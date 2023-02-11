@@ -1,0 +1,11 @@
+{
+  "name": "Iron Wallet",
+  "description": "A dev-oriented web3 wallet",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": ["activeTab", "scripting"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {}
+}
