@@ -12,12 +12,11 @@
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "noEmit": true,
     "jsx": "react-jsx",
     "incremental": true,
     "types": ["node"],
-    "typeRoots": ["node_modules/@types"]
+    "typeRoots": ["./src/global.d.ts"]
   },
-  "include": ["src", "webpack", "node_modules/@types"],
+  "include": ["src", "webpack", "node_modules/@types", "node_modules/@types"],
   "exclude": ["build", "node_modules"]
 }
