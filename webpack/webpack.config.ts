@@ -20,7 +20,7 @@ module.exports = {
     library: { type: "module" },
   },
   resolve: {
-    extensions: [".ts", ".tsx"],
+    extensions: [".ts", ".tsx", ".js"],
   },
   module: {
     rules: [
@@ -60,4 +60,13 @@ module.exports = {
       ],
     }),
   ],
+
+  devServer: {
+    static: {
+      directory: path.join(__dirname, "../dist"),
+    },
+    hot: true,
+    compress: true,
+    port: 9000,
+  },
 };

@@ -16,7 +16,7 @@ function Popup() {
           expand();
         }}
       >
-        Expand
+        Expand2
       </button>
     </div>
   );
