@@ -1,5 +1,6 @@
 import { createRoot } from "react-dom/client";
 import browser from "webextension-polyfill";
+import "../global.css";
 
 function expand() {
   const url = browser.runtime.getURL("expanded.html");
@@ -9,7 +10,7 @@ function expand() {
 function Popup() {
   return (
     <div>
-      <h1>Popup</h1>
+      <h1 className="text-red-400">Popup</h1>
       <button
         onClick={() => {
           expand();

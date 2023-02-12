@@ -1,4 +1,5 @@
 import { createRoot } from "react-dom/client";
+import "../global.css";
 
 function Expanded() {
   return <div>Expanded!</div>;
