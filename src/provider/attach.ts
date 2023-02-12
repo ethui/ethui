@@ -1,9 +1,7 @@
-import { Provider } from "./provider";
+import type { IronProvider } from "./provider";
 
-export function attachGlobalProvider(provider: Provider) {
-  console.log("attaching");
-  console.log("global", global);
+export function attachGlobalProvider(provider: IronProvider) {
   (global as Record<string, any>).iron = provider;
-  console.log((global as any).iron);
+  (global as Record<string, any>).ethereum = provider;
   window.dispatchEvent(new Event("ethereum#initialized"));
 }

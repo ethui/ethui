@@ -20,10 +20,7 @@
   "web_accessible_resources": [
     {
       "matches": ["<all_urls>"],
-      "resources": [
-        "src/extension/expanded.html",
-        "src/extension/content_main.ts"
-      ]
+      "resources": ["src/extension/expanded.html", "src/extension/inpage.ts"]
     }
   ]
 }
