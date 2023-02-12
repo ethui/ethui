@@ -1,11 +1,14 @@
 const path = require("path");
+const CopyPlugin = require("copy-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 const extensionSrc = path.resolve(__dirname, "..", "src", "extension");
 
-const CopyPlugin = require("copy-webpack-plugin");
 module.exports = {
   mode: "production",
   entry: {
+    popup: path.resolve(extensionSrc, "popup.tsx"),
+    expanded: path.resolve(extensionSrc, "expanded.tsx"),
     background: path.resolve(extensionSrc, "background.ts"),
   },
   output: {
@@ -13,7 +16,7 @@ module.exports = {
     filename: "[name].js",
   },
   resolve: {
-    extensions: [".ts", ".js"],
+    extensions: [".ts", ".tsx"],
   },
   module: {
     rules: [
@@ -22,9 +25,26 @@ module.exports = {
         loader: "ts-loader",
         exclude: /node_modules/,
       },
+      {
+        test: /\.html$/,
+        loader: "html-loader",
+        exclude: /node_modules/,
+      },
     ],
   },
   plugins: [
+    // html entrypoints
+    ...["popup", "expanded"].map(
+      (name) =>
+        new HtmlWebpackPlugin({
+          template: path.join(extensionSrc, `${name}.html`),
+          filename: `${name}.html`,
+          chunks: [name],
+          cache: false,
+        })
+    ),
+
+    // manifest
     new CopyPlugin({
       patterns: [
         { from: ".", to: ".", context: "public" },
