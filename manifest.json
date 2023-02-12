@@ -5,7 +5,8 @@
   "manifest_version": 3,
   "permissions": ["activeTab", "scripting"],
   "background": {
-    "service_worker": "src/extension/background.ts"
+    "service_worker": "src/extension/background.ts",
+    "type": "module"
   },
   "action": {
     "default_popup": "src/extension/popup.html"

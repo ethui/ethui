@@ -5,6 +5,7 @@ const CONTENT_SCRIPT = "ironwallet-contentscript";
 const INPAGE = "ironwallet-inpage";
 
 function main() {
+  console.log("[inpage] init");
   const ironStream = new WindowPostMessageStream({
     name: INPAGE,
     target: CONTENT_SCRIPT,
