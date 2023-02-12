@@ -1,17 +1,15 @@
 import { WindowPostMessageStream } from "@metamask/post-message-stream";
 import browser from "webextension-polyfill";
-
-const CONTENT_SCRIPT = "ironwallet-contentscript";
-const INPAGE = "ironwallet-inpage";
+import { CONTENT_SCRIPT_ID, INPAGE_ID } from "../constants";
 
 export class ContentScript {
-  private stream: WindowPostMessageStream;
+  private windowStream: WindowPostMessageStream;
 
   constructor() {
     console.log("[contentScript] init");
     this.injectInPageScript();
     this.listenForMessages();
-    this.stream = this.initializeStream();
+    this.windowStream = this.initializeWindowStream();
   }
 
   private injectInPageScript() {
@@ -35,15 +33,15 @@ export class ContentScript {
     });
   }
 
-  private initializeStream() {
+  private initializeWindowStream() {
     const stream = new WindowPostMessageStream({
-      name: CONTENT_SCRIPT,
-      target: INPAGE,
+      name: CONTENT_SCRIPT_ID,
+      target: INPAGE_ID,
     });
 
-    stream.write("hello1");
+    stream.write("hello from contentScript");
     stream.on("data", (data) =>
-      console.log("[contentscript] received stream data: ", data)
+      console.log("[contentScript->windowStream] received: ", data)
     );
 
     return stream;
