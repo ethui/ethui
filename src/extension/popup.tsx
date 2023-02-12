@@ -3,7 +3,7 @@ import browser from "webextension-polyfill";
 import "../global.css";
 
 function expand() {
-  const url = browser.runtime.getURL("expanded.html");
+  const url = browser.runtime.getURL("src/extension/expanded.html");
   browser.tabs.create({ url }).then(() => window.close());
 }
 
@@ -16,7 +16,7 @@ function Popup() {
           expand();
         }}
       >
-        Expand2
+        Expand
       </button>
     </div>
   );

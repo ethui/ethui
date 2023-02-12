@@ -1,7 +1,12 @@
 console.log("Content script works!");
 
-(async () => {
-  const src = chrome.runtime.getURL("content_script_main.js");
-  const contentMain = await import(/*webpackIgnore: true*/ src);
-  contentMain.main();
-})();
+import { Provider } from "../provider";
+
+function main() {
+  const provider = new Provider();
+  console.log(provider);
+  // Do what you want
+  console.log("hello from content_script_main");
+}
+
+main();
