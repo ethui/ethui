@@ -1,8 +1,28 @@
+import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import "../global.css";
+import { sendMsgToBackground } from "../messenger";
 
 function Expanded() {
-  return <div>Expanded!</div>;
+  const [block, setBlock] = useState(0);
+  function getBlockNumber() {
+    sendMsgToBackground("BLOCK", { message: block.toString() });
+    setBlock(block + 1);
+  }
+
+  return (
+    <div>
+      Expanded!
+      <button
+        onClick={() => {
+          getBlockNumber();
+        }}
+      >
+        Get
+      </button>
+      <p>Block Number: {block}</p>
+    </div>
+  );
 }
 
 function init() {

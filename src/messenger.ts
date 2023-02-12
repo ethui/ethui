@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 
-export async function sendMsgToBackground(type: any, data = null) {
+export async function sendMsgToBackground(type: any, data: any = null) {
   try {
     const response = await browser.runtime.sendMessage({ type, data });
     return response;

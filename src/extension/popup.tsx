@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import browser from "webextension-polyfill";
 import "../global.css";
@@ -21,6 +22,10 @@ function sendMsg() {
 }
 
 function Popup() {
+  const [block, setBlock] = useState(0);
+
+  function getBlockNumber() {}
+
   return (
     <div>
       <h1 className="text-red-400">Popup</h1>
