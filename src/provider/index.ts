@@ -1,7 +1,2 @@
-export class Provider {
-  readonly foo: boolean;
-
-  constructor() {
-    this.foo = true;
-  }
-}
+export * from "./provider";
+export * from "./attach";

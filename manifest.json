@@ -13,13 +13,17 @@
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*", "<all_urls>"],
-      "js": ["src/extension/content_script.ts"]
+      "js": ["src/extension/content_script.ts"],
+      "all_frames": true
     }
   ],
   "web_accessible_resources": [
     {
       "matches": ["<all_urls>"],
-      "resources": ["src/extension/expanded.html"]
+      "resources": [
+        "src/extension/expanded.html",
+        "src/extension/content_main.ts"
+      ]
     }
   ]
 }

@@ -1,12 +1,18 @@
+import browser from "webextension-polyfill";
+
 console.log("Content script works!");
 
-import { Provider } from "../provider";
-
-function main() {
-  const provider = new Provider();
-  console.log(provider);
-  // Do what you want
-  console.log("hello from content_script_main");
+function injectScript(file: string) {
+  try {
+    const container = document.head || document.documentElement;
+    const scriptTag = document.createElement("script");
+    scriptTag.setAttribute("async", "false");
+    scriptTag.setAttribute("src", file);
+    container.insertBefore(scriptTag, container.children[0]);
+    container.removeChild(scriptTag);
+  } catch (error) {
+    console.error("Iron Wallet: Provider injection failed.", error);
+  }
 }
 
-main();
+injectScript(browser.runtime.getURL("src/extension/content_main.js"));

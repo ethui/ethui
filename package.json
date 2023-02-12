@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A dev-oriented web3 wallet",
   "scripts": {
-    "dev": "parcel watch manifest.json",
+    "dev": "parcel watch manifest.json --no-cache",
     "build": "parcel build manifest.json"
   },
   "repository": "https://github.com/naps62/iron",
