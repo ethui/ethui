@@ -1,49 +1,13 @@
-import { useState } from "react";
 import { createRoot } from "react-dom/client";
-import browser from "webextension-polyfill";
+import { ExpandBtn } from "../components/ExpandBtn";
 import "../global.css";
-import { sendMsgToBackground, sendMsgToContentScript } from "../messenger";
-
-function expand() {
-  const url = browser.runtime.getURL("src/extension/expanded.html");
-  browser.tabs.create({ url }).then(() => window.close());
-}
-
-function sendMsg() {
-  sendMsgToBackground({ type: "foo", data: { message: "bar" } });
-  browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
-    tabs.forEach((tab) => {
-      sendMsgToContentScript(tab.id!, {
-        type: "foo",
-        data: { message: "bar" },
-      });
-    });
-  });
-}
 
 function Popup() {
-  const [block, setBlock] = useState(0);
-
-  function getBlockNumber() {}
-
   return (
-    <div>
+    <main className="container mx-auto px-4">
       <h1 className="text-red-400">Popup</h1>
-      <button
-        onClick={() => {
-          expand();
-        }}
-      >
-        Expand
-      </button>
-      <button
-        onClick={() => {
-          sendMsg();
-        }}
-      >
-        Send Msg
-      </button>
-    </div>
+      <ExpandBtn>Expand</ExpandBtn>
+    </main>
   );
 }
 

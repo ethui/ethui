@@ -11,16 +11,18 @@ function Expanded() {
   }
 
   return (
-    <div>
-      Expanded!
-      <button
-        onClick={() => {
-          getBlockNumber();
-        }}
-      >
-        Get
-      </button>
-      <p>Block Number: {block}</p>
+    <div className="bg-slate-200 h-screen p-4">
+      <main className="container mx-auto px-4 py-4 bg-white">
+        <h1>Expanded!</h1>
+        <button
+          onClick={() => {
+            getBlockNumber();
+          }}
+        >
+          Get
+        </button>
+        <p>Block Number: {block}</p>
+      </main>
     </div>
   );
 }
