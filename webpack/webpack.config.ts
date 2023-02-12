@@ -5,15 +5,19 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const extensionSrc = path.resolve(__dirname, "..", "src", "extension");
 
 module.exports = {
+  experiments: { outputModule: true },
   mode: "production",
   entry: {
     popup: path.resolve(extensionSrc, "popup.tsx"),
     expanded: path.resolve(extensionSrc, "expanded.tsx"),
     background: path.resolve(extensionSrc, "background.ts"),
+    content_script: path.resolve(extensionSrc, "content_script.ts"),
+    content_script_main: path.resolve(extensionSrc, "content_script_main.ts"),
   },
   output: {
     path: path.join(__dirname, "../dist"),
     filename: "[name].js",
+    library: { type: "module" },
   },
   resolve: {
     extensions: [".ts", ".tsx"],
