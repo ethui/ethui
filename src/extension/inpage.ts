@@ -1,3 +1,3 @@
-import { InPage } from "../inpage";
+import { init } from "../inpage";
 
-new InPage();
+init();

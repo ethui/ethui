@@ -1,12 +1,10 @@
-import { IronProvider, attachGlobalProvider } from "../provider";
+// import { IronProvider, attachGlobalProvider } from "../provider";
 
-export class InPage {
-  private provider: IronProvider;
+// let provider: IronProvider;
 
-  constructor() {
-    console.log("[inpage] init");
-    // this.provider = new IronProvider
-    this.provider = new IronProvider();
-    attachGlobalProvider(this.provider);
-  }
+export function init() {
+  console.log("[inpage] init");
+  // this.provider = new IronProvider
+  // this.provider = new IronProvider();
+  // attachGlobalProvider(this.provider);
 }

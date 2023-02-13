@@ -1,3 +1,3 @@
-import { ContentScript } from "../content_script";
+import { init } from "../content_script";
 
-new ContentScript();
+init();
