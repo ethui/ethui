@@ -1,6 +1,5 @@
 import browser from "webextension-polyfill";
 import { Request } from "./types";
-import { getActiveTab } from "./utils";
 
 export async function requestToBackground(req: Request) {
   try {

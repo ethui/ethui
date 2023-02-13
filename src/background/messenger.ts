@@ -1,11 +1,13 @@
 import browser from "webextension-polyfill";
 
+type Callback = (req: any) => Promise<unknown>;
+
 /**
  * listen to requests from contentscript
  * try to handle them with a given callback, and reply with result/error
  */
 export function listen(callback: Callback) {
-  browser.runtime.onMessage.addListener((req, sender, sendResponse: any) => {
+  browser.runtime.onMessage.addListener((req, _sender, sendResponse: any) => {
     console.log("from cs", req);
     (async () => {
       try {

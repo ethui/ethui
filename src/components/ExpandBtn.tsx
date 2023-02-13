@@ -10,7 +10,6 @@ function expand() {
 }
 
 export function ExpandBtn({ children }: Props) {
-  expand();
   return (
     <button
       className="btn"

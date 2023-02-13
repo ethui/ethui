@@ -5,8 +5,10 @@ import "../global.css";
 
 function Popup() {
   return (
-    <main className="container mx-auto px-4">
-      <h1 className="text-red-400">Popup</h1>
+    <main className="container bg-white prose">
+      <div className="navbar bg-neutral text-neutral-content">
+        <a className="btn btn-ghost normal-case text-xl">Iron Wallet</a>
+      </div>
       <ExpandBtn>Expand</ExpandBtn>
       <CurrentBlock />
     </main>

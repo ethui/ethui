@@ -7,3 +7,5 @@ declare namespace chrome {
 declare module "stream" {
   export interface Duplex {}
 }
+
+declare module "daisyui" {}
