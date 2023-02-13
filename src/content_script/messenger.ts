@@ -1,12 +1,12 @@
 import browser from "webextension-polyfill";
-import { CSRequest } from "../messenger/types";
+import { Request } from "../messenger/types";
 
 interface Event {
-  data: CSRequest;
+  data: Request;
   ports: MessagePort[];
 }
 
-type Callback = (event: CSRequest) => Promise<unknown>;
+type Callback = (event: Request) => Promise<unknown>;
 
 /**
  * listen to messages from the inpage script

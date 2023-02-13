@@ -1,16 +1,16 @@
-import { CSRequest } from "../messenger/types";
+import { Request } from "../messenger/types";
 
 /**
  * sends a request to be processed in the background script
  */
-export function requestToBackground(op: Omit<CSRequest, "relay">) {
+export function requestToBackground(op: Omit<Request, "relay">) {
   return request({ ...op, _relay: true });
 }
 
 /**
  * sends a request to be processed directly by the contentscript
  */
-export function requestToContent(op: Omit<CSRequest, "relay">) {
+export function requestToContent(op: Omit<Request, "relay">) {
   return request({ ...op, _relay: false });
 }
 
@@ -22,7 +22,7 @@ export function requestToContent(op: Omit<CSRequest, "relay">) {
  *
  * TODO: is it a good idea to create one of MessageChannels for every request?
  */
-function request(op: CSRequest) {
+function request(op: Request) {
   return new Promise((resolve, reject) => {
     const channel = new MessageChannel();
 

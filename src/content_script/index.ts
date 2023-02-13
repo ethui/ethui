@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { CSRequest } from "../messenger/types";
+import { Request } from "../messenger/types";
 import { listenWithBackgroundRelay } from "./messenger";
 
 export async function init() {
@@ -9,7 +9,7 @@ export async function init() {
   // listen from messages from inpage
   // if `relay: true` message is relayed to background
   // otherwise it's handled with the given callback
-  listenWithBackgroundRelay(async (event: CSRequest) => {
+  listenWithBackgroundRelay(async (event: Request) => {
     console.log("cs received non-relay msg", event);
     return "direct result from cs";
   });
