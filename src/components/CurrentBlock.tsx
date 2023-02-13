@@ -7,8 +7,8 @@ export function CurrentBlock() {
   async function getBlock() {
     console.log("getBlock");
     const resp = await sendToBackground({
-      name: "eth",
-      data: "what is block?",
+      type: "eth",
+      message: { method: "eth_getBlockNumber", params: [] },
     });
     console.log(resp);
     setBlock(block);

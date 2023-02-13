@@ -1,3 +1,5 @@
 import { init } from "../background";
 
-init();
+(async () => {
+  init();
+})();

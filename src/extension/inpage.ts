@@ -1,3 +1,5 @@
 import { init } from "../inpage";
 
-init();
+(async () => {
+  init();
+})();

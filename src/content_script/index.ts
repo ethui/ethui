@@ -1,22 +1,23 @@
-import { WindowPostMessageStream } from "@metamask/post-message-stream";
 import browser from "webextension-polyfill";
-import PortStream from "extension-port-stream";
-import ObjectMultiplex from "@metamask/object-multiplex";
-import pump, { Stream } from "pump";
+import { CSRequest } from "../messenger/types";
+import { listenWithBackgroundRelay } from "./messenger";
 
-let inpageStream;
-let inpageChannel;
-let bgStream;
-let bgChannel;
-
-const provider = "iron-provider";
-
-export function init() {
+export async function init() {
   console.log("[contentScript] init");
   injectInPageScript();
-  setupStreams();
+
+  // listen from messages from inpage
+  // if `relay: true` message is relayed to background
+  // otherwise it's handled with the given callback
+  listenWithBackgroundRelay(async (event: CSRequest) => {
+    console.log("cs received non-relay msg", event);
+    return "direct result from cs";
+  });
 }
 
+/**
+ * Injects the inpage script
+ */
 function injectInPageScript() {
   const url = browser.runtime.getURL("src/extension/inpage.js");
 
@@ -30,59 +31,4 @@ function injectInPageScript() {
   } catch (error) {
     console.error("Iron Wallet: Provider injection failed.", error);
   }
-}
-
-function setupStreams() {
-  //
-  // cs <-> inpage
-  //
-  inpageStream = new WindowPostMessageStream({
-    name: "contentscript",
-    target: "inpage",
-  });
-
-  const inpageMux = new ObjectMultiplex();
-  pump(
-    inpageMux as unknown as Stream,
-    inpageStream as unknown as Stream,
-    inpageMux as unknown as Stream,
-    (err: any) => logStreamDisconnect("Inpage Multiplex", err)
-  );
-
-  //
-  // cs <-> background
-  //
-  const bgPort = browser.runtime.connect({ name: "port" });
-  bgStream = new PortStream(bgPort);
-
-  const bgMux = new ObjectMultiplex();
-  pump(
-    bgMux as unknown as Stream,
-    bgStream,
-    bgMux as unknown as Stream,
-    (err: any) => {
-      logStreamDisconnect("Background multiplex failed", err);
-    }
-  );
-
-  //
-  // background <-> page forward, "provider" channel
-  //
-  inpageChannel = inpageMux.createStream("provider");
-  bgChannel = bgMux.createStream("provider");
-  pump(
-    inpageChannel as unknown as Stream,
-    bgChannel as unknown as Stream,
-    inpageChannel as unknown as Stream,
-    (err: any) => {
-      logStreamDisconnect(`Muxed traffic for channel ${provider} failed`, err);
-    }
-  );
-}
-
-function logStreamDisconnect(remoteLabel: string, error: any) {
-  console.debug(
-    `[Iron] Content script lost connection to "${remoteLabel}".`,
-    error
-  );
 }

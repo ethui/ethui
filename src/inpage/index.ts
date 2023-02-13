@@ -1,25 +1,37 @@
-// import { IronProvider, attachGlobalProvider } from "../provider";
+import { IronProvider, attachGlobalProvider } from "./provider";
 
-import { WindowPostMessageStream } from "@metamask/post-message-stream";
+import { Duplex } from "stream";
+import { requestToBackground, requestToContent } from "./messenger";
 
-// let provider: IronProvider;
+let provider: IronProvider;
+let csStream: Duplex;
 
-export function init() {
+export async function init() {
   console.log("[inpage] init");
-  // this.provider = new IronProvider
-  // this.provider = new IronProvider();
-  // attachGlobalProvider(this.provider);
-  setupStream();
+  setupProvider();
+
+  console.log(
+    "[inpage]",
+    await requestToContent({ type: "add", message: [3, 5] })
+  );
+  console.log(
+    "[inpage]",
+    await requestToBackground({ type: "add", message: [3, 5] })
+  );
+  console.log(
+    "[inpage]",
+    await requestToBackground({
+      type: "eth",
+      message: {
+        method: "eth_getBalance",
+        params: ["0x8D97689C9818892B700e27F316cc3E41e17fBeb9", "latest"],
+      },
+    })
+  );
 }
 
-function setupStream() {
-  //
-  // inpage <-> cs
-  const csStream = new WindowPostMessageStream({
-    name: "inpage",
-    target: "contentscript",
-  });
-  csStream.on("data", (data) => console.log("from cs", data));
-  console.log("inpage write");
-  csStream.write({ name: "provider", foo: "3hello from inpage", data: "foo" });
+function setupProvider() {
+  console.log("setting up provider");
+  provider = new IronProvider();
+  attachGlobalProvider(provider);
 }
