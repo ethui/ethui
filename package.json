@@ -11,6 +11,7 @@
   "license": "MIT",
   "devDependencies": {
     "@parcel/config-webextension": "^2.8.3",
+    "@tailwindcss/typography": "^0.5.9",
     "@types/chrome": "^0.0.212",
     "@types/pump": "^1.1.1",
     "@types/react": "^18.0.28",

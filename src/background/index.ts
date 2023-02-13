@@ -16,7 +16,6 @@ listen(async (req: any) => {
         req.message.method,
         req.message.params
       );
-      console.log("[iron] rpc reply", result);
       return result;
     // return await provider.getBlockNumber();
     default:

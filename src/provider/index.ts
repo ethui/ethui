@@ -1,2 +1,2 @@
-export * from "./IronProvider";
+export * from "./provider";
 export * from "./attach";

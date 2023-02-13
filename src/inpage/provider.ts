@@ -1,30 +1,33 @@
 export const IronWalletStreamName = "iron-wallet-provider";
-import { requestToBackground } from "./messenger";
 
 interface RequestArguments {
   method: string;
   params?: unknown[] | object;
 }
 
+type Requester = (req: RequestArguments) => Promise<unknown>;
+
 export class IronProvider {
   readonly connected: boolean;
+  readonly requester: Requester;
 
   /**
    * Initializes RPC connection and middlewares
    */
-  constructor() {
+  constructor(requester: Requester) {
     this.connected = false;
+    this.requester = requester;
   }
 
   isConnected(): boolean {
     return this.connected;
   }
 
-  async request(args: RequestArguments): unknown {
+  async request(args: RequestArguments): Promise<unknown> {
     // TODO: metamask does a bunch of checks here
 
-    return await requestToBackground({ type: "eth", message: args });
-    // return new Promise((resolve, reject) => {});
+    console.log("[iron] request", args);
+    return await this.requester(args);
   }
 }
 

@@ -1,10 +1,7 @@
-import { IronProvider, attachGlobalProvider } from "./provider";
-
-import { Duplex } from "stream";
+import { IronProvider, attachGlobalProvider } from "../provider";
 import { requestToBackground, requestToContent } from "./messenger";
 
 let provider: IronProvider;
-let csStream: Duplex;
 
 export async function init() {
   console.log("[inpage] init");
@@ -20,18 +17,16 @@ export async function init() {
   );
   console.log(
     "[inpage]",
-    await requestToBackground({
-      type: "eth",
-      message: {
-        method: "eth_getBalance",
-        params: ["0x8D97689C9818892B700e27F316cc3E41e17fBeb9", "latest"],
-      },
-    })
+    await provider.request({ method: "eth_blockNumber" })
   );
 }
 
 function setupProvider() {
-  console.log("setting up provider");
-  provider = new IronProvider();
+  console.log("setting up provider2");
+  // setup a provider where requests are proxied to `requestToBackground`
+  provider = new IronProvider((req) =>
+    requestToBackground({ type: "eth", message: req })
+  );
+
   attachGlobalProvider(provider);
 }
