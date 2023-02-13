@@ -1,4 +1,5 @@
 import { createRoot } from "react-dom/client";
+import { CurrentBlock } from "../components/CurrentBlock";
 import { ExpandBtn } from "../components/ExpandBtn";
 import "../global.css";
 
@@ -7,6 +8,7 @@ function Popup() {
     <main className="container mx-auto px-4">
       <h1 className="text-red-400">Popup</h1>
       <ExpandBtn>Expand</ExpandBtn>
+      <CurrentBlock />
     </main>
   );
 }
