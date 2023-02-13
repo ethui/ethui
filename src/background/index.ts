@@ -14,9 +14,12 @@ export function init() {
 }
 
 function listenForMessages() {
-  browser.runtime.onMessage.addListener((message: any, sender: any) => {
-    console.log("[background] received: ", message, sender);
-  });
+  browser.runtime.onMessage.addListener(
+    (message: any, sender: any, sendResponse: any) => {
+      console.log("[background] received: ", message, sender);
+      sendResponse({ response: `response to ${message}` });
+    }
+  );
 }
 
 function setupDebug() {
