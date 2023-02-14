@@ -1,15 +1,18 @@
 import { createRoot } from "react-dom/client";
 import { CurrentBlock } from "../components/CurrentBlock";
+import { Navbar } from "../components/Navbar";
 import "../global.css";
 
 function Expanded() {
   return (
     <div className="bg-slate-200 h-screen p-4">
-      <main className="container mx-auto px-4 py-4 bg-white rounded-box prose">
-        <div className="navbar bg-neutral text-neutral-content rounded-box">
-          <a className="btn btn-ghost normal-case text-xl">Iron Wallet</a>
+      <main className="container mx-auto px-4 py-4 bg-white rounded-box ">
+        <Navbar />
+        <div className="gap-4 items-center py-8 px-4">
+          <CurrentBlock />
+          <hr className="divider my-2" />
+          asd2
         </div>
-        <CurrentBlock />
       </main>
     </div>
   );
