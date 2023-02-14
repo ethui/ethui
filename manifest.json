@@ -3,7 +3,7 @@
   "description": "A dev-oriented web3 wallet",
   "version": "1.0",
   "manifest_version": 3,
-  "permissions": ["activeTab", "scripting"],
+  "permissions": ["activeTab", "scripting", "storage"],
   "background": {
     "service_worker": "src/extension/background.ts",
     "type": "module"
