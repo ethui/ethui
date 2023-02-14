@@ -2,16 +2,26 @@ import browser from "webextension-polyfill";
 import { create } from "zustand";
 import { createJSONStorage, persist, StateStorage } from "zustand/middleware";
 
-interface State {
+interface Settings {
   mnemonic: string;
-  setMnemonic: (mnemonic: string) => void;
+  rpc: string;
 }
+
+interface Setters {
+  setSettings: (settings: Settings) => void;
+}
+
+type State = Settings & Setters;
 
 export const useStore = create<State>()(
   persist(
     (set, _get) => ({
       mnemonic: "",
-      setMnemonic: (mnemonic) => set({ mnemonic: mnemonic }),
+      rpc: "",
+      setSettings: ({ mnemonic, rpc }) => {
+        console.log(mnemonic);
+        set({ mnemonic, rpc });
+      },
     }),
     {
       name: "iron-store",
@@ -20,12 +30,13 @@ export const useStore = create<State>()(
   )
 );
 
+// exposes `browser.storage.local` as a zustand-compatible storage
 const storageWrapper: StateStorage = {
   getItem: (name: string) =>
     new Promise((resolve) => {
       browser.storage.local
         .get(name)
-        .then((result) => resolve(result as unknown as string));
+        .then((result) => resolve(result[name] as unknown as string));
     }),
   setItem: (key, value) => {
     browser.storage.local.set({ key, value });

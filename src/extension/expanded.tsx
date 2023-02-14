@@ -3,6 +3,7 @@ import { CurrentBlock } from "../components/CurrentBlock";
 import { Navbar } from "../components/Navbar";
 import { useStore } from "../store";
 import "../global.css";
+import { Settings } from "../components/settings";
 
 function Expanded() {
   const [mnemonic, setMnemonic] = useStore((state) => [
@@ -17,13 +18,7 @@ function Expanded() {
         <div className="gap-4 items-center py-8 px-4">
           <CurrentBlock />
           <hr className="divider my-2" />
-          <div>current mnemonic: {mnemonic}</div>
-          <input
-            type="text"
-            placeholder="Type here"
-            className="input w-full max-w-xs"
-            onChange={(e) => setMnemonic(e.target.value)}
-          />
+          <Settings />
         </div>
       </main>
     </div>
