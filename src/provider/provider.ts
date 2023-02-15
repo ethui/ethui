@@ -15,7 +15,7 @@ export class IronProvider {
    * Initializes RPC connection and middlewares
    */
   constructor(requester: Requester) {
-    this.connected = false;
+    this.connected = true;
     this.requester = requester;
   }
 
