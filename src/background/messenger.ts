@@ -8,7 +8,6 @@ type Callback = (req: any) => Promise<unknown>;
  */
 export function listen(callback: Callback) {
   browser.runtime.onMessage.addListener((req, _sender, sendResponse: any) => {
-    console.log("from cs", req);
     (async () => {
       try {
         const response = await callback(req);

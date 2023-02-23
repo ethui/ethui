@@ -10,7 +10,6 @@ export async function init() {
   // if `relay: true` message is relayed to background
   // otherwise it's handled with the given callback
   listenWithBackgroundRelay(async (event: Request) => {
-    console.log("cs received non-relay msg", event);
     return "direct result from cs";
   });
 }

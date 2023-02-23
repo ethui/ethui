@@ -4,7 +4,6 @@ import { Request } from "./types";
 export async function requestToBackground(req: Request) {
   try {
     const response = await browser.runtime.sendMessage(req);
-    console.log("response from background: ", response);
     return response;
   } catch (error) {
     console.error("[sendToBackground] error: ", error);

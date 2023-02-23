@@ -4,8 +4,8 @@ import { requestToBackground, requestToContent } from "./messenger";
 let provider: IronProvider;
 
 export async function init() {
-  // console.log("[inpage] init");
-  // setupProvider();
+  console.log("[inpage] init");
+  setupProvider();
   //
   // console.log(
   //   "[inpage]",
@@ -22,7 +22,6 @@ export async function init() {
 }
 
 function setupProvider() {
-  console.log("setting up provider2");
   // setup a provider where requests are proxied to `requestToBackground`
   provider = new IronProvider((req) =>
     requestToBackground({ type: "eth", message: req })

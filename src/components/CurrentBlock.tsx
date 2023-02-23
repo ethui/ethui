@@ -13,7 +13,6 @@ export function CurrentBlock() {
 
   const update = async () => {
     const resp = await provider.request({ method: "eth_blockNumber" });
-    console.log("here", resp);
     setBlock(BigNumber.from(resp));
   };
 

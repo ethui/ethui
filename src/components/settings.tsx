@@ -12,18 +12,21 @@ export function Settings() {
   const onSubmit = (data: any) => setSettings(data);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <FormControl
-        name="Mnemonic"
-        register={register("mnemonic")}
-        value={mnemonic}
-      />
-      <FormControl name="RPC" register={register("rpc")} value={rpc} />
+    <>
+      <h2 className="text-xl">Settings</h2>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <FormControl
+          name="Mnemonic"
+          register={register("mnemonic")}
+          value={mnemonic}
+        />
+        <FormControl name="RPC" register={register("rpc")} value={rpc} />
 
-      <div className="m-2">
-        <input type="submit" value="Save" className="p-2 btn btn-primary" />
-      </div>
-    </form>
+        <div className="m-2">
+          <input type="submit" value="Save" className="p-2 btn btn-primary" />
+        </div>
+      </form>
+    </>
   );
 }
 
