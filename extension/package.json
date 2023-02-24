@@ -1,0 +1,15 @@
+{
+  "name": "@iron/extension",
+  "version": "1.0.0",
+  "description": "A dev-oriented web3 wallet",
+  "repository": "https://github.com/naps62/iron",
+  "author": "Miguel Palhas <mpalhas@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/react-dom": "^18.0.10"
+  },
+  "dependencies": {
+    "react-dom": "^18.2.0",
+    "@iron/ui": "*"
+  }
+}

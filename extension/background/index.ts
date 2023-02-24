@@ -1,6 +1,9 @@
 import { providers } from "ethers";
 import { listen } from "./messenger";
 
+// init on load
+(async () => init())();
+
 const ALCHEMY_RPC =
   "https://eth-mainnet.g.alchemy.com/v2/rTwL6BTDDWkP3tZJUc_N6shfCSR5hsTs";
 

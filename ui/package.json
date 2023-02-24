@@ -1,0 +1,33 @@
+{
+  "name": "@iron/ui",
+  "version": "1.0.0",
+  "license": "MIT",
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.9",
+    "@types/chrome": "^0.0.212",
+    "@types/pump": "^1.1.1",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.10",
+    "@types/webextension-polyfill": "^0.10.0",
+    "buffer": "^5.5.0",
+    "events": "^3.1.0",
+    "postcss": "^8.4.21",
+    "process": "^0.11.10",
+    "stream-browserify": "^3.0.0",
+    "tailwindcss": "3.2.2",
+    "typescript": "^4.9.5",
+    "webextension-polyfill": "^0.10.0"
+  },
+  "dependencies": {
+    "@heroicons/react": "^2.0.15",
+    "@types/is-stream": "^2.0.0",
+    "daisyui": "^2.22.0",
+    "ethers": "^5.7.2",
+    "fast-deep-equal": "^3.1.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.43.1",
+    "wouter": "^2.10.0",
+    "zustand": "^4.3.3"
+  }
+}

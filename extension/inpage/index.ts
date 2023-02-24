@@ -1,5 +1,8 @@
-import { IronProvider, attachGlobalProvider } from "../provider";
-import { requestToBackground, requestToContent } from "./messenger";
+import { IronProvider, attachGlobalProvider } from "@iron/ui/provider";
+// import { requestToBackground } from "@iron/ui/messenger";
+
+// init on load
+(async () => init())();
 
 let provider: IronProvider;
 
@@ -23,9 +26,9 @@ export async function init() {
 
 function setupProvider() {
   // setup a provider where requests are proxied to `requestToBackground`
-  provider = new IronProvider((req) =>
-    requestToBackground({ type: "eth", message: req })
-  );
+  // provider = new IronProvider((req) =>
+  //   requestToBackground({ type: "eth", message: req })
+  // );
 
   attachGlobalProvider(provider);
 }

@@ -2,6 +2,9 @@ import browser from "webextension-polyfill";
 import { Request } from "../messenger/types";
 import { listenWithBackgroundRelay } from "./messenger";
 
+// init on load
+(async () => init())();
+
 export async function init() {
   console.log("[contentScript] init");
   injectInPageScript();
@@ -18,7 +21,7 @@ export async function init() {
  * Injects the inpage script
  */
 function injectInPageScript() {
-  const url = browser.runtime.getURL("src/extension/inpage.js");
+  const url = browser.runtime.getURL("inpage/index.js");
 
   try {
     const container = document.head || document.documentElement;
