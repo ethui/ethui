@@ -11,8 +11,6 @@ export function Settings() {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const onSubmit = (data: any) => setSettings(data);
 
-  console.log(errors.mnemonic)
-
   return (
     <>
       <h2 className="text-xl">Settings</h2>
