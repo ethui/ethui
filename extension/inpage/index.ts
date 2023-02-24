@@ -1,6 +1,9 @@
 import { IronProvider, attachGlobalProvider } from "@iron/ui/provider";
 // import { requestToBackground } from "@iron/ui/messenger";
 
+// init on load
+(async () => init())();
+
 let provider: IronProvider;
 
 export async function init() {
@@ -29,7 +32,3 @@ function setupProvider() {
 
   attachGlobalProvider(provider);
 }
-
-(async () => {
-  init();
-})();

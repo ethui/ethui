@@ -2,6 +2,9 @@ import browser from "webextension-polyfill";
 import { Request } from "../messenger/types";
 import { listenWithBackgroundRelay } from "./messenger";
 
+// init on load
+(async () => init())();
+
 export async function init() {
   console.log("[contentScript] init");
   injectInPageScript();
@@ -31,7 +34,3 @@ function injectInPageScript() {
     console.error("Iron Wallet: Provider injection failed.", error);
   }
 }
-
-(async () => {
-  await init();
-})();
