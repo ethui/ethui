@@ -1,7 +1,6 @@
 {
   "name": "@iron/ui",
   "version": "1.0.0",
-  "main": "src/index.js",
   "license": "MIT",
   "devDependencies": {
     "@parcel/config-webextension": "^2.8.3",
