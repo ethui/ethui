@@ -18,7 +18,7 @@ export async function init() {
  * Injects the inpage script
  */
 function injectInPageScript() {
-  const url = browser.runtime.getURL("src/extension/inpage.js");
+  const url = browser.runtime.getURL("inpage/index.js");
 
   try {
     const container = document.head || document.documentElement;
@@ -31,3 +31,7 @@ function injectInPageScript() {
     console.error("Iron Wallet: Provider injection failed.", error);
   }
 }
+
+(async () => {
+  await init();
+})();

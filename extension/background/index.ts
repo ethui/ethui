@@ -27,3 +27,7 @@ export async function init() {
   console.log("[background] init");
   provider = new providers.JsonRpcProvider(ALCHEMY_RPC);
 }
+
+(async () => {
+  init();
+})();

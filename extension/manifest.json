@@ -5,23 +5,23 @@
   "manifest_version": 3,
   "permissions": ["activeTab", "scripting", "storage"],
   "background": {
-    "service_worker": "src/extension/background.ts",
+    "service_worker": "background/index.ts",
     "type": "module"
   },
   "action": {
-    "default_popup": "src/extension/popup.html"
+    "default_popup": "popup.html"
   },
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*", "<all_urls>"],
-      "js": ["src/extension/content_script.ts"],
+      "js": ["content_script/index.ts"],
       "all_frames": true
     }
   ],
   "web_accessible_resources": [
     {
       "matches": ["<all_urls>"],
-      "resources": ["src/extension/expanded.html", "src/extension/inpage.ts"]
+      "resources": ["expanded.html", "inpage/index.ts"]
     }
   ]
 }
