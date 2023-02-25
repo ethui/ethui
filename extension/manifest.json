@@ -18,6 +18,9 @@
       "all_frames": true
     }
   ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; frame-ancestors 'none';"
+  },
   "web_accessible_resources": [
     {
       "matches": ["<all_urls>"],
