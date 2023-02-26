@@ -1,10 +1,10 @@
 import { Duplex } from "stream";
 import {
-  MetaMaskInpageProvider,
-  MetaMaskInpageProviderOptions,
-} from "./MetaMaskInpageProvider";
+  IronInpageProvider,
+  IronInpageProviderOptions,
+} from "./IronInpageProvider";
 
-interface InitializeProviderOptions extends MetaMaskInpageProviderOptions {
+interface InitializeProviderOptions extends IronInpageProviderOptions {
   /**
    * The stream used to connect to the wallet.
    */
@@ -17,7 +17,7 @@ interface InitializeProviderOptions extends MetaMaskInpageProviderOptions {
 }
 
 /**
- * Initializes a MetaMaskInpageProvider and (optionally) assigns it as window.ethereum.
+ * Initializes a IronInpageProvider and (optionally) assigns it as window.ethereum.
  *
  * @param options - An options bag.
  * @param options.connectionStream - A Node.js stream.
@@ -33,8 +33,8 @@ export function initializeProvider({
   logger = console,
   maxEventListeners = 100,
   shouldSetOnWindow = true,
-}: InitializeProviderOptions): MetaMaskInpageProvider {
-  const provider = new MetaMaskInpageProvider(connectionStream, {
+}: InitializeProviderOptions): IronInpageProvider {
+  const provider = new IronInpageProvider(connectionStream, {
     jsonRpcStreamName,
     logger,
     maxEventListeners,
@@ -59,7 +59,7 @@ export function initializeProvider({
  * @param providerInstance - The provider instance.
  */
 export function setGlobalProvider(
-  providerInstance: MetaMaskInpageProvider
+  providerInstance: IronInpageProvider
 ): void {
   (window as Record<string, any>).ethereum = providerInstance;
   window.dispatchEvent(new Event("ethereum#initialized"));

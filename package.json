@@ -8,7 +8,8 @@
   "workspaces": [
     "extension",
     "provider",
-    "ui"
+    "ui",
+    "settings"
   ],
   "devDependencies": {
     "@parcel/config-webextension": "^2.8.3",

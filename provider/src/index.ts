@@ -3,17 +3,13 @@ import {
   initializeProvider,
   setGlobalProvider,
 } from "./initializeInpageProvider";
-import {
-  MetaMaskInpageProvider,
-  MetaMaskInpageProviderStreamName,
-} from "./MetaMaskInpageProvider";
+import { IronInpageProvider } from "./IronInpageProvider";
 import { StreamProvider } from "./StreamProvider";
 
 export {
   BaseProvider,
   initializeProvider,
-  MetaMaskInpageProviderStreamName,
-  MetaMaskInpageProvider,
+  IronInpageProvider,
   setGlobalProvider,
   StreamProvider,
 };

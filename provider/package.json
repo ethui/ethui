@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "license": "MIT",
   "dependencies": {
+    "@iron/settings": "*",
     "@metamask/object-multiplex": "^1.2.0",
     "@metamask/safe-event-emitter": "^2.0.0",
     "is-stream": "^3.0.0",

@@ -15,6 +15,7 @@ import {
 import { providerAsMiddleware } from "@metamask/eth-json-rpc-middleware/src/providerAsMiddleware";
 import { permissionRpcMethods } from "@metamask/permission-controller";
 import createJsonRpcClient from "./jsonrpc";
+import { Constants } from "@iron/settings";
 
 //
 // global state
@@ -75,7 +76,7 @@ export function initProvider({ rpcUrl, chainId }) {
 export function setupProviderConnection(remotePort: any, sender: any) {
   const stream = new PortStream(remotePort);
   const mux = setupMultiplex(stream);
-  const outStream = mux.createStream("metamask-provider");
+  const outStream = mux.createStream(Constants.provider.streamName);
 
   const origin = new URL(sender.url).origin;
 

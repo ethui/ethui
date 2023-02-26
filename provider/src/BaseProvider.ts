@@ -91,7 +91,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
 
   /**
    * The user's currently selected Ethereum address.
-   * If null, MetaMask is either locked or the user has not permitted any
+   * If null, Iron is either locked or the user has not permitted any
    * addresses to be viewed.
    */
   public selectedAddress: string | null;
@@ -281,7 +281,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
    * required events. Idempotent.
    *
    * @param chainId - The ID of the newly connected chain.
-   * @emits MetaMaskInpageProvider#connect
+   * @emits IronInpageProvider#connect
    */
   protected _handleConnect(chainId: string) {
     if (!this._state.isConnected) {
@@ -380,7 +380,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
 
     if (!Array.isArray(accounts)) {
       this._log.error(
-        'MetaMask: Received invalid accounts parameter. Please report this bug.',
+        'Iron: Received invalid accounts parameter. Please report this bug.',
         accounts,
       );
       _accounts = [];
@@ -389,7 +389,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
     for (const account of accounts) {
       if (typeof account !== 'string') {
         this._log.error(
-          'MetaMask: Received non-string account. Please report this bug.',
+          'Iron: Received non-string account. Please report this bug.',
           accounts,
         );
         _accounts = [];
@@ -403,7 +403,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
       // returns
       if (isEthAccounts && this._state.accounts !== null) {
         this._log.error(
-          `MetaMask: 'eth_accounts' unexpectedly updated accounts. Please report this bug.`,
+          `Iron: 'eth_accounts' unexpectedly updated accounts. Please report this bug.`,
           _accounts,
         );
       }
@@ -440,7 +440,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
   }: { accounts?: string[]; isUnlocked?: boolean } = {}) {
     if (typeof isUnlocked !== 'boolean') {
       this._log.error(
-        'MetaMask: Received invalid isUnlocked parameter. Please report this bug.',
+        'Iron: Received invalid isUnlocked parameter. Please report this bug.',
       );
       return;
     }

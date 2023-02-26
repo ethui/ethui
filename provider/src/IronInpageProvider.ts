@@ -13,6 +13,7 @@ import {
   AbstractStreamProvider,
   StreamProviderOptions,
 } from "./StreamProvider";
+import { Constants } from "@iron/settings";
 
 export interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
   method:
@@ -24,7 +25,7 @@ export interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
 
 type WarningEventName = keyof SentWarningsState["events"];
 
-export interface MetaMaskInpageProviderOptions
+export interface IronInpageProviderOptions
   extends Partial<Omit<StreamProviderOptions, "rpcMiddleware">> {}
 
 interface SentWarningsState {
@@ -41,12 +42,7 @@ interface SentWarningsState {
   };
 }
 
-/**
- * The name of the stream consumed by {@link MetaMaskInpageProvider}.
- */
-export const MetaMaskInpageProviderStreamName = "metamask-provider";
-
-export class MetaMaskInpageProvider extends AbstractStreamProvider {
+export class IronInpageProvider extends AbstractStreamProvider {
   protected _sentWarnings: SentWarningsState = {
     // methods
     enable: false,
@@ -65,21 +61,21 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    * Experimental methods can be found here.
    */
   public readonly _metamask: ReturnType<
-    MetaMaskInpageProvider["_getExperimentalApi"]
+    IronInpageProvider["_getExperimentalApi"]
   >;
 
   public networkVersion: string | null;
 
   /**
-   * Indicating that this provider is a MetaMask provider.
+   * Indicating that this provider is a Iron provider.
    */
-  public readonly isMetaMask: true;
+  public readonly isIron: true;
 
   /**
    * @param connectionStream - A Node.js duplex stream
    * @param options - An options bag
    * @param options.jsonRpcStreamName - The name of the internal JSON-RPC stream.
-   * Default: metamask-provider
+   * Default: iron:provider
    * @param options.logger - The logging API to use. Default: console
    * @param options.maxEventListeners - The maximum number of event
    * listeners. Default: 100
@@ -87,10 +83,10 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
   constructor(
     connectionStream: Duplex,
     {
-      jsonRpcStreamName = MetaMaskInpageProviderStreamName,
+      jsonRpcStreamName = Constants.provider.streamName,
       logger = console,
       maxEventListeners,
-    }: MetaMaskInpageProviderOptions = {}
+    }: IronInpageProviderOptions = {}
   ) {
     super(connectionStream, {
       jsonRpcStreamName,
@@ -105,7 +101,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
     this._initializeStateAsync();
 
     this.networkVersion = null;
-    this.isMetaMask = true;
+    this.isIron = true;
 
     this._sendSync = this._sendSync.bind(this);
     this.enable = this.enable.bind(this);
@@ -352,9 +348,9 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
     return new Proxy(
       {
         /**
-         * Determines if MetaMask is unlocked by the user.
+         * Determines if Iron is unlocked by the user.
          *
-         * @returns Promise resolving to true if MetaMask is currently unlocked
+         * @returns Promise resolving to true if Iron is currently unlocked
          */
         isUnlocked: async () => {
           if (!this._state.initialized) {
