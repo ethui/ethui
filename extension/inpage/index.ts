@@ -1,5 +1,5 @@
 import { WindowPostMessageStream } from "@metamask/post-message-stream";
-import { initializeProvider } from "@metamask/providers";
+import { initializeProvider } from "@iron/provider";
 
 // init on load
 (async () => init())();
