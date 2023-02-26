@@ -1,34 +1,24 @@
-import { IronProvider, attachGlobalProvider } from "@iron/ui/provider";
-// import { requestToBackground } from "@iron/ui/messenger";
+import { WindowPostMessageStream } from "@metamask/post-message-stream";
+import { initializeProvider } from "@metamask/providers";
 
 // init on load
 (async () => init())();
 
-let provider: IronProvider;
-
 export async function init() {
   console.log("[inpage] init");
-  setupProvider();
-  //
-  // console.log(
-  //   "[inpage]",
-  //   await requestToContent({ type: "add", message: [3, 5] })
-  // );
-  // console.log(
-  //   "[inpage]",
-  //   await requestToBackground({ type: "add", message: [3, 5] })
-  // );
-  // console.log(
-  //   "[inpage]",
-  //   await provider.request({ method: "eth_blockNumber" })
-  // );
+
+  initProvider();
 }
 
-function setupProvider() {
-  // setup a provider where requests are proxied to `requestToBackground`
-  // provider = new IronProvider((req) =>
-  //   requestToBackground({ type: "eth", message: req })
-  // );
+/**
+ * injects a `window.ethereum` object
+ * conntected to a `WindowPostMessageStream`
+ */
+function initProvider() {
+  const stream = new WindowPostMessageStream({
+    name: "iron:inpage",
+    target: "iron:contentscript",
+  });
 
-  attachGlobalProvider(provider);
+  initializeProvider({ connectionStream: stream });
 }

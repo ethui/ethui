@@ -1,32 +1,21 @@
-import { providers } from "ethers";
-import { listen } from "./messenger";
-
-// init on load
-(async () => init())();
+import PortStream from "extension-port-stream";
+import { initProvider, setupProviderConnection } from "./provider";
 
 const ALCHEMY_RPC =
   "https://eth-mainnet.g.alchemy.com/v2/rTwL6BTDDWkP3tZJUc_N6shfCSR5hsTs";
 
-let provider: providers.JsonRpcProvider;
-
-listen(async (req: any) => {
-  switch (req.type) {
-    case "add":
-      return req.message[0] + req.message[1];
-    case "eth":
-      console.log("eth", req.message);
-      const result = await provider.send(
-        req.message.method,
-        req.message.params
-      );
-      return result;
-    // return await provider.getBlockNumber();
-    default:
-      throw `unknown message ${req.type}`;
-  }
-});
+// init on load
+(async () => init())();
 
 export async function init() {
   console.log("[background] init");
-  provider = new providers.JsonRpcProvider(ALCHEMY_RPC);
+  initProvider({ rpcUrl: ALCHEMY_RPC, chainId: "0x1" });
+  handleConnections();
+}
+
+function handleConnections() {
+  chrome.runtime.onConnect.addListener(async (remotePort: any, ...args) => {
+    console.log("[background] onConnect", [remotePort, ...args]);
+    setupProviderConnection(remotePort, remotePort.sender);
+  });
 }
