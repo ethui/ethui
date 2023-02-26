@@ -23,7 +23,6 @@ interface InitializeProviderOptions extends MetaMaskInpageProviderOptions {
  * @param options.connectionStream - A Node.js stream.
  * @param options.jsonRpcStreamName - The name of the internal JSON-RPC stream.
  * @param options.maxEventListeners - The maximum number of event listeners.
- * @param options.shouldSendMetadata - Whether the provider should send page metadata.
  * @param options.shouldSetOnWindow - Whether the provider should be set as window.ethereum.
  * @param options.shouldShimWeb3 - Whether a window.web3 shim should be injected.
  * @returns The initialized provider (whether set or not).
@@ -33,14 +32,12 @@ export function initializeProvider({
   jsonRpcStreamName,
   logger = console,
   maxEventListeners = 100,
-  shouldSendMetadata = true,
   shouldSetOnWindow = true,
 }: InitializeProviderOptions): MetaMaskInpageProvider {
   const provider = new MetaMaskInpageProvider(connectionStream, {
     jsonRpcStreamName,
     logger,
     maxEventListeners,
-    shouldSendMetadata,
   });
 
   const proxiedProvider = new Proxy(provider, {

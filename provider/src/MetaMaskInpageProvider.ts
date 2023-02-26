@@ -1,37 +1,31 @@
-import type { Duplex } from 'stream';
-import type { JsonRpcRequest, JsonRpcResponse } from 'json-rpc-engine';
-import { ethErrors } from 'eth-rpc-errors';
-import { sendSiteMetadata } from './siteMetadata';
-import messages from './messages';
+import type { Duplex } from "stream";
+import type { JsonRpcRequest, JsonRpcResponse } from "json-rpc-engine";
+import { ethErrors } from "eth-rpc-errors";
+import messages from "./messages";
 import {
   EMITTED_NOTIFICATIONS,
   getDefaultExternalMiddleware,
   getRpcPromiseCallback,
   NOOP,
-} from './utils';
-import type { UnvalidatedJsonRpcRequest } from './BaseProvider';
+} from "./utils";
+import type { UnvalidatedJsonRpcRequest } from "./BaseProvider";
 import {
   AbstractStreamProvider,
   StreamProviderOptions,
-} from './StreamProvider';
+} from "./StreamProvider";
 
 export interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
   method:
-    | 'eth_accounts'
-    | 'eth_coinbase'
-    | 'eth_uninstallFilter'
-    | 'net_version';
+    | "eth_accounts"
+    | "eth_coinbase"
+    | "eth_uninstallFilter"
+    | "net_version";
 }
 
-type WarningEventName = keyof SentWarningsState['events'];
+type WarningEventName = keyof SentWarningsState["events"];
 
 export interface MetaMaskInpageProviderOptions
-  extends Partial<Omit<StreamProviderOptions, 'rpcMiddleware'>> {
-  /**
-   * Whether the provider should send page metadata.
-   */
-  shouldSendMetadata?: boolean;
-}
+  extends Partial<Omit<StreamProviderOptions, "rpcMiddleware">> {}
 
 interface SentWarningsState {
   // methods
@@ -50,7 +44,7 @@ interface SentWarningsState {
 /**
  * The name of the stream consumed by {@link MetaMaskInpageProvider}.
  */
-export const MetaMaskInpageProviderStreamName = 'metamask-provider';
+export const MetaMaskInpageProviderStreamName = "metamask-provider";
 
 export class MetaMaskInpageProvider extends AbstractStreamProvider {
   protected _sentWarnings: SentWarningsState = {
@@ -71,7 +65,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    * Experimental methods can be found here.
    */
   public readonly _metamask: ReturnType<
-    MetaMaskInpageProvider['_getExperimentalApi']
+    MetaMaskInpageProvider["_getExperimentalApi"]
   >;
 
   public networkVersion: string | null;
@@ -89,8 +83,6 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    * @param options.logger - The logging API to use. Default: console
    * @param options.maxEventListeners - The maximum number of event
    * listeners. Default: 100
-   * @param options.shouldSendMetadata - Whether the provider should
-   * send page metadata. Default: true
    */
   constructor(
     connectionStream: Duplex,
@@ -98,8 +90,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
       jsonRpcStreamName = MetaMaskInpageProviderStreamName,
       logger = console,
       maxEventListeners,
-      shouldSendMetadata,
-    }: MetaMaskInpageProviderOptions = {},
+    }: MetaMaskInpageProviderOptions = {}
   ) {
     super(connectionStream, {
       jsonRpcStreamName,
@@ -125,32 +116,16 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
     this._metamask = this._getExperimentalApi();
 
     // handle JSON-RPC notifications
-    this._jsonRpcConnection.events.on('notification', (payload) => {
+    this._jsonRpcConnection.events.on("notification", (payload) => {
       const { method } = payload;
       if (EMITTED_NOTIFICATIONS.includes(method)) {
         // deprecated
         // emitted here because that was the original order
-        this.emit('data', payload);
+        this.emit("data", payload);
         // deprecated
-        this.emit('notification', payload.params.result);
+        this.emit("notification", payload.params.result);
       }
     });
-
-    // send website metadata
-    if (shouldSendMetadata) {
-      if (document.readyState === 'complete') {
-        sendSiteMetadata(this._rpcEngine, this._log);
-      } else {
-        const domContentLoadedHandler = () => {
-          sendSiteMetadata(this._rpcEngine, this._log);
-          window.removeEventListener(
-            'DOMContentLoaded',
-            domContentLoadedHandler,
-          );
-        };
-        window.addEventListener('DOMContentLoaded', domContentLoadedHandler);
-      }
-    }
   }
 
   //====================
@@ -165,7 +140,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    */
   sendAsync(
     payload: JsonRpcRequest<unknown>,
-    callback: (error: Error | null, result?: JsonRpcResponse<unknown>) => void,
+    callback: (error: Error | null, result?: JsonRpcResponse<unknown>) => void
   ): void {
     this._rpcRequest(payload, callback);
   }
@@ -198,7 +173,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
 
   prependOnceListener(
     eventName: string,
-    listener: (...args: unknown[]) => void,
+    listener: (...args: unknown[]) => void
   ) {
     this._warnOfDeprecation(eventName);
     return super.prependOnceListener(eventName, listener);
@@ -255,8 +230,8 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
     return new Promise<string[]>((resolve, reject) => {
       try {
         this._rpcRequest(
-          { method: 'eth_requestAccounts', params: [] },
-          getRpcPromiseCallback(resolve, reject),
+          { method: "eth_requestAccounts", params: [] },
+          getRpcPromiseCallback(resolve, reject)
         );
       } catch (error) {
         reject(error);
@@ -285,7 +260,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
    */
   send<T>(
     payload: JsonRpcRequest<unknown>,
-    callback: (error: Error | null, result?: JsonRpcResponse<T>) => void,
+    callback: (error: Error | null, result?: JsonRpcResponse<T>) => void
   ): void;
 
   /**
@@ -305,14 +280,14 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
     }
 
     if (
-      typeof methodOrPayload === 'string' &&
+      typeof methodOrPayload === "string" &&
       (!callbackOrArgs || Array.isArray(callbackOrArgs))
     ) {
       return new Promise((resolve, reject) => {
         try {
           this._rpcRequest(
             { method: methodOrPayload, params: callbackOrArgs },
-            getRpcPromiseCallback(resolve, reject, false),
+            getRpcPromiseCallback(resolve, reject, false)
           );
         } catch (error) {
           reject(error);
@@ -320,12 +295,12 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
       });
     } else if (
       methodOrPayload &&
-      typeof methodOrPayload === 'object' &&
-      typeof callbackOrArgs === 'function'
+      typeof methodOrPayload === "object" &&
+      typeof callbackOrArgs === "function"
     ) {
       return this._rpcRequest(
         methodOrPayload as JsonRpcRequest<unknown>,
-        callbackOrArgs as (...args: unknown[]) => void,
+        callbackOrArgs as (...args: unknown[]) => void
       );
     }
     return this._sendSync(methodOrPayload as SendSyncJsonRpcRequest);
@@ -339,20 +314,20 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
   protected _sendSync(payload: SendSyncJsonRpcRequest) {
     let result;
     switch (payload.method) {
-      case 'eth_accounts':
+      case "eth_accounts":
         result = this.selectedAddress ? [this.selectedAddress] : [];
         break;
 
-      case 'eth_coinbase':
+      case "eth_coinbase":
         result = this.selectedAddress || null;
         break;
 
-      case 'eth_uninstallFilter':
+      case "eth_uninstallFilter":
         this._rpcRequest(payload, NOOP);
         result = true;
         break;
 
-      case 'net_version':
+      case "net_version":
         result = this.networkVersion || null;
         break;
 
@@ -384,7 +359,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
         isUnlocked: async () => {
           if (!this._state.initialized) {
             await new Promise<void>((resolve) => {
-              this.on('_initialized', () => resolve());
+              this.on("_initialized", () => resolve());
             });
           }
           return this._state.isUnlocked;
@@ -397,7 +372,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
           if (!Array.isArray(requests)) {
             throw ethErrors.rpc.invalidRequest({
               message:
-                'Batch requests must be made with an array of request objects.',
+                "Batch requests must be made with an array of request objects.",
               data: requests,
             });
           }
@@ -415,7 +390,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
           }
           return Reflect.get(obj, prop, ...args);
         },
-      },
+      }
     );
   }
 
@@ -440,7 +415,7 @@ export class MetaMaskInpageProvider extends AbstractStreamProvider {
     if (this._state.isConnected && networkVersion !== this.networkVersion) {
       this.networkVersion = networkVersion as string;
       if (this._state.initialized) {
-        this.emit('networkChanged', this.networkVersion);
+        this.emit("networkChanged", this.networkVersion);
       }
     }
   }

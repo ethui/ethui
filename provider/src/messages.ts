@@ -1,16 +1,14 @@
 const messages = {
   errors: {
     disconnected: () =>
-      'MetaMask: Disconnected from chain. Attempting to connect.',
+      "MetaMask: Disconnected from chain. Attempting to connect.",
     permanentlyDisconnected: () =>
-      'MetaMask: Disconnected from MetaMask background. Page reload required.',
-    sendSiteMetadata: () =>
-      `MetaMask: Failed to send site metadata. This is an internal error, please report this bug.`,
+      "MetaMask: Disconnected from MetaMask background. Page reload required.",
     unsupportedSync: (method: string) =>
       `MetaMask: The MetaMask Ethereum provider does not support synchronous methods like ${method} without a callback parameter.`,
-    invalidDuplexStream: () => 'Must provide a Node.js-style duplex stream.',
+    invalidDuplexStream: () => "Must provide a Node.js-style duplex stream.",
     invalidNetworkParams: () =>
-      'MetaMask: Received invalid network parameters. Please report this bug.',
+      "MetaMask: Received invalid network parameters. Please report this bug.",
     invalidRequestArgs: () => `Expected a single, non-array, object argument.`,
     invalidRequestMethod: () => `'args.method' must be a non-empty string.`,
     invalidRequestParams: () =>
