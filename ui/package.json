@@ -28,6 +28,8 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.1",
     "wouter": "^2.10.0",
-    "zustand": "^4.3.3"
+    "zustand": "^4.3.3",
+    "@hookform/resolvers": "^2.9.11",
+    "zod": "^3.20.6"
   }
 }
