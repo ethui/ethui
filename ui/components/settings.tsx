@@ -1,5 +1,12 @@
 import { useStore } from "../store";
 import { useForm } from "react-hook-form";
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+
+const schema = z.object({
+  mnemonic: z.string().regex(/^(\w+\s){11}\w+$/),
+  rpc: z.string().regex(/^(https?):\/\/[^\s/$.?#].[^\s]*$/)
+})
 
 export function Settings() {
   const [mnemonic, rpc, setSettings] = useStore((state) => [
@@ -8,37 +15,28 @@ export function Settings() {
     state.setSettings,
   ]);
 
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const { register, handleSubmit, formState: { errors } } = useForm({ resolver: zodResolver(schema) });
   const onSubmit = (data: any) => setSettings(data);
 
+  console.log(errors)
   return (
     <>
       <h2 className="text-xl">Settings</h2>
       <form onSubmit={handleSubmit(onSubmit)}>
         <FormControl
           name="Mnemonic"
-          register={register("mnemonic", {
-            pattern: {
-              value: /^(\w+\s){11}\w+$/i,
-              message: 'invalid mnemonic'
-            }
-          })}
+          register={register("mnemonic")}
           value={mnemonic}
-          error={errors.mnemonic ? errors.mnemonic.message?.toString() : undefined } 
+          error={errors.mnemonic}
         />
-        
-        <FormControl 
+
+        <FormControl
           name="RPC"
-          register={register("rpc", {
-            pattern: {
-              value: /^(https?):\/\/[^\s/$.?#].[^\s]*$/i,
-              message: 'invalid rpc host'
-            }
-          })} 
-          value={rpc} 
-          error={errors.rpc ? errors.rpc.message?.toString() : undefined } 
+          register={register("rpc")}
+          value={rpc}
+          error={errors.rpc}
         />
-        
+
         <div className="m-2">
           <input type="submit" value="Save" className="p-2 btn btn-primary" />
         </div>
