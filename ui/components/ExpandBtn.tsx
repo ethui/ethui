@@ -1,3 +1,4 @@
+import React from "react";
 import browser from "webextension-polyfill";
 
 interface Props {
