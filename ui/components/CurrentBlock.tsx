@@ -4,9 +4,7 @@ import { useProvider } from "../hooks";
 
 export function CurrentBlock() {
   const provider = useProvider();
-  console.log(provider);
   const [block, setBlock] = useState(0);
-  console.log("here2");
 
   const update = async () => {
     const block = await provider.getBlockNumber();
