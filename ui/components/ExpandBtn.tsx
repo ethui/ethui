@@ -1,3 +1,4 @@
+import React from "react";
 import browser from "webextension-polyfill";
 
 interface Props {
@@ -5,7 +6,7 @@ interface Props {
 }
 
 function expand() {
-  const url = browser.runtime.getURL("src/extension/expanded.html");
+  const url = browser.runtime.getURL("expanded.html");
   browser.tabs.create({ url }).then(() => window.close());
 }
 
