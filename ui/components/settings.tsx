@@ -51,7 +51,7 @@ interface FormControlProps {
   name: string;
   register: any;
   value: string;
-  error: FieldError;
+  error: FieldError | undefined;
 }
 
 function FormControl({ name, register, value, error }: FormControlProps) {
