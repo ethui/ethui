@@ -1,24 +1,19 @@
-import { BigNumber } from "ethers";
+import React from "react";
 import { useEffect, useState } from "react";
-import { requestToBackground } from "../messenger";
-import { IronProvider } from "../provider";
-
-const provider = new IronProvider(
-  async (req) =>
-    (await requestToBackground({ type: "eth", message: req })).result
-);
+import { useProvider } from "../hooks";
 
 export function CurrentBlock() {
-  const [block, setBlock] = useState(BigNumber.from(0));
+  const provider = useProvider();
+  const [block, setBlock] = useState(0);
 
   const update = async () => {
-    const resp = await provider.request({ method: "eth_blockNumber" });
-    setBlock(BigNumber.from(resp));
+    const block = await provider.getBlockNumber();
+    setBlock(block);
   };
 
   // update block number every few seconds
   useEffect(() => {
-    if (block.eq(0)) {
+    if (block === 0) {
       update();
     } else {
       const interval = setInterval(update, 5000);
