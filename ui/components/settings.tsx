@@ -23,8 +23,6 @@ export function Settings() {
   } = useForm({ resolver: zodResolver(schema) });
   const onSubmit = (data: any) => setSettings(data);
 
-  console.log("error");
-  console.log(errors);
   return (
     <>
       <h2 className="text-xl">Settings</h2>

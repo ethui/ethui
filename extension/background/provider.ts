@@ -102,7 +102,7 @@ export function setupProviderConnection(remotePort: any, sender: any) {
           mid.destroy();
         }
       });
-      connectionId && this.removeConnection(origin, connectionId);
+      connectionId && removeConnection(origin, connectionId);
       if (err) {
         console.error(err);
       }
@@ -201,6 +201,18 @@ function addConnection(origin: any, { engine }: any) {
   };
 
   return id;
+}
+
+function removeConnection(origin: any, id: any) {
+  if (!connections[origin]) {
+    connections[origin] = {};
+  }
+
+  delete connections[origin][id];
+
+  if (Object.keys(connections[origin].length === 0)) {
+    delete connections[origin];
+  }
 }
 
 async function getProviderStateHandler(
