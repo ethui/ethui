@@ -69,7 +69,8 @@ export class IronInpageProvider extends AbstractStreamProvider {
   /**
    * Indicating that this provider is a Iron provider.
    */
-  public readonly isIron: true;
+  public readonly isIron: boolean = true;
+  public readonly isMetaMask: boolean = true;
 
   /**
    * @param connectionStream - A Node.js duplex stream
@@ -101,7 +102,6 @@ export class IronInpageProvider extends AbstractStreamProvider {
     this._initializeStateAsync();
 
     this.networkVersion = null;
-    this.isIron = true;
 
     this._sendSync = this._sendSync.bind(this);
     this.enable = this.enable.bind(this);

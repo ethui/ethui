@@ -2,9 +2,9 @@ import { injectInPageScript } from "./injectInpageScript";
 import { initProviderForward } from "./providerForward";
 
 // init on load
-(async () => init())();
+init();
 
-export async function init() {
+function init() {
   console.log("[contentScript] init");
 
   initProviderForward();

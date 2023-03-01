@@ -58,9 +58,7 @@ export function initializeProvider({
  *
  * @param providerInstance - The provider instance.
  */
-export function setGlobalProvider(
-  providerInstance: IronInpageProvider
-): void {
+export function setGlobalProvider(providerInstance: IronInpageProvider): void {
   (window as Record<string, any>).ethereum = providerInstance;
   window.dispatchEvent(new Event("ethereum#initialized"));
 }

@@ -3,9 +3,9 @@ import { initializeProvider } from "@iron/provider-inpage";
 import { Constants } from "@iron/settings";
 
 // init on load
-(async () => init())();
+init();
 
-export async function init() {
+export function init() {
   console.log("[inpage] init");
 
   initProvider();
