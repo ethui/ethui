@@ -9,7 +9,7 @@ type Handler = (
 
 const requestAccounts: Handler = async (_req, res, _next, end) => {
   // TODO: this needs to come from the seed
-  res.result = ["0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"];
+  res.result = ["0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5"];
   end();
 };
 
@@ -25,6 +25,7 @@ const providerState: Handler = (_req, res, _next, end) => {
 };
 
 const handlers: Record<string, Handler> = {
+  eth_accounts: requestAccounts,
   eth_requestAccounts: requestAccounts,
   metamask_getProviderState: providerState,
 };

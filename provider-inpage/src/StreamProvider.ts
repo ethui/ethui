@@ -86,6 +86,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
 
     // Handle JSON-RPC notifications
     this._jsonRpcConnection.events.on("notification", (payload) => {
+      console.log("payload", payload);
       const { method, params } = payload;
       if (method === "metamask_accountsChanged") {
         this._handleAccountsChanged(params);
