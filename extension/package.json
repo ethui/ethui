@@ -9,15 +9,13 @@
     "@types/react-dom": "^18.0.10"
   },
   "dependencies": {
-    "@iron/ui": "*",
     "@iron/provider-inpage": "*",
-    "@metamask/eth-json-rpc-middleware": "https://github.com/MetaMask/eth-json-rpc-middleware",
-    "@metamask/eth-json-rpc-provider": "^1.0.0",
+    "@iron/provider-worker": "*",
+    "@iron/ui": "*",
+    "@metamask/object-multiplex": "^1.2.0",
     "@metamask/post-message-stream": "^6.1.0",
-    "@metamask/providers": "^10.2.1",
-    "eth-json-rpc-filters": "^6.0.0",
     "extension-port-stream": "^2.0.1",
-    "punycode": "^2.3.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "webextension-polyfill": "^0.10.0"
   }
 }

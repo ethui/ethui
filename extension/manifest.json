@@ -5,7 +5,7 @@
   "manifest_version": 3,
   "permissions": ["activeTab", "scripting", "storage"],
   "background": {
-    "service_worker": "background/index.ts",
+    "service_worker": "background.ts",
     "type": "module"
   },
   "action": {
@@ -24,7 +24,7 @@
   "web_accessible_resources": [
     {
       "matches": ["<all_urls>"],
-      "resources": ["expanded.html", "inpage/index.ts"]
+      "resources": ["expanded.html", "inpage.ts"]
     }
   ]
 }

@@ -2,7 +2,7 @@ import PortStream from "extension-port-stream";
 import ObjectMultiplex from "@metamask/object-multiplex";
 import pump, { type Stream } from "pump";
 import { createEngineStream } from "json-rpc-middleware-stream";
-import { JsonRpcEngine, type JsonRpcMiddleware } from "json-rpc-engine";
+import { JsonRpcEngine } from "json-rpc-engine";
 import createFilterMiddleware from "eth-json-rpc-filters";
 import createSubscriptionManager from "eth-json-rpc-filters/subscriptionManager";
 import { nanoid } from "nanoid";
@@ -12,9 +12,9 @@ import {
   providerFromEngine,
 } from "@metamask/eth-json-rpc-provider";
 import { providerAsMiddleware } from "@metamask/eth-json-rpc-middleware/src/providerAsMiddleware";
-import createJsonRpcClient from "./jsonrpc";
+import createJsonRpcClient from "./src/jsonrpc";
 import { Constants } from "@iron/settings";
-import { methodMiddleware } from "./providerMethods";
+import { methodMiddleware } from "./src/methods";
 
 //
 // global state
