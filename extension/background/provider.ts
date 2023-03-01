@@ -2,10 +2,9 @@ import PortStream from "extension-port-stream";
 import ObjectMultiplex from "@metamask/object-multiplex";
 import pump, { type Stream } from "pump";
 import { createEngineStream } from "json-rpc-middleware-stream";
-import { JsonRpcEngine } from "json-rpc-engine";
+import { JsonRpcEngine, type JsonRpcMiddleware } from "json-rpc-engine";
 import createFilterMiddleware from "eth-json-rpc-filters";
 import createSubscriptionManager from "eth-json-rpc-filters/subscriptionManager";
-import { selectHooks } from "@metamask/rpc-methods/dist/utils";
 import { nanoid } from "nanoid";
 import { ethErrors } from "eth-rpc-errors";
 import {
@@ -13,9 +12,13 @@ import {
   providerFromEngine,
 } from "@metamask/eth-json-rpc-provider";
 import { providerAsMiddleware } from "@metamask/eth-json-rpc-middleware/src/providerAsMiddleware";
-import { permissionRpcMethods } from "@metamask/permission-controller";
 import createJsonRpcClient from "./jsonrpc";
+<<<<<<< HEAD
 import { Constants } from "@iron/settings";
+||||||| ee9f140
+=======
+import { methodMiddleware } from "./providerMethods";
+>>>>>>> main
 
 //
 // global state
@@ -23,22 +26,6 @@ import { Constants } from "@iron/settings";
 
 let provider: any;
 let connections: any = {};
-const getProviderState = {
-  methodNames: ["metamask_getProviderState"],
-  implementation: getProviderStateHandler,
-  hookNames: {
-    getProviderState: true,
-  },
-};
-const localHandlers = [getProviderState];
-const allHandlers = [...localHandlers, ...permissionRpcMethods.handlers];
-
-const handlerMap = allHandlers.reduce((map, handler) => {
-  for (const methodName of handler.methodNames) {
-    map.set(methodName, handler);
-  }
-  return map;
-}, new Map());
 
 //
 // functions
@@ -103,7 +90,7 @@ export function setupProviderConnection(remotePort: any, sender: any) {
           mid.destroy();
         }
       });
-      connectionId && this.removeConnection(origin, connectionId);
+      connectionId && removeConnection(origin, connectionId);
       if (err) {
         console.error(err);
       }
@@ -139,56 +126,11 @@ function setupProviderEngine() {
     engine.emit("notification", message);
   });
 
-  engine.push(
-    createMethodMiddleware({
-      origin,
-
-      getProviderState: (_origin: any) => ({
-        isUnlocked: true,
-        chainId: "0x1",
-        networkVersion: "1",
-        accounts: [],
-      }),
-    })
-  );
+  engine.push(methodMiddleware);
 
   // forward to metamask primary provider
   engine.push(providerAsMiddleware(provider));
   return engine;
-}
-
-function createMethodMiddleware(hooks: any) {
-  return async function methodMiddleware(
-    req: any,
-    res: any,
-    next: any,
-    end: any
-  ) {
-    // Reject unsupported methods.
-    if (["eth_signTransaction"].includes(req.method)) {
-      return end(ethErrors.rpc.methodNotSupported());
-    }
-
-    const handler = handlerMap.get(req.method);
-    if (handler) {
-      const { implementation, hookNames } = handler;
-      try {
-        // Implementations may or may not be async, so we must await them.
-        return await implementation(
-          req,
-          res,
-          next,
-          end,
-          selectHooks(hooks, hookNames)
-        );
-      } catch (error) {
-        console.error(error);
-        return end(error);
-      }
-    }
-
-    return next();
-  };
 }
 
 function addConnection(origin: any, { engine }: any) {
@@ -202,6 +144,18 @@ function addConnection(origin: any, { engine }: any) {
   };
 
   return id;
+}
+
+function removeConnection(origin: any, id: any) {
+  if (!connections[origin]) {
+    connections[origin] = {};
+  }
+
+  delete connections[origin][id];
+
+  if (Object.keys(connections[origin].length === 0)) {
+    delete connections[origin];
+  }
 }
 
 async function getProviderStateHandler(
