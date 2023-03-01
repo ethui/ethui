@@ -14,7 +14,6 @@
     "@metamask/eth-json-rpc-provider": "^1.0.0",
     "@metamask/post-message-stream": "^6.1.0",
     "@metamask/providers": "^10.2.1",
-    "@metamask/rpc-methods": "^0.30.0",
     "eth-json-rpc-filters": "^6.0.0",
     "extension-port-stream": "^2.0.1",
     "punycode": "^2.3.0",
