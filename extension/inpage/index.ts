@@ -1,5 +1,6 @@
 import { WindowPostMessageStream } from "@metamask/post-message-stream";
-import { initializeProvider } from "@metamask/providers";
+import { initializeProvider } from "@iron/provider-inpage";
+import { Constants } from "@iron/settings";
 
 // init on load
 (async () => init())();
@@ -16,8 +17,8 @@ export async function init() {
  */
 function initProvider() {
   const stream = new WindowPostMessageStream({
-    name: "iron:inpage",
-    target: "iron:contentscript",
+    name: Constants.provider.inpageStreamName,
+    target: Constants.provider.contentscriptStreamName,
   });
 
   initializeProvider({ connectionStream: stream });

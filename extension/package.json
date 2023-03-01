@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@iron/ui": "*",
+    "@iron/provider-inpage": "*",
     "@metamask/eth-json-rpc-middleware": "https://github.com/MetaMask/eth-json-rpc-middleware",
     "@metamask/eth-json-rpc-provider": "^1.0.0",
     "@metamask/post-message-stream": "^6.1.0",

@@ -13,6 +13,7 @@ import {
 } from "@metamask/eth-json-rpc-provider";
 import { providerAsMiddleware } from "@metamask/eth-json-rpc-middleware/src/providerAsMiddleware";
 import createJsonRpcClient from "./jsonrpc";
+import { Constants } from "@iron/settings";
 import { methodMiddleware } from "./providerMethods";
 
 //
@@ -31,8 +32,6 @@ export function initProvider({ rpcUrl, chainId }) {
     rpcUrl,
     chainId,
   });
-
-  console.log("here");
 
   const networkProvider = providerFromMiddleware(networkMiddleware);
   const filterMiddleware = createFilterMiddleware({
@@ -58,7 +57,7 @@ export function initProvider({ rpcUrl, chainId }) {
 export function setupProviderConnection(remotePort: any, sender: any) {
   const stream = new PortStream(remotePort);
   const mux = setupMultiplex(stream);
-  const outStream = mux.createStream("metamask-provider");
+  const outStream = mux.createStream(Constants.provider.streamName);
 
   const origin = new URL(sender.url).origin;
 

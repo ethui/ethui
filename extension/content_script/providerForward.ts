@@ -3,13 +3,14 @@ import browser from "webextension-polyfill";
 import PortStream from "extension-port-stream";
 import ObjectMultiplex from "@metamask/object-multiplex";
 import pump, { type Stream } from "pump";
+import { Constants } from "@iron/settings";
 
 let METAMASK_EXTENSION_CONNECT_SENT = false;
 
 export function initProviderForward() {
   const inpageStream = new WindowPostMessageStream({
-    name: "iron:contentscript",
-    target: "iron:inpage",
+    name: Constants.provider.contentscriptStreamName,
+    target: Constants.provider.inpageStreamName,
   });
 
   const inpageMux = new ObjectMultiplex();
@@ -18,10 +19,10 @@ export function initProviderForward() {
     inpageMux as unknown as Stream,
     inpageStream as unknown as Stream,
     inpageMux as unknown as Stream,
-    (err) => warnDisconnect("MetaMask Inpage Multiplex", err)
+    (err) => warnDisconnect("Iron Inpage Multiplex", err)
   );
 
-  const pageChannel = inpageMux.createStream("metamask-provider");
+  const pageChannel = inpageMux.createStream(Constants.provider.streamName);
 
   // bg stream
   METAMASK_EXTENSION_CONNECT_SENT = true;
@@ -40,19 +41,19 @@ export function initProviderForward() {
     bgStream,
     bgMux as unknown as Stream,
     (err: any) => {
-      warnDisconnect("MetaMask Background Multiplex", err);
+      warnDisconnect("Iron Background Multiplex", err);
       // notifyInpageOfStreamFailure();
     }
   );
 
-  const extensionChannel = bgMux.createStream("metamask-provider");
+  const extensionChannel = bgMux.createStream(Constants.provider.streamName);
   pump(
     pageChannel as unknown as Stream,
     extensionChannel as unknown as Stream,
     pageChannel as unknown as Stream,
     (error: any) =>
       console.debug(
-        `MetaMask: Muxed traffic for channel "iron:provider" failed.`,
+        `Iron: Muxed traffic for channel "iron:provider" failed.`,
         error
       )
   );
