@@ -1,0 +1,16 @@
+{
+  "name": "@iron/provider-worker",
+  "version": "1.0.0",
+  "license": "MIT",
+  "dependencies": {
+    "@metamask/eth-json-rpc-middleware": "^11.0.0",
+    "@metamask/object-multiplex": "^1.2.0",
+    "eth-json-rpc-filters": "^6.0.0",
+    "eth-rpc-errors": "^4.0.3",
+    "extension-port-stream": "^2.0.1",
+    "json-rpc-engine": "^6.1.0",
+    "json-rpc-middleware-stream": "^4.2.1",
+    "nanoid": "^4.0.1",
+    "pump": "^3.0.0"
+  }
+}
