@@ -13,12 +13,8 @@ import {
 } from "@metamask/eth-json-rpc-provider";
 import { providerAsMiddleware } from "@metamask/eth-json-rpc-middleware/src/providerAsMiddleware";
 import createJsonRpcClient from "./jsonrpc";
-<<<<<<< HEAD
 import { Constants } from "@iron/settings";
-||||||| ee9f140
-=======
 import { methodMiddleware } from "./providerMethods";
->>>>>>> main
 
 //
 // global state
@@ -36,8 +32,6 @@ export function initProvider({ rpcUrl, chainId }) {
     rpcUrl,
     chainId,
   });
-
-  console.log("here");
 
   const networkProvider = providerFromMiddleware(networkMiddleware);
   const filterMiddleware = createFilterMiddleware({

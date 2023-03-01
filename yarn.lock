@@ -525,37 +525,7 @@
     tweetnacl "^1.0.3"
     tweetnacl-util "^0.15.1"
 
-<<<<<<< HEAD
-"@metamask/key-tree@^6.2.1":
-  version "6.2.1"
-  resolved "https://registry.yarnpkg.com/@metamask/key-tree/-/key-tree-6.2.1.tgz#8a2ef746efe33fd9872719cca180109e26ab2fc3"
-  integrity sha512-5o8D9jsESNa8q3iqLwKXZ06vzRG08waK4kLMA8Tybyl3a1/n7B6WN0J5vaT2kAtxoOiD98pSJK0n+aeJAqvkuA==
-  dependencies:
-    "@metamask/scure-bip39" "^2.1.0"
-    "@metamask/utils" "^3.3.0"
-    "@noble/ed25519" "^1.6.0"
-    "@noble/hashes" "^1.0.0"
-    "@noble/secp256k1" "^1.5.5"
-    "@scure/base" "^1.0.0"
-
 "@metamask/object-multiplex@^1.1.0", "@metamask/object-multiplex@^1.2.0":
-||||||| ee9f140
-"@metamask/key-tree@^6.2.1":
-  version "6.2.1"
-  resolved "https://registry.yarnpkg.com/@metamask/key-tree/-/key-tree-6.2.1.tgz#8a2ef746efe33fd9872719cca180109e26ab2fc3"
-  integrity sha512-5o8D9jsESNa8q3iqLwKXZ06vzRG08waK4kLMA8Tybyl3a1/n7B6WN0J5vaT2kAtxoOiD98pSJK0n+aeJAqvkuA==
-  dependencies:
-    "@metamask/scure-bip39" "^2.1.0"
-    "@metamask/utils" "^3.3.0"
-    "@noble/ed25519" "^1.6.0"
-    "@noble/hashes" "^1.0.0"
-    "@noble/secp256k1" "^1.5.5"
-    "@scure/base" "^1.0.0"
-
-"@metamask/object-multiplex@^1.1.0":
-=======
-"@metamask/object-multiplex@^1.1.0":
->>>>>>> main
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@metamask/object-multiplex/-/object-multiplex-1.2.0.tgz#38fc15c142f61939391e1b9a8eed679696c7e4f4"
   integrity sha512-hksV602d3NWE2Q30Mf2Np1WfVKaGqfJRy9vpHAmelbaD0OkDt06/0KQkRR6UVYdMbTbkuEu8xN5JDUU80inGwQ==

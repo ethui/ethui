@@ -7,7 +7,7 @@
   },
   "workspaces": [
     "extension",
-    "provider",
+    "provider-inpage",
     "ui",
     "settings"
   ],
