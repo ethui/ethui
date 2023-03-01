@@ -1,5 +1,5 @@
 import { WindowPostMessageStream } from "@metamask/post-message-stream";
-import { initializeProvider } from "@iron/provider";
+import { initializeProvider } from "@iron/provider-inpage";
 import { Constants } from "@iron/settings";
 
 // init on load
