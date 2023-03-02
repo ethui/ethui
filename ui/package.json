@@ -19,6 +19,7 @@
     "webextension-polyfill": "^0.10.0"
   },
   "dependencies": {
+    "@iron/state": "*",
     "@heroicons/react": "^2.0.15",
     "@types/is-stream": "^2.0.0",
     "daisyui": "^2.22.0",

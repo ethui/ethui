@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { useStore } from "../store";
+import { useStore } from "@iron/state";
 
 export function useProvider() {
   const rpc = useStore((state) => state.rpc);

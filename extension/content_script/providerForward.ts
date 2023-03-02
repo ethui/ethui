@@ -3,7 +3,7 @@ import browser from "webextension-polyfill";
 import PortStream from "extension-port-stream";
 import ObjectMultiplex from "@metamask/object-multiplex";
 import pump, { type Stream } from "pump";
-import { Constants } from "@iron/settings";
+import * as Constants from "@iron/constants";
 
 let METAMASK_EXTENSION_CONNECT_SENT = false;
 

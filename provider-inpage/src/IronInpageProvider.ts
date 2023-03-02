@@ -13,7 +13,7 @@ import {
   AbstractStreamProvider,
   StreamProviderOptions,
 } from "./StreamProvider";
-import { Constants } from "@iron/settings";
+import * as Constants from "@iron/constants";
 
 export interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
   method:
