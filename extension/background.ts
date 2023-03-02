@@ -3,7 +3,6 @@ import { initProvider, setupProviderConnection } from "@iron/provider-worker";
 
 const ALCHEMY_RPC =
   "https://eth-mainnet.g.alchemy.com/v2/rTwL6BTDDWkP3tZJUc_N6shfCSR5hsTs";
-const ANVIL_RPC = "http://localhost:8545";
 
 // init on load
 (async () => init())();
