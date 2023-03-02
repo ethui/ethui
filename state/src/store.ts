@@ -2,35 +2,42 @@ import * as Constants from "@iron/constants";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { storageWrapper } from "./storageWrapper";
+import { Address, NetworkSettings, Settings, WalletSettings } from "./types";
 
-type Address = `0x${string}`;
-
-interface Settings {
-  mnemonic: string;
-  rpc: string;
-  address: Address;
+interface Getters {
+  address: () => Address;
 }
 
 interface Setters {
-  setMnemonic: (settings: Pick<Settings, "mnemonic">) => void;
-  setRpc: (settings: Pick<Settings, "rpc">) => void;
+  setWalletSettings: (settings: WalletSettings) => void;
+  setRpc: (settings: NetworkSettings) => void;
 }
 
-type State = Settings & Setters;
+type State = Settings & Setters & Getters;
+
+const defaultSettings: Settings = {
+  mnemonic: Constants.wallet.mnemonic,
+  derivationPath: Constants.wallet.path,
+  addressIndex: Constants.wallet.index,
+  rpc: Constants.network.rpc,
+};
+
+function generateGetters(get: () => Settings): Getters {
+  return {
+    address: () => {
+      const { mnemonic, derivationPath, addressIndex } = get();
+      return deriveAddress(mnemonic, derivationPath, addressIndex);
+    },
+  };
+}
 
 export const useStore = create<State>()(
   persist(
-    (set, _get) => ({
-      mnemonic: Constants.wallet.mnemonic,
-      rpc: Constants.network.rpc,
-      address: derive(
-        Constants.wallet.mnemonic,
-        Constants.wallet.path,
-        Constants.wallet.index
-      ),
-      setMnemonic: ({ mnemonic }) => {
-        // TODO: if mnemonic change, we also need to re-derive addresses
-        set({ mnemonic });
+    (set, get) => ({
+      ...defaultSettings,
+      ...generateGetters(get),
+      setWalletSettings: ({ mnemonic, derivationPath, addressIndex }) => {
+        set({ mnemonic, derivationPath, addressIndex });
       },
       setRpc: ({ rpc }) => {
         set({ rpc });
@@ -46,6 +53,10 @@ export const useStore = create<State>()(
 );
 
 // TODO: this needs to be generated from the mnemonic
-function derive(_mnemonic: string, _path: string, _index: number): Address {
+export function deriveAddress(
+  _mnemonic: string,
+  _path: string,
+  _index: number
+): Address {
   return "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
 }

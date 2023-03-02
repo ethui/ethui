@@ -1,29 +1,28 @@
 import React from "react";
-import { useStore } from "@iron/state";
+import { schemas, useStore } from "@iron/state";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { FormControl } from "./utils";
 
-const schema = z.object({
-  mnemonic: z.string().regex(/^(\w+\s){11}\w+$/),
-});
-
 export function WalletSettings() {
-  const [mnemonic, setMnemonic] = useStore((state) => [
-    state.mnemonic,
-    state.setMnemonic,
-  ]);
+  const [mnemonic, derivationPath, addressIndex, setWalletSettings] = useStore(
+    (state) => [
+      state.mnemonic,
+      state.derivationPath,
+      state.addressIndex,
+      state.setWalletSettings,
+    ]
+  );
 
   const {
     register,
     handleSubmit,
     reset,
     formState: { isDirty, isValid, errors },
-  } = useForm({ resolver: zodResolver(schema) });
+  } = useForm({ resolver: zodResolver(schemas.wallet) });
   const onSubmit = (data: any) => {
     reset(data);
-    setMnemonic(data);
+    setWalletSettings(data);
   };
 
   return (
@@ -33,6 +32,18 @@ export function WalletSettings() {
         register={register("mnemonic")}
         value={mnemonic}
         error={errors.mnemonic}
+      />
+      <FormControl
+        name="Derivation Path"
+        register={register("derivationPath")}
+        value={derivationPath}
+        error={errors.derivationPath}
+      />
+      <FormControl
+        name="Address Index"
+        register={register("addressIndex", { valueAsNumber: true })}
+        value={addressIndex.toString()}
+        error={errors.addressIndex}
       />
       <div className="m-2">
         <input
