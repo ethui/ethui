@@ -12,7 +12,8 @@ interface Settings {
 }
 
 interface Setters {
-  setSettings: (settings: Settings) => void;
+  setMnemonic: (settings: Pick<Settings, "mnemonic">) => void;
+  setRpc: (settings: Pick<Settings, "rpc">) => void;
 }
 
 type State = Settings & Setters;
@@ -27,8 +28,12 @@ export const useStore = create<State>()(
         Constants.wallet.path,
         Constants.wallet.index
       ),
-      setSettings: ({ mnemonic, rpc }) => {
-        set({ mnemonic, rpc });
+      setMnemonic: ({ mnemonic }) => {
+        // TODO: if mnemonic change, we also need to re-derive addresses
+        set({ mnemonic });
+      },
+      setRpc: ({ rpc }) => {
+        set({ rpc });
       },
     }),
     {

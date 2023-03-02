@@ -19,9 +19,11 @@
     "webextension-polyfill": "^0.10.0"
   },
   "dependencies": {
-    "@iron/state": "*",
     "@heroicons/react": "^2.0.15",
+    "@hookform/resolvers": "^2.9.11",
+    "@iron/state": "*",
     "@types/is-stream": "^2.0.0",
+    "classnames": "^2.3.2",
     "daisyui": "^2.22.0",
     "ethers": "^5.7.2",
     "fast-deep-equal": "^3.1.3",
@@ -29,8 +31,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.1",
     "wouter": "^2.10.0",
-    "zustand": "^4.3.3",
-    "@hookform/resolvers": "^2.9.11",
-    "zod": "^3.20.6"
+    "zod": "^3.20.6",
+    "zustand": "^4.3.3"
   }
 }
