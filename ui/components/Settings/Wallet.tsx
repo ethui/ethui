@@ -5,14 +5,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FormControl } from "./utils";
 
 export function WalletSettings() {
-  const [mnemonic, derivationPath, addressIndex, setWalletSettings] = useStore(
-    (state) => [
-      state.mnemonic,
-      state.derivationPath,
-      state.addressIndex,
-      state.setWalletSettings,
-    ]
-  );
+  const [walletSettings, setWalletSettings] = useStore((state) => [
+    state.wallet,
+    state.setWalletSettings,
+  ]);
 
   const {
     register,
@@ -30,19 +26,19 @@ export function WalletSettings() {
       <FormControl
         name="Mnemonic"
         register={register("mnemonic")}
-        value={mnemonic}
+        value={walletSettings.mnemonic}
         error={errors.mnemonic}
       />
       <FormControl
         name="Derivation Path"
         register={register("derivationPath")}
-        value={derivationPath}
+        value={walletSettings.derivationPath}
         error={errors.derivationPath}
       />
       <FormControl
         name="Address Index"
         register={register("addressIndex", { valueAsNumber: true })}
-        value={addressIndex.toString()}
+        value={walletSettings.addressIndex.toString()}
         error={errors.addressIndex}
       />
       <div className="m-2">

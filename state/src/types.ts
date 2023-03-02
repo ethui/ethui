@@ -16,15 +16,4 @@ export const schemas = {
 export type WalletSettings = z.infer<typeof schemas.wallet>;
 export type NetworkSettings = z.infer<typeof schemas.network>;
 
-export type Settings = WalletSettings & NetworkSettings;
-
-interface Getters {
-  address: () => Address;
-}
-
-interface Setters {
-  setWalletSettings: (settings: WalletSettings) => void;
-  setRpc: (settings: NetworkSettings) => void;
-}
-
-type State = Settings & Setters & Getters;
+export type Settings = { wallet: WalletSettings; network: NetworkSettings };

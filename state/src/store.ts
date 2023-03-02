@@ -10,22 +10,26 @@ interface Getters {
 
 interface Setters {
   setWalletSettings: (settings: WalletSettings) => void;
-  setRpc: (settings: NetworkSettings) => void;
+  setNetworkSettings: (settings: NetworkSettings) => void;
 }
 
 type State = Settings & Setters & Getters;
 
 const defaultSettings: Settings = {
-  mnemonic: Constants.wallet.mnemonic,
-  derivationPath: Constants.wallet.path,
-  addressIndex: Constants.wallet.index,
-  rpc: Constants.network.rpc,
+  wallet: {
+    mnemonic: Constants.wallet.mnemonic,
+    derivationPath: Constants.wallet.path,
+    addressIndex: Constants.wallet.index,
+  },
+  network: {
+    rpc: Constants.network.rpc,
+  },
 };
 
 function generateGetters(get: () => Settings): Getters {
   return {
     address: () => {
-      const { mnemonic, derivationPath, addressIndex } = get();
+      const { mnemonic, derivationPath, addressIndex } = get().wallet;
       return deriveAddress(mnemonic, derivationPath, addressIndex);
     },
   };
@@ -36,11 +40,11 @@ export const useStore = create<State>()(
     (set, get) => ({
       ...defaultSettings,
       ...generateGetters(get),
-      setWalletSettings: ({ mnemonic, derivationPath, addressIndex }) => {
-        set({ mnemonic, derivationPath, addressIndex });
+      setWalletSettings: (wallet) => {
+        set({ wallet });
       },
-      setRpc: ({ rpc }) => {
-        set({ rpc });
+      setNetworkSettings: (network) => {
+        set({ network });
       },
     }),
     {

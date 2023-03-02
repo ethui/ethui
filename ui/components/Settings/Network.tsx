@@ -5,7 +5,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FormControl } from "./utils";
 
 export function NetworkSettings() {
-  const [rpc, setRpc] = useStore((state) => [state.rpc, state.setRpc]);
+  const [networkSettings, setNetworkSettings] = useStore((state) => [
+    state.network,
+    state.setNetworkSettings,
+  ]);
 
   const {
     register,
@@ -15,7 +18,7 @@ export function NetworkSettings() {
   } = useForm({ resolver: zodResolver(schemas.network) });
   const onSubmit = (data: any) => {
     reset(data);
-    setRpc(data);
+    setNetworkSettings(data);
   };
 
   return (
@@ -23,7 +26,7 @@ export function NetworkSettings() {
       <FormControl
         name="RPC"
         register={register("rpc")}
-        value={rpc}
+        value={networkSettings.rpc}
         error={errors.rpc}
       />
       <div className="m-2">
