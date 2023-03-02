@@ -3,9 +3,11 @@ import { initializeProvider } from "@iron/provider-inpage";
 import { Constants } from "@iron/settings";
 
 // init on load
-(async () => init())();
+init();
 
-export async function init() {
+// This can never be async, otherwise window.ethereum won't be injected in time
+// for page load
+export function init() {
   console.log("[inpage] init");
 
   initProvider();

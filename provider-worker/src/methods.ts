@@ -25,6 +25,7 @@ const providerState: Handler = (_req, res, _next, end) => {
 };
 
 const handlers: Record<string, Handler> = {
+  eth_accounts: requestAccounts,
   eth_requestAccounts: requestAccounts,
   metamask_getProviderState: providerState,
 };

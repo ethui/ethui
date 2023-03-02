@@ -2,9 +2,11 @@ import { injectInPageScript } from "./injectInpageScript";
 import { initProviderForward } from "./providerForward";
 
 // init on load
-(async () => init())();
+init();
 
-export async function init() {
+// This can never be async, otherwise window.ethereum won't be injected in time
+// for page load
+function init() {
   console.log("[contentScript] init");
 
   initProviderForward();

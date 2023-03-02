@@ -1,3 +1,4 @@
+import browser from "webextension-polyfill";
 import { initProvider, setupProviderConnection } from "@iron/provider-worker";
 
 const ALCHEMY_RPC =
@@ -13,7 +14,7 @@ export async function init() {
 }
 
 function handleConnections() {
-  chrome.runtime.onConnect.addListener(async (remotePort: any, ...args) => {
+  browser.runtime.onConnect.addListener(async (remotePort: any, ...args) => {
     console.log("[background] onConnect", [remotePort, ...args]);
     setupProviderConnection(remotePort, remotePort.sender);
   });

@@ -15,6 +15,7 @@
     {
       "matches": ["http://*/*", "https://*/*", "<all_urls>"],
       "js": ["content_script/index.ts"],
+      "run_at": "document_start",
       "all_frames": true
     }
   ],

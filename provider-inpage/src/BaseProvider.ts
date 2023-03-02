@@ -1,6 +1,6 @@
-import SafeEventEmitter from '@metamask/safe-event-emitter';
-import { ethErrors, EthereumRpcError } from 'eth-rpc-errors';
-import dequal from 'fast-deep-equal';
+import SafeEventEmitter from "@metamask/safe-event-emitter";
+import { ethErrors, EthereumRpcError } from "eth-rpc-errors";
+import dequal from "fast-deep-equal";
 import {
   JsonRpcEngine,
   JsonRpcRequest,
@@ -8,14 +8,14 @@ import {
   JsonRpcVersion,
   JsonRpcSuccess,
   JsonRpcMiddleware,
-} from 'json-rpc-engine';
-import messages from './messages';
+} from "json-rpc-engine";
+import messages from "./messages";
 import {
   getRpcPromiseCallback,
   ConsoleLike,
   Maybe,
   isValidChainId,
-} from './utils';
+} from "./utils";
 
 export interface UnvalidatedJsonRpcRequest {
   id?: JsonRpcId;
@@ -162,7 +162,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
    * or rejects if an error is encountered.
    */
   async request<T>(args: RequestArguments): Promise<Maybe<T>> {
-    if (!args || typeof args !== 'object' || Array.isArray(args)) {
+    if (!args || typeof args !== "object" || Array.isArray(args)) {
       throw ethErrors.rpc.invalidRequest({
         message: messages.errors.invalidRequestArgs(),
         data: args,
@@ -171,7 +171,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
 
     const { method, params } = args;
 
-    if (typeof method !== 'string' || method.length === 0) {
+    if (typeof method !== "string" || method.length === 0) {
       throw ethErrors.rpc.invalidRequest({
         message: messages.errors.invalidRequestMethod(),
         data: args,
@@ -181,7 +181,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
     if (
       params !== undefined &&
       !Array.isArray(params) &&
-      (typeof params !== 'object' || params === null)
+      (typeof params !== "object" || params === null)
     ) {
       throw ethErrors.rpc.invalidRequest({
         message: messages.errors.invalidRequestParams(),
@@ -192,7 +192,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
     return new Promise<T>((resolve, reject) => {
       this._rpcRequest(
         { method, params },
-        getRpcPromiseCallback(resolve, reject),
+        getRpcPromiseCallback(resolve, reject)
       );
     });
   }
@@ -221,7 +221,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
     networkVersion?: string;
   }) {
     if (this._state.initialized === true) {
-      throw new Error('Provider already initialized.');
+      throw new Error("Provider already initialized.");
     }
 
     if (initialState) {
@@ -237,7 +237,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
     // Mark provider as initialized regardless of whether initial state was
     // retrieved.
     this._state.initialized = true;
-    this.emit('_initialized');
+    this.emit("_initialized");
   }
 
   /**
@@ -249,24 +249,24 @@ export abstract class BaseProvider extends SafeEventEmitter {
    */
   protected _rpcRequest(
     payload: UnvalidatedJsonRpcRequest | UnvalidatedJsonRpcRequest[],
-    callback: (...args: any[]) => void,
+    callback: (...args: any[]) => void
   ) {
     let cb = callback;
 
     if (!Array.isArray(payload)) {
       if (!payload.jsonrpc) {
-        payload.jsonrpc = '2.0';
+        payload.jsonrpc = "2.0";
       }
 
       if (
-        payload.method === 'eth_accounts' ||
-        payload.method === 'eth_requestAccounts'
+        payload.method === "eth_accounts" ||
+        payload.method === "eth_requestAccounts"
       ) {
         // handle accounts changing
         cb = (err: Error, res: JsonRpcSuccess<string[]>) => {
           this._handleAccountsChanged(
             res.result || [],
-            payload.method === 'eth_accounts',
+            payload.method === "eth_accounts"
           );
           callback(err, res);
         };
@@ -286,7 +286,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
   protected _handleConnect(chainId: string) {
     if (!this._state.isConnected) {
       this._state.isConnected = true;
-      this.emit('connect', { chainId });
+      this.emit("connect", { chainId });
       this._log.debug(messages.info.connected(chainId));
     }
   }
@@ -313,13 +313,13 @@ export abstract class BaseProvider extends SafeEventEmitter {
       if (isRecoverable) {
         error = new EthereumRpcError(
           1013, // Try again later
-          errorMessage || messages.errors.disconnected(),
+          errorMessage || messages.errors.disconnected()
         );
         this._log.debug(error);
       } else {
         error = new EthereumRpcError(
           1011, // Internal error
-          errorMessage || messages.errors.permanentlyDisconnected(),
+          errorMessage || messages.errors.permanentlyDisconnected()
         );
         this._log.error(error);
         this.chainId = null;
@@ -329,7 +329,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
         this._state.isPermanentlyDisconnected = true;
       }
 
-      this.emit('disconnect', error);
+      this.emit("disconnect", error);
     }
   }
 
@@ -358,7 +358,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
     if (chainId !== this.chainId) {
       this.chainId = chainId;
       if (this._state.initialized) {
-        this.emit('chainChanged', this.chainId);
+        this.emit("chainChanged", this.chainId);
       }
     }
   }
@@ -374,23 +374,23 @@ export abstract class BaseProvider extends SafeEventEmitter {
    */
   protected _handleAccountsChanged(
     accounts: unknown[],
-    isEthAccounts = false,
+    isEthAccounts = false
   ): void {
     let _accounts = accounts;
 
     if (!Array.isArray(accounts)) {
       this._log.error(
-        'Iron: Received invalid accounts parameter. Please report this bug.',
-        accounts,
+        "Iron: Received invalid accounts parameter. Please report this bug.",
+        accounts
       );
       _accounts = [];
     }
 
     for (const account of accounts) {
-      if (typeof account !== 'string') {
+      if (typeof account !== "string") {
         this._log.error(
-          'Iron: Received non-string account. Please report this bug.',
-          accounts,
+          "Iron: Received non-string account. Please report this bug.",
+          accounts
         );
         _accounts = [];
         break;
@@ -401,10 +401,11 @@ export abstract class BaseProvider extends SafeEventEmitter {
     if (!dequal(this._state.accounts, _accounts)) {
       // we should always have the correct accounts even before eth_accounts
       // returns
+      // TODO: can this error be safely ignored?
       if (isEthAccounts && this._state.accounts !== null) {
         this._log.error(
           `Iron: 'eth_accounts' unexpectedly updated accounts. Please report this bug.`,
-          _accounts,
+          _accounts
         );
       }
 
@@ -417,7 +418,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
 
       // finally, after all state has been updated, emit the event
       if (this._state.initialized) {
-        this.emit('accountsChanged', _accounts);
+        this.emit("accountsChanged", _accounts);
       }
     }
   }
@@ -438,9 +439,9 @@ export abstract class BaseProvider extends SafeEventEmitter {
     accounts,
     isUnlocked,
   }: { accounts?: string[]; isUnlocked?: boolean } = {}) {
-    if (typeof isUnlocked !== 'boolean') {
+    if (typeof isUnlocked !== "boolean") {
       this._log.error(
-        'Iron: Received invalid isUnlocked parameter. Please report this bug.',
+        "Iron: Received invalid isUnlocked parameter. Please report this bug."
       );
       return;
     }
