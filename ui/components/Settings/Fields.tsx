@@ -31,6 +31,7 @@ interface FieldRadioProps {
   register: any;
   values: any[];
   defaultValue: any;
+  title: string;
   error: FieldError | undefined;
 }
 
@@ -40,10 +41,14 @@ export function FieldRadio({
   control,
   values,
   defaultValue,
+  title,
   error,
 }: FieldRadioProps) {
   return (
     <div className="form-control w-full m-2">
+      <label className="label">
+        <span className="label-text">{title}</span>
+      </label>
       <Controller
         {...{ control, name, defaultValue }}
         render={({ field: { onChange, ...props } }) => (
@@ -61,7 +66,6 @@ export function FieldRadio({
                 <span className="label-text pl-2">{value}</span>
               </label>
             ))}
-            {error && <p>&#9888; {error.message} </p>}
           </>
         )}
       />

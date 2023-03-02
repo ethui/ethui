@@ -39,6 +39,7 @@ export function WalletSettings() {
       <FieldRadio
         control={control}
         name="addressIndex"
+        title="Derivation Index"
         values={[0, 1, 2, 3, 4]}
         defaultValue={walletSettings.addressIndex}
         error={errors.addressIndex}
