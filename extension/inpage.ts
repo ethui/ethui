@@ -5,6 +5,8 @@ import { Constants } from "@iron/settings";
 // init on load
 init();
 
+// This can never be async, otherwise window.ethereum won't be injected in time
+// for page load
 export function init() {
   console.log("[inpage] init");
 
