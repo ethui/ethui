@@ -9,7 +9,7 @@ type Handler = (
 ) => Promise<void> | void;
 
 const requestAccounts: Handler = async (_req, res, _next, end) => {
-  const address = useStore.getState().address;
+  const address = useStore.getState().address();
   res.result = [address];
   end();
 };

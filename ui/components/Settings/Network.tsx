@@ -1,13 +1,8 @@
 import React from "react";
-import { useStore } from "@iron/state";
+import { schemas, useStore } from "@iron/state";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { FormControl } from "./utils";
-
-const schema = z.object({
-  rpc: z.string().regex(/^(https?):\/\/[^\s/$.?#].[^\s]*$/),
-});
 
 export function NetworkSettings() {
   const [rpc, setRpc] = useStore((state) => [state.rpc, state.setRpc]);
@@ -17,7 +12,7 @@ export function NetworkSettings() {
     handleSubmit,
     reset,
     formState: { isDirty, isValid, errors },
-  } = useForm({ resolver: zodResolver(schema) });
+  } = useForm({ resolver: zodResolver(schemas.network) });
   const onSubmit = (data: any) => {
     reset(data);
     setRpc(data);
