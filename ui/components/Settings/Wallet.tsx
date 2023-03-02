@@ -42,7 +42,6 @@ export function WalletSettings() {
         title="Derivation Index"
         values={[0, 1, 2, 3, 4]}
         defaultValue={walletSettings.addressIndex}
-        error={errors.addressIndex}
       />
       <div className="m-2">
         <input

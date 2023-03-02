@@ -1,11 +1,18 @@
 import React from "react";
-import { Controller, FieldError } from "react-hook-form";
+import {
+  Controller,
+  FieldError,
+  FieldErrorsImpl,
+  Merge,
+} from "react-hook-form";
+
+type Error = FieldError | Merge<FieldError, FieldErrorsImpl<any>>;
 
 interface FieldTextProps {
   name: string;
   register: any;
   value: string;
-  error: FieldError | undefined;
+  error?: Error;
 }
 
 export function FieldText({ name, register, value, error }: FieldTextProps) {
@@ -20,7 +27,7 @@ export function FieldText({ name, register, value, error }: FieldTextProps) {
         defaultValue={value}
         className="input input-bordered w-full"
       />
-      {error && <p>&#9888; {error.message} </p>}
+      {error && <p className="text-red-600">{error.message?.toString()}</p>}
     </div>
   );
 }
@@ -28,11 +35,9 @@ export function FieldText({ name, register, value, error }: FieldTextProps) {
 interface FieldRadioProps {
   name: string;
   control: any;
-  register: any;
   values: any[];
   defaultValue: any;
   title: string;
-  error: FieldError | undefined;
 }
 
 // TODO: currently assumes radio groups are number fields
@@ -42,7 +47,6 @@ export function FieldRadio({
   values,
   defaultValue,
   title,
-  error,
 }: FieldRadioProps) {
   return (
     <div className="form-control w-full m-2">
