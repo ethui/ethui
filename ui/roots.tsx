@@ -1,5 +1,11 @@
 import React from "react";
-import { CurrentBlock, Navbar, Settings, ExpandBtn } from "./components";
+import {
+  CurrentBlock,
+  Navbar,
+  Settings,
+  ExpandBtn,
+  expand,
+} from "./components";
 import { Route, Router } from "wouter";
 import { useHashLocation } from "./hooks/hashLocation";
 import "./global.css";
@@ -21,6 +27,9 @@ export function Expanded() {
 }
 
 export function Popup() {
+  // let's skip the popup for now (or even forever?)
+  expand();
+
   return (
     <main className="container bg-white prose">
       <div className="navbar bg-neutral text-neutral-content">

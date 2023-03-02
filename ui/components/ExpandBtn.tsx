@@ -5,7 +5,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-function expand() {
+export function expand() {
   const url = browser.runtime.getURL("expanded.html");
   browser.tabs.create({ url }).then(() => window.close());
 }
