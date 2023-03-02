@@ -2,7 +2,7 @@ import React from "react";
 import { schemas, useStore } from "@iron/state";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormControl } from "./utils";
+import { FieldText } from "./Fields";
 
 export function NetworkSettings() {
   const [networkSettings, setNetworkSettings] = useStore((state) => [
@@ -23,7 +23,7 @@ export function NetworkSettings() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <FormControl
+      <FieldText
         name="RPC"
         register={register("rpc")}
         value={networkSettings.rpc}
