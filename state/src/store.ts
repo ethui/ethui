@@ -3,6 +3,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { storageWrapper } from "./storageWrapper";
 import { Address, NetworkSettings, Settings, WalletSettings } from "./types";
+import { deriveAddress } from "./utils";
 
 interface Getters {
   address: () => Address;
@@ -26,26 +27,12 @@ const defaultSettings: Settings = {
   },
 };
 
-function generateGetters(get: () => Settings): Getters {
-  return {
-    address: () => {
-      const { mnemonic, derivationPath, addressIndex } = get().wallet;
-      return deriveAddress(mnemonic, derivationPath, addressIndex);
-    },
-  };
-}
-
 export const useStore = create<State>()(
   persist(
     (set, get) => ({
       ...defaultSettings,
       ...generateGetters(get),
-      setWalletSettings: (wallet) => {
-        set({ wallet });
-      },
-      setNetworkSettings: (network) => {
-        set({ network });
-      },
+      ...generateSetters(get, set),
     }),
     {
       name: "iron-store",
@@ -56,11 +43,24 @@ export const useStore = create<State>()(
   )
 );
 
-// TODO: this needs to be generated from the mnemonic
-export function deriveAddress(
-  _mnemonic: string,
-  _path: string,
-  _index: number
-): Address {
-  return "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
+function generateGetters(get: () => Settings): Getters {
+  return {
+    address: () => {
+      const { mnemonic, derivationPath, addressIndex } = get().wallet;
+      return deriveAddress(mnemonic, derivationPath, addressIndex);
+    },
+  };
+}
+function generateSetters(
+  _get: () => Settings,
+  set: (partial: Partial<State>) => void
+): Setters {
+  return {
+    setWalletSettings: (wallet) => {
+      set({ wallet });
+    },
+    setNetworkSettings: (network) => {
+      set({ network });
+    },
+  };
 }
