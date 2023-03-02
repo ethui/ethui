@@ -10,7 +10,8 @@
     "provider-inpage",
     "provider-worker",
     "ui",
-    "settings"
+    "state",
+    "constants"
   ],
   "devDependencies": {
     "@parcel/config-webextension": "^2.8.3",

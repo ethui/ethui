@@ -6,14 +6,13 @@ import { JsonRpcEngine } from "json-rpc-engine";
 import createFilterMiddleware from "eth-json-rpc-filters";
 import createSubscriptionManager from "eth-json-rpc-filters/subscriptionManager";
 import { nanoid } from "nanoid";
-import { ethErrors } from "eth-rpc-errors";
 import {
   providerFromMiddleware,
   providerFromEngine,
 } from "@metamask/eth-json-rpc-provider";
 import { providerAsMiddleware } from "@metamask/eth-json-rpc-middleware/src/providerAsMiddleware";
 import createJsonRpcClient from "./src/jsonrpc";
-import { Constants } from "@iron/settings";
+import * as Constants from "@iron/constants";
 import { methodMiddleware } from "./src/methods";
 
 //
@@ -150,17 +149,4 @@ function removeConnection(origin: any, id: any) {
   if (Object.keys(connections[origin].length === 0)) {
     delete connections[origin];
   }
-}
-
-async function getProviderStateHandler(
-  req: any,
-  res: any,
-  _next: any,
-  end: any,
-  { getProviderState: _getProviderState }: any
-) {
-  res.result = {
-    ...(await _getProviderState(req.origin)),
-  };
-  return end();
 }
