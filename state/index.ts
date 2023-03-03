@@ -1,5 +1,5 @@
 import { useStore } from "./src/store";
-import { schemas } from "./src/types";
-import { deriveAddress } from "./src/utils";
+import { schemas } from "./src/settings";
+import { deriveAddress, deriveAddresses } from "./src/addresses";
 
-export { useStore, schemas, deriveAddress };
+export { useStore, schemas, deriveAddress, deriveAddresses };

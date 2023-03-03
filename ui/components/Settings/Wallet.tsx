@@ -1,8 +1,9 @@
-import React from "react";
-import { schemas, useStore } from "@iron/state";
+import React, { useEffect, useState } from "react";
+import { deriveAddresses, schemas, useStore } from "@iron/state";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldRadio, FieldText } from "./Fields";
+import { Address } from "@iron/state/src/types";
 
 export function WalletSettings() {
   const [walletSettings, setWalletSettings] = useStore((state) => [
@@ -16,11 +17,32 @@ export function WalletSettings() {
     reset,
     formState: { isDirty, isValid, errors },
     control,
+    getValues,
   } = useForm({ resolver: zodResolver(schemas.wallet) });
   const onSubmit = (data: any) => {
     reset(data);
     setWalletSettings(data);
   };
+
+  const [derivedAddresses, setDerivedAddresses] = useState<
+    Record<number, Address>
+  >({});
+
+  useEffect(() => {
+    const addresses = deriveAddresses(
+      walletSettings.mnemonic,
+      walletSettings.derivationPath,
+      0,
+      5
+    ).reduce((acc, address, i) => {
+      acc[i] = address;
+      return acc;
+    }, {});
+
+    setDerivedAddresses(addresses);
+  }, []);
+
+  console.log(getValues());
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -40,7 +62,7 @@ export function WalletSettings() {
         control={control}
         name="addressIndex"
         title="Derivation Index"
-        values={[0, 1, 2, 3, 4]}
+        values={derivedAddresses}
         defaultValue={walletSettings.addressIndex}
       />
       <div className="m-2">

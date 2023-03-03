@@ -35,7 +35,7 @@ export function FieldText({ name, register, value, error }: FieldTextProps) {
 interface FieldRadioProps {
   name: string;
   control: any;
-  values: any[];
+  values: Record<number, string>;
   defaultValue: any;
   title: string;
 }
@@ -57,19 +57,23 @@ export function FieldRadio({
         {...{ control, name, defaultValue }}
         render={({ field: { onChange, ...props } }) => (
           <>
-            {values.map((value) => (
-              <label className="label cursor-pointer justify-start">
-                <input
-                  type="radio"
-                  {...props}
-                  checked={value === props.value}
-                  value={value}
-                  onChange={(e) => onChange(parseInt(e.target.value, 10))}
-                  className="radio checked:bg-red-500"
-                />
-                <span className="label-text pl-2">{value}</span>
-              </label>
-            ))}
+            {Object.keys(values).map((i) => {
+              console.log(i, typeof i, props.value, typeof props.value);
+              console.log(i === props.value);
+              return (
+                <label className="label cursor-pointer justify-start">
+                  <input
+                    type="radio"
+                    {...props}
+                    checked={i.toString() === props.value.toString()}
+                    value={i}
+                    onChange={(e) => onChange(parseInt(e.target.value, 10))}
+                    className="radio checked:bg-red-500"
+                  />
+                  <span className="label-text pl-2">{values[i]}</span>
+                </label>
+              );
+            })}
           </>
         )}
       />

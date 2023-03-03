@@ -1,49 +1,37 @@
-import * as Constants from "@iron/constants";
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
-import { storageWrapper } from "./storageWrapper";
-import { Address, NetworkSettings, Settings, WalletSettings } from "./types";
-import { deriveAddress } from "./utils";
+import { persist } from "zustand/middleware";
+import {
+  defaultSettings,
+  NetworkSettings,
+  SettingsSchema,
+  WalletSettings,
+} from "./settings";
+import { storageBackend } from "./browserStorageBackend";
+import { type Address, deriveAddress } from "./addresses";
 
 interface Getters {
   address: () => Address;
 }
 
 interface Setters {
-  setWalletSettings: (settings: WalletSettings) => void;
-  setNetworkSettings: (settings: NetworkSettings) => void;
+  setWalletSettings: (settings: SettingsSchema["wallet"]) => void;
+  setNetworkSettings: (settings: SettingsSchema["network"]) => void;
 }
 
-type State = Settings & Setters & Getters;
+type Store = SettingsSchema & Setters & Getters;
 
-const defaultSettings: Settings = {
-  wallet: {
-    mnemonic: Constants.wallet.mnemonic,
-    derivationPath: Constants.wallet.path,
-    addressIndex: Constants.wallet.index,
-  },
-  network: {
-    rpc: Constants.network.rpc,
-  },
-};
-
-export const useStore = create<State>()(
+export const useStore = create<Store>()(
   persist(
     (set, get) => ({
       ...defaultSettings,
       ...generateGetters(get),
       ...generateSetters(get, set),
     }),
-    {
-      name: "iron-store",
-      storage: createJSONStorage(() => {
-        return storageWrapper;
-      }),
-    }
+    storageBackend
   )
 );
 
-function generateGetters(get: () => Settings): Getters {
+function generateGetters(get: () => SettingsSchema): Getters {
   return {
     address: () => {
       const { mnemonic, derivationPath, addressIndex } = get().wallet;
@@ -52,14 +40,16 @@ function generateGetters(get: () => Settings): Getters {
   };
 }
 function generateSetters(
-  _get: () => Settings,
-  set: (partial: Partial<State>) => void
+  _get: () => SettingsSchema,
+  set: (partial: Partial<Store>) => void
 ): Setters {
   return {
     setWalletSettings: (wallet) => {
+      wallet = WalletSettings.beforeUpdate(wallet);
       set({ wallet });
     },
     setNetworkSettings: (network) => {
+      network = NetworkSettings.beforeUpdate(network);
       set({ network });
     },
   };
