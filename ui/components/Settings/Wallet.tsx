@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { deriveAddresses, schemas, useStore } from "@iron/state";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldRadio, FieldText } from "./Fields";
-import { Address } from "@iron/state/src/types";
+import { Address } from "@iron/state";
+import { ErrorMessage } from "@hookform/error-message";
+import { debounce } from "lodash";
 
 export function WalletSettings() {
   const [walletSettings, setWalletSettings] = useStore((state) => [
@@ -17,7 +19,7 @@ export function WalletSettings() {
     reset,
     formState: { isDirty, isValid, errors },
     control,
-    getValues,
+    watch,
   } = useForm({ resolver: zodResolver(schemas.wallet) });
   const onSubmit = (data: any) => {
     reset(data);
@@ -28,21 +30,30 @@ export function WalletSettings() {
     Record<number, Address>
   >({});
 
+  const [mnemonic, derivationPath] = watch(["mnemonic", "derivationPath"]);
+  console.log(derivedAddresses);
+
+  const debouncedDeriveAddresses = useCallback(
+    debounce((mnemonic: string, derivationPath: string) => {
+      deriveAddresses(mnemonic, derivationPath, 0, 5).reduce(
+        (acc, address, i) => {
+          acc[i] = address;
+          return acc;
+        },
+        {}
+      );
+    }, 200),
+    []
+  );
+
   useEffect(() => {
-    const addresses = deriveAddresses(
-      walletSettings.mnemonic,
-      walletSettings.derivationPath,
-      0,
-      5
-    ).reduce((acc, address, i) => {
-      acc[i] = address;
-      return acc;
-    }, {});
-
-    setDerivedAddresses(addresses);
-  }, []);
-
-  console.log(getValues());
+    try {
+      const addresses = debouncedDeriveAddresses(mnemonic, derivationPath);
+      setDerivedAddresses(addresses);
+    } catch (err) {
+      console.error(err);
+    }
+  }, [mnemonic, derivationPath]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -52,6 +63,7 @@ export function WalletSettings() {
         value={walletSettings.mnemonic}
         error={errors.mnemonic}
       />
+      <ErrorMessage name="mnemonic" {...{ errors }} />
       <FieldText
         name="Derivation Path"
         register={register("derivationPath")}

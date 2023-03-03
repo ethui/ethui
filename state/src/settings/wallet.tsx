@@ -2,6 +2,7 @@ import * as Constants from "@iron/constants";
 import { SettingsSection } from ".";
 import * as z from "zod";
 import { deriveAddress } from "../addresses";
+import { ethers } from "ethers";
 
 const schema = z.object({
   mnemonic: z.string().regex(/^(\w+\s){11}\w+$/),
@@ -32,6 +33,13 @@ export const WalletSettings: SettingsSection<WalletSchema, ExtraFields> = {
   },
 
   beforeUpdate(settings) {
-    return { ...settings, address: "" };
+    const { mnemonic, derivationPath, addressIndex } = settings;
+    const walletNode = ethers.utils.HDNode.fromMnemonic(mnemonic);
+
+    return {
+      ...settings,
+      address: walletNode.derivePath(`${derivationPath}/${addressIndex}`)
+        .address,
+    };
   },
 };
