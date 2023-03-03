@@ -1,6 +1,7 @@
-import { Address } from "./types";
 import { ethers } from "ethers";
 import _ from "lodash";
+
+export type Address = `0x${string}`;
 
 export function deriveAddress(
   mnemonic: string,

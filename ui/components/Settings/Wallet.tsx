@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { deriveAddress, schemas, useStore } from "@iron/state";
+import { deriveAddresses, schemas, useStore } from "@iron/state";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldRadio, FieldText } from "./Fields";
-import _ from "lodash";
 import { Address } from "@iron/state/src/types";
-import { deriveAddresses } from "@iron/state/src/utils";
 
 export function WalletSettings() {
   const [walletSettings, setWalletSettings] = useStore((state) => [
