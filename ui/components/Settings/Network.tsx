@@ -25,7 +25,8 @@ export function NetworkSettings() {
     <form onSubmit={handleSubmit(onSubmit)}>
       <FieldText
         name="RPC"
-        register={register("rpc")}
+        field="rpc"
+        register={register}
         value={networkSettings.rpc}
         error={errors.rpc}
       />

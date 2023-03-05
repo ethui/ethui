@@ -1,11 +1,20 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { deriveAddresses, schemas, useStore } from "@iron/state";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldRadio, FieldText } from "./Fields";
 import { Address } from "@iron/state";
-import { ErrorMessage } from "@hookform/error-message";
-import { debounce } from "lodash";
+import { useDebouncedEffect } from "../../hooks/useDebouncedEffect";
+
+function deriveFiveAddresses(mnemonic: string, derivationPath: string) {
+  return deriveAddresses(mnemonic, derivationPath, 0, 5).reduce(
+    (acc, address, i) => {
+      acc[i] = address;
+      return acc;
+    },
+    {}
+  );
+}
 
 export function WalletSettings() {
   const [walletSettings, setWalletSettings] = useStore((state) => [
@@ -20,7 +29,8 @@ export function WalletSettings() {
     formState: { isDirty, isValid, errors },
     control,
     watch,
-  } = useForm({ resolver: zodResolver(schemas.wallet) });
+    trigger,
+  } = useForm({ mode: "onBlur", resolver: zodResolver(schemas.wallet) });
   const onSubmit = (data: any) => {
     reset(data);
     setWalletSettings(data);
@@ -30,46 +40,35 @@ export function WalletSettings() {
     Record<number, Address>
   >({});
 
+  // refresh listed addresses when mnemonic/path changes
   const [mnemonic, derivationPath] = watch(["mnemonic", "derivationPath"]);
-  console.log(derivedAddresses);
-
-  const debouncedDeriveAddresses = useCallback(
-    debounce((mnemonic: string, derivationPath: string) => {
-      deriveAddresses(mnemonic, derivationPath, 0, 5).reduce(
-        (acc, address, i) => {
-          acc[i] = address;
-          return acc;
-        },
-        {}
-      );
-    }, 200),
-    []
-  );
-
-  useEffect(() => {
+  useDebouncedEffect(() => {
+    if (!isValid || !mnemonic || !derivationPath) return;
     try {
-      const addresses = debouncedDeriveAddresses(mnemonic, derivationPath);
+      const addresses = deriveFiveAddresses(mnemonic, derivationPath);
       setDerivedAddresses(addresses);
     } catch (err) {
       console.error(err);
     }
-  }, [mnemonic, derivationPath]);
+  }, [isValid, mnemonic, derivationPath, trigger]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <FieldText
         name="Mnemonic"
-        register={register("mnemonic")}
+        field="mnemonic"
+        register={register}
         value={walletSettings.mnemonic}
         error={errors.mnemonic}
       />
-      <ErrorMessage name="mnemonic" {...{ errors }} />
       <FieldText
         name="Derivation Path"
-        register={register("derivationPath")}
+        field="derivationPath"
+        register={register}
         value={walletSettings.derivationPath}
         error={errors.derivationPath}
       />
+
       <FieldRadio
         control={control}
         name="addressIndex"

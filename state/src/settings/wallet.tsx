@@ -5,9 +5,13 @@ import { deriveAddress } from "../addresses";
 import { ethers } from "ethers";
 
 const schema = z.object({
-  mnemonic: z.string().regex(/^(\w+\s){11}\w+$/),
-  derivationPath: z.string(),
-  addressIndex: z.number().int().min(0).max(1000),
+  mnemonic: z
+    .string()
+    .regex(/^(\w+\s){11}\w+$/, { message: "Must be a 12-word phrase" }),
+  derivationPath: z
+    .string()
+    .regex(/^m\/(\d+'?\/)+\d+$/, { message: "invalid path format" }),
+  addressIndex: z.number().int().min(0).max(3),
 });
 
 export type WalletSchema = z.infer<typeof schema>;
@@ -33,7 +37,9 @@ export const WalletSettings: SettingsSection<WalletSchema, ExtraFields> = {
   },
 
   beforeUpdate(settings) {
-    const { mnemonic, derivationPath, addressIndex } = settings;
+    const { mnemonic, derivationPath } = settings;
+    // TODO:
+    const addressIndex = 0;
     const walletNode = ethers.utils.HDNode.fromMnemonic(mnemonic);
 
     return {

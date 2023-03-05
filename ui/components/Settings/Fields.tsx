@@ -11,11 +11,18 @@ type Error = FieldError | Merge<FieldError, FieldErrorsImpl<any>>;
 interface FieldTextProps {
   name: string;
   register: any;
+  field: string;
   value: string;
   error?: any;
 }
 
-export function FieldText({ name, register, value, error }: FieldTextProps) {
+export function FieldText({
+  name,
+  field,
+  register,
+  value,
+  error,
+}: FieldTextProps) {
   return (
     <div className="form-control w-full m-2">
       <label className="label">
@@ -23,7 +30,7 @@ export function FieldText({ name, register, value, error }: FieldTextProps) {
       </label>
       <input
         type="text"
-        {...register}
+        {...register(field)}
         defaultValue={value}
         className="input input-bordered w-full"
       />
