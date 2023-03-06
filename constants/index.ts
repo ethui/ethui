@@ -21,3 +21,20 @@ export const wallet = {
 export const network = {
   rpc: "https://eth-mainnet.g.alchemy.com/v2/rTwL6BTDDWkP3tZJUc_N6shfCSR5hsTs",
 };
+
+export const networks = [
+  {
+    name: "mainnet",
+    url: "https://eth-mainnet.g.alchemy.com/v2/rTwL6BTDDWkP3tZJUc_N6shfCSR5hsTs",
+    currency: "ETH",
+    chainId: 1,
+    decimals: 18,
+  },
+  {
+    name: "anvil",
+    url: "http://locahlhost:8545",
+    currency: "ETH",
+    chainId: 31337,
+    decimals: 18,
+  },
+];

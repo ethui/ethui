@@ -12,7 +12,8 @@ interface FieldTextProps {
   name: string;
   register: any;
   field: string;
-  value: string;
+  value?: string | number;
+  valueAsNumber?: boolean;
   error?: any;
 }
 
@@ -21,17 +22,19 @@ export function FieldText({
   field,
   register,
   value,
+  valueAsNumber,
   error,
 }: FieldTextProps) {
   return (
-    <div className="form-control w-full m-2">
+    <div className="form-control w-full px-2">
       <label className="label">
         <span className="label-text">{name}</span>
       </label>
       <input
         type="text"
-        {...register(field)}
+        {...register(field, { valueAsNumber })}
         defaultValue={value}
+        valueAsNumber={valueAsNumber}
         className="input input-bordered w-full"
       />
 
