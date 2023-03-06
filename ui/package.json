@@ -20,9 +20,11 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.0.15",
+    "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "^2.9.11",
     "@iron/state": "*",
     "@types/is-stream": "^2.0.0",
+    "@types/lodash": "^4.14.191",
     "classnames": "^2.3.2",
     "daisyui": "^2.22.0",
     "ethers": "^5.7.2",

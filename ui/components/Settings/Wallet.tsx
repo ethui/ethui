@@ -3,7 +3,18 @@ import { deriveAddresses, schemas, useStore } from "@iron/state";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldRadio, FieldText } from "./Fields";
-import { Address } from "@iron/state/src/types";
+import { Address } from "@iron/state";
+import { useDebouncedEffect } from "../../hooks/useDebouncedEffect";
+
+function deriveFiveAddresses(mnemonic: string, derivationPath: string) {
+  return deriveAddresses(mnemonic, derivationPath, 0, 5).reduce(
+    (acc, address, i) => {
+      acc[i] = address;
+      return acc;
+    },
+    {}
+  );
+}
 
 export function WalletSettings() {
   const [walletSettings, setWalletSettings] = useStore((state) => [
@@ -17,8 +28,9 @@ export function WalletSettings() {
     reset,
     formState: { isDirty, isValid, errors },
     control,
-    getValues,
-  } = useForm({ resolver: zodResolver(schemas.wallet) });
+    watch,
+    trigger,
+  } = useForm({ mode: "onBlur", resolver: zodResolver(schemas.wallet) });
   const onSubmit = (data: any) => {
     reset(data);
     setWalletSettings(data);
@@ -28,36 +40,35 @@ export function WalletSettings() {
     Record<number, Address>
   >({});
 
-  useEffect(() => {
-    const addresses = deriveAddresses(
-      walletSettings.mnemonic,
-      walletSettings.derivationPath,
-      0,
-      5
-    ).reduce((acc, address, i) => {
-      acc[i] = address;
-      return acc;
-    }, {});
-
-    setDerivedAddresses(addresses);
-  }, []);
-
-  console.log(getValues());
+  // refresh listed addresses when mnemonic/path changes
+  const [mnemonic, derivationPath] = watch(["mnemonic", "derivationPath"]);
+  useDebouncedEffect(() => {
+    if (!isValid || !mnemonic || !derivationPath) return;
+    try {
+      const addresses = deriveFiveAddresses(mnemonic, derivationPath);
+      setDerivedAddresses(addresses);
+    } catch (err) {
+      console.error(err);
+    }
+  }, [isValid, mnemonic, derivationPath, trigger]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <FieldText
         name="Mnemonic"
-        register={register("mnemonic")}
+        field="mnemonic"
+        register={register}
         value={walletSettings.mnemonic}
         error={errors.mnemonic}
       />
       <FieldText
         name="Derivation Path"
-        register={register("derivationPath")}
+        field="derivationPath"
+        register={register}
         value={walletSettings.derivationPath}
         error={errors.derivationPath}
       />
+
       <FieldRadio
         control={control}
         name="addressIndex"
