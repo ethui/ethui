@@ -1,16 +1,24 @@
 import * as z from "zod";
-import { type NetworkSchema, NetworkSettings } from "./network";
-import { type WalletSchema, WalletSettings } from "./wallet";
+import { NetworkSettings, type NetworkFullSchema } from "./network";
+import { type WalletFullSchema, WalletSettings } from "./wallet";
+import { type Stream } from "stream";
 
-export interface SettingsSection<Schema, Extra> {
+export interface SettingsSection<Schema, Derived> {
   schema: z.ZodSchema<Schema>;
 
-  defaults: () => Schema & Extra;
+  defaults: () => Schema & Derived;
 
-  beforeUpdate: (settings: Schema) => Schema & Extra;
+  beforeUpdate: (
+    newSettings: Schema,
+    oldSettings: Schema & Derived,
+    stream: Stream
+  ) => Schema & Derived;
 }
 
-export type SettingsSchema = { wallet: WalletSchema; network: NetworkSchema };
+export type SettingsSchema = {
+  wallet: WalletFullSchema;
+  network: NetworkFullSchema;
+};
 
 export { NetworkSettings, WalletSettings };
 

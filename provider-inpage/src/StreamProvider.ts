@@ -67,7 +67,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
       connectionStream,
       mux as unknown as Duplex,
       connectionStream,
-      this._handleStreamDisconnect.bind(this, "Iron")
+      this._handleStreamDisconnect.bind(this, "Iron constructor")
     );
 
     // Set up RPC connection
@@ -86,15 +86,18 @@ export abstract class AbstractStreamProvider extends BaseProvider {
 
     // Handle JSON-RPC notifications
     this._jsonRpcConnection.events.on("notification", (payload) => {
-      console.log("payload", payload);
       const { method, params } = payload;
-      if (method === "metamask_accountsChanged") {
+      if (method === "accountsChanged") {
+        console.log("handleAccountsChanged", params);
         this._handleAccountsChanged(params);
       } else if (method === "metamask_unlockStateChanged") {
+        console.log("handleUnlockStateChanged");
         this._handleUnlockStateChanged(params);
-      } else if (method === "metamask_chainChanged") {
+      } else if (method === "chainChanged") {
+        console.log("handleChainChanged", params);
         this._handleChainChanged(params);
       } else if (EMITTED_NOTIFICATIONS.includes(method)) {
+        console.log("emitting", method);
         this.emit("message", {
           type: method,
           data: params,
@@ -103,6 +106,8 @@ export abstract class AbstractStreamProvider extends BaseProvider {
         connectionStream.destroy(
           new Error(messages.errors.permanentlyDisconnected())
         );
+      } else {
+        console.error("unexpected message", payload);
       }
     });
   }

@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import { schemas, useStore } from "@iron/state";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldText } from "./Fields";
+import { ExtensionContext } from "../../context";
 
 export function NetworkSettings() {
+  const { stream } = useContext(ExtensionContext);
   const [networkSettings, setNetworkSettings] = useStore((state) => [
     state.network,
     state.setNetworkSettings,
@@ -18,7 +20,7 @@ export function NetworkSettings() {
   } = useForm({ resolver: zodResolver(schemas.network) });
   const onSubmit = (data: any) => {
     reset(data);
-    setNetworkSettings(data);
+    setNetworkSettings(data, stream);
   };
 
   return (

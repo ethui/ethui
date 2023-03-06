@@ -7,6 +7,11 @@ export const provider = {
   inpageStreamName: "iron:provider:inpage",
 };
 
+export const windows = {
+  expanded: "iron:expanded",
+  popup: "iron:popup",
+};
+
 export const wallet = {
   mnemonic: "test test test test test test test test test test test junk",
   path: "m/44'/60'/0'/0",

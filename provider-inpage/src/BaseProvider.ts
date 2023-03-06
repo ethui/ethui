@@ -321,6 +321,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
           1011, // Internal error
           errorMessage || messages.errors.permanentlyDisconnected()
         );
+
         this._log.error(error);
         this.chainId = null;
         this._state.accounts = null;

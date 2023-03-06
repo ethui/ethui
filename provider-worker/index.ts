@@ -5,7 +5,6 @@ import { createEngineStream } from "json-rpc-middleware-stream";
 import { JsonRpcEngine } from "json-rpc-engine";
 import createFilterMiddleware from "eth-json-rpc-filters";
 import createSubscriptionManager from "eth-json-rpc-filters/subscriptionManager";
-import { nanoid } from "nanoid";
 import {
   providerFromMiddleware,
   providerFromEngine,
@@ -14,13 +13,13 @@ import { providerAsMiddleware } from "@metamask/eth-json-rpc-middleware/src/prov
 import createJsonRpcClient from "./src/jsonrpc";
 import * as Constants from "@iron/constants";
 import { methodMiddleware } from "./src/methods";
+import { Connections } from "./src/connections";
 
 //
 // global state
 //
 
 let provider: any;
-let connections: any = {};
 
 //
 // functions
@@ -53,7 +52,7 @@ export function initProvider({ rpcUrl, chainId }) {
   provider = providerFromEngine(engine);
 }
 
-export function setupProviderConnection(remotePort: any, sender: any) {
+export function setupExternalConnection(remotePort: any, sender: any) {
   const stream = new PortStream(remotePort);
   const mux = setupMultiplex(stream);
   const outStream = mux.createStream(Constants.provider.streamName);
@@ -70,7 +69,7 @@ export function setupProviderConnection(remotePort: any, sender: any) {
   // setup connection
   const providerStream = createEngineStream({ engine });
 
-  const connectionId = addConnection(origin, { engine });
+  const connectionId = Connections.add(origin, { engine });
 
   pump(
     outStream as unknown as Stream,
@@ -83,12 +82,22 @@ export function setupProviderConnection(remotePort: any, sender: any) {
           mid.destroy();
         }
       });
-      connectionId && removeConnection(origin, connectionId);
+      connectionId && Connections.remove(origin, connectionId);
       if (err) {
         console.error(err);
       }
     }
   );
+}
+
+export function setupInternalConnection(remotePort: any) {
+  const stream = new PortStream(remotePort);
+
+  stream.on("data", (message) => {
+    if ((message.type = "broadcast")) {
+      Connections.notifyAll(message.payload);
+    }
+  });
 }
 
 function setupMultiplex(connectionStream: any) {
@@ -111,7 +120,7 @@ function setupProviderEngine() {
   const engine = new JsonRpcEngine();
   // forward notifications from network provider
   provider.on("data", (error: any, message: any) => {
-    console.log("data", error, message);
+    console.error("data", error, message);
     if (error) {
       // This should never happen, this error parameter is never set
       throw error;
@@ -124,29 +133,4 @@ function setupProviderEngine() {
   // forward to metamask primary provider
   engine.push(providerAsMiddleware(provider));
   return engine;
-}
-
-function addConnection(origin: any, { engine }: any) {
-  if (!connections[origin]) {
-    connections[origin] = {};
-  }
-
-  const id = nanoid();
-  connections[origin][id] = {
-    engine,
-  };
-
-  return id;
-}
-
-function removeConnection(origin: any, id: any) {
-  if (!connections[origin]) {
-    connections[origin] = {};
-  }
-
-  delete connections[origin][id];
-
-  if (Object.keys(connections[origin].length === 0)) {
-    delete connections[origin];
-  }
 }

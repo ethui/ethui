@@ -7,15 +7,20 @@ import {
   WalletSettings,
 } from "./settings";
 import { storageBackend } from "./browserStorageBackend";
-import { type Address, deriveAddress } from "./addresses";
+import { deriveAddress } from "./addresses";
+import { type Stream } from "stream";
 
-interface Getters {
-  address: () => Address;
-}
+interface Getters {}
 
 interface Setters {
-  setWalletSettings: (settings: SettingsSchema["wallet"]) => void;
-  setNetworkSettings: (settings: SettingsSchema["network"]) => void;
+  setWalletSettings: (
+    settings: SettingsSchema["wallet"],
+    stream: Stream
+  ) => void;
+  setNetworkSettings: (
+    settings: SettingsSchema["network"],
+    stream: Stream
+  ) => void;
 }
 
 type Store = SettingsSchema & Setters & Getters;
@@ -39,17 +44,20 @@ function generateGetters(get: () => SettingsSchema): Getters {
     },
   };
 }
+
 function generateSetters(
-  _get: () => SettingsSchema,
+  get: () => SettingsSchema,
   set: (partial: Partial<Store>) => void
 ): Setters {
   return {
-    setWalletSettings: (wallet) => {
-      wallet = WalletSettings.beforeUpdate(wallet);
+    setWalletSettings: (wallet, stream) => {
+      const oldWallet = get().wallet;
+      wallet = WalletSettings.beforeUpdate(wallet, oldWallet, stream);
       set({ wallet });
     },
-    setNetworkSettings: (network) => {
-      network = NetworkSettings.beforeUpdate(network);
+    setNetworkSettings: (network, stream) => {
+      const oldNetwork = get().network;
+      network = NetworkSettings.beforeUpdate(network, oldNetwork, stream);
       set({ network });
     },
   };

@@ -13,6 +13,7 @@
     "@iron/provider-worker": "*",
     "@iron/ui": "*",
     "@iron/constants": "*",
+    "@iron/state": "*",
     "@metamask/object-multiplex": "^1.2.0",
     "@metamask/post-message-stream": "^6.1.0",
     "extension-port-stream": "^2.0.1",

@@ -9,7 +9,7 @@ type Handler = (
 ) => Promise<void> | void;
 
 const requestAccounts: Handler = async (_req, res, _next, end) => {
-  const address = useStore.getState().address();
+  const address = useStore.getState().wallet.address;
   res.result = [address];
   end();
 };
@@ -40,7 +40,6 @@ export const methodMiddleware: JsonRpcMiddleware<unknown, unknown> =
 
     if (handlers[req.method]) {
       try {
-        console.log("req.method", req.method);
         return await handlers[req.method](req, res, next, end);
       } catch (error) {
         console.error(error);

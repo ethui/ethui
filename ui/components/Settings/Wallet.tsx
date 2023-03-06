@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { deriveAddresses, schemas, useStore } from "@iron/state";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldRadio, FieldText } from "./Fields";
 import { Address } from "@iron/state";
 import { useDebouncedEffect } from "../../hooks/useDebouncedEffect";
+import { ExtensionContext } from "../../context";
 
 function deriveFiveAddresses(mnemonic: string, derivationPath: string) {
   return deriveAddresses(mnemonic, derivationPath, 0, 5).reduce(
@@ -17,6 +18,7 @@ function deriveFiveAddresses(mnemonic: string, derivationPath: string) {
 }
 
 export function WalletSettings() {
+  const { stream } = useContext(ExtensionContext);
   const [walletSettings, setWalletSettings] = useStore((state) => [
     state.wallet,
     state.setWalletSettings,
@@ -33,7 +35,7 @@ export function WalletSettings() {
   } = useForm({ mode: "onBlur", resolver: zodResolver(schemas.wallet) });
   const onSubmit = (data: any) => {
     reset(data);
-    setWalletSettings(data);
+    setWalletSettings(data, stream);
   };
 
   const [derivedAddresses, setDerivedAddresses] = useState<
