@@ -31,6 +31,13 @@ export const networks = [
     decimals: 18,
   },
   {
+    name: "goerli",
+    url: "https://eth-goerli.g.alchemy.com/v2/rTwL6BTDDWkP3tZJUc_N6shfCSR5hsTs",
+    chainId: 5,
+    currency: "ETH",
+    decimals: 18,
+  },
+  {
     name: "anvil",
     url: "http://locahlhost:8545",
     currency: "ETH",
