@@ -3,6 +3,7 @@ import { SettingsSection } from ".";
 import * as z from "zod";
 import { deriveAddress } from "../addresses";
 import { ethers } from "ethers";
+import { type Stream } from "stream";
 
 const schema = z.object({
   mnemonic: z
@@ -20,6 +21,8 @@ interface ExtraFields {
   address: string;
 }
 
+export type WalletFullSchema = WalletSchema & ExtraFields;
+
 export const WalletSettings: SettingsSection<WalletSchema, ExtraFields> = {
   schema,
 
@@ -36,16 +39,29 @@ export const WalletSettings: SettingsSection<WalletSchema, ExtraFields> = {
     };
   },
 
-  beforeUpdate(settings) {
-    const { mnemonic, derivationPath } = settings;
-    // TODO:
-    const addressIndex = 0;
+  beforeUpdate(settings, oldSettings, stream) {
+    const { mnemonic, derivationPath, addressIndex } = settings;
     const walletNode = ethers.utils.HDNode.fromMnemonic(mnemonic);
+    const childNode = walletNode.derivePath(
+      `${derivationPath}/${addressIndex}`
+    );
+    const address = childNode.address;
+
+    const addressChanged = address != oldSettings.address;
+
+    if (addressChanged) {
+      stream.write({
+        type: "broadcast",
+        payload: {
+          method: "accountsChanged",
+          params: [address],
+        },
+      });
+    }
 
     return {
       ...settings,
-      address: walletNode.derivePath(`${derivationPath}/${addressIndex}`)
-        .address,
+      address,
     };
   },
 };

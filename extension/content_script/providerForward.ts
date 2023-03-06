@@ -28,7 +28,6 @@ export function initProviderForward() {
   METAMASK_EXTENSION_CONNECT_SENT = true;
   const bgPort = browser.runtime.connect({ name: "iron:contentscript" });
   const bgStream = new PortStream(bgPort);
-  bgStream.on("data", extensionStreamMessageListener);
 
   // create and connect channel muxers
   // so we can handle the channels individually
@@ -64,28 +63,4 @@ function warnDisconnect(remoteLabel: string, error: any) {
     `[iron] Content script lost connection "${remoteLabel}".`,
     error
   );
-}
-
-// TODO: is this needed?
-function extensionStreamMessageListener(msg: any) {
-  if (
-    METAMASK_EXTENSION_CONNECT_SENT &&
-    msg.data.method === "metamask_chainChanged"
-  ) {
-    METAMASK_EXTENSION_CONNECT_SENT = false;
-    window.postMessage(
-      {
-        target: "iron:inpage", // the post-message-stream "target"
-        data: {
-          // this object gets passed to obj-multiplex
-          name: "iron:provider", // the obj-multiplex channel name
-          data: {
-            jsonrpc: "2.0",
-            method: "METAMASK_EXTENSION_CONNECT_CAN_RETRY",
-          },
-        },
-      },
-      window.location.origin
-    );
-  }
 }
