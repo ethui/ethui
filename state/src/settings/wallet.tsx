@@ -1,8 +1,8 @@
 import * as Constants from "@iron/constants";
-import { SettingsSection } from ".";
 import * as z from "zod";
 import { deriveAddress } from "../addresses";
 import { ethers } from "ethers";
+import { SettingsFullSchema } from "./index";
 import { type Stream } from "stream";
 
 const schema = z.object({
@@ -23,7 +23,12 @@ interface ExtraFields {
 
 export type WalletFullSchema = WalletSchema & ExtraFields;
 
-export const WalletSettings: SettingsSection<WalletSchema, ExtraFields> = {
+type Opts = {
+  get: () => SettingsFullSchema;
+  stream: Stream;
+};
+
+export const WalletSettings = {
   schema,
 
   defaults() {
@@ -39,15 +44,19 @@ export const WalletSettings: SettingsSection<WalletSchema, ExtraFields> = {
     };
   },
 
-  beforeUpdate(settings, oldSettings, stream) {
-    const { mnemonic, derivationPath, addressIndex } = settings;
+  setWalletSettings(
+    wallet: WalletSchema,
+    { get, stream }: Opts
+  ): WalletFullSchema {
+    const oldSettings = get();
+    const { mnemonic, derivationPath, addressIndex } = wallet;
     const walletNode = ethers.utils.HDNode.fromMnemonic(mnemonic);
     const childNode = walletNode.derivePath(
       `${derivationPath}/${addressIndex}`
     );
     const address = childNode.address;
 
-    const addressChanged = address != oldSettings.address;
+    const addressChanged = address != oldSettings.wallet.address;
 
     if (addressChanged) {
       stream.write({
@@ -60,7 +69,7 @@ export const WalletSettings: SettingsSection<WalletSchema, ExtraFields> = {
     }
 
     return {
-      ...settings,
+      ...wallet,
       address,
     };
   },

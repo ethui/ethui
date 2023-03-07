@@ -1,5 +1,8 @@
 import { Cog6ToothIcon } from "@heroicons/react/24/solid";
+import React from "react";
 import { Link } from "wouter";
+import { QuickNetworkSelect } from "./Settings/index";
+import { QuickAccountSelect } from "./Settings/QuickAccountSelect";
 
 export function Navbar() {
   return (
@@ -10,6 +13,8 @@ export function Navbar() {
         </Link>
       </div>
       <div className="flex-none">
+        <QuickAccountSelect />
+        <QuickNetworkSelect />
         <Link href="/settings">
           <button className="btn btn-square btn-ghost">
             {" "}

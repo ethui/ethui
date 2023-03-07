@@ -19,7 +19,7 @@ interface Props {
 export function Expanded({ stream }: Props) {
   return (
     <ExtensionContext.Provider value={{ stream: stream! }}>
-      <div className="bg-slate-200 h-screen p-4">
+      <div className="bg-slate-200 min-h-screen p-4">
         <Router hook={useHashLocation}>
           <main className="container mx-auto px-4 py-4 bg-white rounded-box ">
             <Navbar />

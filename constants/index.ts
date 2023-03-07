@@ -18,16 +18,19 @@ export const wallet = {
   index: 0,
 };
 
-export const network = {
-  rpc: "https://eth-mainnet.g.alchemy.com/v2/rTwL6BTDDWkP3tZJUc_N6shfCSR5hsTs",
-};
-
 export const networks = [
   {
     name: "mainnet",
     url: "https://eth-mainnet.g.alchemy.com/v2/rTwL6BTDDWkP3tZJUc_N6shfCSR5hsTs",
     currency: "ETH",
     chainId: 1,
+    decimals: 18,
+  },
+  {
+    name: "goerli",
+    url: "https://eth-goerli.g.alchemy.com/v2/rTwL6BTDDWkP3tZJUc_N6shfCSR5hsTs",
+    chainId: 5,
+    currency: "ETH",
     decimals: 18,
   },
   {

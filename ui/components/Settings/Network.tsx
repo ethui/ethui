@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { schemas, useStore } from "@iron/state";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -6,11 +6,19 @@ import { FieldText } from "./Fields";
 import { ExtensionContext } from "../../context";
 import _ from "lodash";
 
+const emptyNetwork = {
+  name: "",
+  url: "",
+  chainId: undefined!,
+  currency: "",
+  decimals: undefined!,
+};
+
 export function NetworkSettings() {
   const { stream } = useContext(ExtensionContext);
-  const [networkSettings, setNetworkSettings] = useStore((state) => [
+  const [networkSettings, setNetworks] = useStore((state) => [
     state.network,
-    state.setNetworkSettings,
+    state.setNetworks,
   ]);
 
   const {
@@ -31,13 +39,9 @@ export function NetworkSettings() {
   });
 
   const onSubmit = (data: any) => {
-    // const networks = indexes.map((i) => data.networks[i]);
-    // data = { ...data, networks };
     reset(data);
-    setNetworkSettings(data, stream);
+    setNetworks(data.networks, stream);
   };
-
-  console.log("errors", errors);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -88,7 +92,7 @@ export function NetworkSettings() {
               />
             </div>
             <button
-              className="btn btn-warning mt-2"
+              className="btn btn-sm btn-warning mt-2"
               onClick={() => remove(index)}
             >
               Remove
@@ -98,16 +102,8 @@ export function NetworkSettings() {
         );
       })}
       <button
-        className="btn btn-accent"
-        onClick={() =>
-          append({
-            name: "",
-            url: "",
-            chainId: undefined,
-            currency: "",
-            decimals: undefined,
-          })
-        }
+        className="btn btn-sm btn-accent"
+        onClick={() => append(emptyNetwork)}
       >
         Add
       </button>
@@ -115,7 +111,7 @@ export function NetworkSettings() {
         <input
           type="submit"
           value={isDirty ? "Save" : "Saved"}
-          // disabled={!isDirty || !isValid}
+          disabled={!isDirty || !isValid}
           className="p-2 btn btn-primary"
         />
       </div>
