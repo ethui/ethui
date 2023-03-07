@@ -18,10 +18,6 @@ export const wallet = {
   index: 0,
 };
 
-export const network = {
-  rpc: "https://eth-mainnet.g.alchemy.com/v2/rTwL6BTDDWkP3tZJUc_N6shfCSR5hsTs",
-};
-
 export const networks = [
   {
     name: "mainnet",
