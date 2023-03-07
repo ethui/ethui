@@ -258,19 +258,6 @@ export abstract class BaseProvider extends SafeEventEmitter {
         payload.jsonrpc = "2.0";
       }
 
-      if (
-        payload.method === "eth_accounts" ||
-        payload.method === "eth_requestAccounts"
-      ) {
-        // handle accounts changing
-        cb = (err: Error, res: JsonRpcSuccess<string[]>) => {
-          this._handleAccountsChanged(
-            res.result || [],
-            payload.method === "eth_accounts"
-          );
-          callback(err, res);
-        };
-      }
       return this._rpcEngine.handle(payload as JsonRpcRequest<unknown>, cb);
     }
     return this._rpcEngine.handle(payload as JsonRpcRequest<unknown>[], cb);
@@ -400,16 +387,6 @@ export abstract class BaseProvider extends SafeEventEmitter {
 
     // emit accountsChanged if anything about the accounts array has changed
     if (!dequal(this._state.accounts, _accounts)) {
-      // we should always have the correct accounts even before eth_accounts
-      // returns
-      // TODO: can this error be safely ignored?
-      if (isEthAccounts && this._state.accounts !== null) {
-        this._log.error(
-          `Iron: 'eth_accounts' unexpectedly updated accounts. Please report this bug.`,
-          _accounts
-        );
-      }
-
       this._state.accounts = _accounts as string[];
 
       // handle selectedAddress

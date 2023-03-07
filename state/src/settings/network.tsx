@@ -46,21 +46,27 @@ export const NetworkSettings = {
   // change the currently connected network
   // updates only the index of the current list of networks to point to
   setCurrentNetwork(idx: number, { get, stream }: Opts) {
-    const oldNetwork = get().network;
+    const { current, networks } = get().network;
+
+    const oldNetwork = networks[current];
+    const newNetwork = networks[idx];
+    console.log(newNetwork);
 
     // notify only if new value is actually different
-    if (oldNetwork.current != idx) {
+    if (current != idx) {
       stream.write({
         type: "broadcast",
         // TODO: change hardcoded chainid
         payload: {
           method: "chainChanged",
-          params: { chainId: "0x1", networkVersion: "mainnet" },
+          params: {
+            chainId: `0x${newNetwork.chainId.toString(16)}`,
+            networkVersion: newNetwork.name,
+          },
         },
       });
     }
-    console.log("switch", oldNetwork.current, idx);
 
-    return { ...oldNetwork, current: idx };
+    return { networks, current: idx };
   },
 };
