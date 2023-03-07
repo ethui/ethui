@@ -13,18 +13,11 @@ export function CurrentBlock() {
 
   // update block number every few seconds
   useEffect(() => {
-    if (block === 0) {
-      update();
-    } else {
-      const interval = setInterval(update, 5000);
+    update();
+    const interval = setInterval(update, 2000);
 
-      return () => clearInterval(interval);
-    }
-  }, [block]);
+    return () => clearInterval(interval);
+  }, [provider, block]);
 
-  return (
-    <div>
-      <p>Block: {block.toString()}</p>
-    </div>
-  );
+  return <p>Block: {block.toString()}</p>;
 }

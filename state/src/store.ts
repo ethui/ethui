@@ -3,61 +3,56 @@ import { persist } from "zustand/middleware";
 import {
   defaultSettings,
   NetworkSettings,
-  SettingsSchema,
+  SettingsFullSchema,
   WalletSettings,
 } from "./settings";
 import { storageBackend } from "./browserStorageBackend";
-import { deriveAddress } from "./addresses";
 import { type Stream } from "stream";
-
-interface Getters {}
+import { WalletSchema } from "./settings/wallet";
+import { NetworkSchema } from "./settings/network";
 
 interface Setters {
-  setWalletSettings: (
-    settings: SettingsSchema["wallet"],
-    stream: Stream
-  ) => void;
-  setNetworkSettings: (
-    settings: SettingsSchema["network"],
-    stream: Stream
-  ) => void;
+  setWalletSettings: (settings: WalletSchema, stream: Stream) => void;
+  setNetworks: (settings: NetworkSchema["networks"], stream: Stream) => void;
+  setCurrentNetwork: (index: number, stream: Stream) => void;
 }
 
-type Store = SettingsSchema & Setters & Getters;
+type Store = SettingsFullSchema & Setters;
 
 export const useStore = create<Store>()(
   persist(
     (set, get) => ({
       ...defaultSettings,
-      ...generateGetters(get),
       ...generateSetters(get, set),
     }),
     storageBackend
   )
 );
 
-function generateGetters(get: () => SettingsSchema): Getters {
-  return {
-    address: () => {
-      const { mnemonic, derivationPath, addressIndex } = get().wallet;
-      return deriveAddress(mnemonic, derivationPath, addressIndex);
-    },
-  };
-}
-
 function generateSetters(
-  get: () => SettingsSchema,
+  get: () => SettingsFullSchema,
   set: (partial: Partial<Store>) => void
 ): Setters {
   return {
-    setWalletSettings: (wallet, stream) => {
-      const oldWallet = get().wallet;
-      wallet = WalletSettings.beforeUpdate(wallet, oldWallet, stream);
+    setWalletSettings: (newWallet, stream) => {
+      const wallet = WalletSettings.setWalletSettings(newWallet, {
+        get,
+        stream,
+      });
       set({ wallet });
     },
-    setNetworkSettings: (network, stream) => {
-      const oldNetwork = get().network;
-      network = NetworkSettings.beforeUpdate(network, oldNetwork, stream);
+    setNetworks: (networks, stream) => {
+      const network = NetworkSettings.setNetworks(networks, {
+        get,
+        stream,
+      });
+      set({ network });
+    },
+    setCurrentNetwork: (idx, stream) => {
+      const network = NetworkSettings.setCurrentNetwork(idx, {
+        get,
+        stream,
+      });
       set({ network });
     },
   };

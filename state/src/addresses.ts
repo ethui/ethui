@@ -26,3 +26,16 @@ export function deriveAddresses(
     (i: number) => node.derivePath(`${path}/${i}`).address as `0x${string}`
   );
 }
+
+export function deriveFiveAddresses(
+  mnemonic: string,
+  derivationPath: string
+): Record<number, string> {
+  return deriveAddresses(mnemonic, derivationPath, 0, 5).reduce(
+    (acc, address, i) => {
+      acc[i] = address;
+      return acc;
+    },
+    {}
+  );
+}

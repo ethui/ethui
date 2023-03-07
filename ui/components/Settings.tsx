@@ -3,8 +3,8 @@ import { NetworkSettings, WalletSettings } from "./Settings/index";
 import classnames from "classnames";
 
 const sections = [
-  { name: "Network", component: NetworkSettings },
   { name: "Wallet", component: WalletSettings },
+  { name: "Network", component: NetworkSettings },
 ];
 
 export function Settings() {
@@ -15,7 +15,7 @@ export function Settings() {
   return (
     <div className="flex">
       <div className="w-1/4">
-        <ul className="menu bg-base-100 w-56">
+        <ul className="menu bg-base-100">
           {sections.map(({ name }, index) => (
             <li key={index}>
               <a
@@ -28,7 +28,6 @@ export function Settings() {
           ))}
         </ul>
       </div>
-      <div className="divider divider-horizontal" />
       <div className="w-3/4 p-4">
         <h2 className="text-xl">
           Settings {">"} {currentSection.name}
