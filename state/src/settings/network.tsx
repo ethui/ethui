@@ -48,7 +48,6 @@ export const NetworkSettings = {
   setCurrentNetwork(idx: number, { get, stream }: Opts) {
     const { current, networks } = get().network;
 
-    const oldNetwork = networks[current];
     const newNetwork = networks[idx];
     console.log(newNetwork);
 
