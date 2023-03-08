@@ -19,6 +19,11 @@
       "all_frames": true
     }
   ],
+  "icons": {
+    "16": "icons/iron-16.png",
+    "48": "icons/iron-48.png",
+    "128": "icons/iron-128.png"
+  },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'; frame-ancestors 'none';"
   },
