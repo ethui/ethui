@@ -25,9 +25,15 @@ const providerState: Handler = (_req, res, _next, end) => {
   end();
 };
 
+const sendTransaction: Handler = (_req, res, _next, end) => {
+  // TODO: send transaction
+  end();
+};
+
 const handlers: Record<string, Handler> = {
   eth_accounts: requestAccounts,
   eth_requestAccounts: requestAccounts,
+  eth_sendTransaction: sendTransaction,
   metamask_getProviderState: providerState,
 };
 
@@ -40,7 +46,9 @@ export const methodMiddleware: JsonRpcMiddleware<unknown, unknown> =
 
     if (handlers[req.method]) {
       try {
-        return await handlers[req.method](req, res, next, end);
+        const ret = await handlers[req.method](req, res, next, end);
+        console.log("[res]", res.result);
+        return ret;
       } catch (error) {
         console.error(error);
         return end(error);
