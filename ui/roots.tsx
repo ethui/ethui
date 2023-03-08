@@ -1,5 +1,12 @@
 import React from "react";
-import { HomePage, Navbar, Settings, ExpandBtn, expand } from "./components";
+import {
+  HomePage,
+  Navbar,
+  Settings,
+  ExpandBtn,
+  CurrentBlock,
+  expand,
+} from "./components";
 import { Route, Router } from "wouter";
 import { useHashLocation } from "./hooks/hashLocation";
 import "./global.css";
