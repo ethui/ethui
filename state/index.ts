@@ -1,5 +1,12 @@
 import { useStore } from "./src/store";
-import { schemas } from "./src/settings";
-import { Address, deriveAddress, deriveAddresses } from "./src/addresses";
+import { schemas, type SettingsSchema } from "./src/settings";
+import { type Address, deriveAddress, deriveAddresses } from "./src/addresses";
 
-export { Address, useStore, schemas, deriveAddress, deriveAddresses };
+export {
+  type Address,
+  type SettingsSchema,
+  useStore,
+  schemas,
+  deriveAddress,
+  deriveAddresses,
+};

@@ -34,7 +34,6 @@ export function FieldText({
         type="text"
         {...register(field, { valueAsNumber })}
         defaultValue={value}
-        valueAsNumber={valueAsNumber}
         className="input input-bordered w-full"
       />
 
@@ -66,14 +65,14 @@ export function FieldRadio({
       </label>
       <Controller
         {...{ control, name, defaultValue }}
-        render={({ field: { onChange, ...props } }) => (
+        render={({ field: { onChange, value, ...props } }) => (
           <>
             {Object.keys(values).map((i) => (
-              <label className="label cursor-pointer justify-start">
+              <label key={i} className="label cursor-pointer justify-start">
                 <input
                   type="radio"
                   {...props}
-                  checked={i.toString() === props.value.toString()}
+                  checked={i.toString() === value.toString()}
                   value={i}
                   onChange={(e) => onChange(parseInt(e.target.value, 10))}
                   className="radio checked:bg-red-500"

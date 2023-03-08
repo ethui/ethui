@@ -4,7 +4,7 @@ import { createFetchMiddleware } from "@metamask/eth-json-rpc-middleware/src/fet
 import { PollingBlockTracker } from "eth-block-tracker";
 import { providerFromMiddleware } from "@metamask/eth-json-rpc-provider";
 
-export default function createJsonRpcClient({ rpcUrl, chainId }) {
+export default function createJsonRpcClient({ rpcUrl }: { rpcUrl: string }) {
   const fetchMiddleware = createFetchMiddleware({ rpcUrl, fetch });
 
   const blockProvider = providerFromMiddleware(fetchMiddleware);

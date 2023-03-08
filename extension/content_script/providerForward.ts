@@ -5,8 +5,6 @@ import ObjectMultiplex from "@metamask/object-multiplex";
 import pump, { type Stream } from "pump";
 import * as Constants from "@iron/constants";
 
-let METAMASK_EXTENSION_CONNECT_SENT = false;
-
 export function initProviderForward() {
   const inpageStream = new WindowPostMessageStream({
     name: Constants.provider.contentscriptStreamName,
