@@ -23,7 +23,6 @@ export function initProviderForward() {
   const pageChannel = inpageMux.createStream(Constants.provider.streamName);
 
   // bg stream
-  METAMASK_EXTENSION_CONNECT_SENT = true;
   const bgPort = browser.runtime.connect({ name: "iron:contentscript" });
   const bgStream = new PortStream(bgPort);
 

@@ -1,8 +1,8 @@
-import { type Stream } from "stream";
 import { createContext } from "react";
+import PortStream from "extension-port-stream";
 
 interface Context {
-  stream: Stream;
+  stream: typeof PortStream;
 }
 
 export const ExtensionContext = createContext<Context>(undefined!);
