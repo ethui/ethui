@@ -14,6 +14,7 @@ import createJsonRpcClient from "./src/jsonrpc";
 import * as Constants from "@iron/constants";
 import { methodMiddleware } from "./src/methods";
 import { Connections } from "./src/connections";
+import { debugMiddleware } from "./src/debug";
 
 //
 // global state
@@ -128,6 +129,7 @@ function setupProviderEngine() {
     engine.emit("notification", message);
   });
 
+  engine.push(debugMiddleware);
   engine.push(methodMiddleware);
 
   // forward to metamask primary provider
