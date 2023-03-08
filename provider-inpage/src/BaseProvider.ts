@@ -6,7 +6,6 @@ import {
   JsonRpcRequest,
   JsonRpcId,
   JsonRpcVersion,
-  JsonRpcSuccess,
   JsonRpcMiddleware,
 } from "json-rpc-engine";
 import messages from "./messages";

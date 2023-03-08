@@ -1,4 +1,4 @@
-const connections: any = {};
+const connections: Record<any, any> = {};
 
 import { nanoid } from "nanoid";
 

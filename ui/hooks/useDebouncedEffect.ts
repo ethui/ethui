@@ -2,8 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { debounce } from "lodash";
 
 export function useDebouncedEffect(
-  callback: any,
-  dependency: any,
+  callback: () => void,
+  dependency: unknown[],
   timeout = 300,
   options = { trailing: true, leading: false }
 ) {
