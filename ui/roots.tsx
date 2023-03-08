@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  CurrentBlock,
-  Navbar,
-  Settings,
-  ExpandBtn,
-  expand,
-} from "./components";
+import { HomePage, Navbar, Settings, ExpandBtn, expand } from "./components";
 import { Route, Router } from "wouter";
 import { useHashLocation } from "./hooks/hashLocation";
 import "./global.css";
@@ -24,7 +18,7 @@ export function Expanded({ stream }: Props) {
           <main className="container mx-auto px-4 py-4 bg-white rounded-box ">
             <Navbar />
             <div className="gap-4 items-center py-8 px-4">
-              <Route path="/" component={CurrentBlock} />
+              <Route path="/" component={HomePage} />
               <Route path="/settings" component={Settings} />
             </div>
           </main>
