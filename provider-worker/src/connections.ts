@@ -1,4 +1,5 @@
-let connections: any = {};
+const connections: Record<any, any> = {};
+
 import { nanoid } from "nanoid";
 
 export const Connections = {

@@ -6,7 +6,6 @@ import {
   JsonRpcRequest,
   JsonRpcId,
   JsonRpcVersion,
-  JsonRpcSuccess,
   JsonRpcMiddleware,
 } from "json-rpc-engine";
 import messages from "./messages";
@@ -249,10 +248,8 @@ export abstract class BaseProvider extends SafeEventEmitter {
    */
   protected _rpcRequest(
     payload: UnvalidatedJsonRpcRequest | UnvalidatedJsonRpcRequest[],
-    callback: (...args: any[]) => void
+    cb: (...args: any[]) => void
   ) {
-    let cb = callback;
-
     if (!Array.isArray(payload)) {
       if (!payload.jsonrpc) {
         payload.jsonrpc = "2.0";
@@ -360,10 +357,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
    * @param isEthAccounts - Whether the accounts value was returned by
    * a call to eth_accounts.
    */
-  protected _handleAccountsChanged(
-    accounts: unknown[],
-    isEthAccounts = false
-  ): void {
+  protected _handleAccountsChanged(accounts: unknown[]): void {
     let _accounts = accounts;
 
     if (!Array.isArray(accounts)) {

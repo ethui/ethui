@@ -60,10 +60,10 @@ export function setupExternalConnection(remotePort: any, sender: any) {
 
   const origin = new URL(sender.url).origin;
 
-  let tabId: any;
-  if (sender.tab && sender.tab.id) {
-    tabId = sender.tab.id;
-  }
+  // let tabId: any;
+  // if (sender.tab && sender.tab.id) {
+  //   tabId = sender.tab.id;
+  // }
 
   const engine = setupProviderEngine();
 
