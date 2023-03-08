@@ -1,6 +1,6 @@
 import * as Constants from "@iron/constants";
 import * as z from "zod";
-import { deriveAddress } from "../addresses";
+import { Address, deriveAddress } from "../addresses";
 import { ethers } from "ethers";
 import { SettingsFullSchema } from "./index";
 import { type Stream } from "stream";
@@ -18,7 +18,7 @@ const schema = z.object({
 export type WalletSchema = z.infer<typeof schema>;
 
 interface ExtraFields {
-  address: string;
+  address: Address;
 }
 
 export type WalletFullSchema = WalletSchema & ExtraFields;

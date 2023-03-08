@@ -15,17 +15,25 @@ const requestAccounts: Handler = async (_req, res, _next, end) => {
 };
 
 const providerState: Handler = (_req, res, _next, end) => {
-  // TODO: this needs to come from the current store state
-  res.result = {
-    isUnlocked: true,
-    chainId: "0x1",
-    networkVersion: "1",
-    accounts: [],
-  };
+  res.result = useStore.getState().getProviderState();
   end();
 };
 
-const sendTransaction: Handler = (_req, res, _next, end) => {
+const chainId: Handler = (_req, res, _next, end) => {
+  res.result = useStore.getState().getProviderState().chainId;
+  end();
+};
+
+const switchChain: Handler = (req, res, next, end) => {
+  const requestedChainId = req.params![0].chainId;
+
+  console.log("[req]", req);
+  // TODO:
+  end();
+};
+
+const sendTransaction: Handler = (req, res, _next, end) => {
+  console.log("[req]", req);
   // TODO: send transaction
   end();
 };
@@ -33,8 +41,10 @@ const sendTransaction: Handler = (_req, res, _next, end) => {
 const handlers: Record<string, Handler> = {
   eth_accounts: requestAccounts,
   eth_requestAccounts: requestAccounts,
+  eth_chainId: chainId,
   eth_sendTransaction: sendTransaction,
   metamask_getProviderState: providerState,
+  wallet_switchEthereumChain: switchChain,
 };
 
 export const methodMiddleware: JsonRpcMiddleware<unknown, unknown> =

@@ -10,11 +10,20 @@ import { storageBackend } from "./browserStorageBackend";
 import { type Stream } from "stream";
 import { WalletSchema } from "./settings/wallet";
 import { NetworkSchema } from "./settings/network";
+import { Address } from "./addresses";
+
+interface ProviderState {
+  isUnlocked: boolean;
+  chainId: `0x${string}`;
+  networkVersion: string;
+  accounts: Address[];
+}
 
 interface Setters {
   setWalletSettings: (settings: WalletSchema, stream: Stream) => void;
   setNetworks: (settings: NetworkSchema["networks"], stream: Stream) => void;
   setCurrentNetwork: (index: number, stream: Stream) => void;
+  getProviderState: () => ProviderState;
 }
 
 type Store = SettingsFullSchema & Setters;
@@ -54,6 +63,17 @@ function generateSetters(
         stream,
       });
       set({ network });
+    },
+    getProviderState: () => {
+      const { network, wallet } = get();
+      const currentNetwork = network.networks[network.current];
+
+      return {
+        isUnlocked: true,
+        chainId: `0x${currentNetwork.chainId.toString(16)}`,
+        networkVersion: currentNetwork.name,
+        accounts: [wallet.address],
+      };
     },
   };
 }
