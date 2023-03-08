@@ -9,7 +9,7 @@ export function deriveAddress(
   index: number
 ): Address {
   const node = ethers.utils.HDNode.fromMnemonic(mnemonic);
-  let account = node.derivePath(`${path}/${index}`);
+  const account = node.derivePath(`${path}/${index}`);
 
   return account.address as `0x${string}`;
 }

@@ -25,8 +25,9 @@ export interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
 
 type WarningEventName = keyof SentWarningsState["events"];
 
-export interface IronInpageProviderOptions
-  extends Partial<Omit<StreamProviderOptions, "rpcMiddleware">> {}
+export type IronInpageProviderOptions = Partial<
+  Omit<StreamProviderOptions, "rpcMiddleware">
+>;
 
 interface SentWarningsState {
   // methods

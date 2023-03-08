@@ -249,10 +249,8 @@ export abstract class BaseProvider extends SafeEventEmitter {
    */
   protected _rpcRequest(
     payload: UnvalidatedJsonRpcRequest | UnvalidatedJsonRpcRequest[],
-    callback: (...args: any[]) => void
+    cb: (...args: any[]) => void
   ) {
-    let cb = callback;
-
     if (!Array.isArray(payload)) {
       if (!payload.jsonrpc) {
         payload.jsonrpc = "2.0";

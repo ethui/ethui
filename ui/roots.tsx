@@ -13,12 +13,12 @@ import { type Stream } from "stream";
 import { ExtensionContext } from "./context";
 
 interface Props {
-  stream?: Stream;
+  stream: Stream;
 }
 
 export function Expanded({ stream }: Props) {
   return (
-    <ExtensionContext.Provider value={{ stream: stream! }}>
+    <ExtensionContext.Provider value={{ stream: stream }}>
       <div className="bg-slate-200 min-h-screen p-4">
         <Router hook={useHashLocation}>
           <main className="container mx-auto px-4 py-4 bg-white rounded-box ">
@@ -39,7 +39,7 @@ export function Popup({ stream }: Props) {
   expand();
 
   return (
-    <ExtensionContext.Provider value={{ stream: stream! }}>
+    <ExtensionContext.Provider value={{ stream: stream }}>
       <main className="container bg-white prose">
         <div className="navbar bg-neutral text-neutral-content">
           <a className="btn btn-ghost normal-case text-xl">Iron Wallet</a>

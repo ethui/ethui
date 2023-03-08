@@ -18,6 +18,15 @@
     "types": ["node"],
     "typeRoots": ["./src/global.d.ts", "node_modules/@types"]
   },
-  "include": ["src", "webpack", "node_modules/@types"],
+  "include": [
+    "ui",
+    "extension",
+    "config",
+    "constants",
+    "provider-inpage",
+    "provider-worker",
+    "state",
+    "node_modules/@types"
+  ],
   "exclude": ["build", "node_modules"]
 }
