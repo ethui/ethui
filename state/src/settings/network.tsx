@@ -2,6 +2,7 @@ import * as Constants from "@iron/constants";
 import * as z from "zod";
 import { type Stream } from "stream";
 import { SettingsFullSchema } from ".";
+import { Opts } from "./utils";
 
 const schema = z.object({
   current: z.number(),
@@ -19,11 +20,6 @@ const schema = z.object({
 export type NetworkSchema = z.infer<typeof schema>;
 
 export type NetworkFullSchema = NetworkSchema;
-
-type Opts = {
-  get: () => SettingsFullSchema;
-  stream: Stream;
-};
 
 export const NetworkSettings = {
   schema,
@@ -52,7 +48,7 @@ export const NetworkSettings = {
     console.log(newNetwork);
 
     // notify only if new value is actually different
-    if (current != idx) {
+    if (current != idx && !!stream) {
       stream.write({
         type: "broadcast",
         // TODO: change hardcoded chainid
@@ -67,5 +63,15 @@ export const NetworkSettings = {
     }
 
     return { networks, current: idx };
+  },
+
+  switchToChain(requestedChainId: number, { get, stream }: Opts) {
+    const { networks } = get().network;
+
+    const idx = networks.findIndex(
+      ({ chainId }) => chainId == requestedChainId
+    );
+
+    return NetworkSettings.setCurrentNetwork(idx, { get, stream });
   },
 };

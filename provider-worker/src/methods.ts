@@ -25,9 +25,10 @@ const chainId: Handler = (_req, res, _next, end) => {
 };
 
 const switchChain: Handler = (req, res, next, end) => {
-  // TODO:
-  // const requestedChainId = req.params![0].chainId;
+  const requestedChainId = Number(req.params![0].chainId);
+  useStore.getState().switchToChain(Number(requestedChainId));
 
+  res.result = null;
   console.log("[req]", req);
   end();
 };

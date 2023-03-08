@@ -5,12 +5,18 @@ import {
   type NetworkFullSchema,
 } from "./network";
 import { type WalletFullSchema, WalletSettings, WalletSchema } from "./wallet";
+import { type Stream } from "stream";
 
 export interface SettingsSection<Schema, Derived> {
   schema: z.ZodSchema<Schema>;
 
   defaults: () => Schema & Derived;
 }
+
+export type SettingsOpts = {
+  get: () => SettingsFullSchema;
+  stream?: Stream;
+};
 
 export type SettingsSchema = {
   wallet: WalletSchema;

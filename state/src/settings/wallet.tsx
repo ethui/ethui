@@ -4,6 +4,7 @@ import { Address, deriveAddress } from "../addresses";
 import { ethers } from "ethers";
 import { SettingsFullSchema } from "./index";
 import { type Stream } from "stream";
+import { Opts } from "./utils";
 
 const schema = z.object({
   mnemonic: z
@@ -22,11 +23,6 @@ interface ExtraFields {
 }
 
 export type WalletFullSchema = WalletSchema & ExtraFields;
-
-type Opts = {
-  get: () => SettingsFullSchema;
-  stream: Stream;
-};
 
 export const WalletSettings = {
   schema,
@@ -58,7 +54,7 @@ export const WalletSettings = {
 
     const addressChanged = address != oldSettings.wallet.address;
 
-    if (addressChanged) {
+    if (addressChanged && !!stream) {
       stream.write({
         type: "broadcast",
         payload: {

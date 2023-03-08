@@ -24,6 +24,7 @@ interface Setters {
   setNetworks: (settings: NetworkSchema["networks"], stream: Stream) => void;
   setCurrentNetwork: (index: number, stream: Stream) => void;
   getProviderState: () => ProviderState;
+  switchToChain: (chainId: number) => void;
 }
 
 type Store = SettingsFullSchema & Setters;
@@ -74,6 +75,17 @@ function generateSetters(
         networkVersion: currentNetwork.name,
         accounts: [wallet.address],
       };
+    },
+
+    // TODO: this is called from the background
+    // all others are currently called from expanded.tsx
+    // this means storage is being updated, but not the in-memory copy of each process
+    // It also means we don't actually broadcast the `chainChanged` event, so
+    // even the page that requested this is not updated
+    // Need to figure out a way to keep storage centralized on the same process
+    switchToChain: (chainId: number) => {
+      const network = NetworkSettings.switchToChain(chainId, { get });
+      set({ network });
     },
   };
 }
