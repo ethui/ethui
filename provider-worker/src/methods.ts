@@ -25,10 +25,10 @@ const chainId: Handler = (_req, res, _next, end) => {
 };
 
 const switchChain: Handler = (req, res, next, end) => {
-  const requestedChainId = req.params![0].chainId;
+  // TODO:
+  // const requestedChainId = req.params![0].chainId;
 
   console.log("[req]", req);
-  // TODO:
   end();
 };
 
