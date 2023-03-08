@@ -357,10 +357,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
    * @param isEthAccounts - Whether the accounts value was returned by
    * a call to eth_accounts.
    */
-  protected _handleAccountsChanged(
-    accounts: unknown[],
-    isEthAccounts = false
-  ): void {
+  protected _handleAccountsChanged(accounts: unknown[]): void {
     let _accounts = accounts;
 
     if (!Array.isArray(accounts)) {
