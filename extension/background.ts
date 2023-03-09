@@ -1,7 +1,7 @@
 import browser, { Runtime } from "webextension-polyfill";
 import {
   initProvider,
-  setupExternalConnection,
+  setupProviderConnection,
   setupInternalConnection,
 } from "@iron/provider-worker";
 
@@ -26,7 +26,7 @@ function handleConnections() {
       setupInternalConnection(remotePort);
     } else {
       console.log("[background] onConnect: external", remotePort);
-      setupExternalConnection(remotePort, remotePort.sender);
+      setupProviderConnection(remotePort, remotePort.sender);
     }
   });
 }
