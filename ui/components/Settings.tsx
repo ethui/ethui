@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { NetworkSettings, WalletSettings } from "./Settings/index";
 import classnames from "classnames";
 

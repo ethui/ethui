@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { deriveAddresses, schemas, useStore } from "@iron/state";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,7 +9,7 @@ import { ExtensionContext } from "../../context";
 
 function deriveFiveAddresses(mnemonic: string, derivationPath: string) {
   return deriveAddresses(mnemonic, derivationPath, 0, 5).reduce(
-    (acc, address, i) => {
+    (acc: Record<number, Address>, address, i) => {
       acc[i] = address;
       return acc;
     },

@@ -8,6 +8,7 @@ import createSubscriptionManager from "eth-json-rpc-filters/subscriptionManager"
 import {
   providerFromMiddleware,
   providerFromEngine,
+  type SafeEventEmitterProvider,
 } from "@metamask/eth-json-rpc-provider";
 import { providerAsMiddleware } from "@metamask/eth-json-rpc-middleware/src/providerAsMiddleware";
 import createJsonRpcClient from "./src/jsonrpc";
@@ -15,21 +16,26 @@ import * as Constants from "@iron/constants";
 import { methodMiddleware } from "./src/methods";
 import { Connections } from "./src/connections";
 import { debugMiddleware } from "./src/debug";
+import { Runtime } from "webextension-polyfill";
 
 //
 // global state
 //
 
-let provider: any;
+let provider: SafeEventEmitterProvider;
 
 //
 // functions
 //
 
-export function initProvider({ rpcUrl, chainId }) {
+export function initProvider({
+  rpcUrl,
+}: {
+  rpcUrl: string;
+  chainId: number | string;
+}) {
   const { networkMiddleware, blockTracker } = createJsonRpcClient({
     rpcUrl,
-    chainId,
   });
 
   const networkProvider = providerFromMiddleware(networkMiddleware);
@@ -43,7 +49,7 @@ export function initProvider({ rpcUrl, chainId }) {
   });
 
   const engine = new JsonRpcEngine();
-  subscriptionManager.events.on("notification", (message: any) =>
+  subscriptionManager.events.on("notification", (message: unknown) =>
     engine.emit("notification", message)
   );
   engine.push(filterMiddleware);
@@ -53,12 +59,15 @@ export function initProvider({ rpcUrl, chainId }) {
   provider = providerFromEngine(engine);
 }
 
-export function setupExternalConnection(remotePort: any, sender: any) {
+export function setupExternalConnection(
+  remotePort: Runtime.Port,
+  sender: Runtime.MessageSender
+) {
   const stream = new PortStream(remotePort);
   const mux = setupMultiplex(stream);
   const outStream = mux.createStream(Constants.provider.streamName);
 
-  const origin = new URL(sender.url).origin;
+  const origin = new URL(sender.url!).origin;
 
   // let tabId: any;
   // if (sender.tab && sender.tab.id) {
@@ -72,26 +81,21 @@ export function setupExternalConnection(remotePort: any, sender: any) {
 
   const connectionId = Connections.add(origin, { engine });
 
-  pump(
-    outStream as unknown as Stream,
-    providerStream,
-    outStream as unknown as Stream,
-    (err) => {
-      // handle any middleware cleanup
-      engine._middleware.forEach((mid) => {
-        if (mid.destroy && typeof mid.destroy === "function") {
-          mid.destroy();
-        }
-      });
-      connectionId && Connections.remove(origin, connectionId);
-      if (err) {
-        console.error(err);
+  pump(outStream, providerStream, outStream, (err) => {
+    // handle any middleware cleanup
+    engine._middleware.forEach((mid) => {
+      if (mid.destroy && typeof mid.destroy === "function") {
+        mid.destroy();
       }
+    });
+    connectionId && Connections.remove(origin, connectionId);
+    if (err) {
+      console.error(err);
     }
-  );
+  });
 }
 
-export function setupInternalConnection(remotePort: any) {
+export function setupInternalConnection(remotePort: Runtime.Port) {
   const stream = new PortStream(remotePort);
 
   stream.on("data", (message) => {
@@ -101,13 +105,13 @@ export function setupInternalConnection(remotePort: any) {
   });
 }
 
-function setupMultiplex(connectionStream: any) {
+function setupMultiplex(connectionStream: Stream) {
   const mux = new ObjectMultiplex();
   const CONNECTION_READY = "CONNECTION_READY";
   mux.ignoreStream(CONNECTION_READY);
   mux.ignoreStream("ACK_KEEP_ALIVE_MESSAGE");
   mux.ignoreStream("WORKER_KEEP_ALIVE_MESSAGE");
-  pump(connectionStream, mux as unknown as Stream, connectionStream, (err) => {
+  pump(connectionStream, mux, connectionStream, (err) => {
     if (err) {
       console.error(err);
     }
@@ -120,7 +124,7 @@ function setupProviderEngine() {
   // setup json rpc engine stack
   const engine = new JsonRpcEngine();
   // forward notifications from network provider
-  provider.on("data", (error: any, message: any) => {
+  provider.on("data", (error: Error, message: unknown) => {
     console.error("data", error, message);
     if (error) {
       // This should never happen, this error parameter is never set

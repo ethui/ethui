@@ -1,5 +1,4 @@
 import { Cog6ToothIcon } from "@heroicons/react/24/solid";
-import React from "react";
 import { Link } from "wouter";
 import { QuickNetworkSelect } from "./Settings/index";
 import { QuickAccountSelect } from "./Settings/QuickAccountSelect";

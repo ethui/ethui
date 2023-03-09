@@ -1,7 +1,6 @@
 import * as Constants from "@iron/constants";
 import * as z from "zod";
-import { type Stream } from "stream";
-import { SettingsFullSchema } from ".";
+import { Opts } from ".";
 
 const schema = z.object({
   current: z.number(),
@@ -20,11 +19,6 @@ export type NetworkSchema = z.infer<typeof schema>;
 
 export type NetworkFullSchema = NetworkSchema;
 
-type Opts = {
-  get: () => SettingsFullSchema;
-  stream: Stream;
-};
-
 export const NetworkSettings = {
   schema,
 
@@ -38,7 +32,7 @@ export const NetworkSettings = {
   // change the existing list of networks
   setNetworks(
     networks: NetworkSchema["networks"],
-    { get, stream: _stream }: Opts
+    { get }: Opts
   ): NetworkFullSchema {
     return { ...get().network, networks };
   },

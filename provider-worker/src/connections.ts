@@ -1,43 +1,33 @@
-const connections: Record<any, any> = {};
+import { type JsonRpcEngine } from "json-rpc-engine";
 
 import { nanoid } from "nanoid";
 
+interface Connection {
+  engine: JsonRpcEngine;
+}
+
+const connections: Map<[string, string], Connection> = new Map();
 export const Connections = {
   add,
   remove,
   notifyAll,
 };
 
-function add(origin: any, { engine }: any) {
-  if (!connections[origin]) {
-    connections[origin] = {};
-  }
+function add(origin: string, conn: Connection) {
   const id = nanoid();
-  connections[origin][id] = {
-    engine,
-  };
+  connections.set([origin, id], conn);
 
   return id;
 }
 
-function remove(origin: any, id: any) {
-  if (!connections[origin]) {
-    connections[origin] = {};
-  }
-
-  delete connections[origin][id];
-
-  if (Object.keys(connections[origin].length === 0)) {
-    delete connections[origin];
-  }
+function remove(origin: string, id: string) {
+  connections.delete([origin, id]);
 }
 
-function notifyAll(payload: any) {
-  Object.keys(connections).forEach((origin) => {
-    Object.values(connections[origin]).forEach(async (conn: any) => {
-      if (conn.engine) {
-        conn.engine.emit("notification", payload);
-      }
-    });
-  });
+function notifyAll(payload: unknown) {
+  for (const { engine } of connections.values()) {
+    if (engine) {
+      engine.emit("notification", payload);
+    }
+  }
 }

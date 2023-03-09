@@ -1,16 +1,17 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { schemas, useStore } from "@iron/state";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldText } from "./Fields";
 import { ExtensionContext } from "../../context";
-import _ from "lodash";
 
 const emptyNetwork = {
   name: "",
   url: "",
-  chainId: undefined!,
   currency: "",
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  chainId: undefined!,
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   decimals: undefined!,
 };
 

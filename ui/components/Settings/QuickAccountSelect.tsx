@@ -1,7 +1,7 @@
 import { useStore } from "@iron/state";
 import { deriveFiveAddresses } from "@iron/state/src/addresses";
 import classnames from "classnames";
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { ExtensionContext } from "../../context";
 import truncateEthAddress from "truncate-eth-address";
 
