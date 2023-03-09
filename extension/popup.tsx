@@ -1,7 +1,6 @@
 import { createRoot } from "react-dom/client";
 
 import { Popup } from "@iron/ui/roots";
-import React from "react";
 
 function init() {
   const appContainer = document.querySelector("#app-container");

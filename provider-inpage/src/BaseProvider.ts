@@ -248,7 +248,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
    */
   protected _rpcRequest(
     payload: UnvalidatedJsonRpcRequest | UnvalidatedJsonRpcRequest[],
-    cb: (...args: any[]) => void
+    cb: (...args: unknown[]) => void
   ) {
     if (!Array.isArray(payload)) {
       if (!payload.jsonrpc) {

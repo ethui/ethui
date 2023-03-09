@@ -7,7 +7,7 @@ import {
   WalletSettings,
 } from "./settings";
 import { storageBackend } from "./browserStorageBackend";
-import { type Stream } from "stream";
+import { type Writable } from "stream";
 import { WalletSchema } from "./settings/wallet";
 import { NetworkSchema } from "./settings/network";
 import { Address } from "./addresses";
@@ -20,9 +20,9 @@ interface ProviderState {
 }
 
 interface Setters {
-  setWalletSettings: (settings: WalletSchema, stream: Stream) => void;
-  setNetworks: (settings: NetworkSchema["networks"], stream: Stream) => void;
-  setCurrentNetwork: (index: number, stream: Stream) => void;
+  setWalletSettings: (settings: WalletSchema, stream: Writable) => void;
+  setNetworks: (settings: NetworkSchema["networks"], stream: Writable) => void;
+  setCurrentNetwork: (index: number, stream: Writable) => void;
   getProviderState: () => ProviderState;
 }
 

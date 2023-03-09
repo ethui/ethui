@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { BigNumber, ethers } from "ethers";
 import truncateEthAddress from "truncate-eth-address";
 import { useStore } from "@iron/state";

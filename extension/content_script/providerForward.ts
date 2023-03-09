@@ -2,7 +2,7 @@ import { WindowPostMessageStream } from "@metamask/post-message-stream";
 import browser from "webextension-polyfill";
 import PortStream from "extension-port-stream";
 import ObjectMultiplex from "@metamask/object-multiplex";
-import pump, { type Stream } from "pump";
+import pump from "pump";
 import * as Constants from "@iron/constants";
 
 export function initProviderForward() {
@@ -13,17 +13,13 @@ export function initProviderForward() {
 
   const inpageMux = new ObjectMultiplex();
   inpageMux.setMaxListeners(25);
-  pump(
-    inpageMux as unknown as Stream,
-    inpageStream as unknown as Stream,
-    inpageMux as unknown as Stream,
-    (err) => warnDisconnect("Iron Inpage Multiplex", err)
+  pump(inpageMux, inpageStream, inpageMux, (err) =>
+    warnDisconnect("Iron Inpage Multiplex", err)
   );
 
   const pageChannel = inpageMux.createStream(Constants.provider.streamName);
 
   // bg stream
-  METAMASK_EXTENSION_CONNECT_SENT = true;
   const bgPort = browser.runtime.connect({ name: "iron:contentscript" });
   const bgStream = new PortStream(bgPort);
 
@@ -33,30 +29,20 @@ export function initProviderForward() {
   bgMux.setMaxListeners(25);
   bgMux.ignoreStream("publicConfig"); // TODO:LegacyProvider: Delete
 
-  pump(
-    bgMux as unknown as Stream,
-    bgStream,
-    bgMux as unknown as Stream,
-    (err: any) => {
-      warnDisconnect("Iron Background Multiplex", err);
-      // notifyInpageOfStreamFailure();
-    }
-  );
+  pump(bgMux, bgStream, bgMux, (err?: Error) => {
+    warnDisconnect("Iron Background Multiplex", err);
+  });
 
   const extensionChannel = bgMux.createStream(Constants.provider.streamName);
-  pump(
-    pageChannel as unknown as Stream,
-    extensionChannel as unknown as Stream,
-    pageChannel as unknown as Stream,
-    (error: any) =>
-      console.debug(
-        `Iron: Muxed traffic for channel "iron:provider" failed.`,
-        error
-      )
+  pump(pageChannel, extensionChannel, pageChannel, (error?: Error) =>
+    console.debug(
+      `Iron: Muxed traffic for channel "iron:provider" failed.`,
+      error
+    )
   );
 }
 
-function warnDisconnect(remoteLabel: string, error: any) {
+function warnDisconnect(remoteLabel: string, error?: Error) {
   console.debug(
     `[iron] Content script lost connection "${remoteLabel}".`,
     error

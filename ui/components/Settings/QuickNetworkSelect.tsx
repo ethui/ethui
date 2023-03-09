@@ -1,6 +1,6 @@
 import { useStore } from "@iron/state";
 import classnames from "classnames";
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { ExtensionContext } from "../../context";
 
 export function QuickNetworkSelect() {

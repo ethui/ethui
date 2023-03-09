@@ -1,4 +1,3 @@
-import React from "react";
 import { createRoot } from "react-dom/client";
 import { Expanded } from "@iron/ui/roots";
 import PortStream from "extension-port-stream";

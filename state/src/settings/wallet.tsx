@@ -2,8 +2,7 @@ import * as Constants from "@iron/constants";
 import * as z from "zod";
 import { Address, deriveAddress } from "../addresses";
 import { ethers } from "ethers";
-import { SettingsFullSchema } from "./index";
-import { type Stream } from "stream";
+import { Opts } from ".";
 
 const schema = z.object({
   mnemonic: z
@@ -22,11 +21,6 @@ interface ExtraFields {
 }
 
 export type WalletFullSchema = WalletSchema & ExtraFields;
-
-type Opts = {
-  get: () => SettingsFullSchema;
-  stream: Stream;
-};
 
 export const WalletSettings = {
   schema,
@@ -54,7 +48,7 @@ export const WalletSettings = {
     const childNode = walletNode.derivePath(
       `${derivationPath}/${addressIndex}`
     );
-    const address = childNode.address;
+    const address = childNode.address as Address;
 
     const addressChanged = address != oldSettings.wallet.address;
 

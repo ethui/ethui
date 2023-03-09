@@ -1,30 +1,35 @@
-import React from "react";
 import {
+  Control,
   Controller,
   FieldError,
   FieldErrorsImpl,
+  FieldValues,
   Merge,
+  Path,
+  UseFormRegister,
 } from "react-hook-form";
 
-type Error = FieldError | Merge<FieldError, FieldErrorsImpl<any>>;
+type Error<T extends FieldValues> =
+  | FieldError
+  | Merge<FieldError, FieldErrorsImpl<T>>;
 
-interface FieldTextProps {
+interface FieldTextProps<T extends FieldValues> {
   name: string;
-  register: any;
-  field: string;
+  register: UseFormRegister<T>;
+  field: Path<T>;
   value?: string | number;
   valueAsNumber?: boolean;
-  error?: any;
+  error?: Error<T>;
 }
 
-export function FieldText({
+export function FieldText<T extends FieldValues>({
   name,
   field,
   register,
   value,
   valueAsNumber,
   error,
-}: FieldTextProps) {
+}: FieldTextProps<T>) {
   return (
     <div className="form-control w-full px-2">
       <label className="label">
@@ -44,9 +49,9 @@ export function FieldText({
 
 interface FieldRadioProps {
   name: string;
-  control: any;
+  control: Control<FieldValues, unknown>;
   values: Record<number, string>;
-  defaultValue: any;
+  defaultValue: string | number;
   title: string;
 }
 

@@ -6,14 +6,15 @@
   "author": "Miguel Palhas <mpalhas@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "@types/react-dom": "^18.0.10"
+    "@types/react-dom": "^18.0.10",
+    "@types/readable-stream": "^2.3.15"
   },
   "dependencies": {
+    "@iron/constants": "*",
     "@iron/provider-inpage": "*",
     "@iron/provider-worker": "*",
-    "@iron/ui": "*",
-    "@iron/constants": "*",
     "@iron/state": "*",
+    "@iron/ui": "*",
     "@metamask/object-multiplex": "^1.2.0",
     "@metamask/post-message-stream": "^6.1.0",
     "extension-port-stream": "^2.0.1",

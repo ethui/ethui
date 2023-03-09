@@ -59,6 +59,7 @@ export function initializeProvider({
  * @param providerInstance - The provider instance.
  */
 export function setGlobalProvider(providerInstance: IronInpageProvider): void {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (window as Record<string, any>).ethereum = providerInstance;
   window.dispatchEvent(new Event("ethereum#initialized"));
 }

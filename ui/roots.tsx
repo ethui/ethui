@@ -1,4 +1,3 @@
-import React from "react";
 import {
   HomePage,
   Navbar,
@@ -6,15 +5,15 @@ import {
   ExpandBtn,
   CurrentBlock,
   expand,
-} from "./components";
+} from "./components/index";
 import { Route, Router } from "wouter";
 import { useHashLocation } from "./hooks/hashLocation";
 import "./global.css";
-import { type Stream } from "stream";
 import { ExtensionContext } from "./context";
+import PortStream from "extension-port-stream";
 
 interface Props {
-  stream: Stream;
+  stream: typeof PortStream;
 }
 
 export function Expanded({ stream }: Props) {
