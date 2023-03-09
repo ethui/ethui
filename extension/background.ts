@@ -1,4 +1,5 @@
 import browser, { Runtime } from "webextension-polyfill";
+
 import {
   initProvider,
   setupExternalConnection,

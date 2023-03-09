@@ -1,17 +1,19 @@
-import type { Duplex } from "stream";
-import ObjectMultiplex from "@metamask/object-multiplex";
-import SafeEventEmitter from "@metamask/safe-event-emitter";
 import { isDuplexStream } from "is-stream";
 import type { JsonRpcMiddleware } from "json-rpc-engine";
 import { createStreamMiddleware } from "json-rpc-middleware-stream";
 import pump from "pump";
+import type { Duplex } from "stream";
+
+import ObjectMultiplex from "@metamask/object-multiplex";
+import SafeEventEmitter from "@metamask/safe-event-emitter";
+
+import { BaseProvider, BaseProviderOptions } from "./BaseProvider";
 import messages from "./messages";
 import {
   EMITTED_NOTIFICATIONS,
   isValidChainId,
   isValidNetworkVersion,
 } from "./utils";
-import { BaseProvider, BaseProviderOptions } from "./BaseProvider";
 
 export interface StreamProviderOptions extends BaseProviderOptions {
   /**

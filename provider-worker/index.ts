@@ -1,22 +1,25 @@
-import PortStream from "extension-port-stream";
-import ObjectMultiplex from "@metamask/object-multiplex";
-import pump, { type Stream } from "pump";
-import { createEngineStream } from "json-rpc-middleware-stream";
-import { JsonRpcEngine } from "json-rpc-engine";
 import createFilterMiddleware from "eth-json-rpc-filters";
 import createSubscriptionManager from "eth-json-rpc-filters/subscriptionManager";
-import {
-  providerFromMiddleware,
-  providerFromEngine,
-  type SafeEventEmitterProvider,
-} from "@metamask/eth-json-rpc-provider";
+import PortStream from "extension-port-stream";
+import { JsonRpcEngine } from "json-rpc-engine";
+import { createEngineStream } from "json-rpc-middleware-stream";
+import pump, { type Stream } from "pump";
+import { Runtime } from "webextension-polyfill";
+
 import { providerAsMiddleware } from "@metamask/eth-json-rpc-middleware/src/providerAsMiddleware";
-import createJsonRpcClient from "./src/jsonrpc";
+import {
+  type SafeEventEmitterProvider,
+  providerFromEngine,
+  providerFromMiddleware,
+} from "@metamask/eth-json-rpc-provider";
+import ObjectMultiplex from "@metamask/object-multiplex";
+
 import * as Constants from "@iron/constants";
-import { methodMiddleware } from "./src/methods";
+
 import { Connections } from "./src/connections";
 import { debugMiddleware } from "./src/debug";
-import { Runtime } from "webextension-polyfill";
+import createJsonRpcClient from "./src/jsonrpc";
+import { methodMiddleware } from "./src/methods";
 
 //
 // global state

@@ -1,8 +1,9 @@
-import { createRoot } from "react-dom/client";
-import { Expanded } from "@iron/ui/roots";
 import PortStream from "extension-port-stream";
+import { createRoot } from "react-dom/client";
 import browser from "webextension-polyfill";
+
 import * as Constants from "@iron/constants";
+import { Expanded } from "@iron/ui/roots";
 
 function init() {
   const stream = initBackgroundStream();

@@ -1,5 +1,4 @@
 import { type JsonRpcEngine } from "json-rpc-engine";
-
 import { nanoid } from "nanoid";
 
 interface Connection {

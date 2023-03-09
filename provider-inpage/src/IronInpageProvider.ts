@@ -1,19 +1,21 @@
-import type { Duplex } from "stream";
-import type { JsonRpcRequest, JsonRpcResponse } from "json-rpc-engine";
 import { ethErrors } from "eth-rpc-errors";
-import messages from "./messages";
-import {
-  EMITTED_NOTIFICATIONS,
-  getDefaultExternalMiddleware,
-  getRpcPromiseCallback,
-  NOOP,
-} from "./utils";
+import type { JsonRpcRequest, JsonRpcResponse } from "json-rpc-engine";
+import type { Duplex } from "stream";
+
+import * as Constants from "@iron/constants";
+
 import type { UnvalidatedJsonRpcRequest } from "./BaseProvider";
 import {
   AbstractStreamProvider,
   StreamProviderOptions,
 } from "./StreamProvider";
-import * as Constants from "@iron/constants";
+import messages from "./messages";
+import {
+  EMITTED_NOTIFICATIONS,
+  NOOP,
+  getDefaultExternalMiddleware,
+  getRpcPromiseCallback,
+} from "./utils";
 
 export interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
   method:

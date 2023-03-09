@@ -1,5 +1,6 @@
-import { type JsonRpcMiddleware } from "json-rpc-engine";
 import { ethErrors } from "eth-rpc-errors";
+import { type JsonRpcMiddleware } from "json-rpc-engine";
+
 import { useStore } from "@iron/state";
 
 // A handler is a JsonRpcMiddleware, but it can optionally be async,

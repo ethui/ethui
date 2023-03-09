@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import { useProvider } from "../hooks";
 
 export function CurrentBlock() {

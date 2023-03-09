@@ -1,10 +1,10 @@
 import { BaseProvider } from "./BaseProvider";
+import { IronInpageProvider } from "./IronInpageProvider";
+import { StreamProvider } from "./StreamProvider";
 import {
   initializeProvider,
   setGlobalProvider,
 } from "./initializeInpageProvider";
-import { IronInpageProvider } from "./IronInpageProvider";
-import { StreamProvider } from "./StreamProvider";
 
 export {
   BaseProvider,

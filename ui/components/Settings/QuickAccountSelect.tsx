@@ -1,9 +1,11 @@
-import { useStore } from "@iron/state";
-import { deriveFiveAddresses } from "@iron/state/src/addresses";
 import classnames from "classnames";
 import { useContext } from "react";
-import { ExtensionContext } from "../../context";
 import truncateEthAddress from "truncate-eth-address";
+
+import { useStore } from "@iron/state";
+import { deriveFiveAddresses } from "@iron/state/src/addresses";
+
+import { ExtensionContext } from "../../context";
 
 export function QuickAccountSelect() {
   const { stream } = useContext(ExtensionContext);

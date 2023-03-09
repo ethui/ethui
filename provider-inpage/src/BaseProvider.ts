@@ -1,18 +1,20 @@
-import SafeEventEmitter from "@metamask/safe-event-emitter";
-import { ethErrors, EthereumRpcError } from "eth-rpc-errors";
+import { EthereumRpcError, ethErrors } from "eth-rpc-errors";
 import dequal from "fast-deep-equal";
 import {
   JsonRpcEngine,
-  JsonRpcRequest,
   JsonRpcId,
-  JsonRpcVersion,
   JsonRpcMiddleware,
+  JsonRpcRequest,
+  JsonRpcVersion,
 } from "json-rpc-engine";
+
+import SafeEventEmitter from "@metamask/safe-event-emitter";
+
 import messages from "./messages";
 import {
-  getRpcPromiseCallback,
   ConsoleLike,
   Maybe,
+  getRpcPromiseCallback,
   isValidChainId,
 } from "./utils";
 

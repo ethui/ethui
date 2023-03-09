@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { NetworkSettings, WalletSettings } from "./Settings/index";
 import classnames from "classnames";
+import { useState } from "react";
+
+import { NetworkSettings, WalletSettings } from "./Settings/index";
 
 const sections = [
   { name: "Wallet", component: WalletSettings },

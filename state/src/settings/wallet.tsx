@@ -1,16 +1,18 @@
-import * as Constants from "@iron/constants";
-import * as z from "zod";
-import { Address, deriveAddress } from "../addresses";
 import { ethers } from "ethers";
+import * as z from "zod";
+
+import * as Constants from "@iron/constants";
+
 import { Opts } from ".";
+import { Address, deriveAddress } from "../addresses";
 
 const schema = z.object({
-  mnemonic: z
-    .string()
-    .regex(/^(\w+\s){11}\w+$/, { message: "Must be a 12-word phrase" }),
-  derivationPath: z
-    .string()
-    .regex(/^m\/(\d+'?\/)+\d+$/, { message: "invalid path format" }),
+  mnemonic: z.string().regex(/^(\w+\s){11}\w+$/, {
+    message: "Must be a 12-word phrase",
+  }),
+  derivationPath: z.string().regex(/^m\/(\d+'?\/)+\d+$/, {
+    message: "invalid path format",
+  }),
   addressIndex: z.number().int().min(0).max(3),
 });
 

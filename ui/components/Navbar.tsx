@@ -1,7 +1,8 @@
 import { Cog6ToothIcon } from "@heroicons/react/24/solid";
 import { Link } from "wouter";
-import { QuickNetworkSelect } from "./Settings/index";
+
 import { QuickAccountSelect } from "./Settings/QuickAccountSelect";
+import { QuickNetworkSelect } from "./Settings/index";
 
 export function Navbar() {
   return (

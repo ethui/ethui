@@ -1,4 +1,5 @@
 import browser from "webextension-polyfill";
+
 /**
  * Injects the inpage script
  */

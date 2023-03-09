@@ -1,16 +1,17 @@
+import PortStream from "extension-port-stream";
+import { Route, Router } from "wouter";
+
 import {
+  CurrentBlock,
+  ExpandBtn,
   HomePage,
   Navbar,
   Settings,
-  ExpandBtn,
-  CurrentBlock,
   expand,
 } from "./components/index";
-import { Route, Router } from "wouter";
-import { useHashLocation } from "./hooks/hashLocation";
-import "./global.css";
 import { ExtensionContext } from "./context";
-import PortStream from "extension-port-stream";
+import "./global.css";
+import { useHashLocation } from "./hooks/hashLocation";
 
 interface Props {
   stream: typeof PortStream;
