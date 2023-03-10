@@ -32,11 +32,19 @@ const chainId: Handler = (_req, res, _next, end) => {
   end();
 };
 
-const switchChain: Handler = (req, res, next, end) => {
+const switchChain: Handler = (req, _res, next, end) => {
   // TODO:
   // const requestedChainId = req.params![0].chainId;
+  const id = parseInt(req.params[0].chainId.replace(/^0x/, ""), 16);
+  const idx = settings.network.networks.findIndex(
+    ({ chainId }) => chainId == id
+  );
+  settings.setCurrentNetwork(idx);
 
-  console.log("[req]", req);
+  // TODO: If the error code (error.code) is 4902, then the requested chain has
+  // not been added by MetaMask, and you have to request to add it via
+  // wallet_addEthereumChain.
+
   end();
 };
 

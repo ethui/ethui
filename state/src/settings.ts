@@ -1,5 +1,8 @@
 import { ethers } from "ethers";
+import _ from "lodash";
 import { Runtime } from "webextension-polyfill";
+
+import { broadcastViaProviders } from "@iron/provider-worker";
 
 import { deriveAddress, deriveAddressFromNode } from "./addresses";
 import { read, write } from "./browserStorageBackend";
@@ -25,9 +28,15 @@ export const settings: State & { initialized: boolean } = {
       settings.derivationPath,
       settings.addressIndex
     );
+    const addressChanged = address !== this.wallet.address;
+
     this.wallet = { address, ...settings };
     broadcast();
     write("wallets", this.wallet);
+
+    if (addressChanged) {
+      broadcastViaProviders({ method: "accountsChanged", params: [address] });
+    }
   },
 
   getAll() {
@@ -35,16 +44,41 @@ export const settings: State & { initialized: boolean } = {
   },
 
   setNetworks(networks) {
-    console.log("setNetworks", networks);
+    const currentNetwork = this.network.networks[this.network.current];
+
     this.network.networks = networks;
     broadcast();
     write("networks", this.network);
+
+    // if current network changed, broadcast
+    const newNetwork = this.network.networks[this.network.current];
+    if (!_.isEqual(currentNetwork, newNetwork)) {
+      broadcastViaProviders({
+        method: "chainChanged",
+        params: {
+          chainId: `0x${newNetwork.chainId.toString(16)}`,
+          networkVersion: newNetwork.name,
+        },
+      });
+    }
   },
 
   setCurrentNetwork(idx) {
+    const chainChanged = idx !== this.network.current;
     this.network.current = idx;
     broadcast();
     write("networks", this.network);
+
+    if (chainChanged) {
+      const network = this.network.networks[idx];
+      broadcastViaProviders({
+        method: "chainChanged",
+        params: {
+          chainId: `0x${network.chainId.toString(16)}`,
+          networkVersion: network.name,
+        },
+      });
+    }
   },
 
   getAddress() {

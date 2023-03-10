@@ -1,7 +1,7 @@
 import {
+  broadcastViaProviders,
   initProvider,
-  setupInternalConnection,
   setupProviderConnection,
 } from "./src/provider";
 
-export { initProvider, setupProviderConnection, setupInternalConnection };
+export { initProvider, setupProviderConnection, broadcastViaProviders };

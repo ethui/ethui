@@ -1,22 +1,25 @@
-import PortStream from "extension-port-stream";
-import ObjectMultiplex from "@metamask/object-multiplex";
-import pump, { type Stream } from "pump";
-import { createEngineStream } from "json-rpc-middleware-stream";
-import { JsonRpcEngine } from "json-rpc-engine";
 import createFilterMiddleware from "eth-json-rpc-filters";
 import createSubscriptionManager from "eth-json-rpc-filters/subscriptionManager";
-import {
-  providerFromMiddleware,
-  providerFromEngine,
-  type SafeEventEmitterProvider,
-} from "@metamask/eth-json-rpc-provider";
-import { providerAsMiddleware } from "@metamask/eth-json-rpc-middleware/src/providerAsMiddleware";
-import * as Constants from "@iron/constants";
+import PortStream from "extension-port-stream";
+import { JsonRpcEngine } from "json-rpc-engine";
+import { createEngineStream } from "json-rpc-middleware-stream";
+import pump, { type Stream } from "pump";
 import { Runtime } from "webextension-polyfill";
+
+import { providerAsMiddleware } from "@metamask/eth-json-rpc-middleware/src/providerAsMiddleware";
+import {
+  type SafeEventEmitterProvider,
+  providerFromEngine,
+  providerFromMiddleware,
+} from "@metamask/eth-json-rpc-provider";
+import ObjectMultiplex from "@metamask/object-multiplex";
+
+import * as Constants from "@iron/constants";
+
 import { Connections } from "./connections";
+import { debugMiddleware } from "./debug";
 import createJsonRpcClient from "./jsonrpc";
 import { methodMiddleware } from "./methods";
-import { debugMiddleware } from "./debug";
 
 //
 // global state
@@ -95,15 +98,18 @@ export function setupProviderConnection(
   });
 }
 
-export function setupInternalConnection(remotePort: Runtime.Port) {
-  const stream = new PortStream(remotePort);
-
-  stream.on("data", (message) => {
-    if ((message.type = "broadcast")) {
-      Connections.notifyAll(message.payload);
-    }
-  });
+export function broadcastViaProviders(payload) {
+  Connections.notifyAll(payload);
 }
+// export function setupInternalConnection(remotePort: Runtime.Port) {
+//   const stream = new PortStream(remotePort);
+//
+//   stream.on("data", (message) => {
+//     if ((message.type = "broadcast")) {
+//       Connections.notifyAll(message.payload);
+//     }
+//   });
+// }
 
 function setupMultiplex(connectionStream: Stream) {
   const mux = new ObjectMultiplex();
