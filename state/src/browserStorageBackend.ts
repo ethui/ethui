@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { createJSONStorage, StateStorage } from "zustand/middleware";
+import { StateStorage, createJSONStorage } from "zustand/middleware";
 
 // exposes `browser.storage.local` as a zustand-compatible storage
 const browserStorageBackend: StateStorage = {

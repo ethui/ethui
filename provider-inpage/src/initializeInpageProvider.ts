@@ -1,4 +1,5 @@
 import { Duplex } from "stream";
+
 import {
   IronInpageProvider,
   IronInpageProviderOptions,

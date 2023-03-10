@@ -1,5 +1,7 @@
-import * as Constants from "@iron/constants";
 import * as z from "zod";
+
+import * as Constants from "@iron/constants";
+
 import { Opts } from ".";
 
 const schema = z.object({

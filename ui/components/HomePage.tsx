@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
 import { BigNumber, ethers } from "ethers";
+import { useEffect, useState } from "react";
 import truncateEthAddress from "truncate-eth-address";
+
 import { useStore } from "@iron/state";
 import { CurrentBlock } from "@iron/ui/components";
 import { useProvider } from "@iron/ui/hooks";

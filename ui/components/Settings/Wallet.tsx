@@ -1,11 +1,13 @@
-import { useContext, useState } from "react";
-import { deriveAddresses, schemas, useStore } from "@iron/state";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FieldRadio, FieldText } from "./Fields";
+import { useContext, useState } from "react";
+import { useForm } from "react-hook-form";
+
+import { deriveAddresses, schemas, useStore } from "@iron/state";
 import { Address } from "@iron/state";
-import { useDebouncedEffect } from "../../hooks/useDebouncedEffect";
+
 import { ExtensionContext } from "../../context";
+import { useDebouncedEffect } from "../../hooks/useDebouncedEffect";
+import { FieldRadio, FieldText } from "./Fields";
 
 function deriveFiveAddresses(mnemonic: string, derivationPath: string) {
   return deriveAddresses(mnemonic, derivationPath, 0, 5).reduce(

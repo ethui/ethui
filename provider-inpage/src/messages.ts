@@ -1,7 +1,6 @@
 const messages = {
   errors: {
-    disconnected: () =>
-      "Iron: Disconnected from chain. Attempting to connect.",
+    disconnected: () => "Iron: Disconnected from chain. Attempting to connect.",
     permanentlyDisconnected: () =>
       "Iron: Disconnected from Iron background. Page reload required.",
     unsupportedSync: (method: string) =>

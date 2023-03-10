@@ -1,16 +1,17 @@
+import { type Writable } from "stream";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+
+import { Address } from "./addresses";
+import { storageBackend } from "./browserStorageBackend";
 import {
-  defaultSettings,
   NetworkSettings,
   SettingsFullSchema,
   WalletSettings,
+  defaultSettings,
 } from "./settings";
-import { storageBackend } from "./browserStorageBackend";
-import { type Writable } from "stream";
-import { WalletSchema } from "./settings/wallet";
 import { NetworkSchema } from "./settings/network";
-import { Address } from "./addresses";
+import { WalletSchema } from "./settings/wallet";
 
 interface ProviderState {
   isUnlocked: boolean;

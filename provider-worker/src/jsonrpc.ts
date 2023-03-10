@@ -1,7 +1,8 @@
+import { PollingBlockTracker } from "eth-block-tracker";
 import { mergeMiddleware } from "json-rpc-engine";
+
 // this needs to be imported directly from fetch.ts to not cause CSP errors
 import { createFetchMiddleware } from "@metamask/eth-json-rpc-middleware/src/fetch";
-import { PollingBlockTracker } from "eth-block-tracker";
 import { providerFromMiddleware } from "@metamask/eth-json-rpc-provider";
 
 export default function createJsonRpcClient({ rpcUrl }: { rpcUrl: string }) {

@@ -1,7 +1,7 @@
-import type { JsonRpcMiddleware } from 'json-rpc-engine';
+import type { JsonRpcMiddleware } from "json-rpc-engine";
 
-import type { ConsoleLike } from '../utils';
-import messages from '../messages';
+import messages from "../messages";
+import type { ConsoleLike } from "../utils";
 
 /**
  * Create JSON-RPC middleware that logs warnings for deprecated RPC methods.
@@ -10,7 +10,7 @@ import messages from '../messages';
  * @returns The JSON-RPC middleware.
  */
 export function createRpcWarningMiddleware(
-  log: ConsoleLike,
+  log: ConsoleLike
 ): JsonRpcMiddleware<unknown, unknown> {
   const sentWarnings = {
     ethDecryptDeprecation: false,
@@ -20,13 +20,13 @@ export function createRpcWarningMiddleware(
   return (req, _res, next) => {
     if (
       sentWarnings.ethDecryptDeprecation === false &&
-      req.method === 'eth_decrypt'
+      req.method === "eth_decrypt"
     ) {
       log.warn(messages.warnings.rpc.ethDecryptDeprecation);
       sentWarnings.ethDecryptDeprecation = true;
     } else if (
       sentWarnings.ethGetEncryptionPublicKeyDeprecation === false &&
-      req.method === 'eth_getEncryptionPublicKey'
+      req.method === "eth_getEncryptionPublicKey"
     ) {
       log.warn(messages.warnings.rpc.ethGetEncryptionPublicKeyDeprecation);
       sentWarnings.ethGetEncryptionPublicKeyDeprecation = true;

@@ -1,11 +1,12 @@
+import { Writable } from "stream";
 import * as z from "zod";
+
 import {
+  type NetworkFullSchema,
   NetworkSchema,
   NetworkSettings,
-  type NetworkFullSchema,
 } from "./network";
-import { type WalletFullSchema, WalletSettings, WalletSchema } from "./wallet";
-import { Writable } from "stream";
+import { type WalletFullSchema, WalletSchema, WalletSettings } from "./wallet";
 
 export interface SettingsSection<Schema, Derived> {
   schema: z.ZodSchema<Schema>;

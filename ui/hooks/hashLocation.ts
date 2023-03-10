@@ -1,5 +1,5 @@
 import type { BaseLocationHook } from "wouter/use-location";
-import { useLocationProperty, navigate } from "wouter/use-location";
+import { navigate, useLocationProperty } from "wouter/use-location";
 
 const hashLocation = () => window.location.hash.replace(/^#/, "") || "/";
 
