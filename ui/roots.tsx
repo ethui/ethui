@@ -51,13 +51,15 @@ export function Popup({ remoteState }: Props) {
 
   return (
     <ExtensionContext.Provider value={{ remoteState }}>
-      <main className="container bg-white prose">
-        <div className="navbar bg-neutral text-neutral-content">
-          <a className="btn btn-ghost normal-case text-xl">Iron Wallet</a>
-        </div>
-        <ExpandBtn>Expand</ExpandBtn>
-        <CurrentBlock />
-      </main>
+      <QueryClientProvider client={queryClient}>
+        <main className="container bg-white prose">
+          <div className="navbar bg-neutral text-neutral-content">
+            <a className="btn btn-ghost normal-case text-xl">Iron Wallet</a>
+          </div>
+          <ExpandBtn>Expand</ExpandBtn>
+          <CurrentBlock />
+        </main>
+      </QueryClientProvider>
     </ExtensionContext.Provider>
   );
 }
