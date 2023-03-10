@@ -15,14 +15,20 @@ const requestAccounts: Handler = async (_req, res, _next, end) => {
 };
 
 const providerState: Handler = (_req, res, _next, end) => {
-  // TODO:
-  // res.result = useStore.getState().getProviderState();
+  const currentNetwork = settings.network.networks[settings.network.current];
+
+  res.result = {
+    isUnlocked: true,
+    chainId: `0x${currentNetwork.chainId.toString(16)}`,
+    networkVersion: currentNetwork.name,
+    accounts: [settings.wallet.address],
+  };
   end();
 };
 
 const chainId: Handler = (_req, res, _next, end) => {
-  // TODO:
-  // res.result = useStore.getState().getProviderState().chainId;
+  const currentNetwork = settings.network.networks[settings.network.current];
+  res.result = `0x${currentNetwork.chainId.toString(16)}`;
   end();
 };
 
