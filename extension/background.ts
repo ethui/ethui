@@ -1,10 +1,9 @@
 import browser, { Runtime } from "webextension-polyfill";
 
-import {
-  initProvider,
-  setupProviderConnection,
-  setupInternalConnection,
-} from "@iron/provider-worker";
+import { initProvider, setupProviderConnection } from "@iron/provider-worker";
+import { setupStateServer } from "@iron/state";
+
+// import { setupStateConnection } from "@iron/state";
 
 const ALCHEMY_RPC =
   "https://eth-mainnet.g.alchemy.com/v2/rTwL6BTDDWkP3tZJUc_N6shfCSR5hsTs";
@@ -21,10 +20,14 @@ export async function init() {
 const extensionId = browser.runtime.id;
 
 function handleConnections() {
+  // browser.runtime.onMessage.addListener(stateServerListener);
+
   browser.runtime.onConnect.addListener(async (remotePort: Runtime.Port) => {
     if (remotePort?.sender?.origin == `chrome-extension://${extensionId}`) {
       console.log("[background] onConnect: self", remotePort);
-      setupInternalConnection(remotePort);
+      setupStateServer(remotePort);
+      // setupInternalConnection(remotePort);
+      // setupStateConnection(remotePort);
     } else {
       console.log("[background] onConnect: external", remotePort);
       setupProviderConnection(remotePort, remotePort.sender);

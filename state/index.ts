@@ -1,12 +1,14 @@
 import { type Address, deriveAddress, deriveAddresses } from "./src/addresses";
-import { type SettingsSchema, schemas } from "./src/settings";
-import { useStore } from "./src/store";
+import { setupStateClient } from "./src/client";
+import { type State, schema } from "./src/schema";
+import { setupStateServer } from "./src/server";
 
 export {
   type Address,
-  type SettingsSchema,
-  useStore,
-  schemas,
+  type State,
+  schema,
   deriveAddress,
   deriveAddresses,
+  setupStateServer,
+  setupStateClient,
 };

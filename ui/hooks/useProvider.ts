@@ -1,10 +1,11 @@
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 
-import { useStore } from "@iron/state";
+import * as Constants from "@iron/constants";
 
 export function useProvider() {
-  const network = useStore(({ network }) => network.networks[network.current]);
+  // TODO: replace with state later
+  const network = Constants.networks[0];
 
   const [provider, setProvider] = useState(
     new ethers.providers.JsonRpcProvider(network.url)

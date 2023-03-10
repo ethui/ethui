@@ -1,20 +1,14 @@
 import classnames from "classnames";
-import { useContext } from "react";
 
-import { useStore } from "@iron/state";
-
-import { ExtensionContext } from "../../context";
+import { useSettings } from "../../hooks/useSettings";
 
 export function QuickNetworkSelect() {
-  const { stream } = useContext(ExtensionContext);
-  const [networks, currentIdx, setCurrentNetwork] = useStore(
-    ({ network, setCurrentNetwork }) => [
-      network.networks,
-      network.current,
-      setCurrentNetwork,
-    ]
-  );
+  const settings = useSettings();
 
+  // TODO:
+  if (!settings.data) return <>Loading</>;
+
+  const { networks, current: currentIdx } = settings.data.network;
   const current = networks[currentIdx];
 
   const handleClick = (
@@ -23,7 +17,7 @@ export function QuickNetworkSelect() {
   ) => {
     e.preventDefault();
     if (currentIdx == i) return;
-    setCurrentNetwork(i, stream);
+    settings.methods.setCurrentNetwork(i);
   };
 
   return (
