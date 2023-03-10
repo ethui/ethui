@@ -1,6 +1,7 @@
 import { ethers } from "ethers";
-import { useStore } from "@iron/state";
 import { useEffect, useState } from "react";
+
+import { useStore } from "@iron/state";
 
 export function useProvider() {
   const network = useStore(({ network }) => network.networks[network.current]);

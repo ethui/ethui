@@ -1,8 +1,10 @@
-import { WindowPostMessageStream } from "@metamask/post-message-stream";
-import browser from "webextension-polyfill";
 import PortStream from "extension-port-stream";
-import ObjectMultiplex from "@metamask/object-multiplex";
 import pump from "pump";
+import browser from "webextension-polyfill";
+
+import ObjectMultiplex from "@metamask/object-multiplex";
+import { WindowPostMessageStream } from "@metamask/post-message-stream";
+
 import * as Constants from "@iron/constants";
 
 export function initProviderForward() {

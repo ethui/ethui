@@ -1,9 +1,11 @@
-import { useContext } from "react";
-import { schemas, useStore } from "@iron/state";
-import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FieldText } from "./Fields";
+import { useContext } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
+
+import { schemas, useStore } from "@iron/state";
+
 import { ExtensionContext } from "../../context";
+import { FieldText } from "./Fields";
 
 const emptyNetwork = {
   name: "",
