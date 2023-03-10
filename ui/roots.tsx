@@ -1,4 +1,5 @@
 import PortStream from "extension-port-stream";
+import { useEffect } from "react";
 import { Route, Router } from "wouter";
 
 import {
@@ -37,7 +38,9 @@ export function Expanded({ stream }: Props) {
 
 export function Popup({ stream }: Props) {
   // let's skip the popup for now (or even forever?)
-  expand();
+  useEffect(() => {
+    expand();
+  }, []);
 
   return (
     <ExtensionContext.Provider value={{ stream: stream }}>
