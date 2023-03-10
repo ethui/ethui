@@ -1,7 +1,7 @@
 import { ethErrors } from "eth-rpc-errors";
 import { type JsonRpcMiddleware } from "json-rpc-engine";
 
-// import { useStore } from "@iron/state";
+import { settings } from "@iron/state";
 
 // A handler is a JsonRpcMiddleware, but it can optionally be async,
 // so the return type is more relaxed
@@ -10,9 +10,7 @@ type Handler = (
 ) => Promise<void> | void;
 
 const requestAccounts: Handler = async (_req, res, _next, end) => {
-  // TODO:
-  // const address = useStore.getState().wallet.address;
-  res.result = [address];
+  res.result = [settings.wallet.address];
   end();
 };
 

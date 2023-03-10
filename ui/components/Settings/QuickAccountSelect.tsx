@@ -7,7 +7,6 @@ import { useSettings } from "../../hooks/useSettings";
 
 export function QuickAccountSelect() {
   const settings = useSettings();
-  console.log("settings", settings.data);
 
   // TODO:
   if (!settings.data) return <>Loading</>;

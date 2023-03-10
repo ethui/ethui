@@ -11,6 +11,9 @@ export function QuickNetworkSelect() {
   const { networks, current: currentIdx } = settings.data.network;
   const current = networks[currentIdx];
 
+  console.log("data", settings.data.network);
+  console.log("networks", networks);
+  console.log(current);
   const handleClick = (
     e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
     i: number

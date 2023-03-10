@@ -1,22 +1,10 @@
 import browser from "webextension-polyfill";
-import { StateStorage, createJSONStorage } from "zustand/middleware";
 
-// exposes `browser.storage.local` as a zustand-compatible storage
-const browserStorageBackend: StateStorage = {
-  getItem: (name: string) =>
-    new Promise((resolve) => {
-      browser.storage.local.get(name).then((result) => resolve(result[name]));
-    }),
-  setItem: (key, value) =>
-    new Promise((resolve) => {
-      browser.storage.local.set({ [key]: value }).then((x) => resolve(x));
-    }),
-  removeItem: (key) => browser.storage.local.set({ [key]: undefined }),
-};
+export async function write(key: string, value: unknown) {
+  browser.storage.local.set({ [key]: value });
+}
 
-export const storageBackend = {
-  name: "iron-store",
-  storage: createJSONStorage(() => {
-    return browserStorageBackend;
-  }),
-};
+export async function read<T>(key: string, defaultVal: T): Promise<T> {
+  const res = await browser.storage.local.get(key);
+  return res.length > 0 ? (res as unknown as T) : defaultVal;
+}

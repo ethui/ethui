@@ -1,16 +1,17 @@
 import * as Comlink from "comlink";
 import { createEndpoint } from "comlink-extension/src/index";
-import { runtime } from "webextension-polyfill";
+import { type Runtime, runtime } from "webextension-polyfill";
 
 import { State } from "./schema";
 
-export function setupStateClient(): Comlink.Remote<State> {
-  const port = runtime.connect();
-  const obj: Comlink.Remote<State> = Comlink.wrap(createEndpoint(port));
+export interface RemoteState {
+  state: Comlink.Remote<State>;
+  ping: Runtime.Port;
+}
 
-  // obj.inc().then((r) => console.log("resp", r));
-  obj.getAddress().then(console.log);
-  obj.wallet;
+export function setupStateClient(): RemoteState {
+  const statePort = runtime.connect(undefined, { name: "state-client" });
+  const ping = runtime.connect(undefined, { name: "state-ping" });
 
-  return obj;
+  return { state: Comlink.wrap(createEndpoint(statePort)), ping };
 }

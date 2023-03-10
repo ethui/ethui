@@ -1,15 +1,24 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useQuery } from "react-query";
 
 import { ExtensionContext } from "../context";
 
 export function useSettings() {
-  const { remoteState } = useContext(ExtensionContext);
+  const {
+    remoteState: { state, ping },
+  } = useContext(ExtensionContext);
 
-  const query = useQuery("settings", () => remoteState.getAll());
+  const { refetch, ...query } = useQuery("settings", () => state.getAll());
+
+  // refetch all data whenever ping is polled
+  useEffect(() => {
+    ping.onMessage.addListener(refetch);
+    () => ping.onMessage.removeListener(refetch);
+  }, [ping, refetch]);
 
   return {
     ...query,
-    methods: remoteState,
+    refetch,
+    methods: state,
   };
 }

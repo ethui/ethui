@@ -13,7 +13,7 @@ export const schema = z.object({
       message: "invalid path format",
     }),
     addressIndex: z.number().int().min(0).max(3),
-    address: z.string().min(1),
+    address: z.string(),
   }),
 
   network: z.object({

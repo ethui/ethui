@@ -3,36 +3,25 @@ import {
   createBackgroundEndpoint,
   isMessagePort,
 } from "comlink-extension/src/index";
+import { nanoid } from "nanoid";
 import { Runtime } from "webextension-polyfill";
 
-import { deriveAddress } from "./addresses";
-import { State, defaults } from "./schema";
+import { initState, listeners, settings } from "./settings";
 
-export function setupStateServer(port: Runtime.Port) {
+export async function setupStateServer(port: Runtime.Port) {
   if (isMessagePort(port)) return;
 
-  Comlink.expose(state, createBackgroundEndpoint(port));
+  if (!settings.initialized) {
+    await initState();
+  }
+  Comlink.expose(settings, createBackgroundEndpoint(port));
 }
 
-const state: State = {
-  ...defaults,
-  setWalletSettings(settings) {
-    this.wallet = settings;
-  },
-  getAll() {
-    return { wallet: this.wallet, network: this.network };
-  },
-  setNetworks(networks) {
-    this.network.networks = networks;
-  },
-  setCurrentNetwork(idx) {
-    this.network.current = idx;
-  },
-  getAddress() {
-    return deriveAddress(
-      this.wallet.mnemonic,
-      this.wallet.derivationPath,
-      this.wallet.addressIndex
-    );
-  },
-};
+export async function setupStatePing(port: Runtime.Port) {
+  const id = nanoid();
+  listeners.set(id, port);
+
+  port.onDisconnect.addListener(() => {
+    listeners.delete(id);
+  });
+}
