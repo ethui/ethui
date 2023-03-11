@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Button, Card } from "flowbite-react";
 import { useFieldArray, useForm } from "react-hook-form";
 
 import { schema } from "@iron/state";
@@ -46,76 +47,73 @@ export function NetworkSettings() {
   if (!settings.data) return <>Loading</>;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
       {fields.map((field, index) => {
         const item = settings.data.network.networks[index];
         const err = (errors.networks && errors.networks[index]) || {};
         return (
-          <fieldset key={field.id}>
-            <div className="flex">
+          <Card key={field.id}>
+            <fieldset className="flex flex-col gap-4">
+              <div className="flex gap-4">
+                <FieldText
+                  name="Name"
+                  field={`networks.${index}.name`}
+                  register={register}
+                  value={item?.name}
+                  error={err.name}
+                />
+                <FieldText
+                  name="Chain Id"
+                  field={`networks.${index}.chainId`}
+                  register={register}
+                  value={item?.chainId}
+                  valueAsNumber={true}
+                  error={err.chainId}
+                />
+              </div>
               <FieldText
-                name="Name"
-                field={`networks.${index}.name`}
+                name="URL"
+                field={`networks.${index}.url`}
                 register={register}
-                value={item?.name}
-                error={err.name}
+                value={item?.url}
+                error={err.url}
               />
-              <FieldText
-                name="Chain Id"
-                field={`networks.${index}.chainId`}
-                register={register}
-                value={item?.chainId}
-                valueAsNumber={true}
-                error={err.chainId}
-              />
-            </div>
-            <FieldText
-              name="URL"
-              field={`networks.${index}.url`}
-              register={register}
-              value={item?.url}
-              error={err.url}
-            />
-            <div className="flex">
-              <FieldText
-                name="Currency"
-                field={`networks.${index}.currency`}
-                register={register}
-                value={item?.currency}
-                error={err.currency}
-              />
-              <FieldText
-                name="Decimals"
-                field={`networks.${index}.decimals`}
-                register={register}
-                value={item?.decimals}
-                valueAsNumber={true}
-                error={err.decimals}
-              />
-            </div>
-            <button
-              className="btn btn-sm btn-warning mt-2"
-              onClick={() => remove(index)}
-            >
-              Remove
-            </button>
-            <div className="divider divider-vertical" />
-          </fieldset>
+              <div className="flex gap-4">
+                <FieldText
+                  name="Currency"
+                  field={`networks.${index}.currency`}
+                  register={register}
+                  value={item?.currency}
+                  error={err.currency}
+                />
+                <FieldText
+                  name="Decimals"
+                  field={`networks.${index}.decimals`}
+                  register={register}
+                  value={item?.decimals}
+                  valueAsNumber={true}
+                  error={err.decimals}
+                />
+              </div>
+              <div>
+                <Button color="warning" size="xs" onClick={() => remove(index)}>
+                  Remove
+                </Button>
+              </div>
+              <div className="divider divider-vertical" />
+            </fieldset>
+          </Card>
         );
       })}
-      <button
-        className="btn btn-sm btn-accent"
-        onClick={() => append(emptyNetwork)}
-      >
-        Add
-      </button>
+      <div>
+        <Button color="success" size="xs" onClick={() => append(emptyNetwork)}>
+          Add
+        </Button>
+      </div>
       <div className="my-2">
-        <input
-          type="submit"
-          value={isDirty ? "Save" : "Saved"}
-          disabled={!isDirty || !isValid}
-          className="p-2 btn btn-primary"
-        />
+        <Button type="submit" disabled={!isDirty || !isValid}>
+          {isDirty ? "Save" : "Saved"}
+        </Button>
       </div>
     </form>
   );

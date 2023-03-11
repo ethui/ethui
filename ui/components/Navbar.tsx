@@ -1,27 +1,30 @@
 import { Cog6ToothIcon } from "@heroicons/react/24/solid";
+import { Navbar as FlowbiteNavbar } from "flowbite-react";
 import { Link } from "wouter";
 
 import { QuickAccountSelect } from "./Settings/QuickAccountSelect";
 import { QuickNetworkSelect } from "./Settings/index";
 
+const { Brand, Toggle, Collapse } = FlowbiteNavbar;
+
 export function Navbar() {
   return (
-    <div className="navbar bg-neutral text-neutral-content rounded-box">
-      <div className="flex-1">
+    <FlowbiteNavbar>
+      <Brand>
         <Link href="/">
-          <a className="btn btn-ghost normal-case text-xl">Iron Wallet</a>
+          <a>Iron Wallet</a>
         </Link>
-      </div>
-      <div className="flex-none">
+      </Brand>
+      <Toggle />
+      <Collapse>
         <QuickAccountSelect />
         <QuickNetworkSelect />
         <Link href="/settings">
-          <button className="btn btn-square btn-ghost">
-            {" "}
-            <Cog6ToothIcon className="h-6 w-6 text-white" />
-          </button>
+          <a>
+            <Cog6ToothIcon className="h-6 w-6" />
+          </a>
         </Link>
-      </div>
-    </div>
+      </Collapse>
+    </FlowbiteNavbar>
   );
 }

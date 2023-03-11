@@ -1,4 +1,4 @@
-import classnames from "classnames";
+import { Dropdown } from "flowbite-react";
 
 import { useSettings } from "../../hooks/useSettings";
 
@@ -14,35 +14,18 @@ export function QuickNetworkSelect() {
   console.log("data", settings.data.network);
   console.log("networks", networks);
   console.log(current);
-  const handleClick = (
-    e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
-    i: number
-  ) => {
-    e.preventDefault();
+  const handleClick = (i: number) => {
     if (currentIdx == i) return;
     settings.methods.setCurrentNetwork(i);
   };
 
   return (
-    <div className="dropdown dropdown-end">
-      <label tabIndex={0} className="btn btn-primary m-1">
-        {current.name}
-      </label>
-      <ul
-        tabIndex={0}
-        className="dropdown-content menu p-2 shadow bg-base-100 text-black rounded-box w-52"
-      >
-        {networks.map(({ name }, i) => (
-          <li key={i}>
-            <a
-              onClick={(e) => handleClick(e, i)}
-              className={classnames({ "bg-slate-400": i === currentIdx })}
-            >
-              {name}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <Dropdown label={current.name}>
+      {networks.map(({ name }, i) => (
+        <Dropdown.Item key={i} onClick={() => handleClick(i)}>
+          {name}
+        </Dropdown.Item>
+      ))}
+    </Dropdown>
   );
 }

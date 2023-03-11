@@ -1,3 +1,5 @@
+import { Label, Radio, TextInput } from "flowbite-react";
+import { Fragment } from "react";
 import {
   Control,
   Controller,
@@ -31,18 +33,23 @@ export function FieldText<T extends FieldValues>({
   error,
 }: FieldTextProps<T>) {
   return (
-    <div className="form-control w-full px-2">
-      <label className="label">
-        <span className="label-text">{name}</span>
-      </label>
-      <input
+    <div>
+      <div className="mb-2 block">
+        <Label htmlFor={field} value={name} />
+      </div>
+      <TextInput
         type="text"
         {...register(field, { valueAsNumber })}
         defaultValue={value}
-        className="input input-bordered w-full"
+        color={error ? "failure" : "default"}
+        helperText={
+          error && (
+            <Fragment>
+              <span className="font-medium">{error.message?.toString()}</span>
+            </Fragment>
+          )
+        }
       />
-
-      {error && <p className="text-red-600">{error.message?.toString()}</p>}
     </div>
   );
 }
@@ -64,30 +71,30 @@ export function FieldRadio({
   title,
 }: FieldRadioProps) {
   return (
-    <div className="form-control w-full m-2">
-      <label className="label">
-        <span className="label-text">{title}</span>
-      </label>
+    <fieldset className="flex flex-col gap-4">
+      <legend>{title}</legend>
       <Controller
         {...{ control, name, defaultValue }}
         render={({ field: { onChange, value, ...props } }) => (
           <>
             {Object.keys(values).map((i) => (
-              <label key={i} className="label cursor-pointer justify-start">
-                <input
-                  type="radio"
+              <div key={i} className="flex items-center gap-2">
+                <Radio
                   {...props}
-                  checked={i.toString() === value.toString()}
+                  defaultChecked={i.toString() === value.toString()}
                   value={i}
                   onChange={(e) => onChange(parseInt(e.target.value, 10))}
                   className="radio checked:bg-red-500"
                 />
-                <span className="label-text pl-2">{values[i]}</span>
-              </label>
+                {/* <span className="label-text pl-2">{values[i]}</span> */}
+                <Label key={i} className="label cursor-pointer justify-start">
+                  {values[i]}
+                </Label>
+              </div>
             ))}
           </>
         )}
       />
-    </div>
+    </fieldset>
   );
 }

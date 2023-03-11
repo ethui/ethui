@@ -1,8 +1,6 @@
-import * as Comlink from "comlink";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Route, Router } from "wouter";
 
-import { State } from "@iron/state";
 import { RemoteState } from "@iron/state/src/client";
 
 import {
