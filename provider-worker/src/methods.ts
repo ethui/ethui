@@ -1,4 +1,5 @@
 import { ethErrors } from "eth-rpc-errors";
+import { ethers } from "ethers";
 import { type JsonRpcMiddleware } from "json-rpc-engine";
 
 import { settings } from "@iron/state";
@@ -48,9 +49,23 @@ const switchChain: Handler = (req, _res, next, end) => {
   end();
 };
 
-const sendTransaction: Handler = (req, res, _next, end) => {
-  console.log("[req]", req);
-  // TODO: send transaction
+const sendTransaction: Handler = async (req, res, _next, end) => {
+  const { gas, gasPrice, from, to, data, value, chainId } = req.params[0];
+  const signer = settings.getSigner();
+  const expectedAddress = await signer.getAddress();
+
+  // not correct address
+  if (from !== expectedAddress) {
+    console.log("not the same", from, signer.getAddress());
+    // TODO: should we do more here?
+    end();
+    return;
+  }
+
+  const tx = { gas, gasPrice, from, to, data, value, chainId };
+  const txResponse = await signer.sendTransaction(tx);
+  res.result = txResponse.hash;
+
   end();
 };
 
