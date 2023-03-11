@@ -2,6 +2,10 @@
   "name": "@iron/provider-inpage",
   "version": "1.0.0",
   "license": "MIT",
+  "devDependencies": {
+    "@types/pump": "^1.1.1",
+    "@types/is-stream": "^2.0.0"
+  },
   "dependencies": {
     "@iron/state": "*",
     "@metamask/object-multiplex": "^1.2.0",

@@ -1,10 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useContext } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 
-import { schemas, useStore } from "@iron/state";
+import { schema } from "@iron/state";
 
-import { ExtensionContext } from "../../context";
+import { useSettings } from "../../hooks/useSettings";
 import { FieldText } from "./Fields";
 
 const emptyNetwork = {
@@ -17,12 +16,10 @@ const emptyNetwork = {
   decimals: undefined!,
 };
 
+const formSchema = schema.shape.network;
+
 export function NetworkSettings() {
-  const { stream } = useContext(ExtensionContext);
-  const [networkSettings, setNetworks] = useStore((state) => [
-    state.network,
-    state.setNetworks,
-  ]);
+  const settings = useSettings();
 
   const {
     register,
@@ -32,8 +29,8 @@ export function NetworkSettings() {
     formState: { isDirty, isValid, errors },
   } = useForm({
     mode: "onBlur",
-    resolver: zodResolver(schemas.network),
-    defaultValues: networkSettings,
+    resolver: zodResolver(formSchema),
+    defaultValues: settings.data?.network,
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -43,13 +40,15 @@ export function NetworkSettings() {
 
   const onSubmit = (data: any) => {
     reset(data);
-    setNetworks(data.networks, stream);
+    settings.methods.setNetworks(data.networks);
   };
+
+  if (!settings.data) return <>Loading</>;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       {fields.map((field, index) => {
-        const item = networkSettings.networks[index];
+        const item = settings.data.network.networks[index];
         const err = (errors.networks && errors.networks[index]) || {};
         return (
           <fieldset key={field.id}>

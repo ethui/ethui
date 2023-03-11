@@ -14,6 +14,5 @@ export default function createJsonRpcClient({ rpcUrl }: { rpcUrl: string }) {
   });
 
   const networkMiddleware = mergeMiddleware([fetchMiddleware]);
-  console.log("networkMiddleware", networkMiddleware);
   return { networkMiddleware, blockTracker };
 }

@@ -1,18 +1,20 @@
-import { ethers } from "ethers";
+import { JsonRpcProvider } from "@ethersproject/providers";
 import { useEffect, useState } from "react";
 
-import { useStore } from "@iron/state";
+import { useSettings } from "./useSettings";
 
 export function useProvider() {
-  const network = useStore(({ network }) => network.networks[network.current]);
+  const { data, isLoading } = useSettings();
 
-  const [provider, setProvider] = useState(
-    new ethers.providers.JsonRpcProvider(network.url)
-  );
+  const [provider, setProvider] = useState<JsonRpcProvider | null>(null);
 
   useEffect(() => {
-    setProvider(new ethers.providers.JsonRpcProvider(network.url));
-  }, [network.url]);
+    if (!data?.network) return;
 
-  return provider;
+    const network = data.network.networks[data.network.current];
+    const provider = new JsonRpcProvider(network.url);
+    setProvider(provider);
+  }, [data?.network]);
+
+  return { provider, isLoading };
 }

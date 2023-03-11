@@ -5,10 +5,10 @@
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.9",
     "@types/chrome": "^0.0.212",
-    "@types/pump": "^1.1.1",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.10",
     "@types/webextension-polyfill": "^0.10.0",
+    "@types/lodash": "^4.14.191",
     "buffer": "^5.5.0",
     "events": "^3.1.0",
     "postcss": "^8.4.21",
@@ -20,11 +20,8 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.0.15",
-    "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "^2.9.11",
     "@iron/state": "*",
-    "@types/is-stream": "^2.0.0",
-    "@types/lodash": "^4.14.191",
     "classnames": "^2.3.2",
     "daisyui": "^2.22.0",
     "ethers": "^5.7.2",
@@ -33,9 +30,9 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.1",
+    "react-query": "^3.39.3",
     "truncate-eth-address": "^1.0.2",
     "wouter": "^2.10.0",
-    "zod": "^3.20.6",
-    "zustand": "^4.3.3"
+    "zod": "^3.20.6"
   }
 }

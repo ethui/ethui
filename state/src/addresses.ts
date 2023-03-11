@@ -14,6 +14,16 @@ export function deriveAddress(
   return account.address as `0x${string}`;
 }
 
+export function deriveAddressFromNode(
+  node: ethers.utils.HDNode,
+  path: string,
+  index: number
+): Address {
+  const account = node.derivePath(`${path}/${index}`);
+
+  return account.address as `0x${string}`;
+}
+
 export function deriveAddresses(
   mnemonic: string,
   path: string,

@@ -1,7 +1,7 @@
 import { ethErrors } from "eth-rpc-errors";
 import { type JsonRpcMiddleware } from "json-rpc-engine";
 
-import { useStore } from "@iron/state";
+import { settings } from "@iron/state";
 
 // A handler is a JsonRpcMiddleware, but it can optionally be async,
 // so the return type is more relaxed
@@ -10,26 +10,41 @@ type Handler = (
 ) => Promise<void> | void;
 
 const requestAccounts: Handler = async (_req, res, _next, end) => {
-  const address = useStore.getState().wallet.address;
-  res.result = [address];
+  res.result = [settings.wallet.address];
   end();
 };
 
 const providerState: Handler = (_req, res, _next, end) => {
-  res.result = useStore.getState().getProviderState();
+  const currentNetwork = settings.network.networks[settings.network.current];
+
+  res.result = {
+    isUnlocked: true,
+    chainId: `0x${currentNetwork.chainId.toString(16)}`,
+    networkVersion: currentNetwork.name,
+    accounts: [settings.wallet.address],
+  };
   end();
 };
 
 const chainId: Handler = (_req, res, _next, end) => {
-  res.result = useStore.getState().getProviderState().chainId;
+  const currentNetwork = settings.network.networks[settings.network.current];
+  res.result = `0x${currentNetwork.chainId.toString(16)}`;
   end();
 };
 
-const switchChain: Handler = (req, res, next, end) => {
+const switchChain: Handler = (req, _res, next, end) => {
   // TODO:
   // const requestedChainId = req.params![0].chainId;
+  const id = parseInt(req.params[0].chainId.replace(/^0x/, ""), 16);
+  const idx = settings.network.networks.findIndex(
+    ({ chainId }) => chainId == id
+  );
+  settings.setCurrentNetwork(idx);
 
-  console.log("[req]", req);
+  // TODO: If the error code (error.code) is 4902, then the requested chain has
+  // not been added by MetaMask, and you have to request to add it via
+  // wallet_addEthereumChain.
+
   end();
 };
 

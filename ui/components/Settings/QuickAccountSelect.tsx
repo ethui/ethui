@@ -1,23 +1,17 @@
 import classnames from "classnames";
-import { useContext } from "react";
 import truncateEthAddress from "truncate-eth-address";
 
-import { useStore } from "@iron/state";
 import { deriveFiveAddresses } from "@iron/state/src/addresses";
 
-import { ExtensionContext } from "../../context";
+import { useSettings } from "../../hooks/useSettings";
 
 export function QuickAccountSelect() {
-  const { stream } = useContext(ExtensionContext);
-  const [mnemonic, derivationPath, addressIndex, setWalletSettings] = useStore(
-    ({ wallet, setWalletSettings }) => [
-      wallet.mnemonic,
-      wallet.derivationPath,
-      wallet.addressIndex,
-      setWalletSettings,
-    ]
-  );
+  const settings = useSettings();
 
+  // TODO:
+  if (!settings.data) return <>Loading</>;
+
+  const { mnemonic, derivationPath, addressIndex } = settings.data.wallet;
   const addresses = deriveFiveAddresses(mnemonic, derivationPath);
   const current = addresses[addressIndex];
 
@@ -27,7 +21,11 @@ export function QuickAccountSelect() {
   ) => {
     e.preventDefault();
     if (addressIndex == i) return;
-    setWalletSettings({ mnemonic, derivationPath, addressIndex: i }, stream);
+    settings.methods.setWalletSettings({
+      mnemonic,
+      derivationPath,
+      addressIndex: i,
+    });
   };
 
   return (
