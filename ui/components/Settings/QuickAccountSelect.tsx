@@ -1,4 +1,4 @@
-import classnames from "classnames";
+import { Dropdown } from "flowbite-react";
 import truncateEthAddress from "truncate-eth-address";
 
 import { deriveFiveAddresses } from "@iron/state/src/addresses";
@@ -15,11 +15,7 @@ export function QuickAccountSelect() {
   const addresses = deriveFiveAddresses(mnemonic, derivationPath);
   const current = addresses[addressIndex];
 
-  const handleClick = (
-    e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
-    i: number
-  ) => {
-    e.preventDefault();
+  const handleClick = (i: number) => {
     if (addressIndex == i) return;
     settings.methods.setWalletSettings({
       mnemonic,
@@ -29,27 +25,12 @@ export function QuickAccountSelect() {
   };
 
   return (
-    <div className="dropdown dropdown-end">
-      <label tabIndex={0} className="btn btn-primary m-1 normal-case">
-        {truncateEthAddress(current)}
-      </label>
-      <ul
-        tabIndex={0}
-        className="dropdown-content menu p-2 shadow bg-base-100 text-black rounded-box"
-      >
-        {Object.entries(addresses).map(([i, address]) => (
-          <li key={i}>
-            <a
-              onClick={(e) => handleClick(e, parseInt(i))}
-              className={classnames("normal-case", {
-                "bg-slate-400": parseInt(i) === addressIndex,
-              })}
-            >
-              {address}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <Dropdown label={truncateEthAddress(current)}>
+      {Object.entries(addresses).map(([i, address]) => (
+        <Dropdown.Item key={i} onClick={() => handleClick(parseInt(i))}>
+          {address}
+        </Dropdown.Item>
+      ))}
+    </Dropdown>
   );
 }

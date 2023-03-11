@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "flowbite-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -63,7 +64,7 @@ export function WalletSettings() {
   if (!settings.data) return <>Loading</>;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
       <FieldText
         name="Mnemonic"
         field="mnemonic"
@@ -87,12 +88,9 @@ export function WalletSettings() {
         defaultValue={settings.data.wallet.addressIndex}
       />
       <div className="m-2">
-        <input
-          type="submit"
-          value={isDirty ? "Save" : "Saved"}
-          disabled={!isDirty || !isValid}
-          className="p-2 btn btn-primary"
-        />
+        <Button type="submit" disabled={!isDirty || !isValid}>
+          {isDirty ? "Save" : "Saved"}
+        </Button>
       </div>
     </form>
   );
