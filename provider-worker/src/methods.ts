@@ -51,18 +51,33 @@ const switchChain: Handler = (req, _res, next, end) => {
 
 const sendTransaction: Handler = async (req, res, _next, end) => {
   const { gas, gasPrice, from, to, data, value, chainId } = req.params[0];
+  const currentNetwork = settings.network.networks[settings.network.current];
   const signer = settings.getSigner();
+  const provider = settings.getProvider();
   const expectedAddress = await signer.getAddress();
 
   // not correct address
-  if (from !== expectedAddress) {
-    console.log("not the same", from, signer.getAddress());
+  if (from.toLowerCase() !== expectedAddress.toLowerCase()) {
+    console.error(
+      "sendTransaction: from address mismatch",
+      from.toLowerCase(),
+      expectedAddress.toLowerCase()
+    );
     // TODO: should we do more here?
     end();
     return;
   }
 
-  const tx = { gas, gasPrice, from, to, data, value, chainId };
+  // TODO: maybe add nonce here?
+  const tx = {
+    gasLimit: gas,
+    gasPrice: gasPrice || (await provider.getGasPrice()),
+    from,
+    to,
+    data,
+    value: value || 0,
+    chainId: currentNetwork.chainId,
+  };
   const txResponse = await signer.sendTransaction(tx);
   res.result = txResponse.hash;
 
@@ -87,11 +102,11 @@ export const methodMiddleware: JsonRpcMiddleware<unknown, unknown> =
 
     if (handlers[req.method]) {
       try {
+        console.log("[req2]", req);
         const ret = await handlers[req.method](req, res, next, end);
-        console.log("[res]", res.result);
         return ret;
       } catch (error) {
-        console.error(error);
+        console.error("method error", error);
         return end(error);
       }
     }
