@@ -11,9 +11,6 @@ import { initState, listeners, settings } from "./settings";
 export async function setupStateServer(port: Runtime.Port) {
   if (isMessagePort(port)) return;
 
-  if (!settings.initialized) {
-    await initState();
-  }
   Comlink.expose(settings, createBackgroundEndpoint(port));
 }
 

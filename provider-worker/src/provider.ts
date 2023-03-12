@@ -17,7 +17,6 @@ import ObjectMultiplex from "@metamask/object-multiplex";
 import * as Constants from "@iron/constants";
 
 import { Connections } from "./connections";
-import { debugMiddleware } from "./debug";
 import createJsonRpcClient from "./jsonrpc";
 import { methodMiddleware } from "./methods";
 
@@ -139,7 +138,6 @@ function setupProviderEngine() {
     engine.emit("notification", message);
   });
 
-  engine.push(debugMiddleware);
   engine.push(methodMiddleware);
 
   // forward to metamask primary provider

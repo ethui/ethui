@@ -35,7 +35,7 @@ export const networks = [
   },
   {
     name: "anvil",
-    url: "http://locahlhost:8545",
+    url: "http://localhost:8545",
     currency: "ETH",
     chainId: 31337,
     decimals: 18,

@@ -11,9 +11,6 @@ export function QuickNetworkSelect() {
   const { networks, current: currentIdx } = settings.data.network;
   const current = networks[currentIdx];
 
-  console.log("data", settings.data.network);
-  console.log("networks", networks);
-  console.log(current);
   const handleClick = (i: number) => {
     if (currentIdx == i) return;
     settings.methods.setCurrentNetwork(i);

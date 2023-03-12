@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 import * as z from "zod";
 
 import * as Constants from "@iron/constants";
@@ -55,6 +56,8 @@ interface Methods {
   setNetworks: (networks: Schema["network"]["networks"]) => void;
   setCurrentNetwork: (idx: number) => void;
   getAddress: () => Address;
+  getSigner: () => ethers.Signer;
+  getProvider: () => ethers.providers.Provider;
 }
 
 export type State = Schema & Methods;

@@ -12,9 +12,7 @@ export const listeners: Map<string, Runtime.Port> = new Map();
 
 let hdNode: ethers.utils.HDNode;
 
-export const settings: State & { initialized: boolean } = {
-  initialized: false,
-
+export const settings: State = {
   ...defaults,
 
   setWalletSettings(settings) {
@@ -31,8 +29,8 @@ export const settings: State & { initialized: boolean } = {
     const addressChanged = address !== this.wallet.address;
 
     this.wallet = { address, ...settings };
-    broadcast();
     write("wallets", this.wallet);
+    broadcast();
 
     if (addressChanged) {
       broadcastViaProviders({ method: "accountsChanged", params: [address] });
@@ -88,12 +86,22 @@ export const settings: State & { initialized: boolean } = {
       this.wallet.addressIndex
     );
   },
+
+  getProvider() {
+    const network = this.network.networks[this.network.current];
+    return new ethers.providers.JsonRpcProvider(network.url);
+  },
+
+  getSigner() {
+    const { derivationPath, addressIndex } = this.wallet;
+    const child = hdNode.derivePath(`${derivationPath}/${addressIndex}`);
+    return new ethers.Wallet(child.privateKey, this.getProvider());
+  },
 };
 
 export async function initState() {
   settings.wallet = await read("wallet", defaults.wallet);
   settings.network = await read("network", defaults.network);
-  settings.initialized = true;
   hdNode = ethers.utils.HDNode.fromMnemonic(settings.wallet.mnemonic);
 }
 
