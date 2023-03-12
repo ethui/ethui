@@ -33,7 +33,7 @@ const chainId: Handler = (_req, res, _next, end) => {
   end();
 };
 
-const switchChain: Handler = (req, _res, next, end) => {
+const switchChain: Handler = (req, res, next, end) => {
   // TODO:
   // const requestedChainId = req.params![0].chainId;
   const id = parseInt(req.params[0].chainId.replace(/^0x/, ""), 16);
@@ -41,6 +41,7 @@ const switchChain: Handler = (req, _res, next, end) => {
     ({ chainId }) => chainId == id
   );
   settings.setCurrentNetwork(idx);
+  res.result = null;
 
   // TODO: If the error code (error.code) is 4902, then the requested chain has
   // not been added by MetaMask, and you have to request to add it via
@@ -69,8 +70,7 @@ const sendTransaction: Handler = async (req, res, _next, end) => {
   }
 
   // TODO: maybe add nonce here?
-  const tx = {
-    gasLimit: gas,
+  const tx: ethers.providers.TransactionRequest = {
     gasPrice: gasPrice || (await provider.getGasPrice()),
     from,
     to,
@@ -78,6 +78,8 @@ const sendTransaction: Handler = async (req, res, _next, end) => {
     value: value || 0,
     chainId: currentNetwork.chainId,
   };
+  const gasEstimation = await provider.estimateGas(tx);
+  tx.gasLimit = gasEstimation;
   const txResponse = await signer.sendTransaction(tx);
   res.result = txResponse.hash;
 
@@ -102,8 +104,8 @@ export const methodMiddleware: JsonRpcMiddleware<unknown, unknown> =
 
     if (handlers[req.method]) {
       try {
-        console.log("[req2]", req);
         const ret = await handlers[req.method](req, res, next, end);
+        console.log("\n[res]", req.method, res);
         return ret;
       } catch (error) {
         console.error("method error", error);

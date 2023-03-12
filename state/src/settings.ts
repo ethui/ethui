@@ -29,8 +29,8 @@ export const settings: State = {
     const addressChanged = address !== this.wallet.address;
 
     this.wallet = { address, ...settings };
-    broadcast();
     write("wallets", this.wallet);
+    broadcast();
 
     if (addressChanged) {
       broadcastViaProviders({ method: "accountsChanged", params: [address] });
