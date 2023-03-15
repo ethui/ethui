@@ -26,6 +26,7 @@ export const schema = z.object({
         currency: z.string().min(1),
         chainId: z.number(),
         decimals: z.number(),
+        dev: z.boolean(),
       })
     ),
   }),
