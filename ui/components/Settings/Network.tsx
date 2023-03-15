@@ -5,7 +5,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { schema } from "@iron/state";
 
 import { useSettings } from "../../hooks/useSettings";
-import { FieldText } from "./Fields";
+import { FieldCheckbox, FieldText } from "./Fields";
 
 const emptyNetwork = {
   name: "",
@@ -15,6 +15,7 @@ const emptyNetwork = {
   chainId: undefined!,
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   decimals: undefined!,
+  dev: false,
 };
 
 const formSchema = schema.shape.network;
@@ -69,6 +70,11 @@ export function NetworkSettings() {
                   value={item?.chainId}
                   valueAsNumber={true}
                   error={err.chainId}
+                />
+                <FieldCheckbox
+                  name="Dev mode"
+                  field={`networks.${index}.dev`}
+                  register={register}
                 />
               </div>
               <FieldText
