@@ -4,6 +4,7 @@ import truncateEthAddress from "truncate-eth-address";
 
 import { useStore } from "@iron/state";
 import { CurrentBlock } from "@iron/ui/components";
+import { CurrentNonce } from "@iron/ui/components";
 import { useProvider } from "@iron/ui/hooks";
 
 export function HomePage() {
@@ -20,6 +21,7 @@ export function HomePage() {
       <div>{truncateEthAddress(address)}</div>
       {balance && <div>{ethers.utils.formatEther(balance)} ETH</div>}
       <CurrentBlock />
+      <CurrentNonce />
     </>
   );
 }
