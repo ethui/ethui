@@ -1,8 +1,16 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, str::FromStr};
 
-use ethers::providers::{Http, Provider};
+use ethers::abi::AbiEncode;
+use ethers::{
+    prelude::SignerMiddleware,
+    providers::Middleware,
+    types::{
+        serde_helpers::StringifiedNumeric, transaction::eip2718::TypedTransaction, Address, Bytes,
+        Eip1559TransactionRequest, U256,
+    },
+};
 use jsonrpc_core::{MetaIoHandler, Params};
-use log::debug;
+use log::{debug, info};
 use serde_json::json;
 
 use crate::context::{Context, UnlockedContext};
@@ -25,6 +33,7 @@ impl Default for Handler {
 
 impl Handler {
     pub async fn handle(&self, request: String, ctx: Context) -> Option<String> {
+        info!("RPC request: {}", request.to_string());
         self.io.handle_request(&request.to_string(), ctx).await
     }
 
@@ -35,7 +44,6 @@ impl Handler {
                     .add_method_with_meta($name, |params: Params, ctx: Context| async move {
                         let ctx = ctx.lock().await;
                         let res = $fn(params, ctx).await;
-                        dbg!("self RPC {}: {:?}", $name, &res);
                         Ok(res)
                     });
             };
@@ -45,14 +53,11 @@ impl Handler {
             ($name:literal) => {
                 self.io
                     .add_method_with_meta($name, |params: Params, ctx: Context| async move {
-                        let ctx = ctx.lock().await;
-                        let network = ctx.get_current_network();
-                        let provider = Provider::<Http>::try_from(network.rpc_url).unwrap();
+                        let provider = ctx.lock().await.get_provider();
                         let res: serde_json::Value = provider
                             .request::<_, serde_json::Value>($name, params)
                             .await
                             .unwrap();
-                        debug!("provider RPC {}: {}", $name, res);
                         Ok(res)
                     });
             };
@@ -63,8 +68,10 @@ impl Handler {
         self_handler!("eth_chainId", Self::chain_id);
         self_handler!("metamask_getProviderState", Self::provider_state);
         self_handler!("wallet_switchEthereumChain", Self::switch_chain);
+        self_handler!("eth_sendTransaction", Self::send_transaction);
         provider_handler!("eth_estimateGas");
         provider_handler!("eth_call");
+        provider_handler!("eth_blockNumber");
     }
 
     async fn accounts(_: Params, ctx: UnlockedContext<'_>) -> serde_json::Value {
@@ -94,5 +101,46 @@ impl Handler {
         ctx.set_current_network_by_id(chain_id);
 
         serde_json::Value::Null
+    }
+
+    async fn send_transaction(params: Params, ctx: UnlockedContext<'_>) -> serde_json::Value {
+        let params = params.parse::<Vec<HashMap<String, String>>>().unwrap()[0].clone();
+
+        // parse params
+        let from = Address::from_str(params.get("from").unwrap()).unwrap();
+        let to = Address::from_str(params.get("to").unwrap()).unwrap();
+        let value = params
+            .get("value")
+            .cloned()
+            .map(|v| U256::try_from(StringifiedNumeric::String(v)).unwrap())
+            .unwrap_or_else(U256::default);
+        let data = params.get("data");
+        let chain_id = ctx.get_current_network().chain_id;
+
+        // construct an EIP1559 tx, and wrap in Eip2718
+        let mut tx = Eip1559TransactionRequest::new()
+            .to(to)
+            .from(from)
+            .value(value)
+            .chain_id(chain_id);
+
+        if let Some(data) = data {
+            tx = tx.data(Bytes::from_str(data).unwrap());
+        }
+
+        let mut envelope = TypedTransaction::Eip1559(tx);
+
+        // create signer
+        let provider = ctx.get_provider();
+        let signer = SignerMiddleware::new(provider, ctx.get_signer());
+
+        // fill in gas
+        let gas_limit = signer.estimate_gas(&envelope, None).await;
+        envelope.set_gas(gas_limit.unwrap() * 120 / 100);
+
+        // sign & send
+        let res = signer.send_transaction(envelope, None).await.unwrap();
+
+        res.tx_hash().encode_hex().into()
     }
 }
