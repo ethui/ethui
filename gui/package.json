@@ -1,0 +1,52 @@
+{
+  "name": "@iron/gui",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@tailwindcss/typography": "^0.5.9",
+    "@tauri-apps/api": "^1.2.0",
+    "@types/chrome": "^0.0.212",
+    "@types/lodash": "^4.14.191",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.10",
+    "buffer": "^5.5.0",
+    "events": "^3.1.0",
+    "postcss": "^8.4.21",
+    "process": "^0.11.10",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "swr": "^2.1.1",
+    "tailwindcss": "3.2.2",
+    "typescript": "^4.9.5"
+  },
+  "devDependencies": {
+    "@heroicons/react": "^2.0.15",
+    "@hookform/resolvers": "^2.9.11",
+    "@tauri-apps/cli": "^1.2.2",
+    "@types/node": "^18.7.10",
+    "@types/react": "^18.0.15",
+    "@types/react-dom": "^18.0.6",
+    "@vitejs/plugin-react": "^3.0.0",
+    "ethers": "^5.7.2",
+    "fast-deep-equal": "^3.1.3",
+    "flowbite": "^1.6.4",
+    "flowbite-react": "^0.4.2",
+    "lodash": "^4.17.21",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.43.1",
+    "react-query": "^3.39.3",
+    "truncate-eth-address": "^1.0.2",
+    "typescript": "^4.6.4",
+    "vite": "^4.0.0",
+    "wouter": "^2.10.0",
+    "zod": "^3.20.6"
+  }
+}

@@ -5,12 +5,10 @@ import browser from "webextension-polyfill";
 import ObjectMultiplex from "@metamask/object-multiplex";
 import { WindowPostMessageStream } from "@metamask/post-message-stream";
 
-import * as Constants from "@iron/constants";
-
 export function initProviderForward() {
   const inpageStream = new WindowPostMessageStream({
-    name: Constants.provider.contentscriptStreamName,
-    target: Constants.provider.inpageStreamName,
+    name: "iron:provider:contentscript",
+    target: "iron:provider:inpage",
   });
 
   const inpageMux = new ObjectMultiplex();
@@ -19,7 +17,7 @@ export function initProviderForward() {
     warnDisconnect("Iron Inpage Multiplex", err)
   );
 
-  const pageChannel = inpageMux.createStream(Constants.provider.streamName);
+  const pageChannel = inpageMux.createStream("metamask-provider");
 
   // bg stream
   const bgPort = browser.runtime.connect({ name: "iron:contentscript" });
@@ -35,7 +33,7 @@ export function initProviderForward() {
     warnDisconnect("Iron Background Multiplex", err);
   });
 
-  const extensionChannel = bgMux.createStream(Constants.provider.streamName);
+  const extensionChannel = bgMux.createStream("metamask-provider");
   pump(pageChannel, extensionChannel, pageChannel, (error?: Error) =>
     console.debug(
       `Iron: Muxed traffic for channel "iron:provider" failed.`,

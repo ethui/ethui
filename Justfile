@@ -1,4 +1,13 @@
 alias d := dev
 
 dev:
-  watchexec --exts ts,tsx,json,html,cjs --restart --print-events --no-project-ignore --ignore "{node_modules,.git,.parcel-cache,dist}/*" -- yarn build
+  #!/bin/bash -ue
+  trap 'kill %1; kill %2' SIGINT
+  just extension-dev | sed -e 's/^/\x1b[0;31m[extension]\x1b[0m /' &
+  just tauri-dev
+
+extension-dev:
+  parcel watch extension/manifest.json --no-cache --host localhost
+
+tauri-dev:
+  RUST_LOG=iron=debug tauri dev
