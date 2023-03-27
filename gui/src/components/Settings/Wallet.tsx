@@ -1,38 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { invoke } from "@tauri-apps/api/tauri";
-import { ethers } from "ethers";
 import { Button } from "flowbite-react";
-import _ from "lodash";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { useInvoke } from "../../hooks/tauri";
 import { useDebouncedEffect } from "../../hooks/useDebouncedEffect";
 import { Address, Wallet, walletSchema } from "../../types";
+import { deriveFiveAddresses } from "../../utils/address";
 import { FieldRadio, FieldText } from "./Fields";
-
-export function deriveAddresses(
-  mnemonic: string,
-  path: string,
-  from: number,
-  to: number
-): Address[] {
-  const node = ethers.utils.HDNode.fromMnemonic(mnemonic);
-
-  return _.range(from, to).map(
-    (i: number) => node.derivePath(`${path}/${i}`).address as `0x${string}`
-  );
-}
-
-function deriveFiveAddresses(mnemonic: string, derivationPath: string) {
-  return deriveAddresses(mnemonic, derivationPath, 0, 5).reduce(
-    (acc: Record<number, Address>, address, i) => {
-      acc[i] = address;
-      return acc;
-    },
-    {}
-  );
-}
 
 export function WalletSettings() {
   const { data: wallet, mutate } = useInvoke<Wallet>("get_wallet");

@@ -2,15 +2,12 @@
   "private": true,
   "description": "A dev-oriented web3 wallet",
   "scripts": {
-    "app:dev": "tauri dev",
+    "app:dev": "RUST_LOG=iron=debug tauri dev",
     "extension:dev": "parcel watch extension/manifest.json --no-cache --host localhost",
     "lint": "eslint ."
   },
   "workspaces": [
     "extension",
-    "provider-worker",
-    "state",
-    "constants",
     "gui"
   ],
   "devDependencies": {

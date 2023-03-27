@@ -1,9 +1,0 @@
-{
-  "name": "@iron/state",
-  "version": "1.0.0",
-  "license": "MIT",
-  "dependencies": {
-    "@iron/constants": "*",
-    "nanoid": "^4.0.1"
-  }
-}

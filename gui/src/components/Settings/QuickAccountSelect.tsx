@@ -3,10 +3,9 @@ import { Dropdown } from "flowbite-react";
 import { useCallback, useEffect, useState } from "react";
 import truncateEthAddress from "truncate-eth-address";
 
-import { deriveFiveAddresses } from "@iron/state/src/addresses";
-
 import { useInvoke } from "../../hooks/tauri";
 import { Address, Wallet } from "../../types";
+import { deriveFiveAddresses } from "../../utils/address";
 
 export function QuickAccountSelect() {
   const { data: wallet, mutate } = useInvoke<Wallet>("get_wallet");
