@@ -33,7 +33,7 @@ Clone the repo and install dependencies
 ```sh
 git clone git@github.com:subvisual/iron
 cd iron
-yarn
+just setup
 ```
 
 Now start the development server:
