@@ -1,5 +1,9 @@
 alias d := dev
 
+setup:
+  yarn
+  cargo build
+
 dev:
   #!/bin/bash -ue
   trap 'kill %1; kill %2' SIGINT

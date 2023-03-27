@@ -19,6 +19,7 @@ Read on for a concrete guide on how to get set up.
 
 ### Requirements
 
+- Rust
 - Node.js (16+ recommended)
 - Yarn
 - Google Chrome (a profile without MetaMask installed)
@@ -38,12 +39,10 @@ yarn
 Now start the development server:
 
 ```sh
-# the recommended way (see next section for why `just` is recommended over `yarn`)
 just dev
-
-# the Node.js way
-yarn dev
 ```
+
+On the first run, you'll also need to install the development extension.
 
 1. Open Google Chrome
 2. go to `chrome://extensions`
@@ -51,11 +50,4 @@ yarn dev
 4. Load unpacked -> choose the `iron/dist` directory
 5. Iron should now be running
 
-### A note on live-reloading
-
-We use [parcel][parcel] for the build system (it has a preset suited for browser extensions). However, I've ran into problems with `parcel watch`, where it doesn't actually seem to properly recompile all of the changes.
-
-This being a browser extension doesn't help, as that introduces additional complexity, and some of its components don't actually support live-reloading.
-
-But regardless, I found better results with [watchexec][watchexec] instead of `parcel watch`, which is why I'm recommending it here.
-The build times should be close to the same because caching still does its job.
+For future runs, you may jus need to reload it on `chrome://extensions`.
