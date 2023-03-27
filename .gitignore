@@ -2,3 +2,5 @@ node_modules
 dist
 .parcel-cache
 parcel-bundle-reports
+tsconfig.tsbuildinfo
+target/

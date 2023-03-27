@@ -1,8 +1,5 @@
 import { ethers } from "ethers";
 import _ from "lodash";
-import { Runtime } from "webextension-polyfill";
-
-import { broadcastViaProviders } from "@iron/provider-worker";
 
 import { deriveAddress, deriveAddressFromNode } from "./addresses";
 import { read, write } from "./browserStorageBackend";

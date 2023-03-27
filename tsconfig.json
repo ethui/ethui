@@ -19,6 +19,7 @@
     "typeRoots": ["./src/global.d.ts", "node_modules/@types"]
   },
   "include": [
+    "gui",
     "ui",
     "extension",
     "config",

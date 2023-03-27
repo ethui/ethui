@@ -2,23 +2,18 @@
   "private": true,
   "description": "A dev-oriented web3 wallet",
   "scripts": {
-    "dev": "parcel watch extension/manifest.json --no-cache --host localhost",
-    "build": "parcel build extension/manifest.json",
-    "clean": "rm -rf dist",
-    "bundle-analyzer": "yarn clean && parcel build extension/manifest.json --reporter @parcel/reporter-bundle-analyzer && google-chrome-stable parcel-bundle-reports/default.html",
+    "app:dev": "tauri dev",
+    "extension:dev": "parcel watch extension/manifest.json --no-cache --host localhost",
     "lint": "eslint ."
   },
   "workspaces": [
     "extension",
-    "provider-inpage",
     "provider-worker",
-    "ui",
     "state",
-    "constants"
+    "constants",
+    "gui"
   ],
   "devDependencies": {
-    "@parcel/config-webextension": "^2.8.3",
-    "@parcel/reporter-bundle-analyzer": "^2.8.3",
     "@trivago/prettier-plugin-sort-imports": "^4.1.1",
     "@typescript-eslint/eslint-plugin": "^5.54.1",
     "assert": "^2.0.0",
@@ -31,7 +26,6 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "parcel": "^2.8.3",
     "prettier": "^2.8.4",
-    "punycode": "^1.4.1",
     "tailwindcss": "^3.2.7"
   }
 }

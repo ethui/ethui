@@ -40,7 +40,7 @@ export function deriveAddresses(
 export function deriveFiveAddresses(
   mnemonic: string,
   derivationPath: string
-): Record<number, string> {
+): Record<number, Address> {
   return deriveAddresses(mnemonic, derivationPath, 0, 5).reduce(
     (acc, address, i) => {
       acc[i] = address;

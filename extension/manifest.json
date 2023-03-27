@@ -8,9 +8,6 @@
     "service_worker": "background.ts",
     "type": "module"
   },
-  "action": {
-    "default_popup": "popup.html"
-  },
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*", "<all_urls>"],
@@ -30,7 +27,7 @@
   "web_accessible_resources": [
     {
       "matches": ["<all_urls>"],
-      "resources": ["expanded.html", "inpage.ts"]
+      "resources": ["inpage.ts"]
     }
   ]
 }
