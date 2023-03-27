@@ -1,7 +1,5 @@
 use std::net::SocketAddr;
-use std::sync::Arc;
 
-use futures_util::lock::Mutex;
 use futures_util::{SinkExt, StreamExt};
 use log::*;
 use tokio::net::{TcpListener, TcpStream};

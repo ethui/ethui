@@ -68,7 +68,7 @@ impl Handler {
     }
 
     async fn accounts(_: Params, ctx: UnlockedContext<'_>) -> serde_json::Value {
-        json!([ctx.wallet.address()])
+        json!([ctx.wallet.checksummed_address()])
     }
 
     async fn chain_id(_: Params, ctx: UnlockedContext<'_>) -> serde_json::Value {
@@ -82,7 +82,7 @@ impl Handler {
             "isUnlocked": true,
             "chainId": network.chain_id_hex(),
             "networkVersion": network.name,
-            "accounts": [ctx.wallet.address()],
+            "accounts": [ctx.wallet.checksummed_address()],
         })
     }
 

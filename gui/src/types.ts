@@ -19,7 +19,7 @@ export const walletSchema = z.object({
   mnemonic: z.string().regex(/^(\w+\s){11}\w+$/, {
     message: "Must be a 12-word phrase",
   }),
-  derivation_path: z.string().regex(/^m\/(\d+'?\/)+\d+$/, {
+  derivationPath: z.string().regex(/^m\/(\d+'?\/)+\d+$/, {
     message: "invalid path format",
   }),
   idx: z.number().int().min(0).max(3),

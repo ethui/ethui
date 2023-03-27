@@ -1,9 +1,10 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use std::net::SocketAddr;
 use std::sync::Arc;
 
 use ethers::signers::coins_bip39::English;
 use ethers::signers::{MnemonicBuilder, Signer};
+use ethers::types::Address;
 use ethers::utils::to_checksum;
 use ethers_core::k256::ecdsa::SigningKey;
 use futures_util::lock::{Mutex, MutexGuard, MutexLockFuture};
@@ -64,22 +65,39 @@ impl ContextInner {
         });
     }
 
+    /// Changes the currently connected wallet
+    ///
+    /// Broadcasts `accountsChanged`
     pub fn set_wallet(&mut self, wallet: Wallet) {
+        let previous_address = self.wallet.checksummed_address();
         self.wallet = wallet;
+        let new_address = self.wallet.checksummed_address();
+
+        if previous_address != new_address {
+            self.broadcast(json!({
+                "method": "accountsChanged",
+                "params": [new_address]
+            }));
+        }
     }
 
+    /// Changes the currently connected wallet
+    ///
+    /// Broadcasts `chainChanged`
     pub fn set_current_network(&mut self, new_current_network: String) {
+        let previous_network = self.get_current_network();
         self.current_network = new_current_network;
+        let new_network = self.get_current_network();
 
-        let network = self.networks.get(&self.current_network).unwrap().clone();
-
-        self.broadcast(json!({
-            "method": "chainChanged",
-            "params": {
-                "chainId": format!("0x{:x}", network.chain_id),
-                "networkVersion": network.name
-            }
-        }));
+        if previous_network.chain_id != new_network.chain_id {
+            self.broadcast(json!({
+                "method": "chainChanged",
+                "params": {
+                    "chainId": format!("0x{:x}", new_network.chain_id),
+                    "networkVersion": new_network.name
+                }
+            }));
+        }
     }
 
     pub fn set_current_network_by_id(&mut self, new_chain_id: u32) {
@@ -102,6 +120,7 @@ impl ContextInner {
 }
 
 #[derive(Debug, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct Wallet {
     mnemonic: String,
     derivation_path: String,
@@ -146,7 +165,11 @@ impl Wallet {
             .map_err(|e| e.to_string())
     }
 
-    pub fn address(&self) -> String {
+    pub fn address(&self) -> Address {
+        self.signer.address()
+    }
+
+    pub fn checksummed_address(&self) -> String {
         to_checksum(&self.signer.address(), None)
     }
 }
@@ -163,7 +186,7 @@ impl<'de> Deserialize<'de> for Wallet {
         struct WalletVisitor;
 
         #[derive(Deserialize)]
-        #[serde(field_identifier, rename_all = "lowercase")]
+        #[serde(field_identifier, rename_all = "camelCase")]
         enum Field {
             Mnemonic,
             DerivationPath,

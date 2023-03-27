@@ -68,10 +68,10 @@ export function WalletSettings() {
       />
       <FieldText
         name="Derivation Path"
-        field="derivation_path"
+        field="derivationPath"
         register={register}
-        value={wallet.derivation_path}
-        error={errors.derivation_path}
+        value={wallet.derivationPath}
+        error={errors.derivationPath}
       />
 
       <FieldRadio

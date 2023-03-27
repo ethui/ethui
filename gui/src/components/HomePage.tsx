@@ -17,7 +17,6 @@ export function HomePage() {
 
   return (
     <>
-      <h1>Home Page</h1>
       <div>{address && truncateEthAddress(address)}</div>
       {balance && <div>{ethers.utils.formatEther(balance)} ETH</div>}
       <CurrentBlock />

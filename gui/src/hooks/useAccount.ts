@@ -17,7 +17,7 @@ export function useAccount() {
     // keys, or to instantiate HDWallet nodes on the webview)
     const address = deriveAddress(
       wallet.mnemonic,
-      wallet.derivation_path,
+      wallet.derivationPath,
       wallet.idx
     );
     setAddress(address);
