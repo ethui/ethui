@@ -25,6 +25,7 @@ export const networks = [
     currency: "ETH",
     chainId: 1,
     decimals: 18,
+    dev: false,
   },
   {
     name: "goerli",
@@ -32,6 +33,7 @@ export const networks = [
     chainId: 5,
     currency: "ETH",
     decimals: 18,
+    dev: false,
   },
   {
     name: "anvil",
@@ -39,5 +41,6 @@ export const networks = [
     currency: "ETH",
     chainId: 31337,
     decimals: 18,
+    dev: true,
   },
 ];

@@ -1,4 +1,4 @@
-import { Label, Radio, TextInput } from "flowbite-react";
+import { Checkbox, Label, Radio, TextInput } from "flowbite-react";
 import { Fragment } from "react";
 import {
   Control,
@@ -101,5 +101,24 @@ export function FieldRadio({
         )}
       />
     </fieldset>
+  );
+}
+
+interface FieldCheckboxProps<T extends FieldValues> {
+  name: string;
+  field: Path<T>;
+  register: UseFormRegister<T>;
+}
+
+export function FieldCheckbox<T extends FieldValues>({
+  name,
+  field,
+  register,
+}: FieldCheckboxProps<T>) {
+  return (
+    <div className="flex items-center gap-2">
+      <Checkbox id={field} {...register(field)} />
+      <Label htmlFor={field}>{name}</Label>
+    </div>
   );
 }

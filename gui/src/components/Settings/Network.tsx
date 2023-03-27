@@ -6,8 +6,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 
 import { useInvoke } from "../../hooks/tauri";
 import { Network, networkSchema } from "../../types";
-// import { schema } from "@iron/state";
-import { FieldText } from "./Fields";
+import { FieldCheckbox, FieldText } from "./Fields";
 
 const emptyNetwork: Network = {
   name: "",
