@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::net::SocketAddr;
+use std::path::PathBuf;
 use std::sync::Arc;
 
 use ethers::providers::{Http, Provider};
@@ -10,6 +11,8 @@ use ethers_core::k256::ecdsa::SigningKey;
 use futures_util::lock::{Mutex, MutexGuard, MutexLockFuture};
 use log::{debug, info};
 use serde::{Deserialize, Serialize};
+
+use crate::error::Result;
 
 #[derive(Clone)]
 pub struct Context(Arc<Mutex<ContextInner>>);
@@ -32,6 +35,8 @@ pub struct ContextInner {
     pub networks: HashMap<String, Network>,
     #[serde(skip)]
     pub peers: HashMap<SocketAddr, mpsc::UnboundedSender<serde_json::Value>>,
+    #[serde(skip)]
+    pub db: Option<sled::Db>,
 }
 
 impl ContextInner {
@@ -47,6 +52,11 @@ impl ContextInner {
             networks,
             ..Default::default()
         }
+    }
+
+    pub fn connect_db(&mut self, path: PathBuf) -> Result<()> {
+        self.db = Some(sled::open(path)?);
+        Ok(())
     }
 
     pub fn add_peer(&mut self, peer: SocketAddr, snd: mpsc::UnboundedSender<serde_json::Value>) {
@@ -170,7 +180,7 @@ impl Wallet {
         derivation_path: &str,
         idx: u32,
         chain_id: u32,
-    ) -> Result<ethers::signers::Wallet<SigningKey>, String> {
+    ) -> std::result::Result<ethers::signers::Wallet<SigningKey>, String> {
         MnemonicBuilder::<English>::default()
             .phrase(mnemonic)
             .derivation_path(&format!("{}/{}", derivation_path, idx))

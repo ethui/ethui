@@ -29,6 +29,7 @@ thiserror = "1.0.40"
 ethers = "2.0.0"
 ethers-core = "=2.0.0"
 jsonrpc-core = "18.0.0"
+sled = "0.34.7"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

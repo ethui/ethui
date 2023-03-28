@@ -9,8 +9,7 @@ mod ws;
 
 use color_eyre::Result;
 
-#[tokio::main]
-async fn main() -> Result<()> {
+fn main() -> Result<()> {
     env_logger::init();
     color_eyre::install()?;
 
@@ -18,11 +17,12 @@ async fn main() -> Result<()> {
 
     {
         let ctx = ctx.clone();
-        tokio::spawn(async move { ws::ws_server_loop(ctx).await });
+        tauri::async_runtime::spawn(async move { ws::ws_server_loop(ctx.clone()).await });
     }
 
+    let ctx2 = ctx.clone();
     tauri::Builder::default()
-        .manage(ctx)
+        .manage(ctx.clone())
         .invoke_handler(tauri::generate_handler![
             commands::get_networks,
             commands::get_current_network,
@@ -31,6 +31,22 @@ async fn main() -> Result<()> {
             commands::set_wallet,
             commands::set_networks
         ])
+        .setup(|app| {
+            let db_path = app
+                .path_resolver()
+                .resolve_resource("db.sled")
+                .expect("failed to resolve resource")
+                .clone();
+
+            {
+                tauri::async_runtime::spawn(async move {
+                    let mut ctx = ctx2.lock().await;
+                    ctx.connect_db(db_path).expect("could not connect to DB");
+                });
+            }
+
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 

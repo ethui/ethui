@@ -37,7 +37,7 @@ pub async fn accept_connection(peer: SocketAddr, stream: TcpStream, ctx: Context
                 }
                 _ => (),
             },
-            Error::JsonError(e) => {
+            _ => {
                 error!("JSON error {:?}, connection terminated {:?}", e, peer)
             }
         }
