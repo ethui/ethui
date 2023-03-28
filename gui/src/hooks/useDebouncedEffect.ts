@@ -9,25 +9,26 @@ export function useDebouncedEffect(
 ) {
   const { leading, trailing } = options;
   // the source of truth will be _dependencyRef.current  always
-  const [_dependency, _setdependency] = useState(dependency);
+  const [innerDependency, setdependency] = useState(dependency);
 
   // making use of second approach here we discussed above
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const makeChangeTodependency = useCallback(
     debounce(
       (dependency) => {
-        _setdependency(dependency);
+        setdependency(dependency);
       },
       timeout,
       { trailing, leading }
     ),
-    [trailing, leading, timeout]
+    [trailing, leading, timeout, setdependency]
   );
 
   useEffect(() => {
     if (dependency) {
       makeChangeTodependency(dependency);
     }
-  }, dependency);
+  }, [dependency, makeChangeTodependency]);
 
-  useEffect(callback, _dependency);
+  useEffect(callback, [innerDependency, callback]);
 }

@@ -10,7 +10,7 @@ use ethers::{
     },
 };
 use jsonrpc_core::{MetaIoHandler, Params};
-use log::{debug, info};
+use log::info;
 use serde_json::json;
 
 use crate::context::{Context, UnlockedContext};

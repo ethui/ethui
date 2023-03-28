@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Button } from "flowbite-react";
 import { useCallback, useState } from "react";
-import { useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 
 import { useInvoke } from "../../hooks/tauri";
 import { useDebouncedEffect } from "../../hooks/useDebouncedEffect";
@@ -27,7 +27,7 @@ export function WalletSettings() {
   });
 
   const onSubmit = useCallback(
-    async (data: any) => {
+    async (data: FieldValues) => {
       reset(data);
       console.log(data);
       await invoke("set_wallet", {

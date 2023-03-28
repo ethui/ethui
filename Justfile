@@ -1,4 +1,5 @@
 alias d := dev
+alias l := lint
 
 setup:
   yarn
@@ -10,8 +11,17 @@ dev:
   just extension-dev | sed -e 's/^/\x1b[0;31m[extension]\x1b[0m /' &
   just tauri-dev
 
+lint:
+  cargo clippy
+  yarn eslint .
+
+#
+# internal
+#
+
 extension-dev:
   parcel watch extension/manifest.json --no-cache --host localhost
 
 tauri-dev:
   RUST_LOG=iron=debug tauri dev
+
