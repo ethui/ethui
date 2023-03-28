@@ -93,7 +93,7 @@ export function FieldRadio({
                   className="label cursor-pointer justify-start"
                   htmlFor={i}
                 >
-                  {values[i]}
+                  {values[Number(i)]}
                 </Label>
               </div>
             ))}

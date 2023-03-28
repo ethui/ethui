@@ -69,7 +69,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
       connectionStream,
       mux as unknown as Duplex,
       connectionStream,
-      this._handleStreamDisconnect.bind(this, "Iron constructor")
+      this._handleStreamDisconnect.bind(this, "Iron constructor") as any
     );
 
     // Set up RPC connection
@@ -80,7 +80,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
       this._jsonRpcConnection.stream,
       mux.createStream(jsonRpcStreamName) as unknown as Duplex,
       this._jsonRpcConnection.stream,
-      this._handleStreamDisconnect.bind(this, "Iron RpcProvider")
+      this._handleStreamDisconnect.bind(this, "Iron RpcProvider") as any
     );
 
     // Wire up the JsonRpcEngine to the JSON-RPC connection stream

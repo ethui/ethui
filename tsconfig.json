@@ -29,5 +29,5 @@
     "state",
     "node_modules/@types"
   ],
-  "exclude": ["build", "node_modules"]
+  "exclude": ["build", "node_modules", "extension/dist"]
 }

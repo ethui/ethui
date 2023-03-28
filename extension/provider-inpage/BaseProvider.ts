@@ -193,7 +193,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
     return new Promise<T>((resolve, reject) => {
       this._rpcRequest(
         { method, params },
-        getRpcPromiseCallback(resolve, reject)
+        getRpcPromiseCallback(resolve as any, reject) as any
       );
     });
   }
