@@ -1,7 +1,7 @@
 {
   "build": {
     "beforeDevCommand": "yarn workspace @iron/gui dev",
-    "beforeBuildCommand": "yarn build",
+    "beforeBuildCommand": "yarn workspace @iron/gui build",
     "devPath": "http://localhost:1420",
     "distDir": "../dist-tauri",
     "withGlobalTauri": false
@@ -27,7 +27,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.naps26.iron",
       "targets": "all"
     },
     "security": {
