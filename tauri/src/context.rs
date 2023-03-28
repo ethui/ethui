@@ -2,13 +2,15 @@ use std::collections::HashMap;
 use std::net::SocketAddr;
 use std::sync::Arc;
 
+use ethers::providers::{Http, Provider};
 use ethers::signers::coins_bip39::English;
 use ethers::signers::{MnemonicBuilder, Signer};
+use ethers::types::transaction::eip2718::TypedTransaction;
 use ethers::types::Address;
 use ethers::utils::to_checksum;
 use ethers_core::k256::ecdsa::SigningKey;
 use futures_util::lock::{Mutex, MutexGuard, MutexLockFuture};
-use log::info;
+use log::{debug, info};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone)]
@@ -90,6 +92,10 @@ impl ContextInner {
         let new_network = self.get_current_network();
 
         if previous_network.chain_id != new_network.chain_id {
+            // update signer
+            self.wallet.update_chain_id(new_network.chain_id);
+
+            // broadcast to peers
             self.broadcast(json!({
                 "method": "chainChanged",
                 "params": {
@@ -116,6 +122,15 @@ impl ContextInner {
 
     pub fn get_current_network(&self) -> Network {
         self.networks.get(&self.current_network).unwrap().clone()
+    }
+
+    pub fn get_provider(&self) -> Provider<Http> {
+        let network = self.get_current_network();
+        Provider::<Http>::try_from(network.rpc_url).unwrap()
+    }
+
+    pub fn get_signer(&self) -> ethers::signers::Wallet<SigningKey> {
+        self.wallet.signer.clone()
     }
 }
 
@@ -156,6 +171,7 @@ impl Wallet {
         mnemonic: &str,
         derivation_path: &str,
         idx: u32,
+        chain_id: u32,
     ) -> Result<ethers::signers::Wallet<SigningKey>, String> {
         MnemonicBuilder::<English>::default()
             .phrase(mnemonic)
@@ -163,6 +179,7 @@ impl Wallet {
             .map_err(|e| e.to_string())?
             .build()
             .map_err(|e| e.to_string())
+            .map(|v| v.with_chain_id(chain_id))
     }
 
     pub fn address(&self) -> Address {
@@ -172,6 +189,16 @@ impl Wallet {
     pub fn checksummed_address(&self) -> String {
         to_checksum(&self.signer.address(), None)
     }
+
+    pub(self) fn update_chain_id(&mut self, chain_id: u32) {
+        debug!("new chain id {}", chain_id);
+        self.signer =
+            Self::build_signer(&self.mnemonic, &self.derivation_path, self.idx, chain_id).unwrap();
+    }
+
+    // pub fn sign(&self, tx: TypedTransaction) -> TypedTransaction {
+    //     let sig = self.signer.sign_transaction(&tx);
+    // }
 }
 
 use serde::de::{self, MapAccess, Visitor};
@@ -228,7 +255,9 @@ impl<'de> Deserialize<'de> for Wallet {
                     derivation_path.ok_or_else(|| de::Error::missing_field("derivation_path"))?;
                 let idx: u32 = idx.ok_or_else(|| de::Error::missing_field("idx"))?;
 
-                let signer = Wallet::build_signer(&mnemonic, &derivation_path, idx)
+                // TODO: the chain id needs to be updated right away, if we read the "current
+                // chain" from storage in the future
+                let signer = Wallet::build_signer(&mnemonic, &derivation_path, idx, 1)
                     .map_err(|_| de::Error::custom("could not build signer"))?;
 
                 Ok(Wallet {
