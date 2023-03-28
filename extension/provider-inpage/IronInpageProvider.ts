@@ -139,7 +139,7 @@ export class IronInpageProvider extends AbstractStreamProvider {
     payload: JsonRpcRequest<unknown>,
     callback: (error: Error | null, result?: JsonRpcResponse<unknown>) => void
   ): void {
-    this._rpcRequest(payload, callback);
+    this._rpcRequest(payload, callback as any);
   }
 
   /**
@@ -228,7 +228,7 @@ export class IronInpageProvider extends AbstractStreamProvider {
       try {
         this._rpcRequest(
           { method: "eth_requestAccounts", params: [] },
-          getRpcPromiseCallback(resolve, reject)
+          getRpcPromiseCallback(resolve as any, reject) as any
         );
       } catch (error) {
         reject(error);
@@ -284,7 +284,7 @@ export class IronInpageProvider extends AbstractStreamProvider {
         try {
           this._rpcRequest(
             { method: methodOrPayload, params: callbackOrArgs },
-            getRpcPromiseCallback(resolve, reject, false)
+            getRpcPromiseCallback(resolve, reject, false) as any
           );
         } catch (error) {
           reject(error);
@@ -375,7 +375,10 @@ export class IronInpageProvider extends AbstractStreamProvider {
           }
 
           return new Promise((resolve, reject) => {
-            this._rpcRequest(requests, getRpcPromiseCallback(resolve, reject));
+            this._rpcRequest(
+              requests,
+              getRpcPromiseCallback(resolve, reject) as any
+            );
           });
         },
       },

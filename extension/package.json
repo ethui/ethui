@@ -33,5 +33,9 @@
     "webextension-polyfill": "^0.10.0",
     "websocket-stream": "^5.5.2",
     "websocket-ts": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/pump": "^1.1.1",
+    "@types/webextension-polyfill": "^0.10.0"
   }
 }
