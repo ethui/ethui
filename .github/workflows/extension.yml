@@ -54,7 +54,7 @@ jobs:
         with:
           toolchain: nightly
 
-        run: yarn workspace @iron/gui install
+      - run: yarn workspace @iron/gui install
 
       - uses: actions-rs/cargo@v1
         with:
