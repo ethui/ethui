@@ -7,7 +7,7 @@ on:
       - "v*"
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.sha }}
 
 jobs:
   extension:
@@ -25,7 +25,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: releases/${{ github.ref }}/extension.zip
+          name: releases-${{ github.sha }}-extension.zip
           path: ./extension/extension.zip
           retention-days: 1
 
@@ -54,7 +54,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: releases/${{ github.ref }}/iron-ubuntu-x86_64
+          name: releases-${{ github.sha }}-iron-ubuntu-x86_64
           path: ./target/release/iron
           retention-days: 1
 
@@ -68,13 +68,13 @@ jobs:
       - name: Download extension
         uses: actions/download-artifact@v3
         with:
-          name: releases/${{ github.ref }}/extension.zip
+          name: releases-${{ github.sha }}-extension.zip
           path: release/
 
       - name: Download extension
         uses: actions/download-artifact@v3
         with:
-          name: releases/${{ github.ref }}/iron-ubuntu-x86_64
+          name: releases-${{ github.sha }}-iron-ubuntu-x86_64
           path: release/
 
       - name: Create release
