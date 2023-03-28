@@ -10,24 +10,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  create-release:
-    runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
-    steps:
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: true
-          prerelease: true
-
   extension:
-    needs: create-release
+    name: Build Extension
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -39,17 +23,14 @@ jobs:
         run: yarn workspace @iron/extension build:zip
 
       - name: Upload artifact
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: actions/upload-artifact@v3
         with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./extension/extension.zip
-          asset_name: extension.zip
-          asset_content_type: application/zip
+          name: releases/${{ githbu.ref }}/extension.zip
+          path: ./extension/extension.zip
+          retention-days: 1
 
   ubuntu:
-    needs: create-release
+    name: Build Binary
     runs-on: ubuntu-latest
     steps:
       - name: install dependencies (ubuntu only)
@@ -71,11 +52,36 @@ jobs:
           args: --release
 
       - name: Upload artifact
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: actions/upload-artifact@v3
         with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./target/release/iron
-          asset_name: iron-ubuntu-x86_64
-          asset_content_type: application/octet-stream
+          name: releases/${{ githbu.ref }}/iron-ubuntu-x86_64
+          path: ./target/release/iron
+          retention-days: 1
+
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Download extension
+        uses: actions/download-artifact@v3
+        with:
+          name: releases/${{ github.ref }}/extension.zip
+          path: release/
+
+      - name: Download extension
+        uses: actions/download-artifact@v3
+        with:
+          name: releases/${{ github.ref }}/iron-ubuntu-x86_64
+          path: release/
+
+      - name: Create release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          prerelease: true
+          files: |
+            release/extension.zip
+            release/iron-ubuntu-x86_64
