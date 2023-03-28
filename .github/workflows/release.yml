@@ -7,7 +7,6 @@ on:
 
 jobs:
   create-release:
-    needs: [extension, ubuntu]
     runs-on: ubuntu-latest
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
