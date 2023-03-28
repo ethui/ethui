@@ -3,7 +3,8 @@
   "description": "A dev-oriented web3 wallet",
   "scripts": {
     "app:dev": "RUST_LOG=iron=debug tauri dev",
-    "extension:dev": "parcel watch extension/manifest.json --no-cache --host localhost",
+    "extension:dev": "yarn workspace @iron/extension dev",
+    "extension:build": "yarn workspace @iron/extension build",
     "lint": "eslint ."
   },
   "workspaces": [

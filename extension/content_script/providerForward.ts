@@ -1,6 +1,6 @@
 import PortStream from "extension-port-stream";
 import pump from "pump";
-import browser from "webextension-polyfill";
+import { runtime } from "webextension-polyfill";
 
 import ObjectMultiplex from "@metamask/object-multiplex";
 import { WindowPostMessageStream } from "@metamask/post-message-stream";
@@ -20,7 +20,7 @@ export function initProviderForward() {
   const pageChannel = inpageMux.createStream("metamask-provider");
 
   // bg stream
-  const bgPort = browser.runtime.connect({ name: "iron:contentscript" });
+  const bgPort = runtime.connect({ name: "iron:contentscript" });
   const bgStream = new PortStream(bgPort);
 
   // create and connect channel muxers

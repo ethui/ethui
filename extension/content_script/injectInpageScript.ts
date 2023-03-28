@@ -1,10 +1,10 @@
-import browser from "webextension-polyfill";
+import { runtime } from "webextension-polyfill";
 
 /**
  * Injects the inpage script
  */
 export function injectInPageScript() {
-  const url = browser.runtime.getURL("inpage.js");
+  const url = runtime.getURL("inpage.js");
 
   try {
     const container = document.head || document.documentElement;
