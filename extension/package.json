@@ -36,6 +36,9 @@
   },
   "devDependencies": {
     "@types/pump": "^1.1.1",
-    "@types/webextension-polyfill": "^0.10.0"
+    "@types/webextension-polyfill": "^0.10.0",
+    "buffer": "^5.5.0",
+    "events": "^3.1.0",
+    "process": "^0.11.10"
   }
 }
