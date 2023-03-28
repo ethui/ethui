@@ -1,5 +1,3 @@
-use log::debug;
-
 use crate::context::{Context, Network, Wallet};
 
 type Ctx<'a> = tauri::State<'a, Context>;
