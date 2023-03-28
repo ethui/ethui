@@ -1,8 +1,10 @@
 {
   "private": true,
+  "version": "0.0.1",
   "description": "A dev-oriented web3 wallet",
   "scripts": {
     "app:dev": "RUST_LOG=iron=debug tauri dev",
+    "gui:build": "yarn workspace @iron/gui build",
     "extension:dev": "yarn workspace @iron/extension dev",
     "extension:build": "yarn workspace @iron/extension build",
     "lint": "eslint ."

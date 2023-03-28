@@ -25,7 +25,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: releases-${{ github.sha }}-extension.zip
+          name: extension-${{ github.sha }}
           path: ./extension/extension.zip
           retention-days: 1
 
@@ -45,19 +45,14 @@ jobs:
         with:
           toolchain: nightly
 
-      - run: yarn workspace @iron/gui install
-
-      - name: Build release binary
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release
+      - run: yarn install
+      - run: yarn run tauri build
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: releases-${{ github.sha }}-iron-ubuntu-x86_64
-          path: ./target/release/iron
+          name: app-${{ github.sha }}
+          path: ./target/release/bundle/
           retention-days: 1
 
   create-release:
@@ -70,14 +65,14 @@ jobs:
       - name: Download extension
         uses: actions/download-artifact@v3
         with:
-          name: releases-${{ github.sha }}-extension.zip
+          name: extension-${{ github.sha }}
           path: release/
 
       - name: Download extension
         uses: actions/download-artifact@v3
         with:
-          name: releases-${{ github.sha }}-iron-ubuntu-x86_64
-          path: release/
+          name: app-${{ github.sha }}
+          path: app/
 
       - name: Create release
         id: create_release
@@ -87,4 +82,4 @@ jobs:
           prerelease: true
           files: |
             release/extension.zip
-            release/iron-ubuntu-x86_64
+            app/*

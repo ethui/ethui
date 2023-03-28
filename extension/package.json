@@ -13,6 +13,8 @@
     "lint": "eslint ."
   },
   "devDependencies": {
+    "@types/pump": "^1.1.1",
+    "@types/webextension-polyfill": "^0.10.0",
     "@metamask/eth-json-rpc-middleware": "https://github.com/MetaMask/eth-json-rpc-middleware#e7a1de5cc9c76f24f436be69850d442c46582975",
     "@metamask/object-multiplex": "^1.2.0",
     "@metamask/post-message-stream": "^6.1.0",

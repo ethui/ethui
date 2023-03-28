@@ -3,12 +3,12 @@
     "beforeDevCommand": "yarn workspace @iron/gui dev",
     "beforeBuildCommand": "yarn workspace @iron/gui build",
     "devPath": "http://localhost:1420",
-    "distDir": "../dist-tauri",
+    "distDir": "../gui/dist",
     "withGlobalTauri": false
   },
   "package": {
     "productName": "iron",
-    "version": "0.0.0"
+    "version": "../package.json"
   },
   "tauri": {
     "allowlist": {

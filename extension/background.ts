@@ -1,5 +1,6 @@
 import PortStream from "extension-port-stream";
 import pump, { type Stream } from "pump";
+import { type Duplex } from "stream";
 import browser, { type Runtime } from "webextension-polyfill";
 import { WebsocketBuilder } from "websocket-ts";
 
@@ -23,10 +24,10 @@ function handleConnections() {
 export function setupProviderConnection(remotePort: Runtime.Port) {
   const stream = new PortStream(remotePort);
   const mux = setupMultiplex(stream);
-  const outStream = mux.createStream("metamask-provider");
+  const outStream = mux.createStream("metamask-provider") as unknown as Duplex;
 
   const ws = new WebsocketBuilder("ws://localhost:9002")
-    .onMessage((i, e) => {
+    .onMessage((_i, e) => {
       // write back to page provider
       const data = JSON.parse(e.data);
       console.log("onMessage", data);
@@ -47,7 +48,7 @@ function setupMultiplex(connectionStream: Stream) {
   mux.ignoreStream(CONNECTION_READY);
   mux.ignoreStream("ACK_KEEP_ALIVE_MESSAGE");
   mux.ignoreStream("WORKER_KEEP_ALIVE_MESSAGE");
-  pump(connectionStream, mux, connectionStream, (err) => {
+  pump(connectionStream, mux as unknown as Duplex, connectionStream, (err) => {
     if (err) {
       console.error(err);
     }
