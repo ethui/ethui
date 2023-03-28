@@ -5,8 +5,6 @@ use std::sync::Arc;
 use ethers::providers::{Http, Provider};
 use ethers::signers::coins_bip39::English;
 use ethers::signers::{MnemonicBuilder, Signer};
-use ethers::types::transaction::eip2718::TypedTransaction;
-use ethers::types::Address;
 use ethers::utils::to_checksum;
 use ethers_core::k256::ecdsa::SigningKey;
 use futures_util::lock::{Mutex, MutexGuard, MutexLockFuture};
@@ -182,10 +180,6 @@ impl Wallet {
             .map(|v| v.with_chain_id(chain_id))
     }
 
-    pub fn address(&self) -> Address {
-        self.signer.address()
-    }
-
     pub fn checksummed_address(&self) -> String {
         to_checksum(&self.signer.address(), None)
     }
@@ -195,10 +189,6 @@ impl Wallet {
         self.signer =
             Self::build_signer(&self.mnemonic, &self.derivation_path, self.idx, chain_id).unwrap();
     }
-
-    // pub fn sign(&self, tx: TypedTransaction) -> TypedTransaction {
-    //     let sig = self.signer.sign_transaction(&tx);
-    // }
 }
 
 use serde::de::{self, MapAccess, Visitor};
@@ -269,7 +259,7 @@ impl<'de> Deserialize<'de> for Wallet {
             }
         }
 
-        const FIELDS: &'static [&'static str] = &["mnemonic", "derivation_path", "idx"];
+        const FIELDS: &[&str] = &["mnemonic", "derivation_path", "idx"];
         deserializer.deserialize_struct("Wallet", FIELDS, WalletVisitor)
     }
 }

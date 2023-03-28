@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Route, Router } from "wouter";
 
-import { CurrentBlock, HomePage, Navbar, Settings } from "./components/index";
+import { HomePage, Navbar, Settings } from "./components/index";
 import { useHashLocation } from "./hooks/hashLocation";
 
 const queryClient = new QueryClient({
