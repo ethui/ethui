@@ -3,6 +3,7 @@
 
 mod commands;
 mod context;
+mod db;
 mod error;
 mod rpc;
 mod ws;
@@ -10,7 +11,8 @@ mod ws;
 use color_eyre::Result;
 use tauri::Manager;
 
-fn main() -> Result<()> {
+#[tokio::main]
+async fn main() -> Result<()> {
     env_logger::init();
     color_eyre::install()?;
 
@@ -32,7 +34,7 @@ fn main() -> Result<()> {
         .expect("failed to resolve resource")
         .clone();
 
-    let ctx = context::Context::try_new(db_path)?;
+    let ctx = context::Context::try_new(db_path).await?;
     app.manage(ctx.clone());
     tauri::async_runtime::spawn(async move { ws::ws_server_loop(ctx).await });
 
