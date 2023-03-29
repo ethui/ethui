@@ -8,21 +8,13 @@ mod rpc;
 mod ws;
 
 use color_eyre::Result;
+use tauri::Manager;
 
 fn main() -> Result<()> {
     env_logger::init();
     color_eyre::install()?;
 
-    let ctx = context::Context::new();
-
-    {
-        let ctx = ctx.clone();
-        tauri::async_runtime::spawn(async move { ws::ws_server_loop(ctx.clone()).await });
-    }
-
-    let ctx2 = ctx.clone();
-    tauri::Builder::default()
-        .manage(ctx.clone())
+    let app = tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             commands::get_networks,
             commands::get_current_network,
@@ -31,24 +23,20 @@ fn main() -> Result<()> {
             commands::set_wallet,
             commands::set_networks
         ])
-        .setup(|app| {
-            let db_path = app
-                .path_resolver()
-                .resolve_resource("db.sled")
-                .expect("failed to resolve resource")
-                .clone();
-
-            {
-                tauri::async_runtime::spawn(async move {
-                    let mut ctx = ctx2.lock().await;
-                    ctx.connect_db(db_path).expect("could not connect to DB");
-                });
-            }
-
-            Ok(())
-        })
-        .run(tauri::generate_context!())
+        .build(tauri::generate_context!())
         .expect("error while running tauri application");
+
+    let db_path = app
+        .path_resolver()
+        .resolve_resource("db.sled")
+        .expect("failed to resolve resource")
+        .clone();
+
+    let ctx = context::Context::try_new(db_path)?;
+    app.manage(ctx.clone());
+    tauri::async_runtime::spawn(async move { ws::ws_server_loop(ctx).await });
+
+    app.run(|_, _| {});
 
     Ok(())
 }

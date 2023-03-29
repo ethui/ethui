@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use ethers::providers::{Http, Provider};
 use ethers_core::k256::ecdsa::SigningKey;
 use log::info;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use serde_json::json;
 use tokio::sync::mpsc;
 
@@ -13,7 +13,7 @@ pub use super::network::Network;
 pub use super::wallet::Wallet;
 use crate::error::Result;
 
-#[derive(Debug, Default, Deserialize, Serialize)]
+#[derive(Debug, Serialize)]
 pub struct ContextInner {
     pub wallet: Wallet,
     pub current_network: String,
@@ -21,27 +21,23 @@ pub struct ContextInner {
     #[serde(skip)]
     pub peers: HashMap<SocketAddr, mpsc::UnboundedSender<serde_json::Value>>,
     #[serde(skip)]
-    pub db: Option<sled::Db>,
+    pub db: sled::Db,
 }
 
 impl ContextInner {
-    pub fn new() -> Self {
+    pub fn try_new(db_path: PathBuf) -> Result<Self> {
         let mut networks = HashMap::new();
         networks.insert(String::from("mainnet"), Network::mainnet());
         networks.insert(String::from("goerli"), Network::goerli());
         networks.insert(String::from("anvil"), Network::anvil());
 
-        Self {
+        Ok(Self {
             wallet: Wallet::default(),
             current_network: String::from("mainnet"),
             networks,
-            ..Default::default()
-        }
-    }
-
-    pub fn connect_db(&mut self, path: PathBuf) -> Result<()> {
-        self.db = Some(sled::open(path)?);
-        Ok(())
+            db: sled::open(db_path)?,
+            peers: HashMap::new(),
+        })
     }
 
     pub fn add_peer(&mut self, peer: SocketAddr, snd: mpsc::UnboundedSender<serde_json::Value>) {
