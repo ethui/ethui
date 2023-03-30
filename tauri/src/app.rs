@@ -32,7 +32,7 @@ impl IronApp {
     pub fn get_db_path(&self) -> PathBuf {
         self.0
             .path_resolver()
-            .resolve_resource("db.sled")
+            .resolve_resource("db.sqlite3")
             .expect("failed to resource resource")
             .clone()
     }
