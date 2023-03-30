@@ -1,54 +1,92 @@
 use std::collections::HashMap;
+use std::fs::File;
+use std::io::BufReader;
 use std::net::SocketAddr;
-use std::path::PathBuf;
+use std::path::Path;
 
 use ethers::providers::{Http, Provider};
 use ethers_core::k256::ecdsa::SigningKey;
 use log::info;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tokio::sync::mpsc;
 
 pub use super::network::Network;
 pub use super::wallet::Wallet;
+use crate::app::SETTINGS_PATH;
 use crate::db::DB;
 use crate::error::Result;
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct ContextInner {
     pub wallet: Wallet,
     pub current_network: String,
     pub networks: HashMap<String, Network>,
+
+    /// Deserialized into an empty HashMap
     #[serde(skip)]
     pub peers: HashMap<SocketAddr, mpsc::UnboundedSender<serde_json::Value>>,
+
+    /// This is deserialized with the Default trait which only works after `App` has been
+    /// initialized and `DB_PATH` cell filled
     #[serde(skip)]
     pub db: DB,
 }
 
-impl ContextInner {
-    pub async fn try_new(db_path: PathBuf) -> Result<Self> {
+impl Default for ContextInner {
+    fn default() -> Self {
         let mut networks = HashMap::new();
         networks.insert(String::from("mainnet"), Network::mainnet());
         networks.insert(String::from("goerli"), Network::goerli());
         networks.insert(String::from("anvil"), Network::anvil());
 
-        let db = DB::try_new(db_path).await?;
-
-        Ok(Self {
-            wallet: Wallet::default(),
-            current_network: String::from("mainnet"),
+        Self {
             networks,
-            db,
-            peers: HashMap::new(),
-        })
+            current_network: String::from("mainnet"),
+            wallet: Default::default(),
+            peers: Default::default(),
+            db: Default::default(),
+        }
+    }
+}
+
+impl ContextInner {
+    pub async fn from_settings_file() -> Result<Self> {
+        let path = Path::new(SETTINGS_PATH.get().unwrap());
+
+        let mut res: Self = if path.exists() {
+            let file = File::open(path)?;
+            let reader = BufReader::new(file);
+
+            serde_json::from_reader(reader)?
+        } else {
+            let defaults: Self = Default::default();
+            defaults.save()?;
+            defaults
+        };
+
+        res.db.connect().await?;
+
+        Ok(res)
+    }
+
+    pub fn save(&self) -> Result<()> {
+        let path = Path::new(SETTINGS_PATH.get().unwrap());
+        let file = File::create(path)?;
+
+        serde_json::to_writer_pretty(file, self)?;
+
+        Ok(())
     }
 
     pub fn add_peer(&mut self, peer: SocketAddr, snd: mpsc::UnboundedSender<serde_json::Value>) {
         self.peers.insert(peer, snd);
+        self.save().unwrap();
     }
 
     pub fn remove_peer(&mut self, peer: SocketAddr) {
         self.peers.remove(&peer);
+        self.save().unwrap();
     }
 
     pub fn broadcast<T: Serialize + std::fmt::Debug>(&self, msg: T) {
@@ -73,6 +111,7 @@ impl ContextInner {
                 "params": [new_address]
             }));
         }
+        self.save().unwrap();
     }
 
     /// Changes the currently connected wallet
@@ -96,6 +135,7 @@ impl ContextInner {
                 }
             }));
         }
+        self.save().unwrap();
     }
 
     pub fn set_current_network_by_id(&mut self, new_chain_id: u32) {
@@ -105,11 +145,13 @@ impl ContextInner {
             .find(|n| n.chain_id == new_chain_id)
             .unwrap();
 
-        self.set_current_network(new_network.name.clone())
+        self.set_current_network(new_network.name.clone());
+        self.save().unwrap();
     }
 
     pub fn set_networks(&mut self, networks: Vec<Network>) {
         self.networks = networks.into_iter().map(|n| (n.name.clone(), n)).collect();
+        self.save().unwrap();
     }
 
     pub fn get_current_network(&self) -> Network {

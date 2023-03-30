@@ -4,6 +4,7 @@ pub enum Error {
     JsonError(#[from] serde_json::Error),
     SqlxError(#[from] sqlx::Error),
     SqlxMigrateError(#[from] sqlx::migrate::MigrateError),
+    IOError(#[from] std::io::Error),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -17,6 +18,7 @@ impl std::fmt::Display for Error {
             JsonError(e) => write!(f, "JsonError: {}", e),
             SqlxError(e) => write!(f, "SqlxError: {}", e),
             SqlxMigrateError(e) => write!(f, "SqlxMigrateError: {}", e),
+            IOError(e) => write!(f, "IOError: {}", e),
         }
     }
 }

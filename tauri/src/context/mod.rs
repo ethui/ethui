@@ -2,7 +2,6 @@ mod inner;
 mod network;
 mod wallet;
 
-use std::path::PathBuf;
 use std::sync::Arc;
 
 use futures_util::lock::{Mutex, MutexGuard, MutexLockFuture};
@@ -17,10 +16,13 @@ pub struct Context(Arc<Mutex<ContextInner>>);
 pub type UnlockedContext<'a> = MutexGuard<'a, ContextInner>;
 
 impl Context {
-    pub async fn try_new(db_path: PathBuf) -> Result<Self> {
-        Ok(Self(Arc::new(Mutex::new(
-            ContextInner::try_new(db_path).await?,
-        ))))
+    /// Reads settings from $APPDIR/settings.json
+    ///
+    /// Builds default settings if file does not exist
+    pub async fn from_settings_file() -> Result<Self> {
+        let inner = ContextInner::from_settings_file().await?;
+
+        Ok(Self(Arc::new(Mutex::new(inner))))
     }
 
     pub fn lock(&self) -> MutexLockFuture<'_, ContextInner> {

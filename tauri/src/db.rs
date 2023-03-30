@@ -3,28 +3,49 @@ use std::path::PathBuf;
 use log::debug;
 use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous};
 
-use crate::error::Result;
+use crate::{app::DB_PATH, error::Result};
 
 #[derive(Debug)]
-pub struct DB(sqlx::Pool<sqlx::Sqlite>);
+pub struct DB {
+    path: PathBuf,
+    pool: Option<sqlx::Pool<sqlx::Sqlite>>,
+}
 
 impl DB {
-    pub async fn try_new(db_path: PathBuf) -> Result<Self> {
-        debug!("Opening database at: {:?}", db_path);
+    pub fn new(path: PathBuf) -> Self {
+        Self { path, pool: None }
+    }
+
+    pub async fn connect(&mut self) -> Result<()> {
+        debug!("Opening database at: {:?}", self.path);
         let connect_options = SqliteConnectOptions::new()
-            .filename(db_path)
+            .filename(&self.path)
             .create_if_missing(true)
             .journal_mode(SqliteJournalMode::Wal)
             .synchronous(SqliteSynchronous::Normal)
             .foreign_keys(true);
 
-        let db = SqlitePoolOptions::new()
+        let pool = SqlitePoolOptions::new()
             .connect_with(connect_options)
             .await?;
 
         debug!("Database opened successfully");
-        migrations::run(&db).await?;
-        Ok(Self(db))
+        migrations::run(&pool).await?;
+
+        self.pool = Some(pool);
+
+        Ok(())
+    }
+}
+
+// When instantiating the DB object
+// we assume `DB_PATH` has already been filled by the initialized App
+//
+// This is a helpful way to be able to correctly deserialize the entire context and setup the DB
+// connection along the way
+impl Default for DB {
+    fn default() -> Self {
+        Self::new(PathBuf::from(DB_PATH.get().unwrap()))
     }
 }
 

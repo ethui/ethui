@@ -2309,6 +2309,7 @@ dependencies = [
  "jsonrpc-core",
  "lazy_static",
  "log",
+ "once_cell",
  "serde",
  "serde_json",
  "sqlx",
