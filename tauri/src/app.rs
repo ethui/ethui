@@ -37,14 +37,6 @@ impl IronApp {
         res
     }
 
-    pub fn get_db_path(&self) -> PathBuf {
-        self.get_resource("db.sqlite3")
-    }
-
-    pub fn get_settings_file(&self) -> PathBuf {
-        self.get_resource("settings.json")
-    }
-
     pub fn manage(&self, ctx: Context) {
         self.0.manage(ctx);
     }
@@ -77,6 +69,14 @@ impl IronApp {
             .resolve_resource(name)
             .expect("failed to resource resource")
             .clone()
+    }
+
+    fn get_db_path(&self) -> PathBuf {
+        self.get_resource("db.sqlite3")
+    }
+
+    fn get_settings_file(&self) -> PathBuf {
+        self.get_resource("settings.json")
     }
 }
 
