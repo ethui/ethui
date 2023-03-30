@@ -31,8 +31,6 @@ ethers-core = "=2.0.0"
 jsonrpc-core = "18.0.0"
 sqlx = { version = "0.6.3", features = ["runtime-tokio-rustls", "sqlite", "migrate"] }
 lazy_static = "1.4.0"
-# r2d2_sqlite = "0.21.0"
-# r2d2 = "0.8.10"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
