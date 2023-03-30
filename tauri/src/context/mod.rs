@@ -17,8 +17,10 @@ pub struct Context(Arc<Mutex<ContextInner>>);
 pub type UnlockedContext<'a> = MutexGuard<'a, ContextInner>;
 
 impl Context {
-    pub fn try_new(db_path: PathBuf) -> Result<Self> {
-        Ok(Self(Arc::new(Mutex::new(ContextInner::try_new(db_path)?))))
+    pub async fn try_new(db_path: PathBuf) -> Result<Self> {
+        Ok(Self(Arc::new(Mutex::new(
+            ContextInner::try_new(db_path).await?,
+        ))))
     }
 
     pub fn lock(&self) -> MutexLockFuture<'_, ContextInner> {

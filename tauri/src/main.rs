@@ -4,6 +4,7 @@
 mod app;
 mod commands;
 mod context;
+mod db;
 mod error;
 mod rpc;
 mod ws;
@@ -11,7 +12,8 @@ mod ws;
 use color_eyre::Result;
 use context::Context;
 
-fn main() -> Result<()> {
+#[tokio::main]
+async fn main() -> Result<()> {
     env_logger::init();
     color_eyre::install()?;
 
@@ -19,7 +21,7 @@ fn main() -> Result<()> {
 
     // now we're able to build our context
     // this relies on $APPDIR retrieved from Tauri
-    let ctx = Context::try_new(app.get_db_path())?;
+    let ctx = Context::try_new(app.get_db_path()).await?;
 
     // run websockets server loop
     {

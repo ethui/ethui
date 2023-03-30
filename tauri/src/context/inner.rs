@@ -11,6 +11,7 @@ use tokio::sync::mpsc;
 
 pub use super::network::Network;
 pub use super::wallet::Wallet;
+use crate::db::DB;
 use crate::error::Result;
 
 #[derive(Debug, Serialize)]
@@ -21,21 +22,23 @@ pub struct ContextInner {
     #[serde(skip)]
     pub peers: HashMap<SocketAddr, mpsc::UnboundedSender<serde_json::Value>>,
     #[serde(skip)]
-    pub db: sled::Db,
+    pub db: DB,
 }
 
 impl ContextInner {
-    pub fn try_new(db_path: PathBuf) -> Result<Self> {
+    pub async fn try_new(db_path: PathBuf) -> Result<Self> {
         let mut networks = HashMap::new();
         networks.insert(String::from("mainnet"), Network::mainnet());
         networks.insert(String::from("goerli"), Network::goerli());
         networks.insert(String::from("anvil"), Network::anvil());
 
+        let db = DB::try_new(db_path).await?;
+
         Ok(Self {
             wallet: Wallet::default(),
             current_network: String::from("mainnet"),
             networks,
-            db: sled::open(db_path)?,
+            db,
             peers: HashMap::new(),
         })
     }
