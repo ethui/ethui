@@ -1,16 +1,18 @@
-use color_eyre::Result;
+use std::path::PathBuf;
+
 use tauri::{
-    CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
+    AppHandle, Builder, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
+    SystemTrayMenuItem,
 };
 
-use crate::commands;
+use crate::{commands, context::Context};
 
 pub struct IronApp(tauri::App);
 
 impl IronApp {
     pub fn build() -> Self {
         let tray = Self::build_tray();
-        let app = tauri::Builder::default()
+        let app = Builder::default()
             .invoke_handler(tauri::generate_handler![
                 commands::get_networks,
                 commands::get_current_network,
@@ -20,32 +22,33 @@ impl IronApp {
                 commands::set_networks
             ])
             .system_tray(tray)
-            .on_system_tray_event(|app, event| match event {
-                SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
-                    "quit" => app.exit(0),
-                    "hide" => app.get_window("main").unwrap().hide().unwrap(),
-                    "show" => {
-                        if let Some(w) = app.get_window("main") {
-                            w.show().unwrap()
-                        } else {
-                            tauri::WindowBuilder::new(
-                                app,
-                                "main",
-                                tauri::WindowUrl::App("index.html".into()),
-                            )
-                            .build()
-                            .unwrap();
-                        }
-                    }
-                    _ => {}
-                },
-
-                _ => {}
-            })
+            .on_system_tray_event(on_system_tray_event)
             .build(tauri::generate_context!())
             .expect("error while running tauri application");
 
         Self(app)
+    }
+
+    pub fn get_db_path(&self) -> PathBuf {
+        self.0
+            .path_resolver()
+            .resolve_resource("db.sled")
+            .expect("failed to resource resource")
+            .clone()
+    }
+
+    pub fn manage(&self, ctx: Context) {
+        self.0.manage(ctx);
+    }
+
+    pub fn run(self) {
+        self.0.run(|_, event| match event {
+            // close to system tray
+            tauri::RunEvent::ExitRequested { api, .. } => {
+                api.prevent_exit();
+            }
+            _ => {}
+        });
     }
 
     fn build_tray() -> tauri::SystemTray {
@@ -59,5 +62,34 @@ impl IronApp {
             .add_item(quit);
 
         SystemTray::new().with_menu(tray_menu)
+    }
+}
+
+fn on_system_tray_event(app: &AppHandle, event: SystemTrayEvent) {
+    use SystemTrayEvent::*;
+
+    match event {
+        MenuItemClick { id, .. } => match id.as_str() {
+            // here `"quit".to_string()` defines the menu item id, and the second parameter
+            // is the menu item label.
+            "quit" => app.exit(0),
+            "hide" => app.get_window("main").unwrap().hide().unwrap(),
+            "show" => show_main_window(app),
+            _ => {}
+        },
+
+        DoubleClick { .. } => show_main_window(app),
+
+        _ => {}
+    }
+}
+
+fn show_main_window(app: &AppHandle) {
+    if let Some(w) = app.get_window("main") {
+        w.show().unwrap()
+    } else {
+        tauri::WindowBuilder::new(app, "main", tauri::WindowUrl::App("index.html".into()))
+            .build()
+            .unwrap();
     }
 }
