@@ -29,14 +29,12 @@ impl DB {
 }
 
 mod migrations {
-    use lazy_static::lazy_static;
     use log::debug;
     use sqlx::migrate;
 
     use crate::error::Result;
 
     pub async fn run(pool: &sqlx::Pool<sqlx::Sqlite>) -> Result<()> {
-        let mut conn = pool.acquire().await?;
         debug!("Running migrations");
         migrate!("../migrations/").run(pool).await?;
 

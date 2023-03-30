@@ -33,6 +33,10 @@
       "identifier": "com.naps26.iron",
       "targets": "all"
     },
+    "systemTray": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": true
+    },
     "security": {
       "csp": null
     },
