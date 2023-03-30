@@ -1,11 +1,14 @@
 use std::path::PathBuf;
 
 use log::debug;
-use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous};
+use sqlx::{
+    pool::PoolConnection,
+    sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous},
+};
 
 use crate::{app::DB_PATH, error::Result};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct DB {
     path: PathBuf,
     pool: Option<sqlx::Pool<sqlx::Sqlite>>,
@@ -35,6 +38,10 @@ impl DB {
         self.pool = Some(pool);
 
         Ok(())
+    }
+
+    pub async fn conn(&self) -> Result<PoolConnection<sqlx::Sqlite>> {
+        Ok(self.pool.as_ref().unwrap().acquire().await?)
     }
 }
 

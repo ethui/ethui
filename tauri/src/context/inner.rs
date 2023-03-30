@@ -6,11 +6,12 @@ use std::path::Path;
 
 use ethers::providers::{Http, Provider};
 use ethers_core::k256::ecdsa::SigningKey;
-use log::info;
+use log::debug;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tokio::sync::mpsc;
 
+use super::block_listener::BlockListener;
 pub use super::network::Network;
 pub use super::wallet::Wallet;
 use crate::app::SETTINGS_PATH;
@@ -31,6 +32,9 @@ pub struct ContextInner {
     /// initialized and `DB_PATH` cell filled
     #[serde(skip)]
     pub db: DB,
+
+    #[serde(skip)]
+    block_listener: Option<BlockListener>,
 }
 
 impl Default for ContextInner {
@@ -46,6 +50,7 @@ impl Default for ContextInner {
             wallet: Default::default(),
             peers: Default::default(),
             db: Default::default(),
+            block_listener: Default::default(),
         }
     }
 }
@@ -70,6 +75,25 @@ impl ContextInner {
         Ok(res)
     }
 
+    pub fn init(&mut self) -> Result<()> {
+        self.reset_listener()?;
+        Ok(())
+    }
+
+    fn reset_listener(&mut self) -> Result<()> {
+        if self.current_network == "anvil" {
+            debug!("Initializing block listener for {}", self.current_network);
+            self.block_listener = Some(BlockListener::new(
+                self.get_provider().url().clone(),
+                self.db.clone(),
+            ));
+        } else {
+            self.block_listener = None;
+        }
+
+        Ok(())
+    }
+
     pub fn save(&self) -> Result<()> {
         let path = Path::new(SETTINGS_PATH.get().unwrap());
         let file = File::create(path)?;
@@ -90,8 +114,6 @@ impl ContextInner {
     }
 
     pub fn broadcast<T: Serialize + std::fmt::Debug>(&self, msg: T) {
-        info!("Broadcasting message: {:?}", msg);
-
         self.peers.iter().for_each(|(_, sender)| {
             sender.send(serde_json::to_value(&msg).unwrap()).unwrap();
         });
@@ -136,6 +158,7 @@ impl ContextInner {
             }));
         }
         self.save().unwrap();
+        self.reset_listener().unwrap();
     }
 
     pub fn set_current_network_by_id(&mut self, new_chain_id: u32) {

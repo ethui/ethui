@@ -8,21 +8,23 @@ mod context;
 mod db;
 mod error;
 mod rpc;
+mod store;
 mod ws;
 
-use color_eyre::Result;
 use context::Context;
+use error::Result;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    env_logger::init();
     color_eyre::install()?;
+    env_logger::init();
 
     let app = app::IronApp::build();
 
     // now we're able to build our context
     // this relies on $APPDIR retrieved from Tauri
-    let ctx = Context::from_settings_file().await?;
+    let mut ctx = Context::from_settings_file().await?;
+    ctx.init().await?;
 
     // run websockets server loop
     {
