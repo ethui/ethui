@@ -20,8 +20,8 @@ lint:
 #
 
 extension-dev:
-  parcel watch extension/manifest.json --no-cache --host localhost
+  yarn run parcel watch extension/manifest.json --no-cache --host localhost
 
 tauri-dev:
-  RUST_LOG=iron=debug tauri dev
+  RUST_LOG=iron=debug yarn run tauri dev
 

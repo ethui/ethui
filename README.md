@@ -47,7 +47,7 @@ On the first run, you'll also need to install the development extension.
 1. Open Google Chrome
 2. go to `chrome://extensions`
 3. enable `Developer mode` (upper right corner)
-4. Load unpacked -> choose the `iron/dist` directory
+4. Load unpacked -> choose the `iron/extension/dist` directory
 5. Iron should now be running
 
 For future runs, you may jus need to reload it on `chrome://extensions`.
