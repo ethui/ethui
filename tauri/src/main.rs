@@ -1,5 +1,6 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+#![feature(once_cell)]
 
 mod app;
 mod commands;
@@ -21,7 +22,7 @@ async fn main() -> Result<()> {
 
     // now we're able to build our context
     // this relies on $APPDIR retrieved from Tauri
-    let ctx = Context::try_new(app.get_db_path()).await?;
+    let ctx = Context::from_settings_file().await?;
 
     // run websockets server loop
     {

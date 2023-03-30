@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{path::PathBuf, sync::OnceLock};
 
 use tauri::{
     AppHandle, Builder, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
@@ -8,6 +8,9 @@ use tauri::{
 use crate::{commands, context::Context};
 
 pub struct IronApp(tauri::App);
+
+pub static DB_PATH: OnceLock<PathBuf> = OnceLock::new();
+pub static SETTINGS_PATH: OnceLock<PathBuf> = OnceLock::new();
 
 impl IronApp {
     pub fn build() -> Self {
@@ -26,15 +29,12 @@ impl IronApp {
             .build(tauri::generate_context!())
             .expect("error while running tauri application");
 
-        Self(app)
-    }
+        let res = Self(app);
 
-    pub fn get_db_path(&self) -> PathBuf {
-        self.0
-            .path_resolver()
-            .resolve_resource("db.sqlite3")
-            .expect("failed to resource resource")
-            .clone()
+        DB_PATH.set(res.get_db_path()).unwrap();
+        SETTINGS_PATH.set(res.get_settings_file()).unwrap();
+
+        res
     }
 
     pub fn manage(&self, ctx: Context) {
@@ -62,6 +62,21 @@ impl IronApp {
             .add_item(quit);
 
         SystemTray::new().with_menu(tray_menu)
+    }
+    fn get_resource(&self, name: &str) -> PathBuf {
+        self.0
+            .path_resolver()
+            .resolve_resource(name)
+            .expect("failed to resource resource")
+            .clone()
+    }
+
+    fn get_db_path(&self) -> PathBuf {
+        self.get_resource("db.sqlite3")
+    }
+
+    fn get_settings_file(&self) -> PathBuf {
+        self.get_resource("settings.json")
     }
 }
 
