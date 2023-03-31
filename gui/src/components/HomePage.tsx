@@ -4,6 +4,7 @@ import truncateEthAddress from "truncate-eth-address";
 
 import { CurrentBlock } from ".";
 import { useAccount, useProvider } from "../hooks";
+import { Txs } from "./Txs";
 
 export function HomePage() {
   const provider = useProvider();
@@ -20,6 +21,7 @@ export function HomePage() {
       <div>{address && truncateEthAddress(address)}</div>
       {balance && <div>{ethers.utils.formatEther(balance)} ETH</div>}
       <CurrentBlock />
+      <Txs />
     </>
   );
 }

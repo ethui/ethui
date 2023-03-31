@@ -1,7 +1,6 @@
-use ethers::types::{Address, H256};
+use ethers::types::Address;
 
 use crate::context::{Context, Network, Wallet};
-use crate::db::DB;
 use crate::store::transactions::TransactionStore;
 
 type Ctx<'a> = tauri::State<'a, Context>;
@@ -46,9 +45,9 @@ pub async fn set_wallet(wallet: Wallet, ctx: Ctx<'_>) -> Result<()> {
 }
 
 #[tauri::command]
-pub async fn get_transactions(addr: Address, ctx: Ctx<'_>) -> Result<Vec<String>> {
+pub async fn get_transactions(address: Address, ctx: Ctx<'_>) -> Result<Vec<String>> {
     let ctx = ctx.lock().await;
 
     // TODO: this unwrap is avoidable
-    Ok(ctx.db.get_transactions(addr).await.unwrap())
+    Ok(ctx.db.get_transactions(address).await.unwrap())
 }

@@ -23,11 +23,10 @@ impl TransactionStore for DB {
 
         // TODO: batch this in a single query
         for tx in txs.iter() {
-            debug!("saving tx {}", &tx.hash);
             // TODO: chain_name must come from caller
             sqlx::query(
                 r#"
-            INSERT INTO transactions (hash, chain_name, 'from', 'to')
+            INSERT INTO transactions (hash, chain_name, from_address, to_address)
             VALUES (?,?,?,?)
             "#,
             )
@@ -47,7 +46,8 @@ impl TransactionStore for DB {
         let mut conn = self.conn().await?;
 
         let res: Vec<String> =
-            sqlx::query(r#"SELECT hash FROM transactions WHERE 'from' = ? OR 'to' = ?"#)
+            sqlx::query(r#"SELECT hash FROM transactions WHERE from_address = ? or to_address = ? COLLATE NOCASE"#)
+                .bind(format!("0x{:x}", from_or_to))
                 .map(|row: SqliteRow| row.get("hash"))
                 .fetch_all(&mut conn)
                 .await?;
