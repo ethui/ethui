@@ -32,7 +32,6 @@
     "truncate-eth-address": "^1.0.2",
     "typescript": "^4.9.5",
     "vite": "^4.0.0",
-    "vitest": "^0.29.8",
     "wouter": "^2.10.0",
     "zod": "^3.20.6"
   },
@@ -43,6 +42,7 @@
     "@types/node": "^18.7.10",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.10",
-    "jsdom": "^21.1.1"
+    "jsdom": "^21.1.1",
+    "vitest": "^0.29.8"
   }
 }
