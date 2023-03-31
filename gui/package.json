@@ -8,9 +8,8 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
-    "test:ui": "npm run vitest",
-    "vitest": "vitest run",
-    "vitest:watch": "vitest"
+    "test:ui": "vitest run",
+    "test:ui:watch": "vitest"
   },
   "dependencies": {
     "@heroicons/react": "^2.0.15",
