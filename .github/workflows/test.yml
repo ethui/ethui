@@ -35,12 +35,6 @@ jobs:
       - if: ${{ steps.cache-modules.outputs.cache-hit != 'true' }}
         name: Install nodes
         continue-on-error: true
-        run: npm install
-
-      - name: Build
-        run: npm run build
-
-      - name: Install modules
         run: yarn
 
       - name: Vitest
