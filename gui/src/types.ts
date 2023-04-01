@@ -3,13 +3,20 @@ import { z } from "zod";
 // const formSchema = schema.shape.network;
 export const networkSchema = z.object({
   networks: z.array(
-    z.object({
-      name: z.string().min(1),
-      rpc_url: z.string().min(1),
-      currency: z.string().min(1),
-      chain_id: z.number(),
-      decimals: z.number(),
-    })
+    z
+      .object({
+        name: z.string().min(1),
+        dev: z.boolean().default(false),
+        http_url: z.string().min(1),
+        ws_url: z.string().optional(),
+        currency: z.string().min(1),
+        chain_id: z.number(),
+        decimals: z.number(),
+      })
+      .refine((data) => !data.dev || !data.ws_url || data.ws_url.length > 0, {
+        path: ["ws_url"],
+        message: "WebSockets are mandatory for dev networks",
+      })
   ),
 });
 

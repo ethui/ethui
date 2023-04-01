@@ -4,7 +4,9 @@ use serde::{Deserialize, Serialize};
 pub struct Network {
     pub name: String,
     pub chain_id: u32,
-    pub rpc_url: String,
+    pub dev: bool,
+    pub http_url: String,
+    pub ws_url: Option<String>,
     pub currency: String,
     pub decimals: u32,
 }
@@ -14,9 +16,11 @@ impl Network {
         Self {
             name: String::from("mainnet"),
             chain_id: 1,
-            rpc_url: String::from(
+            dev: false,
+            http_url: String::from(
                 "https://eth-mainnet.g.alchemy.com/v2/rTwL6BTDDWkP3tZJUc_N6shfCSR5hsTs",
             ),
+            ws_url: None,
             currency: String::from("ETH"),
             decimals: 18,
         }
@@ -26,9 +30,11 @@ impl Network {
         Self {
             name: String::from("goerli"),
             chain_id: 5,
-            rpc_url: String::from(
+            dev: false,
+            http_url: String::from(
                 "https://eth-goerli.g.alchemy.com/v2/rTwL6BTDDWkP3tZJUc_N6shfCSR5hsTs",
             ),
+            ws_url: None,
             currency: String::from("ETH"),
             decimals: 18,
         }
@@ -38,7 +44,9 @@ impl Network {
         Self {
             name: String::from("anvil"),
             chain_id: 31337,
-            rpc_url: String::from("http://localhost:8545"),
+            dev: true,
+            http_url: String::from("http://localhost:8545"),
+            ws_url: Some(String::from("ws://localhost:8545")),
             currency: String::from("ETH"),
             decimals: 18,
         }
