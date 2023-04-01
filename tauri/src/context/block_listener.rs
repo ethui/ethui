@@ -10,6 +10,7 @@ use ethers::{
 use futures_util::StreamExt;
 use log::{debug, warn};
 use tokio::sync::mpsc;
+use url::Url;
 
 use crate::{db::DB, error::Error, Result};
 
@@ -25,13 +26,13 @@ enum Msg {
 }
 
 impl BlockListener {
-    pub fn new(url: url::Url, db: DB) -> Self {
+    pub fn new(http_url: Url, ws_url: Url, db: DB) -> Self {
         // TODO: I think this could be a oneshot::channel, but I was running into `Copy` trait problems
         let (quit_snd, quit_rcv) = mpsc::channel(10);
         let (block_snd, block_rcv) = mpsc::unbounded_channel();
 
         tokio::spawn(async move { process(block_rcv, db).await });
-        tokio::spawn(async move { watch(url, quit_rcv, block_snd).await });
+        tokio::spawn(async move { watch(http_url, ws_url, quit_rcv, block_snd).await });
 
         Self { quit_snd }
     }
@@ -67,12 +68,13 @@ impl RetryPolicy<HttpClientError> for AlwaysRetry {
 }
 
 async fn watch(
-    url: url::Url,
+    http_url: Url,
+    ws_url: Url,
     mut quit_rcv: mpsc::Receiver<()>,
     block_snd: mpsc::UnboundedSender<Msg>,
 ) -> Result<()> {
     // retryclient with infinite retries
-    let jsonrpc = Http::new(url.clone());
+    let jsonrpc = Http::new(http_url);
     let client = RetryClientBuilder::default()
         .rate_limit_retries(u32::MAX)
         .timeout_retries(u32::MAX)
@@ -95,8 +97,7 @@ async fn watch(
             .send(Msg::Reset)
             .map_err(|_| Error::WatcherError)?;
 
-        // TODO: we need the ws URL to be provided from settings as well
-        let provider: Provider<Ws> = Provider::<Ws>::connect("ws://localhost:8545")
+        let provider: Provider<Ws> = Provider::<Ws>::connect(&ws_url)
             .await?
             .interval(Duration::from_secs(1));
 

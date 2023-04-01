@@ -10,6 +10,7 @@ use log::debug;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tokio::sync::mpsc;
+use url::Url;
 
 use super::block_listener::BlockListener;
 pub use super::network::Network;
@@ -81,10 +82,14 @@ impl ContextInner {
     }
 
     fn reset_listener(&mut self) -> Result<()> {
-        if self.current_network == "anvil" {
+        let network = self.get_current_network();
+
+        if let (true, Some(ws_url)) = (network.dev, network.ws_url) {
             debug!("Initializing block listener for {}", self.current_network);
             self.block_listener = Some(BlockListener::new(
-                self.get_provider().url().clone(),
+                // TODO: store Url in networks instead of String
+                Url::parse(&network.http_url)?,
+                Url::parse(&ws_url)?,
                 self.db.clone(),
             ));
         } else {
