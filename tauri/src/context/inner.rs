@@ -160,7 +160,7 @@ impl ContextInner {
 
     pub fn get_provider(&self) -> Provider<Http> {
         let network = self.get_current_network();
-        Provider::<Http>::try_from(network.rpc_url).unwrap()
+        Provider::<Http>::try_from(network.http_url).unwrap()
     }
 
     pub fn get_signer(&self) -> ethers::signers::Wallet<SigningKey> {

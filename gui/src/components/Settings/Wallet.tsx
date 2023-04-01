@@ -17,7 +17,7 @@ export function WalletSettings() {
     register,
     handleSubmit,
     reset,
-    formState: { isDirty, isValid, errors },
+    formState: { isValid, dirtyFields, errors },
     control,
     watch,
     trigger,
@@ -25,6 +25,8 @@ export function WalletSettings() {
     mode: "onBlur",
     resolver: zodResolver(walletSchema),
   });
+  // TODO: https://github.com/react-hook-form/react-hook-form/issues/3213
+  const isDirtyAlt = !!Object.keys(dirtyFields).length;
 
   const onSubmit = useCallback(
     async (data: FieldValues) => {
@@ -43,17 +45,17 @@ export function WalletSettings() {
   >({});
 
   // refresh listed addresses when mnemonic/path changes
-  const [mnemonic, derivationPath] = watch(["mnemonic", "derivation_path"]);
+  const [mnemonic, derivationPath] = watch(["mnemonic", "derivationPath"]);
 
   useDebouncedEffect(() => {
-    if ((isDirty && !isValid) || !mnemonic || !derivationPath) return;
+    if ((isDirtyAlt && !isValid) || !mnemonic || !derivationPath) return;
     try {
       const addresses = deriveFiveAddresses(mnemonic, derivationPath);
       setDerivedAddresses(addresses);
     } catch (err) {
       console.error(err);
     }
-  }, [isValid, mnemonic, derivationPath, trigger]);
+  }, [isDirtyAlt, isValid, mnemonic, derivationPath, trigger]);
 
   if (!wallet) return <>Loading</>;
 
@@ -82,8 +84,8 @@ export function WalletSettings() {
         defaultValue={wallet.idx}
       />
       <div className="m-2">
-        <Button type="submit" disabled={!isDirty || !isValid}>
-          {isDirty ? "Save" : "Saved"}
+        <Button type="submit" disabled={!isDirtyAlt || !isValid}>
+          {isDirtyAlt ? "Save" : "Saved"}
         </Button>
       </div>
     </form>

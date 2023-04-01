@@ -6,11 +6,13 @@ import { useFieldArray, useForm } from "react-hook-form";
 
 import { useInvoke } from "../../hooks/tauri";
 import { Network, networkSchema } from "../../types";
-import { FieldText } from "./Fields";
+import { FieldCheckbox, FieldText } from "./Fields";
 
 const emptyNetwork: Network = {
   name: "",
-  rpc_url: "",
+  dev: false,
+  http_url: "",
+  ws_url: "",
   currency: "",
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   chain_id: undefined!,
@@ -26,12 +28,16 @@ export function NetworkSettings() {
     handleSubmit,
     reset,
     control,
-    formState: { isDirty, isValid, errors },
+    formState: { isValid, dirtyFields, errors },
   } = useForm({
     mode: "onBlur",
     resolver: zodResolver(networkSchema),
     defaultValues: { networks },
   });
+  // TODO: https://github.com/react-hook-form/react-hook-form/issues/3213
+  const isDirtyAlt = !!Object.keys(dirtyFields).length;
+  console.log(errors);
+  console.log("isValid", isValid);
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -73,13 +79,25 @@ export function NetworkSettings() {
                   valueAsNumber={true}
                   error={err.chain_id}
                 />
+                <FieldCheckbox
+                  name="Dev mode"
+                  field={`networks.${index}.dev`}
+                  register={register}
+                />
               </div>
               <FieldText
-                name="RPC URL"
-                field={`networks.${index}.rpc_url`}
+                name="HTTP RPC"
+                field={`networks.${index}.http_url`}
                 register={register}
-                value={item?.rpc_url}
-                error={err.rpc_url}
+                value={item?.http_url}
+                error={err.http_url}
+              />
+              <FieldText
+                name="WebSockets URL"
+                field={`networks.${index}.ws_url`}
+                register={register}
+                value={item?.ws_url}
+                error={err.ws_url}
               />
               <div className="flex gap-4">
                 <FieldText
@@ -114,8 +132,8 @@ export function NetworkSettings() {
         </Button>
       </div>
       <div className="my-2">
-        <Button type="submit" disabled={!isDirty || !isValid}>
-          {isDirty ? "Save" : "Saved"}
+        <Button type="submit" disabled={!isDirtyAlt || !isValid}>
+          {isDirtyAlt ? "Save" : "Saved"}
         </Button>
       </div>
     </form>
