@@ -33,8 +33,8 @@ impl Default for Handler {
 
 impl Handler {
     pub async fn handle(&self, request: String, ctx: Context) -> Option<String> {
-        info!("RPC request: {}", request.to_string());
-        self.io.handle_request(&request.to_string(), ctx).await
+        info!("{}", request);
+        self.io.handle_request(&request, ctx).await
     }
 
     fn add_handlers(&mut self) {

@@ -7,12 +7,14 @@ import { useInvoke } from "./tauri";
 export function useProvider() {
   const { data: network } = useInvoke<Network>("get_current_network");
 
-  const [provider, setProvider] = useState<JsonRpcProvider | null>(null);
+  const [provider, setProvider] = useState<JsonRpcProvider | undefined>(
+    undefined
+  );
 
   useEffect(() => {
     if (!network) return;
 
-    const provider = new JsonRpcProvider(network.rpc_url);
+    const provider = new JsonRpcProvider(network.http_url);
     setProvider(provider);
   }, [network]);
 
