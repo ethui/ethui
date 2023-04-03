@@ -4,3 +4,4 @@ dist
 parcel-bundle-reports
 tsconfig.tsbuildinfo
 target/
+!migrations/*.sql
