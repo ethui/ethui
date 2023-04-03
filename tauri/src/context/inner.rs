@@ -33,9 +33,8 @@ pub struct ContextInner {
     /// initialized and `DB_PATH` cell filled
     #[serde(skip)]
     pub db: DB,
-
-    #[serde(skip)]
-    block_listener: Option<BlockListener>,
+    // #[serde(skip)]
+    // block_listener: Option<BlockListener>,
 }
 
 impl Default for ContextInner {
@@ -51,7 +50,7 @@ impl Default for ContextInner {
             wallet: Default::default(),
             peers: Default::default(),
             db: Default::default(),
-            block_listener: Default::default(),
+            // block_listener: Default::default(),
         }
     }
 }
@@ -71,31 +70,16 @@ impl ContextInner {
             defaults
         };
 
-        res.db.connect().await?;
+        res.init().await?;
 
         Ok(res)
     }
 
-    pub fn init(&mut self) -> Result<()> {
-        self.reset_listener()?;
-        Ok(())
-    }
-
-    fn reset_listener(&mut self) -> Result<()> {
-        let network = self.get_current_network();
-
-        if let (true, Some(ws_url)) = (network.dev, network.ws_url) {
-            debug!("Initializing block listener for {}", self.current_network);
-            self.block_listener = Some(BlockListener::new(
-                // TODO: store Url in networks instead of String
-                Url::parse(&network.http_url)?,
-                Url::parse(&ws_url)?,
-                self.db.clone(),
-            ));
-        } else {
-            self.block_listener = None;
+    pub async fn init(&mut self) -> Result<()> {
+        self.db.connect().await?;
+        for network in self.networks.values_mut() {
+            network.reset_listener(&self.db)?;
         }
-
         Ok(())
     }
 
@@ -163,7 +147,6 @@ impl ContextInner {
             }));
         }
         self.save().unwrap();
-        self.reset_listener().unwrap();
     }
 
     pub fn set_current_network_by_id(&mut self, new_chain_id: u32) {

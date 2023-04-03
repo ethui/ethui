@@ -40,8 +40,8 @@ impl DB {
         Ok(())
     }
 
-    pub async fn conn(&self) -> Result<PoolConnection<sqlx::Sqlite>> {
-        Ok(self.pool.as_ref().unwrap().acquire().await?)
+    pub fn pool(&self) -> &sqlx::Pool<sqlx::Sqlite> {
+        self.pool.as_ref().unwrap()
     }
 }
 

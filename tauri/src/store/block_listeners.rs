@@ -5,46 +5,82 @@ use sqlx::Row;
 use crate::db::DB;
 use crate::error::Result;
 
+#[derive(Debug)]
+pub struct ListenerState {
+    pub chain_id: u32,
+    pub last_known_block: u32,
+}
+
+impl ListenerState {
+    pub fn new(chain_id: u32) -> Self {
+        Self {
+            chain_id,
+            last_known_block: 0,
+        }
+    }
+}
+
+impl TryFrom<SqliteRow> for ListenerState {
+    type Error = crate::error::Error;
+
+    fn try_from(value: SqliteRow) -> Result<Self> {
+        Ok(Self {
+            chain_id: value.try_get("chain_id")?,
+            last_known_block: value.try_get("last_known_lock")?,
+        })
+    }
+}
+
 #[async_trait]
 pub trait BlockListenerStore {
-    async fn get_last_known_block(&self, network: &str) -> Result<u32>;
-    async fn set_last_known_block(&self, network: &str, block: u32) -> Result<()>;
+    async fn get_block_listener_state(&self, chain_id: u32) -> Result<ListenerState>;
+    async fn set_block_listener_state(&self, state: &ListenerState) -> Result<()>;
+    async fn clear_block_listener_state(&self, chain_id: u32) -> Result<()>;
 }
 
 #[async_trait]
 impl BlockListenerStore for DB {
-    async fn get_last_known_block(&self, network: &str) -> Result<u32> {
-        let mut conn = self.conn().await?;
-
-        let res: Option<u32> = sqlx::query(
-            r#"
-            SELECT block 
-            FROM last_known_block 
-            WHERE network = ?
-            "#,
-        )
-        .bind(network)
-        .map(|row: SqliteRow| row.get("block"))
-        .fetch_one(&mut conn)
-        .await?;
-
-        Ok(res.unwrap_or(0))
-    }
-
-    async fn set_last_known_block(&self, network: &str, block: u32) -> Result<()> {
-        let mut conn = self.conn().await?;
-
+    async fn get_block_listener_state(&self, chain_id: u32) -> Result<ListenerState> {
         sqlx::query(
             r#"
-            INSERT INTO last_known_block (network, last_known_block) 
-            VALUES (?, ?) ON CONFLICT(network) 
-            DO UPDATE SET block = ?
+            SELECT *
+            FROM block
+            WHERE chain_id = ?
             "#,
         )
-        .bind(network)
-        .bind(block)
-        .bind(block)
-        .execute(&mut conn)
+        .bind(chain_id)
+        .map(|row: SqliteRow| row.try_into())
+        .fetch_one(self.pool())
+        .await?
+    }
+
+    async fn set_block_listener_state(&self, state: &ListenerState) -> Result<()> {
+        sqlx::query(
+            r#"
+            INSERT INTO block_listeners (chain_id, last_known_block) 
+            VALUES (?, ?ON CONFLICT(chain_id) 
+            DO UPDATE SET last_known_block = ?
+            "#,
+        )
+        .bind(&state.chain_id)
+        .bind(&state.last_known_block)
+        .bind(&state.last_known_block)
+        .execute(self.pool())
+        .await?;
+
+        Ok(())
+    }
+
+    async fn clear_block_listener_state(&self, chain_id: u32) -> Result<()> {
+        sqlx::query(
+            r#"
+        DELETE 
+        FROM block_listeners
+        WHERE chain_id = ?
+        "#,
+        )
+        .bind(chain_id)
+        .execute(self.pool())
         .await?;
 
         Ok(())

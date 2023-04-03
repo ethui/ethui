@@ -27,7 +27,7 @@ impl Context {
     }
 
     pub async fn init(&mut self) -> Result<()> {
-        self.lock().await.init()
+        self.lock().await.init().await
     }
 
     pub fn lock(&self) -> MutexLockFuture<'_, ContextInner> {

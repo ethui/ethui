@@ -1,6 +1,5 @@
 use async_trait::async_trait;
 use ethers::types::{Address, Transaction};
-use log::debug;
 use sqlx::sqlite::SqliteRow;
 use sqlx::Row;
 
@@ -19,8 +18,6 @@ pub trait TransactionStore {
 #[async_trait]
 impl TransactionStore for DB {
     async fn save_transactions(&self, txs: Vec<Transaction>) -> Result<()> {
-        let mut conn = self.conn().await?;
-
         // TODO: batch this in a single query
         for tx in txs.iter() {
             // TODO: chain_name must come from caller
@@ -28,13 +25,14 @@ impl TransactionStore for DB {
                 r#"
             INSERT INTO transactions (hash, chain_name, from_address, to_address)
             VALUES (?,?,?,?)
+            ON CONFLICT(hash) DO NOTHING
             "#,
             )
             .bind(format!("0x{:x}", tx.hash))
             .bind("anvil")
             .bind(format!("0x{:x}", tx.from))
             .bind(format!("0x{:x}", tx.to.unwrap_or_default()))
-            .execute(&mut conn)
+            .execute(self.pool())
             .await?;
             // TODO: report this errors in await?. Currently they're being silently ignored, because the task just gets killed
         }
@@ -43,23 +41,19 @@ impl TransactionStore for DB {
     }
 
     async fn get_transactions(&self, from_or_to: Address) -> Result<Vec<String>> {
-        let mut conn = self.conn().await?;
-
         let res: Vec<String> =
             sqlx::query(r#"SELECT hash FROM transactions WHERE from_address = ? or to_address = ? COLLATE NOCASE"#)
                 .bind(format!("0x{:x}", from_or_to))
                 .map(|row: SqliteRow| row.get("hash"))
-                .fetch_all(&mut conn)
+                .fetch_all(self.pool())
                 .await?;
 
         Ok(res)
     }
 
     async fn truncate_transactions(&self) -> Result<()> {
-        debug!("truncating transactions");
-
         sqlx::query("DELETE FROM transactions")
-            .execute(&mut self.conn().await?)
+            .execute(self.pool())
             .await?;
 
         Ok(())
