@@ -7,7 +7,7 @@ use ethers::{
     },
     types::{Block, Transaction, U64},
 };
-use futures_util::{Stream, StreamExt};
+use futures_util::StreamExt;
 use log::{debug, warn};
 use tokio::sync::mpsc;
 use url::Url;
@@ -102,6 +102,14 @@ impl RetryPolicy<HttpClientError> for AlwaysRetry {
     }
 }
 
+/// Watches a chain for new blocks and sends them to the block processor This monster is very
+/// convoluted:
+///     1. waits for an RPC node to be available (since local devnets may be intermittent)
+///     2. once it does, syncs from scratch, since any past history may no longer be valid
+///     3. listens to new blocks via websockets
+///     4. if anvil_nodeInfo is available, also check forkBlockNumber, and prevent fetching blocks
+///        past that (so that forked anvil don't overload or past fetching logic)
+// TODO: refactor
 async fn watch(
     db: DB,
     chain_id: u32,
@@ -143,44 +151,33 @@ async fn watch(
             .await?
             .interval(Duration::from_secs(1));
 
-        // TODO: if we happen to subscribe only when a few blocks have been through, we'll miss a
-        // few txs in that case though, we need to consider if we're in a mainnet fork, in which
-        // case blindly fetching all previous blocks is a bad idea
+        // if we're in a forked anvil, grab the fork block number, so we don't index too much
+        let node_info: serde_json::Value = provider
+            .request("anvil_nodeInfo", ())
+            .await
+            .unwrap_or(serde_json::Value::Null);
+        let fork_block = node_info["forkConfig"]["forkBlockNumber"]
+            .as_u64()
+            .unwrap_or(0);
+
         let mut stream = provider.subscribe_blocks().await?;
 
-        // let mut past_stream: None;
-        // catch up to past blocks
-        let past_range = if block_number > state.last_known_block.into() {
-            (state.last_known_block as u64 + 1)..block_number.low_u64()
-            // TODO: catch up
-        } else {
-            (state.last_known_block as u64 + 1)..0
-        };
-
-        let iter = past_range
-            .into_iter()
-            .map(|b| provider.get_block_with_txs(b));
-
-        let mut past_stream = futures_util::stream::iter(iter);
-
-        // let past_stream = futures_util::stream::iter(block_range);
+        // catch up with everything behind
+        // from the moment the fork started (or genesis if not a fork)
+        let past_range = fork_block..=block_number.low_u64();
+        for b in past_range.into_iter() {
+            if let Some(b) = provider.get_block_with_txs(b).await? {
+                block_snd
+                    .send(Msg::Block(b))
+                    .map_err(|_| Error::WatcherError)?
+            }
+        }
 
         'ws: loop {
-            debug!("here");
             // wait for the next block
             // once again, break out if we receive a close signal
             tokio::select! {
                 _ = quit_rcv.recv() => break 'watcher,
-
-                b = past_stream.next() => {
-                    match b {
-                        // TODO: this is causing an infite pool loop for some reason
-                        Some(b) => {
-                            block_snd.send(Msg::Block(b.await.unwrap().unwrap())).map_err(|_|Error::WatcherError)?;
-                        },
-                        None => break 'ws,
-                    }
-                }
 
                 b = stream.next() => {
                     match b {

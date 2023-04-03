@@ -1,8 +1,4 @@
-import {
-  ArrowRightIcon,
-  MapPinIcon,
-  UsersIcon,
-} from "@heroicons/react/20/solid";
+import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import classnames from "classnames";
 import { formatEther } from "ethers/lib/utils";
 import useSWR from "swr";

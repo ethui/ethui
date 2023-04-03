@@ -6,13 +6,10 @@ use std::path::Path;
 
 use ethers::providers::{Http, Provider};
 use ethers_core::k256::ecdsa::SigningKey;
-use log::debug;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tokio::sync::mpsc;
-use url::Url;
 
-use super::block_listener::BlockListener;
 pub use super::network::Network;
 pub use super::wallet::Wallet;
 use crate::app::SETTINGS_PATH;

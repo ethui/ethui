@@ -1,10 +1,7 @@
 use std::path::PathBuf;
 
 use log::debug;
-use sqlx::{
-    pool::PoolConnection,
-    sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous},
-};
+use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous};
 
 use crate::{app::DB_PATH, error::Result};
 
