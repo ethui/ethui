@@ -174,6 +174,7 @@ async fn watch(
 
                 b = past_stream.next() => {
                     match b {
+                        // TODO: this is causing an infite pool loop for some reason
                         Some(b) => {
                             block_snd.send(Msg::Block(b.await.unwrap().unwrap())).map_err(|_|Error::WatcherError)?;
                         },
