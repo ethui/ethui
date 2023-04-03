@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 
-import { useProvider } from "../hooks";
+import { useClient } from "../hooks";
 
 export function CurrentBlock() {
-  const provider = useProvider();
-  const [block, setBlock] = useState(0);
+  const client = useClient();
+  const [block, setBlock] = useState<bigint>(0n);
 
   // update block number every few seconds
   useEffect(() => {
     const update = async () => {
-      if (!provider) return;
+      if (!client) return;
 
-      const block = await provider.getBlockNumber();
+      const block = await client.getBlockNumber();
       setBlock(block);
     };
 
@@ -19,7 +19,7 @@ export function CurrentBlock() {
     const interval = setInterval(update, 2000);
 
     return () => clearInterval(interval);
-  }, [provider, block]);
+  }, [client, block]);
 
   return <p>Block: {block.toString()}</p>;
 }

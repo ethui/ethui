@@ -1,24 +1,24 @@
-import { BigNumber, ethers } from "ethers";
 import { useEffect, useState } from "react";
 import truncateEthAddress from "truncate-eth-address";
+import { formatEther } from "viem";
 
 import { CurrentBlock } from ".";
-import { useAccount, useProvider } from "../hooks";
+import { useAccount, useClient } from "../hooks";
 
 export function HomePage() {
-  const provider = useProvider();
+  const client = useClient();
   const address = useAccount();
-  const [balance, setBalance] = useState(BigNumber.from(0));
+  const [balance, setBalance] = useState<bigint>();
 
   useEffect(() => {
-    if (!address || !provider) return;
-    async () => setBalance(await provider.getBalance(address));
-  }, [provider, address, balance]);
+    if (!address || !client) return;
+    async () => setBalance(await client.getBalance({ address }));
+  }, [client, address, balance]);
 
   return (
     <>
       <div>{address && truncateEthAddress(address)}</div>
-      {balance && <div>{ethers.utils.formatEther(balance)} ETH</div>}
+      {balance && <div>{formatEther(balance)} ETH</div>}
       <CurrentBlock />
     </>
   );
