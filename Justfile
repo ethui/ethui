@@ -6,7 +6,8 @@ setup:
   cargo build
 
 dev:
-  RUST_LOG=iron=debug yarn run tauri dev
+  rm -rf target/debug/db.*
+  yarn run tauri dev
 
 lint:
   cargo clippy
