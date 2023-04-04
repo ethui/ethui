@@ -22,7 +22,8 @@ impl IronApp {
                 commands::set_current_network,
                 commands::get_wallet,
                 commands::set_wallet,
-                commands::set_networks
+                commands::set_networks,
+                commands::get_transactions
             ])
             .system_tray(tray)
             .on_system_tray_event(on_system_tray_event)

@@ -1,3 +1,4 @@
+mod block_listener;
 mod inner;
 mod network;
 mod wallet;
@@ -23,6 +24,10 @@ impl Context {
         let inner = ContextInner::from_settings_file().await?;
 
         Ok(Self(Arc::new(Mutex::new(inner))))
+    }
+
+    pub async fn init(&mut self) -> Result<()> {
+        self.lock().await.init().await
     }
 
     pub fn lock(&self) -> MutexLockFuture<'_, ContextInner> {

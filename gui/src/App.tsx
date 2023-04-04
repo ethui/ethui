@@ -13,9 +13,9 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <div className="bg-slate-200 min-h-screen p-4">
         <Router hook={useHashLocation}>
-          <main className="container mx-auto px-4 py-4 bg-white rounded-box ">
+          <main className="container mx-auto">
             <Navbar />
-            <div className="gap-4 items-center py-8 px-4">
+            <div className="gap-4 items-center bg-white">
               <Route path="/" component={HomePage} />
               <Route path="/settings" component={Settings} />
             </div>

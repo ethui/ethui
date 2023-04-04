@@ -6,7 +6,6 @@ use std::path::Path;
 
 use ethers::providers::{Http, Provider};
 use ethers_core::k256::ecdsa::SigningKey;
-use log::info;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tokio::sync::mpsc;
@@ -31,6 +30,8 @@ pub struct ContextInner {
     /// initialized and `DB_PATH` cell filled
     #[serde(skip)]
     pub db: DB,
+    // #[serde(skip)]
+    // block_listener: Option<BlockListener>,
 }
 
 impl Default for ContextInner {
@@ -46,6 +47,7 @@ impl Default for ContextInner {
             wallet: Default::default(),
             peers: Default::default(),
             db: Default::default(),
+            // block_listener: Default::default(),
         }
     }
 }
@@ -65,9 +67,17 @@ impl ContextInner {
             defaults
         };
 
-        res.db.connect().await?;
+        res.init().await?;
 
         Ok(res)
+    }
+
+    pub async fn init(&mut self) -> Result<()> {
+        self.db.connect().await?;
+        for network in self.networks.values_mut() {
+            network.reset_listener(&self.db)?;
+        }
+        Ok(())
     }
 
     pub fn save(&self) -> Result<()> {
@@ -90,8 +100,6 @@ impl ContextInner {
     }
 
     pub fn broadcast<T: Serialize + std::fmt::Debug>(&self, msg: T) {
-        info!("Broadcasting message: {:?}", msg);
-
         self.peers.iter().for_each(|(_, sender)| {
             sender.send(serde_json::to_value(&msg).unwrap()).unwrap();
         });
