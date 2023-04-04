@@ -36,7 +36,7 @@ pub static SETTINGS_PATH: OnceLock<PathBuf> = OnceLock::new();
 
 impl IronApp {
     pub fn build() -> Self {
-        let (tx, rx) = mpsc::unbounded_channel();
+        let (snd, rcv) = mpsc::unbounded_channel();
 
         let tray = Self::build_tray();
         let app = Builder::default()
@@ -49,7 +49,15 @@ impl IronApp {
                 commands::set_networks,
                 commands::get_transactions
             ])
-            .manage(Mutex::new(rx))
+            .setup(|app| {
+                let handle = app.handle();
+
+                tauri::async_runtime::spawn(async move {
+                    event_listener(handle, rcv).await;
+                });
+
+                Ok(())
+            })
             .system_tray(tray)
             .on_system_tray_event(on_system_tray_event)
             .build(tauri::generate_context!())
@@ -57,7 +65,7 @@ impl IronApp {
 
         let res = Self {
             app: Some(app),
-            sender: tx,
+            sender: snd,
         };
 
         DB_PATH.set(res.get_db_path()).unwrap();
@@ -71,15 +79,7 @@ impl IronApp {
     }
 
     pub fn run(&mut self) {
-        self.app.take().unwrap().run(|app, event| {
-            // coisas
-            let rx = app.state::<Mutex<mpsc::UnboundedReceiver<IronEvent>>>();
-            while let Ok(msg) = rx.lock().unwrap().try_recv() {
-                let window = app.get_window("main").unwrap();
-                window.emit(msg.label(), &msg).unwrap();
-                debug!("emit_to main: {:?}", msg);
-            }
-
+        self.app.take().unwrap().run(|_, event| {
             if let tauri::RunEvent::ExitRequested { api, .. } = event {
                 api.prevent_exit();
             }
@@ -121,8 +121,6 @@ fn on_system_tray_event(app: &AppHandle, event: SystemTrayEvent) {
 
     match event {
         MenuItemClick { id, .. } => match id.as_str() {
-            // here `"quit".to_string()` defines the menu item id, and the second parameter
-            // is the menu item label.
             "quit" => app.exit(0),
             "hide" => app.get_window("main").unwrap().hide().unwrap(),
             "show" => show_main_window(app),
@@ -142,5 +140,12 @@ fn show_main_window(app: &AppHandle) {
         tauri::WindowBuilder::new(app, "main", tauri::WindowUrl::App("index.html".into()))
             .build()
             .unwrap();
+    }
+}
+
+async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<IronEvent>) {
+    while let (Some(msg), Some(window)) = (rcv.recv().await, handle.get_window("main")) {
+        window.emit(msg.label(), &msg).unwrap();
+        debug!("emit_to main: {:?}", msg);
     }
 }
