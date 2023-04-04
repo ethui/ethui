@@ -8,7 +8,7 @@ use crate::{app::DB_PATH, error::Result};
 #[derive(Debug, Clone)]
 pub struct DB {
     path: PathBuf,
-    pool: Option<sqlx::Pool<sqlx::Sqlite>>,
+    pub pool: Option<sqlx::Pool<sqlx::Sqlite>>,
 }
 
 impl DB {
@@ -39,6 +39,10 @@ impl DB {
 
     pub fn pool(&self) -> &sqlx::Pool<sqlx::Sqlite> {
         self.pool.as_ref().unwrap()
+    }
+
+    pub async fn tx(&self) -> Result<sqlx::Transaction<sqlx::Sqlite>> {
+        Ok(self.pool.clone().unwrap().begin().await?)
     }
 }
 

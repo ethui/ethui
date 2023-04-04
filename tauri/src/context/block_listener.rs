@@ -51,7 +51,8 @@ impl BlockListener {
 
         {
             let db = self.db.clone();
-            tokio::spawn(async move { process(block_rcv, db).await });
+            let chain_id = self.chain_id.clone();
+            tokio::spawn(async move { process(block_rcv, chain_id, db).await });
         }
 
         {
@@ -195,11 +196,12 @@ async fn watch(
     Ok(())
 }
 
-async fn process(mut block_rcv: mpsc::UnboundedReceiver<Msg>, db: DB) -> Result<()> {
+async fn process(mut block_rcv: mpsc::UnboundedReceiver<Msg>, chain_id: u32, db: DB) -> Result<()> {
+    // TODO: broadcast this info to the frontend, so it can refresh right away
     while let Some(msg) = block_rcv.recv().await {
         match msg {
             Msg::Reset => db.truncate_transactions().await?,
-            Msg::Block(block) => db.save_transactions(block.transactions).await?,
+            Msg::Block(block) => db.save_transactions(chain_id, block.transactions).await?,
         }
     }
 
