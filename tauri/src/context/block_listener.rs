@@ -143,9 +143,7 @@ async fn watch(
             Ok(res) = client.request::<_, U64>("eth_blockNumber", ()) => res
         };
 
-        block_snd
-            .send(Msg::Reset)
-            .map_err(|_| Error::Watcher)?;
+        block_snd.send(Msg::Reset).map_err(|_| Error::Watcher)?;
 
         let provider: Provider<Ws> = Provider::<Ws>::connect(&ws_url)
             .await?
@@ -167,9 +165,7 @@ async fn watch(
         let past_range = fork_block..=block_number.low_u64();
         for b in past_range.into_iter() {
             if let Some(b) = provider.get_block_with_txs(b).await? {
-                block_snd
-                    .send(Msg::Block(b))
-                    .map_err(|_| Error::Watcher)?
+                block_snd.send(Msg::Block(b)).map_err(|_| Error::Watcher)?
             }
         }
 
@@ -199,7 +195,7 @@ async fn process(mut block_rcv: mpsc::UnboundedReceiver<Msg>, chain_id: u32, db:
     // TODO: broadcast this info to the frontend, so it can refresh right away
     while let Some(msg) = block_rcv.recv().await {
         match msg {
-            Msg::Reset => db.truncate_transactions().await?,
+            Msg::Reset => db.truncate_transactions(chain_id).await?,
             Msg::Block(block) => db.save_transactions(chain_id, block.transactions).await?,
         }
     }
