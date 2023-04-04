@@ -75,7 +75,9 @@ function Receipt({ hash }: { hash: string }) {
                   className="h-5 w-5 text-gray-400 sm:mx-2"
                   aria-hidden="true"
                 />
-                {truncateEthAddress(receipt.to)}
+                {receipt.to
+                  ? truncateEthAddress(receipt.to)
+                  : "Contract Deploy"}
               </p>
               <p className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 ml-5">
                 {formatEther(tx.value)} Ξ
