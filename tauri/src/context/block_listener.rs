@@ -12,9 +12,12 @@ use log::{debug, warn};
 use tokio::sync::mpsc;
 use url::Url;
 
-use crate::store::{
-    block_listeners::{BlockListenerStore, ListenerState},
-    transactions::TransactionStore,
+use crate::{
+    app::IronEvent,
+    store::{
+        block_listeners::{BlockListenerStore, ListenerState},
+        transactions::TransactionStore,
+    },
 };
 use crate::{db::DB, error::Error, Result};
 
@@ -24,22 +27,31 @@ pub struct BlockListener {
     http_url: Url,
     ws_url: Url,
     quit_snd: Option<mpsc::Sender<()>>,
+    window_snd: mpsc::UnboundedSender<IronEvent>,
     db: DB,
 }
 
 #[derive(Debug)]
 enum Msg {
+    CaughtUp,
     Reset,
     Block(Block<Transaction>),
 }
 
 impl BlockListener {
-    pub fn new(chain_id: u32, http_url: Url, ws_url: Url, db: DB) -> Self {
+    pub fn new(
+        chain_id: u32,
+        http_url: Url,
+        ws_url: Url,
+        db: DB,
+        window_snd: mpsc::UnboundedSender<IronEvent>,
+    ) -> Self {
         Self {
             chain_id,
             http_url,
             ws_url,
             db,
+            window_snd,
             quit_snd: None,
         }
     }
@@ -52,7 +64,8 @@ impl BlockListener {
         {
             let db = self.db.clone();
             let chain_id = self.chain_id;
-            tokio::spawn(async move { process(block_rcv, chain_id, db).await });
+            let window_snd = self.window_snd.clone();
+            tokio::spawn(async move { process(block_rcv, window_snd, chain_id, db).await });
         }
 
         {
@@ -130,7 +143,6 @@ async fn watch(
         .get_block_listener_state(chain_id)
         .await
         .unwrap_or_else(|_| ListenerState::new(chain_id));
-    debug!("{:?}", state);
 
     'watcher: loop {
         // retry forever
@@ -143,9 +155,7 @@ async fn watch(
             Ok(res) = client.request::<_, U64>("eth_blockNumber", ()) => res
         };
 
-        block_snd
-            .send(Msg::Reset)
-            .map_err(|_| Error::Watcher)?;
+        block_snd.send(Msg::Reset).map_err(|_| Error::Watcher)?;
 
         let provider: Provider<Ws> = Provider::<Ws>::connect(&ws_url)
             .await?
@@ -167,11 +177,12 @@ async fn watch(
         let past_range = fork_block..=block_number.low_u64();
         for b in past_range.into_iter() {
             if let Some(b) = provider.get_block_with_txs(b).await? {
-                block_snd
-                    .send(Msg::Block(b))
-                    .map_err(|_| Error::Watcher)?
+                debug!("syncing block: {}", b.number.unwrap());
+                block_snd.send(Msg::Block(b)).map_err(|_| Error::Watcher)?
             }
         }
+
+        block_snd.send(Msg::CaughtUp).map_err(|_| Error::Watcher)?;
 
         'ws: loop {
             // wait for the next block
@@ -195,12 +206,29 @@ async fn watch(
     Ok(())
 }
 
-async fn process(mut block_rcv: mpsc::UnboundedReceiver<Msg>, chain_id: u32, db: DB) -> Result<()> {
-    // TODO: broadcast this info to the frontend, so it can refresh right away
+async fn process(
+    mut block_rcv: mpsc::UnboundedReceiver<Msg>,
+    window_snd: mpsc::UnboundedSender<IronEvent>,
+    chain_id: u32,
+    db: DB,
+) -> Result<()> {
+    let mut caught_up = false;
+
     while let Some(msg) = block_rcv.recv().await {
         match msg {
-            Msg::Reset => db.truncate_transactions().await?,
+            Msg::Reset => {
+                db.truncate_transactions().await?;
+                caught_up = false
+            }
+            Msg::CaughtUp => caught_up = true,
             Msg::Block(block) => db.save_transactions(chain_id, block.transactions).await?,
+        }
+
+        // don't emit events until we're catching up
+        // otherwise we spam too much during that phase
+        if caught_up {
+            debug!("sending");
+            window_snd.send(IronEvent::RefreshTransactions)?;
         }
     }
 

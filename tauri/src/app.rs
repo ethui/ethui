@@ -1,19 +1,43 @@
-use std::{path::PathBuf, sync::OnceLock};
+use std::{
+    path::PathBuf,
+    sync::{Arc, Mutex, OnceLock},
+};
 
+use log::debug;
+use serde::Serialize;
 use tauri::{
     AppHandle, Builder, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
     SystemTrayMenuItem,
 };
+use tokio::sync::mpsc;
 
 use crate::{commands, context::Context};
 
-pub struct IronApp(tauri::App);
+pub struct IronApp {
+    pub sender: mpsc::UnboundedSender<IronEvent>,
+    app: Option<tauri::App>,
+}
+
+#[derive(Debug, Serialize)]
+pub enum IronEvent {
+    RefreshTransactions,
+}
+
+impl IronEvent {
+    fn label(&self) -> &str {
+        match self {
+            Self::RefreshTransactions => "refresh-transactions",
+        }
+    }
+}
 
 pub static DB_PATH: OnceLock<PathBuf> = OnceLock::new();
 pub static SETTINGS_PATH: OnceLock<PathBuf> = OnceLock::new();
 
 impl IronApp {
     pub fn build() -> Self {
+        let (tx, rx) = mpsc::unbounded_channel();
+
         let tray = Self::build_tray();
         let app = Builder::default()
             .invoke_handler(tauri::generate_handler![
@@ -25,12 +49,16 @@ impl IronApp {
                 commands::set_networks,
                 commands::get_transactions
             ])
+            .manage(Mutex::new(rx))
             .system_tray(tray)
             .on_system_tray_event(on_system_tray_event)
             .build(tauri::generate_context!())
             .expect("error while running tauri application");
 
-        let res = Self(app);
+        let res = Self {
+            app: Some(app),
+            sender: tx,
+        };
 
         DB_PATH.set(res.get_db_path()).unwrap();
         SETTINGS_PATH.set(res.get_settings_file()).unwrap();
@@ -39,12 +67,22 @@ impl IronApp {
     }
 
     pub fn manage(&self, ctx: Context) {
-        self.0.manage(ctx);
+        self.app.as_ref().unwrap().manage(ctx);
     }
 
-    pub fn run(self) {
-        self.0.run(|_, event| if let tauri::RunEvent::ExitRequested { api, .. } = event {
-            api.prevent_exit();
+    pub fn run(&mut self) {
+        self.app.take().unwrap().run(|app, event| {
+            // coisas
+            let rx = app.state::<Mutex<mpsc::UnboundedReceiver<IronEvent>>>();
+            while let Ok(msg) = rx.lock().unwrap().try_recv() {
+                let window = app.get_window("main").unwrap();
+                window.emit(msg.label(), &msg).unwrap();
+                debug!("emit_to main: {:?}", msg);
+            }
+
+            if let tauri::RunEvent::ExitRequested { api, .. } = event {
+                api.prevent_exit();
+            }
         });
     }
 
@@ -61,7 +99,9 @@ impl IronApp {
         SystemTray::new().with_menu(tray_menu)
     }
     fn get_resource(&self, name: &str) -> PathBuf {
-        self.0
+        self.app
+            .as_ref()
+            .unwrap()
             .path_resolver()
             .resolve_resource(name)
             .expect("failed to resource resource")

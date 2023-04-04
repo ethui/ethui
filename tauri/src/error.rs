@@ -1,3 +1,5 @@
+use crate::app::IronEvent;
+
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     Websocket(#[from] tungstenite::Error),
@@ -8,6 +10,7 @@ pub enum Error {
     EthersProvider(#[from] ethers::providers::ProviderError),
     Eyre(#[from] color_eyre::eyre::Error),
     Url(#[from] url::ParseError),
+    WindowSend(#[from] tokio::sync::mpsc::error::SendError<IronEvent>),
     Watcher,
 }
 
@@ -26,7 +29,8 @@ impl std::fmt::Display for Error {
             EthersProvider(e) => write!(f, "EthersProviderError: {}", e),
             Eyre(e) => write!(f, "EyreError: {}", e),
             Url(e) => write!(f, "URLError: {}", e),
-            Watcher=> write!(f, "WatcherError"),
+            Watcher => write!(f, "WatcherError"),
+            WindowSend(e) => write!(f, "WindowSendError: {}", e),
         }
     }
 }

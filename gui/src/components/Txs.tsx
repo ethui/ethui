@@ -1,7 +1,9 @@
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
+import { listen } from "@tauri-apps/api/event";
 import classnames from "classnames";
 import { formatEther } from "ethers/lib/utils";
-import useSWR from "swr";
+import { useEffect } from "react";
+import useSWR, { useSWRConfig } from "swr";
 import truncateEthAddress from "truncate-eth-address";
 
 import { useAccount, useProvider } from "../hooks";
@@ -12,6 +14,18 @@ export function Txs() {
   const { data: hashes } = useInvoke<string[]>("get_transactions", {
     address: account,
   });
+  const { mutate } = useSWRConfig();
+
+  useEffect(() => {
+    const unlisten = listen("refresh-transactions", () => {
+      console.log("refreshing transactions");
+      mutate((key: unknown[]) => key && key[0] == "get_transactions");
+    });
+
+    return () => {
+      unlisten.then((cb) => cb());
+    };
+  }, [mutate]);
 
   return (
     <div className="bg-white shadow sm:rounded-lg">

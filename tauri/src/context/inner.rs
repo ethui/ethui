@@ -12,7 +12,7 @@ use tokio::sync::mpsc;
 
 pub use super::network::Network;
 pub use super::wallet::Wallet;
-use crate::app::SETTINGS_PATH;
+use crate::app::{IronEvent, SETTINGS_PATH};
 use crate::db::DB;
 use crate::error::Result;
 
@@ -30,8 +30,9 @@ pub struct ContextInner {
     /// initialized and `DB_PATH` cell filled
     #[serde(skip)]
     pub db: DB,
-    // #[serde(skip)]
-    // block_listener: Option<BlockListener>,
+
+    #[serde(skip)]
+    window_snd: Option<mpsc::UnboundedSender<IronEvent>>,
 }
 
 impl Default for ContextInner {
@@ -47,7 +48,7 @@ impl Default for ContextInner {
             wallet: Default::default(),
             peers: Default::default(),
             db: Default::default(),
-            // block_listener: Default::default(),
+            window_snd: None,
         }
     }
 }
@@ -56,7 +57,7 @@ impl ContextInner {
     pub async fn from_settings_file() -> Result<Self> {
         let path = Path::new(SETTINGS_PATH.get().unwrap());
 
-        let mut res: Self = if path.exists() {
+        let res: Self = if path.exists() {
             let file = File::open(path)?;
             let reader = BufReader::new(file);
 
@@ -67,15 +68,14 @@ impl ContextInner {
             defaults
         };
 
-        res.init().await?;
-
         Ok(res)
     }
 
-    pub async fn init(&mut self) -> Result<()> {
+    pub async fn init(&mut self, sender: mpsc::UnboundedSender<IronEvent>) -> Result<()> {
+        self.window_snd = Some(sender);
         self.db.connect().await?;
         for network in self.networks.values_mut() {
-            network.reset_listener(&self.db)?;
+            network.reset_listener(&self.db, self.window_snd.as_ref().unwrap().clone())?;
         }
         Ok(())
     }
