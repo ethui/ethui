@@ -8,7 +8,7 @@ use crate::error::Result;
 
 #[async_trait]
 pub trait TransactionStore {
-    async fn truncate_transactions(&self) -> Result<()>;
+    async fn truncate_transactions(&self, chain_id: u32) -> Result<()>;
     async fn save_transactions(&self, chain_id: u32, tx: Vec<Transaction>) -> Result<()>;
 
     // TODO: should maybe return Vec<H256> here
@@ -53,8 +53,9 @@ impl TransactionStore for DB {
         Ok(res)
     }
 
-    async fn truncate_transactions(&self) -> Result<()> {
-        sqlx::query("DELETE FROM transactions")
+    async fn truncate_transactions(&self, chain_id: u32) -> Result<()> {
+        sqlx::query("DELETE FROM transactions WHERE chain_id = ?")
+            .bind(chain_id)
             .execute(self.pool())
             .await?;
 
