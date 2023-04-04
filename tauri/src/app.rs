@@ -1,9 +1,5 @@
-use std::{
-    path::PathBuf,
-    sync::{Arc, Mutex, OnceLock},
-};
+use std::{path::PathBuf, sync::OnceLock};
 
-use log::debug;
 use serde::Serialize;
 use tauri::{
     AppHandle, Builder, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,

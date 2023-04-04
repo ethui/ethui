@@ -12,13 +12,7 @@ use log::{debug, warn};
 use tokio::sync::mpsc;
 use url::Url;
 
-use crate::{
-    app::IronEvent,
-    store::{
-        block_listeners::{BlockListenerStore, ListenerState},
-        transactions::TransactionStore,
-    },
-};
+use crate::{app::IronEvent, store::transactions::TransactionStore};
 use crate::{db::DB, error::Error, Result};
 
 #[derive(Debug)]
@@ -69,13 +63,9 @@ impl BlockListener {
         }
 
         {
-            let db = self.db.clone();
-            let chain_id = self.chain_id;
             let http_url = self.http_url.clone();
             let ws_url = self.ws_url.clone();
-            tokio::spawn(async move {
-                watch(db, chain_id, http_url, ws_url, quit_rcv, block_snd).await
-            });
+            tokio::spawn(async move { watch(http_url, ws_url, quit_rcv, block_snd).await });
         }
 
         self.quit_snd = Some(quit_snd);
@@ -124,8 +114,6 @@ impl RetryPolicy<HttpClientError> for AlwaysRetry {
 ///        past that (so that forked anvil don't overload or past fetching logic)
 // TODO: refactor
 async fn watch(
-    db: DB,
-    chain_id: u32,
     http_url: Url,
     ws_url: Url,
     mut quit_rcv: mpsc::Receiver<()>,
@@ -138,11 +126,6 @@ async fn watch(
         .timeout_retries(u32::MAX)
         .initial_backoff(Duration::from_millis(1000))
         .build(jsonrpc.clone(), Box::<AlwaysRetry>::default());
-
-    let state: ListenerState = db
-        .get_block_listener_state(chain_id)
-        .await
-        .unwrap_or_else(|_| ListenerState::new(chain_id));
 
     'watcher: loop {
         // retry forever
@@ -177,7 +160,6 @@ async fn watch(
         let past_range = fork_block..=block_number.low_u64();
         for b in past_range.into_iter() {
             if let Some(b) = provider.get_block_with_txs(b).await? {
-                debug!("syncing block: {}", b.number.unwrap());
                 block_snd.send(Msg::Block(b)).map_err(|_| Error::Watcher)?
             }
         }
@@ -217,7 +199,7 @@ async fn process(
     while let Some(msg) = block_rcv.recv().await {
         match msg {
             Msg::Reset => {
-                db.truncate_transactions().await?;
+                db.truncate_transactions(chain_id).await?;
                 caught_up = false
             }
             Msg::CaughtUp => caught_up = true,
