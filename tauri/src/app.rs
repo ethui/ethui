@@ -43,12 +43,8 @@ impl IronApp {
     }
 
     pub fn run(self) {
-        self.0.run(|_, event| match event {
-            // close to system tray
-            tauri::RunEvent::ExitRequested { api, .. } => {
-                api.prevent_exit();
-            }
-            _ => {}
+        self.0.run(|_, event| if let tauri::RunEvent::ExitRequested { api, .. } = event {
+            api.prevent_exit();
         });
     }
 
@@ -69,7 +65,6 @@ impl IronApp {
             .path_resolver()
             .resolve_resource(name)
             .expect("failed to resource resource")
-            .clone()
     }
 
     fn get_db_path(&self) -> PathBuf {

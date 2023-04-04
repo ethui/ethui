@@ -62,9 +62,9 @@ impl BlockListenerStore for DB {
             DO UPDATE SET last_known_block = ?
             "#,
         )
-        .bind(&state.chain_id)
-        .bind(&state.last_known_block)
-        .bind(&state.last_known_block)
+        .bind(state.chain_id)
+        .bind(state.last_known_block)
+        .bind(state.last_known_block)
         .execute(self.pool())
         .await?;
 

@@ -1,14 +1,14 @@
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    WebsocketError(#[from] tungstenite::Error),
-    JsonError(#[from] serde_json::Error),
-    SqlxError(#[from] sqlx::Error),
-    SqlxMigrateError(#[from] sqlx::migrate::MigrateError),
-    IOError(#[from] std::io::Error),
-    EthersProviderError(#[from] ethers::providers::ProviderError),
-    EyreError(#[from] color_eyre::eyre::Error),
-    URLError(#[from] url::ParseError),
-    WatcherError,
+    Websocket(#[from] tungstenite::Error),
+    Json(#[from] serde_json::Error),
+    Sqlx(#[from] sqlx::Error),
+    SqlxMigrate(#[from] sqlx::migrate::MigrateError),
+    IO(#[from] std::io::Error),
+    EthersProvider(#[from] ethers::providers::ProviderError),
+    Eyre(#[from] color_eyre::eyre::Error),
+    Url(#[from] url::ParseError),
+    Watcher,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -18,15 +18,15 @@ impl std::fmt::Display for Error {
         use Error::*;
 
         match self {
-            WebsocketError(e) => write!(f, "WebsocketError: {}", e),
-            JsonError(e) => write!(f, "JsonError: {}", e),
-            SqlxError(e) => write!(f, "SqlxError: {}", e),
-            SqlxMigrateError(e) => write!(f, "SqlxMigrateError: {}", e),
-            IOError(e) => write!(f, "IOError: {}", e),
-            EthersProviderError(e) => write!(f, "EthersProviderError: {}", e),
-            EyreError(e) => write!(f, "EyreError: {}", e),
-            URLError(e) => write!(f, "URLError: {}", e),
-            WatcherError => write!(f, "WatcherError"),
+            Websocket(e) => write!(f, "WebsocketError: {}", e),
+            Json(e) => write!(f, "JsonError: {}", e),
+            Sqlx(e) => write!(f, "SqlxError: {}", e),
+            SqlxMigrate(e) => write!(f, "SqlxMigrateError: {}", e),
+            IO(e) => write!(f, "IOError: {}", e),
+            EthersProvider(e) => write!(f, "EthersProviderError: {}", e),
+            Eyre(e) => write!(f, "EyreError: {}", e),
+            Url(e) => write!(f, "URLError: {}", e),
+            Watcher=> write!(f, "WatcherError"),
         }
     }
 }

@@ -51,13 +51,13 @@ impl BlockListener {
 
         {
             let db = self.db.clone();
-            let chain_id = self.chain_id.clone();
+            let chain_id = self.chain_id;
             tokio::spawn(async move { process(block_rcv, chain_id, db).await });
         }
 
         {
             let db = self.db.clone();
-            let chain_id = self.chain_id.clone();
+            let chain_id = self.chain_id;
             let http_url = self.http_url.clone();
             let ws_url = self.ws_url.clone();
             tokio::spawn(async move {
@@ -75,9 +75,8 @@ impl BlockListener {
 
         tokio::spawn(async move {
             if let Some(quit_snd) = quit_snd {
-                match quit_snd.clone().send(()).await {
-                    Err(e) => warn!("Error closing listener: {:?}", e),
-                    _ => (),
+                if let Err(e) = quit_snd.clone().send(()).await {
+                    warn!("Error closing listener: {:?}", e)
                 }
             }
         });
@@ -146,7 +145,7 @@ async fn watch(
 
         block_snd
             .send(Msg::Reset)
-            .map_err(|_| Error::WatcherError)?;
+            .map_err(|_| Error::Watcher)?;
 
         let provider: Provider<Ws> = Provider::<Ws>::connect(&ws_url)
             .await?
@@ -170,7 +169,7 @@ async fn watch(
             if let Some(b) = provider.get_block_with_txs(b).await? {
                 block_snd
                     .send(Msg::Block(b))
-                    .map_err(|_| Error::WatcherError)?
+                    .map_err(|_| Error::Watcher)?
             }
         }
 
@@ -184,7 +183,7 @@ async fn watch(
                     match b {
                         Some(b) => {
                             let full_block = provider.get_block_with_txs(b.number.unwrap()).await?.unwrap();
-                            block_snd.send(Msg::Block(full_block)).map_err(|_|Error::WatcherError)?;
+                            block_snd.send(Msg::Block(full_block)).map_err(|_|Error::Watcher)?;
                         },
                         None => break 'ws,
                     }

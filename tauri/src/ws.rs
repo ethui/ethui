@@ -29,7 +29,7 @@ pub async fn accept_connection(peer: SocketAddr, stream: TcpStream, ctx: Context
 
     if let Err(e) = err {
         match e {
-            Error::WebsocketError(e) => match e {
+            Error::Websocket(e) => match e {
                 tungstenite::Error::ConnectionClosed
                 | tungstenite::Error::Protocol(_)
                 | tungstenite::Error::Utf8 => {
