@@ -3,7 +3,7 @@ name = "iron"
 version = "0.0.0"
 description = "A Tauri App"
 authors = ["you"]
-license = ""
+license-file = "../LICENSE"
 repository = ""
 edition = "2021"
 
