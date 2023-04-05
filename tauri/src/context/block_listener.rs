@@ -12,10 +12,7 @@ use log::{debug, warn};
 use tokio::sync::mpsc;
 use url::Url;
 
-use crate::store::{
-    block_listeners::{BlockListenerStore, ListenerState},
-    transactions::TransactionStore,
-};
+use crate::{app::IronEvent, store::transactions::TransactionStore};
 use crate::{db::DB, error::Error, Result};
 
 #[derive(Debug)]
@@ -24,22 +21,31 @@ pub struct BlockListener {
     http_url: Url,
     ws_url: Url,
     quit_snd: Option<mpsc::Sender<()>>,
+    window_snd: mpsc::UnboundedSender<IronEvent>,
     db: DB,
 }
 
 #[derive(Debug)]
 enum Msg {
+    CaughtUp,
     Reset,
     Block(Block<Transaction>),
 }
 
 impl BlockListener {
-    pub fn new(chain_id: u32, http_url: Url, ws_url: Url, db: DB) -> Self {
+    pub fn new(
+        chain_id: u32,
+        http_url: Url,
+        ws_url: Url,
+        db: DB,
+        window_snd: mpsc::UnboundedSender<IronEvent>,
+    ) -> Self {
         Self {
             chain_id,
             http_url,
             ws_url,
             db,
+            window_snd,
             quit_snd: None,
         }
     }
@@ -52,17 +58,14 @@ impl BlockListener {
         {
             let db = self.db.clone();
             let chain_id = self.chain_id;
-            tokio::spawn(async move { process(block_rcv, chain_id, db).await });
+            let window_snd = self.window_snd.clone();
+            tokio::spawn(async move { process(block_rcv, window_snd, chain_id, db).await });
         }
 
         {
-            let db = self.db.clone();
-            let chain_id = self.chain_id;
             let http_url = self.http_url.clone();
             let ws_url = self.ws_url.clone();
-            tokio::spawn(async move {
-                watch(db, chain_id, http_url, ws_url, quit_rcv, block_snd).await
-            });
+            tokio::spawn(async move { watch(http_url, ws_url, quit_rcv, block_snd).await });
         }
 
         self.quit_snd = Some(quit_snd);
@@ -111,8 +114,6 @@ impl RetryPolicy<HttpClientError> for AlwaysRetry {
 ///        past that (so that forked anvil don't overload or past fetching logic)
 // TODO: refactor
 async fn watch(
-    db: DB,
-    chain_id: u32,
     http_url: Url,
     ws_url: Url,
     mut quit_rcv: mpsc::Receiver<()>,
@@ -125,12 +126,6 @@ async fn watch(
         .timeout_retries(u32::MAX)
         .initial_backoff(Duration::from_millis(1000))
         .build(jsonrpc.clone(), Box::<AlwaysRetry>::default());
-
-    let state: ListenerState = db
-        .get_block_listener_state(chain_id)
-        .await
-        .unwrap_or_else(|_| ListenerState::new(chain_id));
-    debug!("{:?}", state);
 
     'watcher: loop {
         // retry forever
@@ -169,6 +164,8 @@ async fn watch(
             }
         }
 
+        block_snd.send(Msg::CaughtUp).map_err(|_| Error::Watcher)?;
+
         'ws: loop {
             // wait for the next block
             // once again, break out if we receive a close signal
@@ -191,12 +188,29 @@ async fn watch(
     Ok(())
 }
 
-async fn process(mut block_rcv: mpsc::UnboundedReceiver<Msg>, chain_id: u32, db: DB) -> Result<()> {
-    // TODO: broadcast this info to the frontend, so it can refresh right away
+async fn process(
+    mut block_rcv: mpsc::UnboundedReceiver<Msg>,
+    window_snd: mpsc::UnboundedSender<IronEvent>,
+    chain_id: u32,
+    db: DB,
+) -> Result<()> {
+    let mut caught_up = false;
+
     while let Some(msg) = block_rcv.recv().await {
         match msg {
-            Msg::Reset => db.truncate_transactions(chain_id).await?,
+            Msg::Reset => {
+                db.truncate_transactions(chain_id).await?;
+                caught_up = false
+            }
+            Msg::CaughtUp => caught_up = true,
             Msg::Block(block) => db.save_transactions(chain_id, block.transactions).await?,
+        }
+
+        // don't emit events until we're catching up
+        // otherwise we spam too much during that phase
+        if caught_up {
+            debug!("sending");
+            window_snd.send(IronEvent::RefreshTransactions)?;
         }
     }
 

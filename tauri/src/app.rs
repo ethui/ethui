@@ -1,19 +1,39 @@
 use std::{path::PathBuf, sync::OnceLock};
 
+use serde::Serialize;
 use tauri::{
     AppHandle, Builder, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
     SystemTrayMenuItem,
 };
+use tokio::sync::mpsc;
 
 use crate::{commands, context::Context};
 
-pub struct IronApp(tauri::App);
+pub struct IronApp {
+    pub sender: mpsc::UnboundedSender<IronEvent>,
+    app: Option<tauri::App>,
+}
+
+#[derive(Debug, Serialize)]
+pub enum IronEvent {
+    RefreshTransactions,
+}
+
+impl IronEvent {
+    fn label(&self) -> &str {
+        match self {
+            Self::RefreshTransactions => "refresh-transactions",
+        }
+    }
+}
 
 pub static DB_PATH: OnceLock<PathBuf> = OnceLock::new();
 pub static SETTINGS_PATH: OnceLock<PathBuf> = OnceLock::new();
 
 impl IronApp {
     pub fn build() -> Self {
+        let (snd, rcv) = mpsc::unbounded_channel();
+
         let tray = Self::build_tray();
         let app = Builder::default()
             .invoke_handler(tauri::generate_handler![
@@ -25,12 +45,24 @@ impl IronApp {
                 commands::set_networks,
                 commands::get_transactions
             ])
+            .setup(|app| {
+                let handle = app.handle();
+
+                tauri::async_runtime::spawn(async move {
+                    event_listener(handle, rcv).await;
+                });
+
+                Ok(())
+            })
             .system_tray(tray)
             .on_system_tray_event(on_system_tray_event)
             .build(tauri::generate_context!())
             .expect("error while running tauri application");
 
-        let res = Self(app);
+        let res = Self {
+            app: Some(app),
+            sender: snd,
+        };
 
         DB_PATH.set(res.get_db_path()).unwrap();
         SETTINGS_PATH.set(res.get_settings_file()).unwrap();
@@ -39,12 +71,14 @@ impl IronApp {
     }
 
     pub fn manage(&self, ctx: Context) {
-        self.0.manage(ctx);
+        self.app.as_ref().unwrap().manage(ctx);
     }
 
-    pub fn run(self) {
-        self.0.run(|_, event| if let tauri::RunEvent::ExitRequested { api, .. } = event {
-            api.prevent_exit();
+    pub fn run(&mut self) {
+        self.app.take().unwrap().run(|_, event| {
+            if let tauri::RunEvent::ExitRequested { api, .. } = event {
+                api.prevent_exit();
+            }
         });
     }
 
@@ -61,7 +95,9 @@ impl IronApp {
         SystemTray::new().with_menu(tray_menu)
     }
     fn get_resource(&self, name: &str) -> PathBuf {
-        self.0
+        self.app
+            .as_ref()
+            .unwrap()
             .path_resolver()
             .resolve_resource(name)
             .expect("failed to resource resource")
@@ -81,8 +117,6 @@ fn on_system_tray_event(app: &AppHandle, event: SystemTrayEvent) {
 
     match event {
         MenuItemClick { id, .. } => match id.as_str() {
-            // here `"quit".to_string()` defines the menu item id, and the second parameter
-            // is the menu item label.
             "quit" => app.exit(0),
             "hide" => app.get_window("main").unwrap().hide().unwrap(),
             "show" => show_main_window(app),
@@ -102,5 +136,11 @@ fn show_main_window(app: &AppHandle) {
         tauri::WindowBuilder::new(app, "main", tauri::WindowUrl::App("index.html".into()))
             .build()
             .unwrap();
+    }
+}
+
+async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<IronEvent>) {
+    while let (Some(msg), Some(window)) = (rcv.recv().await, handle.get_window("main")) {
+        window.emit(msg.label(), &msg).unwrap();
     }
 }

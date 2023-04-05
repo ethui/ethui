@@ -2,10 +2,11 @@ use std::sync::{Arc, Mutex};
 
 use log::debug;
 use serde::{Deserialize, Serialize};
+use tokio::sync::mpsc;
 use url::Url;
 
 use super::block_listener::BlockListener;
-use crate::db::DB;
+use crate::{app::IronEvent, db::DB};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Network {
@@ -69,7 +70,11 @@ impl Network {
         format!("0x{:x}", self.chain_id)
     }
 
-    pub fn reset_listener(&mut self, db: &DB) -> crate::error::Result<()> {
+    pub fn reset_listener(
+        &mut self,
+        db: &DB,
+        window_snd: mpsc::UnboundedSender<IronEvent>,
+    ) -> crate::error::Result<()> {
         if let Some(listener) = self.listener.as_ref() {
             listener.lock().unwrap().stop();
             self.listener = None;
@@ -79,7 +84,8 @@ impl Network {
             debug!("Initializing {} listener", self.name);
             let http_url = Url::parse(&self.http_url)?;
             let ws_url = Url::parse(&self.ws_url.clone().unwrap())?;
-            let mut listener = BlockListener::new(self.chain_id, http_url, ws_url, db.clone());
+            let mut listener =
+                BlockListener::new(self.chain_id, http_url, ws_url, db.clone(), window_snd);
             listener.run()?;
             self.listener = Some(Arc::new(Mutex::new(listener)));
         }

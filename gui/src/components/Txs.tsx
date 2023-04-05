@@ -1,7 +1,9 @@
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
+import { listen } from "@tauri-apps/api/event";
 import classnames from "classnames";
 import { formatEther } from "ethers/lib/utils";
-import useSWR from "swr";
+import { useEffect } from "react";
+import useSWR, { useSWRConfig } from "swr";
 import truncateEthAddress from "truncate-eth-address";
 
 import { useAccount, useProvider } from "../hooks";
@@ -12,6 +14,18 @@ export function Txs() {
   const { data: hashes } = useInvoke<string[]>("get_transactions", {
     address: account,
   });
+  const { mutate } = useSWRConfig();
+
+  useEffect(() => {
+    const unlisten = listen("refresh-transactions", () => {
+      console.log("refreshing transactions");
+      mutate((key: unknown[]) => key && key[0] == "get_transactions");
+    });
+
+    return () => {
+      unlisten.then((cb) => cb());
+    };
+  }, [mutate]);
 
   return (
     <div className="bg-white shadow sm:rounded-lg">
@@ -61,7 +75,9 @@ function Receipt({ hash }: { hash: string }) {
                   className="h-5 w-5 text-gray-400 sm:mx-2"
                   aria-hidden="true"
                 />
-                {truncateEthAddress(receipt.to)}
+                {receipt.to
+                  ? truncateEthAddress(receipt.to)
+                  : "Contract Deploy"}
               </p>
               <p className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 ml-5">
                 {formatEther(tx.value)} Ξ
