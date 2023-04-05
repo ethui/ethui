@@ -10,7 +10,7 @@ use ethers::{
     },
 };
 use jsonrpc_core::{MetaIoHandler, Params};
-use log::info;
+use log::{debug, info};
 use serde_json::json;
 
 use crate::context::{Context, UnlockedContext};
@@ -139,8 +139,13 @@ impl Handler {
         envelope.set_gas(gas_limit.unwrap() * 120 / 100);
 
         // sign & send
-        let res = signer.send_transaction(envelope, None).await.unwrap();
+        let res = signer.send_transaction(envelope, None).await;
 
-        res.tx_hash().encode_hex().into()
+        if res.is_err() {
+            debug!("send_transaction error: {:?}", res);
+            Default::default()
+        } else {
+            res.unwrap().tx_hash().encode_hex().into()
+        }
     }
 }
