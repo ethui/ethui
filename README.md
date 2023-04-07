@@ -5,6 +5,18 @@ A DevEx focused crypto wallet.
 [good-first-issue]: https://github.com/naps62/iron/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22
 [justfile]: https://github.com/casey/just
 
+## Features
+
+- [x] Act as a MetaMask drop-in replacement
+    - [x] "Connect Wallet" functionality on your browser
+    - [x] switching networks
+    - [x] switching accounts
+    - [x] submitting transactions
+    - [ ] signing messages
+- [x] track transaction history
+- [x] track [anvil][anvil] restarts
+- [ ] other development / debugging features coming soon
+
 ---
 
 ## Contributing
