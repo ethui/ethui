@@ -22,7 +22,6 @@ export function QuickNetworkSelect() {
 
   useEffect(() => {
     const unlisten = listen("refresh-network", () => {
-      console.log("refreshing network");
       mutate();
     });
 

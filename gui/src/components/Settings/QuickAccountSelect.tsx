@@ -5,7 +5,6 @@ import truncateEthAddress from "truncate-eth-address";
 
 import { useInvoke } from "../../hooks/tauri";
 import { Address, Wallet } from "../../types";
-import { deriveFiveAddresses } from "../../utils/address";
 
 export function QuickAccountSelect() {
   const { data: wallet, mutate } = useInvoke<Wallet>("get_wallet");
@@ -16,12 +15,18 @@ export function QuickAccountSelect() {
   useEffect(() => {
     if (!wallet) return;
 
-    const addresses = deriveFiveAddresses(
-      wallet.mnemonic,
-      wallet.derivationPath
-    );
-    setAddresses(addresses);
-    setCurrent(addresses[wallet.idx]);
+    (async () => {
+      try {
+        const addresses = (await invoke("derive_addresses", {})) as Record<
+          number,
+          Address
+        >;
+        setAddresses(addresses);
+        setCurrent(addresses[wallet.idx]);
+      } catch (err) {
+        console.error(err);
+      }
+    })();
   }, [wallet]);
 
   const handleClick = useCallback(

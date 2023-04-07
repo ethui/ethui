@@ -51,3 +51,27 @@ pub async fn get_transactions(address: Address, ctx: Ctx<'_>) -> Result<Vec<Stri
     // TODO: this unwrap is avoidable
     Ok(ctx.db.get_transactions(address).await.unwrap())
 }
+
+#[tauri::command]
+pub async fn derive_addresses_with_mnemonic(
+    mnemonic: String,
+    derivation_path: String,
+    ctx: Ctx<'_>,
+) -> Result<Vec<String>> {
+    let ctx = ctx.lock().await;
+
+    let wallet = ctx.wallet.clone();
+    let addresses = Wallet::derive_addresses_with_mnemonic(&mnemonic, &derivation_path, 5).unwrap();
+
+    Ok(addresses)
+}
+
+#[tauri::command]
+pub async fn derive_addresses(ctx: Ctx<'_>) -> Result<Vec<String>> {
+    let ctx = ctx.lock().await;
+
+    let wallet = ctx.wallet.clone();
+    let addresses = wallet.derive_addresses(5).unwrap();
+
+    Ok(addresses)
+}

@@ -1,13 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Button } from "flowbite-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 
 import { useInvoke } from "../../hooks/tauri";
-import { useDebouncedEffect } from "../../hooks/useDebouncedEffect";
 import { Address, Wallet, walletSchema } from "../../types";
-import { deriveFiveAddresses } from "../../utils/address";
 import { FieldRadio, FieldText } from "./Fields";
 
 export function WalletSettings() {
@@ -47,14 +45,20 @@ export function WalletSettings() {
   // refresh listed addresses when mnemonic/path changes
   const [mnemonic, derivationPath] = watch(["mnemonic", "derivationPath"]);
 
-  useDebouncedEffect(() => {
+  // addresses are derived on the fly by backend
+  useEffect(() => {
     if ((isDirtyAlt && !isValid) || !mnemonic || !derivationPath) return;
-    try {
-      const addresses = deriveFiveAddresses(mnemonic, derivationPath);
-      setDerivedAddresses(addresses);
-    } catch (err) {
-      console.error(err);
-    }
+    (async () => {
+      try {
+        const addresses = (await invoke("derive_addresses_with_mnemonic", {
+          mnemonic,
+          derivationPath,
+        })) as Record<number, Address>;
+        setDerivedAddresses(addresses);
+      } catch (err) {
+        console.error(err);
+      }
+    })();
   }, [isDirtyAlt, isValid, mnemonic, derivationPath, trigger]);
 
   if (!wallet) return <>Loading</>;

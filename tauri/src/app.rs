@@ -46,7 +46,9 @@ impl IronApp {
                 commands::get_wallet,
                 commands::set_wallet,
                 commands::set_networks,
-                commands::get_transactions
+                commands::get_transactions,
+                commands::derive_addresses,
+                commands::derive_addresses_with_mnemonic,
             ])
             .setup(|app| {
                 let handle = app.handle();
