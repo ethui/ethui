@@ -3,6 +3,7 @@
 A DevEx focused crypto wallet.
 
 [good-first-issue]: https://github.com/naps62/iron/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22
+[justfile]: https://github.com/casey/just
 
 ---
 
@@ -13,10 +14,6 @@ Search through currently open issues for suggestions on where you may be able to
 
 Read on for a concrete guide on how to get set up.
 
-### Maybe start with the video?
-
-[Video link][video]
-
 ### Requirements
 
 - Rust
@@ -24,7 +21,6 @@ Read on for a concrete guide on how to get set up.
 - Yarn
 - Google Chrome (a profile without MetaMask installed)
 - [justfile][justfile]
-- [watchexec][watchexec]
 
 ### Get started
 
