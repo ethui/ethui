@@ -100,11 +100,21 @@ impl ContextInner {
     pub fn add_peer(&mut self, peer: SocketAddr, snd: mpsc::UnboundedSender<serde_json::Value>) {
         self.peers.insert(peer, snd);
         self.save().unwrap();
+        self.window_snd
+            .as_ref()
+            .unwrap()
+            .send(IronEvent::RefreshConnections)
+            .unwrap();
     }
 
     pub fn remove_peer(&mut self, peer: SocketAddr) {
         self.peers.remove(&peer);
         self.save().unwrap();
+        self.window_snd
+            .as_ref()
+            .unwrap()
+            .send(IronEvent::RefreshConnections)
+            .unwrap();
     }
 
     pub fn broadcast<T: Serialize + std::fmt::Debug>(&self, msg: T) {
@@ -138,7 +148,6 @@ impl ContextInner {
         self.current_network = new_current_network;
         let new_network = self.get_current_network();
 
-        debug!("here");
         if previous_network.chain_id != new_network.chain_id {
             // update signer
             self.wallet.update_chain_id(new_network.chain_id);
@@ -151,7 +160,6 @@ impl ContextInner {
                     "networkVersion": new_network.name
                 }
             }));
-            debug!("here");
             self.window_snd
                 .as_ref()
                 .unwrap()

@@ -19,6 +19,7 @@ pub struct IronApp {
 pub enum IronEvent {
     RefreshNetwork,
     RefreshTransactions,
+    RefreshConnections,
 }
 
 impl IronEvent {
@@ -26,6 +27,7 @@ impl IronEvent {
         match self {
             Self::RefreshNetwork => "refresh-network",
             Self::RefreshTransactions => "refresh-transactions",
+            Self::RefreshConnections => "refresh-connections",
         }
     }
 }
@@ -45,8 +47,10 @@ impl IronApp {
                 commands::set_current_network,
                 commands::get_wallet,
                 commands::set_wallet,
+                commands::get_current_address,
                 commands::set_networks,
                 commands::get_transactions,
+                commands::get_connections,
                 commands::derive_addresses,
                 commands::derive_addresses_with_mnemonic,
             ])

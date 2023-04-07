@@ -45,11 +45,30 @@ pub async fn set_wallet(wallet: Wallet, ctx: Ctx<'_>) -> Result<()> {
 }
 
 #[tauri::command]
+pub async fn get_current_address(ctx: Ctx<'_>) -> Result<String> {
+    let ctx = ctx.lock().await;
+
+    Ok(ctx.wallet.checksummed_address())
+}
+
+#[tauri::command]
 pub async fn get_transactions(address: Address, ctx: Ctx<'_>) -> Result<Vec<String>> {
     let ctx = ctx.lock().await;
 
     // TODO: this unwrap is avoidable
     Ok(ctx.db.get_transactions(address).await.unwrap())
+}
+
+#[tauri::command]
+pub async fn get_connections(ctx: Ctx<'_>) -> Result<Vec<String>> {
+    let ctx = ctx.lock().await;
+
+    Ok(ctx
+        .peers
+        .keys()
+        .to_owned()
+        .map(|p| format!("{}", p))
+        .collect())
 }
 
 #[tauri::command]
