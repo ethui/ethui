@@ -46,11 +46,42 @@ jobs:
           override: true
           components: rustfmt, clippy
 
-      - uses: actions-rs/cargo@v1
+      - name: cargo-check
+        uses: actions-rs/cargo@v1
         with:
           command: check
 
-      - uses: actions-rs/cargo@v1
+      - name: cargo-clippy
+        uses: actions-rs/cargo@v1
         with:
           command: clippy
           args: --all
+
+      - name: cargo-deny
+        uses: EmbarkStudios/cargo-deny-action@v1
+
+  vitest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache modules
+        id: cache-modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.yarn
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - if: ${{ steps.cache-modules.outputs.cache-hit != 'true' }}
+        name: Install nodes
+        continue-on-error: true
+        run: yarn
+
+      - name: Vitest
+        run: yarn workspace @iron/gui test:ui
