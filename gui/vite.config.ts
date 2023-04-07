@@ -28,4 +28,14 @@ export default defineConfig(async () => ({
     // produce sourcemaps for debug builds
     sourcemap: !!process.env.TAURI_DEBUG,
   },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './test/setup.ts',
+    isolate: true,
+    threads: true,
+    coverage: {
+      reporter: ['text', 'json', 'html']
+    }
+  }
 }));
