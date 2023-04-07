@@ -6,6 +6,7 @@ use std::path::Path;
 
 use ethers::providers::{Http, Provider};
 use ethers_core::k256::ecdsa::SigningKey;
+use log::debug;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tokio::sync::mpsc;
@@ -74,9 +75,16 @@ impl ContextInner {
     pub async fn init(&mut self, sender: mpsc::UnboundedSender<IronEvent>) -> Result<()> {
         self.window_snd = Some(sender);
         self.db.connect().await?;
+
         for network in self.networks.values_mut() {
             network.reset_listener(&self.db, self.window_snd.as_ref().unwrap().clone())?;
         }
+
+        // this needs to be called after initialization since the deserialized signer hardcoded
+        // chain_id = 1
+        self.wallet
+            .update_chain_id(self.get_current_network().chain_id);
+
         Ok(())
     }
 
@@ -125,11 +133,12 @@ impl ContextInner {
     /// Changes the currently connected wallet
     ///
     /// Broadcasts `chainChanged`
-    pub fn set_current_network(&mut self, new_current_network: String) {
+    pub fn set_current_network(&mut self, new_current_network: String) -> Result<()> {
         let previous_network = self.get_current_network();
         self.current_network = new_current_network;
         let new_network = self.get_current_network();
 
+        debug!("here");
         if previous_network.chain_id != new_network.chain_id {
             // update signer
             self.wallet.update_chain_id(new_network.chain_id);
@@ -142,8 +151,16 @@ impl ContextInner {
                     "networkVersion": new_network.name
                 }
             }));
+            debug!("here");
+            self.window_snd
+                .as_ref()
+                .unwrap()
+                .send(IronEvent::RefreshNetwork)?
         }
-        self.save().unwrap();
+
+        self.save();
+
+        Ok(())
     }
 
     pub fn set_current_network_by_id(&mut self, new_chain_id: u32) {
