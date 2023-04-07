@@ -3,7 +3,7 @@ import { listen } from "@tauri-apps/api/event";
 import classnames from "classnames";
 import { formatEther } from "ethers/lib/utils";
 import { useEffect } from "react";
-import useSWR, { useSWRConfig } from "swr";
+import useSWR from "swr";
 import truncateEthAddress from "truncate-eth-address";
 
 import { useAccount, useProvider } from "../hooks";
@@ -11,15 +11,13 @@ import { useInvoke } from "../hooks/tauri";
 
 export function Txs() {
   const account = useAccount();
-  const { data: hashes } = useInvoke<string[]>("get_transactions", {
+  const { data: hashes, mutate } = useInvoke<string[]>("get_transactions", {
     address: account,
   });
-  const { mutate } = useSWRConfig();
 
   useEffect(() => {
     const unlisten = listen("refresh-transactions", () => {
-      console.log("refreshing transactions");
-      mutate((key: unknown[]) => key && key[0] == "get_transactions");
+      mutate();
     });
 
     return () => {

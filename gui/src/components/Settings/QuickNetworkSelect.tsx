@@ -1,6 +1,7 @@
+import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Dropdown } from "flowbite-react";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 
 import { useInvoke } from "../../hooks/tauri";
 import { Network } from "../../types";
@@ -18,6 +19,17 @@ export function QuickNetworkSelect() {
     },
     [current, mutate]
   );
+
+  useEffect(() => {
+    const unlisten = listen("refresh-network", () => {
+      console.log("refreshing network");
+      mutate();
+    });
+
+    return () => {
+      unlisten.then((cb) => cb());
+    };
+  }, [mutate]);
 
   if (!networks || !current) return <>Loading</>;
 

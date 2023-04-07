@@ -33,7 +33,6 @@ impl Default for Handler {
 
 impl Handler {
     pub async fn handle(&self, request: String, ctx: Context) -> Option<String> {
-        info!("{}", request);
         self.io.handle_request(&request, ctx).await
     }
 
@@ -142,7 +141,6 @@ impl Handler {
         let res = signer.send_transaction(envelope, None).await;
 
         if res.is_err() {
-            debug!("send_transaction error: {:?}", res);
             Default::default()
         } else {
             res.unwrap().tx_hash().encode_hex().into()

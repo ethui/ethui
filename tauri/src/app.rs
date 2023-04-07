@@ -1,5 +1,6 @@
 use std::{path::PathBuf, sync::OnceLock};
 
+use log::debug;
 use serde::Serialize;
 use tauri::{
     AppHandle, Builder, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
@@ -16,12 +17,14 @@ pub struct IronApp {
 
 #[derive(Debug, Serialize)]
 pub enum IronEvent {
+    RefreshNetwork,
     RefreshTransactions,
 }
 
 impl IronEvent {
     fn label(&self) -> &str {
         match self {
+            Self::RefreshNetwork => "refresh-network",
             Self::RefreshTransactions => "refresh-transactions",
         }
     }
@@ -141,6 +144,7 @@ fn show_main_window(app: &AppHandle) {
 
 async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<IronEvent>) {
     while let (Some(msg), Some(window)) = (rcv.recv().await, handle.get_window("main")) {
+        debug!("received event: {:?}", msg);
         window.emit(msg.label(), &msg).unwrap();
     }
 }
