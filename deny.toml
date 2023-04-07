@@ -1,0 +1,45 @@
+[advisories]
+vulnerability = "deny"
+unmaintained = "warn"
+yanked = "warn"
+notice = "warn"
+ignore = [
+  # kuchiki is unmaintained
+  "RUSTSEC-2023-0019",
+  # lbisqlite3-sys vulneratility
+  # currently waiting for an sqlx update
+  "RUSTSEC-2022-0090"
+]
+
+[licenses]
+allow = [
+    "MIT",
+    "MIT-0",
+    "Unlicense",
+    "ISC",
+    "Unicode-DFS-2016",
+    "Apache-2.0",
+    "MPL-2.0",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "OpenSSL"
+]
+exceptions = [
+    # As stated in https://github.com/gakonst/ethers-rs/blob/master/deny.toml
+    # CC0 is a permissive license but somewhat unclear status for source code
+    # so we prefer to not have dependencies using it
+    # https://tldrlegal.com/license/creative-commons-cc0-1.0-universal
+    { allow = ["CC0-1.0"], name = "tiny-keccak" },
+]
+
+# See note in unicode-ident's readme!
+[[licenses.clarify]]
+name = "unicode-ident"
+version = "*"
+expression = "(MIT OR Apache-2.0) AND Unicode-DFS-2016"
+license-files = [{ path = "LICENSE-UNICODE", hash = 0x3fb01745 }]
+[[licenses.clarify]]
+name = "ring"
+version = "*"
+expression = "OpenSSL"
+license-files = [{ path = "LICENSE", hash = 0xbd0eed23 }]

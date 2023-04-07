@@ -46,11 +46,16 @@ jobs:
           override: true
           components: rustfmt, clippy
 
-      - uses: actions-rs/cargo@v1
+      - name: cargo-check
+        uses: actions-rs/cargo@v1
         with:
           command: check
 
-      - uses: actions-rs/cargo@v1
+      - name: cargo-clippy
+        uses: actions-rs/cargo@v1
         with:
           command: clippy
           args: --all
+
+      - name: cargo-deny
+        uses: EmbarkStudios/cargo-deny-action@v1
