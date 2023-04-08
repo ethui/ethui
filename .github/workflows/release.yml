@@ -19,6 +19,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: "yarn"
+
+      - run: npm install -g yarn
+
       - name: Install dependencies
         run: yarn workspace @iron/extension install
 
@@ -62,6 +69,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+          cache: "yarn"
+
+      - run: npm install -g yarn
 
       - name: install frontend dependencies
         run: yarn install
@@ -78,6 +88,8 @@ jobs:
     needs: [extension, app]
     name: Create Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Download extension
         uses: actions/download-artifact@v3
