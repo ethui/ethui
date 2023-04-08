@@ -24,8 +24,6 @@ jobs:
           node-version: 18
           cache: "yarn"
 
-      - run: npm install -g yarn
-
       - name: Install dependencies
         run: yarn workspace @iron/extension install
 
@@ -65,16 +63,17 @@ jobs:
         with:
           toolchain: nightly
 
+      - name: rust cache
+        uses: Swatinem/rust-cache@v2
+
       - name: setup node
         uses: actions/setup-node@v3
         with:
           node-version: 18
           cache: "yarn"
 
-      - run: npm install -g yarn
-
-      - name: install frontend dependencies
-        run: yarn install
+      - run: yarn install
+      - run: yarn run tauri build
 
       - uses: tauri-apps/tauri-action@v0
         id: tauri
