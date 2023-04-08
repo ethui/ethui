@@ -68,11 +68,11 @@ jobs:
           name: extension-${{ github.sha }}
           path: release/
 
-      - name: Download extension
+      - name: Download binary
         uses: actions/download-artifact@v3
         with:
           name: app-${{ github.sha }}
-          path: app/
+          path: release/
 
       - name: Create release
         id: create_release
@@ -81,5 +81,4 @@ jobs:
           draft: true
           prerelease: true
           files: |
-            release/extension.zip
-            app/*
+            release/*
