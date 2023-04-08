@@ -8,12 +8,12 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.sha }}
+permissions:
+  contents: write
 
 jobs:
   create:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     outputs:
       tag: ${{ steps.get-tag.outputs.tag }}
       release_id: ${{ steps.create_release.id }}
@@ -97,8 +97,6 @@ jobs:
           releaseId: ${{ needs.create.outputs.release_id }}
 
   publish:
-    permissions:
-      contents: write
     needs: [create, extension, app]
     runs-on: ubuntu-20.04
     steps:
