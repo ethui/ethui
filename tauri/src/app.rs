@@ -1,6 +1,7 @@
-use std::{path::PathBuf, sync::OnceLock};
+use std::path::PathBuf;
 
 use log::debug;
+use once_cell::sync::OnceCell;
 use serde::Serialize;
 use tauri::{
     AppHandle, Builder, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
@@ -32,8 +33,8 @@ impl IronEvent {
     }
 }
 
-pub static DB_PATH: OnceLock<PathBuf> = OnceLock::new();
-pub static SETTINGS_PATH: OnceLock<PathBuf> = OnceLock::new();
+pub static DB_PATH: OnceCell<PathBuf> = OnceCell::new();
+pub static SETTINGS_PATH: OnceCell<PathBuf> = OnceCell::new();
 
 impl IronApp {
     pub fn build() -> Self {
