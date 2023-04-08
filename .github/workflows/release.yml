@@ -16,6 +16,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: yarn cache
+        uses: actions/setup-node@v3
+        with:
+          cache: "yarn"
+
       - name: Install dependencies
         run: yarn workspace @iron/extension install
 
@@ -44,6 +49,14 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
+
+      - name: rust cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: yarn cache
+        uses: actions/setup-node@v3
+        with:
+          cache: "yarn"
 
       - run: yarn install
       - run: yarn run tauri build
