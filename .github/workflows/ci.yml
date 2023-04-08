@@ -68,6 +68,8 @@ jobs:
         with:
           cache: "yarn"
 
+      - run: yarn install
+
       - name: ESLint
         run: yarn lint
 
