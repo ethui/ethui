@@ -10,11 +10,30 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.sha }}
 
 jobs:
-  #
-  # build extension
-  #
+  create:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      tag: ${{ steps.get-tag.outputs.tag }}
+      release_id: ${{ steps.create_release.id }}
+      upload_url: ${{ steps.create_release.upload_url }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - id: get-tag
+        name: get tag
+        run: echo "tag=v$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+
+      - id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          prerelease: true
+          tag_name: ${{ steps.get-tag.outputs.tag }}
+
   extension:
-    name: Build Extension
+    needs: [create]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -30,18 +49,13 @@ jobs:
       - name: Build extension zip
         run: yarn workspace @iron/extension build:zip
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: extension-${{ github.sha }}
-          path: ./extension/extension.zip
-          retention-days: 1
+      - name: Upload to release
+        run: gh release upload ${{ needs.create.outputs.tag }} ./extension/extension.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  #
-  # build tauri app
-  #
   app:
-    name: Build Binary
+    needs: [create]
     strategy:
       fail-fast: false
       matrix:
@@ -79,34 +93,16 @@ jobs:
         id: tauri
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          releaseId: ${{ needs.create.outputs.release_id }}
 
-  #
-  # create release
-  #
-  create-release:
-    needs: [extension, app]
-    name: Create Release
-    runs-on: ubuntu-latest
+  publish:
     permissions:
       contents: write
+      needs: [create, extension, app]
+    runs-on: ubuntu-20.04
     steps:
-      - name: Download extension
-        uses: actions/download-artifact@v3
-        with:
-          name: extension-${{ github.sha }}
-          path: release/
-
-      - name: Download binary
-        uses: actions/download-artifact@v3
-        with:
-          name: ${{ needs.app.outputs.artifacts }}
-          path: release/
-
-      - name: Create release
-        id: create_release
-        uses: softprops/action-gh-release@v1
-        with:
-          draft: true
-          prerelease: true
-          files: |
-            release/*
+      - name: publish release
+        run: gh release edit ${{ needs.create.outputs.release_id }} --draft=false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
