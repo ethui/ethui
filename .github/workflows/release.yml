@@ -99,7 +99,7 @@ jobs:
   publish:
     permissions:
       contents: write
-      needs: [create, extension, app]
+    needs: [create, extension, app]
     runs-on: ubuntu-20.04
     steps:
       - name: publish release
