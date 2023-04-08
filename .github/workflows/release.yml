@@ -50,7 +50,7 @@ jobs:
         run: yarn workspace @iron/extension build:zip
 
       - name: Upload to release
-        run: gh release upload ${{ needs.create.outputs.tag }} ./extension/extension.zip
+        run: gh release upload ${{ needs.create.outputs.release_id }} ./extension/extension.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
