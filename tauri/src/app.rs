@@ -1,6 +1,5 @@
 use std::path::PathBuf;
 
-use log::debug;
 use once_cell::sync::OnceCell;
 use serde::Serialize;
 use tauri::{

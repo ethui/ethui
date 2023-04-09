@@ -6,7 +6,7 @@ use std::path::Path;
 
 use ethers::providers::{Http, Provider};
 use ethers_core::k256::ecdsa::SigningKey;
-use log::{debug, warn};
+use log::warn;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tokio::sync::mpsc;

@@ -85,8 +85,6 @@ pub async fn accept_connection(socket: SocketAddr, stream: TcpStream, ctx: Conte
     let err = handle_connection(ws_stream, rcv, ctx.clone()).await;
     ctx.lock().await.remove_peer(socket);
 
-    // TODO: this removal should be cleaner
-
     if let Err(e) = err {
         match e {
             Error::Websocket(e) => match e {

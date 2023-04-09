@@ -1,6 +1,5 @@
 use std::path::PathBuf;
 
-use log::debug;
 use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous};
 
 use crate::{app::DB_PATH, error::Result};
@@ -17,7 +16,6 @@ impl DB {
     }
 
     pub async fn connect(&mut self) -> Result<()> {
-        debug!("Opening database at: {:?}", self.path);
         let connect_options = SqliteConnectOptions::new()
             .filename(&self.path)
             .create_if_missing(true)
@@ -29,7 +27,6 @@ impl DB {
             .connect_with(connect_options)
             .await?;
 
-        debug!("Database opened successfully");
         migrations::run(&pool).await?;
 
         self.pool = Some(pool);
@@ -58,13 +55,11 @@ impl Default for DB {
 }
 
 mod migrations {
-    use log::debug;
     use sqlx::migrate;
 
     use crate::error::Result;
 
     pub async fn run(pool: &sqlx::Pool<sqlx::Sqlite>) -> Result<()> {
-        debug!("Running migrations");
         migrate!("../migrations/").run(pool).await?;
 
         Ok(())

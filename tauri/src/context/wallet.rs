@@ -2,7 +2,6 @@ use ethers::signers::coins_bip39::English;
 use ethers::signers::{MnemonicBuilder, Signer};
 use ethers::utils::to_checksum;
 use ethers_core::k256::ecdsa::SigningKey;
-use log::debug;
 use serde::de::{self, MapAccess, Visitor};
 use serde::{Deserialize, Serialize};
 
@@ -87,7 +86,6 @@ impl Wallet {
     }
 
     pub fn update_chain_id(&mut self, chain_id: u32) {
-        debug!("new chain id {}", chain_id);
         self.signer =
             Self::build_signer(&self.mnemonic, &self.derivation_path, self.idx, chain_id).unwrap();
     }
