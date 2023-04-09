@@ -1,10 +1,23 @@
 import { listen } from "@tauri-apps/api/event";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { useInvoke } from "../hooks/tauri";
 
+interface Connection {
+  origin: string;
+  tab_id?: number;
+  socket: string;
+  url: string;
+  favicon: string;
+}
+
 export function Connections() {
-  const { data: connections, mutate } = useInvoke<string[]>("get_connections");
+  const { data: connections, mutate } =
+    useInvoke<Connection[]>("get_connections");
+
+  const [groupedConnections, setGroupedConnections] = useState<
+    Map<number | undefined, Connection[]>
+  >(new Map());
 
   useEffect(() => {
     const unlisten = listen("refresh-connections", () => {
@@ -16,6 +29,20 @@ export function Connections() {
     };
   }, [mutate]);
 
+  useEffect(() => {
+    if (!connections) return;
+    const groupedConnections = connections.reduce((acc, conn) => {
+      if (!acc.has(conn.tab_id)) {
+        acc.set(conn.tab_id, []);
+      }
+      acc.get(conn.tab_id)!.push(conn);
+
+      return acc;
+    }, new Map());
+
+    setGroupedConnections(groupedConnections);
+  }, [connections]);
+
   console.log("conn", connections);
 
   return (
@@ -26,26 +53,29 @@ export function Connections() {
         </h1>
       </div>
       <ul role="list" className="px-4 divide-y divide-gray-200">
-        {(connections || []).map((conn) => (
-          <Connection key={conn} conn={conn} />
+        {Array.from(groupedConnections.entries()).map(([id, conns]) => (
+          <li key={id}>
+            <Connection tabId={id} conns={conns} />
+          </li>
         ))}
       </ul>
     </div>
   );
 }
 
-function Connection({ conn }: { conn: string }) {
+function Connection({ tabId, conns }: { tabId?: number; conns: Connection[] }) {
   return (
-    <li>
-      <a href="#" className="block hover:bg-gray-50">
-        <div className="py-4 sm:px-6">
-          <div className="flex items-center justify-between">
-            <p className="truncate text-sm font-medium text-indigo-600">
-              {conn}
+    <a href="#" className="block hover:bg-gray-50">
+      <div className="py-4 sm:px-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center flex-shrink-0">
+            {conns[0].favicon && <img src={conns[0].favicon} width={25} />}
+            <p className="ml-2 truncate text-sm font-medium text-indigo-600">
+              {conns.map((conn) => conn.origin).join(", ")}
             </p>
           </div>
         </div>
-      </a>
-    </li>
+      </div>
+    </a>
   );
 }
