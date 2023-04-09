@@ -4,7 +4,13 @@ use crate::context::{Context, Network, Wallet};
 use crate::store::transactions::TransactionStore;
 
 type Ctx<'a> = tauri::State<'a, Context>;
-type Result<T> = std::result::Result<T, ()>;
+type Result<T> = std::result::Result<T, String>;
+
+impl From<crate::error::Error> for String {
+    fn from(e: crate::error::Error) -> Self {
+        e.to_string()
+    }
+}
 
 #[tauri::command]
 pub async fn get_current_network(ctx: Ctx<'_>) -> Result<Network> {
@@ -21,7 +27,8 @@ pub async fn get_networks(ctx: Ctx<'_>) -> Result<Vec<Network>> {
 
 #[tauri::command]
 pub async fn set_current_network(network: String, ctx: Ctx<'_>) -> Result<()> {
-    ctx.lock().await.set_current_network(network);
+    ctx.lock().await.set_current_network(network)?;
+
     Ok(())
 }
 
@@ -75,11 +82,7 @@ pub async fn get_connections(ctx: Ctx<'_>) -> Result<Vec<String>> {
 pub async fn derive_addresses_with_mnemonic(
     mnemonic: String,
     derivation_path: String,
-    ctx: Ctx<'_>,
 ) -> Result<Vec<String>> {
-    let ctx = ctx.lock().await;
-
-    let wallet = ctx.wallet.clone();
     let addresses = Wallet::derive_addresses_with_mnemonic(&mnemonic, &derivation_path, 5).unwrap();
 
     Ok(addresses)

@@ -20,6 +20,8 @@ pub struct Handler {
 
 impl jsonrpc_core::Metadata for Context {}
 
+type Result<T> = jsonrpc_core::Result<T>;
+
 impl Default for Handler {
     fn default() -> Self {
         let mut res = Self {
@@ -41,8 +43,7 @@ impl Handler {
                 self.io
                     .add_method_with_meta($name, |params: Params, ctx: Context| async move {
                         let ctx = ctx.lock().await;
-                        let res = $fn(params, ctx).await;
-                        Ok(res)
+                        $fn(params, ctx).await
                     });
             };
         }
@@ -72,36 +73,43 @@ impl Handler {
         provider_handler!("eth_blockNumber");
     }
 
-    async fn accounts(_: Params, ctx: UnlockedContext<'_>) -> serde_json::Value {
-        json!([ctx.wallet.checksummed_address()])
+    async fn accounts(_: Params, ctx: UnlockedContext<'_>) -> Result<serde_json::Value> {
+        Ok(json!([ctx.wallet.checksummed_address()]))
     }
 
-    async fn chain_id(_: Params, ctx: UnlockedContext<'_>) -> serde_json::Value {
-        json!(ctx.get_current_network().chain_id_hex())
+    async fn chain_id(_: Params, ctx: UnlockedContext<'_>) -> Result<serde_json::Value> {
+        Ok(json!(ctx.get_current_network().chain_id_hex()))
     }
 
-    async fn provider_state(_: Params, ctx: UnlockedContext<'_>) -> serde_json::Value {
+    async fn provider_state(_: Params, ctx: UnlockedContext<'_>) -> Result<serde_json::Value> {
         let network = ctx.get_current_network();
 
-        json!({
+        Ok(json!({
             "isUnlocked": true,
             "chainId": network.chain_id_hex(),
             "networkVersion": network.name,
             "accounts": [ctx.wallet.checksummed_address()],
-        })
+        }))
     }
 
-    async fn switch_chain(params: Params, mut ctx: UnlockedContext<'_>) -> serde_json::Value {
+    async fn switch_chain(
+        params: Params,
+        mut ctx: UnlockedContext<'_>,
+    ) -> Result<serde_json::Value> {
         let params = params.parse::<Vec<HashMap<String, String>>>().unwrap();
         let chain_id_str = params[0].get("chainId").unwrap().clone();
         let chain_id = u32::from_str_radix(&chain_id_str[2..], 16).unwrap();
 
-        ctx.set_current_network_by_id(chain_id);
-
-        serde_json::Value::Null
+        match ctx.set_current_network_by_id(chain_id) {
+            Ok(_) => Ok(serde_json::Value::Null),
+            Err(e) => Err(jsonrpc_core::Error::invalid_params(e)),
+        }
     }
 
-    async fn send_transaction(params: Params, ctx: UnlockedContext<'_>) -> serde_json::Value {
+    async fn send_transaction(
+        params: Params,
+        ctx: UnlockedContext<'_>,
+    ) -> Result<serde_json::Value> {
         let params = params.parse::<Vec<HashMap<String, String>>>().unwrap()[0].clone();
 
         // parse params
@@ -139,10 +147,9 @@ impl Handler {
         // sign & send
         let res = signer.send_transaction(envelope, None).await;
 
-        if res.is_err() {
-            Default::default()
-        } else {
-            res.unwrap().tx_hash().encode_hex().into()
+        match res {
+            Ok(res) => Ok(res.tx_hash().encode_hex().into()),
+            Err(e) => Ok(e.to_string().into()),
         }
     }
 }

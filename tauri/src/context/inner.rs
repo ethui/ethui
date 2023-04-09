@@ -6,7 +6,6 @@ use std::path::Path;
 
 use ethers::providers::{Http, Provider};
 use ethers_core::k256::ecdsa::SigningKey;
-use log::debug;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tokio::sync::mpsc;
@@ -166,20 +165,22 @@ impl ContextInner {
                 .send(IronEvent::RefreshNetwork)?
         }
 
-        self.save();
+        self.save()?;
 
         Ok(())
     }
 
-    pub fn set_current_network_by_id(&mut self, new_chain_id: u32) {
+    pub fn set_current_network_by_id(&mut self, new_chain_id: u32) -> Result<()> {
         let new_network = self
             .networks
             .values()
             .find(|n| n.chain_id == new_chain_id)
             .unwrap();
 
-        self.set_current_network(new_network.name.clone());
-        self.save().unwrap();
+        self.set_current_network(new_network.name.clone())?;
+        self.save()?;
+
+        Ok(())
     }
 
     pub fn set_networks(&mut self, networks: Vec<Network>) {
