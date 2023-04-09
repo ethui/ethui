@@ -1,6 +1,6 @@
 use ethers::signers::coins_bip39::English;
 use ethers::signers::{MnemonicBuilder, Signer};
-use ethers::utils::{secret_key_to_address, to_checksum};
+use ethers::utils::to_checksum;
 use ethers_core::k256::ecdsa::SigningKey;
 use log::debug;
 use serde::de::{self, MapAccess, Visitor};
