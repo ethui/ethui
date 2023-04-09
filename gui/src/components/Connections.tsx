@@ -45,11 +45,6 @@ export function Connections() {
 
   return (
     <div className="bg-white shadow sm:rounded-lg">
-      <div className="px-4 py-5 sm:px-6">
-        <h1 className="text-base font-semibold leading-6 text-gray-900">
-          Connections
-        </h1>
-      </div>
       <ul role="list" className="px-4 divide-y divide-gray-200">
         {Array.from(groupedConnections.entries()).map(([id, conns]) => (
           <li key={id}>
