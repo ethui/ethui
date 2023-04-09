@@ -1,15 +1,56 @@
+use std::collections::HashMap;
 use std::net::SocketAddr;
 
 use futures_util::{SinkExt, StreamExt};
 use log::*;
+use serde::Serialize;
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::mpsc;
-use tokio_tungstenite::accept_async;
+use tokio_tungstenite::{accept_hdr_async, WebSocketStream};
+use tungstenite::handshake::server::{ErrorResponse, Request, Response};
 use tungstenite::Message;
+use url::Url;
 
 use crate::context::Context;
 use crate::error::{Error, Result};
 use crate::rpc::Handler;
+
+#[derive(Clone, Debug, Serialize)]
+pub struct Peer {
+    pub origin: String,
+    pub favicon: Option<String>,
+    pub url: Option<String>,
+    pub tab_id: Option<u32>,
+    pub socket: SocketAddr,
+    #[serde(skip)]
+    pub sender: mpsc::UnboundedSender<serde_json::Value>,
+}
+
+impl Peer {
+    fn new(
+        socket: SocketAddr,
+        sender: mpsc::UnboundedSender<serde_json::Value>,
+        params: HashMap<String, String>,
+    ) -> Self {
+        let origin = params
+            .get("origin")
+            .cloned()
+            .unwrap_or(String::from("unknown"));
+
+        let url = params.get("url").cloned();
+        let favicon = params.get("favicon").cloned();
+        let tab_id = params.get("tabId").cloned().and_then(|id| id.parse().ok());
+
+        Self {
+            socket,
+            sender,
+            origin,
+            favicon,
+            url,
+            tab_id,
+        }
+    }
+}
 
 pub async fn ws_server_loop(ctx: Context) {
     let addr = "127.0.0.1:9002";
@@ -24,12 +65,27 @@ pub async fn ws_server_loop(ctx: Context) {
     }
 }
 
-pub async fn accept_connection(peer: SocketAddr, stream: TcpStream, ctx: Context) {
-    let err = handle_connection(peer, stream, ctx.clone()).await;
+pub async fn accept_connection(socket: SocketAddr, stream: TcpStream, ctx: Context) {
+    let mut query_params: HashMap<String, String> = Default::default();
+    let callback = |req: &Request, res: Response| -> std::result::Result<Response, ErrorResponse> {
+        // url = Some(req.uri().clone());
+        let url = Url::parse(&format!("{}{}", "http://localhost", req.uri()));
+        query_params = url.unwrap().query_pairs().into_owned().collect();
+        Ok(res)
+    };
+
+    let ws_stream = accept_hdr_async(stream, callback)
+        .await
+        .expect("Failed to accept");
+    let (snd, rcv) = mpsc::unbounded_channel::<serde_json::Value>();
+
+    let peer = Peer::new(socket, snd, query_params);
+
+    ctx.lock().await.add_peer(peer);
+    let err = handle_connection(ws_stream, rcv, ctx.clone()).await;
+    ctx.lock().await.remove_peer(socket);
 
     // TODO: this removal should be cleaner
-    debug!("Peer down: {}", peer);
-    ctx.lock().await.remove_peer(peer);
 
     if let Err(e) = err {
         match e {
@@ -37,27 +93,25 @@ pub async fn accept_connection(peer: SocketAddr, stream: TcpStream, ctx: Context
                 tungstenite::Error::ConnectionClosed
                 | tungstenite::Error::Protocol(_)
                 | tungstenite::Error::Utf8 => {
-                    info!("Connection closed, {:?}, {:?}", peer, e);
+                    info!("Connection closed, {:?}, {:?}", socket, e);
                 }
                 _ => (),
             },
             _ => {
-                error!("JSON error {:?}, connection terminated {:?}", e, peer)
+                error!("JSON error {:?}, connection terminated {:?}", e, socket)
             }
         }
     }
 }
 
-async fn handle_connection(peer: SocketAddr, stream: TcpStream, ctx: Context) -> Result<()> {
-    debug!("Peer   up: {}", peer);
-
-    let ws_stream = accept_async(stream).await.expect("Failed to accept");
-    let (mut ws_sender, mut ws_receiver) = ws_stream.split();
-    let (snd, mut rcv) = mpsc::unbounded_channel::<serde_json::Value>();
-
-    ctx.lock().await.add_peer(peer, snd);
+async fn handle_connection(
+    stream: WebSocketStream<TcpStream>,
+    mut rcv: mpsc::UnboundedReceiver<serde_json::Value>,
+    ctx: Context,
+) -> Result<()> {
     let handler = Handler::default();
     let mut interval = tokio::time::interval(std::time::Duration::from_secs(15));
+    let (mut ws_sender, mut ws_receiver) = stream.split();
 
     loop {
         tokio::select! {
@@ -98,9 +152,6 @@ async fn handle_connection(peer: SocketAddr, stream: TcpStream, ctx: Context) ->
 
         }
     }
-
-    debug!("Peer down: {}", peer);
-    ctx.lock().await.remove_peer(peer);
 
     Ok(())
 }
