@@ -67,15 +67,10 @@ pub async fn get_transactions(address: Address, ctx: Ctx<'_>) -> Result<Vec<Stri
 }
 
 #[tauri::command]
-pub async fn get_connections(ctx: Ctx<'_>) -> Result<Vec<String>> {
+pub async fn get_connections(ctx: Ctx<'_>) -> Result<Vec<crate::ws::Peer>> {
     let ctx = ctx.lock().await;
 
-    Ok(ctx
-        .peers
-        .keys()
-        .to_owned()
-        .map(|p| format!("{}", p))
-        .collect())
+    Ok(ctx.peers.values().cloned().collect())
 }
 
 #[tauri::command]

@@ -15,6 +15,7 @@ pub use super::wallet::Wallet;
 use crate::app::{IronEvent, SETTINGS_PATH};
 use crate::db::DB;
 use crate::error::Result;
+use crate::ws::Peer;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct ContextInner {
@@ -24,7 +25,7 @@ pub struct ContextInner {
 
     /// Deserialized into an empty HashMap
     #[serde(skip)]
-    pub peers: HashMap<SocketAddr, mpsc::UnboundedSender<serde_json::Value>>,
+    pub peers: HashMap<SocketAddr, Peer>,
 
     /// This is deserialized with the Default trait which only works after `App` has been
     /// initialized and `DB_PATH` cell filled
@@ -96,8 +97,8 @@ impl ContextInner {
         Ok(())
     }
 
-    pub fn add_peer(&mut self, peer: SocketAddr, snd: mpsc::UnboundedSender<serde_json::Value>) {
-        self.peers.insert(peer, snd);
+    pub fn add_peer(&mut self, peer: Peer) {
+        self.peers.insert(peer.socket, peer);
         self.save().unwrap();
         self.window_snd
             .as_ref()
@@ -117,8 +118,10 @@ impl ContextInner {
     }
 
     pub fn broadcast<T: Serialize + std::fmt::Debug>(&self, msg: T) {
-        self.peers.iter().for_each(|(_, sender)| {
-            sender.send(serde_json::to_value(&msg).unwrap()).unwrap();
+        self.peers.iter().for_each(|(_, peer)| {
+            peer.sender
+                .send(serde_json::to_value(&msg).unwrap())
+                .unwrap();
         });
     }
 

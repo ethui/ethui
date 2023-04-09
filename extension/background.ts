@@ -26,7 +26,25 @@ export function setupProviderConnection(remotePort: Runtime.Port) {
   const mux = setupMultiplex(stream);
   const outStream = mux.createStream("metamask-provider") as unknown as Duplex;
 
-  const ws = new WebsocketBuilder("ws://localhost:9002")
+  const params: Record<string, string> = {
+    origin: (remotePort.sender as unknown as { origin: string }).origin,
+  };
+
+  if (remotePort.sender?.tab?.id) {
+    params.tabId = remotePort.sender.tab.id.toString(10);
+  }
+
+  if (remotePort.sender?.tab?.favIconUrl) {
+    params.favicon = remotePort.sender.tab.favIconUrl;
+  }
+
+  if (remotePort.sender?.tab?.url) {
+    params.url = remotePort.sender.tab.url;
+  }
+
+  const ws = new WebsocketBuilder(
+    `ws://localhost:9002?${encodeUrlParams(params)}`
+  )
     .onMessage((_i, e) => {
       // write back to page provider
       const data = JSON.parse(e.data);
@@ -54,4 +72,10 @@ function setupMultiplex(connectionStream: Stream) {
     }
   });
   return mux;
+}
+
+function encodeUrlParams(p: Record<string, string>) {
+  return Object.entries(p)
+    .map((kv) => kv.map(encodeURIComponent).join("="))
+    .join("&");
 }

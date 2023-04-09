@@ -27,11 +27,6 @@ export function Txs() {
 
   return (
     <div className="bg-white shadow sm:rounded-lg">
-      <div className="px-4 py-5 sm:px-6">
-        <h1 className="text-base font-semibold leading-6 text-gray-900">
-          Transaction History
-        </h1>
-      </div>
       <ul role="list" className="px-4 divide-y divide-gray-200">
         {(hashes || []).map((hash) => (
           <Receipt key={hash} hash={hash} />

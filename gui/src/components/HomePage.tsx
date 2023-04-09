@@ -5,7 +5,7 @@ import { Connections } from "./Connections";
 import { Txs } from "./Txs";
 
 const tabs = [
-  { name: "Activity", component: Txs },
+  { name: "Transactions", component: Txs },
   { name: "Connections", component: Connections },
 ];
 
