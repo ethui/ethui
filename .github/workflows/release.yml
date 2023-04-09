@@ -75,7 +75,8 @@ jobs:
       - name: setup rust
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          toolchain: stable
+          override: true
 
       - name: rust cache
         uses: Swatinem/rust-cache@v2
