@@ -6,6 +6,7 @@ use std::path::Path;
 
 use ethers::providers::{Http, Provider};
 use ethers_core::k256::ecdsa::SigningKey;
+use log::debug;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tokio::sync::mpsc;
@@ -107,6 +108,7 @@ impl ContextInner {
     }
 
     pub fn remove_peer(&mut self, peer: SocketAddr) {
+        debug!("Removing peer: {}", peer);
         self.peers.remove(&peer);
         self.save().unwrap();
         self.window_snd

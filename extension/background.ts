@@ -2,7 +2,7 @@ import PortStream from "extension-port-stream";
 import pump, { type Stream } from "pump";
 import { type Duplex } from "stream";
 import browser, { type Runtime } from "webextension-polyfill";
-import { WebsocketBuilder } from "websocket-ts";
+import { Websocket, WebsocketBuilder } from "websocket-ts";
 
 import ObjectMultiplex from "@metamask/object-multiplex";
 
@@ -22,11 +22,19 @@ function handleConnections() {
 }
 
 export function setupProviderConnection(remotePort: Runtime.Port) {
+  let ws: Websocket;
+
   const stream = new PortStream(remotePort);
-  const mux = setupMultiplex(stream);
+  const mux = new ObjectMultiplex();
+  pump(stream, mux as unknown as Duplex, stream, (err) => {
+    if (err && ws) {
+      ws.close();
+      console.log("closing");
+    }
+  });
   const outStream = mux.createStream("metamask-provider") as unknown as Duplex;
 
-  const ws = new WebsocketBuilder("ws://localhost:9002")
+  ws = new WebsocketBuilder("ws://localhost:9002")
     .onMessage((_i, e) => {
       // write back to page provider
       const data = JSON.parse(e.data);
@@ -40,18 +48,4 @@ export function setupProviderConnection(remotePort: Runtime.Port) {
     console.log("req:", data);
     ws.send(JSON.stringify(data));
   });
-}
-
-function setupMultiplex(connectionStream: Stream) {
-  const mux = new ObjectMultiplex();
-  const CONNECTION_READY = "CONNECTION_READY";
-  mux.ignoreStream(CONNECTION_READY);
-  mux.ignoreStream("ACK_KEEP_ALIVE_MESSAGE");
-  mux.ignoreStream("WORKER_KEEP_ALIVE_MESSAGE");
-  pump(connectionStream, mux as unknown as Duplex, connectionStream, (err) => {
-    if (err) {
-      console.error(err);
-    }
-  });
-  return mux;
 }
