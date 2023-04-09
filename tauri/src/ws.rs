@@ -5,6 +5,7 @@ use log::*;
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::mpsc;
 use tokio_tungstenite::accept_async;
+use tungstenite::Message;
 
 use crate::context::Context;
 use crate::error::{Error, Result};
@@ -18,14 +19,17 @@ pub async fn ws_server_loop(ctx: Context) {
         let peer = stream
             .peer_addr()
             .expect("connected streams should have a peer address");
-        debug!("Peer address: {}", peer);
 
         tokio::spawn(accept_connection(peer, stream, ctx.clone()));
     }
 }
 
 pub async fn accept_connection(peer: SocketAddr, stream: TcpStream, ctx: Context) {
-    let err = handle_connection(peer, stream, ctx).await;
+    let err = handle_connection(peer, stream, ctx.clone()).await;
+
+    // TODO: this removal should be cleaner
+    debug!("Peer down: {}", peer);
+    ctx.lock().await.remove_peer(peer);
 
     if let Err(e) = err {
         match e {
@@ -33,7 +37,7 @@ pub async fn accept_connection(peer: SocketAddr, stream: TcpStream, ctx: Context
                 tungstenite::Error::ConnectionClosed
                 | tungstenite::Error::Protocol(_)
                 | tungstenite::Error::Utf8 => {
-                    info!("Connection closed, {:?}", peer);
+                    info!("Connection closed, {:?}, {:?}", peer, e);
                 }
                 _ => (),
             },
@@ -45,7 +49,7 @@ pub async fn accept_connection(peer: SocketAddr, stream: TcpStream, ctx: Context
 }
 
 async fn handle_connection(peer: SocketAddr, stream: TcpStream, ctx: Context) -> Result<()> {
-    debug!("New WebSocket connection: {}", peer);
+    debug!("Peer   up: {}", peer);
 
     let ws_stream = accept_async(stream).await.expect("Failed to accept");
     let (mut ws_sender, mut ws_receiver) = ws_stream.split();
@@ -53,6 +57,7 @@ async fn handle_connection(peer: SocketAddr, stream: TcpStream, ctx: Context) ->
 
     ctx.lock().await.add_peer(peer, snd);
     let handler = Handler::default();
+    let mut interval = tokio::time::interval(std::time::Duration::from_secs(15));
 
     loop {
         tokio::select! {
@@ -61,6 +66,9 @@ async fn handle_connection(peer: SocketAddr, stream: TcpStream, ctx: Context) ->
                 match msg {
                     Some(msg)=>{
                         let msg = msg?;
+                        if let Message::Pong(_) = msg {
+                            continue;
+                        }
                         let reply = handler.handle(msg.to_string(), ctx.clone()).await;
                         let reply = reply.unwrap_or_else(||serde_json::Value::Null.to_string());
 
@@ -83,9 +91,15 @@ async fn handle_connection(peer: SocketAddr, stream: TcpStream, ctx: Context) ->
                 }
             }
 
+            // send a ping every 15 seconds
+            _ = interval.tick() => {
+                ws_sender.send(Message::Ping(Default::default())).await?;
+            }
+
         }
     }
 
+    debug!("Peer down: {}", peer);
     ctx.lock().await.remove_peer(peer);
 
     Ok(())

@@ -6,7 +6,7 @@ use std::path::Path;
 
 use ethers::providers::{Http, Provider};
 use ethers_core::k256::ecdsa::SigningKey;
-use log::debug;
+use log::{debug, warn};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tokio::sync::mpsc;
@@ -108,7 +108,6 @@ impl ContextInner {
     }
 
     pub fn remove_peer(&mut self, peer: SocketAddr) {
-        debug!("Removing peer: {}", peer);
         self.peers.remove(&peer);
         self.save().unwrap();
         self.window_snd
@@ -120,7 +119,11 @@ impl ContextInner {
 
     pub fn broadcast<T: Serialize + std::fmt::Debug>(&self, msg: T) {
         self.peers.iter().for_each(|(_, sender)| {
-            sender.send(serde_json::to_value(&msg).unwrap()).unwrap();
+            sender
+                .send(serde_json::to_value(&msg).unwrap())
+                .unwrap_or_else(|e| {
+                    warn!("Failed to send message to peer: {}", e);
+                });
         });
     }
 

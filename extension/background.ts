@@ -28,6 +28,7 @@ export function setupProviderConnection(remotePort: Runtime.Port) {
   const mux = new ObjectMultiplex();
   pump(stream, mux as unknown as Duplex, stream, (err) => {
     if (err && ws) {
+      console.error(err);
       ws.close();
       console.log("closing");
     }
