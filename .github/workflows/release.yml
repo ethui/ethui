@@ -75,6 +75,7 @@ jobs:
       - name: setup rust
         uses: actions-rs/toolchain@v1
         with:
+          toolchain: stable
           override: true
 
       - name: rust cache
