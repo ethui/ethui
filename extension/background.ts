@@ -1,4 +1,5 @@
 import PortStream from "extension-port-stream";
+import log from "loglevel";
 import pump from "pump";
 import { type Duplex } from "stream";
 import browser, { type Runtime } from "webextension-polyfill";
@@ -6,17 +7,21 @@ import { Websocket, WebsocketBuilder } from "websocket-ts";
 
 import ObjectMultiplex from "@metamask/object-multiplex";
 
+import { type Settings, defaultSettings, loadSettings } from "./settings";
+
 // init on load
 (async () => init())();
 
+let settings: Settings = defaultSettings;
+
 export async function init() {
-  console.log("[background] init");
+  settings = (await loadSettings()) as Settings;
+  log.setLevel(settings.logLevel);
   handleConnections();
 }
 
 function handleConnections() {
   browser.runtime.onConnect.addListener(async (remotePort: Runtime.Port) => {
-    console.log("[background] onConnect", remotePort);
     setupProviderConnection(remotePort);
   });
 }
@@ -28,18 +33,18 @@ export function setupProviderConnection(port: Runtime.Port) {
   const mux = new ObjectMultiplex();
   pump(stream, mux as unknown as Duplex, stream, (err) => {
     if (err && ws) {
-      console.error(err);
+      log.warn(err);
+      log.debug("closing WS");
       ws.close();
-      console.log("closing");
     }
   });
   const outStream = mux.createStream("metamask-provider") as unknown as Duplex;
 
-  ws = new WebsocketBuilder(`ws://localhost:9002?${connectionParams(port)}`)
+  ws = new WebsocketBuilder(`${settings.endpoint}?${connectionParams(port)}`)
     .onMessage((_i, e) => {
       // write back to page provider
       const data = JSON.parse(e.data);
-      console.log("onMessage", data);
+      log.debug("onMessage", data);
       outStream.write(data);
     })
     .build();
@@ -48,7 +53,7 @@ export function setupProviderConnection(port: Runtime.Port) {
     if (!ws) return;
 
     // forward all messages to ws
-    console.log("req:", data);
+    log.debug("request", data);
     ws.send(JSON.stringify(data));
   });
 }

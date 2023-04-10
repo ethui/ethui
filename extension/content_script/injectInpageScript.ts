@@ -1,8 +1,6 @@
+import log from "loglevel";
 import { runtime } from "webextension-polyfill";
 
-/**
- * Injects the inpage script
- */
 export function injectInPageScript() {
   const url = runtime.getURL("inpage.js");
 
@@ -14,6 +12,6 @@ export function injectInPageScript() {
     container.insertBefore(scriptTag, container.children[0]);
     container.removeChild(scriptTag);
   } catch (error) {
-    console.error("Iron Wallet: Provider injection failed.", error);
+    log.error("Iron Wallet: Provider injection failed.", error);
   }
 }

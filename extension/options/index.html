@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Iron Options</title>
+  </head>
+  <style type="text/css">
+    .form-section {
+      margin: 10px;
+    }
+
+    .label {
+      display: block;
+    }
+  </style>
+  <body>
+    <div class="form-section">
+      <label class="label">Log level</label>
+      <select id="log-level">
+        <option value="info">Info</option>
+        <option value="warn">Warn</option>
+        <option value="error">Error</option>
+        <option value="debug">Debug</option>
+      </select>
+    </div>
+
+    <div class="form-section">
+      <label class="label">Endpoint</label>
+      <input type="text" id="endpoint" />
+    </div>
+
+    <div class="form-section">
+      <div id="status"></div>
+      <button id="save">Save</button>
+    </div>
+
+    <script src="./index.ts" type="module"></script>
+  </body>
+</html>
