@@ -1,10 +1,10 @@
 import { invoke } from "@tauri-apps/api/tauri";
-import { Dropdown } from "flowbite-react";
 import { useCallback, useEffect, useState } from "react";
 import truncateEthAddress from "truncate-eth-address";
 
 import { useInvoke } from "../../hooks/tauri";
 import { Address, Wallet } from "../../types";
+import Dropdown from "../Base/Dropdown";
 
 export function QuickAccountSelect() {
   const { data: wallet, mutate } = useInvoke<Wallet>("get_wallet");
@@ -44,12 +44,10 @@ export function QuickAccountSelect() {
   if (!wallet) return <>Loading</>;
 
   return (
-    <Dropdown label={truncateEthAddress(current)}>
-      {Object.entries(addresses).map(([i, address]) => (
-        <Dropdown.Item key={i} onClick={() => handleClick(parseInt(i))}>
-          {address}
-        </Dropdown.Item>
-      ))}
-    </Dropdown>
+    <Dropdown
+      label={truncateEthAddress(current)}
+      entries={addresses}
+      onChange={(key) => handleClick(parseInt(key))}
+    />
   );
 }
