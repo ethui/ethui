@@ -21,10 +21,10 @@ function handleConnections() {
   });
 }
 
-export function setupProviderConnection(remotePort: Runtime.Port) {
+export function setupProviderConnection(port: Runtime.Port) {
   let ws: Websocket;
 
-  const stream = new PortStream(remotePort);
+  const stream = new PortStream(port);
   const mux = new ObjectMultiplex();
   pump(stream, mux as unknown as Duplex, stream, (err) => {
     if (err && ws) {
@@ -35,23 +35,7 @@ export function setupProviderConnection(remotePort: Runtime.Port) {
   });
   const outStream = mux.createStream("metamask-provider") as unknown as Duplex;
 
-  const params: Record<string, string> = {
-    origin: (remotePort.sender as unknown as { origin: string }).origin,
-  };
-
-  if (remotePort.sender?.tab?.id) {
-    params.tabId = remotePort.sender.tab.id.toString(10);
-  }
-
-  if (remotePort.sender?.tab?.favIconUrl) {
-    params.favicon = remotePort.sender.tab.favIconUrl;
-  }
-
-  if (remotePort.sender?.tab?.url) {
-    params.url = remotePort.sender.tab.url;
-  }
-
-  ws = new WebsocketBuilder(`ws://localhost:9002?${encodeUrlParams(params)}`)
+  ws = new WebsocketBuilder(`ws://localhost:9002?${connectionParams(port)}`)
     .onMessage((_i, e) => {
       // write back to page provider
       const data = JSON.parse(e.data);
@@ -67,8 +51,27 @@ export function setupProviderConnection(remotePort: Runtime.Port) {
   });
 }
 
-function encodeUrlParams(p: Record<string, string>) {
-  return Object.entries(p)
+function connectionParams(port: Runtime.Port) {
+  const sender = port.sender;
+  const tab = sender?.tab;
+
+  const params: Record<string, string | undefined> = {
+    origin: (port.sender as unknown as { origin: string }).origin,
+    tabId: tab?.id?.toString(10),
+    favicon: tab?.favIconUrl,
+    url: tab?.url,
+    title: tab?.title,
+  };
+
+  return encodeUrlParams(params);
+}
+
+function encodeUrlParams(p: Record<string, string | undefined>) {
+  const filtered: Record<string, string> = Object.fromEntries(
+    Object.entries(p).filter(([, v]) => v !== undefined)
+  ) as Record<string, string>;
+
+  return Object.entries(filtered)
     .map((kv) => kv.map(encodeURIComponent).join("="))
     .join("&");
 }

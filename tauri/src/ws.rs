@@ -21,6 +21,7 @@ pub struct Peer {
     pub favicon: Option<String>,
     pub url: Option<String>,
     pub tab_id: Option<u32>,
+    pub title: Option<String>,
     pub socket: SocketAddr,
     #[serde(skip)]
     pub sender: mpsc::UnboundedSender<serde_json::Value>,
@@ -40,6 +41,7 @@ impl Peer {
         let url = params.get("url").cloned();
         let favicon = params.get("favicon").cloned();
         let tab_id = params.get("tabId").cloned().and_then(|id| id.parse().ok());
+        let title = params.get("title").cloned();
 
         Self {
             socket,
@@ -48,6 +50,7 @@ impl Peer {
             favicon,
             url,
             tab_id,
+            title,
         }
     }
 }

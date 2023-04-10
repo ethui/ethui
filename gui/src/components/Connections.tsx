@@ -6,6 +6,7 @@ import { useInvoke } from "../hooks/tauri";
 interface Connection {
   origin: string;
   tab_id?: number;
+  title?: string;
   socket: string;
   url: string;
   favicon: string;
@@ -42,6 +43,7 @@ export function Connections() {
 
     setGroupedConnections(groupedConnections);
   }, [connections]);
+  console.log(groupedConnections);
 
   return (
     <div className="bg-white shadow sm:rounded-lg">
@@ -66,7 +68,7 @@ function Connection({ tabId, conns }: { tabId?: number; conns: Connection[] }) {
         <div className="flex items-center flex-grow">
           <div className="flex flex-col flex-grow">
             <p className="ml-2 truncate text-sm font-medium text-indigo-600">
-              <span className="text-indigo-600">{conns[0].origin}</span>
+              <span className="text-indigo-600">{conns[0].title}</span>
             </p>
             <div className="ml-2 sm:flex sm:justify-between">
               <div className="sm:flex">
