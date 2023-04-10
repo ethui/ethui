@@ -22,7 +22,7 @@ function handleConnections() {
 }
 
 export function setupProviderConnection(port: Runtime.Port) {
-  let ws: Websocket;
+  let ws: Websocket | null = null;
 
   const stream = new PortStream(port);
   const mux = new ObjectMultiplex();
@@ -45,6 +45,8 @@ export function setupProviderConnection(port: Runtime.Port) {
     .build();
 
   outStream.on("data", (data: unknown) => {
+    if (!ws) return;
+
     // forward all messages to ws
     console.log("req:", data);
     ws.send(JSON.stringify(data));
