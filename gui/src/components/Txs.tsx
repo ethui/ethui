@@ -27,9 +27,11 @@ export function Txs() {
 
   return (
     <div className="bg-white shadow sm:rounded-lg">
-      <ul role="list" className="px-4 divide-y divide-gray-200">
+      <ul role="list" className="divide-y divide-gray-200">
         {(hashes || []).map((hash) => (
-          <Receipt key={hash} hash={hash} />
+          <li key={hash}>
+            <Receipt key={hash} hash={hash} />
+          </li>
         ))}
       </ul>
     </div>
@@ -49,37 +51,33 @@ function Receipt({ hash }: { hash: string }) {
   if (!receipt || !tx) return null;
 
   return (
-    <li>
-      <a href="#" className="block hover:bg-gray-50">
-        <div className="py-4 sm:px-6">
-          <div className="flex items-center justify-between">
-            <p className="truncate text-sm font-medium text-indigo-600">
-              {hash}
-            </p>
-            <div className="ml-2 flex flex-shrink-0">
-              <Status status={receipt.status} />
-            </div>
-          </div>
-          <div className="mt-2 sm:flex sm:justify-between">
-            <div className="sm:flex">
-              <p className="flex items-center text-sm text-gray-500">
-                {truncateEthAddress(receipt.from)}
-                <ArrowRightIcon
-                  className="h-5 w-5 text-gray-400 sm:mx-2"
-                  aria-hidden="true"
-                />
-                {receipt.to
-                  ? truncateEthAddress(receipt.to)
-                  : "Contract Deploy"}
-              </p>
-              <p className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 ml-5">
-                {formatEther(tx.value)} Ξ
-              </p>
-            </div>
+    <a href="#" className="px-4 block hover:bg-gray-50">
+      <div className="py-4">
+        <div className="flex items-center justify-between">
+          <p className="flex-grow min-w-0 truncate text-sm font-medium text-indigo-600">
+            {hash}
+          </p>
+          <div className="flex flex-shrink-0">
+            <Status status={receipt.status} />
           </div>
         </div>
-      </a>
-    </li>
+        <div className="mt-2 sm:flex sm:justify-between">
+          <div className="sm:flex">
+            <p className="flex items-center text-sm text-gray-500">
+              {truncateEthAddress(receipt.from)}
+              <ArrowRightIcon
+                className="h-5 w-5 text-gray-400 sm:mx-2"
+                aria-hidden="true"
+              />
+              {receipt.to ? truncateEthAddress(receipt.to) : "Contract Deploy"}
+            </p>
+            <p className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 ml-5">
+              {formatEther(tx.value)} Ξ
+            </p>
+          </div>
+        </div>
+      </div>
+    </a>
   );
 }
 

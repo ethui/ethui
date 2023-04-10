@@ -149,6 +149,7 @@ fn show_main_window(app: &AppHandle) {
 }
 
 async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<IronEvent>) {
+    // TODO: need to not finish if there's no window
     while let (Some(msg), Some(window)) = (rcv.recv().await, handle.get_window("main")) {
         window.emit(msg.label(), &msg).unwrap();
     }

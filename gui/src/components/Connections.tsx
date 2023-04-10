@@ -46,7 +46,7 @@ export function Connections() {
 
   return (
     <div className="bg-white shadow sm:rounded-lg">
-      <ul role="list" className="px-4 divide-y divide-gray-200">
+      <ul role="list" className="divide-y divide-gray-200">
         {Array.from(groupedConnections.entries()).map(([id, conns]) => (
           <li key={id}>
             <Connection tabId={id} conns={conns} />
@@ -59,17 +59,17 @@ export function Connections() {
 
 function Connection({ tabId, conns }: { tabId?: number; conns: Connection[] }) {
   return (
-    <div className="py-4 sm:px-6">
-      <div className="flex items-center justify-between">
-        <div className="flex flex-shrink">
-          {conns[0].favicon && <img src={conns[0].favicon} width={25} />}
+    <a href="#" className="px-4 block hover:bg-gray-50">
+      <div className="py-4 flex items-center justify-start">
+        <div className="flex flex-shrink-0">
+          {conns[0].favicon && <img src={conns[0].favicon} width={25} />}{" "}
         </div>
-        <div className="flex items-center flex-grow">
-          <div className="flex flex-col flex-grow">
-            <p className="ml-2 truncate text-sm font-medium text-indigo-600">
+        <div className="flex-grow min-w-0">
+          <div className="flex flex-col">
+            <p className="mx-2 truncate text-sm font-medium text-indigo-600">
               <span className="text-indigo-600">{conns[0].title}</span>
             </p>
-            <div className="ml-2 sm:flex sm:justify-between">
+            <div className="pl-2 sm:flex sm:justify-between">
               <div className="sm:flex">
                 {tabId && (
                   <span className="text-sm text-gray-600">Tab ID {tabId}</span>
@@ -78,12 +78,12 @@ function Connection({ tabId, conns }: { tabId?: number; conns: Connection[] }) {
             </div>
           </div>
         </div>
-        <div>
+        <div className="flex-shrink-0">
           <span className="inline-flex rounded-full px-2 text-xs font-semibold leading-5 bg-gray-100 text-gray-800">
             {conns.length} connections
           </span>
         </div>
       </div>
-    </div>
+    </a>
   );
 }
