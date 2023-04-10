@@ -1,3 +1,4 @@
+import log from "loglevel";
 import { runtime } from "webextension-polyfill";
 
 /**
@@ -14,6 +15,6 @@ export function injectInPageScript() {
     container.insertBefore(scriptTag, container.children[0]);
     container.removeChild(scriptTag);
   } catch (error) {
-    console.error("Iron Wallet: Provider injection failed.", error);
+    log.error("Iron Wallet: Provider injection failed.", error);
   }
 }

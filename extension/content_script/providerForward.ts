@@ -1,4 +1,5 @@
 import PortStream from "extension-port-stream";
+import log from "loglevel";
 import pump, { type Stream } from "pump";
 import { type Duplex } from "stream";
 import { runtime } from "webextension-polyfill";
@@ -50,7 +51,7 @@ export function initProviderForward() {
     extensionChannel as unknown as Stream,
     pageChannel,
     (error?: Error) =>
-      console.debug(
+      log.debug(
         `Iron: Muxed traffic for channel "iron:provider" failed.`,
         error
       )
@@ -58,8 +59,5 @@ export function initProviderForward() {
 }
 
 function warnDisconnect(remoteLabel: string, error?: Error) {
-  console.debug(
-    `[iron] Content script lost connection "${remoteLabel}".`,
-    error
-  );
+  log.debug(`[iron] Content script lost connection "${remoteLabel}".`, error);
 }
