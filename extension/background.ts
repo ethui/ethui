@@ -1,5 +1,5 @@
 import PortStream from "extension-port-stream";
-import pump, { type Stream } from "pump";
+import pump from "pump";
 import { type Duplex } from "stream";
 import browser, { type Runtime } from "webextension-polyfill";
 import { Websocket, WebsocketBuilder } from "websocket-ts";

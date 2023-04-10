@@ -43,7 +43,6 @@ export function Connections() {
 
     setGroupedConnections(groupedConnections);
   }, [connections]);
-  console.log(groupedConnections);
 
   return (
     <div className="bg-white shadow sm:rounded-lg">
