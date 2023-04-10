@@ -1,11 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { invoke } from "@tauri-apps/api/tauri";
-import { Button } from "flowbite-react";
 import { useCallback, useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 
 import { useInvoke } from "../../hooks/tauri";
 import { Address, Wallet, walletSchema } from "../../types";
+import Button from "../Base/Button";
 import { FieldRadio, FieldText } from "./Fields";
 
 export function WalletSettings() {

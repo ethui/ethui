@@ -1,11 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { invoke } from "@tauri-apps/api/tauri";
-import { Button, Card } from "flowbite-react";
+import { Card } from "flowbite-react";
 import { useCallback } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 
 import { useInvoke } from "../../hooks/tauri";
 import { Network, networkSchema } from "../../types";
+import Button from "../Base/Button";
 import { FieldCheckbox, FieldText } from "./Fields";
 
 const emptyNetwork: Network = {
