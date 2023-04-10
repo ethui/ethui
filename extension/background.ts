@@ -1,8 +1,8 @@
 import PortStream from "extension-port-stream";
-import pump, { type Stream } from "pump";
+import pump from "pump";
 import { type Duplex } from "stream";
 import browser, { type Runtime } from "webextension-polyfill";
-import { WebsocketBuilder } from "websocket-ts";
+import { Websocket, WebsocketBuilder } from "websocket-ts";
 
 import ObjectMultiplex from "@metamask/object-multiplex";
 
@@ -21,30 +21,21 @@ function handleConnections() {
   });
 }
 
-export function setupProviderConnection(remotePort: Runtime.Port) {
-  const stream = new PortStream(remotePort);
-  const mux = setupMultiplex(stream);
+export function setupProviderConnection(port: Runtime.Port) {
+  let ws: Websocket | null = null;
+
+  const stream = new PortStream(port);
+  const mux = new ObjectMultiplex();
+  pump(stream, mux as unknown as Duplex, stream, (err) => {
+    if (err && ws) {
+      console.error(err);
+      ws.close();
+      console.log("closing");
+    }
+  });
   const outStream = mux.createStream("metamask-provider") as unknown as Duplex;
 
-  const params: Record<string, string> = {
-    origin: (remotePort.sender as unknown as { origin: string }).origin,
-  };
-
-  if (remotePort.sender?.tab?.id) {
-    params.tabId = remotePort.sender.tab.id.toString(10);
-  }
-
-  if (remotePort.sender?.tab?.favIconUrl) {
-    params.favicon = remotePort.sender.tab.favIconUrl;
-  }
-
-  if (remotePort.sender?.tab?.url) {
-    params.url = remotePort.sender.tab.url;
-  }
-
-  const ws = new WebsocketBuilder(
-    `ws://localhost:9002?${encodeUrlParams(params)}`
-  )
+  ws = new WebsocketBuilder(`ws://localhost:9002?${connectionParams(port)}`)
     .onMessage((_i, e) => {
       // write back to page provider
       const data = JSON.parse(e.data);
@@ -54,28 +45,35 @@ export function setupProviderConnection(remotePort: Runtime.Port) {
     .build();
 
   outStream.on("data", (data: unknown) => {
+    if (!ws) return;
+
     // forward all messages to ws
     console.log("req:", data);
     ws.send(JSON.stringify(data));
   });
 }
 
-function setupMultiplex(connectionStream: Stream) {
-  const mux = new ObjectMultiplex();
-  const CONNECTION_READY = "CONNECTION_READY";
-  mux.ignoreStream(CONNECTION_READY);
-  mux.ignoreStream("ACK_KEEP_ALIVE_MESSAGE");
-  mux.ignoreStream("WORKER_KEEP_ALIVE_MESSAGE");
-  pump(connectionStream, mux as unknown as Duplex, connectionStream, (err) => {
-    if (err) {
-      console.error(err);
-    }
-  });
-  return mux;
+function connectionParams(port: Runtime.Port) {
+  const sender = port.sender;
+  const tab = sender?.tab;
+
+  const params: Record<string, string | undefined> = {
+    origin: (port.sender as unknown as { origin: string }).origin,
+    tabId: tab?.id?.toString(10),
+    favicon: tab?.favIconUrl,
+    url: tab?.url,
+    title: tab?.title,
+  };
+
+  return encodeUrlParams(params);
 }
 
-function encodeUrlParams(p: Record<string, string>) {
-  return Object.entries(p)
+function encodeUrlParams(p: Record<string, string | undefined>) {
+  const filtered: Record<string, string> = Object.fromEntries(
+    Object.entries(p).filter(([, v]) => v !== undefined)
+  ) as Record<string, string>;
+
+  return Object.entries(filtered)
     .map((kv) => kv.map(encodeURIComponent).join("="))
     .join("&");
 }

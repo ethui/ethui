@@ -1,6 +1,5 @@
 use std::path::PathBuf;
 
-use log::debug;
 use once_cell::sync::OnceCell;
 use serde::Serialize;
 use tauri::{
@@ -151,7 +150,6 @@ fn show_main_window(app: &AppHandle) {
 
 async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<IronEvent>) {
     while let (Some(msg), Some(window)) = (rcv.recv().await, handle.get_window("main")) {
-        debug!("received event: {:?}", msg);
         window.emit(msg.label(), &msg).unwrap();
     }
 }

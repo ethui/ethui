@@ -1,6 +1,5 @@
 use std::sync::{Arc, Mutex};
 
-use log::debug;
 use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
 use url::Url;
@@ -81,7 +80,6 @@ impl Network {
         }
 
         if self.dev {
-            debug!("Initializing {} listener", self.name);
             let http_url = Url::parse(&self.http_url)?;
             let ws_url = Url::parse(&self.ws_url.clone().unwrap())?;
             let mut listener =

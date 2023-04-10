@@ -6,6 +6,7 @@ use std::path::Path;
 
 use ethers::providers::{Http, Provider};
 use ethers_core::k256::ecdsa::SigningKey;
+use log::warn;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tokio::sync::mpsc;
@@ -121,7 +122,9 @@ impl ContextInner {
         self.peers.iter().for_each(|(_, peer)| {
             peer.sender
                 .send(serde_json::to_value(&msg).unwrap())
-                .unwrap();
+                .unwrap_or_else(|e| {
+                    warn!("Failed to send message to peer: {}", e);
+                });
         });
     }
 

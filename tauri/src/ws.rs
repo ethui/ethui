@@ -6,8 +6,9 @@ use log::*;
 use serde::Serialize;
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::mpsc;
-use tokio_tungstenite::accept_hdr_async;
+use tokio_tungstenite::{accept_hdr_async, WebSocketStream};
 use tungstenite::handshake::server::{ErrorResponse, Request, Response};
+use tungstenite::Message;
 use url::Url;
 
 use crate::context::Context;
@@ -20,6 +21,7 @@ pub struct Peer {
     pub favicon: Option<String>,
     pub url: Option<String>,
     pub tab_id: Option<u32>,
+    pub title: Option<String>,
     pub socket: SocketAddr,
     #[serde(skip)]
     pub sender: mpsc::UnboundedSender<serde_json::Value>,
@@ -39,6 +41,7 @@ impl Peer {
         let url = params.get("url").cloned();
         let favicon = params.get("favicon").cloned();
         let tab_id = params.get("tabId").cloned().and_then(|id| id.parse().ok());
+        let title = params.get("title").cloned();
 
         Self {
             socket,
@@ -47,6 +50,7 @@ impl Peer {
             favicon,
             url,
             tab_id,
+            title,
         }
     }
 }
@@ -59,33 +63,12 @@ pub async fn ws_server_loop(ctx: Context) {
         let peer = stream
             .peer_addr()
             .expect("connected streams should have a peer address");
-        debug!("Peer address: {}", peer);
 
         tokio::spawn(accept_connection(peer, stream, ctx.clone()));
     }
 }
 
-pub async fn accept_connection(peer: SocketAddr, stream: TcpStream, ctx: Context) {
-    let err = handle_connection(peer, stream, ctx).await;
-
-    if let Err(e) = err {
-        match e {
-            Error::Websocket(e) => match e {
-                tungstenite::Error::ConnectionClosed
-                | tungstenite::Error::Protocol(_)
-                | tungstenite::Error::Utf8 => {
-                    info!("Connection closed, {:?}", peer);
-                }
-                _ => (),
-            },
-            _ => {
-                error!("JSON error {:?}, connection terminated {:?}", e, peer)
-            }
-        }
-    }
-}
-
-async fn handle_connection(socket: SocketAddr, stream: TcpStream, ctx: Context) -> Result<()> {
+pub async fn accept_connection(socket: SocketAddr, stream: TcpStream, ctx: Context) {
     let mut query_params: HashMap<String, String> = Default::default();
     let callback = |req: &Request, res: Response| -> std::result::Result<Response, ErrorResponse> {
         // url = Some(req.uri().clone());
@@ -97,14 +80,39 @@ async fn handle_connection(socket: SocketAddr, stream: TcpStream, ctx: Context) 
     let ws_stream = accept_hdr_async(stream, callback)
         .await
         .expect("Failed to accept");
-
-    let (mut ws_sender, mut ws_receiver) = ws_stream.split();
-    let (snd, mut rcv) = mpsc::unbounded_channel::<serde_json::Value>();
+    let (snd, rcv) = mpsc::unbounded_channel::<serde_json::Value>();
 
     let peer = Peer::new(socket, snd, query_params);
-    debug!("New Peer connection: {:?}", peer);
+
     ctx.lock().await.add_peer(peer);
+    let err = handle_connection(ws_stream, rcv, ctx.clone()).await;
+    ctx.lock().await.remove_peer(socket);
+
+    if let Err(e) = err {
+        match e {
+            Error::Websocket(e) => match e {
+                tungstenite::Error::ConnectionClosed
+                | tungstenite::Error::Protocol(_)
+                | tungstenite::Error::Utf8 => {
+                    info!("Connection closed, {:?}, {:?}", socket, e);
+                }
+                _ => (),
+            },
+            _ => {
+                error!("JSON error {:?}, connection terminated {:?}", e, socket)
+            }
+        }
+    }
+}
+
+async fn handle_connection(
+    stream: WebSocketStream<TcpStream>,
+    mut rcv: mpsc::UnboundedReceiver<serde_json::Value>,
+    ctx: Context,
+) -> Result<()> {
     let handler = Handler::default();
+    let mut interval = tokio::time::interval(std::time::Duration::from_secs(15));
+    let (mut ws_sender, mut ws_receiver) = stream.split();
 
     loop {
         tokio::select! {
@@ -113,6 +121,9 @@ async fn handle_connection(socket: SocketAddr, stream: TcpStream, ctx: Context) 
                 match msg {
                     Some(msg)=>{
                         let msg = msg?;
+                        if let Message::Pong(_) = msg {
+                            continue;
+                        }
                         let reply = handler.handle(msg.to_string(), ctx.clone()).await;
                         let reply = reply.unwrap_or_else(||serde_json::Value::Null.to_string());
 
@@ -135,10 +146,13 @@ async fn handle_connection(socket: SocketAddr, stream: TcpStream, ctx: Context) 
                 }
             }
 
+            // send a ping every 15 seconds
+            _ = interval.tick() => {
+                ws_sender.send(Message::Ping(Default::default())).await?;
+            }
+
         }
     }
-
-    ctx.lock().await.remove_peer(socket);
 
     Ok(())
 }
