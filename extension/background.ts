@@ -22,7 +22,6 @@ export async function init() {
 
 function handleConnections() {
   browser.runtime.onConnect.addListener(async (remotePort: Runtime.Port) => {
-    console.log("[background] onConnect", remotePort);
     setupProviderConnection(remotePort);
   });
 }

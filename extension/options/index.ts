@@ -2,8 +2,6 @@ import browser from "webextension-polyfill";
 
 import { Settings, defaultSettings } from "../settings";
 
-console.log(defaultSettings);
-
 const $logLevel = document.getElementById("log-level") as HTMLInputElement;
 const $endpoint = document.getElementById("endpoint") as HTMLInputElement;
 const $status = document.getElementById("status") as HTMLDivElement;
@@ -16,7 +14,6 @@ const saveOptions = () => {
       ($logLevel.value as Settings["logLevel"]) || defaultSettings.logLevel,
     endpoint: $endpoint.value || defaultSettings.endpoint,
   };
-  console.log(options);
 
   chrome.storage.sync.set(options, () => {
     // Update status to let user know options were saved.
@@ -31,7 +28,6 @@ const saveOptions = () => {
 // stored in chrome.storage.
 const restoreOptions = () => {
   browser.storage.sync.get(defaultSettings).then((items) => {
-    console.log(items);
     $logLevel.value = items.logLevel;
     $endpoint.value = items.endpoint;
   });

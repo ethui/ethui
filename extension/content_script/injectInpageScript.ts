@@ -1,9 +1,6 @@
 import log from "loglevel";
 import { runtime } from "webextension-polyfill";
 
-/**
- * Injects the inpage script
- */
 export function injectInPageScript() {
   const url = runtime.getURL("inpage.js");
 
