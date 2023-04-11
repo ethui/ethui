@@ -3,7 +3,7 @@
 [good-first-issue]: https://github.com/naps62/iron/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22
 [justfile]: https://github.com/casey/just
 
-A Development, anvil-aware crypto wallet.
+A Development-only, anvil-aware crypto wallet.
 Ever had to manually reset your MetaMask account to get your `nonce` back to zero on a local test chain? Then have I got a treat for you.
 
 Use your usual "Connect with MetaMask" flows, but with life-chainging quality-of-life:
