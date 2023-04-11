@@ -1,5 +1,3 @@
-import { Checkbox, Label, Radio, TextInput } from "flowbite-react";
-import { Fragment } from "react";
 import {
   Control,
   Controller,
@@ -35,21 +33,22 @@ export function FieldText<T extends FieldValues>({
   return (
     <div>
       <div className="mb-2 block">
-        <Label htmlFor={field} value={name} />
+        <label className="text-sm font-medium text-gray-900" htmlFor={field}>
+          {name}
+        </label>
       </div>
-      <TextInput
+      <input
+        className="block w-full border disabled:cursor-not-allowed disabled:opacity-50 rounded-lg p-2.5 text-sm"
         type="text"
         {...register(field, { valueAsNumber })}
         defaultValue={value}
         color={error ? "failure" : "default"}
-        helperText={
-          error && (
-            <Fragment>
-              <span className="font-medium">{error.message?.toString()}</span>
-            </Fragment>
-          )
-        }
       />
+      {error && (
+        <span className="mt-2 text-sm text-red-600">
+          {error.message?.toString()}
+        </span>
+      )}
     </div>
   );
 }
@@ -79,22 +78,23 @@ export function FieldRadio({
           <>
             {Object.keys(values).map((i) => (
               <div key={i} className="flex items-center gap-2">
-                <Radio
+                <input
+                  type="radio"
+                  className="h-4 w-4 border border-gray-300 focus:ring-2 focus:ring-blue-500 radio"
                   {...props}
                   id={i}
                   defaultChecked={i.toString() === value.toString()}
                   value={i}
                   onChange={(e) => onChange(parseInt(e.target.value, 10))}
-                  className="radio checked:bg-red-500"
                 />
                 {/* <span className="label-text pl-2">{values[i]}</span> */}
-                <Label
+                <label
                   key={i}
                   className="label cursor-pointer justify-start"
                   htmlFor={i}
                 >
                   {values[Number(i)]}
-                </Label>
+                </label>
               </div>
             ))}
           </>
@@ -117,7 +117,12 @@ export function FieldCheckbox<T extends FieldValues>({
 }: FieldCheckboxProps<T>) {
   return (
     <div className="flex items-center gap-2">
-      <Checkbox id={field} {...register(field)} />
+      <input
+        type="checkbox"
+        className="h-4 w-4 rounded border border-gray-300 bg-gray-100"
+        id={field}
+        {...register(field)}
+      />
       <Label htmlFor={field}>{name}</Label>
     </div>
   );
