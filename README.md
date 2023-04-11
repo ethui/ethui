@@ -37,7 +37,7 @@ Use your usual "Connect with MetaMask" flows, but with life-chainging quality-of
 
 ## Contributing
 
-Pull Requests & Issues are always welcome. Please make sure your PR passes every CI check.
+Pull Requests & Issues are more than welcome! If you have a bug to report, or a feature to suggest, please open an issue.
 Search through currently open issues for suggestions on where you may be able to contribute (particularly the [`good-first-issue`][good-first-issue] label).
 
 Read on for a concrete guide on how to get set up.
