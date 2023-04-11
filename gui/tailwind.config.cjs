@@ -13,7 +13,6 @@ module.exports = {
   },
   plugins: [
     require("@tailwindcss/typography"),
-    require("flowbite/plugin"),
     plugin(function ({ addBase }) {
       addBase({
         body: { fontSize: "inherit" },
