@@ -35,7 +35,7 @@ export default function Dropdown({ label, entries, onChange }: Props) {
           <div className="py-1">
             {Object.entries(entries).map(([k, v]) => (
               <Menu.Item key={k}>
-                {({ active }) => (
+                {({ active, close }) => (
                   <a
                     href="#"
                     className={classnames({
@@ -43,7 +43,11 @@ export default function Dropdown({ label, entries, onChange }: Props) {
                       "bg-gray-100 text-gray-900": active,
                       "text-gray-700": !active,
                     })}
-                    onClick={() => onChange?.(k)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onChange?.(k);
+                      close();
+                    }}
                   >
                     {v}
                   </a>
