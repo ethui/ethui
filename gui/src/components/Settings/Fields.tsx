@@ -123,7 +123,9 @@ export function FieldCheckbox<T extends FieldValues>({
         id={field}
         {...register(field)}
       />
-      <Label htmlFor={field}>{name}</Label>
+      <label className="text-sm font-medium text-gray-900" htmlFor={field}>
+        {name}
+      </label>
     </div>
   );
 }
