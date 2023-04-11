@@ -1,0 +1,45 @@
+name: CI - Yarn
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "*"
+  pull_request:
+    types: [opened, synchronize]
+    paths-ignore:
+      - "./migrations/**"
+      - "./tauri/**"
+      - "*.toml"
+      - "*.md"
+      - "LICENSE"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  #
+  # yarn tests/lint
+  #
+  yarn:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: rust cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: yarn cache
+        uses: actions/setup-node@v3
+        with:
+          cache: "yarn"
+
+      - run: yarn install
+
+      - name: ESLint
+        run: yarn lint
+
+      - name: Vitest
+        run: yarn workspace @iron/gui test:ui
