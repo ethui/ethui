@@ -1,4 +1,4 @@
-name: CI
+name: CI - Rust
 
 on:
   push:
@@ -8,15 +8,18 @@ on:
       - "*"
   pull_request:
     types: [opened, synchronize]
+    paths-ignore:
+      - "./extension/**"
+      - "./gui/**"
+      - "*.json"
+      - "*.md"
+      - "LICENSE"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  #
-  # cargo checks
-  #
   cargo:
     name: cargo-checks
     runs-on: ubuntu-latest
@@ -51,27 +54,3 @@ jobs:
 
       - name: cargo-deny
         uses: EmbarkStudios/cargo-deny-action@v1
-
-  #
-  # yarn tests/lint
-  #
-  yarn:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: rust cache
-        uses: Swatinem/rust-cache@v2
-
-      - name: yarn cache
-        uses: actions/setup-node@v3
-        with:
-          cache: "yarn"
-
-      - run: yarn install
-
-      - name: ESLint
-        run: yarn lint
-
-      - name: Vitest
-        run: yarn workspace @iron/gui test:ui
