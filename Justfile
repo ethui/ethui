@@ -5,20 +5,29 @@ setup:
   yarn
   cargo build
 
+build:
+  yarn extension:build
+  cargo build
+
 dev:
   rm -rf target/debug/db.*
   yarn run tauri dev
 
 lint:
+  cargo fmt --all -- --check
   cargo clippy
-  yarn eslint .
+  yarn lint
+
+ext:
+  yarn run extension:build
+
+ext-dev:
+  yarn run extension:dev
 
 #
 # internal
 #
 
-extension-dev:
-  yarn run parcel watch extension/manifest.json --no-cache --host localhost
 
 anvil:
   anvil --block-time 4
