@@ -48,7 +48,8 @@ Read on for a concrete guide on how to get set up.
 - Node.js (16+ recommended)
 - Yarn
 - Google Chrome (a profile without MetaMask installed)
-- [justfile][justfile]
+
+There's also an optional [justfile][justfile], if you prefer that over `yarn`.
 
 ### Get started
 
