@@ -30,7 +30,6 @@ export function WalletSettings() {
   const onSubmit = useCallback(
     async (data: FieldValues) => {
       reset(data);
-      console.log(data);
       await invoke("set_wallet", {
         wallet: data,
       });
@@ -48,12 +47,15 @@ export function WalletSettings() {
 
   // addresses are derived on the fly by backend
   useEffect(() => {
-    if ((isDirtyAlt && !isValid) || !mnemonic || !derivationPath) return;
+    const localMnemonic: string = mnemonic ?? wallet?.mnemonic;
+    const localPath: string = derivationPath ?? wallet?.derivationPath;
+
+    if ((isDirtyAlt && !isValid) || !localMnemonic || !localPath) return;
     (async () => {
       try {
         const addresses = (await invoke("derive_addresses_with_mnemonic", {
-          mnemonic,
-          derivationPath,
+          mnemonic: localMnemonic,
+          derivationPath: localPath,
         })) as Address[];
 
         const addressMap = addresses.reduce((acc, address, i) => {
@@ -66,7 +68,7 @@ export function WalletSettings() {
         console.error(err);
       }
     })();
-  }, [isDirtyAlt, isValid, mnemonic, derivationPath, trigger]);
+  }, [wallet, isDirtyAlt, isValid, mnemonic, derivationPath, trigger]);
 
   if (!wallet) return <>Loading</>;
 

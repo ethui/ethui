@@ -32,7 +32,6 @@ export function QuickAccountSelect() {
   const handleClick = useCallback(
     async (i: number) => {
       if (!wallet || wallet.idx == i) return;
-      console.log(wallet);
       await invoke("set_wallet", {
         wallet: { ...wallet, idx: i },
       });
