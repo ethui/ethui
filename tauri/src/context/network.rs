@@ -27,9 +27,7 @@ impl Network {
             name: String::from("mainnet"),
             chain_id: 1,
             dev: false,
-            http_url: String::from(
-                "https://eth-mainnet.g.alchemy.com/v2/rTwL6BTDDWkP3tZJUc_N6shfCSR5hsTs",
-            ),
+            http_url: String::from("https://ethereum.publicnode.com"),
             ws_url: None,
             currency: String::from("ETH"),
             decimals: 18,
@@ -42,9 +40,7 @@ impl Network {
             name: String::from("goerli"),
             chain_id: 5,
             dev: false,
-            http_url: String::from(
-                "https://eth-goerli.g.alchemy.com/v2/rTwL6BTDDWkP3tZJUc_N6shfCSR5hsTs",
-            ),
+            http_url: String::from("https://rpc.ankr.com/eth_goerli"),
             ws_url: None,
             currency: String::from("ETH"),
             decimals: 18,
