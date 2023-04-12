@@ -40,8 +40,9 @@ export function Txs() {
 
 function Receipt({ hash }: { hash: string }) {
   const provider = useProvider();
-  const { data: tx } = useSWR(["getTransaction", hash], ([, hash]) =>
-    provider?.getTransaction(hash)
+  const { data: tx } = useSWR(
+    ["getTransaction", hash],
+    async ([, hash]) => await provider?.getTransaction(hash)
   );
   const { data: receipt } = useSWR(
     ["getTransactionReceipt", hash],
