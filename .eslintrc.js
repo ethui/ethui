@@ -7,7 +7,13 @@ module.exports = {
   ],
   parser: "@typescript-eslint/parser",
   plugins: ["react", "@typescript-eslint"],
-  ignorePatterns: ["**/*.generated.ts", "node_modules/*", "dist/*"],
+  ignorePatterns: [
+    "**/*.generated.ts",
+    "node_modules/*",
+    "extension/dist/*",
+    "gui/dist/*",
+    "extension/provider-inpage/*",
+  ],
   settings: {
     react: {
       version: "detect",
