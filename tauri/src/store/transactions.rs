@@ -44,11 +44,12 @@ impl TransactionStore for DB {
 
     async fn get_transactions(&self, from_or_to: Address) -> Result<Vec<String>> {
         let res: Vec<String> =
-            sqlx::query(r#"SELECT hash FROM transactions WHERE from_address = ? or to_address = ? COLLATE NOCASE"#)
+            dbg!(sqlx::query(r#"SELECT * FROM transactions WHERE from_address = ? or to_address = ? COLLATE NOCASE"#)
+                .bind(format!("0x{:x}", from_or_to))
                 .bind(format!("0x{:x}", from_or_to))
                 .map(|row: SqliteRow| row.get("hash"))
                 .fetch_all(self.pool())
-                .await?;
+                .await)?;
 
         Ok(res)
     }
