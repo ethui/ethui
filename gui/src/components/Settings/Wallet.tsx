@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useCallback, useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
+import truncateEthAddress from "truncate-eth-address";
 
 import { useInvoke } from "../../hooks/tauri";
 import { Address, Wallet, walletSchema } from "../../types";
@@ -54,7 +55,7 @@ export function WalletSettings() {
           mnemonic,
           derivationPath,
         })) as Record<number, Address>;
-        setDerivedAddresses(addresses);
+        setDerivedAddresses(addresses.map(truncateEthAddress));
       } catch (err) {
         console.error(err);
       }
@@ -83,7 +84,7 @@ export function WalletSettings() {
       <FieldRadio
         control={control}
         name="idx"
-        title="Derivation Index"
+        title="Address"
         values={derivedAddresses}
         defaultValue={wallet.idx}
       />
