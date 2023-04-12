@@ -46,8 +46,15 @@ pub async fn get_wallet(ctx: Ctx<'_>) -> Result<Wallet> {
 }
 
 #[tauri::command]
-pub async fn set_wallet(wallet: Wallet, ctx: Ctx<'_>) -> Result<()> {
-    ctx.lock().await.set_wallet(wallet);
+pub async fn set_wallet(mut wallet: Wallet, ctx: Ctx<'_>) -> Result<()> {
+    let mut ctx = ctx.lock().await;
+
+    // wallet is deserialized from frontend params, and doesn't yet know the chain_id
+    // we need to manually set it
+    let chain_id = ctx.get_current_network().chain_id;
+    wallet.update_chain_id(chain_id);
+
+    ctx.set_wallet(wallet);
     Ok(())
 }
 
