@@ -46,7 +46,7 @@ function Receipt({ hash }: { hash: string }) {
   );
   const { data: receipt } = useSWR(
     ["getTransactionReceipt", hash],
-    ([, hash]) => provider?.getTransactionReceipt(hash)
+    async ([, hash]) => await provider?.getTransactionReceipt(hash)
   );
 
   if (!receipt || !tx) return null;
