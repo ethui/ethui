@@ -4,11 +4,12 @@
   "license": "MIT",
   "description": "A dev-oriented web3 wallet",
   "scripts": {
-    "app:dev": "RUST_LOG=iron=debug tauri dev",
+    "app:dev": "rm -rf target/debug/db.* && RUST_LOG=iron=debug tauri dev",
     "gui:build": "yarn workspace @iron/gui build",
     "extension:dev": "yarn workspace @iron/extension dev",
     "extension:build": "yarn workspace @iron/extension build",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "setup": "yarn install && yarn extension:build"
   },
   "workspaces": [
     "extension",
