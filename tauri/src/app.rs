@@ -50,6 +50,7 @@ impl IronApp {
                 commands::get_current_address,
                 commands::set_networks,
                 commands::get_transactions,
+                commands::get_contracts,
                 commands::get_connections,
                 commands::derive_addresses,
                 commands::derive_addresses_with_mnemonic,

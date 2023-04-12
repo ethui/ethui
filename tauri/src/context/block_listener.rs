@@ -5,14 +5,14 @@ use ethers::{
         Http, HttpClientError, JsonRpcClient, Middleware, Provider, RetryClientBuilder,
         RetryPolicy, Ws,
     },
-    types::{Block, Transaction, U64},
+    types::{Block, Trace, Transaction, U64},
 };
 use futures_util::StreamExt;
-use log::{debug, warn};
+use log::warn;
 use tokio::sync::mpsc;
 use url::Url;
 
-use crate::{app::IronEvent, store::transactions::TransactionStore};
+use crate::{app::IronEvent, store::traces::TracesStore};
 use crate::{db::DB, error::Error, Result};
 
 #[derive(Debug)]
@@ -30,6 +30,7 @@ enum Msg {
     CaughtUp,
     Reset,
     Block(Block<Transaction>),
+    BlockTraces(Vec<Trace>),
 }
 
 impl BlockListener {
@@ -176,6 +177,8 @@ async fn watch(
                     match b {
                         Some(b) => {
                             let full_block = provider.get_block_with_txs(b.number.unwrap()).await?.unwrap();
+                            let block_traces = provider.trace_block(b.number.unwrap().into()).await?;
+                            block_snd.send(Msg::BlockTraces(block_traces)).map_err(|_|Error::Watcher)?;
                             block_snd.send(Msg::Block(full_block)).map_err(|_|Error::Watcher)?;
                         },
                         None => break 'ws,
@@ -199,17 +202,17 @@ async fn process(
     while let Some(msg) = block_rcv.recv().await {
         match msg {
             Msg::Reset => {
-                db.truncate_transactions(chain_id).await?;
+                db.truncate_traces(chain_id).await?;
                 caught_up = false
             }
             Msg::CaughtUp => caught_up = true,
-            Msg::Block(block) => db.save_transactions(chain_id, block.transactions).await?,
+            Msg::BlockTraces(traces) => db.save_traces(chain_id, traces).await?,
+            Msg::Block(_) => {}
         }
 
         // don't emit events until we're catching up
         // otherwise we spam too much during that phase
         if caught_up {
-            debug!("sending");
             window_snd.send(IronEvent::RefreshTransactions)?;
         }
     }

@@ -44,6 +44,7 @@ export function WalletSettings() {
 
   // refresh listed addresses when mnemonic/path changes
   const [mnemonic, derivationPath] = watch(["mnemonic", "derivationPath"]);
+  console.log(watch[("mnemonic", "derivationPath", "idx")]);
 
   // addresses are derived on the fly by backend
   useEffect(() => {
@@ -58,6 +59,7 @@ export function WalletSettings() {
           derivationPath: localPath,
         })) as Address[];
 
+        console.log(addresses);
         const addressMap = addresses.reduce((acc, address, i) => {
           acc[i] = address;
           return acc;

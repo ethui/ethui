@@ -1,7 +1,7 @@
 use ethers::types::Address;
 
 use crate::context::{Context, Network, Wallet};
-use crate::store::transactions::TransactionStore;
+use crate::store::traces::TracesStore;
 
 type Ctx<'a> = tauri::State<'a, Context>;
 type Result<T> = std::result::Result<T, String>;
@@ -63,7 +63,17 @@ pub async fn get_transactions(address: Address, ctx: Ctx<'_>) -> Result<Vec<Stri
     let ctx = ctx.lock().await;
 
     // TODO: this unwrap is avoidable
-    Ok(ctx.db.get_transactions(address).await.unwrap())
+    let chain_id = ctx.get_current_network().chain_id;
+    Ok(ctx.db.get_transactions(chain_id, address).await.unwrap())
+}
+
+#[tauri::command]
+pub async fn get_contracts(ctx: Ctx<'_>) -> Result<Vec<String>> {
+    let ctx = ctx.lock().await;
+
+    // TODO: this unwrap is avoidable
+    let chain_id = ctx.get_current_network().chain_id;
+    Ok(ctx.db.get_contracts(chain_id).await.unwrap())
 }
 
 #[tauri::command]
