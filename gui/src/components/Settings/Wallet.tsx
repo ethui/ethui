@@ -54,8 +54,14 @@ export function WalletSettings() {
         const addresses = (await invoke("derive_addresses_with_mnemonic", {
           mnemonic,
           derivationPath,
-        })) as Record<number, Address>;
-        setDerivedAddresses(addresses.map(truncateEthAddress));
+        })) as Address[];
+
+        const addressMap = addresses.reduce((acc, address, i) => {
+          acc[i] = address;
+          return acc;
+        }, {} as Record<number, Address>); // as Record<number, Address>;
+
+        setDerivedAddresses(addressMap);
       } catch (err) {
         console.error(err);
       }
