@@ -5,11 +5,12 @@
   "description": "A dev-oriented web3 wallet",
   "license": "MIT",
   "scripts": {
-    "build": "yarn clean && parcel build manifest.json --no-content-hash",
-    "build:zip": "yarn build && zip -r extension.zip ./dist",
+    "build": "yarn clean && parcel build manifest.json",
+    "build:release": "yarn clean && parcel build manifest.json --no-source-maps",
+    "build:zip": "yarn build:release && zip -r extension.zip ./dist",
     "dev": "parcel watch manifest.json --no-cache --host localhost",
     "clean": "rm -rf dist .cache",
-    "bundle-analyzer": "yarn clean && parcel build manifest.json --reporter @parcel/reporter-bundle-analyzer && google-chrome-stable parcel-bundle-reports/default.html",
+    "bundle-analyzer": "yarn clean && parcel build manifest.json --no-source-maps --reporter @parcel/reporter-bundle-analyzer && google-chrome-stable parcel-bundle-reports/default.html",
     "lint": "eslint ."
   },
   "dependencies": {
