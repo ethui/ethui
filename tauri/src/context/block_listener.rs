@@ -8,11 +8,11 @@ use ethers::{
     types::{Block, Trace, Transaction, U64},
 };
 use futures_util::StreamExt;
-use log::{debug, warn};
+use log::warn;
 use tokio::sync::mpsc;
 use url::Url;
 
-use crate::{app::IronEvent, store::traces::TracesStore, store::transactions::TransactionStore};
+use crate::{app::IronEvent, store::traces::TracesStore};
 use crate::{db::DB, error::Error, Result};
 
 #[derive(Debug)]
@@ -202,7 +202,7 @@ async fn process(
     while let Some(msg) = block_rcv.recv().await {
         match msg {
             Msg::Reset => {
-                db.truncate_transactions(chain_id).await?;
+                db.truncate_traces(chain_id).await?;
                 caught_up = false
             }
             Msg::CaughtUp => caught_up = true,

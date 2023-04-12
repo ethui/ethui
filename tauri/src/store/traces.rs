@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 use ethers::types::{Action, Address, Bytes, Call, Create, CreateResult, Res, Trace, H256, U256};
-use log::debug;
+use sqlx::Row;
 
 use crate::{db::DB, error::Result};
 
@@ -108,6 +108,14 @@ pub trait TracesStore {
         chain_id: u32,
         events: T,
     ) -> Result<()>;
+
+    async fn truncate_traces(&self, chain_id: u32) -> Result<()>;
+
+    // TODO: should maybe return Vec<H256> here
+    async fn get_transactions(&self, chain_id: u32, from_or_to: Address) -> Result<Vec<String>>;
+
+    // TODO: should maybe return Vec<H256> here
+    async fn get_contracts(&self, chain_id: u32) -> Result<Vec<String>>;
 }
 
 #[async_trait]
@@ -125,11 +133,9 @@ impl TracesStore for DB {
                 Event::Tx(ref tx) => {
                     dbg!(format!("0x{:x}", tx.from));
                     sqlx::query(
-                        r#"
-                    INSERT INTO transactions (hash, chain_id, from_address, to_address)
+                        r#" INSERT INTO transactions (hash, chain_id, from_address, to_address)
                     VALUES (?,?,?,?)
-                    ON CONFLICT(hash) DO NOTHING
-                    "#,
+                    ON CONFLICT(hash) DO NOTHING "#,
                     )
                     .bind(format!("0x{:x}", tx.hash))
                     .bind(chain_id)
@@ -141,11 +147,9 @@ impl TracesStore for DB {
 
                 Event::ContractDeployed(ref tx) => {
                     sqlx::query(
-                        r#"
-                    INSERT INTO contracts (address, chain_id)
+                        r#" INSERT INTO contracts (address, chain_id)
                     VALUES (?,?)
-                    ON CONFLICT(address, chain_id) DO NOTHING
-                        "#,
+                    ON CONFLICT(address, chain_id) DO NOTHING "#,
                     )
                     .bind(format!("0x{:x}", tx.address))
                     .bind(chain_id)
@@ -156,6 +160,51 @@ impl TracesStore for DB {
             }
         }
         conn.commit().await?;
+        Ok(())
+    }
+
+    async fn get_transactions(&self, chain_id: u32, from_or_to: Address) -> Result<Vec<String>> {
+        let res: Vec<String> = sqlx::query(
+            r#" SELECT * 
+            FROM transactions 
+            WHERE chain_id = ? 
+            AND (from_address = ? or to_address = ?) COLLATE NOCASE "#,
+        )
+        .bind(chain_id)
+        .bind(format!("0x{:x}", from_or_to))
+        .bind(format!("0x{:x}", from_or_to))
+        .map(|row| row.get("hash"))
+        .fetch_all(self.pool())
+        .await?;
+
+        Ok(res)
+    }
+
+    async fn get_contracts(&self, chain_id: u32) -> Result<Vec<String>> {
+        let res: Vec<String> = sqlx::query(
+            r#" SELECT * 
+            FROM contracts
+            WHERE chain_id = ? "#,
+        )
+        .bind(chain_id)
+        .map(|row| row.get("address"))
+        .fetch_all(self.pool())
+        .await?;
+
+        Ok(res)
+    }
+
+    async fn truncate_traces(&self, chain_id: u32) -> Result<()> {
+        sqlx::query("DELETE FROM transactions WHERE chain_id = ?")
+            .bind(chain_id)
+            .execute(self.pool())
+            .await?;
+
+        sqlx::query("DELETE FROM contracts WHERE chain_id = ?")
+            .bind(chain_id)
+            .execute(self.pool())
+            .await?;
+
         Ok(())
     }
 }

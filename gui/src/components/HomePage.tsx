@@ -2,10 +2,12 @@ import classnames from "classnames";
 import { useState } from "react";
 
 import { Connections } from "./Connections";
+import { Contracts } from "./Contracts";
 import { Txs } from "./Txs";
 
 const tabs = [
   { name: "Transactions", component: Txs },
+  { name: "Contracts", component: Contracts },
   { name: "Connections", component: Connections },
 ];
 
