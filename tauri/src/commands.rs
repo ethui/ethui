@@ -1,7 +1,7 @@
 use ethers::types::Address;
 
 use crate::context::{Context, Network, Wallet};
-use crate::store::traces::TracesStore;
+use crate::store::events::EventsStore;
 
 type Ctx<'a> = tauri::State<'a, Context>;
 type Result<T> = std::result::Result<T, String>;

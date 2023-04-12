@@ -1,115 +1,19 @@
 use async_trait::async_trait;
-use ethers::types::{Action, Address, Bytes, Call, Create, CreateResult, Res, Trace, H256, U256};
+use ethers::types::Address;
 use sqlx::Row;
 
+use super::types::{Event, Events};
 use crate::{db::DB, error::Result};
 
-#[derive(Debug)]
-pub enum Event {
-    Tx(Tx),
-    ContractDeployed(ContractDeployed),
-    ERC20Transfer(ERC20Transfer),
-}
-
-#[derive(Debug)]
-pub struct Events(pub Vec<Event>);
-
-#[derive(Debug)]
-pub struct Tx {
-    pub hash: H256,
-    pub from: Address,
-    pub to: Option<Address>,
-    pub value: U256,
-    pub data: Bytes,
-}
-
-#[derive(Debug)]
-pub struct ERC20Transfer {
-    pub from: Address,
-    pub to: Address,
-    pub token: Address,
-    pub amount: U256,
-}
-
-#[derive(Debug)]
-pub struct ContractDeployed {
-    pub address: Address,
-}
-
-impl From<Trace> for Events {
-    fn from(trace: Trace) -> Self {
-        let events: Vec<Event> = match (trace.action, trace.result, trace.trace_address.len()) {
-            // contract deploys
-            (
-                Action::Create(Create { from, value, .. }),
-                Some(Res::Create(CreateResult { address, .. })),
-                _,
-            ) => {
-                vec![
-                    Tx {
-                        hash: trace.transaction_hash.unwrap(),
-                        from,
-                        to: None,
-                        value,
-                        data: Bytes::new(),
-                    }
-                    .into(),
-                    ContractDeployed::new(address).into(),
-                ]
-            }
-
-            // top-level trace of a transaction
-            (action, _, 0) => match action {
-                // TODO: match call input against ERC20 abi
-
-                // other regular calls
-                Action::Call(Call {
-                    from,
-                    to,
-                    value,
-                    input,
-                    ..
-                }) => vec![Tx {
-                    hash: trace.transaction_hash.unwrap(),
-                    from,
-                    to: Some(to),
-                    value,
-                    data: input,
-                }
-                .into()],
-
-                // we already capture contract deploys somewhere else
-                _ => vec![],
-            },
-
-            _ => vec![],
-        };
-
-        Events(events)
-    }
-}
-
-impl From<Vec<Trace>> for Events {
-    fn from(traces: Vec<Trace>) -> Self {
-        let events: Vec<Vec<Event>> = traces
-            .into_iter()
-            .map(|t| Into::<Events>::into(t).0)
-            .collect();
-
-        let result: Vec<Event> = events.into_iter().flatten().collect();
-        Events(result)
-    }
-}
-
 #[async_trait]
-pub trait TracesStore {
-    async fn save_traces<T: Into<Events> + Sized + Send>(
+pub trait EventsStore {
+    async fn save_events<T: Into<Events> + Sized + Send>(
         &self,
         chain_id: u32,
         events: T,
     ) -> Result<()>;
 
-    async fn truncate_traces(&self, chain_id: u32) -> Result<()>;
+    async fn truncate_events(&self, chain_id: u32) -> Result<()>;
 
     // TODO: should maybe return Vec<H256> here
     async fn get_transactions(&self, chain_id: u32, from_or_to: Address) -> Result<Vec<String>>;
@@ -119,8 +23,8 @@ pub trait TracesStore {
 }
 
 #[async_trait]
-impl TracesStore for DB {
-    async fn save_traces<T: Into<Events> + Sized + Send>(
+impl EventsStore for DB {
+    async fn save_events<T: Into<Events> + Sized + Send>(
         &self,
         chain_id: u32,
         events: T,
@@ -194,7 +98,7 @@ impl TracesStore for DB {
         Ok(res)
     }
 
-    async fn truncate_traces(&self, chain_id: u32) -> Result<()> {
+    async fn truncate_events(&self, chain_id: u32) -> Result<()> {
         sqlx::query("DELETE FROM transactions WHERE chain_id = ?")
             .bind(chain_id)
             .execute(self.pool())
@@ -206,23 +110,5 @@ impl TracesStore for DB {
             .await?;
 
         Ok(())
-    }
-}
-
-impl ContractDeployed {
-    pub fn new(address: Address) -> Self {
-        Self { address }
-    }
-}
-
-impl From<ContractDeployed> for Event {
-    fn from(value: ContractDeployed) -> Self {
-        Self::ContractDeployed(value)
-    }
-}
-
-impl From<Tx> for Event {
-    fn from(value: Tx) -> Self {
-        Self::Tx(value)
     }
 }
