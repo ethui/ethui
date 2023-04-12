@@ -100,6 +100,8 @@ jobs:
     needs: [create, extension, app]
     runs-on: ubuntu-20.04
     steps:
+      - uses: actions/checkout@v3
+
       - name: publish release
         run: gh release edit ${{ needs.create.outputs.release_id }} --draft=false
         env:
