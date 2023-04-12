@@ -71,7 +71,7 @@ export function FieldRadio({
 }: FieldRadioProps) {
   return (
     <fieldset className="flex flex-col gap-4">
-      <legend>{title}</legend>
+      <legend className="mb-2">{title}</legend>
       <Controller
         {...{ control, name, defaultValue }}
         render={({ field: { onChange, value, ...props } }) => (

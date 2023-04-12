@@ -122,7 +122,6 @@ export function NetworkSettings() {
                   Remove
                 </Button>
               </div>
-              <div className="divider divider-vertical" />
             </fieldset>
           </Card>
         );
