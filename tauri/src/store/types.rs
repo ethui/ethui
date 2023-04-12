@@ -125,13 +125,13 @@ impl TryFrom<Log> for Event {
         // decode ERC20 calls
         match IERC20Events::decode_log(&raw) {
             Ok(IERC20Events::TransferFilter(ierc20::TransferFilter { from, to, value })) => {
-                return Ok(ERC20Transfer {
+                return dbg!(Ok(ERC20Transfer {
                     from,
                     to,
                     value,
                     contract: log.address,
                 }
-                .into())
+                .into()))
             }
             _ => {}
         };

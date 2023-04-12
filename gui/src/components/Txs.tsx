@@ -31,7 +31,7 @@ export function Txs() {
       <ul role="list" className="divide-y divide-gray-200">
         {(hashes || []).map((hash) => (
           <li key={hash}>
-            <Receipt key={hash} hash={hash} />
+            <Receipt hash={hash} />
           </li>
         ))}
       </ul>

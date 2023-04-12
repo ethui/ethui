@@ -51,6 +51,7 @@ impl IronApp {
                 commands::set_networks,
                 commands::get_transactions,
                 commands::get_contracts,
+                commands::get_erc20_balances,
                 commands::get_connections,
                 commands::derive_addresses,
                 commands::derive_addresses_with_mnemonic,

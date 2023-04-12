@@ -8,7 +8,7 @@ use ethers::{
     types::{Filter, Log, Trace, U64},
 };
 use futures_util::StreamExt;
-use log::warn;
+use log::{debug, warn};
 use tokio::sync::mpsc;
 use url::Url;
 
@@ -164,6 +164,7 @@ async fn watch(
                 .send(Msg::Traces(traces))
                 .map_err(|_| Error::Watcher)?;
 
+            debug!("block {}", b);
             let logs = provider.get_logs(&Filter::new().select(b)).await?;
             block_snd
                 .send(Msg::Logs(logs))
@@ -181,6 +182,7 @@ async fn watch(
                 b = stream.next() => {
                     match b {
                         Some(b) => {
+                            debug!("block {:?}", b.number);
                             let block_traces = provider.trace_block(b.number.unwrap().into()).await?;
                             block_snd.send(Msg::Traces(block_traces)).map_err(|_|Error::Watcher)?;
                         },

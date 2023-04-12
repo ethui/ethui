@@ -1,4 +1,4 @@
-use ethers::types::Address;
+use ethers::types::{Address, U256};
 
 use crate::context::{Context, Network, Wallet};
 use crate::store::events::EventsStore;
@@ -81,6 +81,14 @@ pub async fn get_contracts(ctx: Ctx<'_>) -> Result<Vec<String>> {
     // TODO: this unwrap is avoidable
     let chain_id = ctx.get_current_network().chain_id;
     Ok(ctx.db.get_contracts(chain_id).await.unwrap())
+}
+
+#[tauri::command]
+pub async fn get_erc20_balances(address: Address, ctx: Ctx<'_>) -> Result<Vec<(Address, U256)>> {
+    let ctx = ctx.lock().await;
+
+    let chain_id = ctx.get_current_network().chain_id;
+    Ok(ctx.db.get_balances(chain_id, address).await.unwrap())
 }
 
 #[tauri::command]
