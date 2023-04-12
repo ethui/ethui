@@ -2,7 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useCallback, useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import truncateEthAddress from "truncate-eth-address";
 
 import { useInvoke } from "../../hooks/tauri";
 import { Address, Wallet, walletSchema } from "../../types";

@@ -8,7 +8,9 @@
     "gui:build": "yarn workspace @iron/gui build",
     "extension:dev": "yarn workspace @iron/extension dev",
     "extension:build": "yarn workspace @iron/extension build",
-    "lint": "eslint .",
+    "lint": "yarn lint:eslint && yarn lint:tsc",
+    "lint:eslint": "eslint .",
+    "lint:tsc": "tsc --noEmit",
     "setup": "yarn install && yarn extension:build"
   },
   "workspaces": [
