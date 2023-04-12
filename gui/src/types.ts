@@ -29,7 +29,7 @@ export const walletSchema = z.object({
   derivationPath: z.string().regex(/^m\/(\d+'?\/)+\d+$/, {
     message: "invalid path format",
   }),
-  idx: z.number().int().min(0).max(3),
+  idx: z.number().int().min(0).max(4),
 });
 
 export type Address = `0x${string}`;
