@@ -2,6 +2,7 @@
 
 [good-first-issue]: https://github.com/naps62/iron/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22
 [justfile]: https://github.com/casey/just
+[releases]: https://github.com/iron-wallet/iron/releases
 
 A Development-only, anvil-aware crypto wallet.
 Ever had to manually reset your MetaMask account to get your `nonce` back to zero on a local test chain? Then have I got a treat for you.
@@ -32,6 +33,19 @@ Use your usual "Connect with MetaMask" flows, but with life-chainging quality-of
   - [ ] debug transactions and contracts right there on your wallet
   - [ ] track local foundry projects, sync ABIs and deploys
 - [ ] other development / debugging features coming soon
+
+---
+
+## Installing
+
+1. Check the latest [release][releases]
+2. Download `extension.zip` and manually install it in your browser (currently tested on Google Chrome, more to come soon):
+   2.1. Extract the zip file
+   2.2. go to `chrome://extensions`
+   2.3. enable `Developer mode` (upper right corner)
+   2.4. Load unpacked -> choose the directory you extracted from the ZIP file
+3. Download the appropriate binary for your architecture, and set it up in your `$PATH`
+4. Run `iron`.
 
 ---
 
