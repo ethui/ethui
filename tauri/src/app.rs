@@ -61,6 +61,12 @@ impl IronApp {
                     event_listener(handle, rcv).await;
                 });
 
+                #[cfg(feature = "debug")]
+                if std::env::var("IRON_OPEN_DEVTOOLS").is_ok() {
+                    let window = app.get_window("main").unwrap();
+                    window.open_devtools();
+                }
+
                 Ok(())
             })
             .system_tray(tray)
