@@ -69,7 +69,7 @@ function Receipt({ hash }: { hash: string }) {
           </div>
         </div>
         <div className="mt-2 sm:flex sm:justify-between">
-          <div className="sm:flex">
+          <div className="flex flex-row items-center">
             <p className="flex items-center text-sm text-gray-500">
               {truncateEthAddress(receipt.from)}
               <ArrowRightIcon
@@ -78,7 +78,7 @@ function Receipt({ hash }: { hash: string }) {
               />
               {receipt.to ? truncateEthAddress(receipt.to) : "Contract Deploy"}
             </p>
-            <p className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 ml-5">
+            <p className="flex items-center text-sm text-gray-500 sm:mt-0 ml-5">
               {formatEther(tx.value)} Ξ
             </p>
           </div>
