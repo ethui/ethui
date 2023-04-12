@@ -29,8 +29,7 @@ pub struct BlockListener {
 enum Msg {
     CaughtUp,
     Reset,
-    Block(Block<Transaction>),
-    BlockTraces(Vec<Trace>),
+    Traces(Vec<Trace>),
 }
 
 impl BlockListener {
@@ -113,7 +112,6 @@ impl RetryPolicy<HttpClientError> for AlwaysRetry {
 ///     3. listens to new blocks via websockets
 ///     4. if anvil_nodeInfo is available, also check forkBlockNumber, and prevent fetching blocks
 ///        past that (so that forked anvil don't overload or past fetching logic)
-// TODO: refactor
 async fn watch(
     http_url: Url,
     ws_url: Url,
@@ -160,9 +158,10 @@ async fn watch(
         // from the moment the fork started (or genesis if not a fork)
         let past_range = fork_block..=block_number.low_u64();
         for b in past_range.into_iter() {
-            if let Some(b) = provider.get_block_with_txs(b).await? {
-                block_snd.send(Msg::Block(b)).map_err(|_| Error::Watcher)?
-            }
+            let traces = provider.trace_block(b.into()).await?;
+            block_snd
+                .send(Msg::Traces(traces))
+                .map_err(|_| Error::Watcher)?
         }
 
         block_snd.send(Msg::CaughtUp).map_err(|_| Error::Watcher)?;
@@ -176,10 +175,8 @@ async fn watch(
                 b = stream.next() => {
                     match b {
                         Some(b) => {
-                            let full_block = provider.get_block_with_txs(b.number.unwrap()).await?.unwrap();
                             let block_traces = provider.trace_block(b.number.unwrap().into()).await?;
-                            block_snd.send(Msg::BlockTraces(block_traces)).map_err(|_|Error::Watcher)?;
-                            block_snd.send(Msg::Block(full_block)).map_err(|_|Error::Watcher)?;
+                            block_snd.send(Msg::Traces(block_traces)).map_err(|_|Error::Watcher)?;
                         },
                         None => break 'ws,
                     }
@@ -206,8 +203,7 @@ async fn process(
                 caught_up = false
             }
             Msg::CaughtUp => caught_up = true,
-            Msg::BlockTraces(traces) => db.save_traces(chain_id, traces).await?,
-            Msg::Block(_) => {}
+            Msg::Traces(traces) => db.save_traces(chain_id, traces).await?,
         }
 
         // don't emit events until we're catching up

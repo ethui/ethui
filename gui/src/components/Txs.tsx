@@ -17,6 +17,7 @@ export function Txs() {
 
   useEffect(() => {
     const unlisten = listen("refresh-transactions", () => {
+      console.log("refresh");
       mutate();
     });
 
@@ -40,14 +41,19 @@ export function Txs() {
 
 function Receipt({ hash }: { hash: string }) {
   const provider = useProvider();
-  const { data: tx } = useSWR(
-    ["getTransaction", hash],
-    async ([, hash]) => await provider?.getTransaction(hash)
+  const { data: tx, mutate: mutate1 } = useSWR(
+    !!provider && ["getTransaction", hash],
+    ([, hash]) => provider?.getTransaction(hash)
   );
-  const { data: receipt } = useSWR(
-    ["getTransactionReceipt", hash],
-    async ([, hash]) => await provider?.getTransactionReceipt(hash)
+  const { data: receipt, mutate: mutate2 } = useSWR(
+    !!provider && ["getTransactionReceipt", hash],
+    ([, hash]) => provider?.getTransactionReceipt(hash)
   );
+
+  useEffect(() => {
+    mutate1();
+    mutate2();
+  }, [provider, mutate1, mutate2]);
 
   if (!receipt || !tx) return null;
 
