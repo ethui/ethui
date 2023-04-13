@@ -14,11 +14,15 @@ import {
 } from "@mui/material";
 import { formatEther } from "ethers/lib/utils";
 import { createElement } from "react";
+import { ArrowRightIcon } from "@heroicons/react/20/solid";
+import { listen } from "@tauri-apps/api/event";
+import { formatEther } from "ethers/lib/utils";
 import { useEffect } from "react";
 import useSWR from "swr";
 import truncateEthAddress from "truncate-eth-address";
+import { type TransactionReceipt, formatEther } from "viem";
 
-import { useAccount, useProvider } from "../hooks";
+import { useAccount, useClient } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
 import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
 import { Address } from "../types";
@@ -53,19 +57,22 @@ interface ReceiptProps {
 
 function Receipt({ account, hash }: ReceiptProps) {
   const provider = useProvider();
+  const client = useClient();
+
   const { data: tx, mutate: mutate1 } = useSWR(
-    !!provider && ["getTransaction", hash],
-    ([, hash]) => provider?.getTransaction(hash)
+    !!client && ["getTransaction", hash],
+    ([, hash]) => client?.getTransaction({ hash: `0x${hash}` })
   );
+
   const { data: receipt, mutate: mutate2 } = useSWR(
-    !!provider && ["getTransactionReceipt", hash],
-    ([, hash]) => provider?.getTransactionReceipt(hash)
+    !!client && ["getTransactionReceipt", hash],
+    ([, hash]) => client?.getTransactionReceipt({ hash: `0x${hash}` })
   );
 
   useEffect(() => {
     mutate1();
     mutate2();
-  }, [provider, mutate1, mutate2]);
+  }, [client, mutate1, mutate2]);
 
   if (!receipt || !tx) return null;
 
@@ -120,3 +127,4 @@ function Icon({ account, receipt, tx }: IconProps) {
 
   return <Badge>{createElement(icon, { color })}</Badge>;
 }
+
