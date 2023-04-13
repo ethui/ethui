@@ -1,13 +1,16 @@
 import { listen } from "@tauri-apps/api/event";
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { useEffect } from "react";
+import { useContractRead } from "wagmi";
 
-import { useAccount } from "../hooks";
+import { useAccount, useProvider } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
 import { Address } from "../types";
 
 export function Balances() {
   const address = useAccount();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const provider = useProvider();
   const { data: balances, mutate } = useInvoke<[Address, string][]>(
     "get_erc20_balances",
     { address }
@@ -29,7 +32,12 @@ export function Balances() {
       <ul role="list" className="divide-y divide-gray-200">
         {(balances || []).map(([contract, balance]) => (
           <li key={contract}>
-            <Balance {...{ contract, balance }} />
+            <Balance
+              {...{
+                contract,
+                balance: BigNumber.from(balance),
+              }}
+            />
           </li>
         ))}
       </ul>
@@ -44,12 +52,21 @@ function Balance({
   contract: Address;
   balance: BigNumber;
 }) {
+  // const provider = useProvider();
+  // const { data: name } = useContractRead({
+  //   address: contract,
+  //   abi: ERC20,
+  //   functionName: "symbol",
+  // });
+  //
+  // if (!name) return;
+
   return (
     <a href="#" className="px-4 block hover:bg-gray-50">
       <div className="py-4">
         <div className="flex items-center justify-between">
           <p className="flex-grow min-w-0 truncate text-sm font-medium text-indigo-600">
-            {contract} - {balance.toString()}
+            {balance.toString()}
           </p>
         </div>
       </div>
