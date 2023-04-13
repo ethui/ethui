@@ -67,7 +67,7 @@ function Connection({ tabId, conns }: { tabId?: number; conns: Connection[] }) {
         <div className="flex-grow min-w-0">
           <div className="flex flex-col">
             <p className="mx-2 truncate text-sm font-medium text-indigo-600">
-              <span className="text-indigo-600">{conns[0].title}</span>
+              {conns[0].title}
             </p>
             <div className="pl-2 sm:flex sm:justify-between">
               <div className="sm:flex">

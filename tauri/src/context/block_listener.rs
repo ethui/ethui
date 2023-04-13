@@ -5,14 +5,14 @@ use ethers::{
         Http, HttpClientError, JsonRpcClient, Middleware, Provider, RetryClientBuilder,
         RetryPolicy, Ws,
     },
-    types::{Block, Trace, Transaction, U64},
+    types::{Filter, Log, Trace, U64},
 };
 use futures_util::StreamExt;
-use log::warn;
+use log::{debug, warn};
 use tokio::sync::mpsc;
 use url::Url;
 
-use crate::{app::IronEvent, store::traces::TracesStore};
+use crate::{app::IronEvent, store::events::EventsStore};
 use crate::{db::DB, error::Error, Result};
 
 #[derive(Debug)]
@@ -30,6 +30,7 @@ enum Msg {
     CaughtUp,
     Reset,
     Traces(Vec<Trace>),
+    Logs(Vec<Log>),
 }
 
 impl BlockListener {
@@ -161,7 +162,13 @@ async fn watch(
             let traces = provider.trace_block(b.into()).await?;
             block_snd
                 .send(Msg::Traces(traces))
-                .map_err(|_| Error::Watcher)?
+                .map_err(|_| Error::Watcher)?;
+
+            debug!("block {}", b);
+            let logs = provider.get_logs(&Filter::new().select(b)).await?;
+            block_snd
+                .send(Msg::Logs(logs))
+                .map_err(|_| Error::Watcher)?;
         }
 
         block_snd.send(Msg::CaughtUp).map_err(|_| Error::Watcher)?;
@@ -175,6 +182,7 @@ async fn watch(
                 b = stream.next() => {
                     match b {
                         Some(b) => {
+                            debug!("block {:?}", b.number);
                             let block_traces = provider.trace_block(b.number.unwrap().into()).await?;
                             block_snd.send(Msg::Traces(block_traces)).map_err(|_|Error::Watcher)?;
                         },
@@ -199,11 +207,12 @@ async fn process(
     while let Some(msg) = block_rcv.recv().await {
         match msg {
             Msg::Reset => {
-                db.truncate_traces(chain_id).await?;
+                db.truncate_events(chain_id).await?;
                 caught_up = false
             }
             Msg::CaughtUp => caught_up = true,
-            Msg::Traces(traces) => db.save_traces(chain_id, traces).await?,
+            Msg::Traces(traces) => db.save_events(chain_id, traces).await?,
+            Msg::Logs(logs) => db.save_events(chain_id, logs).await?,
         }
 
         // don't emit events until we're catching up

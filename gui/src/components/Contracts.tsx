@@ -22,7 +22,7 @@ export function Contracts() {
       <ul role="list" className="divide-y divide-gray-200">
         {(addresses || []).map((address) => (
           <li key={address}>
-            <Contract key={address} address={address} />
+            <Contract address={address} />
           </li>
         ))}
       </ul>
