@@ -13,6 +13,7 @@ pub enum Error {
     WindowSend(#[from] tokio::sync::mpsc::error::SendError<IronEvent>),
     Watcher,
     MnemonicError(#[from] ethers::signers::coins_bip39::MnemonicError),
+    WalletError(#[from] ethers::signers::WalletError),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -33,6 +34,7 @@ impl std::fmt::Display for Error {
             Watcher => write!(f, "WatcherError"),
             WindowSend(e) => write!(f, "WindowSendError: {}", e),
             MnemonicError(e) => write!(f, "MnemonicError: {}", e),
+            WalletError(e) => write!(f, "WalletError: {}", e),
         }
     }
 }

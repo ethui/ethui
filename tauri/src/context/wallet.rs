@@ -48,18 +48,16 @@ impl Wallet {
         // let mnemonic = Mnemonic::<English>::new_from_phrase(mnemonic)?;
         let builder = MnemonicBuilder::<English>::default().phrase(mnemonic);
 
-        let res = (0..indexes).map(|idx| {
-            let signer = builder
-                .clone()
-                .derivation_path(&format!("{}/{}", derivation_path, idx))
-                .unwrap()
-                .build()
-                .unwrap();
+        (0..indexes)
+            .map(|idx| -> Result<_> {
+                let signer = builder
+                    .clone()
+                    .derivation_path(&format!("{}/{}", derivation_path, idx))?
+                    .build()?;
 
-            to_checksum(&signer.address(), None)
-        });
-
-        Ok(res.collect())
+                Ok(to_checksum(&signer.address(), None))
+            })
+            .collect()
     }
 
     pub fn derive_addresses(&self, indexes: u32) -> Result<Vec<String>> {
