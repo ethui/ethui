@@ -2,7 +2,6 @@ use std::str::FromStr;
 
 use async_trait::async_trait;
 use ethers::types::{Address, U256};
-use log::debug;
 use sqlx::Row;
 
 use super::types::{Event, Events};
@@ -125,7 +124,6 @@ impl EventsStore for DB {
                         .await?;
                     }
                 }
-                _ => {}
             }
         }
         conn.commit().await?;

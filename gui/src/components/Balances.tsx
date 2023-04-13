@@ -1,18 +1,16 @@
 import { listen } from "@tauri-apps/api/event";
 import { erc20ABI } from "@wagmi/core";
-import { BigNumber, ethers } from "ethers";
-import { formatEther, formatUnits } from "ethers/lib/utils.js";
+import { BigNumber } from "ethers";
+import { formatUnits } from "ethers/lib/utils.js";
 import { useEffect } from "react";
 import { useBalance, useContractRead } from "wagmi";
 
-import { useAccount, useProvider } from "../hooks";
+import { useAccount } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
 import { Address } from "../types";
 
 export function Balances() {
   const address = useAccount();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const provider = useProvider();
   const { data: balances, mutate } = useInvoke<[Address, string][]>(
     "get_erc20_balances",
     { address }
@@ -27,6 +25,7 @@ export function Balances() {
       unlisten.then((cb) => cb());
     };
   }, [mutate]);
+  console.log(balances);
 
   return (
     <div className="bg-white shadow sm:rounded-lg">
