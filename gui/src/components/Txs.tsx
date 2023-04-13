@@ -4,7 +4,7 @@ import classnames from "classnames";
 import { useEffect } from "react";
 import useSWR from "swr";
 import truncateEthAddress from "truncate-eth-address";
-import { type TransactionReceipt, formatEther } from "viem";
+import { formatEther } from "viem";
 
 import { useAccount, useClient } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
@@ -90,7 +90,7 @@ function Receipt({ hash }: { hash: string }) {
   );
 }
 
-function Status({ status }: { status: TransactionReceipt["status"] }) {
+function Status({ status }: { status: string }) {
   return (
     <span
       className={classnames(
