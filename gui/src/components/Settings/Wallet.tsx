@@ -19,6 +19,8 @@ export function WalletSettings() {
     control,
     watch,
     trigger,
+    clearErrors,
+    setError,
   } = useForm({
     mode: "onBlur",
     resolver: zodResolver(walletSchema),
@@ -57,18 +59,33 @@ export function WalletSettings() {
           derivationPath: localPath,
         })) as Address[];
 
-        console.log(addresses);
         const addressMap = addresses.reduce((acc, address, i) => {
           acc[i] = address;
           return acc;
         }, {} as Record<number, Address>); // as Record<number, Address>;
 
         setDerivedAddresses(addressMap);
+        clearErrors(["mnemonic", "derivationPath"]);
       } catch (err) {
-        console.error(err);
+        const message = `${err}`.replace("WalletError: ", "");
+
+        if (`${err}`.match(/word/)) {
+          setError("mnemonic", { type: "custom", message });
+        } else {
+          setError("derivationPath", { type: "custom", message });
+        }
       }
     })();
-  }, [wallet, isDirtyAlt, isValid, mnemonic, derivationPath, trigger]);
+  }, [
+    wallet,
+    isDirtyAlt,
+    isValid,
+    mnemonic,
+    derivationPath,
+    trigger,
+    clearErrors,
+    setError,
+  ]);
 
   if (!wallet) return <>Loading</>;
 

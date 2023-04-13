@@ -1,4 +1,5 @@
 use ethers::types::{Address, U256};
+use log::error;
 
 use crate::context::{Context, Network, Wallet};
 use crate::store::events::EventsStore;
@@ -103,9 +104,11 @@ pub async fn derive_addresses_with_mnemonic(
     mnemonic: String,
     derivation_path: String,
 ) -> Result<Vec<String>> {
-    let addresses = Wallet::derive_addresses_with_mnemonic(&mnemonic, &derivation_path, 5).unwrap();
-
-    Ok(addresses)
+    Ok(Wallet::derive_addresses_with_mnemonic(
+        &mnemonic,
+        &derivation_path,
+        5,
+    )?)
 }
 
 #[tauri::command]
