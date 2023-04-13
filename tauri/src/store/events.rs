@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use async_trait::async_trait;
 use ethers::types::{Address, U256};
-use sqlx::Row;
+use sqlx::{sqlite::SqliteRow, Row};
 
 use super::types::{Event, Events};
 use crate::{db::DB, error::Result};
@@ -68,34 +68,44 @@ impl EventsStore for DB {
                 Event::ERC20Transfer(transfer) => {
                     // update from's balance
                     if !transfer.from.is_zero() {
+                        let current = sqlx::query(r#"SELECT balance FROM balances WHERE chain_id = ? AND contract = ? AND owner = ?"#)
+                            .bind(chain_id)
+                            .bind(format!("0x{:x}", transfer.contract))
+                            .bind(format!("0x{:x}", transfer.from))
+                            .map(|r: SqliteRow|U256::from_dec_str(r.get::<&str,_>("balance")).unwrap())
+                            .fetch_one(&mut conn)
+                        .await?;
+
                         sqlx::query(
                             r#" INSERT OR REPLACE INTO balances (chain_id, contract, owner, balance) 
-                        VALUES (?,?,?, COALESCE((SELECT balance from balances WHERE chain_id = ? AND contract = ? AND owner = ?), 0) - ?) "#,
+                        VALUES (?,?,?,?) "#,
                         )
                             .bind(chain_id)
                             .bind(format!("0x{:x}", transfer.contract))
                             .bind(format!("0x{:x}", transfer.from))
-                            .bind(chain_id)
-                            .bind(format!("0x{:x}", transfer.contract))
-                            .bind(format!("0x{:x}", transfer.from))
-                            .bind(transfer.value.to_string())
+                            .bind((current-transfer.value).to_string())
                             .execute(&mut conn)
                         .await?;
                     }
 
                     // update to's balance
                     if !transfer.to.is_zero() {
+                        let current = sqlx::query(r#"SELECT balance FROM balances WHERE chain_id = ? AND contract = ? AND owner = ?"#)
+                            .bind(chain_id)
+                            .bind(format!("0x{:x}", transfer.contract))
+                            .bind(format!("0x{:x}", transfer.to))
+                            .map(|r: SqliteRow|U256::from_dec_str(r.get::<&str,_>("balance")).unwrap())
+                            .fetch_one(&mut conn)
+                            .await.unwrap_or(U256::zero());
+
                         sqlx::query(
                             r#" INSERT OR REPLACE INTO balances (chain_id, contract, owner, balance) 
-                        VALUES (?,?,?, COALESCE((SELECT balance from balances WHERE chain_id = ? AND contract = ? AND owner = ?), 0) + ?) "#,
+                        VALUES (?,?,?,?) "#,
                         )
                             .bind(chain_id)
                             .bind(format!("0x{:x}", transfer.contract))
                             .bind(format!("0x{:x}", transfer.to))
-                            .bind(chain_id)
-                            .bind(format!("0x{:x}", transfer.contract))
-                            .bind(format!("0x{:x}", transfer.to))
-                            .bind(transfer.value.to_string())
+                            .bind((current + transfer.value).to_string())
                             .execute(&mut conn)
                         .await?;
                     }
@@ -163,7 +173,7 @@ impl EventsStore for DB {
 
     async fn get_balances(&self, chain_id: u32, address: Address) -> Result<Vec<(Address, U256)>> {
         let res: Vec<_> = sqlx::query(
-            r#" SELECT contract, CAST(balance AS VARCHAR) AS balance
+            r#" SELECT contract, balance AS balance
             FROM balances
             WHERE chain_id = ? AND owner = ? "#,
         )
@@ -188,6 +198,16 @@ impl EventsStore for DB {
             .await?;
 
         sqlx::query("DELETE FROM contracts WHERE chain_id = ?")
+            .bind(chain_id)
+            .execute(self.pool())
+            .await?;
+
+        sqlx::query("DELETE FROM balances WHERE chain_id = ?")
+            .bind(chain_id)
+            .execute(self.pool())
+            .await?;
+
+        sqlx::query("DELETE FROM nft_tokens WHERE chain_id = ?")
             .bind(chain_id)
             .execute(self.pool())
             .await?;
