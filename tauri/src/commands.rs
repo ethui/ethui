@@ -1,5 +1,4 @@
 use ethers::types::{Address, U256};
-use log::error;
 
 use crate::context::{Context, Network, Wallet};
 use crate::store::events::EventsStore;

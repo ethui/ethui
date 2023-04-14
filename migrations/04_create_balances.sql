@@ -2,7 +2,7 @@ CREATE TABLE balances (
   contract VARCHAR COLLATE NOCASE,
   owner VARCHAR COLLATE NOCASE,
   chain_id INTEGER NOT NULL,
-  balance BIG INT NOT NULL,
+  balance TEXT NOT NULL,
   PRIMARY KEY (contract, owner, chain_id)
 );
 
