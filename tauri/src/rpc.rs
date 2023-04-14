@@ -12,6 +12,7 @@ use ethers::{
     },
 };
 use jsonrpc_core::{MetaIoHandler, Params};
+use log::debug;
 use serde_json::json;
 
 use crate::context::{Context, UnlockedContext};
@@ -156,8 +157,15 @@ impl Handler {
         let signer = SignerMiddleware::new(provider, ctx.get_signer());
 
         // fill in gas
-        let gas_limit = signer.estimate_gas(&envelope, None).await;
-        envelope.set_gas(gas_limit.unwrap() * 120 / 100);
+        // TODO: we're defaulting to 1_000_000 gas cost if estimation fails
+        // estimation failing means the tx will faill anyway, so this is fine'ish
+        // but can probably be improved a lot in the future
+        let gas_limit = signer
+            .estimate_gas(&envelope, None)
+            .await
+            .unwrap_or(1_000_000.into());
+
+        envelope.set_gas(gas_limit * 120 / 100);
 
         // sign & send
         let res = signer.send_transaction(envelope, None).await;
