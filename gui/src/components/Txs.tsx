@@ -1,12 +1,12 @@
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { listen } from "@tauri-apps/api/event";
 import classnames from "classnames";
-import { formatEther } from "ethers/lib/utils";
 import { useEffect } from "react";
 import useSWR from "swr";
 import truncateEthAddress from "truncate-eth-address";
+import { formatEther } from "viem";
 
-import { useAccount, useProvider } from "../hooks";
+import { useAccount, useClient } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
 
 export function Txs() {
@@ -40,20 +40,22 @@ export function Txs() {
 }
 
 function Receipt({ hash }: { hash: string }) {
-  const provider = useProvider();
+  const client = useClient();
+
   const { data: tx, mutate: mutate1 } = useSWR(
-    !!provider && ["getTransaction", hash],
-    ([, hash]) => provider?.getTransaction(hash)
+    !!client && ["getTransaction", hash],
+    ([, hash]) => client?.getTransaction({ hash: `0x${hash}` })
   );
+
   const { data: receipt, mutate: mutate2 } = useSWR(
-    !!provider && ["getTransactionReceipt", hash],
-    ([, hash]) => provider?.getTransactionReceipt(hash)
+    !!client && ["getTransactionReceipt", hash],
+    ([, hash]) => client?.getTransactionReceipt({ hash: `0x${hash}` })
   );
 
   useEffect(() => {
     mutate1();
     mutate2();
-  }, [provider, mutate1, mutate2]);
+  }, [client, mutate1, mutate2]);
 
   if (!receipt || !tx) return null;
 
@@ -88,18 +90,18 @@ function Receipt({ hash }: { hash: string }) {
   );
 }
 
-function Status({ status }: { status?: number }) {
+function Status({ status }: { status: string }) {
   return (
     <span
       className={classnames(
         "inline-flex rounded-full px-2 text-xs font-semibold leading-5",
         {
-          "bg-green-100 text-green-800": status == 1,
-          "bg-red-100 text-red-800": status == 0,
+          "bg-green-100 text-green-800": status === "success",
+          "bg-red-100 text-red-800": status === "reverted",
         }
       )}
     >
-      {status == 1 ? "Success" : "Failed"}
+      {status === "success" ? "Success" : "Failed"}
     </span>
   );
 }
