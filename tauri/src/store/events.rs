@@ -1,7 +1,10 @@
 use std::str::FromStr;
 
 use async_trait::async_trait;
-use ethers::types::{Address, U256};
+use ethers::{
+    abi::AbiEncode,
+    types::{Address, U256},
+};
 use sqlx::{sqlite::SqliteRow, Row};
 
 use super::types::{Event, Events};
@@ -45,10 +48,10 @@ impl EventsStore for DB {
                         VALUES (?,?,?,?)
                         ON CONFLICT(hash) DO NOTHING "#,
                     )
-                    .bind(format!("0x{:x}", tx.hash))
+                    .bind(tx.hash.encode_hex())
                     .bind(chain_id)
-                    .bind(format!("0x{:x}", tx.from))
-                    .bind(tx.to.map(|a| format!("0x{:x}", a)))
+                    .bind(tx.from.encode_hex())
+                    .bind(tx.to.map(AbiEncode::encode_hex))
                     .execute(&mut conn)
                     .await?;
                 }
@@ -59,7 +62,7 @@ impl EventsStore for DB {
                         VALUES (?,?)
                         ON CONFLICT(address, chain_id) DO NOTHING "#,
                     )
-                    .bind(format!("0x{:x}", tx.address))
+                    .bind(tx.address.encode_hex())
                     .bind(chain_id)
                     .execute(&mut conn)
                     .await?;
@@ -70,8 +73,8 @@ impl EventsStore for DB {
                     if !transfer.from.is_zero() {
                         let current = sqlx::query(r#"SELECT balance FROM balances WHERE chain_id = ? AND contract = ? AND owner = ?"#)
                             .bind(chain_id)
-                            .bind(format!("0x{:x}", transfer.contract))
-                            .bind(format!("0x{:x}", transfer.from))
+                            .bind(transfer.contract.encode_hex())
+                            .bind(transfer.from.encode_hex())
                             .map(|r: SqliteRow|U256::from_dec_str(r.get::<&str,_>("balance")).unwrap())
                             .fetch_one(&mut conn)
                         .await?;
@@ -81,9 +84,9 @@ impl EventsStore for DB {
                         VALUES (?,?,?,?) "#,
                         )
                             .bind(chain_id)
-                            .bind(format!("0x{:x}", transfer.contract))
-                            .bind(format!("0x{:x}", transfer.from))
-                            .bind((current-transfer.value).to_string())
+                            .bind(transfer.contract.encode_hex())
+                            .bind(transfer.from.encode_hex())
+                            .bind((current - transfer.value).to_string())
                             .execute(&mut conn)
                         .await?;
                     }
@@ -92,8 +95,8 @@ impl EventsStore for DB {
                     if !transfer.to.is_zero() {
                         let current = sqlx::query(r#"SELECT balance FROM balances WHERE chain_id = ? AND contract = ? AND owner = ?"#)
                             .bind(chain_id)
-                            .bind(format!("0x{:x}", transfer.contract))
-                            .bind(format!("0x{:x}", transfer.to))
+                            .bind(transfer.contract.encode_hex())
+                            .bind(transfer.to.encode_hex())
                             .map(|r: SqliteRow|U256::from_dec_str(r.get::<&str,_>("balance")).unwrap())
                             .fetch_one(&mut conn)
                             .await.unwrap_or(U256::zero());
@@ -103,8 +106,8 @@ impl EventsStore for DB {
                         VALUES (?,?,?,?) "#,
                         )
                             .bind(chain_id)
-                            .bind(format!("0x{:x}", transfer.contract))
-                            .bind(format!("0x{:x}", transfer.to))
+                            .bind(transfer.contract.encode_hex())
+                            .bind(transfer.to.encode_hex())
                             .bind((current + transfer.value).to_string())
                             .execute(&mut conn)
                         .await?;
@@ -117,8 +120,8 @@ impl EventsStore for DB {
                             r#" DELETE FROM nft_tokens WHERE chain_id = ? AND contract = ? AND token_id = ? "#,
                         )
                             .bind(chain_id)
-                            .bind(format!("0x{:x}", transfer.contract))
-                            .bind(format!("0x{:x}", transfer.token_id))
+                            .bind(transfer.contract.encode_hex())
+                            .bind(transfer.token_id.encode_hex())
                             .execute(&mut conn)
                         .await?;
                     } else {
@@ -127,9 +130,9 @@ impl EventsStore for DB {
                             VALUES (?,?,?,?) "#,
                         )
                         .bind(chain_id)
-                        .bind(format!("0x{:x}", transfer.contract))
-                        .bind(format!("0x{:x}", transfer.token_id))
-                        .bind(format!("0x{:x}", transfer.to))
+                        .bind(transfer.contract.encode_hex())
+                        .bind(transfer.token_id.encode_hex())
+                        .bind(transfer.to.encode_hex())
                         .execute(&mut conn)
                         .await?;
                     }
@@ -148,8 +151,8 @@ impl EventsStore for DB {
             AND (from_address = ? or to_address = ?) COLLATE NOCASE "#,
         )
         .bind(chain_id)
-        .bind(format!("0x{:x}", from_or_to))
-        .bind(format!("0x{:x}", from_or_to))
+        .bind(from_or_to.encode_hex())
+        .bind(from_or_to.encode_hex())
         .map(|row| row.get("hash"))
         .fetch_all(self.pool())
         .await?;
