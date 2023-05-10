@@ -13,7 +13,7 @@ use tokio::sync::mpsc;
 
 pub use super::network::Network;
 pub use super::wallet::Wallet;
-use crate::app::{IronEvent, SETTINGS_PATH};
+use crate::app::{IronEvent, IronWindowEvent, SETTINGS_PATH};
 use crate::db::DB;
 use crate::error::Result;
 use crate::ws::Peer;
@@ -104,7 +104,7 @@ impl ContextInner {
         self.window_snd
             .as_ref()
             .unwrap()
-            .send(IronEvent::RefreshConnections)
+            .send(IronEvent::Window(IronWindowEvent::RefreshConnections))
             .unwrap();
     }
 
@@ -114,7 +114,7 @@ impl ContextInner {
         self.window_snd
             .as_ref()
             .unwrap()
-            .send(IronEvent::RefreshConnections)
+            .send(IronEvent::Window(IronWindowEvent::RefreshConnections))
             .unwrap();
     }
 
@@ -168,7 +168,7 @@ impl ContextInner {
             self.window_snd
                 .as_ref()
                 .unwrap()
-                .send(IronEvent::RefreshNetwork)?
+                .send(IronEvent::Window(IronWindowEvent::RefreshNetwork))?
         }
 
         self.save()?;
@@ -205,5 +205,13 @@ impl ContextInner {
 
     pub fn get_signer(&self) -> ethers::signers::Wallet<SigningKey> {
         self.wallet.signer.clone()
+    }
+
+    pub fn review_tx(&self, params: jsonrpc_core::Params) {
+        self.window_snd
+            .as_ref()
+            .unwrap()
+            .send(IronEvent::TxReview(params))
+            .unwrap();
     }
 }

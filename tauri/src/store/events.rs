@@ -68,6 +68,7 @@ impl EventsStore for DB {
                     .await?;
                 }
 
+                // TODO: what to do if we don't know this contract, and don't have balances yet? (e.g. in a fork)
                 Event::ERC20Transfer(transfer) => {
                     // update from's balance
                     if !transfer.from.is_zero() {

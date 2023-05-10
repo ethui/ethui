@@ -17,12 +17,18 @@ pub struct IronApp {
 
 #[derive(Debug, Serialize)]
 pub enum IronEvent {
+    Window(IronWindowEvent),
+    TxReview(jsonrpc_core::Params),
+}
+
+#[derive(Debug, Serialize)]
+pub enum IronWindowEvent {
     RefreshNetwork,
     RefreshTransactions,
     RefreshConnections,
 }
 
-impl IronEvent {
+impl IronWindowEvent {
     fn label(&self) -> &str {
         match self {
             Self::RefreshNetwork => "refresh-network",
@@ -157,8 +163,31 @@ fn show_main_window(app: &AppHandle) {
 }
 
 async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<IronEvent>) {
-    // TODO: need to not finish if there's no window
-    while let (Some(msg), Some(window)) = (rcv.recv().await, handle.get_window("main")) {
-        window.emit(msg.label(), &msg).unwrap();
+    while let Some(msg) = rcv.recv().await {
+        use IronEvent::*;
+
+        match msg {
+            Window(msg) => {
+                // forward directly to main window
+                // if window is not open, just ignore them
+                if let Some(window) = handle.get_window("main") {
+                    window.emit(msg.label(), &msg).unwrap();
+                }
+            }
+
+            // dialog events
+            TxReview(data) => {
+                dbg!("here");
+                dbg!(data);
+                let window = tauri::WindowBuilder::new(
+                    &handle,
+                    "dialog",
+                    tauri::WindowUrl::App("dialog.html".into()),
+                )
+                .inner_size(500f64, 600f64)
+                .build()
+                .unwrap();
+            }
+        }
     }
 }

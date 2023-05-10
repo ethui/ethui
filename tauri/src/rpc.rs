@@ -144,6 +144,7 @@ impl Handler {
         params: Params,
         ctx: UnlockedContext<'_>,
     ) -> Result<serde_json::Value> {
+        ctx.review_tx(params.clone());
         let params = params.parse::<Vec<HashMap<String, String>>>().unwrap()[0].clone();
 
         // parse params
