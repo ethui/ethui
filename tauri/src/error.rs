@@ -2,6 +2,7 @@ use crate::app::IronEvent;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
+    FixPathEnv(#[from] fix_path_env::Error),
     Websocket(#[from] tungstenite::Error),
     Json(#[from] serde_json::Error),
     Sqlx(#[from] sqlx::Error),
@@ -23,6 +24,7 @@ impl std::fmt::Display for Error {
         use Error::*;
 
         match self {
+            FixPathEnv(e) => write!(f, "FixPathEnvError: {}", e),
             Websocket(e) => write!(f, "WebsocketError: {}", e),
             Json(e) => write!(f, "JsonError: {}", e),
             Sqlx(e) => write!(f, "SqlxError: {}", e),

@@ -18,6 +18,7 @@ use error::Result;
 async fn main() -> Result<()> {
     color_eyre::install()?;
     env_logger::init();
+    fix_path_env::fix()?;
 
     let mut app = app::IronApp::build();
 
