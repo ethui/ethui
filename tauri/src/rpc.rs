@@ -1,6 +1,7 @@
 use std::{collections::HashMap, str::FromStr};
 
 use ethers::abi::AbiEncode;
+use ethers::providers::ProviderError;
 use ethers::signers::Signer;
 use ethers::types::transaction::eip712;
 use ethers::{
@@ -11,7 +12,7 @@ use ethers::{
         Eip1559TransactionRequest, U256,
     },
 };
-use jsonrpc_core::{MetaIoHandler, Params};
+use jsonrpc_core::{ErrorCode, MetaIoHandler, Params};
 use serde_json::json;
 
 use crate::context::{Context, UnlockedContext};
@@ -31,6 +32,26 @@ impl Default for Handler {
         };
         res.add_handlers();
         res
+    }
+}
+
+fn ethers_to_jsonrpc_error(e: ProviderError) -> jsonrpc_core::Error {
+    // TODO: probable handle more error types here
+    match e {
+        ProviderError::JsonRpcClientError(e) => {
+            if let Some(e) = e.as_error_response() {
+                jsonrpc_core::Error {
+                    code: ErrorCode::ServerError(e.code),
+                    data: e.data.clone(),
+                    message: e.message.clone(),
+                }
+            } else if let Some(e) = e.as_serde_error() {
+                jsonrpc_core::Error::invalid_request()
+            } else {
+                jsonrpc_core::Error::internal_error()
+            }
+        }
+        _ => jsonrpc_core::Error::internal_error(),
     }
 }
 
@@ -55,11 +76,11 @@ impl Handler {
                 self.io
                     .add_method_with_meta($name, |params: Params, ctx: Context| async move {
                         let provider = ctx.lock().await.get_provider();
-                        let res: serde_json::Value = provider
+                        let res: jsonrpc_core::Result<serde_json::Value> = provider
                             .request::<_, serde_json::Value>($name, params)
                             .await
-                            .unwrap();
-                        Ok(res)
+                            .map_err(ethers_to_jsonrpc_error);
+                        dbg!(res)
                     });
             };
         }
