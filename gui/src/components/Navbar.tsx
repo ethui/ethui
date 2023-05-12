@@ -1,5 +1,6 @@
 import { Disclosure } from "@headlessui/react";
 import { Cog6ToothIcon } from "@heroicons/react/24/solid";
+import React from "react";
 import { Link } from "wouter";
 
 import { QuickAccountSelect, QuickNetworkSelect } from "./Settings/index";

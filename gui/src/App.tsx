@@ -1,3 +1,4 @@
+import React from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Route, Router } from "wouter";
 

@@ -1,8 +1,10 @@
 import { invoke } from "@tauri-apps/api/tauri";
+import React from "react";
 import { useCallback, useEffect, useState } from "react";
 import { useSWRConfig } from "swr";
 import truncateEthAddress from "truncate-eth-address";
 
+import { useAccount } from "../../hooks";
 import { useInvoke } from "../../hooks/tauri";
 import { Address, Wallet } from "../../types";
 import Dropdown from "../Base/Dropdown";
@@ -10,9 +12,10 @@ import Dropdown from "../Base/Dropdown";
 export function QuickAccountSelect() {
   const { mutate } = useSWRConfig();
   const { data: wallet } = useInvoke<Wallet>("get_wallet");
+  console.log(wallet);
 
   const [addresses, setAddresses] = useState<Record<number, Address>>([]);
-  const [current, setCurrent] = useState<Address>("0x");
+  const current = useAccount();
 
   useEffect(() => {
     if (!wallet) return;
@@ -24,7 +27,6 @@ export function QuickAccountSelect() {
           Address
         >;
         setAddresses(addresses);
-        setCurrent(addresses[wallet.idx]);
       } catch (err) {
         console.error(err);
       }

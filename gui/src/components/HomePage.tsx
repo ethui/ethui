@@ -1,12 +1,15 @@
 import classnames from "classnames";
+import React from "react";
 import { useState } from "react";
 
 import { Balances } from "./Balances";
 import { Connections } from "./Connections";
 import { Contracts } from "./Contracts";
+import { Details } from "./Details";
 import { Txs } from "./Txs";
 
 const tabs = [
+  { name: "Details", component: Details },
   { name: "Transactions", component: Txs },
   { name: "Balances", component: Balances },
   { name: "Contracts", component: Contracts },
@@ -27,7 +30,6 @@ export function HomePage() {
                 onClick={() => setCurrentTab(tab)}
                 className={classnames(
                   "whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium cursor-pointer",
-
                   {
                     "border-indigo-500 text-indigo-600":
                       currentTab.name == tab.name,

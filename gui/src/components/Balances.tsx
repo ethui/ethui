@@ -2,12 +2,14 @@ import { listen } from "@tauri-apps/api/event";
 import { erc20ABI } from "@wagmi/core";
 import { BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils.js";
+import React from "react";
 import { useEffect } from "react";
 import { useBalance, useContractRead } from "wagmi";
 
 import { useAccount } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
 import { Address } from "../types";
+import Panel from "./Base/Panel";
 
 export function Balances() {
   const address = useAccount();
@@ -28,7 +30,7 @@ export function Balances() {
   console.log(balances);
 
   return (
-    <div className="bg-white shadow sm:rounded-lg">
+    <Panel>
       <ul role="list" className="divide-y divide-gray-200">
         {address && (
           <li>
@@ -46,7 +48,7 @@ export function Balances() {
           </li>
         ))}
       </ul>
-    </div>
+    </Panel>
   );
 }
 

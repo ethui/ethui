@@ -1,8 +1,10 @@
 import { listen } from "@tauri-apps/api/event";
+import React from "react";
 import { useEffect } from "react";
 
 import { useInvoke } from "../hooks/tauri";
 import { Address } from "../types";
+import Panel from "./Base/Panel";
 
 export function Contracts() {
   const { data: addresses, mutate } = useInvoke<Address[]>("get_contracts");
@@ -18,7 +20,7 @@ export function Contracts() {
   }, [mutate]);
 
   return (
-    <div className="bg-white shadow sm:rounded-lg">
+    <Panel>
       <ul role="list" className="divide-y divide-gray-200">
         {(addresses || []).map((address) => (
           <li key={address}>
@@ -26,7 +28,7 @@ export function Contracts() {
           </li>
         ))}
       </ul>
-    </div>
+    </Panel>
   );
 }
 

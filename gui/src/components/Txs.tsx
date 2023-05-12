@@ -2,12 +2,14 @@ import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { listen } from "@tauri-apps/api/event";
 import classnames from "classnames";
 import { formatEther } from "ethers/lib/utils";
+import React from "react";
 import { useEffect } from "react";
 import useSWR from "swr";
 import truncateEthAddress from "truncate-eth-address";
 
 import { useAccount, useProvider } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
+import Panel from "./Base/Panel";
 
 export function Txs() {
   const account = useAccount();
@@ -27,7 +29,7 @@ export function Txs() {
   }, [mutate]);
 
   return (
-    <div className="bg-white shadow sm:rounded-lg">
+    <Panel>
       <ul role="list" className="divide-y divide-gray-200">
         {(hashes || []).map((hash) => (
           <li key={hash}>
@@ -35,7 +37,7 @@ export function Txs() {
           </li>
         ))}
       </ul>
-    </div>
+    </Panel>
   );
 }
 

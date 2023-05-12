@@ -1,7 +1,9 @@
 import { listen } from "@tauri-apps/api/event";
+import React from "react";
 import { useEffect, useState } from "react";
 
 import { useInvoke } from "../hooks/tauri";
+import Panel from "./Base/Panel";
 
 interface Connection {
   origin: string;
@@ -45,7 +47,7 @@ export function Connections() {
   }, [connections]);
 
   return (
-    <div className="bg-white shadow sm:rounded-lg">
+    <Panel>
       <ul role="list" className="divide-y divide-gray-200">
         {Array.from(groupedConnections.entries()).map(([id, conns]) => (
           <li key={id}>
@@ -53,7 +55,7 @@ export function Connections() {
           </li>
         ))}
       </ul>
-    </div>
+    </Panel>
   );
 }
 

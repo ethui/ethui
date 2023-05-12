@@ -10,6 +10,11 @@ module.exports = {
   ],
   theme: {
     extend: {},
+    container: {
+      padding: {
+        DEFAULT: "1rem",
+      },
+    },
   },
   plugins: [
     require("@tailwindcss/typography"),
