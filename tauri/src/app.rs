@@ -3,11 +3,11 @@ use std::path::PathBuf;
 use once_cell::sync::OnceCell;
 use serde::Serialize;
 use tauri::{
-    AppHandle, Builder, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
-    SystemTrayMenuItem,
+    AppHandle, Builder, CustomMenuItem, GlobalWindowEvent, Manager, SystemTray, SystemTrayEvent,
+    SystemTrayMenu, SystemTrayMenuItem, WindowEvent,
 };
 use tauri_plugin_window_state::{
-    AppHandleExt, Builder as windowStatePlugin, StateFlags, WindowExt,
+    AppHandleExt, Builder as windowStatePlugin, StateFlags
 };
 use tokio::sync::mpsc;
 
@@ -75,15 +75,7 @@ impl IronApp {
 
                 Ok(())
             })
-            .on_window_event(|event| match event.event() {
-                tauri::WindowEvent::CloseRequested { api, .. } => {
-                    let app = event.window().app_handle();
-                    let _ = app.save_window_state(StateFlags::all());
-                    app.hide().unwrap();
-                    api.prevent_close();
-                }
-                _ => {}
-            })
+            .on_window_event(on_window_event)
             .system_tray(tray)
             .on_system_tray_event(on_system_tray_event)
             .build(tauri::generate_context!())
@@ -140,6 +132,18 @@ impl IronApp {
 
     fn get_settings_file(&self) -> PathBuf {
         self.get_resource("settings.json")
+    }
+}
+
+fn on_window_event(event: GlobalWindowEvent) {
+    match event.event() {
+        WindowEvent::CloseRequested { api, .. } => {
+            let app = event.window().app_handle();
+            let _ = app.save_window_state(StateFlags::all());
+            app.hide().unwrap();
+            api.prevent_close();
+        }
+        _ => {}
     }
 }
 
