@@ -6,6 +6,9 @@ use tauri::{
     AppHandle, Builder, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
     SystemTrayMenuItem,
 };
+use tauri_plugin_window_state::{
+    AppHandleExt, Builder as windowStatePlugin, StateFlags, WindowExt,
+};
 use tokio::sync::mpsc;
 
 use crate::{commands, context::Context};
@@ -41,6 +44,7 @@ impl IronApp {
 
         let tray = Self::build_tray();
         let app = Builder::default()
+            .plugin(windowStatePlugin::default().build())
             .invoke_handler(tauri::generate_handler![
                 commands::get_networks,
                 commands::get_current_network,
@@ -71,6 +75,15 @@ impl IronApp {
 
                 Ok(())
             })
+            .on_window_event(|event| match event.event() {
+                tauri::WindowEvent::CloseRequested { api, .. } => {
+                    let app = event.window().app_handle();
+                    let _ = app.save_window_state(StateFlags::all());
+                    app.hide().unwrap();
+                    api.prevent_close();
+                }
+                _ => {}
+            })
             .system_tray(tray)
             .on_system_tray_event(on_system_tray_event)
             .build(tauri::generate_context!())
@@ -92,10 +105,11 @@ impl IronApp {
     }
 
     pub fn run(&mut self) {
-        self.app.take().unwrap().run(|_, event| {
-            if let tauri::RunEvent::ExitRequested { api, .. } = event {
+        self.app.take().unwrap().run(|_, event| match event {
+            tauri::RunEvent::ExitRequested { api, .. } => {
                 api.prevent_exit();
             }
+            _ => {}
         });
     }
 
