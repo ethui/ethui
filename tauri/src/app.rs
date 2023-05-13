@@ -6,9 +6,7 @@ use tauri::{
     AppHandle, Builder, CustomMenuItem, GlobalWindowEvent, Manager, SystemTray, SystemTrayEvent,
     SystemTrayMenu, SystemTrayMenuItem, WindowEvent,
 };
-use tauri_plugin_window_state::{
-    AppHandleExt, Builder as windowStatePlugin, StateFlags
-};
+use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, StateFlags};
 use tokio::sync::mpsc;
 
 use crate::{commands, context::Context};
