@@ -1,9 +1,10 @@
-import { listen } from "@tauri-apps/api/event";
+import { Box, Stack, Typography } from "@mui/material";
+import { groupBy, map } from "lodash";
 import React from "react";
-import { useEffect, useState } from "react";
 
 import { useInvoke } from "../hooks/tauri";
-import Panel from "./Base/Panel";
+import { useRefreshConnections } from "../hooks/useRefreshConnections";
+import Panel from "./Panel";
 
 interface Connection {
   origin: string;
@@ -18,74 +19,34 @@ export function Connections() {
   const { data: connections, mutate } =
     useInvoke<Connection[]>("get_connections");
 
-  const [groupedConnections, setGroupedConnections] = useState<
-    Map<number | undefined, Connection[]>
-  >(new Map());
+  useRefreshConnections(mutate);
 
-  useEffect(() => {
-    const unlisten = listen("refresh-connections", () => {
-      mutate();
-    });
-
-    return () => {
-      unlisten.then((cb) => cb());
-    };
-  }, [mutate]);
-
-  useEffect(() => {
-    if (!connections) return;
-    const groupedConnections = connections.reduce((acc, conn) => {
-      if (!acc.has(conn.tab_id)) {
-        acc.set(conn.tab_id, []);
-      }
-      acc.get(conn.tab_id).push(conn);
-
-      return acc;
-    }, new Map());
-
-    setGroupedConnections(groupedConnections);
-  }, [connections]);
+  const connectionsByTabId = groupBy(connections, "tab_id");
 
   return (
     <Panel>
-      <ul role="list" className="divide-y divide-gray-200">
-        {Array.from(groupedConnections.entries()).map(([id, conns]) => (
-          <li key={id}>
-            <Connection tabId={id} conns={conns} />
-          </li>
+      <Stack spacing={2}>
+        {map(connectionsByTabId, (conns, tabId) => (
+          <Connection key={tabId} tabId={tabId} conns={conns} />
         ))}
-      </ul>
+      </Stack>
     </Panel>
   );
 }
 
-function Connection({ tabId, conns }: { tabId?: number; conns: Connection[] }) {
+function Connection({ tabId, conns }: { tabId?: string; conns: Connection[] }) {
   return (
-    <a href="#" className="px-4 block hover:bg-gray-50">
-      <div className="py-4 flex items-center justify-start">
-        <div className="flex flex-shrink-0">
-          {conns[0].favicon && <img src={conns[0].favicon} width={25} />}{" "}
-        </div>
-        <div className="flex-grow min-w-0">
-          <div className="flex flex-col">
-            <p className="mx-2 truncate text-sm font-medium text-indigo-600">
-              {conns[0].title}
-            </p>
-            <div className="pl-2 sm:flex sm:justify-between">
-              <div className="sm:flex">
-                {tabId && (
-                  <span className="text-sm text-gray-600">Tab ID {tabId}</span>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="flex-shrink-0">
-          <span className="inline-flex rounded-full px-2 text-xs font-semibold leading-5 bg-gray-100 text-gray-800">
-            {conns.length} connections
-          </span>
-        </div>
-      </div>
-    </a>
+    <Stack direction="row" spacing={2}>
+      <Box
+        component="img"
+        src={conns[0].favicon}
+        sx={{ width: 24, height: 24, mt: 1 }}
+      />
+      <Stack>
+        <Typography variant="overline"> {conns[0].title}</Typography>
+        {tabId && <Typography variant="body2">Tab ID {tabId}</Typography>}
+        <Typography variant="body2">{conns.length} connections</Typography>
+      </Stack>
+    </Stack>
   );
 }

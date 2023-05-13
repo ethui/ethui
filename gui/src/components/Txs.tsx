@@ -1,6 +1,11 @@
-import { ArrowRightIcon } from "@heroicons/react/20/solid";
-import { listen } from "@tauri-apps/api/event";
-import classnames from "classnames";
+import {
+  Box,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+} from "@mui/material";
+import { green, red } from "@mui/material/colors";
 import { formatEther } from "ethers/lib/utils";
 import React from "react";
 import { useEffect } from "react";
@@ -9,7 +14,8 @@ import truncateEthAddress from "truncate-eth-address";
 
 import { useAccount, useProvider } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
-import Panel from "./Base/Panel";
+import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
+import Panel from "./Panel";
 
 export function Txs() {
   const account = useAccount();
@@ -17,26 +23,15 @@ export function Txs() {
     address: account,
   });
 
-  useEffect(() => {
-    const unlisten = listen("refresh-transactions", () => {
-      console.log("refresh");
-      mutate();
-    });
-
-    return () => {
-      unlisten.then((cb) => cb());
-    };
-  }, [mutate]);
+  useRefreshTransactions(mutate);
 
   return (
     <Panel>
-      <ul role="list" className="divide-y divide-gray-200">
+      <List dense>
         {(hashes || []).map((hash) => (
-          <li key={hash}>
-            <Receipt hash={hash} />
-          </li>
+          <Receipt key={hash} hash={hash} />
         ))}
-      </ul>
+      </List>
     </Panel>
   );
 }
@@ -60,48 +55,31 @@ function Receipt({ hash }: { hash: string }) {
   if (!receipt || !tx) return null;
 
   return (
-    <a href="#" className="px-4 block hover:bg-gray-50">
-      <div className="py-4">
-        <div className="flex items-center justify-between">
-          <p className="flex-grow min-w-0 truncate text-sm font-medium text-indigo-600">
-            {hash}
-          </p>
-          <div className="flex flex-shrink-0">
-            <Status status={receipt.status} />
-          </div>
-        </div>
-        <div className="mt-2 sm:flex sm:justify-between">
-          <div className="flex flex-row items-center">
-            <p className="flex items-center text-sm text-gray-500">
-              {truncateEthAddress(receipt.from)}
-              <ArrowRightIcon
-                className="h-5 w-5 text-gray-400 sm:mx-2"
-                aria-hidden="true"
-              />
+    <ListItem disablePadding alignItems="flex-start">
+      <ListItemAvatar sx={{ minWidth: 32 }}>
+        <Box
+          sx={{
+            width: 10,
+            height: 10,
+            borderRadius: "100%",
+            mt: 1,
+            background: receipt.status === 1 ? green[500] : red[500],
+          }}
+        ></Box>
+      </ListItemAvatar>
+      <ListItemText
+        primary={hash}
+        secondary={
+          <>
+            <Box>From: {truncateEthAddress(receipt.from)}</Box>
+            <Box>
+              To:{" "}
               {receipt.to ? truncateEthAddress(receipt.to) : "Contract Deploy"}
-            </p>
-            <p className="flex items-center text-sm text-gray-500 sm:mt-0 ml-5">
-              {formatEther(tx.value)} Ξ
-            </p>
-          </div>
-        </div>
-      </div>
-    </a>
-  );
-}
-
-function Status({ status }: { status?: number }) {
-  return (
-    <span
-      className={classnames(
-        "inline-flex rounded-full px-2 text-xs font-semibold leading-5",
-        {
-          "bg-green-100 text-green-800": status == 1,
-          "bg-red-100 text-red-800": status == 0,
+            </Box>
+            <Box>Amount: {formatEther(tx.value)} Ξ</Box>
+          </>
         }
-      )}
-    >
-      {status == 1 ? "Success" : "Failed"}
-    </span>
+      />
+    </ListItem>
   );
 }

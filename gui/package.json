@@ -12,12 +12,18 @@
     "test:ui:watch": "vitest"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.0",
+    "@emotion/styled": "^11.11.0",
+    "@fontsource/roboto": "^4.5.8",
     "@headlessui/react": "^1.7.13",
     "@heroicons/react": "^2.0.15",
     "@hookform/resolvers": "^2.9.11",
+    "@mui/icons-material": "^5.11.16",
+    "@mui/material": "^5.13.0",
     "@tailwindcss/typography": "^0.5.9",
     "@tauri-apps/api": "^1.2.0",
     "@tauri-apps/cli": "^1.2.2",
+    "@types/lodash": "^4.14.194",
     "@vitejs/plugin-react": "^3.0.0",
     "@wagmi/core": "^0.10.9",
     "classnames": "^2.3.2",

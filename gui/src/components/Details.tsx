@@ -1,25 +1,37 @@
-import { DocumentDuplicateIcon } from "@heroicons/react/20/solid";
+import ContentCopy from "@mui/icons-material/ContentCopy";
+import { Button, Tooltip } from "@mui/material";
 import { writeText } from "@tauri-apps/api/clipboard";
-import React from "react";
+import React, { useState } from "react";
 import truncateEthAddress from "truncate-eth-address";
 
 import { useAccount } from "../hooks";
-import Button from "./Base/Button";
-import Panel from "./Base/Panel";
+import Panel from "./Panel";
 
 export function Details() {
+  const [copied, setCopied] = useState(false);
   const address = useAccount();
 
   if (!address) return null;
 
+  const copyToClipboard = () => {
+    writeText(address);
+    setCopied(true);
+  };
+
   return (
     <Panel>
-      <Button onClick={() => writeText(address)}>
-        <div className="flex items-center">
-          <span>{truncateEthAddress(address)}</span>
-          <DocumentDuplicateIcon className="w-4 h-4 ml-2" />
-        </div>
-      </Button>
+      <Tooltip
+        onClose={() => setTimeout(() => setCopied(false), 500)}
+        title={copied ? "Copied to clipboard" : "Copy to clipboard"}
+      >
+        <Button
+          variant="outlined"
+          endIcon={<ContentCopy />}
+          onClick={copyToClipboard}
+        >
+          {truncateEthAddress(address)}
+        </Button>
+      </Tooltip>
     </Panel>
   );
 }

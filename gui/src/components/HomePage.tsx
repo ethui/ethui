@@ -1,4 +1,4 @@
-import classnames from "classnames";
+import { Container, Paper, Tab, Tabs } from "@mui/material";
 import React from "react";
 import { useState } from "react";
 
@@ -6,6 +6,7 @@ import { Balances } from "./Balances";
 import { Connections } from "./Connections";
 import { Contracts } from "./Contracts";
 import { Details } from "./Details";
+import { TabPanel } from "./TabPanel";
 import { Txs } from "./Txs";
 
 const tabs = [
@@ -17,35 +18,27 @@ const tabs = [
 ];
 
 export function HomePage() {
-  const [currentTab, setCurrentTab] = useState(tabs[0]);
+  const [currentTab, setCurrentTab] = useState(0);
 
   return (
-    <>
-      <div>
-        <div className="px-4 border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8" aria-label="Tabs">
-            {tabs.map((tab) => (
-              <a
-                key={tab.name}
-                onClick={() => setCurrentTab(tab)}
-                className={classnames(
-                  "whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium cursor-pointer",
-                  {
-                    "border-indigo-500 text-indigo-600":
-                      currentTab.name == tab.name,
-                    "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700":
-                      currentTab.name !== tab.name,
-                  }
-                )}
-                aria-current={currentTab.name == tab.name ? "page" : undefined}
-              >
-                {tab.name}
-              </a>
-            ))}
-          </nav>
-        </div>
-      </div>
-      <currentTab.component />
-    </>
+    <Container maxWidth="md">
+      <Paper>
+        <Tabs
+          variant="fullWidth"
+          sx={{ mb: 2 }}
+          value={currentTab}
+          onChange={(_e, newTab) => setCurrentTab(newTab)}
+        >
+          {tabs.map((tab) => (
+            <Tab key={tab.name} label={tab.name} />
+          ))}
+        </Tabs>
+        {tabs.map((tab, index) => (
+          <TabPanel index={index} key={tab.name} value={currentTab}>
+            <tab.component />
+          </TabPanel>
+        ))}
+      </Paper>
+    </Container>
   );
 }

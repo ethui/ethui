@@ -1,28 +1,39 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Button,
+  FormControl,
+  FormControlLabel,
+  FormHelperText,
+  FormLabel,
+  Radio,
+  RadioGroup,
+  Stack,
+  TextField,
+} from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
+import { map } from "lodash";
+import React from "react";
 import { useCallback, useEffect, useState } from "react";
-import { FieldValues, useForm } from "react-hook-form";
+import { Controller, FieldValues, useForm } from "react-hook-form";
 
-import { useInvoke } from "../../hooks/tauri";
-import { Address, Wallet, walletSchema } from "../../types";
-import Button from "../Base/Button";
-import { FieldRadio, FieldText } from "./Fields";
+import { useInvoke } from "../hooks/tauri";
+import { Address, Wallet, walletSchema } from "../types";
 
-export function WalletSettings() {
+export function SettingsWallet() {
   const { data: wallet, mutate } = useInvoke<Wallet>("get_wallet");
 
   const {
     register,
     handleSubmit,
     reset,
-    formState: { isValid, dirtyFields, errors },
+    formState: { isValid, isDirty, dirtyFields, errors },
     control,
     watch,
     trigger,
     clearErrors,
     setError,
   } = useForm({
-    mode: "onBlur",
+    mode: "onChange",
     resolver: zodResolver(walletSchema),
   });
   // TODO: https://github.com/react-hook-form/react-hook-form/issues/3213
@@ -52,6 +63,7 @@ export function WalletSettings() {
     const localPath: string = derivationPath ?? wallet?.derivationPath;
 
     if ((isDirtyAlt && !isValid) || !localMnemonic || !localPath) return;
+
     (async () => {
       try {
         const addresses = (await invoke("derive_addresses_with_mnemonic", {
@@ -91,33 +103,59 @@ export function WalletSettings() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-      <FieldText
-        name="Mnemonic"
-        field="mnemonic"
-        register={register}
-        value={wallet.mnemonic}
-        error={errors.mnemonic}
-      />
-      <FieldText
-        name="Derivation Path"
-        field="derivationPath"
-        register={register}
-        value={wallet.derivationPath}
-        error={errors.derivationPath}
-      />
-
-      <FieldRadio
-        control={control}
-        name="idx"
-        title="Address"
-        values={derivedAddresses}
-        defaultValue={wallet.idx}
-      />
-      <div className="m-2">
-        <Button type="submit" disabled={!isDirtyAlt || !isValid}>
-          {isDirtyAlt ? "Save" : "Saved"}
+      <Stack alignItems="flex-start" spacing={2}>
+        <TextField
+          label="Mnemonic"
+          defaultValue={wallet.mnemonic}
+          error={!!errors.mnemonic}
+          helperText={errors.mnemonic?.message?.toString() || ""}
+          fullWidth
+          {...register("mnemonic")}
+        />
+        <TextField
+          label="Derivation Path"
+          spellCheck="false"
+          defaultValue={wallet.derivationPath}
+          error={!!errors.derivationPath}
+          helperText={errors.derivationPath?.message?.toString() || ""}
+          {...register("derivationPath")}
+        />
+        <FormControl error={!!errors.idx}>
+          <FormLabel id="account">Account</FormLabel>
+          <Controller
+            rules={{ required: true }}
+            control={control}
+            name="idx"
+            render={({ field }) => (
+              <RadioGroup
+                aria-labelledby="account"
+                {...field}
+                value={field.value === undefined ? wallet.idx : field.value}
+                onChange={(e) => field.onChange(parseInt(e.target.value))}
+              >
+                {map(derivedAddresses, (address: Address, id: string) => (
+                  <FormControlLabel
+                    key={id}
+                    value={parseInt(id, 10)}
+                    control={<Radio />}
+                    label={address}
+                  />
+                ))}
+              </RadioGroup>
+            )}
+          />
+          {errors.idx && (
+            <FormHelperText>{errors.idx.message?.toString()}</FormHelperText>
+          )}
+        </FormControl>
+        <Button
+          variant="contained"
+          type="submit"
+          disabled={!isDirty || !isValid}
+        >
+          Save
         </Button>
-      </div>
+      </Stack>
     </form>
   );
 }
