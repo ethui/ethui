@@ -26,7 +26,7 @@ export function SettingsWallet() {
     register,
     handleSubmit,
     reset,
-    formState: { isValid, isDirty, dirtyFields, errors },
+    formState: { isValid, dirtyFields, errors },
     control,
     watch,
     trigger,
@@ -151,7 +151,7 @@ export function SettingsWallet() {
         <Button
           variant="contained"
           type="submit"
-          disabled={!isDirty || !isValid}
+          disabled={!isDirtyAlt || !isValid}
         >
           Save
         </Button>
