@@ -1,8 +1,11 @@
+import { List, ListItem, ListItemText } from "@mui/material";
 import { listen } from "@tauri-apps/api/event";
+import React from "react";
 import { useEffect } from "react";
 
 import { useInvoke } from "../hooks/tauri";
 import { Address } from "../types";
+import Panel from "./Panel";
 
 export function Contracts() {
   const { data: addresses, mutate } = useInvoke<Address[]>("get_contracts");
@@ -18,28 +21,20 @@ export function Contracts() {
   }, [mutate]);
 
   return (
-    <div className="bg-white shadow sm:rounded-lg">
-      <ul role="list" className="divide-y divide-gray-200">
+    <Panel>
+      <List>
         {(addresses || []).map((address) => (
-          <li key={address}>
-            <Contract address={address} />
-          </li>
+          <Contract key={address} address={address} />
         ))}
-      </ul>
-    </div>
+      </List>
+    </Panel>
   );
 }
 
 function Contract({ address }: { address: Address }) {
   return (
-    <a href="#" className="px-4 block hover:bg-gray-50">
-      <div className="py-4">
-        <div className="flex items-center justify-between">
-          <p className="flex-grow min-w-0 truncate text-sm font-medium text-indigo-600">
-            {address}
-          </p>
-        </div>
-      </div>
-    </a>
+    <ListItem>
+      <ListItemText primary={address} />
+    </ListItem>
   );
 }

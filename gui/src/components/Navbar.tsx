@@ -1,32 +1,81 @@
-import { Disclosure } from "@headlessui/react";
-import { Cog6ToothIcon } from "@heroicons/react/24/solid";
+import Settings from "@mui/icons-material/Settings";
+import {
+  Box,
+  Button,
+  Container,
+  Grid,
+  IconButton,
+  Modal,
+  Paper,
+} from "@mui/material";
+import React, { useState } from "react";
 import { Link } from "wouter";
 
-import { QuickAccountSelect, QuickNetworkSelect } from "./Settings/index";
+import { QuickAccountSelect } from "./QuickAccountSelect";
+import { QuickNetworkSelect } from "./QuickNetworkSelect";
+import { Settings as SettingsPage } from "./Settings";
+
+function SettingsButton() {
+  const [showSettings, setShowSettings] = useState(false);
+
+  return (
+    <>
+      <IconButton onClick={() => setShowSettings(true)}>
+        <Settings />
+      </IconButton>
+      <Modal
+        open={showSettings}
+        onClose={() => setShowSettings(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Paper
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "80%",
+            height: "80%",
+            overflowY: "scroll",
+            p: 4,
+          }}
+        >
+          <SettingsPage />
+        </Paper>
+      </Modal>
+    </>
+  );
+}
 
 export function Navbar() {
   return (
-    <Disclosure as="nav">
-      <div className="mx-auto max-w-7xl px-2 lg:px-8">
-        <div className="flex h-16 justify-between">
-          <div className="flex">
-            <div className="flex flex-shrink-0 items-center">
-              <a href="#">Iron Wallet</a>
-            </div>
-          </div>
-          <div className="flex items-center">
-            <div className="flex-shrink-0 flex gap-x-2 items-center">
-              <QuickAccountSelect />
-              <QuickNetworkSelect />
-              <Link href="/settings">
-                <a>
-                  <Cog6ToothIcon className="h-6 w-6" />
-                </a>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Disclosure>
+    <Container
+      maxWidth={false}
+      component="nav"
+      sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        py: 2,
+      }}
+    >
+      <Box flexShrink="0">
+        <Button size="medium" component={Link} href="/">
+          Iron Wallet
+        </Button>
+      </Box>
+      <Grid container spacing={2} justifyContent="flex-end" alignItems="center">
+        <Grid item>
+          <QuickAccountSelect />
+        </Grid>
+        <Grid item>
+          <QuickNetworkSelect />
+        </Grid>
+        <Grid item>
+          <SettingsButton />
+        </Grid>
+      </Grid>
+    </Container>
   );
 }

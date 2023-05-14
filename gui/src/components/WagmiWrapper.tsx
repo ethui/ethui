@@ -1,5 +1,6 @@
 import { type ProviderWithFallbackConfig } from "@wagmi/core";
 import { providers } from "ethers";
+import React from "react";
 import { useEffect, useState } from "react";
 import {
   Chain,
@@ -36,7 +37,7 @@ export function WagmiWrapper({ children }: Props) {
     setClient(buildClient(network));
   }, [network]);
 
-  if (!client) return <></>;
+  if (!client) return null;
 
   return <WagmiConfig client={client}>{children}</WagmiConfig>;
 }
