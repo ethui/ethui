@@ -95,11 +95,10 @@ impl IronApp {
     }
 
     pub fn run(&mut self) {
-        self.app.take().unwrap().run(|_, event| match event {
-            tauri::RunEvent::ExitRequested { api, .. } => {
+        self.app.take().unwrap().run(|_, event| {
+            if let tauri::RunEvent::ExitRequested { api, .. } = event {
                 api.prevent_exit();
             }
-            _ => {}
         });
     }
 
