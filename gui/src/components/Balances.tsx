@@ -1,14 +1,13 @@
 import { Stack, Typography } from "@mui/material";
-import { listen } from "@tauri-apps/api/event";
 import { erc20ABI } from "@wagmi/core";
 import { BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils.js";
 import React from "react";
-import { useEffect } from "react";
 import { useBalance, useContractRead } from "wagmi";
 
 import { useAccount } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
+import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
 import { Address } from "../types";
 import Panel from "./Panel";
 
@@ -19,15 +18,7 @@ export function Balances() {
     { address }
   );
 
-  useEffect(() => {
-    const unlisten = listen("refresh-transactions", () => {
-      mutate();
-    });
-
-    return () => {
-      unlisten.then((cb) => cb());
-    };
-  }, [mutate]);
+  useRefreshTransactions(mutate);
 
   return (
     <Panel>

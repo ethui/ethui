@@ -104,7 +104,7 @@ impl ContextInner {
         self.window_snd
             .as_ref()
             .unwrap()
-            .send(IronEvent::RefreshConnections)
+            .send(IronEvent::ConnectionsUpdated)
             .unwrap();
     }
 
@@ -114,7 +114,7 @@ impl ContextInner {
         self.window_snd
             .as_ref()
             .unwrap()
-            .send(IronEvent::RefreshConnections)
+            .send(IronEvent::ConnectionsUpdated)
             .unwrap();
     }
 
@@ -168,7 +168,7 @@ impl ContextInner {
             self.window_snd
                 .as_ref()
                 .unwrap()
-                .send(IronEvent::RefreshNetwork)?
+                .send(IronEvent::NetworkChanged)?
         }
 
         self.save()?;

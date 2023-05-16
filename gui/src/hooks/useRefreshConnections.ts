@@ -3,7 +3,7 @@ import { useEffect } from "react";
 
 export function useRefreshConnections(callback: () => unknown) {
   useEffect(() => {
-    const unlisten = listen("refresh-connections", () => {
+    const unlisten = listen("connections-updated", () => {
       callback();
     });
 
