@@ -1,9 +1,10 @@
-import { List, ListItem, ListItemText } from "@mui/material";
+import { List, ListItem, Typography } from "@mui/material";
 import React from "react";
 
 import { useInvoke } from "../hooks/tauri";
 import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
 import { Address } from "../types";
+import { CopyToClipboard } from "./CopyToClipboard";
 import Panel from "./Panel";
 
 export function Contracts() {
@@ -25,7 +26,9 @@ export function Contracts() {
 function Contract({ address }: { address: Address }) {
   return (
     <ListItem>
-      <ListItemText primary={address} />
+      <CopyToClipboard>
+        <Typography>{address}</Typography>
+      </CopyToClipboard>
     </ListItem>
   );
 }
