@@ -3,8 +3,8 @@ use std::path::PathBuf;
 use once_cell::sync::OnceCell;
 use serde::Serialize;
 use tauri::{
-    AppHandle, Builder, CustomMenuItem, GlobalWindowEvent, Manager, SystemTray, SystemTrayEvent,
-    SystemTrayMenu, SystemTrayMenuItem, WindowEvent,
+    AppHandle, Builder, CustomMenuItem, GlobalWindowEvent, Manager, Menu, MenuItem, Submenu,
+    SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem, WindowEvent,
 };
 use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, StateFlags};
 use tokio::sync::mpsc;
@@ -41,6 +41,8 @@ impl IronApp {
         let (snd, rcv) = mpsc::unbounded_channel();
 
         let tray = Self::build_tray();
+        let menu = Self::build_menu();
+
         let mut builder = Builder::default()
             .plugin(windowStatePlugin::default().build())
             .invoke_handler(tauri::generate_handler![
@@ -73,6 +75,7 @@ impl IronApp {
 
                 Ok(())
             })
+            .menu(menu)
             .on_window_event(on_window_event);
 
         #[cfg(not(target_os = "macos"))]
@@ -83,6 +86,17 @@ impl IronApp {
         }
 
         let app = builder
+            .on_menu_event(|event| match event.menu_item_id() {
+                "quit" => {
+                    std::process::exit(0);
+                }
+                "close" => {
+                    event.window().close().unwrap();
+                }
+                path => {
+                    event.window().emit("go", path).unwrap();
+                }
+            })
             .build(tauri::generate_context!())
             .expect("error while running tauri application");
 
@@ -107,6 +121,42 @@ impl IronApp {
                 api.prevent_exit();
             }
         });
+    }
+
+    fn build_menu() -> Menu {
+        let quit = CustomMenuItem::new("quit".to_string(), "Quit");
+        let close = CustomMenuItem::new("close".to_string(), "Close");
+        let file_submenu = Submenu::new("File", Menu::new().add_item(quit).add_item(close));
+
+        let edit_submenu = Submenu::new(
+            "Edit",
+            Menu::new()
+                .add_native_item(MenuItem::Cut)
+                .add_native_item(MenuItem::Copy)
+                .add_native_item(MenuItem::Paste),
+        );
+
+        let details = CustomMenuItem::new("details".to_string(), "Details");
+        let transactions = CustomMenuItem::new("transactions".to_string(), "Transactions");
+        let balances = CustomMenuItem::new("balances".to_string(), "Balances");
+        let contracts = CustomMenuItem::new("contracts".to_string(), "Contracts");
+        let connections = CustomMenuItem::new("connections".to_string(), "Connections");
+        let go_submenu = Submenu::new(
+            "Go",
+            Menu::new()
+                .add_item(details)
+                .add_item(transactions)
+                .add_item(balances)
+                .add_item(contracts)
+                .add_item(connections),
+        );
+
+        Menu::new()
+            .add_native_item(MenuItem::Copy)
+            .add_item(CustomMenuItem::new("hide", "Hide"))
+            .add_submenu(file_submenu)
+            .add_submenu(edit_submenu)
+            .add_submenu(go_submenu)
     }
 
     fn build_tray() -> tauri::SystemTray {

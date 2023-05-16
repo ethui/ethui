@@ -47,6 +47,7 @@ export function QuickAccountSelect() {
 
   return (
     <Select
+      size="small"
       renderValue={(value: number) =>
         addresses[value] && truncateEthAddress(addresses[value])
       }
