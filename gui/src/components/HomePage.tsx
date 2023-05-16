@@ -5,6 +5,7 @@ import React, { useEffect } from "react";
 import { Link, Route, Switch, useLocation, useRoute } from "wouter";
 
 import { useKeyPress } from "../hooks/useKeyPress";
+import { useMenuAction } from "../hooks/useMenuAction";
 import { Balances } from "./Balances";
 import { Connections } from "./Connections";
 import { Contracts } from "./Contracts";
@@ -23,18 +24,7 @@ export function HomePage() {
   const [_match, params] = useRoute(":path");
   const [_location, setLocation] = useLocation();
 
-  useEffect(() => {
-    const unlisten = appWindow.listen(
-      "go",
-      ({ payload }: { payload: string }) => {
-        setLocation(payload);
-      }
-    );
-
-    return () => {
-      unlisten.then((cb) => cb());
-    };
-  }, [setLocation]);
+  useMenuAction((payload) => setLocation(payload));
 
   const handleKeyboardNavigation = (event: KeyboardEvent) => {
     setLocation(tabs[parseInt(event.key) - 1].path);
