@@ -141,11 +141,11 @@ impl IronApp {
                 .add_item(connections),
         );
 
-        Menu::new()
-            .add_native_item(MenuItem::Copy)
-            .add_item(CustomMenuItem::new("hide", "Hide"))
-            .add_submenu(file_submenu)
-            .add_submenu(edit_submenu)
+        Menu::os_default("Iron")
+            // .add_native_item(MenuItem::Copy)
+            // .add_item(CustomMenuItem::new("hide", "Hide"))
+            // .add_submenu(file_submenu)
+            // .add_submenu(edit_submenu)
             .add_submenu(go_submenu)
     }
 
