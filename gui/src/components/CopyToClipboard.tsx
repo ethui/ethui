@@ -27,7 +27,8 @@ export function CopyToClipboard({
       onClose={() => setTimeout(() => setCopied(false), 500)}
       title={copied ? "Copied to clipboard" : "Copy to clipboard"}
       arrow
-      enterDelay={600}
+      enterDelay={800}
+      enterNextDelay={800}
     >
       <Button
         disableRipple
