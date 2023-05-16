@@ -69,29 +69,28 @@ impl From<Trace> for Events {
                 ]
             }
 
-            // top-level trace of a transaction
-            (action, _, 0) => match action {
-                // TODO: match call input against ERC20 abi
+            // TODO: match call input against ERC20 abi
 
-                // other regular calls
+            // top-level trace of a transaction
+            // other regular calls
+            (
                 Action::Call(Call {
                     from,
                     to,
                     value,
                     input,
                     ..
-                }) => vec![Tx {
-                    hash: trace.transaction_hash.unwrap(),
-                    from,
-                    to: Some(to),
-                    value,
-                    data: input,
-                }
-                .into()],
-
-                // we already capture contract deploys somewhere else
-                _ => vec![],
-            },
+                }),
+                _,
+                0,
+            ) => vec![Tx {
+                hash: trace.transaction_hash.unwrap(),
+                from,
+                to: Some(to),
+                value,
+                data: input,
+            }
+            .into()],
 
             _ => vec![],
         };
@@ -123,30 +122,28 @@ impl TryFrom<Log> for Event {
         };
 
         // decode ERC20 calls
-        match IERC20Events::decode_log(&raw) {
-            Ok(IERC20Events::TransferFilter(ierc20::TransferFilter { from, to, value })) => {
-                return Ok(ERC20Transfer {
-                    from,
-                    to,
-                    value,
-                    contract: log.address,
-                }
-                .into())
+        if let Ok(IERC20Events::TransferFilter(ierc20::TransferFilter { from, to, value })) =
+            IERC20Events::decode_log(&raw)
+        {
+            return Ok(ERC20Transfer {
+                from,
+                to,
+                value,
+                contract: log.address,
             }
-            _ => {}
+            .into());
         };
 
-        match IERC721Events::decode_log(&raw) {
-            Ok(IERC721Events::TransferFilter(ierc721::TransferFilter { from, to, token_id })) => {
-                return Ok(ERC721Transfer {
-                    from,
-                    to,
-                    token_id,
-                    contract: log.address,
-                }
-                .into())
+        if let Ok(IERC721Events::TransferFilter(ierc721::TransferFilter { from, to, token_id })) =
+            IERC721Events::decode_log(&raw)
+        {
+            return Ok(ERC721Transfer {
+                from,
+                to,
+                token_id,
+                contract: log.address,
             }
-            _ => {}
+            .into());
         };
 
         Err(())

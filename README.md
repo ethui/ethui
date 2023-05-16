@@ -4,35 +4,40 @@
 [justfile]: https://github.com/casey/just
 [releases]: https://github.com/iron-wallet/iron/releases
 
-A Development-only, anvil-aware crypto wallet.
-Ever had to manually reset your MetaMask account to get your `nonce` back to zero on a local test chain? Then have I got a treat for you.
-
-Use your usual "Connect with MetaMask" flows, but with life-chainging quality-of-life:
-
-- defaults to `test test test ... junk`
-- no encryption, no passwords to input all the time. just a plain HD Wallet
-- no annoying popups for confirmations, gas estimates, etc (they'll come, but opt-in)
-- ever had to "Reset your Account"
-- active monitoring of `anvil` networks, monitoring restarts
-- runs in your desktop, not your browser (can be closed to the statusbar)
+A developer's crypto wallet.
 
 ![Iron wallet](./screenshot.png)
 
-## Features
+## Features / Roadmap
 
-- [x] Act as a MetaMask drop-in replacement
-  - [x] "Connect Wallet" functionality on your browser
-  - [x] switching networks
-  - [x] switching accounts
-  - [x] submitting transactions
-  - [x] signing messages
-- [x] track transaction history
-- [x] track [anvil][anvil] restarts
+- [x] **Metamask drop-in replacement for simple flows**
+  - "Connect with MetaMask", submit transactions, sign messages, switch accounts & networks without intrusive popups
+- [x] **[anvil]-aware**
+  - [x] track transaction history
+  - [x] track deployed smart contracts (via traces, so internal deploys are also detected)
+  - [x] automatically track chain restarts / reverts
 - [ ] connection list
-  - [ ] switch chain/account on individual connections, not just globally
-  - [ ] debug transactions and contracts right there on your wallet
+  - [ ] fine-grained control over account and network selection (i.e. different selections per tab, or per domain)
   - [ ] track local foundry projects, sync ABIs and deploys
-- [ ] other development / debugging features coming soon
+  - [ ] etherscan-like contract read/write UI for all local contracts
+  - [ ] fork & simulate mainnet transactions locally. for debugging & security
+  - [ ] impersonate / prank on any dApp
+
+## Security
+
+**Right now there is none.**
+Our "go to market strategy" is to help developers looking to speed up their feedback loop. This means:
+
+- mnemonic defaults to `test test test ... junk`
+- no encryption, no passwords to input all the time. just a plain HD Wallet
+- no annoying popups for confirmations, gas estimates, etc (they'll come, but opt-in)
+- no need to "Reset your Account" to reset the `nonce`
+
+This will change soon, but we're debating ideas on how this could also be done better, such as:
+
+- Allow connection to private keys in 3rd party encryption software (GPG, KeyPass, ...)
+- Support multiple wallets
+- Retain a dev-only wallet where security would still be opted-out of
 
 ---
 

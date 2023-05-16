@@ -45,11 +45,11 @@
     },
     "windows": [
       {
-        "title": "Iron",
-        "width": 450,
-        "height": 600,
         "fullscreen": false,
-        "resizable": true
+        "resizable": true,
+        "title": "iron",
+        "width": 1200,
+        "height": 800
       }
     ]
   }

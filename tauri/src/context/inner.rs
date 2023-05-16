@@ -104,7 +104,13 @@ impl ContextInner {
         self.window_snd
             .as_ref()
             .unwrap()
+<<<<<<< HEAD
             .send(IronEvent::Window(IronWindowEvent::RefreshConnections))
+||||||| e730eb6
+            .send(IronEvent::RefreshConnections)
+=======
+            .send(IronEvent::ConnectionsUpdated)
+>>>>>>> main
             .unwrap();
     }
 
@@ -114,7 +120,13 @@ impl ContextInner {
         self.window_snd
             .as_ref()
             .unwrap()
+<<<<<<< HEAD
             .send(IronEvent::Window(IronWindowEvent::RefreshConnections))
+||||||| e730eb6
+            .send(IronEvent::RefreshConnections)
+=======
+            .send(IronEvent::ConnectionsUpdated)
+>>>>>>> main
             .unwrap();
     }
 
@@ -168,7 +180,13 @@ impl ContextInner {
             self.window_snd
                 .as_ref()
                 .unwrap()
+<<<<<<< HEAD
                 .send(IronEvent::Window(IronWindowEvent::RefreshNetwork))?
+||||||| e730eb6
+                .send(IronEvent::RefreshNetwork)?
+=======
+                .send(IronEvent::NetworkChanged)?
+>>>>>>> main
         }
 
         self.save()?;

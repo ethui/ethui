@@ -3,9 +3,10 @@ use std::path::PathBuf;
 use once_cell::sync::OnceCell;
 use serde::Serialize;
 use tauri::{
-    AppHandle, Builder, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
-    SystemTrayMenuItem,
+    AppHandle, Builder, CustomMenuItem, GlobalWindowEvent, Manager, SystemTray, SystemTrayEvent,
+    SystemTrayMenu, SystemTrayMenuItem, WindowEvent,
 };
+use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, StateFlags};
 use tokio::sync::mpsc;
 
 use crate::{commands, context::Context};
@@ -23,17 +24,17 @@ pub enum IronEvent {
 
 #[derive(Debug, Serialize)]
 pub enum IronWindowEvent {
-    RefreshNetwork,
-    RefreshTransactions,
-    RefreshConnections,
+    NetworkChanged,
+    TxsUpdated,
+    ConnectionsUpdated,
 }
 
 impl IronWindowEvent {
     fn label(&self) -> &str {
         match self {
-            Self::RefreshNetwork => "refresh-network",
-            Self::RefreshTransactions => "refresh-transactions",
-            Self::RefreshConnections => "refresh-connections",
+            Self::NetworkChanged => "network-changed",
+            Self::TxsUpdated => "txs-updated",
+            Self::ConnectionsUpdated => "connections-updated",
         }
     }
 }
@@ -46,7 +47,8 @@ impl IronApp {
         let (snd, rcv) = mpsc::unbounded_channel();
 
         let tray = Self::build_tray();
-        let app = Builder::default()
+        let mut builder = Builder::default()
+            .plugin(windowStatePlugin::default().build())
             .invoke_handler(tauri::generate_handler![
                 commands::get_networks,
                 commands::get_current_network,
@@ -77,8 +79,16 @@ impl IronApp {
 
                 Ok(())
             })
-            .system_tray(tray)
-            .on_system_tray_event(on_system_tray_event)
+            .on_window_event(on_window_event);
+
+        #[cfg(not(target_os = "macos"))]
+        {
+            builder = builder
+                .system_tray(tray)
+                .on_system_tray_event(on_system_tray_event);
+        }
+
+        let app = builder
             .build(tauri::generate_context!())
             .expect("error while running tauri application");
 
@@ -135,6 +145,20 @@ impl IronApp {
     }
 }
 
+fn on_window_event(event: GlobalWindowEvent) {
+    if let WindowEvent::CloseRequested { api, .. } = event.event() {
+        let window = event.window();
+        let app = window.app_handle();
+        let _ = app.save_window_state(StateFlags::all());
+
+        #[cfg(target_os = "macos")]
+        {
+            app.hide().unwrap();
+            api.prevent_close();
+        }
+    }
+}
+
 fn on_system_tray_event(app: &AppHandle, event: SystemTrayEvent) {
     use SystemTrayEvent::*;
 
@@ -145,9 +169,7 @@ fn on_system_tray_event(app: &AppHandle, event: SystemTrayEvent) {
             "show" => show_main_window(app),
             _ => {}
         },
-
         DoubleClick { .. } => show_main_window(app),
-
         _ => {}
     }
 }

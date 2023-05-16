@@ -30,12 +30,12 @@ export default defineConfig(async () => ({
   },
   test: {
     globals: true,
-    environment: 'jsdom',
-    setupFiles: './test/setup.ts',
+    environment: "jsdom",
+    setupFiles: "./test/setup.ts",
     isolate: true,
     threads: true,
     coverage: {
-      reporter: ['text', 'json', 'html']
-    }
-  }
+      reporter: ["text", "json", "html"],
+    },
+  },
 }));

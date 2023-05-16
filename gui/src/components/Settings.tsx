@@ -1,46 +1,35 @@
-import classnames from "classnames";
+import { Container, Tab, Tabs } from "@mui/material";
+import React from "react";
 import { useState } from "react";
 
-import { NetworkSettings, WalletSettings } from "./Settings/index";
+import { SettingsNetwork } from "./SettingsNetwork";
+import { SettingsWallet } from "./SettingsWallet";
+import { TabPanel } from "./TabPanel";
 
-const sections = [
-  { name: "Wallet", component: WalletSettings },
-  { name: "Network", component: NetworkSettings },
+const tabs = [
+  { name: "Wallet", component: SettingsWallet },
+  { name: "Network", component: SettingsNetwork },
 ];
 
 export function Settings() {
-  const [currentTab, setCurrentTab] = useState(sections[0]);
+  const [currentTab, setCurrentTab] = useState(0);
 
   return (
-    <>
-      <div>
-        <div className="px-4 border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8" aria-label="Tabs">
-            {sections.map((tab) => (
-              <a
-                key={tab.name}
-                onClick={() => setCurrentTab(tab)}
-                className={classnames(
-                  "whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium cursor-pointer",
-
-                  {
-                    "border-indigo-500 text-indigo-600":
-                      currentTab.name == tab.name,
-                    "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700":
-                      currentTab.name !== tab.name,
-                  }
-                )}
-                aria-current={currentTab.name == tab.name ? "page" : undefined}
-              >
-                {tab.name}
-              </a>
-            ))}
-          </nav>
-        </div>
-      </div>
-      <div className="m-4">
-        <currentTab.component />
-      </div>
-    </>
+    <Container maxWidth="md">
+      <Tabs
+        sx={{ mb: 2 }}
+        value={currentTab}
+        onChange={(_e, newTab) => setCurrentTab(newTab)}
+      >
+        {tabs.map((tab) => (
+          <Tab key={tab.name} label={tab.name} />
+        ))}
+      </Tabs>
+      {tabs.map((tab, index) => (
+        <TabPanel index={index} key={tab.name} value={currentTab}>
+          <tab.component />
+        </TabPanel>
+      ))}
+    </Container>
   );
 }

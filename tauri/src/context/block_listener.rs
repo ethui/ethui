@@ -222,7 +222,7 @@ async fn process(
         // don't emit events until we're catching up
         // otherwise we spam too much during that phase
         if caught_up {
-            window_snd.send(IronEvent::Window(IronWindowEvent::RefreshTransactions))?;
+            window_snd.send(IronEvent::Window(IronWindowEvent::TxsUpdated))?;
         }
     }
 
