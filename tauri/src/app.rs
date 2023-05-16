@@ -4,7 +4,7 @@ use once_cell::sync::OnceCell;
 use serde::Serialize;
 use tauri::{
     AppHandle, Builder, CustomMenuItem, GlobalWindowEvent, Manager, Menu, MenuItem, Submenu,
-    SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem, WindowEvent,
+    SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem, WindowEvent, WindowMenuEvent,
 };
 use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, StateFlags};
 use tokio::sync::mpsc;
@@ -86,17 +86,7 @@ impl IronApp {
         }
 
         let app = builder
-            .on_menu_event(|event| match event.menu_item_id() {
-                "quit" => {
-                    std::process::exit(0);
-                }
-                "close" => {
-                    event.window().close().unwrap();
-                }
-                path => {
-                    event.window().emit("go", path).unwrap();
-                }
-            })
+            .on_menu_event(on_menu_event)
             .build(tauri::generate_context!())
             .expect("error while running tauri application");
 
@@ -186,6 +176,20 @@ impl IronApp {
 
     fn get_settings_file(&self) -> PathBuf {
         self.get_resource("settings.json")
+    }
+}
+
+fn on_menu_event(event: WindowMenuEvent) {
+    match event.menu_item_id() {
+        "quit" => {
+            std::process::exit(0);
+        }
+        "close" => {
+            event.window().close().unwrap();
+        }
+        path => {
+            event.window().emit("go", path).unwrap();
+        }
     }
 }
 
