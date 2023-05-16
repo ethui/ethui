@@ -41,7 +41,7 @@ impl IronApp {
         let (snd, rcv) = mpsc::unbounded_channel();
 
         let tray = Self::build_tray();
-        let builder = Builder::default()
+        let mut builder = Builder::default()
             .plugin(windowStatePlugin::default().build())
             .invoke_handler(tauri::generate_handler![
                 commands::get_networks,
