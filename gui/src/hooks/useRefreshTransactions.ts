@@ -3,7 +3,7 @@ import { useEffect } from "react";
 
 export function useRefreshTransactions(callback: () => unknown) {
   useEffect(() => {
-    const unlisten = listen("refresh-transactions", () => {
+    const unlisten = listen("txs-updated", () => {
       callback();
     });
 

@@ -3,7 +3,7 @@ import { useEffect } from "react";
 
 export function useRefreshNetwork(callback: () => unknown) {
   useEffect(() => {
-    const unlisten = listen("refresh-network", () => {
+    const unlisten = listen("network-changed", () => {
       callback();
     });
 

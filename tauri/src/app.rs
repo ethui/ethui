@@ -17,17 +17,17 @@ pub struct IronApp {
 
 #[derive(Debug, Serialize)]
 pub enum IronEvent {
-    RefreshNetwork,
-    RefreshTransactions,
-    RefreshConnections,
+    NetworkChanged,
+    TxsUpdated,
+    ConnectionsUpdated,
 }
 
 impl IronEvent {
     fn label(&self) -> &str {
         match self {
-            Self::RefreshNetwork => "refresh-network",
-            Self::RefreshTransactions => "refresh-transactions",
-            Self::RefreshConnections => "refresh-connections",
+            Self::NetworkChanged => "network-changed",
+            Self::TxsUpdated => "txs-updated",
+            Self::ConnectionsUpdated => "connections-updated",
         }
     }
 }
