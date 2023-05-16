@@ -3,7 +3,8 @@ import {
   List,
   ListItem,
   ListItemAvatar,
-  ListItemText,
+  Stack,
+  Typography,
 } from "@mui/material";
 import { green, red } from "@mui/material/colors";
 import { formatEther } from "ethers/lib/utils";
@@ -15,6 +16,7 @@ import truncateEthAddress from "truncate-eth-address";
 import { useAccount, useProvider } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
 import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
+import { CopyToClipboard } from "./CopyToClipboard";
 import Panel from "./Panel";
 
 export function Txs() {
@@ -62,24 +64,36 @@ function Receipt({ hash }: { hash: string }) {
             width: 10,
             height: 10,
             borderRadius: "100%",
-            mt: 1,
             background: receipt.status === 1 ? green[500] : red[500],
           }}
         ></Box>
       </ListItemAvatar>
-      <ListItemText
-        primary={hash}
-        secondary={
-          <>
-            <Box>From: {truncateEthAddress(receipt.from)}</Box>
-            <Box>
-              To:{" "}
-              {receipt.to ? truncateEthAddress(receipt.to) : "Contract Deploy"}
-            </Box>
-            <Box>Amount: {formatEther(tx.value)} Ξ</Box>
-          </>
-        }
-      />
+      <Stack mb={1}>
+        <CopyToClipboard>
+          <Typography>{hash}</Typography>
+        </CopyToClipboard>
+        <Box sx={{ fontSize: 12 }}>
+          <Box>
+            From:{" "}
+            <CopyToClipboard label={receipt.from}>
+              {truncateEthAddress(receipt.from)}
+            </CopyToClipboard>
+          </Box>
+          <Box>
+            To:{" "}
+            {receipt.to ? (
+              <CopyToClipboard label={receipt.to}>
+                {truncateEthAddress(receipt.to)}
+              </CopyToClipboard>
+            ) : (
+              "Contract Deploy"
+            )}
+          </Box>
+          <Box>
+            Amount: <CopyToClipboard>{formatEther(tx.value)}</CopyToClipboard> Ξ
+          </Box>
+        </Box>
+      </Stack>
     </ListItem>
   );
 }

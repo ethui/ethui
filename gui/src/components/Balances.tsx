@@ -9,6 +9,7 @@ import { useAccount } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
 import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
 import { Address } from "../types";
+import { CopyToClipboard } from "./CopyToClipboard";
 import Panel from "./Panel";
 
 export function Balances() {
@@ -45,7 +46,7 @@ function BalanceETH({ address }: { address: Address }) {
 
   return (
     <Typography>
-      {balance.formatted} {balance.symbol}
+      <CopyToClipboard>{balance.formatted}</CopyToClipboard> {balance.symbol}
     </Typography>
   );
 }
@@ -73,7 +74,7 @@ function BalanceERC20({
 
   return (
     <Typography>
-      {name} {formatUnits(balance, decimals)}
+      {name} <CopyToClipboard>{formatUnits(balance, decimals)}</CopyToClipboard>
     </Typography>
   );
 }
