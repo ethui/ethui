@@ -1,5 +1,7 @@
+use std::collections::hash_map::DefaultHasher;
 use std::collections::HashMap;
 use std::fs::File;
+use std::hash::{Hash, Hasher};
 use std::io::BufReader;
 use std::net::SocketAddr;
 use std::path::Path;
@@ -9,7 +11,7 @@ use ethers_core::k256::ecdsa::SigningKey;
 use log::warn;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use tokio::sync::mpsc;
+use tokio::sync::{mpsc, oneshot};
 
 pub use super::network::Network;
 pub use super::wallet::Wallet;
@@ -35,6 +37,12 @@ pub struct ContextInner {
 
     #[serde(skip)]
     window_snd: Option<mpsc::UnboundedSender<IronEvent>>,
+
+    #[serde(skip)]
+    /// Items pending response from the UI
+    /// e.g.: transactions waiting for user review
+    /// messages waiting for signing approval
+    pub oneshots: HashMap<u64, oneshot::Sender<serde_json::Value>>,
 }
 
 impl Default for ContextInner {
@@ -50,6 +58,7 @@ impl Default for ContextInner {
             wallet: Default::default(),
             peers: Default::default(),
             db: Default::default(),
+            oneshots: Default::default(),
             window_snd: None,
         }
     }
@@ -207,11 +216,25 @@ impl ContextInner {
         self.wallet.signer.clone()
     }
 
-    pub fn review_tx(&self, params: jsonrpc_core::Params) {
+    // spawns a transaction review dialog
+    // returns a oneshot::Receiver who will be notified when a result is received
+    pub async fn spawn_review_tx_dialog(
+        &mut self,
+        params: serde_json::Value,
+    ) -> oneshot::Receiver<serde_json::Value> {
+        let mut s = DefaultHasher::new();
+        params.to_string().hash(&mut s);
+        let rnd: u64 = s.finish();
+
         self.window_snd
             .as_ref()
             .unwrap()
-            .send(IronEvent::TxReview(params))
+            .send(IronEvent::TxReview(rnd, params))
             .unwrap();
+
+        let (snd, rcv) = oneshot::channel();
+        self.oneshots.insert(rnd, snd);
+
+        rcv
     }
 }

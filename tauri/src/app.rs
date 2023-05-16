@@ -16,13 +16,13 @@ pub struct IronApp {
     app: Option<tauri::App>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Clone)]
 pub enum IronEvent {
     Window(IronWindowEvent),
-    TxReview(jsonrpc_core::Params),
+    TxReview(u64, serde_json::Value),
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Clone)]
 pub enum IronWindowEvent {
     NetworkChanged,
     TxsUpdated,
@@ -198,17 +198,19 @@ async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<Iron
             }
 
             // dialog events
-            TxReview(data) => {
-                dbg!("here");
-                dbg!(data);
-                let window = tauri::WindowBuilder::new(
-                    &handle,
-                    "dialog",
-                    tauri::WindowUrl::App("dialog.html".into()),
-                )
-                .inner_size(500f64, 600f64)
-                .build()
-                .unwrap();
+            TxReview(id, data) => {
+                let url = format!(
+                    "dialog.html?type={}&id={}&payload={}",
+                    "tx-review",
+                    id,
+                    urlencoding::encode(&data.to_string())
+                );
+
+                let window =
+                    tauri::WindowBuilder::new(&handle, "dialog", tauri::WindowUrl::App(url.into()))
+                        .inner_size(500f64, 600f64)
+                        .build()
+                        .unwrap();
             }
         }
     }

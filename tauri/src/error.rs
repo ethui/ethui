@@ -1,3 +1,9 @@
+use ethers::{
+    prelude::{signer::SignerMiddlewareError, *},
+    signers,
+};
+use ethers_core::k256::ecdsa::SigningKey;
+
 use crate::app::IronEvent;
 
 #[derive(thiserror::Error, Debug)]
@@ -15,6 +21,9 @@ pub enum Error {
     Watcher,
     MnemonicError(#[from] ethers::signers::coins_bip39::MnemonicError),
     WalletError(#[from] ethers::signers::WalletError),
+    SignerMiddlewareError(
+        #[from] SignerMiddlewareError<Provider<Http>, signers::Wallet<SigningKey>>,
+    ),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -37,6 +46,7 @@ impl std::fmt::Display for Error {
             WindowSend(e) => write!(f, "WindowSendError: {}", e),
             MnemonicError(e) => write!(f, "MnemonicError: {}", e),
             WalletError(e) => write!(f, "WalletError: {}", e),
+            SignerMiddlewareError(e) => write!(f, "SignerMiddlewareError: {}", e),
         }
     }
 }

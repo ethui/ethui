@@ -16,7 +16,6 @@ pub use crate::error::Result;
 
 #[derive(Clone)]
 pub struct Context(Arc<Mutex<ContextInner>>);
-pub type UnlockedContext<'a> = MutexGuard<'a, ContextInner>;
 
 impl Context {
     /// Reads settings from $APPDIR/settings.json
