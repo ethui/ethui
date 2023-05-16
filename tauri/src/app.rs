@@ -3,9 +3,11 @@ use std::path::PathBuf;
 use once_cell::sync::OnceCell;
 use serde::Serialize;
 use tauri::{
-    AppHandle, Builder, CustomMenuItem, GlobalWindowEvent, Manager, Menu, MenuItem, Submenu,
-    SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem, WindowEvent, WindowMenuEvent,
+    AppHandle, Builder, CustomMenuItem, GlobalWindowEvent, Manager, SystemTray, SystemTrayEvent,
+    SystemTrayMenu, SystemTrayMenuItem, WindowEvent,
 };
+#[cfg(not(target_os = "linux"))]
+use tauri::{Menu, MenuItem, Submenu};
 use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, StateFlags};
 use tokio::sync::mpsc;
 
@@ -41,7 +43,6 @@ impl IronApp {
         let (snd, rcv) = mpsc::unbounded_channel();
 
         let tray = Self::build_tray();
-        let menu = Self::build_menu();
 
         let mut builder = Builder::default()
             .plugin(windowStatePlugin::default().build())
@@ -86,6 +87,7 @@ impl IronApp {
 
         #[cfg(not(target_os = "linux"))]
         {
+            menu = Self::build_menu();
             builder = builder.menu(menu).on_menu_event(on_menu_event)
         }
 
@@ -116,6 +118,7 @@ impl IronApp {
         });
     }
 
+    #[cfg(not(target_os = "linux"))]
     fn build_menu() -> Menu {
         let details = CustomMenuItem::new("details".to_string(), "Details");
         let transactions = CustomMenuItem::new("transactions".to_string(), "Transactions");
@@ -165,6 +168,7 @@ impl IronApp {
     }
 }
 
+#[cfg(not(target_os = "linux"))]
 fn on_menu_event(event: WindowMenuEvent) {
     match event.menu_item_id() {
         "quit" => {
@@ -180,7 +184,12 @@ fn on_menu_event(event: WindowMenuEvent) {
 }
 
 fn on_window_event(event: GlobalWindowEvent) {
-    if let WindowEvent::CloseRequested { api, .. } = event.event() {
+    if let WindowEvent::CloseRequested {
+        #[cfg(not(target_os = "linux"))]
+        api,
+        ..
+    } = event.event()
+    {
         let window = event.window();
         let app = window.app_handle();
         let _ = app.save_window_state(StateFlags::all());
