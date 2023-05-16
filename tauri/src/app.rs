@@ -75,7 +75,6 @@ impl IronApp {
 
                 Ok(())
             })
-            .menu(menu)
             .on_window_event(on_window_event);
 
         #[cfg(not(target_os = "macos"))]
@@ -85,8 +84,12 @@ impl IronApp {
                 .on_system_tray_event(on_system_tray_event);
         }
 
+        #[cfg(not(target_os = "linux"))]
+        {
+            builder = builder.menu(menu).on_menu_event(on_menu_event)
+        }
+
         let app = builder
-            .on_menu_event(on_menu_event)
             .build(tauri::generate_context!())
             .expect("error while running tauri application");
 
@@ -114,18 +117,6 @@ impl IronApp {
     }
 
     fn build_menu() -> Menu {
-        let quit = CustomMenuItem::new("quit".to_string(), "Quit");
-        let close = CustomMenuItem::new("close".to_string(), "Close");
-        let file_submenu = Submenu::new("File", Menu::new().add_item(quit).add_item(close));
-
-        let edit_submenu = Submenu::new(
-            "Edit",
-            Menu::new()
-                .add_native_item(MenuItem::Cut)
-                .add_native_item(MenuItem::Copy)
-                .add_native_item(MenuItem::Paste),
-        );
-
         let details = CustomMenuItem::new("details".to_string(), "Details");
         let transactions = CustomMenuItem::new("transactions".to_string(), "Transactions");
         let balances = CustomMenuItem::new("balances".to_string(), "Balances");
@@ -141,12 +132,7 @@ impl IronApp {
                 .add_item(connections),
         );
 
-        Menu::os_default("Iron")
-            // .add_native_item(MenuItem::Copy)
-            // .add_item(CustomMenuItem::new("hide", "Hide"))
-            // .add_submenu(file_submenu)
-            // .add_submenu(edit_submenu)
-            .add_submenu(go_submenu)
+        Menu::os_default("Iron").add_submenu(go_submenu)
     }
 
     fn build_tray() -> tauri::SystemTray {
