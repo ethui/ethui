@@ -41,7 +41,7 @@ impl IronApp {
         let (snd, rcv) = mpsc::unbounded_channel();
 
         let tray = Self::build_tray();
-        let app = Builder::default()
+        let builder = Builder::default()
             .plugin(windowStatePlugin::default().build())
             .invoke_handler(tauri::generate_handler![
                 commands::get_networks,
@@ -73,9 +73,14 @@ impl IronApp {
 
                 Ok(())
             })
-            .on_window_event(on_window_event)
+            .on_window_event(on_window_event);
+
+        #[cfg(not(target_os = "macos"))]
+        builder
             .system_tray(tray)
-            .on_system_tray_event(on_system_tray_event)
+            .on_system_tray_event(on_system_tray_event);
+
+        let app = builder
             .build(tauri::generate_context!())
             .expect("error while running tauri application");
 
@@ -134,17 +139,14 @@ impl IronApp {
 
 fn on_window_event(event: GlobalWindowEvent) {
     if let WindowEvent::CloseRequested { api, .. } = event.event() {
-        let window = event.window();
-        let app = window.app_handle();
-        let _ = app.save_window_state(StateFlags::all());
-
         #[cfg(target_os = "macos")]
-        app.hide().unwrap();
-
-        #[cfg(not(target_os = "macos"))]
-        window.close().unwrap();
-
-        api.prevent_close();
+        {
+            let window = event.window();
+            let app = window.app_handle();
+            let _ = app.save_window_state(StateFlags::all());
+            app.hide().unwrap();
+            api.prevent_close();
+        }
     }
 }
 
@@ -158,9 +160,7 @@ fn on_system_tray_event(app: &AppHandle, event: SystemTrayEvent) {
             "show" => show_main_window(app),
             _ => {}
         },
-
         DoubleClick { .. } => show_main_window(app),
-
         _ => {}
     }
 }
