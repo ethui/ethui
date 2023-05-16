@@ -45,7 +45,7 @@ fn ethers_to_jsonrpc_error(e: ProviderError) -> jsonrpc_core::Error {
                     data: e.data.clone(),
                     message: e.message.clone(),
                 }
-            } else if let Some(e) = e.as_serde_error() {
+            } else if e.as_serde_error().is_some() {
                 jsonrpc_core::Error::invalid_request()
             } else {
                 jsonrpc_core::Error::internal_error()
