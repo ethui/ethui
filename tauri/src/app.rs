@@ -141,11 +141,12 @@ impl IronApp {
 
 fn on_window_event(event: GlobalWindowEvent) {
     if let WindowEvent::CloseRequested { api, .. } = event.event() {
+        let window = event.window();
+        let app = window.app_handle();
+        let _ = app.save_window_state(StateFlags::all());
+
         #[cfg(target_os = "macos")]
         {
-            let window = event.window();
-            let app = window.app_handle();
-            let _ = app.save_window_state(StateFlags::all());
             app.hide().unwrap();
             api.prevent_close();
         }
