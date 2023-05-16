@@ -6,14 +6,15 @@ import { Balances } from "./Balances";
 import { Connections } from "./Connections";
 import { Contracts } from "./Contracts";
 import { Details } from "./Details";
+import { LivenetPlaceholder } from "./LivenetPlaceholder";
 import { TabPanel } from "./TabPanel";
 import { Txs } from "./Txs";
 
 const tabs = [
   { name: "Details", component: Details },
-  { name: "Transactions", component: Txs },
-  { name: "Balances", component: Balances },
-  { name: "Contracts", component: Contracts },
+  { name: "Transactions", component: Txs, devOnly: true },
+  { name: "Balances", component: Balances, devOnly: true },
+  { name: "Contracts", component: Contracts, devOnly: true },
   { name: "Connections", component: Connections },
 ];
 
@@ -35,7 +36,9 @@ export function HomePage() {
         </Tabs>
         {tabs.map((tab, index) => (
           <TabPanel index={index} key={tab.name} value={currentTab}>
-            <tab.component />
+            <LivenetPlaceholder devOnly={tab.devOnly}>
+              <tab.component />
+            </LivenetPlaceholder>
           </TabPanel>
         ))}
       </Paper>
