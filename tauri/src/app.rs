@@ -9,7 +9,7 @@ use tauri::{
 use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, StateFlags};
 use tokio::sync::mpsc;
 
-use crate::{commands, context::Context};
+use crate::{commands, context::Context, dialogs};
 
 pub struct IronApp {
     pub sender: mpsc::UnboundedSender<IronEvent>,
@@ -19,7 +19,8 @@ pub struct IronApp {
 #[derive(Debug, Serialize, Clone)]
 pub enum IronEvent {
     Window(IronWindowEvent),
-    TxReview(u64, serde_json::Value),
+
+    OpenDialog(u64, String, serde_json::Value),
 }
 
 #[derive(Debug, Serialize, Clone)]
@@ -63,6 +64,7 @@ impl IronApp {
                 commands::get_connections,
                 commands::derive_addresses,
                 commands::derive_addresses_with_mnemonic,
+                dialogs::dialog_finish,
             ])
             .setup(|app| {
                 let handle = app.handle();
@@ -94,11 +96,12 @@ impl IronApp {
 
         let res = Self {
             app: Some(app),
-            sender: snd,
+            sender: snd.clone(),
         };
 
         DB_PATH.set(res.get_db_path()).unwrap();
         SETTINGS_PATH.set(res.get_settings_file()).unwrap();
+        dialogs::init(snd.clone());
 
         res
     }
@@ -197,20 +200,8 @@ async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<Iron
                 }
             }
 
-            // dialog events
-            TxReview(id, data) => {
-                let url = format!(
-                    "dialog.html?type={}&id={}&payload={}",
-                    "tx-review",
-                    id,
-                    urlencoding::encode(&data.to_string())
-                );
-
-                let window =
-                    tauri::WindowBuilder::new(&handle, "dialog", tauri::WindowUrl::App(url.into()))
-                        .inner_size(500f64, 600f64)
-                        .build()
-                        .unwrap();
+            OpenDialog(id, dialog_type, data) => {
+                dialogs::open_with_handle(&handle, dialog_type, id, data).unwrap();
             }
         }
     }

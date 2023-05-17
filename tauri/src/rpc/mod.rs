@@ -145,16 +145,12 @@ impl Handler {
     }
 
     async fn send_transaction(params: Params, ctx: Context) -> Result<serde_json::Value> {
-        let rcv = {
-            let mut ctx = ctx.lock().await;
-            // TODO: why is this an array?
-            let mut params: serde_json::Value = params.clone().into();
-            params = params.as_array().unwrap()[0].clone(); //.as_array().unwrap()[0];
-            ctx.spawn_review_tx_dialog(params).await
-        };
-
-        // TODO: in the future, send json values here to override params
-        let _ = rcv.await.unwrap();
+        #[cfg(feature = "dialogs")]
+        {
+            let rcv = crate::dialogs::open("tx-review", params.clone().into()).unwrap();
+            // TODO: in the future, send json values here to override params
+            let _ = rcv.await.unwrap();
+        }
 
         let mut sender = SendTransaction::build(params.into());
 

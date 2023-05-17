@@ -24,6 +24,7 @@ pub enum Error {
     SignerMiddlewareError(
         #[from] SignerMiddlewareError<Provider<Http>, signers::Wallet<SigningKey>>,
     ),
+    TauriError(#[from] tauri::Error),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -47,6 +48,7 @@ impl std::fmt::Display for Error {
             MnemonicError(e) => write!(f, "MnemonicError: {}", e),
             WalletError(e) => write!(f, "WalletError: {}", e),
             SignerMiddlewareError(e) => write!(f, "SignerMiddlewareError: {}", e),
+            TauriError(e) => write!(f, "TauriError: {}", e),
         }
     }
 }

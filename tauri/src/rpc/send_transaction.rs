@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use ethers::{
     prelude::*,
-    signers::{Signer, Wallet},
+    signers::Wallet,
     types::{serde_helpers::StringifiedNumeric, transaction::eip2718::TypedTransaction},
 };
 use ethers_core::k256::ecdsa::SigningKey;
@@ -23,7 +23,7 @@ impl SendTransaction {
 
         request
             .set_from(Address::from_str(params["get"].as_str().unwrap()).unwrap())
-            .set_to(Address::from_str(&params["to"].as_str().unwrap()).unwrap());
+            .set_to(Address::from_str(params["to"].as_str().unwrap()).unwrap());
 
         if let Some(value) = params["value"].as_str() {
             let v = StringifiedNumeric::String(value.to_string());

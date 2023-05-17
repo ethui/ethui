@@ -5,7 +5,7 @@ mod wallet;
 
 use std::sync::Arc;
 
-use futures_util::lock::{Mutex, MutexGuard, MutexLockFuture};
+use futures_util::lock::{Mutex, MutexLockFuture};
 use tokio::sync::mpsc;
 
 pub use self::inner::ContextInner;

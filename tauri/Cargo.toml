@@ -44,3 +44,4 @@ default = []
 # DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
 debug = ["tauri/devtools"]
+dialogs = []
