@@ -21,7 +21,9 @@ import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { useInvoke } from "../hooks/tauri";
 import { Network, networkSchema } from "../types";
 
-const emptyNetwork: Network = {
+type NewChild = { new?: boolean };
+
+const emptyNetwork: Network & NewChild = {
   name: "",
   dev: false,
   http_url: "",
@@ -31,10 +33,12 @@ const emptyNetwork: Network = {
   chain_id: undefined!,
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   decimals: undefined!,
+  new: true,
 };
 
 export function SettingsNetwork() {
-  const { data: networks, mutate } = useInvoke<Network[]>("get_networks");
+  const { data: networks, mutate } =
+    useInvoke<(Network & NewChild)[]>("get_networks");
 
   const {
     register,
@@ -71,9 +75,12 @@ export function SettingsNetwork() {
       {fields.map((field, index) => {
         //        const item = networks[index];
         const err = (errors.networks && errors.networks[index]) || {};
+        console.log(field);
         return (
-          <Accordion key={field.id}>
-            <AccordionSummary expandIcon={<ExpandMore />}>foo</AccordionSummary>
+          <Accordion key={field.id} defaultExpanded={field.new}>
+            <AccordionSummary expandIcon={<ExpandMore />}>
+              {field.name} - {field.chain_id}
+            </AccordionSummary>
             <AccordionDetails>
               <Stack spacing={2} alignItems="flex-start">
                 <Stack spacing={2} direction="row">
