@@ -4,10 +4,12 @@ import { useState } from "react";
 
 import { SettingsNetwork } from "./SettingsNetwork";
 import { SettingsWallet } from "./SettingsWallet";
+import { SettingsWallets } from "./SettingsWallets";
 import { TabPanel } from "./TabPanel";
 
 const tabs = [
-  { name: "Wallet", component: SettingsWallet },
+  { name: "Wallet old", component: SettingsWallet },
+  { name: "Wallet", component: SettingsWallets },
   { name: "Network", component: SettingsNetwork },
 ];
 

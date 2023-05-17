@@ -9,6 +9,7 @@ mod db;
 mod error;
 mod rpc;
 mod store;
+mod wallets;
 mod ws;
 
 use context::Context;

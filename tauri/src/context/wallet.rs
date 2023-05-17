@@ -10,9 +10,10 @@ use crate::error::Result;
 #[derive(Debug, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Wallet {
+    pub name: String,
     mnemonic: String,
     derivation_path: String,
-    idx: u32,
+    pub idx: u32,
     #[serde(skip)]
     pub signer: ethers::signers::Wallet<SigningKey>,
 }
@@ -31,6 +32,8 @@ impl Default for Wallet {
             .expect("");
 
         Self {
+            // TODO: wallet name
+            name: "test".into(),
             mnemonic,
             derivation_path,
             idx,
@@ -145,6 +148,8 @@ impl<'de> Deserialize<'de> for Wallet {
                     .map_err(|_| de::Error::custom("could not build signer"))?;
 
                 Ok(Wallet {
+                    // TODO: wallet name
+                    name: "test".into(),
                     mnemonic,
                     derivation_path,
                     idx,
