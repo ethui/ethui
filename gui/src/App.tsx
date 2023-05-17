@@ -6,6 +6,7 @@ import { Route, Router } from "wouter";
 
 import { HomePage } from "./components/HomePage";
 import { Navbar } from "./components/Navbar";
+import { NestedRoutes } from "./components/NestedRoutes";
 import { WagmiWrapper } from "./components/WagmiWrapper";
 import { useHashLocation } from "./hooks/hashLocation";
 import { useTheme } from "./hooks/useTheme";
@@ -22,9 +23,11 @@ export default function App() {
       <CssBaseline>
         <QueryClientProvider client={queryClient}>
           <WagmiWrapper>
-            <Router hook={useHashLocation}>
+            <Router>
               <Navbar />
-              <Route path="/" component={HomePage} />
+              <NestedRoutes base="/">
+                <HomePage />
+              </NestedRoutes>
             </Router>
           </WagmiWrapper>
         </QueryClientProvider>

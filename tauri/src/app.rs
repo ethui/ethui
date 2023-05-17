@@ -6,6 +6,8 @@ use tauri::{
     AppHandle, Builder, CustomMenuItem, GlobalWindowEvent, Manager, SystemTray, SystemTrayEvent,
     SystemTrayMenu, SystemTrayMenuItem, WindowEvent,
 };
+#[cfg(not(target_os = "linux"))]
+use tauri::{Menu, MenuItem, Submenu};
 use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, StateFlags};
 use tokio::sync::mpsc;
 
@@ -48,6 +50,7 @@ impl IronApp {
         let (snd, rcv) = mpsc::unbounded_channel();
 
         let tray = Self::build_tray();
+
         let mut builder = Builder::default()
             .plugin(windowStatePlugin::default().build())
             .invoke_handler(tauri::generate_handler![
@@ -90,6 +93,12 @@ impl IronApp {
                 .on_system_tray_event(on_system_tray_event);
         }
 
+        #[cfg(not(target_os = "linux"))]
+        {
+            menu = Self::build_menu();
+            builder = builder.menu(menu).on_menu_event(on_menu_event)
+        }
+
         let app = builder
             .build(tauri::generate_context!())
             .expect("error while running tauri application");
@@ -116,6 +125,26 @@ impl IronApp {
                 api.prevent_exit();
             }
         });
+    }
+
+    #[cfg(not(target_os = "linux"))]
+    fn build_menu() -> Menu {
+        let details = CustomMenuItem::new("details".to_string(), "Details");
+        let transactions = CustomMenuItem::new("transactions".to_string(), "Transactions");
+        let balances = CustomMenuItem::new("balances".to_string(), "Balances");
+        let contracts = CustomMenuItem::new("contracts".to_string(), "Contracts");
+        let connections = CustomMenuItem::new("connections".to_string(), "Connections");
+        let go_submenu = Submenu::new(
+            "Go",
+            Menu::new()
+                .add_item(details)
+                .add_item(transactions)
+                .add_item(balances)
+                .add_item(contracts)
+                .add_item(connections),
+        );
+
+        Menu::os_default("Iron").add_submenu(go_submenu)
     }
 
     fn build_tray() -> tauri::SystemTray {
@@ -148,8 +177,28 @@ impl IronApp {
     }
 }
 
+#[cfg(not(target_os = "linux"))]
+fn on_menu_event(event: WindowMenuEvent) {
+    match event.menu_item_id() {
+        "quit" => {
+            std::process::exit(0);
+        }
+        "close" => {
+            event.window().close().unwrap();
+        }
+        path => {
+            event.window().emit("go", path).unwrap();
+        }
+    }
+}
+
 fn on_window_event(event: GlobalWindowEvent) {
-    if let WindowEvent::CloseRequested { api, .. } = event.event() {
+    if let WindowEvent::CloseRequested {
+        #[cfg(not(target_os = "linux"))]
+        api,
+        ..
+    } = event.event()
+    {
         let window = event.window();
         let app = window.app_handle();
         let _ = app.save_window_state(StateFlags::all());
