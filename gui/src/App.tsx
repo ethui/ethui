@@ -6,7 +6,7 @@ import {
 } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 import { grey } from "@mui/material/colors";
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Route, Router, Switch, useLocation } from "wouter";
 
@@ -52,7 +52,9 @@ export default function App() {
             <Router>
               <Switch>
                 <Route path="/dialog/tx-review/:id">
-                  {({ id }) => <TxReviewDialog id={parseInt(id!)} />}
+                  {({ id }: { id: string }) => (
+                    <TxReviewDialog id={parseInt(id)} />
+                  )}
                 </Route>
 
                 <Route>
