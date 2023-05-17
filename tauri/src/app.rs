@@ -20,7 +20,7 @@ pub struct IronApp {
 pub enum IronEvent {
     Window(IronWindowEvent),
 
-    OpenDialog(u64, String, serde_json::Value),
+    OpenDialog(u32, String, serde_json::Value),
 }
 
 #[derive(Debug, Serialize, Clone)]

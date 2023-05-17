@@ -79,7 +79,7 @@ impl Handler {
                             .request::<_, serde_json::Value>($name, params)
                             .await
                             .map_err(ethers_to_jsonrpc_error);
-                        dbg!(res)
+                        res
                     });
             };
         }
@@ -147,9 +147,26 @@ impl Handler {
     async fn send_transaction(params: Params, ctx: Context) -> Result<serde_json::Value> {
         #[cfg(feature = "dialogs")]
         {
-            let rcv = crate::dialogs::open("tx-review", params.clone().into()).unwrap();
-            // TODO: in the future, send json values here to override params
-            let _ = rcv.await.unwrap();
+            // TODO: why is this an array?
+            let params: serde_json::Value = params.clone().into();
+            let params = params.as_array().unwrap()[0].clone();
+
+            let rcv = crate::dialogs::open("tx-review", params).unwrap();
+            match rcv.await {
+                // 1st case is if the channel closes. 2nd case is if "Reject" is hit
+                Err(_) | Ok(Err(_)) => {
+                    // TODO: what's the appropriate error to return here?
+                    // or should we return Ok(_)? Err(_) seems to close the ws connection
+                    return Err(jsonrpc_core::Error {
+                        code: ErrorCode::ServerError(0),
+                        data: None,
+                        message: "transaction rejected".into(),
+                    });
+                }
+                Ok(Ok(_response)) => {
+                    // TODO: in the future, send json values here to override params
+                }
+            }
         }
 
         let mut sender = SendTransaction::build(params.into());

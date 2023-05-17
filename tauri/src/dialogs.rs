@@ -17,7 +17,7 @@ struct PendingDialog {
     oneshot_snd: oneshot::Sender<DialogResult>,
 }
 
-type PendingDialogMap = HashMap<u64, PendingDialog>;
+type PendingDialogMap = HashMap<u32, PendingDialog>;
 
 static DIALOGS: Lazy<Mutex<PendingDialogMap>> = Lazy::new(Default::default);
 
@@ -36,11 +36,12 @@ pub fn init(app_snd: mpsc::UnboundedSender<IronEvent>) {
 /// And emits an OpenDialog event, asking the window to do so
 ///
 /// The event loop will eventually call back into `open_with_handle` to continue the process
+#[allow(unused)]
 pub fn open(dialog_type: &str, payload: Json) -> crate::Result<DialogReceiver> {
     // TODO: make this random as well, or just increment a counter. what if we open the same payload twice?
     let mut s = DefaultHasher::new();
     payload.to_string().hash(&mut s);
-    let id: u64 = s.finish();
+    let id: u32 = s.finish() as u32;
 
     let (snd, rcv) = oneshot::channel();
 
@@ -67,7 +68,7 @@ pub fn open(dialog_type: &str, payload: Json) -> crate::Result<DialogReceiver> {
 pub fn open_with_handle(
     app: &AppHandle,
     dialog_type: String,
-    id: u64,
+    id: u32,
     payload: Json,
 ) -> crate::Result<()> {
     let url = format!(
@@ -91,7 +92,8 @@ pub fn open_with_handle(
 /// Since feature-gating doesn't play well inside the `generate_handler!` macro where this is
 /// called, we need to feature-gate inside the body
 #[tauri::command]
-pub fn dialog_finish(id: u64, dialog: tauri::Window, result: DialogResult) -> Result<(), String> {
+pub fn dialog_finish(dialog: tauri::Window, id: u32, result: DialogResult) -> Result<(), String> {
+    dbg!(&result);
     dialog.close().map_err(|e| e.to_string())?;
 
     let pending = DIALOGS.lock().unwrap().remove(&id).unwrap();

@@ -25,6 +25,7 @@ pub enum Error {
         #[from] SignerMiddlewareError<Provider<Http>, signers::Wallet<SigningKey>>,
     ),
     TauriError(#[from] tauri::Error),
+    RecvError(#[from] tokio::sync::mpsc::error::RecvError),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -49,6 +50,7 @@ impl std::fmt::Display for Error {
             WalletError(e) => write!(f, "WalletError: {}", e),
             SignerMiddlewareError(e) => write!(f, "SignerMiddlewareError: {}", e),
             TauriError(e) => write!(f, "TauriError: {}", e),
+            RecvError(e) => write!(f, "RecvError: {}", e),
         }
     }
 }
