@@ -41,8 +41,6 @@ export default function App() {
     () => createTheme(getDesignTokens(prefersDarkMode ? "dark" : "light")),
     [prefersDarkMode]
   );
-  const loc = useLocation();
-  console.log(loc);
 
   return (
     <ThemeProvider theme={theme}>
