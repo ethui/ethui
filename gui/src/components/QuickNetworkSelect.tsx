@@ -24,7 +24,7 @@ export function QuickNetworkSelect() {
   if (!networks || !current) return <>Loading</>;
 
   return (
-    <Select onChange={handleChange} value={current.name} label="">
+    <Select size="small" onChange={handleChange} value={current.name} label="">
       {networks.map((network) => (
         <MenuItem value={network.name} key={network.name}>
           {network.name}
