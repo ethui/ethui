@@ -6,7 +6,7 @@ import {
 } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 import { grey } from "@mui/material/colors";
-import { useMemo } from "react";
+import React "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Route, Router, Switch, useLocation } from "wouter";
 
@@ -37,7 +37,7 @@ const getDesignTokens = (mode: PaletteMode) => ({
 export default function App() {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
-  const theme = useMemo(
+  const theme = React.useMemo(
     () => createTheme(getDesignTokens(prefersDarkMode ? "dark" : "light")),
     [prefersDarkMode]
   );
