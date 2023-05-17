@@ -1,6 +1,4 @@
-import { invoke } from "@tauri-apps/api/tauri";
-import { useCallback } from "react";
-
+import { useDialog } from "../hooks/useDialog";
 import Panel from "./Panel";
 
 export interface TxRequest {
@@ -9,21 +7,11 @@ export interface TxRequest {
   to: string;
   value: string;
 }
-type Props = {
-  id: number;
-  payload: TxRequest;
-};
 
-export function TxReviewDialog({ id, payload }: Props) {
-  console.log(payload);
+export function TxReviewDialog({ id }: { id: number }) {
+  const { payload, accept, reject } = useDialog<TxRequest>(id);
 
-  const accept = useCallback(() => {
-    invoke("dialog_finish", { id, result: { Ok: payload } });
-  }, [id, payload]);
-
-  const reject = useCallback(() => {
-    invoke("dialog_finish", { id, result: { Err: {} } });
-  }, [id]);
+  if (!payload) return null;
 
   return (
     <Panel>
@@ -31,9 +19,8 @@ export function TxReviewDialog({ id, payload }: Props) {
       <p>To: {payload.to}</p>
       <p>value: {payload.value}</p>
       <p>data: {payload.data}</p>
-
-      <button onClick={accept}>Accept</button>
-      <button onClick={reject}>Reject</button>
+      <button onClick={() => accept(payload)}>Accept</button>
+      <button onClick={() => reject(payload)}>Reject</button>
     </Panel>
   );
 }

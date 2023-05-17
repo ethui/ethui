@@ -14,6 +14,7 @@ pub type DialogReceiver = oneshot::Receiver<DialogResult>;
 
 #[derive(Debug)]
 struct PendingDialog {
+    payload: Json,
     oneshot_snd: oneshot::Sender<DialogResult>,
 }
 
@@ -48,12 +49,15 @@ pub fn open(dialog_type: &str, payload: Json) -> crate::Result<DialogReceiver> {
     APP_SND
         .get()
         .unwrap()
-        .send(IronEvent::OpenDialog(id, dialog_type.to_string(), payload))?;
+        .send(IronEvent::OpenDialog(id, dialog_type.to_string()))?;
 
-    DIALOGS
-        .lock()
-        .unwrap()
-        .insert(id, PendingDialog { oneshot_snd: snd });
+    DIALOGS.lock().unwrap().insert(
+        id,
+        PendingDialog {
+            payload,
+            oneshot_snd: snd,
+        },
+    );
 
     Ok(rcv)
 }
@@ -65,24 +69,24 @@ pub fn open(dialog_type: &str, payload: Json) -> crate::Result<DialogReceiver> {
 ///   channel
 ///   - payload: a JSON payload to display information. The schema depends on the type of dialog
 #[allow(unused)]
-pub fn open_with_handle(
-    app: &AppHandle,
-    dialog_type: String,
-    id: u32,
-    payload: Json,
-) -> crate::Result<()> {
-    let url = format!(
-        "dialog.html?type={}&id={}&payload={}",
-        dialog_type,
-        id,
-        urlencoding::encode(&payload.to_string())
-    );
+pub fn open_with_handle(app: &AppHandle, dialog_type: String, id: u32) -> crate::Result<()> {
+    let url = format!("/dialog/tx-review/{}", id);
 
     let window = WindowBuilder::new(app, "dialog", WindowUrl::App(url.into()))
         .inner_size(500f64, 600f64)
         .build()?;
 
     Ok(())
+}
+
+/// Retrieves the payload for a dialog window
+/// Dialogs can call this once ready to retrieve the data they're meant to display
+#[tauri::command]
+pub fn dialog_get_payload(id: u32) -> Result<Json, String> {
+    let dialogs = DIALOGS.lock().unwrap();
+    let pending = dialogs.get(&id).unwrap();
+
+    Ok(pending.payload.clone())
 }
 
 /// Receives the return value of a dialog, and closes it
@@ -93,7 +97,6 @@ pub fn open_with_handle(
 /// called, we need to feature-gate inside the body
 #[tauri::command]
 pub fn dialog_finish(dialog: tauri::Window, id: u32, result: DialogResult) -> Result<(), String> {
-    dbg!(&result);
     dialog.close().map_err(|e| e.to_string())?;
 
     let pending = DIALOGS.lock().unwrap().remove(&id).unwrap();

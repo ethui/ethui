@@ -22,7 +22,7 @@ pub struct IronApp {
 pub enum IronEvent {
     Window(IronWindowEvent),
 
-    OpenDialog(u32, String, serde_json::Value),
+    OpenDialog(u32, String),
 }
 
 #[derive(Debug, Serialize, Clone)]
@@ -67,6 +67,7 @@ impl IronApp {
                 commands::get_connections,
                 commands::derive_addresses,
                 commands::derive_addresses_with_mnemonic,
+                dialogs::dialog_get_payload,
                 dialogs::dialog_finish,
             ])
             .setup(|app| {
@@ -249,8 +250,8 @@ async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<Iron
                 }
             }
 
-            OpenDialog(id, dialog_type, data) => {
-                dialogs::open_with_handle(&handle, dialog_type, id, data).unwrap();
+            OpenDialog(id, dialog_type) => {
+                dialogs::open_with_handle(&handle, dialog_type, id).unwrap();
             }
         }
     }
