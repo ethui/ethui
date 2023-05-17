@@ -1,7 +1,6 @@
 import { Container, Paper, Tab, Tabs } from "@mui/material";
-import { appWindow } from "@tauri-apps/api/window";
 import { findIndex, parseInt, range, toString } from "lodash";
-import React, { useEffect } from "react";
+import React from "react";
 import { Link, Route, Switch, useLocation, useRoute } from "wouter";
 
 import { useKeyPress } from "../hooks/useKeyPress";
@@ -10,13 +9,14 @@ import { Balances } from "./Balances";
 import { Connections } from "./Connections";
 import { Contracts } from "./Contracts";
 import { Details } from "./Details";
+import { LivenetPlaceholder } from "./LivenetPlaceholder";
 import { Txs } from "./Txs";
 
 const tabs = [
   { path: "details", name: "Details", component: Details },
-  { path: "transactions", name: "Transactions", component: Txs },
-  { path: "balances", name: "Balances", component: Balances },
-  { path: "contracts", name: "Contracts", component: Contracts },
+  { path: "transactions", name: "Transactions", component: Txs, devOnly: true },
+  { path: "balances", name: "Balances", component: Balances, devOnly: true },
+  { path: "contracts", name: "Contracts", component: Contracts, devOnly: true },
   { path: "connections", name: "Connections", component: Connections },
 ];
 
@@ -59,11 +59,14 @@ export function HomePage() {
             />
           ))}
         </Tabs>
+
         <div role="tabpanel">
           <Switch>
             {tabs.map((tab) => (
               <Route key={tab.path || "/"} path={tab.path}>
-                <tab.component />
+                <LivenetPlaceholder devOnly={tab.devOnly}>
+                  <tab.component />
+                </LivenetPlaceholder>
               </Route>
             ))}
             <Route>
