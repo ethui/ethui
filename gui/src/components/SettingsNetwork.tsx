@@ -75,7 +75,6 @@ export function SettingsNetwork() {
       {fields.map((field, index) => {
         //        const item = networks[index];
         const err = (errors.networks && errors.networks[index]) || {};
-        console.log(field);
         return (
           <Accordion key={field.id} defaultExpanded={field.new}>
             <AccordionSummary expandIcon={<ExpandMore />}>
