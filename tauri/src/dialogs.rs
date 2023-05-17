@@ -6,7 +6,7 @@ use once_cell::sync::{Lazy, OnceCell};
 use tauri::{AppHandle, WindowBuilder, WindowUrl};
 use tokio::sync::{mpsc, oneshot};
 
-use crate::app::IronEvent;
+use crate::app;
 
 pub type Json = serde_json::Value;
 pub type DialogResult = std::result::Result<Json, Json>;
@@ -24,9 +24,9 @@ static DIALOGS: Lazy<Mutex<PendingDialogMap>> = Lazy::new(Default::default);
 
 /// a global sender used internally to go through the app's event loop, which is required for
 /// opening dialogs
-static APP_SND: OnceCell<mpsc::UnboundedSender<IronEvent>> = OnceCell::new();
+static APP_SND: OnceCell<mpsc::UnboundedSender<app::Event>> = OnceCell::new();
 
-pub fn init(app_snd: mpsc::UnboundedSender<IronEvent>) {
+pub fn init(app_snd: mpsc::UnboundedSender<app::Event>) {
     APP_SND.set(app_snd).unwrap();
 }
 
@@ -49,7 +49,7 @@ pub fn open(dialog_type: &str, payload: Json) -> crate::Result<DialogReceiver> {
     APP_SND
         .get()
         .unwrap()
-        .send(IronEvent::OpenDialog(id, dialog_type.to_string()))?;
+        .send(app::Event::OpenDialog(id, dialog_type.to_string()))?;
 
     DIALOGS.lock().unwrap().insert(
         id,

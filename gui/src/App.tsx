@@ -8,7 +8,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { grey } from "@mui/material/colors";
 import React from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { Route, Router, Switch, useLocation } from "wouter";
+import { Route, Router, Switch } from "wouter";
 
 import { HomePage } from "./components/HomePage";
 import { Navbar } from "./components/Navbar";
@@ -37,7 +37,7 @@ const getDesignTokens = (mode: PaletteMode) => ({
 export default function App() {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
-  const theme = useMemo(
+  const theme = React.useMemo(
     () => createTheme(getDesignTokens(prefersDarkMode ? "dark" : "light")),
     [prefersDarkMode]
   );

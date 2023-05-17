@@ -14,31 +14,39 @@ use tokio::sync::mpsc;
 use crate::{commands, context::Context, dialogs};
 
 pub struct IronApp {
-    pub sender: mpsc::UnboundedSender<IronEvent>,
+    pub sender: mpsc::UnboundedSender<Event>,
     app: Option<tauri::App>,
 }
 
 #[derive(Debug, Serialize, Clone)]
-pub enum IronEvent {
-    Window(IronWindowEvent),
+pub enum Event {
+    /// notify the frontend about a state change
+    Notify(Notify),
 
+    /// open a dialog
     OpenDialog(u32, String),
 }
 
 #[derive(Debug, Serialize, Clone)]
-pub enum IronWindowEvent {
+pub enum Notify {
     NetworkChanged,
     TxsUpdated,
     ConnectionsUpdated,
 }
 
-impl IronWindowEvent {
+impl Notify {
     fn label(&self) -> &str {
         match self {
             Self::NetworkChanged => "network-changed",
             Self::TxsUpdated => "txs-updated",
             Self::ConnectionsUpdated => "connections-updated",
         }
+    }
+}
+
+impl From<Notify> for Event {
+    fn from(value: Notify) -> Self {
+        Event::Notify(value)
     }
 }
 
@@ -237,12 +245,12 @@ fn show_main_window(app: &AppHandle) {
     }
 }
 
-async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<IronEvent>) {
+async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<Event>) {
     while let Some(msg) = rcv.recv().await {
-        use IronEvent::*;
+        use Event::*;
 
         match msg {
-            Window(msg) => {
+            Notify(msg) => {
                 // forward directly to main window
                 // if window is not open, just ignore them
                 if let Some(window) = handle.get_window("main") {

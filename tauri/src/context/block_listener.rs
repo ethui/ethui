@@ -13,7 +13,7 @@ use tokio::sync::mpsc;
 use url::Url;
 
 use crate::{
-    app::{IronEvent, IronWindowEvent},
+    app::{self, Notify},
     store::events::EventsStore,
 };
 use crate::{db::DB, error::Error, Result};
@@ -24,7 +24,7 @@ pub struct BlockListener {
     http_url: Url,
     ws_url: Url,
     quit_snd: Option<mpsc::Sender<()>>,
-    window_snd: mpsc::UnboundedSender<IronEvent>,
+    window_snd: mpsc::UnboundedSender<app::Event>,
     db: DB,
 }
 
@@ -42,7 +42,7 @@ impl BlockListener {
         http_url: Url,
         ws_url: Url,
         db: DB,
-        window_snd: mpsc::UnboundedSender<IronEvent>,
+        window_snd: mpsc::UnboundedSender<app::Event>,
     ) -> Self {
         Self {
             chain_id,
@@ -202,7 +202,7 @@ async fn watch(
 
 async fn process(
     mut block_rcv: mpsc::UnboundedReceiver<Msg>,
-    window_snd: mpsc::UnboundedSender<IronEvent>,
+    window_snd: mpsc::UnboundedSender<app::Event>,
     chain_id: u32,
     db: DB,
 ) -> Result<()> {
@@ -222,7 +222,7 @@ async fn process(
         // don't emit events until we're catching up
         // otherwise we spam too much during that phase
         if caught_up {
-            window_snd.send(IronEvent::Window(IronWindowEvent::TxsUpdated))?;
+            window_snd.send(Notify::TxsUpdated.into())?;
         }
     }
 

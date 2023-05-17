@@ -4,7 +4,7 @@ use ethers::{
 };
 use ethers_core::k256::ecdsa::SigningKey;
 
-use crate::app::IronEvent;
+use crate::app;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -17,7 +17,7 @@ pub enum Error {
     EthersProvider(#[from] ethers::providers::ProviderError),
     Eyre(#[from] color_eyre::eyre::Error),
     Url(#[from] url::ParseError),
-    WindowSend(#[from] tokio::sync::mpsc::error::SendError<IronEvent>),
+    WindowSend(#[from] tokio::sync::mpsc::error::SendError<app::Event>),
     Watcher,
     MnemonicError(#[from] ethers::signers::coins_bip39::MnemonicError),
     WalletError(#[from] ethers::signers::WalletError),

@@ -13,7 +13,7 @@ use tokio::sync::mpsc;
 
 pub use super::network::Network;
 pub use super::wallet::Wallet;
-use crate::app::{IronEvent, IronWindowEvent, SETTINGS_PATH};
+use crate::app::{self, Notify, SETTINGS_PATH};
 use crate::db::DB;
 use crate::error::Result;
 use crate::ws::Peer;
@@ -34,7 +34,7 @@ pub struct ContextInner {
     pub db: DB,
 
     #[serde(skip)]
-    window_snd: Option<mpsc::UnboundedSender<IronEvent>>,
+    window_snd: Option<mpsc::UnboundedSender<app::Event>>,
 }
 
 impl Default for ContextInner {
@@ -73,7 +73,7 @@ impl ContextInner {
         Ok(res)
     }
 
-    pub async fn init(&mut self, sender: mpsc::UnboundedSender<IronEvent>) -> Result<()> {
+    pub async fn init(&mut self, sender: mpsc::UnboundedSender<app::Event>) -> Result<()> {
         self.window_snd = Some(sender);
         self.db.connect().await?;
 
@@ -104,7 +104,7 @@ impl ContextInner {
         self.window_snd
             .as_ref()
             .unwrap()
-            .send(IronEvent::Window(IronWindowEvent::ConnectionsUpdated))
+            .send(Notify::ConnectionsUpdated.into())
             .unwrap();
     }
 
@@ -114,7 +114,7 @@ impl ContextInner {
         self.window_snd
             .as_ref()
             .unwrap()
-            .send(IronEvent::Window(IronWindowEvent::ConnectionsUpdated))
+            .send(Notify::ConnectionsUpdated.into())
             .unwrap();
     }
 
@@ -168,7 +168,7 @@ impl ContextInner {
             self.window_snd
                 .as_ref()
                 .unwrap()
-                .send(IronEvent::Window(IronWindowEvent::NetworkChanged))?
+                .send(app::Notify::NetworkChanged.into())?
         }
 
         self.save()?;
