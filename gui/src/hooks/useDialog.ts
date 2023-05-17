@@ -4,7 +4,7 @@ import { useCallback } from "react";
 import { useInvoke } from "./tauri";
 
 export function useDialog<T>(id: number) {
-  const { data: payload } = useInvoke<T>("dialog_get_payload", { id });
+  const { data } = useInvoke<T>("dialog_get_payload", { id });
 
   const accept = useCallback(
     (payload: unknown) =>
@@ -18,5 +18,5 @@ export function useDialog<T>(id: number) {
     [id]
   );
 
-  return { payload, accept, reject };
+  return { data, accept, reject };
 }

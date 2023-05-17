@@ -9,18 +9,20 @@ export interface TxRequest {
 }
 
 export function TxReviewDialog({ id }: { id: number }) {
-  const { payload, accept, reject } = useDialog<TxRequest>(id);
+  const { data, accept, reject } = useDialog<TxRequest>(id);
 
-  if (!payload) return null;
+  if (!data) return null;
+
+  const { from, to, value, data: calldata } = data;
 
   return (
     <Panel>
-      <p>From: {payload.from}</p>
-      <p>To: {payload.to}</p>
-      <p>value: {payload.value}</p>
-      <p>data: {payload.data}</p>
-      <button onClick={() => accept(payload)}>Accept</button>
-      <button onClick={() => reject(payload)}>Reject</button>
+      <p>From: {from}</p>
+      <p>To: {to}</p>
+      <p>value: {value}</p>
+      <p>data: {calldata}</p>
+      <button onClick={() => accept(data)}>Accept</button>
+      <button onClick={() => reject(data)}>Reject</button>
     </Panel>
   );
 }
