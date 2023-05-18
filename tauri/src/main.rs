@@ -8,13 +8,18 @@ mod context;
 mod db;
 mod dialogs;
 mod error;
+mod global_state;
+mod peers;
 mod rpc;
 mod store;
+mod types;
 mod wallets;
 mod ws;
 
-use context::{peers::Peers, Context};
+use context::Context;
 use error::Result;
+use global_state::GlobalState;
+use peers::Peers;
 use wallets::Wallets;
 
 #[tokio::main]
@@ -25,7 +30,7 @@ async fn main() -> Result<()> {
 
     let mut app = app::IronApp::build();
 
-    Wallets::init(app.get_settings_file("wallets"));
+    Wallets::init(app.get_settings_file("wallets")).await;
     Peers::init(app.sender.clone()).await;
 
     // now we're able to build our context

@@ -11,11 +11,7 @@ use tauri::{Menu, Submenu, WindowMenuEvent};
 use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, StateFlags};
 use tokio::sync::mpsc;
 
-use crate::{
-    commands,
-    context::{peers, Context},
-    dialogs, wallets,
-};
+use crate::{commands, context::Context, dialogs, peers, wallets};
 
 pub struct IronApp {
     pub sender: mpsc::UnboundedSender<Event>,
@@ -76,14 +72,14 @@ impl IronApp {
                 commands::get_transactions,
                 commands::get_contracts,
                 commands::get_erc20_balances,
-                peers::peers_get_all,
-                wallets::wallets_get_all,
-                wallets::wallets_get_current,
-                wallets::wallets_get_current_address,
-                wallets::wallets_set_list,
-                wallets::wallets_set_current_wallet,
-                wallets::wallets_set_current_key,
-                wallets::wallets_get_wallet_addresses,
+                peers::commands::peers_get_all,
+                wallets::commands::wallets_get_all,
+                wallets::commands::wallets_get_current,
+                wallets::commands::wallets_get_current_address,
+                wallets::commands::wallets_set_list,
+                wallets::commands::wallets_set_current_wallet,
+                wallets::commands::wallets_set_current_key,
+                wallets::commands::wallets_get_wallet_addresses,
                 dialogs::dialog_get_payload,
                 dialogs::dialog_finish,
             ])
@@ -130,7 +126,7 @@ impl IronApp {
         SETTINGS_PATH
             .set(res.get_settings_file("settings"))
             .unwrap();
-        dialogs::init(snd.clone());
+        dialogs::init(snd);
 
         res
     }

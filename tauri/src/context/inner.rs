@@ -1,18 +1,18 @@
-use std::collections::HashMap;
-use std::fs::File;
-use std::io::BufReader;
 use std::path::Path;
+use std::{collections::HashMap, fs::File, io::BufReader};
 
 use ethers::providers::{Http, Provider};
 use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
 
 pub use super::network::Network;
-use super::peers::Peers;
-pub use super::wallet::Wallet;
-use crate::app::{self, SETTINGS_PATH};
-use crate::db::DB;
-use crate::error::Result;
+use crate::{
+    app::{self, SETTINGS_PATH},
+    db::DB,
+    error::Result,
+    global_state::GlobalState,
+    peers::Peers,
+};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct ContextInner {
@@ -88,7 +88,7 @@ impl ContextInner {
 
         if previous_network.chain_id != new_network.chain_id {
             tokio::spawn(async move {
-                Peers::get()
+                Peers::read()
                     .await
                     .broadcast_chain_changed(new_network.chain_id, new_network.name);
             });

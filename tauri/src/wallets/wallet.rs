@@ -1,12 +1,11 @@
 use ethers::signers::coins_bip39::English;
 use ethers::signers::{MnemonicBuilder, Signer};
-use ethers::types::Address;
-use ethers::utils::to_checksum;
 use ethers_core::k256::ecdsa::SigningKey;
 use serde::de::{self, MapAccess, Visitor};
 use serde::{Deserialize, Serialize};
 
 use crate::error::Result;
+use crate::types::ChecksummedAddress;
 
 #[derive(Debug, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -41,7 +40,7 @@ impl Default for Wallet {
 }
 
 impl Wallet {
-    pub fn current_address(&self) -> ChecksummedAddress {
+    pub fn get_current_address(&self) -> ChecksummedAddress {
         // TODO: where will chain id come from?
         self.build_signer(1).unwrap().address().into()
     }
@@ -170,23 +169,5 @@ impl<'de> Deserialize<'de> for Wallet {
 
         const FIELDS: &[&str] = &["mnemonic", "derivation_path", "idx"];
         deserializer.deserialize_struct("Wallet", FIELDS, WalletVisitor)
-    }
-}
-
-#[derive(Debug, Deserialize)]
-pub struct ChecksummedAddress(Address);
-
-impl Serialize for ChecksummedAddress {
-    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(&to_checksum(&self.0, None))
-    }
-}
-
-impl From<Address> for ChecksummedAddress {
-    fn from(value: Address) -> Self {
-        Self(value)
     }
 }

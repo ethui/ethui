@@ -1,8 +1,6 @@
 mod block_listener;
 mod inner;
 mod network;
-pub mod peers;
-pub mod wallet;
 
 use std::sync::Arc;
 
@@ -11,7 +9,6 @@ use tokio::sync::mpsc;
 
 pub use self::inner::ContextInner;
 pub use self::network::Network;
-pub use self::wallet::Wallet;
 use crate::app;
 pub use crate::error::Result;
 

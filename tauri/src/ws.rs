@@ -1,20 +1,26 @@
-use std::collections::HashMap;
-use std::net::SocketAddr;
+use std::{collections::HashMap, net::SocketAddr};
 
 use futures_util::{SinkExt, StreamExt};
 use log::*;
 use serde::Serialize;
-use tokio::net::{TcpListener, TcpStream};
-use tokio::sync::mpsc;
+use tokio::{
+    net::{TcpListener, TcpStream},
+    sync::mpsc,
+};
 use tokio_tungstenite::{accept_hdr_async, WebSocketStream};
-use tungstenite::handshake::server::{ErrorResponse, Request, Response};
-use tungstenite::Message;
+use tungstenite::{
+    handshake::server::{ErrorResponse, Request, Response},
+    Message,
+};
 use url::Url;
 
-use crate::context::peers::Peers;
-use crate::context::Context;
-use crate::error::{Error, Result};
-use crate::rpc::Handler;
+use crate::{
+    context::Context,
+    error::{Error, Result},
+    global_state::GlobalState,
+    peers::Peers,
+    rpc::Handler,
+};
 
 #[derive(Clone, Debug, Serialize)]
 pub struct Peer {
@@ -85,9 +91,9 @@ pub async fn accept_connection(socket: SocketAddr, stream: TcpStream, ctx: Conte
 
     let peer = Peer::new(socket, snd, query_params);
 
-    Peers::get().await.add_peer(peer);
+    Peers::write().await.add_peer(peer);
     let err = handle_connection(ws_stream, rcv, ctx.clone()).await;
-    Peers::get().await.remove_peer(socket);
+    Peers::write().await.remove_peer(socket);
 
     if let Err(e) = err {
         match e {

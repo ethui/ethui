@@ -1,33 +1,24 @@
+pub mod commands;
+mod global;
+
 use std::{collections::HashMap, net::SocketAddr};
 
-use futures_util::lock::{Mutex, MutexGuard};
 use log::warn;
-use once_cell::sync::Lazy;
 use serde::Serialize;
 use serde_json::json;
 use tokio::sync::mpsc;
 
-use super::wallet::ChecksummedAddress;
-use crate::{app, ws::Peer};
+use crate::{app, types::ChecksummedAddress, ws::Peer};
 
-#[derive(Default)]
+/// Tracks a list of peers, usually browser tabs, that connect to the app
+#[derive(Debug, Default)]
 pub struct Peers {
     map: HashMap<SocketAddr, Peer>,
     window_snd: Option<mpsc::UnboundedSender<app::Event>>,
 }
 
-static PEERS: Lazy<Mutex<Peers>> = Lazy::new(Default::default);
-
 impl Peers {
-    pub async fn get<'a>() -> MutexGuard<'a, Peers> {
-        PEERS.lock().await
-    }
-
-    pub async fn init(sender: mpsc::UnboundedSender<app::Event>) {
-        let mut peers = PEERS.lock().await;
-        peers.window_snd = Some(sender);
-    }
-
+    /// Adds a new peer
     pub fn add_peer(&mut self, peer: Peer) {
         self.map.insert(peer.socket, peer);
         self.window_snd
@@ -37,6 +28,7 @@ impl Peers {
             .unwrap();
     }
 
+    /// Removes an existing peer
     pub fn remove_peer(&mut self, peer: SocketAddr) {
         self.map.remove(&peer);
         self.window_snd
@@ -46,6 +38,7 @@ impl Peers {
             .unwrap();
     }
 
+    /// Broadcasts an `accountsChanged` event to all peers
     pub fn broadcast_accounts_changed(&self, new_accounts: Vec<ChecksummedAddress>) {
         self.broadcast(json!({
             "method": "accountsChanged",
@@ -53,6 +46,7 @@ impl Peers {
         }));
     }
 
+    /// Broadcasts a `chainChanged` event to all peers
     pub fn broadcast_chain_changed(&self, chain_id: u32, name: String) {
         self.broadcast(json!({
             "method": "chainChanged",
@@ -76,9 +70,4 @@ impl Peers {
     fn get_all(&self) -> Vec<Peer> {
         self.map.values().cloned().collect()
     }
-}
-
-#[tauri::command]
-pub async fn peers_get_all() -> Result<Vec<Peer>, String> {
-    Ok(Peers::get().await.get_all())
 }
