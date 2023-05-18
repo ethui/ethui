@@ -5,6 +5,7 @@ use std::net::SocketAddr;
 use std::path::Path;
 
 use ethers::providers::{Http, Provider};
+use ethers_core::abi::Hash;
 use ethers_core::k256::ecdsa::SigningKey;
 use log::warn;
 use serde::{Deserialize, Serialize};
@@ -191,6 +192,17 @@ impl ContextInner {
 
     pub fn set_networks(&mut self, networks: Vec<Network>) {
         self.networks = networks.into_iter().map(|n| (n.name.clone(), n)).collect();
+        self.save().unwrap();
+    }
+
+    pub fn reset_networks(&mut self) {
+        self.networks = HashMap::new();
+        self.networks
+            .insert(String::from("mainnet"), Network::mainnet());
+        self.networks
+            .insert(String::from("goerli"), Network::goerli());
+        self.networks
+            .insert(String::from("anvil"), Network::anvil());
         self.save().unwrap();
     }
 

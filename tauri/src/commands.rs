@@ -39,6 +39,13 @@ pub async fn set_networks(networks: Vec<Network>, ctx: Ctx<'_>) -> Result<()> {
 }
 
 #[tauri::command]
+pub async fn reset_networks(ctx: Ctx<'_>) -> Result<Vec<Network>> {
+    let mut ctx = ctx.lock().await;
+    ctx.reset_networks();
+    Ok(ctx.networks.values().cloned().collect())
+}
+
+#[tauri::command]
 pub async fn get_wallet(ctx: Ctx<'_>) -> Result<Wallet> {
     let ctx = ctx.lock().await;
 

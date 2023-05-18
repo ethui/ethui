@@ -6,6 +6,7 @@ import {
   AccordionSummary,
   Button,
   Checkbox,
+  Divider,
   FormControl,
   FormControlLabel,
   FormGroup,
@@ -26,6 +27,7 @@ type NewChild = { new?: boolean };
 const emptyNetwork: Network & NewChild = {
   name: "",
   dev: false,
+  explorer_url: "",
   http_url: "",
   ws_url: "",
   currency: "",
@@ -59,14 +61,17 @@ export function SettingsNetwork() {
     name: "networks",
   });
 
-  const onSubmit = useCallback(
-    async (data: { networks?: Network[] }) => {
-      reset(data);
-      await invoke("set_networks", { networks: data.networks });
-      mutate();
-    },
-    [reset, mutate]
-  );
+  const onSubmit = async (data: { networks?: Network[] }) => {
+    await invoke("set_networks", { networks: data.networks });
+    reset(data);
+    mutate();
+  };
+
+  const onReset = async () => {
+    const networks: Network[] = await invoke("reset_networks");
+    reset({ networks });
+    mutate();
+  };
 
   if (!networks) return <>Loading</>;
 
@@ -141,6 +146,13 @@ export function SettingsNetwork() {
                   error={!!err.ws_url}
                   helperText={err.ws_url?.message?.toString()}
                 />
+                <TextField
+                  label="Explorer URL"
+                  {...register(`networks.${index}.explorer_url`)}
+                  fullWidth
+                  error={!!err.explorer_url}
+                  helperText={err.explorer_url?.message?.toString()}
+                />
                 <Stack spacing={2} direction="row">
                   <TextField
                     label="Currency"
@@ -169,7 +181,7 @@ export function SettingsNetwork() {
           </Accordion>
         );
       })}
-      <Stack spacing={2} direction="row" sx={{ mt: 4 }}>
+      <Stack spacing={2} direction="row" sx={{ mt: 4, mb: 2 }}>
         <Button
           color="primary"
           variant="contained"
@@ -187,6 +199,14 @@ export function SettingsNetwork() {
           Add network
         </Button>
       </Stack>
+      <Button
+        variant="outlined"
+        color="warning"
+        size="medium"
+        onClick={onReset}
+      >
+        Reset Networks
+      </Button>
     </form>
   );
 }
