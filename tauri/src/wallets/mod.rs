@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 /// https://www.reddit.com/r/rust/comments/f4zldz/i_audited_3_different_implementation_of_async/
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
-use crate::context::{wallet::ChecksummedAddress, Wallet};
+use crate::context::{peers::Peers, wallet::ChecksummedAddress, Wallet};
 
 #[derive(Default, Debug, Serialize, Deserialize)]
 pub struct Wallets {
@@ -56,6 +56,11 @@ impl Wallets {
         Ok(())
     }
 
+    fn notify_peers(&self) {
+        let addresses = vec![self.get_current().current_address()];
+        tokio::spawn(async move { Peers::get().await.broadcast_accounts_changed(addresses) });
+    }
+
     fn get_all(&self) -> Vec<Wallet> {
         self.wallets.clone()
     }
@@ -63,6 +68,7 @@ impl Wallets {
     fn set_wallets(&mut self, wallets: Vec<Wallet>) -> Result<(), String> {
         self.wallets = wallets;
         self.ensure_current();
+        self.notify_peers();
         self.save()?;
 
         Ok(())
@@ -87,12 +93,14 @@ impl Wallets {
             return Err(format!("Wallet with id {} not found", id));
         }
         self.current = id;
+        self.notify_peers();
         self.save()?;
         Ok(())
     }
 
     fn set_current_key(&mut self, key: String) -> Result<(), String> {
         self.wallets[self.current].set_current_key(key);
+        self.notify_peers();
         self.save()?;
         Ok(())
     }
@@ -108,36 +116,43 @@ impl Wallets {
     }
 }
 
+/// Lists all wallets
 #[tauri::command]
 pub async fn wallets_get_all() -> Vec<Wallet> {
     Wallets::read().await.get_all()
 }
 
+/// Gets the current wallet
 #[tauri::command]
 pub async fn wallets_get_current() -> Result<Wallet, String> {
     Ok(Wallets::read().await.get_current().clone())
 }
 
+/// Gets the current address ooof the current wallet
 #[tauri::command]
 pub async fn wallets_get_current_address() -> Result<ChecksummedAddress, String> {
     Ok(Wallets::read().await.get_current().current_address())
 }
 
+/// Sets a new list of wallets
 #[tauri::command]
 pub async fn wallets_set_list(list: Vec<Wallet>) -> Result<(), String> {
     Wallets::write().await.set_wallets(list)
 }
 
+/// Switches the current wallet
 #[tauri::command]
 pub async fn wallets_set_current_wallet(idx: usize) -> Result<(), String> {
     Wallets::write().await.set_current_wallet(idx)
 }
 
+/// Switches the current key of the current wallet
 #[tauri::command]
 pub async fn wallets_set_current_key(key: String) -> Result<(), String> {
     Wallets::write().await.set_current_key(key)
 }
 
+/// Get all known addresses of a wallet
 #[tauri::command]
 pub async fn wallets_get_wallet_addresses(
     name: String,

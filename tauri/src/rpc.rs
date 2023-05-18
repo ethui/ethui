@@ -81,7 +81,7 @@ impl Handler {
                             .request::<_, serde_json::Value>($name, params)
                             .await
                             .map_err(ethers_to_jsonrpc_error);
-                        dbg!(res)
+                        res
                     });
             };
         }
@@ -148,8 +148,6 @@ impl Handler {
         ctx: UnlockedContext<'_>,
     ) -> Result<serde_json::Value> {
         let params = params.parse::<Vec<HashMap<String, String>>>().unwrap()[0].clone();
-
-        dbg!(&params);
 
         // parse params
         let from = Address::from_str(params.get("from").unwrap()).unwrap();

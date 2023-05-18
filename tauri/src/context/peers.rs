@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 use std::{collections::HashMap, net::SocketAddr};
 
 use futures_util::lock::{Mutex, MutexGuard};
@@ -65,7 +63,7 @@ impl Peers {
         }));
     }
 
-    pub fn broadcast<T: Serialize + std::fmt::Debug>(&self, msg: T) {
+    fn broadcast<T: Serialize + std::fmt::Debug>(&self, msg: T) {
         self.map.iter().for_each(|(_, peer)| {
             peer.sender
                 .send(serde_json::to_value(&msg).unwrap())
