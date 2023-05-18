@@ -8,6 +8,7 @@ mod context;
 mod db;
 mod dialogs;
 mod error;
+mod foundry;
 mod rpc;
 mod store;
 mod ws;
@@ -20,6 +21,8 @@ async fn main() -> Result<()> {
     color_eyre::install()?;
     env_logger::init();
     fix_path_env::fix()?;
+
+    foundry::Foundry::watch().await.unwrap();
 
     let mut app = app::IronApp::build();
 
