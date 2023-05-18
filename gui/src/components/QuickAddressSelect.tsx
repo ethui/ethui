@@ -2,6 +2,7 @@ import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import { map } from "lodash";
 import { useSWRConfig } from "swr";
+import truncateEthAddress from "truncate-eth-address";
 
 import { useInvoke } from "../hooks/tauri";
 import { Address, Wallet2 } from "../types";
@@ -26,12 +27,17 @@ export function QuickAddressSelect() {
     })();
   };
 
+  const renderValue = (v: string) => {
+    const address = addresses?.find(([key]) => key === v)?.[1];
+    return address && truncateEthAddress(address);
+  };
+
   if (!addresses || !current_wallet) return <>Loading</>;
 
   return (
     <Select
       size="small"
-      renderValue={(v: string) => addresses.find(([key]) => key === v)?.[1]}
+      renderValue={renderValue}
       value={current_wallet.currentKey}
       onChange={handleChange}
     >
