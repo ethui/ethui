@@ -11,27 +11,42 @@ use tauri::{Menu, Submenu, WindowMenuEvent};
 use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, StateFlags};
 use tokio::sync::mpsc;
 
-use crate::{commands, context::Context};
+use crate::{commands, context::Context, dialogs};
 
 pub struct IronApp {
-    pub sender: mpsc::UnboundedSender<IronEvent>,
+    pub sender: mpsc::UnboundedSender<Event>,
     app: Option<tauri::App>,
 }
 
-#[derive(Debug, Serialize)]
-pub enum IronEvent {
+#[derive(Debug, Serialize, Clone)]
+pub enum Event {
+    /// notify the frontend about a state change
+    Notify(Notify),
+
+    /// open a dialog
+    OpenDialog(u32, String),
+}
+
+#[derive(Debug, Serialize, Clone)]
+pub enum Notify {
     NetworkChanged,
     TxsUpdated,
     ConnectionsUpdated,
 }
 
-impl IronEvent {
+impl Notify {
     fn label(&self) -> &str {
         match self {
             Self::NetworkChanged => "network-changed",
             Self::TxsUpdated => "txs-updated",
             Self::ConnectionsUpdated => "connections-updated",
         }
+    }
+}
+
+impl From<Notify> for Event {
+    fn from(value: Notify) -> Self {
+        Event::Notify(value)
     }
 }
 
@@ -61,6 +76,8 @@ impl IronApp {
                 commands::get_connections,
                 commands::derive_addresses,
                 commands::derive_addresses_with_mnemonic,
+                dialogs::dialog_get_payload,
+                dialogs::dialog_finish,
             ])
             .setup(|app| {
                 let handle = app.handle();
@@ -98,11 +115,12 @@ impl IronApp {
 
         let res = Self {
             app: Some(app),
-            sender: snd,
+            sender: snd.clone(),
         };
 
         DB_PATH.set(res.get_db_path()).unwrap();
         SETTINGS_PATH.set(res.get_settings_file()).unwrap();
+        dialogs::init(snd.clone());
 
         res
     }
@@ -228,9 +246,22 @@ fn show_main_window(app: &AppHandle) {
     }
 }
 
-async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<IronEvent>) {
-    // TODO: need to not finish if there's no window
-    while let (Some(msg), Some(window)) = (rcv.recv().await, handle.get_window("main")) {
-        window.emit(msg.label(), &msg).unwrap();
+async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<Event>) {
+    while let Some(msg) = rcv.recv().await {
+        use Event::*;
+
+        match msg {
+            Notify(msg) => {
+                // forward directly to main window
+                // if window is not open, just ignore them
+                if let Some(window) = handle.get_window("main") {
+                    window.emit(msg.label(), &msg).unwrap();
+                }
+            }
+
+            OpenDialog(id, dialog_type) => {
+                dialogs::open_with_handle(&handle, dialog_type, id).unwrap();
+            }
+        }
     }
 }

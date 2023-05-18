@@ -3,7 +3,7 @@ use ethers::types::{Address, U256};
 use crate::context::{Context, Network, Wallet};
 use crate::store::events::EventsStore;
 
-type Ctx<'a> = tauri::State<'a, Context>;
+pub type Ctx<'a> = tauri::State<'a, Context>;
 type Result<T> = std::result::Result<T, String>;
 
 impl From<crate::error::Error> for String {

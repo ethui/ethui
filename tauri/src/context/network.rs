@@ -8,7 +8,7 @@ use tokio::sync::mpsc;
 use url::Url;
 
 use super::block_listener::BlockListener;
-use crate::{app::IronEvent, db::DB};
+use crate::{app, db::DB};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Network {
@@ -83,7 +83,7 @@ impl Network {
     pub fn reset_listener(
         &mut self,
         db: &DB,
-        window_snd: mpsc::UnboundedSender<IronEvent>,
+        window_snd: mpsc::UnboundedSender<app::Event>,
     ) -> crate::error::Result<()> {
         if let Some(listener) = self.listener.as_ref() {
             listener.lock().unwrap().stop();

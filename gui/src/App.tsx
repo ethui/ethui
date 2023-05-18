@@ -8,13 +8,12 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { grey } from "@mui/material/colors";
 import React from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { Route, Router } from "wouter";
+import { Route, Router, Switch } from "wouter";
 
 import { HomePage } from "./components/HomePage";
 import { Navbar } from "./components/Navbar";
-import { NestedRoutes } from "./components/NestedRoutes";
+import { TxReviewDialog } from "./components/TxReviewDialog";
 import { WagmiWrapper } from "./components/WagmiWrapper";
-import { useHashLocation } from "./hooks/hashLocation";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { suspense: true } },
@@ -49,10 +48,18 @@ export default function App() {
         <QueryClientProvider client={queryClient}>
           <WagmiWrapper>
             <Router>
-              <Navbar />
-              <NestedRoutes base="/">
-                <HomePage />
-              </NestedRoutes>
+              <Switch>
+                <Route path="/dialog/tx-review/:id">
+                  {({ id }: { id: string }) => (
+                    <TxReviewDialog id={parseInt(id)} />
+                  )}
+                </Route>
+
+                <Route>
+                  <Navbar />
+                  <HomePage />
+                </Route>
+              </Switch>
             </Router>
           </WagmiWrapper>
         </QueryClientProvider>
