@@ -11,11 +11,10 @@ use tauri::{Menu, Submenu, WindowMenuEvent};
 use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, StateFlags};
 use tokio::sync::mpsc;
 
-use crate::{commands, context::Context, dialogs};
 use crate::{
     commands,
     context::{peers, Context},
-    wallets,
+    dialogs, wallets,
 };
 
 pub struct IronApp {

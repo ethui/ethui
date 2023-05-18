@@ -10,7 +10,7 @@ use tokio::sync::mpsc;
 pub use super::network::Network;
 use super::peers::Peers;
 pub use super::wallet::Wallet;
-use crate::app::{self, Notify, SETTINGS_PATH};
+use crate::app::{self, SETTINGS_PATH};
 use crate::db::DB;
 use crate::error::Result;
 

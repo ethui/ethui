@@ -74,7 +74,7 @@ impl Network {
 
     pub fn default() -> HashMap<String, Self> {
         let mut networks = HashMap::new();
-        networks.insert(String::from("mainnetk"), Self::mainnet());
+        networks.insert(String::from("mainnet"), Self::mainnet());
         networks.insert(String::from("goerli"), Self::goerli());
         networks.insert(String::from("anvil"), Self::anvil());
         networks

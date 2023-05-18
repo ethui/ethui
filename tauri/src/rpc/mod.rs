@@ -14,12 +14,9 @@ use ethers::{
 use jsonrpc_core::{ErrorCode, MetaIoHandler, Params};
 use serde_json::json;
 
-use crate::context::{Context, UnlockedContext};
-use crate::wallets::Wallets;
-use crate::context::{Context, UnlockedContext};
 use self::send_transaction::SendTransaction;
 use crate::context::Context;
->>>>>>> main:tauri/src/rpc/mod.rs
+use crate::wallets::Wallets;
 
 pub struct Handler {
     io: MetaIoHandler<Context>,
@@ -110,7 +107,7 @@ impl Handler {
         self_handler!("eth_signTypedData_v4", Self::eth_sign_typed_data_v4);
     }
 
-    async fn accounts(_: Params, _ctx: UnlockedContext<'_>) -> Result<serde_json::Value> {
+    async fn accounts(_: Params, _ctx: Context) -> Result<serde_json::Value> {
         let address = Wallets::read().await.get_current().current_address();
         Ok(json!([address]))
     }

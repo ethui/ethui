@@ -8,12 +8,12 @@ use serde_json::json;
 use tokio::sync::mpsc;
 
 use super::wallet::ChecksummedAddress;
-use crate::{app::IronEvent, ws::Peer};
+use crate::{app, ws::Peer};
 
 #[derive(Default)]
 pub struct Peers {
     map: HashMap<SocketAddr, Peer>,
-    window_snd: Option<mpsc::UnboundedSender<IronEvent>>,
+    window_snd: Option<mpsc::UnboundedSender<app::Event>>,
 }
 
 static PEERS: Lazy<Mutex<Peers>> = Lazy::new(Default::default);
@@ -23,7 +23,7 @@ impl Peers {
         PEERS.lock().await
     }
 
-    pub async fn init(sender: mpsc::UnboundedSender<IronEvent>) {
+    pub async fn init(sender: mpsc::UnboundedSender<app::Event>) {
         let mut peers = PEERS.lock().await;
         peers.window_snd = Some(sender);
     }
@@ -33,7 +33,7 @@ impl Peers {
         self.window_snd
             .as_ref()
             .unwrap()
-            .send(IronEvent::ConnectionsUpdated)
+            .send(app::Notify::ConnectionsUpdated.into())
             .unwrap();
     }
 
@@ -42,7 +42,7 @@ impl Peers {
         self.window_snd
             .as_ref()
             .unwrap()
-            .send(IronEvent::ConnectionsUpdated)
+            .send(app::Notify::ConnectionsUpdated.into())
             .unwrap();
     }
 
