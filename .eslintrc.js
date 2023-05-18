@@ -13,6 +13,7 @@ module.exports = {
     "extension/dist/*",
     "gui/dist/*",
     "extension/provider-inpage/*",
+    "target/*",
   ],
   settings: {
     react: {
@@ -20,6 +21,7 @@ module.exports = {
     },
   },
   rules: {
+    "no-console": ["error", { allow: ["warn", "error"] }],
     "react/jsx-uses-react": "off",
     "react/react-in-jsx-scope": "off",
     "no-unused-vars": "off",
