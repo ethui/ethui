@@ -195,6 +195,8 @@ impl ContextInner {
     }
 
     pub fn get_current_network(&self) -> Network {
+        dbg!(&self.current_network);
+        dbg!(&self.networks);
         self.networks.get(&self.current_network).unwrap().clone()
     }
 
