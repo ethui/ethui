@@ -7,7 +7,7 @@ import { SettingsWallets } from "./SettingsWallets";
 import { TabPanel } from "./TabPanel";
 
 const tabs = [
-  { name: "Wallet", component: SettingsWallets },
+  { name: "Wallets", component: SettingsWallets },
   { name: "Network", component: SettingsNetwork },
 ];
 
