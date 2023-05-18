@@ -39,13 +39,8 @@ pub struct ContextInner {
 
 impl Default for ContextInner {
     fn default() -> Self {
-        let mut networks = HashMap::new();
-        networks.insert(String::from("mainnet"), Network::mainnet());
-        networks.insert(String::from("goerli"), Network::goerli());
-        networks.insert(String::from("anvil"), Network::anvil());
-
         Self {
-            networks,
+            networks: Network::default(),
             current_network: String::from("mainnet"),
             wallet: Default::default(),
             peers: Default::default(),
@@ -191,6 +186,11 @@ impl ContextInner {
 
     pub fn set_networks(&mut self, networks: Vec<Network>) {
         self.networks = networks.into_iter().map(|n| (n.name.clone(), n)).collect();
+        self.save().unwrap();
+    }
+
+    pub fn reset_networks(&mut self) {
+        self.networks = Network::default();
         self.save().unwrap();
     }
 

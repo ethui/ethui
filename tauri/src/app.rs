@@ -7,7 +7,7 @@ use tauri::{
     SystemTrayMenu, SystemTrayMenuItem, WindowEvent,
 };
 #[cfg(not(target_os = "linux"))]
-use tauri::{Menu, MenuItem, Submenu};
+use tauri::{Menu, Submenu, WindowMenuEvent};
 use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, StateFlags};
 use tokio::sync::mpsc;
 
@@ -54,6 +54,7 @@ impl IronApp {
                 commands::set_wallet,
                 commands::get_current_address,
                 commands::set_networks,
+                commands::reset_networks,
                 commands::get_transactions,
                 commands::get_contracts,
                 commands::get_erc20_balances,
@@ -87,7 +88,7 @@ impl IronApp {
 
         #[cfg(not(target_os = "linux"))]
         {
-            menu = Self::build_menu();
+            let menu = Self::build_menu();
             builder = builder.menu(menu).on_menu_event(on_menu_event)
         }
 
