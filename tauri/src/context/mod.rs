@@ -6,18 +6,17 @@ pub mod wallet;
 
 use std::sync::Arc;
 
-use futures_util::lock::{Mutex, MutexGuard, MutexLockFuture};
+use futures_util::lock::{Mutex, MutexLockFuture};
 use tokio::sync::mpsc;
 
 pub use self::inner::ContextInner;
 pub use self::network::Network;
 pub use self::wallet::Wallet;
-use crate::app::IronEvent;
+use crate::app;
 pub use crate::error::Result;
 
 #[derive(Clone)]
 pub struct Context(Arc<Mutex<ContextInner>>);
-pub type UnlockedContext<'a> = MutexGuard<'a, ContextInner>;
 
 impl Context {
     /// Reads settings from $APPDIR/settings.json
@@ -29,7 +28,7 @@ impl Context {
         Ok(Self(Arc::new(Mutex::new(inner))))
     }
 
-    pub async fn init(&mut self, sender: mpsc::UnboundedSender<IronEvent>) -> Result<()> {
+    pub async fn init(&mut self, sender: mpsc::UnboundedSender<app::Event>) -> Result<()> {
         self.lock().await.init(sender).await
     }
 

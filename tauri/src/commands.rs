@@ -3,7 +3,7 @@ use ethers::types::{Address, U256};
 use crate::context::{Context, Network};
 use crate::store::events::EventsStore;
 
-type Ctx<'a> = tauri::State<'a, Context>;
+pub type Ctx<'a> = tauri::State<'a, Context>;
 type Result<T> = std::result::Result<T, String>;
 
 impl From<crate::error::Error> for String {
@@ -36,6 +36,13 @@ pub async fn set_current_network(network: String, ctx: Ctx<'_>) -> Result<()> {
 pub async fn set_networks(networks: Vec<Network>, ctx: Ctx<'_>) -> Result<()> {
     ctx.lock().await.set_networks(networks);
     Ok(())
+}
+
+#[tauri::command]
+pub async fn reset_networks(ctx: Ctx<'_>) -> Result<Vec<Network>> {
+    let mut ctx = ctx.lock().await;
+    ctx.reset_networks();
+    Ok(ctx.networks.values().cloned().collect())
 }
 
 #[tauri::command]

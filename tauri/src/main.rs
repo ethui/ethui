@@ -6,6 +6,7 @@ mod app;
 mod commands;
 mod context;
 mod db;
+mod dialogs;
 mod error;
 mod rpc;
 mod store;

@@ -10,7 +10,7 @@ use tokio::sync::mpsc;
 pub use super::network::Network;
 use super::peers::Peers;
 pub use super::wallet::Wallet;
-use crate::app::{IronEvent, SETTINGS_PATH};
+use crate::app::{self, Notify, SETTINGS_PATH};
 use crate::db::DB;
 use crate::error::Result;
 
@@ -25,18 +25,13 @@ pub struct ContextInner {
     pub db: DB,
 
     #[serde(skip)]
-    window_snd: Option<mpsc::UnboundedSender<IronEvent>>,
+    window_snd: Option<mpsc::UnboundedSender<app::Event>>,
 }
 
 impl Default for ContextInner {
     fn default() -> Self {
-        let mut networks = HashMap::new();
-        networks.insert(String::from("mainnet"), Network::mainnet());
-        networks.insert(String::from("goerli"), Network::goerli());
-        networks.insert(String::from("anvil"), Network::anvil());
-
         Self {
-            networks,
+            networks: Network::default(),
             current_network: String::from("mainnet"),
             // peers: Default::default(),
             db: Default::default(),
@@ -63,7 +58,7 @@ impl ContextInner {
         Ok(res)
     }
 
-    pub async fn init(&mut self, sender: mpsc::UnboundedSender<IronEvent>) -> Result<()> {
+    pub async fn init(&mut self, sender: mpsc::UnboundedSender<app::Event>) -> Result<()> {
         self.window_snd = Some(sender);
         self.db.connect().await?;
 
@@ -101,7 +96,7 @@ impl ContextInner {
             self.window_snd
                 .as_ref()
                 .unwrap()
-                .send(IronEvent::NetworkChanged)?
+                .send(app::Notify::NetworkChanged.into())?
         }
 
         self.save()?;
@@ -124,6 +119,11 @@ impl ContextInner {
 
     pub fn set_networks(&mut self, networks: Vec<Network>) {
         self.networks = networks.into_iter().map(|n| (n.name.clone(), n)).collect();
+        self.save().unwrap();
+    }
+
+    pub fn reset_networks(&mut self) {
+        self.networks = Network::default();
         self.save().unwrap();
     }
 

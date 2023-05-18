@@ -1,3 +1,5 @@
+mod send_transaction;
+
 use std::{collections::HashMap, str::FromStr};
 
 use ethers::abi::AbiEncode;
@@ -7,16 +9,17 @@ use ethers::types::transaction::eip712;
 use ethers::{
     prelude::SignerMiddleware,
     providers::Middleware,
-    types::{
-        serde_helpers::StringifiedNumeric, transaction::eip2718::TypedTransaction, Address, Bytes,
-        Eip1559TransactionRequest, U256,
-    },
+    types::{Address, Bytes},
 };
 use jsonrpc_core::{ErrorCode, MetaIoHandler, Params};
 use serde_json::json;
 
 use crate::context::{Context, UnlockedContext};
 use crate::wallets::Wallets;
+use crate::context::{Context, UnlockedContext};
+use self::send_transaction::SendTransaction;
+use crate::context::Context;
+>>>>>>> main:tauri/src/rpc/mod.rs
 
 pub struct Handler {
     io: MetaIoHandler<Context>,
@@ -66,7 +69,6 @@ impl Handler {
             ($name:literal, $fn:path) => {
                 self.io
                     .add_method_with_meta($name, |params: Params, ctx: Context| async move {
-                        let ctx = ctx.lock().await;
                         $fn(params, ctx).await
                     });
             };
@@ -113,11 +115,15 @@ impl Handler {
         Ok(json!([address]))
     }
 
-    async fn chain_id(_: Params, ctx: UnlockedContext<'_>) -> Result<serde_json::Value> {
+    async fn chain_id(_: Params, ctx: Context) -> Result<serde_json::Value> {
+        let ctx = ctx.lock().await;
+
         Ok(json!(ctx.get_current_network().chain_id_hex()))
     }
 
-    async fn provider_state(_: Params, ctx: UnlockedContext<'_>) -> Result<serde_json::Value> {
+    async fn provider_state(_: Params, ctx: Context) -> Result<serde_json::Value> {
+        let ctx = ctx.lock().await;
+
         let network = ctx.get_current_network();
         let address = Wallets::read().await.get_current().current_address();
 
@@ -129,10 +135,9 @@ impl Handler {
         }))
     }
 
-    async fn switch_chain(
-        params: Params,
-        mut ctx: UnlockedContext<'_>,
-    ) -> Result<serde_json::Value> {
+    async fn switch_chain(params: Params, ctx: Context) -> Result<serde_json::Value> {
+        let mut ctx = ctx.lock().await;
+
         let params = params.parse::<Vec<HashMap<String, String>>>().unwrap();
         let chain_id_str = params[0].get("chainId").unwrap().clone();
         let chain_id = u32::from_str_radix(&chain_id_str[2..], 16).unwrap();
@@ -143,37 +148,34 @@ impl Handler {
         }
     }
 
-    async fn send_transaction(
-        params: Params,
-        ctx: UnlockedContext<'_>,
-    ) -> Result<serde_json::Value> {
-        let params = params.parse::<Vec<HashMap<String, String>>>().unwrap()[0].clone();
+    async fn send_transaction(params: Params, ctx: Context) -> Result<serde_json::Value> {
+        #[cfg(feature = "dialogs")]
+        {
+            // TODO: why is this an array?
+            let params: serde_json::Value = params.clone().into();
+            let params = params.as_array().unwrap()[0].clone();
 
-        // parse params
-        let from = Address::from_str(params.get("from").unwrap()).unwrap();
-        let to = Address::from_str(params.get("to").unwrap()).unwrap();
-        let value = params
-            .get("value")
-            .cloned()
-            .map(|v| U256::try_from(StringifiedNumeric::String(v)).unwrap())
-            .unwrap_or_else(U256::default);
-        let data = params.get("data");
-        let chain_id = ctx.get_current_network().chain_id;
-
-        // TODO: ensure from == signer
-
-        // construct an EIP1559 tx, and wrap in Eip2718
-        let mut tx = Eip1559TransactionRequest::new()
-            .to(to)
-            .from(from)
-            .value(value)
-            .chain_id(chain_id);
-
-        if let Some(data) = data {
-            tx = tx.data(Bytes::from_str(data).unwrap());
+            let rcv = crate::dialogs::open("tx-review", params).unwrap();
+            match rcv.await {
+                // 1st case is if the channel closes. 2nd case is if "Reject" is hit
+                Err(_) | Ok(Err(_)) => {
+                    // TODO: what's the appropriate error to return here?
+                    // or should we return Ok(_)? Err(_) seems to close the ws connection
+                    return Err(jsonrpc_core::Error {
+                        code: ErrorCode::ServerError(0),
+                        data: None,
+                        message: "transaction rejected".into(),
+                    });
+                }
+                Ok(Ok(_response)) => {
+                    // TODO: in the future, send json values here to override params
+                }
+            }
         }
 
-        let mut envelope = TypedTransaction::Eip1559(tx);
+        let mut sender = SendTransaction::build(params.into());
+
+        let ctx = ctx.lock().await;
 
         // create signer
         let provider = ctx.get_provider();
@@ -184,19 +186,11 @@ impl Handler {
             .unwrap();
         let signer = SignerMiddleware::new(provider, signer);
 
-        // fill in gas
-        // TODO: we're defaulting to 1_000_000 gas cost if estimation fails
-        // estimation failing means the tx will faill anyway, so this is fine'ish
-        // but can probably be improved a lot in the future
-        let gas_limit = signer
-            .estimate_gas(&envelope, None)
-            .await
-            .unwrap_or(1_000_000.into());
+        sender.set_chain_id(ctx.get_current_network().chain_id);
+        sender.set_signer(signer);
+        sender.estimate_gas().await;
 
-        envelope.set_gas(gas_limit * 120 / 100);
-
-        // sign & send
-        let res = signer.send_transaction(envelope, None).await;
+        let res = sender.send().await;
 
         match res {
             Ok(res) => Ok(res.tx_hash().encode_hex().into()),
@@ -204,7 +198,9 @@ impl Handler {
         }
     }
 
-    async fn eth_sign(params: Params, ctx: UnlockedContext<'_>) -> Result<serde_json::Value> {
+    async fn eth_sign(params: Params, ctx: Context) -> Result<serde_json::Value> {
+        let ctx = ctx.lock().await;
+
         let params = params.parse::<Vec<Option<String>>>().unwrap();
         let msg = params[0].as_ref().cloned().unwrap();
         let address = Address::from_str(&params[1].as_ref().cloned().unwrap()).unwrap();
@@ -228,10 +224,9 @@ impl Handler {
         }
     }
 
-    async fn eth_sign_typed_data_v4(
-        params: Params,
-        ctx: UnlockedContext<'_>,
-    ) -> Result<serde_json::Value> {
+    async fn eth_sign_typed_data_v4(params: Params, ctx: Context) -> Result<serde_json::Value> {
+        let ctx = ctx.lock().await;
+
         let params = params.parse::<Vec<Option<String>>>().unwrap();
         let _address = Address::from_str(&params[0].as_ref().cloned().unwrap()).unwrap();
         let data = params[1].as_ref().cloned().unwrap();

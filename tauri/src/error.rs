@@ -1,4 +1,10 @@
-use crate::app::IronEvent;
+use ethers::{
+    prelude::{signer::SignerMiddlewareError, *},
+    signers,
+};
+use ethers_core::k256::ecdsa::SigningKey;
+
+use crate::app;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -11,10 +17,15 @@ pub enum Error {
     EthersProvider(#[from] ethers::providers::ProviderError),
     Eyre(#[from] color_eyre::eyre::Error),
     Url(#[from] url::ParseError),
-    WindowSend(#[from] tokio::sync::mpsc::error::SendError<IronEvent>),
+    WindowSend(#[from] tokio::sync::mpsc::error::SendError<app::Event>),
     Watcher,
     MnemonicError(#[from] ethers::signers::coins_bip39::MnemonicError),
     WalletError(#[from] ethers::signers::WalletError),
+    SignerMiddlewareError(
+        #[from] SignerMiddlewareError<Provider<Http>, signers::Wallet<SigningKey>>,
+    ),
+    TauriError(#[from] tauri::Error),
+    RecvError(#[from] tokio::sync::mpsc::error::RecvError),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -37,6 +48,9 @@ impl std::fmt::Display for Error {
             WindowSend(e) => write!(f, "WindowSendError: {}", e),
             MnemonicError(e) => write!(f, "MnemonicError: {}", e),
             WalletError(e) => write!(f, "WalletError: {}", e),
+            SignerMiddlewareError(e) => write!(f, "SignerMiddlewareError: {}", e),
+            TauriError(e) => write!(f, "TauriError: {}", e),
+            RecvError(e) => write!(f, "RecvError: {}", e),
         }
     }
 }

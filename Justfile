@@ -11,7 +11,7 @@ build:
 
 dev:
   rm -rf target/debug/db.*
-  yarn run tauri dev --features "debug"
+  yarn run tauri dev --features ${IRON_FEATURES:-debug}
 
 lint:
   cargo fmt --all -- --check

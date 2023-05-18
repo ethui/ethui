@@ -7,6 +7,7 @@ export const networkSchema = z.object({
       .object({
         name: z.string().min(1),
         dev: z.boolean().default(false),
+        explorer_url: z.string().optional().nullable(),
         http_url: z.string().min(1),
         ws_url: z.string().nullable().optional(),
         currency: z.string().min(1),
