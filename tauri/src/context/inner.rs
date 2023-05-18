@@ -5,7 +5,6 @@ use std::net::SocketAddr;
 use std::path::Path;
 
 use ethers::providers::{Http, Provider};
-use ethers_core::abi::Hash;
 use ethers_core::k256::ecdsa::SigningKey;
 use log::warn;
 use serde::{Deserialize, Serialize};
@@ -40,13 +39,8 @@ pub struct ContextInner {
 
 impl Default for ContextInner {
     fn default() -> Self {
-        let mut networks = HashMap::new();
-        networks.insert(String::from("mainnet"), Network::mainnet());
-        networks.insert(String::from("goerli"), Network::goerli());
-        networks.insert(String::from("anvil"), Network::anvil());
-
         Self {
-            networks,
+            networks: Network::default(),
             current_network: String::from("mainnet"),
             wallet: Default::default(),
             peers: Default::default(),
@@ -196,13 +190,7 @@ impl ContextInner {
     }
 
     pub fn reset_networks(&mut self) {
-        self.networks = HashMap::new();
-        self.networks
-            .insert(String::from("mainnet"), Network::mainnet());
-        self.networks
-            .insert(String::from("goerli"), Network::goerli());
-        self.networks
-            .insert(String::from("anvil"), Network::anvil());
+        self.networks = Network::default();
         self.save().unwrap();
     }
 

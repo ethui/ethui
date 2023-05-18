@@ -1,4 +1,7 @@
-use std::sync::{Arc, Mutex};
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+};
 
 use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
@@ -67,6 +70,14 @@ impl Network {
 
     pub fn chain_id_hex(&self) -> String {
         format!("0x{:x}", self.chain_id)
+    }
+
+    pub fn default() -> HashMap<String, Self> {
+        let mut networks = HashMap::new();
+        networks.insert(String::from("mainnetk"), Self::mainnet());
+        networks.insert(String::from("goerli"), Self::goerli());
+        networks.insert(String::from("anvil"), Self::anvil());
+        networks
     }
 
     pub fn reset_listener(
