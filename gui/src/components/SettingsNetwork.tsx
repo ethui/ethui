@@ -6,7 +6,6 @@ import {
   AccordionSummary,
   Button,
   Checkbox,
-  Divider,
   FormControl,
   FormControlLabel,
   FormGroup,
@@ -16,11 +15,11 @@ import {
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import React from "react";
-import { useCallback } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 
 import { useInvoke } from "../hooks/tauri";
 import { Network, networkSchema } from "../types";
+import { ConfirmationDialog } from "./ConfirmationDialog";
 
 type NewChild = { new?: boolean };
 
@@ -199,14 +198,28 @@ export function SettingsNetwork() {
           Add network
         </Button>
       </Stack>
-      <Button
-        variant="outlined"
-        color="warning"
-        size="medium"
-        onClick={onReset}
+      <ConfirmationDialog
+        content={
+          <>
+            You are about to reset the networks to their default configuration.
+            This action will replace your existing networks.
+          </>
+        }
+        title="Reset Networks"
+        confirmationLabel="Reset Networks"
+        onConfirm={onReset}
       >
-        Reset Networks
-      </Button>
+        {({ onOpen }) => (
+          <Button
+            variant="outlined"
+            color="warning"
+            size="medium"
+            onClick={() => onOpen()}
+          >
+            Reset Networks
+          </Button>
+        )}
+      </ConfirmationDialog>
     </form>
   );
 }
