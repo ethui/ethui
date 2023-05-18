@@ -3,12 +3,12 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { useSWRConfig } from "swr";
 
 import { useInvoke } from "../hooks/tauri";
-import { Wallet2 } from "../types";
+import { Wallet } from "../types";
 
 export function QuickWalletSelect() {
   const { mutate } = useSWRConfig();
-  const { data: wallets } = useInvoke<Wallet2[]>("wallets_get_all");
-  const { data: current } = useInvoke<Wallet2>("wallets_get_current");
+  const { data: wallets } = useInvoke<Wallet[]>("wallets_get_all");
+  const { data: current } = useInvoke<Wallet>("wallets_get_current");
 
   const handleChange = (event: SelectChangeEvent<number>) => {
     const idx = event.target.value as number;

@@ -18,11 +18,11 @@ import { useCallback, useEffect } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 
 import { useInvoke } from "../hooks/tauri";
-import { Wallet2, walletsSchema } from "../types";
+import { Wallet, walletsSchema } from "../types";
 
 type NewChild = { new?: boolean };
 
-const emptyWallet: Wallet2 & NewChild = {
+const emptyWallet: Wallet & NewChild = {
   name: "",
   dev: false,
   mnemonic: "",
@@ -37,7 +37,7 @@ export function SettingsWallets() {
   // perhaps force this request somewhere else?
   // or trigger a reset of the form once it shows up?
   const { data: wallets, mutate } =
-    useInvoke<(Wallet2 & NewChild)[]>("wallets_get_all");
+    useInvoke<(Wallet & NewChild)[]>("wallets_get_all");
 
   const {
     register,
@@ -65,7 +65,7 @@ export function SettingsWallets() {
   });
 
   const onSubmit = useCallback(
-    async (data: { wallets?: Wallet2[] }) => {
+    async (data: { wallets?: Wallet[] }) => {
       reset(data);
       await invoke("wallets_set_list", { list: data.wallets });
       mutate();

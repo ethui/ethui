@@ -5,11 +5,11 @@ import { useSWRConfig } from "swr";
 import truncateEthAddress from "truncate-eth-address";
 
 import { useInvoke } from "../hooks/tauri";
-import { Address, Wallet2 } from "../types";
+import { Address, Wallet } from "../types";
 
 export function QuickAddressSelect() {
   const { mutate } = useSWRConfig();
-  const { data: current_wallet } = useInvoke<Wallet2>("wallets_get_current");
+  const { data: current_wallet } = useInvoke<Wallet>("wallets_get_current");
   const { data: addresses } = useInvoke<[string, Address][]>(
     "wallets_get_wallet_addresses",
     { name: current_wallet?.name }
