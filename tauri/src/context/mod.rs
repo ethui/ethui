@@ -1,6 +1,7 @@
 mod block_listener;
 mod inner;
 mod network;
+pub mod peers;
 pub mod wallet;
 
 use std::sync::Arc;

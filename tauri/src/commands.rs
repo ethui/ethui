@@ -63,10 +63,3 @@ pub async fn get_erc20_balances(address: Address, ctx: Ctx<'_>) -> Result<Vec<(A
     let chain_id = ctx.get_current_network().chain_id;
     Ok(ctx.db.get_balances(chain_id, address).await.unwrap())
 }
-
-#[tauri::command]
-pub async fn get_connections(ctx: Ctx<'_>) -> Result<Vec<crate::ws::Peer>> {
-    let ctx = ctx.lock().await;
-
-    Ok(ctx.peers.values().cloned().collect())
-}

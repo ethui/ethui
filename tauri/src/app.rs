@@ -11,7 +11,11 @@ use tauri::{Menu, MenuItem, Submenu};
 use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, StateFlags};
 use tokio::sync::mpsc;
 
-use crate::{commands, context::Context, wallets};
+use crate::{
+    commands,
+    context::{peers, Context},
+    wallets,
+};
 
 pub struct IronApp {
     pub sender: mpsc::UnboundedSender<IronEvent>,
@@ -56,7 +60,7 @@ impl IronApp {
                 commands::get_transactions,
                 commands::get_contracts,
                 commands::get_erc20_balances,
-                commands::get_connections,
+                peers::peers_get_all,
                 wallets::wallets_get_all,
                 wallets::wallets_get_current,
                 wallets::wallets_get_current_address,

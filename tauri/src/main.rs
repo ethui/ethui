@@ -12,7 +12,7 @@ mod store;
 mod wallets;
 mod ws;
 
-use context::Context;
+use context::{peers::Peers, Context};
 use error::Result;
 use wallets::Wallets;
 
@@ -25,6 +25,7 @@ async fn main() -> Result<()> {
     let mut app = app::IronApp::build();
 
     Wallets::init(app.get_settings_file("wallets"));
+    Peers::init(app.sender.clone()).await;
 
     // now we're able to build our context
     // this relies on $APPDIR retrieved from Tauri

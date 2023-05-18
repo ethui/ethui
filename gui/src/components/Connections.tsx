@@ -17,7 +17,7 @@ interface Connection {
 
 export function Connections() {
   const { data: connections, mutate } =
-    useInvoke<Connection[]>("get_connections");
+    useInvoke<Connection[]>("peers_get_all");
 
   useRefreshConnections(mutate);
 

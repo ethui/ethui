@@ -1,30 +1,23 @@
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufReader;
-use std::net::SocketAddr;
 use std::path::Path;
 
 use ethers::providers::{Http, Provider};
-use log::warn;
 use serde::{Deserialize, Serialize};
-use serde_json::json;
 use tokio::sync::mpsc;
 
 pub use super::network::Network;
+use super::peers::Peers;
 pub use super::wallet::Wallet;
 use crate::app::{IronEvent, SETTINGS_PATH};
 use crate::db::DB;
 use crate::error::Result;
-use crate::ws::Peer;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct ContextInner {
     pub current_network: String,
     pub networks: HashMap<String, Network>,
-
-    /// Deserialized into an empty HashMap
-    #[serde(skip)]
-    pub peers: HashMap<SocketAddr, Peer>,
 
     /// This is deserialized with the Default trait which only works after `App` has been
     /// initialized and `DB_PATH` cell filled
@@ -45,7 +38,7 @@ impl Default for ContextInner {
         Self {
             networks,
             current_network: String::from("mainnet"),
-            peers: Default::default(),
+            // peers: Default::default(),
             db: Default::default(),
             window_snd: None,
         }
@@ -90,36 +83,6 @@ impl ContextInner {
         Ok(())
     }
 
-    pub fn add_peer(&mut self, peer: Peer) {
-        self.peers.insert(peer.socket, peer);
-        self.save().unwrap();
-        self.window_snd
-            .as_ref()
-            .unwrap()
-            .send(IronEvent::ConnectionsUpdated)
-            .unwrap();
-    }
-
-    pub fn remove_peer(&mut self, peer: SocketAddr) {
-        self.peers.remove(&peer);
-        self.save().unwrap();
-        self.window_snd
-            .as_ref()
-            .unwrap()
-            .send(IronEvent::ConnectionsUpdated)
-            .unwrap();
-    }
-
-    pub fn broadcast<T: Serialize + std::fmt::Debug>(&self, msg: T) {
-        self.peers.iter().for_each(|(_, peer)| {
-            peer.sender
-                .send(serde_json::to_value(&msg).unwrap())
-                .unwrap_or_else(|e| {
-                    warn!("Failed to send message to peer: {}", e);
-                });
-        });
-    }
-
     /// Changes the currently connected wallet
     ///
     /// Broadcasts `chainChanged`
@@ -129,14 +92,12 @@ impl ContextInner {
         let new_network = self.get_current_network();
 
         if previous_network.chain_id != new_network.chain_id {
-            // broadcast to peers
-            self.broadcast(json!({
-                "method": "chainChanged",
-                "params": {
-                    "chainId": format!("0x{:x}", new_network.chain_id),
-                    "networkVersion": new_network.name
-                }
-            }));
+            tokio::spawn(async move {
+                Peers::get()
+                    .await
+                    .broadcast_chain_changed(new_network.chain_id, new_network.name);
+            });
+
             self.window_snd
                 .as_ref()
                 .unwrap()

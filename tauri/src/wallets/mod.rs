@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 use std::{
     fs::File,
     io::BufReader,

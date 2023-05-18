@@ -11,6 +11,7 @@ use tungstenite::handshake::server::{ErrorResponse, Request, Response};
 use tungstenite::Message;
 use url::Url;
 
+use crate::context::peers::Peers;
 use crate::context::Context;
 use crate::error::{Error, Result};
 use crate::rpc::Handler;
@@ -84,9 +85,9 @@ pub async fn accept_connection(socket: SocketAddr, stream: TcpStream, ctx: Conte
 
     let peer = Peer::new(socket, snd, query_params);
 
-    ctx.lock().await.add_peer(peer);
+    Peers::get().await.add_peer(peer);
     let err = handle_connection(ws_stream, rcv, ctx.clone()).await;
-    ctx.lock().await.remove_peer(socket);
+    Peers::get().await.remove_peer(socket);
 
     if let Err(e) = err {
         match e {
