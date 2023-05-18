@@ -12,11 +12,11 @@ use crate::types::ChecksummedAddress;
 pub struct Wallet {
     pub name: String,
     mnemonic: String,
-    pub derivation_path: String,
-    pub idx: u32,
-    pub dev: bool,
-    pub count: u32,
-    pub current_key: String,
+    derivation_path: String,
+    idx: u32,
+    dev: bool,
+    count: u32,
+    current_key: String,
 }
 
 impl Default for Wallet {
