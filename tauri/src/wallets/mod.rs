@@ -1,41 +1,51 @@
 #![allow(dead_code)]
 
-use std::collections::HashMap;
+use std::{
+    collections::HashMap,
+    fs::File,
+    io::BufReader,
+    path::{Path, PathBuf},
+};
 
+use ethers::types::Address;
 use once_cell::sync::OnceCell;
+use serde::{Deserialize, Serialize};
 /// An audit of 3 different async RwLock implementations:
 /// https://www.reddit.com/r/rust/comments/f4zldz/i_audited_3_different_implementation_of_async/
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
-use crate::context::Wallet;
+use crate::context::{wallet::ChecksummedAddress, Wallet};
 
-#[derive(Debug)]
+#[derive(Default, Debug, Serialize, Deserialize)]
 pub struct Wallets {
-    map: HashMap<String, Wallet>,
-    current: Current,
+    current: Option<Current>,
+    wallets: Vec<Wallet>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 struct Current {
-    id: String,
-    idx: u32,
+    name: String,
+    key: String,
 }
 
 static WALLETS: OnceCell<RwLock<Wallets>> = OnceCell::new();
+static FILE: OnceCell<PathBuf> = OnceCell::new();
 
 impl Wallets {
-    // TODO: read from a config file here?
-    pub fn init(wallets: HashMap<String, Wallet>) {
-        WALLETS
-            .set(RwLock::new(Wallets {
-                map: wallets,
-                current: Current {
-                    // TODO: this can't be hardcoded
-                    id: "test".into(),
-                    idx: 0,
-                },
-            }))
-            .unwrap();
+    pub fn init(file: PathBuf) {
+        FILE.set(file.clone()).unwrap();
+        let path = Path::new(&file);
+
+        let mut res: Self = if path.exists() {
+            let file = File::open(path).unwrap();
+            let reader = BufReader::new(file);
+            serde_json::from_reader(reader).unwrap()
+        } else {
+            Default::default()
+        };
+
+        res.ensure_current();
+        WALLETS.set(RwLock::new(res)).unwrap();
     }
 
     async fn read<'a>() -> RwLockReadGuard<'a, Wallets> {
@@ -47,34 +57,55 @@ impl Wallets {
     }
 
     fn get_all(&self) -> Vec<Wallet> {
-        self.map.values().cloned().collect()
-    }
-
-    fn get_current(&self) -> Wallet {
-        self.map.get(&self.current.id).unwrap().clone()
+        self.wallets.clone()
     }
 
     fn set_wallets(&mut self, wallets: Vec<Wallet>) -> Result<(), String> {
-        let first = wallets.first().ok_or("no wallets provided")?.clone();
-
-        self.map = wallets.into_iter().map(|w| (w.name.clone(), w)).collect();
-
-        // if current wallet is gone, conenct to the first new one
-        if self.map.get(&self.current.id).is_none() {
-            self.current = Current {
-                id: first.name,
-                idx: first.idx,
-            };
-        }
+        self.wallets = wallets;
+        self.ensure_current();
 
         Ok(())
     }
 
-    fn derive_addresses(&self, id: Option<String>, count: u32) -> Vec<String> {
-        let id = id.unwrap_or(self.current.id.clone());
-        let wallet = self.map.get(&id).unwrap();
+    fn derive_addresses(&self, name: Option<String>) -> HashMap<String, ChecksummedAddress> {
+        let name = name.unwrap_or_else(|| self.current.as_ref().unwrap().name.clone());
+        let wallet = self.find_wallet(&name).unwrap();
 
-        wallet.derive_addresses(count).unwrap()
+        wallet.derive_all_addresses().unwrap()
+    }
+
+    fn get_current(&self) -> Option<&Wallet> {
+        if let Some(current) = &self.current {
+            self.find_wallet(&current.name)
+        } else {
+            None
+        }
+    }
+
+    fn find_wallet(&self, id: &String) -> Option<&Wallet> {
+        self.wallets.iter().find(|w| &w.name == id)
+    }
+
+    fn ensure_current(&mut self) {
+        if self.wallets.is_empty() {
+            self.wallets.push(Default::default());
+        }
+
+        if self.get_current().is_none() {
+            self.current = Some(Current {
+                name: self.wallets[0].name.clone(),
+                key: self.wallets[0].default_key(),
+            });
+        }
+    }
+
+    fn save(&mut self) -> crate::Result<()> {
+        let path = Path::new(FILE.get().unwrap());
+        let file = File::create(path)?;
+
+        serde_json::to_writer_pretty(file, self)?;
+
+        Ok(())
     }
 }
 
@@ -85,7 +116,7 @@ pub async fn wallets_get_all() -> Vec<Wallet> {
 
 #[tauri::command]
 pub async fn wallets_get_current() -> Result<Wallet, String> {
-    Ok(Wallets::read().await.get_current())
+    Ok(Wallets::read().await.get_current().cloned().unwrap())
 }
 
 #[tauri::command]
@@ -94,6 +125,8 @@ pub async fn wallets_set(list: Vec<Wallet>) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub async fn wallets_derive(id: Option<String>, count: u32) -> Result<Vec<String>, String> {
-    Ok(Wallets::read().await.derive_addresses(id, count))
+pub async fn wallets_get_addresses(
+    name: Option<String>,
+) -> Result<HashMap<String, ChecksummedAddress>, String> {
+    Ok(Wallets::read().await.derive_addresses(name))
 }

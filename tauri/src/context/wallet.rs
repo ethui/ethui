@@ -1,5 +1,8 @@
+use std::collections::HashMap;
+
 use ethers::signers::coins_bip39::English;
 use ethers::signers::{MnemonicBuilder, Signer};
+use ethers::types::Address;
 use ethers::utils::to_checksum;
 use ethers_core::k256::ecdsa::SigningKey;
 use serde::de::{self, MapAccess, Visitor};
@@ -12,10 +15,12 @@ use crate::error::Result;
 pub struct Wallet {
     pub name: String,
     mnemonic: String,
-    derivation_path: String,
+    pub derivation_path: String,
     pub idx: u32,
     #[serde(skip)]
     pub signer: ethers::signers::Wallet<SigningKey>,
+    pub dev: bool,
+    pub count: u32,
 }
 
 impl Default for Wallet {
@@ -38,6 +43,8 @@ impl Default for Wallet {
             derivation_path,
             idx,
             signer,
+            dev: true,
+            count: 3,
         }
     }
 }
@@ -46,12 +53,12 @@ impl Wallet {
     pub fn derive_addresses_with_mnemonic(
         mnemonic: &str,
         derivation_path: &str,
-        indexes: u32,
+        count: u32,
     ) -> Result<Vec<String>> {
         // let mnemonic = Mnemonic::<English>::new_from_phrase(mnemonic)?;
         let builder = MnemonicBuilder::<English>::default().phrase(mnemonic);
 
-        (0..indexes)
+        (0..count)
             .map(|idx| -> Result<_> {
                 let signer = builder
                     .clone()
@@ -59,6 +66,25 @@ impl Wallet {
                     .build()?;
 
                 Ok(to_checksum(&signer.address(), None))
+            })
+            .collect()
+    }
+
+    pub fn default_key(&self) -> String {
+        format!("{}/{}", self.derivation_path, self.idx)
+    }
+
+    pub fn derive_all_addresses(&self) -> Result<HashMap<String, ChecksummedAddress>> {
+        // let mnemonic = Mnemonic::<English>::new_from_phrase(mnemonic)?;
+        let builder = MnemonicBuilder::<English>::default().phrase(self.mnemonic.as_str());
+
+        (0..self.count)
+            .map(|idx| -> Result<_> {
+                let path = format!("{}/{}", self.derivation_path, idx);
+
+                let signer = builder.clone().derivation_path(&path)?.build()?;
+
+                Ok((path, signer.address().into()))
             })
             .collect()
     }
@@ -102,9 +128,12 @@ impl<'de> Deserialize<'de> for Wallet {
         #[derive(Deserialize)]
         #[serde(field_identifier, rename_all = "camelCase")]
         enum Field {
+            Name,
             Mnemonic,
             DerivationPath,
+            Count,
             Idx,
+            Dev,
         }
 
         impl<'de> Visitor<'de> for WalletVisitor {
@@ -118,12 +147,18 @@ impl<'de> Deserialize<'de> for Wallet {
             where
                 V: MapAccess<'de>,
             {
+                let mut name = None;
                 let mut mnemonic = None;
                 let mut derivation_path = None;
                 let mut idx = None;
+                let mut count = None;
+                let mut dev = None;
 
                 while let Some(key) = map.next_key()? {
                     match key {
+                        Field::Name => {
+                            name = Some(map.next_value()?);
+                        }
                         Field::Mnemonic => {
                             mnemonic = Some(map.next_value()?);
                         }
@@ -133,14 +168,23 @@ impl<'de> Deserialize<'de> for Wallet {
                         Field::Idx => {
                             idx = Some(map.next_value()?);
                         }
+                        Field::Dev => {
+                            dev = Some(map.next_value()?);
+                        }
+                        Field::Count => {
+                            count = Some(map.next_value()?);
+                        }
                     }
                 }
 
+                let name: String = name.ok_or_else(|| de::Error::missing_field("name"))?;
                 let mnemonic: String =
                     mnemonic.ok_or_else(|| de::Error::missing_field("mnemonic"))?;
                 let derivation_path: String =
                     derivation_path.ok_or_else(|| de::Error::missing_field("derivation_path"))?;
                 let idx: u32 = idx.ok_or_else(|| de::Error::missing_field("idx"))?;
+                let count: u32 = count.unwrap_or(1);
+                let dev: bool = dev.unwrap_or(false);
 
                 // TODO: the chain id needs to be updated right away, if we read the "current
                 // chain" from storage in the future
@@ -149,16 +193,36 @@ impl<'de> Deserialize<'de> for Wallet {
 
                 Ok(Wallet {
                     // TODO: wallet name
-                    name: "test".into(),
+                    name,
                     mnemonic,
                     derivation_path,
                     idx,
                     signer,
+                    dev,
+                    count,
                 })
             }
         }
 
         const FIELDS: &[&str] = &["mnemonic", "derivation_path", "idx"];
         deserializer.deserialize_struct("Wallet", FIELDS, WalletVisitor)
+    }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ChecksummedAddress(Address);
+
+impl Serialize for ChecksummedAddress {
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(&to_checksum(&self.0, None))
+    }
+}
+
+impl From<Address> for ChecksummedAddress {
+    fn from(value: Address) -> Self {
+        Self(value)
     }
 }

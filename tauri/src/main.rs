@@ -14,6 +14,7 @@ mod ws;
 
 use context::Context;
 use error::Result;
+use wallets::Wallets;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -22,6 +23,8 @@ async fn main() -> Result<()> {
     fix_path_env::fix()?;
 
     let mut app = app::IronApp::build();
+
+    Wallets::init(app.get_settings_file("wallets"));
 
     // now we're able to build our context
     // this relies on $APPDIR retrieved from Tauri

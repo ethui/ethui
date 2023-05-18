@@ -45,6 +45,7 @@ export const walletSchema2 = z.object({
     message: "invalid path format",
   }),
   idx: z.number().int().min(0).max(4),
+  count: z.number().int().min(1),
 });
 
 export type Wallet2 = z.infer<typeof walletSchema2>;

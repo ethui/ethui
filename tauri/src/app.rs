@@ -63,7 +63,7 @@ impl IronApp {
                 wallets::wallets_get_all,
                 wallets::wallets_get_current,
                 wallets::wallets_set,
-                wallets::wallets_derive
+                wallets::wallets_get_addresses,
             ])
             .setup(|app| {
                 let handle = app.handle();
@@ -105,7 +105,9 @@ impl IronApp {
         };
 
         DB_PATH.set(res.get_db_path()).unwrap();
-        SETTINGS_PATH.set(res.get_settings_file()).unwrap();
+        SETTINGS_PATH
+            .set(res.get_settings_file("settings"))
+            .unwrap();
 
         res
     }
@@ -167,8 +169,8 @@ impl IronApp {
         self.get_resource("db.sqlite3")
     }
 
-    fn get_settings_file(&self) -> PathBuf {
-        self.get_resource("settings.json")
+    pub fn get_settings_file(&self, name: &str) -> PathBuf {
+        self.get_resource(&format!("{}.json", name))
     }
 }
 

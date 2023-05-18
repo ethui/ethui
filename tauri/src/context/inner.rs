@@ -16,7 +16,6 @@ pub use super::wallet::Wallet;
 use crate::app::{IronEvent, SETTINGS_PATH};
 use crate::db::DB;
 use crate::error::Result;
-use crate::wallets::Wallets;
 use crate::ws::Peer;
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -77,10 +76,6 @@ impl ContextInner {
     pub async fn init(&mut self, sender: mpsc::UnboundedSender<IronEvent>) -> Result<()> {
         self.window_snd = Some(sender);
         self.db.connect().await?;
-
-        let mut wallets = HashMap::new();
-        wallets.insert("test".to_string(), self.wallet.clone());
-        Wallets::init(wallets);
 
         for network in self.networks.values_mut() {
             network.reset_listener(&self.db, self.window_snd.as_ref().unwrap().clone())?;
