@@ -5,7 +5,6 @@ use std::net::SocketAddr;
 use std::path::Path;
 
 use ethers::providers::{Http, Provider};
-use ethers_core::k256::ecdsa::SigningKey;
 use log::warn;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -20,7 +19,6 @@ use crate::ws::Peer;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct ContextInner {
-    pub wallet: Wallet,
     pub current_network: String,
     pub networks: HashMap<String, Network>,
 
@@ -47,7 +45,6 @@ impl Default for ContextInner {
         Self {
             networks,
             current_network: String::from("mainnet"),
-            wallet: Default::default(),
             peers: Default::default(),
             db: Default::default(),
             window_snd: None,
@@ -80,11 +77,6 @@ impl ContextInner {
         for network in self.networks.values_mut() {
             network.reset_listener(&self.db, self.window_snd.as_ref().unwrap().clone())?;
         }
-
-        // this needs to be called after initialization since the deserialized signer hardcoded
-        // chain_id = 1
-        self.wallet
-            .update_chain_id(self.get_current_network().chain_id);
 
         Ok(())
     }
@@ -130,23 +122,6 @@ impl ContextInner {
 
     /// Changes the currently connected wallet
     ///
-    /// Broadcasts `accountsChanged`
-    pub fn set_wallet(&mut self, wallet: Wallet) {
-        let previous_address = self.wallet.checksummed_address();
-        self.wallet = wallet;
-        let new_address = self.wallet.checksummed_address();
-
-        if previous_address != new_address {
-            self.broadcast(json!({
-                "method": "accountsChanged",
-                "params": [new_address]
-            }));
-        }
-        self.save().unwrap();
-    }
-
-    /// Changes the currently connected wallet
-    ///
     /// Broadcasts `chainChanged`
     pub fn set_current_network(&mut self, new_current_network: String) -> Result<()> {
         let previous_network = self.get_current_network();
@@ -154,9 +129,6 @@ impl ContextInner {
         let new_network = self.get_current_network();
 
         if previous_network.chain_id != new_network.chain_id {
-            // update signer
-            self.wallet.update_chain_id(new_network.chain_id);
-
             // broadcast to peers
             self.broadcast(json!({
                 "method": "chainChanged",
@@ -201,9 +173,5 @@ impl ContextInner {
     pub fn get_provider(&self) -> Provider<Http> {
         let network = self.get_current_network();
         Provider::<Http>::try_from(network.http_url).unwrap()
-    }
-
-    pub fn get_signer(&self) -> ethers::signers::Wallet<SigningKey> {
-        self.wallet.signer.clone()
     }
 }

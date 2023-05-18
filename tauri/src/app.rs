@@ -20,6 +20,7 @@ pub struct IronApp {
 
 #[derive(Debug, Serialize)]
 pub enum IronEvent {
+    AddressChanged,
     NetworkChanged,
     TxsUpdated,
     ConnectionsUpdated,
@@ -28,6 +29,7 @@ pub enum IronEvent {
 impl IronEvent {
     fn label(&self) -> &str {
         match self {
+            Self::AddressChanged => "address-changed",
             Self::NetworkChanged => "network-changed",
             Self::TxsUpdated => "txs-updated",
             Self::ConnectionsUpdated => "connections-updated",
@@ -50,20 +52,18 @@ impl IronApp {
                 commands::get_networks,
                 commands::get_current_network,
                 commands::set_current_network,
-                commands::get_wallet,
-                commands::set_wallet,
-                commands::get_current_address,
                 commands::set_networks,
                 commands::get_transactions,
                 commands::get_contracts,
                 commands::get_erc20_balances,
                 commands::get_connections,
-                commands::derive_addresses,
-                commands::derive_addresses_with_mnemonic,
                 wallets::wallets_get_all,
                 wallets::wallets_get_current,
-                wallets::wallets_set,
-                wallets::wallets_get_addresses,
+                wallets::wallets_get_current_address,
+                wallets::wallets_set_list,
+                wallets::wallets_set_current_wallet,
+                wallets::wallets_set_current_key,
+                wallets::wallets_get_wallet_addresses,
             ])
             .setup(|app| {
                 let handle = app.handle();

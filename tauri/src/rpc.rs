@@ -16,6 +16,7 @@ use jsonrpc_core::{ErrorCode, MetaIoHandler, Params};
 use serde_json::json;
 
 use crate::context::{Context, UnlockedContext};
+use crate::wallets::Wallets;
 
 pub struct Handler {
     io: MetaIoHandler<Context>,
@@ -107,8 +108,9 @@ impl Handler {
         self_handler!("eth_signTypedData_v4", Self::eth_sign_typed_data_v4);
     }
 
-    async fn accounts(_: Params, ctx: UnlockedContext<'_>) -> Result<serde_json::Value> {
-        Ok(json!([ctx.wallet.checksummed_address()]))
+    async fn accounts(_: Params, _ctx: UnlockedContext<'_>) -> Result<serde_json::Value> {
+        let address = Wallets::read().await.get_current().current_address();
+        Ok(json!([address]))
     }
 
     async fn chain_id(_: Params, ctx: UnlockedContext<'_>) -> Result<serde_json::Value> {
@@ -117,12 +119,13 @@ impl Handler {
 
     async fn provider_state(_: Params, ctx: UnlockedContext<'_>) -> Result<serde_json::Value> {
         let network = ctx.get_current_network();
+        let address = Wallets::read().await.get_current().current_address();
 
         Ok(json!({
             "isUnlocked": true,
             "chainId": network.chain_id_hex(),
             "networkVersion": network.name,
-            "accounts": [ctx.wallet.checksummed_address()],
+            "accounts": [address],
         }))
     }
 
@@ -145,6 +148,8 @@ impl Handler {
         ctx: UnlockedContext<'_>,
     ) -> Result<serde_json::Value> {
         let params = params.parse::<Vec<HashMap<String, String>>>().unwrap()[0].clone();
+
+        dbg!(&params);
 
         // parse params
         let from = Address::from_str(params.get("from").unwrap()).unwrap();
@@ -174,7 +179,12 @@ impl Handler {
 
         // create signer
         let provider = ctx.get_provider();
-        let signer = SignerMiddleware::new(provider, ctx.get_signer());
+        let signer = Wallets::read()
+            .await
+            .get_current()
+            .build_signer(ctx.get_current_network().chain_id)
+            .unwrap();
+        let signer = SignerMiddleware::new(provider, signer);
 
         // fill in gas
         // TODO: we're defaulting to 1_000_000 gas cost if estimation fails
@@ -204,7 +214,12 @@ impl Handler {
         // TODO: ensure from == signer
 
         let provider = ctx.get_provider();
-        let signer = SignerMiddleware::new(provider, ctx.get_signer());
+        let signer = Wallets::read()
+            .await
+            .get_current()
+            .build_signer(ctx.get_current_network().chain_id)
+            .unwrap();
+        let signer = SignerMiddleware::new(provider, signer);
 
         let bytes = Bytes::from_str(&msg).unwrap();
         let res = signer.sign(bytes, &address).await;
@@ -224,7 +239,11 @@ impl Handler {
         let data = params[1].as_ref().cloned().unwrap();
         let typed_data: eip712::TypedData = serde_json::from_str(&data).unwrap();
 
-        let signer = ctx.get_signer();
+        let signer = Wallets::read()
+            .await
+            .get_current()
+            .build_signer(ctx.get_current_network().chain_id)
+            .unwrap();
         // TODO: ensure from == signer
 
         let res = signer.sign_typed_data(&typed_data).await;

@@ -46,6 +46,7 @@ export const walletSchema2 = z.object({
   }),
   idx: z.number().int().min(0).max(4),
   count: z.number().int().min(1),
+  currentKey: z.string().optional(),
 });
 
 export type Wallet2 = z.infer<typeof walletSchema2>;

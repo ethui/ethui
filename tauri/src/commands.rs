@@ -1,6 +1,6 @@
 use ethers::types::{Address, U256};
 
-use crate::context::{Context, Network, Wallet};
+use crate::context::{Context, Network};
 use crate::store::events::EventsStore;
 
 type Ctx<'a> = tauri::State<'a, Context>;
@@ -39,33 +39,6 @@ pub async fn set_networks(networks: Vec<Network>, ctx: Ctx<'_>) -> Result<()> {
 }
 
 #[tauri::command]
-pub async fn get_wallet(ctx: Ctx<'_>) -> Result<Wallet> {
-    let ctx = ctx.lock().await;
-
-    Ok(ctx.wallet.clone())
-}
-
-#[tauri::command]
-pub async fn set_wallet(mut wallet: Wallet, ctx: Ctx<'_>) -> Result<()> {
-    let mut ctx = ctx.lock().await;
-
-    // wallet is deserialized from frontend params, and doesn't yet know the chain_id
-    // we need to manually set it
-    let chain_id = ctx.get_current_network().chain_id;
-    wallet.update_chain_id(chain_id);
-
-    ctx.set_wallet(wallet);
-    Ok(())
-}
-
-#[tauri::command]
-pub async fn get_current_address(ctx: Ctx<'_>) -> Result<String> {
-    let ctx = ctx.lock().await;
-
-    Ok(ctx.wallet.checksummed_address())
-}
-
-#[tauri::command]
 pub async fn get_transactions(address: Address, ctx: Ctx<'_>) -> Result<Vec<String>> {
     let ctx = ctx.lock().await;
 
@@ -96,26 +69,4 @@ pub async fn get_connections(ctx: Ctx<'_>) -> Result<Vec<crate::ws::Peer>> {
     let ctx = ctx.lock().await;
 
     Ok(ctx.peers.values().cloned().collect())
-}
-
-#[tauri::command]
-pub async fn derive_addresses_with_mnemonic(
-    mnemonic: String,
-    derivation_path: String,
-) -> Result<Vec<String>> {
-    Ok(Wallet::derive_addresses_with_mnemonic(
-        &mnemonic,
-        &derivation_path,
-        5,
-    )?)
-}
-
-#[tauri::command]
-pub async fn derive_addresses(ctx: Ctx<'_>) -> Result<Vec<String>> {
-    let ctx = ctx.lock().await;
-
-    let wallet = ctx.wallet.clone();
-    let addresses = wallet.derive_addresses(5).unwrap();
-
-    Ok(addresses)
 }

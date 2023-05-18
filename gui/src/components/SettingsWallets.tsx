@@ -67,7 +67,7 @@ export function SettingsWallets() {
   const onSubmit = useCallback(
     async (data: { wallets?: Wallet2[] }) => {
       reset(data);
-      await invoke("wallets_set", { list: data.wallets });
+      await invoke("wallets_set_list", { list: data.wallets });
       mutate();
     },
     [reset, mutate]

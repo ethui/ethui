@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use ethers::signers::coins_bip39::English;
 use ethers::signers::{MnemonicBuilder, Signer};
 use ethers::types::Address;
@@ -17,10 +15,9 @@ pub struct Wallet {
     mnemonic: String,
     pub derivation_path: String,
     pub idx: u32,
-    #[serde(skip)]
-    pub signer: ethers::signers::Wallet<SigningKey>,
     pub dev: bool,
     pub count: u32,
+    pub current_key: String,
 }
 
 impl Default for Wallet {
@@ -28,13 +25,7 @@ impl Default for Wallet {
         let mnemonic = String::from("test test test test test test test test test test test junk");
         let derivation_path = String::from("m/44'/60'/0'/0");
         let idx = 0;
-
-        let signer = MnemonicBuilder::<English>::default()
-            .phrase(mnemonic.as_str())
-            .derivation_path(&format!("{}/{}", derivation_path, idx))
-            .unwrap()
-            .build()
-            .expect("");
+        let current_key = format!("{}/{}", derivation_path, idx);
 
         Self {
             // TODO: wallet name
@@ -42,39 +33,25 @@ impl Default for Wallet {
             mnemonic,
             derivation_path,
             idx,
-            signer,
             dev: true,
             count: 3,
+            current_key,
         }
     }
 }
 
 impl Wallet {
-    pub fn derive_addresses_with_mnemonic(
-        mnemonic: &str,
-        derivation_path: &str,
-        count: u32,
-    ) -> Result<Vec<String>> {
-        // let mnemonic = Mnemonic::<English>::new_from_phrase(mnemonic)?;
-        let builder = MnemonicBuilder::<English>::default().phrase(mnemonic);
-
-        (0..count)
-            .map(|idx| -> Result<_> {
-                let signer = builder
-                    .clone()
-                    .derivation_path(&format!("{}/{}", derivation_path, idx))?
-                    .build()?;
-
-                Ok(to_checksum(&signer.address(), None))
-            })
-            .collect()
+    pub fn current_address(&self) -> ChecksummedAddress {
+        // TODO: where will chain id come from?
+        self.build_signer(1).unwrap().address().into()
     }
 
-    pub fn default_key(&self) -> String {
-        format!("{}/{}", self.derivation_path, self.idx)
+    pub fn set_current_key(&mut self, key: String) {
+        // TODO: check if key is valid
+        self.current_key = key;
     }
 
-    pub fn derive_all_addresses(&self) -> Result<HashMap<String, ChecksummedAddress>> {
+    pub fn derive_all_addresses(&self) -> Result<Vec<(String, ChecksummedAddress)>> {
         // let mnemonic = Mnemonic::<English>::new_from_phrase(mnemonic)?;
         let builder = MnemonicBuilder::<English>::default().phrase(self.mnemonic.as_str());
 
@@ -89,32 +66,17 @@ impl Wallet {
             .collect()
     }
 
-    pub fn derive_addresses(&self, indexes: u32) -> Result<Vec<String>> {
-        Self::derive_addresses_with_mnemonic(&self.mnemonic, &self.derivation_path, indexes)
-    }
-
     pub fn build_signer(
-        mnemonic: &str,
-        derivation_path: &str,
-        idx: u32,
+        &self,
         chain_id: u32,
     ) -> std::result::Result<ethers::signers::Wallet<SigningKey>, String> {
         MnemonicBuilder::<English>::default()
-            .phrase(mnemonic)
-            .derivation_path(&format!("{}/{}", derivation_path, idx))
+            .phrase(self.mnemonic.as_ref())
+            .derivation_path(&self.current_key)
             .map_err(|e| e.to_string())?
             .build()
             .map_err(|e| e.to_string())
             .map(|v| v.with_chain_id(chain_id))
-    }
-
-    pub fn checksummed_address(&self) -> String {
-        to_checksum(&self.signer.address(), None)
-    }
-
-    pub fn update_chain_id(&mut self, chain_id: u32) {
-        self.signer =
-            Self::build_signer(&self.mnemonic, &self.derivation_path, self.idx, chain_id).unwrap();
     }
 }
 
@@ -134,6 +96,7 @@ impl<'de> Deserialize<'de> for Wallet {
             Count,
             Idx,
             Dev,
+            CurrentKey,
         }
 
         impl<'de> Visitor<'de> for WalletVisitor {
@@ -152,6 +115,7 @@ impl<'de> Deserialize<'de> for Wallet {
                 let mut derivation_path = None;
                 let mut idx = None;
                 let mut count = None;
+                let mut current_key = None;
                 let mut dev = None;
 
                 while let Some(key) = map.next_key()? {
@@ -174,6 +138,9 @@ impl<'de> Deserialize<'de> for Wallet {
                         Field::Count => {
                             count = Some(map.next_value()?);
                         }
+                        Field::CurrentKey => {
+                            current_key = Some(map.next_value()?);
+                        }
                     }
                 }
 
@@ -184,12 +151,9 @@ impl<'de> Deserialize<'de> for Wallet {
                     derivation_path.ok_or_else(|| de::Error::missing_field("derivation_path"))?;
                 let idx: u32 = idx.ok_or_else(|| de::Error::missing_field("idx"))?;
                 let count: u32 = count.unwrap_or(1);
+                let current_key: String =
+                    current_key.unwrap_or(format!("{}/{}", derivation_path, idx));
                 let dev: bool = dev.unwrap_or(false);
-
-                // TODO: the chain id needs to be updated right away, if we read the "current
-                // chain" from storage in the future
-                let signer = Wallet::build_signer(&mnemonic, &derivation_path, idx, 1)
-                    .map_err(|_| de::Error::custom("could not build signer"))?;
 
                 Ok(Wallet {
                     // TODO: wallet name
@@ -197,9 +161,9 @@ impl<'de> Deserialize<'de> for Wallet {
                     mnemonic,
                     derivation_path,
                     idx,
-                    signer,
                     dev,
                     count,
+                    current_key,
                 })
             }
         }
