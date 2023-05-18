@@ -16,7 +16,7 @@ use serde_json::json;
 
 use self::send_transaction::SendTransaction;
 use crate::context::Context;
-use crate::global_state::GlobalState;
+use crate::types::GlobalState;
 use crate::wallets::Wallets;
 
 pub struct Handler {

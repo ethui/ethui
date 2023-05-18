@@ -33,9 +33,6 @@ const emptyWallet: Wallet & NewChild = {
 };
 
 export function SettingsWallets() {
-  // TODO on the first render this isn't cached yet
-  // perhaps force this request somewhere else?
-  // or trigger a reset of the form once it shows up?
   const { data: wallets, mutate } =
     useInvoke<(Wallet & NewChild)[]>("wallets_get_all");
 
@@ -54,10 +51,7 @@ export function SettingsWallets() {
   const isDirtyAlt = !!Object.keys(dirtyFields).length;
 
   // default values are async, need to reset once they're ready
-  useEffect(() => {
-    if (!wallets) return;
-    reset({ wallets });
-  }, [reset, wallets]);
+  useEffect(() => reset({ wallets }), [reset, wallets]);
 
   const { fields, append, remove } = useFieldArray({
     control,

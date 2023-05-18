@@ -8,7 +8,6 @@ mod context;
 mod db;
 mod dialogs;
 mod error;
-mod global_state;
 mod peers;
 mod rpc;
 mod store;
@@ -18,8 +17,8 @@ mod ws;
 
 use context::Context;
 use error::Result;
-use global_state::GlobalState;
 use peers::Peers;
+use types::GlobalState;
 use wallets::Wallets;
 
 #[tokio::main]

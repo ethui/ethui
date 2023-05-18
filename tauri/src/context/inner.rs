@@ -10,8 +10,8 @@ use crate::{
     app::{self, SETTINGS_PATH},
     db::DB,
     error::Result,
-    global_state::GlobalState,
     peers::Peers,
+    types::GlobalState,
 };
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -33,7 +33,6 @@ impl Default for ContextInner {
         Self {
             networks: Network::default(),
             current_network: String::from("mainnet"),
-            // peers: Default::default(),
             db: Default::default(),
             window_snd: None,
         }

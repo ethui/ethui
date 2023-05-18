@@ -14,7 +14,7 @@ import {
   TextField,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
-import React from "react";
+import { useEffect } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 
 import { useInvoke } from "../hooks/tauri";
@@ -54,6 +54,9 @@ export function SettingsNetwork() {
   });
   // TODO: https://github.com/react-hook-form/react-hook-form/issues/3213
   const isDirtyAlt = !!Object.keys(dirtyFields).length;
+
+  // default values are async, need to reset once they're ready
+  useEffect(() => reset({ networks }), [reset, networks]);
 
   const { fields, append, remove } = useFieldArray({
     control,

@@ -1,5 +1,5 @@
 use super::{wallet::Wallet, Wallets};
-use crate::{global_state::GlobalState, types::ChecksummedAddress};
+use crate::types::{ChecksummedAddress, GlobalState};
 
 /// Lists all wallets
 #[tauri::command]

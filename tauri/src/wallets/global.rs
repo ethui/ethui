@@ -9,7 +9,7 @@ use once_cell::sync::OnceCell;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
 use super::Wallets;
-use crate::global_state::GlobalState;
+use crate::types::GlobalState;
 
 static WALLETS: OnceCell<RwLock<Wallets>> = OnceCell::new();
 

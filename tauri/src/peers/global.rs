@@ -3,7 +3,7 @@ use once_cell::sync::Lazy;
 use tokio::sync::{mpsc, RwLock, RwLockReadGuard, RwLockWriteGuard};
 
 use super::Peers;
-use crate::{app, global_state::GlobalState};
+use crate::{app, types::GlobalState};
 
 static PEERS: Lazy<RwLock<Peers>> = Lazy::new(Default::default);
 

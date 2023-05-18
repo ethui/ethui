@@ -10,7 +10,10 @@ use std::{
 use serde::{Deserialize, Serialize};
 
 use self::wallet::Wallet;
-use crate::{global_state::GlobalState, peers::Peers, types::ChecksummedAddress};
+use crate::{
+    peers::Peers,
+    types::{ChecksummedAddress, GlobalState},
+};
 
 /// Maintains a list of Ethereum wallets, including keeping track of the global current wallet &
 /// address

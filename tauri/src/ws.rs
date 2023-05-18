@@ -17,9 +17,9 @@ use url::Url;
 use crate::{
     context::Context,
     error::{Error, Result},
-    global_state::GlobalState,
     peers::Peers,
     rpc::Handler,
+    types::GlobalState,
 };
 
 #[derive(Clone, Debug, Serialize)]
