@@ -4,7 +4,7 @@ import React from "react";
 import { useInvoke } from "../hooks/tauri";
 import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
 import { Address } from "../types";
-import { CopyToClipboard } from "./CopyToClipboard";
+import { ContextMenu } from "./ContextMenu";
 import Panel from "./Panel";
 
 export function Contracts() {
@@ -26,9 +26,9 @@ export function Contracts() {
 function Contract({ address }: { address: Address }) {
   return (
     <ListItem>
-      <CopyToClipboard>
+      <ContextMenu>
         <Typography>{address}</Typography>
-      </CopyToClipboard>
+      </ContextMenu>
     </ListItem>
   );
 }
