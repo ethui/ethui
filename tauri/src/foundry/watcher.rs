@@ -5,11 +5,22 @@ use std::{
 
 use glob::glob;
 use notify::{Config, Event, EventKind, RecommendedWatcher, RecursiveMode, Watcher};
+use once_cell::sync::Lazy;
+use regex::Regex;
 use tokio::sync::mpsc::{self, Receiver};
 
+#[derive(Debug)]
+pub(super) struct Match {
+    full_path: PathBuf,
+    project: String,
+    file: String,
+    name: String,
+}
+
+/// Creates an async watch over a directory, looking for relevant ABI files to index
 pub(super) async fn async_watch<P: AsRef<Path>>(
     path: P,
-    snd: mpsc::UnboundedSender<PathBuf>,
+    snd: mpsc::UnboundedSender<Match>,
 ) -> notify::Result<()> {
     let (mut watcher, mut rx) = async_watcher()?;
 
@@ -21,14 +32,12 @@ pub(super) async fn async_watch<P: AsRef<Path>>(
         use EventKind::*;
 
         match res {
-            Ok(event) => match event.kind {
-                Modify(_) | Remove(_) => {
-                    if event.paths[0].extension() == Some(OsStr::new("json")) {
-                        snd.send(event.paths[0].clone()).unwrap();
-                    }
+            Ok(event) => {
+                // convert event to a match, notify if successful
+                if let Ok(m) = event.try_into() {
+                    snd.send(m).unwrap();
                 }
-                _ => {}
-            },
+            }
             Err(e) => log::warn!("watch error: {:?}", e),
         }
     }
@@ -51,17 +60,73 @@ fn async_watcher() -> notify::Result<(RecommendedWatcher, Receiver<notify::Resul
     Ok((watcher, rx))
 }
 
+/// Runs a one-off glob query looking for ABIs to index
+/// Is meant to complement `async_watch` by running an initial sweep on boot
 pub(super) async fn scan_glob<P: AsRef<Path>>(
     path: P,
-    snd: mpsc::UnboundedSender<PathBuf>,
+    snd: mpsc::UnboundedSender<Match>,
 ) -> notify::Result<()> {
     let query =
         format!("{}/**/*.sol/**/*.json", path.as_ref().to_str().unwrap()).replace("//", "/");
 
-    for entry in glob(&query).unwrap().flatten() {
+    for entry in glob(&query)
+        .unwrap()
+        .flatten()
+        .map(|path| path.try_into())
+        .flatten()
+    {
         snd.send(entry).unwrap();
     }
 
     // TODO: this should glob all files at the start
     Ok(())
+}
+
+/// A regex that matches paths in the form
+/// `.../{project_name}/out/{dir/subdir}/{abi}.json`
+static REGEX: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(
+        r#"(?x)
+        \/
+        (?<project>[^\/]+) # project name
+        \/out\/
+        (?<file>.+) # file path
+        \/
+        (?<name>[^\/]+) # abi name
+        .json 
+        $"#,
+    )
+    .unwrap()
+});
+
+impl TryFrom<PathBuf> for Match {
+    type Error = ();
+
+    fn try_from(path: PathBuf) -> std::result::Result<Self, Self::Error> {
+        if path.extension() != Some(OsStr::new("json")) {
+            return Err(());
+        }
+
+        let path_str = path.clone();
+        let path_str = path_str.to_str().unwrap();
+
+        REGEX.captures(path_str).ok_or(()).map(|caps| Self {
+            full_path: path,
+            project: caps["project"].to_string(),
+            file: caps["file"].to_string(),
+            name: caps["name"].to_string(),
+        })
+    }
+}
+
+impl TryFrom<notify::Event> for Match {
+    type Error = ();
+
+    fn try_from(event: notify::Event) -> Result<Self, Self::Error> {
+        use EventKind::*;
+        match event.kind {
+            Modify(_) | Remove(_) => event.paths[0].try_into(),
+            _ => Err(()),
+        }
+    }
 }

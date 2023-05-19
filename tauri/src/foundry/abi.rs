@@ -2,6 +2,7 @@
 
 use std::{fs::File, io::BufReader, path::PathBuf};
 
+use once_cell::sync::Lazy;
 use regex::Regex;
 
 use super::calculate_code_hash;
@@ -16,25 +17,30 @@ pub(super) struct Abi {
     pub abi: serde_json::Value,
 }
 
-impl Abi {
-    pub fn try_from_file(path: PathBuf) -> Result<Self, ()> {
-        // TODO: this won't work in windows I supose
-        let re = Regex::new(
-            r#"(?x)
+/// A regex that matches paths in the form
+/// `.../{project_name}/out/{dir/subdir}/{abi}.json`
+static REGEX: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(
+        r#"(?x)
         \/
         (?<project>[^\/]+) # project name
         \/out\/
-        (?<file>[^\/]+) # file path
+        (?<file>.+) # file path
         \/
         (?<name>[^\/]+) # abi name
         .json 
         $"#,
-        )
-        .unwrap();
+    )
+    .unwrap()
+});
+
+impl Abi {
+    pub fn try_from_file(path: PathBuf) -> Result<Self, ()> {
+        // TODO: this won't work in windows I supose
 
         let path_str = path.clone();
         let path_str = path_str.to_str().unwrap();
-        let caps = re.captures(path_str);
+        let caps = REGEX.captures(path_str);
         if caps.is_none() {
             return Err(());
         }
