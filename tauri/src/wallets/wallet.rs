@@ -3,7 +3,7 @@ use ethers::signers::{MnemonicBuilder, Signer};
 use ethers_core::k256::ecdsa::SigningKey;
 use serde::{Deserialize, Serialize};
 
-use crate::error::Result;
+use super::error::Result;
 use crate::types::ChecksummedAddress;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

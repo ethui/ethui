@@ -1,4 +1,4 @@
-use super::{wallet::Wallet, Wallets};
+use super::{wallet::Wallet, Result, Wallets};
 use crate::types::{ChecksummedAddress, GlobalState};
 
 /// Lists all wallets
@@ -9,13 +9,13 @@ pub async fn wallets_get_all() -> Vec<Wallet> {
 
 /// Gets the current wallet
 #[tauri::command]
-pub async fn wallets_get_current() -> Result<Wallet, String> {
+pub async fn wallets_get_current() -> Result<Wallet> {
     Ok(Wallets::read().await.get_current_wallet().clone())
 }
 
 /// Gets the current address ooof the current wallet
 #[tauri::command]
-pub async fn wallets_get_current_address() -> Result<ChecksummedAddress, String> {
+pub async fn wallets_get_current_address() -> Result<ChecksummedAddress> {
     Ok(Wallets::read()
         .await
         .get_current_wallet()
@@ -25,19 +25,19 @@ pub async fn wallets_get_current_address() -> Result<ChecksummedAddress, String>
 /// Sets a new list of wallets
 /// Currently, the UI sends over the entire list to set, instead of adding/removing items
 #[tauri::command]
-pub async fn wallets_set_list(list: Vec<Wallet>) -> Result<(), String> {
+pub async fn wallets_set_list(list: Vec<Wallet>) -> Result<()> {
     Wallets::write().await.set_wallets(list)
 }
 
 /// Switches the current wallet
 #[tauri::command]
-pub async fn wallets_set_current_wallet(idx: usize) -> Result<(), String> {
+pub async fn wallets_set_current_wallet(idx: usize) -> Result<()> {
     Wallets::write().await.set_current_wallet(idx)
 }
 
 /// Switches the current key of the current wallet
 #[tauri::command]
-pub async fn wallets_set_current_path(key: String) -> Result<(), String> {
+pub async fn wallets_set_current_path(key: String) -> Result<()> {
     Wallets::write().await.set_current_path(key)
 }
 
@@ -45,6 +45,6 @@ pub async fn wallets_set_current_path(key: String) -> Result<(), String> {
 #[tauri::command]
 pub async fn wallets_get_wallet_addresses(
     name: String,
-) -> Result<Vec<(String, ChecksummedAddress)>, String> {
+) -> Result<Vec<(String, ChecksummedAddress)>> {
     Ok(Wallets::read().await.get_wallet_addresses(name))
 }

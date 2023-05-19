@@ -1,4 +1,5 @@
 pub mod commands;
+mod error;
 mod global;
 mod wallet;
 
@@ -7,6 +8,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
+pub use error::{Error, Result};
 use serde::{Deserialize, Serialize};
 
 use self::wallet::Wallet;
@@ -38,7 +40,7 @@ impl Wallets {
     ///
     /// Since wallets actually contain multiple addresses, we need the ability to connect to a
     /// different one within the same wallet
-    fn set_current_path(&mut self, key: String) -> Result<(), String> {
+    fn set_current_path(&mut self, key: String) -> Result<()> {
         self.wallets[self.current].set_current_path(&key)?;
         self.notify_peers();
         self.save()?;
@@ -46,10 +48,11 @@ impl Wallets {
     }
 
     /// Switches the current default wallet
-    fn set_current_wallet(&mut self, id: usize) -> Result<(), String> {
+    fn set_current_wallet(&mut self, id: usize) -> Result<()> {
         if id >= self.wallets.len() {
-            return Err(format!("Wallet with id {} not found", id));
+            return Err(Error::InvalidWallet(id));
         }
+
         self.current = id;
         self.notify_peers();
         self.save()?;
@@ -62,8 +65,9 @@ impl Wallets {
     }
 
     /// Resets the list of wallets to a new one
-    /// TODO: should fail if wallets with duplicate names exist
-    fn set_wallets(&mut self, wallets: Vec<Wallet>) -> Result<(), String> {
+    fn set_wallets(&mut self, wallets: Vec<Wallet>) -> Result<()> {
+        // TODO: should fail if wallets with duplicate names exist
+
         self.wallets = wallets;
         self.ensure_current();
         self.notify_peers();
@@ -85,7 +89,7 @@ impl Wallets {
     }
 
     /// Persists current state to disk
-    fn save(&self) -> crate::Result<()> {
+    fn save(&self) -> Result<()> {
         let pathbuf = self.file.clone().unwrap();
         let path = Path::new(&pathbuf);
         let file = File::create(path)?;
