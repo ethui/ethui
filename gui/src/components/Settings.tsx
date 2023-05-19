@@ -2,11 +2,13 @@ import { Container, Tab, Tabs } from "@mui/material";
 import React from "react";
 import { useState } from "react";
 
+import { SettingsFoundry } from "./SettingsFoundry";
 import { SettingsNetwork } from "./SettingsNetwork";
 import { SettingsWallet } from "./SettingsWallet";
 import { TabPanel } from "./TabPanel";
 
 const tabs = [
+  { name: "Foundry", component: SettingsFoundry },
   { name: "Wallet", component: SettingsWallet },
   { name: "Network", component: SettingsNetwork },
 ];

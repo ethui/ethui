@@ -1,8 +1,4 @@
-use std::collections::HashMap;
-use std::fs::File;
-use std::io::BufReader;
-use std::net::SocketAddr;
-use std::path::Path;
+use std::{collections::HashMap, fs::File, io::BufReader, net::SocketAddr, path::Path};
 
 use ethers::providers::{Http, Provider};
 use ethers_core::k256::ecdsa::SigningKey;
@@ -11,15 +7,16 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tokio::sync::mpsc;
 
-pub use super::network::Network;
-pub use super::wallet::Wallet;
-use crate::app::{self, Notify, SETTINGS_PATH};
-use crate::db::DB;
-use crate::error::Result;
-use crate::ws::Peer;
+pub use super::{network::Network, wallet::Wallet};
+use crate::{
+    app::{self, Notify, SETTINGS_PATH},
+    db::DB,
+};
+use crate::{error::Result, foundry, ws::Peer};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct ContextInner {
+    pub foundry: foundry::Settings,
     pub wallet: Wallet,
     pub current_network: String,
     pub networks: HashMap<String, Network>,
@@ -40,6 +37,7 @@ pub struct ContextInner {
 impl Default for ContextInner {
     fn default() -> Self {
         Self {
+            foundry: Default::default(),
             networks: Network::default(),
             current_network: String::from("mainnet"),
             wallet: Default::default(),

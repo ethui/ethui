@@ -8,6 +8,7 @@ mod context;
 mod db;
 mod dialogs;
 mod error;
+mod foundry;
 mod rpc;
 mod store;
 mod ws;

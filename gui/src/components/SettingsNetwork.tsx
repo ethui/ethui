@@ -109,17 +109,15 @@ export function SettingsNetwork() {
                           <Controller
                             name={`networks.${index}.dev`}
                             control={control}
-                            render={({ field }) => {
-                              return (
-                                <Checkbox
-                                  {...field}
-                                  checked={field.value}
-                                  onChange={(e) =>
-                                    field.onChange(e.target.checked)
-                                  }
-                                />
-                              );
-                            }}
+                            render={({ field }) => (
+                              <Checkbox
+                                {...field}
+                                checked={field.value}
+                                onChange={(e) =>
+                                  field.onChange(e.target.checked)
+                                }
+                              />
+                            )}
                           />
                         }
                       />

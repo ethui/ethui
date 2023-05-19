@@ -11,7 +11,7 @@ use tauri::{Menu, Submenu, WindowMenuEvent};
 use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, StateFlags};
 use tokio::sync::mpsc;
 
-use crate::{commands, context::Context, dialogs};
+use crate::{commands, context::Context, dialogs, foundry};
 
 pub struct IronApp {
     pub sender: mpsc::UnboundedSender<Event>,
@@ -78,6 +78,8 @@ impl IronApp {
                 commands::derive_addresses_with_mnemonic,
                 dialogs::dialog_get_payload,
                 dialogs::dialog_finish,
+                foundry::commands::foundry_get_settings,
+                foundry::commands::foundry_set_settings,
             ])
             .setup(|app| {
                 let handle = app.handle();
