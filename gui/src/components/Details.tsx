@@ -20,10 +20,13 @@ export function Details() {
 
   return (
     <Panel>
-      <Tooltip
-        onClose={() => setTimeout(() => setCopied(false), 500)}
-        title={copied ? "Copied to clipboard" : "Copy to clipboard"}
+      <Button
+        sx={{ textTransform: "none" }}
+        variant="outlined"
+        endIcon={<ContentCopy />}
+        onClick={copyToClipboard}
       >
+<<<<<<< Updated upstream
         <Button
           variant="outlined"
           endIcon={<ContentCopy />}
@@ -32,6 +35,21 @@ export function Details() {
           {truncateEthAddress(address)}
         </Button>
       </Tooltip>
+||||||| Stash base
+        <Button
+          variant="outlined"
+          endIcon={<ContentCopy />}
+          onClick={copyToClipboard}
+        >
+          {truncateEthAddress(address)}
+        </Button>
+      </Tooltip>
+      <Balances />
+=======
+        {truncateEthAddress(address)}
+      </Button>
+      <Balances />
+>>>>>>> Stashed changes
     </Panel>
   );
 }

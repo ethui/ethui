@@ -70,19 +70,19 @@ function Receipt({ hash }: { hash: string }) {
       </ListItemAvatar>
       <Stack mb={1}>
         <ContextMenu>
-          <Typography>{hash}</Typography>
+          <Typography sx={{ textTransform: "none" }}>{hash}</Typography>
         </ContextMenu>
         <Box sx={{ fontSize: 12 }}>
           <Box>
             From:{" "}
-            <ContextMenu label={receipt.from}>
+            <ContextMenu label={receipt.from} sx={{ textTransform: "none" }}>
               {truncateEthAddress(receipt.from)}
             </ContextMenu>
           </Box>
           <Box>
             To:{" "}
             {receipt.to ? (
-              <ContextMenu label={receipt.to}>
+              <ContextMenu label={receipt.to} sx={{ textTransform: "none" }}>
                 {truncateEthAddress(receipt.to)}
               </ContextMenu>
             ) : (
