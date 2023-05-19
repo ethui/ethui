@@ -37,7 +37,7 @@ export const walletSchema = z.object({
   count: z.number().int().min(1),
 });
 
-export type Wallet = z.infer<typeof walletSchema> & { currentPath: string };
+export type Wallet = z.infer<typeof walletSchema> & { currentPath?: string };
 
 export const walletsSchema = z.object({
   wallets: z.array(walletSchema),
