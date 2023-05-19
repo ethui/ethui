@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import truncateEthAddress from "truncate-eth-address";
 
 import { useAccount } from "../hooks";
+import { Balances } from "./Balances";
 import Panel from "./Panel";
 
 export function Details() {
@@ -32,6 +33,7 @@ export function Details() {
           {truncateEthAddress(address)}
         </Button>
       </Tooltip>
+      <Balances />
     </Panel>
   );
 }
