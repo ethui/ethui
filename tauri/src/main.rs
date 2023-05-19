@@ -15,6 +15,7 @@ mod ws;
 
 use context::Context;
 use error::Result;
+use foundry::Foundry;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -22,7 +23,7 @@ async fn main() -> Result<()> {
     env_logger::init();
     fix_path_env::fix()?;
 
-    foundry::Foundry::watch().await.unwrap();
+    Foundry::init().await?;
 
     let mut app = app::IronApp::build();
 

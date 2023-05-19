@@ -1,5 +1,6 @@
 import { List, ListItem, Typography } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
+import { useProvider } from "wagmi";
 
 import { useInvoke } from "../hooks/tauri";
 import { useRefreshTransactions } from "../hooks/useRefreshTransactions";

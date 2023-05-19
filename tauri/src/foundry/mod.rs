@@ -1,73 +1,73 @@
-use std::path::Path;
+mod abi;
+pub mod commands;
+mod watcher;
 
-use notify::{
-    event::{CreateKind, ModifyKind, RemoveKind},
-    Config, Event, EventKind, RecommendedWatcher, RecursiveMode, Result, Watcher,
-};
-use tokio::sync::mpsc::{self, Receiver};
+use std::{collections::HashMap, path::PathBuf, sync::RwLock};
 
-static PATH: &str = "/home/naps62/projects";
+use once_cell::sync::Lazy;
+use tokio::{spawn, sync::mpsc};
+
+use self::abi::calculate_codehash;
+
+static PATH: &str = "/home/naps62/projects/";
 
 #[derive(Default)]
 pub struct Foundry {
-    // known_abis: HashMap<String, String>,
+    abis_by_path: HashMap<PathBuf, u64>,
+    abis_by_codehash: HashMap<u64, abi::Abi>,
 }
 
+static FOUNDRY: Lazy<RwLock<Foundry>> = Lazy::new(Default::default);
+
 impl Foundry {
-    pub async fn watch() -> Result<()> {
-        // let (snd, rcv) = mpsc::unbounded_channel();
+    pub async fn init() -> crate::Result<()> {
+        Self::watch().await
+    }
 
-        tokio::spawn(async {
-            if let Err(e) = async_watch("/home/naps62/projects/").await {
-                println!("error: {:?}", e)
-            }
-        });
+    fn get_abi_for(&self, code: String) -> Option<abi::Abi> {
+        let codehash = calculate_codehash(&code);
+        self.abis_by_codehash.get(&codehash).cloned()
+    }
 
-        // watcher.watch(Path::new("."), RecursiveMode::Recursive)?;
+    /// starts the ABI watcher service
+    async fn watch() -> crate::Result<()> {
+        let (snd, rcv) = mpsc::unbounded_channel();
+        let snd_clone = snd.clone();
+
+        // spawn file watcher
+        spawn(async { watcher::async_watch(PATH, snd_clone).await.unwrap() });
+        // spawn initial file globber
+        spawn(async { watcher::scan_glob(PATH, snd).await.unwrap() });
+        // spawn event handler
+        spawn(async { Self::handle_events(rcv).await.unwrap() });
 
         Ok(())
     }
-}
 
-async fn async_watch<P: AsRef<Path>>(path: P) -> notify::Result<()> {
-    let (mut watcher, mut rx) = async_watcher()?;
-
-    // Add a path to be watched. All files and directories at that path and
-    // below will be monitored for changes.
-    watcher.watch(path.as_ref(), RecursiveMode::Recursive)?;
-
-    while let Some(res) = rx.recv().await {
-        use EventKind::*;
-
-        match res {
-            Ok(event) => match event.kind {
-                Modify(_) | Remove(_) => {
-                    if event.paths[0].ends_with("run-latest.json") {
-                        dbg!(event.kind, event.paths);
-                    }
-                }
-                _ => {}
-            },
-            Err(e) => println!("watch error: {:?}", e),
+    /// Handlers ABI file events
+    async fn handle_events(mut rcv: mpsc::UnboundedReceiver<PathBuf>) -> crate::Result<()> {
+        while let Some(path) = rcv.recv().await {
+            let mut foundry = FOUNDRY.write().unwrap();
+            if let Ok(abi) = abi::Abi::try_from_file(path.clone()) {
+                foundry.insert_known_abi(abi);
+            } else {
+                foundry.remove_known_abi(path);
+            }
         }
+
+        Ok(())
     }
 
-    Ok(())
-}
+    // indexes a new known ABI
+    fn insert_known_abi(&mut self, abi: abi::Abi) {
+        self.abis_by_path.insert(abi.path.clone(), abi.codehash);
+        self.abis_by_codehash.insert(abi.codehash, abi);
+    }
 
-fn async_watcher() -> notify::Result<(RecommendedWatcher, Receiver<notify::Result<Event>>)> {
-    let (tx, rx) = mpsc::channel(100);
-
-    // Automatically select the best implementation for your platform.
-    // You can also access each implementation directly e.g. INotifyWatcher.
-    let watcher = RecommendedWatcher::new(
-        move |res| {
-            futures::executor::block_on(async {
-                tx.send(res).await.unwrap();
-            });
-        },
-        Config::default(),
-    )?;
-
-    Ok((watcher, rx))
+    // removes a previously known ABI by their path
+    fn remove_known_abi(&mut self, path: PathBuf) {
+        if let Some(code_hash) = self.abis_by_path.remove(&path) {
+            self.abis_by_codehash.remove(&code_hash);
+        }
+    }
 }

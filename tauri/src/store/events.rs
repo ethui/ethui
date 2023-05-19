@@ -1,8 +1,12 @@
 use std::str::FromStr;
 
 use async_trait::async_trait;
-use ethers::types::{Address, U256};
+use ethers::{
+    providers::{Http, Middleware, Provider},
+    types::{Address, U256},
+};
 use sqlx::{sqlite::SqliteRow, Row};
+use url::Url;
 
 use super::types::{Event, Events};
 use crate::{db::DB, error::Result};
@@ -13,6 +17,7 @@ pub trait EventsStore {
         &self,
         chain_id: u32,
         events: T,
+        http_url: Url,
     ) -> Result<()>;
 
     async fn truncate_events(&self, chain_id: u32) -> Result<()>;
@@ -33,8 +38,11 @@ impl EventsStore for DB {
         &self,
         chain_id: u32,
         events: T,
+        http_url: Url,
     ) -> Result<()> {
         let mut conn = self.tx().await?;
+
+        let provider: Provider<Http> = Provider::<Http>::try_from(&http_url.to_string()).unwrap();
 
         for tx in events.into().0.iter() {
             // TODO: report this errors in await?. Currently they're being silently ignored, because the task just gets killed
@@ -54,13 +62,20 @@ impl EventsStore for DB {
                 }
 
                 Event::ContractDeployed(ref tx) => {
+                    let deployed_code = provider
+                        .get_code(tx.address, None)
+                        .await
+                        .ok()
+                        .map(|v| v.to_string());
+
                     sqlx::query(
-                        r#" INSERT INTO contracts (address, chain_id)
+                        r#" INSERT INTO contracts (address, chain_id, deployed_code)
                         VALUES (?,?)
-                        ON CONFLICT(address, chain_id) DO NOTHING "#,
+                        ON CONFLICT(address, chain_id, deployed_code) DO NOTHING "#,
                     )
                     .bind(format!("0x{:x}", tx.address))
                     .bind(chain_id)
+                    .bind(deployed_code)
                     .execute(&mut conn)
                     .await?;
                 }

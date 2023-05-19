@@ -63,7 +63,10 @@ impl BlockListener {
             let db = self.db.clone();
             let chain_id = self.chain_id;
             let window_snd = self.window_snd.clone();
-            tokio::spawn(async move { process(block_rcv, window_snd, chain_id, db).await });
+            let http_url = self.http_url.clone();
+            tokio::spawn(
+                async move { process(http_url, block_rcv, window_snd, chain_id, db).await },
+            );
         }
 
         {
@@ -201,6 +204,7 @@ async fn watch(
 }
 
 async fn process(
+    http_url: Url,
     mut block_rcv: mpsc::UnboundedReceiver<Msg>,
     window_snd: mpsc::UnboundedSender<app::Event>,
     chain_id: u32,
@@ -215,8 +219,8 @@ async fn process(
                 caught_up = false
             }
             Msg::CaughtUp => caught_up = true,
-            Msg::Traces(traces) => db.save_events(chain_id, traces).await?,
-            Msg::Logs(logs) => db.save_events(chain_id, logs).await?,
+            Msg::Traces(traces) => db.save_events(chain_id, traces, http_url.clone()).await?,
+            Msg::Logs(logs) => db.save_events(chain_id, logs, http_url.clone()).await?,
         }
 
         // don't emit events until we're catching up
