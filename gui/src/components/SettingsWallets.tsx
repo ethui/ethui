@@ -27,7 +27,6 @@ const emptyWallet: Wallet & NewChild = {
   dev: false,
   mnemonic: "",
   derivationPath: "",
-  idx: 0,
   count: 1,
   new: true,
 };
@@ -133,16 +132,6 @@ export function SettingsWallets() {
                     error={!!err.derivationPath}
                     helperText={err.derivationPath?.message?.toString() || ""}
                     {...register(`wallets.${index}.derivationPath`)}
-                  />
-                  <TextField
-                    label="Index"
-                    spellCheck="false"
-                    error={!!err.idx}
-                    type="number"
-                    helperText={err.idx?.message?.toString() || ""}
-                    {...register(`wallets.${index}.idx`, {
-                      valueAsNumber: true,
-                    })}
                   />
                   <TextField
                     label="Count"

@@ -1,42 +1,20 @@
 use ethers::signers::coins_bip39::English;
 use ethers::signers::{MnemonicBuilder, Signer};
 use ethers_core::k256::ecdsa::SigningKey;
-use serde::de::{self, MapAccess, Visitor};
 use serde::{Deserialize, Serialize};
 
 use crate::error::Result;
 use crate::types::ChecksummedAddress;
 
-#[derive(Debug, Serialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Wallet {
     pub name: String,
     mnemonic: String,
     derivation_path: String,
-    idx: u32,
     dev: bool,
     count: u32,
     current_path: String,
-}
-
-impl Default for Wallet {
-    fn default() -> Self {
-        let mnemonic = String::from("test test test test test test test test test test test junk");
-        let derivation_path = String::from("m/44'/60'/0'/0");
-        let idx = 0;
-        let current_path = format!("{}/{}", derivation_path, idx);
-
-        Self {
-            // TODO: wallet name
-            name: "test".into(),
-            mnemonic,
-            derivation_path,
-            idx,
-            dev: true,
-            count: 3,
-            current_path,
-        }
-    }
 }
 
 impl Wallet {
@@ -45,9 +23,16 @@ impl Wallet {
         self.build_signer(1).unwrap().address().into()
     }
 
-    pub fn set_current_path(&mut self, key: String) {
-        // TODO: check if key is valid
-        self.current_path = key;
+    pub fn set_current_path(&mut self, path: &str) -> Result<()> {
+        let builder = MnemonicBuilder::<English>::default().phrase(self.mnemonic.as_str());
+
+        match derive_from_builder_and_path(builder, path) {
+            Ok(_) => {
+                self.current_path = path.to_string();
+                Ok(())
+            }
+            Err(e) => Err(e),
+        }
     }
 
     pub fn derive_all_addresses(&self) -> Result<Vec<(String, ChecksummedAddress)>> {
@@ -57,10 +42,9 @@ impl Wallet {
         (0..self.count)
             .map(|idx| -> Result<_> {
                 let path = format!("{}/{}", self.derivation_path, idx);
+                let address = derive_from_builder_and_path(builder.clone(), &path)?;
 
-                let signer = builder.clone().derivation_path(&path)?.build()?;
-
-                Ok((path, signer.address().into()))
+                Ok((path, address))
             })
             .collect()
     }
@@ -79,95 +63,27 @@ impl Wallet {
     }
 }
 
-impl<'de> Deserialize<'de> for Wallet {
-    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        struct WalletVisitor;
+fn derive_from_builder_and_path(
+    builder: MnemonicBuilder<English>,
+    path: &str,
+) -> Result<ChecksummedAddress> {
+    Ok(builder.derivation_path(path)?.build()?.address().into())
+}
 
-        #[derive(Deserialize)]
-        #[serde(field_identifier, rename_all = "camelCase")]
-        enum Field {
-            Name,
-            Mnemonic,
-            DerivationPath,
-            Count,
-            Idx,
-            Dev,
-            CurrentKey,
+impl Default for Wallet {
+    fn default() -> Self {
+        let mnemonic = String::from("test test test test test test test test test test test junk");
+        let derivation_path = String::from("m/44'/60'/0'/0");
+        let current_path = format!("{}/{}", derivation_path, 0);
+
+        Self {
+            // TODO: wallet name
+            name: "test".into(),
+            mnemonic,
+            derivation_path,
+            dev: true,
+            count: 3,
+            current_path,
         }
-
-        impl<'de> Visitor<'de> for WalletVisitor {
-            type Value = Wallet;
-
-            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-                formatter.write_str("struct Wallet")
-            }
-
-            fn visit_map<V>(self, mut map: V) -> std::result::Result<Wallet, V::Error>
-            where
-                V: MapAccess<'de>,
-            {
-                let mut name = None;
-                let mut mnemonic = None;
-                let mut derivation_path = None;
-                let mut idx = None;
-                let mut count = None;
-                let mut current_path = None;
-                let mut dev = None;
-
-                while let Some(key) = map.next_key()? {
-                    match key {
-                        Field::Name => {
-                            name = Some(map.next_value()?);
-                        }
-                        Field::Mnemonic => {
-                            mnemonic = Some(map.next_value()?);
-                        }
-                        Field::DerivationPath => {
-                            derivation_path = Some(map.next_value()?);
-                        }
-                        Field::Idx => {
-                            idx = Some(map.next_value()?);
-                        }
-                        Field::Dev => {
-                            dev = Some(map.next_value()?);
-                        }
-                        Field::Count => {
-                            count = Some(map.next_value()?);
-                        }
-                        Field::CurrentKey => {
-                            current_path = Some(map.next_value()?);
-                        }
-                    }
-                }
-
-                let name: String = name.ok_or_else(|| de::Error::missing_field("name"))?;
-                let mnemonic: String =
-                    mnemonic.ok_or_else(|| de::Error::missing_field("mnemonic"))?;
-                let derivation_path: String =
-                    derivation_path.ok_or_else(|| de::Error::missing_field("derivation_path"))?;
-                let idx: u32 = idx.ok_or_else(|| de::Error::missing_field("idx"))?;
-                let count: u32 = count.unwrap_or(1);
-                let current_path: String =
-                    current_path.unwrap_or(format!("{}/{}", derivation_path, idx));
-                let dev: bool = dev.unwrap_or(false);
-
-                Ok(Wallet {
-                    // TODO: wallet name
-                    name,
-                    mnemonic,
-                    derivation_path,
-                    idx,
-                    dev,
-                    count,
-                    current_path,
-                })
-            }
-        }
-
-        const FIELDS: &[&str] = &["mnemonic", "derivation_path", "idx"];
-        deserializer.deserialize_struct("Wallet", FIELDS, WalletVisitor)
     }
 }

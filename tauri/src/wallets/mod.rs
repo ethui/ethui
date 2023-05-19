@@ -39,7 +39,7 @@ impl Wallets {
     /// Since wallets actually contain multiple addresses, we need the ability to connect to a
     /// different one within the same wallet
     fn set_current_path(&mut self, key: String) -> Result<(), String> {
-        self.wallets[self.current].set_current_path(key);
+        self.wallets[self.current].set_current_path(&key)?;
         self.notify_peers();
         self.save()?;
         Ok(())
