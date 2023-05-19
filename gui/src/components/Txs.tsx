@@ -16,7 +16,7 @@ import truncateEthAddress from "truncate-eth-address";
 import { useAccount, useProvider } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
 import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
-import { CopyToClipboard } from "./CopyToClipboard";
+import { ContextMenu } from "./ContextMenu";
 import Panel from "./Panel";
 
 export function Txs() {
@@ -69,28 +69,28 @@ function Receipt({ hash }: { hash: string }) {
         ></Box>
       </ListItemAvatar>
       <Stack mb={1}>
-        <CopyToClipboard>
+        <ContextMenu>
           <Typography>{hash}</Typography>
-        </CopyToClipboard>
+        </ContextMenu>
         <Box sx={{ fontSize: 12 }}>
           <Box>
             From:{" "}
-            <CopyToClipboard label={receipt.from}>
+            <ContextMenu label={receipt.from}>
               {truncateEthAddress(receipt.from)}
-            </CopyToClipboard>
+            </ContextMenu>
           </Box>
           <Box>
             To:{" "}
             {receipt.to ? (
-              <CopyToClipboard label={receipt.to}>
+              <ContextMenu label={receipt.to}>
                 {truncateEthAddress(receipt.to)}
-              </CopyToClipboard>
+              </ContextMenu>
             ) : (
               "Contract Deploy"
             )}
           </Box>
           <Box>
-            Amount: <CopyToClipboard>{formatEther(tx.value)}</CopyToClipboard> Ξ
+            Amount: <ContextMenu>{formatEther(tx.value)}</ContextMenu> Ξ
           </Box>
         </Box>
       </Stack>
