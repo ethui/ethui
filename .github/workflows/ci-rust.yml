@@ -50,7 +50,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: clippy
-          args: --all
+          args: --all -- -D clippy::all -D clippy::dbg_macro
 
       - name: cargo-deny
         uses: EmbarkStudios/cargo-deny-action@v1
