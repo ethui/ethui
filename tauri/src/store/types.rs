@@ -52,10 +52,13 @@ impl From<Trace> for Events {
         let events: Vec<Event> = match (trace.action, trace.result, trace.trace_address.len()) {
             // contract deploys
             (
-                Action::Create(Create { from, value, .. }),
+                Action::Create(Create {
+                    from, value, init, ..
+                }),
                 Some(Res::Create(CreateResult { address, .. })),
                 _,
             ) => {
+                dbg!(init);
                 vec![
                     Tx {
                         hash: trace.transaction_hash.unwrap(),

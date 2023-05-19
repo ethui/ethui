@@ -10,6 +10,7 @@ import { Connections } from "./Connections";
 import { Contracts } from "./Contracts";
 import { Details } from "./Details";
 import { LivenetPlaceholder } from "./LivenetPlaceholder";
+import { NestedRoutes } from "./NestedRoutes";
 import { Txs } from "./Txs";
 
 const tabs = [
@@ -21,7 +22,7 @@ const tabs = [
 ];
 
 export function HomePage() {
-  const [_match, params] = useRoute(":path");
+  const [_match, params] = useRoute("/:path");
   const [_location, setLocation] = useLocation();
 
   useMenuAction((payload) => setLocation(payload));
@@ -61,18 +62,20 @@ export function HomePage() {
         </Tabs>
 
         <div role="tabpanel">
-          <Switch>
-            {tabs.map((tab) => (
-              <Route key={tab.path || "/"} path={tab.path}>
-                <LivenetPlaceholder devOnly={tab.devOnly}>
-                  <tab.component />
-                </LivenetPlaceholder>
+          <NestedRoutes base="/">
+            <Switch>
+              {tabs.map((tab) => (
+                <Route key={tab.path || "/"} path={tab.path}>
+                  <LivenetPlaceholder devOnly={tab.devOnly}>
+                    <tab.component />
+                  </LivenetPlaceholder>
+                </Route>
+              ))}
+              <Route>
+                <Details />
               </Route>
-            ))}
-            <Route>
-              <Details />
-            </Route>
-          </Switch>
+            </Switch>
+          </NestedRoutes>
         </div>
       </Paper>
     </Container>

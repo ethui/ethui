@@ -3,6 +3,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use glob::glob;
 use notify::{Config, Event, EventKind, RecommendedWatcher, RecursiveMode, Watcher};
 use tokio::sync::mpsc::{self, Receiver};
 
@@ -51,9 +52,16 @@ fn async_watcher() -> notify::Result<(RecommendedWatcher, Receiver<notify::Resul
 }
 
 pub(super) async fn scan_glob<P: AsRef<Path>>(
-    _path: P,
-    _snd: mpsc::UnboundedSender<PathBuf>,
+    path: P,
+    snd: mpsc::UnboundedSender<PathBuf>,
 ) -> notify::Result<()> {
+    let query =
+        format!("{}/**/*.sol/**/*.json", path.as_ref().to_str().unwrap()).replace("//", "/");
+
+    for entry in glob(&query).unwrap().flatten() {
+        snd.send(entry).unwrap();
+    }
+
     // TODO: this should glob all files at the start
     Ok(())
 }

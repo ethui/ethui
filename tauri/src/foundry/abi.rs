@@ -1,18 +1,18 @@
 #![allow(dead_code)]
 
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
 use std::{fs::File, io::BufReader, path::PathBuf};
 
 use regex::Regex;
 
+use super::calculate_code_hash;
+
 #[derive(Debug, Clone)]
-pub struct Abi {
+pub(super) struct Abi {
     pub path: PathBuf,
     pub project: String,
     pub file: String,
     pub name: String,
-    pub codehash: u64,
+    pub code_hash: u64,
     pub abi: serde_json::Value,
 }
 
@@ -47,14 +47,22 @@ impl Abi {
         let file = File::open(path.clone()).unwrap();
         let reader = BufReader::new(file);
 
-        let json: serde_json::Value = serde_json::from_reader(reader).unwrap();
+        let json: Result<serde_json::Value, _> = serde_json::from_reader(reader);
+
+        if json.is_err() {
+            return Err(());
+        }
+        let json = json.unwrap();
 
         let abi = json["abi"].clone();
         let deployed_bytecode = json["deployedBytecode"]["object"].clone();
 
-        if abi.is_null() || deployed_bytecode.is_null() {
+        if abi.is_null() || !deployed_bytecode.is_string() {
             return Err(());
         }
+
+        let code = deployed_bytecode.as_str().unwrap().to_string();
+        let code_hash = calculate_code_hash(&code);
 
         Ok(Self {
             path,
@@ -62,13 +70,7 @@ impl Abi {
             file: caps["file"].to_string(),
             name: caps["name"].to_string(),
             abi,
-            codehash: calculate_codehash(&deployed_bytecode.to_string()),
+            code_hash,
         })
     }
-}
-
-pub(super) fn calculate_codehash<T: Hash>(t: &T) -> u64 {
-    let mut s = DefaultHasher::new();
-    t.hash(&mut s);
-    s.finish()
 }

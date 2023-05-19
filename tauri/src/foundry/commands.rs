@@ -1,9 +1,12 @@
 use super::FOUNDRY;
 
 #[tauri::command]
-pub async fn foundry_get_abi(code: String) -> crate::Result<Option<serde_json::Value>> {
-    let foundry = FOUNDRY.read().unwrap();
+pub async fn foundry_get_abi(
+    deployed_code_hash: String,
+) -> Result<Option<serde_json::Value>, String> {
+    let foundry = FOUNDRY.read().await;
 
-    Ok(foundry.get_abi_for(code).map(|abi| abi.abi))
-    // Ok(foundry.abis_by_codehash.values().cloned().collect())
+    Ok(foundry
+        .get_abi_for(deployed_code_hash.parse().unwrap())
+        .map(|abi| abi.abi))
 }

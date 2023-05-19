@@ -1,6 +1,4 @@
 import { List, ListItem, Typography } from "@mui/material";
-import React, { useEffect } from "react";
-import { useProvider } from "wagmi";
 
 import { useInvoke } from "../hooks/tauri";
 import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
@@ -8,23 +6,36 @@ import { Address } from "../types";
 import { CopyToClipboard } from "./CopyToClipboard";
 import Panel from "./Panel";
 
+interface IContract {
+  address: Address;
+  deployedCodeHash: string;
+}
+
 export function Contracts() {
-  const { data: addresses, mutate } = useInvoke<Address[]>("get_contracts");
+  const { data: contracts, mutate } = useInvoke<IContract[]>("get_contracts");
 
   useRefreshTransactions(mutate);
 
   return (
     <Panel>
       <List>
-        {(addresses || []).map((address) => (
-          <Contract key={address} address={address} />
+        {(contracts || []).map((contract) => (
+          <Contract key={contract.address} {...contract} />
         ))}
       </List>
     </Panel>
   );
 }
 
-function Contract({ address }: { address: Address }) {
+function Contract({ address, deployedCodeHash }: IContract) {
+  console.log(deployedCodeHash);
+  const { data: abi, ...rest } = useInvoke<string>("foundry_get_abi", {
+    deployedCodeHash,
+  });
+
+  console.log(abi);
+  console.log(rest);
+
   return (
     <ListItem>
       <CopyToClipboard>

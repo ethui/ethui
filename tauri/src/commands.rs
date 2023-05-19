@@ -1,7 +1,7 @@
 use ethers::types::{Address, U256};
 
 use crate::context::{Context, Network, Wallet};
-use crate::store::events::EventsStore;
+use crate::store::events::{EventsStore, StoredContract};
 
 pub type Ctx<'a> = tauri::State<'a, Context>;
 type Result<T> = std::result::Result<T, String>;
@@ -82,7 +82,7 @@ pub async fn get_transactions(address: Address, ctx: Ctx<'_>) -> Result<Vec<Stri
 }
 
 #[tauri::command]
-pub async fn get_contracts(ctx: Ctx<'_>) -> Result<Vec<String>> {
+pub async fn get_contracts(ctx: Ctx<'_>) -> Result<Vec<StoredContract>> {
     let ctx = ctx.lock().await;
 
     // TODO: this unwrap is avoidable
