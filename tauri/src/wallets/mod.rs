@@ -4,6 +4,7 @@ mod global;
 mod wallet;
 
 use std::{
+    collections::HashSet,
     fs::File,
     path::{Path, PathBuf},
 };
@@ -66,6 +67,9 @@ impl Wallets {
 
     /// Resets the list of wallets to a new one
     fn set_wallets(&mut self, wallets: Vec<Wallet>) -> Result<()> {
+        if let Some(n) = find_duplicates(&wallets) {
+            return Err(Error::DuplicateWalletNames(n));
+        }
         // TODO: should fail if wallets with duplicate names exist
 
         self.wallets = wallets;
@@ -115,4 +119,16 @@ impl Wallets {
         let addresses = vec![self.get_current_wallet().get_current_address()];
         tokio::spawn(async move { Peers::read().await.broadcast_accounts_changed(addresses) });
     }
+}
+
+fn find_duplicates(wallets: &[Wallet]) -> Option<String> {
+    let mut uniq = HashSet::new();
+    for wallet in wallets.iter() {
+        if uniq.contains(&wallet.name) {
+            return Some(wallet.name.clone());
+        }
+        uniq.insert(&wallet.name);
+    }
+
+    None
 }

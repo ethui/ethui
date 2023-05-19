@@ -2,6 +2,9 @@ use serde::Serialize;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
+    #[error("duplicate wallet names `{0}`")]
+    DuplicateWalletNames(String),
+
     #[error("invalid wallet index {0}")]
     InvalidWallet(usize),
 
