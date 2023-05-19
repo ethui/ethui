@@ -15,7 +15,7 @@ dev:
 
 lint:
   cargo fmt --all -- --check
-  cargo clippy
+  cargo clippy --all -- -D clippy::all -D clippy::dbg_macro
   yarn lint
 
 ext:

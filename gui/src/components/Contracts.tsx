@@ -3,7 +3,7 @@ import { List, ListItem, Typography } from "@mui/material";
 import { useInvoke } from "../hooks/tauri";
 import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
 import { Address } from "../types";
-import { CopyToClipboard } from "./CopyToClipboard";
+import { ContextMenu } from "./ContextMenu";
 import Panel from "./Panel";
 
 interface IContract {
@@ -34,9 +34,9 @@ function Contract({ address, deployedCodeHash }: IContract) {
 
   return (
     <ListItem>
-      <CopyToClipboard>
+      <ContextMenu>
         <Typography>{address}</Typography>
-      </CopyToClipboard>
+      </ContextMenu>
     </ListItem>
   );
 }

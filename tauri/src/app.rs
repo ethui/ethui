@@ -121,7 +121,7 @@ impl IronApp {
 
         DB_PATH.set(res.get_db_path()).unwrap();
         SETTINGS_PATH.set(res.get_settings_file()).unwrap();
-        dialogs::init(snd.clone());
+        dialogs::init(snd);
 
         res
     }
