@@ -182,15 +182,16 @@ impl Handler {
         let ctx = ctx.lock().await;
 
         // create signer
+        let chain_id = ctx.get_current_network().chain_id;
         let provider = ctx.get_provider();
         let signer = Wallets::read()
             .await
             .get_current_wallet()
-            .build_signer(ctx.get_current_network().chain_id)
+            .build_signer(chain_id)
             .unwrap();
         let signer = SignerMiddleware::new(provider, signer);
 
-        sender.set_chain_id(ctx.get_current_network().chain_id);
+        sender.set_chain_id(chain_id);
         sender.set_signer(signer);
         sender.estimate_gas().await;
 
