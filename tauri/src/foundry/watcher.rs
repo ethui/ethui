@@ -9,12 +9,13 @@ use once_cell::sync::Lazy;
 use regex::Regex;
 use tokio::sync::mpsc::{self, Receiver};
 
-#[derive(Debug)]
+/// An abi match contains the full path of the matched file, as well as parsed information about it
+#[derive(Debug, Clone)]
 pub(super) struct Match {
-    full_path: PathBuf,
-    project: String,
-    file: String,
-    name: String,
+    pub(super) full_path: PathBuf,
+    pub(super) project: String,
+    pub(super) file: String,
+    pub(super) name: String,
 }
 
 /// Creates an async watch over a directory, looking for relevant ABI files to index
@@ -29,8 +30,6 @@ pub(super) async fn async_watch<P: AsRef<Path>>(
     watcher.watch(path.as_ref(), RecursiveMode::Recursive)?;
 
     while let Some(res) = rx.recv().await {
-        use EventKind::*;
-
         match res {
             Ok(event) => {
                 // convert event to a match, notify if successful
@@ -125,7 +124,7 @@ impl TryFrom<notify::Event> for Match {
     fn try_from(event: notify::Event) -> Result<Self, Self::Error> {
         use EventKind::*;
         match event.kind {
-            Modify(_) | Remove(_) => event.paths[0].try_into(),
+            Modify(_) | Remove(_) => event.paths[0].clone().try_into(),
             _ => Err(()),
         }
     }

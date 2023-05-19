@@ -1,5 +1,6 @@
 mod abi;
 pub mod commands;
+pub(self) mod error;
 mod watcher;
 
 use std::collections::hash_map::DefaultHasher;
@@ -12,7 +13,9 @@ use tokio::{
     sync::{mpsc, RwLock},
 };
 
-static PATH: &str = "/home/naps62/projects/dummy";
+use self::watcher::Match;
+
+static PATH: &str = "/home/naps62/projects/";
 
 #[derive(Default)]
 pub struct Foundry {
@@ -47,13 +50,13 @@ impl Foundry {
     }
 
     /// Handlers ABI file events
-    async fn handle_events(mut rcv: mpsc::UnboundedReceiver<PathBuf>) -> crate::Result<()> {
-        while let Some(path) = rcv.recv().await {
+    async fn handle_events(mut rcv: mpsc::UnboundedReceiver<Match>) -> crate::Result<()> {
+        while let Some(m) = rcv.recv().await {
             let mut foundry = FOUNDRY.write().await;
-            if let Ok(abi) = abi::Abi::try_from_file(path.clone()) {
+            if let Ok(abi) = abi::Abi::try_from_match(m.clone()) {
                 foundry.insert_known_abi(abi);
             } else {
-                foundry.remove_known_abi(path);
+                foundry.remove_known_abi(m.full_path);
             }
         }
 

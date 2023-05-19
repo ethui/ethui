@@ -2,10 +2,11 @@
 
 use std::{fs::File, io::BufReader, path::PathBuf};
 
-use once_cell::sync::Lazy;
-use regex::Regex;
-
-use super::calculate_code_hash;
+use super::{
+    calculate_code_hash,
+    error::{Error, Result},
+    watcher::Match,
+};
 
 #[derive(Debug, Clone)]
 pub(super) struct Abi {
@@ -17,64 +18,32 @@ pub(super) struct Abi {
     pub abi: serde_json::Value,
 }
 
-/// A regex that matches paths in the form
-/// `.../{project_name}/out/{dir/subdir}/{abi}.json`
-static REGEX: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(
-        r#"(?x)
-        \/
-        (?<project>[^\/]+) # project name
-        \/out\/
-        (?<file>.+) # file path
-        \/
-        (?<name>[^\/]+) # abi name
-        .json 
-        $"#,
-    )
-    .unwrap()
-});
-
 impl Abi {
-    pub fn try_from_file(path: PathBuf) -> Result<Self, ()> {
+    pub fn try_from_match(m: Match) -> Result<Self> {
         // TODO: this won't work in windows I supose
 
-        let path_str = path.clone();
-        let path_str = path_str.to_str().unwrap();
-        let caps = REGEX.captures(path_str);
-        if caps.is_none() {
-            return Err(());
-        }
-        let caps = caps.unwrap();
-
-        if !path.exists() {
-            return Err(());
+        if !m.full_path.exists() {
+            return Err(Error::FileNotFound(m.full_path));
         }
 
-        let file = File::open(path.clone()).unwrap();
-        let reader = BufReader::new(file);
-
-        let json: Result<serde_json::Value, _> = serde_json::from_reader(reader);
-
-        if json.is_err() {
-            return Err(());
-        }
-        let json = json.unwrap();
+        let file = File::open(m.full_path.clone()).unwrap();
+        let json: serde_json::Value = serde_json::from_reader(BufReader::new(file))?;
 
         let abi = json["abi"].clone();
         let deployed_bytecode = json["deployedBytecode"]["object"].clone();
 
         if abi.is_null() || !deployed_bytecode.is_string() {
-            return Err(());
+            return Err(Error::NotAnABI(m.full_path));
         }
 
         let code = deployed_bytecode.as_str().unwrap().to_string();
         let code_hash = calculate_code_hash(&code);
 
         Ok(Self {
-            path,
-            project: caps["project"].to_string(),
-            file: caps["file"].to_string(),
-            name: caps["name"].to_string(),
+            path: m.full_path,
+            project: m.project,
+            file: m.file,
+            name: m.name,
             abi,
             code_hash,
         })

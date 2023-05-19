@@ -32,6 +32,9 @@ function Contract({ address, deployedCodeHash }: IContract) {
     deployedCodeHash,
   });
 
+  console.log(address);
+  console.log(abi);
+
   return (
     <ListItem>
       <ContextMenu>
