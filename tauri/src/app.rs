@@ -32,7 +32,7 @@ pub enum Notify {
     AddressChanged,
     NetworkChanged,
     TxsUpdated,
-    ConnectionsUpdated,
+    PeersUpdated,
 }
 
 impl Notify {
@@ -41,7 +41,7 @@ impl Notify {
             Self::AddressChanged => "address-changed",
             Self::NetworkChanged => "network-changed",
             Self::TxsUpdated => "txs-updated",
-            Self::ConnectionsUpdated => "connections-updated",
+            Self::PeersUpdated => "peers-updated",
         }
     }
 }

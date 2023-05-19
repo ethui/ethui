@@ -24,7 +24,7 @@ impl Peers {
         self.window_snd
             .as_ref()
             .unwrap()
-            .send(app::Notify::ConnectionsUpdated.into())
+            .send(app::Notify::PeersUpdated.into())
             .unwrap();
     }
 
@@ -34,7 +34,7 @@ impl Peers {
         self.window_snd
             .as_ref()
             .unwrap()
-            .send(app::Notify::ConnectionsUpdated.into())
+            .send(app::Notify::PeersUpdated.into())
             .unwrap();
     }
 
