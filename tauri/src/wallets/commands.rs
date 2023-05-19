@@ -37,8 +37,8 @@ pub async fn wallets_set_current_wallet(idx: usize) -> Result<(), String> {
 
 /// Switches the current key of the current wallet
 #[tauri::command]
-pub async fn wallets_set_current_key(key: String) -> Result<(), String> {
-    Wallets::write().await.set_current_key(key)
+pub async fn wallets_set_current_path(key: String) -> Result<(), String> {
+    Wallets::write().await.set_current_path(key)
 }
 
 /// Get all known addresses of a wallet

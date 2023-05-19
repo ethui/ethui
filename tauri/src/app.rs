@@ -78,7 +78,7 @@ impl IronApp {
                 wallets::commands::wallets_get_current_address,
                 wallets::commands::wallets_set_list,
                 wallets::commands::wallets_set_current_wallet,
-                wallets::commands::wallets_set_current_key,
+                wallets::commands::wallets_set_current_path,
                 wallets::commands::wallets_get_wallet_addresses,
                 dialogs::dialog_get_payload,
                 dialogs::dialog_finish,

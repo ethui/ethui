@@ -16,7 +16,7 @@ pub struct Wallet {
     idx: u32,
     dev: bool,
     count: u32,
-    current_key: String,
+    current_path: String,
 }
 
 impl Default for Wallet {
@@ -24,7 +24,7 @@ impl Default for Wallet {
         let mnemonic = String::from("test test test test test test test test test test test junk");
         let derivation_path = String::from("m/44'/60'/0'/0");
         let idx = 0;
-        let current_key = format!("{}/{}", derivation_path, idx);
+        let current_path = format!("{}/{}", derivation_path, idx);
 
         Self {
             // TODO: wallet name
@@ -34,7 +34,7 @@ impl Default for Wallet {
             idx,
             dev: true,
             count: 3,
-            current_key,
+            current_path,
         }
     }
 }
@@ -45,9 +45,9 @@ impl Wallet {
         self.build_signer(1).unwrap().address().into()
     }
 
-    pub fn set_current_key(&mut self, key: String) {
+    pub fn set_current_path(&mut self, key: String) {
         // TODO: check if key is valid
-        self.current_key = key;
+        self.current_path = key;
     }
 
     pub fn derive_all_addresses(&self) -> Result<Vec<(String, ChecksummedAddress)>> {
@@ -71,7 +71,7 @@ impl Wallet {
     ) -> std::result::Result<ethers::signers::Wallet<SigningKey>, String> {
         MnemonicBuilder::<English>::default()
             .phrase(self.mnemonic.as_ref())
-            .derivation_path(&self.current_key)
+            .derivation_path(&self.current_path)
             .map_err(|e| e.to_string())?
             .build()
             .map_err(|e| e.to_string())
@@ -114,7 +114,7 @@ impl<'de> Deserialize<'de> for Wallet {
                 let mut derivation_path = None;
                 let mut idx = None;
                 let mut count = None;
-                let mut current_key = None;
+                let mut current_path = None;
                 let mut dev = None;
 
                 while let Some(key) = map.next_key()? {
@@ -138,7 +138,7 @@ impl<'de> Deserialize<'de> for Wallet {
                             count = Some(map.next_value()?);
                         }
                         Field::CurrentKey => {
-                            current_key = Some(map.next_value()?);
+                            current_path = Some(map.next_value()?);
                         }
                     }
                 }
@@ -150,8 +150,8 @@ impl<'de> Deserialize<'de> for Wallet {
                     derivation_path.ok_or_else(|| de::Error::missing_field("derivation_path"))?;
                 let idx: u32 = idx.ok_or_else(|| de::Error::missing_field("idx"))?;
                 let count: u32 = count.unwrap_or(1);
-                let current_key: String =
-                    current_key.unwrap_or(format!("{}/{}", derivation_path, idx));
+                let current_path: String =
+                    current_path.unwrap_or(format!("{}/{}", derivation_path, idx));
                 let dev: bool = dev.unwrap_or(false);
 
                 Ok(Wallet {
@@ -162,7 +162,7 @@ impl<'de> Deserialize<'de> for Wallet {
                     idx,
                     dev,
                     count,
-                    current_key,
+                    current_path,
                 })
             }
         }

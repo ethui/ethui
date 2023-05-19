@@ -20,7 +20,7 @@ export function QuickAddressSelect() {
     if (!current_wallet || !addresses) return;
 
     (async () => {
-      await invoke("wallets_set_current_key", {
+      await invoke("wallets_set_current_path", {
         key,
       });
       mutate(() => true);
@@ -38,7 +38,7 @@ export function QuickAddressSelect() {
     <Select
       size="small"
       renderValue={renderValue}
-      value={current_wallet.currentKey}
+      value={current_wallet.currentPath}
       onChange={handleChange}
     >
       {map(addresses, ([key, address]) => (
