@@ -19,7 +19,6 @@ pub struct Wallet {
 
 impl Wallet {
     pub fn get_current_address(&self) -> ChecksummedAddress {
-        // TODO: where will chain id come from?
         self.build_signer(1).unwrap().address().into()
     }
 
@@ -77,7 +76,6 @@ impl Default for Wallet {
         let current_path = format!("{}/{}", derivation_path, 0);
 
         Self {
-            // TODO: wallet name
             name: "test".into(),
             mnemonic,
             derivation_path,
