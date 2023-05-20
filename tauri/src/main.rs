@@ -8,12 +8,16 @@ mod context;
 mod db;
 mod dialogs;
 mod error;
+mod peers;
 mod rpc;
 mod store;
+mod types;
 mod ws;
 
 use context::Context;
 use error::Result;
+use peers::Peers;
+use types::GlobalState;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -22,6 +26,7 @@ async fn main() -> Result<()> {
     fix_path_env::fix()?;
 
     let mut app = app::IronApp::build();
+    Peers::init(app.sender.clone()).await;
 
     // now we're able to build our context
     // this relies on $APPDIR retrieved from Tauri

@@ -11,7 +11,7 @@ use tauri::{Menu, Submenu, WindowMenuEvent};
 use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, StateFlags};
 use tokio::sync::mpsc;
 
-use crate::{commands, context::Context, dialogs};
+use crate::{commands, context::Context, dialogs, peers};
 
 pub struct IronApp {
     pub sender: mpsc::UnboundedSender<Event>,
@@ -31,7 +31,7 @@ pub enum Event {
 pub enum Notify {
     NetworkChanged,
     TxsUpdated,
-    ConnectionsUpdated,
+    PeersUpdated,
 }
 
 impl Notify {
@@ -39,7 +39,7 @@ impl Notify {
         match self {
             Self::NetworkChanged => "network-changed",
             Self::TxsUpdated => "txs-updated",
-            Self::ConnectionsUpdated => "connections-updated",
+            Self::PeersUpdated => "peers-updated",
         }
     }
 }
@@ -76,6 +76,7 @@ impl IronApp {
                 commands::get_connections,
                 commands::derive_addresses,
                 commands::derive_addresses_with_mnemonic,
+                peers::commands::peers_get_all,
                 dialogs::dialog_get_payload,
                 dialogs::dialog_finish,
             ])

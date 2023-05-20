@@ -6,6 +6,7 @@ use serde::de::{self, MapAccess, Visitor};
 use serde::{Deserialize, Serialize};
 
 use crate::error::Result;
+use crate::types::ChecksummedAddress;
 
 #[derive(Debug, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -81,6 +82,10 @@ impl Wallet {
 
     pub fn checksummed_address(&self) -> String {
         to_checksum(&self.signer.address(), None)
+    }
+
+    pub fn get_current_address(&self) -> ChecksummedAddress {
+        self.signer.address().into()
     }
 
     pub fn update_chain_id(&mut self, chain_id: u32) {
