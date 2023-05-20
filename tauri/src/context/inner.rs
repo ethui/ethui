@@ -11,7 +11,6 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tokio::sync::mpsc;
 
-pub use super::network::Network;
 pub use super::wallet::Wallet;
 use crate::app::{self, Notify, SETTINGS_PATH};
 use crate::db::DB;
@@ -21,8 +20,6 @@ use crate::ws::Peer;
 #[derive(Debug, Deserialize, Serialize)]
 pub struct ContextInner {
     pub wallet: Wallet,
-    pub current_network: String,
-    pub networks: HashMap<String, Network>,
 
     /// Deserialized into an empty HashMap
     #[serde(skip)]
@@ -40,8 +37,6 @@ pub struct ContextInner {
 impl Default for ContextInner {
     fn default() -> Self {
         Self {
-            networks: Network::default(),
-            current_network: String::from("mainnet"),
             wallet: Default::default(),
             peers: Default::default(),
             db: Default::default(),
@@ -71,10 +66,6 @@ impl ContextInner {
     pub async fn init(&mut self, sender: mpsc::UnboundedSender<app::Event>) -> Result<()> {
         self.window_snd = Some(sender);
         self.db.connect().await?;
-
-        for network in self.networks.values_mut() {
-            network.reset_listener(&self.db, self.window_snd.as_ref().unwrap().clone())?;
-        }
 
         // this needs to be called after initialization since the deserialized signer hardcoded
         // chain_id = 1
@@ -138,69 +129,6 @@ impl ContextInner {
             }));
         }
         self.save().unwrap();
-    }
-
-    /// Changes the currently connected wallet
-    ///
-    /// Broadcasts `chainChanged`
-    pub fn set_current_network(&mut self, new_current_network: String) -> Result<()> {
-        let previous_network = self.get_current_network();
-        self.current_network = new_current_network;
-        let new_network = self.get_current_network();
-
-        if previous_network.chain_id != new_network.chain_id {
-            // update signer
-            self.wallet.update_chain_id(new_network.chain_id);
-
-            // broadcast to peers
-            self.broadcast(json!({
-                "method": "chainChanged",
-                "params": {
-                    "chainId": format!("0x{:x}", new_network.chain_id),
-                    "networkVersion": new_network.name
-                }
-            }));
-            self.window_snd
-                .as_ref()
-                .unwrap()
-                .send(app::Notify::NetworkChanged.into())?
-        }
-
-        self.save()?;
-
-        Ok(())
-    }
-
-    pub fn set_current_network_by_id(&mut self, new_chain_id: u32) -> Result<()> {
-        let new_network = self
-            .networks
-            .values()
-            .find(|n| n.chain_id == new_chain_id)
-            .unwrap();
-
-        self.set_current_network(new_network.name.clone())?;
-        self.save()?;
-
-        Ok(())
-    }
-
-    pub fn set_networks(&mut self, networks: Vec<Network>) {
-        self.networks = networks.into_iter().map(|n| (n.name.clone(), n)).collect();
-        self.save().unwrap();
-    }
-
-    pub fn reset_networks(&mut self) {
-        self.networks = Network::default();
-        self.save().unwrap();
-    }
-
-    pub fn get_current_network(&self) -> Network {
-        self.networks.get(&self.current_network).unwrap().clone()
-    }
-
-    pub fn get_provider(&self) -> Provider<Http> {
-        let network = self.get_current_network();
-        Provider::<Http>::try_from(network.http_url).unwrap()
     }
 
     pub fn get_signer(&self) -> ethers::signers::Wallet<SigningKey> {

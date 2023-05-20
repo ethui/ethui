@@ -3,6 +3,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
+use ethers::providers::{Http, Provider};
 use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
 use url::Url;
@@ -78,6 +79,10 @@ impl Network {
         networks.insert(String::from("goerli"), Self::goerli());
         networks.insert(String::from("anvil"), Self::anvil());
         networks
+    }
+
+    pub fn get_provider(&self) -> Provider<Http> {
+        Provider::<Http>::try_from(self.http_url).unwrap()
     }
 
     pub fn reset_listener(

@@ -3,19 +3,17 @@ mod send_transaction;
 use std::{collections::HashMap, str::FromStr};
 
 use ethers::abi::AbiEncode;
-use ethers::providers::ProviderError;
-use ethers::signers::Signer;
-use ethers::types::transaction::eip712;
 use ethers::{
     prelude::SignerMiddleware,
-    providers::Middleware,
-    types::{Address, Bytes},
+    providers::{Middleware, ProviderError},
+    signers::Signer,
+    types::{transaction::eip712, Address, Bytes},
 };
 use jsonrpc_core::{ErrorCode, MetaIoHandler, Params};
 use serde_json::json;
 
 use self::send_transaction::SendTransaction;
-use crate::context::Context;
+use crate::{context::Context, networks::Networks};
 
 pub struct Handler {
     io: MetaIoHandler<Context>,
@@ -74,7 +72,7 @@ impl Handler {
             ($name:literal) => {
                 self.io
                     .add_method_with_meta($name, |params: Params, ctx: Context| async move {
-                        let provider = ctx.lock().await.get_provider();
+                        let provider = Networks::read().await.get_provider();
                         let res: jsonrpc_core::Result<serde_json::Value> = provider
                             .request::<_, serde_json::Value>($name, params)
                             .await
@@ -113,15 +111,14 @@ impl Handler {
     }
 
     async fn chain_id(_: Params, ctx: Context) -> Result<serde_json::Value> {
-        let ctx = ctx.lock().await;
-
-        Ok(json!(ctx.get_current_network().chain_id_hex()))
+        let network = Networks::read().await.get_current_network();
+        Ok(json!(network.chain_id_hex()))
     }
 
     async fn provider_state(_: Params, ctx: Context) -> Result<serde_json::Value> {
         let ctx = ctx.lock().await;
 
-        let network = ctx.get_current_network();
+        let network = Networks::read().await.get_current_network();
 
         Ok(json!({
             "isUnlocked": true,
@@ -138,7 +135,8 @@ impl Handler {
         let chain_id_str = params[0].get("chainId").unwrap().clone();
         let chain_id = u32::from_str_radix(&chain_id_str[2..], 16).unwrap();
 
-        match ctx.set_current_network_by_id(chain_id) {
+        let networks = Networks::write().await;
+        match networks.set_current_network_by_id(chain_id) {
             Ok(_) => Ok(serde_json::Value::Null),
             Err(e) => Err(jsonrpc_core::Error::invalid_params(e)),
         }
@@ -173,11 +171,13 @@ impl Handler {
 
         let ctx = ctx.lock().await;
 
+        let networks = Networks::read().await;
+        let network = networks.get_current_network();
         // create signer
-        let provider = ctx.get_provider();
+        let provider = networks.get_provider();
         let signer = SignerMiddleware::new(provider, ctx.get_signer());
 
-        sender.set_chain_id(ctx.get_current_network().chain_id);
+        sender.set_chain_id(network.chain_id);
         sender.set_signer(signer);
         sender.estimate_gas().await;
 
@@ -198,7 +198,7 @@ impl Handler {
 
         // TODO: ensure from == signer
 
-        let provider = ctx.get_provider();
+        let provider = Networks::read().await.get_current_provider();
         let signer = SignerMiddleware::new(provider, ctx.get_signer());
 
         let bytes = Bytes::from_str(&msg).unwrap();

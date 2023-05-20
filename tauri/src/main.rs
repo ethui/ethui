@@ -8,8 +8,10 @@ mod context;
 mod db;
 mod dialogs;
 mod error;
+mod networks;
 mod rpc;
 mod store;
+mod types;
 mod ws;
 
 use context::Context;
