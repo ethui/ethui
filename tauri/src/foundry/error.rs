@@ -6,7 +6,7 @@ pub enum Error {
     FileNotFound(PathBuf),
 
     #[error("error parsing JSON: {0}")]
-    JSONError(#[from] serde_json::Error),
+    JSON(#[from] serde_json::Error),
 
     #[error("file does not have the expected schema: {0}")]
     NotAnABI(PathBuf),
