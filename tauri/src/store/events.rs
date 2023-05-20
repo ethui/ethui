@@ -10,7 +10,9 @@ use sqlx::{sqlite::SqliteRow, Row};
 use url::Url;
 
 use super::types::{Event, Events};
-use crate::{db::DB, error::Result, foundry::calculate_code_hash};
+#[cfg(feature = "foundry-abi-watch")]
+use crate::foundry::calculate_code_hash;
+use crate::{db::DB, error::Result};
 
 #[async_trait]
 pub trait EventsStore {
@@ -26,10 +28,8 @@ pub trait EventsStore {
     // TODO: should maybe return Vec<H256> here
     async fn get_transactions(&self, chain_id: u32, from_or_to: Address) -> Result<Vec<String>>;
 
-    // TODO: should maybe return Vec<H256> here
     async fn get_contracts(&self, chain_id: u32) -> Result<Vec<StoredContract>>;
 
-    // TODO: should maybe return Vec<(Address, U256)> here
     async fn get_balances(&self, chain_id: u32, address: Address) -> Result<Vec<(Address, U256)>>;
 }
 
@@ -63,11 +63,17 @@ impl EventsStore for DB {
                 }
 
                 Event::ContractDeployed(ref tx) => {
-                    let code_hash = provider
-                        .get_code(tx.address, None)
-                        .await
-                        .ok()
-                        .map(|v| calculate_code_hash(&v.to_string()).to_string());
+                    let code_hash: Option<String> = {
+                        #[cfg(feature = "foundry-abi-watch")]
+                        provider
+                            .get_code(tx.address, None)
+                            .await
+                            .ok()
+                            .map(|v| calculate_code_hash(&v.to_string()).to_string());
+
+                        #[cfg(not(feature = "foundry-abi-watch"))]
+                        None
+                    };
 
                     sqlx::query(
                         r#" INSERT INTO contracts (address, chain_id, deployed_code_hash)

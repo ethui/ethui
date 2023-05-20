@@ -8,6 +8,7 @@ mod context;
 mod db;
 mod dialogs;
 mod error;
+#[cfg(feature = "foundry-abi-watch")]
 mod foundry;
 mod rpc;
 mod store;
@@ -15,6 +16,7 @@ mod ws;
 
 use context::Context;
 use error::Result;
+#[cfg(feature = "foundry-abi-watch")]
 use foundry::Foundry;
 
 #[tokio::main]
@@ -23,6 +25,7 @@ async fn main() -> Result<()> {
     env_logger::init();
     fix_path_env::fix()?;
 
+    #[cfg(feature = "foundry-abi-watch")]
     Foundry::init().await?;
 
     let mut app = app::IronApp::build();

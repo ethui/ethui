@@ -28,12 +28,9 @@ export function Contracts() {
 }
 
 function Contract({ address, deployedCodeHash }: IContract) {
-  const { data: abi } = useInvoke<string>("foundry_get_abi", {
+  const { data: _abi } = useInvoke<string>("foundry_get_abi", {
     deployedCodeHash,
   });
-
-  console.log(address);
-  console.log(abi);
 
   return (
     <ListItem>
