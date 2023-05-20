@@ -34,7 +34,7 @@ export const walletSchema = z.object({
   derivationPath: z.string().regex(/^m\/(\d+'?\/)+\d+$/, {
     message: "invalid path format",
   }),
-  count: z.number().int().min(1),
+  idx: z.number().int().min(0).max(4),
 });
 
 export type Wallet = z.infer<typeof walletSchema> & { currentPath?: string };
