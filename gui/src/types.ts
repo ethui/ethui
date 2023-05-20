@@ -26,8 +26,6 @@ export type Network = z.infer<typeof networkSchema.shape.networks>[number];
 export type Address = `0x${string}`;
 
 export const walletSchema = z.object({
-  name: z.string().min(1),
-  dev: z.boolean().default(false),
   mnemonic: z.string().regex(/^(\w+\s){11}\w+$/, {
     message: "Must be a 12-word phrase",
   }),
@@ -36,14 +34,6 @@ export const walletSchema = z.object({
   }),
   idx: z.number().int().min(0).max(4),
 });
-
-export type Wallet = z.infer<typeof walletSchema> & { currentPath?: string };
-
-export const walletsSchema = z.object({
-  wallets: z.array(walletSchema),
-});
-
-export type Wallets = z.infer<typeof walletsSchema>;
 
 export const foundrySettingsSchema = z.object({
   abiWatch: z.boolean().default(false),
