@@ -28,9 +28,8 @@ async fn main() -> Result<()> {
     fix_path_env::fix()?;
 
     let mut app = app::IronApp::build();
-
-    Wallets::init(app.get_settings_file("wallets")).await;
     Peers::init(app.sender.clone()).await;
+    Wallets::init(app.get_settings_file("wallets")).await;
 
     // now we're able to build our context
     // this relies on $APPDIR retrieved from Tauri

@@ -18,7 +18,7 @@ const tabs = [
   { path: "transactions", name: "Transactions", component: Txs, devOnly: true },
   { path: "balances", name: "Balances", component: Balances, devOnly: true },
   { path: "contracts", name: "Contracts", component: Contracts, devOnly: true },
-  { path: "connections", name: "Peers", component: Peers },
+  { path: "connections", name: "Connections", component: Peers },
 ];
 
 export function HomePage() {

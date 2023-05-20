@@ -43,7 +43,7 @@ function Connection({ tabId, conns }: { tabId?: string; conns: Peer[] }) {
       <Stack>
         <Typography variant="overline"> {conns[0].title}</Typography>
         {tabId && <Typography variant="body2">Tab ID {tabId}</Typography>}
-        <Typography variant="body2">{conns.length} connections</Typography>
+        <Typography variant="body2">{conns.length} peers</Typography>
       </Stack>
     </Stack>
   );
