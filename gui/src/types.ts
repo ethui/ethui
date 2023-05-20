@@ -35,6 +35,8 @@ export const walletSchema = z.object({
   idx: z.number().int().min(0).max(4),
 });
 
+export type Wallet = z.infer<typeof walletSchema> & { currentPath?: string };
+
 export const foundrySettingsSchema = z.object({
   abiWatch: z.boolean().default(false),
   abiWatchPath: z.string().optional(),
