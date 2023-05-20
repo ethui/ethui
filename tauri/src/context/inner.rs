@@ -4,18 +4,19 @@ use std::io::BufReader;
 use std::net::SocketAddr;
 use std::path::Path;
 
-use ethers::providers::{Http, Provider};
 use ethers_core::k256::ecdsa::SigningKey;
-use log::warn;
 use serde::{Deserialize, Serialize};
-use serde_json::json;
 use tokio::sync::mpsc;
 
 pub use super::wallet::Wallet;
-use crate::app::{self, Notify, SETTINGS_PATH};
-use crate::db::DB;
-use crate::error::Result;
-use crate::ws::Peer;
+use crate::{
+    app::{self, SETTINGS_PATH},
+    db::DB,
+    error::Result,
+    peers::Peers,
+    types::GlobalState,
+    ws::Peer,
+};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct ContextInner {
@@ -67,11 +68,6 @@ impl ContextInner {
         self.window_snd = Some(sender);
         self.db.connect().await?;
 
-        // this needs to be called after initialization since the deserialized signer hardcoded
-        // chain_id = 1
-        self.wallet
-            .update_chain_id(self.get_current_network().chain_id);
-
         Ok(())
     }
 
@@ -84,50 +80,18 @@ impl ContextInner {
         Ok(())
     }
 
-    pub fn add_peer(&mut self, peer: Peer) {
-        self.peers.insert(peer.socket, peer);
-        self.save().unwrap();
-        self.window_snd
-            .as_ref()
-            .unwrap()
-            .send(Notify::ConnectionsUpdated.into())
-            .unwrap();
-    }
-
-    pub fn remove_peer(&mut self, peer: SocketAddr) {
-        self.peers.remove(&peer);
-        self.save().unwrap();
-        self.window_snd
-            .as_ref()
-            .unwrap()
-            .send(Notify::ConnectionsUpdated.into())
-            .unwrap();
-    }
-
-    pub fn broadcast<T: Serialize + std::fmt::Debug>(&self, msg: T) {
-        self.peers.iter().for_each(|(_, peer)| {
-            peer.sender
-                .send(serde_json::to_value(&msg).unwrap())
-                .unwrap_or_else(|e| {
-                    warn!("Failed to send message to peer: {}", e);
-                });
-        });
-    }
-
     /// Changes the currently connected wallet
     ///
     /// Broadcasts `accountsChanged`
     pub fn set_wallet(&mut self, wallet: Wallet) {
-        let previous_address = self.wallet.checksummed_address();
         self.wallet = wallet;
-        let new_address = self.wallet.checksummed_address();
+        let new_addresses = vec![self.wallet.get_current_address()];
 
-        if previous_address != new_address {
-            self.broadcast(json!({
-                "method": "accountsChanged",
-                "params": [new_address]
-            }));
-        }
+        tokio::spawn(async move {
+            Peers::read()
+                .await
+                .broadcast_accounts_changed(new_addresses)
+        });
         self.save().unwrap();
     }
 

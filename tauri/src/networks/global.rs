@@ -6,19 +6,23 @@ use std::{
 
 use async_trait::async_trait;
 use once_cell::sync::OnceCell;
-use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
+use tokio::sync::{mpsc, RwLock, RwLockReadGuard, RwLockWriteGuard};
 
-use super::Networks;
-use crate::types::GlobalState;
+use super::{network::Network, Networks};
+use crate::{app, db::DB, types::GlobalState};
 
 static NETWORKS: OnceCell<RwLock<Networks>> = OnceCell::new();
 
 #[async_trait]
 impl GlobalState for Networks {
     /// initializes through the $XDG_CONFIG/iron/wallets.json file
-    type Initializer = PathBuf;
+    type Initializer = (PathBuf, mpsc::UnboundedSender<app::Event>, DB);
 
-    async fn init(pathbuf: Self::Initializer) {
+    async fn init(args: Self::Initializer) {
+        let pathbuf = args.0;
+        let window_snd = args.1;
+        let db = args.2;
+
         let path = Path::new(&pathbuf);
 
         let mut res: Self = if path.exists() {
@@ -27,14 +31,20 @@ impl GlobalState for Networks {
 
             let mut res: Self = serde_json::from_reader(reader).unwrap();
             res.file = Some(pathbuf);
+            res.window_snd = Some(window_snd);
+            res.db = Some(db);
             res
         } else {
             Self {
-                networks: Default::default(),
+                networks: Network::default(),
                 current: "mainnet".into(),
                 file: Some(pathbuf),
+                window_snd: Some(window_snd),
+                db: Some(db),
             }
         };
+
+        res.reset_listeners();
 
         NETWORKS.set(RwLock::new(res)).unwrap();
     }

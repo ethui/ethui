@@ -29,7 +29,7 @@ type WagmiClient = Client<
 >;
 
 export function WagmiWrapper({ children }: Props) {
-  const { data: network } = useInvoke<Network>("get_current_network");
+  const { data: network } = useInvoke<Network>("networks_get_current");
   const [client, setClient] = useState<WagmiClient>();
 
   useEffect(() => {

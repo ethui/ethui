@@ -13,7 +13,7 @@ use jsonrpc_core::{ErrorCode, MetaIoHandler, Params};
 use serde_json::json;
 
 use self::send_transaction::SendTransaction;
-use crate::{context::Context, networks::Networks};
+use crate::{context::Context, networks::Networks, types::GlobalState};
 
 pub struct Handler {
     io: MetaIoHandler<Context>,
@@ -71,8 +71,9 @@ impl Handler {
         macro_rules! provider_handler {
             ($name:literal) => {
                 self.io
-                    .add_method_with_meta($name, |params: Params, ctx: Context| async move {
-                        let provider = Networks::read().await.get_provider();
+                    .add_method_with_meta($name, |params: Params, _ctx: Context| async move {
+                        let provider = Networks::read().await.get_current_provider();
+
                         let res: jsonrpc_core::Result<serde_json::Value> = provider
                             .request::<_, serde_json::Value>($name, params)
                             .await
@@ -110,15 +111,17 @@ impl Handler {
         Ok(json!([ctx.wallet.checksummed_address()]))
     }
 
-    async fn chain_id(_: Params, ctx: Context) -> Result<serde_json::Value> {
-        let network = Networks::read().await.get_current_network();
+    async fn chain_id(_: Params, _ctx: Context) -> Result<serde_json::Value> {
+        let networks = Networks::read().await;
+        let network = networks.get_current_network();
         Ok(json!(network.chain_id_hex()))
     }
 
     async fn provider_state(_: Params, ctx: Context) -> Result<serde_json::Value> {
         let ctx = ctx.lock().await;
+        let networks = Networks::read().await;
 
-        let network = Networks::read().await.get_current_network();
+        let network = networks.get_current_network();
 
         Ok(json!({
             "isUnlocked": true,
@@ -128,17 +131,15 @@ impl Handler {
         }))
     }
 
-    async fn switch_chain(params: Params, ctx: Context) -> Result<serde_json::Value> {
-        let mut ctx = ctx.lock().await;
-
+    async fn switch_chain(params: Params, _ctx: Context) -> Result<serde_json::Value> {
         let params = params.parse::<Vec<HashMap<String, String>>>().unwrap();
         let chain_id_str = params[0].get("chainId").unwrap().clone();
         let chain_id = u32::from_str_radix(&chain_id_str[2..], 16).unwrap();
 
-        let networks = Networks::write().await;
+        let mut networks = Networks::write().await;
         match networks.set_current_network_by_id(chain_id) {
             Ok(_) => Ok(serde_json::Value::Null),
-            Err(e) => Err(jsonrpc_core::Error::invalid_params(e)),
+            Err(e) => Err(jsonrpc_core::Error::invalid_params(e.to_string())),
         }
     }
 
@@ -173,9 +174,9 @@ impl Handler {
 
         let networks = Networks::read().await;
         let network = networks.get_current_network();
+
         // create signer
-        let provider = networks.get_provider();
-        let signer = SignerMiddleware::new(provider, ctx.get_signer());
+        let signer = SignerMiddleware::new(network.get_provider(), ctx.get_signer());
 
         sender.set_chain_id(network.chain_id);
         sender.set_signer(signer);

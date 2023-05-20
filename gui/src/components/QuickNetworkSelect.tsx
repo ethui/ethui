@@ -7,8 +7,8 @@ import { useRefreshNetwork } from "../hooks/useRefreshNetwork";
 import { Network } from "../types";
 
 export function QuickNetworkSelect() {
-  const { data: networks } = useInvoke<Network[]>("get_networks");
-  const { data: current, mutate } = useInvoke<Network>("get_current_network");
+  const { data: networks } = useInvoke<Network[]>("networks_get_list");
+  const { data: current, mutate } = useInvoke<Network>("networks_get_current");
 
   useRefreshNetwork(mutate);
 

@@ -1,14 +1,21 @@
+pub mod commands;
 mod error;
 mod global;
 mod network;
 
-use std::{collections::HashMap, path::PathBuf};
+use std::{
+    collections::HashMap,
+    fs::File,
+    path::{Path, PathBuf},
+};
 
-pub use error::{Error, Result};
 use ethers::providers::{Http, Provider};
 use serde::{Deserialize, Serialize};
+use tokio::sync::mpsc;
 
+pub use self::error::{Error, Result};
 use self::network::Network;
+use crate::{app, db::DB, peers::Peers, types::GlobalState};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Networks {
@@ -17,29 +24,25 @@ pub struct Networks {
 
     #[serde(skip)]
     file: Option<PathBuf>,
+
+    #[serde(skip)]
+    window_snd: Option<mpsc::UnboundedSender<app::Event>>,
+
+    #[serde(skip)]
+    db: Option<DB>,
 }
 
 impl Networks {
     /// Changes the currently connected wallet
     ///
     /// Broadcasts `chainChanged`
-    pub async fn set_current_network(&mut self, new_current_network: String) -> Result<()> {
-        let previous_network = self.get_current_network();
+    pub fn set_current_network(&mut self, new_current_network: String) -> Result<()> {
+        let previous = self.get_current_network().chain_id;
         self.current = new_current_network;
-        let new_network = self.get_current_network();
+        let new = self.get_current_network().chain_id;
 
-        if previous_network.chain_id != new_network.chain_id {
-            // update signer
-            self.wallet.update_chain_id(new_network.chain_id);
-
-            // broadcast to peers
-            self.broadcast(json!({
-                "method": "chainChanged",
-                "params": {
-                    "chainId": format!("0x{:x}", new_network.chain_id),
-                    "networkVersion": new_network.name
-                }
-            }));
+        if previous != new {
+            self.notify_peers();
             self.window_snd
                 .as_ref()
                 .unwrap()
@@ -51,7 +54,7 @@ impl Networks {
         Ok(())
     }
 
-    pub async fn set_current_network_by_id(&mut self, new_chain_id: u32) -> Result<()> {
+    pub fn set_current_network_by_id(&mut self, new_chain_id: u32) -> Result<()> {
         let new_network = self
             .networks
             .values()
@@ -65,11 +68,12 @@ impl Networks {
     }
 
     pub fn get_current_network(&self) -> &Network {
-        &self.networks.get[&self.current]
+        &self.networks[&self.current]
     }
 
     pub fn set_networks(&mut self, networks: Vec<Network>) {
         self.networks = networks.into_iter().map(|n| (n.name.clone(), n)).collect();
+        // TODO: ensure current network still exists
         self.save().unwrap();
     }
 
@@ -84,12 +88,22 @@ impl Networks {
 
     // broadcasts `accountsChanged` to all peers
     fn notify_peers(&self) {
-        let current = self.get_current_network();
+        let current = self.get_current_network().clone();
         tokio::spawn(async move {
             Peers::read()
                 .await
-                .broadcast_chain_chainged(current.chain_id, self.current)
+                .broadcast_chain_changed(current.chain_id, current.name)
         });
+    }
+
+    fn reset_listeners(&mut self) {
+        let db = self.db.clone().unwrap();
+
+        for network in self.networks.values_mut() {
+            network
+                .reset_listener(db.clone(), self.window_snd.as_ref().unwrap().clone())
+                .unwrap();
+        }
     }
 
     // Persists current state to disk
