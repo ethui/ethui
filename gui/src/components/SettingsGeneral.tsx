@@ -20,7 +20,7 @@ export function SettingsGeneral() {
   const {
     handleSubmit,
     reset,
-    formState: { isValid, dirtyFields, errors },
+    formState: { isValid, dirtyFields },
     control,
   } = useForm({
     mode: "onChange",
@@ -41,7 +41,6 @@ export function SettingsGeneral() {
   );
 
   if (!general) return null;
-  console.log(general, errors);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
