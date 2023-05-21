@@ -11,7 +11,7 @@ use tauri::{Menu, Submenu, WindowMenuEvent};
 use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, StateFlags};
 use tokio::sync::mpsc;
 
-use crate::{commands, context::Context, dialogs, networks, peers};
+use crate::{commands, context::Context, db::DB, dialogs, networks, peers};
 
 pub struct IronApp {
     pub sender: mpsc::UnboundedSender<Event>,
@@ -50,7 +50,6 @@ impl From<Notify> for Event {
     }
 }
 
-pub static DB_PATH: OnceCell<PathBuf> = OnceCell::new();
 pub static SETTINGS_PATH: OnceCell<PathBuf> = OnceCell::new();
 
 impl IronApp {
@@ -118,7 +117,6 @@ impl IronApp {
             sender: snd.clone(),
         };
 
-        DB_PATH.set(res.get_resource_path("db.sqlite3")).unwrap();
         SETTINGS_PATH
             .set(res.get_resource_path("settings.json"))
             .unwrap();
@@ -136,8 +134,10 @@ impl IronApp {
             .expect("failed to resource resource")
     }
 
-    pub fn manage(&self, ctx: Context) {
-        self.app.as_ref().unwrap().manage(ctx);
+    pub fn manage(&self, ctx: Context, db: DB) {
+        let app = self.app.as_ref().unwrap();
+        app.manage(ctx);
+        app.manage(db);
     }
 
     pub fn run(&mut self) {

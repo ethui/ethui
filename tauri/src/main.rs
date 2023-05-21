@@ -29,8 +29,7 @@ async fn main() -> Result<()> {
     fix_path_env::fix()?;
 
     let mut app = app::IronApp::build();
-    let mut db = DB::default();
-    db.connect().await?;
+    let db = DB::connect(&app.get_resource_path("db.sqlite3")).await?;
 
     let mut ctx = Context::from_settings_file().await?;
 
@@ -44,7 +43,7 @@ async fn main() -> Result<()> {
 
     // now we're able to build our context
     // this relies on $APPDIR retrieved from Tauri
-    ctx.init(app.sender.clone(), db.clone()).await?;
+    ctx.init(app.sender.clone()).await?;
 
     // run websockets server loop
     {
@@ -54,7 +53,7 @@ async fn main() -> Result<()> {
 
     // make context available to tauri's runtime
     // and run it
-    app.manage(ctx);
+    app.manage(ctx, db);
     app.run();
 
     Ok(())
