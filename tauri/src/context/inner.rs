@@ -9,7 +9,6 @@ use tokio::sync::mpsc;
 pub use super::wallet::Wallet;
 use crate::{
     app::{self, SETTINGS_PATH},
-    db::DB,
     error::Result,
     peers::Peers,
     types::GlobalState,
@@ -18,11 +17,6 @@ use crate::{
 #[derive(Debug, Deserialize, Serialize, Default)]
 pub struct ContextInner {
     pub wallet: Wallet,
-
-    /// This is deserialized with the Default trait which only works after `App` has been
-    /// initialized and `DB_PATH` cell filled
-    #[serde(skip)]
-    pub db: Option<DB>,
 
     #[serde(skip)]
     window_snd: Option<mpsc::UnboundedSender<app::Event>>,
@@ -46,9 +40,8 @@ impl ContextInner {
         Ok(res)
     }
 
-    pub async fn init(&mut self, sender: mpsc::UnboundedSender<app::Event>, db: DB) -> Result<()> {
+    pub async fn init(&mut self, sender: mpsc::UnboundedSender<app::Event>) -> Result<()> {
         self.window_snd = Some(sender);
-        self.db = Some(db);
 
         Ok(())
     }
