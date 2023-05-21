@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
 use url::Url;
 
-use crate::{app, context::BlockListener, db::DB};
+use crate::{app, block_listener::BlockListener, db::DB};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Network {

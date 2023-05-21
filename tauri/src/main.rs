@@ -3,7 +3,7 @@
 
 mod abis;
 mod app;
-mod context;
+mod block_listener;
 mod db;
 mod dialogs;
 mod error;
@@ -15,7 +15,6 @@ mod types;
 mod wallets;
 mod ws;
 
-use context::Context;
 use db::DB;
 use error::Result;
 use networks::Networks;
@@ -32,8 +31,6 @@ async fn main() -> Result<()> {
     let mut app = app::IronApp::build();
     let db = DB::connect(&app.get_resource_path("db.sqlite3")).await?;
 
-    let mut ctx = Context::from_settings_file().await?;
-
     Peers::init(app.sender.clone()).await;
     Wallets::init(app.get_resource_path("wallets.json")).await;
     Networks::init((
@@ -43,16 +40,12 @@ async fn main() -> Result<()> {
     ))
     .await;
 
-    // now we're able to build our context
-    // this relies on $APPDIR retrieved from Tauri
-    ctx.init(app.sender.clone()).await?;
-
     // run websockets server loop
     tauri::async_runtime::spawn(async move { ws::ws_server_loop().await });
 
     // make context available to tauri's runtime
     // and run it
-    app.manage(ctx, db);
+    app.manage(db);
     app.run();
 
     Ok(())

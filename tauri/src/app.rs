@@ -12,7 +12,6 @@ use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, Stat
 use tokio::sync::mpsc;
 
 use crate::{
-    context::Context,
     db::{self, DB},
     dialogs, networks, peers, wallets,
 };
@@ -142,9 +141,8 @@ impl IronApp {
             .expect("failed to resource resource")
     }
 
-    pub fn manage(&self, ctx: Context, db: DB) {
+    pub fn manage(&self, db: DB) {
         let app = self.app.as_ref().unwrap();
-        app.manage(ctx);
         app.manage(db);
     }
 
