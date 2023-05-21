@@ -13,7 +13,7 @@ use jsonrpc_core::{ErrorCode, IoHandler, Params};
 use serde_json::json;
 
 use self::send_transaction::SendTransaction;
-use crate::{networks::Networks, types::GlobalState, types::GlobalState, wallets::Wallets};
+use crate::{networks::Networks, types::GlobalState, wallets::Wallets};
 
 pub struct Handler {
     io: IoHandler,
