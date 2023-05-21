@@ -101,10 +101,9 @@ impl Handler {
     }
 
     async fn accounts(_: Params) -> Result<serde_json::Value> {
-        let address = Wallets::read()
-            .await
-            .get_current_wallet()
-            .get_current_address();
+        let wallets = Wallets::read().await;
+        let address = wallets.get_current_wallet().get_current_address();
+
         Ok(json!([address]))
     }
 
