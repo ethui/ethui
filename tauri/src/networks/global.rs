@@ -1,4 +1,5 @@
 use std::{
+    collections::HashMap,
     fs::File,
     io::BufReader,
     path::{Path, PathBuf},
@@ -6,6 +7,7 @@ use std::{
 
 use async_trait::async_trait;
 use once_cell::sync::OnceCell;
+use serde::Deserialize;
 use tokio::sync::{mpsc, RwLock, RwLockReadGuard, RwLockWriteGuard};
 
 use super::{network::Network, Networks};
@@ -23,24 +25,35 @@ impl GlobalState for Networks {
         let window_snd = args.1;
         let db = args.2;
 
+        /// The persisted format of the networks object
+        #[derive(Debug, Deserialize)]
+        struct PersistedNetworks {
+            pub current: String,
+            pub networks: HashMap<String, Network>,
+        }
+
         let path = Path::new(&pathbuf);
 
         let mut res: Self = if path.exists() {
             let file = File::open(path).unwrap();
             let reader = BufReader::new(file);
 
-            let mut res: Self = serde_json::from_reader(reader).unwrap();
-            res.file = Some(pathbuf);
-            res.window_snd = Some(window_snd);
-            res.db = Some(db);
-            res
+            let res: PersistedNetworks = serde_json::from_reader(reader).unwrap();
+
+            Self {
+                networks: res.networks,
+                current: res.current,
+                file: pathbuf,
+                window_snd,
+                db,
+            }
         } else {
             Self {
                 networks: Network::default(),
                 current: "mainnet".into(),
-                file: Some(pathbuf),
-                window_snd: Some(window_snd),
-                db: Some(db),
+                file: pathbuf,
+                window_snd,
+                db,
             }
         };
 
