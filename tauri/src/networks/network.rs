@@ -3,12 +3,12 @@ use std::{
     sync::{Arc, Mutex},
 };
 
+use ethers::providers::{Http, Provider};
 use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
 use url::Url;
 
-use super::block_listener::BlockListener;
-use crate::{app, db::DB};
+use crate::{app, context::BlockListener, db::DB};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Network {
@@ -80,9 +80,13 @@ impl Network {
         networks
     }
 
+    pub fn get_provider(&self) -> Provider<Http> {
+        Provider::<Http>::try_from(self.http_url.clone()).unwrap()
+    }
+
     pub fn reset_listener(
         &mut self,
-        db: &DB,
+        db: DB,
         window_snd: mpsc::UnboundedSender<app::Event>,
     ) -> crate::error::Result<()> {
         if let Some(listener) = self.listener.as_ref() {
@@ -93,8 +97,7 @@ impl Network {
         if self.dev {
             let http_url = Url::parse(&self.http_url)?;
             let ws_url = Url::parse(&self.ws_url.clone().unwrap())?;
-            let mut listener =
-                BlockListener::new(self.chain_id, http_url, ws_url, db.clone(), window_snd);
+            let mut listener = BlockListener::new(self.chain_id, http_url, ws_url, db, window_snd);
             listener.run()?;
             self.listener = Some(Arc::new(Mutex::new(listener)));
         }

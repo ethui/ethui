@@ -1,14 +1,13 @@
 mod block_listener;
 mod inner;
-mod network;
 
 use std::sync::Arc;
 
+pub use block_listener::BlockListener;
 use futures_util::lock::{Mutex, MutexLockFuture};
 use tokio::sync::mpsc;
 
 pub use self::inner::ContextInner;
-pub use self::network::Network;
 use crate::app;
 pub use crate::error::Result;
 
