@@ -3,7 +3,6 @@
 
 mod abis;
 mod app;
-mod commands;
 mod context;
 mod db;
 mod dialogs;
@@ -14,6 +13,7 @@ mod rpc;
 mod store;
 mod types;
 mod ws;
+mod wallets;
 
 use context::Context;
 use db::DB;
@@ -21,6 +21,7 @@ use error::Result;
 use networks::Networks;
 use peers::Peers;
 use types::GlobalState;
+use wallets::Wallets;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -40,6 +41,7 @@ async fn main() -> Result<()> {
         db.clone(),
     ))
     .await;
+    Wallets::init(app.get_resource_path("wallets.json")).await;
 
     // now we're able to build our context
     // this relies on $APPDIR retrieved from Tauri

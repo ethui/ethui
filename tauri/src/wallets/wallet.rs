@@ -14,6 +14,7 @@ pub struct Wallet {
     mnemonic: String,
     derivation_path: String,
     idx: u32,
+
     #[serde(skip)]
     pub signer: ethers::signers::Wallet<SigningKey>,
 }
