@@ -17,7 +17,7 @@ export function QuickNetworkSelect() {
 
     if (!current || current.name === network) return;
 
-    await invoke("set_current_network", { network });
+    await invoke("networks_set_current", { network });
     mutate();
   };
 

@@ -45,37 +45,33 @@ pub async fn get_current_address(ctx: Ctx<'_>) -> Result<String> {
 #[tauri::command]
 pub async fn get_transactions(address: Address, ctx: Ctx<'_>) -> Result<Vec<String>> {
     let ctx = ctx.lock().await;
+    let db = ctx.db.clone().unwrap();
     let networks = Networks::read().await;
 
     // TODO: this unwrap is avoidable
     let chain_id = networks.get_current_network().chain_id;
-    Ok(ctx.db.get_transactions(chain_id, address).await.unwrap())
+    Ok(db.get_transactions(chain_id, address).await.unwrap())
 }
 
 #[tauri::command]
 pub async fn get_contracts(ctx: Ctx<'_>) -> Result<Vec<String>> {
     let ctx = ctx.lock().await;
+    let db = ctx.db.clone().unwrap();
     let networks = Networks::read().await;
 
     // TODO: this unwrap is avoidable
     let chain_id = networks.get_current_network().chain_id;
-    Ok(ctx.db.get_contracts(chain_id).await.unwrap())
+    Ok(db.get_contracts(chain_id).await.unwrap())
 }
 
 #[tauri::command]
 pub async fn get_erc20_balances(address: Address, ctx: Ctx<'_>) -> Result<Vec<(Address, U256)>> {
     let ctx = ctx.lock().await;
+    let db = ctx.db.clone().unwrap();
     let networks = Networks::read().await;
 
     let chain_id = networks.get_current_network().chain_id;
-    Ok(ctx.db.get_balances(chain_id, address).await.unwrap())
-}
-
-#[tauri::command]
-pub async fn get_connections(ctx: Ctx<'_>) -> Result<Vec<crate::ws::Peer>> {
-    let ctx = ctx.lock().await;
-
-    Ok(ctx.peers.values().cloned().collect())
+    Ok(db.get_balances(chain_id, address).await.unwrap())
 }
 
 #[tauri::command]

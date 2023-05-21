@@ -73,7 +73,6 @@ impl IronApp {
                 commands::get_transactions,
                 commands::get_contracts,
                 commands::get_erc20_balances,
-                commands::get_connections,
                 commands::derive_addresses,
                 commands::derive_addresses_with_mnemonic,
                 peers::commands::peers_get_all,

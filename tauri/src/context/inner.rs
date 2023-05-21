@@ -1,7 +1,5 @@
-use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufReader;
-use std::net::SocketAddr;
 use std::path::Path;
 
 use ethers_core::k256::ecdsa::SigningKey;
@@ -15,35 +13,19 @@ use crate::{
     error::Result,
     peers::Peers,
     types::GlobalState,
-    ws::Peer,
 };
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Default)]
 pub struct ContextInner {
     pub wallet: Wallet,
-
-    /// Deserialized into an empty HashMap
-    #[serde(skip)]
-    pub peers: HashMap<SocketAddr, Peer>,
 
     /// This is deserialized with the Default trait which only works after `App` has been
     /// initialized and `DB_PATH` cell filled
     #[serde(skip)]
-    pub db: DB,
+    pub db: Option<DB>,
 
     #[serde(skip)]
     window_snd: Option<mpsc::UnboundedSender<app::Event>>,
-}
-
-impl Default for ContextInner {
-    fn default() -> Self {
-        Self {
-            wallet: Default::default(),
-            peers: Default::default(),
-            db: Default::default(),
-            window_snd: None,
-        }
-    }
 }
 
 impl ContextInner {
@@ -64,9 +46,9 @@ impl ContextInner {
         Ok(res)
     }
 
-    pub async fn init(&mut self, sender: mpsc::UnboundedSender<app::Event>) -> Result<()> {
+    pub async fn init(&mut self, sender: mpsc::UnboundedSender<app::Event>, db: DB) -> Result<()> {
         self.window_snd = Some(sender);
-        self.db.connect().await?;
+        self.db = Some(db);
 
         Ok(())
     }

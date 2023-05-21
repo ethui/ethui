@@ -11,6 +11,7 @@ use tokio::sync::mpsc;
 pub use self::inner::ContextInner;
 pub use self::wallet::Wallet;
 use crate::app;
+use crate::db::DB;
 pub use crate::error::Result;
 
 #[derive(Clone)]
@@ -26,8 +27,8 @@ impl Context {
         Ok(Self(Arc::new(Mutex::new(inner))))
     }
 
-    pub async fn init(&mut self, sender: mpsc::UnboundedSender<app::Event>) -> Result<()> {
-        self.lock().await.init(sender).await
+    pub async fn init(&mut self, sender: mpsc::UnboundedSender<app::Event>, db: DB) -> Result<()> {
+        self.lock().await.init(sender, db).await
     }
 
     pub fn lock(&self) -> MutexLockFuture<'_, ContextInner> {
