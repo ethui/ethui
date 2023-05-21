@@ -59,9 +59,9 @@ export function SettingsGeneral() {
                 sx={{ minWidth: 120 }}
                 {...field}
               >
-                <MenuItem value={"Auto"}>Auto</MenuItem>
-                <MenuItem value={"Dark"}>Dark</MenuItem>
-                <MenuItem value={"Light"}>Light</MenuItem>
+                <MenuItem value={"auto"}>Auto</MenuItem>
+                <MenuItem value={"dark"}>Dark</MenuItem>
+                <MenuItem value={"light"}>Light</MenuItem>
               </Select>
             )}
           />

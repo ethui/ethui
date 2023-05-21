@@ -32,7 +32,7 @@ export const walletSchema = z.object({
 });
 
 export const generalSettingsSchema = z.object({
-  darkMode: z.enum(["Auto", "Dark", "Light"]),
+  darkMode: z.enum(["auto", "dark", "light"]),
 });
 
 export type Address = `0x${string}`;
