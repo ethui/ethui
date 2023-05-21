@@ -8,7 +8,7 @@ import { ContextMenu } from "./ContextMenu";
 import Panel from "./Panel";
 
 export function Contracts() {
-  const { data: addresses, mutate } = useInvoke<Address[]>("get_contracts");
+  const { data: addresses, mutate } = useInvoke<Address[]>("db_get_contracts");
 
   useRefreshTransactions(mutate);
 

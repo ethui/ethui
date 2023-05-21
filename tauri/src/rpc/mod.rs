@@ -14,6 +14,7 @@ use serde_json::json;
 
 use self::send_transaction::SendTransaction;
 use crate::{context::Context, networks::Networks, types::GlobalState, wallets::Wallets};
+use crate::{context::Context, networks::Networks, types::GlobalState};
 
 pub struct Handler {
     io: IoHandler<()>,
@@ -108,6 +109,10 @@ impl Handler {
             .get_current_wallet()
             .get_current_address();
         Ok(json!([address]))
+    async fn accounts(_: Params, _ctx: Context) -> Result<serde_json::Value> {
+        let wallets = Wallets::read().await;
+
+        Ok(json!([wallets.wallet.checksummed_address()]))
     }
 
     async fn chain_id(_: Params) -> Result<serde_json::Value> {
@@ -118,6 +123,7 @@ impl Handler {
 
     async fn provider_state(_: Params) -> Result<serde_json::Value> {
         let networks = Networks::read().await;
+        let wallets = Wallets::read().await;
 
         let network = networks.get_current_network();
         let address = Wallets::read()
@@ -129,7 +135,7 @@ impl Handler {
             "isUnlocked": true,
             "chainId": network.chain_id_hex(),
             "networkVersion": network.name,
-            "accounts": [address],
+            "accounts": [wallets.wallet.checksummed_address()],
         }))
     }
 
@@ -172,18 +178,18 @@ impl Handler {
 
         let mut sender = SendTransaction::build(params.into());
 
-        // create signer
         let networks = Networks::read().await;
         let network = networks.get_current_network();
 
-        sender.set_chain_id(network.chain_id);
+        let wallets = Wallets::read().await;
+
         // create signer
         let signer = Wallets::read()
             .await
             .get_current_wallet()
             .build_signer(network.chain_id)
             .unwrap();
-        let signer = SignerMiddleware::new(network.get_provider(), signer);
+        let signer = SignerMiddleware::new(network.get_provider(),signer);
 
         sender.set_chain_id(network.chain_id);
         sender.set_signer(signer);
