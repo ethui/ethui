@@ -3,7 +3,6 @@
 
 mod abis;
 mod app;
-mod commands;
 mod context;
 mod db;
 mod dialogs;
@@ -14,6 +13,7 @@ mod rpc;
 mod store;
 mod types;
 mod ws;
+mod wallets;
 
 use context::Context;
 use db::DB;

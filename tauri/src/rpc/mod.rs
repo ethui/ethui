@@ -13,6 +13,7 @@ use jsonrpc_core::{ErrorCode, MetaIoHandler, Params};
 use serde_json::json;
 
 use self::send_transaction::SendTransaction;
+use crate::wallets::Wallets;
 use crate::{context::Context, networks::Networks, types::GlobalState};
 
 pub struct Handler {
@@ -105,10 +106,10 @@ impl Handler {
         self_handler!("eth_signTypedData_v4", Self::eth_sign_typed_data_v4);
     }
 
-    async fn accounts(_: Params, ctx: Context) -> Result<serde_json::Value> {
-        let ctx = ctx.lock().await;
+    async fn accounts(_: Params, _ctx: Context) -> Result<serde_json::Value> {
+        let wallets = Wallets::read().await;
 
-        Ok(json!([ctx.wallet.checksummed_address()]))
+        Ok(json!([wallets.wallet.checksummed_address()]))
     }
 
     async fn chain_id(_: Params, _ctx: Context) -> Result<serde_json::Value> {
@@ -117,9 +118,9 @@ impl Handler {
         Ok(json!(network.chain_id_hex()))
     }
 
-    async fn provider_state(_: Params, ctx: Context) -> Result<serde_json::Value> {
-        let ctx = ctx.lock().await;
+    async fn provider_state(_: Params, _ctx: Context) -> Result<serde_json::Value> {
         let networks = Networks::read().await;
+        let wallets = Wallets::read().await;
 
         let network = networks.get_current_network();
 
@@ -127,7 +128,7 @@ impl Handler {
             "isUnlocked": true,
             "chainId": network.chain_id_hex(),
             "networkVersion": network.name,
-            "accounts": [ctx.wallet.checksummed_address()],
+            "accounts": [wallets.wallet.checksummed_address()],
         }))
     }
 
@@ -143,7 +144,7 @@ impl Handler {
         }
     }
 
-    async fn send_transaction(params: Params, ctx: Context) -> Result<serde_json::Value> {
+    async fn send_transaction(params: Params, _ctx: Context) -> Result<serde_json::Value> {
         #[cfg(feature = "dialogs")]
         {
             // TODO: why is this an array?
@@ -170,13 +171,13 @@ impl Handler {
 
         let mut sender = SendTransaction::build(params.into());
 
-        let ctx = ctx.lock().await;
-
         let networks = Networks::read().await;
         let network = networks.get_current_network();
 
+        let wallets = Wallets::read().await;
+
         // create signer
-        let signer = SignerMiddleware::new(network.get_provider(), ctx.get_signer());
+        let signer = SignerMiddleware::new(network.get_provider(), wallets.get_signer());
 
         sender.set_chain_id(network.chain_id);
         sender.set_signer(signer);
@@ -190,17 +191,16 @@ impl Handler {
         }
     }
 
-    async fn eth_sign(params: Params, ctx: Context) -> Result<serde_json::Value> {
-        let ctx = ctx.lock().await;
-
+    async fn eth_sign(params: Params, _ctx: Context) -> Result<serde_json::Value> {
         let params = params.parse::<Vec<Option<String>>>().unwrap();
         let msg = params[0].as_ref().cloned().unwrap();
         let address = Address::from_str(&params[1].as_ref().cloned().unwrap()).unwrap();
 
         // TODO: ensure from == signer
 
+        let wallets = Wallets::read().await;
         let provider = Networks::read().await.get_current_provider();
-        let signer = SignerMiddleware::new(provider, ctx.get_signer());
+        let signer = SignerMiddleware::new(provider, wallets.get_signer());
 
         let bytes = Bytes::from_str(&msg).unwrap();
         let res = signer.sign(bytes, &address).await;
@@ -211,15 +211,14 @@ impl Handler {
         }
     }
 
-    async fn eth_sign_typed_data_v4(params: Params, ctx: Context) -> Result<serde_json::Value> {
-        let ctx = ctx.lock().await;
-
+    async fn eth_sign_typed_data_v4(params: Params, _ctx: Context) -> Result<serde_json::Value> {
         let params = params.parse::<Vec<Option<String>>>().unwrap();
         let _address = Address::from_str(&params[0].as_ref().cloned().unwrap()).unwrap();
         let data = params[1].as_ref().cloned().unwrap();
         let typed_data: eip712::TypedData = serde_json::from_str(&data).unwrap();
 
-        let signer = ctx.get_signer();
+        let wallets = Wallets::read().await;
+        let signer = wallets.get_signer();
         // TODO: ensure from == signer
 
         let res = signer.sign_typed_data(&typed_data).await;

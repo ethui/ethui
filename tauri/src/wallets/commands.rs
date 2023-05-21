@@ -1,8 +1,7 @@
-use crate::context::{Context, Wallet};
+use super::{Wallet, Wallets};
 use crate::networks::Networks;
 use crate::types::GlobalState;
 
-pub type Ctx<'a> = tauri::State<'a, Context>;
 type Result<T> = std::result::Result<T, String>;
 
 impl From<crate::error::Error> for String {
@@ -12,15 +11,14 @@ impl From<crate::error::Error> for String {
 }
 
 #[tauri::command]
-pub async fn get_wallet(ctx: Ctx<'_>) -> Result<Wallet> {
-    let ctx = ctx.lock().await;
+pub async fn get_wallet() -> Result<Wallet> {
+    let wallets = Wallets::read().await;
 
-    Ok(ctx.wallet.clone())
+    Ok(wallets.wallet.clone())
 }
 
 #[tauri::command]
-pub async fn set_wallet(mut wallet: Wallet, ctx: Ctx<'_>) -> Result<()> {
-    let mut ctx = ctx.lock().await;
+pub async fn set_wallet(mut wallet: Wallet) -> Result<()> {
     let networks = Networks::read().await;
 
     // wallet is deserialized from frontend params, and doesn't yet know the chain_id
@@ -28,15 +26,16 @@ pub async fn set_wallet(mut wallet: Wallet, ctx: Ctx<'_>) -> Result<()> {
     let chain_id = networks.get_current_network().chain_id;
     wallet.update_chain_id(chain_id);
 
-    ctx.set_wallet(wallet);
+    let mut wallets = Wallets::write().await;
+    wallets.set_wallet(wallet);
     Ok(())
 }
 
 #[tauri::command]
-pub async fn get_current_address(ctx: Ctx<'_>) -> Result<String> {
-    let ctx = ctx.lock().await;
+pub async fn get_current_address() -> Result<String> {
+    let wallets = Wallets::read().await;
 
-    Ok(ctx.wallet.checksummed_address())
+    Ok(wallets.wallet.checksummed_address())
 }
 
 #[tauri::command]
@@ -52,10 +51,10 @@ pub async fn derive_addresses_with_mnemonic(
 }
 
 #[tauri::command]
-pub async fn derive_addresses(ctx: Ctx<'_>) -> Result<Vec<String>> {
-    let ctx = ctx.lock().await;
+pub async fn derive_addresses() -> Result<Vec<String>> {
+    let wallets = Wallets::read().await;
 
-    let wallet = ctx.wallet.clone();
+    let wallet = wallets.wallet.clone();
     let addresses = wallet.derive_addresses(5).unwrap();
 
     Ok(addresses)
