@@ -10,26 +10,26 @@ use std::{
 };
 
 use ethers::providers::{Http, Provider};
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use tokio::sync::mpsc;
 
 pub use self::error::{Error, Result};
 use self::network::Network;
 use crate::{app, db::DB, peers::Peers, types::GlobalState};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct Networks {
     pub current: String,
     pub networks: HashMap<String, Network>,
 
     #[serde(skip)]
-    file: Option<PathBuf>,
+    file: PathBuf,
 
     #[serde(skip)]
-    window_snd: Option<mpsc::UnboundedSender<app::Event>>,
+    window_snd: mpsc::UnboundedSender<app::Event>,
 
     #[serde(skip)]
-    db: Option<DB>,
+    db: DB,
 }
 
 impl Networks {
@@ -43,10 +43,7 @@ impl Networks {
 
         if previous != new {
             self.notify_peers();
-            self.window_snd
-                .as_ref()
-                .unwrap()
-                .send(app::Notify::NetworkChanged.into())?
+            self.window_snd.send(app::Notify::NetworkChanged.into())?
         }
 
         self.save()?;
@@ -97,18 +94,18 @@ impl Networks {
     }
 
     fn reset_listeners(&mut self) {
-        let db = self.db.clone().unwrap();
+        let db = self.db.clone();
 
         for network in self.networks.values_mut() {
             network
-                .reset_listener(db.clone(), self.window_snd.as_ref().unwrap().clone())
+                .reset_listener(db.clone(), self.window_snd.clone())
                 .unwrap();
         }
     }
 
     // Persists current state to disk
     fn save(&self) -> Result<()> {
-        let pathbuf = self.file.clone().unwrap();
+        let pathbuf = self.file.clone();
         let path = Path::new(&pathbuf);
         let file = File::create(path)?;
 
