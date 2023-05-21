@@ -1,9 +1,5 @@
-use ethers::types::{Address, U256};
-
 use crate::context::{Context, Wallet};
-use crate::db::DB;
 use crate::networks::Networks;
-use crate::store::events::EventsStore;
 use crate::types::GlobalState;
 
 pub type Ctx<'a> = tauri::State<'a, Context>;
@@ -41,35 +37,6 @@ pub async fn get_current_address(ctx: Ctx<'_>) -> Result<String> {
     let ctx = ctx.lock().await;
 
     Ok(ctx.wallet.checksummed_address())
-}
-
-#[tauri::command]
-pub async fn get_transactions(address: Address, db: tauri::State<'_, DB>) -> Result<Vec<String>> {
-    let networks = Networks::read().await;
-
-    // TODO: this unwrap is avoidable
-    let chain_id = networks.get_current_network().chain_id;
-    Ok(db.get_transactions(chain_id, address).await.unwrap())
-}
-
-#[tauri::command]
-pub async fn get_contracts(db: tauri::State<'_, DB>) -> Result<Vec<String>> {
-    let networks = Networks::read().await;
-
-    // TODO: this unwrap is avoidable
-    let chain_id = networks.get_current_network().chain_id;
-    Ok(db.get_contracts(chain_id).await.unwrap())
-}
-
-#[tauri::command]
-pub async fn get_erc20_balances(
-    address: Address,
-    db: tauri::State<'_, DB>,
-) -> Result<Vec<(Address, U256)>> {
-    let networks = Networks::read().await;
-
-    let chain_id = networks.get_current_network().chain_id;
-    Ok(db.get_balances(chain_id, address).await.unwrap())
 }
 
 #[tauri::command]
