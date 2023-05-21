@@ -34,7 +34,7 @@ async fn main() -> Result<()> {
     {
         let ctx_inner = ctx.lock().await;
         Networks::init((
-            app.get_resource("networks.json"),
+            app.get_resource_path("networks.json"),
             app.sender.clone(),
             ctx_inner.db.clone(),
         ))

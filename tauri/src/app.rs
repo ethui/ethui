@@ -119,11 +119,22 @@ impl IronApp {
             sender: snd.clone(),
         };
 
-        DB_PATH.set(res.get_db_path()).unwrap();
-        SETTINGS_PATH.set(res.get_settings_file()).unwrap();
+        DB_PATH.set(res.get_resource_path("db.sqlite3")).unwrap();
+        SETTINGS_PATH
+            .set(res.get_resource_path("settings.json"))
+            .unwrap();
         dialogs::init(snd);
 
         res
+    }
+
+    pub fn get_resource_path(&self, name: &str) -> PathBuf {
+        self.app
+            .as_ref()
+            .unwrap()
+            .path_resolver()
+            .resolve_resource(name)
+            .expect("failed to resource resource")
     }
 
     pub fn manage(&self, ctx: Context) {
@@ -169,23 +180,6 @@ impl IronApp {
             .add_item(quit);
 
         SystemTray::new().with_menu(tray_menu)
-    }
-
-    pub fn get_resource(&self, name: &str) -> PathBuf {
-        self.app
-            .as_ref()
-            .unwrap()
-            .path_resolver()
-            .resolve_resource(name)
-            .expect("failed to resource resource")
-    }
-
-    fn get_db_path(&self) -> PathBuf {
-        self.get_resource("db.sqlite3")
-    }
-
-    fn get_settings_file(&self) -> PathBuf {
-        self.get_resource("settings.json")
     }
 }
 
