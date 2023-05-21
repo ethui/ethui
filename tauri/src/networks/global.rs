@@ -25,6 +25,13 @@ impl GlobalState for Networks {
         let window_snd = args.1;
         let db = args.2;
 
+        /// The persisted format of the networks object
+        #[derive(Debug, Deserialize)]
+        struct PersistedNetworks {
+            pub current: String,
+            pub networks: HashMap<String, Network>,
+        }
+
         let path = Path::new(&pathbuf);
 
         let mut res: Self = if path.exists() {
@@ -62,10 +69,4 @@ impl GlobalState for Networks {
     async fn write<'a>() -> RwLockWriteGuard<'a, Self> {
         NETWORKS.get().unwrap().write().await
     }
-}
-
-#[derive(Debug, Clone, Deserialize)]
-pub struct PersistedNetworks {
-    pub current: String,
-    pub networks: HashMap<String, Network>,
 }
