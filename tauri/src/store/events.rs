@@ -10,9 +10,7 @@ use sqlx::{sqlite::SqliteRow, Row};
 use url::Url;
 
 use super::types::{Event, Events};
-#[cfg(feature = "foundry-abi-watch")]
-use crate::foundry::calculate_code_hash;
-use crate::{db::DB, error::Result};
+use crate::{db::DB, error::Result, foundry::calculate_code_hash};
 
 #[async_trait]
 pub trait EventsStore {
@@ -43,8 +41,6 @@ impl EventsStore for DB {
     ) -> Result<()> {
         let mut conn = self.tx().await?;
 
-        let provider: Provider<Http> = Provider::<Http>::try_from(&http_url.to_string()).unwrap();
-
         for tx in events.into().0.iter() {
             // TODO: report this errors in await?. Currently they're being silently ignored, because the task just gets killed
             match tx {
@@ -63,17 +59,13 @@ impl EventsStore for DB {
                 }
 
                 Event::ContractDeployed(ref tx) => {
-                    let code_hash: Option<String> = {
-                        #[cfg(feature = "foundry-abi-watch")]
-                        provider
-                            .get_code(tx.address, None)
-                            .await
-                            .ok()
-                            .map(|v| calculate_code_hash(&v.to_string()).to_string());
-
-                        #[cfg(not(feature = "foundry-abi-watch"))]
-                        None
-                    };
+                    let provider: Provider<Http> =
+                        Provider::<Http>::try_from(&http_url.to_string()).unwrap();
+                    let code_hash: Option<String> = provider
+                        .get_code(tx.address, None)
+                        .await
+                        .ok()
+                        .map(|v| calculate_code_hash(&v.to_string()).to_string());
 
                     sqlx::query(
                         r#" INSERT INTO contracts (address, chain_id, deployed_code_hash)

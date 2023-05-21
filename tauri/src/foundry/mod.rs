@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 mod abi;
 pub mod commands;
 pub(self) mod error;

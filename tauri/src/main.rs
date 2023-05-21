@@ -8,7 +8,6 @@ mod context;
 mod db;
 mod dialogs;
 mod error;
-#[cfg(feature = "foundry-abi-watch")]
 mod foundry;
 mod rpc;
 mod store;
