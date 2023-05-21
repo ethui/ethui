@@ -44,7 +44,7 @@ export function HomePage() {
   );
 
   return (
-    <Container maxWidth="md">
+    <Container disableGutters maxWidth="md">
       <Paper>
         <Tabs
           variant="fullWidth"
