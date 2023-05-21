@@ -14,7 +14,6 @@ mod store;
 mod types;
 mod wallets;
 mod ws;
-mod wallets;
 
 use context::Context;
 use db::DB;
@@ -43,7 +42,6 @@ async fn main() -> Result<()> {
         db.clone(),
     ))
     .await;
-    Wallets::init(app.get_resource_path("wallets.json")).await;
 
     // now we're able to build our context
     // this relies on $APPDIR retrieved from Tauri
