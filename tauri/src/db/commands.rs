@@ -14,7 +14,6 @@ pub async fn db_get_transactions(
 ) -> Result<Vec<String>> {
     let networks = Networks::read().await;
 
-    // TODO: this unwrap is avoidable
     let chain_id = networks.get_current_network().chain_id;
     Ok(db.get_transactions(chain_id, address).await.unwrap())
 }
@@ -23,7 +22,6 @@ pub async fn db_get_transactions(
 pub async fn db_get_contracts(db: tauri::State<'_, DB>) -> Result<Vec<String>> {
     let networks = Networks::read().await;
 
-    // TODO: this unwrap is avoidable
     let chain_id = networks.get_current_network().chain_id;
     Ok(db.get_contracts(chain_id).await.unwrap())
 }
