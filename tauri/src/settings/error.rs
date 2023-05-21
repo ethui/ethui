@@ -1,5 +1,3 @@
-use crate::app;
-
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("IO error: {0}")]
@@ -7,9 +5,6 @@ pub enum Error {
 
     #[error("serialization error: {0}")]
     Serde(#[from] serde_json::Error),
-
-    #[error("error sending event to window: {0}")]
-    WindowSend(#[from] tokio::sync::mpsc::error::SendError<app::Event>),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
