@@ -1,7 +1,6 @@
 import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import { map } from "lodash";
-import React from "react";
 import { useEffect, useState } from "react";
 import { useSWRConfig } from "swr";
 import truncateEthAddress from "truncate-eth-address";

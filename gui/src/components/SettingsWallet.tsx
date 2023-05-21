@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import { map } from "lodash";
-import React from "react";
 import { useCallback, useEffect, useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 
