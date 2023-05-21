@@ -17,7 +17,6 @@ use url::Url;
 
 use crate::rpc::Handler;
 use crate::{
-    context::Context,
     error::{Error, Result},
     peers::Peers,
     types::GlobalState,
@@ -63,7 +62,7 @@ impl Peer {
     }
 }
 
-pub async fn ws_server_loop(ctx: Context) {
+pub async fn ws_server_loop() {
     let addr = "127.0.0.1:9002";
     let listener = TcpListener::bind(&addr).await.expect("Can't listen to");
 
@@ -72,11 +71,11 @@ pub async fn ws_server_loop(ctx: Context) {
             .peer_addr()
             .expect("connected streams should have a peer address");
 
-        tokio::spawn(accept_connection(peer, stream, ctx.clone()));
+        tokio::spawn(accept_connection(peer, stream));
     }
 }
 
-pub async fn accept_connection(socket: SocketAddr, stream: TcpStream, ctx: Context) {
+pub async fn accept_connection(socket: SocketAddr, stream: TcpStream) {
     let mut query_params: HashMap<String, String> = Default::default();
     let callback = |req: &Request, res: Response| -> std::result::Result<Response, ErrorResponse> {
         // url = Some(req.uri().clone());
@@ -93,7 +92,7 @@ pub async fn accept_connection(socket: SocketAddr, stream: TcpStream, ctx: Conte
     let peer = Peer::new(socket, snd, query_params);
 
     Peers::write().await.add_peer(peer);
-    let err = handle_connection(ws_stream, rcv, ctx.clone()).await;
+    let err = handle_connection(ws_stream, rcv).await;
     Peers::write().await.remove_peer(socket);
 
     if let Err(e) = err {
@@ -116,7 +115,6 @@ pub async fn accept_connection(socket: SocketAddr, stream: TcpStream, ctx: Conte
 async fn handle_connection(
     stream: WebSocketStream<TcpStream>,
     mut rcv: mpsc::UnboundedReceiver<serde_json::Value>,
-    ctx: Context,
 ) -> Result<()> {
     let handler = Handler::default();
     let mut interval = tokio::time::interval(std::time::Duration::from_secs(15));
@@ -132,7 +130,7 @@ async fn handle_connection(
                         if let Message::Pong(_) = msg {
                             continue;
                         }
-                        let reply = handler.handle(msg.to_string(), ctx.clone()).await;
+                        let reply = handler.handle(msg.to_string()).await;
                         let reply = reply.unwrap_or_else(||serde_json::Value::Null.to_string());
 
                         ws_sender.send(reply.into()).await?;
