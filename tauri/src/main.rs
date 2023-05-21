@@ -8,6 +8,7 @@ mod context;
 mod db;
 mod dialogs;
 mod error;
+mod networks;
 mod peers;
 mod rpc;
 mod store;
@@ -15,7 +16,9 @@ mod types;
 mod ws;
 
 use context::Context;
+use db::DB;
 use error::Result;
+use networks::Networks;
 use peers::Peers;
 use types::GlobalState;
 
@@ -26,12 +29,22 @@ async fn main() -> Result<()> {
     fix_path_env::fix()?;
 
     let mut app = app::IronApp::build();
+    let mut db = DB::default();
+    db.connect().await?;
+
+    let mut ctx = Context::from_settings_file().await?;
+
     Peers::init(app.sender.clone()).await;
+    Networks::init((
+        app.get_resource_path("networks.json"),
+        app.sender.clone(),
+        db.clone(),
+    ))
+    .await;
 
     // now we're able to build our context
     // this relies on $APPDIR retrieved from Tauri
-    let mut ctx = Context::from_settings_file().await?;
-    ctx.init(app.sender.clone()).await?;
+    ctx.init(app.sender.clone(), db.clone()).await?;
 
     // run websockets server loop
     {

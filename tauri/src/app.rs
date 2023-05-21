@@ -11,7 +11,7 @@ use tauri::{Menu, Submenu, WindowMenuEvent};
 use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, StateFlags};
 use tokio::sync::mpsc;
 
-use crate::{commands, context::Context, dialogs, peers};
+use crate::{commands, context::Context, dialogs, networks, peers};
 
 pub struct IronApp {
     pub sender: mpsc::UnboundedSender<Event>,
@@ -62,18 +62,17 @@ impl IronApp {
         let mut builder = Builder::default()
             .plugin(windowStatePlugin::default().build())
             .invoke_handler(tauri::generate_handler![
-                commands::get_networks,
-                commands::get_current_network,
-                commands::set_current_network,
+                networks::commands::networks_get_list,
+                networks::commands::networks_get_current,
+                networks::commands::networks_set_list,
+                networks::commands::networks_set_current,
+                networks::commands::networks_reset,
                 commands::get_wallet,
                 commands::set_wallet,
                 commands::get_current_address,
-                commands::set_networks,
-                commands::reset_networks,
                 commands::get_transactions,
                 commands::get_contracts,
                 commands::get_erc20_balances,
-                commands::get_connections,
                 commands::derive_addresses,
                 commands::derive_addresses_with_mnemonic,
                 peers::commands::peers_get_all,
@@ -119,11 +118,22 @@ impl IronApp {
             sender: snd.clone(),
         };
 
-        DB_PATH.set(res.get_db_path()).unwrap();
-        SETTINGS_PATH.set(res.get_settings_file()).unwrap();
+        DB_PATH.set(res.get_resource_path("db.sqlite3")).unwrap();
+        SETTINGS_PATH
+            .set(res.get_resource_path("settings.json"))
+            .unwrap();
         dialogs::init(snd);
 
         res
+    }
+
+    pub fn get_resource_path(&self, name: &str) -> PathBuf {
+        self.app
+            .as_ref()
+            .unwrap()
+            .path_resolver()
+            .resolve_resource(name)
+            .expect("failed to resource resource")
     }
 
     pub fn manage(&self, ctx: Context) {
@@ -169,22 +179,6 @@ impl IronApp {
             .add_item(quit);
 
         SystemTray::new().with_menu(tray_menu)
-    }
-    fn get_resource(&self, name: &str) -> PathBuf {
-        self.app
-            .as_ref()
-            .unwrap()
-            .path_resolver()
-            .resolve_resource(name)
-            .expect("failed to resource resource")
-    }
-
-    fn get_db_path(&self) -> PathBuf {
-        self.get_resource("db.sqlite3")
-    }
-
-    fn get_settings_file(&self) -> PathBuf {
-        self.get_resource("settings.json")
     }
 }
 
