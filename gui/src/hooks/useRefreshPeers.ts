@@ -1,9 +1,9 @@
 import { listen } from "@tauri-apps/api/event";
 import { useEffect } from "react";
 
-export function useRefreshConnections(callback: () => unknown) {
+export function useRefreshPeers(callback: () => unknown) {
   useEffect(() => {
-    const unlisten = listen("connections-updated", () => {
+    const unlisten = listen("peers-updated", () => {
       callback();
     });
 

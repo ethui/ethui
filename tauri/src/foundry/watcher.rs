@@ -71,8 +71,7 @@ pub(super) async fn scan_glob<P: AsRef<Path>>(
     for entry in glob(&query)
         .unwrap()
         .flatten()
-        .map(|path| path.try_into())
-        .flatten()
+        .flat_map(|path| path.try_into())
     {
         snd.send(entry).unwrap();
     }

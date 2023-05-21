@@ -8,7 +8,7 @@ interface Props {
 }
 
 export function LivenetPlaceholder({ children, devOnly }: Props) {
-  const { data } = useInvoke<Network>("get_current_network");
+  const { data } = useInvoke<Network>("networks_get_current");
 
   if (!devOnly || data?.dev) {
     return <>{children}</>;

@@ -1,9 +1,16 @@
-import { List, ListItem, Typography } from "@mui/material";
+import { ExpandMore } from "@mui/icons-material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  List,
+  Typography,
+} from "@mui/material";
 
 import { useInvoke } from "../hooks/tauri";
 import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
 import { Address } from "../types";
-import { ContextMenu } from "./ContextMenu";
+import { ABIForm } from "./ABIForm";
 import Panel from "./Panel";
 
 interface IContract {
@@ -12,31 +19,33 @@ interface IContract {
 }
 
 export function Contracts() {
-  const { data: contracts, mutate } = useInvoke<IContract[]>("get_contracts");
+  const { data: contracts, mutate } =
+    useInvoke<IContract[]>("db_get_contracts");
 
   useRefreshTransactions(mutate);
 
   return (
     <Panel>
-      <List>
-        {(contracts || []).map((contract) => (
-          <Contract key={contract.address} {...contract} />
-        ))}
-      </List>
+      {(contracts || []).map((contract) => (
+        <Contract key={contract.address} {...contract} />
+      ))}
     </Panel>
   );
 }
 
 function Contract({ address, deployedCodeHash }: IContract) {
-  const { data: _abi } = useInvoke<string>("foundry_get_abi", {
+  const { data: abi } = useInvoke<string>("foundry_get_abi", {
     deployedCodeHash,
   });
 
   return (
-    <ListItem>
-      <ContextMenu>
+    <Accordion>
+      <AccordionSummary expandIcon={<ExpandMore />}>
         <Typography>{address}</Typography>
-      </ContextMenu>
-    </ListItem>
+      </AccordionSummary>
+      <AccordionDetails>
+        {abi && <ABIForm address={address} abi={abi} />}
+      </AccordionDetails>
+    </Accordion>
   );
 }

@@ -21,8 +21,6 @@ export const networkSchema = z.object({
   ),
 });
 
-export type Network = z.infer<typeof networkSchema.shape.networks>[number];
-
 export const walletSchema = z.object({
   mnemonic: z.string().regex(/^(\w+\s){11}\w+$/, {
     message: "Must be a 12-word phrase",
@@ -33,5 +31,11 @@ export const walletSchema = z.object({
   idx: z.number().int().min(0).max(4),
 });
 
+export const generalSettingsSchema = z.object({
+  darkMode: z.enum(["auto", "dark", "light"]),
+});
+
 export type Address = `0x${string}`;
+export type Network = z.infer<typeof networkSchema.shape.networks>[number];
 export type Wallet = z.infer<typeof walletSchema>;
+export type GeneralSettings = z.infer<typeof generalSettingsSchema>;

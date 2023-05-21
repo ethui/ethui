@@ -21,7 +21,7 @@ import Panel from "./Panel";
 
 export function Txs() {
   const account = useAccount();
-  const { data: hashes, mutate } = useInvoke<string[]>("get_transactions", {
+  const { data: hashes, mutate } = useInvoke<string[]>("db_get_transactions", {
     address: account,
   });
 
