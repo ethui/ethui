@@ -26,7 +26,7 @@ export function useTheme() {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
   const final =
-    data?.darkMode == "Dark" || (data?.darkMode == "Auto" && prefersDarkMode);
+    data?.darkMode == "dark" || (data?.darkMode == "auto" && prefersDarkMode);
 
   const theme = useMemo(
     () => createTheme(getDesignTokens(final ? "dark" : "light")),
