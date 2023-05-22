@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+export const generalSettingsSchema = z.object({
+  darkMode: z.enum(["auto", "dark", "light"]),
+});
+
 // const formSchema = schema.shape.network;
 export const networkSchema = z.object({
   networks: z.array(
@@ -21,16 +25,6 @@ export const networkSchema = z.object({
   ),
 });
 
-<<<<<<< HEAD
-export type Network = z.infer<typeof networkSchema.shape.networks>[number];
-
-export type Address = `0x${string}`;
-
-||||||| 99ee597
-export type Network = z.infer<typeof networkSchema.shape.networks>[number];
-
-=======
->>>>>>> main
 export const walletSchema = z.object({
   name: z.string().min(1),
   dev: z.boolean().default(false),
@@ -43,24 +37,12 @@ export const walletSchema = z.object({
   count: z.number().int().min(1),
 });
 
-<<<<<<< HEAD
-export type Wallet = z.infer<typeof walletSchema> & { currentPath?: string };
-
 export const walletsSchema = z.object({
   wallets: z.array(walletSchema),
 });
 
+export type Address = `0x${string}`;
+export type Wallet = z.infer<typeof walletSchema> & { currentPath?: string };
 export type Wallets = z.infer<typeof walletsSchema>;
-||||||| 99ee597
-export type Address = `0x${string}`;
-export type Wallet = z.infer<typeof walletSchema>;
-=======
-export const generalSettingsSchema = z.object({
-  darkMode: z.enum(["auto", "dark", "light"]),
-});
-
-export type Address = `0x${string}`;
 export type Network = z.infer<typeof networkSchema.shape.networks>[number];
-export type Wallet = z.infer<typeof walletSchema>;
 export type GeneralSettings = z.infer<typeof generalSettingsSchema>;
->>>>>>> main
