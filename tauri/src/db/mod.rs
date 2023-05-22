@@ -1,10 +1,11 @@
 pub mod commands;
+mod error;
 
 use std::path::PathBuf;
 
 use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous};
 
-use crate::error::Result;
+pub use self::error::{Error, Result};
 
 #[derive(Debug, Clone)]
 pub struct DB {

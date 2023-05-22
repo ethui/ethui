@@ -1,8 +1,6 @@
-use super::{Wallet, Wallets};
+use super::{Result, Wallet, Wallets};
 use crate::networks::Networks;
 use crate::types::GlobalState;
-
-type Result<T> = std::result::Result<T, String>;
 
 impl From<crate::error::Error> for String {
     fn from(e: crate::error::Error) -> Self {
@@ -43,11 +41,7 @@ pub async fn derive_addresses_with_mnemonic(
     mnemonic: String,
     derivation_path: String,
 ) -> Result<Vec<String>> {
-    Ok(Wallet::derive_addresses_with_mnemonic(
-        &mnemonic,
-        &derivation_path,
-        5,
-    )?)
+    Wallet::derive_addresses_with_mnemonic(&mnemonic, &derivation_path, 5)
 }
 
 #[tauri::command]

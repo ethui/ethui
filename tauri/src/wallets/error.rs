@@ -5,6 +5,9 @@ pub enum Error {
 
     #[error("serialization error: {0}")]
     Serde(#[from] serde_json::Error),
+
+    #[error(transparent)]
+    WalletError(#[from] ethers::signers::WalletError),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
