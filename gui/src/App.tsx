@@ -3,6 +3,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Route, Router, Switch } from "wouter";
 
+import { CommandBar } from "./components/CommandBar";
 import { HomePage } from "./components/HomePage";
 import { Navbar } from "./components/Navbar";
 import { TxReviewDialog } from "./components/TxReviewDialog";
@@ -21,20 +22,22 @@ export default function App() {
       <CssBaseline>
         <QueryClientProvider client={queryClient}>
           <WagmiWrapper>
-            <Router>
-              <Switch>
-                <Route path="/dialog/tx-review/:id">
-                  {({ id }: { id: string }) => (
-                    <TxReviewDialog id={parseInt(id)} />
-                  )}
-                </Route>
+            <CommandBar>
+              <Router>
+                <Switch>
+                  <Route path="/dialog/tx-review/:id">
+                    {({ id }: { id: string }) => (
+                      <TxReviewDialog id={parseInt(id)} />
+                    )}
+                  </Route>
 
-                <Route>
-                  <Navbar />
-                  <HomePage />
-                </Route>
-              </Switch>
-            </Router>
+                  <Route>
+                    <Navbar />
+                    <HomePage />
+                  </Route>
+                </Switch>
+              </Router>
+            </CommandBar>
           </WagmiWrapper>
         </QueryClientProvider>
       </CssBaseline>
