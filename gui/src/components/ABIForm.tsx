@@ -24,7 +24,10 @@ export function ABIForm({ address, abi }: Props) {
     id: i,
   }));
 
-  const handleChange = (_event: SyntheticEvent, value: any | null) => {
+  const handleChange = (
+    _event: SyntheticEvent,
+    value: { item: ABIItem } | null
+  ) => {
     if (value === null) {
       setCurrentItem(undefined);
     } else {

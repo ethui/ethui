@@ -85,12 +85,12 @@ pub(super) async fn scan_glob<P: AsRef<Path>>(
 static REGEX: Lazy<Regex> = Lazy::new(|| {
     Regex::new(
         r#"(?x)
-        \/
-        (?<project>[^\/]+) # project name
-        \/out\/
-        (?<file>.+) # file path
-        \/
-        (?<name>[^\/]+) # abi name
+        /
+        (?P<project>[^/]+) # project name
+        /out/
+        (?P<file>.+) # file path
+        /
+        (?P<name>[^/]+) # abi name
         .json 
         $"#,
     )
