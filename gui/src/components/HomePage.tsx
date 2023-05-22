@@ -5,18 +5,19 @@ import { Link, Route, Switch, useLocation, useRoute } from "wouter";
 
 import { useKeyPress } from "../hooks/useKeyPress";
 import { useMenuAction } from "../hooks/useMenuAction";
+import { Balances } from "./Balances";
 import { Connections } from "./Connections";
-import { Contracts } from "./Contracts";
 import { Details } from "./Details";
 import { LivenetPlaceholder } from "./LivenetPlaceholder";
 import { NestedRoutes } from "./NestedRoutes";
+import { Peers } from "./Peers";
 import { Txs } from "./Txs";
 
 const tabs = [
   { path: "details", name: "Details", component: Details },
   { path: "transactions", name: "Transactions", component: Txs, devOnly: true },
   { path: "contracts", name: "Contracts", component: Contracts, devOnly: true },
-  { path: "connections", name: "Connections", component: Connections },
+  { path: "connections", name: "Connections", component: Peers },
 ];
 
 export function HomePage() {
@@ -42,7 +43,7 @@ export function HomePage() {
   );
 
   return (
-    <Container maxWidth="md">
+    <Container disableGutters maxWidth="md">
       <Paper>
         <Tabs
           variant="fullWidth"

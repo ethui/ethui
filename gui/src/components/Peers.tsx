@@ -1,12 +1,11 @@
 import { Box, Stack, Typography } from "@mui/material";
 import { groupBy, map } from "lodash";
-import React from "react";
 
 import { useInvoke } from "../hooks/tauri";
-import { useRefreshConnections } from "../hooks/useRefreshConnections";
+import { useRefreshPeers } from "../hooks/useRefreshPeers";
 import Panel from "./Panel";
 
-interface Connection {
+interface Peer {
   origin: string;
   tab_id?: number;
   title?: string;
@@ -15,18 +14,17 @@ interface Connection {
   favicon: string;
 }
 
-export function Connections() {
-  const { data: connections, mutate } =
-    useInvoke<Connection[]>("get_connections");
+export function Peers() {
+  const { data: peers, mutate } = useInvoke<Peer[]>("peers_get_all");
 
-  useRefreshConnections(mutate);
+  useRefreshPeers(mutate);
 
-  const connectionsByTabId = groupBy(connections, "tab_id");
+  const peersByTabId = groupBy(peers, "tab_id");
 
   return (
     <Panel>
       <Stack spacing={2}>
-        {map(connectionsByTabId, (conns, tabId) => (
+        {map(peersByTabId, (conns, tabId) => (
           <Connection key={tabId} tabId={tabId} conns={conns} />
         ))}
       </Stack>
@@ -34,7 +32,7 @@ export function Connections() {
   );
 }
 
-function Connection({ tabId, conns }: { tabId?: string; conns: Connection[] }) {
+function Connection({ tabId, conns }: { tabId?: string; conns: Peer[] }) {
   return (
     <Stack direction="row" spacing={2}>
       <Box
@@ -45,7 +43,7 @@ function Connection({ tabId, conns }: { tabId?: string; conns: Connection[] }) {
       <Stack>
         <Typography variant="overline"> {conns[0].title}</Typography>
         {tabId && <Typography variant="body2">Tab ID {tabId}</Typography>}
-        <Typography variant="body2">{conns.length} connections</Typography>
+        <Typography variant="body2">{conns.length} peers</Typography>
       </Stack>
     </Stack>
   );

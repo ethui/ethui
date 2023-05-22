@@ -5,7 +5,7 @@ import { Network } from "../types";
 import { useInvoke } from "./tauri";
 
 export function useProvider() {
-  const { data: network } = useInvoke<Network>("get_current_network");
+  const { data: network } = useInvoke<Network>("networks_get_current");
 
   const [provider, setProvider] = useState<JsonRpcProvider | undefined>(
     undefined

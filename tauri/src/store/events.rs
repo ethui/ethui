@@ -5,7 +5,7 @@ use ethers::types::{Address, U256};
 use sqlx::{sqlite::SqliteRow, Row};
 
 use super::types::{Event, Events};
-use crate::{db::DB, error::Result};
+use crate::db::{Result, DB};
 
 #[async_trait]
 pub trait EventsStore {
