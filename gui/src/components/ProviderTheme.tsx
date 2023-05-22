@@ -49,6 +49,7 @@ export function ProviderTheme({ children }: { children: ReactNode }) {
     {
       id: themeModeId,
       name: "Change theme mode",
+      section: "",
     },
     ...["auto", "dark", "light"].map((mode) => ({
       id: `${themeModeId}${mode}`,

@@ -1,12 +1,17 @@
 import {
+  Box,
   List,
+  ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
   Paper,
+  Typography,
+  useTheme,
 } from "@mui/material";
 import {
+  ActionId,
   ActionImpl,
   KBarAnimator,
   KBarPortal,
@@ -19,7 +24,7 @@ import {
 import React, { ReactNode, forwardRef } from "react";
 
 function RenderResults() {
-  const { results } = useMatches();
+  const { results, rootActionId } = useMatches();
 
   return (
     <List
@@ -27,18 +32,17 @@ function RenderResults() {
       items={results}
       onRender={({ item, active }) =>
         typeof item === "string" ? (
-          <div
-            style={{
-              padding: "8px 16px",
-              fontSize: "10px",
-              textTransform: "uppercase" as const,
-              opacity: 0.5,
-            }}
-          >
-            {item}
-          </div>
+          <ListItem dense>
+            <Typography color="gray" variant="subtitle2">
+              {item}
+            </Typography>
+          </ListItem>
         ) : (
-          <ResultItem action={item} active={active} />
+          <ResultItem
+            currentRootActionId={rootActionId}
+            action={item}
+            active={active}
+          />
         )
       }
     />
@@ -50,17 +54,38 @@ const ResultItem = forwardRef(
     {
       action,
       active,
+      currentRootActionId,
     }: {
       action: ActionImpl;
       active: boolean;
+      currentRootActionId?: ActionId | null;
     },
     ref: React.Ref<HTMLDivElement>
   ) => {
+    const ancestors = React.useMemo(() => {
+      if (!currentRootActionId) return action.ancestors;
+      const index = action.ancestors.findIndex(
+        (ancestor) => ancestor.id === currentRootActionId
+      );
+      // +1 removes the currentRootAction; e.g.
+      // if we are on the "Set theme" parent action,
+      // the UI should not display "Set theme… > Dark"
+      // but rather just "Dark"
+      return action.ancestors.slice(index + 1);
+    }, [action.ancestors, currentRootActionId]);
+
     return (
       <ListItemButton ref={ref} selected={active}>
         {action.icon && <ListItemIcon>{action.icon}</ListItemIcon>}
 
-        <ListItemText primary={action.name} secondary={action.subtitle} />
+        <ListItemText
+          primary={
+            ancestors.length
+              ? `${ancestors.map((a) => a.name).join(" > ")}: ${action.name}`
+              : action.name
+          }
+          secondary={action.subtitle}
+        />
 
         {action.shortcut?.length ? (
           <ListItemSecondaryAction aria-hidden>
@@ -77,6 +102,8 @@ const ResultItem = forwardRef(
 ResultItem.displayName = "ResultItem";
 
 export function CommandBar({ children }: { children: ReactNode }) {
+  const theme = useTheme();
+
   return (
     <>
       <KBarPortal>
@@ -84,26 +111,22 @@ export function CommandBar({ children }: { children: ReactNode }) {
           <Paper
             component={KBarAnimator}
             elevation={3}
-            style={{
+            sx={{
               maxWidth: "600px",
               width: "100%",
-              // background: "var(--background)",
-              // color: "var(--foreground)",
-              // borderRadius: "8px",
               overflow: "hidden",
-              // boxShadow: "var(--shadow)",
             }}
           >
-            <KBarSearch
-              style={{
-                padding: "12px 16px",
-                fontSize: "16px",
+            <Box
+              component={KBarSearch}
+              sx={{
                 width: "100%",
-                boxSizing: "border-box" as React.CSSProperties["boxSizing"],
                 outline: "none",
                 border: "none",
-                background: "var(--background)",
-                color: "var(--foreground)",
+                p: theme.spacing(2),
+                color: theme.palette.text.primary,
+                background: "transparent",
+                ...theme.typography.body1,
               }}
             />
             <RenderResults />

@@ -49,18 +49,21 @@ export function ProviderNetworks({ children }: { children: ReactNode }) {
 
   useRefreshNetwork(mutateNetwork);
 
-  useRegisterActions([
-    {
-      id: actionId,
-      name: "Change network",
-    },
-    ...(networks || []).map((network) => ({
-      id: `${actionId}{network.name}`,
-      name: network.name,
-      parent: actionId,
-      perform: () => value.setNetwork(network.name),
-    })),
-  ]);
+  useRegisterActions(
+    [
+      {
+        id: actionId,
+        name: "Change network",
+      },
+      ...(networks || []).map((network) => ({
+        id: `${actionId}{network.name}`,
+        name: network.name,
+        parent: actionId,
+        perform: () => value.setNetwork(network.name),
+      })),
+    ],
+    [networks, value.setNetwork]
+  );
 
   return (
     <NetworksContext.Provider value={value}>

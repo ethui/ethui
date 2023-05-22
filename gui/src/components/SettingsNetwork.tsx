@@ -66,16 +66,12 @@ export function SettingsNetwork() {
 
   const onSubmit = async (data: { networks?: Network[] }) => {
     if (data.networks) await setNetworks(data.networks);
-    // await invoke("set_networks", { networks: data.networks });
     reset(data);
-    // mutate();
   };
 
   const onReset = async () => {
-    // const networks: Network[] = await invoke("reset_networks");
     const networks = await resetNetworks();
     reset({ networks });
-    // mutate();
   };
 
   if (!networks) return <>Loading</>;
