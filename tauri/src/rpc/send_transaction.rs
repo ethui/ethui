@@ -7,7 +7,7 @@ use ethers::{
 };
 use ethers_core::k256::ecdsa::SigningKey;
 
-use crate::Result;
+use super::Result;
 
 pub struct SendTransaction {
     pub request: TypedTransaction,
@@ -22,7 +22,7 @@ impl SendTransaction {
         let mut request = TypedTransaction::default();
 
         request
-            .set_from(Address::from_str(params["from"].as_str().unwrap()).unwrap())
+            .set_from(Address::from_str(params[""].as_str().unwrap()).unwrap())
             .set_to(Address::from_str(params["to"].as_str().unwrap()).unwrap());
 
         if let Some(value) = params["value"].as_str() {
