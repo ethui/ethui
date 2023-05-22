@@ -42,7 +42,7 @@ impl Networks {
         let new = self.get_current_network().chain_id;
 
         if previous != new {
-            self.broadcast_network_changed()?;
+            self.on_network_changed()?;
         }
 
         self.save()?;
@@ -85,7 +85,7 @@ impl Networks {
         self.get_current_network().get_provider()
     }
 
-    fn broadcast_network_changed(&self) -> Result<()> {
+    fn on_network_changed(&self) -> Result<()> {
         self.notify_peers();
         self.window_snd.send(app::Notify::NetworkChanged.into())?;
 
@@ -98,7 +98,7 @@ impl Networks {
         if !self.networks.contains_key(&self.current) {
             let name = self.networks.values().next().unwrap().name.clone();
             self.current = name;
-            self.broadcast_network_changed()?;
+            self.on_network_changed()?;
         }
 
         self.save()
