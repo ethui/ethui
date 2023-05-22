@@ -13,7 +13,7 @@ use tokio::sync::mpsc;
 
 use crate::{
     db::{self, DB},
-    dialogs, foundry, networks, peers, settings, wallets,
+    dialogs, networks, peers, settings, wallets,
 };
 
 pub struct IronApp {
@@ -84,8 +84,6 @@ impl IronApp {
                 wallets::commands::wallets_get_wallet_addresses,
                 dialogs::dialog_get_payload,
                 dialogs::dialog_finish,
-                foundry::commands::foundry_get_settings,
-                foundry::commands::foundry_set_settings,
             ])
             .setup(|app| {
                 let handle = app.handle();

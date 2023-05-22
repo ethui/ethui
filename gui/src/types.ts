@@ -2,6 +2,8 @@ import { z } from "zod";
 
 export const generalSettingsSchema = z.object({
   darkMode: z.enum(["auto", "dark", "light"]),
+  abiWatch: z.boolean().default(false),
+  abiWatchPath: z.string().optional(),
 });
 
 // const formSchema = schema.shape.network;
@@ -41,14 +43,8 @@ export const walletsSchema = z.object({
   wallets: z.array(walletSchema),
 });
 
-export const foundrySettingsSchema = z.object({
-  abiWatch: z.boolean().default(false),
-  abiWatchPath: z.string().optional(),
-});
-
 export type Address = `0x${string}`;
 export type Wallet = z.infer<typeof walletSchema> & { currentPath?: string };
 export type Wallets = z.infer<typeof walletsSchema>;
 export type Network = z.infer<typeof networkSchema.shape.networks>[number];
 export type GeneralSettings = z.infer<typeof generalSettingsSchema>;
-export type FoundrySettings = z.infer<typeof foundrySettingsSchema>;

@@ -7,7 +7,6 @@ mod block_listener;
 mod db;
 mod dialogs;
 mod error;
-mod foundry;
 mod networks;
 mod peers;
 mod rpc;

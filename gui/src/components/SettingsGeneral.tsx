@@ -1,11 +1,16 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Button,
+  Checkbox,
   FormControl,
+  FormControlLabel,
+  FormGroup,
+  FormHelperText,
   InputLabel,
   MenuItem,
   Select,
   Stack,
+  TextField,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useCallback } from "react";
@@ -20,8 +25,9 @@ export function SettingsGeneral() {
   const {
     handleSubmit,
     reset,
-    formState: { isValid, dirtyFields },
+    formState: { isValid, dirtyFields, errors },
     control,
+    register,
   } = useForm({
     mode: "onChange",
     resolver: zodResolver(generalSettingsSchema),
@@ -66,13 +72,48 @@ export function SettingsGeneral() {
             )}
           />
         </FormControl>
-        <Button
-          variant="contained"
-          type="submit"
-          disabled={!isDirtyAlt || !isValid}
-        >
-          Save
-        </Button>
+        <Paper>
+          <FormControl error={!!errors.watcher}>
+            <FormGroup>
+              <FormControlLabel
+                label="ABI watch (requires restart)"
+                control={
+                  <Controller
+                    name="abiWatch"
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        {...field}
+                        checked={field.value || false}
+                        onChange={(e) => field.onChange(e.target.checked)}
+                      />
+                    )}
+                  />
+                }
+              />
+            </FormGroup>
+            {errors.abiWatch && (
+              <FormHelperText>
+                {errors.abiWatch.message?.toString()}
+              </FormHelperText>
+            )}
+          </FormControl>
+          <TextField
+            label="ABI Watch path"
+            defaultValue={general.abiWatchPath}
+            error={!!errors.abiWatchPath}
+            helperText={errors.abiWatchPath?.message?.toString() || ""}
+            fullWidth
+            {...register("abiWatchPath")}
+          />
+          <Button
+            variant="contained"
+            type="submit"
+            disabled={!isDirtyAlt || !isValid}
+          >
+            Save
+          </Button>
+        </Paper>
       </Stack>
     </form>
   );
