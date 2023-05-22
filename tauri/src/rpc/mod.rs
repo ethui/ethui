@@ -15,7 +15,11 @@ use serde_json::json;
 
 pub use self::error::{Error, Result};
 use self::send_transaction::SendTransaction;
-use crate::{networks::Networks, types::GlobalState, wallets::Wallets};
+use crate::{
+    networks::Networks,
+    types::GlobalState,
+    wallets::{WalletControl, Wallets},
+};
 
 pub struct Handler {
     io: IoHandler,
@@ -102,7 +106,7 @@ impl Handler {
 
     async fn accounts(_: Params) -> jsonrpc_core::Result<serde_json::Value> {
         let wallets = Wallets::read().await;
-        let address = wallets.get_current_wallet().get_current_address();
+        let address = wallets.get_current_wallet().get_current_address().await;
 
         Ok(json!([address]))
     }
@@ -118,7 +122,7 @@ impl Handler {
         let wallets = Wallets::read().await;
 
         let network = networks.get_current_network();
-        let address = wallets.get_current_wallet().get_current_address();
+        let address = wallets.get_current_wallet().get_current_address().await;
 
         Ok(json!({
             "isUnlocked": true,
@@ -147,6 +151,7 @@ impl Handler {
         let signer = wallets
             .get_current_wallet()
             .build_signer(network.chain_id)
+            .await
             .map_err(|e| Error::SignerBuild(e.to_string()))?;
         let signer = SignerMiddleware::new(network.get_provider(), signer);
 
@@ -184,6 +189,7 @@ impl Handler {
             .await
             .get_current_wallet()
             .build_signer(network.chain_id)
+            .await
             .unwrap();
         let signer = SignerMiddleware::new(provider, signer);
 
@@ -208,6 +214,7 @@ impl Handler {
             .await
             .get_current_wallet()
             .build_signer(network.chain_id)
+            .await
             .unwrap();
         // TODO: ensure from == signer
 

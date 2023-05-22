@@ -1,7 +1,10 @@
 pub mod commands;
 mod error;
 mod global;
+mod json_keystore_wallet;
+mod plaintext;
 mod wallet;
+mod wrapper;
 
 use std::{
     collections::HashSet,
@@ -12,7 +15,11 @@ use std::{
 pub use error::{Error, Result};
 use serde::{Deserialize, Serialize};
 
-use self::wallet::Wallet;
+pub use self::{
+    json_keystore_wallet::JsonKeystoreWallet,
+    plaintext::PlaintextWallet,
+    wallet::{Wallet, WalletControl},
+};
 use crate::{
     peers::Peers,
     types::{ChecksummedAddress, GlobalState},
@@ -22,6 +29,7 @@ use crate::{
 /// address
 #[derive(Default, Debug, Serialize, Deserialize)]
 pub struct Wallets {
+    #[serde(skip)]
     wallets: Vec<Wallet>,
 
     #[serde(default)]
@@ -41,32 +49,32 @@ impl Wallets {
     ///
     /// Since wallets actually contain multiple addresses, we need the ability to connect to a
     /// different one within the same wallet
-    fn set_current_path(&mut self, key: String) -> Result<()> {
-        self.wallets[self.current].set_current_path(&key)?;
-        self.notify_peers();
+    async fn set_current_path(&mut self, key: String) -> Result<()> {
+        self.wallets[self.current].set_current_path(&key).await?;
+        self.notify_peers().await;
         self.save()?;
         Ok(())
     }
 
     /// Switches the current default wallet
-    fn set_current_wallet(&mut self, id: usize) -> Result<()> {
+    async fn set_current_wallet(&mut self, id: usize) -> Result<()> {
         if id >= self.wallets.len() {
             return Err(Error::InvalidWallet(id));
         }
 
         self.current = id;
-        self.notify_peers();
+        self.notify_peers().await;
         self.save()?;
         Ok(())
     }
 
     /// Retrieves all wallets
-    fn get_all(&self) -> Vec<Wallet> {
-        self.wallets.clone()
+    fn get_all(&self) -> &Vec<Wallet> {
+        &self.wallets
     }
 
     /// Resets the list of wallets to a new one
-    fn set_wallets(&mut self, wallets: Vec<Wallet>) -> Result<()> {
+    async fn set_wallets(&mut self, wallets: Vec<Wallet>) -> Result<()> {
         if let Some(n) = find_duplicates(&wallets) {
             return Err(Error::DuplicateWalletNames(n));
         }
@@ -74,22 +82,22 @@ impl Wallets {
 
         self.wallets = wallets;
         self.ensure_current();
-        self.notify_peers();
+        self.notify_peers().await;
         self.save()?;
 
         Ok(())
     }
 
     /// Get all addresses currently enabled in a given wallet
-    fn get_wallet_addresses(&self, name: String) -> Vec<(String, ChecksummedAddress)> {
+    async fn get_wallet_addresses(&self, name: String) -> Vec<(String, ChecksummedAddress)> {
         let wallet = self.find_wallet(&name).unwrap();
 
-        wallet.derive_all_addresses().unwrap()
+        wallet.derive_all_addresses().await.unwrap()
     }
 
     /// Finds a wallet by its name
     fn find_wallet(&self, id: &String) -> Option<&Wallet> {
-        self.wallets.iter().find(|w| &w.name == id)
+        self.wallets.iter().find(|w| w.name() == *id)
     }
 
     /// Persists current state to disk
@@ -106,7 +114,8 @@ impl Wallets {
     /// Ensures that self.current never points to an invalid wallet
     fn ensure_current(&mut self) {
         if self.wallets.is_empty() {
-            self.wallets.push(Default::default());
+            self.wallets
+                .push(Wallet::Plaintext(PlaintextWallet::default()));
         }
 
         if self.current >= self.wallets.len() {
@@ -115,8 +124,8 @@ impl Wallets {
     }
 
     // broadcasts `accountsChanged` to all peers
-    fn notify_peers(&self) {
-        let addresses = vec![self.get_current_wallet().get_current_address()];
+    async fn notify_peers(&self) {
+        let addresses = vec![self.get_current_wallet().get_current_address().await];
         tokio::spawn(async move { Peers::read().await.broadcast_accounts_changed(addresses) });
     }
 }
@@ -124,10 +133,11 @@ impl Wallets {
 fn find_duplicates(wallets: &[Wallet]) -> Option<String> {
     let mut uniq = HashSet::new();
     for wallet in wallets.iter() {
-        if uniq.contains(&wallet.name) {
-            return Some(wallet.name.clone());
+        let name = wallet.name();
+        if uniq.contains(&name) {
+            return Some(name);
         }
-        uniq.insert(&wallet.name);
+        uniq.insert(name);
     }
 
     None
