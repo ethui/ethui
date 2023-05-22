@@ -20,7 +20,7 @@ use super::{JsonKeystoreWallet, PlaintextWallet};
 
 #[enum_dispatch]
 #[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(tag = "type")]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub enum Wallet {
     Plaintext(PlaintextWallet),
     JsonKeystore(JsonKeystoreWallet),

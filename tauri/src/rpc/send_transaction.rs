@@ -70,6 +70,7 @@ impl SendTransaction {
         self
     }
 
+    #[allow(unused)]
     pub async fn spawn_dialog(&mut self) -> Result<()> {
         let params = serde_json::to_value(&self.request).unwrap();
 

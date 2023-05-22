@@ -32,6 +32,8 @@ pub enum Event {
 
 #[derive(Debug, Serialize, Clone)]
 pub enum Notify {
+    #[allow(unused)]
+    WalletsChanged,
     NetworkChanged,
     TxsUpdated,
     PeersUpdated,
@@ -40,6 +42,7 @@ pub enum Notify {
 impl Notify {
     fn label(&self) -> &str {
         match self {
+            Self::WalletsChanged => "wallets-changed",
             Self::NetworkChanged => "network-changed",
             Self::TxsUpdated => "txs-updated",
             Self::PeersUpdated => "peers-updated",

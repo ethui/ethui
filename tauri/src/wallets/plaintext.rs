@@ -11,9 +11,11 @@ use crate::types::ChecksummedAddress;
 pub struct PlaintextWallet {
     name: String,
     mnemonic: String,
+    #[serde(default = "default_derivation_path")]
     derivation_path: String,
     dev: bool,
     count: u32,
+    #[serde(default = "default_current_path")]
     current_path: String,
 }
 
@@ -86,4 +88,12 @@ impl Default for PlaintextWallet {
             current_path,
         }
     }
+}
+
+fn default_derivation_path() -> String {
+    "m/44'/60'/0'/0/0".to_string()
+}
+
+fn default_current_path() -> String {
+    format!("{}/0", default_derivation_path())
 }

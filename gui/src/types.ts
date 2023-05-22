@@ -27,24 +27,40 @@ export const networkSchema = z.object({
   ),
 });
 
-export const walletSchema = z.object({
-  name: z.string().min(1),
-  dev: z.boolean().default(false),
-  mnemonic: z.string().regex(/^(\w+\s){11}\w+$/, {
-    message: "Must be a 12-word phrase",
+export const walletSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("plaintext"),
+    name: z.string().min(1),
+    dev: z.boolean().default(false),
+    mnemonic: z.string().regex(/^(\w+\s){11}\w+$/, {
+      message: "Must be a 12-word phrase",
+    }),
+    derivationPath: z.string().regex(/^m\/(\d+'?\/)+\d+$/, {
+      message: "invalid path format",
+    }),
+    count: z.number().int().min(1),
+    currentPath: z.string().optional(),
   }),
-  derivationPath: z.string().regex(/^m\/(\d+'?\/)+\d+$/, {
-    message: "invalid path format",
+  z.object({
+    type: z.literal("jsonKeystore"),
+    name: z.string().min(1),
+    path: z.string().min(1),
+    currentPath: z.string().optional(),
   }),
-  count: z.number().int().min(1),
-});
+]);
+
+export const walletTypes: Wallet["type"][] = Array.from(
+  walletSchema.optionsMap.keys()
+)
+  .filter((x) => !!x)
+  .map((k) => k!.toString() as unknown as Wallet["type"]);
 
 export const walletsSchema = z.object({
   wallets: z.array(walletSchema),
 });
 
 export type Address = `0x${string}`;
-export type Wallet = z.infer<typeof walletSchema> & { currentPath?: string };
+export type Wallet = z.infer<typeof walletSchema>;
 export type Wallets = z.infer<typeof walletsSchema>;
 export type Network = z.infer<typeof networkSchema.shape.networks>[number];
 export type GeneralSettings = z.infer<typeof generalSettingsSchema>;
