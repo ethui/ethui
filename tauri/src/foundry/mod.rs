@@ -16,8 +16,8 @@ use tokio::{
 };
 
 use self::watcher::Match;
-
-static PATH: &str = "/home/naps62/projects/";
+use crate::settings::Settings;
+use crate::types::GlobalState;
 
 #[derive(Default)]
 pub struct Foundry {
@@ -29,7 +29,16 @@ static FOUNDRY: Lazy<RwLock<Foundry>> = Lazy::new(Default::default);
 
 impl Foundry {
     pub async fn init() -> crate::Result<()> {
-        Self::watch().await
+        let settings = Settings::read().await;
+
+        if let (true, Some(path)) = (
+            settings.inner.abi_watch,
+            settings.inner.abi_watch_path.clone(),
+        ) {
+            Self::watch(path).await
+        } else {
+            Ok(())
+        }
     }
 
     fn get_abi_for(&self, code_hash: u64) -> Option<abi::Abi> {
@@ -37,14 +46,15 @@ impl Foundry {
     }
 
     /// starts the ABI watcher service
-    async fn watch() -> crate::Result<()> {
+    async fn watch(path: String) -> crate::Result<()> {
         let (snd, rcv) = mpsc::unbounded_channel();
         let snd_clone = snd.clone();
+        let path_clone = path.clone();
 
         // spawn file watcher
-        spawn(async { watcher::async_watch(PATH, snd_clone).await.unwrap() });
+        spawn(async { watcher::async_watch(path, snd_clone).await.unwrap() });
         // spawn initial file globber
-        spawn(async { watcher::scan_glob(PATH, snd).await.unwrap() });
+        spawn(async { watcher::scan_glob(path_clone, snd).await.unwrap() });
         // spawn event handler
         spawn(async { Self::handle_events(rcv).await.unwrap() });
 

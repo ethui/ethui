@@ -19,6 +19,7 @@ mod ws;
 
 use db::DB;
 use error::Result;
+use foundry::Foundry;
 #[cfg(feature = "foundry-abi-watch")]
 use foundry::Foundry;
 use networks::Networks;
@@ -33,12 +34,8 @@ async fn main() -> Result<()> {
     env_logger::init();
     fix_path_env::fix()?;
 
-    #[cfg(feature = "foundry-abi-watch")]
-    Foundry::init().await?;
-
     let mut app = app::IronApp::build();
     let db = DB::connect(&app.get_resource_path("db.sqlite3")).await?;
-
     Settings::init(app.get_resource_path("settings.json")).await;
     Peers::init(app.sender.clone()).await;
     Wallets::init(app.get_resource_path("wallets.json")).await;
@@ -48,6 +45,7 @@ async fn main() -> Result<()> {
         db.clone(),
     ))
     .await;
+    Foundry::init().await?;
 
     // run websockets server loop
     tauri::async_runtime::spawn(async move { ws::ws_server_loop().await });
