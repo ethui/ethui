@@ -2,8 +2,8 @@ mod send_transaction;
 
 use std::{collections::HashMap, str::FromStr};
 
-use ethers::abi::AbiEncode;
 use ethers::{
+    abi::AbiEncode,
     prelude::SignerMiddleware,
     providers::{Middleware, ProviderError},
     signers::Signer,
@@ -19,8 +19,6 @@ use crate::{networks::Networks, types::GlobalState};
 pub struct Handler {
     io: IoHandler,
 }
-
-type Result<T> = jsonrpc_core::Result<T>;
 
 impl Default for Handler {
     fn default() -> Self {
@@ -101,19 +99,19 @@ impl Handler {
         self_handler!("eth_signTypedData_v4", Self::eth_sign_typed_data_v4);
     }
 
-    async fn accounts(_: Params) -> Result<serde_json::Value> {
+    async fn accounts(_: Params) -> jsonrpc_core::Result<serde_json::Value> {
         let wallets = Wallets::read().await;
 
         Ok(json!([wallets.wallet.checksummed_address()]))
     }
 
-    async fn chain_id(_: Params) -> Result<serde_json::Value> {
+    async fn chain_id(_: Params) -> jsonrpc_core::Result<serde_json::Value> {
         let networks = Networks::read().await;
         let network = networks.get_current_network();
         Ok(json!(network.chain_id_hex()))
     }
 
-    async fn provider_state(_: Params) -> Result<serde_json::Value> {
+    async fn provider_state(_: Params) -> jsonrpc_core::Result<serde_json::Value> {
         let networks = Networks::read().await;
         let wallets = Wallets::read().await;
 
@@ -127,7 +125,7 @@ impl Handler {
         }))
     }
 
-    async fn switch_chain(params: Params) -> Result<serde_json::Value> {
+    async fn switch_chain(params: Params) -> jsonrpc_core::Result<serde_json::Value> {
         let params = params.parse::<Vec<HashMap<String, String>>>().unwrap();
         let chain_id_str = params[0].get("chainId").unwrap().clone();
         let chain_id = u32::from_str_radix(&chain_id_str[2..], 16).unwrap();
@@ -139,33 +137,7 @@ impl Handler {
         }
     }
 
-    async fn send_transaction(params: Params) -> Result<serde_json::Value> {
-        #[cfg(feature = "dialogs")]
-        {
-            // TODO: why is this an array?
-            let params: serde_json::Value = params.clone().into();
-            let params = params.as_array().unwrap()[0].clone();
-
-            let rcv = crate::dialogs::open("tx-review", params).unwrap();
-            match rcv.await {
-                // 1st case is if the channel closes. 2nd case is if "Reject" is hit
-                Err(_) | Ok(Err(_)) => {
-                    // TODO: what's the appropriate error to return here?
-                    // or should we return Ok(_)? Err(_) seems to close the ws connection
-                    return Err(jsonrpc_core::Error {
-                        code: ErrorCode::ServerError(0),
-                        data: None,
-                        message: "transaction rejected".into(),
-                    });
-                }
-                Ok(Ok(_response)) => {
-                    // TODO: in the future, send json values here to override params
-                }
-            }
-        }
-
-        let mut sender = SendTransaction::build(params.into());
-
+    async fn send_transaction(params: Params) -> jsonrpc_core::Result<serde_json::Value> {
         let networks = Networks::read().await;
         let network = networks.get_current_network();
 
@@ -174,19 +146,27 @@ impl Handler {
         // create signer
         let signer = SignerMiddleware::new(network.get_provider(), wallets.get_signer());
 
-        sender.set_chain_id(network.chain_id);
-        sender.set_signer(signer);
-        sender.estimate_gas().await;
+        let mut sender = SendTransaction::default();
 
-        let res = sender.send().await;
+        let sender = sender
+            .set_params(params.into())
+            .set_chain_id(network.chain_id)
+            .set_signer(signer)
+            .estimate_gas()
+            .await;
 
-        match res {
+        #[cfg(feature = "dialogs")]
+        sender.spawn_dialog().await?;
+
+        let result = sender.send().await;
+
+        match result {
             Ok(res) => Ok(res.tx_hash().encode_hex().into()),
             Err(e) => Ok(e.to_string().into()),
         }
     }
 
-    async fn eth_sign(params: Params) -> Result<serde_json::Value> {
+    async fn eth_sign(params: Params) -> jsonrpc_core::Result<serde_json::Value> {
         let params = params.parse::<Vec<Option<String>>>().unwrap();
         let msg = params[0].as_ref().cloned().unwrap();
         let address = Address::from_str(&params[1].as_ref().cloned().unwrap()).unwrap();
@@ -206,7 +186,7 @@ impl Handler {
         }
     }
 
-    async fn eth_sign_typed_data_v4(params: Params) -> Result<serde_json::Value> {
+    async fn eth_sign_typed_data_v4(params: Params) -> jsonrpc_core::Result<serde_json::Value> {
         let params = params.parse::<Vec<Option<String>>>().unwrap();
         let _address = Address::from_str(&params[0].as_ref().cloned().unwrap()).unwrap();
         let data = params[1].as_ref().cloned().unwrap();
