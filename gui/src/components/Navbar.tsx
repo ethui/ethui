@@ -11,8 +11,9 @@ import {
 import React, { useState } from "react";
 import { Link } from "wouter";
 
-import { QuickAccountSelect } from "./QuickAccountSelect";
+import { QuickAddressSelect } from "./QuickAddressSelect";
 import { QuickNetworkSelect } from "./QuickNetworkSelect";
+import { QuickWalletSelect } from "./QuickWalletSelect";
 import { Settings as SettingsPage } from "./Settings";
 
 function SettingsButton() {
@@ -67,7 +68,10 @@ export function Navbar() {
       </Box>
       <Grid container spacing={2} justifyContent="flex-end" alignItems="center">
         <Grid item>
-          <QuickAccountSelect />
+          <QuickWalletSelect />
+        </Grid>
+        <Grid item>
+          <QuickAddressSelect />
         </Grid>
         <Grid item>
           <QuickNetworkSelect />

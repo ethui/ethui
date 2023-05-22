@@ -1,55 +1,50 @@
 use super::{Result, Wallet, Wallets};
-use crate::networks::Networks;
-use crate::types::GlobalState;
+use crate::types::{ChecksummedAddress, GlobalState};
 
-impl From<crate::error::Error> for String {
-    fn from(e: crate::error::Error) -> Self {
-        e.to_string()
-    }
+/// Lists all wallets
+#[tauri::command]
+pub async fn wallets_get_all() -> Vec<Wallet> {
+    Wallets::read().await.get_all()
 }
 
+/// Gets the current wallet
 #[tauri::command]
-pub async fn get_wallet() -> Result<Wallet> {
-    let wallets = Wallets::read().await;
-
-    Ok(wallets.wallet.clone())
+pub async fn wallets_get_current() -> Result<Wallet> {
+    Ok(Wallets::read().await.get_current_wallet().clone())
 }
 
+/// Gets the current address ooof the current wallet
 #[tauri::command]
-pub async fn set_wallet(mut wallet: Wallet) -> Result<()> {
-    let networks = Networks::read().await;
-
-    // wallet is deserialized from frontend params, and doesn't yet know the chain_id
-    // we need to manually set it
-    let chain_id = networks.get_current_network().chain_id;
-    wallet.update_chain_id(chain_id);
-
-    let mut wallets = Wallets::write().await;
-    wallets.set_wallet(wallet);
-    Ok(())
+pub async fn wallets_get_current_address() -> Result<ChecksummedAddress> {
+    Ok(Wallets::read()
+        .await
+        .get_current_wallet()
+        .get_current_address())
 }
 
+/// Sets a new list of wallets
+/// Currently, the UI sends over the entire list to set, instead of adding/removing items
 #[tauri::command]
-pub async fn get_current_address() -> Result<String> {
-    let wallets = Wallets::read().await;
-
-    Ok(wallets.wallet.checksummed_address())
+pub async fn wallets_set_list(list: Vec<Wallet>) -> Result<()> {
+    Wallets::write().await.set_wallets(list)
 }
 
+/// Switches the current wallet
 #[tauri::command]
-pub async fn derive_addresses_with_mnemonic(
-    mnemonic: String,
-    derivation_path: String,
-) -> Result<Vec<String>> {
-    Wallet::derive_addresses_with_mnemonic(&mnemonic, &derivation_path, 5)
+pub async fn wallets_set_current_wallet(idx: usize) -> Result<()> {
+    Wallets::write().await.set_current_wallet(idx)
 }
 
+/// Switches the current key of the current wallet
 #[tauri::command]
-pub async fn derive_addresses() -> Result<Vec<String>> {
-    let wallets = Wallets::read().await;
+pub async fn wallets_set_current_path(key: String) -> Result<()> {
+    Wallets::write().await.set_current_path(key)
+}
 
-    let wallet = wallets.wallet.clone();
-    let addresses = wallet.derive_addresses(5).unwrap();
-
-    Ok(addresses)
+/// Get all known addresses of a wallet
+#[tauri::command]
+pub async fn wallets_get_wallet_addresses(
+    name: String,
+) -> Result<Vec<(String, ChecksummedAddress)>> {
+    Ok(Wallets::read().await.get_wallet_addresses(name))
 }

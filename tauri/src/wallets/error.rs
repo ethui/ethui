@@ -1,5 +1,13 @@
-#[derive(Debug, thiserror::Error)]
+use serde::Serialize;
+
+#[derive(thiserror::Error, Debug)]
 pub enum Error {
+    #[error("duplicate wallet names `{0}`")]
+    DuplicateWalletNames(String),
+
+    #[error("invalid wallet index {0}")]
+    InvalidWallet(usize),
+
     #[error("IO error: {0}")]
     IO(#[from] std::io::Error),
 
@@ -7,12 +15,12 @@ pub enum Error {
     Serde(#[from] serde_json::Error),
 
     #[error(transparent)]
-    WalletError(#[from] ethers::signers::WalletError),
+    SignerError(#[from] ethers::signers::WalletError),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
 
-impl serde::Serialize for Error {
+impl Serialize for Error {
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
     where
         S: serde::Serializer,

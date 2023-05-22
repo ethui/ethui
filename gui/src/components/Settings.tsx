@@ -4,13 +4,13 @@ import { useState } from "react";
 import { SettingsFoundry } from "./SettingsFoundry";
 import { SettingsGeneral } from "./SettingsGeneral";
 import { SettingsNetwork } from "./SettingsNetwork";
-import { SettingsWallet } from "./SettingsWallet";
+import { SettingsWallets } from "./SettingsWallets";
 import { TabPanel } from "./TabPanel";
 
 const tabs = [
   { name: "General", component: SettingsGeneral },
   { name: "Foundry", component: SettingsFoundry },
-  { name: "Wallet", component: SettingsWallet },
+  { name: "Wallets", component: SettingsWallets },
   { name: "Network", component: SettingsNetwork },
 ];
 
