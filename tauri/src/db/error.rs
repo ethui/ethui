@@ -1,13 +1,10 @@
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-    #[error("IO error: {0}")]
-    IO(#[from] std::io::Error),
-
-    #[error("serialization error: {0}")]
-    Serde(#[from] serde_json::Error),
+    #[error(transparent)]
+    Sqlx(#[from] sqlx::Error),
 
     #[error(transparent)]
-    WalletError(#[from] ethers::signers::WalletError),
+    SqlxMigrate(#[from] sqlx::migrate::MigrateError),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

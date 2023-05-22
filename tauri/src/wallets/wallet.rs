@@ -5,7 +5,7 @@ use ethers_core::k256::ecdsa::SigningKey;
 use serde::de::{self, MapAccess, Visitor};
 use serde::{Deserialize, Serialize};
 
-use crate::error::Result;
+use super::Result;
 use crate::types::ChecksummedAddress;
 
 #[derive(Debug, Serialize, Clone)]

@@ -10,7 +10,10 @@ use sqlx::{sqlite::SqliteRow, Row};
 use url::Url;
 
 use super::types::{Event, Events};
-use crate::{db::DB, error::Result, foundry::calculate_code_hash};
+use crate::{
+    db::{Result, DB},
+    foundry::calculate_code_hash,
+};
 
 #[async_trait]
 pub trait EventsStore {

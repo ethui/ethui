@@ -7,7 +7,7 @@ use ethers::{
 };
 use ethers_core::k256::ecdsa::SigningKey;
 
-use crate::Result;
+use super::{Error, Result};
 
 #[derive(Default)]
 pub struct SendTransaction {
@@ -71,24 +71,21 @@ impl SendTransaction {
     }
 
     pub async fn spawn_dialog(&mut self) -> Result<()> {
-        let rcv = crate::dialogs::open("tx-review", self.request.into()).unwrap();
+        let params = serde_json::to_value(&self.request).unwrap();
+
+        let rcv = crate::dialogs::open("tx-review", params).unwrap();
+
         match rcv.await {
             // 1st case is if the channel closes. 2nd case is if "Reject" is hit
-            Err(_) | Ok(Err(_)) => {
+            Err(_) | Ok(Err(_)) => 
                 // TODO: what's the appropriate error to return here?
                 // or should we return Ok(_)? Err(_) seems to close the ws connection
-                return Err(jsonrpc_core::Error {
-                    code: ErrorCode::ServerError(0),
-                    data: None,
-                    message: "transaction rejected".into(),
-                });
-            }
-            Ok(Ok(_response)) => {
+                Err(Error::TxDialogRejected),
+            
+            Ok(Ok(_response)) => 
+                Ok(())
                 // TODO: in the future, send json values here to override params
-            }
         }
-
-        self
     }
 
     pub async fn send(&mut self) -> Result<PendingTransaction<'_, Http>> {

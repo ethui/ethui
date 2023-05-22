@@ -1,3 +1,4 @@
+mod error;
 mod send_transaction;
 
 use std::{collections::HashMap, str::FromStr};
@@ -12,6 +13,7 @@ use ethers::{
 use jsonrpc_core::{ErrorCode, IoHandler, Params};
 use serde_json::json;
 
+pub use self::error::{Error, Result};
 use self::send_transaction::SendTransaction;
 use crate::wallets::Wallets;
 use crate::{networks::Networks, types::GlobalState};
@@ -140,11 +142,9 @@ impl Handler {
     async fn send_transaction(params: Params) -> jsonrpc_core::Result<serde_json::Value> {
         let networks = Networks::read().await;
         let network = networks.get_current_network();
-
         let wallets = Wallets::read().await;
-
-        // create signer
-        let signer = SignerMiddleware::new(network.get_provider(), wallets.get_signer());
+        let signer = wallets.get_signer().with_chain_id(network.chain_id);
+        let signer = SignerMiddleware::new(network.get_provider(), signer);
 
         let mut sender = SendTransaction::default();
 
