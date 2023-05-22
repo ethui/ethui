@@ -62,7 +62,9 @@ export function SettingsNetwork() {
   });
 
   const onSubmit = async (data: { networks?: Network[] }) => {
-    if (data.networks) await setNetworks(data.networks);
+    if (!data.networks) return;
+
+    await setNetworks(data.networks);
     reset(data);
   };
 
