@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+export const generalSettingsSchema = z.object({
+  darkMode: z.enum(["auto", "dark", "light"]),
+});
+
 // const formSchema = schema.shape.network;
 export const networkSchema = z.object({
   networks: z.array(
@@ -22,20 +26,23 @@ export const networkSchema = z.object({
 });
 
 export const walletSchema = z.object({
+  name: z.string().min(1),
+  dev: z.boolean().default(false),
   mnemonic: z.string().regex(/^(\w+\s){11}\w+$/, {
     message: "Must be a 12-word phrase",
   }),
   derivationPath: z.string().regex(/^m\/(\d+'?\/)+\d+$/, {
     message: "invalid path format",
   }),
-  idx: z.number().int().min(0).max(4),
+  count: z.number().int().min(1),
 });
 
-export const generalSettingsSchema = z.object({
-  darkMode: z.enum(["auto", "dark", "light"]),
+export const walletsSchema = z.object({
+  wallets: z.array(walletSchema),
 });
 
 export type Address = `0x${string}`;
+export type Wallet = z.infer<typeof walletSchema> & { currentPath?: string };
+export type Wallets = z.infer<typeof walletsSchema>;
 export type Network = z.infer<typeof networkSchema.shape.networks>[number];
-export type Wallet = z.infer<typeof walletSchema>;
 export type GeneralSettings = z.infer<typeof generalSettingsSchema>;

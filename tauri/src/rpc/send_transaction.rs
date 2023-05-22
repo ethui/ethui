@@ -77,14 +77,14 @@ impl SendTransaction {
 
         match rcv.await {
             // 1st case is if the channel closes. 2nd case is if "Reject" is hit
-            Err(_) | Ok(Err(_)) => 
-                // TODO: what's the appropriate error to return here?
-                // or should we return Ok(_)? Err(_) seems to close the ws connection
-                Err(Error::TxDialogRejected),
-            
-            Ok(Ok(_response)) => 
-                Ok(())
-                // TODO: in the future, send json values here to override params
+            Err(_) | Ok(Err(_)) =>
+            // TODO: what's the appropriate error to return here?
+            // or should we return Ok(_)? Err(_) seems to close the ws connection
+            {
+                Err(Error::TxDialogRejected)
+            }
+
+            Ok(Ok(_response)) => Ok(()), // TODO: in the future, send json values here to override params
         }
     }
 

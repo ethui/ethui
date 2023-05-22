@@ -35,13 +35,13 @@ async fn main() -> Result<()> {
 
     Settings::init(app.get_resource_path("settings.json")).await;
     Peers::init(app.sender.clone()).await;
+    Wallets::init(app.get_resource_path("wallets.json")).await;
     Networks::init((
         app.get_resource_path("networks.json"),
         app.sender.clone(),
         db.clone(),
     ))
     .await;
-    Wallets::init(app.get_resource_path("wallets.json")).await;
 
     // run websockets server loop
     tauri::async_runtime::spawn(async move { ws::ws_server_loop().await });
