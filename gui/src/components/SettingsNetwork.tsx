@@ -48,7 +48,7 @@ export function SettingsNetwork() {
   } = useForm({
     mode: "onBlur",
     resolver: zodResolver(networkSchema),
-    defaultValues: { networks },
+    defaultValues: { networks: networks as (Network & NewChild)[] },
   });
   // TODO: https://github.com/react-hook-form/react-hook-form/issues/3213
   const isDirtyAlt = !!Object.keys(dirtyFields).length;
