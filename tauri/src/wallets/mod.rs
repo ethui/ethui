@@ -4,53 +4,96 @@ mod global;
 mod wallet;
 
 use std::{
+    collections::HashSet,
     fs::File,
     path::{Path, PathBuf},
 };
 
-use ethers_core::k256::ecdsa::SigningKey;
+pub use error::{Error, Result};
 use serde::{Deserialize, Serialize};
 
-pub use self::{
-    error::{Error, Result},
-    wallet::Wallet,
+use self::wallet::Wallet;
+use crate::{
+    app,
+    peers::Peers,
+    types::{ChecksummedAddress, GlobalState},
 };
-use crate::{peers::Peers, types::GlobalState};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+/// Maintains a list of Ethereum wallets, including keeping track of the global current wallet &
+/// address
+#[derive(Default, Debug, Serialize, Deserialize)]
 pub struct Wallets {
-    pub wallet: Wallet,
+    wallets: Vec<Wallet>,
+
+    #[serde(default)]
+    current: usize,
 
     #[serde(skip)]
     file: Option<PathBuf>,
 }
 
 impl Wallets {
-    /// Changes the currently connected wallet
+    /// Gets a reference the current default wallet
+    pub fn get_current_wallet(&self) -> &Wallet {
+        &self.wallets[self.current]
+    }
+
+    /// Sets the current key within the current default
     ///
-    /// Broadcasts `accountsChanged`
-    pub fn set_wallet(&mut self, wallet: Wallet) {
-        self.wallet = wallet;
-
+    /// Since wallets actually contain multiple addresses, we need the ability to connect to a
+    /// different one within the same wallet
+    fn set_current_path(&mut self, key: String) -> Result<()> {
+        self.wallets[self.current].set_current_path(&key)?;
         self.notify_peers();
-        self.save().unwrap();
+        self.save()?;
+        Ok(())
     }
 
-    pub fn get_signer(&self) -> ethers::signers::Wallet<SigningKey> {
-        self.wallet.signer.clone()
+    /// Switches the current default wallet
+    fn set_current_wallet(&mut self, id: usize) -> Result<()> {
+        if id >= self.wallets.len() {
+            return Err(Error::InvalidWallet(id));
+        }
+
+        self.current = id;
+        self.notify_peers();
+        self.save()?;
+        Ok(())
     }
 
-    // broadcasts `accountsChanged` to all peers
-    fn notify_peers(&self) {
-        let new_addresses = vec![self.wallet.get_current_address()];
-        tokio::spawn(async move {
-            Peers::read()
-                .await
-                .broadcast_accounts_changed(new_addresses)
-        });
+    /// Retrieves all wallets
+    fn get_all(&self) -> Vec<Wallet> {
+        self.wallets.clone()
     }
 
-    // Persists current state to disk
+    /// Resets the list of wallets to a new one
+    fn set_wallets(&mut self, wallets: Vec<Wallet>) -> Result<()> {
+        if let Some(n) = find_duplicates(&wallets) {
+            return Err(Error::DuplicateWalletNames(n));
+        }
+        // TODO: should fail if wallets with duplicate names exist
+
+        self.wallets = wallets;
+        self.ensure_current();
+        self.notify_peers();
+        self.save()?;
+
+        Ok(())
+    }
+
+    /// Get all addresses currently enabled in a given wallet
+    fn get_wallet_addresses(&self, name: String) -> Vec<(String, ChecksummedAddress)> {
+        let wallet = self.find_wallet(&name).unwrap();
+
+        wallet.derive_all_addresses().unwrap()
+    }
+
+    /// Finds a wallet by its name
+    fn find_wallet(&self, id: &String) -> Option<&Wallet> {
+        self.wallets.iter().find(|w| &w.name == id)
+    }
+
+    /// Persists current state to disk
     fn save(&self) -> Result<()> {
         let pathbuf = self.file.clone().unwrap();
         let path = Path::new(&pathbuf);
@@ -60,4 +103,33 @@ impl Wallets {
 
         Ok(())
     }
+
+    /// Ensures that self.current never points to an invalid wallet
+    fn ensure_current(&mut self) {
+        if self.wallets.is_empty() {
+            self.wallets.push(Default::default());
+        }
+
+        if self.current >= self.wallets.len() {
+            self.current = 0;
+        }
+    }
+
+    // broadcasts `accountsChanged` to all peers
+    fn notify_peers(&self) {
+        let addresses = vec![self.get_current_wallet().get_current_address()];
+        tokio::spawn(async move { Peers::read().await.broadcast_accounts_changed(addresses) });
+    }
+}
+
+fn find_duplicates(wallets: &[Wallet]) -> Option<String> {
+    let mut uniq = HashSet::new();
+    for wallet in wallets.iter() {
+        if uniq.contains(&wallet.name) {
+            return Some(wallet.name.clone());
+        }
+        uniq.insert(&wallet.name);
+    }
+
+    None
 }

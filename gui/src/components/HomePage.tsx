@@ -1,11 +1,9 @@
 import { Container, Paper, Tab, Tabs } from "@mui/material";
 import { findIndex, parseInt, range, toString } from "lodash";
-import React from "react";
 import { Link, Route, Switch, useLocation, useRoute } from "wouter";
 
 import { useKeyPress } from "../hooks/useKeyPress";
 import { useMenuAction } from "../hooks/useMenuAction";
-import { Balances } from "./Balances";
 import { Contracts } from "./Contracts";
 import { Details } from "./Details";
 import { LivenetPlaceholder } from "./LivenetPlaceholder";
@@ -16,7 +14,6 @@ import { Txs } from "./Txs";
 const tabs = [
   { path: "details", name: "Details", component: Details },
   { path: "transactions", name: "Transactions", component: Txs, devOnly: true },
-  { path: "balances", name: "Balances", component: Balances, devOnly: true },
   { path: "contracts", name: "Contracts", component: Contracts, devOnly: true },
   { path: "connections", name: "Connections", component: Peers },
 ];

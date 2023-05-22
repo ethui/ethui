@@ -8,7 +8,7 @@ use async_trait::async_trait;
 use once_cell::sync::OnceCell;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
-use super::{Wallet, Wallets};
+use super::Wallets;
 use crate::types::GlobalState;
 
 static WALLETS: OnceCell<RwLock<Wallets>> = OnceCell::new();
@@ -21,7 +21,7 @@ impl GlobalState for Wallets {
     async fn init(pathbuf: Self::Initializer) {
         let path = Path::new(&pathbuf);
 
-        let res: Self = if path.exists() {
+        let mut res: Self = if path.exists() {
             let file = File::open(path).unwrap();
             let reader = BufReader::new(file);
 
@@ -30,11 +30,13 @@ impl GlobalState for Wallets {
             res
         } else {
             Self {
-                wallet: Wallet::default(),
+                wallets: Default::default(),
+                current: 0,
                 file: Some(pathbuf),
             }
         };
 
+        res.ensure_current();
         WALLETS.set(RwLock::new(res)).unwrap();
     }
 

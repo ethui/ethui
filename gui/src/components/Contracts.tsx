@@ -41,7 +41,7 @@ function Contract({ address, deployedCodeHash }: IContract) {
   return (
     <Accordion>
       <AccordionSummary expandIcon={<ExpandMore />}>
-        <Typography>
+        <Typography sx={{ textTransform: "none" }}>
           {address}
           {data && <Chip label={data.name} />}
         </Typography>

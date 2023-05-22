@@ -10,6 +10,9 @@ pub enum Error {
     #[error("Transaction rejected")]
     TxDialogRejected,
 
+    #[error("Error building signer: {0}")]
+    SignerBuild(String),
+
     #[error(transparent)]
     SignerMiddleware(#[from] SignerMiddlewareError<Provider<Http>, signers::Wallet<SigningKey>>),
 

@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import truncateEthAddress from "truncate-eth-address";
 
 import { useAccount } from "../hooks";
+import { Balances } from "./Balances";
 import Panel from "./Panel";
 
 export function Details() {
@@ -25,6 +26,7 @@ export function Details() {
         title={copied ? "Copied to clipboard" : "Copy to clipboard"}
       >
         <Button
+          sx={{ textTransform: "none" }}
           variant="outlined"
           endIcon={<ContentCopy />}
           onClick={copyToClipboard}
@@ -32,6 +34,7 @@ export function Details() {
           {truncateEthAddress(address)}
         </Button>
       </Tooltip>
+      <Balances />
     </Panel>
   );
 }

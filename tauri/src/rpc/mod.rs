@@ -16,8 +16,7 @@ use serde_json::json;
 
 pub use self::error::{Error, Result};
 use self::send_transaction::SendTransaction;
-use crate::wallets::Wallets;
-use crate::{networks::Networks, types::GlobalState};
+use crate::{networks::Networks, types::GlobalState, wallets::Wallets};
 
 pub struct Handler {
     io: IoHandler,
@@ -104,8 +103,9 @@ impl Handler {
 
     async fn accounts(_: Params) -> jsonrpc_core::Result<serde_json::Value> {
         let wallets = Wallets::read().await;
+        let address = wallets.get_current_wallet().get_current_address();
 
-        Ok(json!([wallets.wallet.checksummed_address()]))
+        Ok(json!([address]))
     }
 
     async fn chain_id(_: Params) -> jsonrpc_core::Result<serde_json::Value> {
@@ -119,12 +119,13 @@ impl Handler {
         let wallets = Wallets::read().await;
 
         let network = networks.get_current_network();
+        let address = wallets.get_current_wallet().get_current_address();
 
         Ok(json!({
             "isUnlocked": true,
             "chainId": network.chain_id_hex(),
             "networkVersion": network.name,
-            "accounts": [wallets.wallet.checksummed_address()],
+            "accounts": [address],
         }))
     }
 
@@ -147,7 +148,17 @@ impl Handler {
         let networks = Networks::read().await;
         let network = networks.get_current_network();
         let wallets = Wallets::read().await;
-        let signer = wallets.get_signer().with_chain_id(network.chain_id);
+        let signer = wallets
+            .get_current_wallet()
+            .build_signer(network.chain_id)
+            .map_err(|e| Error::SignerBuild(e.to_string()))?;
+        let signer = SignerMiddleware::new(network.get_provider(), signer);
+
+        // create signer
+        let signer = wallets
+            .get_current_wallet()
+            .build_signer(network.chain_id)
+            .unwrap();
         let signer = SignerMiddleware::new(network.get_provider(), signer);
 
         let mut sender = SendTransaction::default();
@@ -177,9 +188,15 @@ impl Handler {
 
         // TODO: ensure from == signer
 
-        let wallets = Wallets::read().await;
-        let provider = Networks::read().await.get_current_provider();
-        let signer = SignerMiddleware::new(provider, wallets.get_signer());
+        let networks = Networks::read().await;
+        let network = networks.get_current_network();
+        let provider = network.get_provider();
+        let signer = Wallets::read()
+            .await
+            .get_current_wallet()
+            .build_signer(network.chain_id)
+            .unwrap();
+        let signer = SignerMiddleware::new(provider, signer);
 
         let bytes = Bytes::from_str(&msg).unwrap();
         let res = signer.sign(bytes, &address).await;
@@ -196,8 +213,13 @@ impl Handler {
         let data = params[1].as_ref().cloned().unwrap();
         let typed_data: eip712::TypedData = serde_json::from_str(&data).unwrap();
 
-        let wallets = Wallets::read().await;
-        let signer = wallets.get_signer();
+        let networks = Networks::read().await;
+        let network = networks.get_current_network();
+        let signer = Wallets::read()
+            .await
+            .get_current_wallet()
+            .build_signer(network.chain_id)
+            .unwrap();
         // TODO: ensure from == signer
 
         let res = signer.sign_typed_data(&typed_data).await;

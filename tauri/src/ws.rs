@@ -1,5 +1,4 @@
-use std::collections::HashMap;
-use std::net::SocketAddr;
+use std::{collections::HashMap, net::SocketAddr};
 
 use futures_util::{SinkExt, StreamExt};
 use log::*;
@@ -15,10 +14,10 @@ use tungstenite::{
 };
 use url::Url;
 
-use crate::rpc::Handler;
 use crate::{
     error::{Error, Result},
     peers::Peers,
+    rpc::Handler,
     types::GlobalState,
 };
 

@@ -3,12 +3,12 @@ import { useState } from "react";
 
 import { SettingsGeneral } from "./SettingsGeneral";
 import { SettingsNetwork } from "./SettingsNetwork";
-import { SettingsWallet } from "./SettingsWallet";
+import { SettingsWallets } from "./SettingsWallets";
 import { TabPanel } from "./TabPanel";
 
 const tabs = [
   { name: "General", component: SettingsGeneral },
-  { name: "Wallet", component: SettingsWallet },
+  { name: "Wallets", component: SettingsWallets },
   { name: "Network", component: SettingsNetwork },
 ];
 
