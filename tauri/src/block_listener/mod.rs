@@ -1,5 +1,8 @@
+mod error;
+
 use std::time::Duration;
 
+pub use error::{Error, Result};
 use ethers::{
     providers::{
         Http, HttpClientError, JsonRpcClient, Middleware, Provider, RetryClientBuilder,
@@ -12,11 +15,11 @@ use log::warn;
 use tokio::sync::mpsc;
 use url::Url;
 
+use crate::db::DB;
 use crate::{
     app::{self, Notify},
     store::events::EventsStore,
 };
-use crate::{db::DB, error::Error, Result};
 
 #[derive(Debug)]
 pub struct BlockListener {

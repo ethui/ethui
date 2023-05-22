@@ -39,7 +39,7 @@ const emptyNetwork: Network & NewChild = {
 
 export function SettingsNetwork() {
   const { data: networks, mutate } =
-    useInvoke<(Network & NewChild)[]>("get_networks");
+    useInvoke<(Network & NewChild)[]>("networks_get_list");
 
   const {
     register,

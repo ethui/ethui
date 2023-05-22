@@ -15,7 +15,7 @@ import Panel from "./Panel";
 export function Balances() {
   const address = useAccount();
   const { data: balances, mutate } = useInvoke<[Address, string][]>(
-    "get_erc20_balances",
+    "db_get_erc20_balances",
     { address }
   );
 
