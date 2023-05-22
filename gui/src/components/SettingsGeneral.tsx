@@ -13,7 +13,7 @@ import {
   TextField,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 
 import { useInvoke } from "../hooks/tauri";
@@ -31,9 +31,13 @@ export function SettingsGeneral() {
   } = useForm({
     mode: "onChange",
     resolver: zodResolver(generalSettingsSchema),
+    defaultValues: general,
   });
   // TODO: https://github.com/react-hook-form/react-hook-form/issues/3213
   const isDirtyAlt = !!Object.keys(dirtyFields).length;
+
+  // default values are async, need to reset once they're ready
+  useEffect(() => reset(general), [reset, general]);
 
   const onSubmit = useCallback(
     async (data: FieldValues) => {
@@ -72,48 +76,42 @@ export function SettingsGeneral() {
             )}
           />
         </FormControl>
-        <Paper>
-          <FormControl error={!!errors.watcher}>
-            <FormGroup>
-              <FormControlLabel
-                label="ABI watch (requires restart)"
-                control={
-                  <Controller
-                    name="abiWatch"
-                    control={control}
-                    render={({ field }) => (
-                      <Checkbox
-                        {...field}
-                        checked={field.value || false}
-                        onChange={(e) => field.onChange(e.target.checked)}
-                      />
-                    )}
-                  />
-                }
-              />
-            </FormGroup>
-            {errors.abiWatch && (
-              <FormHelperText>
-                {errors.abiWatch.message?.toString()}
-              </FormHelperText>
-            )}
-          </FormControl>
-          <TextField
-            label="ABI Watch path"
-            defaultValue={general.abiWatchPath}
-            error={!!errors.abiWatchPath}
-            helperText={errors.abiWatchPath?.message?.toString() || ""}
-            fullWidth
-            {...register("abiWatchPath")}
-          />
-          <Button
-            variant="contained"
-            type="submit"
-            disabled={!isDirtyAlt || !isValid}
-          >
-            Save
-          </Button>
-        </Paper>
+        <FormControl error={!!errors.abiWatch}>
+          <FormGroup>
+            <FormControlLabel
+              label="ABI Watcher"
+              control={
+                <Controller
+                  name="abiWatch"
+                  control={control}
+                  render={({ field }) => (
+                    <Checkbox {...field} checked={field.value} />
+                  )}
+                />
+              }
+            />
+          </FormGroup>
+          {errors.abiWatch && (
+            <FormHelperText>
+              {errors.abiWatch.message?.toString()}
+            </FormHelperText>
+          )}
+        </FormControl>
+        <TextField
+          label="ABI Watch path"
+          defaultValue={general.abiWatchPath}
+          error={!!errors.abiWatchPath}
+          helperText={errors.abiWatchPath?.message?.toString() || ""}
+          fullWidth
+          {...register("abiWatchPath")}
+        />
+        <Button
+          variant="contained"
+          type="submit"
+          disabled={!isDirtyAlt || !isValid}
+        >
+          Save
+        </Button>
       </Stack>
     </form>
   );
