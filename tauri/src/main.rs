@@ -10,6 +10,7 @@ mod error;
 mod networks;
 mod peers;
 mod rpc;
+mod settings;
 mod store;
 mod types;
 mod wallets;
@@ -19,6 +20,7 @@ use db::DB;
 use error::Result;
 use networks::Networks;
 use peers::Peers;
+use settings::Settings;
 use types::GlobalState;
 use wallets::Wallets;
 
@@ -31,6 +33,7 @@ async fn main() -> Result<()> {
     let mut app = app::IronApp::build();
     let db = DB::connect(&app.get_resource_path("db.sqlite3")).await?;
 
+    Settings::init(app.get_resource_path("settings.json")).await;
     Peers::init(app.sender.clone()).await;
     Wallets::init(app.get_resource_path("wallets.json")).await;
     Networks::init((

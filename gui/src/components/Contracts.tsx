@@ -27,7 +27,7 @@ function Contract({ address }: { address: Address }) {
   return (
     <ListItem>
       <ContextMenu>
-        <Typography>{address}</Typography>
+        <Typography sx={{ textTransform: "none" }}>{address}</Typography>
       </ContextMenu>
     </ListItem>
   );

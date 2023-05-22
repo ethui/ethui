@@ -25,6 +25,7 @@ export function Details() {
         title={copied ? "Copied to clipboard" : "Copy to clipboard"}
       >
         <Button
+          sx={{ textTransform: "none" }}
           variant="outlined"
           endIcon={<ContentCopy />}
           onClick={copyToClipboard}

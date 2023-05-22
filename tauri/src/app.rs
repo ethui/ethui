@@ -13,7 +13,7 @@ use tokio::sync::mpsc;
 
 use crate::{
     db::{self, DB},
-    dialogs, networks, peers, wallets,
+    dialogs, networks, peers, settings, wallets,
 };
 
 pub struct IronApp {
@@ -64,6 +64,8 @@ impl IronApp {
         let mut builder = Builder::default()
             .plugin(windowStatePlugin::default().build())
             .invoke_handler(tauri::generate_handler![
+                settings::commands::settings_get,
+                settings::commands::settings_set,
                 networks::commands::networks_get_list,
                 networks::commands::networks_get_current,
                 networks::commands::networks_set_list,

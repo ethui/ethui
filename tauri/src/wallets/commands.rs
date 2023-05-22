@@ -1,4 +1,4 @@
-use super::{wallet::Wallet, Result, Wallets};
+use super::{Result, Wallet, Wallets};
 use crate::types::{ChecksummedAddress, GlobalState};
 
 /// Lists all wallets

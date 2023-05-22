@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
 use url::Url;
 
+use super::{Error, Result};
 use crate::{app, block_listener::BlockListener, db::DB};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -88,7 +89,7 @@ impl Network {
         &mut self,
         db: DB,
         window_snd: mpsc::UnboundedSender<app::Event>,
-    ) -> crate::error::Result<()> {
+    ) -> Result<()> {
         if let Some(listener) = self.listener.as_ref() {
             listener.lock().unwrap().stop();
             self.listener = None;
@@ -98,7 +99,9 @@ impl Network {
             let http_url = Url::parse(&self.http_url)?;
             let ws_url = Url::parse(&self.ws_url.clone().unwrap())?;
             let mut listener = BlockListener::new(self.chain_id, http_url, ws_url, db, window_snd);
-            listener.run()?;
+            listener
+                .run()
+                .map_err(|e| Error::ErrorRunningListener(e.to_string()))?;
             self.listener = Some(Arc::new(Mutex::new(listener)));
         }
 

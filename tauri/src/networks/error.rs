@@ -10,6 +10,12 @@ pub enum Error {
 
     #[error("error sending event to window: {0}")]
     WindowSend(#[from] tokio::sync::mpsc::error::SendError<app::Event>),
+
+    #[error(transparent)]
+    Url(#[from] url::ParseError),
+
+    #[error("Error running listener: {0}")]
+    ErrorRunningListener(String),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -22,4 +28,3 @@ impl serde::Serialize for Error {
         serializer.serialize_str(self.to_string().as_ref())
     }
 }
-

@@ -11,19 +11,24 @@ use tokio::sync::mpsc;
 use crate::{app, types::ChecksummedAddress, ws::Peer};
 
 /// Tracks a list of peers, usually browser tabs, that connect to the app
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct Peers {
     map: HashMap<SocketAddr, Peer>,
-    window_snd: Option<mpsc::UnboundedSender<app::Event>>,
+    window_snd: mpsc::UnboundedSender<app::Event>,
 }
 
 impl Peers {
+    pub fn new(window_snd: mpsc::UnboundedSender<app::Event>) -> Self {
+        Self {
+            map: HashMap::new(),
+            window_snd,
+        }
+    }
+
     /// Adds a new peer
     pub fn add_peer(&mut self, peer: Peer) {
         self.map.insert(peer.socket, peer);
         self.window_snd
-            .as_ref()
-            .unwrap()
             .send(app::Notify::PeersUpdated.into())
             .unwrap();
     }
@@ -32,8 +37,6 @@ impl Peers {
     pub fn remove_peer(&mut self, peer: SocketAddr) {
         self.map.remove(&peer);
         self.window_snd
-            .as_ref()
-            .unwrap()
             .send(app::Notify::PeersUpdated.into())
             .unwrap();
     }
