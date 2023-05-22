@@ -36,11 +36,11 @@ impl WalletControl for JsonKeystoreWallet {
         todo!()
     }
 
-    async fn set_current_path(&mut self, path: &str) -> Result<()> {
+    async fn set_current_path(&mut self, _path: &str) -> Result<()> {
         todo!()
     }
 
-    async fn build_signer(&self, chain_id: u32) -> Result<ethers::signers::Wallet<SigningKey>> {
+    async fn build_signer(&self, _chain_id: u32) -> Result<ethers::signers::Wallet<SigningKey>> {
         todo!()
     }
 
