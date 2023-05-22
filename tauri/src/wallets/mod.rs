@@ -14,7 +14,6 @@ use serde::{Deserialize, Serialize};
 
 use self::wallet::Wallet;
 use crate::{
-    app,
     peers::Peers,
     types::{ChecksummedAddress, GlobalState},
 };
