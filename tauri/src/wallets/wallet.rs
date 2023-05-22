@@ -48,17 +48,12 @@ impl Wallet {
             .collect()
     }
 
-    pub fn build_signer(
-        &self,
-        chain_id: u32,
-    ) -> std::result::Result<ethers::signers::Wallet<SigningKey>, String> {
-        MnemonicBuilder::<English>::default()
+    pub fn build_signer(&self, chain_id: u32) -> Result<ethers::signers::Wallet<SigningKey>> {
+        Ok(MnemonicBuilder::<English>::default()
             .phrase(self.mnemonic.as_ref())
-            .derivation_path(&self.current_path)
-            .map_err(|e| e.to_string())?
+            .derivation_path(&self.current_path)?
             .build()
-            .map_err(|e| e.to_string())
-            .map(|v| v.with_chain_id(chain_id))
+            .map(|v| v.with_chain_id(chain_id))?)
     }
 }
 

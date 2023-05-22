@@ -144,7 +144,10 @@ impl Handler {
         let networks = Networks::read().await;
         let network = networks.get_current_network();
         let wallets = Wallets::read().await;
-        let signer = wallets.get_signer().with_chain_id(network.chain_id);
+        let signer = wallets
+            .get_current_wallet()
+            .build_signer(network.chain_id)
+            .map_err(|e| Error::SignerBuild(e.to_string()))?;
         let signer = SignerMiddleware::new(network.get_provider(), signer);
 
         // create signer

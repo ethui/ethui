@@ -10,10 +10,11 @@ pub enum Error {
     #[error("Transaction rejected")]
     TxDialogRejected,
 
+    #[error("Error building signer: {0}")]
+    SignerBuild(String),
+
     #[error(transparent)]
-    SignerMiddlewareError(
-        #[from] SignerMiddlewareError<Provider<Http>, signers::Wallet<SigningKey>>,
-    ),
+    SignerMiddleware(#[from] SignerMiddlewareError<Provider<Http>, signers::Wallet<SigningKey>>),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
