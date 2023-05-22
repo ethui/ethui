@@ -16,13 +16,13 @@ interface Props {
 export function ABIForm({ address, abi }: Props) {
   const [currentItem, setCurrentItem] = useState<ABIItem | undefined>();
 
-  const functions = abi.filter((item) => item.type === "function");
-
-  const options = functions.map((item, i) => ({
-    item,
-    label: functionSignature(item.name, item.inputs),
-    id: i,
-  }));
+  const options = abi
+    .filter((item) => item.type === "function")
+    .map((item, i) => ({
+      item,
+      label: functionSignature(item.name, item.inputs),
+      id: i,
+    }));
 
   const handleChange = (
     _event: SyntheticEvent,
