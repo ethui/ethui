@@ -54,7 +54,7 @@ impl Settings {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", default)]
 pub struct SerializedSettings {
     pub dark_mode: DarkMode,
     pub abi_watch: bool,
