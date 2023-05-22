@@ -140,47 +140,27 @@ impl Handler {
     }
 
     async fn send_transaction(params: Params) -> jsonrpc_core::Result<serde_json::Value> {
-        #[cfg(feature = "dialogs")]
-        {
-            // TODO: why is this an array?
-            let params: serde_json::Value = params.clone().into();
-            let params = params.as_array().unwrap()[0].clone();
-
-            let rcv = crate::dialogs::open("tx-review", params).unwrap();
-            match rcv.await {
-                // 1st case is if the channel closes. 2nd case is if "Reject" is hit
-                Err(_) | Ok(Err(_)) => {
-                    // TODO: what's the appropriate error to return here?
-                    // or should we return Ok(_)? Err(_) seems to close the ws connection
-                    return Err(jsonrpc_core::Error {
-                        code: ErrorCode::ServerError(0),
-                        data: None,
-                        message: "transaction rejected".into(),
-                    });
-                }
-                Ok(Ok(_response)) => {
-                    // TODO: in the future, send json values here to override params
-                }
-            }
-        }
-
-        let mut sender = SendTransaction::build(params.into());
-
         let networks = Networks::read().await;
         let network = networks.get_current_network();
-
         let wallets = Wallets::read().await;
+        let signer = wallets.get_signer().with_chain_id(network.chain_id);
+        let signer = SignerMiddleware::new(network.get_provider(), signer);
 
-        // create signer
-        let signer = SignerMiddleware::new(network.get_provider(), wallets.get_signer());
+        let mut sender = SendTransaction::default();
 
-        sender.set_chain_id(network.chain_id);
-        sender.set_signer(signer);
-        sender.estimate_gas().await;
+        let sender = sender
+            .set_params(params.into())
+            .set_chain_id(network.chain_id)
+            .set_signer(signer)
+            .estimate_gas()
+            .await;
 
-        let res = sender.send().await;
+        #[cfg(feature = "dialogs")]
+        sender.spawn_dialog().await?;
 
-        match res {
+        let result = sender.send().await;
+
+        match result {
             Ok(res) => Ok(res.tx_hash().encode_hex().into()),
             Err(e) => Ok(e.to_string().into()),
         }
