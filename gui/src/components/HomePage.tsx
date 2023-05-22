@@ -1,12 +1,10 @@
 import { Container, Paper, Tab, Tabs } from "@mui/material";
 import { findIndex, parseInt, range, toString } from "lodash";
-import React from "react";
 import { Link, Route, Switch, useLocation, useRoute } from "wouter";
 
 import { useKeyPress } from "../hooks/useKeyPress";
 import { useMenuAction } from "../hooks/useMenuAction";
-import { Balances } from "./Balances";
-import { Connections } from "./Connections";
+import { Contracts } from "./Contracts";
 import { Details } from "./Details";
 import { LivenetPlaceholder } from "./LivenetPlaceholder";
 import { NestedRoutes } from "./NestedRoutes";
