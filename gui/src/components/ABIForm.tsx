@@ -68,6 +68,7 @@ function ABIItemForm({ contract, item }: { contract: Address; item: ABIItem }) {
   const [callResult, setCallResult] = useState<
     ethers.utils.Result | undefined
   >();
+  const [txResult, setTxResult] = useState<string | undefined>();
 
   console.log(callResult);
   const iface = new ethers.utils.Interface([item]);
@@ -80,31 +81,42 @@ function ABIItemForm({ contract, item }: { contract: Address; item: ABIItem }) {
     );
 
     if (item.stateMutability === "view") {
+      // send call directly to provider
       const result = await provider.call({ to: contract, data });
       setCallResult(iface.decodeFunctionResult(item.name, result));
     } else {
-      invoke("rpc_send_transaction", { params: { to: contract, data } });
+      // submit transaction via backend
+      const result = await invoke<string>("rpc_send_transaction", {
+        params: { to: contract, data },
+      });
+      setTxResult(result);
     }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Stack direction="column" spacing={2}>
+      <Stack direction="column" spacing={2} justifyContent="flex-start">
         {item.inputs.map(({ name, type }, key) => (
-          <TextField
-            size="small"
-            key={key}
-            {...register(`args.${name}`)}
-            label={`${name} (${type})`}
-          />
+          <Box>
+            <TextField
+              sx={{ minWidth: 300 }}
+              size="small"
+              key={key}
+              {...register(`args.${name}`)}
+              label={`${name} (${type})`}
+            />
+          </Box>
         ))}
         {item.stateMutability === "payable" && (
           <TextField size="small" {...register("value")} label="value" />
         )}
-        <Button variant="contained" type="submit">
-          {item.stateMutability == "view" ? "Call" : "Send"}
-        </Button>
+        <Box>
+          <Button sx={{ minWidth: 150 }} variant="contained" type="submit">
+            {item.stateMutability == "view" ? "Call" : "Send"}
+          </Button>
+        </Box>
         {callResult && <Box>{callResult.map((value) => value.toString())}</Box>}
+        {txResult && <Box>{txResult}</Box>}
       </Stack>
     </form>
   );
