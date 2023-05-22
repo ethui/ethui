@@ -37,9 +37,6 @@ const emptyNetwork: Network & NewChild = {
 };
 
 export function SettingsNetwork() {
-  // const { data: networks, mutate } =
-  //   useInvoke<(Network & NewChild)[]>("networks_get_list");
-
   const { networks, setNetworks, resetNetworks } = useNetworks();
 
   const {
