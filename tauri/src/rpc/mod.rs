@@ -1,3 +1,4 @@
+pub mod commands;
 mod error;
 mod send_transaction;
 
@@ -139,7 +140,10 @@ impl Handler {
         }
     }
 
-    async fn send_transaction(params: Params) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn send_transaction<T: Into<serde_json::Value>>(
+        params: T,
+    ) -> jsonrpc_core::Result<serde_json::Value> {
+        // TODO: should we scope these rwlock reads so they don't stick during sining?
         let networks = Networks::read().await;
         let network = networks.get_current_network();
         let wallets = Wallets::read().await;

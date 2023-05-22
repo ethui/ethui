@@ -11,9 +11,10 @@ pub enum Error {
     TxDialogRejected,
 
     #[error(transparent)]
-    SignerMiddlewareError(
-        #[from] SignerMiddlewareError<Provider<Http>, signers::Wallet<SigningKey>>,
-    ),
+    SignerMiddleware(#[from] SignerMiddlewareError<Provider<Http>, signers::Wallet<SigningKey>>),
+
+    #[error(transparent)]
+    JsonRpc(#[from] jsonrpc_core::Error),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -25,5 +26,14 @@ impl From<Error> for jsonrpc_core::Error {
             data: None,
             message: value.to_string(),
         }
+    }
+}
+
+impl serde::Serialize for Error {
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.to_string().as_ref())
     }
 }

@@ -3,13 +3,13 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  List,
+  Chip,
   Typography,
 } from "@mui/material";
 
 import { useInvoke } from "../hooks/tauri";
 import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
-import { Address } from "../types";
+import { ABIMatch, Address } from "../types";
 import { ABIForm } from "./ABIForm";
 import Panel from "./Panel";
 
@@ -34,17 +34,20 @@ export function Contracts() {
 }
 
 function Contract({ address, deployedCodeHash }: IContract) {
-  const { data: abi } = useInvoke<string>("foundry_get_abi", {
+  const { data } = useInvoke<ABIMatch>("foundry_get_abi", {
     deployedCodeHash,
   });
 
   return (
     <Accordion>
       <AccordionSummary expandIcon={<ExpandMore />}>
-        <Typography>{address}</Typography>
+        <Typography>
+          {address}
+          {data && <Chip label={data.name} />}
+        </Typography>
       </AccordionSummary>
       <AccordionDetails>
-        {abi && <ABIForm address={address} abi={abi} />}
+        {data && <ABIForm address={address} abi={data.abi} />}
       </AccordionDetails>
     </Accordion>
   );

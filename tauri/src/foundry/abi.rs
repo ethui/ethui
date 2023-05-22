@@ -8,8 +8,8 @@ use super::{
     watcher::Match,
 };
 
-#[derive(Debug, Clone)]
-pub(super) struct Abi {
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct Abi {
     pub path: PathBuf,
     pub project: String,
     pub file: String,
@@ -19,7 +19,7 @@ pub(super) struct Abi {
 }
 
 impl Abi {
-    pub fn try_from_match(m: Match) -> Result<Self> {
+    pub(super) fn try_from_match(m: Match) -> Result<Self> {
         // TODO: this won't work in windows I supose
 
         if !m.full_path.exists() {

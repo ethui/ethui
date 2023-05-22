@@ -19,7 +19,11 @@ pub struct SendTransaction {
 impl SendTransaction {
     pub fn set_params(&mut self, params: serde_json::Value) -> &mut Self {
         // TODO: why is this an array?
-        let params = &params.as_array().unwrap()[0];
+        let params = if params.is_array() {
+            &params.as_array().unwrap()[0]
+        } else {
+            &params
+        };
 
         if let Some(from) = params["from"].as_str() {
             self.request.set_from(Address::from_str(from).unwrap());
@@ -77,14 +81,14 @@ impl SendTransaction {
 
         match rcv.await {
             // 1st case is if the channel closes. 2nd case is if "Reject" is hit
-            Err(_) | Ok(Err(_)) => 
-                // TODO: what's the appropriate error to return here?
-                // or should we return Ok(_)? Err(_) seems to close the ws connection
-                Err(Error::TxDialogRejected),
-            
-            Ok(Ok(_response)) => 
-                Ok(())
-                // TODO: in the future, send json values here to override params
+            Err(_) | Ok(Err(_)) =>
+            // TODO: what's the appropriate error to return here?
+            // or should we return Ok(_)? Err(_) seems to close the ws connection
+            {
+                Err(Error::TxDialogRejected)
+            }
+
+            Ok(Ok(_response)) => Ok(()), // TODO: in the future, send json values here to override params
         }
     }
 
