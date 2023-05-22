@@ -154,13 +154,6 @@ impl Handler {
             .map_err(|e| Error::SignerBuild(e.to_string()))?;
         let signer = SignerMiddleware::new(network.get_provider(), signer);
 
-        // create signer
-        let signer = wallets
-            .get_current_wallet()
-            .build_signer(network.chain_id)
-            .unwrap();
-        let signer = SignerMiddleware::new(network.get_provider(), signer);
-
         let mut sender = SendTransaction::default();
 
         let sender = sender

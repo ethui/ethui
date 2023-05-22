@@ -54,15 +54,19 @@ impl Settings {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", default)]
 pub struct SerializedSettings {
     pub dark_mode: DarkMode,
+    pub abi_watch: bool,
+    pub abi_watch_path: Option<String>,
 }
 
 impl Default for SerializedSettings {
     fn default() -> Self {
         Self {
             dark_mode: DarkMode::Auto,
+            abi_watch: false,
+            abi_watch_path: None,
         }
     }
 }
