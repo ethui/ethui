@@ -32,8 +32,6 @@ export function ABIForm({ address, abi }: Props) {
     }
   };
 
-  console.log(options);
-
   return (
     <Stack alignItems="flex-start" spacing={2}>
       <Autocomplete
@@ -70,7 +68,6 @@ function ABIItemForm({ contract, item }: { contract: Address; item: ABIItem }) {
   >();
   const [txResult, setTxResult] = useState<string | undefined>();
 
-  console.log(callResult);
   const iface = new ethers.utils.Interface([item]);
   const paramNames = iface.getFunction(item.name).inputs.map((i) => i.name);
 
@@ -97,11 +94,10 @@ function ABIItemForm({ contract, item }: { contract: Address; item: ABIItem }) {
     <form onSubmit={handleSubmit(onSubmit)}>
       <Stack direction="column" spacing={2} justifyContent="flex-start">
         {item.inputs.map(({ name, type }, key) => (
-          <Box>
+          <Box key={key}>
             <TextField
               sx={{ minWidth: 300 }}
               size="small"
-              key={key}
               {...register(`args.${name}`)}
               label={`${name} (${type})`}
             />
