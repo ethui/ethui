@@ -13,11 +13,10 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 
-import { useInvoke } from "../hooks/tauri";
+import { useNetworks } from "../hooks/useNetworks";
 import { Network, networkSchema } from "../types";
 import { ConfirmationDialog } from "./ConfirmationDialog";
 
@@ -38,8 +37,10 @@ const emptyNetwork: Network & NewChild = {
 };
 
 export function SettingsNetwork() {
-  const { data: networks, mutate } =
-    useInvoke<(Network & NewChild)[]>("networks_get_list");
+  // const { data: networks, mutate } =
+  //   useInvoke<(Network & NewChild)[]>("networks_get_list");
+
+  const { networks, setNetworks, resetNetworks } = useNetworks();
 
   const {
     register,
@@ -64,15 +65,17 @@ export function SettingsNetwork() {
   });
 
   const onSubmit = async (data: { networks?: Network[] }) => {
-    await invoke("set_networks", { networks: data.networks });
+    if (data.networks) await setNetworks(data.networks);
+    // await invoke("set_networks", { networks: data.networks });
     reset(data);
-    mutate();
+    // mutate();
   };
 
   const onReset = async () => {
-    const networks: Network[] = await invoke("reset_networks");
+    // const networks: Network[] = await invoke("reset_networks");
+    const networks = await resetNetworks();
     reset({ networks });
-    mutate();
+    // mutate();
   };
 
   if (!networks) return <>Loading</>;

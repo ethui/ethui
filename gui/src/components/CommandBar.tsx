@@ -1,12 +1,12 @@
 import {
   List,
-  ListItem,
-  ListItemAvatar,
+  ListItemButton,
+  ListItemIcon,
+  ListItemSecondaryAction,
   ListItemText,
   Paper,
 } from "@mui/material";
 import {
-  ActionId,
   ActionImpl,
   KBarAnimator,
   KBarPortal,
@@ -16,10 +16,10 @@ import {
   KBarSearch,
   useMatches,
 } from "kbar";
-import React from "react";
+import React, { ReactNode, forwardRef } from "react";
 
 function RenderResults() {
-  const { results, rootActionId } = useMatches();
+  const { results } = useMatches();
 
   return (
     <List
@@ -38,84 +38,47 @@ function RenderResults() {
             {item}
           </div>
         ) : (
-          <ResultItem
-            action={item}
-            active={active}
-            currentRootActionId={rootActionId}
-          />
+          <ResultItem action={item} active={active} />
         )
       }
     />
   );
 }
 
-const ResultItem = React.forwardRef(
+const ResultItem = forwardRef(
   (
     {
       action,
       active,
-      currentRootActionId,
     }: {
       action: ActionImpl;
       active: boolean;
-      currentRootActionId?: ActionId;
     },
     ref: React.Ref<HTMLDivElement>
   ) => {
-    const ancestors = React.useMemo(() => {
-      if (!currentRootActionId) return action.ancestors;
-      const index = action.ancestors.findIndex(
-        (ancestor) => ancestor.id === currentRootActionId
-      );
-      // +1 removes the currentRootAction; e.g.
-      // if we are on the "Set theme" parent action,
-      // the UI should not display "Set theme… > Dark"
-      // but rather just "Dark"
-      return action.ancestors.slice(index + 1);
-    }, [action.ancestors, currentRootActionId]);
-
     return (
-      <ListItem
-        ref={ref}
-        selected={active}
-        secondaryAction={
-          action.shortcut?.length ? (
-            <div aria-hidden>
-              {action.shortcut.map((sc) => (
-                <kbd key={sc}>{sc}</kbd>
-              ))}
-            </div>
-          ) : null
-        }
-      >
-        {action.icon && <ListItemAvatar>{action.icon}</ListItemAvatar>}
+      <ListItemButton ref={ref} selected={active}>
+        {action.icon && <ListItemIcon>{action.icon}</ListItemIcon>}
+
         <ListItemText primary={action.name} secondary={action.subtitle} />
-      </ListItem>
+
+        {action.shortcut?.length ? (
+          <ListItemSecondaryAction aria-hidden>
+            {action.shortcut.map((sc) => (
+              <kbd key={sc}>{sc}</kbd>
+            ))}
+          </ListItemSecondaryAction>
+        ) : null}
+      </ListItemButton>
     );
   }
 );
 
-const actions = [
-  {
-    id: "blog",
-    name: "Blog",
-    subtitle: "asd",
-    shortcut: ["b"],
-    keywords: "writing words",
-    perform: () => (window.location.pathname = "details"),
-  },
-  {
-    id: "contact",
-    name: "Contact",
-    shortcut: ["c"],
-    keywords: "email",
-    perform: () => (window.location.pathname = "transactions"),
-  },
-];
+ResultItem.displayName = "ResultItem";
 
 export function CommandBar({ children }: { children: ReactNode }) {
   return (
-    <KBarProvider actions={actions}>
+    <>
       <KBarPortal>
         <KBarPositioner>
           <Paper
@@ -148,6 +111,10 @@ export function CommandBar({ children }: { children: ReactNode }) {
         </KBarPositioner>
       </KBarPortal>
       {children}
-    </KBarProvider>
+    </>
   );
+}
+
+export function CommandBarProvider({ children }: { children: ReactNode }) {
+  return <KBarProvider>{children}</KBarProvider>;
 }
