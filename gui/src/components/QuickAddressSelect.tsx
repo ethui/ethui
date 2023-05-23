@@ -15,7 +15,6 @@ export function QuickAddressSelect() {
     { name: current_wallet?.name }
   );
 
-  console.log(current_wallet);
   const handleChange = (event: SelectChangeEvent<string>) => {
     const key = event.target.value;
     if (!current_wallet || !addresses) return;
