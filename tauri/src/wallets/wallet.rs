@@ -55,6 +55,10 @@ impl Wallet {
             .build()
             .map(|v| v.with_chain_id(chain_id))?)
     }
+
+    pub fn is_dev(&self) -> bool {
+        self.dev
+    }
 }
 
 fn derive_from_builder_and_path(

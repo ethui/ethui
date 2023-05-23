@@ -12,7 +12,7 @@ use std::{
 pub use error::{Error, Result};
 use serde::{Deserialize, Serialize};
 
-use self::wallet::Wallet;
+pub use self::wallet::Wallet;
 use crate::{
     peers::Peers,
     types::{ChecksummedAddress, GlobalState},

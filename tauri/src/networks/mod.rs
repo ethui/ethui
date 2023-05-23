@@ -14,7 +14,7 @@ use serde::Serialize;
 use tokio::sync::mpsc;
 
 pub use self::error::{Error, Result};
-use self::network::Network;
+pub use self::network::Network;
 use crate::{app, db::DB, peers::Peers, types::GlobalState};
 
 #[derive(Debug, Clone, Serialize)]
