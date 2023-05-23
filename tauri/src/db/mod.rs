@@ -1,5 +1,6 @@
 pub mod commands;
 mod error;
+mod queries;
 
 use std::{path::PathBuf, str::FromStr};
 
@@ -9,9 +10,7 @@ use ethers::{
 };
 use serde::Serialize;
 use sqlx::{
-    sqlite::{
-        SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteRow, SqliteSynchronous,
-    },
+    sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous},
     Row,
 };
 use url::Url;
@@ -58,17 +57,9 @@ impl DB {
             // TODO: report this errors in await?. Currently they're being silently ignored, because the task just gets killed
             match tx {
                 Event::Tx(ref tx) => {
-                    sqlx::query(
-                        r#" INSERT INTO transactions (hash, chain_id, from_address, to_address)
-                        VALUES (?,?,?,?)
-                        ON CONFLICT(hash) DO NOTHING "#,
-                    )
-                    .bind(format!("0x{:x}", tx.hash))
-                    .bind(chain_id)
-                    .bind(format!("0x{:x}", tx.from))
-                    .bind(tx.to.map(|a| format!("0x{:x}", a)))
-                    .execute(&mut conn)
-                    .await?;
+                    queries::insert_transaction(tx, chain_id)
+                        .execute(&mut conn)
+                        .await?;
                 }
 
                 Event::ContractDeployed(ref tx) => {
@@ -80,87 +71,52 @@ impl DB {
                         .ok()
                         .map(|v| calculate_code_hash(&v.to_string()).to_string());
 
-                    sqlx::query(
-                        r#" INSERT INTO contracts (address, chain_id, deployed_code_hash)
-                        VALUES (?,?,?)
-                        ON CONFLICT(address, chain_id) DO NOTHING "#,
-                    )
-                    .bind(format!("0x{:x}", tx.address))
-                    .bind(chain_id)
-                    .bind(code_hash)
-                    .execute(&mut conn)
-                    .await?;
+                    queries::insert_contract(tx, chain_id, code_hash)
+                        .execute(&mut conn)
+                        .await?;
                 }
 
                 // TODO: what to do if we don't know this contract, and don't have balances yet? (e.g. in a fork)
                 Event::ERC20Transfer(transfer) => {
                     // update from's balance
                     if !transfer.from.is_zero() {
-                        let current = sqlx::query(r#"SELECT balance FROM balances WHERE chain_id = ? AND contract = ? AND owner = ?"#)
-                            .bind(chain_id)
-                            .bind(format!("0x{:x}", transfer.contract))
-                            .bind(format!("0x{:x}", transfer.from))
-                            .map(|r: SqliteRow|U256::from_dec_str(r.get::<&str,_>("balance")).unwrap())
-                            .fetch_one(&mut conn)
-                        .await?;
+                        let current =
+                            queries::erc20_read_balance(transfer.contract, transfer.from, chain_id)
+                                .fetch_one(&mut conn)
+                                .await?;
 
-                        sqlx::query(
-                            r#" INSERT OR REPLACE INTO balances (chain_id, contract, owner, balance) 
-                        VALUES (?,?,?,?) "#,
+                        queries::erc20_update_balance(
+                            transfer.contract,
+                            transfer.from,
+                            chain_id,
+                            current - transfer.value,
                         )
-                            .bind(chain_id)
-                            .bind(format!("0x{:x}", transfer.contract))
-                            .bind(format!("0x{:x}", transfer.from))
-                            .bind((current-transfer.value).to_string())
-                            .execute(&mut conn)
+                        .execute(&mut conn)
                         .await?;
                     }
 
                     // update to's balance
                     if !transfer.to.is_zero() {
-                        let current = sqlx::query(r#"SELECT balance FROM balances WHERE chain_id = ? AND contract = ? AND owner = ?"#)
-                            .bind(chain_id)
-                            .bind(format!("0x{:x}", transfer.contract))
-                            .bind(format!("0x{:x}", transfer.to))
-                            .map(|r: SqliteRow|U256::from_dec_str(r.get::<&str,_>("balance")).unwrap())
-                            .fetch_one(&mut conn)
-                            .await.unwrap_or(U256::zero());
+                        let current =
+                            queries::erc20_read_balance(transfer.contract, transfer.to, chain_id)
+                                .fetch_one(&mut conn)
+                                .await?;
 
-                        sqlx::query(
-                            r#" INSERT OR REPLACE INTO balances (chain_id, contract, owner, balance) 
-                        VALUES (?,?,?,?) "#,
+                        queries::erc20_update_balance(
+                            transfer.contract,
+                            transfer.to,
+                            chain_id,
+                            current + transfer.value,
                         )
-                            .bind(chain_id)
-                            .bind(format!("0x{:x}", transfer.contract))
-                            .bind(format!("0x{:x}", transfer.to))
-                            .bind((current + transfer.value).to_string())
-                            .execute(&mut conn)
+                        .execute(&mut conn)
                         .await?;
                     }
                 }
 
-                Event::ERC721Transfer(transfer) => {
-                    if !transfer.to.is_zero() {
-                        sqlx::query(
-                            r#" DELETE FROM nft_tokens WHERE chain_id = ? AND contract = ? AND token_id = ? "#,
-                        )
-                            .bind(chain_id)
-                            .bind(format!("0x{:x}", transfer.contract))
-                            .bind(format!("0x{:x}", transfer.token_id))
-                            .execute(&mut conn)
-                        .await?;
-                    } else {
-                        sqlx::query(
-                            r#" INSERT INTO nft_tokens (chain_id, contract, token_id, owner)
-                            VALUES (?,?,?,?) "#,
-                        )
-                        .bind(chain_id)
-                        .bind(format!("0x{:x}", transfer.contract))
-                        .bind(format!("0x{:x}", transfer.token_id))
-                        .bind(format!("0x{:x}", transfer.to))
+                Event::ERC721Transfer(ref transfer) => {
+                    queries::erc721_transfer(transfer, chain_id)
                         .execute(&mut conn)
                         .await?;
-                    }
                 }
             }
         }

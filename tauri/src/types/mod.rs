@@ -1,5 +1,5 @@
 mod checksummed_address;
-mod events;
+pub mod events;
 mod global_state;
 
 pub use checksummed_address::ChecksummedAddress;
