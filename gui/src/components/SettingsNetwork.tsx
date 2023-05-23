@@ -5,17 +5,12 @@ import {
   AccordionDetails,
   AccordionSummary,
   Button,
-  Checkbox,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormHelperText,
   Stack,
   TextField,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect } from "react";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 
 import { useInvoke } from "../hooks/tauri";
 import { Network, networkSchema } from "../types";
