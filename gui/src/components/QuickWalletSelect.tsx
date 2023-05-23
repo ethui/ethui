@@ -10,7 +10,6 @@ export function QuickWalletSelect() {
   const { data: wallets } = useInvoke<Wallet[]>("wallets_get_all");
   const { data: current } = useInvoke<Wallet>("wallets_get_current");
 
-  console.log(wallets);
   const handleChange = (event: SelectChangeEvent<number>) => {
     const idx = event.target.value as number;
     if (!wallets || !current || current.name == wallets[idx].name) return;

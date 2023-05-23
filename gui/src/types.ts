@@ -52,8 +52,8 @@ export const walletSchema = z.discriminatedUnion("type", [
 export const walletTypes: Wallet["type"][] = Array.from(
   walletSchema.optionsMap.keys()
 )
-  .filter((x) => !!x)
-  .map((k) => k!.toString() as unknown as Wallet["type"]);
+  .filter((k) => !!k)
+  .map((k) => k as unknown as Wallet["type"]);
 
 export const walletsSchema = z.object({
   wallets: z.array(walletSchema),

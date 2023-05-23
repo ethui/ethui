@@ -4,7 +4,6 @@ mod global;
 mod json_keystore_wallet;
 mod plaintext;
 mod wallet;
-mod wrapper;
 
 use std::{
     collections::HashSet,

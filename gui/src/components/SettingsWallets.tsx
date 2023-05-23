@@ -180,7 +180,7 @@ const AddWalletButton = ({ append }: AddWalletButtonProps) => {
               handleClose();
             }}
           >
-            {type!.replace(/([A-Z])/g, " $1")}
+            {type.replace(/([A-Z])/g, " $1")}
           </MenuItem>
         ))}
       </Menu>
@@ -203,7 +203,7 @@ const emptyWallets: Record<Wallet["type"], Wallet & NewChild> = {
   jsonKeystore: {
     type: "jsonKeystore",
     name: "",
-    path: "",
+    file: "",
     new: true,
   },
 };
