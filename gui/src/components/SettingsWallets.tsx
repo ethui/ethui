@@ -28,6 +28,7 @@ const emptyWallet: Wallet & NewChild = {
   mnemonic: "",
   derivationPath: "",
   count: 1,
+  currentPath: "",
   new: true,
 };
 
@@ -80,6 +81,11 @@ export function SettingsWallets() {
                 {field.name}
               </AccordionSummary>
               <AccordionDetails>
+                <input
+                  type="hidden"
+                  {...register(`wallets.${index}.currentPath`)}
+                />
+
                 <Stack spacing={2} alignItems="flex-start" key={field.id}>
                   <Stack spacing={2} direction="row">
                     <TextField
