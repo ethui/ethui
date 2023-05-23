@@ -64,3 +64,20 @@ export type Wallet = z.infer<typeof walletSchema>;
 export type Wallets = z.infer<typeof walletsSchema>;
 export type Network = z.infer<typeof networkSchema.shape.networks>[number];
 export type GeneralSettings = z.infer<typeof generalSettingsSchema>;
+
+export interface ABIFunctionInput {
+  name: string;
+  type: string;
+}
+
+export interface ABIItem {
+  name: string;
+  type: "error" | "function" | "constructor";
+  stateMutability: "view" | "pure" | "nonpayable" | "payable";
+  inputs: ABIFunctionInput[];
+}
+
+export interface ABIMatch {
+  name: string;
+  abi: ABIItem[];
+}

@@ -19,7 +19,11 @@ pub struct SendTransaction {
 impl SendTransaction {
     pub fn set_params(&mut self, params: serde_json::Value) -> &mut Self {
         // TODO: why is this an array?
-        let params = &params.as_array().unwrap()[0];
+        let params = if params.is_array() {
+            &params.as_array().unwrap()[0]
+        } else {
+            &params
+        };
 
         if let Some(from) = params["from"].as_str() {
             self.request.set_from(Address::from_str(from).unwrap());
