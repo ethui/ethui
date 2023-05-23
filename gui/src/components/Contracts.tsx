@@ -1,34 +1,54 @@
-import { List, ListItem, Typography } from "@mui/material";
-import React from "react";
+import { ExpandMore } from "@mui/icons-material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Chip,
+  Typography,
+} from "@mui/material";
 
 import { useInvoke } from "../hooks/tauri";
 import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
-import { Address } from "../types";
-import { ContextMenu } from "./ContextMenu";
+import { ABIMatch, Address } from "../types";
+import { ABIForm } from "./ABIForm";
 import Panel from "./Panel";
 
+interface IContract {
+  address: Address;
+  deployedCodeHash: string;
+}
+
 export function Contracts() {
-  const { data: addresses, mutate } = useInvoke<Address[]>("db_get_contracts");
+  const { data: contracts, mutate } =
+    useInvoke<IContract[]>("db_get_contracts");
 
   useRefreshTransactions(mutate);
 
   return (
     <Panel>
-      <List>
-        {(addresses || []).map((address) => (
-          <Contract key={address} address={address} />
-        ))}
-      </List>
+      {(contracts || []).map((contract) => (
+        <Contract key={contract.address} {...contract} />
+      ))}
     </Panel>
   );
 }
 
-function Contract({ address }: { address: Address }) {
+function Contract({ address, deployedCodeHash }: IContract) {
+  const { data } = useInvoke<ABIMatch>("foundry_get_abi", {
+    deployedCodeHash,
+  });
+
   return (
-    <ListItem>
-      <ContextMenu>
-        <Typography sx={{ textTransform: "none" }}>{address}</Typography>
-      </ContextMenu>
-    </ListItem>
+    <Accordion>
+      <AccordionSummary expandIcon={<ExpandMore />}>
+        <Typography sx={{ textTransform: "none" }}>
+          {address}
+          {data && <Chip sx={{ marginLeft: 2 }} label={data.name} />}
+        </Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        {data && <ABIForm address={address} abi={data.abi} />}
+      </AccordionDetails>
+    </Accordion>
   );
 }
