@@ -1,9 +1,7 @@
 pub mod commands;
 mod error;
-mod types;
 
-use std::path::PathBuf;
-use std::str::FromStr;
+use std::{path::PathBuf, str::FromStr};
 
 use ethers::{
     providers::{Http, Middleware, Provider},
@@ -19,8 +17,10 @@ use sqlx::{
 use url::Url;
 
 pub use self::error::{Error, Result};
-use self::types::{Event, Events};
-use crate::foundry::calculate_code_hash;
+use crate::{
+    foundry::calculate_code_hash,
+    types::{Event, Events},
+};
 
 #[derive(Debug, Clone)]
 pub struct DB {
