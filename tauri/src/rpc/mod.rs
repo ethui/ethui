@@ -164,7 +164,7 @@ impl Handler {
             .estimate_gas()
             .await;
 
-        if network.dev && wallet.is_dev() {
+        if network.is_dev() && wallet.is_dev() {
             sender.skip_dialog();
         }
 
