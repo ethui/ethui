@@ -87,20 +87,21 @@ export function SettingsWallets() {
                   {field.name}
                 </AccordionSummary>
                 <AccordionDetails>
-                  <TextField
-                    label="Name"
-                    error={!!err.name}
-                    helperText={err.name?.message?.toString()}
-                    {...register(`wallets.${index}.name`)}
-                  />
-
                   <Stack spacing={2} alignItems="flex-start" key={field.id}>
+                    <TextField
+                      label="Name"
+                      error={!!err.name}
+                      helperText={err.name?.message?.toString()}
+                      {...register(`wallets.${index}.name`)}
+                    />
+
                     {createElement(formPerType[field.type], {
                       index,
                       field,
                       remove,
                       errors: err,
                     })}
+
                     <Button
                       color="warning"
                       size="small"
