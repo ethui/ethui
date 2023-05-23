@@ -7,6 +7,7 @@ mod block_listener;
 mod db;
 mod dialogs;
 mod error;
+mod foundry;
 mod networks;
 mod peers;
 mod rpc;
@@ -18,6 +19,9 @@ mod ws;
 
 use db::DB;
 use error::Result;
+use foundry::Foundry;
+#[cfg(feature = "foundry-abi-watch")]
+use foundry::Foundry;
 use networks::Networks;
 use peers::Peers;
 use settings::Settings;
@@ -32,7 +36,6 @@ async fn main() -> Result<()> {
 
     let mut app = app::IronApp::build();
     let db = DB::connect(&app.get_resource_path("db.sqlite3")).await?;
-
     Settings::init(app.get_resource_path("settings.json")).await;
     Peers::init(app.sender.clone()).await;
     Wallets::init(app.get_resource_path("wallets.json")).await;
@@ -42,6 +45,7 @@ async fn main() -> Result<()> {
         db.clone(),
     ))
     .await;
+    Foundry::init().await?;
 
     // run websockets server loop
     tauri::async_runtime::spawn(async move { ws::ws_server_loop().await });

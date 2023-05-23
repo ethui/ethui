@@ -1,11 +1,19 @@
 use std::str::FromStr;
 
 use async_trait::async_trait;
-use ethers::types::{Address, U256};
+use ethers::{
+    providers::{Http, Middleware, Provider},
+    types::{Address, U256},
+};
+use serde::Serialize;
 use sqlx::{sqlite::SqliteRow, Row};
+use url::Url;
 
 use super::types::{Event, Events};
-use crate::db::{Result, DB};
+use crate::{
+    db::{Result, DB},
+    foundry::calculate_code_hash,
+};
 
 #[async_trait]
 pub trait EventsStore {
@@ -13,6 +21,7 @@ pub trait EventsStore {
         &self,
         chain_id: u32,
         events: T,
+        http_url: Url,
     ) -> Result<()>;
 
     async fn truncate_events(&self, chain_id: u32) -> Result<()>;
@@ -20,10 +29,8 @@ pub trait EventsStore {
     // TODO: should maybe return Vec<H256> here
     async fn get_transactions(&self, chain_id: u32, from_or_to: Address) -> Result<Vec<String>>;
 
-    // TODO: should maybe return Vec<H256> here
-    async fn get_contracts(&self, chain_id: u32) -> Result<Vec<String>>;
+    async fn get_contracts(&self, chain_id: u32) -> Result<Vec<StoredContract>>;
 
-    // TODO: should maybe return Vec<(Address, U256)> here
     async fn get_balances(&self, chain_id: u32, address: Address) -> Result<Vec<(Address, U256)>>;
 }
 
@@ -33,6 +40,7 @@ impl EventsStore for DB {
         &self,
         chain_id: u32,
         events: T,
+        http_url: Url,
     ) -> Result<()> {
         let mut conn = self.tx().await?;
 
@@ -54,13 +62,22 @@ impl EventsStore for DB {
                 }
 
                 Event::ContractDeployed(ref tx) => {
+                    let provider: Provider<Http> =
+                        Provider::<Http>::try_from(&http_url.to_string()).unwrap();
+                    let code_hash: Option<String> = provider
+                        .get_code(tx.address, None)
+                        .await
+                        .ok()
+                        .map(|v| calculate_code_hash(&v.to_string()).to_string());
+
                     sqlx::query(
-                        r#" INSERT INTO contracts (address, chain_id)
-                        VALUES (?,?)
+                        r#" INSERT INTO contracts (address, chain_id, deployed_code_hash)
+                        VALUES (?,?,?)
                         ON CONFLICT(address, chain_id) DO NOTHING "#,
                     )
                     .bind(format!("0x{:x}", tx.address))
                     .bind(chain_id)
+                    .bind(code_hash)
                     .execute(&mut conn)
                     .await?;
                 }
@@ -158,14 +175,17 @@ impl EventsStore for DB {
         Ok(res)
     }
 
-    async fn get_contracts(&self, chain_id: u32) -> Result<Vec<String>> {
+    async fn get_contracts(&self, chain_id: u32) -> Result<Vec<StoredContract>> {
         let res: Vec<_> = sqlx::query(
             r#" SELECT * 
             FROM contracts
             WHERE chain_id = ? "#,
         )
         .bind(chain_id)
-        .map(|row| row.get("address"))
+        .map(|row| StoredContract {
+            address: Address::from_str(row.get::<&str, _>("address")).unwrap(),
+            deployed_code_hash: row.get("deployed_code_hash"),
+        })
         .fetch_all(self.pool())
         .await?;
 
@@ -215,4 +235,11 @@ impl EventsStore for DB {
 
         Ok(())
     }
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StoredContract {
+    address: Address,
+    deployed_code_hash: String,
 }

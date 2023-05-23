@@ -23,7 +23,8 @@ allow = [
     "MPL-2.0",
     "BSD-2-Clause",
     "BSD-3-Clause",
-    "OpenSSL"
+    "OpenSSL",
+    "CC0-1.0"
 ]
 exceptions = [
     # As stated in https://github.com/gakonst/ethers-rs/blob/master/deny.toml
