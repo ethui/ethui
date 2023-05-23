@@ -82,6 +82,7 @@ pub(super) async fn scan_glob<P: AsRef<Path>>(
 
 /// A regex that matches paths in the form
 /// `.../{project_name}/out/{dir/subdir}/{abi}.json`
+#[cfg(not(target_os = "windows"))]
 static REGEX: Lazy<Regex> = Lazy::new(|| {
     Regex::new(
         r#"(?x)
@@ -91,6 +92,22 @@ static REGEX: Lazy<Regex> = Lazy::new(|| {
         (?P<file>.+) # file path
         /
         (?P<name>[^/]+) # abi name
+        .json 
+        $"#,
+    )
+    .unwrap()
+});
+
+#[cfg(target_os = "windows")]
+static REGEX: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(
+        r#"(?x)
+        \\
+        (?P<project>[^\\]+) # project name
+        \\out\\
+        (?P<file>.+) # file path
+        \\
+        (?P<name>[^\\]+) # abi name
         .json 
         $"#,
     )
