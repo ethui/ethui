@@ -44,7 +44,7 @@ export const walletSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("jsonKeystore"),
     name: z.string().min(1),
-    path: z.string().min(1),
+    file: z.string().min(1),
     currentPath: z.string().optional(),
   }),
 ]);

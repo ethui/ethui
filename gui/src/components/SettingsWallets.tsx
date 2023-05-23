@@ -223,7 +223,7 @@ interface SubFormProps {
 
 function PlaintextWalletForm({ index, errors }: SubFormProps) {
   const { register, control } = useFormContext<{
-    wallets: (Wallet & NewChild)[];
+    wallets: (Wallet & { type: "plaintext" } & NewChild)[];
   }>();
 
   const err = errors as Merge<
@@ -291,11 +291,25 @@ function PlaintextWalletForm({ index, errors }: SubFormProps) {
   );
 }
 
-function JsonKeystoreWalletForm({ errors }: SubFormProps) {
-  const _err = errors as Merge<
+function JsonKeystoreWalletForm({ errors, index }: SubFormProps) {
+  const { register } = useFormContext<{
+    wallets: (Wallet & { type: "jsonKeystore" } & NewChild)[];
+  }>();
+
+  const err = errors as Merge<
     FieldError,
     FieldErrorsImpl<NonNullable<Wallet & { type: "jsonKeystore" }>>
   >;
 
-  return <></>;
+  return (
+    <>
+      <TextField
+        label="Keystore file"
+        error={!!err.file}
+        helperText={err.file?.message?.toString() || ""}
+        fullWidth
+        {...register(`wallets.${index}.file`)}
+      />
+    </>
+  );
 }

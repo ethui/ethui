@@ -29,7 +29,6 @@ use crate::{
 /// address
 #[derive(Default, Debug, Serialize, Deserialize)]
 pub struct Wallets {
-    #[serde(skip)]
     wallets: Vec<Wallet>,
 
     #[serde(default)]
