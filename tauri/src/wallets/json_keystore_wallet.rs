@@ -1,10 +1,10 @@
 #![allow(dead_code)]
 
-use std::{cell::RefCell, fs::File, io::BufReader, path::PathBuf, str::FromStr, sync::Arc};
+use std::{fs::File, io::BufReader, path::PathBuf, str::FromStr, sync::Arc};
 
 use ethers::signers::Signer;
 use ethers_core::{k256::ecdsa::SigningKey, types::Address};
-use tokio::sync::{Mutex, RwLock};
+use tokio::sync::RwLock;
 
 use super::{Result, WalletControl};
 use crate::types::ChecksummedAddress;
@@ -14,6 +14,11 @@ pub struct JsonKeystoreWallet {
     name: String,
     pub file: PathBuf,
 
+    /// The signer is cached inside a `RwLock` so we can have interior mutability
+    /// Since JSON keystore signers are time-consuming to decrypt, we can't do it on-the-fly for
+    /// every incoming signing request
+    ///
+    /// instead, we (TODO:) cache the signer for a set period of time
     #[serde(skip)]
     signer: Arc<RwLock<Option<ethers::signers::Wallet<SigningKey>>>>,
 }

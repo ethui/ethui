@@ -5,9 +5,6 @@ pub enum Error {
     #[error("duplicate wallet names `{0}`")]
     DuplicateWalletNames(String),
 
-    #[error("wallet does not support multiple paths")]
-    SinglePathOnly,
-
     #[error("invalid wallet index {0}")]
     InvalidWallet(usize),
 
