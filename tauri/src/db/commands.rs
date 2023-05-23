@@ -2,9 +2,8 @@ use ethers::types::{Address, U256};
 
 use super::Result;
 use crate::{
-    db::DB,
+    db::{StoredContract, DB},
     networks::Networks,
-    store::events::{EventsStore, StoredContract},
     types::GlobalState,
 };
 
