@@ -12,7 +12,6 @@ mod networks;
 mod peers;
 mod rpc;
 mod settings;
-mod store;
 mod types;
 mod wallets;
 mod ws;
