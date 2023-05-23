@@ -2863,6 +2863,7 @@ name = "iron"
 version = "0.0.3"
 dependencies = [
  "async-trait",
+ "coins-bip32",
  "color-eyre",
  "env_logger",
  "ethers",

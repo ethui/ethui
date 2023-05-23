@@ -1,3 +1,6 @@
+use std::str::FromStr;
+
+use coins_bip32::path::DerivationPath;
 use ethers::signers::coins_bip39::English;
 use ethers::signers::{MnemonicBuilder, Signer};
 use ethers_core::k256::ecdsa::SigningKey;
@@ -6,8 +9,8 @@ use serde::{Deserialize, Serialize};
 use super::Result;
 use crate::types::ChecksummedAddress;
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(try_from = "WalletDeserializer", rename_all = "camelCase")]
 pub struct Wallet {
     pub name: String,
     mnemonic: String,
@@ -68,7 +71,7 @@ impl Default for Wallet {
     fn default() -> Self {
         let mnemonic = String::from("test test test test test test test test test test test junk");
         let derivation_path = String::from("m/44'/60'/0'/0");
-        let current_path = format!("{}/{}", derivation_path, 0);
+        let current_path = format!("{derivation_path}/0");
 
         Self {
             name: "test".into(),
@@ -78,5 +81,52 @@ impl Default for Wallet {
             count: 3,
             current_path,
         }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+struct WalletDeserializer {
+    name: String,
+    mnemonic: String,
+    derivation_path: String,
+    dev: bool,
+    count: u32,
+    current_path: Option<String>,
+}
+
+#[derive(thiserror::Error, Debug)]
+enum WalletDeserializerError {
+    #[error(transparent)]
+    DerivationPath(#[from] coins_bip32::Bip32Error),
+}
+
+/// Deserializes a wallet with some additional_checks ensuring derivation_paths are valid
+impl TryFrom<WalletDeserializer> for Wallet {
+    type Error = WalletDeserializerError;
+
+    fn try_from(value: WalletDeserializer) -> std::result::Result<Self, Self::Error> {
+        // try using given current_path
+        let current_path: std::result::Result<DerivationPath, _> = match value.current_path {
+            Some(path) => DerivationPath::from_str(&path),
+            None => Err(coins_bip32::Bip32Error::MalformattedDerivation(
+                value.current_path.unwrap_or_default(),
+            )),
+        };
+
+        // if current_path is not given or invalid, try to build it from derivation_path
+        let current_path: DerivationPath = match current_path {
+            Ok(path) => path,
+            Err(_) => DerivationPath::from_str(&format!("{}/0", value.derivation_path))?,
+        };
+
+        Ok(Self {
+            name: value.name,
+            mnemonic: value.mnemonic,
+            derivation_path: value.derivation_path,
+            dev: value.dev,
+            count: value.count,
+            current_path: current_path.derivation_string(),
+        })
     }
 }

@@ -37,6 +37,7 @@ url = "2.3.1"
 hex = "0.4.3"
 async-trait = "0.1.68"
 urlencoding = "2.1.2"
+coins-bip32 = "0.8.3"
 
 [features]
 default = []
