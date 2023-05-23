@@ -84,7 +84,7 @@ impl Default for Wallet {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct WalletDeserializer {
     name: String,
@@ -95,29 +95,21 @@ struct WalletDeserializer {
     current_path: Option<String>,
 }
 
-#[derive(thiserror::Error, Debug)]
-enum WalletDeserializerError {
-    #[error(transparent)]
-    DerivationPath(#[from] coins_bip32::Bip32Error),
-}
-
 /// Deserializes a wallet with some additional_checks ensuring derivation_paths are valid
 impl TryFrom<WalletDeserializer> for Wallet {
-    type Error = WalletDeserializerError;
+    type Error = coins_bip32::Bip32Error;
 
     fn try_from(value: WalletDeserializer) -> std::result::Result<Self, Self::Error> {
         // try using given current_path
-        let current_path: std::result::Result<DerivationPath, _> = match value.current_path {
-            Some(path) => DerivationPath::from_str(&path),
-            None => Err(coins_bip32::Bip32Error::MalformattedDerivation(
-                value.current_path.unwrap_or_default(),
-            )),
+        let current_path: Option<DerivationPath> = match value.current_path {
+            Some(path) => DerivationPath::from_str(&path).ok(),
+            None => None,
         };
 
         // if current_path is not given or invalid, try to build it from derivation_path
         let current_path: DerivationPath = match current_path {
-            Ok(path) => path,
-            Err(_) => DerivationPath::from_str(&format!("{}/0", value.derivation_path))?,
+            Some(path) => path,
+            None => DerivationPath::from_str(&format!("{}/0", value.derivation_path))?,
         };
 
         Ok(Self {
