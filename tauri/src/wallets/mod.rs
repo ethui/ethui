@@ -4,7 +4,7 @@ mod global;
 mod wallet;
 
 use std::{
-    collections::HashSet,
+    collections::{HashMap, HashSet},
     fs::File,
     path::{Path, PathBuf},
 };
@@ -82,9 +82,10 @@ impl Wallets {
 
     /// Get all addresses currently enabled in a given wallet
     fn get_wallet_addresses(&self, name: String) -> Vec<(String, ChecksummedAddress)> {
-        let wallet = self.find_wallet(&name).unwrap();
-
-        wallet.derive_all_addresses().unwrap()
+        self.find_wallet(&name)
+            .unwrap()
+            .derive_all_addresses()
+            .unwrap()
     }
 
     /// Finds a wallet by its name

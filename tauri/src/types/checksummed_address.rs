@@ -1,7 +1,7 @@
 use ethers::{types::Address, utils::to_checksum};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Hash, Eq, PartialEq, Clone)]
 pub struct ChecksummedAddress(Address);
 
 impl Serialize for ChecksummedAddress {

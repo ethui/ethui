@@ -30,9 +30,9 @@ impl GlobalState for Wallets {
             res
         } else {
             Self {
-                wallets: Default::default(),
                 current: 0,
                 file: Some(pathbuf),
+                ..Default::default()
             }
         };
 

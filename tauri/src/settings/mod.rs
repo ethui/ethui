@@ -3,6 +3,7 @@ mod error;
 mod global;
 
 use std::{
+    collections::HashMap,
     fs::File,
     path::{Path, PathBuf},
 };
@@ -10,6 +11,7 @@ use std::{
 use serde::{Deserialize, Serialize};
 
 pub use self::error::{Error, Result};
+use crate::types::ChecksummedAddress;
 
 #[derive(Debug, Clone)]
 pub struct Settings {
@@ -41,6 +43,18 @@ impl Settings {
         &self.inner
     }
 
+    fn get_alias(&self, address: ChecksummedAddress) -> Option<String> {
+        self.inner.aliases.get(&address).cloned()
+    }
+
+    fn set_alias(&mut self, address: ChecksummedAddress, alias: Option<String>) {
+        if let Some(alias) = alias {
+            self.inner.aliases.insert(address, alias);
+        } else {
+            self.inner.aliases.remove(&address);
+        }
+    }
+
     // Persists current state to disk
     fn save(&self) -> Result<()> {
         let pathbuf = self.file.clone();
@@ -57,8 +71,12 @@ impl Settings {
 #[serde(rename_all = "camelCase", default)]
 pub struct SerializedSettings {
     pub dark_mode: DarkMode,
+
     pub abi_watch: bool,
     pub abi_watch_path: Option<String>,
+
+    #[serde(default)]
+    aliases: HashMap<ChecksummedAddress, String>,
 }
 
 impl Default for SerializedSettings {
@@ -67,6 +85,7 @@ impl Default for SerializedSettings {
             dark_mode: DarkMode::Auto,
             abi_watch: false,
             abi_watch_path: None,
+            aliases: HashMap::new(),
         }
     }
 }
