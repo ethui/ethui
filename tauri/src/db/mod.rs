@@ -100,7 +100,8 @@ impl DB {
                         let current =
                             queries::erc20_read_balance(transfer.contract, transfer.to, chain_id)
                                 .fetch_one(&mut conn)
-                                .await?;
+                                .await
+                                .unwrap_or(U256::zero());
 
                         queries::erc20_update_balance(
                             transfer.contract,
