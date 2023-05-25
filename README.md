@@ -40,33 +40,31 @@ Our "go to market strategy" is to help developers looking to speed up their feed
 - no annoying popups for confirmations, gas estimates, etc (they'll come, but opt-in)
 - no need to "Reset your Account" to reset the `nonce`
 
-This will change soon, but we're debating ideas on how this could also be done better, such as:
-
-- Allow connection to private keys in 3rd party encryption software (GPG, KeyPass, ...)
-- Support multiple wallets
-- Retain a dev-only wallet where security would still be opted-out of
+This will change [very very soon](https://github.com/iron-wallet/iron/pull/185) thought, but more future work will include:
+- other 3rd party encryption software (e.g.: GPG)
+- Hardware wallets
+- WalletConnect
 
 ---
 
 ## Installing
 
 1. Check the latest [release][releases]
-2. Download `extension.zip` and manually install it in your browser (currently tested on Google Chrome, more to come soon):
-   2.1. Extract the zip file
-   2.2. go to `chrome://extensions`
-   2.3. enable `Developer mode` (upper right corner)
-   2.4. Load unpacked -> choose the directory you extracted from the ZIP file
-3. Download the appropriate binary for your architecture, and set it up in your `$PATH`
+2. Download the appropriate binary for your architecture, and set it up in your `$PATH`
+3. Download `extension.zip` and manually install it in your browser (currently tested on Google Chrome, more to come soon):
+   3.1. Extract the zip file
+   3.2. go to `chrome://extensions`
+   3.3. enable `Developer mode` (upper right corner)
+   3.4. Load unpacked -> choose the directory you extracted from the ZIP file
 4. Run `iron`.
 
 ---
 
 ## Contributing
 
-Pull Requests & Issues are more than welcome! If you have a bug to report, or a feature to suggest, please open an issue.
-Search through currently open issues for suggestions on where you may be able to contribute (particularly the [`good-first-issue`][good-first-issue] label).
+Check out the [Contribution Guide][./CONTRIBUTING.md]
 
-Read on for a concrete guide on how to get set up.
+## Building from source
 
 ### Requirements
 
