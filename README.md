@@ -1,14 +1,17 @@
 # Iron Wallet
 
+[announcement]: https://mirror.xyz/iron-wallet.eth/OnCNvwKBs6ZpJrOVQQqsqHFW1RkqEK7MAsbPSIQNRFo
 [good-first-issue]: https://github.com/naps62/iron/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22
 [justfile]: https://github.com/casey/just
 [releases]: https://github.com/iron-wallet/iron/releases
 [prank-wallet]: https://ethglobal.com/showcase/prank-wallet-cgnb3
 [anvil]: https://book.getfoundry.sh/anvil/
 
-A developer's crypto wallet.
+A developer's crypto wallet. Check out the [announcement blog post][announcement].
 
-![Iron wallet](./screenshot.png)
+<p align="center">
+    <img src="./screenshot.png" width=70%>
+</>
 
 ## Features / Roadmap
 
@@ -29,6 +32,7 @@ A developer's crypto wallet.
   - [x] etherscan-like contract read/write UI for all local contracts (https://github.com/iron-wallet/iron/pull/166)
   - [ ] quick command bar (https://github.com/iron-wallet/iron/pull/182)
   - [x] Dark mode
+
 
 ## Security
 
@@ -62,18 +66,17 @@ This will change [very very soon](https://github.com/iron-wallet/iron/pull/185) 
 
 ## Contributing
 
-Check out the [Contribution Guide][./CONTRIBUTING.md]
+Check out the [Contribution Guide](./CONTRIBUTING.md)
 
 ## Building from source
 
 ### Requirements
 
-- Rust
-- Node.js (16+ recommended)
-- Yarn
-- Google Chrome (a profile without MetaMask installed)
+Iron is a [Tauri application]. Tauri's requirements are all that should be needed to build the wallet.
+You'll also need Google Chrome, running a profile without MetaMask or other wallet installed, to be solved once EIP-6963 is widely adopted)
 
-There's also an optional [justfile][justfile], if you prefer that over `yarn`.
+
+You may also like to use optional [justfile][justfile], if you prefer that over `yarn`.
 
 ### Get started
 
