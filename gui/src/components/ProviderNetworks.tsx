@@ -8,8 +8,8 @@ import { Network } from "../types";
 
 interface Value {
   networks?: Network[];
-  network?: Network;
-  setNetwork: (newNetwork: string) => Promise<unknown>;
+  currentNetwork?: Network;
+  setCurrentNetwork: (newNetwork: string) => Promise<unknown>;
   setNetworks: (newNetworks: Network[]) => Promise<unknown>;
   resetNetworks: () => Promise<Network[]>;
 }
@@ -21,15 +21,15 @@ const actionId = "network";
 export function ProviderNetworks({ children }: { children: ReactNode }) {
   const { data: networks, mutate: mutateNetworks } =
     useInvoke<Network[]>("networks_get_list");
-  const { data: network, mutate: mutateNetwork } = useInvoke<Network>(
+  const { data: currentNetwork, mutate: mutateNetwork } = useInvoke<Network>(
     "networks_get_current"
   );
 
   const value = {
     networks,
-    network,
-    setNetwork: async (newNetwork: string) => {
-      if (network?.name === newNetwork) return;
+    currentNetwork,
+    setCurrentNetwork: async (newNetwork: string) => {
+      if (currentNetwork?.name === newNetwork) return;
 
       await invoke("networks_set_current", { network: newNetwork });
     },
@@ -56,13 +56,13 @@ export function ProviderNetworks({ children }: { children: ReactNode }) {
         name: "Change network",
       },
       ...(networks || []).map((network) => ({
-        id: `${actionId}{network.name}`,
+        id: `${actionId}/${network.name}`,
         name: network.name,
         parent: actionId,
-        perform: () => value.setNetwork(network.name),
+        perform: () => value.setCurrentNetwork(network.name),
       })),
     ],
-    [networks, value.setNetwork]
+    [networks, value.setCurrentNetwork]
   );
 
   return (

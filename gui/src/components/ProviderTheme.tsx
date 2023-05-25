@@ -20,13 +20,13 @@ const getDesignTokens = (mode: PaletteMode) => ({
     mode,
     ...(mode === "light"
       ? {
-          background: {
-            default: grey[50],
-          },
-        }
+        background: {
+          default: grey[50],
+        },
+      }
       : {
-          background: {},
-        }),
+        background: {},
+      }),
   },
 });
 
@@ -52,7 +52,7 @@ export function ProviderTheme({ children }: { children: ReactNode }) {
       section: "",
     },
     ...["auto", "dark", "light"].map((mode) => ({
-      id: `${themeModeId}${mode}`,
+      id: `${themeModeId}/${mode}`,
       name: mode,
       parent: themeModeId,
       perform: () => changeMode(mode),
