@@ -33,7 +33,6 @@ A developer's crypto wallet. Check out the [announcement blog post][announcement
   - [ ] quick command bar (https://github.com/iron-wallet/iron/pull/182)
   - [x] Dark mode
 
-
 ## Security
 
 **Right now there is none.**
@@ -45,6 +44,7 @@ Our "go to market strategy" is to help developers looking to speed up their feed
 - no need to "Reset your Account" to reset the `nonce`
 
 This will change [very very soon](https://github.com/iron-wallet/iron/pull/185) thought, but more future work will include:
+
 - other 3rd party encryption software (e.g.: GPG)
 - Hardware wallets
 - WalletConnect
@@ -74,7 +74,6 @@ Check out the [Contribution Guide](./CONTRIBUTING.md)
 
 Iron is a [Tauri application]. Tauri's requirements are all that should be needed to build the wallet.
 You'll also need Google Chrome, running a profile without MetaMask or other wallet installed, to be solved once EIP-6963 is widely adopted)
-
 
 You may also like to use optional [justfile][justfile], if you prefer that over `yarn`.
 

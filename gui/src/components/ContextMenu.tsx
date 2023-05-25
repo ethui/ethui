@@ -21,7 +21,7 @@ const buttonSx = {
 };
 
 export function ContextMenu({ children, sx, label }: Props) {
-  const { network } = useNetworks();
+  const { currentNetwork } = useNetworks();
   const [copied, setCopied] = useState(false);
   const [contextMenu, setContextMenu] = useState<{
     target: HTMLElement;
@@ -102,12 +102,12 @@ export function ContextMenu({ children, sx, label }: Props) {
           }
         >
           <MenuItem onClick={onContextCopy}>Copy</MenuItem>
-          {network?.explorer_url && (
+          {currentNetwork?.explorer_url && (
             <MenuItem
               component="a"
               target="_blank"
               href={
-                network.explorer_url +
+                currentNetwork.explorer_url +
                 (label || contextMenu?.target.textContent)
               }
               rel="noreferrer"

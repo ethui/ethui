@@ -49,17 +49,15 @@ function RenderResults() {
   );
 }
 
+interface ResultItemProps {
+  action: ActionImpl;
+  active: boolean;
+  currentRootActionId?: ActionId | null;
+}
+
 const ResultItem = forwardRef(
   (
-    {
-      action,
-      active,
-      currentRootActionId,
-    }: {
-      action: ActionImpl;
-      active: boolean;
-      currentRootActionId?: ActionId | null;
-    },
+    { action, active, currentRootActionId }: ResultItemProps,
     ref: React.Ref<HTMLDivElement>
   ) => {
     const ancestors = React.useMemo(() => {

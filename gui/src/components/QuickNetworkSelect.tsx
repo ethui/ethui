@@ -3,15 +3,20 @@ import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import { useNetworks } from "../hooks/useNetworks";
 
 export function QuickNetworkSelect() {
-  const { networks, network: current, setNetwork } = useNetworks();
+  const { networks, currentNetwork, setCurrentNetwork } = useNetworks();
 
   const handleChange = (event: SelectChangeEvent<string>) =>
-    setNetwork(event.target.value);
+    setCurrentNetwork(event.target.value);
 
-  if (!networks || !current) return <>Loading</>;
+  if (!networks || !currentNetwork) return <>Loading</>;
 
   return (
-    <Select size="small" onChange={handleChange} value={current.name} label="">
+    <Select
+      size="small"
+      onChange={handleChange}
+      value={currentNetwork.name}
+      label=""
+    >
       {networks.map((network) => (
         <MenuItem value={network.name} key={network.name}>
           {network.name}
