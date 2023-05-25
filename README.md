@@ -3,6 +3,8 @@
 [good-first-issue]: https://github.com/naps62/iron/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22
 [justfile]: https://github.com/casey/just
 [releases]: https://github.com/iron-wallet/iron/releases
+[prank-wallet]: https://ethglobal.com/showcase/prank-wallet-cgnb3
+[anvil]: https://book.getfoundry.sh/anvil/
 
 A developer's crypto wallet.
 
@@ -12,16 +14,19 @@ A developer's crypto wallet.
 
 - [x] **Metamask drop-in replacement for simple flows**
   - "Connect with MetaMask", submit transactions, sign messages, switch accounts & networks without intrusive popups
-- [x] **[anvil]-aware**
+- [x] **[anvil][anvil]-aware**
   - [x] track transaction history
   - [x] track deployed smart contracts (via traces, so internal deploys are also detected)
-  - [x] automatically track chain restarts / reverts
+  - [x] automatically track chain restarts / reverts / nonce updates
+  - [x] track local foundry projects, sync ABIs and deploys (https://github.com/iron-wallet/iron/pull/166)
 - [ ] connection list
+  - [ ] fork & simulate mainnet transactions locally. for debugging & security (prototype at [ETHGlobal Lisbon][prank-wallet])
+  - [ ] impersonate / prank on any dApp (prototype at [ETHGlobal Lisbon][prank-wallet])
   - [ ] fine-grained control over account and network selection (i.e. different selections per tab, or per domain)
-  - [ ] track local foundry projects, sync ABIs and deploys
-  - [ ] etherscan-like contract read/write UI for all local contracts
-  - [ ] fork & simulate mainnet transactions locally. for debugging & security
-  - [ ] impersonate / prank on any dApp
+- [ ] UI
+  - [x] etherscan-like contract read/write UI for all local contracts (https://github.com/iron-wallet/iron/pull/166)
+  - [ ] quick command bar (https://github.com/iron-wallet/iron/pull/182)
+  - [x] Dark mode
 
 ## Security
 
