@@ -13,7 +13,9 @@ A developer's crypto wallet.
 ## Features / Roadmap
 
 - [x] **Metamask drop-in replacement for simple flows**
-  - "Connect with MetaMask", submit transactions, sign messages, switch accounts & networks without intrusive popups
+  - [x] "Connect with MetaMask"
+  - [x] base EIP-1193 support
+  - [x] submit transactions, sign messages without intrusive popups
 - [x] **[anvil][anvil]-aware**
   - [x] track transaction history
   - [x] track deployed smart contracts (via traces, so internal deploys are also detected)
