@@ -12,7 +12,7 @@ A developer's crypto wallet.
 
 ## Features / Roadmap
 
-- [x] **Metamask drop-in replacement for simple flows**
+- [x] **Metamask drop-in replacement**
   - [x] "Connect with MetaMask"
   - [x] base EIP-1193 support
   - [x] submit transactions, sign messages without intrusive popups
