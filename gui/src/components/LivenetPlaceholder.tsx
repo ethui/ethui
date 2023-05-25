@@ -10,7 +10,7 @@ interface Props {
 export function LivenetPlaceholder({ children, devOnly }: Props) {
   const { data } = useInvoke<Network>("networks_get_current");
 
-  if (!devOnly || data?.dev) {
+  if (!devOnly || data?.chain_id === 31337) {
     return <>{children}</>;
   }
 

@@ -14,12 +14,17 @@ pub struct SendTransaction {
     pub dialog: bool,
     pub request: TypedTransaction,
     pub signer: Option<SignerMiddleware<Provider<Http>, Wallet<SigningKey>>>,
+    skip_dialog: bool,
 }
 
 impl SendTransaction {
     pub fn set_params(&mut self, params: serde_json::Value) -> &mut Self {
         // TODO: why is this an array?
-        let params = &params.as_array().unwrap()[0];
+        let params = if params.is_array() {
+            &params.as_array().unwrap()[0]
+        } else {
+            &params
+        };
 
         if let Some(from) = params["from"].as_str() {
             self.request.set_from(Address::from_str(from).unwrap());
@@ -70,7 +75,19 @@ impl SendTransaction {
         self
     }
 
-    pub async fn spawn_dialog(&mut self) -> Result<()> {
+    pub fn skip_dialog(&mut self) -> &mut Self {
+        self.skip_dialog = true;
+        self
+    }
+
+    pub async fn finish(&mut self) -> Result<PendingTransaction<'_, Http>> {
+        if !self.skip_dialog {
+            self.spawn_dialog().await?;
+        }
+        self.send().await
+    }
+
+    async fn spawn_dialog(&mut self) -> Result<()> {
         let params = serde_json::to_value(&self.request).unwrap();
 
         let rcv = crate::dialogs::open("tx-review", params).unwrap();
@@ -88,7 +105,7 @@ impl SendTransaction {
         }
     }
 
-    pub async fn send(&mut self) -> Result<PendingTransaction<'_, Http>> {
+    async fn send(&mut self) -> Result<PendingTransaction<'_, Http>> {
         Ok(self
             .signer
             .as_ref()

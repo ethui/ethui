@@ -12,7 +12,6 @@ export const networkSchema = z.object({
     z
       .object({
         name: z.string().min(1),
-        dev: z.boolean().default(false),
         explorer_url: z.string().optional().nullable(),
         http_url: z.string().min(1),
         ws_url: z.string().nullable().optional(),
@@ -20,10 +19,14 @@ export const networkSchema = z.object({
         chain_id: z.number(),
         decimals: z.number(),
       })
-      .refine((data) => !data.dev || !data.ws_url || data.ws_url.length > 0, {
-        path: ["ws_url"],
-        message: "WebSockets are mandatory for dev networks",
-      })
+      .refine(
+        (data) =>
+          data.chain_id !== 31337 || (!!data.ws_url && data.ws_url.length > 0),
+        {
+          path: ["ws_url"],
+          message: "WebSockets are mandatory for dev networks",
+        }
+      )
   ),
 });
 
@@ -36,6 +39,7 @@ export const walletSchema = z.object({
   derivationPath: z.string().regex(/^m\/(\d+'?\/)+\d+$/, {
     message: "invalid path format",
   }),
+  currentPath: z.string().optional(),
   count: z.number().int().min(1),
 });
 
@@ -44,7 +48,24 @@ export const walletsSchema = z.object({
 });
 
 export type Address = `0x${string}`;
-export type Wallet = z.infer<typeof walletSchema> & { currentPath?: string };
+export type Wallet = z.infer<typeof walletSchema>;
 export type Wallets = z.infer<typeof walletsSchema>;
 export type Network = z.infer<typeof networkSchema.shape.networks>[number];
 export type GeneralSettings = z.infer<typeof generalSettingsSchema>;
+
+export interface ABIFunctionInput {
+  name: string;
+  type: string;
+}
+
+export interface ABIItem {
+  name: string;
+  type: "error" | "function" | "constructor";
+  stateMutability: "view" | "pure" | "nonpayable" | "payable";
+  inputs: ABIFunctionInput[];
+}
+
+export interface ABIMatch {
+  name: string;
+  abi: ABIItem[];
+}

@@ -14,7 +14,7 @@ use serde::Serialize;
 use tokio::sync::mpsc;
 
 pub use self::error::{Error, Result};
-use self::network::Network;
+pub use self::network::Network;
 use crate::{app, db::DB, peers::Peers, types::GlobalState};
 
 #[derive(Debug, Clone, Serialize)]
@@ -72,13 +72,11 @@ impl Networks {
     }
 
     pub fn set_networks(&mut self, networks: Vec<Network>) -> Result<()> {
-        let networks = networks.into_iter().map(|n| (n.name.clone(), n)).collect();
-
         self.do_set_networks(networks)
     }
 
     pub fn reset_networks(&mut self) -> Result<()> {
-        self.do_set_networks(Network::default())
+        self.do_set_networks(Network::all_default())
     }
 
     pub fn get_current_provider(&self) -> Provider<Http> {
@@ -92,12 +90,13 @@ impl Networks {
         Ok(())
     }
 
-    fn do_set_networks(&mut self, networks: HashMap<String, Network>) -> Result<()> {
-        self.networks = networks;
+    fn do_set_networks(&mut self, networks: Vec<Network>) -> Result<()> {
+        let first = networks[0].name.clone();
+
+        self.networks = networks.into_iter().map(|n| (n.name.clone(), n)).collect();
 
         if !self.networks.contains_key(&self.current) {
-            let name = self.networks.values().next().unwrap().name.clone();
-            self.current = name;
+            self.current = first;
             self.on_network_changed()?;
         }
 

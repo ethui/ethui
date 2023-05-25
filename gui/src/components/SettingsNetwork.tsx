@@ -5,16 +5,11 @@ import {
   AccordionDetails,
   AccordionSummary,
   Button,
-  Checkbox,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormHelperText,
   Stack,
   TextField,
 } from "@mui/material";
 import { useEffect } from "react";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 
 import { useNetworks } from "../hooks/useNetworks";
 import { Network, networkSchema } from "../types";
@@ -24,7 +19,6 @@ type NewChild = { new?: boolean };
 
 const emptyNetwork: Network & NewChild = {
   name: "",
-  dev: false,
   explorer_url: "",
   http_url: "",
   ws_url: "",
@@ -102,33 +96,6 @@ export function SettingsNetwork() {
                       valueAsNumber: true,
                     })}
                   />
-                  <FormControl error={!!err.dev}>
-                    <FormGroup>
-                      <FormControlLabel
-                        label="Dev mode"
-                        control={
-                          <Controller
-                            name={`networks.${index}.dev`}
-                            control={control}
-                            render={({ field }) => (
-                              <Checkbox
-                                {...field}
-                                checked={field.value}
-                                onChange={(e) =>
-                                  field.onChange(e.target.checked)
-                                }
-                              />
-                            )}
-                          />
-                        }
-                      />
-                    </FormGroup>
-                    {err.dev && (
-                      <FormHelperText>
-                        {err.dev.message?.toString()}
-                      </FormHelperText>
-                    )}
-                  </FormControl>
                 </Stack>
                 <TextField
                   label="HTTP RPC"
