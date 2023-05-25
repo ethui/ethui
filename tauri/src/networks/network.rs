@@ -1,7 +1,4 @@
-use std::{
-    collections::HashMap,
-    sync::{Arc, Mutex},
-};
+use std::sync::{Arc, Mutex};
 
 use ethers::providers::{Http, Provider};
 use serde::{Deserialize, Serialize};
@@ -65,20 +62,16 @@ impl Network {
         }
     }
 
+    pub fn all_default() -> Vec<Self> {
+        vec![Self::anvil(), Self::mainnet(), Self::goerli()]
+    }
+
     pub fn chain_id_hex(&self) -> String {
         format!("0x{:x}", self.chain_id)
     }
 
     pub fn is_dev(&self) -> bool {
         self.chain_id == 31337
-    }
-
-    pub fn default() -> HashMap<String, Self> {
-        let mut networks = HashMap::new();
-        networks.insert(String::from("mainnet"), Self::mainnet());
-        networks.insert(String::from("goerli"), Self::goerli());
-        networks.insert(String::from("anvil"), Self::anvil());
-        networks
     }
 
     pub fn get_provider(&self) -> Provider<Http> {

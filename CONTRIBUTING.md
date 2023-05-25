@@ -5,6 +5,7 @@
 [good-first-issue]: https://github.com/iron-wallet/iron/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22
 
 We welcome all kinds of contributions:
+
 - Issues suggesting new features or bug reports
 - Pull requests
 - Newcomers to web3 / blockchain looking to learn and perhaps help along the way.
@@ -22,4 +23,3 @@ Here's a few suggestions on how to get started:
 ## Code of Conduct
 
 We adhere to the [Rust Code of Conduct][coc], which describes expected minimum behaviour we expect from all contributors. Please [contact us][contact] in case of any violations.
-

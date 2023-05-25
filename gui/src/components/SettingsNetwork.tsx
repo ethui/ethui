@@ -8,11 +8,10 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 
-import { useInvoke } from "../hooks/tauri";
+import { useNetworks } from "../hooks/useNetworks";
 import { Network, networkSchema } from "../types";
 import { ConfirmationDialog } from "./ConfirmationDialog";
 
@@ -32,8 +31,7 @@ const emptyNetwork: Network & NewChild = {
 };
 
 export function SettingsNetwork() {
-  const { data: networks, mutate } =
-    useInvoke<(Network & NewChild)[]>("networks_get_list");
+  const { networks, setNetworks, resetNetworks } = useNetworks();
 
   const {
     register,
@@ -44,7 +42,7 @@ export function SettingsNetwork() {
   } = useForm({
     mode: "onBlur",
     resolver: zodResolver(networkSchema),
-    defaultValues: { networks },
+    defaultValues: { networks: networks as (Network & NewChild)[] },
   });
   // TODO: https://github.com/react-hook-form/react-hook-form/issues/3213
   const isDirtyAlt = !!Object.keys(dirtyFields).length;
@@ -58,15 +56,15 @@ export function SettingsNetwork() {
   });
 
   const onSubmit = async (data: { networks?: Network[] }) => {
-    await invoke("networks_set_list", { newNetworks: data.networks });
+    if (!data.networks) return;
+
+    await setNetworks(data.networks);
     reset(data);
-    mutate();
   };
 
   const onReset = async () => {
-    const networks: Network[] = await invoke("networks_reset");
+    const networks = await resetNetworks();
     reset({ networks });
-    mutate();
   };
 
   if (!networks) return <>Loading</>;

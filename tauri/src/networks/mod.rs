@@ -42,8 +42,7 @@ impl Networks {
         let new = self.get_current_network().chain_id;
 
         if previous != new {
-            self.notify_peers();
-            self.window_snd.send(app::Notify::NetworkChanged.into())?
+            self.on_network_changed()?;
         }
 
         self.save()?;
@@ -65,22 +64,43 @@ impl Networks {
     }
 
     pub fn get_current_network(&self) -> &Network {
+        if !self.networks.contains_key(&self.current) {
+            return self.networks.values().next().unwrap();
+        }
+
         &self.networks[&self.current]
     }
 
-    pub fn set_networks(&mut self, networks: Vec<Network>) {
-        self.networks = networks.into_iter().map(|n| (n.name.clone(), n)).collect();
-        // TODO: ensure current network still exists
-        self.save().unwrap();
+    pub fn set_networks(&mut self, networks: Vec<Network>) -> Result<()> {
+        self.do_set_networks(networks)
     }
 
-    pub fn reset_networks(&mut self) {
-        self.networks = Network::default();
-        self.save().unwrap();
+    pub fn reset_networks(&mut self) -> Result<()> {
+        self.do_set_networks(Network::all_default())
     }
 
     pub fn get_current_provider(&self) -> Provider<Http> {
         self.get_current_network().get_provider()
+    }
+
+    fn on_network_changed(&self) -> Result<()> {
+        self.notify_peers();
+        self.window_snd.send(app::Notify::NetworkChanged.into())?;
+
+        Ok(())
+    }
+
+    fn do_set_networks(&mut self, networks: Vec<Network>) -> Result<()> {
+        let first = networks[0].name.clone();
+
+        self.networks = networks.into_iter().map(|n| (n.name.clone(), n)).collect();
+
+        if !self.networks.contains_key(&self.current) {
+            self.current = first;
+            self.on_network_changed()?;
+        }
+
+        self.save()
     }
 
     // broadcasts `accountsChanged` to all peers
