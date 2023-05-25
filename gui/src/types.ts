@@ -12,7 +12,6 @@ export const networkSchema = z.object({
     z
       .object({
         name: z.string().min(1),
-        dev: z.boolean().default(false),
         explorer_url: z.string().optional().nullable(),
         http_url: z.string().min(1),
         ws_url: z.string().nullable().optional(),
@@ -20,10 +19,14 @@ export const networkSchema = z.object({
         chain_id: z.number(),
         decimals: z.number(),
       })
-      .refine((data) => !data.dev || !data.ws_url || data.ws_url.length > 0, {
-        path: ["ws_url"],
-        message: "WebSockets are mandatory for dev networks",
-      })
+      .refine(
+        (data) =>
+          data.chain_id !== 31337 || (!!data.ws_url && data.ws_url.length > 0),
+        {
+          path: ["ws_url"],
+          message: "WebSockets are mandatory for dev networks",
+        }
+      )
   ),
 });
 

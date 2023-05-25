@@ -146,27 +146,29 @@ impl Handler {
     ) -> jsonrpc_core::Result<serde_json::Value> {
         // TODO: should we scope these rwlock reads so they don't stick during sining?
         let networks = Networks::read().await;
-        let network = networks.get_current_network();
         let wallets = Wallets::read().await;
-        let signer = wallets
-            .get_current_wallet()
+
+        let network = networks.get_current_network();
+        let wallet = wallets.get_current_wallet();
+
+        let signer = wallet
             .build_signer(network.chain_id)
             .map_err(|e| Error::SignerBuild(e.to_string()))?;
-        let signer = SignerMiddleware::new(network.get_provider(), signer);
 
         let mut sender = SendTransaction::default();
 
         let sender = sender
             .set_params(params.into())
             .set_chain_id(network.chain_id)
-            .set_signer(signer)
+            .set_signer(SignerMiddleware::new(network.get_provider(), signer))
             .estimate_gas()
             .await;
 
-        #[cfg(feature = "dialogs")]
-        sender.spawn_dialog().await?;
+        if network.is_dev() && wallet.is_dev() {
+            sender.skip_dialog();
+        }
 
-        let result = sender.send().await;
+        let result = sender.finish().await;
 
         match result {
             Ok(res) => Ok(res.tx_hash().encode_hex().into()),
