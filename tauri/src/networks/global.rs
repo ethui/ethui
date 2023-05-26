@@ -48,9 +48,11 @@ impl GlobalState for Networks {
                 db,
             }
         } else {
+            let networks = Network::all_default();
+            let current = networks[0].name.clone();
             Self {
-                networks: Network::default(),
-                current: "mainnet".into(),
+                networks: networks.into_iter().map(|n| (n.name.clone(), n)).collect(),
+                current,
                 file: pathbuf,
                 window_snd,
                 db,

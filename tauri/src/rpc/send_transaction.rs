@@ -14,6 +14,7 @@ pub struct SendTransaction {
     pub dialog: bool,
     pub request: TypedTransaction,
     pub signer: Option<SignerMiddleware<Provider<Http>, Wallet<SigningKey>>>,
+    skip_dialog: bool,
 }
 
 impl SendTransaction {
@@ -74,8 +75,19 @@ impl SendTransaction {
         self
     }
 
-    #[allow(unused)]
-    pub async fn spawn_dialog(&mut self) -> Result<()> {
+    pub fn skip_dialog(&mut self) -> &mut Self {
+        self.skip_dialog = true;
+        self
+    }
+
+    pub async fn finish(&mut self) -> Result<PendingTransaction<'_, Http>> {
+        if !self.skip_dialog {
+            self.spawn_dialog().await?;
+        }
+        self.send().await
+    }
+
+    async fn spawn_dialog(&mut self) -> Result<()> {
         let params = serde_json::to_value(&self.request).unwrap();
 
         let rcv = crate::dialogs::open("tx-review", params).unwrap();
@@ -93,7 +105,7 @@ impl SendTransaction {
         }
     }
 
-    pub async fn send(&mut self) -> Result<PendingTransaction<'_, Http>> {
+    async fn send(&mut self) -> Result<PendingTransaction<'_, Http>> {
         Ok(self
             .signer
             .as_ref()

@@ -34,6 +34,8 @@ import {
 import { useInvoke } from "../hooks/tauri";
 import { Wallet, walletTypes, walletsSchema } from "../types";
 
+type NewChild = { new?: boolean };
+
 export function SettingsWallets() {
   const { data: wallets, mutate } =
     useInvoke<(Wallet & NewChild)[]>("wallets_get_all");
@@ -88,6 +90,10 @@ export function SettingsWallets() {
                 </AccordionSummary>
                 <AccordionDetails>
                   <Stack spacing={2} alignItems="flex-start" key={field.id}>
+                    <input
+                      type="hidden"
+                      {...register(`wallets.${index}.currentPath`)}
+                    />
                     <TextField
                       label="Name"
                       error={!!err.name}
@@ -187,8 +193,6 @@ const AddWalletButton = ({ append }: AddWalletButtonProps) => {
     </>
   );
 };
-
-type NewChild = { new?: boolean };
 
 const emptyWallets: Record<Wallet["type"], Wallet & NewChild> = {
   plaintext: {

@@ -14,6 +14,7 @@ pub trait WalletControl: Sync + Send + Deserialize<'static> + Serialize + std::f
     async fn set_current_path(&mut self, path: &str) -> Result<()>;
     async fn build_signer(&self, chain_id: u32) -> Result<ethers::signers::Wallet<SigningKey>>;
     async fn derive_all_addresses(&self) -> Result<Vec<(String, ChecksummedAddress)>>;
+    fn is_dev(&self) -> bool;
 }
 
 use super::{JsonKeystoreWallet, PlaintextWallet};

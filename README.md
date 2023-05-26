@@ -1,27 +1,37 @@
 # Iron Wallet
 
+[announcement]: https://mirror.xyz/iron-wallet.eth/OnCNvwKBs6ZpJrOVQQqsqHFW1RkqEK7MAsbPSIQNRFo
 [good-first-issue]: https://github.com/naps62/iron/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22
 [justfile]: https://github.com/casey/just
 [releases]: https://github.com/iron-wallet/iron/releases
+[prank-wallet]: https://ethglobal.com/showcase/prank-wallet-cgnb3
+[anvil]: https://book.getfoundry.sh/anvil/
 
-A developer's crypto wallet.
+A developer's crypto wallet. Check out the [announcement blog post][announcement].
 
-![Iron wallet](./screenshot.png)
+<p align="center">
+    <img src="./screenshot.png" width=70%>
+</>
 
 ## Features / Roadmap
 
-- [x] **Metamask drop-in replacement for simple flows**
-  - "Connect with MetaMask", submit transactions, sign messages, switch accounts & networks without intrusive popups
-- [x] **[anvil]-aware**
+- [x] **Metamask drop-in replacement**
+  - [x] "Connect with MetaMask"
+  - [x] base EIP-1193 support
+  - [x] submit transactions, sign messages without intrusive popups
+- [x] **[anvil][anvil]-aware**
   - [x] track transaction history
   - [x] track deployed smart contracts (via traces, so internal deploys are also detected)
-  - [x] automatically track chain restarts / reverts
+  - [x] automatically track chain restarts / reverts / nonce updates
+  - [x] track local foundry projects, sync ABIs and deploys (https://github.com/iron-wallet/iron/pull/166)
 - [ ] connection list
+  - [ ] fork & simulate mainnet transactions locally. for debugging & security (prototype at [ETHGlobal Lisbon][prank-wallet])
+  - [ ] impersonate / prank on any dApp (prototype at [ETHGlobal Lisbon][prank-wallet])
   - [ ] fine-grained control over account and network selection (i.e. different selections per tab, or per domain)
-  - [ ] track local foundry projects, sync ABIs and deploys
-  - [ ] etherscan-like contract read/write UI for all local contracts
-  - [ ] fork & simulate mainnet transactions locally. for debugging & security
-  - [ ] impersonate / prank on any dApp
+- [ ] UI
+  - [x] etherscan-like contract read/write UI for all local contracts (https://github.com/iron-wallet/iron/pull/166)
+  - [ ] quick command bar (https://github.com/iron-wallet/iron/pull/182)
+  - [x] Dark mode
 
 ## Security
 
@@ -33,42 +43,39 @@ Our "go to market strategy" is to help developers looking to speed up their feed
 - no annoying popups for confirmations, gas estimates, etc (they'll come, but opt-in)
 - no need to "Reset your Account" to reset the `nonce`
 
-This will change soon, but we're debating ideas on how this could also be done better, such as:
+This will change [very very soon](https://github.com/iron-wallet/iron/pull/185) thought, but more future work will include:
 
-- Allow connection to private keys in 3rd party encryption software (GPG, KeyPass, ...)
-- Support multiple wallets
-- Retain a dev-only wallet where security would still be opted-out of
+- other 3rd party encryption software (e.g.: GPG)
+- Hardware wallets
+- WalletConnect
 
 ---
 
 ## Installing
 
 1. Check the latest [release][releases]
-2. Download `extension.zip` and manually install it in your browser (currently tested on Google Chrome, more to come soon):
-   2.1. Extract the zip file
-   2.2. go to `chrome://extensions`
-   2.3. enable `Developer mode` (upper right corner)
-   2.4. Load unpacked -> choose the directory you extracted from the ZIP file
-3. Download the appropriate binary for your architecture, and set it up in your `$PATH`
+2. Download the appropriate binary for your architecture, and set it up in your `$PATH`
+3. Download `extension.zip` and manually install it in your browser (currently tested on Google Chrome, more to come soon):
+   3.1. Extract the zip file
+   3.2. go to `chrome://extensions`
+   3.3. enable `Developer mode` (upper right corner)
+   3.4. Load unpacked -> choose the directory you extracted from the ZIP file
 4. Run `iron`.
 
 ---
 
 ## Contributing
 
-Pull Requests & Issues are more than welcome! If you have a bug to report, or a feature to suggest, please open an issue.
-Search through currently open issues for suggestions on where you may be able to contribute (particularly the [`good-first-issue`][good-first-issue] label).
+Check out the [Contribution Guide](./CONTRIBUTING.md)
 
-Read on for a concrete guide on how to get set up.
+## Building from source
 
 ### Requirements
 
-- Rust
-- Node.js (16+ recommended)
-- Yarn
-- Google Chrome (a profile without MetaMask installed)
+Iron is a [Tauri application]. Tauri's requirements are all that should be needed to build the wallet.
+You'll also need Google Chrome, running a profile without MetaMask or other wallet installed, to be solved once EIP-6963 is widely adopted)
 
-There's also an optional [justfile][justfile], if you prefer that over `yarn`.
+You may also like to use optional [justfile][justfile], if you prefer that over `yarn`.
 
 ### Get started
 

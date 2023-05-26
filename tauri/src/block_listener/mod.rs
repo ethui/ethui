@@ -15,11 +15,8 @@ use log::warn;
 use tokio::sync::mpsc;
 use url::Url;
 
+use crate::app::{self, Notify};
 use crate::db::DB;
-use crate::{
-    app::{self, Notify},
-    store::events::EventsStore,
-};
 
 #[derive(Debug)]
 pub struct BlockListener {

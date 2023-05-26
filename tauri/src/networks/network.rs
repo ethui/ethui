@@ -1,7 +1,4 @@
-use std::{
-    collections::HashMap,
-    sync::{Arc, Mutex},
-};
+use std::sync::{Arc, Mutex};
 
 use ethers::providers::{Http, Provider};
 use serde::{Deserialize, Serialize};
@@ -15,7 +12,6 @@ use crate::{app, block_listener::BlockListener, db::DB};
 pub struct Network {
     pub name: String,
     pub chain_id: u32,
-    pub dev: bool,
     pub explorer_url: Option<String>,
     pub http_url: String,
     pub ws_url: Option<String>,
@@ -31,7 +27,6 @@ impl Network {
         Self {
             name: String::from("mainnet"),
             chain_id: 1,
-            dev: false,
             explorer_url: Some(String::from("https://etherscan.io/search?q=")),
             http_url: String::from("https://ethereum.publicnode.com"),
             ws_url: None,
@@ -45,7 +40,6 @@ impl Network {
         Self {
             name: String::from("goerli"),
             chain_id: 5,
-            dev: false,
             explorer_url: Some(String::from("https://goerli.etherscan.io/search?q=")),
             http_url: String::from("https://rpc.ankr.com/eth_goerli"),
             ws_url: None,
@@ -59,7 +53,6 @@ impl Network {
         Self {
             name: String::from("anvil"),
             chain_id: 31337,
-            dev: true,
             explorer_url: None,
             http_url: String::from("http://localhost:8545"),
             ws_url: Some(String::from("ws://localhost:8545")),
@@ -69,16 +62,16 @@ impl Network {
         }
     }
 
+    pub fn all_default() -> Vec<Self> {
+        vec![Self::anvil(), Self::mainnet(), Self::goerli()]
+    }
+
     pub fn chain_id_hex(&self) -> String {
         format!("0x{:x}", self.chain_id)
     }
 
-    pub fn default() -> HashMap<String, Self> {
-        let mut networks = HashMap::new();
-        networks.insert(String::from("mainnet"), Self::mainnet());
-        networks.insert(String::from("goerli"), Self::goerli());
-        networks.insert(String::from("anvil"), Self::anvil());
-        networks
+    pub fn is_dev(&self) -> bool {
+        self.chain_id == 31337
     }
 
     pub fn get_provider(&self) -> Provider<Http> {
@@ -95,7 +88,7 @@ impl Network {
             self.listener = None;
         }
 
-        if self.dev {
+        if self.is_dev() {
             let http_url = Url::parse(&self.http_url)?;
             let ws_url = Url::parse(&self.ws_url.clone().unwrap())?;
             let mut listener = BlockListener::new(self.chain_id, http_url, ws_url, db, window_snd);

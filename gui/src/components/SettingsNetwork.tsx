@@ -5,19 +5,13 @@ import {
   AccordionDetails,
   AccordionSummary,
   Button,
-  Checkbox,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormHelperText,
   Stack,
   TextField,
 } from "@mui/material";
-import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect } from "react";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 
-import { useInvoke } from "../hooks/tauri";
+import { useNetworks } from "../hooks/useNetworks";
 import { Network, networkSchema } from "../types";
 import { ConfirmationDialog } from "./ConfirmationDialog";
 
@@ -25,7 +19,6 @@ type NewChild = { new?: boolean };
 
 const emptyNetwork: Network & NewChild = {
   name: "",
-  dev: false,
   explorer_url: "",
   http_url: "",
   ws_url: "",
@@ -38,8 +31,7 @@ const emptyNetwork: Network & NewChild = {
 };
 
 export function SettingsNetwork() {
-  const { data: networks, mutate } =
-    useInvoke<(Network & NewChild)[]>("networks_get_list");
+  const { networks, setNetworks, resetNetworks } = useNetworks();
 
   const {
     register,
@@ -50,7 +42,7 @@ export function SettingsNetwork() {
   } = useForm({
     mode: "onBlur",
     resolver: zodResolver(networkSchema),
-    defaultValues: { networks },
+    defaultValues: { networks: networks as (Network & NewChild)[] },
   });
   // TODO: https://github.com/react-hook-form/react-hook-form/issues/3213
   const isDirtyAlt = !!Object.keys(dirtyFields).length;
@@ -64,15 +56,15 @@ export function SettingsNetwork() {
   });
 
   const onSubmit = async (data: { networks?: Network[] }) => {
-    await invoke("set_networks", { networks: data.networks });
+    if (!data.networks) return;
+
+    await setNetworks(data.networks);
     reset(data);
-    mutate();
   };
 
   const onReset = async () => {
-    const networks: Network[] = await invoke("reset_networks");
+    const networks = await resetNetworks();
     reset({ networks });
-    mutate();
   };
 
   if (!networks) return <>Loading</>;
@@ -104,33 +96,6 @@ export function SettingsNetwork() {
                       valueAsNumber: true,
                     })}
                   />
-                  <FormControl error={!!err.dev}>
-                    <FormGroup>
-                      <FormControlLabel
-                        label="Dev mode"
-                        control={
-                          <Controller
-                            name={`networks.${index}.dev`}
-                            control={control}
-                            render={({ field }) => (
-                              <Checkbox
-                                {...field}
-                                checked={field.value}
-                                onChange={(e) =>
-                                  field.onChange(e.target.checked)
-                                }
-                              />
-                            )}
-                          />
-                        }
-                      />
-                    </FormGroup>
-                    {err.dev && (
-                      <FormHelperText>
-                        {err.dev.message?.toString()}
-                      </FormHelperText>
-                    )}
-                  </FormControl>
                 </Stack>
                 <TextField
                   label="HTTP RPC"

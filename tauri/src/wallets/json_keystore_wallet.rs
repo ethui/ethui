@@ -64,6 +64,9 @@ impl WalletControl for JsonKeystoreWallet {
     async fn derive_all_addresses(&self) -> Result<Vec<(String, ChecksummedAddress)>> {
         Ok(vec![("default".into(), self.get_current_address().await)])
     }
+    fn is_dev(&self) -> bool {
+        false
+    }
 }
 
 impl JsonKeystoreWallet {

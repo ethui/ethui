@@ -28,7 +28,7 @@ pub async fn networks_set_current(network: String) -> Result<()> {
 pub async fn networks_set_list(new_networks: Vec<Network>) -> Result<()> {
     let mut networks = Networks::write().await;
 
-    networks.set_networks(new_networks);
+    networks.set_networks(new_networks)?;
 
     Ok(())
 }
@@ -37,7 +37,7 @@ pub async fn networks_set_list(new_networks: Vec<Network>) -> Result<()> {
 pub async fn networks_reset() -> Result<Vec<Network>> {
     let mut networks = Networks::write().await;
 
-    networks.reset_networks();
+    networks.reset_networks()?;
 
     Ok(networks.networks.values().cloned().collect())
 }
