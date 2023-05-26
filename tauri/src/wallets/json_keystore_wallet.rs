@@ -6,7 +6,7 @@ use ethers::signers::Signer;
 use ethers_core::{k256::ecdsa::SigningKey, types::Address};
 use tokio::sync::RwLock;
 
-use super::{Result, WalletControl};
+use super::{Result, WalletControl, Error};
 use crate::types::ChecksummedAddress;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
@@ -55,7 +55,7 @@ impl WalletControl for JsonKeystoreWallet {
     }
 
     async fn build_signer(&self, chain_id: u32) -> Result<ethers::signers::Wallet<SigningKey>> {
-        self.unlock("testtest").await.unwrap();
+        self.unlock().await.unwrap();
 
         let signer = self.signer.read().await;
         Ok(signer.clone().unwrap().with_chain_id(chain_id))
@@ -70,13 +70,19 @@ impl WalletControl for JsonKeystoreWallet {
 }
 
 impl JsonKeystoreWallet {
-    async fn unlock(&self, password: &str) -> Result<()> {
+    async fn unlock(&self) -> Result<()> {
+
         {
             let signer = self.signer.read().await;
             if signer.is_some() {
                 return Ok(());
             }
         }
+
+        let rcv = crate::dialogs::open("jsonkeystore-unlock", serde_json::to_value(&self).unwrap()).unwrap();
+
+        let password = rcv.await?.map_err(|_| Error::UnlockDialogRejected)?;
+        let password= password.as_str().unwrap();
 
         let keystore_signer =
             ethers::signers::Wallet::decrypt_keystore(self.file.clone(), password)?;
