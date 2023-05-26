@@ -71,7 +71,6 @@ impl WalletControl for JsonKeystoreWallet {
 
 impl JsonKeystoreWallet {
     async fn unlock(&self) -> Result<()> {
-
         {
             let signer = self.signer.read().await;
             if signer.is_some() {
@@ -79,10 +78,12 @@ impl JsonKeystoreWallet {
             }
         }
 
-        let rcv = crate::dialogs::open("jsonkeystore-unlock", serde_json::to_value(&self).unwrap()).unwrap();
+        let rcv = crate::dialogs::open("jsonkeystore-unlock", serde_json::to_value(self).unwrap()).unwrap();
 
         let password = rcv.await?.map_err(|_| Error::UnlockDialogRejected)?;
-        let password= password.as_str().unwrap();
+        let password= password["password"].as_str().unwrap();
+
+        // TODO we need to keep the dialog open while this is processing
 
         let keystore_signer =
             ethers::signers::Wallet::decrypt_keystore(self.file.clone(), password)?;

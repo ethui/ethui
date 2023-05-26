@@ -20,7 +20,21 @@ struct PendingDialog {
 
 type PendingDialogMap = HashMap<u32, PendingDialog>;
 
+
 static DIALOGS: Lazy<Mutex<PendingDialogMap>> = Lazy::new(Default::default);
+
+#[derive(Debug)]
+struct Preset{
+    title: String, w: f64, h: f64
+}
+
+static PRESETS: Lazy<HashMap<String,Preset>> = Lazy::new(|| {
+    let mut presets=HashMap::new();
+    presets.insert("tx-review".into(), Preset{title: "Transaction Review".into(), w:500.0, h:500.0});
+
+    presets.insert("jsonkeystore-unlock".into(), Preset{title:"Jsonkeystore Unlock".into(),w: 400.0,h: 200.0});
+    presets
+});
 
 /// a global sender used internally to go through the app's event loop, which is required for
 /// opening dialogs
@@ -68,12 +82,17 @@ pub fn open(dialog_type: &str, payload: Json) -> crate::Result<DialogReceiver> {
 ///   - id: a numeric ID, meant to match the future window response with the pending oneshot
 ///   channel
 ///   - payload: a JSON payload to display information. The schema depends on the type of dialog
-#[allow(unused)]
 pub fn open_with_handle(app: &AppHandle, dialog_type: String, id: u32) -> crate::Result<()> {
-    let url = format!("/dialog/tx-review/{}", id);
+    let preset=PRESETS.get(&dialog_type).unwrap();
+    let url = format!("/dialog/{dialog_type}/{id}");
+    let title =format!("Iron Dialog - {}", preset.title);
 
-    let window = WindowBuilder::new(app, "dialog", WindowUrl::App(url.into()))
-        .inner_size(500f64, 600f64)
+    dbg!(&preset);
+
+
+    WindowBuilder::new(app, "dialog", WindowUrl::App(url.into()))
+        .max_inner_size(preset.w, preset.h)
+        .title(title)
         .build()?;
 
     Ok(())

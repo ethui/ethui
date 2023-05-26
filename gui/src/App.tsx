@@ -4,6 +4,7 @@ import { Route, Router, Switch } from "wouter";
 
 import { CommandBar, CommandBarProvider } from "./components/CommandBar";
 import { HomePage } from "./components/HomePage";
+import { JsonKeystoreUnlockDialog } from "./components/JsonKeystoreUnlockDialog";
 import { Navbar } from "./components/Navbar";
 import { ProviderNetworks } from "./components/ProviderNetworks";
 import { ProviderTheme } from "./components/ProviderTheme";
@@ -28,6 +29,12 @@ export default function App() {
                       <Route path="/dialog/tx-review/:id">
                         {({ id }: { id: string }) => (
                           <TxReviewDialog id={parseInt(id)} />
+                        )}
+                      </Route>
+
+                      <Route path="/dialog/jsonkeystore-unlock/:id">
+                        {({ id }: { id: string }) => (
+                          <JsonKeystoreUnlockDialog id={parseInt(id)} />
                         )}
                       </Route>
 
