@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Stack, TextField, Typography } from "@mui/material";
+import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -14,20 +15,23 @@ interface Request {
 const schema = z.object({ password: z.string() });
 
 export function JsonKeystoreUnlockDialog({ id }: { id: number }) {
-  const { data, accept, reject } = useDialog<Request>(id);
+  const { data, send, reject } = useDialog<Request>(id);
   const {
     handleSubmit,
     register,
     formState: { errors, isDirty, isValid },
   } = useForm({ resolver: zodResolver(schema) });
+  const [loading, setLoading] = useState(false);
 
   if (!data) return null;
 
   const { name, file } = data;
 
+  console.log(data);
   const onSubmit = (data: FieldValues) => {
     console.log(data);
-    accept(data);
+    send(data);
+    setLoading(true);
   };
 
   return (

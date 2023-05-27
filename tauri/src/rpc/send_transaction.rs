@@ -96,7 +96,7 @@ impl SendTransaction {
 
         match dialog.recv().await {
             // TODO: in the future, send json values here to override params
-            DialogMsg::Accept(_response) => Ok(()),
+            Some(DialogMsg::Accept(_response)) => Ok(()),
 
             _ =>
             // TODO: what's the appropriate error to return here?

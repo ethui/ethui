@@ -4,7 +4,7 @@ use once_cell::sync::OnceCell;
 use serde::Serialize;
 use tauri::{
     AppHandle, Builder, CustomMenuItem, GlobalWindowEvent, Manager, SystemTray, SystemTrayEvent,
-    SystemTrayMenu, SystemTrayMenuItem, WindowEvent,
+    SystemTrayMenu, SystemTrayMenuItem, WindowBuilder, WindowEvent, WindowUrl,
 };
 #[cfg(not(target_os = "linux"))]
 use tauri::{Menu, Submenu, WindowMenuEvent};
@@ -27,10 +27,13 @@ pub enum Event {
     Notify(Notify),
 
     /// open a dialog
-    OpenDialog(dialogs::Dialog),
+    DialogOpen(dialogs::DialogOpenParams),
 
     /// close a dialog
-    CloseDialog(dialogs::Dialog),
+    DialogClose(dialogs::DialogCloseParams),
+
+    /// sends a new event to a dialog
+    DialogSend(dialogs::DialogSend),
 }
 
 #[derive(Debug, Serialize, Clone)]
@@ -93,6 +96,7 @@ impl IronApp {
                 wallets::commands::wallets_set_current_path,
                 wallets::commands::wallets_get_wallet_addresses,
                 dialogs::commands::dialog_get_payload,
+                dialogs::commands::dialog_send,
                 dialogs::commands::dialog_finish,
                 foundry::commands::foundry_get_abi,
                 rpc::commands::rpc_send_transaction,
@@ -272,12 +276,34 @@ async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<Even
                 }
             }
 
-            OpenDialog(dialog) => {
-                dialog.open_with_app_handle(&handle).await.unwrap();
+            DialogOpen(dialogs::DialogOpenParams {
+                label,
+                title,
+                url,
+                w,
+                h,
+            }) => {
+                WindowBuilder::new(&handle, label, WindowUrl::App(url.into()))
+                    .max_inner_size(w, h)
+                    .title(title)
+                    .build()
+                    .unwrap();
             }
 
-            CloseDialog(dialog) => {
-                dialog.close_with_app_handle(&handle).await.unwrap();
+            DialogClose(dialogs::DialogCloseParams { label }) => {
+                handle.get_window(&label).unwrap().close().unwrap()
+            }
+
+            DialogSend(dialogs::DialogSend {
+                label,
+                event_type,
+                payload,
+            }) => {
+                handle
+                    .get_window(&label)
+                    .unwrap()
+                    .emit(&event_type, &payload)
+                    .unwrap();
             }
         }
     }

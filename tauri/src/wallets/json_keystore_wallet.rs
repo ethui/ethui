@@ -4,6 +4,7 @@ use std::{fs::File, io::BufReader, path::PathBuf, str::FromStr, sync::Arc};
 
 use ethers::signers::Signer;
 use ethers_core::{k256::ecdsa::SigningKey, types::Address};
+use serde_json::json;
 use tokio::sync::RwLock;
 
 use super::{Error, Result, WalletControl};
@@ -72,6 +73,7 @@ impl WalletControl for JsonKeystoreWallet {
 
 impl JsonKeystoreWallet {
     async fn unlock(&self) -> Result<()> {
+        // if we already have a signer, then we're good
         {
             let signer = self.signer.read().await;
             if signer.is_some() {
@@ -79,28 +81,40 @@ impl JsonKeystoreWallet {
             }
         }
 
+        // open the dialog
         let dialog = Dialog::new("jsonkeystore-unlock", serde_json::to_value(self).unwrap());
         dialog.open().await?;
 
-        let password = match dialog.recv().await {
-            DialogMsg::Data(payload) | DialogMsg::Accept(payload) => {
-                let password = payload["password"].clone();
-                password
-                    .as_str()
-                    .ok_or(Error::UnlockDialogRejected)?
-                    .to_string()
+        // attempt to receive a password at most 3 times
+        for _ in 0..3 {
+            let password = match dbg!(dialog.recv().await) {
+                Some(DialogMsg::Data(payload)) | Some(DialogMsg::Accept(payload)) => {
+                    let password = payload["password"].clone();
+                    Ok(password
+                        .as_str()
+                        .ok_or(Error::UnlockDialogRejected)?
+                        .to_string())
+                }
+                _ => Err(Error::UnlockDialogRejected),
+            };
+
+            if let Ok(password) = password {
+                if let Ok(keystore) =
+                    ethers::signers::Wallet::decrypt_keystore(self.file.clone(), password)
+                {
+                    let mut signer = self.signer.write().await;
+                    *signer = Some(keystore);
+                    dialog.close().await?;
+                    return Ok(());
+                }
             }
-            DialogMsg::Reject(_) => return Err(Error::UnlockDialogRejected),
-        };
 
-        // TODO we need to keep the dialog open while this is processing
+            dbg!("sending failure");
+            dialog.send("failed", None).await?;
+        }
 
-        let keystore_signer =
-            ethers::signers::Wallet::decrypt_keystore(self.file.clone(), password)?;
-
-        let mut signer = self.signer.write().await;
-        *signer = Some(keystore_signer);
-
-        Ok(())
+        dbg!("closing");
+        dialog.close().await?;
+        Err(Error::UnlockDialogFailed)
     }
 }

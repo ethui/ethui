@@ -21,6 +21,9 @@ pub enum Error {
     #[error("wallet unlock rejected by user")]
     UnlockDialogRejected,
 
+    #[error("user failed to unlock the wallet")]
+    UnlockDialogFailed,
+
     #[error(transparent)]
     Recv(#[from] oneshot::error::RecvError),
 
