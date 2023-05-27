@@ -21,13 +21,16 @@ pub struct IronApp {
     app: Option<tauri::App>,
 }
 
-#[derive(Debug, Serialize, Clone)]
+#[derive(Debug, Clone)]
 pub enum Event {
     /// notify the frontend about a state change
     Notify(Notify),
 
     /// open a dialog
-    OpenDialog(u32, String),
+    OpenDialog(dialogs::Dialog),
+
+    /// close a dialog
+    CloseDialog(dialogs::Dialog),
 }
 
 #[derive(Debug, Serialize, Clone)]
@@ -58,6 +61,10 @@ impl From<Notify> for Event {
 
 pub static SETTINGS_PATH: OnceCell<PathBuf> = OnceCell::new();
 
+/// a global sender used internally to go through the app's event loop, which is required for
+/// opening dialogs
+pub static APP_SND: OnceCell<mpsc::UnboundedSender<Event>> = OnceCell::new();
+
 impl IronApp {
     pub fn build() -> Self {
         let (snd, rcv) = mpsc::unbounded_channel();
@@ -85,8 +92,8 @@ impl IronApp {
                 wallets::commands::wallets_set_current_wallet,
                 wallets::commands::wallets_set_current_path,
                 wallets::commands::wallets_get_wallet_addresses,
-                dialogs::dialog_get_payload,
-                dialogs::dialog_finish,
+                dialogs::commands::dialog_get_payload,
+                dialogs::commands::dialog_finish,
                 foundry::commands::foundry_get_abi,
                 rpc::commands::rpc_send_transaction,
             ])
@@ -132,7 +139,7 @@ impl IronApp {
         SETTINGS_PATH
             .set(res.get_resource_path("settings.json"))
             .unwrap();
-        dialogs::init(snd);
+        APP_SND.set(snd).unwrap();
 
         res
     }
@@ -265,8 +272,12 @@ async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<Even
                 }
             }
 
-            OpenDialog(id, dialog_type) => {
-                dialogs::open_with_handle(&handle, dialog_type, id).unwrap();
+            OpenDialog(dialog) => {
+                dialog.open_with_app_handle(&handle).await.unwrap();
+            }
+
+            CloseDialog(dialog) => {
+                dialog.close_with_app_handle(&handle).await.unwrap();
             }
         }
     }

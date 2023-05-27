@@ -53,12 +53,7 @@ export function JsonKeystoreUnlockDialog({ id }: { id: number }) {
             >
               Unlock
             </Button>
-            <Button
-              variant="contained"
-              type="submit"
-              color="error"
-              onClick={reject}
-            >
+            <Button variant="contained" color="error" onClick={() => reject()}>
               Cancel
             </Button>
           </Stack>

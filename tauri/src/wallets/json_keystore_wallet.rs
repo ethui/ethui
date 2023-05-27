@@ -6,8 +6,9 @@ use ethers::signers::Signer;
 use ethers_core::{k256::ecdsa::SigningKey, types::Address};
 use tokio::sync::RwLock;
 
-use super::{Result, WalletControl, Error};
-use crate::types::ChecksummedAddress;
+use super::{Error, Result, WalletControl};
+use crate::dialogs::DialogMsg;
+use crate::{dialogs::Dialog, types::ChecksummedAddress};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct JsonKeystoreWallet {
@@ -55,7 +56,7 @@ impl WalletControl for JsonKeystoreWallet {
     }
 
     async fn build_signer(&self, chain_id: u32) -> Result<ethers::signers::Wallet<SigningKey>> {
-        self.unlock().await.unwrap();
+        dbg!(self.unlock().await)?;
 
         let signer = self.signer.read().await;
         Ok(signer.clone().unwrap().with_chain_id(chain_id))
@@ -78,10 +79,19 @@ impl JsonKeystoreWallet {
             }
         }
 
-        let rcv = crate::dialogs::open("jsonkeystore-unlock", serde_json::to_value(self).unwrap()).unwrap();
+        let dialog = Dialog::new("jsonkeystore-unlock", serde_json::to_value(self).unwrap());
+        dialog.open().await?;
 
-        let password = rcv.await?.map_err(|_| Error::UnlockDialogRejected)?;
-        let password= password["password"].as_str().unwrap();
+        let password = match dialog.recv().await {
+            DialogMsg::Data(payload) | DialogMsg::Accept(payload) => {
+                let password = payload["password"].clone();
+                password
+                    .as_str()
+                    .ok_or(Error::UnlockDialogRejected)?
+                    .to_string()
+            }
+            DialogMsg::Reject(_) => return Err(Error::UnlockDialogRejected),
+        };
 
         // TODO we need to keep the dialog open while this is processing
 
