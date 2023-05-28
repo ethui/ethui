@@ -13,7 +13,6 @@ export function useDialog<T>(id: number) {
     invoke("dialog_finish", { id, result: { Ok: payload } });
 
   const reject = (payload: unknown = {}) => {
-    console.log(payload);
     invoke("dialog_finish", { id, result: { Err: payload } });
   };
 
