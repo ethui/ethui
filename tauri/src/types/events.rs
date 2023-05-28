@@ -24,6 +24,7 @@ pub struct Tx {
     pub to: Option<Address>,
     pub value: U256,
     pub data: Bytes,
+    pub block_number: u64,
 }
 
 #[derive(Debug)]
@@ -59,6 +60,7 @@ impl From<Trace> for Events {
                 vec![
                     Tx {
                         hash: trace.transaction_hash.unwrap(),
+                        block_number: trace.block_number,
                         from,
                         to: None,
                         value,
@@ -85,6 +87,7 @@ impl From<Trace> for Events {
                 0,
             ) => vec![Tx {
                 hash: trace.transaction_hash.unwrap(),
+                block_number: trace.block_number,
                 from,
                 to: Some(to),
                 value,
