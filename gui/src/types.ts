@@ -84,3 +84,13 @@ export interface ABIMatch {
   name: string;
   abi: ABIItem[];
 }
+
+export interface Tx {
+  hash: string;
+  from: Address;
+  to: Address;
+  value: string;
+  data: string;
+  blockNumber: number;
+  position: number;
+}
