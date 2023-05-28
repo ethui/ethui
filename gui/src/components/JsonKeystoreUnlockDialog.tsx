@@ -41,15 +41,13 @@ export function JsonKeystoreUnlockDialog({ id }: { id: number }) {
     return () => {
       unlisten.then((cb) => cb());
     };
-  }, [attempts]);
+  }, [attempts, listen]);
 
   if (!data) return null;
 
   const { name } = data;
 
-  console.log(data);
   const onSubmit = (data: FieldValues) => {
-    console.log(data);
     send(data);
     setLoading(true);
   };

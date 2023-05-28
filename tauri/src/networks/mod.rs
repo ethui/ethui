@@ -116,7 +116,6 @@ impl Networks {
     fn reset_listeners(&mut self) {
         let db = self.db.clone();
 
-
         for network in self.networks.values_mut() {
             network
                 .reset_listener(db.clone(), self.window_snd.clone())

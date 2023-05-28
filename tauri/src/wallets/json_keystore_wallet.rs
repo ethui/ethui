@@ -91,7 +91,7 @@ impl JsonKeystoreWallet {
 
         // attempt to receive a password at most 3 times
         for _ in 0..3 {
-            let password = match dbg!(dialog.recv().await) {
+            let password = match dialog.recv().await {
                 Some(DialogMsg::Data(payload)) | Some(DialogMsg::Accept(payload)) => {
                     let password = payload["password"].clone();
                     Ok(password
