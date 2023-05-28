@@ -2785,6 +2785,7 @@ dependencies = [
  "notify",
  "once_cell",
  "regex",
+ "secrets",
  "serde",
  "serde_json",
  "sqlx",
@@ -4662,6 +4663,17 @@ dependencies = [
  "pkcs8",
  "subtle",
  "zeroize",
+]
+
+[[package]]
+name = "secrets"
+version = "1.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f51745a213c4a2acabad80cd511e40376996bc83db6ceb4ebc7853d41c597988"
+dependencies = [
+ "libc",
+ "pkg-config",
+ "vcpkg",
 ]
 
 [[package]]

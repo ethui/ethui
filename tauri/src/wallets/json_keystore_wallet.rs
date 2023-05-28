@@ -3,9 +3,10 @@
 use std::time::Duration;
 use std::{fs::File, io::BufReader, path::PathBuf, str::FromStr, sync::Arc};
 
-use ethers::signers::Signer;
+use ethers::signers::{self, Signer};
 use ethers_core::{k256::ecdsa::SigningKey, types::Address};
-use tokio::sync::RwLock;
+use secrets::SecretVec;
+use tokio::sync::{Mutex, RwLock};
 use tokio::task::JoinHandle;
 
 use super::{Error, Result, WalletControl};
@@ -20,8 +21,14 @@ pub struct JsonKeystoreWallet {
     /// The signer is cached inside a `RwLock` so we can have interior mutability
     /// Since JSON keystore signers are time-consuming to decrypt, we can't do it on-the-fly for
     /// every incoming signing request
+    ///
+    /// The cache is stored as a
+    /// [SecretVec](https://docs.rs/secrets/latest/secrets/struct.SecretVec.html#method.new) for
+    /// some in-memory safety guarantees
+    ///
+    /// The additional Mutex within is there because `SecretVec` is not Send
     #[serde(skip)]
-    signer: Arc<RwLock<Option<ethers::signers::Wallet<SigningKey>>>>,
+    secret: Arc<RwLock<Option<Mutex<SecretVec<u8>>>>>,
 
     /// A join handle that will expire the signer after some time
     #[serde(skip)]
@@ -33,7 +40,7 @@ impl JsonKeystoreWallet {
         Self {
             name: "".into(),
             file: PathBuf::new(),
-            signer: Default::default(),
+            secret: Default::default(),
             expirer: Default::default(),
         }
     }
@@ -60,11 +67,14 @@ impl WalletControl for JsonKeystoreWallet {
         Ok(())
     }
 
-    async fn build_signer(&self, chain_id: u32) -> Result<ethers::signers::Wallet<SigningKey>> {
+    async fn build_signer(&self, chain_id: u32) -> Result<signers::Wallet<SigningKey>> {
         self.unlock().await?;
 
-        let signer = self.signer.read().await;
-        Ok(signer.clone().unwrap().with_chain_id(chain_id))
+        let secret = self.secret.read().await;
+        let secret = secret.as_ref().unwrap().lock().await;
+
+        let signer = from_secret(&secret);
+        Ok(signer.with_chain_id(chain_id))
     }
 
     async fn derive_all_addresses(&self) -> Result<Vec<(String, ChecksummedAddress)>> {
@@ -76,13 +86,15 @@ impl WalletControl for JsonKeystoreWallet {
 }
 
 impl JsonKeystoreWallet {
+    async fn is_unlocked(&self) -> bool {
+        let secret = self.secret.read().await;
+        secret.is_some()
+    }
+
     async fn unlock(&self) -> Result<()> {
         // if we already have a signer, then we're good
-        {
-            let signer = self.signer.read().await;
-            if signer.is_some() {
-                return Ok(());
-            }
+        if self.is_unlocked().await {
+            return Ok(());
         }
 
         // open the dialog
@@ -103,22 +115,8 @@ impl JsonKeystoreWallet {
             };
 
             // if password was given, and correctly decrypts the keystore
-            if let Ok(keystore) =
-                ethers::signers::Wallet::decrypt_keystore(self.file.clone(), password)
-            {
-                let mut expirer = self.expirer.write().await;
-                let mut signer = self.signer.write().await;
-
-                // set up cache expiration for 1 minute
-                let signer_clone = self.signer.clone();
-                *expirer = Some(tokio::spawn(async move {
-                    tokio::time::sleep(Duration::from_secs(60)).await;
-                    signer_clone.write().await.take();
-                }));
-
-                // set cache signer
-                *signer = Some(keystore);
-
+            if let Ok(keystore) = signers::Wallet::decrypt_keystore(self.file.clone(), password) {
+                self.store_secret(&keystore).await;
                 dialog.close().await?;
                 return Ok(());
             }
@@ -129,4 +127,39 @@ impl JsonKeystoreWallet {
         dialog.close().await?;
         Err(Error::UnlockDialogFailed)
     }
+
+    async fn store_secret(&self, keystore: &signers::Wallet<SigningKey>) {
+        // acquire both write locks
+        let mut expirer_handle = self.expirer.write().await;
+        let mut secret_handle = self.secret.write().await;
+
+        let secret = into_secret(keystore);
+
+        *secret_handle = Some(Mutex::new(secret));
+
+        // set up cache expiration for 1 minute
+        let clone = Arc::clone(&self.secret);
+        *expirer_handle = Some(tokio::spawn(async move {
+            tokio::time::sleep(Duration::from_secs(60)).await;
+            clone.write().await.take();
+        }));
+    }
+}
+
+/// Converts a signer into a SecretVec
+fn into_secret(keystore: &signers::Wallet<SigningKey>) -> SecretVec<u8> {
+    let signer_bytes = keystore.signer().to_bytes();
+    let bytes = signer_bytes.as_slice();
+
+    SecretVec::new(bytes.len(), |s| {
+        (0..bytes.len()).for_each(|i| {
+            s[i] = bytes[i];
+        });
+    })
+}
+
+/// Converts a SecretVec into a signer
+fn from_secret(secret: &SecretVec<u8>) -> signers::Wallet<SigningKey> {
+    let signer_bytes = secret.borrow();
+    signers::Wallet::from_bytes(&signer_bytes).unwrap()
 }

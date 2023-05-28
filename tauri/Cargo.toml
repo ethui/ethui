@@ -44,6 +44,7 @@ notify = "6.0.0"
 futures = "0.3.28"
 regex = "1.8.1"
 anyhow = "1.0.71"
+secrets = "1.2.0"
 
 [features]
 default = []
