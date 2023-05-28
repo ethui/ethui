@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Backdrop,
+  Box,
   Button,
   CircularProgress,
   Stack,
@@ -53,7 +54,7 @@ export function JsonKeystoreUnlockDialog({ id }: { id: number }) {
   };
 
   return (
-    <Panel>
+    <Box sx={{ p: 2, pb: 2 }}>
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <Stack spacing={2}>
           <Typography>
@@ -62,6 +63,7 @@ export function JsonKeystoreUnlockDialog({ id }: { id: number }) {
 
           <TextField
             label="Password"
+            type="password"
             helperText={
               attempts !== 3 && `Incorrect password, ${attempts} attempts left`
             }
@@ -85,6 +87,6 @@ export function JsonKeystoreUnlockDialog({ id }: { id: number }) {
       <Backdrop open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>
-    </Panel>
+    </Box>
   );
 }

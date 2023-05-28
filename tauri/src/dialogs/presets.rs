@@ -25,7 +25,7 @@ pub(super) static PRESETS: Lazy<HashMap<String, Preset>> = Lazy::new(|| {
         Preset {
             title: "Jsonkeystore Unlock".into(),
             w: 400.0,
-            h: 200.0,
+            h: 205.0,
         },
     );
     presets

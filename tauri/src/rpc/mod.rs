@@ -155,9 +155,7 @@ impl Handler {
         let network = networks.get_current_network();
         let wallet = wallets.get_current_wallet();
 
-        let signer = wallet
-            .build_signer(network.chain_id)
-            .await
+        let signer = dbg!(wallet.build_signer(network.chain_id).await)
             .map_err(|e| Error::SignerBuild(e.to_string()))?;
 
         let mut sender = SendTransaction::default();
@@ -174,6 +172,7 @@ impl Handler {
         }
 
         let result = sender.finish().await;
+        dbg!(&result);
 
         match result {
             Ok(res) => Ok(res.tx_hash().encode_hex().into()),

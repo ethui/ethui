@@ -94,35 +94,33 @@ impl JsonKeystoreWallet {
             let password = match dialog.recv().await {
                 Some(DialogMsg::Data(payload)) | Some(DialogMsg::Accept(payload)) => {
                     let password = payload["password"].clone();
-                    Ok(password
+                    password
                         .as_str()
                         .ok_or(Error::UnlockDialogRejected)?
-                        .to_string())
+                        .to_string()
                 }
-                _ => Err(Error::UnlockDialogRejected),
+                _ => return Err(Error::UnlockDialogRejected),
             };
 
             // if password was given, and correctly decrypts the keystore
-            if let Ok(password) = password {
-                if let Ok(keystore) =
-                    ethers::signers::Wallet::decrypt_keystore(self.file.clone(), password)
-                {
-                    let mut expirer = self.expirer.write().await;
-                    let mut signer = self.signer.write().await;
+            if let Ok(keystore) =
+                ethers::signers::Wallet::decrypt_keystore(self.file.clone(), password)
+            {
+                let mut expirer = self.expirer.write().await;
+                let mut signer = self.signer.write().await;
 
-                    // set up cache expiration for 1 minute
-                    let signer_clone = self.signer.clone();
-                    *expirer = Some(tokio::spawn(async move {
-                        tokio::time::sleep(Duration::from_secs(60)).await;
-                        signer_clone.write().await.take();
-                    }));
+                // set up cache expiration for 1 minute
+                let signer_clone = self.signer.clone();
+                *expirer = Some(tokio::spawn(async move {
+                    tokio::time::sleep(Duration::from_secs(60)).await;
+                    signer_clone.write().await.take();
+                }));
 
-                    // set cache signer
-                    *signer = Some(keystore);
+                // set cache signer
+                *signer = Some(keystore);
 
-                    dialog.close().await?;
-                    return Ok(());
-                }
+                dialog.close().await?;
+                return Ok(());
             }
 
             dialog.send("failed", None).await?;
