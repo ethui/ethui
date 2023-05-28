@@ -1,4 +1,4 @@
-import { Container, Paper, Tab, Tabs } from "@mui/material";
+import { Container, Tab, Tabs } from "@mui/material";
 import { findIndex, parseInt, range, toString } from "lodash";
 import { Link, Route, Switch, useLocation, useRoute } from "wouter";
 
@@ -42,39 +42,37 @@ export function HomePage() {
 
   return (
     <Container disableGutters maxWidth="md">
-      <Paper>
-        <Tabs
-          variant="fullWidth"
-          sx={{ mb: 2 }}
-          value={Math.max(findIndex(tabs, { path: params?.path }), 0)}
-        >
-          {tabs.map((tab) => (
-            <Tab
-              LinkComponent={Link}
-              href={tab.path}
-              key={tab.name}
-              label={tab.name}
-            />
-          ))}
-        </Tabs>
+      <Tabs
+        variant="fullWidth"
+        sx={{ mb: 2 }}
+        value={Math.max(findIndex(tabs, { path: params?.path }), 0)}
+      >
+        {tabs.map((tab) => (
+          <Tab
+            LinkComponent={Link}
+            href={tab.path}
+            key={tab.name}
+            label={tab.name}
+          />
+        ))}
+      </Tabs>
 
-        <div role="tabpanel">
-          <NestedRoutes base="/">
-            <Switch>
-              {tabs.map((tab) => (
-                <Route key={tab.path || "/"} path={tab.path}>
-                  <LivenetPlaceholder devOnly={tab.devOnly}>
-                    <tab.component />
-                  </LivenetPlaceholder>
-                </Route>
-              ))}
-              <Route>
-                <Details />
+      <div role="tabpanel">
+        <NestedRoutes base="/">
+          <Switch>
+            {tabs.map((tab) => (
+              <Route key={tab.path || "/"} path={tab.path}>
+                <LivenetPlaceholder devOnly={tab.devOnly}>
+                  <tab.component />
+                </LivenetPlaceholder>
               </Route>
-            </Switch>
-          </NestedRoutes>
-        </div>
-      </Paper>
+            ))}
+            <Route>
+              <Details />
+            </Route>
+          </Switch>
+        </NestedRoutes>
+      </div>
     </Container>
   );
 }

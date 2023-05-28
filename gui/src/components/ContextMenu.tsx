@@ -1,5 +1,6 @@
 import { Button, Menu, MenuItem, SxProps, Tooltip } from "@mui/material";
 import { writeText } from "@tauri-apps/api/clipboard";
+import { BigNumber } from "ethers";
 import React, { MouseEvent, ReactNode, useState } from "react";
 
 import { useNetworks } from "../hooks/useNetworks";
@@ -8,6 +9,7 @@ interface Props {
   children: ReactNode;
   sx?: SxProps;
   label?: string;
+  wei?: BigNumber;
 }
 
 const buttonSx = {
