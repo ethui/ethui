@@ -291,7 +291,9 @@ async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<Even
             }
 
             DialogClose(dialogs::DialogCloseParams { label }) => {
-                handle.get_window(&label).unwrap().close().unwrap()
+                if let Some(window) = handle.get_window(&label) {
+                    window.close().unwrap();
+                }
             }
 
             DialogSend(dialogs::DialogSend {

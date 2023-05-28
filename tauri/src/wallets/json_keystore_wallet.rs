@@ -1,11 +1,12 @@
 #![allow(dead_code)]
 
+use std::time::Duration;
 use std::{fs::File, io::BufReader, path::PathBuf, str::FromStr, sync::Arc};
 
 use ethers::signers::Signer;
 use ethers_core::{k256::ecdsa::SigningKey, types::Address};
-use serde_json::json;
 use tokio::sync::RwLock;
+use tokio::task::JoinHandle;
 
 use super::{Error, Result, WalletControl};
 use crate::dialogs::DialogMsg;
@@ -19,10 +20,12 @@ pub struct JsonKeystoreWallet {
     /// The signer is cached inside a `RwLock` so we can have interior mutability
     /// Since JSON keystore signers are time-consuming to decrypt, we can't do it on-the-fly for
     /// every incoming signing request
-    ///
-    /// instead, we (TODO:) cache the signer for a set period of time
     #[serde(skip)]
     signer: Arc<RwLock<Option<ethers::signers::Wallet<SigningKey>>>>,
+
+    /// A join handle that will expire the signer after some time
+    #[serde(skip)]
+    expirer: Arc<RwLock<Option<JoinHandle<()>>>>,
 }
 
 impl JsonKeystoreWallet {
@@ -31,6 +34,7 @@ impl JsonKeystoreWallet {
             name: "".into(),
             file: PathBuf::new(),
             signer: Default::default(),
+            expirer: Default::default(),
         }
     }
 }
@@ -57,7 +61,7 @@ impl WalletControl for JsonKeystoreWallet {
     }
 
     async fn build_signer(&self, chain_id: u32) -> Result<ethers::signers::Wallet<SigningKey>> {
-        dbg!(self.unlock().await)?;
+        self.unlock().await?;
 
         let signer = self.signer.read().await;
         Ok(signer.clone().unwrap().with_chain_id(chain_id))
@@ -98,22 +102,32 @@ impl JsonKeystoreWallet {
                 _ => Err(Error::UnlockDialogRejected),
             };
 
+            // if password was given, and correctly decrypts the keystore
             if let Ok(password) = password {
                 if let Ok(keystore) =
                     ethers::signers::Wallet::decrypt_keystore(self.file.clone(), password)
                 {
+                    let mut expirer = self.expirer.write().await;
                     let mut signer = self.signer.write().await;
+
+                    // set up cache expiration for 1 minute
+                    let signer_clone = self.signer.clone();
+                    *expirer = Some(tokio::spawn(async move {
+                        tokio::time::sleep(Duration::from_secs(60)).await;
+                        signer_clone.write().await.take();
+                    }));
+
+                    // set cache signer
                     *signer = Some(keystore);
+
                     dialog.close().await?;
                     return Ok(());
                 }
             }
 
-            dbg!("sending failure");
             dialog.send("failed", None).await?;
         }
 
-        dbg!("closing");
         dialog.close().await?;
         Err(Error::UnlockDialogFailed)
     }
