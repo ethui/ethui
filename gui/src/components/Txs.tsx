@@ -1,18 +1,19 @@
+import {
+  type TransactionReceipt,
+  type TransactionResponse,
+} from "@ethersproject/providers";
 import { CallMade, NoteAdd, VerticalAlignBottom } from "@mui/icons-material";
 import {
-  Avatar,
   Badge,
   Box,
-  Grid,
   List,
   ListItem,
   ListItemAvatar,
   Stack,
   Typography,
 } from "@mui/material";
-import { green, red } from "@mui/material/colors";
 import { formatEther } from "ethers/lib/utils";
-import React, { createElement } from "react";
+import { createElement } from "react";
 import { useEffect } from "react";
 import useSWR from "swr";
 import truncateEthAddress from "truncate-eth-address";
@@ -20,6 +21,7 @@ import truncateEthAddress from "truncate-eth-address";
 import { useAccount, useProvider } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
 import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
+import { Address } from "../types";
 import { ContextMenu } from "./ContextMenu";
 import Panel from "./Panel";
 
@@ -31,18 +33,25 @@ export function Txs() {
 
   useRefreshTransactions(mutate);
 
+  if (!account) return null;
+
   return (
     <Panel>
       <List>
         {(hashes || []).map((hash) => (
-          <Receipt key={hash} hash={hash} />
+          <Receipt account={account} key={hash} hash={hash} />
         ))}
       </List>
     </Panel>
   );
 }
 
-function Receipt({ hash }: { hash: string }) {
+interface ReceiptProps {
+  account: Address;
+  hash: string;
+}
+
+function Receipt({ account, hash }: ReceiptProps) {
   const provider = useProvider();
   const { data: tx, mutate: mutate1 } = useSWR(
     !!provider && ["getTransaction", hash],
@@ -59,13 +68,11 @@ function Receipt({ hash }: { hash: string }) {
   }, [provider, mutate1, mutate2]);
 
   if (!receipt || !tx) return null;
-  console.log(tx);
-  console.log(receipt);
 
   return (
     <ListItem>
       <ListItemAvatar>
-        <Icon receipt={receipt} tx={tx} />
+        <Icon {...{ receipt, tx, account }} />
       </ListItemAvatar>
       <Box sx={{ flexGrow: 1 }}>
         <Stack>
@@ -94,13 +101,18 @@ function Receipt({ hash }: { hash: string }) {
   );
 }
 
-function Icon({ receipt, tx }: any) {
-  const address = useAccount();
+interface IconProps {
+  account: Address;
+  receipt: TransactionReceipt;
+  tx: TransactionResponse;
+}
+
+function Icon({ account, receipt, tx }: IconProps) {
   const color = receipt.status === 1 ? "success" : "error";
 
   let icon = CallMade;
 
-  if (tx.to == address) {
+  if (tx.to == account) {
     icon = VerticalAlignBottom;
   } else if (!tx.to) {
     icon = NoteAdd;

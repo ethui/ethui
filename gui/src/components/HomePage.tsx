@@ -1,4 +1,4 @@
-import { Container, Paper, Tab, Tabs } from "@mui/material";
+import { Container, Tab, Tabs } from "@mui/material";
 import { findIndex, parseInt, range, toString } from "lodash";
 import { Link, Route, Switch, useLocation, useRoute } from "wouter";
 
