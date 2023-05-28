@@ -82,7 +82,7 @@ You may also like to use optional [justfile][justfile], if you prefer that over 
 **1. Clone the repo and install dependencies:**
 
 ```sh
-git clone git@github.com:subvisual/iron && cd iron
+git clone git@github.com:iron-wallet/iron && cd iron
 ```
 
 **2. Run the initial build**, which will install dependencies and build the extension `dist`:
