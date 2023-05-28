@@ -1,5 +1,9 @@
+import { CallMade, NoteAdd, VerticalAlignBottom } from "@mui/icons-material";
 import {
+  Avatar,
+  Badge,
   Box,
+  Grid,
   List,
   ListItem,
   ListItemAvatar,
@@ -8,7 +12,7 @@ import {
 } from "@mui/material";
 import { green, red } from "@mui/material/colors";
 import { formatEther } from "ethers/lib/utils";
-import React from "react";
+import React, { createElement } from "react";
 import { useEffect } from "react";
 import useSWR from "swr";
 import truncateEthAddress from "truncate-eth-address";
@@ -29,7 +33,7 @@ export function Txs() {
 
   return (
     <Panel>
-      <List dense>
+      <List>
         {(hashes || []).map((hash) => (
           <Receipt key={hash} hash={hash} />
         ))}
@@ -55,45 +59,52 @@ function Receipt({ hash }: { hash: string }) {
   }, [provider, mutate1, mutate2]);
 
   if (!receipt || !tx) return null;
+  console.log(tx);
+  console.log(receipt);
 
   return (
-    <ListItem disablePadding alignItems="flex-start">
-      <ListItemAvatar sx={{ minWidth: 32 }}>
-        <Box
-          sx={{
-            width: 10,
-            height: 10,
-            borderRadius: "100%",
-            background: receipt.status === 1 ? green[500] : red[500],
-          }}
-        ></Box>
+    <ListItem>
+      <ListItemAvatar>
+        <Icon receipt={receipt} tx={tx} />
       </ListItemAvatar>
-      <Stack mb={1}>
-        <ContextMenu>
-          <Typography sx={{ textTransform: "none" }}>{hash}</Typography>
-        </ContextMenu>
-        <Box sx={{ fontSize: 12 }}>
+      <Box sx={{ flexGrow: 1 }}>
+        <Stack>
           <Box>
-            From:{" "}
             <ContextMenu label={receipt.from} sx={{ textTransform: "none" }}>
               {truncateEthAddress(receipt.from)}
-            </ContextMenu>
-          </Box>
-          <Box>
-            To:{" "}
+            </ContextMenu>{" "}
+            →{" "}
             {receipt.to ? (
               <ContextMenu label={receipt.to} sx={{ textTransform: "none" }}>
                 {truncateEthAddress(receipt.to)}
               </ContextMenu>
             ) : (
-              "Contract Deploy"
+              <Typography component="span">Contract Deploy</Typography>
             )}
           </Box>
-          <Box>
-            Amount: <ContextMenu>{formatEther(tx.value)}</ContextMenu> Ξ
-          </Box>
-        </Box>
-      </Stack>
+          <Typography variant="caption" fontSize="xl">
+            Block #{tx.blockNumber}
+          </Typography>
+        </Stack>
+      </Box>
+      <Box>
+        <ContextMenu>{formatEther(tx.value)} Ξ</ContextMenu>
+      </Box>
     </ListItem>
   );
+}
+
+function Icon({ receipt, tx }: any) {
+  const address = useAccount();
+  const color = receipt.status === 1 ? "success" : "error";
+
+  let icon = CallMade;
+
+  if (tx.to == address) {
+    icon = VerticalAlignBottom;
+  } else if (!tx.to) {
+    icon = NoteAdd;
+  }
+
+  return <Badge>{createElement(icon, { color })}</Badge>;
 }
