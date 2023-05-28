@@ -13,7 +13,6 @@ import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { useDialog } from "../hooks/useDialog";
-import Panel from "./Panel";
 
 interface Request {
   name: string;
