@@ -1,4 +1,5 @@
 use serde::Serialize;
+use tokio::sync::oneshot;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -16,6 +17,18 @@ pub enum Error {
 
     #[error(transparent)]
     SignerError(#[from] ethers::signers::WalletError),
+
+    #[error("wallet unlock rejected by user")]
+    UnlockDialogRejected,
+
+    #[error("user failed to unlock the wallet")]
+    UnlockDialogFailed,
+
+    #[error(transparent)]
+    Recv(#[from] oneshot::error::RecvError),
+
+    #[error(transparent)]
+    Dialog(#[from] crate::dialogs::Error),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

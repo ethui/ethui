@@ -4,7 +4,7 @@ use once_cell::sync::OnceCell;
 use serde::Serialize;
 use tauri::{
     AppHandle, Builder, CustomMenuItem, GlobalWindowEvent, Manager, SystemTray, SystemTrayEvent,
-    SystemTrayMenu, SystemTrayMenuItem, WindowEvent,
+    SystemTrayMenu, SystemTrayMenuItem, WindowBuilder, WindowEvent, WindowUrl,
 };
 #[cfg(not(target_os = "linux"))]
 use tauri::{Menu, Submenu, WindowMenuEvent};
@@ -21,17 +21,25 @@ pub struct IronApp {
     app: Option<tauri::App>,
 }
 
-#[derive(Debug, Serialize, Clone)]
+#[derive(Debug, Clone)]
 pub enum Event {
     /// notify the frontend about a state change
     Notify(Notify),
 
     /// open a dialog
-    OpenDialog(u32, String),
+    DialogOpen(dialogs::DialogOpenParams),
+
+    /// close a dialog
+    DialogClose(dialogs::DialogCloseParams),
+
+    /// sends a new event to a dialog
+    DialogSend(dialogs::DialogSend),
 }
 
 #[derive(Debug, Serialize, Clone)]
 pub enum Notify {
+    #[allow(unused)]
+    WalletsChanged,
     NetworkChanged,
     TxsUpdated,
     PeersUpdated,
@@ -40,6 +48,7 @@ pub enum Notify {
 impl Notify {
     fn label(&self) -> &str {
         match self {
+            Self::WalletsChanged => "wallets-changed",
             Self::NetworkChanged => "network-changed",
             Self::TxsUpdated => "txs-updated",
             Self::PeersUpdated => "peers-updated",
@@ -54,6 +63,10 @@ impl From<Notify> for Event {
 }
 
 pub static SETTINGS_PATH: OnceCell<PathBuf> = OnceCell::new();
+
+/// a global sender used internally to go through the app's event loop, which is required for
+/// opening dialogs
+pub static APP_SND: OnceCell<mpsc::UnboundedSender<Event>> = OnceCell::new();
 
 impl IronApp {
     pub fn build() -> Self {
@@ -82,8 +95,9 @@ impl IronApp {
                 wallets::commands::wallets_set_current_wallet,
                 wallets::commands::wallets_set_current_path,
                 wallets::commands::wallets_get_wallet_addresses,
-                dialogs::dialog_get_payload,
-                dialogs::dialog_finish,
+                dialogs::commands::dialog_get_payload,
+                dialogs::commands::dialog_send,
+                dialogs::commands::dialog_finish,
                 foundry::commands::foundry_get_abi,
                 rpc::commands::rpc_send_transaction,
             ])
@@ -129,7 +143,7 @@ impl IronApp {
         SETTINGS_PATH
             .set(res.get_resource_path("settings.json"))
             .unwrap();
-        dialogs::init(snd);
+        APP_SND.set(snd).unwrap();
 
         res
     }
@@ -262,8 +276,36 @@ async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<Even
                 }
             }
 
-            OpenDialog(id, dialog_type) => {
-                dialogs::open_with_handle(&handle, dialog_type, id).unwrap();
+            DialogOpen(dialogs::DialogOpenParams {
+                label,
+                title,
+                url,
+                w,
+                h,
+            }) => {
+                WindowBuilder::new(&handle, label, WindowUrl::App(url.into()))
+                    .max_inner_size(w, h)
+                    .title(title)
+                    .build()
+                    .unwrap();
+            }
+
+            DialogClose(dialogs::DialogCloseParams { label }) => {
+                if let Some(window) = handle.get_window(&label) {
+                    window.close().unwrap();
+                }
+            }
+
+            DialogSend(dialogs::DialogSend {
+                label,
+                event_type,
+                payload,
+            }) => {
+                handle
+                    .get_window(&label)
+                    .unwrap()
+                    .emit(&event_type, &payload)
+                    .unwrap();
             }
         }
     }

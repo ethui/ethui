@@ -8,6 +8,7 @@ use ethers::{
 use ethers_core::k256::ecdsa::SigningKey;
 
 use super::{Error, Result};
+use crate::dialogs::{Dialog, DialogMsg};
 
 #[derive(Default)]
 pub struct SendTransaction {
@@ -90,18 +91,19 @@ impl SendTransaction {
     async fn spawn_dialog(&mut self) -> Result<()> {
         let params = serde_json::to_value(&self.request).unwrap();
 
-        let rcv = crate::dialogs::open("tx-review", params).unwrap();
+        let dialog = Dialog::new("tx-review", params);
+        dialog.open().await?;
 
-        match rcv.await {
-            // 1st case is if the channel closes. 2nd case is if "Reject" is hit
-            Err(_) | Ok(Err(_)) =>
+        match dialog.recv().await {
+            // TODO: in the future, send json values here to override params
+            Some(DialogMsg::Accept(_response)) => Ok(()),
+
+            _ =>
             // TODO: what's the appropriate error to return here?
             // or should we return Ok(_)? Err(_) seems to close the ws connection
             {
                 Err(Error::TxDialogRejected)
             }
-
-            Ok(Ok(_response)) => Ok(()), // TODO: in the future, send json values here to override params
         }
     }
 
