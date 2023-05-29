@@ -46,7 +46,6 @@ export function AddressView({ contextMenu, address }: Props) {
             explorer={address}
             actions={contextActions}
             sx={{ textTransform: "none" }}
-            title={address}
           >
             {alias ? alias : truncateEthAddress(address)}
           </ContextMenu>
