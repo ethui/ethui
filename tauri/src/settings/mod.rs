@@ -3,13 +3,17 @@ mod error;
 mod global;
 
 use std::{
+    collections::HashMap,
     fs::File,
     path::{Path, PathBuf},
+    str::FromStr,
 };
 
+use ethers_core::types::Address;
 use serde::{Deserialize, Serialize};
 
 pub use self::error::{Error, Result};
+use crate::types::ChecksummedAddress;
 
 #[derive(Debug, Clone)]
 pub struct Settings {
@@ -41,6 +45,22 @@ impl Settings {
         &self.inner
     }
 
+    fn get_alias(&self, address: ChecksummedAddress) -> Option<String> {
+        self.inner.aliases.get(&address).cloned()
+    }
+
+    fn set_alias(&mut self, address: ChecksummedAddress, alias: Option<String>) {
+        // trim whitespaces
+        // empty str becomes None
+        let alias = alias.map(|v| v.trim().to_owned()).filter(|v| !v.is_empty());
+
+        if let Some(alias) = alias {
+            self.inner.aliases.insert(address, alias);
+        } else {
+            self.inner.aliases.remove(&address);
+        }
+    }
+
     // Persists current state to disk
     fn save(&self) -> Result<()> {
         let pathbuf = self.file.clone();
@@ -57,8 +77,12 @@ impl Settings {
 #[serde(rename_all = "camelCase", default)]
 pub struct SerializedSettings {
     pub dark_mode: DarkMode,
+
     pub abi_watch: bool,
     pub abi_watch_path: Option<String>,
+
+    #[serde(default = "default_aliases")]
+    aliases: HashMap<ChecksummedAddress, String>,
 }
 
 impl Default for SerializedSettings {
@@ -67,6 +91,31 @@ impl Default for SerializedSettings {
             dark_mode: DarkMode::Auto,
             abi_watch: false,
             abi_watch_path: None,
+            aliases: HashMap::new(),
         }
     }
+}
+
+fn default_aliases() -> HashMap<ChecksummedAddress, String> {
+    let mut res = HashMap::new();
+    res.insert(
+        Address::from_str("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
+            .unwrap()
+            .into(),
+        "alice".into(),
+    );
+    res.insert(
+        Address::from_str("0x70997970C51812dc3A010C7d01b50e0d17dc79C8")
+            .unwrap()
+            .into(),
+        "bob".into(),
+    );
+    res.insert(
+        Address::from_str("0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC")
+            .unwrap()
+            .into(),
+        "charlie".into(),
+    );
+
+    res
 }

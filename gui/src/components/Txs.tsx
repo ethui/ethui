@@ -8,11 +8,8 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { BigNumber } from "ethers";
-import { createElement } from "react";
-import { useEffect } from "react";
+import { createElement, useEffect } from "react";
 import useSWR from "swr";
-import truncateEthAddress from "truncate-eth-address";
 import { type TransactionReceipt, formatEther } from "viem";
 
 import { useAccount } from "../hooks";
@@ -20,6 +17,7 @@ import { useInvoke } from "../hooks/tauri";
 import { useProvider } from "../hooks/useProvider";
 import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
 import { Address, Tx } from "../types";
+import { AddressView } from "./AddressView";
 import { ContextMenu } from "./ContextMenu";
 import Panel from "./Panel";
 
@@ -72,14 +70,9 @@ function Receipt({ account, tx }: ReceiptProps) {
       <Box sx={{ flexGrow: 1 }}>
         <Stack>
           <Box>
-            <ContextMenu label={tx.from} sx={{ textTransform: "none" }}>
-              {truncateEthAddress(tx.from)}
-            </ContextMenu>{" "}
-            →{" "}
-            {tx.to ? (
-              <ContextMenu label={tx.to} sx={{ textTransform: "none" }}>
-                {truncateEthAddress(tx.to)}
-              </ContextMenu>
+            <AddressView address={receipt.from} /> →{" "}
+            {receipt.to ? (
+              <AddressView address={receipt.to} />
             ) : (
               <Typography component="span">Contract Deploy</Typography>
             )}

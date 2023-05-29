@@ -1,16 +1,9 @@
 import Settings from "@mui/icons-material/Settings";
-import {
-  Box,
-  Button,
-  Container,
-  Grid,
-  IconButton,
-  Modal,
-  Paper,
-} from "@mui/material";
+import { Box, Button, Container, Grid, IconButton } from "@mui/material";
 import { useState } from "react";
 import { Link } from "wouter";
 
+import { Modal } from "./Modal";
 import { QuickAddressSelect } from "./QuickAddressSelect";
 import { QuickNetworkSelect } from "./QuickNetworkSelect";
 import { QuickWalletSelect } from "./QuickWalletSelect";
@@ -24,26 +17,16 @@ function SettingsButton() {
       <IconButton onClick={() => setShowSettings(true)}>
         <Settings />
       </IconButton>
+
       <Modal
         open={showSettings}
         onClose={() => setShowSettings(false)}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
+        sx={{
+          width: "80%",
+          height: "80%",
+        }}
       >
-        <Paper
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "80%",
-            height: "80%",
-            overflowY: "scroll",
-            p: 4,
-          }}
-        >
-          <SettingsPage />
-        </Paper>
+        <SettingsPage />
       </Modal>
     </>
   );

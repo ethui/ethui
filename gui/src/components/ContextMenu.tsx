@@ -6,8 +6,17 @@ import { useNetworks } from "../hooks/useNetworks";
 
 interface Props {
   children: ReactNode;
+  copy?: string;
+  explorer?: string;
   sx?: SxProps;
-  label?: string;
+  actions?: CustomAction[];
+  title?: string;
+}
+
+interface CustomAction {
+  label: string;
+  action: () => unknown;
+  disabled?: boolean;
 }
 
 const buttonSx = {
@@ -20,7 +29,14 @@ const buttonSx = {
   minWidth: "inherit",
 };
 
-export function ContextMenu({ children, sx, label }: Props) {
+export function ContextMenu({
+  children,
+  title,
+  sx,
+  copy,
+  explorer,
+  actions,
+}: Props) {
   const { currentNetwork } = useNetworks();
   const [copied, setCopied] = useState(false);
   const [contextMenu, setContextMenu] = useState<{
@@ -30,7 +46,7 @@ export function ContextMenu({ children, sx, label }: Props) {
   } | null>(null);
 
   const contextMenuOpen = Boolean(contextMenu?.target);
-  const tooltipDelay = copied ? 0 : contextMenuOpen ? Infinity : 1200;
+  const tooltipDelay = copied ? 0 : contextMenuOpen ? Infinity : 600;
 
   const copyToClipboard = (text: string | null | undefined) => {
     if (!text) throw new Error("Nothing to copy to clipboard");
@@ -40,18 +56,18 @@ export function ContextMenu({ children, sx, label }: Props) {
     setContextMenu(null);
   };
 
-  const onContextCopy = () =>
-    copyToClipboard(label || contextMenu?.target.textContent);
+  const onContextCopy = () => copyToClipboard(copy);
 
   const onCopyText = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    copyToClipboard(label || event.currentTarget?.textContent);
+    copyToClipboard(copy);
   };
 
   const onCloseMenu = () => setContextMenu(null);
 
   const onContextMenu = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    setContextMenu(null);
 
     setContextMenu(
       contextMenu === null
@@ -64,11 +80,20 @@ export function ContextMenu({ children, sx, label }: Props) {
     );
   };
 
+  const onAction = (
+    e: MouseEvent<HTMLAnchorElement>,
+    action: () => unknown
+  ) => {
+    e.preventDefault();
+    setContextMenu(null);
+    action();
+  };
+
   return (
     <>
       <Tooltip
         onClose={() => setTimeout(() => setCopied(false), 500)}
-        title={copied ? "Copied to clipboard" : "Copy to clipboard"}
+        title={copy && copied ? "Copied to clipboard" : copy}
         arrow
         enterDelay={tooltipDelay}
         enterNextDelay={tooltipDelay}
@@ -81,6 +106,7 @@ export function ContextMenu({ children, sx, label }: Props) {
           sx={{ ...buttonSx, ...sx }}
           onClick={onCopyText}
           onContextMenu={onContextMenu}
+          title={title}
         >
           {children}
         </Button>
@@ -101,21 +127,35 @@ export function ContextMenu({ children, sx, label }: Props) {
               : undefined
           }
         >
-          <MenuItem onClick={onContextCopy}>Copy</MenuItem>
-          {currentNetwork?.explorer_url && (
+          {/* copy to clipboard */}
+          {copy && <MenuItem onClick={onContextCopy}>Copy</MenuItem>}
+
+          {/* open in explorer */}
+          {currentNetwork?.explorer_url && explorer && (
             <MenuItem
               component="a"
               target="_blank"
-              href={
-                currentNetwork.explorer_url +
-                (label || contextMenu?.target.textContent)
-              }
+              href={`${currentNetwork.explorer_url}${explorer}`}
               rel="noreferrer"
               onClick={onCloseMenu}
             >
               Open in explorer
             </MenuItem>
           )}
+
+          {/* custom actions */}
+          {actions &&
+            actions
+              .filter(({ disabled }) => !disabled)
+              .map(({ label, action }) => (
+                <MenuItem
+                  component="a"
+                  key={label}
+                  onClick={(e) => onAction(e, action)}
+                >
+                  {label}
+                </MenuItem>
+              ))}
         </Menu>
       )}
     </>

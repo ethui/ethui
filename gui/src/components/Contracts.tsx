@@ -3,15 +3,14 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Box,
   Chip,
-  Typography,
 } from "@mui/material";
 
 import { useInvoke } from "../hooks/tauri";
 import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
 import { ABIMatch, Address } from "../types";
 import { ABIForm } from "./ABIForm";
+import { AddressView } from "./AddressView";
 import Panel from "./Panel";
 
 interface IContract {
@@ -42,12 +41,8 @@ function Contract({ address, deployedCodeHash }: IContract) {
   return (
     <Accordion>
       <AccordionSummary expandIcon={<ExpandMore />}>
-        <Box>
-          <Typography component="span" sx={{ textTransform: "none" }}>
-            {address}
-          </Typography>
-          {data && <Chip sx={{ marginLeft: 2 }} label={data.name} />}
-        </Box>
+        <AddressView address={address} />
+        {data && <Chip sx={{ marginLeft: 2 }} label={data.name} />}
       </AccordionSummary>
       <AccordionDetails>
         {data && <ABIForm address={address} abi={data.abi} />}
