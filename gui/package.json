@@ -23,7 +23,7 @@
     "@wagmi/core": "^0.10.9",
     "classnames": "^2.3.2",
     "kbar": "^0.1.0-beta.40",
-    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.1",
@@ -43,7 +43,7 @@
     "@types/node": "^18.7.10",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.10",
-    "@types/lodash": "^4.14.194",
+    "@types/lodash-es": "^4.17.7",
     "@vitejs/plugin-react": "^3.0.0",
     "jsdom": "^21.1.1",
     "vitest": "^0.29.8"
