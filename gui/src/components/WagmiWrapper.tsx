@@ -1,13 +1,14 @@
-import { type ProviderWithFallbackConfig } from "@wagmi/core";
-import { providers } from "ethers";
 import React from "react";
 import { useEffect, useState } from "react";
+import { FallbackTransport } from "viem";
 import {
   Chain,
-  Client,
+  type Config,
+  PublicClient,
   WagmiConfig,
+  WebSocketPublicClient,
   configureChains,
-  createClient,
+  createConfig,
 } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
@@ -18,41 +19,33 @@ interface Props {
   children: React.ReactNode;
 }
 
-type WagmiChains = { chains: Chain[] };
-type WagmiProvider =
-  | providers.FallbackProvider
-  | ProviderWithFallbackConfig<providers.JsonRpcProvider>;
-
-type WagmiClient = Client<
-  WagmiProvider & WagmiChains,
-  providers.WebSocketProvider & WagmiChains
+type WagmiConfig = Config<
+  PublicClient<FallbackTransport>,
+  WebSocketPublicClient<FallbackTransport>
 >;
 
 export function WagmiWrapper({ children }: Props) {
   const { data: network } = useInvoke<Network>("networks_get_current");
-  const [client, setClient] = useState<WagmiClient>();
+  const [config, setConfig] = useState<WagmiConfig>();
 
   useEffect(() => {
     if (!network) return;
-    setClient(buildClient(network));
+
+    const { publicClient, webSocketPublicClient } = configureChains(
+      [buildChain(network)],
+      [jsonRpcProvider({ rpc: () => ({ http: network?.http_url }) })]
+    );
+
+    const config = createConfig({
+      publicClient,
+      webSocketPublicClient,
+    });
+    setConfig(config);
   }, [network]);
 
-  if (!client) return null;
+  if (!config) return null;
 
-  return <WagmiConfig client={client}>{children}</WagmiConfig>;
-}
-
-function buildClient(network: Network) {
-  const { provider, webSocketProvider } = configureChains(
-    [buildChain(network)],
-    [
-      jsonRpcProvider({
-        rpc: () => ({ http: network?.http_url }),
-      }),
-    ]
-  );
-
-  return createClient({ provider, webSocketProvider });
+  return <WagmiConfig config={config}>{children}</WagmiConfig>;
 }
 
 function buildChain(network: Network): Chain {

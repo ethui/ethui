@@ -1,11 +1,11 @@
 import { Autocomplete, Box, Button, Chip, TextField } from "@mui/material";
 import { Stack } from "@mui/system";
 import { invoke } from "@tauri-apps/api/tauri";
-import { ethers } from "ethers";
 import { SyntheticEvent, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useProvider } from "wagmi";
+import { encodeFunctionData } from "viem";
 
+import { useProvider } from "../hooks/useProvider";
 import { ABIFunctionInput, ABIItem, Address } from "../types";
 
 interface Props {
@@ -60,32 +60,42 @@ export function ABIForm({ address, abi }: Props) {
 
 interface CallArgs {
   value?: string;
-  args: Record<string, unknown>;
+  args: Record<string, string>;
 }
 
 function ABIItemForm({ contract, item }: { contract: Address; item: ABIItem }) {
   const provider = useProvider();
   const { register, handleSubmit } = useForm<CallArgs>();
-  const [callResult, setCallResult] = useState<
-    ethers.utils.Result | undefined
-  >();
-  const [txResult, setTxResult] = useState<string | undefined>();
+  const [callResult, setCallResult] = useState<string>();
+  const [txResult, setTxResult] = useState<string>();
 
-  const iface = new ethers.utils.Interface([item]);
-  const paramNames = iface.getFunction(item.name).inputs.map((i) => i.name);
+  if (!provider) return null;
 
   const onSubmit = async (params: CallArgs) => {
-    const data = iface.encodeFunctionData(
-      item.name,
-      paramNames.map((name) => params.args[name])
-    );
+    const args = item.inputs.map((input) => params.args[input.name]);
+
+    const data = encodeFunctionData({
+      abi: [item],
+      functionName: item.name,
+      args,
+    });
 
     if (item.stateMutability === "view") {
-      // send call directly to provider
-      const result = await provider.call({ to: contract, data });
-      setCallResult(iface.decodeFunctionResult(item.name, result));
+      const result = await provider.readContract({
+        address: contract,
+        abi: [item],
+        functionName: item.name,
+        args,
+      });
+
+      if (typeof result === "bigint") {
+        setCallResult(result.toString());
+      } else if (typeof result === "string") {
+        setCallResult(result);
+      } else {
+        setCallResult(JSON.stringify(result));
+      }
     } else {
-      // submit transaction via backend
       const result = await invoke<string>("rpc_send_transaction", {
         params: { to: contract, data },
       });
@@ -114,7 +124,7 @@ function ABIItemForm({ contract, item }: { contract: Address; item: ABIItem }) {
             {item.stateMutability == "view" ? "Call" : "Send"}
           </Button>
         </Box>
-        {callResult && <Box>{callResult.map((value) => value.toString())}</Box>}
+        {callResult && <Box>{callResult}</Box>}
         {txResult && <Box>{txResult}</Box>}
       </Stack>
     </form>

@@ -3,6 +3,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Box,
   Chip,
   Typography,
 } from "@mui/material";
@@ -41,10 +42,12 @@ function Contract({ address, deployedCodeHash }: IContract) {
   return (
     <Accordion>
       <AccordionSummary expandIcon={<ExpandMore />}>
-        <Typography sx={{ textTransform: "none" }}>
-          {address}
+        <Box>
+          <Typography component="span" sx={{ textTransform: "none" }}>
+            {address}
+          </Typography>
           {data && <Chip sx={{ marginLeft: 2 }} label={data.name} />}
-        </Typography>
+        </Box>
       </AccordionSummary>
       <AccordionDetails>
         {data && <ABIForm address={address} abi={data.abi} />}

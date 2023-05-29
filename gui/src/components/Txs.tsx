@@ -1,7 +1,3 @@
-import {
-  type TransactionReceipt,
-  type TransactionResponse,
-} from "@ethersproject/providers";
 import { CallMade, NoteAdd, VerticalAlignBottom } from "@mui/icons-material";
 import {
   Badge,
@@ -18,9 +14,11 @@ import { createElement } from "react";
 import { useEffect } from "react";
 import useSWR from "swr";
 import truncateEthAddress from "truncate-eth-address";
+import { type Transaction, type TransactionReceipt, formatEther } from "viem";
 
-import { useAccount, useProvider } from "../hooks";
+import { useAccount } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
+import { useProvider } from "../hooks/useProvider";
 import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
 import { Address, Tx } from "../types";
 import { ContextMenu } from "./ContextMenu";
@@ -56,9 +54,9 @@ function Receipt({ account, tx }: ReceiptProps) {
   const provider = useProvider();
   /// TODO: currently doing an RPC request per transaction, because we don't know the status
   /// we need to remove this at some point
-  const { data: receipt, mutate: mutate } = useSWR(
+  const { data: receipt, mutate } = useSWR(
     !!provider && ["getTransactionReceipt", tx.hash],
-    ([, hash]) => provider?.getTransactionReceipt(hash)
+    ([, hash]) => provider?.getTransactionReceipt({ hash })
   );
 
   useEffect(() => {
@@ -88,7 +86,7 @@ function Receipt({ account, tx }: ReceiptProps) {
             )}
           </Box>
           <Typography variant="caption" fontSize="xl">
-            Block #{tx.blockNumber}
+            Block #{tx.blockNumber?.toLocaleString()}
           </Typography>
         </Stack>
       </Box>
@@ -101,12 +99,12 @@ function Receipt({ account, tx }: ReceiptProps) {
 
 interface IconProps {
   account: Address;
-  tx: Tx;
   receipt: TransactionReceipt;
+  tx: Tx;
 }
 
-function Icon({ account, tx, receipt }: IconProps) {
-  const color = receipt.status === 1 ? "success" : "error";
+function Icon({ account, receipt, tx }: IconProps) {
+  const color = receipt.status === "success" ? "success" : "error";
 
   let icon = CallMade;
 
