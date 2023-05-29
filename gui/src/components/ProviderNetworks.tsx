@@ -47,7 +47,10 @@ export function ProviderNetworks({ children }: { children: ReactNode }) {
     },
   };
 
-  useRefreshNetwork(mutateNetwork);
+  useRefreshNetwork(() => {
+    mutateNetworks();
+    mutateNetwork();
+  });
 
   useRegisterActions(
     [
