@@ -14,7 +14,7 @@ import useSWR from "swr";
 import truncateEthAddress from "truncate-eth-address";
 import { type Transaction, type TransactionReceipt, formatEther } from "viem";
 
-import { useAccount, useClient } from "../hooks";
+import { useAccount } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
 import { useProvider } from "../hooks/useProvider";
 import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
