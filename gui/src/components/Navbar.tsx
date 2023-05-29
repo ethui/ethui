@@ -8,7 +8,7 @@ import {
   Modal,
   Paper,
 } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link } from "wouter";
 
 import { QuickAddressSelect } from "./QuickAddressSelect";

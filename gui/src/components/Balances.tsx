@@ -1,8 +1,6 @@
 import { Stack, Typography } from "@mui/material";
 import { erc20ABI } from "@wagmi/core";
-import { BigNumber } from "ethers";
-import { formatUnits } from "ethers/lib/utils.js";
-import React from "react";
+import { formatUnits } from "viem";
 import { useBalance, useContractRead } from "wagmi";
 
 import { useAccount } from "../hooks";
@@ -30,7 +28,7 @@ export function Balances() {
             key={contract}
             {...{
               contract,
-              balance: BigNumber.from(balance),
+              balance: BigInt(balance),
             }}
           />
         ))}
@@ -56,7 +54,7 @@ function BalanceERC20({
   balance,
 }: {
   contract: Address;
-  balance: BigNumber;
+  balance: bigint;
 }) {
   const { data: name } = useContractRead({
     address: contract,

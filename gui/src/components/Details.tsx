@@ -1,7 +1,7 @@
 import ContentCopy from "@mui/icons-material/ContentCopy";
 import { Button, Tooltip } from "@mui/material";
 import { writeText } from "@tauri-apps/api/clipboard";
-import React, { useState } from "react";
+import { useState } from "react";
 import truncateEthAddress from "truncate-eth-address";
 
 import { useAccount } from "../hooks";
