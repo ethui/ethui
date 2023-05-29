@@ -9,12 +9,11 @@ import {
   Typography,
 } from "@mui/material";
 import { BigNumber } from "ethers";
-import { formatEther } from "ethers/lib/utils";
 import { createElement } from "react";
 import { useEffect } from "react";
 import useSWR from "swr";
 import truncateEthAddress from "truncate-eth-address";
-import { type Transaction, type TransactionReceipt, formatEther } from "viem";
+import { type TransactionReceipt, formatEther } from "viem";
 
 import { useAccount } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
@@ -91,7 +90,7 @@ function Receipt({ account, tx }: ReceiptProps) {
         </Stack>
       </Box>
       <Box>
-        <ContextMenu>{formatEther(BigNumber.from(tx.value))} Ξ</ContextMenu>
+        <ContextMenu>{formatEther(BigInt(tx.value))} Ξ</ContextMenu>
       </Box>
     </ListItem>
   );

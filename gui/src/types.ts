@@ -86,7 +86,7 @@ export interface ABIMatch {
 }
 
 export interface Tx {
-  hash: string;
+  hash: `0x${string}`;
   from: Address;
   to: Address;
   value: string;
