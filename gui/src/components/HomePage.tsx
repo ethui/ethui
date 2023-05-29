@@ -1,5 +1,5 @@
 import { Container, Tab, Tabs } from "@mui/material";
-import { findIndex, parseInt, range, toString } from "lodash";
+import { findIndex, parseInt, range, toString } from "lodash-es";
 import { Link, Route, Switch, useLocation, useRoute } from "wouter";
 
 import { useKeyPress } from "../hooks/useKeyPress";
