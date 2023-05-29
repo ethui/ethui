@@ -1,12 +1,13 @@
 mod error;
 
 use crate::db::DB;
-use crate::types::AlchemyResponse;
 use crate::{
     types::GlobalState,
     wallets::{WalletControl, Wallets},
 };
 pub use error::{Error, Result};
+use ethers_core::types::{Address, U256};
+use serde::Deserialize;
 use serde_json::json;
 use url::Url;
 
@@ -64,4 +65,18 @@ async fn process(ws_url: Url, db: DB, chain_id: u32) -> Result<()> {
         db.save_balances(res, chain_id).await?;
     }
     Ok(())
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AlchemyResponse {
+    pub address: Address,
+    pub token_balances: Vec<TokenBalance>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TokenBalance {
+    pub contract_address: Address,
+    pub token_balance: U256,
 }

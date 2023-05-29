@@ -19,7 +19,8 @@ pub use self::error::{Error, Result};
 use crate::types::events::Tx;
 use crate::{
     foundry::calculate_code_hash,
-    types::{AlchemyResponse, Event, Events},
+    live_networks_listener::AlchemyResponse,
+    types::{Event, Events},
 };
 
 #[derive(Debug, Clone)]
@@ -50,16 +51,14 @@ impl DB {
         let mut conn = self.tx().await?;
 
         for balance in balances.token_balances {
-            if !balance.token_balance.is_zero() {
-                queries::erc20_update_balance(
-                    balance.contract_address,
-                    balances.address,
-                    chain_id,
-                    balance.token_balance,
-                )
-                .execute(&mut conn)
-                .await?;
-            }
+            queries::erc20_update_balance(
+                balance.contract_address,
+                balances.address,
+                chain_id,
+                balance.token_balance,
+            )
+            .execute(&mut conn)
+            .await?;
         }
 
         conn.commit().await?;
