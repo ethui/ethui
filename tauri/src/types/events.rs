@@ -1,8 +1,13 @@
+use std::str::FromStr;
+
 use ethers::contract::EthLogDecode;
 use ethers::{
     abi::RawLog,
     types::{Action, Address, Bytes, Call, Create, CreateResult, Log, Res, Trace, H256, U256},
 };
+use serde::Serialize;
+use sqlx::sqlite::SqliteRow;
+use sqlx::Row;
 
 use crate::abis;
 
@@ -17,13 +22,16 @@ pub enum Event {
 #[derive(Debug)]
 pub struct Events(pub Vec<Event>);
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Tx {
     pub hash: H256,
     pub from: Address,
     pub to: Option<Address>,
     pub value: U256,
     pub data: Bytes,
+    pub block_number: u64,
+    pub position: Option<usize>,
 }
 
 #[derive(Debug)]
@@ -59,6 +67,8 @@ impl From<Trace> for Events {
                 vec![
                     Tx {
                         hash: trace.transaction_hash.unwrap(),
+                        block_number: trace.block_number,
+                        position: trace.transaction_position,
                         from,
                         to: None,
                         value,
@@ -85,6 +95,8 @@ impl From<Trace> for Events {
                 0,
             ) => vec![Tx {
                 hash: trace.transaction_hash.unwrap(),
+                block_number: trace.block_number,
+                position: trace.transaction_position,
                 from,
                 to: Some(to),
                 value,
@@ -188,5 +200,21 @@ impl From<ERC20Transfer> for Event {
 impl From<ERC721Transfer> for Event {
     fn from(value: ERC721Transfer) -> Self {
         Self::ERC721Transfer(value)
+    }
+}
+
+impl TryFrom<&SqliteRow> for Tx {
+    type Error = ();
+
+    fn try_from(row: &SqliteRow) -> Result<Self, Self::Error> {
+        Ok(Self {
+            hash: H256::from_str(row.get("hash")).unwrap(),
+            from: Address::from_str(row.get("from_address")).unwrap(),
+            to: Address::from_str(row.get("to_address")).ok(),
+            value: U256::from_str(row.get("value")).unwrap(),
+            data: Bytes::from_str(row.get("data")).unwrap(),
+            block_number: row.get::<i64, _>("block_number") as u64,
+            position: Some(row.get::<i32, _>("position") as usize),
+        })
     }
 }
