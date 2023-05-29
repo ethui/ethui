@@ -12,6 +12,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { BigNumber } from "ethers";
 import { formatEther } from "ethers/lib/utils";
 import { createElement } from "react";
 import { useEffect } from "react";
@@ -21,13 +22,13 @@ import truncateEthAddress from "truncate-eth-address";
 import { useAccount, useProvider } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
 import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
-import { Address } from "../types";
+import { Address, Tx } from "../types";
 import { ContextMenu } from "./ContextMenu";
 import Panel from "./Panel";
 
 export function Txs() {
   const account = useAccount();
-  const { data: hashes, mutate } = useInvoke<string[]>("db_get_transactions", {
+  const { data: txs, mutate } = useInvoke<Tx[]>("db_get_transactions", {
     address: account,
   });
 
@@ -38,8 +39,8 @@ export function Txs() {
   return (
     <Panel>
       <List>
-        {(hashes || []).map((hash) => (
-          <Receipt account={account} key={hash} hash={hash} />
+        {(txs || []).map((tx) => (
+          <Receipt account={account} tx={tx} key={tx.hash} />
         ))}
       </List>
     </Panel>
@@ -48,26 +49,23 @@ export function Txs() {
 
 interface ReceiptProps {
   account: Address;
-  hash: string;
+  tx: Tx;
 }
 
-function Receipt({ account, hash }: ReceiptProps) {
+function Receipt({ account, tx }: ReceiptProps) {
   const provider = useProvider();
-  const { data: tx, mutate: mutate1 } = useSWR(
-    !!provider && ["getTransaction", hash],
-    ([, hash]) => provider?.getTransaction(hash)
-  );
-  const { data: receipt, mutate: mutate2 } = useSWR(
-    !!provider && ["getTransactionReceipt", hash],
+  /// TODO: currently doing an RPC request per transaction, because we don't know the status
+  /// we need to remove this at some point
+  const { data: receipt, mutate: mutate } = useSWR(
+    !!provider && ["getTransactionReceipt", tx.hash],
     ([, hash]) => provider?.getTransactionReceipt(hash)
   );
 
   useEffect(() => {
-    mutate1();
-    mutate2();
-  }, [provider, mutate1, mutate2]);
+    mutate();
+  }, [provider, mutate]);
 
-  if (!receipt || !tx) return null;
+  if (!receipt) return null;
 
   return (
     <ListItem>
@@ -77,13 +75,13 @@ function Receipt({ account, hash }: ReceiptProps) {
       <Box sx={{ flexGrow: 1 }}>
         <Stack>
           <Box>
-            <ContextMenu label={receipt.from} sx={{ textTransform: "none" }}>
-              {truncateEthAddress(receipt.from)}
+            <ContextMenu label={tx.from} sx={{ textTransform: "none" }}>
+              {truncateEthAddress(tx.from)}
             </ContextMenu>{" "}
             →{" "}
-            {receipt.to ? (
-              <ContextMenu label={receipt.to} sx={{ textTransform: "none" }}>
-                {truncateEthAddress(receipt.to)}
+            {tx.to ? (
+              <ContextMenu label={tx.to} sx={{ textTransform: "none" }}>
+                {truncateEthAddress(tx.to)}
               </ContextMenu>
             ) : (
               <Typography component="span">Contract Deploy</Typography>
@@ -95,7 +93,7 @@ function Receipt({ account, hash }: ReceiptProps) {
         </Stack>
       </Box>
       <Box>
-        <ContextMenu>{formatEther(tx.value)} Ξ</ContextMenu>
+        <ContextMenu>{formatEther(BigNumber.from(tx.value))} Ξ</ContextMenu>
       </Box>
     </ListItem>
   );
@@ -103,11 +101,11 @@ function Receipt({ account, hash }: ReceiptProps) {
 
 interface IconProps {
   account: Address;
+  tx: Tx;
   receipt: TransactionReceipt;
-  tx: TransactionResponse;
 }
 
-function Icon({ account, receipt, tx }: IconProps) {
+function Icon({ account, tx, receipt }: IconProps) {
   const color = receipt.status === 1 ? "success" : "error";
 
   let icon = CallMade;

@@ -209,10 +209,10 @@ impl TryFrom<&SqliteRow> for Tx {
     fn try_from(row: &SqliteRow) -> Result<Self, Self::Error> {
         Ok(Self {
             hash: H256::from_str(row.get("hash")).unwrap(),
-            from: Address::from_str(row.get("from")).unwrap(),
-            to: Some(Address::from_str(row.get("to")).unwrap()),
+            from: Address::from_str(row.get("from_address")).unwrap(),
+            to: Address::from_str(row.get("to_address")).ok(),
             value: U256::from_str(row.get("value")).unwrap(),
-            data: Bytes::from_str(row.get("bytes")).unwrap(),
+            data: Bytes::from_str(row.get("data")).unwrap(),
             block_number: row.get::<i64, _>("block_number") as u64,
             position: Some(row.get::<i32, _>("position") as usize),
         })
