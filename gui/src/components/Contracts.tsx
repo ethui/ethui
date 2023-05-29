@@ -4,7 +4,6 @@ import {
   AccordionDetails,
   AccordionSummary,
   Chip,
-  Typography,
 } from "@mui/material";
 
 import { useInvoke } from "../hooks/tauri";
@@ -42,10 +41,8 @@ function Contract({ address, deployedCodeHash }: IContract) {
   return (
     <Accordion>
       <AccordionSummary expandIcon={<ExpandMore />}>
-        <Typography sx={{ textTransform: "none" }}>
-          <AddressView address={address} />
-          {data && <Chip sx={{ marginLeft: 2 }} label={data.name} />}
-        </Typography>
+        <AddressView address={address} />
+        {data && <Chip sx={{ marginLeft: 2 }} label={data.name} />}
       </AccordionSummary>
       <AccordionDetails>
         {data && <ABIForm address={address} abi={data.abi} />}

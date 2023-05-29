@@ -3,7 +3,6 @@ import { Box, Divider, Stack } from "@mui/material";
 import { useAccount } from "../hooks";
 import { AddressView } from "./AddressView";
 import { Balances } from "./Balances";
-import Panel from "./Panel";
 
 export function Details() {
   const address = useAccount();

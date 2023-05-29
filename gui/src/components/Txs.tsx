@@ -1,7 +1,3 @@
-import {
-  type TransactionReceipt,
-  type TransactionResponse,
-} from "@ethersproject/providers";
 import { CallMade, NoteAdd, VerticalAlignBottom } from "@mui/icons-material";
 import {
   Badge,
@@ -12,13 +8,14 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { formatEther } from "ethers/lib/utils";
 import { createElement } from "react";
 import { useEffect } from "react";
 import useSWR from "swr";
+import { type Transaction, type TransactionReceipt, formatEther } from "viem";
 
-import { useAccount, useProvider } from "../hooks";
+import { useAccount } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
+import { useProvider } from "../hooks/useProvider";
 import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
 import { Address } from "../types";
 import { AddressView } from "./AddressView";
@@ -27,9 +24,12 @@ import Panel from "./Panel";
 
 export function Txs() {
   const account = useAccount();
-  const { data: hashes, mutate } = useInvoke<string[]>("db_get_transactions", {
-    address: account,
-  });
+  const { data: hashes, mutate } = useInvoke<`0x${string}`[]>(
+    "db_get_transactions",
+    {
+      address: account,
+    }
+  );
 
   useRefreshTransactions(mutate);
 
@@ -48,18 +48,20 @@ export function Txs() {
 
 interface ReceiptProps {
   account: Address;
-  hash: string;
+  hash: `0x${string}`;
 }
 
 function Receipt({ account, hash }: ReceiptProps) {
   const provider = useProvider();
+
   const { data: tx, mutate: mutate1 } = useSWR(
     !!provider && ["getTransaction", hash],
-    ([, hash]) => provider?.getTransaction(hash)
+    ([, hash]) => provider?.getTransaction({ hash })
   );
+
   const { data: receipt, mutate: mutate2 } = useSWR(
     !!provider && ["getTransactionReceipt", hash],
-    ([, hash]) => provider?.getTransactionReceipt(hash)
+    ([, hash]) => provider?.getTransactionReceipt({ hash })
   );
 
   useEffect(() => {
@@ -85,7 +87,7 @@ function Receipt({ account, hash }: ReceiptProps) {
             )}
           </Box>
           <Typography variant="caption" fontSize="xl">
-            Block #{tx.blockNumber}
+            Block #{tx.blockNumber?.toLocaleString()}
           </Typography>
         </Stack>
       </Box>
@@ -99,11 +101,11 @@ function Receipt({ account, hash }: ReceiptProps) {
 interface IconProps {
   account: Address;
   receipt: TransactionReceipt;
-  tx: TransactionResponse;
+  tx: Transaction;
 }
 
 function Icon({ account, receipt, tx }: IconProps) {
-  const color = receipt.status === 1 ? "success" : "error";
+  const color = receipt.status === "success" ? "success" : "error";
 
   let icon = CallMade;
 

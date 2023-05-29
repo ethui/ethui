@@ -22,30 +22,30 @@ export default function App() {
         <CssBaseline>
           <QueryClientProvider client={queryClient}>
             <WagmiWrapper>
-              <CommandBar>
-                <ProviderNetworks>
-                  <Router>
-                    <Switch>
-                      <Route path="/dialog/tx-review/:id">
-                        {({ id }: { id: string }) => (
-                          <TxReviewDialog id={parseInt(id)} />
-                        )}
-                      </Route>
+              <ProviderNetworks>
+                <Router>
+                  <Switch>
+                    <Route path="/dialog/tx-review/:id">
+                      {({ id }: { id: string }) => (
+                        <TxReviewDialog id={parseInt(id)} />
+                      )}
+                    </Route>
 
-                      <Route path="/dialog/jsonkeystore-unlock/:id">
-                        {({ id }: { id: string }) => (
-                          <JsonKeystoreUnlockDialog id={parseInt(id)} />
-                        )}
-                      </Route>
+                    <Route path="/dialog/jsonkeystore-unlock/:id">
+                      {({ id }: { id: string }) => (
+                        <JsonKeystoreUnlockDialog id={parseInt(id)} />
+                      )}
+                    </Route>
 
-                      <Route>
+                    <Route>
+                      <CommandBar>
                         <Navbar />
                         <HomePage />
-                      </Route>
-                    </Switch>
-                  </Router>
-                </ProviderNetworks>
-              </CommandBar>
+                      </CommandBar>
+                    </Route>
+                  </Switch>
+                </Router>
+              </ProviderNetworks>
             </WagmiWrapper>
           </QueryClientProvider>
         </CssBaseline>

@@ -1,5 +1,5 @@
-import { JsonRpcProvider } from "@ethersproject/providers";
 import { useEffect, useState } from "react";
+import { createPublicClient, http } from "viem";
 
 import { Network } from "../types";
 import { useInvoke } from "./tauri";
@@ -7,14 +7,17 @@ import { useInvoke } from "./tauri";
 export function useProvider() {
   const { data: network } = useInvoke<Network>("networks_get_current");
 
-  const [provider, setProvider] = useState<JsonRpcProvider | undefined>(
-    undefined
-  );
+  const [provider, setProvider] = useState<
+    ReturnType<typeof createPublicClient> | undefined
+  >(undefined);
 
   useEffect(() => {
     if (!network) return;
 
-    const provider = new JsonRpcProvider(network.http_url);
+    const provider = createPublicClient({
+      transport: http(network.http_url),
+    });
+
     setProvider(provider);
   }, [network]);
 
