@@ -1,6 +1,6 @@
 import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
-import { map } from "lodash";
+import { map } from "lodash-es";
 import { useSWRConfig } from "swr";
 
 import { useInvoke } from "../hooks/tauri";

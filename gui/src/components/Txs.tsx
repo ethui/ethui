@@ -8,28 +8,24 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { createElement } from "react";
-import { useEffect } from "react";
+import { createElement, useEffect } from "react";
 import useSWR from "swr";
-import { type Transaction, type TransactionReceipt, formatEther } from "viem";
+import { type TransactionReceipt, formatEther } from "viem";
 
 import { useAccount } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
 import { useProvider } from "../hooks/useProvider";
 import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
-import { Address } from "../types";
+import { Address, Tx } from "../types";
 import { AddressView } from "./AddressView";
 import { ContextMenu } from "./ContextMenu";
 import Panel from "./Panel";
 
 export function Txs() {
   const account = useAccount();
-  const { data: hashes, mutate } = useInvoke<`0x${string}`[]>(
-    "db_get_transactions",
-    {
-      address: account,
-    }
-  );
+  const { data: txs, mutate } = useInvoke<Tx[]>("db_get_transactions", {
+    address: account,
+  });
 
   useRefreshTransactions(mutate);
 
@@ -38,8 +34,8 @@ export function Txs() {
   return (
     <Panel>
       <List>
-        {(hashes || []).map((hash) => (
-          <Receipt account={account} key={hash} hash={hash} />
+        {(txs || []).map((tx) => (
+          <Receipt account={account} tx={tx} key={tx.hash} />
         ))}
       </List>
     </Panel>
@@ -48,28 +44,23 @@ export function Txs() {
 
 interface ReceiptProps {
   account: Address;
-  hash: `0x${string}`;
+  tx: Tx;
 }
 
-function Receipt({ account, hash }: ReceiptProps) {
+function Receipt({ account, tx }: ReceiptProps) {
   const provider = useProvider();
-
-  const { data: tx, mutate: mutate1 } = useSWR(
-    !!provider && ["getTransaction", hash],
-    ([, hash]) => provider?.getTransaction({ hash })
-  );
-
-  const { data: receipt, mutate: mutate2 } = useSWR(
-    !!provider && ["getTransactionReceipt", hash],
+  /// TODO: currently doing an RPC request per transaction, because we don't know the status
+  /// we need to remove this at some point
+  const { data: receipt, mutate } = useSWR(
+    !!provider && ["getTransactionReceipt", tx.hash],
     ([, hash]) => provider?.getTransactionReceipt({ hash })
   );
 
   useEffect(() => {
-    mutate1();
-    mutate2();
-  }, [provider, mutate1, mutate2]);
+    mutate();
+  }, [provider, mutate]);
 
-  if (!receipt || !tx) return null;
+  if (!receipt) return null;
 
   return (
     <ListItem>
@@ -92,7 +83,7 @@ function Receipt({ account, hash }: ReceiptProps) {
         </Stack>
       </Box>
       <Box>
-        <ContextMenu>{formatEther(tx.value)} Ξ</ContextMenu>
+        <ContextMenu>{formatEther(BigInt(tx.value))} Ξ</ContextMenu>
       </Box>
     </ListItem>
   );
@@ -101,7 +92,7 @@ function Receipt({ account, hash }: ReceiptProps) {
 interface IconProps {
   account: Address;
   receipt: TransactionReceipt;
-  tx: Transaction;
+  tx: Tx;
 }
 
 function Icon({ account, receipt, tx }: IconProps) {

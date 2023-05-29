@@ -1,6 +1,7 @@
 use ethers::types::{Address, U256};
 
 use super::Result;
+use crate::types::events::Tx;
 use crate::{
     db::{StoredContract, DB},
     networks::Networks,
@@ -8,10 +9,7 @@ use crate::{
 };
 
 #[tauri::command]
-pub async fn db_get_transactions(
-    address: Address,
-    db: tauri::State<'_, DB>,
-) -> Result<Vec<String>> {
+pub async fn db_get_transactions(address: Address, db: tauri::State<'_, DB>) -> Result<Vec<Tx>> {
     let networks = Networks::read().await;
 
     let chain_id = networks.get_current_network().chain_id;

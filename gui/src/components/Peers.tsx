@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
-import { groupBy, map } from "lodash";
+import { groupBy, map } from "lodash-es";
 
 import { useInvoke } from "../hooks/tauri";
 import { useRefreshPeers } from "../hooks/useRefreshPeers";

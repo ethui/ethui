@@ -16,6 +16,7 @@ use sqlx::{
 use url::Url;
 
 pub use self::error::{Error, Result};
+use crate::types::events::Tx;
 use crate::{
     foundry::calculate_code_hash,
     types::{Event, Events},
@@ -125,17 +126,18 @@ impl DB {
         Ok(())
     }
 
-    async fn get_transactions(&self, chain_id: u32, from_or_to: Address) -> Result<Vec<String>> {
+    async fn get_transactions(&self, chain_id: u32, from_or_to: Address) -> Result<Vec<Tx>> {
         let res: Vec<_> = sqlx::query(
             r#" SELECT * 
             FROM transactions 
             WHERE chain_id = ? 
-            AND (from_address = ? or to_address = ?) COLLATE NOCASE "#,
+            AND (from_address = ? or to_address = ?) COLLATE NOCASE
+            ORDER BY block_number DESC, position DESC"#,
         )
         .bind(chain_id)
         .bind(format!("0x{:x}", from_or_to))
         .bind(format!("0x{:x}", from_or_to))
-        .map(|row| row.get("hash"))
+        .map(|row| Tx::try_from(&row).unwrap())
         .fetch_all(self.pool())
         .await?;
 
