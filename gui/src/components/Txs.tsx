@@ -92,7 +92,7 @@ function Receipt({ account, hash }: ReceiptProps) {
             )}
           </Box>
           <Typography variant="caption" fontSize="xl">
-            Block #{tx.blockNumber?.toString()}
+            Block #{tx.blockNumber?.toLocaleString()}
           </Typography>
         </Stack>
       </Box>
