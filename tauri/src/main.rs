@@ -19,8 +19,6 @@ mod ws;
 use db::DB;
 use error::Result;
 use foundry::Foundry;
-#[cfg(feature = "foundry-abi-watch")]
-use foundry::Foundry;
 use networks::Networks;
 use peers::Peers;
 use settings::Settings;

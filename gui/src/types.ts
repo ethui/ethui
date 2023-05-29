@@ -30,18 +30,33 @@ export const networkSchema = z.object({
   ),
 });
 
-export const walletSchema = z.object({
-  name: z.string().min(1),
-  dev: z.boolean().default(false),
-  mnemonic: z.string().regex(/^(\w+\s){11}\w+$/, {
-    message: "Must be a 12-word phrase",
+export const walletSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("plaintext"),
+    name: z.string().min(1),
+    dev: z.boolean().default(false),
+    mnemonic: z.string().regex(/^(\w+\s){11}\w+$/, {
+      message: "Must be a 12-word phrase",
+    }),
+    derivationPath: z.string().regex(/^m\/(\d+'?\/)+\d+$/, {
+      message: "invalid path format",
+    }),
+    count: z.number().int().min(1),
+    currentPath: z.string().optional(),
   }),
-  derivationPath: z.string().regex(/^m\/(\d+'?\/)+\d+$/, {
-    message: "invalid path format",
+  z.object({
+    type: z.literal("jsonKeystore"),
+    name: z.string().min(1),
+    file: z.string().min(1),
+    currentPath: z.string().optional(),
   }),
-  currentPath: z.string().optional(),
-  count: z.number().int().min(1),
-});
+]);
+
+export const walletTypes: Wallet["type"][] = Array.from(
+  walletSchema.optionsMap.keys()
+)
+  .filter((k) => !!k)
+  .map((k) => k as unknown as Wallet["type"]);
 
 export const walletsSchema = z.object({
   wallets: z.array(walletSchema),

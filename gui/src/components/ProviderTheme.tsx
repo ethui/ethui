@@ -5,7 +5,6 @@ import {
   createTheme,
   useMediaQuery,
 } from "@mui/material";
-import { grey } from "@mui/material/colors";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useRegisterActions } from "kbar";
 import { ReactNode, createContext, useMemo } from "react";
@@ -20,9 +19,7 @@ const getDesignTokens = (mode: PaletteMode) => ({
     mode,
     ...(mode === "light"
       ? {
-          background: {
-            default: grey[50],
-          },
+          background: {},
         }
       : {
           background: {},

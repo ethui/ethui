@@ -11,6 +11,7 @@ import { useInvoke } from "../hooks/tauri";
 import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
 import { ABIMatch, Address } from "../types";
 import { ABIForm } from "./ABIForm";
+import { AddressView } from "./AddressView";
 import Panel from "./Panel";
 
 interface IContract {
@@ -42,7 +43,7 @@ function Contract({ address, deployedCodeHash }: IContract) {
     <Accordion>
       <AccordionSummary expandIcon={<ExpandMore />}>
         <Typography sx={{ textTransform: "none" }}>
-          {address}
+          <AddressView address={address} />
           {data && <Chip sx={{ marginLeft: 2 }} label={data.name} />}
         </Typography>
       </AccordionSummary>
