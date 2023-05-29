@@ -18,6 +18,7 @@ export const networkSchema = z.object({
         currency: z.string().min(1),
         chain_id: z.number(),
         decimals: z.number(),
+        alchemy_url: z.string().nullable().optional(),
       })
       .refine(
         (data) =>

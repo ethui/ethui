@@ -8,6 +8,7 @@ mod db;
 mod dialogs;
 mod error;
 mod foundry;
+mod live_networks_listener;
 mod networks;
 mod peers;
 mod rpc;
