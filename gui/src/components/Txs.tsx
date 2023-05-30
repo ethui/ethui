@@ -8,7 +8,6 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { grey } from "@mui/material/colors";
 import { createElement, useEffect } from "react";
 import useSWR from "swr";
 import { type TransactionReceipt, formatEther } from "viem";
@@ -72,14 +71,14 @@ function Receipt({ account, tx }: ReceiptProps) {
       </ListItemAvatar>
       <Box sx={{ flexGrow: 1 }}>
         <Stack>
-          <Box>
-            <AddressView address={receipt.from} /> →{" "}
+          <Stack direction="row" spacing={1}>
+            <AddressView address={receipt.from} /> <span>→</span>
             {receipt.to ? (
               <AddressView address={receipt.to} />
             ) : (
               <Typography component="span">Contract Deploy</Typography>
             )}
-          </Box>
+          </Stack>
           <Typography variant="caption" fontSize="xl">
             Block #{tx.blockNumber?.toLocaleString()}
           </Typography>
