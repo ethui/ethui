@@ -10,7 +10,6 @@ interface Props {
   explorer?: string;
   sx?: SxProps;
   actions?: CustomAction[];
-  title?: string;
 }
 
 interface CustomAction {
@@ -29,14 +28,7 @@ const buttonSx = {
   minWidth: "inherit",
 };
 
-export function ContextMenu({
-  children,
-  title,
-  sx,
-  copy,
-  explorer,
-  actions,
-}: Props) {
+export function ContextMenu({ children, sx, copy, explorer, actions }: Props) {
   const { currentNetwork } = useNetworks();
   const [copied, setCopied] = useState(false);
   const [contextMenu, setContextMenu] = useState<{
@@ -106,7 +98,6 @@ export function ContextMenu({
           sx={{ ...buttonSx, ...sx }}
           onClick={onCopyText}
           onContextMenu={onContextMenu}
-          title={title}
         >
           {children}
         </Button>
