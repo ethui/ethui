@@ -3,9 +3,9 @@ import { z } from "zod";
 export const generalSettingsSchema = z.object({
   darkMode: z.enum(["auto", "dark", "light"]),
   abiWatch: z.boolean().default(false),
-  abiWatchPath: z.string().optional(),
+  abiWatchPath: z.string().optional().nullable(),
   hideEmptyTokens: z.boolean().default(true),
-  alchemyApiKey: z.string().optional(),
+  alchemyApiKey: z.string().optional().nullable(),
 });
 
 // const formSchema = schema.shape.network;
