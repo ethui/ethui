@@ -18,26 +18,24 @@ export function Balances() {
   );
   const { data: settings } = useInvoke<GeneralSettings>("settings_get");
 
+  const reorderedBalances = (balances || [])
+    .map<[`0x${string}`, bigint]>(([c, b]) => [c, BigInt(b)]) // is it possible to get the proper type from backend directly?
+    .filter(([, balance]) => (settings?.hideEmptyTokens ? !!balance : true))
+    .sort(([, a], [, b]) => (b > a ? 1 : b < a ? -1 : 0));
+
   useRefreshTransactions(mutate);
 
   return (
     <Panel>
       <Stack>
         {address && <BalanceETH address={address} />}
-        {(balances || [])
-          .filter(([, balance]) =>
-            settings?.hideEmptyTokens ? !BigInt(balance) : true
-          )
-          .sort(([, a], [, b]) => parseInt((BigInt(b) - BigInt(a)).toString()))
-          .map(([contract, balance]) => (
-            <BalanceERC20
-              key={contract}
-              {...{
-                contract,
-                balance: BigInt(balance),
-              }}
-            />
-          ))}
+        {reorderedBalances.map(([contract, balance]) => (
+          <BalanceERC20
+            key={contract}
+            contract={contract}
+            balance={BigInt(balance)}
+          />
+        ))}
       </Stack>
     </Panel>
   );
