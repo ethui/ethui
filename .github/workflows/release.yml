@@ -16,22 +16,31 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.get-tag.outputs.tag }}
-      release_id: ${{ steps.create_release.outputs.id }}
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      release_id: ${{ steps.get-id.outputs.result }}
     steps:
       - uses: actions/checkout@v3
 
+      # get the current draft release
       - id: get-tag
         name: get tag
-        run: echo "tag=v$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+        run: echo "tag=$(gh release list | grep -i 'draft' | awk 'NR==1 {print $1}')" >> $GITHUB_OUTPUT
 
-      - id: create_release
-        uses: softprops/action-gh-release@v1
+      # the tauri action wants the release-id instead of the tag
+      # so we need to fetch that too
+      - name: get release ID
+        id: get-id
+        uses: actions/github-script@v6
         with:
-          draft: true
-          prerelease: true
-          tag_name: ${{ steps.get-tag.outputs.tag }}
+          script: |
+            const { data } = await github.rest.repos.getReleaseByTag({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: `${{ steps.get-tag.outputs.tag }}`,
+            })
+            return data.id
 
+  # build extension
+  # upload to draft release
   extension:
     needs: [create]
     runs-on: ubuntu-latest
@@ -54,6 +63,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  # build tauri app
+  # upload to draft release
   app:
     needs: [create]
     strategy:
@@ -61,8 +72,6 @@ jobs:
       matrix:
         platform: [macos-latest, ubuntu-20.04, windows-latest]
     runs-on: ${{ matrix.platform }}
-    outputs:
-      artifacts: ${{ steps.tauri.artifactPaths }}
     steps:
       - uses: actions/checkout@v3
 
@@ -96,6 +105,7 @@ jobs:
         with:
           releaseId: ${{ needs.create.outputs.release_id }}
 
+  # publish the draft
   publish:
     needs: [create, extension, app]
     runs-on: ubuntu-20.04
