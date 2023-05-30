@@ -2,9 +2,9 @@ import { z } from "zod";
 
 export const generalSettingsSchema = z.object({
   darkMode: z.enum(["auto", "dark", "light"]),
-  abiWatch: z.boolean().default(false),
+  abiWatch: z.boolean(),
   abiWatchPath: z.string().optional().nullable(),
-  hideEmptyTokens: z.boolean().default(true),
+  hideEmptyTokens: z.boolean(),
   alchemyApiKey: z.string().optional().nullable(),
 });
 
