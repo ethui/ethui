@@ -1,30 +1,21 @@
 import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
-import { invoke } from "@tauri-apps/api/tauri";
 import { map } from "lodash-es";
-import { useSWRConfig } from "swr";
 
 import { useInvoke } from "../hooks/tauri";
-import { Address, Wallet } from "../types";
+import { useWallets } from "../hooks/useWallets";
+import { Address } from "../types";
 import { AddressView } from "./AddressView";
 
 export function QuickAddressSelect() {
-  const { mutate } = useSWRConfig();
-  const { data: current_wallet } = useInvoke<Wallet>("wallets_get_current");
+  const { currentWallet, setCurrentAddress } = useWallets();
   const { data: addresses } = useInvoke<[string | undefined, Address][]>(
     "wallets_get_wallet_addresses",
-    { name: current_wallet?.name }
+    { name: currentWallet?.name }
   );
 
   const handleChange = (event: SelectChangeEvent<string | undefined>) => {
-    const key = event.target.value;
-    if (!current_wallet || !addresses) return;
-
-    (async () => {
-      await invoke("wallets_set_current_path", {
-        key,
-      });
-      mutate(() => true);
-    })();
+    if (!event.target.value) return;
+    setCurrentAddress(event.target.value);
   };
 
   const renderValue = (v: string) => {
@@ -32,13 +23,13 @@ export function QuickAddressSelect() {
     return address && <AddressView contextMenu={false} address={address} />;
   };
 
-  if (!addresses || !current_wallet) return <>Loading</>;
+  if (!addresses || !currentWallet) return <>Loading</>;
 
   return (
     <Select
       size="small"
       renderValue={renderValue}
-      value={current_wallet.currentPath || addresses[0][0]}
+      value={currentWallet.currentPath || addresses[0][0]}
       onChange={handleChange}
     >
       {map(addresses, ([key, address]) => (
