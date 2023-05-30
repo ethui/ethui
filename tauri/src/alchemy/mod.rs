@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tokio::{
     spawn,
-    sync::{RwLock, RwLockReadGuard, RwLockWriteGuard},
+    sync::{RwLock, RwLockWriteGuard},
 };
 use url::Url;
 
@@ -71,34 +71,31 @@ impl Alchemy {
         let networks = Networks::read().await;
         let chain_id = networks.get_current_network().chain_id;
         let wallets = Wallets::read().await;
-        let address = wallets.get_current_wallet().get_current_address().await.0;
+        let address = wallets.get_current_wallet().get_current_address().await;
         let settings = Settings::read().await;
-        let api_key = settings.inner.alchemy_api_key.as_ref().unwrap();
-        let url = ENDPOINTS.get(&chain_id).unwrap();
-        let url = url.join(&api_key)?;
-        let client = reqwest::Client::new();
-        let res: serde_json::Value = client
-            .post(url)
-            .json(&json!({
-                "jsonrpc": "2.0",
-                "method": "alchemy_getTokenBalances",
-                "params": [address, "erc20"]
-            }))
-            .send()
-            .await?
-            .json()
-            .await?;
+        if let Some(api_key) = settings.inner.alchemy_api_key.as_ref() {
+            let url = ENDPOINTS.get(&chain_id).unwrap();
+            let url = url.join(&api_key)?;
+            let client = reqwest::Client::new();
+            let res: serde_json::Value = client
+                .post(url)
+                .json(&json!({
+                    "jsonrpc": "2.0",
+                    "method": "alchemy_getTokenBalances",
+                    "params": [address, "erc20"]
+                }))
+                .send()
+                .await?
+                .json()
+                .await?;
 
-        let res = (&res["result"]).clone();
-        let res: AlchemyResponse = serde_json::from_value(res).unwrap();
-        println!("{:#?}", res);
-        Self::write().await.db.save_balances(res, chain_id).await?;
+            let res = (&res["result"]).clone();
+            let res: AlchemyResponse = serde_json::from_value(res).unwrap();
+            println!("{:#?}", res);
+            Self::write().await.db.save_balances(res, chain_id).await?;
+        }
 
         Ok(())
-    }
-
-    async fn read<'a>() -> RwLockReadGuard<'a, Self> {
-        ALCHEMY.get().unwrap().read().await
     }
 
     async fn write<'a>() -> RwLockWriteGuard<'a, Self> {
