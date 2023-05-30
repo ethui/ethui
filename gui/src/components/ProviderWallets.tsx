@@ -32,7 +32,6 @@ const actionId = "wallet";
 export function ProviderWallets({ children }: { children: ReactNode }) {
   const { data: wallets } = useInvoke<Wallet[]>("wallets_get_all");
   const { data: currentWallet } = useInvoke<Wallet>("wallets_get_current");
-  console.log(currentWallet);
   const [info, setInfo] = useState<WalletInfo[]>([]);
 
   // fetch addresses and alias for all wallets
@@ -46,8 +45,6 @@ export function ProviderWallets({ children }: { children: ReactNode }) {
     currentWallet,
     setCurrentWallet: async (name: string) => {
       const idx = (wallets || []).findIndex((w) => w.name === name);
-      console.log(name, wallets);
-      console.log(idx);
       if (
         !wallets ||
         !currentWallet ||

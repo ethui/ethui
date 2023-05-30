@@ -1,10 +1,8 @@
 import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
-import { useSWRConfig } from "swr";
 
 import { useWallets } from "../hooks/useWallets";
 
 export function QuickWalletSelect() {
-  const { mutate } = useSWRConfig();
   const { wallets, currentWallet, setCurrentWallet } = useWallets();
 
   const handleChange = (event: SelectChangeEvent<string>) => {
