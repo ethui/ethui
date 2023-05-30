@@ -13,7 +13,10 @@ use once_cell::sync::Lazy;
 use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use tokio::{spawn, sync::RwLock};
+use tokio::{
+    spawn,
+    sync::{RwLock, RwLockReadGuard, RwLockWriteGuard},
+};
 use url::Url;
 
 use std::collections::HashMap;
@@ -88,15 +91,17 @@ impl Alchemy {
 
         let res = (&res["result"]).clone();
         let res: AlchemyResponse = serde_json::from_value(res).unwrap();
-        ALCHEMY
-            .get()
-            .unwrap()
-            .read()
-            .await
-            .db
-            .save_balances(res, chain_id)
-            .await?;
+        println!("{:#?}", res);
+        Self::write().await.db.save_balances(res, chain_id).await?;
 
         Ok(())
+    }
+
+    async fn read<'a>() -> RwLockReadGuard<'a, Self> {
+        ALCHEMY.get().unwrap().read().await
+    }
+
+    async fn write<'a>() -> RwLockWriteGuard<'a, Self> {
+        ALCHEMY.get().unwrap().write().await
     }
 }
