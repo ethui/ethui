@@ -12,34 +12,35 @@ permissions:
   contents: write
 
 jobs:
-  create:
+  setup:
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.get-tag.outputs.tag }}
-      release_id: ${{ steps.get-id.outputs.result }}
+      release_id: ${{ steps.get-id.outputs.id }}
     steps:
       - uses: actions/checkout@v3
+
+      - run: sudo apt install -y jq
 
       # get the current draft release
       - id: get-tag
         name: get tag
-        run: echo "tag=$(gh release list | grep -i 'draft' | awk 'NR==1 {print $1}')" >> $GITHUB_OUTPUT
+        run: |
+          echo "tag=$(gh api /repos/iron-wallet/releases |\
+            jq '.[] | select(.draft == true) | .tag_name')" \
+            >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # the tauri action wants the release-id instead of the tag
-      # so we need to fetch that too
-      - name: get release ID
-        id: get-id
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const { data } = await github.rest.repos.getReleaseByTag({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag_name: `${{ steps.get-tag.outputs.tag }}`,
-            })
-            return data.id
+      # get the current release_id
+      - id: get-id
+        name: get release ID
+        run: |
+          echo "id=$(gh api /repos/iron-wallet/releases |\
+            jq '.[] | select(.draft == true) | .id')" \
+            >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # build extension
   # upload to draft release
@@ -65,7 +66,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # build tauri app
+  # build extension
   # upload to draft release
   app:
     needs: [create]
@@ -107,7 +108,6 @@ jobs:
         with:
           releaseId: ${{ needs.create.outputs.release_id }}
 
-  # publish the draft
   publish:
     needs: [create, extension, app]
     runs-on: ubuntu-20.04
