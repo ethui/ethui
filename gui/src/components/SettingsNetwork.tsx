@@ -28,7 +28,6 @@ const emptyNetwork: Network & NewChild = {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   decimals: undefined!,
   new: true,
-  alchemy_url: "",
 };
 
 export function SettingsNetwork() {
@@ -135,15 +134,6 @@ export function SettingsNetwork() {
                     helperText={err.decimals?.message?.toString()}
                   />
                 </Stack>
-                {field.chain_id !== 31337 && ( // Only show this field in live networks
-                  <TextField
-                    label="Alchemy URL (with API key)"
-                    {...register(`networks.${index}.alchemy_url`)}
-                    fullWidth
-                    error={!!err.alchemy_url}
-                    helperText={err.alchemy_url?.message?.toString()}
-                  />
-                )}
                 <Button
                   color="warning"
                   size="small"

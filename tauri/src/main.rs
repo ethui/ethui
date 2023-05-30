@@ -2,13 +2,13 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod abis;
+mod alchemy;
 mod app;
 mod block_listener;
 mod db;
 mod dialogs;
 mod error;
 mod foundry;
-mod live_networks_listener;
 mod networks;
 mod peers;
 mod rpc;
@@ -17,6 +17,7 @@ mod types;
 mod wallets;
 mod ws;
 
+use alchemy::Alchemy;
 use db::DB;
 use error::Result;
 use foundry::Foundry;
@@ -44,6 +45,7 @@ async fn main() -> Result<()> {
     ))
     .await;
     Foundry::init().await?;
+    Alchemy::init(db.clone()).await;
 
     // run websockets server loop
     tauri::async_runtime::spawn(async move { ws::ws_server_loop().await });

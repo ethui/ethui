@@ -15,7 +15,13 @@ use tokio::sync::mpsc;
 
 pub use self::error::{Error, Result};
 pub use self::network::Network;
-use crate::{app, db::DB, peers::Peers, types::GlobalState};
+use crate::{
+    app,
+    db::DB,
+    peers::Peers,
+    types::GlobalState,
+    wallets::{WalletControl, Wallets},
+};
 
 #[derive(Debug, Clone, Serialize)]
 pub struct Networks {

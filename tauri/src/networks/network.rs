@@ -1,12 +1,12 @@
 use std::sync::{Arc, Mutex};
 
 use ethers::providers::{Http, Provider};
+use ethers_core::types::Address;
 use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
 use url::Url;
 
 use super::{Error, Result};
-use crate::live_networks_listener::LiveNetworksListener;
 use crate::{app, block_listener::BlockListener, db::DB};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -18,13 +18,9 @@ pub struct Network {
     pub ws_url: Option<String>,
     pub currency: String,
     pub decimals: u32,
-    pub alchemy_url: Option<String>,
 
     #[serde(skip)]
     listener: Option<Arc<Mutex<BlockListener>>>,
-
-    #[serde(skip)]
-    live_listener: Option<Arc<Mutex<LiveNetworksListener>>>,
 }
 
 impl Network {
@@ -38,8 +34,6 @@ impl Network {
             currency: String::from("ETH"),
             decimals: 18,
             listener: None,
-            live_listener: None,
-            alchemy_url: None,
         }
     }
 
@@ -53,8 +47,6 @@ impl Network {
             currency: String::from("ETH"),
             decimals: 18,
             listener: None,
-            live_listener: None,
-            alchemy_url: None,
         }
     }
 
@@ -68,8 +60,6 @@ impl Network {
             currency: String::from("ETH"),
             decimals: 18,
             listener: None,
-            live_listener: None,
-            alchemy_url: None,
         }
     }
 
@@ -107,13 +97,6 @@ impl Network {
                 .run()
                 .map_err(|e| Error::ErrorRunningListener(e.to_string()))?;
             self.listener = Some(Arc::new(Mutex::new(listener)));
-        } else if let Some(alchemy_url) = &self.alchemy_url {
-            let alchemy_url = Url::parse(&alchemy_url)?;
-            let mut listener = LiveNetworksListener::new(self.chain_id, db, alchemy_url);
-            listener
-                .run()
-                .map_err(|e| Error::ErrorRunningListener(e.to_string()))?;
-            self.live_listener = Some(Arc::new(Mutex::new(listener)));
         }
 
         Ok(())

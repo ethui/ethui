@@ -4,6 +4,8 @@ export const generalSettingsSchema = z.object({
   darkMode: z.enum(["auto", "dark", "light"]),
   abiWatch: z.boolean().default(false),
   abiWatchPath: z.string().optional(),
+  hideEmptyTokens: z.boolean().default(true),
+  alchemyApiKey: z.string().optional(),
 });
 
 // const formSchema = schema.shape.network;
@@ -18,7 +20,6 @@ export const networkSchema = z.object({
         currency: z.string().min(1),
         chain_id: z.number(),
         decimals: z.number(),
-        alchemy_url: z.string().nullable().optional(),
       })
       .refine(
         (data) =>

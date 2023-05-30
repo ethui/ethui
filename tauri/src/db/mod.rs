@@ -18,8 +18,8 @@ use url::Url;
 pub use self::error::{Error, Result};
 use crate::types::events::Tx;
 use crate::{
+    alchemy::AlchemyResponse,
     foundry::calculate_code_hash,
-    live_networks_listener::AlchemyResponse,
     types::{Event, Events},
 };
 
