@@ -5,6 +5,7 @@ import truncateEthAddress from "truncate-eth-address";
 import { useInvoke } from "../hooks/tauri";
 import { useWallets } from "../hooks/useWallets";
 import { Address } from "../types";
+import { AddressView } from "./AddressView";
 
 export function QuickAddressSelect() {
   const { currentWallet, setCurrentAddress } = useWallets();
@@ -20,7 +21,7 @@ export function QuickAddressSelect() {
 
   const renderValue = (v: string) => {
     const address = addresses?.find(([key]) => key === v)?.[1];
-    return address && truncateEthAddress(address);
+    return address && <AddressView address={address} />;
   };
 
   if (!addresses || !currentWallet) return <>Loading</>;
@@ -34,7 +35,7 @@ export function QuickAddressSelect() {
     >
       {map(addresses, ([key, address]) => (
         <MenuItem value={key} key={key}>
-          {address}
+          <AddressView address={address} />
         </MenuItem>
       ))}
     </Select>
