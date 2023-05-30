@@ -1,8 +1,18 @@
 import CloseIcon from "@mui/icons-material/Close";
-import { Alert, Collapse, IconButton } from "@mui/material";
+import {
+  Alert,
+  IconButton,
+  Link,
+  Snackbar,
+  SnackbarOrigin,
+} from "@mui/material";
 import { useState } from "react";
 
 import packageJson from "../../../package.json";
+
+interface State extends SnackbarOrigin {
+  open: boolean;
+}
 
 export async function getLatestVersion() {
   const response = await fetch(
@@ -16,28 +26,52 @@ const latestVersion = await getLatestVersion();
 const currentVersion = `v${packageJson.version}`;
 
 export function NewVersionWarning() {
-  const [open, setOpen] = useState(true);
+  const [state, setState] = useState<State>({
+    open: true,
+    vertical: "bottom",
+    horizontal: "right",
+  });
+  const { vertical, horizontal, open } = state;
 
-  return currentVersion !== latestVersion ? (
-    <Collapse in={open}>
+  const handleClose = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway" || reason === "escapeKeyDown") {
+      return;
+    }
+
+    setState({ ...state, open: false });
+  };
+
+  return currentVersion === latestVersion ? (
+    <Snackbar
+      anchorOrigin={{ vertical, horizontal }}
+      open={open}
+      onClose={handleClose}
+      key={vertical + horizontal}
+    >
       <Alert
         severity="info"
         action={
           <IconButton
             aria-label="close"
             color="inherit"
-            size="small"
-            onClick={() => {
-              setOpen(false);
-            }}
+            sx={{ p: 0.5 }}
+            onClick={handleClose}
           >
-            <CloseIcon fontSize="inherit" />
+            <CloseIcon />
           </IconButton>
         }
       >
-        There&apos;s a new version of Iron Wallet available. Please update to
-        the latest version.
+        New release available.{" "}
+        <Link
+          href="https://github.com/iron-wallet/iron/releases"
+          target="_blank"
+        >
+          Click to update.
+        </Link>
       </Alert>
-    </Collapse>
+    </Snackbar>
   ) : null;
 }

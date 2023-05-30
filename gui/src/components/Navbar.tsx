@@ -11,7 +11,6 @@ import {
 import React, { useState } from "react";
 import { Link } from "wouter";
 
-import { NewVersionWarning } from "./NewVersionWarning";
 import { QuickAddressSelect } from "./QuickAddressSelect";
 import { QuickNetworkSelect } from "./QuickNetworkSelect";
 import { QuickWalletSelect } from "./QuickWalletSelect";
@@ -67,9 +66,6 @@ export function Navbar() {
           Iron Wallet
         </Button>
       </Box>
-      <Box flexShrink="0">
-        <NewVersionWarning />
-      </Box>
       <Grid container spacing={2} justifyContent="flex-end" alignItems="center">
         <Grid item>
           <QuickWalletSelect />
@@ -87,4 +83,3 @@ export function Navbar() {
     </Container>
   );
 }
-
