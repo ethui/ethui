@@ -32,6 +32,8 @@ version-resolver:
       - "patch"
   default: patch
 
+include-pre-releases: true
+
 template: |
   ## Changes
 
