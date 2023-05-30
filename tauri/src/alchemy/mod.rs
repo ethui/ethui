@@ -56,7 +56,8 @@ static ALCHEMY: OnceCell<RwLock<Alchemy>> = OnceCell::new();
 
 impl Alchemy {
     pub async fn init(db: DB) {
-        ALCHEMY.set(RwLock::new(Self { db })).unwrap();
+        let alchemy = Self { db };
+        ALCHEMY.set(RwLock::new(alchemy)).unwrap();
 
         // TODO: init a timer?
         // make the first request?
@@ -86,7 +87,7 @@ impl Alchemy {
             .await?;
 
         let res = (&res["result"]).clone();
-        let res: AlchemyResponse = serde_json::from_value(dbg!(res)).unwrap();
+        let res: AlchemyResponse = serde_json::from_value(res).unwrap();
         ALCHEMY
             .get()
             .unwrap()
