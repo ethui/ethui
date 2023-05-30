@@ -45,7 +45,7 @@ jobs:
   # build extension
   # upload to draft release
   extension:
-    needs: [create]
+    needs: [setup]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -69,7 +69,7 @@ jobs:
   # build extension
   # upload to draft release
   app:
-    needs: [create]
+    needs: [setup]
     strategy:
       fail-fast: false
       matrix:
@@ -109,7 +109,7 @@ jobs:
           releaseId: ${{ needs.create.outputs.release_id }}
 
   publish:
-    needs: [create, extension, app]
+    needs: [setup, extension, app]
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
