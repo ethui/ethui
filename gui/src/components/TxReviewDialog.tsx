@@ -1,10 +1,9 @@
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Button, Stack, Typography } from "@mui/material";
 import { formatEther } from "viem";
 
 import { useDialog } from "../hooks/useDialog";
 import { AddressView } from "./AddressView";
 import { ContextMenu } from "./ContextMenu";
-import Panel from "./Panel";
 
 export interface TxRequest {
   data: string;

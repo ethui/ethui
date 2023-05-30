@@ -8,7 +8,6 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { grey } from "@mui/material/colors";
 import { createElement, useEffect } from "react";
 import useSWR from "swr";
 import { type TransactionReceipt, formatEther } from "viem";

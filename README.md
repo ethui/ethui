@@ -76,10 +76,10 @@ Check out the [Contribution Guide](./CONTRIBUTING.md)
 
 ### Requirements
 
-* [**Tauri's requirements**][tauri-requirements];
-* **libsodium** ([macos][libsodium-macos], [Arch][libsodium-arch], [Ubuntu][libsodium-ubuntu])
-* **Google Chrome**, running a profile without MetaMask or other wallet installed, to be solved once EIP-6963 is widely adopted
-* (optional) [justfile][Justfile]
+- [**Tauri's requirements**][tauri-requirements];
+- **libsodium** ([macos][libsodium-macos], [Arch][libsodium-arch], [Ubuntu][libsodium-ubuntu])
+- **Google Chrome**, running a profile without MetaMask or other wallet installed, to be solved once EIP-6963 is widely adopted
+- (optional) [**justfile**][Justfile]
 
 ### Get started
 
