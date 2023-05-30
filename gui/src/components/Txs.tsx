@@ -69,14 +69,14 @@ function Receipt({ account, tx }: ReceiptProps) {
       </ListItemAvatar>
       <Box sx={{ flexGrow: 1 }}>
         <Stack>
-          <Box>
-            <AddressView address={receipt.from} /> →{" "}
+          <Stack direction="row" spacing={1}>
+            <AddressView address={receipt.from} /> <span>→</span>
             {receipt.to ? (
               <AddressView address={receipt.to} />
             ) : (
               <Typography component="span">Contract Deploy</Typography>
             )}
-          </Box>
+          </Stack>
           <Typography variant="caption" fontSize="xl">
             Block #{tx.blockNumber?.toLocaleString()}
           </Typography>

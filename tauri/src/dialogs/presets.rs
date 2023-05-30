@@ -15,8 +15,8 @@ pub(super) static PRESETS: Lazy<HashMap<String, Preset>> = Lazy::new(|| {
         "tx-review".into(),
         Preset {
             title: "Transaction Review".into(),
-            w: 500.0,
-            h: 500.0,
+            w: 400.0,
+            h: 220.0,
         },
     );
 
