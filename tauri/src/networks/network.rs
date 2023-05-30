@@ -1,7 +1,6 @@
 use std::sync::{Arc, Mutex};
 
 use ethers::providers::{Http, Provider};
-use ethers_core::types::Address;
 use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
 use url::Url;
