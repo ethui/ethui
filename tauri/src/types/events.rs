@@ -211,7 +211,7 @@ impl TryFrom<&SqliteRow> for Tx {
             hash: H256::from_str(row.get("hash")).unwrap(),
             from: Address::from_str(row.get("from_address")).unwrap(),
             to: Address::from_str(row.get("to_address")).ok(),
-            value: U256::from_str(row.get("value")).unwrap(),
+            value: U256::from_str_radix(row.get("value"), 10).unwrap(),
             data: Bytes::from_str(row.get("data")).unwrap(),
             block_number: row.get::<i64, _>("block_number") as u64,
             position: Some(row.get::<i32, _>("position") as usize),

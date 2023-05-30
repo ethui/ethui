@@ -8,6 +8,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { grey } from "@mui/material/colors";
 import { createElement, useEffect } from "react";
 import useSWR from "swr";
 import { type TransactionReceipt, formatEther } from "viem";
@@ -56,6 +57,8 @@ function Receipt({ account, tx }: ReceiptProps) {
     ([, hash]) => provider?.getTransactionReceipt({ hash })
   );
 
+  const value = BigInt(tx.value);
+
   useEffect(() => {
     mutate();
   }, [provider, mutate]);
@@ -83,7 +86,11 @@ function Receipt({ account, tx }: ReceiptProps) {
         </Stack>
       </Box>
       <Box>
-        <ContextMenu>{formatEther(BigInt(tx.value))} Ξ</ContextMenu>
+        {value > 0n && (
+          <ContextMenu copy={value.toString()}>
+            {formatEther(value)} Ξ
+          </ContextMenu>
+        )}
       </Box>
     </ListItem>
   );
