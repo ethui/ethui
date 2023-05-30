@@ -19,9 +19,6 @@ pub enum Error {
 
     #[error(transparent)]
     Url(#[from] url::ParseError),
-
-    #[error("Error running listener: {0}")]
-    ErrorRunningListener(String),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
