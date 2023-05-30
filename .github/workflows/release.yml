@@ -24,6 +24,8 @@ jobs:
       - id: get-tag
         name: get tag
         run: echo "tag=$(gh release list | grep -i 'draft' | awk 'NR==1 {print $1}')" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # the tauri action wants the release-id instead of the tag
       # so we need to fetch that too
