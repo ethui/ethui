@@ -24,7 +24,7 @@ jobs:
       - id: get-tag
         name: get tag
         run: |
-          echo "tag=$(gh api /repos/iron-wallet/iron/releases ||
+          echo "tag=$(gh api /repos/iron-wallet/iron/releases |\
             jq '.[] | select(.draft == true) | .tag_name')" \
             >> $GITHUB_OUTPUT
         env:
