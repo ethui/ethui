@@ -22,14 +22,11 @@ export function ProviderWallets({ children }: { children: ReactNode }) {
     useInvoke<Wallet[]>("wallets_get_all");
   const { data: currentWallet, mutate: mutateCurrentWallet } =
     useInvoke<Wallet>("wallets_get_current");
-  console.log(currentWallet);
 
   const value = {
     wallets,
     currentWallet,
     setCurrentWallet: async (idx: number) => {
-      console.log("here");
-      console.log(wallets, currentWallet, idx);
       if (
         !wallets ||
         !currentWallet ||
@@ -37,7 +34,6 @@ export function ProviderWallets({ children }: { children: ReactNode }) {
       )
         return;
 
-      console.log("here");
       await invoke("wallets_set_current_wallet", { idx });
       mutateCurrentWallet();
     },
