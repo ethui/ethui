@@ -1,6 +1,5 @@
 import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import { map } from "lodash-es";
-import truncateEthAddress from "truncate-eth-address";
 
 import { useInvoke } from "../hooks/tauri";
 import { useWallets } from "../hooks/useWallets";
@@ -21,7 +20,7 @@ export function QuickAddressSelect() {
 
   const renderValue = (v: string) => {
     const address = addresses?.find(([key]) => key === v)?.[1];
-    return address && <AddressView address={address} />;
+    return address && <AddressView contextMenu={false} address={address} />;
   };
 
   if (!addresses || !currentWallet) return <>Loading</>;
@@ -35,7 +34,7 @@ export function QuickAddressSelect() {
     >
       {map(addresses, ([key, address]) => (
         <MenuItem value={key} key={key}>
-          <AddressView address={address} />
+          <AddressView contextMenu={false} address={address} />
         </MenuItem>
       ))}
     </Select>
