@@ -9,7 +9,6 @@ static ALCHEMY: OnceCell<RwLock<Alchemy>> = OnceCell::new();
 
 #[async_trait]
 impl GlobalState for Alchemy {
-    /// The only needed state to initialize `Alchemy` is a sender to the tauri event loop
     type Initializer = DB;
 
     async fn init(db: Self::Initializer) {
