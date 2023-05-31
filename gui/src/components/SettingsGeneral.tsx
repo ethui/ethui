@@ -105,6 +105,13 @@ export function SettingsGeneral() {
           fullWidth
           {...register("abiWatchPath")}
         />
+        <TextField
+          label="Alchemy API Key"
+          {...register("alchemyApiKey")}
+          fullWidth
+          error={!!errors.alchemyApiKey}
+          helperText={errors.alchemyApiKey?.message?.toString()}
+        />
         <Button
           variant="contained"
           type="submit"
