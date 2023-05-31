@@ -1,4 +1,5 @@
 mod error;
+mod global;
 
 pub use self::error::{Error, Result};
 use crate::{
@@ -10,13 +11,9 @@ use crate::{
 };
 use ethers_core::types::{Address, U256};
 use once_cell::sync::Lazy;
-use once_cell::sync::OnceCell;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use serde_json::json;
-use tokio::{
-    spawn,
-    sync::{RwLock, RwLockWriteGuard},
-};
+
 use url::Url;
 
 use std::collections::HashMap;
@@ -35,9 +32,8 @@ static ENDPOINTS: Lazy<HashMap<u32, Url>> = Lazy::new(|| {
     endpoints
 });
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug)]
 pub struct Alchemy {
-    #[serde(skip)]
     db: DB,
 }
 
@@ -55,19 +51,12 @@ pub struct TokenBalance {
     pub token_balance: U256,
 }
 
-static ALCHEMY: OnceCell<RwLock<Alchemy>> = OnceCell::new();
-
 impl Alchemy {
-    pub async fn init(db: DB) {
-        let alchemy = Self { db };
-        ALCHEMY.set(RwLock::new(alchemy)).unwrap();
-
-        // TODO: init a timer?
-        // make the first request?
-        spawn(async { Self::fetch_balances().await.unwrap() });
+    pub fn new(db: DB) -> Self {
+        Self { db }
     }
 
-    async fn fetch_balances() -> Result<()> {
+    async fn fetch_balances(&self) -> Result<()> {
         let networks = Networks::read().await;
         let chain_id = networks.get_current_network().chain_id;
         let wallets = Wallets::read().await;
@@ -91,14 +80,9 @@ impl Alchemy {
 
             let res = (&res["result"]).clone();
             let res: AlchemyResponse = serde_json::from_value(res).unwrap();
-            println!("{:#?}", res);
-            Self::write().await.db.save_balances(res, chain_id).await?;
+            self.db.save_balances(res, chain_id).await?;
         }
 
         Ok(())
-    }
-
-    async fn write<'a>() -> RwLockWriteGuard<'a, Self> {
-        ALCHEMY.get().unwrap().write().await
     }
 }
