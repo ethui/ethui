@@ -25,7 +25,7 @@ export async function getLatestVersion() {
 const latestVersion = await getLatestVersion();
 const currentVersion = `v${packageJson.version}`;
 
-export function NewVersionWarning() {
+export function NewVersionNotice() {
   const [state, setState] = useState<State>({
     open: true,
     vertical: "bottom",
