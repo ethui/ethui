@@ -67,7 +67,7 @@ jobs:
   # build extension
   # upload to draft release
   app:
-    needs: []
+    needs: [setup]
     strategy:
       fail-fast: false
       matrix:
