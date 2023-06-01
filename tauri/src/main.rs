@@ -45,7 +45,7 @@ async fn main() -> Result<()> {
     ))
     .await;
     Foundry::init().await?;
-    Alchemy::init(db.clone()).await;
+    Alchemy::init((db.clone(), app.sender.clone())).await;
 
     // run websockets server loop
     tauri::async_runtime::spawn(async move { ws::ws_server_loop().await });

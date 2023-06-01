@@ -4,26 +4,20 @@ import { formatUnits } from "viem";
 import { useBalance, useContractRead } from "wagmi";
 
 import { useAccount } from "../hooks";
-import { useInvoke } from "../hooks/tauri";
-import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
+import { useTokensBalances } from "../hooks/useTokensBalances";
 import { Address } from "../types";
 import { CopyToClipboard } from "./CopyToClipboard";
 import Panel from "./Panel";
 
 export function Balances() {
   const address = useAccount();
-  const { data: balances, mutate } = useInvoke<[Address, string][]>(
-    "db_get_erc20_balances",
-    { address }
-  );
-
-  useRefreshTransactions(mutate);
+  const { balances } = useTokensBalances();
 
   return (
     <Panel>
       <Stack>
         {address && <BalanceETH address={address} />}
-        {(balances || []).map(([contract, balance]) => (
+        {balances.map(([contract, balance]) => (
           <BalanceERC20
             key={contract}
             {...{

@@ -8,6 +8,7 @@ import { JsonKeystoreUnlockDialog } from "./components/JsonKeystoreUnlockDialog"
 import { Navbar } from "./components/Navbar";
 import { ProviderNetworks } from "./components/ProviderNetworks";
 import { ProviderTheme } from "./components/ProviderTheme";
+import { ProviderTokensBalances } from "./components/ProviderTokensBalances";
 import { ProviderWallets } from "./components/ProviderWallets";
 import { TxReviewDialog } from "./components/TxReviewDialog";
 import { WagmiWrapper } from "./components/WagmiWrapper";
@@ -25,28 +26,30 @@ export default function App() {
             <WagmiWrapper>
               <ProviderWallets>
                 <ProviderNetworks>
-                  <Router>
-                    <Switch>
-                      <Route path="/dialog/tx-review/:id">
-                        {({ id }: { id: string }) => (
-                          <TxReviewDialog id={parseInt(id)} />
-                        )}
-                      </Route>
+                  <ProviderTokensBalances>
+                    <Router>
+                      <Switch>
+                        <Route path="/dialog/tx-review/:id">
+                          {({ id }: { id: string }) => (
+                            <TxReviewDialog id={parseInt(id)} />
+                          )}
+                        </Route>
 
-                      <Route path="/dialog/jsonkeystore-unlock/:id">
-                        {({ id }: { id: string }) => (
-                          <JsonKeystoreUnlockDialog id={parseInt(id)} />
-                        )}
-                      </Route>
+                        <Route path="/dialog/jsonkeystore-unlock/:id">
+                          {({ id }: { id: string }) => (
+                            <JsonKeystoreUnlockDialog id={parseInt(id)} />
+                          )}
+                        </Route>
 
-                      <Route>
-                        <CommandBar>
-                          <Navbar />
-                          <HomePage />
-                        </CommandBar>
-                      </Route>
-                    </Switch>
-                  </Router>
+                        <Route>
+                          <CommandBar>
+                            <Navbar />
+                            <HomePage />
+                          </CommandBar>
+                        </Route>
+                      </Switch>
+                    </Router>
+                  </ProviderTokensBalances>
                 </ProviderNetworks>
               </ProviderWallets>
             </WagmiWrapper>

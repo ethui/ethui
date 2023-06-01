@@ -4,6 +4,7 @@ mod global;
 
 pub use self::error::{Error, Result};
 use crate::{
+    app::{self, Notify},
     db::DB,
     settings::Settings,
     types::{ChecksummedAddress, GlobalState},
@@ -13,6 +14,7 @@ use once_cell::sync::Lazy;
 use serde::Deserialize;
 use serde_json::json;
 
+use tokio::sync::mpsc;
 use url::Url;
 
 use std::collections::HashMap;
@@ -33,6 +35,7 @@ static ENDPOINTS: Lazy<HashMap<u32, Url>> = Lazy::new(|| {
 #[derive(Debug)]
 pub struct Alchemy {
     db: DB,
+    window_snd: mpsc::UnboundedSender<app::Event>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -50,8 +53,8 @@ pub struct TokenBalance {
 }
 
 impl Alchemy {
-    pub fn new(db: DB) -> Self {
-        Self { db }
+    pub fn new(db: DB, window_snd: mpsc::UnboundedSender<app::Event>) -> Self {
+        Self { db, window_snd }
     }
 
     async fn fetch_balances(&self, chain_id: u32, address: ChecksummedAddress) -> Result<()> {
@@ -77,6 +80,7 @@ impl Alchemy {
             let res = (res["result"]).clone();
             let res: AlchemyResponse = serde_json::from_value(res)?;
             self.db.save_balances(res, chain_id).await?;
+            self.window_snd.send(Notify::TxsUpdated.into())?;
         }
 
         Ok(())
