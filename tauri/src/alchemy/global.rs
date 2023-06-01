@@ -13,7 +13,6 @@ impl GlobalState for Alchemy {
 
     async fn init(db: Self::Initializer) {
         let instance = Alchemy::new(db);
-        instance.fetch_balances().await.unwrap();
         ALCHEMY.set(RwLock::new(instance)).unwrap();
     }
 

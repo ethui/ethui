@@ -1,13 +1,12 @@
+pub mod commands;
 mod error;
 mod global;
 
 pub use self::error::{Error, Result};
 use crate::{
     db::DB,
-    networks::Networks,
     settings::Settings,
-    types::GlobalState,
-    wallets::{WalletControl, Wallets},
+    types::{ChecksummedAddress, GlobalState},
 };
 use ethers_core::types::{Address, U256};
 use once_cell::sync::Lazy;
@@ -55,18 +54,16 @@ impl Alchemy {
         Self { db }
     }
 
-    async fn fetch_balances(&self) -> Result<()> {
-        let networks = Networks::read().await;
-        let chain_id = networks.get_current_network().chain_id;
-        let wallets = Wallets::read().await;
-        let address = wallets.get_current_wallet().get_current_address().await;
+    async fn fetch_balances(&self, chain_id: u32, address: ChecksummedAddress) -> Result<()> {
         let settings = Settings::read().await;
-        if let Some(api_key) = settings.inner.alchemy_api_key.as_ref() {
-            let url = ENDPOINTS.get(&chain_id).unwrap();
-            let url = url.join(&api_key)?;
+        if let (Some(api_key), Some(endpoint)) = (
+            settings.inner.alchemy_api_key.as_ref(),
+            ENDPOINTS.get(&chain_id),
+        ) {
+            let endpoint = endpoint.join(&api_key)?;
             let client = reqwest::Client::new();
             let res: serde_json::Value = client
-                .post(url)
+                .post(endpoint)
                 .json(&json!({
                     "jsonrpc": "2.0",
                     "method": "alchemy_getTokenBalances",
@@ -78,7 +75,7 @@ impl Alchemy {
                 .await?;
 
             let res = (&res["result"]).clone();
-            let res: AlchemyResponse = serde_json::from_value(res).unwrap();
+            let res: AlchemyResponse = serde_json::from_value(res)?;
             self.db.save_balances(res, chain_id).await?;
         }
 
