@@ -18,16 +18,16 @@ use url::Url;
 use std::collections::HashMap;
 
 static ENDPOINTS: Lazy<HashMap<u32, Url>> = Lazy::new(|| {
-    let mut endpoints: HashMap<u32, Url> = HashMap::new();
-    endpoints.insert(
-        1,
-        Url::parse("https://eth-mainnet.g.alchemy.com/v2/").unwrap(),
-    );
-    endpoints.insert(
-        5,
-        Url::parse("https://eth-goerli.g.alchemy.com/v2/").unwrap(),
-    );
-    endpoints
+    HashMap::from([
+        (
+            1,
+            Url::parse("https://eth-mainnet.g.alchemy.com/v2/").unwrap(),
+        ),
+        (
+            5,
+            Url::parse("https://eth-goerli.g.alchemy.com/v2/").unwrap(),
+        ),
+    ])
 });
 
 #[derive(Debug)]
