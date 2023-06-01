@@ -118,13 +118,13 @@ jobs:
         with:
           releaseId: ${{ needs.setup.outputs.release_id }}
 
-  publish:
-    needs: [setup, extension, app]
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: publish release
-        run: gh release edit ${{ needs.setup.outputs.tag }} --draft=false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # publish:
+  #   needs: [setup, extension, app]
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #
+  #     - name: publish release
+  #       run: gh release edit ${{ needs.setup.outputs.tag }} --draft=false
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
