@@ -60,7 +60,7 @@ impl Alchemy {
             settings.inner.alchemy_api_key.as_ref(),
             ENDPOINTS.get(&chain_id),
         ) {
-            let endpoint = endpoint.join(&api_key)?;
+            let endpoint = endpoint.join(api_key)?;
             let client = reqwest::Client::new();
             let res: serde_json::Value = client
                 .post(endpoint)
@@ -74,7 +74,7 @@ impl Alchemy {
                 .json()
                 .await?;
 
-            let res = (&res["result"]).clone();
+            let res = (res["result"]).clone();
             let res: AlchemyResponse = serde_json::from_value(res)?;
             self.db.save_balances(res, chain_id).await?;
         }
