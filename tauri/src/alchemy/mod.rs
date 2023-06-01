@@ -19,7 +19,6 @@ use url::Url;
 use std::collections::HashMap;
 
 static ENDPOINTS: Lazy<HashMap<u32, Url>> = Lazy::new(|| {
-    println!("initializing");
     let mut endpoints: HashMap<u32, Url> = HashMap::new();
     endpoints.insert(
         1,
