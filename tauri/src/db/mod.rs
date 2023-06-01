@@ -47,6 +47,7 @@ impl DB {
         Ok(db)
     }
 
+    // TODO: Change this to an Into<T> of some kind, so we don't depend directly on AlchemyResponse here
     pub async fn save_balances(&self, balances: AlchemyResponse, chain_id: u32) -> Result<()> {
         let mut conn = self.tx().await?;
 
