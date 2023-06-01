@@ -80,6 +80,7 @@ pub struct SerializedSettings {
 
     pub abi_watch: bool,
     pub abi_watch_path: Option<String>,
+    pub alchemy_api_key: Option<String>,
 
     #[serde(default = "default_aliases")]
     aliases: HashMap<ChecksummedAddress, String>,
@@ -91,6 +92,7 @@ impl Default for SerializedSettings {
             dark_mode: DarkMode::Auto,
             abi_watch: false,
             abi_watch_path: None,
+            alchemy_api_key: None,
             aliases: HashMap::new(),
         }
     }
