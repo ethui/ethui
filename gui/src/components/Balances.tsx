@@ -19,9 +19,8 @@ export function Balances() {
   const { data: settings } = useInvoke<GeneralSettings>("settings_get");
 
   const reorderedBalances = (balances || [])
-    .map<[`0x${string}`, bigint]>(([c, b]) => [c, BigInt(b)]) // is it possible to get the proper type from backend directly?
-    .filter(([, balance]) => (settings?.hideEmptyTokens ? !!balance : true))
-    .sort(([, a], [, b]) => (b > a ? 1 : b < a ? -1 : 0));
+    .map<[Address, bigint]>(([c, b]) => [c, BigInt(b)])
+    .filter(([, balance]) => (settings?.hideEmptyTokens ? !!balance : true));
 
   useRefreshTransactions(mutate);
 
