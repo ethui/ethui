@@ -28,7 +28,11 @@ export function ProviderTokensBalances({ children }: { children: ReactNode }) {
   const { mutate: refetchTokensBalances } = useInvoke(
     "alchemy_fetch_balances",
     { chainId, address },
-    { refreshInterval: 10 * 1000 * 60 }
+    {
+      refreshInterval: 10 * 1000 * 60,
+      revalidateOnFocus: false,
+      revalidateOnMount: false,
+    }
   );
 
   const value = {
