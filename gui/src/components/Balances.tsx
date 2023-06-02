@@ -1,5 +1,6 @@
 import { Stack, Typography } from "@mui/material";
 import { erc20ABI } from "@wagmi/core";
+import { useEffect, useState } from "react";
 import { formatUnits } from "viem";
 import { useBalance, useContractRead } from "wagmi";
 
@@ -10,29 +11,19 @@ import { CopyToClipboard } from "./CopyToClipboard";
 import Panel from "./Panel";
 
 export function Balances() {
-  const address = useAccount();
-  const { balances } = useTokensBalances();
-
   return (
     <Panel>
       <Stack>
-        {address && <BalanceETH address={address} />}
-        {balances.map(([contract, balance]) => (
-          <BalanceERC20
-            key={contract}
-            {...{
-              contract,
-              balance: BigInt(balance),
-            }}
-          />
-        ))}
+        <BalanceETH />
+        <BalancesERC20 />
       </Stack>
     </Panel>
   );
 }
 
-function BalanceETH({ address }: { address: Address }) {
-  const { data: balance } = useBalance({ address });
+function BalanceETH() {
+  const address = useAccount();
+  const { data: balance } = useBalance({ address, enabled: !!address });
 
   if (!balance) return null;
 
@@ -40,6 +31,19 @@ function BalanceETH({ address }: { address: Address }) {
     <Typography>
       <CopyToClipboard>{balance.formatted}</CopyToClipboard> {balance.symbol}
     </Typography>
+  );
+}
+
+function BalancesERC20() {
+  const { balances } = useTokensBalances();
+  return (
+    <>
+      {balances.map(([contract, balance]) => (
+        <Delayed key={contract} waitBeforeShow={0}>
+          <BalanceERC20 contract={contract} balance={balance} />
+        </Delayed>
+      ))}
+    </>
   );
 }
 
@@ -69,4 +73,23 @@ function BalanceERC20({
       {name} <CopyToClipboard>{formatUnits(balance, decimals)}</CopyToClipboard>
     </Typography>
   );
+}
+
+function Delayed({
+  children,
+  waitBeforeShow = 500,
+}: {
+  children: React.ReactNode;
+  waitBeforeShow?: number;
+}) {
+  const [isShown, setIsShown] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsShown(true);
+    }, waitBeforeShow);
+    return () => clearTimeout(timer);
+  }, [waitBeforeShow]);
+
+  return isShown ? <>{children}</> : null;
 }

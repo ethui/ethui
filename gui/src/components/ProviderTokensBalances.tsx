@@ -3,7 +3,7 @@ import { ReactNode, createContext } from "react";
 
 import { useAccount } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
-import { useNetworks } from "../hooks/useNetworks";
+import { useCurrentNetwork } from "../hooks/useCurrentNetwork";
 import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
 import { Address, TokenBalance } from "../types";
 
@@ -18,12 +18,12 @@ const actionId = "token-balances";
 
 export function ProviderTokensBalances({ children }: { children: ReactNode }) {
   const address = useAccount();
-  const { currentNetwork } = useNetworks();
+  const { currentNetwork } = useCurrentNetwork();
   const chainId = currentNetwork?.chain_id;
 
   const { data: balances, mutate: mutateBalances } = useInvoke<
     [Address, string][]
-  >("db_get_erc20_balances", { address });
+  >("db_get_erc20_balances", { chainId, address });
 
   const { mutate: refetchTokensBalances } = useInvoke(
     "alchemy_fetch_balances",

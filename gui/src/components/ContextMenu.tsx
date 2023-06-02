@@ -2,6 +2,7 @@ import { Button, Menu, MenuItem, SxProps, Tooltip } from "@mui/material";
 import { writeText } from "@tauri-apps/api/clipboard";
 import React, { MouseEvent, ReactNode, useState } from "react";
 
+import { useCurrentNetwork } from "../hooks/useCurrentNetwork";
 import { useNetworks } from "../hooks/useNetworks";
 
 interface Props {
@@ -29,7 +30,7 @@ const buttonSx = {
 };
 
 export function ContextMenu({ children, sx, copy, explorer, actions }: Props) {
-  const { currentNetwork } = useNetworks();
+  const { currentNetwork } = useCurrentNetwork();
   const [copied, setCopied] = useState(false);
   const [contextMenu, setContextMenu] = useState<{
     target: HTMLElement;
