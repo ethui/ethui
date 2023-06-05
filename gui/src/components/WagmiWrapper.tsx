@@ -1,5 +1,4 @@
 import React from "react";
-import { useEffect, useState } from "react";
 import { FallbackTransport } from "viem";
 import {
   Chain,
@@ -12,7 +11,7 @@ import {
 } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
-import { useInvoke } from "../hooks/tauri";
+import { useCurrentNetwork } from "../hooks/useCurrentNetwork";
 import { Network } from "../types";
 
 interface Props {
@@ -25,25 +24,19 @@ type WagmiConfig = Config<
 >;
 
 export function WagmiWrapper({ children }: Props) {
-  const { data: network } = useInvoke<Network>("networks_get_current");
-  const [config, setConfig] = useState<WagmiConfig>();
+  const { currentNetwork } = useCurrentNetwork();
 
-  useEffect(() => {
-    if (!network) return;
+  if (!currentNetwork) return null;
 
-    const { publicClient, webSocketPublicClient } = configureChains(
-      [buildChain(network)],
-      [jsonRpcProvider({ rpc: () => ({ http: network?.http_url }) })]
-    );
+  const { publicClient, webSocketPublicClient } = configureChains(
+    [buildChain(currentNetwork)],
+    [jsonRpcProvider({ rpc: () => ({ http: currentNetwork?.http_url }) })]
+  );
 
-    const config = createConfig({
-      publicClient,
-      webSocketPublicClient,
-    });
-    setConfig(config);
-  }, [network]);
-
-  if (!config) return null;
+  const config = createConfig({
+    publicClient,
+    webSocketPublicClient,
+  });
 
   return <WagmiConfig config={config}>{children}</WagmiConfig>;
 }

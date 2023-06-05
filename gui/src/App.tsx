@@ -24,10 +24,10 @@ export default function App() {
       <ProviderTheme>
         <CssBaseline>
           <QueryClientProvider client={queryClient}>
-            <WagmiWrapper>
-              <ProviderWallets>
-                <ProviderNetworks>
-                  <ProviderCurrentNetwork>
+            <ProviderWallets>
+              <ProviderNetworks>
+                <ProviderCurrentNetwork>
+                  <WagmiWrapper>
                     <ProviderTokensBalances>
                       <Router>
                         <Switch>
@@ -52,10 +52,10 @@ export default function App() {
                         </Switch>
                       </Router>
                     </ProviderTokensBalances>
-                  </ProviderCurrentNetwork>
-                </ProviderNetworks>
-              </ProviderWallets>
-            </WagmiWrapper>
+                  </WagmiWrapper>
+                </ProviderCurrentNetwork>
+              </ProviderNetworks>
+            </ProviderWallets>
           </QueryClientProvider>
         </CssBaseline>
       </ProviderTheme>

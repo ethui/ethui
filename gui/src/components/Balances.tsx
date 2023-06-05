@@ -1,6 +1,5 @@
 import { Stack, Typography } from "@mui/material";
 import { erc20ABI } from "@wagmi/core";
-import { useEffect, useState } from "react";
 import { formatUnits } from "viem";
 import { useBalance, useContractRead } from "wagmi";
 
@@ -39,9 +38,7 @@ function BalancesERC20() {
   return (
     <>
       {balances.map(([contract, balance]) => (
-        <Delayed key={contract} waitBeforeShow={0}>
-          <BalanceERC20 contract={contract} balance={balance} />
-        </Delayed>
+        <BalanceERC20 key={contract} contract={contract} balance={balance} />
       ))}
     </>
   );
@@ -73,23 +70,4 @@ function BalanceERC20({
       {name} <CopyToClipboard>{formatUnits(balance, decimals)}</CopyToClipboard>
     </Typography>
   );
-}
-
-function Delayed({
-  children,
-  waitBeforeShow = 500,
-}: {
-  children: React.ReactNode;
-  waitBeforeShow?: number;
-}) {
-  const [isShown, setIsShown] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsShown(true);
-    }, waitBeforeShow);
-    return () => clearTimeout(timer);
-  }, [waitBeforeShow]);
-
-  return isShown ? <>{children}</> : null;
 }
