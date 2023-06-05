@@ -3,7 +3,6 @@ import { writeText } from "@tauri-apps/api/clipboard";
 import React, { MouseEvent, ReactNode, useState } from "react";
 
 import { useCurrentNetwork } from "../hooks/useCurrentNetwork";
-import { useNetworks } from "../hooks/useNetworks";
 
 interface Props {
   children: ReactNode;
