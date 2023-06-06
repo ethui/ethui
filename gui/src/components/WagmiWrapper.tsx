@@ -11,7 +11,7 @@ import {
 } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
-import { useCurrentNetwork } from "../hooks/useCurrentNetwork";
+import { useNetworks } from "../hooks/useNetworks";
 import { Network } from "../types";
 
 interface Props {
@@ -24,15 +24,20 @@ type WagmiConfig = Config<
 >;
 
 export function WagmiWrapper({ children }: Props) {
-  const { currentNetwork } = useCurrentNetwork();
+  const { networks } = useNetworks();
 
-  if (!currentNetwork) return null;
+  if (!networks) return null;
 
   const { publicClient, webSocketPublicClient } = configureChains(
-    [buildChain(currentNetwork)],
-    [jsonRpcProvider({ rpc: () => ({ http: currentNetwork?.http_url }) })]
+    networks.map(buildChain),
+    [
+      jsonRpcProvider({
+        rpc: (chain: Chain) => ({
+          http: networks.find((n) => n.chain_id === chain.id)?.http_url || "",
+        }),
+      }),
+    ]
   );
-
   const config = createConfig({
     publicClient,
     webSocketPublicClient,

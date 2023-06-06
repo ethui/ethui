@@ -1,9 +1,9 @@
 import { Stack, Typography } from "@mui/material";
-import { erc20ABI } from "@wagmi/core";
 import { formatUnits } from "viem";
-import { useBalance, useContractRead } from "wagmi";
+import { erc20ABI, useBalance, useContractRead } from "wagmi";
 
 import { useAccount } from "../hooks";
+import { useCurrentNetwork } from "../hooks/useCurrentNetwork";
 import { useTokensBalances } from "../hooks/useTokensBalances";
 import { Address } from "../types";
 import { CopyToClipboard } from "./CopyToClipboard";
@@ -22,7 +22,12 @@ export function Balances() {
 
 function BalanceETH() {
   const address = useAccount();
-  const { data: balance } = useBalance({ address, enabled: !!address });
+  const { currentNetwork } = useCurrentNetwork();
+  const { data: balance } = useBalance({
+    address,
+    enabled: !!address,
+    chainId: currentNetwork?.chain_id,
+  });
 
   if (!balance) return null;
 
@@ -35,10 +40,16 @@ function BalanceETH() {
 
 function BalancesERC20() {
   const { balances } = useTokensBalances();
+  const { currentNetwork } = useCurrentNetwork();
   return (
     <>
       {balances.map(([contract, balance]) => (
-        <BalanceERC20 key={contract} contract={contract} balance={balance} />
+        <BalanceERC20
+          key={contract}
+          contract={contract}
+          balance={balance}
+          chainId={currentNetwork?.chain_id}
+        />
       ))}
     </>
   );
@@ -47,20 +58,24 @@ function BalancesERC20() {
 function BalanceERC20({
   contract,
   balance,
+  chainId,
 }: {
   contract: Address;
   balance: bigint;
+  chainId?: number;
 }) {
   const { data: name } = useContractRead({
     address: contract,
     abi: erc20ABI,
     functionName: "symbol",
+    chainId,
   });
 
   const { data: decimals } = useContractRead({
     address: contract,
     abi: erc20ABI,
     functionName: "decimals",
+    chainId,
   });
 
   if (!name || !decimals) return null;
