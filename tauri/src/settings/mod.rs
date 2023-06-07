@@ -81,6 +81,7 @@ pub struct SerializedSettings {
     pub abi_watch: bool,
     pub abi_watch_path: Option<String>,
     pub alchemy_api_key: Option<String>,
+    #[serde(default = "default_true")]
     pub hide_empty_tokens: bool,
 
     #[serde(default = "default_aliases")]
@@ -98,6 +99,10 @@ impl Default for SerializedSettings {
             aliases: HashMap::new(),
         }
     }
+}
+
+const fn default_true() -> bool {
+    true
 }
 
 fn default_aliases() -> HashMap<ChecksummedAddress, String> {
