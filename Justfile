@@ -11,6 +11,7 @@ build:
 
 dev:
   rm -rf target/debug/db.*
+  (cd ../web3-demo && just dev) &
   yarn run tauri dev --features ${IRON_FEATURES:-debug}
 
 lint:

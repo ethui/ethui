@@ -15,7 +15,7 @@ const saveOptions = () => {
     endpoint: $endpoint.value || defaultSettings.endpoint,
   };
 
-  chrome.storage.sync.set(options, () => {
+  browser.storage.sync.set(options).then(() => {
     // Update status to let user know options were saved.
     $status.textContent = "Options saved. Restart browser to take effect";
     setTimeout(() => {
