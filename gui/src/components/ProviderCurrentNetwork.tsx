@@ -1,7 +1,9 @@
 import { invoke } from "@tauri-apps/api/tauri";
+import { useRegisterActions } from "kbar";
 import { ReactNode, createContext } from "react";
 
 import { useInvoke } from "../hooks/tauri";
+import { useNetworks } from "../hooks/useNetworks";
 import { useRefreshNetwork } from "../hooks/useRefreshNetwork";
 import { Network } from "../types";
 
@@ -11,6 +13,8 @@ interface Value {
 }
 
 export const CurrentNetworkContext = createContext<Value>({} as Value);
+
+const actionId = "network";
 
 export function ProviderCurrentNetwork({ children }: { children: ReactNode }) {
   const { data: currentNetwork, mutate: mutateNetwork } = useInvoke<Network>(
@@ -27,6 +31,26 @@ export function ProviderCurrentNetwork({ children }: { children: ReactNode }) {
   };
 
   useRefreshNetwork(mutateNetwork);
+
+  const { networks } = useNetworks();
+
+  useRegisterActions(
+    [
+      {
+        id: actionId,
+        name: "Change network",
+      },
+      ...(networks || []).map((network) => ({
+        id: `${actionId}/${network.name}`,
+        name: network.name,
+        parent: actionId,
+        perform: () => {
+          value.setCurrentNetwork(network.name);
+        },
+      })),
+    ],
+    [networks, value.setCurrentNetwork]
+  );
 
   return (
     <CurrentNetworkContext.Provider value={value}>
