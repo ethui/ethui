@@ -18,7 +18,7 @@ export function Balances() {
   );
   const { data: settings } = useInvoke<GeneralSettings>("settings_get");
 
-  const reorderedBalances = (balances || [])
+  const filteredBalances = (balances || [])
     .map<[Address, bigint]>(([c, b]) => [c, BigInt(b)])
     .filter(([, balance]) => (settings?.hideEmptyTokens ? !!balance : true));
 
@@ -28,12 +28,8 @@ export function Balances() {
     <Panel>
       <Stack>
         {address && <BalanceETH address={address} />}
-        {reorderedBalances.map(([contract, balance]) => (
-          <BalanceERC20
-            key={contract}
-            contract={contract}
-            balance={BigInt(balance)}
-          />
+        {filteredBalances.map(([contract, balance]) => (
+          <BalanceERC20 key={contract} contract={contract} balance={balance} />
         ))}
       </Stack>
     </Panel>
