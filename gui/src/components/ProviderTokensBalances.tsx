@@ -4,7 +4,7 @@ import { ReactNode, createContext } from "react";
 import { useAccount } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
 import { useCurrentNetwork } from "../hooks/useCurrentNetwork";
-import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
+import { useRefreshBalances } from "../hooks/useRefreshBalances";
 import { Address, TokenBalance } from "../types";
 
 interface Value {
@@ -42,7 +42,7 @@ export function ProviderTokensBalances({ children }: { children: ReactNode }) {
     },
   } as Value;
 
-  useRefreshTransactions(mutateBalances);
+  useRefreshBalances(mutateBalances);
 
   useRegisterActions(
     [

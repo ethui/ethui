@@ -80,7 +80,7 @@ impl Alchemy {
             let res = (res["result"]).clone();
             let res: AlchemyResponse = serde_json::from_value(res)?;
             self.db.save_balances(res, chain_id).await?;
-            self.window_snd.send(Notify::TxsUpdated.into())?;
+            self.window_snd.send(Notify::BalancesUpdated.into())?;
         }
 
         Ok(())
