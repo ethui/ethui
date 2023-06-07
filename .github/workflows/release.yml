@@ -57,10 +57,12 @@ jobs:
         run: yarn workspace @iron/extension install
 
       - name: Build extension zip
-        run: yarn workspace @iron/extension build:zip
+        run: yarn workspace @iron/extension release
+        env:
+          EXTENSION_TAG: ${{ needs.setup.outputs.tag }}
 
       - name: Upload to release
-        run: gh release upload ${{ needs.setup.outputs.tag }} ./extension/extension.zip
+        run: gh release upload ${{ needs.setup.outputs.tag }} ./extension/*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
