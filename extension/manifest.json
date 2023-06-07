@@ -32,5 +32,10 @@
       "matches": ["<all_urls>"],
       "resources": ["inpage.ts"]
     }
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "iron-wallet@naps62.com"
+    }
+  }
 }

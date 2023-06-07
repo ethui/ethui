@@ -6,12 +6,12 @@
   "license": "MIT",
   "scripts": {
     "build": "yarn clean && parcel build manifest.json",
-    "build:release": "yarn clean && parcel build manifest.json --no-source-maps",
-    "build:zip": "yarn build:release && zip -r extension.zip ./dist",
+    "build:release": "yarn build:release:chrome && yarn build:release:firefox",
     "dev": "parcel watch manifest.json --no-cache --host localhost",
     "clean": "rm -rf dist .cache",
     "bundle-analyzer": "yarn clean && parcel build manifest.json --no-source-maps --reporter @parcel/reporter-bundle-analyzer && google-chrome-stable parcel-bundle-reports/default.html",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "release": "bash ./release.sh"
   },
   "dependencies": {
     "@metamask/eth-json-rpc-middleware": "https://github.com/MetaMask/eth-json-rpc-middleware#e7a1de5cc9c76f24f436be69850d442c46582975",
