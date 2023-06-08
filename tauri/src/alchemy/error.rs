@@ -19,6 +19,9 @@ pub enum Error {
 
     #[error(transparent)]
     Url(#[from] url::ParseError),
+
+    #[error(transparent)]
+    JoinError(#[from] tokio::task::JoinError),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

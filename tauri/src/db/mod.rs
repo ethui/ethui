@@ -2,7 +2,7 @@ pub mod commands;
 mod error;
 mod queries;
 
-use std::{path::PathBuf, str::FromStr};
+use std::{path::PathBuf, str::FromStr, sync::Arc};
 
 use ethers::{
     providers::{Http, Middleware, Provider},
@@ -16,9 +16,8 @@ use sqlx::{
 use url::Url;
 
 pub use self::error::{Error, Result};
-use crate::types::events::Tx;
+use crate::{abis::ERC20Token, alchemy::TokenMetadata, types::events::Tx};
 use crate::{
-    alchemy::AlchemyResponse,
     foundry::calculate_code_hash,
     types::{Event, Events},
 };
@@ -48,15 +47,40 @@ impl DB {
     }
 
     // TODO: Change this to an Into<T> of some kind, so we don't depend directly on AlchemyResponse here
-    pub async fn save_balances(&self, balances: AlchemyResponse, chain_id: u32) -> Result<()> {
+    pub async fn save_native_balance(
+        &self,
+        balance: U256,
+        address: Address,
+        chain_id: u32,
+        decimals: u32,
+        symbol: String,
+    ) -> Result<()> {
         let mut conn = self.tx().await?;
 
-        for balance in balances.token_balances {
+        queries::native_update_balance(address, chain_id, balance, decimals, symbol)
+            .execute(&mut conn)
+            .await?;
+        conn.commit().await?;
+        Ok(())
+    }
+
+    // TODO: Change this to an Into<T> of some kind, so we don't depend directly on AlchemyErc20BalancesResponse here
+    pub async fn save_balances(
+        &self,
+        balances: Vec<TokenMetadata>,
+        chain_id: u32,
+        address: Address,
+    ) -> Result<()> {
+        let mut conn = self.tx().await?;
+
+        for balance in balances {
             queries::erc20_update_balance(
                 balance.contract_address,
-                balances.address,
+                address,
                 chain_id,
                 balance.token_balance,
+                Into::<u32>::into(balance.decimals),
+                balance.symbol,
             )
             .execute(&mut conn)
             .await?;
@@ -100,6 +124,13 @@ impl DB {
                 // TODO: what to do if we don't know this contract, and don't have balances yet? (e.g. in a fork)
                 Event::ERC20Transfer(transfer) => {
                     // update from's balance
+                    let provider: Provider<Http> =
+                        Provider::<Http>::try_from(&http_url.to_string()).unwrap();
+                    let client = Arc::new(provider);
+                    let contract = ERC20Token::new(transfer.contract, client.clone());
+                    let symbol = contract.symbol().call().await.unwrap();
+                    let decimals = contract.decimals().call().await.unwrap();
+
                     if !transfer.from.is_zero() {
                         let current =
                             queries::erc20_read_balance(transfer.contract, transfer.from, chain_id)
@@ -111,6 +142,8 @@ impl DB {
                             transfer.from,
                             chain_id,
                             current - transfer.value,
+                            Into::<u32>::into(decimals),
+                            symbol.clone(),
                         )
                         .execute(&mut conn)
                         .await?;
@@ -129,6 +162,8 @@ impl DB {
                             transfer.to,
                             chain_id,
                             current + transfer.value,
+                            Into::<u32>::into(decimals),
+                            symbol,
                         )
                         .execute(&mut conn)
                         .await?;
@@ -181,13 +216,38 @@ impl DB {
         Ok(res)
     }
 
+    pub async fn get_native_balance(
+        &self,
+        chain_id: u32,
+        address: Address,
+    ) -> Result<(U256, String, u32)> {
+        let res = sqlx::query(
+            r#" SELECT balance, symbol, decimals
+            FROM native_balances
+            WHERE chain_id = ? AND owner = ? "#,
+        )
+        .bind(chain_id)
+        .bind(format!("0x{:x}", address))
+        .map(|row| {
+            (
+                U256::from_dec_str(row.get::<&str, _>("balance")).unwrap(),
+                row.get::<String, _>("symbol"),
+                row.get::<u32, _>("decimals"),
+            )
+        })
+        .fetch_one(self.pool())
+        .await?;
+
+        Ok(res)
+    }
+
     pub async fn get_balances(
         &self,
         chain_id: u32,
         address: Address,
-    ) -> Result<Vec<(Address, U256)>> {
+    ) -> Result<Vec<(Address, U256, String, u32)>> {
         let res: Vec<_> = sqlx::query(
-            r#" SELECT contract, balance AS balance
+            r#" SELECT contract, balance, symbol, decimals
             FROM balances
             WHERE chain_id = ? AND owner = ? "#,
         )
@@ -195,8 +255,10 @@ impl DB {
         .bind(format!("0x{:x}", address))
         .map(|row| {
             (
-                Address::from_str(&row.get::<String, _>("contract")).unwrap(),
+                Address::from_str(row.get::<&str, _>("contract")).unwrap(),
                 U256::from_dec_str(row.get::<&str, _>("balance")).unwrap(),
+                row.get::<String, _>("symbol"),
+                row.get::<u32, _>("decimals"),
             )
         })
         .fetch_all(self.pool())

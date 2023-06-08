@@ -89,6 +89,7 @@ impl IronApp {
                 networks::commands::networks_reset,
                 db::commands::db_get_transactions,
                 db::commands::db_get_contracts,
+                db::commands::db_get_native_balance,
                 db::commands::db_get_erc20_balances,
                 peers::commands::peers_get_all,
                 wallets::commands::wallets_get_all,

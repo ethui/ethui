@@ -35,6 +35,24 @@ pub(super) fn insert_contract(
     .bind(code_hash)
 }
 
+pub(super) fn native_update_balance<'a>(
+    address: Address,
+    chain_id: u32,
+    balance: U256,
+    decimals: u32,
+    symbol: String,
+) -> Query<'a> {
+    sqlx::query(
+        r#" INSERT OR REPLACE INTO native_balances (chain_id, owner, balance, decimals, symbol)
+                        VALUES (?,?,?,?,?) "#,
+    )
+    .bind(chain_id)
+    .bind(format!("0x{:x}", address))
+    .bind(balance.to_string())
+    .bind(decimals)
+    .bind(symbol)
+}
+
 /// The horrible return type here can be aliased once `type_alias_impl_trait` is stabilized
 /// https://github.com/rust-lang/rust/issues/63063
 pub(super) fn erc20_read_balance<'a>(
@@ -59,15 +77,19 @@ pub(super) fn erc20_update_balance<'a>(
     address: Address,
     chain_id: u32,
     balance: U256,
+    decimals: u32,
+    symbol: String,
 ) -> Query<'a> {
     sqlx::query(
-        r#" INSERT OR REPLACE INTO balances (chain_id, contract, owner, balance) 
-                        VALUES (?,?,?,?) "#,
+        r#" INSERT OR REPLACE INTO balances (chain_id, contract, owner, balance, decimals, symbol)
+                        VALUES (?,?,?,?,?,?) "#,
     )
     .bind(chain_id)
     .bind(format!("0x{:x}", token))
     .bind(format!("0x{:x}", address))
     .bind(balance.to_string())
+    .bind(decimals)
+    .bind(symbol)
 }
 
 pub(super) fn erc721_transfer<'a>(tx: &events::ERC721Transfer, chain_id: u32) -> Query<'a> {

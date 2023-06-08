@@ -1,0 +1,5 @@
+ALTER TABLE balances
+ADD symbol VARCHAR;
+
+ALTER TABLE balances
+ADD decimals INTEGER NOT NULL DEFAULT 0;
