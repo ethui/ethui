@@ -5,6 +5,7 @@ import {
   Link,
   Snackbar,
   SnackbarOrigin,
+  Typography,
 } from "@mui/material";
 import { useState } from "react";
 
@@ -37,6 +38,7 @@ export function NewVersionNotice() {
     event: React.SyntheticEvent | Event,
     reason?: string
   ) => {
+    event.stopPropagation();
     if (reason === "clickaway" || reason === "escapeKeyDown") {
       return;
     }
@@ -51,27 +53,23 @@ export function NewVersionNotice() {
       onClose={handleClose}
       key={vertical + horizontal}
     >
-      <Alert
-        severity="info"
-        action={
-          <IconButton
-            aria-label="close"
-            color="inherit"
-            sx={{ p: 0.5 }}
-            onClick={handleClose}
-          >
-            <CloseIcon />
-          </IconButton>
-        }
-      >
-        New release available.{" "}
-        <Link
-          href="https://github.com/iron-wallet/iron/releases"
-          target="_blank"
+      <Link href="https://github.com/iron-wallet/iron/releases" target="_blank">
+        <Alert
+          severity="info"
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              sx={{ p: 0.5 }}
+              onClick={handleClose}
+            >
+              <CloseIcon />
+            </IconButton>
+          }
         >
-          Click to update.
-        </Link>
-      </Alert>
+          <Typography>New release available.</Typography>
+        </Alert>
+      </Link>
     </Snackbar>
   ) : null;
 }
