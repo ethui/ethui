@@ -1,7 +1,7 @@
-use crate::{db::DB, types::GlobalState};
+use crate::{app, db::DB, types::GlobalState};
 use async_trait::async_trait;
 use once_cell::sync::OnceCell;
-use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
+use tokio::sync::{mpsc, RwLock, RwLockReadGuard, RwLockWriteGuard};
 
 use super::Alchemy;
 
@@ -9,10 +9,12 @@ static ALCHEMY: OnceCell<RwLock<Alchemy>> = OnceCell::new();
 
 #[async_trait]
 impl GlobalState for Alchemy {
-    type Initializer = DB;
+    type Initializer = (DB, mpsc::UnboundedSender<app::Event>);
 
-    async fn init(db: Self::Initializer) {
-        let instance = Alchemy::new(db);
+    async fn init(args: Self::Initializer) {
+        let db = args.0;
+        let window_snd = args.1;
+        let instance = Alchemy::new(db, window_snd);
         ALCHEMY.set(RwLock::new(instance)).unwrap();
     }
 
