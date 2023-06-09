@@ -1,13 +1,15 @@
 import { invoke } from "@tauri-apps/api/tauri";
-import useSWR, { SWRResponse } from "swr";
+import useSWR from "swr";
+import type { SWRConfiguration, SWRResponse } from "swr";
 
 type TArgs = Record<string, unknown>;
 
 export const useInvoke = <TResult>(
   command: string,
-  args: TArgs = {}
+  args: TArgs = {},
+  props?: SWRConfiguration
 ): SWRResponse<TResult, unknown> => {
-  return useSWR<TResult>([command, args], invokeFetcher);
+  return useSWR<TResult>([command, args], invokeFetcher, props);
 };
 
 const invokeFetcher = async <TResult>([command, args]: [

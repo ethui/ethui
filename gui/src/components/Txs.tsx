@@ -56,6 +56,8 @@ function Receipt({ account, tx }: ReceiptProps) {
     ([, hash]) => provider?.getTransactionReceipt({ hash })
   );
 
+  const value = BigInt(tx.value);
+
   useEffect(() => {
     mutate();
   }, [provider, mutate]);
@@ -69,21 +71,25 @@ function Receipt({ account, tx }: ReceiptProps) {
       </ListItemAvatar>
       <Box sx={{ flexGrow: 1 }}>
         <Stack>
-          <Box>
-            <AddressView address={receipt.from} /> →{" "}
+          <Stack direction="row" spacing={1}>
+            <AddressView address={receipt.from} /> <span>→</span>
             {receipt.to ? (
               <AddressView address={receipt.to} />
             ) : (
               <Typography component="span">Contract Deploy</Typography>
             )}
-          </Box>
+          </Stack>
           <Typography variant="caption" fontSize="xl">
             Block #{tx.blockNumber?.toLocaleString()}
           </Typography>
         </Stack>
       </Box>
       <Box>
-        <ContextMenu>{formatEther(BigInt(tx.value))} Ξ</ContextMenu>
+        {value > 0n && (
+          <ContextMenu copy={value.toString()}>
+            {formatEther(value)} Ξ
+          </ContextMenu>
+        )}
       </Box>
     </ListItem>
   );

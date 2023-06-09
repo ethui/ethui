@@ -2,7 +2,7 @@ import { Button, Menu, MenuItem, SxProps, Tooltip } from "@mui/material";
 import { writeText } from "@tauri-apps/api/clipboard";
 import React, { MouseEvent, ReactNode, useState } from "react";
 
-import { useNetworks } from "../hooks/useNetworks";
+import { useCurrentNetwork } from "../hooks/useCurrentNetwork";
 
 interface Props {
   children: ReactNode;
@@ -10,7 +10,6 @@ interface Props {
   explorer?: string;
   sx?: SxProps;
   actions?: CustomAction[];
-  title?: string;
 }
 
 interface CustomAction {
@@ -29,15 +28,8 @@ const buttonSx = {
   minWidth: "inherit",
 };
 
-export function ContextMenu({
-  children,
-  title,
-  sx,
-  copy,
-  explorer,
-  actions,
-}: Props) {
-  const { currentNetwork } = useNetworks();
+export function ContextMenu({ children, sx, copy, explorer, actions }: Props) {
+  const { currentNetwork } = useCurrentNetwork();
   const [copied, setCopied] = useState(false);
   const [contextMenu, setContextMenu] = useState<{
     target: HTMLElement;
@@ -106,7 +98,6 @@ export function ContextMenu({
           sx={{ ...buttonSx, ...sx }}
           onClick={onCopyText}
           onContextMenu={onContextMenu}
-          title={title}
         >
           {children}
         </Button>

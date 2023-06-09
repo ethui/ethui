@@ -26,11 +26,9 @@ pub async fn db_get_contracts(db: tauri::State<'_, DB>) -> Result<Vec<StoredCont
 
 #[tauri::command]
 pub async fn db_get_erc20_balances(
+    chain_id: u32,
     address: Address,
     db: tauri::State<'_, DB>,
 ) -> Result<Vec<(Address, U256)>> {
-    let networks = Networks::read().await;
-
-    let chain_id = networks.get_current_network().chain_id;
     Ok(db.get_balances(chain_id, address).await.unwrap())
 }

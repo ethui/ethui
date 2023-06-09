@@ -7,14 +7,16 @@ categories:
       - "enhancement"
   - title: "🐛 Bug Fixes"
     labels:
-      - "fix"
       - "bugfix"
       - "bug"
   - title: "🌐 Extension"
     labels:
       - "extension"
   - title: "🧰 Maintenance"
-    label: "chore"
+    labels:
+      - "chore"
+      - "docs"
+      - "dependencies"
 
 change-template: "- $TITLE @$AUTHOR (#$NUMBER)"
 
@@ -23,14 +25,17 @@ change-title-escapes: '\<*_&'
 version-resolver:
   major:
     labels:
-      - "major"
+      - "breaking-change"
   minor:
     labels:
-      - "minor"
+      - "feature"
   patch:
     labels:
-      - "patch"
+      - "bugfix"
+      - "bug"
   default: patch
+
+include-pre-releases: true
 
 template: |
   ## Changes

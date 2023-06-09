@@ -18,6 +18,7 @@ use url::Url;
 pub use self::error::{Error, Result};
 use crate::types::events::Tx;
 use crate::{
+    alchemy::AlchemyResponse,
     foundry::calculate_code_hash,
     types::{Event, Events},
 };
@@ -44,6 +45,25 @@ impl DB {
         db.migrate().await?;
 
         Ok(db)
+    }
+
+    // TODO: Change this to an Into<T> of some kind, so we don't depend directly on AlchemyResponse here
+    pub async fn save_balances(&self, balances: AlchemyResponse, chain_id: u32) -> Result<()> {
+        let mut conn = self.tx().await?;
+
+        for balance in balances.token_balances {
+            queries::erc20_update_balance(
+                balance.contract_address,
+                balances.address,
+                chain_id,
+                balance.token_balance,
+            )
+            .execute(&mut conn)
+            .await?;
+        }
+
+        conn.commit().await?;
+        Ok(())
     }
 
     pub async fn save_events<T: Into<Events> + Sized + Send>(
@@ -128,9 +148,9 @@ impl DB {
 
     async fn get_transactions(&self, chain_id: u32, from_or_to: Address) -> Result<Vec<Tx>> {
         let res: Vec<_> = sqlx::query(
-            r#" SELECT * 
-            FROM transactions 
-            WHERE chain_id = ? 
+            r#" SELECT *
+            FROM transactions
+            WHERE chain_id = ?
             AND (from_address = ? or to_address = ?) COLLATE NOCASE
             ORDER BY block_number DESC, position DESC"#,
         )
@@ -146,7 +166,7 @@ impl DB {
 
     pub async fn get_contracts(&self, chain_id: u32) -> Result<Vec<StoredContract>> {
         let res: Vec<_> = sqlx::query(
-            r#" SELECT * 
+            r#" SELECT *
             FROM contracts
             WHERE chain_id = ? "#,
         )

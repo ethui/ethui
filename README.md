@@ -6,6 +6,10 @@
 [releases]: https://github.com/iron-wallet/iron/releases
 [prank-wallet]: https://ethglobal.com/showcase/prank-wallet-cgnb3
 [anvil]: https://book.getfoundry.sh/anvil/
+[tauri-requirements]: https://tauri.app/v1/guides/getting-started/prerequisites/
+[libsodium-macos]: https://formulae.brew.sh/formula/libsodium
+[libsodium-arch]: https://archlinux.org/packages/extra/x86_64/libsodium/
+[libsodium-ubuntu]: https://packages.ubuntu.com/search?keywords=libsodium-dev
 
 A developer's crypto wallet. Check out the [announcement blog post][announcement].
 
@@ -72,10 +76,10 @@ Check out the [Contribution Guide](./CONTRIBUTING.md)
 
 ### Requirements
 
-Iron is a [Tauri application]. Tauri's requirements are all that should be needed to build the wallet.
-You'll also need Google Chrome, running a profile without MetaMask or other wallet installed, to be solved once EIP-6963 is widely adopted)
-
-You may also like to use optional [justfile][justfile], if you prefer that over `yarn`.
+- [**Tauri's requirements**][tauri-requirements];
+- **libsodium** ([macos][libsodium-macos], [Arch][libsodium-arch], [Ubuntu][libsodium-ubuntu])
+- **Google Chrome**, running a profile without MetaMask or other wallet installed, to be solved once EIP-6963 is widely adopted
+- (optional) [**justfile**][Justfile]
 
 ### Get started
 
