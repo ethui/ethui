@@ -32,11 +32,7 @@ function BalanceETH() {
 
   if (!balance) return null;
 
-  return (
-    <Typography>
-      <CopyToClipboard>{balance.formatted}</CopyToClipboard> {balance.symbol}
-    </Typography>
-  );
+  return <BalanceItem balance={balance.value} decimals={18} symbol="ETH" />;
 }
 
 function BalancesERC20() {
@@ -87,9 +83,23 @@ function BalanceERC20({
 
   if (!name || !decimals) return null;
 
+  return <BalanceItem balance={balance} decimals={decimals} symbol={name} />;
+}
+
+interface BalanceItemProps {
+  balance: bigint;
+  decimals: number;
+  symbol: string;
+}
+
+function BalanceItem({ balance, decimals, symbol }: BalanceItemProps) {
+  const truncatedBalance = balance - (balance % BigInt(0.001 * 10 ** decimals));
+
   return (
     <Typography>
-      {name} <CopyToClipboard>{formatUnits(balance, decimals)}</CopyToClipboard>
+      <CopyToClipboard label={balance.toString()}>
+        {formatUnits(truncatedBalance, decimals)} {symbol}
+      </CopyToClipboard>
     </Typography>
   );
 }
