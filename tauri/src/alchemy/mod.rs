@@ -2,6 +2,15 @@ pub mod commands;
 mod error;
 mod global;
 
+use std::collections::HashMap;
+
+use ethers_core::types::{Address, U256};
+use once_cell::sync::Lazy;
+use serde::Deserialize;
+use serde_json::json;
+use tokio::sync::mpsc;
+use url::Url;
+
 pub use self::error::{Error, Result};
 use crate::{
     app::{self, Notify},
@@ -9,15 +18,6 @@ use crate::{
     settings::Settings,
     types::{ChecksummedAddress, GlobalState},
 };
-use ethers_core::types::{Address, U256};
-use once_cell::sync::Lazy;
-use serde::Deserialize;
-use serde_json::json;
-
-use tokio::sync::mpsc;
-use url::Url;
-
-use std::collections::HashMap;
 
 static ENDPOINTS: Lazy<HashMap<u32, Url>> = Lazy::new(|| {
     HashMap::from([
@@ -58,6 +58,7 @@ impl Alchemy {
     }
 
     async fn fetch_balances(&self, chain_id: u32, address: ChecksummedAddress) -> Result<()> {
+        dbg!("fetching balances");
         let settings = Settings::read().await;
         if let (Some(api_key), Some(endpoint)) = (
             settings.inner.alchemy_api_key.as_ref(),
