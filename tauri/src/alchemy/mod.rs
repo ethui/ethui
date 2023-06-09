@@ -58,7 +58,6 @@ impl Alchemy {
     }
 
     async fn fetch_balances(&self, chain_id: u32, address: ChecksummedAddress) -> Result<()> {
-        dbg!("fetching balances");
         let settings = Settings::read().await;
         if let (Some(api_key), Some(endpoint)) = (
             settings.inner.alchemy_api_key.as_ref(),
