@@ -1,5 +1,5 @@
 use ethers_core::types::{Address, U256};
-use sqlx::{sqlite::SqliteRow, Row, Sqlite};
+use sqlx::Sqlite;
 
 use crate::types::events;
 
@@ -51,25 +51,6 @@ pub(super) fn native_update_balance<'a>(
     .bind(balance.to_string())
     .bind(decimals)
     .bind(symbol)
-}
-
-/// The horrible return type here can be aliased once `type_alias_impl_trait` is stabilized
-/// https://github.com/rust-lang/rust/issues/63063
-pub(super) fn erc20_read_balance<'a>(
-    token: Address,
-    address: Address,
-    chain_id: u32,
-) -> sqlx::query::Map<
-    'a,
-    Sqlite,
-    impl FnMut(<Sqlite as sqlx::Database>::Row) -> sqlx::Result<U256> + 'a,
-    sqlx::sqlite::SqliteArguments<'a>,
-> {
-    sqlx::query(r#"SELECT balance FROM balances WHERE chain_id = ? AND contract = ? AND owner = ?"#)
-        .bind(chain_id)
-        .bind(format!("0x{:x}", token))
-        .bind(format!("0x{:x}", address))
-        .map(|r: SqliteRow| U256::from_dec_str(r.get::<&str, _>("balance")).unwrap_or_default())
 }
 
 pub(super) fn erc20_update_balance<'a>(

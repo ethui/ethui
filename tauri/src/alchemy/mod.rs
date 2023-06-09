@@ -18,6 +18,9 @@ use once_cell::sync::Lazy;
 use serde::Deserialize;
 use serde_json::json;
 
+use ethers_contract::ContractError;
+use ethers_providers::{Http, Provider};
+
 use url::Url;
 
 use std::{collections::HashMap, sync::Arc};
@@ -121,18 +124,21 @@ impl Alchemy {
                         TokenMetadata {
                             contract_address: balance.contract_address,
                             token_balance: balance.token_balance,
-                            symbol: contract.symbol().call().await.unwrap(),
-                            decimals: contract.decimals().call().await.unwrap(),
+                            symbol: contract.symbol().call().await.unwrap_or_default(),
+                            decimals: contract.decimals().call().await.unwrap_or_default(),
                         }
                     })
                 })
                 .buffer_unordered(balances_amount);
 
             let balances = erc20_stream
-                .fold(Vec::<TokenMetadata>::new(), |mut balances, f| async move {
-                    balances.push(f.unwrap());
-                    balances
-                })
+                .fold(
+                    Vec::<TokenMetadata>::new(),
+                    |mut balances, balance| async move {
+                        balances.push(balance.unwrap());
+                        balances
+                    },
+                )
                 .await;
             self.db
                 .save_balances(balances, chain_id, erc20_balances.address)

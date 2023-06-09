@@ -91,7 +91,15 @@ impl Network {
         if self.is_dev() {
             let http_url = Url::parse(&self.http_url)?;
             let ws_url = Url::parse(&self.ws_url.clone().unwrap())?;
-            let mut listener = BlockListener::new(self.chain_id, http_url, ws_url, db, window_snd);
+            let mut listener = BlockListener::new(
+                self.chain_id,
+                self.currency.clone(),
+                self.decimals,
+                http_url,
+                ws_url,
+                db,
+                window_snd,
+            );
             listener
                 .run()
                 .map_err(|e| Error::ErrorRunningListener(e.to_string()))?;

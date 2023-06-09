@@ -1,6 +1,6 @@
 mod error;
 
-use std::time::Duration;
+use std::{str::FromStr, sync::Arc, time::Duration};
 
 pub use error::{Error, Result};
 use ethers::{
@@ -10,17 +10,25 @@ use ethers::{
     },
     types::{Filter, Log, Trace, U64},
 };
+use ethers_core::abi::Address;
 use futures_util::StreamExt;
 use log::warn;
+use serde_json::json;
 use tokio::sync::mpsc;
 use url::Url;
 
-use crate::app::{self, Notify};
 use crate::db::DB;
+use crate::{
+    app::{self, Notify},
+    types::GlobalState,
+    wallets::{WalletControl, Wallets},
+};
 
 #[derive(Debug)]
 pub struct BlockListener {
     chain_id: u32,
+    currency: String,
+    decimals: u32,
     http_url: Url,
     ws_url: Url,
     quit_snd: Option<mpsc::Sender<()>>,
@@ -39,6 +47,8 @@ enum Msg {
 impl BlockListener {
     pub fn new(
         chain_id: u32,
+        currency: String,
+        decimals: u32,
         http_url: Url,
         ws_url: Url,
         db: DB,
@@ -46,6 +56,8 @@ impl BlockListener {
     ) -> Self {
         Self {
             chain_id,
+            currency,
+            decimals,
             http_url,
             ws_url,
             db,
@@ -62,11 +74,16 @@ impl BlockListener {
         {
             let db = self.db.clone();
             let chain_id = self.chain_id;
+            let decimals = self.decimals;
+            let currency = self.currency.clone();
             let window_snd = self.window_snd.clone();
             let http_url = self.http_url.clone();
-            tokio::spawn(
-                async move { process(http_url, block_rcv, window_snd, chain_id, db).await },
-            );
+            tokio::spawn(async move {
+                process(
+                    http_url, block_rcv, window_snd, chain_id, currency, decimals, db,
+                )
+                .await
+            });
         }
 
         {
@@ -208,9 +225,29 @@ async fn process(
     mut block_rcv: mpsc::UnboundedReceiver<Msg>,
     window_snd: mpsc::UnboundedSender<app::Event>,
     chain_id: u32,
+    currency: String,
+    decimals: u32,
     db: DB,
 ) -> Result<()> {
     let mut caught_up = false;
+    let provider: Provider<Http> = Provider::<Http>::try_from(http_url.to_string()).unwrap();
+    let client = Arc::new(provider);
+    let wallets = Wallets::read().await;
+    let addresses = wallets
+        .get_current_wallet()
+        .derive_all_addresses()
+        .await
+        .unwrap();
+
+    for (_, checked_address) in addresses {
+        // Get network balances on load
+        let json_address = json!(checked_address);
+        let address = json_address.as_str().unwrap();
+        let balance = client.get_balance(address, None).await.unwrap();
+        let address = Address::from_str(address).unwrap();
+        db.save_native_balance(balance, address, chain_id, decimals, currency.clone())
+            .await?;
+    }
 
     while let Some(msg) = block_rcv.recv().await {
         match msg {
@@ -219,8 +256,14 @@ async fn process(
                 caught_up = false
             }
             Msg::CaughtUp => caught_up = true,
-            Msg::Traces(traces) => db.save_events(chain_id, traces, http_url.clone()).await?,
-            Msg::Logs(logs) => db.save_events(chain_id, logs, http_url.clone()).await?,
+            Msg::Traces(traces) => {
+                db.save_events(chain_id, decimals, currency.clone(), traces, client.clone())
+                    .await?
+            }
+            Msg::Logs(logs) => {
+                db.save_events(chain_id, decimals, currency.clone(), logs, client.clone())
+                    .await?
+            }
         }
 
         // don't emit events until we're catching up

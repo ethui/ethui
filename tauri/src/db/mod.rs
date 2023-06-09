@@ -13,7 +13,6 @@ use sqlx::{
     sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous},
     Row,
 };
-use url::Url;
 
 pub use self::error::{Error, Result};
 use crate::{abis::ERC20Token, alchemy::TokenMetadata, types::events::Tx};
@@ -74,16 +73,19 @@ impl DB {
         let mut conn = self.tx().await?;
 
         for balance in balances {
-            queries::erc20_update_balance(
-                balance.contract_address,
-                address,
-                chain_id,
-                balance.token_balance,
-                Into::<u32>::into(balance.decimals),
-                balance.symbol,
-            )
-            .execute(&mut conn)
-            .await?;
+            // Ignore results without symbol or decimals
+            if balance.symbol != "" && balance.decimals > 0 {
+                queries::erc20_update_balance(
+                    balance.contract_address,
+                    address,
+                    chain_id,
+                    balance.token_balance,
+                    Into::<u32>::into(balance.decimals),
+                    balance.symbol,
+                )
+                .execute(&mut conn)
+                .await?;
+            }
         }
 
         conn.commit().await?;
@@ -93,8 +95,10 @@ impl DB {
     pub async fn save_events<T: Into<Events> + Sized + Send>(
         &self,
         chain_id: u32,
+        native_decimals: u32,
+        native_currency: String,
         events: T,
-        http_url: Url,
+        provider: Arc<Provider<Http>>,
     ) -> Result<()> {
         let mut conn = self.tx().await?;
 
@@ -102,14 +106,37 @@ impl DB {
             // TODO: report this errors in await?. Currently they're being silently ignored, because the task just gets killed
             match tx {
                 Event::Tx(ref tx) => {
+                    let provider = provider.clone();
+                    let decimals = native_decimals;
+
+                    if !tx.from.is_zero() {
+                        // update native balance on every transactions
+                        let symbol = native_currency.clone();
+                        let balance = provider.get_balance(tx.from, None).await.unwrap();
+                        queries::native_update_balance(
+                            tx.from, chain_id, balance, decimals, symbol,
+                        )
+                        .execute(&mut conn)
+                        .await?;
+                    }
+                    if let Some(to) = tx.to {
+                        if !to.is_zero() {
+                            // update native balance on every transactions
+                            let symbol = native_currency.clone();
+                            let balance = provider.get_balance(to, None).await.unwrap();
+                            queries::native_update_balance(to, chain_id, balance, decimals, symbol)
+                                .execute(&mut conn)
+                                .await?;
+                        }
+                    }
+
                     queries::insert_transaction(tx, chain_id)
                         .execute(&mut conn)
                         .await?;
                 }
 
                 Event::ContractDeployed(ref tx) => {
-                    let provider: Provider<Http> =
-                        Provider::<Http>::try_from(&http_url.to_string()).unwrap();
+                    let provider = provider.clone();
                     let code_hash: Option<String> = provider
                         .get_code(tx.address, None)
                         .await
@@ -122,26 +149,23 @@ impl DB {
                 }
 
                 // TODO: what to do if we don't know this contract, and don't have balances yet? (e.g. in a fork)
+                // My changes fix this TODO?
                 Event::ERC20Transfer(transfer) => {
                     // update from's balance
-                    let provider: Provider<Http> =
-                        Provider::<Http>::try_from(&http_url.to_string()).unwrap();
-                    let client = Arc::new(provider);
-                    let contract = ERC20Token::new(transfer.contract, client.clone());
-                    let symbol = contract.symbol().call().await.unwrap();
-                    let decimals = contract.decimals().call().await.unwrap();
+                    let provider = provider.clone();
+                    let contract = ERC20Token::new(transfer.contract, provider);
+                    let symbol = contract.symbol().call().await?;
+                    let decimals = contract.decimals().call().await?;
 
                     if !transfer.from.is_zero() {
-                        let current =
-                            queries::erc20_read_balance(transfer.contract, transfer.from, chain_id)
-                                .fetch_one(&mut conn)
-                                .await?;
+                        // Get balance from contract directly
+                        let balance = contract.balance_of(transfer.from).call().await?;
 
                         queries::erc20_update_balance(
                             transfer.contract,
                             transfer.from,
                             chain_id,
-                            current - transfer.value,
+                            balance,
                             Into::<u32>::into(decimals),
                             symbol.clone(),
                         )
@@ -151,17 +175,14 @@ impl DB {
 
                     // update to's balance
                     if !transfer.to.is_zero() {
-                        let current =
-                            queries::erc20_read_balance(transfer.contract, transfer.to, chain_id)
-                                .fetch_one(&mut conn)
-                                .await
-                                .unwrap_or(U256::zero());
+                        // Get balance from contract directly
+                        let balance = contract.balance_of(transfer.to).call().await?;
 
                         queries::erc20_update_balance(
                             transfer.contract,
                             transfer.to,
                             chain_id,
-                            current + transfer.value,
+                            balance,
                             Into::<u32>::into(decimals),
                             symbol,
                         )

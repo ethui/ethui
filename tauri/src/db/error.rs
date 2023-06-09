@@ -1,3 +1,6 @@
+use ethers_contract::ContractError;
+use ethers_providers::{Http, Provider};
+
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error(transparent)]
@@ -5,6 +8,9 @@ pub enum Error {
 
     #[error(transparent)]
     SqlxMigrate(#[from] sqlx::migrate::MigrateError),
+
+    #[error(transparent)]
+    ContractError(#[from] ContractError<Provider<Http>>),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
