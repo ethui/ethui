@@ -112,6 +112,26 @@ export function SettingsGeneral() {
           error={!!errors.alchemyApiKey}
           helperText={errors.alchemyApiKey?.message?.toString()}
         />
+        <FormControl error={!!errors.hideEmptyTokens}>
+          <FormGroup>
+            <FormControlLabel
+              label="Hide Tokens Without Balance"
+              control={
+                <Controller
+                  name="hideEmptyTokens"
+                  control={control}
+                  render={({ field }) => (
+                    <Checkbox
+                      {...field}
+                      checked={field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                    />
+                  )}
+                />
+              }
+            />
+          </FormGroup>
+        </FormControl>
         <Button
           variant="contained"
           type="submit"

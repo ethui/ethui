@@ -1,9 +1,11 @@
 import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
 
+import { useCurrentNetwork } from "../hooks/useCurrentNetwork";
 import { useNetworks } from "../hooks/useNetworks";
 
 export function QuickNetworkSelect() {
-  const { networks, currentNetwork, setCurrentNetwork } = useNetworks();
+  const { networks } = useNetworks();
+  const { currentNetwork, setCurrentNetwork } = useCurrentNetwork();
 
   const handleChange = (event: SelectChangeEvent<string>) =>
     setCurrentNetwork(event.target.value);

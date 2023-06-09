@@ -12,6 +12,7 @@ use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, Stat
 use tokio::sync::mpsc;
 
 use crate::{
+    alchemy,
     db::{self, DB},
     dialogs, foundry, networks, peers, rpc, settings, wallets,
 };
@@ -43,6 +44,7 @@ pub enum Notify {
     NetworkChanged,
     TxsUpdated,
     PeersUpdated,
+    BalancesUpdated,
 }
 
 impl Notify {
@@ -52,6 +54,7 @@ impl Notify {
             Self::NetworkChanged => "network-changed",
             Self::TxsUpdated => "txs-updated",
             Self::PeersUpdated => "peers-updated",
+            Self::BalancesUpdated => "balances-updated",
         }
     }
 }
@@ -101,6 +104,7 @@ impl IronApp {
                 dialogs::commands::dialog_send,
                 dialogs::commands::dialog_finish,
                 foundry::commands::foundry_get_abi,
+                alchemy::commands::alchemy_fetch_balances,
                 rpc::commands::rpc_send_transaction,
             ])
             .setup(|app| {
