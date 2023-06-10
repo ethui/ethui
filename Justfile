@@ -10,7 +10,6 @@ build:
   cargo build
 
 dev:
-  rm -rf target/debug/db.*
   yarn run tauri dev --features ${IRON_FEATURES:-debug}
 
 lint:

@@ -40,10 +40,10 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.5",
     "@types/chrome": "^0.0.212",
+    "@types/lodash-es": "^4.17.7",
     "@types/node": "^18.7.10",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.10",
-    "@types/lodash-es": "^4.17.7",
     "@vitejs/plugin-react": "^3.0.0",
     "jsdom": "^21.1.1",
     "vitest": "^0.29.8"

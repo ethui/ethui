@@ -1,4 +1,11 @@
-import { Stack, Typography } from "@mui/material";
+import {
+  Avatar,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Stack,
+} from "@mui/material";
 import { formatUnits } from "viem";
 import { erc20ABI, useBalance, useContractRead } from "wagmi";
 
@@ -8,14 +15,17 @@ import { useCurrentNetwork } from "../hooks/useCurrentNetwork";
 import { useTokensBalances } from "../hooks/useTokensBalances";
 import { Address, GeneralSettings } from "../types";
 import { CopyToClipboard } from "./CopyToClipboard";
+import { CryptoIcon } from "./IconCrypto";
 import Panel from "./Panel";
 
 export function Balances() {
   return (
     <Panel>
       <Stack>
-        <BalanceETH />
-        <BalancesERC20 />
+        <List>
+          <BalanceETH />
+          <BalancesERC20 />
+        </List>
       </Stack>
     </Panel>
   );
@@ -96,10 +106,17 @@ function BalanceItem({ balance, decimals, symbol }: BalanceItemProps) {
   const truncatedBalance = balance - (balance % BigInt(0.001 * 10 ** decimals));
 
   return (
-    <Typography>
-      <CopyToClipboard label={balance.toString()}>
-        {formatUnits(truncatedBalance, decimals)} {symbol}
-      </CopyToClipboard>
-    </Typography>
+    <ListItem>
+      <ListItemAvatar>
+        <Avatar>
+          <CryptoIcon ticker={symbol} />
+        </Avatar>
+      </ListItemAvatar>
+      <ListItemText secondary={symbol}>
+        <CopyToClipboard label={balance.toString()}>
+          {formatUnits(truncatedBalance, decimals)}
+        </CopyToClipboard>
+      </ListItemText>
+    </ListItem>
   );
 }
