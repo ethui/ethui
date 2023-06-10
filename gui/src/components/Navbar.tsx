@@ -1,8 +1,9 @@
+import { Menu } from "@mui/icons-material";
 import Settings from "@mui/icons-material/Settings";
-import { Box, Button, Container, Grid, IconButton } from "@mui/material";
+import { AppBar, Grid, IconButton, Toolbar, Typography } from "@mui/material";
 import { useState } from "react";
-import { Link } from "wouter";
 
+import { useTheme } from "../hooks/useTheme";
 import { Modal } from "./Modal";
 import { QuickAddressSelect } from "./QuickAddressSelect";
 import { QuickNetworkSelect } from "./QuickNetworkSelect";
@@ -33,36 +34,41 @@ function SettingsButton() {
 }
 
 export function Navbar() {
+  const theme = useTheme();
+
   return (
-    <Container
-      maxWidth={false}
-      component="nav"
+    <AppBar
+      position="sticky"
       sx={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        py: 2,
+        background: theme?.palette.background.default,
+        color: theme?.palette.text.primary,
+        boxShadow: "none",
       }}
     >
-      <Box flexShrink="0">
-        <Button size="medium" component={Link} href="/">
-          Iron Wallet
-        </Button>
-      </Box>
-      <Grid container spacing={2} justifyContent="flex-end" alignItems="center">
-        <Grid item>
-          <QuickWalletSelect />
+      <Toolbar>
+        <Typography variant="h6" sx={{ flexGrow: 1 }}>
+          Iron&nbsp;Wallet
+        </Typography>
+        <Grid
+          container
+          spacing={2}
+          justifyContent="flex-end"
+          alignItems="center"
+        >
+          <Grid item>
+            <QuickWalletSelect />
+          </Grid>
+          <Grid item>
+            <QuickAddressSelect />
+          </Grid>
+          <Grid item>
+            <QuickNetworkSelect />
+          </Grid>
+          <Grid item>
+            <SettingsButton />
+          </Grid>
         </Grid>
-        <Grid item>
-          <QuickAddressSelect />
-        </Grid>
-        <Grid item>
-          <QuickNetworkSelect />
-        </Grid>
-        <Grid item>
-          <SettingsButton />
-        </Grid>
-      </Grid>
-    </Container>
+      </Toolbar>
+    </AppBar>
   );
 }
