@@ -8,6 +8,7 @@ import { Contracts } from "./Contracts";
 import { Details } from "./Details";
 import { LivenetPlaceholder } from "./LivenetPlaceholder";
 import { NestedRoutes } from "./NestedRoutes";
+import { NewVersionNotice } from "./NewVersionNotice";
 import { Peers } from "./Peers";
 import { Txs } from "./Txs";
 
@@ -73,6 +74,7 @@ export function HomePage() {
           </Switch>
         </NestedRoutes>
       </div>
+      <NewVersionNotice />
     </Container>
   );
 }
