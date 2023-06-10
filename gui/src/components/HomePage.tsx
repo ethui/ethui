@@ -42,41 +42,39 @@ export function HomePage() {
   );
 
   return (
-    <>
-      <Container disableGutters maxWidth="md">
-        <Tabs
-          variant="fullWidth"
-          sx={{ mb: 2 }}
-          value={Math.max(findIndex(tabs, { path: params?.path }), 0)}
-        >
-          {tabs.map((tab) => (
-            <Tab
-              LinkComponent={Link}
-              href={tab.path}
-              key={tab.name}
-              label={tab.name}
-            />
-          ))}
-        </Tabs>
+    <Container disableGutters maxWidth="md">
+      <Tabs
+        variant="fullWidth"
+        sx={{ mb: 2 }}
+        value={Math.max(findIndex(tabs, { path: params?.path }), 0)}
+      >
+        {tabs.map((tab) => (
+          <Tab
+            LinkComponent={Link}
+            href={tab.path}
+            key={tab.name}
+            label={tab.name}
+          />
+        ))}
+      </Tabs>
 
-        <div role="tabpanel">
-          <NestedRoutes base="/">
-            <Switch>
-              {tabs.map((tab) => (
-                <Route key={tab.path || "/"} path={tab.path}>
-                  <LivenetPlaceholder devOnly={tab.devOnly}>
-                    <tab.component />
-                  </LivenetPlaceholder>
-                </Route>
-              ))}
-              <Route>
-                <Details />
+      <div role="tabpanel">
+        <NestedRoutes base="/">
+          <Switch>
+            {tabs.map((tab) => (
+              <Route key={tab.path || "/"} path={tab.path}>
+                <LivenetPlaceholder devOnly={tab.devOnly}>
+                  <tab.component />
+                </LivenetPlaceholder>
               </Route>
-            </Switch>
-          </NestedRoutes>
-        </div>
-      </Container>
+            ))}
+            <Route>
+              <Details />
+            </Route>
+          </Switch>
+        </NestedRoutes>
+      </div>
       <NewVersionNotice />
-    </>
+    </Container>
   );
 }
