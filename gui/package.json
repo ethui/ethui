@@ -32,7 +32,7 @@
     "truncate-eth-address": "^1.0.2",
     "typescript": "^5.0.0",
     "viem": "^0.3.0",
-    "vite": "^4.0.0",
+    "vite": "^4.2.3",
     "wagmi": "^1.0.8",
     "wouter": "^2.10.0",
     "zod": "^3.20.6"
