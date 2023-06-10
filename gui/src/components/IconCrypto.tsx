@@ -12,7 +12,6 @@ const urlFor = (ticker: string, type: "color" | "black" | "white") =>
 export function CryptoIcon({ ticker }: Props) {
   const theme = useTheme();
 
-  console.log("foo", theme?.palette.mode);
   const mode = theme?.palette.mode === "dark" ? "black" : "white";
 
   const [error, setError] = useState(false);
@@ -25,7 +24,5 @@ export function CryptoIcon({ ticker }: Props) {
     }
   }, [error, mode]);
 
-  console.log(mode);
-
-  return <img {...{ src, onError }} />;
+  return <img width="100%" {...{ src, onError }} />;
 }
