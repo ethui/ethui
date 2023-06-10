@@ -4,24 +4,15 @@ mod queries;
 
 use std::{path::PathBuf, str::FromStr};
 
-use ethers::{
-    providers::{Http, Middleware, Provider},
-    types::{Address, U256},
-};
+use ethers::types::{Address, U256};
 use serde::Serialize;
 use sqlx::{
     sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous},
     Row,
 };
-use url::Url;
 
 pub use self::error::{Error, Result};
-use crate::types::events::Tx;
-use crate::{
-    alchemy::AlchemyResponse,
-    foundry::calculate_code_hash,
-    types::{Event, Events},
-};
+use crate::types::{events::Tx, Event};
 
 #[derive(Debug, Clone)]
 pub struct DB {
@@ -48,33 +39,28 @@ impl DB {
     }
 
     // TODO: Change this to an Into<T> of some kind, so we don't depend directly on AlchemyResponse here
-    pub async fn save_balances(&self, balances: AlchemyResponse, chain_id: u32) -> Result<()> {
+    pub async fn save_balances(
+        &self,
+        chain_id: u32,
+        address: Address,
+        balances: Vec<(Address, U256)>,
+    ) -> Result<()> {
         let mut conn = self.tx().await?;
 
-        for balance in balances.token_balances {
-            queries::erc20_update_balance(
-                balance.contract_address,
-                balances.address,
-                chain_id,
-                balance.token_balance,
-            )
-            .execute(&mut conn)
-            .await?;
+        for (contract, balance) in balances {
+            queries::erc20_update_balance(contract, address, chain_id, balance)
+                .execute(&mut conn)
+                .await?;
         }
 
         conn.commit().await?;
         Ok(())
     }
 
-    pub async fn save_events<T: Into<Events> + Sized + Send>(
-        &self,
-        chain_id: u32,
-        events: T,
-        http_url: Url,
-    ) -> Result<()> {
+    pub async fn save_events(&self, chain_id: u32, events: Vec<Event>) -> Result<()> {
         let mut conn = self.tx().await?;
 
-        for tx in events.into().0.iter() {
+        for tx in events.iter() {
             // TODO: report this errors in await?. Currently they're being silently ignored, because the task just gets killed
             match tx {
                 Event::Tx(ref tx) => {
@@ -84,15 +70,7 @@ impl DB {
                 }
 
                 Event::ContractDeployed(ref tx) => {
-                    let provider: Provider<Http> =
-                        Provider::<Http>::try_from(&http_url.to_string()).unwrap();
-                    let code_hash: Option<String> = provider
-                        .get_code(tx.address, None)
-                        .await
-                        .ok()
-                        .map(|v| calculate_code_hash(&v.to_string()).to_string());
-
-                    queries::insert_contract(tx, chain_id, code_hash)
+                    queries::insert_contract(tx, chain_id)
                         .execute(&mut conn)
                         .await?;
                 }

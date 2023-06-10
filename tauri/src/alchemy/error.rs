@@ -19,6 +19,12 @@ pub enum Error {
 
     #[error(transparent)]
     Url(#[from] url::ParseError),
+
+    #[error("Unsupported chain id: {0}")]
+    UnsupportedChainId(u32),
+
+    #[error("API Key not found")]
+    NoAPIKey,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

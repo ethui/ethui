@@ -1,4 +1,5 @@
 mod error;
+mod expanders;
 
 use std::time::Duration;
 
@@ -15,6 +16,7 @@ use log::warn;
 use tokio::sync::mpsc;
 use url::Url;
 
+use self::expanders::{expand_logs, expand_traces};
 use crate::app::{self, Notify};
 use crate::db::DB;
 
@@ -212,6 +214,8 @@ async fn process(
 ) -> Result<()> {
     let mut caught_up = false;
 
+    let provider: Provider<Http> = Provider::<Http>::try_from(&http_url.to_string()).unwrap();
+
     while let Some(msg) = block_rcv.recv().await {
         match msg {
             Msg::Reset => {
@@ -219,8 +223,14 @@ async fn process(
                 caught_up = false
             }
             Msg::CaughtUp => caught_up = true,
-            Msg::Traces(traces) => db.save_events(chain_id, traces, http_url.clone()).await?,
-            Msg::Logs(logs) => db.save_events(chain_id, logs, http_url.clone()).await?,
+            Msg::Traces(traces) => {
+                let events = expand_traces(traces, &provider).await;
+                db.save_events(chain_id, events).await?
+            }
+            Msg::Logs(logs) => {
+                let events = expand_logs(logs);
+                db.save_events(chain_id, events).await?
+            }
         }
 
         // don't emit events until we're catching up
