@@ -1,15 +1,9 @@
 use std::str::FromStr;
 
-use ethers::contract::EthLogDecode;
-use ethers::{
-    abi::RawLog,
-    types::{Action, Address, Bytes, Call, Create, CreateResult, Log, Res, Trace, H256, U256},
-};
+use ethers::types::{Address, Bytes, H256, U256};
 use serde::Serialize;
 use sqlx::sqlite::SqliteRow;
 use sqlx::Row;
-
-use crate::abis;
 
 #[derive(Debug)]
 pub enum Event {
@@ -18,9 +12,6 @@ pub enum Event {
     ERC20Transfer(ERC20Transfer),
     ERC721Transfer(ERC721Transfer),
 }
-
-#[derive(Debug)]
-pub struct Events(pub Vec<Event>);
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -53,130 +44,7 @@ pub struct ERC721Transfer {
 #[derive(Debug)]
 pub struct ContractDeployed {
     pub address: Address,
-}
-
-impl From<Trace> for Events {
-    fn from(trace: Trace) -> Self {
-        let events: Vec<Event> = match (trace.action, trace.result, trace.trace_address.len()) {
-            // contract deploys
-            (
-                Action::Create(Create { from, value, .. }),
-                Some(Res::Create(CreateResult { address, .. })),
-                _,
-            ) => {
-                vec![
-                    Tx {
-                        hash: trace.transaction_hash.unwrap(),
-                        block_number: trace.block_number,
-                        position: trace.transaction_position,
-                        from,
-                        to: None,
-                        value,
-                        data: Bytes::new(),
-                    }
-                    .into(),
-                    ContractDeployed::new(address).into(),
-                ]
-            }
-
-            // TODO: match call input against ERC20 abi
-
-            // top-level trace of a transaction
-            // other regular calls
-            (
-                Action::Call(Call {
-                    from,
-                    to,
-                    value,
-                    input,
-                    ..
-                }),
-                _,
-                0,
-            ) => vec![Tx {
-                hash: trace.transaction_hash.unwrap(),
-                block_number: trace.block_number,
-                position: trace.transaction_position,
-                from,
-                to: Some(to),
-                value,
-                data: input,
-            }
-            .into()],
-
-            _ => vec![],
-        };
-
-        Events(events)
-    }
-}
-
-impl From<Vec<Trace>> for Events {
-    fn from(traces: Vec<Trace>) -> Self {
-        let events: Vec<Vec<Event>> = traces
-            .into_iter()
-            .map(|t| Into::<Events>::into(t).0)
-            .collect();
-
-        let result: Vec<Event> = events.into_iter().flatten().collect();
-        Events(result)
-    }
-}
-
-impl TryFrom<Log> for Event {
-    type Error = ();
-    fn try_from(log: Log) -> Result<Self, Self::Error> {
-        let raw = RawLog::from((log.topics, log.data.to_vec()));
-
-        use abis::{
-            ierc20::{self, IERC20Events},
-            ierc721::{self, IERC721Events},
-        };
-
-        // decode ERC20 calls
-        if let Ok(IERC20Events::TransferFilter(ierc20::TransferFilter { from, to, value })) =
-            IERC20Events::decode_log(&raw)
-        {
-            return Ok(ERC20Transfer {
-                from,
-                to,
-                value,
-                contract: log.address,
-            }
-            .into());
-        };
-
-        if let Ok(IERC721Events::TransferFilter(ierc721::TransferFilter { from, to, token_id })) =
-            IERC721Events::decode_log(&raw)
-        {
-            return Ok(ERC721Transfer {
-                from,
-                to,
-                token_id,
-                contract: log.address,
-            }
-            .into());
-        };
-
-        Err(())
-    }
-}
-
-impl From<Vec<Log>> for Events {
-    fn from(logs: Vec<Log>) -> Self {
-        let events: Vec<Event> = logs
-            .into_iter()
-            .filter_map(|t| TryInto::<Event>::try_into(t).ok())
-            .collect();
-
-        Events(events)
-    }
-}
-
-impl ContractDeployed {
-    pub fn new(address: Address) -> Self {
-        Self { address }
-    }
+    pub code_hash: Option<String>,
 }
 
 impl From<ContractDeployed> for Event {

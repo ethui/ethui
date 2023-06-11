@@ -20,11 +20,7 @@ pub(super) fn insert_transaction(tx: &events::Tx, chain_id: u32) -> Query {
     .bind(tx.value.to_string())
 }
 
-pub(super) fn insert_contract(
-    tx: &events::ContractDeployed,
-    chain_id: u32,
-    code_hash: Option<String>,
-) -> Query {
+pub(super) fn insert_contract(tx: &events::ContractDeployed, chain_id: u32) -> Query {
     sqlx::query(
         r#" INSERT INTO contracts (address, chain_id, deployed_code_hash)
                         VALUES (?,?,?)
@@ -32,7 +28,7 @@ pub(super) fn insert_contract(
     )
     .bind(format!("0x{:x}", tx.address))
     .bind(chain_id)
-    .bind(code_hash)
+    .bind(tx.code_hash.clone())
 }
 
 /// The horrible return type here can be aliased once `type_alias_impl_trait` is stabilized
