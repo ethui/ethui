@@ -7,6 +7,7 @@ import { HomePage } from "./components/HomePage";
 import { JsonKeystoreUnlockDialog } from "./components/JsonKeystoreUnlockDialog";
 import { Navbar } from "./components/Navbar";
 import { ProviderCurrentNetwork } from "./components/ProviderCurrentNetwork";
+import { ProviderNativeBalance } from "./components/ProviderNativeBalance";
 import { ProviderNetworks } from "./components/ProviderNetworks";
 import { ProviderTheme } from "./components/ProviderTheme";
 import { ProviderTokensBalances } from "./components/ProviderTokensBalances";
@@ -28,30 +29,32 @@ export default function App() {
               <ProviderNetworks>
                 <WagmiWrapper>
                   <ProviderCurrentNetwork>
-                    <ProviderTokensBalances>
-                      <Router>
-                        <Switch>
-                          <Route path="/dialog/tx-review/:id">
-                            {({ id }: { id: string }) => (
-                              <TxReviewDialog id={parseInt(id)} />
-                            )}
-                          </Route>
+                    <ProviderNativeBalance>
+                      <ProviderTokensBalances>
+                        <Router>
+                          <Switch>
+                            <Route path="/dialog/tx-review/:id">
+                              {({ id }: { id: string }) => (
+                                <TxReviewDialog id={parseInt(id)} />
+                              )}
+                            </Route>
 
-                          <Route path="/dialog/jsonkeystore-unlock/:id">
-                            {({ id }: { id: string }) => (
-                              <JsonKeystoreUnlockDialog id={parseInt(id)} />
-                            )}
-                          </Route>
+                            <Route path="/dialog/jsonkeystore-unlock/:id">
+                              {({ id }: { id: string }) => (
+                                <JsonKeystoreUnlockDialog id={parseInt(id)} />
+                              )}
+                            </Route>
 
-                          <Route>
-                            <CommandBar>
-                              <Navbar />
-                              <HomePage />
-                            </CommandBar>
-                          </Route>
-                        </Switch>
-                      </Router>
-                    </ProviderTokensBalances>
+                            <Route>
+                              <CommandBar>
+                                <Navbar />
+                                <HomePage />
+                              </CommandBar>
+                            </Route>
+                          </Switch>
+                        </Router>
+                      </ProviderTokensBalances>
+                    </ProviderNativeBalance>
                   </ProviderCurrentNetwork>
                 </WagmiWrapper>
               </ProviderNetworks>

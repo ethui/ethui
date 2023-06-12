@@ -7,11 +7,11 @@ import {
   Stack,
 } from "@mui/material";
 import { formatUnits } from "viem";
-import { erc20ABI, useBalance, useContractRead } from "wagmi";
+import { erc20ABI, useContractRead } from "wagmi";
 
-import { useAccount } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
 import { useCurrentNetwork } from "../hooks/useCurrentNetwork";
+import { useNativeBalance } from "../hooks/useNativeBalance";
 import { useTokensBalances } from "../hooks/useTokensBalances";
 import { Address, GeneralSettings } from "../types";
 import { CopyToClipboard } from "./CopyToClipboard";
@@ -32,17 +32,16 @@ export function BalancesList() {
 }
 
 function BalanceETH() {
-  const address = useAccount();
   const { currentNetwork } = useCurrentNetwork();
-  const { data: balance } = useBalance({
-    address,
-    enabled: !!address,
-    chainId: currentNetwork?.chain_id,
-  });
+  const { balance } = useNativeBalance();
 
-  if (!balance) return null;
-
-  return <BalanceItem balance={balance.value} decimals={18} symbol="ETH" />;
+  return (
+    <BalanceItem
+      balance={balance}
+      decimals={currentNetwork?.decimals || 18}
+      symbol={currentNetwork?.currency || "ETH"}
+    />
+  );
 }
 
 function BalancesERC20() {
@@ -103,7 +102,9 @@ interface BalanceItemProps {
 }
 
 function BalanceItem({ balance, decimals, symbol }: BalanceItemProps) {
-  const truncatedBalance = balance - (balance % BigInt(0.001 * 10 ** decimals));
+  // Some tokens respond with 1 decimals, that breaks this truncatedBalance without the Math.ceil
+  const truncatedBalance =
+    balance - (balance % BigInt(Math.ceil(0.001 * 10 ** decimals)));
 
   return (
     <ListItem>

@@ -31,6 +31,20 @@ pub(super) fn insert_contract(tx: &events::ContractDeployed, chain_id: u32) -> Q
     .bind(tx.code_hash.clone())
 }
 
+pub(super) fn native_update_balance<'a>(
+    balance: U256,
+    chain_id: u32,
+    address: Address,
+) -> Query<'a> {
+    sqlx::query(
+        r#" INSERT OR REPLACE INTO native_balances (balance, chain_id, owner)
+                        VALUES (?,?,?) "#,
+    )
+    .bind(balance.to_string())
+    .bind(chain_id)
+    .bind(format!("0x{:x}", address))
+}
+
 /// The horrible return type here can be aliased once `type_alias_impl_trait` is stabilized
 /// https://github.com/rust-lang/rust/issues/63063
 pub(super) fn erc20_read_balance<'a>(
@@ -57,7 +71,7 @@ pub(super) fn erc20_update_balance<'a>(
     balance: U256,
 ) -> Query<'a> {
     sqlx::query(
-        r#" INSERT OR REPLACE INTO balances (chain_id, contract, owner, balance) 
+        r#" INSERT OR REPLACE INTO balances (chain_id, contract, owner, balance)
                         VALUES (?,?,?,?) "#,
     )
     .bind(chain_id)
