@@ -5,7 +5,7 @@ import { useAccount } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
 import { useCurrentNetwork } from "../hooks/useCurrentNetwork";
 import { useRefreshNativeBalance } from "../hooks/useRefreshNativeBalance";
-import { Address } from "../types";
+import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
 
 interface Value {
   balance: bigint;
@@ -44,6 +44,8 @@ export function ProviderNativeBalance({ children }: { children: ReactNode }) {
   } as Value;
 
   useRefreshNativeBalance(mutateBalance);
+  // Recheck balance after a transaction:
+  useRefreshTransactions(refetchNativeBalance);
 
   useRegisterActions(
     [
