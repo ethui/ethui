@@ -6,7 +6,6 @@
   "license": "MIT",
   "scripts": {
     "build": "yarn clean && parcel build manifest.json",
-    "build:release": "yarn build:release:chrome && yarn build:release:firefox",
     "dev": "parcel watch manifest.json --no-cache --host localhost",
     "clean": "rm -rf dist .cache",
     "bundle-analyzer": "yarn clean && parcel build manifest.json --no-source-maps --reporter @parcel/reporter-bundle-analyzer && google-chrome-stable parcel-bundle-reports/default.html",
