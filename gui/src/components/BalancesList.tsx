@@ -35,11 +35,13 @@ function BalanceETH() {
   const { currentNetwork } = useCurrentNetwork();
   const { balance } = useNativeBalance();
 
+  if (!currentNetwork) return null;
+
   return (
     <BalanceItem
       balance={balance}
-      decimals={currentNetwork?.decimals || 18}
-      symbol={currentNetwork?.currency || "ETH"}
+      decimals={currentNetwork.decimals}
+      symbol={currentNetwork.currency}
     />
   );
 }

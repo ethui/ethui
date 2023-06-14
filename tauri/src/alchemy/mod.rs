@@ -3,7 +3,7 @@ mod error;
 mod global;
 mod types;
 
-use std::{collections::HashMap, sync::Arc};
+use std::collections::HashMap;
 
 use ethers::providers::Middleware;
 use ethers_core::types::Address;
@@ -99,8 +99,7 @@ impl Alchemy {
     }
 
     async fn fetch_native_balance(&self, chain_id: u32, address: Address) -> Result<()> {
-        let provider = Networks::write().await.get_current_provider();
-        let client = Arc::new(provider);
+        let client = Networks::write().await.get_current_provider();
         let balance = client.get_balance(address, None).await.unwrap();
         self.db
             .save_native_balance(balance, chain_id, address)
