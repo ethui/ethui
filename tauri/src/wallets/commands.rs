@@ -1,5 +1,10 @@
+use serde_json::json;
+
 use super::{Result, Wallet, WalletControl, Wallets};
-use crate::types::{ChecksummedAddress, GlobalState};
+use crate::{
+    dialogs::{Dialog, DialogMsg},
+    types::{ChecksummedAddress, GlobalState, Json},
+};
 
 /// Lists all wallets
 #[tauri::command]
@@ -28,6 +33,21 @@ pub async fn wallets_get_current_address() -> Result<ChecksummedAddress> {
 #[tauri::command]
 pub async fn wallets_set_list(list: Vec<Wallet>) -> Result<()> {
     Wallets::write().await.set_wallets(list).await
+}
+
+#[tauri::command]
+pub async fn wallets_create(wallet: Wallet) -> Result<()> {
+    Wallets::write().await.create(wallet).await
+}
+
+#[tauri::command]
+pub async fn wallets_update(name: String, params: Json) -> Result<()> {
+    Wallets::write().await.update(name, params).await
+}
+
+#[tauri::command]
+pub async fn wallets_remove(name: String) -> Result<()> {
+    Wallets::write().await.remove(name).await
 }
 
 /// Switches the current wallet

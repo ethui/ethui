@@ -13,6 +13,7 @@ import { ProviderTokensBalances } from "./components/ProviderTokensBalances";
 import { ProviderWallets } from "./components/ProviderWallets";
 import { TxReviewDialog } from "./components/TxReviewDialog";
 import { WagmiWrapper } from "./components/WagmiWrapper";
+import { WalletCreateDialog } from "./components/WalletCreateDialog";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { suspense: true } },
@@ -40,6 +41,12 @@ export default function App() {
                           <Route path="/dialog/jsonkeystore-unlock/:id">
                             {({ id }: { id: string }) => (
                               <JsonKeystoreUnlockDialog id={parseInt(id)} />
+                            )}
+                          </Route>
+
+                          <Route path="/dialog/wallet-create/:id">
+                            {({ id }: { id: string }) => (
+                              <WalletCreateDialog id={parseInt(id)} />
                             )}
                           </Route>
 

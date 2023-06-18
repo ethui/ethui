@@ -21,7 +21,7 @@ pub use self::{
 };
 use crate::{
     peers::Peers,
-    types::{ChecksummedAddress, GlobalState},
+    types::{ChecksummedAddress, GlobalState, Json},
 };
 
 /// Maintains a list of Ethereum wallets, including keeping track of the global current wallet &
@@ -71,6 +71,16 @@ impl Wallets {
         &self.wallets
     }
 
+    pub async fn create_wallet_of_type(&mut self, wallet_type: &str, params: Json) -> Result<()> {
+        let wallet = match wallet_type {
+            _ => return Err(Error::InvalidWalletType(wallet_type.to_owned())),
+        };
+
+        self.wallets.push(wallet);
+        self.save()?;
+        Ok(())
+    }
+
     /// Resets the list of wallets to a new one
     async fn set_wallets(&mut self, wallets: Vec<Wallet>) -> Result<()> {
         if let Some(n) = find_duplicates(&wallets) {
@@ -83,6 +93,35 @@ impl Wallets {
         self.notify_peers().await;
         self.save()?;
 
+        Ok(())
+    }
+
+    async fn create(&mut self, wallet: Wallet) -> Result<()> {
+        // TODO: ensure no duplicates
+        self.wallets.push(wallet);
+        self.notify_peers().await;
+        self.save()?;
+        Ok(())
+    }
+
+    async fn update(&mut self, name: String, params: Json) -> Result<()> {
+        todo!()
+    }
+
+    async fn remove(&mut self, name: String) -> Result<()> {
+        dbg!(&name);
+        let new = self
+            .wallets
+            .iter()
+            .filter(|w| w.name() != name)
+            .cloned()
+            .collect();
+        dbg!(&new);
+
+        self.wallets = new;
+        self.ensure_current();
+        self.notify_peers().await;
+        self.save()?;
         Ok(())
     }
 

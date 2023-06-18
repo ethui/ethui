@@ -29,6 +29,9 @@ pub enum Error {
 
     #[error(transparent)]
     Dialog(#[from] crate::dialogs::Error),
+
+    #[error("unknown wallet type: {0}")]
+    InvalidWalletType(String),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
