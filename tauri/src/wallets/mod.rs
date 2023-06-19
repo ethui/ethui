@@ -3,6 +3,7 @@ mod error;
 mod global;
 mod json_keystore_wallet;
 mod plaintext;
+mod utils;
 mod wallet;
 
 use std::{
@@ -53,7 +54,7 @@ impl Wallets {
     /// Since wallets actually contain multiple addresses, we need the ability to connect to a
     /// different one within the same wallet
     async fn set_current_path(&mut self, key: String) -> Result<()> {
-        self.wallets[self.current].set_current_path(&key).await?;
+        self.wallets[self.current].set_current_path(key).await?;
         self.on_wallet_changed().await?;
         self.save()?;
         Ok(())
@@ -128,7 +129,7 @@ impl Wallets {
     async fn get_wallet_addresses(&self, name: String) -> Vec<(String, ChecksummedAddress)> {
         let wallet = self.find_wallet(&name).unwrap();
 
-        wallet.derive_all_addresses().await.unwrap()
+        wallet.get_all_addresses().await
     }
 
     /// Finds a wallet by its name

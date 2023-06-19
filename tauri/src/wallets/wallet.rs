@@ -11,10 +11,13 @@ use crate::types::ChecksummedAddress;
 pub trait WalletControl: Sync + Send + Deserialize<'static> + Serialize + std::fmt::Debug {
     fn name(&self) -> String;
     async fn get_current_address(&self) -> ChecksummedAddress;
-    async fn set_current_path(&mut self, path: &str) -> Result<()>;
+    async fn set_current_path(&mut self, path: String) -> Result<()>;
+    async fn get_all_addresses(&self) -> Vec<(String, ChecksummedAddress)>;
     async fn build_signer(&self, chain_id: u32) -> Result<ethers::signers::Wallet<SigningKey>>;
-    async fn derive_all_addresses(&self) -> Result<Vec<(String, ChecksummedAddress)>>;
-    fn is_dev(&self) -> bool;
+
+    fn is_dev(&self) -> bool {
+        false
+    }
 }
 
 use super::{JsonKeystoreWallet, PlaintextWallet};
