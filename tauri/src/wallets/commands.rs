@@ -30,6 +30,21 @@ pub async fn wallets_set_list(list: Vec<Wallet>) -> Result<()> {
     Wallets::write().await.set_wallets(list).await
 }
 
+#[tauri::command]
+pub async fn wallets_create(wallet: Wallet) -> Result<()> {
+    Wallets::write().await.create(wallet).await
+}
+
+#[tauri::command]
+pub async fn wallets_update(name: String, params: Wallet) -> Result<()> {
+    Wallets::write().await.update(name, params).await
+}
+
+#[tauri::command]
+pub async fn wallets_remove(name: String) -> Result<()> {
+    Wallets::write().await.remove(name).await
+}
+
 /// Switches the current wallet
 #[tauri::command]
 pub async fn wallets_set_current_wallet(idx: usize) -> Result<()> {

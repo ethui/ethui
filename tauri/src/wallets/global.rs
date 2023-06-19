@@ -6,33 +6,50 @@ use std::{
 
 use async_trait::async_trait;
 use once_cell::sync::OnceCell;
-use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
+use serde::Deserialize;
+use tokio::sync::{mpsc, RwLock, RwLockReadGuard, RwLockWriteGuard};
 
 use super::Wallets;
-use crate::types::GlobalState;
+use crate::{app, types::GlobalState, wallets::Wallet};
 
 static WALLETS: OnceCell<RwLock<Wallets>> = OnceCell::new();
 
 #[async_trait]
 impl GlobalState for Wallets {
     /// initializes through the $XDG_CONFIG/iron/wallets.json file
-    type Initializer = PathBuf;
+    type Initializer = (PathBuf, mpsc::UnboundedSender<app::Event>);
 
-    async fn init(pathbuf: Self::Initializer) {
+    async fn init(args: Self::Initializer) {
+        let pathbuf = args.0;
+        let window_snd = args.1;
+
         let path = Path::new(&pathbuf);
+
+        #[derive(Debug, Deserialize)]
+        struct PersistedWallets {
+            wallets: Vec<Wallet>,
+            #[serde(default)]
+            current: usize,
+        }
 
         let mut res: Self = if path.exists() {
             let file = File::open(path).unwrap();
             let reader = BufReader::new(file);
 
-            let mut res: Self = serde_json::from_reader(reader).unwrap();
-            res.file = Some(pathbuf);
-            res
+            let res: PersistedWallets = serde_json::from_reader(reader).unwrap();
+
+            Self {
+                wallets: res.wallets,
+                current: res.current,
+                file: Some(pathbuf),
+                window_snd,
+            }
         } else {
             Self {
+                wallets: Default::default(),
                 current: 0,
                 file: Some(pathbuf),
-                ..Default::default()
+                window_snd,
             }
         };
 

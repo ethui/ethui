@@ -1,6 +1,8 @@
 use serde::Serialize;
 use tokio::sync::oneshot;
 
+use crate::app;
+
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error("duplicate wallet names `{0}`")]
@@ -29,6 +31,9 @@ pub enum Error {
 
     #[error(transparent)]
     Dialog(#[from] crate::dialogs::Error),
+
+    #[error("error sending event to window: {0}")]
+    WindowSend(#[from] tokio::sync::mpsc::error::SendError<app::Event>),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

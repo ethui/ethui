@@ -16,143 +16,98 @@ import {
   TextField,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
-import { createElement, useCallback, useEffect, useState } from "react";
-import {
-  Controller,
-  FieldArrayWithId,
-  FieldError,
-  FieldErrorsImpl,
-  FormProvider,
-  Merge,
-  UseFieldArrayAppend,
-  UseFieldArrayRemove,
-  useFieldArray,
-  useForm,
-  useFormContext,
-} from "react-hook-form";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 import { useInvoke } from "../hooks/tauri";
-import { Wallet, walletTypes, walletsSchema } from "../types";
+import { Wallet, walletSchema, walletTypes } from "../types";
 
 type NewChild = { new?: boolean };
 
 export function SettingsWallets() {
-  const { data: wallets, mutate } =
-    useInvoke<(Wallet & NewChild)[]>("wallets_get_all");
-
-  const form = useForm({
-    mode: "onBlur",
-    resolver: zodResolver(walletsSchema),
-    defaultValues: { wallets },
-  });
-
-  const {
-    handleSubmit,
-    reset,
-    control,
-    register,
-    formState: { isValid, dirtyFields, errors },
-  } = form;
-
-  // TODO: https://github.com/react-hook-form/react-hook-form/issues/3213
-  const isDirtyAlt = !!Object.keys(dirtyFields).length;
-
-  // default values are async, need to reset once they're ready
-  useEffect(() => reset({ wallets }), [reset, wallets]);
-
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "wallets",
-  });
-
-  const onSubmit = useCallback(
-    async (data: { wallets?: Wallet[] }) => {
-      reset(data);
-      await invoke("wallets_set_list", { list: data.wallets });
-      mutate();
-    },
-    [reset, mutate]
-  );
+  const { data: wallets, mutate } = useInvoke<Wallet[]>("wallets_get_all");
+  const [newWallets, setNewWallets] = useState<Wallet[]>([]);
 
   if (!wallets) return null;
 
+  const allWallets: (Wallet & NewChild)[] = wallets.concat(newWallets);
+
+  const append = (type: Wallet["type"]) => {
+    setNewWallets([...newWallets, emptyWallets[type]]);
+  };
+
+  const save = async (
+    wallet: Wallet & NewChild,
+    params: Wallet,
+    idx: number
+  ) => {
+    if (wallet.new) {
+      invoke("wallets_create", { wallet: params }).then(() => mutate());
+      setNewWallets(newWallets.filter((_, i) => i != idx - wallets.length));
+    } else {
+      await invoke("wallets_update", { name: wallet.name, params });
+      await mutate();
+    }
+  };
+
+  const remove = async (wallet: Wallet & NewChild, idx: number) => {
+    if (wallet.new) {
+      setNewWallets(newWallets.filter((_, i) => i != idx - wallets.length));
+    } else {
+      await invoke("wallets_remove", { name: wallet.name });
+      await mutate();
+    }
+  };
+
   return (
-    <FormProvider {...form}>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack>
-          {fields.map((field, index) => {
-            const err = (errors.wallets && errors.wallets[index]) || {};
+    <>
+      <Stack>
+        {allWallets.map((wallet, i) => {
+          const props = {
+            onSubmit: (params: Wallet) => save(wallet, params, i),
+            onRemove: () => remove(wallet, i),
+          };
 
-            return (
-              <Accordion key={field.id} defaultExpanded={field.new}>
-                <AccordionSummary expandIcon={<ExpandMore />}>
-                  {field.name}
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Stack spacing={2} alignItems="flex-start" key={field.id}>
-                    <input
-                      type="hidden"
-                      {...register(`wallets.${index}.currentPath`)}
-                    />
-                    <TextField
-                      label="Name"
-                      error={!!err.name}
-                      helperText={err.name?.message?.toString()}
-                      {...register(`wallets.${index}.name`)}
-                    />
-
-                    {createElement(formPerType[field.type], {
-                      index,
-                      field,
-                      remove,
-                      errors: err,
-                    })}
-
-                    <Button
-                      color="warning"
-                      size="small"
-                      onClick={() => remove(index)}
-                    >
-                      Remove
-                    </Button>
-                  </Stack>
-                </AccordionDetails>
-              </Accordion>
-            );
-          })}
-        </Stack>
-        <Stack spacing={2} direction="row" sx={{ mt: 4 }}>
-          <Button
-            color="primary"
-            variant="contained"
-            type="submit"
-            disabled={!isDirtyAlt || !isValid}
-          >
-            Save
-          </Button>
-
-          <AddWalletButton append={append} />
-        </Stack>
-      </form>
-    </FormProvider>
+          return (
+            <Accordion key={wallet.name} defaultExpanded={wallet.new}>
+              <AccordionSummary expandIcon={<ExpandMore />}>
+                {wallet.name}
+              </AccordionSummary>
+              <AccordionDetails>
+                {wallet.type === "plaintext" && (
+                  <Plaintext wallet={wallet} {...props} />
+                )}
+                {wallet.type === "jsonKeystore" && (
+                  <JsonKeystore wallet={wallet} {...props} />
+                )}
+              </AccordionDetails>
+            </Accordion>
+          );
+        })}
+      </Stack>
+      <Stack spacing={2} direction="row" sx={{ mt: 4 }}>
+        <AddWalletButton append={append} />
+      </Stack>
+    </>
   );
 }
 
 interface AddWalletButtonProps {
-  append: UseFieldArrayAppend<
-    { wallets: (Wallet & NewChild)[] | undefined },
-    "wallets"
-  >;
+  append: (type: Wallet["type"]) => void;
 }
 
 const AddWalletButton = ({ append }: AddWalletButtonProps) => {
   const [anchor, setAnchor] = useState<HTMLElement | undefined>();
   const open = Boolean(anchor);
 
-  const handleClick = (e: React.MouseEvent<HTMLElement>) => {
+  const handleOpen = (e: React.MouseEvent<HTMLElement>) => {
     setAnchor(e.currentTarget);
   };
   const handleClose = () => setAnchor(undefined);
+  const handleChoice = (type: Wallet["type"]) => {
+    append(type);
+    setAnchor(undefined);
+  };
 
   return (
     <>
@@ -163,7 +118,7 @@ const AddWalletButton = ({ append }: AddWalletButtonProps) => {
         aria-expanded={open ? "true" : undefined}
         variant="contained"
         disableElevation
-        onClick={handleClick}
+        onClick={handleOpen}
         endIcon={<KeyboardArrowDown />}
         color="info"
         size="medium"
@@ -176,23 +131,186 @@ const AddWalletButton = ({ append }: AddWalletButtonProps) => {
         open={open}
         onClose={handleClose}
       >
-        {walletTypes.map((type: Wallet["type"]) => (
+        {walletTypes.map((walletType: Wallet["type"]) => (
           <MenuItem
-            value={type}
-            key={type}
+            value={walletType}
+            key={walletType}
             sx={{ textTransform: "capitalize" }}
-            onClick={() => {
-              append(emptyWallets[type]);
-              handleClose();
-            }}
+            onClick={() => handleChoice(walletType)}
           >
-            {type.replace(/([A-Z])/g, " $1")}
+            {walletType.replace(/([A-Z])/g, " $1")}
           </MenuItem>
         ))}
       </Menu>
     </>
   );
 };
+
+interface PlaintextProps {
+  wallet: Wallet & { type: "plaintext" };
+  onSubmit: (data: Wallet & { type: "plaintext" }) => void;
+  onRemove: () => void;
+}
+
+function Plaintext({ wallet, onSubmit, onRemove }: PlaintextProps) {
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { isValid, isDirty, errors },
+  } = useForm({
+    mode: "onBlur",
+    resolver: zodResolver(walletSchema),
+    defaultValues: wallet,
+  });
+
+  return (
+    <Stack
+      spacing={2}
+      alignItems="flex-start"
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <input type="hidden" {...register("type")} />
+      <input type="hidden" {...register("currentPath")} />
+      <TextField
+        label="Name"
+        error={!!errors.name}
+        helperText={errors.name?.message?.toString()}
+        {...register("name")}
+      />
+      <Stack spacing={2} direction="row">
+        <FormControl error={!!errors.dev}>
+          <FormGroup>
+            <FormControlLabel
+              label="Dev account"
+              control={
+                <Controller
+                  name="dev"
+                  control={control}
+                  render={({ field }) => {
+                    return (
+                      <Checkbox
+                        {...field}
+                        checked={field.value}
+                        onChange={(e) => field.onChange(e.target.checked)}
+                      />
+                    );
+                  }}
+                />
+              }
+            />
+          </FormGroup>
+          {errors.dev && (
+            <FormHelperText>{errors.dev.message?.toString()}</FormHelperText>
+          )}
+        </FormControl>
+      </Stack>
+      <TextField
+        label="Mnemonic"
+        error={!!errors.mnemonic}
+        helperText={errors.mnemonic?.message?.toString() || ""}
+        fullWidth
+        {...register("mnemonic")}
+      />
+      <TextField
+        label="Derivation Path"
+        spellCheck="false"
+        error={!!errors.derivationPath}
+        helperText={errors.derivationPath?.message?.toString() || ""}
+        {...register("derivationPath")}
+      />
+      <TextField
+        label="Count"
+        spellCheck="false"
+        error={!!errors.count}
+        type="number"
+        helperText={errors.count?.message?.toString() || ""}
+        {...register("count", {
+          valueAsNumber: true,
+        })}
+      />
+      <Stack direction="row" spacing={2}>
+        <Button
+          color="primary"
+          variant="contained"
+          type="submit"
+          disabled={!isDirty || !isValid}
+        >
+          Save
+        </Button>
+        <Button
+          color="warning"
+          variant="contained"
+          size="small"
+          onClick={onRemove}
+        >
+          Remove
+        </Button>
+      </Stack>
+    </Stack>
+  );
+}
+
+interface JsonKeystoreProps {
+  wallet: Wallet & { type: "jsonKeystore" };
+  onSubmit: (data: Wallet & { type: "jsonKeystore" }) => void;
+  onRemove: () => void;
+}
+
+function JsonKeystore({ wallet, onSubmit, onRemove }: JsonKeystoreProps) {
+  const {
+    register,
+    handleSubmit,
+    formState: { isValid, isDirty, errors },
+  } = useForm({
+    mode: "onBlur",
+    resolver: zodResolver(walletSchema),
+    defaultValues: wallet,
+  });
+
+  return (
+    <Stack
+      spacing={2}
+      alignItems="flex-start"
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <input type="hidden" {...register("type")} />
+      <TextField
+        label="Name"
+        error={!!errors.name}
+        helperText={errors.name?.message?.toString()}
+        {...register("name")}
+      />
+      <TextField
+        label="Keystore file"
+        error={!!errors.file}
+        helperText={errors.file?.message?.toString() || ""}
+        fullWidth
+        {...register("file")}
+      />
+      <Stack direction="row" spacing={2}>
+        <Button
+          color="primary"
+          variant="contained"
+          type="submit"
+          disabled={!isDirty || !isValid}
+        >
+          Save
+        </Button>
+        <Button
+          color="warning"
+          variant="contained"
+          size="small"
+          onClick={onRemove}
+        >
+          Remove
+        </Button>
+      </Stack>
+    </Stack>
+  );
+}
 
 const emptyWallets: Record<Wallet["type"], Wallet & NewChild> = {
   plaintext: {
@@ -211,110 +329,3 @@ const emptyWallets: Record<Wallet["type"], Wallet & NewChild> = {
     new: true,
   },
 };
-
-const formPerType: {
-  [T in Wallet["type"]]: React.FunctionComponent<SubFormProps>;
-} = {
-  plaintext: PlaintextWalletForm,
-  jsonKeystore: JsonKeystoreWalletForm,
-};
-
-interface SubFormProps {
-  field: FieldArrayWithId<Wallet>;
-  errors: Merge<FieldError, FieldErrorsImpl<NonNullable<Wallet>>>;
-  remove: UseFieldArrayRemove;
-  index: number;
-}
-
-function PlaintextWalletForm({ index, errors }: SubFormProps) {
-  const { register, control } = useFormContext<{
-    wallets: (Wallet & { type: "plaintext" } & NewChild)[];
-  }>();
-
-  const err = errors as Merge<
-    FieldError,
-    FieldErrorsImpl<NonNullable<Wallet & { type: "plaintext" }>>
-  >;
-
-  return (
-    <>
-      <input type="hidden" {...register(`wallets.${index}.type`)} />
-      <input type="hidden" {...register(`wallets.${index}.currentPath`)} />
-
-      <Stack spacing={2} direction="row">
-        <FormControl error={!!err.dev}>
-          <FormGroup>
-            <FormControlLabel
-              label="Dev account"
-              control={
-                <Controller
-                  name={`wallets.${index}.dev`}
-                  control={control}
-                  render={({ field }) => {
-                    return (
-                      <Checkbox
-                        {...field}
-                        checked={field.value}
-                        onChange={(e) => field.onChange(e.target.checked)}
-                      />
-                    );
-                  }}
-                />
-              }
-            />
-          </FormGroup>
-          {err.dev && (
-            <FormHelperText>{err.dev.message?.toString()}</FormHelperText>
-          )}
-        </FormControl>
-      </Stack>
-      <TextField
-        label="Mnemonic"
-        error={!!err.mnemonic}
-        helperText={err.mnemonic?.message?.toString() || ""}
-        fullWidth
-        {...register(`wallets.${index}.mnemonic`)}
-      />
-      <TextField
-        label="Derivation Path"
-        spellCheck="false"
-        error={!!err.derivationPath}
-        helperText={err.derivationPath?.message?.toString() || ""}
-        {...register(`wallets.${index}.derivationPath`)}
-      />
-      <TextField
-        label="Count"
-        spellCheck="false"
-        error={!!err.count}
-        type="number"
-        helperText={err.count?.message?.toString() || ""}
-        {...register(`wallets.${index}.count`, {
-          valueAsNumber: true,
-        })}
-      />
-    </>
-  );
-}
-
-function JsonKeystoreWalletForm({ errors, index }: SubFormProps) {
-  const { register } = useFormContext<{
-    wallets: (Wallet & { type: "jsonKeystore" } & NewChild)[];
-  }>();
-
-  const err = errors as Merge<
-    FieldError,
-    FieldErrorsImpl<NonNullable<Wallet & { type: "jsonKeystore" }>>
-  >;
-
-  return (
-    <>
-      <TextField
-        label="Keystore file"
-        error={!!err.file}
-        helperText={err.file?.message?.toString() || ""}
-        fullWidth
-        {...register(`wallets.${index}.file`)}
-      />
-    </>
-  );
-}
