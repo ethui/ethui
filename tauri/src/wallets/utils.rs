@@ -5,7 +5,7 @@ use crate::types::ChecksummedAddress;
 
 pub fn derive_address(mnemonic: &str, path: &str) -> Result<ChecksummedAddress> {
     let builder = MnemonicBuilder::<English>::default().phrase(mnemonic);
-    derive_from_builder_and_path(builder.clone(), &path)
+    derive_from_builder_and_path(builder, path)
 }
 
 pub fn derive_addresses(
