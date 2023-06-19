@@ -16,18 +16,13 @@ import {
   TextField,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
-import { createElement, useState } from "react";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import { useInvoke } from "../hooks/tauri";
 import { Wallet, walletSchema, walletTypes } from "../types";
 
 type NewChild = { new?: boolean };
-
-const types = {
-  plaintext: Plaintext,
-  jsonKeystore: JsonKeystore,
-} as const;
 
 export function SettingsWallets() {
   const { data: wallets, mutate } = useInvoke<Wallet[]>("wallets_get_all");
@@ -47,9 +42,10 @@ export function SettingsWallets() {
     idx: number
   ) => {
     if (wallet.new) {
-      invoke("wallets_create", { wallet }).then(() => mutate());
+      invoke("wallets_create", { wallet: params }).then(() => mutate());
       setNewWallets(newWallets.filter((_, i) => i != idx - wallets.length));
     } else {
+      console.log(params);
       await invoke("wallets_update", { name: wallet.name, params });
       await mutate();
     }

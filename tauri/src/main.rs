@@ -37,7 +37,7 @@ async fn main() -> Result<()> {
     let db = DB::connect(&app.get_resource_path("db.sqlite3")).await?;
     Settings::init(app.get_resource_path("settings.json")).await;
     Peers::init(app.sender.clone()).await;
-    Wallets::init(app.get_resource_path("wallets.json")).await;
+    Wallets::init((app.get_resource_path("wallets.json"), app.sender.clone())).await;
     Networks::init((
         app.get_resource_path("networks.json"),
         app.sender.clone(),
