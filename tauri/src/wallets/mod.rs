@@ -116,7 +116,6 @@ impl Wallets {
             .filter(|w| w.name() != name)
             .cloned()
             .collect();
-        dbg!(&new);
 
         self.wallets = new;
         self.ensure_current();
@@ -161,7 +160,6 @@ impl Wallets {
     }
 
     async fn on_wallet_changed(&self) -> Result<()> {
-        dbg!("on wallet changed");
         self.notify_peers().await;
         self.window_snd.send(app::Notify::WalletsChanged.into())?;
 
