@@ -20,6 +20,7 @@ const queryClient = new QueryClient({
 });
 
 export default function App() {
+  console.log("asd");
   return (
     <CommandBarProvider>
       <ProviderTheme>
