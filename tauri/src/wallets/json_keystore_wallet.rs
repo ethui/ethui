@@ -63,7 +63,7 @@ impl WalletControl for JsonKeystoreWallet {
         address.into()
     }
 
-    async fn set_current_path(&mut self, _path: &str) -> Result<()> {
+    async fn set_current_path(&mut self, _path: String) -> Result<()> {
         Ok(())
     }
 
@@ -77,9 +77,10 @@ impl WalletControl for JsonKeystoreWallet {
         Ok(signer.with_chain_id(chain_id))
     }
 
-    async fn derive_all_addresses(&self) -> Result<Vec<(String, ChecksummedAddress)>> {
-        Ok(vec![("default".into(), self.get_current_address().await)])
+    async fn get_all_addresses(&self) -> Vec<(String, ChecksummedAddress)> {
+        vec![("default".into(), self.get_current_address().await)]
     }
+
     fn is_dev(&self) -> bool {
         false
     }
