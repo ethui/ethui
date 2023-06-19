@@ -32,9 +32,6 @@ pub enum Error {
     #[error(transparent)]
     Dialog(#[from] crate::dialogs::Error),
 
-    #[error("unknown wallet type: {0}")]
-    InvalidWalletType(String),
-
     #[error("error sending event to window: {0}")]
     WindowSend(#[from] tokio::sync::mpsc::error::SendError<app::Event>),
 }

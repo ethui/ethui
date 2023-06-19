@@ -1,10 +1,5 @@
-use serde_json::json;
-
 use super::{Result, Wallet, WalletControl, Wallets};
-use crate::{
-    dialogs::{Dialog, DialogMsg},
-    types::{ChecksummedAddress, GlobalState, Json},
-};
+use crate::types::{ChecksummedAddress, GlobalState};
 
 /// Lists all wallets
 #[tauri::command]

@@ -45,7 +45,6 @@ export function SettingsWallets() {
       invoke("wallets_create", { wallet: params }).then(() => mutate());
       setNewWallets(newWallets.filter((_, i) => i != idx - wallets.length));
     } else {
-      console.log(params);
       await invoke("wallets_update", { name: wallet.name, params });
       await mutate();
     }

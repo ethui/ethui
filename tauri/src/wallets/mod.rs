@@ -12,7 +12,7 @@ use std::{
 };
 
 pub use error::{Error, Result};
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use tokio::sync::mpsc;
 
 pub use self::{
@@ -23,7 +23,7 @@ pub use self::{
 use crate::{
     app,
     peers::Peers,
-    types::{ChecksummedAddress, GlobalState, Json},
+    types::{ChecksummedAddress, GlobalState},
 };
 
 /// Maintains a list of Ethereum wallets, including keeping track of the global current wallet &

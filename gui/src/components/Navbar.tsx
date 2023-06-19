@@ -1,4 +1,3 @@
-import { Menu } from "@mui/icons-material";
 import Settings from "@mui/icons-material/Settings";
 import { AppBar, Grid, IconButton, Toolbar, Typography } from "@mui/material";
 import { useState } from "react";
