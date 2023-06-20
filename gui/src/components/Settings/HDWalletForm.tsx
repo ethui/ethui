@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import truncateEthAddress from "truncate-eth-address";
 import { formatUnits } from "viem";
+import { z } from "zod";
 
 import { useProvider } from "../../hooks/useProvider";
 import {
@@ -25,13 +26,21 @@ import {
   Wallet,
   derivationPathSchema,
   hdWalletSchema,
-  hdWalletUpdateSchema,
   passwordFormSchema,
 } from "../../types";
 
-export interface Request {
-  type: "HDWallet";
-}
+const createSchema = hdWalletSchema.extend({
+  current: z.string(),
+});
+
+const updateSchema = hdWalletSchema.pick({
+  type: true,
+  name: true,
+  derivationPath: true,
+  count: true,
+});
+
+type FormType = z.infer<typeof createSchema> | z.infer<typeof updateSchema>;
 
 const steps = ["Import", "Secure", "Review"];
 
@@ -39,7 +48,7 @@ interface Props {
   type: "create" | "update";
   wallet: Wallet & { type: "HDWallet" };
 
-  onSubmit: (data: Wallet & { type: "HDWallet" }) => void;
+  onSubmit: (data: FormType) => void;
   onCancel: () => void;
   onRemove: () => void;
 }
@@ -59,7 +68,7 @@ function HDWalletCreateForm({
 }: Omit<Props, "type">) {
   const [name, setName] = useState("");
   const [step, setStep] = useState(0);
-  const [mnemonic, setMnemonic] = useState<string | null>(null);
+  const [mnemonic, setMnemonic] = useState<string>("");
   const [derivationPath, setDerivationPath] = useState<string | null>(null);
   const [current, setCurrent] = useState<string | null>(null);
   const [password, setPassword] = useState("");
@@ -76,7 +85,15 @@ function HDWalletCreateForm({
       current,
       password,
     });
-  }, [current]);
+  }, [
+    name,
+    current,
+    mnemonic,
+    derivationPath,
+    password,
+    wallet.type,
+    onSubmit,
+  ]);
 
   return (
     <Stack direction="column" spacing={2}>
@@ -110,7 +127,7 @@ function HDWalletCreateForm({
 
       {step == 2 && (
         <ReviewStep
-          mnemonic={mnemonic!}
+          mnemonic={mnemonic}
           onSubmit={(derivationPath, current) => {
             setDerivationPath(derivationPath);
             setCurrent(current);
@@ -128,7 +145,7 @@ interface MnemonicStepProps {
 }
 
 function MnemonicStep({ onSubmit, onCancel }: MnemonicStepProps) {
-  const schema = hdWalletSchema.pick({ name: true, mnemonic: true });
+  const schema = createSchema.pick({ name: true, mnemonic: true });
   const {
     handleSubmit,
     register,
@@ -244,7 +261,7 @@ interface ReviewStepProps {
 }
 
 function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
-  const schema = hdWalletSchema.pick({ derivationPath: true });
+  const schema = createSchema.pick({ derivationPath: true });
   const defaultValues = {
     derivationPath: derivationPathSchema.parse(undefined),
   };
@@ -355,7 +372,7 @@ function NativeBalance({ address }: NativeBalanceProps) {
         setBalance(formatUnits(truncatedBalance, decimals));
       }
     });
-  }, [provider, address]);
+  }, [provider, address, decimals]);
 
   if (!balance || !provider) return null;
 
@@ -377,7 +394,7 @@ function HDWalletUpdateForm({
     formState: { isValid, isDirty, errors },
   } = useForm({
     mode: "onBlur",
-    resolver: zodResolver(hdWalletUpdateSchema),
+    resolver: zodResolver(updateSchema),
     defaultValues: wallet,
   });
 

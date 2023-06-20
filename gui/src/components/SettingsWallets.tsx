@@ -16,13 +16,13 @@ import {
   TextField,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
+import { startCase } from "lodash-es";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import { useInvoke } from "../hooks/tauri";
 import { Wallet, walletSchema, walletTypes } from "../types";
 import { HDWalletForm } from "./Settings/HDWalletForm";
-import { startCase } from "lodash-es";
 
 type NewChild = { new?: boolean };
 
@@ -40,7 +40,7 @@ export function SettingsWallets() {
 
   const save = async (
     wallet: Wallet & NewChild,
-    params: Wallet,
+    params: object,
     idx: number
   ) => {
     if (wallet.new) {
@@ -52,7 +52,10 @@ export function SettingsWallets() {
     }
   };
 
-  const remove = async (wallet: Wallet & NewChild, idx: number) => {
+  const remove = async (
+    wallet: { name: string; new?: boolean },
+    idx: number
+  ) => {
     if (wallet.new) {
       setNewWallets(newWallets.filter((_, i) => i != idx - wallets.length));
     } else {
@@ -66,9 +69,9 @@ export function SettingsWallets() {
       <Stack>
         {allWallets.map((wallet, i) => {
           const props = {
-            onSubmit: (params: Wallet) => save(wallet, params, i),
+            onSubmit: (params: object) => save(wallet, params, i),
             onRemove: () => remove(wallet, i),
-            onCancel: wallet.new ? () => remove(wallet, i) : () => {},
+            onCancel: () => wallet.new && remove(wallet, i),
           };
 
           return (
@@ -326,5 +329,13 @@ const emptyWallets: Record<Wallet["type"], Wallet & NewChild> = {
     file: "",
     new: true,
   },
-  HDWallet: { type: "HDWallet", name: "", new: true },
+  HDWallet: {
+    type: "HDWallet",
+    name: "",
+    count: 5,
+    derivationPath: "",
+    mnemonic: "",
+    password: "",
+    new: true,
+  },
 };
