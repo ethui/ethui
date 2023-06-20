@@ -4,7 +4,6 @@ import { Route, Router, Switch } from "wouter";
 
 import { CommandBar, CommandBarProvider } from "./components/CommandBar";
 import { HomePage } from "./components/HomePage";
-import { WalletUnlockDialog } from "./components/WalletUnlockDialog";
 import { Navbar } from "./components/Navbar";
 import { ProviderCurrentNetwork } from "./components/ProviderCurrentNetwork";
 import { ProviderNetworks } from "./components/ProviderNetworks";
@@ -13,6 +12,7 @@ import { ProviderTokensBalances } from "./components/ProviderTokensBalances";
 import { ProviderWallets } from "./components/ProviderWallets";
 import { TxReviewDialog } from "./components/TxReviewDialog";
 import { WagmiWrapper } from "./components/WagmiWrapper";
+import { WalletUnlockDialog } from "./components/WalletUnlockDialog";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { suspense: true } },
