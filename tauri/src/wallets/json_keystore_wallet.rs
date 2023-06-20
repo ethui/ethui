@@ -38,17 +38,6 @@ pub struct JsonKeystoreWallet {
     expirer: Arc<RwLock<Option<JoinHandle<()>>>>,
 }
 
-impl JsonKeystoreWallet {
-    pub fn new() -> Self {
-        Self {
-            name: "".into(),
-            file: PathBuf::new(),
-            secret: Default::default(),
-            expirer: Default::default(),
-        }
-    }
-}
-
 #[async_trait]
 impl WalletCreate for JsonKeystoreWallet {
     async fn create(params: Json) -> Result<Wallet> {
@@ -93,10 +82,6 @@ impl WalletControl for JsonKeystoreWallet {
 
     async fn get_all_addresses(&self) -> Vec<(String, ChecksummedAddress)> {
         vec![("default".into(), self.get_current_address().await)]
-    }
-
-    fn is_dev(&self) -> bool {
-        false
     }
 }
 
