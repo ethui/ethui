@@ -4,7 +4,7 @@ import { Route, Router, Switch } from "wouter";
 
 import { CommandBar, CommandBarProvider } from "./components/CommandBar";
 import { HomePage } from "./components/HomePage";
-import { JsonKeystoreUnlockDialog } from "./components/JsonKeystoreUnlockDialog";
+import { WalletUnlockDialog } from "./components/WalletUnlockDialog";
 import { Navbar } from "./components/Navbar";
 import { ProviderCurrentNetwork } from "./components/ProviderCurrentNetwork";
 import { ProviderNetworks } from "./components/ProviderNetworks";
@@ -37,9 +37,9 @@ export default function App() {
                             )}
                           </Route>
 
-                          <Route path="/dialog/jsonkeystore-unlock/:id">
+                          <Route path="/dialog/wallet-unlock/:id">
                             {({ id }: { id: string }) => (
-                              <JsonKeystoreUnlockDialog id={parseInt(id)} />
+                              <WalletUnlockDialog id={parseInt(id)} />
                             )}
                           </Route>
 

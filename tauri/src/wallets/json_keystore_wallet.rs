@@ -99,7 +99,7 @@ impl JsonKeystoreWallet {
         }
 
         // open the dialog
-        let dialog = Dialog::new("jsonkeystore-unlock", serde_json::to_value(self).unwrap());
+        let dialog = Dialog::new("wallet-unlock", serde_json::to_value(self).unwrap());
         dialog.open().await?;
 
         // attempt to receive a password at most 3 times
