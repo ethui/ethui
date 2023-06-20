@@ -62,7 +62,7 @@ impl WalletControl for JsonKeystoreWallet {
         self.name.clone()
     }
 
-    async fn update(&mut self, params: Json) -> Result<Wallet> {
+    async fn update(mut self, params: Json) -> Result<Wallet> {
         Ok(Wallet::JsonKeystore(serde_json::from_value(params)?))
     }
 
@@ -87,7 +87,7 @@ impl WalletControl for JsonKeystoreWallet {
         let secret = self.secret.read().await;
         let secret = secret.as_ref().unwrap().lock().await;
 
-        let signer = from_secret(&secret);
+        let signer = signer_from_secret(&secret);
         Ok(signer.with_chain_id(chain_id))
     }
 
@@ -148,7 +148,7 @@ impl JsonKeystoreWallet {
         let mut expirer_handle = self.expirer.write().await;
         let mut secret_handle = self.secret.write().await;
 
-        let secret = into_secret(keystore);
+        let secret = signer_into_secret(keystore);
 
         *secret_handle = Some(Mutex::new(secret));
 
@@ -162,7 +162,7 @@ impl JsonKeystoreWallet {
 }
 
 /// Converts a signer into a SecretVec
-fn into_secret(keystore: &signers::Wallet<SigningKey>) -> SecretVec<u8> {
+fn signer_into_secret(keystore: &signers::Wallet<SigningKey>) -> SecretVec<u8> {
     let signer_bytes = keystore.signer().to_bytes();
     let bytes = signer_bytes.as_slice();
 
@@ -174,7 +174,7 @@ fn into_secret(keystore: &signers::Wallet<SigningKey>) -> SecretVec<u8> {
 }
 
 /// Converts a SecretVec into a signer
-fn from_secret(secret: &SecretVec<u8>) -> signers::Wallet<SigningKey> {
+fn signer_from_secret(secret: &SecretVec<u8>) -> signers::Wallet<SigningKey> {
     let signer_bytes = secret.borrow();
     signers::Wallet::from_bytes(&signer_bytes).unwrap()
 }

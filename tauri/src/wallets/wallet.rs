@@ -10,7 +10,7 @@ use crate::types::{ChecksummedAddress, Json};
 #[enum_dispatch(Wallet)]
 pub trait WalletControl: Sync + Send + Deserialize<'static> + Serialize + std::fmt::Debug {
     fn name(&self) -> String;
-    async fn update(&mut self, params: Json) -> Result<Wallet>;
+    async fn update(mut self, params: Json) -> Result<Wallet>;
     async fn get_current_address(&self) -> ChecksummedAddress;
     async fn set_current_path(&mut self, path: String) -> Result<()>;
     async fn get_all_addresses(&self) -> Vec<(String, ChecksummedAddress)>;
@@ -42,7 +42,7 @@ impl WalletCreate for Wallet {
 
         let wallet = match wallet_type {
             "plaintext" => PlaintextWallet::create(params).await?,
-            "json_keystore" => JsonKeystoreWallet::create(params).await?,
+            "jsonKeystore" => JsonKeystoreWallet::create(params).await?,
             _ => return Err(Error::InvalidWalletType(wallet_type.into())),
         };
 

@@ -36,7 +36,7 @@ pub async fn wallets_create(params: Json) -> Result<()> {
 }
 
 #[tauri::command]
-pub async fn wallets_update(name: String, params: Wallet) -> Result<()> {
+pub async fn wallets_update(name: String, params: Json) -> Result<()> {
     Wallets::write().await.update(name, params).await
 }
 

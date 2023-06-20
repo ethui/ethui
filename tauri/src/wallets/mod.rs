@@ -102,10 +102,12 @@ impl Wallets {
         Ok(())
     }
 
-    async fn update(&mut self, name: String, params: Wallet) -> Result<()> {
+    async fn update(&mut self, name: String, params: Json) -> Result<()> {
         // TODO: should fail if no wallet of that name exists
         let i = self.wallets.iter().position(|w| w.name() == name).unwrap();
-        self.wallets[i] = params;
+        self.wallets[i] = self.wallets[i].clone().update(params).await?;
+
+        self.ensure_current();
         self.notify_peers().await;
         self.on_wallet_changed().await?;
         self.save()?;

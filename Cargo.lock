@@ -2868,7 +2868,6 @@ dependencies = [
  "tauri",
  "tauri-build",
  "tauri-plugin-window-state",
- "tempfile",
  "thiserror",
  "tokio",
  "tokio-tungstenite",
