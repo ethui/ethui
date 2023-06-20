@@ -110,7 +110,14 @@ impl HDWallet {
     pub async fn from_params(params: HDWalletParams) -> Result<Self> {
         let addresses =
             utils::derive_addresses(&params.mnemonic, &params.derivation_path, params.count);
-        let current = addresses.first().unwrap().clone();
+
+        // use given `current`, but only after ensuring it is part of the derived list of addresses
+        let current = if let Some(current) = addresses.iter().find(|(p, _)| p == &params.current) {
+            current.clone()
+        } else {
+            return Err(Error::InvalidKey(params.current));
+        };
+
         let ciphertext = crypto::encrypt(&params.mnemonic, &params.password).unwrap();
 
         Ok(Self {
