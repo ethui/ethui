@@ -61,6 +61,3 @@ default = []
 # DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
 debug = ["tauri/devtools"]
-
-[dev-dependencies]
-tempfile = "3.5.0"
