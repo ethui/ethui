@@ -34,6 +34,9 @@ pub enum Error {
 
     #[error("error sending event to window: {0}")]
     WindowSend(#[from] tokio::sync::mpsc::error::SendError<app::Event>),
+
+    #[error("invalid wallet type: {0}")]
+    InvalidWalletType(String),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

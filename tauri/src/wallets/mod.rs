@@ -16,6 +16,7 @@ pub use error::{Error, Result};
 use serde::Serialize;
 use tokio::sync::mpsc;
 
+use self::wallet::WalletCreate;
 pub use self::{
     json_keystore_wallet::JsonKeystoreWallet,
     plaintext::PlaintextWallet,
@@ -24,7 +25,7 @@ pub use self::{
 use crate::{
     app,
     peers::Peers,
-    types::{ChecksummedAddress, GlobalState},
+    types::{ChecksummedAddress, GlobalState, Json},
 };
 
 /// Maintains a list of Ethereum wallets, including keeping track of the global current wallet &
@@ -92,7 +93,8 @@ impl Wallets {
         Ok(())
     }
 
-    async fn create(&mut self, wallet: Wallet) -> Result<()> {
+    async fn create(&mut self, params: Json) -> Result<()> {
+        let wallet = Wallet::create(params).await?;
         // TODO: ensure no duplicates
         self.wallets.push(wallet);
         self.on_wallet_changed().await?;

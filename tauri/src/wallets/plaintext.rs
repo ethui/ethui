@@ -1,12 +1,13 @@
 use std::str::FromStr;
 
+use async_trait::async_trait;
 use coins_bip32::path::DerivationPath;
 use ethers::signers::{coins_bip39::English, MnemonicBuilder, Signer};
 use ethers_core::k256::ecdsa::SigningKey;
 use serde::{Deserialize, Serialize};
 
-use super::{utils, Result, WalletControl};
-use crate::types::ChecksummedAddress;
+use super::{utils, wallet::WalletCreate, Result, Wallet, WalletControl};
+use crate::types::{ChecksummedAddress, Json};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(try_from = "Deserializer", rename_all = "camelCase")]
@@ -19,10 +20,21 @@ pub struct PlaintextWallet {
     current_path: String,
 }
 
-#[async_trait::async_trait]
+#[async_trait]
+impl WalletCreate for PlaintextWallet {
+    async fn create(params: Json) -> Result<Wallet> {
+        Ok(Wallet::Plaintext(serde_json::from_value(params)?))
+    }
+}
+
+#[async_trait]
 impl WalletControl for PlaintextWallet {
     fn name(&self) -> String {
         self.name.clone()
+    }
+
+    async fn update(&mut self, params: Json) -> Result<Wallet> {
+        Ok(Wallet::Plaintext(serde_json::from_value(params)?))
     }
 
     async fn get_current_address(&self) -> ChecksummedAddress {

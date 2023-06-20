@@ -1,5 +1,5 @@
 use super::{Result, Wallet, WalletControl, Wallets};
-use crate::types::{ChecksummedAddress, GlobalState};
+use crate::types::{ChecksummedAddress, GlobalState, Json};
 
 /// Lists all wallets
 #[tauri::command]
@@ -31,8 +31,8 @@ pub async fn wallets_set_list(list: Vec<Wallet>) -> Result<()> {
 }
 
 #[tauri::command]
-pub async fn wallets_create(wallet: Wallet) -> Result<()> {
-    Wallets::write().await.create(wallet).await
+pub async fn wallets_create(params: Json) -> Result<()> {
+    Wallets::write().await.create(params).await
 }
 
 #[tauri::command]
