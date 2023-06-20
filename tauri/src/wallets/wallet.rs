@@ -3,6 +3,7 @@ use enum_dispatch::enum_dispatch;
 use ethers_core::k256::ecdsa::SigningKey;
 use serde::{Deserialize, Serialize};
 
+use super::hd_wallet::HDWallet;
 use super::{Error, JsonKeystoreWallet, PlaintextWallet, Result};
 use crate::types::{ChecksummedAddress, Json};
 
@@ -33,6 +34,9 @@ pub trait WalletCreate {
 pub enum Wallet {
     Plaintext(PlaintextWallet),
     JsonKeystore(JsonKeystoreWallet),
+
+    #[serde(rename = "HDWallet")]
+    HDWallet(HDWallet),
 }
 
 #[async_trait]
@@ -43,6 +47,7 @@ impl WalletCreate for Wallet {
         let wallet = match wallet_type {
             "plaintext" => PlaintextWallet::create(params).await?,
             "jsonKeystore" => JsonKeystoreWallet::create(params).await?,
+            "HDWallet" => HDWallet::create(params).await?,
             _ => return Err(Error::InvalidWalletType(wallet_type.into())),
         };
 

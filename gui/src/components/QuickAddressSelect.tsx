@@ -3,12 +3,12 @@ import { map } from "lodash-es";
 
 import { useInvoke } from "../hooks/tauri";
 import { useWallets } from "../hooks/useWallets";
-import { Address } from "../types";
+import { Address, Wallet } from "../types";
 import { AddressView } from "./AddressView";
 
 export function QuickAddressSelect() {
   const { currentWallet, setCurrentAddress } = useWallets();
-  const { data: addresses } = useInvoke<[string | undefined, Address][]>(
+  const { data: addresses } = useInvoke<[string, Address][]>(
     "wallets_get_wallet_addresses",
     { name: currentWallet?.name }
   );
@@ -29,7 +29,7 @@ export function QuickAddressSelect() {
     <Select
       size="small"
       renderValue={renderValue}
-      value={currentWallet.currentPath || addresses[0][0]}
+      value={getCurrentPath(currentWallet, addresses)}
       onChange={handleChange}
     >
       {map(addresses, ([key, address]) => (
@@ -39,4 +39,14 @@ export function QuickAddressSelect() {
       ))}
     </Select>
   );
+}
+
+function getCurrentPath(wallet: Wallet, addresses: [string, Address][]) {
+  switch (wallet.type) {
+    case "HDWallet":
+      return wallet.current ? wallet.current[0] : addresses[0][0];
+
+    default:
+      return wallet.currentPath || addresses[0][0];
+  }
 }

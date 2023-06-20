@@ -103,6 +103,7 @@ impl IronApp {
                 wallets::commands::wallets_set_current_wallet,
                 wallets::commands::wallets_set_current_path,
                 wallets::commands::wallets_get_wallet_addresses,
+                wallets::commands::wallets_get_mnemonic_addresses,
                 dialogs::commands::dialog_get_payload,
                 dialogs::commands::dialog_send,
                 dialogs::commands::dialog_finish,
@@ -293,6 +294,7 @@ async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<Even
                 h,
             }) => {
                 WindowBuilder::new(&handle, label, WindowUrl::App(url.into()))
+                    .min_inner_size(w, h)
                     .max_inner_size(w, h)
                     .title(title)
                     .build()

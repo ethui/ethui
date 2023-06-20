@@ -1,6 +1,7 @@
 pub mod commands;
 mod error;
 mod global;
+mod hd_wallet;
 mod json_keystore_wallet;
 mod plaintext;
 mod utils;
@@ -105,6 +106,7 @@ impl Wallets {
     async fn update(&mut self, name: String, params: Json) -> Result<()> {
         // TODO: should fail if no wallet of that name exists
         let i = self.wallets.iter().position(|w| w.name() == name).unwrap();
+
         self.wallets[i] = self.wallets[i].clone().update(params).await?;
 
         self.ensure_current();

@@ -32,6 +32,24 @@ export const networkSchema = z.object({
   ),
 });
 
+export const passwordSchema = z
+  .string()
+  .min(8, { message: "must be at least 8 characters long" })
+  .regex(
+    new RegExp("[^a-zA-Z0-9]"),
+    "must have at least one special character"
+  );
+
+export const passwordFormSchema = z
+  .object({
+    password: passwordSchema,
+    passwordConfirmation: passwordSchema,
+  })
+  .refine((data) => data.password == data.passwordConfirmation, {
+    path: ["passwordConfirmation"],
+    message: "The two passwords don't match",
+  });
+
 export const mnemonicSchema = z.string().regex(/^(\w+\s){11}\w+$/, {
   message: "Must be a 12-word phrase",
 });
@@ -43,7 +61,31 @@ export const derivationPathSchema = z
   })
   .default("m/44'/60'/0'/0");
 
+export const hdWalletSchema = z.object({
+  type: z.literal("HDWallet"),
+  count: z.number().int().min(1).max(100),
+  name: z.string().min(1),
+  current: z.array(z.string()).length(2).optional(),
+  mnemonic: mnemonicSchema,
+  derivationPath: derivationPathSchema,
+  password: passwordSchema,
+});
+
+export const hdWalletUpdateSchema = hdWalletSchema.pick({
+  type: true,
+  name: true,
+  derivationPath: true,
+  count: true,
+});
+
 export const walletSchema = z.discriminatedUnion("type", [
+  hdWalletSchema,
+  z.object({
+    type: z.literal("jsonKeystore"),
+    name: z.string().min(1),
+    file: z.string().min(1),
+    currentPath: z.string().optional(),
+  }),
   z.object({
     type: z.literal("plaintext"),
     name: z.string().min(1),
@@ -51,12 +93,6 @@ export const walletSchema = z.discriminatedUnion("type", [
     mnemonic: mnemonicSchema,
     derivationPath: derivationPathSchema,
     count: z.number().int().min(1),
-    currentPath: z.string().optional(),
-  }),
-  z.object({
-    type: z.literal("jsonKeystore"),
-    name: z.string().min(1),
-    file: z.string().min(1),
     currentPath: z.string().optional(),
   }),
 ]);

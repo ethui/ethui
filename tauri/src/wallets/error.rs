@@ -32,6 +32,9 @@ pub enum Error {
     #[error(transparent)]
     Dialog(#[from] crate::dialogs::Error),
 
+    #[error("unknown wallet key: {0}")]
+    InvalidKey(String),
+
     #[error("error sending event to window: {0}")]
     WindowSend(#[from] tokio::sync::mpsc::error::SendError<app::Event>),
 
