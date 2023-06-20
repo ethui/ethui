@@ -3,14 +3,17 @@
 use std::time::Duration;
 use std::{fs::File, io::BufReader, path::PathBuf, str::FromStr, sync::Arc};
 
+use async_trait::async_trait;
 use ethers::signers::{self, Signer};
 use ethers_core::{k256::ecdsa::SigningKey, types::Address};
 use secrets::SecretVec;
 use tokio::sync::{Mutex, RwLock};
 use tokio::task::JoinHandle;
 
-use super::{Error, Result, WalletControl};
+use super::wallet::WalletCreate;
+use super::{Error, Result, Wallet, WalletControl};
 use crate::dialogs::DialogMsg;
+use crate::types::Json;
 use crate::{dialogs::Dialog, types::ChecksummedAddress};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
@@ -46,10 +49,21 @@ impl JsonKeystoreWallet {
     }
 }
 
-#[async_trait::async_trait]
+#[async_trait]
+impl WalletCreate for JsonKeystoreWallet {
+    async fn create(params: Json) -> Result<Wallet> {
+        Ok(Wallet::JsonKeystore(serde_json::from_value(params)?))
+    }
+}
+
+#[async_trait]
 impl WalletControl for JsonKeystoreWallet {
     fn name(&self) -> String {
         self.name.clone()
+    }
+
+    async fn update(&mut self, params: Json) -> Result<Wallet> {
+        Ok(Wallet::JsonKeystore(serde_json::from_value(params)?))
     }
 
     async fn get_current_address(&self) -> ChecksummedAddress {
