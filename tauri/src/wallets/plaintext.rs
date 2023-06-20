@@ -33,7 +33,7 @@ impl WalletControl for PlaintextWallet {
         self.name.clone()
     }
 
-    async fn update(&mut self, params: Json) -> Result<Wallet> {
+    async fn update(mut self, params: Json) -> Result<Wallet> {
         Ok(Wallet::Plaintext(serde_json::from_value(params)?))
     }
 
