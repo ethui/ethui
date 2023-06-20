@@ -21,12 +21,13 @@ pub(super) static PRESETS: Lazy<HashMap<String, Preset>> = Lazy::new(|| {
     );
 
     presets.insert(
-        "jsonkeystore-unlock".into(),
+        "wallet-unlock".into(),
         Preset {
-            title: "Jsonkeystore Unlock".into(),
+            title: "Wallet Unlock".into(),
             w: 400.0,
             h: 205.0,
         },
     );
+
     presets
 });

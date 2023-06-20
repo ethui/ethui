@@ -3,14 +3,17 @@
 use std::time::Duration;
 use std::{fs::File, io::BufReader, path::PathBuf, str::FromStr, sync::Arc};
 
+use async_trait::async_trait;
 use ethers::signers::{self, Signer};
 use ethers_core::{k256::ecdsa::SigningKey, types::Address};
 use secrets::SecretVec;
 use tokio::sync::{Mutex, RwLock};
 use tokio::task::JoinHandle;
 
-use super::{Error, Result, WalletControl};
+use super::wallet::WalletCreate;
+use super::{Error, Result, Wallet, WalletControl};
 use crate::dialogs::DialogMsg;
+use crate::types::Json;
 use crate::{dialogs::Dialog, types::ChecksummedAddress};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
@@ -35,21 +38,21 @@ pub struct JsonKeystoreWallet {
     expirer: Arc<RwLock<Option<JoinHandle<()>>>>,
 }
 
-impl JsonKeystoreWallet {
-    pub fn new() -> Self {
-        Self {
-            name: "".into(),
-            file: PathBuf::new(),
-            secret: Default::default(),
-            expirer: Default::default(),
-        }
+#[async_trait]
+impl WalletCreate for JsonKeystoreWallet {
+    async fn create(params: Json) -> Result<Wallet> {
+        Ok(Wallet::JsonKeystore(serde_json::from_value(params)?))
     }
 }
 
-#[async_trait::async_trait]
+#[async_trait]
 impl WalletControl for JsonKeystoreWallet {
     fn name(&self) -> String {
         self.name.clone()
+    }
+
+    async fn update(mut self, params: Json) -> Result<Wallet> {
+        Ok(Wallet::JsonKeystore(serde_json::from_value(params)?))
     }
 
     async fn get_current_address(&self) -> ChecksummedAddress {
@@ -63,7 +66,7 @@ impl WalletControl for JsonKeystoreWallet {
         address.into()
     }
 
-    async fn set_current_path(&mut self, _path: &str) -> Result<()> {
+    async fn set_current_path(&mut self, _path: String) -> Result<()> {
         Ok(())
     }
 
@@ -73,15 +76,12 @@ impl WalletControl for JsonKeystoreWallet {
         let secret = self.secret.read().await;
         let secret = secret.as_ref().unwrap().lock().await;
 
-        let signer = from_secret(&secret);
+        let signer = signer_from_secret(&secret);
         Ok(signer.with_chain_id(chain_id))
     }
 
-    async fn derive_all_addresses(&self) -> Result<Vec<(String, ChecksummedAddress)>> {
-        Ok(vec![("default".into(), self.get_current_address().await)])
-    }
-    fn is_dev(&self) -> bool {
-        false
+    async fn get_all_addresses(&self) -> Vec<(String, ChecksummedAddress)> {
+        vec![("default".into(), self.get_current_address().await)]
     }
 }
 
@@ -98,7 +98,7 @@ impl JsonKeystoreWallet {
         }
 
         // open the dialog
-        let dialog = Dialog::new("jsonkeystore-unlock", serde_json::to_value(self).unwrap());
+        let dialog = Dialog::new("wallet-unlock", serde_json::to_value(self).unwrap());
         dialog.open().await?;
 
         // attempt to receive a password at most 3 times
@@ -133,7 +133,7 @@ impl JsonKeystoreWallet {
         let mut expirer_handle = self.expirer.write().await;
         let mut secret_handle = self.secret.write().await;
 
-        let secret = into_secret(keystore);
+        let secret = signer_into_secret(keystore);
 
         *secret_handle = Some(Mutex::new(secret));
 
@@ -147,7 +147,7 @@ impl JsonKeystoreWallet {
 }
 
 /// Converts a signer into a SecretVec
-fn into_secret(keystore: &signers::Wallet<SigningKey>) -> SecretVec<u8> {
+fn signer_into_secret(keystore: &signers::Wallet<SigningKey>) -> SecretVec<u8> {
     let signer_bytes = keystore.signer().to_bytes();
     let bytes = signer_bytes.as_slice();
 
@@ -159,7 +159,7 @@ fn into_secret(keystore: &signers::Wallet<SigningKey>) -> SecretVec<u8> {
 }
 
 /// Converts a SecretVec into a signer
-fn from_secret(secret: &SecretVec<u8>) -> signers::Wallet<SigningKey> {
+fn signer_from_secret(secret: &SecretVec<u8>) -> signers::Wallet<SigningKey> {
     let signer_bytes = secret.borrow();
     signers::Wallet::from_bytes(&signer_bytes).unwrap()
 }

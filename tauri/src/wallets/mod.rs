@@ -3,6 +3,7 @@ mod error;
 mod global;
 mod json_keystore_wallet;
 mod plaintext;
+mod utils;
 mod wallet;
 
 use std::{
@@ -12,26 +13,32 @@ use std::{
 };
 
 pub use error::{Error, Result};
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
+use tokio::sync::mpsc;
 
+use self::wallet::WalletCreate;
 pub use self::{
     json_keystore_wallet::JsonKeystoreWallet,
     plaintext::PlaintextWallet,
     wallet::{Wallet, WalletControl},
 };
 use crate::{
+    app,
     peers::Peers,
-    types::{ChecksummedAddress, GlobalState},
+    types::{ChecksummedAddress, GlobalState, Json},
 };
 
 /// Maintains a list of Ethereum wallets, including keeping track of the global current wallet &
 /// address
-#[derive(Default, Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize)]
 pub struct Wallets {
     wallets: Vec<Wallet>,
 
     #[serde(default)]
     current: usize,
+
+    #[serde(skip)]
+    window_snd: mpsc::UnboundedSender<app::Event>,
 
     #[serde(skip)]
     file: Option<PathBuf>,
@@ -48,8 +55,8 @@ impl Wallets {
     /// Since wallets actually contain multiple addresses, we need the ability to connect to a
     /// different one within the same wallet
     async fn set_current_path(&mut self, key: String) -> Result<()> {
-        self.wallets[self.current].set_current_path(&key).await?;
-        self.notify_peers().await;
+        self.wallets[self.current].set_current_path(key).await?;
+        self.on_wallet_changed().await?;
         self.save()?;
         Ok(())
     }
@@ -61,7 +68,7 @@ impl Wallets {
         }
 
         self.current = id;
-        self.notify_peers().await;
+        self.on_wallet_changed().await?;
         self.save()?;
         Ok(())
     }
@@ -80,9 +87,45 @@ impl Wallets {
 
         self.wallets = wallets;
         self.ensure_current();
-        self.notify_peers().await;
+        self.on_wallet_changed().await?;
         self.save()?;
 
+        Ok(())
+    }
+
+    async fn create(&mut self, params: Json) -> Result<()> {
+        let wallet = Wallet::create(params).await?;
+        // TODO: ensure no duplicates
+        self.wallets.push(wallet);
+        self.on_wallet_changed().await?;
+        self.save()?;
+        Ok(())
+    }
+
+    async fn update(&mut self, name: String, params: Json) -> Result<()> {
+        // TODO: should fail if no wallet of that name exists
+        let i = self.wallets.iter().position(|w| w.name() == name).unwrap();
+        self.wallets[i] = self.wallets[i].clone().update(params).await?;
+
+        self.ensure_current();
+        self.notify_peers().await;
+        self.on_wallet_changed().await?;
+        self.save()?;
+        Ok(())
+    }
+
+    async fn remove(&mut self, name: String) -> Result<()> {
+        let new = self
+            .wallets
+            .iter()
+            .filter(|w| w.name() != name)
+            .cloned()
+            .collect();
+
+        self.wallets = new;
+        self.ensure_current();
+        self.on_wallet_changed().await?;
+        self.save()?;
         Ok(())
     }
 
@@ -90,7 +133,7 @@ impl Wallets {
     async fn get_wallet_addresses(&self, name: String) -> Vec<(String, ChecksummedAddress)> {
         let wallet = self.find_wallet(&name).unwrap();
 
-        wallet.derive_all_addresses().await.unwrap()
+        wallet.get_all_addresses().await
     }
 
     /// Finds a wallet by its name
@@ -119,6 +162,13 @@ impl Wallets {
         if self.current >= self.wallets.len() {
             self.current = 0;
         }
+    }
+
+    async fn on_wallet_changed(&self) -> Result<()> {
+        self.notify_peers().await;
+        self.window_snd.send(app::Notify::WalletsChanged.into())?;
+
+        Ok(())
     }
 
     // broadcasts `accountsChanged` to all peers

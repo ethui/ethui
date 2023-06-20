@@ -30,8 +30,10 @@ export const WalletsContext = createContext<Value>({} as Value);
 const actionId = "wallet";
 
 export function ProviderWallets({ children }: { children: ReactNode }) {
-  const { data: wallets } = useInvoke<Wallet[]>("wallets_get_all");
-  const { data: currentWallet } = useInvoke<Wallet>("wallets_get_current");
+  const { data: wallets, mutate: mutateWallets } =
+    useInvoke<Wallet[]>("wallets_get_all");
+  const { data: currentWallet, mutate: mutateCurrentWallet } =
+    useInvoke<Wallet>("wallets_get_current");
   const [info, setInfo] = useState<WalletInfo[]>([]);
 
   // fetch addresses and alias for all wallets
@@ -62,7 +64,8 @@ export function ProviderWallets({ children }: { children: ReactNode }) {
   };
 
   useRefreshWallets(() => {
-    mutate(() => true);
+    mutateWallets();
+    mutateCurrentWallet();
   });
 
   useRegisterActions(

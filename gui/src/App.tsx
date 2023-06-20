@@ -4,7 +4,6 @@ import { Route, Router, Switch } from "wouter";
 
 import { CommandBar, CommandBarProvider } from "./components/CommandBar";
 import { HomePage } from "./components/HomePage";
-import { JsonKeystoreUnlockDialog } from "./components/JsonKeystoreUnlockDialog";
 import { Navbar } from "./components/Navbar";
 import { ProviderCurrentNetwork } from "./components/ProviderCurrentNetwork";
 import { ProviderNativeBalance } from "./components/ProviderNativeBalance";
@@ -14,6 +13,7 @@ import { ProviderTokensBalances } from "./components/ProviderTokensBalances";
 import { ProviderWallets } from "./components/ProviderWallets";
 import { TxReviewDialog } from "./components/TxReviewDialog";
 import { WagmiWrapper } from "./components/WagmiWrapper";
+import { WalletUnlockDialog } from "./components/WalletUnlockDialog";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { suspense: true } },
@@ -39,9 +39,9 @@ export default function App() {
                               )}
                             </Route>
 
-                            <Route path="/dialog/jsonkeystore-unlock/:id">
+                            <Route path="/dialog/wallet-unlock/:id">
                               {({ id }: { id: string }) => (
-                                <JsonKeystoreUnlockDialog id={parseInt(id)} />
+                                <WalletUnlockDialog id={parseInt(id)} />
                               )}
                             </Route>
 

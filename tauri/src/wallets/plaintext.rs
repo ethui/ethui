@@ -1,12 +1,13 @@
 use std::str::FromStr;
 
+use async_trait::async_trait;
 use coins_bip32::path::DerivationPath;
 use ethers::signers::{coins_bip39::English, MnemonicBuilder, Signer};
 use ethers_core::k256::ecdsa::SigningKey;
 use serde::{Deserialize, Serialize};
 
-use super::{Result, WalletControl};
-use crate::types::ChecksummedAddress;
+use super::{utils, wallet::WalletCreate, Result, Wallet, WalletControl};
+use crate::types::{ChecksummedAddress, Json};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(try_from = "Deserializer", rename_all = "camelCase")]
@@ -19,22 +20,33 @@ pub struct PlaintextWallet {
     current_path: String,
 }
 
-#[async_trait::async_trait]
+#[async_trait]
+impl WalletCreate for PlaintextWallet {
+    async fn create(params: Json) -> Result<Wallet> {
+        Ok(Wallet::Plaintext(serde_json::from_value(params)?))
+    }
+}
+
+#[async_trait]
 impl WalletControl for PlaintextWallet {
     fn name(&self) -> String {
         self.name.clone()
+    }
+
+    async fn update(mut self, params: Json) -> Result<Wallet> {
+        Ok(Wallet::Plaintext(serde_json::from_value(params)?))
     }
 
     async fn get_current_address(&self) -> ChecksummedAddress {
         self.build_signer(1).await.unwrap().address().into()
     }
 
-    async fn set_current_path(&mut self, path: &str) -> Result<()> {
+    async fn set_current_path(&mut self, path: String) -> Result<()> {
         let builder = MnemonicBuilder::<English>::default().phrase(self.mnemonic.as_str());
 
-        match derive_from_builder_and_path(builder, path) {
+        match utils::derive_from_builder_and_path(builder, &path) {
             Ok(_) => {
-                self.current_path = path.to_string();
+                self.current_path = path;
                 Ok(())
             }
             Err(e) => Err(e),
@@ -49,30 +61,13 @@ impl WalletControl for PlaintextWallet {
             .map(|v| v.with_chain_id(chain_id))?)
     }
 
-    async fn derive_all_addresses(&self) -> Result<Vec<(String, ChecksummedAddress)>> {
-        // let mnemonic = Mnemonic::<English>::new_from_phrase(mnemonic)?;
-        let builder = MnemonicBuilder::<English>::default().phrase(self.mnemonic.as_str());
-
-        (0..self.count)
-            .map(|idx| -> Result<_> {
-                let path = format!("{}/{}", self.derivation_path, idx);
-                let address = derive_from_builder_and_path(builder.clone(), &path)?;
-
-                Ok((path, address))
-            })
-            .collect()
+    async fn get_all_addresses(&self) -> Vec<(String, ChecksummedAddress)> {
+        utils::derive_addresses(&self.mnemonic, &self.derivation_path, self.count)
     }
 
     fn is_dev(&self) -> bool {
         self.dev
     }
-}
-
-fn derive_from_builder_and_path(
-    builder: MnemonicBuilder<English>,
-    path: &str,
-) -> Result<ChecksummedAddress> {
-    Ok(builder.derivation_path(path)?.build()?.address().into())
 }
 
 impl Default for PlaintextWallet {

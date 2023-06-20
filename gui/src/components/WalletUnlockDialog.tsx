@@ -21,7 +21,7 @@ interface Request {
 
 const schema = z.object({ password: z.string() });
 
-export function JsonKeystoreUnlockDialog({ id }: { id: number }) {
+export function WalletUnlockDialog({ id }: { id: number }) {
   const { data, send, reject, listen } = useDialog<Request>(id);
   const {
     handleSubmit,

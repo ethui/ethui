@@ -23,7 +23,7 @@ release() {
 
   parcel build manifest.json --no-source-maps --dist-dir $dist
   patch $type $dist/manifest.json
-  zip -r extension-${tag}-${type}.zip $dist
+  (cd $dist && zip -r ../extension-${tag}-${type}.zip *)
   rm -rf $manifest $dist
 }
 

@@ -3,7 +3,7 @@ import { useEffect } from "react";
 
 export function useRefreshWallets(callback: () => unknown) {
   useEffect(() => {
-    const unlisten = listen("wallets-updated", () => {
+    const unlisten = listen("wallets-changed", () => {
       callback();
     });
 

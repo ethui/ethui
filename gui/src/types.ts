@@ -32,17 +32,24 @@ export const networkSchema = z.object({
   ),
 });
 
+export const mnemonicSchema = z.string().regex(/^(\w+\s){11}\w+$/, {
+  message: "Must be a 12-word phrase",
+});
+
+export const derivationPathSchema = z
+  .string()
+  .regex(/^m\/(\d+'?\/)+\d+$/, {
+    message: "invalid path format",
+  })
+  .default("m/44'/60'/0'/0");
+
 export const walletSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("plaintext"),
     name: z.string().min(1),
     dev: z.boolean().default(false),
-    mnemonic: z.string().regex(/^(\w+\s){11}\w+$/, {
-      message: "Must be a 12-word phrase",
-    }),
-    derivationPath: z.string().regex(/^m\/(\d+'?\/)+\d+$/, {
-      message: "invalid path format",
-    }),
+    mnemonic: mnemonicSchema,
+    derivationPath: derivationPathSchema,
     count: z.number().int().min(1),
     currentPath: z.string().optional(),
   }),

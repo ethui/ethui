@@ -3,21 +3,29 @@ use enum_dispatch::enum_dispatch;
 use ethers_core::k256::ecdsa::SigningKey;
 use serde::{Deserialize, Serialize};
 
-use super::Result;
-use crate::types::ChecksummedAddress;
+use super::{Error, JsonKeystoreWallet, PlaintextWallet, Result};
+use crate::types::{ChecksummedAddress, Json};
 
 #[async_trait]
 #[enum_dispatch(Wallet)]
 pub trait WalletControl: Sync + Send + Deserialize<'static> + Serialize + std::fmt::Debug {
     fn name(&self) -> String;
+    async fn update(mut self, params: Json) -> Result<Wallet>;
     async fn get_current_address(&self) -> ChecksummedAddress;
-    async fn set_current_path(&mut self, path: &str) -> Result<()>;
+    async fn set_current_path(&mut self, path: String) -> Result<()>;
+    async fn get_all_addresses(&self) -> Vec<(String, ChecksummedAddress)>;
     async fn build_signer(&self, chain_id: u32) -> Result<ethers::signers::Wallet<SigningKey>>;
-    async fn derive_all_addresses(&self) -> Result<Vec<(String, ChecksummedAddress)>>;
-    fn is_dev(&self) -> bool;
+
+    fn is_dev(&self) -> bool {
+        false
+    }
 }
 
-use super::{JsonKeystoreWallet, PlaintextWallet};
+/// needs to be a separate trait, because enum_dispatch does not allow for static functions
+#[async_trait]
+pub trait WalletCreate {
+    async fn create(params: Json) -> Result<Wallet>;
+}
 
 #[enum_dispatch]
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -25,4 +33,19 @@ use super::{JsonKeystoreWallet, PlaintextWallet};
 pub enum Wallet {
     Plaintext(PlaintextWallet),
     JsonKeystore(JsonKeystoreWallet),
+}
+
+#[async_trait]
+impl WalletCreate for Wallet {
+    async fn create(params: Json) -> Result<Wallet> {
+        let wallet_type = params["type"].as_str().unwrap_or_default();
+
+        let wallet = match wallet_type {
+            "plaintext" => PlaintextWallet::create(params).await?,
+            "jsonKeystore" => JsonKeystoreWallet::create(params).await?,
+            _ => return Err(Error::InvalidWalletType(wallet_type.into())),
+        };
+
+        Ok(wallet)
+    }
 }
