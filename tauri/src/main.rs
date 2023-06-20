@@ -5,6 +5,7 @@ mod abis;
 mod alchemy;
 mod app;
 mod block_listener;
+mod crypto;
 mod db;
 mod dialogs;
 mod error;

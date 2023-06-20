@@ -14,6 +14,8 @@ pub struct EncryptedData<T: serde::Serialize + serde::de::DeserializeOwned> {
     salt: [u8; 32],
     nonce: [u8; 19],
     ciphertext: Vec<u8>,
+
+    #[serde(skip)]
     phantom: std::marker::PhantomData<T>,
 }
 
