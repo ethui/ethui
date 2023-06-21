@@ -10,7 +10,6 @@ import { ProviderNativeBalance } from "./components/ProviderNativeBalance";
 import { ProviderNetworks } from "./components/ProviderNetworks";
 import { ProviderTheme } from "./components/ProviderTheme";
 import { ProviderTokensBalances } from "./components/ProviderTokensBalances";
-import { ProviderWallets } from "./components/ProviderWallets";
 import { TxReviewDialog } from "./components/TxReviewDialog";
 import { WagmiWrapper } from "./components/WagmiWrapper";
 import { WalletUnlockDialog } from "./components/WalletUnlockDialog";
@@ -25,40 +24,38 @@ export default function App() {
       <ProviderTheme>
         <CssBaseline>
           <QueryClientProvider client={queryClient}>
-            <ProviderWallets>
-              <ProviderNetworks>
-                <WagmiWrapper>
-                  <ProviderCurrentNetwork>
-                    <ProviderNativeBalance>
-                      <ProviderTokensBalances>
-                        <Router>
-                          <Switch>
-                            <Route path="/dialog/tx-review/:id">
-                              {({ id }: { id: string }) => (
-                                <TxReviewDialog id={parseInt(id)} />
-                              )}
-                            </Route>
+            <ProviderNetworks>
+              <WagmiWrapper>
+                <ProviderCurrentNetwork>
+                  <ProviderNativeBalance>
+                    <ProviderTokensBalances>
+                      <Router>
+                        <Switch>
+                          <Route path="/dialog/tx-review/:id">
+                            {({ id }: { id: string }) => (
+                              <TxReviewDialog id={parseInt(id)} />
+                            )}
+                          </Route>
 
-                            <Route path="/dialog/wallet-unlock/:id">
-                              {({ id }: { id: string }) => (
-                                <WalletUnlockDialog id={parseInt(id)} />
-                              )}
-                            </Route>
+                          <Route path="/dialog/wallet-unlock/:id">
+                            {({ id }: { id: string }) => (
+                              <WalletUnlockDialog id={parseInt(id)} />
+                            )}
+                          </Route>
 
-                            <Route>
-                              <CommandBar>
-                                <Navbar />
-                                <HomePage />
-                              </CommandBar>
-                            </Route>
-                          </Switch>
-                        </Router>
-                      </ProviderTokensBalances>
-                    </ProviderNativeBalance>
-                  </ProviderCurrentNetwork>
-                </WagmiWrapper>
-              </ProviderNetworks>
-            </ProviderWallets>
+                          <Route>
+                            <CommandBar>
+                              <Navbar />
+                              <HomePage />
+                            </CommandBar>
+                          </Route>
+                        </Switch>
+                      </Router>
+                    </ProviderTokensBalances>
+                  </ProviderNativeBalance>
+                </ProviderCurrentNetwork>
+              </WagmiWrapper>
+            </ProviderNetworks>
           </QueryClientProvider>
         </CssBaseline>
       </ProviderTheme>

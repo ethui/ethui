@@ -20,8 +20,11 @@ import {
   KBarResults,
   KBarSearch,
   useMatches,
+  useRegisterActions,
 } from "kbar";
 import React, { ReactNode, forwardRef } from "react";
+
+import { useWallets } from "../store/wallets";
 
 function RenderResults() {
   const { results, rootActionId } = useMatches();
@@ -100,7 +103,10 @@ const ResultItem = forwardRef(
 ResultItem.displayName = "ResultItem";
 
 export function CommandBar({ children }: { children: ReactNode }) {
+  const { actions: walletActions } = useWallets();
   const theme = useTheme();
+
+  useRegisterActions(walletActions, [walletActions]);
 
   return (
     <>
