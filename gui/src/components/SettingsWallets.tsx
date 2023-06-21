@@ -20,14 +20,14 @@ import { startCase } from "lodash-es";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
-import { useInvoke } from "../hooks/tauri";
+import { useWallets } from "../store/wallets";
 import { Wallet, walletSchema, walletTypes } from "../types";
 import { HDWalletForm } from "./Settings/HDWalletForm";
 
 type NewChild = { new?: boolean };
 
 export function SettingsWallets() {
-  const [wallets,reloadWallets]=useWallets((s)=>[s.wallets,s.reload]);
+  const wallets = useWallets((s) => s.wallets);
   const [newWallets, setNewWallets] = useState<Wallet[]>([]);
 
   if (!wallets) return null;
@@ -44,11 +44,10 @@ export function SettingsWallets() {
     idx: number
   ) => {
     if (wallet.new) {
-      invoke("wallets_create", { params }).then(() => mutate());
+      invoke("wallets_create", { params });
       setNewWallets(newWallets.filter((_, i) => i != idx - wallets.length));
     } else {
       await invoke("wallets_update", { name: wallet.name, params });
-      await mutate();
     }
   };
 
@@ -60,7 +59,6 @@ export function SettingsWallets() {
       setNewWallets(newWallets.filter((_, i) => i != idx - wallets.length));
     } else {
       await invoke("wallets_remove", { name: wallet.name });
-      await mutate();
     }
   };
 

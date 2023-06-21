@@ -1,8 +1,9 @@
-import { create } from "zustand";
-import { Address, Wallet } from "../types";
-import { invoke } from "@tauri-apps/api/tauri";
 import { listen } from "@tauri-apps/api/event";
+import { invoke } from "@tauri-apps/api/tauri";
 import { Action } from "kbar";
+import { create } from "zustand";
+
+import { Address, Wallet } from "../types";
 
 interface State {
   currentWallet?: Wallet;
@@ -108,7 +109,6 @@ listen("wallets-changed", async () => {
 });
 
 (async () => {
-  console.log("init");
   await useWallets.getState().reload();
 })();
 

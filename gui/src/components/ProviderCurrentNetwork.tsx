@@ -1,12 +1,11 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { useRegisterActions } from "kbar";
-import { ReactNode, createContext, useEffect } from "react";
+import { ReactNode, createContext } from "react";
 
 import { useInvoke } from "../hooks/tauri";
 import { useNetworks } from "../hooks/useNetworks";
 import { useRefreshNetwork } from "../hooks/useRefreshNetwork";
 import { Network } from "../types";
-import { useWallets } from "../store/wallets";
 
 interface Value {
   currentNetwork?: Network;

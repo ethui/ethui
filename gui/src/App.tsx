@@ -10,11 +10,9 @@ import { ProviderNativeBalance } from "./components/ProviderNativeBalance";
 import { ProviderNetworks } from "./components/ProviderNetworks";
 import { ProviderTheme } from "./components/ProviderTheme";
 import { ProviderTokensBalances } from "./components/ProviderTokensBalances";
-import { ProviderWallets } from "./components/ProviderWallets";
 import { TxReviewDialog } from "./components/TxReviewDialog";
 import { WagmiWrapper } from "./components/WagmiWrapper";
 import { WalletUnlockDialog } from "./components/WalletUnlockDialog";
-import { useStore } from "./store";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { suspense: true } },

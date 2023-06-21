@@ -22,7 +22,8 @@ import {
   useMatches,
   useRegisterActions,
 } from "kbar";
-import React, { ReactNode, forwardRef, useEffect } from "react";
+import React, { ReactNode, forwardRef } from "react";
+
 import { useWallets } from "../store/wallets";
 
 function RenderResults() {
