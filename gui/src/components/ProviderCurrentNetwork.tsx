@@ -1,11 +1,12 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { useRegisterActions } from "kbar";
-import { ReactNode, createContext } from "react";
+import { ReactNode, createContext, useEffect } from "react";
 
 import { useInvoke } from "../hooks/tauri";
 import { useNetworks } from "../hooks/useNetworks";
 import { useRefreshNetwork } from "../hooks/useRefreshNetwork";
 import { Network } from "../types";
+import { useWallets } from "../store/wallets";
 
 interface Value {
   currentNetwork?: Network;
@@ -17,6 +18,7 @@ export const CurrentNetworkContext = createContext<Value>({} as Value);
 const actionId = "network";
 
 export function ProviderCurrentNetwork({ children }: { children: ReactNode }) {
+  const { actions: walletActions } = useWallets();
   const { data: currentNetwork, mutate: mutateNetwork } = useInvoke<Network>(
     "networks_get_current"
   );
@@ -29,6 +31,8 @@ export function ProviderCurrentNetwork({ children }: { children: ReactNode }) {
       await invoke("networks_set_current", { network: newNetwork });
     },
   };
+
+  useEffect(() => useRegisterActions(walletActions), [walletActions]);
 
   useRefreshNetwork(mutateNetwork);
 

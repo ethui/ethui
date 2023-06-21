@@ -1,6 +1,6 @@
 import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
 
-import { useWallets } from "../hooks/useWallets";
+import { useWallets } from "../store/wallets";
 
 export function QuickWalletSelect() {
   const { wallets, currentWallet, setCurrentWallet } = useWallets();

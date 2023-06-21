@@ -35,7 +35,8 @@
     "vite": "^4.2.3",
     "wagmi": "^1.0.8",
     "wouter": "^2.10.0",
-    "zod": "^3.20.6"
+    "zod": "^3.20.6",
+    "zustand": "^4.3.8"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.5",
