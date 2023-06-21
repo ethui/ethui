@@ -5,7 +5,7 @@ mod types;
 
 use std::collections::HashMap;
 
-use ethers::providers::Middleware;
+use ethers::providers::{Http, Middleware, Provider};
 use ethers_core::types::Address;
 use once_cell::sync::Lazy;
 use serde_json::json;
@@ -17,7 +17,6 @@ pub use self::error::{Error, Result};
 use crate::{
     app::{self, Notify},
     db::DB,
-    networks::Networks,
     settings::Settings,
     types::{ChecksummedAddress, GlobalState, Json},
 };
@@ -69,10 +68,40 @@ impl Alchemy {
         Ok(())
     }
 
+    async fn fetch_native_balance(&self, chain_id: u32, address: Address) -> Result<()> {
+        let client = self.client(chain_id).await?;
+        let balance = client.get_balance(address, None).await.unwrap();
+
+        self.db
+            .save_native_balance(balance, chain_id, address)
+            .await?;
+        self.window_snd.send(Notify::NativeBalanceUpdated.into())?;
+        Ok(())
+    }
+
     async fn request<R>(&self, chain_id: u32, payload: Json) -> Result<R>
     where
         R: serde::de::DeserializeOwned,
     {
+        let client = reqwest::Client::new();
+        let res: serde_json::Value = client
+            .post(self.endpoint(chain_id).await?)
+            .json(&payload)
+            .send()
+            .await?
+            .json()
+            .await?;
+
+        Ok(serde_json::from_value(res["result"].clone())?)
+    }
+
+    async fn client(&self, chain_id: u32) -> Result<Provider<Http>> {
+        let endpoint = self.endpoint(chain_id).await?;
+
+        Ok(Provider::<Http>::try_from(endpoint.as_str())?)
+    }
+
+    async fn endpoint(&self, chain_id: u32) -> Result<Url> {
         let settings = Settings::read().await;
 
         let endpoint = match ENDPOINTS.get(&chain_id) {
@@ -85,26 +114,6 @@ impl Alchemy {
             None => return Err(Error::NoAPIKey),
         };
 
-        let endpoint = endpoint.join(api_key)?;
-        let client = reqwest::Client::new();
-        let res: serde_json::Value = client
-            .post(endpoint)
-            .json(&payload)
-            .send()
-            .await?
-            .json()
-            .await?;
-
-        Ok(serde_json::from_value(res["result"].clone())?)
-    }
-
-    async fn fetch_native_balance(&self, chain_id: u32, address: Address) -> Result<()> {
-        let client = Networks::write().await.get_current_provider();
-        let balance = client.get_balance(address, None).await.unwrap();
-        self.db
-            .save_native_balance(balance, chain_id, address)
-            .await?;
-        self.window_snd.send(Notify::NativeBalanceUpdated.into())?;
-        Ok(())
+        Ok(endpoint.join(api_key)?)
     }
 }
