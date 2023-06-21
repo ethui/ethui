@@ -7,7 +7,10 @@ import { Address, Wallet } from "../types";
 import { AddressView } from "./AddressView";
 
 export function QuickAddressSelect() {
-  const { currentWallet, setCurrentAddress } = useWallets();
+  const [currentWallet, setCurrentAddress] = useWallets((s) => [
+    s.currentWallet,
+    s.setCurrentAddress,
+  ]);
   const { data: addresses } = useInvoke<[string, Address][]>(
     "wallets_get_wallet_addresses",
     { name: currentWallet?.name }
