@@ -11,7 +11,7 @@ import {
 import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 
-import { useNetworks } from "../hooks/useNetworks";
+import { useNetworks } from "../store";
 import { Network, networkSchema } from "../types";
 import { ConfirmationDialog } from "./ConfirmationDialog";
 
@@ -31,7 +31,11 @@ const emptyNetwork: Network & NewChild = {
 };
 
 export function SettingsNetwork() {
-  const { networks, setNetworks, resetNetworks } = useNetworks();
+  const [networks, setNetworks, resetNetworks] = useNetworks((s) => [
+    s.networks,
+    s.setNetworks,
+    s.resetNetworks,
+  ]);
 
   const {
     register,

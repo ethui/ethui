@@ -3,9 +3,9 @@ import { ReactNode, createContext } from "react";
 
 import { useAccount } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
-import { useCurrentNetwork } from "../hooks/useCurrentNetwork";
 import { useRefreshBalances } from "../hooks/useRefreshBalances";
 import { Address, TokenBalance } from "../types";
+import { useNetworks } from "../store";
 
 interface Value {
   balances: TokenBalance[];
@@ -18,7 +18,7 @@ const actionId = "token-balances";
 
 export function ProviderTokensBalances({ children }: { children: ReactNode }) {
   const address = useAccount();
-  const { currentNetwork } = useCurrentNetwork();
+  const currentNetwork = useNetworks((s) => s.current);
   const chainId = currentNetwork?.chain_id;
 
   const { data: balances, mutate: mutateBalances } = useInvoke<

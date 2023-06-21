@@ -24,7 +24,7 @@ import {
 } from "kbar";
 import React, { ReactNode, forwardRef } from "react";
 
-import { useWallets } from "../store/wallets";
+import { useWallets } from "../store";
 
 function RenderResults() {
   const { results, rootActionId } = useMatches();

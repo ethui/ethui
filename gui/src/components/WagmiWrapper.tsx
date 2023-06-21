@@ -11,7 +11,7 @@ import {
 } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
-import { useNetworks } from "../hooks/useNetworks";
+import { useNetworks } from "../store";
 import { Network } from "../types";
 
 interface Props {
@@ -24,7 +24,7 @@ type WagmiConfig = Config<
 >;
 
 export function WagmiWrapper({ children }: Props) {
-  const { networks } = useNetworks();
+  const networks = useNetworks((s) => s.networks);
 
   if (!networks) return null;
 
