@@ -52,6 +52,19 @@ impl DB {
         Ok(())
     }
 
+    pub async fn get_erc20_metadata(
+        &self,
+        contract: Address,
+        chain_id: u32,
+    ) -> Result<(u8, String)> {
+        let mut conn = self.tx().await?;
+        let meta = queries::erc20_read_metadata(contract, chain_id)
+            .fetch_one(&mut conn)
+            .await?;
+        conn.commit().await?;
+        Ok(meta)
+    }
+
     // TODO: Change this to an Into<T> of some kind, so we don't depend directly on AlchemyResponse here
     pub async fn save_erc20_balances(
         &self,
@@ -66,6 +79,23 @@ impl DB {
                 .execute(&mut conn)
                 .await?;
         }
+
+        conn.commit().await?;
+        Ok(())
+    }
+
+    pub async fn save_erc20_metadata(
+        &self,
+        address: Address,
+        chain_id: u32,
+        symbol: String,
+        decimals: u8,
+    ) -> Result<()> {
+        let mut conn = self.tx().await?;
+
+        queries::update_erc20_metadata(address, chain_id, symbol, decimals)
+            .execute(&mut conn)
+            .await?;
 
         conn.commit().await?;
         Ok(())
@@ -193,11 +223,12 @@ impl DB {
         &self,
         chain_id: u32,
         address: Address,
-    ) -> Result<Vec<(Address, U256)>> {
+    ) -> Result<Vec<(Address, U256, u8, String)>> {
         let res: Vec<_> = sqlx::query(
-            r#" SELECT contract, balance AS balance
+            r#" SELECT balances.contract, balances.balance, meta.decimals, meta.symbol
             FROM balances
-            WHERE chain_id = ? AND owner = ? "#,
+            INNER JOIN tokens_metadata AS meta ON meta.chain_id = balances.chain_id AND meta.contract =  balances.contract
+            WHERE balances.chain_id = ? AND balances.owner = ? "#,
         )
         .bind(chain_id)
         .bind(format!("0x{:x}", address))
@@ -205,6 +236,8 @@ impl DB {
             (
                 Address::from_str(&row.get::<String, _>("contract")).unwrap(),
                 U256::from_dec_str(row.get::<&str, _>("balance")).unwrap(),
+                row.get::<u8, _>("decimals"),
+                row.get::<String, _>("symbol")
             )
         })
         .fetch_all(self.pool())

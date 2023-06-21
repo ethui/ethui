@@ -7,13 +7,12 @@ import {
   Stack,
 } from "@mui/material";
 import { formatUnits } from "viem";
-import { erc20ABI, useContractRead } from "wagmi";
 
 import { useInvoke } from "../hooks/tauri";
 import { useCurrentNetwork } from "../hooks/useCurrentNetwork";
 import { useNativeBalance } from "../hooks/useNativeBalance";
 import { useTokensBalances } from "../hooks/useTokensBalances";
-import { Address, GeneralSettings } from "../types";
+import { GeneralSettings } from "../types";
 import { CopyToClipboard } from "./CopyToClipboard";
 import { CryptoIcon } from "./IconCrypto";
 import Panel from "./Panel";
@@ -48,21 +47,20 @@ function BalanceETH() {
 
 function BalancesERC20() {
   const { balances } = useTokensBalances();
-  const { currentNetwork } = useCurrentNetwork();
   const { data: settings } = useInvoke<GeneralSettings>("settings_get");
 
-  const filteredBalances = (balances || [])
-    .map<[Address, bigint]>(([c, b]) => [c, BigInt(b)])
-    .filter(([, balance]) => (settings?.hideEmptyTokens ? !!balance : true));
+  const filteredBalances = (balances || []).filter(([, balance]) =>
+    settings?.hideEmptyTokens ? !!balance : true
+  );
 
   return (
     <>
-      {filteredBalances.map(([contract, balance]) => (
+      {filteredBalances.map(([contract, balance, decimals, symbol]) => (
         <BalanceERC20
           key={contract}
-          contract={contract}
           balance={balance}
-          chainId={currentNetwork?.chain_id}
+          decimals={decimals}
+          symbol={symbol}
         />
       ))}
     </>
@@ -70,31 +68,17 @@ function BalancesERC20() {
 }
 
 function BalanceERC20({
-  contract,
   balance,
-  chainId,
+  decimals,
+  symbol,
 }: {
-  contract: Address;
   balance: bigint;
-  chainId?: number;
+  decimals: number;
+  symbol: string;
 }) {
-  const { data: name } = useContractRead({
-    address: contract,
-    abi: erc20ABI,
-    functionName: "symbol",
-    chainId,
-  });
+  if (!symbol || !decimals) return null;
 
-  const { data: decimals } = useContractRead({
-    address: contract,
-    abi: erc20ABI,
-    functionName: "decimals",
-    chainId,
-  });
-
-  if (!name || !decimals) return null;
-
-  return <BalanceItem balance={balance} decimals={decimals} symbol={name} />;
+  return <BalanceItem balance={balance} decimals={decimals} symbol={symbol} />;
 }
 
 interface BalanceItemProps {

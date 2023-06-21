@@ -3,10 +3,11 @@ mod error;
 mod global;
 mod types;
 
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Arc};
 
 use ethers::providers::{Http, Middleware, Provider};
-use ethers_core::types::Address;
+use ethers_core::types::{Address, U256};
+use futures::{stream, StreamExt};
 use once_cell::sync::Lazy;
 use serde_json::json;
 use tokio::sync::mpsc;
@@ -15,8 +16,10 @@ use url::Url;
 
 pub use self::error::{Error, Result};
 use crate::{
+    abis::ERC20Token,
     app::{self, Notify},
     db::DB,
+    networks::Networks,
     settings::Settings,
     types::{ChecksummedAddress, GlobalState, Json},
 };
@@ -47,7 +50,7 @@ impl Alchemy {
 
     /// fetches ERC20 balances for a user/chain_id
     /// updates the DB, and notifies the UI
-    async fn fetch_balances(&self, chain_id: u32, address: ChecksummedAddress) -> Result<()> {
+    async fn fetch_erc20_balances(&self, chain_id: u32, address: ChecksummedAddress) -> Result<()> {
         let res: Balances = self
             .request(
                 chain_id,
@@ -58,7 +61,10 @@ impl Alchemy {
                 }),
             )
             .await?;
-        let balances = res.token_balances.into_iter().map(Into::into).collect();
+        let balances: Vec<(Address, U256)> =
+            res.token_balances.into_iter().map(Into::into).collect();
+
+        self.fetch_erc20_metadata(chain_id, balances.clone()).await;
 
         self.db
             .save_erc20_balances(chain_id, res.address, balances)
@@ -77,6 +83,35 @@ impl Alchemy {
             .await?;
         self.window_snd.send(Notify::NativeBalanceUpdated.into())?;
         Ok(())
+    }
+
+    async fn fetch_erc20_metadata(&self, chain_id: u32, balances: Vec<(Address, U256)>) {
+        let networks = Networks::read().await;
+        let provider = networks.get_current_provider();
+        let len = balances.len();
+
+        let res = stream::iter(balances)
+            .map(|(address, _)| {
+                let client = Arc::new(provider.clone());
+                let db = self.db.clone();
+                tokio::spawn(async move {
+                    let metas = db.get_erc20_metadata(address, chain_id).await;
+                    match metas {
+                        Ok(_) => {}
+                        Err(_) => {
+                            let contract = ERC20Token::new(address, client.clone());
+                            let symbol = contract.symbol().call().await.unwrap_or_default();
+                            let decimals = contract.decimals().call().await.unwrap_or_default();
+                            db.save_erc20_metadata(address, chain_id, symbol, decimals)
+                                .await
+                                .unwrap();
+                        }
+                    }
+                })
+            })
+            .buffer_unordered(len);
+
+        res.for_each(|f| async move { f.unwrap() }).await;
     }
 
     async fn request<R>(&self, chain_id: u32, payload: Json) -> Result<R>

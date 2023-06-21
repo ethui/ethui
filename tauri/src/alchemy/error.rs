@@ -25,6 +25,9 @@ pub enum Error {
 
     #[error("API Key not found")]
     NoAPIKey,
+
+    #[error(transparent)]
+    JoinError(#[from] tokio::task::JoinError),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

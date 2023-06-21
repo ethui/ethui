@@ -10,7 +10,7 @@ pub async fn alchemy_fetch_erc20_balances(
     address: ChecksummedAddress,
 ) -> Result<()> {
     let alchemy = Alchemy::write().await;
-    alchemy.fetch_balances(chain_id, address).await
+    alchemy.fetch_erc20_balances(chain_id, address).await
 }
 
 /// call to fetch native balance

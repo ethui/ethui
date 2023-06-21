@@ -22,7 +22,7 @@ export function ProviderTokensBalances({ children }: { children: ReactNode }) {
   const chainId = currentNetwork?.chain_id;
 
   const { data: balances, mutate: mutateBalances } = useInvoke<
-    [Address, string][]
+    [Address, string, string, string][]
   >("db_get_erc20_balances", { chainId, address });
 
   const { mutate: refetchTokensBalances } = useInvoke(
@@ -36,7 +36,12 @@ export function ProviderTokensBalances({ children }: { children: ReactNode }) {
   );
 
   const value = {
-    balances: (balances || [])?.map(([a, c]) => [a, BigInt(c)]),
+    balances: (balances || [])?.map(([address, balance, decimals, symbol]) => [
+      address,
+      BigInt(balance),
+      Number(decimals),
+      symbol,
+    ]),
     refetchBalances: async () => {
       refetchTokensBalances();
     },

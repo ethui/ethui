@@ -45,6 +45,39 @@ pub(super) fn native_update_balance<'a>(
     .bind(format!("0x{:x}", address))
 }
 
+pub(super) fn erc20_read_metadata<'a>(
+    contract: Address,
+    chain_id: u32,
+) -> sqlx::query::Map<
+    'a,
+    Sqlite,
+    impl FnMut(<Sqlite as sqlx::Database>::Row) -> sqlx::Result<(u8, String)> + 'a,
+    sqlx::sqlite::SqliteArguments<'a>,
+> {
+    sqlx::query(
+        r#"SELECT decimals, symbol FROM tokens_metadata WHERE contract = ? AND chain_id = ?"#,
+    )
+    .bind(format!("0x{:x}", contract))
+    .bind(chain_id)
+    .map(|row| (row.get::<u8, _>("decimals"), row.get::<String, _>("symbol")))
+}
+
+pub(super) fn update_erc20_metadata<'a>(
+    address: Address,
+    chain_id: u32,
+    symbol: String,
+    decimals: u8,
+) -> Query<'a> {
+    sqlx::query(
+        r#" INSERT OR REPLACE INTO tokens_metadata (contract, chain_id, decimals, symbol)
+                        VALUES (?,?,?,?) "#,
+    )
+    .bind(format!("0x{:x}", address))
+    .bind(chain_id)
+    .bind(decimals)
+    .bind(symbol)
+}
+
 /// The horrible return type here can be aliased once `type_alias_impl_trait` is stabilized
 /// https://github.com/rust-lang/rust/issues/63063
 pub(super) fn erc20_read_balance<'a>(
