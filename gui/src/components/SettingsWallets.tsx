@@ -16,11 +16,13 @@ import {
   TextField,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
+import { startCase } from "lodash-es";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import { useInvoke } from "../hooks/tauri";
 import { Wallet, walletSchema, walletTypes } from "../types";
+import { HDWalletForm } from "./Settings/HDWalletForm";
 
 type NewChild = { new?: boolean };
 
@@ -38,11 +40,11 @@ export function SettingsWallets() {
 
   const save = async (
     wallet: Wallet & NewChild,
-    params: Wallet,
+    params: object,
     idx: number
   ) => {
     if (wallet.new) {
-      invoke("wallets_create", { wallet: params }).then(() => mutate());
+      invoke("wallets_create", { params }).then(() => mutate());
       setNewWallets(newWallets.filter((_, i) => i != idx - wallets.length));
     } else {
       await invoke("wallets_update", { name: wallet.name, params });
@@ -50,7 +52,10 @@ export function SettingsWallets() {
     }
   };
 
-  const remove = async (wallet: Wallet & NewChild, idx: number) => {
+  const remove = async (
+    wallet: { name: string; new?: boolean },
+    idx: number
+  ) => {
     if (wallet.new) {
       setNewWallets(newWallets.filter((_, i) => i != idx - wallets.length));
     } else {
@@ -64,14 +69,15 @@ export function SettingsWallets() {
       <Stack>
         {allWallets.map((wallet, i) => {
           const props = {
-            onSubmit: (params: Wallet) => save(wallet, params, i),
+            onSubmit: (params: object) => save(wallet, params, i),
             onRemove: () => remove(wallet, i),
+            onCancel: () => wallet.new && remove(wallet, i),
           };
 
           return (
             <Accordion key={wallet.name} defaultExpanded={wallet.new}>
               <AccordionSummary expandIcon={<ExpandMore />}>
-                {wallet.name}
+                {wallet.new ? `New ${startCase(wallet.type)}` : wallet.name}
               </AccordionSummary>
               <AccordionDetails>
                 {wallet.type === "plaintext" && (
@@ -79,6 +85,13 @@ export function SettingsWallets() {
                 )}
                 {wallet.type === "jsonKeystore" && (
                   <JsonKeystore wallet={wallet} {...props} />
+                )}
+                {wallet.type === "HDWallet" && (
+                  <HDWalletForm
+                    wallet={wallet}
+                    type={wallet.new ? "create" : "update"}
+                    {...props}
+                  />
                 )}
               </AccordionDetails>
             </Accordion>
@@ -138,7 +151,7 @@ const AddWalletButton = ({ append }: AddWalletButtonProps) => {
             sx={{ textTransform: "capitalize" }}
             onClick={() => handleChoice(walletType)}
           >
-            {walletType.replace(/([A-Z])/g, " $1")}
+            {startCase(walletType)}
           </MenuItem>
         ))}
       </Menu>
@@ -226,9 +239,7 @@ function Plaintext({ wallet, onSubmit, onRemove }: PlaintextProps) {
         error={!!errors.count}
         type="number"
         helperText={errors.count?.message?.toString() || ""}
-        {...register("count", {
-          valueAsNumber: true,
-        })}
+        {...register("count", { valueAsNumber: true })}
       />
       <Stack direction="row" spacing={2}>
         <Button
@@ -239,12 +250,7 @@ function Plaintext({ wallet, onSubmit, onRemove }: PlaintextProps) {
         >
           Save
         </Button>
-        <Button
-          color="warning"
-          variant="contained"
-          size="small"
-          onClick={onRemove}
-        >
+        <Button color="warning" variant="contained" onClick={onRemove}>
           Remove
         </Button>
       </Stack>
@@ -299,12 +305,7 @@ function JsonKeystore({ wallet, onSubmit, onRemove }: JsonKeystoreProps) {
         >
           Save
         </Button>
-        <Button
-          color="warning"
-          variant="contained"
-          size="small"
-          onClick={onRemove}
-        >
+        <Button color="warning" variant="contained" onClick={onRemove}>
           Remove
         </Button>
       </Stack>
@@ -326,6 +327,15 @@ const emptyWallets: Record<Wallet["type"], Wallet & NewChild> = {
     type: "jsonKeystore",
     name: "",
     file: "",
+    new: true,
+  },
+  HDWallet: {
+    type: "HDWallet",
+    name: "",
+    count: 5,
+    derivationPath: "",
+    mnemonic: "",
+    password: "",
     new: true,
   },
 };

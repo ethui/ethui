@@ -1,4 +1,4 @@
-use super::{Result, Wallet, WalletControl, Wallets};
+use super::{utils, Result, Wallet, WalletControl, Wallets};
 use crate::types::{ChecksummedAddress, GlobalState, Json};
 
 /// Lists all wallets
@@ -63,4 +63,14 @@ pub async fn wallets_get_wallet_addresses(
     name: String,
 ) -> Result<Vec<(String, ChecksummedAddress)>> {
     Ok(Wallets::read().await.get_wallet_addresses(name).await)
+}
+
+/// Derives the list of addresses for a given mnemonic Used when importing a new wallet in the UI,
+/// to provide feedback before the wallet is actually created
+#[tauri::command]
+pub async fn wallets_get_mnemonic_addresses(
+    mnemonic: String,
+    derivation_path: String,
+) -> Vec<(String, ChecksummedAddress)> {
+    utils::derive_addresses(&mnemonic, &derivation_path, 5)
 }

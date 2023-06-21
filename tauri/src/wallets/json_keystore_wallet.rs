@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 use std::time::Duration;
 use std::{fs::File, io::BufReader, path::PathBuf, str::FromStr, sync::Arc};
 

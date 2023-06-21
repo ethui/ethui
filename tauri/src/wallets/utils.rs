@@ -3,11 +3,6 @@ use ethers::signers::{coins_bip39::English, MnemonicBuilder, Signer};
 use super::Result;
 use crate::types::ChecksummedAddress;
 
-pub fn derive_address(mnemonic: &str, path: &str) -> Result<ChecksummedAddress> {
-    let builder = MnemonicBuilder::<English>::default().phrase(mnemonic);
-    derive_from_builder_and_path(builder, path)
-}
-
 pub fn derive_addresses(
     mnemonic: &str,
     derivation_path: &str,
