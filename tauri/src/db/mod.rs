@@ -38,8 +38,22 @@ impl DB {
         Ok(db)
     }
 
+    pub async fn save_native_balance(
+        &self,
+        balance: U256,
+        chain_id: u32,
+        address: Address,
+    ) -> Result<()> {
+        let mut conn = self.tx().await?;
+        queries::native_update_balance(balance, chain_id, address)
+            .execute(&mut conn)
+            .await?;
+        conn.commit().await?;
+        Ok(())
+    }
+
     // TODO: Change this to an Into<T> of some kind, so we don't depend directly on AlchemyResponse here
-    pub async fn save_balances(
+    pub async fn save_erc20_balances(
         &self,
         chain_id: u32,
         address: Address,
@@ -159,7 +173,21 @@ impl DB {
         Ok(res)
     }
 
-    pub async fn get_balances(
+    pub async fn get_native_balance(&self, chain_id: u32, address: Address) -> Result<U256> {
+        let res: U256 = sqlx::query(
+            r#" SELECT balance
+            FROM native_balances
+            WHERE chain_id = ? AND owner = ? "#,
+        )
+        .bind(chain_id)
+        .bind(format!("0x{:x}", address))
+        .map(|row| U256::from_dec_str(row.get::<&str, _>("balance")).unwrap())
+        .fetch_one(self.pool())
+        .await?;
+        Ok(res)
+    }
+
+    pub async fn get_erc20_balances(
         &self,
         chain_id: u32,
         address: Address,

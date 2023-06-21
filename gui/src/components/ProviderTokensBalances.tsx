@@ -26,7 +26,7 @@ export function ProviderTokensBalances({ children }: { children: ReactNode }) {
   >("db_get_erc20_balances", { chainId, address });
 
   const { mutate: refetchTokensBalances } = useInvoke(
-    "alchemy_fetch_balances",
+    "alchemy_fetch_erc20_balances",
     { chainId, address },
     {
       refreshInterval: 10 * 1000 * 60,
@@ -48,7 +48,7 @@ export function ProviderTokensBalances({ children }: { children: ReactNode }) {
     [
       {
         id: actionId,
-        name: "Refresh tokens balances",
+        name: "Update ERC20 tokens",
         perform: () => value.refetchBalances(),
       },
     ],

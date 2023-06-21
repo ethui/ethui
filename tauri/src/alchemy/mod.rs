@@ -5,6 +5,8 @@ mod types;
 
 use std::collections::HashMap;
 
+use ethers::providers::Middleware;
+use ethers_core::types::Address;
 use once_cell::sync::Lazy;
 use serde_json::json;
 use tokio::sync::mpsc;
@@ -15,6 +17,7 @@ pub use self::error::{Error, Result};
 use crate::{
     app::{self, Notify},
     db::DB,
+    networks::Networks,
     settings::Settings,
     types::{ChecksummedAddress, GlobalState, Json},
 };
@@ -59,9 +62,9 @@ impl Alchemy {
         let balances = res.token_balances.into_iter().map(Into::into).collect();
 
         self.db
-            .save_balances(chain_id, res.address, balances)
+            .save_erc20_balances(chain_id, res.address, balances)
             .await?;
-        self.window_snd.send(Notify::BalancesUpdated.into())?;
+        self.window_snd.send(Notify::ERC20BalancesUpdated.into())?;
 
         Ok(())
     }
@@ -93,5 +96,15 @@ impl Alchemy {
             .await?;
 
         Ok(serde_json::from_value(res["result"].clone())?)
+    }
+
+    async fn fetch_native_balance(&self, chain_id: u32, address: Address) -> Result<()> {
+        let client = Networks::write().await.get_current_provider();
+        let balance = client.get_balance(address, None).await.unwrap();
+        self.db
+            .save_native_balance(balance, chain_id, address)
+            .await?;
+        self.window_snd.send(Notify::NativeBalanceUpdated.into())?;
+        Ok(())
     }
 }

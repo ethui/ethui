@@ -44,7 +44,8 @@ pub enum Notify {
     NetworkChanged,
     TxsUpdated,
     PeersUpdated,
-    BalancesUpdated,
+    ERC20BalancesUpdated,
+    NativeBalanceUpdated,
 }
 
 impl Notify {
@@ -54,7 +55,8 @@ impl Notify {
             Self::NetworkChanged => "network-changed",
             Self::TxsUpdated => "txs-updated",
             Self::PeersUpdated => "peers-updated",
-            Self::BalancesUpdated => "balances-updated",
+            Self::ERC20BalancesUpdated => "erc20-balances-updated",
+            Self::NativeBalanceUpdated => "native-balance-updated",
         }
     }
 }
@@ -92,6 +94,7 @@ impl IronApp {
                 db::commands::db_get_transactions,
                 db::commands::db_get_contracts,
                 db::commands::db_get_erc20_balances,
+                db::commands::db_get_native_balance,
                 peers::commands::peers_get_all,
                 wallets::commands::wallets_get_all,
                 wallets::commands::wallets_get_current,
@@ -108,7 +111,8 @@ impl IronApp {
                 dialogs::commands::dialog_send,
                 dialogs::commands::dialog_finish,
                 foundry::commands::foundry_get_abi,
-                alchemy::commands::alchemy_fetch_balances,
+                alchemy::commands::alchemy_fetch_erc20_balances,
+                alchemy::commands::alchemy_fetch_native_balance,
                 rpc::commands::rpc_send_transaction,
             ])
             .setup(|app| {

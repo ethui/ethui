@@ -30,5 +30,14 @@ pub async fn db_get_erc20_balances(
     address: Address,
     db: tauri::State<'_, DB>,
 ) -> Result<Vec<(Address, U256)>> {
-    Ok(db.get_balances(chain_id, address).await.unwrap())
+    Ok(db.get_erc20_balances(chain_id, address).await.unwrap())
+}
+
+#[tauri::command]
+pub async fn db_get_native_balance(
+    chain_id: u32,
+    address: Address,
+    db: tauri::State<'_, DB>,
+) -> Result<U256> {
+    Ok(db.get_native_balance(chain_id, address).await.unwrap())
 }
