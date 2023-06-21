@@ -173,7 +173,7 @@ impl DB {
         Ok(res)
     }
 
-    pub async fn get_native_balance(&self, chain_id: u32, address: Address) -> Result<U256> {
+    pub async fn get_native_balance(&self, chain_id: u32, address: Address) -> U256 {
         let res: U256 = sqlx::query(
             r#" SELECT balance
             FROM native_balances
@@ -183,8 +183,10 @@ impl DB {
         .bind(format!("0x{:x}", address))
         .map(|row| U256::from_dec_str(row.get::<&str, _>("balance")).unwrap())
         .fetch_one(self.pool())
-        .await?;
-        Ok(res)
+        .await
+        .unwrap_or_default();
+
+        res
     }
 
     pub async fn get_erc20_balances(

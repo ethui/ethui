@@ -39,5 +39,5 @@ pub async fn db_get_native_balance(
     address: Address,
     db: tauri::State<'_, DB>,
 ) -> Result<U256> {
-    Ok(db.get_native_balance(chain_id, address).await.unwrap())
+    Ok(db.get_native_balance(chain_id, address).await)
 }
