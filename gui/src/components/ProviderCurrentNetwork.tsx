@@ -18,7 +18,6 @@ export const CurrentNetworkContext = createContext<Value>({} as Value);
 const actionId = "network";
 
 export function ProviderCurrentNetwork({ children }: { children: ReactNode }) {
-  const { actions: walletActions } = useWallets();
   const { data: currentNetwork, mutate: mutateNetwork } = useInvoke<Network>(
     "networks_get_current"
   );
@@ -31,8 +30,6 @@ export function ProviderCurrentNetwork({ children }: { children: ReactNode }) {
       await invoke("networks_set_current", { network: newNetwork });
     },
   };
-
-  useEffect(() => useRegisterActions(walletActions), [walletActions]);
 
   useRefreshNetwork(mutateNetwork);
 

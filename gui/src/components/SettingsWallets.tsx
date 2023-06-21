@@ -27,7 +27,7 @@ import { HDWalletForm } from "./Settings/HDWalletForm";
 type NewChild = { new?: boolean };
 
 export function SettingsWallets() {
-  const { data: wallets, mutate } = useInvoke<Wallet[]>("wallets_get_all");
+  const [wallets,reloadWallets]=useWallets((s)=>[s.wallets,s.reload]);
   const [newWallets, setNewWallets] = useState<Wallet[]>([]);
 
   if (!wallets) return null;

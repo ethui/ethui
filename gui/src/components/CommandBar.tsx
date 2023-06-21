@@ -105,7 +105,7 @@ export function CommandBar({ children }: { children: ReactNode }) {
   const { actions: walletActions } = useWallets();
   const theme = useTheme();
 
-  useEffect(() => useRegisterActions(walletActions), [walletActions]);
+  useRegisterActions(walletActions, [walletActions]);
 
   return (
     <>
