@@ -46,7 +46,6 @@ const store: StateCreator<Store> = (set, get) => ({
       }),
     ]);
 
-    console.log("inteervaling");
     interval && clearInterval(interval);
     const poll = () => {
       const { address, chainId } = get();
