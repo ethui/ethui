@@ -66,11 +66,6 @@ export function SettingsNetwork() {
     reset(data);
   };
 
-  const onReset = async () => {
-    const networks = await resetNetworks();
-    reset({ networks });
-  };
-
   if (!networks) return <>Loading</>;
 
   return (
@@ -177,7 +172,7 @@ export function SettingsNetwork() {
         }
         title="Reset Networks"
         confirmationLabel="Reset Networks"
-        onConfirm={onReset}
+        onConfirm={resetNetworks}
       >
         {({ onOpen }) => (
           <Button

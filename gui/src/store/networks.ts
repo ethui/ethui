@@ -11,9 +11,9 @@ interface State {
 }
 
 interface Setters {
-  setNetworks: (newNetworks: Network[]) => void;
-  setCurrent: (newNetwork: string) => void;
-  resetNetworks: () => void;
+  setNetworks: (newNetworks: Network[]) => Promise<void>;
+  setCurrent: (newNetwork: string) => Promise<void>;
+  resetNetworks: () => Promise<void>;
   reload: () => Promise<void>;
   reloadActions: () => Promise<void>;
 }
