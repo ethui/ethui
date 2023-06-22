@@ -3,8 +3,8 @@ import { useRegisterActions } from "kbar";
 import { ReactNode, createContext } from "react";
 
 import { useInvoke } from "../hooks/tauri";
-import { useNetworks } from "../hooks/useNetworks";
 import { useRefreshNetwork } from "../hooks/useRefreshNetwork";
+import { useNetworks } from "../store";
 import { Network } from "../types";
 
 interface Value {
@@ -32,7 +32,7 @@ export function ProviderCurrentNetwork({ children }: { children: ReactNode }) {
 
   useRefreshNetwork(mutateNetwork);
 
-  const { networks } = useNetworks();
+  const networks = useNetworks((s) => s.networks);
 
   useRegisterActions(
     [

@@ -2,7 +2,7 @@ import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import { map } from "lodash-es";
 
 import { useInvoke } from "../hooks/tauri";
-import { useWallets } from "../store/wallets";
+import { useWallets } from "../store";
 import { Address, Wallet } from "../types";
 import { AddressView } from "./AddressView";
 

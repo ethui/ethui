@@ -20,7 +20,7 @@ import { startCase } from "lodash-es";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
-import { useWallets } from "../store/wallets";
+import { useWallets } from "../store";
 import { Wallet, walletSchema, walletTypes } from "../types";
 import { HDWalletForm } from "./Settings/HDWalletForm";
 
