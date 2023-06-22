@@ -1,7 +1,8 @@
 import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Action } from "kbar";
-import { create } from "zustand";
+import { type StateCreator, create } from "zustand";
+import { subscribeWithSelector } from "zustand/middleware";
 
 import { Network } from "../types";
 
@@ -23,7 +24,7 @@ type Store = State & Setters;
 
 const actionId = "networks";
 
-export const useNetworks = create<Store>()((set, get) => ({
+const store: StateCreator<Store> = (set, get) => ({
   networks: [],
   actions: [],
 
@@ -73,7 +74,9 @@ export const useNetworks = create<Store>()((set, get) => ({
 
     set({ actions });
   },
-}));
+});
+
+export const useNetworks = create<Store>()(subscribeWithSelector(store));
 
 listen("networks-changed", async () => {
   await useNetworks.getState().reload();

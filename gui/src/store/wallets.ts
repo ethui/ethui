@@ -1,7 +1,8 @@
 import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Action } from "kbar";
-import { create } from "zustand";
+import { StateCreator, create } from "zustand";
+import { subscribeWithSelector } from "zustand/middleware";
 
 import { Address, Wallet } from "../types";
 
@@ -34,7 +35,7 @@ type Store = State & Setters;
 
 const actionId = "wallet";
 
-export const useWallets = create<Store>()((set, get) => ({
+const store: StateCreator<Store> = (set, get) => ({
   wallets: [],
   actions: [],
 
@@ -106,7 +107,9 @@ export const useWallets = create<Store>()((set, get) => ({
 
     set({ actions });
   },
-}));
+});
+
+export const useWallets = create<Store>()(subscribeWithSelector(store));
 
 listen("wallets-changed", async () => {
   await useWallets.getState().reload();

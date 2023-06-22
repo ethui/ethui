@@ -63,7 +63,7 @@ impl Alchemy {
         self.db
             .save_erc20_balances(chain_id, res.address, balances)
             .await?;
-        self.window_snd.send(Notify::ERC20BalancesUpdated.into())?;
+        self.window_snd.send(Notify::BalancesUpdated.into())?;
 
         Ok(())
     }
@@ -75,7 +75,7 @@ impl Alchemy {
         self.db
             .save_native_balance(balance, chain_id, address)
             .await?;
-        self.window_snd.send(Notify::NativeBalanceUpdated.into())?;
+        self.window_snd.send(Notify::BalancesUpdated.into())?;
         Ok(())
     }
 

@@ -237,7 +237,7 @@ async fn process(
         // otherwise we spam too much during that phase
         if caught_up {
             window_snd.send(Notify::TxsUpdated.into())?;
-            window_snd.send(Notify::ERC20BalancesUpdated.into())?;
+            window_snd.send(Notify::BalancesUpdated.into())?;
         }
     }
 
