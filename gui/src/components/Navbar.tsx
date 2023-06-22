@@ -3,11 +3,13 @@ import { AppBar, Grid, IconButton, Toolbar, Typography } from "@mui/material";
 import { useState } from "react";
 
 import { useTheme } from "../store/theme";
-import { Modal } from "./Modal";
-import { QuickAddressSelect } from "./QuickAddressSelect";
-import { QuickNetworkSelect } from "./QuickNetworkSelect";
-import { QuickWalletSelect } from "./QuickWalletSelect";
-import { Settings as SettingsPage } from "./Settings";
+import {
+  QuickAddressSelect,
+  QuickNetworkSelect,
+  QuickWalletSelect,
+  Settings as SettingsPage,
+  Modal
+} from "./";
 
 function SettingsButton() {
   const [showSettings, setShowSettings] = useState(false);

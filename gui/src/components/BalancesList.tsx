@@ -9,12 +9,10 @@ import {
 import { formatUnits } from "viem";
 import { erc20ABI, useContractRead } from "wagmi";
 
-import { useInvoke } from "../hooks/tauri";
+import { useInvoke } from "../hooks";
 import { useBalances, useNetworks } from "../store";
 import { Address, GeneralSettings } from "../types";
-import { CopyToClipboard } from "./CopyToClipboard";
-import { CryptoIcon } from "./IconCrypto";
-import Panel from "./Panel";
+import { CopyToClipboard, IconCrypto, Panel } from "./";
 
 export function BalancesList() {
   return (
@@ -110,7 +108,7 @@ function BalanceItem({ balance, decimals, symbol }: BalanceItemProps) {
     <ListItem>
       <ListItemAvatar>
         <Avatar>
-          <CryptoIcon ticker={symbol} />
+          <IconCrypto ticker={symbol} />
         </Avatar>
       </ListItemAvatar>
       <ListItemText secondary={symbol}>

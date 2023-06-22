@@ -1,6 +1,6 @@
-import { useInvoke } from "../hooks/tauri";
+import { useInvoke } from "../hooks";
 import { Network } from "../types";
-import Panel from "./Panel";
+import { Panel } from "./";
 
 interface Props {
   children: React.ReactNode;

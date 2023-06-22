@@ -9,7 +9,7 @@ interface Props {
 const urlFor = (ticker: string, type: "color" | "black" | "white") =>
   `/cryptocurrency-icons/${type}/${ticker.toLowerCase()}.svg`;
 
-export function CryptoIcon({ ticker }: Props) {
+export function IconCrypto({ ticker }: Props) {
   const themeMode = useTheme((s) => s.theme.palette.mode);
 
   const mode = themeMode === "dark" ? "black" : "white";

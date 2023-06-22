@@ -3,12 +3,14 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Route, Router, Switch } from "wouter";
 
-import { CommandBar } from "./components/CommandBar";
-import { HomePage } from "./components/HomePage";
-import { Navbar } from "./components/Navbar";
-import { TxReviewDialog } from "./components/TxReviewDialog";
-import { WagmiWrapper } from "./components/WagmiWrapper";
-import { WalletUnlockDialog } from "./components/WalletUnlockDialog";
+import {
+  CommandBar,
+  HomePage,
+  Navbar,
+  TxReviewDialog,
+  WagmiWrapper,
+  WalletUnlockDialog,
+} from "./components";
 import { useTheme } from "./store/theme";
 
 const queryClient = new QueryClient({

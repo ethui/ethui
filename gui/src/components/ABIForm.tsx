@@ -5,7 +5,7 @@ import { SyntheticEvent, useState } from "react";
 import { useForm } from "react-hook-form";
 import { encodeFunctionData } from "viem";
 
-import { useProvider } from "../hooks/useProvider";
+import { useProvider } from "../hooks";
 import { ABIFunctionInput, ABIItem, Address } from "../types";
 
 interface Props {

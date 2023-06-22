@@ -2,15 +2,16 @@ import { Container, Tab, Tabs } from "@mui/material";
 import { findIndex, parseInt, range, toString } from "lodash-es";
 import { Link, Route, Switch, useLocation, useRoute } from "wouter";
 
-import { useKeyPress } from "../hooks/useKeyPress";
-import { useMenuAction } from "../hooks/useMenuAction";
-import { Balances } from "./Balances";
-import { Contracts } from "./Contracts";
-import { LivenetPlaceholder } from "./LivenetPlaceholder";
-import { NestedRoutes } from "./NestedRoutes";
-import { NewVersionNotice } from "./NewVersionNotice";
-import { Peers } from "./Peers";
-import { Txs } from "./Txs";
+import { useKeyPress, useMenuAction } from "../hooks";
+import {
+  Balances,
+  Contracts,
+  LivenetPlaceholder,
+  NestedRoutes,
+  NewVersionNotice,
+  Peers,
+  Txs,
+} from "./";
 
 const tabs = [
   { path: "details", name: "Balances", component: Balances },
