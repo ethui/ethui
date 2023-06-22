@@ -1,4 +1,4 @@
-use super::{Result, SerializedSettings, Settings};
+use super::{Result, SerializedSettings, Settings,DarkMode};
 use crate::types::{ChecksummedAddress, GlobalState};
 
 #[tauri::command]
@@ -9,6 +9,11 @@ pub async fn settings_get() -> SerializedSettings {
 #[tauri::command]
 pub async fn settings_set(new_settings: SerializedSettings) -> Result<()> {
     Settings::write().await.set(new_settings)
+}
+
+#[tauri::command]
+pub async fn settings_set_dark_mode(mode: DarkMode) -> Result<()> {
+    Settings::write().await.set_dark_mode(mode)
 }
 
 /// Gets the alias for an address

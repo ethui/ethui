@@ -82,6 +82,7 @@ impl IronApp {
             .invoke_handler(tauri::generate_handler![
                 settings::commands::settings_get,
                 settings::commands::settings_set,
+                settings::commands::settings_set_dark_mode,
                 settings::commands::settings_set_alias,
                 settings::commands::settings_get_alias,
                 networks::commands::networks_get_list,

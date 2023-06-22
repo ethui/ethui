@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { useTheme } from "../hooks/useTheme";
+import { useTheme } from "../store/theme";
 
 interface Props {
   ticker: string;
@@ -10,9 +10,9 @@ const urlFor = (ticker: string, type: "color" | "black" | "white") =>
   `/cryptocurrency-icons/${type}/${ticker.toLowerCase()}.svg`;
 
 export function CryptoIcon({ ticker }: Props) {
-  const theme = useTheme();
+  const themeMode = useTheme((s) => s.theme.palette.mode);
 
-  const mode = theme?.palette.mode === "dark" ? "black" : "white";
+  const mode = themeMode === "dark" ? "black" : "white";
 
   const [error, setError] = useState(false);
   const [src, setSrc] = useState<string | undefined>(urlFor(ticker, "color"));

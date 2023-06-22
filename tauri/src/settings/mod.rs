@@ -41,6 +41,13 @@ impl Settings {
         Ok(())
     }
 
+    pub fn set_dark_mode(&mut self,mode: DarkMode)->Result<()>{
+        self.inner.dark_mode =mode;
+        self.save()?;
+
+        Ok(())
+    }
+
     pub fn get(&self) -> &SerializedSettings {
         &self.inner
     }
