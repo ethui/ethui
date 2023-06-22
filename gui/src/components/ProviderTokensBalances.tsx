@@ -4,8 +4,8 @@ import { ReactNode, createContext } from "react";
 import { useAccount } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
 import { useRefreshBalances } from "../hooks/useRefreshBalances";
-import { Address, TokenBalance } from "../types";
 import { useNetworks } from "../store";
+import { Address, TokenBalance } from "../types";
 
 interface Value {
   balances: TokenBalance[];

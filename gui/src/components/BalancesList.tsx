@@ -12,11 +12,11 @@ import { erc20ABI, useContractRead } from "wagmi";
 import { useInvoke } from "../hooks/tauri";
 import { useNativeBalance } from "../hooks/useNativeBalance";
 import { useTokensBalances } from "../hooks/useTokensBalances";
+import { useNetworks } from "../store";
 import { Address, GeneralSettings } from "../types";
 import { CopyToClipboard } from "./CopyToClipboard";
 import { CryptoIcon } from "./IconCrypto";
 import Panel from "./Panel";
-import { useNetworks } from "../store";
 
 export function BalancesList() {
   return (

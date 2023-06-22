@@ -3,8 +3,8 @@ import { useRegisterActions } from "kbar";
 import { ReactNode, createContext } from "react";
 
 import { useInvoke } from "../hooks/tauri";
-import { useNetworks } from "../store";
 import { useRefreshNetwork } from "../hooks/useRefreshNetwork";
+import { useNetworks } from "../store";
 import { Network } from "../types";
 
 interface Value {

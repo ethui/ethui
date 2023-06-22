@@ -1,8 +1,9 @@
-import { create } from "zustand";
-import { Network } from "../types";
-import { invoke } from "@tauri-apps/api/tauri";
 import { listen } from "@tauri-apps/api/event";
+import { invoke } from "@tauri-apps/api/tauri";
 import { Action } from "kbar";
+import { create } from "zustand";
+
+import { Network } from "../types";
 
 interface State {
   networks: Network[];

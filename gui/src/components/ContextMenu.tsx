@@ -1,6 +1,7 @@
 import { Button, Menu, MenuItem, SxProps, Tooltip } from "@mui/material";
 import { writeText } from "@tauri-apps/api/clipboard";
 import React, { MouseEvent, ReactNode, useState } from "react";
+
 import { useNetworks } from "../store";
 
 interface Props {
