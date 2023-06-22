@@ -10,7 +10,6 @@ import { formatUnits } from "viem";
 import { erc20ABI, useContractRead } from "wagmi";
 
 import { useInvoke } from "../hooks/tauri";
-import { useTokensBalances } from "../hooks/useTokensBalances";
 import { useBalances, useNetworks } from "../store";
 import { Address, GeneralSettings } from "../types";
 import { CopyToClipboard } from "./CopyToClipboard";
@@ -35,7 +34,6 @@ function BalanceETH() {
   const balance = useBalances((s) => s.nativeBalance);
 
   if (!currentNetwork || !balance) return null;
-  console.log(balance);
 
   return (
     <BalanceItem
@@ -48,7 +46,7 @@ function BalanceETH() {
 
 function BalancesERC20() {
   const currentNetwork = useNetworks((s) => s.current);
-  const { balances } = useTokensBalances();
+  const balances = useBalances((s) => s.erc20Balances);
   const { data: settings } = useInvoke<GeneralSettings>("settings_get");
 
   const filteredBalances = (balances || [])

@@ -4,7 +4,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { StateCreator, create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { Address, TokenBalance, Wallet } from "../types";
+import { Address, TokenBalance } from "../types";
 import { useNetworks } from "./networks";
 import { useWallets } from "./wallets";
 
@@ -27,7 +27,7 @@ interface Setters {
 
 type Store = State & Setters;
 
-const oneMinute = 10 * 1000 * 60;
+const oneMinute = 60 * 1000;
 
 // const actionId = "balances";
 
@@ -36,7 +36,6 @@ const store: StateCreator<Store> = (set, get) => ({
 
   async reload() {
     const { address, chainId, interval } = get();
-    console.log(address, chainId);
     if (!address || !chainId) return;
 
     const [native, erc20] = await Promise.all([
@@ -47,13 +46,14 @@ const store: StateCreator<Store> = (set, get) => ({
       }),
     ]);
 
+    console.log("inteervaling");
     interval && clearInterval(interval);
-    const newInterval = setInterval(() => {
+    const poll = () => {
       const { address, chainId } = get();
-      console.log("invoking", address, chainId);
       invoke("alchemy_fetch_native_balance", { chainId, address });
       invoke("alchmey_fetch_erc20_balances", { chainId, address });
-    }, oneMinute);
+    };
+    const newInterval = setInterval(poll, oneMinute);
 
     set({
       nativeBalance: BigInt(native),
@@ -63,13 +63,11 @@ const store: StateCreator<Store> = (set, get) => ({
   },
 
   setAddress(address) {
-    console.log("setAddress", address);
     set({ address });
     get().reload();
   },
 
   setChainId(chainId) {
-    console.log(chainId);
     set({ chainId });
     get().reload();
   },
@@ -85,16 +83,8 @@ listen("balances-updated", async () => {
   await useBalances.getState().reload();
 
   useWallets.subscribe(
-    (s) => {
-      // console.log("sub", s);
-      // return "foo"
-      return s.address;
-    },
-    (foo) => console.log("result", foo),
-    // (address?: Address) => {
-    // console.log("here", address);
-    // useBalances.getState().setAddress(address);
-    // },
+    (s) => s.address,
+    (address?: Address) => useBalances.getState().setAddress(address),
     { fireImmediately: true }
   );
 
