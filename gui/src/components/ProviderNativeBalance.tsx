@@ -5,7 +5,7 @@ import { useAccount } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
 import { useRefreshNativeBalance } from "../hooks/useRefreshNativeBalance";
 import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
-import { useNetworks } from "../store";
+import { useNetworks, useWallets } from "../store";
 
 interface Value {
   balance: bigint;
@@ -17,7 +17,7 @@ export const NativeBalanceContext = createContext<Value>({} as Value);
 const actionId = "native-balance";
 
 export function ProviderNativeBalance({ children }: { children: ReactNode }) {
-  const address = useAccount();
+  const address = useWallets((s) => s.address);
   const currentNetwork = useNetworks((s) => s.current);
   const chainId = currentNetwork?.chain_id;
 

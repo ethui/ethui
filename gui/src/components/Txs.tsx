@@ -12,17 +12,17 @@ import { createElement, useEffect } from "react";
 import useSWR from "swr";
 import { type TransactionReceipt, formatEther } from "viem";
 
-import { useAccount } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
 import { useProvider } from "../hooks/useProvider";
 import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
+import { useWallets } from "../store";
 import { Address, Tx } from "../types";
 import { AddressView } from "./AddressView";
 import { ContextMenu } from "./ContextMenu";
 import Panel from "./Panel";
 
 export function Txs() {
-  const account = useAccount();
+  const account = useWallets((s) => s.address);
   const { data: txs, mutate } = useInvoke<Tx[]>("db_get_transactions", {
     address: account,
   });

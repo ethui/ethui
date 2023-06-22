@@ -1,11 +1,11 @@
 import { Box, Divider, Stack } from "@mui/material";
 
-import { useAccount } from "../hooks";
+import { useWallets } from "../store";
 import { AddressView } from "./AddressView";
 import { BalancesList } from "./BalancesList";
 
 export function Balances() {
-  const address = useAccount();
+  const address = useWallets((s) => s.address);
 
   if (!address) return null;
 
