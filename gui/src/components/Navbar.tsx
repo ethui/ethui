@@ -2,7 +2,7 @@ import Settings from "@mui/icons-material/Settings";
 import { AppBar, Grid, IconButton, Toolbar, Typography } from "@mui/material";
 import { useState } from "react";
 
-import { useTheme } from "../hooks/useTheme";
+import { useTheme } from "../store/theme";
 import { Modal } from "./Modal";
 import { QuickAddressSelect } from "./QuickAddressSelect";
 import { QuickNetworkSelect } from "./QuickNetworkSelect";
@@ -33,14 +33,14 @@ function SettingsButton() {
 }
 
 export function Navbar() {
-  const theme = useTheme();
+  const palette = useTheme((s) => s.theme.palette);
 
   return (
     <AppBar
       position="sticky"
       sx={{
-        background: theme?.palette.background.default,
-        color: theme?.palette.text.primary,
+        background: palette.background.default,
+        color: palette.text.primary,
         boxShadow: "none",
       }}
     >
