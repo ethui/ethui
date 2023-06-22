@@ -1,7 +1,6 @@
 import { useRegisterActions } from "kbar";
 import { ReactNode, createContext } from "react";
 
-import { useAccount } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
 import { useRefreshNativeBalance } from "../hooks/useRefreshNativeBalance";
 import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
