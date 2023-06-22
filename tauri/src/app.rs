@@ -44,8 +44,7 @@ pub enum Notify {
     NetworkChanged,
     TxsUpdated,
     PeersUpdated,
-    ERC20BalancesUpdated,
-    NativeBalanceUpdated,
+    BalancesUpdated,
 }
 
 impl Notify {
@@ -55,8 +54,7 @@ impl Notify {
             Self::NetworkChanged => "network-changed",
             Self::TxsUpdated => "txs-updated",
             Self::PeersUpdated => "peers-updated",
-            Self::ERC20BalancesUpdated => "erc20-balances-updated",
-            Self::NativeBalanceUpdated => "native-balance-updated",
+            Self::BalancesUpdated => "balances-updated",
         }
     }
 }

@@ -3,7 +3,7 @@ import { useEffect } from "react";
 
 export function useRefreshBalances(callback: () => unknown) {
   useEffect(() => {
-    const unlisten = listen("erc20-balances-updated", () => {
+    const unlisten = listen("balances-updated", () => {
       callback();
     });
 

@@ -3,7 +3,7 @@ import { useEffect } from "react";
 
 export function useRefreshNativeBalance(callback: () => unknown) {
   useEffect(() => {
-    const unlisten = listen("native-balance-updated", () => {
+    const unlisten = listen("balances-updated", () => {
       callback();
     });
 
