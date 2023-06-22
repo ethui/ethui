@@ -25,28 +25,7 @@ export default function App() {
             <WagmiWrapper>
               <ProviderNativeBalance>
                 <ProviderTokensBalances>
-                  <Router>
-                    <Switch>
-                      <Route path="/dialog/tx-review/:id">
-                        {({ id }: { id: string }) => (
-                          <TxReviewDialog id={parseInt(id)} />
-                        )}
-                      </Route>
-
-                      <Route path="/dialog/wallet-unlock/:id">
-                        {({ id }: { id: string }) => (
-                          <WalletUnlockDialog id={parseInt(id)} />
-                        )}
-                      </Route>
-
-                      <Route>
-                        <CommandBar>
-                          <Navbar />
-                          <HomePage />
-                        </CommandBar>
-                      </Route>
-                    </Switch>
-                  </Router>
+                  <Routes />
                 </ProviderTokensBalances>
               </ProviderNativeBalance>
             </WagmiWrapper>
@@ -54,5 +33,28 @@ export default function App() {
         </CssBaseline>
       </ProviderTheme>
     </CommandBarProvider>
+  );
+}
+
+function Routes() {
+  return (
+    <Router>
+      <Switch>
+        <Route path="/dialog/tx-review/:id">
+          {({ id }: { id: string }) => <TxReviewDialog id={parseInt(id)} />}
+        </Route>
+
+        <Route path="/dialog/wallet-unlock/:id">
+          {({ id }: { id: string }) => <WalletUnlockDialog id={parseInt(id)} />}
+        </Route>
+
+        <Route>
+          <CommandBar>
+            <Navbar />
+            <HomePage />
+          </CommandBar>
+        </Route>
+      </Switch>
+    </Router>
   );
 }

@@ -1,4 +1,4 @@
-import { useRegisterActions } from "kbar";
+import { Action, useRegisterActions } from "kbar";
 import { ReactNode, createContext } from "react";
 
 import { useAccount } from "../hooks";
@@ -10,6 +10,7 @@ import { useNetworks } from "../store";
 interface Value {
   balance: bigint;
   refetchBalance: () => Promise<void>;
+  actions: Action[];
 }
 
 export const NativeBalanceContext = createContext<Value>({} as Value);
@@ -41,22 +42,18 @@ export function ProviderNativeBalance({ children }: { children: ReactNode }) {
     refetchBalance: async () => {
       refetchNativeBalance();
     },
-  } as Value;
-
-  useRefreshNativeBalance(mutateBalance);
-  // Recheck balance after a transaction:
-  useRefreshTransactions(refetchNativeBalance);
-
-  useRegisterActions(
-    [
+    actions: [
       {
         id: actionId,
         name: "Update account balance",
         perform: () => value.refetchBalance(),
       },
     ],
-    [value.refetchBalance]
-  );
+  } as Value;
+
+  useRefreshNativeBalance(mutateBalance);
+  // Recheck balance after a transaction:
+  useRefreshTransactions(refetchNativeBalance);
 
   return (
     <NativeBalanceContext.Provider value={value}>
