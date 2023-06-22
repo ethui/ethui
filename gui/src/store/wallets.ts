@@ -7,6 +7,7 @@ import { Address, Wallet } from "../types";
 
 interface State {
   currentWallet?: Wallet;
+  address?: Address;
   wallets: Wallet[];
   actions: Action[];
 }
@@ -23,9 +24,9 @@ interface AddressInfo {
 }
 
 interface Setters {
-  setCurrentWallet: (name: string) => Promise<unknown>;
-  setCurrentAddress: (name: string) => Promise<unknown>;
-  reload: () => Promise<unknown>;
+  setCurrentWallet: (name: string) => Promise<void>;
+  setCurrentAddress: (name: string) => Promise<void>;
+  reload: () => Promise<void>;
   reloadActions: () => Promise<unknown>;
 }
 
@@ -53,10 +54,13 @@ export const useWallets = create<Store>()((set, get) => ({
   },
 
   async reload() {
-    const wallets = await invoke<Wallet[]>("wallets_get_all");
-    const currentWallet = await invoke<Wallet>("wallets_get_current");
+    const [wallets, currentWallet, address] = await Promise.all([
+      invoke<Wallet[]>("wallets_get_all"),
+      invoke<Wallet>("wallets_get_current"),
+      invoke<Address>("wallets_get_current_address"),
+    ]);
 
-    set({ wallets, currentWallet });
+    set({ wallets, currentWallet, address });
     get().reloadActions();
   },
 

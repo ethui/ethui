@@ -1,10 +1,9 @@
 import { useRegisterActions } from "kbar";
 import { ReactNode, createContext } from "react";
 
-import { useAccount } from "../hooks";
 import { useInvoke } from "../hooks/tauri";
 import { useRefreshBalances } from "../hooks/useRefreshBalances";
-import { useNetworks } from "../store";
+import { useNetworks, useWallets } from "../store";
 import { Address, TokenBalance } from "../types";
 
 interface Value {
@@ -17,7 +16,7 @@ export const TokensBalancesContext = createContext<Value>({} as Value);
 const actionId = "token-balances";
 
 export function ProviderTokensBalances({ children }: { children: ReactNode }) {
-  const address = useAccount();
+  const address = useWallets((s) => s.address);
   const currentNetwork = useNetworks((s) => s.current);
   const chainId = currentNetwork?.chain_id;
 
