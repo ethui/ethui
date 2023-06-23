@@ -8,6 +8,7 @@ use std::collections::HashMap;
 use ethers::providers::{Http, Middleware, Provider};
 use ethers_core::types::Address;
 use once_cell::sync::Lazy;
+use serde_json::json;
 use tokio::sync::mpsc;
 use types::Balances;
 use url::Url;
@@ -17,7 +18,7 @@ use crate::{
     app::{self, Notify},
     db::DB,
     settings::Settings,
-    types::{ChecksummedAddress, GlobalState},
+    types::{ChecksummedAddress, GlobalState, Json},
 };
 
 static ENDPOINTS: Lazy<HashMap<u32, Url>> = Lazy::new(|| {
@@ -70,6 +71,30 @@ impl Alchemy {
             .save_native_balance(balance, chain_id, address)
             .await?;
         self.window_snd.send(Notify::BalancesUpdated.into())?;
+        Ok(())
+    }
+
+    async fn fetch_transactions(&self, chain_id: u32, address: Address) -> Result<()> {
+        let tip = dbg!(self.db.get_tip(chain_id, address).await)?;
+        let client = self.client(chain_id).await?;
+
+        let latest = client.get_block_number().await?;
+        let txs: Json = dbg!(
+            client
+                .request(
+                    "alchemy_getAssetTransfers",
+                    dbg!(json!([{
+                        "fromBlock": format!("0x{:x}", tip + 1),
+                        "toBlock": format!("0x{:x}",latest),
+                        "fromAddress": address,
+                        "category": ["external"]
+                    }])),
+                )
+                .await
+        )?;
+
+        dbg!(&txs);
+
         Ok(())
     }
 

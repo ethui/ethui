@@ -216,7 +216,8 @@ impl DB {
     pub async fn get_tip(&self, chain_id: u32, address: Address) -> Result<u64> {
         let tip = queries::get_tip(address, chain_id)
             .fetch_one(self.pool())
-            .await?;
+            .await
+            .unwrap_or_default();
 
         Ok(tip)
     }

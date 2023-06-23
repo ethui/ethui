@@ -37,6 +37,8 @@ const store: StateCreator<Store> = (set, get) => ({
   async reload() {
     const { address, chainId, interval } = get();
     if (!address || !chainId) return;
+    console.log("invokign");
+    invoke("alchemy_fetch_transactions", { address, chainId });
 
     const [native, erc20] = await Promise.all([
       invoke<string>("db_get_native_balance", { address, chainId }),
