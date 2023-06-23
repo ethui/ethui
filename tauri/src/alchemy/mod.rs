@@ -52,7 +52,6 @@ impl Alchemy {
         let res: Balances = client
             .request("alchemy_getTokenBalances", [&address.to_string(), "erc20"])
             .await?;
-        dbg!(&res);
         let balances = res.token_balances.into_iter().map(Into::into).collect();
 
         self.db
