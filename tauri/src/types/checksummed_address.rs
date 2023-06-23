@@ -18,3 +18,9 @@ impl From<Address> for ChecksummedAddress {
         Self(value)
     }
 }
+
+impl ToString for ChecksummedAddress {
+    fn to_string(&self) -> String {
+        to_checksum(&self.0, None)
+    }
+}
