@@ -13,14 +13,16 @@ import useSWR from "swr";
 import { type TransactionReceipt, formatEther } from "viem";
 
 import { useInvoke, useProvider, useRefreshTransactions } from "../hooks";
-import { useWallets } from "../store";
+import { useNetworks, useWallets } from "../store";
 import { Address, Tx } from "../types";
 import { AddressView, ContextMenu, Panel } from "./";
 
 export function Txs() {
   const account = useWallets((s) => s.address);
+  const chainId = useNetworks((s) => s.current?.chain_id);
   const { data: txs, mutate } = useInvoke<Tx[]>("db_get_transactions", {
     address: account,
+    chainId,
   });
 
   useRefreshTransactions(mutate);
