@@ -20,7 +20,7 @@ import truncateEthAddress from "truncate-eth-address";
 import { formatUnits } from "viem";
 import { z } from "zod";
 
-import { useProvider } from "../../hooks/useProvider";
+import { useProvider } from "../../hooks";
 import {
   Address,
   Wallet,

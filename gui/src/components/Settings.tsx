@@ -1,10 +1,12 @@
 import { Container, Tab, Tabs } from "@mui/material";
 import { useState } from "react";
 
-import { SettingsGeneral } from "./SettingsGeneral";
-import { SettingsNetwork } from "./SettingsNetwork";
-import { SettingsWallets } from "./SettingsWallets";
-import { TabPanel } from "./TabPanel";
+import {
+  SettingsGeneral,
+  SettingsNetwork,
+  SettingsWallets,
+  TabPanel,
+} from "./";
 
 const tabs = [
   { name: "General", component: SettingsGeneral },

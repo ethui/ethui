@@ -1,9 +1,8 @@
 import { Box, Stack, Typography } from "@mui/material";
 import { groupBy, map } from "lodash-es";
 
-import { useInvoke } from "../hooks/tauri";
-import { useRefreshPeers } from "../hooks/useRefreshPeers";
-import Panel from "./Panel";
+import { useInvoke, useRefreshPeers } from "../hooks";
+import { Panel } from "./";
 
 interface Peer {
   origin: string;
