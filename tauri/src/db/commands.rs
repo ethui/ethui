@@ -1,26 +1,23 @@
 use ethers::types::{Address, U256};
 
 use super::Result;
+use crate::db::{StoredContract, DB};
 use crate::types::events::Tx;
-use crate::{
-    db::{StoredContract, DB},
-    networks::Networks,
-    types::GlobalState,
-};
 
 #[tauri::command]
-pub async fn db_get_transactions(address: Address, db: tauri::State<'_, DB>) -> Result<Vec<Tx>> {
-    let networks = Networks::read().await;
-
-    let chain_id = networks.get_current_network().chain_id;
+pub async fn db_get_transactions(
+    address: Address,
+    chain_id: u32,
+    db: tauri::State<'_, DB>,
+) -> Result<Vec<Tx>> {
     Ok(db.get_transactions(chain_id, address).await.unwrap())
 }
 
 #[tauri::command]
-pub async fn db_get_contracts(db: tauri::State<'_, DB>) -> Result<Vec<StoredContract>> {
-    let networks = Networks::read().await;
-
-    let chain_id = networks.get_current_network().chain_id;
+pub async fn db_get_contracts(
+    chain_id: u32,
+    db: tauri::State<'_, DB>,
+) -> Result<Vec<StoredContract>> {
     db.get_contracts(chain_id).await
 }
 

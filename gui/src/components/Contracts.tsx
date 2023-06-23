@@ -7,6 +7,7 @@ import {
 } from "@mui/material";
 
 import { useInvoke, useRefreshTransactions } from "../hooks";
+import { useNetworks } from "../store";
 import { ABIMatch, Address } from "../types";
 import { ABIForm, AddressView, Panel } from "./";
 
@@ -16,8 +17,11 @@ interface IContract {
 }
 
 export function Contracts() {
-  const { data: contracts, mutate } =
-    useInvoke<IContract[]>("db_get_contracts");
+  const chainId = useNetworks((s) => s.current?.chain_id);
+  const { data: contracts, mutate } = useInvoke<IContract[]>(
+    "db_get_contracts",
+    { chainId }
+  );
 
   useRefreshTransactions(mutate);
 
