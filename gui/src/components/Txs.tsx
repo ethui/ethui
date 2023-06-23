@@ -15,8 +15,7 @@ import { type TransactionReceipt, formatEther } from "viem";
 import { useInvoke, useProvider, useRefreshTransactions } from "../hooks";
 import { useWallets } from "../store";
 import { Address, Tx } from "../types";
-
-// import { AddressView, ContextMenu, Panel } from "./";
+import { AddressView, ContextMenu, Panel } from "./";
 
 export function Txs() {
   const account = useWallets((s) => s.address);
