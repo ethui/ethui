@@ -2,15 +2,17 @@ pub mod commands;
 mod error;
 mod global;
 mod types;
+mod utils;
 
 use std::collections::HashMap;
 
 use ethers::providers::{Http, Middleware, Provider};
 use ethers_core::types::Address;
+use futures::future;
 use once_cell::sync::Lazy;
 use serde_json::json;
 use tokio::sync::mpsc;
-use types::Balances;
+use types::{Balances, Transfers};
 use url::Url;
 
 pub use self::error::{Error, Result};
@@ -79,21 +81,30 @@ impl Alchemy {
         let client = self.client(chain_id).await?;
 
         let latest = client.get_block_number().await?;
-        let txs: Json = dbg!(
-            client
-                .request(
-                    "alchemy_getAssetTransfers",
-                    dbg!(json!([{
-                        "fromBlock": format!("0x{:x}", tip + 1),
-                        "toBlock": format!("0x{:x}",latest),
-                        "fromAddress": address,
-                        "category": ["external"]
-                    }])),
-                )
-                .await
-        )?;
+        let txs: Transfers = (client
+            .request(
+                "alchemy_getAssetTransfers",
+                dbg!(json!([{
+                    "fromBlock": format!("0x{:x}", tip + 1),
+                    "toBlock": format!("0x{:x}",latest),
+                    "fromAddress": address,
+                    "category": ["external"],
+                "maxCount": format!("0x{:x}", 2)
+                }])),
+            )
+            .await)?;
 
         dbg!(&txs);
+
+        let txs: Vec<()> = future::try_join_all(
+            txs.transfers
+                .into_iter()
+                .map(|transfer| utils::transfer_into_tx(transfer, &client)),
+        )
+        .await
+        .unwrap();
+
+        // dbg!(txs);
 
         Ok(())
     }
