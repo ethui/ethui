@@ -1,14 +1,14 @@
 use ethers::types::{Address, U256};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub(super) struct Balances {
     pub address: Address,
     pub token_balances: Vec<TokenBalance>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub(super) struct TokenBalance {
     pub contract_address: Address,
