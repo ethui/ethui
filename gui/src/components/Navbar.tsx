@@ -4,11 +4,11 @@ import { useState } from "react";
 
 import { useTheme } from "../store/theme";
 import {
+  Modal,
   QuickAddressSelect,
   QuickNetworkSelect,
   QuickWalletSelect,
   Settings as SettingsPage,
-  Modal
 } from "./";
 
 function SettingsButton() {

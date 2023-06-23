@@ -1,7 +1,7 @@
 import { Box, Divider, Stack } from "@mui/material";
 
 import { useWallets } from "../store";
-import { AddressView,BalancesList } from "./";
+import { AddressView, BalancesList } from "./";
 
 export function Balances() {
   const address = useWallets((s) => s.address);
