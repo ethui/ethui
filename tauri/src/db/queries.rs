@@ -102,3 +102,31 @@ pub(super) fn erc721_transfer<'a>(tx: &events::ERC721Transfer, chain_id: u32) ->
         .bind(format!("0x{:x}", tx.to))
     }
 }
+
+pub(super) fn get_tip<'a>(
+    owner: Address,
+    chain_id: u32,
+) -> sqlx::query::Map<
+    'a,
+    Sqlite,
+    impl FnMut(<Sqlite as sqlx::Database>::Row) -> sqlx::Result<u64> + 'a,
+    sqlx::sqlite::SqliteArguments<'a>,
+> {
+    sqlx::query(r#"SELECT tip FROM tips WHERE owner = ? AND chain_id = ?"#)
+        .bind(format!("0x{:x}", owner))
+        .bind(chain_id)
+        .map(|r: SqliteRow| {
+            let tip_str = r
+                .get::<Option<&str>, _>("tip")
+                .unwrap_or("0x0")
+                .trim_start_matches("0x");
+            u64::from_str_radix(tip_str, 16).unwrap_or(0)
+        })
+}
+
+pub(super) fn set_tip<'a>(owner: Address, chain_id: u32, tip: u64) -> Query<'a> {
+    sqlx::query(r#"INSERT INTO tips (owner, chain_id, tip) VALUES (?,?,?) ON CONFLICT REPLACE"#)
+        .bind(format!("0x{:x}", owner))
+        .bind(chain_id)
+        .bind(format!("0x{:x}", tip))
+}
