@@ -78,9 +78,11 @@ impl DB {
             // TODO: report this errors in await?. Currently they're being silently ignored, because the task just gets killed
             match tx {
                 Event::Tx(ref tx) => {
-                    queries::insert_transaction(tx, chain_id)
-                        .execute(&mut conn)
-                        .await?;
+                    dbg!(
+                        queries::insert_transaction(tx, chain_id)
+                            .execute(&mut conn)
+                            .await
+                    )?;
                 }
 
                 Event::ContractDeployed(ref tx) => {

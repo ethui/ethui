@@ -89,20 +89,23 @@ impl Alchemy {
                     "toBlock": format!("0x{:x}",latest),
                     "fromAddress": address,
                     "category": ["external"],
-                "maxCount": format!("0x{:x}", 2)
+                "maxCount": format!("0x{:x}", 10)
                 }])),
             )
             .await)?;
 
-        dbg!(&txs);
-
-        let txs: Vec<()> = future::try_join_all(
+        let txs = future::try_join_all(
             txs.transfers
                 .into_iter()
                 .map(|transfer| utils::transfer_into_tx(transfer, &client)),
         )
         .await
-        .unwrap();
+        .unwrap()
+        .into_iter()
+        .flatten()
+        .collect();
+
+        self.db.save_events(chain_id, txs).await?;
 
         // dbg!(txs);
 

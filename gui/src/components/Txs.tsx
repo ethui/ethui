@@ -24,6 +24,7 @@ export function Txs() {
     address: account,
     chainId,
   });
+  console.log(txs);
 
   useRefreshTransactions(mutate);
 
@@ -51,7 +52,13 @@ function Receipt({ account, tx }: ReceiptProps) {
   /// we need to remove this at some point
   const { data: receipt, mutate } = useSWR(
     !!provider && ["getTransactionReceipt", tx.hash],
-    ([, hash]) => provider?.getTransactionReceipt({ hash })
+    async ([, hash]) => {
+      console.log(hash);
+      let receipt = await provider?.getTransactionReceipt({ hash });
+      console.log("here");
+      console.log(receipt);
+      return receipt;
+    }
   );
 
   const value = BigInt(tx.value);

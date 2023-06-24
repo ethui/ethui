@@ -10,7 +10,7 @@ pub async fn db_get_transactions(
     chain_id: u32,
     db: tauri::State<'_, DB>,
 ) -> Result<Vec<Tx>> {
-    Ok(db.get_transactions(chain_id, address).await.unwrap())
+    dbg!(Ok(db.get_transactions(chain_id, address).await.unwrap()))
 }
 
 #[tauri::command]

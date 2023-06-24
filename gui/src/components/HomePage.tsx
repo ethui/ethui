@@ -15,7 +15,7 @@ import {
 
 const tabs = [
   { path: "details", name: "Balances", component: Balances },
-  { path: "transactions", name: "Transactions", component: Txs, devOnly: true },
+  { path: "transactions", name: "Transactions", component: Txs },
   { path: "contracts", name: "Contracts", component: Contracts, devOnly: true },
   { path: "connections", name: "Connections", component: Peers },
 ];
