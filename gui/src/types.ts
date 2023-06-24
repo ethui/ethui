@@ -139,4 +139,5 @@ export interface Tx {
   data: string;
   blockNumber: number;
   position: number;
+  status: number;
 }

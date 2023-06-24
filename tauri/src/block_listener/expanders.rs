@@ -14,17 +14,27 @@ use crate::{
     },
 };
 
+use super::{Error, Result};
+
 pub(super) async fn expand_traces(traces: Vec<Trace>, provider: &Provider<Http>) -> Vec<Event> {
     let result = traces.into_iter().map(|t| expand_trace(t, provider));
-    join_all(result).await.into_iter().flatten().collect()
+    let res = join_all(result).await.into_iter().filter_map(|r| r.ok());
+
+    res.flatten().collect()
 }
 
 pub(super) fn expand_logs(traces: Vec<Log>) -> Vec<crate::types::Event> {
     traces.into_iter().filter_map(expand_log).collect()
 }
 
-async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Vec<Event> {
-    match (
+async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Result<Vec<Event>> {
+    let hash = trace.transaction_hash.unwrap();
+    let receipt = provider
+        .get_transaction_receipt(hash)
+        .await?
+        .ok_or(Error::TxNotFound(hash))?;
+
+    let res = match (
         trace.action.clone(),
         trace.result.clone(),
         trace.trace_address.len(),
@@ -44,6 +54,7 @@ async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Vec<Event> {
                     to: None,
                     value,
                     data: Bytes::new(),
+                    status: receipt.status.unwrap().as_u64(),
                 }
                 .into(),
                 ContractDeployed {
@@ -80,11 +91,14 @@ async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Vec<Event> {
             to: Some(to),
             value,
             data: input,
+            status: receipt.status.unwrap().as_u64(),
         }
         .into()],
 
         _ => vec![],
-    }
+    };
+
+    Ok(res)
 }
 
 fn expand_log(log: Log) -> Option<Event> {
