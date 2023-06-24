@@ -32,7 +32,7 @@ async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Result<Vec<Eve
     let receipt = provider
         .get_transaction_receipt(hash)
         .await?
-        .ok_or(Error::TxNotFound(hash.into()))?;
+        .ok_or(Error::TxNotFound(hash))?;
 
     let res = match (
         trace.action.clone(),
