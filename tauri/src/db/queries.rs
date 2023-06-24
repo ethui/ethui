@@ -126,8 +126,11 @@ pub(super) fn get_tip<'a>(
 }
 
 pub(super) fn set_tip<'a>(owner: Address, chain_id: u32, tip: u64) -> Query<'a> {
-    sqlx::query(r#"INSERT INTO tips (owner, chain_id, tip) VALUES (?,?,?) ON CONFLICT REPLACE"#)
-        .bind(format!("0x{:x}", owner))
-        .bind(chain_id)
-        .bind(format!("0x{:x}", tip))
+    sqlx::query(
+        r#"INSERT OR REPLACE INTO tips (owner, chain_id, tip) 
+        VALUES (?,?,?) "#,
+    )
+    .bind(format!("0x{:x}", owner))
+    .bind(chain_id)
+    .bind(format!("0x{:x}", tip))
 }

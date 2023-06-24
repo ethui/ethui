@@ -4,9 +4,11 @@ mod global;
 mod types;
 mod utils;
 
-use std::collections::HashMap;
+use std::{collections::HashMap, time::Duration};
 
-use ethers::providers::{Http, Middleware, Provider};
+use ethers::providers::{
+    Http, HttpRateLimitRetryPolicy, Middleware, Provider, RetryClient, RetryClientBuilder,
+};
 use ethers_core::types::Address;
 use futures::future;
 use once_cell::sync::Lazy;
@@ -77,27 +79,41 @@ impl Alchemy {
     }
 
     async fn fetch_transactions(&self, chain_id: u32, address: Address) -> Result<()> {
-        let tip = dbg!(self.db.get_tip(chain_id, address).await)?;
+        let tip = self.db.get_tip(chain_id, address).await?;
         let client = self.client(chain_id).await?;
 
         let latest = client.get_block_number().await?;
-        let txs: Transfers = (client
+        let outgoing: Transfers = (client
             .request(
                 "alchemy_getAssetTransfers",
-                dbg!(json!([{
+                json!([{
                     "fromBlock": format!("0x{:x}", tip + 1),
                     "toBlock": format!("0x{:x}",latest),
                     "fromAddress": address,
                     "category": ["external"],
-                "maxCount": format!("0x{:x}", 10)
-                }])),
+                "maxCount": format!("0x{:x}", 50)
+                }]),
             )
             .await)?;
 
-        let txs = future::try_join_all(
-            txs.transfers
+        let incoming: Transfers = (client
+            .request(
+                "alchemy_getAssetTransfers",
+                json!([{
+                    "fromBlock": format!("0x{:x}", tip + 1),
+                    "toBlock": format!("0x{:x}",latest),
+                    "toAddress": address,
+                    "category": ["external"],
+                }]),
+            )
+            .await)?;
+
+        let txs: Vec<_> = future::try_join_all(
+            outgoing
+                .transfers
                 .into_iter()
-                .map(|transfer| utils::transfer_into_tx(transfer, &client)),
+                .chain(incoming.transfers.into_iter())
+                .map(|transfer| utils::transfer_into_tx(transfer, &client, chain_id, &self.db)),
         )
         .await
         .unwrap()
@@ -106,16 +122,28 @@ impl Alchemy {
         .collect();
 
         self.db.save_events(chain_id, txs).await?;
-
-        // dbg!(txs);
+        self.db.set_tip(chain_id, address, latest.as_u64()).await?;
+        self.window_snd.send(Notify::TxsUpdated.into())?;
 
         Ok(())
     }
 
-    async fn client(&self, chain_id: u32) -> Result<Provider<Http>> {
+    async fn client(&self, chain_id: u32) -> Result<Provider<RetryClient<Http>>> {
         let endpoint = self.endpoint(chain_id).await?;
+        let http = Http::new(endpoint);
 
-        Ok(Provider::<Http>::try_from(endpoint.as_str())?)
+        let policy = Box::<HttpRateLimitRetryPolicy>::default();
+
+        let res = RetryClientBuilder::default()
+            .rate_limit_retries(10)
+            .timeout_retries(3)
+            .initial_backoff(Duration::from_millis(500))
+            .compute_units_per_second(300)
+            .build(http, policy);
+
+        let provider = Provider::new(res);
+
+        Ok(provider)
     }
 
     async fn endpoint(&self, chain_id: u32) -> Result<Url> {

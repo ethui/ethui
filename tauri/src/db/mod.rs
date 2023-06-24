@@ -4,7 +4,7 @@ mod queries;
 
 use std::{path::PathBuf, str::FromStr};
 
-use ethers::types::{Address, U256};
+use ethers::types::{Address, H256, U256};
 use serde::Serialize;
 use sqlx::{
     sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous},
@@ -78,11 +78,9 @@ impl DB {
             // TODO: report this errors in await?. Currently they're being silently ignored, because the task just gets killed
             match tx {
                 Event::Tx(ref tx) => {
-                    dbg!(
-                        queries::insert_transaction(tx, chain_id)
-                            .execute(&mut conn)
-                            .await
-                    )?;
+                    queries::insert_transaction(tx, chain_id)
+                        .execute(&mut conn)
+                        .await?;
                 }
 
                 Event::ContractDeployed(ref tx) => {
@@ -138,6 +136,19 @@ impl DB {
         }
         conn.commit().await?;
         Ok(())
+    }
+
+    pub async fn transaction_exists(&self, chain_id: u32, hash: H256) -> Result<bool> {
+        let res = sqlx::query(
+            r#"SELECT count(*) > 0 as result FROM transactions WHERE chain_id = ? AND hash = ?"#,
+        )
+        .bind(chain_id)
+        .bind(format!("0x{:x}", hash))
+        .map(|row| row.get("result"))
+        .fetch_one(self.pool())
+        .await?;
+
+        Ok(res)
     }
 
     async fn get_transactions(&self, chain_id: u32, from_or_to: Address) -> Result<Vec<Tx>> {

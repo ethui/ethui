@@ -28,24 +28,18 @@ pub(super) struct Transfers {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub(super) struct Transfer {
-    pub category: Category,
-    pub unique_id: String,
-    pub block_num: U64,
-    // pub value: U256,
-    // pub from: Address,
-    // pub to: Address,
+#[serde(tag = "category", rename_all = "camelCase")]
+pub(super) enum Transfer {
+    External(TransferData),
+    Internal(TransferData),
+    Erc20(TransferData),
+    Erc721(TransferData),
+    Erc1155(TransferData),
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum Category {
-    External,
-    Internal,
-    Token,
-    ERC20,
-    ERC721,
-    ERC1155,
-    SpecialNFT,
+#[serde(rename_all = "camelCase")]
+pub(super) struct TransferData {
+    pub unique_id: String,
+    pub block_num: U64,
 }
