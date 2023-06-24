@@ -8,7 +8,6 @@ use std::collections::HashMap;
 use ethers::providers::{Http, Middleware, Provider};
 use ethers_core::types::Address;
 use once_cell::sync::Lazy;
-use serde_json::json;
 use tokio::sync::mpsc;
 use types::Balances;
 use url::Url;
@@ -18,7 +17,7 @@ use crate::{
     app::{self, Notify},
     db::DB,
     settings::Settings,
-    types::{ChecksummedAddress, GlobalState, Json},
+    types::{ChecksummedAddress, GlobalState},
 };
 
 static ENDPOINTS: Lazy<HashMap<u32, Url>> = Lazy::new(|| {
@@ -48,15 +47,10 @@ impl Alchemy {
     /// fetches ERC20 balances for a user/chain_id
     /// updates the DB, and notifies the UI
     async fn fetch_balances(&self, chain_id: u32, address: ChecksummedAddress) -> Result<()> {
-        let res: Balances = self
-            .request(
-                chain_id,
-                json!({
-                    "jsonrpc": "2.0",
-                    "method": "alchemy_getTokenBalances",
-                    "params": [address, "erc20"]
-                }),
-            )
+        let client = self.client(chain_id).await?;
+
+        let res: Balances = client
+            .request("alchemy_getTokenBalances", [&address.to_string(), "erc20"])
             .await?;
         let balances = res.token_balances.into_iter().map(Into::into).collect();
 
@@ -77,22 +71,6 @@ impl Alchemy {
             .await?;
         self.window_snd.send(Notify::BalancesUpdated.into())?;
         Ok(())
-    }
-
-    async fn request<R>(&self, chain_id: u32, payload: Json) -> Result<R>
-    where
-        R: serde::de::DeserializeOwned,
-    {
-        let client = reqwest::Client::new();
-        let res: serde_json::Value = client
-            .post(self.endpoint(chain_id).await?)
-            .json(&payload)
-            .send()
-            .await?
-            .json()
-            .await?;
-
-        Ok(serde_json::from_value(res["result"].clone())?)
     }
 
     async fn client(&self, chain_id: u32) -> Result<Provider<Http>> {

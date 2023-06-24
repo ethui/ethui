@@ -7,8 +7,8 @@ type Query<'a> = sqlx::query::Query<'a, Sqlite, sqlx::sqlite::SqliteArguments<'a
 
 pub(super) fn insert_transaction(tx: &events::Tx, chain_id: u32) -> Query {
     sqlx::query(
-        r#" INSERT INTO transactions (hash, chain_id, from_address, to_address, block_number, position, value)
-        VALUES (?,?,?,?,?,?,?)
+        r#" INSERT INTO transactions (hash, chain_id, from_address, to_address, block_number, position, value, status)
+        VALUES (?,?,?,?,?,?,?,?)
         ON CONFLICT(hash) DO NOTHING "#,
     )
     .bind(format!("0x{:x}", tx.hash))
@@ -18,6 +18,7 @@ pub(super) fn insert_transaction(tx: &events::Tx, chain_id: u32) -> Query {
     .bind(tx.block_number as i64)
     .bind(tx.position.unwrap_or(0) as u32)
     .bind(tx.value.to_string())
+    .bind(tx.status as u32)
 }
 
 pub(super) fn insert_contract(tx: &events::ContractDeployed, chain_id: u32) -> Query {

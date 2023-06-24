@@ -5,9 +5,6 @@ pub enum Error {
     #[error(transparent)]
     DB(#[from] crate::db::Error),
 
-    #[error(transparent)]
-    Reqwest(#[from] reqwest::Error),
-
     #[error("IO error: {0}")]
     IO(#[from] std::io::Error),
 
@@ -25,6 +22,9 @@ pub enum Error {
 
     #[error("API Key not found")]
     NoAPIKey,
+
+    #[error(transparent)]
+    ProviderError(#[from] ethers::providers::ProviderError),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

@@ -8,11 +8,10 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { createElement, useEffect } from "react";
-import useSWR from "swr";
-import { type TransactionReceipt, formatEther } from "viem";
+import { createElement } from "react";
+import { formatEther } from "viem";
 
-import { useInvoke, useProvider, useRefreshTransactions } from "../hooks";
+import { useInvoke, useRefreshTransactions } from "../hooks";
 import { useNetworks, useWallets } from "../store";
 import { Address, Tx } from "../types";
 import { AddressView, ContextMenu, Panel } from "./";
@@ -46,33 +45,19 @@ interface ReceiptProps {
 }
 
 function Receipt({ account, tx }: ReceiptProps) {
-  const provider = useProvider();
-  /// TODO: currently doing an RPC request per transaction, because we don't know the status
-  /// we need to remove this at some point
-  const { data: receipt, mutate } = useSWR(
-    !!provider && ["getTransactionReceipt", tx.hash],
-    ([, hash]) => provider?.getTransactionReceipt({ hash })
-  );
-
   const value = BigInt(tx.value);
-
-  useEffect(() => {
-    mutate();
-  }, [provider, mutate]);
-
-  if (!receipt) return null;
 
   return (
     <ListItem>
       <ListItemAvatar>
-        <Icon {...{ receipt, tx, account }} />
+        <Icon {...{ tx, account }} />
       </ListItemAvatar>
       <Box sx={{ flexGrow: 1 }}>
         <Stack>
           <Stack direction="row" spacing={1}>
-            <AddressView address={receipt.from} /> <span>→</span>
-            {receipt.to ? (
-              <AddressView address={receipt.to} />
+            <AddressView address={tx.from} /> <span>→</span>
+            {tx.to ? (
+              <AddressView address={tx.to} />
             ) : (
               <Typography component="span">Contract Deploy</Typography>
             )}
@@ -95,12 +80,11 @@ function Receipt({ account, tx }: ReceiptProps) {
 
 interface IconProps {
   account: Address;
-  receipt: TransactionReceipt;
   tx: Tx;
 }
 
-function Icon({ account, receipt, tx }: IconProps) {
-  const color = receipt.status === "success" ? "success" : "error";
+function Icon({ account, tx }: IconProps) {
+  const color = tx.status === 1 ? "success" : "error";
 
   let icon = CallMade;
 
