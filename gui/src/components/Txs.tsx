@@ -27,7 +27,7 @@ export function Txs() {
 
   const loadMore = () => {
     let pagination: Pagination = {};
-    let last = pages?.at(-1)?.pagination;
+    const last = pages?.at(-1)?.pagination;
     if (!!last) {
       pagination = last;
       pagination.page = (pagination.page || 0) + 1;
