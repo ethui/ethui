@@ -1,4 +1,4 @@
-use ethers::types::H256;
+use ethers::{providers::JsonRpcError, types::H256};
 
 use crate::app;
 
@@ -30,6 +30,9 @@ pub enum Error {
 
     #[error(transparent)]
     ProviderError(#[from] ethers::providers::ProviderError),
+
+    #[error(transparent)]
+    JsonRpcError(#[from] JsonRpcError),
 
     #[error("Transaction not found: {0}")]
     TxNotFound(H256),
