@@ -144,7 +144,7 @@ impl DB {
 
     pub async fn transaction_exists(&self, chain_id: u32, hash: H256) -> Result<bool> {
         let res = sqlx::query(
-            r#"SELECT count(*) > 0 as result FROM transactions WHERE chain_id = ? AND hash = ?"#,
+            r#"SELECT COUNT(*) > 0 as result FROM transactions WHERE chain_id = ? AND hash = ?"#,
         )
         .bind(chain_id)
         .bind(format!("0x{:x}", hash))
