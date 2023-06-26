@@ -51,6 +51,7 @@ const store: StateCreator<Store> = (set, get) => ({
       const { address, chainId } = get();
       invoke("alchemy_fetch_native_balance", { chainId, address });
       invoke("alchemy_fetch_erc20_balances", { chainId, address });
+      invoke("alchemy_fetch_transactions", { address, chainId });
     };
     const newInterval = setInterval(poll, oneMinute);
 

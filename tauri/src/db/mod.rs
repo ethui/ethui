@@ -5,7 +5,7 @@ mod queries;
 
 use std::{path::PathBuf, str::FromStr};
 
-use ethers::types::{Address, U256};
+use ethers::types::{Address, H256, U256};
 use serde::Serialize;
 use sqlx::{
     sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous},
@@ -142,6 +142,19 @@ impl DB {
         Ok(())
     }
 
+    pub async fn transaction_exists(&self, chain_id: u32, hash: H256) -> Result<bool> {
+        let res = sqlx::query(
+            r#"SELECT COUNT(*) > 0 as result FROM transactions WHERE chain_id = ? AND hash = ?"#,
+        )
+        .bind(chain_id)
+        .bind(format!("0x{:x}", hash))
+        .map(|row| row.get("result"))
+        .fetch_one(self.pool())
+        .await?;
+
+        Ok(res)
+    }
+
     async fn get_transactions(
         &self,
         chain_id: u32,
@@ -243,7 +256,8 @@ impl DB {
     pub async fn get_tip(&self, chain_id: u32, address: Address) -> Result<u64> {
         let tip = queries::get_tip(address, chain_id)
             .fetch_one(self.pool())
-            .await?;
+            .await
+            .unwrap_or_default();
 
         Ok(tip)
     }

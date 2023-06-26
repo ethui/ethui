@@ -112,6 +112,7 @@ impl IronApp {
                 foundry::commands::foundry_get_abi,
                 alchemy::commands::alchemy_fetch_erc20_balances,
                 alchemy::commands::alchemy_fetch_native_balance,
+                alchemy::commands::alchemy_fetch_transactions,
                 rpc::commands::rpc_send_transaction,
             ])
             .setup(|app| {

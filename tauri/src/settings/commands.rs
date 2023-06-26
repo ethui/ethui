@@ -1,4 +1,4 @@
-use super::{Result, SerializedSettings, Settings,DarkMode};
+use super::{DarkMode, Result, SerializedSettings, Settings};
 use crate::types::{ChecksummedAddress, GlobalState};
 
 #[tauri::command]
