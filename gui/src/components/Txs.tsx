@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
-import { createElement, useState } from "react";
+import { createElement, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { formatEther } from "viem";
 
@@ -40,10 +40,16 @@ export function Txs() {
     }).then((page) => setPages([...pages, page]));
   };
 
-  useRefreshTransactions(() => {
+  useEffect(() => {
+    if (pages.length == 0) loadMore();
+  }, [pages]);
+
+  const reload = () => {
     setPages([]);
-    loadMore();
-  });
+  };
+
+  useRefreshTransactions(reload);
+  useEffect(reload, [account, chainId]);
 
   if (!account) return null;
 
