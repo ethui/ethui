@@ -1,17 +1,18 @@
-use std::str::FromStr;
+use std::{str::FromStr, sync::Arc};
 
 use ethers::{
     providers::{Http, Middleware, Provider, RetryClient},
-    types::H256,
+    types::{Address, H256, U256},
 };
 
 use super::{types::Transfer, Error, Result};
 use crate::{
+    abis::IERC20,
     db::DB,
     foundry::calculate_code_hash,
     types::{
         events::{ContractDeployed, Tx},
-        Event,
+        Event, TokenMetadata,
     },
 };
 
@@ -70,4 +71,31 @@ pub(super) async fn transfer_into_tx(
     };
 
     Ok(res)
+}
+
+pub(super) async fn fetch_erc20_metadata(
+    balances: Vec<(Address, U256)>,
+    client: Provider<RetryClient<Http>>,
+    chain_id: u32,
+    db: &DB,
+) -> Result<()> {
+    let client = Arc::new(client);
+
+    for (address, _) in balances {
+        if db.get_erc20_metadata(address, chain_id).await.is_err() {
+            let contract = IERC20::new(address, client.clone());
+
+            let metadata = TokenMetadata {
+                name: contract.name().call().await.unwrap_or_default(),
+                symbol: contract.symbol().call().await.unwrap_or_default(),
+                decimals: contract.decimals().call().await.unwrap_or_default(),
+            };
+
+            db.save_erc20_metadata(address, chain_id, metadata)
+                .await
+                .unwrap();
+        }
+    }
+
+    Ok(())
 }

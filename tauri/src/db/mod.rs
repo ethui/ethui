@@ -16,7 +16,7 @@ pub use self::{
     error::{Error, Result},
     pagination::{Paginated, Pagination},
 };
-use crate::types::{events::Tx, Event};
+use crate::types::{events::Tx, Event, TokenBalance, TokenMetadata};
 
 #[derive(Debug, Clone)]
 pub struct DB {
@@ -56,6 +56,16 @@ impl DB {
         Ok(())
     }
 
+    pub async fn get_erc20_metadata(
+        &self,
+        contract: Address,
+        chain_id: u32,
+    ) -> Result<TokenMetadata> {
+        Ok(queries::erc20_read_metadata(contract, chain_id)
+            .fetch_one(self.pool())
+            .await?)
+    }
+
     // TODO: Change this to an Into<T> of some kind, so we don't depend directly on AlchemyResponse here
     pub async fn save_erc20_balances(
         &self,
@@ -70,6 +80,22 @@ impl DB {
                 .execute(&mut conn)
                 .await?;
         }
+
+        conn.commit().await?;
+        Ok(())
+    }
+
+    pub async fn save_erc20_metadata(
+        &self,
+        address: Address,
+        chain_id: u32,
+        metadata: TokenMetadata,
+    ) -> Result<()> {
+        let mut conn = self.tx().await?;
+
+        queries::update_erc20_metadata(address, chain_id, metadata)
+            .execute(&mut conn)
+            .await?;
 
         conn.commit().await?;
         Ok(())
@@ -233,20 +259,17 @@ impl DB {
         &self,
         chain_id: u32,
         address: Address,
-    ) -> Result<Vec<(Address, U256)>> {
+    ) -> Result<Vec<TokenBalance>> {
         let res: Vec<_> = sqlx::query(
-            r#" SELECT contract, balance AS balance
+            r#"SELECT balances.contract, balances.balance, meta.decimals, meta.name, meta.symbol
             FROM balances
-            WHERE chain_id = ? AND owner = ? "#,
+            INNER JOIN tokens_metadata AS meta
+              ON meta.chain_id = balances.chain_id AND meta.contract = balances.contract
+            WHERE balances.chain_id = ? AND balances.owner = ? "#,
         )
         .bind(chain_id)
         .bind(format!("0x{:x}", address))
-        .map(|row| {
-            (
-                Address::from_str(&row.get::<String, _>("contract")).unwrap(),
-                U256::from_dec_str(row.get::<&str, _>("balance")).unwrap(),
-            )
-        })
+        .map(|row| row.try_into().unwrap())
         .fetch_all(self.pool())
         .await?;
 

@@ -11,7 +11,7 @@ pub async fn alchemy_fetch_erc20_balances(
 ) -> Result<()> {
     Alchemy::read()
         .await
-        .fetch_balances(chain_id, address)
+        .fetch_erc20_balances(chain_id, address)
         .await
 }
 

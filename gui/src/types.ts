@@ -108,11 +108,22 @@ export const walletsSchema = z.object({
 });
 
 export type Address = `0x${string}`;
-export type TokenBalance = [Address, bigint];
 export type Wallet = z.infer<typeof walletSchema>;
 export type Wallets = z.infer<typeof walletsSchema>;
 export type Network = z.infer<typeof networkSchema.shape.networks>[number];
 export type GeneralSettings = z.infer<typeof generalSettingsSchema>;
+
+export interface TokenBalance {
+  contract: Address;
+  balance: string;
+  metadata: TokenMetadata;
+}
+
+export interface TokenMetadata {
+  name: string;
+  symbol: string;
+  decimals: number;
+}
 
 export interface ABIFunctionInput {
   name: string;

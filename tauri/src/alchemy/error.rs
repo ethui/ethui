@@ -26,6 +26,9 @@ pub enum Error {
     NoAPIKey,
 
     #[error(transparent)]
+    JoinError(#[from] tokio::task::JoinError),
+
+    #[error(transparent)]
     ProviderError(#[from] ethers::providers::ProviderError),
 
     #[error("Transaction not found: {0}")]

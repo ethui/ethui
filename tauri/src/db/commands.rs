@@ -3,6 +3,7 @@ use ethers::types::{Address, U256};
 use super::{Paginated, Pagination, Result};
 use crate::db::{StoredContract, DB};
 use crate::types::events::Tx;
+use crate::types::TokenBalance;
 
 #[tauri::command]
 pub async fn db_get_transactions(
@@ -11,10 +12,8 @@ pub async fn db_get_transactions(
     pagination: Option<Pagination>,
     db: tauri::State<'_, DB>,
 ) -> Result<Paginated<Tx>> {
-    Ok(db
-        .get_transactions(chain_id, address, pagination.unwrap_or_default())
+    db.get_transactions(chain_id, address, pagination.unwrap_or_default())
         .await
-        .unwrap())
 }
 
 #[tauri::command]
@@ -30,8 +29,8 @@ pub async fn db_get_erc20_balances(
     chain_id: u32,
     address: Address,
     db: tauri::State<'_, DB>,
-) -> Result<Vec<(Address, U256)>> {
-    Ok(db.get_erc20_balances(chain_id, address).await.unwrap())
+) -> Result<Vec<TokenBalance>> {
+    db.get_erc20_balances(chain_id, address).await
 }
 
 #[tauri::command]

@@ -9,7 +9,7 @@ use std::{collections::HashMap, time::Duration};
 use ethers::providers::{
     Http, HttpRateLimitRetryPolicy, Middleware, Provider, RetryClient, RetryClientBuilder,
 };
-use ethers_core::types::Address;
+use ethers_core::types::{Address, U256};
 use futures::future;
 use once_cell::sync::Lazy;
 use serde_json::json;
@@ -51,13 +51,16 @@ impl Alchemy {
 
     /// fetches ERC20 balances for a user/chain_id
     /// updates the DB, and notifies the UI
-    async fn fetch_balances(&self, chain_id: u32, address: ChecksummedAddress) -> Result<()> {
+    async fn fetch_erc20_balances(&self, chain_id: u32, address: ChecksummedAddress) -> Result<()> {
         let client = self.client(chain_id).await?;
 
         let res: Balances = client
             .request("alchemy_getTokenBalances", [&address.to_string(), "erc20"])
             .await?;
-        let balances = res.token_balances.into_iter().map(Into::into).collect();
+        let balances: Vec<(Address, U256)> =
+            res.token_balances.into_iter().map(Into::into).collect();
+
+        utils::fetch_erc20_metadata(balances.clone(), client, chain_id, &self.db).await?;
 
         self.db
             .save_erc20_balances(chain_id, res.address, balances)
@@ -84,7 +87,7 @@ impl Alchemy {
         let tip = self.db.get_tip(chain_id, address).await?;
         let latest = client.get_block_number().await?;
 
-        if tip - 1 == latest.as_u64() {
+        if tip.saturating_sub(1) == latest.as_u64() {
             return Ok(());
         }
 
@@ -119,8 +122,7 @@ impl Alchemy {
                 .chain(incoming.transfers.into_iter())
                 .map(|transfer| utils::transfer_into_tx(transfer, &client, chain_id, &self.db)),
         )
-        .await
-        .unwrap()
+        .await?
         .into_iter()
         .flatten()
         .collect();

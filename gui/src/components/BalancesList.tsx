@@ -7,11 +7,10 @@ import {
   Stack,
 } from "@mui/material";
 import { formatUnits } from "viem";
-import { erc20ABI, useContractRead } from "wagmi";
 
 import { useInvoke } from "../hooks";
 import { useBalances, useNetworks } from "../store";
-import { Address, GeneralSettings } from "../types";
+import { GeneralSettings } from "../types";
 import { CopyToClipboard, IconCrypto, Panel } from "./";
 
 export function BalancesList() {
@@ -43,22 +42,21 @@ function BalanceETH() {
 }
 
 function BalancesERC20() {
-  const currentNetwork = useNetworks((s) => s.current);
   const balances = useBalances((s) => s.erc20Balances);
   const { data: settings } = useInvoke<GeneralSettings>("settings_get");
 
-  const filteredBalances = (balances || [])
-    .map<[Address, bigint]>(([c, b]) => [c, BigInt(b)])
-    .filter(([, balance]) => (settings?.hideEmptyTokens ? !!balance : true));
+  const filteredBalances = (balances || []).filter(
+    (token) => !settings?.hideEmptyTokens || BigInt(token.balance) > 0
+  );
 
   return (
     <>
-      {filteredBalances.map(([contract, balance]) => (
+      {filteredBalances.map(({ contract, balance, metadata }) => (
         <BalanceERC20
           key={contract}
-          contract={contract}
-          balance={balance}
-          chainId={currentNetwork?.chain_id}
+          balance={BigInt(balance)}
+          decimals={metadata.decimals}
+          symbol={metadata.symbol}
         />
       ))}
     </>
@@ -66,31 +64,17 @@ function BalancesERC20() {
 }
 
 function BalanceERC20({
-  contract,
   balance,
-  chainId,
+  decimals,
+  symbol,
 }: {
-  contract: Address;
   balance: bigint;
-  chainId?: number;
+  decimals: number;
+  symbol: string;
 }) {
-  const { data: name } = useContractRead({
-    address: contract,
-    abi: erc20ABI,
-    functionName: "symbol",
-    chainId,
-  });
+  if (!symbol || !decimals) return null;
 
-  const { data: decimals } = useContractRead({
-    address: contract,
-    abi: erc20ABI,
-    functionName: "decimals",
-    chainId,
-  });
-
-  if (!name || !decimals) return null;
-
-  return <BalanceItem balance={balance} decimals={decimals} symbol={name} />;
+  return <BalanceItem balance={balance} decimals={decimals} symbol={symbol} />;
 }
 
 interface BalanceItemProps {

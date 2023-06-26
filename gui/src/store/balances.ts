@@ -12,6 +12,7 @@ interface State {
   nativeBalance?: bigint;
   erc20Balances: TokenBalance[];
 
+  shouldPoll: boolean;
   address?: Address;
   chainId?: number;
   interval?: NodeJS.Timer;
@@ -23,6 +24,8 @@ interface Setters {
 
   setAddress: (address?: Address) => void;
   setChainId: (chainId?: number) => void;
+
+  poll: () => Promise<void>;
 }
 
 type Store = State & Setters;
@@ -33,31 +36,38 @@ const oneMinute = 60 * 1000;
 
 const store: StateCreator<Store> = (set, get) => ({
   erc20Balances: [],
+  shouldPoll: true,
+
+  async poll() {
+    const { address, chainId } = get();
+    if (!address || !chainId) return;
+    invoke("alchemy_fetch_native_balance", { chainId, address });
+    invoke("alchemy_fetch_erc20_balances", { chainId, address });
+    invoke("alchemy_fetch_transactions", { address, chainId });
+  },
 
   async reload() {
-    const { address, chainId, interval } = get();
+    const { address, chainId, interval, poll, shouldPoll } = get();
     if (!address || !chainId) return;
 
-    const [native, erc20] = await Promise.all([
+    const [native, erc20Balances] = await Promise.all([
       invoke<string>("db_get_native_balance", { address, chainId }),
-      invoke<[Address, string][]>("db_get_erc20_balances", {
+      invoke<TokenBalance[]>("db_get_erc20_balances", {
         address,
         chainId,
       }),
     ]);
 
     interval && clearInterval(interval);
-    const poll = () => {
-      const { address, chainId } = get();
-      invoke("alchemy_fetch_native_balance", { chainId, address });
-      invoke("alchemy_fetch_erc20_balances", { chainId, address });
-      invoke("alchemy_fetch_transactions", { address, chainId });
-    };
     const newInterval = setInterval(poll, oneMinute);
+    if (shouldPoll) {
+      set({ shouldPoll: false });
+      poll();
+    }
 
     set({
       nativeBalance: BigInt(native),
-      erc20Balances: erc20.map(([a, c]) => [a, BigInt(c)]),
+      erc20Balances,
       interval: newInterval,
     });
   },
