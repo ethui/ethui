@@ -1,5 +1,6 @@
 pub mod commands;
 mod error;
+mod pagination;
 mod queries;
 
 use std::{path::PathBuf, str::FromStr};
@@ -11,7 +12,11 @@ use sqlx::{
     Row,
 };
 
-pub use self::error::{Error, Result};
+pub use self::{
+    error::{Error, Result},
+    pagination::{Paginated, Pagination},
+};
+
 use crate::types::{events::Tx, Event};
 
 #[derive(Debug, Clone)]
@@ -151,22 +156,46 @@ impl DB {
         Ok(res)
     }
 
-    async fn get_transactions(&self, chain_id: u32, from_or_to: Address) -> Result<Vec<Tx>> {
-        let res: Vec<_> = sqlx::query(
+    async fn get_transactions(
+        &self,
+        chain_id: u32,
+        from_or_to: Address,
+        pagination: Pagination,
+    ) -> Result<Paginated<Tx>> {
+        let items: Vec<_> = sqlx::query(
             r#" SELECT *
             FROM transactions
             WHERE chain_id = ?
             AND (from_address = ? or to_address = ?) COLLATE NOCASE
-            ORDER BY block_number DESC, position DESC"#,
+            ORDER BY block_number DESC, position DESC
+            LIMIT ? OFFSET ?
+            "#,
         )
         .bind(chain_id)
         .bind(format!("0x{:x}", from_or_to))
         .bind(format!("0x{:x}", from_or_to))
+        .bind(pagination.page_size)
+        .bind(pagination.offset())
         .map(|row| Tx::try_from(&row).unwrap())
         .fetch_all(self.pool())
         .await?;
 
-        Ok(res)
+        let total: u32 = sqlx::query(
+            r#"
+            SELECT count(*) as total
+            FROM transactions
+            WHERE chain_id = ?
+            AND (from_address = ? or to_address = ?) COLLATE NOCASE
+            "#,
+        )
+        .bind(chain_id)
+        .bind(format!("0x{:x}", from_or_to))
+        .bind(format!("0x{:x}", from_or_to))
+        .map(|row| row.get("total"))
+        .fetch_one(self.pool())
+        .await?;
+
+        Ok(Paginated::new(items, pagination, total))
     }
 
     pub async fn get_contracts(&self, chain_id: u32) -> Result<Vec<StoredContract>> {

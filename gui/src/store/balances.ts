@@ -37,8 +37,6 @@ const store: StateCreator<Store> = (set, get) => ({
   async reload() {
     const { address, chainId, interval } = get();
     if (!address || !chainId) return;
-    console.log("invokign");
-    invoke("alchemy_fetch_transactions", { address, chainId });
 
     const [native, erc20] = await Promise.all([
       invoke<string>("db_get_native_balance", { address, chainId }),
@@ -53,6 +51,7 @@ const store: StateCreator<Store> = (set, get) => ({
       const { address, chainId } = get();
       invoke("alchemy_fetch_native_balance", { chainId, address });
       invoke("alchemy_fetch_erc20_balances", { chainId, address });
+      invoke("alchemy_fetch_transactions", { address, chainId });
     };
     const newInterval = setInterval(poll, oneMinute);
 

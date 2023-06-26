@@ -22,7 +22,7 @@ use crate::{
     app::{self, Notify},
     db::DB,
     settings::Settings,
-    types::{ChecksummedAddress, GlobalState, Json},
+    types::{ChecksummedAddress, GlobalState},
 };
 
 static ENDPOINTS: Lazy<HashMap<u32, Url>> = Lazy::new(|| {
@@ -79,10 +79,15 @@ impl Alchemy {
     }
 
     async fn fetch_transactions(&self, chain_id: u32, address: Address) -> Result<()> {
-        let tip = self.db.get_tip(chain_id, address).await?;
         let client = self.client(chain_id).await?;
 
+        let tip = self.db.get_tip(chain_id, address).await?;
         let latest = client.get_block_number().await?;
+
+        if tip - 1 == latest.as_u64() {
+            return Ok(());
+        }
+
         let outgoing: Transfers = (client
             .request(
                 "alchemy_getAssetTransfers",
