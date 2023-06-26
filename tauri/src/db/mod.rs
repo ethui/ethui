@@ -240,6 +240,22 @@ impl DB {
         Ok(res)
     }
 
+    pub async fn get_tip(&self, chain_id: u32, address: Address) -> Result<u64> {
+        let tip = queries::get_tip(address, chain_id)
+            .fetch_one(self.pool())
+            .await?;
+
+        Ok(tip)
+    }
+
+    pub async fn set_tip(&self, chain_id: u32, address: Address, tip: u64) -> Result<()> {
+        queries::set_tip(address, chain_id, tip)
+            .execute(self.pool())
+            .await?;
+
+        Ok(())
+    }
+
     pub async fn truncate_events(&self, chain_id: u32) -> Result<()> {
         sqlx::query("DELETE FROM transactions WHERE chain_id = ?")
             .bind(chain_id)
