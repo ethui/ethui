@@ -180,7 +180,7 @@ impl DB {
 
         let total: u32 = sqlx::query(
             r#"
-            SELECT count(*) as total
+            SELECT COUNT(*) as total
             FROM transactions
             WHERE chain_id = ?
             AND (from_address = ? or to_address = ?) COLLATE NOCASE
