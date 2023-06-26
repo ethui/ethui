@@ -1,4 +1,4 @@
-import { CallMade, NoteAdd, VerticalAlignBottom } from "@mui/icons-material";
+import { CallMade, CallReceived, NoteAdd } from "@mui/icons-material";
 import {
   Badge,
   Box,
@@ -88,8 +88,8 @@ function Icon({ account, tx }: IconProps) {
 
   let icon = CallMade;
 
-  if (tx.to == account) {
-    icon = VerticalAlignBottom;
+  if (tx.to.toLowerCase() == account.toLowerCase()) {
+    icon = CallReceived;
   } else if (!tx.to) {
     icon = NoteAdd;
   }

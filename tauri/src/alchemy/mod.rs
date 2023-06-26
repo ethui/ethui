@@ -91,7 +91,6 @@ impl Alchemy {
                     "toBlock": format!("0x{:x}",latest),
                     "fromAddress": address,
                     "category": ["external"],
-                "maxCount": format!("0x{:x}", 50)
                 }]),
             )
             .await)?;
