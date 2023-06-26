@@ -84,9 +84,10 @@ interface BalanceItemProps {
 }
 
 function BalanceItem({ balance, decimals, symbol }: BalanceItemProps) {
+  const minimum = 0.001;
   // Some tokens respond with 1 decimals, that breaks this truncatedBalance without the Math.ceil
   const truncatedBalance =
-    balance - (balance % BigInt(Math.ceil(0.001 * 10 ** decimals)));
+    balance - (balance % BigInt(Math.ceil(minimum * 10 ** decimals)));
 
   return (
     <ListItem>
@@ -97,7 +98,9 @@ function BalanceItem({ balance, decimals, symbol }: BalanceItemProps) {
       </ListItemAvatar>
       <ListItemText secondary={symbol}>
         <CopyToClipboard label={balance.toString()}>
-          {formatUnits(truncatedBalance, decimals)}
+          {truncatedBalance > 0
+            ? formatUnits(truncatedBalance, decimals)
+            : `< ${minimum}`}
         </CopyToClipboard>
       </ListItemText>
     </ListItem>
