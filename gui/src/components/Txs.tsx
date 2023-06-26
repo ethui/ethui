@@ -1,40 +1,79 @@
-import { CallMade, NoteAdd, VerticalAlignBottom } from "@mui/icons-material";
+import { CallMade, CallReceived, NoteAdd } from "@mui/icons-material";
 import {
   Badge,
   Box,
+  CircularProgress,
   List,
   ListItem,
   ListItemAvatar,
   Stack,
   Typography,
 } from "@mui/material";
-import { createElement } from "react";
+import { invoke } from "@tauri-apps/api/tauri";
+import { createElement, useState } from "react";
+import InfiniteScroll from "react-infinite-scroller";
 import { formatEther } from "viem";
 
-import { useInvoke, useRefreshTransactions } from "../hooks";
+import { useRefreshTransactions } from "../hooks";
 import { useNetworks, useWallets } from "../store";
-import { Address, Tx } from "../types";
+import { Address, Paginated, Pagination, Tx } from "../types";
 import { AddressView, ContextMenu, Panel } from "./";
 
 export function Txs() {
   const account = useWallets((s) => s.address);
   const chainId = useNetworks((s) => s.current?.chain_id);
-  const { data: txs, mutate } = useInvoke<Tx[]>("db_get_transactions", {
-    address: account,
-    chainId,
-  });
 
-  useRefreshTransactions(mutate);
+  const [pages, setPages] = useState<Paginated<Tx>[]>([]);
+
+  const loadMore = () => {
+    let pagination: Pagination = {};
+    let last = pages?.at(-1)?.pagination;
+    if (!!last) {
+      pagination = last;
+      pagination.page = (pagination.page || 0) + 1;
+    }
+
+    invoke<Paginated<Tx>>("db_get_transactions", {
+      address: account,
+      chainId,
+      pagination,
+    }).then((page) => setPages([...pages, page]));
+  };
+
+  useRefreshTransactions(() => {
+    setPages([]);
+    loadMore();
+  });
 
   if (!account) return null;
 
+  const loader = (
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+      }}
+      key="loader"
+    >
+      <CircularProgress />
+    </Box>
+  );
+
   return (
     <Panel>
-      <List>
-        {(txs || []).map((tx) => (
-          <Receipt account={account} tx={tx} key={tx.hash} />
-        ))}
-      </List>
+      <InfiniteScroll
+        loadMore={loadMore}
+        hasMore={!pages.at(-1)?.last}
+        loader={loader}
+      >
+        <List key={"list"}>
+          {pages.flatMap((page) =>
+            page.items.map((tx) => (
+              <Receipt account={account} tx={tx} key={tx.hash} />
+            ))
+          )}
+        </List>
+      </InfiniteScroll>
     </Panel>
   );
 }
@@ -88,10 +127,10 @@ function Icon({ account, tx }: IconProps) {
 
   let icon = CallMade;
 
-  if (tx.to == account) {
-    icon = VerticalAlignBottom;
-  } else if (!tx.to) {
+  if (!tx.to) {
     icon = NoteAdd;
+  } else if (tx.to.toLowerCase() == account.toLowerCase()) {
+    icon = CallReceived;
   }
 
   return <Badge>{createElement(icon, { color })}</Badge>;

@@ -141,3 +141,15 @@ export interface Tx {
   position: number;
   status: number;
 }
+
+export interface Pagination {
+  page?: number;
+  page_size?: number;
+}
+
+export interface Paginated<T> {
+  pagination: Pagination;
+  items: T[];
+  last: boolean;
+  total: number;
+}
