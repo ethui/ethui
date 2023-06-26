@@ -12,7 +12,7 @@ interface State {
   nativeBalance?: bigint;
   erc20Balances: TokenBalance[];
 
-  shouldPoll: bool;
+  shouldPoll: boolean;
   address?: Address;
   chainId?: number;
   interval?: NodeJS.Timer;
