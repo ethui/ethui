@@ -16,7 +16,6 @@ pub use self::{
     error::{Error, Result},
     pagination::{Paginated, Pagination},
 };
-
 use crate::types::{events::Tx, Event};
 
 #[derive(Debug, Clone)]
@@ -168,8 +167,7 @@ impl DB {
             WHERE chain_id = ?
             AND (from_address = ? or to_address = ?) COLLATE NOCASE
             ORDER BY block_number DESC, position DESC
-            LIMIT ? OFFSET ?
-            "#,
+            LIMIT ? OFFSET ?"#,
         )
         .bind(chain_id)
         .bind(format!("0x{:x}", from_or_to))

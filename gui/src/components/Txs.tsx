@@ -27,7 +27,7 @@ export function Txs() {
 
   const loadMore = () => {
     let pagination: Pagination = {};
-    let last = pages?.at(-1)?.pagination;
+    const last = pages?.at(-1)?.pagination;
     if (!!last) {
       pagination = last;
       pagination.page = (pagination.page || 0) + 1;
@@ -53,6 +53,7 @@ export function Txs() {
         display: "flex",
         justifyContent: "center",
       }}
+      key="loader"
     >
       <CircularProgress />
     </Box>
@@ -126,10 +127,10 @@ function Icon({ account, tx }: IconProps) {
 
   let icon = CallMade;
 
-  if (tx.to.toLowerCase() == account.toLowerCase()) {
-    icon = CallReceived;
-  } else if (!tx.to) {
+  if (!tx.to) {
     icon = NoteAdd;
+  } else if (tx.to.toLowerCase() == account.toLowerCase()) {
+    icon = CallReceived;
   }
 
   return <Badge>{createElement(icon, { color })}</Badge>;

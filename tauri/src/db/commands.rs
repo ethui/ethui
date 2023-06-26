@@ -8,8 +8,8 @@ use crate::types::events::Tx;
 pub async fn db_get_transactions(
     address: Address,
     chain_id: u32,
-    db: tauri::State<'_, DB>,
     pagination: Option<Pagination>,
+    db: tauri::State<'_, DB>,
 ) -> Result<Paginated<Tx>> {
     Ok(db
         .get_transactions(chain_id, address, pagination.unwrap_or_default())
