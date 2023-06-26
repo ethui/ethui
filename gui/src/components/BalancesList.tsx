@@ -8,14 +8,10 @@ import {
 } from "@mui/material";
 import { formatUnits } from "viem";
 
-import { useInvoke } from "../hooks/tauri";
-import { useCurrentNetwork } from "../hooks/useCurrentNetwork";
-import { useNativeBalance } from "../hooks/useNativeBalance";
-import { useTokensBalances } from "../hooks/useTokensBalances";
+import { useInvoke } from "../hooks";
+import { useBalances, useNetworks } from "../store";
 import { GeneralSettings } from "../types";
-import { CopyToClipboard } from "./CopyToClipboard";
-import { CryptoIcon } from "./IconCrypto";
-import Panel from "./Panel";
+import { CopyToClipboard, IconCrypto, Panel } from "./";
 
 export function BalancesList() {
   return (
@@ -31,10 +27,10 @@ export function BalancesList() {
 }
 
 function BalanceETH() {
-  const { currentNetwork } = useCurrentNetwork();
-  const { balance } = useNativeBalance();
+  const currentNetwork = useNetworks((s) => s.current);
+  const balance = useBalances((s) => s.nativeBalance);
 
-  if (!currentNetwork) return null;
+  if (!currentNetwork || !balance) return null;
 
   return (
     <BalanceItem
@@ -46,21 +42,21 @@ function BalanceETH() {
 }
 
 function BalancesERC20() {
-  const { balances } = useTokensBalances();
+  const balances = useBalances((s) => s.erc20Balances);
   const { data: settings } = useInvoke<GeneralSettings>("settings_get");
 
-  const filteredBalances = (balances || []).filter(([, balance]) =>
-    settings?.hideEmptyTokens ? !!balance : true
+  const filteredBalances = (balances || []).filter(
+    (token) => !settings?.hideEmptyTokens || BigInt(token.balance) > 0
   );
 
   return (
     <>
-      {filteredBalances.map(([contract, balance, decimals, symbol]) => (
+      {filteredBalances.map(({ contract, balance, metadata }) => (
         <BalanceERC20
           key={contract}
-          balance={balance}
-          decimals={decimals}
-          symbol={symbol}
+          balance={BigInt(balance)}
+          decimals={metadata.decimals}
+          symbol={metadata.symbol}
         />
       ))}
     </>
@@ -96,7 +92,7 @@ function BalanceItem({ balance, decimals, symbol }: BalanceItemProps) {
     <ListItem>
       <ListItemAvatar>
         <Avatar>
-          <CryptoIcon ticker={symbol} />
+          <IconCrypto ticker={symbol} />
         </Avatar>
       </ListItemAvatar>
       <ListItemText secondary={symbol}>

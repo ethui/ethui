@@ -1,6 +1,5 @@
-import { useInvoke } from "../hooks/tauri";
-import { Network } from "../types";
-import Panel from "./Panel";
+import { useNetworks } from "../store";
+import { Panel } from "./";
 
 interface Props {
   children: React.ReactNode;
@@ -8,9 +7,9 @@ interface Props {
 }
 
 export function LivenetPlaceholder({ children, devOnly }: Props) {
-  const { data } = useInvoke<Network>("networks_get_current");
+  const chainId = useNetworks((s) => s.current?.chain_id);
 
-  if (!devOnly || data?.chain_id === 31337) {
+  if (!devOnly || chainId === 31337) {
     return <>{children}</>;
   }
 

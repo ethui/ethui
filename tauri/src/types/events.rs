@@ -23,6 +23,7 @@ pub struct Tx {
     pub data: Bytes,
     pub block_number: u64,
     pub position: Option<usize>,
+    pub status: u64,
 }
 
 #[derive(Debug)]
@@ -83,6 +84,7 @@ impl TryFrom<&SqliteRow> for Tx {
             data: Bytes::from_str(row.get("data")).unwrap(),
             block_number: row.get::<i64, _>("block_number") as u64,
             position: Some(row.get::<i32, _>("position") as usize),
+            status: row.get::<i32, _>("status") as u64,
         })
     }
 }

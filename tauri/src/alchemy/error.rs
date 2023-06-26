@@ -1,12 +1,11 @@
+use ethers::types::H256;
+
 use crate::app;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error(transparent)]
     DB(#[from] crate::db::Error),
-
-    #[error(transparent)]
-    Reqwest(#[from] reqwest::Error),
 
     #[error("IO error: {0}")]
     IO(#[from] std::io::Error),
@@ -28,6 +27,12 @@ pub enum Error {
 
     #[error(transparent)]
     JoinError(#[from] tokio::task::JoinError),
+
+    #[error(transparent)]
+    ProviderError(#[from] ethers::providers::ProviderError),
+
+    #[error("Transaction not found: {0}")]
+    TxNotFound(H256),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

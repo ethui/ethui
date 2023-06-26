@@ -6,12 +6,10 @@ import {
   Chip,
 } from "@mui/material";
 
-import { useInvoke } from "../hooks/tauri";
-import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
+import { useInvoke, useRefreshTransactions } from "../hooks";
+import { useNetworks } from "../store";
 import { ABIMatch, Address } from "../types";
-import { ABIForm } from "./ABIForm";
-import { AddressView } from "./AddressView";
-import Panel from "./Panel";
+import { ABIForm, AddressView, Panel } from "./";
 
 interface IContract {
   address: Address;
@@ -19,8 +17,11 @@ interface IContract {
 }
 
 export function Contracts() {
-  const { data: contracts, mutate } =
-    useInvoke<IContract[]>("db_get_contracts");
+  const chainId = useNetworks((s) => s.current?.chain_id);
+  const { data: contracts, mutate } = useInvoke<IContract[]>(
+    "db_get_contracts",
+    { chainId }
+  );
 
   useRefreshTransactions(mutate);
 

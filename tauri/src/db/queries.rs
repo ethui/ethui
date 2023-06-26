@@ -1,14 +1,14 @@
 use ethers_core::types::{Address, U256};
 use sqlx::{sqlite::SqliteRow, Row, Sqlite};
 
-use crate::types::events;
+use crate::types::{events, TokenMetadata};
 
 type Query<'a> = sqlx::query::Query<'a, Sqlite, sqlx::sqlite::SqliteArguments<'a>>;
 
 pub(super) fn insert_transaction(tx: &events::Tx, chain_id: u32) -> Query {
     sqlx::query(
-        r#" INSERT INTO transactions (hash, chain_id, from_address, to_address, block_number, position, value)
-        VALUES (?,?,?,?,?,?,?)
+        r#" INSERT INTO transactions (hash, chain_id, from_address, to_address, block_number, position, value, status)
+        VALUES (?,?,?,?,?,?,?,?)
         ON CONFLICT(hash) DO NOTHING "#,
     )
     .bind(format!("0x{:x}", tx.hash))
@@ -18,6 +18,7 @@ pub(super) fn insert_transaction(tx: &events::Tx, chain_id: u32) -> Query {
     .bind(tx.block_number as i64)
     .bind(tx.position.unwrap_or(0) as u32)
     .bind(tx.value.to_string())
+    .bind(tx.status as u32)
 }
 
 pub(super) fn insert_contract(tx: &events::ContractDeployed, chain_id: u32) -> Query {
@@ -51,31 +52,33 @@ pub(super) fn erc20_read_metadata<'a>(
 ) -> sqlx::query::Map<
     'a,
     Sqlite,
-    impl FnMut(<Sqlite as sqlx::Database>::Row) -> sqlx::Result<(u8, String)> + 'a,
+    impl FnMut(<Sqlite as sqlx::Database>::Row) -> sqlx::Result<TokenMetadata> + 'a,
     sqlx::sqlite::SqliteArguments<'a>,
 > {
     sqlx::query(
-        r#"SELECT decimals, symbol FROM tokens_metadata WHERE contract = ? AND chain_id = ?"#,
+        r#"SELECT decimals, name, symbol
+        FROM tokens_metadata
+        WHERE contract = ? AND chain_id = ?"#,
     )
     .bind(format!("0x{:x}", contract))
     .bind(chain_id)
-    .map(|row| (row.get::<u8, _>("decimals"), row.get::<String, _>("symbol")))
+    .map(|row| row.try_into().unwrap())
 }
 
 pub(super) fn update_erc20_metadata<'a>(
     address: Address,
     chain_id: u32,
-    symbol: String,
-    decimals: u8,
+    metadata: TokenMetadata,
 ) -> Query<'a> {
     sqlx::query(
-        r#" INSERT OR REPLACE INTO tokens_metadata (contract, chain_id, decimals, symbol)
-                        VALUES (?,?,?,?) "#,
+        r#" INSERT OR REPLACE INTO tokens_metadata (contract, chain_id, decimals, name,symbol)
+                        VALUES (?,?,?,?,?) "#,
     )
     .bind(format!("0x{:x}", address))
     .bind(chain_id)
-    .bind(decimals)
-    .bind(symbol)
+    .bind(metadata.decimals)
+    .bind(metadata.name)
+    .bind(metadata.symbol)
 }
 
 /// The horrible return type here can be aliased once `type_alias_impl_trait` is stabilized
@@ -134,4 +137,35 @@ pub(super) fn erc721_transfer<'a>(tx: &events::ERC721Transfer, chain_id: u32) ->
         .bind(format!("0x{:x}", tx.token_id))
         .bind(format!("0x{:x}", tx.to))
     }
+}
+
+pub(super) fn get_tip<'a>(
+    owner: Address,
+    chain_id: u32,
+) -> sqlx::query::Map<
+    'a,
+    Sqlite,
+    impl FnMut(<Sqlite as sqlx::Database>::Row) -> sqlx::Result<u64> + 'a,
+    sqlx::sqlite::SqliteArguments<'a>,
+> {
+    sqlx::query(r#"SELECT tip FROM tips WHERE owner = ? AND chain_id = ?"#)
+        .bind(format!("0x{:x}", owner))
+        .bind(chain_id)
+        .map(|r: SqliteRow| {
+            let tip_str = r
+                .get::<Option<&str>, _>("tip")
+                .unwrap_or("0x0")
+                .trim_start_matches("0x");
+            u64::from_str_radix(tip_str, 16).unwrap_or(0)
+        })
+}
+
+pub(super) fn set_tip<'a>(owner: Address, chain_id: u32, tip: u64) -> Query<'a> {
+    sqlx::query(
+        r#"INSERT OR REPLACE INTO tips (owner, chain_id, tip) 
+        VALUES (?,?,?) "#,
+    )
+    .bind(format!("0x{:x}", owner))
+    .bind(chain_id)
+    .bind(format!("0x{:x}", tip))
 }

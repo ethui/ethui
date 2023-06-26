@@ -1,43 +1,79 @@
-import { CallMade, NoteAdd, VerticalAlignBottom } from "@mui/icons-material";
+import { CallMade, CallReceived, NoteAdd } from "@mui/icons-material";
 import {
   Badge,
   Box,
+  CircularProgress,
   List,
   ListItem,
   ListItemAvatar,
   Stack,
   Typography,
 } from "@mui/material";
-import { createElement, useEffect } from "react";
-import useSWR from "swr";
-import { type TransactionReceipt, formatEther } from "viem";
+import { invoke } from "@tauri-apps/api/tauri";
+import { createElement, useState } from "react";
+import InfiniteScroll from "react-infinite-scroller";
+import { formatEther } from "viem";
 
-import { useAccount } from "../hooks";
-import { useInvoke } from "../hooks/tauri";
-import { useProvider } from "../hooks/useProvider";
-import { useRefreshTransactions } from "../hooks/useRefreshTransactions";
-import { Address, Tx } from "../types";
-import { AddressView } from "./AddressView";
-import { ContextMenu } from "./ContextMenu";
-import Panel from "./Panel";
+import { useRefreshTransactions } from "../hooks";
+import { useNetworks, useWallets } from "../store";
+import { Address, Paginated, Pagination, Tx } from "../types";
+import { AddressView, ContextMenu, Panel } from "./";
 
 export function Txs() {
-  const account = useAccount();
-  const { data: txs, mutate } = useInvoke<Tx[]>("db_get_transactions", {
-    address: account,
-  });
+  const account = useWallets((s) => s.address);
+  const chainId = useNetworks((s) => s.current?.chain_id);
 
-  useRefreshTransactions(mutate);
+  const [pages, setPages] = useState<Paginated<Tx>[]>([]);
+
+  const loadMore = () => {
+    let pagination: Pagination = {};
+    const last = pages?.at(-1)?.pagination;
+    if (!!last) {
+      pagination = last;
+      pagination.page = (pagination.page || 0) + 1;
+    }
+
+    invoke<Paginated<Tx>>("db_get_transactions", {
+      address: account,
+      chainId,
+      pagination,
+    }).then((page) => setPages([...pages, page]));
+  };
+
+  useRefreshTransactions(() => {
+    setPages([]);
+    loadMore();
+  });
 
   if (!account) return null;
 
+  const loader = (
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+      }}
+      key="loader"
+    >
+      <CircularProgress />
+    </Box>
+  );
+
   return (
     <Panel>
-      <List>
-        {(txs || []).map((tx) => (
-          <Receipt account={account} tx={tx} key={tx.hash} />
-        ))}
-      </List>
+      <InfiniteScroll
+        loadMore={loadMore}
+        hasMore={!pages.at(-1)?.last}
+        loader={loader}
+      >
+        <List key={"list"}>
+          {pages.flatMap((page) =>
+            page.items.map((tx) => (
+              <Receipt account={account} tx={tx} key={tx.hash} />
+            ))
+          )}
+        </List>
+      </InfiniteScroll>
     </Panel>
   );
 }
@@ -48,33 +84,19 @@ interface ReceiptProps {
 }
 
 function Receipt({ account, tx }: ReceiptProps) {
-  const provider = useProvider();
-  /// TODO: currently doing an RPC request per transaction, because we don't know the status
-  /// we need to remove this at some point
-  const { data: receipt, mutate } = useSWR(
-    !!provider && ["getTransactionReceipt", tx.hash],
-    ([, hash]) => provider?.getTransactionReceipt({ hash })
-  );
-
   const value = BigInt(tx.value);
-
-  useEffect(() => {
-    mutate();
-  }, [provider, mutate]);
-
-  if (!receipt) return null;
 
   return (
     <ListItem>
       <ListItemAvatar>
-        <Icon {...{ receipt, tx, account }} />
+        <Icon {...{ tx, account }} />
       </ListItemAvatar>
       <Box sx={{ flexGrow: 1 }}>
         <Stack>
           <Stack direction="row" spacing={1}>
-            <AddressView address={receipt.from} /> <span>→</span>
-            {receipt.to ? (
-              <AddressView address={receipt.to} />
+            <AddressView address={tx.from} /> <span>→</span>
+            {tx.to ? (
+              <AddressView address={tx.to} />
             ) : (
               <Typography component="span">Contract Deploy</Typography>
             )}
@@ -97,19 +119,18 @@ function Receipt({ account, tx }: ReceiptProps) {
 
 interface IconProps {
   account: Address;
-  receipt: TransactionReceipt;
   tx: Tx;
 }
 
-function Icon({ account, receipt, tx }: IconProps) {
-  const color = receipt.status === "success" ? "success" : "error";
+function Icon({ account, tx }: IconProps) {
+  const color = tx.status === 1 ? "success" : "error";
 
   let icon = CallMade;
 
-  if (tx.to == account) {
-    icon = VerticalAlignBottom;
-  } else if (!tx.to) {
+  if (!tx.to) {
     icon = NoteAdd;
+  } else if (tx.to.toLowerCase() == account.toLowerCase()) {
+    icon = CallReceived;
   }
 
   return <Badge>{createElement(icon, { color })}</Badge>;

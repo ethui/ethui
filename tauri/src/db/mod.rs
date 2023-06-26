@@ -1,18 +1,22 @@
 pub mod commands;
 mod error;
+mod pagination;
 mod queries;
 
 use std::{path::PathBuf, str::FromStr};
 
-use ethers::types::{Address, U256};
+use ethers::types::{Address, H256, U256};
 use serde::Serialize;
 use sqlx::{
     sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous},
     Row,
 };
 
-pub use self::error::{Error, Result};
-use crate::types::{events::Tx, Event};
+pub use self::{
+    error::{Error, Result},
+    pagination::{Paginated, Pagination},
+};
+use crate::types::{events::Tx, Event, TokenBalance, TokenMetadata};
 
 #[derive(Debug, Clone)]
 pub struct DB {
@@ -56,13 +60,10 @@ impl DB {
         &self,
         contract: Address,
         chain_id: u32,
-    ) -> Result<(u8, String)> {
-        let mut conn = self.tx().await?;
-        let meta = queries::erc20_read_metadata(contract, chain_id)
-            .fetch_one(&mut conn)
-            .await?;
-        conn.commit().await?;
-        Ok(meta)
+    ) -> Result<TokenMetadata> {
+        Ok(queries::erc20_read_metadata(contract, chain_id)
+            .fetch_one(self.pool())
+            .await?)
     }
 
     // TODO: Change this to an Into<T> of some kind, so we don't depend directly on AlchemyResponse here
@@ -88,12 +89,11 @@ impl DB {
         &self,
         address: Address,
         chain_id: u32,
-        symbol: String,
-        decimals: u8,
+        metadata: TokenMetadata,
     ) -> Result<()> {
         let mut conn = self.tx().await?;
 
-        queries::update_erc20_metadata(address, chain_id, symbol, decimals)
+        queries::update_erc20_metadata(address, chain_id, metadata)
             .execute(&mut conn)
             .await?;
 
@@ -168,22 +168,58 @@ impl DB {
         Ok(())
     }
 
-    async fn get_transactions(&self, chain_id: u32, from_or_to: Address) -> Result<Vec<Tx>> {
-        let res: Vec<_> = sqlx::query(
+    pub async fn transaction_exists(&self, chain_id: u32, hash: H256) -> Result<bool> {
+        let res = sqlx::query(
+            r#"SELECT COUNT(*) > 0 as result FROM transactions WHERE chain_id = ? AND hash = ?"#,
+        )
+        .bind(chain_id)
+        .bind(format!("0x{:x}", hash))
+        .map(|row| row.get("result"))
+        .fetch_one(self.pool())
+        .await?;
+
+        Ok(res)
+    }
+
+    async fn get_transactions(
+        &self,
+        chain_id: u32,
+        from_or_to: Address,
+        pagination: Pagination,
+    ) -> Result<Paginated<Tx>> {
+        let items: Vec<_> = sqlx::query(
             r#" SELECT *
             FROM transactions
             WHERE chain_id = ?
             AND (from_address = ? or to_address = ?) COLLATE NOCASE
-            ORDER BY block_number DESC, position DESC"#,
+            ORDER BY block_number DESC, position DESC
+            LIMIT ? OFFSET ?"#,
         )
         .bind(chain_id)
         .bind(format!("0x{:x}", from_or_to))
         .bind(format!("0x{:x}", from_or_to))
+        .bind(pagination.page_size)
+        .bind(pagination.offset())
         .map(|row| Tx::try_from(&row).unwrap())
         .fetch_all(self.pool())
         .await?;
 
-        Ok(res)
+        let total: u32 = sqlx::query(
+            r#"
+            SELECT COUNT(*) as total
+            FROM transactions
+            WHERE chain_id = ?
+            AND (from_address = ? or to_address = ?) COLLATE NOCASE
+            "#,
+        )
+        .bind(chain_id)
+        .bind(format!("0x{:x}", from_or_to))
+        .bind(format!("0x{:x}", from_or_to))
+        .map(|row| row.get("total"))
+        .fetch_one(self.pool())
+        .await?;
+
+        Ok(Paginated::new(items, pagination, total))
     }
 
     pub async fn get_contracts(&self, chain_id: u32) -> Result<Vec<StoredContract>> {
@@ -223,27 +259,38 @@ impl DB {
         &self,
         chain_id: u32,
         address: Address,
-    ) -> Result<Vec<(Address, U256, u8, String)>> {
+    ) -> Result<Vec<TokenBalance>> {
         let res: Vec<_> = sqlx::query(
-            r#" SELECT balances.contract, balances.balance, meta.decimals, meta.symbol
+            r#"SELECT balances.contract, balances.balance, meta.decimals, meta.name, meta.symbol
             FROM balances
-            INNER JOIN tokens_metadata AS meta ON meta.chain_id = balances.chain_id AND meta.contract =  balances.contract
+            INNER JOIN tokens_metadata AS meta
+              ON meta.chain_id = balances.chain_id AND meta.contract = balances.contract
             WHERE balances.chain_id = ? AND balances.owner = ? "#,
         )
         .bind(chain_id)
         .bind(format!("0x{:x}", address))
-        .map(|row| {
-            (
-                Address::from_str(&row.get::<String, _>("contract")).unwrap(),
-                U256::from_dec_str(row.get::<&str, _>("balance")).unwrap(),
-                row.get::<u8, _>("decimals"),
-                row.get::<String, _>("symbol")
-            )
-        })
+        .map(|row| row.try_into().unwrap())
         .fetch_all(self.pool())
         .await?;
 
         Ok(res)
+    }
+
+    pub async fn get_tip(&self, chain_id: u32, address: Address) -> Result<u64> {
+        let tip = queries::get_tip(address, chain_id)
+            .fetch_one(self.pool())
+            .await
+            .unwrap_or_default();
+
+        Ok(tip)
+    }
+
+    pub async fn set_tip(&self, chain_id: u32, address: Address, tip: u64) -> Result<()> {
+        queries::set_tip(address, chain_id, tip)
+            .execute(self.pool())
+            .await?;
+
+        Ok(())
     }
 
     pub async fn truncate_events(&self, chain_id: u32) -> Result<()> {

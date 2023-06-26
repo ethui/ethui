@@ -8,7 +8,6 @@ import {
   ListItemText,
   Paper,
   Typography,
-  useTheme,
 } from "@mui/material";
 import {
   ActionId,
@@ -20,8 +19,24 @@ import {
   KBarResults,
   KBarSearch,
   useMatches,
+  useRegisterActions,
 } from "kbar";
-import React, { ReactNode, forwardRef } from "react";
+import React, { forwardRef } from "react";
+
+import { useNetworks, useWallets } from "../store";
+import { useTheme } from "../store/theme";
+
+export function CommandBar() {
+  return (
+    <KBarProvider>
+      <KBarPortal>
+        <KBarPositioner>
+          <CommandBarInner />
+        </KBarPositioner>
+      </KBarPortal>
+    </KBarProvider>
+  );
+}
 
 function RenderResults() {
   const { results, rootActionId } = useMatches();
@@ -46,6 +61,42 @@ function RenderResults() {
         )
       }
     />
+  );
+}
+
+function CommandBarInner() {
+  const walletActions = useWallets((s) => s.actions);
+  const networkActions = useNetworks((s) => s.actions);
+  const [theme, themeActions] = useTheme((s) => [s.theme, s.actions]);
+
+  useRegisterActions(walletActions, [walletActions]);
+  useRegisterActions(networkActions, [networkActions]);
+  useRegisterActions(themeActions, [themeActions]);
+
+  return (
+    <Paper
+      component={KBarAnimator}
+      elevation={3}
+      sx={{
+        maxWidth: "600px",
+        width: "100%",
+        overflow: "hidden",
+      }}
+    >
+      <Box
+        component={KBarSearch}
+        sx={{
+          width: "100%",
+          outline: "none",
+          border: "none",
+          p: theme.spacing(2),
+          color: theme.palette.text.primary,
+          background: "transparent",
+          ...theme.typography.body1,
+        }}
+      />
+      <RenderResults />
+    </Paper>
   );
 }
 
@@ -98,44 +149,3 @@ const ResultItem = forwardRef(
 );
 
 ResultItem.displayName = "ResultItem";
-
-export function CommandBar({ children }: { children: ReactNode }) {
-  const theme = useTheme();
-
-  return (
-    <>
-      <KBarPortal>
-        <KBarPositioner>
-          <Paper
-            component={KBarAnimator}
-            elevation={3}
-            sx={{
-              maxWidth: "600px",
-              width: "100%",
-              overflow: "hidden",
-            }}
-          >
-            <Box
-              component={KBarSearch}
-              sx={{
-                width: "100%",
-                outline: "none",
-                border: "none",
-                p: theme.spacing(2),
-                color: theme.palette.text.primary,
-                background: "transparent",
-                ...theme.typography.body1,
-              }}
-            />
-            <RenderResults />
-          </Paper>
-        </KBarPositioner>
-      </KBarPortal>
-      {children}
-    </>
-  );
-}
-
-export function CommandBarProvider({ children }: { children: ReactNode }) {
-  return <KBarProvider>{children}</KBarProvider>;
-}

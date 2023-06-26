@@ -27,6 +27,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.1",
+    "react-infinite-scroller": "^1.2.6",
     "react-query": "^3.39.3",
     "swr": "^2.1.1",
     "truncate-eth-address": "^1.0.2",
@@ -35,7 +36,8 @@
     "vite": "^4.2.3",
     "wagmi": "^1.0.8",
     "wouter": "^2.10.0",
-    "zod": "^3.20.6"
+    "zod": "^3.20.6",
+    "zustand": "^4.3.8"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.5",
@@ -44,6 +46,7 @@
     "@types/node": "^18.7.10",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.10",
+    "@types/react-infinite-scroller": "^1.2.3",
     "@vitejs/plugin-react": "^3.0.0",
     "jsdom": "^21.1.1",
     "vitest": "^0.29.8"

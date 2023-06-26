@@ -44,8 +44,7 @@ pub enum Notify {
     NetworkChanged,
     TxsUpdated,
     PeersUpdated,
-    ERC20BalancesUpdated,
-    NativeBalanceUpdated,
+    BalancesUpdated,
 }
 
 impl Notify {
@@ -55,8 +54,7 @@ impl Notify {
             Self::NetworkChanged => "network-changed",
             Self::TxsUpdated => "txs-updated",
             Self::PeersUpdated => "peers-updated",
-            Self::ERC20BalancesUpdated => "erc20-balances-updated",
-            Self::NativeBalanceUpdated => "native-balance-updated",
+            Self::BalancesUpdated => "balances-updated",
         }
     }
 }
@@ -84,6 +82,7 @@ impl IronApp {
             .invoke_handler(tauri::generate_handler![
                 settings::commands::settings_get,
                 settings::commands::settings_set,
+                settings::commands::settings_set_dark_mode,
                 settings::commands::settings_set_alias,
                 settings::commands::settings_get_alias,
                 networks::commands::networks_get_list,
@@ -113,6 +112,7 @@ impl IronApp {
                 foundry::commands::foundry_get_abi,
                 alchemy::commands::alchemy_fetch_erc20_balances,
                 alchemy::commands::alchemy_fetch_native_balance,
+                alchemy::commands::alchemy_fetch_transactions,
                 rpc::commands::rpc_send_transaction,
             ])
             .setup(|app| {

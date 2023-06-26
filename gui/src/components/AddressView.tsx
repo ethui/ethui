@@ -6,9 +6,8 @@ import { FieldValues, useForm } from "react-hook-form";
 import truncateEthAddress from "truncate-eth-address";
 import { z } from "zod";
 
-import { useInvoke } from "../hooks/tauri";
-import { ContextMenu } from "./ContextMenu";
-import { Modal } from "./Modal";
+import { useInvoke } from "../hooks";
+import { ContextMenu, Modal } from "./";
 
 interface Props {
   address: string;

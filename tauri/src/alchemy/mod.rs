@@ -2,26 +2,27 @@ pub mod commands;
 mod error;
 mod global;
 mod types;
+mod utils;
 
-use std::{collections::HashMap, sync::Arc};
+use std::{collections::HashMap, time::Duration};
 
-use ethers::providers::{Http, Middleware, Provider};
+use ethers::providers::{
+    Http, HttpRateLimitRetryPolicy, Middleware, Provider, RetryClient, RetryClientBuilder,
+};
 use ethers_core::types::{Address, U256};
-use futures::{stream, StreamExt};
+use futures::future;
 use once_cell::sync::Lazy;
 use serde_json::json;
 use tokio::sync::mpsc;
-use types::Balances;
+use types::{Balances, Transfers};
 use url::Url;
 
 pub use self::error::{Error, Result};
 use crate::{
-    abis::ERC20Token,
     app::{self, Notify},
     db::DB,
-    networks::Networks,
     settings::Settings,
-    types::{ChecksummedAddress, GlobalState, Json},
+    types::{ChecksummedAddress, GlobalState},
 };
 
 static ENDPOINTS: Lazy<HashMap<u32, Url>> = Lazy::new(|| {
@@ -51,25 +52,20 @@ impl Alchemy {
     /// fetches ERC20 balances for a user/chain_id
     /// updates the DB, and notifies the UI
     async fn fetch_erc20_balances(&self, chain_id: u32, address: ChecksummedAddress) -> Result<()> {
-        let res: Balances = self
-            .request(
-                chain_id,
-                json!({
-                    "jsonrpc": "2.0",
-                    "method": "alchemy_getTokenBalances",
-                    "params": [address, "erc20"]
-                }),
-            )
+        let client = self.client(chain_id).await?;
+
+        let res: Balances = client
+            .request("alchemy_getTokenBalances", [&address.to_string(), "erc20"])
             .await?;
         let balances: Vec<(Address, U256)> =
             res.token_balances.into_iter().map(Into::into).collect();
 
-        self.fetch_erc20_metadata(chain_id, balances.clone()).await;
+        utils::fetch_erc20_metadata(balances.clone(), client, chain_id, &self.db).await?;
 
         self.db
             .save_erc20_balances(chain_id, res.address, balances)
             .await?;
-        self.window_snd.send(Notify::ERC20BalancesUpdated.into())?;
+        self.window_snd.send(Notify::BalancesUpdated.into())?;
 
         Ok(())
     }
@@ -81,59 +77,79 @@ impl Alchemy {
         self.db
             .save_native_balance(balance, chain_id, address)
             .await?;
-        self.window_snd.send(Notify::NativeBalanceUpdated.into())?;
+        self.window_snd.send(Notify::BalancesUpdated.into())?;
         Ok(())
     }
 
-    async fn fetch_erc20_metadata(&self, chain_id: u32, balances: Vec<(Address, U256)>) {
-        let networks = Networks::read().await;
-        let provider = networks.get_current_provider();
-        let len = balances.len();
+    async fn fetch_transactions(&self, chain_id: u32, address: Address) -> Result<()> {
+        let client = self.client(chain_id).await?;
 
-        let res = stream::iter(balances)
-            .map(|(address, _)| {
-                let client = Arc::new(provider.clone());
-                let db = self.db.clone();
-                tokio::spawn(async move {
-                    let metas = db.get_erc20_metadata(address, chain_id).await;
-                    match metas {
-                        Ok(_) => {}
-                        Err(_) => {
-                            let contract = ERC20Token::new(address, client.clone());
-                            let symbol = contract.symbol().call().await.unwrap_or_default();
-                            let decimals = contract.decimals().call().await.unwrap_or_default();
-                            db.save_erc20_metadata(address, chain_id, symbol, decimals)
-                                .await
-                                .unwrap();
-                        }
-                    }
-                })
-            })
-            .buffer_unordered(len);
+        let tip = self.db.get_tip(chain_id, address).await?;
+        let latest = client.get_block_number().await?;
 
-        res.for_each(|f| async move { f.unwrap() }).await;
+        if tip.saturating_sub(1) == latest.as_u64() {
+            return Ok(());
+        }
+
+        let outgoing: Transfers = (client
+            .request(
+                "alchemy_getAssetTransfers",
+                json!([{
+                    "fromBlock": format!("0x{:x}", tip + 1),
+                    "toBlock": format!("0x{:x}",latest),
+                    "fromAddress": address,
+                    "category": ["external"],
+                }]),
+            )
+            .await)?;
+
+        let incoming: Transfers = (client
+            .request(
+                "alchemy_getAssetTransfers",
+                json!([{
+                    "fromBlock": format!("0x{:x}", tip + 1),
+                    "toBlock": format!("0x{:x}",latest),
+                    "toAddress": address,
+                    "category": ["external"],
+                }]),
+            )
+            .await)?;
+
+        let txs: Vec<_> = future::try_join_all(
+            outgoing
+                .transfers
+                .into_iter()
+                .chain(incoming.transfers.into_iter())
+                .map(|transfer| utils::transfer_into_tx(transfer, &client, chain_id, &self.db)),
+        )
+        .await?
+        .into_iter()
+        .flatten()
+        .collect();
+
+        self.db.save_events(chain_id, txs).await?;
+        self.db.set_tip(chain_id, address, latest.as_u64()).await?;
+        self.window_snd.send(Notify::TxsUpdated.into())?;
+
+        Ok(())
     }
 
-    async fn request<R>(&self, chain_id: u32, payload: Json) -> Result<R>
-    where
-        R: serde::de::DeserializeOwned,
-    {
-        let client = reqwest::Client::new();
-        let res: serde_json::Value = client
-            .post(self.endpoint(chain_id).await?)
-            .json(&payload)
-            .send()
-            .await?
-            .json()
-            .await?;
-
-        Ok(serde_json::from_value(res["result"].clone())?)
-    }
-
-    async fn client(&self, chain_id: u32) -> Result<Provider<Http>> {
+    async fn client(&self, chain_id: u32) -> Result<Provider<RetryClient<Http>>> {
         let endpoint = self.endpoint(chain_id).await?;
+        let http = Http::new(endpoint);
 
-        Ok(Provider::<Http>::try_from(endpoint.as_str())?)
+        let policy = Box::<HttpRateLimitRetryPolicy>::default();
+
+        let res = RetryClientBuilder::default()
+            .rate_limit_retries(10)
+            .timeout_retries(3)
+            .initial_backoff(Duration::from_millis(500))
+            .compute_units_per_second(300)
+            .build(http, policy);
+
+        let provider = Provider::new(res);
+
+        Ok(provider)
     }
 
     async fn endpoint(&self, chain_id: u32) -> Result<Url> {

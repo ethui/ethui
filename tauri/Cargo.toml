@@ -49,7 +49,6 @@ futures = "0.3.28"
 regex = "1.8.1"
 anyhow = "1.0.71"
 secrets = { version = "1.2.0", features = ["use-libsodium-sys"] }
-reqwest = { version = "0.11", features = ["json", "tokio-rustls"] }
 chacha20poly1305 = "0.10.1"
 rust-argon2 = "1.0.0"
 aead = { version = "0.5.2", features = ["stream"] }
