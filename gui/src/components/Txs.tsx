@@ -23,7 +23,6 @@ export function Txs() {
     address: account,
     chainId,
   });
-  console.log(txs);
 
   useRefreshTransactions(mutate);
 
