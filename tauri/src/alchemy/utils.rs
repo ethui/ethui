@@ -5,6 +5,7 @@ use ethers::{
     types::H256,
 };
 
+use super::{types::Transfer, Error, Result};
 use crate::{
     db::DB,
     foundry::calculate_code_hash,
@@ -13,8 +14,6 @@ use crate::{
         Event,
     },
 };
-
-use super::{types::Transfer, Error, Result};
 
 pub(super) async fn transfer_into_tx(
     transfer: Transfer,
@@ -30,7 +29,7 @@ pub(super) async fn transfer_into_tx(
         Transfer::Erc1155(data) => data,
     };
 
-    let hash = H256::from_str(data.unique_id.split(":").collect::<Vec<_>>()[0]).unwrap();
+    let hash = H256::from_str(data.unique_id.split(':').collect::<Vec<_>>()[0]).unwrap();
 
     let mut res = vec![];
     if db.transaction_exists(chain_id, hash).await? {
@@ -40,11 +39,11 @@ pub(super) async fn transfer_into_tx(
     let tx = client
         .get_transaction(hash)
         .await?
-        .ok_or(Error::TxNotFound(hash.into()))?;
+        .ok_or(Error::TxNotFound(hash))?;
     let receipt = client
         .get_transaction_receipt(hash)
         .await?
-        .ok_or(Error::TxNotFound(hash.into()))?;
+        .ok_or(Error::TxNotFound(hash))?;
 
     res.push(
         Tx {

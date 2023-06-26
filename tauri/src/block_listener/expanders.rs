@@ -6,6 +6,7 @@ use ethers::{
 };
 use futures::future::join_all;
 
+use super::{Error, Result};
 use crate::{
     foundry::calculate_code_hash,
     types::{
@@ -13,8 +14,6 @@ use crate::{
         Event,
     },
 };
-
-use super::{Error, Result};
 
 pub(super) async fn expand_traces(traces: Vec<Trace>, provider: &Provider<Http>) -> Vec<Event> {
     let result = traces.into_iter().map(|t| expand_trace(t, provider));
