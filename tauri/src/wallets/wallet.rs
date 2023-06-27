@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 use enum_dispatch::enum_dispatch;
-use ethers_core::k256::ecdsa::SigningKey;
+use ethers::core::k256::ecdsa::SigningKey;
 use serde::{Deserialize, Serialize};
 
 use super::hd_wallet::HDWallet;

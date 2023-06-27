@@ -2834,7 +2834,6 @@ dependencies = [
  "enum_dispatch",
  "env_logger",
  "ethers",
- "ethers-core",
  "eyre",
  "fix-path-env",
  "futures",

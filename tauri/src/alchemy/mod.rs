@@ -6,10 +6,10 @@ mod utils;
 
 use std::{collections::HashMap, time::Duration};
 
+use ethers::core::types::{Address, U256};
 use ethers::providers::{
     Http, HttpRateLimitRetryPolicy, Middleware, Provider, RetryClient, RetryClientBuilder,
 };
-use ethers_core::types::{Address, U256};
 use futures::future;
 use once_cell::sync::Lazy;
 use serde_json::json;
