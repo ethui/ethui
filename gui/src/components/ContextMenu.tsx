@@ -51,22 +51,24 @@ export function ContextMenu({ children, sx, copy, explorer, actions }: Props) {
   const onContextCopy = () => copyToClipboard(copy);
 
   const onCopyText = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
     event.preventDefault();
     copyToClipboard(copy);
   };
 
   const onCloseMenu = () => setContextMenu(null);
 
-  const onContextMenu = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const onContextMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    event.preventDefault();
     setContextMenu(null);
 
     setContextMenu(
       contextMenu === null
         ? {
-            target: e.currentTarget,
-            mouseX: e.clientX + 2,
-            mouseY: e.clientY - 6,
+            target: event.currentTarget,
+            mouseX: event.clientX + 2,
+            mouseY: event.clientY - 6,
           }
         : null
     );
@@ -76,6 +78,7 @@ export function ContextMenu({ children, sx, copy, explorer, actions }: Props) {
     e: MouseEvent<HTMLAnchorElement>,
     action: () => unknown
   ) => {
+    e.stopPropagation();
     e.preventDefault();
     setContextMenu(null);
     action();
