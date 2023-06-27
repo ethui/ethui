@@ -15,6 +15,10 @@ export function Modal({ children, sx, ...props }: Props) {
       {...props}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+      }}
     >
       <Paper sx={style({ sx })}>{children}</Paper>
     </MuiModal>
