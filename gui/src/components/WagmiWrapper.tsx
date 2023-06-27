@@ -24,21 +24,22 @@ type WagmiConfig = Config<
 >;
 
 export function WagmiWrapper({ children }: Props) {
-  const networks = useNetworks((s) => s.networks);
+  const network = useNetworks((s) => s.current);
 
-  if (!networks) return null;
+  if (!network) return null;
 
   const { publicClient, webSocketPublicClient } = configureChains(
-    networks.map(buildChain),
+    [buildChain(network)],
     [
       jsonRpcProvider({
-        rpc: (chain: Chain) => ({
-          http: networks.find((n) => n.chain_id === chain.id)?.http_url || "",
+        rpc: (_chain: Chain) => ({
+          http: network.http_url,
         }),
       }),
     ]
   );
   const config = createConfig({
+    autoConnect: true,
     publicClient,
     webSocketPublicClient,
   });
@@ -55,7 +56,7 @@ function buildChain(network: Network): Chain {
   return {
     id: network.chain_id,
     network: network.name,
-    name: network.name,
+    name: "Ethereum",
     nativeCurrency: {
       name: "Ether",
       symbol: network.currency,
