@@ -1,8 +1,5 @@
 import { CallMade, CallReceived, NoteAdd } from "@mui/icons-material";
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Badge,
   Box,
   CircularProgress,
@@ -75,13 +72,13 @@ export function Txs() {
         hasMore={!pages.at(-1)?.last}
         loader={loader}
       >
-        <Stack>
+        <List key={"list"}>
           {pages.flatMap((page) =>
             page.items.map((tx) => (
               <Receipt account={account} tx={tx} key={tx.hash} />
             ))
           )}
-        </Stack>
+        </List>
       </InfiniteScroll>
     </Panel>
   );
@@ -96,36 +93,33 @@ function Receipt({ account, tx }: ReceiptProps) {
   const value = BigInt(tx.value);
 
   return (
-    <Accordion>
-      <AccordionSummary>
-        <ListItemAvatar>
-          <Icon {...{ tx, account }} />
-        </ListItemAvatar>
-        <Box sx={{ flexGrow: 1 }}>
-          <Stack>
-            <Stack direction="row" spacing={1}>
-              <AddressView address={tx.from} /> <span>→</span>
-              {tx.to ? (
-                <AddressView address={tx.to} />
-              ) : (
-                <Typography component="span">Contract Deploy</Typography>
-              )}
-            </Stack>
-            <Typography variant="caption" fontSize="xl">
-              Block #{tx.blockNumber?.toLocaleString()}
-            </Typography>
+    <ListItem>
+      <ListItemAvatar>
+        <Icon {...{ tx, account }} />
+      </ListItemAvatar>
+      <Box sx={{ flexGrow: 1 }}>
+        <Stack>
+          <Stack direction="row" spacing={1}>
+            <AddressView address={tx.from} /> <span>→</span>
+            {tx.to ? (
+              <AddressView address={tx.to} />
+            ) : (
+              <Typography component="span">Contract Deploy</Typography>
+            )}
           </Stack>
-        </Box>
-        <Box>
-          {value > 0n && (
-            <ContextMenu copy={value.toString()}>
-              {formatEther(value)} Ξ
-            </ContextMenu>
-          )}
-        </Box>
-      </AccordionSummary>
-      <AccordionDetails>TODO</AccordionDetails>
-    </Accordion>
+          <Typography variant="caption" fontSize="xl">
+            Block #{tx.blockNumber?.toLocaleString()}
+          </Typography>
+        </Stack>
+      </Box>
+      <Box>
+        {value > 0n && (
+          <ContextMenu copy={value.toString()}>
+            {formatEther(value)} Ξ
+          </ContextMenu>
+        )}
+      </Box>
+    </ListItem>
   );
 }
 
