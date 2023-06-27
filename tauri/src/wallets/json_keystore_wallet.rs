@@ -2,8 +2,8 @@ use std::time::Duration;
 use std::{fs::File, io::BufReader, path::PathBuf, str::FromStr, sync::Arc};
 
 use async_trait::async_trait;
+use ethers::core::{k256::ecdsa::SigningKey, types::Address};
 use ethers::signers::{self, Signer};
-use ethers_core::{k256::ecdsa::SigningKey, types::Address};
 use secrets::SecretVec;
 use tokio::sync::{Mutex, RwLock};
 use tokio::task::JoinHandle;

@@ -1,8 +1,8 @@
 use std::{sync::Arc, time::Duration};
 
 use async_trait::async_trait;
+use ethers::core::k256::ecdsa::SigningKey;
 use ethers::signers::{self, coins_bip39::English, MnemonicBuilder, Signer};
-use ethers_core::k256::ecdsa::SigningKey;
 use secrets::SecretVec;
 use tokio::{
     sync::{Mutex, RwLock},

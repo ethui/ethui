@@ -2,8 +2,8 @@ use std::str::FromStr;
 
 use async_trait::async_trait;
 use coins_bip32::path::DerivationPath;
+use ethers::core::k256::ecdsa::SigningKey;
 use ethers::signers::{coins_bip39::English, MnemonicBuilder, Signer};
-use ethers_core::k256::ecdsa::SigningKey;
 use serde::{Deserialize, Serialize};
 
 use super::{utils, wallet::WalletCreate, Result, Wallet, WalletControl};

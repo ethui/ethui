@@ -9,7 +9,7 @@ use std::{
     str::FromStr,
 };
 
-use ethers_core::types::Address;
+use ethers::core::types::Address;
 use serde::{Deserialize, Serialize};
 
 pub use self::error::{Error, Result};

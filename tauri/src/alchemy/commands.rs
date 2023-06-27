@@ -1,4 +1,4 @@
-use ethers_core::types::Address;
+use ethers::core::types::Address;
 
 use super::{Alchemy, Result};
 use crate::types::{ChecksummedAddress, GlobalState};

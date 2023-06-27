@@ -6,7 +6,7 @@
 /// the ChaCha20poly1305 scheme to encrypt the data.
 use aead::{KeyInit, OsRng};
 use chacha20poly1305::XChaCha20Poly1305;
-use ethers_core::rand::RngCore;
+use ethers::core::rand::RngCore;
 use zeroize::Zeroize;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]

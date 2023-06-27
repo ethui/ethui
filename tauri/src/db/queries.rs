@@ -1,4 +1,4 @@
-use ethers_core::types::{Address, U256};
+use ethers::core::types::{Address, U256};
 use sqlx::{sqlite::SqliteRow, Row, Sqlite};
 
 use crate::types::{events, TokenMetadata};
