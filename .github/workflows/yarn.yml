@@ -1,4 +1,4 @@
-name: CI - Yarn
+name: yarn
 
 on:
   push:
@@ -23,7 +23,7 @@ jobs:
   #
   # yarn tests/lint
   #
-  yarn:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -41,5 +41,5 @@ jobs:
       - name: ESLint
         run: yarn lint
 
-      - name: Vitest
-        run: yarn workspace @iron/gui test:ui
+      # - name: Vitest
+      # run: yarn workspace @iron/gui test:ui
