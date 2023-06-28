@@ -98,7 +98,7 @@ impl Alchemy {
                     "fromBlock": format!("0x{:x}", tip + 1),
                     "toBlock": format!("0x{:x}",latest),
                     "fromAddress": address,
-                    "category": ["external"],
+                    "category": ["external", "internal", "erc20", "erc721", "erc1155"],
                 }]),
             )
             .await)?;
@@ -110,7 +110,7 @@ impl Alchemy {
                     "fromBlock": format!("0x{:x}", tip + 1),
                     "toBlock": format!("0x{:x}",latest),
                     "toAddress": address,
-                    "category": ["external"],
+                    "category": ["external", "internal", "erc20", "erc721", "erc1155"],
                 }]),
             )
             .await)?;
