@@ -10,7 +10,7 @@ use ethers::core::types::{Address, U256};
 use ethers::providers::{
     Http, HttpRateLimitRetryPolicy, Middleware, Provider, RetryClient, RetryClientBuilder,
 };
-use futures::future;
+use futures::{stream, StreamExt};
 use once_cell::sync::Lazy;
 use serde_json::json;
 use tokio::sync::mpsc;
@@ -115,21 +115,18 @@ impl Alchemy {
             )
             .await)?;
 
-        let txs: Vec<_> = future::try_join_all(
-            outgoing
-                .transfers
-                .into_iter()
-                .chain(incoming.transfers.into_iter())
-                .map(|transfer| utils::transfer_into_tx(transfer, &client, chain_id, &self.db)),
-        )
-        .await?
-        .into_iter()
-        .flatten()
-        .collect();
+        let mut chunks = stream::iter(outgoing.transfers.into_iter().chain(incoming.transfers))
+            .map(|transfer| utils::transfer_into_tx(transfer, &client, chain_id, &self.db))
+            .buffer_unordered(1)
+            .chunks(20);
 
-        self.db.save_events(chain_id, txs).await?;
-        self.db.set_tip(chain_id, address, latest.as_u64()).await?;
-        self.window_snd.send(Notify::TxsUpdated.into())?;
+        while let Some(chunk) = chunks.next().await {
+            let txs = chunk.into_iter().filter_map(|r| r.ok()).flatten().collect();
+
+            self.db.save_events(chain_id, txs).await?;
+            self.db.set_tip(chain_id, address, latest.as_u64()).await?;
+            self.window_snd.send(Notify::TxsUpdated.into())?;
+        }
 
         Ok(())
     }
