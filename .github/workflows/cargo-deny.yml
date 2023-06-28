@@ -26,21 +26,20 @@ jobs:
     continue-on-error: ${{ matrix.checks == 'advisories' }}
 
     steps:
+      - uses: actions/checkout@v3
 
-    - uses: actions/checkout@v3
+      # check if cargo.lock changed
+      # only needed in advisories
+      - uses: dorny/paths-filter@v2
+        id: lock
+        with:
+          filters: |
+            src:
+              - '**/Cargo.lock'
+        if: ${{ matrix.checks == 'advisories' }}
 
-    # check if cargo.lock changed
-    # only needed in advisories
-    - uses: dorny/paths-filter@v2
-      id: lock
-      with:
-        filters: |
-          src:
-            - '**/Cargo.lock'
-      if: ${{ matrix.checks == 'advisories' }}
-
-    - uses: EmbarkStudios/cargo-deny-action@v1
-      with:
-        command: check ${{ matrix.checks }}
-      # conditionally run advisories only if lock changed
-      if: ${{ matrix.checks != 'advisories' || steps.lock.outputs.src == 'true' }}
+      - uses: EmbarkStudios/cargo-deny-action@v1
+        with:
+          command: check ${{ matrix.checks }}
+        # conditionally run advisories only if lock changed
+        if: ${{ matrix.checks != 'advisories' || steps.lock.outputs.src == 'true' }}
