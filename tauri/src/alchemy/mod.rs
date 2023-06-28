@@ -6,11 +6,11 @@ mod utils;
 
 use std::{collections::HashMap, time::Duration};
 
+use ethers::core::types::{Address, U256};
 use ethers::providers::{
     Http, HttpRateLimitRetryPolicy, Middleware, Provider, RetryClient, RetryClientBuilder,
 };
-use ethers_core::types::{Address, U256};
-use futures::{future, stream, StreamExt};
+use futures::{stream, StreamExt};
 use once_cell::sync::Lazy;
 use serde_json::json;
 use tokio::sync::mpsc;

@@ -1,8 +1,8 @@
+use ethers::core::k256::ecdsa::SigningKey;
 use ethers::{
     prelude::{signer::SignerMiddlewareError, *},
     signers,
 };
-use ethers_core::k256::ecdsa::SigningKey;
 use jsonrpc_core::ErrorCode;
 
 #[derive(thiserror::Error, Debug)]

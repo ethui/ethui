@@ -1,11 +1,11 @@
 use std::str::FromStr;
 
+use ethers::core::k256::ecdsa::SigningKey;
 use ethers::{
     prelude::*,
     signers::Wallet,
     types::{serde_helpers::StringifiedNumeric, transaction::eip2718::TypedTransaction},
 };
-use ethers_core::k256::ecdsa::SigningKey;
 
 use super::{Error, Result};
 use crate::dialogs::{Dialog, DialogMsg};
