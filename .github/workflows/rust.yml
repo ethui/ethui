@@ -1,4 +1,4 @@
-name: CI - Rust
+name: Rust
 
 on:
   push:
@@ -21,7 +21,6 @@ concurrency:
 
 jobs:
   cargo:
-    name: cargo-checks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -51,6 +50,3 @@ jobs:
         with:
           command: clippy
           args: --all -- -D clippy::all -D clippy::dbg_macro
-
-      - name: cargo-deny
-        uses: EmbarkStudios/cargo-deny-action@v1

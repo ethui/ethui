@@ -1,4 +1,4 @@
-name: CI - Yarn
+name: Yarn
 
 on:
   push:
