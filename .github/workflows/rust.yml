@@ -50,7 +50,6 @@ jobs:
         with:
           command: clippy
           args: --all -- -D clippy::all -D clippy::dbg_macro
-        
 
   cargo-deny:
     runs-on: ubuntu-latest
