@@ -59,7 +59,7 @@ jobs:
           - advisories
           - bans licenses sources
 
-    name: ${{ matrix.checks }}
+    name: cargo-deny (${{ matrix.checks }})
 
     # Prevent sudden announcement of a new advisory from failing ci:
     continue-on-error: ${{ matrix.checks == 'advisories' }}
