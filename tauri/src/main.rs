@@ -17,6 +17,7 @@ mod settings;
 mod types;
 mod wallets;
 mod ws;
+mod simulator;
 
 use alchemy::Alchemy;
 use db::DB;

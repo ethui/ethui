@@ -28,7 +28,7 @@ tokio = { version = "1.26.0", features = ["full", "sync"] }
 tokio-tungstenite = "0.18.0"
 tungstenite = "0.18.0"
 thiserror = "1.0.40"
-ethers = { version = "2.0.0", features = ["ws"] }
+ethers = { git = "https://github.com/gakonst/ethers-rs", features = ["ws"] }
 jsonrpc-core = "18.0.0"
 sqlx = { version = "0.6.3", features = [
   "runtime-tokio-rustls",
@@ -52,6 +52,9 @@ chacha20poly1305 = "0.10.1"
 rust-argon2 = "1.0.0"
 aead = { version = "0.5.2", features = ["stream"] }
 zeroize = "1.6.0"
+revm = "3.1.1"
+foundry-evm = { git = "https://github.com/foundry-rs/foundry", default-features = true }
+foundry-common = { git = "https://github.com/foundry-rs/foundry", default-features = true }
 
 [features]
 default = []
