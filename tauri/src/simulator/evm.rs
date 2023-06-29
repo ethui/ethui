@@ -1,5 +1,5 @@
 use super::error::{
-    Error::{EvmCallRaw, EvmEnv, EvmRevert},
+    Error::{CallRaw, Env, Revert},
     Result,
 };
 use ethers::types::{Address, U256};
@@ -10,15 +10,15 @@ use revm::primitives::AccountInfo;
 use url::Url;
 
 #[derive(Debug, Clone)]
-pub struct EVM(Executor);
+pub struct Evm(Executor);
 
-impl EVM {
+impl Evm {
     pub fn db(&self) -> &Backend {
         self.0.backend()
     }
 }
 
-impl EVM {
+impl Evm {
     pub fn new(
         fork_url: Url,
         fork_block_number: Option<u64>,
@@ -31,7 +31,7 @@ impl EVM {
             ..Default::default()
         };
 
-        let env = evm_opts.evm_env_blocking().map_err(|e| EvmEnv(e))?;
+        let env = evm_opts.evm_env_blocking().map_err(Env)?;
         let fork_opts = Some(CreateFork {
             url: fork_url.to_string(),
             enable_caching: true,
@@ -47,7 +47,7 @@ impl EVM {
 
         let executor = builder.build(db);
 
-        Ok(EVM(executor))
+        Ok(Evm(executor))
     }
 
     pub fn basic(&self, address: Address) -> Result<Option<AccountInfo>> {
@@ -72,10 +72,10 @@ impl EVM {
                 data.unwrap_or_default().into(),
                 value.unwrap_or_default(),
             )
-            .map_err(|e| EvmCallRaw(e))?;
+            .map_err(CallRaw)?;
 
         if res.reverted {
-            return Err(EvmRevert(res.exit_reason));
+            return Err(Revert(res.exit_reason));
         }
 
         Ok(res)

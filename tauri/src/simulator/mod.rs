@@ -3,7 +3,7 @@ mod evm;
 
 use std::str::FromStr;
 
-use evm::EVM;
+use evm::Evm;
 
 use url::Url;
 
@@ -40,7 +40,7 @@ pub fn simulate(
 ) -> Result<CallResult> {
     let gas_limit = 18446744073709551615;
 
-    let mut evm = EVM::new(fork_url, fork_block_number, gas_limit, true)?;
+    let mut evm = Evm::new(fork_url, fork_block_number, gas_limit, true)?;
 
     let info = evm.basic(from)?;
     let balance_before: U256 = info.unwrap().balance.into();
