@@ -6,7 +6,8 @@ import {
   ListItemText,
   Stack,
 } from "@mui/material";
-import { formatUnits } from "viem";
+import truncateEthAddress from "truncate-eth-address";
+import { Address, formatUnits } from "viem";
 
 import { useInvoke } from "../hooks";
 import { useBalances, useNetworks } from "../store";
@@ -54,6 +55,7 @@ function BalancesERC20() {
       {filteredBalances.map(({ contract, balance, metadata }) => (
         <BalanceERC20
           key={contract}
+          contract={contract}
           balance={BigInt(balance)}
           decimals={metadata.decimals}
           symbol={metadata.symbol}
@@ -64,26 +66,41 @@ function BalancesERC20() {
 }
 
 function BalanceERC20({
+  contract,
   balance,
   decimals,
   symbol,
 }: {
+  contract: Address;
   balance: bigint;
   decimals: number;
   symbol: string;
 }) {
   if (!symbol || !decimals) return null;
 
-  return <BalanceItem balance={balance} decimals={decimals} symbol={symbol} />;
+  return (
+    <BalanceItem
+      contract={contract}
+      balance={balance}
+      decimals={decimals}
+      symbol={symbol}
+    />
+  );
 }
 
 interface BalanceItemProps {
+  contract?: Address;
   balance: bigint;
   decimals: number;
   symbol: string;
 }
 
-function BalanceItem({ balance, decimals, symbol }: BalanceItemProps) {
+function BalanceItem({
+  balance,
+  decimals,
+  symbol,
+  contract,
+}: BalanceItemProps) {
   const minimum = 0.001;
   // Some tokens respond with 1 decimals, that breaks this truncatedBalance without the Math.ceil
   const truncatedBalance =
@@ -96,7 +113,11 @@ function BalanceItem({ balance, decimals, symbol }: BalanceItemProps) {
           <IconCrypto ticker={symbol} />
         </Avatar>
       </ListItemAvatar>
-      <ListItemText secondary={symbol}>
+      <ListItemText
+        secondary={`${symbol} ${
+          contract && `(${truncateEthAddress(contract)})`
+        }`}
+      >
         <CopyToClipboard label={balance.toString()}>
           {truncatedBalance > 0
             ? formatUnits(truncatedBalance, decimals)
