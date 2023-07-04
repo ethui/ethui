@@ -50,9 +50,21 @@ export const passwordFormSchema = z
     message: "The two passwords don't match",
   });
 
-export const mnemonicSchema = z.string().regex(/^(\w+\s){11}\w+$/, {
-  message: "Must be a 12-word phrase",
-});
+export const mnemonicSchema = z
+  .string()
+  .regex(/^([a-z]+\s)+[a-z]+$/, {
+    message: "Must be a list of english words",
+  })
+  .refine(
+    (data) => {
+      const words = data.split(/\s+/).length;
+      return [12, 15, 18, 21, 24].includes(words);
+    },
+    {
+      message:
+        "Invalid number of words. Needs to be 12, 15, 18, 21 or 24 words long",
+    }
+  );
 
 export const derivationPathSchema = z
   .string()
