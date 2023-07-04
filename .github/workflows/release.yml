@@ -25,7 +25,7 @@ jobs:
         name: get tag
         run: |
           echo "tag=$(gh api /repos/iron-wallet/iron/releases |\
-            jq '.[] | select(.draft == true) | .tag_name')" \
+            jq -r '.[] | select(.draft == true) | .tag_name')" \
             >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -35,7 +35,7 @@ jobs:
         name: get release ID
         run: |
           echo "id=$(gh api /repos/iron-wallet/iron/releases |\
-            jq '.[] | select(.draft == true) | .id')" \
+            jq -r '.[] | select(.draft == true) | .id')" \
             >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
