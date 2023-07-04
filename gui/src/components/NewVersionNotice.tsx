@@ -7,7 +7,7 @@ import {
   SnackbarOrigin,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import packageJson from "../../../package.json";
 
@@ -23,16 +23,20 @@ export async function getLatestVersion() {
   return json[0].tag_name;
 }
 
-const latestVersion = await getLatestVersion();
-const currentVersion = `v${packageJson.version}`;
-
 export function NewVersionNotice() {
+  const current = `v${packageJson.version}`;
+  const [latest, setLatest] = useState<string | null>(null);
   const [state, setState] = useState<State>({
     open: true,
     vertical: "bottom",
     horizontal: "right",
   });
   const { vertical, horizontal, open } = state;
+  console.log(latest);
+
+  useEffect(() => {
+    getLatestVersion().then(setLatest);
+  }, [setLatest]);
 
   const handleClose = (
     event: React.SyntheticEvent | Event,
@@ -46,7 +50,9 @@ export function NewVersionNotice() {
     setState({ ...state, open: false });
   };
 
-  return currentVersion !== latestVersion ? (
+  if (!latest) return null;
+
+  return current !== latest ? (
     <Snackbar
       anchorOrigin={{ vertical, horizontal }}
       open={open}
