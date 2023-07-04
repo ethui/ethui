@@ -32,7 +32,6 @@ export function NewVersionNotice() {
     horizontal: "right",
   });
   const { vertical, horizontal, open } = state;
-  console.log(latest);
 
   useEffect(() => {
     getLatestVersion().then(setLatest);
