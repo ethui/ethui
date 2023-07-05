@@ -43,7 +43,7 @@ export function Txs() {
 
   useEffect(() => {
     if (pages.length == 0) loadMore();
-  }, [pages]);
+  }, [pages, loadMore]);
 
   const reload = () => {
     setPages([]);
