@@ -22,6 +22,7 @@
     "@tauri-apps/cli": "^1.3.1",
     "@wagmi/core": "^0.10.9",
     "classnames": "^2.3.2",
+    "core-js": "^3.31.0",
     "kbar": "^0.1.0-beta.40",
     "lodash-es": "^4.17.21",
     "react": "^18.2.0",
@@ -42,6 +43,7 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.5",
     "@types/chrome": "^0.0.212",
+    "@types/core-js": "^2.5.5",
     "@types/lodash-es": "^4.17.7",
     "@types/node": "^18.7.10",
     "@types/react": "^18.0.28",
