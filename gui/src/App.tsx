@@ -6,6 +6,7 @@ import { Route, Router, Switch } from "wouter";
 import {
   CommandBar,
   HomePage,
+  MsgSignDialog,
   Navbar,
   TxReviewDialog,
   WagmiWrapper,
@@ -39,6 +40,10 @@ function Routes() {
       <Switch>
         <Route path="/dialog/tx-review/:id">
           {({ id }: { id: string }) => <TxReviewDialog id={parseInt(id)} />}
+        </Route>
+
+        <Route path="/dialog/msg-sign/:id">
+          {({ id }: { id: string }) => <MsgSignDialog id={parseInt(id)} />}
         </Route>
 
         <Route path="/dialog/wallet-unlock/:id">
