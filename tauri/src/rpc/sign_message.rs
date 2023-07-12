@@ -1,8 +1,5 @@
 use std::str::FromStr;
 
-use crate::dialogs::{Dialog, DialogMsg};
-
-use super::{Error, Result};
 use ethers::{
     core::k256::ecdsa::SigningKey,
     prelude::SignerMiddleware,
@@ -11,6 +8,9 @@ use ethers::{
     types::{transaction::eip712, Address, Bytes, Signature},
 };
 use serde::Serialize;
+
+use super::{Error, Result};
+use crate::dialogs::{Dialog, DialogMsg};
 
 #[derive(Default)]
 pub struct SignMessage {

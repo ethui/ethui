@@ -3,7 +3,7 @@ import { Button, Stack, Typography } from "@mui/material";
 import { useDialog } from "../hooks";
 
 export function MsgSignDialog({ id }: { id: number }) {
-  const { data, accept, reject } = useDialog<any>(id);
+  const { data, accept, reject } = useDialog<Record<string, string>>(id);
 
   if (!data) return null;
 
