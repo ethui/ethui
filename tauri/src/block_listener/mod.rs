@@ -1,7 +1,7 @@
 mod error;
 mod expanders;
 
-use std::time::Duration;
+use std::{sync::Arc, time::Duration};
 
 pub use error::{Error, Result};
 use ethers::{
@@ -9,7 +9,7 @@ use ethers::{
         Http, HttpClientError, JsonRpcClient, Middleware, Provider, RetryClientBuilder,
         RetryPolicy, Ws,
     },
-    types::{Filter, Log, Trace, U64},
+    types::{Address, Filter, Log, Trace, U64},
 };
 use futures_util::StreamExt;
 use log::warn;
@@ -17,8 +17,11 @@ use tokio::sync::mpsc;
 use url::Url;
 
 use self::expanders::{expand_logs, expand_traces};
-use crate::app::{self, Notify};
-use crate::db::DB;
+use crate::{
+    abis::IERC20,
+    app::{self, Notify},
+};
+use crate::{db::DB, types::TokenMetadata};
 
 #[derive(Debug)]
 pub struct BlockListener {
@@ -233,6 +236,14 @@ async fn process(
             }
         }
 
+        for address in db.get_erc20_missing_metadata(chain_id).await?.into_iter() {
+            let metadata = fetch_erc20_metadata(address, &provider).await;
+
+            db.save_erc20_metadata(address, chain_id, metadata)
+                .await
+                .unwrap();
+        }
+
         // don't emit events until we're catching up
         // otherwise we spam too much during that phase
         if caught_up {
@@ -242,4 +253,17 @@ async fn process(
     }
 
     Ok(())
+}
+
+pub(super) async fn fetch_erc20_metadata(
+    address: Address,
+    client: &Provider<Http>,
+) -> TokenMetadata {
+    let contract = IERC20::new(address, Arc::new(client));
+
+    TokenMetadata {
+        name: contract.name().call().await.unwrap_or_default(),
+        symbol: contract.symbol().call().await.unwrap_or_default(),
+        decimals: contract.decimals().call().await.unwrap_or_default(),
+    }
 }

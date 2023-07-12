@@ -263,13 +263,29 @@ impl DB {
         let res: Vec<_> = sqlx::query(
             r#"SELECT balances.contract, balances.balance, meta.decimals, meta.name, meta.symbol
             FROM balances
-            INNER JOIN tokens_metadata AS meta
+            LEFT JOIN tokens_metadata AS meta
               ON meta.chain_id = balances.chain_id AND meta.contract = balances.contract
             WHERE balances.chain_id = ? AND balances.owner = ? "#,
         )
         .bind(chain_id)
         .bind(format!("0x{:x}", address))
         .map(|row| row.try_into().unwrap())
+        .fetch_all(self.pool())
+        .await?;
+
+        Ok(res)
+    }
+
+    pub async fn get_erc20_missing_metadata(&self, chain_id: u32) -> Result<Vec<Address>> {
+        let res: Vec<_> = sqlx::query(
+            r#"SELECT DISTINCT balances.contract
+        FROM balances
+        LEFT JOIN tokens_metadata AS meta
+          ON meta.chain_id = balances.chain_id AND meta.contract = balances.contract
+        WHERE balances.chain_id = ? AND meta.chain_id IS NULL"#,
+        )
+        .bind(chain_id)
+        .map(|row| Address::from_str(row.get::<&str, _>("contract")).unwrap())
         .fetch_all(self.pool())
         .await?;
 
