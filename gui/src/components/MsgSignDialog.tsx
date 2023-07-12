@@ -7,8 +7,7 @@ export function MsgSignDialog({ id }: { id: number }) {
 
   if (!data) return null;
 
-  let msg;
-  msg = data["Raw"] || JSON.stringify(data["Typed"], null, 2);
+  const msg = data["Raw"] || JSON.stringify(data["Typed"], null, 2);
 
   return (
     <Stack direction="column" spacing={2} sx={{ p: 2 }}>
