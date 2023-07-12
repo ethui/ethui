@@ -58,7 +58,6 @@ jobs:
       # install our Node.js dependencies with Yarn
       - name: Yarn install
         run: yarn install
-        working-directory: webdriver/webdriverio
 
       # install the latest version of `tauri-driver`.
       # note: the tauri-driver version is independent of any other Tauri versions
@@ -73,4 +72,3 @@ jobs:
       # display server which allows our application to run headless without any changes to the code
       - name: WebdriverIO
         run: xvfb-run yarn test
-        working-directory: webdriver/webdriverio
