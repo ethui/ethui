@@ -1,21 +1,21 @@
 pub mod commands;
 mod error;
 mod send_transaction;
+mod sign_message;
 
 use std::{collections::HashMap, str::FromStr};
 
 use ethers::{
     abi::AbiEncode,
     prelude::SignerMiddleware,
-    providers::{Middleware, ProviderError},
-    signers::Signer,
-    types::{transaction::eip712, Address, Bytes},
+    providers::ProviderError,
+    types::{transaction::eip712, Address},
 };
 use jsonrpc_core::{ErrorCode, IoHandler, Params};
 use serde_json::json;
 
 pub use self::error::{Error, Result};
-use self::send_transaction::SendTransaction;
+use self::{send_transaction::SendTransaction, sign_message::SignMessage};
 use crate::{
     networks::Networks,
     types::GlobalState,
@@ -186,23 +186,26 @@ impl Handler {
         let msg = params[0].as_ref().cloned().unwrap();
         let address = Address::from_str(&params[1].as_ref().cloned().unwrap()).unwrap();
 
+        let networks = Networks::read().await;
+        let wallets = Wallets::read().await;
+
+        let network = networks.get_current_network();
+        let wallet = wallets.get_current_wallet();
+        let wallet_signer = wallet.build_signer(network.chain_id).await.unwrap();
+        let wallet_signer = SignerMiddleware::new(network.get_provider(), wallet_signer);
+
         // TODO: ensure from == signer
 
-        let networks = Networks::read().await;
-        let network = networks.get_current_network();
-        let provider = network.get_provider();
-        let signer = Wallets::read()
-            .await
-            .get_current_wallet()
-            .build_signer(network.chain_id)
-            .await
-            .unwrap();
-        let signer = SignerMiddleware::new(provider, signer);
+        let mut signer = SignMessage::build_from_string(msg);
+        let signer = signer.set_address(address).set_signer(wallet_signer);
 
-        let bytes = Bytes::from_str(&msg).unwrap();
-        let res = signer.sign(bytes, &address).await;
+        if network.is_dev() && wallet.is_dev() {
+            signer.skip_dialog();
+        }
 
-        match res {
+        let result = signer.finish().await;
+
+        match result {
             Ok(res) => Ok(format!("0x{}", res).into()),
             Err(e) => Ok(e.to_string().into()),
         }
@@ -210,23 +213,34 @@ impl Handler {
 
     async fn eth_sign_typed_data_v4(params: Params) -> jsonrpc_core::Result<serde_json::Value> {
         let params = params.parse::<Vec<Option<String>>>().unwrap();
-        let _address = Address::from_str(&params[0].as_ref().cloned().unwrap()).unwrap();
+        let address = Address::from_str(&params[0].as_ref().cloned().unwrap()).unwrap();
         let data = params[1].as_ref().cloned().unwrap();
         let typed_data: eip712::TypedData = serde_json::from_str(&data).unwrap();
 
         let networks = Networks::read().await;
+        let wallets = Wallets::read().await;
+
+        let wallet = wallets.get_current_wallet();
         let network = networks.get_current_network();
-        let signer = Wallets::read()
-            .await
+        let wallet_signer = wallets
             .get_current_wallet()
             .build_signer(network.chain_id)
             .await
             .unwrap();
+        let wallet_signer = SignerMiddleware::new(network.get_provider(), wallet_signer);
+
         // TODO: ensure from == signer
 
-        let res = signer.sign_typed_data(&typed_data).await;
+        let mut signer = SignMessage::build_from_typed_data(typed_data);
+        let signer = signer.set_address(address).set_signer(wallet_signer);
 
-        match res {
+        if network.is_dev() && wallet.is_dev() {
+            signer.skip_dialog();
+        }
+
+        let result = signer.finish().await;
+
+        match result {
             Ok(res) => Ok(format!("0x{}", res).into()),
             Err(e) => Ok(e.to_string().into()),
         }
