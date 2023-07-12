@@ -200,7 +200,7 @@ impl Handler {
         let signer = signer.set_address(address).set_signer(wallet_signer);
 
         if network.is_dev() && wallet.is_dev() {
-            signer.skip_dialog();
+            // signer.skip_dialog();
         }
 
         let result = signer.finish().await;
@@ -235,7 +235,7 @@ impl Handler {
         let signer = signer.set_address(address).set_signer(wallet_signer);
 
         if network.is_dev() && wallet.is_dev() {
-            signer.skip_dialog();
+            // signer.skip_dialog();
         }
 
         let result = signer.finish().await;
