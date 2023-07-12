@@ -84,7 +84,7 @@ impl SignMessage {
 
         match self.data {
             Some(Data::Raw(ref msg)) => {
-                let bytes = Bytes::from_str(&msg).unwrap();
+                let bytes = Bytes::from_str(msg).unwrap();
                 Ok(signer.sign(bytes, &self.address.unwrap()).await?)
             }
             Some(Data::Typed(ref data)) => {

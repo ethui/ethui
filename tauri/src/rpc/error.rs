@@ -20,7 +20,7 @@ pub enum Error {
     SignerMiddleware(#[from] SignerMiddlewareError<Provider<Http>, signers::Wallet<SigningKey>>),
 
     #[error(transparent)]
-    WalletError(#[from] ethers::signers::WalletError),
+    Wallet(#[from] ethers::signers::WalletError),
 
     #[error(transparent)]
     JsonRpc(#[from] jsonrpc_core::Error),

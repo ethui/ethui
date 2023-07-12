@@ -191,7 +191,7 @@ impl Handler {
 
         let network = networks.get_current_network();
         let wallet = wallets.get_current_wallet();
-        let wallet_signer = wallet.build_signer(network.chain_id).await.unwrap().clone();
+        let wallet_signer = wallet.build_signer(network.chain_id).await.unwrap();
         let wallet_signer = SignerMiddleware::new(network.get_provider(), wallet_signer);
 
         // TODO: ensure from == signer
