@@ -21,6 +21,15 @@ pub(super) static PRESETS: Lazy<HashMap<String, Preset>> = Lazy::new(|| {
     );
 
     presets.insert(
+        "msg-sign".into(),
+        Preset {
+            title: "Sign Message".into(),
+            w: 400.0,
+            h: 220.0,
+        },
+    );
+
+    presets.insert(
         "wallet-unlock".into(),
         Preset {
             title: "Wallet Unlock".into(),

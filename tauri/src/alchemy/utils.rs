@@ -16,7 +16,6 @@ use crate::{
     },
 };
 
-
 pub(super) async fn transfer_into_tx(
     transfer: Transfer,
     client: &Provider<RetryClient<Http>>,

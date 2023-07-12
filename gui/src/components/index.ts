@@ -28,3 +28,4 @@ export { TxReviewDialog } from "./TxReviewDialog";
 export { Txs } from "./Txs";
 export { WagmiWrapper } from "./WagmiWrapper";
 export { WalletUnlockDialog } from "./WalletUnlockDialog";
+export { MsgSignDialog } from "./MsgSignDialog";

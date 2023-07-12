@@ -10,11 +10,17 @@ pub enum Error {
     #[error("Transaction rejected")]
     TxDialogRejected,
 
+    #[error("Signature rejected")]
+    SignatureRejected,
+
     #[error("Error building signer: {0}")]
     SignerBuild(String),
 
     #[error(transparent)]
     SignerMiddleware(#[from] SignerMiddlewareError<Provider<Http>, signers::Wallet<SigningKey>>),
+
+    #[error(transparent)]
+    Wallet(#[from] ethers::signers::WalletError),
 
     #[error(transparent)]
     JsonRpc(#[from] jsonrpc_core::Error),
