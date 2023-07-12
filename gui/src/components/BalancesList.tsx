@@ -49,7 +49,6 @@ function BalancesERC20() {
   const filteredBalances = (balances || []).filter(
     (token) => !settings?.hideEmptyTokens || BigInt(token.balance) > 0
   );
-  console.log(filteredBalances);
 
   return (
     <>
@@ -106,7 +105,6 @@ function BalanceItem({
   // Some tokens respond with 1 decimals, that breaks this truncatedBalance without the Math.ceil
   const truncatedBalance =
     balance - (balance % BigInt(Math.ceil(minimum * 10 ** decimals)));
-  console.log(balance);
 
   return (
     <ListItem>
