@@ -52,6 +52,8 @@ jobs:
           node-version: 16.x
           cache: "yarn"
 
+      - run: yarn install
+
       # install the latest version of `tauri-driver`.
       # note: the tauri-driver version is independent of any other Tauri versions
       - name: Install tauri-driver
