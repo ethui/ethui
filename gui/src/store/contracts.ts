@@ -34,6 +34,12 @@ const store: StateCreator<Store> = (set, get) => ({
 
   addAddress: async (chainId: number, address: Address) => {
     try {
+      if (
+        get().data[chainId]?.some((contract) => contract.address === address)
+      ) {
+        return;
+      }
+
       const sourceCode = await getContractSourceCode(address);
 
       set(({ data }) => {
@@ -53,9 +59,7 @@ const store: StateCreator<Store> = (set, get) => ({
 
 export const useContracts = create<Store>()(store);
 
-(() => {
-  useContracts.getState().init();
-})();
+useContracts.getState().init();
 
 const getContractSourceCode = async (address: Address): Promise<IContract> => {
   const url = `https://api.etherscan.io/api?module=contract&action=getsourcecode&address=${address}&apikey=${API_KEY}`;
