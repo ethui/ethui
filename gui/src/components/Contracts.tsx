@@ -12,17 +12,13 @@ import {
 import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { useNetworks } from "../store";
-import { useContracts } from "../store/contracts";
+import { useContracts, useNetworks } from "../store";
 import { IContract } from "../types";
 import { ABIForm, AddressView, Panel } from "./";
 
 export function Contracts() {
   const chainId = useNetworks((s) => s.current?.chain_id);
   const contracts = useContracts((s) => s.data);
-
-  // TODO
-  useContracts();
 
   if (!chainId || !contracts) return null;
 

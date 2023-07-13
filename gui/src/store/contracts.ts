@@ -37,13 +37,12 @@ const store: StateCreator<Store> = (set, get) => ({
       const sourceCode = await getContractSourceCode(address);
 
       set(({ data }) => {
-        if (!data[chainId]) {
-          data[chainId] = [];
-        }
-
-        data[chainId].push(sourceCode);
-
-        return { data };
+        return {
+          data: {
+            ...data,
+            [chainId]: [...(data[chainId] || []), sourceCode],
+          },
+        };
       });
     } catch (e) {
       // eslint-disable-next-line no-console
