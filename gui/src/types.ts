@@ -200,3 +200,9 @@ export interface Paginated<T> {
   last: boolean;
   total: number;
 }
+
+export interface IContract {
+  address: Address;
+  abi: ABIItem[];
+  name: string;
+}

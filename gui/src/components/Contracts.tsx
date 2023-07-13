@@ -12,10 +12,9 @@ import {
 import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import ABIdata from "../erc20.json";
 import { useNetworks } from "../store";
 import { useContracts } from "../store/contracts";
-import { Address } from "../types";
+import { IContract } from "../types";
 import { ABIForm, AddressView, Panel } from "./";
 
 export function Contracts() {
@@ -31,21 +30,21 @@ export function Contracts() {
     <Panel>
       <AddressInput chainId={chainId} />
       {Array.from(contracts[chainId] || []).map((contract) => (
-        <Contract key={contract} address={contract} />
+        <Contract key={contract.address} contract={contract} />
       ))}
     </Panel>
   );
 }
 
-function Contract({ address }: { address: Address }) {
+function Contract({ contract }: { contract: IContract }) {
   return (
     <Accordion>
       <AccordionSummary expandIcon={<ExpandMore />}>
-        <AddressView address={address} />
-        <Chip sx={{ marginLeft: 2 }} label="ERC20" />
+        <AddressView address={contract.address} />
+        <Chip sx={{ marginLeft: 2 }} label={contract.name} />
       </AccordionSummary>
       <AccordionDetails>
-        <ABIForm address={address} abi={ABIdata} />
+        <ABIForm address={contract.address} abi={contract.abi} />
       </AccordionDetails>
     </Accordion>
   );
