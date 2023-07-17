@@ -1,5 +1,5 @@
 import Settings from "@mui/icons-material/Settings";
-import { AppBar, Grid, IconButton, Toolbar, Typography } from "@mui/material";
+import { AppBar, Grid, IconButton, Toolbar } from "@mui/material";
 import { useState } from "react";
 
 import { useTheme } from "../store";
@@ -10,29 +10,7 @@ import {
   QuickWalletSelect,
   Settings as SettingsPage,
 } from "./";
-
-function SettingsButton() {
-  const [showSettings, setShowSettings] = useState(false);
-
-  return (
-    <>
-      <IconButton onClick={() => setShowSettings(true)}>
-        <Settings />
-      </IconButton>
-
-      <Modal
-        open={showSettings}
-        onClose={() => setShowSettings(false)}
-        sx={{
-          width: "80%",
-          height: "80%",
-        }}
-      >
-        <SettingsPage />
-      </Modal>
-    </>
-  );
-}
+import { Logo } from "./Logo";
 
 export function Navbar() {
   const palette = useTheme((s) => s.theme.palette);
@@ -47,9 +25,7 @@ export function Navbar() {
       }}
     >
       <Toolbar>
-        <Typography variant="h6" sx={{ flexGrow: 1 }}>
-          Iron&nbsp;Wallet
-        </Typography>
+        <Logo width={40} />
         <Grid
           container
           spacing={2}
@@ -71,5 +47,28 @@ export function Navbar() {
         </Grid>
       </Toolbar>
     </AppBar>
+  );
+}
+
+function SettingsButton() {
+  const [showSettings, setShowSettings] = useState(false);
+
+  return (
+    <>
+      <IconButton onClick={() => setShowSettings(true)}>
+        <Settings />
+      </IconButton>
+
+      <Modal
+        open={showSettings}
+        onClose={() => setShowSettings(false)}
+        sx={{
+          width: "80%",
+          height: "80%",
+        }}
+      >
+        <SettingsPage />
+      </Modal>
+    </>
   );
 }
