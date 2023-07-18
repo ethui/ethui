@@ -1,2 +1,2 @@
 [workspace]
-members = ["./tauri"]
+members = ["./tauri", "./bin/iron"]

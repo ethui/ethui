@@ -1,0 +1,7 @@
+[package]
+name = "iron"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+iron-core = { path = "../../crates/core" }
