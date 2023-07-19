@@ -1,9 +1,12 @@
+use std::collections::hash_map::DefaultHasher;
+use std::hash::{Hash, Hasher};
 use std::{str::FromStr, sync::Arc};
 
 use ethers::{
     providers::{Http, Middleware, Provider, RetryClient},
     types::{Address, H256, U256},
 };
+use iron_abis::IERC20;
 use iron_db::DB;
 use iron_types::{
     events::{ContractDeployed, Tx},
@@ -11,7 +14,6 @@ use iron_types::{
 };
 
 use super::{types::Transfer, Error, Result};
-use crate::{abis::IERC20, foundry::calculate_code_hash};
 
 pub(super) async fn transfer_into_tx(
     transfer: Transfer,
@@ -95,4 +97,10 @@ pub(super) async fn fetch_erc20_metadata(
     }
 
     Ok(())
+}
+
+pub fn calculate_code_hash<T: Hash>(t: &T) -> u64 {
+    let mut s = DefaultHasher::new();
+    t.hash(&mut s);
+    s.finish()
 }

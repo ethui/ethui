@@ -1,7 +1,8 @@
 use std::path::PathBuf;
 
+use iron_core::{dialogs, foundry, networks, peers, rpc, wallets};
+use iron_db::DB;
 use iron_types::{app_events, AppEvent};
-
 use tauri::{
     AppHandle, Builder, CustomMenuItem, GlobalWindowEvent, Manager, SystemTray, SystemTrayEvent,
     SystemTrayMenu, SystemTrayMenuItem, WindowBuilder, WindowEvent, WindowUrl,
@@ -10,9 +11,6 @@ use tauri::{
 use tauri::{Menu, Submenu, WindowMenuEvent};
 use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, StateFlags};
 use tokio::sync::mpsc;
-
-use iron_core::{alchemy, dialogs, foundry, networks, peers, rpc, settings, wallets};
-use iron_db::DB;
 
 pub struct IronApp {
     pub sender: mpsc::UnboundedSender<AppEvent>,
@@ -28,11 +26,11 @@ impl IronApp {
         let mut builder = Builder::default()
             .plugin(windowStatePlugin::default().build())
             .invoke_handler(tauri::generate_handler![
-                settings::commands::settings_get,
-                settings::commands::settings_set,
-                settings::commands::settings_set_dark_mode,
-                settings::commands::settings_set_alias,
-                settings::commands::settings_get_alias,
+                iron_settings::commands::settings_get,
+                iron_settings::commands::settings_set,
+                iron_settings::commands::settings_set_dark_mode,
+                iron_settings::commands::settings_set_alias,
+                iron_settings::commands::settings_get_alias,
                 networks::commands::networks_get_list,
                 networks::commands::networks_get_current,
                 networks::commands::networks_set_list,
@@ -58,9 +56,9 @@ impl IronApp {
                 dialogs::commands::dialog_send,
                 dialogs::commands::dialog_finish,
                 foundry::commands::foundry_get_abi,
-                alchemy::commands::alchemy_fetch_erc20_balances,
-                alchemy::commands::alchemy_fetch_native_balance,
-                alchemy::commands::alchemy_fetch_transactions,
+                iron_sync_alchemy::commands::alchemy_fetch_erc20_balances,
+                iron_sync_alchemy::commands::alchemy_fetch_native_balance,
+                iron_sync_alchemy::commands::alchemy_fetch_transactions,
                 rpc::commands::rpc_send_transaction,
             ])
             .setup(|app| {

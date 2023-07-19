@@ -5,12 +5,10 @@ mod app;
 mod error;
 
 use error::Result;
-
-use iron_core::{
-    alchemy::Alchemy, foundry::Foundry, networks::Networks, peers::Peers, settings::Settings,
-    wallets::Wallets, ws,
-};
+use iron_core::{foundry::Foundry, networks::Networks, peers::Peers, wallets::Wallets, ws};
 use iron_db::DB;
+use iron_settings::Settings;
+use iron_sync_alchemy::Alchemy;
 use iron_types::GlobalState;
 
 #[tokio::main]

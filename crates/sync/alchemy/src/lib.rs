@@ -12,6 +12,7 @@ use ethers::providers::{
 };
 use futures::{stream, StreamExt};
 use iron_db::DB;
+use iron_settings::Settings;
 use iron_types::{AppEvent, AppNotify, ChecksummedAddress, GlobalState};
 use once_cell::sync::Lazy;
 use serde_json::json;
@@ -20,7 +21,6 @@ use types::{Balances, Transfers};
 use url::Url;
 
 pub use self::error::{Error, Result};
-use crate::settings::Settings;
 
 static ENDPOINTS: Lazy<HashMap<u32, Url>> = Lazy::new(|| {
     HashMap::from([

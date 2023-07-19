@@ -1,5 +1,4 @@
 pub mod abis;
-pub mod alchemy;
 pub mod app;
 pub mod crypto;
 pub mod dialogs;
@@ -8,6 +7,5 @@ pub mod foundry;
 pub mod networks;
 pub mod peers;
 pub mod rpc;
-pub mod settings;
 pub mod wallets;
 pub mod ws;
