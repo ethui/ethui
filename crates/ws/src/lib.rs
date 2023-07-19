@@ -1,10 +1,10 @@
 mod error;
-pub mod peers;
 
 use std::{collections::HashMap, net::SocketAddr};
 
 pub use error::{WsError, WsResult};
 use futures_util::{SinkExt, StreamExt};
+use iron_peers::{Peer, Peers};
 use iron_types::GlobalState;
 use log::*;
 use serde::Serialize;
@@ -20,46 +20,6 @@ use tungstenite::{
 use url::Url;
 
 use crate::{peers::Peers, rpc::Handler};
-
-#[derive(Clone, Debug, Serialize)]
-pub struct Peer {
-    pub origin: String,
-    pub favicon: Option<String>,
-    pub url: Option<String>,
-    pub tab_id: Option<u32>,
-    pub title: Option<String>,
-    pub socket: SocketAddr,
-    #[serde(skip)]
-    pub sender: mpsc::UnboundedSender<serde_json::Value>,
-}
-
-impl Peer {
-    fn new(
-        socket: SocketAddr,
-        sender: mpsc::UnboundedSender<serde_json::Value>,
-        params: HashMap<String, String>,
-    ) -> Self {
-        let origin = params
-            .get("origin")
-            .cloned()
-            .unwrap_or(String::from("unknown"));
-
-        let url = params.get("url").cloned();
-        let favicon = params.get("favicon").cloned();
-        let tab_id = params.get("tabId").cloned().and_then(|id| id.parse().ok());
-        let title = params.get("title").cloned();
-
-        Self {
-            socket,
-            sender,
-            origin,
-            favicon,
-            url,
-            tab_id,
-            title,
-        }
-    }
-}
 
 pub async fn ws_server_loop() {
     let addr = "127.0.0.1:9002";

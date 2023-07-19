@@ -1,6 +1,5 @@
 [package]
-name = "iron-core"
-description = "Iron Wallet core lib"
+name = "iron-rpc"
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true
@@ -14,8 +13,6 @@ iron-types = { workspace = true }
 iron-settings = { workspace = true }
 iron-db = { workspace = true }
 iron-networks = { workspace = true }
-iron-ws = { workspace = true }
-iron-rpc = { workspace = true }
 ethers = { workspace = true }
 iron-sync-anvil = { workspace = true }
 tauri = { version = "1.2", features = ["api-all", "system-tray"] }

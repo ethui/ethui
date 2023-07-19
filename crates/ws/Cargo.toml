@@ -12,6 +12,8 @@ authors.workspace = true
 
 [dependencies]
 iron-types = { workspace = true }
+iron-rpc = { workspace = true }
+iron-peers = { workspace = true }
 ethers = { workspace = true }
 iron-sync-anvil = { workspace = true }
 tauri = { version = "1.2", features = ["api-all", "system-tray"] }

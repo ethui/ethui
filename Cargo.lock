@@ -2868,6 +2868,7 @@ dependencies = [
  "hex",
  "iron-db",
  "iron-networks",
+ "iron-rpc",
  "iron-settings",
  "iron-sync-anvil",
  "iron-types",
@@ -2912,6 +2913,66 @@ dependencies = [
 name = "iron-networks"
 version = "0.4.1"
 dependencies = [
+ "anyhow",
+ "async-trait",
+ "enum_dispatch",
+ "ethers",
+ "futures",
+ "futures-util",
+ "hex",
+ "iron-db",
+ "iron-peers",
+ "iron-sync-anvil",
+ "iron-types",
+ "jsonrpc-core",
+ "log",
+ "notify",
+ "once_cell",
+ "regex",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "tauri",
+ "thiserror",
+ "tokio",
+ "tokio-tungstenite",
+ "tungstenite",
+ "url",
+ "urlencoding",
+]
+
+[[package]]
+name = "iron-peers"
+version = "0.4.1"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "enum_dispatch",
+ "futures",
+ "futures-util",
+ "hex",
+ "iron-types",
+ "jsonrpc-core",
+ "log",
+ "notify",
+ "once_cell",
+ "regex",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "tauri",
+ "thiserror",
+ "tokio",
+ "tokio-tungstenite",
+ "tungstenite",
+ "url",
+ "urlencoding",
+]
+
+[[package]]
+name = "iron-rpc"
+version = "0.4.1"
+dependencies = [
  "aead",
  "anyhow",
  "async-trait",
@@ -2925,9 +2986,10 @@ dependencies = [
  "glob",
  "hex",
  "iron-db",
+ "iron-networks",
+ "iron-settings",
  "iron-sync-anvil",
  "iron-types",
- "iron-ws",
  "jsonrpc-core",
  "log",
  "notify",
@@ -3035,6 +3097,8 @@ dependencies = [
  "futures-util",
  "glob",
  "hex",
+ "iron-peers",
+ "iron-rpc",
  "iron-sync-anvil",
  "iron-types",
  "jsonrpc-core",

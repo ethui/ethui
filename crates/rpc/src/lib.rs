@@ -11,16 +11,14 @@ use ethers::{
     providers::ProviderError,
     types::{transaction::eip712, Address},
 };
+use iron_networks::Networks;
 use iron_types::GlobalState;
 use jsonrpc_core::{ErrorCode, IoHandler, Params};
 use serde_json::json;
 
 pub use self::error::{Error, Result};
 use self::{send_transaction::SendTransaction, sign_message::SignMessage};
-use crate::{
-    wallets::{WalletControl, Wallets},
-};
-use iron_networks::Networks,
+use crate::wallets::{WalletControl, Wallets};
 
 pub struct Handler {
     io: IoHandler,

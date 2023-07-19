@@ -9,7 +9,45 @@ use serde::Serialize;
 use serde_json::json;
 use tokio::sync::mpsc;
 
-use crate::Peer;
+#[derive(Clone, Debug, Serialize)]
+pub struct Peer {
+    pub origin: String,
+    pub favicon: Option<String>,
+    pub url: Option<String>,
+    pub tab_id: Option<u32>,
+    pub title: Option<String>,
+    pub socket: SocketAddr,
+    #[serde(skip)]
+    pub sender: mpsc::UnboundedSender<serde_json::Value>,
+}
+
+impl Peer {
+    fn new(
+        socket: SocketAddr,
+        sender: mpsc::UnboundedSender<serde_json::Value>,
+        params: HashMap<String, String>,
+    ) -> Self {
+        let origin = params
+            .get("origin")
+            .cloned()
+            .unwrap_or(String::from("unknown"));
+
+        let url = params.get("url").cloned();
+        let favicon = params.get("favicon").cloned();
+        let tab_id = params.get("tabId").cloned().and_then(|id| id.parse().ok());
+        let title = params.get("title").cloned();
+
+        Self {
+            socket,
+            sender,
+            origin,
+            favicon,
+            url,
+            tab_id,
+            title,
+        }
+    }
+}
 
 /// Tracks a list of peers, usually browser tabs, that connect to the app
 #[derive(Debug)]
