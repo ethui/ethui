@@ -5,11 +5,13 @@ mod app;
 mod error;
 
 use error::Result;
-use iron_core::{foundry::Foundry, networks::Networks, peers::Peers, wallets::Wallets, ws};
+use iron_core::{foundry::Foundry, wallets::Wallets, ws};
 use iron_db::DB;
+use iron_networks::Networks;
 use iron_settings::Settings;
 use iron_sync_alchemy::Alchemy;
 use iron_types::GlobalState;
+use iron_ws::Peers;
 
 #[tokio::main]
 async fn main() -> Result<()> {

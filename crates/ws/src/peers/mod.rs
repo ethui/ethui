@@ -9,7 +9,7 @@ use serde::Serialize;
 use serde_json::json;
 use tokio::sync::mpsc;
 
-use crate::ws::Peer;
+use crate::Peer;
 
 /// Tracks a list of peers, usually browser tabs, that connect to the app
 #[derive(Debug)]

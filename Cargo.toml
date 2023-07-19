@@ -2,6 +2,8 @@
 members = [
   "bin/iron",
   "crates/settings",
+  "crates/networks",
+  "crates/ws",
   "crates/abis",
   "crates/core",
   "crates/types",
@@ -24,6 +26,9 @@ authors = ["Miguel Palhas <mpalhas@gmail.com>"]
 [workspace.dependencies]
 iron-core = { path = "crates/core" }
 iron-settings = { path = "crates/settings" }
+iron-networks = { path = "crates/networks" }
+iron-ws = { path = "crates/ws" }
+iron-peers = { path = "crates/peers" }
 iron-types = { path = "crates/types" }
 iron-abis = { path = "crates/abis" }
 iron-db = { path = "crates/db" }

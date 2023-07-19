@@ -11,6 +11,8 @@ authors.workspace = true
 [dependencies]
 iron-core = { workspace = true }
 iron-settings = { workspace = true }
+iron-networks = { workspace = true }
+iron-ws = { workspace = true }
 iron-types = { workspace = true }
 iron-db = { workspace = true }
 iron-sync-alchemy = { workspace = true }

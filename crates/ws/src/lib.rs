@@ -1,5 +1,9 @@
+mod error;
+pub mod peers;
+
 use std::{collections::HashMap, net::SocketAddr};
 
+pub use error::{WsError, WsResult};
 use futures_util::{SinkExt, StreamExt};
 use iron_types::GlobalState;
 use log::*;
@@ -15,11 +19,7 @@ use tungstenite::{
 };
 use url::Url;
 
-use crate::{
-    error::{Error, Result},
-    peers::Peers,
-    rpc::Handler,
-};
+use crate::{peers::Peers, rpc::Handler};
 
 #[derive(Clone, Debug, Serialize)]
 pub struct Peer {
@@ -96,7 +96,7 @@ pub async fn accept_connection(socket: SocketAddr, stream: TcpStream) {
 
     if let Err(e) = err {
         match e {
-            Error::Websocket(e) => match e {
+            WsError::Websocket(e) => match e {
                 tungstenite::Error::ConnectionClosed
                 | tungstenite::Error::Protocol(_)
                 | tungstenite::Error::Utf8 => {
@@ -114,7 +114,7 @@ pub async fn accept_connection(socket: SocketAddr, stream: TcpStream) {
 async fn handle_connection(
     stream: WebSocketStream<TcpStream>,
     mut rcv: mpsc::UnboundedReceiver<serde_json::Value>,
-) -> Result<()> {
+) -> WsResult<()> {
     let handler = Handler::default();
     let mut interval = tokio::time::interval(std::time::Duration::from_secs(15));
     let (mut ws_sender, mut ws_receiver) = stream.split();

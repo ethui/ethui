@@ -4,7 +4,6 @@ pub mod crypto;
 pub mod dialogs;
 pub mod error;
 pub mod foundry;
-pub mod networks;
 pub mod peers;
 pub mod rpc;
 pub mod wallets;

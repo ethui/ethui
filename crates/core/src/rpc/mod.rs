@@ -18,9 +18,9 @@ use serde_json::json;
 pub use self::error::{Error, Result};
 use self::{send_transaction::SendTransaction, sign_message::SignMessage};
 use crate::{
-    networks::Networks,
     wallets::{WalletControl, Wallets},
 };
+use iron_networks::Networks,
 
 pub struct Handler {
     io: IoHandler,

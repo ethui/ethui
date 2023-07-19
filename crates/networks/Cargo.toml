@@ -1,6 +1,5 @@
 [package]
-name = "iron-core"
-description = "Iron Wallet core lib"
+name = "iron-networks"
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true
@@ -11,11 +10,9 @@ authors.workspace = true
 
 [dependencies]
 iron-types = { workspace = true }
-iron-settings = { workspace = true }
-iron-db = { workspace = true }
-iron-networks = { workspace = true }
-iron-ws = { workspace = true }
 ethers = { workspace = true }
+iron-db = { workspace = true }
+iron-ws = { workspace = true }
 iron-sync-anvil = { workspace = true }
 tauri = { version = "1.2", features = ["api-all", "system-tray"] }
 tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
