@@ -344,7 +344,7 @@ impl DB {
     async fn migrate(&self) -> Result<()> {
         let pool = self.pool.clone();
 
-        sqlx::migrate!("../migrations/").run(&pool).await?;
+        sqlx::migrate!("../../migrations/").run(&pool).await?;
 
         Ok(())
     }

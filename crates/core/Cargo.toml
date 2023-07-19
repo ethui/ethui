@@ -1,26 +1,21 @@
 [package]
-name = "iron"
+name = "iron-core"
+description = "Iron Wallet core lib"
+authors.workspace = true
 version = "0.4.1"
-description = "A Tauri App"
-authors = ["you"]
-license-file = "../LICENSE"
-repository = ""
-edition = "2021"
+edition.workspace = true
+license-file.workspace = true
+homepage.workspace = true
+repository.workspace = true
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[build-dependencies]
-tauri-build = { version = "1.2", features = [] }
 
 [dependencies]
 tauri = { version = "1.2", features = ["api-all", "system-tray"] }
 tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
-fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs", rev = "1a4c224" }
 serde = { version = "1.0", features = ["derive", "std"] }
 serde_json = "1.0"
 
-color-eyre = "0.6.2"
-env_logger = "0.10.0"
 eyre = "0.6.8"
 futures-util = "0.3.27"
 log = "0.4.17"
@@ -52,10 +47,3 @@ chacha20poly1305 = "0.10.1"
 rust-argon2 = "1.0.0"
 aead = { version = "0.5.2", features = ["stream"] }
 zeroize = "1.6.0"
-
-[features]
-default = []
-# this feature is used for production builds or when `devPath` points to the filesystem
-# DO NOT REMOVE!!
-custom-protocol = ["tauri/custom-protocol"]
-debug = ["tauri/devtools"]

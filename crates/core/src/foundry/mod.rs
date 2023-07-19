@@ -18,6 +18,7 @@ use tokio::{
 use self::watcher::Match;
 use crate::settings::Settings;
 use crate::types::GlobalState;
+use crate::error::Result;
 
 #[derive(Default)]
 pub struct Foundry {
@@ -28,7 +29,7 @@ pub struct Foundry {
 static FOUNDRY: Lazy<RwLock<Foundry>> = Lazy::new(Default::default);
 
 impl Foundry {
-    pub async fn init() -> crate::Result<()> {
+    pub async fn init() -> Result<()> {
         let settings = Settings::read().await;
 
         if let (true, Some(path)) = (
@@ -46,7 +47,7 @@ impl Foundry {
     }
 
     /// starts the ABI watcher service
-    async fn watch(path: String) -> crate::Result<()> {
+    async fn watch(path: String) -> Result<()> {
         let (snd, rcv) = mpsc::unbounded_channel();
         let snd_clone = snd.clone();
         let path_clone = path.clone();
@@ -62,7 +63,7 @@ impl Foundry {
     }
 
     /// Handlers ABI file events
-    async fn handle_events(mut rcv: mpsc::UnboundedReceiver<Match>) -> crate::Result<()> {
+    async fn handle_events(mut rcv: mpsc::UnboundedReceiver<Match>) -> Result<()> {
         while let Some(m) = rcv.recv().await {
             let mut foundry = FOUNDRY.write().await;
             if let Ok(abi) = abi::Abi::try_from_match(m.clone()) {

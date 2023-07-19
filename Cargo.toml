@@ -1,2 +1,20 @@
 [workspace]
-members = ["./tauri", "./bin/iron"]
+members = ["bin/iron", "crates/core"]
+default-members = ["bin/iron"]
+
+[workspace.package]
+version = "0.4.1"
+edition = "2021"
+license-file = "./LICENSE"
+homepage = "https://github.com/iron-wallet"
+repository = "https://github.com/iron/wallet/reth"
+exclude = [
+  ".github/",
+  "extension/"
+]
+authors = ["Miguel Palhas <mpalhas@gmail.com>"]
+
+[workspace.dependencies]
+tokio = { version = "1.26.0", features = ["full", "sync"] }
+thiserror = "1.0.40"
+ethers = { version = "2.0.0", features = ["ws"] }

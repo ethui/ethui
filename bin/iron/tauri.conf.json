@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "iron",
-    "version": "../package.json"
+    "version": "../../package.json"
   },
   "tauri": {
     "allowlist": {

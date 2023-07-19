@@ -1,7 +1,6 @@
 use std::path::PathBuf;
 
-use once_cell::sync::OnceCell;
-use serde::Serialize;
+use iron_core::app::Event;
 use tauri::{
     AppHandle, Builder, CustomMenuItem, GlobalWindowEvent, Manager, SystemTray, SystemTrayEvent,
     SystemTrayMenu, SystemTrayMenuItem, WindowBuilder, WindowEvent, WindowUrl,
@@ -11,7 +10,7 @@ use tauri::{Menu, Submenu, WindowMenuEvent};
 use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, StateFlags};
 use tokio::sync::mpsc;
 
-use crate::{
+use iron_core::{
     alchemy,
     db::{self, DB},
     dialogs, foundry, networks, peers, rpc, settings, wallets,
@@ -21,55 +20,6 @@ pub struct IronApp {
     pub sender: mpsc::UnboundedSender<Event>,
     app: Option<tauri::App>,
 }
-
-#[derive(Debug, Clone)]
-pub enum Event {
-    /// notify the frontend about a state change
-    Notify(Notify),
-
-    /// open a dialog
-    DialogOpen(dialogs::DialogOpenParams),
-
-    /// close a dialog
-    DialogClose(dialogs::DialogCloseParams),
-
-    /// sends a new event to a dialog
-    DialogSend(dialogs::DialogSend),
-}
-
-#[derive(Debug, Serialize, Clone)]
-pub enum Notify {
-    #[allow(unused)]
-    WalletsChanged,
-    NetworkChanged,
-    TxsUpdated,
-    PeersUpdated,
-    BalancesUpdated,
-}
-
-impl Notify {
-    fn label(&self) -> &str {
-        match self {
-            Self::WalletsChanged => "wallets-changed",
-            Self::NetworkChanged => "network-changed",
-            Self::TxsUpdated => "txs-updated",
-            Self::PeersUpdated => "peers-updated",
-            Self::BalancesUpdated => "balances-updated",
-        }
-    }
-}
-
-impl From<Notify> for Event {
-    fn from(value: Notify) -> Self {
-        Event::Notify(value)
-    }
-}
-
-pub static SETTINGS_PATH: OnceCell<PathBuf> = OnceCell::new();
-
-/// a global sender used internally to go through the app's event loop, which is required for
-/// opening dialogs
-pub static APP_SND: OnceCell<mpsc::UnboundedSender<Event>> = OnceCell::new();
 
 impl IronApp {
     pub fn build() -> Self {
@@ -154,10 +104,10 @@ impl IronApp {
             sender: snd.clone(),
         };
 
-        SETTINGS_PATH
+        iron_core::app::SETTINGS_PATH
             .set(res.get_resource_path("settings.json"))
             .unwrap();
-        APP_SND.set(snd).unwrap();
+        iron_core::app::APP_SND.set(snd).unwrap();
 
         res
     }

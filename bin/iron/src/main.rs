@@ -1,32 +1,15 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-mod abis;
-mod alchemy;
 mod app;
-mod block_listener;
-mod crypto;
-mod db;
-mod dialogs;
 mod error;
-mod foundry;
-mod networks;
-mod peers;
-mod rpc;
-mod settings;
-mod types;
-mod wallets;
-mod ws;
 
-use alchemy::Alchemy;
-use db::DB;
 use error::Result;
-use foundry::Foundry;
-use networks::Networks;
-use peers::Peers;
-use settings::Settings;
-use types::GlobalState;
-use wallets::Wallets;
+
+use iron_core::{
+    alchemy::Alchemy, db::DB, foundry::Foundry, networks::Networks, peers::Peers,
+    settings::Settings, types::GlobalState, wallets::Wallets, ws,
+};
 
 #[tokio::main]
 async fn main() -> Result<()> {

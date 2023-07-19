@@ -6,16 +6,10 @@ pub enum Error {
     DB(#[from] crate::db::Error),
 
     #[error(transparent)]
-    FixPathEnv(#[from] fix_path_env::Error),
-
-    #[error(transparent)]
     Websocket(#[from] tungstenite::Error),
 
     #[error(transparent)]
     IO(#[from] std::io::Error),
-
-    #[error(transparent)]
-    Eyre(#[from] color_eyre::eyre::Error),
 
     #[error(transparent)]
     WindowSend(#[from] tokio::sync::mpsc::error::SendError<app::Event>),

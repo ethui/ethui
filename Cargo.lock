@@ -2825,17 +2825,31 @@ checksum = "12b6ee2129af8d4fb011108c73d99a1b83a85977f23b82460c0ae2e25bb4b57f"
 name = "iron"
 version = "0.4.1"
 dependencies = [
+ "color-eyre",
+ "env_logger",
+ "eyre",
+ "fix-path-env",
+ "iron-core",
+ "once_cell",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-window-state",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
+name = "iron-core"
+version = "0.4.1"
+dependencies = [
  "aead",
  "anyhow",
  "async-trait",
  "chacha20poly1305",
  "coins-bip32",
- "color-eyre",
  "enum_dispatch",
- "env_logger",
  "ethers",
  "eyre",
- "fix-path-env",
  "futures",
  "futures-util",
  "glob",
@@ -2851,7 +2865,6 @@ dependencies = [
  "serde_json",
  "sqlx",
  "tauri",
- "tauri-build",
  "tauri-plugin-window-state",
  "thiserror",
  "tokio",
