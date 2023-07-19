@@ -22,7 +22,7 @@ pub struct Peer {
 }
 
 impl Peer {
-    fn new(
+    pub fn new(
         socket: SocketAddr,
         sender: mpsc::UnboundedSender<serde_json::Value>,
         params: HashMap<String, String>,

@@ -1,5 +1,5 @@
 [package]
-name = "iron-rpc"
+name = "iron-wallets"
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true
@@ -8,13 +8,13 @@ repository.workspace = true
 exclude.workspace = true
 authors.workspace = true
 
+
 [dependencies]
 iron-types = { workspace = true }
-iron-settings = { workspace = true }
-iron-db = { workspace = true }
+iron-peers = { workspace = true }
+iron-globals = { workspace = true }
 iron-dialogs = { workspace = true }
-iron-networks = { workspace = true }
-iron-wallets = { workspace = true }
+iron-crypto = { workspace = true }
 ethers = { workspace = true }
 iron-sync-anvil = { workspace = true }
 tauri = { version = "1.2", features = ["api-all", "system-tray"] }

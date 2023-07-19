@@ -29,7 +29,7 @@ pub enum Error {
     Recv(#[from] oneshot::error::RecvError),
 
     #[error(transparent)]
-    Dialog(#[from] crate::dialogs::Error),
+    Dialog(#[from] iron_dialogs::Error),
 
     #[error("unknown wallet key: {0}")]
     InvalidKey(String),

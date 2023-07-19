@@ -1,10 +1,2 @@
-pub mod abis;
-pub mod app;
-pub mod crypto;
-pub mod dialogs;
 pub mod error;
 pub mod foundry;
-pub mod peers;
-pub mod rpc;
-pub mod wallets;
-pub mod ws;

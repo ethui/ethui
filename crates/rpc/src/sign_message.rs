@@ -7,10 +7,10 @@ use ethers::{
     signers::{Signer, Wallet},
     types::{transaction::eip712, Address, Bytes, Signature},
 };
+use iron_dialogs::{Dialog, DialogMsg};
 use serde::Serialize;
 
 use super::{Error, Result};
-use crate::dialogs::{Dialog, DialogMsg};
 
 #[derive(Default)]
 pub struct SignMessage {

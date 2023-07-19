@@ -26,7 +26,7 @@ pub enum Error {
     JsonRpc(#[from] jsonrpc_core::Error),
 
     #[error(transparent)]
-    Dialog(#[from] crate::dialogs::Error),
+    Dialog(#[from] iron_dialogs::Error),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

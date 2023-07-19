@@ -1,17 +1,21 @@
 [workspace]
 members = [
   "bin/iron",
+  "crates/globals",
   "crates/settings",
   "crates/networks",
+  "crates/wallets",
   "crates/ws",
-  "crates/peers",
   "crates/rpc",
+  "crates/dialogs",
+  "crates/peers",
   "crates/abis",
   "crates/core",
   "crates/types",
   "crates/db",
   "crates/sync/anvil",
   "crates/sync/alchemy",
+  "crates/crypto",
 ]
 default-members = ["bin/iron"]
 
@@ -27,11 +31,15 @@ authors = ["Miguel Palhas <mpalhas@gmail.com>"]
 
 [workspace.dependencies]
 iron-core = { path = "crates/core" }
+iron-globals = { path = "crates/globals" }
+iron-crypto = { path = "crates/crypto" }
 iron-settings = { path = "crates/settings" }
 iron-networks = { path = "crates/networks" }
+iron-wallets = { path = "crates/wallets" }
 iron-ws = { path = "crates/ws" }
 iron-peers = { path = "crates/peers" }
 iron-rpc = { path = "crates/rpc" }
+iron-dialogs = { path = "crates/dialogs" }
 iron-types = { path = "crates/types" }
 iron-abis = { path = "crates/abis" }
 iron-db = { path = "crates/db" }

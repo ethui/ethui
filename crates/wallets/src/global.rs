@@ -10,8 +10,7 @@ use once_cell::sync::OnceCell;
 use serde::Deserialize;
 use tokio::sync::{mpsc, RwLock, RwLockReadGuard, RwLockWriteGuard};
 
-use super::Wallets;
-use crate::wallets::Wallet;
+use super::{Wallet, Wallets};
 
 static WALLETS: OnceCell<RwLock<Wallets>> = OnceCell::new();
 

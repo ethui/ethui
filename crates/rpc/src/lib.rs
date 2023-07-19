@@ -13,12 +13,12 @@ use ethers::{
 };
 use iron_networks::Networks;
 use iron_types::GlobalState;
+use iron_wallets::{WalletControl, Wallets};
 use jsonrpc_core::{ErrorCode, IoHandler, Params};
 use serde_json::json;
 
 pub use self::error::{Error, Result};
 use self::{send_transaction::SendTransaction, sign_message::SignMessage};
-use crate::wallets::{WalletControl, Wallets};
 
 pub struct Handler {
     io: IoHandler,

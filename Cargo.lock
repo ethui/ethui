@@ -2830,10 +2830,15 @@ dependencies = [
  "fix-path-env",
  "iron-core",
  "iron-db",
+ "iron-dialogs",
+ "iron-globals",
  "iron-networks",
+ "iron-peers",
+ "iron-rpc",
  "iron-settings",
  "iron-sync-alchemy",
  "iron-types",
+ "iron-wallets",
  "iron-ws",
  "tauri",
  "tauri-build",
@@ -2867,11 +2872,13 @@ dependencies = [
  "glob",
  "hex",
  "iron-db",
+ "iron-globals",
  "iron-networks",
- "iron-rpc",
+ "iron-peers",
  "iron-settings",
  "iron-sync-anvil",
  "iron-types",
+ "iron-wallets",
  "iron-ws",
  "jsonrpc-core",
  "log",
@@ -2895,6 +2902,41 @@ dependencies = [
 ]
 
 [[package]]
+name = "iron-crypto"
+version = "0.4.1"
+dependencies = [
+ "aead",
+ "anyhow",
+ "async-trait",
+ "chacha20poly1305",
+ "coins-bip32",
+ "enum_dispatch",
+ "ethers",
+ "eyre",
+ "futures",
+ "futures-util",
+ "glob",
+ "hex",
+ "jsonrpc-core",
+ "log",
+ "notify",
+ "once_cell",
+ "regex",
+ "rust-argon2",
+ "secrets",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "thiserror",
+ "tokio",
+ "tokio-tungstenite",
+ "tungstenite",
+ "url",
+ "urlencoding",
+ "zeroize",
+]
+
+[[package]]
 name = "iron-db"
 version = "0.4.1"
 dependencies = [
@@ -2906,6 +2948,59 @@ dependencies = [
  "sqlx",
  "tauri",
  "thiserror",
+ "tokio",
+]
+
+[[package]]
+name = "iron-dialogs"
+version = "0.4.1"
+dependencies = [
+ "aead",
+ "anyhow",
+ "async-trait",
+ "chacha20poly1305",
+ "coins-bip32",
+ "enum_dispatch",
+ "ethers",
+ "eyre",
+ "futures",
+ "futures-util",
+ "glob",
+ "hex",
+ "iron-db",
+ "iron-globals",
+ "iron-networks",
+ "iron-peers",
+ "iron-settings",
+ "iron-sync-anvil",
+ "iron-types",
+ "jsonrpc-core",
+ "log",
+ "notify",
+ "once_cell",
+ "regex",
+ "rust-argon2",
+ "secrets",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "tauri",
+ "tauri-plugin-window-state",
+ "thiserror",
+ "tokio",
+ "tokio-tungstenite",
+ "tungstenite",
+ "url",
+ "urlencoding",
+ "zeroize",
+]
+
+[[package]]
+name = "iron-globals"
+version = "0.4.1"
+dependencies = [
+ "iron-types",
+ "once_cell",
  "tokio",
 ]
 
@@ -2986,10 +3081,12 @@ dependencies = [
  "glob",
  "hex",
  "iron-db",
+ "iron-dialogs",
  "iron-networks",
  "iron-settings",
  "iron-sync-anvil",
  "iron-types",
+ "iron-wallets",
  "jsonrpc-core",
  "log",
  "notify",
@@ -3079,6 +3176,49 @@ dependencies = [
  "serde_json",
  "sqlx",
  "tokio",
+]
+
+[[package]]
+name = "iron-wallets"
+version = "0.4.1"
+dependencies = [
+ "aead",
+ "anyhow",
+ "async-trait",
+ "chacha20poly1305",
+ "coins-bip32",
+ "enum_dispatch",
+ "ethers",
+ "eyre",
+ "futures",
+ "futures-util",
+ "glob",
+ "hex",
+ "iron-crypto",
+ "iron-dialogs",
+ "iron-globals",
+ "iron-peers",
+ "iron-sync-anvil",
+ "iron-types",
+ "jsonrpc-core",
+ "log",
+ "notify",
+ "once_cell",
+ "regex",
+ "rust-argon2",
+ "secrets",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "tauri",
+ "tauri-plugin-window-state",
+ "thiserror",
+ "tokio",
+ "tokio-tungstenite",
+ "tungstenite",
+ "url",
+ "urlencoding",
+ "zeroize",
 ]
 
 [[package]]

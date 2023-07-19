@@ -4,6 +4,7 @@ use async_trait::async_trait;
 use ethers::core::k256::ecdsa::SigningKey;
 use ethers::signers::{self, coins_bip39::English, MnemonicBuilder, Signer};
 use iron_crypto::{self, EncryptedData};
+use iron_dialogs::{Dialog, DialogMsg};
 use iron_types::ChecksummedAddress;
 use secrets::SecretVec;
 use tokio::{
@@ -12,7 +13,6 @@ use tokio::{
 };
 
 use super::{utils, wallet::WalletCreate, Error, Result, Wallet, WalletControl};
-use crate::dialogs::{Dialog, DialogMsg};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -116,7 +116,7 @@ impl HDWallet {
             return Err(Error::InvalidKey(params.current));
         };
 
-        let ciphertext = crypto::encrypt(&params.mnemonic, &params.password).unwrap();
+        let ciphertext = iron_crypto::encrypt(&params.mnemonic, &params.password).unwrap();
 
         Ok(Self {
             name: params.name,
@@ -192,7 +192,7 @@ impl HDWallet {
             };
 
             // if password was given, and correctly decrypts the keystore
-            if let Ok(mnemonic) = crypto::decrypt(&self.ciphertext, &password) {
+            if let Ok(mnemonic) = iron_crypto::decrypt(&self.ciphertext, &password) {
                 self.store_secret(mnemonic).await;
                 dialog.close().await?;
                 return Ok(());

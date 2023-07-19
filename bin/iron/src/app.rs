@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use iron_core::{dialogs, foundry, networks, peers, rpc, wallets};
+use iron_core::foundry;
 use iron_db::DB;
 use iron_types::{app_events, AppEvent};
 use tauri::{
@@ -31,35 +31,35 @@ impl IronApp {
                 iron_settings::commands::settings_set_dark_mode,
                 iron_settings::commands::settings_set_alias,
                 iron_settings::commands::settings_get_alias,
-                networks::commands::networks_get_list,
-                networks::commands::networks_get_current,
-                networks::commands::networks_set_list,
-                networks::commands::networks_set_current,
-                networks::commands::networks_reset,
+                iron_networks::commands::networks_get_list,
+                iron_networks::commands::networks_get_current,
+                iron_networks::commands::networks_set_list,
+                iron_networks::commands::networks_set_current,
+                iron_networks::commands::networks_reset,
                 iron_db::commands::db_get_transactions,
                 iron_db::commands::db_get_contracts,
                 iron_db::commands::db_get_erc20_balances,
                 iron_db::commands::db_get_native_balance,
-                peers::commands::peers_get_all,
-                wallets::commands::wallets_get_all,
-                wallets::commands::wallets_get_current,
-                wallets::commands::wallets_get_current_address,
-                wallets::commands::wallets_set_list,
-                wallets::commands::wallets_create,
-                wallets::commands::wallets_update,
-                wallets::commands::wallets_remove,
-                wallets::commands::wallets_set_current_wallet,
-                wallets::commands::wallets_set_current_path,
-                wallets::commands::wallets_get_wallet_addresses,
-                wallets::commands::wallets_get_mnemonic_addresses,
-                dialogs::commands::dialog_get_payload,
-                dialogs::commands::dialog_send,
-                dialogs::commands::dialog_finish,
+                iron_peers::commands::peers_get_all,
+                iron_wallets::commands::wallets_get_all,
+                iron_wallets::commands::wallets_get_current,
+                iron_wallets::commands::wallets_get_current_address,
+                iron_wallets::commands::wallets_set_list,
+                iron_wallets::commands::wallets_create,
+                iron_wallets::commands::wallets_update,
+                iron_wallets::commands::wallets_remove,
+                iron_wallets::commands::wallets_set_current_wallet,
+                iron_wallets::commands::wallets_set_current_path,
+                iron_wallets::commands::wallets_get_wallet_addresses,
+                iron_wallets::commands::wallets_get_mnemonic_addresses,
+                iron_dialogs::commands::dialog_get_payload,
+                iron_dialogs::commands::dialog_send,
+                iron_dialogs::commands::dialog_finish,
                 foundry::commands::foundry_get_abi,
                 iron_sync_alchemy::commands::alchemy_fetch_erc20_balances,
                 iron_sync_alchemy::commands::alchemy_fetch_native_balance,
                 iron_sync_alchemy::commands::alchemy_fetch_transactions,
-                rpc::commands::rpc_send_transaction,
+                iron_rpc::commands::rpc_send_transaction,
             ])
             .setup(|app| {
                 let handle = app.handle();
@@ -100,10 +100,10 @@ impl IronApp {
             sender: snd.clone(),
         };
 
-        iron_core::app::SETTINGS_PATH
+        iron_globals::SETTINGS_PATH
             .set(res.get_resource_path("settings.json"))
             .unwrap();
-        iron_core::app::APP_SND.set(snd).unwrap();
+        iron_globals::APP_SND.set(snd).unwrap();
 
         res
     }

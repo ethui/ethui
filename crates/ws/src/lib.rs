@@ -5,9 +5,9 @@ use std::{collections::HashMap, net::SocketAddr};
 pub use error::{WsError, WsResult};
 use futures_util::{SinkExt, StreamExt};
 use iron_peers::{Peer, Peers};
+use iron_rpc::Handler;
 use iron_types::GlobalState;
 use log::*;
-use serde::Serialize;
 use tokio::{
     net::{TcpListener, TcpStream},
     sync::mpsc,
@@ -18,8 +18,6 @@ use tungstenite::{
     Message,
 };
 use url::Url;
-
-use crate::{peers::Peers, rpc::Handler};
 
 pub async fn ws_server_loop() {
     let addr = "127.0.0.1:9002";

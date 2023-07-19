@@ -6,9 +6,9 @@ use ethers::{
     signers::Wallet,
     types::{serde_helpers::StringifiedNumeric, transaction::eip2718::TypedTransaction},
 };
+use iron_dialogs::{Dialog, DialogMsg};
 
 use super::{Error, Result};
-use crate::dialogs::{Dialog, DialogMsg};
 
 #[derive(Default)]
 pub struct SendTransaction {

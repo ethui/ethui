@@ -112,7 +112,7 @@ impl Inner {
             id,
             preset: preset.to_string(),
             payload,
-            app_snd: crate::app::APP_SND.get().unwrap().clone(),
+            app_snd: iron_globals::APP_SND.get().unwrap().clone(),
             inbound_snd: snd,
             inbound_rcv: RwLock::new(rcv),
         }

@@ -1,5 +1,5 @@
 [package]
-name = "iron-rpc"
+name = "iron-dialogs"
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true
@@ -9,12 +9,12 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
+iron-globals = { workspace = true }
 iron-types = { workspace = true }
 iron-settings = { workspace = true }
 iron-db = { workspace = true }
-iron-dialogs = { workspace = true }
 iron-networks = { workspace = true }
-iron-wallets = { workspace = true }
+iron-peers = { workspace = true }
 ethers = { workspace = true }
 iron-sync-anvil = { workspace = true }
 tauri = { version = "1.2", features = ["api-all", "system-tray"] }

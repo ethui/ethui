@@ -5,13 +5,14 @@ mod app;
 mod error;
 
 use error::Result;
-use iron_core::{foundry::Foundry, wallets::Wallets, ws};
+use iron_core::foundry::Foundry;
 use iron_db::DB;
 use iron_networks::Networks;
+use iron_peers::Peers;
 use iron_settings::Settings;
 use iron_sync_alchemy::Alchemy;
 use iron_types::GlobalState;
-use iron_ws::Peers;
+use iron_wallets::Wallets;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -34,7 +35,7 @@ async fn main() -> Result<()> {
     Alchemy::init((db.clone(), app.sender.clone())).await;
 
     // run websockets server loop
-    tauri::async_runtime::spawn(async move { ws::ws_server_loop().await });
+    tauri::async_runtime::spawn(async move { iron_ws::ws_server_loop().await });
 
     // make context available to tauri's runtime
     // and run it

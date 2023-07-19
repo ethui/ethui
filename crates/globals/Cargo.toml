@@ -1,0 +1,14 @@
+[package]
+name = "iron-globals"
+version.workspace = true
+edition.workspace = true
+license-file.workspace = true
+homepage.workspace = true
+repository.workspace = true
+exclude.workspace = true
+authors.workspace = true
+
+[dependencies]
+iron-types = { workspace = true }
+tokio = { workspace = true }
+once_cell = { workspace = true }
