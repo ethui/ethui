@@ -2,13 +2,14 @@
 
 mod abi;
 pub mod commands;
-pub(self) mod error;
+pub mod error;
 mod watcher;
 
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 use std::{collections::HashMap, path::PathBuf};
 
+pub use error::{Error, Result};
 use iron_settings::Settings;
 use iron_types::GlobalState;
 use once_cell::sync::Lazy;
@@ -18,7 +19,6 @@ use tokio::{
 };
 
 use self::watcher::Match;
-use crate::error::Result;
 
 #[derive(Default)]
 pub struct Foundry {

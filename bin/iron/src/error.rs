@@ -3,7 +3,7 @@ use iron_types::AppEvent;
 #[derive(thiserror::Error, Debug)]
 pub enum AppError {
     #[error(transparent)]
-    Core(#[from] iron_core::error::Error),
+    Core(#[from] iron_forge::Error),
 
     #[error(transparent)]
     DB(#[from] iron_db::Error),

@@ -10,7 +10,7 @@ members = [
   "crates/dialogs",
   "crates/peers",
   "crates/abis",
-  "crates/core",
+  "crates/forge",
   "crates/types",
   "crates/db",
   "crates/sync/anvil",
@@ -30,7 +30,7 @@ exclude = [".github/", "extension/"]
 authors = ["Miguel Palhas <mpalhas@gmail.com>"]
 
 [workspace.dependencies]
-iron-core = { path = "crates/core" }
+iron-forge = { path = "crates/forge" }
 iron-globals = { path = "crates/globals" }
 iron-crypto = { path = "crates/crypto" }
 iron-settings = { path = "crates/settings" }

@@ -1,6 +1,6 @@
 [package]
-name = "iron-core"
-description = "Iron Wallet core lib"
+name = "iron-forge"
+description = "Iron Wallet forge integration"
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true

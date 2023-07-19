@@ -5,8 +5,8 @@ mod app;
 mod error;
 
 use error::Result;
-use iron_core::foundry::Foundry;
 use iron_db::DB;
+use iron_forge::Foundry;
 use iron_networks::Networks;
 use iron_peers::Peers;
 use iron_settings::Settings;

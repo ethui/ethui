@@ -1,6 +1,5 @@
 use std::path::PathBuf;
 
-use iron_core::foundry;
 use iron_db::DB;
 use iron_types::{app_events, AppEvent};
 use tauri::{
@@ -55,7 +54,7 @@ impl IronApp {
                 iron_dialogs::commands::dialog_get_payload,
                 iron_dialogs::commands::dialog_send,
                 iron_dialogs::commands::dialog_finish,
-                foundry::commands::foundry_get_abi,
+                iron_forge::commands::foundry_get_abi,
                 iron_sync_alchemy::commands::alchemy_fetch_erc20_balances,
                 iron_sync_alchemy::commands::alchemy_fetch_native_balance,
                 iron_sync_alchemy::commands::alchemy_fetch_transactions,

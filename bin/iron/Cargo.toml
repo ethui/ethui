@@ -9,7 +9,7 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-iron-core = { workspace = true }
+iron-forge = { workspace = true }
 iron-settings = { workspace = true }
 iron-networks = { workspace = true }
 iron-wallets = { workspace = true }
