@@ -8,8 +8,9 @@ use error::Result;
 
 use iron_core::{
     alchemy::Alchemy, db::DB, foundry::Foundry, networks::Networks, peers::Peers,
-    settings::Settings, types::GlobalState, wallets::Wallets, ws,
+    settings::Settings, wallets::Wallets, ws,
 };
+use iron_types::GlobalState;
 
 #[tokio::main]
 async fn main() -> Result<()> {

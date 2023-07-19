@@ -1,9 +1,8 @@
 use ethers::types::{Address, U256};
+use iron_types::{events::Tx, TokenBalance};
 
 use super::{Paginated, Pagination, Result};
 use crate::db::{StoredContract, DB};
-use crate::types::events::Tx;
-use crate::types::TokenBalance;
 
 #[tauri::command]
 pub async fn db_get_transactions(

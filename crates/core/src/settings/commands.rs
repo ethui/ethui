@@ -1,5 +1,6 @@
+use iron_types::{ChecksummedAddress, GlobalState};
+
 use super::{DarkMode, Result, SerializedSettings, Settings};
-use crate::types::{ChecksummedAddress, GlobalState};
 
 #[tauri::command]
 pub async fn settings_get() -> SerializedSettings {

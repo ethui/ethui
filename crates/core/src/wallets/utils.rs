@@ -1,7 +1,7 @@
 use ethers::signers::{coins_bip39::English, MnemonicBuilder, Signer};
+use iron_types::ChecksummedAddress;
 
 use super::Result;
-use crate::types::ChecksummedAddress;
 
 pub fn derive_addresses(
     mnemonic: &str,

@@ -5,12 +5,13 @@ use std::{
 };
 
 use async_trait::async_trait;
+use iron_types::GlobalState;
 use once_cell::sync::OnceCell;
 use serde::Deserialize;
 use tokio::sync::{mpsc, RwLock, RwLockReadGuard, RwLockWriteGuard};
 
 use super::Wallets;
-use crate::{app, types::GlobalState, wallets::Wallet};
+use crate::{app, wallets::Wallet};
 
 static WALLETS: OnceCell<RwLock<Wallets>> = OnceCell::new();
 

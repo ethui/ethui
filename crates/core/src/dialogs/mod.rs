@@ -7,8 +7,6 @@ mod presets;
 pub use error::{Error, Result};
 pub use handle::{Dialog, DialogMsg};
 
-use crate::types::Json;
-
 #[derive(Debug, Clone)]
 pub struct DialogOpenParams {
     pub label: String,
@@ -28,5 +26,5 @@ pub struct DialogCloseParams {
 pub struct DialogSend {
     pub label: String,
     pub event_type: String,
-    pub payload: Option<Json>,
+    pub payload: Option<serde_json::Value>,
 }

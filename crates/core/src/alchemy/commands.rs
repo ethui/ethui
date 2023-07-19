@@ -1,7 +1,7 @@
 use ethers::core::types::Address;
+use iron_types::{ChecksummedAddress, GlobalState};
 
 use super::{Alchemy, Result};
-use crate::types::{ChecksummedAddress, GlobalState};
 
 /// call to fetch balances
 #[tauri::command]

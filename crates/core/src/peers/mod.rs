@@ -3,12 +3,13 @@ mod global;
 
 use std::{collections::HashMap, net::SocketAddr};
 
+use iron_types::ChecksummedAddress;
 use log::warn;
 use serde::Serialize;
 use serde_json::json;
 use tokio::sync::mpsc;
 
-use crate::{app, types::ChecksummedAddress, ws::Peer};
+use crate::{app, ws::Peer};
 
 /// Tracks a list of peers, usually browser tabs, that connect to the app
 #[derive(Debug)]

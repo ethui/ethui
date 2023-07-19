@@ -14,6 +14,7 @@ use std::{
 };
 
 pub use error::{Error, Result};
+use iron_types::{ChecksummedAddress, GlobalState, Json};
 use serde::Serialize;
 use tokio::sync::mpsc;
 
@@ -23,11 +24,7 @@ pub use self::{
     plaintext::PlaintextWallet,
     wallet::{Wallet, WalletControl},
 };
-use crate::{
-    app,
-    peers::Peers,
-    types::{ChecksummedAddress, GlobalState, Json},
-};
+use crate::{app, peers::Peers};
 
 /// Maintains a list of Ethereum wallets, including keeping track of the global current wallet &
 /// address

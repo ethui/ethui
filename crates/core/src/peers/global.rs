@@ -1,9 +1,10 @@
 use async_trait::async_trait;
+use iron_types::GlobalState;
 use once_cell::sync::OnceCell;
 use tokio::sync::{mpsc, RwLock, RwLockReadGuard, RwLockWriteGuard};
 
 use super::Peers;
-use crate::{app, types::GlobalState};
+use crate::app;
 
 static PEERS: OnceCell<RwLock<Peers>> = OnceCell::new();
 

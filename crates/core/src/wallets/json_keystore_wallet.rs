@@ -4,15 +4,14 @@ use std::{fs::File, io::BufReader, path::PathBuf, str::FromStr, sync::Arc};
 use async_trait::async_trait;
 use ethers::core::{k256::ecdsa::SigningKey, types::Address};
 use ethers::signers::{self, Signer};
+use iron_types::ChecksummedAddress;
 use secrets::SecretVec;
 use tokio::sync::{Mutex, RwLock};
 use tokio::task::JoinHandle;
 
 use super::wallet::WalletCreate;
 use super::{Error, Result, Wallet, WalletControl};
-use crate::dialogs::DialogMsg;
-use crate::types::Json;
-use crate::{dialogs::Dialog, types::ChecksummedAddress};
+use crate::dialogs::{Dialog, DialogMsg};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct JsonKeystoreWallet {
@@ -38,7 +37,7 @@ pub struct JsonKeystoreWallet {
 
 #[async_trait]
 impl WalletCreate for JsonKeystoreWallet {
-    async fn create(params: Json) -> Result<Wallet> {
+    async fn create(params: serde_json::Value) -> Result<Wallet> {
         Ok(Wallet::JsonKeystore(serde_json::from_value(params)?))
     }
 }
@@ -49,7 +48,7 @@ impl WalletControl for JsonKeystoreWallet {
         self.name.clone()
     }
 
-    async fn update(mut self, params: Json) -> Result<Wallet> {
+    async fn update(mut self, params: serde_json::Value) -> Result<Wallet> {
         Ok(Wallet::JsonKeystore(serde_json::from_value(params)?))
     }
 

@@ -11,6 +11,7 @@ use ethers::providers::{
     Http, HttpRateLimitRetryPolicy, Middleware, Provider, RetryClient, RetryClientBuilder,
 };
 use futures::{stream, StreamExt};
+use iron_types::{ChecksummedAddress, GlobalState};
 use once_cell::sync::Lazy;
 use serde_json::json;
 use tokio::sync::mpsc;
@@ -22,7 +23,6 @@ use crate::{
     app::{self, Notify},
     db::DB,
     settings::Settings,
-    types::{ChecksummedAddress, GlobalState},
 };
 
 static ENDPOINTS: Lazy<HashMap<u32, Url>> = Lazy::new(|| {

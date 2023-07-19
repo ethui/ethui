@@ -10,10 +10,10 @@ use std::{
 };
 
 use ethers::core::types::Address;
+use iron_types::ChecksummedAddress;
 use serde::{Deserialize, Serialize};
 
 pub use self::error::{Error, Result};
-use crate::types::ChecksummedAddress;
 
 #[derive(Debug, Clone)]
 pub struct Settings {

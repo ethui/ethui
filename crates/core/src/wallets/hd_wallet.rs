@@ -3,6 +3,7 @@ use std::{sync::Arc, time::Duration};
 use async_trait::async_trait;
 use ethers::core::k256::ecdsa::SigningKey;
 use ethers::signers::{self, coins_bip39::English, MnemonicBuilder, Signer};
+use iron_types::ChecksummedAddress;
 use secrets::SecretVec;
 use tokio::{
     sync::{Mutex, RwLock},
@@ -13,7 +14,6 @@ use super::{utils, wallet::WalletCreate, Error, Result, Wallet, WalletControl};
 use crate::{
     crypto::{self, EncryptedData},
     dialogs::{Dialog, DialogMsg},
-    types::{ChecksummedAddress, Json},
 };
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
@@ -45,7 +45,7 @@ pub struct HDWallet {
 
 #[async_trait]
 impl WalletCreate for HDWallet {
-    async fn create(params: Json) -> Result<Wallet> {
+    async fn create(params: serde_json::Value) -> Result<Wallet> {
         Ok(Wallet::HDWallet(
             Self::from_params(serde_json::from_value(params)?).await?,
         ))
@@ -58,7 +58,7 @@ impl WalletControl for HDWallet {
         self.name.clone()
     }
 
-    async fn update(mut self, params: Json) -> Result<Wallet> {
+    async fn update(mut self, params: serde_json::Value) -> Result<Wallet> {
         if let Some(name) = params["name"].as_str() {
             self.name = name.into();
         }

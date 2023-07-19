@@ -4,17 +4,13 @@ use ethers::{
     providers::{Http, Middleware, Provider, RetryClient},
     types::{Address, H256, U256},
 };
+use iron_types::{
+    events::{ContractDeployed, Tx},
+    Event, TokenMetadata,
+};
 
 use super::{types::Transfer, Error, Result};
-use crate::{
-    abis::IERC20,
-    db::DB,
-    foundry::calculate_code_hash,
-    types::{
-        events::{ContractDeployed, Tx},
-        Event, TokenMetadata,
-    },
-};
+use crate::{abis::IERC20, db::DB, foundry::calculate_code_hash};
 
 pub(super) async fn transfer_into_tx(
     transfer: Transfer,

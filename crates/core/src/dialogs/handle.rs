@@ -2,11 +2,12 @@ use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 use std::sync::Arc;
 
+use iron_types::Json;
 use tokio::sync::{mpsc, RwLock, RwLockReadGuard};
 
 use super::{global::OPEN_DIALOGS, presets, Result};
 use super::{DialogCloseParams, DialogOpenParams, DialogSend};
-use crate::{app, types::Json};
+use crate::app;
 
 #[derive(Debug)]
 pub enum DialogMsg {

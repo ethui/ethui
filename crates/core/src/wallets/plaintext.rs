@@ -4,10 +4,10 @@ use async_trait::async_trait;
 use coins_bip32::path::DerivationPath;
 use ethers::core::k256::ecdsa::SigningKey;
 use ethers::signers::{coins_bip39::English, MnemonicBuilder, Signer};
+use iron_types::ChecksummedAddress;
 use serde::{Deserialize, Serialize};
 
 use super::{utils, wallet::WalletCreate, Result, Wallet, WalletControl};
-use crate::types::{ChecksummedAddress, Json};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(try_from = "Deserializer", rename_all = "camelCase")]
@@ -22,7 +22,7 @@ pub struct PlaintextWallet {
 
 #[async_trait]
 impl WalletCreate for PlaintextWallet {
-    async fn create(params: Json) -> Result<Wallet> {
+    async fn create(params: serde_json::Value) -> Result<Wallet> {
         Ok(Wallet::Plaintext(serde_json::from_value(params)?))
     }
 }
@@ -33,7 +33,7 @@ impl WalletControl for PlaintextWallet {
         self.name.clone()
     }
 
-    async fn update(mut self, params: Json) -> Result<Wallet> {
+    async fn update(mut self, params: serde_json::Value) -> Result<Wallet> {
         Ok(Wallet::Plaintext(serde_json::from_value(params)?))
     }
 

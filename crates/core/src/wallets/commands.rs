@@ -1,5 +1,6 @@
+use iron_types::{ChecksummedAddress, GlobalState, Json};
+
 use super::{utils, Result, Wallet, WalletControl, Wallets};
-use crate::types::{ChecksummedAddress, GlobalState, Json};
 
 /// Lists all wallets
 #[tauri::command]

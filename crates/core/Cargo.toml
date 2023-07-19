@@ -1,8 +1,8 @@
 [package]
 name = "iron-core"
 description = "Iron Wallet core lib"
+version.workspace = true
 authors.workspace = true
-version = "0.4.1"
 edition.workspace = true
 license-file.workspace = true
 homepage.workspace = true
@@ -11,6 +11,8 @@ repository.workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+iron-types = {workspace = true }
+ethers = { workspace = true }
 tauri = { version = "1.2", features = ["api-all", "system-tray"] }
 tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 serde = { version = "1.0", features = ["derive", "std"] }
@@ -23,13 +25,8 @@ tokio = { version = "1.26.0", features = ["full", "sync"] }
 tokio-tungstenite = "0.18.0"
 tungstenite = "0.18.0"
 thiserror = "1.0.40"
-ethers = { version = "2.0.0", features = ["ws"] }
 jsonrpc-core = "18.0.0"
-sqlx = { version = "0.6.3", features = [
-  "runtime-tokio-rustls",
-  "sqlite",
-  "migrate",
-] }
+sqlx = { workspace = true }
 once_cell = "1.17.1"
 url = "2.3.1"
 hex = "0.4.3"

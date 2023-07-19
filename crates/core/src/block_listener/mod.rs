@@ -12,16 +12,17 @@ use ethers::{
     types::{Address, Filter, Log, Trace, U64},
 };
 use futures_util::StreamExt;
+use iron_types::TokenMetadata;
 use log::warn;
 use tokio::sync::mpsc;
 use url::Url;
 
 use self::expanders::{expand_logs, expand_traces};
+use crate::db::DB;
 use crate::{
     abis::IERC20,
     app::{self, Notify},
 };
-use crate::{db::DB, types::TokenMetadata};
 
 #[derive(Debug)]
 pub struct BlockListener {

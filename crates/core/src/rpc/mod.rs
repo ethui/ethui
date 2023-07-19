@@ -11,6 +11,7 @@ use ethers::{
     providers::ProviderError,
     types::{transaction::eip712, Address},
 };
+use iron_types::GlobalState;
 use jsonrpc_core::{ErrorCode, IoHandler, Params};
 use serde_json::json;
 
@@ -18,7 +19,6 @@ pub use self::error::{Error, Result};
 use self::{send_transaction::SendTransaction, sign_message::SignMessage};
 use crate::{
     networks::Networks,
-    types::GlobalState,
     wallets::{WalletControl, Wallets},
 };
 

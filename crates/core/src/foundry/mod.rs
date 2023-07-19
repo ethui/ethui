@@ -9,6 +9,7 @@ use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 use std::{collections::HashMap, path::PathBuf};
 
+use iron_types::GlobalState;
 use once_cell::sync::Lazy;
 use tokio::{
     spawn,
@@ -16,9 +17,8 @@ use tokio::{
 };
 
 use self::watcher::Match;
-use crate::settings::Settings;
-use crate::types::GlobalState;
 use crate::error::Result;
+use crate::settings::Settings;
 
 #[derive(Default)]
 pub struct Foundry {

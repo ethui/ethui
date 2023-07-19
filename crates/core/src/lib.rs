@@ -11,6 +11,5 @@ pub mod networks;
 pub mod peers;
 pub mod rpc;
 pub mod settings;
-pub mod types;
 pub mod wallets;
 pub mod ws;

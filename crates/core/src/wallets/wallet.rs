@@ -1,11 +1,11 @@
 use async_trait::async_trait;
 use enum_dispatch::enum_dispatch;
 use ethers::core::k256::ecdsa::SigningKey;
+use iron_types::{ChecksummedAddress, Json};
 use serde::{Deserialize, Serialize};
 
 use super::hd_wallet::HDWallet;
 use super::{Error, JsonKeystoreWallet, PlaintextWallet, Result};
-use crate::types::{ChecksummedAddress, Json};
 
 #[async_trait]
 #[enum_dispatch(Wallet)]

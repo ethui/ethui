@@ -1,5 +1,9 @@
 [workspace]
-members = ["bin/iron", "crates/core"]
+members = [
+  "bin/iron",
+  "crates/core",
+  "crates/types"
+]
 default-members = ["bin/iron"]
 
 [workspace.package]
@@ -15,6 +19,16 @@ exclude = [
 authors = ["Miguel Palhas <mpalhas@gmail.com>"]
 
 [workspace.dependencies]
+iron-core = { path = "crates/core" }
+iron-types = { path = "crates/types" }
 tokio = { version = "1.26.0", features = ["full", "sync"] }
 thiserror = "1.0.40"
 ethers = { version = "2.0.0", features = ["ws"] }
+sqlx = { version = "0.6.3", features = [
+  "runtime-tokio-rustls",
+  "sqlite",
+  "migrate",
+] }
+serde = { version = "1.0", features = ["derive", "std"] }
+serde_json = "1.0"
+async-trait = "0.1.68"

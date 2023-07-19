@@ -1,19 +1,17 @@
+use ethers::types::{Action, Bytes, Call, Create, CreateResult, Log, Res, Trace};
 use ethers::{
     abi::RawLog,
     contract::EthLogDecode,
     providers::{Http, Middleware, Provider},
-    types::{Action, Bytes, Call, Create, CreateResult, Log, Res, Trace},
 };
 use futures::future::join_all;
+use iron_types::{
+    events::{ContractDeployed, ERC20Transfer, ERC721Transfer, Tx},
+    Event,
+};
 
 use super::{Error, Result};
-use crate::{
-    foundry::calculate_code_hash,
-    types::{
-        events::{ContractDeployed, ERC20Transfer, ERC721Transfer, Tx},
-        Event,
-    },
-};
+use crate::foundry::calculate_code_hash;
 
 pub(super) async fn expand_traces(traces: Vec<Trace>, provider: &Provider<Http>) -> Vec<Event> {
     let result = traces.into_iter().map(|t| expand_trace(t, provider));
@@ -22,7 +20,7 @@ pub(super) async fn expand_traces(traces: Vec<Trace>, provider: &Provider<Http>)
     res.flatten().collect()
 }
 
-pub(super) fn expand_logs(traces: Vec<Log>) -> Vec<crate::types::Event> {
+pub(super) fn expand_logs(traces: Vec<Log>) -> Vec<iron_types::Event> {
     traces.into_iter().filter_map(expand_log).collect()
 }
 

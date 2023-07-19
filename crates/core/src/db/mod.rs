@@ -6,6 +6,7 @@ mod queries;
 use std::{path::PathBuf, str::FromStr};
 
 use ethers::types::{Address, H256, U256};
+use iron_types::{events::Tx, Event, TokenBalance, TokenMetadata};
 use serde::Serialize;
 use sqlx::{
     sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous},
@@ -16,7 +17,6 @@ pub use self::{
     error::{Error, Result},
     pagination::{Paginated, Pagination},
 };
-use crate::types::{events::Tx, Event, TokenBalance, TokenMetadata};
 
 #[derive(Debug, Clone)]
 pub struct DB {

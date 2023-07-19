@@ -1,5 +1,7 @@
+use iron_types::GlobalState;
+
 use super::Peers;
-use crate::{types::GlobalState, ws::Peer};
+use crate::ws::Peer;
 
 #[tauri::command]
 pub async fn peers_get_all() -> Result<Vec<Peer>, String> {

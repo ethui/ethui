@@ -1,6 +1,7 @@
 use std::{collections::HashMap, net::SocketAddr};
 
 use futures_util::{SinkExt, StreamExt};
+use iron_types::GlobalState;
 use log::*;
 use serde::Serialize;
 use tokio::{
@@ -18,7 +19,6 @@ use crate::{
     error::{Error, Result},
     peers::Peers,
     rpc::Handler,
-    types::GlobalState,
 };
 
 #[derive(Clone, Debug, Serialize)]

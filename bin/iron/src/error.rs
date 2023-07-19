@@ -1,5 +1,3 @@
-use crate::app;
-
 #[derive(thiserror::Error, Debug)]
 pub enum AppError {
     #[error(transparent)]

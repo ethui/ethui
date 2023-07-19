@@ -6,12 +6,13 @@ use std::{
 };
 
 use async_trait::async_trait;
+use iron_types::GlobalState;
 use once_cell::sync::OnceCell;
 use serde::Deserialize;
 use tokio::sync::{mpsc, RwLock, RwLockReadGuard, RwLockWriteGuard};
 
 use super::{network::Network, Networks};
-use crate::{app, db::DB, types::GlobalState};
+use crate::{app, db::DB};
 
 static NETWORKS: OnceCell<RwLock<Networks>> = OnceCell::new();
 
