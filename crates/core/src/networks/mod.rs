@@ -10,13 +10,14 @@ use std::{
 };
 
 use ethers::providers::{Http, Provider};
+use iron_db::DB;
 use iron_types::GlobalState;
 use serde::Serialize;
 use tokio::sync::mpsc;
 
 pub use self::error::{Error, Result};
 pub use self::network::Network;
-use crate::{app, db::DB, peers::Peers};
+use crate::{app, peers::Peers};
 
 #[derive(Debug, Clone, Serialize)]
 pub struct Networks {

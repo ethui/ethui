@@ -12,6 +12,7 @@ tauri-build = { version = "1.2", features = [] }
 [dependencies]
 iron-core = { workspace = true }
 iron-types = { workspace =true }
+iron-db = { workspace =true }
 tauri = { version = "1.2", features = ["api-all", "system-tray"] }
 tokio = { version = "1.26.0", features = ["full", "sync"] }
 fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs", rev = "1a4c224" }

@@ -21,6 +21,8 @@ authors = ["Miguel Palhas <mpalhas@gmail.com>"]
 [workspace.dependencies]
 iron-core = { path = "crates/core" }
 iron-types = { path = "crates/types" }
+iron-ws = { path = "crates/ws" }
+iron-db = { path = "crates/db" }
 tokio = { version = "1.26.0", features = ["full", "sync"] }
 thiserror = "1.0.40"
 ethers = { version = "2.0.0", features = ["ws"] }

@@ -4,7 +4,7 @@ pub enum AppError {
     Core(#[from] iron_core::error::Error),
 
     #[error(transparent)]
-    DB(#[from] iron_core::db::Error),
+    DB(#[from] iron_db::Error),
 
     #[error(transparent)]
     FixPathEnv(#[from] fix_path_env::Error),

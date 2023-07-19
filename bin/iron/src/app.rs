@@ -10,11 +10,8 @@ use tauri::{Menu, Submenu, WindowMenuEvent};
 use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, StateFlags};
 use tokio::sync::mpsc;
 
-use iron_core::{
-    alchemy,
-    db::{self, DB},
-    dialogs, foundry, networks, peers, rpc, settings, wallets,
-};
+use iron_core::{alchemy, dialogs, foundry, networks, peers, rpc, settings, wallets};
+use iron_db::DB;
 
 pub struct IronApp {
     pub sender: mpsc::UnboundedSender<Event>,
@@ -40,10 +37,10 @@ impl IronApp {
                 networks::commands::networks_set_list,
                 networks::commands::networks_set_current,
                 networks::commands::networks_reset,
-                db::commands::db_get_transactions,
-                db::commands::db_get_contracts,
-                db::commands::db_get_erc20_balances,
-                db::commands::db_get_native_balance,
+                iron_db::commands::db_get_transactions,
+                iron_db::commands::db_get_contracts,
+                iron_db::commands::db_get_erc20_balances,
+                iron_db::commands::db_get_native_balance,
                 peers::commands::peers_get_all,
                 wallets::commands::wallets_get_all,
                 wallets::commands::wallets_get_current,

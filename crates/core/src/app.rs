@@ -54,18 +54,3 @@ pub static SETTINGS_PATH: OnceCell<PathBuf> = OnceCell::new();
 /// a global sender used internally to go through the app's event loop, which is required for
 /// opening dialogs
 pub static APP_SND: OnceCell<mpsc::UnboundedSender<Event>> = OnceCell::new();
-
-#[cfg(not(target_os = "linux"))]
-fn on_menu_event(event: WindowMenuEvent) {
-    match event.menu_item_id() {
-        "quit" => {
-            std::process::exit(0);
-        }
-        "close" => {
-            event.window().close().unwrap();
-        }
-        path => {
-            event.window().emit("go", path).unwrap();
-        }
-    }
-}

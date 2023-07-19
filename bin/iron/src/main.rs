@@ -7,9 +7,10 @@ mod error;
 use error::Result;
 
 use iron_core::{
-    alchemy::Alchemy, db::DB, foundry::Foundry, networks::Networks, peers::Peers,
-    settings::Settings, wallets::Wallets, ws,
+    alchemy::Alchemy, foundry::Foundry, networks::Networks, peers::Peers, settings::Settings,
+    wallets::Wallets, ws,
 };
+use iron_db::DB;
 use iron_types::GlobalState;
 
 #[tokio::main]

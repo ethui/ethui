@@ -1,7 +1,6 @@
 [package]
-name = "iron-core"
-description = "Iron Wallet core lib"
-version.workspace = true
+name = "iron-db"
+version = "0.1.0"
 authors.workspace = true
 edition.workspace = true
 license-file.workspace = true
@@ -11,8 +10,7 @@ repository.workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-iron-types = {workspace = true }
-iron-db = {workspace = true }
+iron-types = { workspace = true }
 ethers = { workspace = true }
 tauri = { version = "1.2", features = ["api-all", "system-tray"] }
 tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }

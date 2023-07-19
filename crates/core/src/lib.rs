@@ -3,7 +3,6 @@ pub mod alchemy;
 pub mod app;
 pub mod block_listener;
 pub mod crypto;
-pub mod db;
 pub mod dialogs;
 pub mod error;
 pub mod foundry;

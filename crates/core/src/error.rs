@@ -3,7 +3,7 @@ use crate::app;
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error(transparent)]
-    DB(#[from] crate::db::Error),
+    DB(#[from] iron_db::Error),
 
     #[error(transparent)]
     Websocket(#[from] tungstenite::Error),

@@ -11,6 +11,7 @@ use ethers::providers::{
     Http, HttpRateLimitRetryPolicy, Middleware, Provider, RetryClient, RetryClientBuilder,
 };
 use futures::{stream, StreamExt};
+use iron_db::DB;
 use iron_types::{ChecksummedAddress, GlobalState};
 use once_cell::sync::Lazy;
 use serde_json::json;
@@ -21,7 +22,6 @@ use url::Url;
 pub use self::error::{Error, Result};
 use crate::{
     app::{self, Notify},
-    db::DB,
     settings::Settings,
 };
 

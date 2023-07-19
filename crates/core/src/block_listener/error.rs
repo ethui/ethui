@@ -8,7 +8,7 @@ pub enum Error {
     Watcher,
 
     #[error(transparent)]
-    DB(#[from] crate::db::Error),
+    DB(#[from] iron_db::Error),
 
     #[error(transparent)]
     WindowSend(#[from] tokio::sync::mpsc::error::SendError<app::Event>),

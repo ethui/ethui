@@ -1,12 +1,13 @@
 use std::sync::{Arc, Mutex};
 
 use ethers::providers::{Http, Provider};
+use iron_db::DB;
 use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
 use url::Url;
 
 use super::{Error, Result};
-use crate::{app, block_listener::BlockListener, db::DB};
+use crate::{app, block_listener::BlockListener};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Network {

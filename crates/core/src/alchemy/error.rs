@@ -5,7 +5,7 @@ use crate::app;
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error(transparent)]
-    DB(#[from] crate::db::Error),
+    DB(#[from] iron_db::Error),
 
     #[error("IO error: {0}")]
     IO(#[from] std::io::Error),

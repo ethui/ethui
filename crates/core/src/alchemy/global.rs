@@ -1,10 +1,11 @@
 use async_trait::async_trait;
+use iron_db::DB;
 use iron_types::GlobalState;
 use once_cell::sync::OnceCell;
 use tokio::sync::{mpsc, RwLock, RwLockReadGuard, RwLockWriteGuard};
 
 use super::Alchemy;
-use crate::{app, db::DB};
+use crate::app;
 
 static ALCHEMY: OnceCell<RwLock<Alchemy>> = OnceCell::new();
 
