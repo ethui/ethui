@@ -14,36 +14,17 @@ authors.workspace = true
 iron-types = { workspace = true }
 iron-rpc = { workspace = true }
 iron-peers = { workspace = true }
-ethers = { workspace = true }
 iron-sync-anvil = { workspace = true }
-tauri = { version = "1.2", features = ["api-all", "system-tray"] }
-tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
-serde = { version = "1.0", features = ["derive", "std"] }
-serde_json = "1.0"
 
-eyre = "0.6.8"
+ethers = { workspace = true }
+tokio = { workspace = true }
+tauri = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+
 futures-util = "0.3.27"
 log = "0.4.17"
-tokio = { version = "1.26.0", features = ["full", "sync"] }
 tokio-tungstenite = "0.18.0"
 tungstenite = "0.18.0"
 thiserror = "1.0.40"
-jsonrpc-core = "18.0.0"
-sqlx = { workspace = true }
-once_cell = "1.17.1"
 url = "2.3.1"
-hex = "0.4.3"
-async-trait = "0.1.68"
-urlencoding = "2.1.2"
-enum_dispatch = "0.3.11"
-coins-bip32 = "0.8.3"
-glob = "0.3.1"
-notify = "6.0.0"
-futures = "0.3.28"
-regex = "1.8.1"
-anyhow = "1.0.71"
-secrets = { version = "1.2.0", features = ["use-libsodium-sys"] }
-chacha20poly1305 = "0.10.1"
-rust-argon2 = "1.0.0"
-aead = { version = "0.5.2", features = ["stream"] }
-zeroize = "1.6.0"
