@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 
-use iron_core::app::Event;
+use iron_types::{app_events, AppEvent};
+
 use tauri::{
     AppHandle, Builder, CustomMenuItem, GlobalWindowEvent, Manager, SystemTray, SystemTrayEvent,
     SystemTrayMenu, SystemTrayMenuItem, WindowBuilder, WindowEvent, WindowUrl,
@@ -14,7 +15,7 @@ use iron_core::{alchemy, dialogs, foundry, networks, peers, rpc, settings, walle
 use iron_db::DB;
 
 pub struct IronApp {
-    pub sender: mpsc::UnboundedSender<Event>,
+    pub sender: mpsc::UnboundedSender<AppEvent>,
     app: Option<tauri::App>,
 }
 
@@ -224,9 +225,9 @@ fn show_main_window(app: &AppHandle) {
     }
 }
 
-async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<Event>) {
+async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<AppEvent>) {
     while let Some(msg) = rcv.recv().await {
-        use Event::*;
+        use AppEvent::*;
 
         match msg {
             Notify(msg) => {
@@ -237,7 +238,7 @@ async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<Even
                 }
             }
 
-            DialogOpen(dialogs::DialogOpenParams {
+            DialogOpen(app_events::DialogOpen {
                 label,
                 title,
                 url,
@@ -252,13 +253,13 @@ async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<Even
                     .unwrap();
             }
 
-            DialogClose(dialogs::DialogCloseParams { label }) => {
+            DialogClose(app_events::DialogClose { label }) => {
                 if let Some(window) = handle.get_window(&label) {
                     window.close().unwrap();
                 }
             }
 
-            DialogSend(dialogs::DialogSend {
+            DialogSend(app_events::DialogSend {
                 label,
                 event_type,
                 payload,

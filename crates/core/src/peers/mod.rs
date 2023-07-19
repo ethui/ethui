@@ -3,23 +3,23 @@ mod global;
 
 use std::{collections::HashMap, net::SocketAddr};
 
-use iron_types::ChecksummedAddress;
+use iron_types::{AppEvent, AppNotify, ChecksummedAddress};
 use log::warn;
 use serde::Serialize;
 use serde_json::json;
 use tokio::sync::mpsc;
 
-use crate::{app, ws::Peer};
+use crate::ws::Peer;
 
 /// Tracks a list of peers, usually browser tabs, that connect to the app
 #[derive(Debug)]
 pub struct Peers {
     map: HashMap<SocketAddr, Peer>,
-    window_snd: mpsc::UnboundedSender<app::Event>,
+    window_snd: mpsc::UnboundedSender<AppEvent>,
 }
 
 impl Peers {
-    pub fn new(window_snd: mpsc::UnboundedSender<app::Event>) -> Self {
+    pub fn new(window_snd: mpsc::UnboundedSender<AppEvent>) -> Self {
         Self {
             map: HashMap::new(),
             window_snd,
@@ -30,7 +30,7 @@ impl Peers {
     pub fn add_peer(&mut self, peer: Peer) {
         self.map.insert(peer.socket, peer);
         self.window_snd
-            .send(app::Notify::PeersUpdated.into())
+            .send(AppNotify::PeersUpdated.into())
             .unwrap();
     }
 
@@ -38,7 +38,7 @@ impl Peers {
     pub fn remove_peer(&mut self, peer: SocketAddr) {
         self.map.remove(&peer);
         self.window_snd
-            .send(app::Notify::PeersUpdated.into())
+            .send(AppNotify::PeersUpdated.into())
             .unwrap();
     }
 

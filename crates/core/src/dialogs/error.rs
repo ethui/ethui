@@ -1,8 +1,6 @@
 use serde::Serialize;
 use tokio::sync::mpsc;
 
-use crate::app;
-
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error(transparent)]
@@ -12,7 +10,7 @@ pub enum Error {
     Send(#[from] mpsc::error::SendError<super::handle::DialogMsg>),
 
     #[error(transparent)]
-    WindowSend(#[from] mpsc::error::SendError<app::Event>),
+    WindowSend(#[from] mpsc::error::SendError<iron_types::AppEvent>),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

@@ -14,7 +14,7 @@ use std::{
 };
 
 pub use error::{Error, Result};
-use iron_types::{ChecksummedAddress, GlobalState, Json};
+use iron_types::{AppEvent, AppNotify, ChecksummedAddress, GlobalState, Json};
 use serde::Serialize;
 use tokio::sync::mpsc;
 
@@ -24,7 +24,7 @@ pub use self::{
     plaintext::PlaintextWallet,
     wallet::{Wallet, WalletControl},
 };
-use crate::{app, peers::Peers};
+use crate::peers::Peers;
 
 /// Maintains a list of Ethereum wallets, including keeping track of the global current wallet &
 /// address
@@ -36,7 +36,7 @@ pub struct Wallets {
     current: usize,
 
     #[serde(skip)]
-    window_snd: mpsc::UnboundedSender<app::Event>,
+    window_snd: mpsc::UnboundedSender<AppEvent>,
 
     #[serde(skip)]
     file: Option<PathBuf>,
@@ -165,7 +165,7 @@ impl Wallets {
 
     async fn on_wallet_changed(&self) -> Result<()> {
         self.notify_peers().await;
-        self.window_snd.send(app::Notify::WalletsChanged.into())?;
+        self.window_snd.send(AppNotify::WalletsChanged.into())?;
 
         Ok(())
     }

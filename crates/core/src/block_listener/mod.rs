@@ -13,16 +13,13 @@ use ethers::{
 };
 use futures_util::StreamExt;
 use iron_db::DB;
-use iron_types::TokenMetadata;
+use iron_types::{AppEvent, AppNotify, TokenMetadata};
 use log::warn;
 use tokio::sync::mpsc;
 use url::Url;
 
 use self::expanders::{expand_logs, expand_traces};
-use crate::{
-    abis::IERC20,
-    app::{self, Notify},
-};
+use crate::abis::IERC20;
 
 #[derive(Debug)]
 pub struct BlockListener {
@@ -30,7 +27,7 @@ pub struct BlockListener {
     http_url: Url,
     ws_url: Url,
     quit_snd: Option<mpsc::Sender<()>>,
-    window_snd: mpsc::UnboundedSender<app::Event>,
+    window_snd: mpsc::UnboundedSender<AppEvent>,
     db: DB,
 }
 
@@ -48,7 +45,7 @@ impl BlockListener {
         http_url: Url,
         ws_url: Url,
         db: DB,
-        window_snd: mpsc::UnboundedSender<app::Event>,
+        window_snd: mpsc::UnboundedSender<AppEvent>,
     ) -> Self {
         Self {
             chain_id,
@@ -212,7 +209,7 @@ async fn watch(
 async fn process(
     http_url: Url,
     mut block_rcv: mpsc::UnboundedReceiver<Msg>,
-    window_snd: mpsc::UnboundedSender<app::Event>,
+    window_snd: mpsc::UnboundedSender<AppEvent>,
     chain_id: u32,
     db: DB,
 ) -> Result<()> {
@@ -248,8 +245,8 @@ async fn process(
         // don't emit events until we're catching up
         // otherwise we spam too much during that phase
         if caught_up {
-            window_snd.send(Notify::TxsUpdated.into())?;
-            window_snd.send(Notify::BalancesUpdated.into())?;
+            window_snd.send(AppNotify::TxsUpdated.into())?;
+            window_snd.send(AppNotify::BalancesUpdated.into())?;
         }
     }
 

@@ -2,12 +2,13 @@ use std::sync::{Arc, Mutex};
 
 use ethers::providers::{Http, Provider};
 use iron_db::DB;
+use iron_types::AppEvent;
 use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
 use url::Url;
 
 use super::{Error, Result};
-use crate::{app, block_listener::BlockListener};
+use crate::block_listener::BlockListener;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Network {
@@ -82,7 +83,7 @@ impl Network {
     pub fn reset_listener(
         &mut self,
         db: DB,
-        window_snd: mpsc::UnboundedSender<app::Event>,
+        window_snd: mpsc::UnboundedSender<AppEvent>,
     ) -> Result<()> {
         if let Some(listener) = self.listener.as_ref() {
             listener.lock().unwrap().stop();

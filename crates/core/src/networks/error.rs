@@ -1,4 +1,4 @@
-use crate::app;
+use iron_types::AppEvent;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -9,7 +9,7 @@ pub enum Error {
     Serde(#[from] serde_json::Error),
 
     #[error("error sending event to window: {0}")]
-    WindowSend(#[from] tokio::sync::mpsc::error::SendError<app::Event>),
+    WindowSend(#[from] tokio::sync::mpsc::error::SendError<AppEvent>),
 
     #[error(transparent)]
     Url(#[from] url::ParseError),

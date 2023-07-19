@@ -1,17 +1,16 @@
 use async_trait::async_trait;
 use iron_db::DB;
-use iron_types::GlobalState;
+use iron_types::{AppEvent, GlobalState};
 use once_cell::sync::OnceCell;
 use tokio::sync::{mpsc, RwLock, RwLockReadGuard, RwLockWriteGuard};
 
 use super::Alchemy;
-use crate::app;
 
 static ALCHEMY: OnceCell<RwLock<Alchemy>> = OnceCell::new();
 
 #[async_trait]
 impl GlobalState for Alchemy {
-    type Initializer = (DB, mpsc::UnboundedSender<app::Event>);
+    type Initializer = (DB, mpsc::UnboundedSender<AppEvent>);
 
     async fn init(args: Self::Initializer) {
         let db = args.0;

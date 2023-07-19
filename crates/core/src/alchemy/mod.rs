@@ -12,7 +12,7 @@ use ethers::providers::{
 };
 use futures::{stream, StreamExt};
 use iron_db::DB;
-use iron_types::{ChecksummedAddress, GlobalState};
+use iron_types::{AppEvent, AppNotify, ChecksummedAddress, GlobalState};
 use once_cell::sync::Lazy;
 use serde_json::json;
 use tokio::sync::mpsc;
@@ -20,10 +20,7 @@ use types::{Balances, Transfers};
 use url::Url;
 
 pub use self::error::{Error, Result};
-use crate::{
-    app::{self, Notify},
-    settings::Settings,
-};
+use crate::settings::Settings;
 
 static ENDPOINTS: Lazy<HashMap<u32, Url>> = Lazy::new(|| {
     HashMap::from([
@@ -41,11 +38,11 @@ static ENDPOINTS: Lazy<HashMap<u32, Url>> = Lazy::new(|| {
 #[derive(Debug)]
 pub struct Alchemy {
     db: DB,
-    window_snd: mpsc::UnboundedSender<app::Event>,
+    window_snd: mpsc::UnboundedSender<AppEvent>,
 }
 
 impl Alchemy {
-    pub fn new(db: DB, window_snd: mpsc::UnboundedSender<app::Event>) -> Self {
+    pub fn new(db: DB, window_snd: mpsc::UnboundedSender<AppEvent>) -> Self {
         Self { db, window_snd }
     }
 
@@ -65,7 +62,7 @@ impl Alchemy {
         self.db
             .save_erc20_balances(chain_id, res.address, balances)
             .await?;
-        self.window_snd.send(Notify::BalancesUpdated.into())?;
+        self.window_snd.send(AppNotify::BalancesUpdated.into())?;
 
         Ok(())
     }
@@ -77,7 +74,7 @@ impl Alchemy {
         self.db
             .save_native_balance(balance, chain_id, address)
             .await?;
-        self.window_snd.send(Notify::BalancesUpdated.into())?;
+        self.window_snd.send(AppNotify::BalancesUpdated.into())?;
         Ok(())
     }
 
@@ -125,7 +122,7 @@ impl Alchemy {
 
             self.db.save_events(chain_id, txs).await?;
             self.db.set_tip(chain_id, address, latest.as_u64()).await?;
-            self.window_snd.send(Notify::TxsUpdated.into())?;
+            self.window_snd.send(AppNotify::TxsUpdated.into())?;
         }
 
         Ok(())

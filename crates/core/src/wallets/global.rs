@@ -5,20 +5,20 @@ use std::{
 };
 
 use async_trait::async_trait;
-use iron_types::GlobalState;
+use iron_types::{AppEvent, GlobalState};
 use once_cell::sync::OnceCell;
 use serde::Deserialize;
 use tokio::sync::{mpsc, RwLock, RwLockReadGuard, RwLockWriteGuard};
 
 use super::Wallets;
-use crate::{app, wallets::Wallet};
+use crate::wallets::Wallet;
 
 static WALLETS: OnceCell<RwLock<Wallets>> = OnceCell::new();
 
 #[async_trait]
 impl GlobalState for Wallets {
     /// initializes through the $XDG_CONFIG/iron/wallets.json file
-    type Initializer = (PathBuf, mpsc::UnboundedSender<app::Event>);
+    type Initializer = (PathBuf, mpsc::UnboundedSender<AppEvent>);
 
     async fn init(args: Self::Initializer) {
         let pathbuf = args.0;

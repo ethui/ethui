@@ -1,4 +1,4 @@
-use crate::app;
+use iron_types::AppEvent;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -12,7 +12,7 @@ pub enum Error {
     IO(#[from] std::io::Error),
 
     #[error(transparent)]
-    WindowSend(#[from] tokio::sync::mpsc::error::SendError<app::Event>),
+    WindowSend(#[from] tokio::sync::mpsc::error::SendError<AppEvent>),
 
     #[error(transparent)]
     TauriError(#[from] tauri::Error),

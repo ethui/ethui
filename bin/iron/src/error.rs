@@ -1,3 +1,5 @@
+use iron_types::AppEvent;
+
 #[derive(thiserror::Error, Debug)]
 pub enum AppError {
     #[error(transparent)]
@@ -13,7 +15,7 @@ pub enum AppError {
     Eyre(#[from] color_eyre::eyre::Error),
 
     #[error(transparent)]
-    WindowSend(#[from] tokio::sync::mpsc::error::SendError<iron_core::app::Event>),
+    WindowSend(#[from] tokio::sync::mpsc::error::SendError<AppEvent>),
 
     #[error(transparent)]
     TauriError(#[from] tauri::Error),

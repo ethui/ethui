@@ -11,13 +11,13 @@ use std::{
 
 use ethers::providers::{Http, Provider};
 use iron_db::DB;
-use iron_types::GlobalState;
+use iron_types::{AppEvent, AppNotify, GlobalState};
 use serde::Serialize;
 use tokio::sync::mpsc;
 
 pub use self::error::{Error, Result};
 pub use self::network::Network;
-use crate::{app, peers::Peers};
+use crate::peers::Peers;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct Networks {
@@ -28,7 +28,7 @@ pub struct Networks {
     file: PathBuf,
 
     #[serde(skip)]
-    window_snd: mpsc::UnboundedSender<app::Event>,
+    window_snd: mpsc::UnboundedSender<AppEvent>,
 
     #[serde(skip)]
     db: DB,
@@ -87,7 +87,7 @@ impl Networks {
 
     fn on_network_changed(&self) -> Result<()> {
         self.notify_peers();
-        self.window_snd.send(app::Notify::NetworkChanged.into())?;
+        self.window_snd.send(AppNotify::NetworkChanged.into())?;
 
         Ok(())
     }

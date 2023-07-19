@@ -1,7 +1,6 @@
+use iron_types::AppEvent;
 use serde::Serialize;
 use tokio::sync::oneshot;
-
-use crate::app;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -36,7 +35,7 @@ pub enum Error {
     InvalidKey(String),
 
     #[error("error sending event to window: {0}")]
-    WindowSend(#[from] tokio::sync::mpsc::error::SendError<app::Event>),
+    WindowSend(#[from] tokio::sync::mpsc::error::SendError<AppEvent>),
 
     #[error("invalid wallet type: {0}")]
     InvalidWalletType(String),
