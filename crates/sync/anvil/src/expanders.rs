@@ -9,9 +9,10 @@ use iron_types::{
     events::{ContractDeployed, ERC20Transfer, ERC721Transfer, Tx},
     Event,
 };
+use std::collections::hash_map::DefaultHasher;
+use std::hash::{Hash, Hasher};
 
 use super::{Error, Result};
-use crate::foundry::calculate_code_hash;
 
 pub(super) async fn expand_traces(traces: Vec<Trace>, provider: &Provider<Http>) -> Vec<Event> {
     let result = traces.into_iter().map(|t| expand_trace(t, provider));
@@ -101,7 +102,7 @@ async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Result<Vec<Eve
 fn expand_log(log: Log) -> Option<Event> {
     let raw = RawLog::from((log.topics, log.data.to_vec()));
 
-    use crate::abis::{
+    use iron_abis::{
         ierc20::{self, IERC20Events},
         ierc721::{self, IERC721Events},
     };
@@ -137,4 +138,11 @@ fn expand_log(log: Log) -> Option<Event> {
     };
 
     None
+}
+
+// TODO: reuse this from the foundry module
+pub fn calculate_code_hash<T: Hash>(t: &T) -> u64 {
+    let mut s = DefaultHasher::new();
+    t.hash(&mut s);
+    s.finish()
 }

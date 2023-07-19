@@ -2841,6 +2841,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "iron-abis"
+version = "0.4.1"
+dependencies = [
+ "ethers",
+ "serde",
+]
+
+[[package]]
 name = "iron-core"
 version = "0.4.1"
 dependencies = [
@@ -2857,6 +2865,7 @@ dependencies = [
  "glob",
  "hex",
  "iron-db",
+ "iron-sync-anvil",
  "iron-types",
  "jsonrpc-core",
  "log",
@@ -2908,6 +2917,42 @@ dependencies = [
  "sqlx",
  "tauri",
  "tauri-plugin-window-state",
+ "thiserror",
+ "tokio",
+ "tokio-tungstenite",
+ "tungstenite",
+ "url",
+ "urlencoding",
+ "zeroize",
+]
+
+[[package]]
+name = "iron-sync-anvil"
+version = "0.4.1"
+dependencies = [
+ "aead",
+ "anyhow",
+ "async-trait",
+ "chacha20poly1305",
+ "coins-bip32",
+ "enum_dispatch",
+ "ethers",
+ "futures",
+ "futures-util",
+ "glob",
+ "hex",
+ "iron-abis",
+ "iron-db",
+ "iron-types",
+ "jsonrpc-core",
+ "log",
+ "notify",
+ "once_cell",
+ "regex",
+ "rust-argon2",
+ "serde",
+ "serde_json",
+ "sqlx",
  "thiserror",
  "tokio",
  "tokio-tungstenite",

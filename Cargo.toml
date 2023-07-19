@@ -1,8 +1,11 @@
 [workspace]
 members = [
   "bin/iron",
+  "crates/abis",
   "crates/core",
-  "crates/types"
+  "crates/types",
+  "crates/db",
+  "crates/sync/anvil",
 ]
 default-members = ["bin/iron"]
 
@@ -21,8 +24,9 @@ authors = ["Miguel Palhas <mpalhas@gmail.com>"]
 [workspace.dependencies]
 iron-core = { path = "crates/core" }
 iron-types = { path = "crates/types" }
-iron-ws = { path = "crates/ws" }
+iron-abis = { path = "crates/abis" }
 iron-db = { path = "crates/db" }
+iron-sync-anvil = { path = "crates/sync/anvil" }
 tokio = { version = "1.26.0", features = ["full", "sync"] }
 thiserror = "1.0.40"
 ethers = { version = "2.0.0", features = ["ws"] }

@@ -19,7 +19,7 @@ use tokio::sync::mpsc;
 use url::Url;
 
 use self::expanders::{expand_logs, expand_traces};
-use crate::abis::IERC20;
+use iron_abis::IERC20;
 
 #[derive(Debug)]
 pub struct BlockListener {
@@ -253,10 +253,7 @@ async fn process(
     Ok(())
 }
 
-pub(super) async fn fetch_erc20_metadata(
-    address: Address,
-    client: &Provider<Http>,
-) -> TokenMetadata {
+pub async fn fetch_erc20_metadata(address: Address, client: &Provider<Http>) -> TokenMetadata {
     let contract = IERC20::new(address, Arc::new(client));
 
     TokenMetadata {

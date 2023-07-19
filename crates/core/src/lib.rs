@@ -1,7 +1,6 @@
 pub mod abis;
 pub mod alchemy;
 pub mod app;
-pub mod block_listener;
 pub mod crypto;
 pub mod dialogs;
 pub mod error;
