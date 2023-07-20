@@ -19,9 +19,9 @@ tauri = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 once_cell = { workspace = true }
+tracing = { workspace = true }
 
 futures-util = "0.3.27"
-log = "0.4.17"
 tokio-tungstenite = "0.18.0"
 tungstenite = "0.18.0"
 thiserror = "1.0.40"

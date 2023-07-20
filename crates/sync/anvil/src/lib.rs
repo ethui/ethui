@@ -17,8 +17,8 @@ pub use global::init;
 use iron_abis::IERC20;
 use iron_db::DB;
 use iron_types::{TokenMetadata, UINotify, UISender};
-use log::warn;
 use tokio::sync::mpsc;
+use tracing::warn;
 use url::Url;
 
 use self::expanders::{expand_logs, expand_traces};

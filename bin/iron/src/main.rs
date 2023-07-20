@@ -8,15 +8,10 @@ use error::AppResult;
 
 #[tokio::main]
 async fn main() -> AppResult<()> {
-    color_eyre::install()?;
-    env_logger::init();
+    iron_tracing::init()?;
     fix_path_env::fix()?;
 
-    let app = app::IronApp::build().await?;
-
-    tokio::spawn(async { iron_ws::ws_server_loop().await });
-
-    app.run();
+    app::IronApp::build().await?.run();
 
     Ok(())
 }

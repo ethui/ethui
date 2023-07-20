@@ -2,6 +2,7 @@
 members = [
   "bin/iron",
   "crates/settings",
+  "crates/tracing",
   "crates/networks",
   "crates/wallets",
   "crates/ws",
@@ -43,6 +44,7 @@ iron-db = { path = "crates/db" }
 iron-sync-anvil = { path = "crates/sync/anvil" }
 iron-sync-alchemy = { path = "crates/sync/alchemy" }
 iron-broadcast = { path = "crates/broadcast" }
+iron-tracing = { path = "crates/tracing" }
 tokio = { version = "1.26.0", features = ["full", "sync"] }
 thiserror = "1.0.40"
 ethers = { version = "2.0.0", features = ["ws"] }
@@ -57,3 +59,4 @@ async-trait = "0.1.68"
 tauri = { version = "1.2", features = ["api-all", "system-tray"] }
 once_cell = "1.17.1"
 secrets = { version = "1.2.0", features = ["use-libsodium-sys"] }
+tracing = "0.1.0"

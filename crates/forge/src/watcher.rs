@@ -37,7 +37,7 @@ pub(super) async fn async_watch<P: AsRef<Path>>(
                     snd.send(m).unwrap();
                 }
             }
-            Err(e) => log::warn!("watch error: {:?}", e),
+            Err(e) => tracing::warn!("watch error: {:?}", e),
         }
     }
 

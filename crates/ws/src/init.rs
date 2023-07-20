@@ -4,13 +4,14 @@ use iron_types::{GlobalState, UISender};
 use once_cell::sync::OnceCell;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
-use crate::peers::Peers;
+use crate::{peers::Peers, server::server_loop};
 
 static PEERS: OnceCell<RwLock<Peers>> = OnceCell::new();
 
-pub async fn init(sender: UISender) {
+pub fn init(sender: UISender) {
     PEERS.set(RwLock::new(Peers::new(sender))).unwrap();
 
+    tokio::spawn(async { server_loop().await });
     tokio::spawn(async { receiver().await });
 }
 
