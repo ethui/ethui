@@ -1,7 +1,6 @@
 use std::{collections::HashMap, net::SocketAddr};
 
 use iron_types::{ChecksummedAddress, UINotify, UISender};
-use log::warn;
 use serde::Serialize;
 use serde_json::json;
 use tokio::sync::mpsc;
@@ -97,7 +96,7 @@ impl Peers {
             peer.sender
                 .send(serde_json::to_value(&msg).unwrap())
                 .unwrap_or_else(|e| {
-                    warn!("Failed to send message to peer: {}", e);
+                    tracing::warn!("Failed to send message to peer: {}", e);
                 });
         });
     }

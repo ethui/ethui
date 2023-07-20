@@ -12,13 +12,13 @@ pub enum AppError {
     FixPathEnv(#[from] fix_path_env::Error),
 
     #[error(transparent)]
-    Eyre(#[from] color_eyre::eyre::Error),
-
-    #[error(transparent)]
     WindowSend(#[from] tokio::sync::mpsc::error::SendError<UIEvent>),
 
     #[error(transparent)]
     TauriError(#[from] tauri::Error),
+
+    #[error(transparent)]
+    Tracing(#[from] iron_tracing::TracingError),
 }
 
 pub type AppResult<T> = std::result::Result<T, AppError>;

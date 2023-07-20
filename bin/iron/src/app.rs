@@ -107,6 +107,8 @@ impl IronApp {
     }
 
     pub fn run(self) {
+        tracing::info!("Starting Iron");
+
         self.app.run(|_, event| {
             if let tauri::RunEvent::ExitRequested { api, .. } = event {
                 api.prevent_exit();
@@ -166,7 +168,7 @@ fn on_menu_event(event: WindowMenuEvent) {
 async fn init(app: &tauri::App, db: &DB, snd: UISender) -> AppResult<()> {
     iron_dialogs::init(snd.clone());
     iron_settings::init(resource(app, "settings.json")).await;
-    iron_ws::init(snd.clone()).await;
+    iron_ws::init(snd.clone());
     iron_wallets::init(resource(app, "wallets.json"), snd.clone()).await;
     iron_networks::init(resource(app, "networks.json"), snd.clone()).await;
     iron_forge::init().await?;
