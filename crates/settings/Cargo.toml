@@ -18,6 +18,5 @@ serde_json = { workspace = true }
 tauri = { workspace = true }
 tokio = { workspace = true }
 thiserror = { workspace = true }
-sqlx = { workspace = true }
 once_cell = { workspace = true }
 async-trait = { workspace = true }

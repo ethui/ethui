@@ -11,13 +11,7 @@ authors.workspace = true
 [dependencies]
 iron-globals = { workspace = true }
 iron-types = { workspace = true }
-iron-settings = { workspace = true }
-iron-db = { workspace = true }
-iron-networks = { workspace = true }
-iron-peers = { workspace = true }
-iron-sync-anvil = { workspace = true }
 
-ethers = { workspace = true }
 tauri = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }

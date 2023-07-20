@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use iron_db::DB;
-use iron_types::{app_events, AppEvent};
+use iron_types::{app_events, AppEvent, GlobalState};
 use tauri::{
     AppHandle, Builder, CustomMenuItem, GlobalWindowEvent, Manager, SystemTray, SystemTrayEvent,
     SystemTrayMenu, SystemTrayMenuItem, WindowBuilder, WindowEvent, WindowUrl,
@@ -11,13 +11,15 @@ use tauri::{Menu, Submenu, WindowMenuEvent};
 use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, StateFlags};
 use tokio::sync::mpsc;
 
+use crate::error::AppResult;
+
 pub struct IronApp {
-    pub sender: mpsc::UnboundedSender<AppEvent>,
-    app: Option<tauri::App>,
+    app: tauri::App,
+    //pub db: DB,
 }
 
 impl IronApp {
-    pub fn build() -> Self {
+    pub async fn build() -> AppResult<Self> {
         let (snd, rcv) = mpsc::unbounded_channel();
 
         let tray = Self::build_tray();
@@ -94,35 +96,28 @@ impl IronApp {
             .build(tauri::generate_context!())
             .expect("error while running tauri application");
 
-        let res = Self {
-            app: Some(app),
-            sender: snd.clone(),
-        };
-
         iron_globals::SETTINGS_PATH
-            .set(res.get_resource_path("settings.json"))
+            .set(resource(&app, "settings.json"))
             .unwrap();
-        iron_globals::APP_SND.set(snd).unwrap();
+        iron_globals::APP_SND.set(snd.clone()).unwrap();
+        let db = DB::connect(&resource(&app, "db.sqlite3")).await?;
+        iron_settings::Settings::init(resource(&app, "settings.json")).await;
+        iron_peers::Peers::init(snd.clone()).await;
+        iron_wallets::Wallets::init((resource(&app, "wallets.json"), snd.clone())).await;
+        iron_networks::Networks::init((resource(&app, "networks.json"), snd.clone(), db.clone()))
+            .await;
 
-        res
-    }
+        iron_forge::Foundry::init().await?;
+        iron_sync_alchemy::Alchemy::init((db.clone(), snd)).await;
 
-    pub fn get_resource_path(&self, name: &str) -> PathBuf {
-        self.app
-            .as_ref()
-            .unwrap()
-            .path_resolver()
-            .resolve_resource(name)
-            .expect("failed to resource resource")
-    }
-
-    pub fn manage(&self, db: DB) {
-        let app = self.app.as_ref().unwrap();
         app.manage(db);
+        let res = Self { app };
+
+        Ok(res)
     }
 
-    pub fn run(&mut self) {
-        self.app.take().unwrap().run(|_, event| {
+    pub fn run(self) {
+        self.app.run(|_, event| {
             if let tauri::RunEvent::ExitRequested { api, .. } = event {
                 api.prevent_exit();
             }
@@ -269,4 +264,10 @@ async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<AppE
             }
         }
     }
+}
+
+fn resource(app: &tauri::App, resource: &str) -> PathBuf {
+    app.path_resolver()
+        .resolve_resource(resource)
+        .expect(&format!("failed to resolve resource {}", resource))
 }

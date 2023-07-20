@@ -19,7 +19,6 @@ pub struct EncryptedData<T: serde::Serialize + serde::de::DeserializeOwned> {
     phantom: std::marker::PhantomData<T>,
 }
 
-#[allow(unused)]
 /// Encrypts a password-protected secret
 pub fn encrypt<T>(data: &T, password: &str) -> anyhow::Result<EncryptedData<T>>
 where

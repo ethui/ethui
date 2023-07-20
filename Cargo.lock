@@ -2884,7 +2884,6 @@ version = "0.4.1"
 dependencies = [
  "ethers",
  "iron-types",
- "once_cell",
  "serde",
  "serde_json",
  "sqlx",
@@ -2897,13 +2896,7 @@ dependencies = [
 name = "iron-dialogs"
 version = "0.4.1"
 dependencies = [
- "ethers",
- "iron-db",
  "iron-globals",
- "iron-networks",
- "iron-peers",
- "iron-settings",
- "iron-sync-anvil",
  "iron-types",
  "once_cell",
  "serde",
@@ -3022,7 +3015,6 @@ dependencies = [
  "once_cell",
  "serde",
  "serde_json",
- "sqlx",
  "tauri",
  "thiserror",
  "tokio",
@@ -3092,7 +3084,6 @@ dependencies = [
  "iron-crypto",
  "iron-dialogs",
  "iron-globals",
- "iron-sync-anvil",
  "iron-types",
  "once_cell",
  "secrets",

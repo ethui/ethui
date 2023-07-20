@@ -21,4 +21,4 @@ pub enum AppError {
     TauriError(#[from] tauri::Error),
 }
 
-pub type Result<T> = std::result::Result<T, AppError>;
+pub type AppResult<T> = std::result::Result<T, AppError>;
