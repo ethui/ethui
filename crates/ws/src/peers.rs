@@ -1,9 +1,5 @@
-pub mod commands;
-mod init;
-
 use std::{collections::HashMap, net::SocketAddr};
 
-pub use init::init;
 use iron_types::{AppEvent, AppNotify, ChecksummedAddress};
 use log::warn;
 use serde::Serialize;
@@ -110,7 +106,7 @@ impl Peers {
         });
     }
 
-    fn get_all(&self) -> Vec<Peer> {
+    pub(crate) fn get_all(&self) -> Vec<Peer> {
         self.map.values().cloned().collect()
     }
 }

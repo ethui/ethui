@@ -4,7 +4,7 @@ use iron_types::{AppEvent, GlobalState};
 use once_cell::sync::OnceCell;
 use tokio::sync::{mpsc, RwLock, RwLockReadGuard, RwLockWriteGuard};
 
-use super::Peers;
+use crate::peers::Peers;
 
 static PEERS: OnceCell<RwLock<Peers>> = OnceCell::new();
 

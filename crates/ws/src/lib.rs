@@ -1,13 +1,17 @@
+pub mod commands;
 mod error;
+mod init;
+mod peers;
 
 use std::{collections::HashMap, net::SocketAddr};
 
 pub use error::{WsError, WsResult};
 use futures_util::{SinkExt, StreamExt};
-use iron_peers::{Peer, Peers};
+pub use init::init;
 use iron_rpc::Handler;
 use iron_types::GlobalState;
 use log::*;
+use peers::{Peer, Peers};
 use tokio::{
     net::{TcpListener, TcpStream},
     sync::mpsc,

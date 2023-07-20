@@ -11,7 +11,6 @@ use std::{
 
 use ethers::providers::{Http, Provider};
 pub use init::init;
-use iron_db::DB;
 use iron_types::{AppEvent, AppNotify};
 use serde::Serialize;
 use tokio::sync::mpsc;
@@ -29,9 +28,6 @@ pub struct Networks {
 
     #[serde(skip)]
     window_snd: mpsc::UnboundedSender<AppEvent>,
-
-    #[serde(skip)]
-    db: DB,
 }
 
 impl Networks {
@@ -113,13 +109,9 @@ impl Networks {
         });
     }
 
-    fn reset_listeners(&mut self) {
-        let db = self.db.clone();
-
+    async fn reset_listeners(&mut self) {
         for network in self.networks.values_mut() {
-            network
-                .reset_listener(db.clone(), self.window_snd.clone())
-                .unwrap();
+            network.reset_listener().await.unwrap();
         }
     }
 

@@ -30,14 +30,18 @@ async fn receiver() -> ! {
 }
 
 pub async fn reset_listener(chain_id: u32, http: Url, ws: Url) {
-    LISTENERS.lock().await.insert(
+    LISTENERS.lock().await.remove(&chain_id);
+
+    let mut listener = BlockListener::new(
         chain_id,
-        BlockListener::new(
-            chain_id,
-            http,
-            ws,
-            DB.get().unwrap().clone(),
-            WINDOW_SND.get().unwrap().clone(),
-        ),
+        http,
+        ws,
+        DB.get().unwrap().clone(),
+        WINDOW_SND.get().unwrap().clone(),
     );
+
+    // TODO: should just report error, not unwrap and crash
+    listener.run().unwrap();
+
+    LISTENERS.lock().await.insert(chain_id, listener);
 }

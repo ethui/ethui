@@ -41,7 +41,7 @@ impl IronApp {
                 iron_db::commands::db_get_contracts,
                 iron_db::commands::db_get_erc20_balances,
                 iron_db::commands::db_get_native_balance,
-                iron_peers::commands::peers_get_all,
+                iron_ws::commands::ws_get_all_peers,
                 iron_wallets::commands::wallets_get_all,
                 iron_wallets::commands::wallets_get_current,
                 iron_wallets::commands::wallets_get_current_address,
@@ -165,9 +165,9 @@ fn on_menu_event(event: WindowMenuEvent) {
 async fn init(app: &tauri::App, db: &DB, snd: mpsc::UnboundedSender<AppEvent>) -> AppResult<()> {
     iron_dialogs::init(snd.clone());
     iron_settings::init(resource(app, "settings.json")).await;
-    iron_peers::init(snd.clone()).await;
+    iron_ws::init(snd.clone()).await;
     iron_wallets::init(resource(app, "wallets.json"), snd.clone()).await;
-    iron_networks::init(resource(app, "networks.json"), snd.clone(), db.clone()).await;
+    iron_networks::init(resource(app, "networks.json"), snd.clone()).await;
     iron_forge::init().await?;
     iron_sync_alchemy::init(db.clone(), snd.clone()).await;
     iron_sync_anvil::init(db.clone(), snd.clone());

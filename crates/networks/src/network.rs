@@ -1,14 +1,8 @@
-use std::sync::{Arc, Mutex};
-
 use ethers::providers::{Http, Provider};
-use iron_db::DB;
-use iron_sync_anvil::BlockListener;
-use iron_types::AppEvent;
 use serde::{Deserialize, Serialize};
-use tokio::sync::mpsc;
 use url::Url;
 
-use super::{Error, Result};
+use super::Result;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Network {
@@ -19,9 +13,6 @@ pub struct Network {
     pub ws_url: Option<String>,
     pub currency: String,
     pub decimals: u32,
-
-    #[serde(skip)]
-    listener: Option<Arc<Mutex<BlockListener>>>,
 }
 
 impl Network {
@@ -34,7 +25,6 @@ impl Network {
             ws_url: None,
             currency: String::from("ETH"),
             decimals: 18,
-            listener: None,
         }
     }
 
@@ -47,7 +37,6 @@ impl Network {
             ws_url: None,
             currency: String::from("ETH"),
             decimals: 18,
-            listener: None,
         }
     }
 
@@ -60,7 +49,6 @@ impl Network {
             ws_url: Some(String::from("ws://localhost:8545")),
             currency: String::from("ETH"),
             decimals: 18,
-            listener: None,
         }
     }
 
@@ -80,24 +68,11 @@ impl Network {
         Provider::<Http>::try_from(self.http_url.clone()).unwrap()
     }
 
-    pub fn reset_listener(
-        &mut self,
-        db: DB,
-        window_snd: mpsc::UnboundedSender<AppEvent>,
-    ) -> Result<()> {
-        if let Some(listener) = self.listener.as_ref() {
-            listener.lock().unwrap().stop();
-            self.listener = None;
-        }
-
+    pub async fn reset_listener(&mut self) -> Result<()> {
         if self.is_dev() {
-            let http_url = Url::parse(&self.http_url)?;
-            let ws_url = Url::parse(&self.ws_url.clone().unwrap())?;
-            let mut listener = BlockListener::new(self.chain_id, http_url, ws_url, db, window_snd);
-            listener
-                .run()
-                .map_err(|e| Error::ErrorRunningListener(e.to_string()))?;
-            self.listener = Some(Arc::new(Mutex::new(listener)));
+            let http = Url::parse(&self.http_url)?;
+            let ws = Url::parse(&self.ws_url.clone().unwrap())?;
+            iron_broadcast::reset_anvil_listener(self.chain_id, http, ws).await;
         }
 
         Ok(())

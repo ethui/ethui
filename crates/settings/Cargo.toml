@@ -10,7 +10,7 @@ authors.workspace = true
 
 [dependencies]
 iron-types = { workspace = true }
-iron-db = { workspace = true }
+
 ethers = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }

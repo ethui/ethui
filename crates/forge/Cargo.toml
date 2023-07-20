@@ -12,12 +12,6 @@ authors.workspace = true
 [dependencies]
 iron-types = { workspace = true }
 iron-settings = { workspace = true }
-iron-db = { workspace = true }
-iron-networks = { workspace = true }
-iron-wallets = { workspace = true }
-iron-peers = { workspace = true }
-iron-ws = { workspace = true }
-iron-sync-anvil = { workspace = true }
 
 ethers = { workspace = true }
 tauri = { workspace = true }

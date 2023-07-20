@@ -13,7 +13,6 @@ iron-forge = { workspace = true }
 iron-settings = { workspace = true }
 iron-networks = { workspace = true }
 iron-wallets = { workspace = true }
-iron-peers = { workspace = true }
 iron-dialogs = { workspace = true }
 iron-rpc = { workspace = true }
 iron-ws = { workspace = true }

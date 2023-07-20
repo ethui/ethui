@@ -2832,7 +2832,6 @@ dependencies = [
  "iron-dialogs",
  "iron-forge",
  "iron-networks",
- "iron-peers",
  "iron-rpc",
  "iron-settings",
  "iron-sync-alchemy",
@@ -2913,14 +2912,8 @@ dependencies = [
  "ethers",
  "futures",
  "glob",
- "iron-db",
- "iron-networks",
- "iron-peers",
  "iron-settings",
- "iron-sync-anvil",
  "iron-types",
- "iron-wallets",
- "iron-ws",
  "log",
  "notify",
  "once_cell",
@@ -2939,28 +2932,8 @@ dependencies = [
  "async-trait",
  "ethers",
  "iron-broadcast",
- "iron-db",
- "iron-sync-anvil",
  "iron-types",
  "log",
- "once_cell",
- "serde",
- "serde_json",
- "tauri",
- "thiserror",
- "tokio",
- "url",
-]
-
-[[package]]
-name = "iron-peers"
-version = "0.4.1"
-dependencies = [
- "async-trait",
- "iron-broadcast",
- "iron-types",
- "log",
- "notify",
  "once_cell",
  "serde",
  "serde_json",
@@ -2998,7 +2971,6 @@ version = "0.4.1"
 dependencies = [
  "async-trait",
  "ethers",
- "iron-db",
  "iron-types",
  "once_cell",
  "serde",
@@ -3086,13 +3058,15 @@ dependencies = [
 name = "iron-ws"
 version = "0.4.1"
 dependencies = [
+ "async-trait",
  "ethers",
  "futures-util",
- "iron-peers",
+ "iron-broadcast",
  "iron-rpc",
- "iron-sync-anvil",
  "iron-types",
  "log",
+ "notify",
+ "once_cell",
  "serde",
  "serde_json",
  "tauri",

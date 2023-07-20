@@ -8,19 +8,17 @@ repository.workspace = true
 exclude.workspace = true
 authors.workspace = true
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 iron-types = { workspace = true }
 iron-rpc = { workspace = true }
-iron-peers = { workspace = true }
-iron-sync-anvil = { workspace = true }
+iron-broadcast = { workspace = true }
 
 ethers = { workspace = true }
 tokio = { workspace = true }
 tauri = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
+once_cell = { workspace = true }
 
 futures-util = "0.3.27"
 log = "0.4.17"
@@ -28,3 +26,5 @@ tokio-tungstenite = "0.18.0"
 tungstenite = "0.18.0"
 thiserror = "1.0.40"
 url = "2.3.1"
+notify = "6.0.0"
+async-trait = "0.1.68"
