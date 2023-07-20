@@ -2,8 +2,8 @@ use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 use std::sync::Arc;
 
-use iron_types::app_events::{DialogClose, DialogOpen, DialogSend};
-use iron_types::{AppEvent, Json};
+use iron_types::ui_events::{DialogClose, DialogOpen, DialogSend};
+use iron_types::{Json, UIEvent, UISender};
 use tokio::sync::{mpsc, RwLock, RwLockReadGuard};
 
 use super::{global::OPEN_DIALOGS, presets, Result};
@@ -88,7 +88,7 @@ pub struct Inner {
     payload: Json,
 
     /// app channel
-    app_snd: mpsc::UnboundedSender<AppEvent>,
+    app_snd: UISender,
 
     /// inbound msgs from dialog
     inbound_snd: mpsc::UnboundedSender<DialogMsg>,
@@ -123,7 +123,7 @@ impl Inner {
         let url = format!("/dialog/{}/{}", self.preset, self.id);
         let title = format!("Iron Dialog - {}", preset.title);
 
-        Ok(self.app_snd.send(AppEvent::DialogOpen(DialogOpen {
+        Ok(self.app_snd.send(UIEvent::DialogOpen(DialogOpen {
             label: self.label(),
             title,
             url,
@@ -133,7 +133,7 @@ impl Inner {
     }
 
     fn close(&self) -> Result<()> {
-        self.app_snd.send(AppEvent::DialogClose(DialogClose {
+        self.app_snd.send(UIEvent::DialogClose(DialogClose {
             label: self.label(),
         }))?;
 
@@ -141,7 +141,7 @@ impl Inner {
     }
 
     fn send(&self, event_type: &str, payload: Option<Json>) -> Result<()> {
-        self.app_snd.send(AppEvent::DialogSend(DialogSend {
+        self.app_snd.send(UIEvent::DialogSend(DialogSend {
             label: self.label(),
             event_type: event_type.into(),
             payload,

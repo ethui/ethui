@@ -1,5 +1,5 @@
 use ethers::types::H256;
-use iron_types::AppEvent;
+use iron_types::UIEvent;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -10,7 +10,7 @@ pub enum Error {
     DB(#[from] iron_db::Error),
 
     #[error(transparent)]
-    WindowSend(#[from] tokio::sync::mpsc::error::SendError<AppEvent>),
+    WindowSend(#[from] tokio::sync::mpsc::error::SendError<UIEvent>),
 
     #[error(transparent)]
     EthersProvider(#[from] ethers::providers::ProviderError),

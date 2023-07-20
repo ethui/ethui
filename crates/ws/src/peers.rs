@@ -1,6 +1,6 @@
 use std::{collections::HashMap, net::SocketAddr};
 
-use iron_types::{AppEvent, AppNotify, ChecksummedAddress};
+use iron_types::{ChecksummedAddress, UINotify, UISender};
 use log::warn;
 use serde::Serialize;
 use serde_json::json;
@@ -50,11 +50,11 @@ impl Peer {
 #[derive(Debug)]
 pub struct Peers {
     map: HashMap<SocketAddr, Peer>,
-    window_snd: mpsc::UnboundedSender<AppEvent>,
+    window_snd: UISender,
 }
 
 impl Peers {
-    pub fn new(window_snd: mpsc::UnboundedSender<AppEvent>) -> Self {
+    pub fn new(window_snd: UISender) -> Self {
         Self {
             map: HashMap::new(),
             window_snd,
@@ -64,17 +64,13 @@ impl Peers {
     /// Adds a new peer
     pub fn add_peer(&mut self, peer: Peer) {
         self.map.insert(peer.socket, peer);
-        self.window_snd
-            .send(AppNotify::PeersUpdated.into())
-            .unwrap();
+        self.window_snd.send(UINotify::PeersUpdated.into()).unwrap();
     }
 
     /// Removes an existing peer
     pub fn remove_peer(&mut self, peer: SocketAddr) {
         self.map.remove(&peer);
-        self.window_snd
-            .send(AppNotify::PeersUpdated.into())
-            .unwrap();
+        self.window_snd.send(UINotify::PeersUpdated.into()).unwrap();
     }
 
     /// Broadcasts an `accountsChanged` event to all peers

@@ -11,9 +11,8 @@ use std::{
 
 use ethers::providers::{Http, Provider};
 pub use init::init;
-use iron_types::{AppEvent, AppNotify};
+use iron_types::{UINotify, UISender};
 use serde::Serialize;
-use tokio::sync::mpsc;
 
 pub use self::error::{Error, Result};
 pub use self::network::Network;
@@ -27,7 +26,7 @@ pub struct Networks {
     file: PathBuf,
 
     #[serde(skip)]
-    window_snd: mpsc::UnboundedSender<AppEvent>,
+    window_snd: UISender,
 }
 
 impl Networks {
@@ -83,7 +82,7 @@ impl Networks {
 
     fn on_network_changed(&self) -> Result<()> {
         self.notify_peers();
-        self.window_snd.send(AppNotify::NetworkChanged.into())?;
+        self.window_snd.send(UINotify::NetworkChanged.into())?;
 
         Ok(())
     }

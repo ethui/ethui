@@ -10,7 +10,7 @@ pub enum Error {
     Send(#[from] mpsc::error::SendError<super::handle::DialogMsg>),
 
     #[error(transparent)]
-    WindowSend(#[from] mpsc::error::SendError<iron_types::AppEvent>),
+    WindowSend(#[from] mpsc::error::SendError<iron_types::UIEvent>),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

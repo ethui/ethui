@@ -1,14 +1,14 @@
 use async_trait::async_trait;
-use iron_broadcast::Msg;
-use iron_types::{AppEvent, GlobalState};
+use iron_broadcast::InternalMsg;
+use iron_types::{GlobalState, UISender};
 use once_cell::sync::OnceCell;
-use tokio::sync::{mpsc, RwLock, RwLockReadGuard, RwLockWriteGuard};
+use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
 use crate::peers::Peers;
 
 static PEERS: OnceCell<RwLock<Peers>> = OnceCell::new();
 
-pub async fn init(sender: mpsc::UnboundedSender<AppEvent>) {
+pub async fn init(sender: UISender) {
     PEERS.set(RwLock::new(Peers::new(sender))).unwrap();
 
     tokio::spawn(async { receiver().await });
@@ -30,11 +30,13 @@ async fn receiver() -> ! {
 
     loop {
         if let Ok(msg) = rx.recv().await {
+            use InternalMsg::*;
+
             match msg {
-                Msg::ChainChanged(chain_id, name) => {
+                ChainChanged(chain_id, name) => {
                     Peers::read().await.broadcast_chain_changed(chain_id, name)
                 }
-                Msg::AccountsChanged(accounts) => {
+                AccountsChanged(accounts) => {
                     Peers::read().await.broadcast_accounts_changed(accounts)
                 }
                 _ => {}

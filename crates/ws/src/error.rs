@@ -1,4 +1,4 @@
-use iron_types::AppEvent;
+use iron_types::UIEvent;
 
 #[derive(thiserror::Error, Debug)]
 pub enum WsError {
@@ -9,7 +9,7 @@ pub enum WsError {
     IO(#[from] std::io::Error),
 
     #[error(transparent)]
-    WindowSend(#[from] tokio::sync::mpsc::error::SendError<AppEvent>),
+    WindowSend(#[from] tokio::sync::mpsc::error::SendError<UIEvent>),
 
     #[error(transparent)]
     TauriError(#[from] tauri::Error),

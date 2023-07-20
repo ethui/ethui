@@ -15,9 +15,8 @@ use std::{
 
 pub use error::{Error, Result};
 pub use init::init;
-use iron_types::{AppEvent, AppNotify, ChecksummedAddress, Json};
+use iron_types::{ChecksummedAddress, Json, UINotify, UISender};
 use serde::Serialize;
-use tokio::sync::mpsc;
 
 use self::wallet::WalletCreate;
 pub use self::{
@@ -36,7 +35,7 @@ pub struct Wallets {
     current: usize,
 
     #[serde(skip)]
-    window_snd: mpsc::UnboundedSender<AppEvent>,
+    window_snd: UISender,
 
     #[serde(skip)]
     file: Option<PathBuf>,
@@ -165,7 +164,7 @@ impl Wallets {
 
     async fn on_wallet_changed(&self) -> Result<()> {
         self.notify_peers().await;
-        self.window_snd.send(AppNotify::WalletsChanged.into())?;
+        self.window_snd.send(UINotify::WalletsChanged.into())?;
 
         Ok(())
     }

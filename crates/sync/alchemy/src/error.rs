@@ -1,5 +1,5 @@
 use ethers::{providers::JsonRpcError, types::H256};
-use iron_types::AppEvent;
+use iron_types::UIEvent;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -13,7 +13,7 @@ pub enum Error {
     Serde(#[from] serde_json::Error),
 
     #[error("error sending event to window: {0}")]
-    WindowSend(#[from] tokio::sync::mpsc::error::SendError<AppEvent>),
+    WindowSend(#[from] tokio::sync::mpsc::error::SendError<UIEvent>),
 
     #[error(transparent)]
     Url(#[from] url::ParseError),

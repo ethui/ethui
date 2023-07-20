@@ -1,9 +1,12 @@
 use serde::Serialize;
 
+pub type UISender = tokio::sync::mpsc::UnboundedSender<UIEvent>;
+pub type UIReceiver = tokio::sync::mpsc::UnboundedReceiver<UIEvent>;
+
 #[derive(Debug, Clone)]
-pub enum AppEvent {
+pub enum UIEvent {
     /// notify the frontend about a state change
-    Notify(AppNotify),
+    Notify(UINotify),
 
     /// open a dialog
     DialogOpen(DialogOpen),
@@ -38,7 +41,7 @@ pub struct DialogSend {
 }
 
 #[derive(Debug, Serialize, Clone)]
-pub enum AppNotify {
+pub enum UINotify {
     #[allow(unused)]
     WalletsChanged,
     NetworkChanged,
@@ -47,7 +50,7 @@ pub enum AppNotify {
     BalancesUpdated,
 }
 
-impl AppNotify {
+impl UINotify {
     pub fn label(&self) -> &str {
         match self {
             Self::WalletsChanged => "wallets-changed",
@@ -59,8 +62,8 @@ impl AppNotify {
     }
 }
 
-impl From<AppNotify> for AppEvent {
-    fn from(value: AppNotify) -> Self {
-        AppEvent::Notify(value)
+impl From<UINotify> for UIEvent {
+    fn from(value: UINotify) -> Self {
+        UIEvent::Notify(value)
     }
 }

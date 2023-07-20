@@ -1,7 +1,8 @@
 use std::path::PathBuf;
 
 use iron_db::DB;
-use iron_types::{app_events, AppEvent};
+use iron_types::ui_events::UIReceiver;
+use iron_types::{ui_events, UIEvent, UISender};
 use tauri::{
     AppHandle, Builder, CustomMenuItem, GlobalWindowEvent, Manager, SystemTray, SystemTrayEvent,
     SystemTrayMenu, SystemTrayMenuItem, WindowBuilder, WindowEvent, WindowUrl,
@@ -162,7 +163,7 @@ fn on_menu_event(event: WindowMenuEvent) {
     }
 }
 
-async fn init(app: &tauri::App, db: &DB, snd: mpsc::UnboundedSender<AppEvent>) -> AppResult<()> {
+async fn init(app: &tauri::App, db: &DB, snd: UISender) -> AppResult<()> {
     iron_dialogs::init(snd.clone());
     iron_settings::init(resource(app, "settings.json")).await;
     iron_ws::init(snd.clone()).await;
@@ -219,9 +220,9 @@ fn show_main_window(app: &AppHandle) {
     }
 }
 
-async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<AppEvent>) {
+async fn event_listener(handle: AppHandle, mut rcv: UIReceiver) {
     while let Some(msg) = rcv.recv().await {
-        use AppEvent::*;
+        use UIEvent::*;
 
         match msg {
             Notify(msg) => {
@@ -232,7 +233,7 @@ async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<AppE
                 }
             }
 
-            DialogOpen(app_events::DialogOpen {
+            DialogOpen(ui_events::DialogOpen {
                 label,
                 title,
                 url,
@@ -247,13 +248,13 @@ async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<AppE
                     .unwrap();
             }
 
-            DialogClose(app_events::DialogClose { label }) => {
+            DialogClose(ui_events::DialogClose { label }) => {
                 if let Some(window) = handle.get_window(&label) {
                     window.close().unwrap();
                 }
             }
 
-            DialogSend(app_events::DialogSend {
+            DialogSend(ui_events::DialogSend {
                 label,
                 event_type,
                 payload,

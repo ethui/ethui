@@ -16,7 +16,7 @@ use futures_util::StreamExt;
 pub use global::init;
 use iron_abis::IERC20;
 use iron_db::DB;
-use iron_types::{AppEvent, AppNotify, TokenMetadata};
+use iron_types::{TokenMetadata, UINotify, UISender};
 use log::warn;
 use tokio::sync::mpsc;
 use url::Url;
@@ -29,7 +29,7 @@ pub struct BlockListener {
     http_url: Url,
     ws_url: Url,
     quit_snd: Option<mpsc::Sender<()>>,
-    window_snd: mpsc::UnboundedSender<AppEvent>,
+    window_snd: UISender,
     db: DB,
 }
 
@@ -42,13 +42,7 @@ enum Msg {
 }
 
 impl BlockListener {
-    pub fn new(
-        chain_id: u32,
-        http_url: Url,
-        ws_url: Url,
-        db: DB,
-        window_snd: mpsc::UnboundedSender<AppEvent>,
-    ) -> Self {
+    pub fn new(chain_id: u32, http_url: Url, ws_url: Url, db: DB, window_snd: UISender) -> Self {
         Self {
             chain_id,
             http_url,
@@ -211,7 +205,7 @@ async fn watch(
 async fn process(
     http_url: Url,
     mut block_rcv: mpsc::UnboundedReceiver<Msg>,
-    window_snd: mpsc::UnboundedSender<AppEvent>,
+    window_snd: UISender,
     chain_id: u32,
     db: DB,
 ) -> Result<()> {
@@ -247,8 +241,8 @@ async fn process(
         // don't emit events until we're catching up
         // otherwise we spam too much during that phase
         if caught_up {
-            window_snd.send(AppNotify::TxsUpdated.into())?;
-            window_snd.send(AppNotify::BalancesUpdated.into())?;
+            window_snd.send(UINotify::TxsUpdated.into())?;
+            window_snd.send(UINotify::BalancesUpdated.into())?;
         }
     }
 

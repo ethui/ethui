@@ -5,16 +5,16 @@ use std::{
 };
 
 use async_trait::async_trait;
-use iron_types::{AppEvent, GlobalState};
+use iron_types::{GlobalState, UISender};
 use once_cell::sync::OnceCell;
 use serde::Deserialize;
-use tokio::sync::{mpsc, RwLock, RwLockReadGuard, RwLockWriteGuard};
+use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
 use super::{Wallet, Wallets};
 
 static WALLETS: OnceCell<RwLock<Wallets>> = OnceCell::new();
 
-pub async fn init(pathbuf: PathBuf, window_snd: mpsc::UnboundedSender<AppEvent>) {
+pub async fn init(pathbuf: PathBuf, window_snd: UISender) {
     let path = Path::new(&pathbuf);
 
     #[derive(Debug, Deserialize)]

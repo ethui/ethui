@@ -2,6 +2,7 @@
 members = [
   "bin/iron",
   "crates/settings",
+  "crates/context",
   "crates/networks",
   "crates/wallets",
   "crates/ws",
@@ -32,6 +33,7 @@ authors = ["Miguel Palhas <mpalhas@gmail.com>"]
 iron-forge = { path = "crates/forge" }
 iron-crypto = { path = "crates/crypto" }
 iron-settings = { path = "crates/settings" }
+iron-context = { path = "crates/context" }
 iron-networks = { path = "crates/networks" }
 iron-wallets = { path = "crates/wallets" }
 iron-ws = { path = "crates/ws" }
