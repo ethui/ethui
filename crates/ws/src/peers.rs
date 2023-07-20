@@ -21,7 +21,7 @@ impl Peer {
     pub fn new(
         socket: SocketAddr,
         sender: mpsc::UnboundedSender<serde_json::Value>,
-        params: HashMap<String, String>,
+        params: &HashMap<String, String>,
     ) -> Self {
         let origin = params
             .get("origin")

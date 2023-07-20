@@ -33,9 +33,8 @@ pub(crate) async fn server_loop() {
 async fn accept_connection(socket: SocketAddr, stream: TcpStream) {
     let mut query_params: HashMap<String, String> = Default::default();
     let callback = |req: &Request, res: Response| -> std::result::Result<Response, ErrorResponse> {
-        // url = Some(req.uri().clone());
-        let url = Url::parse(&format!("{}{}", "http://localhost", req.uri()));
-        query_params = url.unwrap().query_pairs().into_owned().collect();
+        let url = Url::parse(&format!("{}{}", "http://localhost", req.uri())).unwrap();
+        query_params = url.query_pairs().into_owned().collect();
         Ok(res)
     };
 
@@ -43,8 +42,11 @@ async fn accept_connection(socket: SocketAddr, stream: TcpStream) {
         .await
         .expect("Failed to accept");
     let (snd, rcv) = mpsc::unbounded_channel::<serde_json::Value>();
+    let url = query_params.get("url").cloned().unwrap_or_default();
 
-    let peer = Peer::new(socket, snd, query_params);
+    tracing::debug!("Peer  {}", url);
+
+    let peer = Peer::new(socket, snd, &query_params);
 
     Peers::write().await.add_peer(peer);
     let err = handle_connection(ws_stream, rcv).await;
@@ -56,12 +58,12 @@ async fn accept_connection(socket: SocketAddr, stream: TcpStream) {
                 tungstenite::Error::ConnectionClosed
                 | tungstenite::Error::Protocol(_)
                 | tungstenite::Error::Utf8 => {
-                    tracing::info!("Connection closed, {:?}, {:?}", socket, e);
+                    tracing::debug!("Close  {} {:?}", url, e);
                 }
                 _ => (),
             },
             _ => {
-                tracing::error!("JSON error {:?}, connection terminated {:?}", e, socket)
+                tracing::error!("Error  {} {}", url, e);
             }
         }
     }
