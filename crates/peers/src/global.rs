@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use iron_broadcast::Msg;
 use iron_types::{AppEvent, GlobalState};
 use once_cell::sync::OnceCell;
 use tokio::sync::{mpsc, RwLock, RwLockReadGuard, RwLockWriteGuard};
@@ -14,6 +15,8 @@ impl GlobalState for Peers {
 
     async fn init(sender: Self::Initializer) {
         PEERS.set(RwLock::new(Peers::new(sender))).unwrap();
+
+        tokio::spawn(async { receiver().await });
     }
 
     async fn read<'a>() -> RwLockReadGuard<'a, Self> {
@@ -22,5 +25,23 @@ impl GlobalState for Peers {
 
     async fn write<'a>() -> RwLockWriteGuard<'a, Self> {
         PEERS.get().unwrap().write().await
+    }
+}
+
+async fn receiver() -> ! {
+    let mut rx = iron_broadcast::subscribe().await;
+
+    loop {
+        if let Ok(msg) = rx.recv().await {
+            match msg {
+                Msg::ChainChanged(chain_id, name) => {
+                    Peers::write().await.broadcast_chain_changed(chain_id, name)
+                }
+                Msg::AccountsChanged(accounts) => {
+                    Peers::write().await.broadcast_accounts_changed(accounts)
+                }
+                _ => {}
+            }
+        }
     }
 }

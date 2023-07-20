@@ -16,6 +16,7 @@ members = [
   "crates/sync/anvil",
   "crates/sync/alchemy",
   "crates/crypto",
+  "crates/broadcast",
 ]
 default-members = ["bin/iron"]
 
@@ -45,6 +46,7 @@ iron-abis = { path = "crates/abis" }
 iron-db = { path = "crates/db" }
 iron-sync-anvil = { path = "crates/sync/anvil" }
 iron-sync-alchemy = { path = "crates/sync/alchemy" }
+iron-broadcast = { path = "crates/broadcast" }
 tokio = { version = "1.26.0", features = ["full", "sync"] }
 thiserror = "1.0.40"
 ethers = { version = "2.0.0", features = ["ws"] }

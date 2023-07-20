@@ -11,9 +11,7 @@ use std::{
 
 use ethers::providers::{Http, Provider};
 use iron_db::DB;
-use iron_peers::Peers;
-use iron_types::{AppEvent, AppNotify, GlobalState};
-//use iron_ws::peers::Peers;
+use iron_types::{AppEvent, AppNotify};
 use serde::Serialize;
 use tokio::sync::mpsc;
 
@@ -110,9 +108,7 @@ impl Networks {
     fn notify_peers(&self) {
         let current = self.get_current_network().clone();
         tokio::spawn(async move {
-            Peers::read()
-                .await
-                .broadcast_chain_changed(current.chain_id, current.name)
+            iron_broadcast::chain_changed(current.chain_id, current.name.clone()).await;
         });
     }
 

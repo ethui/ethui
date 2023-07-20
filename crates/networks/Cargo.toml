@@ -10,9 +10,9 @@ authors.workspace = true
 
 [dependencies]
 iron-types = { workspace = true }
-iron-peers = { workspace = true }
 iron-db = { workspace = true }
 iron-sync-anvil = { workspace = true }
+iron-broadcast = { workspace = true }
 
 ethers = { workspace = true }
 tauri = { workspace = true }

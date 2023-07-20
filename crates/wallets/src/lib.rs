@@ -14,7 +14,6 @@ use std::{
 };
 
 pub use error::{Error, Result};
-use iron_peers::Peers;
 use iron_types::{AppEvent, AppNotify, ChecksummedAddress, GlobalState, Json};
 use serde::Serialize;
 use tokio::sync::mpsc;
@@ -173,7 +172,7 @@ impl Wallets {
     // broadcasts `accountsChanged` to all peers
     async fn notify_peers(&self) {
         let addresses = vec![self.get_current_wallet().get_current_address().await];
-        tokio::spawn(async move { Peers::read().await.broadcast_accounts_changed(addresses) });
+        iron_broadcast::accounts_changed(addresses).await;
     }
 }
 

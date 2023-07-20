@@ -2856,6 +2856,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "iron-broadcast"
+version = "0.4.1"
+dependencies = [
+ "iron-types",
+ "once_cell",
+ "tokio",
+]
+
+[[package]]
 name = "iron-crypto"
 version = "0.4.1"
 dependencies = [
@@ -2946,8 +2955,8 @@ version = "0.4.1"
 dependencies = [
  "async-trait",
  "ethers",
+ "iron-broadcast",
  "iron-db",
- "iron-peers",
  "iron-sync-anvil",
  "iron-types",
  "log",
@@ -2965,6 +2974,7 @@ name = "iron-peers"
 version = "0.4.1"
 dependencies = [
  "async-trait",
+ "iron-broadcast",
  "iron-types",
  "log",
  "notify",
@@ -3078,10 +3088,10 @@ dependencies = [
  "coins-bip32",
  "enum_dispatch",
  "ethers",
+ "iron-broadcast",
  "iron-crypto",
  "iron-dialogs",
  "iron-globals",
- "iron-peers",
  "iron-sync-anvil",
  "iron-types",
  "once_cell",

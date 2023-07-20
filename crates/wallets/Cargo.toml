@@ -11,11 +11,11 @@ authors.workspace = true
 
 [dependencies]
 iron-types = { workspace = true }
-iron-peers = { workspace = true }
 iron-globals = { workspace = true }
 iron-dialogs = { workspace = true }
 iron-crypto = { workspace = true }
 iron-sync-anvil = { workspace = true }
+iron-broadcast = { workspace = true }
 
 ethers = { workspace = true }
 tauri = { workspace = true }
