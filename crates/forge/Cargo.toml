@@ -17,7 +17,6 @@ iron-networks = { workspace = true }
 iron-wallets = { workspace = true }
 iron-peers = { workspace = true }
 iron-ws = { workspace = true }
-iron-globals = { workspace = true }
 iron-sync-anvil = { workspace = true }
 
 ethers = { workspace = true }

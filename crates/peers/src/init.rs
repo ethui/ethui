@@ -8,17 +8,14 @@ use super::Peers;
 
 static PEERS: OnceCell<RwLock<Peers>> = OnceCell::new();
 
+pub async fn init(sender: mpsc::UnboundedSender<AppEvent>) {
+    PEERS.set(RwLock::new(Peers::new(sender))).unwrap();
+
+    tokio::spawn(async { receiver().await });
+}
+
 #[async_trait]
 impl GlobalState for Peers {
-    /// The only needed state to initialize `Peers` is a sender to the tauri event loop
-    type Initializer = mpsc::UnboundedSender<AppEvent>;
-
-    async fn init(sender: Self::Initializer) {
-        PEERS.set(RwLock::new(Peers::new(sender))).unwrap();
-
-        tokio::spawn(async { receiver().await });
-    }
-
     async fn read<'a>() -> RwLockReadGuard<'a, Self> {
         PEERS.get().unwrap().read().await
     }
@@ -40,6 +37,7 @@ async fn receiver() -> ! {
                 Msg::AccountsChanged(accounts) => {
                     Peers::read().await.broadcast_accounts_changed(accounts)
                 }
+                _ => {}
             }
         }
     }

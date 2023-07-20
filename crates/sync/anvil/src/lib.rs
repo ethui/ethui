@@ -1,5 +1,6 @@
 mod error;
 mod expanders;
+mod global;
 
 use std::{sync::Arc, time::Duration};
 
@@ -12,6 +13,8 @@ use ethers::{
     types::{Address, Filter, Log, Trace, U64},
 };
 use futures_util::StreamExt;
+pub use global::init;
+use iron_abis::IERC20;
 use iron_db::DB;
 use iron_types::{AppEvent, AppNotify, TokenMetadata};
 use log::warn;
@@ -19,7 +22,6 @@ use tokio::sync::mpsc;
 use url::Url;
 
 use self::expanders::{expand_logs, expand_traces};
-use iron_abis::IERC20;
 
 #[derive(Debug)]
 pub struct BlockListener {

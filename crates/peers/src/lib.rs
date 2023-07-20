@@ -1,8 +1,9 @@
 pub mod commands;
-mod global;
+mod init;
 
 use std::{collections::HashMap, net::SocketAddr};
 
+pub use init::init;
 use iron_types::{AppEvent, AppNotify, ChecksummedAddress};
 use log::warn;
 use serde::Serialize;

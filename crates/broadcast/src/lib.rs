@@ -3,12 +3,14 @@ mod global;
 use global::read;
 use iron_types::ChecksummedAddress;
 use tokio::sync::broadcast;
+use url::Url;
 
 /// Supported messages
 #[derive(Debug, Clone)]
 pub enum Msg {
     ChainChanged(u32, String),
     AccountsChanged(Vec<ChecksummedAddress>),
+    ResetAnvilListener { chain_id: u32, http: Url, ws: Url },
 }
 
 /// Creates a new subscriber
@@ -27,4 +29,12 @@ pub async fn chain_changed(chain_id: u32, name: String) {
 /// Broadcasts `AccountsChanged` events
 pub async fn accounts_changed(addresses: Vec<ChecksummedAddress>) {
     read().await.send(Msg::AccountsChanged(addresses)).unwrap();
+}
+
+/// Requests a reset of the anvil listener for a given chain_id
+pub async fn reset_anvil_listener(chain_id: u32, http: Url, ws: Url) {
+    read()
+        .await
+        .send(Msg::ResetAnvilListener { chain_id, http, ws })
+        .unwrap();
 }

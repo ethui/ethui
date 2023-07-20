@@ -3,6 +3,7 @@
 mod abi;
 pub mod commands;
 pub mod error;
+mod init;
 mod watcher;
 
 use std::collections::hash_map::DefaultHasher;
@@ -10,8 +11,7 @@ use std::hash::{Hash, Hasher};
 use std::{collections::HashMap, path::PathBuf};
 
 pub use error::{Error, Result};
-use iron_settings::Settings;
-use iron_types::GlobalState;
+pub use init::init;
 use once_cell::sync::Lazy;
 use tokio::{
     spawn,
@@ -29,19 +29,6 @@ pub struct Foundry {
 static FOUNDRY: Lazy<RwLock<Foundry>> = Lazy::new(Default::default);
 
 impl Foundry {
-    pub async fn init() -> Result<()> {
-        let settings = Settings::read().await;
-
-        if let (true, Some(path)) = (
-            settings.inner.abi_watch,
-            settings.inner.abi_watch_path.clone(),
-        ) {
-            Self::watch(path).await
-        } else {
-            Ok(())
-        }
-    }
-
     fn get_abi_for(&self, code_hash: u64) -> Option<abi::Abi> {
         self.abis_by_code_hash.get(&code_hash).cloned()
     }

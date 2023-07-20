@@ -1,7 +1,7 @@
 pub mod commands;
 mod error;
-mod global;
 mod hd_wallet;
+mod init;
 mod json_keystore_wallet;
 mod plaintext;
 mod utils;
@@ -14,6 +14,7 @@ use std::{
 };
 
 pub use error::{Error, Result};
+pub use init::init;
 use iron_types::{AppEvent, AppNotify, ChecksummedAddress, Json};
 use serde::Serialize;
 use tokio::sync::mpsc;

@@ -4,11 +4,9 @@ use tokio::sync::{RwLockReadGuard, RwLockWriteGuard};
 /// Meant to be declared as `OnceCell<RwLock<State>>` or `Lazy<RwLock<State>>`
 #[async_trait::async_trait]
 pub trait GlobalState {
-    type Initializer;
-
-    /// initializees the global state
-    /// future read/write calls assume this has previously been called
-    async fn init(initializer: Self::Initializer);
+    // /// initializees the global state
+    // /// future read/write calls assume this has previously been called
+    // async fn init(initializer: Self::Initializer);
 
     /// acquires a read-only handle to the global state
     async fn read<'a>() -> RwLockReadGuard<'a, Self>;

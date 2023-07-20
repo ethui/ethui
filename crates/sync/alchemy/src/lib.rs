@@ -1,9 +1,8 @@
 pub mod commands;
 mod error;
-mod global;
+mod init;
 mod types;
 mod utils;
-
 use std::{collections::HashMap, time::Duration};
 
 use ethers::core::types::{Address, U256};
@@ -11,6 +10,7 @@ use ethers::providers::{
     Http, HttpRateLimitRetryPolicy, Middleware, Provider, RetryClient, RetryClientBuilder,
 };
 use futures::{stream, StreamExt};
+pub use init::init;
 use iron_db::DB;
 use iron_settings::Settings;
 use iron_types::{AppEvent, AppNotify, ChecksummedAddress, GlobalState};

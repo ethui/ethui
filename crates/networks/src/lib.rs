@@ -1,6 +1,6 @@
 pub mod commands;
 mod error;
-mod global;
+mod init;
 mod network;
 
 use std::{
@@ -10,6 +10,7 @@ use std::{
 };
 
 use ethers::providers::{Http, Provider};
+pub use init::init;
 use iron_db::DB;
 use iron_types::{AppEvent, AppNotify};
 use serde::Serialize;

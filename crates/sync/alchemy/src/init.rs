@@ -8,17 +8,13 @@ use super::Alchemy;
 
 static ALCHEMY: OnceCell<RwLock<Alchemy>> = OnceCell::new();
 
+pub async fn init(db: DB, window_snd: mpsc::UnboundedSender<AppEvent>) {
+    let instance = Alchemy::new(db, window_snd);
+    ALCHEMY.set(RwLock::new(instance)).unwrap();
+}
+
 #[async_trait]
 impl GlobalState for Alchemy {
-    type Initializer = (DB, mpsc::UnboundedSender<AppEvent>);
-
-    async fn init(args: Self::Initializer) {
-        let db = args.0;
-        let window_snd = args.1;
-        let instance = Alchemy::new(db, window_snd);
-        ALCHEMY.set(RwLock::new(instance)).unwrap();
-    }
-
     async fn read<'a>() -> RwLockReadGuard<'a, Self> {
         ALCHEMY.get().unwrap().read().await
     }

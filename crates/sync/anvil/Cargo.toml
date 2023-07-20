@@ -12,6 +12,7 @@ authors.workspace = true
 iron-db = { workspace = true }
 iron-abis = { workspace = true }
 iron-types = { workspace = true }
+iron-broadcast = { workspace = true }
 
 ethers = { workspace = true }
 tokio = { workspace = true }
@@ -19,6 +20,7 @@ sqlx = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
+once_cell = { workspace = true }
 
 url = "2.3.1"
 futures = "0.3.28"

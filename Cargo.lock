@@ -2831,12 +2831,12 @@ dependencies = [
  "iron-db",
  "iron-dialogs",
  "iron-forge",
- "iron-globals",
  "iron-networks",
  "iron-peers",
  "iron-rpc",
  "iron-settings",
  "iron-sync-alchemy",
+ "iron-sync-anvil",
  "iron-types",
  "iron-wallets",
  "iron-ws",
@@ -2862,6 +2862,7 @@ dependencies = [
  "iron-types",
  "once_cell",
  "tokio",
+ "url",
 ]
 
 [[package]]
@@ -2896,7 +2897,6 @@ dependencies = [
 name = "iron-dialogs"
 version = "0.4.1"
 dependencies = [
- "iron-globals",
  "iron-types",
  "once_cell",
  "serde",
@@ -2914,7 +2914,6 @@ dependencies = [
  "futures",
  "glob",
  "iron-db",
- "iron-globals",
  "iron-networks",
  "iron-peers",
  "iron-settings",
@@ -2930,15 +2929,6 @@ dependencies = [
  "serde_json",
  "tauri",
  "thiserror",
- "tokio",
-]
-
-[[package]]
-name = "iron-globals"
-version = "0.4.1"
-dependencies = [
- "iron-types",
- "once_cell",
  "tokio",
 ]
 
@@ -2991,7 +2981,6 @@ dependencies = [
  "iron-dialogs",
  "iron-networks",
  "iron-settings",
- "iron-sync-anvil",
  "iron-types",
  "iron-wallets",
  "jsonrpc-core",
@@ -3010,7 +2999,6 @@ dependencies = [
  "async-trait",
  "ethers",
  "iron-db",
- "iron-sync-anvil",
  "iron-types",
  "once_cell",
  "serde",
@@ -3030,7 +3018,6 @@ dependencies = [
  "iron-abis",
  "iron-db",
  "iron-settings",
- "iron-sync-anvil",
  "iron-types",
  "once_cell",
  "serde",
@@ -3049,9 +3036,11 @@ dependencies = [
  "futures",
  "futures-util",
  "iron-abis",
+ "iron-broadcast",
  "iron-db",
  "iron-types",
  "log",
+ "once_cell",
  "serde",
  "serde_json",
  "sqlx",
@@ -3083,7 +3072,6 @@ dependencies = [
  "iron-broadcast",
  "iron-crypto",
  "iron-dialogs",
- "iron-globals",
  "iron-types",
  "once_cell",
  "secrets",

@@ -1,6 +1,6 @@
 pub mod commands;
 mod error;
-mod global;
+mod init;
 
 use std::{
     collections::HashMap,
@@ -10,6 +10,7 @@ use std::{
 };
 
 use ethers::core::types::Address;
+pub use init::init;
 use iron_types::ChecksummedAddress;
 use serde::{Deserialize, Serialize};
 

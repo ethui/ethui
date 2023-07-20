@@ -12,3 +12,5 @@ authors.workspace = true
 iron-types = { workspace = true }
 tokio = { workspace = true }
 once_cell = { workspace = true }
+
+url = "2.3.1"

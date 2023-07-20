@@ -1,7 +1,6 @@
 [workspace]
 members = [
   "bin/iron",
-  "crates/globals",
   "crates/settings",
   "crates/networks",
   "crates/wallets",
@@ -32,7 +31,6 @@ authors = ["Miguel Palhas <mpalhas@gmail.com>"]
 
 [workspace.dependencies]
 iron-forge = { path = "crates/forge" }
-iron-globals = { path = "crates/globals" }
 iron-crypto = { path = "crates/crypto" }
 iron-settings = { path = "crates/settings" }
 iron-networks = { path = "crates/networks" }

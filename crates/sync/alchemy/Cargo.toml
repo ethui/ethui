@@ -13,7 +13,6 @@ iron-settings = { workspace = true }
 iron-types = { workspace = true }
 iron-db = { workspace = true }
 iron-abis = { workspace = true }
-iron-sync-anvil = { workspace = true }
 
 ethers = { workspace = true }
 tauri = { workspace = true }

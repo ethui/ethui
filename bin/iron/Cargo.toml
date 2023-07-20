@@ -16,11 +16,11 @@ iron-wallets = { workspace = true }
 iron-peers = { workspace = true }
 iron-dialogs = { workspace = true }
 iron-rpc = { workspace = true }
-iron-globals = { workspace = true }
 iron-ws = { workspace = true }
 iron-types = { workspace = true }
 iron-db = { workspace = true }
 iron-sync-alchemy = { workspace = true }
+iron-sync-anvil = { workspace = true }
 tauri = { workspace = true }
 tokio = { workspace = true }
 thiserror = { workspace = true }

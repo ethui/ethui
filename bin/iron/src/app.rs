@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use iron_db::DB;
-use iron_types::{app_events, AppEvent, GlobalState};
+use iron_types::{app_events, AppEvent};
 use tauri::{
     AppHandle, Builder, CustomMenuItem, GlobalWindowEvent, Manager, SystemTray, SystemTrayEvent,
     SystemTrayMenu, SystemTrayMenuItem, WindowBuilder, WindowEvent, WindowUrl,
@@ -96,19 +96,8 @@ impl IronApp {
             .build(tauri::generate_context!())
             .expect("error while running tauri application");
 
-        iron_globals::SETTINGS_PATH
-            .set(resource(&app, "settings.json"))
-            .unwrap();
-        iron_globals::APP_SND.set(snd.clone()).unwrap();
         let db = DB::connect(&resource(&app, "db.sqlite3")).await?;
-        iron_settings::Settings::init(resource(&app, "settings.json")).await;
-        iron_peers::Peers::init(snd.clone()).await;
-        iron_wallets::Wallets::init((resource(&app, "wallets.json"), snd.clone())).await;
-        iron_networks::Networks::init((resource(&app, "networks.json"), snd.clone(), db.clone()))
-            .await;
-
-        iron_forge::Foundry::init().await?;
-        iron_sync_alchemy::Alchemy::init((db.clone(), snd)).await;
+        init(&app, &db, snd).await?;
 
         app.manage(db);
         let res = Self { app };
@@ -171,6 +160,19 @@ fn on_menu_event(event: WindowMenuEvent) {
             event.window().emit("go", path).unwrap();
         }
     }
+}
+
+async fn init(app: &tauri::App, db: &DB, snd: mpsc::UnboundedSender<AppEvent>) -> AppResult<()> {
+    iron_dialogs::init(snd.clone());
+    iron_settings::init(resource(app, "settings.json")).await;
+    iron_peers::init(snd.clone()).await;
+    iron_wallets::init(resource(app, "wallets.json"), snd.clone()).await;
+    iron_networks::init(resource(app, "networks.json"), snd.clone(), db.clone()).await;
+    iron_forge::init().await?;
+    iron_sync_alchemy::init(db.clone(), snd.clone()).await;
+    iron_sync_anvil::init(db.clone(), snd.clone());
+
+    Ok(())
 }
 
 fn on_window_event(event: GlobalWindowEvent) {
@@ -269,5 +271,5 @@ async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<AppE
 fn resource(app: &tauri::App, resource: &str) -> PathBuf {
     app.path_resolver()
         .resolve_resource(resource)
-        .expect(&format!("failed to resolve resource {}", resource))
+        .unwrap_or_else(|| panic!("failed to resolve resource {}", resource))
 }

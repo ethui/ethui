@@ -9,7 +9,6 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-iron-globals = { workspace = true }
 iron-types = { workspace = true }
 
 tauri = { workspace = true }
