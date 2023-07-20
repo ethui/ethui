@@ -63,7 +63,7 @@ async fn accept_connection(socket: SocketAddr, stream: TcpStream) {
                 _ => (),
             },
             _ => {
-                tracing::error!("Error  {} {}", url, e);
+                tracing::error!("Error {} {}", url, e);
             }
         }
     }

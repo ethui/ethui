@@ -14,7 +14,7 @@ interface Peer {
 }
 
 export function Peers() {
-  const { data: peers, mutate } = useInvoke<Peer[]>("peers_get_all");
+  const { data: peers, mutate } = useInvoke<Peer[]>("ws_get_all_peers");
 
   useRefreshPeers(mutate);
 

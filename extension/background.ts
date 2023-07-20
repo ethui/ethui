@@ -3,7 +3,13 @@ import log from "loglevel";
 import pump from "pump";
 import { type Duplex } from "stream";
 import browser, { type Runtime } from "webextension-polyfill";
-import { ExponentialBackoff, Websocket, WebsocketBuilder } from "websocket-ts";
+import {
+  ConstantBackoff,
+  ExponentialBackoff,
+  LinearBackoff,
+  Websocket,
+  WebsocketBuilder,
+} from "websocket-ts";
 
 import ObjectMultiplex from "@metamask/object-multiplex";
 
@@ -41,7 +47,7 @@ export function setupProviderConnection(port: Runtime.Port) {
   const outStream = mux.createStream("metamask-provider") as unknown as Duplex;
 
   ws = new WebsocketBuilder(`${settings.endpoint}?${connectionParams(port)}`)
-    .withBackoff(new ExponentialBackoff(2000, 5))
+    .withBackoff(new ConstantBackoff(1000))
     .onMessage((_i, e) => {
       // write back to page provider
       const data = JSON.parse(e.data);
