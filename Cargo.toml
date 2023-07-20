@@ -1,2 +1,59 @@
 [workspace]
-members = ["./tauri"]
+members = [
+  "bin/iron",
+  "crates/settings",
+  "crates/networks",
+  "crates/wallets",
+  "crates/ws",
+  "crates/rpc",
+  "crates/dialogs",
+  "crates/abis",
+  "crates/forge",
+  "crates/types",
+  "crates/db",
+  "crates/sync/anvil",
+  "crates/sync/alchemy",
+  "crates/crypto",
+  "crates/broadcast",
+]
+default-members = ["bin/iron"]
+
+
+[workspace.package]
+version = "0.4.1"
+edition = "2021"
+license-file = "./LICENSE"
+homepage = "https://github.com/iron-wallet"
+repository = "https://github.com/iron/wallet/reth"
+exclude = [".github/", "extension/"]
+authors = ["Miguel Palhas <mpalhas@gmail.com>"]
+
+[workspace.dependencies]
+iron-forge = { path = "crates/forge" }
+iron-crypto = { path = "crates/crypto" }
+iron-settings = { path = "crates/settings" }
+iron-networks = { path = "crates/networks" }
+iron-wallets = { path = "crates/wallets" }
+iron-ws = { path = "crates/ws" }
+iron-rpc = { path = "crates/rpc" }
+iron-dialogs = { path = "crates/dialogs" }
+iron-types = { path = "crates/types" }
+iron-abis = { path = "crates/abis" }
+iron-db = { path = "crates/db" }
+iron-sync-anvil = { path = "crates/sync/anvil" }
+iron-sync-alchemy = { path = "crates/sync/alchemy" }
+iron-broadcast = { path = "crates/broadcast" }
+tokio = { version = "1.26.0", features = ["full", "sync"] }
+thiserror = "1.0.40"
+ethers = { version = "2.0.0", features = ["ws"] }
+sqlx = { version = "0.6.3", features = [
+  "runtime-tokio-rustls",
+  "sqlite",
+  "migrate",
+] }
+serde = { version = "1.0", features = ["derive", "std"] }
+serde_json = "1.0"
+async-trait = "0.1.68"
+tauri = { version = "1.2", features = ["api-all", "system-tray"] }
+once_cell = "1.17.1"
+secrets = { version = "1.2.0", features = ["use-libsodium-sys"] }

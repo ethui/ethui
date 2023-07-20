@@ -2825,41 +2825,255 @@ checksum = "12b6ee2129af8d4fb011108c73d99a1b83a85977f23b82460c0ae2e25bb4b57f"
 name = "iron"
 version = "0.4.1"
 dependencies = [
- "aead",
- "anyhow",
- "async-trait",
- "chacha20poly1305",
- "coins-bip32",
  "color-eyre",
- "enum_dispatch",
  "env_logger",
- "ethers",
- "eyre",
  "fix-path-env",
- "futures",
- "futures-util",
- "glob",
- "hex",
- "jsonrpc-core",
- "log",
- "notify",
- "once_cell",
- "regex",
- "rust-argon2",
- "secrets",
- "serde",
- "serde_json",
- "sqlx",
+ "iron-db",
+ "iron-dialogs",
+ "iron-forge",
+ "iron-networks",
+ "iron-rpc",
+ "iron-settings",
+ "iron-sync-alchemy",
+ "iron-sync-anvil",
+ "iron-types",
+ "iron-wallets",
+ "iron-ws",
  "tauri",
  "tauri-build",
  "tauri-plugin-window-state",
  "thiserror",
  "tokio",
+]
+
+[[package]]
+name = "iron-abis"
+version = "0.4.1"
+dependencies = [
+ "ethers",
+ "serde",
+]
+
+[[package]]
+name = "iron-broadcast"
+version = "0.4.1"
+dependencies = [
+ "iron-types",
+ "once_cell",
+ "tokio",
+ "url",
+]
+
+[[package]]
+name = "iron-crypto"
+version = "0.4.1"
+dependencies = [
+ "aead",
+ "anyhow",
+ "chacha20poly1305",
+ "ethers",
+ "rust-argon2",
+ "serde",
+ "serde_json",
+ "zeroize",
+]
+
+[[package]]
+name = "iron-db"
+version = "0.4.1"
+dependencies = [
+ "ethers",
+ "iron-types",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "tauri",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
+name = "iron-dialogs"
+version = "0.4.1"
+dependencies = [
+ "iron-types",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
+name = "iron-forge"
+version = "0.4.1"
+dependencies = [
+ "ethers",
+ "futures",
+ "glob",
+ "iron-settings",
+ "iron-types",
+ "log",
+ "notify",
+ "once_cell",
+ "regex",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
+name = "iron-networks"
+version = "0.4.1"
+dependencies = [
+ "async-trait",
+ "ethers",
+ "iron-broadcast",
+ "iron-types",
+ "log",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+ "url",
+]
+
+[[package]]
+name = "iron-rpc"
+version = "0.4.1"
+dependencies = [
+ "enum_dispatch",
+ "ethers",
+ "futures-util",
+ "iron-db",
+ "iron-dialogs",
+ "iron-networks",
+ "iron-settings",
+ "iron-types",
+ "iron-wallets",
+ "jsonrpc-core",
+ "log",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
+name = "iron-settings"
+version = "0.4.1"
+dependencies = [
+ "async-trait",
+ "ethers",
+ "iron-types",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
+name = "iron-sync-alchemy"
+version = "0.4.1"
+dependencies = [
+ "async-trait",
+ "ethers",
+ "futures",
+ "iron-abis",
+ "iron-db",
+ "iron-settings",
+ "iron-types",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+ "url",
+]
+
+[[package]]
+name = "iron-sync-anvil"
+version = "0.4.1"
+dependencies = [
+ "ethers",
+ "futures",
+ "futures-util",
+ "iron-abis",
+ "iron-broadcast",
+ "iron-db",
+ "iron-types",
+ "log",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "thiserror",
+ "tokio",
+ "url",
+]
+
+[[package]]
+name = "iron-types"
+version = "0.4.1"
+dependencies = [
+ "async-trait",
+ "ethers",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "tokio",
+]
+
+[[package]]
+name = "iron-wallets"
+version = "0.4.1"
+dependencies = [
+ "async-trait",
+ "coins-bip32",
+ "enum_dispatch",
+ "ethers",
+ "iron-broadcast",
+ "iron-crypto",
+ "iron-dialogs",
+ "iron-types",
+ "once_cell",
+ "secrets",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
+name = "iron-ws"
+version = "0.4.1"
+dependencies = [
+ "async-trait",
+ "ethers",
+ "futures-util",
+ "iron-broadcast",
+ "iron-rpc",
+ "iron-types",
+ "log",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
  "tokio-tungstenite",
  "tungstenite",
  "url",
- "urlencoding",
- "zeroize",
 ]
 
 [[package]]
@@ -6211,12 +6425,6 @@ dependencies = [
  "percent-encoding",
  "serde",
 ]
-
-[[package]]
-name = "urlencoding"
-version = "2.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e8db7427f936968176eaa7cdf81b7f98b980b18495ec28f1b5791ac3bfe3eea9"
 
 [[package]]
 name = "utf-8"
