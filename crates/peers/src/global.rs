@@ -35,12 +35,11 @@ async fn receiver() -> ! {
         if let Ok(msg) = rx.recv().await {
             match msg {
                 Msg::ChainChanged(chain_id, name) => {
-                    Peers::write().await.broadcast_chain_changed(chain_id, name)
+                    Peers::read().await.broadcast_chain_changed(chain_id, name)
                 }
                 Msg::AccountsChanged(accounts) => {
-                    Peers::write().await.broadcast_accounts_changed(accounts)
+                    Peers::read().await.broadcast_accounts_changed(accounts)
                 }
-                _ => {}
             }
         }
     }

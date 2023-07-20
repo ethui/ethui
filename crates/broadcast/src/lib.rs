@@ -1,44 +1,30 @@
+mod global;
+
+use global::read;
 use iron_types::ChecksummedAddress;
-use once_cell::sync::Lazy;
-use tokio::sync::{broadcast, RwLock};
+use tokio::sync::broadcast;
 
-static BROADCAST: Lazy<RwLock<Broadcast>> = Lazy::new(Default::default);
-
-pub async fn subscribe() -> broadcast::Receiver<Msg> {
-    BROADCAST.read().await.tx.subscribe()
-}
-
-pub async fn chain_changed(chain_id: u32, name: String) {
-    BROADCAST
-        .write()
-        .await
-        .tx
-        .send(Msg::ChainChanged(chain_id, name))
-        .unwrap();
-}
-
-pub async fn accounts_changed(addresses: Vec<ChecksummedAddress>) {
-    BROADCAST
-        .write()
-        .await
-        .tx
-        .send(Msg::AccountsChanged(addresses))
-        .unwrap();
-}
-
+/// Supported messages
 #[derive(Debug, Clone)]
 pub enum Msg {
     ChainChanged(u32, String),
     AccountsChanged(Vec<ChecksummedAddress>),
 }
 
-pub struct Broadcast {
-    tx: broadcast::Sender<Msg>,
+/// Creates a new subscriber
+pub async fn subscribe() -> broadcast::Receiver<Msg> {
+    read().await.subscribe()
 }
 
-impl Default for Broadcast {
-    fn default() -> Self {
-        let (tx, _rx) = broadcast::channel(16);
-        Self { tx }
-    }
+/// Broadcasts `ChainChanged` events
+pub async fn chain_changed(chain_id: u32, name: String) {
+    read()
+        .await
+        .send(Msg::ChainChanged(chain_id, name))
+        .unwrap();
+}
+
+/// Broadcasts `AccountsChanged` events
+pub async fn accounts_changed(addresses: Vec<ChecksummedAddress>) {
+    read().await.send(Msg::AccountsChanged(addresses)).unwrap();
 }

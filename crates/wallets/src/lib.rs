@@ -14,7 +14,7 @@ use std::{
 };
 
 pub use error::{Error, Result};
-use iron_types::{AppEvent, AppNotify, ChecksummedAddress, GlobalState, Json};
+use iron_types::{AppEvent, AppNotify, ChecksummedAddress, Json};
 use serde::Serialize;
 use tokio::sync::mpsc;
 
