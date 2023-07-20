@@ -3065,7 +3065,6 @@ dependencies = [
  "iron-rpc",
  "iron-types",
  "log",
- "notify",
  "once_cell",
  "serde",
  "serde_json",
