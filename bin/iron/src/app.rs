@@ -16,7 +16,6 @@ use crate::error::AppResult;
 
 pub struct IronApp {
     app: tauri::App,
-    //pub db: DB,
 }
 
 impl IronApp {
@@ -107,8 +106,6 @@ impl IronApp {
     }
 
     pub fn run(self) {
-        tracing::info!("Starting Iron");
-
         self.app.run(|_, event| {
             if let tauri::RunEvent::ExitRequested { api, .. } = event {
                 api.prevent_exit();
@@ -118,9 +115,8 @@ impl IronApp {
 
     #[cfg(not(target_os = "linux"))]
     fn build_menu() -> Menu {
-        let details = CustomMenuItem::new("details".to_string(), "Details");
-        let transactions = CustomMenuItem::new("transactions".to_string(), "Transactions");
         let balances = CustomMenuItem::new("balances".to_string(), "Balances");
+        let transactions = CustomMenuItem::new("transactions".to_string(), "Transactions");
         let contracts = CustomMenuItem::new("contracts".to_string(), "Contracts");
         let connections = CustomMenuItem::new("connections".to_string(), "Connections");
         let go_submenu = Submenu::new(
