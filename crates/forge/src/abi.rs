@@ -1,9 +1,11 @@
 #![allow(dead_code)]
 
+use std::str::FromStr;
 use std::{fs::File, io::BufReader, path::PathBuf};
 
+use ethers::types::Bytes;
+
 use super::{
-    calculate_code_hash,
     error::{Error, Result},
     watcher::Match,
 };
@@ -14,7 +16,7 @@ pub struct Abi {
     pub project: String,
     pub file: String,
     pub name: String,
-    pub code_hash: u64,
+    pub code: Bytes,
     pub abi: serde_json::Value,
 }
 
@@ -34,14 +36,14 @@ impl Abi {
             return Err(Error::EmptyABI(m.full_path));
         }
 
-        let deployed_bytecode = json["deployedBytecode"]["object"].clone();
+        let bytecode = json["bytecode"]["object"].clone();
 
-        if abi.is_null() || !deployed_bytecode.is_string() {
+        if abi.is_null() || !bytecode.is_string() {
             return Err(Error::NotAnABI(m.full_path));
         }
 
-        let code = deployed_bytecode.as_str().unwrap().to_string();
-        let code_hash = calculate_code_hash(&code);
+        let code = Bytes::from_str(bytecode.as_str().unwrap()).unwrap();
+        //let code_hash = calculate_code_hash(&code);
 
         Ok(Self {
             path: m.full_path,
@@ -49,7 +51,7 @@ impl Abi {
             file: m.file,
             name: m.name,
             abi,
-            code_hash,
+            code,
         })
     }
 }

@@ -30,7 +30,13 @@ static FOUNDRY: Lazy<RwLock<Foundry>> = Lazy::new(Default::default);
 
 impl Foundry {
     fn get_abi_for(&self, code_hash: u64) -> Option<abi::Abi> {
-        self.abis_by_code_hash.get(&code_hash).cloned()
+        let abi = self.abis_by_code_hash.get(&code_hash).cloned();
+
+        if abi.is_none() {
+            dbg!(&self.abis_by_path);
+            dbg!(&code_hash);
+        }
+        abi
     }
 
     /// starts the ABI watcher service

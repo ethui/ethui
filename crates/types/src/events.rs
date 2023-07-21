@@ -45,7 +45,8 @@ pub struct ERC721Transfer {
 #[derive(Debug)]
 pub struct ContractDeployed {
     pub address: Address,
-    pub code_hash: Option<String>,
+    pub code: Option<String>,
+    pub init_code: Option<String>,
 }
 
 impl From<ContractDeployed> for Event {

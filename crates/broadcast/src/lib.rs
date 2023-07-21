@@ -34,6 +34,7 @@ mod internal_msgs {
 
     /// Requests a reset of the anvil listener for a given chain_id
     pub async fn reset_anvil_listener(chain_id: u32, http: Url, ws: Url) {
+        dbg!("here2");
         send(ResetAnvilListener { chain_id, http, ws }).await;
     }
 

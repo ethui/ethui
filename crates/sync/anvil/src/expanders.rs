@@ -1,3 +1,6 @@
+use std::collections::hash_map::DefaultHasher;
+use std::hash::{Hash, Hasher};
+
 use ethers::types::{Action, Bytes, Call, Create, CreateResult, Log, Res, Trace};
 use ethers::{
     abi::RawLog,
@@ -9,8 +12,6 @@ use iron_types::{
     events::{ContractDeployed, ERC20Transfer, ERC721Transfer, Tx},
     Event,
 };
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
 
 use super::{Error, Result};
 
@@ -39,7 +40,9 @@ async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Result<Vec<Eve
     ) {
         // contract deploys
         (
-            Action::Create(Create { from, value, .. }),
+            Action::Create(Create {
+                from, value, init, ..
+            }),
             Some(Res::Create(CreateResult { address, .. })),
             _,
         ) => {
@@ -55,15 +58,12 @@ async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Result<Vec<Eve
                     status: receipt.status.unwrap().as_u64(),
                 }
                 .into(),
-                ContractDeployed {
+                dbg!(ContractDeployed {
                     address,
-                    code_hash: provider
-                        .get_code(address, None)
-                        .await
-                        .ok()
-                        .map(|v| calculate_code_hash(&v.to_string()).to_string()),
+                    init_code: Some(dbg!(&init)),
+                    code: provider.get_code(address, None).await.ok()
                 }
-                .into(),
+                .into()),
             ]
         }
 

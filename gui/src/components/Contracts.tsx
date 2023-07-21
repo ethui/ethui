@@ -35,6 +35,7 @@ export function Contracts() {
 }
 
 function Contract({ address, deployedCodeHash }: IContract) {
+  console.log(address, deployedCodeHash);
   const { data } = useInvoke<ABIMatch>("foundry_get_abi", {
     deployedCodeHash,
   });

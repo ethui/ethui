@@ -64,9 +64,16 @@ pub(super) async fn transfer_into_tx(
             .get_code(address, None)
             .await
             .ok()
-            .map(|v| calculate_code_hash(&v.to_string()).to_string());
+            .map(|v| calculate_code_hash(&v).to_string());
 
-        res.push(ContractDeployed { address, code_hash }.into())
+        res.push(
+            ContractDeployed {
+                address,
+                code_hash,
+                init_code_hash: None,
+            }
+            .into(),
+        )
     };
 
     Ok(res)
