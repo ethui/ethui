@@ -42,6 +42,8 @@ enum Msg {
 
 impl Tracker {
     pub fn run(chain_id: u32, http_url: Url, ws_url: Url, db: DB, window_snd: UISender) -> Self {
+        tracing::debug!("Starting anvil tracker");
+
         let ctx = Ctx {
             chain_id,
             http_url,
@@ -70,6 +72,8 @@ impl Tracker {
     }
 
     pub fn stop(&mut self) {
+        tracing::debug!("Stopping anvil tracker");
+
         let quit_snd = self.quit_snd.take();
 
         tokio::spawn(async move {

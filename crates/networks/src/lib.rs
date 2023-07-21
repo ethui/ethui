@@ -68,6 +68,13 @@ impl Networks {
         &self.networks[&self.current]
     }
 
+    pub fn get_network(&self, chain_id: u32) -> Option<Network> {
+        self.networks
+            .values()
+            .find(|n| n.chain_id == chain_id)
+            .cloned()
+    }
+
     pub fn set_networks(&mut self, networks: Vec<Network>) -> Result<()> {
         self.do_set_networks(networks)
     }

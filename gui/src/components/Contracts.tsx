@@ -11,32 +11,40 @@ import { useNetworks } from "../store";
 import { ABIMatch, Address } from "../types";
 import { ABIForm, AddressView, Panel } from "./";
 
-interface IContract {
+interface ContractData {
   address: Address;
   deployedCodeHash: string;
 }
 
 export function Contracts() {
   const chainId = useNetworks((s) => s.current?.chain_id);
-  const { data: contracts, mutate } = useInvoke<IContract[]>(
+  const { data: contracts, mutate } = useInvoke<ContractData[]>(
     "db_get_contracts",
     { chainId }
   );
 
   useRefreshTransactions(mutate);
 
+  if (!chainId) return null;
+
   return (
     <Panel>
-      {(contracts || []).map((contract) => (
-        <Contract key={contract.address} {...contract} />
+      {(contracts || []).map(({ address }) => (
+        <Contract key={address} address={address} chainId={chainId} />
       ))}
     </Panel>
   );
 }
 
-function Contract({ address, deployedCodeHash }: IContract) {
+interface IContract {
+  address: Address;
+  chainId: number;
+}
+
+function Contract({ address, chainId }: IContract) {
   const { data } = useInvoke<ABIMatch>("foundry_get_abi", {
-    deployedCodeHash,
+    address,
+    chainId,
   });
 
   return (

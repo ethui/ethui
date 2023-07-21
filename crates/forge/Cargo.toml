@@ -12,6 +12,7 @@ authors.workspace = true
 [dependencies]
 iron-types = { workspace = true }
 iron-settings = { workspace = true }
+iron-networks = { workspace = true }
 
 ethers = { workspace = true }
 tauri = { workspace = true }

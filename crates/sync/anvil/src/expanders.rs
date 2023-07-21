@@ -9,8 +9,6 @@ use iron_types::{
     events::{ContractDeployed, ERC20Transfer, ERC721Transfer, Tx},
     Event,
 };
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
 
 use super::{Error, Result};
 
@@ -57,11 +55,7 @@ async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Result<Vec<Eve
                 .into(),
                 ContractDeployed {
                     address,
-                    code_hash: provider
-                        .get_code(address, None)
-                        .await
-                        .ok()
-                        .map(|v| calculate_code_hash(&v.to_string()).to_string()),
+                    code: provider.get_code(address, None).await.ok(),
                 }
                 .into(),
             ]
@@ -138,11 +132,4 @@ fn expand_log(log: Log) -> Option<Event> {
     };
 
     None
-}
-
-// TODO: reuse this from the foundry module
-pub fn calculate_code_hash<T: Hash>(t: &T) -> u64 {
-    let mut s = DefaultHasher::new();
-    t.hash(&mut s);
-    s.finish()
 }

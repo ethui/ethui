@@ -1,5 +1,3 @@
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
 use std::{str::FromStr, sync::Arc};
 
 use ethers::{
@@ -60,13 +58,9 @@ pub(super) async fn transfer_into_tx(
     );
 
     if let Some(address) = receipt.contract_address {
-        let code_hash = client
-            .get_code(address, None)
-            .await
-            .ok()
-            .map(|v| calculate_code_hash(&v.to_string()).to_string());
+        let code = client.get_code(address, None).await.ok();
 
-        res.push(ContractDeployed { address, code_hash }.into())
+        res.push(ContractDeployed { address, code }.into())
     };
 
     Ok(res)
@@ -97,10 +91,4 @@ pub(super) async fn fetch_erc20_metadata(
     }
 
     Ok(())
-}
-
-pub fn calculate_code_hash<T: Hash>(t: &T) -> u64 {
-    let mut s = DefaultHasher::new();
-    t.hash(&mut s);
-    s.finish()
 }
