@@ -62,11 +62,48 @@ impl Handler {
             };
         }
 
-        // delegate directly to provider
-        provider_handler!("eth_estimateGas");
-        provider_handler!("eth_call");
+        // gossip methods
         provider_handler!("eth_blockNumber");
+        provider_handler!("eth_sendRawTransaction");
+
+        // state methods
+        // delegate directly to provider
+        provider_handler!("eth_getBalance");
+        provider_handler!("eth_getStorageAt");
+        provider_handler!("eth_getTransactionCount");
+        provider_handler!("eth_getCode");
+        provider_handler!("eth_call");
+        provider_handler!("eth_estimateGas");
+        provider_handler!("eth_protocolVersion");
+        provider_handler!("eth_syncing");
+        provider_handler!("eth_mining");
+
+        // TODO: handle this one internally
         provider_handler!("net_version");
+
+        // history methods
+        // delegate directly to provider
+        provider_handler!("eth_getBlockTransactionCountByHash");
+        provider_handler!("eth_getBlockTransactionCountByNumber");
+        provider_handler!("eth_getUncleCountByBlockHash");
+        provider_handler!("eth_getUncleCountByBlockNumber");
+        provider_handler!("eth_getBlockByHash");
+        provider_handler!("eth_getBlockByNumber");
+        provider_handler!("eth_getTransactionByHash");
+        provider_handler!("eth_getTransactionByBlockHashAndIndex");
+        provider_handler!("eth_getTransactionByBlockNumberAndIndex");
+        provider_handler!("eth_getTransactionReceipt");
+        provider_handler!("eth_getUncleByBlockHashAndIndex");
+        provider_handler!("eth_getUncleByBlockNumberAndIndex");
+
+        // filter methods
+        // delegate directly to provider
+        provider_handler!("eth_newFilter");
+        provider_handler!("eth_newBlockFilter");
+        provider_handler!("eth_newPendingFilter");
+        provider_handler!("eth_uninstallFilter");
+        provider_handler!("eth_getFilterLogs");
+        provider_handler!("eth_getLogs");
 
         // handle internally
         self_handler!("eth_accounts", Self::accounts);
@@ -74,14 +111,21 @@ impl Handler {
         self_handler!("eth_chainId", Self::chain_id);
         self_handler!("eth_sendTransaction", Self::send_transaction);
         self_handler!("eth_sign", Self::eth_sign);
-
         self_handler!("personal_sign", Self::eth_sign);
-        self_handler!("metamask_getProviderState", Self::provider_state);
-
-        self_handler!("wallet_switchEthereumChain", Self::switch_chain);
-
         self_handler!("eth_signTypedData", Self::eth_sign_typed_data_v4);
         self_handler!("eth_signTypedData_v4", Self::eth_sign_typed_data_v4);
+        self_handler!("wallet_switchEthereumChain", Self::switch_chain);
+
+        // metamask
+        self_handler!("metamask_getProviderState", Self::provider_state);
+
+        // not yet implemented
+        self_handler!("web3_clientVersion", Self::unimplemented);
+        self_handler!("web3_sha3", Self::unimplemented);
+        self_handler!("net_listening", Self::unimplemented);
+        self_handler!("net_peerCount", Self::unimplemented);
+        self_handler!("eth_gasPrice", Self::unimplemented);
+        self_handler!("eth_signTransaction", Self::unimplemented);
     }
 
     async fn accounts(_: Params) -> jsonrpc_core::Result<serde_json::Value> {
@@ -223,5 +267,11 @@ impl Handler {
             Ok(res) => Ok(format!("0x{}", res).into()),
             Err(e) => Ok(e.to_string().into()),
         }
+    }
+
+    async fn unimplemented(params: Params) -> jsonrpc_core::Result<serde_json::Value> {
+        tracing::warn!("unimplemented method called: {:?}", params);
+
+        Err(jsonrpc_core::Error::internal_error())
     }
 }
