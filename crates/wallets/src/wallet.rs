@@ -4,8 +4,10 @@ use ethers::core::k256::ecdsa::SigningKey;
 use iron_types::{ChecksummedAddress, Json};
 use serde::{Deserialize, Serialize};
 
-use super::hd_wallet::HDWallet;
-use super::{Error, JsonKeystoreWallet, PlaintextWallet, Result};
+use crate::{
+    hd_wallet::HDWallet, impersonator::Impersonator, Error, JsonKeystoreWallet, PlaintextWallet,
+    Result,
+};
 
 #[async_trait]
 #[enum_dispatch(Wallet)]
@@ -37,6 +39,8 @@ pub enum Wallet {
 
     #[serde(rename = "HDWallet")]
     HDWallet(HDWallet),
+
+    Impersonator(Impersonator),
 }
 
 #[async_trait]

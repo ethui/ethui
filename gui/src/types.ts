@@ -107,6 +107,12 @@ export const walletSchema = z.discriminatedUnion("type", [
     count: z.number().int().min(1),
     currentPath: z.string().optional(),
   }),
+  z.object({
+    type: z.literal("impersonator"),
+    name: z.string().min(1),
+    addresses: z.array(z.string()).min(1),
+    current: z.number(),
+  }),
 ]);
 
 export const walletTypes: Wallet["type"][] = Array.from(

@@ -12,7 +12,7 @@ use tokio::{
     task::JoinHandle,
 };
 
-use super::{utils, wallet::WalletCreate, Error, Result, Wallet, WalletControl};
+use crate::{utils, wallet::WalletCreate, Error, Result, Wallet, WalletControl};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]

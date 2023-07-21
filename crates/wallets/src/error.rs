@@ -39,6 +39,12 @@ pub enum Error {
 
     #[error("invalid wallet type: {0}")]
     InvalidWalletType(String),
+
+    #[error("This wallet type cannot sign")]
+    WalletCantSign,
+
+    #[error(transparent)]
+    ParseInto(#[from] std::num::ParseIntError),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

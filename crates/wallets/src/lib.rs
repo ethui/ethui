@@ -1,6 +1,7 @@
 pub mod commands;
 mod error;
 mod hd_wallet;
+mod impersonator;
 mod init;
 mod json_keystore_wallet;
 mod plaintext;

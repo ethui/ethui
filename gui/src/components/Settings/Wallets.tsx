@@ -1,28 +1,23 @@
-import { zodResolver } from "@hookform/resolvers/zod";
 import { ExpandMore, KeyboardArrowDown } from "@mui/icons-material";
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
   Button,
-  Checkbox,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormHelperText,
   Menu,
   MenuItem,
   Stack,
-  TextField,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import { startCase } from "lodash-es";
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
 
-import { useWallets } from "../store";
-import { Wallet, walletSchema, walletTypes } from "../types";
-import { HDWalletForm } from "./Settings/HDWalletForm";
+import { useWallets } from "../../store";
+import { Wallet, walletTypes } from "../../types";
+import { HDWalletForm } from "./Wallet/HDWallet";
+import { ImpersonatorForm } from "./Wallet/Impersonator";
+import { JsonKeystore } from "./Wallet/JsonKeystore";
+import { Plaintext } from "./Wallet/Plaintext";
 
 type NewChild = { new?: boolean };
 
@@ -91,6 +86,9 @@ export function SettingsWallets() {
                     {...props}
                   />
                 )}
+                {wallet.type === "impersonator" && (
+                  <ImpersonatorForm wallet={wallet} {...props} />
+                )}
               </AccordionDetails>
             </Accordion>
           );
@@ -156,160 +154,6 @@ const AddWalletButton = ({ append }: AddWalletButtonProps) => {
     </>
   );
 };
-
-interface PlaintextProps {
-  wallet: Wallet & { type: "plaintext" };
-  onSubmit: (data: Wallet & { type: "plaintext" }) => void;
-  onRemove: () => void;
-}
-
-function Plaintext({ wallet, onSubmit, onRemove }: PlaintextProps) {
-  const {
-    register,
-    handleSubmit,
-    control,
-    formState: { isValid, isDirty, errors },
-  } = useForm({
-    mode: "onBlur",
-    resolver: zodResolver(walletSchema),
-    defaultValues: wallet,
-  });
-
-  return (
-    <Stack
-      spacing={2}
-      alignItems="flex-start"
-      component="form"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <input type="hidden" {...register("type")} />
-      <input type="hidden" {...register("currentPath")} />
-      <TextField
-        label="Name"
-        error={!!errors.name}
-        helperText={errors.name?.message?.toString()}
-        {...register("name")}
-      />
-      <Stack spacing={2} direction="row">
-        <FormControl error={!!errors.dev}>
-          <FormGroup>
-            <FormControlLabel
-              label="Dev account"
-              control={
-                <Controller
-                  name="dev"
-                  control={control}
-                  render={({ field }) => {
-                    return (
-                      <Checkbox
-                        {...field}
-                        checked={field.value}
-                        onChange={(e) => field.onChange(e.target.checked)}
-                      />
-                    );
-                  }}
-                />
-              }
-            />
-          </FormGroup>
-          {errors.dev && (
-            <FormHelperText>{errors.dev.message?.toString()}</FormHelperText>
-          )}
-        </FormControl>
-      </Stack>
-      <TextField
-        label="Mnemonic"
-        error={!!errors.mnemonic}
-        helperText={errors.mnemonic?.message?.toString() || ""}
-        fullWidth
-        {...register("mnemonic")}
-      />
-      <TextField
-        label="Derivation Path"
-        spellCheck="false"
-        error={!!errors.derivationPath}
-        helperText={errors.derivationPath?.message?.toString() || ""}
-        {...register("derivationPath")}
-      />
-      <TextField
-        label="Count"
-        spellCheck="false"
-        error={!!errors.count}
-        type="number"
-        helperText={errors.count?.message?.toString() || ""}
-        {...register("count", { valueAsNumber: true })}
-      />
-      <Stack direction="row" spacing={2}>
-        <Button
-          color="primary"
-          variant="contained"
-          type="submit"
-          disabled={!isDirty || !isValid}
-        >
-          Save
-        </Button>
-        <Button color="warning" variant="contained" onClick={onRemove}>
-          Remove
-        </Button>
-      </Stack>
-    </Stack>
-  );
-}
-
-interface JsonKeystoreProps {
-  wallet: Wallet & { type: "jsonKeystore" };
-  onSubmit: (data: Wallet & { type: "jsonKeystore" }) => void;
-  onRemove: () => void;
-}
-
-function JsonKeystore({ wallet, onSubmit, onRemove }: JsonKeystoreProps) {
-  const {
-    register,
-    handleSubmit,
-    formState: { isValid, isDirty, errors },
-  } = useForm({
-    mode: "onBlur",
-    resolver: zodResolver(walletSchema),
-    defaultValues: wallet,
-  });
-
-  return (
-    <Stack
-      spacing={2}
-      alignItems="flex-start"
-      component="form"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <input type="hidden" {...register("type")} />
-      <TextField
-        label="Name"
-        error={!!errors.name}
-        helperText={errors.name?.message?.toString()}
-        {...register("name")}
-      />
-      <TextField
-        label="Keystore file"
-        error={!!errors.file}
-        helperText={errors.file?.message?.toString() || ""}
-        fullWidth
-        {...register("file")}
-      />
-      <Stack direction="row" spacing={2}>
-        <Button
-          color="primary"
-          variant="contained"
-          type="submit"
-          disabled={!isDirty || !isValid}
-        >
-          Save
-        </Button>
-        <Button color="warning" variant="contained" onClick={onRemove}>
-          Remove
-        </Button>
-      </Stack>
-    </Stack>
-  );
-}
 
 const emptyWallets: Record<Wallet["type"], Wallet & NewChild> = {
   plaintext: {
