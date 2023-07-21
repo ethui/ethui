@@ -65,6 +65,7 @@ impl Foundry {
 
     // indexes a new known ABI
     fn insert_known_abi(&mut self, abi: abi::Abi) {
+        tracing::trace!("insert ABI: {:?}", abi.path);
         self.abis_by_path.insert(abi.path.clone(), abi.code_hash);
         self.abis_by_code_hash.insert(abi.code_hash, abi);
     }
@@ -72,6 +73,7 @@ impl Foundry {
     // removes a previously known ABI by their path
     fn remove_known_abi(&mut self, path: PathBuf) {
         if let Some(code_hash) = self.abis_by_path.remove(&path) {
+            tracing::trace!("remove ABI: {:?}", path);
             self.abis_by_code_hash.remove(&code_hash);
         }
     }

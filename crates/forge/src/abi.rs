@@ -30,6 +30,10 @@ impl Abi {
         let json: serde_json::Value = serde_json::from_reader(BufReader::new(file))?;
 
         let abi = json["abi"].clone();
+        if abi.as_array().map(|a| a.is_empty()).unwrap_or(true) {
+            return Err(Error::EmptyABI(m.full_path));
+        }
+
         let deployed_bytecode = json["deployedBytecode"]["object"].clone();
 
         if abi.is_null() || !deployed_bytecode.is_string() {
