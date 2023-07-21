@@ -7,11 +7,11 @@ use once_cell::sync::{Lazy, OnceCell};
 use tokio::sync::{mpsc, Mutex};
 use url::Url;
 
-use crate::BlockListener;
+use crate::tracker::Tracker;
 
 static DB: OnceCell<DB> = OnceCell::new();
 static WINDOW_SND: OnceCell<mpsc::UnboundedSender<UIEvent>> = OnceCell::new();
-static LISTENERS: Lazy<Mutex<HashMap<u32, BlockListener>>> = Lazy::new(Default::default);
+static LISTENERS: Lazy<Mutex<HashMap<u32, Tracker>>> = Lazy::new(Default::default);
 
 pub fn init(db: DB, window_snd: mpsc::UnboundedSender<UIEvent>) {
     DB.set(db).unwrap();
@@ -29,19 +29,16 @@ async fn receiver() -> ! {
     }
 }
 
-pub async fn reset_listener(chain_id: u32, http: Url, ws: Url) {
+async fn reset_listener(chain_id: u32, http: Url, ws: Url) {
     LISTENERS.lock().await.remove(&chain_id);
 
-    let mut listener = BlockListener::new(
+    let listener = Tracker::run(
         chain_id,
         http,
         ws,
         DB.get().unwrap().clone(),
         WINDOW_SND.get().unwrap().clone(),
     );
-
-    // TODO: should just report error, not unwrap and crash
-    listener.run().unwrap();
 
     LISTENERS.lock().await.insert(chain_id, listener);
 }
