@@ -162,8 +162,10 @@ fn on_menu_event(event: WindowMenuEvent) {
 }
 
 async fn init(app: &tauri::App, db: &DB, snd: UISender) -> AppResult<()> {
-    iron_sync_alchemy::init(db.clone(), snd.clone()).await;
+    // anvil needs to be started before networks, otherwise the initial tracker won't be ready to
+    // spawn
     iron_sync_anvil::init(db.clone(), snd.clone());
+    iron_sync_alchemy::init(db.clone(), snd.clone()).await;
 
     iron_dialogs::init(snd.clone());
     iron_settings::init(resource(app, "settings.json")).await;
