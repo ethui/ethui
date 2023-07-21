@@ -1,4 +1,4 @@
-import { Box, Stack, Typography } from "@mui/material";
+import { Badge, Box, Stack, Typography } from "@mui/material";
 import { groupBy, map } from "lodash-es";
 
 import { useInvoke, useRefreshPeers } from "../hooks";
@@ -24,25 +24,21 @@ export function Peers() {
     <Panel>
       <Stack spacing={2}>
         {map(peersByTabId, (conns, tabId) => (
-          <Connection key={tabId} tabId={tabId} conns={conns} />
+          <Connection key={tabId} conns={conns} />
         ))}
       </Stack>
     </Panel>
   );
 }
 
-function Connection({ tabId, conns }: { tabId?: string; conns: Peer[] }) {
+function Connection({ conns }: { conns: Peer[] }) {
   return (
-    <Stack direction="row" spacing={2}>
-      <Box
-        component="img"
-        src={conns[0].favicon}
-        sx={{ width: 24, height: 24, mt: 1 }}
-      />
+    <Stack direction="row" alignItems="center" spacing={2}>
+      <Badge>
+        <img width="30" height="30" src={conns[0].favicon} />
+      </Badge>
       <Stack>
-        <Typography variant="overline"> {conns[0].title}</Typography>
-        {tabId && <Typography variant="body2">Tab ID {tabId}</Typography>}
-        <Typography variant="body2">{conns.length} peers</Typography>
+        <Typography> {conns[0].title}</Typography>
       </Stack>
     </Stack>
   );

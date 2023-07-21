@@ -70,6 +70,8 @@ impl Handler {
         macro_rules! provider_handler {
             ($name:literal) => {
                 self.io.add_method($name, |params: Params| async move {
+                    tracing::debug!("{} {:?}", $name, params);
+
                     let provider = Networks::read().await.get_current_provider();
 
                     let res: jsonrpc_core::Result<serde_json::Value> = provider

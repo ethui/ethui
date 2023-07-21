@@ -48,6 +48,12 @@ export function setupProviderConnection(port: Runtime.Port) {
 
   ws = new WebsocketBuilder(`${settings.endpoint}?${connectionParams(port)}`)
     .withBackoff(new ConstantBackoff(1000))
+    .onOpen((i, ev) => {
+      log.debug("onOpen", i, ev);
+    })
+    .onClose((i, ev) => {
+      log.debug("onClose", i, ev);
+    })
     .onMessage((_i, e) => {
       // write back to page provider
       const data = JSON.parse(e.data);
