@@ -6,11 +6,11 @@ pub mod error;
 mod init;
 mod watcher;
 
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
+use std::collections::BTreeMap;
 use std::{collections::HashMap, path::PathBuf};
 
 pub use error::{Error, Result};
+use ethers::types::Bytes;
 pub use init::init;
 use once_cell::sync::Lazy;
 use tokio::{
@@ -22,21 +22,20 @@ use self::watcher::Match;
 
 #[derive(Default)]
 pub struct Foundry {
-    abis_by_path: HashMap<PathBuf, u64>,
+    abis: Vec<abi::Abi>,
+    abis_by_path: BTreeMap<PathBuf, abi::Abi>,
     abis_by_code_hash: HashMap<u64, abi::Abi>,
 }
 
 static FOUNDRY: Lazy<RwLock<Foundry>> = Lazy::new(Default::default);
+static FUZZ_DIFF_THRESHOLD: f64 = 0.2;
 
 impl Foundry {
-    fn get_abi_for(&self, code_hash: u64) -> Option<abi::Abi> {
-        let abi = self.abis_by_code_hash.get(&code_hash).cloned();
-
-        if abi.is_none() {
-            dbg!(&self.abis_by_path);
-            dbg!(&code_hash);
-        }
-        abi
+    fn get_abi_for(&self, code: Bytes) -> Option<abi::Abi> {
+        self.abis_by_path
+            .values()
+            .find(|abi| diff_score(&abi.code, &code) < FUZZ_DIFF_THRESHOLD)
+            .cloned()
     }
 
     /// starts the ABI watcher service
@@ -72,21 +71,57 @@ impl Foundry {
     // indexes a new known ABI
     fn insert_known_abi(&mut self, abi: abi::Abi) {
         tracing::trace!("insert ABI: {:?}", abi.path);
-        self.abis_by_path.insert(abi.path.clone(), abi.code_hash);
-        self.abis_by_code_hash.insert(abi.code_hash, abi);
+        self.abis_by_path.insert(abi.path.clone(), abi);
+        //self.abis.push(abi);
+        // self.abis_by_path.insert(abi.path.clone(), abi.code_hash);
+        // self.abis_by_code_hash.insert(abi.code_hash, abi);
     }
 
     // removes a previously known ABI by their path
     fn remove_known_abi(&mut self, path: PathBuf) {
-        if let Some(code_hash) = self.abis_by_path.remove(&path) {
-            tracing::trace!("remove ABI: {:?}", path);
-            self.abis_by_code_hash.remove(&code_hash);
-        }
+        self.abis_by_path.remove(&path);
+        // if let Some(code_hash) = self.abis_by_path.remove(&path) {
+        //     tracing::trace!("remove ABI: {:?}", path);
+        //     self.abis_by_code_hash.remove(&code_hash);
+        // }
     }
 }
 
-pub fn calculate_code_hash<T: Hash>(t: &T) -> u64 {
-    let mut s = DefaultHasher::new();
-    t.hash(&mut s);
-    s.finish()
+/// Very simple fuzzy matching of contract bytecode.
+///
+/// Will fail for small contracts that are essentially all immutable variables.
+/// Taken from https://github.com/foundry-rs/foundry/blob/02e430c20fb7ba1794f5cabdd7eb73182baf4e7e/common/src/contracts.rs#L96-L114
+pub fn diff_score(a: &[u8], b: &[u8]) -> f64 {
+    let cutoff_len = usize::min(a.len(), b.len());
+    if cutoff_len == 0 {
+        return 1.0;
+    }
+
+    let a = &a[..cutoff_len];
+    let b = &b[..cutoff_len];
+    let mut diff_chars = 0;
+    for i in 0..cutoff_len {
+        if a[i] != b[i] {
+            diff_chars += 1;
+        }
+    }
+    diff_chars as f64 / cutoff_len as f64
+}
+
+#[cfg(test)]
+mod tests {
+    use std::str::FromStr;
+
+    use ethers::types::Bytes;
+
+    use super::*;
+
+    #[test]
+    fn test() {
+        let forge = Bytes::from_str("0x6080604052348015600f57600080fd5b5060043610603c5760003560e01c8063243dc8da146041578063a10a6819146056578063dc80035d146080575b600080fd5b60005460405190815260200160405180910390f35b607e7f0000000000000000000000000000000000000000000000000000000000000000600055565b005b607e608b3660046090565b600055565b60006020828403121560a157600080fd5b503591905056fea26469706673582212201b6eea80fa9d695c35c1d3f39e1a44e9e108da8c1558fd243e2afff27e1e5c6564736f6c634300080d0033").unwrap();
+
+        let onchain = Bytes::from_str("0x6080604052348015600f57600080fd5b5060043610603c5760003560e01c8063243dc8da146041578063a10a6819146056578063dc80035d146080575b600080fd5b60005460405190815260200160405180910390f35b607e7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff600055565b005b607e608b3660046090565b600055565b60006020828403121560a157600080fd5b503591905056fea26469706673582212201b6eea80fa9d695c35c1d3f39e1a44e9e108da8c1558fd243e2afff27e1e5c6564736f6c634300080d0033").unwrap();
+
+        assert!(diff_score(&forge, &onchain) < FUZZ_DIFF_THRESHOLD);
+    }
 }

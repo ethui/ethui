@@ -28,7 +28,7 @@ pub(super) fn insert_contract(tx: &events::ContractDeployed, chain_id: u32) -> Q
     )
     .bind(format!("0x{:x}", tx.address))
     .bind(chain_id)
-    .bind(tx.init_code_hash.clone())
+    .bind(tx.code.clone().map(|c| c.to_string()))
 }
 
 pub(super) fn native_update_balance<'a>(

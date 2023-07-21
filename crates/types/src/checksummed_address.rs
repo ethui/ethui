@@ -2,7 +2,7 @@ use ethers::{types::Address, utils::to_checksum};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Hash, Eq, PartialEq, Clone)]
-pub struct ChecksummedAddress(Address);
+pub struct ChecksummedAddress(pub Address);
 
 impl Serialize for ChecksummedAddress {
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
