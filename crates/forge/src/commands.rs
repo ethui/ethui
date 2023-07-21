@@ -2,7 +2,7 @@ use ethers::providers::Middleware;
 use iron_networks::Networks;
 use iron_types::{ChecksummedAddress, GlobalState};
 
-use super::{abi::Abi, FOUNDRY};
+use super::{abi::Abi, FORGE};
 
 /// Gets the ABI, if known, for a given address and chain_id
 #[tauri::command]
@@ -24,6 +24,6 @@ pub async fn foundry_get_abi(
         return Ok(None);
     }
 
-    let foundry = FOUNDRY.read().await;
+    let foundry = FORGE.read().await;
     Ok(foundry.get_abi_for(code))
 }

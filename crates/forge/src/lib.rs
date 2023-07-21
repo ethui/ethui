@@ -7,7 +7,7 @@ mod init;
 mod watcher;
 
 use std::collections::BTreeMap;
-use std::{collections::HashMap, path::PathBuf};
+use std::path::PathBuf;
 
 pub use error::{Error, Result};
 use ethers::types::Bytes;
@@ -21,16 +21,14 @@ use tokio::{
 use self::watcher::Match;
 
 #[derive(Default)]
-pub struct Foundry {
-    abis: Vec<abi::Abi>,
+pub struct Forge {
     abis_by_path: BTreeMap<PathBuf, abi::Abi>,
-    abis_by_code_hash: HashMap<u64, abi::Abi>,
 }
 
-static FOUNDRY: Lazy<RwLock<Foundry>> = Lazy::new(Default::default);
+static FORGE: Lazy<RwLock<Forge>> = Lazy::new(Default::default);
 static FUZZ_DIFF_THRESHOLD: f64 = 0.2;
 
-impl Foundry {
+impl Forge {
     fn get_abi_for(&self, code: Bytes) -> Option<abi::Abi> {
         self.abis_by_path
             .values()
@@ -57,7 +55,7 @@ impl Foundry {
     /// Handlers ABI file events
     async fn handle_events(mut rcv: mpsc::UnboundedReceiver<Match>) -> Result<()> {
         while let Some(m) = rcv.recv().await {
-            let mut foundry = FOUNDRY.write().await;
+            let mut foundry = FORGE.write().await;
             if let Ok(abi) = abi::Abi::try_from_match(m.clone()) {
                 foundry.insert_known_abi(abi);
             } else {
@@ -72,18 +70,11 @@ impl Foundry {
     fn insert_known_abi(&mut self, abi: abi::Abi) {
         tracing::trace!("insert ABI: {:?}", abi.path);
         self.abis_by_path.insert(abi.path.clone(), abi);
-        //self.abis.push(abi);
-        // self.abis_by_path.insert(abi.path.clone(), abi.code_hash);
-        // self.abis_by_code_hash.insert(abi.code_hash, abi);
     }
 
     // removes a previously known ABI by their path
     fn remove_known_abi(&mut self, path: PathBuf) {
         self.abis_by_path.remove(&path);
-        // if let Some(code_hash) = self.abis_by_path.remove(&path) {
-        //     tracing::trace!("remove ABI: {:?}", path);
-        //     self.abis_by_code_hash.remove(&code_hash);
-        // }
     }
 }
 

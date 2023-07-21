@@ -1,7 +1,7 @@
 use iron_settings::Settings;
 use iron_types::GlobalState;
 
-use crate::Foundry;
+use crate::Forge;
 
 pub async fn init() -> crate::Result<()> {
     let settings = Settings::read().await;
@@ -10,7 +10,7 @@ pub async fn init() -> crate::Result<()> {
         settings.inner.abi_watch,
         settings.inner.abi_watch_path.clone(),
     ) {
-        Foundry::watch(path).await
+        Forge::watch(path).await
     } else {
         Ok(())
     }
