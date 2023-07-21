@@ -49,3 +49,23 @@ impl serde::Serialize for Error {
         serializer.serialize_str(self.to_string().as_ref())
     }
 }
+
+pub(crate) fn ethers_to_jsonrpc_error(e: ProviderError) -> jsonrpc_core::Error {
+    // TODO: probable handle more error types here
+    match e {
+        ProviderError::JsonRpcClientError(e) => {
+            if let Some(e) = e.as_error_response() {
+                jsonrpc_core::Error {
+                    code: ErrorCode::ServerError(e.code),
+                    data: e.data.clone(),
+                    message: e.message.clone(),
+                }
+            } else if e.as_serde_error().is_some() {
+                jsonrpc_core::Error::invalid_request()
+            } else {
+                jsonrpc_core::Error::internal_error()
+            }
+        }
+        _ => jsonrpc_core::Error::internal_error(),
+    }
+}

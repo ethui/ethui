@@ -8,13 +8,12 @@ use std::{collections::HashMap, str::FromStr};
 use ethers::{
     abi::AbiEncode,
     prelude::SignerMiddleware,
-    providers::ProviderError,
     types::{transaction::eip712, Address},
 };
 use iron_networks::Networks;
 use iron_types::GlobalState;
 use iron_wallets::{WalletControl, Wallets};
-use jsonrpc_core::{ErrorCode, IoHandler, Params};
+use jsonrpc_core::{IoHandler, Params};
 use serde_json::json;
 
 pub use self::error::{Error, Result};
@@ -31,26 +30,6 @@ impl Default for Handler {
         };
         res.add_handlers();
         res
-    }
-}
-
-fn ethers_to_jsonrpc_error(e: ProviderError) -> jsonrpc_core::Error {
-    // TODO: probable handle more error types here
-    match e {
-        ProviderError::JsonRpcClientError(e) => {
-            if let Some(e) = e.as_error_response() {
-                jsonrpc_core::Error {
-                    code: ErrorCode::ServerError(e.code),
-                    data: e.data.clone(),
-                    message: e.message.clone(),
-                }
-            } else if e.as_serde_error().is_some() {
-                jsonrpc_core::Error::invalid_request()
-            } else {
-                jsonrpc_core::Error::internal_error()
-            }
-        }
-        _ => jsonrpc_core::Error::internal_error(),
     }
 }
 
@@ -77,7 +56,7 @@ impl Handler {
                     let res: jsonrpc_core::Result<serde_json::Value> = provider
                         .request::<_, serde_json::Value>($name, params)
                         .await
-                        .map_err(ethers_to_jsonrpc_error);
+                        .map_err(error::ethers_to_jsonrpc_error);
                     res
                 });
             };
