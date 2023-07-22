@@ -39,9 +39,11 @@ export function SettingsWallets() {
     idx: number
   ) => {
     if (wallet.new) {
+      console.log("wallet_create");
       invoke("wallets_create", { params });
       setNewWallets(newWallets.filter((_, i) => i != idx - wallets.length));
     } else {
+      console.log("wallet_update");
       await invoke("wallets_update", { name: wallet.name, params });
     }
   };
@@ -178,6 +180,12 @@ const emptyWallets: Record<Wallet["type"], Wallet & NewChild> = {
     derivationPath: "",
     mnemonic: "",
     password: "",
+    new: true,
+  },
+  impersonator: {
+    type: "impersonator",
+    name: "",
+    addresses: [""],
     new: true,
   },
 };

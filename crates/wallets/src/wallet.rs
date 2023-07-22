@@ -52,6 +52,7 @@ impl WalletCreate for Wallet {
             "plaintext" => PlaintextWallet::create(params).await?,
             "jsonKeystore" => JsonKeystoreWallet::create(params).await?,
             "HDWallet" => HDWallet::create(params).await?,
+            "impersonator" => Impersonator::create(params).await?,
             _ => return Err(Error::InvalidWalletType(wallet_type.into())),
         };
 

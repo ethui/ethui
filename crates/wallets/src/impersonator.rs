@@ -10,8 +10,10 @@ use crate::{wallet::WalletCreate, Result, Wallet, WalletControl};
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct Impersonator {
     pub name: String,
-    pub current: usize,
     pub addresses: Vec<ChecksummedAddress>,
+
+    #[serde(default)]
+    pub current: usize,
 }
 
 #[async_trait]

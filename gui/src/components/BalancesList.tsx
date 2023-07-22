@@ -84,7 +84,6 @@ function BalanceItem({
     balance - (balance % BigInt(Math.ceil(minimum * 10 ** decimals)));
 
   if (!symbol || !decimals) return null;
-  console.log(contract);
 
   return (
     <ListItem>
