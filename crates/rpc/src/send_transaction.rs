@@ -28,15 +28,12 @@ impl<'a> SendTransaction<'a> {
     }
 
     pub async fn estimate_gas(&mut self) -> &mut SendTransaction<'a> {
-        self.build_signer().await;
-
         // TODO: we're defaulting to 1_000_000 gas cost if estimation fails
         // estimation failing means the tx will faill anyway, so this is fine'ish
         // but can probably be improved a lot in the future
         let gas_limit = self
-            .signer
-            .as_ref()
-            .unwrap()
+            .network
+            .get_provider()
             .estimate_gas(&self.request, None)
             .await
             .unwrap_or(1_000_000.into());
@@ -46,9 +43,12 @@ impl<'a> SendTransaction<'a> {
     }
 
     pub async fn finish(&mut self) -> Result<PendingTransaction<'_, Http>> {
+        tracing::debug!("finishing transaction");
+
         self.build_signer().await;
 
-        if !self.network.is_dev() && self.wallet.is_dev() {
+        let skip_dialog = self.network.is_dev() && self.wallet.is_dev();
+        if !skip_dialog {
             self.spawn_dialog().await?;
         }
         self.send().await
@@ -74,7 +74,7 @@ impl<'a> SendTransaction<'a> {
     }
 
     async fn build_signer(&mut self) {
-        if self.signer.is_some() {
+        if self.signer.is_none() {
             let signer: signers::Wallet<SigningKey> = self
                 .wallet
                 .build_signer(self.network.chain_id, &self.wallet_path)
@@ -144,6 +144,8 @@ impl<'a> SendTransactionBuilder<'a> {
     }
 
     pub fn build(self) -> SendTransaction<'a> {
+        tracing::debug!("building SendTransaction");
+
         SendTransaction {
             wallet: self.wallet.unwrap(),
             wallet_path: self.wallet_path.unwrap(),
