@@ -17,7 +17,7 @@ use jsonrpc_core::{IoHandler, Params};
 use serde_json::json;
 
 pub use self::error::{Error, Result};
-use self::{send_transaction::SendTransaction, sign_message::SignMessage};
+use self::sign_message::SignMessage;
 
 pub struct Handler {
     io: IoHandler,
@@ -171,6 +171,8 @@ impl Handler {
     async fn send_transaction<T: Into<serde_json::Value>>(
         params: T,
     ) -> jsonrpc_core::Result<serde_json::Value> {
+        use send_transaction::SendTransaction;
+
         // TODO: should we scope these rwlock reads so they don't stick during sining?
         let networks = Networks::read().await;
         let wallets = Wallets::read().await;
@@ -178,25 +180,14 @@ impl Handler {
         let network = networks.get_current_network();
         let wallet = wallets.get_current_wallet();
 
-        let signer = wallet
-            .build_signer(network.chain_id)
-            .await
-            .map_err(|e| Error::SignerBuild(e.to_string()))?;
+        let mut sender = SendTransaction::build()
+            .set_wallet(wallet)
+            .set_wallet_path(wallet.get_current_path())
+            .set_network(network)
+            .set_request(params.into())
+            .build();
 
-        let mut sender = SendTransaction::default();
-
-        let sender = sender
-            .set_params(params.into())
-            .set_chain_id(network.chain_id)
-            .set_signer(SignerMiddleware::new(network.get_provider(), signer))
-            .estimate_gas()
-            .await;
-
-        if network.is_dev() && wallet.is_dev() {
-            sender.skip_dialog();
-        }
-
-        let result = sender.finish().await;
+        let result = sender.estimate_gas().await.finish().await;
 
         match result {
             Ok(res) => Ok(res.tx_hash().encode_hex().into()),
@@ -214,7 +205,10 @@ impl Handler {
 
         let network = networks.get_current_network();
         let wallet = wallets.get_current_wallet();
-        let wallet_signer = wallet.build_signer(network.chain_id).await.unwrap();
+        let wallet_signer = wallet
+            .build_signer(network.chain_id, &wallet.get_current_path())
+            .await
+            .unwrap();
         let wallet_signer = SignerMiddleware::new(network.get_provider(), wallet_signer);
 
         // TODO: ensure from == signer
@@ -247,7 +241,7 @@ impl Handler {
         let network = networks.get_current_network();
         let wallet_signer = wallets
             .get_current_wallet()
-            .build_signer(network.chain_id)
+            .build_signer(network.chain_id, &wallet.get_current_path())
             .await
             .unwrap();
         let wallet_signer = SignerMiddleware::new(network.get_provider(), wallet_signer);

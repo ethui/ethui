@@ -38,7 +38,11 @@ impl WalletControl for PlaintextWallet {
     }
 
     async fn get_current_address(&self) -> ChecksummedAddress {
-        self.build_signer(1).await.unwrap().address().into()
+        self.build_current_signer(1).await.unwrap().address().into()
+    }
+
+    fn get_current_path(&self) -> String {
+        self.current_path.clone()
     }
 
     async fn set_current_path(&mut self, path: String) -> Result<()> {
@@ -53,7 +57,13 @@ impl WalletControl for PlaintextWallet {
         }
     }
 
-    async fn build_signer(&self, chain_id: u32) -> Result<ethers::signers::Wallet<SigningKey>> {
+    async fn build_signer(
+        &self,
+        chain_id: u32,
+        _path: &str,
+    ) -> Result<ethers::signers::Wallet<SigningKey>> {
+        // TODO: ensure path exists
+
         Ok(MnemonicBuilder::<English>::default()
             .phrase(self.mnemonic.as_ref())
             .derivation_path(&self.current_path)?

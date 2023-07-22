@@ -13,9 +13,22 @@ pub trait WalletControl: Sync + Send + Deserialize<'static> + Serialize + std::f
     fn name(&self) -> String;
     async fn update(mut self, params: Json) -> Result<Wallet>;
     async fn get_current_address(&self) -> ChecksummedAddress;
+    fn get_current_path(&self) -> String;
     async fn set_current_path(&mut self, path: String) -> Result<()>;
     async fn get_all_addresses(&self) -> Vec<(String, ChecksummedAddress)>;
-    async fn build_signer(&self, chain_id: u32) -> Result<ethers::signers::Wallet<SigningKey>>;
+
+    async fn build_signer(
+        &self,
+        chain_id: u32,
+        path: &str,
+    ) -> Result<ethers::signers::Wallet<SigningKey>>;
+
+    async fn build_current_signer(
+        &self,
+        chain_id: u32,
+    ) -> Result<ethers::signers::Wallet<SigningKey>> {
+        self.build_signer(chain_id, &self.get_current_path()).await
+    }
 
     fn is_dev(&self) -> bool {
         false
