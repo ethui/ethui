@@ -1,8 +1,9 @@
 use std::str::FromStr;
 
-use ethers::core::k256::ecdsa::SigningKey;
 use ethers::{
+    core::k256::ecdsa::SigningKey,
     prelude::*,
+    providers::Middleware as _,
     signers,
     types::{serde_helpers::StringifiedNumeric, transaction::eip2718::TypedTransaction},
 };
@@ -11,6 +12,7 @@ use iron_networks::Network;
 use iron_wallets::{Wallet, WalletControl};
 
 use super::{Error, Result};
+type Middleware = SignerMiddleware<Provider<Http>, signers::Wallet<SigningKey>>;
 
 /// Orchestrates the signing of a transaction
 /// Takes references to both the wallet and network where this
@@ -19,7 +21,7 @@ pub struct SendTransaction<'a> {
     pub wallet_path: String,
     pub network: &'a Network,
     pub request: TypedTransaction,
-    pub signer: Option<SignerMiddleware<Provider<Http>, signers::Wallet<SigningKey>>>,
+    pub signer: Option<Middleware>,
 }
 
 impl<'a> SendTransaction<'a> {
@@ -44,8 +46,6 @@ impl<'a> SendTransaction<'a> {
 
     pub async fn finish(&mut self) -> Result<PendingTransaction<'_, Http>> {
         tracing::debug!("finishing transaction");
-
-        self.build_signer().await;
 
         let skip_dialog = self.network.is_dev() && self.wallet.is_dev();
         if !skip_dialog {
@@ -73,18 +73,17 @@ impl<'a> SendTransaction<'a> {
         }
     }
 
-    async fn build_signer(&mut self) {
-        if self.signer.is_none() {
-            let signer: signers::Wallet<SigningKey> = self
-                .wallet
-                .build_signer(self.network.chain_id, &self.wallet_path)
-                .await
-                .unwrap();
-            self.signer = Some(SignerMiddleware::new(self.network.get_provider(), signer));
-        }
+    async fn build_signer(&self) -> Middleware {
+        let signer: signers::Wallet<SigningKey> = self
+            .wallet
+            .build_signer(self.network.chain_id, &self.wallet_path)
+            .await
+            .unwrap();
+        SignerMiddleware::new(self.network.get_provider(), signer)
     }
 
     async fn send(&mut self) -> Result<PendingTransaction<'_, Http>> {
+        self.build_signer().await;
         let signer = self.signer.as_ref().unwrap();
 
         Ok(signer.send_transaction(self.request.clone(), None).await?)

@@ -52,6 +52,10 @@ impl WalletControl for Impersonator {
         self.addresses[self.current].clone()
     }
 
+    fn get_current_path(&self) -> String {
+        self.current.to_string()
+    }
+
     async fn set_current_path(&mut self, path: String) -> Result<()> {
         self.current = usize::from_str(&path)?;
         Ok(())
@@ -64,7 +68,11 @@ impl WalletControl for Impersonator {
             .collect()
     }
 
-    async fn build_signer(&self, _chain_id: u32) -> Result<ethers::signers::Wallet<SigningKey>> {
+    async fn build_signer(
+        &self,
+        _chain_id: u32,
+        _path: &str,
+    ) -> Result<ethers::signers::Wallet<SigningKey>> {
         Err(crate::Error::WalletCantSign)
     }
 }
