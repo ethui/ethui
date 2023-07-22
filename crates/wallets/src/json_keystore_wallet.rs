@@ -63,11 +63,19 @@ impl WalletControl for JsonKeystoreWallet {
         address.into()
     }
 
+    fn get_current_path(&self) -> String {
+        self.file.to_string_lossy().to_string()
+    }
+
     async fn set_current_path(&mut self, _path: String) -> Result<()> {
         Ok(())
     }
 
-    async fn build_signer(&self, chain_id: u32) -> Result<signers::Wallet<SigningKey>> {
+    async fn build_signer(
+        &self,
+        chain_id: u32,
+        _path: &str,
+    ) -> Result<signers::Wallet<SigningKey>> {
         self.unlock().await?;
 
         let secret = self.secret.read().await;
