@@ -90,7 +90,7 @@ impl WalletControl for HDWallet {
     }
 
     async fn build_signer(&self, chain_id: u32, path: &str) -> Result<signers::Wallet<SigningKey>> {
-        if !self.addresses.iter().any(|(p, _)| p == &path) {
+        if !self.addresses.iter().any(|(p, _)| p == path) {
             return Err(Error::InvalidKey(path.to_string()));
         }
 
@@ -102,7 +102,7 @@ impl WalletControl for HDWallet {
         let mnemonic = mnemonic_from_secret(&secret);
         let signer = MnemonicBuilder::<English>::default()
             .phrase(mnemonic.as_str())
-            .derivation_path(&path)?
+            .derivation_path(path)?
             .build()?;
 
         Ok(signer.with_chain_id(chain_id))
