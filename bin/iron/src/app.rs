@@ -122,7 +122,6 @@ impl IronApp {
         let go_submenu = Submenu::new(
             "Go",
             Menu::new()
-                .add_item(details)
                 .add_item(transactions)
                 .add_item(balances)
                 .add_item(contracts)
