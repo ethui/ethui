@@ -58,7 +58,6 @@ export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
     name: "addresses",
   });
 
-  console.log(errors);
   return (
     <Stack
       spacing={2}
