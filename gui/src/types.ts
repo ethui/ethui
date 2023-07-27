@@ -165,6 +165,24 @@ export interface Tx {
   status: number;
 }
 
+// export interface Nft {
+//   hash: `0x${string}`;
+//   contract: Address;
+//   owner: Address;
+//   metadata: JSON;
+// }
+
+export interface Nft {
+  hash: `0x${string}`;
+  from: Address;
+  to: Address;
+  value: string;
+  data: string;
+  blockNumber: number;
+  position: number;
+  status: number;
+}
+
 export interface Pagination {
   page?: number;
   page_size?: number;
