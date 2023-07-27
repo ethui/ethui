@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { useKeyPress } from "../../hooks";
 import { OnboardingCarousel } from "./OnboardingCarousel";
 import { steps } from "./Steps";
 
@@ -17,6 +18,10 @@ export function OnboardingWizard({ handleClose }: Props) {
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
+
+  useKeyPress(["ArrowRight"], { meta: true }, handleNext);
+
+  useKeyPress(["ArrowLeft"], { meta: true }, handleBack);
 
   return (
     <OnboardingCarousel
