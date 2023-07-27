@@ -1,27 +1,11 @@
 import { useState } from "react";
 
 import { OnboardingCarousel } from "./OnboardingCarousel";
-
-export type Step = { label: string; description: string };
+import { steps } from "./Steps";
 
 interface Props {
   handleClose: () => void;
 }
-
-const steps = [
-  {
-    label: "First",
-    description: "Step 1",
-  },
-  {
-    label: "Second",
-    description: "Step 2",
-  },
-  {
-    label: "Last",
-    description: "Step 3",
-  },
-];
 
 export function OnboardingWizard({ handleClose }: Props) {
   const [activeStep, setActiveStep] = useState(0);

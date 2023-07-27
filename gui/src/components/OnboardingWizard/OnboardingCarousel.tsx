@@ -7,7 +7,7 @@ import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 
 import { Logo } from "../Logo";
-import { Step } from "./OnboardingWizard";
+import { Step } from "./Steps";
 
 interface Props {
   steps: Step[];
