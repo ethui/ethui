@@ -43,3 +43,22 @@ impl TryFrom<SqliteRow> for TokenMetadata {
         })
     }
 }
+
+#[derive(Debug, Serialize)]
+pub struct Erc721Token {
+    pub contract: Address,
+    pub token_id: U256,
+    pub owner: Address,
+}
+
+impl TryFrom<SqliteRow> for Erc721Token {
+    type Error = ();
+
+    fn try_from(row: SqliteRow) -> Result<Self, Self::Error> {
+        Ok(Self {
+            contract: Address::from_str(row.get("contract")).unwrap(),
+            token_id: U256::from_str_radix(row.get("token_id"), 10).unwrap(),
+            owner: Address::from_str(row.get("owner")).unwrap(),
+        })
+    }
+}
