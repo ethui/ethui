@@ -171,6 +171,7 @@ async fn init(app: &tauri::App, db: &DB, snd: UISender) -> AppResult<()> {
     iron_ws::init(snd.clone());
     iron_wallets::init(resource(app, "wallets.json"), snd.clone()).await;
     iron_networks::init(resource(app, "networks.json"), snd.clone()).await;
+    iron_prices::init().await;
     iron_forge::init().await?;
 
     Ok(())

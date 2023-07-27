@@ -21,6 +21,7 @@ iron-db = { workspace = true }
 iron-sync-alchemy = { workspace = true }
 iron-sync-anvil = { workspace = true }
 iron-tracing = { workspace = true }
+iron-prices = { workspace = true }
 tauri = { workspace = true }
 tokio = { workspace = true }
 thiserror = { workspace = true }
