@@ -7,13 +7,12 @@ interface Props {
 }
 
 export function OnboardingWrapper({ children }: Props) {
-  // TODO: get state from local storage
-  const onboarded = false;
+  const onboarded = localStorage.getItem("onboarded");
 
-  const [isOnboarded, setIsOnboarded] = useState(onboarded);
+  const [isOnboarded, setIsOnboarded] = useState(!!onboarded);
 
   const closeOnboarding = () => {
-    // TODO: update local storage
+    localStorage.setItem("onboarded", "true");
     setIsOnboarded(true);
   };
 
