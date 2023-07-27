@@ -1,4 +1,5 @@
 import CallToActionIcon from "@mui/icons-material/CallToAction";
+import ImageIcon from "@mui/icons-material/Image";
 import OnlinePredictionSharpIcon from "@mui/icons-material/OnlinePredictionSharp";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import RequestQuoteSharpIcon from "@mui/icons-material/RequestQuoteSharp";
@@ -14,6 +15,7 @@ import { useTheme } from "../store";
 import {
   Account,
   Contracts,
+  Nfts,
   Peers,
   QuickAddressSelect,
   QuickNetworkSelect,
@@ -31,6 +33,7 @@ export const TABS = [
     component: Account,
     icon: RequestQuoteSharpIcon,
   },
+  { path: "nfts", name: "NFTs", component: Nfts, icon: ImageIcon },
   {
     path: "transactions",
     name: "Transactions",

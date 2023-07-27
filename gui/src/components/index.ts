@@ -26,3 +26,5 @@ export { WagmiWrapper } from "./WagmiWrapper";
 export { WalletUnlockDialog } from "./WalletUnlockDialog";
 export { MsgSignDialog } from "./MsgSignDialog";
 export { DevBuildNotice } from "./DevBuildNotice";
+export { Nfts } from "./Nfts";
+export { NftDetailsView } from "./NftDetailsView";
