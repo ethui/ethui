@@ -1,17 +1,20 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
+import { invoke } from "@tauri-apps/api/tauri";
 import { useState } from "react";
 
 import { useKeyPress } from "../../hooks";
+import { useWizardForm } from "../../store/wizard";
 import { Logo } from "../Logo";
 import { OnboardingCarousel } from "./OnboardingCarousel";
 import { steps } from "./Steps";
 
 interface Props {
-  handleClose: () => void;
+  closeOnboarding: () => void;
 }
 
-export function OnboardingWizard({ handleClose }: Props) {
+export function OnboardingWizard({ closeOnboarding }: Props) {
   const [activeStep, setActiveStep] = useState(0);
+  const { alchemyApiKey } = useWizardForm();
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -19,6 +22,16 @@ export function OnboardingWizard({ handleClose }: Props) {
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
+  const handleClose = async () => {
+    if (alchemyApiKey.isDirty) {
+      await invoke("settings_set", {
+        newSettings: { alchemyApiKey: alchemyApiKey.value },
+      });
+    }
+
+    closeOnboarding();
   };
 
   useKeyPress(["ArrowRight"], { meta: true }, handleNext);

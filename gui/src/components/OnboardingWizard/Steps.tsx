@@ -1,12 +1,7 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Link, Stack, TextField, Typography } from "@mui/material";
-import { invoke } from "@tauri-apps/api/tauri";
-import { ReactNode, useCallback } from "react";
-import { FieldValues, useForm } from "react-hook-form";
-import { z } from "zod";
+import { Link, Stack, TextField, Typography } from "@mui/material";
+import { ReactNode } from "react";
 
-import { useInvoke } from "../../hooks";
-import { GeneralSettings } from "../../types";
+import { useWizardForm } from "../../store/wizard";
 
 export type Step = { label: string; description: ReactNode };
 
@@ -45,30 +40,7 @@ function WelcomeStep() {
 }
 
 function LiveBlockchainsStep() {
-  const { mutate } = useInvoke<GeneralSettings>("settings_get");
-
-  const schema = z.object({
-    alchemyApiKey: z.string(),
-  });
-
-  const {
-    handleSubmit,
-    register,
-    formState: { errors, isValid },
-  } = useForm({
-    mode: "onChange",
-    resolver: zodResolver(schema),
-  });
-
-  const onSubmit = useCallback(
-    async (data: FieldValues) => {
-      await invoke("settings_set", {
-        newSettings: data,
-      });
-      mutate();
-    },
-    [mutate]
-  );
+  const { alchemyApiKey, setAlchemyApiKey } = useWizardForm();
 
   return (
     <Stack spacing={3}>
@@ -94,29 +66,14 @@ function LiveBlockchainsStep() {
         </Link>{" "}
         and set up the API key.
       </Typography>
-      <Stack
-        component="form"
-        direction="row"
-        spacing={1}
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <TextField
-          label="API Key"
-          variant="outlined"
-          fullWidth
-          error={!!errors.alchemyApiKey}
-          helperText={errors.alchemyApiKey?.message?.toString() || ""}
-          {...register("alchemyApiKey")}
-        />
-        <Button
-          variant="contained"
-          type="submit"
-          disabled={!isValid}
-          sx={{ height: "56px" }}
-        >
-          Save
-        </Button>
-      </Stack>
+      <TextField
+        label="API Key"
+        fullWidth
+        type="text"
+        variant="outlined"
+        onChange={(e) => setAlchemyApiKey(e.target.value)}
+        value={alchemyApiKey.value}
+      />
     </Stack>
   );
 }

@@ -18,5 +18,5 @@ export function OnboardingWrapper({ children }: Props) {
 
   if (isOnboarded) return <>{children}</>;
 
-  return <OnboardingWizard handleClose={closeOnboarding} />;
+  return <OnboardingWizard closeOnboarding={closeOnboarding} />;
 }
