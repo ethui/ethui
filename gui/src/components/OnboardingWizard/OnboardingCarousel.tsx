@@ -19,7 +19,6 @@ interface Props {
 export function OnboardingCarousel({
   steps,
   activeStep,
-  // handleClose,
   handleNext,
   handleBack,
 }: Props) {
