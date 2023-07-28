@@ -38,7 +38,7 @@ impl IronApp {
                 iron_db::commands::db_get_contracts,
                 iron_db::commands::db_get_erc20_balances,
                 iron_db::commands::db_get_native_balance,
-                iron_db::commands::db_get_nft_tokens,
+                iron_db::commands::db_get_erc721_tokens,
                 iron_ws::commands::ws_get_all_peers,
                 iron_wallets::commands::wallets_get_all,
                 iron_wallets::commands::wallets_get_current,

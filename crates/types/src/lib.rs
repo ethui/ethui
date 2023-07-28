@@ -9,7 +9,7 @@ use ethers::types::{Address, U256};
 pub use events::Event;
 pub use global_state::GlobalState;
 
-pub use tokens::{TokenBalance, TokenMetadata, NftToken};
+pub use tokens::{TokenBalance, TokenMetadata, Erc721Token};
 pub use ui_events::UINotify;
 
 pub type Json = serde_json::Value;

@@ -33,7 +33,7 @@ export function Nfts() {
       pagination.page = (pagination.page || 0) + 1;
     }
 
-    invoke<NftToken>("db_get_nft_tokens", {
+    invoke<NftToken>("db_get_erc721_tokens", {
       chainId,
     }).then((page) => {
       // setPages([...pages, page]); // todo: fix this

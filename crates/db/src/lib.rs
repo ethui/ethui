@@ -6,7 +6,7 @@ mod queries;
 use std::{path::PathBuf, str::FromStr};
 
 use ethers::types::{Address, H256, U256};
-use iron_types::{events::Tx, Event, TokenBalance, TokenMetadata, NftToken};
+use iron_types::{events::Tx, Event, TokenBalance, TokenMetadata, Erc721Token};
 use serde::Serialize;
 use sqlx::{
     sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous},
@@ -308,14 +308,14 @@ impl DB {
         Ok(res)
     }
 
-    pub async fn get_nft_tokens(&self, chain_id: u32) -> Result<Vec<NftToken>> {
+    pub async fn get_erc721_tokens(&self, chain_id: u32) -> Result<Vec<Erc721Token>> {
       let res: Vec<_> = sqlx::query(
         r#" SELECT * 
         FROM nft_tokens
         WHERE chain_id = ?"#,
       )
       .bind(chain_id)
-      .map(|row| NftToken {
+      .map(|row| Erc721Token {
         contract: Address::from_str(row.get::<&str, _>("contract")).unwrap(),
         token_id: U256::from_dec_str(row.get::<&str, _>("token_id")).unwrap(),
         owner: Address::from_str(row.get::<&str, _>("owner")).unwrap(),

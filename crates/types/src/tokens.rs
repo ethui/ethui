@@ -45,7 +45,7 @@ impl TryFrom<SqliteRow> for TokenMetadata {
 }
 
 #[derive(Debug, Serialize)]
-pub struct NftToken {
+pub struct Erc721Token {
     // pub contract: ChecksummedAddress,
     pub contract: Address,
     pub token_id: U256,

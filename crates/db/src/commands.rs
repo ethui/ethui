@@ -1,5 +1,5 @@
 use ethers::types::{Address, U256};
-use iron_types::{events::Tx, TokenBalance, NftToken};
+use iron_types::{events::Tx, TokenBalance, Erc721Token};
 
 use super::{Paginated, Pagination, Result};
 use crate::{StoredContract, DB};
@@ -42,10 +42,10 @@ pub async fn db_get_native_balance(
 }
 
 #[tauri::command]
-pub async fn db_get_nft_tokens(
+pub async fn db_get_erc721_tokens(
     chain_id: u32,
     db: tauri::State<'_, DB>,
-) -> Result<Vec<NftToken>> {
-    db.get_nft_tokens(chain_id).await
+) -> Result<Vec<Erc721Token>> {
+    db.get_erc721_tokens(chain_id).await
 }
 
