@@ -5,8 +5,6 @@ mod queries;
 
 use std::{path::PathBuf, str::FromStr};
 
-use log::info;
-
 use ethers::types::{Address, H256, U256};
 use iron_types::{events::Tx, Event, TokenBalance, TokenMetadata, NftToken};
 use serde::Serialize;
