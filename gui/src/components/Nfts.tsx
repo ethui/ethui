@@ -15,6 +15,12 @@ import { Modal, NftDetailsView } from "./";
 import { AddressView } from "./AddressView";
 import { Panel } from "./Panel";
 
+interface NftGalleryItemProps {
+  contract: Address;
+  imgSrc: string | undefined;
+  clickHandler: () => void;
+}
+
 export function Nfts() {
   const account = useWallets((s) => s.address);
   const chainId = useNetworks((s) => s.current?.chain_id);
@@ -101,11 +107,7 @@ export function Nfts() {
     contract,
     imgSrc,
     clickHandler,
-  }: {
-    contract: Address;
-    imgSrc: string | undefined;
-    clickHandler: () => void;
-  }) {
+  }: NftGalleryItemProps) {
     return (
       <ImageListItem
         sx={{ cursor: "pointer" }}
