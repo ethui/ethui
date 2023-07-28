@@ -1,0 +1,96 @@
+{
+    "feeds": {
+        "mainnet": {
+            "USD": {
+                "1INCH": [
+                    {
+                        "provider": "chainlink",
+                        "address": "0xc929ad75B72593967DE83E7F7Cda0493458261D9"
+                    }
+                ],
+                "AAVE": [
+                    {
+                        "provider": "chainlink",
+                        "address": "0x547a514d5e3769680Ce22B2361c10Ea13619e8a9"
+                    }
+                ],
+                "ADA": [
+                    {
+                        "provider": "chainlink",
+                        "address": "0xAE48c91dF1fE419994FFDa27da09D5aC69c30f55"
+                    }
+                ],
+                "ADX": [
+                    {
+                        "provider": "chainlink",
+                        "address": "0x231e764B44b2C1b7Ca171fa8021A24ed520Cde10"
+                    }
+                ],
+                "ALCX": [
+                    {
+                        "provider": "chainlink",
+                        "address": "0xc355e4C0B3ff4Ed0B49EaACD55FE29B311f42976"
+                    }
+                ],
+                "AMPL": [
+                    {
+                        "provider": "chainlink",
+                        "address": "0xe20CA8D7546932360e37E9D72c1a47334af57706"
+                    }
+                ],
+                "ANKR": [
+                    {
+                        "provider": "chainlink",
+                        "address": "0x7eed379bf00005CfeD29feD4009669dE9Bcc21ce"
+                    }
+                ],
+                "APE": [
+                    {
+                        "provider": "chainlink",
+                        "address": "0xD10aBbC76679a20055E167BB80A24ac851b37056"
+                    }
+                ],
+                "ATOM": [
+                    {
+                        "provider": "chainlink",
+                        "address": "0xDC4BDB458C6361093069Ca2aD30D74cc152EdC75"
+                    }
+                ],
+                "AVAX": [
+                    {
+                        "provider": "chainlink",
+                        "address": "0xFF3EEb22B5E3dE6e705b44749C2559d704923FD7"
+                    }
+                ],
+                "BTC": [
+                    {
+                        "provider": "chainlink",
+                        "address": "0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c"
+                    }
+                ],
+                "ETH": [
+                    {
+                        "provider": "chainlink",
+                        "address": "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419"
+                    }
+                ]
+            }
+        },
+        "goerli": {
+            "USD": {
+                "BTC": [
+                    {
+                        "provider": "chainlink",
+                        "address": "0xA39434A63A52E749F02807ae27335515BA4b07F7"
+                    }
+                ],
+                "ETH": [
+                    {
+                        "provider": "chainlink",
+                        "address": "0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e"
+                    }
+                ]
+            }
+        }
+    }
+}

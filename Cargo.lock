@@ -2752,6 +2752,7 @@ dependencies = [
  "fix-path-env",
  "iron-db",
  "iron-dialogs",
+ "iron-exchange-rates",
  "iron-forge",
  "iron-networks",
  "iron-rpc",
@@ -2826,6 +2827,19 @@ dependencies = [
  "serde_json",
  "tauri",
  "thiserror",
+ "tokio",
+]
+
+[[package]]
+name = "iron-exchange-rates"
+version = "0.4.1"
+dependencies = [
+ "async-trait",
+ "ethers",
+ "iron-types",
+ "once_cell",
+ "serde",
+ "serde_json",
  "tokio",
 ]
 
