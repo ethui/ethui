@@ -50,10 +50,10 @@ export function OnboardingCarousel({
         </IconButton>
         <Stack width="100%" alignItems="center">
           <Typography variant="h6" component="h1" mb={1.5} alignSelf="start">
-            {steps[activeStep].label}
+            {steps[activeStep].title}
           </Typography>
           <Box height={{ xs: "260px", sm: "180px" }} alignSelf="start">
-            {steps[activeStep].description}
+            {steps[activeStep].component}
           </Box>
           <MobileStepper
             steps={maxSteps}

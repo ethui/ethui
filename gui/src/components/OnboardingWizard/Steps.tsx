@@ -3,20 +3,20 @@ import { ReactNode } from "react";
 
 import { useWizardForm } from "../../store/wizard";
 
-export type Step = { label: string; description: ReactNode };
+export type Step = { title: string; component: ReactNode };
 
 export const steps = [
   {
-    label: "Welcome",
-    description: <WelcomeStep />,
+    title: "Welcome",
+    component: <WelcomeStep />,
   },
   {
-    label: "Live blockchains",
-    description: <LiveBlockchainsStep />,
+    title: "Live blockchains",
+    component: <LiveBlockchainsStep />,
   },
   {
-    label: "Thank you!",
-    description: <ThankYouStep />,
+    title: "Thank you!",
+    component: <ThankYouStep />,
   },
 ];
 
