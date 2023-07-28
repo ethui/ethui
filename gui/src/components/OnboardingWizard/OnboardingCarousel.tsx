@@ -38,7 +38,7 @@ export function OnboardingCarousel({
           direction="row"
           alignItems="center"
           justifyContent="center"
-          spacing={8}
+          spacing={{ xs: 3, sm: 8 }}
         >
           <IconButton
             size="medium"
@@ -59,7 +59,7 @@ export function OnboardingCarousel({
             <Typography variant="h6" component="h1" mb={1.5} alignSelf="start">
               {steps[activeStep].label}
             </Typography>
-            <Box height="180px" alignSelf="start">
+            <Box height={{ xs: "260px", sm: "180px" }} alignSelf="start">
               {steps[activeStep].description}
             </Box>
             <MobileStepper
