@@ -73,13 +73,16 @@ impl<'a> SendTransaction<'a> {
         }
     }
 
-    async fn build_signer(&self) -> Middleware {
-        let signer: signers::Wallet<SigningKey> = self
-            .wallet
-            .build_signer(self.network.chain_id, &self.wallet_path)
-            .await
-            .unwrap();
-        SignerMiddleware::new(self.network.get_provider(), signer)
+    async fn build_signer(&mut self) {
+        if self.signer.is_none() {
+            let signer: signers::Wallet<SigningKey> = self
+                .wallet
+                .build_signer(self.network.chain_id, &self.wallet_path)
+                .await
+                .unwrap();
+
+            self.signer = Some(SignerMiddleware::new(self.network.get_provider(), signer))
+        }
     }
 
     async fn send(&mut self) -> Result<PendingTransaction<'_, Http>> {
