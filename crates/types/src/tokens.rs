@@ -43,3 +43,13 @@ impl TryFrom<SqliteRow> for TokenMetadata {
         })
     }
 }
+
+#[derive(Debug, Serialize)]
+pub struct NftToken {
+    // pub contract: ChecksummedAddress,
+    pub contract: Address,
+    pub token_id: U256,
+    // pub metadata: TokenMetadata,
+    pub owner: Address,
+}
+

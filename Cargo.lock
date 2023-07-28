@@ -2807,6 +2807,7 @@ version = "0.4.1"
 dependencies = [
  "ethers",
  "iron-types",
+ "log",
  "serde",
  "serde_json",
  "sqlx",

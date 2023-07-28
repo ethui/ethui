@@ -6,11 +6,11 @@ import {
   ImageListItemBar,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 
 import { useNetworks, useWallets } from "../store";
-import { Address, Nft, Paginated, Pagination } from "../types";
+import { Address, NftToken, Paginated, Pagination } from "../types";
 import { Modal, NftDetailsView } from "./";
 import { AddressView } from "./AddressView";
 import { Panel } from "./Panel";
@@ -20,10 +20,10 @@ export function Nfts() {
   const chainId = useNetworks((s) => s.current?.chain_id);
 
   const [detailsViewOpen, setDetailsViewOpen] = useState(false);
-  const [currentNftDetails, setCurrentNftDetails] = useState<Nft | undefined>(
-    undefined
-  );
-  const [pages, setPages] = useState<Paginated<Nft>[]>([]);
+  const [currentNftDetails, setCurrentNftDetails] = useState<
+    NftToken | undefined
+  >(undefined);
+  const [pages, setPages] = useState<Paginated<NftToken>[]>([]);
 
   const loadMore = () => {
     let pagination: Pagination = {};
@@ -33,11 +33,20 @@ export function Nfts() {
       pagination.page = (pagination.page || 0) + 1;
     }
 
-    invoke<Paginated<Nft>>("db_get_transactions", {
-      address: account,
+    invoke<NftToken>("db_get_nft_tokens", {
       chainId,
-      pagination,
-    }).then((page) => setPages([...pages, page]));
+    }).then((page) => {
+      // setPages([...pages, page]); // todo: fix this
+      console.log("debug >>>", pages);
+    });
+  };
+
+  useEffect(() => {
+    if (pages.length == 0) loadMore();
+  }, [pages]);
+
+  const reload = () => {
+    setPages([]);
   };
 
   const loader = (
@@ -51,10 +60,6 @@ export function Nfts() {
       <CircularProgress />
     </Box>
   );
-
-  const reload = () => {
-    setPages([]);
-  };
 
   return (
     <Panel>
@@ -103,14 +108,19 @@ export function Nfts() {
   }) {
     return (
       <ImageListItem
+        sx={{ cursor: "pointer" }}
         onClick={() => {
           clickHandler();
           setDetailsViewOpen(true);
         }}
       >
         <img
-          src={`${imgSrc ?? ""}?w=164&h=164&fit=crop&auto=format`}
-          srcSet={`${imgSrc ?? ""}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
+          src={`${
+            imgSrc ?? "https://placehold.co/150x150"
+          }?w=164&h=164&fit=crop&auto=format`}
+          srcSet={`${
+            imgSrc ?? "https://placehold.co/150x150"
+          }?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
           alt={contract.slice(0, 1)}
           loading="lazy"
         />
