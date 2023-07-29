@@ -2756,8 +2756,7 @@ dependencies = [
  "iron-networks",
  "iron-rpc",
  "iron-settings",
- "iron-sync-alchemy",
- "iron-sync-anvil",
+ "iron-sync",
  "iron-tracing",
  "iron-types",
  "iron-wallets",
@@ -2906,6 +2905,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "iron-sync"
+version = "0.4.1"
+dependencies = [
+ "ethers",
+ "iron-broadcast",
+ "iron-db",
+ "iron-sync-alchemy",
+ "iron-sync-anvil",
+ "iron-types",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "iron-sync-alchemy"
 version = "0.4.1"
 dependencies = [
@@ -2919,9 +2937,9 @@ dependencies = [
  "once_cell",
  "serde",
  "serde_json",
- "tauri",
  "thiserror",
  "tokio",
+ "tracing",
  "url",
 ]
 

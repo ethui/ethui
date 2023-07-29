@@ -41,9 +41,9 @@ const store: StateCreator<Store> = (set, get) => ({
   async poll() {
     const { address, chainId } = get();
     if (!address || !chainId) return;
-    invoke("alchemy_fetch_native_balance", { chainId, address });
-    invoke("alchemy_fetch_erc20_balances", { chainId, address });
-    invoke("alchemy_fetch_transactions", { address, chainId });
+    invoke("fetch_native_balance", { chainId, address });
+    invoke("fetch_erc20_balances", { chainId, address });
+    invoke("fetch_transactions", { address, chainId });
   },
 
   async reload() {

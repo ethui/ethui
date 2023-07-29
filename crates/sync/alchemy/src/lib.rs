@@ -13,9 +13,10 @@ use futures::{stream, StreamExt};
 pub use init::init;
 use iron_db::DB;
 use iron_settings::Settings;
-use iron_types::{ChecksummedAddress, GlobalState, UINotify, UISender};
+use iron_types::{ChecksummedAddress, Event, GlobalState, UINotify, UISender};
 use once_cell::sync::Lazy;
 use serde_json::json;
+use tracing::{instrument, trace};
 use types::{Balances, Transfers};
 use url::Url;
 
@@ -77,12 +78,15 @@ impl Alchemy {
         Ok(())
     }
 
+    #[instrument(skip(self))]
     async fn fetch_transactions(&self, chain_id: u32, address: Address) -> Result<()> {
+        trace!("fetching");
         let client = self.client(chain_id).await?;
 
         let tip = self.db.get_tip(chain_id, address).await?;
         let latest = client.get_block_number().await?;
 
+        // if tip - 1 == latest, we're up to date
         if tip.saturating_sub(1) == latest.as_u64() {
             return Ok(());
         }
@@ -111,16 +115,37 @@ impl Alchemy {
             )
             .await)?;
 
+        trace!(
+            outgoing = outgoing.transfers.len(),
+            incoming = incoming.transfers.len()
+        );
+
         let mut chunks = stream::iter(outgoing.transfers.into_iter().chain(incoming.transfers))
             .map(|transfer| utils::transfer_into_tx(transfer, &client, chain_id, &self.db))
-            .buffer_unordered(1)
+            .buffered(20)
             .chunks(20);
 
         while let Some(chunk) = chunks.next().await {
-            let txs = chunk.into_iter().filter_map(|r| r.ok()).flatten().collect();
+            let txs: Vec<Event> = chunk
+                .into_iter()
+                .filter_map(|r| r.ok())
+                .flatten()
+                .collect::<Vec<_>>();
 
+            if txs.is_empty() {
+                continue;
+            }
+
+            let tip = txs
+                .iter()
+                .map(|tx| tx.block_number())
+                .max()
+                .unwrap_or_default()
+                .saturating_sub(1);
+
+            trace!(tip);
             self.db.save_events(chain_id, txs).await?;
-            self.db.set_tip(chain_id, address, latest.as_u64()).await?;
+            self.db.set_tip(chain_id, address, tip).await?;
             self.window_snd.send(UINotify::TxsUpdated.into())?;
         }
 

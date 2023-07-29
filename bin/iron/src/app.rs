@@ -57,9 +57,9 @@ impl IronApp {
                 iron_dialogs::commands::dialog_send,
                 iron_dialogs::commands::dialog_finish,
                 iron_forge::commands::foundry_get_abi,
-                iron_sync_alchemy::commands::alchemy_fetch_erc20_balances,
-                iron_sync_alchemy::commands::alchemy_fetch_native_balance,
-                iron_sync_alchemy::commands::alchemy_fetch_transactions,
+                iron_sync::commands::fetch_erc20_balances,
+                iron_sync::commands::fetch_native_balance,
+                iron_sync::commands::fetch_transactions,
                 iron_rpc::commands::rpc_send_transaction,
             ])
             .setup(|app| {
@@ -163,8 +163,7 @@ fn on_menu_event(event: WindowMenuEvent) {
 async fn init(app: &tauri::App, db: &DB, snd: UISender) -> AppResult<()> {
     // anvil needs to be started before networks, otherwise the initial tracker won't be ready to
     // spawn
-    iron_sync_anvil::init(db.clone(), snd.clone());
-    iron_sync_alchemy::init(db.clone(), snd.clone()).await;
+    iron_sync::init(db.clone(), snd.clone()).await;
 
     iron_dialogs::init(snd.clone());
     iron_settings::init(resource(app, "settings.json")).await;

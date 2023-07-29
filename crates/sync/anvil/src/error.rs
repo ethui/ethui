@@ -17,6 +17,9 @@ pub enum Error {
 
     #[error("Transaction not found: {0}")]
     TxNotFound(H256),
+
+    #[error("Block number missing from trace or transaction")]
+    BlockNumberMissing,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

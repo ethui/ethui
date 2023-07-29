@@ -1,5 +1,5 @@
 [package]
-name = "iron-sync-alchemy"
+name = "iron-sync"
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true
@@ -9,19 +9,17 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-iron-settings = { workspace = true }
-iron-types = { workspace = true }
+iron-sync-anvil = { workspace = true }
+iron-sync-alchemy = { workspace = true }
+tauri = { workspace = true }
 iron-db = { workspace = true }
-iron-abis = { workspace = true }
+iron-types = { workspace = true }
+iron-broadcast = { workspace = true }
 
 ethers = { workspace = true }
+tokio = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
-tokio = { workspace = true }
 thiserror = { workspace = true }
 once_cell = { workspace = true }
 tracing = { workspace = true }
-
-url = "2.3.1"
-async-trait = "0.1.68"
-futures = "0.3.28"

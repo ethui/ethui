@@ -317,6 +317,7 @@ impl DB {
         Ok(tip)
     }
 
+    #[instrument(skip(self))]
     pub async fn set_tip(&self, chain_id: u32, address: Address, tip: u64) -> Result<()> {
         queries::set_tip(address, chain_id, tip)
             .execute(self.pool())
