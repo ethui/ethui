@@ -21,12 +21,11 @@ export function QuickNetworkSelect() {
   if (!networks || !current) return <>Loading</>;
 
   return (
-    <FormControl variant="standard">
+    <FormControl fullWidth variant="standard">
       <InputLabel id="network-select-label">Network</InputLabel>
       <Select
         labelId="network-select-label"
         label="Network"
-        disableUnderline
         size="small"
         onChange={handleChange}
         value={current.name}

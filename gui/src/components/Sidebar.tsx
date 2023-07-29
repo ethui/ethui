@@ -1,6 +1,7 @@
 import {
   Box,
   Drawer,
+  Grid,
   List,
   ListItemButton,
   ListItemIcon,
@@ -16,7 +17,15 @@ import { parseInt, range, toString } from "lodash-es";
 
 import { useKeyPress, useMenuAction } from "../hooks";
 
-import { Balances, Contracts, Peers, Txs } from "./";
+import {
+  Balances,
+  Contracts,
+  Peers,
+  QuickAddressSelect,
+  QuickNetworkSelect,
+  QuickWalletSelect,
+  Txs,
+} from "./";
 
 import { Logo } from "./Logo";
 import { SettingsButton } from "./SettingsButton";
@@ -105,7 +114,7 @@ export function Sidebar({ children }: { children: ReactNode }) {
             },
           }}
         >
-          <Box sx={{ px: 2, pt: 6 }}>
+          <Box flexShrink={0} sx={{ px: 2, pt: 6 }}>
             <Logo width={40} />
           </Box>
           <List sx={{ flexGrow: 1 }}>
@@ -142,6 +151,30 @@ export function Sidebar({ children }: { children: ReactNode }) {
               </ListItemButton>
             ))}
           </List>
+          <Grid
+            container
+            spacing={2}
+            justifyContent="center"
+            flexDirection="column"
+            alignItems="stretch"
+            sx={{
+              [theme.breakpoints.down("md")]: {
+                display: "none",
+              },
+            }}
+            p={2}
+          >
+            <Grid item>
+              <QuickWalletSelect />
+            </Grid>
+            <Grid item>
+              <QuickAddressSelect />
+            </Grid>
+            <Grid item>
+              <QuickNetworkSelect />
+            </Grid>
+            <Grid item></Grid>
+          </Grid>
           <Box
             p={2}
             alignSelf="stretch"

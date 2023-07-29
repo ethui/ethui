@@ -35,10 +35,9 @@ export function QuickAddressSelect() {
   if (!addresses || !currentWallet) return <>Loading</>;
 
   return (
-    <FormControl variant="standard">
+    <FormControl fullWidth variant="standard">
       <InputLabel id="account-select-label">Account</InputLabel>
       <Select
-        disableUnderline
         label="Account"
         labelId="account-select-label"
         onChange={handleChange}

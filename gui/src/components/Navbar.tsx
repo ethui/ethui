@@ -1,7 +1,6 @@
-import { AppBar, Grid, Toolbar } from "@mui/material";
+import { AppBar, Toolbar } from "@mui/material";
 
 import { useTheme } from "../store";
-import { QuickAddressSelect, QuickNetworkSelect, QuickWalletSelect } from "./";
 
 export function Navbar() {
   const palette = useTheme((s) => s.theme.palette);
@@ -13,27 +12,9 @@ export function Navbar() {
         background: palette.background.default,
         color: palette.text.primary,
         boxShadow: "none",
+        height: 32,
       }}
-    >
-      <Toolbar>
-        <Grid
-          container
-          spacing={2}
-          justifyContent="flex-end"
-          alignItems="center"
-        >
-          <Grid item>
-            <QuickWalletSelect />
-          </Grid>
-          <Grid item>
-            <QuickAddressSelect />
-          </Grid>
-          <Grid item>
-            <QuickNetworkSelect />
-          </Grid>
-          <Grid item></Grid>
-        </Grid>
-      </Toolbar>
-    </AppBar>
+      data-tauri-drag-region="true"
+    ></AppBar>
   );
 }

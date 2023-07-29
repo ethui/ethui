@@ -22,10 +22,9 @@ export function QuickWalletSelect() {
   if (!wallets || !currentWallet) return <>Loading</>;
 
   return (
-    <FormControl variant="standard">
+    <FormControl variant="standard" fullWidth>
       <InputLabel id="wallet-select-label">Wallet</InputLabel>
       <Select
-        disableUnderline
         label="Wallet"
         labelId="wallet-select-label"
         onChange={handleChange}
