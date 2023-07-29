@@ -10,6 +10,8 @@ pub enum InternalMsg {
     ChainChanged(u32, String),
     AccountsChanged(Vec<ChecksummedAddress>),
     ResetAnvilListener { chain_id: u32, http: Url, ws: Url },
+    TrackAddress(ChecksummedAddress),
+    UntrackAddress(ChecksummedAddress),
 }
 
 mod internal_msgs {
