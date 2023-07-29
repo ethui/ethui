@@ -12,6 +12,7 @@ use sqlx::{
     sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous},
     Row,
 };
+use tracing::{instrument, trace};
 
 pub use self::{
     error::{Error, Result},
@@ -101,6 +102,7 @@ impl DB {
         Ok(())
     }
 
+    #[instrument(level = "trace", skip(self, events))]
     pub async fn save_events(&self, chain_id: u32, events: Vec<Event>) -> Result<()> {
         let mut conn = self.tx().await?;
 
@@ -108,12 +110,16 @@ impl DB {
             // TODO: report this errors in await?. Currently they're being silently ignored, because the task just gets killed
             match tx {
                 Event::Tx(ref tx) => {
+                    trace!(tx = tx.hash.to_string());
+
                     queries::insert_transaction(tx, chain_id)
                         .execute(&mut conn)
                         .await?;
                 }
 
                 Event::ContractDeployed(ref tx) => {
+                    trace!(contract = tx.address.to_string());
+
                     queries::insert_contract(tx, chain_id)
                         .execute(&mut conn)
                         .await?;
@@ -121,6 +127,11 @@ impl DB {
 
                 // TODO: what to do if we don't know this contract, and don't have balances yet? (e.g. in a fork)
                 Event::ERC20Transfer(transfer) => {
+                    trace!(
+                        from = transfer.from.to_string(),
+                        to = transfer.to.to_string(),
+                        value = transfer.value.to_string()
+                    );
                     // update from's balance
                     if !transfer.from.is_zero() {
                         let current =
@@ -158,6 +169,11 @@ impl DB {
                 }
 
                 Event::ERC721Transfer(ref transfer) => {
+                    trace!(
+                        from = transfer.from.to_string(),
+                        to = transfer.to.to_string(),
+                        id = transfer.token_id.to_string()
+                    );
                     queries::erc721_transfer(transfer, chain_id)
                         .execute(&mut conn)
                         .await?;

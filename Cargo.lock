@@ -2814,6 +2814,7 @@ dependencies = [
  "tauri",
  "thiserror",
  "tokio",
+ "tracing",
 ]
 
 [[package]]
