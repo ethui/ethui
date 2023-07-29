@@ -1,4 +1,10 @@
-import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+} from "@mui/material";
 
 import { useNetworks } from "../store";
 
@@ -15,12 +21,22 @@ export function QuickNetworkSelect() {
   if (!networks || !current) return <>Loading</>;
 
   return (
-    <Select size="small" onChange={handleChange} value={current.name} label="">
-      {networks.map((network) => (
-        <MenuItem value={network.name} key={network.name}>
-          {network.name}
-        </MenuItem>
-      ))}
-    </Select>
+    <FormControl variant="standard">
+      <InputLabel id="network-select-label">Network</InputLabel>
+      <Select
+        labelId="network-select-label"
+        label="Network"
+        disableUnderline
+        size="small"
+        onChange={handleChange}
+        value={current.name}
+      >
+        {networks.map((network) => (
+          <MenuItem value={network.name} key={network.name}>
+            {network.name}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
   );
 }

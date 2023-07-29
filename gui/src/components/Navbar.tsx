@@ -1,16 +1,7 @@
-import Settings from "@mui/icons-material/Settings";
-import { AppBar, Grid, IconButton, Toolbar } from "@mui/material";
-import { useState } from "react";
+import { AppBar, Grid, Toolbar } from "@mui/material";
 
 import { useTheme } from "../store";
-import {
-  Modal,
-  QuickAddressSelect,
-  QuickNetworkSelect,
-  QuickWalletSelect,
-  Settings as SettingsPage,
-} from "./";
-import { Logo } from "./Logo";
+import { QuickAddressSelect, QuickNetworkSelect, QuickWalletSelect } from "./";
 
 export function Navbar() {
   const palette = useTheme((s) => s.theme.palette);
@@ -25,7 +16,6 @@ export function Navbar() {
       }}
     >
       <Toolbar>
-        <Logo width={40} />
         <Grid
           container
           spacing={2}
@@ -41,34 +31,9 @@ export function Navbar() {
           <Grid item>
             <QuickNetworkSelect />
           </Grid>
-          <Grid item>
-            <SettingsButton />
-          </Grid>
+          <Grid item></Grid>
         </Grid>
       </Toolbar>
     </AppBar>
-  );
-}
-
-function SettingsButton() {
-  const [showSettings, setShowSettings] = useState(false);
-
-  return (
-    <>
-      <IconButton onClick={() => setShowSettings(true)}>
-        <Settings />
-      </IconButton>
-
-      <Modal
-        open={showSettings}
-        onClose={() => setShowSettings(false)}
-        sx={{
-          width: "80%",
-          height: "80%",
-        }}
-      >
-        <SettingsPage />
-      </Modal>
-    </>
   );
 }

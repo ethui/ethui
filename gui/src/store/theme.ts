@@ -4,6 +4,7 @@ import { Action } from "kbar";
 import { StateCreator, create } from "zustand";
 
 import { GeneralSettings } from "../types";
+import { grey } from "@mui/material/colors";
 
 interface Store {
   mode: "auto" | "light" | "dark";
@@ -61,16 +62,30 @@ export const useTheme = create<Store>()(store);
 })();
 
 function getDesignTokens(mode: PaletteMode) {
+  const light = mode === "light";
+
   return {
     palette: {
       mode,
-      ...(mode === "light"
+      ...(light
         ? {
             background: {},
           }
         : {
             background: {},
           }),
+    },
+    components: {
+      MuiPaper: {
+        variants: [
+          {
+            props: { variant: "lighter" as const },
+            style: {
+              background: light ? grey[100] : grey[900],
+            },
+          },
+        ],
+      },
     },
   };
 }

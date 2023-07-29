@@ -1,4 +1,10 @@
-import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+} from "@mui/material";
 import { map } from "lodash-es";
 
 import { useInvoke } from "../hooks";
@@ -29,18 +35,24 @@ export function QuickAddressSelect() {
   if (!addresses || !currentWallet) return <>Loading</>;
 
   return (
-    <Select
-      size="small"
-      renderValue={renderValue}
-      value={getCurrentPath(currentWallet, addresses)}
-      onChange={handleChange}
-    >
-      {map(addresses, ([key, address]) => (
-        <MenuItem value={key} key={key}>
-          <AddressView contextMenu={false} address={address} />
-        </MenuItem>
-      ))}
-    </Select>
+    <FormControl variant="standard">
+      <InputLabel id="account-select-label">Account</InputLabel>
+      <Select
+        disableUnderline
+        label="Account"
+        labelId="account-select-label"
+        onChange={handleChange}
+        renderValue={renderValue}
+        size="small"
+        value={getCurrentPath(currentWallet, addresses)}
+      >
+        {map(addresses, ([key, address]) => (
+          <MenuItem value={key} key={key}>
+            <AddressView contextMenu={false} address={address} />
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
   );
 }
 
