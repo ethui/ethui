@@ -9,7 +9,9 @@ use ethers::types::{Address, H256, U256};
 use iron_types::{events::Tx, Event, TokenBalance, TokenMetadata};
 use serde::Serialize;
 use sqlx::{
-    sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous},
+    sqlite::{
+        SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteRow, SqliteSynchronous,
+    },
     Row,
 };
 use tracing::{instrument, trace};
@@ -245,14 +247,33 @@ impl DB {
             WHERE chain_id = ? "#,
         )
         .bind(chain_id)
-        .map(|row| StoredContract {
-            address: Address::from_str(row.get::<&str, _>("address")).unwrap(),
-            deployed_code_hash: row.get("deployed_code_hash"),
-        })
+        .map(|row| row.try_into().unwrap())
         .fetch_all(self.pool())
         .await?;
 
         Ok(res)
+    }
+
+    pub async fn insert_contract(
+        &self,
+        chain_id: u32,
+        address: Address,
+        abi: Option<String>,
+        name: Option<String>,
+    ) -> Result<()> {
+        sqlx::query(
+            r#" INSERT INTO contracts (address, chain_id, abi, name)
+                        VALUES (?,?,?,?)
+                        ON CONFLICT(address, chain_id) DO NOTHING "#,
+        )
+        .bind(format!("0x{:x}", address))
+        .bind(chain_id)
+        .bind(abi)
+        .bind(name)
+        .execute(self.pool())
+        .await?;
+
+        Ok(())
     }
 
     pub async fn get_native_balance(&self, chain_id: u32, address: Address) -> U256 {
@@ -371,5 +392,18 @@ impl DB {
 #[serde(rename_all = "camelCase")]
 pub struct StoredContract {
     address: Address,
-    deployed_code_hash: String,
+    abi: serde_json::Value,
+    name: String,
+}
+
+impl TryFrom<SqliteRow> for StoredContract {
+    type Error = ();
+
+    fn try_from(row: SqliteRow) -> std::result::Result<Self, Self::Error> {
+        Ok(Self {
+            address: Address::from_str(row.get::<&str, _>("address")).unwrap(),
+            abi: serde_json::from_str(row.get::<&str, _>("abi")).unwrap_or_default(),
+            name: row.get::<&str, _>("name").to_owned(),
+        })
+    }
 }

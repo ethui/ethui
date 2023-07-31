@@ -18,9 +18,10 @@ const store: StateCreator<Store> = (set, get) => ({
   data: {},
 
   init: async () => {
-    const contracts = await invoke<IContract[]>("db_get_contracts", {
+    const contracts = await invoke<IContract[]>("contracts_get_all", {
       chainId: 31337,
     });
+
     set({
       data: {
         31337: contracts.map(({ address }) => ({

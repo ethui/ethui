@@ -5,6 +5,15 @@ pub enum Error {
 
     #[error(transparent)]
     SqlxMigrate(#[from] sqlx::migrate::MigrateError),
+
+    #[error(transparent)]
+    EnvVar(#[from] std::env::VarError),
+
+    #[error(transparent)]
+    EtherscanError(#[from] ethers::etherscan::errors::EtherscanError),
+
+    #[error("Invalid chain")]
+    InvalidChain,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

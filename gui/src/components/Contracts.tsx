@@ -9,6 +9,9 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
+import { listen } from "@tauri-apps/api/event";
+import { invoke } from "@tauri-apps/api/tauri";
+import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -18,14 +21,27 @@ import { ABIForm, AddressView, Panel } from "./";
 
 export function Contracts() {
   const chainId = useNetworks((s) => s.current?.chain_id);
-  const contracts = useContracts((s) => s.data);
 
-  if (!chainId || !contracts) return null;
+  if (!chainId) return null;
+
+  const [contracts, setContracts] = useState<IContract[]>([]);
+
+  const fetch_contracts = async () => {
+    invoke<IContract[]>("contracts_get_all", {
+      chainId: chainId,
+    }).then(setContracts);
+  };
+
+  useEffect(() => {
+    void fetch_contracts();
+  }, [chainId]);
+
+  listen("contracts-updated", () => fetch_contracts);
 
   return (
     <Panel>
       <AddressInput chainId={chainId} />
-      {Array.from(contracts[chainId] || []).map((contract) => (
+      {Array.from(contracts || []).map((contract) => (
         <Contract key={contract.address} contract={contract} />
       ))}
     </Panel>
@@ -39,9 +55,11 @@ function Contract({ contract }: { contract: IContract }) {
         <AddressView address={contract.address} />
         <Chip sx={{ marginLeft: 2 }} label={contract.name} />
       </AccordionSummary>
-      <AccordionDetails>
-        <ABIForm address={contract.address} abi={contract.abi} />
-      </AccordionDetails>
+      {contract.abi && (
+        <AccordionDetails>
+          <ABIForm address={contract.address} abi={contract.abi} />
+        </AccordionDetails>
+      )}
     </Accordion>
   );
 }
@@ -62,7 +80,12 @@ function AddressInput({ chainId }: { chainId: number }) {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = (data: FieldValues) => addAddress(chainId, data.address);
+  const onSubmit = (data: FieldValues) => {
+    addAddress(chainId, data.address);
+
+    const contract_address = data.address;
+    invoke("contracts_insert_contract", { chainId, address: contract_address });
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>

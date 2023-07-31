@@ -2751,6 +2751,7 @@ version = "0.4.1"
 dependencies = [
  "fix-path-env",
  "iron-broadcast",
+ "iron-contracts",
  "iron-db",
  "iron-dialogs",
  "iron-forge",
@@ -2785,6 +2786,16 @@ dependencies = [
  "once_cell",
  "tokio",
  "url",
+]
+
+[[package]]
+name = "iron-contracts"
+version = "0.4.1"
+dependencies = [
+ "ethers",
+ "iron-db",
+ "sqlx",
+ "tauri",
 ]
 
 [[package]]
