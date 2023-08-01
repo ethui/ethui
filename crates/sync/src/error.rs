@@ -4,7 +4,7 @@ pub enum SyncError {
     AlchemyError(#[from] iron_sync_alchemy::Error),
 }
 
-pub type SyncResult<T> = std::result::Result<T, SyncError>;
+// pub type SyncResult<T> = std::result::Result<T, SyncError>;
 
 impl serde::Serialize for SyncError {
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>

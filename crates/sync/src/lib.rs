@@ -1,14 +1,13 @@
-pub mod commands;
 mod error;
 
 use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 
-use error::SyncResult;
 use iron_broadcast::InternalMsg;
 use iron_db::DB;
 use iron_sync_alchemy::Alchemy;
-use iron_types::{ChecksummedAddress, GlobalState, UISender};
+use iron_types::{ChecksummedAddress, GlobalState, UINotify, UISender};
+use tokio::select;
 use tokio::sync::{mpsc, Mutex};
 use tokio::task::JoinHandle;
 use tokio::time::{sleep, Duration};
@@ -16,11 +15,11 @@ use tracing::{error, instrument};
 
 pub async fn init(db: DB, window_snd: UISender) {
     iron_sync_anvil::init(db.clone(), window_snd.clone());
-    iron_sync_alchemy::init(db, window_snd).await;
+    iron_sync_alchemy::init(db.clone()).await;
 
     let (snd, rcv) = mpsc::unbounded_channel();
     tokio::spawn(async { receiver(snd).await });
-    tokio::spawn(async { Worker::run(rcv).await });
+    tokio::spawn(async { Worker::run(db, rcv, window_snd).await });
 }
 
 #[derive(Debug)]
@@ -29,8 +28,8 @@ enum Msg {
     UntrackAddress(ChecksummedAddress),
     TrackNetwork(u32),
     UntrackNetwork(u32),
-    PriorityAddress(ChecksummedAddress),
-    PriorityNetwork(u32),
+    PollAddress(ChecksummedAddress),
+    PollNetwork(u32),
 }
 
 impl TryFrom<InternalMsg> for Msg {
@@ -40,10 +39,10 @@ impl TryFrom<InternalMsg> for Msg {
         let res = match msg {
             InternalMsg::AddressAdded(addr) => Msg::TrackAddress(addr),
             InternalMsg::AddressRemoved(addr) => Msg::UntrackAddress(addr),
-            InternalMsg::CurrentAddressChanged(addr) => Msg::PriorityAddress(addr),
+            InternalMsg::CurrentAddressChanged(addr) => Msg::PollAddress(addr),
             InternalMsg::NetworkAdded(chain_id) => Msg::TrackNetwork(chain_id),
             InternalMsg::NetworkRemoved(chain_id) => Msg::UntrackNetwork(chain_id),
-            InternalMsg::CurrentNetworkChanged(chain_id) => Msg::PriorityNetwork(chain_id),
+            InternalMsg::CurrentNetworkChanged(chain_id) => Msg::PollNetwork(chain_id),
             _ => return Err(()),
         };
 
@@ -66,18 +65,35 @@ async fn receiver(snd: mpsc::UnboundedSender<Msg>) -> Result<(), ()> {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 struct Worker {
-    addres: HashSet<ChecksummedAddress>,
+    db: DB,
+    addresses: HashSet<ChecksummedAddress>,
     chain_ids: HashSet<u32>,
-    priority: (Option<ChecksummedAddress>, Option<u32>),
-    workers: HashMap<(ChecksummedAddress, u32), JoinHandle<()>>,
+    current: (Option<ChecksummedAddress>, Option<u32>),
+    workers: HashMap<(ChecksummedAddress, u32), (JoinHandle<()>, mpsc::UnboundedSender<()>)>,
     mutex: Arc<Mutex<()>>,
+    window_snd: UISender,
 }
 
 impl Worker {
-    async fn run(mut rcv: mpsc::UnboundedReceiver<Msg>) -> Result<(), ()> {
-        let mut worker: Self = Default::default();
+    fn new(db: DB, window_snd: UISender) -> Self {
+        Self {
+            db,
+            window_snd,
+            addresses: Default::default(),
+            chain_ids: Default::default(),
+            current: (None, None),
+            workers: Default::default(),
+            mutex: Arc::new(Mutex::new(())),
+        }
+    }
+    async fn run(
+        db: DB,
+        mut rcv: mpsc::UnboundedReceiver<Msg>,
+        window_snd: UISender,
+    ) -> Result<(), ()> {
+        let mut worker = Self::new(db, window_snd);
 
         loop {
             use Msg::*;
@@ -87,8 +103,8 @@ impl Worker {
                     UntrackAddress(addr) => worker.untrack_addr(addr),
                     TrackNetwork(chain_id) => worker.track_network(chain_id),
                     UntrackNetwork(chain_id) => worker.untrack_network(chain_id),
-                    PriorityAddress(addr) => worker.prioritize_addr(addr),
-                    PriorityNetwork(chain_id) => worker.prioritize_network(chain_id),
+                    PollAddress(addr) => worker.prioritize_addr(addr),
+                    PollNetwork(chain_id) => worker.prioritize_network(chain_id),
                 };
             }
         }
@@ -97,11 +113,10 @@ impl Worker {
     /// creates a new worker per chain ID for the incoming addr
     #[instrument(skip(self), level = "trace")]
     fn track_addr(&mut self, addr: ChecksummedAddress) {
-        self.addres.insert(addr);
+        self.addresses.insert(addr);
         for chain_id in self.chain_ids.iter() {
             let chain_id = *chain_id;
-            let mutex = self.mutex.clone();
-            let task = tokio::spawn(async move { unit_worker(addr, chain_id, mutex, false).await });
+            let task = self.spawn(addr, chain_id);
             self.workers.insert((addr, chain_id), task);
         }
     }
@@ -109,7 +124,7 @@ impl Worker {
     /// drops all existing workers for this addr
     #[instrument(skip(self), level = "trace")]
     fn untrack_addr(&mut self, addr: ChecksummedAddress) {
-        self.addres.remove(&addr);
+        self.addresses.remove(&addr);
         self.workers.retain(|(a, _), _| a != &addr);
     }
 
@@ -118,9 +133,9 @@ impl Worker {
     fn track_network(&mut self, chain_id: u32) {
         if iron_sync_alchemy::supports_network(chain_id) {
             self.chain_ids.insert(chain_id);
-            for addr in self.addres.iter() {
+            for addr in self.addresses.iter() {
                 let addr = *addr;
-                let task = self.spawn(addr, chain_id, false);
+                let task = self.spawn(addr, chain_id);
                 self.workers.insert((addr, chain_id), task);
             }
         }
@@ -136,18 +151,12 @@ impl Worker {
     /// replaces worker for this addr & current chain_id with a priority one
     #[instrument(skip(self), level = "trace")]
     fn prioritize_addr(&mut self, addr: ChecksummedAddress) {
-        // replace previous priority with a regular worker
-        if let Some(priority) = self.current_priority() {
-            let task = self.spawn(priority.0, priority.1, false);
-            self.workers.insert(priority, task);
-        }
+        self.current.0 = Some(addr);
 
-        self.priority.0 = Some(addr);
-
-        // insert new priority task
-        if let Some(priority) = self.current_priority() {
-            let task = self.spawn(addr, priority.1, true);
-            self.workers.insert((addr, priority.1), task);
+        if let (Some(address), Some(chain_id)) = self.current {
+            self.workers
+                .get(&(address, chain_id))
+                .map(|(_, rx)| rx.send(()));
         }
     }
 
@@ -155,33 +164,32 @@ impl Worker {
     #[instrument(skip(self), level = "trace")]
     fn prioritize_network(&mut self, chain_id: u32) {
         if iron_sync_alchemy::supports_network(chain_id) {
-            // replace previous priority with a regular worker
-            if let Some(priority) = self.current_priority() {
-                let task = self.spawn(priority.0, priority.1, false);
-                self.workers.insert(priority, task);
-            }
+            self.current.1 = Some(chain_id);
 
-            self.priority.1 = Some(chain_id);
-
-            // insert new priority task
-            if let Some(priority) = self.current_priority() {
-                let task = self.spawn(priority.0, chain_id, true);
-                self.workers.insert((priority.0, chain_id), task);
+            if let (Some(address), Some(chain_id)) = self.current {
+                self.workers
+                    .get(&(address, chain_id))
+                    .map(|(_, rx)| rx.send(()));
             }
         }
     }
 
-    fn spawn(&self, addr: ChecksummedAddress, chain_id: u32, priority: bool) -> JoinHandle<()> {
+    fn spawn(
+        &self,
+        addr: ChecksummedAddress,
+        chain_id: u32,
+    ) -> (JoinHandle<()>, mpsc::UnboundedSender<()>) {
         let mutex = self.mutex.clone();
-        tokio::spawn(async move { unit_worker(addr, chain_id, mutex, priority).await })
-    }
+        let db = self.db.clone();
+        let (tx, rx) = mpsc::unbounded_channel();
+        let window_snd = self.window_snd.clone();
 
-    fn current_priority(&self) -> Option<(ChecksummedAddress, u32)> {
-        if let (Some(addr), Some(chain_id)) = self.priority {
-            Some((addr, chain_id))
-        } else {
-            None
-        }
+        (
+            tokio::spawn(
+                async move { unit_worker(addr, chain_id, mutex, db, rx, window_snd).await },
+            ),
+            tx,
+        )
     }
 }
 
@@ -189,40 +197,81 @@ impl Worker {
 /// the wait period between each update will depend on the priority value:
 /// * low-priority pairs wait 10 minutes
 /// * high-priority waits 30 seconds
-#[instrument(skip(mutex), level = "trace")]
+#[instrument(skip(mutex, db, rx), level = "trace")]
 async fn unit_worker(
     addr: ChecksummedAddress,
     chain_id: u32,
     mutex: Arc<Mutex<()>>,
-    priority: bool,
+    db: DB,
+    mut rx: mpsc::UnboundedReceiver<()>,
+    window_snd: UISender,
 ) {
+    let tip = db.get_tip(chain_id, addr.into()).await.ok();
+    let delay = 60;
+
     loop {
+        tracing::trace!("waiting again");
+
         // The alchemy global object already acts as a mutex,
         // but that's an implementation detail that may change, so we track our own mutex to ensure
         // only 1 worker at a time
-        let _ = mutex.lock().await;
-
+        let _guard = mutex.lock().await;
         tracing::trace!(event = "working");
 
         // the alchemy global object acts as a mutex already
         let alchemy = Alchemy::read().await;
 
-        alchemy
-            .fetch_erc20_balances(chain_id, addr.into())
-            .await
-            .unwrap_or_else(|err| error!(call = "erc20", err = err.to_string()));
+        match alchemy.fetch_updates(chain_id, addr.into(), tip).await {
+            Ok(result) => {
+                if let Some(events) = result.events {
+                    let res = db.save_events(chain_id, events).await;
+                    log_if_error("save_events", res);
 
-        alchemy
-            .fetch_native_balance(chain_id, addr.into())
-            .await
-            .unwrap_or_else(|err| error!(call = "native", err = err.to_string()));
+                    // TODO: this event should specify address and chain_id
+                    let _ = window_snd.send(UINotify::TxsUpdated.into());
+                }
 
-        alchemy
-            .fetch_transactions(chain_id, addr.into())
-            .await
-            .unwrap_or_else(|err| error!(call = "txs", err = err.to_string()));
+                if let Some(tip) = result.tip {
+                    let res = db.set_tip(chain_id, addr.into(), tip).await;
+                    log_if_error("set_tip", res);
+                }
 
-        let sleep_duration = if priority { 30 } else { 60 * 10 };
-        sleep(Duration::from_secs(sleep_duration)).await;
+                if let Some(balances) = result.erc20_balances {
+                    let res = db
+                        .save_erc20_balances(chain_id, addr.into(), balances)
+                        .await;
+                    log_if_error("erc20_balances", res);
+
+                    // TODO: this event should specify address and chain_id
+                    let _ = window_snd.send(UINotify::BalancesUpdated.into());
+                }
+
+                if let Some(balance) = result.native_balance {
+                    let res = db.save_native_balance(balance, chain_id, addr.into()).await;
+                    log_if_error("native_balances", res);
+
+                    // TODO: this event should specify address and chain_id
+                    let _ = window_snd.send(UINotify::BalancesUpdated.into());
+                }
+            }
+            Err(err) => {
+                error!(call = "txs", err = err.to_string());
+            }
+        }
+
+        // wait for either a set delay, or for an outside poll request
+        select! {
+            _ = rx.recv() => {},
+            _ = sleep(Duration::from_secs(delay)) => {}
+        };
+    }
+}
+
+fn log_if_error<T, E>(call: &str, err: Result<T, E>)
+where
+    E: std::error::Error + std::fmt::Display,
+{
+    if let Err(err) = err {
+        error!(call, err = err.to_string());
     }
 }

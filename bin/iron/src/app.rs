@@ -56,9 +56,6 @@ impl IronApp {
                 iron_dialogs::commands::dialog_send,
                 iron_dialogs::commands::dialog_finish,
                 iron_forge::commands::foundry_get_abi,
-                iron_sync::commands::fetch_erc20_balances,
-                iron_sync::commands::fetch_native_balance,
-                iron_sync::commands::fetch_transactions,
                 iron_rpc::commands::rpc_send_transaction,
             ])
             .setup(|app| {
