@@ -203,13 +203,12 @@ impl Alchemy {
     }
 
     async fn endpoint(&self, chain_id: u32) -> Result<Url> {
-        let settings = Settings::read().await;
-
         let endpoint = match NETWORKS.get(&chain_id) {
             Some(network) => network.base_url.clone(),
             None => return Err(Error::UnsupportedChainId(chain_id)),
         };
 
+        let settings = Settings::read().await;
         let api_key = match settings.inner.alchemy_api_key.as_ref() {
             Some(api_key) => api_key,
             None => return Err(Error::NoAPIKey),
