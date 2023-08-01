@@ -26,8 +26,6 @@ export function Txs() {
 
   const [pages, setPages] = useState<Paginated<Tx>[]>([]);
 
-  console.log("rendering");
-  console.log(pages.length);
   const loadMore = () => {
     let pagination: Pagination = {};
     const last = pages?.at(-1)?.pagination;
