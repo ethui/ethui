@@ -315,11 +315,7 @@ impl DB {
         WHERE chain_id = ?"#,
       )
       .bind(chain_id)
-      .map(|row| Erc721Token {
-        contract: Address::from_str(row.get::<&str, _>("contract")).unwrap(),
-        token_id: U256::from_dec_str(row.get::<&str, _>("token_id")).unwrap(),
-        owner: Address::from_str(row.get::<&str, _>("owner")).unwrap(),
-      })
+      .map(|row| row.try_into().unwrap())
       .fetch_all(self.pool())
       .await?;
 
