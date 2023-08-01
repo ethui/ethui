@@ -48,6 +48,7 @@ pub async fn init(pathbuf: PathBuf, window_snd: UISender) {
         }
     };
 
+    res.broadcast_init().await;
     res.reset_listeners().await;
 
     NETWORKS.set(RwLock::new(res)).unwrap();

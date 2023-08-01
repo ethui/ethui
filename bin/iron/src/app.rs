@@ -45,7 +45,6 @@ impl IronApp {
                 iron_wallets::commands::wallets_get_all,
                 iron_wallets::commands::wallets_get_current,
                 iron_wallets::commands::wallets_get_current_address,
-                iron_wallets::commands::wallets_set_list,
                 iron_wallets::commands::wallets_create,
                 iron_wallets::commands::wallets_update,
                 iron_wallets::commands::wallets_remove,

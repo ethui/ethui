@@ -13,7 +13,7 @@ use futures::{stream, StreamExt};
 pub use init::init;
 use iron_db::DB;
 use iron_settings::Settings;
-use iron_types::{ChecksummedAddress, Event, GlobalState, UINotify, UISender};
+use iron_types::{Event, GlobalState, UINotify, UISender};
 use once_cell::sync::Lazy;
 use serde_json::json;
 use tracing::{instrument, trace};
@@ -35,6 +35,10 @@ static ENDPOINTS: Lazy<HashMap<u32, Url>> = Lazy::new(|| {
     ])
 });
 
+pub fn supports_network(chain_id: u32) -> bool {
+    ENDPOINTS.get(&chain_id).is_some()
+}
+
 #[derive(Debug)]
 pub struct Alchemy {
     db: DB,
@@ -48,11 +52,14 @@ impl Alchemy {
 
     /// fetches ERC20 balances for a user/chain_id
     /// updates the DB, and notifies the UI
-    async fn fetch_erc20_balances(&self, chain_id: u32, address: ChecksummedAddress) -> Result<()> {
+    pub async fn fetch_erc20_balances(&self, chain_id: u32, address: Address) -> Result<()> {
         let client = self.client(chain_id).await?;
 
         let res: Balances = client
-            .request("alchemy_getTokenBalances", [&address.to_string(), "erc20"])
+            .request(
+                "alchemy_getTokenBalances",
+                [&format!("0x{:x}", address), "erc20"],
+            )
             .await?;
         let balances: Vec<(Address, U256)> =
             res.token_balances.into_iter().map(Into::into).collect();
@@ -67,7 +74,7 @@ impl Alchemy {
         Ok(())
     }
 
-    async fn fetch_native_balance(&self, chain_id: u32, address: Address) -> Result<()> {
+    pub async fn fetch_native_balance(&self, chain_id: u32, address: Address) -> Result<()> {
         let client = self.client(chain_id).await?;
         let balance = client.get_balance(address, None).await.unwrap();
 
@@ -78,12 +85,12 @@ impl Alchemy {
         Ok(())
     }
 
-    #[instrument(skip(self))]
-    async fn fetch_transactions(&self, chain_id: u32, address: Address) -> Result<()> {
+    #[instrument(skip(self), fields(addr = addr.to_string()), level = "trace")]
+    pub async fn fetch_transactions(&self, chain_id: u32, addr: Address) -> Result<()> {
         trace!("fetching");
         let client = self.client(chain_id).await?;
 
-        let tip = self.db.get_tip(chain_id, address).await?;
+        let tip = self.db.get_tip(chain_id, addr).await?;
         let latest = client.get_block_number().await?;
 
         // if tip - 1 == latest, we're up to date
@@ -97,7 +104,7 @@ impl Alchemy {
                 json!([{
                     "fromBlock": format!("0x{:x}", tip + 1),
                     "toBlock": format!("0x{:x}",latest),
-                    "fromAddress": address,
+                    "fromAddress": format!("0x{:x}", addr),
                     "category": ["external", "internal", "erc20", "erc721", "erc1155"],
                 }]),
             )
@@ -109,7 +116,7 @@ impl Alchemy {
                 json!([{
                     "fromBlock": format!("0x{:x}", tip + 1),
                     "toBlock": format!("0x{:x}",latest),
-                    "toAddress": address,
+                    "toAddress": format!("0x{:x}", addr),
                     "category": ["external", "internal", "erc20", "erc721", "erc1155"],
                 }]),
             )
@@ -145,7 +152,7 @@ impl Alchemy {
 
             trace!(tip);
             self.db.save_events(chain_id, txs).await?;
-            self.db.set_tip(chain_id, address, tip).await?;
+            self.db.set_tip(chain_id, addr, tip).await?;
             self.window_snd.send(UINotify::TxsUpdated.into())?;
         }
 

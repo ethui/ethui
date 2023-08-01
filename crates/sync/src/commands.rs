@@ -1,11 +1,10 @@
 use ethers::core::types::Address;
-use iron_types::ChecksummedAddress;
 
 use crate::SyncResult;
 
 /// call to fetch balances
 #[tauri::command]
-pub async fn fetch_erc20_balances(chain_id: u32, address: ChecksummedAddress) -> SyncResult<()> {
+pub async fn fetch_erc20_balances(chain_id: u32, address: Address) -> SyncResult<()> {
     if chain_id == 31337 {
         return Ok(());
     }

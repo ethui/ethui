@@ -9,9 +9,16 @@ use url::Url;
 pub enum InternalMsg {
     ChainChanged(u32, String),
     AccountsChanged(Vec<ChecksummedAddress>),
+
     ResetAnvilListener { chain_id: u32, http: Url, ws: Url },
-    TrackAddress(ChecksummedAddress),
-    UntrackAddress(ChecksummedAddress),
+
+    AddressAdded(ChecksummedAddress),
+    AddressRemoved(ChecksummedAddress),
+    CurrentAddressChanged(ChecksummedAddress),
+
+    NetworkAdded(u32),
+    NetworkRemoved(u32),
+    CurrentNetworkChanged(u32),
 }
 
 mod internal_msgs {
@@ -37,6 +44,30 @@ mod internal_msgs {
     /// Requests a reset of the anvil listener for a given chain_id
     pub async fn reset_anvil_listener(chain_id: u32, http: Url, ws: Url) {
         send(ResetAnvilListener { chain_id, http, ws }).await;
+    }
+
+    pub async fn address_added(address: ChecksummedAddress) {
+        send(AddressAdded(address)).await;
+    }
+
+    pub async fn address_removed(address: ChecksummedAddress) {
+        send(AddressRemoved(address)).await;
+    }
+
+    pub async fn current_address_changed(address: ChecksummedAddress) {
+        send(CurrentAddressChanged(address)).await;
+    }
+
+    pub async fn network_added(chain_id: u32) {
+        send(NetworkAdded(chain_id)).await;
+    }
+
+    pub async fn network_removed(chain_id: u32) {
+        send(NetworkRemoved(chain_id)).await;
+    }
+
+    pub async fn current_network_changed(chain_id: u32) {
+        send(CurrentNetworkChanged(chain_id)).await;
     }
 
     /// broadcaster for internal msgs

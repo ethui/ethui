@@ -2983,6 +2983,7 @@ dependencies = [
  "serde_json",
  "sqlx",
  "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -2993,6 +2994,7 @@ dependencies = [
  "coins-bip32",
  "enum_dispatch",
  "ethers",
+ "futures",
  "iron-broadcast",
  "iron-crypto",
  "iron-dialogs",

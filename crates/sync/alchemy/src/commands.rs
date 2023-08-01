@@ -1,9 +1,9 @@
 use ethers::core::types::Address;
-use iron_types::{ChecksummedAddress, GlobalState};
+use iron_types::GlobalState;
 
 use crate::{Alchemy, Error, Result};
 
-pub async fn fetch_erc20_balances(chain_id: u32, address: ChecksummedAddress) -> Result<()> {
+pub async fn fetch_erc20_balances(chain_id: u32, address: Address) -> Result<()> {
     let alchemy = Alchemy::read().await;
 
     handle_error(alchemy.fetch_erc20_balances(chain_id, address).await)
