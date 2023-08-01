@@ -6,7 +6,7 @@ import MobileStepper from "@mui/material/MobileStepper";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 
-import { Step } from "./Steps";
+import { Step } from "./OnboardingSteps";
 
 interface Props {
   steps: Step[];

@@ -1,7 +1,7 @@
 import { Link, Stack, TextField, Typography } from "@mui/material";
 import { ReactNode } from "react";
 
-import { useWizardForm } from "../../store/wizard";
+import { useWizardForm } from "./../store/wizard";
 
 export type Step = { title: string; component: ReactNode };
 

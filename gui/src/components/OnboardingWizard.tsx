@@ -2,11 +2,11 @@ import { Box, Button, Stack, Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useState } from "react";
 
-import { useKeyPress } from "../../hooks";
-import { useWizardForm } from "../../store/wizard";
-import { Logo } from "../Logo";
+import { useKeyPress } from "./../hooks";
+import { useWizardForm } from "./../store/wizard";
+import { Logo } from "./Logo";
 import { OnboardingCarousel } from "./OnboardingCarousel";
-import { steps } from "./Steps";
+import { steps } from "./OnboardingSteps";
 
 interface Props {
   closeOnboarding: () => void;

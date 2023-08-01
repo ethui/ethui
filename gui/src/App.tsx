@@ -12,7 +12,7 @@ import {
   WagmiWrapper,
   WalletUnlockDialog,
 } from "./components";
-import { OnboardingWrapper } from "./components/OnboardingWizard/OnboardingWrapper";
+import { OnboardingWrapper } from "./components/OnboardingWrapper";
 import { useTheme } from "./store/theme";
 
 const queryClient = new QueryClient({
