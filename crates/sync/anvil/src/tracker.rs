@@ -10,7 +10,7 @@ use ethers::{
 use futures_util::StreamExt;
 use iron_abis::IERC20;
 use iron_db::DB;
-use iron_types::{TokenMetadata, UINotify, UISender};
+use iron_types::{TokenMetadata, UINotify};
 use tokio::sync::mpsc;
 use tracing::warn;
 use url::Url;
@@ -28,7 +28,6 @@ pub struct Ctx {
     chain_id: u32,
     http_url: Url,
     ws_url: Url,
-    window_snd: UISender,
     db: DB,
 }
 
@@ -41,7 +40,7 @@ enum Msg {
 }
 
 impl Tracker {
-    pub fn run(chain_id: u32, http_url: Url, ws_url: Url, db: DB, window_snd: UISender) -> Self {
+    pub fn run(chain_id: u32, http_url: Url, ws_url: Url, db: DB) -> Self {
         tracing::debug!("Starting anvil tracker");
 
         let ctx = Ctx {
@@ -49,7 +48,6 @@ impl Tracker {
             http_url,
             ws_url,
             db,
-            window_snd,
         };
 
         // TODO: I think this could be a oneshot::channel, but I was running into `Copy` trait problems
@@ -234,8 +232,8 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
         // don't emit events until we're catching up
         // otherwise we spam too much during that phase
         if caught_up {
-            ctx.window_snd.send(UINotify::TxsUpdated.into())?;
-            ctx.window_snd.send(UINotify::BalancesUpdated.into())?;
+            iron_broadcast::ui_notify(UINotify::TxsUpdated).await;
+            iron_broadcast::ui_notify(UINotify::BalancesUpdated).await;
         }
     }
 

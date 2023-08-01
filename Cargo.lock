@@ -2750,6 +2750,7 @@ name = "iron"
 version = "0.4.1"
 dependencies = [
  "fix-path-env",
+ "iron-broadcast",
  "iron-db",
  "iron-dialogs",
  "iron-forge",
@@ -2819,6 +2820,7 @@ dependencies = [
 name = "iron-dialogs"
 version = "0.4.1"
 dependencies = [
+ "iron-broadcast",
  "iron-types",
  "once_cell",
  "serde",

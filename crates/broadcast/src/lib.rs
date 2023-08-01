@@ -1,7 +1,9 @@
 pub use internal_msgs::*;
+use iron_types::ui_events;
 use iron_types::ChecksummedAddress;
 use once_cell::sync::Lazy;
 use tokio::sync::{broadcast, RwLock};
+pub use ui_msgs::*;
 use url::Url;
 
 /// Supported messages
@@ -21,13 +23,28 @@ pub enum InternalMsg {
     CurrentNetworkChanged(u32),
 }
 
+#[derive(Debug, Clone)]
+pub enum UIMsg {
+    /// notify the frontend about a state change
+    Notify(ui_events::UINotify),
+
+    /// open a dialog
+    DialogOpen(ui_events::DialogOpen),
+
+    /// close a dialog
+    DialogClose(ui_events::DialogClose),
+
+    /// sends a new event to a dialog
+    DialogSend(ui_events::DialogSend),
+}
+
 mod internal_msgs {
     use InternalMsg::*;
 
     use super::*;
 
     /// Creates a new subscriber
-    pub async fn subscribe() -> broadcast::Receiver<InternalMsg> {
+    pub async fn subscribe_internal() -> broadcast::Receiver<InternalMsg> {
         INTERNAL.read().await.subscribe()
     }
 
@@ -77,6 +94,43 @@ mod internal_msgs {
     });
 
     async fn send<'a>(msg: InternalMsg) {
+        INTERNAL.read().await.send(msg).unwrap();
+    }
+}
+
+mod ui_msgs {
+    use UIMsg::*;
+
+    use super::*;
+
+    /// Creates a new subscriber
+    pub async fn subscribe_ui() -> broadcast::Receiver<UIMsg> {
+        INTERNAL.read().await.subscribe()
+    }
+
+    pub async fn ui_notify(params: ui_events::UINotify) {
+        send(Notify(params)).await;
+    }
+
+    pub async fn dialog_open(params: ui_events::DialogOpen) {
+        send(DialogOpen(params)).await;
+    }
+
+    pub async fn dialog_close(params: ui_events::DialogClose) {
+        send(DialogClose(params)).await;
+    }
+
+    pub async fn dialog_send(params: ui_events::DialogSend) {
+        send(DialogSend(params)).await;
+    }
+
+    /// broadcaster for UI msgs
+    static INTERNAL: Lazy<RwLock<broadcast::Sender<UIMsg>>> = Lazy::new(|| {
+        let (tx, _rx) = broadcast::channel(16);
+        RwLock::new(tx)
+    });
+
+    async fn send<'a>(msg: UIMsg) {
         INTERNAL.read().await.send(msg).unwrap();
     }
 }

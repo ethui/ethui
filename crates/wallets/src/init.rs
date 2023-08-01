@@ -5,7 +5,7 @@ use std::{
 };
 
 use async_trait::async_trait;
-use iron_types::{GlobalState, UISender};
+use iron_types::GlobalState;
 use once_cell::sync::OnceCell;
 use serde::Deserialize;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
@@ -14,7 +14,7 @@ use super::{Wallet, Wallets};
 
 static WALLETS: OnceCell<RwLock<Wallets>> = OnceCell::new();
 
-pub async fn init(pathbuf: PathBuf, window_snd: UISender) {
+pub async fn init(pathbuf: PathBuf) {
     let path = Path::new(&pathbuf);
 
     #[derive(Debug, Deserialize)]
@@ -34,14 +34,12 @@ pub async fn init(pathbuf: PathBuf, window_snd: UISender) {
             wallets: res.wallets,
             current: res.current,
             file: Some(pathbuf),
-            window_snd,
         }
     } else {
         Wallets {
             wallets: Default::default(),
             current: 0,
             file: Some(pathbuf),
-            window_snd,
         }
     };
 

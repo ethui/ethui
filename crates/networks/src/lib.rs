@@ -12,7 +12,7 @@ use std::{
 
 use ethers::providers::{Http, Provider};
 pub use init::init;
-use iron_types::{UINotify, UISender};
+use iron_types::UINotify;
 use serde::Serialize;
 
 pub use self::error::{Error, Result};
@@ -25,9 +25,6 @@ pub struct Networks {
 
     #[serde(skip)]
     file: PathBuf,
-
-    #[serde(skip)]
-    window_snd: UISender,
 }
 
 impl Networks {
@@ -90,7 +87,7 @@ impl Networks {
 
     async fn on_network_changed(&self) -> Result<()> {
         self.notify_peers();
-        self.window_snd.send(UINotify::NetworkChanged.into())?;
+        iron_broadcast::ui_notify(UINotify::NetworkChanged).await;
 
         let chain_id = self.get_current_network().chain_id;
         iron_broadcast::current_network_changed(chain_id).await;
