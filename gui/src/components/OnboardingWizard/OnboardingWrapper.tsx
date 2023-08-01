@@ -6,9 +6,9 @@ interface Props {
   children: React.ReactNode;
 }
 
-export function OnboardingWrapper({ children }: Props) {
-  const onboarded = localStorage.getItem("onboarded");
+const onboarded = localStorage.getItem("onboarded");
 
+export function OnboardingWrapper({ children }: Props) {
   const [isOnboarded, setIsOnboarded] = useState(!!onboarded);
 
   const closeOnboarding = () => {
