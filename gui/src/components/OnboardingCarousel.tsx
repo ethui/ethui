@@ -7,23 +7,29 @@ import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 
 import { Step } from "./OnboardingSteps";
+import { WizardFormData } from "./OnboardingWizard";
 
 interface Props {
   steps: Step[];
   activeStep: number;
+  formData: WizardFormData;
   handleClose: () => void;
   handleNext: () => void;
   handleBack: () => void;
+  setFormData: React.Dispatch<React.SetStateAction<WizardFormData>>;
 }
 
 export function OnboardingCarousel({
   steps,
   activeStep,
+  formData,
   handleNext,
   handleBack,
+  setFormData,
 }: Props) {
   const theme = useTheme();
   const maxSteps = steps.length;
+  const step = steps[activeStep];
 
   return (
     <Container disableGutters maxWidth="sm" sx={{ mt: 8, mb: 10 }}>
@@ -53,7 +59,7 @@ export function OnboardingCarousel({
             {steps[activeStep].title}
           </Typography>
           <Box height={{ xs: "260px", sm: "180px" }} alignSelf="start">
-            {steps[activeStep].component}
+            <step.component setFormData={setFormData} formData={formData} />
           </Box>
           <MobileStepper
             steps={maxSteps}

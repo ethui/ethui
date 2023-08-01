@@ -1,22 +1,31 @@
 import { Link, Stack, TextField, Typography } from "@mui/material";
-import { ReactNode } from "react";
+import { ChangeEvent } from "react";
 
-import { useWizardForm } from "./../store/wizard";
+import { WizardFormData } from "./OnboardingWizard";
 
-export type Step = { title: string; component: ReactNode };
+export type Step = {
+  title: string;
+  component: ({
+    formData,
+    setFormData,
+  }: {
+    formData: WizardFormData;
+    setFormData: React.Dispatch<React.SetStateAction<WizardFormData>>;
+  }) => JSX.Element;
+};
 
 export const steps = [
   {
     title: "Welcome",
-    component: <WelcomeStep />,
+    component: WelcomeStep,
   },
   {
     title: "Live blockchains",
-    component: <LiveBlockchainsStep />,
+    component: LiveBlockchainsStep,
   },
   {
     title: "Thank you!",
-    component: <ThankYouStep />,
+    component: ThankYouStep,
   },
 ];
 
@@ -39,8 +48,16 @@ function WelcomeStep() {
   );
 }
 
-function LiveBlockchainsStep() {
-  const { alchemyApiKey, setAlchemyApiKey } = useWizardForm();
+function LiveBlockchainsStep({
+  formData,
+  setFormData,
+}: {
+  formData: WizardFormData;
+  setFormData: React.Dispatch<React.SetStateAction<WizardFormData>>;
+}) {
+  const onChange = (ev: ChangeEvent<HTMLTextAreaElement>) => {
+    setFormData((data) => ({ ...data, alchemyApiKey: ev.target.value }));
+  };
 
   return (
     <Stack spacing={3}>
@@ -71,8 +88,8 @@ function LiveBlockchainsStep() {
         fullWidth
         type="text"
         variant="outlined"
-        onChange={(e) => setAlchemyApiKey(e.target.value)}
-        value={alchemyApiKey.value}
+        onChange={onChange}
+        value={formData.alchemyApiKey}
       />
     </Stack>
   );

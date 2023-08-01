@@ -1,9 +1,9 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import { useKeyPress } from "./../hooks";
-import { useWizardForm } from "./../store/wizard";
+import { GeneralSettings } from "../types";
+import { useInvoke, useKeyPress } from "./../hooks";
 import { Logo } from "./Logo";
 import { OnboardingCarousel } from "./OnboardingCarousel";
 import { steps } from "./OnboardingSteps";
@@ -12,9 +12,20 @@ interface Props {
   closeOnboarding: () => void;
 }
 
+export type WizardFormData = { alchemyApiKey?: string | null };
+
 export function OnboardingWizard({ closeOnboarding }: Props) {
+  const { data: settings } = useInvoke<GeneralSettings>("settings_get");
+
   const [activeStep, setActiveStep] = useState(0);
-  const { alchemyApiKey } = useWizardForm();
+  const [formData, setFormData] = useState<WizardFormData>({});
+
+  useEffect(() => {
+    setFormData((data) => ({
+      ...data,
+      alchemyApiKey: settings?.alchemyApiKey,
+    }));
+  }, [settings?.alchemyApiKey]);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -25,9 +36,9 @@ export function OnboardingWizard({ closeOnboarding }: Props) {
   };
 
   const handleClose = async () => {
-    if (alchemyApiKey.isDirty) {
+    if (formData.alchemyApiKey !== settings?.alchemyApiKey) {
       await invoke("settings_set", {
-        newSettings: { alchemyApiKey: alchemyApiKey.value },
+        newSettings: { alchemyApiKey: formData.alchemyApiKey },
       });
     }
 
@@ -50,6 +61,8 @@ export function OnboardingWizard({ closeOnboarding }: Props) {
         handleClose={handleClose}
         handleNext={handleNext}
         handleBack={handleBack}
+        formData={formData}
+        setFormData={setFormData}
       />
       <Box textAlign="center">
         <Button
