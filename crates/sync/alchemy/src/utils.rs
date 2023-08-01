@@ -16,8 +16,6 @@ use super::{types::Transfer, Error, Result};
 pub(super) async fn transfer_into_tx(
     transfer: Transfer,
     client: &Provider<RetryClient<Http>>,
-    chain_id: u32,
-    db: &DB,
 ) -> Result<Vec<Event>> {
     let data = match transfer {
         Transfer::External(data) => data,
@@ -31,9 +29,6 @@ pub(super) async fn transfer_into_tx(
     let hash = H256::from_str(data.unique_id.split(':').collect::<Vec<_>>()[0]).unwrap();
 
     let mut res = vec![];
-    if db.transaction_exists(chain_id, hash).await? {
-        return Ok(res);
-    }
 
     let tx = client
         .get_transaction(hash)

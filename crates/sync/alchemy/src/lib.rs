@@ -166,9 +166,7 @@ impl Alchemy {
         // final result
         let events: Vec<Event> =
             stream::iter(outgoing.transfers.into_iter().chain(incoming.transfers))
-                .then(|transfer| async {
-                    utils::transfer_into_tx(transfer, &client, chain_id, &self.db).await
-                })
+                .then(|transfer| async { utils::transfer_into_tx(transfer, &client).await })
                 .collect::<Vec<Result<Vec<_>>>>()
                 .await
                 .into_iter()
