@@ -4,9 +4,9 @@ use ethers::core::k256::ecdsa::SigningKey;
 use iron_types::{ChecksummedAddress, Json};
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    hd_wallet::HDWallet, impersonator::Impersonator, Error, JsonKeystoreWallet, PlaintextWallet,
-    Result,
+use super::{
+    hd_wallet::HDWallet, impersonator::Impersonator, json_keystore_wallet::JsonKeystoreWallet,
+    plaintext::PlaintextWallet, Error, Result,
 };
 
 #[async_trait]

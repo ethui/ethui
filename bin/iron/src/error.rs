@@ -1,5 +1,3 @@
-use iron_types::UIEvent;
-
 #[derive(thiserror::Error, Debug)]
 pub enum AppError {
     #[error(transparent)]
@@ -10,9 +8,6 @@ pub enum AppError {
 
     #[error(transparent)]
     FixPathEnv(#[from] fix_path_env::Error),
-
-    #[error(transparent)]
-    WindowSend(#[from] tokio::sync::mpsc::error::SendError<UIEvent>),
 
     #[error(transparent)]
     TauriError(#[from] tauri::Error),
