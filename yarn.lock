@@ -2247,17 +2247,6 @@
     "@parcel/transformer-react-refresh-wrap" "2.8.3"
     "@parcel/transformer-svg" "2.8.3"
 
-"@parcel/config-webextension@^2.8.3":
-  version "2.8.3"
-  resolved "https://registry.yarnpkg.com/@parcel/config-webextension/-/config-webextension-2.8.3.tgz#24d1e0c391ef675dbd4aecf6199b826b6d034eb5"
-  integrity sha512-TWbnfMzVvJvSqLD0+5oA4lPa3yzDLtkXzZcoPp91HkvAH6G7iySOFUq0uAEecpzxQBpOf+90emQNgSvyBOkHgA==
-  dependencies:
-    "@parcel/config-default" "2.8.3"
-    "@parcel/packager-webextension" "2.8.3"
-    "@parcel/runtime-webextension" "2.8.3"
-    "@parcel/transformer-raw" "2.8.3"
-    "@parcel/transformer-webextension" "2.8.3"
-
 "@parcel/core@2.8.3":
   version "2.8.3"
   resolved "https://registry.yarnpkg.com/@parcel/core/-/core-2.8.3.tgz#22a69f36095d53736ab10bf42697d9aa5f4e382b"
@@ -2489,30 +2478,12 @@
     "@parcel/utils" "2.8.3"
     posthtml "^0.16.4"
 
-"@parcel/packager-webextension@2.8.3":
-  version "2.8.3"
-  resolved "https://registry.yarnpkg.com/@parcel/packager-webextension/-/packager-webextension-2.8.3.tgz#2cb618aa36d040688c1ce07f5e91d491b3772cc7"
-  integrity sha512-kcA0VOmuroM2XsVOtk+jWFkJxKYjVEsyJoEazg2sahpNx4dWmXXMGnRyQF0og9PqKow5UQIw7jl1PcvMVO9rCA==
-  dependencies:
-    "@parcel/plugin" "2.8.3"
-    "@parcel/utils" "2.8.3"
-    nullthrows "^1.1.1"
-
 "@parcel/plugin@2.8.3":
   version "2.8.3"
   resolved "https://registry.yarnpkg.com/@parcel/plugin/-/plugin-2.8.3.tgz#7bb30a5775eaa6473c27f002a0a3ee7308d6d669"
   integrity sha512-jZ6mnsS4D9X9GaNnvrixDQwlUQJCohDX2hGyM0U0bY2NWU8Km97SjtoCpWjq+XBCx/gpC4g58+fk9VQeZq2vlw==
   dependencies:
     "@parcel/types" "2.8.3"
-
-"@parcel/reporter-bundle-analyzer@^2.8.3":
-  version "2.8.3"
-  resolved "https://registry.yarnpkg.com/@parcel/reporter-bundle-analyzer/-/reporter-bundle-analyzer-2.8.3.tgz#706899df09f5ad4fa2882a6139e95935c2848329"
-  integrity sha512-4h0JwqOCmHlbzFwgYyEqgchMwk2N1zXmDltO2vIhPikvdsJCJXoRqvJvVTeLeL5bPOYLduMhlaAvn5B3jqcsFA==
-  dependencies:
-    "@parcel/plugin" "2.8.3"
-    "@parcel/utils" "2.8.3"
-    nullthrows "^1.1.1"
 
 "@parcel/reporter-cli@2.8.3":
   version "2.8.3"
@@ -2572,15 +2543,6 @@
   version "2.8.3"
   resolved "https://registry.yarnpkg.com/@parcel/runtime-service-worker/-/runtime-service-worker-2.8.3.tgz#54d92da9ff1dfbd27db0e84164a22fa59e99b348"
   integrity sha512-/Skkw+EeRiwzOJso5fQtK8c9b452uWLNhQH1ISTodbmlcyB4YalAiSsyHCtMYD0c3/t5Sx4ZS7vxBAtQd0RvOw==
-  dependencies:
-    "@parcel/plugin" "2.8.3"
-    "@parcel/utils" "2.8.3"
-    nullthrows "^1.1.1"
-
-"@parcel/runtime-webextension@2.8.3":
-  version "2.8.3"
-  resolved "https://registry.yarnpkg.com/@parcel/runtime-webextension/-/runtime-webextension-2.8.3.tgz#774d9bd39fa7fdbc8275cac4efbda44a95f1ab2a"
-  integrity sha512-ZSSwcL5HtHmrqxJKkIrw7nnhCN5uOo6Qh6KIZevqL0+FCMiKS5qZG0bNTzwSHxwzQbeK7cgRerRWAdAJnvoSpA==
   dependencies:
     "@parcel/plugin" "2.8.3"
     "@parcel/utils" "2.8.3"
@@ -2726,17 +2688,6 @@
     posthtml-parser "^0.10.1"
     posthtml-render "^3.0.0"
     semver "^5.7.1"
-
-"@parcel/transformer-webextension@2.8.3":
-  version "2.8.3"
-  resolved "https://registry.yarnpkg.com/@parcel/transformer-webextension/-/transformer-webextension-2.8.3.tgz#ae035539013ff67d98bc04d39f1cd8071aad35c5"
-  integrity sha512-YTNGE53G1cQwz5oNJxAxTM1nLzR/f1OSOhYC4AZJkxTwLGmcpS7T3KE0rmUMWfTZGbP2v0t7U7FjSDtU45j2nw==
-  dependencies:
-    "@mischnic/json-sourcemap" "^0.1.0"
-    "@parcel/diagnostic" "2.8.3"
-    "@parcel/plugin" "2.8.3"
-    "@parcel/utils" "2.8.3"
-    content-security-policy-parser "^0.3.0"
 
 "@parcel/types@2.8.3":
   version "2.8.3"
@@ -6060,11 +6011,6 @@ constants-browserify@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/constants-browserify/-/constants-browserify-1.0.0.tgz#c20b96d8c617748aaf1c16021760cd27fcb8cb75"
   integrity sha512-xFxOwqIzR/e1k1gLiWEophSCMqXcwVHIH7akf7b/vxcUeGunlj3hvZaaqxwHsTgn+IndtkQJgSztIDWeumWJDQ==
-
-content-security-policy-parser@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/content-security-policy-parser/-/content-security-policy-parser-0.3.0.tgz#a14d4ed54c8d098621ba46cabcd20a78be0c691e"
-  integrity sha512-ub90B4t9EfDPv3DCH7vEwGe4tVMkSm4Ow1HsmvmEQwinDfpTEDmkuJVa5WpzHDTt2bUirNRZuzL6S0msASlJhg==
 
 convert-source-map@^1.5.0, convert-source-map@^1.7.0:
   version "1.9.0"
