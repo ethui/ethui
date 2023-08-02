@@ -80,7 +80,6 @@ impl<'a> SendTransaction<'a> {
                 .build_signer(self.network.chain_id, &self.wallet_path)
                 .await
                 .unwrap();
-
             self.signer = Some(SignerMiddleware::new(self.network.get_provider(), signer))
         }
     }
