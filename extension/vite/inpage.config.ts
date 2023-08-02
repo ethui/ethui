@@ -25,10 +25,10 @@ export default defineConfig({
   ],
   build: {
     emptyOutDir: false,
-    outDir: path.resolve(__dirname, "dist"),
+    outDir: path.resolve(__dirname, "..", "dist"),
     lib: {
       formats: ["iife"],
-      entry: path.resolve(__dirname, "src", "inpage", "index.ts"),
+      entry: path.resolve(__dirname, "..", "src", "inpage", "index.ts"),
       name: "Iron Wallet - inpage script",
     },
     rollupOptions: {

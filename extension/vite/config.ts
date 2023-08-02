@@ -23,12 +23,12 @@ export default defineConfig({
     }),
   ],
   build: {
-    outDir: path.resolve(__dirname, "dist"),
+    outDir: path.resolve(__dirname, "..", "dist"),
     emptyOutDir: false,
     rollupOptions: {
       input: {
-        options: new URL("./src/options/index.html", import.meta.url).pathname,
-        background: new URL("./src/background/index.html", import.meta.url)
+        options: new URL("../src/options/index.html", import.meta.url).pathname,
+        background: new URL("../src/background/index.html", import.meta.url)
           .pathname,
       },
       output: {
