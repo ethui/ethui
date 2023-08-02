@@ -30,9 +30,10 @@
   ],
   "permissions": ["scripting", "storage"],
   "icons": {
-    "16": "iron-16.png",
-    "48": "iron-48.png",
-    "128": "iron-128.png"
+    "16": "icons/iron-16.png",
+    "48": "icons/iron-48.png",
+    "96": "icons/iron-96.png",
+    "128": "icons/iron-128.png"
   },
   "browser_specific_settings": {
     "gecko": {
