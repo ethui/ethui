@@ -1,3 +1,4 @@
+import path from "node:path";
 import { defineConfig } from "vite";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 
@@ -14,6 +15,7 @@ const fetchVersion = () => {
 };
 
 export default defineConfig({
+  root: "src",
   plugins: [
     fetchVersion(),
     nodePolyfills({
@@ -21,12 +23,12 @@ export default defineConfig({
     }),
   ],
   build: {
-    outDir: "dist",
+    outDir: path.resolve(__dirname, "dist"),
     emptyOutDir: false,
     rollupOptions: {
       input: {
-        options: new URL("./options/index.html", import.meta.url).pathname,
-        background: new URL("./background/index.html", import.meta.url)
+        options: new URL("./src/options/index.html", import.meta.url).pathname,
+        background: new URL("./src/background/index.html", import.meta.url)
           .pathname,
       },
       output: {

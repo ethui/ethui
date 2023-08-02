@@ -16,6 +16,7 @@ const fetchVersion = () => {
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  root: "src",
   plugins: [
     fetchVersion(),
     nodePolyfills({
@@ -27,7 +28,7 @@ export default defineConfig({
     outDir: path.resolve(__dirname, "dist"),
     lib: {
       formats: ["iife"],
-      entry: path.resolve(__dirname, "background", "index.ts"),
+      entry: path.resolve(__dirname, "src", "background", "index.ts"),
       name: "Cat Facts",
     },
     rollupOptions: {

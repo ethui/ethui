@@ -13,7 +13,6 @@
     "build:firefox:manifest": "mv dist/manifestv2.json dist/manifest.json",
     "build:chrome": "NODE_ENV=production run-s clean compile build:chrome:*",
     "build:chrome:script": "vite build --config vite.chrome.config.ts",
-    "build:chrome:inpage": "vite build --config vite.inpage.config.ts",
     "build:chrome:manifest": "rm dist/manifestv2.json",
     "bundle": "run-s bundle:*",
     "bundle:clean": "run-s clean",

@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 export default defineConfig({
+  root: "src",
   plugins: [
     nodePolyfills({
       exclude: ["fs"],
@@ -16,7 +17,7 @@ export default defineConfig({
     outDir: path.resolve(__dirname, "dist"),
     lib: {
       formats: ["iife"],
-      entry: path.resolve(__dirname, "content-script", "index.ts"),
+      entry: path.resolve(__dirname, "src", "content-script", "index.ts"),
       name: "Cat Facts",
     },
     rollupOptions: {
