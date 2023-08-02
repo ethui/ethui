@@ -11,3 +11,4 @@ gui/vite.config.ts.timestamp-*
 extension/*.zip
 *.xpi
 *.crx
+*.pem
