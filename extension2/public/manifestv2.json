@@ -1,0 +1,34 @@
+{
+  "manifest_version": 2,
+  "name": "My Web Extension",
+  "author": "my@email.com",
+  "description": "A cross browser web extension.",
+  "homepage_url": "https://projectUrl.com",
+  "version": "0.0.0",
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "run_at": "document_idle",
+      "js": ["./contentScript/index.js"],
+      "css": ["./style.css"]
+    }
+  ],
+  "background": {
+    "page": "./background/index.html",
+    "persistent": false
+  },
+  "browser_action": {
+    "default_area": "navbar",
+    "default_popup": "./popup/index.html",
+    "default_title": "Open the popup",
+    "default_icon": "icon-72x72.png"
+  },
+  "permissions": [],
+  "icons": {
+    "72": "icon-72x72.png",
+    "96": "icon-96x96.png",
+    "128": "icon-128x128.png",
+    "144": "icon-144x144.png",
+    "152": "icon-152x152.png"
+  }
+}
