@@ -13,7 +13,7 @@ import {
 
 import ObjectMultiplex from "@metamask/object-multiplex";
 
-import { type Settings, defaultSettings, loadSettings } from "./settings";
+import { type Settings, defaultSettings, loadSettings } from "../settings";
 
 // init on load
 (async () => init())();

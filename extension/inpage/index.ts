@@ -2,7 +2,7 @@ import { type Duplex } from "stream";
 
 import { WindowPostMessageStream } from "@metamask/post-message-stream";
 
-import { initializeProvider } from "./provider-inpage";
+import { initializeProvider } from "./provider";
 
 // init on load
 init();
@@ -18,6 +18,7 @@ export function init() {
  * conntected to a `WindowPostMessageStream`
  */
 function initProvider() {
+  console.log("here");
   const stream = new WindowPostMessageStream({
     name: "iron:provider:inpage",
     target: "iron:provider:contentscript",
