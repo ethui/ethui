@@ -12,7 +12,6 @@ use iron_networks::Network;
 use iron_wallets::{Wallet, WalletControl};
 
 use super::{Error, Result};
-type Middleware = SignerMiddleware<Provider<Http>, signers::Wallet<SigningKey>>;
 
 /// Orchestrates the signing of a transaction
 /// Takes references to both the wallet and network where this
@@ -21,7 +20,7 @@ pub struct SendTransaction<'a> {
     pub wallet_path: String,
     pub network: &'a Network,
     pub request: TypedTransaction,
-    pub signer: Option<Middleware>,
+    pub signer: Option<SignerMiddleware<Provider<Http>, signers::Wallet<SigningKey>>>,
 }
 
 impl<'a> SendTransaction<'a> {
