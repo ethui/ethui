@@ -20,6 +20,7 @@ iron-types = { workspace = true }
 iron-db = { workspace = true }
 iron-sync = { workspace = true }
 iron-tracing = { workspace = true }
+iron-broadcast = { workspace = true }
 tauri = { workspace = true }
 tokio = { workspace = true }
 thiserror = { workspace = true }

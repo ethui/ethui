@@ -15,7 +15,7 @@ use std::{
 
 pub use error::{Error, Result};
 pub use init::init;
-use iron_types::{ChecksummedAddress, Json, UINotify, UISender};
+use iron_types::{ChecksummedAddress, Json, UINotify};
 use serde::Serialize;
 
 use self::wallet::WalletCreate;
@@ -33,9 +33,6 @@ pub struct Wallets {
 
     #[serde(default)]
     current: usize,
-
-    #[serde(skip)]
-    window_snd: UISender,
 
     #[serde(skip)]
     file: Option<PathBuf>,
@@ -108,10 +105,10 @@ impl Wallets {
             let before: HashSet<_> = before.into_iter().collect();
             let after: HashSet<_> = after.into_iter().collect();
             for (_, a) in after.difference(&before) {
-                iron_broadcast::address_added(a.clone()).await;
+                iron_broadcast::address_added(*a).await;
             }
             for (_, a) in before.difference(&after) {
-                iron_broadcast::address_removed(a.clone()).await;
+                iron_broadcast::address_removed(*a).await;
             }
         });
 
@@ -194,7 +191,7 @@ impl Wallets {
         let addr = self.get_current_address().await;
 
         self.notify_peers().await;
-        self.window_snd.send(UINotify::WalletsChanged.into())?;
+        iron_broadcast::ui_notify(UINotify::WalletsChanged).await;
         iron_broadcast::current_address_changed(addr).await;
 
         Ok(())

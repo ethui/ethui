@@ -6,7 +6,7 @@ use std::{
 };
 
 use async_trait::async_trait;
-use iron_types::{GlobalState, UISender};
+use iron_types::GlobalState;
 use once_cell::sync::OnceCell;
 use serde::Deserialize;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
@@ -15,7 +15,7 @@ use super::{network::Network, Networks};
 
 static NETWORKS: OnceCell<RwLock<Networks>> = OnceCell::new();
 
-pub async fn init(pathbuf: PathBuf, window_snd: UISender) {
+pub async fn init(pathbuf: PathBuf) {
     /// The persisted format of the networks object
     #[derive(Debug, Deserialize)]
     struct PersistedNetworks {
@@ -35,7 +35,6 @@ pub async fn init(pathbuf: PathBuf, window_snd: UISender) {
             networks: res.networks,
             current: res.current,
             file: pathbuf,
-            window_snd,
         }
     } else {
         let networks = Network::all_default();
@@ -44,7 +43,6 @@ pub async fn init(pathbuf: PathBuf, window_snd: UISender) {
             networks: networks.into_iter().map(|n| (n.name.clone(), n)).collect(),
             current,
             file: pathbuf,
-            window_snd,
         }
     };
 

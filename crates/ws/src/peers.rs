@@ -1,6 +1,6 @@
 use std::{collections::HashMap, net::SocketAddr};
 
-use iron_types::{ChecksummedAddress, UINotify, UISender};
+use iron_types::{ChecksummedAddress, UINotify};
 use serde::Serialize;
 use serde_json::json;
 use tokio::sync::mpsc;
@@ -46,30 +46,24 @@ impl Peer {
 }
 
 /// Tracks a list of peers, usually browser tabs, that connect to the app
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Peers {
     map: HashMap<SocketAddr, Peer>,
-    window_snd: UISender,
 }
 
 impl Peers {
-    pub fn new(window_snd: UISender) -> Self {
-        Self {
-            map: HashMap::new(),
-            window_snd,
-        }
-    }
-
     /// Adds a new peer
-    pub fn add_peer(&mut self, peer: Peer) {
+    pub async fn add_peer(&mut self, peer: Peer) {
         self.map.insert(peer.socket, peer);
-        self.window_snd.send(UINotify::PeersUpdated.into()).unwrap();
+        iron_broadcast::ui_notify(UINotify::PeersUpdated).await;
+        //self.window_snd.send(UINotify::PeersUpdated.into()).unwrap();
     }
 
     /// Removes an existing peer
-    pub fn remove_peer(&mut self, peer: SocketAddr) {
+    pub async fn remove_peer(&mut self, peer: SocketAddr) {
         self.map.remove(&peer);
-        self.window_snd.send(UINotify::PeersUpdated.into()).unwrap();
+        iron_broadcast::ui_notify(UINotify::PeersUpdated).await;
+        //self.window_snd.send(UINotify::PeersUpdated.into()).unwrap();
     }
 
     /// Broadcasts an `accountsChanged` event to all peers

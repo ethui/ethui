@@ -1,16 +1,14 @@
 use async_trait::async_trait;
 use iron_broadcast::InternalMsg;
-use iron_types::{GlobalState, UISender};
-use once_cell::sync::OnceCell;
+use iron_types::GlobalState;
+use once_cell::sync::Lazy;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
 use crate::{peers::Peers, server::server_loop};
 
-static PEERS: OnceCell<RwLock<Peers>> = OnceCell::new();
+static PEERS: Lazy<RwLock<Peers>> = Lazy::new(Default::default);
 
-pub fn init(sender: UISender) {
-    PEERS.set(RwLock::new(Peers::new(sender))).unwrap();
-
+pub fn init() {
     tokio::spawn(async { server_loop().await });
     tokio::spawn(async { receiver().await });
 }
@@ -18,16 +16,16 @@ pub fn init(sender: UISender) {
 #[async_trait]
 impl GlobalState for Peers {
     async fn read<'a>() -> RwLockReadGuard<'a, Self> {
-        PEERS.get().unwrap().read().await
+        PEERS.read().await
     }
 
     async fn write<'a>() -> RwLockWriteGuard<'a, Self> {
-        PEERS.get().unwrap().write().await
+        PEERS.write().await
     }
 }
 
 async fn receiver() -> ! {
-    let mut rx = iron_broadcast::subscribe().await;
+    let mut rx = iron_broadcast::subscribe_internal().await;
 
     loop {
         if let Ok(msg) = rx.recv().await {

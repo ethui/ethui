@@ -4,20 +4,20 @@ use std::sync::Arc;
 use iron_broadcast::InternalMsg;
 use iron_db::DB;
 use iron_sync_alchemy::Alchemy;
-use iron_types::{ChecksummedAddress, GlobalState, UINotify, UISender};
+use iron_types::{ChecksummedAddress, GlobalState, UINotify};
 use tokio::select;
 use tokio::sync::{mpsc, Mutex};
 use tokio::task::JoinHandle;
 use tokio::time::{sleep, Duration};
 use tracing::{error, instrument};
 
-pub async fn init(db: DB, window_snd: UISender) {
-    iron_sync_anvil::init(db.clone(), window_snd.clone());
+pub async fn init(db: DB) {
+    iron_sync_anvil::init(db.clone());
     iron_sync_alchemy::init(db.clone()).await;
 
     let (snd, rcv) = mpsc::unbounded_channel();
     tokio::spawn(async { receiver(snd).await });
-    tokio::spawn(async { Worker::run(db, rcv, window_snd).await });
+    tokio::spawn(async { Worker::run(db, rcv).await });
 }
 
 #[derive(Debug)]
@@ -52,7 +52,7 @@ impl TryFrom<InternalMsg> for Msg {
 /// if a msg is convertible to `Msg`, forward that to the sync worker
 #[instrument(skip(snd), level = "trace")]
 async fn receiver(snd: mpsc::UnboundedSender<Msg>) -> Result<(), ()> {
-    let mut rx = iron_broadcast::subscribe().await;
+    let mut rx = iron_broadcast::subscribe_internal().await;
 
     loop {
         if let Ok(internal_msg) = rx.recv().await {
@@ -71,14 +71,12 @@ struct Worker {
     current: (Option<ChecksummedAddress>, Option<u32>),
     workers: HashMap<(ChecksummedAddress, u32), (JoinHandle<()>, mpsc::UnboundedSender<()>)>,
     mutex: Arc<Mutex<()>>,
-    window_snd: UISender,
 }
 
 impl Worker {
-    fn new(db: DB, window_snd: UISender) -> Self {
+    fn new(db: DB) -> Self {
         Self {
             db,
-            window_snd,
             addresses: Default::default(),
             chain_ids: Default::default(),
             current: (None, None),
@@ -86,12 +84,8 @@ impl Worker {
             mutex: Arc::new(Mutex::new(())),
         }
     }
-    async fn run(
-        db: DB,
-        mut rcv: mpsc::UnboundedReceiver<Msg>,
-        window_snd: UISender,
-    ) -> Result<(), ()> {
-        let mut worker = Self::new(db, window_snd);
+    async fn run(db: DB, mut rcv: mpsc::UnboundedReceiver<Msg>) -> Result<(), ()> {
+        let mut worker = Self::new(db);
 
         loop {
             use Msg::*;
@@ -180,12 +174,9 @@ impl Worker {
         let mutex = self.mutex.clone();
         let db = self.db.clone();
         let (tx, rx) = mpsc::unbounded_channel();
-        let window_snd = self.window_snd.clone();
 
         (
-            tokio::spawn(
-                async move { unit_worker(addr, chain_id, mutex, db, rx, window_snd).await },
-            ),
+            tokio::spawn(async move { unit_worker(addr, chain_id, mutex, db, rx).await }),
             tx,
         )
     }
@@ -202,7 +193,6 @@ async fn unit_worker(
     mutex: Arc<Mutex<()>>,
     db: DB,
     mut rx: mpsc::UnboundedReceiver<()>,
-    window_snd: UISender,
 ) {
     let tip = db.get_tip(chain_id, addr.into()).await.ok();
     let delay = 60;
@@ -226,7 +216,7 @@ async fn unit_worker(
                     log_if_error("save_events", res);
 
                     // TODO: this event should specify address and chain_id
-                    let _ = window_snd.send(UINotify::TxsUpdated.into());
+                    iron_broadcast::ui_notify(UINotify::TxsUpdated).await;
                 }
 
                 if let Some(tip) = result.tip {
@@ -241,7 +231,7 @@ async fn unit_worker(
                     log_if_error("erc20_balances", res);
 
                     // TODO: this event should specify address and chain_id
-                    let _ = window_snd.send(UINotify::BalancesUpdated.into());
+                    iron_broadcast::ui_notify(UINotify::BalancesUpdated).await;
                 }
 
                 if let Some(balance) = result.native_balance {
@@ -249,7 +239,7 @@ async fn unit_worker(
                     log_if_error("native_balances", res);
 
                     // TODO: this event should specify address and chain_id
-                    let _ = window_snd.send(UINotify::BalancesUpdated.into());
+                    iron_broadcast::ui_notify(UINotify::BalancesUpdated).await;
                 }
             }
             Err(err) => {
