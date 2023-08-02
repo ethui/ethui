@@ -2,7 +2,7 @@ import { type Duplex } from "stream";
 
 import { WindowPostMessageStream } from "@metamask/post-message-stream";
 
-import { initializeProvider } from "./provider-inpage";
+import { initializeProvider } from "./provider";
 
 // init on load
 init();

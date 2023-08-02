@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "Iron Wallet",
+  "description": "A developer-focused Ethereum wallet",
+  "version": "0.4.1",
+  "author": "Miguel Palhas <mpalhas@gmail.com>",
+  "homepage_url": "https://github.com/iron-wallet",
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "run_at": "document_idle",
+      "js": ["./contentScript/index.js"],
+      "css": ["./style.css"]
+    }
+  ],
+  "background": {
+    "page": "./background/index.html",
+    "persistent": false
+  },
+  "options_ui": {
+    "page": "./options/index.html"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; frame-ancestors 'none';"
+  },
+  "web_accessible_resources": [
+    {
+      "matches": ["<all_urls>"],
+      "resources": ["inpage.ts"]
+    }
+  ],
+  "permissions": ["scripting", "storage"],
+  "icons": {
+    "16": "iron-16.png",
+    "48": "iron-48.png",
+    "128": "iron-128.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "iron-wallet@naps62.com"
+    }
+  }
+}

@@ -90,15 +90,19 @@ export abstract class AbstractStreamProvider extends BaseProvider {
     this._jsonRpcConnection.events.on("notification", (payload) => {
       const { method, params } = payload;
       if (method === "accountsChanged") {
+        // eslint-disable-next-line no-console
         console.log("handleAccountsChanged", params);
         this._handleAccountsChanged(params);
       } else if (method === "metamask_unlockStateChanged") {
+        // eslint-disable-next-line no-console
         console.log("handleUnlockStateChanged");
         this._handleUnlockStateChanged(params);
       } else if (method === "chainChanged") {
+        // eslint-disable-next-line no-console
         console.log("handleChainChanged", params);
         this._handleChainChanged(params);
       } else if (EMITTED_NOTIFICATIONS.includes(method)) {
+        // eslint-disable-next-line no-console
         console.log("emitting", method);
         this.emit("message", {
           type: method,
