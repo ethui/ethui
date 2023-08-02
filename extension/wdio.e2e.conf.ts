@@ -31,6 +31,7 @@ async function openExtensionPopup (this: WebdriverIO.Browser, extensionName: str
 }
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace WebdriverIO {
       interface Browser {
         openExtensionPopup: typeof openExtensionPopup

@@ -3,13 +3,7 @@ import log from "loglevel";
 import pump from "pump";
 import { type Duplex } from "stream";
 import browser, { type Runtime } from "webextension-polyfill";
-import {
-  ConstantBackoff,
-  ExponentialBackoff,
-  LinearBackoff,
-  Websocket,
-  WebsocketBuilder,
-} from "websocket-ts";
+import { ConstantBackoff, Websocket, WebsocketBuilder } from "websocket-ts";
 
 import ObjectMultiplex from "@metamask/object-multiplex";
 

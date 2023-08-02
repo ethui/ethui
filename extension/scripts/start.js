@@ -36,5 +36,6 @@ async function startBrowser (browserName) {
 }
 
 const browserName = process.argv.slice(2).pop() || 'chrome'
+// eslint-disable-next-line no-console
 console.log(`Run web extension in ${browserName}...`)
 await startBrowser(browserName)

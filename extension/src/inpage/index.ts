@@ -18,7 +18,6 @@ export function init() {
  * conntected to a `WindowPostMessageStream`
  */
 function initProvider() {
-  console.log("here");
   const stream = new WindowPostMessageStream({
     name: "iron:provider:inpage",
     target: "iron:provider:contentscript",
