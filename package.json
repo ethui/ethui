@@ -17,7 +17,8 @@
   },
   "workspaces": [
     "extension",
-    "gui"
+    "gui",
+    "e2e-tests"
   ],
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.1.1",
@@ -30,10 +31,7 @@
     "eslint-config-standard-with-typescript": "^34.0.0",
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "prettier": "^2.8.8",
-    "@wdio/local-runner": "^7.9.1",
-    "@wdio/mocha-framework": "^7.9.1",
-    "@wdio/spec-reporter": "^7.9.0"
+    "prettier": "^2.8.8"
   },
   "dependencies": {
     "@wdio/cli": "^8.12.2",

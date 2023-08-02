@@ -1,0 +1,13 @@
+{
+  "name": "@iron/e2e-tests",
+  "private": true,
+  "scripts": {
+    "setup": "yarn install && yarn extension:build",
+    "test": "wdio run wdio.conf.js"
+  },
+  "devDependencies": {
+    "@wdio/local-runner": "^7.9.1",
+    "@wdio/mocha-framework": "^7.9.1",
+    "@wdio/spec-reporter": "^7.9.0"
+  }
+}

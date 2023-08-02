@@ -6,13 +6,13 @@ const { spawn, spawnSync } = require("child_process");
 let tauriDriver;
 
 exports.config = {
-  specs: ["test/specs/**/*.js"],
+  specs: ["specs/**/*.js"],
   maxInstances: 1,
   capabilities: [
     {
       maxInstances: 1,
       "tauri:options": {
-        application: "target/release/iron",
+        application: "../target/debug/iron",
       },
     },
   ],
@@ -25,12 +25,12 @@ exports.config = {
 
   // ensure the rust project is built since we expect this binary to exist for
   // the webdriver sessions
-  // onPrepare: () => spawnSync("cargo", ["build", "--release"]),
+  onPrepare: () => spawnSync("cargo", ["build"]),
 
   // ensure we are running `tauri-driver` before the session starts so that we
   // can proxy the webdriver requests
   beforeSession: () =>
-    (tauriDriver = spawn("/usr/local/cargo/bin/tauri-driver", [], {
+    (tauriDriver = spawn("tauri-driver", [], {
       stdio: [null, process.stdout, process.stderr],
     })),
 
