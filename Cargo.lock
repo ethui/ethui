@@ -13,15 +13,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "addr2line"
-version = "0.19.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a76fd60b23679b7d19bd066031410fb7e458ccc5e958eb5c325888ce4baedc97"
-dependencies = [
- "gimli",
-]
-
-[[package]]
 name = "adler"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -350,21 +341,6 @@ name = "autocfg"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
-
-[[package]]
-name = "backtrace"
-version = "0.3.67"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "233d376d6d185f2a3093e58f283f60f880315b6c60075b01f36b3b85154564ca"
-dependencies = [
- "addr2line",
- "cc",
- "cfg-if",
- "libc",
- "miniz_oxide 0.6.2",
- "object",
- "rustc-demangle",
-]
 
 [[package]]
 name = "base16ct"
@@ -848,33 +824,6 @@ dependencies = [
  "sha2 0.10.6",
  "sha3",
  "thiserror",
-]
-
-[[package]]
-name = "color-eyre"
-version = "0.6.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5a667583cca8c4f8436db8de46ea8233c42a7d9ae424a82d338f2e4675229204"
-dependencies = [
- "backtrace",
- "color-spantrace",
- "eyre",
- "indenter",
- "once_cell",
- "owo-colors",
- "tracing-error",
-]
-
-[[package]]
-name = "color-spantrace"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1ba75b3d9449ecdccb27ecbc479fdc0b87fa2dd43d2f8298f9bf0e59aacc8dce"
-dependencies = [
- "once_cell",
- "owo-colors",
- "tracing-core",
- "tracing-error",
 ]
 
 [[package]]
@@ -1412,19 +1361,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "env_logger"
-version = "0.10.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "85cdab6a89accf66733ad5a1693a4dcced6aeff64602b634530dd73c1f3ee9f0"
-dependencies = [
- "humantime",
- "is-terminal",
- "log",
- "regex",
- "termcolor",
-]
-
-[[package]]
 name = "errno"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1869,7 +1805,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3b9429470923de8e8cbd4d2dc513535400b4b3fef0319fb5c4e1f520a7bef743"
 dependencies = [
  "crc32fast",
- "miniz_oxide 0.7.1",
+ "miniz_oxide",
 ]
 
 [[package]]
@@ -2228,12 +2164,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "gimli"
-version = "0.27.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ad0a93d233ebf96623465aad4046a8d3aa4da22d4f4beba5388838c8a434bbb4"
-
-[[package]]
 name = "gio"
 version = "0.15.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2580,12 +2510,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c4a1e36c821dbe04574f602848a19f742f4fb3c98d40449f11bcad18d6b17421"
 
 [[package]]
-name = "humantime"
-version = "2.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9a3a5bfb195931eeb336b2a7b4d761daec841b97f947d34394601737a7bba5e4"
-
-[[package]]
 name = "hyper"
 version = "0.14.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2823,43 +2747,288 @@ checksum = "12b6ee2129af8d4fb011108c73d99a1b83a85977f23b82460c0ae2e25bb4b57f"
 
 [[package]]
 name = "iron"
-version = "0.2.1"
+version = "0.4.1"
 dependencies = [
- "aead",
- "anyhow",
- "async-trait",
- "chacha20poly1305",
- "coins-bip32",
- "color-eyre",
- "enum_dispatch",
- "env_logger",
- "ethers",
- "eyre",
  "fix-path-env",
- "futures",
- "futures-util",
- "glob",
- "hex",
- "jsonrpc-core",
- "log",
- "notify",
- "once_cell",
- "regex",
- "rust-argon2",
- "secrets",
- "serde",
- "serde_json",
- "sqlx",
+ "iron-broadcast",
+ "iron-db",
+ "iron-dialogs",
+ "iron-forge",
+ "iron-networks",
+ "iron-rpc",
+ "iron-settings",
+ "iron-sync",
+ "iron-tracing",
+ "iron-types",
+ "iron-wallets",
+ "iron-ws",
  "tauri",
  "tauri-build",
  "tauri-plugin-window-state",
  "thiserror",
  "tokio",
+]
+
+[[package]]
+name = "iron-abis"
+version = "0.4.1"
+dependencies = [
+ "ethers",
+ "serde",
+]
+
+[[package]]
+name = "iron-broadcast"
+version = "0.4.1"
+dependencies = [
+ "iron-types",
+ "once_cell",
+ "tokio",
+ "url",
+]
+
+[[package]]
+name = "iron-crypto"
+version = "0.4.1"
+dependencies = [
+ "aead",
+ "anyhow",
+ "chacha20poly1305",
+ "ethers",
+ "rust-argon2",
+ "serde",
+ "serde_json",
+ "zeroize",
+]
+
+[[package]]
+name = "iron-db"
+version = "0.4.1"
+dependencies = [
+ "ethers",
+ "iron-types",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "tauri",
+ "thiserror",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "iron-dialogs"
+version = "0.4.1"
+dependencies = [
+ "iron-broadcast",
+ "iron-types",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
+name = "iron-forge"
+version = "0.4.1"
+dependencies = [
+ "ethers",
+ "futures",
+ "glob",
+ "iron-networks",
+ "iron-settings",
+ "iron-types",
+ "notify",
+ "once_cell",
+ "regex",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "iron-networks"
+version = "0.4.1"
+dependencies = [
+ "async-trait",
+ "ethers",
+ "iron-broadcast",
+ "iron-types",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+ "url",
+]
+
+[[package]]
+name = "iron-rpc"
+version = "0.4.1"
+dependencies = [
+ "enum_dispatch",
+ "ethers",
+ "futures-util",
+ "iron-db",
+ "iron-dialogs",
+ "iron-networks",
+ "iron-settings",
+ "iron-types",
+ "iron-wallets",
+ "jsonrpc-core",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "iron-settings"
+version = "0.4.1"
+dependencies = [
+ "async-trait",
+ "ethers",
+ "iron-types",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
+name = "iron-sync"
+version = "0.4.1"
+dependencies = [
+ "ethers",
+ "iron-broadcast",
+ "iron-db",
+ "iron-sync-alchemy",
+ "iron-sync-anvil",
+ "iron-types",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "iron-sync-alchemy"
+version = "0.4.1"
+dependencies = [
+ "async-trait",
+ "ethers",
+ "futures",
+ "iron-abis",
+ "iron-db",
+ "iron-settings",
+ "iron-types",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "iron-sync-anvil"
+version = "0.4.1"
+dependencies = [
+ "ethers",
+ "futures",
+ "futures-util",
+ "iron-abis",
+ "iron-broadcast",
+ "iron-db",
+ "iron-types",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "thiserror",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "iron-tracing"
+version = "0.4.1"
+dependencies = [
+ "thiserror",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "iron-types"
+version = "0.4.1"
+dependencies = [
+ "async-trait",
+ "ethers",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "iron-wallets"
+version = "0.4.1"
+dependencies = [
+ "async-trait",
+ "coins-bip32",
+ "enum_dispatch",
+ "ethers",
+ "futures",
+ "iron-broadcast",
+ "iron-crypto",
+ "iron-dialogs",
+ "iron-types",
+ "once_cell",
+ "secrets",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
+name = "iron-ws"
+version = "0.4.1"
+dependencies = [
+ "async-trait",
+ "ethers",
+ "futures-util",
+ "iron-broadcast",
+ "iron-rpc",
+ "iron-types",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
  "tokio-tungstenite",
+ "tracing",
  "tungstenite",
  "url",
- "urlencoding",
- "zeroize",
 ]
 
 [[package]]
@@ -3291,15 +3460,6 @@ checksum = "68354c5c6bd36d73ff3feceb05efa59b6acb7626617f4962be322a825e61f79a"
 
 [[package]]
 name = "miniz_oxide"
-version = "0.6.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b275950c28b37e794e8c55d88aeb5e139d0ce23fdbbeda68f8d7174abdf9e8fa"
-dependencies = [
- "adler",
-]
-
-[[package]]
-name = "miniz_oxide"
 version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e7810e0be55b428ada41041c41f32c9f1a42817901b4ccf45fa3d4b6561e74c7"
@@ -3573,15 +3733,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "object"
-version = "0.30.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ea86265d3d3dcb6a27fc51bd29a4bf387fae9d2986b823079d4986af253eb439"
-dependencies = [
- "memchr",
-]
-
-[[package]]
 name = "once_cell"
 version = "1.17.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3708,12 +3859,6 @@ name = "overload"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b15813163c1d831bf4a13c3610c05c0d03b39feb07f7e09fa234dac9b15aaf39"
-
-[[package]]
-name = "owo-colors"
-version = "3.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c1b04fb49957986fdce4d6ee7a65027d55d4b6d2265e5848bbb507b58ccfdb6f"
 
 [[package]]
 name = "pango"
@@ -4109,7 +4254,7 @@ dependencies = [
  "crc32fast",
  "fdeflate",
  "flate2",
- "miniz_oxide 0.7.1",
+ "miniz_oxide",
 ]
 
 [[package]]
@@ -4566,12 +4711,6 @@ dependencies = [
  "constant_time_eq 0.1.5",
  "crossbeam-utils",
 ]
-
-[[package]]
-name = "rustc-demangle"
-version = "0.1.23"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d626bb9dae77e28219937af045c257c28bfd3f69333c512553507f5f9798cb76"
 
 [[package]]
 name = "rustc-hex"
@@ -5778,15 +5917,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "termcolor"
-version = "1.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "be55cf8942feac5c765c2c993422806843c9a9a45d4d5c407ad6dd2ea95eb9b6"
-dependencies = [
- "winapi-util",
-]
-
-[[package]]
 name = "thin-slice"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6033,16 +6163,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tracing-error"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d686ec1c0f384b1277f097b2f279a2ecc11afe8c133c1aabf036a27cb4cd206e"
-dependencies = [
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
 name = "tracing-futures"
 version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6211,12 +6331,6 @@ dependencies = [
  "percent-encoding",
  "serde",
 ]
-
-[[package]]
-name = "urlencoding"
-version = "2.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e8db7427f936968176eaa7cdf81b7f98b980b18495ec28f1b5791ac3bfe3eea9"
 
 [[package]]
 name = "utf-8"

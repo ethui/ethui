@@ -17,6 +17,10 @@ A developer's crypto wallet. Check out the [announcement blog post][announcement
     <img src="./screenshot.png" width=70%>
 </>
 
+## Status
+
+The project is ready for development purposes. We **do not recommend usage for ongoing mainnet activity**, unless you really know what you're doing.
+
 ## Features / Roadmap
 
 - [x] **Metamask drop-in replacement**

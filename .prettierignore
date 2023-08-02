@@ -1,4 +1,7 @@
 gui/dist
+gui/vite.config.ts.timestamp-*
 extension/dist
-extension/parcel-bundle-reports
+extension/scripts/start.js
+extension/wdio.e2e.conf.ts
+node_modules
 target

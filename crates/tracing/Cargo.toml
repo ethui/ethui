@@ -1,0 +1,15 @@
+[package]
+name = "iron-tracing"
+version.workspace = true
+edition.workspace = true
+license-file.workspace = true
+homepage.workspace = true
+repository.workspace = true
+exclude.workspace = true
+authors.workspace = true
+
+[dependencies]
+tracing = { workspace = true }
+thiserror = { workspace = true }
+
+tracing-subscriber = "0.3"
