@@ -49,7 +49,7 @@ impl WalletControl for Impersonator {
     }
 
     async fn get_current_address(&self) -> ChecksummedAddress {
-        self.addresses[self.current].clone()
+        self.addresses[self.current]
     }
 
     fn get_current_path(&self) -> String {
@@ -62,10 +62,7 @@ impl WalletControl for Impersonator {
     }
 
     async fn get_all_addresses(&self) -> Vec<(String, ChecksummedAddress)> {
-        self.addresses
-            .iter()
-            .map(|v| (v.to_string(), v.clone()))
-            .collect()
+        self.addresses.iter().map(|v| (v.to_string(), *v)).collect()
     }
 
     async fn build_signer(

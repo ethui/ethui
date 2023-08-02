@@ -1,4 +1,4 @@
-import { Badge, Box, Stack, Typography } from "@mui/material";
+import { Badge, Stack, Typography } from "@mui/material";
 import { groupBy, map } from "lodash-es";
 
 import { useInvoke, useRefreshPeers } from "../hooks";
