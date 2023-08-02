@@ -93,7 +93,6 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "stream": "^0.0.2",
-    "stream-browserify": "^3.0.0",
     "webextension-polyfill": "^0.10.0",
     "websocket-stream": "^5.5.2",
     "websocket-ts": "^1.1.1"
