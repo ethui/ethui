@@ -4,9 +4,11 @@ mod types;
 mod utils;
 use std::{collections::HashMap, time::Duration};
 
-use ethers::core::types::{Address, U256};
-use ethers::providers::{
-    Http, HttpRateLimitRetryPolicy, Middleware, Provider, RetryClient, RetryClientBuilder,
+use ethers::{
+    core::types::{Address, U256},
+    providers::{
+        Http, HttpRateLimitRetryPolicy, Middleware, Provider, RetryClient, RetryClientBuilder,
+    },
 };
 use futures::{stream, StreamExt};
 pub use init::init;

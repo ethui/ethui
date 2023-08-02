@@ -1,14 +1,18 @@
-use std::collections::{HashMap, HashSet};
-use std::sync::Arc;
+use std::{
+    collections::{HashMap, HashSet},
+    sync::Arc,
+};
 
 use iron_broadcast::InternalMsg;
 use iron_db::DB;
 use iron_sync_alchemy::Alchemy;
 use iron_types::{ChecksummedAddress, GlobalState, UINotify};
-use tokio::select;
-use tokio::sync::{mpsc, Mutex};
-use tokio::task::JoinHandle;
-use tokio::time::{sleep, Duration};
+use tokio::{
+    select,
+    sync::{mpsc, Mutex},
+    task::JoinHandle,
+    time::{sleep, Duration},
+};
 use tracing::{error, instrument};
 
 pub async fn init(db: DB) {

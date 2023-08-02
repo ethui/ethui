@@ -1,6 +1,5 @@
 pub use internal_msgs::*;
-use iron_types::ui_events;
-use iron_types::ChecksummedAddress;
+use iron_types::{ui_events, ChecksummedAddress};
 use once_cell::sync::Lazy;
 use tokio::sync::{broadcast, RwLock};
 pub use ui_msgs::*;

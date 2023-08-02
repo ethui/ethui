@@ -1,9 +1,13 @@
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
-use std::sync::Arc;
+use std::{
+    collections::hash_map::DefaultHasher,
+    hash::{Hash, Hasher},
+    sync::Arc,
+};
 
-use iron_types::ui_events::{DialogClose, DialogOpen, DialogSend};
-use iron_types::Json;
+use iron_types::{
+    ui_events::{DialogClose, DialogOpen, DialogSend},
+    Json,
+};
 use tokio::sync::{mpsc, RwLock, RwLockReadGuard};
 
 use super::{global::OPEN_DIALOGS, presets, Result};

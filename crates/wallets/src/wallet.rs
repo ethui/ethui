@@ -4,8 +4,7 @@ use ethers::core::k256::ecdsa::SigningKey;
 use iron_types::{ChecksummedAddress, Json};
 use serde::{Deserialize, Serialize};
 
-use super::hd_wallet::HDWallet;
-use super::{Error, JsonKeystoreWallet, PlaintextWallet, Result};
+use super::{hd_wallet::HDWallet, Error, JsonKeystoreWallet, PlaintextWallet, Result};
 
 #[async_trait]
 #[enum_dispatch(Wallet)]

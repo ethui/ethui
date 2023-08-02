@@ -1,8 +1,7 @@
 mod error;
 
 pub use error::{TracingError, TracingResult};
-use tracing_subscriber::fmt::format::FmtSpan;
-use tracing_subscriber::EnvFilter;
+use tracing_subscriber::{fmt::format::FmtSpan, EnvFilter};
 
 pub fn init() -> TracingResult<()> {
     let subscriber = tracing_subscriber::FmtSubscriber::builder()

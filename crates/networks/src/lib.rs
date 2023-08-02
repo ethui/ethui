@@ -3,9 +3,8 @@ mod error;
 mod init;
 mod network;
 
-use std::collections::HashSet;
 use std::{
-    collections::HashMap,
+    collections::{HashMap, HashSet},
     fs::File,
     path::{Path, PathBuf},
 };
@@ -15,8 +14,10 @@ pub use init::init;
 use iron_types::UINotify;
 use serde::Serialize;
 
-pub use self::error::{Error, Result};
-pub use self::network::Network;
+pub use self::{
+    error::{Error, Result},
+    network::Network,
+};
 
 #[derive(Debug, Clone, Serialize)]
 pub struct Networks {

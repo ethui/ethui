@@ -2,8 +2,7 @@ use std::str::FromStr;
 
 use ethers::types::{Address, Bytes, H256, U256};
 use serde::Serialize;
-use sqlx::sqlite::SqliteRow;
-use sqlx::Row;
+use sqlx::{sqlite::SqliteRow, Row};
 
 #[derive(Debug)]
 pub enum Event {

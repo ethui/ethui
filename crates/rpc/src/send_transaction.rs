@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
-use ethers::core::k256::ecdsa::SigningKey;
 use ethers::{
+    core::k256::ecdsa::SigningKey,
     prelude::*,
     signers,
     types::{serde_helpers::StringifiedNumeric, transaction::eip2718::TypedTransaction},
