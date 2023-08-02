@@ -44,7 +44,13 @@ static NETWORKS: Lazy<HashMap<u32, Network>> = Lazy::new(|| {
         },
     );
 
-    // TODO: add sepolia
+    map.insert(
+        11155111,
+        Network {
+            base_url: Url::parse("https://eth-sepolia.g.alchemy.com/v2/").unwrap(),
+            default_from_block: 3000000, // May 1st 2023
+        },
+    );
 
     map
 });
