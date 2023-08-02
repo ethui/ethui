@@ -308,8 +308,8 @@ impl DB {
         Ok(res)
     }
 
-    pub async fn get_tip(&self, chain_id: u32, address: Address) -> Result<u64> {
-        let tip = queries::get_tip(address, chain_id)
+    pub async fn get_tip(&self, chain_id: u32, addr: Address) -> Result<u64> {
+        let tip = queries::get_tip(addr, chain_id)
             .fetch_one(self.pool())
             .await
             .unwrap_or_default();
@@ -317,8 +317,9 @@ impl DB {
         Ok(tip)
     }
 
-    pub async fn set_tip(&self, chain_id: u32, address: Address, tip: u64) -> Result<()> {
-        queries::set_tip(address, chain_id, tip)
+    #[instrument(skip(self), level = "trace")]
+    pub async fn set_tip(&self, chain_id: u32, addr: Address, tip: u64) -> Result<()> {
+        queries::set_tip(addr, chain_id, tip)
             .execute(self.pool())
             .await?;
 

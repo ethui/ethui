@@ -29,6 +29,7 @@ async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Result<Vec<Eve
         .get_transaction_receipt(hash)
         .await?
         .ok_or(Error::TxNotFound(hash))?;
+    let block_number = trace.block_number;
 
     let res = match (
         trace.action.clone(),
@@ -44,18 +45,19 @@ async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Result<Vec<Eve
             vec![
                 Tx {
                     hash: trace.transaction_hash.unwrap(),
-                    block_number: trace.block_number,
                     position: trace.transaction_position,
                     from,
                     to: None,
                     value,
                     data: Bytes::new(),
                     status: receipt.status.unwrap().as_u64(),
+                    block_number,
                 }
                 .into(),
                 ContractDeployed {
                     address,
                     code: provider.get_code(address, None).await.ok(),
+                    block_number,
                 }
                 .into(),
             ]
@@ -77,13 +79,13 @@ async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Result<Vec<Eve
             0,
         ) => vec![Tx {
             hash: trace.transaction_hash.unwrap(),
-            block_number: trace.block_number,
             position: trace.transaction_position,
             from,
             to: Some(to),
             value,
             data: input,
             status: receipt.status.unwrap().as_u64(),
+            block_number,
         }
         .into()],
 
@@ -95,6 +97,7 @@ async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Result<Vec<Eve
 
 fn expand_log(log: Log) -> Option<Event> {
     let raw = RawLog::from((log.topics, log.data.to_vec()));
+    let block_number = log.block_number?.as_u64();
 
     use iron_abis::{
         ierc20::{self, IERC20Events},
@@ -111,6 +114,7 @@ fn expand_log(log: Log) -> Option<Event> {
                 to,
                 value,
                 contract: log.address,
+                block_number,
             }
             .into(),
         );
@@ -126,6 +130,7 @@ fn expand_log(log: Log) -> Option<Event> {
                 to,
                 token_id,
                 contract: log.address,
+                block_number,
             }
             .into(),
         );

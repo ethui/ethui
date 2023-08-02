@@ -71,7 +71,7 @@ impl WalletControl for HDWallet {
     }
 
     async fn get_current_address(&self) -> ChecksummedAddress {
-        self.current.1.clone()
+        self.current.1
     }
 
     fn get_current_path(&self) -> String {

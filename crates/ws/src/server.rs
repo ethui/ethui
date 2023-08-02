@@ -48,9 +48,9 @@ async fn accept_connection(socket: SocketAddr, stream: TcpStream) {
 
     let peer = Peer::new(socket, snd, &query_params);
 
-    Peers::write().await.add_peer(peer);
+    Peers::write().await.add_peer(peer).await;
     let err = handle_connection(ws_stream, rcv).await;
-    Peers::write().await.remove_peer(socket);
+    Peers::write().await.remove_peer(socket).await;
 
     if let Err(e) = err {
         match e {
