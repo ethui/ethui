@@ -14,6 +14,7 @@ module.exports = {
     "gui/dist/*",
     "extension/provider-inpage/*",
     "target/*",
+    "e2e-tests/*.js",
   ],
   settings: {
     react: {
