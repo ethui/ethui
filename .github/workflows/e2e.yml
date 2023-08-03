@@ -21,17 +21,17 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Tauri dependencies
-        run: >-
+        run: >
           sudo apt-get update &&
           sudo apt-get install -y
           libgtk-3-dev
-          libayatana-appindicator3-dev
-          libwebkit2gtk-4.0-dev
+          libgtksourceview-3.0-dev
+          webkit2gtk-4.0
+          libappindicator3-dev
           webkit2gtk-driver
           xvfb
 
-      - name: Rust stable
-        uses: actions-rs/toolchain@v1
+      - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           override: true
@@ -43,8 +43,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           cache: "yarn"
-
-      - run: yarn install
+          node-version: 18.x
 
       - name: Install tauri-driver
         uses: actions-rs/cargo@v1
@@ -52,5 +51,6 @@ jobs:
           command: install
           args: tauri-driver
 
-      - name: WebdriverIO
-        run: xvfb-run yarn workspace @iron/e2e-tests test
+      - run: yarn install
+      - run: yarn run tauri build
+      - run: xvfb-run yarn workspace @iron/e2e-tests test

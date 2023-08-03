@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn extension:build",
-    "test": "wdio run wdio.conf.js"
+    "test": "wdio run wdio.config.js"
   },
   "devDependencies": {
     "@wdio/local-runner": "^8.14.3",
