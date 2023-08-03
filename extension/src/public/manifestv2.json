@@ -26,7 +26,7 @@
   "web_accessible_resources": [
     {
       "matches": ["<all_urls>"],
-      "resources": ["inpage.ts"]
+      "resources": ["/inpage/inpage.js"]
     }
   ],
   "permissions": ["scripting", "storage"],
