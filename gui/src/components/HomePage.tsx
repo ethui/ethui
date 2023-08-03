@@ -15,13 +15,14 @@ export function HomePage() {
       <Sidebar>
         <Container
           // sx={{ pl: `${DRAWER_WIDTH_MD}px` }}
+          sx={{ m: 0 }}
           disableGutters
           maxWidth="md"
         >
           <NestedRoutes base="/">
             <Switch>
               {TABS.map((tab) => (
-                <Route key={tab.path || "/"} path={tab.path}>
+                <Route key={tab.path} path={tab.path}>
                   <LivenetPlaceholder devOnly={tab.devOnly}>
                     <tab.component />
                   </LivenetPlaceholder>

@@ -1,20 +1,61 @@
-import { Box, Divider, Stack } from "@mui/material";
-
-import { useWallets } from "../store";
-import { AddressView, BalancesList } from "./";
+import {
+  Box,
+  Card,
+  CardActions,
+  CardContent,
+  IconButton,
+  Typography,
+} from "@mui/material";
+import { useTheme, useWallets } from "../store";
+import { AddressView, BalancesList, Panel } from "./";
+import { ContentCopySharp } from "@mui/icons-material";
 
 export function Balances() {
+  const { theme } = useTheme();
   const address = useWallets((s) => s.address);
 
   if (!address) return null;
 
   return (
-    <Stack direction="column" justifyContent="center" spacing={1}>
-      <Box alignSelf="center">
-        <AddressView address={address} />
+    <Panel>
+      <Typography fontSize={32} mb={2}>
+        Balances
+      </Typography>
+
+      <Box
+        display="flex"
+        flexDirection="row-reverse"
+        alignItems="flex-start"
+        justifyContent="flex-end"
+        rowGap={1}
+        columnGap={2}
+        sx={{
+          [theme.breakpoints.down("sm")]: {
+            flexDirection: "column",
+          },
+        }}
+      >
+        <Card sx={{ width: "fit-content" }}>
+          <CardContent sx={{ pb: 0 }}>
+            <Typography
+              textTransform="uppercase"
+              fontSize={12}
+              color="text.secondary"
+            >
+              Account
+            </Typography>
+            <Typography>
+              <AddressView address={address} />
+            </Typography>
+          </CardContent>
+          <CardActions disableSpacing>
+            <IconButton>
+              <ContentCopySharp fontSize="small" />
+            </IconButton>
+          </CardActions>
+        </Card>
+        <BalancesList />
       </Box>
-      <Divider />
-      <BalancesList />
-    </Stack>
+    </Panel>
   );
 }

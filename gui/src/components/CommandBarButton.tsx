@@ -1,18 +1,19 @@
-import Settings from "@mui/icons-material/SettingsSharp";
+import TerminalSharpIcon from "@mui/icons-material/TerminalSharp";
 import { Button, IconButton } from "@mui/material";
-import { useState } from "react";
+import { useKBar } from "kbar";
 
-import { Modal, Settings as SettingsPage } from "./";
 import { useTheme } from "../store";
 
-export function SettingsButton() {
-  const [showSettings, setShowSettings] = useState(false);
+export function CommandBarButton() {
+  const kbar = useKBar();
   const { theme } = useTheme();
+
+  const handleClick = () => kbar.query.toggle();
 
   return (
     <>
       <IconButton
-        onClick={() => setShowSettings(true)}
+        onClick={handleClick}
         color="inherit"
         sx={{
           height: 40,
@@ -23,14 +24,14 @@ export function SettingsButton() {
           },
         }}
       >
-        <Settings />
+        <TerminalSharpIcon />
       </IconButton>
 
       <Button
         color="inherit"
         fullWidth
-        startIcon={<Settings />}
-        onClick={() => setShowSettings(true)}
+        startIcon={<TerminalSharpIcon />}
+        onClick={handleClick}
         sx={{
           justifyContent: "flex-start",
           [theme.breakpoints.down("md")]: {
@@ -38,19 +39,8 @@ export function SettingsButton() {
           },
         }}
       >
-        Settings
+        Command Bar
       </Button>
-
-      <Modal
-        open={showSettings}
-        onClose={() => setShowSettings(false)}
-        sx={{
-          width: "80%",
-          height: "80%",
-        }}
-      >
-        <SettingsPage />
-      </Modal>
     </>
   );
 }

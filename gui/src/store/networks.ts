@@ -52,6 +52,7 @@ const store: StateCreator<Store> = (set, get) => ({
     const current = await invoke<Network>("networks_get_current");
     const networks = await invoke<Network[]>("networks_get_list");
     set({ networks, current });
+    get().reloadActions();
   },
 
   async reloadActions() {

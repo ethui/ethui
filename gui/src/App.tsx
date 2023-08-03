@@ -49,11 +49,11 @@ function Routes() {
         <Route path="/dialog/wallet-unlock/:id">
           {({ id }: { id: string }) => <WalletUnlockDialog id={parseInt(id)} />}
         </Route>
-
         <Route>
-          <Navbar />
-          <HomePage />
-          <CommandBar />
+          <CommandBar>
+            <Navbar />
+            <HomePage />
+          </CommandBar>
         </Route>
       </Switch>
     </Router>

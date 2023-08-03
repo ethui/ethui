@@ -4,7 +4,6 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
-  Stack,
 } from "@mui/material";
 import truncateEthAddress from "truncate-eth-address";
 import { Address, formatUnits } from "viem";
@@ -12,18 +11,14 @@ import { Address, formatUnits } from "viem";
 import { useInvoke } from "../hooks";
 import { useBalances, useNetworks } from "../store";
 import { GeneralSettings } from "../types";
-import { CopyToClipboard, IconCrypto, Panel } from "./";
+import { CopyToClipboard, IconCrypto } from "./";
 
 export function BalancesList() {
   return (
-    <Panel>
-      <Stack>
-        <List>
-          <BalanceETH />
-          <BalancesERC20 />
-        </List>
-      </Stack>
-    </Panel>
+    <List>
+      <BalanceETH />
+      <BalancesERC20 />
+    </List>
   );
 }
 

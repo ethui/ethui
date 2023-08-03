@@ -1,18 +1,10 @@
-import {
-  Box,
-  Drawer,
-  Grid,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-} from "@mui/material";
+import { Box, Button, Drawer, IconButton, Stack } from "@mui/material";
 import { findIndex } from "lodash-es";
 import { Link, useLocation, useRoute } from "wouter";
-import ArrowOutwardSharpIcon from "@mui/icons-material/ArrowOutwardSharp";
 import RequestQuoteSharpIcon from "@mui/icons-material/RequestQuoteSharp";
 import TerminalSharpIcon from "@mui/icons-material/TerminalSharp";
 import OnlinePredictionSharpIcon from "@mui/icons-material/OnlinePredictionSharp";
+import ReceiptIcon from "@mui/icons-material/Receipt";
 import { parseInt, range, toString } from "lodash-es";
 
 import { useKeyPress, useMenuAction } from "../hooks";
@@ -31,6 +23,8 @@ import { Logo } from "./Logo";
 import { SettingsButton } from "./SettingsButton";
 import { ReactNode } from "react";
 import { useTheme } from "../store";
+import { CommandBarButton } from "./CommandBarButton";
+import { grey } from "@mui/material/colors";
 
 export const TABS = [
   {
@@ -43,7 +37,7 @@ export const TABS = [
     path: "transactions",
     name: "Transactions",
     component: Txs,
-    icon: ArrowOutwardSharpIcon,
+    icon: ReceiptIcon,
   },
   {
     path: "contracts",
@@ -91,10 +85,7 @@ export function Sidebar({ children }: { children: ReactNode }) {
       <Drawer
         PaperProps={{
           variant: "lighter",
-        }}
-        sx={{
-          flexShrink: 0,
-          "& .MuiDrawer-paper": {
+          sx: {
             width: WIDTH_MD,
             [theme.breakpoints.down("md")]: {
               width: WIDTH_SM,
@@ -102,6 +93,7 @@ export function Sidebar({ children }: { children: ReactNode }) {
             },
           },
         }}
+        sx={{ flexShrink: 0 }}
         variant="permanent"
       >
         <Box
@@ -117,77 +109,42 @@ export function Sidebar({ children }: { children: ReactNode }) {
           <Box flexShrink={0} sx={{ px: 2, pt: 6 }}>
             <Logo width={40} />
           </Box>
-          <List sx={{ flexGrow: 1 }}>
+          <Stack p={2} rowGap={1} flexGrow={1}>
             {TABS.map((tab, index) => (
-              <ListItemButton
+              <SidebarTab
+                key={index}
+                tab={tab}
                 selected={
                   index === Math.max(findIndex(TABS, { path: params?.path }), 0)
                 }
-                LinkComponent={Link}
-                href={tab.path}
-                key={tab.path}
-                sx={{
-                  minHeight: 50,
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    [theme.breakpoints.down("md")]: {
-                      justifyContent: "center",
-                    },
-                  }}
-                >
-                  <tab.icon fontSize="medium" />
-                </ListItemIcon>
-                <ListItemText
-                  sx={{
-                    [theme.breakpoints.down("md")]: {
-                      display: "none",
-                    },
-                  }}
-                >
-                  {tab.name}
-                </ListItemText>
-              </ListItemButton>
+              />
             ))}
-          </List>
-          <Grid
-            container
-            spacing={2}
-            justifyContent="center"
-            flexDirection="column"
-            alignItems="stretch"
+          </Stack>
+          <Stack
+            rowGap={1}
+            p={2}
             sx={{
               [theme.breakpoints.down("md")]: {
                 display: "none",
               },
             }}
-            p={2}
           >
-            <Grid item>
-              <QuickWalletSelect />
-            </Grid>
-            <Grid item>
-              <QuickAddressSelect />
-            </Grid>
-            <Grid item>
-              <QuickNetworkSelect />
-            </Grid>
-            <Grid item></Grid>
-          </Grid>
-          <Box
+            <QuickWalletSelect />
+            <QuickAddressSelect />
+            <QuickNetworkSelect />
+          </Stack>
+          <Stack
             p={2}
-            alignSelf="stretch"
-            display="flex"
-            justifyContent="flex-start"
+            rowGap={1}
             sx={{
               [theme.breakpoints.down("md")]: {
                 justifyContent: "center",
               },
             }}
           >
+            <CommandBarButton />
             <SettingsButton />
-          </Box>
+          </Stack>
         </Box>
       </Drawer>
       <Box
@@ -201,5 +158,61 @@ export function Sidebar({ children }: { children: ReactNode }) {
         {children}
       </Box>
     </Box>
+  );
+}
+
+function SidebarTab({
+  tab,
+  selected,
+}: {
+  tab: (typeof TABS)[number];
+  selected: boolean;
+}) {
+  const { theme } = useTheme();
+  const backgroundColor = theme.palette.mode === "dark" ? 800 : 200;
+
+  return (
+    <>
+      <IconButton
+        LinkComponent={Link}
+        href={tab.path}
+        disabled={selected}
+        color="inherit"
+        size="small"
+        sx={{
+          display: "none",
+          height: 40,
+          width: 40,
+          [theme.breakpoints.down("md")]: {
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          },
+          "&.Mui-disabled": {
+            backgroundColor: grey[backgroundColor],
+          },
+        }}
+      >
+        <tab.icon fontSize="medium" />
+      </IconButton>
+      <Button
+        color="inherit"
+        disabled={selected}
+        startIcon={<tab.icon fontSize="medium" />}
+        LinkComponent={Link}
+        href={tab.path}
+        sx={{
+          justifyContent: "flex-start",
+          [theme.breakpoints.down("md")]: {
+            display: "none",
+          },
+          "&.Mui-disabled": {
+            backgroundColor: grey[backgroundColor],
+          },
+        }}
+      >
+        {tab.name}
+      </Button>
+    </>
   );
 }

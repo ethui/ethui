@@ -47,7 +47,7 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "iron",
+        "title": "",
         "width": 1200,
         "height": 800,
         "titleBarStyle": "Overlay"

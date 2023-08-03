@@ -1,10 +1,10 @@
-import { PaletteMode, Theme, createTheme } from "@mui/material";
+import { PaletteMode, Theme, ThemeOptions, createTheme } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Action } from "kbar";
 import { StateCreator, create } from "zustand";
+import { grey } from "@mui/material/colors";
 
 import { GeneralSettings } from "../types";
-import { grey } from "@mui/material/colors";
 
 interface Store {
   mode: "auto" | "light" | "dark";
@@ -25,7 +25,6 @@ const store: StateCreator<Store> = (set, get) => ({
     {
       id: actionId,
       name: "Change theme mode",
-      section: "",
     },
     ...(["auto", "dark", "light"] as const).map((mode) => ({
       id: `${actionId}/${mode}`,
@@ -61,19 +60,12 @@ export const useTheme = create<Store>()(store);
   await useTheme.getState().reload();
 })();
 
-function getDesignTokens(mode: PaletteMode) {
+function getDesignTokens(mode: PaletteMode): ThemeOptions {
   const light = mode === "light";
 
   return {
     palette: {
       mode,
-      ...(light
-        ? {
-            background: {},
-          }
-        : {
-            background: {},
-          }),
     },
     components: {
       MuiPaper: {
