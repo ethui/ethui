@@ -1,7 +1,7 @@
 // keep track of the `tauri-driver` child process
 let tauriDriver;
 
-const config = {
+export const config = {
   specs: ["specs/**/*.js"],
   maxInstances: 1,
   capabilities: [
