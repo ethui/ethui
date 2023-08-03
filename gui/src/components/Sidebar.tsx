@@ -2,7 +2,6 @@ import { Box, Button, Drawer, IconButton, Stack } from "@mui/material";
 import { findIndex } from "lodash-es";
 import { Link, useLocation, useRoute } from "wouter";
 import RequestQuoteSharpIcon from "@mui/icons-material/RequestQuoteSharp";
-import TerminalSharpIcon from "@mui/icons-material/TerminalSharp";
 import OnlinePredictionSharpIcon from "@mui/icons-material/OnlinePredictionSharp";
 import CallToActionIcon from "@mui/icons-material/CallToAction";
 import ReceiptIcon from "@mui/icons-material/Receipt";
