@@ -1,3 +1,4 @@
+import { ContentCopySharp } from "@mui/icons-material";
 import {
   Box,
   Card,
@@ -6,9 +7,9 @@ import {
   IconButton,
   Typography,
 } from "@mui/material";
+
 import { useTheme, useWallets } from "../store";
 import { AddressView, BalancesList, Panel } from "./";
-import { ContentCopySharp } from "@mui/icons-material";
 
 export function Balances() {
   const { theme } = useTheme();

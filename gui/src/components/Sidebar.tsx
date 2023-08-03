@@ -1,14 +1,16 @@
-import { Box, Button, Drawer, IconButton, Stack } from "@mui/material";
-import { findIndex } from "lodash-es";
-import { Link, useLocation, useRoute } from "wouter";
-import RequestQuoteSharpIcon from "@mui/icons-material/RequestQuoteSharp";
-import OnlinePredictionSharpIcon from "@mui/icons-material/OnlinePredictionSharp";
 import CallToActionIcon from "@mui/icons-material/CallToAction";
+import OnlinePredictionSharpIcon from "@mui/icons-material/OnlinePredictionSharp";
 import ReceiptIcon from "@mui/icons-material/Receipt";
+import RequestQuoteSharpIcon from "@mui/icons-material/RequestQuoteSharp";
+import { Box, Button, Drawer, IconButton, Stack } from "@mui/material";
+import { grey } from "@mui/material/colors";
+import { findIndex } from "lodash-es";
 import { parseInt, range, toString } from "lodash-es";
+import { ReactNode } from "react";
+import { Link, useLocation, useRoute } from "wouter";
 
 import { useKeyPress, useMenuAction } from "../hooks";
-
+import { useTheme } from "../store";
 import {
   Balances,
   Contracts,
@@ -18,13 +20,9 @@ import {
   QuickWalletSelect,
   Txs,
 } from "./";
-
+import { CommandBarButton } from "./CommandBarButton";
 import { Logo } from "./Logo";
 import { SettingsButton } from "./SettingsButton";
-import { ReactNode } from "react";
-import { useTheme } from "../store";
-import { CommandBarButton } from "./CommandBarButton";
-import { grey } from "@mui/material/colors";
 
 export const TABS = [
   {

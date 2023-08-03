@@ -2,8 +2,8 @@ import Settings from "@mui/icons-material/SettingsSharp";
 import { Button, IconButton } from "@mui/material";
 import { useState } from "react";
 
-import { Modal, Settings as SettingsPage } from "./";
 import { useTheme } from "../store";
+import { Modal, Settings as SettingsPage } from "./";
 
 export function SettingsButton() {
   const [showSettings, setShowSettings] = useState(false);

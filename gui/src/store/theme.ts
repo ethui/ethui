@@ -1,8 +1,8 @@
 import { PaletteMode, Theme, ThemeOptions, createTheme } from "@mui/material";
+import { grey } from "@mui/material/colors";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Action } from "kbar";
 import { StateCreator, create } from "zustand";
-import { grey } from "@mui/material/colors";
 
 import { GeneralSettings } from "../types";
 
