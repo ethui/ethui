@@ -39,3 +39,10 @@ send-eth:
     --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 \
     --rpc-url http://localhost:8545
 
+docker:
+  docker run -e XDG_RUNTIME_DIR=/tmp \
+    -it \
+    -e WAYLAND_DISPLAY=$WAYLAND_DISPLAY \
+    -v $XDG_RUNTIME_DIR/$WAYLAND_DISPLAY:/tmp/$WAYLAND_DISPLAY  \
+    e2e /bin/bash
+
