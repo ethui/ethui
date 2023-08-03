@@ -8,8 +8,13 @@ on: # rebuild any PRs and main branch changes
   pull_request:
     types: [opened, synchronize]
     paths-ignore:
+      - "./e2e-tests/**"
+      - "./bin/**"
+      - "./crates/**"
       - "./gui/**"
+      - "./migrations/**"
       - "*.md"
+      - "*.toml"
       - "LICENSE"
 
 concurrency:
