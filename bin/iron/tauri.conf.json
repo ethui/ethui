@@ -3,7 +3,7 @@
     "beforeDevCommand": "yarn workspace @iron/gui dev",
     "beforeBuildCommand": "yarn workspace @iron/gui build",
     "devPath": "http://localhost:1420",
-    "distDir": "dist",
+    "distDir": "../../gui/dist",
     "withGlobalTauri": false
   },
   "package": {

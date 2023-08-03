@@ -25,6 +25,8 @@ exports.config = {
     timeout: 60000,
   },
 
+  onPrepare: () => spawnSync("cargo", ["build", "--release"]),
+
   // ensure we are running `tauri-driver` before the session starts so that we
   // can proxy the webdriver requests
   // beforeSession: () =>
