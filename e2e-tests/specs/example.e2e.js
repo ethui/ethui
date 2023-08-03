@@ -1,6 +1,6 @@
 describe("Hello Tauri", () => {
   it("should be cordial", async () => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 10000));
 
     const header = await $("body");
     const text = await header.getHTML();

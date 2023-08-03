@@ -17,8 +17,7 @@
   },
   "workspaces": [
     "extension",
-    "gui",
-    "e2e-tests"
+    "gui"
   ],
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.1.1",
