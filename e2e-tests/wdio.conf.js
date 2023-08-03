@@ -1,3 +1,5 @@
+import { spawn, spawnSync } from "child_process";
+
 // keep track of the `tauri-driver` child process
 let tauriDriver;
 
