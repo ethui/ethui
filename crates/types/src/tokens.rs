@@ -58,7 +58,7 @@ impl TryFrom<SqliteRow> for Erc721Token {
       Ok(Self {
           contract: Address::from_str(row.get("contract")).unwrap().into(),
           token_id: U256::from_str_radix(row.get("token_id"), 10).unwrap(),
-          owner: Address::from_str(row.get("owner")).unwrap().into(),,
+          owner: Address::from_str(row.get("owner")).unwrap().into(),
       })
   }
 }

@@ -309,6 +309,7 @@ impl DB {
     }
 
     pub async fn get_erc721_tokens(&self, chain_id: u32) -> Result<Vec<Erc721Token>> {
+      // po-todo: filter by owner
       let res: Vec<_> = sqlx::query(
         r#" SELECT * 
         FROM nft_tokens
@@ -318,6 +319,8 @@ impl DB {
       .map(|row| row.try_into().unwrap())
       .fetch_all(self.pool())
       .await?;
+
+      tracing::warn!("get_erc721_tokens: {:?}", res);
 
       Ok(res)
     }

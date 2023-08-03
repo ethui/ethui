@@ -10,6 +10,7 @@ import React, { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 
 import { useNetworks, useWallets } from "../store";
+import { useErc721 } from "../store/erc721";
 import { Address, NftToken, Paginated, Pagination } from "../types";
 import { Modal, NftDetailsView } from "./";
 import { AddressView } from "./AddressView";
@@ -29,68 +30,26 @@ export function Nfts() {
   const [currentNftDetails, setCurrentNftDetails] = useState<
     NftToken | undefined
   >(undefined);
-  const [pages, setPages] = useState<Paginated<NftToken>[]>([]);
 
-  const loadMore = () => {
-    let pagination: Pagination = {};
-    const last = pages?.at(-1)?.pagination;
-    if (!!last) {
-      pagination = last;
-      pagination.page = (pagination.page || 0) + 1;
-    }
-
-    invoke<NftToken>("db_get_erc721_tokens", {
-      chainId,
-    }).then((page) => {
-      // setPages([...pages, page]); // todo: fix this
-      console.log("debug >>>", pages);
-    });
-  };
-
-  useEffect(() => {
-    if (pages.length == 0) loadMore();
-  }, [pages]);
-
-  const reload = () => {
-    setPages([]);
-  };
-
-  const loader = (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-      }}
-      key="loader"
-    >
-      <CircularProgress />
-    </Box>
-  );
+  const nftsList = useErc721((s) => s.erc721Tokens);
 
   return (
     <Panel>
-      <InfiniteScroll
-        loadMore={loadMore}
-        hasMore={!pages.at(-1)?.last}
-        loader={loader}
-      >
-        <ImageList cols={3} gap={10}>
-          {pages.flatMap((page) =>
-            page.items.map((nft) => {
-              return (
-                <NftGalleryItem
-                  key={nft.hash}
-                  contract={nft.hash}
-                  clickHandler={() => {
-                    setCurrentNftDetails(nft);
-                  }}
-                  imgSrc={undefined} //nft?.imgSrc}
-                />
-              );
-            })
-          )}
-        </ImageList>
-      </InfiniteScroll>
+      <ImageList cols={3} gap={10}>
+        {nftsList.map((nft) => {
+          return (
+            <NftGalleryItem
+              key={nft.hash}
+              contract={nft.hash}
+              clickHandler={() => {
+                setCurrentNftDetails(nft);
+              }}
+              imgSrc={undefined} //nft?.imgSrc}
+            />
+          );
+        })}
+      </ImageList>
+
       <Modal
         open={detailsViewOpen}
         onClose={() => {
