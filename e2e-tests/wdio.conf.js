@@ -1,11 +1,7 @@
-import { spawn, spawnSync } from "child_process";
-import os from "os";
-import path from "path";
-
 // keep track of the `tauri-driver` child process
 let tauriDriver;
 
-export const config = {
+const config = {
   specs: ["specs/**/*.js"],
   maxInstances: 1,
   capabilities: [
