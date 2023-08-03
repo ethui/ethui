@@ -4,6 +4,7 @@ import { Link, useLocation, useRoute } from "wouter";
 import RequestQuoteSharpIcon from "@mui/icons-material/RequestQuoteSharp";
 import TerminalSharpIcon from "@mui/icons-material/TerminalSharp";
 import OnlinePredictionSharpIcon from "@mui/icons-material/OnlinePredictionSharp";
+import CallToActionIcon from "@mui/icons-material/CallToAction";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import { parseInt, range, toString } from "lodash-es";
 
@@ -44,7 +45,7 @@ export const TABS = [
     name: "Contracts",
     component: Contracts,
     devOnly: true,
-    icon: TerminalSharpIcon,
+    icon: CallToActionIcon,
   },
   {
     path: "connections",
