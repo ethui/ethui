@@ -1,11 +1,11 @@
-const os = require("os");
-const path = require("path");
-const { spawn, spawnSync } = require("child_process");
+import { spawn, spawnSync } from "child_process";
+import os from "os";
+import path from "path";
 
 // keep track of the `tauri-driver` child process
 let tauriDriver;
 
-exports.config = {
+export const config = {
   specs: ["specs/**/*.js"],
   maxInstances: 1,
   capabilities: [

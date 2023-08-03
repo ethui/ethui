@@ -2,6 +2,7 @@
   "name": "@iron/e2e-tests",
   "version": "0.0.1",
   "private": true,
+  "type": "module",
   "scripts": {
     "setup": "yarn install && yarn extension:build",
     "test": "wdio run wdio.conf.js"
