@@ -1,20 +1,27 @@
-import { AppBar, Toolbar } from "@mui/material";
+import { AppBar, Toolbar, Typography } from "@mui/material";
 
 import { useTheme } from "../store";
+import { TABS } from "./Sidebar";
 
-export function Navbar() {
+export function Navbar({ tab }: { tab: (typeof TABS)[number] }) {
   const palette = useTheme((s) => s.theme.palette);
 
   return (
     <AppBar
       position="sticky"
+      elevation={0}
       sx={{
         background: palette.background.default,
         color: palette.text.primary,
-        boxShadow: "none",
-        height: 32,
+        borderBottom: 1,
+        borderColor: palette.divider,
       }}
-      data-tauri-drag-region="true"
-    ></AppBar>
+    >
+      <Toolbar data-tauri-drag-region="true" variant="dense">
+        <Typography variant="h6" component="div">
+          {tab.name}
+        </Typography>
+      </Toolbar>
+    </AppBar>
   );
 }

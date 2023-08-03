@@ -1,40 +1,34 @@
-import { Box, Container } from "@mui/material";
+import { Box } from "@mui/material";
 import { Route, Switch } from "wouter";
 
-import {
-  Balances,
-  LivenetPlaceholder,
-  NestedRoutes,
-  NewVersionNotice,
-} from "./";
+import { LivenetPlaceholder, Navbar, NestedRoutes, NewVersionNotice } from "./";
 import { Sidebar, TABS } from "./Sidebar";
+
+const defaultTab = TABS[0];
 
 export function HomePage() {
   return (
     <Box>
       <Sidebar>
-        <Container
-          // sx={{ pl: `${DRAWER_WIDTH_MD}px` }}
-          sx={{ m: 0 }}
-          disableGutters
-          maxWidth="md"
-        >
-          <NestedRoutes base="/">
-            <Switch>
-              {TABS.map((tab) => (
-                <Route key={tab.path} path={tab.path}>
+        <NestedRoutes base="/">
+          <Switch>
+            {TABS.map((tab) => (
+              <Route key={tab.path} path={tab.path}>
+                <>
+                  <Navbar tab={tab} />
                   <LivenetPlaceholder devOnly={tab.devOnly}>
                     <tab.component />
                   </LivenetPlaceholder>
-                </Route>
-              ))}
-              <Route>
-                <Balances />
+                </>
               </Route>
-            </Switch>
-          </NestedRoutes>
-          <NewVersionNotice />
-        </Container>
+            ))}
+            <Route>
+              <Navbar tab={defaultTab} />
+              <defaultTab.component />
+            </Route>
+          </Switch>
+        </NestedRoutes>
+        <NewVersionNotice />
       </Sidebar>
     </Box>
   );

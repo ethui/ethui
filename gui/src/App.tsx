@@ -7,7 +7,6 @@ import {
   CommandBar,
   HomePage,
   MsgSignDialog,
-  Navbar,
   TxReviewDialog,
   WagmiWrapper,
   WalletUnlockDialog,
@@ -51,7 +50,6 @@ function Routes() {
         </Route>
         <Route>
           <CommandBar>
-            <Navbar />
             <HomePage />
           </CommandBar>
         </Route>

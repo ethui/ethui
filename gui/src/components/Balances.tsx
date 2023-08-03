@@ -18,10 +18,6 @@ export function Balances() {
 
   return (
     <Panel>
-      <Typography fontSize={32} mb={2}>
-        Balances
-      </Typography>
-
       <Box
         display="flex"
         flexDirection="row-reverse"
