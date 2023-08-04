@@ -159,13 +159,12 @@ export function Sidebar({ children }: { children: ReactNode }) {
   );
 }
 
-function SidebarTab({
-  tab,
-  selected,
-}: {
+interface SidebarTabProps {
   tab: (typeof TABS)[number];
   selected: boolean;
-}) {
+}
+
+function SidebarTab({ tab, selected }: SidebarTabProps) {
   const { theme } = useTheme();
   const backgroundColor = theme.palette.mode === "dark" ? 800 : 200;
 
