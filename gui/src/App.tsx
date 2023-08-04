@@ -7,7 +7,6 @@ import {
   CommandBar,
   HomePage,
   MsgSignDialog,
-  Navbar,
   TxReviewDialog,
   WagmiWrapper,
   WalletUnlockDialog,
@@ -49,11 +48,10 @@ function Routes() {
         <Route path="/dialog/wallet-unlock/:id">
           {({ id }: { id: string }) => <WalletUnlockDialog id={parseInt(id)} />}
         </Route>
-
         <Route>
-          <Navbar />
-          <HomePage />
-          <CommandBar />
+          <CommandBar>
+            <HomePage />
+          </CommandBar>
         </Route>
       </Switch>
     </Router>
