@@ -1,5 +1,5 @@
 use ethers::types::{Address, U256};
-use iron_types::{events::Tx, TokenBalance, Erc721Token};
+use iron_types::{events::Tx, Erc721Token, TokenBalance};
 
 use super::{Paginated, Pagination, Result};
 use crate::{StoredContract, DB};
@@ -48,4 +48,3 @@ pub async fn db_get_erc721_tokens(
 ) -> Result<Vec<Erc721Token>> {
     db.get_erc721_tokens(chain_id).await
 }
-

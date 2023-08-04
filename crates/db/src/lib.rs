@@ -6,7 +6,7 @@ mod queries;
 use std::{path::PathBuf, str::FromStr};
 
 use ethers::types::{Address, H256, U256};
-use iron_types::{events::Tx, Event, TokenBalance, TokenMetadata, Erc721Token};
+use iron_types::{events::Tx, Erc721Token, Event, TokenBalance, TokenMetadata};
 use serde::Serialize;
 use sqlx::{
     sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous},
@@ -309,20 +309,18 @@ impl DB {
     }
 
     pub async fn get_erc721_tokens(&self, chain_id: u32) -> Result<Vec<Erc721Token>> {
-      // po-todo: filter by owner
-      let res: Vec<_> = sqlx::query(
-        r#" SELECT * 
+        // po-todo: filter by owner
+        let res: Vec<_> = sqlx::query(
+            r#" SELECT * 
         FROM nft_tokens
         WHERE chain_id = ?"#,
-      )
-      .bind(chain_id)
-      .map(|row| row.try_into().unwrap())
-      .fetch_all(self.pool())
-      .await?;
+        )
+        .bind(chain_id)
+        .map(|row| row.try_into().unwrap())
+        .fetch_all(self.pool())
+        .await?;
 
-      tracing::warn!("get_erc721_tokens: {:?}", res);
-
-      Ok(res)
+        Ok(res)
     }
 
     pub async fn get_tip(&self, chain_id: u32, addr: Address) -> Result<u64> {

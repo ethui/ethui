@@ -1,4 +1,3 @@
-import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/tauri";
 import { StateCreator, create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
@@ -35,8 +34,8 @@ const store: StateCreator<Store> = (set, get) => ({
     const [erc721Tokens] = await Promise.all([
       invoke<NftToken[]>("db_get_erc721_tokens", { chainId }),
     ]);
- 
-    set({erc721Tokens});
+
+    set({ erc721Tokens });
   },
 
   setAddress(address) {
@@ -53,7 +52,9 @@ const store: StateCreator<Store> = (set, get) => ({
 export const useErc721 = create<Store>()(subscribeWithSelector(store));
 
 (async () => {
-  const interval = setInterval(async () => { await useErc721.getState().reload(); }, oneMinute);
+  const interval = setInterval(async () => {
+    await useErc721.getState().reload();
+  }, oneMinute);
 
   useWallets.subscribe(
     (s) => s.address,

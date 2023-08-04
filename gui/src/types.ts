@@ -172,7 +172,6 @@ export interface NftToken {
   // metadata: JSON;
 }
 
-
 export interface Pagination {
   page?: number;
   page_size?: number;

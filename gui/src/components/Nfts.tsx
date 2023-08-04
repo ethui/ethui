@@ -1,17 +1,8 @@
-import {
-  Box,
-  CircularProgress,
-  ImageList,
-  ImageListItem,
-  ImageListItemBar,
-} from "@mui/material";
-import { invoke } from "@tauri-apps/api/tauri";
-import React, { useEffect, useState } from "react";
-import InfiniteScroll from "react-infinite-scroller";
+import { ImageList, ImageListItem, ImageListItemBar } from "@mui/material";
+import { useState } from "react";
 
-import { useNetworks, useWallets } from "../store";
 import { useErc721 } from "../store/erc721";
-import { Address, NftToken, Paginated, Pagination } from "../types";
+import { Address, NftToken } from "../types";
 import { Modal, NftDetailsView } from "./";
 import { AddressView } from "./AddressView";
 import { Panel } from "./Panel";
@@ -23,9 +14,6 @@ interface NftGalleryItemProps {
 }
 
 export function Nfts() {
-  const account = useWallets((s) => s.address);
-  const chainId = useNetworks((s) => s.current?.chain_id);
-
   const [detailsViewOpen, setDetailsViewOpen] = useState(false);
   const [currentNftDetails, setCurrentNftDetails] = useState<
     NftToken | undefined

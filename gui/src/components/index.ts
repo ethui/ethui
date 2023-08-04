@@ -30,4 +30,4 @@ export { WagmiWrapper } from "./WagmiWrapper";
 export { WalletUnlockDialog } from "./WalletUnlockDialog";
 export { MsgSignDialog } from "./MsgSignDialog";
 export { Nfts } from "./Nfts";
-export { NftDetailsView } from "./NftDetailsView";  
+export { NftDetailsView } from "./NftDetailsView";
