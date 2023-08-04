@@ -17,6 +17,11 @@ pub async fn settings_set_dark_mode(mode: DarkMode) -> Result<()> {
     Settings::write().await.set_dark_mode(mode)
 }
 
+#[tauri::command]
+pub async fn settings_finish_onboarding() -> Result<()> {
+    Settings::write().await.finish_onboarding()
+}
+
 /// Gets the alias for an address
 #[tauri::command]
 pub async fn settings_get_alias(address: ChecksummedAddress) -> Option<String> {
