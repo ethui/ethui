@@ -1,16 +1,24 @@
 import { ethErrors } from "eth-rpc-errors";
+import { isDuplexStream } from "is-stream";
 import type { JsonRpcRequest, JsonRpcResponse } from "json-rpc-engine";
+import type { JsonRpcMiddleware } from "json-rpc-engine";
+import { createStreamMiddleware } from "json-rpc-middleware-stream";
 import log from "loglevel";
+import pump from "pump";
 import type { Duplex } from "stream";
 
-import type { UnvalidatedJsonRpcRequest } from "./BaseProvider";
-import {
-  AbstractStreamProvider,
-  StreamProviderOptions,
-} from "./StreamProvider";
+import ObjectMultiplex from "@metamask/object-multiplex";
+import SafeEventEmitter from "@metamask/safe-event-emitter";
+
+import { BaseProvider, BaseProviderOptions } from "./BaseProvider";
+import { UnvalidatedJsonRpcRequest } from "./BaseProvider";
 import messages from "./messages";
 import {
   EMITTED_NOTIFICATIONS,
+  isValidChainId,
+  isValidNetworkVersion,
+} from "./utils";
+import {
   NOOP,
   getDefaultExternalMiddleware,
   getRpcPromiseCallback,
@@ -44,7 +52,20 @@ interface SentWarningsState {
   };
 }
 
-export class IronInpageProvider extends AbstractStreamProvider {
+export interface StreamProviderOptions extends BaseProviderOptions {
+  /**
+   * The name of the stream used to connect to the wallet.
+   */
+  jsonRpcStreamName: string;
+}
+
+export interface JsonRpcConnection {
+  events: SafeEventEmitter;
+  middleware: JsonRpcMiddleware<unknown, unknown>;
+  stream: Duplex;
+}
+
+export class IronInpageProvider extends BaseProvider {
   protected _sentWarnings: SentWarningsState = {
     // methods
     enable: false,
@@ -58,6 +79,8 @@ export class IronInpageProvider extends AbstractStreamProvider {
       notification: false,
     },
   };
+
+  protected _jsonRpcConnection: JsonRpcConnection;
 
   /**
    * Experimental methods can be found here.
@@ -89,11 +112,75 @@ export class IronInpageProvider extends AbstractStreamProvider {
       maxEventListeners,
     }: IronInpageProviderOptions = {}
   ) {
-    super(connectionStream, {
-      jsonRpcStreamName,
-      maxEventListeners,
-      rpcMiddleware: getDefaultExternalMiddleware(),
+    // super(connectionStream, {
+    //   jsonRpcStreamName,
+    //   maxEventListeners,
+    //   rpcMiddleware: getDefaultExternalMiddleware(),
+    // });
+    super({ maxEventListeners, rpcMiddleware: getDefaultExternalMiddleware() });
+
+    // start old AbstractStreamProvider.constructor
+    if (!isDuplexStream(connectionStream)) {
+      throw new Error(messages.errors.invalidDuplexStream());
+    }
+
+    // Bind functions to prevent consumers from making unbound calls
+    this._handleStreamDisconnect = this._handleStreamDisconnect.bind(this);
+
+    // Set up connectionStream multiplexing
+    const mux = new ObjectMultiplex();
+    pump(
+      connectionStream,
+      mux as unknown as Duplex,
+      connectionStream,
+      this._handleStreamDisconnect.bind(this, "Iron constructor") as any
+    );
+
+    // Set up RPC connection
+    this._jsonRpcConnection = createStreamMiddleware({
+      retryOnMessage: "METAMASK_EXTENSION_CONNECT_CAN_RETRY",
     });
+    pump(
+      this._jsonRpcConnection.stream,
+      mux.createStream(jsonRpcStreamName) as unknown as Duplex,
+      this._jsonRpcConnection.stream,
+      this._handleStreamDisconnect.bind(this, "Iron RpcProvider") as any
+    );
+
+    // Wire up the JsonRpcEngine to the JSON-RPC connection stream
+    this._rpcEngine.push(this._jsonRpcConnection.middleware);
+
+    // Handle JSON-RPC notifications
+    this._jsonRpcConnection.events.on("notification", (payload) => {
+      const { method, params } = payload;
+      if (method === "accountsChanged") {
+        // eslint-disable-next-line no-console
+        console.log("handleAccountsChanged", params);
+        this._handleAccountsChanged(params);
+      } else if (method === "metamask_unlockStateChanged") {
+        // eslint-disable-next-line no-console
+        console.log("handleUnlockStateChanged");
+        this._handleUnlockStateChanged(params);
+      } else if (method === "chainChanged") {
+        // eslint-disable-next-line no-console
+        console.log("handleChainChanged", params);
+        this._handleChainChanged(params);
+      } else if (EMITTED_NOTIFICATIONS.includes(method)) {
+        // eslint-disable-next-line no-console
+        console.log("emitting", method);
+        this.emit("message", {
+          type: method,
+          data: params,
+        });
+      } else if (method === "METAMASK_STREAM_FAILURE") {
+        connectionStream.destroy(
+          new Error(messages.errors.permanentlyDisconnected())
+        );
+      } else {
+        console.error("unexpected message", payload);
+      }
+    });
+    // end old AbstractStreamProvider.constructor
 
     // We shouldn't perform asynchronous work in the constructor, but at one
     // point we started doing so, and changing this class isn't worth it at
@@ -408,7 +495,35 @@ export class IronInpageProvider extends AbstractStreamProvider {
   }: { chainId?: string; networkVersion?: string } = {}) {
     // This will validate the params and disconnect the provider if the
     // networkVersion is 'loading'.
-    super._handleChainChanged({ chainId, networkVersion });
+    // start: old AbstractProvider._handleChainChanged
+    /**
+     * Upon receipt of a new chainId and networkVersion, emits corresponding
+     * events and sets relevant public state. This class does not have a
+     * `networkVersion` property, but we rely on receiving a `networkVersion`
+     * with the value of `loading` to detect when the network is changing and
+     * a recoverable `disconnect` even has occurred. Child classes that use the
+     * `networkVersion` for other purposes must implement additional handling
+     * therefore.
+     *
+     * @emits BaseProvider#chainChanged
+     * @param networkInfo - An object with network info.
+     * @param networkInfo.chainId - The latest chain ID.
+     * @param networkInfo.networkVersion - The latest network ID.
+     */
+    if (!isValidChainId(chainId) || !isValidNetworkVersion(networkVersion)) {
+      log.error(messages.errors.invalidNetworkParams(), {
+        chainId,
+        networkVersion,
+      });
+      return;
+    }
+
+    if (networkVersion === "loading") {
+      this._handleDisconnect(true);
+    } else {
+      super._handleChainChanged({ chainId });
+    }
+    // end: old AbstractProvider._handleChainChanged
 
     if (this._state.isConnected && networkVersion !== this.networkVersion) {
       this.networkVersion = networkVersion as string;
@@ -417,4 +532,55 @@ export class IronInpageProvider extends AbstractStreamProvider {
       }
     }
   }
+
+  // start: old AbstractProvider methods
+
+  //====================
+  // Private Methods
+  //====================
+
+  /**
+   * **MUST** be called by child classes.
+   *
+   * Calls `metamask_getProviderState` and passes the result to
+   * {@link BaseProvider._initializeState}. Logs an error if getting initial state
+   * fails. Throws if called after initialization has completed.
+   */
+  protected async _initializeStateAsync() {
+    let initialState: Parameters<BaseProvider["_initializeState"]>[0];
+
+    try {
+      initialState = (await this.request({
+        method: "metamask_getProviderState",
+      })) as Parameters<BaseProvider["_initializeState"]>[0];
+    } catch (error) {
+      log.error(
+        "Iron: Failed to get initial state. Please report this bug.",
+        error
+      );
+    }
+    this._initializeState(initialState);
+  }
+
+  /**
+   * Called when connection is lost to critical streams. Emits an 'error' event
+   * from the provider with the error message and stack if present.
+   *
+   * @emits BaseProvider#disconnect
+   */
+  private _handleStreamDisconnect(streamName: string, error: Error) {
+    let warningMsg = `Iron: Lost connection to "${streamName}".`;
+    if (error?.stack) {
+      warningMsg += `\n${error.stack}`;
+    }
+
+    log.warn(warningMsg);
+    if (this.listenerCount("error") > 0) {
+      this.emit("error", warningMsg);
+    }
+
+    this._handleDisconnect(false, error ? error.message : undefined);
+  }
+
+  // end: old AbstractProvider methods
 }
