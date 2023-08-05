@@ -1,1 +1,0 @@
-export { initializeProvider } from "./initializeInpageProvider";
