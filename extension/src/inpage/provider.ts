@@ -17,6 +17,15 @@ import { EMITTED_NOTIFICATIONS, isValidNetworkVersion } from "./utils";
 import { NOOP, getDefaultExternalMiddleware } from "./utils";
 import { Maybe, getRpcPromiseCallback, isValidChainId } from "./utils";
 
+interface IronProviderOptions {
+  // The stream used to connect to the wallet.
+  connectionStream: Duplex;
+  // The name of the stream used to connect to the wallet.
+  jsonRpcStreamName: string;
+  // The maximum number of event listeners.
+  maxEventListeners: number;
+}
+
 interface UnvalidatedJsonRpcRequest {
   id?: JsonRpcId;
   jsonrpc?: JsonRpcVersion;
@@ -25,10 +34,9 @@ interface UnvalidatedJsonRpcRequest {
 }
 
 interface RequestArguments {
-  /** The RPC method to request. */
+  // The RPC method to request.
   method: string;
-
-  /** The params of the RPC method, if any. */
+  // The params of the RPC method, if any.
   params?: unknown[] | Record<string, unknown>;
 }
 
@@ -40,16 +48,6 @@ interface ProviderState {
   isPermanentlyDisconnected: boolean;
 }
 
-function defaultState(): ProviderState {
-  return {
-    accounts: null,
-    isConnected: false,
-    isUnlocked: false,
-    initialized: false,
-    isPermanentlyDisconnected: false,
-  };
-}
-
 interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
   method:
     | "eth_accounts"
@@ -59,15 +57,6 @@ interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
 }
 
 type WarningEventName = keyof SentWarningsState["events"];
-
-interface IronProviderOptions {
-  // The stream used to connect to the wallet.
-  connectionStream: Duplex;
-  // The name of the stream used to connect to the wallet.
-  jsonRpcStreamName: string;
-  // The maximum number of event listeners.
-  maxEventListeners: number;
-}
 
 interface SentWarningsState {
   // methods
@@ -142,7 +131,7 @@ export class IronProvider extends SafeEventEmitter {
   }: IronProviderOptions) {
     super();
     this.setMaxListeners(maxEventListeners);
-    this.state = defaultState();
+    this.state = this.defaultState();
     this.engine = new JsonRpcEngine();
     this.connection = createStreamMiddleware({
       retryOnMessage: "METAMASK_EXTENSION_CONNECT_CAN_RETRY",
@@ -856,5 +845,15 @@ export class IronProvider extends SafeEventEmitter {
         this.emit("notification", payload.params.result);
       }
     });
+  }
+
+  private defaultState(): ProviderState {
+    return {
+      accounts: null,
+      isConnected: false,
+      isUnlocked: false,
+      initialized: false,
+      isPermanentlyDisconnected: false,
+    };
   }
 }
