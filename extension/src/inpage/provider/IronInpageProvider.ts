@@ -91,9 +91,8 @@ export class IronInpageProvider extends AbstractStreamProvider {
   ) {
     super(connectionStream, {
       jsonRpcStreamName,
-      logger: console,
       maxEventListeners,
-      rpcMiddleware: getDefaultExternalMiddleware(console),
+      rpcMiddleware: getDefaultExternalMiddleware(),
     });
 
     // We shouldn't perform asynchronous work in the constructor, but at one

@@ -12,12 +12,7 @@ import log from "loglevel";
 import SafeEventEmitter from "@metamask/safe-event-emitter";
 
 import messages from "./messages";
-import {
-  ConsoleLike,
-  Maybe,
-  getRpcPromiseCallback,
-  isValidChainId,
-} from "./utils";
+import { Maybe, getRpcPromiseCallback, isValidChainId } from "./utils";
 
 export interface UnvalidatedJsonRpcRequest {
   id?: JsonRpcId;
@@ -27,11 +22,6 @@ export interface UnvalidatedJsonRpcRequest {
 }
 
 export interface BaseProviderOptions {
-  /**
-   * The logging API to use.
-   */
-  logger?: ConsoleLike;
-
   /**
    * The maximum number of event listeners.
    */

@@ -1,7 +1,7 @@
 import type { JsonRpcMiddleware } from "json-rpc-engine";
+import log from "loglevel";
 
 import messages from "../messages";
-import type { ConsoleLike } from "../utils";
 
 /**
  * Create JSON-RPC middleware that logs warnings for deprecated RPC methods.
@@ -9,9 +9,10 @@ import type { ConsoleLike } from "../utils";
  * @param log - The logging API to use.
  * @returns The JSON-RPC middleware.
  */
-export function createRpcWarningMiddleware(
-  log: ConsoleLike
-): JsonRpcMiddleware<unknown, unknown> {
+export function createRpcWarningMiddleware(): JsonRpcMiddleware<
+  unknown,
+  unknown
+> {
   const sentWarnings = {
     ethDecryptDeprecation: false,
     ethGetEncryptionPublicKeyDeprecation: false,

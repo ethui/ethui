@@ -4,15 +4,11 @@ import {
   PendingJsonRpcResponse,
   createIdRemapMiddleware,
 } from "json-rpc-engine";
+import log from "loglevel";
 
 import { createRpcWarningMiddleware } from "./middleware/createRpcWarningMiddleware";
 
 export type Maybe<T> = Partial<T> | null | undefined;
-
-export type ConsoleLike = Pick<
-  Console,
-  "log" | "warn" | "error" | "debug" | "info" | "trace"
->;
 
 // Constants
 
@@ -29,10 +25,10 @@ export const EMITTED_NOTIFICATIONS = Object.freeze([
  * @param logger - The logger to use in the error middleware.
  * @returns An array of json-rpc-engine middleware functions.
  */
-export const getDefaultExternalMiddleware = (logger: ConsoleLike = console) => [
+export const getDefaultExternalMiddleware = () => [
   createIdRemapMiddleware(),
-  createErrorMiddleware(logger),
-  createRpcWarningMiddleware(logger),
+  createErrorMiddleware(),
+  createRpcWarningMiddleware(),
 ];
 
 /**
@@ -41,9 +37,7 @@ export const getDefaultExternalMiddleware = (logger: ConsoleLike = console) => [
  * @param log - The logging API to use.
  * @returns A json-rpc-engine middleware function.
  */
-function createErrorMiddleware(
-  log: ConsoleLike
-): JsonRpcMiddleware<unknown, unknown> {
+function createErrorMiddleware(): JsonRpcMiddleware<unknown, unknown> {
   return (req, res, next) => {
     // json-rpc-engine will terminate the request when it notices this error
     if (typeof req.method !== "string" || !req.method) {

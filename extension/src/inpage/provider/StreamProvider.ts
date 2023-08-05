@@ -53,7 +53,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
       rpcMiddleware,
     }: StreamProviderOptions
   ) {
-    super({ logger: console, maxEventListeners, rpcMiddleware });
+    super({ maxEventListeners, rpcMiddleware });
 
     if (!isDuplexStream(connectionStream)) {
       throw new Error(messages.errors.invalidDuplexStream());
