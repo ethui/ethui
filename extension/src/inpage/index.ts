@@ -2,7 +2,6 @@ import { type Duplex } from "stream";
 
 import { WindowPostMessageStream } from "@metamask/post-message-stream";
 
-// import { initializeProvider } from "./initialize";
 import { IronProvider } from "./provider";
 
 // init on load
@@ -24,6 +23,8 @@ export function initializeProvider(): IronProvider {
   }) as unknown as Duplex;
 
   const provider = new IronProvider({
+    jsonRpcStreamName: "metamask-provider",
+    maxEventListeners: 100,
     connectionStream,
   });
 

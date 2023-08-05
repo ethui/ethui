@@ -17,14 +17,14 @@ import { EMITTED_NOTIFICATIONS, isValidNetworkVersion } from "./utils";
 import { NOOP, getDefaultExternalMiddleware } from "./utils";
 import { Maybe, getRpcPromiseCallback, isValidChainId } from "./utils";
 
-export interface UnvalidatedJsonRpcRequest {
+interface UnvalidatedJsonRpcRequest {
   id?: JsonRpcId;
   jsonrpc?: JsonRpcVersion;
   method: string;
   params?: unknown;
 }
 
-export interface RequestArguments {
+interface RequestArguments {
   /** The RPC method to request. */
   method: string;
 
@@ -32,7 +32,7 @@ export interface RequestArguments {
   params?: unknown[] | Record<string, unknown>;
 }
 
-export interface ProviderState {
+interface ProviderState {
   accounts: null | string[];
   isConnected: boolean;
   isUnlocked: boolean;
@@ -50,7 +50,7 @@ function defaultState(): ProviderState {
   };
 }
 
-export interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
+interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
   method:
     | "eth_accounts"
     | "eth_coinbase"
@@ -60,16 +60,13 @@ export interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
 
 type WarningEventName = keyof SentWarningsState["events"];
 
-export interface IronProviderOptions {
+interface IronProviderOptions {
   // The stream used to connect to the wallet.
   connectionStream: Duplex;
   // The name of the stream used to connect to the wallet.
-  jsonRpcStreamName?: string;
+  jsonRpcStreamName: string;
   // The maximum number of event listeners.
-  maxEventListeners?: number;
-  // `json-rpc-engine` middleware. The middleware will be inserted in the given
-  // order immediately after engine initialization.
-  rpcMiddleware?: JsonRpcMiddleware<unknown, unknown>[];
+  maxEventListeners: number;
 }
 
 interface SentWarningsState {
@@ -86,7 +83,7 @@ interface SentWarningsState {
   };
 }
 
-export interface JsonRpcConnection {
+interface JsonRpcConnection {
   events: SafeEventEmitter;
   middleware: JsonRpcMiddleware<unknown, unknown>;
   stream: Duplex;
@@ -95,15 +92,23 @@ export interface JsonRpcConnection {
 export class IronProvider extends SafeEventEmitter {
   // The chain ID of the currently connected Ethereum chain.
   // See [chainId.network]{@link https://chainid.network} for more information.
-  public chainId: string | null;
+  public chainId?: string;
 
   // The user's currently selected Ethereum address.
   // If null, Iron is either locked or the user has not permitted any
   // addresses to be viewed.
-  public selectedAddress: string | null;
+  public selectedAddress?: string;
 
   // Experimental methods can be found here.
   public readonly _metamask: ReturnType<IronProvider["_getExperimentalApi"]>;
+
+  public networkVersion?: string;
+
+  /**
+   * Indicating that this provider is a Iron provider.
+   */
+  public readonly isIron: boolean = true;
+  public readonly isMetaMask: boolean = true;
 
   protected state: ProviderState;
   protected engine: JsonRpcEngine;
@@ -122,14 +127,6 @@ export class IronProvider extends SafeEventEmitter {
   };
   protected connection: JsonRpcConnection;
 
-  public networkVersion: string | null;
-
-  /**
-   * Indicating that this provider is a Iron provider.
-   */
-  public readonly isIron: boolean = true;
-  public readonly isMetaMask: boolean = true;
-
   /**
    * @param connectionStream - A Node.js duplex stream
    * @param options - An options bag
@@ -140,149 +137,41 @@ export class IronProvider extends SafeEventEmitter {
    */
   constructor({
     connectionStream,
-    jsonRpcStreamName = "metamask-provider",
-    maxEventListeners = 100,
-    rpcMiddleware = getDefaultExternalMiddleware(),
+    jsonRpcStreamName,
+    maxEventListeners,
   }: IronProviderOptions) {
-    // start: old BaseProvider.constructor
-    // end: old BaseProvider.constructor
     super();
     this.setMaxListeners(maxEventListeners);
-
-    // Private state
     this.state = defaultState();
-
-    // Public state
-    this.selectedAddress = null;
-    this.chainId = null;
-
-    // Bind functions to prevent consumers from making unbound calls
-    this.handleAccountsChanged = this.handleAccountsChanged.bind(this);
-    this.handleConnect = this.handleConnect.bind(this);
-    this.handleChainChanged = this.handleChainChanged.bind(this);
-    this.handleDisconnect = this.handleDisconnect.bind(this);
-    this.handleUnlockStateChanged = this.handleUnlockStateChanged.bind(this);
-    this.rpcRequest = this.rpcRequest.bind(this);
-    this.request = this.request.bind(this);
-
-    // Handle RPC requests via dapp-side RPC engine.
-    //
-    // ATTN: Implementers must push a middleware that hands off requests to
-    // the server.
-    const rpcEngine = new JsonRpcEngine();
-    rpcMiddleware.forEach((middleware) => rpcEngine.push(middleware));
-    this.engine = rpcEngine;
-
-    // start old AbstractStreamProvider.constructor
-    if (!isDuplexStream(connectionStream)) {
-      throw new Error(messages.errors.invalidDuplexStream());
-    }
-
-    // Bind functions to prevent consumers from making unbound calls
-    this.handleStreamDisconnect = this.handleStreamDisconnect.bind(this);
-
-    // Set up connectionStream multiplexing
-    const mux = new ObjectMultiplex();
-    pump(
-      connectionStream,
-      mux as unknown as Duplex,
-      connectionStream,
-      this.handleStreamDisconnect.bind(this, "Iron constructor") as any
-    );
-
-    // Set up RPC connection
+    this.engine = new JsonRpcEngine();
     this.connection = createStreamMiddleware({
       retryOnMessage: "METAMASK_EXTENSION_CONNECT_CAN_RETRY",
     });
-    pump(
-      this.connection.stream,
-      mux.createStream(jsonRpcStreamName) as unknown as Duplex,
-      this.connection.stream,
-      this.handleStreamDisconnect.bind(this, "Iron RpcProvider") as any
-    );
 
-    // Wire up the JsonRpcEngine to the JSON-RPC connection stream
-    this.engine.push(this.connection.middleware);
-
-    // Handle JSON-RPC notifications
-    this.connection.events.on("notification", (payload) => {
-      const { method, params } = payload;
-      if (method === "accountsChanged") {
-        log.info("handleAccountsChanged", params);
-        this.handleAccountsChanged(params);
-      } else if (method === "metamask_unlockStateChanged") {
-        log.info("handleUnlockStateChanged");
-        this.handleUnlockStateChanged(params);
-      } else if (method === "chainChanged") {
-        log.info("handleChainChanged", params);
-        this.handleChainChanged(params);
-      } else if (EMITTED_NOTIFICATIONS.includes(method)) {
-        log.info("emitting", method);
-        this.emit("message", {
-          type: method,
-          data: params,
-        });
-      } else if (method === "METAMASK_STREAM_FAILURE") {
-        connectionStream.destroy(
-          new Error(messages.errors.permanentlyDisconnected())
-        );
-      } else {
-        log.error("unexpected message", payload);
-      }
-    });
-    // end old AbstractStreamProvider.constructor
+    this.bindFunctions();
+    this._metamask = this._getExperimentalApi();
+    this.setupEngine(connectionStream, jsonRpcStreamName);
 
     // We shouldn't perform asynchronous work in the constructor, but at one
     // point we started doing so, and changing this class isn't worth it at
     // the time of writing.
     this._initializeStateAsync();
-
-    this.networkVersion = null;
-
-    this._sendSync = this._sendSync.bind(this);
-    this.enable = this.enable.bind(this);
-    this.send = this.send.bind(this);
-    this.sendAsync = this.sendAsync.bind(this);
-    this._warnOfDeprecation = this._warnOfDeprecation.bind(this);
-
-    this._metamask = this._getExperimentalApi();
-
-    // handle JSON-RPC notifications
-    this.connection.events.on("notification", (payload) => {
-      const { method } = payload;
-      if (EMITTED_NOTIFICATIONS.includes(method)) {
-        // deprecated
-        // emitted here because that was the original order
-        this.emit("data", payload);
-        // deprecated
-        this.emit("notification", payload.params.result);
-      }
-    });
   }
 
-  // start: old BaseProvider._initializeStateAsync
-  //====================
-  // Public Methods
-  //====================
-
-  /**
-   * Returns whether the provider can process RPC requests.
-   */
-  isConnected(): boolean {
+  // Returns whether the provider can process RPC requests.
+  public isConnected(): boolean {
     return this.state.isConnected;
   }
 
-  /**
-   * Submits an RPC request for the given method, with the given params.
-   * Resolves with the result of the method call, or rejects on error.
-   *
-   * @param args - The RPC request arguments.
-   * @param args.method - The RPC method name.
-   * @param args.params - The parameters for the RPC method.
-   * @returns A Promise that resolves with the result of the RPC method,
-   * or rejects if an error is encountered.
-   */
-  async request<T>(args: RequestArguments): Promise<Maybe<T>> {
+  // Submits an RPC request for the given method, with the given params.
+  // Resolves with the result of the method call, or rejects on error.
+  //
+  // @param args - The RPC request arguments.
+  // @param args.method - The RPC method name.
+  // @param args.params - The parameters for the RPC method.
+  // @returns A Promise that resolves with the result of the RPC method,
+  // or rejects if an error is encountered.
+  public async request<T>(args: RequestArguments): Promise<Maybe<T>> {
     if (!args || typeof args !== "object" || Array.isArray(args)) {
       throw ethErrors.rpc.invalidRequest({
         message: messages.errors.invalidRequestArgs(),
@@ -317,10 +206,6 @@ export class IronProvider extends SafeEventEmitter {
       );
     });
   }
-
-  //====================
-  // Private Methods
-  //====================
 
   /**
    * **MUST** be called by child classes.
@@ -429,9 +314,9 @@ export class IronProvider extends SafeEventEmitter {
         );
 
         log.error(error);
-        this.chainId = null;
+        this.chainId = undefined;
         this.state.accounts = null;
-        this.selectedAddress = null;
+        this.selectedAddress = undefined;
         this.state.isUnlocked = false;
         this.state.isPermanentlyDisconnected = true;
       }
@@ -440,7 +325,7 @@ export class IronProvider extends SafeEventEmitter {
     }
 
     if (this.networkVersion && !isRecoverable) {
-      this.networkVersion = null;
+      this.networkVersion = undefined;
     }
   }
 
@@ -550,7 +435,7 @@ export class IronProvider extends SafeEventEmitter {
 
       // handle selectedAddress
       if (this.selectedAddress !== _accounts[0]) {
-        this.selectedAddress = (_accounts[0] as string) || null;
+        this.selectedAddress = (_accounts[0] as string) || undefined;
       }
 
       // finally, after all state has been updated, emit the event
@@ -600,19 +485,16 @@ export class IronProvider extends SafeEventEmitter {
    * @param payload - The RPC request object.
    * @param callback - The callback function.
    */
-  sendAsync(
+  public sendAsync(
     payload: JsonRpcRequest<unknown>,
     callback: (error: Error | null, result?: JsonRpcResponse<unknown>) => void
   ): void {
     this.rpcRequest(payload, callback as any);
   }
 
-  /**
-   * We override the following event methods so that we can warn consumers
-   * about deprecated events:
-   *   addListener, on, once, prependListener, prependOnceListener
-   */
-
+  // We override the following event methods so that we can warn consumers
+  // about deprecated events:
+  //   addListener, on, once, prependListener, prependOnceListener
   addListener(eventName: string, listener: (...args: unknown[]) => void) {
     this._warnOfDeprecation(eventName);
     return super.addListener(eventName, listener);
@@ -645,9 +527,7 @@ export class IronProvider extends SafeEventEmitter {
   // Private Methods
   //====================
 
-  /**
-   * Warns of deprecation for the given event, if applicable.
-   */
+  // Warns of deprecation for the given event, if applicable.
   protected _warnOfDeprecation(eventName: string): void {
     if (this.sentWarnings?.events[eventName as WarningEventName] === false) {
       log.warn(messages.warnings.events[eventName as WarningEventName]);
@@ -665,7 +545,7 @@ export class IronProvider extends SafeEventEmitter {
    * @deprecated Use request({ method: 'eth_requestAccounts' }) instead.
    * @returns A promise that resolves to an array of addresses.
    */
-  enable(): Promise<string[]> {
+  public enable(): Promise<string[]> {
     if (!this.sentWarnings.enable) {
       log.warn(messages.warnings.enableDeprecation);
       this.sentWarnings.enable = true;
@@ -702,7 +582,7 @@ export class IronProvider extends SafeEventEmitter {
    * @param callback - An error-first callback that will receive the JSON-RPC
    * response object.
    */
-  send<T>(
+  public send<T>(
     payload: JsonRpcRequest<unknown>,
     callback: (error: Error | null, result?: JsonRpcResponse<T>) => void
   ): void;
@@ -715,9 +595,9 @@ export class IronProvider extends SafeEventEmitter {
    * @param payload - A JSON-RPC request object.
    * @returns A JSON-RPC response object.
    */
-  send<T>(payload: SendSyncJsonRpcRequest): JsonRpcResponse<T>;
+  public send<T>(payload: SendSyncJsonRpcRequest): JsonRpcResponse<T>;
 
-  send(methodOrPayload: unknown, callbackOrArgs?: unknown): unknown {
+  public send(methodOrPayload: unknown, callbackOrArgs?: unknown): unknown {
     if (!this.sentWarnings.send) {
       log.warn(messages.warnings.sendDeprecation);
       this.sentWarnings.send = true;
@@ -876,7 +756,7 @@ export class IronProvider extends SafeEventEmitter {
    *
    * @emits BaseProvider#disconnect
    */
-  private handleStreamDisconnect(streamName: string, error: Error) {
+  private handleStreamDisconnect(streamName: string, error?: Error) {
     let warningMsg = `Iron: Lost connection to "${streamName}".`;
     if (error?.stack) {
       warningMsg += `\n${error.stack}`;
@@ -891,4 +771,90 @@ export class IronProvider extends SafeEventEmitter {
   }
 
   // end: old AbstractProvider methods
+
+  // Bind functions to prevent consumers from making unbound calls
+  private bindFunctions() {
+    this.handleAccountsChanged = this.handleAccountsChanged.bind(this);
+    this.handleConnect = this.handleConnect.bind(this);
+    this.handleChainChanged = this.handleChainChanged.bind(this);
+    this.handleDisconnect = this.handleDisconnect.bind(this);
+    this.handleUnlockStateChanged = this.handleUnlockStateChanged.bind(this);
+    this.rpcRequest = this.rpcRequest.bind(this);
+    this.request = this.request.bind(this);
+    this.handleStreamDisconnect = this.handleStreamDisconnect.bind(this);
+    this._sendSync = this._sendSync.bind(this);
+    this.enable = this.enable.bind(this);
+    this.send = this.send.bind(this);
+    this.sendAsync = this.sendAsync.bind(this);
+    this._warnOfDeprecation = this._warnOfDeprecation.bind(this);
+  }
+
+  private setupEngine(stream: Duplex, streamName: string) {
+    // Handle RPC requests via dapp-side RPC engine.
+    //
+    // ATTN: Implementers must push a middleware that hands off requests to
+    // the server.
+    getDefaultExternalMiddleware().forEach((middleware) =>
+      this.engine.push(middleware)
+    );
+
+    // start old AbstractStreamProvider.constructor
+    if (!isDuplexStream(stream)) {
+      throw new Error(messages.errors.invalidDuplexStream());
+    }
+
+    // Set up connectionStream multiplexing
+    const mux = new ObjectMultiplex();
+    pump(stream, mux as unknown as Duplex, stream, (e) =>
+      this.handleStreamDisconnect("Iron constructor", e)
+    );
+
+    // Set up RPC connection
+    pump(
+      this.connection.stream,
+      mux.createStream(streamName) as unknown as Duplex,
+      this.connection.stream,
+      this.handleStreamDisconnect.bind(this, "Iron RpcProvider") as any
+    );
+
+    // Wire up the JsonRpcEngine to the JSON-RPC connection stream
+    this.engine.push(this.connection.middleware);
+
+    // Handle JSON-RPC notifications
+    this.connection.events.on("notification", (payload) => {
+      const { method, params } = payload;
+      if (method === "accountsChanged") {
+        log.info("handleAccountsChanged", params);
+        this.handleAccountsChanged(params);
+      } else if (method === "metamask_unlockStateChanged") {
+        log.info("handleUnlockStateChanged");
+        this.handleUnlockStateChanged(params);
+      } else if (method === "chainChanged") {
+        log.info("handleChainChanged", params);
+        this.handleChainChanged(params);
+      } else if (EMITTED_NOTIFICATIONS.includes(method)) {
+        log.info("emitting", method);
+        this.emit("message", {
+          type: method,
+          data: params,
+        });
+      } else if (method === "METAMASK_STREAM_FAILURE") {
+        stream.destroy(new Error(messages.errors.permanentlyDisconnected()));
+      } else {
+        log.error("unexpected message", payload);
+      }
+    });
+
+    // handle JSON-RPC notifications
+    this.connection.events.on("notification", (payload) => {
+      const { method } = payload;
+      if (EMITTED_NOTIFICATIONS.includes(method)) {
+        // deprecated
+        // emitted here because that was the original order
+        this.emit("data", payload);
+        // deprecated
+        this.emit("notification", payload.params.result);
+      }
+    });
+  }
 }
