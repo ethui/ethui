@@ -31,13 +31,11 @@ interface InitializeProviderOptions extends IronInpageProviderOptions {
 export function initializeProvider({
   connectionStream,
   jsonRpcStreamName,
-  logger = console,
   maxEventListeners = 100,
   shouldSetOnWindow = true,
 }: InitializeProviderOptions): IronInpageProvider {
   const provider = new IronInpageProvider(connectionStream, {
     jsonRpcStreamName,
-    logger,
     maxEventListeners,
   });
 

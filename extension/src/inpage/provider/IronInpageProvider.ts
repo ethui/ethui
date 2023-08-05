@@ -1,5 +1,6 @@
 import { ethErrors } from "eth-rpc-errors";
 import type { JsonRpcRequest, JsonRpcResponse } from "json-rpc-engine";
+import log from "loglevel";
 import type { Duplex } from "stream";
 
 import type { UnvalidatedJsonRpcRequest } from "./BaseProvider";
@@ -78,7 +79,6 @@ export class IronInpageProvider extends AbstractStreamProvider {
    * @param options - An options bag
    * @param options.jsonRpcStreamName - The name of the internal JSON-RPC stream.
    * Default: iron:provider
-   * @param options.logger - The logging API to use. Default: console
    * @param options.maxEventListeners - The maximum number of event
    * listeners. Default: 100
    */
@@ -86,15 +86,14 @@ export class IronInpageProvider extends AbstractStreamProvider {
     connectionStream: Duplex,
     {
       jsonRpcStreamName = "metamask-provider",
-      logger = console,
       maxEventListeners,
     }: IronInpageProviderOptions = {}
   ) {
     super(connectionStream, {
       jsonRpcStreamName,
-      logger,
+      logger: console,
       maxEventListeners,
-      rpcMiddleware: getDefaultExternalMiddleware(logger),
+      rpcMiddleware: getDefaultExternalMiddleware(console),
     });
 
     // We shouldn't perform asynchronous work in the constructor, but at one
@@ -203,7 +202,7 @@ export class IronInpageProvider extends AbstractStreamProvider {
    */
   protected _warnOfDeprecation(eventName: string): void {
     if (this._sentWarnings?.events[eventName as WarningEventName] === false) {
-      this._log.warn(messages.warnings.events[eventName as WarningEventName]);
+      log.warn(messages.warnings.events[eventName as WarningEventName]);
       this._sentWarnings.events[eventName as WarningEventName] = true;
     }
   }
@@ -220,7 +219,7 @@ export class IronInpageProvider extends AbstractStreamProvider {
    */
   enable(): Promise<string[]> {
     if (!this._sentWarnings.enable) {
-      this._log.warn(messages.warnings.enableDeprecation);
+      log.warn(messages.warnings.enableDeprecation);
       this._sentWarnings.enable = true;
     }
 
@@ -272,7 +271,7 @@ export class IronInpageProvider extends AbstractStreamProvider {
 
   send(methodOrPayload: unknown, callbackOrArgs?: unknown): unknown {
     if (!this._sentWarnings.send) {
-      this._log.warn(messages.warnings.sendDeprecation);
+      log.warn(messages.warnings.sendDeprecation);
       this._sentWarnings.send = true;
     }
 
@@ -385,7 +384,7 @@ export class IronInpageProvider extends AbstractStreamProvider {
       {
         get: (obj, prop, ...args) => {
           if (!this._sentWarnings.experimentalMethods) {
-            this._log.warn(messages.warnings.experimentalMethods);
+            log.warn(messages.warnings.experimentalMethods);
             this._sentWarnings.experimentalMethods = true;
           }
           return Reflect.get(obj, prop, ...args);

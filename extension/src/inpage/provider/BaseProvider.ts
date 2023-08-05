@@ -7,6 +7,7 @@ import {
   JsonRpcRequest,
   JsonRpcVersion,
 } from "json-rpc-engine";
+import log from "loglevel";
 
 import SafeEventEmitter from "@metamask/safe-event-emitter";
 
@@ -70,8 +71,6 @@ export interface BaseProviderState {
  * 4. Ensure that notifications are received and emitted as appropriate.
  */
 export abstract class BaseProvider extends SafeEventEmitter {
-  protected readonly _log: ConsoleLike;
-
   protected _state: BaseProviderState;
 
   protected _rpcEngine: JsonRpcEngine;
@@ -104,13 +103,10 @@ export abstract class BaseProvider extends SafeEventEmitter {
    * listeners. Default: 100
    */
   constructor({
-    logger = console,
     maxEventListeners = 100,
     rpcMiddleware = [],
   }: BaseProviderOptions = {}) {
     super();
-
-    this._log = logger;
 
     this.setMaxListeners(maxEventListeners);
 
@@ -273,7 +269,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
     if (!this._state.isConnected) {
       this._state.isConnected = true;
       this.emit("connect", { chainId });
-      this._log.debug(messages.info.connected(chainId));
+      log.debug(messages.info.connected(chainId));
     }
   }
 
@@ -301,14 +297,14 @@ export abstract class BaseProvider extends SafeEventEmitter {
           1013, // Try again later
           errorMessage || messages.errors.disconnected()
         );
-        this._log.debug(error);
+        log.debug(error);
       } else {
         error = new EthereumRpcError(
           1011, // Internal error
           errorMessage || messages.errors.permanentlyDisconnected()
         );
 
-        this._log.error(error);
+        log.error(error);
         this.chainId = null;
         this._state.accounts = null;
         this.selectedAddress = null;
@@ -336,7 +332,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
     chainId,
   }: { chainId?: string; networkVersion?: string } = {}) {
     if (!isValidChainId(chainId)) {
-      this._log.error(messages.errors.invalidNetworkParams(), { chainId });
+      log.error(messages.errors.invalidNetworkParams(), { chainId });
       return;
     }
 
@@ -363,7 +359,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
     let _accounts = accounts;
 
     if (!Array.isArray(accounts)) {
-      this._log.error(
+      log.error(
         "Iron: Received invalid accounts parameter. Please report this bug.",
         accounts
       );
@@ -372,7 +368,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
 
     for (const account of accounts) {
       if (typeof account !== "string") {
-        this._log.error(
+        log.error(
           "Iron: Received non-string account. Please report this bug.",
           accounts
         );
@@ -414,7 +410,7 @@ export abstract class BaseProvider extends SafeEventEmitter {
     isUnlocked,
   }: { accounts?: string[]; isUnlocked?: boolean } = {}) {
     if (typeof isUnlocked !== "boolean") {
-      this._log.error(
+      log.error(
         "Iron: Received invalid isUnlocked parameter. Please report this bug."
       );
       return;

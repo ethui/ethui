@@ -1,6 +1,7 @@
 import { isDuplexStream } from "is-stream";
 import type { JsonRpcMiddleware } from "json-rpc-engine";
 import { createStreamMiddleware } from "json-rpc-middleware-stream";
+import log from "loglevel";
 import pump from "pump";
 import type { Duplex } from "stream";
 
@@ -41,7 +42,6 @@ export abstract class AbstractStreamProvider extends BaseProvider {
    * @param connectionStream - A Node.js duplex stream
    * @param options - An options bag
    * @param options.jsonRpcStreamName - The name of the internal JSON-RPC stream.
-   * @param options.logger - The logging API to use. Default: console
    * @param options.maxEventListeners - The maximum number of event
    * listeners. Default: 100
    */
@@ -49,12 +49,11 @@ export abstract class AbstractStreamProvider extends BaseProvider {
     connectionStream: Duplex,
     {
       jsonRpcStreamName,
-      logger,
       maxEventListeners,
       rpcMiddleware,
     }: StreamProviderOptions
   ) {
-    super({ logger, maxEventListeners, rpcMiddleware });
+    super({ logger: console, maxEventListeners, rpcMiddleware });
 
     if (!isDuplexStream(connectionStream)) {
       throw new Error(messages.errors.invalidDuplexStream());
@@ -137,7 +136,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
         method: "metamask_getProviderState",
       })) as Parameters<BaseProvider["_initializeState"]>[0];
     } catch (error) {
-      this._log.error(
+      log.error(
         "Iron: Failed to get initial state. Please report this bug.",
         error
       );
@@ -157,7 +156,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
       warningMsg += `\n${error.stack}`;
     }
 
-    this._log.warn(warningMsg);
+    log.warn(warningMsg);
     if (this.listenerCount("error") > 0) {
       this.emit("error", warningMsg);
     }
@@ -184,7 +183,7 @@ export abstract class AbstractStreamProvider extends BaseProvider {
     networkVersion,
   }: { chainId?: string; networkVersion?: string } = {}) {
     if (!isValidChainId(chainId) || !isValidNetworkVersion(networkVersion)) {
-      this._log.error(messages.errors.invalidNetworkParams(), {
+      log.error(messages.errors.invalidNetworkParams(), {
         chainId,
         networkVersion,
       });
