@@ -40,3 +40,10 @@ export interface JsonRpcConnection {
   middleware: JsonRpcMiddleware<unknown, unknown>;
   stream: Duplex;
 }
+
+export interface ExternalProviderState {
+  accounts: string[];
+  chainId: string;
+  isUnlocked: boolean;
+  networkVersion?: string;
+}

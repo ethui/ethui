@@ -8,7 +8,7 @@ import log from "loglevel";
 
 import { createRpcWarningMiddleware } from "./middleware/createRpcWarningMiddleware";
 
-export type Maybe<T> = Partial<T> | null | undefined;
+export type Maybe<T> = T | null | undefined;
 
 // Constants
 

@@ -12,6 +12,7 @@ import ObjectMultiplex from "@metamask/object-multiplex";
 import SafeEventEmitter from "@metamask/safe-event-emitter";
 
 import {
+  ExternalProviderState,
   JsonRpcConnection,
   ProviderState,
   RequestArguments,
@@ -62,18 +63,8 @@ export class IronProvider extends SafeEventEmitter {
 
   protected state: ProviderState;
   protected engine: JsonRpcEngine;
-  protected sentWarnings: Record<string, boolean> = {
-    // methods
-    enable: false,
-    experimentalMethods: false,
-    send: false,
-    // events
-    "events.close": false,
-    "events.data": false,
-    "events.networkChanged": false,
-    "events.notification": false,
-  };
   protected connection: JsonRpcConnection;
+  protected sentWarnings: Record<string, boolean> = {};
 
   /**
    * @param connectionStream - A Node.js duplex stream
@@ -103,7 +94,7 @@ export class IronProvider extends SafeEventEmitter {
     // We shouldn't perform asynchronous work in the constructor, but at one
     // point we started doing so, and changing this class isn't worth it at
     // the time of writing.
-    this._initializeStateAsync();
+    this.initializeStateAsync();
   }
 
   // Returns whether the provider can process RPC requests.
@@ -225,45 +216,6 @@ export class IronProvider extends SafeEventEmitter {
       );
     }
     return this._sendSync(methodOrPayload as SendSyncJsonRpcRequest);
-  }
-
-  /**
-   * **MUST** be called by child classes.
-   *
-   * Sets initial state if provided and marks this provider as initialized.
-   * Throws if called more than once.
-   *
-   * Permits the `networkVersion` field in the parameter object for
-   * compatibility with child classes that use this value.
-   *
-   * @param initialState - The provider's initial state.
-   * @emits BaseProvider#_initialized
-   * @emits BaseProvider#connect - If `initialState` is defined.
-   */
-  protected _initializeState(initialState?: {
-    accounts: string[];
-    chainId: string;
-    isUnlocked: boolean;
-    networkVersion?: string;
-  }) {
-    if (this.state.initialized === true) {
-      throw new Error("Provider already initialized.");
-    }
-
-    if (initialState) {
-      const { accounts, chainId, isUnlocked, networkVersion } = initialState;
-
-      // EIP-1193 connect
-      this.handleConnect(chainId);
-      this.handleChainChanged({ chainId, networkVersion });
-      this.handleUnlockStateChanged({ accounts, isUnlocked });
-      this.handleAccountsChanged(accounts);
-    }
-
-    // Mark provider as initialized regardless of whether initial state was
-    // retrieved.
-    this.state.initialized = true;
-    this.emit("_initialized");
   }
 
   /**
@@ -653,24 +605,43 @@ export class IronProvider extends SafeEventEmitter {
   /**
    * **MUST** be called by child classes.
    *
-   * Calls `metamask_getProviderState` and passes the result to
-   * {@link BaseProvider._initializeState}. Logs an error if getting initial state
-   * fails. Throws if called after initialization has completed.
+   * Calls `metamask_getProviderState` and sets initial state
+   * if provided and marks this provider as initialized.
+   * Throws if called more than once.
+   *
+   * Permits the `networkVersion` field in the parameter object for
+   * compatibility with child classes that use this value.
    */
-  protected async _initializeStateAsync() {
-    let initialState: Parameters<IronProvider["_initializeState"]>[0];
-
+  protected async initializeStateAsync() {
     try {
-      initialState = (await this.request({
+      const initialState = await this.request<ExternalProviderState>({
         method: "metamask_getProviderState",
-      })) as Parameters<IronProvider["_initializeState"]>[0];
+      });
+
+      if (this.state.initialized === true) {
+        throw new Error("Provider already initialized.");
+      }
+
+      if (initialState) {
+        const { accounts, chainId, isUnlocked, networkVersion } = initialState;
+
+        // EIP-1193 connect
+        this.handleConnect(chainId);
+        this.handleChainChanged({ chainId, networkVersion });
+        this.handleUnlockStateChanged({ accounts, isUnlocked });
+        this.handleAccountsChanged(accounts);
+      }
+
+      // Mark provider as initialized regardless of whether initial state was
+      // retrieved.
+      this.state.initialized = true;
+      this.emit("_initialized");
     } catch (error) {
       log.error(
         "Iron: Failed to get initial state. Please report this bug.",
         error
       );
     }
-    this._initializeState(initialState);
   }
 
   /**
