@@ -60,18 +60,16 @@ export class IronProvider extends SafeEventEmitter {
 
   protected state: ProviderState;
   protected engine: JsonRpcEngine;
-  protected sentWarnings: SentWarningsState = {
+  protected sentWarnings: Record<string, boolean> = {
     // methods
     enable: false,
     experimentalMethods: false,
     send: false,
     // events
-    events: {
-      close: false,
-      data: false,
-      networkChanged: false,
-      notification: false,
-    },
+    "events.close": false,
+    "events.data": false,
+    "events.networkChanged": false,
+    "events.notification": false,
   };
   protected connection: JsonRpcConnection;
 
@@ -479,25 +477,24 @@ export class IronProvider extends SafeEventEmitter {
 
   /* Warns of deprecation for the given event, if applicable. */
   protected _warnOfDeprecation(eventName: string): void {
-    if (this.sentWarnings?.events[eventName as WarningEventName] === false) {
-      let msg;
-      switch (eventName) {
-        case "close":
-          msg = `Iron: The event 'close' is deprecated and may be removed in the future. Please use 'disconnect' instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1193#disconnect`;
-          break;
-        case "data":
-          msg = `Iron: The event 'data' is deprecated and will be removed in the future. Use 'message' instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1193#message`;
-          break;
-        case "networkChanged":
-          msg = `Iron: The event 'networkChanged' is deprecated and may be removed in the future. Use 'chainChanged' instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1193#chainchanged`;
-          break;
-        case "notification":
-          msg = `Iron: The event 'notification' is deprecated and may be removed in the future. Use 'message' instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1193#message`;
-          break;
-      }
+    let msg;
+    switch (eventName) {
+      case "close":
+        msg = `Iron: The event 'close' is deprecated and may be removed in the future. Please use 'disconnect' instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1193#disconnect`;
+        break;
+      case "data":
+        msg = `Iron: The event 'data' is deprecated and will be removed in the future. Use 'message' instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1193#message`;
+        break;
+      case "networkChanged":
+        msg = `Iron: The event 'networkChanged' is deprecated and may be removed in the future. Use 'chainChanged' instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1193#chainchanged`;
+        break;
+      case "notification":
+        msg = `Iron: The event 'notification' is deprecated and may be removed in the future. Use 'message' instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1193#message`;
+        break;
+    }
 
-      log.warn(msg);
-      this.sentWarnings.events[eventName as WarningEventName] = true;
+    if (msg) {
+      this.warnOnce(`events.{eventName}`, msg);
     }
   }
 
@@ -512,12 +509,10 @@ export class IronProvider extends SafeEventEmitter {
    * @returns A promise that resolves to an array of addresses.
    */
   public enable(): Promise<string[]> {
-    if (!this.sentWarnings.enable) {
-      log.warn(
-        `Iron: 'ethereum.enable()' is deprecated and may be removed in the future. Please use the 'eth_requestAccounts' RPC method instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1102`
-      );
-      this.sentWarnings.enable = true;
-    }
+    this.warnOnce(
+      "enable",
+      `Iron: 'ethereum.enable()' is deprecated and may be removed in the future. Please use the 'eth_requestAccounts' RPC method instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1102`
+    );
 
     return new Promise<string[]>((resolve, reject) => {
       try {
@@ -566,12 +561,10 @@ export class IronProvider extends SafeEventEmitter {
   public send<T>(payload: SendSyncJsonRpcRequest): JsonRpcResponse<T>;
 
   public send(methodOrPayload: unknown, callbackOrArgs?: unknown): unknown {
-    if (!this.sentWarnings.send) {
-      log.warn(
-        `Iron: 'ethereum.send(...)' is deprecated and may be removed in the future. Please use 'ethereum.sendAsync(...)' or 'ethereum.request(...)' instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1193`
-      );
-      this.sentWarnings.send = true;
-    }
+    this.warnOnce(
+      "send",
+      `Iron: 'ethereum.send(...)' is deprecated and may be removed in the future. Please use 'ethereum.sendAsync(...)' or 'ethereum.request(...)' instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1193`
+    );
 
     if (
       typeof methodOrPayload === "string" &&
@@ -605,7 +598,7 @@ export class IronProvider extends SafeEventEmitter {
    *
    * @deprecated
    */
-  protected _sendSync(payload: SendSyncJsonRpcRequest) {
+  private _sendSync(payload: SendSyncJsonRpcRequest) {
     let result;
     switch (payload.method) {
       case "eth_accounts":
@@ -644,7 +637,7 @@ export class IronProvider extends SafeEventEmitter {
    * Gets the experimental _metamask API as Proxy, so that we can warn consumers
    * about its experimental nature.
    */
-  protected _getExperimentalApi() {
+  private _getExperimentalApi() {
     return new Proxy(
       {
         // Determines if Iron is unlocked by the user.
@@ -678,12 +671,11 @@ export class IronProvider extends SafeEventEmitter {
       },
       {
         get: (obj, prop, ...args) => {
-          if (!this.sentWarnings.experimentalMethods) {
-            log.warn(
-              `Iron: 'ethereum._metamask' exposes non-standard, experimental methods. They may be removed or changed without warning.`
-            );
-            this.sentWarnings.experimentalMethods = true;
-          }
+          this.warnOnce(
+            "experimentalMethods",
+            `Iron: 'ethereum._metamask' exposes non-standard, experimental methods. They may be removed or changed without warning.`
+          );
+
           return Reflect.get(obj, prop, ...args);
         },
       }
@@ -827,5 +819,12 @@ export class IronProvider extends SafeEventEmitter {
       initialized: false,
       isPermanentlyDisconnected: false,
     };
+  }
+
+  private warnOnce(key: string, message: string) {
+    if (!this.sentWarnings[key]) {
+      this.sentWarnings[key] = true;
+      log.warn(message);
+    }
   }
 }

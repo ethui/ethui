@@ -35,22 +35,6 @@ export interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
     | "net_version";
 }
 
-export type WarningEventName = keyof SentWarningsState["events"];
-
-export interface SentWarningsState {
-  // methods
-  enable: boolean;
-  experimentalMethods: boolean;
-  send: boolean;
-  // events
-  events: {
-    close: boolean;
-    data: boolean;
-    networkChanged: boolean;
-    notification: boolean;
-  };
-}
-
 export interface JsonRpcConnection {
   events: SafeEventEmitter;
   middleware: JsonRpcMiddleware<unknown, unknown>;
