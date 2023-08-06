@@ -16,9 +16,7 @@ import {
   ProviderState,
   RequestArguments,
   SendSyncJsonRpcRequest,
-  SentWarningsState,
   UnvalidatedJsonRpcRequest,
-  WarningEventName,
 } from "./types";
 import { EMITTED_NOTIFICATIONS, isValidNetworkVersion } from "./utils";
 import { NOOP, getDefaultExternalMiddleware } from "./utils";
@@ -34,13 +32,17 @@ interface IronProviderOptions {
 }
 
 export class IronProvider extends SafeEventEmitter {
-  // The chain ID of the currently connected Ethereum chain.
-  // See [chainId.network]{@link https://chainid.network} for more information.
+  /**
+   * The chain ID of the currently connected Ethereum chain.
+   * See [chainId.network]{@link https://chainid.network} for more information.
+   */
   public chainId?: string;
 
-  // The user's currently selected Ethereum address.
-  // If null, Iron is either locked or the user has not permitted any
-  // addresses to be viewed.
+  /**
+   * The user's currently selected Ethereum address.
+   * If null, Iron is either locked or the user has not permitted any
+   * addresses to be viewed.
+   */
   public selectedAddress?: string;
 
   // Experimental methods can be found here.
@@ -153,6 +155,76 @@ export class IronProvider extends SafeEventEmitter {
         getRpcPromiseCallback(resolve as any, reject) as any
       );
     });
+  }
+
+  /**
+   * Submits an RPC request per the given JSON-RPC request object.
+   *
+   * @param payload - The RPC request object.
+   * @param callback - The callback function.
+   */
+  public sendAsync(
+    payload: JsonRpcRequest<unknown>,
+    callback: (error: Error | null, result?: JsonRpcResponse<unknown>) => void
+  ): void {
+    this.rpcRequest(payload, callback as any);
+  }
+
+  /**
+   * Equivalent to: ethereum.request('eth_requestAccounts')
+   *
+   * @deprecated Use request({ method: 'eth_requestAccounts' }) instead.
+   * @returns A promise that resolves to an array of addresses.
+   */
+  public enable(): Promise<string[]> {
+    this.warnOnce(
+      "enable",
+      `Iron: 'ethereum.enable()' is deprecated and may be removed in the future. Please use the 'eth_requestAccounts' RPC method instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1102`
+    );
+
+    return new Promise<string[]>((resolve, reject) => {
+      try {
+        this.rpcRequest(
+          { method: "eth_requestAccounts", params: [] },
+          getRpcPromiseCallback(resolve as any, reject) as any
+        );
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  public send(methodOrPayload: unknown, callbackOrArgs?: unknown): unknown {
+    this.warnOnce(
+      "send",
+      `Iron: 'ethereum.send(...)' is deprecated and may be removed in the future. Please use 'ethereum.sendAsync(...)' or 'ethereum.request(...)' instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1193`
+    );
+
+    if (
+      typeof methodOrPayload === "string" &&
+      (!callbackOrArgs || Array.isArray(callbackOrArgs))
+    ) {
+      return new Promise((resolve, reject) => {
+        try {
+          this.rpcRequest(
+            { method: methodOrPayload, params: callbackOrArgs },
+            getRpcPromiseCallback(resolve, reject, false) as any
+          );
+        } catch (error) {
+          reject(error);
+        }
+      });
+    } else if (
+      methodOrPayload &&
+      typeof methodOrPayload === "object" &&
+      typeof callbackOrArgs === "function"
+    ) {
+      return this.rpcRequest(
+        methodOrPayload as JsonRpcRequest<unknown>,
+        callbackOrArgs as (...args: unknown[]) => void
+      );
+    }
+    return this._sendSync(methodOrPayload as SendSyncJsonRpcRequest);
   }
 
   /**
@@ -430,19 +502,6 @@ export class IronProvider extends SafeEventEmitter {
   }
 
   /**
-   * Submits an RPC request per the given JSON-RPC request object.
-   *
-   * @param payload - The RPC request object.
-   * @param callback - The callback function.
-   */
-  public sendAsync(
-    payload: JsonRpcRequest<unknown>,
-    callback: (error: Error | null, result?: JsonRpcResponse<unknown>) => void
-  ): void {
-    this.rpcRequest(payload, callback as any);
-  }
-
-  /**
    * We override the following event methods so that we can warn consumers
    * about deprecated events:
    *   addListener, on, once, prependListener, prependOnceListener
@@ -501,97 +560,6 @@ export class IronProvider extends SafeEventEmitter {
   //====================
   // Deprecated Methods
   //====================
-
-  /**
-   * Equivalent to: ethereum.request('eth_requestAccounts')
-   *
-   * @deprecated Use request({ method: 'eth_requestAccounts' }) instead.
-   * @returns A promise that resolves to an array of addresses.
-   */
-  public enable(): Promise<string[]> {
-    this.warnOnce(
-      "enable",
-      `Iron: 'ethereum.enable()' is deprecated and may be removed in the future. Please use the 'eth_requestAccounts' RPC method instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1102`
-    );
-
-    return new Promise<string[]>((resolve, reject) => {
-      try {
-        this.rpcRequest(
-          { method: "eth_requestAccounts", params: [] },
-          getRpcPromiseCallback(resolve as any, reject) as any
-        );
-      } catch (error) {
-        reject(error);
-      }
-    });
-  }
-
-  /**
-   * Submits an RPC request for the given method, with the given params.
-   *
-   * @deprecated Use "request" instead.
-   * @param method - The method to request.
-   * @param params - Any params for the method.
-   * @returns A Promise that resolves with the JSON-RPC response object for the
-   * request.
-   */
-  send<T>(method: string, params?: T[]): Promise<JsonRpcResponse<T>>;
-
-  /**
-   * Submits an RPC request per the given JSON-RPC request object.
-   *
-   * @deprecated Use "request" instead.
-   * @param payload - A JSON-RPC request object.
-   * @param callback - An error-first callback that will receive the JSON-RPC
-   * response object.
-   */
-  public send<T>(
-    payload: JsonRpcRequest<unknown>,
-    callback: (error: Error | null, result?: JsonRpcResponse<T>) => void
-  ): void;
-
-  /**
-   * Accepts a JSON-RPC request object, and synchronously returns the cached result
-   * for the given method. Only supports 4 specific RPC methods.
-   *
-   * @deprecated Use "request" instead.
-   * @param payload - A JSON-RPC request object.
-   * @returns A JSON-RPC response object.
-   */
-  public send<T>(payload: SendSyncJsonRpcRequest): JsonRpcResponse<T>;
-
-  public send(methodOrPayload: unknown, callbackOrArgs?: unknown): unknown {
-    this.warnOnce(
-      "send",
-      `Iron: 'ethereum.send(...)' is deprecated and may be removed in the future. Please use 'ethereum.sendAsync(...)' or 'ethereum.request(...)' instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1193`
-    );
-
-    if (
-      typeof methodOrPayload === "string" &&
-      (!callbackOrArgs || Array.isArray(callbackOrArgs))
-    ) {
-      return new Promise((resolve, reject) => {
-        try {
-          this.rpcRequest(
-            { method: methodOrPayload, params: callbackOrArgs },
-            getRpcPromiseCallback(resolve, reject, false) as any
-          );
-        } catch (error) {
-          reject(error);
-        }
-      });
-    } else if (
-      methodOrPayload &&
-      typeof methodOrPayload === "object" &&
-      typeof callbackOrArgs === "function"
-    ) {
-      return this.rpcRequest(
-        methodOrPayload as JsonRpcRequest<unknown>,
-        callbackOrArgs as (...args: unknown[]) => void
-      );
-    }
-    return this._sendSync(methodOrPayload as SendSyncJsonRpcRequest);
-  }
 
   /**
    * Internal backwards compatibility method, used in send.
