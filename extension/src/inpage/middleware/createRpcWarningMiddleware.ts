@@ -1,8 +1,6 @@
 import type { JsonRpcMiddleware } from "json-rpc-engine";
 import log from "loglevel";
 
-import messages from "../messages";
-
 /**
  * Create JSON-RPC middleware that logs warnings for deprecated RPC methods.
  *
@@ -23,13 +21,17 @@ export function createRpcWarningMiddleware(): JsonRpcMiddleware<
       sentWarnings.ethDecryptDeprecation === false &&
       req.method === "eth_decrypt"
     ) {
-      log.warn(messages.warnings.rpc.ethDecryptDeprecation);
+      log.warn(
+        `Iron: The RPC method 'eth_decrypt' is deprecated and may be removed in the future.\nFor more information, see: https://medium.com/metamask/metamask-api-method-deprecation-2b0564a84686`
+      );
       sentWarnings.ethDecryptDeprecation = true;
     } else if (
       sentWarnings.ethGetEncryptionPublicKeyDeprecation === false &&
       req.method === "eth_getEncryptionPublicKey"
     ) {
-      log.warn(messages.warnings.rpc.ethGetEncryptionPublicKeyDeprecation);
+      log.warn(
+        `Iron: The RPC method 'eth_getEncryptionPublicKey' is deprecated and may be removed in the future.\nFor more information, see: https://medium.com/metamask/metamask-api-method-deprecation-2b0564a84686`
+      );
       sentWarnings.ethGetEncryptionPublicKeyDeprecation = true;
     }
     next();
