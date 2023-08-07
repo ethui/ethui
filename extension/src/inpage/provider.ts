@@ -758,28 +758,23 @@ export class IronProvider extends SafeEventEmitter {
           break;
 
         default:
+          // TODO: check all these emits against original impl
           if (EMITTED_NOTIFICATIONS.includes(method)) {
             log.info("emitting", method);
+
             this.emit("message", {
               type: method,
               data: params,
             });
+
+            // deprecated
+            // emitted here because that was the original order
+            this.emit("data", payload);
+            // deprecated
+            this.emit("notification", payload.params.result);
           } else {
             log.error("unexpected message", payload);
           }
-      }
-    });
-
-    // TODO: why is this duplicated? check previous superclasses
-    // handle JSON-RPC notifications
-    this.connection.events.on("notification", (payload) => {
-      const { method } = payload;
-      if (EMITTED_NOTIFICATIONS.includes(method)) {
-        // deprecated
-        // emitted here because that was the original order
-        this.emit("data", payload);
-        // deprecated
-        this.emit("notification", payload.params.result);
       }
     });
   }
