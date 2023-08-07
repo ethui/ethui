@@ -14,10 +14,10 @@ import SafeEventEmitter from "@metamask/safe-event-emitter";
 import {
   ExternalProviderState,
   JsonRpcConnection,
-  ProviderState,
   RequestArguments,
   SendSyncJsonRpcRequest,
-  UnvalidatedJsonRpcRequest,
+  UnvalidatedRequest,
+  UnvalidatedSingleOrBatchRequest,
 } from "./types";
 import { EMITTED_NOTIFICATIONS, isValidNetworkVersion } from "./utils";
 import { NOOP, getDefaultExternalMiddleware } from "./utils";
@@ -61,7 +61,15 @@ export class IronProvider extends SafeEventEmitter {
    */
   public readonly isMetaMask: boolean = true;
 
-  protected state: ProviderState;
+  protected state: {
+    accounts: null | string[];
+    isConnected: boolean;
+    isUnlocked: boolean;
+    initialized: boolean;
+    isPermanentlyDisconnected: boolean;
+  };
+
+  protected autoId: number = 0;
   protected engine: JsonRpcEngine;
   protected connection: JsonRpcConnection;
   protected sentWarnings: Record<string, boolean> = {};
@@ -149,19 +157,6 @@ export class IronProvider extends SafeEventEmitter {
   }
 
   /**
-   * Submits an RPC request per the given JSON-RPC request object.
-   *
-   * @param payload - The RPC request object.
-   * @param callback - The callback function.
-   */
-  public sendAsync(
-    payload: JsonRpcRequest<unknown>,
-    callback: (error: Error | null, result?: JsonRpcResponse<unknown>) => void
-  ): void {
-    this.rpcRequest(payload, callback as any);
-  }
-
-  /**
    * Equivalent to: ethereum.request('eth_requestAccounts')
    *
    * @deprecated Use request({ method: 'eth_requestAccounts' }) instead.
@@ -183,6 +178,19 @@ export class IronProvider extends SafeEventEmitter {
         reject(error);
       }
     });
+  }
+
+  /**
+   * Submits an RPC request per the given JSON-RPC request object.
+   *
+   * @param payload - The RPC request object.
+   * @param callback - The callback function.
+   */
+  public sendAsync(
+    payload: JsonRpcRequest<unknown>,
+    callback: (error: Error | null, result?: JsonRpcResponse<unknown>) => void
+  ): void {
+    this.rpcRequest(payload, callback as any);
   }
 
   public send(methodOrPayload: unknown, callbackOrArgs?: unknown): unknown {
@@ -226,17 +234,28 @@ export class IronProvider extends SafeEventEmitter {
    * @param callback - The consumer's callback.
    */
   protected rpcRequest(
-    payload: UnvalidatedJsonRpcRequest | UnvalidatedJsonRpcRequest[],
+    payload: UnvalidatedSingleOrBatchRequest,
     cb: (...args: unknown[]) => void
   ) {
     if (!Array.isArray(payload)) {
-      if (!payload.jsonrpc) {
-        payload.jsonrpc = "2.0";
-      }
+      let request = {
+        id: payload.id || this.nextId(),
+        jsonrpc: payload.jsonrpc || "2.0",
+        method: payload.method,
+        params: payload.params,
+      };
 
-      return this.engine.handle(payload as JsonRpcRequest<unknown>, cb);
+      return this.engine.handle(request, cb);
+    } else {
+      let request = payload.map((payload) => ({
+        id: payload.id || this.nextId(),
+        jsonrpc: payload.jsonrpc || "2.0",
+        method: payload.method,
+        params: payload.params,
+      }));
+
+      return this.engine.handle(request, cb);
     }
-    return this.engine.handle(payload as JsonRpcRequest<unknown>[], cb);
   }
 
   /**
@@ -320,6 +339,8 @@ export class IronProvider extends SafeEventEmitter {
     chainId,
     networkVersion,
   }: { chainId?: string; networkVersion?: string } = {}) {
+    log.info("handleChainChanged", { chainId, networkVersion });
+
     // This will validate the params and disconnect the provider if the
     // networkVersion is 'loading'.
     /**
@@ -387,6 +408,7 @@ export class IronProvider extends SafeEventEmitter {
    * a call to eth_accounts.
    */
   protected handleAccountsChanged(accounts: unknown[]): void {
+    log.info("handleAccountsChanged", accounts);
     let _accounts = accounts;
 
     if (!Array.isArray(accounts)) {
@@ -440,6 +462,8 @@ export class IronProvider extends SafeEventEmitter {
     accounts,
     isUnlocked,
   }: { accounts?: string[]; isUnlocked?: boolean } = {}) {
+    log.info("handleUnlockStateChanged", { accounts, isUnlocked });
+
     if (typeof isUnlocked !== "boolean") {
       log.error(
         "Iron: Received invalid isUnlocked parameter. Please report this bug."
@@ -572,7 +596,7 @@ export class IronProvider extends SafeEventEmitter {
         },
 
         // Make a batch RPC request.
-        requestBatch: async (requests: UnvalidatedJsonRpcRequest[]) => {
+        requestBatch: async (requests: UnvalidatedRequest[]) => {
           if (!Array.isArray(requests)) {
             throw ethErrors.rpc.invalidRequest({
               message:
@@ -711,32 +735,42 @@ export class IronProvider extends SafeEventEmitter {
     // Handle JSON-RPC notifications
     this.connection.events.on("notification", (payload) => {
       const { method, params } = payload;
-      if (method === "accountsChanged") {
-        log.info("handleAccountsChanged", params);
-        this.handleAccountsChanged(params);
-      } else if (method === "metamask_unlockStateChanged") {
-        log.info("handleUnlockStateChanged");
-        this.handleUnlockStateChanged(params);
-      } else if (method === "chainChanged") {
-        log.info("handleChainChanged", params);
-        this.handleChainChanged(params);
-      } else if (EMITTED_NOTIFICATIONS.includes(method)) {
-        log.info("emitting", method);
-        this.emit("message", {
-          type: method,
-          data: params,
-        });
-      } else if (method === "METAMASK_STREAM_FAILURE") {
-        stream.destroy(
-          new Error(
-            "Iron: Disconnected from Iron background. Page reload required."
-          )
-        );
-      } else {
-        log.error("unexpected message", payload);
+
+      switch (method) {
+        case "accountsChanged":
+          this.handleAccountsChanged(params);
+          break;
+
+        case "metamask_unlockStateChanged":
+          this.handleUnlockStateChanged(params);
+          break;
+
+        case "chainChanged":
+          this.handleChainChanged(params);
+          break;
+
+        case "METAMASK_STREAM_FAILURE":
+          stream.destroy(
+            new Error(
+              "Iron: Disconnected from Iron background. Page reload required."
+            )
+          );
+          break;
+
+        default:
+          if (EMITTED_NOTIFICATIONS.includes(method)) {
+            log.info("emitting", method);
+            this.emit("message", {
+              type: method,
+              data: params,
+            });
+          } else {
+            log.error("unexpected message", payload);
+          }
       }
     });
 
+    // TODO: why is this duplicated? check previous superclasses
     // handle JSON-RPC notifications
     this.connection.events.on("notification", (payload) => {
       const { method } = payload;
@@ -750,7 +784,12 @@ export class IronProvider extends SafeEventEmitter {
     });
   }
 
-  private defaultState(): ProviderState {
+  private nextId() {
+    this.autoId++;
+    return `auto-${this.nextId}`;
+  }
+
+  private defaultState() {
     return {
       accounts: null,
       isConnected: false,

@@ -5,7 +5,11 @@ import type { Duplex } from "stream";
 
 import type SafeEventEmitter from "@metamask/safe-event-emitter";
 
-export interface UnvalidatedJsonRpcRequest {
+export type UnvalidatedSingleOrBatchRequest =
+  | UnvalidatedRequest
+  | UnvalidatedRequest[];
+
+export interface UnvalidatedRequest {
   id?: JsonRpcId;
   jsonrpc?: JsonRpcVersion;
   method: string;
@@ -17,14 +21,6 @@ export interface RequestArguments {
   method: string;
   /* The params of the RPC method, if any. */
   params?: unknown[] | Record<string, unknown>;
-}
-
-export interface ProviderState {
-  accounts: null | string[];
-  isConnected: boolean;
-  isUnlocked: boolean;
-  initialized: boolean;
-  isPermanentlyDisconnected: boolean;
 }
 
 export interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
