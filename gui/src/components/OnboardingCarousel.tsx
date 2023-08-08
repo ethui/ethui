@@ -13,9 +13,9 @@ interface Props {
   steps: Step[];
   activeStep: number;
   formData: WizardFormData;
-  handleClose: () => void;
-  handleNext: () => void;
-  handleBack: () => void;
+  handleClose: () => unknown;
+  handleNext: () => unknown;
+  handleBack: () => unknown;
   setFormData: React.Dispatch<React.SetStateAction<WizardFormData>>;
 }
 
