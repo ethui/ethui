@@ -308,14 +308,14 @@ impl DB {
         Ok(res)
     }
 
-    pub async fn get_erc721_tokens(&self, chain_id: u32) -> Result<Vec<Erc721Token>> {
-        // po-todo: filter by owner
+    pub async fn get_erc721_tokens(&self, chain_id: u32, address: Address) -> Result<Vec<Erc721Token>> {
         let res: Vec<_> = sqlx::query(
             r#" SELECT * 
         FROM nft_tokens
-        WHERE chain_id = ?"#,
+        WHERE chain_id = ? AND owner = ?"#,
         )
         .bind(chain_id)
+        .bind(format!("0x{:x}", address))
         .map(|row| row.try_into().unwrap())
         .fetch_all(self.pool())
         .await?;

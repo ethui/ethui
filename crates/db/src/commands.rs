@@ -44,7 +44,8 @@ pub async fn db_get_native_balance(
 #[tauri::command]
 pub async fn db_get_erc721_tokens(
     chain_id: u32,
+    address: Address,
     db: tauri::State<'_, DB>,
 ) -> Result<Vec<Erc721Token>> {
-    db.get_erc721_tokens(chain_id).await
+    db.get_erc721_tokens(chain_id, address).await
 }
