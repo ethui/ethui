@@ -1,22 +1,26 @@
+import { invoke } from "@tauri-apps/api/tauri";
 import { useState } from "react";
 
+import { useInvoke } from "../hooks";
+import { GeneralSettings } from "../types";
 import { OnboardingWizard } from "./OnboardingWizard";
 
 interface Props {
   children: React.ReactNode;
 }
 
-const onboarded = localStorage.getItem("onboarded");
-
 export function OnboardingWrapper({ children }: Props) {
-  const [isOnboarded, setIsOnboarded] = useState(!!onboarded);
+  const [isOnboarded, setIsOnboarded] = useState<boolean>();
+  const { data: settings } = useInvoke<GeneralSettings>("settings_get");
 
   const closeOnboarding = () => {
-    localStorage.setItem("onboarded", "true");
     setIsOnboarded(true);
+    invoke("settings_finish_onboarding");
   };
 
-  if (isOnboarded) return <>{children}</>;
+  if (!settings) return null;
+
+  if (isOnboarded || settings.onboarded) return <>{children}</>;
 
   return <OnboardingWizard closeOnboarding={closeOnboarding} />;
 }
