@@ -24,13 +24,6 @@ pub async fn wallets_get_current_address() -> Result<ChecksummedAddress> {
         .await)
 }
 
-/// Sets a new list of wallets
-/// Currently, the UI sends over the entire list to set, instead of adding/removing items
-#[tauri::command]
-pub async fn wallets_set_list(list: Vec<Wallet>) -> Result<()> {
-    Wallets::write().await.set_wallets(list).await
-}
-
 #[tauri::command]
 pub async fn wallets_create(params: Json) -> Result<()> {
     Wallets::write().await.create(params).await

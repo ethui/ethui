@@ -18,14 +18,13 @@ iron-rpc = { workspace = true }
 iron-ws = { workspace = true }
 iron-types = { workspace = true }
 iron-db = { workspace = true }
-iron-sync-alchemy = { workspace = true }
-iron-sync-anvil = { workspace = true }
+iron-sync = { workspace = true }
 iron-tracing = { workspace = true }
 iron-exchange-rates = { workspace = true }
+iron-broadcast = { workspace = true }
 tauri = { workspace = true }
 tokio = { workspace = true }
 thiserror = { workspace = true }
-tracing = { workspace = true }
 
 fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs", rev = "1a4c224" }
 tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }

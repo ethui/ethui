@@ -56,15 +56,29 @@ jobs:
       - name: Install dependencies
         run: yarn workspace @iron/extension install
 
-      - name: Build extension zip
-        run: yarn workspace @iron/extension release
-        env:
-          EXTENSION_TAG: ${{ needs.setup.outputs.tag }}
+      - name: Create bundles
+        run: yarn workspace @iron/extension bundle
 
       - name: Upload to release
-        run: gh release upload ${{ needs.setup.outputs.tag }} ./extension/*.zip
+        run: gh release upload ${{ needs.setup.outputs.tag }} ./extension/*.{crx,zip,xpi}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # TODO:
+      # - name: Submit to Mozilla
+      #   working-directory: ./extension/dist
+      #   run: npx web-ext-submit@7
+      #   env:
+      #     WEB_EXT_API_KEY: ${{ secrets.WEB_EXT_API_KEY }}
+      #     WEB_EXT_API_SECRET: ${{ secrets.WEB_EXT_API_SECRET }}
+      # - name: Submit to Google
+      #   working-directory: ./extension/dist
+      #   run: npx chrome-webstore-upload-cli@2 upload --auto-publish
+      #   env:
+      #     EXTENSION_ID: ${{ secrets.EXTENSION_ID }}
+      #     CLIENT_ID: ${{ secrets.CLIENT_ID }}
+      #     CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+      #     REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
 
   # build extension
   # upload to draft release

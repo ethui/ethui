@@ -1,5 +1,4 @@
-use super::handle::DialogMsg;
-use super::{error::Result, global::OPEN_DIALOGS};
+use super::{error::Result, global::OPEN_DIALOGS, handle::DialogMsg};
 
 /// Retrieves the payload for a dialog window
 /// Dialogs can call this once ready to retrieve the data they're meant to display

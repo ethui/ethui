@@ -15,7 +15,7 @@ use std::{
 
 pub use error::{Error, Result};
 pub use init::init;
-use iron_types::{ChecksummedAddress, Json, UINotify, UISender};
+use iron_types::{ChecksummedAddress, Json, UINotify};
 use serde::Serialize;
 
 use self::wallet::WalletCreate;
@@ -33,9 +33,6 @@ pub struct Wallets {
 
     #[serde(default)]
     current: usize,
-
-    #[serde(skip)]
-    window_snd: UISender,
 
     #[serde(skip)]
     file: Option<PathBuf>,
@@ -58,6 +55,10 @@ impl Wallets {
         Ok(())
     }
 
+    async fn get_current_address(&self) -> ChecksummedAddress {
+        self.get_current_wallet().get_current_address().await
+    }
+
     /// Switches the current default wallet
     async fn set_current_wallet(&mut self, id: usize) -> Result<()> {
         if id >= self.wallets.len() {
@@ -75,27 +76,20 @@ impl Wallets {
         &self.wallets
     }
 
-    /// Resets the list of wallets to a new one
-    async fn set_wallets(&mut self, wallets: Vec<Wallet>) -> Result<()> {
-        if let Some(n) = find_duplicates(&wallets) {
-            return Err(Error::DuplicateWalletNames(n));
-        }
-        // TODO: should fail if wallets with duplicate names exist
-
-        self.wallets = wallets;
-        self.ensure_current();
-        self.on_wallet_changed().await?;
-        self.save()?;
-
-        Ok(())
-    }
-
     async fn create(&mut self, params: Json) -> Result<()> {
         let wallet = Wallet::create(params).await?;
+        let addresses = wallet.get_all_addresses().await;
+
         // TODO: ensure no duplicates
         self.wallets.push(wallet);
+
         self.on_wallet_changed().await?;
         self.save()?;
+
+        for (_, a) in addresses {
+            iron_broadcast::address_added(a).await;
+        }
+
         Ok(())
     }
 
@@ -103,7 +97,20 @@ impl Wallets {
         // TODO: should fail if no wallet of that name exists
         let i = self.wallets.iter().position(|w| w.name() == name).unwrap();
 
+        let before = self.wallets[i].get_all_addresses().await;
         self.wallets[i] = self.wallets[i].clone().update(params).await?;
+        let after = self.wallets[i].get_all_addresses().await;
+
+        tokio::spawn(async move {
+            let before: HashSet<_> = before.into_iter().collect();
+            let after: HashSet<_> = after.into_iter().collect();
+            for (_, a) in after.difference(&before) {
+                iron_broadcast::address_added(*a).await;
+            }
+            for (_, a) in before.difference(&after) {
+                iron_broadcast::address_removed(*a).await;
+            }
+        });
 
         self.ensure_current();
         self.notify_peers().await;
@@ -113,17 +120,24 @@ impl Wallets {
     }
 
     async fn remove(&mut self, name: String) -> Result<()> {
-        let new = self
+        let found = self
             .wallets
             .iter()
-            .filter(|w| w.name() != name)
-            .cloned()
-            .collect();
+            .enumerate()
+            .find(|(_, w)| w.name() == name);
 
-        self.wallets = new;
-        self.ensure_current();
-        self.on_wallet_changed().await?;
-        self.save()?;
+        if let Some((i, _)) = found {
+            let removed = self.wallets.remove(i);
+
+            for (_, a) in removed.get_all_addresses().await {
+                iron_broadcast::address_removed(a).await;
+            }
+
+            self.ensure_current();
+            self.on_wallet_changed().await?;
+            self.save()?;
+        }
+
         Ok(())
     }
 
@@ -162,9 +176,23 @@ impl Wallets {
         }
     }
 
+    async fn init_broadcast(&self) {
+        for wallet in self.wallets.iter() {
+            for (_, addr) in wallet.get_all_addresses().await {
+                iron_broadcast::address_added(addr).await;
+            }
+        }
+
+        let addr = self.get_current_address().await;
+        iron_broadcast::current_address_changed(addr).await;
+    }
+
     async fn on_wallet_changed(&self) -> Result<()> {
+        let addr = self.get_current_address().await;
+
         self.notify_peers().await;
-        self.window_snd.send(UINotify::WalletsChanged.into())?;
+        iron_broadcast::ui_notify(UINotify::WalletsChanged).await;
+        iron_broadcast::current_address_changed(addr).await;
 
         Ok(())
     }
@@ -174,17 +202,4 @@ impl Wallets {
         let addresses = vec![self.get_current_wallet().get_current_address().await];
         iron_broadcast::accounts_changed(addresses).await;
     }
-}
-
-fn find_duplicates(wallets: &[Wallet]) -> Option<String> {
-    let mut uniq = HashSet::new();
-    for wallet in wallets.iter() {
-        let name = wallet.name();
-        if uniq.contains(&name) {
-            return Some(name);
-        }
-        uniq.insert(name);
-    }
-
-    None
 }

@@ -1,4 +1,3 @@
-use iron_types::UIEvent;
 use serde::Serialize;
 use tokio::sync::oneshot;
 
@@ -33,9 +32,6 @@ pub enum Error {
 
     #[error("unknown wallet key: {0}")]
     InvalidKey(String),
-
-    #[error("error sending event to window: {0}")]
-    WindowSend(#[from] tokio::sync::mpsc::error::SendError<UIEvent>),
 
     #[error("invalid wallet type: {0}")]
     InvalidWalletType(String),

@@ -21,19 +21,22 @@ import {
   useMatches,
   useRegisterActions,
 } from "kbar";
-import React, { forwardRef } from "react";
+import React, { ReactNode, forwardRef } from "react";
 
 import { useNetworks, useWallets } from "../store";
 import { useTheme } from "../store/theme";
 
-export function CommandBar() {
+export function CommandBar({ children }: { children: ReactNode }) {
+  const { theme } = useTheme();
+
   return (
     <KBarProvider>
       <KBarPortal>
-        <KBarPositioner>
+        <KBarPositioner style={{ zIndex: theme.zIndex.tooltip + 1 }}>
           <CommandBarInner />
         </KBarPositioner>
       </KBarPortal>
+      {children}
     </KBarProvider>
   );
 }

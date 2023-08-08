@@ -158,7 +158,7 @@ impl Handler {
         let chain_id = u32::from_str_radix(&chain_id_str[2..], 16).unwrap();
 
         let mut networks = Networks::write().await;
-        match networks.set_current_network_by_id(chain_id) {
+        match networks.set_current_network_by_id(chain_id).await {
             Ok(_) => Ok(serde_json::Value::Null),
             Err(e) => Err(jsonrpc_core::Error::invalid_params(e.to_string())),
         }

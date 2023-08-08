@@ -1,5 +1,5 @@
-use ethers::core::k256::ecdsa::SigningKey;
 use ethers::{
+    core::k256::ecdsa::SigningKey,
     prelude::{signer::SignerMiddlewareError, *},
     signers,
 };

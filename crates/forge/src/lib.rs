@@ -6,8 +6,7 @@ pub mod error;
 mod init;
 mod watcher;
 
-use std::collections::BTreeMap;
-use std::path::PathBuf;
+use std::{collections::BTreeMap, path::PathBuf};
 
 pub use error::{Error, Result};
 use ethers::types::Bytes;

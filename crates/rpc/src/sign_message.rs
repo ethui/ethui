@@ -1,11 +1,11 @@
 use std::str::FromStr;
 
-use ethers::signers::Signer;
 use ethers::{
     core::k256::ecdsa::SigningKey,
     prelude::SignerMiddleware,
     providers::{Http, Middleware as _, Provider},
     signers,
+    signers::Signer,
     types::{transaction::eip712, Bytes, Signature},
 };
 use iron_dialogs::{Dialog, DialogMsg};
