@@ -1,9 +1,8 @@
+use ethers::types::Address;
 use serde::Deserialize;
 
-use super::chainlink::ChainlinkFeed;
-
 #[derive(Debug, Deserialize)]
-#[serde(tag = "provider", rename_all = "camelCase")]
+#[serde(tag = "provider", rename_all = "camelCase", content = "address")]
 pub enum Feed {
-    Chainlink(ChainlinkFeed),
+    Chainlink(Address),
 }

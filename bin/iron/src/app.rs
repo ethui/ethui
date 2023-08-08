@@ -162,7 +162,6 @@ async fn init(app: &tauri::App, db: &DB) -> AppResult<()> {
     iron_ws::init();
     iron_wallets::init(resource(app, "wallets.json")).await;
     iron_networks::init(resource(app, "networks.json")).await;
-    iron_exchange_rates::init().await;
     iron_forge::init().await?;
 
     Ok(())
