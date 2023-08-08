@@ -30,6 +30,7 @@ pub enum UINotify {
     TxsUpdated,
     PeersUpdated,
     BalancesUpdated,
+    Erc721Updated,
 }
 
 impl UINotify {
@@ -40,6 +41,7 @@ impl UINotify {
             Self::TxsUpdated => "txs-updated",
             Self::PeersUpdated => "peers-updated",
             Self::BalancesUpdated => "balances-updated",
+            Self::Erc721Updated => "erc721-updated",
         }
     }
 }

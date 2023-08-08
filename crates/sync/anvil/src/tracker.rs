@@ -234,6 +234,7 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
         if caught_up {
             iron_broadcast::ui_notify(UINotify::TxsUpdated).await;
             iron_broadcast::ui_notify(UINotify::BalancesUpdated).await;
+            iron_broadcast::ui_notify(UINotify::Erc721Updated).await;
         }
     }
 
