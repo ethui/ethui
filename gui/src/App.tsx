@@ -11,6 +11,7 @@ import {
   WagmiWrapper,
   WalletUnlockDialog,
 } from "./components";
+import { OnboardingWrapper } from "./components/Onboarding";
 import { useTheme } from "./store/theme";
 
 const queryClient = new QueryClient({
@@ -24,9 +25,11 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline>
         <QueryClientProvider client={queryClient}>
-          <WagmiWrapper>
-            <Routes />
-          </WagmiWrapper>
+          <OnboardingWrapper>
+            <WagmiWrapper>
+              <Routes />
+            </WagmiWrapper>
+          </OnboardingWrapper>
         </QueryClientProvider>
       </CssBaseline>
     </ThemeProvider>

@@ -49,6 +49,13 @@ impl Settings {
         Ok(())
     }
 
+    pub fn finish_onboarding(&mut self) -> Result<()> {
+        self.inner.onboarded = true;
+        self.save()?;
+
+        Ok(())
+    }
+
     pub fn get(&self) -> &SerializedSettings {
         &self.inner
     }
@@ -94,6 +101,9 @@ pub struct SerializedSettings {
 
     #[serde(default = "default_aliases")]
     aliases: HashMap<ChecksummedAddress, String>,
+
+    #[serde(default)]
+    onboarded: bool,
 }
 
 impl Default for SerializedSettings {
@@ -105,6 +115,7 @@ impl Default for SerializedSettings {
             alchemy_api_key: None,
             hide_empty_tokens: true,
             aliases: HashMap::new(),
+            onboarded: false,
         }
     }
 }
