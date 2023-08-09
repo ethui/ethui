@@ -8,9 +8,9 @@ use ethers::{
     types::{Address, Filter, Log, Trace, U64},
 };
 use futures_util::StreamExt;
-use iron_abis::IERC20;
+use iron_abis::{IERC20, IERC721};
 use iron_db::DB;
-use iron_types::{TokenMetadata, UINotify};
+use iron_types::{Erc721Token, Erc721TokenMetadata, TokenMetadata, UINotify};
 use tokio::sync::mpsc;
 use tracing::warn;
 use url::Url;
@@ -215,6 +215,20 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
             }
         }
 
+        for erc721_token_info in ctx
+            .db
+            .get_erc721_missing_metadata(ctx.chain_id)
+            .await?
+            .into_iter()
+        {
+            let token_id = erc721_token_info.token_id;
+            let address = erc721_token_info.contract;
+            let metadata = fetch_erc721_metadata(erc721_token_info, &provider).await;
+            ctx.db
+                .save_erc721_metadata(address, ctx.chain_id, token_id, metadata)
+                .await?;
+        }
+
         for address in ctx
             .db
             .get_erc20_missing_metadata(ctx.chain_id)
@@ -248,5 +262,17 @@ pub async fn fetch_erc20_metadata(address: Address, client: &Provider<Http>) -> 
         name: contract.name().call().await.unwrap_or_default(),
         symbol: contract.symbol().call().await.unwrap_or_default(),
         decimals: contract.decimals().call().await.unwrap_or_default(),
+    }
+}
+
+pub async fn fetch_erc721_metadata(
+    erc721_token_info: Erc721Token,
+    client: &Provider<Http>,
+) -> Erc721TokenMetadata {
+    let contract = IERC721::new(erc721_token_info.contract, Arc::new(client));
+    Erc721TokenMetadata {
+        name: contract.name().call().await.unwrap_or_default(),
+        symbol: contract.symbol().call().await.unwrap_or_default(),
+        url: "".to_string(), // contract.tokenURI(erc721_token_info.token_id).call().await.unwrap_or_default()
     }
 }

@@ -48,6 +48,14 @@ impl TryFrom<SqliteRow> for TokenMetadata {
 pub struct Erc721Token {
     pub contract: Address,
     pub owner: Address,
+    pub token_id: U256,
+}
+
+#[derive(Debug, Serialize)]
+pub struct Erc721TokenMetadata {
+    pub name: String,
+    pub symbol: String,
+    pub url: String,
 }
 
 impl TryFrom<SqliteRow> for Erc721Token {
@@ -57,6 +65,7 @@ impl TryFrom<SqliteRow> for Erc721Token {
         Ok(Self {
             contract: Address::from_str(row.get("contract")).unwrap(),
             owner: Address::from_str(row.get("owner")).unwrap(),
+            token_id: U256::from_str(row.get("token_id")).unwrap(),
         })
     }
 }

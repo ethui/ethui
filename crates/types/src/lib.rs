@@ -8,7 +8,7 @@ pub use checksummed_address::ChecksummedAddress;
 use ethers::types::{Address, U256};
 pub use events::Event;
 pub use global_state::GlobalState;
-pub use tokens::{Erc721Token, TokenBalance, TokenMetadata};
+pub use tokens::{Erc721Token, Erc721TokenMetadata, TokenBalance, TokenMetadata};
 pub use ui_events::UINotify;
 
 pub type Json = serde_json::Value;

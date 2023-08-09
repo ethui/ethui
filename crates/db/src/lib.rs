@@ -6,7 +6,9 @@ mod queries;
 use std::{path::PathBuf, str::FromStr};
 
 use ethers::types::{Address, H256, U256};
-use iron_types::{events::Tx, Erc721Token, Event, TokenBalance, TokenMetadata};
+use iron_types::{
+    events::Tx, Erc721Token, Erc721TokenMetadata, Event, TokenBalance, TokenMetadata,
+};
 use serde::Serialize;
 use sqlx::{
     sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous},
@@ -308,7 +310,11 @@ impl DB {
         Ok(res)
     }
 
-    pub async fn get_erc721_tokens(&self, chain_id: u32, address: Address) -> Result<Vec<Erc721Token>> {
+    pub async fn get_erc721_tokens(
+        &self,
+        chain_id: u32,
+        address: Address,
+    ) -> Result<Vec<Erc721Token>> {
         let res: Vec<_> = sqlx::query(
             r#" SELECT * 
         FROM nft_tokens
@@ -321,6 +327,39 @@ impl DB {
         .await?;
 
         Ok(res)
+    }
+
+    pub async fn get_erc721_missing_metadata(&self, chain_id: u32) -> Result<Vec<Erc721Token>> {
+        let res: Vec<_> = sqlx::query(
+            r#"SELECT nft_tokens.*
+        FROM nft_tokens
+        LEFT JOIN nfts_metadata AS meta
+          ON meta.chain_id = nft_tokens.chain_id AND meta.contract = nft_tokens.contract AND meta.token_id = nft_tokens.token_id
+        WHERE nft_tokens.chain_id = ? AND meta.chain_id IS NULL"#,
+        )
+        .bind(chain_id)
+        .map(|row| row.try_into().unwrap())
+        .fetch_all(self.pool())
+        .await?;
+
+        Ok(res)
+    }
+
+    pub async fn save_erc721_metadata(
+        &self,
+        address: Address,
+        chain_id: u32,
+        token_id: U256,
+        metadata: Erc721TokenMetadata,
+    ) -> Result<()> {
+        let mut conn = self.tx().await?;
+
+        queries::update_erc721_metadata(address, chain_id, token_id, metadata)
+            .execute(&mut conn)
+            .await?;
+
+        conn.commit().await?;
+        Ok(())
     }
 
     pub async fn get_tip(&self, chain_id: u32, addr: Address) -> Result<u64> {
