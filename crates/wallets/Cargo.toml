@@ -21,6 +21,7 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 tokio = { workspace = true }
 secrets = { workspace = true }
+futures = "0.3.28"
 
 thiserror = "1.0.40"
 once_cell = "1.17.1"

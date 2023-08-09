@@ -1,8 +1,10 @@
 use std::{sync::Arc, time::Duration};
 
 use async_trait::async_trait;
-use ethers::core::k256::ecdsa::SigningKey;
-use ethers::signers::{self, coins_bip39::English, MnemonicBuilder, Signer};
+use ethers::{
+    core::k256::ecdsa::SigningKey,
+    signers::{self, coins_bip39::English, MnemonicBuilder, Signer},
+};
 use iron_crypto::{self, EncryptedData};
 use iron_dialogs::{Dialog, DialogMsg};
 use iron_types::ChecksummedAddress;
@@ -71,7 +73,7 @@ impl WalletControl for HDWallet {
     }
 
     async fn get_current_address(&self) -> ChecksummedAddress {
-        self.current.1.clone()
+        self.current.1
     }
 
     fn get_current_path(&self) -> String {

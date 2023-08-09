@@ -1,9 +1,13 @@
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
-use std::sync::Arc;
+use std::{
+    collections::hash_map::DefaultHasher,
+    hash::{Hash, Hasher},
+    sync::Arc,
+};
 
-use iron_types::ui_events::{DialogClose, DialogOpen, DialogSend};
-use iron_types::{Json, UIEvent, UISender};
+use iron_types::{
+    ui_events::{DialogClose, DialogOpen, DialogSend},
+    Json,
+};
 use tokio::sync::{mpsc, RwLock, RwLockReadGuard};
 
 use super::{global::OPEN_DIALOGS, presets, Result};
@@ -36,12 +40,12 @@ impl Dialog {
         let clone = self.clone();
         let inner = self.read().await;
         OPEN_DIALOGS.lock().await.insert(inner.id, clone);
-        inner.open()
+        inner.open().await
     }
 
     /// Closes the dialog window
     pub async fn close(self) -> Result<()> {
-        self.read().await.close()
+        self.read().await.close().await
     }
 
     /// Gets a copy of the payload intended for the dialog
@@ -57,7 +61,7 @@ impl Dialog {
 
     /// Sends an event to the dialog
     pub async fn send(&self, event_type: &str, payload: Option<Json>) -> Result<()> {
-        self.read().await.send(event_type, payload)
+        self.read().await.send(event_type, payload).await
     }
 
     /// Awaits data received from the dialog
@@ -87,9 +91,6 @@ pub struct Inner {
     /// payload to first send to dialog
     payload: Json,
 
-    /// app channel
-    app_snd: UISender,
-
     /// inbound msgs from dialog
     inbound_snd: mpsc::UnboundedSender<DialogMsg>,
 
@@ -112,40 +113,45 @@ impl Inner {
             id,
             preset: preset.to_string(),
             payload,
-            app_snd: crate::global::APP_SND.get().unwrap().clone(),
             inbound_snd: snd,
             inbound_rcv: RwLock::new(rcv),
         }
     }
 
-    fn open(&self) -> Result<()> {
+    async fn open(&self) -> Result<()> {
         let preset = presets::PRESETS.get(&self.preset).unwrap();
         let url = format!("/dialog/{}/{}", self.preset, self.id);
         let title = format!("Iron Dialog - {}", preset.title);
 
-        Ok(self.app_snd.send(UIEvent::DialogOpen(DialogOpen {
+        iron_broadcast::dialog_open(DialogOpen {
             label: self.label(),
             title,
             url,
             w: preset.w,
             h: preset.h,
-        }))?)
-    }
-
-    fn close(&self) -> Result<()> {
-        self.app_snd.send(UIEvent::DialogClose(DialogClose {
-            label: self.label(),
-        }))?;
+        })
+        .await;
 
         Ok(())
     }
 
-    fn send(&self, event_type: &str, payload: Option<Json>) -> Result<()> {
-        self.app_snd.send(UIEvent::DialogSend(DialogSend {
+    async fn close(&self) -> Result<()> {
+        iron_broadcast::dialog_close(DialogClose {
+            label: self.label(),
+        })
+        .await;
+
+        Ok(())
+    }
+
+    async fn send(&self, event_type: &str, payload: Option<Json>) -> Result<()> {
+        iron_broadcast::dialog_send(DialogSend {
             label: self.label(),
             event_type: event_type.into(),
             payload,
-        }))?;
+        })
+        .await;
+
         Ok(())
     }
 

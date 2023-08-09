@@ -2,7 +2,7 @@ import log from "loglevel";
 import { runtime } from "webextension-polyfill";
 
 export function injectInPageScript() {
-  const url = runtime.getURL("inpage.js");
+  const url = runtime.getURL("inpage/inpage.js");
 
   try {
     const container = document.head || document.documentElement;

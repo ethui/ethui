@@ -1,7 +1,6 @@
 #![allow(dead_code)]
 
-use std::str::FromStr;
-use std::{fs::File, io::BufReader, path::PathBuf};
+use std::{fs::File, io::BufReader, path::PathBuf, str::FromStr};
 
 use ethers::types::Bytes;
 

@@ -2,8 +2,7 @@ use std::str::FromStr;
 
 use ethers::types::{Address, Bytes, H256, U256};
 use serde::Serialize;
-use sqlx::sqlite::SqliteRow;
-use sqlx::Row;
+use sqlx::{sqlite::SqliteRow, Row};
 
 #[derive(Debug)]
 pub enum Event {
@@ -11,6 +10,17 @@ pub enum Event {
     ContractDeployed(ContractDeployed),
     ERC20Transfer(ERC20Transfer),
     ERC721Transfer(ERC721Transfer),
+}
+
+impl Event {
+    pub fn block_number(&self) -> u64 {
+        match self {
+            Event::Tx(tx) => tx.block_number,
+            Event::ContractDeployed(deploy) => deploy.block_number,
+            Event::ERC20Transfer(transfer) => transfer.block_number,
+            Event::ERC721Transfer(transfer) => transfer.block_number,
+        }
+    }
 }
 
 #[derive(Debug, Serialize)]
@@ -32,6 +42,7 @@ pub struct ERC20Transfer {
     pub to: Address,
     pub value: U256,
     pub contract: Address,
+    pub block_number: u64,
 }
 
 #[derive(Debug)]
@@ -40,12 +51,14 @@ pub struct ERC721Transfer {
     pub to: Address,
     pub token_id: U256,
     pub contract: Address,
+    pub block_number: u64,
 }
 
 #[derive(Debug)]
 pub struct ContractDeployed {
     pub address: Address,
     pub code: Option<Bytes>,
+    pub block_number: u64,
 }
 
 impl From<ContractDeployed> for Event {

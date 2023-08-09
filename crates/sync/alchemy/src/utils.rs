@@ -16,8 +16,6 @@ use super::{types::Transfer, Error, Result};
 pub(super) async fn transfer_into_tx(
     transfer: Transfer,
     client: &Provider<RetryClient<Http>>,
-    chain_id: u32,
-    db: &DB,
 ) -> Result<Vec<Event>> {
     let data = match transfer {
         Transfer::External(data) => data,
@@ -26,13 +24,11 @@ pub(super) async fn transfer_into_tx(
         Transfer::Erc721(data) => data,
         Transfer::Erc1155(data) => data,
     };
+    let block_number = data.block_num.as_u64();
 
     let hash = H256::from_str(data.unique_id.split(':').collect::<Vec<_>>()[0]).unwrap();
 
     let mut res = vec![];
-    if db.transaction_exists(chain_id, hash).await? {
-        return Ok(res);
-    }
 
     let tx = client
         .get_transaction(hash)
@@ -43,24 +39,33 @@ pub(super) async fn transfer_into_tx(
         .await?
         .ok_or(Error::TxNotFound(hash))?;
 
-    res.push(
-        Tx {
-            hash,
-            block_number: receipt.block_number.unwrap().as_u64(),
-            position: tx.transaction_index.map(|p| p.as_usize()),
-            from: tx.from,
-            to: tx.to,
-            value: tx.value,
-            data: tx.input,
-            status: receipt.status.unwrap().as_u64(),
-        }
-        .into(),
-    );
+    if let Some(status) = receipt.status {
+        res.push(
+            Tx {
+                hash,
+                block_number,
+                position: tx.transaction_index.map(|p| p.as_usize()),
+                from: tx.from,
+                to: tx.to,
+                value: tx.value,
+                data: tx.input,
+                status: status.as_u64(),
+            }
+            .into(),
+        );
+    }
 
     if let Some(address) = receipt.contract_address {
         let code = client.get_code(address, None).await.ok();
 
-        res.push(ContractDeployed { address, code }.into())
+        res.push(
+            ContractDeployed {
+                address,
+                code,
+                block_number,
+            }
+            .into(),
+        )
     };
 
     Ok(res)

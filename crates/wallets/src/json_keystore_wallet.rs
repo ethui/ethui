@@ -1,17 +1,19 @@
-use std::time::Duration;
-use std::{fs::File, io::BufReader, path::PathBuf, str::FromStr, sync::Arc};
+use std::{fs::File, io::BufReader, path::PathBuf, str::FromStr, sync::Arc, time::Duration};
 
 use async_trait::async_trait;
-use ethers::core::{k256::ecdsa::SigningKey, types::Address};
-use ethers::signers::{self, Signer};
+use ethers::{
+    core::{k256::ecdsa::SigningKey, types::Address},
+    signers::{self, Signer},
+};
 use iron_dialogs::{Dialog, DialogMsg};
 use iron_types::ChecksummedAddress;
 use secrets::SecretVec;
-use tokio::sync::{Mutex, RwLock};
-use tokio::task::JoinHandle;
+use tokio::{
+    sync::{Mutex, RwLock},
+    task::JoinHandle,
+};
 
-use super::wallet::WalletCreate;
-use super::{Error, Result, Wallet, WalletControl};
+use super::{wallet::WalletCreate, Error, Result, Wallet, WalletControl};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct JsonKeystoreWallet {

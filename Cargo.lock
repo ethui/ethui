@@ -2750,14 +2750,14 @@ name = "iron"
 version = "0.4.1"
 dependencies = [
  "fix-path-env",
+ "iron-broadcast",
  "iron-db",
  "iron-dialogs",
  "iron-forge",
  "iron-networks",
  "iron-rpc",
  "iron-settings",
- "iron-sync-alchemy",
- "iron-sync-anvil",
+ "iron-sync",
  "iron-tracing",
  "iron-types",
  "iron-wallets",
@@ -2767,7 +2767,6 @@ dependencies = [
  "tauri-plugin-window-state",
  "thiserror",
  "tokio",
- "tracing",
 ]
 
 [[package]]
@@ -2814,12 +2813,14 @@ dependencies = [
  "tauri",
  "thiserror",
  "tokio",
+ "tracing",
 ]
 
 [[package]]
 name = "iron-dialogs"
 version = "0.4.1"
 dependencies = [
+ "iron-broadcast",
  "iron-types",
  "once_cell",
  "serde",
@@ -2905,6 +2906,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "iron-sync"
+version = "0.4.1"
+dependencies = [
+ "ethers",
+ "iron-broadcast",
+ "iron-db",
+ "iron-sync-alchemy",
+ "iron-sync-anvil",
+ "iron-types",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "iron-sync-alchemy"
 version = "0.4.1"
 dependencies = [
@@ -2918,9 +2938,9 @@ dependencies = [
  "once_cell",
  "serde",
  "serde_json",
- "tauri",
  "thiserror",
  "tokio",
+ "tracing",
  "url",
 ]
 
@@ -2964,6 +2984,7 @@ dependencies = [
  "serde_json",
  "sqlx",
  "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -2974,6 +2995,7 @@ dependencies = [
  "coins-bip32",
  "enum_dispatch",
  "ethers",
+ "futures",
  "iron-broadcast",
  "iron-crypto",
  "iron-dialogs",
