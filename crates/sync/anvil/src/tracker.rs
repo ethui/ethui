@@ -273,6 +273,6 @@ pub async fn fetch_erc721_metadata(
     Erc721TokenMetadata {
         name: contract.name().call().await.unwrap_or_default(),
         symbol: contract.symbol().call().await.unwrap_or_default(),
-        url: "".to_string(), // contract.tokenURI(erc721_token_info.token_id).call().await.unwrap_or_default()
+        uri: contract.token_uri(erc721_token_info.token_id).call().await.unwrap_or_default()
     }
 }

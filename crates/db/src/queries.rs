@@ -144,7 +144,7 @@ pub(super) fn update_erc721_metadata<'a>(
     metadata: Erc721TokenMetadata,
 ) -> Query<'a> {
     sqlx::query(
-        r#" INSERT OR REPLACE INTO nfts_metadata (contract, chain_id, token_id, name, symbol, url)
+        r#" INSERT OR REPLACE INTO nfts_metadata (contract, chain_id, token_id, name, symbol, uri)
                         VALUES (?,?,?,?,?,?) "#,
     )
     .bind(format!("0x{:x}", address))
@@ -152,7 +152,7 @@ pub(super) fn update_erc721_metadata<'a>(
     .bind(format!("0x{:x}", token_id))
     .bind(metadata.name)
     .bind(metadata.symbol)
-    .bind(metadata.url)
+    .bind(metadata.uri)
 }
 
 pub(super) fn get_tip<'a>(

@@ -55,7 +55,7 @@ pub struct Erc721Token {
 pub struct Erc721TokenMetadata {
     pub name: String,
     pub symbol: String,
-    pub url: String,
+    pub uri: String,
 }
 
 impl TryFrom<SqliteRow> for Erc721Token {
