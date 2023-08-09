@@ -1,7 +1,7 @@
 import { Link, Stack, TextField, Typography } from "@mui/material";
 import { ChangeEvent } from "react";
 
-import { WizardFormData } from "./OnboardingWizard";
+import { WizardFormData } from "./Wizard";
 
 export type Step = {
   title: string;
