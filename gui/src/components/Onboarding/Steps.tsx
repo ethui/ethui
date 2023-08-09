@@ -32,18 +32,25 @@ export const steps = [
 function WelcomeStep() {
   return (
     <Typography component="p">
-      Iron is a crypto wallet built with development and debugging in mind. It
-      bundles together features that exist only as loose CLI tools and 3rd party
-      websites. It runs locally on your device and is{" "}
+      Iron is an Ethereum wallet for developers. Check out{" "}
       <Link
         underline="hover"
-        href="https://github.com/iron-wallet/iron"
+        href="https://mirror.xyz/iron-wallet.eth"
         target="_blank"
         rel="nofollow noopener noreferrer"
       >
-        100% open-source
-      </Link>
-      .
+        our website
+      </Link>{" "}
+      to learn more, or check out the&nbsp;
+      <Link
+        underline="hover"
+        href="https://mirror.xyz/iron-wallet.eth"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+      >
+        source code on Github
+      </Link>{" "}
+      Contributors are welcome!
     </Typography>
   );
 }
@@ -71,17 +78,16 @@ function LiveBlockchainsStep({
         >
           Anvil
         </Link>{" "}
-        out of the box. If you want to use Iron with a live blockchain, create
-        an account on{" "}
+        out of the box. But for live blockchains, a connection to{" "}
         <Link
           underline="hover"
           href="https://www.alchemy.com/"
           target="_blank"
           rel="nofollow noopener noreferrer"
         >
-          Alchemy
+          alchemy.com
         </Link>{" "}
-        and set up the API key.
+        is recommended. Insert your personal API below.
       </Typography>
       <TextField
         label="API Key"

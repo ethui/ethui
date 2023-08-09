@@ -6,8 +6,8 @@ import MobileStepper from "@mui/material/MobileStepper";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 
-import { Step } from "./OnboardingSteps";
-import { WizardFormData } from "./OnboardingWizard";
+import { Step } from "./Steps";
+import { WizardFormData } from "./Wizard";
 
 interface Props {
   steps: Step[];

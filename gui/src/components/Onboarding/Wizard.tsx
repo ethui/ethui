@@ -2,11 +2,11 @@ import { Box, Button, Stack, Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 
-import { GeneralSettings } from "../types";
-import { useInvoke, useKeyPress } from "./../hooks";
-import { Logo } from "./Logo";
-import { OnboardingCarousel } from "./OnboardingCarousel";
-import { steps } from "./OnboardingSteps";
+import { GeneralSettings } from "../../types";
+import { Logo } from "../Logo";
+import { useInvoke, useKeyPress } from "./../../hooks";
+import { OnboardingCarousel } from "./Carousel";
+import { steps } from "./Steps";
 
 interface Props {
   closeOnboarding: () => void;
@@ -71,7 +71,7 @@ export function OnboardingWizard({ closeOnboarding }: Props) {
           size="medium"
           onClick={handleClose}
         >
-          {activeStep === steps.length - 1 ? "Close" : "Skip"}
+          {activeStep === steps.length - 1 ? "Close" : "Skip Onboarding"}
         </Button>
       </Box>
     </Box>
