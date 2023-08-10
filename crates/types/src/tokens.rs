@@ -88,7 +88,7 @@ impl TryFrom<SqliteRow> for Erc721Token {
             owner: Address::from_str(row.get("owner")).unwrap(),
             token_id: U256::from_str(row.get("token_id")).unwrap(),
             uri: row.get("uri"),
-            metadata: row.get("metadata"),
+            info: row.try_into()?,
         })
     }
 }
