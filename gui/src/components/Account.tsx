@@ -11,7 +11,7 @@ import {
 import { useTheme, useWallets } from "../store";
 import { AddressView, BalancesList, Panel } from "./";
 
-export function Balances() {
+export function Account() {
   const { theme } = useTheme();
   const address = useWallets((s) => s.address);
 
