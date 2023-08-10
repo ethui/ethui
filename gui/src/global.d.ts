@@ -10,10 +10,3 @@ declare module "@mui/material/Paper" {
     lighter: true;
   }
 }
-
-// https://github.com/mui/material-ui/issues/35251#issuecomment-1366844584
-declare module "@mui/material/styles" {
-  interface BreakpointOverrides {
-    sidebar: true;
-  }
-}
