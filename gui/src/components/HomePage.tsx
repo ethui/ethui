@@ -2,9 +2,7 @@ import { Box } from "@mui/material";
 import { Route, Switch } from "wouter";
 
 import { LivenetPlaceholder, Navbar, NestedRoutes, NewVersionNotice } from "./";
-import { Sidebar, TABS } from "./Sidebar";
-
-const defaultTab = TABS[0];
+import { DEFAULT_TAB, Sidebar, TABS } from "./Sidebar";
 
 export function HomePage() {
   return (
@@ -23,8 +21,8 @@ export function HomePage() {
               </Route>
             ))}
             <Route>
-              <Navbar tab={defaultTab} />
-              <defaultTab.component />
+              <Navbar tab={DEFAULT_TAB} />
+              <DEFAULT_TAB.component />
             </Route>
           </Switch>
         </NestedRoutes>

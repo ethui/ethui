@@ -52,6 +52,8 @@ export const TABS = [
   },
 ];
 
+export const DEFAULT_TAB = TABS[0];
+
 const WIDTH_MD = 200;
 const WIDTH_SM = 80;
 
@@ -104,7 +106,7 @@ export function Sidebar({ children }: { children: ReactNode }) {
             },
           }}
         >
-          <Box flexShrink={0} sx={{ px: 2, pt: 6 }}>
+          <Box flexShrink={0} sx={{ px: 2, pt: 2 }}>
             <Logo width={40} />
           </Box>
           <Stack p={2} rowGap={1} flexGrow={1}>
