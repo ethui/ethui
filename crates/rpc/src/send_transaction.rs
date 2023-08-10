@@ -3,7 +3,6 @@ use std::str::FromStr;
 use ethers::{
     core::k256::ecdsa::SigningKey,
     prelude::*,
-    providers::Middleware as _,
     signers,
     types::{serde_helpers::StringifiedNumeric, transaction::eip2718::TypedTransaction},
 };
