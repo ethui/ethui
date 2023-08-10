@@ -6,6 +6,7 @@ export const generalSettingsSchema = z.object({
   abiWatchPath: z.string().optional().nullable(),
   alchemyApiKey: z.string().optional().nullable(),
   hideEmptyTokens: z.boolean(),
+  onboarded: z.boolean(),
 });
 
 // const formSchema = schema.shape.network;

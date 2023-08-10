@@ -27,6 +27,7 @@ impl IronApp {
                 iron_settings::commands::settings_get,
                 iron_settings::commands::settings_set,
                 iron_settings::commands::settings_set_dark_mode,
+                iron_settings::commands::settings_finish_onboarding,
                 iron_settings::commands::settings_set_alias,
                 iron_settings::commands::settings_get_alias,
                 iron_networks::commands::networks_get_list,

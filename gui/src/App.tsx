@@ -7,11 +7,11 @@ import {
   CommandBar,
   HomePage,
   MsgSignDialog,
-  Navbar,
   TxReviewDialog,
   WagmiWrapper,
   WalletUnlockDialog,
 } from "./components";
+import { OnboardingWrapper } from "./components/Onboarding";
 import { useTheme } from "./store/theme";
 
 const queryClient = new QueryClient({
@@ -25,9 +25,11 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline>
         <QueryClientProvider client={queryClient}>
-          <WagmiWrapper>
-            <Routes />
-          </WagmiWrapper>
+          <OnboardingWrapper>
+            <WagmiWrapper>
+              <Routes />
+            </WagmiWrapper>
+          </OnboardingWrapper>
         </QueryClientProvider>
       </CssBaseline>
     </ThemeProvider>
@@ -49,11 +51,10 @@ function Routes() {
         <Route path="/dialog/wallet-unlock/:id">
           {({ id }: { id: string }) => <WalletUnlockDialog id={parseInt(id)} />}
         </Route>
-
         <Route>
-          <Navbar />
-          <HomePage />
-          <CommandBar />
+          <CommandBar>
+            <HomePage />
+          </CommandBar>
         </Route>
       </Switch>
     </Router>

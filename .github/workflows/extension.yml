@@ -1,0 +1,37 @@
+name: extension
+on: # rebuild any PRs and main branch changes
+  push:
+    branches:
+      - main
+    tags:
+      - "*"
+  pull_request:
+    types: [opened, synchronize]
+    paths-ignore:
+      - "./gui/**"
+      - "*.md"
+      - "LICENSE"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: yarn cache
+        uses: actions/setup-node@v3
+        with:
+          cache: "yarn"
+
+      - name: install
+        run: yarn workspace @iron/extension install
+
+      - name: bundle
+        run: yarn workspace @iron/extension bundle
+
+      - name: test
+        run: yarn workspace @iron/extension test

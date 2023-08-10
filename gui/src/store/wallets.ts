@@ -67,24 +67,20 @@ const store: StateCreator<Store> = (set, get) => ({
 
   async reloadActions() {
     const { wallets } = get();
-    const info = await fetchAllWalletInfo(wallets);
+    const info = (await fetchAllWalletInfo(wallets)) || [];
 
     const actions = [
       {
         id: actionId,
         name: "Change wallet",
       },
-      // create action for each wallet
-      ...(info || [])
+      ...info
         .map(({ wallet, addresses }) => [
           {
             id: `${actionId}/${wallet.name}`,
             name: wallet.name,
             parent: actionId,
-            perform: () => get().setCurrentWallet(wallet.name),
           },
-
-          // create action for each address
           ...(addresses || []).map(({ key, address, alias }) => ({
             id: `${actionId}/${wallet.name}/${key}`,
             name: alias || address,
@@ -96,13 +92,6 @@ const store: StateCreator<Store> = (set, get) => ({
           })),
         ])
         .flat(),
-
-      ...(wallets || []).map(({ name }) => ({
-        id: `${actionId}/${name}`,
-        name,
-        parent: actionId,
-        perform: () => get().setCurrentWallet(name),
-      })),
     ];
 
     set({ actions });
