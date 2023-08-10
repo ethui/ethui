@@ -7,7 +7,8 @@ use std::{path::PathBuf, str::FromStr};
 
 use ethers::types::{Address, H256, U256};
 use iron_types::{
-    events::Tx, Erc721Token, Erc721TokenMetadata, Event, TokenBalance, TokenMetadata,
+    events::Tx, Erc721Token, Erc721TokenInfo, Erc721TokenMetadata, Event, TokenBalance,
+    TokenMetadata,
 };
 use serde::Serialize;
 use sqlx::{
@@ -318,7 +319,9 @@ impl DB {
         let res: Vec<_> = sqlx::query(
             r#" SELECT * 
         FROM nft_tokens
-        WHERE chain_id = ? AND owner = ?"#,
+        LEFT JOIN nfts_metadata AS meta
+          ON meta.chain_id = nft_tokens.chain_id AND meta.contract = nft_tokens.contract AND meta.token_id = nft_tokens.token_id
+        WHERE nft_tokens.chain_id = ? AND nft_tokens.owner = ?"#,
         )
         .bind(chain_id)
         .bind(format!("0x{:x}", address))
@@ -329,7 +332,7 @@ impl DB {
         Ok(res)
     }
 
-    pub async fn get_erc721_missing_metadata(&self, chain_id: u32) -> Result<Vec<Erc721Token>> {
+    pub async fn get_erc721_missing_metadata(&self, chain_id: u32) -> Result<Vec<Erc721TokenInfo>> {
         let res: Vec<_> = sqlx::query(
             r#"SELECT nft_tokens.*
         FROM nft_tokens
