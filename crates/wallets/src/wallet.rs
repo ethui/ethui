@@ -4,7 +4,10 @@ use ethers::core::k256::ecdsa::SigningKey;
 use iron_types::{ChecksummedAddress, Json};
 use serde::{Deserialize, Serialize};
 
-use super::{hd_wallet::HDWallet, Error, JsonKeystoreWallet, PlaintextWallet, Result};
+use super::{
+    hd_wallet::HDWallet, impersonator::Impersonator, json_keystore_wallet::JsonKeystoreWallet,
+    plaintext::PlaintextWallet, Error, Result,
+};
 
 #[async_trait]
 #[enum_dispatch(Wallet)]
@@ -49,6 +52,8 @@ pub enum Wallet {
 
     #[serde(rename = "HDWallet")]
     HDWallet(HDWallet),
+
+    Impersonator(Impersonator),
 }
 
 #[async_trait]
@@ -60,6 +65,7 @@ impl WalletCreate for Wallet {
             "plaintext" => PlaintextWallet::create(params).await?,
             "jsonKeystore" => JsonKeystoreWallet::create(params).await?,
             "HDWallet" => HDWallet::create(params).await?,
+            "impersonator" => Impersonator::create(params).await?,
             _ => return Err(Error::InvalidWalletType(wallet_type.into())),
         };
 
