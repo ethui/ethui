@@ -12,7 +12,7 @@ import { Link, useLocation, useRoute } from "wouter";
 import { useKeyPress, useMenuAction } from "../hooks";
 import { useTheme } from "../store";
 import {
-  Balances,
+  Account,
   Contracts,
   Peers,
   QuickAddressSelect,
@@ -26,9 +26,9 @@ import { SettingsButton } from "./SettingsButton";
 
 export const TABS = [
   {
-    path: "details",
-    name: "Balances",
-    component: Balances,
+    path: "account",
+    name: "Account",
+    component: Account,
     icon: RequestQuoteSharpIcon,
   },
   {
@@ -57,10 +57,10 @@ export const DEFAULT_TAB = TABS[0];
 const WIDTH_MD = 200;
 const WIDTH_SM = 80;
 
-export function Sidebar({ children }: { children: ReactNode }) {
-  const [_match, params] = useRoute("/:path");
+export function SidebarLayout({ children }: { children: ReactNode }) {
   const [_location, setLocation] = useLocation();
   const { theme } = useTheme();
+  const breakpoint = theme.breakpoints.down("sm");
 
   const handleKeyboardNavigation = (event: KeyboardEvent) => {
     setLocation(TABS[parseInt(event.key) - 1].path);
@@ -81,83 +81,112 @@ export function Sidebar({ children }: { children: ReactNode }) {
   );
 
   return (
-    <Box>
-      <Drawer
-        PaperProps={{
-          variant: "lighter",
-          sx: {
-            width: WIDTH_MD,
-            [theme.breakpoints.down("md")]: {
-              width: WIDTH_SM,
-              justifyContent: "center",
-            },
-          },
-        }}
-        sx={{ flexShrink: 0 }}
-        variant="permanent"
-      >
-        <Box
-          flexGrow={1}
-          display="flex"
-          flexDirection="column"
-          sx={{
-            [theme.breakpoints.down("md")]: {
-              alignItems: "center",
-            },
-          }}
-        >
-          <Box flexShrink={0} sx={{ px: 2, pt: 2 }}>
-            <Logo width={40} />
-          </Box>
-          <Stack p={2} rowGap={1} flexGrow={1}>
-            {TABS.map((tab, index) => (
-              <SidebarTab
-                key={index}
-                tab={tab}
-                selected={
-                  index === Math.max(findIndex(TABS, { path: params?.path }), 0)
-                }
-              />
-            ))}
-          </Stack>
-          <Stack
-            rowGap={1}
-            p={2}
-            sx={{
-              [theme.breakpoints.down("md")]: {
-                display: "none",
-              },
-            }}
-          >
-            <QuickWalletSelect />
-            <QuickAddressSelect />
-            <QuickNetworkSelect />
-          </Stack>
-          <Stack
-            p={2}
-            rowGap={1}
-            sx={{
-              [theme.breakpoints.down("md")]: {
-                justifyContent: "center",
-              },
-            }}
-          >
-            <CommandBarButton />
-            <SettingsButton />
-          </Stack>
-        </Box>
-      </Drawer>
+    <>
+      <Sidebar />
       <Box
         sx={{
           pl: `${WIDTH_MD}px`,
-          [theme.breakpoints.down("md")]: {
+          [breakpoint]: {
             pl: `${WIDTH_SM}px`,
           },
         }}
       >
         {children}
       </Box>
-    </Box>
+    </>
+  );
+}
+
+export function Sidebar() {
+  const [_match, params] = useRoute("/:path");
+  const [_location, setLocation] = useLocation();
+  const { theme } = useTheme();
+  const breakpoint = theme.breakpoints.down("sm");
+
+  const handleKeyboardNavigation = (event: KeyboardEvent) => {
+    setLocation(TABS[parseInt(event.key) - 1].path);
+  };
+
+  useMenuAction((payload) => setLocation(payload));
+
+  useKeyPress(
+    range(1, TABS.length + 1).map(toString),
+    { meta: true },
+    handleKeyboardNavigation
+  );
+
+  useKeyPress(
+    range(1, TABS.length + 1).map(toString),
+    { ctrl: true },
+    handleKeyboardNavigation
+  );
+
+  return (
+    <Drawer
+      PaperProps={{
+        variant: "lighter",
+        sx: {
+          width: WIDTH_MD,
+          [breakpoint]: {
+            width: WIDTH_SM,
+            justifyContent: "center",
+          },
+        },
+      }}
+      sx={{ flexShrink: 0 }}
+      variant="permanent"
+    >
+      <Box
+        flexGrow={1}
+        display="flex"
+        flexDirection="column"
+        sx={{
+          [breakpoint]: {
+            alignItems: "center",
+          },
+        }}
+      >
+        <Box flexShrink={0} sx={{ px: 2, pt: 2 }}>
+          <Logo width={40} />
+        </Box>
+        <Stack p={2} rowGap={1} flexGrow={1}>
+          {TABS.map((tab, index) => (
+            <SidebarTab
+              key={index}
+              tab={tab}
+              selected={
+                index === Math.max(findIndex(TABS, { path: params?.path }), 0)
+              }
+            />
+          ))}
+        </Stack>
+        <Stack
+          rowGap={1}
+          p={2}
+          sx={{
+            [breakpoint]: {
+              display: "none",
+            },
+          }}
+        >
+          <QuickWalletSelect />
+          <QuickAddressSelect />
+          <QuickNetworkSelect />
+        </Stack>
+        <Stack
+          p={2}
+          rowGap={1}
+          sx={{
+            [breakpoint]: {
+              justifyContent: "center",
+            },
+          }}
+        >
+          <CommandBarButton />
+          <SettingsButton />
+        </Stack>
+      </Box>
+    </Drawer>
   );
 }
 
@@ -169,6 +198,7 @@ interface SidebarTabProps {
 function SidebarTab({ tab, selected }: SidebarTabProps) {
   const { theme } = useTheme();
   const backgroundColor = theme.palette.mode === "dark" ? 800 : 200;
+  const breakpoint = theme.breakpoints.down("sm");
 
   return (
     <>
@@ -182,7 +212,7 @@ function SidebarTab({ tab, selected }: SidebarTabProps) {
           display: "none",
           height: 40,
           width: 40,
-          [theme.breakpoints.down("md")]: {
+          [breakpoint]: {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -202,7 +232,7 @@ function SidebarTab({ tab, selected }: SidebarTabProps) {
         href={tab.path}
         sx={{
           justifyContent: "flex-start",
-          [theme.breakpoints.down("md")]: {
+          [breakpoint]: {
             display: "none",
           },
           "&.Mui-disabled": {

@@ -1,3 +1,4 @@
+import { BreakpointOverrides } from "@mui/material/styles";
 import Chrome from "chrome";
 
 declare namespace chrome {
