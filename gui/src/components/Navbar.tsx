@@ -17,7 +17,7 @@ export function Navbar({ tab }: { tab: (typeof TABS)[number] }) {
         borderColor: palette.divider,
       }}
     >
-      <Toolbar data-tauri-drag-region="true" variant="dense">
+      <Toolbar data-tauri-drag-region="true">
         <Typography variant="h6" component="div">
           {tab.name}
         </Typography>

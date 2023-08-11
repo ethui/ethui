@@ -1,9 +1,8 @@
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 
 import { GeneralSettings } from "../../types";
-import { Logo } from "../Logo";
 import { useInvoke, useKeyPress } from "./../../hooks";
 import { OnboardingCarousel } from "./Carousel";
 import { steps } from "./Steps";
@@ -51,10 +50,7 @@ export function OnboardingWizard({ closeOnboarding }: Props) {
 
   return (
     <Box px={3}>
-      <Stack direction="row" py={1.5} spacing={1} alignItems="center">
-        <Logo width={40} />
-        <Typography>Iron Wallet</Typography>
-      </Stack>
+      <Box data-tauri-drag-region="true" pt={4}></Box>
       <OnboardingCarousel
         steps={steps}
         activeStep={activeStep}

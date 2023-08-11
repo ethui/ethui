@@ -78,6 +78,11 @@ function getDesignTokens(mode: PaletteMode): ThemeOptions {
           },
         ],
       },
+      MuiToolbar: {
+        defaultProps: {
+          variant: "dense",
+        },
+      },
     },
   };
 }
