@@ -45,8 +45,8 @@ export function SettingsButton() {
         open={showSettings}
         onClose={() => setShowSettings(false)}
         sx={{
-          width: "80%",
-          height: "80%",
+          width: "90%",
+          height: "90%",
         }}
       >
         <SettingsPage />
