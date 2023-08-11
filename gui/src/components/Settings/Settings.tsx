@@ -1,12 +1,12 @@
 import { Box, Button, Container, Drawer, Stack } from "@mui/material";
+import { grey } from "@mui/material/colors";
+import { find } from "lodash-es";
 import { useState } from "react";
 
+import { useTheme } from "../../store";
 import { SettingsGeneral } from "./General";
 import { SettingsNetwork } from "./Network";
 import { SettingsWallets } from "./Wallets";
-import { grey } from "@mui/material/colors";
-import { useTheme } from "../../store";
-import { find } from "lodash-es";
 
 const TABS = [
   { name: "General", component: SettingsGeneral },
