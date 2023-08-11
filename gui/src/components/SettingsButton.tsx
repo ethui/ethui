@@ -18,7 +18,7 @@ export function SettingsButton() {
           height: 40,
           width: 40,
           display: "none",
-          [theme.breakpoints.down("md")]: {
+          [theme.breakpoints.down("sm")]: {
             display: "initial",
           },
         }}
@@ -33,7 +33,7 @@ export function SettingsButton() {
         onClick={() => setShowSettings(true)}
         sx={{
           justifyContent: "flex-start",
-          [theme.breakpoints.down("md")]: {
+          [theme.breakpoints.down("sm")]: {
             display: "none",
           },
         }}

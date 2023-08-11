@@ -1,12 +1,11 @@
 import { Route, Switch } from "wouter";
 
 import { LivenetPlaceholder, Navbar, NestedRoutes, NewVersionNotice } from "./";
-import { DEFAULT_TAB, Sidebar, SidebarLayout, TABS } from "./Sidebar";
+import { DEFAULT_TAB, SidebarLayout, TABS } from "./Sidebar";
 
 export function HomePage() {
   return (
     <SidebarLayout>
-      <Sidebar />
       <NestedRoutes base="/">
         <Switch>
           {TABS.map((tab) => (

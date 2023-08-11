@@ -2,7 +2,7 @@ import CallToActionIcon from "@mui/icons-material/CallToAction";
 import OnlinePredictionSharpIcon from "@mui/icons-material/OnlinePredictionSharp";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import RequestQuoteSharpIcon from "@mui/icons-material/RequestQuoteSharp";
-import { Box, Button, Drawer, IconButton, Stack } from "@mui/material";
+import { Box, Button, Drawer, IconButton, Stack, Toolbar } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { findIndex } from "lodash-es";
 import { parseInt, range, toString } from "lodash-es";
@@ -148,10 +148,14 @@ export function Sidebar() {
             },
           }}
         >
-          <Box flexShrink={0} sx={{ px: 2, pt: 2 }}>
-            {type !== "Darwin" && <Logo width={40} />}
-          </Box>
-          <Stack p={2} rowGap={1} flexGrow={1}>
+          {type === "Darwin" ? (
+            <Toolbar data-tauri-drag-region="true"></Toolbar>
+          ) : (
+            <Toolbar sx={{ p: 2 }} data-tauri-drag-region="true">
+              <Logo width={40} />
+            </Toolbar>
+          )}
+          <Stack px={2} pb={2} pt={1} rowGap={1} flexGrow={1}>
             {TABS.map((tab, index) => (
               <SidebarTab
                 key={index}
