@@ -3,8 +3,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 
 import { GeneralSettings } from "../../types";
-import { Logo } from "../Logo";
-import { useInvoke, useKeyPress, useOS } from "./../../hooks";
+import { useInvoke, useKeyPress } from "./../../hooks";
 import { OnboardingCarousel } from "./Carousel";
 import { steps } from "./Steps";
 
@@ -16,7 +15,6 @@ export type WizardFormData = { alchemyApiKey?: string | null };
 
 export function OnboardingWizard({ closeOnboarding }: Props) {
   const { data: settings } = useInvoke<GeneralSettings>("settings_get");
-  const { type } = useOS();
 
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState<WizardFormData>({});
@@ -53,11 +51,6 @@ export function OnboardingWizard({ closeOnboarding }: Props) {
   return (
     <Box px={3}>
       <Box data-tauri-drag-region="true" pt={4}></Box>
-      {type !== "Darwin" && (
-        <Box>
-          <Logo width={40} />
-        </Box>
-      )}
       <OnboardingCarousel
         steps={steps}
         activeStep={activeStep}
