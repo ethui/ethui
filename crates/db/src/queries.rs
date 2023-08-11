@@ -115,7 +115,6 @@ pub(super) fn erc20_update_balance<'a>(
     .bind(balance.to_string())
 }
 
-// TODO - refactor
 pub(super) fn erc721_transfer<'a>(tx: &events::ERC721Transfer, chain_id: u32) -> Query<'a> {
     if tx.to.is_zero() {
         // burning
@@ -138,7 +137,6 @@ pub(super) fn erc721_transfer<'a>(tx: &events::ERC721Transfer, chain_id: u32) ->
     }
 }
 
-// TODO - refactor
 pub(super) fn update_erc721<'a>(
     address: Address,
     chain_id: u32,
