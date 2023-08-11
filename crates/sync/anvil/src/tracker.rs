@@ -228,7 +228,6 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
             let owner = erc721_token.owner;
             let erc721_data = fetch_erc721_data(erc721_token, &provider).await;
 
-            dbg!(&erc721_data);
             ctx.db
                 .save_erc721_data(
                     address,
@@ -307,10 +306,8 @@ pub async fn fetch_erc721_data(
             md = response.text().await.unwrap();
         }
     } else {
-        // TODO: handle exception
+        // TODO: handle exceptions
     }
-
-    dbg!(&md);
 
     Erc721TokenData {
         name: contract.name().call().await.unwrap_or_default(),
