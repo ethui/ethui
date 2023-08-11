@@ -22,7 +22,7 @@ export function Settings() {
   const tab = find(TABS, { name: currentTab });
 
   return (
-    <Container disableGutters>
+    <Container sx={{ margin: "initial" }} disableGutters>
       <Drawer
         PaperProps={{
           variant: "lighter",
