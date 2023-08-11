@@ -1,5 +1,5 @@
 use ethers::core::types::{Address, U256};
-use iron_types::{events, Erc721TokenMetadata, TokenMetadata};
+use iron_types::{events, TokenMetadata};
 use sqlx::{sqlite::SqliteRow, Row, Sqlite};
 
 type Query<'a> = sqlx::query::Query<'a, Sqlite, sqlx::sqlite::SqliteArguments<'a>>;
@@ -115,11 +115,12 @@ pub(super) fn erc20_update_balance<'a>(
     .bind(balance.to_string())
 }
 
+// TODO - refactor
 pub(super) fn erc721_transfer<'a>(tx: &events::ERC721Transfer, chain_id: u32) -> Query<'a> {
     if tx.to.is_zero() {
         // burning
         sqlx::query(
-            r#" DELETE FROM nft_tokens WHERE chain_id = ? AND contract = ? AND token_id = ? "#,
+            r#" DELETE FROM erc721_tokens WHERE chain_id = ? AND contract = ? AND token_id = ? "#,
         )
         .bind(chain_id)
         .bind(format!("0x{:x}", tx.contract))
@@ -127,32 +128,51 @@ pub(super) fn erc721_transfer<'a>(tx: &events::ERC721Transfer, chain_id: u32) ->
     } else {
         // minting or transfer
         sqlx::query(
-            r#" INSERT OR REPLACE INTO nft_tokens (chain_id, contract, token_id, owner)
-                        VALUES (?,?,?,?)"#,
+            r#" INSERT OR REPLACE INTO erc721_tokens (contract, chain_id, token_id, owner, uri, metadata)
+                        VALUES (?,?,?,?, null, null)"#,
         )
-        .bind(chain_id)
         .bind(format!("0x{:x}", tx.contract))
+        .bind(chain_id)
         .bind(format!("0x{:x}", tx.token_id))
         .bind(format!("0x{:x}", tx.to))
     }
 }
 
-pub(super) fn update_erc721_metadata<'a>(
+// TODO - refactor
+pub(super) fn update_erc721<'a>(
     address: Address,
     chain_id: u32,
     token_id: U256,
-    metadata: Erc721TokenMetadata,
+    owner: Address,
+    uri: String,
+    metadata: String,
 ) -> Query<'a> {
     sqlx::query(
-        r#" INSERT OR REPLACE INTO nfts_metadata (contract, chain_id, token_id, name, symbol, uri)
+        r#" INSERT OR REPLACE INTO erc721_tokens (contract, chain_id, token_id, owner, uri, metadata)
                         VALUES (?,?,?,?,?,?) "#,
     )
     .bind(format!("0x{:x}", address))
     .bind(chain_id)
     .bind(format!("0x{:x}", token_id))
-    .bind(metadata.name)
-    .bind(metadata.symbol)
-    .bind(metadata.uri)
+    .bind(format!("0x{:x}", owner))
+    .bind(uri)
+    .bind(metadata)
+}
+
+pub(super) fn update_erc721collection<'a>(
+    address: Address,
+    chain_id: u32,
+    name: String,
+    symbol: String,
+) -> Query<'a> {
+    sqlx::query(
+        r#" INSERT OR REPLACE INTO erc721_collections (contract, chain_id, name, symbol)
+                      VALUES (?,?,?,?) "#,
+    )
+    .bind(format!("0x{:x}", address))
+    .bind(chain_id)
+    .bind(name)
+    .bind(symbol)
 }
 
 pub(super) fn get_tip<'a>(

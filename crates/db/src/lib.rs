@@ -6,10 +6,7 @@ mod queries;
 use std::{path::PathBuf, str::FromStr};
 
 use ethers::types::{Address, H256, U256};
-use iron_types::{
-    events::Tx, Erc721Token, Erc721TokenInfo, Erc721TokenMetadata, Event, TokenBalance,
-    TokenMetadata,
-};
+use iron_types::{events::Tx, Erc721Collection, Erc721Token, Event, TokenBalance, TokenMetadata};
 use serde::Serialize;
 use sqlx::{
     sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous},
@@ -170,7 +167,6 @@ impl DB {
                         .await?;
                     }
                 }
-
                 Event::ERC721Transfer(ref transfer) => {
                     trace!(
                         from = transfer.from.to_string(),
@@ -314,17 +310,34 @@ impl DB {
     pub async fn get_erc721_tokens(
         &self,
         chain_id: u32,
-        address: Address,
+        owner: Address,
     ) -> Result<Vec<Erc721Token>> {
-        let res: Vec<_> = sqlx::query(
-            r#" SELECT * 
-        FROM nft_tokens
-        LEFT JOIN nfts_metadata AS meta
-          ON meta.chain_id = nft_tokens.chain_id AND meta.contract = nft_tokens.contract AND meta.token_id = nft_tokens.token_id
-        WHERE nft_tokens.chain_id = ? AND nft_tokens.owner = ?"#,
+        let res: Vec<Erc721Token> = sqlx::query(
+            r#" SELECT *
+        FROM erc721_tokens
+        WHERE chain_id = ? AND owner = ?"#,
         )
         .bind(chain_id)
+        .bind(format!("0x{:x}", owner))
+        .map(|row| row.try_into().unwrap())
+        .fetch_all(self.pool())
+        .await?;
+
+        Ok(res)
+    }
+
+    pub async fn get_erc721_collections(
+        &self,
+        chain_id: u32,
+        address: Address,
+    ) -> Result<Vec<Erc721Collection>> {
+        let res: Vec<Erc721Collection> = sqlx::query(
+            r#" SELECT *
+        FROM erc721_collections
+        WHERE contract IN (SELECT DISTINCT contract FROM erc721_tokens WHERE owner = ? AND chain_id =?)"#,
+        )
         .bind(format!("0x{:x}", address))
+        .bind(chain_id)
         .map(|row| row.try_into().unwrap())
         .fetch_all(self.pool())
         .await?;
@@ -332,13 +345,11 @@ impl DB {
         Ok(res)
     }
 
-    pub async fn get_erc721_missing_metadata(&self, chain_id: u32) -> Result<Vec<Erc721TokenInfo>> {
+    pub async fn get_erc721_missing_data(&self, chain_id: u32) -> Result<Vec<Erc721Token>> {
         let res: Vec<_> = sqlx::query(
-            r#"SELECT nft_tokens.*
-        FROM nft_tokens
-        LEFT JOIN nfts_metadata AS meta
-          ON meta.chain_id = nft_tokens.chain_id AND meta.contract = nft_tokens.contract AND meta.token_id = nft_tokens.token_id
-        WHERE nft_tokens.chain_id = ? AND meta.chain_id IS NULL"#,
+            r#"SELECT *
+        FROM erc721_tokens
+        WHERE chain_id = ? AND uri IS NULL"#,
         )
         .bind(chain_id)
         .map(|row| row.try_into().unwrap())
@@ -348,16 +359,23 @@ impl DB {
         Ok(res)
     }
 
-    pub async fn save_erc721_metadata(
+    pub async fn save_erc721_data(
         &self,
         address: Address,
         chain_id: u32,
         token_id: U256,
-        metadata: Erc721TokenMetadata,
+        owner: Address,
+        name: String,
+        symbol: String,
+        uri: String,
+        metadata: String,
     ) -> Result<()> {
         let mut conn = self.tx().await?;
+        queries::update_erc721(address, chain_id, token_id, owner, uri, metadata)
+            .execute(&mut conn)
+            .await?;
 
-        queries::update_erc721_metadata(address, chain_id, token_id, metadata)
+        queries::update_erc721collection(address, chain_id, name, symbol)
             .execute(&mut conn)
             .await?;
 
@@ -399,7 +417,7 @@ impl DB {
             .execute(self.pool())
             .await?;
 
-        sqlx::query("DELETE FROM nft_tokens WHERE chain_id = ?")
+        sqlx::query("DELETE FROM erc721_tokens WHERE chain_id = ?")
             .bind(chain_id)
             .execute(self.pool())
             .await?;

@@ -45,37 +45,38 @@ impl TryFrom<SqliteRow> for TokenMetadata {
 }
 
 #[derive(Debug, Serialize)]
-pub struct Erc721Token {
-    pub info: Erc721TokenInfo,
+pub struct Erc721TokenData {
     pub name: String,
     pub symbol: String,
     pub uri: String,
+    pub metadata: String,
 }
-
 #[derive(Debug, Serialize)]
-pub struct Erc721TokenInfo {
+pub struct Erc721Collection {
     pub contract: Address,
-    pub owner: Address,
-    pub token_id: U256,
-}
-
-#[derive(Debug, Serialize)]
-pub struct Erc721TokenMetadata {
     pub name: String,
     pub symbol: String,
-    pub uri: String,
 }
 
-impl TryFrom<SqliteRow> for Erc721TokenInfo {
+impl TryFrom<SqliteRow> for Erc721Collection {
     type Error = ();
 
     fn try_from(row: SqliteRow) -> Result<Self, Self::Error> {
         Ok(Self {
             contract: Address::from_str(row.get("contract")).unwrap(),
-            owner: Address::from_str(row.get("owner")).unwrap(),
-            token_id: U256::from_str(row.get("token_id")).unwrap(),
+            name: row.get("name"),
+            symbol: row.get("symbol"),
         })
     }
+}
+
+#[derive(Debug, Serialize)]
+pub struct Erc721Token {
+    pub contract: Address,
+    pub token_id: U256,
+    pub owner: Address,
+    pub uri: String,
+    pub metadata: String,
 }
 
 impl TryFrom<SqliteRow> for Erc721Token {
@@ -83,10 +84,11 @@ impl TryFrom<SqliteRow> for Erc721Token {
 
     fn try_from(row: SqliteRow) -> Result<Self, Self::Error> {
         Ok(Self {
-            name: row.get("name"),
-            symbol: row.get("symbol"),
+            contract: Address::from_str(row.get("contract")).unwrap(),
+            owner: Address::from_str(row.get("owner")).unwrap(),
+            token_id: U256::from_str(row.get("token_id")).unwrap(),
             uri: row.get("uri"),
-            info: row.try_into().unwrap(),
+            metadata: row.get("metadata"),
         })
     }
 }

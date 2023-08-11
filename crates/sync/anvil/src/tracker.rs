@@ -1,5 +1,6 @@
-use std::{sync::Arc, time::Duration};
+use std::{ops::Add, sync::Arc, time::Duration};
 
+use base64::{engine::general_purpose, Engine as _};
 use ethers::{
     providers::{
         Http, HttpClientError, JsonRpcClient, Middleware, Provider, RetryClientBuilder,
@@ -10,7 +11,8 @@ use ethers::{
 use futures_util::StreamExt;
 use iron_abis::{IERC20, IERC721};
 use iron_db::DB;
-use iron_types::{Erc721TokenInfo, Erc721TokenMetadata, TokenMetadata, UINotify};
+use iron_types::{Erc721Token, Erc721TokenData, TokenMetadata, UINotify};
+use reqwest;
 use tokio::sync::mpsc;
 use tracing::warn;
 use url::Url;
@@ -215,17 +217,29 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
             }
         }
 
-        for erc721_token_info in ctx
+        for erc721_token in ctx
             .db
-            .get_erc721_missing_metadata(ctx.chain_id)
+            .get_erc721_missing_data(ctx.chain_id)
             .await?
             .into_iter()
         {
-            let token_id = erc721_token_info.token_id;
-            let address = erc721_token_info.contract;
-            let metadata = fetch_erc721_metadata(erc721_token_info, &provider).await;
+            let token_id = erc721_token.token_id;
+            let address = erc721_token.contract;
+            let owner = erc721_token.owner;
+            let erc721_data = fetch_erc721_data(erc721_token, &provider).await;
+
+            dbg!(&erc721_data);
             ctx.db
-                .save_erc721_metadata(address, ctx.chain_id, token_id, metadata)
+                .save_erc721_data(
+                    address,
+                    ctx.chain_id,
+                    token_id,
+                    owner,
+                    erc721_data.name,
+                    erc721_data.symbol,
+                    erc721_data.uri,
+                    erc721_data.metadata,
+                )
                 .await?;
         }
 
@@ -265,18 +279,43 @@ pub async fn fetch_erc20_metadata(address: Address, client: &Provider<Http>) -> 
     }
 }
 
-pub async fn fetch_erc721_metadata(
-    erc721_token_info: Erc721TokenInfo,
+pub async fn fetch_erc721_data(
+    erc721_token: Erc721Token,
     client: &Provider<Http>,
-) -> Erc721TokenMetadata {
-    let contract = IERC721::new(erc721_token_info.contract, Arc::new(client));
-    Erc721TokenMetadata {
+) -> Erc721TokenData {
+    let contract = IERC721::new(erc721_token.contract, Arc::new(client));
+
+    let contract_uri = contract
+        .token_uri(erc721_token.token_id)
+        .call()
+        .await
+        .unwrap();
+
+    let mut md = "".to_string();
+    if contract_uri.contains("data:application/json;base64,") {
+        let byte_string = contract_uri
+            .strip_prefix("data:application/json;base64,")
+            .unwrap();
+
+        let decoded_uri = general_purpose::STANDARD.decode(byte_string);
+        md = String::from_utf8(decoded_uri.unwrap()).unwrap();
+    } else if contract_uri.contains("ipfs://") {
+        let contract_uri = contract_uri.replace("ipfs://", "https://ipfs.io/ipfs/");
+        let response = reqwest::get(contract_uri.clone()).await.unwrap();
+
+        if response.status().is_success() {
+            md = response.text().await.unwrap();
+        }
+    } else {
+        // TODO: handle exception
+    }
+
+    dbg!(&md);
+
+    Erc721TokenData {
         name: contract.name().call().await.unwrap_or_default(),
         symbol: contract.symbol().call().await.unwrap_or_default(),
-        uri: contract
-            .token_uri(erc721_token_info.token_id)
-            .call()
-            .await
-            .unwrap_or_default(),
+        uri: contract_uri,
+        metadata: md,
     }
 }
