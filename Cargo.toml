@@ -22,7 +22,7 @@ default-members = ["bin/iron"]
 
 
 [workspace.package]
-version = "0.4.1"
+version = "0.5.0"
 edition = "2021"
 license-file = "./LICENSE"
 homepage = "https://github.com/iron-wallet"
