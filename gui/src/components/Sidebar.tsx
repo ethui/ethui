@@ -9,7 +9,7 @@ import { parseInt, range, toString } from "lodash-es";
 import { ReactNode } from "react";
 import { Link, useLocation, useRoute } from "wouter";
 
-import { useKeyPress, useMenuAction } from "../hooks";
+import { useKeyPress, useMenuAction, useOS } from "../hooks";
 import { useTheme } from "../store";
 import {
   Account,
@@ -102,6 +102,7 @@ export function Sidebar() {
   const [_location, setLocation] = useLocation();
   const { theme } = useTheme();
   const breakpoint = theme.breakpoints.down("sm");
+  const { type } = useOS();
 
   const handleKeyboardNavigation = (event: KeyboardEvent) => {
     setLocation(TABS[parseInt(event.key) - 1].path);
@@ -136,56 +137,58 @@ export function Sidebar() {
       sx={{ flexShrink: 0 }}
       variant="permanent"
     >
-      <Box
-        flexGrow={1}
-        display="flex"
-        flexDirection="column"
-        sx={{
-          [breakpoint]: {
-            alignItems: "center",
-          },
-        }}
-      >
-        <Box flexShrink={0} sx={{ px: 2, pt: 2 }}>
-          <Logo width={40} />
+      {type && (
+        <Box
+          flexGrow={1}
+          display="flex"
+          flexDirection="column"
+          sx={{
+            [breakpoint]: {
+              alignItems: "center",
+            },
+          }}
+        >
+          <Box flexShrink={0} sx={{ px: 2, pt: 2 }}>
+            {type !== "Darwin" && <Logo width={40} />}
+          </Box>
+          <Stack p={2} rowGap={1} flexGrow={1}>
+            {TABS.map((tab, index) => (
+              <SidebarTab
+                key={index}
+                tab={tab}
+                selected={
+                  index === Math.max(findIndex(TABS, { path: params?.path }), 0)
+                }
+              />
+            ))}
+          </Stack>
+          <Stack
+            rowGap={1}
+            p={2}
+            sx={{
+              [breakpoint]: {
+                display: "none",
+              },
+            }}
+          >
+            <QuickWalletSelect />
+            <QuickAddressSelect />
+            <QuickNetworkSelect />
+          </Stack>
+          <Stack
+            p={2}
+            rowGap={1}
+            sx={{
+              [breakpoint]: {
+                justifyContent: "center",
+              },
+            }}
+          >
+            <CommandBarButton />
+            <SettingsButton />
+          </Stack>
         </Box>
-        <Stack p={2} rowGap={1} flexGrow={1}>
-          {TABS.map((tab, index) => (
-            <SidebarTab
-              key={index}
-              tab={tab}
-              selected={
-                index === Math.max(findIndex(TABS, { path: params?.path }), 0)
-              }
-            />
-          ))}
-        </Stack>
-        <Stack
-          rowGap={1}
-          p={2}
-          sx={{
-            [breakpoint]: {
-              display: "none",
-            },
-          }}
-        >
-          <QuickWalletSelect />
-          <QuickAddressSelect />
-          <QuickNetworkSelect />
-        </Stack>
-        <Stack
-          p={2}
-          rowGap={1}
-          sx={{
-            [breakpoint]: {
-              justifyContent: "center",
-            },
-          }}
-        >
-          <CommandBarButton />
-          <SettingsButton />
-        </Stack>
-      </Box>
+      )}
     </Drawer>
   );
 }

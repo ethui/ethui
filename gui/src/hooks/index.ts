@@ -6,3 +6,4 @@ export { useRefreshPeers } from "./useRefreshPeers";
 export { useRefreshTransactions } from "./useRefreshTransactions";
 export { useDialog } from "./useDialog";
 export { useKeyPress } from "./useKeyPress";
+export { useOS } from "./useOS";
