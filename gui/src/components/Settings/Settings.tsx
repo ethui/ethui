@@ -1,9 +1,15 @@
-import { Box, Button, Container, Drawer, Stack } from "@mui/material";
-import { grey } from "@mui/material/colors";
+import {
+  Box,
+  Button,
+  Container,
+  Drawer,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { blue } from "@mui/material/colors";
 import { find } from "lodash-es";
 import { useState } from "react";
 
-import { useTheme } from "../../store";
 import { SettingsGeneral } from "./General";
 import { SettingsNetwork } from "./Network";
 import { SettingsWallets } from "./Wallets";
@@ -14,7 +20,7 @@ const TABS = [
   { name: "Network", component: SettingsNetwork },
 ];
 
-const WIDTH = 120;
+const WIDTH = 140;
 
 export function Settings() {
   const [currentTab, setCurrentTab] = useState(TABS[0].name);
@@ -27,6 +33,7 @@ export function Settings() {
         PaperProps={{
           variant: "lighter",
           sx: {
+            py: 2,
             width: WIDTH,
           },
         }}
@@ -34,7 +41,7 @@ export function Settings() {
         variant="permanent"
       >
         <Box flexGrow={1} display="flex" flexDirection="column">
-          <Stack p={2} rowGap={1} flexGrow={1}>
+          <Stack py={2} px={3} rowGap={1} flexGrow={1}>
             {TABS.map((tab) => (
               <SidebarTab
                 key={tab.name}
@@ -53,7 +60,14 @@ export function Settings() {
           width: "100%",
         }}
       >
-        {tab && <tab.component />}
+        {tab && (
+          <>
+            <Typography mb={3} fontWeight="bold" variant="bordered">
+              {tab.name}
+            </Typography>
+            <tab.component />
+          </>
+        )}
       </Box>
     </Container>
   );
@@ -66,21 +80,8 @@ interface SidebarTabProps {
 }
 
 function SidebarTab({ tab, onSelect, selected }: SidebarTabProps) {
-  const { theme } = useTheme();
-  const backgroundColor = theme.palette.mode === "dark" ? 800 : 200;
-
   return (
-    <Button
-      color="inherit"
-      disabled={selected}
-      onClick={onSelect}
-      sx={{
-        justifyContent: "flex-start",
-        "&.Mui-disabled": {
-          backgroundColor: grey[backgroundColor],
-        },
-      }}
-    >
+    <Button variant="sidebar" onClick={onSelect} disabled={selected}>
       {tab.name}
     </Button>
   );

@@ -35,7 +35,9 @@ export function AddressView({ contextMenu, address }: Props) {
   return (
     <>
       {!contextMenu && (
-        <Box title={address}>{alias ? alias : truncateEthAddress(address)}</Box>
+        <Box fontSize="inherit" title={address}>
+          {alias ? alias : truncateEthAddress(address)}
+        </Box>
       )}
 
       {contextMenu && (

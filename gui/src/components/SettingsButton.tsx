@@ -14,6 +14,7 @@ export function SettingsButton() {
       <IconButton
         onClick={() => setShowSettings(true)}
         color="inherit"
+        size="small"
         sx={{
           height: 40,
           width: 40,
@@ -27,12 +28,10 @@ export function SettingsButton() {
       </IconButton>
 
       <Button
-        color="inherit"
-        fullWidth
+        variant="sidebar"
         startIcon={<Settings />}
         onClick={() => setShowSettings(true)}
         sx={{
-          justifyContent: "flex-start",
           [theme.breakpoints.down("sm")]: {
             display: "none",
           },
@@ -45,8 +44,10 @@ export function SettingsButton() {
         open={showSettings}
         onClose={() => setShowSettings(false)}
         sx={{
+          outline: "none",
           width: "90%",
           height: "90%",
+          maxWidth: "900px",
         }}
       >
         <SettingsPage />
