@@ -1,18 +1,17 @@
 import Settings from "@mui/icons-material/SettingsSharp";
 import { Button, IconButton } from "@mui/material";
-import { useState } from "react";
 
-import { useTheme } from "../store";
+import { useSettings, useTheme } from "../store";
 import { Modal, Settings as SettingsPage } from "./";
 
 export function SettingsButton() {
-  const [showSettings, setShowSettings] = useState(false);
+  const { show, open, close } = useSettings();
   const { theme } = useTheme();
 
   return (
     <>
       <IconButton
-        onClick={() => setShowSettings(true)}
+        onClick={open}
         color="inherit"
         size="small"
         sx={{
@@ -30,7 +29,7 @@ export function SettingsButton() {
       <Button
         variant="sidebar"
         startIcon={<Settings />}
-        onClick={() => setShowSettings(true)}
+        onClick={open}
         sx={{
           [theme.breakpoints.down("sm")]: {
             display: "none",
@@ -41,8 +40,8 @@ export function SettingsButton() {
       </Button>
 
       <Modal
-        open={showSettings}
-        onClose={() => setShowSettings(false)}
+        open={show}
+        onClose={close}
         sx={{
           outline: "none",
           width: "90%",
