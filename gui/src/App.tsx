@@ -1,10 +1,18 @@
-import { GlobalStyles, ThemeProvider } from "@mui/material";
+import {
+  Box,
+  GlobalStyles,
+  Stack,
+  ThemeProvider,
+  Typography,
+} from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
+import { red } from "@mui/material/colors";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Route, Router, Switch } from "wouter";
 
 import {
   CommandBar,
+  DevBuildNotice,
   HomePage,
   MsgSignDialog,
   TxReviewDialog,
@@ -34,6 +42,7 @@ export default function App() {
       <GlobalStyles styles={globalStyles} />
       <CssBaseline>
         <QueryClientProvider client={queryClient}>
+          <DevBuildNotice />
           <OnboardingWrapper>
             <WagmiWrapper>
               <Routes />
