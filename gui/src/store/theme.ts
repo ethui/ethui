@@ -1,5 +1,5 @@
 import { PaletteMode, Theme, ThemeOptions, createTheme } from "@mui/material";
-import { blue, grey } from "@mui/material/colors";
+import { blue, grey, lightBlue } from "@mui/material/colors";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Action } from "kbar";
 import { StateCreator, create } from "zustand";
@@ -91,7 +91,7 @@ function getDesignTokens(mode: PaletteMode): ThemeOptions {
               justifyContent: "flex-start",
               textTransform: "inherit",
               "&.Mui-disabled": {
-                backgroundColor: blue[500],
+                backgroundColor: lightBlue[800],
                 color: "white",
               },
               "& .MuiButton-startIcon": {
@@ -120,6 +120,8 @@ function getDesignTokens(mode: PaletteMode): ThemeOptions {
           root: {
             borderColor,
             borderBottomStyle: "solid",
+            backgroundColor: "transparent",
+            color: "inherit",
           },
         },
       },
