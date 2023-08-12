@@ -1,3 +1,4 @@
+import { appWindow } from "@tauri-apps/api/window";
 import { Action } from "kbar";
 import { StateCreator, create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
@@ -33,6 +34,6 @@ const store: StateCreator<Store> = (set, _get) => ({
 
 export const useSettings = create<Store>()(subscribeWithSelector(store));
 
-addEventListener("keypress", (event) => {
-  if (event.metaKey && event.key === ",") useSettings.getState().open();
+appWindow.listen("settings", () => {
+  useSettings.getState().open();
 });
