@@ -12,7 +12,7 @@ use std::{
 use ethers::providers::{Http, Provider};
 pub use init::init;
 use iron_types::UINotify;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 pub use self::{
     error::{Error, Result},
@@ -21,21 +21,23 @@ pub use self::{
 
 #[derive(Debug, Clone, Serialize)]
 pub struct Networks {
-    pub current: String,
     pub networks: HashMap<String, Network>,
+
+    // global affinity will point to the current network
+    pub current: String,
 
     #[serde(skip)]
     file: PathBuf,
 }
 
 impl Networks {
-    /// Changes the currently connected wallet
+    /// Changes the currently connected wallet by network name
     ///
-    /// Broadcasts `chainChanged`
-    pub async fn set_current_network(&mut self, new_current_network: String) -> Result<()> {
-        let previous = self.get_current_network().chain_id;
+    /// Broadcasts `chainChanged` to all connections with global or no affinity
+    pub async fn set_current_by_name(&mut self, new_current_network: String) -> Result<()> {
+        let previous = self.get_current().chain_id;
         self.current = new_current_network;
-        let new = self.get_current_network().chain_id;
+        let new = self.get_current().chain_id;
 
         if previous != new {
             self.on_network_changed().await?;
@@ -46,20 +48,23 @@ impl Networks {
         Ok(())
     }
 
-    pub async fn set_current_network_by_id(&mut self, new_chain_id: u32) -> Result<()> {
+    /// Changes the currently connected wallet by chain ID
+    ///
+    /// Broadcasts `chainChanged` to all connections with global or no affinity
+    pub async fn set_current_by_id(&mut self, new_chain_id: u32) -> Result<()> {
         let new_network = self
             .networks
             .values()
             .find(|n| n.chain_id == new_chain_id)
             .unwrap();
 
-        self.set_current_network(new_network.name.clone()).await?;
+        self.set_current_by_name(new_network.name.clone()).await?;
         self.save()?;
 
         Ok(())
     }
 
-    pub fn get_current_network(&self) -> &Network {
+    pub fn get_current(&self) -> &Network {
         if !self.networks.contains_key(&self.current) {
             return self.networks.values().next().unwrap();
         }
@@ -83,14 +88,15 @@ impl Networks {
     }
 
     pub fn get_current_provider(&self) -> Provider<Http> {
-        self.get_current_network().get_provider()
+        self.get_current().get_provider()
     }
 
     async fn on_network_changed(&self) -> Result<()> {
+        // TODO: check domain
         self.notify_peers();
         iron_broadcast::ui_notify(UINotify::NetworkChanged).await;
 
-        let chain_id = self.get_current_network().chain_id;
+        let chain_id = self.get_current().chain_id;
         iron_broadcast::current_network_changed(chain_id).await;
 
         Ok(())
@@ -113,6 +119,8 @@ impl Networks {
             }
         });
 
+        // TODO: check affinities
+
         if !self.networks.contains_key(&self.current) {
             self.current = first;
             self.on_network_changed().await?;
@@ -123,7 +131,7 @@ impl Networks {
 
     // broadcasts `accountsChanged` to all peers
     fn notify_peers(&self) {
-        let current = self.get_current_network().clone();
+        let current = self.get_current().clone();
         tokio::spawn(async move {
             iron_broadcast::chain_changed(current.chain_id, current.name.clone()).await;
         });
@@ -134,7 +142,7 @@ impl Networks {
             iron_broadcast::network_added(network.chain_id).await;
         }
 
-        let chain_id = self.get_current_network().chain_id;
+        let chain_id = self.get_current().chain_id;
         iron_broadcast::current_network_changed(chain_id).await;
     }
 
@@ -157,5 +165,24 @@ impl Networks {
         serde_json::to_writer_pretty(file, self)?;
 
         Ok(())
+    }
+}
+
+/// Affinity of a connecction with a network
+/// Each connection may either follow the global "current network", or stick to a specific chain_id
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+pub enum Affinity {
+    /// While on Global, peers will automatically be switched whenever the main connection
+    /// switches, or whenever another global peer asks for a chain change
+    #[default]
+    Global,
+
+    /// Sticky will only switch chain id when requested by itself
+    Sticky(u32),
+}
+
+impl From<u32> for Affinity {
+    fn from(value: u32) -> Self {
+        Affinity::Sticky(value)
     }
 }

@@ -11,6 +11,9 @@ pub enum Error {
 
     #[error("Error running listener: {0}")]
     ErrorRunningListener(String),
+
+    #[error("Invalid chain ID: {0}")]
+    InvalidChainId(u32),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

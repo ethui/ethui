@@ -3017,6 +3017,7 @@ dependencies = [
  "ethers",
  "futures-util",
  "iron-broadcast",
+ "iron-networks",
  "iron-rpc",
  "iron-types",
  "once_cell",

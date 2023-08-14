@@ -1,7 +1,7 @@
-use std::{collections::HashMap, net::SocketAddr};
+use std::{collections::HashMap, net::SocketAddr, path::PathBuf};
 
 use iron_types::{ChecksummedAddress, UINotify};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tokio::sync::mpsc;
 
@@ -43,12 +43,40 @@ impl Peer {
             title,
         }
     }
+
+    /// Extracts the domain from the url
+    pub fn domain(&self) -> Option<String> {
+        self.url.as_ref().and_then(|url| {
+            url.parse::<url::Url>()
+                .ok()
+                .and_then(|url| url.host_str().map(|s| s.to_owned()))
+        })
+    }
+}
+
+impl From<Peer> for iron_rpc::Handler {
+    fn from(value: Peer) -> Self {
+        Self::new(value.domain())
+    }
 }
 
 /// Tracks a list of peers, usually browser tabs, that connect to the app
 #[derive(Debug, Default)]
 pub struct Peers {
+    // current list of connections
     map: HashMap<SocketAddr, Peer>,
+
+    store: Store,
+    file: PathBuf,
+}
+
+#[derive(Debug, Default, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
+pub(crate) struct Store {
+    // maps rule -> current_chain_id
+    // rule is currently a domain, but may eventually grow
+    // TODO: removing networks will cause some affinities to become invalid. need to clean them up
+    affinities: HashMap<String, u64>,
 }
 
 impl Peers {
@@ -64,6 +92,13 @@ impl Peers {
         self.map.remove(&peer);
         iron_broadcast::ui_notify(UINotify::PeersUpdated).await;
         //self.window_snd.send(UINotify::PeersUpdated.into()).unwrap();
+    }
+
+    pub async fn set_affinity(&mut self, domain: String, chain_id: u32)->Result<()>{        }
+        self.store.affinities.insert(domain, chain_id as u64);
+        self.save().await?;
+
+    Ok()
     }
 
     /// Broadcasts an `accountsChanged` event to all peers

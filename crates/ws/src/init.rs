@@ -1,14 +1,39 @@
 use async_trait::async_trait;
 use iron_broadcast::InternalMsg;
 use iron_types::GlobalState;
-use once_cell::sync::Lazy;
+use once_cell::sync::OnceCell;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
-use crate::{peers::Peers, server::server_loop};
+use crate::{
+    peers::{Peers, Store},
+    server::server_loop,
+};
 
-static PEERS: Lazy<RwLock<Peers>> = Lazy::new(Default::default);
+static PEERS: OnceCell<RwLock<Peers>> = OnceCell::new();
 
-pub fn init() {
+pub async fn init(pathbuf: PathBuf) {
+    let path = Path::new(&pathbuf);
+
+    let res: Settings = if path.exists() {
+        let file = File::open(path).unwrap();
+        let reader = BufReader::new(file);
+
+        let store: Store = serde_json::from_reader(reader).unwrap();
+
+        Peers {
+            store,
+            file: pathbuf,
+            map: Default::default(),
+        }
+    } else {
+        Peers {
+            file: pathbuf,
+            ..Default::default()
+        }
+    };
+
+    PEERS.set(RwLock::new(res)).unwrap();
+
     tokio::spawn(async { server_loop().await });
     tokio::spawn(async { receiver().await });
 }
