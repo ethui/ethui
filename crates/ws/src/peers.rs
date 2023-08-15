@@ -1,9 +1,17 @@
-use std::{collections::HashMap, net::SocketAddr, path::PathBuf};
+use std::{
+    collections::HashMap,
+    fs::File,
+    net::SocketAddr,
+    path::{Path, PathBuf},
+    sync::Arc,
+};
 
 use iron_types::{ChecksummedAddress, UINotify};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use tokio::sync::mpsc;
+use tokio::sync::{mpsc, RwLock};
+
+use crate::error::WsResult;
 
 #[derive(Clone, Debug, Serialize)]
 pub struct Peer {
@@ -66,17 +74,7 @@ pub struct Peers {
     // current list of connections
     map: HashMap<SocketAddr, Peer>,
 
-    store: Store,
     file: PathBuf,
-}
-
-#[derive(Debug, Default, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", default)]
-pub(crate) struct Store {
-    // maps rule -> current_chain_id
-    // rule is currently a domain, but may eventually grow
-    // TODO: removing networks will cause some affinities to become invalid. need to clean them up
-    affinities: HashMap<String, u64>,
 }
 
 impl Peers {
@@ -94,11 +92,20 @@ impl Peers {
         //self.window_snd.send(UINotify::PeersUpdated.into()).unwrap();
     }
 
-    pub async fn set_affinity(&mut self, domain: String, chain_id: u32)->Result<()>{        }
-        self.store.affinities.insert(domain, chain_id as u64);
-        self.save().await?;
+    pub async fn set_affinity(&mut self, domain: String, chain_id: u32) -> WsResult<()> {
+        let mut store = self.store.write().await;
+        store.affinities.insert(domain, chain_id as u64);
+        self.save()?;
 
-    Ok()
+        Ok(())
+    }
+
+    pub async fn remove_affinity(&mut self, domain: String) -> WsResult<()> {
+        let mut store = self.store.write().await;
+        store.affinities.remove(&domain);
+        self.save()?;
+
+        Ok(())
     }
 
     /// Broadcasts an `accountsChanged` event to all peers
@@ -132,5 +139,30 @@ impl Peers {
 
     pub(crate) fn get_all(&self) -> Vec<Peer> {
         self.map.values().cloned().collect()
+    }
+}
+
+#[derive(Debug, Default, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
+pub(crate) struct Store {
+    #[serde(skip, default)]
+    file: PathBuf,
+
+    // maps rule -> current_chain_id
+    // rule is currently a domain, but may eventually grow
+    // TODO: removing networks will cause some affinities to become invalid. need to clean them up
+    affinities: HashMap<String, u64>,
+}
+
+impl Store {
+    // Persists current state to disk
+    fn save(&self) -> WsResult<()> {
+        let pathbuf = self.file.clone();
+        let path = Path::new(&pathbuf);
+        let file = File::create(path)?;
+
+        serde_json::to_writer_pretty(file, self)?;
+
+        Ok(())
     }
 }

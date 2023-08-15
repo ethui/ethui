@@ -12,7 +12,7 @@ use std::{
 use ethers::providers::{Http, Provider};
 pub use init::init;
 use iron_types::UINotify;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 pub use self::{
     error::{Error, Result},
@@ -165,24 +165,5 @@ impl Networks {
         serde_json::to_writer_pretty(file, self)?;
 
         Ok(())
-    }
-}
-
-/// Affinity of a connecction with a network
-/// Each connection may either follow the global "current network", or stick to a specific chain_id
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
-pub enum Affinity {
-    /// While on Global, peers will automatically be switched whenever the main connection
-    /// switches, or whenever another global peer asks for a chain change
-    #[default]
-    Global,
-
-    /// Sticky will only switch chain id when requested by itself
-    Sticky(u32),
-}
-
-impl From<u32> for Affinity {
-    fn from(value: u32) -> Self {
-        Affinity::Sticky(value)
     }
 }

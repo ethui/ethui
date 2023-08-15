@@ -1,7 +1,15 @@
+use std::{
+    collections::HashMap,
+    fs::File,
+    io::BufReader,
+    path::{Path, PathBuf},
+};
+
 use async_trait::async_trait;
 use iron_broadcast::InternalMsg;
 use iron_types::GlobalState;
-use once_cell::sync::OnceCell;
+use once_cell::sync::{Lazy, OnceCell};
+use serde::Deserialize;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
 use crate::{
@@ -9,30 +17,32 @@ use crate::{
     server::server_loop,
 };
 
-static PEERS: OnceCell<RwLock<Peers>> = OnceCell::new();
+static PEERS: Lazy<RwLock<Peers>> = Lazy::new(Default::default);
+static PEERS_STORE: OnceCell<RwLock<Store>> = OnceCell::new();
 
 pub async fn init(pathbuf: PathBuf) {
     let path = Path::new(&pathbuf);
 
-    let res: Settings = if path.exists() {
+    #[derive(Debug, Deserialize)]
+    struct PersistedStore {
+        affinities: HashMap<String, u64>,
+    }
+
+    let store: Store = if path.exists() {
         let file = File::open(path).unwrap();
         let reader = BufReader::new(file);
 
-        let store: Store = serde_json::from_reader(reader).unwrap();
+        let store: PersistedStore = serde_json::from_reader(reader).unwrap();
 
-        Peers {
-            store,
+        Store {
+            affinities: store.affinities,
             file: pathbuf,
-            map: Default::default(),
         }
     } else {
-        Peers {
-            file: pathbuf,
-            ..Default::default()
-        }
+        Store::default()
     };
 
-    PEERS.set(RwLock::new(res)).unwrap();
+    PEERS_STORE.set(RwLock::new(store)).unwrap();
 
     tokio::spawn(async { server_loop().await });
     tokio::spawn(async { receiver().await });
@@ -46,6 +56,17 @@ impl GlobalState for Peers {
 
     async fn write<'a>() -> RwLockWriteGuard<'a, Self> {
         PEERS.write().await
+    }
+}
+
+#[async_trait]
+impl GlobalState for Store {
+    async fn read<'a>() -> RwLockReadGuard<'a, Self> {
+        PEERS_STORE.get().unwrap().read().await
+    }
+
+    async fn write<'a>() -> RwLockWriteGuard<'a, Self> {
+        PEERS_STORE.get().unwrap().write().await
     }
 }
 

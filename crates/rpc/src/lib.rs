@@ -162,10 +162,7 @@ impl Handler {
 
         let mut networks = Networks::write().await;
 
-        match networks
-            .switch_for_domain(ctx.domain, chain_id.into())
-            .await
-        {
+        match networks.set_current_by_id(chain_id.into()).await {
             Ok(_) => Ok(serde_json::Value::Null),
             Err(e) => Err(jsonrpc_core::Error::invalid_params(e.to_string())),
         }

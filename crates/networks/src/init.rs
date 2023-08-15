@@ -11,7 +11,7 @@ use once_cell::sync::OnceCell;
 use serde::Deserialize;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
-use super::{network::Network, Affinity, Networks};
+use super::{network::Network, Networks};
 
 static NETWORKS: OnceCell<RwLock<Networks>> = OnceCell::new();
 
@@ -21,8 +21,6 @@ pub async fn init(pathbuf: PathBuf) {
     struct PersistedNetworks {
         pub current: String,
         pub networks: HashMap<String, Network>,
-        #[serde(default)]
-        pub affinities: HashMap<String, Affinity>,
     }
 
     let path = Path::new(&pathbuf);
@@ -35,7 +33,6 @@ pub async fn init(pathbuf: PathBuf) {
 
         Networks {
             networks: res.networks,
-            affinities: res.affinities,
             current: res.current,
             file: pathbuf,
         }
@@ -44,7 +41,6 @@ pub async fn init(pathbuf: PathBuf) {
         let current = networks[0].name.clone();
         Networks {
             networks: networks.into_iter().map(|n| (n.name.clone(), n)).collect(),
-            affinities: Default::default(),
             current,
             file: pathbuf,
         }
