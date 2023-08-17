@@ -6,6 +6,7 @@ use std::{
 };
 
 use async_trait::async_trait;
+use iron_broadcast::InternalMsg;
 use iron_types::GlobalState;
 use once_cell::sync::OnceCell;
 use serde::Deserialize;
@@ -50,6 +51,8 @@ pub async fn init(pathbuf: PathBuf) {
     res.reset_listeners().await;
 
     NETWORKS.set(RwLock::new(res)).unwrap();
+
+    tokio::spawn(async { receiver().await });
 }
 
 #[async_trait]
@@ -60,5 +63,22 @@ impl GlobalState for Networks {
 
     async fn write<'a>() -> RwLockWriteGuard<'a, Self> {
         NETWORKS.get().unwrap().write().await
+    }
+}
+
+async fn receiver() -> ! {
+    let mut rx = iron_broadcast::subscribe_internal().await;
+
+    loop {
+        if let Ok(msg) = rx.recv().await {
+            use InternalMsg::*;
+
+            if let ChainChanged(chain_id, _domain, affinity) = msg {
+                if affinity.is_global() || affinity.is_unset() {
+                    // TODO: handle this error
+                    let _ = Networks::write().await.set_current_by_id(chain_id).await;
+                }
+            }
+        }
     }
 }

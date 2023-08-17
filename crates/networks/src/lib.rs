@@ -11,7 +11,7 @@ use std::{
 
 use ethers::providers::{Http, Provider};
 pub use init::init;
-use iron_types::UINotify;
+use iron_types::{Affinity, UINotify};
 use serde::Serialize;
 
 pub use self::{
@@ -62,6 +62,10 @@ impl Networks {
         self.save()?;
 
         Ok(())
+    }
+
+    pub fn validate_chain_id(&self, chain_id: u32) -> bool {
+        self.networks.iter().any(|(_, n)| n.chain_id == chain_id)
     }
 
     pub fn get_current(&self) -> &Network {
@@ -133,7 +137,7 @@ impl Networks {
     fn notify_peers(&self) {
         let current = self.get_current().clone();
         tokio::spawn(async move {
-            iron_broadcast::chain_changed(current.chain_id, current.name.clone()).await;
+            iron_broadcast::chain_changed(current.chain_id, None, Affinity::Global).await;
         });
     }
 

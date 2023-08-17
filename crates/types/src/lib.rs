@@ -1,9 +1,11 @@
+mod affinity;
 mod checksummed_address;
 pub mod events;
 mod global_state;
 mod tokens;
 pub mod ui_events;
 
+pub use affinity::Affinity;
 pub use checksummed_address::ChecksummedAddress;
 use ethers::types::{Address, U256};
 pub use events::Event;

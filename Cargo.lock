@@ -2872,9 +2872,11 @@ dependencies = [
 name = "iron-rpc"
 version = "0.5.0"
 dependencies = [
+ "async-trait",
  "enum_dispatch",
  "ethers",
  "futures-util",
+ "iron-broadcast",
  "iron-db",
  "iron-dialogs",
  "iron-networks",
@@ -2882,6 +2884,7 @@ dependencies = [
  "iron-types",
  "iron-wallets",
  "jsonrpc-core",
+ "once_cell",
  "serde",
  "serde_json",
  "tauri",

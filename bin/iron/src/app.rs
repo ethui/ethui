@@ -161,7 +161,8 @@ async fn init(app: &tauri::App, db: &DB) -> AppResult<()> {
     iron_sync::init(db.clone()).await;
 
     iron_settings::init(resource(app, "settings.json")).await;
-    iron_ws::init(resource(app, "peers.json")).await;
+    iron_ws::init().await;
+    iron_rpc::init(resource(app, "peers.json")).await;
     iron_wallets::init(resource(app, "wallets.json")).await;
     iron_networks::init(resource(app, "networks.json")).await;
     iron_forge::init().await?;

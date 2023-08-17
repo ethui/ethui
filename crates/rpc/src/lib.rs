@@ -1,19 +1,25 @@
 pub mod commands;
 mod error;
+mod init;
 mod send_transaction;
 mod sign_message;
+mod store;
 
 use std::collections::HashMap;
 
 use ethers::{abi::AbiEncode, types::transaction::eip712};
+pub use init::init;
 use iron_networks::Networks;
-use iron_types::GlobalState;
+use iron_types::{Affinity, GlobalState};
 use iron_wallets::{WalletControl, Wallets};
 use jsonrpc_core::{MetaIoHandler, Params};
 use serde_json::json;
 
-pub use self::error::{Error, Result};
 use self::sign_message::SignMessage;
+pub use self::{
+    error::{Error, Result},
+    store::RpcStore,
+};
 
 pub struct Handler {
     io: MetaIoHandler<Ctx>,
@@ -139,10 +145,11 @@ impl Handler {
         Ok(json!(network.chain_id_hex()))
     }
 
-    async fn provider_state(_: Params, _: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn provider_state(_: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
         let networks = Networks::read().await;
         let wallets = Wallets::read().await;
 
+        let affinity = ctx.get_affinity().await;
         let network = networks.get_current();
         let address = wallets.get_current_wallet().get_current_address().await;
 
@@ -160,11 +167,20 @@ impl Handler {
         let chain_id_str = params[0].get("chainId").unwrap().clone();
         let chain_id = u32::from_str_radix(&chain_id_str[2..], 16).unwrap();
 
-        let mut networks = Networks::write().await;
+        if Networks::write().await.validate_chain_id(chain_id) {
+            let affinity = chain_id.into();
+            // immediatelly set affinity for the current handler
+            ctx.set_affinity(affinity).await?;
 
-        match networks.set_current_by_id(chain_id.into()).await {
-            Ok(_) => Ok(serde_json::Value::Null),
-            Err(e) => Err(jsonrpc_core::Error::invalid_params(e.to_string())),
+            // broadcast update to notify other entities asynchronously
+            iron_broadcast::chain_changed(chain_id, ctx.domain, affinity).await;
+
+            Ok(serde_json::Value::Null)
+        } else {
+            Err(jsonrpc_core::Error::invalid_params(format!(
+                "Invalid Chain ID: {}",
+                chain_id
+            )))
         }
     }
 
@@ -274,5 +290,21 @@ impl jsonrpc_core::Metadata for Ctx {}
 impl Ctx {
     pub fn empty() -> Self {
         Self { domain: None }
+    }
+
+    pub async fn get_affinity(&self) -> Option<Affinity> {
+        if let Some(ref domain) = self.domain {
+            RpcStore::read().await.get_affinity(domain)
+        } else {
+            None
+        }
+    }
+
+    pub async fn set_affinity(&self, affinity: Affinity) -> Result<()> {
+        if let Some(ref domain) = self.domain {
+            RpcStore::write().await.set_affinity(domain, affinity)?;
+        }
+
+        Ok(())
     }
 }

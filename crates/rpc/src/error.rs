@@ -27,6 +27,12 @@ pub enum Error {
 
     #[error(transparent)]
     Dialog(#[from] iron_dialogs::Error),
+
+    #[error("serialization error: {0}")]
+    Serde(#[from] serde_json::Error),
+
+    #[error(transparent)]
+    IO(#[from] std::io::Error),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

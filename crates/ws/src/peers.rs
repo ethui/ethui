@@ -1,17 +1,11 @@
-use std::{
-    collections::HashMap,
-    fs::File,
-    net::SocketAddr,
-    path::{Path, PathBuf},
-    sync::Arc,
-};
+use std::{collections::HashMap, net::SocketAddr};
 
-use iron_types::{ChecksummedAddress, UINotify};
-use serde::{Deserialize, Serialize};
+use iron_networks::Networks;
+use iron_rpc::RpcStore;
+use iron_types::{Affinity, ChecksummedAddress, GlobalState, UINotify};
+use serde::Serialize;
 use serde_json::json;
-use tokio::sync::{mpsc, RwLock};
-
-use crate::error::WsResult;
+use tokio::sync::{mpsc, RwLockReadGuard};
 
 #[derive(Clone, Debug, Serialize)]
 pub struct Peer {
@@ -73,8 +67,6 @@ impl From<Peer> for iron_rpc::Handler {
 pub struct Peers {
     // current list of connections
     map: HashMap<SocketAddr, Peer>,
-
-    file: PathBuf,
 }
 
 impl Peers {
@@ -92,22 +84,6 @@ impl Peers {
         //self.window_snd.send(UINotify::PeersUpdated.into()).unwrap();
     }
 
-    pub async fn set_affinity(&mut self, domain: String, chain_id: u32) -> WsResult<()> {
-        let mut store = self.store.write().await;
-        store.affinities.insert(domain, chain_id as u64);
-        self.save()?;
-
-        Ok(())
-    }
-
-    pub async fn remove_affinity(&mut self, domain: String) -> WsResult<()> {
-        let mut store = self.store.write().await;
-        store.affinities.remove(&domain);
-        self.save()?;
-
-        Ok(())
-    }
-
     /// Broadcasts an `accountsChanged` event to all peers
     pub fn broadcast_accounts_changed(&self, new_accounts: Vec<ChecksummedAddress>) {
         self.broadcast(json!({
@@ -117,14 +93,37 @@ impl Peers {
     }
 
     /// Broadcasts a `chainChanged` event to all peers
-    pub fn broadcast_chain_changed(&self, chain_id: u32, name: String) {
-        self.broadcast(json!({
-            "method": "chainChanged",
-            "params": {
-                "chainId": format!("0x{:x}", chain_id),
-                "networkVersion": name
+    pub async fn broadcast_chain_changed(
+        &self,
+        chain_id: u32,
+        domain: Option<String>,
+        affinity: Affinity,
+    ) {
+        if let Some(network) = Networks::read().await.get_network(chain_id) {
+            let msg = json!({
+                "method": "chainChanged",
+                "params": {
+                    "chainId": format!("0x{:x}", chain_id),
+                    "networkVersion": network.name
+                }
+            });
+
+            let store = iron_rpc::RpcStore::read().await;
+            for (_, peer) in self.map.iter() {
+                if affinity_matches(peer, &domain, &affinity, &store) {
+                    tracing::info!(
+                        event = "peer chain changed",
+                        domain = peer.domain(),
+                        chain_id
+                    );
+                    peer.sender
+                        .send(serde_json::to_value(&msg).unwrap())
+                        .unwrap_or_else(|e| {
+                            tracing::warn!("Failed to send message to peer: {}", e);
+                        });
+                }
             }
-        }));
+        }
     }
 
     fn broadcast<T: Serialize + std::fmt::Debug>(&self, msg: T) {
@@ -142,27 +141,26 @@ impl Peers {
     }
 }
 
-#[derive(Debug, Default, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", default)]
-pub(crate) struct Store {
-    #[serde(skip, default)]
-    file: PathBuf,
+// checks if a peer matches the given affinity
+fn affinity_matches(
+    peer: &Peer,
+    domain: &Option<String>,
+    affinity: &Affinity,
+    store: &RwLockReadGuard<'_, RpcStore>,
+) -> bool {
+    use Affinity::*;
 
-    // maps rule -> current_chain_id
-    // rule is currently a domain, but may eventually grow
-    // TODO: removing networks will cause some affinities to become invalid. need to clean them up
-    affinities: HashMap<String, u64>,
-}
+    match affinity {
+        // if affinity is global/undefined, we match against any other global/undefined peer
+        Unset | Global => {
+            let current_affinity = peer.domain().map(|d| store.get_affinity(&d));
 
-impl Store {
-    // Persists current state to disk
-    fn save(&self) -> WsResult<()> {
-        let pathbuf = self.file.clone();
-        let path = Path::new(&pathbuf);
-        let file = File::create(path)?;
+            current_affinity
+                .map(|a| a.is_unset() || a.is_global())
+                .unwrap_or(true)
+        }
 
-        serde_json::to_writer_pretty(file, self)?;
-
-        Ok(())
+        // if affinity is sticky, we only match against peers on the same domain
+        Sticky(_) => peer.domain() == *domain,
     }
 }
