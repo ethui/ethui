@@ -149,15 +149,14 @@ impl Handler {
         let networks = Networks::read().await;
         let wallets = Wallets::read().await;
 
-        let affinity = ctx.get_affinity().await;
+        let _affinity = ctx.get_affinity().await;
         let network = networks.get_current();
         let address = wallets.get_current_wallet().get_current_address().await;
 
         Ok(json!({
             "isUnlocked": true,
             "chainId": network.chain_id_hex(),
-            "
-        networkVersion": network.name,
+            "networkVersion": network.name,
             "accounts": [address],
         }))
     }
@@ -166,8 +165,15 @@ impl Handler {
         let params = params.parse::<Vec<HashMap<String, String>>>().unwrap();
         let chain_id_str = params[0].get("chainId").unwrap().clone();
         let chain_id = u32::from_str_radix(&chain_id_str[2..], 16).unwrap();
+        dbg!(&params);
 
+        if ctx.get_current_chain_id().await == chain_id {
+            return Ok(serde_json::Value::Null);
+        }
+
+        dbg!("here");
         if Networks::write().await.validate_chain_id(chain_id) {
+            dbg!("1");
             let affinity = chain_id.into();
             // immediatelly set affinity for the current handler
             ctx.set_affinity(affinity).await?;
@@ -177,6 +183,7 @@ impl Handler {
 
             Ok(serde_json::Value::Null)
         } else {
+            dbg!("2");
             Err(jsonrpc_core::Error::invalid_params(format!(
                 "Invalid Chain ID: {}",
                 chain_id
@@ -292,11 +299,11 @@ impl Ctx {
         Self { domain: None }
     }
 
-    pub async fn get_affinity(&self) -> Option<Affinity> {
+    pub async fn get_affinity(&self) -> Affinity {
         if let Some(ref domain) = self.domain {
             RpcStore::read().await.get_affinity(domain)
         } else {
-            None
+            Default::default()
         }
     }
 
@@ -306,5 +313,12 @@ impl Ctx {
         }
 
         Ok(())
+    }
+
+    pub async fn get_current_chain_id(&self) -> u32 {
+        match self.get_affinity().await {
+            Affinity::Sticky(chain_id) => chain_id,
+            _ => Networks::read().await.get_current().chain_id,
+        }
     }
 }

@@ -34,7 +34,10 @@ pub async fn init(pathbuf: PathBuf) {
             file: pathbuf,
         }
     } else {
-        RpcStore::default()
+        RpcStore {
+            file: pathbuf,
+            ..Default::default()
+        }
     };
 
     STORE.set(RwLock::new(store)).unwrap();
