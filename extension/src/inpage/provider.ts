@@ -18,9 +18,14 @@ import {
   UnvalidatedRequest,
   UnvalidatedSingleOrBatchRequest,
 } from "./types";
-import { EMITTED_NOTIFICATIONS, isValidNetworkVersion } from "./utils";
-import { NOOP, getDefaultExternalMiddleware } from "./utils";
-import { Maybe, getRpcPromiseCallback, isValidChainId } from "./utils";
+import {
+  EMITTED_NOTIFICATIONS,
+  Maybe,
+  getDefaultExternalMiddleware,
+  getRpcPromiseCallback,
+  isValidChainId,
+  isValidNetworkVersion,
+} from "./utils";
 
 interface IronProviderOptions {
   /* The stream used to connect to the wallet. */
@@ -462,48 +467,6 @@ export class IronProvider extends SafeEventEmitter {
     }
   }
 
-  //====================
-  // Deprecated Methods
-  //====================
-
-  /**
-   * Internal backwards compatibility method, used in send.
-   *
-   * @deprecated
-   */
-  private _sendSync(payload: SendSyncJsonRpcRequest) {
-    let result;
-    switch (payload.method) {
-      case "eth_accounts":
-        result = this.selectedAddress ? [this.selectedAddress] : [];
-        break;
-
-      case "eth_coinbase":
-        result = this.selectedAddress || null;
-        break;
-
-      case "eth_uninstallFilter":
-        this.rpcRequest(payload, NOOP);
-        result = true;
-        break;
-
-      case "net_version":
-        result = this.networkVersion || null;
-        break;
-
-      default:
-        throw new Error(
-          `Iron: The Iron Ethereum provider does not support synchronous methods like ${payload.method} without a callback parameter.`
-        );
-    }
-
-    return {
-      id: payload.id,
-      jsonrpc: payload.jsonrpc,
-      result,
-    };
-  }
-
   /**
    * Constructor helper.
    *
@@ -627,10 +590,6 @@ export class IronProvider extends SafeEventEmitter {
     this.rpcRequest = this.rpcRequest.bind(this);
     this.request = this.request.bind(this);
     this.handleStreamDisconnect = this.handleStreamDisconnect.bind(this);
-    this._sendSync = this._sendSync.bind(this);
-    this.enable = this.enable.bind(this);
-    this.send = this.send.bind(this);
-    this.sendAsync = this.sendAsync.bind(this);
     this._warnOfDeprecation = this._warnOfDeprecation.bind(this);
   }
 

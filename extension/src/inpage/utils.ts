@@ -1,10 +1,13 @@
 import { ethErrors } from "eth-rpc-errors";
+import { request } from "http";
 import {
   JsonRpcMiddleware,
   PendingJsonRpcResponse,
   createIdRemapMiddleware,
 } from "json-rpc-engine";
 import log from "loglevel";
+
+import { UnvalidatedSingleOrBatchRequest } from "./types";
 
 export type Maybe<T> = T | null | undefined;
 
@@ -56,21 +59,20 @@ function createErrorMiddleware(): JsonRpcMiddleware<unknown, unknown> {
 }
 
 // resolve response.result or response, reject errors
-export const getRpcPromiseCallback =
-  (
-    resolve: (value?: unknown) => void,
-    reject: (error?: Error) => void,
-    unwrapResult = true
-  ) =>
-  (error: Error, response: PendingJsonRpcResponse<unknown>): void => {
+export function getRpcPromiseCallback(
+  resolve: (value?: unknown) => void,
+  reject: (error?: Error) => void
+) {
+  return (error: Error, response: PendingJsonRpcResponse<unknown>): void => {
     if (error || response.error) {
       reject(error || response.error);
     } else {
-      !unwrapResult || Array.isArray(response)
-        ? resolve(response)
-        : resolve(response.result);
+      const result = Array.isArray(response) ? response : response.result;
+
+      resolve(result);
     }
   };
+}
 
 /**
  * Checks whether the given chain ID is valid, meaning if it is non-empty,
@@ -93,5 +95,3 @@ export const isValidNetworkVersion = (
   networkVersion: unknown
 ): networkVersion is string =>
   Boolean(networkVersion) && typeof networkVersion === "string";
-
-export const NOOP = () => undefined;
