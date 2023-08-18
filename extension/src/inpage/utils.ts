@@ -6,8 +6,6 @@ import {
 } from "json-rpc-engine";
 import log from "loglevel";
 
-import { createRpcWarningMiddleware } from "./middleware/createRpcWarningMiddleware";
-
 export type Maybe<T> = T | null | undefined;
 
 // Constants
@@ -28,7 +26,6 @@ export const EMITTED_NOTIFICATIONS = Object.freeze([
 export const getDefaultExternalMiddleware = () => [
   createIdRemapMiddleware(),
   createErrorMiddleware(),
-  createRpcWarningMiddleware(),
 ];
 
 /**
