@@ -302,20 +302,19 @@ export class IronProvider extends SafeEventEmitter {
    */
   protected handleAccountsChanged(accounts: Address[]): void {
     log.info("handleAccountsChanged", accounts);
-    let _accounts = accounts;
 
     // emit accountsChanged if anything about the accounts array has changed
-    if (!dequal(this.state.accounts, _accounts)) {
-      this.state.accounts = _accounts as string[];
+    if (!dequal(this.state.accounts, accounts)) {
+      this.state.accounts = accounts as string[];
 
       // handle selectedAddress
-      if (this.selectedAddress !== _accounts[0]) {
-        this.selectedAddress = _accounts[0] || undefined;
+      if (this.selectedAddress !== accounts[0]) {
+        this.selectedAddress = accounts[0] || undefined;
       }
 
       // finally, after all state has been updated, emit the event
       if (this.state.initialized) {
-        this.emit("accountsChanged", _accounts);
+        this.emit("accountsChanged", accounts);
       }
     }
   }
