@@ -67,7 +67,6 @@ export class IronProvider extends SafeEventEmitter {
   protected autoId = 0;
   protected engine: JsonRpcEngine;
   protected connection: JsonRpcConnection;
-  protected sentWarnings: Record<string, boolean> = {};
 
   /**
    * @param connectionStream - A Node.js duplex stream
