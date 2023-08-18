@@ -69,7 +69,7 @@ export class IronProvider extends SafeEventEmitter {
     isPermanentlyDisconnected: boolean;
   };
 
-  protected autoId: number = 0;
+  protected autoId = 0;
   protected engine: JsonRpcEngine;
   protected connection: JsonRpcConnection;
   protected sentWarnings: Record<string, boolean> = {};
@@ -238,7 +238,7 @@ export class IronProvider extends SafeEventEmitter {
     cb: (...args: unknown[]) => void
   ) {
     if (!Array.isArray(payload)) {
-      let request = {
+      const request = {
         id: payload.id || this.nextId(),
         jsonrpc: payload.jsonrpc || "2.0",
         method: payload.method,
@@ -247,7 +247,7 @@ export class IronProvider extends SafeEventEmitter {
 
       return this.engine.handle(request, cb);
     } else {
-      let request = payload.map((payload) => ({
+      const request = payload.map((payload) => ({
         id: payload.id || this.nextId(),
         jsonrpc: payload.jsonrpc || "2.0",
         method: payload.method,
