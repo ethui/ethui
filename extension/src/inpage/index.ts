@@ -20,7 +20,7 @@ export function init() {
  * conntected to a `WindowPostMessageStream`
  * returns The initialized provider (whether set or not).
  */
-export function initializeProvider(): IronProvider {
+export function initializeProvider() {
   const connectionStream = new WindowPostMessageStream({
     name: "iron:provider:inpage",
     target: "iron:provider:contentscript",
@@ -32,15 +32,10 @@ export function initializeProvider(): IronProvider {
     connectionStream,
   });
 
-  const proxiedProvider = new Proxy(provider, {
-    // some common libraries, e.g. web3@1.x, mess with our API
-    deleteProperty: () => true,
-  });
-
-  setGlobalProvider(proxiedProvider);
-
-  return proxiedProvider;
+  setGlobalProvider(provider);
 }
+
+type ExtendedWindow = Window & typeof globalThis & { ethereum: IronProvider };
 
 /**
  * Sets the given provider instance as window.ethereum and dispatches the
@@ -49,7 +44,6 @@ export function initializeProvider(): IronProvider {
  * @param provider - The provider instance.
  */
 function setGlobalProvider(provider: IronProvider): void {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (window as Record<string, any>).ethereum = provider;
+  (window as ExtendedWindow).ethereum = provider;
   window.dispatchEvent(new Event("ethereum#initialized"));
 }
