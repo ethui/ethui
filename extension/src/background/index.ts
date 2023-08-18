@@ -40,7 +40,24 @@ export function setupProviderConnection(port: Runtime.Port) {
   });
   const outStream = mux.createStream("iron-provider") as unknown as Duplex;
 
-  ws = new WebsocketBuilder(`${settings.endpoint}?${connectionParams(port)}`)
+  outStream.on("data", (data: unknown) => {
+    // only connect once the first data packet arrives
+    // this prevents unnecessary connections for tabs that don't actually use the provider
+    if (!ws) {
+      console.log("connecting");
+      ws = connect(port, outStream);
+    }
+    console.log("data", data);
+
+    // forward all messages to ws
+    log.debug("request", data);
+    ws.send(JSON.stringify(data));
+  });
+}
+
+function connect(port: Runtime.Port, outStream: Duplex) {
+  // This isnt' working here
+  return new WebsocketBuilder(`${settings.endpoint}?${connectionParams(port)}`)
     .withBackoff(new ConstantBackoff(1000))
     .onOpen((i, ev) => {
       log.debug("onOpen", i, ev);
@@ -55,14 +72,6 @@ export function setupProviderConnection(port: Runtime.Port) {
       outStream.write(data);
     })
     .build();
-
-  outStream.on("data", (data: unknown) => {
-    if (!ws) return;
-
-    // forward all messages to ws
-    log.debug("request", data);
-    ws.send(JSON.stringify(data));
-  });
 }
 
 function connectionParams(port: Runtime.Port) {
