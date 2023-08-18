@@ -147,7 +147,7 @@ impl Handler {
         Ok(json!({
             "isUnlocked": true,
             "chainId": network.chain_id_hex(),
-            "networkVersion": network.name,
+            "networkVersion": network.chain_id.to_string(),
             "accounts": [address],
         }))
     }
