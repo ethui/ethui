@@ -40,13 +40,18 @@ export class IronProvider extends SafeEventEmitter {
   public chainId?: string;
 
   /**
+   * Define `window.ethereum.networkVersion`, by returning the chain ID directly
+   */
+  get networkVersion() {
+    return this.chainId;
+  }
+
+  /**
    * The user's currently selected Ethereum address.
    * If null, Iron is either locked or the user has not permitted any
    * addresses to be viewed.
    */
   public selectedAddress?: Address;
-
-  public networkVersion?: string;
 
   /**
    * Indicating that this provider is an Iron provider.
@@ -186,49 +191,30 @@ export class IronProvider extends SafeEventEmitter {
 
   /**
    * When the provider becomes disconnected, updates internal state and emits
-   * required events. Idempotent with respect to the isRecoverable parameter.
+   * required events.
    *
    * Error codes per the CloseEvent status codes as required by EIP-1193:
    * https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent#Status_codes
    *
-   * @param isRecoverable - Whether the disconnection is recoverable.
    * @param errorMessage - A custom error message.
    * @emits BaseProvider#disconnect
    */
-  protected handleDisconnect(isRecoverable: boolean, errorMessage?: string) {
-    if (
-      this.state.isConnected ||
-      (!this.state.isPermanentlyDisconnected && !isRecoverable)
-    ) {
+  protected handleDisconnect(errorMessage: string) {
+    if (this.state.isConnected || !this.state.isPermanentlyDisconnected) {
       this.state.isConnected = false;
 
-      let error;
-      if (isRecoverable) {
-        error = new EthereumRpcError(
-          1013, // Try again later
-          errorMessage ||
-            "Iron: Disconnected from chain. Attempting to connect."
-        );
-        log.debug(error);
-      } else {
-        error = new EthereumRpcError(
-          1011, // Internal error
-          errorMessage ||
-            "Iron: Disconnected from Iron background. Page reload required."
-        );
+      const error = new EthereumRpcError(
+        1011, // Internal error
+        errorMessage
+      );
 
-        log.error(error);
-        this.chainId = undefined;
-        this.state.accounts = [];
-        this.selectedAddress = undefined;
-        this.state.isPermanentlyDisconnected = true;
-      }
+      log.error(error);
+      this.chainId = undefined;
+      this.state.accounts = [];
+      this.selectedAddress = undefined;
+      this.state.isPermanentlyDisconnected = true;
 
       this.emit("disconnect", error);
-    }
-
-    if (this.networkVersion && !isRecoverable) {
-      this.networkVersion = undefined;
     }
   }
 
@@ -237,45 +223,16 @@ export class IronProvider extends SafeEventEmitter {
    * and sets relevant public state. Does nothing if the given `chainId` is
    * equivalent to the existing value.
    *
-   * Permits the `networkVersion` field in the parameter object for
-   * compatibility with child classes that use this value.
-   *
    * @emits BaseProvider#chainChanged
-   * @param networkInfo - An object with network info.
    * @param networkInfo.chainId - The latest chain ID.
-   * @param networkInfo.networkVersion - The latest network ID.
    */
-  protected handleChainChanged({
-    chainId,
-    networkVersion,
-  }: {
-    chainId: string;
-    networkVersion: string;
-  }) {
-    log.info("handleChainChanged", { chainId, networkVersion });
-
-    // This will validate the params and disconnect the provider if the
-    // networkVersion is 'loading'.
-    /**
-     * Upon receipt of a new chainId and networkVersion, emits corresponding
-     * events and sets relevant public state. This class does not have a
-     * `networkVersion` property, but we rely on receiving a `networkVersion`
-     * with the value of `loading` to detect when the network is changing and
-     * a recoverable `disconnect` even has occurred. Child classes that use the
-     * `networkVersion` for other purposes must implement additional handling
-     * therefore.
-     *
-     * @emits BaseProvider#chainChanged
-     * @param networkInfo - An object with network info.
-     * @param networkInfo.chainId - The latest chain ID.
-     * @param networkInfo.networkVersion - The latest network ID.
-     */
+  protected handleChainChanged({ chainId }: { chainId: string }) {
+    log.info("handleChainChanged", { chainId });
 
     this.handleConnect(chainId);
 
     if (chainId !== this.chainId) {
       this.chainId = chainId;
-      this.networkVersion = networkVersion;
       if (this.state.initialized) {
         this.emit("chainChanged", this.chainId);
       }
@@ -316,9 +273,6 @@ export class IronProvider extends SafeEventEmitter {
    * Calls `metamask_getProviderState` and sets initial state
    * if provided and marks this provider as initialized.
    * Throws if called more than once.
-   *
-   * Permits the `networkVersion` field in the parameter object for
-   * compatibility with child classes that use this value.
    */
   protected async initializeStateAsync() {
     try {
@@ -331,11 +285,11 @@ export class IronProvider extends SafeEventEmitter {
       }
 
       if (initialState) {
-        const { accounts, chainId, networkVersion } = initialState;
+        const { accounts, chainId } = initialState;
 
         // EIP-1193 connect
         this.handleConnect(chainId);
-        this.handleChainChanged({ chainId, networkVersion });
+        this.handleChainChanged({ chainId });
         this.handleAccountsChanged(accounts);
       }
 
@@ -368,7 +322,11 @@ export class IronProvider extends SafeEventEmitter {
       this.emit("error", warningMsg);
     }
 
-    this.handleDisconnect(false, error ? error.message : undefined);
+    this.handleDisconnect(
+      error
+        ? error.message
+        : "Iron: Disconnected from Iron background. Page reload required."
+    );
   }
 
   /* Bind functions to prevent consumers from making unbound calls */
