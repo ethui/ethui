@@ -1,7 +1,6 @@
 import { EthereumRpcError, ethErrors } from "eth-rpc-errors";
 import dequal from "fast-deep-equal";
 import { isDuplexStream } from "is-stream";
-import type { JsonRpcRequest, JsonRpcResponse } from "json-rpc-engine";
 import { JsonRpcEngine } from "json-rpc-engine";
 import { createStreamMiddleware } from "json-rpc-middleware-stream";
 import log from "loglevel";
@@ -656,7 +655,7 @@ export class IronProvider extends SafeEventEmitter {
       this.connection.stream,
       mux.createStream(streamName) as unknown as Duplex,
       this.connection.stream,
-      (e) => this.handleStreamDisconnect("Iron RpcProvider", e) as any
+      (e) => this.handleStreamDisconnect("Iron RpcProvider", e)
     );
 
     // Wire up the JsonRpcEngine to the JSON-RPC connection stream
