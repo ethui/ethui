@@ -8,7 +8,7 @@ export type UnvalidatedSingleOrBatchRequest =
   | UnvalidatedRequest
   | UnvalidatedRequest[];
 
-export interface UnvalidatedRequest {
+interface UnvalidatedRequest {
   id?: JsonRpcId;
   jsonrpc?: JsonRpcVersion;
   method: string;

@@ -14,7 +14,6 @@ import {
   ExternalProviderState,
   JsonRpcConnection,
   RequestArguments,
-  UnvalidatedRequest,
   UnvalidatedSingleOrBatchRequest,
 } from "./types";
 import {
@@ -49,20 +48,12 @@ export class IronProvider extends SafeEventEmitter {
    */
   public selectedAddress?: string;
 
-  // Experimental methods can be found here.
-  public readonly _metamask: ReturnType<IronProvider["_getExperimentalApi"]>;
-
   public networkVersion?: string;
 
   /**
    * Indicating that this provider is an Iron provider.
    */
   public readonly isIron: boolean = true;
-
-  // /**
-  //  * Impersonating metamask's provider
-  //  */
-  // public readonly isMetaMask: boolean = true;
 
   protected state: {
     accounts: null | string[];
@@ -99,7 +90,6 @@ export class IronProvider extends SafeEventEmitter {
     });
 
     this.bindFunctions();
-    this._metamask = this._getExperimentalApi();
     this.setupEngine(connectionStream, jsonRpcStreamName);
 
     // We shouldn't perform asynchronous work in the constructor, but at one
@@ -411,57 +401,6 @@ export class IronProvider extends SafeEventEmitter {
   }
 
   /**
-   * Constructor helper.
-   *
-   * Gets the experimental _metamask API as Proxy, so that we can warn consumers
-   * about its experimental nature.
-   */
-  private _getExperimentalApi() {
-    return new Proxy(
-      {
-        // Determines if Iron is unlocked by the user.
-        // @returns Promise resolving to true if Iron is currently unlocked
-        isUnlocked: async () => {
-          if (!this.state.initialized) {
-            await new Promise<void>((resolve) => {
-              this.on("_initialized", () => resolve());
-            });
-          }
-          return this.state.isUnlocked;
-        },
-
-        // Make a batch RPC request.
-        requestBatch: async (requests: UnvalidatedRequest[]) => {
-          if (!Array.isArray(requests)) {
-            throw ethErrors.rpc.invalidRequest({
-              message:
-                "Batch requests must be made with an array of request objects.",
-              data: requests,
-            });
-          }
-
-          return new Promise((resolve, reject) => {
-            this.rpcRequest(
-              requests,
-              getRpcPromiseCallback(resolve, reject) as any
-            );
-          });
-        },
-      },
-      {
-        get: (obj, prop, ...args) => {
-          this.warnOnce(
-            "experimentalMethods",
-            `Iron: 'ethereum._metamask' exposes non-standard, experimental methods. They may be removed or changed without warning.`
-          );
-
-          return Reflect.get(obj, prop, ...args);
-        },
-      }
-    );
-  }
-
-  /**
    * **MUST** be called by child classes.
    *
    * Calls `metamask_getProviderState` and sets initial state
@@ -613,12 +552,5 @@ export class IronProvider extends SafeEventEmitter {
       initialized: false,
       isPermanentlyDisconnected: false,
     };
-  }
-
-  private warnOnce(key: string, message: string) {
-    if (!this.sentWarnings[key]) {
-      this.sentWarnings[key] = true;
-      log.warn(message);
-    }
   }
 }
