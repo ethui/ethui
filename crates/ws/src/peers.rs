@@ -135,7 +135,12 @@ impl Peers {
         });
     }
 
-    pub(crate) fn get_all(&self) -> Vec<Peer> {
-        self.map.values().cloned().collect()
+    pub(crate) fn all_by_domain(&self) -> HashMap<String, Vec<Peer>> {
+        self.map.values().fold(Default::default(), |mut acc, p| {
+            acc.entry(p.domain().unwrap_or_default())
+                .or_default()
+                .push(p.clone());
+            acc
+        })
     }
 }

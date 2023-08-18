@@ -199,3 +199,5 @@ export interface Paginated<T> {
   last: boolean;
   total: number;
 }
+
+export type Affinity = { sticky: number } | "global" | "unset";

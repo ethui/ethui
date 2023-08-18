@@ -40,7 +40,7 @@ impl IronApp {
                 iron_db::commands::db_get_contracts,
                 iron_db::commands::db_get_erc20_balances,
                 iron_db::commands::db_get_native_balance,
-                iron_ws::commands::ws_get_all_peers,
+                iron_ws::commands::ws_peers_by_domain,
                 iron_wallets::commands::wallets_get_all,
                 iron_wallets::commands::wallets_get_current,
                 iron_wallets::commands::wallets_get_current_address,
@@ -56,6 +56,8 @@ impl IronApp {
                 iron_dialogs::commands::dialog_finish,
                 iron_forge::commands::foundry_get_abi,
                 iron_rpc::commands::rpc_send_transaction,
+                iron_connections::commands::connections_affinity_for,
+                iron_connections::commands::connections_set_affinity
             ])
             .setup(|app| {
                 let handle = app.handle();

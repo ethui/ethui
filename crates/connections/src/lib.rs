@@ -1,3 +1,4 @@
+pub mod commands;
 mod ctx;
 mod error;
 mod init;

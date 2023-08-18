@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Copy, Debug, Serialize, Deserialize, Default, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub enum Affinity {
     #[default]
     Unset,

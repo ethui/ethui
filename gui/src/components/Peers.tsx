@@ -1,7 +1,20 @@
-import { Badge, Stack, Typography } from "@mui/material";
-import { groupBy, map } from "lodash-es";
+import {
+  Badge,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { invoke } from "@tauri-apps/api/tauri";
+import { map } from "lodash-es";
+import { useState } from "react";
 
 import { useInvoke, useRefreshPeers } from "../hooks";
+import { useNetworks } from "../store";
+import { Affinity } from "../types";
 import { Panel } from "./";
 
 interface Peer {
@@ -14,32 +27,81 @@ interface Peer {
 }
 
 export function Peers() {
-  const { data: peers, mutate } = useInvoke<Peer[]>("ws_get_all_peers");
+  const { data: peersByDomain, mutate } =
+    useInvoke<Record<string, Peer[]>>("ws_peers_by_domain");
 
   useRefreshPeers(mutate);
-
-  const peersByTabId = groupBy(peers, "tab_id");
 
   return (
     <Panel>
       <Stack spacing={2}>
-        {map(peersByTabId, (conns, tabId) => (
-          <Connection key={tabId} conns={conns} />
+        {map(peersByDomain, (peers, domain) => (
+          <Domain key={domain} domain={domain} peers={peers} />
         ))}
       </Stack>
     </Panel>
   );
 }
 
-function Connection({ conns }: { conns: Peer[] }) {
+function Domain({ domain, peers }: { domain: string; peers: Peer[] }) {
   return (
     <Stack direction="row" alignItems="center" spacing={2}>
       <Badge>
-        <img width="30" height="30" src={conns[0].favicon} />
+        <img width="30" height="30" src={peers[0].favicon} />
       </Badge>
       <Stack>
-        <Typography> {conns[0].title}</Typography>
+        <Typography> {peers[0].title}</Typography>
+      </Stack>
+      <Stack>
+        <AffinityForm domain={domain} />
       </Stack>
     </Stack>
+  );
+}
+
+function AffinityForm({ domain }: { domain: string }) {
+  const networks = useNetworks((s) => s.networks);
+  const { data: affinity } = useInvoke<Affinity>("connections_affinity_for", {
+    domain,
+  });
+
+  const [current, setCurrent] = useState(affinity || "global");
+
+  const handleChange = (event: SelectChangeEvent<string>) => {
+    console.log(event.target.value);
+    let affinity: Affinity = "global";
+    if (event.target.value !== "global") {
+      affinity = { sticky: parseInt(event.target.value) };
+    }
+    invoke("connections_set_affinity", {
+      domain,
+      affinity,
+    });
+    setCurrent(affinity);
+  };
+
+  const value =
+    current == "global" || current == "unset"
+      ? "global"
+      : current.sticky.toString();
+
+  return (
+    <FormControl fullWidth variant="standard">
+      <Select
+        labelId="network-select-label"
+        label="Network"
+        size="small"
+        onChange={handleChange}
+        value={value}
+        displayEmpty
+      >
+        <MenuItem value="global">Global</MenuItem>
+        {networks.map((network) => (
+          <MenuItem value={network.chain_id} key={network.name}>
+            {network.name}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
   );
 }
