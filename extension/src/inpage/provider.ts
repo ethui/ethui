@@ -220,7 +220,7 @@ export class IronProvider extends SafeEventEmitter {
 
         log.error(error);
         this.chainId = undefined;
-        this.state.accounts = null;
+        this.state.accounts = [];
         this.selectedAddress = undefined;
         this.state.isUnlocked = false;
         this.state.isPermanentlyDisconnected = true;
@@ -298,7 +298,7 @@ export class IronProvider extends SafeEventEmitter {
 
     // emit accountsChanged if anything about the accounts array has changed
     if (!dequal(this.state.accounts, accounts)) {
-      this.state.accounts = accounts as string[];
+      this.state.accounts = accounts;
 
       // handle selectedAddress
       if (this.selectedAddress !== accounts[0]) {
