@@ -29,8 +29,10 @@ export interface JsonRpcConnection {
 }
 
 export interface ExternalProviderState {
-  accounts: string[];
+  accounts: Address[];
   chainId: string;
   isUnlocked: boolean;
   networkVersion?: string;
 }
+
+export type Address = `0x${string}`;

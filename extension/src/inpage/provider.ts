@@ -11,6 +11,7 @@ import ObjectMultiplex from "@metamask/object-multiplex";
 import SafeEventEmitter from "@metamask/safe-event-emitter";
 
 import {
+  Address,
   ExternalProviderState,
   JsonRpcConnection,
   RequestArguments,
@@ -47,7 +48,7 @@ export class IronProvider extends SafeEventEmitter {
    * If null, Iron is either locked or the user has not permitted any
    * addresses to be viewed.
    */
-  public selectedAddress?: string;
+  public selectedAddress?: Address;
 
   public networkVersion?: string;
 
@@ -279,32 +280,13 @@ export class IronProvider extends SafeEventEmitter {
       return;
     }
 
-    if (networkVersion === "loading") {
-      this.handleDisconnect(true);
-    } else {
-      if (!isValidChainId(chainId)) {
-        log.error(
-          "Iron: Received invalid network parameters. Please report this bug.",
-          { chainId }
-        );
-        return;
-      }
+    this.handleConnect(chainId);
 
-      this.handleConnect(chainId);
-
-      if (chainId !== this.chainId) {
-        this.chainId = chainId;
-        if (this.state.initialized) {
-          this.emit("chainChanged", this.chainId);
-        }
-      }
-    }
-    // end: old AbstractProvider.handleChainChanged
-
-    if (this.state.isConnected && networkVersion !== this.networkVersion) {
-      this.networkVersion = networkVersion as string;
+    if (chainId !== this.chainId) {
+      this.chainId = chainId;
+      this.networkVersion = networkVersion;
       if (this.state.initialized) {
-        this.emit("networkChanged", this.networkVersion);
+        this.emit("chainChanged", this.chainId);
       }
     }
   }
@@ -318,28 +300,9 @@ export class IronProvider extends SafeEventEmitter {
    * @param isEthAccounts - Whether the accounts value was returned by
    * a call to eth_accounts.
    */
-  protected handleAccountsChanged(accounts: unknown[]): void {
+  protected handleAccountsChanged(accounts: Address[]): void {
     log.info("handleAccountsChanged", accounts);
     let _accounts = accounts;
-
-    if (!Array.isArray(accounts)) {
-      log.error(
-        "Iron: Received invalid accounts parameter. Please report this bug.",
-        accounts
-      );
-      _accounts = [];
-    }
-
-    for (const account of accounts) {
-      if (typeof account !== "string") {
-        log.error(
-          "Iron: Received non-string account. Please report this bug.",
-          accounts
-        );
-        _accounts = [];
-        break;
-      }
-    }
 
     // emit accountsChanged if anything about the accounts array has changed
     if (!dequal(this.state.accounts, _accounts)) {
@@ -347,7 +310,7 @@ export class IronProvider extends SafeEventEmitter {
 
       // handle selectedAddress
       if (this.selectedAddress !== _accounts[0]) {
-        this.selectedAddress = (_accounts[0] as string) || undefined;
+        this.selectedAddress = _accounts[0] || undefined;
       }
 
       // finally, after all state has been updated, emit the event
@@ -372,18 +335,11 @@ export class IronProvider extends SafeEventEmitter {
   protected handleUnlockStateChanged({
     accounts,
     isUnlocked,
-  }: { accounts?: string[]; isUnlocked?: boolean } = {}) {
+  }: { accounts?: Address[]; isUnlocked?: boolean } = {}) {
     log.info("handleUnlockStateChanged", { accounts, isUnlocked });
 
-    if (typeof isUnlocked !== "boolean") {
-      log.error(
-        "Iron: Received invalid isUnlocked parameter. Please report this bug."
-      );
-      return;
-    }
-
     if (isUnlocked !== this.state.isUnlocked) {
-      this.state.isUnlocked = isUnlocked;
+      this.state.isUnlocked = isUnlocked || false;
       this.handleAccountsChanged(accounts || []);
     }
   }
