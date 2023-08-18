@@ -1,7 +1,11 @@
 import { EthereumRpcError, ethErrors } from "eth-rpc-errors";
 import dequal from "fast-deep-equal";
 import { isDuplexStream } from "is-stream";
-import { JsonRpcEngine } from "json-rpc-engine";
+import {
+  JsonRpcEngine,
+  JsonRpcMiddleware,
+  createIdRemapMiddleware,
+} from "json-rpc-engine";
 import { createStreamMiddleware } from "json-rpc-middleware-stream";
 import log from "loglevel";
 import pump from "pump";
@@ -12,20 +16,12 @@ import SafeEventEmitter from "@metamask/safe-event-emitter";
 
 import {
   Address,
-  ExternalProviderState,
-  JsonRpcConnection,
+  ProviderState,
+  Request,
   RequestArguments,
-  UnvalidatedRequest,
-  UnvalidatedSingleOrBatchRequest,
+  SingleOrBatchRequest,
 } from "./types";
-import {
-  EMITTED_NOTIFICATIONS,
-  Maybe,
-  getDefaultExternalMiddleware,
-  getRpcPromiseCallback,
-  isValidChainId,
-  isValidNetworkVersion,
-} from "./utils";
+import { Maybe, createErrorMiddleware, getRpcPromiseCallback } from "./utils";
 
 interface IronProviderOptions {
   /* The stream used to connect to the wallet. */
@@ -67,7 +63,11 @@ export class IronProvider extends SafeEventEmitter {
 
   protected autoId = 0;
   protected engine: JsonRpcEngine;
-  protected connection: JsonRpcConnection;
+  protected connection: {
+    events: SafeEventEmitter;
+    middleware: JsonRpcMiddleware<unknown, unknown>;
+    stream: Duplex;
+  };
 
   /**
    * @param connectionStream - A Node.js duplex stream
@@ -158,7 +158,7 @@ export class IronProvider extends SafeEventEmitter {
    * @param callback - The consumer's callback.
    */
   protected rpcRequest(
-    payload: UnvalidatedSingleOrBatchRequest,
+    payload: SingleOrBatchRequest,
     cb: (...args: unknown[]) => void
   ) {
     if (!Array.isArray(payload)) {
@@ -250,7 +250,10 @@ export class IronProvider extends SafeEventEmitter {
   protected handleChainChanged({
     chainId,
     networkVersion,
-  }: { chainId?: string; networkVersion?: string } = {}) {
+  }: {
+    chainId: string;
+    networkVersion: string;
+  }) {
     log.info("handleChainChanged", { chainId, networkVersion });
 
     // This will validate the params and disconnect the provider if the
@@ -269,16 +272,6 @@ export class IronProvider extends SafeEventEmitter {
      * @param networkInfo.chainId - The latest chain ID.
      * @param networkInfo.networkVersion - The latest network ID.
      */
-    if (!isValidChainId(chainId) || !isValidNetworkVersion(networkVersion)) {
-      log.error(
-        "Iron: Received invalid network parameters. Please report this bug.",
-        {
-          chainId,
-          networkVersion,
-        }
-      );
-      return;
-    }
 
     this.handleConnect(chainId);
 
@@ -355,7 +348,7 @@ export class IronProvider extends SafeEventEmitter {
    */
   protected async initializeStateAsync() {
     try {
-      const initialState = await this.request<ExternalProviderState>({
+      const initialState = await this.request<ProviderState>({
         method: "metamask_getProviderState",
       });
 
@@ -422,10 +415,8 @@ export class IronProvider extends SafeEventEmitter {
       throw new Error("IronProvider - Invalid Duplex Stream");
     }
 
-    // Handle RPC requests via dapp-side RPC engine.
-    getDefaultExternalMiddleware().forEach((middleware) =>
-      this.engine.push(middleware)
-    );
+    this.engine.push(createIdRemapMiddleware());
+    this.engine.push(createErrorMiddleware());
 
     // Set up connectionStream multiplexing
     const mux = new ObjectMultiplex();
@@ -468,7 +459,7 @@ export class IronProvider extends SafeEventEmitter {
           break;
 
         default:
-          if (EMITTED_NOTIFICATIONS.includes(method)) {
+          if (method === "eth_subscription") {
             log.info("emitting", method);
 
             this.emit("message", {
@@ -482,7 +473,7 @@ export class IronProvider extends SafeEventEmitter {
     });
   }
 
-  private sanitizeRequest(req: UnvalidatedRequest) {
+  private sanitizeRequest(req: Request) {
     return {
       id: req.id || this.nextId(),
       jsonrpc: req.jsonrpc || "2.0",

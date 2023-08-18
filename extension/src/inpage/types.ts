@@ -1,14 +1,8 @@
-import type { JsonRpcMiddleware } from "json-rpc-engine";
 import type { JsonRpcId, JsonRpcVersion } from "json-rpc-engine";
-import type { Duplex } from "stream";
 
-import type SafeEventEmitter from "@metamask/safe-event-emitter";
+export type SingleOrBatchRequest = Request | Request[];
 
-export type UnvalidatedSingleOrBatchRequest =
-  | UnvalidatedRequest
-  | UnvalidatedRequest[];
-
-export interface UnvalidatedRequest {
+export interface Request {
   id?: JsonRpcId;
   jsonrpc?: JsonRpcVersion;
   method: string;
@@ -22,17 +16,11 @@ export interface RequestArguments {
   params?: unknown[] | Record<string, unknown>;
 }
 
-export interface JsonRpcConnection {
-  events: SafeEventEmitter;
-  middleware: JsonRpcMiddleware<unknown, unknown>;
-  stream: Duplex;
-}
-
-export interface ExternalProviderState {
+export interface ProviderState {
   accounts: Address[];
   chainId: string;
   isUnlocked: boolean;
-  networkVersion?: string;
+  networkVersion: string;
 }
 
 export type Address = `0x${string}`;

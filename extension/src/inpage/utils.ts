@@ -1,32 +1,8 @@
 import { ethErrors } from "eth-rpc-errors";
-import {
-  JsonRpcMiddleware,
-  PendingJsonRpcResponse,
-  createIdRemapMiddleware,
-} from "json-rpc-engine";
+import { JsonRpcMiddleware, PendingJsonRpcResponse } from "json-rpc-engine";
 import log from "loglevel";
 
 export type Maybe<T> = T | null | undefined;
-
-// Constants
-
-export const EMITTED_NOTIFICATIONS = Object.freeze([
-  "eth_subscription", // per eth-json-rpc-filters/subscriptionManager
-]);
-
-// Utility functions
-
-/**
- * Gets the default middleware for external providers, consisting of an ID
- * remapping middleware and an error middleware.
- *
- * @param logger - The logger to use in the error middleware.
- * @returns An array of json-rpc-engine middleware functions.
- */
-export const getDefaultExternalMiddleware = () => [
-  createIdRemapMiddleware(),
-  createErrorMiddleware(),
-];
 
 /**
  * json-rpc-engine middleware that logs RPC errors and and validates req.method.
@@ -34,7 +10,7 @@ export const getDefaultExternalMiddleware = () => [
  * @param log - The logging API to use.
  * @returns A json-rpc-engine middleware function.
  */
-function createErrorMiddleware(): JsonRpcMiddleware<unknown, unknown> {
+export function createErrorMiddleware(): JsonRpcMiddleware<unknown, unknown> {
   return (req, res, next) => {
     // json-rpc-engine will terminate the request when it notices this error
     if (typeof req.method !== "string" || !req.method) {
@@ -70,25 +46,3 @@ export function getRpcPromiseCallback(
     }
   };
 }
-
-/**
- * Checks whether the given chain ID is valid, meaning if it is non-empty,
- * '0x'-prefixed string.
- *
- * @param chainId - The chain ID to validate.
- * @returns Whether the given chain ID is valid.
- */
-export const isValidChainId = (chainId: unknown): chainId is string =>
-  Boolean(chainId) && typeof chainId === "string" && chainId.startsWith("0x");
-
-/**
- * Checks whether the given network version is valid, meaning if it is non-empty
- * string.
- *
- * @param networkVersion - The network version to validate.
- * @returns Whether the given network version is valid.
- */
-export const isValidNetworkVersion = (
-  networkVersion: unknown
-): networkVersion is string =>
-  Boolean(networkVersion) && typeof networkVersion === "string";
