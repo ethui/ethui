@@ -1,12 +1,4 @@
-import { ContentCopySharp } from "@mui/icons-material";
-import {
-  Box,
-  Card,
-  CardActions,
-  CardContent,
-  IconButton,
-  Typography,
-} from "@mui/material";
+import { Box, Card, CardContent, Typography } from "@mui/material";
 
 import { useTheme, useWallets } from "../store";
 import { AddressView, BalancesList, Panel } from "./";
