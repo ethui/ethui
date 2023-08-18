@@ -5,6 +5,9 @@ pub enum Error {
 
     #[error(transparent)]
     IO(#[from] std::io::Error),
+
+    #[error("invalid chain id: {0}")]
+    InvalidChainId(u32),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

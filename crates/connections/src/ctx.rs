@@ -1,10 +1,15 @@
 use iron_networks::{Network, Networks};
 use iron_types::{Affinity, GlobalState};
 
-use crate::{Result, Store};
+use crate::{Error, Result, Store};
 
+/// Context for a provider connection
+///
+/// Handles network affinity of this individual connection
+/// Affinity is actually stored in `Store` for persistence
 #[derive(Debug, Clone)]
 pub struct Ctx {
+    /// The domain associated with a connection
     pub domain: Option<String>,
 }
 
@@ -23,7 +28,7 @@ impl Ctx {
         }
     }
 
-    pub async fn set_affinity(&self, affinity: Affinity) -> Result<()> {
+    pub async fn set_affinity(&mut self, affinity: Affinity) -> Result<()> {
         if let Some(ref domain) = self.domain {
             Store::write().await.set_affinity(domain, affinity)?;
         }
@@ -39,6 +44,25 @@ impl Ctx {
             .get_network(chain_id)
             .unwrap()
             .clone()
+    }
+
+    pub async fn switch_chain(&mut self, new_chain_id: u32) -> Result<()> {
+        if self.chain_id().await == new_chain_id {
+            return Ok(());
+        }
+
+        if Networks::read().await.validate_chain_id(new_chain_id) {
+            let affinity = new_chain_id.into();
+            // immediatelly set affinity for the current handler
+            self.set_affinity(affinity).await?;
+
+            // broadcast update to notify other entities asynchronously
+            iron_broadcast::chain_changed(new_chain_id, self.domain.clone(), affinity).await;
+
+            Ok(())
+        } else {
+            Err(Error::InvalidChainId(new_chain_id))
+        }
     }
 
     pub async fn chain_id(&self) -> u32 {
