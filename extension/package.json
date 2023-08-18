@@ -91,8 +91,6 @@
     "json-rpc-middleware-stream": "^4.2.1",
     "loglevel": "^1.8.1",
     "pump": "^3.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "stream": "^0.0.2",
     "webextension-polyfill": "^0.10.0",
     "websocket-stream": "^5.5.2",

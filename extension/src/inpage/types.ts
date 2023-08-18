@@ -1,4 +1,3 @@
-import type { JsonRpcRequest } from "json-rpc-engine";
 import type { JsonRpcMiddleware } from "json-rpc-engine";
 import type { JsonRpcId, JsonRpcVersion } from "json-rpc-engine";
 import type { Duplex } from "stream";
@@ -21,14 +20,6 @@ export interface RequestArguments {
   method: string;
   /* The params of the RPC method, if any. */
   params?: unknown[] | Record<string, unknown>;
-}
-
-export interface SendSyncJsonRpcRequest extends JsonRpcRequest<unknown> {
-  method:
-    | "eth_accounts"
-    | "eth_coinbase"
-    | "eth_uninstallFilter"
-    | "net_version";
 }
 
 export interface JsonRpcConnection {

@@ -14,7 +14,6 @@ import {
   ExternalProviderState,
   JsonRpcConnection,
   RequestArguments,
-  SendSyncJsonRpcRequest,
   UnvalidatedRequest,
   UnvalidatedSingleOrBatchRequest,
 } from "./types";
@@ -60,10 +59,10 @@ export class IronProvider extends SafeEventEmitter {
    */
   public readonly isIron: boolean = true;
 
-  /**
-   * Impersonating metamask's provider
-   */
-  public readonly isMetaMask: boolean = true;
+  // /**
+  //  * Impersonating metamask's provider
+  //  */
+  // public readonly isMetaMask: boolean = true;
 
   protected state: {
     accounts: null | string[];

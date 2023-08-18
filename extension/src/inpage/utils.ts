@@ -1,13 +1,10 @@
 import { ethErrors } from "eth-rpc-errors";
-import { request } from "http";
 import {
   JsonRpcMiddleware,
   PendingJsonRpcResponse,
   createIdRemapMiddleware,
 } from "json-rpc-engine";
 import log from "loglevel";
-
-import { UnvalidatedSingleOrBatchRequest } from "./types";
 
 export type Maybe<T> = T | null | undefined;
 
