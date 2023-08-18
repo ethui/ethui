@@ -23,7 +23,7 @@ export function initProviderForward() {
   );
 
   const pageChannel = inpageMux.createStream(
-    "metamask-provider"
+    "iron-provider"
   ) as unknown as Duplex;
 
   // bg stream
@@ -45,7 +45,7 @@ export function initProviderForward() {
     }
   );
 
-  const extensionChannel = bgMux.createStream("metamask-provider");
+  const extensionChannel = bgMux.createStream("iron-provider");
   pump(
     pageChannel,
     extensionChannel as unknown as Stream,
