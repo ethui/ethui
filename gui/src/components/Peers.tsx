@@ -95,7 +95,9 @@ function AffinityForm({ domain }: { domain: string }) {
         value={value}
         displayEmpty
       >
-        <MenuItem value="global">Global</MenuItem>
+        <MenuItem value="global">
+          <em>Global</em>
+        </MenuItem>
         {networks.map((network) => (
           <MenuItem value={network.chain_id} key={network.name}>
             {network.name}
