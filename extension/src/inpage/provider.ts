@@ -43,7 +43,7 @@ export class IronProvider extends SafeEventEmitter {
    * Define `window.ethereum.networkVersion`, by returning the chain ID directly
    */
   get networkVersion() {
-    return this.chainId;
+    return this.chainId && parseInt(this.chainId, 16).toString();
   }
 
   /**
