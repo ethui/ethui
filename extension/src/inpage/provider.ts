@@ -14,6 +14,7 @@ import {
   ExternalProviderState,
   JsonRpcConnection,
   RequestArguments,
+  UnvalidatedRequest,
   UnvalidatedSingleOrBatchRequest,
 } from "./types";
 import {
@@ -161,22 +162,10 @@ export class IronProvider extends SafeEventEmitter {
     cb: (...args: unknown[]) => void
   ) {
     if (!Array.isArray(payload)) {
-      const request = {
-        id: payload.id || this.nextId(),
-        jsonrpc: payload.jsonrpc || "2.0",
-        method: payload.method,
-        params: payload.params,
-      };
-
+      const request = this.sanitizeRequest(payload);
       return this.engine.handle(request, cb);
     } else {
-      const request = payload.map((payload) => ({
-        id: payload.id || this.nextId(),
-        jsonrpc: payload.jsonrpc || "2.0",
-        method: payload.method,
-        params: payload.params,
-      }));
-
+      const request = payload.map(this.sanitizeRequest);
       return this.engine.handle(request, cb);
     }
   }
@@ -537,6 +526,15 @@ export class IronProvider extends SafeEventEmitter {
           }
       }
     });
+  }
+
+  private sanitizeRequest(req: UnvalidatedRequest) {
+    return {
+      id: req.id || this.nextId(),
+      jsonrpc: req.jsonrpc || "2.0",
+      method: req.method,
+      params: req.params,
+    };
   }
 
   private nextId() {
