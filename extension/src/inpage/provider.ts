@@ -412,62 +412,6 @@ export class IronProvider extends SafeEventEmitter {
   }
 
   /**
-   * We override the following event methods so that we can warn consumers
-   * about deprecated events:
-   *   addListener, on, once, prependListener, prependOnceListener
-   */
-  addListener(eventName: string, listener: (...args: unknown[]) => void) {
-    this._warnOfDeprecation(eventName);
-    return super.addListener(eventName, listener);
-  }
-
-  on(eventName: string, listener: (...args: unknown[]) => void) {
-    this._warnOfDeprecation(eventName);
-    return super.on(eventName, listener);
-  }
-
-  once(eventName: string, listener: (...args: unknown[]) => void) {
-    this._warnOfDeprecation(eventName);
-    return super.once(eventName, listener);
-  }
-
-  prependListener(eventName: string, listener: (...args: unknown[]) => void) {
-    this._warnOfDeprecation(eventName);
-    return super.prependListener(eventName, listener);
-  }
-
-  prependOnceListener(
-    eventName: string,
-    listener: (...args: unknown[]) => void
-  ) {
-    this._warnOfDeprecation(eventName);
-    return super.prependOnceListener(eventName, listener);
-  }
-
-  /* Warns of deprecation for the given event, if applicable. */
-  protected _warnOfDeprecation(eventName: string): void {
-    let msg;
-    switch (eventName) {
-      case "close":
-        msg = `Iron: The event 'close' is deprecated and may be removed in the future. Please use 'disconnect' instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1193#disconnect`;
-        break;
-      case "data":
-        msg = `Iron: The event 'data' is deprecated and will be removed in the future. Use 'message' instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1193#message`;
-        break;
-      case "networkChanged":
-        msg = `Iron: The event 'networkChanged' is deprecated and may be removed in the future. Use 'chainChanged' instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1193#chainchanged`;
-        break;
-      case "notification":
-        msg = `Iron: The event 'notification' is deprecated and may be removed in the future. Use 'message' instead.\nFor more information, see: https://eips.ethereum.org/EIPS/eip-1193#message`;
-        break;
-    }
-
-    if (msg) {
-      this.warnOnce(`events.{eventName}`, msg);
-    }
-  }
-
-  /**
    * Constructor helper.
    *
    * Gets the experimental _metamask API as Proxy, so that we can warn consumers
@@ -590,7 +534,6 @@ export class IronProvider extends SafeEventEmitter {
     this.rpcRequest = this.rpcRequest.bind(this);
     this.request = this.request.bind(this);
     this.handleStreamDisconnect = this.handleStreamDisconnect.bind(this);
-    this._warnOfDeprecation = this._warnOfDeprecation.bind(this);
   }
 
   private setupEngine(stream: Duplex, streamName: string) {
