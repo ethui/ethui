@@ -48,7 +48,7 @@ function BalancesERC20() {
   return (
     <>
       {filteredBalances.map(({ contract, balance, metadata }) => (
-        <BalanceERC20
+        <BalanceItem
           key={contract}
           contract={contract}
           balance={BigInt(balance)}
@@ -57,29 +57,6 @@ function BalancesERC20() {
         />
       ))}
     </>
-  );
-}
-
-function BalanceERC20({
-  contract,
-  balance,
-  decimals,
-  symbol,
-}: {
-  contract: Address;
-  balance: bigint;
-  decimals: number;
-  symbol: string;
-}) {
-  if (!symbol || !decimals) return null;
-
-  return (
-    <BalanceItem
-      contract={contract}
-      balance={balance}
-      decimals={decimals}
-      symbol={symbol}
-    />
   );
 }
 
@@ -101,6 +78,8 @@ function BalanceItem({
   const truncatedBalance =
     balance - (balance % BigInt(Math.ceil(minimum * 10 ** decimals)));
 
+  if (!symbol || !decimals) return null;
+
   return (
     <ListItem>
       <ListItemAvatar>
@@ -110,7 +89,7 @@ function BalanceItem({
       </ListItemAvatar>
       <ListItemText
         secondary={`${symbol} ${
-          contract && `(${truncateEthAddress(contract)})`
+          contract ? `(${truncateEthAddress(contract)})` : ``
         }`}
       >
         <CopyToClipboard label={balance.toString()}>

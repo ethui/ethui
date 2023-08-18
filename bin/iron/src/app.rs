@@ -11,7 +11,7 @@ use tauri::{
 use tauri::{Menu, Submenu, WindowMenuEvent};
 use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, StateFlags};
 
-use crate::error::AppResult;
+use crate::{commands, error::AppResult};
 
 pub struct IronApp {
     app: tauri::App,
@@ -24,9 +24,11 @@ impl IronApp {
         let mut builder = Builder::default()
             .plugin(windowStatePlugin::default().build())
             .invoke_handler(tauri::generate_handler![
+                commands::get_build_mode,
                 iron_settings::commands::settings_get,
                 iron_settings::commands::settings_set,
                 iron_settings::commands::settings_set_dark_mode,
+                iron_settings::commands::settings_finish_onboarding,
                 iron_settings::commands::settings_set_alias,
                 iron_settings::commands::settings_get_alias,
                 iron_networks::commands::networks_get_list,

@@ -19,7 +19,7 @@ export function CommandBarButton() {
           height: 40,
           width: 40,
           display: "none",
-          [theme.breakpoints.down("md")]: {
+          [theme.breakpoints.down("sm")]: {
             display: "initial",
           },
         }}
@@ -34,7 +34,7 @@ export function CommandBarButton() {
         onClick={handleClick}
         sx={{
           justifyContent: "flex-start",
-          [theme.breakpoints.down("md")]: {
+          [theme.breakpoints.down("sm")]: {
             display: "none",
           },
         }}

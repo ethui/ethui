@@ -45,8 +45,6 @@ impl<'a> SendTransaction<'a> {
     pub async fn finish(&mut self) -> Result<PendingTransaction<'_, Http>> {
         tracing::debug!("finishing transaction");
 
-        self.build_signer().await;
-
         let skip_dialog = self.network.is_dev() && self.wallet.is_dev();
         if !skip_dialog {
             self.spawn_dialog().await?;
@@ -85,6 +83,7 @@ impl<'a> SendTransaction<'a> {
     }
 
     async fn send(&mut self) -> Result<PendingTransaction<'_, Http>> {
+        self.build_signer().await;
         let signer = self.signer.as_ref().unwrap();
 
         Ok(signer.send_transaction(self.request.clone(), None).await?)
