@@ -11,9 +11,9 @@ use once_cell::sync::OnceCell;
 use serde::Deserialize;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
-use crate::store::RpcStore;
+use crate::store::Store;
 
-static STORE: OnceCell<RwLock<RpcStore>> = OnceCell::new();
+static STORE: OnceCell<RwLock<Store>> = OnceCell::new();
 
 pub async fn init(pathbuf: PathBuf) {
     let path = Path::new(&pathbuf);
@@ -23,18 +23,18 @@ pub async fn init(pathbuf: PathBuf) {
         affinities: HashMap<String, Affinity>,
     }
 
-    let store: RpcStore = if path.exists() {
+    let store: Store = if path.exists() {
         let file = File::open(path).unwrap();
         let reader = BufReader::new(file);
 
         let store: PersistedStore = serde_json::from_reader(reader).unwrap();
 
-        RpcStore {
+        Store {
             affinities: store.affinities,
             file: pathbuf,
         }
     } else {
-        RpcStore {
+        Store {
             file: pathbuf,
             ..Default::default()
         }
@@ -44,7 +44,7 @@ pub async fn init(pathbuf: PathBuf) {
 }
 
 #[async_trait]
-impl GlobalState for RpcStore {
+impl GlobalState for Store {
     async fn read<'a>() -> RwLockReadGuard<'a, Self> {
         STORE.get().unwrap().read().await
     }

@@ -11,7 +11,7 @@ use crate::Result;
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", default)]
-pub struct RpcStore {
+pub struct Store {
     #[serde(skip, default)]
     pub(crate) file: PathBuf,
 
@@ -21,7 +21,7 @@ pub struct RpcStore {
     pub(crate) affinities: HashMap<String, Affinity>,
 }
 
-impl RpcStore {
+impl Store {
     pub fn get_affinity(&self, domain: &str) -> Affinity {
         self.affinities.get(domain).cloned().unwrap_or_default()
     }
@@ -31,9 +31,6 @@ impl RpcStore {
             Affinity::Unset => self.affinities.remove(domain),
             affinity => self.affinities.insert(domain.to_string(), affinity),
         };
-
-        dbg!(&self.affinities);
-
         self.save()?;
 
         Ok(())

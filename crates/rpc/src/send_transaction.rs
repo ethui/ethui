@@ -17,7 +17,7 @@ use super::{Error, Result};
 pub struct SendTransaction<'a> {
     pub wallet: &'a Wallet,
     pub wallet_path: String,
-    pub network: &'a Network,
+    pub network: Network,
     pub request: TypedTransaction,
     pub signer: Option<SignerMiddleware<Provider<Http>, signers::Wallet<SigningKey>>>,
 }
@@ -94,7 +94,7 @@ impl<'a> SendTransaction<'a> {
 pub struct SendTransactionBuilder<'a> {
     pub wallet: Option<&'a Wallet>,
     pub wallet_path: Option<String>,
-    pub network: Option<&'a Network>,
+    pub network: Option<Network>,
     pub request: TypedTransaction,
 }
 
@@ -109,7 +109,7 @@ impl<'a> SendTransactionBuilder<'a> {
         self
     }
 
-    pub fn set_network(mut self, network: &'a Network) -> SendTransactionBuilder<'a> {
+    pub fn set_network(mut self, network: Network) -> SendTransactionBuilder<'a> {
         self.network = Some(network);
         self
     }

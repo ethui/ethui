@@ -28,6 +28,9 @@ pub enum Error {
     #[error(transparent)]
     Dialog(#[from] iron_dialogs::Error),
 
+    #[error(transparent)]
+    Connection(#[from] iron_connections::Error),
+
     #[error("serialization error: {0}")]
     Serde(#[from] serde_json::Error),
 

@@ -1,11 +1,10 @@
 use std::{collections::HashMap, net::SocketAddr};
 
 use iron_networks::Networks;
-use iron_rpc::RpcStore;
 use iron_types::{Affinity, ChecksummedAddress, GlobalState, UINotify};
 use serde::Serialize;
 use serde_json::json;
-use tokio::sync::{mpsc, RwLockReadGuard};
+use tokio::sync::mpsc;
 
 #[derive(Clone, Debug, Serialize)]
 pub struct Peer {
@@ -108,9 +107,9 @@ impl Peers {
                 }
             });
 
-            let store = iron_rpc::RpcStore::read().await;
             for (_, peer) in self.map.iter() {
-                if affinity_matches(peer, &domain, &affinity, &store) {
+                if iron_connections::utils::affinity_matches(peer.domain(), &domain, affinity).await
+                {
                     tracing::info!(
                         event = "peer chain changed",
                         domain = peer.domain(),
@@ -138,29 +137,5 @@ impl Peers {
 
     pub(crate) fn get_all(&self) -> Vec<Peer> {
         self.map.values().cloned().collect()
-    }
-}
-
-// checks if a peer matches the given affinity
-fn affinity_matches(
-    peer: &Peer,
-    domain: &Option<String>,
-    affinity: &Affinity,
-    store: &RwLockReadGuard<'_, RpcStore>,
-) -> bool {
-    use Affinity::*;
-
-    match affinity {
-        // if affinity is global/undefined, we match against any other global/undefined peer
-        Unset | Global => {
-            let current_affinity = peer.domain().map(|d| store.get_affinity(&d));
-
-            current_affinity
-                .map(|a| a.is_unset() || a.is_global())
-                .unwrap_or(true)
-        }
-
-        // if affinity is sticky, we only match against peers on the same domain
-        Sticky(_) => peer.domain() == *domain,
     }
 }
