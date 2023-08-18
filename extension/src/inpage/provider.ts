@@ -564,9 +564,7 @@ export class IronProvider extends SafeEventEmitter {
     this.engine.push(this.connection.middleware);
 
     // Handle JSON-RPC notifications
-    this.connection.events.on("notification", (payload) => {
-      const { method, params } = payload;
-
+    this.connection.events.on("notification", ({ method, params }) => {
       switch (method) {
         case "accountsChanged":
           this.handleAccountsChanged(params);
@@ -589,7 +587,6 @@ export class IronProvider extends SafeEventEmitter {
           break;
 
         default:
-          // TODO: check all these emits against original impl
           if (EMITTED_NOTIFICATIONS.includes(method)) {
             log.info("emitting", method);
 
@@ -597,14 +594,8 @@ export class IronProvider extends SafeEventEmitter {
               type: method,
               data: params,
             });
-
-            // deprecated
-            // emitted here because that was the original order
-            this.emit("data", payload);
-            // deprecated
-            this.emit("notification", payload.params.result);
           } else {
-            log.error("unexpected message", payload);
+            log.error("unexpected message", { method, params });
           }
       }
     });
