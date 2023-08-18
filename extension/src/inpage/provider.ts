@@ -54,7 +54,7 @@ export class IronProvider extends SafeEventEmitter {
   public readonly isIron: boolean = true;
 
   protected state: {
-    accounts: null | string[];
+    accounts: Address[];
     isConnected: boolean;
     isUnlocked: boolean;
     initialized: boolean;
@@ -489,7 +489,7 @@ export class IronProvider extends SafeEventEmitter {
 
   private defaultState() {
     return {
-      accounts: null,
+      accounts: [],
       isConnected: false,
       isUnlocked: false,
       initialized: false,
