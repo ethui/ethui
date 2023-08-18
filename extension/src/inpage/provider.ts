@@ -56,7 +56,6 @@ export class IronProvider extends SafeEventEmitter {
   protected state: {
     accounts: Address[];
     isConnected: boolean;
-    isUnlocked: boolean;
     initialized: boolean;
     isPermanentlyDisconnected: boolean;
   };
@@ -222,7 +221,6 @@ export class IronProvider extends SafeEventEmitter {
         this.chainId = undefined;
         this.state.accounts = [];
         this.selectedAddress = undefined;
-        this.state.isUnlocked = false;
         this.state.isPermanentlyDisconnected = true;
       }
 
@@ -313,30 +311,6 @@ export class IronProvider extends SafeEventEmitter {
   }
 
   /**
-   * Upon receipt of a new isUnlocked state, sets relevant public state.
-   * Calls the accounts changed handler with the received accounts, or an empty
-   * array.
-   *
-   * Does nothing if the received value is equal to the existing value.
-   * There are no lock/unlock events.
-   *
-   * @param opts - Options bag.
-   * @param opts.accounts - The exposed accounts, if any.
-   * @param opts.isUnlocked - The latest isUnlocked value.
-   */
-  protected handleUnlockStateChanged({
-    accounts,
-    isUnlocked,
-  }: { accounts?: Address[]; isUnlocked?: boolean } = {}) {
-    log.info("handleUnlockStateChanged", { accounts, isUnlocked });
-
-    if (isUnlocked !== this.state.isUnlocked) {
-      this.state.isUnlocked = isUnlocked || false;
-      this.handleAccountsChanged(accounts || []);
-    }
-  }
-
-  /**
    * **MUST** be called by child classes.
    *
    * Calls `metamask_getProviderState` and sets initial state
@@ -357,12 +331,11 @@ export class IronProvider extends SafeEventEmitter {
       }
 
       if (initialState) {
-        const { accounts, chainId, isUnlocked, networkVersion } = initialState;
+        const { accounts, chainId, networkVersion } = initialState;
 
         // EIP-1193 connect
         this.handleConnect(chainId);
         this.handleChainChanged({ chainId, networkVersion });
-        this.handleUnlockStateChanged({ accounts, isUnlocked });
         this.handleAccountsChanged(accounts);
       }
 
@@ -404,7 +377,6 @@ export class IronProvider extends SafeEventEmitter {
     this.handleConnect = this.handleConnect.bind(this);
     this.handleChainChanged = this.handleChainChanged.bind(this);
     this.handleDisconnect = this.handleDisconnect.bind(this);
-    this.handleUnlockStateChanged = this.handleUnlockStateChanged.bind(this);
     this.rpcRequest = this.rpcRequest.bind(this);
     this.request = this.request.bind(this);
     this.handleStreamDisconnect = this.handleStreamDisconnect.bind(this);
@@ -440,10 +412,6 @@ export class IronProvider extends SafeEventEmitter {
       switch (method) {
         case "accountsChanged":
           this.handleAccountsChanged(params);
-          break;
-
-        case "metamask_unlockStateChanged":
-          this.handleUnlockStateChanged(params);
           break;
 
         case "chainChanged":
