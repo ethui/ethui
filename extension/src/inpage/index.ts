@@ -26,11 +26,7 @@ export function initializeProvider() {
     target: "iron:provider:contentscript",
   }) as unknown as Duplex;
 
-  const provider = new IronProvider({
-    jsonRpcStreamName: "metamask-provider",
-    maxEventListeners: 100,
-    connectionStream,
-  });
+  const provider = new IronProvider(connectionStream);
 
   setGlobalProvider(provider);
 }

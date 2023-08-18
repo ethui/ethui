@@ -38,7 +38,7 @@ export function setupProviderConnection(port: Runtime.Port) {
       ws.close();
     }
   });
-  const outStream = mux.createStream("metamask-provider") as unknown as Duplex;
+  const outStream = mux.createStream("iron-provider") as unknown as Duplex;
 
   ws = new WebsocketBuilder(`${settings.endpoint}?${connectionParams(port)}`)
     .withBackoff(new ConstantBackoff(1000))

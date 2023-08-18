@@ -75,27 +75,16 @@ export class IronProvider extends SafeEventEmitter {
 
   /**
    * @param connectionStream - A Node.js duplex stream
-   * @param options - An options bag
-   * @param options.jsonRpcStreamName - The name of the internal JSON-RPC stream.
-   * Default: iron:provider
-   * @param options.maxEventListeners - The maximum number of event
-   * listeners. Default: 100
    */
-  constructor({
-    connectionStream,
-    jsonRpcStreamName,
-    maxEventListeners,
-  }: IronProviderOptions) {
+  constructor(connectionStream: Duplex) {
     super();
-    this.setMaxListeners(maxEventListeners);
+    this.setMaxListeners(100);
     this.state = this.defaultState();
     this.engine = new JsonRpcEngine();
-    this.connection = createStreamMiddleware({
-      retryOnMessage: "METAMASK_EXTENSION_CONNECT_CAN_RETRY",
-    });
+    this.connection = createStreamMiddleware();
 
     this.bindFunctions();
-    this.setupEngine(connectionStream, jsonRpcStreamName);
+    this.setupEngine(connectionStream, "iron-provider");
 
     // We shouldn't perform asynchronous work in the constructor, but at one
     // point we started doing so, and changing this class isn't worth it at
