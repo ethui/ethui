@@ -61,16 +61,16 @@ export function setupProviderConnection(port: Runtime.Port) {
     .onOpen((instance, event) => {
       // connection is ready. set the upper `ws` value, and flush the backlog
       ws = instance;
-      log.debug("[WS] onOpen", instance, event);
+      log.debug("onOpen", instance, event);
       backlog.map((data) => instance.send(JSON.stringify(data)));
     })
     .onClose((instance, event) => {
-      log.debug("[WS] onClose", instance, event);
+      log.debug("onClose", instance, event);
     })
     .onMessage((_ins, event) => {
       // forward WS server messages back to the stream (content script)
       const data = JSON.parse(event.data);
-      log.debug("[WS] onMessage", data);
+      log.debug("onMessage", data);
       outStream.write(data);
     });
 
@@ -127,4 +127,3 @@ function encodeUrlParams(p: Record<string, string | undefined>) {
     .map((kv) => kv.map(encodeURIComponent).join("="))
     .join("&");
 }
-
