@@ -14,18 +14,23 @@ import { type Settings, defaultSettings, loadSettings } from "../settings";
 
 let settings: Settings = defaultSettings;
 
+/**
+ * Loads the current settings, and listens for incoming connections (from the injected contentscript)
+ */
 export async function init() {
   settings = (await loadSettings()) as Settings;
   log.setLevel(settings.logLevel);
-  handleConnections();
-}
 
-function handleConnections() {
+  // handle each incoming content script connection
   browser.runtime.onConnect.addListener(async (remotePort: Runtime.Port) => {
     setupProviderConnection(remotePort);
   });
 }
 
+/**
+ * Set up connection stream to new content scripts.
+ * The stream data is attached to a WebsocketConnection to server run by the Iron desktop app
+ */
 export function setupProviderConnection(port: Runtime.Port) {
   let ws: Websocket | null = null;
 
@@ -40,7 +45,7 @@ export function setupProviderConnection(port: Runtime.Port) {
   });
   const outStream = mux.createStream("iron-provider") as unknown as Duplex;
 
-  ws = new WebsocketBuilder(`${settings.endpoint}?${connectionParams(port)}`)
+  ws = new WebsocketBuilder(ironBackendEndpoint(port))
     .withBackoff(new ConstantBackoff(1000))
     .onOpen((i, ev) => {
       log.debug("onOpen", i, ev);
@@ -56,6 +61,7 @@ export function setupProviderConnection(port: Runtime.Port) {
     })
     .build();
 
+  // forwarding incoming stream data to the WS server
   outStream.on("data", (data: unknown) => {
     if (!ws) return;
 
@@ -65,6 +71,18 @@ export function setupProviderConnection(port: Runtime.Port) {
   });
 }
 
+/**
+ * The URL of the Iron server if given from the settings, with connection metadata being appended as URL params
+ */
+function ironBackendEndpoint(port: Runtime.Port) {
+  return `${settings.endpoint}?${connectionParams(port)}`;
+}
+
+/**
+ * URL-encoded connection info
+ *
+ * This includes all info that may be useful for the Iron server.
+ */
 function connectionParams(port: Runtime.Port) {
   const sender = port.sender;
   const tab = sender?.tab;
@@ -80,6 +98,9 @@ function connectionParams(port: Runtime.Port) {
   return encodeUrlParams(params);
 }
 
+/**
+ * URL-encode a set of params
+ */
 function encodeUrlParams(p: Record<string, string | undefined>) {
   const filtered: Record<string, string> = Object.fromEntries(
     Object.entries(p).filter(([, v]) => v !== undefined)

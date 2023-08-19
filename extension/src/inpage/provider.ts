@@ -23,15 +23,6 @@ import {
 } from "./types";
 import { Maybe, createErrorMiddleware, getRpcPromiseCallback } from "./utils";
 
-interface IronProviderOptions {
-  /* The stream used to connect to the wallet. */
-  connectionStream: Duplex;
-  /* The name of the stream used to connect to the wallet. */
-  jsonRpcStreamName: string;
-  /* The maximum number of event listeners. */
-  maxEventListeners: number;
-}
-
 export class IronProvider extends SafeEventEmitter {
   /**
    * The chain ID of the currently connected Ethereum chain.
@@ -81,7 +72,6 @@ export class IronProvider extends SafeEventEmitter {
     this.setMaxListeners(100);
     this.state = this.defaultState();
     this.engine = new JsonRpcEngine();
-    this.connection = createStreamMiddleware();
 
     this.bindFunctions();
     this.setupEngine(connectionStream, "iron-provider");
@@ -282,8 +272,6 @@ export class IronProvider extends SafeEventEmitter {
         this.handleAccountsChanged(accounts);
       }
 
-      // Mark provider as initialized regardless of whether initial state was
-      // retrieved.
       this.state.initialized = true;
       this.emit("_initialized");
     } catch (error) {
@@ -330,6 +318,8 @@ export class IronProvider extends SafeEventEmitter {
   }
 
   private setupEngine(stream: Duplex, streamName: string) {
+    const connection = createStreamMiddleware();
+
     if (!isDuplexStream(stream)) {
       throw new Error("IronProvider - Invalid Duplex Stream");
     }
@@ -345,17 +335,17 @@ export class IronProvider extends SafeEventEmitter {
 
     // Set up RPC connection
     pump(
-      this.connection.stream,
+      connection.stream,
       mux.createStream(streamName) as unknown as Duplex,
-      this.connection.stream,
+      connection.stream,
       (e) => this.handleStreamDisconnect("Iron RpcProvider", e)
     );
 
     // Wire up the JsonRpcEngine to the JSON-RPC connection stream
-    this.engine.push(this.connection.middleware);
+    this.engine.push(connection.middleware);
 
     // Handle JSON-RPC notifications
-    this.connection.events.on("notification", ({ method, params }) => {
+    connection.events.on("notification", ({ method, params }) => {
       switch (method) {
         case "accountsChanged":
           this.handleAccountsChanged(params);
@@ -399,7 +389,7 @@ export class IronProvider extends SafeEventEmitter {
 
   private nextId() {
     this.autoId++;
-    return `auto-${this.nextId}`;
+    return `auto-${this.autoId}`;
   }
 
   private defaultState() {
