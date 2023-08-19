@@ -1,11 +1,7 @@
 import { EthereumRpcError, ethErrors } from "eth-rpc-errors";
 import dequal from "fast-deep-equal";
 import { isDuplexStream } from "is-stream";
-import {
-  JsonRpcEngine,
-  JsonRpcMiddleware,
-  createIdRemapMiddleware,
-} from "json-rpc-engine";
+import { JsonRpcEngine, createIdRemapMiddleware } from "json-rpc-engine";
 import { createStreamMiddleware } from "json-rpc-middleware-stream";
 import log from "loglevel";
 import pump from "pump";
@@ -58,11 +54,6 @@ export class IronProvider extends SafeEventEmitter {
 
   protected autoId = 0;
   protected engine: JsonRpcEngine;
-  protected connection: {
-    events: SafeEventEmitter;
-    middleware: JsonRpcMiddleware<unknown, unknown>;
-    stream: Duplex;
-  };
 
   /**
    * @param connectionStream - A Node.js duplex stream
