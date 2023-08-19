@@ -78,7 +78,6 @@ export function setupProviderConnection(port: Runtime.Port) {
 
   // forwarding incoming stream data to the WS server
   outStream.on("data", (data: unknown) => {
-    console.log("data", data);
     if (!ws) {
       // connection not ready yet: push to backlog and initiate connection
       backlog.push(data);
