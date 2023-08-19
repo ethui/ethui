@@ -37,6 +37,7 @@ export function getRpcPromiseCallback(
   reject: (error?: Error) => void
 ) {
   return (error: Error, response: PendingJsonRpcResponse<unknown>): void => {
+    console.log("result", error, response);
     if (error || response.error) {
       reject(error || response.error);
     } else {

@@ -73,8 +73,6 @@ export class IronProvider extends SafeEventEmitter {
     this.state = this.defaultState();
 
     this.engine = new JsonRpcEngine();
-
-    // this.setupEngine(connectionStream, "iron-provider");
   }
 
   // Returns whether the provider can process RPC requests.
@@ -93,6 +91,12 @@ export class IronProvider extends SafeEventEmitter {
    * or rejects if an error is encountered.
    */
   public async request<T>(args: RequestArguments): Promise<Maybe<T>> {
+    // initialization calls `metamask_getProviderState`,
+    // so we need to explicitly skip this call to avoid infinite recursion
+    if (args.method !== "metamask_getProviderState") {
+      await this.initialize();
+    }
+
     if (!args || typeof args !== "object" || Array.isArray(args)) {
       throw ethErrors.rpc.invalidRequest({
         message: "Expected a single, non-array, object argument",
@@ -119,14 +123,6 @@ export class IronProvider extends SafeEventEmitter {
         data: args,
       });
     }
-
-    console.log(args);
-    // initialization calls `metamask_getProviderState`,
-    // so we need to explicitly skip this call to avoid infinite recursion
-    if (method !== "metamask_getProviderState") {
-      await this.initialize();
-    }
-    console.log(args);
 
     return new Promise<T>((resolve, reject) => {
       this.rpcRequest(
@@ -260,17 +256,14 @@ export class IronProvider extends SafeEventEmitter {
     if (this.state.initialized) {
       return;
     }
-    console.log("initialize");
 
     this.setupEngine();
 
     try {
-      console.log("here");
       const initialState = await this.request<ProviderState>({
         method: "metamask_getProviderState",
       });
 
-      console.log("here");
       if (this.state.initialized) {
         throw new Error("Provider already initialized.");
       }
@@ -407,7 +400,7 @@ export class IronProvider extends SafeEventEmitter {
 
   private nextId() {
     this.autoId++;
-    return `auto-${this.nextId}`;
+    return `auto-${this.autoId}`;
   }
 
   private defaultState() {
