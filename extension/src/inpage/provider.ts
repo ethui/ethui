@@ -71,7 +71,6 @@ export class IronProvider extends SafeEventEmitter {
     this.pendingConnectionStream = connectionStream;
     this.setMaxListeners(100);
     this.state = this.defaultState();
-
     this.engine = new JsonRpcEngine();
   }
 
@@ -328,8 +327,8 @@ export class IronProvider extends SafeEventEmitter {
     }
 
     const connection = createStreamMiddleware();
-
     const stream = this.pendingConnectionStream;
+
     if (!isDuplexStream(stream)) {
       throw new Error("IronProvider - Invalid Duplex Stream");
     }

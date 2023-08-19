@@ -74,8 +74,6 @@ export function setupProviderConnection(port: Runtime.Port) {
       outStream.write(data);
     });
 
-  // ws = wsBuilder.build();
-
   // forwarding incoming stream data to the WS server
   outStream.on("data", (data: unknown) => {
     if (!ws) {
@@ -129,3 +127,4 @@ function encodeUrlParams(p: Record<string, string | undefined>) {
     .map((kv) => kv.map(encodeURIComponent).join("="))
     .join("&");
 }
+
