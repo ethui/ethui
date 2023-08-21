@@ -52,12 +52,22 @@ impl Ctx {
         }
 
         if Networks::read().await.validate_chain_id(new_chain_id) {
-            let affinity = new_chain_id.into();
-            // immediatelly set affinity for the current handler
-            self.set_affinity(affinity).await?;
+            match self.get_affinity().await {
+                // If affinity is not set, or sticky, update local affinity, and publish event
+                Affinity::Unset | Affinity::Sticky(_) => {
+                    let affinity = new_chain_id.into();
+                    self.set_affinity(affinity).await?;
 
-            // broadcast update to notify other entities asynchronously
-            iron_broadcast::chain_changed(new_chain_id, self.domain.clone(), affinity).await;
+                    iron_broadcast::chain_changed(new_chain_id, self.domain.clone(), affinity)
+                        .await;
+                }
+
+                // If current affinity is global, there's nothing to update on this Ctx, and the
+                // domain is irrelevant in the update,
+                Affinity::Global => {
+                    iron_broadcast::chain_changed(new_chain_id, None, Affinity::Global).await;
+                }
+            };
 
             Ok(())
         } else {

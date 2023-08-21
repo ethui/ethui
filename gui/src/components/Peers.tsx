@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import { map } from "lodash-es";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useInvoke, useRefreshPeers } from "../hooks";
 import { useNetworks } from "../store";
@@ -59,11 +59,23 @@ function Domain({ domain, peers }: { domain: string; peers: Peer[] }) {
 
 function AffinityForm({ domain }: { domain: string }) {
   const networks = useNetworks((s) => s.networks);
-  const { data: affinity } = useInvoke<Affinity>("connections_affinity_for", {
-    domain,
-  });
+  const { data: affinity, mutate } = useInvoke<Affinity>(
+    "connections_affinity_for",
+    {
+      domain,
+    }
+  );
 
-  const [current, setCurrent] = useState(affinity || "global");
+  console.log("here");
+  useRefreshPeers(mutate);
+
+  const [current, setCurrent] = useState<Affinity>("global");
+
+  useEffect(() => {
+    setCurrent(affinity || "global");
+  }, [affinity]);
+
+  // TODO: need to be refreshed
 
   const handleChange = (event: SelectChangeEvent<string>) => {
     console.log(event.target.value);
