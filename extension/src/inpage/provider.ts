@@ -21,31 +21,12 @@ import { Maybe, createErrorMiddleware, getRpcPromiseCallback } from "./utils";
 
 export class IronProvider extends SafeEventEmitter {
   /**
-   * The chain ID of the currently connected Ethereum chain.
-   * See [chainId.network]{@link https://chainid.network} for more information.
-   */
-  public chainId?: string;
-
-  /**
-   * Define `window.ethereum.networkVersion`, by returning the chain ID directly
-   */
-  get networkVersion() {
-    return this.chainId && parseInt(this.chainId, 16).toString();
-  }
-
-  /**
-   * The user's currently selected Ethereum address.
-   * If null, Iron is either locked or the user has not permitted any
-   * addresses to be viewed.
-   */
-  public selectedAddress?: Address;
-
-  /**
    * Indicating that this provider is an Iron provider.
    */
   public readonly isIron: boolean = true;
 
   protected state: {
+    chainId?: string;
     accounts: Address[];
     isConnected: boolean;
     initialized: boolean;
@@ -179,9 +160,8 @@ export class IronProvider extends SafeEventEmitter {
       );
 
       log.error(error);
-      this.chainId = undefined;
+      this.state.chainId = undefined;
       this.state.accounts = [];
-      this.selectedAddress = undefined;
       this.state.isPermanentlyDisconnected = true;
 
       this.emit("disconnect", error);
@@ -201,10 +181,10 @@ export class IronProvider extends SafeEventEmitter {
 
     this.handleConnect(chainId);
 
-    if (chainId !== this.chainId) {
-      this.chainId = chainId;
+    if (chainId !== this.state.chainId) {
+      this.state.chainId = chainId;
       if (this.state.initialized) {
-        this.emit("chainChanged", this.chainId);
+        this.emit("chainChanged", chainId);
       }
     }
   }
@@ -225,11 +205,6 @@ export class IronProvider extends SafeEventEmitter {
     if (!dequal(this.state.accounts, accounts)) {
       this.state.accounts = accounts;
 
-      // handle selectedAddress
-      if (this.selectedAddress !== accounts[0]) {
-        this.selectedAddress = accounts[0] || undefined;
-      }
-
       // finally, after all state has been updated, emit the event
       if (this.state.initialized) {
         this.emit("accountsChanged", accounts);
@@ -238,8 +213,6 @@ export class IronProvider extends SafeEventEmitter {
   }
 
   /**
-   * **MUST** be called by child classes.
-   *
    * Calls `metamask_getProviderState` and sets initial state
    * if provided and marks this provider as initialized.
    * Throws if called more than once.
@@ -385,6 +358,7 @@ export class IronProvider extends SafeEventEmitter {
 
   private defaultState() {
     return {
+      chainId: undefined,
       accounts: [],
       isConnected: false,
       isUnlocked: false,
