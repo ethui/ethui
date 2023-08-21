@@ -98,7 +98,7 @@ impl Peers {
         domain: Option<String>,
         affinity: Affinity,
     ) {
-        if let Some(network) = Networks::read().await.get_network(chain_id) {
+        if Networks::read().await.validate_chain_id(chain_id) {
             let msg = json!({
                 "method": "chainChanged",
                 "params": {

@@ -137,7 +137,7 @@ impl Networks {
     fn notify_peers(&self) {
         let current = self.get_current().clone();
         tokio::spawn(async move {
-            iron_broadcast::chain_changed(current.chain_id, Affinity::Global).await;
+            iron_broadcast::chain_changed(current.chain_id, None, Affinity::Global).await;
         });
     }
 

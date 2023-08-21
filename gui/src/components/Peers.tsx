@@ -1,5 +1,6 @@
 import {
   Badge,
+  Box,
   FormControl,
   InputLabel,
   MenuItem,
@@ -49,12 +50,10 @@ function Domain({ domain, peers }: { domain: string; peers: Peer[] }) {
       <Badge>
         <img width="30" height="30" src={peers[0].favicon} />
       </Badge>
-      <Stack>
-        <Typography> {peers[0].title}</Typography>
-      </Stack>
-      <Stack>
+      <Typography> {peers[0].origin}</Typography>
+      <Box sx={{ "&&": { ml: "auto" } }}>
         <AffinityForm domain={domain} />
-      </Stack>
+      </Box>
     </Stack>
   );
 }
