@@ -31,27 +31,28 @@ export class IronProvider extends SafeEventEmitter {
     isConnected: boolean;
     initialized: boolean;
     isPermanentlyDisconnected: boolean;
+    engineSetupFinished: boolean;
   };
 
   protected autoId = 0;
   protected engine: JsonRpcEngine;
 
   /**
+   * Connection creation is lazy.
+   * So we need to hold the given connectionStream until we are actually ready to connect
+   */
+  protected pendingConnectionStream?: Duplex;
+
+  /**
    * @param connectionStream - A Node.js duplex stream
    */
   constructor(connectionStream: Duplex) {
     super();
+    this.bindFunctions();
+    this.pendingConnectionStream = connectionStream;
     this.setMaxListeners(100);
     this.state = this.defaultState();
     this.engine = new JsonRpcEngine();
-
-    this.bindFunctions();
-    this.setupEngine(connectionStream, "iron-provider");
-
-    // We shouldn't perform asynchronous work in the constructor, but at one
-    // point we started doing so, and changing this class isn't worth it at
-    // the time of writing.
-    this.initializeStateAsync();
   }
 
   // Returns whether the provider can process RPC requests.
@@ -70,6 +71,12 @@ export class IronProvider extends SafeEventEmitter {
    * or rejects if an error is encountered.
    */
   public async request<T>(args: RequestArguments): Promise<Maybe<T>> {
+    // initialization calls `metamask_getProviderState`,
+    // so we need to explicitly skip this call to avoid infinite recursion
+    if (args.method !== "metamask_getProviderState") {
+      await this.initialize();
+    }
+
     if (!args || typeof args !== "object" || Array.isArray(args)) {
       throw ethErrors.rpc.invalidRequest({
         message: "Expected a single, non-array, object argument",
@@ -217,13 +224,19 @@ export class IronProvider extends SafeEventEmitter {
    * if provided and marks this provider as initialized.
    * Throws if called more than once.
    */
-  protected async initializeStateAsync() {
+  protected async initialize() {
+    if (this.state.initialized) {
+      return;
+    }
+
+    this.setupEngine();
+
     try {
       const initialState = await this.request<ProviderState>({
         method: "metamask_getProviderState",
       });
 
-      if (this.state.initialized === true) {
+      if (this.state.initialized) {
         throw new Error("Provider already initialized.");
       }
 
@@ -281,8 +294,13 @@ export class IronProvider extends SafeEventEmitter {
     this.handleStreamDisconnect = this.handleStreamDisconnect.bind(this);
   }
 
-  private setupEngine(stream: Duplex, streamName: string) {
+  private setupEngine() {
+    if (!this.pendingConnectionStream) {
+      return;
+    }
+
     const connection = createStreamMiddleware();
+    const stream = this.pendingConnectionStream;
 
     if (!isDuplexStream(stream)) {
       throw new Error("IronProvider - Invalid Duplex Stream");
@@ -300,7 +318,7 @@ export class IronProvider extends SafeEventEmitter {
     // Set up RPC connection
     pump(
       connection.stream,
-      mux.createStream(streamName) as unknown as Duplex,
+      mux.createStream("iron-provider") as unknown as Duplex,
       connection.stream,
       (e) => this.handleStreamDisconnect("Iron RpcProvider", e)
     );
@@ -340,6 +358,7 @@ export class IronProvider extends SafeEventEmitter {
           }
       }
     });
+    this.pendingConnectionStream = undefined;
   }
 
   private sanitizeRequest(req: Request) {
@@ -364,6 +383,7 @@ export class IronProvider extends SafeEventEmitter {
       isUnlocked: false,
       initialized: false,
       isPermanentlyDisconnected: false,
+      engineSetupFinished: false,
     };
   }
 }
