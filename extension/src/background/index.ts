@@ -14,20 +14,34 @@ import { type Settings, defaultSettings, loadSettings } from "../settings";
 
 let settings: Settings = defaultSettings;
 
+/**
+ * Loads the current settings, and listens for incoming connections (from the injected contentscript)
+ */
 export async function init() {
   settings = (await loadSettings()) as Settings;
   log.setLevel(settings.logLevel);
-  handleConnections();
-}
 
-function handleConnections() {
+  // handle each incoming content script connection
   browser.runtime.onConnect.addListener(async (remotePort: Runtime.Port) => {
     setupProviderConnection(remotePort);
   });
 }
 
+/**
+ * Set up connection stream to new content scripts.
+ * The stream data is attached to a WebsocketConnection to server run by the Iron desktop app
+ *
+ * The WS connection is created lazily (when the first data packet is sent).
+ * This behaviour prevents initiating connections for browser tabs where `window.ethereum` is not actually used
+ */
 export function setupProviderConnection(port: Runtime.Port) {
-  let ws: Websocket | null = null;
+  // the future connection
+  let ws: Websocket | undefined;
+
+  // because of the lazy connection, there is a slight delay between the first request being sent from the page,
+  // and the WS connection being ready to receive it.
+  // During that period, we keep a backlog of pending msgs to flush once the connection is ready
+  const backlog: unknown[] = [];
 
   const stream = new PortStream(port);
   const mux = new ObjectMultiplex();
@@ -38,33 +52,54 @@ export function setupProviderConnection(port: Runtime.Port) {
       ws.close();
     }
   });
-  const outStream = mux.createStream("metamask-provider") as unknown as Duplex;
+  const outStream = mux.createStream("iron-provider") as unknown as Duplex;
 
-  ws = new WebsocketBuilder(`${settings.endpoint}?${connectionParams(port)}`)
+  // pre-build the websocket connection
+  // not actually buit until the first message arrives
+  const wsBuilder = new WebsocketBuilder(ironBackendEndpoint(port))
     .withBackoff(new ConstantBackoff(1000))
-    .onOpen((i, ev) => {
-      log.debug("onOpen", i, ev);
+    .onOpen((instance, event) => {
+      // connection is ready. set the upper `ws` value, and flush the backlog
+      ws = instance;
+      log.debug("onOpen", instance, event);
+      backlog.map((data) => instance.send(JSON.stringify(data)));
     })
-    .onClose((i, ev) => {
-      log.debug("onClose", i, ev);
+    .onClose((instance, event) => {
+      log.debug("onClose", instance, event);
     })
-    .onMessage((_i, e) => {
-      // write back to page provider
-      const data = JSON.parse(e.data);
+    .onMessage((_ins, event) => {
+      // forward WS server messages back to the stream (content script)
+      const data = JSON.parse(event.data);
       log.debug("onMessage", data);
       outStream.write(data);
-    })
-    .build();
+    });
 
+  // forwarding incoming stream data to the WS server
   outStream.on("data", (data: unknown) => {
-    if (!ws) return;
-
-    // forward all messages to ws
-    log.debug("request", data);
-    ws.send(JSON.stringify(data));
+    if (!ws) {
+      // connection not ready yet: push to backlog and initiate connection
+      backlog.push(data);
+      wsBuilder.build();
+    } else {
+      // connection is ready, forward the message normaly
+      log.debug("request", data);
+      ws.send(JSON.stringify(data));
+    }
   });
 }
 
+/**
+ * The URL of the Iron server if given from the settings, with connection metadata being appended as URL params
+ */
+function ironBackendEndpoint(port: Runtime.Port) {
+  return `${settings.endpoint}?${connectionParams(port)}`;
+}
+
+/**
+ * URL-encoded connection info
+ *
+ * This includes all info that may be useful for the Iron server.
+ */
 function connectionParams(port: Runtime.Port) {
   const sender = port.sender;
   const tab = sender?.tab;
@@ -80,6 +115,9 @@ function connectionParams(port: Runtime.Port) {
   return encodeUrlParams(params);
 }
 
+/**
+ * URL-encode a set of params
+ */
 function encodeUrlParams(p: Record<string, string | undefined>) {
   const filtered: Record<string, string> = Object.fromEntries(
     Object.entries(p).filter(([, v]) => v !== undefined)

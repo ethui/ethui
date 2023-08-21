@@ -1,12 +1,4 @@
-import { ContentCopySharp } from "@mui/icons-material";
-import {
-  Box,
-  Card,
-  CardActions,
-  CardContent,
-  IconButton,
-  Typography,
-} from "@mui/material";
+import { Box, Card, CardContent, Typography } from "@mui/material";
 
 import { useTheme, useWallets } from "../store";
 import { AddressView, BalancesList, Panel } from "./";
@@ -21,7 +13,7 @@ export function Account() {
     <Panel>
       <Box
         display="flex"
-        flexDirection="row-reverse"
+        flexDirection={{ sm: "column", md: "row-reverse" }}
         alignItems="flex-start"
         justifyContent="flex-end"
         rowGap={1}
@@ -39,17 +31,12 @@ export function Account() {
               fontSize={12}
               color="text.secondary"
             >
-              Account
+              Address
             </Typography>
             <Typography>
-              <AddressView address={address} />
+              <AddressView address={address} copyIcon />
             </Typography>
           </CardContent>
-          <CardActions disableSpacing>
-            <IconButton>
-              <ContentCopySharp fontSize="small" />
-            </IconButton>
-          </CardActions>
         </Card>
         <BalancesList />
       </Box>

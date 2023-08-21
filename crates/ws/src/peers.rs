@@ -103,7 +103,6 @@ impl Peers {
                 "method": "chainChanged",
                 "params": {
                     "chainId": format!("0x{:x}", chain_id),
-                    "networkVersion": network.name
                 }
             });
 
