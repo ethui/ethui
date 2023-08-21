@@ -66,7 +66,6 @@ function AffinityForm({ domain }: { domain: string }) {
     }
   );
 
-  console.log("here");
   useRefreshPeers(mutate);
 
   const [current, setCurrent] = useState<Affinity>("global");
@@ -75,10 +74,7 @@ function AffinityForm({ domain }: { domain: string }) {
     setCurrent(affinity || "global");
   }, [affinity]);
 
-  // TODO: need to be refreshed
-
   const handleChange = (event: SelectChangeEvent<string>) => {
-    console.log(event.target.value);
     let affinity: Affinity = "global";
     if (event.target.value !== "global") {
       affinity = { sticky: parseInt(event.target.value) };
