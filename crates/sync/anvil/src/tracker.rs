@@ -234,12 +234,27 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
                     ctx.chain_id,
                     token_id,
                     owner,
-                    erc721_data.name,
-                    erc721_data.symbol,
                     erc721_data.uri,
                     erc721_data.metadata,
                 )
                 .await?;
+
+            let collection = ctx
+                .db
+                .get_erc721_missing_collection(ctx.chain_id, address)
+                .await?;
+
+            if collection.is_empty() {
+                dbg!("saving collection");
+                ctx.db
+                    .save_erc721_collection(
+                        address,
+                        ctx.chain_id,
+                        erc721_data.name,
+                        erc721_data.symbol,
+                    )
+                    .await?;
+            }
         }
 
         for address in ctx

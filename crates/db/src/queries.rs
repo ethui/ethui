@@ -127,8 +127,8 @@ pub(super) fn erc721_transfer<'a>(tx: &events::ERC721Transfer, chain_id: u32) ->
     } else {
         // minting or transfer
         sqlx::query(
-            r#" INSERT OR REPLACE INTO erc721_tokens (contract, chain_id, token_id, owner, uri, metadata)
-                        VALUES (?,?,?,?, null, null)"#,
+            r#" INSERT OR REPLACE INTO erc721_tokens (contract, chain_id, token_id, owner)
+                        VALUES (?,?,?,?)"#,
         )
         .bind(format!("0x{:x}", tx.contract))
         .bind(chain_id)

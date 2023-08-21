@@ -334,13 +334,29 @@ impl DB {
         let res: Vec<Erc721Collection> = sqlx::query(
             r#" SELECT *
         FROM erc721_collections
-        WHERE contract IN (SELECT DISTINCT contract FROM erc721_tokens WHERE owner = ? AND chain_id =?)"#,
+        WHERE contract IN (SELECT DISTINCT contract FROM erc721_tokens WHERE owner = ? AND chain_id = ?)"#,
         )
         .bind(format!("0x{:x}", address))
         .bind(chain_id)
         .map(|row| row.try_into().unwrap())
         .fetch_all(self.pool())
         .await?;
+
+        Ok(res)
+    }
+
+    pub async fn get_erc721_missing_collection(
+        &self,
+        chain_id: u32,
+        address: Address,
+    ) -> Result<Vec<Erc721Collection>> {
+        let res: Vec<Erc721Collection> =
+            sqlx::query(r#" SELECT * FROM erc721_collections WHERE contract = ? AND chain_id = ?"#)
+                .bind(format!("0x{:x}", address))
+                .bind(chain_id)
+                .map(|row| row.try_into().unwrap())
+                .fetch_all(self.pool())
+                .await?;
 
         Ok(res)
     }
@@ -365,8 +381,6 @@ impl DB {
         chain_id: u32,
         token_id: U256,
         owner: Address,
-        name: String,
-        symbol: String,
         uri: String,
         metadata: String,
     ) -> Result<()> {
@@ -374,6 +388,19 @@ impl DB {
         queries::update_erc721(address, chain_id, token_id, owner, uri, metadata)
             .execute(&mut conn)
             .await?;
+
+        conn.commit().await?;
+        Ok(())
+    }
+
+    pub async fn save_erc721_collection(
+        &self,
+        address: Address,
+        chain_id: u32,
+        name: String,
+        symbol: String,
+    ) -> Result<()> {
+        let mut conn = self.tx().await?;
 
         queries::update_erc721collection(address, chain_id, name, symbol)
             .execute(&mut conn)
