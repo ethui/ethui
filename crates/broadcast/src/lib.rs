@@ -8,7 +8,7 @@ use url::Url;
 /// Supported messages
 #[derive(Debug, Clone)]
 pub enum InternalMsg {
-    ChainChanged(u32, String),
+    ChainChanged(u32),
     AccountsChanged(Vec<ChecksummedAddress>),
 
     ResetAnvilListener { chain_id: u32, http: Url, ws: Url },
@@ -48,8 +48,8 @@ mod internal_msgs {
     }
 
     /// Broadcasts `ChainChanged` events
-    pub async fn chain_changed(chain_id: u32, name: String) {
-        send(ChainChanged(chain_id, name)).await;
+    pub async fn chain_changed(chain_id: u32) {
+        send(ChainChanged(chain_id)).await;
     }
 
     /// Broadcasts `AccountsChanged` events
