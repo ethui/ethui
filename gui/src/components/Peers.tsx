@@ -2,7 +2,6 @@ import {
   Badge,
   Box,
   FormControl,
-  InputLabel,
   MenuItem,
   Select,
   SelectChangeEvent,
