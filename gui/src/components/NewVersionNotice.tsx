@@ -63,7 +63,7 @@ export function NewVersionNotice() {
         sx={{
           "&&": {
             color: "inherit",
-            textDecorationColor: "currentColor"
+            textDecorationColor: "currentColor",
           },
         }}
         target="_blank"
