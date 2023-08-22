@@ -49,7 +49,7 @@ export function NewVersionNotice() {
     setState({ ...state, open: false });
   };
 
-  // if (!latest || current === latest) return null;
+  if (!latest || current === latest) return null;
 
   return (
     <Snackbar

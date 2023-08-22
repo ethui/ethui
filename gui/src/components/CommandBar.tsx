@@ -23,7 +23,7 @@ import {
 } from "kbar";
 import React, { ReactNode, forwardRef } from "react";
 
-import { useNetworks, useSettings, useWallets } from "../store";
+import { useNetworks, useSettingsWindow, useWallets } from "../store";
 import { useTheme } from "../store/theme";
 
 export function CommandBar({ children }: { children: ReactNode }) {
@@ -71,12 +71,12 @@ function CommandBarInner() {
   const walletActions = useWallets((s) => s.actions);
   const networkActions = useNetworks((s) => s.actions);
   const [theme, themeActions] = useTheme((s) => [s.theme, s.actions]);
-  const settingsActions = useSettings((s) => s.actions);
+  const settingsWindowActions = useSettingsWindow((s) => s.actions);
 
   useRegisterActions(walletActions, [walletActions]);
   useRegisterActions(networkActions, [networkActions]);
-  useRegisterActions(themeActions, [settingsActions]);
-  useRegisterActions(settingsActions, [settingsActions]);
+  useRegisterActions(themeActions, [settingsWindowActions]);
+  useRegisterActions(settingsWindowActions, [settingsWindowActions]);
 
   return (
     <Paper

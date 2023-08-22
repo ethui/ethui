@@ -6,7 +6,6 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { blue } from "@mui/material/colors";
 import { find } from "lodash-es";
 import { useState } from "react";
 

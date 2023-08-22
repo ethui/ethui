@@ -1,11 +1,11 @@
 import Settings from "@mui/icons-material/SettingsSharp";
 import { Button, IconButton } from "@mui/material";
 
-import { useSettings, useTheme } from "../store";
+import { useSettingsWindow, useTheme } from "../store";
 import { Modal, Settings as SettingsPage } from "./";
 
 export function SettingsButton() {
-  const { show, open, close } = useSettings();
+  const { show, open, close } = useSettingsWindow();
   const { theme } = useTheme();
 
   return (

@@ -32,8 +32,8 @@ const store: StateCreator<Store> = (set, _get) => ({
   },
 });
 
-export const useSettings = create<Store>()(subscribeWithSelector(store));
+export const useSettingsWindow = create<Store>()(subscribeWithSelector(store));
 
 appWindow.listen("menu:settings", () => {
-  useSettings.getState().open();
+  useSettingsWindow.getState().open();
 });
