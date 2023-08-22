@@ -49,7 +49,7 @@ export function NewVersionNotice() {
     setState({ ...state, open: false });
   };
 
-  if (!latest || current === latest) return null;
+  // if (!latest || current === latest) return null;
 
   return (
     <Snackbar
@@ -61,8 +61,10 @@ export function NewVersionNotice() {
       <Link
         href="https://github.com/iron-wallet/iron/releases"
         sx={{
-          color: "inherit",
-          textDecorationColor: "currentColor !important",
+          "&&": {
+            color: "inherit",
+            textDecorationColor: "currentColor"
+          },
         }}
         target="_blank"
       >
