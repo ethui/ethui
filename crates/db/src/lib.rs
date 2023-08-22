@@ -6,7 +6,9 @@ mod queries;
 use std::{path::PathBuf, str::FromStr};
 
 use ethers::types::{Address, H256, U256};
-use iron_types::{events::Tx, Erc721Collection, Erc721Token, Event, TokenBalance, TokenMetadata};
+use iron_types::{
+    events::Tx, Erc721Collection, Erc721Token, Erc721TokenData, Event, TokenBalance, TokenMetadata,
+};
 use serde::Serialize;
 use sqlx::{
     sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous},
@@ -311,37 +313,19 @@ impl DB {
         &self,
         chain_id: u32,
         owner: Address,
-    ) -> Result<Vec<Erc721Token>> {
-        let res: Vec<Erc721Token> = sqlx::query(
-            r#" SELECT *
+    ) -> Result<Vec<Erc721TokenData>> {
+        let res: Vec<Erc721TokenData> = sqlx::query(
+            r#" SELECT erc721_tokens.*, collection.name, collection.symbol
         FROM erc721_tokens
-        WHERE chain_id = ? AND owner = ?"#,
+        LEFT JOIN erc721_collections as collection
+          ON collection.contract = erc721_tokens.contract AND collection.chain_id = erc721_tokens.chain_id
+        WHERE erc721_tokens.chain_id = ? AND erc721_tokens.owner = ?"#,
         )
         .bind(chain_id)
         .bind(format!("0x{:x}", owner))
         .map(|row| row.try_into().unwrap())
         .fetch_all(self.pool())
         .await?;
-
-        Ok(res)
-    }
-
-    pub async fn get_erc721_collections(
-        &self,
-        chain_id: u32,
-        address: Address,
-    ) -> Result<Vec<Erc721Collection>> {
-        let res: Vec<Erc721Collection> = sqlx::query(
-            r#" SELECT *
-        FROM erc721_collections
-        WHERE contract IN (SELECT DISTINCT contract FROM erc721_tokens WHERE owner = ? AND chain_id = ?)"#,
-        )
-        .bind(format!("0x{:x}", address))
-        .bind(chain_id)
-        .map(|row| row.try_into().unwrap())
-        .fetch_all(self.pool())
-        .await?;
-
         Ok(res)
     }
 

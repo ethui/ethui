@@ -11,7 +11,7 @@ use ethers::{
 use futures_util::StreamExt;
 use iron_abis::{IERC20, IERC721};
 use iron_db::DB;
-use iron_types::{Erc721Token, Erc721TokenData, TokenMetadata, UINotify};
+use iron_types::{Erc721Token, Erc721TokenDetails, TokenMetadata, UINotify};
 use tokio::sync::mpsc;
 use tracing::warn;
 use url::Url;
@@ -294,7 +294,7 @@ pub async fn fetch_erc20_metadata(address: Address, client: &Provider<Http>) -> 
 pub async fn fetch_erc721_data(
     erc721_token: Erc721Token,
     client: &Provider<Http>,
-) -> Erc721TokenData {
+) -> Erc721TokenDetails {
     let contract = IERC721::new(erc721_token.contract, Arc::new(client));
 
     let contract_uri = match contract.token_uri(erc721_token.token_id).call().await {
@@ -332,7 +332,7 @@ pub async fn fetch_erc721_data(
         }
     }
 
-    Erc721TokenData {
+    Erc721TokenDetails {
         name: contract.name().call().await.unwrap_or_default(),
         symbol: contract.symbol().call().await.unwrap_or_default(),
         uri: contract_uri,
