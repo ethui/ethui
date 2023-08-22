@@ -1,5 +1,5 @@
 use ethers::types::{Address, U256};
-use iron_types::{events::Tx, Erc721Collection, Erc721Token, Erc721TokenData, TokenBalance};
+use iron_types::{events::Tx, Erc721TokenData, TokenBalance};
 
 use super::{Paginated, Pagination, Result};
 use crate::{StoredContract, DB};
