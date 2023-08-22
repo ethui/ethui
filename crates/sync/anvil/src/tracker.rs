@@ -1,4 +1,4 @@
-use std::{ops::Add, sync::Arc, time::Duration};
+use std::{sync::Arc, time::Duration};
 
 use base64::{self, Engine as _};
 use ethers::{
@@ -12,7 +12,6 @@ use futures_util::StreamExt;
 use iron_abis::{IERC20, IERC721};
 use iron_db::DB;
 use iron_types::{Erc721Token, Erc721TokenData, TokenMetadata, UINotify};
-use reqwest;
 use tokio::sync::mpsc;
 use tracing::warn;
 use url::Url;
@@ -245,7 +244,6 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
                 .await?;
 
             if collection.is_empty() {
-                dbg!("saving collection");
                 ctx.db
                     .save_erc721_collection(
                         address,
