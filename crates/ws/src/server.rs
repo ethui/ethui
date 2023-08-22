@@ -18,7 +18,7 @@ pub use crate::error::{WsError, WsResult};
 use crate::peers::{Peer, Peers};
 
 pub(crate) async fn server_loop() {
-    let addr = "127.0.0.1:9002";
+    let addr = std::env::var("IRON_SERVER_ENDPOINT").unwrap_or("127.0.0.1:9002".into());
     let listener = TcpListener::bind(&addr).await.expect("Can't listen to");
 
     while let Ok((stream, _)) = listener.accept().await {

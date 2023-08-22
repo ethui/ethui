@@ -17,12 +17,13 @@ members = [
   "crates/sync/alchemy",
   "crates/crypto",
   "crates/broadcast",
+  "crates/exchange-rates"
 ]
 default-members = ["bin/iron"]
 
 
 [workspace.package]
-version = "0.4.1"
+version = "0.5.0"
 edition = "2021"
 license-file = "./LICENSE"
 homepage = "https://github.com/iron-wallet"
@@ -47,6 +48,7 @@ iron-sync-anvil = { path = "crates/sync/anvil" }
 iron-sync-alchemy = { path = "crates/sync/alchemy" }
 iron-broadcast = { path = "crates/broadcast" }
 iron-tracing = { path = "crates/tracing" }
+iron-exchange-rates = { path = "crates/exchange-rates" }
 tokio = { version = "1.26.0", features = ["full", "sync"] }
 thiserror = "1.0.40"
 ethers = { version = "2.0.0", features = ["ws"] }
