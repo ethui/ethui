@@ -1,6 +1,6 @@
 use std::{ops::Add, sync::Arc, time::Duration};
 
-use base64::{engine::general_purpose, Engine as _};
+use base64::{self, Engine as _};
 use ethers::{
     providers::{
         Http, HttpClientError, JsonRpcClient, Middleware, Provider, RetryClientBuilder,
@@ -299,29 +299,39 @@ pub async fn fetch_erc721_data(
 ) -> Erc721TokenData {
     let contract = IERC721::new(erc721_token.contract, Arc::new(client));
 
-    let contract_uri = contract
-        .token_uri(erc721_token.token_id)
-        .call()
-        .await
-        .unwrap();
+    let contract_uri = match contract.token_uri(erc721_token.token_id).call().await {
+        Ok(uri) => uri,
+        Err(_) => "".to_string(),
+    };
 
     let mut md = "".to_string();
     if contract_uri.contains("data:application/json;base64,") {
         let byte_string = contract_uri
             .strip_prefix("data:application/json;base64,")
-            .unwrap();
+            .unwrap_or("");
 
-        let decoded_uri = general_purpose::STANDARD.decode(byte_string);
-        md = String::from_utf8(decoded_uri.unwrap()).unwrap();
+        let decoded_uri = match base64::engine::general_purpose::STANDARD.decode(byte_string) {
+            Ok(decoded) => decoded,
+            Err(_) => vec![],
+        };
+
+        md = match String::from_utf8(decoded_uri) {
+            Ok(md) => md,
+            Err(_) => "".to_string(),
+        };
     } else if contract_uri.contains("ipfs://") {
         let contract_uri = contract_uri.replace("ipfs://", "https://ipfs.io/ipfs/");
-        let response = reqwest::get(contract_uri.clone()).await.unwrap();
+        let response = match reqwest::get(contract_uri.clone()).await {
+            Ok(response) => response,
+            Err(_) => todo!(),
+        };
 
         if response.status().is_success() {
-            md = response.text().await.unwrap();
+            md = match response.text().await {
+                Ok(md) => md,
+                Err(_) => "".to_string(),
+            };
         }
-    } else {
-        // TODO: handle exceptions
     }
 
     Erc721TokenData {

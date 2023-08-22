@@ -51,6 +51,7 @@ pub struct Erc721TokenData {
     pub uri: String,
     pub metadata: String,
 }
+
 #[derive(Debug, Serialize)]
 pub struct Erc721Collection {
     pub contract: Address,
