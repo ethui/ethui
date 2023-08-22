@@ -1,5 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, Button, Stack, TextField, Typography } from "@mui/material";
+import { ContentCopySharp } from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  IconButton,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
@@ -12,9 +20,10 @@ import { ContextMenu, Modal } from "./";
 interface Props {
   address: string;
   contextMenu?: boolean;
+  copyIcon?: boolean;
 }
 
-export function AddressView({ contextMenu, address }: Props) {
+export function AddressView({ contextMenu, address, copyIcon }: Props) {
   const { data: alias, mutate } = useInvoke<string>("settings_get_alias", {
     address,
   });
@@ -32,13 +41,21 @@ export function AddressView({ contextMenu, address }: Props) {
     },
   ];
 
+  const content = (
+    <>
+      {alias ? alias : truncateEthAddress(address)}
+
+      {copyIcon && (
+        <IconButton>
+          <ContentCopySharp fontSize="small" />
+        </IconButton>
+      )}
+    </>
+  );
+
   return (
     <>
-      {!contextMenu && (
-        <Box fontSize="inherit" title={address}>
-          {alias ? alias : truncateEthAddress(address)}
-        </Box>
-      )}
+      {!contextMenu && <Box fontSize="inherit" title={address}>{content}</Box>}
 
       {contextMenu && (
         <>
@@ -48,7 +65,7 @@ export function AddressView({ contextMenu, address }: Props) {
             actions={contextActions}
             sx={{ textTransform: "none" }}
           >
-            {alias ? alias : truncateEthAddress(address)}
+            {content}
           </ContextMenu>
 
           <Modal open={aliasFormOpen} onClose={() => setAliasFormOpen(false)}>
@@ -65,6 +82,7 @@ export function AddressView({ contextMenu, address }: Props) {
 
 AddressView.defaultProps = {
   contextMenu: true,
+  copyIcon: false,
 };
 
 const schema = z.object({

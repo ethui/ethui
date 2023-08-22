@@ -29,7 +29,7 @@
       "resources": ["/inpage/inpage.js"]
     }
   ],
-  "permissions": ["scripting", "storage"],
+  "permissions": ["storage"],
   "icons": {
     "16": "icons/iron-16.png",
     "48": "icons/iron-48.png",

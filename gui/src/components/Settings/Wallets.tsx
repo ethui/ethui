@@ -4,9 +4,11 @@ import {
   AccordionDetails,
   AccordionSummary,
   Button,
+  Chip,
   Menu,
   MenuItem,
   Stack,
+  Typography,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import { startCase } from "lodash-es";
@@ -70,7 +72,12 @@ export function SettingsWallets() {
           return (
             <Accordion key={wallet.name} defaultExpanded={wallet.new}>
               <AccordionSummary expandIcon={<ExpandMore />}>
-                {wallet.new ? `New ${startCase(wallet.type)}` : wallet.name}
+                <Stack alignItems="center" direction="row">
+                  <Typography>
+                    {wallet.new ? `New ${startCase(wallet.type)}` : wallet.name}
+                  </Typography>
+                  <Chip sx={{ marginLeft: 2 }} label={wallet.type} />
+                </Stack>
               </AccordionSummary>
               <AccordionDetails>
                 {wallet.type === "plaintext" && (

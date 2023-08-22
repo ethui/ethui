@@ -5,6 +5,7 @@ import { Route, Router, Switch } from "wouter";
 
 import {
   CommandBar,
+  DevBuildNotice,
   HomePage,
   MsgSignDialog,
   TxReviewDialog,
@@ -34,6 +35,7 @@ export default function App() {
       <GlobalStyles styles={globalStyles} />
       <CssBaseline>
         <QueryClientProvider client={queryClient}>
+          <DevBuildNotice />
           <OnboardingWrapper>
             <WagmiWrapper>
               <Routes />

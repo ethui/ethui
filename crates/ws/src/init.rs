@@ -32,9 +32,7 @@ async fn receiver() -> ! {
             use InternalMsg::*;
 
             match msg {
-                ChainChanged(chain_id, name) => {
-                    Peers::read().await.broadcast_chain_changed(chain_id, name)
-                }
+                ChainChanged(chain_id) => Peers::read().await.broadcast_chain_changed(chain_id),
                 AccountsChanged(accounts) => {
                     Peers::read().await.broadcast_accounts_changed(accounts)
                 }
