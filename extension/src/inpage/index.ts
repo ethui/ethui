@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from "@lukeed/uuid";
+import { EIP1193Provider, announceProvider } from "mipd";
 import { type Duplex } from "stream";
 
 import { WindowPostMessageStream } from "@metamask/post-message-stream";
@@ -29,6 +31,16 @@ export function initializeProvider() {
   const provider = new IronProvider(connectionStream);
 
   setGlobalProvider(provider);
+
+  announceProvider({
+    info: {
+      icon: "https://avatars.githubusercontent.com/u/130035865?s=200&v=4",
+      name: "Iron",
+      rdns: "eth.iron-wallet",
+      uuid: uuidv4(),
+    },
+    provider: provider as EIP1193Provider,
+  });
 }
 
 type ExtendedWindow = Window & typeof globalThis & { ethereum: IronProvider };
