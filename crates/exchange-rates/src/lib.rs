@@ -1,9 +1,10 @@
 mod feed;
 mod init;
 
+use std::collections::HashMap;
+
 use feed::Feed;
 use serde::Deserialize;
-use std::collections::HashMap;
 
 #[derive(Debug, Deserialize)]
 pub struct Feeds {

@@ -60,6 +60,13 @@ impl Settings {
         &self.inner
     }
 
+    pub fn get_etherscan_api_key(&self) -> Result<String> {
+        self.inner
+            .etherscan_api_key
+            .clone()
+            .ok_or(Error::EtherscanKeyNotSet)
+    }
+
     fn get_alias(&self, address: ChecksummedAddress) -> Option<String> {
         self.inner.aliases.get(&address).cloned()
     }

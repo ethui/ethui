@@ -18,14 +18,12 @@ import { ABIForm, AddressView, Panel } from "./";
 
 export function Contracts() {
   const chainId = useNetworks((s) => s.current?.chain_id);
-  const contracts = useContracts((s) => s.data);
-
-  if (!chainId || !contracts) return null;
+  const contracts = useContracts((s) => s.contracts);
 
   return (
     <Panel>
-      <AddressInput chainId={chainId} />
-      {Array.from(contracts[chainId] || []).map((contract) => (
+      {chainId != 31337 && <AddressInput />}
+      {Array.from(contracts || []).map((contract) => (
         <Contract key={contract.address} contract={contract} />
       ))}
     </Panel>
@@ -39,19 +37,21 @@ function Contract({ contract }: { contract: IContract }) {
         <AddressView address={contract.address} />
         <Chip sx={{ marginLeft: 2 }} label={contract.name} />
       </AccordionSummary>
-      <AccordionDetails>
-        <ABIForm address={contract.address} abi={contract.abi} />
-      </AccordionDetails>
+      {contract.abi && (
+        <AccordionDetails>
+          <ABIForm address={contract.address} abi={contract.abi} />
+        </AccordionDetails>
+      )}
     </Accordion>
   );
 }
 
-function AddressInput({ chainId }: { chainId: number }) {
+function AddressInput() {
   const schema = z.object({
     address: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid format"),
   });
 
-  const addAddress = useContracts((s) => s.addAddress);
+  const add = useContracts((s) => s.add);
 
   const {
     handleSubmit,
@@ -62,7 +62,9 @@ function AddressInput({ chainId }: { chainId: number }) {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = (data: FieldValues) => addAddress(chainId, data.address);
+  const onSubmit = (data: FieldValues) => {
+    add(data.address);
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
