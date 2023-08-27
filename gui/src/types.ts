@@ -168,8 +168,9 @@ export interface ABIFunctionInput {
 
 export interface ABIItem {
   name: string;
-  type: "error" | "function" | "constructor";
-  stateMutability: "view" | "pure" | "nonpayable" | "payable";
+  constant: boolean;
+  type: string;
+  stateMutability: string;
   inputs: ABIFunctionInput[];
 }
 
@@ -202,3 +203,9 @@ export interface Paginated<T> {
 }
 
 export type Affinity = { sticky: number } | "global" | "unset";
+
+export interface IContract {
+  address: Address;
+  abi: ABIItem[];
+  name: string;
+}

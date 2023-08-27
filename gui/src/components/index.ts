@@ -9,7 +9,6 @@ export { Contracts } from "./Contracts";
 export { CopyToClipboard } from "./CopyToClipboard";
 export { HomePage } from "./HomePage";
 export { IconCrypto } from "./IconCrypto";
-export { LivenetPlaceholder } from "./LivenetPlaceholder";
 export { Modal } from "./Modal";
 export { Navbar } from "./Navbar";
 export { NestedRoutes } from "./NestedRoutes";

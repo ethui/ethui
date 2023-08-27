@@ -1,6 +1,6 @@
 import { Route, Switch } from "wouter";
 
-import { LivenetPlaceholder, Navbar, NestedRoutes, NewVersionNotice } from "./";
+import { Navbar, NestedRoutes, NewVersionNotice } from "./";
 import { DEFAULT_TAB, SidebarLayout, TABS } from "./Sidebar";
 
 export function HomePage() {
@@ -12,9 +12,7 @@ export function HomePage() {
             <Route key={tab.path} path={tab.path}>
               <>
                 <Navbar tab={tab} />
-                <LivenetPlaceholder devOnly={tab.devOnly}>
-                  <tab.component />
-                </LivenetPlaceholder>
+                <tab.component />
               </>
             </Route>
           ))}
