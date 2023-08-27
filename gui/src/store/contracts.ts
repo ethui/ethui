@@ -2,7 +2,6 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { Address } from "viem";
 import { StateCreator, create } from "zustand";
 
-import ABI from "../erc20.json";
 import { ABIItem, IContract } from "../types";
 
 const API_KEY = import.meta.env.VITE_ETHERSCAN_API_KEY;
@@ -26,7 +25,8 @@ const store: StateCreator<Store> = (set, get) => ({
       data: {
         31337: contracts.map(({ address }) => ({
           address,
-          abi: ABI as ABIItem[],
+          // TODO: get ABI from backend
+          abi: [] as ABIItem[],
           name: "ERC20",
         })),
       },
