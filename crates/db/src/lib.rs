@@ -264,8 +264,8 @@ impl DB {
     ) -> Result<()> {
         sqlx::query(
             r#" INSERT INTO contracts (address, chain_id, abi, name)
-                        VALUES (?,?,?,?)
-                        ON CONFLICT(address, chain_id) DO NOTHING "#,
+                VALUES (?,?,?,?)
+                ON CONFLICT REPLACE"#,
         )
         .bind(format!("0x{:x}", address))
         .bind(chain_id)
