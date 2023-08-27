@@ -1,6 +1,5 @@
 use ethers::{
     abi::Abi,
-    etherscan::contract::Metadata,
     prelude::{errors::EtherscanError, Client},
     types::{Address, Chain},
 };
@@ -13,27 +12,25 @@ pub(crate) async fn fetch_etherscan_contract_name(
     chain: Chain,
     address: Address,
 ) -> Result<Option<String>> {
-    let settings = Settings::read().await;
-    let api_key = settings.inner.etherscan_api_key;
+    let api_key = Settings::read().await.get_etherscan_api_key()?;
 
     let client = Client::new(chain, api_key)?;
 
     match client.contract_source_code(address).await {
-        Ok(metadata) => Ok(Some(metadata.items[0].contract_name)),
-        Err(EtherscanError::ContractCodeNotVerified) => Ok(None),
-        err => err?,
+        Ok(metadata) => Ok(Some(metadata.items[0].contract_name.clone())),
+        Err(EtherscanError::ContractCodeNotVerified(_)) => Ok(None),
+        Err(err) => Err(err.into()),
     }
 }
 
 pub(crate) async fn fetch_etherscan_abi(chain: Chain, address: Address) -> Result<Option<Abi>> {
-    let settings = Settings::read().await;
-    let api_key = settings.inner.etherscan_api_key;
+    let api_key = Settings::read().await.get_etherscan_api_key()?;
 
     let client = Client::new(chain, api_key)?;
 
     match client.contract_abi(address).await {
         Ok(abi) => Ok(Some(abi)),
-        Err(EtherscanError::ContractCodeNotVerified) => Ok(None),
-        err => err?,
+        Err(EtherscanError::ContractCodeNotVerified(_)) => Ok(None),
+        Err(err) => Err(err.into()),
     }
 }

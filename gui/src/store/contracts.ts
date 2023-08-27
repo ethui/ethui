@@ -1,77 +1,55 @@
+import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Address } from "viem";
 import { StateCreator, create } from "zustand";
+import { subscribeWithSelector } from "zustand/middleware";
 
-import { ABIItem, IContract } from "../types";
+import { IContract } from "../types";
+import { useNetworks } from "./networks";
 
-const API_KEY = import.meta.env.VITE_ETHERSCAN_API_KEY;
-
-interface Store {
-  data: Record<number, Array<IContract>>;
-
-  init: () => void;
-  addAddress: (chainId: number, address: Address) => void;
+interface State {
+  chainId?: number;
+  contracts: IContract[];
 }
 
+interface Setters {
+  reload: () => Promise<void>;
+  add: (address: Address) => void;
+  setChainId: (chainId?: number) => Promise<void>;
+}
+
+type Store = State & Setters;
+
 const store: StateCreator<Store> = (set, get) => ({
-  data: {},
+  contracts: [],
 
-  init: async () => {
+  async reload() {
+    const { chainId } = get();
     const contracts = await invoke<IContract[]>("db_get_contracts", {
-      chainId: 31337,
+      chainId,
     });
-
-    set({
-      data: {
-        31337: contracts.map(({ address }) => ({
-          address,
-          // TODO: get ABI from backend
-          abi: [] as ABIItem[],
-          name: "ERC20",
-        })),
-      },
-    });
+    set({ contracts });
   },
 
-  addAddress: async (chainId: number, address: Address) => {
-    try {
-      if (
-        get().data[chainId]?.some((contract) => contract.address === address)
-      ) {
-        return;
-      }
+  add: async (address: Address) => {
+    const { chainId } = get();
+    invoke("db_insert_contract", { chainId, address });
+  },
 
-      const sourceCode = await getContractSourceCode(address);
-
-      set(({ data }) => {
-        return {
-          data: {
-            ...data,
-            [chainId]: [...(data[chainId] || []), sourceCode],
-          },
-        };
-      });
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.log(e);
-    }
+  async setChainId(chainId) {
+    set({ chainId });
+    get().reload();
   },
 });
 
-export const useContracts = create<Store>()(store);
+export const useContracts = create<Store>()(subscribeWithSelector(store));
 
-useContracts.getState().init();
+listen("contracts-changed", async () => {
+  await useContracts.getState().reload();
+});
 
-const getContractSourceCode = async (address: Address): Promise<IContract> => {
-  const url = `https://api.etherscan.io/api?module=contract&action=getsourcecode&address=${address}&apikey=${API_KEY}`;
-
-  return await fetch(url)
-    .then((res) => res.json())
-    .then(({ result }) => ({
-      address,
-      abi: (JSON.parse(result[0].ABI) as ABIItem[]).filter(
-        ({ type }) => type === "function"
-      ),
-      name: result[0].ContractName,
-    }));
-};
+useNetworks.subscribe(
+  (s) => s.current?.chain_id,
+  (chainId) => useContracts.getState().setChainId(chainId),
+  { fireImmediately: true }
+);

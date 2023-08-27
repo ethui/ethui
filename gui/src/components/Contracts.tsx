@@ -9,38 +9,20 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { invoke } from "@tauri-apps/api/tauri";
-import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { useRefreshContracts } from "../hooks";
 import { useContracts, useNetworks } from "../store";
 import { IContract } from "../types";
 import { ABIForm, AddressView, Panel } from "./";
 
 export function Contracts() {
   const chainId = useNetworks((s) => s.current?.chain_id);
-
-  if (!chainId) return null;
-
-  const [contracts, setContracts] = useState<IContract[]>([]);
-
-  const fetchContracts = async () => {
-    invoke<IContract[]>("contracts_get_all", {
-      chainId: chainId,
-    }).then(setContracts);
-  };
-
-  useEffect(() => {
-    fetchContracts();
-  }, [chainId]);
-
-  useRefreshContracts(fetchContracts);
+  const contracts = useContracts((s) => s.contracts);
 
   return (
     <Panel>
-      <AddressInput chainId={chainId} />
+      {chainId != 31337 && <AddressInput />}
       {Array.from(contracts || []).map((contract) => (
         <Contract key={contract.address} contract={contract} />
       ))}
@@ -64,12 +46,12 @@ function Contract({ contract }: { contract: IContract }) {
   );
 }
 
-function AddressInput({ chainId }: { chainId: number }) {
+function AddressInput() {
   const schema = z.object({
     address: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid format"),
   });
 
-  const addAddress = useContracts((s) => s.addAddress);
+  const add = useContracts((s) => s.add);
 
   const {
     handleSubmit,
@@ -81,10 +63,7 @@ function AddressInput({ chainId }: { chainId: number }) {
   });
 
   const onSubmit = (data: FieldValues) => {
-    addAddress(chainId, data.address);
-
-    const contract_address = data.address;
-    invoke("db_insert_contract", { chainId, address: contract_address });
+    add(data.address);
   };
 
   return (

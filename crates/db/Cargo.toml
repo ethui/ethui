@@ -11,7 +11,6 @@ authors.workspace = true
 [dependencies]
 iron-types = { workspace = true }
 iron-settings = { workspace = true }
-iron-types = { workspace = true }
 
 ethers = { workspace = true }
 sqlx = { workspace = true }

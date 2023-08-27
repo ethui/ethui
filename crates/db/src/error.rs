@@ -1,3 +1,5 @@
+use ethers::prelude::errors::EtherscanError;
+
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error(transparent)]
@@ -7,10 +9,13 @@ pub enum Error {
     SqlxMigrate(#[from] sqlx::migrate::MigrateError),
 
     #[error(transparent)]
-    EtherscanError(#[from] ethers::etherscan::errors::EtherscanError),
+    Etherscan(#[from] EtherscanError),
 
     #[error("Invalid chain")]
     InvalidChain,
+
+    #[error(transparent)]
+    Settings(#[from] iron_settings::Error),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

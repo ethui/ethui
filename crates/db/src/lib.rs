@@ -8,11 +8,8 @@ use std::{path::PathBuf, str::FromStr};
 
 use ethers::types::{Address, H256, U256};
 use iron_types::{events::Tx, Event, StoredContract, TokenBalance, TokenMetadata};
-use serde::Serialize;
 use sqlx::{
-    sqlite::{
-        SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteRow, SqliteSynchronous,
-    },
+    sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous},
     Row,
 };
 use tracing::{instrument, trace};
@@ -255,24 +252,26 @@ impl DB {
         Ok(res)
     }
 
-    pub async fn insert_contract(
+    pub async fn insert_contract_with_abi(
         &self,
         chain_id: u32,
         address: Address,
         abi: Option<String>,
         name: Option<String>,
     ) -> Result<()> {
-        sqlx::query(
-            r#" INSERT INTO contracts (address, chain_id, abi, name)
+        dbg!(
+            sqlx::query(
+                r#" INSERT INTO contracts (address, chain_id, abi, name)
                 VALUES (?,?,?,?)
-                ON CONFLICT REPLACE"#,
-        )
-        .bind(format!("0x{:x}", address))
-        .bind(chain_id)
-        .bind(abi)
-        .bind(name)
-        .execute(self.pool())
-        .await?;
+                ON CONFLICT(address, chain_id) DO NOTHING "#,
+            )
+            .bind(format!("0x{:x}", address))
+            .bind(chain_id)
+            .bind(abi)
+            .bind(name)
+            .execute(self.pool())
+            .await
+        )?;
 
         Ok(())
     }

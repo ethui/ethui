@@ -1,6 +1,7 @@
 use std::str::FromStr;
 
 use ethers::{abi::Abi, types::Address};
+use serde::Serialize;
 use sqlx::{sqlite::SqliteRow, Row};
 
 #[derive(Debug, Serialize)]

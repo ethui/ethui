@@ -50,12 +50,15 @@ pub async fn db_insert_contract(
     address: Address,
     db: tauri::State<'_, DB>,
 ) -> Result<()> {
-    let chain = Chain::try_from(chain_id)?;
+    let chain = Chain::try_from(chain_id).map_err(|_| Error::InvalidChain)?;
     let name = fetch_etherscan_contract_name(chain, address).await?;
-    let abi = fetch_etherscan_abi(chain, address).await?;
+    let abi = fetch_etherscan_abi(chain, address)
+        .await?
+        .map(|abi| serde_json::to_string(&abi).unwrap());
 
     // self.window_snd.send(UINotify::BalancesUpdated.into())?;
     // send ContractsUpdated event to UI using iron_broadcast
 
-    db.insert_contract(chain_id, address, abi, name).await
+    db.insert_contract_with_abi(chain_id, address, abi, name)
+        .await
 }
