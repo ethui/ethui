@@ -17,7 +17,7 @@ pub enum Error {
     #[error("Unsupported chain id: {0}")]
     UnsupportedChainId(u32),
 
-    #[error("API Key not found")]
+    #[error("Alchemy API Key not found")]
     NoAPIKey,
 
     #[error(transparent)]

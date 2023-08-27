@@ -168,8 +168,9 @@ export interface ABIFunctionInput {
 
 export interface ABIItem {
   name: string;
-  type: "error" | "function" | "constructor";
-  stateMutability: "view" | "pure" | "nonpayable" | "payable";
+  constant: boolean;
+  type: string;
+  stateMutability: string;
   inputs: ABIFunctionInput[];
 }
 
@@ -199,4 +200,10 @@ export interface Paginated<T> {
   items: T[];
   last: boolean;
   total: number;
+}
+
+export interface IContract {
+  address: Address;
+  abi: ABIItem[];
+  name: string;
 }

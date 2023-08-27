@@ -49,7 +49,7 @@
         "resizable": true,
         "title": "",
         "width": 600,
-        "height": 700,
+        "height": 800,
         "titleBarStyle": "Overlay"
       }
     ]

@@ -5,6 +5,9 @@ pub enum Error {
 
     #[error("serialization error: {0}")]
     Serde(#[from] serde_json::Error),
+
+    #[error("Etherscan API key not set")]
+    EtherscanKeyNotSet,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
