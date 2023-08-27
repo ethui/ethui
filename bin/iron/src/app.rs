@@ -8,7 +8,7 @@ use tauri::{
 };
 use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, StateFlags};
 
-use crate::{commands, error::AppResult, menu, system_tray};
+use crate::{commands, error::AppResult, menu};
 
 pub struct IronApp {
     app: tauri::App,
@@ -59,8 +59,8 @@ impl IronApp {
         #[cfg(not(target_os = "macos"))]
         {
             builder = builder
-                .system_tray(system_tray::build())
-                .on_system_tray_event(system_tray::event_handler);
+                .system_tray(crate::system_tray::build())
+                .on_system_tray_event(crate::system_tray::event_handler);
         }
 
         let app = builder
