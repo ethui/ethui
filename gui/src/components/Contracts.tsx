@@ -84,7 +84,7 @@ function AddressInput({ chainId }: { chainId: number }) {
     addAddress(chainId, data.address);
 
     const contract_address = data.address;
-    invoke("contracts_insert_contract", { chainId, address: contract_address });
+    invoke("db_insert_contract", { chainId, address: contract_address });
   };
 
   return (
