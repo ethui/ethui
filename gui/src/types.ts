@@ -5,6 +5,7 @@ export const generalSettingsSchema = z.object({
   abiWatch: z.boolean(),
   abiWatchPath: z.string().optional().nullable(),
   alchemyApiKey: z.string().optional().nullable(),
+  etherscanApiKey: z.string().optional().nullable(),
   hideEmptyTokens: z.boolean(),
   onboarded: z.boolean(),
 });
