@@ -10,12 +10,12 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { useInvoke } from "../hooks";
 import { useContracts, useNetworks } from "../store";
-import { IContract } from "../types";
+import { ABIMatch, IContract } from "../types";
 import { ABIForm, AddressView, Panel } from "./";
 
 export function Contracts() {
@@ -33,15 +33,27 @@ export function Contracts() {
 }
 
 function Contract({ contract }: { contract: IContract }) {
+  const chainId = useNetworks((s) => s.current?.chain_id);
+
+  // TODO: only do this if chainId == 31337
+  const { data: foundryMatch } = useInvoke<ABIMatch>("foundry_get_abi", {
+    address: contract.address,
+    chainId,
+  });
+
+  const name = contract.name || foundryMatch?.name;
+  const abi = contract.abi || foundryMatch?.abi;
+  console.log(contract, chainId, foundryMatch);
+
   return (
     <Accordion>
       <AccordionSummary expandIcon={<ExpandMore />}>
         <AddressView address={contract.address} />
-        <Chip sx={{ marginLeft: 2 }} label={contract.name} />
+        <Chip sx={{ marginLeft: 2 }} label={name} />
       </AccordionSummary>
-      {contract.abi && (
+      {abi && (
         <AccordionDetails>
-          <ABIForm address={contract.address} abi={contract.abi} />
+          <ABIForm address={contract.address} abi={abi} />
         </AccordionDetails>
       )}
     </Accordion>
