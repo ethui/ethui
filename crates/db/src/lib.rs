@@ -259,19 +259,17 @@ impl DB {
         abi: Option<String>,
         name: Option<String>,
     ) -> Result<()> {
-        dbg!(
-            sqlx::query(
-                r#" INSERT INTO contracts (address, chain_id, abi, name)
+        sqlx::query(
+            r#" INSERT INTO contracts (address, chain_id, abi, name)
                 VALUES (?,?,?,?)
                 ON CONFLICT(address, chain_id) DO NOTHING "#,
-            )
-            .bind(format!("0x{:x}", address))
-            .bind(chain_id)
-            .bind(abi)
-            .bind(name)
-            .execute(self.pool())
-            .await
-        )?;
+        )
+        .bind(format!("0x{:x}", address))
+        .bind(chain_id)
+        .bind(abi)
+        .bind(name)
+        .execute(self.pool())
+        .await?;
 
         Ok(())
     }
