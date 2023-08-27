@@ -25,3 +25,4 @@ export { Txs } from "./Txs";
 export { WagmiWrapper } from "./WagmiWrapper";
 export { WalletUnlockDialog } from "./WalletUnlockDialog";
 export { MsgSignDialog } from "./MsgSignDialog";
+export { DevBuildNotice } from "./DevBuildNotice";

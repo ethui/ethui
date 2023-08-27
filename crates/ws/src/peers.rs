@@ -75,12 +75,12 @@ impl Peers {
     }
 
     /// Broadcasts a `chainChanged` event to all peers
-    pub fn broadcast_chain_changed(&self, chain_id: u32, name: String) {
+    pub fn broadcast_chain_changed(&self, chain_id: u32) {
         self.broadcast(json!({
             "method": "chainChanged",
             "params": {
                 "chainId": format!("0x{:x}", chain_id),
-                "networkVersion": name
+                "networkVersion": chain_id.to_string()
             }
         }));
     }
