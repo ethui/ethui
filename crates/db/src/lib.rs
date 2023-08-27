@@ -7,7 +7,7 @@ mod utils;
 use std::{path::PathBuf, str::FromStr};
 
 use ethers::types::{Address, H256, U256};
-use iron_types::{events::Tx, Event, TokenBalance, TokenMetadata};
+use iron_types::{events::Tx, Event, StoredContract, TokenBalance, TokenMetadata};
 use serde::Serialize;
 use sqlx::{
     sqlite::{
@@ -386,25 +386,5 @@ impl DB {
         sqlx::migrate!("../../migrations/").run(&pool).await?;
 
         Ok(())
-    }
-}
-
-#[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct StoredContract {
-    address: Address,
-    abi: serde_json::Value,
-    name: String,
-}
-
-impl TryFrom<SqliteRow> for StoredContract {
-    type Error = ();
-
-    fn try_from(row: SqliteRow) -> std::result::Result<Self, Self::Error> {
-        Ok(Self {
-            address: Address::from_str(row.get::<&str, _>("address")).unwrap(),
-            abi: serde_json::from_str(row.get::<&str, _>("abi")).unwrap_or_default(),
-            name: row.get::<&str, _>("name").to_owned(),
-        })
     }
 }
