@@ -14,7 +14,7 @@ interface State {
 
 interface Setters {
   reload: () => Promise<void>;
-  add: (address: Address) => void;
+  add: (address: Address) => Promise<void>;
   setChainId: (chainId?: number) => Promise<void>;
 }
 
@@ -33,7 +33,7 @@ const store: StateCreator<Store> = (set, get) => ({
 
   add: async (address: Address) => {
     const { chainId } = get();
-    invoke("db_insert_contract", { chainId, address });
+    await invoke("db_insert_contract", { chainId, address });
   },
 
   async setChainId(chainId) {
@@ -44,7 +44,7 @@ const store: StateCreator<Store> = (set, get) => ({
 
 export const useContracts = create<Store>()(subscribeWithSelector(store));
 
-listen("contracts-changed", async () => {
+listen("contracts-updated", async () => {
   await useContracts.getState().reload();
 });
 

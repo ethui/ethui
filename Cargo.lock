@@ -2871,6 +2871,7 @@ name = "iron-db"
 version = "0.5.0"
 dependencies = [
  "ethers",
+ "iron-broadcast",
  "iron-settings",
  "iron-types",
  "serde",

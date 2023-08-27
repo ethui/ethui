@@ -1,5 +1,5 @@
 use ethers::types::{Address, Chain, U256};
-use iron_types::{events::Tx, TokenBalance};
+use iron_types::{events::Tx, TokenBalance, UINotify};
 
 use super::{Paginated, Pagination, Result};
 use crate::{
@@ -60,5 +60,9 @@ pub async fn db_insert_contract(
     // send ContractsUpdated event to UI using iron_broadcast
 
     db.insert_contract_with_abi(chain_id, address, abi, name)
-        .await
+        .await?;
+
+    iron_broadcast::ui_notify(UINotify::ContractsUpdated).await;
+
+    Ok(())
 }

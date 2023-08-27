@@ -6,9 +6,11 @@ import {
   AccordionSummary,
   Button,
   Chip,
+  CircularProgress,
   Stack,
   TextField,
 } from "@mui/material";
+import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -22,7 +24,7 @@ export function Contracts() {
 
   return (
     <Panel>
-      {chainId != 31337 && <AddressInput />}
+      {chainId != 31337 && <AddressForm />}
       {Array.from(contracts || []).map((contract) => (
         <Contract key={contract.address} contract={contract} />
       ))}
@@ -46,7 +48,7 @@ function Contract({ contract }: { contract: IContract }) {
   );
 }
 
-function AddressInput() {
+function AddressForm() {
   const schema = z.object({
     address: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid format"),
   });
@@ -55,16 +57,14 @@ function AddressInput() {
 
   const {
     handleSubmit,
-    formState: { isValid, errors },
+    formState: { isValid, errors, isSubmitting },
     register,
   } = useForm({
     mode: "onChange",
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = (data: FieldValues) => {
-    add(data.address);
-  };
+  const onSubmit = (data: FieldValues) => add(data.address);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -76,8 +76,12 @@ function AddressInput() {
           fullWidth
           {...register("address")}
         />
-        <Button variant="contained" type="submit" disabled={!isValid}>
-          Add
+        <Button
+          variant="contained"
+          type="submit"
+          disabled={!isValid || isSubmitting}
+        >
+          {isSubmitting ? <CircularProgress /> : "Add"}
         </Button>
       </Stack>
     </form>
