@@ -2,6 +2,7 @@ pub mod commands;
 mod error;
 mod pagination;
 mod queries;
+mod utils;
 
 use std::{path::PathBuf, str::FromStr};
 

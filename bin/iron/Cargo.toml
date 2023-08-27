@@ -17,7 +17,6 @@ iron-dialogs = { workspace = true }
 iron-rpc = { workspace = true }
 iron-ws = { workspace = true }
 iron-types = { workspace = true }
-iron-contracts = { workspace = true }
 iron-db = { workspace = true }
 iron-sync = { workspace = true }
 iron-tracing = { workspace = true }

@@ -17,8 +17,7 @@ members = [
   "crates/sync/alchemy",
   "crates/crypto",
   "crates/broadcast",
-  "crates/contracts",
-  "crates/exchange-rates"
+  "crates/exchange-rates",
 ]
 default-members = ["bin/iron"]
 
@@ -49,12 +48,7 @@ iron-sync-anvil = { path = "crates/sync/anvil" }
 iron-sync-alchemy = { path = "crates/sync/alchemy" }
 iron-broadcast = { path = "crates/broadcast" }
 iron-tracing = { path = "crates/tracing" }
-<<<<<<< HEAD
-iron-contracts = { path = "crates/contracts" }
-||||||| ed602f0
-=======
 iron-exchange-rates = { path = "crates/exchange-rates" }
->>>>>>> main
 tokio = { version = "1.26.0", features = ["full", "sync"] }
 thiserror = "1.0.40"
 ethers = { version = "2.0.0", features = ["ws"] }

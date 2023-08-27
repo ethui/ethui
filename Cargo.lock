@@ -2815,7 +2815,6 @@ version = "0.5.0"
 dependencies = [
  "fix-path-env",
  "iron-broadcast",
- "iron-contracts",
  "iron-db",
  "iron-dialogs",
  "iron-exchange-rates",
@@ -2854,16 +2853,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "iron-contracts"
-version = "0.4.1"
-dependencies = [
- "ethers",
- "iron-db",
- "sqlx",
- "tauri",
-]
-
-[[package]]
 name = "iron-crypto"
 version = "0.5.0"
 dependencies = [
@@ -2882,6 +2871,7 @@ name = "iron-db"
 version = "0.5.0"
 dependencies = [
  "ethers",
+ "iron-settings",
  "iron-types",
  "serde",
  "serde_json",

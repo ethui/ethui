@@ -14,6 +14,9 @@ pub enum Error {
 
     #[error("Invalid chain")]
     InvalidChain,
+
+    #[error(transparent)]
+    Chain(#[from] ParseChainError),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
