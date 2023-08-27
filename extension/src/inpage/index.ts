@@ -28,8 +28,8 @@ export function init() {
  */
 export function initializeProvider() {
   const connectionStream = new WindowPostMessageStream({
-    name: "iron:provider:inpage",
-    target: "iron:provider:contentscript",
+    name: "iron:inpage",
+    target: "iron:contentscript",
   }) as unknown as Duplex;
 
   const provider = new IronProvider(connectionStream);

@@ -1,8 +1,8 @@
-import { $, $$, browser, expect } from "@wdio/globals";
-import type { Capabilities } from "@wdio/types";
+// import { $, $$, browser, expect } from "@wdio/globals";
+// import type { Capabilities } from "@wdio/types";
 
-const isFirefox =
-  (browser.capabilities as Capabilities.Capabilities).browserName === "firefox";
+// const isFirefox =
+//   (browser.capabilities as Capabilities.Capabilities).browserName === "firefox";
 
 describe("Web Extension e2e test", () => {
   // it("should have injected the component from the content script", async () => {
