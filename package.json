@@ -12,7 +12,7 @@
     "lint:eslint": "eslint .",
     "lint:tsc": "tsc --noEmit",
     "lint:prettier": "prettier --check .",
-    "setup": "yarn install && yarn extension:build"
+    "setup": "yarn install && yarn ext:build"
   },
   "workspaces": [
     "extension",
