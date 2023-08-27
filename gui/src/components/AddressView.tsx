@@ -55,7 +55,11 @@ export function AddressView({ contextMenu, address, copyIcon }: Props) {
 
   return (
     <>
-      {!contextMenu && <Box title={address}>{content}</Box>}
+      {!contextMenu && (
+        <Box fontSize="inherit" title={address}>
+          {content}
+        </Box>
+      )}
 
       {contextMenu && (
         <>

@@ -3,12 +3,12 @@ use std::path::PathBuf;
 use iron_broadcast::UIMsg;
 use iron_db::DB;
 use iron_types::ui_events;
+#[cfg(not(target_os = "linux"))]
+use tauri::{AboutMetadata, Menu, MenuItem, Submenu, WindowMenuEvent};
 use tauri::{
     AppHandle, Builder, CustomMenuItem, GlobalWindowEvent, Manager, SystemTray, SystemTrayEvent,
     SystemTrayMenu, SystemTrayMenuItem, WindowBuilder, WindowEvent, WindowUrl,
 };
-#[cfg(not(target_os = "linux"))]
-use tauri::{Menu, Submenu, WindowMenuEvent};
 use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, StateFlags};
 
 use crate::{commands, error::AppResult};
@@ -112,6 +112,72 @@ impl IronApp {
 
     #[cfg(not(target_os = "linux"))]
     fn build_menu() -> Menu {
+        let mut menu = Menu::new();
+
+        // app submenu
+        #[cfg(target_os = "macos")]
+        {
+            let app_name = "Iron";
+
+            menu = menu.add_submenu(Submenu::new(
+                app_name,
+                Menu::new()
+                    .add_native_item(MenuItem::About(
+                        app_name.to_string(),
+                        AboutMetadata::default(),
+                    ))
+                    .add_native_item(MenuItem::Separator)
+                    .add_item(
+                        CustomMenuItem::new("settings".to_string(), "Settings...")
+                            .accelerator("CmdOrCtrl+Comma"),
+                    )
+                    .add_native_item(MenuItem::Separator)
+                    .add_native_item(MenuItem::Services)
+                    .add_native_item(MenuItem::Separator)
+                    .add_native_item(MenuItem::Hide)
+                    .add_native_item(MenuItem::HideOthers)
+                    .add_native_item(MenuItem::ShowAll)
+                    .add_native_item(MenuItem::Separator)
+                    .add_native_item(MenuItem::Quit),
+            ));
+        }
+
+        // file submenu
+        let mut file_menu = Menu::new();
+        file_menu = file_menu.add_native_item(MenuItem::CloseWindow);
+        #[cfg(not(target_os = "macos"))]
+        {
+            file_menu = file_menu.add_native_item(MenuItem::Quit);
+        }
+        menu = menu.add_submenu(Submenu::new("File", file_menu));
+
+        // edit submenu
+        let mut edit_menu = Menu::new();
+        #[cfg(target_os = "macos")]
+        {
+            edit_menu = edit_menu.add_native_item(MenuItem::Undo);
+            edit_menu = edit_menu.add_native_item(MenuItem::Redo);
+            edit_menu = edit_menu.add_native_item(MenuItem::Separator);
+        }
+        edit_menu = edit_menu.add_native_item(MenuItem::Cut);
+        edit_menu = edit_menu.add_native_item(MenuItem::Copy);
+        edit_menu = edit_menu.add_native_item(MenuItem::Paste);
+        #[cfg(target_os = "macos")]
+        {
+            edit_menu = edit_menu.add_native_item(MenuItem::SelectAll);
+        }
+        menu = menu.add_submenu(Submenu::new("Edit", edit_menu));
+
+        // view submenu
+        #[cfg(target_os = "macos")]
+        {
+            menu = menu.add_submenu(Submenu::new(
+                "View",
+                Menu::new().add_native_item(MenuItem::EnterFullScreen),
+            ));
+        }
+
+        // go submenu
         let balances = CustomMenuItem::new("balances".to_string(), "Balances");
         let transactions = CustomMenuItem::new("transactions".to_string(), "Transactions");
         let contracts = CustomMenuItem::new("contracts".to_string(), "Contracts");
@@ -125,7 +191,18 @@ impl IronApp {
                 .add_item(connections),
         );
 
-        Menu::os_default("Iron").add_submenu(go_submenu)
+        menu = menu.add_submenu(go_submenu);
+
+        // window submenu
+        let mut window_menu = Menu::new();
+        window_menu = window_menu.add_native_item(MenuItem::Minimize);
+        #[cfg(target_os = "macos")]
+        {
+            window_menu = window_menu.add_native_item(MenuItem::Zoom);
+            window_menu = window_menu.add_native_item(MenuItem::Separator);
+        }
+        window_menu = window_menu.add_native_item(MenuItem::CloseWindow);
+        menu.add_submenu(Submenu::new("Window", window_menu))
     }
 
     fn build_tray() -> tauri::SystemTray {
@@ -150,6 +227,9 @@ fn on_menu_event(event: WindowMenuEvent) {
         }
         "close" => {
             event.window().close().unwrap();
+        }
+        "settings" => {
+            event.window().emit("menu:settings", ()).unwrap();
         }
         path => {
             event.window().emit("go", path).unwrap();

@@ -15,6 +15,7 @@ export function CommandBarButton() {
       <IconButton
         onClick={handleClick}
         color="inherit"
+        size="small"
         sx={{
           height: 40,
           width: 40,
@@ -28,12 +29,10 @@ export function CommandBarButton() {
       </IconButton>
 
       <Button
-        color="inherit"
-        fullWidth
+        variant="sidebar"
         startIcon={<TerminalSharpIcon />}
         onClick={handleClick}
         sx={{
-          justifyContent: "flex-start",
           [theme.breakpoints.down("sm")]: {
             display: "none",
           },

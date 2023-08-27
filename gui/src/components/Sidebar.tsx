@@ -3,7 +3,7 @@ import OnlinePredictionSharpIcon from "@mui/icons-material/OnlinePredictionSharp
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import RequestQuoteSharpIcon from "@mui/icons-material/RequestQuoteSharp";
 import { Box, Button, Drawer, IconButton, Stack, Toolbar } from "@mui/material";
-import { grey } from "@mui/material/colors";
+import { blue } from "@mui/material/colors";
 import { findIndex } from "lodash-es";
 import { parseInt, range, toString } from "lodash-es";
 import { ReactNode } from "react";
@@ -55,7 +55,7 @@ export const TABS = [
 export const DEFAULT_TAB = TABS[0];
 
 const WIDTH_MD = 200;
-const WIDTH_SM = 80;
+const WIDTH_SM = 72;
 
 export function SidebarLayout({ children }: { children: ReactNode }) {
   const [_location, setLocation] = useLocation();
@@ -155,7 +155,7 @@ export function Sidebar() {
               <Logo width={40} />
             </Toolbar>
           )}
-          <Stack px={2} pb={2} pt={1} rowGap={1} flexGrow={1}>
+          <Stack px={3} py={1} rowGap={1} flexGrow={1}>
             {TABS.map((tab, index) => (
               <SidebarTab
                 key={index}
@@ -167,8 +167,8 @@ export function Sidebar() {
             ))}
           </Stack>
           <Stack
-            rowGap={1}
-            p={2}
+            rowGap={2}
+            p={3}
             sx={{
               [breakpoint]: {
                 display: "none",
@@ -180,7 +180,7 @@ export function Sidebar() {
             <QuickNetworkSelect />
           </Stack>
           <Stack
-            p={2}
+            p={3}
             rowGap={1}
             sx={{
               [breakpoint]: {
@@ -204,7 +204,6 @@ interface SidebarTabProps {
 
 function SidebarTab({ tab, selected }: SidebarTabProps) {
   const { theme } = useTheme();
-  const backgroundColor = theme.palette.mode === "dark" ? 800 : 200;
   const breakpoint = theme.breakpoints.down("sm");
 
   return (
@@ -217,33 +216,28 @@ function SidebarTab({ tab, selected }: SidebarTabProps) {
         size="small"
         sx={{
           display: "none",
-          height: 40,
-          width: 40,
           [breakpoint]: {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
           },
           "&.Mui-disabled": {
-            backgroundColor: grey[backgroundColor],
+            backgroundColor: blue[500],
+            color: "white",
           },
         }}
       >
         <tab.icon fontSize="medium" />
       </IconButton>
       <Button
-        color="inherit"
+        variant="sidebar"
         disabled={selected}
         startIcon={<tab.icon fontSize="medium" />}
         LinkComponent={Link}
         href={tab.path}
         sx={{
-          justifyContent: "flex-start",
           [breakpoint]: {
             display: "none",
-          },
-          "&.Mui-disabled": {
-            backgroundColor: grey[backgroundColor],
           },
         }}
       >
