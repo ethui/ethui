@@ -4,7 +4,6 @@ import { isDuplexStream } from "is-stream";
 import { JsonRpcEngine, createIdRemapMiddleware } from "json-rpc-engine";
 import { createStreamMiddleware } from "json-rpc-middleware-stream";
 import log from "loglevel";
-import pump from "pump";
 import { type Duplex } from "stream";
 
 import { Address, RequestArguments } from "./types";
@@ -125,10 +124,11 @@ export class IronProvider extends EventEmitter {
     this.engine.push(createIdRemapMiddleware());
     this.engine.push(createErrorMiddleware());
 
-    // Set up RPC connection
-    pump(connection.stream, this.stream, connection.stream, (e) =>
-      this.handleStreamDisconnect(e)
-    );
+    connection.stream.pipe(this.stream).pipe(connection.stream);
+    // // Set up RPC connection
+    // pump(connection.stream, this.stream, connection.stream, (e) =>
+    //   this.handleStreamDisconnect(e)
+    // );
 
     // Wire up the JsonRpcEngine to the JSON-RPC connection stream
     this.engine.push(connection.middleware);
@@ -165,30 +165,6 @@ export class IronProvider extends EventEmitter {
           }
       }
     });
-  }
-
-  /**
-   * Called when connection is lost to critical streams. Emits an 'error' event
-   * from the provider with the error message and stack if present.
-   *
-   * @emits BaseProvider#disconnect
-   */
-  private handleStreamDisconnect(error?: Error) {
-    let warningMsg = `Iron: Connection lost`;
-    if (error?.stack) {
-      warningMsg += `\n${error.stack}`;
-    }
-
-    log.warn(warningMsg);
-    if (this.listenerCount("error") > 0) {
-      this.emit("error", warningMsg);
-    }
-
-    this.handleDisconnect(
-      error
-        ? error.message
-        : "Iron: Disconnected from Iron background. Page reload required."
-    );
   }
 
   private nextId() {

@@ -1,6 +1,5 @@
 import PortStream from "extension-port-stream";
 import log from "loglevel";
-import pump from "pump";
 import { type Duplex } from "stream";
 import { runtime } from "webextension-polyfill";
 
@@ -23,17 +22,15 @@ async function init() {
  */
 export function initProviderForward() {
   const inpageStream = new WindowPostMessageStream({
-    name: "iron:provider:contentscript",
-    target: "iron:provider:inpage",
+    name: "iron:contentscript",
+    target: "iron:inpage",
   }) as unknown as Duplex;
 
   // bg stream
   const bgPort = runtime.connect({ name: "iron:contentscript" });
   const bgStream = new PortStream(bgPort);
 
-  pump(inpageStream, bgStream, inpageStream, (error?: Error) =>
-    log.debug(`Iron: Muxed traffic for channel "iron:provider" failed.`, error)
-  );
+  inpageStream.pipe(bgStream).pipe(inpageStream);
 }
 
 /**

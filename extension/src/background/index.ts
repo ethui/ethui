@@ -14,8 +14,7 @@ let settings: Settings = defaultSettings;
  * Loads the current settings, and listens for incoming connections (from the injected contentscript)
  */
 export async function init() {
-  settings = (await loadSettings()) as Settings;
-  log.setLevel(settings.logLevel);
+  settings = await loadSettings();
 
   // handle each incoming content script connection
   browser.runtime.onConnect.addListener(async (remotePort: Runtime.Port) => {
@@ -43,7 +42,7 @@ export function setupProviderConnection(port: Runtime.Port) {
 
   // pre-build the websocket connection
   // not actually buit until the first message arrives
-  const wsBuilder = new WebsocketBuilder(ironBackendEndpoint(port))
+  const wsBuilder = new WebsocketBuilder(endpoint(port))
     .withBackoff(new ConstantBackoff(1000))
     .onOpen((instance, event) => {
       // connection is ready. set the upper `ws` value, and flush the backlog
@@ -78,8 +77,8 @@ export function setupProviderConnection(port: Runtime.Port) {
 /**
  * The URL of the Iron server if given from the settings, with connection metadata being appended as URL params
  */
-function ironBackendEndpoint(port: Runtime.Port) {
-  return `${settings.endpoint}?${connectionParams(port)}`;
+function endpoint(port: Runtime.Port) {
+  return `${settings.endpoint}?${connParams(port)}`;
 }
 
 /**
@@ -87,7 +86,7 @@ function ironBackendEndpoint(port: Runtime.Port) {
  *
  * This includes all info that may be useful for the Iron server.
  */
-function connectionParams(port: Runtime.Port) {
+function connParams(port: Runtime.Port) {
   const sender = port.sender;
   const tab = sender?.tab;
 
