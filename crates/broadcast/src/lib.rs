@@ -1,5 +1,5 @@
 pub use internal_msgs::*;
-use iron_types::{ui_events, ChecksummedAddress};
+use iron_types::{ui_events, Affinity, ChecksummedAddress};
 use once_cell::sync::Lazy;
 use tokio::sync::{broadcast, RwLock};
 pub use ui_msgs::*;
@@ -8,7 +8,7 @@ use url::Url;
 /// Supported messages
 #[derive(Debug, Clone)]
 pub enum InternalMsg {
-    ChainChanged(u32),
+    ChainChanged(u32, Option<String>, Affinity),
     AccountsChanged(Vec<ChecksummedAddress>),
 
     ResetAnvilListener { chain_id: u32, http: Url, ws: Url },
@@ -48,8 +48,8 @@ mod internal_msgs {
     }
 
     /// Broadcasts `ChainChanged` events
-    pub async fn chain_changed(chain_id: u32) {
-        send(ChainChanged(chain_id)).await;
+    pub async fn chain_changed(chain_id: u32, domain: Option<String>, affinity: Affinity) {
+        send(ChainChanged(chain_id, domain, affinity)).await;
     }
 
     /// Broadcasts `AccountsChanged` events

@@ -6,55 +6,58 @@ mod sign_message;
 use std::collections::HashMap;
 
 use ethers::{abi::AbiEncode, types::transaction::eip712};
-use iron_networks::Networks;
+use iron_connections::Ctx;
 use iron_types::GlobalState;
 use iron_wallets::{WalletControl, Wallets};
-use jsonrpc_core::{IoHandler, Params};
+use jsonrpc_core::{MetaIoHandler, Params};
 use serde_json::json;
 
 pub use self::error::{Error, Result};
 use self::sign_message::SignMessage;
 
 pub struct Handler {
-    io: IoHandler,
+    io: MetaIoHandler<Ctx>,
+    ctx: Ctx,
 }
 
-impl Default for Handler {
-    fn default() -> Self {
+impl Handler {
+    pub fn new(domain: Option<String>) -> Self {
         let mut res = Self {
-            io: IoHandler::default(),
+            io: MetaIoHandler::default(),
+            ctx: Ctx { domain },
         };
         res.add_handlers();
         res
     }
-}
 
-impl Handler {
     pub async fn handle(&self, request: String) -> Option<String> {
-        self.io.handle_request(&request).await
+        self.io.handle_request(&request, self.ctx.clone()).await
     }
 
     fn add_handlers(&mut self) {
         macro_rules! self_handler {
             ($name:literal, $fn:path) => {
                 self.io
-                    .add_method($name, |params: Params| async move { $fn(params).await });
+                    .add_method_with_meta($name, |params: Params, ctx: Ctx| async move {
+                        $fn(params, ctx).await
+                    });
             };
         }
 
         macro_rules! provider_handler {
             ($name:literal) => {
-                self.io.add_method($name, |params: Params| async move {
-                    tracing::debug!("{} {:?}", $name, params);
+                self.io
+                    .add_method_with_meta($name, |params: Params, ctx: Ctx| async move {
+                        tracing::debug!("{} {:?}", $name, params);
 
-                    let provider = Networks::read().await.get_current_provider();
+                        let provider = ctx.network().await.get_provider();
 
-                    let res: jsonrpc_core::Result<serde_json::Value> = provider
-                        .request::<_, serde_json::Value>($name, params)
-                        .await
-                        .map_err(error::ethers_to_jsonrpc_error);
-                    res
-                });
+                        let res: jsonrpc_core::Result<serde_json::Value> = provider
+                            .request::<_, serde_json::Value>($name, params)
+                            .await
+                            .map_err(error::ethers_to_jsonrpc_error);
+                        res
+                    });
             };
         }
 
@@ -124,24 +127,22 @@ impl Handler {
         self_handler!("eth_signTransaction", Self::unimplemented);
     }
 
-    async fn accounts(_: Params) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn accounts(_: Params, _: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
         let wallets = Wallets::read().await;
         let address = wallets.get_current_wallet().get_current_address().await;
 
         Ok(json!([address]))
     }
 
-    async fn chain_id(_: Params) -> jsonrpc_core::Result<serde_json::Value> {
-        let networks = Networks::read().await;
-        let network = networks.get_current_network();
+    async fn chain_id(_: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+        let network = ctx.network().await;
         Ok(json!(network.chain_id_hex()))
     }
 
-    async fn provider_state(_: Params) -> jsonrpc_core::Result<serde_json::Value> {
-        let networks = Networks::read().await;
+    async fn provider_state(_: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
         let wallets = Wallets::read().await;
 
-        let network = networks.get_current_network();
+        let network = ctx.network().await;
         let address = wallets.get_current_wallet().get_current_address().await;
 
         Ok(json!({
@@ -152,27 +153,28 @@ impl Handler {
         }))
     }
 
-    async fn switch_chain(params: Params) -> jsonrpc_core::Result<serde_json::Value> {
+    #[tracing::instrument()]
+    async fn switch_chain(params: Params, mut ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
         let params = params.parse::<Vec<HashMap<String, String>>>().unwrap();
         let chain_id_str = params[0].get("chainId").unwrap().clone();
-        let chain_id = u32::from_str_radix(&chain_id_str[2..], 16).unwrap();
+        let new_chain_id = u32::from_str_radix(&chain_id_str[2..], 16).unwrap();
 
-        let mut networks = Networks::write().await;
-        match networks.set_current_network_by_id(chain_id).await {
-            Ok(_) => Ok(serde_json::Value::Null),
-            Err(e) => Err(jsonrpc_core::Error::invalid_params(e.to_string())),
-        }
+        Ok(ctx
+            .switch_chain(new_chain_id)
+            .await
+            .map(|_| serde_json::Value::Null)
+            .map_err(Error::Connection)?)
     }
 
     async fn send_transaction<T: Into<serde_json::Value>>(
         params: T,
+        ctx: Ctx,
     ) -> jsonrpc_core::Result<serde_json::Value> {
         use send_transaction::SendTransaction;
 
-        let networks = Networks::read().await;
         let wallets = Wallets::read().await;
 
-        let network = networks.get_current_network();
+        let network = ctx.network().await;
         let wallet = wallets.get_current_wallet();
 
         let mut sender = SendTransaction::build()
@@ -190,7 +192,7 @@ impl Handler {
         }
     }
 
-    async fn eth_sign(params: Params) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn eth_sign(params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
         use sign_message::*;
 
         let params = params.parse::<Vec<Option<String>>>().unwrap();
@@ -198,10 +200,9 @@ impl Handler {
         // TODO where should this be used?
         // let address = Address::from_str(&params[1].as_ref().cloned().unwrap()).unwrap();
 
-        let networks = Networks::read().await;
         let wallets = Wallets::read().await;
 
-        let network = networks.get_current_network();
+        let network = ctx.network().await;
         let wallet = wallets.get_current_wallet();
 
         let mut signer = SignMessage::build()
@@ -221,18 +222,20 @@ impl Handler {
         }
     }
 
-    async fn eth_sign_typed_data_v4(params: Params) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn eth_sign_typed_data_v4(
+        params: Params,
+        ctx: Ctx,
+    ) -> jsonrpc_core::Result<serde_json::Value> {
         let params = params.parse::<Vec<Option<String>>>().unwrap();
         // TODO where should this be used?
         // let address = Address::from_str(&params[0].as_ref().cloned().unwrap()).unwrap();
         let data = params[1].as_ref().cloned().unwrap();
         let typed_data: eip712::TypedData = serde_json::from_str(&data).unwrap();
 
-        let networks = Networks::read().await;
         let wallets = Wallets::read().await;
 
         let wallet = wallets.get_current_wallet();
-        let network = networks.get_current_network();
+        let network = ctx.network().await;
 
         let mut signer = SignMessage::build()
             .set_wallet(wallet)
@@ -249,7 +252,7 @@ impl Handler {
         }
     }
 
-    async fn unimplemented(params: Params) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn unimplemented(params: Params, _: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
         tracing::warn!("unimplemented method called: {:?}", params);
 
         Err(jsonrpc_core::Error::internal_error())

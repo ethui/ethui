@@ -2815,6 +2815,7 @@ version = "0.5.0"
 dependencies = [
  "fix-path-env",
  "iron-broadcast",
+ "iron-connections",
  "iron-db",
  "iron-dialogs",
  "iron-exchange-rates",
@@ -2850,6 +2851,25 @@ dependencies = [
  "once_cell",
  "tokio",
  "url",
+]
+
+[[package]]
+name = "iron-connections"
+version = "0.5.0"
+dependencies = [
+ "async-trait",
+ "ethers",
+ "iron-broadcast",
+ "iron-networks",
+ "iron-types",
+ "jsonrpc-core",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -2952,9 +2972,12 @@ dependencies = [
 name = "iron-rpc"
 version = "0.5.0"
 dependencies = [
+ "async-trait",
  "enum_dispatch",
  "ethers",
  "futures-util",
+ "iron-broadcast",
+ "iron-connections",
  "iron-db",
  "iron-dialogs",
  "iron-networks",
@@ -2962,6 +2985,7 @@ dependencies = [
  "iron-types",
  "iron-wallets",
  "jsonrpc-core",
+ "once_cell",
  "serde",
  "serde_json",
  "tauri",
@@ -3097,6 +3121,8 @@ dependencies = [
  "ethers",
  "futures-util",
  "iron-broadcast",
+ "iron-connections",
+ "iron-networks",
  "iron-rpc",
  "iron-types",
  "once_cell",

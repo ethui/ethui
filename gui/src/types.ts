@@ -202,6 +202,8 @@ export interface Paginated<T> {
   total: number;
 }
 
+export type Affinity = { sticky: number } | "global" | "unset";
+
 export interface IContract {
   address: Address;
   abi: ABIItem[];

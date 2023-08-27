@@ -7,6 +7,7 @@ members = [
   "crates/wallets",
   "crates/ws",
   "crates/rpc",
+  "crates/connections",
   "crates/dialogs",
   "crates/abis",
   "crates/forge",
@@ -39,6 +40,7 @@ iron-networks = { path = "crates/networks" }
 iron-wallets = { path = "crates/wallets" }
 iron-ws = { path = "crates/ws" }
 iron-rpc = { path = "crates/rpc" }
+iron-connections = { path = "crates/connections" }
 iron-dialogs = { path = "crates/dialogs" }
 iron-types = { path = "crates/types" }
 iron-abis = { path = "crates/abis" }
@@ -64,3 +66,4 @@ tauri = { version = "1.2", features = ["api-all", "system-tray"] }
 once_cell = "1.17.1"
 secrets = { version = "1.2.0", features = ["use-libsodium-sys"] }
 tracing = "0.1.0"
+jsonrpc-core = "18.0.0"

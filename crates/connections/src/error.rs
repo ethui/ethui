@@ -1,18 +1,12 @@
-#[derive(Debug, thiserror::Error)]
+#[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("IO error: {0}")]
-    IO(#[from] std::io::Error),
-
     #[error("serialization error: {0}")]
     Serde(#[from] serde_json::Error),
 
     #[error(transparent)]
-    Url(#[from] url::ParseError),
+    IO(#[from] std::io::Error),
 
-    #[error("Error running listener: {0}")]
-    ErrorRunningListener(String),
-
-    #[error("Invalid chain ID: {0}")]
+    #[error("invalid chain id: {0}")]
     InvalidChainId(u32),
 }
 
