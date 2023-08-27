@@ -1,11 +1,7 @@
 import PortStream from "extension-port-stream";
 import log from "loglevel";
-import pump from "pump";
-import { type Duplex } from "stream";
 import browser, { type Runtime } from "webextension-polyfill";
 import { ConstantBackoff, Websocket, WebsocketBuilder } from "websocket-ts";
-
-import ObjectMultiplex from "@metamask/object-multiplex";
 
 import { type Settings, defaultSettings, loadSettings } from "../settings";
 
@@ -44,15 +40,6 @@ export function setupProviderConnection(port: Runtime.Port) {
   const backlog: unknown[] = [];
 
   const stream = new PortStream(port);
-  const mux = new ObjectMultiplex();
-  pump(stream, mux as unknown as Duplex, stream, (err) => {
-    if (err && ws) {
-      log.warn(err);
-      log.debug("closing WS");
-      ws.close();
-    }
-  });
-  const outStream = mux.createStream("iron-provider") as unknown as Duplex;
 
   // pre-build the websocket connection
   // not actually buit until the first message arrives
@@ -71,11 +58,11 @@ export function setupProviderConnection(port: Runtime.Port) {
       // forward WS server messages back to the stream (content script)
       const data = JSON.parse(event.data);
       log.debug("onMessage", data);
-      outStream.write(data);
+      stream.write(data);
     });
 
   // forwarding incoming stream data to the WS server
-  outStream.on("data", (data: unknown) => {
+  stream.on("data", (data: unknown) => {
     if (!ws) {
       // connection not ready yet: push to backlog and initiate connection
       backlog.push(data);
