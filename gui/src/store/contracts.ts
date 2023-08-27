@@ -25,6 +25,8 @@ const store: StateCreator<Store> = (set, get) => ({
 
   async reload() {
     const { chainId } = get();
+    if (!chainId) return;
+
     const contracts = await invoke<IContract[]>("db_get_contracts", {
       chainId,
     });
