@@ -112,6 +112,13 @@ export function SettingsGeneral() {
           error={!!errors.alchemyApiKey}
           helperText={errors.alchemyApiKey?.message?.toString()}
         />
+        <TextField
+          label="Etherscan API Key"
+          {...register("etherscanApiKey")}
+          fullWidth
+          error={!!errors.etherscanApiKey}
+          helperText={errors.etherscanApiKey?.message?.toString()}
+        />
         <FormControl error={!!errors.hideEmptyTokens}>
           <FormGroup>
             <FormControlLabel

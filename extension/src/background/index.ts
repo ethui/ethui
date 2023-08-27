@@ -1,11 +1,7 @@
 import PortStream from "extension-port-stream";
 import log from "loglevel";
-import pump from "pump";
-import { type Duplex } from "stream";
 import browser, { type Runtime } from "webextension-polyfill";
 import { ConstantBackoff, Websocket, WebsocketBuilder } from "websocket-ts";
-
-import ObjectMultiplex from "@metamask/object-multiplex";
 
 import { type Settings, defaultSettings, loadSettings } from "../settings";
 
@@ -18,8 +14,7 @@ let settings: Settings = defaultSettings;
  * Loads the current settings, and listens for incoming connections (from the injected contentscript)
  */
 export async function init() {
-  settings = (await loadSettings()) as Settings;
-  log.setLevel(settings.logLevel);
+  settings = await loadSettings();
 
   // handle each incoming content script connection
   browser.runtime.onConnect.addListener(async (remotePort: Runtime.Port) => {
@@ -44,19 +39,10 @@ export function setupProviderConnection(port: Runtime.Port) {
   const backlog: unknown[] = [];
 
   const stream = new PortStream(port);
-  const mux = new ObjectMultiplex();
-  pump(stream, mux as unknown as Duplex, stream, (err) => {
-    if (err && ws) {
-      log.warn(err);
-      log.debug("closing WS");
-      ws.close();
-    }
-  });
-  const outStream = mux.createStream("iron-provider") as unknown as Duplex;
 
   // pre-build the websocket connection
   // not actually buit until the first message arrives
-  const wsBuilder = new WebsocketBuilder(ironBackendEndpoint(port))
+  const wsBuilder = new WebsocketBuilder(endpoint(port))
     .withBackoff(new ConstantBackoff(1000))
     .onOpen((instance, event) => {
       // connection is ready. set the upper `ws` value, and flush the backlog
@@ -71,11 +57,11 @@ export function setupProviderConnection(port: Runtime.Port) {
       // forward WS server messages back to the stream (content script)
       const data = JSON.parse(event.data);
       log.debug("onMessage", data);
-      outStream.write(data);
+      stream.write(data);
     });
 
   // forwarding incoming stream data to the WS server
-  outStream.on("data", (data: unknown) => {
+  stream.on("data", (data: unknown) => {
     if (!ws) {
       // connection not ready yet: push to backlog and initiate connection
       backlog.push(data);
@@ -91,8 +77,8 @@ export function setupProviderConnection(port: Runtime.Port) {
 /**
  * The URL of the Iron server if given from the settings, with connection metadata being appended as URL params
  */
-function ironBackendEndpoint(port: Runtime.Port) {
-  return `${settings.endpoint}?${connectionParams(port)}`;
+function endpoint(port: Runtime.Port) {
+  return `${settings.endpoint}?${connParams(port)}`;
 }
 
 /**
@@ -100,7 +86,7 @@ function ironBackendEndpoint(port: Runtime.Port) {
  *
  * This includes all info that may be useful for the Iron server.
  */
-function connectionParams(port: Runtime.Port) {
+function connParams(port: Runtime.Port) {
   const sender = port.sender;
   const tab = sender?.tab;
 

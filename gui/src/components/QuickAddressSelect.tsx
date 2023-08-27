@@ -61,7 +61,7 @@ function getCurrentPath(wallet: Wallet, addresses: [string, Address][]) {
       return wallet.current ? wallet.current[0] : addresses[0][0];
 
     case "impersonator":
-      return wallet.addresses[wallet.current!];
+      return wallet.addresses[wallet.current || 0];
 
     default:
       return wallet.currentPath || addresses[0][0];
