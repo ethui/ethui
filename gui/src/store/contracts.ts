@@ -17,7 +17,7 @@ const store: StateCreator<Store> = (set, get) => ({
   data: {},
 
   init: async () => {
-    const contracts = await invoke<IContract[]>("contracts_get_all", {
+    const contracts = await invoke<IContract[]>("db_get_contracts", {
       chainId: 31337,
     });
 
