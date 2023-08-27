@@ -10,7 +10,7 @@ import { Address, RequestArguments } from "./types";
 import { Maybe, createErrorMiddleware, getRpcPromiseCallback } from "./utils";
 
 export class IronProvider extends EventEmitter {
-  protected initialized: boolean = false;
+  protected initialized = false;
   protected autoId = 0;
   protected engine: JsonRpcEngine;
   protected stream: Duplex;
