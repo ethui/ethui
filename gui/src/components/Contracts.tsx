@@ -9,12 +9,12 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { useRefreshContracts } from "../hooks";
 import { useContracts, useNetworks } from "../store";
 import { IContract } from "../types";
 import { ABIForm, AddressView, Panel } from "./";
@@ -26,17 +26,17 @@ export function Contracts() {
 
   const [contracts, setContracts] = useState<IContract[]>([]);
 
-  const fetch_contracts = async () => {
+  const fetchContracts = async () => {
     invoke<IContract[]>("contracts_get_all", {
       chainId: chainId,
     }).then(setContracts);
   };
 
   useEffect(() => {
-    void fetch_contracts();
+    fetchContracts();
   }, [chainId]);
 
-  listen("contracts-updated", () => fetch_contracts);
+  useRefreshContracts(fetchContracts);
 
   return (
     <Panel>
