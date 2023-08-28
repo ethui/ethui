@@ -11,13 +11,13 @@
 [libsodium-arch]: https://archlinux.org/packages/extra/x86_64/libsodium/
 [libsodium-ubuntu]: https://packages.ubuntu.com/search?keywords=libsodium-dev
 
+<p align="center">
+    <img src="https://raw.githubusercontent.com/iron-wallet/.github/main/profile/banner.png" width=70%>
+</>
+
 ## What is Iron?
 
 A developer's crypto wallet. Iron has the usual functionality of a crypto wallet, but is purposefully built to speed up your development workflows.
-
-<p align="center">
-    <img src="./screenshot.png" width=70%>
-</>
 
 ### Main features
 
