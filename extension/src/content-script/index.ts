@@ -1,4 +1,3 @@
-import PortStream from "extension-port-stream";
 import log from "loglevel";
 import { type Duplex } from "stream";
 import { runtime } from "webextension-polyfill";
@@ -6,6 +5,12 @@ import { runtime } from "webextension-polyfill";
 import { WindowPostMessageStream } from "@metamask/post-message-stream";
 
 import { loadSettings } from "../settings";
+
+declare global {
+  interface Document {
+    prerendering: any;
+  }
+}
 
 // init on load
 (async () => init())();
@@ -20,7 +25,20 @@ async function init() {
 /**
  * Sets up a stream to forward messages from the injected page script to the extension's background worker
  */
-export function initProviderForward() {
+function initProviderForward() {
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=1457040
+  // and related discussion: https://groups.google.com/a/chromium.org/g/chromium-extensions/c/gHAEKspcdRY?pli=1
+  // Temporary workaround for chromium bug that breaks the content script <=> background connection
+  // for prerendered pages. This delays connection setup until the page is in active state
+  if (document.prerendering) {
+    document.addEventListener("prerenderingchange", () => {
+      if (!document.prerendering) {
+        initProviderForward();
+      }
+    });
+    return;
+  }
+
   const inpageStream = new WindowPostMessageStream({
     name: "iron:contentscript",
     target: "iron:inpage",
@@ -28,9 +46,18 @@ export function initProviderForward() {
 
   // bg stream
   const bgPort = runtime.connect({ name: "iron:contentscript" });
-  const bgStream = new PortStream(bgPort);
 
-  inpageStream.pipe(bgStream).pipe(inpageStream);
+  // inpage -> bg
+  inpageStream.on("data", (data) => {
+    bgPort.postMessage(data);
+  });
+  // bg -> inpage
+  bgPort.onMessage.addListener((data) => {
+    inpageStream.write(data);
+  });
+  bgPort.onDisconnect.addListener(() =>
+    log.error("[Iron - contentscript] disconnected")
+  );
 }
 
 /**

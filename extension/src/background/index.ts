@@ -1,5 +1,3 @@
-import PortStream from "extension-port-stream";
-import log from "loglevel";
 import browser, { type Runtime } from "webextension-polyfill";
 import { ConstantBackoff, Websocket, WebsocketBuilder } from "websocket-ts";
 
@@ -38,37 +36,29 @@ export function setupProviderConnection(port: Runtime.Port) {
   // During that period, we keep a backlog of pending msgs to flush once the connection is ready
   const backlog: unknown[] = [];
 
-  const stream = new PortStream(port);
-
   // pre-build the websocket connection
   // not actually buit until the first message arrives
   const wsBuilder = new WebsocketBuilder(endpoint(port))
     .withBackoff(new ConstantBackoff(1000))
-    .onOpen((instance, event) => {
+    .onOpen((instance, _event) => {
       // connection is ready. set the upper `ws` value, and flush the backlog
       ws = instance;
-      log.debug("onOpen", instance, event);
       backlog.map((data) => instance.send(JSON.stringify(data)));
-    })
-    .onClose((instance, event) => {
-      log.debug("onClose", instance, event);
     })
     .onMessage((_ins, event) => {
       // forward WS server messages back to the stream (content script)
       const data = JSON.parse(event.data);
-      log.debug("onMessage", data);
-      stream.write(data);
+      port.postMessage(data);
     });
 
   // forwarding incoming stream data to the WS server
-  stream.on("data", (data: unknown) => {
+  port.onMessage.addListener((data: unknown) => {
     if (!ws) {
       // connection not ready yet: push to backlog and initiate connection
       backlog.push(data);
       wsBuilder.build();
     } else {
       // connection is ready, forward the message normaly
-      log.debug("request", data);
       ws.send(JSON.stringify(data));
     }
   });

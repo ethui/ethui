@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "@lukeed/uuid";
+import log from "loglevel";
 import { EIP1193Provider, announceProvider } from "mipd";
 import { type Duplex } from "stream";
 
@@ -34,6 +35,7 @@ export function initializeProvider() {
 
   const provider = new IronProvider(connectionStream);
 
+  log.debug("provider", provider);
   setGlobalProvider(provider);
 
   announceProvider({

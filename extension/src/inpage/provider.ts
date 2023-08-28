@@ -38,12 +38,12 @@ export class IronProvider extends EventEmitter {
     method,
     params,
   }: RequestArguments): Promise<Maybe<T>> {
+    log.debug("request", { method, params });
     await this.initialize();
 
     return new Promise<T>((resolve, reject) => {
       this.engine.handle(
         { method, params, id: this.nextId(), jsonrpc: "2.0" },
-        // { method, params, id, jsonrpc: "2.0" },
         getRpcPromiseCallback(resolve as any, reject) as any
       );
     });
@@ -110,10 +110,9 @@ export class IronProvider extends EventEmitter {
   }
 
   protected async initialize() {
-    if (this?.initialized) {
+    if (this.initialized) {
       return;
     }
-    this.initialized = true;
 
     const connection = createStreamMiddleware();
 
@@ -125,10 +124,6 @@ export class IronProvider extends EventEmitter {
     this.engine.push(createErrorMiddleware());
 
     connection.stream.pipe(this.stream).pipe(connection.stream);
-    // // Set up RPC connection
-    // pump(connection.stream, this.stream, connection.stream, (e) =>
-    //   this.handleStreamDisconnect(e)
-    // );
 
     // Wire up the JsonRpcEngine to the JSON-RPC connection stream
     this.engine.push(connection.middleware);
@@ -165,6 +160,8 @@ export class IronProvider extends EventEmitter {
           }
       }
     });
+
+    this.initialized = true;
   }
 
   private nextId() {
