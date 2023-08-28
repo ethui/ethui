@@ -20,8 +20,19 @@ export class IronProvider extends EventEmitter {
    */
   constructor(stream: Duplex) {
     super();
+    this.bindFunctions();
     this.stream = stream;
     this.engine = new JsonRpcEngine();
+  }
+
+  private bindFunctions() {
+    this.request = this.request.bind(this);
+    this.handleConnect = this.handleConnect.bind(this);
+    this.handleDisconnect = this.handleDisconnect.bind(this);
+    this.handleChainChanged = this.handleChainChanged.bind(this);
+    this.handleAccountsChanged = this.handleAccountsChanged.bind(this);
+    this.initialize = this.initialize.bind(this);
+    this.nextId = this.nextId.bind(this);
   }
 
   /**
