@@ -1,7 +1,11 @@
 import { EthereumRpcError } from "eth-rpc-errors";
 import { EventEmitter } from "eventemitter3";
 import { isDuplexStream } from "is-stream";
-import { JsonRpcEngine, createIdRemapMiddleware } from "json-rpc-engine";
+import {
+  JsonRpcEngine,
+  JsonRpcResponse,
+  createIdRemapMiddleware,
+} from "json-rpc-engine";
 import { createStreamMiddleware } from "json-rpc-middleware-stream";
 import log from "loglevel";
 import { type Duplex } from "stream";
@@ -38,12 +42,12 @@ export class IronProvider extends EventEmitter {
     method,
     params,
   }: RequestArguments): Promise<Maybe<T>> {
+    log.debug("request", { method, params });
     await this.initialize();
 
     return new Promise<T>((resolve, reject) => {
       this.engine.handle(
         { method, params, id: this.nextId(), jsonrpc: "2.0" },
-        // { method, params, id, jsonrpc: "2.0" },
         getRpcPromiseCallback(resolve as any, reject) as any
       );
     });
@@ -110,10 +114,9 @@ export class IronProvider extends EventEmitter {
   }
 
   protected async initialize() {
-    if (this?.initialized) {
+    if (this.initialized) {
       return;
     }
-    this.initialized = true;
 
     const connection = createStreamMiddleware();
 
@@ -165,6 +168,8 @@ export class IronProvider extends EventEmitter {
           }
       }
     });
+    console.log("initialization finished");
+    this.initialized = true;
   }
 
   private nextId() {

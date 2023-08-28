@@ -85,7 +85,6 @@
     "eth-json-rpc-filters": "^6.0.0",
     "eth-rpc-errors": "^4.0.3",
     "eventemitter3": "^5.0.1",
-    "extension-port-stream": "^2.1.1",
     "is-stream": "^3.0.0",
     "json-rpc-engine": "^6.1.0",
     "json-rpc-middleware-stream": "^4.2.1",
