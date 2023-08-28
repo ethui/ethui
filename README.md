@@ -11,53 +11,25 @@
 [libsodium-arch]: https://archlinux.org/packages/extra/x86_64/libsodium/
 [libsodium-ubuntu]: https://packages.ubuntu.com/search?keywords=libsodium-dev
 
-A developer's crypto wallet. Check out the [announcement blog post][announcement].
+## What is Iron?
+
+A developer's crypto wallet. Iron has the usual functionality of a crypto wallet, but is purposefully built to speed up your development workflows.
 
 <p align="center">
     <img src="./screenshot.png" width=70%>
 </>
 
+### Main features
+
+- **anvil-aware**: iron uses a dedicated syncing process for local anvil nodes, enabling real-time syncing which works across chain restarts, reverts, and downtime. No longer should you have to manually reset the `nonce` in your wallet
+- **foundry-aware**: the wallet finds existing `forge` outputs in your filesystem, and matches them against on-chain bytecode to create a built-in explorer akin to Etherscan's contract interaction tool
+- **multiple wallets**: Iron is not restricted to a single mnemonic. Create as many wallets as you want, and switch seamlessly between them
+- **Desktop-native experience**: no longer tied to a browser's sandbox. Your wallet is now reachable across your entire system, and you can even use as a proxing for your scripting RPC needs
+- **quick keyboard-based navigation**: A command bar reachable via `Cmd+K` / `Ctrl+K` provides quick access to all of the major actions
+
 ## Status
 
-The project is ready for development purposes. We **do not recommend usage for ongoing mainnet activity**, unless you really know what you're doing.
-
-## Features / Roadmap
-
-- [x] **Metamask drop-in replacement**
-  - [x] "Connect with MetaMask"
-  - [x] base EIP-1193 support
-  - [x] submit transactions, sign messages without intrusive popups
-- [x] **[anvil][anvil]-aware**
-  - [x] track transaction history
-  - [x] track deployed smart contracts (via traces, so internal deploys are also detected)
-  - [x] automatically track chain restarts / reverts / nonce updates
-  - [x] track local foundry projects, sync ABIs and deploys (https://github.com/iron-wallet/iron/pull/166)
-- [ ] connection list
-  - [ ] fork & simulate mainnet transactions locally. for debugging & security (prototype at [ETHGlobal Lisbon][prank-wallet])
-  - [ ] impersonate / prank on any dApp (prototype at [ETHGlobal Lisbon][prank-wallet])
-  - [ ] fine-grained control over account and network selection (i.e. different selections per tab, or per domain)
-- [ ] UI
-  - [x] etherscan-like contract read/write UI for all local contracts (https://github.com/iron-wallet/iron/pull/166)
-  - [ ] quick command bar (https://github.com/iron-wallet/iron/pull/182)
-  - [x] Dark mode
-
-## Security
-
-**Right now there is none.**
-Our "go to market strategy" is to help developers looking to speed up their feedback loop. This means:
-
-- mnemonic defaults to `test test test ... junk`
-- no encryption, no passwords to input all the time. just a plain HD Wallet
-- no annoying popups for confirmations, gas estimates, etc (they'll come, but opt-in)
-- no need to "Reset your Account" to reset the `nonce`
-
-This will change [very very soon](https://github.com/iron-wallet/iron/pull/185) thought, but more future work will include:
-
-- other 3rd party encryption software (e.g.: GPG)
-- Hardware wallets
-- WalletConnect
-
----
+Iron is in active development, but the existing features are more than to provide an enhanced developer exprience over consumer-facing wallets.
 
 ## Installing
 

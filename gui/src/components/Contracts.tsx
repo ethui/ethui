@@ -41,8 +41,8 @@ function Contract({ contract }: { contract: IContract }) {
     chainId,
   });
 
-  const name = contract.name || foundryMatch?.name;
-  const abi = contract.abi || foundryMatch?.abi;
+  const name = foundryMatch?.name || contract.name;
+  const abi = foundryMatch?.abi || contract.abi;
 
   return (
     <Accordion>
