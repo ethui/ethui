@@ -1,11 +1,7 @@
 import { EthereumRpcError } from "eth-rpc-errors";
 import { EventEmitter } from "eventemitter3";
 import { isDuplexStream } from "is-stream";
-import {
-  JsonRpcEngine,
-  JsonRpcResponse,
-  createIdRemapMiddleware,
-} from "json-rpc-engine";
+import { JsonRpcEngine, createIdRemapMiddleware } from "json-rpc-engine";
 import { createStreamMiddleware } from "json-rpc-middleware-stream";
 import log from "loglevel";
 import { type Duplex } from "stream";
@@ -128,10 +124,6 @@ export class IronProvider extends EventEmitter {
     this.engine.push(createErrorMiddleware());
 
     connection.stream.pipe(this.stream).pipe(connection.stream);
-    // // Set up RPC connection
-    // pump(connection.stream, this.stream, connection.stream, (e) =>
-    //   this.handleStreamDisconnect(e)
-    // );
 
     // Wire up the JsonRpcEngine to the JSON-RPC connection stream
     this.engine.push(connection.middleware);
@@ -168,7 +160,7 @@ export class IronProvider extends EventEmitter {
           }
       }
     });
-    console.log("initialization finished");
+
     this.initialized = true;
   }
 
