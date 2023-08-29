@@ -100,7 +100,7 @@ jobs:
 
       - name: install dependencies (windows)
         if: matrix.platform == 'windows-latest'
-      - run: |
+        run: |
           curl https://download.libsodium.org/libsodium/releases/libsodium-1.0.18-msvc.zip --output libsodium.zip
           7z x libsodium.zip
           cp libsodium/x64/Release/v142/static/libsodium.lib sodium.lib
