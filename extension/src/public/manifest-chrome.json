@@ -34,10 +34,5 @@
     "48": "icons/iron-48.png",
     "96": "icons/iron-96.png",
     "128": "icons/iron-128.png"
-  },
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "iron-wallet@naps62.com"
-    }
   }
 }
