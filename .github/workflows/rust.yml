@@ -24,7 +24,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - run: |
-          curl https://download.libsodium.org/libsodium/releases/libsodium-1.0.18-msvc.zip
-          7z x libsodium-1.0.18-msvc.zip
+          curl https://download.libsodium.org/libsodium/releases/libsodium-1.0.18-msvc.zip --output libsodium.zip
+          7z x libsodium.zip
           Copy-Item -Path libsodium\x64\Release\v142\static\libsodium.lib sodium.lib
         shell: bash
