@@ -24,9 +24,10 @@ jobs:
     runs-on: windows-latest
     steps:
       - run: |
-          C:\msys64\usr\bin\wget.exe https://download.libsodium.org/libsodium/releases/libsodium-1.0.18-msvc.zip
+          wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.18-msvc.zip
           7z x libsodium-1.0.18-msvc.zip
           Copy-Item -Path libsodium\x64\Release\v142\static\libsodium.lib sodium.lib
+        shell: bash
 
   cargo-clippy:
     runs-on: ubuntu-latest
