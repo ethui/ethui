@@ -5,11 +5,11 @@ import { WindowPostMessageStream } from "@metamask/post-message-stream";
 
 import { loadSettings } from "../settings";
 
-// declare global {
-//   interface Document {
-//     prerendering: any;
-//   }
-// }
+declare global {
+  interface Document {
+    prerendering: any;
+  }
+}
 
 // init on load
 (async () => init())();
@@ -29,10 +29,9 @@ function initProviderForward() {
   // and related discussion: https://groups.google.com/a/chromium.org/g/chromium-extensions/c/gHAEKspcdRY?pli=1
   // Temporary workaround for chromium bug that breaks the content script <=> background connection
   // for prerendered pages. This delays connection setup until the page is in active state
-  let doc = document as any;
-  if (doc.prerendering) {
-    doc.addEventListener("prerenderingchange", () => {
-      if (!doc.prerendering) {
+  if (document.prerendering) {
+    document.addEventListener("prerenderingchange", () => {
+      if (!document.prerendering) {
         initProviderForward();
       }
     });
