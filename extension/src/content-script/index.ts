@@ -1,3 +1,4 @@
+import log from "loglevel";
 import { type Duplex } from "stream";
 import { runtime } from "webextension-polyfill";
 
@@ -55,7 +56,7 @@ function initProviderForward() {
     inpageStream.write(data);
   });
   bgPort.onDisconnect.addListener(() =>
-    console.error("[Iron - contentscript] disconnected")
+    log.error("[Iron - contentscript] disconnected")
   );
 }
 
@@ -76,6 +77,6 @@ export function injectInPageScript() {
     container.insertBefore(scriptTag, container.children[0]);
     container.removeChild(scriptTag);
   } catch (error) {
-    console.error("Iron Wallet: Provider injection failed.", error);
+    log.error("Iron Wallet: Provider injection failed.", error);
   }
 }
