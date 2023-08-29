@@ -20,14 +20,65 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  download:
-    runs-on: windows-latest
+  cargo-clippy:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
-      - run: |
-          curl https://download.libsodium.org/libsodium/releases/libsodium-1.0.18-msvc.zip --output libsodium.zip
-          7z x libsodium.zip
-          cp libsodium/x64/Release/v142/static/libsodium.lib sodium.lib
-          ls
-        shell: bash
+      - name: install dependencies (ubuntu only)
+        run: |
+          echo {{matrix.platform}}
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf libsodium-dev
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
+
+      - name: rust cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: cargo-check
+        uses: actions-rs/cargo@v1
+        with:
+          command: check
+
+      - name: cargo-clippy
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --all -- -D clippy::all -D clippy::dbg_macro
+
+  cargo-deny:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        checks:
+          - advisories
+          - bans licenses sources
+
+    name: cargo-deny (${{ matrix.checks }})
+
+    # Prevent sudden announcement of a new advisory from failing ci:
+    continue-on-error: ${{ matrix.checks == 'advisories' }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # check if cargo.lock changed
+      # only needed in advisories
+      - uses: dorny/paths-filter@v2
+        id: lock
+        with:
+          filters: |
+            src:
+              - '**/Cargo.lock'
+        if: ${{ matrix.checks == 'advisories' }}
+
+      - uses: EmbarkStudios/cargo-deny-action@v1
+        with:
+          command: check ${{ matrix.checks }}
+        # conditionally run advisories only if lock changed
+        if: ${{ matrix.checks != 'advisories' || steps.lock.outputs.src == 'true' }}

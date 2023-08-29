@@ -100,10 +100,12 @@ jobs:
 
       - name: install dependencies (windows)
         if: matrix.platform == 'windows-latest'
-        run: |
-          C:\msys64\usr\bin\wget.exe https://download.libsodium.org/libsodium/releases/libsodium-1.0.18-msvc.zip
-          7z x libsodium-1.0.18-msvc.zip
-          Copy-Item -Path libsodium\x64\Release\v142\static\libsodium.lib sodium.lib
+      - run: |
+          curl https://download.libsodium.org/libsodium/releases/libsodium-1.0.18-msvc.zip --output libsodium.zip
+          7z x libsodium.zip
+          cp libsodium/x64/Release/v142/static/libsodium.lib sodium.lib
+          ls
+        shell: bash
 
       - name: install dependencies (macos)
         if: matrix.platform == 'macos-latest'
