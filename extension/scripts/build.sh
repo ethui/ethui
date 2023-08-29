@@ -4,7 +4,7 @@
 #
 # defaults
 #
-target=chrome-dev
+target=chrome
 release=false
 
 #
@@ -36,7 +36,6 @@ while [ : ]; do
         ;;
   esac
 done
-echo $target $release
 
 #
 # building
