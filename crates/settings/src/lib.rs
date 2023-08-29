@@ -60,6 +60,13 @@ impl Settings {
         &self.inner
     }
 
+    pub fn get_etherscan_api_key(&self) -> Result<String> {
+        self.inner
+            .etherscan_api_key
+            .clone()
+            .ok_or(Error::EtherscanKeyNotSet)
+    }
+
     fn get_alias(&self, address: ChecksummedAddress) -> Option<String> {
         self.inner.aliases.get(&address).cloned()
     }
@@ -96,6 +103,7 @@ pub struct SerializedSettings {
     pub abi_watch: bool,
     pub abi_watch_path: Option<String>,
     pub alchemy_api_key: Option<String>,
+    pub etherscan_api_key: Option<String>,
     #[serde(default = "default_true")]
     pub hide_empty_tokens: bool,
 
@@ -113,6 +121,7 @@ impl Default for SerializedSettings {
             abi_watch: false,
             abi_watch_path: None,
             alchemy_api_key: None,
+            etherscan_api_key: None,
             hide_empty_tokens: true,
             aliases: HashMap::new(),
             onboarded: false,

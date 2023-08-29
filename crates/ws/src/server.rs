@@ -1,7 +1,6 @@
 use std::{collections::HashMap, net::SocketAddr};
 
 use futures_util::{SinkExt, StreamExt};
-use iron_rpc::Handler;
 use iron_types::GlobalState;
 use tokio::{
     net::{TcpListener, TcpStream},
@@ -18,7 +17,7 @@ pub use crate::error::{WsError, WsResult};
 use crate::peers::{Peer, Peers};
 
 pub(crate) async fn server_loop() {
-    let addr = "127.0.0.1:9002";
+    let addr = std::env::var("IRON_SERVER_ENDPOINT").unwrap_or("127.0.0.1:9002".into());
     let listener = TcpListener::bind(&addr).await.expect("Can't listen to");
 
     while let Ok((stream, _)) = listener.accept().await {
@@ -48,8 +47,8 @@ async fn accept_connection(socket: SocketAddr, stream: TcpStream) {
 
     let peer = Peer::new(socket, snd, &query_params);
 
-    Peers::write().await.add_peer(peer).await;
-    let err = handle_connection(ws_stream, rcv).await;
+    Peers::write().await.add_peer(peer.clone()).await;
+    let err = handle_connection(peer, ws_stream, rcv).await;
     Peers::write().await.remove_peer(socket).await;
 
     if let Err(e) = err {
@@ -70,10 +69,11 @@ async fn accept_connection(socket: SocketAddr, stream: TcpStream) {
 }
 
 async fn handle_connection(
+    peer: Peer,
     stream: WebSocketStream<TcpStream>,
     mut rcv: mpsc::UnboundedReceiver<serde_json::Value>,
 ) -> WsResult<()> {
-    let handler = Handler::default();
+    let handler: iron_rpc::Handler = peer.into();
     let mut interval = tokio::time::interval(std::time::Duration::from_secs(15));
     let (mut ws_sender, mut ws_receiver) = stream.split();
 

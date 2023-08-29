@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import "core-js/features/array/at";
-import { createElement, useEffect, useState } from "react";
+import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { formatEther } from "viem";
 
@@ -26,7 +26,7 @@ export function Txs() {
 
   const [pages, setPages] = useState<Paginated<Tx>[]>([]);
 
-  const loadMore = () => {
+  const loadMore = useCallback(() => {
     let pagination: Pagination = {};
     const last = pages?.at(-1)?.pagination;
     if (!!last) {
@@ -39,7 +39,7 @@ export function Txs() {
       chainId,
       pagination,
     }).then((page) => setPages([...pages, page]));
-  };
+  }, [account, chainId, pages, setPages]);
 
   useEffect(() => {
     if (pages.length == 0) loadMore();

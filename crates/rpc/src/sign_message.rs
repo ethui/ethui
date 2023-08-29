@@ -22,7 +22,7 @@ type Middleware = SignerMiddleware<Provider<Http>, signers::Wallet<SigningKey>>;
 pub struct SignMessage<'a> {
     pub wallet: &'a Wallet,
     pub wallet_path: String,
-    pub network: &'a Network,
+    pub network: Network,
     data: Data,
 }
 
@@ -90,7 +90,7 @@ enum Data {
 pub struct SignMessageBuilder<'a> {
     pub wallet: Option<&'a Wallet>,
     pub wallet_path: Option<String>,
-    pub network: Option<&'a Network>,
+    pub network: Option<Network>,
     data: Option<Data>,
 }
 
@@ -105,7 +105,7 @@ impl<'a> SignMessageBuilder<'a> {
         self
     }
 
-    pub fn set_network(mut self, network: &'a Network) -> SignMessageBuilder<'a> {
+    pub fn set_network(mut self, network: Network) -> SignMessageBuilder<'a> {
         self.network = Some(network);
         self
     }

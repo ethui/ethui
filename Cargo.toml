@@ -7,6 +7,7 @@ members = [
   "crates/wallets",
   "crates/ws",
   "crates/rpc",
+  "crates/connections",
   "crates/dialogs",
   "crates/abis",
   "crates/forge",
@@ -17,12 +18,13 @@ members = [
   "crates/sync/alchemy",
   "crates/crypto",
   "crates/broadcast",
+  "crates/exchange-rates",
 ]
 default-members = ["bin/iron"]
 
 
 [workspace.package]
-version = "0.4.1"
+version = "0.6.1"
 edition = "2021"
 license-file = "./LICENSE"
 homepage = "https://github.com/iron-wallet"
@@ -38,6 +40,7 @@ iron-networks = { path = "crates/networks" }
 iron-wallets = { path = "crates/wallets" }
 iron-ws = { path = "crates/ws" }
 iron-rpc = { path = "crates/rpc" }
+iron-connections = { path = "crates/connections" }
 iron-dialogs = { path = "crates/dialogs" }
 iron-types = { path = "crates/types" }
 iron-abis = { path = "crates/abis" }
@@ -47,6 +50,7 @@ iron-sync-anvil = { path = "crates/sync/anvil" }
 iron-sync-alchemy = { path = "crates/sync/alchemy" }
 iron-broadcast = { path = "crates/broadcast" }
 iron-tracing = { path = "crates/tracing" }
+iron-exchange-rates = { path = "crates/exchange-rates" }
 tokio = { version = "1.26.0", features = ["full", "sync"] }
 thiserror = "1.0.40"
 ethers = { version = "2.0.0", features = ["ws"] }
@@ -62,3 +66,4 @@ tauri = { version = "1.2", features = ["api-all", "system-tray"] }
 once_cell = "1.17.1"
 secrets = { version = "1.2.0", features = ["use-libsodium-sys"] }
 tracing = "0.1.0"
+jsonrpc-core = "18.0.0"

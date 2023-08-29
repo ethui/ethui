@@ -3,15 +3,15 @@ use std::path::PathBuf;
 use iron_broadcast::UIMsg;
 use iron_db::DB;
 use iron_types::ui_events;
+#[cfg(not(target_os = "linux"))]
+use tauri::{AboutMetadata, Menu, MenuItem, Submenu, WindowMenuEvent};
 use tauri::{
     AppHandle, Builder, CustomMenuItem, GlobalWindowEvent, Manager, SystemTray, SystemTrayEvent,
     SystemTrayMenu, SystemTrayMenuItem, WindowBuilder, WindowEvent, WindowUrl,
 };
-#[cfg(not(target_os = "linux"))]
-use tauri::{Menu, Submenu, WindowMenuEvent};
 use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, StateFlags};
 
-use crate::error::AppResult;
+use crate::{commands, error::AppResult};
 
 pub struct IronApp {
     app: tauri::App,
@@ -24,6 +24,7 @@ impl IronApp {
         let mut builder = Builder::default()
             .plugin(windowStatePlugin::default().build())
             .invoke_handler(tauri::generate_handler![
+                commands::get_build_mode,
                 iron_settings::commands::settings_get,
                 iron_settings::commands::settings_set,
                 iron_settings::commands::settings_set_dark_mode,
@@ -35,11 +36,13 @@ impl IronApp {
                 iron_networks::commands::networks_set_list,
                 iron_networks::commands::networks_set_current,
                 iron_networks::commands::networks_reset,
+                iron_db::commands::db_get_contracts,
+                iron_db::commands::db_insert_contract,
                 iron_db::commands::db_get_transactions,
                 iron_db::commands::db_get_contracts,
                 iron_db::commands::db_get_erc20_balances,
                 iron_db::commands::db_get_native_balance,
-                iron_ws::commands::ws_get_all_peers,
+                iron_ws::commands::ws_peers_by_domain,
                 iron_wallets::commands::wallets_get_all,
                 iron_wallets::commands::wallets_get_current,
                 iron_wallets::commands::wallets_get_current_address,
@@ -55,6 +58,8 @@ impl IronApp {
                 iron_dialogs::commands::dialog_finish,
                 iron_forge::commands::foundry_get_abi,
                 iron_rpc::commands::rpc_send_transaction,
+                iron_connections::commands::connections_affinity_for,
+                iron_connections::commands::connections_set_affinity
             ])
             .setup(|app| {
                 let handle = app.handle();
@@ -109,6 +114,72 @@ impl IronApp {
 
     #[cfg(not(target_os = "linux"))]
     fn build_menu() -> Menu {
+        let mut menu = Menu::new();
+
+        // app submenu
+        #[cfg(target_os = "macos")]
+        {
+            let app_name = "Iron";
+
+            menu = menu.add_submenu(Submenu::new(
+                app_name,
+                Menu::new()
+                    .add_native_item(MenuItem::About(
+                        app_name.to_string(),
+                        AboutMetadata::default(),
+                    ))
+                    .add_native_item(MenuItem::Separator)
+                    .add_item(
+                        CustomMenuItem::new("settings".to_string(), "Settings...")
+                            .accelerator("CmdOrCtrl+Comma"),
+                    )
+                    .add_native_item(MenuItem::Separator)
+                    .add_native_item(MenuItem::Services)
+                    .add_native_item(MenuItem::Separator)
+                    .add_native_item(MenuItem::Hide)
+                    .add_native_item(MenuItem::HideOthers)
+                    .add_native_item(MenuItem::ShowAll)
+                    .add_native_item(MenuItem::Separator)
+                    .add_native_item(MenuItem::Quit),
+            ));
+        }
+
+        // file submenu
+        let mut file_menu = Menu::new();
+        file_menu = file_menu.add_native_item(MenuItem::CloseWindow);
+        #[cfg(not(target_os = "macos"))]
+        {
+            file_menu = file_menu.add_native_item(MenuItem::Quit);
+        }
+        menu = menu.add_submenu(Submenu::new("File", file_menu));
+
+        // edit submenu
+        let mut edit_menu = Menu::new();
+        #[cfg(target_os = "macos")]
+        {
+            edit_menu = edit_menu.add_native_item(MenuItem::Undo);
+            edit_menu = edit_menu.add_native_item(MenuItem::Redo);
+            edit_menu = edit_menu.add_native_item(MenuItem::Separator);
+        }
+        edit_menu = edit_menu.add_native_item(MenuItem::Cut);
+        edit_menu = edit_menu.add_native_item(MenuItem::Copy);
+        edit_menu = edit_menu.add_native_item(MenuItem::Paste);
+        #[cfg(target_os = "macos")]
+        {
+            edit_menu = edit_menu.add_native_item(MenuItem::SelectAll);
+        }
+        menu = menu.add_submenu(Submenu::new("Edit", edit_menu));
+
+        // view submenu
+        #[cfg(target_os = "macos")]
+        {
+            menu = menu.add_submenu(Submenu::new(
+                "View",
+                Menu::new().add_native_item(MenuItem::EnterFullScreen),
+            ));
+        }
+
+        // go submenu
         let balances = CustomMenuItem::new("balances".to_string(), "Balances");
         let transactions = CustomMenuItem::new("transactions".to_string(), "Transactions");
         let contracts = CustomMenuItem::new("contracts".to_string(), "Contracts");
@@ -122,7 +193,18 @@ impl IronApp {
                 .add_item(connections),
         );
 
-        Menu::os_default("Iron").add_submenu(go_submenu)
+        menu = menu.add_submenu(go_submenu);
+
+        // window submenu
+        let mut window_menu = Menu::new();
+        window_menu = window_menu.add_native_item(MenuItem::Minimize);
+        #[cfg(target_os = "macos")]
+        {
+            window_menu = window_menu.add_native_item(MenuItem::Zoom);
+            window_menu = window_menu.add_native_item(MenuItem::Separator);
+        }
+        window_menu = window_menu.add_native_item(MenuItem::CloseWindow);
+        menu.add_submenu(Submenu::new("Window", window_menu))
     }
 
     fn build_tray() -> tauri::SystemTray {
@@ -148,6 +230,9 @@ fn on_menu_event(event: WindowMenuEvent) {
         "close" => {
             event.window().close().unwrap();
         }
+        "settings" => {
+            event.window().emit("menu:settings", ()).unwrap();
+        }
         path => {
             event.window().emit("go", path).unwrap();
         }
@@ -160,7 +245,8 @@ async fn init(app: &tauri::App, db: &DB) -> AppResult<()> {
     iron_sync::init(db.clone()).await;
 
     iron_settings::init(resource(app, "settings.json")).await;
-    iron_ws::init();
+    iron_ws::init().await;
+    iron_connections::init(resource(app, "connections.json")).await;
     iron_wallets::init(resource(app, "wallets.json")).await;
     iron_networks::init(resource(app, "networks.json")).await;
     iron_forge::init().await?;

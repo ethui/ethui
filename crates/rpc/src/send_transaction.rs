@@ -17,7 +17,7 @@ use super::{Error, Result};
 pub struct SendTransaction<'a> {
     pub wallet: &'a Wallet,
     pub wallet_path: String,
-    pub network: &'a Network,
+    pub network: Network,
     pub request: TypedTransaction,
     pub signer: Option<SignerMiddleware<Provider<Http>, signers::Wallet<SigningKey>>>,
 }
@@ -44,8 +44,6 @@ impl<'a> SendTransaction<'a> {
 
     pub async fn finish(&mut self) -> Result<PendingTransaction<'_, Http>> {
         tracing::debug!("finishing transaction");
-
-        self.build_signer().await;
 
         let skip_dialog = self.network.is_dev() && self.wallet.is_dev();
         if !skip_dialog {
@@ -85,6 +83,7 @@ impl<'a> SendTransaction<'a> {
     }
 
     async fn send(&mut self) -> Result<PendingTransaction<'_, Http>> {
+        self.build_signer().await;
         let signer = self.signer.as_ref().unwrap();
 
         Ok(signer.send_transaction(self.request.clone(), None).await?)
@@ -95,7 +94,7 @@ impl<'a> SendTransaction<'a> {
 pub struct SendTransactionBuilder<'a> {
     pub wallet: Option<&'a Wallet>,
     pub wallet_path: Option<String>,
-    pub network: Option<&'a Network>,
+    pub network: Option<Network>,
     pub request: TypedTransaction,
 }
 
@@ -110,7 +109,7 @@ impl<'a> SendTransactionBuilder<'a> {
         self
     }
 
-    pub fn set_network(mut self, network: &'a Network) -> SendTransactionBuilder<'a> {
+    pub fn set_network(mut self, network: Network) -> SendTransactionBuilder<'a> {
         self.network = Some(network);
         self
     }

@@ -48,7 +48,7 @@
         "fullscreen": false,
         "resizable": true,
         "title": "",
-        "width": 1200,
+        "width": 600,
         "height": 800,
         "titleBarStyle": "Overlay"
       }

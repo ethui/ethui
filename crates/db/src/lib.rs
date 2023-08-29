@@ -2,12 +2,12 @@ pub mod commands;
 mod error;
 mod pagination;
 mod queries;
+mod utils;
 
 use std::{path::PathBuf, str::FromStr};
 
 use ethers::types::{Address, H256, U256};
-use iron_types::{events::Tx, Event, TokenBalance, TokenMetadata};
-use serde::Serialize;
+use iron_types::{events::Tx, Event, StoredContract, TokenBalance, TokenMetadata};
 use sqlx::{
     sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous},
     Row,
@@ -245,14 +245,33 @@ impl DB {
             WHERE chain_id = ? "#,
         )
         .bind(chain_id)
-        .map(|row| StoredContract {
-            address: Address::from_str(row.get::<&str, _>("address")).unwrap(),
-            deployed_code_hash: row.get("deployed_code_hash"),
-        })
+        .map(|row| row.try_into().unwrap())
         .fetch_all(self.pool())
         .await?;
 
         Ok(res)
+    }
+
+    pub async fn insert_contract_with_abi(
+        &self,
+        chain_id: u32,
+        address: Address,
+        abi: Option<String>,
+        name: Option<String>,
+    ) -> Result<()> {
+        sqlx::query(
+            r#" INSERT INTO contracts (address, chain_id, abi, name)
+                VALUES (?,?,?,?)
+                ON CONFLICT(address, chain_id) DO NOTHING "#,
+        )
+        .bind(format!("0x{:x}", address))
+        .bind(chain_id)
+        .bind(abi)
+        .bind(name)
+        .execute(self.pool())
+        .await?;
+
+        Ok(())
     }
 
     pub async fn get_native_balance(&self, chain_id: u32, address: Address) -> U256 {
@@ -365,11 +384,4 @@ impl DB {
 
         Ok(())
     }
-}
-
-#[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct StoredContract {
-    address: Address,
-    deployed_code_hash: String,
 }
