@@ -6,7 +6,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "clean": "rimraf dist ./*.zip ./*.crx ./*.pem",
+    "clean": "rm -rf dist ./*.zip ./*.crx ./*.pem",
     "dev": "vite --config vite/base.ts",
     "build:firefox": "NODE_ENV=production run-s clean compile build:firefox:*",
     "build:firefox:inpage": "vite build --config vite/inpage.ts",
