@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.6.1",
   "description": "A developer-focused Ethereum wallet",
+  "homepage": "https://github.com/iron-wallet/iron",
   "license": "MIT",
   "type": "module",
   "scripts": {
