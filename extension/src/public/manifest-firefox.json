@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Iron Wallet",
   "description": "A developer-focused Ethereum wallet",
   "version": "0.6.1",
@@ -9,16 +9,15 @@
     {
       "matches": ["<all_urls>"],
       "run_at": "document_idle",
-      "js": ["./contentScript/index.js"],
-      "css": ["./style.css"]
+      "js": ["./contentScript/index.js"]
     }
   ],
   "background": {
-    "page": "./background/index.html",
-    "persistent": false
+    "scripts": ["./background/background.js"]
   },
   "options_ui": {
-    "page": "./options/index.html"
+    "page": "./options/index.html",
+    "browser_style": false
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'; frame-ancestors 'none';"

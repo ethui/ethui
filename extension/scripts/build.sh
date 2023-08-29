@@ -51,6 +51,7 @@ basename=$target-v$version
 yarn run vite build --config vite/base.ts
 yarn run vite build --config vite/content.ts
 yarn run vite build --config vite/inpage.ts
+yarn run vite build --config vite/background.ts
 
 case $target in
   # builds a chrome development version. skips bundling and publishing
@@ -65,17 +66,14 @@ case $target in
 
   # builds and publishes to the chrome extension store
   chrome)
-    # not needed on firefox since it's embedded in background.html
-    yarn run vite build --config vite/chrome.ts
 
     # choose manifest
     mv $DIST_DIR/manifest-chrome.json $DIST_DIR/manifest.json
     rm $DIST_DIR/manifest-firefox.json
 
-    # bundle zip & xpi
-    zip -r dist/$basename.zip $DIST_DIR
-    yarn run web-ext build -s $DIST_DIR -a .
-    mv ./iron_wallet-$version.zip dist/firefox-v$version.xpi
+    # bundle zip & crx
+    zip -r ./dist/chrome-v$version.zip $DIST_DIR
+    yarn run crx pack $DIST_DIR -o ./dist/chrome-v$version.crx
     ;;
 
   # builds and publishes to the firefox extension store
@@ -84,8 +82,9 @@ case $target in
     mv $DIST_DIR/manifest-firefox.json $DIST_DIR/manifest.json
     rm $DIST_DIR/manifest-chrome.json
 
-    # bundle zip & crx
-    zip -r ./dist/chrome-v$version.zip $DIST_DIR
-    yarn run crx pack $DIST_DIR -o ./dist/chrome-v$version.crx
+    # bundle zip & xpi
+    zip -r dist/$basename.zip $DIST_DIR
+    yarn run web-ext build -s $DIST_DIR -a .
+    mv ./iron_wallet-$version.zip dist/firefox-v$version.xpi
     ;;
 esac

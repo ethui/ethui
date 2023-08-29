@@ -11,16 +11,13 @@ export default defineConfig({
       exclude: ["fs"],
     }),
   ],
-  define: {
-    "process.env": {},
-  },
   build: {
     emptyOutDir: false,
     outDir: path.resolve(__dirname, "..", dist),
     lib: {
       formats: ["iife"],
       entry: path.resolve(__dirname, "..", "src", "content-script", "index.ts"),
-      name: "Cat Facts",
+      name: "Iron Wallet content script",
     },
     rollupOptions: {
       output: {

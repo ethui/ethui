@@ -17,7 +17,8 @@
     "service_worker": "./background/background.js"
   },
   "options_ui": {
-    "page": "./options/index.html"
+    "page": "./options/index.html",
+    "browser_style": false
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'; frame-ancestors 'none';"

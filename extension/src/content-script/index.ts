@@ -1,4 +1,3 @@
-import log from "loglevel";
 import { type Duplex } from "stream";
 import { runtime } from "webextension-polyfill";
 
@@ -6,11 +5,11 @@ import { WindowPostMessageStream } from "@metamask/post-message-stream";
 
 import { loadSettings } from "../settings";
 
-declare global {
-  interface Document {
-    prerendering: any;
-  }
-}
+// declare global {
+//   interface Document {
+//     prerendering: any;
+//   }
+// }
 
 // init on load
 (async () => init())();
@@ -30,9 +29,10 @@ function initProviderForward() {
   // and related discussion: https://groups.google.com/a/chromium.org/g/chromium-extensions/c/gHAEKspcdRY?pli=1
   // Temporary workaround for chromium bug that breaks the content script <=> background connection
   // for prerendered pages. This delays connection setup until the page is in active state
-  if (document.prerendering) {
-    document.addEventListener("prerenderingchange", () => {
-      if (!document.prerendering) {
+  let doc = document as any;
+  if (doc.prerendering) {
+    doc.addEventListener("prerenderingchange", () => {
+      if (!doc.prerendering) {
         initProviderForward();
       }
     });
@@ -56,7 +56,7 @@ function initProviderForward() {
     inpageStream.write(data);
   });
   bgPort.onDisconnect.addListener(() =>
-    log.error("[Iron - contentscript] disconnected")
+    console.error("[Iron - contentscript] disconnected")
   );
 }
 
@@ -77,6 +77,6 @@ export function injectInPageScript() {
     container.insertBefore(scriptTag, container.children[0]);
     container.removeChild(scriptTag);
   } catch (error) {
-    log.error("Iron Wallet: Provider injection failed.", error);
+    console.error("Iron Wallet: Provider injection failed.", error);
   }
 }
