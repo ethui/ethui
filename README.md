@@ -15,9 +15,15 @@
     <img src="https://raw.githubusercontent.com/iron-wallet/.github/main/profile/banner.png" width=70%>
 </>
 
+<p align="center">
+    <img alt="licence badge" src="https://img.shields.io/github/license/iron-wallet/iron">
+    <img alt="release badge" src="https://img.shields.io/github/v/release/iron-wallet/iron">
+    <img alt="build badge" src="https://img.shields.io/github/actions/workflow/status/iron-wallet/iron/rust.yml">
+</>
+
 ## What is Iron?
 
-A developer's crypto wallet. Iron has the usual functionality of a crypto wallet, but is purposefully built to speed up your development workflows.
+A developer's crypto wallet. Iron has the usual functionality of a crypto wallet, as well as additional built-in tooling meant to speed up your development workflows.
 
 ### Main features
 
@@ -44,45 +50,26 @@ Iron is in active development, but the existing features are more than to provid
 
 ---
 
+## Partners
+
+<a href="https://subvisual.com/">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/iron-wallet/.github/main/partners/subvisual.png">
+    <img alt="subvisual logo" src="https://raw.githubusercontent.com/iron-wallet/.github/main/partners/subvisual.png" width="auto" height="40">
+  </picture>
+</a>
+
+<a href="https://lightshift.xyz/">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/iron-wallet/.github/main/partners/lightshift.png">
+    <img alt="lightshift logo" src="https://raw.githubusercontent.com/iron-wallet/.github/main/partners/lightshift.png" width="auto" height="40">
+  </picture>
+</a>
+
 ## Contributing
 
 Check out the [Contribution Guide](./CONTRIBUTING.md)
 
-## Building from source
+## License
 
-### Requirements
-
-- [**Tauri's requirements**][tauri-requirements];
-- **libsodium** ([macos][libsodium-macos], [Arch][libsodium-arch], [Ubuntu][libsodium-ubuntu])
-- **Google Chrome**, running a profile without MetaMask or other wallet installed, to be solved once EIP-6963 is widely adopted
-- (optional) [**justfile**][Justfile]
-
-### Get started
-
-**1. Clone the repo and install dependencies:**
-
-```sh
-git clone git@github.com:iron-wallet/iron && cd iron
-```
-
-**2. Run the initial build**, which will install dependencies and build the extension `dist`:
-
-```sh
-yarn setup
-```
-
-**3. Install the extension**
-
-1. Open Google Chrome
-2. go to `chrome://extensions`
-3. enable `Developer mode` (upper right corner)
-4. Load unpacked -> choose the `iron/extension/dist` directory
-5. Iron should now be running
-
-**4. Start the app in development mode**
-
-```sh
-yarn app:dev
-```
-
-**Note:** If you change the extension' code, you may also need to use `yarn extension:dev`, and to manually reload it on `chrome://extensions`. Live code reloading is tricky with these.
+[MIT](./LICENSE) License
