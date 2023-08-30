@@ -58,10 +58,10 @@ jobs:
         run: yarn workspace @iron/extension install
 
       - name: Create bundles
-        run: yarn workspace @iron/extension bundle
+        run: yarn workspace @iron/extension release
 
       - name: Upload to release
-        run: gh release upload ${{ needs.setup.outputs.tag }} ./extension/*.{crx,zip,xpi}
+        run: gh release upload ${{ needs.setup.outputs.tag }} ./extension/dist/*.{crx,zip,xpi}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
