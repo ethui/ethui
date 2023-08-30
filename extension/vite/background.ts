@@ -31,7 +31,7 @@ export default defineConfig({
     lib: {
       formats: ["iife"],
       entry: path.resolve(__dirname, "..", "src", "background", "index.ts"),
-      name: "Cat Facts",
+      name: "Iron Wallet - Background Script",
     },
     rollupOptions: {
       output: {

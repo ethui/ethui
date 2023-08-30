@@ -10,7 +10,6 @@ release=false
 #
 # parse args
 #
-
 VALID_ARGS=$(getopt -o rt:h --long release,target:,help -- "$@")
 if [[ $? -ne 0 ]]; then
     exit 1;
@@ -54,16 +53,6 @@ yarn run vite build --config vite/inpage.ts
 yarn run vite build --config vite/background.ts
 
 case $target in
-  # builds a chrome development version. skips bundling and publishing
-  # meant to be used during local development
-  chrome-dev)
-    yarn run vite build --config vite/chrome.ts
-
-    # choose manifest
-    mv $DIST_DIR/manifest-chrome.json $DIST_DIR/manifest.json
-    rm $DIST_DIR/manifest-firefox.json
-    ;;
-
   # builds and publishes to the chrome extension store
   chrome)
 

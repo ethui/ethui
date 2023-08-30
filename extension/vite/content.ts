@@ -20,7 +20,7 @@ export default defineConfig({
     lib: {
       formats: ["iife"],
       entry: path.resolve(__dirname, "..", "src", "content-script", "index.ts"),
-      name: "Cat Facts",
+      name: "Iron Wallet - Content Script",
     },
     rollupOptions: {
       output: {
