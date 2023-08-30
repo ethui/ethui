@@ -8,17 +8,17 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "run_at": "document_idle",
+      "run_at": "document_start",
       "js": ["./contentScript/index.js"],
-      "css": ["./style.css"]
+      "all_frames": true
     }
   ],
   "background": {
-    "page": "./background/index.html",
-    "persistent": false
+    "service_worker": "./background/background.js"
   },
   "options_ui": {
-    "page": "./options/index.html"
+    "page": "./options/index.html",
+    "browser_style": false
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'; frame-ancestors 'none';"
@@ -35,10 +35,5 @@
     "48": "icons/iron-48.png",
     "96": "icons/iron-96.png",
     "128": "icons/iron-128.png"
-  },
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "iron-wallet@naps62.com"
-    }
   }
 }

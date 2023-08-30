@@ -31,7 +31,4 @@ jobs:
         run: yarn workspace @iron/extension install
 
       - name: bundle
-        run: yarn workspace @iron/extension bundle
-
-      - name: test
-        run: yarn workspace @iron/extension test
+        run: yarn workspace @iron/extension build

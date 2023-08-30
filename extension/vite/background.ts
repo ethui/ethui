@@ -2,6 +2,8 @@ import path from "node:path";
 import { defineConfig } from "vite";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 
+const dist = process.env.DIST_DIR || "dist/dev";
+
 const fetchVersion = () => {
   return {
     name: "html-transform",
@@ -25,11 +27,11 @@ export default defineConfig({
   ],
   build: {
     emptyOutDir: false,
-    outDir: path.resolve(__dirname, "..", "dist"),
+    outDir: path.resolve(__dirname, "..", dist),
     lib: {
       formats: ["iife"],
       entry: path.resolve(__dirname, "..", "src", "background", "index.ts"),
-      name: "Cat Facts",
+      name: "Iron Wallet - Background Script",
     },
     rollupOptions: {
       output: {
