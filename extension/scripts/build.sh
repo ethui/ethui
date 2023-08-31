@@ -1,4 +1,4 @@
-#!/bin/sh -ue
+#!/bin/sh
 
 
 #
@@ -11,7 +11,7 @@ release=false
 # parse args
 #
 VALID_ARGS=$(getopt -o rt:h --long release,target:,help -- "$@")
-if [ $? -ne 0 ]; then
+if [[ $? -ne 0 ]]; then
     exit 1;
 fi
 
