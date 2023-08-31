@@ -4052,29 +4052,8 @@ buffer-from@^1.0.0:
   resolved "https://registry.yarnpkg.com/buffer-from/-/buffer-from-1.1.2.tgz#2b146a6fd72e80b4f55d255f35ed59a3a9a41bd5"
   integrity sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==
 
-<<<<<<< HEAD
-buffer-indexof-polyfill@~1.0.0:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/buffer-indexof-polyfill/-/buffer-indexof-polyfill-1.0.2.tgz#d2732135c5999c64b277fcf9b1abe3498254729c"
-  integrity sha512-I7wzHwA3t1/lwXQh+A5PbNvJxgfo5r3xulgpYDB5zckTu/Z9oUK9biouBKQUjEqzaz3HnAT6TYoovmE+GqSf7A==
-
-"buffer-polyfill@npm:buffer@^6.0.3", buffer@6.0.3, buffer@^6.0.3, buffer@~6.0.3:
-||||||| debc012
-buffer-indexof-polyfill@~1.0.0:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/buffer-indexof-polyfill/-/buffer-indexof-polyfill-1.0.2.tgz#d2732135c5999c64b277fcf9b1abe3498254729c"
-  integrity sha512-I7wzHwA3t1/lwXQh+A5PbNvJxgfo5r3xulgpYDB5zckTu/Z9oUK9biouBKQUjEqzaz3HnAT6TYoovmE+GqSf7A==
-
-buffer-xor@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/buffer-xor/-/buffer-xor-1.0.3.tgz#26e61ed1422fb70dd42e6e36729ed51d855fe8d9"
-  integrity sha512-571s0T7nZWK6vB67HI5dyUF7wXiNcfaPPPTl6zYCNApANjIvYJTg7hlud/+cJpdAhS7dVzqMLmfhfHR3rAcOjQ==
-
-buffer@6.0.3, buffer@^6.0.3, buffer@~6.0.3:
-=======
 "buffer-polyfill@npm:buffer@^6.0.3", buffer@6.0.3, buffer@^6.0.3, buffer@~6.0.3:
   name buffer-polyfill
->>>>>>> main
   version "6.0.3"
   resolved "https://registry.yarnpkg.com/buffer/-/buffer-6.0.3.tgz#2ace578459cc8fbe2a70aaa8f52ee63b6a74c6c6"
   integrity sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA==
@@ -4082,23 +4061,12 @@ buffer@6.0.3, buffer@^6.0.3, buffer@~6.0.3:
     base64-js "^1.3.1"
     ieee754 "^1.2.1"
 
-<<<<<<< HEAD
-buffer-xor@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/buffer-xor/-/buffer-xor-1.0.3.tgz#26e61ed1422fb70dd42e6e36729ed51d855fe8d9"
-  integrity sha512-571s0T7nZWK6vB67HI5dyUF7wXiNcfaPPPTl6zYCNApANjIvYJTg7hlud/+cJpdAhS7dVzqMLmfhfHR3rAcOjQ==
-
-buffer@^5.1.0, buffer@^5.2.1, buffer@^5.5.0, buffer@^5.7.1:
-||||||| debc012
-buffer@^5.1.0, buffer@^5.2.1, buffer@^5.5.0, buffer@^5.7.1:
-=======
 buffer-xor@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/buffer-xor/-/buffer-xor-1.0.3.tgz#26e61ed1422fb70dd42e6e36729ed51d855fe8d9"
   integrity sha512-571s0T7nZWK6vB67HI5dyUF7wXiNcfaPPPTl6zYCNApANjIvYJTg7hlud/+cJpdAhS7dVzqMLmfhfHR3rAcOjQ==
 
 buffer@^5.1.0, buffer@^5.5.0, buffer@^5.7.1:
->>>>>>> main
   version "5.7.1"
   resolved "https://registry.yarnpkg.com/buffer/-/buffer-5.7.1.tgz#ba62e7c13133053582197160851a8f648e99eed0"
   integrity sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ==
@@ -8337,15 +8305,6 @@ postcss@^8.4.27:
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
-postcss@^8.4.27:
-  version "8.4.29"
-  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.29.tgz#33bc121cf3b3688d4ddef50be869b2a54185a1dd"
-  integrity sha512-cbI+jaqIeu/VGqXEarWkRCCffhjgXc0qjBtXpqJhTBohMUjUQnbBr0xqX3vEKudc4iviTewcJo5ajcec5+wdJw==
-  dependencies:
-    nanoid "^3.3.6"
-    picocolors "^1.0.0"
-    source-map-js "^1.0.2"
-
 preact@^10.12.0, preact@^10.5.9:
   version "10.13.2"
   resolved "https://registry.yarnpkg.com/preact/-/preact-10.13.2.tgz#2c40c73d57248b57234c4ae6cd9ab9d8186ebc0a"
@@ -8931,13 +8890,6 @@ rollup@^3.18.0:
   version "3.20.2"
   resolved "https://registry.yarnpkg.com/rollup/-/rollup-3.20.2.tgz#f798c600317f216de2e4ad9f4d9ab30a89b690ff"
   integrity sha512-3zwkBQl7Ai7MFYQE0y1MeQ15+9jsi7XxfrqwTb/9EK8D9C9+//EBR4M+CuA1KODRaNbFez/lWxA5vhEGZp4MUg==
-  optionalDependencies:
-    fsevents "~2.3.2"
-
-rollup@^3.27.1:
-  version "3.28.1"
-  resolved "https://registry.yarnpkg.com/rollup/-/rollup-3.28.1.tgz#fb44aa6d5e65c7e13fd5bcfff266d0c4ea9ba433"
-  integrity sha512-R9OMQmIHJm9znrU3m3cpE8uhN0fGdXiawME7aZIpQqvpS/85+Vt1Hq1/yVIcYfOmaQiHjvXkQAoJukvLpau6Yw==
   optionalDependencies:
     fsevents "~2.3.2"
 
@@ -10032,72 +9984,15 @@ vite-node@0.29.8:
     picocolors "^1.0.0"
     vite "^3.0.0 || ^4.0.0"
 
-<<<<<<< HEAD
-vite-plugin-istanbul@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/vite-plugin-istanbul/-/vite-plugin-istanbul-5.0.0.tgz#7539d76d7c3cafb7b3b0f2371a4e3a69031dcd44"
-  integrity sha512-Tg9zDmm/u4SdEDFbEWHBz7mmFe7jhLRmArA2XCmw5yydEFCARU9r4TxqFFnBFWCL63D9A7XA7VELulOO5T5o/g==
-  dependencies:
-    "@istanbuljs/load-nyc-config" "^1.1.0"
-    espree "^9.6.1"
-    istanbul-lib-instrument "^5.1.0"
-    picocolors "^1.0.0"
-    test-exclude "^6.0.0"
-
 vite-plugin-node-polyfills@^0.11.3:
   version "0.11.3"
   resolved "https://registry.yarnpkg.com/vite-plugin-node-polyfills/-/vite-plugin-node-polyfills-0.11.3.tgz#3b805183a8a20a0f80871d20e0a8b33b90965555"
   integrity sha512-Cz+FJMGzEBwN9KfImOnij3NAfc+P59BXpUqbuN9BzkCr806MY+zo/xzBGOEz9ynY5DUN8fHW2VHUzZgQQS6WJQ==
-||||||| debc012
-vite-plugin-istanbul@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/vite-plugin-istanbul/-/vite-plugin-istanbul-5.0.0.tgz#7539d76d7c3cafb7b3b0f2371a4e3a69031dcd44"
-  integrity sha512-Tg9zDmm/u4SdEDFbEWHBz7mmFe7jhLRmArA2XCmw5yydEFCARU9r4TxqFFnBFWCL63D9A7XA7VELulOO5T5o/g==
-  dependencies:
-    "@istanbuljs/load-nyc-config" "^1.1.0"
-    espree "^9.6.1"
-    istanbul-lib-instrument "^5.1.0"
-    picocolors "^1.0.0"
-    test-exclude "^6.0.0"
-
-vite-plugin-node-polyfills@^0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/vite-plugin-node-polyfills/-/vite-plugin-node-polyfills-0.9.0.tgz#181d096c43e22cae219c6c2434a204b665044de0"
-  integrity sha512-+i+WPUuIBhJy+ODfxx6S6FTl28URCxUszbl/IL4GwrZvbqqY/8VDIp+zpjMS8Us/a7GwN4Iaqr/fVIBtkNQojQ==
-=======
-vite-plugin-node-polyfills@^0.11.3:
-  version "0.11.3"
-  resolved "https://registry.yarnpkg.com/vite-plugin-node-polyfills/-/vite-plugin-node-polyfills-0.11.3.tgz#3b805183a8a20a0f80871d20e0a8b33b90965555"
-  integrity sha512-Cz+FJMGzEBwN9KfImOnij3NAfc+P59BXpUqbuN9BzkCr806MY+zo/xzBGOEz9ynY5DUN8fHW2VHUzZgQQS6WJQ==
->>>>>>> main
   dependencies:
     "@rollup/plugin-inject" "^5.0.3"
     buffer-polyfill "npm:buffer@^6.0.3"
     node-stdlib-browser "^1.2.0"
-<<<<<<< HEAD
     process "^0.11.10"
-
-vite-plugin-top-level-await@^1.3.0:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/vite-plugin-top-level-await/-/vite-plugin-top-level-await-1.3.1.tgz#7e7293be01489b508692627529c0a3b3218a23a3"
-  integrity sha512-55M1h4NAwkrpxPNOJIBzKZFihqLUzIgnElLSmPNPMR2Fn9+JHKaNg3sVX1Fq+VgvuBksQYxiD3OnwQAUu7kaPQ==
-  dependencies:
-    "@rollup/plugin-virtual" "^3.0.1"
-    "@swc/core" "^1.3.10"
-    uuid "^9.0.0"
-||||||| debc012
-
-vite-plugin-top-level-await@^1.3.0:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/vite-plugin-top-level-await/-/vite-plugin-top-level-await-1.3.1.tgz#7e7293be01489b508692627529c0a3b3218a23a3"
-  integrity sha512-55M1h4NAwkrpxPNOJIBzKZFihqLUzIgnElLSmPNPMR2Fn9+JHKaNg3sVX1Fq+VgvuBksQYxiD3OnwQAUu7kaPQ==
-  dependencies:
-    "@rollup/plugin-virtual" "^3.0.1"
-    "@swc/core" "^1.3.10"
-    uuid "^9.0.0"
-=======
-    process "^0.11.10"
->>>>>>> main
 
 "vite@^3.0.0 || ^4.0.0", vite@^4.2.3:
   version "4.2.3"
@@ -10111,33 +10006,10 @@ vite-plugin-top-level-await@^1.3.0:
   optionalDependencies:
     fsevents "~2.3.2"
 
-<<<<<<< HEAD
 vite@^4.4.9:
   version "4.4.9"
   resolved "https://registry.yarnpkg.com/vite/-/vite-4.4.9.tgz#1402423f1a2f8d66fd8d15e351127c7236d29d3d"
   integrity sha512-2mbUn2LlUmNASWwSCNSJ/EG2HuSRTnVNaydp6vMCm5VIqJsjMfbIWtbH2kDuwUVW5mMUKKZvGPX/rqeqVvv1XA==
-  dependencies:
-    esbuild "^0.18.10"
-    postcss "^8.4.27"
-    rollup "^3.27.1"
-  optionalDependencies:
-    fsevents "~2.3.2"
-
-vite@~4.4.6:
-  version "4.4.8"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-4.4.8.tgz#31e4a438f8748695c68bd57ffd262ba93540fdf7"
-  integrity sha512-LONawOUUjxQridNWGQlNizfKH89qPigK36XhMI7COMGztz8KNY0JHim7/xDd71CZwGT4HtSRgI7Hy+RlhG0Gvg==
-||||||| debc012
-vite@^4.4.8, vite@~4.4.6:
-  version "4.4.8"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-4.4.8.tgz#31e4a438f8748695c68bd57ffd262ba93540fdf7"
-  integrity sha512-LONawOUUjxQridNWGQlNizfKH89qPigK36XhMI7COMGztz8KNY0JHim7/xDd71CZwGT4HtSRgI7Hy+RlhG0Gvg==
-=======
-vite@^4.4.9:
-  version "4.4.9"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-4.4.9.tgz#1402423f1a2f8d66fd8d15e351127c7236d29d3d"
-  integrity sha512-2mbUn2LlUmNASWwSCNSJ/EG2HuSRTnVNaydp6vMCm5VIqJsjMfbIWtbH2kDuwUVW5mMUKKZvGPX/rqeqVvv1XA==
->>>>>>> main
   dependencies:
     esbuild "^0.18.10"
     postcss "^8.4.27"
