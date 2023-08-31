@@ -398,6 +398,8 @@ function HDWalletUpdateForm({
     defaultValues: wallet,
   });
 
+  const [isActuallyDirty, setIsActuallyDirty] = useState(false);
+
   return (
     <Stack
       spacing={2}
@@ -431,7 +433,8 @@ function HDWalletUpdateForm({
           color="primary"
           variant="contained"
           type="submit"
-          disabled={!isDirty || !isValid}
+          disabled={(!isDirty || !isValid) && !isActuallyDirty}
+          onClick={() => setIsActuallyDirty(true)}
         >
           Save
         </Button>

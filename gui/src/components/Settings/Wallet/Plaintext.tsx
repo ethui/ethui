@@ -41,9 +41,6 @@ export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
       component="form"
       onSubmit={handleSubmit(onSubmit)}
     >
-      {/* should these two lines be removed? */}
-      <input type="hidden" {...register("type")} />
-      <input type="hidden" {...register("currentPath")} />
       <TextField
         label="Name"
         error={!!errors.name}

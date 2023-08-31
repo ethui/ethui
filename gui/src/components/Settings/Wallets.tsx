@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import { startCase } from "lodash-es";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 
 import { useWallets } from "../../store";
 import { Wallet, walletTypes } from "../../types";
@@ -26,6 +26,13 @@ type NewChild = { new?: boolean };
 export function SettingsWallets() {
   const wallets = useWallets((s) => s.wallets);
   const [newWallets, setNewWallets] = useState<Wallet[]>([]);
+  const [expanded, setExpanded] = useState<string | false>(false);
+
+  const handleAccordion =
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    (panel: string) => (event: ChangeEvent<{}>, isExpanded: boolean) => {
+      setExpanded(isExpanded ? panel : false);
+    };
 
   if (!wallets) return null;
 
@@ -46,6 +53,7 @@ export function SettingsWallets() {
     } else {
       await invoke("wallets_update", { name: wallet.name, params });
     }
+    setExpanded(false);
   };
 
   const remove = async (
@@ -70,7 +78,12 @@ export function SettingsWallets() {
           };
 
           return (
-            <Accordion key={wallet.name} defaultExpanded={wallet.new}>
+            <Accordion
+              key={wallet.name}
+              defaultExpanded={wallet.new}
+              expanded={expanded === wallet.name}
+              onChange={handleAccordion(wallet.name)}
+            >
               <AccordionSummary expandIcon={<ExpandMore />}>
                 <Stack alignItems="center" direction="row">
                   <Typography>

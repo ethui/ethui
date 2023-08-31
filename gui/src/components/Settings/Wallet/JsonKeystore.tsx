@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Stack, TextField } from "@mui/material";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Wallet, walletSchema } from "../../../types";
@@ -23,6 +24,8 @@ export function JsonKeystore({
     resolver: zodResolver(walletSchema),
     defaultValues: wallet,
   });
+
+  const [isActuallyDirty, setIsActuallyDirty] = useState(false);
 
   return (
     <Stack
@@ -50,7 +53,8 @@ export function JsonKeystore({
           color="primary"
           variant="contained"
           type="submit"
-          disabled={!isDirty || !isValid}
+          disabled={(!isDirty || !isValid) && !isActuallyDirty}
+          onClick={() => setIsActuallyDirty(true)}
         >
           Save
         </Button>
