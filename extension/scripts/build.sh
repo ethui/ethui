@@ -10,7 +10,6 @@ release=false
 #
 # parse args
 #
-
 VALID_ARGS=$(getopt -o rt:h --long release,target:,help -- "$@")
 if [[ $? -ne 0 ]]; then
     exit 1;
