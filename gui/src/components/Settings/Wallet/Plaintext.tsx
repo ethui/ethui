@@ -32,7 +32,7 @@ export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
     defaultValues: wallet,
   });
 
-  const [isCheckboxDirty, setIsCheckboxDirty] = useState(false);
+  const [isActuallyDirty, setIsActuallyDirty] = useState(false);
 
   return (
     <Stack
@@ -41,6 +41,7 @@ export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
       component="form"
       onSubmit={handleSubmit(onSubmit)}
     >
+      {/* should these two lines be removed? */}
       <input type="hidden" {...register("type")} />
       <input type="hidden" {...register("currentPath")} />
       <TextField
@@ -103,8 +104,8 @@ export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
           color="primary"
           variant="contained"
           type="submit"
-          disabled={(!isDirty || !isValid) && !isCheckboxDirty}
-          onClick={() => setIsCheckboxDirty(true)}
+          disabled={(!isDirty || !isValid) && !isActuallyDirty}
+          onClick={() => setIsActuallyDirty(true)}
         >
           Save
         </Button>
