@@ -9,6 +9,7 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import { Wallet, walletSchema } from "../../../types";
@@ -30,6 +31,8 @@ export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
     resolver: zodResolver(walletSchema),
     defaultValues: wallet,
   });
+
+  const [isCheckboxDirty, setIsCheckboxDirty] = useState(false);
 
   return (
     <Stack
@@ -100,7 +103,8 @@ export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
           color="primary"
           variant="contained"
           type="submit"
-          disabled={!isDirty || !isValid}
+          disabled={(!isDirty || !isValid) && !isCheckboxDirty}
+          onClick={() => setIsCheckboxDirty(true)}
         >
           Save
         </Button>
