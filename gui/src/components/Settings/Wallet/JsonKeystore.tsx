@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Stack, TextField } from "@mui/material";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 
 import { Wallet, walletSchema } from "../../../types";
 
@@ -18,6 +17,7 @@ export function JsonKeystore({
   const {
     register,
     handleSubmit,
+    reset,
     formState: { isValid, isDirty, errors },
   } = useForm({
     mode: "onBlur",
@@ -25,14 +25,17 @@ export function JsonKeystore({
     defaultValues: wallet,
   });
 
-  const [isActuallyDirty, setIsActuallyDirty] = useState(false);
+  const prepareAndSubmit = (data: FieldValues) => {
+    onSubmit(data);
+    reset(data);
+  };
 
   return (
     <Stack
       spacing={2}
       alignItems="flex-start"
       component="form"
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(prepareAndSubmit)}
     >
       <input type="hidden" {...register("type")} />
       <TextField
@@ -53,8 +56,7 @@ export function JsonKeystore({
           color="primary"
           variant="contained"
           type="submit"
-          disabled={(!isDirty || !isValid) && !isActuallyDirty}
-          onClick={() => setIsActuallyDirty(true)}
+          disabled={!isDirty || !isValid}
         >
           Save
         </Button>

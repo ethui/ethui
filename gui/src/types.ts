@@ -106,6 +106,23 @@ export const hdWalletUpdateSchema = hdWalletSchema.pick({
   count: true,
 });
 
+export const jsonKeystoreSchema = z.object({
+  type: z.literal("jsonKeystore"),
+  name: z.string().min(1),
+  file: z.string().min(1),
+  currentPath: z.string().optional(),
+});
+
+export const plaintextSchema = z.object({
+  type: z.literal("plaintext"),
+  name: z.string().min(1),
+  dev: z.boolean().default(false),
+  mnemonic: mnemonicSchema,
+  derivationPath: derivationPathSchema,
+  count: z.number().int().min(1),
+  currentPath: z.string().optional(),
+});
+
 export const impersonatorSchema = z.object({
   type: z.literal("impersonator"),
   name: z.string().min(1),
@@ -115,21 +132,8 @@ export const impersonatorSchema = z.object({
 
 export const walletSchema = z.discriminatedUnion("type", [
   hdWalletSchema,
-  z.object({
-    type: z.literal("jsonKeystore"),
-    name: z.string().min(1),
-    file: z.string().min(1),
-    currentPath: z.string().optional(),
-  }),
-  z.object({
-    type: z.literal("plaintext"),
-    name: z.string().min(1),
-    dev: z.boolean().default(false),
-    mnemonic: mnemonicSchema,
-    derivationPath: derivationPathSchema,
-    count: z.number().int().min(1),
-    currentPath: z.string().optional(),
-  }),
+  jsonKeystoreSchema,
+  plaintextSchema,
   impersonatorSchema,
 ]);
 
@@ -145,7 +149,10 @@ export const walletsSchema = z.object({
 
 export type Address = `0x${string}`;
 export type Wallet = z.infer<typeof walletSchema>;
-export type Wallets = z.infer<typeof walletsSchema>;
+export type HdWallet = z.infer<typeof hdWalletSchema>;
+export type JsonKeystore = z.infer<typeof jsonKeystoreSchema>;
+export type Plaintext = z.infer<typeof plaintextSchema>;
+export type Impersonator = z.infer<typeof impersonatorSchema>;
 export type Network = z.infer<typeof networkSchema.shape.networks>[number];
 export type GeneralSettings = z.infer<typeof generalSettingsSchema>;
 

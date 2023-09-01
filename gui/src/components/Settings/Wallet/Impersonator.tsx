@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Stack, TextField } from "@mui/material";
-import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -35,6 +34,7 @@ export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
   const {
     register,
     handleSubmit,
+    reset,
     control,
     formState: { isValid, isDirty, errors },
   } = useForm({
@@ -48,6 +48,7 @@ export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
       ...data,
       addresses: data.addresses.map(({ address }) => address),
     });
+    reset(data);
   };
 
   const {
@@ -58,8 +59,6 @@ export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
     control,
     name: "addresses",
   });
-
-  const [isActuallyDirty, setIsActuallyDirty] = useState(false);
 
   return (
     <Stack
@@ -96,8 +95,7 @@ export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
           color="primary"
           variant="contained"
           type="submit"
-          disabled={(!isDirty || !isValid) && !isActuallyDirty}
-          onClick={() => setIsActuallyDirty(true)}
+          disabled={!isDirty || !isValid}
         >
           Save
         </Button>

@@ -9,8 +9,7 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, FieldValues, useForm } from "react-hook-form";
 
 import { Wallet, walletSchema } from "../../../types";
 
@@ -24,6 +23,7 @@ export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
   const {
     register,
     handleSubmit,
+    reset,
     control,
     formState: { isValid, isDirty, errors },
   } = useForm({
@@ -32,14 +32,17 @@ export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
     defaultValues: wallet,
   });
 
-  const [isActuallyDirty, setIsActuallyDirty] = useState(false);
+  const prepareAndSubmit = (data: FieldValues) => {
+    onSubmit(data);
+    reset(data);
+  };
 
   return (
     <Stack
       spacing={2}
       alignItems="flex-start"
       component="form"
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(prepareAndSubmit)}
     >
       <TextField
         label="Name"
@@ -101,8 +104,7 @@ export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
           color="primary"
           variant="contained"
           type="submit"
-          disabled={(!isDirty || !isValid) && !isActuallyDirty}
-          onClick={() => setIsActuallyDirty(true)}
+          disabled={!isDirty || !isValid}
         >
           Save
         </Button>

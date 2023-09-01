@@ -148,6 +148,7 @@ function MnemonicStep({ onSubmit, onCancel }: MnemonicStepProps) {
   const schema = createSchema.pick({ name: true, mnemonic: true });
   const {
     handleSubmit,
+    reset,
     register,
     formState: { errors, isDirty, isValid },
   } = useForm({
@@ -156,6 +157,7 @@ function MnemonicStep({ onSubmit, onCancel }: MnemonicStepProps) {
   });
   const onSubmitInternal = (data: FieldValues) => {
     onSubmit(data.name, data.mnemonic);
+    reset(data);
   };
 
   return (
@@ -398,8 +400,6 @@ function HDWalletUpdateForm({
     defaultValues: wallet,
   });
 
-  const [isActuallyDirty, setIsActuallyDirty] = useState(false);
-
   return (
     <Stack
       spacing={2}
@@ -433,8 +433,7 @@ function HDWalletUpdateForm({
           color="primary"
           variant="contained"
           type="submit"
-          disabled={(!isDirty || !isValid) && !isActuallyDirty}
-          onClick={() => setIsActuallyDirty(true)}
+          disabled={!isDirty || !isValid}
         >
           Save
         </Button>
