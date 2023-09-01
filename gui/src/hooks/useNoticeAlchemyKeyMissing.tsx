@@ -1,13 +1,13 @@
+import { OpenInNew } from "@mui/icons-material";
 import CloseIcon from "@mui/icons-material/Close";
 import { IconButton, Typography } from "@mui/material";
 import { SnackbarKey, useSnackbar } from "notistack";
 import { useEffect } from "react";
-import { OpenInNew } from "@mui/icons-material";
 
-import { useSettingsWindow, useNetworks } from "../store";
-import { useRefreshSettings } from "./useRefreshSettings";
-import { useInvoke } from "./tauri";
+import { useNetworks, useSettingsWindow } from "../store";
 import { GeneralSettings } from "../types";
+import { useInvoke } from "./tauri";
+import { useRefreshSettings } from "./useRefreshSettings";
 
 let key: SnackbarKey;
 

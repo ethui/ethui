@@ -1,5 +1,6 @@
 import { GlobalStyles, ThemeProvider } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
+import { SnackbarProvider } from "notistack";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Route, Router, Switch } from "wouter";
 
@@ -14,7 +15,6 @@ import {
 } from "./components";
 import { OnboardingWrapper } from "./components/Onboarding";
 import { useTheme } from "./store/theme";
-import { SnackbarProvider } from "notistack";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { suspense: true } },

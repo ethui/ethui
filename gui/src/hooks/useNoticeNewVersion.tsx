@@ -1,7 +1,7 @@
 import CloseIcon from "@mui/icons-material/Close";
 import { IconButton, Link, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
 import { SnackbarKey, useSnackbar } from "notistack";
+import { useEffect, useState } from "react";
 
 import packageJson from "../../../package.json";
 
