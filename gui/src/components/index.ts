@@ -12,7 +12,6 @@ export { IconCrypto } from "./IconCrypto";
 export { Modal } from "./Modal";
 export { Navbar } from "./Navbar";
 export { NestedRoutes } from "./NestedRoutes";
-export { NewVersionNotice } from "./NewVersionNotice";
 export { Panel } from "./Panel";
 export { Peers } from "./Peers";
 export { QuickAddressSelect } from "./QuickAddressSelect";

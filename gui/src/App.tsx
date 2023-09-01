@@ -14,6 +14,7 @@ import {
 } from "./components";
 import { OnboardingWrapper } from "./components/Onboarding";
 import { useTheme } from "./store/theme";
+import { SnackbarProvider } from "notistack";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { suspense: true } },
@@ -63,9 +64,11 @@ function Routes() {
           {({ id }: { id: string }) => <WalletUnlockDialog id={parseInt(id)} />}
         </Route>
         <Route>
-          <CommandBar>
-            <HomePage />
-          </CommandBar>
+          <SnackbarProvider>
+            <CommandBar>
+              <HomePage />
+            </CommandBar>
+          </SnackbarProvider>
         </Route>
       </Switch>
     </Router>

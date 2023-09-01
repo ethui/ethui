@@ -55,7 +55,8 @@ impl IronApp {
                 iron_forge::commands::foundry_get_abi,
                 iron_rpc::commands::rpc_send_transaction,
                 iron_connections::commands::connections_affinity_for,
-                iron_connections::commands::connections_set_affinity
+                iron_connections::commands::connections_set_affinity,
+                iron_sync::commands::alchemy_supported_network
             ])
             .on_window_event(on_window_event)
             .menu(menu::build())

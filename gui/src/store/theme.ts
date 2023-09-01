@@ -138,18 +138,6 @@ function getDesignTokens(mode: PaletteMode): ThemeOptions {
           },
         },
       },
-      MuiAlert: {
-        styleOverrides: {
-          icon: {
-            color: `${theme.palette.text.primary} !important`,
-            backgroundColor: light ? grey[200] : grey[900],
-          },
-          standardInfo: {
-            color: theme.palette.text.primary,
-            backgroundColor: light ? grey[200] : grey[900],
-          },
-        },
-      },
       MuiPaper: {
         variants: [
           {
