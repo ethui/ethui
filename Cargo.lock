@@ -2883,6 +2883,7 @@ dependencies = [
  "rust-argon2",
  "serde",
  "serde_json",
+ "thiserror",
  "zeroize",
 ]
 
