@@ -1,14 +1,5 @@
-import { listen } from "@tauri-apps/api/event";
-import { useEffect } from "react";
+import { useEventListen } from "./useEventListen";
 
 export function useRefreshTransactions(callback: () => unknown) {
-  useEffect(() => {
-    const unlisten = listen("txs-updated", () => {
-      callback();
-    });
-
-    return () => {
-      unlisten.then((cb) => cb());
-    };
-  }, [callback]);
+  useEventListen("txs-updated", callback);
 }
