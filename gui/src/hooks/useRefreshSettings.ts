@@ -1,5 +1,5 @@
-import { useEventListen } from "./useEventListen";
+import { useEventListenr } from "./useEventListenr";
 
 export function useRefreshSettings(callback: () => unknown) {
-  useEventListen("settings-changed", callback);
+  useEventListenr("settings-changed", callback);
 }
