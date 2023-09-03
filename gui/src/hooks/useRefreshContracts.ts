@@ -1,5 +1,5 @@
-import { useEventListenr } from "./useEventListenr";
+import { useEventListener } from "./useEventListener";
 
 export function useRefreshContracts(callback: () => unknown) {
-  useEventListenr("contracts-updated", callback);
+  useEventListener("contracts-updated", callback);
 }

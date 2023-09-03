@@ -1,5 +1,5 @@
-import { useEventListenr } from "./useEventListenr";
+import { useEventListener } from "./useEventListener";
 
 export function useRefreshPeers(callback: () => unknown) {
-  useEventListenr("peers-updated", callback);
+  useEventListener("peers-updated", callback);
 }

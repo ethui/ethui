@@ -1,5 +1,5 @@
-import { useEventListenr } from "./useEventListenr";
+import { useEventListener } from "./useEventListener";
 
 export function useRefreshTransactions(callback: () => unknown) {
-  useEventListenr("txs-updated", callback);
+  useEventListener("txs-updated", callback);
 }

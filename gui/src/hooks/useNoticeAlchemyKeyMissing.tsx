@@ -4,32 +4,23 @@ import { IconButton, Typography } from "@mui/material";
 import { SnackbarKey, useSnackbar } from "notistack";
 import { useEffect } from "react";
 
-import { useNetworks, useSettingsWindow } from "../store";
-import { GeneralSettings } from "../types";
+import { useNetworks, useSettings, useSettingsWindow } from "../store";
 import { useInvoke } from "./tauri";
-import { useRefreshSettings } from "./useRefreshSettings";
 
 let key: SnackbarKey;
 
 export function useNoticeAlchemyKeyMissing() {
   const { open } = useSettingsWindow();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const { settings } = useSettings();
   const currentNetwork = useNetworks((s) => s.current);
-
-  const {
-    data: settings,
-    mutate,
-    isLoading: isLoadingSettings,
-  } = useInvoke<GeneralSettings>("settings_get");
-
-  useRefreshSettings(() => mutate);
 
   const { data: isSupportedNetwork, isLoading: isLoadingSupportedNetwork } =
     useInvoke<boolean>("alchemy_supported_network", {
       chainId: currentNetwork?.chain_id,
     });
 
-  const isLoading = isLoadingSettings || isLoadingSupportedNetwork;
+  const isLoading = !settings || isLoadingSupportedNetwork;
 
   const requiresAlchemyKey =
     !isLoading && isSupportedNetwork && !settings?.alchemyApiKey;
