@@ -44,7 +44,7 @@ export NODE_ENV=production
 export DIST_DIR=./dist/$target
 rm -rf $DIST_DIR
 
-version=$(jq -r ".version" package.json)
+version=$(cat package.json | grep \"version\": | cut -d'"' -f 4)
 basename=$target-v$version
 
 yarn run vite build --config vite/base.ts
