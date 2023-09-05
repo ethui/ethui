@@ -17,9 +17,11 @@ import { useCallback, useEffect } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 
 import { useInvoke } from "../../hooks";
+import { useTheme } from "../../store/theme";
 import { GeneralSettings, generalSettingsSchema } from "../../types";
 
 export function SettingsGeneral() {
+  const { changeMode } = useTheme();
   const { data: general, mutate } = useInvoke<GeneralSettings>("settings_get");
 
   const {
@@ -46,8 +48,9 @@ export function SettingsGeneral() {
         newSettings: data,
       });
       mutate();
+      await changeMode(data.darkMode);
     },
-    [reset, mutate]
+    [reset, mutate, changeMode]
   );
 
   if (!general) return null;
