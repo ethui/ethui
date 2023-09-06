@@ -41,11 +41,10 @@ export function SettingsGeneral() {
 
   const onSubmit = useCallback(
     async (data: FieldValues) => {
-      reset(data);
-
       await invoke("settings_set", {
         newSettings: data,
       });
+      reset(data);
     },
     [reset]
   );
