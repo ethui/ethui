@@ -56,7 +56,7 @@ impl IronApp {
                 iron_rpc::commands::rpc_send_transaction,
                 iron_connections::commands::connections_affinity_for,
                 iron_connections::commands::connections_set_affinity,
-                iron_sync::commands::alchemy_is_network_supported
+                iron_sync::commands::sync_alchemy_is_network_supported
             ])
             .on_window_event(on_window_event)
             .menu(menu::build())

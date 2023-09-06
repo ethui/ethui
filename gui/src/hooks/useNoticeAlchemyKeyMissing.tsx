@@ -16,7 +16,7 @@ export function useNoticeAlchemyKeyMissing() {
   const currentNetwork = useNetworks((s) => s.current);
 
   const { data: isSupportedNetwork, isLoading: isLoadingSupportedNetwork } =
-    useInvoke<boolean>("alchemy_is_network_supported", {
+    useInvoke<boolean>("sync_alchemy_is_network_supported", {
       chainId: currentNetwork?.chain_id,
     });
 
