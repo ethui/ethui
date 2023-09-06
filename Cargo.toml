@@ -6,6 +6,7 @@ members = [
   "crates/networks",
   "crates/wallets",
   "crates/ws",
+  "crates/http",
   "crates/rpc",
   "crates/connections",
   "crates/dialogs",
@@ -39,6 +40,7 @@ iron-settings = { path = "crates/settings" }
 iron-networks = { path = "crates/networks" }
 iron-wallets = { path = "crates/wallets" }
 iron-ws = { path = "crates/ws" }
+iron-http = { path = "crates/http" }
 iron-rpc = { path = "crates/rpc" }
 iron-connections = { path = "crates/connections" }
 iron-dialogs = { path = "crates/dialogs" }
