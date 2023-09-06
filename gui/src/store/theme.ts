@@ -6,6 +6,7 @@ import { Action } from "kbar";
 import { StateCreator, create } from "zustand";
 
 import { GeneralSettings } from "../types";
+import { listen } from "@tauri-apps/api/event";
 
 interface Store {
   mode: "auto" | "light" | "dark";

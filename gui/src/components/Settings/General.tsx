@@ -16,12 +16,11 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { useCallback, useEffect } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 
-import { useSettings, useTheme } from "../../store";
+import { useSettings } from "../../store";
 import { generalSettingsSchema } from "../../types";
 
 export function SettingsGeneral() {
-  const [general, reloadSettings] = useSettings((s) => [s.settings, s.reload]);
-  const reloadTheme = useTheme((s) => s.reload);
+  const general = useSettings((s) => s.settings);
 
   const {
     handleSubmit,
@@ -47,11 +46,8 @@ export function SettingsGeneral() {
       await invoke("settings_set", {
         newSettings: data,
       });
-
-      reloadSettings();
-      reloadTheme();
     },
-    [reset, reloadSettings, reloadTheme]
+    [reset]
   );
 
   if (!general) return null;
