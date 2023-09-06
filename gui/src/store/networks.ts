@@ -82,7 +82,7 @@ const store: StateCreator<Store> = (set, get) => ({
 
     if (!current) return false;
 
-    return invoke<boolean>("alchemy_supported_network", {
+    return invoke<boolean>("sync_alchemy_supported_network", {
       chainId: current.chain_id,
     });
   },
