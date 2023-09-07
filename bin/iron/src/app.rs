@@ -101,6 +101,7 @@ async fn init(app: &tauri::App) -> AppResult<()> {
     iron_sync::init(db).await;
     iron_settings::init(resource(app, "settings.json")).await;
     iron_ws::init().await;
+    iron_http::init().await;
     iron_connections::init(resource(app, "connections.json")).await;
     iron_wallets::init(resource(app, "wallets.json")).await;
     iron_networks::init(resource(app, "networks.json")).await;
