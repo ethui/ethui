@@ -70,7 +70,7 @@ export const mnemonicSchema = z
     }
   )
   .refine((data) => validateMnemonic(data, wordlist), {
-    message: "This word combination is not valid",
+    message: "Invalid mnemonic. You have have a typo or an unsupported word",
   });
 
 export const derivationPathSchema = z
