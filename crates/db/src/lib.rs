@@ -3,16 +3,17 @@ mod error;
 mod pagination;
 mod queries;
 mod utils;
-use std::{path::PathBuf, str::FromStr};
 use ethers::types::{Address, H256, U256};
 use iron_types::{
-    events::Tx, Erc721Collection, Erc721Token, Erc721TokenData, Event, StoredContract, TokenBalance, TokenMetadata,
+    events::Tx, Erc721Token, Erc721TokenData, Event, StoredContract,
+    TokenBalance, TokenMetadata,
 };
 use serde::Serialize;
 use sqlx::{
     sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous},
     Row,
 };
+use std::{path::PathBuf, str::FromStr, ops::Add};
 use tracing::{instrument, trace};
 
 pub use self::{
@@ -327,57 +328,21 @@ impl DB {
         Ok(res)
     }
 
-    pub async fn get_erc721_tokens(
-        &self,
-        chain_id: u32,
-        owner: Address,
-    ) -> Result<Vec<Erc721TokenData>> {
-        let res: Vec<Erc721TokenData> = sqlx::query(
-            r#" SELECT erc721_tokens.*, collection.name, collection.symbol
-        FROM erc721_tokens
-        LEFT JOIN erc721_collections as collection
-          ON collection.contract = erc721_tokens.contract AND collection.chain_id = erc721_tokens.chain_id
-        WHERE erc721_tokens.chain_id = ? AND erc721_tokens.owner = ?"#,
-        )
-        .bind(chain_id)
-        .bind(format!("0x{:x}", owner))
-        .map(|row| row.try_into().unwrap())
-        .fetch_all(self.pool())
-        .await?;
-        Ok(res)
-    }
-
-    pub async fn get_erc721_missing_collection(
-        &self,
-        chain_id: u32,
-        address: Address,
-    ) -> Result<Vec<Erc721Collection>> {
-        let res: Vec<Erc721Collection> =
-            sqlx::query(r#" SELECT * FROM erc721_collections WHERE contract = ? AND chain_id = ?"#)
-                .bind(format!("0x{:x}", address))
-                .bind(chain_id)
-                .map(|row| row.try_into().unwrap())
-                .fetch_all(self.pool())
-                .await?;
-
-        Ok(res)
-    }
-
-    pub async fn get_erc721_missing_data(&self, chain_id: u32) -> Result<Vec<Erc721Token>> {
+    
+    pub async fn get_erc721_tokens_missing_data(&self, chain_id: u32) -> Result<Vec<Erc721Token>> {
         let res: Vec<_> = sqlx::query(
             r#"SELECT *
         FROM erc721_tokens
-        WHERE chain_id = ? AND uri IS NULL"#,
+        WHERE chain_id = ? AND (uri IS NULL OR metadata IS NULL)"#,
         )
         .bind(chain_id)
         .map(|row| row.try_into().unwrap())
         .fetch_all(self.pool())
         .await?;
-
         Ok(res)
     }
 
-    pub async fn save_erc721_data(
+    pub async fn save_erc721_token_data(
         &self,
         address: Address,
         chain_id: u32,
@@ -387,13 +352,26 @@ impl DB {
         metadata: String,
     ) -> Result<()> {
         let mut conn = self.tx().await?;
-        queries::update_erc721(address, chain_id, token_id, owner, uri, metadata)
+        queries::update_erc721_token(address, chain_id, token_id, owner, uri, metadata)
             .execute(&mut conn)
             .await?;
 
         conn.commit().await?;
         Ok(())
     }
+
+    pub async fn get_erc721_missing_collections(
+      &self,
+      chain_id: u32,
+    ) -> Result<Vec<Address>> {
+      let res: Vec<Address> = 
+          sqlx::query(r#" SELECT distinct contract FROM erc721_tokens WHERE chain_id = ? and contract not in (SELECT contract FROM erc721_collections WHERE chain_id ?) "#)
+            .bind(chain_id)
+            .bind(chain_id)
+            .map(|row| Address::from_str(row.get::<&str, _>("contract")).unwrap())
+            .fetch_all(self.pool())
+            .await?;
+      Ok(res) }
 
     pub async fn save_erc721_collection(
         &self,
@@ -404,13 +382,33 @@ impl DB {
     ) -> Result<()> {
         let mut conn = self.tx().await?;
 
-        queries::update_erc721collection(address, chain_id, name, symbol)
+        queries::update_erc721_collection(address, chain_id, name, symbol)
             .execute(&mut conn)
             .await?;
 
         conn.commit().await?;
         Ok(())
     }
+
+    pub async fn get_erc721_tokens(
+      &self,
+      chain_id: u32,
+      owner: Address,
+  ) -> Result<Vec<Erc721TokenData>> {
+      let res: Vec<Erc721TokenData> = sqlx::query(
+          r#" SELECT erc721_tokens.*, collection.name, collection.symbol
+      FROM erc721_tokens
+      LEFT JOIN erc721_collections as collection
+        ON collection.contract = erc721_tokens.contract AND collection.chain_id = erc721_tokens.chain_id
+      WHERE erc721_tokens.chain_id = ? AND erc721_tokens.owner = ?"#,
+      )
+      .bind(chain_id)
+      .bind(format!("0x{:x}", owner))
+      .map(|row| row.try_into().unwrap())
+      .fetch_all(self.pool())
+      .await?;
+      Ok(res)
+  }
 
     pub async fn get_tip(&self, chain_id: u32, addr: Address) -> Result<u64> {
         let tip = queries::get_tip(addr, chain_id)

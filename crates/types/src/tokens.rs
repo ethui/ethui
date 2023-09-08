@@ -46,8 +46,8 @@ impl TryFrom<SqliteRow> for TokenMetadata {
 
 #[derive(Debug, Serialize)]
 pub struct Erc721TokenDetails {
-    pub name: String,
-    pub symbol: String,
+    // pub name: String,
+    // pub symbol: String,
     pub uri: String,
     pub metadata: String,
 }

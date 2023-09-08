@@ -136,7 +136,7 @@ pub(super) fn erc721_transfer<'a>(tx: &events::ERC721Transfer, chain_id: u32) ->
     }
 }
 
-pub(super) fn update_erc721<'a>(
+pub(super) fn update_erc721_token<'a>(
     address: Address,
     chain_id: u32,
     token_id: U256,
@@ -156,7 +156,7 @@ pub(super) fn update_erc721<'a>(
     .bind(metadata)
 }
 
-pub(super) fn update_erc721collection<'a>(
+pub(super) fn update_erc721_collection<'a>(
     address: Address,
     chain_id: u32,
     name: String,
