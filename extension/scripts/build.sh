@@ -40,6 +40,7 @@ export DIST_DIR=./dist/$target
 rm -rf $DIST_DIR
 
 version=$(cat package.json | grep \"version\": | cut -d'"' -f 4)
+echo $version
 basename=$target-v$version
 
 yarn run vite build --config vite/base.ts
@@ -69,6 +70,7 @@ case $target in
     # bundle zip & xpi
     zip -r dist/$basename.zip $DIST_DIR
     yarn run web-ext build -s $DIST_DIR -a .
+    ls
     mv ./iron_wallet-$version.zip dist/firefox-v$version.xpi
     ;;
 esac
