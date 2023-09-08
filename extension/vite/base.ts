@@ -2,6 +2,8 @@ import path from "node:path";
 import { defineConfig } from "vite";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 
+const dist = process.env.DIST_DIR || "dist/dev";
+
 const fetchVersion = () => {
   return {
     name: "html-transform",
@@ -23,7 +25,7 @@ export default defineConfig({
     }),
   ],
   build: {
-    outDir: path.resolve(__dirname, "..", "dist"),
+    outDir: path.resolve(__dirname, "..", dist),
     emptyOutDir: false,
     rollupOptions: {
       input: {

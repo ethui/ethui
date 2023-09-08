@@ -22,13 +22,12 @@ pub(super) fn insert_transaction(tx: &events::Tx, chain_id: u32) -> Query {
 
 pub(super) fn insert_contract(tx: &events::ContractDeployed, chain_id: u32) -> Query {
     sqlx::query(
-        r#" INSERT INTO contracts (address, chain_id, deployed_code_hash)
-                        VALUES (?,?,?)
+        r#" INSERT INTO contracts (address, chain_id)
+                        VALUES (?,?)
                         ON CONFLICT(address, chain_id) DO NOTHING "#,
     )
     .bind(format!("0x{:x}", tx.address))
     .bind(chain_id)
-    .bind(tx.code.clone().map(|c| c.to_string()))
 }
 
 pub(super) fn native_update_balance<'a>(

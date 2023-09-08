@@ -49,16 +49,25 @@ export function NewVersionNotice() {
     setState({ ...state, open: false });
   };
 
-  if (!latest) return null;
+  if (!latest || current === latest) return null;
 
-  return current !== latest ? (
+  return (
     <Snackbar
       anchorOrigin={{ vertical, horizontal }}
       open={open}
       onClose={handleClose}
       key={vertical + horizontal}
     >
-      <Link href="https://github.com/iron-wallet/iron/releases" target="_blank">
+      <Link
+        href="https://github.com/iron-wallet/iron/releases"
+        sx={{
+          "&&": {
+            color: "inherit",
+            textDecorationColor: "currentColor",
+          },
+        }}
+        target="_blank"
+      >
         <Alert
           severity="info"
           action={
@@ -76,5 +85,5 @@ export function NewVersionNotice() {
         </Alert>
       </Link>
     </Snackbar>
-  ) : null;
+  );
 }

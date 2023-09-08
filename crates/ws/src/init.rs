@@ -8,7 +8,7 @@ use crate::{peers::Peers, server::server_loop};
 
 static PEERS: Lazy<RwLock<Peers>> = Lazy::new(Default::default);
 
-pub fn init() {
+pub async fn init() {
     tokio::spawn(async { server_loop().await });
     tokio::spawn(async { receiver().await });
 }
@@ -32,8 +32,11 @@ async fn receiver() -> ! {
             use InternalMsg::*;
 
             match msg {
-                ChainChanged(chain_id, name) => {
-                    Peers::read().await.broadcast_chain_changed(chain_id, name)
+                ChainChanged(chain_id, domain, affinity) => {
+                    Peers::read()
+                        .await
+                        .broadcast_chain_changed(chain_id, domain, affinity)
+                        .await
                 }
                 AccountsChanged(accounts) => {
                     Peers::read().await.broadcast_accounts_changed(accounts)

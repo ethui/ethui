@@ -1,13 +1,17 @@
+mod affinity;
 mod checksummed_address;
 pub mod events;
 mod global_state;
+mod stored_contract;
 mod tokens;
 pub mod ui_events;
 
+pub use affinity::Affinity;
 pub use checksummed_address::ChecksummedAddress;
 use ethers::types::{Address, U256};
 pub use events::Event;
 pub use global_state::GlobalState;
+pub use stored_contract::StoredContract;
 pub use tokens::{
     Erc721Collection, Erc721Token, Erc721TokenData, Erc721TokenDetails, TokenBalance, TokenMetadata,
 };

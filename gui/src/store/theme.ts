@@ -1,5 +1,5 @@
 import { PaletteMode, Theme, ThemeOptions, createTheme } from "@mui/material";
-import { grey } from "@mui/material/colors";
+import { grey, lightBlue } from "@mui/material/colors";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Action } from "kbar";
 import { StateCreator, create } from "zustand";
@@ -61,13 +61,90 @@ export const useTheme = create<Store>()(store);
 })();
 
 function getDesignTokens(mode: PaletteMode): ThemeOptions {
+  const theme = createTheme({
+    palette: {
+      mode,
+    },
+  });
+
   const light = mode === "light";
+
+  const borderColor = light ? grey[300] : grey[800];
 
   return {
     palette: {
       mode,
     },
     components: {
+      MuiButton: {
+        variants: [
+          {
+            props: { variant: "sidebar" as const },
+            style: {
+              padding: 0,
+              textAlign: "left",
+              height: theme.spacing(4),
+              paddingLeft: theme.spacing(1),
+              marginLeft: `-${theme.spacing(1)}`,
+              marginRight: `-${theme.spacing(1)}`,
+              fontWeight: "inherit",
+              justifyContent: "flex-start",
+              textTransform: "inherit",
+              "&.Mui-disabled": {
+                backgroundColor: lightBlue[800],
+                color: "white",
+              },
+              "& .MuiButton-startIcon": {
+                marginLeft: 0,
+              },
+            },
+          },
+        ],
+      },
+      MuiTypography: {
+        variants: [
+          {
+            props: { variant: "bordered" as const },
+            style: {
+              display: "block",
+              borderColor: borderColor,
+              borderBottomWidth: 1,
+              borderBottomStyle: "solid",
+              paddingBottom: "0.5em",
+            },
+          },
+        ],
+      },
+      MuiAppBar: {
+        styleOverrides: {
+          root: {
+            borderColor,
+            borderBottomStyle: "solid",
+            backgroundColor: "transparent",
+            color: "inherit",
+          },
+        },
+      },
+      MuiDrawer: {
+        styleOverrides: {
+          paper: {
+            borderColor,
+            borderWidth: 1,
+          },
+        },
+      },
+      MuiAlert: {
+        styleOverrides: {
+          icon: {
+            color: `${theme.palette.text.primary} !important`,
+            backgroundColor: light ? grey[200] : grey[900],
+          },
+          standardInfo: {
+            color: theme.palette.text.primary,
+            backgroundColor: light ? grey[200] : grey[900],
+          },
+        },
+      },
       MuiPaper: {
         variants: [
           {
@@ -77,6 +154,11 @@ function getDesignTokens(mode: PaletteMode): ThemeOptions {
             },
           },
         ],
+      },
+      MuiToolbar: {
+        defaultProps: {
+          variant: "dense",
+        },
       },
     },
   };

@@ -1,3 +1,5 @@
+mod error;
+
 /// Encryption and decryption of secrets
 ///
 /// This largely follows the recommendations described in
@@ -8,6 +10,9 @@ use aead::{KeyInit, OsRng};
 use chacha20poly1305::XChaCha20Poly1305;
 use ethers::core::rand::RngCore;
 use zeroize::Zeroize;
+
+use self::error::CryptoResult;
+use crate::error::CryptoError;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct EncryptedData<T: serde::Serialize + serde::de::DeserializeOwned> {
@@ -20,7 +25,7 @@ pub struct EncryptedData<T: serde::Serialize + serde::de::DeserializeOwned> {
 }
 
 /// Encrypts a password-protected secret
-pub fn encrypt<T>(data: &T, password: &str) -> anyhow::Result<EncryptedData<T>>
+pub fn encrypt<T>(data: &T, password: &str) -> CryptoResult<EncryptedData<T>>
 where
     T: serde::Serialize + serde::de::DeserializeOwned,
 {
@@ -56,7 +61,7 @@ where
 
 #[allow(unused)]
 /// Decrypts a secret from a file using a password
-pub fn decrypt<T>(data: &EncryptedData<T>, password: &str) -> anyhow::Result<T>
+pub fn decrypt<T>(data: &EncryptedData<T>, password: &str) -> CryptoResult<T>
 where
     T: serde::Serialize + serde::de::DeserializeOwned,
 {
@@ -70,7 +75,9 @@ where
 
     const BUFFER_LEN: usize = 500 + 16;
     let mut buffer = [0u8; BUFFER_LEN];
-    let plaintext: Vec<u8> = decryptor.decrypt_last(&data.ciphertext[..]).unwrap();
+    let plaintext: Vec<u8> = decryptor
+        .decrypt_last(&data.ciphertext[..])
+        .map_err(|_| CryptoError::InvalidPassword)?;
 
     // zero out sensitive data
     salt.zeroize();

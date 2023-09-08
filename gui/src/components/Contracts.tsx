@@ -1,61 +1,100 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { ExpandMore } from "@mui/icons-material";
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Button,
   Chip,
+  CircularProgress,
+  Stack,
+  TextField,
 } from "@mui/material";
+import { FieldValues, useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { useInvoke, useRefreshTransactions } from "../hooks";
-import { useNetworks } from "../store";
-import { ABIMatch, Address } from "../types";
+import { useInvoke } from "../hooks";
+import { useContracts, useNetworks } from "../store";
+import { ABIMatch, IContract } from "../types";
 import { ABIForm, AddressView, Panel } from "./";
-
-interface ContractData {
-  address: Address;
-  deployedCodeHash: string;
-}
 
 export function Contracts() {
   const chainId = useNetworks((s) => s.current?.chain_id);
-  const { data: contracts, mutate } = useInvoke<ContractData[]>(
-    "db_get_contracts",
-    { chainId }
-  );
-
-  useRefreshTransactions(mutate);
-
-  if (!chainId) return null;
+  const contracts = useContracts((s) => s.contracts);
 
   return (
     <Panel>
-      {(contracts || []).map(({ address }) => (
-        <Contract key={address} address={address} chainId={chainId} />
+      {chainId != 31337 && <AddressForm />}
+      {Array.from(contracts || []).map((contract) => (
+        <Contract key={contract.address} contract={contract} />
       ))}
     </Panel>
   );
 }
 
-interface IContract {
-  address: Address;
-  chainId: number;
-}
+function Contract({ contract }: { contract: IContract }) {
+  const chainId = useNetworks((s) => s.current?.chain_id);
 
-function Contract({ address, chainId }: IContract) {
-  const { data } = useInvoke<ABIMatch>("foundry_get_abi", {
-    address,
+  // TODO: only do this if chainId == 31337
+  const { data: foundryMatch } = useInvoke<ABIMatch>("foundry_get_abi", {
+    address: contract.address,
     chainId,
   });
+
+  const name = foundryMatch?.name || contract.name;
+  const abi = foundryMatch?.abi || contract.abi;
 
   return (
     <Accordion>
       <AccordionSummary expandIcon={<ExpandMore />}>
-        <AddressView address={address} />
-        {data && <Chip sx={{ marginLeft: 2 }} label={data.name} />}
+        <AddressView address={contract.address} />
+        <Chip sx={{ marginLeft: 2 }} label={name} />
       </AccordionSummary>
-      <AccordionDetails>
-        {data && <ABIForm address={address} abi={data.abi} />}
-      </AccordionDetails>
+      {abi && (
+        <AccordionDetails>
+          <ABIForm address={contract.address} abi={abi} />
+        </AccordionDetails>
+      )}
     </Accordion>
+  );
+}
+
+function AddressForm() {
+  const schema = z.object({
+    address: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid format"),
+  });
+
+  const add = useContracts((s) => s.add);
+
+  const {
+    handleSubmit,
+    formState: { isValid, errors, isSubmitting },
+    register,
+  } = useForm({
+    mode: "onChange",
+    resolver: zodResolver(schema),
+  });
+
+  const onSubmit = (data: FieldValues) => add(data.address);
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Stack direction="row" spacing={2}>
+        <TextField
+          label="Contract Address"
+          error={!!errors.address}
+          helperText={errors.address?.message?.toString() || ""}
+          fullWidth
+          {...register("address")}
+        />
+        <Button
+          variant="contained"
+          type="submit"
+          disabled={!isValid || isSubmitting}
+        >
+          {isSubmitting ? <CircularProgress /> : "Add"}
+        </Button>
+      </Stack>
+    </form>
   );
 }

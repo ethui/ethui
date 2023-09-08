@@ -1,6 +1,7 @@
 use std::{collections::HashMap, net::SocketAddr};
 
-use iron_types::{ChecksummedAddress, UINotify};
+use iron_networks::Networks;
+use iron_types::{Affinity, ChecksummedAddress, GlobalState, UINotify};
 use serde::Serialize;
 use serde_json::json;
 use tokio::sync::mpsc;
@@ -43,11 +44,27 @@ impl Peer {
             title,
         }
     }
+
+    /// Extracts the domain from the url
+    pub fn domain(&self) -> Option<String> {
+        self.url.as_ref().and_then(|url| {
+            url.parse::<url::Url>()
+                .ok()
+                .and_then(|url| url.host_str().map(|s| s.to_owned()))
+        })
+    }
+}
+
+impl From<Peer> for iron_rpc::Handler {
+    fn from(value: Peer) -> Self {
+        Self::new(value.domain())
+    }
 }
 
 /// Tracks a list of peers, usually browser tabs, that connect to the app
 #[derive(Debug, Default)]
 pub struct Peers {
+    // current list of connections
     map: HashMap<SocketAddr, Peer>,
 }
 
@@ -75,14 +92,36 @@ impl Peers {
     }
 
     /// Broadcasts a `chainChanged` event to all peers
-    pub fn broadcast_chain_changed(&self, chain_id: u32, name: String) {
-        self.broadcast(json!({
-            "method": "chainChanged",
-            "params": {
-                "chainId": format!("0x{:x}", chain_id),
-                "networkVersion": name
+    pub async fn broadcast_chain_changed(
+        &self,
+        chain_id: u32,
+        domain: Option<String>,
+        affinity: Affinity,
+    ) {
+        if Networks::read().await.validate_chain_id(chain_id) {
+            let msg = json!({
+                "method": "chainChanged",
+                "params": {
+                    "chainId": format!("0x{:x}", chain_id),
+                }
+            });
+
+            for (_, peer) in self.map.iter() {
+                if iron_connections::utils::affinity_matches(peer.domain(), &domain, affinity).await
+                {
+                    tracing::info!(
+                        event = "peer chain changed",
+                        domain = peer.domain(),
+                        chain_id
+                    );
+                    peer.sender
+                        .send(serde_json::to_value(&msg).unwrap())
+                        .unwrap_or_else(|e| {
+                            tracing::warn!("Failed to send message to peer: {}", e);
+                        });
+                }
             }
-        }));
+        }
     }
 
     fn broadcast<T: Serialize + std::fmt::Debug>(&self, msg: T) {
@@ -95,7 +134,12 @@ impl Peers {
         });
     }
 
-    pub(crate) fn get_all(&self) -> Vec<Peer> {
-        self.map.values().cloned().collect()
+    pub(crate) fn all_by_domain(&self) -> HashMap<String, Vec<Peer>> {
+        self.map.values().fold(Default::default(), |mut acc, p| {
+            acc.entry(p.domain().unwrap_or_default())
+                .or_default()
+                .push(p.clone());
+            acc
+        })
     }
 }

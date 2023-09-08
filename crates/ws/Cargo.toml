@@ -12,6 +12,8 @@ authors.workspace = true
 iron-types = { workspace = true }
 iron-rpc = { workspace = true }
 iron-broadcast = { workspace = true }
+iron-networks = { workspace = true }
+iron-connections = { workspace = true }
 
 ethers = { workspace = true }
 tokio = { workspace = true }

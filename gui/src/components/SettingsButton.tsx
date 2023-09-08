@@ -1,24 +1,24 @@
 import Settings from "@mui/icons-material/SettingsSharp";
 import { Button, IconButton } from "@mui/material";
-import { useState } from "react";
 
-import { useTheme } from "../store";
+import { useSettingsWindow, useTheme } from "../store";
 import { Modal, Settings as SettingsPage } from "./";
 
 export function SettingsButton() {
-  const [showSettings, setShowSettings] = useState(false);
+  const { show, open, close } = useSettingsWindow();
   const { theme } = useTheme();
 
   return (
     <>
       <IconButton
-        onClick={() => setShowSettings(true)}
+        onClick={open}
         color="inherit"
+        size="small"
         sx={{
           height: 40,
           width: 40,
           display: "none",
-          [theme.breakpoints.down("md")]: {
+          [theme.breakpoints.down("sm")]: {
             display: "initial",
           },
         }}
@@ -27,13 +27,11 @@ export function SettingsButton() {
       </IconButton>
 
       <Button
-        color="inherit"
-        fullWidth
+        variant="sidebar"
         startIcon={<Settings />}
-        onClick={() => setShowSettings(true)}
+        onClick={open}
         sx={{
-          justifyContent: "flex-start",
-          [theme.breakpoints.down("md")]: {
+          [theme.breakpoints.down("sm")]: {
             display: "none",
           },
         }}
@@ -42,11 +40,13 @@ export function SettingsButton() {
       </Button>
 
       <Modal
-        open={showSettings}
-        onClose={() => setShowSettings(false)}
+        open={show}
+        onClose={close}
         sx={{
-          width: "80%",
-          height: "80%",
+          outline: "none",
+          width: "90%",
+          height: "90%",
+          maxWidth: "900px",
         }}
       >
         <SettingsPage />
