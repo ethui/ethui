@@ -1,7 +1,4 @@
-use ethers::{
-    providers::{Http, Provider},
-    types::H256,
-};
+use ethers::types::H256;
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("Watcher error")]
