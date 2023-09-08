@@ -5,12 +5,11 @@
 # defaults
 #
 target=chrome
-release=false
 
 #
 # parse args
 #
-VALID_ARGS=$(getopt -o rt:h --long release,target:,help -- "$@")
+VALID_ARGS=$(getopt -o t:h --long target:,help -- "$@")
 if [[ $? -ne 0 ]]; then
     exit 1;
 fi
@@ -18,10 +17,6 @@ fi
 eval set -- "$VALID_ARGS"
 while [ : ]; do
   case "$1" in
-    -r | --release)
-        release=true
-        shift
-        ;;
     -t | --target)
         target=$2
         shift 2

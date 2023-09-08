@@ -9,11 +9,8 @@
   "scripts": {
     "dev": "./scripts/build.sh",
     "build": "yarn run build:chrome && yarn run build:firefox",
-    "release": "yarn run release:chrome && yarn run release:firefox",
     "build:firefox": "./scripts/build.sh --target firefox",
-    "build:chrome": "./scripts/build.sh --target chrome",
-    "release:firefox": "./scripts/build.sh --target firefox --release",
-    "release:chrome": "./scripts/build.sh --target chrome --release"
+    "build:chrome": "./scripts/build.sh --target chrome"
   },
   "devDependencies": {
     "@types/node": "^20.4.5",

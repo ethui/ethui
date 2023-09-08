@@ -58,28 +58,26 @@ jobs:
         run: yarn workspace @iron/extension install
 
       - name: Create bundles
-        run: yarn workspace @iron/extension release
+        run: yarn workspace @iron/extension build
 
       - name: Upload to release
         run: gh release upload ${{ needs.setup.outputs.tag }} ./extension/dist/*.{crx,zip,xpi}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Submit to Mozilla
-      #   working-directory: ./extension/dist
-      #   run: npx web-ext-submit@7
-      #   env:
-      #     WEB_EXT_API_KEY: ${{ secrets.FIREFOX_WEB_EXT_API_KEY }}
-      #     WEB_EXT_API_SECRET: ${{ secrets.FIREFOX_WEB_EXT_API_SECRET }}
-      #
-      # - name: Submit to Google
-      #   working-directory: ./extension/dist
-      #   run: npx chrome-webstore-upload-cli@2 upload --auto-publish
-      #   env:
-      #     EXTENSION_ID: ${{ secrets.CHROME_WEB_EXT_ID }}
-      #     CLIENT_ID: ${{ secrets.CHROME_WEB_EXT_CLIENT_ID }}
-      #     CLIENT_SECRET: ${{ secrets.CHROME_WEB_EXT_CLIENT_SECRET }}
-      #     REFRESH_TOKEN: ${{ secrets.CHROME_WEB_EXT_REFRESH_TOKEN }}
+      - name: Submit to Google
+        run: npx chrome-webstore-upload-cli@2 upload --source ./extension/dist/chrome
+        env:
+          EXTENSION_ID: ${{ secrets.CHROME_WEB_EXT_ID }}
+          CLIENT_ID: ${{ secrets.CHROME_WEB_EXT_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CHROME_WEB_EXT_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.CHROME_WEB_EXT_REFRESH_TOKEN }}
+
+      - name: Submit to Mozilla
+        run: npx web-ext-submit@7 --source-dir ./extension/dist/firefox
+        env:
+          WEB_EXT_API_KEY: ${{ secrets.FIREFOX_WEB_EXT_API_KEY }}
+          WEB_EXT_API_SECRET: ${{ secrets.FIREFOX_WEB_EXT_API_SECRET }}
 
   # build app
   # upload to draft release
