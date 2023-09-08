@@ -1,0 +1,48 @@
+name: release
+
+on:
+  push:
+    branches:
+      - ext-pub
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.sha }}
+permissions:
+  contents: write
+
+jobs:
+  # build extension
+  # upload to draft release
+  # release to mozilla and google stores
+  extension:
+    needs: [setup]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: "yarn"
+
+      - name: Install dependencies
+        run: yarn workspace @iron/extension install
+
+      - name: Create bundles
+        run: yarn workspace @iron/extension release
+
+      - name: Submit to Mozilla
+        working-directory: ./extension/dist
+        run: npx web-ext-submit@7
+        env:
+          WEB_EXT_API_KEY: ${{ secrets.FIREFOX_WEB_EXT_API_KEY }}
+          WEB_EXT_API_SECRET: ${{ secrets.FIREFOX_WEB_EXT_API_SECRET }}
+
+      - name: Submit to Google
+        working-directory: ./extension/dist
+        run: npx chrome-webstore-upload-cli@2 upload
+        env:
+          EXTENSION_ID: ${{ secrets.CHROME_WEB_EXT_ID }}
+          CLIENT_ID: ${{ secrets.CHROME_WEB_EXT_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CHROME_WEB_EXT_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.CHROME_WEB_EXT_REFRESH_TOKEN }}
