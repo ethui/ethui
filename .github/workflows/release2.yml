@@ -33,11 +33,11 @@ jobs:
       - run: ls ./extension/dist
 
       - name: Submit to Mozilla
-        working-directory: ./extension/dist/firefox
         run: npx web-ext-submit@7
         env:
           WEB_EXT_API_KEY: ${{ secrets.FIREFOX_WEB_EXT_API_KEY }}
           WEB_EXT_API_SECRET: ${{ secrets.FIREFOX_WEB_EXT_API_SECRET }}
+        working-directory: ./extension/dist/firefox
 
       - name: Submit to Google
         working-directory: ./extension/dist/chrome
