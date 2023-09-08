@@ -1,4 +1,4 @@
-name: release
+name: release2
 
 on:
   push:
@@ -15,7 +15,6 @@ jobs:
   # upload to draft release
   # release to mozilla and google stores
   extension:
-    needs: [setup]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
