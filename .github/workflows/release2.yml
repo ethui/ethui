@@ -30,7 +30,8 @@ jobs:
       - name: Create bundles
         run: yarn workspace @iron/extension release
 
-      - run: ls ./extension/dist
+      - run: ls
+        working-directory: ./extension/dist/firefox
 
       - name: Submit to Mozilla
         run: npx web-ext-submit@7
