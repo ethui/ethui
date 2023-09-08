@@ -4,6 +4,9 @@
 mod app;
 mod commands;
 mod error;
+mod menu;
+#[cfg(not(target_os = "macos"))]
+mod system_tray;
 
 use error::AppResult;
 

@@ -16,6 +16,7 @@ iron-wallets = { workspace = true }
 iron-dialogs = { workspace = true }
 iron-rpc = { workspace = true }
 iron-ws = { workspace = true }
+iron-http = { workspace = true }
 iron-connections = { workspace = true }
 iron-types = { workspace = true }
 iron-db = { workspace = true }
