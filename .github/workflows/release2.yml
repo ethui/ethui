@@ -28,11 +28,10 @@ jobs:
         run: yarn workspace @iron/extension install
 
       - name: Create bundles
-        run: yarn workspace @iron/extension release
+        run: yarn workspace @iron/extension build
 
       - name: Submit to Google
-        working-directory: ./extension/dist/chrome
-        run: npx chrome-webstore-upload-cli@2 upload
+        run: npx chrome-webstore-upload-cli@2 upload --source ./extension/dist/chrome
         env:
           EXTENSION_ID: ${{ secrets.CHROME_WEB_EXT_ID }}
           CLIENT_ID: ${{ secrets.CHROME_WEB_EXT_CLIENT_ID }}
