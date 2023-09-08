@@ -1,3 +1,5 @@
+import { validateMnemonic } from "@scure/bip39";
+import { wordlist } from "@scure/bip39/wordlists/english";
 import { z } from "zod";
 
 export const generalSettingsSchema = z.object({
@@ -66,7 +68,10 @@ export const mnemonicSchema = z
       message:
         "Invalid number of words. Needs to be 12, 15, 18, 21 or 24 words long",
     }
-  );
+  )
+  .refine((data) => validateMnemonic(data, wordlist), {
+    message: "Invalid mnemonic. You have have a typo or an unsupported word",
+  });
 
 export const derivationPathSchema = z
   .string()
