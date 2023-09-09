@@ -12,7 +12,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { map } from "lodash-es";
 import { useEffect, useState } from "react";
 
-import { useInvoke, useRefreshPeers } from "../hooks";
+import { useEventListener, useInvoke } from "../hooks";
 import { useNetworks } from "../store";
 import { Affinity } from "../types";
 import { Panel } from "./";
@@ -30,7 +30,7 @@ export function Peers() {
   const { data: peersByDomain, mutate } =
     useInvoke<Record<string, Peer[]>>("ws_peers_by_domain");
 
-  useRefreshPeers(mutate);
+  useEventListener("peers-updated", mutate);
 
   return (
     <Panel>
@@ -66,7 +66,7 @@ function AffinityForm({ domain }: { domain: string }) {
     }
   );
 
-  useRefreshPeers(mutate);
+  useEventListener("peers-updated", mutate);
 
   const [current, setCurrent] = useState<Affinity>("global");
 

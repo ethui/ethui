@@ -1,5 +1,6 @@
 import { PaletteMode, Theme, ThemeOptions, createTheme } from "@mui/material";
 import { grey, lightBlue } from "@mui/material/colors";
+import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Action } from "kbar";
 import { StateCreator, create } from "zustand";
@@ -52,6 +53,10 @@ const store: StateCreator<Store> = (set, get) => ({
     set({ mode });
     get().reload();
   },
+});
+
+listen("settings-changed", async () => {
+  await useTheme.getState().reload();
 });
 
 export const useTheme = create<Store>()(store);
