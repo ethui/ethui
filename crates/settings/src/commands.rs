@@ -9,17 +9,17 @@ pub async fn settings_get() -> SerializedSettings {
 
 #[tauri::command]
 pub async fn settings_set(new_settings: SerializedSettings) -> Result<()> {
-    Settings::write().await.set(new_settings)
+    Settings::write().await.set(new_settings).await
 }
 
 #[tauri::command]
 pub async fn settings_set_dark_mode(mode: DarkMode) -> Result<()> {
-    Settings::write().await.set_dark_mode(mode)
+    Settings::write().await.set_dark_mode(mode).await
 }
 
 #[tauri::command]
 pub async fn settings_finish_onboarding() -> Result<()> {
-    Settings::write().await.finish_onboarding()
+    Settings::write().await.finish_onboarding().await
 }
 
 /// Gets the alias for an address
