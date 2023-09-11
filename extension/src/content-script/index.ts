@@ -55,7 +55,7 @@ function initProviderForward() {
     inpageStream.write(data);
   });
   bgPort.onDisconnect.addListener(() =>
-    log.error("[Iron - contentscript] disconnected")
+    log.error("[Iron - contentscript] disconnected"),
   );
 }
 
