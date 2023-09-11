@@ -1,14 +1,13 @@
+import { WindowPostMessageStream } from "@metamask/post-message-stream";
 import log from "loglevel";
 import { type Duplex } from "stream";
 import { runtime } from "webextension-polyfill";
-
-import { WindowPostMessageStream } from "@metamask/post-message-stream";
 
 import { loadSettings } from "../settings";
 
 declare global {
   interface Document {
-    prerendering: any;
+    prerendering: bool;
   }
 }
 
