@@ -216,6 +216,7 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
             }
         }
 
+        /* ERC721 - contract tokens' uri and metadata  */
         for erc721_token in ctx
             .db
             .get_erc721_tokens_missing_data(ctx.chain_id)
@@ -239,6 +240,7 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
                 .await?;
         }
 
+        /* ERC721 - contract's name and symbol  */
         for erc721_address in ctx
             .db
             .get_erc721_missing_collections(ctx.chain_id)
@@ -246,18 +248,8 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
             .into_iter()
         {
             let contract = IERC721::new(erc721_address.clone(), Arc::new(&provider));
-
-            let name = contract
-                .name()
-                .call()
-                .await
-                .map_err(|_| Error::Erc721FailedToFetchData)?;
-
-            let symbol = contract
-                .symbol()
-                .call()
-                .await
-                .map_err(|_| Error::Erc721FailedToFetchData)?;
+            let name = contract.name().call().await.unwrap_or_default();
+            let symbol = contract.symbol().call().await.unwrap_or_default();
 
             ctx.db
                 .save_erc721_collection(erc721_address, ctx.chain_id, name, symbol)
@@ -338,8 +330,6 @@ pub async fn fetch_erc721_token_data(
     }
 
     Ok(Erc721TokenDetails {
-        //     name: contract.name().call().await.unwrap_or_default(),
-        //     symbol: contract.symbol().call().await.unwrap_or_default(),
         uri: contract_uri,
         metadata: md,
     })
