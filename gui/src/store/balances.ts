@@ -70,12 +70,12 @@ listen("balances-updated", async () => {
   useWallets.subscribe(
     (s) => s.address,
     (address?: Address) => useBalances.getState().setAddress(address),
-    { fireImmediately: true }
+    { fireImmediately: true },
   );
 
   useNetworks.subscribe(
     (s) => s.current?.chain_id,
     (chainId) => useBalances.getState().setChainId(chainId),
-    { fireImmediately: true }
+    { fireImmediately: true },
   );
 })();

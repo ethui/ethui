@@ -63,7 +63,7 @@ function AffinityForm({ domain }: { domain: string }) {
     "connections_affinity_for",
     {
       domain,
-    }
+    },
   );
 
   useEventListener("peers-updated", mutate);
