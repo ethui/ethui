@@ -5,12 +5,11 @@
 # defaults
 #
 target=chrome
-release=false
 
 #
 # parse args
 #
-VALID_ARGS=$(getopt -o rt:h --long release,target:,help -- "$@")
+VALID_ARGS=$(getopt -o t:h --long target:,help -- "$@")
 if [[ $? -ne 0 ]]; then
     exit 1;
 fi
@@ -18,10 +17,6 @@ fi
 eval set -- "$VALID_ARGS"
 while [ : ]; do
   case "$1" in
-    -r | --release)
-        release=true
-        shift
-        ;;
     -t | --target)
         target=$2
         shift 2
@@ -44,7 +39,8 @@ export NODE_ENV=production
 export DIST_DIR=./dist/$target
 rm -rf $DIST_DIR
 
-version=$(jq -r ".version" package.json)
+version=$(cat package.json | grep \"version\": | cut -d'"' -f 4)
+echo $version
 basename=$target-v$version
 
 yarn run vite build --config vite/base.ts
@@ -74,6 +70,7 @@ case $target in
     # bundle zip & xpi
     zip -r dist/$basename.zip $DIST_DIR
     yarn run web-ext build -s $DIST_DIR -a .
+    ls
     mv ./iron_wallet-$version.zip dist/firefox-v$version.xpi
     ;;
 esac

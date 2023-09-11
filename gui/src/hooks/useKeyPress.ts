@@ -4,7 +4,7 @@ export const useKeyPress = (
   keys: string[],
   modifiers: { alt?: boolean; meta?: boolean; ctrl?: boolean; shift?: boolean },
   callback: (event: KeyboardEvent) => unknown,
-  node = null
+  node = null,
 ) => {
   const callbackRef = useRef(callback);
   useLayoutEffect(() => {
@@ -25,7 +25,7 @@ export const useKeyPress = (
         callbackRef.current(event);
       }
     },
-    [keys, modifiers]
+    [keys, modifiers],
   );
 
   useEffect(() => {

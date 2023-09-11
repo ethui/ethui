@@ -55,7 +55,7 @@ export class IronProvider extends EventEmitter {
     return new Promise<T>((resolve, reject) => {
       this.engine.handle(
         { method, params, id: this.nextId(), jsonrpc: "2.0" },
-        getRpcPromiseCallback(resolve as any, reject) as any
+        getRpcPromiseCallback(resolve as any, reject) as any,
       );
     });
   }
@@ -84,7 +84,7 @@ export class IronProvider extends EventEmitter {
   protected handleDisconnect(errorMessage: string) {
     const error = new EthereumRpcError(
       1011, // Internal error
-      errorMessage
+      errorMessage,
     );
 
     log.error(error);
@@ -153,8 +153,8 @@ export class IronProvider extends EventEmitter {
         case "METAMASK_STREAM_FAILURE":
           this.stream.destroy(
             new Error(
-              "Iron: Disconnected from Iron background. Page reload required."
-            )
+              "Iron: Disconnected from Iron background. Page reload required.",
+            ),
           );
           break;
 

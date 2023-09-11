@@ -53,5 +53,5 @@ listen("contracts-updated", async () => {
 useNetworks.subscribe(
   (s) => s.current?.chain_id,
   (chainId) => useContracts.getState().setChainId(chainId),
-  { fireImmediately: true }
+  { fireImmediately: true },
 );

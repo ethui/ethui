@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Iron Wallet",
   "description": "A developer-focused Ethereum wallet",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "author": "Miguel Palhas <mpalhas@gmail.com>",
   "homepage_url": "https://github.com/iron-wallet",
   "content_scripts": [

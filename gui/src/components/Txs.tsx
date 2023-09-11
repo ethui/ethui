@@ -11,19 +11,22 @@ import {
   Badge,
   Box,
   CircularProgress,
+  Grid,
   Stack,
   Typography,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
+import truncateEthAddress from "truncate-eth-address";
+import { formatEther, formatGwei } from "viem";
 import { useTransaction, useWaitForTransaction } from "wagmi";
 import { waitForTransaction } from "wagmi/actions";
 
-import { useProvider, useRefreshTransactions } from "../hooks";
+import { useEventListener, useProvider } from "../hooks";
 import { useNetworks, useWallets } from "../store";
 import { Address, Paginated, Pagination, Tx } from "../types";
-import { AddressView, Panel } from "./";
+import { AddressView, ContextMenu, Panel } from "./";
 
 export function Txs() {
   const account = useWallets((s) => s.address);
@@ -54,7 +57,7 @@ export function Txs() {
     setPages([]);
   };
 
-  useRefreshTransactions(reload);
+  useEventListener("txs-updated", reload);
   useEffect(reload, [account, chainId]);
 
   if (!account) return null;
@@ -88,7 +91,7 @@ export function Txs() {
                 <Details tx={tx} />
               </AccordionDetails>
             </Accordion>
-          ))
+          )),
         )}
       </InfiniteScroll>
     </Panel>
@@ -142,16 +145,88 @@ function Details({ tx }: DetailsProps) {
   const { data: transaction } = useTransaction({ hash: tx.hash });
   const { data: receipt } = useWaitForTransaction({ hash: tx.hash });
 
-  console.log(transaction, "asd", receipt, "asd");
+  console.log(transaction, receipt);
 
-  if (!receipt) return null;
+  if (!receipt || !transaction) return null;
 
   return (
-    <>
-      <Stack direction="column"></Stack>
-      {transaction?.toString()}
-      <br />
-      {receipt?.toString()}
-    </>
+    <Grid container rowSpacing={2}>
+      <Datapoint label="hash" value={truncateEthAddress(tx.hash)} />
+      <Datapoint label="from" value={<AddressView address={tx.from} />} short />
+      <Datapoint
+        label="to"
+        value={tx.to ? <AddressView address={tx.to} /> : ""}
+        short
+      />
+      <Datapoint
+        label="value"
+        value={<ContextMenu>{formatEther(BigInt(tx.value))} Ξ</ContextMenu>}
+      />
+      <Datapoint
+        label="data"
+        value={
+          <Typography
+            sx={{ overflowWrap: "break-word", fontFamily: "monospace" }}
+          >
+            {transaction.input}
+          </Typography>
+        }
+        mono
+      />
+      <Datapoint label="type" value={transaction.type} />
+      {/* TODO: other txs types */}
+      {transaction.type == "eip1559" && (
+        <>
+          <Datapoint
+            label="maxFeePerGas"
+            value={`${formatGwei(transaction.maxFeePerGas)} gwei`}
+            short
+          />
+          <Datapoint
+            label="maxPriorityFeePerGas"
+            value={`${formatGwei(transaction.maxPriorityFeePerGas)} gwei`}
+            short
+          />
+        </>
+      )}
+      <Datapoint
+        label="gasLimit"
+        value={`${formatGwei(transaction.gas)} gwei`}
+        short
+      />
+      <Datapoint
+        label="gasUsed"
+        value={`${formatGwei(receipt.gasUsed)} gwei`}
+        short
+      />
+    </Grid>
   );
 }
+
+interface DatapointProps {
+  label: string;
+  value: React.ReactNode;
+  short: boolean;
+  mono: boolean;
+}
+
+const monoStyle = {
+  overflowWrap: "break-word",
+  fontFamily: "monospace",
+};
+
+function Datapoint({ label, value, short, mono }: DatapointProps) {
+  return (
+    <Grid item xs={short ? 6 : 12}>
+      <Typography color="gray" sx={{ fontSize: "12px" }}>
+        {label}
+      </Typography>
+      {value}
+    </Grid>
+  );
+}
+
+Datapoint.defaultProps = {
+  short: false,
+  mono: false,
+};
