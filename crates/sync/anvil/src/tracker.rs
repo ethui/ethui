@@ -247,12 +247,13 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
             .await?
             .into_iter()
         {
-            let contract = IERC721::new(erc721_address.clone(), Arc::new(&provider));
+            let address = erc721_address;
+            let contract = IERC721::new(erc721_address, Arc::new(&provider));
             let name = contract.name().call().await.unwrap_or_default();
             let symbol = contract.symbol().call().await.unwrap_or_default();
 
             ctx.db
-                .save_erc721_collection(erc721_address, ctx.chain_id, name, symbol)
+                .save_erc721_collection(address, ctx.chain_id, name, symbol)
                 .await?;
         }
 
