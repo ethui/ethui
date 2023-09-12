@@ -1,5 +1,5 @@
 use ethers::types::{Address, Chain, U256};
-use iron_types::{events::Tx, TokenBalance, UINotify};
+use iron_types::{events::Tx, Erc721TokenData, TokenBalance, UINotify};
 
 use super::{Paginated, Pagination, Result};
 use crate::{
@@ -36,6 +36,7 @@ pub async fn db_get_native_balance(
     Ok(db.get_native_balance(chain_id, address).await)
 }
 
+
 #[tauri::command]
 pub async fn db_get_contracts(
     chain_id: u32,
@@ -65,4 +66,14 @@ pub async fn db_insert_contract(
     iron_broadcast::ui_notify(UINotify::ContractsUpdated).await;
 
     Ok(())
+
+}
+
+#[tauri::command]
+pub async fn db_get_erc721_tokens(
+    chain_id: u32,
+    owner: Address,
+    db: tauri::State<'_, DB>,
+) -> Result<Vec<Erc721TokenData>> {
+    db.get_erc721_tokens(chain_id, owner).await
 }
