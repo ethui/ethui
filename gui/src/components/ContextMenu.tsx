@@ -70,13 +70,13 @@ export function ContextMenu({ children, sx, copy, explorer, actions }: Props) {
             mouseX: event.clientX + 2,
             mouseY: event.clientY - 6,
           }
-        : null
+        : null,
     );
   };
 
   const onAction = (
     e: MouseEvent<HTMLAnchorElement>,
-    action: () => unknown
+    action: () => unknown,
   ) => {
     e.stopPropagation();
     e.preventDefault();

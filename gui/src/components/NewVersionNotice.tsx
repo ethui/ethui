@@ -17,7 +17,7 @@ interface State extends SnackbarOrigin {
 
 export async function getLatestVersion() {
   const response = await fetch(
-    "https://api.github.com/repos/iron-wallet/iron/releases?per_page=1"
+    "https://api.github.com/repos/iron-wallet/iron/releases?per_page=1",
   );
   const json = await response.json();
   return json[0].tag_name;
@@ -39,7 +39,7 @@ export function NewVersionNotice() {
 
   const handleClose = (
     event: React.SyntheticEvent | Event,
-    reason?: string
+    reason?: string,
   ) => {
     event.stopPropagation();
     if (reason === "clickaway" || reason === "escapeKeyDown") {

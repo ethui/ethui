@@ -2866,7 +2866,7 @@ checksum = "28b29a3cd74f0f4598934efe3aeba42bae0eb4680554128851ebbecb02af14e6"
 
 [[package]]
 name = "iron"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "fix-path-env",
  "iron-broadcast",
@@ -2893,7 +2893,7 @@ dependencies = [
 
 [[package]]
 name = "iron-abis"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "ethers",
  "serde",
@@ -2901,7 +2901,7 @@ dependencies = [
 
 [[package]]
 name = "iron-broadcast"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "iron-types",
  "once_cell",
@@ -2911,7 +2911,7 @@ dependencies = [
 
 [[package]]
 name = "iron-connections"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "async-trait",
  "ethers",
@@ -2930,7 +2930,7 @@ dependencies = [
 
 [[package]]
 name = "iron-crypto"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "aead",
  "anyhow",
@@ -2945,7 +2945,7 @@ dependencies = [
 
 [[package]]
 name = "iron-db"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "ethers",
  "iron-broadcast",
@@ -2962,7 +2962,7 @@ dependencies = [
 
 [[package]]
 name = "iron-dialogs"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "iron-broadcast",
  "iron-types",
@@ -2976,7 +2976,7 @@ dependencies = [
 
 [[package]]
 name = "iron-exchange-rates"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "async-trait",
  "ethers",
@@ -2989,7 +2989,7 @@ dependencies = [
 
 [[package]]
 name = "iron-forge"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "ethers",
  "futures",
@@ -3010,7 +3010,7 @@ dependencies = [
 
 [[package]]
 name = "iron-http"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "axum",
  "serde",
@@ -3020,7 +3020,7 @@ dependencies = [
 
 [[package]]
 name = "iron-networks"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "async-trait",
  "ethers",
@@ -3037,7 +3037,7 @@ dependencies = [
 
 [[package]]
 name = "iron-rpc"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "async-trait",
  "enum_dispatch",
@@ -3063,10 +3063,11 @@ dependencies = [
 
 [[package]]
 name = "iron-settings"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "async-trait",
  "ethers",
+ "iron-broadcast",
  "iron-types",
  "once_cell",
  "serde",
@@ -3078,7 +3079,7 @@ dependencies = [
 
 [[package]]
 name = "iron-sync"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "ethers",
  "iron-broadcast",
@@ -3097,7 +3098,7 @@ dependencies = [
 
 [[package]]
 name = "iron-sync-alchemy"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "async-trait",
  "ethers",
@@ -3117,7 +3118,7 @@ dependencies = [
 
 [[package]]
 name = "iron-sync-anvil"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "base64 0.21.3",
  "ethers",
@@ -3140,7 +3141,7 @@ dependencies = [
 
 [[package]]
 name = "iron-tracing"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "thiserror",
  "tracing",
@@ -3149,7 +3150,7 @@ dependencies = [
 
 [[package]]
 name = "iron-types"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "async-trait",
  "ethers",
@@ -3162,7 +3163,7 @@ dependencies = [
 
 [[package]]
 name = "iron-wallets"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "async-trait",
  "coins-bip32",
@@ -3184,7 +3185,7 @@ dependencies = [
 
 [[package]]
 name = "iron-ws"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "async-trait",
  "ethers",

@@ -34,7 +34,7 @@ export function createErrorMiddleware(): JsonRpcMiddleware<unknown, unknown> {
 // resolve response.result or response, reject errors
 export function getRpcPromiseCallback(
   resolve: (value?: unknown) => void,
-  reject: (error?: Error) => void
+  reject: (error?: Error) => void,
 ) {
   return (error: Error, response: PendingJsonRpcResponse<unknown>): void => {
     if (error || response.error) {

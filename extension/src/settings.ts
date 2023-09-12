@@ -13,7 +13,7 @@ export const defaultSettings: Settings = {
 
 export async function loadSettings() {
   const settings = (await browser.storage.sync.get(
-    defaultSettings
+    defaultSettings,
   )) as Settings;
   log.setLevel(settings.logLevel);
   return settings;

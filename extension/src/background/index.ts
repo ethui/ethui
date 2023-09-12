@@ -96,7 +96,7 @@ function connParams(port: Runtime.Port) {
  */
 function encodeUrlParams(p: Record<string, string | undefined>) {
   const filtered: Record<string, string> = Object.fromEntries(
-    Object.entries(p).filter(([, v]) => v !== undefined)
+    Object.entries(p).filter(([, v]) => v !== undefined),
   ) as Record<string, string>;
 
   return Object.entries(filtered)

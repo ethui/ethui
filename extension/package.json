@@ -1,7 +1,7 @@
 {
   "name": "@iron/extension",
   "private": true,
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "A developer-focused Ethereum wallet",
   "homepage": "https://github.com/iron-wallet/iron",
   "license": "MIT",
@@ -9,24 +9,19 @@
   "scripts": {
     "dev": "./scripts/build.sh",
     "build": "yarn run build:chrome && yarn run build:firefox",
-    "release": "yarn run release:chrome && yarn run release:firefox",
     "build:firefox": "./scripts/build.sh --target firefox",
-    "build:chrome": "./scripts/build.sh --target chrome",
-    "release:firefox": "./scripts/build.sh --target firefox --release",
-    "release:chrome": "./scripts/build.sh --target chrome --release"
+    "build:chrome": "./scripts/build.sh --target chrome"
   },
   "devDependencies": {
     "@types/node": "^20.4.5",
-    "@types/webextension-polyfill": "^0.10.1",
-    "@vitejs/plugin-react": "^4.0.4",
+    "@types/webextension-polyfill": "^0.10.2",
     "autoprefixer": "^10.4.14",
-    "buffer": "^5.5.0",
     "crx": "^5.0.1",
     "ts-node": "^10.9.1",
-    "typescript": "^5.1.6",
+    "typescript": "^5.2.2",
     "vite": "^4.4.9",
-    "vite-plugin-node-polyfills": "^0.11.3",
-    "web-ext": "^7.6.2"
+    "vite-plugin-node-polyfills": "^0.12.0",
+    "web-ext": "^7.7.0"
   },
   "dependencies": {
     "@lukeed/uuid": "^2.0.1",
@@ -42,7 +37,6 @@
     "mipd": "^0.0.5",
     "stream": "^0.0.2",
     "webextension-polyfill": "^0.10.0",
-    "websocket-stream": "^5.5.2",
     "websocket-ts": "^1.1.1"
   }
 }
