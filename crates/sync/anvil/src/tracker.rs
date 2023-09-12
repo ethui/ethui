@@ -219,7 +219,7 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
         /* ERC721 - contract tokens' uri and metadata  */
         for erc721_token in ctx
             .db
-            .get_erc721_tokens_missing_data(ctx.chain_id)
+            .get_erc721_tokens_with_missing_data(ctx.chain_id)
             .await?
             .into_iter()
         {
@@ -243,7 +243,7 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
         /* ERC721 - contract's name and symbol  */
         for erc721_address in ctx
             .db
-            .get_erc721_missing_collections(ctx.chain_id)
+            .get_erc721_collections_with_missing_data(ctx.chain_id)
             .await?
             .into_iter()
         {
