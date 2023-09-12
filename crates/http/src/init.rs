@@ -6,7 +6,7 @@ use crate::error::Result;
 
 pub async fn init() {
     tokio::spawn(async {
-        let routes = Router::new().merge(routes_rpc());
+        let routes = Router::new().merge(rpc_proxy());
 
         let addr = std::env::var("IRON_HTTP_SERVER_ENDPOINT")
             .unwrap_or("127.0.0.1:9003".into())
@@ -20,8 +20,8 @@ pub async fn init() {
     });
 }
 
-fn routes_rpc() -> Router {
-    Router::new().route("/", post(handler_rpc))
+fn rpc_proxy() -> Router {
+    Router::new().route("/", post(rpc_handler))
 }
 
 #[derive(Debug, Deserialize)]
@@ -29,7 +29,7 @@ struct RpcParams {
     domain: Option<String>,
 }
 
-async fn handler_rpc(Query(params): Query<RpcParams>, payload: String) -> Result<Json<Value>> {
+async fn rpc_handler(Query(params): Query<RpcParams>, payload: String) -> Result<Json<Value>> {
     let domain = params.domain;
     let handler = iron_rpc::Handler::new(domain);
 

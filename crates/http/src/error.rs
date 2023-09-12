@@ -20,8 +20,9 @@ impl serde::Serialize for Error {
     }
 }
 
+// TODO: revisit this to correctly respond with the appropriate status code
 impl IntoResponse for Error {
     fn into_response(self) -> Response {
-        (StatusCode::INTERNAL_SERVER_ERROR, "UNHANDLED_CLIENT_ERROR").into_response()
+        (StatusCode::INTERNAL_SERVER_ERROR, self.to_string()).into_response()
     }
 }
