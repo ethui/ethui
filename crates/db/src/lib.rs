@@ -326,7 +326,7 @@ impl DB {
         Ok(res)
     }
 
-    pub async fn get_erc721_tokens_missing_data(&self, chain_id: u32) -> Result<Vec<Erc721Token>> {
+    pub async fn get_erc721_tokens_with_missing_data(&self, chain_id: u32) -> Result<Vec<Erc721Token>> {
         let res: Vec<_> = sqlx::query(
             r#"SELECT *
         FROM erc721_tokens
