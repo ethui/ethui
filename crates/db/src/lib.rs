@@ -357,7 +357,7 @@ impl DB {
         Ok(())
     }
 
-    pub async fn get_erc721_missing_collections(&self, chain_id: u32) -> Result<Vec<Address>> {
+    pub async fn get_erc721_collections_with_missing_data(&self, chain_id: u32) -> Result<Vec<Address>> {
         let res: Vec<Address> = sqlx::query(
             r#"SELECT DISTINCT contract 
           FROM erc721_tokens
