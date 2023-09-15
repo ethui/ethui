@@ -46,7 +46,7 @@ export function SettingsGeneral() {
       });
       reset(data);
     },
-    [reset]
+    [reset],
   );
 
   if (!general) return null;
