@@ -19,12 +19,13 @@ export function Nfts() {
     Nft | undefined
   >(undefined);
 
-  const nftsList = useNfts((s) => s.nfts);
+  const nfts = useNfts((s) => s.nfts);
 
   return (
     <Panel>
       <ImageList cols={3} gap={10}>
-        {nftsList.map((nft) => {
+        {nfts.map((nft) => {
+          const imgSrc = nft.metadata ? JSON.parse(nft.metadata).image : undefined;
           return (
             <NftGalleryItem
               key={`${nft.contract}-${ nft.token_id}`}
@@ -32,7 +33,7 @@ export function Nfts() {
               clickHandler={() => {
                 setCurrentNftDetails(nft);
               }}
-              imgSrc={undefined} //nft?.imgSrc}
+              imgSrc={imgSrc} //nft?.imgSrc}
             />
           );
         })}

@@ -5,6 +5,7 @@ import { subscribeWithSelector } from "zustand/middleware";
 import { Address, Nft } from "../types";
 import { useNetworks } from "./networks";
 import { useWallets } from "./wallets";
+import { listen } from "@tauri-apps/api/event";
 
 interface State {
   nfts: Nft[];
@@ -32,7 +33,7 @@ const store: StateCreator<Store> = (set, get) => ({
     if (!address || !chainId) return;
 
     const [nfts] = await Promise.all([
-      invoke<Nft[]>("db_get_erc721_tokens", { chainId }),
+      invoke<Nft[]>("db_get_erc721_tokens", { chainId, owner: address }),
     ]);
 
     set({ nfts });
@@ -50,6 +51,10 @@ const store: StateCreator<Store> = (set, get) => ({
 });
 
 export const useNfts = create<Store>()(subscribeWithSelector(store));
+
+listen("erc721-updated", async () => {
+  await useNfts.getState().reload();
+});
 
 (async () => {
   const interval = setInterval(async () => {
