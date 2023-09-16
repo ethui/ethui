@@ -195,11 +195,14 @@ export interface Tx {
   status: number;
 }
 
-export interface NftToken {
-  hash: `0x${string}`;
+export interface Nft {
   contract: Address;
+  token_id: string;
   owner: Address;
-  // metadata: JSON;
+  name: string;
+  symbol: string;
+  uri: string;
+  metadata: string;
 }
 
 export interface Pagination {

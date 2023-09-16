@@ -2,12 +2,12 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { StateCreator, create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { Address, NftToken } from "../types";
+import { Address, Nft } from "../types";
 import { useNetworks } from "./networks";
 import { useWallets } from "./wallets";
 
 interface State {
-  erc721Tokens: NftToken[];
+  nfts: Nft[];
   address?: Address;
   chainId?: number;
   interval?: NodeJS.Timer;
@@ -24,18 +24,18 @@ type Store = State & Setters;
 const oneMinute = 60 * 1000;
 
 const store: StateCreator<Store> = (set, get) => ({
-  erc721Tokens: [],
+  nfts: [],
   shouldPoll: true,
 
   async reload() {
     const { address, chainId } = get();
     if (!address || !chainId) return;
 
-    const [erc721Tokens] = await Promise.all([
-      invoke<NftToken[]>("db_get_erc721_tokens", { chainId }),
+    const [nfts] = await Promise.all([
+      invoke<Nft[]>("db_get_erc721_tokens", { chainId }),
     ]);
 
-    set({ erc721Tokens });
+    set({ nfts });
   },
 
   setAddress(address) {
@@ -49,22 +49,22 @@ const store: StateCreator<Store> = (set, get) => ({
   },
 });
 
-export const useErc721 = create<Store>()(subscribeWithSelector(store));
+export const useNfts = create<Store>()(subscribeWithSelector(store));
 
 (async () => {
   const interval = setInterval(async () => {
-    await useErc721.getState().reload();
+    await useNfts.getState().reload();
   }, oneMinute);
 
   useWallets.subscribe(
     (s) => s.address,
-    (address?: Address) => useErc721.getState().setAddress(address),
+    (address?: Address) => useNfts.getState().setAddress(address),
     { fireImmediately: true }
   );
 
   useNetworks.subscribe(
     (s) => s.current?.chain_id,
-    (chainId) => useErc721.getState().setChainId(chainId),
+    (chainId) => useNfts.getState().setChainId(chainId),
     { fireImmediately: true }
   );
 

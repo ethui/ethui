@@ -1,28 +1,28 @@
 import { List, ListItem, ListItemText } from "@mui/material";
 
-import { NftToken } from "../types";
+import { Nft } from "../types";
 import { AddressView } from "./AddressView";
 
-export function NftDetailsView({ nftData }: { nftData: NftToken }) {
+export function NftDetailsView({ nft }: { nft: Nft }) {
   return (
     <div>
       <List dense={true}>
         <ListItem>
           <ListItemText
             primary={"Contract Address"}
-            secondary={<AddressView address={nftData.hash} />}
+            secondary={<AddressView address={nft.contract} />}
           />
         </ListItem>
         <ListItem>
           <ListItemText
-            primary={"Chain ID"}
-            secondary={<AddressView address={nftData.hash} />}
+            primary={"Token ID"}
+            secondary={<AddressView address={nft.token_id} />}
           />
         </ListItem>
         <ListItem>
           <ListItemText
-            primary={"Owner"}
-            secondary={<AddressView address={nftData.hash} />}
+            primary={"Metadata"}
+            secondary={<p>{JSON.stringify(nft.metadata)}</p>}
           />
         </ListItem>
         <ListItem>

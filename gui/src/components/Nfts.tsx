@@ -1,8 +1,8 @@
 import { ImageList, ImageListItem, ImageListItemBar } from "@mui/material";
 import { useState } from "react";
 
-import { useErc721 } from "../store/erc721";
-import { Address, NftToken } from "../types";
+import { useNfts } from "../store/nfts";
+import { Address, Nft } from "../types";
 import { Modal, NftDetailsView } from "./";
 import { AddressView } from "./AddressView";
 import { Panel } from "./Panel";
@@ -16,10 +16,10 @@ interface NftGalleryItemProps {
 export function Nfts() {
   const [detailsViewOpen, setDetailsViewOpen] = useState(false);
   const [currentNftDetails, setCurrentNftDetails] = useState<
-    NftToken | undefined
+    Nft | undefined
   >(undefined);
 
-  const nftsList = useErc721((s) => s.erc721Tokens);
+  const nftsList = useNfts((s) => s.nfts);
 
   return (
     <Panel>
@@ -27,8 +27,8 @@ export function Nfts() {
         {nftsList.map((nft) => {
           return (
             <NftGalleryItem
-              key={nft.hash}
-              contract={nft.hash}
+              key={`${nft.contract}-${ nft.token_id}`}
+              contract={nft.contract}
               clickHandler={() => {
                 setCurrentNftDetails(nft);
               }}
@@ -45,7 +45,7 @@ export function Nfts() {
           setDetailsViewOpen(false);
         }}
       >
-        {currentNftDetails && <NftDetailsView nftData={currentNftDetails} />}
+        {currentNftDetails && <NftDetailsView nft={currentNftDetails} />}
       </Modal>
     </Panel>
   );
