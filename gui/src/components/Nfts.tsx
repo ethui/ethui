@@ -27,14 +27,15 @@ export function Nfts() {
         {nfts.map((nft) => {
           const imgSrc = nft.metadata ? JSON.parse(nft.metadata).image : undefined;
           return (
-            <Item
-              key={`${nft.contract}-${ nft.token_id}`}
-              contract={nft.contract}
-              clickHandler={() => {
-                setCurrentNftDetails(nft);
-              }}
-              imgSrc={imgSrc} //nft?.imgSrc}
-            />
+            <Grid item key={`${nft.contract}-${ nft.token_id}`}>
+              <Item
+                contract={nft.contract}
+                clickHandler={() => {
+                  setCurrentNftDetails(nft);
+                }}
+                imgSrc={imgSrc} //nft?.imgSrc}
+              />
+            </Grid>
           );
         })}
       </Grid>
@@ -58,22 +59,20 @@ export function Nfts() {
     clickHandler,
   }: ItemProps) {
     return (
-      <Grid item>
         <Card onClick={() => {
           clickHandler();
           setDetailsViewOpen(true);
         }}>
-        <CardMedia
-          component="img"
-          image={`${imgSrc ?? ''}`}
-          alt="Nft image" />
+          <CardMedia
+            component="img"
+            image={`${imgSrc ?? ''}`}
+            alt="Nft image" />
           <CardContent  sx={{ display: 'flex', width: '100%', justifyContent: 'center'}}>
-          <Typography variant={"body1"}>
-              <AddressView address={contract} />
-            </Typography>
+            <Typography variant={"body1"}>
+                <AddressView address={contract} />
+              </Typography>
           </CardContent>
         </Card>
-      </Grid>
     );
   }
 }
