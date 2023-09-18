@@ -6,7 +6,6 @@ import { Address, Nft } from "../types";
 import { Modal, NftDetailsView } from "./";
 import { AddressView } from "./AddressView";
 import { Panel } from "./Panel";
-import { flare } from "viem/chains";
 
 interface ItemProps {
   contract: Address;
