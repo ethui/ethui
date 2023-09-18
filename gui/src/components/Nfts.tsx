@@ -1,4 +1,4 @@
-import { Card, CardContent, CardMedia, Grid } from "@mui/material";
+import { Card, CardContent, CardMedia, Grid, Typography } from "@mui/material";
 import { useState } from "react";
 
 import { useNfts } from "../store/nfts";
@@ -6,8 +6,9 @@ import { Address, Nft } from "../types";
 import { Modal, NftDetailsView } from "./";
 import { AddressView } from "./AddressView";
 import { Panel } from "./Panel";
+import { flare } from "viem/chains";
 
-interface NftGalleryItemProps {
+interface ItemProps {
   contract: Address;
   imgSrc: string | undefined;
   clickHandler: () => void;
@@ -27,7 +28,7 @@ export function Nfts() {
         {nfts.map((nft) => {
           const imgSrc = nft.metadata ? JSON.parse(nft.metadata).image : undefined;
           return (
-            <NftGalleryItem
+            <Item
               key={`${nft.contract}-${ nft.token_id}`}
               contract={nft.contract}
               clickHandler={() => {
@@ -52,25 +53,25 @@ export function Nfts() {
     </Panel>
   );
 
-  function NftGalleryItem({
+  function Item({
     contract,
     imgSrc,
     clickHandler,
-  }: NftGalleryItemProps) {
+  }: ItemProps) {
     return (
-      <Grid item
-        onClick={() => {
+      <Grid item>
+        <Card onClick={() => {
           clickHandler();
           setDetailsViewOpen(true);
-        }}
-      >
-        <Card>
+        }}>
         <CardMedia
           component="img"
           image={`${imgSrc ?? ''}`}
           alt="Nft image" />
-          <CardContent>
-            <AddressView address={contract} />
+          <CardContent  sx={{ display: 'flex', width: '100%', justifyContent: 'center'}}>
+          <Typography variant={"body1"}>
+              <AddressView address={contract} />
+            </Typography>
           </CardContent>
         </Card>
       </Grid>
