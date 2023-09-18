@@ -26,7 +26,7 @@ export function ABIForm({ address, abi }: Props) {
 
   const handleChange = (
     _event: SyntheticEvent,
-    value: { item: ABIItem } | null,
+    value: { item: ABIItem } | null
   ) => {
     if (value === null) {
       setCurrentItem(undefined);

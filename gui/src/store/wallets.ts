@@ -116,7 +116,7 @@ const fetchAllWalletInfo = async (wallets: Wallet[]): Promise<WalletInfo[]> =>
       wallets.map(async (wallet) => {
         const addresses = await invoke<[string, Address][]>(
           "wallets_get_wallet_addresses",
-          { name: wallet.name },
+          { name: wallet.name }
         );
 
         return {
@@ -128,9 +128,9 @@ const fetchAllWalletInfo = async (wallets: Wallet[]): Promise<WalletInfo[]> =>
               address,
               walletName: wallet.name,
               alias: await invoke<string>("settings_get_alias", { address }),
-            })),
+            }))
           ),
         };
-      }),
+      })
     )
   ).flat();

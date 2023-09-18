@@ -19,7 +19,7 @@ export function QuickAddressSelect() {
   ]);
   const { data: addresses } = useInvoke<[string, Address][]>(
     "wallets_get_wallet_addresses",
-    { name: currentWallet?.name },
+    { name: currentWallet?.name }
   );
 
   const handleChange = (event: SelectChangeEvent<string | undefined>) => {

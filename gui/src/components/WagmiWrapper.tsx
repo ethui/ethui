@@ -36,7 +36,7 @@ export function WagmiWrapper({ children }: Props) {
           http: network.http_url,
         }),
       }),
-    ],
+    ]
   );
   const config = createConfig({
     autoConnect: true,

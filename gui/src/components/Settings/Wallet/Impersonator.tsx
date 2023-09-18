@@ -12,7 +12,7 @@ export const schema = z.object({
   addresses: z.array(
     z.object({
       address: addressSchema,
-    }),
+    })
   ),
   current: z.number().optional(),
 });

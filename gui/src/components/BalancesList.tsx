@@ -42,7 +42,7 @@ function BalancesERC20() {
   const { data: settings } = useInvoke<GeneralSettings>("settings_get");
 
   const filteredBalances = (balances || []).filter(
-    (token) => !settings?.hideEmptyTokens || BigInt(token.balance) > 0,
+    (token) => !settings?.hideEmptyTokens || BigInt(token.balance) > 0
   );
 
   return (

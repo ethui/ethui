@@ -39,7 +39,7 @@ const store: StateCreator<Store> = (set, get) => ({
     const { darkMode } = await invoke<GeneralSettings>("settings_get");
 
     const prefersDarkMode = window.matchMedia(
-      "(prefers-color-scheme: dark)",
+      "(prefers-color-scheme: dark)"
     ).matches;
 
     const mode =

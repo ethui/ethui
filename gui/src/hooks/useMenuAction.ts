@@ -7,7 +7,7 @@ export function useMenuGoAction(callback: (payload: string) => unknown) {
       "go",
       ({ payload }: { payload: string }) => {
         callback(payload);
-      },
+      }
     );
 
     return () => {

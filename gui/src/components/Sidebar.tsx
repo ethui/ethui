@@ -71,13 +71,13 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
   useKeyPress(
     range(1, TABS.length + 1).map(toString),
     { meta: true },
-    handleKeyboardNavigation,
+    handleKeyboardNavigation
   );
 
   useKeyPress(
     range(1, TABS.length + 1).map(toString),
     { ctrl: true },
-    handleKeyboardNavigation,
+    handleKeyboardNavigation
   );
 
   return (
@@ -113,13 +113,13 @@ export function Sidebar() {
   useKeyPress(
     range(1, TABS.length + 1).map(toString),
     { meta: true },
-    handleKeyboardNavigation,
+    handleKeyboardNavigation
   );
 
   useKeyPress(
     range(1, TABS.length + 1).map(toString),
     { ctrl: true },
-    handleKeyboardNavigation,
+    handleKeyboardNavigation
   );
 
   return (
