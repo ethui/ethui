@@ -58,7 +58,7 @@ export function useNoticeAlchemyKeyMissing() {
             </IconButton>
           </>
         ),
-      }
+      },
     );
   }, [closeSnackbar, enqueueSnackbar, open, requiresAlchemyKey]);
 }

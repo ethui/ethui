@@ -10,7 +10,7 @@ const fetchVersion = () => {
     transformIndexHtml(html) {
       return html.replace(
         /__APP_VERSION__/,
-        `v${process.env.npm_package_version}`
+        `v${process.env.npm_package_version}`,
       );
     },
   };

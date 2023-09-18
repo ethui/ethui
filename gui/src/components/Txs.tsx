@@ -77,7 +77,7 @@ export function Txs() {
           {pages.flatMap((page) =>
             page.items.map((tx) => (
               <Receipt account={account} tx={tx} key={tx.hash} />
-            ))
+            )),
           )}
         </List>
       </InfiniteScroll>

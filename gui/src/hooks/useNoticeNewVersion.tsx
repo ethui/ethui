@@ -7,7 +7,7 @@ import packageJson from "../../../package.json";
 
 export async function getLatestVersion() {
   const response = await fetch(
-    "https://api.github.com/repos/iron-wallet/iron/releases?per_page=1"
+    "https://api.github.com/repos/iron-wallet/iron/releases?per_page=1",
   );
   const json = await response.json();
   return json[0].tag_name;
@@ -55,7 +55,7 @@ export function useNoticeNewVersion() {
             <CloseIcon />
           </IconButton>
         ),
-      }
+      },
     );
   }, [latest, current, closeSnackbar, enqueueSnackbar]);
 
