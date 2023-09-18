@@ -1,4 +1,4 @@
-import { List, ListItem, ListItemText } from "@mui/material";
+import { List, ListItem, ListItemText, Typography } from "@mui/material";
 
 import { Nft } from "../types";
 import { AddressView } from "./AddressView";
@@ -15,6 +15,16 @@ export function NftDetailsView({ nft }: { nft: Nft }) {
         </ListItem>
         <ListItem>
           <ListItemText
+            primary={<Typography variant="body2" color="text.primary">
+            Collection
+            </Typography>}
+          secondary={<Typography variant="body2" color="text.secondary">
+            {nft.name} ({nft.symbol})
+            </Typography>}
+          />
+        </ListItem>
+        <ListItem>
+          <ListItemText
             primary={"Token ID"}
             secondary={<AddressView address={nft.token_id} />}
           />
@@ -22,11 +32,14 @@ export function NftDetailsView({ nft }: { nft: Nft }) {
         <ListItem>
           <ListItemText
             primary={"Metadata"}
-            secondary={<p>{JSON.stringify(nft.metadata)}</p>}
+            secondary={nft.metadata}
           />
         </ListItem>
         <ListItem>
-          <ListItemText primary={"Metadata"} secondary={"{}"} />
+          <ListItemText
+            primary={"Asset URL"}
+            secondary={JSON.parse(nft.metadata).image}
+          />
         </ListItem>
       </List>
     </div>

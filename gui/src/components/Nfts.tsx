@@ -1,4 +1,4 @@
-import { ImageList, ImageListItem, ImageListItemBar } from "@mui/material";
+import { Card, CardContent, CardMedia, Grid } from "@mui/material";
 import { useState } from "react";
 
 import { useNfts } from "../store/nfts";
@@ -23,7 +23,7 @@ export function Nfts() {
 
   return (
     <Panel>
-      <ImageList cols={3} gap={10}>
+      <Grid container spacing={1}>
         {nfts.map((nft) => {
           const imgSrc = nft.metadata ? JSON.parse(nft.metadata).image : undefined;
           return (
@@ -37,9 +37,10 @@ export function Nfts() {
             />
           );
         })}
-      </ImageList>
+      </Grid>
 
       <Modal
+        sx={{width: '80%'}}
         open={detailsViewOpen}
         onClose={() => {
           setCurrentNftDetails(undefined);
@@ -57,28 +58,22 @@ export function Nfts() {
     clickHandler,
   }: NftGalleryItemProps) {
     return (
-      <ImageListItem
-        sx={{ cursor: "pointer" }}
+      <Grid item
         onClick={() => {
           clickHandler();
           setDetailsViewOpen(true);
         }}
       >
-        <img
-          src={`${
-            imgSrc ?? "https://placehold.co/150x150"
-          }?w=164&h=164&fit=crop&auto=format`}
-          srcSet={`${
-            imgSrc ?? "https://placehold.co/150x150"
-          }?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-          alt={contract.slice(0, 1)}
-          loading="lazy"
-        />
-        <ImageListItemBar
-          title={<AddressView address={contract} />}
-          position="bottom"
-        />
-      </ImageListItem>
+        <Card>
+        <CardMedia
+          component="img"
+          image={`${imgSrc ?? ''}`}
+          alt="Nft image" />
+          <CardContent>
+            <AddressView address={contract} />
+          </CardContent>
+        </Card>
+      </Grid>
     );
   }
 }
