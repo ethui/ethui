@@ -6,7 +6,7 @@ import { Wallet, walletSchema } from "../../../types";
 
 interface JsonKeystoreProps {
   wallet: Wallet & { type: "jsonKeystore" };
-  onSubmit: (data: Wallet & { type: "jsonKeystore" }) => void;
+  onSubmit: (data: FieldValues) => void;
   onRemove: () => void;
 }
 export function JsonKeystore({

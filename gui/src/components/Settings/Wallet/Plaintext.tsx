@@ -15,7 +15,7 @@ import { Wallet, walletSchema } from "../../../types";
 
 export interface Props {
   wallet: Wallet & { type: "plaintext" };
-  onSubmit: (data: Wallet & { type: "plaintext" }) => void;
+  onSubmit: (data: FieldValues) => void;
   onRemove: () => void;
 }
 

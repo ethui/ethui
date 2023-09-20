@@ -12,7 +12,8 @@ import {
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import { startCase } from "lodash-es";
-import { ChangeEvent, useState } from "react";
+import { useState } from "react";
+import { type FieldValues } from "react-hook-form";
 
 import { useWallets } from "../../store";
 import { Wallet, walletTypes } from "../../types";
@@ -26,13 +27,6 @@ type NewChild = { new?: boolean };
 export function SettingsWallets() {
   const wallets = useWallets((s) => s.wallets);
   const [newWallets, setNewWallets] = useState<Wallet[]>([]);
-  const [expanded, setExpanded] = useState<string | false>(false);
-
-  const handleAccordion =
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    (panel: string) => (event: ChangeEvent<{}>, isExpanded: boolean) => {
-      setExpanded(isExpanded ? panel : false);
-    };
 
   if (!wallets) return null;
 
@@ -53,7 +47,6 @@ export function SettingsWallets() {
     } else {
       await invoke("wallets_update", { name: wallet.name, params });
     }
-    setExpanded(false);
   };
 
   const remove = async (
@@ -72,18 +65,13 @@ export function SettingsWallets() {
       <Stack>
         {allWallets.map((wallet, i) => {
           const props = {
-            onSubmit: (params: object) => save(wallet, params, i),
+            onSubmit: (params: FieldValues) => save(wallet, params, i),
             onRemove: () => remove(wallet, i),
             onCancel: () => wallet.new && remove(wallet, i),
           };
 
           return (
-            <Accordion
-              key={wallet.name}
-              defaultExpanded={wallet.new}
-              expanded={expanded === wallet.name}
-              onChange={handleAccordion(wallet.name)}
-            >
+            <Accordion key={wallet.name} defaultExpanded={wallet.new}>
               <AccordionSummary expandIcon={<ExpandMore />}>
                 <Stack alignItems="center" direction="row">
                   <Typography>
