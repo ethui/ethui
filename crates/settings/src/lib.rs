@@ -11,7 +11,7 @@ use std::{
 
 use ethers::core::types::Address;
 pub use init::init;
-use iron_types::ChecksummedAddress;
+use iron_types::{ChecksummedAddress, UINotify};
 use serde::{Deserialize, Serialize};
 
 pub use self::error::{Error, Result};
@@ -35,23 +35,23 @@ impl Settings {
     /// Changes the currently connected wallet
     ///
     /// Broadcasts `accountsChanged`
-    pub fn set(&mut self, new_settings: SerializedSettings) -> Result<()> {
+    pub async fn set(&mut self, new_settings: SerializedSettings) -> Result<()> {
         self.inner = new_settings;
-        self.save()?;
+        self.save().await?;
 
         Ok(())
     }
 
-    pub fn set_dark_mode(&mut self, mode: DarkMode) -> Result<()> {
+    pub async fn set_dark_mode(&mut self, mode: DarkMode) -> Result<()> {
         self.inner.dark_mode = mode;
-        self.save()?;
+        self.save().await?;
 
         Ok(())
     }
 
-    pub fn finish_onboarding(&mut self) -> Result<()> {
+    pub async fn finish_onboarding(&mut self) -> Result<()> {
         self.inner.onboarded = true;
-        self.save()?;
+        self.save().await?;
 
         Ok(())
     }
@@ -84,12 +84,13 @@ impl Settings {
     }
 
     // Persists current state to disk
-    fn save(&self) -> Result<()> {
+    async fn save(&self) -> Result<()> {
         let pathbuf = self.file.clone();
         let path = Path::new(&pathbuf);
         let file = File::create(path)?;
 
         serde_json::to_writer_pretty(file, &self.inner)?;
+        iron_broadcast::ui_notify(UINotify::SettingsChanged).await;
 
         Ok(())
     }

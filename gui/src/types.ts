@@ -1,3 +1,5 @@
+import { validateMnemonic } from "@scure/bip39";
+import { wordlist } from "@scure/bip39/wordlists/english";
 import { z } from "zod";
 
 export const generalSettingsSchema = z.object({
@@ -29,8 +31,8 @@ export const networkSchema = z.object({
         {
           path: ["ws_url"],
           message: "WebSockets are mandatory for dev networks",
-        }
-      )
+        },
+      ),
   ),
 });
 
@@ -39,7 +41,7 @@ export const passwordSchema = z
   .min(8, { message: "must be at least 8 characters long" })
   .regex(
     new RegExp("[^a-zA-Z0-9]"),
-    "must have at least one special character"
+    "must have at least one special character",
   );
 
 export const passwordFormSchema = z
@@ -65,8 +67,11 @@ export const mnemonicSchema = z
     {
       message:
         "Invalid number of words. Needs to be 12, 15, 18, 21 or 24 words long",
-    }
-  );
+    },
+  )
+  .refine((data) => validateMnemonic(data, wordlist), {
+    message: "Invalid mnemonic. You have have a typo or an unsupported word",
+  });
 
 export const derivationPathSchema = z
   .string()
@@ -138,7 +143,7 @@ export const walletSchema = z.discriminatedUnion("type", [
 ]);
 
 export const walletTypes: Wallet["type"][] = Array.from(
-  walletSchema.optionsMap.keys()
+  walletSchema.optionsMap.keys(),
 )
   .filter((k) => !!k)
   .map((k) => k as unknown as Wallet["type"]);

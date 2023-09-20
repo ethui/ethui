@@ -12,4 +12,4 @@ authors.workspace = true
 tracing = { workspace = true }
 thiserror = { workspace = true }
 
-tracing-subscriber = "0.3"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }

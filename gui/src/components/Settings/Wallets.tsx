@@ -45,7 +45,7 @@ export function SettingsWallets() {
   const save = async (
     wallet: Wallet & NewChild,
     params: object,
-    idx: number
+    idx: number,
   ) => {
     if (wallet.new) {
       invoke("wallets_create", { params });
@@ -58,7 +58,7 @@ export function SettingsWallets() {
 
   const remove = async (
     wallet: { name: string; new?: boolean },
-    idx: number
+    idx: number,
   ) => {
     if (wallet.new) {
       setNewWallets(newWallets.filter((_, i) => i != idx - wallets.length));

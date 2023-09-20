@@ -6,7 +6,6 @@ import { useInvoke } from "../hooks";
 export function DevBuildNotice() {
   const { data: buildMode } = useInvoke<string>("get_build_mode");
 
-  return null;
   if (buildMode === "debug") {
     return (
       <Stack

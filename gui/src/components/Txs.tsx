@@ -15,7 +15,7 @@ import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { formatEther } from "viem";
 
-import { useRefreshTransactions } from "../hooks";
+import { useEventListener } from "../hooks";
 import { useNetworks, useWallets } from "../store";
 import { Address, Paginated, Pagination, Tx } from "../types";
 import { AddressView, ContextMenu, Panel } from "./";
@@ -49,7 +49,7 @@ export function Txs() {
     setPages([]);
   };
 
-  useRefreshTransactions(reload);
+  useEventListener("txs-updated", reload);
   useEffect(reload, [account, chainId]);
 
   if (!account) return null;
@@ -77,7 +77,7 @@ export function Txs() {
           {pages.flatMap((page) =>
             page.items.map((tx) => (
               <Receipt account={account} tx={tx} key={tx.hash} />
-            ))
+            )),
           )}
         </List>
       </InfiniteScroll>
