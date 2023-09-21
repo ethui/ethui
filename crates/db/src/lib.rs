@@ -3,6 +3,8 @@ mod error;
 mod pagination;
 mod queries;
 mod utils;
+use std::{path::PathBuf, str::FromStr};
+
 use ethers::types::{Address, H256, U256};
 use iron_types::{
     events::Tx, Erc721Token, Erc721TokenData, Event, StoredContract, TokenBalance, TokenMetadata,
@@ -11,7 +13,6 @@ use sqlx::{
     sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous},
     Row,
 };
-use std::{path::PathBuf, str::FromStr};
 use tracing::{instrument, trace};
 
 pub use self::{
@@ -326,7 +327,10 @@ impl DB {
         Ok(res)
     }
 
-    pub async fn get_erc721_tokens_with_missing_data(&self, chain_id: u32) -> Result<Vec<Erc721Token>> {
+    pub async fn get_erc721_tokens_with_missing_data(
+        &self,
+        chain_id: u32,
+    ) -> Result<Vec<Erc721Token>> {
         let res: Vec<_> = sqlx::query(
             r#"SELECT *
         FROM erc721_tokens
@@ -357,7 +361,10 @@ impl DB {
         Ok(())
     }
 
-    pub async fn get_erc721_collections_with_missing_data(&self, chain_id: u32) -> Result<Vec<Address>> {
+    pub async fn get_erc721_collections_with_missing_data(
+        &self,
+        chain_id: u32,
+    ) -> Result<Vec<Address>> {
         let res: Vec<Address> = sqlx::query(
             r#"SELECT DISTINCT contract 
           FROM erc721_tokens

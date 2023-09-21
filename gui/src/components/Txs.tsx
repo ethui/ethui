@@ -26,7 +26,7 @@ import { waitForTransaction } from "wagmi/actions";
 import { useEventListener, useProvider } from "../hooks";
 import { useNetworks, useWallets } from "../store";
 import { Address, Paginated, Pagination, Tx } from "../types";
-import { AddressView, ContextMenu, Panel } from "./";
+import { AddressView, ContextMenu, MonoText, Panel } from "./";
 
 export function Txs() {
   const account = useWallets((s) => s.address);
@@ -140,8 +140,6 @@ interface DetailsProps {
 }
 
 function Details({ tx }: DetailsProps) {
-  const provider = useProvider();
-
   const { data: transaction } = useTransaction({ hash: tx.hash });
   const { data: receipt } = useWaitForTransaction({ hash: tx.hash });
 
@@ -164,15 +162,10 @@ function Details({ tx }: DetailsProps) {
       />
       <Datapoint
         label="data"
-        value={
-          <Typography
-            sx={{ overflowWrap: "break-word", fontFamily: "monospace" }}
-          >
-            {transaction.input}
-          </Typography>
-        }
+        value={<MonoText>{transaction.input}</MonoText>}
         mono
       />
+      <Datapoint label="nonce" value={transaction.nonce} />
       <Datapoint label="type" value={transaction.type} />
       {/* TODO: other txs types */}
       {transaction.type == "eip1559" && (
