@@ -32,6 +32,7 @@ pub enum UINotify {
     BalancesUpdated,
     ContractsUpdated,
     SettingsChanged,
+    Erc721Updated,
 }
 
 impl UINotify {
@@ -44,6 +45,7 @@ impl UINotify {
             Self::BalancesUpdated => "balances-updated",
             Self::ContractsUpdated => "contracts-updated",
             Self::SettingsChanged => "settings-changed",
+            Self::Erc721Updated => "erc721-updated",
         }
     }
 }

@@ -115,10 +115,10 @@ pub(super) fn erc20_update_balance<'a>(
 }
 
 pub(super) fn erc721_transfer<'a>(tx: &events::ERC721Transfer, chain_id: u32) -> Query<'a> {
-    if !tx.to.is_zero() {
+    if tx.to.is_zero() {
         // burning
         sqlx::query(
-            r#" DELETE FROM nft_tokens WHERE chain_id = ? AND contract = ? AND token_id = ? "#,
+            r#" DELETE FROM erc721_tokens WHERE chain_id = ? AND contract = ? AND token_id = ? "#,
         )
         .bind(chain_id)
         .bind(format!("0x{:x}", tx.contract))
@@ -126,15 +126,50 @@ pub(super) fn erc721_transfer<'a>(tx: &events::ERC721Transfer, chain_id: u32) ->
     } else {
         // minting or transfer
         sqlx::query(
-            r#" INSERT INTO nft_tokens (chain_id, contract, token_id, owner)
-                            VALUES (?,?,?,?)
-                            ON CONFLICT REPLACE"#,
+            r#" INSERT OR REPLACE INTO erc721_tokens (contract, chain_id, token_id, owner)
+                        VALUES (?,?,?,?)"#,
         )
-        .bind(chain_id)
         .bind(format!("0x{:x}", tx.contract))
+        .bind(chain_id)
         .bind(format!("0x{:x}", tx.token_id))
         .bind(format!("0x{:x}", tx.to))
     }
+}
+
+pub(super) fn update_erc721_token<'a>(
+    address: Address,
+    chain_id: u32,
+    token_id: U256,
+    owner: Address,
+    uri: String,
+    metadata: String,
+) -> Query<'a> {
+    sqlx::query(
+        r#" INSERT OR REPLACE INTO erc721_tokens (contract, chain_id, token_id, owner, uri, metadata)
+                        VALUES (?,?,?,?,?,?) "#,
+    )
+    .bind(format!("0x{:x}", address))
+    .bind(chain_id)
+    .bind(format!("0x{:x}", token_id))
+    .bind(format!("0x{:x}", owner))
+    .bind(uri)
+    .bind(metadata)
+}
+
+pub(super) fn update_erc721_collection<'a>(
+    address: Address,
+    chain_id: u32,
+    name: String,
+    symbol: String,
+) -> Query<'a> {
+    sqlx::query(
+        r#" INSERT OR REPLACE INTO erc721_collections (contract, chain_id, name, symbol)
+                      VALUES (?,?,?,?) "#,
+    )
+    .bind(format!("0x{:x}", address))
+    .bind(chain_id)
+    .bind(name)
+    .bind(symbol)
 }
 
 pub(super) fn get_tip<'a>(
