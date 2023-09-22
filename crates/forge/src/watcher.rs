@@ -25,6 +25,7 @@ pub(super) async fn async_watch<P: AsRef<Path>>(
     snd: mpsc::UnboundedSender<Match>,
     kill: broadcast::Receiver<()>,
 ) -> notify::Result<()> {
+    // TODO: listen to the killer
     let (mut watcher, mut rx) = async_watcher()?;
 
     // Add a path to be watched. All files and directories at that path and
