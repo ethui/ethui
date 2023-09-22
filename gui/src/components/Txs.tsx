@@ -21,9 +21,8 @@ import InfiniteScroll from "react-infinite-scroller";
 import truncateEthAddress from "truncate-eth-address";
 import { formatEther, formatGwei } from "viem";
 import { useTransaction, useWaitForTransaction } from "wagmi";
-import { waitForTransaction } from "wagmi/actions";
 
-import { useEventListener, useProvider } from "../hooks";
+import { useEventListener } from "../hooks";
 import { useNetworks, useWallets } from "../store";
 import { Address, Paginated, Pagination, Tx } from "../types";
 import { AddressView, ContextMenu, MonoText, Panel } from "./";
@@ -142,8 +141,6 @@ interface DetailsProps {
 function Details({ tx }: DetailsProps) {
   const { data: transaction } = useTransaction({ hash: tx.hash });
   const { data: receipt } = useWaitForTransaction({ hash: tx.hash });
-
-  console.log(transaction, receipt);
 
   if (!receipt || !transaction) return null;
 
