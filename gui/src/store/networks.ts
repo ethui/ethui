@@ -18,6 +18,7 @@ interface Setters {
   resetNetworks: () => Promise<void>;
   reload: () => Promise<void>;
   reloadActions: () => void;
+  isAlchemySupportedNetwork: () => Promise<boolean>;
 }
 
 type Store = State & Setters;
@@ -74,6 +75,16 @@ const store: StateCreator<Store> = (set, get) => ({
     ];
 
     set({ actions });
+  },
+
+  async isAlchemySupportedNetwork() {
+    const current = get().current;
+
+    if (!current) return false;
+
+    return await invoke<boolean>("sync_alchemy_is_network_supported", {
+      chainId: current.chain_id,
+    });
   },
 });
 
