@@ -32,6 +32,7 @@ async fn receiver() -> ! {
             use InternalMsg::*;
 
             if let SettingsUpdated = msg {
+                dbg!("updating");
                 let settings = Settings::read().await;
                 let new_enabled = settings.inner.abi_watch;
                 let new_path = settings.inner.abi_watch_path.clone();
