@@ -77,17 +77,15 @@ export function SettingsGeneral() {
         </FormControl>
         <FormControl error={!!errors.abiWatch}>
           <FormGroup>
-            <FormControlLabel
-              label="ABI Watcher"
-              control={
-                <Controller
-                  name="abiWatch"
-                  control={control}
-                  render={({ field }) => (
-                    <Checkbox {...field} checked={field.value} />
-                  )}
+            <Controller
+              name="abiWatch"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  label="ABI Watcher"
+                  control={<Checkbox {...field} checked={field.value} />}
                 />
-              }
+              )}
             />
           </FormGroup>
           {errors.abiWatch && (
@@ -96,6 +94,7 @@ export function SettingsGeneral() {
             </FormHelperText>
           )}
         </FormControl>
+
         <TextField
           label="ABI Watch path"
           defaultValue={general.abiWatchPath}
@@ -120,23 +119,22 @@ export function SettingsGeneral() {
         />
         <FormControl error={!!errors.hideEmptyTokens}>
           <FormGroup>
-            <FormControlLabel
-              label="Hide Tokens Without Balance"
-              control={
-                <Controller
-                  name="hideEmptyTokens"
-                  control={control}
-                  render={({ field }) => (
-                    <Checkbox
-                      {...field}
-                      checked={field.value}
-                      onChange={(e) => field.onChange(e.target.checked)}
-                    />
-                  )}
+            <Controller
+              name="hideEmptyTokens"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  label="Hide Tokens Without Balance"
+                  control={<Checkbox {...field} checked={field.value} />}
                 />
-              }
+              )}
             />
           </FormGroup>
+          {errors.abiWatch && (
+            <FormHelperText>
+              {errors.hideEmptyTokens?.message?.toString()}
+            </FormHelperText>
+          )}
         </FormControl>
         <Button
           variant="contained"
