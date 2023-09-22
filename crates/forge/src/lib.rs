@@ -58,13 +58,6 @@ impl Forge {
             snd
         };
 
-        // kill the previous watcher, if any
-        if let Some(ref killer) = foundry.killer.take() {
-            dbg!("killing");
-            killer.send(()).unwrap();
-        }
-
-        // setup a new killer
         let kill = broadcast::channel(1);
         foundry.killer = Some(kill.0);
 
@@ -74,6 +67,19 @@ impl Forge {
 
         // spawns a one-off initial file globber
         spawn(async { watcher::scan_glob(path_clone, snd).await.unwrap() });
+
+        Ok(())
+    }
+
+    async fn stop() -> Result<()> {
+        dbg!("stopping");
+        let mut foundry = FORGE.write().await;
+
+        // kill the previous watcher, if any
+        if let Some(ref killer) = foundry.killer.take() {
+            dbg!("killing");
+            killer.send(()).unwrap();
+        }
 
         Ok(())
     }

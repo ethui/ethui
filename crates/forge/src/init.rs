@@ -22,17 +22,20 @@ pub async fn init() -> crate::Result<()> {
 async fn receiver() -> ! {
     let mut rx = iron_broadcast::subscribe_internal().await;
 
-    let settings = Settings::read().await;
+    let (mut enabled, mut path) = {
+        let settings = Settings::read().await;
 
-    let mut enabled = settings.inner.abi_watch;
-    let mut path = settings.inner.abi_watch_path.clone();
+        (
+            settings.inner.abi_watch,
+            settings.inner.abi_watch_path.clone(),
+        )
+    };
 
     loop {
         if let Ok(msg) = rx.recv().await {
             use InternalMsg::*;
 
             if let SettingsUpdated = msg {
-                dbg!("updating");
                 let settings = Settings::read().await;
                 let new_enabled = settings.inner.abi_watch;
                 let new_path = settings.inner.abi_watch_path.clone();
@@ -41,15 +44,17 @@ async fn receiver() -> ! {
                     continue;
                 }
 
-                // stop
-                if new_enabled {
-                    // start
+                dbg!("here");
+
+                let _ = Forge::stop().await;
+
+                if let (true, Some(path)) = (new_enabled, new_path.clone()) {
+                    let _ = Forge::start(path).await;
                 }
 
                 enabled = new_enabled;
                 path = new_path;
             }
         }
-        // if let Ok(msg)=
     }
 }
