@@ -15,7 +15,7 @@ export async function init() {
   settings = await loadSettings();
 
   // handle each incoming content script connection
-  browser.runtime.onConnect.addListener(async (remotePort: Runtime.Port) => {
+  browser.runtime.onConnect.addListener((remotePort: Runtime.Port) => {
     setupProviderConnection(remotePort);
   });
 }
