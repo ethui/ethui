@@ -125,7 +125,7 @@ function getDesignTokens(mode: PaletteMode): ThemeOptions {
           root: {
             borderColor,
             borderBottomStyle: "solid",
-            backgroundColor: "transparent",
+            backgroundColor: theme.palette.background.default,
             color: "inherit",
           },
         },
