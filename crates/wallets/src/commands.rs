@@ -68,3 +68,9 @@ pub async fn wallets_get_mnemonic_addresses(
 ) -> Vec<(String, ChecksummedAddress)> {
     utils::derive_addresses(&mnemonic, &derivation_path, 5)
 }
+
+//Checking the mnemonic when entering a new wallet
+#[tauri::command]
+pub fn verified_wallet_mnemonic(mnemonic: String) -> bool {
+    utils::validate_mnemonic(&mnemonic)
+}
