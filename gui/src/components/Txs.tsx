@@ -200,12 +200,7 @@ interface DatapointProps {
   mono: boolean;
 }
 
-const monoStyle = {
-  overflowWrap: "break-word",
-  fontFamily: "monospace",
-};
-
-function Datapoint({ label, value, short, mono }: DatapointProps) {
+function Datapoint({ label, value, short }: DatapointProps) {
   return (
     <Grid item xs={short ? 6 : 12}>
       <Typography color="gray" sx={{ fontSize: "12px" }}>
