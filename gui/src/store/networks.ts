@@ -17,7 +17,7 @@ interface Setters {
   setCurrent: (newNetwork: string) => Promise<void>;
   resetNetworks: () => Promise<void>;
   reload: () => Promise<void>;
-  reloadActions: () => Promise<void>;
+  reloadActions: () => void;
 }
 
 type Store = State & Setters;
@@ -55,7 +55,7 @@ const store: StateCreator<Store> = (set, get) => ({
     get().reloadActions();
   },
 
-  async reloadActions() {
+  reloadActions() {
     const networks = get().networks;
 
     const actions = [
