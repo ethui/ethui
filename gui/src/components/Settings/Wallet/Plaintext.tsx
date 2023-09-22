@@ -9,13 +9,13 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, FieldValues, useForm } from "react-hook-form";
 
 import { Wallet, walletSchema } from "../../../types";
 
 export interface Props {
   wallet: Wallet & { type: "plaintext" };
-  onSubmit: (data: Wallet & { type: "plaintext" }) => void;
+  onSubmit: (data: FieldValues) => void;
   onRemove: () => void;
 }
 
@@ -23,6 +23,7 @@ export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
   const {
     register,
     handleSubmit,
+    reset,
     control,
     formState: { isValid, isDirty, errors },
   } = useForm({
@@ -31,15 +32,18 @@ export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
     defaultValues: wallet,
   });
 
+  const prepareAndSubmit = (data: FieldValues) => {
+    onSubmit(data);
+    reset(data);
+  };
+
   return (
     <Stack
       spacing={2}
       alignItems="flex-start"
       component="form"
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(prepareAndSubmit)}
     >
-      <input type="hidden" {...register("type")} />
-      <input type="hidden" {...register("currentPath")} />
       <TextField
         label="Name"
         error={!!errors.name}

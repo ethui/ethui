@@ -13,6 +13,7 @@ import {
 import { invoke } from "@tauri-apps/api/tauri";
 import { startCase } from "lodash-es";
 import { useState } from "react";
+import { type FieldValues } from "react-hook-form";
 
 import { useWallets } from "../../store";
 import { Wallet, walletTypes } from "../../types";
@@ -64,7 +65,7 @@ export function SettingsWallets() {
       <Stack>
         {allWallets.map((wallet, i) => {
           const props = {
-            onSubmit: (params: object) => save(wallet, params, i),
+            onSubmit: (params: FieldValues) => save(wallet, params, i),
             onRemove: () => remove(wallet, i),
             onCancel: () => wallet.new && remove(wallet, i),
           };

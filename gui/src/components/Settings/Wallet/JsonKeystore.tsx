@@ -1,12 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Stack, TextField } from "@mui/material";
-import { useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 
 import { Wallet, walletSchema } from "../../../types";
 
 interface JsonKeystoreProps {
   wallet: Wallet & { type: "jsonKeystore" };
-  onSubmit: (data: Wallet & { type: "jsonKeystore" }) => void;
+  onSubmit: (data: FieldValues) => void;
   onRemove: () => void;
 }
 export function JsonKeystore({
@@ -17,6 +17,7 @@ export function JsonKeystore({
   const {
     register,
     handleSubmit,
+    reset,
     formState: { isValid, isDirty, errors },
   } = useForm({
     mode: "onBlur",
@@ -24,12 +25,17 @@ export function JsonKeystore({
     defaultValues: wallet,
   });
 
+  const prepareAndSubmit = (data: FieldValues) => {
+    onSubmit(data);
+    reset(data);
+  };
+
   return (
     <Stack
       spacing={2}
       alignItems="flex-start"
       component="form"
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(prepareAndSubmit)}
     >
       <input type="hidden" {...register("type")} />
       <TextField
