@@ -7,6 +7,7 @@ use glob::glob;
 use notify::{Config, Event, EventKind, RecommendedWatcher, RecursiveMode, Watcher};
 use once_cell::sync::Lazy;
 use regex::Regex;
+use tokio::sync::broadcast;
 use tokio::sync::mpsc::{self, Receiver};
 
 /// An abi match contains the full path of the matched file, as well as parsed information about it
@@ -22,6 +23,7 @@ pub(super) struct Match {
 pub(super) async fn async_watch<P: AsRef<Path>>(
     path: P,
     snd: mpsc::UnboundedSender<Match>,
+    kill: broadcast::Receiver<()>,
 ) -> notify::Result<()> {
     let (mut watcher, mut rx) = async_watcher()?;
 

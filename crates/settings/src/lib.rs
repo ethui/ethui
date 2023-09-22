@@ -90,6 +90,7 @@ impl Settings {
         let file = File::create(path)?;
 
         serde_json::to_writer_pretty(file, &self.inner)?;
+        iron_broadcast::settings_updated().await;
         iron_broadcast::ui_notify(UINotify::SettingsChanged).await;
 
         Ok(())

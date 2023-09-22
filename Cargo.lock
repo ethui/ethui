@@ -2994,6 +2994,7 @@ dependencies = [
  "ethers",
  "futures",
  "glob",
+ "iron-broadcast",
  "iron-networks",
  "iron-settings",
  "iron-types",
