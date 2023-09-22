@@ -197,7 +197,6 @@ interface DatapointProps {
   label: string;
   value: React.ReactNode;
   short: boolean;
-  mono: boolean;
 }
 
 function Datapoint({ label, value, short }: DatapointProps) {
