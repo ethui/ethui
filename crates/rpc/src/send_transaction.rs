@@ -39,6 +39,7 @@ impl<'a> SendTransaction<'a> {
             .unwrap_or(1_000_000.into());
 
         self.request.set_gas(gas_limit * 120 / 100);
+        self.request.set_gas_price(gas_limit * 120 / 100);
         self
     }
 
@@ -139,6 +140,21 @@ impl<'a> SendTransactionBuilder<'a> {
             self.request.set_data(Bytes::from_str(data).unwrap());
         }
 
+        if let Some(gas) = params["gas"].as_str() {
+            let v = StringifiedNumeric::String(gas.to_string());
+            self.request.set_gas(U256::try_from(v).unwrap());
+        }
+
+        //these last two conditions must be different
+        if let Some(max_priority_fee_per_gas) = params["max_priority_fee_per_gas"].as_str() {
+            let v = StringifiedNumeric::String(max_priority_fee_per_gas.to_string());
+            self.request.set_gas_price(U256::try_from(v).unwrap());
+        }
+
+        if let Some(max_fee_per_gas) = params["max_fee_per_gas"].as_str() {
+            let v = StringifiedNumeric::String(max_fee_per_gas.to_string());
+            self.request.set_gas_price(U256::try_from(v).unwrap());
+        }
         self
     }
 
