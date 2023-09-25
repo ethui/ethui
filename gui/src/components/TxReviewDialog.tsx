@@ -1,4 +1,13 @@
-import { Button, Stack, Typography } from "@mui/material";
+import { ExpandMore } from "@mui/icons-material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Button,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { formatEther } from "viem";
 
 import { useDialog } from "../hooks";
@@ -32,6 +41,24 @@ export function TxReviewDialog({ id }: { id: number }) {
         <ContextMenu>{formatEther(BigInt(value))} Ξ</ContextMenu>
       </Stack>
       <Typography>data: {calldata}</Typography>
+
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMore />}>
+          <Typography>Customize Gas</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <TextField label="Gas" fullWidth></TextField>
+          <Stack
+            direction="row"
+            justifyContent="center"
+            spacing={2}
+            marginTop={2}
+          >
+            <Button>Default Value</Button>
+            <Button>Set Gas</Button>
+          </Stack>
+        </AccordionDetails>
+      </Accordion>
 
       <Stack direction="row" justifyContent="center" spacing={2}>
         <Button variant="contained" color="error" onClick={() => reject()}>
