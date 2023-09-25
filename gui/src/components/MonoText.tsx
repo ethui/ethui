@@ -6,7 +6,7 @@ interface Props {
 
 export function MonoText({ children }: Props) {
   return (
-    <Typography sx={{ overflowWrap: "break-word", fontFamily: "monospace" }}>
+    <Typography sx={{ overflowWrap: "break-word", fontFamily: "Roboto Mono" }}>
       {children}
     </Typography>
   );

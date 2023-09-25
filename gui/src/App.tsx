@@ -13,6 +13,7 @@ import {
   WalletUnlockDialog,
 } from "./components";
 import { OnboardingWrapper } from "./components/Onboarding";
+import "./global.css";
 import { useTheme } from "./store/theme";
 
 const queryClient = new QueryClient({
