@@ -30,12 +30,5 @@ pub fn derive_from_builder_and_path(
 
 pub fn validate_mnemonic(mnemonic: &str) -> bool {
     //build a local wallet and check if building successfully
-    if let Ok(_) = MnemonicBuilder::<English>::default()
-    .phrase(mnemonic)
-    .build()
-    {
-        true //Return true if building a local wallet
-    } else {
-        false //Return false if there was an error while building
-    }
+    MnemonicBuilder::<English>::default().phrase(mnemonic).build().is_some()
 }

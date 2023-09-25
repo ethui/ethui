@@ -68,7 +68,7 @@ export const mnemonicSchema = z
         "Invalid number of words. Needs to be 12, 15, 18, 21 or 24 words long",
     },
   )
-  .refine((data) => invoke<string>("verified_wallet_mnemonic", { mnemonic: data }), {
+  .refine((data) => invoke<string>("wallet_validate_mnemonic", { mnemonic: data }), {
     message: "Invalid mnemonic. You may have a typo or an unsupported word TEST",
   });
 
