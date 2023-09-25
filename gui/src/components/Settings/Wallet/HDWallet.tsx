@@ -148,6 +148,7 @@ function MnemonicStep({ onSubmit, onCancel }: MnemonicStepProps) {
   const schema = createSchema.pick({ name: true, mnemonic: true });
   const {
     handleSubmit,
+    reset,
     register,
     formState: { errors, isDirty, isValid },
   } = useForm({
@@ -156,6 +157,7 @@ function MnemonicStep({ onSubmit, onCancel }: MnemonicStepProps) {
   });
   const onSubmitInternal = (data: FieldValues) => {
     onSubmit(data.name, data.mnemonic);
+    reset(data);
   };
 
   return (

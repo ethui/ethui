@@ -3,6 +3,7 @@ mod error;
 mod pagination;
 mod queries;
 mod utils;
+
 use std::{path::PathBuf, str::FromStr};
 
 use ethers::types::{Address, H256, U256};

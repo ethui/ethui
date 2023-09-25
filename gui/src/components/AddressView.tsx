@@ -1,13 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ContentCopySharp } from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  IconButton,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Stack, TextField, Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
@@ -105,7 +98,7 @@ function AliasForm({ address, alias, mutate, onSubmit }: AliasFormProps) {
     resolver: zodResolver(schema),
   });
 
-  const submit = async (data: FieldValues) => {
+  const submit = (data: FieldValues) => {
     invoke("settings_set_alias", { address, alias: data.alias });
     mutate();
     onSubmit();

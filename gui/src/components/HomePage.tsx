@@ -1,9 +1,14 @@
 import { Route, Switch } from "wouter";
 
-import { Navbar, NestedRoutes, NewVersionNotice } from "./";
+import { useNoticeAlchemyKeyMissing } from "../hooks/useNoticeAlchemyKeyMissing";
+import { useNoticeNewVersion } from "../hooks/useNoticeNewVersion";
+import { Navbar, NestedRoutes } from "./";
 import { DEFAULT_TAB, SidebarLayout, TABS } from "./Sidebar";
 
 export function HomePage() {
+  useNoticeAlchemyKeyMissing();
+  useNoticeNewVersion();
+
   return (
     <SidebarLayout>
       <NestedRoutes base="/">
@@ -22,7 +27,6 @@ export function HomePage() {
           </Route>
         </Switch>
       </NestedRoutes>
-      <NewVersionNotice />
     </SidebarLayout>
   );
 }

@@ -50,7 +50,7 @@ export class IronProvider extends EventEmitter {
     params,
   }: RequestArguments): Promise<Maybe<T>> {
     log.debug("request", { method, params });
-    await this.initialize();
+    this.initialize();
 
     return new Promise<T>((resolve, reject) => {
       this.engine.handle(
@@ -120,7 +120,7 @@ export class IronProvider extends EventEmitter {
     this.emit("accountsChanged", accounts);
   }
 
-  protected async initialize() {
+  protected initialize() {
     if (this.initialized) {
       return;
     }
