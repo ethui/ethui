@@ -5,3 +5,8 @@ use crate::Ctx;
 pub async fn rpc_send_transaction(params: serde_json::Value) -> Result<serde_json::Value> {
     Ok(Handler::send_transaction(params, Ctx::empty()).await?)
 }
+
+#[tauri::command]
+pub async fn rpc_simulate_transaction(params: serde_json::Value) -> Result<serde_json::Value> {
+    Ok("asd".into())
+}

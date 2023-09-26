@@ -24,6 +24,7 @@ iron-sync = { workspace = true }
 iron-tracing = { workspace = true }
 iron-exchange-rates = { workspace = true }
 iron-broadcast = { workspace = true }
+iron-simulator = { workspace = true }
 tauri = { workspace = true }
 tokio = { workspace = true }
 thiserror = { workspace = true }

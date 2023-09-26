@@ -21,6 +21,7 @@ members = [
   "crates/crypto",
   "crates/broadcast",
   "crates/exchange-rates",
+  "crates/simulator",
 ]
 default-members = ["bin/iron"]
 
@@ -40,6 +41,7 @@ iron-crypto = { path = "crates/crypto" }
 iron-settings = { path = "crates/settings" }
 iron-networks = { path = "crates/networks" }
 iron-wallets = { path = "crates/wallets" }
+iron-simulator = { path = "crates/simulator" }
 iron-ws = { path = "crates/ws" }
 iron-http = { path = "crates/http" }
 iron-rpc = { path = "crates/rpc" }
