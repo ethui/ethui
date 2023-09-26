@@ -1,0 +1,20 @@
+[package]
+name = "iron-crypto"
+version.workspace = true
+edition.workspace = true
+license-file.workspace = true
+homepage.workspace = true
+repository.workspace = true
+exclude.workspace = true
+authors.workspace = true
+
+[dependencies]
+ethers = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+anyhow = "1.0.71"
+chacha20poly1305 = "0.10.1"
+rust-argon2 = "1.0.0"
+aead = { version = "0.5.2", features = ["stream"] }
+zeroize = "1.6.0"

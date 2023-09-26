@@ -21,19 +21,22 @@ import {
   useMatches,
   useRegisterActions,
 } from "kbar";
-import React, { forwardRef } from "react";
+import React, { ReactNode, forwardRef } from "react";
 
-import { useNetworks, useWallets } from "../store";
+import { useNetworks, useSettingsWindow, useWallets } from "../store";
 import { useTheme } from "../store/theme";
 
-export function CommandBar() {
+export function CommandBar({ children }: { children: ReactNode }) {
+  const { theme } = useTheme();
+
   return (
     <KBarProvider>
       <KBarPortal>
-        <KBarPositioner>
+        <KBarPositioner style={{ zIndex: theme.zIndex.tooltip + 1 }}>
           <CommandBarInner />
         </KBarPositioner>
       </KBarPortal>
+      {children}
     </KBarProvider>
   );
 }
@@ -68,10 +71,12 @@ function CommandBarInner() {
   const walletActions = useWallets((s) => s.actions);
   const networkActions = useNetworks((s) => s.actions);
   const [theme, themeActions] = useTheme((s) => [s.theme, s.actions]);
+  const settingsWindowActions = useSettingsWindow((s) => s.actions);
 
   useRegisterActions(walletActions, [walletActions]);
   useRegisterActions(networkActions, [networkActions]);
-  useRegisterActions(themeActions, [themeActions]);
+  useRegisterActions(themeActions, [settingsWindowActions]);
+  useRegisterActions(settingsWindowActions, [settingsWindowActions]);
 
   return (
     <Paper
@@ -109,12 +114,12 @@ interface ResultItemProps {
 const ResultItem = forwardRef(
   (
     { action, active, currentRootActionId }: ResultItemProps,
-    ref: React.Ref<HTMLDivElement>
+    ref: React.Ref<HTMLDivElement>,
   ) => {
     const ancestors = React.useMemo(() => {
       if (!currentRootActionId) return action.ancestors;
       const index = action.ancestors.findIndex(
-        (ancestor) => ancestor.id === currentRootActionId
+        (ancestor) => ancestor.id === currentRootActionId,
       );
       // +1 removes the currentRootAction; e.g.
       // if we are on the "Set theme" parent action,
@@ -145,7 +150,7 @@ const ResultItem = forwardRef(
         ) : null}
       </ListItemButton>
     );
-  }
+  },
 );
 
 ResultItem.displayName = "ResultItem";

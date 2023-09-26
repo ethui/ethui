@@ -1,3 +1,5 @@
+import { validateMnemonic } from "@scure/bip39";
+import { wordlist } from "@scure/bip39/wordlists/english";
 import { z } from "zod";
 
 export const generalSettingsSchema = z.object({
@@ -5,7 +7,9 @@ export const generalSettingsSchema = z.object({
   abiWatch: z.boolean(),
   abiWatchPath: z.string().optional().nullable(),
   alchemyApiKey: z.string().optional().nullable(),
+  etherscanApiKey: z.string().optional().nullable(),
   hideEmptyTokens: z.boolean(),
+  onboarded: z.boolean(),
 });
 
 // const formSchema = schema.shape.network;
@@ -27,8 +31,8 @@ export const networkSchema = z.object({
         {
           path: ["ws_url"],
           message: "WebSockets are mandatory for dev networks",
-        }
-      )
+        },
+      ),
   ),
 });
 
@@ -37,7 +41,7 @@ export const passwordSchema = z
   .min(8, { message: "must be at least 8 characters long" })
   .regex(
     new RegExp("[^a-zA-Z0-9]"),
-    "must have at least one special character"
+    "must have at least one special character",
   );
 
 export const passwordFormSchema = z
@@ -50,9 +54,24 @@ export const passwordFormSchema = z
     message: "The two passwords don't match",
   });
 
-export const mnemonicSchema = z.string().regex(/^(\w+\s){11}\w+$/, {
-  message: "Must be a 12-word phrase",
-});
+export const mnemonicSchema = z
+  .string()
+  .regex(/^([a-z]+\s)+[a-z]+$/, {
+    message: "Must be a list of english words",
+  })
+  .refine(
+    (data) => {
+      const words = data.split(/\s+/).length;
+      return [12, 15, 18, 21, 24].includes(words);
+    },
+    {
+      message:
+        "Invalid number of words. Needs to be 12, 15, 18, 21 or 24 words long",
+    },
+  )
+  .refine((data) => validateMnemonic(data, wordlist), {
+    message: "Invalid mnemonic. You have have a typo or an unsupported word",
+  });
 
 export const derivationPathSchema = z
   .string()
@@ -60,6 +79,20 @@ export const derivationPathSchema = z
     message: "invalid path format",
   })
   .default("m/44'/60'/0'/0");
+
+export const addressSchema = z
+  .string()
+  .refine((data) => data.match(/^0x[a-fA-F0-9]{40}$/), {
+    message: "not a valid ETH address",
+  });
+
+// react-hook-form doesn't support value-arrays, only object-arrays, so we need this type as a workaround for the impersonator form
+export const addressOrObjectSchema = z.union([
+  addressSchema,
+  z.object({
+    addressSchema,
+  }),
+]);
 
 export const hdWalletSchema = z.object({
   type: z.literal("HDWallet"),
@@ -78,27 +111,39 @@ export const hdWalletUpdateSchema = hdWalletSchema.pick({
   count: true,
 });
 
+export const jsonKeystoreSchema = z.object({
+  type: z.literal("jsonKeystore"),
+  name: z.string().min(1),
+  file: z.string().min(1),
+  currentPath: z.string().optional(),
+});
+
+export const plaintextSchema = z.object({
+  type: z.literal("plaintext"),
+  name: z.string().min(1),
+  dev: z.boolean().default(false),
+  mnemonic: mnemonicSchema,
+  derivationPath: derivationPathSchema,
+  count: z.number().int().min(1),
+  currentPath: z.string().optional(),
+});
+
+export const impersonatorSchema = z.object({
+  type: z.literal("impersonator"),
+  name: z.string().min(1),
+  addresses: z.array(addressSchema).min(1),
+  current: z.number().optional(),
+});
+
 export const walletSchema = z.discriminatedUnion("type", [
   hdWalletSchema,
-  z.object({
-    type: z.literal("jsonKeystore"),
-    name: z.string().min(1),
-    file: z.string().min(1),
-    currentPath: z.string().optional(),
-  }),
-  z.object({
-    type: z.literal("plaintext"),
-    name: z.string().min(1),
-    dev: z.boolean().default(false),
-    mnemonic: mnemonicSchema,
-    derivationPath: derivationPathSchema,
-    count: z.number().int().min(1),
-    currentPath: z.string().optional(),
-  }),
+  jsonKeystoreSchema,
+  plaintextSchema,
+  impersonatorSchema,
 ]);
 
 export const walletTypes: Wallet["type"][] = Array.from(
-  walletSchema.optionsMap.keys()
+  walletSchema.optionsMap.keys(),
 )
   .filter((k) => !!k)
   .map((k) => k as unknown as Wallet["type"]);
@@ -109,7 +154,10 @@ export const walletsSchema = z.object({
 
 export type Address = `0x${string}`;
 export type Wallet = z.infer<typeof walletSchema>;
-export type Wallets = z.infer<typeof walletsSchema>;
+export type HdWallet = z.infer<typeof hdWalletSchema>;
+export type JsonKeystore = z.infer<typeof jsonKeystoreSchema>;
+export type Plaintext = z.infer<typeof plaintextSchema>;
+export type Impersonator = z.infer<typeof impersonatorSchema>;
 export type Network = z.infer<typeof networkSchema.shape.networks>[number];
 export type GeneralSettings = z.infer<typeof generalSettingsSchema>;
 
@@ -132,8 +180,9 @@ export interface ABIFunctionInput {
 
 export interface ABIItem {
   name: string;
-  type: "error" | "function" | "constructor";
-  stateMutability: "view" | "pure" | "nonpayable" | "payable";
+  constant: boolean;
+  type: string;
+  stateMutability: string;
   inputs: ABIFunctionInput[];
 }
 
@@ -163,4 +212,12 @@ export interface Paginated<T> {
   items: T[];
   last: boolean;
   total: number;
+}
+
+export type Affinity = { sticky: number } | "global" | "unset";
+
+export interface IContract {
+  address: Address;
+  abi: ABIItem[];
+  name: string;
 }

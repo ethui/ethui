@@ -1,0 +1,13 @@
+[package]
+name = "iron-abis"
+version.workspace = true
+edition.workspace = true
+license-file.workspace = true
+homepage.workspace = true
+repository.workspace = true
+exclude.workspace = true
+authors.workspace = true
+
+[dependencies]
+ethers = { workspace = true }
+serde = { workspace = true }

@@ -67,24 +67,20 @@ const store: StateCreator<Store> = (set, get) => ({
 
   async reloadActions() {
     const { wallets } = get();
-    const info = await fetchAllWalletInfo(wallets);
+    const info = (await fetchAllWalletInfo(wallets)) || [];
 
     const actions = [
       {
         id: actionId,
         name: "Change wallet",
       },
-      // create action for each wallet
-      ...(info || [])
+      ...info
         .map(({ wallet, addresses }) => [
           {
             id: `${actionId}/${wallet.name}`,
             name: wallet.name,
             parent: actionId,
-            perform: () => get().setCurrentWallet(wallet.name),
           },
-
-          // create action for each address
           ...(addresses || []).map(({ key, address, alias }) => ({
             id: `${actionId}/${wallet.name}/${key}`,
             name: alias || address,
@@ -96,13 +92,6 @@ const store: StateCreator<Store> = (set, get) => ({
           })),
         ])
         .flat(),
-
-      ...(wallets || []).map(({ name }) => ({
-        id: `${actionId}/${name}`,
-        name,
-        parent: actionId,
-        perform: () => get().setCurrentWallet(name),
-      })),
     ];
 
     set({ actions });
@@ -127,7 +116,7 @@ const fetchAllWalletInfo = async (wallets: Wallet[]): Promise<WalletInfo[]> =>
       wallets.map(async (wallet) => {
         const addresses = await invoke<[string, Address][]>(
           "wallets_get_wallet_addresses",
-          { name: wallet.name }
+          { name: wallet.name },
         );
 
         return {
@@ -139,9 +128,9 @@ const fetchAllWalletInfo = async (wallets: Wallet[]): Promise<WalletInfo[]> =>
               address,
               walletName: wallet.name,
               alias: await invoke<string>("settings_get_alias", { address }),
-            }))
+            })),
           ),
         };
-      })
+      }),
     )
   ).flat();

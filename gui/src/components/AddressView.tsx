@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ContentCopySharp } from "@mui/icons-material";
 import { Box, Button, Stack, TextField, Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useState } from "react";
@@ -12,9 +13,10 @@ import { ContextMenu, Modal } from "./";
 interface Props {
   address: string;
   contextMenu?: boolean;
+  copyIcon?: boolean;
 }
 
-export function AddressView({ contextMenu, address }: Props) {
+export function AddressView({ contextMenu, address, copyIcon }: Props) {
   const { data: alias, mutate } = useInvoke<string>("settings_get_alias", {
     address,
   });
@@ -32,10 +34,19 @@ export function AddressView({ contextMenu, address }: Props) {
     },
   ];
 
+  const content = (
+    <>
+      {alias ? alias : truncateEthAddress(address)}
+      {copyIcon && <ContentCopySharp fontSize="small" sx={{ ml: 1 }} />}
+    </>
+  );
+
   return (
     <>
       {!contextMenu && (
-        <Box title={address}>{alias ? alias : truncateEthAddress(address)}</Box>
+        <Box fontSize="inherit" title={address}>
+          {content}
+        </Box>
       )}
 
       {contextMenu && (
@@ -46,7 +57,7 @@ export function AddressView({ contextMenu, address }: Props) {
             actions={contextActions}
             sx={{ textTransform: "none" }}
           >
-            {alias ? alias : truncateEthAddress(address)}
+            {content}
           </ContextMenu>
 
           <Modal open={aliasFormOpen} onClose={() => setAliasFormOpen(false)}>
@@ -63,6 +74,7 @@ export function AddressView({ contextMenu, address }: Props) {
 
 AddressView.defaultProps = {
   contextMenu: true,
+  copyIcon: false,
 };
 
 const schema = z.object({
@@ -86,7 +98,7 @@ function AliasForm({ address, alias, mutate, onSubmit }: AliasFormProps) {
     resolver: zodResolver(schema),
   });
 
-  const submit = async (data: FieldValues) => {
+  const submit = (data: FieldValues) => {
     invoke("settings_set_alias", { address, alias: data.alias });
     mutate();
     onSubmit();

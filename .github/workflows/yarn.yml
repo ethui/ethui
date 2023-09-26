@@ -20,9 +20,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  #
-  # yarn tests/lint
-  #
   lint:
     runs-on: ubuntu-latest
     steps:

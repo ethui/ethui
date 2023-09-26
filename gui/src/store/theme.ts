@@ -1,4 +1,6 @@
-import { PaletteMode, Theme, createTheme } from "@mui/material";
+import { PaletteMode, Theme, ThemeOptions, createTheme } from "@mui/material";
+import { grey, lightBlue } from "@mui/material/colors";
+import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Action } from "kbar";
 import { StateCreator, create } from "zustand";
@@ -24,7 +26,6 @@ const store: StateCreator<Store> = (set, get) => ({
     {
       id: actionId,
       name: "Change theme mode",
-      section: "",
     },
     ...(["auto", "dark", "light"] as const).map((mode) => ({
       id: `${actionId}/${mode}`,
@@ -38,7 +39,7 @@ const store: StateCreator<Store> = (set, get) => ({
     const { darkMode } = await invoke<GeneralSettings>("settings_get");
 
     const prefersDarkMode = window.matchMedia(
-      "(prefers-color-scheme: dark)"
+      "(prefers-color-scheme: dark)",
     ).matches;
 
     const mode =
@@ -54,23 +55,104 @@ const store: StateCreator<Store> = (set, get) => ({
   },
 });
 
+listen("settings-changed", async () => {
+  await useTheme.getState().reload();
+});
+
 export const useTheme = create<Store>()(store);
 
 (async () => {
   await useTheme.getState().reload();
 })();
 
-function getDesignTokens(mode: PaletteMode) {
+function getDesignTokens(mode: PaletteMode): ThemeOptions {
+  const theme = createTheme({
+    palette: {
+      mode,
+    },
+  });
+
+  const light = mode === "light";
+
+  const borderColor = light ? grey[300] : grey[800];
+
   return {
     palette: {
       mode,
-      ...(mode === "light"
-        ? {
-            background: {},
-          }
-        : {
-            background: {},
-          }),
+    },
+    components: {
+      MuiButton: {
+        variants: [
+          {
+            props: { variant: "sidebar" as const },
+            style: {
+              padding: 0,
+              textAlign: "left",
+              height: theme.spacing(4),
+              paddingLeft: theme.spacing(1),
+              marginLeft: `-${theme.spacing(1)}`,
+              marginRight: `-${theme.spacing(1)}`,
+              fontWeight: "inherit",
+              justifyContent: "flex-start",
+              textTransform: "inherit",
+              "&.Mui-disabled": {
+                backgroundColor: lightBlue[800],
+                color: "white",
+              },
+              "& .MuiButton-startIcon": {
+                marginLeft: 0,
+              },
+            },
+          },
+        ],
+      },
+      MuiTypography: {
+        variants: [
+          {
+            props: { variant: "bordered" as const },
+            style: {
+              display: "block",
+              borderColor: borderColor,
+              borderBottomWidth: 1,
+              borderBottomStyle: "solid",
+              paddingBottom: "0.5em",
+            },
+          },
+        ],
+      },
+      MuiAppBar: {
+        styleOverrides: {
+          root: {
+            borderColor,
+            borderBottomStyle: "solid",
+            backgroundColor: theme.palette.background.default,
+            color: "inherit",
+          },
+        },
+      },
+      MuiDrawer: {
+        styleOverrides: {
+          paper: {
+            borderColor,
+            borderWidth: 1,
+          },
+        },
+      },
+      MuiPaper: {
+        variants: [
+          {
+            props: { variant: "lighter" as const },
+            style: {
+              background: light ? grey[100] : grey[900],
+            },
+          },
+        ],
+      },
+      MuiToolbar: {
+        defaultProps: {
+          variant: "dense",
+        },
+      },
     },
   };
 }

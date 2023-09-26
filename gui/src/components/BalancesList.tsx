@@ -4,25 +4,21 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
-  Stack,
 } from "@mui/material";
-import { formatUnits } from "viem";
+import truncateEthAddress from "truncate-eth-address";
+import { Address, formatUnits } from "viem";
 
 import { useInvoke } from "../hooks";
 import { useBalances, useNetworks } from "../store";
 import { GeneralSettings } from "../types";
-import { CopyToClipboard, IconCrypto, Panel } from "./";
+import { CopyToClipboard, IconCrypto } from "./";
 
 export function BalancesList() {
   return (
-    <Panel>
-      <Stack>
-        <List>
-          <BalanceETH />
-          <BalancesERC20 />
-        </List>
-      </Stack>
-    </Panel>
+    <List>
+      <BalanceETH />
+      <BalancesERC20 />
+    </List>
   );
 }
 
@@ -46,14 +42,15 @@ function BalancesERC20() {
   const { data: settings } = useInvoke<GeneralSettings>("settings_get");
 
   const filteredBalances = (balances || []).filter(
-    (token) => !settings?.hideEmptyTokens || BigInt(token.balance) > 0
+    (token) => !settings?.hideEmptyTokens || BigInt(token.balance) > 0,
   );
 
   return (
     <>
       {filteredBalances.map(({ contract, balance, metadata }) => (
-        <BalanceERC20
+        <BalanceItem
           key={contract}
+          contract={contract}
           balance={BigInt(balance)}
           decimals={metadata.decimals}
           symbol={metadata.symbol}
@@ -63,31 +60,25 @@ function BalancesERC20() {
   );
 }
 
-function BalanceERC20({
+interface BalanceItemProps {
+  contract?: Address;
+  balance: bigint;
+  decimals: number;
+  symbol: string;
+}
+
+function BalanceItem({
   balance,
   decimals,
   symbol,
-}: {
-  balance: bigint;
-  decimals: number;
-  symbol: string;
-}) {
-  if (!symbol || !decimals) return null;
-
-  return <BalanceItem balance={balance} decimals={decimals} symbol={symbol} />;
-}
-
-interface BalanceItemProps {
-  balance: bigint;
-  decimals: number;
-  symbol: string;
-}
-
-function BalanceItem({ balance, decimals, symbol }: BalanceItemProps) {
+  contract,
+}: BalanceItemProps) {
   const minimum = 0.001;
   // Some tokens respond with 1 decimals, that breaks this truncatedBalance without the Math.ceil
   const truncatedBalance =
     balance - (balance % BigInt(Math.ceil(minimum * 10 ** decimals)));
+
+  if (!symbol || !decimals) return null;
 
   return (
     <ListItem>
@@ -96,7 +87,11 @@ function BalanceItem({ balance, decimals, symbol }: BalanceItemProps) {
           <IconCrypto ticker={symbol} />
         </Avatar>
       </ListItemAvatar>
-      <ListItemText secondary={symbol}>
+      <ListItemText
+        secondary={`${symbol} ${
+          contract ? `(${truncateEthAddress(contract)})` : ``
+        }`}
+      >
         <CopyToClipboard label={balance.toString()}>
           {truncatedBalance > 0
             ? formatUnits(truncatedBalance, decimals)

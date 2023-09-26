@@ -1,0 +1,31 @@
+[package]
+name = "iron-ws"
+version.workspace = true
+edition.workspace = true
+license-file.workspace = true
+homepage.workspace = true
+repository.workspace = true
+exclude.workspace = true
+authors.workspace = true
+
+[dependencies]
+iron-types = { workspace = true }
+iron-rpc = { workspace = true }
+iron-broadcast = { workspace = true }
+iron-networks = { workspace = true }
+iron-connections = { workspace = true }
+
+ethers = { workspace = true }
+tokio = { workspace = true }
+tauri = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+once_cell = { workspace = true }
+tracing = { workspace = true }
+
+futures-util = "0.3.27"
+tokio-tungstenite = "0.18.0"
+tungstenite = "0.18.0"
+thiserror = "1.0.40"
+url = "2.3.1"
+async-trait = "0.1.68"

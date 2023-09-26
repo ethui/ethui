@@ -1,74 +1,20 @@
-import Settings from "@mui/icons-material/Settings";
-import { AppBar, Grid, IconButton, Toolbar, Typography } from "@mui/material";
-import { useState } from "react";
+import { AppBar, Toolbar, Typography } from "@mui/material";
 
-import { useTheme } from "../store";
-import {
-  Modal,
-  QuickAddressSelect,
-  QuickNetworkSelect,
-  QuickWalletSelect,
-  Settings as SettingsPage,
-} from "./";
+import { TABS } from "./Sidebar";
 
-function SettingsButton() {
-  const [showSettings, setShowSettings] = useState(false);
-
-  return (
-    <>
-      <IconButton onClick={() => setShowSettings(true)}>
-        <Settings />
-      </IconButton>
-
-      <Modal
-        open={showSettings}
-        onClose={() => setShowSettings(false)}
-        sx={{
-          width: "80%",
-          height: "80%",
-        }}
-      >
-        <SettingsPage />
-      </Modal>
-    </>
-  );
-}
-
-export function Navbar() {
-  const palette = useTheme((s) => s.theme.palette);
-
+export function Navbar({ tab }: { tab: (typeof TABS)[number] }) {
   return (
     <AppBar
       position="sticky"
+      elevation={0}
       sx={{
-        background: palette.background.default,
-        color: palette.text.primary,
-        boxShadow: "none",
+        borderBottomWidth: 1,
       }}
     >
-      <Toolbar>
-        <Typography variant="h6" sx={{ flexGrow: 1 }}>
-          Iron&nbsp;Wallet
+      <Toolbar data-tauri-drag-region="true">
+        <Typography variant="h6" component="div">
+          {tab.name}
         </Typography>
-        <Grid
-          container
-          spacing={2}
-          justifyContent="flex-end"
-          alignItems="center"
-        >
-          <Grid item>
-            <QuickWalletSelect />
-          </Grid>
-          <Grid item>
-            <QuickAddressSelect />
-          </Grid>
-          <Grid item>
-            <QuickNetworkSelect />
-          </Grid>
-          <Grid item>
-            <SettingsButton />
-          </Grid>
-        </Grid>
       </Toolbar>
     </AppBar>
   );

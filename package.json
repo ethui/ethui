@@ -1,37 +1,37 @@
 {
   "private": true,
-  "version": "0.2.1",
+  "version": "0.6.2",
   "license": "MIT",
   "description": "A dev-oriented web3 wallet",
   "scripts": {
     "app:dev": "rm -rf target/debug/db.* && RUST_LOG=iron=debug tauri dev",
     "gui:build": "yarn workspace @iron/gui build",
-    "extension:dev": "yarn workspace @iron/extension dev",
-    "extension:build": "yarn workspace @iron/extension build",
+    "ext:dev": "yarn workspace @iron/extension dev",
+    "ext:build": "yarn workspace @iron/extension build:chrome",
     "lint": "yarn lint:eslint && yarn lint:tsc && yarn lint:prettier",
     "lint:eslint": "eslint .",
     "lint:tsc": "tsc --noEmit",
     "lint:prettier": "prettier --check .",
-    "setup": "yarn install && yarn extension:build"
+    "setup": "yarn install && yarn ext:build"
   },
   "workspaces": [
     "extension",
     "gui"
   ],
   "devDependencies": {
-    "@trivago/prettier-plugin-sort-imports": "^4.1.1",
-    "@typescript-eslint/eslint-plugin": "^5.54.1",
-    "assert": "^2.0.0",
+    "@trivago/prettier-plugin-sort-imports": "^4.2.0",
+    "@typescript-eslint/eslint-plugin": "^6.6.0",
+    "assert": "^2.1.0",
     "autoprefixer": "^10.4.13",
-    "eslint": "^8.41.0",
+    "eslint": "^8.48.0",
     "eslint-config-import": "^0.13.0",
-    "eslint-config-prettier": "^8.7.0",
-    "eslint-config-standard-with-typescript": "^34.0.0",
-    "eslint-plugin-react": "^7.32.2",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-config-standard-with-typescript": "^39.0.0",
+    "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "prettier": "^2.8.8"
+    "prettier": "^3.0.3"
   },
   "dependencies": {
-    "typescript": "5.0.4"
+    "typescript": "5.2.2"
   }
 }

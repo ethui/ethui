@@ -7,14 +7,14 @@ type TArgs = Record<string, unknown>;
 export const useInvoke = <TResult>(
   command: string,
   args: TArgs = {},
-  props?: SWRConfiguration
+  props?: SWRConfiguration,
 ): SWRResponse<TResult, unknown> => {
   return useSWR<TResult>([command, args], invokeFetcher, props);
 };
 
 const invokeFetcher = async <TResult>([command, args]: [
   string,
-  TArgs
+  TArgs,
 ]): Promise<TResult> => {
   return invoke<TResult>(command, args);
 };

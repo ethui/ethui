@@ -6,6 +6,9 @@ module.exports = {
     "prettier",
   ],
   parser: "@typescript-eslint/parser",
+  parserOptions: {
+    project: ["./tsconfig.json", "./extension/tsconfig.json"],
+  },
   plugins: ["react", "@typescript-eslint"],
   ignorePatterns: [
     "**/*.generated.ts",
@@ -25,6 +28,9 @@ module.exports = {
     "react/jsx-uses-react": "off",
     "react/react-in-jsx-scope": "off",
     "no-unused-vars": "off",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/await-thenable": "error",
+    "@typescript-eslint/require-await": "error",
     "@typescript-eslint/no-unused-vars": [
       "warn",
       {

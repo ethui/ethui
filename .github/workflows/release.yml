@@ -25,7 +25,7 @@ jobs:
         name: get tag
         run: |
           echo "tag=$(gh api /repos/iron-wallet/iron/releases |\
-            jq '.[] | select(.draft == true) | .tag_name')" \
+            jq -r '.[] | select(.draft == true) | .tag_name')" \
             >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -35,13 +35,14 @@ jobs:
         name: get release ID
         run: |
           echo "id=$(gh api /repos/iron-wallet/iron/releases |\
-            jq '.[] | select(.draft == true) | .id')" \
+            jq -r '.[] | select(.draft == true) | .id')" \
             >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # build extension
   # upload to draft release
+  # release to mozilla and google stores
   extension:
     needs: [setup]
     runs-on: ubuntu-latest
@@ -56,17 +57,29 @@ jobs:
       - name: Install dependencies
         run: yarn workspace @iron/extension install
 
-      - name: Build extension zip
-        run: yarn workspace @iron/extension release
-        env:
-          EXTENSION_TAG: ${{ needs.setup.outputs.tag }}
+      - name: Create bundles
+        run: yarn workspace @iron/extension build
 
       - name: Upload to release
-        run: gh release upload ${{ needs.setup.outputs.tag }} ./extension/*.zip
+        run: gh release upload ${{ needs.setup.outputs.tag }} ./extension/dist/*.{crx,zip,xpi}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # build extension
+      - name: Submit to Google
+        run: npx chrome-webstore-upload-cli@2 upload --source ./extension/dist/chrome
+        env:
+          EXTENSION_ID: ${{ secrets.CHROME_WEB_EXT_ID }}
+          CLIENT_ID: ${{ secrets.CHROME_WEB_EXT_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CHROME_WEB_EXT_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.CHROME_WEB_EXT_REFRESH_TOKEN }}
+
+      - name: Submit to Mozilla
+        run: npx web-ext-submit@7 --source-dir ./extension/dist/firefox
+        env:
+          WEB_EXT_API_KEY: ${{ secrets.FIREFOX_WEB_EXT_API_KEY }}
+          WEB_EXT_API_SECRET: ${{ secrets.FIREFOX_WEB_EXT_API_SECRET }}
+
+  # build app
   # upload to draft release
   app:
     needs: [setup]
@@ -87,9 +100,11 @@ jobs:
       - name: install dependencies (windows)
         if: matrix.platform == 'windows-latest'
         run: |
-          C:\msys64\usr\bin\wget.exe https://download.libsodium.org/libsodium/releases/libsodium-1.0.18-msvc.zip
-          7z x libsodium-1.0.18-msvc.zip
-          Copy-Item -Path libsodium\x64\Release\v142\static\libsodium.lib sodium.lib
+          curl https://download.libsodium.org/libsodium/releases/libsodium-1.0.18-msvc.zip --output libsodium.zip
+          7z x libsodium.zip
+          cp libsodium/x64/Release/v142/static/libsodium.lib sodium.lib
+          ls
+        shell: bash
 
       - name: install dependencies (macos)
         if: matrix.platform == 'macos-latest'
@@ -111,7 +126,7 @@ jobs:
           node-version: 18
           cache: "yarn"
 
-      - run: yarn install
+      - run: yarn install --network-timeout 1000000
 
       - uses: tauri-apps/tauri-action@v0
         id: tauri

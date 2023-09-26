@@ -18,16 +18,6 @@
     "types": ["node"],
     "typeRoots": ["./src/global.d.ts", "node_modules/@types"]
   },
-  "include": [
-    "gui",
-    "ui",
-    "extension",
-    "config",
-    "constants",
-    "provider-inpage",
-    "provider-worker",
-    "state",
-    "node_modules/@types"
-  ],
-  "exclude": ["build", "node_modules", "extension/dist"]
+  "include": ["gui", "node_modules/@types", ".eslintrc.js"],
+  "exclude": ["build", "node_modules", "extension"]
 }

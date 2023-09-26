@@ -1,4 +1,10 @@
-import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+} from "@mui/material";
 import { map } from "lodash-es";
 
 import { useInvoke } from "../hooks";
@@ -13,7 +19,7 @@ export function QuickAddressSelect() {
   ]);
   const { data: addresses } = useInvoke<[string, Address][]>(
     "wallets_get_wallet_addresses",
-    { name: currentWallet?.name }
+    { name: currentWallet?.name },
   );
 
   const handleChange = (event: SelectChangeEvent<string | undefined>) => {
@@ -29,18 +35,23 @@ export function QuickAddressSelect() {
   if (!addresses || !currentWallet) return <>Loading</>;
 
   return (
-    <Select
-      size="small"
-      renderValue={renderValue}
-      value={getCurrentPath(currentWallet, addresses)}
-      onChange={handleChange}
-    >
-      {map(addresses, ([key, address]) => (
-        <MenuItem value={key} key={key}>
-          <AddressView contextMenu={false} address={address} />
-        </MenuItem>
-      ))}
-    </Select>
+    <FormControl fullWidth variant="standard">
+      <InputLabel id="account-select-label">Account</InputLabel>
+      <Select
+        label="Account"
+        labelId="account-select-label"
+        onChange={handleChange}
+        renderValue={renderValue}
+        size="small"
+        value={getCurrentPath(currentWallet, addresses)}
+      >
+        {map(addresses, ([key, address]) => (
+          <MenuItem value={key} key={key}>
+            <AddressView contextMenu={false} address={address} />
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
   );
 }
 
@@ -48,6 +59,9 @@ function getCurrentPath(wallet: Wallet, addresses: [string, Address][]) {
   switch (wallet.type) {
     case "HDWallet":
       return wallet.current ? wallet.current[0] : addresses[0][0];
+
+    case "impersonator":
+      return wallet.addresses[wallet.current || 0];
 
     default:
       return wallet.currentPath || addresses[0][0];
