@@ -1,24 +1,31 @@
-import { CallMade, CallReceived, NoteAdd } from "@mui/icons-material";
 import {
+  CallMade,
+  CallReceived,
+  ExpandMore,
+  NoteAdd,
+} from "@mui/icons-material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Badge,
   Box,
   CircularProgress,
-  List,
-  ListItem,
-  ListItemAvatar,
+  Grid,
   Stack,
   Typography,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
-import "core-js/features/array/at";
 import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
-import { formatEther } from "viem";
+import truncateEthAddress from "truncate-eth-address";
+import { formatEther, formatGwei } from "viem";
+import { useTransaction, useWaitForTransaction } from "wagmi";
 
 import { useEventListener } from "../hooks";
 import { useNetworks, useWallets } from "../store";
 import { Address, Paginated, Pagination, Tx } from "../types";
-import { AddressView, ContextMenu, Panel } from "./";
+import { AddressView, ContextMenu, MonoText, Panel } from "./";
 
 export function Txs() {
   const account = useWallets((s) => s.address);
@@ -73,54 +80,38 @@ export function Txs() {
         hasMore={!pages.at(-1)?.last}
         loader={loader}
       >
-        <List key={"list"}>
-          {pages.flatMap((page) =>
-            page.items.map((tx) => (
-              <Receipt account={account} tx={tx} key={tx.hash} />
-            )),
-          )}
-        </List>
+        {pages.flatMap((page) =>
+          page.items.map((tx) => (
+            <Accordion key={tx.hash}>
+              <AccordionSummary expandIcon={<ExpandMore />}>
+                <Summary account={account} tx={tx} />
+              </AccordionSummary>
+              <AccordionDetails>
+                <Details tx={tx} />
+              </AccordionDetails>
+            </Accordion>
+          )),
+        )}
       </InfiniteScroll>
     </Panel>
   );
 }
 
-interface ReceiptProps {
+interface SummaryProps {
   account: Address;
   tx: Tx;
 }
-
-function Receipt({ account, tx }: ReceiptProps) {
-  const value = BigInt(tx.value);
-
+function Summary({ account, tx }: SummaryProps) {
   return (
-    <ListItem>
-      <ListItemAvatar>
-        <Icon {...{ tx, account }} />
-      </ListItemAvatar>
-      <Box sx={{ flexGrow: 1 }}>
-        <Stack>
-          <Stack direction="row" spacing={1}>
-            <AddressView address={tx.from} /> <span>→</span>
-            {tx.to ? (
-              <AddressView address={tx.to} />
-            ) : (
-              <Typography component="span">Contract Deploy</Typography>
-            )}
-          </Stack>
-          <Typography variant="caption" fontSize="xl">
-            Block #{tx.blockNumber?.toLocaleString()}
-          </Typography>
-        </Stack>
-      </Box>
-      <Box>
-        {value > 0n && (
-          <ContextMenu copy={value.toString()}>
-            {formatEther(value)} Ξ
-          </ContextMenu>
-        )}
-      </Box>
-    </ListItem>
+    <Stack direction="row" spacing={1}>
+      <Icon {...{ tx, account }} />
+      <AddressView address={tx.from} /> <span>→</span>
+      {tx.to ? (
+        <AddressView address={tx.to} />
+      ) : (
+        <Typography component="span">Contract Deploy</Typography>
+      )}
+    </Stack>
   );
 }
 
@@ -142,3 +133,84 @@ function Icon({ account, tx }: IconProps) {
 
   return <Badge>{createElement(icon, { color })}</Badge>;
 }
+
+interface DetailsProps {
+  tx: Tx;
+}
+
+function Details({ tx }: DetailsProps) {
+  const { data: transaction } = useTransaction({ hash: tx.hash });
+  const { data: receipt } = useWaitForTransaction({ hash: tx.hash });
+
+  if (!receipt || !transaction) return null;
+
+  return (
+    <Grid container rowSpacing={2}>
+      <Datapoint label="hash" value={truncateEthAddress(tx.hash)} />
+      <Datapoint label="from" value={<AddressView address={tx.from} />} short />
+      <Datapoint
+        label="to"
+        value={tx.to ? <AddressView address={tx.to} /> : ""}
+        short
+      />
+      <Datapoint
+        label="value"
+        value={<ContextMenu>{formatEther(BigInt(tx.value))} Ξ</ContextMenu>}
+      />
+      <Datapoint
+        label="data"
+        value={<MonoText>{transaction.input}</MonoText>}
+        mono
+      />
+      <Datapoint label="nonce" value={transaction.nonce} />
+      <Datapoint label="type" value={transaction.type} />
+      {/* TODO: other txs types */}
+      {transaction.type == "eip1559" && (
+        <>
+          <Datapoint
+            label="maxFeePerGas"
+            value={`${formatGwei(transaction.maxFeePerGas)} gwei`}
+            short
+          />
+          <Datapoint
+            label="maxPriorityFeePerGas"
+            value={`${formatGwei(transaction.maxPriorityFeePerGas)} gwei`}
+            short
+          />
+        </>
+      )}
+      <Datapoint
+        label="gasLimit"
+        value={`${formatGwei(transaction.gas)} gwei`}
+        short
+      />
+      <Datapoint
+        label="gasUsed"
+        value={`${formatGwei(receipt.gasUsed)} gwei`}
+        short
+      />
+    </Grid>
+  );
+}
+
+interface DatapointProps {
+  label: string;
+  value: React.ReactNode;
+  short: boolean;
+}
+
+function Datapoint({ label, value, short }: DatapointProps) {
+  return (
+    <Grid item xs={short ? 6 : 12}>
+      <Typography color="gray" sx={{ fontSize: "12px" }}>
+        {label}
+      </Typography>
+      {value}
+    </Grid>
+  );
+}
+
+Datapoint.defaultProps = {
+  short: false,
+  mono: false,
+};

@@ -25,3 +25,4 @@ export { WagmiWrapper } from "./WagmiWrapper";
 export { WalletUnlockDialog } from "./WalletUnlockDialog";
 export { MsgSignDialog } from "./MsgSignDialog";
 export { DevBuildNotice } from "./DevBuildNotice";
+export { MonoText } from "./MonoText";
