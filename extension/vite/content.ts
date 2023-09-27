@@ -15,6 +15,7 @@ export default defineConfig({
     "process.env": {},
   },
   build: {
+    minify: false,
     emptyOutDir: false,
     outDir: path.resolve(__dirname, "..", dist),
     lib: {
