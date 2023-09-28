@@ -13,18 +13,13 @@ use foundry_evm::{
         node::CallTraceNode,
         CallTraceArena, CallTraceDecoder, CallTraceDecoderBuilder,
     },
-    utils::{h160_to_b160, u256_to_ru256},
 };
-use revm::{
-    db::DatabaseRef,
-    interpreter::InstructionResult,
-    primitives::{Account, Bytecode, Env, StorageSlot},
-    DatabaseCommit,
-};
+use foundry_utils::types::{ToAlloy, ToEthers};
+use revm::{interpreter::InstructionResult, primitives::Env};
 
 use crate::{
-    errors::{EvmError, OverrideError},
-    simulation::CallTrace,
+    errors::SimulationResult,
+    simulation::{CallTrace, Request, Result},
 };
 
 #[derive(Debug, Clone)]
@@ -73,14 +68,13 @@ pub struct Evm {
 }
 
 impl Evm {
-    pub fn new(
+    pub async fn new(
         env: Option<Env>,
         fork_url: String,
         fork_block_number: Option<u64>,
         gas_limit: u64,
-        tracing: bool,
-        etherscan_key: Option<String>,
     ) -> Self {
+        let foundry_config = foundry_config::Config::default();
         let evm_opts = EvmOpts {
             fork_url: Some(fork_url.clone()),
             fork_block_number,
@@ -91,45 +85,38 @@ impl Evm {
                 gas_limit: u64::MAX,
                 ..Default::default()
             },
-            memory_limit: foundry_config::Config::default().memory_limit,
+            memory_limit: foundry_config.memory_limit,
             ..Default::default()
         };
 
         let fork_opts = CreateFork {
             url: fork_url,
             enable_caching: true,
-            env: evm_opts.evm_env_blocking().unwrap(),
+            env: evm_opts.evm_env().await.unwrap(),
             evm_opts,
         };
 
-        let db = Backend::spawn(Some(fork_opts.clone()));
+        let db = Backend::spawn(Some(fork_opts.clone())).await;
 
-        let mut builder = ExecutorBuilder::default()
-            .with_gas_limit(gas_limit.into())
-            .set_tracing(tracing);
+        let builder = ExecutorBuilder::default().gas_limit(gas_limit.to_alloy());
 
-        if let Some(env) = env {
-            builder = builder.with_config(env);
+        let executor = if let Some(env) = env {
+            builder.build(env, db)
         } else {
-            builder = builder.with_config(fork_opts.env.clone());
-        }
-
-        let executor = builder.build(db);
-
-        let foundry_config = foundry_config::Config {
-            etherscan_api_key: etherscan_key,
-            ..Default::default()
+            builder.build(fork_opts.env.clone(), db)
         };
 
-        let chain: Chain = fork_opts.env.cfg.chain_id.to::<u64>().into();
+        let chain: Chain = fork_opts.env.cfg.chain_id.into();
         let etherscan_identifier = EtherscanIdentifier::new(&foundry_config, Some(chain)).ok();
-        let mut decoder = CallTraceDecoderBuilder::new().with_verbosity(5).build();
+        let mut decoder_builder = CallTraceDecoderBuilder::new().with_verbosity(5);
 
         if let Ok(identifier) =
             SignaturesIdentifier::new(foundry_config::Config::foundry_cache_dir(), false)
         {
-            decoder.add_signature_identifier(identifier);
+            decoder_builder = decoder_builder.with_signature_identifier(identifier);
         }
+
+        let decoder = decoder_builder.build();
 
         Evm {
             executor,
@@ -138,20 +125,54 @@ impl Evm {
         }
     }
 
-    pub async fn call_raw(&mut self, call: CallRawRequest) -> Result<CallRawResult, EvmError> {
+    #[allow(unused)]
+    pub(crate) async fn call(
+        &mut self,
+        transaction: Request,
+        commit: bool,
+    ) -> SimulationResult<Result> {
+        let call = CallRawRequest {
+            from: transaction.from,
+            to: transaction.to,
+            value: transaction.value.map(Uint::from),
+            data: transaction.data,
+            access_list: transaction.access_list,
+            format_trace: transaction.format_trace.unwrap_or_default(),
+        };
+        let result = if commit {
+            self.call_raw_committing(call, transaction.gas_limit)
+                .await?
+        } else {
+            self.call_raw(call).await?
+        };
+
+        Ok(Result {
+            simulation_id: 1,
+            gas_used: result.gas_used,
+            block_number: result.block_number,
+            success: result.success,
+            trace: result
+                .trace
+                .unwrap_or_default()
+                .arena
+                .into_iter()
+                .map(CallTrace::from)
+                .collect(),
+            logs: result.logs,
+            exit_reason: result.exit_reason,
+            formatted_trace: result.formatted_trace,
+            return_data: result.return_data,
+        })
+    }
+
+    pub async fn call_raw(&mut self, call: CallRawRequest) -> SimulationResult<CallRawResult> {
         self.set_access_list(call.access_list);
-        let res = self
-            .executor
-            .call_raw(
-                call.from,
-                call.to,
-                call.data.unwrap_or_default().0,
-                call.value.unwrap_or_default(),
-            )
-            .map_err(|err| {
-                dbg!(&err);
-                EvmError(err)
-            })?;
+        let res = self.executor.call_raw(
+            call.from.to_alloy(),
+            call.to.to_alloy(),
+            call.data.unwrap_or_default().0.into(),
+            call.value.unwrap_or_default().to_alloy(),
+        )?;
 
         let formatted_trace = if call.format_trace {
             let mut output = String::new();
@@ -174,80 +195,24 @@ impl Evm {
             trace: res.traces,
             logs: res.logs,
             exit_reason: res.exit_reason,
-            return_data: Bytes(res.result),
+            return_data: res.result.0.into(),
             formatted_trace,
         })
-    }
-
-    pub fn override_account(
-        &mut self,
-        address: Address,
-        balance: Option<Uint>,
-        nonce: Option<u64>,
-        code: Option<Bytes>,
-        storage: Option<StorageOverride>,
-    ) -> Result<(), OverrideError> {
-        let address = h160_to_b160(address);
-        let mut account = Account {
-            info: self
-                .executor
-                .backend()
-                .basic(address)
-                .map_err(|_| OverrideError)?
-                .unwrap_or_default(),
-            ..Account::new_not_existing()
-        };
-
-        if let Some(balance) = balance {
-            account.info.balance = u256_to_ru256(balance);
-        }
-        if let Some(nonce) = nonce {
-            account.info.nonce = nonce;
-        }
-        if let Some(code) = code {
-            account.info.code = Some(Bytecode::new_raw(code.to_vec().into()));
-        }
-        if let Some(storage) = storage {
-            // If we do a "full storage override", make sure to set this flag so
-            // that existing storage slots are cleared, and unknown ones aren't
-            // fetched from the forked node.
-            account.storage_cleared = !storage.diff;
-            account
-                .storage
-                .extend(storage.slots.into_iter().map(|(key, value)| {
-                    (
-                        u256_to_ru256(Uint::from_big_endian(key.as_bytes())),
-                        StorageSlot::new(u256_to_ru256(value)),
-                    )
-                }));
-        }
-
-        self.executor
-            .backend_mut()
-            .commit([(address, account)].into_iter().collect());
-
-        Ok(())
     }
 
     pub async fn call_raw_committing(
         &mut self,
         call: CallRawRequest,
         gas_limit: u64,
-    ) -> Result<CallRawResult, EvmError> {
-        self.executor.set_gas_limit(gas_limit.into());
+    ) -> SimulationResult<CallRawResult> {
+        self.executor.set_gas_limit(gas_limit.to_alloy());
         self.set_access_list(call.access_list);
-        let res = self
-            .executor
-            .call_raw_committing(
-                call.from,
-                call.to,
-                call.data.unwrap_or_default().0,
-                call.value.unwrap_or_default(),
-            )
-            .map_err(|err| {
-                dbg!(&err);
-                EvmError(err)
-            })?;
+        let res = self.executor.call_raw_committing(
+            call.from.to_alloy(),
+            call.to.to_alloy(),
+            call.data.unwrap_or_default().0.into(),
+            call.value.unwrap_or_default().to_alloy(),
+        )?;
 
         let formatted_trace = if call.format_trace {
             let mut output = String::new();
@@ -270,44 +235,44 @@ impl Evm {
             trace: res.traces,
             logs: res.logs,
             exit_reason: res.exit_reason,
-            return_data: Bytes(res.result),
+            return_data: res.result.0.into(),
             formatted_trace,
         })
     }
 
-    pub async fn set_block(&mut self, number: u64) -> Result<(), EvmError> {
-        self.executor.env_mut().block.number = Uint::from(number).into();
+    pub async fn set_block(&mut self, number: u64) -> SimulationResult<()> {
+        self.executor.env.block.number = number.to_alloy();
         Ok(())
     }
 
     pub fn get_block(&self) -> Uint {
-        self.executor.env().block.number.into()
+        self.executor.env.block.number.to_ethers()
     }
 
-    pub async fn set_block_timestamp(&mut self, timestamp: u64) -> Result<(), EvmError> {
-        self.executor.env_mut().block.timestamp = Uint::from(timestamp).into();
+    pub async fn set_block_timestamp(&mut self, timestamp: u64) -> SimulationResult<()> {
+        self.executor.env.block.timestamp = timestamp.to_alloy();
         Ok(())
     }
 
     pub fn get_block_timestamp(&self) -> Uint {
-        self.executor.env().block.timestamp.into()
+        self.executor.env.block.timestamp.to_ethers()
     }
 
     pub fn get_chain_id(&self) -> Uint {
-        self.executor.env().cfg.chain_id.into()
+        self.executor.env.cfg.chain_id.into()
     }
 
     fn set_access_list(&mut self, access_list: Option<AccessList>) {
-        self.executor.env_mut().tx.access_list = access_list
+        self.executor.env.tx.access_list = access_list
             .unwrap_or_default()
             .0
             .into_iter()
             .map(|item| {
                 (
-                    h160_to_b160(item.address),
+                    item.address.to_alloy(),
                     item.storage_keys
                         .into_iter()
-                        .map(|key| u256_to_ru256(Uint::from_big_endian(key.as_bytes())))
+                        .map(|key| Uint::from_big_endian(key.as_bytes()).to_alloy())
                         .collect(),
                 )
             })

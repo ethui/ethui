@@ -9,8 +9,17 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
+iron-networks = { workspace = true }
+iron-types = { workspace = true }
+
+tauri = { workspace = true }
 ethers = { workspace = true }
 tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+
+eyre = "*"
 
 revm = { version = "3", default-features = false, features = [
   "std",
@@ -20,5 +29,6 @@ revm = { version = "3", default-features = false, features = [
   "optional_block_gas_limit",
   "optional_no_base_fee",
 ] }
-foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "532fdba" }
-foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "532fdba" }
+foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-c74fd945ed129d67b2df69386c3139750cb3c534" }
+foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-c74fd945ed129d67b2df69386c3139750cb3c534" }
+foundry-utils = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-c74fd945ed129d67b2df69386c3139750cb3c534" }
