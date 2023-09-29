@@ -12,7 +12,7 @@ use iron_types::ChecksummedAddress;
 
 pub async fn init() {
     tokio::spawn(async {
-        let routes = Router::new().merge(rpc_proxy()).merge(api());
+        let routes = Router::new().merge(rpc_proxy()).merge(iron_namespace());
 
         let addr = std::env::var("IRON_HTTP_SERVER_ENDPOINT")
             .unwrap_or("127.0.0.1:9003".into())
@@ -30,8 +30,8 @@ fn rpc_proxy() -> Router {
     Router::new().route("/", post(rpc_handler))
 }
 
-fn api() -> Router {
-    Router::new().route("/api/foundry_get_abi", get(foundry_get_abi_handler))
+fn iron_namespace() -> Router {
+    Router::new().route("/iron/foundry_get_abi", get(foundry_get_abi_handler))
 }
 
 #[derive(Debug, Deserialize)]
