@@ -3013,7 +3013,9 @@ name = "iron-http"
 version = "0.6.2"
 dependencies = [
  "axum",
+ "iron-forge",
  "iron-rpc",
+ "iron-types",
  "serde",
  "serde_json",
  "thiserror",

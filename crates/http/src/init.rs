@@ -1,12 +1,18 @@
-use axum::{extract::Query, routing::post, Json, Router};
+use axum::{
+    extract::Query,
+    routing::{get, post},
+    Json, Router,
+};
 use serde::Deserialize;
 use serde_json::Value;
 
-use crate::error::Result;
+use crate::error::{Error, Result};
+
+use iron_types::ChecksummedAddress;
 
 pub async fn init() {
     tokio::spawn(async {
-        let routes = Router::new().merge(rpc_proxy());
+        let routes = Router::new().merge(rpc_proxy()).merge(api());
 
         let addr = std::env::var("IRON_HTTP_SERVER_ENDPOINT")
             .unwrap_or("127.0.0.1:9003".into())
@@ -22,6 +28,25 @@ pub async fn init() {
 
 fn rpc_proxy() -> Router {
     Router::new().route("/", post(rpc_handler))
+}
+
+fn api() -> Router {
+    Router::new().route("/api/foundry_get_abi", get(foundry_get_abi_handler))
+}
+
+#[derive(Debug, Deserialize)]
+struct FoundryGetAbiParams {
+    address: ChecksummedAddress,
+    chain_id: u32,
+}
+
+async fn foundry_get_abi_handler(Query(params): Query<FoundryGetAbiParams>) -> Result<Json<Value>> {
+    let reply = iron_forge::commands::foundry_get_abi(params.address, params.chain_id)
+        .await
+        .map_err(Error::Foundry)
+        .map(|abi| serde_json::to_value(abi).unwrap_or(serde_json::Value::Null))?;
+
+    Ok(Json(reply))
 }
 
 #[derive(Debug, Deserialize)]
