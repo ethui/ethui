@@ -1,4 +1,7 @@
 pub mod commands;
 mod errors;
-mod evm;
-mod simulation;
+pub mod evm;
+mod types;
+
+pub use evm::Evm;
+pub use types::{Request, Result};

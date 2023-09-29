@@ -32,3 +32,6 @@ revm = { version = "3", default-features = false, features = [
 foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-c74fd945ed129d67b2df69386c3139750cb3c534" }
 foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-c74fd945ed129d67b2df69386c3139750cb3c534" }
 foundry-utils = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-c74fd945ed129d67b2df69386c3139750cb3c534" }
+
+[dev-dependencies]
+pretty_assertions = "1.4.0"

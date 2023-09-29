@@ -1,16 +1,17 @@
+use iron_networks::Networks;
+use iron_types::GlobalState;
+
 use crate::{
     errors::SimulationResult,
     evm::Evm,
-    simulation::{Request, Result},
+    types::{Request, Result},
 };
 
 #[tauri::command]
-pub async fn simulator_run(request: Request) -> SimulationResult<Result> {
-    let fork_url = config
-        .fork_url
-        .unwrap_or(chain_id_to_fork_url(request.chain_id)?);
+pub async fn simulator_run(chain_id: u32, request: Request) -> SimulationResult<Result> {
+    let network = Networks::read().await.get_network(chain_id).unwrap();
 
-    let mut evm = Evm::new(None, fork_url, request.block_number, request.gas_limit);
+    let mut evm = Evm::new(network.http_url, None, request.gas_limit).await;
 
-    let response = evm.run(request, false).await?;
+    evm.call(request).await
 }
