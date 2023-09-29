@@ -163,9 +163,9 @@ async fn event_listener(handle: AppHandle) {
                     h,
                 }) => {
                     WindowBuilder::new(&handle, label, WindowUrl::App(url.into()))
-                        .min_inner_size(w, h)
-                        .max_inner_size(w, h)
+                        .inner_size(w, h)
                         .title(title)
+                        .resizable(true)
                         .build()
                         .unwrap();
                 }
@@ -181,6 +181,8 @@ async fn event_listener(handle: AppHandle) {
                     event_type,
                     payload,
                 }) => {
+                    dbg!("here");
+                    dbg!(&label, &event_type, &payload);
                     handle
                         .get_window(&label)
                         .unwrap()

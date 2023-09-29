@@ -1,3 +1,5 @@
+use ethers::types::transaction::eip2718::TypedTransaction;
+use ethers::types::NameOrAddress;
 use ethers::{
     abi::{Address, Uint},
     core::types::Log,
@@ -39,4 +41,21 @@ pub struct CallTrace {
     pub from: Address,
     pub to: Address,
     pub value: Uint,
+}
+
+impl TryFrom<TypedTransaction> for Request {
+    type Error = ();
+
+    fn try_from(value: TypedTransaction) -> std::result::Result<Self, Self::Error> {
+        Ok(Self {
+            from: *value.from().ok_or(())?,
+            to: *value.to().ok_or(()).and_then(|v| match v {
+                NameOrAddress::Name(_) => Err(()),
+                NameOrAddress::Address(a) => Ok(a),
+            })?,
+            value: value.value().cloned(),
+            data: value.data().cloned(),
+            gas_limit: value.gas().map(|v| v.as_u64()).ok_or(())?,
+        })
+    }
 }

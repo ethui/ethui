@@ -3784,6 +3784,7 @@ dependencies = [
  "iron-dialogs",
  "iron-networks",
  "iron-settings",
+ "iron-simulator",
  "iron-types",
  "iron-wallets",
  "jsonrpc-core",

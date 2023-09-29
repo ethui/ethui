@@ -1,8 +1,10 @@
 import { Button, Stack, Typography } from "@mui/material";
+import { invoke } from "@tauri-apps/api/tauri";
+import { useEffect, useState } from "react";
 import { formatEther } from "viem";
 
 import { useDialog } from "../hooks";
-import { AddressView, ContextMenu } from "./";
+import { AddressView, ContextMenu, MonoText } from "./";
 
 export interface TxRequest {
   data: string;
@@ -12,9 +14,20 @@ export interface TxRequest {
 }
 
 export function TxReviewDialog({ id }: { id: number }) {
-  const { data, accept, reject } = useDialog<TxRequest>(id);
+  const { data, accept, reject, send, listen } = useDialog<TxRequest>(id);
+  const [simulation, setSimulation] = useState<unknown>({});
+
+  useEffect(() => {
+    listen("simulation-result", ({ payload }) => setSimulation(payload));
+  }, [listen]);
+
+  useEffect(() => {
+    send("simulate");
+  }, []);
 
   if (!data) return null;
+
+  console.log("sim", simulation);
 
   const { from, to, value: valueStr, data: calldata } = data;
   const value = BigInt(valueStr || 0);
@@ -31,7 +44,9 @@ export function TxReviewDialog({ id }: { id: number }) {
         </Stack>
         <ContextMenu>{formatEther(BigInt(value))} Ξ</ContextMenu>
       </Stack>
-      <Typography>data: {calldata}</Typography>
+      <MonoText>{calldata}</MonoText>
+
+      <MonoText>{JSON.stringify(simulation, null, 2)}</MonoText>
 
       <Stack direction="row" justifyContent="center" spacing={2}>
         <Button variant="contained" color="error" onClick={() => reject()}>
