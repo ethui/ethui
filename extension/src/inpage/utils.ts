@@ -23,10 +23,12 @@ export function createErrorMiddleware(): JsonRpcMiddleware<unknown, unknown> {
     next((done) => {
       const { error } = res;
       if (!error) {
-        return done();
+        done();
+        return;
       }
       log.error(`Iron - RPC Error: ${error.message}`, error, req);
-      return done();
+      done();
+      return;
     });
   };
 }
