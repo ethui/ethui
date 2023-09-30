@@ -1,9 +1,7 @@
-use ethers::types::transaction::eip2718::TypedTransaction;
-use ethers::types::NameOrAddress;
 use ethers::{
     abi::{Address, Uint},
     core::types::Log,
-    types::{Bytes, U256},
+    types::{transaction::eip2718::TypedTransaction, Bytes, NameOrAddress, U256},
 };
 use foundry_evm::CallKind;
 use revm::interpreter::InstructionResult;

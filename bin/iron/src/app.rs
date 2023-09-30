@@ -181,8 +181,6 @@ async fn event_listener(handle: AppHandle) {
                     event_type,
                     payload,
                 }) => {
-                    dbg!("here");
-                    dbg!(&label, &event_type, &payload);
                     handle
                         .get_window(&label)
                         .unwrap()

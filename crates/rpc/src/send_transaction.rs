@@ -91,7 +91,6 @@ impl<'a> SendTransaction<'a> {
 
         tokio::spawn(async move {
             if let Ok(sim) = iron_simulator::commands::simulator_run(chain_id, request).await {
-                dbg!(&sim);
                 dialog
                     .send(
                         "simulation-result",

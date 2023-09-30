@@ -18,7 +18,6 @@ use crate::peers::{Peer, Peers};
 
 pub(crate) async fn server_loop() {
     let addr = std::env::var("IRON_WS_SERVER_ENDPOINT").unwrap_or("127.0.0.1:9002".into());
-    dbg!(&addr);
     let listener = TcpListener::bind(&addr).await.expect("Can't listen to");
 
     while let Ok((stream, _)) = listener.accept().await {
