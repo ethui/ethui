@@ -1,11 +1,12 @@
-import CallToActionIcon from "@mui/icons-material/CallToAction";
-import OnlinePredictionSharpIcon from "@mui/icons-material/OnlinePredictionSharp";
-import ReceiptIcon from "@mui/icons-material/Receipt";
-import RequestQuoteSharpIcon from "@mui/icons-material/RequestQuoteSharp";
+import {
+  CallToAction,
+  OnlinePredictionSharp,
+  Receipt,
+  RequestQuoteSharp,
+} from "@mui/icons-material";
 import { Box, Button, Drawer, IconButton, Stack, Toolbar } from "@mui/material";
 import { blue } from "@mui/material/colors";
-import { findIndex } from "lodash-es";
-import { parseInt, range, toString } from "lodash-es";
+import { findIndex, parseInt, range, toString } from "lodash-es";
 import { ReactNode } from "react";
 import { Link, useLocation, useRoute } from "wouter";
 
@@ -13,42 +14,42 @@ import { useKeyPress, useMenuAction, useOS } from "../hooks";
 import { useTheme } from "../store";
 import {
   Account,
+  CommandBarButton,
   Contracts,
+  Logo,
   Peers,
   QuickAddressSelect,
   QuickNetworkSelect,
   QuickWalletSelect,
+  SettingsButton,
   Txs,
 } from "./";
-import { CommandBarButton } from "./CommandBarButton";
-import { Logo } from "./Logo";
-import { SettingsButton } from "./SettingsButton";
 
 export const TABS = [
   {
     path: "account",
     name: "Account",
     component: Account,
-    icon: RequestQuoteSharpIcon,
+    icon: RequestQuoteSharp,
   },
   {
     path: "transactions",
     name: "Transactions",
     component: Txs,
-    icon: ReceiptIcon,
+    icon: Receipt,
   },
   {
     path: "contracts",
     name: "Contracts",
     component: Contracts,
     devOnly: true,
-    icon: CallToActionIcon,
+    icon: CallToAction,
   },
   {
     path: "connections",
     name: "Connections",
     component: Peers,
-    icon: OnlinePredictionSharpIcon,
+    icon: OnlinePredictionSharp,
   },
 ];
 
