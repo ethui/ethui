@@ -1,6 +1,8 @@
+import { type JsonRpcParams } from "@metamask/utils";
+
 export interface RequestArguments {
   method: string;
-  params?: unknown;
+  params?: JsonRpcParams;
 }
 
 export type Address = `0x${string}`;

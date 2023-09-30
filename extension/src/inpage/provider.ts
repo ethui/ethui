@@ -1,13 +1,17 @@
+import {
+  JsonRpcEngine,
+  createIdRemapMiddleware,
+} from "@metamask/json-rpc-engine";
+import { type Json, type JsonRpcResponse } from "@metamask/utils";
 import { EthereumRpcError } from "eth-rpc-errors";
 import { EventEmitter } from "eventemitter3";
 import { isDuplexStream } from "is-stream";
-import { JsonRpcEngine, createIdRemapMiddleware } from "json-rpc-engine";
 import { createStreamMiddleware } from "json-rpc-middleware-stream";
 import log from "loglevel";
 import { type Duplex } from "stream";
 
 import { Address, RequestArguments } from "./types";
-import { Maybe, createErrorMiddleware, getRpcPromiseCallback } from "./utils";
+import { errorMiddleware } from "./utils";
 
 export class IronProvider extends EventEmitter {
   protected initialized = false;
@@ -44,19 +48,20 @@ export class IronProvider extends EventEmitter {
    * @param args.params - The parameters for the RPC method.
    * @returns A Promise that resolves with the result of the RPC method,
    * or rejects if an error is encountered.
+   * TODO: handle batch calls
    */
-  public async request<T>({
+  public async request({
     method,
     params,
-  }: RequestArguments): Promise<Maybe<T>> {
+  }: RequestArguments): Promise<JsonRpcResponse<Json>> {
     log.debug("request", { method, params });
     this.initialize();
 
-    return new Promise<T>((resolve, reject) => {
-      this.engine.handle(
-        { method, params, id: this.nextId(), jsonrpc: "2.0" },
-        getRpcPromiseCallback(resolve as any, reject) as any,
-      );
+    return this.engine.handle({
+      method,
+      params,
+      id: this.nextId(),
+      jsonrpc: "2.0",
     });
   }
 
@@ -132,7 +137,7 @@ export class IronProvider extends EventEmitter {
     }
 
     this.engine.push(createIdRemapMiddleware());
-    this.engine.push(createErrorMiddleware());
+    this.engine.push(errorMiddleware);
 
     connection.stream.pipe(this.stream).pipe(connection.stream);
 
