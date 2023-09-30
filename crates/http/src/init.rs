@@ -31,7 +31,13 @@ fn rpc_proxy() -> Router {
 }
 
 fn iron_namespace() -> Router {
-    Router::new().route("/iron/foundry_get_abi", get(foundry_get_abi_handler))
+    Router::new().nest("/iron", iron_routes())
+}
+
+fn iron_routes() -> Router {
+    let foundry_routes = Router::new().route("/abi", get(foundry_get_abi_handler));
+
+    Router::new().nest("/foundry", foundry_routes)
 }
 
 #[derive(Debug, Deserialize)]
