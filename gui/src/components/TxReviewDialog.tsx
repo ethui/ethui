@@ -1,4 +1,5 @@
-import { Button, Stack, Typography } from "@mui/material";
+import { TabContext, TabList, TabPanel } from "@mui/lab";
+import { Button, Stack, Tab, Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 import { formatEther } from "viem";
@@ -16,6 +17,7 @@ export interface TxRequest {
 export function TxReviewDialog({ id }: { id: number }) {
   const { data, accept, reject, send, listen } = useDialog<TxRequest>(id);
   const [simulation, setSimulation] = useState<unknown>({});
+  const [tab, setTab] = useState("0");
 
   useEffect(() => {
     listen("simulation-result", ({ payload }) => setSimulation(payload));
@@ -46,7 +48,15 @@ export function TxReviewDialog({ id }: { id: number }) {
       </Stack>
       <MonoText>{calldata}</MonoText>
 
-      <MonoText>{JSON.stringify(simulation, null, 2)}</MonoText>
+      <TabContext value={tab}>
+        <TabList onChange={(e, v) => setTab(v)}>
+          <Tab label="Summary" value="1" />
+          <Tab label="Simulation" value="2" />
+        </TabList>
+        <TabPanel value="0">1</TabPanel>
+        <TabPanel value="1">2</TabPanel>
+      </TabContext>
+      {/*<MonoText>{JSON.stringify(simulation, null, 2)}</MonoText>*/}
 
       <Stack direction="row" justifyContent="center" spacing={2}>
         <Button variant="contained" color="error" onClick={() => reject()}>
