@@ -1,4 +1,4 @@
-import { Box, Stack } from "@mui/material";
+import { Stack } from "@mui/material";
 import { ReactNode } from "react";
 
 export function DialogLayout({ children }: { children: ReactNode }) {
@@ -8,18 +8,3 @@ export function DialogLayout({ children }: { children: ReactNode }) {
     </Stack>
   );
 }
-
-DialogLayout.Bottom = ({ children }: { children: ReactNode }) => {
-  return (
-    <Box
-      sx={{
-        position: "fixed",
-        bottom: 0,
-        width: "100%",
-        pb: 2,
-      }}
-    >
-      {children}
-    </Box>
-  );
-};

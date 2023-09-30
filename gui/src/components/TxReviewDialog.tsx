@@ -98,7 +98,6 @@ interface SimulationResultProps {
 function SimulationResult({ simulation }: SimulationResultProps) {
   if (!simulation) return null;
 
-  console.log(simulation);
   return (
     <Grid container rowSpacing={2}>
       <Datapoint label="success" value={simulation.success.toString()} short />
