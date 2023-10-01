@@ -1,6 +1,7 @@
 import { validateMnemonic } from "@scure/bip39";
 import { wordlist } from "@scure/bip39/wordlists/english";
 import { z } from "zod";
+import { zxcvbn } from "zxcvbn-typescript";
 
 export const generalSettingsSchema = z.object({
   darkMode: z.enum(["auto", "dark", "light"]),
@@ -36,20 +37,26 @@ export const networkSchema = z.object({
   ),
 });
 
-export const passwordSchema = z
-  .string()
-  .min(8, { message: "must be at least 8 characters long" })
-  .regex(
-    new RegExp("[^a-zA-Z0-9]"),
-    "must have at least one special character",
-  );
+export const passwordSchema = z.string().superRefine((password, ctx) => {
+  const zxcvbnResult = zxcvbn(password);
+  if (zxcvbnResult.score < 4) {
+    const errorMessage =
+      zxcvbnResult.feedback.suggestions.length > 0
+        ? zxcvbnResult.feedback.suggestions.join(" ")
+        : "Please use a stronger password.";
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: errorMessage,
+    });
+  }
+});
 
 export const passwordFormSchema = z
   .object({
     password: passwordSchema,
-    passwordConfirmation: passwordSchema,
+    passwordConfirmation: z.string(),
   })
-  .refine((data) => data.password == data.passwordConfirmation, {
+  .refine((data) => data.password === data.passwordConfirmation, {
     path: ["passwordConfirmation"],
     message: "The two passwords don't match",
   });

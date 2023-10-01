@@ -9611,3 +9611,8 @@ zustand@^4.4.1:
   integrity sha512-QCPfstAS4EBiTQzlaGP1gmorkh/UL1Leaj2tdj+zZCZ/9bm0WS7sI2wnfD5lpOszFqWJ1DcPnGoY8RDL61uokw==
   dependencies:
     use-sync-external-store "1.2.0"
+
+zxcvbn-typescript@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/zxcvbn-typescript/-/zxcvbn-typescript-5.0.1.tgz#989def22a78d2b1513be3fadbb4e149d12d7f6f2"
+  integrity sha512-If2a6jdm278dfWmn6NL7oC1lNYRHOthBw0C78LsKvtAHHFNsMudvFhDn2fF/b74txWtSosJJiuJ7jBPn/xP6HQ==
