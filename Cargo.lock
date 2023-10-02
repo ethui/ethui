@@ -2980,10 +2980,12 @@ version = "0.6.2"
 dependencies = [
  "async-trait",
  "ethers",
+ "iron-abis",
  "iron-types",
  "once_cell",
  "serde",
  "serde_json",
+ "tauri",
  "tokio",
 ]
 

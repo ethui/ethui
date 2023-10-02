@@ -1,4 +1,23 @@
 {
+  "rpcs": {
+    "1": [
+      "https://rpc.ankr.com/eth",
+      "https://eth.llamarpc.com",
+      "https://rpc.mevblocker.io",
+      "https://rpc.builder0x69.io",
+      "https://ethereum.publicnode.com",
+      "https://1rpc.io/eth",
+      "https://rpc.flashbots.net",
+      "https://eth-rpc.gateway.pokt.network",
+      "https://eth.meowrpc.com"
+    ],
+    "5": [
+      "https://rpc.ankr.com/eth_goerli",
+      "https://endpoints.omniatech.io/v1/eth/goerli/public",
+      "https://eth-goerli.public.blastapi.io",
+      "https://ethereum-goerli.publicnode.com"
+    ]
+  },
   "feeds": {
     "1": {
       "USD": {

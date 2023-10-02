@@ -10,7 +10,9 @@ authors.workspace = true
 
 [dependencies]
 iron-types = { workspace = true }
+iron-abis = { workspace = true }
 
+tauri = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 ethers = { workspace = true }

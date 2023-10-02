@@ -1,12 +1,12 @@
-use std::collections::HashMap;
-
 use async_trait::async_trait;
 use iron_types::GlobalState;
 use once_cell::sync::Lazy;
 use serde::Deserialize;
+use std::collections::HashMap;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
-use super::{feed::Feed, Feeds};
+use super::feed::Feed;
+use super::Feeds;
 
 static FEEDS: Lazy<RwLock<Feeds>> = Lazy::new(|| {
     // Embed the JSON file in the binary
@@ -15,11 +15,13 @@ static FEEDS: Lazy<RwLock<Feeds>> = Lazy::new(|| {
     #[derive(Deserialize)]
     struct InputFeeds {
         feeds: HashMap<u64, HashMap<String, HashMap<String, Vec<Feed>>>>,
+        rpcs: HashMap<u64, Vec<String>>,
     }
 
     let res: InputFeeds = serde_json::from_str(feeds_str).unwrap();
     let mut feeds = Feeds {
         feeds: HashMap::new(),
+        rpcs: res.rpcs,
     };
 
     for (k1, v1) in res.feeds {

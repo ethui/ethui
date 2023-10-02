@@ -20,7 +20,7 @@ members = [
   "crates/sync/alchemy",
   "crates/crypto",
   "crates/broadcast",
-  "crates/exchange-rates",
+  "crates/exchange-rates"
 ]
 default-members = ["bin/iron"]
 
