@@ -14,6 +14,13 @@ on:
       - "*.toml"
       - "*.md"
       - "LICENSE"
+  merge_group:
+    paths-ignore:
+      - "./migrations/**"
+      - "./tauri/**"
+      - "*.toml"
+      - "*.md"
+      - "LICENSE"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
