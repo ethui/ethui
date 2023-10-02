@@ -71,6 +71,7 @@ pub async fn wallets_get_mnemonic_addresses(
 
 //Checking the mnemonic when entering a new wallet
 #[tauri::command]
-pub fn wallet_validate_mnemonic(mnemonic: String) -> bool {
+pub fn wallets_validate_mnemonic(mnemonic: String) -> bool {
     utils::validate_mnemonic(&mnemonic)
 }
+
