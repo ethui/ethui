@@ -53,7 +53,7 @@ impl IronApp {
                 iron_dialogs::commands::dialog_get_payload,
                 iron_dialogs::commands::dialog_send,
                 iron_dialogs::commands::dialog_finish,
-                iron_forge::commands::foundry_get_abi,
+                iron_forge::commands::forge_get_abi,
                 iron_rpc::commands::rpc_send_transaction,
                 iron_connections::commands::connections_affinity_for,
                 iron_connections::commands::connections_set_affinity,
