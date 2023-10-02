@@ -1,5 +1,5 @@
-import { z } from "zod";
 import { invoke } from "@tauri-apps/api/tauri";
+import { z } from "zod";
 
 export const generalSettingsSchema = z.object({
   darkMode: z.enum(["auto", "dark", "light"]),
@@ -68,9 +68,12 @@ export const mnemonicSchema = z
         "Invalid number of words. Needs to be 12, 15, 18, 21 or 24 words long",
     },
   )
-  .refine((data) => invoke<string>("wallet_validate_mnemonic", { mnemonic: data }), {
-    message: "Invalid mnemonic. You may have a typo or an unsupported word TEST",
-  });
+  .refine(
+    (mnemonic) => invoke<string>("wallets_validate_mnemonic", { mnemonic }),
+    {
+      message: "Invalid mnemonic. You may have a typo or an unsupported word",
+    },
+  );
 
 export const derivationPathSchema = z
   .string()
