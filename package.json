@@ -7,7 +7,7 @@
     "app:dev": "rm -rf target/debug/db.* && RUST_LOG=iron=debug tauri dev",
     "gui:build": "yarn workspace @iron/gui build",
     "ext:dev": "yarn workspace @iron/extension dev",
-    "ext:build": "yarn workspace @iron/extension build:chrome",
+    "ext:build": "yarn workspace @iron/extension build",
     "lint": "yarn lint:eslint && yarn lint:tsc && yarn lint:prettier",
     "lint:eslint": "eslint .",
     "lint:tsc": "tsc --noEmit",
