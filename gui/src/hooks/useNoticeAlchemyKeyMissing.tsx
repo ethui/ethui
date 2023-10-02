@@ -1,5 +1,4 @@
-import { OpenInNew } from "@mui/icons-material";
-import CloseIcon from "@mui/icons-material/Close";
+import { Close, OpenInNew } from "@mui/icons-material";
 import { IconButton, Typography } from "@mui/material";
 import { SnackbarKey, useSnackbar } from "notistack";
 import { useEffect } from "react";
@@ -26,7 +25,10 @@ export function useNoticeAlchemyKeyMissing() {
     !isLoading && isSupportedNetwork && !settings?.alchemyApiKey;
 
   useEffect(() => {
-    if (!requiresAlchemyKey) return closeSnackbar(key);
+    if (!requiresAlchemyKey) {
+      closeSnackbar(key);
+      return;
+    }
 
     key = enqueueSnackbar(
       <>
@@ -54,7 +56,7 @@ export function useNoticeAlchemyKeyMissing() {
               sx={{ p: 0.5 }}
               onClick={() => closeSnackbar(key)}
             >
-              <CloseIcon />
+              <Close />
             </IconButton>
           </>
         ),

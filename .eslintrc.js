@@ -31,6 +31,10 @@ module.exports = {
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/await-thenable": "error",
     "@typescript-eslint/require-await": "error",
+    "@typescript-eslint/no-confusing-void-expression": [
+      "error",
+      { ignoreArrowShorthand: true },
+    ],
     "@typescript-eslint/no-unused-vars": [
       "warn",
       {
