@@ -2,7 +2,11 @@ import {
   JsonRpcEngine,
   createIdRemapMiddleware,
 } from "@metamask/json-rpc-engine";
-import { type Json, type JsonRpcResponse } from "@metamask/utils";
+import {
+  type Json,
+  type JsonRpcResponse,
+  isJsonRpcFailure,
+} from "@metamask/utils";
 import { EthereumRpcError } from "eth-rpc-errors";
 import { EventEmitter } from "eventemitter3";
 import { isDuplexStream } from "is-stream";
@@ -50,19 +54,26 @@ export class IronProvider extends EventEmitter {
    * or rejects if an error is encountered.
    * TODO: handle batch calls
    */
-  public async request({
-    method,
-    params,
-  }: RequestArguments): Promise<JsonRpcResponse<Json>> {
+  public async request({ method, params }: RequestArguments): Promise<unknown> {
     log.debug("request", { method, params });
     this.initialize();
 
-    return this.engine.handle({
+    const resp: JsonRpcResponse<Json> = await this.engine.handle({
       method,
       params,
       id: this.nextId(),
       jsonrpc: "2.0",
     });
+
+    if (isJsonRpcFailure(resp)) {
+      throw resp.error;
+    }
+
+    if (Array.isArray(resp)) {
+      return resp;
+    } else {
+      return resp.result;
+    }
   }
 
   /**

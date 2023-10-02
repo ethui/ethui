@@ -1,6 +1,6 @@
-import { Json, JsonRpcParams, JsonRpcRequest } from "@metamask/utils";
+import { JsonRpcMiddleware } from "@metamask/json-rpc-engine";
+import { Json, JsonRpcParams } from "@metamask/utils";
 import { ethErrors } from "eth-rpc-errors";
-import { JsonRpcMiddleware, PendingJsonRpcResponse } from "json-rpc-engine";
 import log from "loglevel";
 
 export type Maybe<T> = T | null | undefined;
@@ -12,10 +12,9 @@ export type Maybe<T> = T | null | undefined;
  * @returns A json-rpc-engine middleware function.
  */
 export const errorMiddleware: JsonRpcMiddleware<JsonRpcParams, Json> = (
-  req: JsonRpcRequest<JsonRpcParams>,
+  req,
   res,
   next,
-  _end,
 ) => {
   // json-rpc-engine will terminate the request when it notices this error
   if (typeof req.method !== "string" || !req.method) {
@@ -34,19 +33,3 @@ export const errorMiddleware: JsonRpcMiddleware<JsonRpcParams, Json> = (
     return done();
   });
 };
-
-// resolve response.result or response, reject errors
-export function getRpcPromiseCallback(
-  resolve: (value?: unknown) => void,
-  reject: (error?: Error) => void,
-) {
-  return (error: Error, response: PendingJsonRpcResponse<unknown>): void => {
-    if (error || response.error) {
-      reject(error || response.error);
-    } else if (Array.isArray(response)) {
-      resolve(response);
-    } else {
-      resolve(response.result);
-    }
-  };
-}
