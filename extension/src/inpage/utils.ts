@@ -26,10 +26,9 @@ export const errorMiddleware: JsonRpcMiddleware<JsonRpcParams, Json> = (
 
   next((done) => {
     const { error } = res;
-    if (!error) {
-      return done();
+    if (error) {
+      log.error(`Iron - RPC Error: ${error.message}`, error, req);
     }
-    log.error(`Iron - RPC Error: ${error.message}`, error, req);
-    return done();
+    done();
   });
 };
