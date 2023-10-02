@@ -38,15 +38,17 @@ export const networkSchema = z.object({
 });
 
 export const passwordSchema = z.string().superRefine((password, ctx) => {
-  const zxcvbnResult = zxcvbn(password);
-  if (zxcvbnResult.score < 4) {
-    const errorMessage =
-      zxcvbnResult.feedback.suggestions.length > 0
-        ? zxcvbnResult.feedback.suggestions.join(" ")
+  const { feedback, score } = zxcvbn(password);
+
+  if (score < 4) {
+    const message =
+      feedback.suggestions.length > 0
+        ? feedback.suggestions.join(" ")
         : "Please use a stronger password.";
+
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: errorMessage,
+      message,
     });
   }
 });
