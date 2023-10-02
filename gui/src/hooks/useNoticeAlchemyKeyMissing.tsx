@@ -25,7 +25,10 @@ export function useNoticeAlchemyKeyMissing() {
     !isLoading && isSupportedNetwork && !settings?.alchemyApiKey;
 
   useEffect(() => {
-    if (!requiresAlchemyKey) return closeSnackbar(key);
+    if (!requiresAlchemyKey) {
+      closeSnackbar(key);
+      return;
+    }
 
     key = enqueueSnackbar(
       <>
