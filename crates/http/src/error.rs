@@ -8,8 +8,8 @@ pub enum Error {
     #[error("serialization error: {0}")]
     Serde(#[from] serde_json::Error),
 
-    #[error("foundry error")]
-    Foundry(String),
+    #[error(transparent)]
+    Forge(#[from] iron_forge::Error),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
