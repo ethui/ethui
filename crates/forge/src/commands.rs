@@ -6,7 +6,7 @@ use super::{abi::Abi, Error, Result, FORGE};
 
 /// Gets the ABI, if known, for a given address and chain_id
 #[tauri::command]
-pub async fn foundry_get_abi(address: ChecksummedAddress, chain_id: u32) -> Result<Option<Abi>> {
+pub async fn forge_get_abi(address: ChecksummedAddress, chain_id: u32) -> Result<Option<Abi>> {
     let code = {
         let networks = Networks::read().await;
         let network = networks
