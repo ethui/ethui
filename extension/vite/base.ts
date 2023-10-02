@@ -25,6 +25,7 @@ export default defineConfig({
     }),
   ],
   build: {
+    minify: false,
     outDir: path.resolve(__dirname, "..", dist),
     emptyOutDir: false,
     rollupOptions: {
