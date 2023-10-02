@@ -1,5 +1,6 @@
 import { GlobalStyles, ThemeProvider } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
+import { SnackbarProvider } from "notistack";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Route, Router, Switch } from "wouter";
 
@@ -13,6 +14,7 @@ import {
   WalletUnlockDialog,
 } from "./components";
 import { OnboardingWrapper } from "./components/Onboarding";
+import "./global.css";
 import { useTheme } from "./store/theme";
 
 const queryClient = new QueryClient({
@@ -63,9 +65,11 @@ function Routes() {
           {({ id }: { id: string }) => <WalletUnlockDialog id={parseInt(id)} />}
         </Route>
         <Route>
-          <CommandBar>
-            <HomePage />
-          </CommandBar>
+          <SnackbarProvider>
+            <CommandBar>
+              <HomePage />
+            </CommandBar>
+          </SnackbarProvider>
         </Route>
       </Switch>
     </Router>

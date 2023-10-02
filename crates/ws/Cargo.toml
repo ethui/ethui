@@ -24,8 +24,8 @@ once_cell = { workspace = true }
 tracing = { workspace = true }
 
 futures-util = "0.3.27"
-tokio-tungstenite = "0.18.0"
-tungstenite = "0.18.0"
+tokio-tungstenite = "0.20.1"
+tungstenite = "0.20.1"
 thiserror = "1.0.40"
 url = "2.3.1"
 async-trait = "0.1.68"

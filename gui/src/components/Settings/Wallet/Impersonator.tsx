@@ -34,6 +34,7 @@ export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
   const {
     register,
     handleSubmit,
+    reset,
     control,
     formState: { isValid, isDirty, errors },
   } = useForm({
@@ -47,6 +48,7 @@ export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
       ...data,
       addresses: data.addresses.map(({ address }) => address),
     });
+    reset(data);
   };
 
   const {

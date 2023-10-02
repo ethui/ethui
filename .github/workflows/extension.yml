@@ -27,6 +27,8 @@ jobs:
         with:
           cache: "yarn"
 
+      - run: yarn global add node-gyp
+
       - name: install
         run: yarn workspace @iron/extension install
 

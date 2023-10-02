@@ -36,7 +36,6 @@ pub async fn db_get_native_balance(
     Ok(db.get_native_balance(chain_id, address).await)
 }
 
-
 #[tauri::command]
 pub async fn db_get_contracts(
     chain_id: u32,
@@ -66,7 +65,6 @@ pub async fn db_insert_contract(
     iron_broadcast::ui_notify(UINotify::ContractsUpdated).await;
 
     Ok(())
-
 }
 
 #[tauri::command]
