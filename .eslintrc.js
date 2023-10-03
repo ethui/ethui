@@ -5,24 +5,28 @@ module.exports = {
     "plugin:@typescript-eslint/recommended",
     "prettier",
   ],
+  plugins: ["react", "@typescript-eslint", "simple-import-sort", "import"],
+
   parser: "@typescript-eslint/parser",
   parserOptions: {
+    sourceType: "module",
     project: ["./tsconfig.json", "./extension/tsconfig.json"],
   },
-  plugins: ["react", "@typescript-eslint"],
-  ignorePatterns: [
-    "**/*.generated.ts",
-    "node_modules/*",
-    "extension/dist/*",
-    "gui/dist/*",
-    "extension/provider-inpage/*",
-    "target/*",
-  ],
+  env: { es6: true },
+
   settings: {
     react: {
       version: "detect",
     },
   },
+  ignorePatterns: [
+    "**/*.generated.ts",
+    "node_modules/*",
+    "extension/dist/*",
+    "gui/dist/*",
+    "target/*",
+  ],
+
   rules: {
     "no-console": ["error", { allow: ["warn", "error"] }],
     "react/jsx-uses-react": "off",
@@ -43,5 +47,10 @@ module.exports = {
         caughtErrorsIgnorePattern: "^_",
       },
     ],
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error",
+    "import/first": "error",
+    "import/newline-after-import": "error",
+    "import/no-duplicates": "error",
   },
 };
