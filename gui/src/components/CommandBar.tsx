@@ -21,7 +21,7 @@ import {
   useMatches,
   useRegisterActions,
 } from "kbar";
-import React, { forwardRef,ReactNode } from "react";
+import React, { forwardRef, ReactNode } from "react";
 
 import { useNetworks, useSettingsWindow, useWallets } from "../store";
 import { useTheme } from "../store/theme";
