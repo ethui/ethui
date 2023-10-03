@@ -1,6 +1,6 @@
 import {
-  JsonRpcEngine,
   createIdRemapMiddleware,
+  JsonRpcEngine,
 } from "@metamask/json-rpc-engine";
 import { type Json, type JsonRpcResponse } from "@metamask/utils";
 import { EthereumRpcError } from "eth-rpc-errors";

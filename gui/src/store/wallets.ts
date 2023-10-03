@@ -1,7 +1,7 @@
 import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Action } from "kbar";
-import { StateCreator, create } from "zustand";
+import { create,StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
 import { Address, Wallet } from "../types";

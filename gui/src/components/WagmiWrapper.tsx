@@ -3,11 +3,11 @@ import { FallbackTransport } from "viem";
 import {
   Chain,
   type Config,
+  configureChains,
+  createConfig,
   PublicClient,
   WagmiConfig,
   WebSocketPublicClient,
-  configureChains,
-  createConfig,
 } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
