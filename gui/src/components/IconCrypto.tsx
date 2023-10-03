@@ -1,6 +1,5 @@
+import { useTheme } from "@/store/theme";
 import { useEffect, useState } from "react";
-
-import { useTheme } from "../store/theme";
 
 interface Props {
   ticker: string;

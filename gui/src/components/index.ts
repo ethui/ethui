@@ -15,7 +15,7 @@ export { Modal } from "./Modal";
 export { Navbar } from "./Navbar";
 export { NestedRoutes } from "./NestedRoutes";
 export { Panel } from "./Panel";
-export { Peers } from "./Peers";
+export { Connections } from "./Connections";
 export { QuickAddressSelect } from "./QuickAddressSelect";
 export { QuickNetworkSelect } from "./QuickNetworkSelect";
 export { QuickWalletSelect } from "./QuickWalletSelect";

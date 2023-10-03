@@ -142,4 +142,8 @@ impl Peers {
             acc
         })
     }
+
+    pub(crate) fn count(&self) -> usize {
+        self.map.len()
+    }
 }

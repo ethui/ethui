@@ -6,23 +6,37 @@ module.exports = {
     "prettier",
   ],
   parser: "@typescript-eslint/parser",
+  env: { es6: true },
+
   parserOptions: {
-    project: ["./tsconfig.json", "./extension/tsconfig.json"],
+    sourceType: "module",
+    project: [
+      "./tsconfig.json",
+      "./gui/tsconfig.json",
+      "./extension/tsconfig.json",
+    ],
   },
-  plugins: ["react", "@typescript-eslint"],
+
+  plugins: ["react", "@typescript-eslint", "simple-import-sort", "import"],
   ignorePatterns: [
-    "**/*.generated.ts",
     "node_modules/*",
+    "extension/*",
+    "gui/*",
+    "crates/*",
+    "**/node_modules/*",
     "extension/dist/*",
     "gui/dist/*",
     "extension/provider-inpage/*",
+    "extension/dist/*",
     "target/*",
   ],
+
   settings: {
     react: {
       version: "detect",
     },
   },
+
   rules: {
     "no-console": ["error", { allow: ["warn", "error"] }],
     "react/jsx-uses-react": "off",
@@ -43,5 +57,10 @@ module.exports = {
         caughtErrorsIgnorePattern: "^_",
       },
     ],
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error",
+    "import/first": "error",
+    "import/newline-after-import": "error",
+    "import/no-duplicates": "error",
   },
 };

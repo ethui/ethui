@@ -26,7 +26,7 @@ interface Peer {
   favicon: string;
 }
 
-export function Peers() {
+export function Connections() {
   const { data: peersByDomain, mutate } =
     useInvoke<Record<string, Peer[]>>("ws_peers_by_domain");
 
