@@ -96,8 +96,10 @@ function ABIItemForm({ contract, item }: { contract: Address; item: ABIItem }) {
         setCallResult(JSON.stringify(result));
       }
     } else {
+      const value = item.stateMutability === "payable" && params.value ? params.value : "";
+
       const result = await invoke<string>("rpc_send_transaction", {
-        params: { to: contract, data },
+        params: { to: contract, value, data },
       });
       setTxResult(result);
     }
