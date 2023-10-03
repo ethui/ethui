@@ -51,8 +51,8 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
           cache: "yarn"
+          node-version-file: ".tool-versions"
 
       - name: Install dependencies
         run: yarn workspace @iron/extension install
@@ -123,8 +123,8 @@ jobs:
       - name: setup node
         uses: actions/setup-node@v3
         with:
-          node-version: 18
           cache: "yarn"
+          node-version-file: ".tool-versions"
 
       - run: yarn install --network-timeout 1000000
 
