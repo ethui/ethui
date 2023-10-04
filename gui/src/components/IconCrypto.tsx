@@ -27,4 +27,3 @@ export function IconCrypto({}: Props) {
 
 const urlFor = (ticker: string, type: "color" | "black" | "white") =>
   `/cryptocurrency-icons/${type}/${ticker.toLowerCase()}.svg`;
-
