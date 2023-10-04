@@ -16,9 +16,8 @@
     "incremental": true,
     "isolatedModules": true,
     "types": ["node"],
-    "typeRoots": ["./src/global.d.ts", "node_modules/@types"],
-    "traceResolution": true
+    "typeRoots": ["./src/global.d.ts", "node_modules/@types"]
   },
-  "include": ["gui", "node_modules/@types", ".eslintrc.js"],
-  "exclude": ["build", "node_modules", "extension"]
+  "include": ["gui", "extension", "node_modules/@types", ".eslintrc.js"],
+  "exclude": ["build", "node_modules"]
 }

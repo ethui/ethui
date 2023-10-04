@@ -8,7 +8,6 @@ module.exports = {
   plugins: ["react", "@typescript-eslint", "simple-import-sort", "import"],
 
   parser: "@typescript-eslint/parser",
-  env: { es6: true },
 
   parserOptions: {
     sourceType: "module",
