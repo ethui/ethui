@@ -8,7 +8,7 @@ const dist = process.env.DIST_DIR || "dist/dev";
 const fetchVersion = () => {
   return {
     name: "html-transform",
-    transformIndexHtml(html) {
+    transformIndexHtml(html: string) {
       return html.replace(
         /__APP_VERSION__/,
         `v${process.env.npm_package_version}`,

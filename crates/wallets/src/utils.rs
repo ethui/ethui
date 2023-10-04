@@ -34,4 +34,3 @@ pub fn validate_mnemonic(mnemonic: &str) -> bool {
         .build()
         .is_ok()
 }
-

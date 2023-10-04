@@ -12,6 +12,9 @@
     "lint:eslint": "eslint .",
     "lint:tsc": "tsc --noEmit",
     "lint:prettier": "prettier --check .",
+    "fix": "yarn fix:eslint && yarn fix:prettier",
+    "fix:eslint": "eslint --fix .",
+    "fix:prettier": "prettier --write .",
     "setup": "yarn install && yarn ext:build"
   },
   "workspaces": [

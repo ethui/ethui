@@ -8,17 +8,13 @@ module.exports = {
   plugins: ["react", "@typescript-eslint", "simple-import-sort", "import"],
 
   parser: "@typescript-eslint/parser",
+
   parserOptions: {
     sourceType: "module",
     project: ["./tsconfig.json", "./extension/tsconfig.json"],
   },
-  env: { es6: true },
 
-  settings: {
-    react: {
-      version: "detect",
-    },
-  },
+  plugins: ["react", "@typescript-eslint", "simple-import-sort", "import"],
   ignorePatterns: [
     "**/*.generated.ts",
     "node_modules/*",
@@ -26,6 +22,12 @@ module.exports = {
     "gui/dist/*",
     "target/*",
   ],
+
+  settings: {
+    react: {
+      version: "detect",
+    },
+  },
 
   rules: {
     "no-console": ["error", { allow: ["warn", "error"] }],

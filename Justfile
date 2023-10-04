@@ -1,4 +1,5 @@
 alias d := dev
+alias f := fix
 alias l := lint
 
 setup:
@@ -12,21 +13,25 @@ build:
 dev:
   yarn run tauri dev --features ${IRON_FEATURES:-debug}
 
+fix:
+  cargo +nightly fmt --all
+  cargo clippy --all --fix
+  yarn fix
+
 lint:
   cargo +nightly fmt --all -- --check
   cargo clippy --all -- -D clippy::all -D clippy::dbg_macro
   yarn lint
 
 ext:
-  yarn run extension:build
+  yarn run ext:build
 
 ext-dev:
-  yarn run extension:dev
+  yarn run ext:dev
 
 #
 # internal
 #
-
 
 anvil:
   anvil --block-time 4

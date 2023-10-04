@@ -74,4 +74,3 @@ pub async fn wallets_get_mnemonic_addresses(
 pub fn wallets_validate_mnemonic(mnemonic: String) -> bool {
     utils::validate_mnemonic(&mnemonic)
 }
-

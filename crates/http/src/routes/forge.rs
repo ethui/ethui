@@ -1,8 +1,9 @@
-use crate::error::Result;
 use axum::{extract::Query, Json};
 use iron_forge::Abi;
 use iron_types::ChecksummedAddress;
 use serde::Deserialize;
+
+use crate::Result;
 
 #[derive(Debug, Deserialize)]
 pub(crate) struct ForgeGetAbiParams {

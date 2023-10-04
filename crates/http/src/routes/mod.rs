@@ -1,5 +1,7 @@
-use axum::routing::post;
-use axum::{routing::get, Router};
+use axum::{
+    routing::{get, post},
+    Router,
+};
 
 mod forge;
 mod rpc;
