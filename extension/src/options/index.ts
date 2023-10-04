@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 
-import { Settings, defaultSettings } from "../settings";
+import { defaultSettings, Settings } from "../settings";
 
 const $logLevel = document.getElementById("log-level") as HTMLInputElement;
 const $endpoint = document.getElementById("endpoint") as HTMLInputElement;

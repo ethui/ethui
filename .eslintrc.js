@@ -5,6 +5,8 @@ module.exports = {
     "plugin:@typescript-eslint/recommended",
     "prettier",
   ],
+  plugins: ["react", "@typescript-eslint", "simple-import-sort", "import"],
+
   parser: "@typescript-eslint/parser",
   env: { es6: true },
 
@@ -19,15 +21,10 @@ module.exports = {
 
   plugins: ["react", "@typescript-eslint", "simple-import-sort", "import"],
   ignorePatterns: [
+    "**/*.generated.ts",
     "node_modules/*",
-    "extension/*",
-    "gui/*",
-    "crates/*",
-    "**/node_modules/*",
     "extension/dist/*",
     "gui/dist/*",
-    "extension/provider-inpage/*",
-    "extension/dist/*",
     "target/*",
   ],
 

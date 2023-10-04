@@ -23,10 +23,10 @@ import { z } from "zod";
 import { useProvider } from "../../../hooks";
 import {
   Address,
-  Wallet,
   derivationPathSchema,
   hdWalletSchema,
   passwordFormSchema,
+  Wallet,
 } from "../../../types";
 
 const createSchema = hdWalletSchema.extend({

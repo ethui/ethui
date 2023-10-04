@@ -39,11 +39,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           cache: "yarn"
+          node-version-file: ".tool-versions"
 
       - run: yarn install
 
       - name: ESLint
         run: yarn lint
-
-      # - name: Vitest
-      # run: yarn workspace @iron/gui test:ui

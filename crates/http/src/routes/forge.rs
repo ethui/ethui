@@ -15,6 +15,6 @@ pub(crate) async fn get_abi_handler(
     Query(params): Query<ForgeGetAbiParams>,
 ) -> Result<Json<Option<Abi>>> {
     Ok(Json(
-        iron_forge::commands::foundry_get_abi(params.address, params.chain_id).await?,
+        iron_forge::commands::forge_get_abi(params.address, params.chain_id).await?,
     ))
 }

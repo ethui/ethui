@@ -1,12 +1,6 @@
-import { useTheme } from "@/store/theme";
 import { useEffect, useState } from "react";
 
-interface Props {
-  ticker: string;
-}
-
-const urlFor = (ticker: string, type: "color" | "black" | "white") =>
-  `/cryptocurrency-icons/${type}/${ticker.toLowerCase()}.svg`;
+import { useTheme } from "@/store/theme";
 
 export function IconCrypto({}: Props) {
   const themeMode = useTheme((s) => s.theme.palette.mode);
@@ -26,3 +20,10 @@ export function IconCrypto({}: Props) {
 
   return <img width="100%" {...{ src, onError }} />;
 }
+
+interface Props {
+  ticker: string;
+}
+
+const urlFor = (ticker: string, type: "color" | "black" | "white") =>
+  `/cryptocurrency-icons/${type}/${ticker.toLowerCase()}.svg`;

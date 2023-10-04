@@ -20,5 +20,5 @@
     "traceResolution": true
   },
   "include": ["gui", "extension", "node_modules/@types", ".eslintrc.js"],
-  "exclude": ["build", "node_modules", "]
+  "exclude": ["build", "node_modules"]
 }

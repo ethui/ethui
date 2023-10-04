@@ -12,6 +12,11 @@ build:
 dev:
   yarn run tauri dev --features ${IRON_FEATURES:-debug}
 
+fix:
+  cargo +nightly fmt --all
+  cargo clippy --all --fix
+  yarn lint:fix
+
 lint:
   cargo +nightly fmt --all -- --check
   cargo clippy --all -- -D clippy::all -D clippy::dbg_macro
