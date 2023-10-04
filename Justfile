@@ -24,15 +24,14 @@ lint:
   yarn lint
 
 ext:
-  yarn run extension:build
+  yarn run ext:build
 
 ext-dev:
-  yarn run extension:dev
+  yarn run ext:dev
 
 #
 # internal
 #
-
 
 anvil:
   anvil --block-time 4
