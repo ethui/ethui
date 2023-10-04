@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { useTheme } from "@/store/theme";
+import { useTheme } from "../store/theme";
 
 interface Props {
   ticker: string;
@@ -12,7 +12,6 @@ export function IconCrypto({}: Props) {
   const mode = themeMode === "dark" ? "black" : "white";
 
   const [error, setError] = useState(false);
-  // const [src, setSrc] = useState<string | undefined>(urlFor(ticker, "color"));
   const [src, setSrc] = useState<string | undefined>(urlFor("generic", mode));
   const onError = () => setError(true);
 
