@@ -1,4 +1,5 @@
 alias d := dev
+alias f := fix
 alias l := lint
 
 setup:
@@ -15,7 +16,7 @@ dev:
 fix:
   cargo +nightly fmt --all
   cargo clippy --all --fix
-  yarn lint:fix
+  yarn fix
 
 lint:
   cargo +nightly fmt --all -- --check
