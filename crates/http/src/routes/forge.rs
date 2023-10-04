@@ -3,7 +3,7 @@ use iron_forge::Abi;
 use iron_types::ChecksummedAddress;
 use serde::Deserialize;
 
-use crate::error::Result;
+use crate::Result;
 
 #[derive(Debug, Deserialize)]
 pub(crate) struct ForgeGetAbiParams {
