@@ -19,6 +19,6 @@
     "typeRoots": ["./src/global.d.ts", "node_modules/@types"],
     "traceResolution": true
   },
-  "include": ["gui", "extension", "node_modules/@types", ".eslintrc.js"],
-  "exclude": ["build", "node_modules"]
+  "include": ["gui", "node_modules/@types", ".eslintrc.js"],
+  "exclude": ["build", "node_modules", "extension"]
 }
