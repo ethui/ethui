@@ -5,24 +5,34 @@ module.exports = {
     "plugin:@typescript-eslint/recommended",
     "prettier",
   ],
+  plugins: ["react", "@typescript-eslint", "simple-import-sort", "import"],
+
   parser: "@typescript-eslint/parser",
+
   parserOptions: {
-    project: ["./tsconfig.json", "./extension/tsconfig.json"],
+    sourceType: "module",
+    project: [
+      "./tsconfig.json",
+      "./gui/tsconfig.json",
+      "./extension/tsconfig.json",
+    ],
   },
-  plugins: ["react", "@typescript-eslint"],
+
+  plugins: ["react", "@typescript-eslint", "simple-import-sort", "import"],
   ignorePatterns: [
     "**/*.generated.ts",
     "node_modules/*",
     "extension/dist/*",
     "gui/dist/*",
-    "extension/provider-inpage/*",
     "target/*",
   ],
+
   settings: {
     react: {
       version: "detect",
     },
   },
+
   rules: {
     "no-console": ["error", { allow: ["warn", "error"] }],
     "react/jsx-uses-react": "off",
@@ -42,6 +52,17 @@ module.exports = {
         varsIgnorePattern: "^_",
         caughtErrorsIgnorePattern: "^_",
       },
+    ],
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error",
+    "import/first": "error",
+    "import/newline-after-import": "error",
+    "import/no-duplicates": "error",
+    "no-restricted-imports": [
+      "error",
+      // allow only relative imports from the same directory
+      // https://stackoverflow.com/a/76095340
+      { patterns: ["^(?!\\.\\/)((?!.)[sS])*) ?$", "../.*"] },
     ],
   },
 };

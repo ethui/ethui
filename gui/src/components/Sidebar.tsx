@@ -15,10 +15,11 @@ import { useTheme } from "../store";
 import {
   Account,
   CommandBarButton,
+  Connections,
   Contracts,
   Logo,
-  Peers,
   QuickAddressSelect,
+  QuickFastModeToggle,
   QuickNetworkSelect,
   QuickWalletSelect,
   SettingsButton,
@@ -48,7 +49,7 @@ export const TABS = [
   {
     path: "connections",
     name: "Connections",
-    component: Peers,
+    component: Connections,
     icon: OnlinePredictionSharp,
   },
 ];
@@ -179,6 +180,7 @@ export function Sidebar() {
             <QuickWalletSelect />
             <QuickAddressSelect />
             <QuickNetworkSelect />
+            <QuickFastModeToggle />
           </Stack>
           <Stack
             p={3}

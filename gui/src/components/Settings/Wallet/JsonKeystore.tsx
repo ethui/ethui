@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Stack, TextField } from "@mui/material";
 import { FieldValues, useForm } from "react-hook-form";
 
-import { Wallet, walletSchema } from "../../../types";
+import { Wallet, walletSchema } from "@/types";
 
 interface JsonKeystoreProps {
   wallet: Wallet & { type: "jsonKeystore" };

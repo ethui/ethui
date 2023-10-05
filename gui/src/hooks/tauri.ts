@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/tauri";
-import useSWR from "swr";
 import type { SWRConfiguration, SWRResponse } from "swr";
+import useSWR from "swr";
 
 type TArgs = Record<string, unknown>;
 

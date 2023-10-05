@@ -9,8 +9,7 @@ import {
   useTheme,
 } from "@mui/material";
 
-import { Step } from "./Steps";
-import { WizardFormData } from "./Wizard";
+import { type Step, type WizardFormData } from "./";
 
 interface Props {
   steps: Step[];

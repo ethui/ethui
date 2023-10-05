@@ -1,0 +1,16 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "typeRoots": [
+        "./src/global.d.ts",
+        "./node_modules/@types",
+        "../node_modules/@types"
+      ],
+      "@root-package-json": ["../package.json"],
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["./src", "vite.config.ts"],
+  "exclude": ["dist", "node_modules", "../node_modules"]
+}

@@ -3,7 +3,7 @@ import { Button, Stack, TextField } from "@mui/material";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Wallet, addressSchema } from "../../../types";
+import { addressSchema, Wallet } from "@/types";
 
 // react-hook-form doesn't support value-arrays, only object-arrays, so we need this type as a workaround for the impersonator form
 export const schema = z.object({

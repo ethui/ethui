@@ -36,7 +36,7 @@ function Contract({ contract }: { contract: IContract }) {
   const chainId = useNetworks((s) => s.current?.chain_id);
 
   // TODO: only do this if chainId == 31337
-  const { data: foundryMatch } = useInvoke<ABIMatch>("foundry_get_abi", {
+  const { data: foundryMatch } = useInvoke<ABIMatch>("forge_get_abi", {
     address: contract.address,
     chainId,
   });

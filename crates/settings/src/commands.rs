@@ -18,6 +18,11 @@ pub async fn settings_set_dark_mode(mode: DarkMode) -> Result<()> {
 }
 
 #[tauri::command]
+pub async fn settings_set_fast_mode(mode: bool) -> Result<()> {
+    Settings::write().await.set_fast_mode(mode).await
+}
+
+#[tauri::command]
 pub async fn settings_finish_onboarding() -> Result<()> {
     Settings::write().await.finish_onboarding().await
 }
