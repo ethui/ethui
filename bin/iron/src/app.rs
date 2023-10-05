@@ -6,7 +6,7 @@ use iron_types::ui_events;
 use tauri::{
     AppHandle, Builder, GlobalWindowEvent, Manager, WindowBuilder, WindowEvent, WindowUrl,
 };
-use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, StateFlags};
+use tauri_plugin_window_state::Builder as windowStatePlugin;
 
 use crate::{commands, error::AppResult, menu};
 
@@ -129,7 +129,6 @@ fn on_window_event(event: GlobalWindowEvent) {
     {
         let window = event.window();
         let app = window.app_handle();
-        let _ = app.save_window_state(StateFlags::all());
 
         #[cfg(target_os = "macos")]
         {
