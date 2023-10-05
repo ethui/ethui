@@ -39,7 +39,7 @@ export NODE_ENV=production
 export DIST_DIR=./dist/$target
 rm -rf $DIST_DIR
 
-version=$(cat package.json | grep \"version\": | cut -d'"' -f 4)
+version=$(cat ../Cargo.toml | grep -E "^version" | cut -d'"' -f 4)
 echo $version
 basename=$target-v$version
 
