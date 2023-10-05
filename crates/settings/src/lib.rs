@@ -67,6 +67,10 @@ impl Settings {
         &self.inner
     }
 
+    pub fn fast_mode(&self) -> bool {
+        self.inner.fast_mode
+    }
+
     pub fn get_etherscan_api_key(&self) -> Result<String> {
         self.inner
             .etherscan_api_key

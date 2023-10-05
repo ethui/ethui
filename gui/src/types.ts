@@ -133,7 +133,6 @@ export const jsonKeystoreSchema = z.object({
 export const plaintextSchema = z.object({
   type: z.literal("plaintext"),
   name: z.string().min(1),
-  dev: z.boolean().default(false),
   mnemonic: mnemonicSchema,
   derivationPath: derivationPathSchema,
   count: z.number().int().min(1),
