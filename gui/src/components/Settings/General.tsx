@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Button,
-  Checkbox,
   FormControl,
   FormControlLabel,
   FormGroup,
@@ -10,6 +9,7 @@ import {
   MenuItem,
   Select,
   Stack,
+  Switch,
   TextField,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
@@ -75,6 +75,28 @@ export function SettingsGeneral() {
             )}
           />
         </FormControl>
+
+        <FormControl error={!!errors.fastMode}>
+          <FormGroup>
+            <Controller
+              name="fastMode"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  sx={{ pointerEvents: "auto" }}
+                  label="Fast mode"
+                  control={<Switch {...field} checked={field.value} />}
+                />
+              )}
+            />
+          </FormGroup>
+          {errors.abiWatch && (
+            <FormHelperText>
+              {errors.abiWatch.message?.toString()}
+            </FormHelperText>
+          )}
+        </FormControl>
+
         <FormControl error={!!errors.abiWatch}>
           <FormGroup>
             <Controller
@@ -83,7 +105,7 @@ export function SettingsGeneral() {
               render={({ field }) => (
                 <FormControlLabel
                   label="ABI Watcher"
-                  control={<Checkbox {...field} checked={field.value} />}
+                  control={<Switch {...field} checked={field.value} />}
                 />
               )}
             />
@@ -125,7 +147,7 @@ export function SettingsGeneral() {
               render={({ field }) => (
                 <FormControlLabel
                   label="Hide Tokens Without Balance"
-                  control={<Checkbox {...field} checked={field.value} />}
+                  control={<Switch {...field} checked={field.value} />}
                 />
               )}
             />

@@ -1,12 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Button,
-  Checkbox,
   FormControl,
   FormControlLabel,
   FormGroup,
   FormHelperText,
   Stack,
+  Switch,
   TextField,
 } from "@mui/material";
 import { Controller, FieldValues, useForm } from "react-hook-form";
@@ -61,7 +61,7 @@ export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
                   control={control}
                   render={({ field }) => {
                     return (
-                      <Checkbox
+                      <Switch
                         {...field}
                         checked={field.value}
                         onChange={(e) => field.onChange(e.target.checked)}

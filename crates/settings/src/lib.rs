@@ -49,6 +49,13 @@ impl Settings {
         Ok(())
     }
 
+    pub async fn set_fast_mode(&mut self, mode: bool) -> Result<()> {
+        self.inner.fast_mode = mode;
+        self.save().await?;
+
+        Ok(())
+    }
+
     pub async fn finish_onboarding(&mut self) -> Result<()> {
         self.inner.onboarded = true;
         self.save().await?;
@@ -113,6 +120,9 @@ pub struct SerializedSettings {
 
     #[serde(default)]
     onboarded: bool,
+
+    #[serde(default)]
+    fast_mode: bool,
 }
 
 impl Default for SerializedSettings {
@@ -126,6 +136,7 @@ impl Default for SerializedSettings {
             hide_empty_tokens: true,
             aliases: HashMap::new(),
             onboarded: false,
+            fast_mode: false,
         }
     }
 }

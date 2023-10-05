@@ -19,6 +19,7 @@ import {
   Contracts,
   Logo,
   QuickAddressSelect,
+  QuickFastModeToggle,
   QuickNetworkSelect,
   QuickWalletSelect,
   SettingsButton,
@@ -179,6 +180,7 @@ export function Sidebar() {
             <QuickWalletSelect />
             <QuickAddressSelect />
             <QuickNetworkSelect />
+            <QuickFastModeToggle />
           </Stack>
           <Stack
             p={3}

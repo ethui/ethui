@@ -10,6 +10,7 @@ export const generalSettingsSchema = z.object({
   etherscanApiKey: z.string().optional().nullable(),
   hideEmptyTokens: z.boolean(),
   onboarded: z.boolean(),
+  fastMode: z.boolean(),
 });
 
 // const formSchema = schema.shape.network;
