@@ -1,7 +1,7 @@
 {
   "name": "@iron/extension",
   "private": true,
-  "version": "0.6.2",
+  "version": "1.0.0",
   "description": "A developer-focused Ethereum wallet",
   "homepage": "https://github.com/iron-wallet/iron",
   "license": "MIT",
