@@ -29,6 +29,15 @@ ext:
 ext-dev:
   yarn run ext:dev
 
+clean:
+  rm -rf \
+    target \
+    node_modules \
+    gui/node_modules \
+    extension/node_modules \
+    gui/dist \
+    extension/dist
+
 #
 # internal
 #

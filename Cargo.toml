@@ -1,3 +1,12 @@
+[workspace.package]
+version = "0.6.4"
+edition = "2021"
+license-file = "./LICENSE"
+homepage = "https://github.com/iron-wallet"
+repository = "https://github.com/iron/wallet/reth"
+exclude = [".github/", "extension/"]
+authors = ["Miguel Palhas <mpalhas@gmail.com>"]
+
 [workspace]
 resolver = "2"
 members = [
@@ -23,16 +32,6 @@ members = [
   "crates/exchange-rates",
 ]
 default-members = ["bin/iron"]
-
-
-[workspace.package]
-version = "0.6.4"
-edition = "2021"
-license-file = "./LICENSE"
-homepage = "https://github.com/iron-wallet"
-repository = "https://github.com/iron/wallet/reth"
-exclude = [".github/", "extension/"]
-authors = ["Miguel Palhas <mpalhas@gmail.com>"]
 
 [workspace.dependencies]
 iron-forge = { path = "crates/forge" }
