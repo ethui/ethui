@@ -1,8 +1,9 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { useState } from "react";
 
-import { useInvoke } from "../../hooks";
-import { GeneralSettings } from "../../types";
+import { useInvoke } from "@/hooks";
+import { GeneralSettings } from "@/types";
+
 import { OnboardingWizard } from "./Wizard";
 
 interface Props {

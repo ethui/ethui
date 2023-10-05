@@ -11,7 +11,11 @@ module.exports = {
 
   parserOptions: {
     sourceType: "module",
-    project: ["./tsconfig.json", "./extension/tsconfig.json"],
+    project: [
+      "./tsconfig.json",
+      "./gui/tsconfig.json",
+      "./extension/tsconfig.json",
+    ],
   },
 
   plugins: ["react", "@typescript-eslint", "simple-import-sort", "import"],
@@ -54,5 +58,11 @@ module.exports = {
     "import/first": "error",
     "import/newline-after-import": "error",
     "import/no-duplicates": "error",
+    "no-restricted-imports": [
+      "error",
+      // allow only relative imports from the same directory
+      // https://stackoverflow.com/a/76095340
+      { patterns: ["^(?!\\.\\/)((?!.)[sS])*) ?$", "../.*"] },
+    ],
   },
 };
