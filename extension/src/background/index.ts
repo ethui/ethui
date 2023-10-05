@@ -1,7 +1,7 @@
 import browser, { type Runtime } from "webextension-polyfill";
 import { ConstantBackoff, Websocket, WebsocketBuilder } from "websocket-ts";
 
-import { type Settings, defaultSettings, loadSettings } from "../settings";
+import { defaultSettings, loadSettings, type Settings } from "../settings";
 
 // init on load
 (async () => init())();

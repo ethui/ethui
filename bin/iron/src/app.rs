@@ -6,7 +6,7 @@ use iron_types::ui_events;
 use tauri::{
     AppHandle, Builder, GlobalWindowEvent, Manager, WindowBuilder, WindowEvent, WindowUrl,
 };
-use tauri_plugin_window_state::{AppHandleExt, Builder as windowStatePlugin, StateFlags};
+use tauri_plugin_window_state::Builder as windowStatePlugin;
 
 use crate::{commands, error::AppResult, menu};
 
@@ -49,10 +49,11 @@ impl IronApp {
                 iron_wallets::commands::wallets_set_current_path,
                 iron_wallets::commands::wallets_get_wallet_addresses,
                 iron_wallets::commands::wallets_get_mnemonic_addresses,
+                iron_wallets::commands::wallets_validate_mnemonic,
                 iron_dialogs::commands::dialog_get_payload,
                 iron_dialogs::commands::dialog_send,
                 iron_dialogs::commands::dialog_finish,
-                iron_forge::commands::foundry_get_abi,
+                iron_forge::commands::forge_get_abi,
                 iron_rpc::commands::rpc_send_transaction,
                 iron_connections::commands::connections_affinity_for,
                 iron_connections::commands::connections_set_affinity,
@@ -129,7 +130,6 @@ fn on_window_event(event: GlobalWindowEvent) {
     {
         let window = event.window();
         let app = window.app_handle();
-        let _ = app.save_window_state(StateFlags::all());
 
         #[cfg(target_os = "macos")]
         {

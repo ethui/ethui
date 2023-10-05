@@ -1,6 +1,6 @@
-import { validateMnemonic } from "@scure/bip39";
-import { wordlist } from "@scure/bip39/wordlists/english";
+import { invoke } from "@tauri-apps/api/tauri";
 import { z } from "zod";
+import { zxcvbn } from "zxcvbn-typescript";
 
 export const generalSettingsSchema = z.object({
   darkMode: z.enum(["auto", "dark", "light"]),
@@ -36,20 +36,28 @@ export const networkSchema = z.object({
   ),
 });
 
-export const passwordSchema = z
-  .string()
-  .min(8, { message: "must be at least 8 characters long" })
-  .regex(
-    new RegExp("[^a-zA-Z0-9]"),
-    "must have at least one special character",
-  );
+export const passwordSchema = z.string().superRefine((password, ctx) => {
+  const { feedback, score } = zxcvbn(password);
+
+  if (score < 4) {
+    const message =
+      feedback.suggestions.length > 0
+        ? feedback.suggestions.join(" ")
+        : "Please use a stronger password.";
+
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message,
+    });
+  }
+});
 
 export const passwordFormSchema = z
   .object({
     password: passwordSchema,
-    passwordConfirmation: passwordSchema,
+    passwordConfirmation: z.string(),
   })
-  .refine((data) => data.password == data.passwordConfirmation, {
+  .refine((data) => data.password === data.passwordConfirmation, {
     path: ["passwordConfirmation"],
     message: "The two passwords don't match",
   });
@@ -69,9 +77,12 @@ export const mnemonicSchema = z
         "Invalid number of words. Needs to be 12, 15, 18, 21 or 24 words long",
     },
   )
-  .refine((data) => validateMnemonic(data, wordlist), {
-    message: "Invalid mnemonic. You have have a typo or an unsupported word",
-  });
+  .refine(
+    (mnemonic) => invoke<string>("wallets_validate_mnemonic", { mnemonic }),
+    {
+      message: "Invalid mnemonic. You may have a typo or an unsupported word",
+    },
+  );
 
 export const derivationPathSchema = z
   .string()

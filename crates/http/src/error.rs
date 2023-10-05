@@ -7,6 +7,9 @@ use axum::{
 pub enum Error {
     #[error("serialization error: {0}")]
     Serde(#[from] serde_json::Error),
+
+    #[error(transparent)]
+    Forge(#[from] iron_forge::Error),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

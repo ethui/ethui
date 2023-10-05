@@ -8,6 +8,7 @@ mod watcher;
 
 use std::{collections::BTreeMap, path::PathBuf};
 
+pub use abi::Abi;
 pub use error::{Error, Result};
 use ethers::types::Bytes;
 pub use init::init;

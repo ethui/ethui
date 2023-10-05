@@ -27,3 +27,10 @@ pub fn derive_from_builder_and_path(
 ) -> Result<ChecksummedAddress> {
     Ok(builder.derivation_path(path)?.build()?.address().into())
 }
+
+pub fn validate_mnemonic(mnemonic: &str) -> bool {
+    MnemonicBuilder::<English>::default()
+        .phrase(mnemonic)
+        .build()
+        .is_ok()
+}

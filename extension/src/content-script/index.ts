@@ -7,7 +7,7 @@ import { loadSettings } from "../settings";
 
 declare global {
   interface Document {
-    prerendering: bool;
+    prerendering: boolean;
   }
 }
 

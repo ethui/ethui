@@ -11,6 +11,11 @@ on: # rebuild any PRs and main branch changes
       - "./gui/**"
       - "*.md"
       - "LICENSE"
+  merge_group:
+    paths-ignore:
+      - "./gui/**"
+      - "*.md"
+      - "LICENSE"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -26,6 +31,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           cache: "yarn"
+          node-version-file: ".tool-versions"
 
       - run: yarn global add node-gyp
 

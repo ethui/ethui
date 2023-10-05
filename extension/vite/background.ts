@@ -1,4 +1,5 @@
 import path from "node:path";
+
 import { defineConfig } from "vite";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 
@@ -26,6 +27,7 @@ export default defineConfig({
     }),
   ],
   build: {
+    minify: false,
     emptyOutDir: false,
     outDir: path.resolve(__dirname, "..", dist),
     lib: {

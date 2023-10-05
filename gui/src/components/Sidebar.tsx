@@ -15,9 +15,9 @@ import { useTheme } from "../store";
 import {
   Account,
   CommandBarButton,
+  Connections,
   Contracts,
   Logo,
-  Peers,
   QuickAddressSelect,
   QuickNetworkSelect,
   QuickWalletSelect,
@@ -48,7 +48,7 @@ export const TABS = [
   {
     path: "connections",
     name: "Connections",
-    component: Peers,
+    component: Connections,
     icon: OnlinePredictionSharp,
   },
 ];
