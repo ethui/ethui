@@ -2,10 +2,14 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "paths": {
-      "typeRoots": ["./node_modules/@types", "../node_modules/@types"],
+      "typeRoots": [
+        "./src/global.d.ts",
+        "./node_modules/@types",
+        "../node_modules/@types"
+      ],
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "vite"],
+  "include": ["./src", "vite.config.ts"],
   "exclude": ["dist", "node_modules", "../node_modules"]
 }

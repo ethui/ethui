@@ -11,7 +11,11 @@ module.exports = {
 
   parserOptions: {
     sourceType: "module",
-    project: ["./tsconfig.json", "./extension/tsconfig.json"],
+    project: [
+      "./tsconfig.json",
+      "./gui/tsconfig.json",
+      "./extension/tsconfig.json",
+    ],
   },
 
   plugins: ["react", "@typescript-eslint", "simple-import-sort", "import"],
