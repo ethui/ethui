@@ -97,7 +97,7 @@ function ABIItemForm({ contract, item }: { contract: Address; item: ABIItem }) {
       }
     } else {
       const result = await invoke<string>("rpc_send_transaction", {
-        params: { to: contract, data },
+        params: { to: contract, value: params.value, data },
       });
       setTxResult(result);
     }
