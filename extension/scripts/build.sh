@@ -39,8 +39,7 @@ export NODE_ENV=production
 export DIST_DIR=./dist/$target
 rm -rf $DIST_DIR
 
-version=$(cat ../Cargo.toml | grep -E "^version" | cut -d'"' -f 4)
-echo $version
+version=$(cat ../Cargo.toml | grep -E "^version" | cut -d'"' -f 2)
 basename=$target-v$version
 
 yarn run vite build --config vite/base.ts
