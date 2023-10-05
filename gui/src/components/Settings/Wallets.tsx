@@ -15,8 +15,9 @@ import { startCase } from "lodash-es";
 import { useState } from "react";
 import { type FieldValues } from "react-hook-form";
 
-import { useWallets } from "../../store";
-import { Wallet, walletTypes } from "../../types";
+import { useWallets } from "@/store";
+import { Wallet, walletTypes } from "@/types";
+
 import { HDWalletForm } from "./Wallet/HDWallet";
 import { ImpersonatorForm } from "./Wallet/Impersonator";
 import { JsonKeystore } from "./Wallet/JsonKeystore";

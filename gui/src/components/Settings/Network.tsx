@@ -11,9 +11,9 @@ import {
 import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 
-import { useNetworks } from "../../store";
-import { Network, networkSchema } from "../../types";
-import { ConfirmationDialog } from "../";
+import { ConfirmationDialog } from "@/components";
+import { useNetworks } from "@/store";
+import { Network, networkSchema } from "@/types";
 
 type NewChild = { new?: boolean };
 

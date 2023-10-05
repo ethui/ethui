@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 
-import { Wallet, walletSchema } from "../../../types";
+import { Wallet, walletSchema } from "@/types";
 
 export interface Props {
   wallet: Wallet & { type: "plaintext" };
