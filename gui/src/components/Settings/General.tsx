@@ -16,8 +16,8 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { useCallback, useEffect } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 
-import { useSettings } from "../../store";
-import { generalSettingsSchema } from "../../types";
+import { useSettings } from "@/store";
+import { generalSettingsSchema } from "@/types";
 
 export function SettingsGeneral() {
   const general = useSettings((s) => s.settings);

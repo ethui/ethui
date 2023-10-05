@@ -1,9 +1,8 @@
 import CloseIcon from "@mui/icons-material/Close";
 import { IconButton, Link, Typography } from "@mui/material";
+import packageJson from "@root-package-json";
 import { SnackbarKey, useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
-
-import packageJson from "../../../package.json";
 
 export async function getLatestVersion() {
   const response = await fetch(

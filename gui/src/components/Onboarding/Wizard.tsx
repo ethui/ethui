@@ -2,8 +2,9 @@ import { Box, Button } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 
-import { GeneralSettings } from "../../types";
-import { useInvoke, useKeyPress } from "./../../hooks";
+import { useInvoke, useKeyPress } from "@/hooks";
+import { GeneralSettings } from "@/types";
+
 import { OnboardingCarousel } from "./Carousel";
 import { steps } from "./Steps";
 

@@ -58,5 +58,11 @@ module.exports = {
     "import/first": "error",
     "import/newline-after-import": "error",
     "import/no-duplicates": "error",
+    "no-restricted-imports": [
+      "error",
+      // allow only relative imports from the same directory
+      // https://stackoverflow.com/a/76095340
+      { patterns: ["^(?!\\.\\/)((?!.)[sS])*) ?$", "../.*"] },
+    ],
   },
 };
