@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "1",
+  "version": "1.0.0",
   "license": "MIT",
   "description": "A dev-oriented web3 wallet",
   "scripts": {
