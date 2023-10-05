@@ -45,7 +45,8 @@ impl<'a> SendTransaction<'a> {
     pub async fn finish(&mut self) -> Result<PendingTransaction<'_, Http>> {
         tracing::debug!("finishing transaction");
 
-        let skip_dialog = false; //self.network.is_dev() && self.wallet.is_dev();
+        // TODO: add fast mode
+        let skip_dialog = self.network.is_dev() && self.wallet.is_dev();
         if !skip_dialog {
             self.spawn_dialog().await?;
         }
