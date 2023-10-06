@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Backdrop,
-  Box,
   Button,
   CircularProgress,
   Stack,
@@ -13,6 +12,7 @@ import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { useDialog } from "@/hooks";
+import { DialogLayout } from "./Layout";
 
 interface Request {
   name: string;
@@ -53,7 +53,7 @@ export function WalletUnlockDialog({ id }: { id: number }) {
   };
 
   return (
-    <Box sx={{ p: 2, pb: 2 }}>
+    <DialogLayout>
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <Stack spacing={2}>
           <Typography>
@@ -86,6 +86,6 @@ export function WalletUnlockDialog({ id }: { id: number }) {
       <Backdrop open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>
-    </Box>
+    </DialogLayout>
   );
 }

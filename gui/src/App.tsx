@@ -6,17 +6,19 @@ import { SnackbarProvider } from "notistack";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Route, Router, Switch } from "wouter";
 
-import { OnboardingWrapper } from "@/components/Onboarding";
-
 import {
   CommandBar,
   DevBuildNotice,
   HomePage,
+  WagmiWrapper,
+} from "@/components";
+import {
   MsgSignDialog,
   TxReviewDialog,
-  WagmiWrapper,
   WalletUnlockDialog,
-} from "./components";
+} from "@/components/Dialogs";
+import { OnboardingWrapper } from "@/components/Onboarding";
+
 import { useTheme } from "./store/theme";
 
 const queryClient = new QueryClient({
