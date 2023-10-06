@@ -21,6 +21,8 @@ impl IronApp {
             .invoke_handler(tauri::generate_handler![
                 commands::get_build_mode,
                 commands::get_version,
+                commands::get_contract_name,
+                commands::get_contract_abi,
                 iron_settings::commands::settings_get,
                 iron_settings::commands::settings_set,
                 iron_settings::commands::settings_set_dark_mode,

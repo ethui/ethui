@@ -197,11 +197,6 @@ export interface ABIItem {
   inputs: ABIFunctionInput[];
 }
 
-export interface ABIMatch {
-  name: string;
-  abi: ABIItem[];
-}
-
 export interface Tx {
   hash: `0x${string}`;
   from: Address;
@@ -226,9 +221,3 @@ export interface Paginated<T> {
 }
 
 export type Affinity = { sticky: number } | "global" | "unset";
-
-export interface IContract {
-  address: Address;
-  abi: ABIItem[];
-  name: string;
-}

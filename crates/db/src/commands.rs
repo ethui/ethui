@@ -1,10 +1,11 @@
+use ethers::abi::Abi;
 use ethers::types::{Address, Chain, U256};
 use iron_types::{events::Tx, Erc721TokenData, TokenBalance, UINotify};
 
 use super::{Paginated, Pagination, Result};
 use crate::{
     utils::{fetch_etherscan_abi, fetch_etherscan_contract_name},
-    Error, StoredContract, DB,
+    Error, DB,
 };
 
 #[tauri::command]
@@ -37,11 +38,17 @@ pub async fn db_get_native_balance(
 }
 
 #[tauri::command]
-pub async fn db_get_contracts(
+pub async fn db_get_contracts(chain_id: u32, db: tauri::State<'_, DB>) -> Result<Vec<Address>> {
+    db.get_contracts(chain_id).await
+}
+
+#[tauri::command]
+pub async fn db_get_contract_abi(
+    address: Address,
     chain_id: u32,
     db: tauri::State<'_, DB>,
-) -> Result<Vec<StoredContract>> {
-    db.get_contracts(chain_id).await
+) -> Result<Abi> {
+    db.get_contract_abi(chain_id, address).await
 }
 
 #[tauri::command]

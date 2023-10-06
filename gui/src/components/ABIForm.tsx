@@ -5,16 +5,24 @@ import { SyntheticEvent, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { encodeFunctionData } from "viem";
 
-import { useProvider } from "../hooks";
+import { useInvoke, useProvider } from "../hooks";
 import { ABIFunctionInput, ABIItem, Address } from "../types";
 
 interface Props {
+  chainId: number;
   address: Address;
-  abi: ABIItem[];
+  //abi: ABIItem[];
 }
 
-export function ABIForm({ address, abi }: Props) {
+export function ABIForm({ chainId, address }: Props) {
   const [currentItem, setCurrentItem] = useState<ABIItem | undefined>();
+
+  const { data: abi } = useInvoke<ABIItem[]>("get_contract_abi", {
+    address,
+    chainId,
+  });
+
+  if (!abi) return null;
 
   const options = abi
     .filter((item) => item.type === "function")
