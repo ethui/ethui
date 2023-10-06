@@ -19,15 +19,17 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import truncateEthAddress from "truncate-eth-address";
-import { formatEther, formatGwei } from "viem";
+import { Abi, decodeFunctionData, formatEther, formatGwei } from "viem";
 import { useTransaction, useWaitForTransaction } from "wagmi";
 
-import { useEventListener } from "@/hooks";
+import { useEventListener, useInvoke } from "@/hooks";
 import { useNetworks, useWallets } from "@/store";
 import { Address, Paginated, Pagination, Tx } from "@/types";
 
 import { AddressView, ContextMenu, MonoText, Panel } from "./";
 import { Datapoint } from "./Datapoint";
+import { v } from "@tauri-apps/api/event-41a9edf5";
+import ReactJson from "react-json-view";
 
 export function Txs() {
   const account = useWallets((s) => s.address);
@@ -61,7 +63,7 @@ export function Txs() {
   useEventListener("txs-updated", reload);
   useEffect(reload, [account, chainId]);
 
-  if (!account) return null;
+  if (!account || !chainId) return null;
 
   const loader = (
     <Box
@@ -84,12 +86,12 @@ export function Txs() {
       >
         {pages.flatMap((page) =>
           page.items.map((tx) => (
-            <Accordion key={tx.hash}>
+            <Accordion key={tx.hash} TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary expandIcon={<ExpandMore />}>
                 <Summary account={account} tx={tx} />
               </AccordionSummary>
               <AccordionDetails>
-                <Details tx={tx} />
+                <Details tx={tx} chainId={chainId} />
               </AccordionDetails>
             </Accordion>
           )),
@@ -138,13 +140,32 @@ function Icon({ account, tx }: IconProps) {
 
 interface DetailsProps {
   tx: Tx;
+  chainId: number;
 }
 
-function Details({ tx }: DetailsProps) {
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: Unreachable code error
+BigInt.prototype.toJSON = function (): string {
+  return this.toString();
+};
+
+function Details({ tx, chainId }: DetailsProps) {
   const { data: transaction } = useTransaction({ hash: tx.hash });
   const { data: receipt } = useWaitForTransaction({ hash: tx.hash });
+  const { data: abi } = useInvoke<Abi>("get_contract_abi", {
+    address: tx.to,
+    chainId,
+  });
 
   if (!receipt || !transaction) return null;
+
+  let decoded;
+  if (abi && tx.to) {
+    decoded = decodeFunctionData({
+      abi: abi || [],
+      data: transaction.input,
+    });
+  }
 
   return (
     <Grid container rowSpacing={2}>
@@ -159,8 +180,27 @@ function Details({ tx }: DetailsProps) {
         label="value"
         value={<ContextMenu>{formatEther(BigInt(tx.value))} Ξ</ContextMenu>}
       />
+      {decoded && (
+        <Datapoint
+          label="decoded data"
+          value={
+            decoded ? (
+              <ReactJson
+                name={false}
+                collapsed={true}
+                src={decoded}
+                indentWidth={2}
+                displayDataTypes={false}
+              />
+            ) : (
+              <MonoText>{transaction.input}</MonoText>
+            )
+          }
+          mono
+        />
+      )}
       <Datapoint
-        label="data"
+        label="raw data"
         value={<MonoText>{transaction.input}</MonoText>}
         mono
       />
