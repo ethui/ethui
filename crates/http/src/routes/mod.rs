@@ -5,6 +5,7 @@ use axum::{
 
 mod forge;
 mod rpc;
+mod ws;
 
 pub(crate) fn router() -> Router {
     let rpc = Router::new().route("/", post(rpc::handler));
@@ -14,5 +15,12 @@ pub(crate) fn router() -> Router {
         Router::new().route("/abi", get(forge::get_abi_handler)),
     );
 
-    Router::new().merge(rpc).nest("/iron", forge)
+    let ws = Router::new().nest(
+        "/ws",
+        Router::new().route("/peers_by_domain", get(ws::get_peers_by_domain_handler)),
+    );
+
+    let iron = Router::new().merge(forge).merge(ws);
+
+    Router::new().merge(rpc).nest("/iron", iron)
 }

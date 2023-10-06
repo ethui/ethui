@@ -3752,6 +3752,7 @@ dependencies = [
  "iron-forge",
  "iron-rpc",
  "iron-types",
+ "iron-ws",
  "serde",
  "serde_json",
  "thiserror",
