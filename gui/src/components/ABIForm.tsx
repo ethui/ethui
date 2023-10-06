@@ -1,7 +1,7 @@
 import { Autocomplete, Box, Button, Chip, TextField } from "@mui/material";
 import { Stack } from "@mui/system";
 import { invoke } from "@tauri-apps/api/tauri";
-import { SyntheticEvent, useState } from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { encodeFunctionData } from "viem";
 
@@ -65,9 +65,11 @@ interface CallArgs {
 
 function ABIItemForm({ contract, item }: { contract: Address; item: ABIItem }) {
   const provider = useProvider();
-  const { register, handleSubmit } = useForm<CallArgs>();
+  const { register, handleSubmit, reset } = useForm<CallArgs>();
   const [callResult, setCallResult] = useState<string>();
   const [txResult, setTxResult] = useState<string>();
+
+  useEffect(() => reset(), [item, reset]);
 
   if (!provider) return null;
 
@@ -117,7 +119,14 @@ function ABIItemForm({ contract, item }: { contract: Address; item: ABIItem }) {
           </Box>
         ))}
         {item.stateMutability === "payable" && (
-          <TextField size="small" {...register("value")} label="value" />
+          <Box>
+            <TextField
+              sx={{ minWidth: 300 }}
+              size="small"
+              {...register("value")}
+              label="value"
+            />
+          </Box>
         )}
         <Box>
           <Button sx={{ minWidth: 150 }} variant="contained" type="submit">
