@@ -7,7 +7,6 @@
         "./node_modules/@types",
         "../node_modules/@types"
       ],
-      "@root-package-json": ["../package.json"],
       "@/*": ["./src/*"]
     }
   },

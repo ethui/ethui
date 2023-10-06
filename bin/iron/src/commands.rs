@@ -6,3 +6,8 @@ pub fn get_build_mode() -> String {
         "release".to_string()
     }
 }
+
+#[tauri::command]
+pub fn get_version() -> String {
+    std::env!("CARGO_PKG_VERSION").replace('\"', "")
+}
