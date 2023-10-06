@@ -69,12 +69,11 @@ function ABIItemForm({ contract, item }: { contract: Address; item: ABIItem }) {
   const [callResult, setCallResult] = useState<string>();
   const [txResult, setTxResult] = useState<string>();
 
-  useEffect(() => reset(), [item]);
+  useEffect(() => reset(), [item, reset]);
 
   if (!provider) return null;
 
   const onSubmit = async (params: CallArgs) => {
-    console.log(params);
     const args = item.inputs.map((input) => params.args[input.name]);
 
     const data = encodeFunctionData({
