@@ -1,13 +1,4 @@
 import { invoke } from "@tauri-apps/api/tauri";
-import {
-  AbiConstructor,
-  AbiError,
-  AbiEvent,
-  AbiFallback,
-  AbiFunction,
-  AbiReceive,
-} from "abitype";
-import { AbiItem } from "viem";
 import { z } from "zod";
 import { zxcvbn } from "zxcvbn-typescript";
 
