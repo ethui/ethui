@@ -111,6 +111,8 @@ function SimulationResult({ simulation }: SimulationResultProps) {
         label="Logs"
         value={
           <ReactJson
+            name={false}
+            collapsed={true}
             src={simulation.logs}
             indentWidth={2}
             displayDataTypes={false}
