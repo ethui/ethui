@@ -7,9 +7,10 @@ import {
 } from "@mui/material";
 import { map } from "lodash-es";
 
-import { useInvoke } from "../hooks";
-import { useWallets } from "../store";
-import { Address, Wallet } from "../types";
+import { useInvoke } from "@/hooks";
+import { useWallets } from "@/store";
+import { Address, Wallet } from "@/types";
+
 import { AddressView } from "./";
 
 export function QuickAddressSelect() {

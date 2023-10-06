@@ -60,9 +60,14 @@ module.exports = {
     "import/no-duplicates": "error",
     "no-restricted-imports": [
       "error",
-      // allow only relative imports from the same directory
-      // https://stackoverflow.com/a/76095340
-      { patterns: ["^(?!\\.\\/)((?!.)[sS])*) ?$", "../.*"] },
+      {
+        patterns: [
+          {
+            group: ["**../"],
+            message: "Relative imports are not allowed.",
+          },
+        ],
+      },
     ],
   },
 };

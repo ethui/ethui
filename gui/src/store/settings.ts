@@ -4,7 +4,7 @@ import { Action } from "kbar";
 import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { GeneralSettings } from "../types";
+import { GeneralSettings } from "@/types";
 
 interface State {
   settings?: GeneralSettings;

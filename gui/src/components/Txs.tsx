@@ -22,9 +22,10 @@ import truncateEthAddress from "truncate-eth-address";
 import { formatEther, formatGwei } from "viem";
 import { useTransaction, useWaitForTransaction } from "wagmi";
 
-import { useEventListener } from "../hooks";
-import { useNetworks, useWallets } from "../store";
-import { Address, Paginated, Pagination, Tx } from "../types";
+import { useEventListener } from "@/hooks";
+import { useNetworks, useWallets } from "@/store";
+import { Address, Paginated, Pagination, Tx } from "@/types";
+
 import { AddressView, ContextMenu, MonoText, Panel } from "./";
 import { Datapoint } from "./Datapoint";
 

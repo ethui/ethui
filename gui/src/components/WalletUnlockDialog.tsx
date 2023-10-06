@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { useDialog } from "../hooks";
+import { useDialog } from "@/hooks";
 
 interface Request {
   name: string;

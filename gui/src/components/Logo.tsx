@@ -1,4 +1,4 @@
-import { useTheme } from "../store/theme";
+import { useTheme } from "@/store/theme";
 
 export function Logo({ width }: { width: number }) {
   const darkMode = useTheme((s) => s.mode === "dark");
