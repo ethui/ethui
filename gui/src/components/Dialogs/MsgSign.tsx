@@ -2,6 +2,8 @@ import { Button, Stack, Typography } from "@mui/material";
 
 import { useDialog } from "@/hooks";
 
+import { DialogLayout } from "./Layout";
+
 export function MsgSignDialog({ id }: { id: number }) {
   const { data, accept, reject } = useDialog<Record<string, string>>(id);
 
@@ -10,7 +12,7 @@ export function MsgSignDialog({ id }: { id: number }) {
   const msg = data["Raw"] || JSON.stringify(data["Typed"], null, 2);
 
   return (
-    <Stack direction="column" spacing={2} sx={{ p: 2 }}>
+    <DialogLayout>
       <Typography variant="h6" component="h1">
         Sign Message
       </Typography>
@@ -24,6 +26,6 @@ export function MsgSignDialog({ id }: { id: number }) {
           Sign
         </Button>
       </Stack>
-    </Stack>
+    </DialogLayout>
   );
 }

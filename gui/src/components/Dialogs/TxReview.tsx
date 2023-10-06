@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import ReactJson from "react-json-view";
 import { Address, formatEther } from "viem";
 
+import { AddressView, ContextMenu, Datapoint, MonoText } from "@/components";
 import { useDialog } from "@/hooks";
 
-import { AddressView, ContextMenu, DialogLayout, MonoText } from "./";
-import { Datapoint } from "./Datapoint";
+import { DialogLayout } from "./Layout";
 
 export interface TxRequest {
   data: string;
