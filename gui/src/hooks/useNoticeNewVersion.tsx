@@ -2,6 +2,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { IconButton, Link, Typography } from "@mui/material";
 import { SnackbarKey, useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
+
 import { useInvoke } from "./tauri";
 
 export async function getLatestVersion() {
