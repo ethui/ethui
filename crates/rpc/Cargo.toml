@@ -17,6 +17,7 @@ iron-networks = { workspace = true }
 iron-wallets = { workspace = true }
 iron-broadcast = { workspace = true }
 iron-connections = { workspace = true }
+iron-simulator = { workspace = true }
 
 ethers = { workspace = true }
 tokio = { workspace = true }

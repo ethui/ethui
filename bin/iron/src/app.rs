@@ -59,7 +59,8 @@ impl IronApp {
                 iron_rpc::commands::rpc_send_transaction,
                 iron_connections::commands::connections_affinity_for,
                 iron_connections::commands::connections_set_affinity,
-                iron_sync::commands::sync_alchemy_is_network_supported
+                iron_sync::commands::sync_alchemy_is_network_supported,
+                iron_simulator::commands::simulator_run
             ])
             .on_window_event(on_window_event)
             .menu(menu::build())
@@ -160,9 +161,9 @@ async fn event_listener(handle: AppHandle) {
                     h,
                 }) => {
                     WindowBuilder::new(&handle, label, WindowUrl::App(url.into()))
-                        .min_inner_size(w, h)
-                        .max_inner_size(w, h)
+                        .inner_size(w, h)
                         .title(title)
+                        .resizable(true)
                         .build()
                         .unwrap();
                 }

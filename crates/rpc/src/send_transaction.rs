@@ -60,17 +60,50 @@ impl<'a> SendTransaction<'a> {
         let dialog = Dialog::new("tx-review", params);
         dialog.open().await?;
 
-        match dialog.recv().await {
-            // TODO: in the future, send json values here to override params
-            Some(DialogMsg::Accept(_response)) => Ok(()),
+        while let Some(msg) = dialog.recv().await {
+            match msg {
+                DialogMsg::Data(data) => {
+                    if data.as_str() == Some("simulate") {
+                        self.simulate(dialog.clone()).await?;
+                    }
+                }
 
-            _ =>
-            // TODO: what's the appropriate error to return here?
-            // or should we return Ok(_)? Err(_) seems to close the ws connection
-            {
-                Err(Error::TxDialogRejected)
+                // TODO: in the future, send json values here to override params
+                DialogMsg::Accept(_response) => return Ok(()),
+
+                _ =>
+                // TODO: what's the appropriate error to return here?
+                // or should we return Ok(_)? Err(_) seems to close the ws connection
+                {
+                    return Err(Error::TxDialogRejected)
+                }
             }
         }
+
+        Ok(())
+    }
+
+    async fn simulate(&self, dialog: Dialog) -> Result<()> {
+        let chain_id = self.network.chain_id;
+        let request = self
+            .request
+            .clone()
+            .try_into()
+            .map_err(|_| Error::CannotSimulate)?;
+
+        tokio::spawn(async move {
+            if let Ok(sim) = iron_simulator::commands::simulator_run(chain_id, request).await {
+                dialog
+                    .send(
+                        "simulation-result",
+                        Some(serde_json::to_value(sim).unwrap()),
+                    )
+                    .await
+                    .unwrap()
+            }
+        });
+
+        Ok(())
     }
 
     async fn build_signer(&mut self) {
