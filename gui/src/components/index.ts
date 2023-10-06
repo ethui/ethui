@@ -9,6 +9,7 @@ export { Connections } from "./Connections";
 export { ContextMenu } from "./ContextMenu";
 export { Contracts } from "./Contracts";
 export { CopyToClipboard } from "./CopyToClipboard";
+export { Datapoint } from "./Datapoint";
 export { DevBuildNotice } from "./DevBuildNotice";
 export { DialogLayout } from "./DialogLayout";
 export { HomePage } from "./HomePage";
