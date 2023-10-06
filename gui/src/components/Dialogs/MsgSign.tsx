@@ -1,6 +1,7 @@
 import { Button, Stack, Typography } from "@mui/material";
 
 import { useDialog } from "@/hooks";
+
 import { DialogLayout } from "./Layout";
 
 export function MsgSignDialog({ id }: { id: number }) {
