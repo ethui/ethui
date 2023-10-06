@@ -6,7 +6,6 @@ import tsconfigPaths from "vite-tsconfig-paths";
 //   process.env.TAURI_PLATFORM === "android" ||
 //   process.env.TAURI_PLATFORM === "ios";
 
-// https://vitejs.dev/config/
 export default defineConfig(() => ({
   plugins: [react(), tsconfigPaths()],
 
