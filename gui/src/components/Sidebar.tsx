@@ -10,8 +10,9 @@ import { findIndex, parseInt, range, toString } from "lodash-es";
 import { ReactNode } from "react";
 import { Link, useLocation, useRoute } from "wouter";
 
-import { useKeyPress, useMenuAction, useOS } from "../hooks";
-import { useTheme } from "../store";
+import { useKeyPress, useMenuAction, useOS } from "@/hooks";
+import { useTheme } from "@/store";
+
 import {
   Account,
   CommandBarButton,

@@ -12,9 +12,10 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { map } from "lodash-es";
 import { useEffect, useState } from "react";
 
-import { useEventListener, useInvoke } from "../hooks";
-import { useNetworks } from "../store";
-import { Affinity } from "../types";
+import { useEventListener, useInvoke } from "@/hooks";
+import { useNetworks } from "@/store";
+import { Affinity } from "@/types";
+
 import { Panel } from "./";
 
 interface Peer {

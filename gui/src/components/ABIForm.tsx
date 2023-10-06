@@ -5,8 +5,8 @@ import { SyntheticEvent, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { encodeFunctionData } from "viem";
 
-import { useInvoke, useProvider } from "../hooks";
-import { ABIFunctionInput, ABIItem, Address } from "../types";
+import { useInvoke, useProvider } from "@/hooks";
+import { ABIFunctionInput, ABIItem, Address } from "@/types";
 
 interface Props {
   chainId: number;

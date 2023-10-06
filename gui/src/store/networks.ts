@@ -4,7 +4,7 @@ import { Action } from "kbar";
 import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { Network } from "../types";
+import { Network } from "@/types";
 
 interface State {
   networks: Network[];

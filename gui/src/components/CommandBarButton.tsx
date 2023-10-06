@@ -2,7 +2,7 @@ import { TerminalSharp } from "@mui/icons-material";
 import { Button, IconButton } from "@mui/material";
 import { useKBar } from "kbar";
 
-import { useTheme } from "../store";
+import { useTheme } from "@/store";
 
 export function CommandBarButton() {
   const kbar = useKBar();

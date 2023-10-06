@@ -14,9 +14,9 @@ import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { useInvoke } from "@/hooks";
+import { useContracts, useNetworks } from "@/store";
+import { Address } from "@/types";
 
-import { useContracts, useNetworks } from "../store";
-import { Address } from "../types";
 import { ABIForm, AddressView, Panel } from "./";
 
 export function Contracts() {

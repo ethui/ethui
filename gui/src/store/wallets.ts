@@ -4,7 +4,7 @@ import { Action } from "kbar";
 import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { Address, Wallet } from "../types";
+import { Address, Wallet } from "@/types";
 
 interface State {
   currentWallet?: Wallet;
