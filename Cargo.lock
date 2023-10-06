@@ -3600,6 +3600,7 @@ checksum = "28b29a3cd74f0f4598934efe3aeba42bae0eb4680554128851ebbecb02af14e6"
 name = "iron"
 version = "0.6.2"
 dependencies = [
+ "ethers",
  "fix-path-env",
  "iron-broadcast",
  "iron-connections",
@@ -3617,6 +3618,8 @@ dependencies = [
  "iron-types",
  "iron-wallets",
  "iron-ws",
+ "serde",
+ "serde_json",
  "tauri",
  "tauri-build",
  "tauri-plugin-window-state",

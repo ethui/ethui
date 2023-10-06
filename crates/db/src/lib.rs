@@ -6,10 +6,9 @@ mod utils;
 
 use std::{path::PathBuf, str::FromStr};
 
+use ethers::abi::Abi;
 use ethers::types::{Address, H256, U256};
-use iron_types::{
-    events::Tx, Erc721Token, Erc721TokenData, Event, StoredContract, TokenBalance, TokenMetadata,
-};
+use iron_types::{events::Tx, Erc721Token, Erc721TokenData, Event, TokenBalance, TokenMetadata};
 use sqlx::{
     sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous},
     Row,
@@ -239,15 +238,45 @@ impl DB {
         Ok(Paginated::new(items, pagination, total))
     }
 
-    pub async fn get_contracts(&self, chain_id: u32) -> Result<Vec<StoredContract>> {
+    pub async fn get_contracts(&self, chain_id: u32) -> Result<Vec<Address>> {
         let res: Vec<_> = sqlx::query(
-            r#" SELECT *
+            r#" SELECT address
             FROM contracts
             WHERE chain_id = ? "#,
         )
         .bind(chain_id)
-        .map(|row| row.try_into().unwrap())
+        .map(|row| Address::from_str(row.get::<&str, _>("address")).unwrap())
         .fetch_all(self.pool())
+        .await?;
+
+        Ok(res)
+    }
+
+    pub async fn get_contract_name(&self, chain_id: u32, address: Address) -> Result<String> {
+        let res = sqlx::query(
+            r#" SELECT name
+            FROM contracts
+            WHERE chain_id = ? AND address = ? "#,
+        )
+        .bind(chain_id)
+        .bind(format!("0x{:x}", address))
+        .map(|row| row.get("name"))
+        .fetch_one(self.pool())
+        .await?;
+
+        Ok(res)
+    }
+
+    pub async fn get_contract_abi(&self, chain_id: u32, address: Address) -> Result<Abi> {
+        let res = sqlx::query(
+            r#" SELECT abi
+            FROM contracts
+            WHERE chain_id = ? AND address = ? "#,
+        )
+        .bind(chain_id)
+        .bind(format!("0x{:x}", address))
+        .map(|row| serde_json::from_str(row.get::<&str, _>("abi")).unwrap_or_default())
+        .fetch_one(self.pool())
         .await?;
 
         Ok(res)

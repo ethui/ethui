@@ -13,48 +13,44 @@ import {
 import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { useInvoke } from "../hooks";
+import { useInvoke } from "@/hooks";
+
 import { useContracts, useNetworks } from "../store";
-import { ABIMatch, IContract } from "../types";
+import { Address } from "../types";
 import { ABIForm, AddressView, Panel } from "./";
 
 export function Contracts() {
   const chainId = useNetworks((s) => s.current?.chain_id);
-  const contracts = useContracts((s) => s.contracts);
+  const addresses = useContracts((s) => s.addresses);
 
   return (
     <Panel>
       {chainId != 31337 && <AddressForm />}
-      {Array.from(contracts || []).map((contract) => (
-        <Contract key={contract.address} contract={contract} />
+      {Array.from(addresses || []).map((address) => (
+        <Contract key={address} address={address} />
       ))}
     </Panel>
   );
 }
 
-function Contract({ contract }: { contract: IContract }) {
+function Contract({ address }: { address: Address }) {
   const chainId = useNetworks((s) => s.current?.chain_id);
-
-  // TODO: only do this if chainId == 31337
-  const { data: foundryMatch } = useInvoke<ABIMatch>("forge_get_abi", {
-    address: contract.address,
+  const { data: name } = useInvoke<string>("get_contract_name", {
+    address,
     chainId,
   });
 
-  const name = foundryMatch?.name || contract.name;
-  const abi = foundryMatch?.abi || contract.abi;
+  if (!chainId) return null;
 
   return (
-    <Accordion>
+    <Accordion TransitionProps={{ unmountOnExit: true }}>
       <AccordionSummary expandIcon={<ExpandMore />}>
-        <AddressView address={contract.address} />
+        <AddressView address={address} />
         <Chip sx={{ marginLeft: 2 }} label={name} />
       </AccordionSummary>
-      {abi && (
-        <AccordionDetails>
-          <ABIForm address={contract.address} abi={abi} />
-        </AccordionDetails>
-      )}
+      <AccordionDetails>
+        <ABIForm address={address} chainId={chainId} />
+      </AccordionDetails>
     </Accordion>
   );
 }

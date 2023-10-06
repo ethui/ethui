@@ -1,13 +1,12 @@
 use axum::{extract::Query, Json};
-use iron_forge::Abi;
-use iron_types::ChecksummedAddress;
+use iron_types::{Abi, Address};
 use serde::Deserialize;
 
 use crate::Result;
 
 #[derive(Debug, Deserialize)]
 pub(crate) struct ForgeGetAbiParams {
-    address: ChecksummedAddress,
+    address: Address,
     chain_id: u32,
 }
 
