@@ -21,6 +21,7 @@ export { Navbar } from "./Navbar";
 export { NestedRoutes } from "./NestedRoutes";
 export { Panel } from "./Panel";
 export { QuickAddressSelect } from "./QuickAddressSelect";
+export { QuickFastModeToggle } from "./QuickFastModeToggle";
 export { QuickNetworkSelect } from "./QuickNetworkSelect";
 export { QuickWalletSelect } from "./QuickWalletSelect";
 export { Settings } from "./Settings/";

@@ -3,9 +3,9 @@ use std::path::PathBuf;
 use iron_broadcast::UIMsg;
 use iron_db::DB;
 use iron_types::ui_events;
-use tauri::{
-    AppHandle, Builder, GlobalWindowEvent, Manager, WindowBuilder, WindowEvent, WindowUrl,
-};
+#[cfg(target_os = "macos")]
+use tauri::WindowEvent;
+use tauri::{AppHandle, Builder, GlobalWindowEvent, Manager, WindowBuilder, WindowUrl};
 use tauri_plugin_window_state::Builder as windowStatePlugin;
 
 use crate::{commands, error::AppResult, menu};
@@ -23,6 +23,7 @@ impl IronApp {
                 iron_settings::commands::settings_get,
                 iron_settings::commands::settings_set,
                 iron_settings::commands::settings_set_dark_mode,
+                iron_settings::commands::settings_set_fast_mode,
                 iron_settings::commands::settings_finish_onboarding,
                 iron_settings::commands::settings_set_alias,
                 iron_settings::commands::settings_get_alias,
@@ -121,23 +122,19 @@ async fn init(app: &tauri::App) -> AppResult<()> {
     Ok(())
 }
 
+#[cfg(target_os = "macos")]
 fn on_window_event(event: GlobalWindowEvent) {
-    if let WindowEvent::CloseRequested {
-        #[cfg(not(target_os = "linux"))]
-        api,
-        ..
-    } = event.event()
-    {
-        let window = event.window();
-        let app = window.app_handle();
-
-        #[cfg(target_os = "macos")]
+    if let WindowEvent::CloseRequested { api, .. } = event.event() {
         {
+            let app = event.window().app_handle();
             app.hide().unwrap();
             api.prevent_close();
         }
     }
 }
+
+#[cfg(not(target_os = "macos"))]
+fn on_window_event(_event: GlobalWindowEvent) {}
 
 async fn event_listener(handle: AppHandle) {
     let mut rx = iron_broadcast::subscribe_ui().await;
