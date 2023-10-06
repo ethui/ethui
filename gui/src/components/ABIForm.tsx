@@ -6,18 +6,18 @@ import { useForm } from "react-hook-form";
 import { encodeFunctionData } from "viem";
 
 import { useInvoke, useProvider } from "@/hooks";
-import { ABIFunctionInput, ABIItem, Address } from "@/types";
+import { Address } from "@/types";
+import { Abi, AbiFunction, formatAbiItem } from "abitype";
 
 interface Props {
   chainId: number;
   address: Address;
-  //abi: ABIItem[];
 }
 
 export function ABIForm({ chainId, address }: Props) {
-  const [currentItem, setCurrentItem] = useState<ABIItem | undefined>();
+  const [currentItem, setCurrentItem] = useState<AbiFunction | undefined>();
 
-  const { data: abi } = useInvoke<ABIItem[]>("get_contract_abi", {
+  const { data: abi } = useInvoke<Abi>("get_contract_abi", {
     address,
     chainId,
   });
@@ -25,22 +25,18 @@ export function ABIForm({ chainId, address }: Props) {
   if (!abi) return null;
 
   const options = abi
-    .filter((item) => item.type === "function")
+    .filter(({ type }) => type === "function")
     .map((item, i) => ({
-      item,
-      label: functionSignature(item.name, item.inputs),
+      item: item as AbiFunction,
+      label: formatAbiItem(item),
       id: i,
     }));
 
   const handleChange = (
     _event: SyntheticEvent,
-    value: { item: ABIItem } | null,
+    value: { item: AbiFunction } | null,
   ) => {
-    if (value === null) {
-      setCurrentItem(undefined);
-    } else {
-      setCurrentItem(value.item);
-    }
+    setCurrentItem(value?.item);
   };
 
   return (
@@ -61,7 +57,7 @@ export function ABIForm({ chainId, address }: Props) {
         )}
       />
 
-      {currentItem && <ABIItemForm contract={address} item={currentItem} />}
+      {currentItem && <ItemForm contract={address} item={currentItem} />}
     </Stack>
   );
 }
@@ -71,7 +67,12 @@ interface CallArgs {
   args: Record<string, string>;
 }
 
-function ABIItemForm({ contract, item }: { contract: Address; item: ABIItem }) {
+interface ItemFormProps {
+  contract: Address;
+  item: AbiFunction;
+}
+
+function ItemForm({ contract, item }: ItemFormProps) {
   const provider = useProvider();
   const { register, handleSubmit, reset } = useForm<CallArgs>();
   const [callResult, setCallResult] = useState<string>();
@@ -82,7 +83,7 @@ function ABIItemForm({ contract, item }: { contract: Address; item: ABIItem }) {
   if (!provider) return null;
 
   const onSubmit = async (params: CallArgs) => {
-    const args = item.inputs.map((input) => params.args[input.name]);
+    const args = item.inputs.map((input) => params.args[input.name!]);
 
     const data = encodeFunctionData({
       abi: [item],
@@ -94,7 +95,7 @@ function ABIItemForm({ contract, item }: { contract: Address; item: ABIItem }) {
       const result = await provider.readContract({
         address: contract,
         abi: [item],
-        functionName: item.name,
+        functionName: item.name as never, // TODO: no idea why ts thinks this is `never`. code seems to work
         args,
       });
 
@@ -146,9 +147,4 @@ function ABIItemForm({ contract, item }: { contract: Address; item: ABIItem }) {
       </Stack>
     </form>
   );
-}
-
-// TODO: this may be missing some details, such as `calldata`
-function functionSignature(name: string, inputs: ABIFunctionInput[]) {
-  return `${name}(${inputs.map((i) => `${i.type} ${i.name}`).join(", ")})`;
 }

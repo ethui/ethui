@@ -1,4 +1,13 @@
 import { invoke } from "@tauri-apps/api/tauri";
+import {
+  AbiConstructor,
+  AbiError,
+  AbiEvent,
+  AbiFallback,
+  AbiFunction,
+  AbiReceive,
+} from "abitype";
+import { AbiItem } from "viem";
 import { z } from "zod";
 import { zxcvbn } from "zxcvbn-typescript";
 
@@ -182,19 +191,6 @@ export interface TokenMetadata {
   name: string;
   symbol: string;
   decimals: number;
-}
-
-export interface ABIFunctionInput {
-  name: string;
-  type: string;
-}
-
-export interface ABIItem {
-  name: string;
-  constant: boolean;
-  type: string;
-  stateMutability: string;
-  inputs: ABIFunctionInput[];
 }
 
 export interface Tx {
