@@ -6,6 +6,7 @@ import { Address, formatEther } from "viem";
 
 import { useDialog } from "../hooks";
 import { AddressView, ContextMenu, DialogLayout, MonoText } from "./";
+import { Datapoint } from "./Datapoint";
 
 export interface TxRequest {
   data: string;
@@ -122,25 +123,3 @@ function SimulationResult({ simulation }: SimulationResultProps) {
     </Grid>
   );
 }
-
-interface DatapointProps {
-  label: string;
-  value: React.ReactNode | string;
-  short: boolean;
-}
-
-function Datapoint({ label, value, short }: DatapointProps) {
-  return (
-    <Grid item xs={short ? 6 : 12}>
-      <Typography color="gray" sx={{ fontSize: "12px" }}>
-        {label}
-      </Typography>
-      {value}
-    </Grid>
-  );
-}
-
-Datapoint.defaultProps = {
-  short: false,
-  mono: false,
-};
