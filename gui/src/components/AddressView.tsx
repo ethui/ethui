@@ -37,7 +37,7 @@ export function AddressView({ contextMenu, address, copyIcon }: Props) {
 
   const content = (
     <>
-      {alias ? alias : truncateEthAddress(address)}
+      {alias ? alias : truncateEthAddress(`${address}`)}
       {copyIcon && <ContentCopySharp fontSize="small" sx={{ ml: 1 }} />}
     </>
   );
