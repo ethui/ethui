@@ -12,7 +12,9 @@ pub(crate) fn router() -> Router {
 
     let forge = Router::new().nest(
         "/forge",
-        Router::new().route("/abi", get(forge::get_abi_handler)),
+        Router::new()
+            .route("/abi", get(forge::get_abi_handler))
+            .route("/name", get(forge::get_name_handler)),
     );
 
     let ws = Router::new().nest(
