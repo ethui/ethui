@@ -10,6 +10,15 @@ pub enum Error {
 
     #[error(transparent)]
     Forge(#[from] iron_forge::Error),
+
+    #[error(transparent)]
+    IO(#[from] std::io::Error),
+
+    #[error(transparent)]
+    Connection(#[from] iron_connections::Error),
+
+    #[error("invalid chain id: {0}")]
+    InvalidChainId(u32),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
