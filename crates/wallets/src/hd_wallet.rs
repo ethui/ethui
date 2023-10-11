@@ -94,7 +94,7 @@ impl WalletControl for HDWallet {
     async fn get_address(&self, path: &str) -> Result<ChecksummedAddress> {
         self.addresses
             .iter()
-            .find(|(p, _)| p == &path)
+            .find(|(p, _)| p == path)
             .map(|(_, a)| *a)
             .ok_or(Error::InvalidKey(path.into()))
     }
