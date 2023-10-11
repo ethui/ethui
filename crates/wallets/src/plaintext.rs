@@ -58,6 +58,10 @@ impl WalletControl for PlaintextWallet {
         }
     }
 
+    async fn get_address(&self, path: &str) -> Result<ChecksummedAddress> {
+        Ok(self.build_signer(1, path).await?.address().into())
+    }
+
     async fn build_signer(
         &self,
         chain_id: u32,
