@@ -6,10 +6,14 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { ChangeEvent } from "react";
+import { invoke } from "@tauri-apps/api/tauri";
+import { ChangeEvent, useState } from "react";
+import { type FieldValues } from "react-hook-form"; // TODO: check this import
+
+import { HDWalletForm } from "@/components/Settings/Wallet/HDWallet";
+import { mnemonicSchema } from "@/types";
 
 import { type WizardFormData } from "./";
-import { HDWalletForm } from "../Settings/Wallet/HDWallet";
 
 export type Step = {
   title: string;
@@ -124,7 +128,21 @@ function CreateTestWalletStep({
   formData: WizardFormData;
   setFormData: React.Dispatch<React.SetStateAction<WizardFormData>>;
 }) {
-  const onChange = (ev: ChangeEvent<HTMLInputElement>) => {
+  const [validationError, setValidationError] = useState("");
+
+  const onMnemonicChange = async (ev: ChangeEvent<HTMLTextAreaElement>) => {
+    const { value } = ev.target;
+    const validation = await mnemonicSchema.safeParseAsync(value);
+
+    if (validation.success) {
+      setFormData((data) => ({ ...data, testMnemonic: value }));
+      setValidationError("");
+    } else {
+      setValidationError(validation.error.errors[0].message);
+    }
+  };
+
+  const onOptInChange = (ev: ChangeEvent<HTMLInputElement>) => {
     setFormData((data) => ({ ...data, createTestWallet: ev.target.checked }));
   };
 
@@ -143,21 +161,55 @@ function CreateTestWalletStep({
         nodes, using its default mnemonic (unsafe). You can opt-out of this
         behaviour if you don&apos;t plan to use it.
       </Typography>
-      <FormControlLabel
-        label="Opt-in"
-        labelPlacement="top"
-        control={
-          <Checkbox checked={formData.createTestWallet} onChange={onChange} />
-        }
-      />
+      <Stack
+        direction={"row"}
+        spacing={2}
+        justifyContent="space-between"
+        alignItems={"center"}
+      >
+        <TextField
+          label="Test wallet mnemonic"
+          type="text"
+          variant="outlined"
+          onChange={onMnemonicChange}
+          defaultValue={formData.testMnemonic}
+          error={!!validationError}
+          helperText={validationError}
+        />
+        <FormControlLabel
+          label="Opt-in"
+          labelPlacement="top"
+          control={
+            <Checkbox
+              size={"small"}
+              checked={formData.createTestWallet}
+              onChange={onOptInChange}
+            />
+          }
+        />
+      </Stack>
     </Stack>
   );
 }
 
-function AddHDWalletStep() {
+function AddHDWalletStep({
+  formData,
+  setFormData,
+}: {
+  formData: WizardFormData;
+  setFormData: React.Dispatch<React.SetStateAction<WizardFormData>>;
+}) {
+  const onSubmit = (params: FieldValues) => {
+    // TODO: remove this clause
+    if (!formData.addedHDWallet) {
+      invoke("wallets_create", { params });
+      setFormData((data) => ({ ...data, addedHDWallet: true }));
+    }
+  };
+
   return (
     // TODO: check a shorter way to pass the wallet prop
-    // TODO: implement callbacks
+    // TODO: what to do with the onCancel button
     <HDWalletForm
       type={"create"}
       wallet={{
@@ -168,15 +220,9 @@ function AddHDWalletStep() {
         mnemonic: "",
         password: "",
       }}
-      onSubmit={() => {
-        throw new Error("Function submit not implemented.");
-      }}
-      onCancel={() => {
-        throw new Error("Function cancel not implemented.");
-      }}
-      onRemove={() => {
-        throw new Error("Function remove not implemented.");
-      }}
+      onSubmit={onSubmit}
+      onCancel={() => {}}
+      onRemove={() => {}}
     />
   );
 }
