@@ -45,20 +45,22 @@ export function OnboardingWizard({ closeOnboarding }: Props) {
   };
 
   const handleClose = async () => {
-    // TODO: desconstruir form data
-    if (formData.alchemyApiKey !== settings?.alchemyApiKey) {
+    const { alchemyApiKey, createTestWallet, addedHDWallet, testMnemonic } =
+      formData;
+
+    if (alchemyApiKey !== settings?.alchemyApiKey) {
       await invoke("settings_set", {
-        newSettings: { alchemyApiKey: formData.alchemyApiKey },
+        newSettings: { alchemyApiKey },
       });
     }
 
-    // "|| !formData.addedHDWallet" is still necessary because of skip onboarding button
-    if (formData.createTestWallet || !formData.addedHDWallet) {
+    // "|| !addedHDWallet" is still necessary because of skip onboarding button
+    if (createTestWallet || !addedHDWallet) {
       await invoke("wallets_create", {
         params: {
           type: "plaintext",
           name: "test wallet",
-          mnemonic: formData.testMnemonic,
+          mnemonic: testMnemonic,
           derivationPath: "m/44'/60'/0'/0",
           count: 3,
         },

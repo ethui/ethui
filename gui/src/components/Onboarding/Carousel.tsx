@@ -33,7 +33,8 @@ export function OnboardingCarousel({
   const maxSteps = steps.length;
   const step = steps[activeStep];
 
-  const disableNext = activeStep == 3 && !(formData.createTestWallet || formData.addedHDWallet);
+  const disableNext =
+    activeStep == 3 && !(formData.createTestWallet || formData.addedHDWallet);
 
   return (
     <Container disableGutters maxWidth="sm" sx={{ mt: 8, mb: 10 }}>
