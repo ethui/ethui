@@ -1,8 +1,18 @@
-use axum::{extract::Query, Json};
+use axum::{
+    extract::Query,
+    routing::{get, post},
+    Json, Router,
+};
 use iron_types::Affinity;
 use serde::Deserialize;
 
-use crate::Result;
+use crate::{Ctx, Result};
+
+pub(super) fn router() -> Router<Ctx> {
+    Router::new()
+        .route("/affinity_for", get(get_connections_affinity_for_handler))
+        .route("/affinity_for", post(set_connections_affinity_for_handler))
+}
 
 #[derive(Debug, Deserialize)]
 pub(crate) struct GetConnectionParams {

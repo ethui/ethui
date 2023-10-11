@@ -19,6 +19,12 @@ pub enum Error {
 
     #[error("invalid chain id: {0}")]
     InvalidChainId(u32),
+
+    #[error(transparent)]
+    DB(#[from] iron_db::Error),
+
+    #[error("invalid network")]
+    InvalidNetwork,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

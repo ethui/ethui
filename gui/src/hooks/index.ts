@@ -1,4 +1,5 @@
 export { useInvoke } from "./tauri";
+export { useApi } from "./useApi";
 export { useDialog } from "./useDialog";
 export { useEventListener } from "./useEventListener";
 export { useHashLocation } from "./useHashLocation";
