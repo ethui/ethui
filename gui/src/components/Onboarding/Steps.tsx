@@ -233,7 +233,7 @@ function AddHDWalletStep({
         onRemove={() => {}}
       />
       <Collapse in={success}>
-        <Alert>Wallet added successfully!</Alert>
+        <Alert> Wallet added successfully! </Alert>
       </Collapse>
     </Box>
   );
