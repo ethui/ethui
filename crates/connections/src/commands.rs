@@ -4,8 +4,8 @@ use iron_types::{Affinity, GlobalState};
 use crate::{Result, Store};
 
 #[tauri::command]
-pub async fn connections_affinity_for(domain: String) -> Result<Affinity> {
-    Ok(Store::read().await.get_affinity(&domain))
+pub async fn connections_affinity_for(domain: String) -> Affinity {
+    Store::read().await.get_affinity(&domain)
 }
 
 #[tauri::command]

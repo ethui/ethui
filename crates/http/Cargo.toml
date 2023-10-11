@@ -9,6 +9,7 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
+iron-connections = { workspace = true }
 iron-forge = { workspace = true }
 iron-rpc = { workspace = true }
 iron-types = { workspace = true }
