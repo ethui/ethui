@@ -1,6 +1,5 @@
 import {
   Alert,
-  Box,
   Checkbox,
   Collapse,
   FormControlLabel,
@@ -165,10 +164,11 @@ function CreateTestWalletStep({
         nodes, using its default mnemonic (unsafe). You can opt-out of this
         behaviour if you don&apos;t plan to use it.
       </Typography>
-      <Grid container>
+      <Grid container alignItems={"center"}>
         <Grid item xs>
           <TextField
             fullWidth
+            multiline
             label="Test wallet mnemonic"
             type="text"
             variant="outlined"
@@ -217,7 +217,7 @@ function AddHDWalletStep({
   return (
     // TODO: check a shorter way to pass the wallet prop
     // TODO: what to do with the onCancel button
-    <Box mb={2.5}>
+    <>
       <HDWalletForm
         type={"create"}
         wallet={{
@@ -235,7 +235,7 @@ function AddHDWalletStep({
       <Collapse in={success}>
         <Alert> Wallet added successfully! </Alert>
       </Collapse>
-    </Box>
+    </>
   );
 }
 
