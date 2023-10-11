@@ -63,7 +63,6 @@ export function OnboardingCarousel({
           <Box
             minHeight={{ xs: "260px", sm: "180px" }}
             width="100%"
-            pb={2.5}
             alignSelf="start"
           >
             <step.component setFormData={setFormData} formData={formData} />

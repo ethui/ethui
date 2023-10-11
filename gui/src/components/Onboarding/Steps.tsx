@@ -1,6 +1,8 @@
 import {
+  Box,
   Checkbox,
   FormControlLabel,
+  Grid,
   Link,
   Stack,
   TextField,
@@ -161,34 +163,34 @@ function CreateTestWalletStep({
         nodes, using its default mnemonic (unsafe). You can opt-out of this
         behaviour if you don&apos;t plan to use it.
       </Typography>
-      <Stack
-        direction={"row"}
-        spacing={2}
-        justifyContent="space-between"
-        alignItems={"center"}
-      >
-        <TextField
-          label="Test wallet mnemonic"
-          type="text"
-          variant="outlined"
-          onChange={onMnemonicChange}
-          defaultValue={formData.testMnemonic}
-          error={!!validationError}
-          helperText={validationError}
-        />
-        <FormControlLabel
-          label="Opt-in"
-          labelPlacement="top"
-          control={
-            <Checkbox
-              size={"small"}
-              checked={formData.createTestWallet}
-              onChange={onOptInChange}
-            />
-          }
-        />
-      </Stack>
-    </Stack>
+      <Grid container>
+        <Grid item xs>
+          <TextField
+            fullWidth
+            label="Test wallet mnemonic"
+            type="text"
+            variant="outlined"
+            onChange={onMnemonicChange}
+            defaultValue={formData.testMnemonic}
+            error={!!validationError}
+            helperText={validationError}
+          />
+        </Grid>
+        <Grid item>
+          <FormControlLabel
+            label="Opt-in"
+            labelPlacement="top"
+            control={
+              <Checkbox
+                size={"small"}
+                checked={formData.createTestWallet}
+                onChange={onOptInChange}
+              />
+            }
+          />
+        </Grid>
+      </Grid>
+    </Stack >
   );
 }
 
@@ -210,20 +212,23 @@ function AddHDWalletStep({
   return (
     // TODO: check a shorter way to pass the wallet prop
     // TODO: what to do with the onCancel button
-    <HDWalletForm
-      type={"create"}
-      wallet={{
-        type: "HDWallet",
-        name: "",
-        count: 5,
-        derivationPath: "",
-        mnemonic: "",
-        password: "",
-      }}
-      onSubmit={onSubmit}
-      onCancel={() => {}}
-      onRemove={() => {}}
-    />
+    <Box mb={2.5}>
+      <HDWalletForm
+        type={"create"}
+        wallet={{
+          type: "HDWallet",
+          name: "",
+          count: 5,
+          derivationPath: "",
+          mnemonic: "",
+          password: "",
+        }}
+        onSubmit={onSubmit}
+        onCancel={() => { }}
+        onRemove={() => { }}
+      />
+    </Box>
+
   );
 }
 
