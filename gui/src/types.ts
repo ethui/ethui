@@ -184,19 +184,6 @@ export interface TokenMetadata {
   decimals: number;
 }
 
-export interface ABIFunctionInput {
-  name: string;
-  type: string;
-}
-
-export interface ABIItem {
-  name: string;
-  constant: boolean;
-  type: string;
-  stateMutability: string;
-  inputs: ABIFunctionInput[];
-}
-
 export interface Tx {
   hash: `0x${string}`;
   from: Address;
