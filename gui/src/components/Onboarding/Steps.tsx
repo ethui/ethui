@@ -1,6 +1,8 @@
 import {
+  Alert,
   Box,
   Checkbox,
+  Collapse,
   FormControlLabel,
   Grid,
   Link,
@@ -190,7 +192,7 @@ function CreateTestWalletStep({
           />
         </Grid>
       </Grid>
-    </Stack >
+    </Stack>
   );
 }
 
@@ -201,11 +203,14 @@ function AddHDWalletStep({
   formData: WizardFormData;
   setFormData: React.Dispatch<React.SetStateAction<WizardFormData>>;
 }) {
+  const [success, setSuccess] = useState(false);
+
   const onSubmit = (params: FieldValues) => {
     // TODO: remove this clause
     if (!formData.addedHDWallet) {
       invoke("wallets_create", { params });
       setFormData((data) => ({ ...data, addedHDWallet: true }));
+      setSuccess(true);
     }
   };
 
@@ -224,11 +229,13 @@ function AddHDWalletStep({
           password: "",
         }}
         onSubmit={onSubmit}
-        onCancel={() => { }}
-        onRemove={() => { }}
+        onCancel={() => {}}
+        onRemove={() => {}}
       />
+      <Collapse in={success}>
+        <Alert>Wallet added successfully!</Alert>
+      </Collapse>
     </Box>
-
   );
 }
 
