@@ -150,7 +150,7 @@ function CreateTestWalletStep({
   };
 
   return (
-    <Stack spacing={3}>
+    <Stack spacing={3} mb={!!validationError ? -2.4 : 0}>
       <Typography component="p">
         Iron is prepared to connect to{" "}
         <Link
@@ -164,7 +164,7 @@ function CreateTestWalletStep({
         nodes, using its default mnemonic (unsafe). You can opt-out of this
         behaviour if you don&apos;t plan to use it.
       </Typography>
-      <Grid container alignItems={"center"}>
+      <Grid container>
         <Grid item xs>
           <TextField
             fullWidth
@@ -175,7 +175,7 @@ function CreateTestWalletStep({
             onChange={onMnemonicChange}
             defaultValue={formData.testMnemonic}
             error={!!validationError}
-            helperText={validationError}
+            helperText={validationError || " "}
           />
         </Grid>
         <Grid item>
@@ -229,8 +229,8 @@ function AddHDWalletStep({
           password: "",
         }}
         onSubmit={onSubmit}
-        onCancel={() => {}}
-        onRemove={() => {}}
+        onCancel={() => { }}
+        onRemove={() => { }}
       />
       <Collapse in={success}>
         <Alert> Wallet added successfully! </Alert>
