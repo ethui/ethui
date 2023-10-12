@@ -16,7 +16,7 @@ export function OnboardingWrapper({ children }: Props) {
 
   const closeOnboarding = () => {
     setIsOnboarded(true);
-    // invoke("settings_finish_onboarding");
+    invoke("settings_finish_onboarding");
   };
 
   if (!settings) return null;

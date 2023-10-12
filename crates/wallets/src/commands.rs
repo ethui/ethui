@@ -1,6 +1,6 @@
 use iron_types::{ChecksummedAddress, GlobalState, Json};
 
-use super::{utils, Result, Wallet, WalletControl, Wallets};
+use super::{error, utils, Result, Wallet, WalletControl, Wallets};
 
 /// Lists all wallets
 #[tauri::command]
@@ -11,17 +11,19 @@ pub async fn wallets_get_all() -> Vec<Wallet> {
 /// Gets the current wallet
 #[tauri::command]
 pub async fn wallets_get_current() -> Result<Wallet> {
-    Ok(Wallets::read().await.get_current_wallet().clone())
+    match Wallets::read().await.get_current_wallet() {
+        Some(current_wallet) => Ok(current_wallet.clone()),
+        None => Err(error::Error::NoCurrentWallet),
+    }
 }
 
 /// Gets the current address ooof the current wallet
 #[tauri::command]
 pub async fn wallets_get_current_address() -> Result<ChecksummedAddress> {
-    Ok(Wallets::read()
-        .await
-        .get_current_wallet()
-        .get_current_address()
-        .await)
+    match Wallets::read().await.get_current_wallet() {
+        Some(current_wallet) => Ok(current_wallet.get_current_address().await),
+        None => Err(error::Error::NoCurrentWallet),
+    }
 }
 
 #[tauri::command]

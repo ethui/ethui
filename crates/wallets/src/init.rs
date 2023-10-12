@@ -43,7 +43,6 @@ pub async fn init(pathbuf: PathBuf) {
         }
     };
 
-    res.ensure_current();
     res.init_broadcast().await;
 
     WALLETS.set(RwLock::new(res)).unwrap();

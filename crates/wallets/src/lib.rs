@@ -47,8 +47,8 @@ impl Wallets {
     }
 
     /// Gets a reference the current default wallet
-    pub fn get_current_wallet(&self) -> &Wallet {
-        &self.wallets[self.current]
+    pub fn get_current_wallet(&self) -> Option<&Wallet> {
+        self.wallets.get(self.current)
     }
 
     pub fn get(&self, name: &str) -> Option<&Wallet> {
@@ -66,8 +66,13 @@ impl Wallets {
         Ok(())
     }
 
-    async fn get_current_address(&self) -> ChecksummedAddress {
-        self.get_current_wallet().get_current_address().await
+    async fn get_current_address(&self) -> Option<ChecksummedAddress> {
+        // Some(self.get_current_wallet()?.get_current_address().await)
+        if let Some(current_wallet) = self.get_current_wallet() {
+            Some(current_wallet.get_current_address().await)
+        } else {
+            None
+        }
     }
 
     /// Switches the current default wallet
@@ -199,24 +204,28 @@ impl Wallets {
             }
         }
 
-        let addr = self.get_current_address().await;
-        iron_broadcast::current_address_changed(addr).await;
+        if let Some(addr) = self.get_current_address().await {
+            iron_broadcast::current_address_changed(addr).await;
+        }
     }
 
     async fn on_wallet_changed(&self) -> Result<()> {
-        let addr = self.get_current_address().await;
-
         self.notify_peers().await;
         iron_broadcast::ui_notify(UINotify::WalletsChanged).await;
-        iron_broadcast::current_address_changed(addr).await;
+
+        if let Some(addr) = self.get_current_address().await {
+            iron_broadcast::current_address_changed(addr).await;
+        }
 
         Ok(())
     }
 
     // broadcasts `accountsChanged` to all peers
     async fn notify_peers(&self) {
-        let addresses = vec![self.get_current_wallet().get_current_address().await];
-        iron_broadcast::accounts_changed(addresses).await;
+        if let Some(wallet) = self.get_current_wallet() {
+            let addresses = vec![wallet.get_current_address().await];
+            iron_broadcast::accounts_changed(addresses).await;
+        }
     }
 
     fn ensure_no_duplicates_of(&self, name: &str) -> Result<()> {
