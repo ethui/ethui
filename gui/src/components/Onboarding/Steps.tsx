@@ -216,7 +216,6 @@ function AddHDWalletStep({
 
   return (
     // TODO: check a shorter way to pass the wallet prop
-    // TODO: what to do with the onCancel button
     <>
       <HDWalletForm
         type={"create"}
@@ -229,8 +228,8 @@ function AddHDWalletStep({
           password: "",
         }}
         onSubmit={onSubmit}
-        onCancel={() => { }}
-        onRemove={() => { }}
+        onCancel={() => {}}
+        onRemove={() => {}}
       />
       <Collapse in={success}>
         <Alert> Wallet added successfully! </Alert>
