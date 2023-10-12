@@ -3760,6 +3760,7 @@ dependencies = [
  "iron-forge",
  "iron-networks",
  "iron-rpc",
+ "iron-settings",
  "iron-types",
  "iron-ws",
  "serde",
