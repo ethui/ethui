@@ -5,7 +5,6 @@
   "description": "A dev-oriented web3 wallet",
   "scripts": {
     "app:dev": "rm -rf target/debug/db.* && RUST_LOG=iron=debug tauri dev",
-    "app:dev1": "rm -rf target/debug/{db.*,settings.json,wallets.json} && RUST_LOG=iron=debug tauri dev",
     "gui:build": "yarn workspace @iron/gui build",
     "ext:dev": "yarn workspace @iron/extension dev",
     "ext:build": "yarn workspace @iron/extension build",

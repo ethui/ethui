@@ -70,7 +70,7 @@ function HDWalletCreateForm({
   const [mnemonic, setMnemonic] = useState<string>("");
   const [derivationPath, setDerivationPath] = useState<string | null>(null);
   const [current, setCurrent] = useState<string | null>(null);
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState<string>("");
   const [submitted, setSubmitted] = useState<boolean>(false);
 
   useEffect(() => {

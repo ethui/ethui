@@ -131,7 +131,7 @@ function CreateTestWalletStep({
   formData: WizardFormData;
   setFormData: React.Dispatch<React.SetStateAction<WizardFormData>>;
 }) {
-  const [validationError, setValidationError] = useState("");
+  const [validationError, setValidationError] = useState<string>("");
 
   const onMnemonicChange = async (ev: ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = ev.target;
@@ -203,10 +203,9 @@ function AddHDWalletStep({
   formData: WizardFormData;
   setFormData: React.Dispatch<React.SetStateAction<WizardFormData>>;
 }) {
-  const [success, setSuccess] = useState(false);
+  const [success, setSuccess] = useState<boolean>(false);
 
   const onSubmit = (params: FieldValues) => {
-    // TODO: remove this clause
     if (!formData.addedHDWallet) {
       invoke("wallets_create", { params });
       setFormData((data) => ({ ...data, addedHDWallet: true }));
@@ -215,7 +214,6 @@ function AddHDWalletStep({
   };
 
   return (
-    // TODO: check a shorter way to pass the wallet prop
     <>
       <HDWalletForm
         type={"create"}
@@ -228,8 +226,8 @@ function AddHDWalletStep({
           password: "",
         }}
         onSubmit={onSubmit}
-        onCancel={() => {}}
-        onRemove={() => {}}
+        onCancel={() => { }}
+        onRemove={() => { }}
       />
       <Collapse in={success}>
         <Alert> Wallet added successfully! </Alert>

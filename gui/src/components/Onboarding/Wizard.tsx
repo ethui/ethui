@@ -54,7 +54,6 @@ export function OnboardingWizard({ closeOnboarding }: Props) {
       });
     }
 
-    // "|| !addedHDWallet" is still necessary because of skip onboarding button
     if (createTestWallet || !addedHDWallet) {
       await invoke("wallets_create", {
         params: {
