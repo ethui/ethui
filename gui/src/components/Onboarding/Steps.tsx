@@ -4,6 +4,7 @@ import {
   Link,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { ChangeEvent } from "react";
@@ -105,13 +106,15 @@ function LiveBlockchainsStep({
           onChange={onChange}
           value={formData.alchemyApiKey}
         />
-        <IconButton
-          href="https://dashboard.alchemy.com/apps"
-          target="_blank"
-          rel="nofollow noopener noreferrer"
-        >
-          <OpenInNew></OpenInNew>
-        </IconButton>
+        <Tooltip title="Alchemy Apps Dashboard">
+          <IconButton
+            href="https://dashboard.alchemy.com/apps"
+            target="_blank"
+            rel="nofollow noopener noreferrer"
+          >
+            <OpenInNew></OpenInNew>
+          </IconButton>
+        </Tooltip>
       </Stack>
     </Stack>
   );
