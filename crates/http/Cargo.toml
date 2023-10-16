@@ -9,6 +9,7 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
+iron-broadcast = { workspace = true }
 iron-connections = { workspace = true }
 iron-db = { workspace = true }
 iron-forge = { workspace = true }
@@ -20,6 +21,7 @@ iron-types = { workspace = true }
 iron-wallets = { workspace = true }
 iron-ws = { workspace = true }
 
+ethers = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 tokio = { workspace = true }

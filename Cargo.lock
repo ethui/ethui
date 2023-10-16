@@ -3782,6 +3782,8 @@ name = "iron-http"
 version = "0.6.2"
 dependencies = [
  "axum",
+ "ethers",
+ "iron-broadcast",
  "iron-connections",
  "iron-db",
  "iron-forge",

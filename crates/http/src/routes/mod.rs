@@ -4,6 +4,7 @@ use crate::Ctx;
 
 mod connections;
 mod contracts;
+mod db;
 mod forge;
 mod networks;
 mod rpc;
@@ -19,6 +20,7 @@ pub(crate) fn router() -> Router<Ctx> {
             Router::new()
                 .nest("/connections", connections::router())
                 .nest("/contracts", contracts::router())
+                .nest("/db", db::router())
                 .nest("/forge", forge::router())
                 .nest("/settings", settings::router())
                 .nest("/simulator", simulator::router())
