@@ -8,6 +8,7 @@ mod forge;
 mod networks;
 mod rpc;
 mod settings;
+mod simulator;
 mod wallets;
 mod ws;
 
@@ -21,6 +22,7 @@ pub(crate) fn router() -> Router<Ctx> {
                 .nest("/forge", forge::router())
                 .nest("/networks", networks::router())
                 .nest("/settings", settings::router())
+                .nest("/simulator", simulator::router())
                 .nest("/wallets", wallets::router())
                 .nest("/ws", ws::router()),
         )

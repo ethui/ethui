@@ -3761,6 +3761,7 @@ dependencies = [
  "iron-networks",
  "iron-rpc",
  "iron-settings",
+ "iron-simulator",
  "iron-types",
  "iron-wallets",
  "iron-ws",
