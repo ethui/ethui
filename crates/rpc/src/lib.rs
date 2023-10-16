@@ -127,12 +127,11 @@ impl Handler {
 
     async fn accounts(_: Params, _: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
         let wallets = Wallets::read().await;
-        let address = match wallets.get_current_wallet() {
-            Some(current_wallet) => current_wallet.get_current_address().await,
-            None => {
-                return Err(jsonrpc_core::Error::internal_error());
-            }
-        };
+        let address = wallets
+            .get_current_wallet()
+            .ok_or(jsonrpc_core::Error::internal_error())?
+            .get_current_address()
+            .await;
 
         Ok(json!([address]))
     }
@@ -146,12 +145,11 @@ impl Handler {
         let wallets = Wallets::read().await;
 
         let network = ctx.network().await;
-        let address = match wallets.get_current_wallet() {
-            Some(current_wallet) => current_wallet.get_current_address().await,
-            None => {
-                return Err(jsonrpc_core::Error::internal_error());
-            }
-        };
+        let address = wallets
+            .get_current_wallet()
+            .ok_or(jsonrpc_core::Error::internal_error())?
+            .get_current_address()
+            .await;
 
         Ok(json!({
             "isUnlocked": true,
@@ -183,10 +181,9 @@ impl Handler {
         let wallets = Wallets::read().await;
 
         let network = ctx.network().await;
-        let wallet = match wallets.get_current_wallet() {
-            Some(current_wallet) => current_wallet,
-            None => return Err(jsonrpc_core::Error::internal_error()),
-        };
+        let wallet = wallets
+            .get_current_wallet()
+            .ok_or(jsonrpc_core::Error::internal_error())?;
 
         // TODO: send correct path instead of hardcode to current
         // TODO: check that requested wallet is authorized
@@ -216,10 +213,9 @@ impl Handler {
         let wallets = Wallets::read().await;
 
         let network = ctx.network().await;
-        let wallet = match wallets.get_current_wallet() {
-            Some(current_wallet) => current_wallet,
-            None => return Err(jsonrpc_core::Error::internal_error()),
-        };
+        let wallet = wallets
+            .get_current_wallet()
+            .ok_or(jsonrpc_core::Error::internal_error())?;
 
         let mut signer = SignMessage::build()
             .set_wallet(wallet)
@@ -251,10 +247,9 @@ impl Handler {
         let wallets = Wallets::read().await;
 
         let network = ctx.network().await;
-        let wallet = match wallets.get_current_wallet() {
-            Some(current_wallet) => current_wallet,
-            None => return Err(jsonrpc_core::Error::internal_error()),
-        };
+        let wallet = wallets
+            .get_current_wallet()
+            .ok_or(jsonrpc_core::Error::internal_error())?;
 
         let mut signer = SignMessage::build()
             .set_wallet(wallet)

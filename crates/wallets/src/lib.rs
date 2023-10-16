@@ -67,12 +67,7 @@ impl Wallets {
     }
 
     async fn get_current_address(&self) -> Option<ChecksummedAddress> {
-        // Some(self.get_current_wallet()?.get_current_address().await)
-        if let Some(current_wallet) = self.get_current_wallet() {
-            Some(current_wallet.get_current_address().await)
-        } else {
-            None
-        }
+        Some(self.get_current_wallet()?.get_current_address().await)
     }
 
     /// Switches the current default wallet
