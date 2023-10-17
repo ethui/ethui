@@ -3762,6 +3762,7 @@ dependencies = [
  "iron-rpc",
  "iron-settings",
  "iron-types",
+ "iron-wallets",
  "iron-ws",
  "serde",
  "serde_json",
