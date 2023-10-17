@@ -11,25 +11,25 @@ export async function get<T>(
   return getFetcher<T>([endpoint, query]);
 }
 
-export async function post(
+export async function post<T = void>(
   endpoint: string,
   body: Parameters = {},
-): Promise<string> {
-  return await writeFetcher(["post", endpoint, body]);
+): Promise<T> {
+  return await writeFetcher<T>(["post", endpoint, body]);
 }
 
-export async function del(
+export async function del<T = void>(
   endpoint: string,
   body: Parameters = {},
-): Promise<string> {
-  return await writeFetcher(["delete", endpoint, body]);
+): Promise<T> {
+  return await writeFetcher<T>(["delete", endpoint, body]);
 }
 
-export async function put(
+export async function put<T = void>(
   endpoint: string,
   body: Parameters = {},
-): Promise<string> {
-  return await writeFetcher(["put", endpoint, body]);
+): Promise<T> {
+  return await writeFetcher<T>(["put", endpoint, body]);
 }
 
 export async function getFetcher<T>([endpoint, query]: [
@@ -41,16 +41,16 @@ export async function getFetcher<T>([endpoint, query]: [
   return fetch(fullUrl).then((res) => res.json());
 }
 
-export async function writeFetcher([method, endpoint, body]: [
+export async function writeFetcher<T = void>([method, endpoint, body]: [
   string,
   string,
   Parameters,
-]): Promise<string> {
+]): Promise<T> {
   const fullUrl = `http://${HOST}/iron${endpoint}`;
 
   return fetch(fullUrl, {
     method,
     body: JSON.stringify(body),
     headers: { "Content-Type": "application/json" },
-  }).then((res) => res.text());
+  }).then((res) => res.json());
 }

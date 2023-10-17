@@ -45,8 +45,7 @@ const store: StateCreator<Store> = (set, storeGet) => ({
   },
 
   async resetNetworks() {
-    await post("/networks/reset");
-    const networks = await get<Network[]>("/networks/list");
+    const networks = await post<Network[]>("/networks/reset");
     set({ networks });
   },
 

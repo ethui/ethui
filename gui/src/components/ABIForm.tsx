@@ -1,12 +1,13 @@
 import { Autocomplete, Box, Button, Chip, TextField } from "@mui/material";
 import { Stack } from "@mui/system";
-import { invoke } from "@tauri-apps/api/tauri";
 import { Abi, AbiFunction, formatAbiItem } from "abitype";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { encodeFunctionData } from "viem";
 
+import { post } from "@/api";
 import { useApi, useProvider } from "@/hooks";
+import { useWallets } from "@/store";
 import { Address } from "@/types";
 
 interface Props {
@@ -73,6 +74,7 @@ interface ItemFormProps {
 }
 
 function ItemForm({ contract, item }: ItemFormProps) {
+  const address = useWallets((s) => s.address);
   const provider = useProvider();
   const { register, handleSubmit, reset } = useForm<CallArgs>();
   const [callResult, setCallResult] = useState<string>();
@@ -107,8 +109,11 @@ function ItemForm({ contract, item }: ItemFormProps) {
         setCallResult(JSON.stringify(result));
       }
     } else {
-      const result = await invoke<string>("rpc_send_transaction", {
-        params: { to: contract, value: params.value, data },
+      const result = await post<string>("/transactions/send_transaction", {
+        from: address,
+        to: contract,
+        value: params.value,
+        data,
       });
       setTxResult(result);
     }

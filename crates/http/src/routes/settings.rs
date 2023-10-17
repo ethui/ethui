@@ -79,7 +79,7 @@ pub(crate) struct SetAliasPayload {
     alias: Option<String>,
 }
 
-pub(crate) async fn set_alias(Query(params): Query<SetAliasPayload>) -> Result<()> {
+pub(crate) async fn set_alias(Json(params): Json<SetAliasPayload>) -> Result<()> {
     iron_settings::commands::settings_set_alias(params.address, params.alias).await;
 
     Ok(())

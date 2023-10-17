@@ -9,5 +9,7 @@ pub(super) fn router() -> Router<Ctx> {
 pub(crate) async fn send_transaction(
     Json(payload): Json<serde_json::Value>,
 ) -> Result<Json<serde_json::Value>> {
-    Ok(Json(iron_rpc::commands::rpc_send_transaction(payload).await?))
+    Ok(Json(
+        iron_rpc::commands::rpc_send_transaction(payload).await?,
+    ))
 }
