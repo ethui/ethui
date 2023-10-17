@@ -2,7 +2,7 @@ pub mod commands;
 mod error;
 mod pagination;
 mod queries;
-mod utils;
+pub mod utils;
 
 use std::{path::PathBuf, str::FromStr};
 
@@ -199,7 +199,7 @@ impl DB {
         Ok(res)
     }
 
-    async fn get_transactions(
+    pub async fn get_transactions(
         &self,
         chain_id: u32,
         from_or_to: Address,
