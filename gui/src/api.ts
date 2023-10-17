@@ -1,3 +1,5 @@
+import qs from "qs";
+
 export type Parameters = Record<string, unknown>;
 
 const HOST = import.meta.env.VITE_IRON_HTTP_SERVER_ENDPOINT || "localhost:9003";
@@ -34,13 +36,7 @@ export async function getFetcher<T>([endpoint, query]: [
   string,
   Parameters,
 ]): Promise<T> {
-  const searchParams = new URLSearchParams();
-
-  for (const [key, value] of Object.entries(query)) {
-    searchParams.append(key, value ? value.toString() : "");
-  }
-
-  const fullUrl = `http://${HOST}/iron${endpoint}?${searchParams.toString()}`;
+  const fullUrl = `http://${HOST}/iron${endpoint}?${qs.stringify(query)}`;
 
   return fetch(fullUrl).then((res) => res.json());
 }

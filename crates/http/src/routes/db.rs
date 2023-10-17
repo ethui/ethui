@@ -1,3 +1,4 @@
+use axum::extract::Query;
 use axum::routing::post;
 use axum::{extract::State, routing::get, Json, Router};
 
@@ -47,11 +48,11 @@ pub(crate) struct ChainIdPayload {
 
 pub(crate) async fn transactions(
     State(Ctx { db }): State<Ctx>,
-    Json(TransactionsPayload {
+    Query(TransactionsPayload {
         address,
         chain_id,
         pagination,
-    }): Json<TransactionsPayload>,
+    }): Query<TransactionsPayload>,
 ) -> Result<Json<Paginated<Tx>>> {
     Ok(Json(
         db.get_transactions(chain_id, address, pagination.unwrap_or_default())
@@ -61,28 +62,28 @@ pub(crate) async fn transactions(
 
 pub(crate) async fn erc20_balances(
     State(Ctx { db }): State<Ctx>,
-    Json(AddressChainIdPayload { chain_id, address }): Json<AddressChainIdPayload>,
+    Query(AddressChainIdPayload { chain_id, address }): Query<AddressChainIdPayload>,
 ) -> Result<Json<Vec<TokenBalance>>> {
     Ok(Json(db.get_erc20_balances(chain_id, address).await?))
 }
 
 pub(crate) async fn native_balance(
     State(Ctx { db }): State<Ctx>,
-    Json(AddressChainIdPayload { chain_id, address }): Json<AddressChainIdPayload>,
+    Query(AddressChainIdPayload { chain_id, address }): Query<AddressChainIdPayload>,
 ) -> Result<Json<U256>> {
     Ok(Json(db.get_native_balance(chain_id, address).await))
 }
 
 pub(crate) async fn contracts(
     State(Ctx { db }): State<Ctx>,
-    Json(ChainIdPayload { chain_id }): Json<ChainIdPayload>,
+    Query(ChainIdPayload { chain_id }): Query<ChainIdPayload>,
 ) -> Result<Json<Vec<Address>>> {
     Ok(Json(db.get_contracts(chain_id).await?))
 }
 
 pub(crate) async fn contract_abi(
     State(Ctx { db }): State<Ctx>,
-    Json(AddressChainIdPayload { chain_id, address }): Json<AddressChainIdPayload>,
+    Query(AddressChainIdPayload { chain_id, address }): Query<AddressChainIdPayload>,
 ) -> Result<Json<Abi>> {
     Ok(Json(db.get_contract_abi(chain_id, address).await?))
 }
@@ -107,7 +108,7 @@ pub(crate) async fn insert_contract(
 
 pub(crate) async fn erc721_tokens(
     State(Ctx { db }): State<Ctx>,
-    Json(AddressChainIdPayload { chain_id, address }): Json<AddressChainIdPayload>,
+    Query(AddressChainIdPayload { chain_id, address }): Query<AddressChainIdPayload>,
 ) -> Result<Json<Vec<Erc721TokenData>>> {
     Ok(Json(db.get_erc721_tokens(chain_id, address).await?))
 }
