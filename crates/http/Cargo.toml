@@ -9,9 +9,11 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-iron-rpc = { workspace = true }
+iron-connections = { workspace = true }
 iron-forge = { workspace = true }
+iron-rpc = { workspace = true }
 iron-types = { workspace = true }
+iron-ws = { workspace = true }
 
 serde = { workspace = true }
 serde_json = { workspace = true }

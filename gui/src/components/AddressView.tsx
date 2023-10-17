@@ -7,7 +7,8 @@ import { FieldValues, useForm } from "react-hook-form";
 import truncateEthAddress from "truncate-eth-address";
 import { z } from "zod";
 
-import { useInvoke } from "../hooks";
+import { useInvoke } from "@/hooks";
+
 import { ContextMenu, Modal } from "./";
 
 interface Props {
@@ -36,7 +37,7 @@ export function AddressView({ contextMenu, address, copyIcon }: Props) {
 
   const content = (
     <>
-      {alias ? alias : truncateEthAddress(address)}
+      {alias ? alias : truncateEthAddress(`${address}`)}
       {copyIcon && <ContentCopySharp fontSize="small" sx={{ ml: 1 }} />}
     </>
   );

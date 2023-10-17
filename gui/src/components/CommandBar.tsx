@@ -28,8 +28,8 @@ import {
   useSettings,
   useSettingsWindow,
   useWallets,
-} from "../store";
-import { useTheme } from "../store/theme";
+} from "@/store";
+import { useTheme } from "@/store/theme";
 
 export function CommandBar({ children }: { children: ReactNode }) {
   const { theme } = useTheme();

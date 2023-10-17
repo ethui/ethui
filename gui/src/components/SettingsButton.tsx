@@ -1,7 +1,8 @@
 import { SettingsSharp as SettingsSharpIcon } from "@mui/icons-material";
 import { Button, IconButton } from "@mui/material";
 
-import { useSettingsWindow, useTheme } from "../store";
+import { useSettingsWindow, useTheme } from "@/store";
+
 import { Modal, Settings as SettingsPage } from "./";
 
 export function SettingsButton() {

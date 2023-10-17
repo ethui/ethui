@@ -22,10 +22,12 @@ import truncateEthAddress from "truncate-eth-address";
 import { formatEther, formatGwei } from "viem";
 import { useTransaction, useWaitForTransaction } from "wagmi";
 
-import { useEventListener } from "../hooks";
-import { useNetworks, useWallets } from "../store";
-import { Address, Paginated, Pagination, Tx } from "../types";
+import { useEventListener } from "@/hooks";
+import { useNetworks, useWallets } from "@/store";
+import { Address, Paginated, Pagination, Tx } from "@/types";
+
 import { AddressView, ContextMenu, MonoText, Panel } from "./";
+import { Datapoint } from "./Datapoint";
 
 export function Txs() {
   const account = useWallets((s) => s.address);
@@ -192,25 +194,3 @@ function Details({ tx }: DetailsProps) {
     </Grid>
   );
 }
-
-interface DatapointProps {
-  label: string;
-  value: React.ReactNode;
-  short: boolean;
-}
-
-function Datapoint({ label, value, short }: DatapointProps) {
-  return (
-    <Grid item xs={short ? 6 : 12}>
-      <Typography color="gray" sx={{ fontSize: "12px" }}>
-        {label}
-      </Typography>
-      {value}
-    </Grid>
-  );
-}
-
-Datapoint.defaultProps = {
-  short: false,
-  mono: false,
-};

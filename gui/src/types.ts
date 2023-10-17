@@ -184,24 +184,6 @@ export interface TokenMetadata {
   decimals: number;
 }
 
-export interface ABIFunctionInput {
-  name: string;
-  type: string;
-}
-
-export interface ABIItem {
-  name: string;
-  constant: boolean;
-  type: string;
-  stateMutability: string;
-  inputs: ABIFunctionInput[];
-}
-
-export interface ABIMatch {
-  name: string;
-  abi: ABIItem[];
-}
-
 export interface Tx {
   hash: `0x${string}`;
   from: Address;
@@ -226,9 +208,3 @@ export interface Paginated<T> {
 }
 
 export type Affinity = { sticky: number } | "global" | "unset";
-
-export interface IContract {
-  address: Address;
-  abi: ABIItem[];
-  name: string;
-}

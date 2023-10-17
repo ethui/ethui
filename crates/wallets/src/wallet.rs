@@ -19,6 +19,8 @@ pub trait WalletControl: Sync + Send + Deserialize<'static> + Serialize + std::f
     async fn set_current_path(&mut self, path: String) -> Result<()>;
     async fn get_all_addresses(&self) -> Vec<(String, ChecksummedAddress)>;
 
+    async fn get_address(&self, path: &str) -> Result<ChecksummedAddress>;
+
     async fn build_signer(
         &self,
         chain_id: u32,

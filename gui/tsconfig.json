@@ -1,13 +1,12 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
+    "typeRoots": [
+      "./src/global.d.ts",
+      "./node_modules/@types",
+      "../node_modules/@types"
+    ],
     "paths": {
-      "typeRoots": [
-        "./src/global.d.ts",
-        "./node_modules/@types",
-        "../node_modules/@types"
-      ],
-      "@root-package-json": ["../package.json"],
       "@/*": ["./src/*"]
     }
   },

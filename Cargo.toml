@@ -30,6 +30,7 @@ members = [
   "crates/crypto",
   "crates/broadcast",
   "crates/exchange-rates",
+  "crates/simulator",
 ]
 default-members = ["bin/iron"]
 
@@ -39,6 +40,7 @@ iron-crypto = { path = "crates/crypto" }
 iron-settings = { path = "crates/settings" }
 iron-networks = { path = "crates/networks" }
 iron-wallets = { path = "crates/wallets" }
+iron-simulator = { path = "crates/simulator" }
 iron-ws = { path = "crates/ws" }
 iron-http = { path = "crates/http" }
 iron-rpc = { path = "crates/rpc" }
@@ -69,3 +71,9 @@ once_cell = "1.17.1"
 secrets = { version = "1.2.0", features = ["use-libsodium-sys"] }
 tracing = "0.1.0"
 jsonrpc-core = "18.0.0"
+
+[patch.crates-io]
+revm = { git = "https://github.com/Evalir/revm/", branch = "reintroduce-alloy-rebased" }
+revm-interpreter = { git = "https://github.com/Evalir/revm/", branch = "reintroduce-alloy-rebased" }
+revm-precompile = { git = "https://github.com/Evalir/revm/", branch = "reintroduce-alloy-rebased" }
+revm-primitives = { git = "https://github.com/Evalir/revm/", branch = "reintroduce-alloy-rebased" }
