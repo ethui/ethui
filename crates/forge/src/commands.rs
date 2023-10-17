@@ -1,5 +1,4 @@
-use ethers::abi::Abi;
-use ethers::providers::Middleware;
+use ethers::{abi::Abi, providers::Middleware};
 use iron_networks::Networks;
 use iron_types::{Address, GlobalState};
 
