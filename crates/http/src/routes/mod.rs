@@ -12,6 +12,7 @@ mod rpc;
 mod settings;
 mod simulator;
 mod sync;
+mod transactions;
 mod wallets;
 mod ws;
 
@@ -27,6 +28,7 @@ pub(crate) fn router() -> Router<Ctx> {
                 .nest("/settings", settings::router())
                 .nest("/simulator", simulator::router())
                 .nest("/sync", sync::router())
+                .nest("/transactions", transactions::router())
                 .nest("/wallets", wallets::router())
                 .nest("/networks", networks::router())
                 .nest("/ws", ws::router())

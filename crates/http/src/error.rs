@@ -21,6 +21,9 @@ pub enum Error {
     Network(#[from] iron_networks::Error),
 
     #[error(transparent)]
+    RPC(#[from] iron_rpc::Error),
+
+    #[error(transparent)]
     Settings(#[from] iron_settings::Error),
 
     #[error(transparent)]
