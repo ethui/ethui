@@ -1,7 +1,7 @@
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { Box, Button, Grid, Stack, Tab, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import ReactJson from "react-json-view";
+import JsonView from "react18-json-view";
 import { Address, formatEther } from "viem";
 
 import { AddressView, ContextMenu, Datapoint, MonoText } from "@/components";
@@ -111,15 +111,7 @@ function SimulationResult({ simulation }: SimulationResultProps) {
       <Datapoint label="Gas Used" value={simulation.gasUsed.toString()} />
       <Datapoint
         label="Logs"
-        value={
-          <ReactJson
-            name={false}
-            collapsed={true}
-            src={simulation.logs}
-            indentWidth={2}
-            displayDataTypes={false}
-          />
-        }
+        value={<JsonView src={simulation.logs} theme="default" />}
       />
     </Grid>
   );

@@ -1,4 +1,5 @@
 import "./global.css";
+import "react18-json-view/src/style.css";
 
 import { GlobalStyles, ThemeProvider } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
