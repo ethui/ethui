@@ -1,7 +1,7 @@
-import { invoke } from "@tauri-apps/api/tauri";
 import { useState } from "react";
 
-import { useInvoke } from "@/hooks";
+import { post } from "@/api";
+import { useApi } from "@/hooks";
 import { GeneralSettings } from "@/types";
 
 import { OnboardingWizard } from "./Wizard";
@@ -12,11 +12,11 @@ interface Props {
 
 export function OnboardingWrapper({ children }: Props) {
   const [isOnboarded, setIsOnboarded] = useState<boolean>();
-  const { data: settings } = useInvoke<GeneralSettings>("settings_get");
+  const { data: settings } = useApi<GeneralSettings>("/settings");
 
   const closeOnboarding = () => {
     setIsOnboarded(true);
-    invoke("settings_finish_onboarding");
+    post("/settings/finish_onboarding");
   };
 
   if (!settings) return null;

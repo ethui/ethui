@@ -8,7 +8,7 @@ import {
 import truncateEthAddress from "truncate-eth-address";
 import { Address, formatUnits } from "viem";
 
-import { useInvoke } from "@/hooks";
+import { useApi } from "@/hooks";
 import { useBalances, useNetworks } from "@/store";
 import { GeneralSettings } from "@/types";
 
@@ -40,7 +40,7 @@ function BalanceETH() {
 
 function BalancesERC20() {
   const balances = useBalances((s) => s.erc20Balances);
-  const { data: settings } = useInvoke<GeneralSettings>("settings_get");
+  const { data: settings } = useApi<GeneralSettings>("/settings");
 
   const filteredBalances = (balances || []).filter(
     (token) => !settings?.hideEmptyTokens || BigInt(token.balance) > 0,

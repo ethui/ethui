@@ -7,7 +7,8 @@ import { FieldValues, useForm } from "react-hook-form";
 import truncateEthAddress from "truncate-eth-address";
 import { z } from "zod";
 
-import { useInvoke } from "@/hooks";
+import { post } from "@/api";
+import { useApi } from "@/hooks";
 
 import { ContextMenu, Modal } from "./";
 
@@ -18,7 +19,7 @@ interface Props {
 }
 
 export function AddressView({ contextMenu, address, copyIcon }: Props) {
-  const { data: alias, mutate } = useInvoke<string>("settings_get_alias", {
+  const { data: alias, mutate } = useApi<string>("/settings/alias", {
     address,
   });
   const [aliasFormOpen, setAliasFormOpen] = useState(false);
@@ -28,7 +29,7 @@ export function AddressView({ contextMenu, address, copyIcon }: Props) {
     {
       label: "Clear alias",
       action: () => {
-        invoke("settings_set_alias", { address, alias: null });
+        post("/settings/alias", { address, alias: null });
         mutate();
       },
       disabled: !alias,
@@ -100,7 +101,7 @@ function AliasForm({ address, alias, mutate, onSubmit }: AliasFormProps) {
   });
 
   const submit = (data: FieldValues) => {
-    invoke("settings_set_alias", { address, alias: data.alias });
+    post("/settings/alias", { address, alias: data.alias });
     mutate();
     onSubmit();
   };

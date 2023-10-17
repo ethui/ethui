@@ -1,8 +1,8 @@
 import { Box, Button } from "@mui/material";
-import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 
-import { useInvoke, useKeyPress } from "@/hooks";
+import { post } from "@/api";
+import { useApi, useKeyPress } from "@/hooks";
 import { GeneralSettings } from "@/types";
 
 import { OnboardingCarousel } from "./Carousel";
@@ -15,7 +15,7 @@ interface Props {
 export type WizardFormData = { alchemyApiKey?: string | null };
 
 export function OnboardingWizard({ closeOnboarding }: Props) {
-  const { data: settings } = useInvoke<GeneralSettings>("settings_get");
+  const { data: settings } = useApi<GeneralSettings>("/settings");
 
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState<WizardFormData>({});
@@ -37,7 +37,7 @@ export function OnboardingWizard({ closeOnboarding }: Props) {
 
   const handleClose = async () => {
     if (formData.alchemyApiKey !== settings?.alchemyApiKey) {
-      await invoke("settings_set", {
+      await post("/settings", {
         newSettings: { alchemyApiKey: formData.alchemyApiKey },
       });
     }

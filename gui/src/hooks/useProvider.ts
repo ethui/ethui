@@ -3,10 +3,10 @@ import { createPublicClient, http } from "viem";
 
 import { Network } from "@/types";
 
-import { useInvoke } from "./tauri";
+import { useApi } from "./useApi";
 
 export function useProvider() {
-  const { data: network } = useInvoke<Network>("networks_get_current");
+  const { data: network } = useApi<Network>("/networks/current");
 
   const [provider, setProvider] = useState<
     ReturnType<typeof createPublicClient> | undefined

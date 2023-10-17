@@ -1,10 +1,10 @@
 import { createTheme, PaletteMode, Theme, ThemeOptions } from "@mui/material";
 import { grey, lightBlue } from "@mui/material/colors";
 import { listen } from "@tauri-apps/api/event";
-import { invoke } from "@tauri-apps/api/tauri";
 import { Action } from "kbar";
 import { create, StateCreator } from "zustand";
 
+import { get, post } from "@/api";
 import { GeneralSettings } from "@/types";
 
 interface Store {
@@ -18,7 +18,7 @@ interface Store {
 
 const actionId = "themeMode";
 
-const store: StateCreator<Store> = (set, get) => ({
+const store: StateCreator<Store> = (set, storeGet) => ({
   mode: "auto",
   theme: createTheme(getDesignTokens("light")),
 
@@ -31,12 +31,12 @@ const store: StateCreator<Store> = (set, get) => ({
       id: `${actionId}/${mode}`,
       name: mode,
       parent: actionId,
-      perform: () => get().changeMode(mode),
+      perform: () => storeGet().changeMode(mode),
     })),
   ],
 
   async reload() {
-    const { darkMode } = await invoke<GeneralSettings>("settings_get");
+    const { darkMode } = await get<GeneralSettings>("/settings");
 
     const prefersDarkMode = window.matchMedia(
       "(prefers-color-scheme: dark)",
@@ -49,9 +49,9 @@ const store: StateCreator<Store> = (set, get) => ({
   },
 
   async changeMode(mode) {
-    await invoke("settings_set_dark_mode", { mode });
+    await post("/settings/set_dark_mode", { mode });
     set({ mode });
-    get().reload();
+    storeGet().reload();
   },
 });
 

@@ -8,11 +8,11 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { invoke } from "@tauri-apps/api/tauri";
 import { map } from "lodash-es";
 import { useEffect, useState } from "react";
 
-import { useEventListener, useInvoke } from "@/hooks";
+import { post } from "@/api";
+import { useApi, useEventListener } from "@/hooks";
 import { useNetworks } from "@/store";
 import { Affinity } from "@/types";
 
@@ -28,8 +28,9 @@ interface Peer {
 }
 
 export function Connections() {
-  const { data: peersByDomain, mutate } =
-    useInvoke<Record<string, Peer[]>>("ws_peers_by_domain");
+  const { data: peersByDomain, mutate } = useApi<Record<string, Peer[]>>(
+    "/ws/peers_by_domain",
+  );
 
   useEventListener("peers-updated", mutate);
 
@@ -60,11 +61,8 @@ function Domain({ domain, peers }: { domain: string; peers: Peer[] }) {
 
 function AffinityForm({ domain }: { domain: string }) {
   const networks = useNetworks((s) => s.networks);
-  const { data: affinity, mutate } = useInvoke<Affinity>(
-    "connections_affinity_for",
-    {
-      domain,
-    },
+  const { data: affinity, mutate } = useApi<Affinity>(
+    `/connections/affinities/${domain}`,
   );
 
   useEventListener("peers-updated", mutate);
@@ -80,8 +78,7 @@ function AffinityForm({ domain }: { domain: string }) {
     if (event.target.value !== "global") {
       affinity = { sticky: parseInt(event.target.value) };
     }
-    invoke("connections_set_affinity", {
-      domain,
+    post(`/connections/affinities/${domain}`, {
       affinity,
     });
     setCurrent(affinity);

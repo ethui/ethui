@@ -1,6 +1,7 @@
-import { invoke } from "@tauri-apps/api/tauri";
 import { z } from "zod";
 import { zxcvbn } from "zxcvbn-typescript";
+
+import { get } from "./api";
 
 export const generalSettingsSchema = z.object({
   darkMode: z.enum(["auto", "dark", "light"]),
@@ -79,7 +80,7 @@ export const mnemonicSchema = z
     },
   )
   .refine(
-    (mnemonic) => invoke<string>("wallets_validate_mnemonic", { mnemonic }),
+    (mnemonic) => get<string>("/wallets/validate_mnemonic", { mnemonic }),
     {
       message: "Invalid mnemonic. You may have a typo or an unsupported word",
     },

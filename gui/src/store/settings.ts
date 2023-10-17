@@ -1,9 +1,9 @@
 import { listen } from "@tauri-apps/api/event";
-import { invoke } from "@tauri-apps/api/tauri";
 import { Action } from "kbar";
 import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
+import { get, post } from "@/api";
 import { GeneralSettings } from "@/types";
 
 interface State {
@@ -18,15 +18,15 @@ interface Setters {
 
 type Store = State & Setters;
 
-const store: StateCreator<Store> = (set, get) => ({
+const store: StateCreator<Store> = (set, storeGet) => ({
   settings: undefined,
   actions: [],
 
   async reload() {
-    const settings = await invoke<GeneralSettings>("settings_get");
+    const settings = await get<GeneralSettings>("/settings");
 
     set({ settings });
-    get().reloadActions();
+    storeGet().reloadActions();
   },
 
   reloadActions() {
@@ -40,13 +40,13 @@ const store: StateCreator<Store> = (set, get) => ({
         id: `settings/fastMode/enable`,
         parent: "settings/fastMode",
         name: "Fast Mode > Enable",
-        perform: () => invoke("settings_set_fast_mode", { mode: true }),
+        perform: () => post("/settings/set_fast_mode", { mode: true }),
       },
       {
         id: `settings/fastMode/disable`,
         parent: "settings/fastMode",
         name: "Fast Mode > Disable",
-        perform: () => invoke("settings_set_fast_mode", { mode: false }),
+        perform: () => post("/settings/set_fast_mode", { mode: false }),
       },
     ];
 

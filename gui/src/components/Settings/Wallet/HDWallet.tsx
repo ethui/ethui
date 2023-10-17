@@ -13,13 +13,13 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import truncateEthAddress from "truncate-eth-address";
 import { formatUnits } from "viem";
 import { z } from "zod";
 
+import { get } from "@/api";
 import { useProvider } from "@/hooks";
 import {
   Address,
@@ -291,7 +291,7 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
 
   useEffect(() => {
     setCurrent(null);
-    invoke<[string, Address][]>("wallets_get_mnemonic_addresses", {
+    get<[string, Address][]>("/wallets/mnemonic_addresses", {
       mnemonic,
       derivationPath,
     }).then(setAddresses);

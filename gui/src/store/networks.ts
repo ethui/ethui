@@ -4,6 +4,7 @@ import { Action } from "kbar";
 import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
+import { get, post } from "@/api";
 import { Network } from "@/types";
 
 interface State {
@@ -25,39 +26,39 @@ type Store = State & Setters;
 
 const actionId = "networks";
 
-const store: StateCreator<Store> = (set, get) => ({
+const store: StateCreator<Store> = (set, storeGet) => ({
   networks: [],
   actions: [],
 
   async setNetworks(newNetworks) {
     // TODO: this could return the new list directly
-    await invoke("networks_set_list", { newNetworks: newNetworks });
-    const networks = await invoke<Network[]>("networks_get_list");
+    await post("/networks/list", { newNetworks });
+    const networks = await get<Network[]>("/networks/list");
     set({ networks });
   },
 
   async setCurrent(newNetwork) {
     // TODO: this could return the new network directly
-    await invoke("networks_set_current", { network: newNetwork });
+    await post("/networks/current", { network: newNetwork });
 
-    const current = await invoke<Network>("networks_get_current");
+    const current = await get<Network>("/networks/current");
     set({ current });
   },
 
   async resetNetworks() {
-    const networks = await invoke<Network[]>("networks_reset");
+    const networks = await post<Network[]>("/networks/reset");
     set({ networks });
   },
 
   async reload() {
-    const current = await invoke<Network>("networks_get_current");
-    const networks = await invoke<Network[]>("networks_get_list");
+    const current = await get<Network>("/networks/current");
+    const networks = await get<Network[]>("/networks/list");
     set({ networks, current });
-    get().reloadActions();
+    storeGet().reloadActions();
   },
 
   reloadActions() {
-    const networks = get().networks;
+    const networks = storeGet().networks;
 
     const actions = [
       {
@@ -69,7 +70,7 @@ const store: StateCreator<Store> = (set, get) => ({
         name: network.name,
         parent: actionId,
         perform: () => {
-          get().setCurrent(network.name);
+          storeGet().setCurrent(network.name);
         },
       })),
     ];
@@ -78,7 +79,7 @@ const store: StateCreator<Store> = (set, get) => ({
   },
 
   async isAlchemySupportedNetwork() {
-    const current = get().current;
+    const current = storeGet().current;
 
     if (!current) return false;
 

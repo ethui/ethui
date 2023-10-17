@@ -10,11 +10,11 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { invoke } from "@tauri-apps/api/tauri";
 import { startCase } from "lodash-es";
 import { useState } from "react";
 import { type FieldValues } from "react-hook-form";
 
+import { del, post } from "@/api";
 import { useWallets } from "@/store";
 import { Wallet, walletTypes } from "@/types";
 
@@ -43,10 +43,10 @@ export function SettingsWallets() {
     idx: number,
   ) => {
     if (wallet.new) {
-      invoke("wallets_create", { params });
+      post("/wallets/wallet", { params });
       setNewWallets(newWallets.filter((_, i) => i != idx - wallets.length));
     } else {
-      await invoke("wallets_update", { name: wallet.name, params });
+      await post("wallets_update", { name: wallet.name, params });
     }
   };
 
@@ -57,7 +57,7 @@ export function SettingsWallets() {
     if (wallet.new) {
       setNewWallets(newWallets.filter((_, i) => i != idx - wallets.length));
     } else {
-      await invoke("wallets_remove", { name: wallet.name });
+      await del(`/wallets/${wallet.name}`);
     }
   };
 

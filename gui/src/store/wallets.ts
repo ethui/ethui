@@ -4,6 +4,7 @@ import { Action } from "kbar";
 import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
+import { get, post } from "@/api";
 import { Address, Wallet } from "@/types";
 
 interface State {
@@ -35,38 +36,38 @@ type Store = State & Setters;
 
 const actionId = "wallet";
 
-const store: StateCreator<Store> = (set, get) => ({
+const store: StateCreator<Store> = (set, storeGet) => ({
   wallets: [],
   actions: [],
 
   async setCurrentWallet(name: string) {
-    const { wallets, currentWallet } = get();
+    const { wallets, currentWallet } = storeGet();
     const idx = (wallets || []).findIndex((w) => w.name === name);
     if (!wallets || !currentWallet || wallets[idx].name === currentWallet.name)
       return;
 
-    await invoke("wallets_set_current_wallet", { idx });
-    get().reload();
+    await post("/wallets/current_wallet", { idx });
+    storeGet().reload();
   },
 
   async setCurrentAddress(key: string) {
-    await invoke("wallets_set_current_path", { key });
-    get().reload();
+    await post("/wallets/current_path", { key });
+    storeGet().reload();
   },
 
   async reload() {
     const [wallets, currentWallet, address] = await Promise.all([
-      invoke<Wallet[]>("wallets_get_all"),
-      invoke<Wallet>("wallets_get_current"),
-      invoke<Address>("wallets_get_current_address"),
+      get<Wallet[]>("/wallets/all"),
+      get<Wallet>("/wallets/current_wallet"),
+      get<Address>("/wallets/current_address"),
     ]);
 
     set({ wallets, currentWallet, address });
-    get().reloadActions();
+    storeGet().reloadActions();
   },
 
   async reloadActions() {
-    const { wallets } = get();
+    const { wallets } = storeGet();
     const info = (await fetchAllWalletInfo(wallets)) || [];
 
     const actions = [
@@ -86,8 +87,8 @@ const store: StateCreator<Store> = (set, get) => ({
             name: alias || address,
             parent: `${actionId}/${wallet.name}`,
             perform: () => {
-              get().setCurrentWallet(wallet.name);
-              get().setCurrentAddress(key);
+              storeGet().setCurrentWallet(wallet.name);
+              storeGet().setCurrentAddress(key);
             },
           })),
         ])
@@ -127,7 +128,7 @@ const fetchAllWalletInfo = async (wallets: Wallet[]): Promise<WalletInfo[]> =>
               key,
               address,
               walletName: wallet.name,
-              alias: await invoke<string>("settings_get_alias", { address }),
+              alias: await get<string>("/settings/alias", { address }),
             })),
           ),
         };

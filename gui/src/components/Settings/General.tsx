@@ -12,10 +12,10 @@ import {
   Switch,
   TextField,
 } from "@mui/material";
-import { invoke } from "@tauri-apps/api/tauri";
 import { useCallback, useEffect } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 
+import { get, post } from "@/api";
 import { useSettings } from "@/store";
 import { generalSettingsSchema } from "@/types";
 
@@ -41,7 +41,7 @@ export function SettingsGeneral() {
 
   const onSubmit = useCallback(
     async (data: FieldValues) => {
-      await invoke("settings_set", {
+      await post("/settings", {
         newSettings: data,
       });
       reset(data);

@@ -5,7 +5,7 @@ import { useState } from "react";
 import JsonView from "react18-json-view";
 import { decodeFunctionData } from "viem";
 
-import { useInvoke } from "@/hooks";
+import { useApi } from "@/hooks";
 
 import { MonoText } from "./MonoText";
 
@@ -22,7 +22,7 @@ export function CalldataView({ data, contract, chainId }: Props) {
     setTab(newTab);
   };
 
-  const { data: abi } = useInvoke<Abi>("get_contract_abi", {
+  const { data: abi } = useApi<Abi>("abi", {
     address: contract,
     chainId,
   });
