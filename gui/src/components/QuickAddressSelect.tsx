@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import { map } from "lodash-es";
 
-import { useInvoke } from "@/hooks";
+import { useApi } from "@/hooks";
 import { useWallets } from "@/store";
 import { Address, Wallet } from "@/types";
 
@@ -18,8 +18,8 @@ export function QuickAddressSelect() {
     s.currentWallet,
     s.setCurrentAddress,
   ]);
-  const { data: addresses } = useInvoke<[string, Address][]>(
-    "wallets_get_wallet_addresses",
+  const { data: addresses } = useApi<[string, Address][]>(
+    "/wallets/wallet_addresses",
     { name: currentWallet?.name },
   );
 
