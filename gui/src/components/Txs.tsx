@@ -18,16 +18,16 @@ import {
 import { invoke } from "@tauri-apps/api/tauri";
 import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
-import ReactJson from "react-json-view";
 import truncateEthAddress from "truncate-eth-address";
-import { Abi, decodeFunctionData, formatEther, formatGwei } from "viem";
+import { formatEther, formatGwei } from "viem";
 import { useTransaction, useWaitForTransaction } from "wagmi";
 
-import { useEventListener, useInvoke } from "@/hooks";
+import { useEventListener } from "@/hooks";
 import { useNetworks, useWallets } from "@/store";
 import { Address, Paginated, Pagination, Tx } from "@/types";
 
-import { AddressView, ContextMenu, MonoText, Panel } from "./";
+import { AddressView, ContextMenu, Panel } from "./";
+import { CalldataView } from "./Calldata";
 import { Datapoint } from "./Datapoint";
 
 export function Txs() {
@@ -151,20 +151,8 @@ BigInt.prototype.toJSON = function (): string {
 function Details({ tx, chainId }: DetailsProps) {
   const { data: transaction } = useTransaction({ hash: tx.hash });
   const { data: receipt } = useWaitForTransaction({ hash: tx.hash });
-  const { data: abi } = useInvoke<Abi>("get_contract_abi", {
-    address: tx.to,
-    chainId,
-  });
 
   if (!receipt || !transaction) return null;
-
-  let decoded;
-  if (abi && tx.to) {
-    decoded = decodeFunctionData({
-      abi: abi || [],
-      data: transaction.input,
-    });
-  }
 
   return (
     <Grid container rowSpacing={2}>
@@ -179,29 +167,15 @@ function Details({ tx, chainId }: DetailsProps) {
         label="value"
         value={<ContextMenu>{formatEther(BigInt(tx.value))} Ξ</ContextMenu>}
       />
-      {decoded && (
-        <Datapoint
-          label="decoded data"
-          value={
-            decoded ? (
-              <ReactJson
-                name={false}
-                collapsed={true}
-                src={decoded}
-                indentWidth={2}
-                displayDataTypes={false}
-              />
-            ) : (
-              <MonoText>{transaction.input}</MonoText>
-            )
-          }
-          mono
-        />
-      )}
       <Datapoint
-        label="raw data"
-        value={<MonoText>{transaction.input}</MonoText>}
-        mono
+        label="data"
+        value={
+          <CalldataView
+            data={transaction.input}
+            contract={tx.to}
+            chainId={chainId}
+          />
+        }
       />
       <Datapoint label="nonce" value={transaction.nonce} />
       <Datapoint label="type" value={transaction.type} />
