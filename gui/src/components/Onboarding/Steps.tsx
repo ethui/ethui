@@ -18,15 +18,14 @@ import { mnemonicSchema } from "@/types";
 
 import { type WizardFormData } from "./";
 
+interface Props {
+  formData: WizardFormData;
+  setFormData: React.Dispatch<React.SetStateAction<WizardFormData>>;
+}
+
 export type Step = {
   title: string;
-  component: ({
-    formData,
-    setFormData,
-  }: {
-    formData: WizardFormData;
-    setFormData: React.Dispatch<React.SetStateAction<WizardFormData>>;
-  }) => JSX.Element;
+  component: ({ formData, setFormData }: Props) => JSX.Element;
 };
 
 export const steps = [
@@ -78,13 +77,7 @@ function WelcomeStep() {
   );
 }
 
-function LiveBlockchainsStep({
-  formData,
-  setFormData,
-}: {
-  formData: WizardFormData;
-  setFormData: React.Dispatch<React.SetStateAction<WizardFormData>>;
-}) {
+function LiveBlockchainsStep({ formData, setFormData }: Props) {
   const onChange = (ev: ChangeEvent<HTMLTextAreaElement>) => {
     setFormData((data) => ({ ...data, alchemyApiKey: ev.target.value }));
   };
@@ -124,13 +117,7 @@ function LiveBlockchainsStep({
   );
 }
 
-function CreateTestWalletStep({
-  formData,
-  setFormData,
-}: {
-  formData: WizardFormData;
-  setFormData: React.Dispatch<React.SetStateAction<WizardFormData>>;
-}) {
+function CreateTestWalletStep({ formData, setFormData }: Props) {
   const [validationError, setValidationError] = useState<string>("");
 
   const onMnemonicChange = async (ev: ChangeEvent<HTMLTextAreaElement>) => {
@@ -196,13 +183,7 @@ function CreateTestWalletStep({
   );
 }
 
-function AddHDWalletStep({
-  formData,
-  setFormData,
-}: {
-  formData: WizardFormData;
-  setFormData: React.Dispatch<React.SetStateAction<WizardFormData>>;
-}) {
+function AddHDWalletStep({ formData, setFormData }: Props) {
   const [success, setSuccess] = useState<boolean>(false);
 
   const onSubmit = (params: FieldValues) => {
