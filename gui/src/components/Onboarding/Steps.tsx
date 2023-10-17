@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import { ChangeEvent, useState } from "react";
-import { type FieldValues } from "react-hook-form"; // TODO: check this import
+import { type FieldValues } from "react-hook-form";
 
 import { HDWalletForm } from "@/components/Settings/Wallet/HDWallet";
 import { mnemonicSchema } from "@/types";
@@ -226,8 +226,8 @@ function AddHDWalletStep({
           password: "",
         }}
         onSubmit={onSubmit}
-        onCancel={() => { }}
-        onRemove={() => { }}
+        onCancel={() => {}}
+        onRemove={() => {}}
       />
       <Collapse in={success}>
         <Alert> Wallet added successfully! </Alert>

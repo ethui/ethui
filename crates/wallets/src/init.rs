@@ -24,7 +24,7 @@ pub async fn init(pathbuf: PathBuf) {
         current: usize,
     }
 
-    let mut res: Wallets = if path.exists() {
+    let res: Wallets = if path.exists() {
         let file = File::open(path).unwrap();
         let reader = BufReader::new(file);
 

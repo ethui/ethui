@@ -13,7 +13,7 @@ pub async fn wallets_get_all() -> Vec<Wallet> {
 pub async fn wallets_get_current() -> Result<Wallet> {
     match Wallets::read().await.get_current_wallet() {
         Some(current_wallet) => Ok(current_wallet.clone()),
-        None => Err(error::Error::NoCurrentWallet),
+        None => Err(error::Error::NoWallet),
     }
 }
 
@@ -22,7 +22,7 @@ pub async fn wallets_get_current() -> Result<Wallet> {
 pub async fn wallets_get_current_address() -> Result<ChecksummedAddress> {
     match Wallets::read().await.get_current_wallet() {
         Some(current_wallet) => Ok(current_wallet.get_current_address().await),
-        None => Err(error::Error::NoCurrentWallet),
+        None => Err(error::Error::NoWallet),
     }
 }
 

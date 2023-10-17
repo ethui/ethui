@@ -33,7 +33,7 @@ export function OnboardingCarousel({
   const maxSteps = steps.length;
   const step = steps[activeStep];
 
-  const disableNext =
+  const disableNextStepButton =
     activeStep == 3 && !(formData.createTestWallet || formData.addedHDWallet);
 
   return (
@@ -83,7 +83,7 @@ export function OnboardingCarousel({
           color="inherit"
           size="medium"
           onClick={handleNext}
-          disabled={activeStep === maxSteps - 1 || disableNext}
+          disabled={activeStep === maxSteps - 1 || disableNextStepButton}
           sx={{
             visibility: activeStep === maxSteps - 1 ? "hidden" : "visible",
             border: "1px solid currentColor",
