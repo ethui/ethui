@@ -24,6 +24,9 @@ pub enum Error {
     Settings(#[from] iron_settings::Error),
 
     #[error(transparent)]
+    Simulation(#[from] iron_simulator::errors::SimulationError),
+
+    #[error(transparent)]
     Wallets(#[from] iron_wallets::Error),
 
     #[error("invalid chain id: {0}")]
