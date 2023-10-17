@@ -3791,6 +3791,7 @@ dependencies = [
  "iron-rpc",
  "iron-settings",
  "iron-simulator",
+ "iron-sync-alchemy",
  "iron-types",
  "iron-wallets",
  "iron-ws",
