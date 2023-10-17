@@ -17,7 +17,7 @@ let key: SnackbarKey;
 
 export function useNoticeNewVersion() {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  const { data: current } = useApi("/internals/version");
+  const { data: current } = useApi<string>("/internals/version");
   const [latest, setLatest] = useState<string | null>(null);
 
   useEffect(() => {
