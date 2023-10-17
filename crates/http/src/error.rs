@@ -17,6 +17,9 @@ pub enum Error {
     #[error(transparent)]
     Connection(#[from] iron_connections::Error),
 
+    #[error(transparent)]
+    Network(#[from] iron_networks::Error),
+
     #[error("invalid chain id: {0}")]
     InvalidChainId(u32),
 
