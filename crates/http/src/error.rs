@@ -20,6 +20,15 @@ pub enum Error {
     #[error(transparent)]
     Network(#[from] iron_networks::Error),
 
+    #[error(transparent)]
+    Settings(#[from] iron_settings::Error),
+
+    #[error(transparent)]
+    Simulation(#[from] iron_simulator::errors::SimulationError),
+
+    #[error(transparent)]
+    Wallets(#[from] iron_wallets::Error),
+
     #[error("invalid chain id: {0}")]
     InvalidChainId(u32),
 

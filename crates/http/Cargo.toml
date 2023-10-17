@@ -14,7 +14,10 @@ iron-db = { workspace = true }
 iron-forge = { workspace = true }
 iron-networks = { workspace = true }
 iron-rpc = { workspace = true }
+iron-settings = { workspace = true }
+iron-simulator = { workspace = true }
 iron-types = { workspace = true }
+iron-wallets = { workspace = true }
 iron-ws = { workspace = true }
 
 serde = { workspace = true }
