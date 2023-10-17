@@ -6,6 +6,7 @@ mod connections;
 mod contracts;
 mod db;
 mod forge;
+mod internals;
 mod networks;
 mod rpc;
 mod settings;
@@ -28,7 +29,8 @@ pub(crate) fn router() -> Router<Ctx> {
                 .nest("/sync", sync::router())
                 .nest("/wallets", wallets::router())
                 .nest("/networks", networks::router())
-                .nest("/ws", ws::router()),
+                .nest("/ws", ws::router())
+                .nest("/internals", internals::router()),
         )
         .nest("/", rpc::router())
 }
