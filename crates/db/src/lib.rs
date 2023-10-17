@@ -6,8 +6,10 @@ mod utils;
 
 use std::{path::PathBuf, str::FromStr};
 
-use ethers::abi::Abi;
-use ethers::types::{Address, H256, U256};
+use ethers::{
+    abi::Abi,
+    types::{Address, H256, U256},
+};
 use iron_types::{events::Tx, Erc721Token, Erc721TokenData, Event, TokenBalance, TokenMetadata};
 use sqlx::{
     sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous},
@@ -52,7 +54,7 @@ impl DB {
     ) -> Result<()> {
         let mut conn = self.tx().await?;
         queries::native_update_balance(balance, chain_id, address)
-            .execute(&mut conn)
+            .execute(&mut *conn)
             .await?;
         conn.commit().await?;
         Ok(())
@@ -79,7 +81,7 @@ impl DB {
 
         for (contract, balance) in balances {
             queries::erc20_update_balance(contract, address, chain_id, balance)
-                .execute(&mut conn)
+                .execute(&mut *conn)
                 .await?;
         }
 
@@ -96,7 +98,7 @@ impl DB {
         let mut conn = self.tx().await?;
 
         queries::update_erc20_metadata(address, chain_id, metadata)
-            .execute(&mut conn)
+            .execute(&mut *conn)
             .await?;
 
         conn.commit().await?;
@@ -114,7 +116,7 @@ impl DB {
                     trace!(tx = tx.hash.to_string());
 
                     queries::insert_transaction(tx, chain_id)
-                        .execute(&mut conn)
+                        .execute(&mut *conn)
                         .await?;
                 }
 
@@ -122,7 +124,7 @@ impl DB {
                     trace!(contract = tx.address.to_string());
 
                     queries::insert_contract(tx, chain_id)
-                        .execute(&mut conn)
+                        .execute(&mut *conn)
                         .await?;
                 }
 
@@ -137,7 +139,7 @@ impl DB {
                     if !transfer.from.is_zero() {
                         let current =
                             queries::erc20_read_balance(transfer.contract, transfer.from, chain_id)
-                                .fetch_one(&mut conn)
+                                .fetch_one(&mut *conn)
                                 .await?;
 
                         queries::erc20_update_balance(
@@ -146,7 +148,7 @@ impl DB {
                             chain_id,
                             current - transfer.value,
                         )
-                        .execute(&mut conn)
+                        .execute(&mut *conn)
                         .await?;
                     }
 
@@ -154,7 +156,7 @@ impl DB {
                     if !transfer.to.is_zero() {
                         let current =
                             queries::erc20_read_balance(transfer.contract, transfer.to, chain_id)
-                                .fetch_one(&mut conn)
+                                .fetch_one(&mut *conn)
                                 .await
                                 .unwrap_or(U256::zero());
 
@@ -164,7 +166,7 @@ impl DB {
                             chain_id,
                             current + transfer.value,
                         )
-                        .execute(&mut conn)
+                        .execute(&mut *conn)
                         .await?;
                     }
                 }
@@ -175,7 +177,7 @@ impl DB {
                         id = transfer.token_id.to_string()
                     );
                     queries::erc721_transfer(transfer, chain_id)
-                        .execute(&mut conn)
+                        .execute(&mut *conn)
                         .await?;
                 }
             }
@@ -384,7 +386,7 @@ impl DB {
     ) -> Result<()> {
         let mut conn = self.tx().await?;
         queries::update_erc721_token(address, chain_id, token_id, owner, uri, metadata)
-            .execute(&mut conn)
+            .execute(&mut *conn)
             .await?;
 
         conn.commit().await?;
@@ -420,7 +422,7 @@ impl DB {
         let mut conn = self.tx().await?;
 
         queries::update_erc721_collection(address, chain_id, name, symbol)
-            .execute(&mut conn)
+            .execute(&mut *conn)
             .await?;
 
         conn.commit().await?;

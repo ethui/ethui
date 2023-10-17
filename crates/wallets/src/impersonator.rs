@@ -65,6 +65,10 @@ impl WalletControl for Impersonator {
         self.addresses.iter().map(|v| (v.to_string(), *v)).collect()
     }
 
+    async fn get_address(&self, path: &str) -> Result<ChecksummedAddress> {
+        Ok(self.addresses[usize::from_str(path)?])
+    }
+
     async fn build_signer(
         &self,
         _chain_id: u32,
