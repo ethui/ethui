@@ -15,7 +15,7 @@ import {
 import { useCallback, useEffect } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 
-import { get, post } from "@/api";
+import { post } from "@/api";
 import { useSettings } from "@/store";
 import { generalSettingsSchema } from "@/types";
 
