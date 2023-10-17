@@ -73,6 +73,10 @@ impl WalletControl for JsonKeystoreWallet {
         Ok(())
     }
 
+    async fn get_address(&self, _path: &str) -> Result<ChecksummedAddress> {
+        Ok(self.get_current_address().await)
+    }
+
     async fn build_signer(
         &self,
         chain_id: u32,

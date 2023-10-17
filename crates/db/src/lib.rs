@@ -6,8 +6,10 @@ mod utils;
 
 use std::{path::PathBuf, str::FromStr};
 
-use ethers::abi::Abi;
-use ethers::types::{Address, H256, U256};
+use ethers::{
+    abi::Abi,
+    types::{Address, H256, U256},
+};
 use iron_types::{events::Tx, Erc721Token, Erc721TokenData, Event, TokenBalance, TokenMetadata};
 use sqlx::{
     sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous},

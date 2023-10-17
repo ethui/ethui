@@ -9,7 +9,7 @@ use ethers::{
 use iron_dialogs::{Dialog, DialogMsg};
 use iron_networks::Network;
 use iron_settings::Settings;
-use iron_types::GlobalState;
+use iron_types::{ChecksummedAddress, GlobalState};
 use iron_wallets::{Wallet, WalletControl};
 
 use super::{Error, Result};
@@ -85,11 +85,7 @@ impl<'a> SendTransaction<'a> {
 
     async fn simulate(&self, dialog: Dialog) -> Result<()> {
         let chain_id = self.network.chain_id;
-        let request = self
-            .request
-            .clone()
-            .try_into()
-            .map_err(|_| Error::CannotSimulate)?;
+        let request = self.simulation_request().await?;
 
         tokio::spawn(async move {
             if let Ok(sim) = iron_simulator::commands::simulator_run(chain_id, request).await {
@@ -122,6 +118,36 @@ impl<'a> SendTransaction<'a> {
         let signer = self.signer.as_ref().unwrap();
 
         Ok(signer.send_transaction(self.request.clone(), None).await?)
+    }
+
+    async fn simulation_request(&self) -> Result<iron_simulator::Request> {
+        let tx_request = self.request.clone();
+
+        Ok(iron_simulator::Request {
+            from: self.from().await.map_err(|_| Error::CannotSimulate)?.into(),
+            to: *tx_request
+                .to()
+                .ok_or(())
+                .and_then(|v| match v {
+                    NameOrAddress::Name(_) => Err(()),
+                    NameOrAddress::Address(a) => Ok(a),
+                })
+                .map_err(|_| Error::CannotSimulate)?,
+            value: tx_request.value().cloned(),
+            data: tx_request.data().cloned(),
+            gas_limit: tx_request
+                .gas()
+                .map(|v| v.as_u64())
+                .ok_or(())
+                .map_err(|_| Error::CannotSimulate)?,
+        })
+    }
+
+    async fn from(&self) -> Result<ChecksummedAddress> {
+        self.wallet
+            .get_address(&self.wallet_path)
+            .await
+            .map_err(|_| Error::CannotSimulate)
     }
 }
 

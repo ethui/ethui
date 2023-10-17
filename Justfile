@@ -15,7 +15,7 @@ dev:
 
 fix:
   cargo +nightly fmt --all
-  cargo clippy --all --fix
+  cargo clippy --all --fix --allow-dirty
   yarn fix
 
 lint:
