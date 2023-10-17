@@ -1,8 +1,8 @@
 import { listen } from "@tauri-apps/api/event";
-import { invoke } from "@tauri-apps/api/tauri";
 import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
+import { get } from "@/api";
 import { Address, TokenBalance } from "@/types";
 
 import { useNetworks } from "./networks";
@@ -27,16 +27,16 @@ type Store = State & Setters;
 
 // const actionId = "balances";
 
-const store: StateCreator<Store> = (set, get) => ({
+const store: StateCreator<Store> = (set, storeGet) => ({
   erc20Balances: [],
 
   async reload() {
-    const { address, chainId } = get();
+    const { address, chainId } = storeGet();
     if (!address || !chainId) return;
 
     const [native, erc20Balances] = await Promise.all([
-      invoke<string>("db_get_native_balance", { address, chainId }),
-      invoke<TokenBalance[]>("db_get_erc20_balances", {
+      get<string>("/db/native_balance", { address, chainId }),
+      get<TokenBalance[]>("/db/erc20_balances", {
         address,
         chainId,
       }),
@@ -50,12 +50,12 @@ const store: StateCreator<Store> = (set, get) => ({
 
   setAddress(address) {
     set({ address });
-    get().reload();
+    storeGet().reload();
   },
 
   setChainId(chainId) {
     set({ chainId });
-    get().reload();
+    storeGet().reload();
   },
 });
 

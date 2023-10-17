@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 import { useNetworks, useSettings, useSettingsWindow } from "@/store";
 
-import { useInvoke } from "./tauri";
+import { useApi } from "./useApi";
 
 let key: SnackbarKey;
 
@@ -16,7 +16,7 @@ export function useNoticeAlchemyKeyMissing() {
   const currentNetwork = useNetworks((s) => s.current);
 
   const { data: isSupportedNetwork, isLoading: isLoadingSupportedNetwork } =
-    useInvoke<boolean>("sync_alchemy_is_network_supported", {
+    useApi<boolean>("/sync/alchemy_supported", {
       chainId: currentNetwork?.chain_id,
     });
 

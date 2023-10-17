@@ -4,6 +4,8 @@ import { Address } from "viem";
 import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
+import { get, post } from "@/api";
+
 import { useNetworks } from "./networks";
 
 interface State {
@@ -19,27 +21,27 @@ interface Setters {
 
 type Store = State & Setters;
 
-const store: StateCreator<Store> = (set, get) => ({
+const store: StateCreator<Store> = (set, storeGet) => ({
   addresses: [],
 
   async reload() {
-    const { chainId } = get();
+    const { chainId } = storeGet();
     if (!chainId) return;
 
-    const addresses = await invoke<Address[]>("db_get_contracts", {
+    const addresses = await get<Address[]>("/db/contracts", {
       chainId,
     });
     set({ addresses });
   },
 
   add: async (address: Address) => {
-    const { chainId } = get();
-    await invoke("db_insert_contract", { chainId, address });
+    const { chainId } = storeGet();
+    await post("/db/insert_contract", { chainId, address });
   },
 
   setChainId(chainId) {
     set({ chainId });
-    get().reload();
+    storeGet().reload();
   },
 });
 

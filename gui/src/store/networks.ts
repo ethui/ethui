@@ -1,5 +1,4 @@
 import { listen } from "@tauri-apps/api/event";
-import { invoke } from "@tauri-apps/api/tauri";
 import { Action } from "kbar";
 import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
@@ -46,7 +45,8 @@ const store: StateCreator<Store> = (set, storeGet) => ({
   },
 
   async resetNetworks() {
-    const networks = await post<Network[]>("/networks/reset");
+    await post("/networks/reset");
+    const networks = await get<Network[]>("/networks/list");
     set({ networks });
   },
 
@@ -83,7 +83,7 @@ const store: StateCreator<Store> = (set, storeGet) => ({
 
     if (!current) return false;
 
-    return await invoke<boolean>("sync_alchemy_is_network_supported", {
+    return await get<boolean>("/sync/alchemy_supported", {
       chainId: current.chain_id,
     });
   },

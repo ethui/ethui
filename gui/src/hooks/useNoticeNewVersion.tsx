@@ -3,7 +3,7 @@ import { IconButton, Link, Typography } from "@mui/material";
 import { SnackbarKey, useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 
-import { useInvoke } from "./tauri";
+import { useApi } from "./useApi";
 
 export async function getLatestVersion() {
   const response = await fetch(
@@ -17,7 +17,7 @@ let key: SnackbarKey;
 
 export function useNoticeNewVersion() {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  const { data: current } = useInvoke("get_version");
+  const { data: current } = useApi("/internals/version");
   const [latest, setLatest] = useState<string | null>(null);
 
   useEffect(() => {
