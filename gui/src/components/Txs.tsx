@@ -26,7 +26,8 @@ import { useEventListener } from "@/hooks";
 import { useNetworks, useWallets } from "@/store";
 import { Address, Paginated, Pagination, Tx } from "@/types";
 
-import { AddressView, ContextMenu, MonoText, Panel } from "./";
+import { AddressView, ContextMenu, Panel } from "./";
+import { CalldataView } from "./Calldata";
 import { Datapoint } from "./Datapoint";
 
 export function Txs() {
@@ -61,7 +62,7 @@ export function Txs() {
   useEventListener("txs-updated", reload);
   useEffect(reload, [account, chainId]);
 
-  if (!account) return null;
+  if (!account || !chainId) return null;
 
   const loader = (
     <Box
@@ -84,12 +85,12 @@ export function Txs() {
       >
         {pages.flatMap((page) =>
           page.items.map((tx) => (
-            <Accordion key={tx.hash}>
+            <Accordion key={tx.hash} TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary expandIcon={<ExpandMore />}>
                 <Summary account={account} tx={tx} />
               </AccordionSummary>
               <AccordionDetails>
-                <Details tx={tx} />
+                <Details tx={tx} chainId={chainId} />
               </AccordionDetails>
             </Accordion>
           )),
@@ -138,9 +139,16 @@ function Icon({ account, tx }: IconProps) {
 
 interface DetailsProps {
   tx: Tx;
+  chainId: number;
 }
 
-function Details({ tx }: DetailsProps) {
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: Unreachable code error
+BigInt.prototype.toJSON = function (): string {
+  return this.toString();
+};
+
+function Details({ tx, chainId }: DetailsProps) {
   const { data: transaction } = useTransaction({ hash: tx.hash });
   const { data: receipt } = useWaitForTransaction({ hash: tx.hash });
 
@@ -161,8 +169,13 @@ function Details({ tx }: DetailsProps) {
       />
       <Datapoint
         label="data"
-        value={<MonoText>{transaction.input}</MonoText>}
-        mono
+        value={
+          <CalldataView
+            data={transaction.input}
+            contract={tx.to}
+            chainId={chainId}
+          />
+        }
       />
       <Datapoint label="nonce" value={transaction.nonce} />
       <Datapoint label="type" value={transaction.type} />

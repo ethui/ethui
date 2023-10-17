@@ -18,7 +18,9 @@ pub(crate) async fn get_abi_handler(
     ))
 }
 
-pub(crate) async fn get_name_handler(Query(params): Query<ForgeParams>) -> Result<Json<Option<String>>> {
+pub(crate) async fn get_name_handler(
+    Query(params): Query<ForgeParams>,
+) -> Result<Json<Option<String>>> {
     Ok(Json(
         iron_forge::commands::forge_get_name(params.address, params.chain_id).await?,
     ))
