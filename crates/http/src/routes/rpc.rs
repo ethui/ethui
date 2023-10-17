@@ -1,15 +1,25 @@
-use axum::{extract::Query, Json};
+use axum::routing::post;
+use axum::Router;
+use axum::{
+    extract::{Query, State},
+    Json,
+};
 use serde::Deserialize;
 use serde_json::Value;
 
-use crate::Result;
+use crate::{Ctx, Result};
+
+pub(super) fn router() -> Router<Ctx> {
+    Router::new().route("/", post(handler))
+}
 
 #[derive(Debug, Deserialize)]
-pub(super) struct RpcParams {
+struct RpcParams {
     domain: Option<String>,
 }
 
-pub(super) async fn handler(
+async fn handler(
+    State(_): State<Ctx>,
     Query(params): Query<RpcParams>,
     payload: String,
 ) -> Result<Json<Value>> {

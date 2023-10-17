@@ -1,10 +1,14 @@
 use std::collections::HashMap;
 
-use axum::Json;
+use axum::{Json, Router, routing::get};
 use iron_ws::peers::Peer;
 
-use crate::Result;
+use crate::{Ctx, Result};
 
-pub(crate) async fn get_peers_by_domain_handler() -> Result<Json<HashMap<String, Vec<Peer>>>> {
+pub(super) fn router() -> Router<Ctx> {
+    Router::new().route("/peers_by_domain", get(peers_by_domain))
+}
+
+pub(crate) async fn peers_by_domain() -> Result<Json<HashMap<String, Vec<Peer>>>> {
     Ok(Json(iron_ws::commands::ws_peers_by_domain().await))
 }

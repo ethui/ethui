@@ -13,7 +13,7 @@ import {
 import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { useInvoke } from "@/hooks";
+import { useApi } from "@/hooks";
 import { useContracts, useNetworks } from "@/store";
 import { Address } from "@/types";
 
@@ -35,7 +35,7 @@ export function Contracts() {
 
 function Contract({ address }: { address: Address }) {
   const chainId = useNetworks((s) => s.current?.chain_id);
-  const { data: name } = useInvoke<string>("get_contract_name", {
+  const { data: name } = useApi<string>("/contracts/name", {
     address,
     chainId,
   });

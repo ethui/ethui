@@ -20,7 +20,6 @@ async fn simulate_detris() {
     let mut evm = Evm::new(fork_url, fork_block_number, u64::MAX).await;
 
     let res = evm.call(tx).await.unwrap();
-    dbg!(&res);
 
     assert!(res.success);
     assert_eq!(res.gas_used, 118246);

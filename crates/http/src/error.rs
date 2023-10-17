@@ -17,8 +17,26 @@ pub enum Error {
     #[error(transparent)]
     Connection(#[from] iron_connections::Error),
 
+    #[error(transparent)]
+    Network(#[from] iron_networks::Error),
+
+    #[error(transparent)]
+    Settings(#[from] iron_settings::Error),
+
+    #[error(transparent)]
+    Simulation(#[from] iron_simulator::errors::SimulationError),
+
+    #[error(transparent)]
+    Wallets(#[from] iron_wallets::Error),
+
     #[error("invalid chain id: {0}")]
     InvalidChainId(u32),
+
+    #[error(transparent)]
+    DB(#[from] iron_db::Error),
+
+    #[error("invalid network")]
+    InvalidNetwork,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

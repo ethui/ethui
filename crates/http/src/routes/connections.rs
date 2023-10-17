@@ -1,30 +1,33 @@
-use axum::{extract::Query, Json};
+use axum::{
+    extract::Path,
+    routing::{get, post},
+    Json, Router,
+};
 use iron_types::Affinity;
 use serde::Deserialize;
 
-use crate::Result;
+use crate::{Ctx, Result};
 
-#[derive(Debug, Deserialize)]
-pub(crate) struct GetConnectionParams {
-    domain: String,
+pub(super) fn router() -> Router<Ctx> {
+    Router::new()
+        .route("/affinities/:domain", get(get_affinity))
+        .route("/affinities/:domain", post(set_affinity))
+}
+
+pub(crate) async fn get_affinity(Path(domain): Path<String>) -> Json<Affinity> {
+    Json(iron_connections::commands::connections_affinity_for(domain).await)
 }
 
 #[derive(Debug, Deserialize)]
-pub(crate) struct SetConnectionParams {
-    domain: String,
+pub(crate) struct SetAffinityPayload {
     affinity: Affinity,
 }
 
-pub(crate) async fn get_connections_affinity_for_handler(
-    Query(params): Query<GetConnectionParams>,
-) -> Json<Affinity> {
-    Json(iron_connections::commands::connections_affinity_for(params.domain).await)
-}
-
-pub(crate) async fn set_connections_affinity_for_handler(
-    Json(payload): Json<SetConnectionParams>,
+pub(crate) async fn set_affinity(
+    Path(domain): Path<String>,
+    Json(payload): Json<SetAffinityPayload>,
 ) -> Result<()> {
-    iron_connections::commands::connections_set_affinity(&payload.domain, payload.affinity).await?;
+    iron_connections::commands::connections_set_affinity(&domain, payload.affinity).await?;
 
     Ok(())
 }
