@@ -9,33 +9,6 @@ use serde::Deserialize;
 
 use crate::{Ctx, Result};
 
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub(crate) struct SetSettings {
-    new_settings: SerializedSettings,
-}
-
-#[derive(Debug, Deserialize)]
-pub(crate) struct DarkModeParams {
-    mode: DarkMode,
-}
-
-#[derive(Debug, Deserialize)]
-pub(crate) struct FastModeParams {
-    mode: bool,
-}
-
-#[derive(Debug, Deserialize)]
-pub(crate) struct GetAliasParams {
-    address: ChecksummedAddress,
-}
-
-#[derive(Debug, Deserialize)]
-pub(crate) struct SetAliasParams {
-    address: ChecksummedAddress,
-    alias: Option<String>,
-}
-
 pub(super) fn router() -> Router<Ctx> {
     Router::new()
         .route("/", get(settings))
@@ -51,19 +24,35 @@ pub(crate) async fn settings() -> Json<SerializedSettings> {
     Json(iron_settings::commands::settings_get().await)
 }
 
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct SetSettings {
+    new_settings: SerializedSettings,
+}
+
 pub(crate) async fn set_settings(Json(payload): Json<SetSettings>) -> Result<()> {
     iron_settings::commands::settings_set(payload.new_settings).await?;
 
     Ok(())
 }
 
-pub(crate) async fn set_dark_mode(Query(params): Query<DarkModeParams>) -> Result<()> {
+#[derive(Debug, Deserialize)]
+pub(crate) struct SetDarkModePayload {
+    mode: DarkMode,
+}
+
+pub(crate) async fn set_dark_mode(Query(params): Query<SetDarkModePayload>) -> Result<()> {
     iron_settings::commands::settings_set_dark_mode(params.mode).await?;
 
     Ok(())
 }
 
-pub(crate) async fn set_fast_mode(Query(params): Query<FastModeParams>) -> Result<()> {
+#[derive(Debug, Deserialize)]
+pub(crate) struct SetFastModePayload {
+    mode: bool,
+}
+
+pub(crate) async fn set_fast_mode(Query(params): Query<SetFastModePayload>) -> Result<()> {
     iron_settings::commands::settings_set_fast_mode(params.mode).await?;
 
     Ok(())
@@ -75,11 +64,22 @@ pub(crate) async fn finish_onboarding() -> Result<()> {
     Ok(())
 }
 
-pub(crate) async fn alias(Query(params): Query<GetAliasParams>) -> Json<Option<String>> {
+#[derive(Debug, Deserialize)]
+pub(crate) struct GetAliasPayload {
+    address: ChecksummedAddress,
+}
+
+pub(crate) async fn alias(Query(params): Query<GetAliasPayload>) -> Json<Option<String>> {
     Json(iron_settings::commands::settings_get_alias(params.address).await)
 }
 
-pub(crate) async fn set_alias(Query(params): Query<SetAliasParams>) -> Result<()> {
+#[derive(Debug, Deserialize)]
+pub(crate) struct SetAliasPayload {
+    address: ChecksummedAddress,
+    alias: Option<String>,
+}
+
+pub(crate) async fn set_alias(Query(params): Query<SetAliasPayload>) -> Result<()> {
     iron_settings::commands::settings_set_alias(params.address, params.alias).await;
 
     Ok(())

@@ -25,30 +25,8 @@ pub(super) fn router() -> Router<Ctx> {
 }
 
 #[derive(Debug, Deserialize)]
-pub(crate) struct SetCurrentWalletPayload {
-    idx: usize,
-}
-
-#[derive(Debug, Deserialize)]
 pub(crate) struct SetCurrentPathPayload {
     key: String,
-}
-
-#[derive(Debug, Deserialize)]
-pub(crate) struct GetWalletAddressParams {
-    name: String,
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub(crate) struct MnemonicAddressesPayload {
-    mnemonic: String,
-    derivation_path: String,
-}
-
-#[derive(Debug, Deserialize)]
-pub(crate) struct ValidateMnemonicPayload {
-    mnemonic: String,
 }
 
 pub(crate) async fn all() -> Json<Vec<Wallet>> {
@@ -86,6 +64,11 @@ pub(crate) async fn remove(Path(name): Path<String>) -> Result<()> {
     Ok(())
 }
 
+#[derive(Debug, Deserialize)]
+pub(crate) struct SetCurrentWalletPayload {
+    idx: usize,
+}
+
 pub(crate) async fn set_current_wallet(
     Json(SetCurrentWalletPayload { idx }): Json<SetCurrentWalletPayload>,
 ) -> Result<()> {
@@ -102,6 +85,11 @@ pub(crate) async fn set_current_path(
     Ok(())
 }
 
+#[derive(Debug, Deserialize)]
+pub(crate) struct GetWalletAddressParams {
+    name: String,
+}
+
 pub(crate) async fn get_wallet_addresses(
     Query(GetWalletAddressParams { name }): Query<GetWalletAddressParams>,
 ) -> Result<Json<Vec<(String, ChecksummedAddress)>>> {
@@ -110,17 +98,32 @@ pub(crate) async fn get_wallet_addresses(
     ))
 }
 
-pub(crate) async fn get_mnemonic_addresses(
-    Json(MnemonicAddressesPayload {
-        mnemonic,
-        derivation_path,
-    }): Json<MnemonicAddressesPayload>,
-) -> Json<Vec<(String, ChecksummedAddress)>> {
-    Json(iron_wallets::commands::wallets_get_mnemonic_addresses(mnemonic, derivation_path).await)
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct GetMnemonicAddressesPayload {
+    mnemonic: String,
+    derivation_path: String,
 }
 
-pub(crate) async fn validate_mnemonic(
-    Json(ValidateMnemonicPayload { mnemonic }): Json<ValidateMnemonicPayload>,
-) -> Json<bool> {
-    Json(iron_wallets::commands::wallets_validate_mnemonic(mnemonic))
+pub(crate) async fn get_mnemonic_addresses(
+    Json(payload): Json<GetMnemonicAddressesPayload>,
+) -> Json<Vec<(String, ChecksummedAddress)>> {
+    Json(
+        iron_wallets::commands::wallets_get_mnemonic_addresses(
+            payload.mnemonic,
+            payload.derivation_path,
+        )
+        .await,
+    )
+}
+
+#[derive(Debug, Deserialize)]
+pub(crate) struct ValidateMnemonicPayload {
+    mnemonic: String,
+}
+
+pub(crate) async fn validate_mnemonic(Json(payload): Json<ValidateMnemonicPayload>) -> Json<bool> {
+    Json(iron_wallets::commands::wallets_validate_mnemonic(
+        payload.mnemonic,
+    ))
 }
