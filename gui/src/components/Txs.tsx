@@ -18,6 +18,7 @@ import {
 import { invoke } from "@tauri-apps/api/tauri";
 import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
+import ReactJson from "react-json-view";
 import truncateEthAddress from "truncate-eth-address";
 import { Abi, decodeFunctionData, formatEther, formatGwei } from "viem";
 import { useTransaction, useWaitForTransaction } from "wagmi";
@@ -28,8 +29,6 @@ import { Address, Paginated, Pagination, Tx } from "@/types";
 
 import { AddressView, ContextMenu, MonoText, Panel } from "./";
 import { Datapoint } from "./Datapoint";
-import { v } from "@tauri-apps/api/event-41a9edf5";
-import ReactJson from "react-json-view";
 
 export function Txs() {
   const account = useWallets((s) => s.address);
