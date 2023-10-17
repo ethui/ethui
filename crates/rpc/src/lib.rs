@@ -129,7 +129,7 @@ impl Handler {
         let wallets = Wallets::read().await;
         let address = wallets
             .get_current_wallet()
-            .ok_or(jsonrpc_core::Error::internal_error())?
+            .ok_or(Error::Wallets(iron_wallets::Error::NoWallet))?
             .get_current_address()
             .await;
 
@@ -147,7 +147,7 @@ impl Handler {
         let network = ctx.network().await;
         let address = wallets
             .get_current_wallet()
-            .ok_or(jsonrpc_core::Error::internal_error())?
+            .ok_or(Error::Wallets(iron_wallets::Error::NoWallet))?
             .get_current_address()
             .await;
 
@@ -183,7 +183,7 @@ impl Handler {
         let network = ctx.network().await;
         let wallet = wallets
             .get_current_wallet()
-            .ok_or(jsonrpc_core::Error::internal_error())?;
+            .ok_or(Error::Wallets(iron_wallets::Error::NoWallet))?;
 
         // TODO: send correct path instead of hardcode to current
         // TODO: check that requested wallet is authorized
@@ -215,7 +215,7 @@ impl Handler {
         let network = ctx.network().await;
         let wallet = wallets
             .get_current_wallet()
-            .ok_or(jsonrpc_core::Error::internal_error())?;
+            .ok_or(Error::Wallets(iron_wallets::Error::NoWallet))?;
 
         let mut signer = SignMessage::build()
             .set_wallet(wallet)
@@ -249,7 +249,7 @@ impl Handler {
         let network = ctx.network().await;
         let wallet = wallets
             .get_current_wallet()
-            .ok_or(jsonrpc_core::Error::internal_error())?;
+            .ok_or(Error::Wallets(iron_wallets::Error::NoWallet))?;
 
         let mut signer = SignMessage::build()
             .set_wallet(wallet)

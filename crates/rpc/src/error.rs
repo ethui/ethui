@@ -43,6 +43,9 @@ pub enum Error {
 
     #[error("cannot simulate transaction")]
     CannotSimulate,
+
+    #[error(transparent)]
+    Wallets(#[from] iron_wallets::Error),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
