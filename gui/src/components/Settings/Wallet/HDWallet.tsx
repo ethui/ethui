@@ -72,9 +72,10 @@ function HDWalletCreateForm({
   const [derivationPath, setDerivationPath] = useState<string | null>(null);
   const [current, setCurrent] = useState<string | null>(null);
   const [password, setPassword] = useState("");
+  const [submitted, setSubmitted] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!current || !mnemonic || !derivationPath) return;
+    if (!current || !mnemonic || !derivationPath || submitted) return;
     // TODO
     onSubmit({
       type: wallet.type,
@@ -85,6 +86,7 @@ function HDWalletCreateForm({
       current,
       password,
     });
+    setSubmitted(true);
   }, [
     name,
     current,
@@ -93,6 +95,7 @@ function HDWalletCreateForm({
     password,
     wallet.type,
     onSubmit,
+    submitted,
   ]);
 
   return (
