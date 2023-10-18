@@ -106,7 +106,7 @@ pub(crate) struct GetMnemonicAddressesPayload {
 }
 
 pub(crate) async fn get_mnemonic_addresses(
-    Json(payload): Json<GetMnemonicAddressesPayload>,
+    Query(payload): Query<GetMnemonicAddressesPayload>,
 ) -> Json<Vec<(String, ChecksummedAddress)>> {
     Json(
         iron_wallets::commands::wallets_get_mnemonic_addresses(
@@ -122,7 +122,9 @@ pub(crate) struct ValidateMnemonicPayload {
     mnemonic: String,
 }
 
-pub(crate) async fn validate_mnemonic(Json(payload): Json<ValidateMnemonicPayload>) -> Json<bool> {
+pub(crate) async fn validate_mnemonic(
+    Query(payload): Query<ValidateMnemonicPayload>,
+) -> Json<bool> {
     Json(iron_wallets::commands::wallets_validate_mnemonic(
         payload.mnemonic,
     ))

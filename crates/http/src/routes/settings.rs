@@ -41,7 +41,7 @@ pub(crate) struct SetDarkModePayload {
     mode: DarkMode,
 }
 
-pub(crate) async fn set_dark_mode(Query(params): Query<SetDarkModePayload>) -> Result<()> {
+pub(crate) async fn set_dark_mode(Json(params): Json<SetDarkModePayload>) -> Result<()> {
     iron_settings::commands::settings_set_dark_mode(params.mode).await?;
 
     Ok(())
@@ -52,7 +52,7 @@ pub(crate) struct SetFastModePayload {
     mode: bool,
 }
 
-pub(crate) async fn set_fast_mode(Query(params): Query<SetFastModePayload>) -> Result<()> {
+pub(crate) async fn set_fast_mode(Json(params): Json<SetFastModePayload>) -> Result<()> {
     iron_settings::commands::settings_set_fast_mode(params.mode).await?;
 
     Ok(())
@@ -79,7 +79,7 @@ pub(crate) struct SetAliasPayload {
     alias: Option<String>,
 }
 
-pub(crate) async fn set_alias(Query(params): Query<SetAliasPayload>) -> Result<()> {
+pub(crate) async fn set_alias(Json(params): Json<SetAliasPayload>) -> Result<()> {
     iron_settings::commands::settings_set_alias(params.address, params.alias).await;
 
     Ok(())
