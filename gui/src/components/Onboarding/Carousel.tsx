@@ -1,13 +1,15 @@
-import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
-import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
-import { Container, IconButton, Stack } from "@mui/material";
-import Box from "@mui/material/Box";
-import MobileStepper from "@mui/material/MobileStepper";
-import Typography from "@mui/material/Typography";
-import { useTheme } from "@mui/material/styles";
+import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
+import {
+  Box,
+  Container,
+  IconButton,
+  MobileStepper,
+  Stack,
+  Typography,
+  useTheme,
+} from "@mui/material";
 
-import { Step } from "./Steps";
-import { WizardFormData } from "./Wizard";
+import { type Step, type WizardFormData } from "./";
 
 interface Props {
   steps: Step[];

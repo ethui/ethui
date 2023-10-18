@@ -1,7 +1,7 @@
 import { Route, Switch } from "wouter";
 
-import { useNoticeAlchemyKeyMissing } from "../hooks/useNoticeAlchemyKeyMissing";
-import { useNoticeNewVersion } from "../hooks/useNoticeNewVersion";
+import { useNoticeAlchemyKeyMissing, useNoticeNewVersion } from "@/hooks";
+
 import { Navbar, NestedRoutes } from "./";
 import { DEFAULT_TAB, SidebarLayout, TABS } from "./Sidebar";
 

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { createPublicClient, http } from "viem";
 
-import { Network } from "../types";
+import { Network } from "@/types";
+
 import { useInvoke } from "./tauri";
 
 export function useProvider() {

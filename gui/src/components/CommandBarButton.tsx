@@ -1,8 +1,8 @@
-import TerminalSharpIcon from "@mui/icons-material/TerminalSharp";
+import { TerminalSharp } from "@mui/icons-material";
 import { Button, IconButton } from "@mui/material";
 import { useKBar } from "kbar";
 
-import { useTheme } from "../store";
+import { useTheme } from "@/store";
 
 export function CommandBarButton() {
   const kbar = useKBar();
@@ -25,12 +25,12 @@ export function CommandBarButton() {
           },
         }}
       >
-        <TerminalSharpIcon />
+        <TerminalSharp />
       </IconButton>
 
       <Button
         variant="sidebar"
-        startIcon={<TerminalSharpIcon />}
+        startIcon={<TerminalSharp />}
         onClick={handleClick}
         sx={{
           [theme.breakpoints.down("sm")]: {

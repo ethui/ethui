@@ -1,9 +1,10 @@
 import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/tauri";
-import { StateCreator, create } from "zustand";
+import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { Address, TokenBalance } from "../types";
+import { Address, TokenBalance } from "@/types";
+
 import { useNetworks } from "./networks";
 import { useWallets } from "./wallets";
 

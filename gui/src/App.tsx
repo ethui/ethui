@@ -1,3 +1,6 @@
+import "./global.css";
+import "react18-json-view/src/style.css";
+
 import { GlobalStyles, ThemeProvider } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 import { SnackbarProvider } from "notistack";
@@ -8,12 +11,15 @@ import {
   CommandBar,
   DevBuildNotice,
   HomePage,
+  WagmiWrapper,
+} from "@/components";
+import {
   MsgSignDialog,
   TxReviewDialog,
-  WagmiWrapper,
   WalletUnlockDialog,
-} from "./components";
-import { OnboardingWrapper } from "./components/Onboarding";
+} from "@/components/Dialogs";
+import { OnboardingWrapper } from "@/components/Onboarding";
+
 import { useTheme } from "./store/theme";
 
 const queryClient = new QueryClient({

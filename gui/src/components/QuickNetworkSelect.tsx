@@ -6,7 +6,7 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 
-import { useNetworks } from "../store";
+import { useNetworks } from "@/store";
 
 export function QuickNetworkSelect() {
   const [networks, current, setCurrent] = useNetworks((s) => [

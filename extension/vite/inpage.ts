@@ -1,6 +1,8 @@
 import path from "node:path";
+
 import { defineConfig } from "vite";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 const dist = process.env.DIST_DIR || "dist/dev";
 
@@ -16,7 +18,6 @@ const fetchVersion = () => {
   };
 };
 
-// https://vitejs.dev/config/
 export default defineConfig({
   root: "src",
   plugins: [
@@ -24,8 +25,10 @@ export default defineConfig({
     nodePolyfills({
       exclude: ["fs"],
     }),
+    tsconfigPaths(),
   ],
   build: {
+    minify: false,
     emptyOutDir: false,
     outDir: path.resolve(__dirname, "..", dist),
     lib: {

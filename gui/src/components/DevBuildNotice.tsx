@@ -1,7 +1,7 @@
 import { Stack, Typography } from "@mui/material";
 import { red } from "@mui/material/colors";
 
-import { useInvoke } from "../hooks";
+import { useInvoke } from "@/hooks";
 
 export function DevBuildNotice() {
   const { data: buildMode } = useInvoke<string>("get_build_mode");

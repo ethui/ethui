@@ -8,9 +8,10 @@ import {
 import truncateEthAddress from "truncate-eth-address";
 import { Address, formatUnits } from "viem";
 
-import { useInvoke } from "../hooks";
-import { useBalances, useNetworks } from "../store";
-import { GeneralSettings } from "../types";
+import { useInvoke } from "@/hooks";
+import { useBalances, useNetworks } from "@/store";
+import { GeneralSettings } from "@/types";
+
 import { CopyToClipboard, IconCrypto } from "./";
 
 export function BalancesList() {

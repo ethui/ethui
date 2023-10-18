@@ -39,8 +39,7 @@ export NODE_ENV=production
 export DIST_DIR=./dist/$target
 rm -rf $DIST_DIR
 
-version=$(cat package.json | grep \"version\": | cut -d'"' -f 4)
-echo $version
+version=$(cat ../Cargo.toml | grep -E "^version" | cut -d'"' -f 2)
 basename=$target-v$version
 
 yarn run vite build --config vite/base.ts
@@ -48,29 +47,24 @@ yarn run vite build --config vite/content.ts
 yarn run vite build --config vite/inpage.ts
 yarn run vite build --config vite/background.ts
 
+# choose manifest
+mv $DIST_DIR/manifest-$target.json $DIST_DIR/manifest.json
+rm $DIST_DIR/manifest-*.json
+sed -i 's/%VERSION%/'$version'/g' $DIST_DIR/manifest.json
+
+# create zip
+(cd $DIST_DIR && zip -r ../$basename.zip .)
+
+# create crx / xpi
 case $target in
   # builds and publishes to the chrome extension store
   chrome)
-
-    # choose manifest
-    mv $DIST_DIR/manifest-chrome.json $DIST_DIR/manifest.json
-    rm $DIST_DIR/manifest-firefox.json
-
-    # bundle zip & crx
-    zip -r ./dist/chrome-v$version.zip $DIST_DIR
     yarn run crx pack $DIST_DIR -o ./dist/chrome-v$version.crx
     ;;
 
   # builds and publishes to the firefox extension store
   firefox)
-    # choose manifest
-    mv $DIST_DIR/manifest-firefox.json $DIST_DIR/manifest.json
-    rm $DIST_DIR/manifest-chrome.json
-
-    # bundle zip & xpi
-    zip -r dist/$basename.zip $DIST_DIR
     yarn run web-ext build -s $DIST_DIR -a .
-    ls
     mv ./iron_wallet-$version.zip dist/firefox-v$version.xpi
     ;;
 esac

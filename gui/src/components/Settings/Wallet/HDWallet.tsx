@@ -20,14 +20,14 @@ import truncateEthAddress from "truncate-eth-address";
 import { formatUnits } from "viem";
 import { z } from "zod";
 
-import { useProvider } from "../../../hooks";
+import { useProvider } from "@/hooks";
 import {
   Address,
-  Wallet,
   derivationPathSchema,
   hdWalletSchema,
   passwordFormSchema,
-} from "../../../types";
+  Wallet,
+} from "@/types";
 
 const createSchema = hdWalletSchema.extend({
   current: z.string(),

@@ -1,15 +1,14 @@
 import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Address } from "viem";
-import { StateCreator, create } from "zustand";
+import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { IContract } from "../types";
 import { useNetworks } from "./networks";
 
 interface State {
   chainId?: number;
-  contracts: IContract[];
+  addresses: Address[];
 }
 
 interface Setters {
@@ -21,16 +20,16 @@ interface Setters {
 type Store = State & Setters;
 
 const store: StateCreator<Store> = (set, get) => ({
-  contracts: [],
+  addresses: [],
 
   async reload() {
     const { chainId } = get();
     if (!chainId) return;
 
-    const contracts = await invoke<IContract[]>("db_get_contracts", {
+    const addresses = await invoke<Address[]>("db_get_contracts", {
       chainId,
     });
-    set({ contracts });
+    set({ addresses });
   },
 
   add: async (address: Address) => {

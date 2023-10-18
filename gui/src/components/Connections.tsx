@@ -12,9 +12,10 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { map } from "lodash-es";
 import { useEffect, useState } from "react";
 
-import { useEventListener, useInvoke } from "../hooks";
-import { useNetworks } from "../store";
-import { Affinity } from "../types";
+import { useEventListener, useInvoke } from "@/hooks";
+import { useNetworks } from "@/store";
+import { Affinity } from "@/types";
+
 import { Panel } from "./";
 
 interface Peer {
@@ -26,7 +27,7 @@ interface Peer {
   favicon: string;
 }
 
-export function Peers() {
+export function Connections() {
   const { data: peersByDomain, mutate } =
     useInvoke<Record<string, Peer[]>>("ws_peers_by_domain");
 

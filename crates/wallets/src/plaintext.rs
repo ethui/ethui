@@ -17,7 +17,6 @@ pub struct PlaintextWallet {
     name: String,
     mnemonic: String,
     derivation_path: String,
-    dev: bool,
     count: u32,
     current_path: String,
 }
@@ -59,6 +58,10 @@ impl WalletControl for PlaintextWallet {
         }
     }
 
+    async fn get_address(&self, path: &str) -> Result<ChecksummedAddress> {
+        Ok(self.build_signer(1, path).await?.address().into())
+    }
+
     async fn build_signer(
         &self,
         chain_id: u32,
@@ -78,7 +81,7 @@ impl WalletControl for PlaintextWallet {
     }
 
     fn is_dev(&self) -> bool {
-        self.dev
+        true
     }
 }
 
@@ -92,7 +95,6 @@ impl Default for PlaintextWallet {
             name: "test".into(),
             mnemonic,
             derivation_path,
-            dev: true,
             count: 3,
             current_path,
         }
@@ -105,7 +107,6 @@ struct Deserializer {
     name: String,
     mnemonic: String,
     derivation_path: String,
-    dev: bool,
     count: u32,
     current_path: Option<String>,
 }
@@ -131,7 +132,6 @@ impl TryFrom<Deserializer> for PlaintextWallet {
             name: value.name,
             mnemonic: value.mnemonic,
             derivation_path: value.derivation_path,
-            dev: value.dev,
             count: value.count,
             current_path: current_path.derivation_string(),
         })

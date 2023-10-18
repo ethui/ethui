@@ -1,10 +1,10 @@
 import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Action } from "kbar";
-import { type StateCreator, create } from "zustand";
+import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { Network } from "../types";
+import { Network } from "@/types";
 
 interface State {
   networks: Network[];

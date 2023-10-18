@@ -1,6 +1,7 @@
 import { Box, Card, CardContent, Typography } from "@mui/material";
 
-import { useTheme, useWallets } from "../store";
+import { useTheme, useWallets } from "@/store";
+
 import { AddressView, BalancesList, Panel } from "./";
 
 export function Account() {

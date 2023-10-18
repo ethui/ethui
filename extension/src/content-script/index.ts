@@ -3,11 +3,11 @@ import log from "loglevel";
 import { type Duplex } from "stream";
 import { runtime } from "webextension-polyfill";
 
-import { loadSettings } from "../settings";
+import { loadSettings } from "@/settings";
 
 declare global {
   interface Document {
-    prerendering: bool;
+    prerendering: boolean;
   }
 }
 

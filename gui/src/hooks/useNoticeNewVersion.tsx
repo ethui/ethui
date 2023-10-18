@@ -3,21 +3,21 @@ import { IconButton, Link, Typography } from "@mui/material";
 import { SnackbarKey, useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 
-import packageJson from "../../../package.json";
+import { useInvoke } from "./tauri";
 
 export async function getLatestVersion() {
   const response = await fetch(
     "https://api.github.com/repos/iron-wallet/iron/releases?per_page=1",
   );
   const json = await response.json();
-  return json[0].tag_name;
+  return json[0].tag_name.replace("v", "");
 }
 
 let key: SnackbarKey;
 
 export function useNoticeNewVersion() {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  const current = `v${packageJson.version}`;
+  const { data: current } = useInvoke("get_version");
   const [latest, setLatest] = useState<string | null>(null);
 
   useEffect(() => {

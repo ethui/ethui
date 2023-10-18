@@ -24,9 +24,14 @@ iron-sync = { workspace = true }
 iron-tracing = { workspace = true }
 iron-exchange-rates = { workspace = true }
 iron-broadcast = { workspace = true }
+iron-simulator = { workspace = true }
+
+serde = { workspace = true }
+serde_json = { workspace = true }
 tauri = { workspace = true }
 tokio = { workspace = true }
 thiserror = { workspace = true }
+ethers = { workspace = true }
 
 fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs", rev = "1a4c224" }
 tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }

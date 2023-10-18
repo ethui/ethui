@@ -1,3 +1,12 @@
+[workspace.package]
+version = "0.6.2"
+edition = "2021"
+license-file = "./LICENSE"
+homepage = "https://github.com/iron-wallet"
+repository = "https://github.com/iron/wallet/reth"
+exclude = [".github/", "extension/"]
+authors = ["Miguel Palhas <mpalhas@gmail.com>"]
+
 [workspace]
 resolver = "2"
 members = [
@@ -21,18 +30,9 @@ members = [
   "crates/crypto",
   "crates/broadcast",
   "crates/exchange-rates",
+  "crates/simulator",
 ]
 default-members = ["bin/iron"]
-
-
-[workspace.package]
-version = "0.6.2"
-edition = "2021"
-license-file = "./LICENSE"
-homepage = "https://github.com/iron-wallet"
-repository = "https://github.com/iron/wallet/reth"
-exclude = [".github/", "extension/"]
-authors = ["Miguel Palhas <mpalhas@gmail.com>"]
 
 [workspace.dependencies]
 iron-forge = { path = "crates/forge" }
@@ -40,6 +40,7 @@ iron-crypto = { path = "crates/crypto" }
 iron-settings = { path = "crates/settings" }
 iron-networks = { path = "crates/networks" }
 iron-wallets = { path = "crates/wallets" }
+iron-simulator = { path = "crates/simulator" }
 iron-ws = { path = "crates/ws" }
 iron-http = { path = "crates/http" }
 iron-rpc = { path = "crates/rpc" }
@@ -57,7 +58,7 @@ iron-exchange-rates = { path = "crates/exchange-rates" }
 tokio = { version = "1.32.0", features = ["full", "sync"] }
 thiserror = "1.0.40"
 ethers = { version = "2.0.10", features = ["ws"] }
-sqlx = { version = "0.6.3", features = [
+sqlx = { version = "0.7.2", features = [
   "runtime-tokio-rustls",
   "sqlite",
   "migrate",
@@ -65,8 +66,14 @@ sqlx = { version = "0.6.3", features = [
 serde = { version = "1.0", features = ["derive", "std"] }
 serde_json = "1.0"
 async-trait = "0.1.68"
-tauri = { version = "1.4.1", features = ["api-all", "system-tray"] }
+tauri = { version = "1.5.2", features = ["api-all", "system-tray"] }
 once_cell = "1.17.1"
 secrets = { version = "1.2.0", features = ["use-libsodium-sys"] }
 tracing = "0.1.0"
 jsonrpc-core = "18.0.0"
+
+[patch.crates-io]
+revm = { git = "https://github.com/Evalir/revm/", branch = "reintroduce-alloy-rebased" }
+revm-interpreter = { git = "https://github.com/Evalir/revm/", branch = "reintroduce-alloy-rebased" }
+revm-precompile = { git = "https://github.com/Evalir/revm/", branch = "reintroduce-alloy-rebased" }
+revm-primitives = { git = "https://github.com/Evalir/revm/", branch = "reintroduce-alloy-rebased" }

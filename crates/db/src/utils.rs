@@ -8,7 +8,7 @@ use iron_types::GlobalState;
 
 use crate::Result;
 
-pub(crate) async fn fetch_etherscan_contract_name(
+pub async fn fetch_etherscan_contract_name(
     chain: Chain,
     address: Address,
 ) -> Result<Option<String>> {
@@ -23,7 +23,7 @@ pub(crate) async fn fetch_etherscan_contract_name(
     }
 }
 
-pub(crate) async fn fetch_etherscan_abi(chain: Chain, address: Address) -> Result<Option<Abi>> {
+pub async fn fetch_etherscan_abi(chain: Chain, address: Address) -> Result<Option<Abi>> {
     let api_key = Settings::read().await.get_etherscan_api_key()?;
 
     let client = Client::new(chain, api_key)?;

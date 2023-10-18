@@ -91,6 +91,14 @@ impl WalletControl for HDWallet {
         Ok(())
     }
 
+    async fn get_address(&self, path: &str) -> Result<ChecksummedAddress> {
+        self.addresses
+            .iter()
+            .find(|(p, _)| p == path)
+            .map(|(_, a)| *a)
+            .ok_or(Error::InvalidKey(path.into()))
+    }
+
     async fn build_signer(&self, chain_id: u32, path: &str) -> Result<signers::Wallet<SigningKey>> {
         if !self.addresses.iter().any(|(p, _)| p == path) {
             return Err(Error::InvalidKey(path.to_string()));
