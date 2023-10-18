@@ -2,26 +2,30 @@ use iron_broadcast::InternalMsg;
 use iron_settings::Settings;
 use iron_types::GlobalState;
 
-use crate::Forge;
+use crate::FORGE;
 
 pub async fn init() -> crate::Result<()> {
     tokio::spawn(async { receiver().await });
 
     let settings = Settings::read().await;
 
+    let mut forge = FORGE.write().await;
+    let _ = forge.start().await;
+
     if let (true, Some(path)) = (
         settings.inner.abi_watch,
         settings.inner.abi_watch_path.clone(),
     ) {
-        Forge::start(path).await
-    } else {
-        Ok(())
+        forge.watch_path(path.into()).await?;
     }
+
+    Ok(())
 }
 
 async fn receiver() -> ! {
     let mut rx = iron_broadcast::subscribe_internal().await;
 
+    // reads current settings
     let (mut enabled, mut path) = {
         let settings = Settings::read().await;
 
@@ -40,16 +44,16 @@ async fn receiver() -> ! {
                 let new_enabled = settings.inner.abi_watch;
                 let new_path = settings.inner.abi_watch_path.clone();
 
+                // if nothing changed, skip
                 if (enabled, &path) == (new_enabled, &new_path) {
                     continue;
                 }
 
-                dbg!("here");
-
-                let _ = Forge::stop().await;
-
+                let mut forge = FORGE.write().await;
                 if let (true, Some(path)) = (new_enabled, new_path.clone()) {
-                    let _ = Forge::start(path).await;
+                    let _ = forge.watch_path(path.into()).await;
+                } else {
+                    let _ = forge.unwatch().await;
                 }
 
                 enabled = new_enabled;

@@ -12,24 +12,23 @@ pub use abi::Abi;
 pub use error::{Error, Result};
 use ethers::types::Bytes;
 pub use init::init;
-use once_cell::sync::Lazy;
-use tokio::sync::broadcast;
-use tokio::task::JoinHandle;
 use tokio::{
     spawn,
     sync::{mpsc, RwLock},
 };
 
 use self::watcher::Match;
+use once_cell::sync::Lazy;
+
+static FORGE: Lazy<RwLock<Forge>> = Lazy::new(Default::default);
 
 #[derive(Default)]
 pub struct Forge {
+    watch_path: Option<PathBuf>,
+    watcher_snd: Option<mpsc::UnboundedSender<watcher::WatcherMsg>>,
     abis_by_path: BTreeMap<PathBuf, abi::Abi>,
-    killer: Option<broadcast::Sender<()>>,
-    snd: Option<mpsc::UnboundedSender<Match>>,
 }
 
-static FORGE: Lazy<RwLock<Forge>> = Lazy::new(Default::default);
 static FUZZ_DIFF_THRESHOLD: f64 = 0.2;
 
 impl Forge {
@@ -40,60 +39,39 @@ impl Forge {
             .cloned()
     }
 
-    /// starts the ABI watcher service
-    async fn start(path: String) -> Result<()> {
-        dbg!("starting", &path);
-        let mut foundry = FORGE.write().await;
-        let path_clone = path.clone();
+    // spawns all relevant background tasks
+    pub(crate) async fn start(&mut self) -> Result<()> {
+        let (result_snd, result_rcv) = mpsc::unbounded_channel();
+        let (watcher_snd, watcher_rcv) = mpsc::unbounded_channel();
 
-        let snd = if let Some(ref snd) = foundry.snd {
-            dbg!("existing snd");
-            // get sender to existing event handler
-            snd.clone()
-        } else {
-            dbg!("spawining");
-            // spawn event handler
-            let (snd, rcv) = mpsc::unbounded_channel();
-            foundry.snd = Some(snd.clone());
-            spawn(async { Self::handle_events(rcv).await.unwrap() });
-            snd
-        };
+        self.watcher_snd = Some(watcher_snd);
 
-        let kill = broadcast::channel(1);
-        foundry.killer = Some(kill.0);
-
-        // spawn file watcher
-        let snd_clone = snd.clone();
-        spawn(async { watcher::async_watch(path, snd_clone, kill.1).await.unwrap() });
-
-        // spawns a one-off initial file globber
-        spawn(async { watcher::scan_glob(path_clone, snd).await.unwrap() });
+        spawn(async { handle_events(result_rcv).await.unwrap() });
+        spawn(async { watcher::async_watch(result_snd, watcher_rcv).await.unwrap() });
 
         Ok(())
     }
 
-    async fn stop() -> Result<()> {
-        dbg!("stopping");
-        let mut foundry = FORGE.write().await;
+    ///
+    async fn watch_path(&mut self, path: PathBuf) -> Result<()> {
+        self.unwatch().await?;
 
-        // kill the previous watcher, if any
-        if let Some(ref killer) = foundry.killer.take() {
-            dbg!("killing");
-            killer.send(()).unwrap();
-        }
+        tracing::trace!("watch {:?}", path);
+        // watch the new path
+        self.watch_path = Some(path.clone());
+        self.watcher_snd
+            .as_ref()
+            .unwrap()
+            .send(watcher::WatcherMsg::Start(path))?;
 
         Ok(())
     }
 
-    /// Handlers ABI file events
-    async fn handle_events(mut rcv: mpsc::UnboundedReceiver<Match>) -> Result<()> {
-        while let Some(m) = rcv.recv().await {
-            let mut foundry = FORGE.write().await;
-            if let Ok(abi) = abi::Abi::try_from_match(m.clone()) {
-                foundry.insert_known_abi(abi);
-            } else {
-                foundry.remove_known_abi(m.full_path);
-            }
+    // stop current path watch if necessary
+    async fn unwatch(&mut self) -> Result<()> {
+        if let (Some(snd), Some(path)) = (&self.watcher_snd, &self.watch_path.take()) {
+            tracing::trace!("unwatch {:?}", path);
+            snd.send(watcher::WatcherMsg::Stop(path.clone()))?;
         }
 
         Ok(())
@@ -109,6 +87,20 @@ impl Forge {
     fn remove_known_abi(&mut self, path: PathBuf) {
         self.abis_by_path.remove(&path);
     }
+}
+
+/// Handlers ABI file events
+async fn handle_events(mut rcv: mpsc::UnboundedReceiver<Match>) -> Result<()> {
+    while let Some(m) = rcv.recv().await {
+        let mut forge = FORGE.write().await;
+        if let Ok(abi) = abi::Abi::try_from_match(m.clone()) {
+            forge.insert_known_abi(abi);
+        } else {
+            forge.remove_known_abi(m.full_path);
+        }
+    }
+
+    Ok(())
 }
 
 /// Very simple fuzzy matching of contract bytecode.
