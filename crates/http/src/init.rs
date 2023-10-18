@@ -1,4 +1,3 @@
-use axum::http::HeaderValue;
 use iron_db::DB;
 use tower_http::{
     cors::{Any, CorsLayer},
@@ -9,6 +8,7 @@ use crate::routes::router;
 
 #[derive(Clone)]
 pub(crate) struct Ctx {
+    #[allow(unused)]
     pub(crate) db: DB,
 }
 
@@ -22,7 +22,7 @@ pub async fn init(db: DB) {
         let cors = CorsLayer::new()
             .allow_headers(Any)
             .allow_methods(Any)
-            .allow_origin("http://localhost:1420".parse::<HeaderValue>().unwrap())
+            .allow_origin(Any)
             .expose_headers(Any);
 
         let app = router()
