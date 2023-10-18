@@ -68,11 +68,11 @@ async fn name(
             iron_forge::commands::forge_get_name(params.address, params.chain_id).await?,
         ))
     } else {
-        let abi = ctx
+        let name = ctx
             .db
             .get_contract_name(params.chain_id, params.address)
             .await?;
 
-        Ok(Json(Some(abi)))
+        Ok(Json(Some(name)))
     }
 }
