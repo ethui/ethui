@@ -15,9 +15,18 @@ import {
 import { invoke } from "@tauri-apps/api/tauri";
 import { useCallback, useEffect } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
+import { z } from "zod";
 
 import { useSettings } from "@/store";
-import { generalSettingsSchema } from "@/types";
+
+export const schema = z.object({
+  darkMode: z.enum(["auto", "dark", "light"]),
+  alchemyApiKey: z.string().optional().nullable(),
+  etherscanApiKey: z.string().optional().nullable(),
+  hideEmptyTokens: z.boolean(),
+  onboarded: z.boolean(),
+  fastMode: z.boolean(),
+});
 
 export function SettingsGeneral() {
   const general = useSettings((s) => s.settings);
@@ -30,7 +39,7 @@ export function SettingsGeneral() {
     register,
   } = useForm({
     mode: "onChange",
-    resolver: zodResolver(generalSettingsSchema),
+    resolver: zodResolver(schema),
     defaultValues: general,
   });
   // TODO: https://github.com/react-hook-form/react-hook-form/issues/3213
@@ -40,11 +49,11 @@ export function SettingsGeneral() {
   useEffect(() => reset(general), [reset, general]);
 
   const onSubmit = useCallback(
-    async (data: FieldValues) => {
+    async (params: FieldValues) => {
       await invoke("settings_set", {
-        newSettings: data,
+        params,
       });
-      reset(data);
+      reset(params);
     },
     [reset],
   );
@@ -97,34 +106,6 @@ export function SettingsGeneral() {
           )}
         </FormControl>
 
-        <FormControl error={!!errors.abiWatch}>
-          <FormGroup>
-            <Controller
-              name="abiWatch"
-              control={control}
-              render={({ field }) => (
-                <FormControlLabel
-                  label="ABI Watcher"
-                  control={<Switch {...field} checked={field.value} />}
-                />
-              )}
-            />
-          </FormGroup>
-          {errors.abiWatch && (
-            <FormHelperText>
-              {errors.abiWatch.message?.toString()}
-            </FormHelperText>
-          )}
-        </FormControl>
-
-        <TextField
-          label="ABI Watch path"
-          defaultValue={general.abiWatchPath}
-          error={!!errors.abiWatchPath}
-          helperText={errors.abiWatchPath?.message?.toString() || ""}
-          fullWidth
-          {...register("abiWatchPath")}
-        />
         <TextField
           label="Alchemy API Key"
           {...register("alchemyApiKey")}

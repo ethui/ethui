@@ -8,8 +8,8 @@ pub async fn settings_get() -> SerializedSettings {
 }
 
 #[tauri::command]
-pub async fn settings_set(new_settings: SerializedSettings) -> Result<()> {
-    Settings::write().await.set(new_settings).await
+pub async fn settings_set(params: serde_json::Map<String, serde_json::Value>) -> Result<()> {
+    Settings::write().await.set(params).await
 }
 
 #[tauri::command]

@@ -9,6 +9,7 @@ import {
 import { find } from "lodash-es";
 import { useState } from "react";
 
+import { SettingsFoundry } from "./Foundry";
 import { SettingsGeneral } from "./General";
 import { SettingsNetwork } from "./Network";
 import { SettingsWallets } from "./Wallets";
@@ -17,6 +18,7 @@ const TABS = [
   { name: "General", component: SettingsGeneral },
   { name: "Wallets", component: SettingsWallets },
   { name: "Network", component: SettingsNetwork },
+  { name: "Foundry", component: SettingsFoundry },
 ];
 
 const WIDTH = 140;
