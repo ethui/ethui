@@ -2,11 +2,11 @@ use axum::Router;
 
 use crate::Ctx;
 
-mod connections;
-
 mod rpc;
 mod simulator;
 
+#[cfg(feature = "http-insecure-endpoints")]
+mod connections;
 #[cfg(feature = "http-insecure-endpoints")]
 mod contracts;
 #[cfg(feature = "http-insecure-endpoints")]
