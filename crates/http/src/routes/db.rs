@@ -1,18 +1,20 @@
-use axum::extract::Query;
-use axum::routing::post;
-use axum::{extract::State, routing::get, Json, Router};
-
-use iron_db::{Paginated, Pagination};
-
-use ethers::types::Address;
-use ethers::{abi::Abi, types::Chain};
-use iron_types::UINotify;
-use iron_types::{events::Tx, Erc721TokenData, TokenBalance, U256};
-
-use crate::{Ctx, Error, Result};
+use axum::{
+    extract::{Query, State},
+    routing::{get, post},
+    Json, Router,
+};
+use ethers::{
+    abi::Abi,
+    types::{Address, Chain},
+};
+use iron_db::{
+    utils::{fetch_etherscan_abi, fetch_etherscan_contract_name},
+    Paginated, Pagination,
+};
+use iron_types::{events::Tx, Erc721TokenData, TokenBalance, UINotify, U256};
 use serde::Deserialize;
 
-use iron_db::utils::{fetch_etherscan_abi, fetch_etherscan_contract_name};
+use crate::{Ctx, Error, Result};
 
 pub(super) fn router() -> Router<Ctx> {
     Router::new()

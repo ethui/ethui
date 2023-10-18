@@ -41,11 +41,9 @@ export function SettingsGeneral() {
 
   const onSubmit = useCallback(
     async (data: FieldValues) => {
-      console.log("here");
       await invoke("settings_set", {
         newSettings: data,
       });
-      console.log("here2");
       reset(data);
     },
     [reset],

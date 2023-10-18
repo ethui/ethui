@@ -1,8 +1,7 @@
-use axum::routing::get;
-use axum::Router;
 use axum::{
     extract::{Query, State},
-    Json,
+    routing::get,
+    Json, Router,
 };
 use iron_networks::Networks;
 use iron_types::{Abi, Address, GlobalState};

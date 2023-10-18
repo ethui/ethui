@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use axum::{Json, Router, routing::get};
+use axum::{routing::get, Json, Router};
 use iron_ws::peers::Peer;
 
 use crate::{Ctx, Result};

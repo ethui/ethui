@@ -12,13 +12,13 @@ pub use abi::Abi;
 pub use error::{Error, Result};
 use ethers::types::Bytes;
 pub use init::init;
+use once_cell::sync::Lazy;
 use tokio::{
     spawn,
     sync::{mpsc, RwLock},
 };
 
 use self::watcher::Match;
-use once_cell::sync::Lazy;
 
 static FORGE: Lazy<RwLock<Forge>> = Lazy::new(Default::default);
 
@@ -56,7 +56,6 @@ impl Forge {
     async fn watch_path(&mut self, path: PathBuf) -> Result<()> {
         self.unwatch().await?;
 
-        tracing::trace!("watch {:?}", path);
         // watch the new path
         self.watch_path = Some(path.clone());
         self.watcher_snd
@@ -70,21 +69,20 @@ impl Forge {
     // stop current path watch if necessary
     async fn unwatch(&mut self) -> Result<()> {
         if let (Some(snd), Some(path)) = (&self.watcher_snd, &self.watch_path.take()) {
-            tracing::trace!("unwatch {:?}", path);
             snd.send(watcher::WatcherMsg::Stop(path.clone()))?;
         }
 
         Ok(())
     }
 
-    // indexes a new known ABI
-    fn insert_known_abi(&mut self, abi: abi::Abi) {
+    /// indexes a new known ABI
+    fn insert_abi(&mut self, abi: abi::Abi) {
         tracing::trace!("insert ABI: {:?}", abi.path);
         self.abis_by_path.insert(abi.path.clone(), abi);
     }
 
-    // removes a previously known ABI by their path
-    fn remove_known_abi(&mut self, path: PathBuf) {
+    /// removes a previously known ABI by their path
+    fn remove_abi(&mut self, path: PathBuf) {
         self.abis_by_path.remove(&path);
     }
 }
@@ -94,9 +92,9 @@ async fn handle_events(mut rcv: mpsc::UnboundedReceiver<Match>) -> Result<()> {
     while let Some(m) = rcv.recv().await {
         let mut forge = FORGE.write().await;
         if let Ok(abi) = abi::Abi::try_from_match(m.clone()) {
-            forge.insert_known_abi(abi);
+            forge.insert_abi(abi);
         } else {
-            forge.remove_known_abi(m.full_path);
+            forge.remove_abi(m.full_path);
         }
     }
 
