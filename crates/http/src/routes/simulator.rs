@@ -19,7 +19,6 @@ pub(crate) struct SimulationPayload {
 pub(crate) async fn run(
     Json(SimulationPayload { chain_id, request }): Json<SimulationPayload>,
 ) -> HttpResult<Json<iron_simulator::types::Result>> {
-    dbg!(&chain_id, &request);
     Ok(Json(
         iron_simulator::commands::simulator_run(chain_id, request).await?,
     ))
