@@ -12,21 +12,23 @@ export const schema = z.object({
 });
 
 export function SettingsFoundry() {
-  const values = useSettings((s) => s.settings);
+  const general = useSettings((s) => s.settings);
 
   const {
     handleSubmit,
     reset,
-    formState: { isValid, errors },
+    formState: { isValid, dirtyFields, errors },
     register,
   } = useForm({
     mode: "onChange",
     resolver: zodResolver(schema),
-    defaultValues: values,
+    defaultValues: general,
   });
+  // TODO: https://github.com/react-hook-form/react-hook-form/issues/3213
+  const disabled = !Object.keys(dirtyFields).length || !isValid;
 
   // default values are async, need to reset once they're ready
-  useEffect(() => reset(values), [reset, values]);
+  useEffect(() => reset(general), [reset, general]);
 
   const onSubmit = useCallback(
     async (params: FieldValues) => {
@@ -38,7 +40,7 @@ export function SettingsFoundry() {
     [reset],
   );
 
-  if (!values) return null;
+  if (!general) return null;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
@@ -50,13 +52,13 @@ export function SettingsFoundry() {
 
         <TextField
           label="ABI Watch path"
-          defaultValue={values.abiWatchPath}
+          defaultValue={general.abiWatchPath}
           error={!!errors.abiWatchPath}
           helperText={errors.abiWatchPath?.message?.toString() || ""}
           fullWidth
           {...register("abiWatchPath")}
         />
-        <Button variant="contained" type="submit" disabled={!isValid}>
+        <Button variant="contained" type="submit" disabled={disabled}>
           Save
         </Button>
       </Stack>
