@@ -1,6 +1,7 @@
 pub mod commands;
 mod error;
 mod init;
+mod utils;
 
 use std::{
     collections::HashMap,
@@ -13,6 +14,7 @@ use ethers::core::types::Address;
 pub use init::init;
 use iron_types::{ChecksummedAddress, UINotify};
 use serde::{Deserialize, Serialize};
+pub use utils::test_alchemy_api_key;
 
 pub use self::error::{Error, Result};
 
