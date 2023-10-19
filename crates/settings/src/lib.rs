@@ -37,10 +37,6 @@ impl Settings {
             self.inner.dark_mode = serde_json::from_value(v.clone()).unwrap()
         }
 
-        if let Some(v) = params.get("abiWatch") {
-            self.inner.abi_watch = serde_json::from_value(v.clone()).unwrap()
-        }
-
         if let Some(v) = params.get("abiWatchPath") {
             self.inner.abi_watch_path = serde_json::from_value(v.clone()).unwrap()
         }
@@ -133,7 +129,6 @@ impl Settings {
 pub struct SerializedSettings {
     pub dark_mode: DarkMode,
 
-    pub abi_watch: bool,
     pub abi_watch_path: Option<String>,
     pub alchemy_api_key: Option<String>,
     pub etherscan_api_key: Option<String>,
@@ -154,7 +149,6 @@ impl Default for SerializedSettings {
     fn default() -> Self {
         Self {
             dark_mode: DarkMode::Auto,
-            abi_watch: false,
             abi_watch_path: None,
             alchemy_api_key: None,
             etherscan_api_key: None,

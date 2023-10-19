@@ -8,6 +8,7 @@ import {
   Stack,
   Switch,
   TextField,
+  Typography,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useCallback, useEffect } from "react";
@@ -56,25 +57,10 @@ export function SettingsFoundry() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
       <Stack alignItems="flex-start" spacing={2}>
-        <FormControl error={!!errors.abiWatch}>
-          <FormGroup>
-            <Controller
-              name="abiWatch"
-              control={control}
-              render={({ field }) => (
-                <FormControlLabel
-                  label="ABI Watcher"
-                  control={<Switch {...field} checked={field.value} />}
-                />
-              )}
-            />
-          </FormGroup>
-          {errors.abiWatch && (
-            <FormHelperText>
-              {errors.abiWatch.message?.toString()}
-            </FormHelperText>
-          )}
-        </FormControl>
+        <Typography>
+          Iron can monitor your filesystem for foundry projects, indexing the
+          output ABIs automatically.
+        </Typography>
 
         <TextField
           label="ABI Watch path"
