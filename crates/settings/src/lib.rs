@@ -32,11 +32,31 @@ pub enum DarkMode {
 }
 
 impl Settings {
-    /// Changes the currently connected wallet
-    ///
-    /// Broadcasts `accountsChanged`
-    pub async fn set(&mut self, new_settings: SerializedSettings) -> Result<()> {
-        self.inner = new_settings;
+    pub async fn set(&mut self, params: serde_json::Map<String, serde_json::Value>) -> Result<()> {
+        if let Some(v) = params.get("darkMode") {
+            self.inner.dark_mode = serde_json::from_value(v.clone()).unwrap()
+        }
+
+        if let Some(v) = params.get("abiWatch") {
+            self.inner.abi_watch = serde_json::from_value(v.clone()).unwrap()
+        }
+
+        if let Some(v) = params.get("abiWatchPath") {
+            self.inner.abi_watch_path = serde_json::from_value(v.clone()).unwrap()
+        }
+
+        if let Some(v) = params.get("alchemyApiKey") {
+            self.inner.alchemy_api_key = serde_json::from_value(v.clone()).unwrap()
+        }
+
+        if let Some(v) = params.get("etherscanApiKey") {
+            self.inner.etherscan_api_key = serde_json::from_value(v.clone()).unwrap()
+        }
+
+        if let Some(v) = params.get("hideEmptyTokens") {
+            self.inner.hide_empty_tokens = serde_json::from_value(v.clone()).unwrap()
+        }
+
         self.save().await?;
 
         Ok(())

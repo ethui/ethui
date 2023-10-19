@@ -27,10 +27,12 @@ pub(crate) async fn settings() -> Json<SerializedSettings> {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct SetSettings {
-    new_settings: SerializedSettings,
+    new_settings: serde_json::Map<String, serde_json::Value>,
 }
 
-pub(crate) async fn set_settings(Json(payload): Json<SetSettings>) -> Result<()> {
+pub(crate) async fn set_settings(
+    Json(payload): Json<serde_json::Map<String, serde_json::Value>>,
+) -> Result<()> {
     iron_settings::commands::settings_set(payload.new_settings).await?;
 
     Ok(())

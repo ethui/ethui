@@ -1,17 +1,7 @@
 import { invoke } from "@tauri-apps/api/tauri";
+import { Address } from "viem";
 import { z } from "zod";
 import { zxcvbn } from "zxcvbn-typescript";
-
-export const generalSettingsSchema = z.object({
-  darkMode: z.enum(["auto", "dark", "light"]),
-  abiWatch: z.boolean(),
-  abiWatchPath: z.string().optional().nullable(),
-  alchemyApiKey: z.string().optional().nullable(),
-  etherscanApiKey: z.string().optional().nullable(),
-  hideEmptyTokens: z.boolean(),
-  onboarded: z.boolean(),
-  fastMode: z.boolean(),
-});
 
 // const formSchema = schema.shape.network;
 export const networkSchema = z.object({
@@ -163,14 +153,12 @@ export const walletsSchema = z.object({
   wallets: z.array(walletSchema),
 });
 
-export type Address = `0x${string}`;
 export type Wallet = z.infer<typeof walletSchema>;
 export type HdWallet = z.infer<typeof hdWalletSchema>;
 export type JsonKeystore = z.infer<typeof jsonKeystoreSchema>;
 export type Plaintext = z.infer<typeof plaintextSchema>;
 export type Impersonator = z.infer<typeof impersonatorSchema>;
 export type Network = z.infer<typeof networkSchema.shape.networks>[number];
-export type GeneralSettings = z.infer<typeof generalSettingsSchema>;
 
 export interface TokenBalance {
   contract: Address;
