@@ -2,13 +2,12 @@ use axum::Router;
 
 use crate::Ctx;
 
+mod contracts;
 mod rpc;
 mod simulator;
 
 #[cfg(feature = "http-insecure-endpoints")]
 mod connections;
-#[cfg(feature = "http-insecure-endpoints")]
-mod contracts;
 #[cfg(feature = "http-insecure-endpoints")]
 mod db;
 #[cfg(feature = "http-insecure-endpoints")]
@@ -36,7 +35,9 @@ pub(crate) fn router() -> Router<Ctx> {
 
 #[cfg(not(feature = "http-insecure-endpoints"))]
 fn iron_routes() -> Router<Ctx> {
-    Router::new().nest("/simulator", simulator::router())
+    Router::new()
+        .nest("/simulator", simulator::router())
+        .nest("/contracts", contracts::router())
 }
 
 #[cfg(feature = "http-insecure-endpoints")]

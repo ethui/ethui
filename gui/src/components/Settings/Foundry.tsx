@@ -1,24 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Button,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormHelperText,
-  Stack,
-  Switch,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Button, Stack, TextField, Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useCallback, useEffect } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { useSettings } from "@/store";
 
 export const schema = z.object({
-  abiWatch: z.boolean(),
   abiWatchPath: z.string().optional().nullable(),
 });
 
@@ -29,7 +18,6 @@ export function SettingsFoundry() {
     handleSubmit,
     reset,
     formState: { isValid, dirtyFields, errors },
-    control,
     register,
   } = useForm({
     mode: "onChange",
@@ -37,7 +25,7 @@ export function SettingsFoundry() {
     defaultValues: general,
   });
   // TODO: https://github.com/react-hook-form/react-hook-form/issues/3213
-  const isDirtyAlt = !!Object.keys(dirtyFields).length;
+  const disabled = !Object.keys(dirtyFields).length || !isValid;
 
   // default values are async, need to reset once they're ready
   useEffect(() => reset(general), [reset, general]);
@@ -70,11 +58,7 @@ export function SettingsFoundry() {
           fullWidth
           {...register("abiWatchPath")}
         />
-        <Button
-          variant="contained"
-          type="submit"
-          disabled={!isDirtyAlt || !isValid}
-        >
+        <Button variant="contained" type="submit" disabled={disabled}>
           Save
         </Button>
       </Stack>
