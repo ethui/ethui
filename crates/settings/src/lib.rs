@@ -57,7 +57,6 @@ impl Settings {
             self.inner.hide_empty_tokens = serde_json::from_value(v.clone()).unwrap()
         }
 
-        dbg!(&self.inner);
         self.save().await?;
 
         Ok(())
