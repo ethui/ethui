@@ -75,7 +75,6 @@ impl Forge {
 
     /// indexes a new known ABI
     fn insert_abi(&mut self, abi: Abi) {
-        dbg!(&abi.path);
         self.abis_by_path.insert(abi.path.clone(), abi);
     }
 
