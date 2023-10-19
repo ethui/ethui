@@ -1,5 +1,7 @@
 use std::path::PathBuf;
 
+use crate::watcher::WatcherMsg;
+
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error("file not found: {0}")]
@@ -19,6 +21,9 @@ pub enum Error {
 
     #[error(transparent)]
     Ethers(#[from] ethers::providers::ProviderError),
+
+    #[error(transparent)]
+    WatcherSendError(#[from] tokio::sync::mpsc::error::SendError<WatcherMsg>),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

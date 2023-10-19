@@ -1,5 +1,4 @@
-use axum::Json;
-use axum::{routing::get, Router};
+use axum::{routing::get, Json, Router};
 
 use crate::Ctx;
 

@@ -18,30 +18,48 @@ pub(super) struct Match {
     pub(super) name: String,
 }
 
-/// Creates an async watch over a directory, looking for relevant ABI files to index
-pub(super) async fn async_watch<P: AsRef<Path>>(
-    path: P,
+pub enum WatcherMsg {
+    Start(PathBuf),
+    Stop(PathBuf),
+}
+
+/// Creates an async watch, looking for relevant ABI files to index
+/// Starts with no directories, and receives start/stop events for each individual directory to
+/// watch/unwatch
+pub(super) async fn async_watch(
     snd: mpsc::UnboundedSender<Match>,
+    mut rcv: mpsc::UnboundedReceiver<WatcherMsg>,
 ) -> notify::Result<()> {
+    // TODO: listen to the killer
     let (mut watcher, mut rx) = async_watcher()?;
 
-    // Add a path to be watched. All files and directories at that path and
-    // below will be monitored for changes.
-    watcher.watch(path.as_ref(), RecursiveMode::Recursive)?;
-
-    while let Some(res) = rx.recv().await {
-        match res {
-            Ok(event) => {
-                // convert event to a match, notify if successful
-                if let Ok(m) = event.try_into() {
-                    snd.send(m).unwrap();
+    loop {
+        tokio::select! {
+            Some(msg) = rcv.recv() => {
+                match msg {
+                    WatcherMsg::Start(path) => watcher.watch(&path, RecursiveMode::Recursive)?,
+                    WatcherMsg::Stop(path) => watcher.unwatch(&path)?,
                 }
             }
-            Err(e) => tracing::warn!("watch error: {:?}", e),
+
+            msg = rx.recv() => {
+                match msg {
+                    Some(Ok(event)) => {
+                        // convert event to a match, notify if successful
+                        if let Ok(m) = event.try_into() {
+                            snd.send(m).unwrap();
+                        }
+                    }
+
+                    Some(Err(e)) => {
+                        tracing::warn!("watch error: {:?}", e)
+                    }
+
+                    _ => {}
+                }
+            }
         }
     }
-
-    Ok(())
 }
 
 fn async_watcher() -> notify::Result<(RecommendedWatcher, Receiver<notify::Result<Event>>)> {

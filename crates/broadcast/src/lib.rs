@@ -10,6 +10,7 @@ use url::Url;
 pub enum InternalMsg {
     ChainChanged(u32, Option<String>, Affinity),
     AccountsChanged(Vec<ChecksummedAddress>),
+    SettingsUpdated,
 
     ResetAnvilListener { chain_id: u32, http: Url, ws: Url },
 
@@ -55,6 +56,11 @@ mod internal_msgs {
     /// Broadcasts `AccountsChanged` events
     pub async fn accounts_changed(addresses: Vec<ChecksummedAddress>) {
         send(AccountsChanged(addresses)).await;
+    }
+
+    /// Broadcasts `SettingsUpdated` events
+    pub async fn settings_updated() {
+        send(SettingsUpdated).await;
     }
 
     /// Requests a reset of the anvil listener for a given chain_id
