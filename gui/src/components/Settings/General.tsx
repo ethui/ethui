@@ -21,8 +21,35 @@ import { useSettings } from "@/store";
 
 export const schema = z.object({
   darkMode: z.enum(["auto", "dark", "light"]),
-  alchemyApiKey: z.string().optional().nullable(),
-  etherscanApiKey: z.string().optional().nullable(),
+  alchemyApiKey: z
+    .string()
+    .optional()
+    .nullable()
+    .superRefine(async (key, ctx) => {
+      if (!key) return;
+      const valid = await invoke("settings_test_alchemy_api_key", { key });
+      if (valid) return;
+
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Invalid key",
+      });
+    }),
+  etherscanApiKey: z
+    .string()
+    .optional()
+    .nullable()
+
+    .superRefine(async (key, ctx) => {
+      if (!key) return;
+      const valid = await invoke("settings_test_etherscan_api_key", { key });
+      if (valid) return;
+
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Invalid key",
+      });
+    }),
   hideEmptyTokens: z.boolean(),
   onboarded: z.boolean(),
   fastMode: z.boolean(),

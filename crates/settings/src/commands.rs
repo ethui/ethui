@@ -38,3 +38,13 @@ pub async fn settings_get_alias(address: ChecksummedAddress) -> Option<String> {
 pub async fn settings_set_alias(address: ChecksummedAddress, alias: Option<String>) {
     Settings::write().await.set_alias(address, alias)
 }
+
+#[tauri::command]
+pub async fn settings_test_alchemy_api_key(key: String) -> bool {
+    crate::utils::test_alchemy_api_key(key).await
+}
+
+#[tauri::command]
+pub async fn settings_test_etherscan_api_key(key: String) -> bool {
+    crate::utils::test_etherscan_api_key(key).await
+}
