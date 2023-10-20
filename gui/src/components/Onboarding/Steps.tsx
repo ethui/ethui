@@ -95,27 +95,25 @@ function LiveBlockchainsStep({
         >
           alchemy.com
         </Link>{" "}
-        is recommended. Insert your personal API below.
+        is recommended. Go to your{" "}
+        <Link
+          underline="hover"
+          href="https://dashboard.alchemy.com/apps"
+          target="_blank"
+          rel="nofollow noopener noreferrer"
+        >
+          Alchemy dashboard
+        </Link>{" "}
+        and grab an API key.
       </Typography>
-      <Stack spacing={1} direction={"row"} alignItems={"center"}>
-        <TextField
-          label="API Key"
-          fullWidth
-          type="text"
-          variant="outlined"
-          onChange={onChange}
-          value={formData.alchemyApiKey}
-        />
-        <Tooltip title="Alchemy Apps Dashboard">
-          <IconButton
-            href="https://dashboard.alchemy.com/apps"
-            target="_blank"
-            rel="nofollow noopener noreferrer"
-          >
-            <OpenInNew></OpenInNew>
-          </IconButton>
-        </Tooltip>
-      </Stack>
+      <TextField
+        label="API Key"
+        fullWidth
+        type="text"
+        variant="outlined"
+        onChange={onChange}
+        value={formData.alchemyApiKey}
+      />
     </Stack>
   );
 }
