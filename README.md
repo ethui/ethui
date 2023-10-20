@@ -30,12 +30,12 @@ A developer's crypto wallet. Iron has the usual functionality of a crypto wallet
 - **anvil-aware**: iron uses a dedicated syncing process for local anvil nodes, enabling real-time syncing which works across chain restarts, reverts, and downtime. No longer should you have to manually reset the `nonce` in your wallet
 - **foundry-aware**: the wallet finds existing `forge` outputs in your filesystem, and matches them against on-chain bytecode to create a built-in explorer akin to Etherscan's contract interaction tool
 - **multiple wallets**: Iron is not restricted to a single mnemonic. Create as many wallets as you want, and switch seamlessly between them
-- **Desktop-native experience**: no longer tied to a browser's sandbox. Your wallet is now reachable across your entire system, and you can even use as a proxing for your scripting RPC needs
+- **Desktop-native experience**: no longer tied to a browser's sandbox. Your wallet is now reachable across your entire system, and you can even use it as a proxy for your scripting RPC needs
 - **quick keyboard-based navigation**: A command bar reachable via `Cmd+K` / `Ctrl+K` provides quick access to all of the major actions
 
 ## Status
 
-Iron is in active development, but the existing features are more than to provide an enhanced developer exprience over consumer-facing wallets.
+Iron is in active development, but the existing features are more than to provide an enhanced developer experience over consumer-facing wallets.
 
 ## Installing
 
