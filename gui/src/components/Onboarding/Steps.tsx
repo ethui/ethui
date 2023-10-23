@@ -1,4 +1,4 @@
-import { Link, Stack, TextField, Typography } from "@mui/material";
+import { Box, Link, Stack, TextField, Typography } from "@mui/material";
 import { ChangeEvent } from "react";
 
 import { type WizardFormData } from "./";
@@ -22,6 +22,10 @@ export const steps = [
   {
     title: "Live blockchains",
     component: LiveBlockchainsStep,
+  },
+  {
+    title: "Install extension",
+    component: InstallExtensionStep,
   },
   {
     title: "Thank you!",
@@ -97,6 +101,33 @@ function LiveBlockchainsStep({
         onChange={onChange}
         value={formData.alchemyApiKey}
       />
+    </Stack>
+  );
+}
+
+function InstallExtensionStep() {
+  return (
+    <Stack spacing={3}>
+      <Typography component="p">
+        Iron requires it&apos;s browser extension to be installed:
+      </Typography>
+      <Box component="ol">
+        <Typography component="li">
+          Ensure the{" "}
+          <Link
+            underline="hover"
+            href="https://chrome.google.com/webstore/detail/iron-wallet/eljobehkpcnpekmbcjiidekjhkbcnpkf"
+            target="_blank"
+            rel="nofollow noopener noreferrer"
+          >
+            extension
+          </Link>{" "}
+          is installed;
+        </Typography>
+        <Typography component="li">
+          Go to a website [such as uniswap] and connect.
+        </Typography>
+      </Box>
     </Stack>
   );
 }
