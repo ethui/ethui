@@ -109,7 +109,7 @@ function InstallExtensionStep() {
   return (
     <Stack spacing={3}>
       <Typography component="p">
-        Iron requires it&apos;s browser extension to be installed:
+        Iron requires its browser extension to be installed:
       </Typography>
       <Box component="ol">
         <Typography component="li">
