@@ -137,7 +137,7 @@ function CreateTestWalletStep({ formData, setFormData }: Props) {
   };
 
   return (
-    <Stack spacing={3} mb={!!validationError ? -2.4 : 0}>
+    <Stack spacing={3}>
       <Typography component="p">
         Iron is prepared to connect to{" "}
         <Link
