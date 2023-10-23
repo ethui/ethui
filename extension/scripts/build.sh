@@ -31,6 +31,7 @@ while [ : ]; do
   esac
 done
 
+
 #
 # building
 #
@@ -50,7 +51,12 @@ yarn run vite build --config vite/background.ts
 # choose manifest
 mv $DIST_DIR/manifest-$target.json $DIST_DIR/manifest.json
 rm $DIST_DIR/manifest-*.json
-sed -i 's/%VERSION%/'$version'/g' $DIST_DIR/manifest.json
+
+SED_ARGS="-i"
+if [ "$(uname -s)" == "Darwin" ]; then
+  SED_ARGS='-i ""'
+fi
+sed $SED_ARGS "s/%VERSION%/$version/g" $DIST_DIR/manifest.json
 
 # create zip
 (cd $DIST_DIR && zip -r ../$basename.zip .)
