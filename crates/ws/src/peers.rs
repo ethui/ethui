@@ -142,4 +142,8 @@ impl Peers {
             acc
         })
     }
+
+    pub fn all(&self) -> Vec<Peer> {
+        self.map.values().cloned().collect()
+    }
 }

@@ -18,6 +18,15 @@ export async function init() {
   browser.runtime.onConnect.addListener((remotePort: Runtime.Port) => {
     setupProviderConnection(remotePort);
   });
+
+  // testing
+  browser.runtime.onMessageExternal.addListener(
+    async (msg, sender, sendResponse) => {
+      console.log("BG page received message", msg, "from", sender);
+      console.log("Stored data", await browser.storage.local.get());
+      return { response: "response from background script" };
+    },
+  );
 }
 
 /**

@@ -8,3 +8,8 @@ use crate::{Peer, Peers};
 pub async fn ws_peers_by_domain() -> HashMap<String, Vec<Peer>> {
     Peers::read().await.all_by_domain()
 }
+
+#[tauri::command]
+pub async fn ws_all_peers() -> Vec<Peer> {
+    Peers::read().await.all()
+}

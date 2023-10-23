@@ -47,6 +47,8 @@ async fn accept_connection(socket: SocketAddr, stream: TcpStream) {
 
     let peer = Peer::new(socket, snd, &query_params);
 
+    dbg!(peer.clone());
+
     Peers::write().await.add_peer(peer.clone()).await;
     let err = handle_connection(peer, ws_stream, rcv).await;
     Peers::write().await.remove_peer(socket).await;
@@ -84,6 +86,9 @@ async fn handle_connection(
                 match msg {
                     Some(msg)=>{
                         let msg = msg?;
+
+                        dbg!(msg.clone());
+
                         if let Message::Pong(_) = msg {
                             continue;
                         }
@@ -100,6 +105,7 @@ async fn handle_connection(
             msg = rcv.recv() =>{
                 match msg {
                     Some(msg)=>{
+                        dbg!(msg.clone());
                         ws_sender.send(msg.to_string().into()).await?;
                     },
                     None=>{

@@ -183,6 +183,15 @@ export interface Tx {
   status: number;
 }
 
+export interface Peer {
+  origin: string;
+  tab_id?: number;
+  title?: string;
+  socket: string;
+  url: string;
+  favicon: string;
+}
+
 export interface Pagination {
   page?: number;
   page_size?: number;

@@ -2,6 +2,8 @@ import { Box, Link, Stack, TextField, Typography } from "@mui/material";
 import { ChangeEvent } from "react";
 
 import { type WizardFormData } from "./";
+import { useInvoke } from "@/hooks";
+import { Peer } from "@/types";
 
 export type Step = {
   title: string;
@@ -106,6 +108,10 @@ function LiveBlockchainsStep({
 }
 
 function InstallExtensionStep() {
+  const { data: peers } =
+    useInvoke<Peer[]>("ws_all_peers");
+
+
   return (
     <Stack spacing={3}>
       <Typography component="p">
@@ -128,6 +134,9 @@ function InstallExtensionStep() {
           Go to a website [such as uniswap] and connect.
         </Typography>
       </Box>
+      <Typography component="p">
+        {peers?.length > 0 ? "sim" : "nao"}
+      </Typography>
     </Stack>
   );
 }
