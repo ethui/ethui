@@ -31,11 +31,6 @@ while [ : ]; do
   esac
 done
 
-SED_ARGS="-i"
-
-if [ "$(uname -s)" == "Darwin" ]; then
-  SED_ARGS='-i ""'
-fi
 
 #
 # building
@@ -57,6 +52,10 @@ yarn run vite build --config vite/background.ts
 mv $DIST_DIR/manifest-$target.json $DIST_DIR/manifest.json
 rm $DIST_DIR/manifest-*.json
 
+SED_ARGS="--in-place"
+if [ "$(uname -s)" == "Darwin" ]; then
+  SED_ARGS='--in-place ""'
+fi
 sed $SED_ARGS "s/%VERSION%/$version/g" $DIST_DIR/manifest.json
 
 # create zip
