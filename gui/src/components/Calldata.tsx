@@ -1,5 +1,4 @@
-import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { Box, Tab } from "@mui/material";
+import { Chip, Stack } from "@mui/material";
 import { Abi, Address } from "abitype";
 import { useState } from "react";
 import JsonView from "react18-json-view";
@@ -16,11 +15,7 @@ interface Props {
 }
 
 export function CalldataView({ data, contract, chainId }: Props) {
-  const [tab, setTab] = useState("1");
-
-  const handleTabChange = (_e: React.SyntheticEvent, newTab: string) => {
-    setTab(newTab);
-  };
+  const [tab, setTab] = useState("hex");
 
   const { data: abi } = useInvoke<Abi>("get_contract_abi", {
     address: contract,
@@ -36,21 +31,33 @@ export function CalldataView({ data, contract, chainId }: Props) {
   }
 
   return (
-    <TabContext value={tab}>
-      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-        <TabList onChange={handleTabChange} aria-label="lab API tabs example">
-          <Tab label="Hex" value="1" />
-          {decoded && <Tab label="Json" value="2" />}
-        </TabList>
-      </Box>
-      <TabPanel value="1">
-        <MonoText>{data}</MonoText>
-      </TabPanel>
-      {decoded && (
-        <TabPanel value="2">
-          <JsonView src={decoded} theme="default" />
-        </TabPanel>
-      )}
-    </TabContext>
+    <>
+      <Stack direction="row" spacing={1}>
+        <TabChip label="Hex" value="hex" onClick={setTab} current={tab} />
+        {decoded && (
+          <TabChip label="Json" value="json" onClick={setTab} current={tab} />
+        )}
+      </Stack>
+      {tab == "hex" && <MonoText>{data}</MonoText>}
+      {tab == "json" && <JsonView src={decoded} theme="default" />}
+    </>
+  );
+}
+
+interface TabChipProps {
+  label: string;
+  value: string;
+  current: string;
+  onClick: (value: string) => void;
+}
+
+function TabChip({ label, value, onClick, current }: TabChipProps) {
+  return (
+    <Chip
+      label={label}
+      size="small"
+      onClick={() => onClick(value)}
+      variant={current == value ? "filled" : "outlined"}
+    />
   );
 }
