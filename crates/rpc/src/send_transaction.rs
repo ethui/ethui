@@ -55,7 +55,8 @@ impl<'a> SendTransaction<'a> {
     }
 
     async fn spawn_dialog(&mut self) -> Result<()> {
-        let params = serde_json::to_value(&self.request).unwrap();
+        let mut params = serde_json::to_value(&self.request).unwrap();
+        params["chainId"] = self.network.chain_id.into();
 
         let dialog = Dialog::new("tx-review", params);
         dialog.open().await?;

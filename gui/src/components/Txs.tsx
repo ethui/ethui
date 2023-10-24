@@ -19,12 +19,12 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import truncateEthAddress from "truncate-eth-address";
-import { formatEther, formatGwei } from "viem";
+import { Address, formatEther, formatGwei } from "viem";
 import { useTransaction, useWaitForTransaction } from "wagmi";
 
 import { useEventListener } from "@/hooks";
 import { useNetworks, useWallets } from "@/store";
-import { Address, Paginated, Pagination, Tx } from "@/types";
+import { Paginated, Pagination, Tx } from "@/types";
 
 import { AddressView, ContextMenu, Panel } from "./";
 import { CalldataView } from "./Calldata";

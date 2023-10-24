@@ -1,9 +1,8 @@
 pub use internal_msgs::*;
-pub use ui_msgs::*;
-
 use iron_types::{ui_events, Affinity, ChecksummedAddress};
 use once_cell::sync::Lazy;
 use tokio::sync::{broadcast, RwLock};
+pub use ui_msgs::*;
 use url::Url;
 
 /// Supported messages
