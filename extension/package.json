@@ -39,6 +39,6 @@
     "mipd": "^0.0.5",
     "stream": "^0.0.2",
     "webextension-polyfill": "^0.10.0",
-    "websocket-ts": "^1.1.1"
+    "websocket-ts": "^2.1.5"
   }
 }
