@@ -1,8 +1,10 @@
 use std::str::FromStr;
 
-use ethers::etherscan;
-use ethers::providers::{Http, Middleware, Provider};
-use ethers::types::{Address, Chain};
+use ethers::{
+    etherscan,
+    providers::{Http, Middleware, Provider},
+    types::{Address, Chain},
+};
 
 pub async fn test_alchemy_api_key(key: String) -> bool {
     let provider =

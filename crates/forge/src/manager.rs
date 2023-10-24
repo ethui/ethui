@@ -2,13 +2,15 @@
 
 use std::{collections::BTreeMap, path::PathBuf};
 
-use crate::abi::Abi;
-use crate::error::Result;
-use crate::global::FORGE;
 use ethers::types::Bytes;
 use tokio::{spawn, sync::mpsc};
 
-use crate::watcher::{self, Match};
+use crate::{
+    abi::Abi,
+    error::Result,
+    global::FORGE,
+    watcher::{self, Match},
+};
 
 pub struct Forge {
     pub(crate) watch_path: Option<PathBuf>,
