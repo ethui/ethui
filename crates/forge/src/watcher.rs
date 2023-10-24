@@ -30,7 +30,6 @@ pub(super) async fn async_watch(
     snd: mpsc::UnboundedSender<Match>,
     mut rcv: mpsc::UnboundedReceiver<WatcherMsg>,
 ) -> notify::Result<()> {
-    // TODO: listen to the killer
     let (mut watcher, mut rx) = async_watcher()?;
 
     loop {

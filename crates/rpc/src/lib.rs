@@ -76,8 +76,6 @@ impl Handler {
         provider_handler!("eth_protocolVersion");
         provider_handler!("eth_syncing");
         provider_handler!("eth_mining");
-
-        // TODO: handle this one internally
         provider_handler!("net_version");
 
         // history methods
@@ -177,6 +175,8 @@ impl Handler {
         let network = ctx.network().await;
         let wallet = wallets.get_current_wallet();
 
+        // TODO: send correct path instead of hardcode to current
+        // TODO: check that requested wallet is authorized
         let mut sender = SendTransaction::build()
             .set_wallet(wallet)
             .set_wallet_path(wallet.get_current_path())

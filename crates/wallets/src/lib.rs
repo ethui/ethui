@@ -77,6 +77,8 @@ impl Wallets {
         let wallet = Wallet::create(params).await?;
         let addresses = wallet.get_all_addresses().await;
 
+        self.ensure_no_duplicates_of(&wallet.name())?;
+
         // TODO: ensure no duplicates
         self.wallets.push(wallet);
 
@@ -91,8 +93,11 @@ impl Wallets {
     }
 
     async fn update(&mut self, name: String, params: Json) -> Result<()> {
-        // TODO: should fail if no wallet of that name exists
-        let i = self.wallets.iter().position(|w| w.name() == name).unwrap();
+        let i = self
+            .wallets
+            .iter()
+            .position(|w| w.name() == name)
+            .ok_or(Error::InvalidWalletName(name))?;
 
         let before = self.wallets[i].get_all_addresses().await;
         self.wallets[i] = self.wallets[i].clone().update(params).await?;
@@ -198,5 +203,12 @@ impl Wallets {
     async fn notify_peers(&self) {
         let addresses = vec![self.get_current_wallet().get_current_address().await];
         iron_broadcast::accounts_changed(addresses).await;
+    }
+
+    fn ensure_no_duplicates_of(&self, name: &str) -> Result<()> {
+        if self.wallets.iter().any(|w| w.name() == name) {
+            return Err(Error::DuplicateWalletNames(name.to_owned()));
+        }
+        Ok(())
     }
 }

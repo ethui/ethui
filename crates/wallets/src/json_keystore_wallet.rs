@@ -59,7 +59,7 @@ impl WalletControl for JsonKeystoreWallet {
         let reader = BufReader::new(file);
         let mut res: serde_json::Value = serde_json::from_reader(reader).unwrap();
 
-        // TODO: this should be fail correctly
+        // TODO: this should fail correctly
         let address: Address = Address::from_str(res["address"].take().as_str().unwrap()).unwrap();
 
         address.into()

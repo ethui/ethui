@@ -137,33 +137,18 @@ impl Alchemy {
             return Ok(Default::default());
         }
 
-        // TODO: pagination?
-        let outgoing: Transfers = (client
-            .request(
-                "alchemy_getAssetTransfers",
-                json!([{
-                    "fromBlock": format!("0x{:x}", from_block),
-                    "toBlock": format!("0x{:x}",latest),
-                    "maxCount": "0x64",
-                    "fromAddress": format!("0x{:x}", addr),
-                    "category": ["external", "internal", "erc20", "erc721", "erc1155"],
-                }]),
-            )
-            .await)?;
+        let params = json!([{
+            "fromBlock": format!("0x{:x}", from_block),
+            "toBlock": format!("0x{:x}",latest),
+            "maxCount": "0x32",
+            "fromAddress": format!("0x{:x}", addr),
+            "category": ["external", "internal", "erc20", "erc721", "erc1155"],
+        }]);
 
-        // TODO: pagination?
-        let incoming: Transfers = (client
-            .request(
-                "alchemy_getAssetTransfers",
-                json!([{
-                    "fromBlock": format!("0x{:x}", from_block),
-                    "toBlock": format!("0x{:x}",latest),
-                    "toAddress": format!("0x{:x}", addr),
-                    "maxCount": "0x64",
-                    "category": ["external", "internal", "erc20", "erc721", "erc1155"],
-                }]),
-            )
+        let outgoing: Transfers = (client
+            .request("alchemy_getAssetTransfers", params.clone())
             .await)?;
+        let incoming: Transfers = (client.request("alchemy_getAssetTransfers", params).await)?;
 
         trace!(
             event = "fetched",

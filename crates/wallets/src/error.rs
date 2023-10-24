@@ -6,6 +6,9 @@ pub enum Error {
     #[error("duplicate wallet names `{0}`")]
     DuplicateWalletNames(String),
 
+    #[error("invalid wallet name `{0}`")]
+    InvalidWalletName(String),
+
     #[error("invalid wallet index {0}")]
     InvalidWallet(usize),
 
