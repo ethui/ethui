@@ -1,9 +1,18 @@
-import { Box, Link, Stack, TextField, Typography } from "@mui/material";
-import { ChangeEvent } from "react";
+import {
+  Alert,
+  Box,
+  CircularProgress,
+  Link,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { ChangeEvent, useEffect, useState } from "react";
 
-import { type WizardFormData } from "./";
 import { useInvoke } from "@/hooks";
 import { Peer } from "@/types";
+
+import { type WizardFormData } from "./";
 
 export type Step = {
   title: string;
@@ -108,13 +117,17 @@ function LiveBlockchainsStep({
 }
 
 function InstallExtensionStep() {
-  const { data: peers } =
-    useInvoke<Peer[]>("ws_all_peers");
+  const [loading, setLoading] = useState<boolean>(true);
 
+  const { data: peers } = useInvoke<Peer[]>("ws_all_peers");
+
+  useEffect(() => {
+    setLoading(peers?.length == 0);
+  }, [peers]);
 
   return (
-    <Stack spacing={3}>
-      <Typography component="p">
+    <Stack spacing={2} alignItems={"center"}>
+      <Typography width={"100%"} component="p">
         Iron requires its browser extension to be installed:
       </Typography>
       <Box component="ol">
@@ -131,12 +144,23 @@ function InstallExtensionStep() {
           is installed;
         </Typography>
         <Typography component="li">
-          Go to a website [such as uniswap] and connect.
+          Go to a website (such as{" "}
+          <Link
+            underline="hover"
+            href="https://app.uniswap.org/"
+            target="_blank"
+            rel="nofollow noopener noreferrer"
+          >
+            Uniswap
+          </Link>
+          ) and connect.
         </Typography>
       </Box>
-      <Typography component="p">
-        {peers?.length > 0 ? "sim" : "nao"}
-      </Typography>
+      {loading ? (
+        <CircularProgress size={30} />
+      ) : (
+        <Alert severity="success">Extension detected!</Alert>
+      )}
     </Stack>
   );
 }

@@ -143,7 +143,7 @@ impl Peers {
         })
     }
 
-    pub fn all(&self) -> Vec<Peer> {
+    pub fn all_peers(&self) -> Vec<Peer> {
         self.map.values().cloned().collect()
     }
 }
