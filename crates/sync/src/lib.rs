@@ -248,6 +248,9 @@ async fn unit_worker(
                     iron_broadcast::ui_notify(UINotify::BalancesUpdated).await;
                 }
             }
+            Err(iron_sync_alchemy::Error::NoAPIKey) => {
+                // silently ignore
+            }
             Err(err) => {
                 error!(call = "txs", err = err.to_string());
             }

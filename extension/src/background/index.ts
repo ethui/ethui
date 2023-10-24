@@ -1,5 +1,5 @@
 import browser, { type Runtime } from "webextension-polyfill";
-import { ConstantBackoff, Websocket, WebsocketBuilder } from "websocket-ts";
+import { ArrayQueue, ConstantBackoff, WebsocketBuilder } from "websocket-ts";
 
 import { defaultSettings, loadSettings, type Settings } from "@/settings";
 
@@ -28,39 +28,19 @@ export async function init() {
  * This behaviour prevents initiating connections for browser tabs where `window.ethereum` is not actually used
  */
 export function setupProviderConnection(port: Runtime.Port) {
-  // the future connection
-  let ws: Websocket | undefined;
-
-  // because of the lazy connection, there is a slight delay between the first request being sent from the page,
-  // and the WS connection being ready to receive it.
-  // During that period, we keep a backlog of pending msgs to flush once the connection is ready
-  const backlog: unknown[] = [];
-
-  // pre-build the websocket connection
-  // not actually buit until the first message arrives
-  const wsBuilder = new WebsocketBuilder(endpoint(port))
+  const ws = new WebsocketBuilder(endpoint(port))
+    .withBuffer(new ArrayQueue())
     .withBackoff(new ConstantBackoff(1000))
-    .onOpen((instance, _event) => {
-      // connection is ready. set the upper `ws` value, and flush the backlog
-      ws = instance;
-      backlog.map((data) => instance.send(JSON.stringify(data)));
-    })
     .onMessage((_ins, event) => {
       // forward WS server messages back to the stream (content script)
       const data = JSON.parse(event.data);
       port.postMessage(data);
-    });
+    })
+    .build();
 
   // forwarding incoming stream data to the WS server
   port.onMessage.addListener((data: unknown) => {
-    if (!ws) {
-      // connection not ready yet: push to backlog and initiate connection
-      backlog.push(data);
-      wsBuilder.build();
-    } else {
-      // connection is ready, forward the message normaly
-      ws.send(JSON.stringify(data));
-    }
+    ws.send(JSON.stringify(data));
   });
 }
 

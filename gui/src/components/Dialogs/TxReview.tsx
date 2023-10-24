@@ -4,16 +4,22 @@ import { useEffect, useState } from "react";
 import JsonView from "react18-json-view";
 import { Address, formatEther } from "viem";
 
-import { AddressView, ContextMenu, Datapoint, MonoText } from "@/components";
+import {
+  AddressView,
+  CalldataView,
+  ContextMenu,
+  Datapoint,
+} from "@/components";
 import { useDialog } from "@/hooks";
 
 import { DialogLayout } from "./Layout";
 
 export interface TxRequest {
-  data: string;
-  from: string;
-  to: string;
+  data: `0x${string}`;
+  from: Address;
+  to: Address;
   value: string;
+  chainId: number;
 }
 
 interface Log {
@@ -47,7 +53,7 @@ export function TxReviewDialog({ id }: { id: number }) {
 
   if (!data) return null;
 
-  const { from, to, value: valueStr, data: calldata } = data;
+  const { from, to, value: valueStr, data: calldata, chainId } = data;
   const value = BigInt(valueStr || 0);
 
   return (
@@ -71,9 +77,7 @@ export function TxReviewDialog({ id }: { id: number }) {
         </TabList>
 
         <TabPanel value="1" sx={{ flexGrow: 1, overflowY: "auto", px: 0 }}>
-          <Box sx={{}}>
-            <MonoText>{calldata}</MonoText>
-          </Box>
+          <CalldataView data={calldata} contract={to} chainId={chainId} />
         </TabPanel>
 
         <TabPanel value="2" sx={{ flexGrow: 1, overflowY: "auto", px: 0 }}>

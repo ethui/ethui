@@ -4,7 +4,7 @@ use crate::Ctx;
 
 mod contracts;
 mod rpc;
-mod simulator;
+mod transactions;
 
 #[cfg(feature = "http-insecure-endpoints")]
 mod connections;
@@ -21,8 +21,6 @@ mod settings;
 #[cfg(feature = "http-insecure-endpoints")]
 mod sync;
 #[cfg(feature = "http-insecure-endpoints")]
-mod transactions;
-#[cfg(feature = "http-insecure-endpoints")]
 mod wallets;
 #[cfg(feature = "http-insecure-endpoints")]
 mod ws;
@@ -36,7 +34,7 @@ pub(crate) fn router() -> Router<Ctx> {
 #[cfg(not(feature = "http-insecure-endpoints"))]
 fn iron_routes() -> Router<Ctx> {
     Router::new()
-        .nest("/simulator", simulator::router())
+        .nest("/transactions", transactions::router())
         .nest("/contracts", contracts::router())
 }
 
@@ -47,7 +45,6 @@ fn iron_routes() -> Router<Ctx> {
         .nest("/contracts", contracts::router())
         .nest("/db", db::router())
         .nest("/forge", forge::router())
-        .nest("/simulator", simulator::router())
         .nest("/settings", settings::router())
         .nest("/sync", sync::router())
         .nest("/transactions", transactions::router())

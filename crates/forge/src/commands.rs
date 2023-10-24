@@ -2,9 +2,8 @@ use ethers::{abi::Abi, providers::Middleware};
 use iron_networks::Networks;
 use iron_types::{Address, GlobalState};
 
-use crate::global::FORGE;
-
 use super::{Error, Result};
+use crate::global::FORGE;
 
 /// Gets the ABI, if known, for a given address and chain_id
 #[tauri::command]

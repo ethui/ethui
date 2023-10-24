@@ -26,11 +26,16 @@ export function ABIForm({ chainId, address }: Props) {
 
   const options = abi
     .filter(({ type }) => type === "function")
-    .map((item, i) => ({
-      item: item as AbiFunction,
-      label: formatAbiItem(item),
-      id: i,
-    }));
+    .map((item, i) => {
+      item = item as AbiFunction;
+      return {
+        item,
+        label: formatAbiItem(item).replace("function ", ""),
+        group: item.stateMutability === "view" ? "view" : "write",
+        id: i,
+      };
+    })
+    .sort((a, b) => -a.group.localeCompare(b.group));
 
   const handleChange = (
     _event: SyntheticEvent,
@@ -42,7 +47,9 @@ export function ABIForm({ chainId, address }: Props) {
   return (
     <Stack alignItems="flex-start" spacing={2}>
       <Autocomplete
+        selectOnFocus
         sx={{ minWidth: "100%" }}
+        groupBy={(option) => option.group}
         options={options}
         onChange={handleChange}
         isOptionEqualToValue={(option, value) => option.id === value.id}
