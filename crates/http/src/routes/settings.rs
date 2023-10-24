@@ -31,7 +31,7 @@ pub(crate) struct SetSettings {
 }
 
 pub(crate) async fn set_settings(
-    Json(payload): Json<serde_json::Map<String, serde_json::Value>>,
+    Json(payload): Json<SetSettings>,
 ) -> Result<()> {
     iron_settings::commands::settings_set(payload.new_settings).await?;
 
