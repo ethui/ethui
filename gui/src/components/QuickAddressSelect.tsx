@@ -6,13 +6,13 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import { map } from "lodash-es";
+import { Address } from "viem";
 
 import { useInvoke } from "@/hooks";
 import { useWallets } from "@/store";
 import { Wallet } from "@/types";
 
 import { AddressView } from "./";
-import { Address } from "viem";
 
 export function QuickAddressSelect() {
   const [currentWallet, setCurrentAddress] = useWallets((s) => [
