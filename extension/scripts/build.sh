@@ -52,11 +52,11 @@ yarn run vite build --config vite/background.ts
 mv $DIST_DIR/manifest-$target.json $DIST_DIR/manifest.json
 rm $DIST_DIR/manifest-*.json
 
-SED_ARGS="-i"
+sed_args=(-i)
 if [ "$(uname -s)" == "Darwin" ]; then
-  SED_ARGS='-i ""'
+  sed_args=(-i "")
 fi
-sed $SED_ARGS "s/%VERSION%/$version/g" $DIST_DIR/manifest.json
+sed "${sed_args[@]}" "s/%VERSION%/$version/g" $DIST_DIR/manifest.json
 
 # create zip
 (cd $DIST_DIR && zip -r ../$basename.zip .)

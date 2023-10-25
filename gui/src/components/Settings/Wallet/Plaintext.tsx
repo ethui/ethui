@@ -1,15 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Button,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormHelperText,
-  Stack,
-  Switch,
-  TextField,
-} from "@mui/material";
-import { Controller, FieldValues, useForm } from "react-hook-form";
+import { Button, Stack, TextField } from "@mui/material";
+import { FieldValues, useForm } from "react-hook-form";
 
 import { Wallet, walletSchema } from "@/types";
 
@@ -24,7 +15,6 @@ export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
     register,
     handleSubmit,
     reset,
-    control,
     formState: { isValid, isDirty, errors },
   } = useForm({
     mode: "onBlur",
@@ -50,33 +40,6 @@ export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
         helperText={errors.name?.message?.toString()}
         {...register("name")}
       />
-      <Stack spacing={2} direction="row">
-        <FormControl error={!!errors.dev}>
-          <FormGroup>
-            <FormControlLabel
-              label="Dev account"
-              control={
-                <Controller
-                  name="dev"
-                  control={control}
-                  render={({ field }) => {
-                    return (
-                      <Switch
-                        {...field}
-                        checked={field.value}
-                        onChange={(e) => field.onChange(e.target.checked)}
-                      />
-                    );
-                  }}
-                />
-              }
-            />
-          </FormGroup>
-          {errors.dev && (
-            <FormHelperText>{errors.dev.message?.toString()}</FormHelperText>
-          )}
-        </FormControl>
-      </Stack>
       <TextField
         label="Mnemonic"
         error={!!errors.mnemonic}
