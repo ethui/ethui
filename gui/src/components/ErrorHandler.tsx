@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material";
+import { Alert, Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { ErrorInfo, ReactNode } from "react";
 import { ErrorBoundary } from "react-error-boundary";
@@ -25,17 +25,19 @@ export function ErrorHandler({ children }: Props) {
 
 function Fallback({ error }: { error: Error }) {
   return (
-    <Panel>
-      <Typography>Something went wrong:</Typography>
-      <MonoText>
-        {error.toString()}
-        <br />
-        <br />
-        {formatStack(error.stack).map((line, i) => (
-          <div key={i}>{line}</div>
-        ))}
-      </MonoText>
-    </Panel>
+    <>
+      <Alert severity="error">Something went wrong</Alert>
+      <Panel>
+        <MonoText>
+          {error.toString()}
+          <br />
+          <br />
+          {formatStack(error.stack).map((line, i) => (
+            <div key={i}>{line}</div>
+          ))}
+        </MonoText>
+      </Panel>
+    </>
   );
 }
 
