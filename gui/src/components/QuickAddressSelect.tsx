@@ -6,10 +6,11 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import { map } from "lodash-es";
+import { Address } from "viem";
 
 import { useInvoke } from "@/hooks";
 import { useWallets } from "@/store";
-import { Address, Wallet } from "@/types";
+import { Wallet } from "@/types";
 
 import { AddressView } from "./";
 

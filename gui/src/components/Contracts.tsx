@@ -11,11 +11,11 @@ import {
   TextField,
 } from "@mui/material";
 import { FieldValues, useForm } from "react-hook-form";
+import { Address } from "viem";
 import { z } from "zod";
 
 import { useApi } from "@/hooks";
 import { useContracts, useNetworks } from "@/store";
-import { Address } from "@/types";
 
 import { ABIForm, AddressView, Panel } from "./";
 
