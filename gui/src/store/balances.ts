@@ -3,10 +3,11 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { Address, TokenBalance } from "@/types";
+import { TokenBalance } from "@/types";
 
 import { useNetworks } from "./networks";
 import { useWallets } from "./wallets";
+import { Address } from "viem";
 
 interface State {
   nativeBalance?: bigint;

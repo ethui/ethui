@@ -168,7 +168,6 @@ const emptyWallets: Record<Wallet["type"], Wallet & NewChild> = {
   plaintext: {
     type: "plaintext",
     name: "",
-    dev: false,
     mnemonic: "",
     derivationPath: "",
     count: 1,

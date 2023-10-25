@@ -15,9 +15,9 @@ import { z } from "zod";
 
 import { useApi } from "@/hooks";
 import { useContracts, useNetworks } from "@/store";
-import { Address } from "@/types";
 
 import { ABIForm, AddressView, Panel } from "./";
+import { Address } from "viem";
 
 export function Contracts() {
   const chainId = useNetworks((s) => s.current?.chain_id);

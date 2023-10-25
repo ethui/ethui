@@ -3,8 +3,9 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { Action } from "kbar";
 import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
+import { type Address } from "viem";
 
-import { Address, Wallet } from "@/types";
+import { Wallet } from "@/types";
 
 interface State {
   currentWallet?: Wallet;

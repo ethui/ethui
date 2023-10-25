@@ -17,12 +17,11 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import truncateEthAddress from "truncate-eth-address";
-import { formatUnits } from "viem";
+import { Address, formatUnits } from "viem";
 import { z } from "zod";
 
 import { useProvider } from "@/hooks";
 import {
-  Address,
   derivationPathSchema,
   hdWalletSchema,
   passwordFormSchema,

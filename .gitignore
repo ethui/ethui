@@ -12,3 +12,4 @@ extension/*.zip
 *.xpi
 *.crx
 *.pem
+.aider.*

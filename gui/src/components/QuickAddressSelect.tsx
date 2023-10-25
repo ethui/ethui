@@ -9,9 +9,10 @@ import { map } from "lodash-es";
 
 import { useInvoke } from "@/hooks";
 import { useWallets } from "@/store";
-import { Address, Wallet } from "@/types";
+import { Wallet } from "@/types";
 
 import { AddressView } from "./";
+import { Address } from "viem";
 
 export function QuickAddressSelect() {
   const [currentWallet, setCurrentAddress] = useWallets((s) => [
