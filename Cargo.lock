@@ -3658,6 +3658,7 @@ dependencies = [
  "tauri-plugin-window-state",
  "thiserror",
  "tokio",
+ "tracing",
 ]
 
 [[package]]

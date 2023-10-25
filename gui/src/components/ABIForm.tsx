@@ -4,10 +4,9 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { Abi, AbiFunction, formatAbiItem } from "abitype";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { encodeFunctionData } from "viem";
+import { Address, encodeFunctionData } from "viem";
 
 import { useApi, useProvider } from "@/hooks";
-import { Address } from "@/types";
 
 interface Props {
   chainId: number;

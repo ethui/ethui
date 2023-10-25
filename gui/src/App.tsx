@@ -10,6 +10,7 @@ import { Route, Router, Switch } from "wouter";
 import {
   CommandBar,
   DevBuildNotice,
+  ErrorHandler,
   HomePage,
   WagmiWrapper,
 } from "@/components";
@@ -41,14 +42,16 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <GlobalStyles styles={globalStyles} />
       <CssBaseline>
-        <QueryClientProvider client={queryClient}>
-          <DevBuildNotice />
-          <OnboardingWrapper>
-            <WagmiWrapper>
-              <Routes />
-            </WagmiWrapper>
-          </OnboardingWrapper>
-        </QueryClientProvider>
+        <ErrorHandler>
+          <QueryClientProvider client={queryClient}>
+            <DevBuildNotice />
+            <OnboardingWrapper>
+              <WagmiWrapper>
+                <Routes />
+              </WagmiWrapper>
+            </OnboardingWrapper>
+          </QueryClientProvider>
+        </ErrorHandler>
       </CssBaseline>
     </ThemeProvider>
   );

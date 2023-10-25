@@ -28,3 +28,4 @@ export { Settings } from "./Settings/";
 export { SettingsButton } from "./SettingsButton";
 export { Txs } from "./Txs";
 export { WagmiWrapper } from "./WagmiWrapper";
+export { ErrorHandler } from "./ErrorHandler";
