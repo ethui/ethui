@@ -11,13 +11,13 @@ import {
   TextField,
 } from "@mui/material";
 import { FieldValues, useForm } from "react-hook-form";
+import { Address } from "viem";
 import { z } from "zod";
 
 import { useApi } from "@/hooks";
 import { useContracts, useNetworks } from "@/store";
 
 import { ABIForm, AddressView, Panel } from "./";
-import { Address } from "viem";
 
 export function Contracts() {
   const chainId = useNetworks((s) => s.current?.chain_id);
