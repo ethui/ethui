@@ -3890,6 +3890,7 @@ dependencies = [
  "ethers",
  "iron-broadcast",
  "iron-db",
+ "iron-networks",
  "iron-sync-alchemy",
  "iron-sync-anvil",
  "iron-types",

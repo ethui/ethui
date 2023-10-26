@@ -64,6 +64,7 @@ impl IronApp {
                 iron_connections::commands::connections_affinity_for,
                 iron_connections::commands::connections_set_affinity,
                 iron_sync::commands::sync_alchemy_is_network_supported,
+                iron_sync::commands::sync_get_native_balance,
                 iron_simulator::commands::simulator_run
             ])
             .on_window_event(on_window_event)
