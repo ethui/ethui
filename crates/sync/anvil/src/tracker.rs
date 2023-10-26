@@ -125,6 +125,8 @@ async fn watch(
         .build(jsonrpc.clone(), Box::<AlwaysRetry>::default());
 
     'watcher: loop {
+        block_snd.send(Msg::Reset).map_err(|_| Error::Watcher)?;
+
         // retry forever
 
         // make a dummy request, retried forever
@@ -134,8 +136,6 @@ async fn watch(
             _ = quit_rcv.recv() => break 'watcher,
             Ok(res) = client.request::<_, U64>("eth_blockNumber", ()) => res
         };
-
-        block_snd.send(Msg::Reset).map_err(|_| Error::Watcher)?;
 
         let provider: Provider<Ws> = Provider::<Ws>::connect(&ctx.ws_url)
             .await?
@@ -203,7 +203,7 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
         match msg {
             Msg::Reset => {
                 ctx.db.truncate_events(ctx.chain_id).await?;
-                caught_up = false
+                caught_up = true
             }
             Msg::CaughtUp => caught_up = true,
             Msg::Traces(traces) => {
