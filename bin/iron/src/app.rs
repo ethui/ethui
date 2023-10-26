@@ -23,6 +23,7 @@ impl IronApp {
                 commands::get_version,
                 commands::get_contract_name,
                 commands::get_contract_abi,
+                commands::ui_error,
                 iron_settings::commands::settings_get,
                 iron_settings::commands::settings_set,
                 iron_settings::commands::settings_set_dark_mode,

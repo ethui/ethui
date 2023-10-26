@@ -1,5 +1,5 @@
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { Box, Button, Grid, Stack, Tab, Typography } from "@mui/material";
+import { Button, Grid, Stack, Tab, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import JsonView from "react18-json-view";
 import { Address, formatEther } from "viem";

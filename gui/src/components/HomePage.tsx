@@ -2,7 +2,7 @@ import { Route, Switch } from "wouter";
 
 import { useNoticeAlchemyKeyMissing, useNoticeNewVersion } from "@/hooks";
 
-import { Navbar, NestedRoutes } from "./";
+import { ErrorHandler, Navbar, NestedRoutes } from "./";
 import { DEFAULT_TAB, SidebarLayout, TABS } from "./Sidebar";
 
 export function HomePage() {
@@ -16,14 +16,18 @@ export function HomePage() {
           {TABS.map((tab) => (
             <Route key={tab.path} path={tab.path}>
               <>
-                <Navbar tab={tab} />
-                <tab.component />
+                <ErrorHandler>
+                  <Navbar tab={tab} />
+                  <tab.component />
+                </ErrorHandler>
               </>
             </Route>
           ))}
           <Route>
-            <Navbar tab={DEFAULT_TAB} />
-            <DEFAULT_TAB.component />
+            <ErrorHandler>
+              <Navbar tab={DEFAULT_TAB} />
+              <DEFAULT_TAB.component />
+            </ErrorHandler>
           </Route>
         </Switch>
       </NestedRoutes>
