@@ -70,7 +70,6 @@ impl DB {
             .await?)
     }
 
-    // TODO: Change this to an Into<T> of some kind, so we don't depend directly on AlchemyResponse here
     pub async fn save_erc20_balances(
         &self,
         chain_id: u32,
