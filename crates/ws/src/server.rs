@@ -84,7 +84,6 @@ async fn handle_connection(
                 match msg {
                     Some(msg)=>{
                         let msg = msg?;
-
                         if let Message::Pong(_) = msg {
                             continue;
                         }
