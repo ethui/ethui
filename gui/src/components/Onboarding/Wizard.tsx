@@ -31,10 +31,6 @@ export function OnboardingWizard({ closeOnboarding }: Props) {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
   const handleClose = async () => {
     if (formData.alchemyApiKey !== settings?.alchemyApiKey) {
       await invoke("settings_set", {
@@ -47,8 +43,6 @@ export function OnboardingWizard({ closeOnboarding }: Props) {
 
   useKeyPress(["ArrowRight"], { meta: true }, handleNext);
 
-  useKeyPress(["ArrowLeft"], { meta: true }, handleBack);
-
   return (
     <Box px={3}>
       <Box data-tauri-drag-region="true" pt={4}></Box>
@@ -57,7 +51,6 @@ export function OnboardingWizard({ closeOnboarding }: Props) {
         activeStep={activeStep}
         handleClose={handleClose}
         handleNext={handleNext}
-        handleBack={handleBack}
         formData={formData}
         setFormData={setFormData}
       />
@@ -67,8 +60,11 @@ export function OnboardingWizard({ closeOnboarding }: Props) {
           color="inherit"
           size="medium"
           onClick={handleClose}
+          sx={{
+            visibility: activeStep === steps.length - 1 ? "visible" : "hidden",
+          }}
         >
-          {activeStep === steps.length - 1 ? "Close" : "Skip Onboarding"}
+          Close
         </Button>
       </Box>
     </Box>

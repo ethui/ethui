@@ -1,4 +1,4 @@
-import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
+import { KeyboardArrowRight } from "@mui/icons-material";
 import {
   Box,
   Container,
@@ -6,7 +6,6 @@ import {
   MobileStepper,
   Stack,
   Typography,
-  useTheme,
 } from "@mui/material";
 
 import { type Step, type WizardFormData } from "./";
@@ -17,7 +16,6 @@ interface Props {
   formData: WizardFormData;
   handleClose: () => unknown;
   handleNext: () => unknown;
-  handleBack: () => unknown;
   setFormData: React.Dispatch<React.SetStateAction<WizardFormData>>;
 }
 
@@ -26,10 +24,8 @@ export function OnboardingCarousel({
   activeStep,
   formData,
   handleNext,
-  handleBack,
   setFormData,
 }: Props) {
-  const theme = useTheme();
   const maxSteps = steps.length;
   const step = steps[activeStep];
 
@@ -38,25 +34,10 @@ export function OnboardingCarousel({
       <Stack
         direction="row"
         alignItems="center"
-        justifyContent="center"
+        justifyContent="flex-end"
         spacing={{ xs: 3, sm: 8 }}
       >
-        <IconButton
-          size="medium"
-          onClick={handleBack}
-          disabled={activeStep === 0}
-          sx={{
-            visibility: activeStep === 0 ? "hidden" : "visible",
-            border: "1px solid currentColor",
-          }}
-        >
-          {theme.direction === "rtl" ? (
-            <KeyboardArrowRight />
-          ) : (
-            <KeyboardArrowLeft />
-          )}
-        </IconButton>
-        <Stack width="100%" alignItems="center">
+        <Stack width="65%" alignItems="center">
           <Typography variant="h6" component="h1" mb={1.5} alignSelf="start">
             {steps[activeStep].title}
           </Typography>
@@ -81,11 +62,7 @@ export function OnboardingCarousel({
             border: "1px solid currentColor",
           }}
         >
-          {theme.direction === "rtl" ? (
-            <KeyboardArrowLeft />
-          ) : (
-            <KeyboardArrowRight />
-          )}
+          <KeyboardArrowRight />
         </IconButton>
       </Stack>
     </Container>
