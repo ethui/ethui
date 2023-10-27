@@ -70,7 +70,7 @@ function HDWalletCreateForm({
   const [mnemonic, setMnemonic] = useState<string>("");
   const [derivationPath, setDerivationPath] = useState<string | null>(null);
   const [current, setCurrent] = useState<string | null>(null);
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState<string>("");
   const [submitted, setSubmitted] = useState<boolean>(false);
 
   useEffect(() => {
@@ -96,6 +96,20 @@ function HDWalletCreateForm({
     submitted,
   ]);
 
+  const resetForm = () => {
+    setStep(0);
+    setName("");
+    setMnemonic("");
+    setDerivationPath(null);
+    setCurrent(null);
+    setPassword("");
+  };
+
+  const handleCancel = () => {
+    resetForm();
+    onCancel();
+  };
+
   return (
     <Stack direction="column" spacing={2}>
       <Stepper activeStep={step} alternativeLabel>
@@ -112,7 +126,7 @@ function HDWalletCreateForm({
             setMnemonic(mnemonic);
             setStep(1);
           }}
-          onCancel={onCancel}
+          onCancel={handleCancel}
         />
       )}
 
@@ -122,7 +136,7 @@ function HDWalletCreateForm({
             setPassword(p);
             setStep(2);
           }}
-          onCancel={onCancel}
+          onCancel={handleCancel}
         />
       )}
 
@@ -133,7 +147,7 @@ function HDWalletCreateForm({
             setDerivationPath(derivationPath);
             setCurrent(current);
           }}
-          onCancel={onCancel}
+          onCancel={handleCancel}
         />
       )}
     </Stack>

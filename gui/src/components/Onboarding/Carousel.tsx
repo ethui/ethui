@@ -41,7 +41,12 @@ export function OnboardingCarousel({
           <Typography variant="h6" component="h1" mb={1.5} alignSelf="start">
             {steps[activeStep].title}
           </Typography>
-          <Box height={{ xs: "260px", sm: "180px" }} alignSelf="start">
+          <Box
+            width="100%"
+            pb={2.5}
+            minHeight={{ xs: "260px", sm: "180px" }}
+            alignSelf="start"
+          >
             <step.component setFormData={setFormData} formData={formData} />
           </Box>
           <MobileStepper
