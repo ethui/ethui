@@ -19,9 +19,11 @@ export type Step = {
   component: ({
     formData,
     setFormData,
+    setStepCompleted,
   }: {
     formData: WizardFormData;
     setFormData: React.Dispatch<React.SetStateAction<WizardFormData>>;
+    setStepCompleted: React.Dispatch<React.SetStateAction<boolean>>;
   }) => JSX.Element;
 };
 
@@ -116,14 +118,20 @@ function LiveBlockchainsStep({
   );
 }
 
-function InstallExtensionStep() {
+interface InstallExtensionStepProps {
+  setStepCompleted: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+function InstallExtensionStep({ setStepCompleted }: InstallExtensionStepProps) {
   const [loading, setLoading] = useState<boolean>(true);
 
   const { data: peers } = useInvoke<Peer[]>("ws_all_peers");
 
   useEffect(() => {
-    setLoading(peers?.length == 0);
-  }, [peers]);
+    const peerDetected = peers?.length != 0;
+    setLoading(!peerDetected);
+    setStepCompleted(peerDetected);
+  }, [peers, setStepCompleted]);
 
   return (
     <Stack spacing={2} alignItems={"center"}>
