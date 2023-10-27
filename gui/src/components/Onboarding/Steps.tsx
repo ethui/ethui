@@ -143,25 +143,16 @@ function InstallExtensionStep({ setStepCompleted }: InstallExtensionStepProps) {
           Ensure the{" "}
           <Link
             underline="hover"
-            href="https://chrome.google.com/webstore/detail/iron-wallet/eljobehkpcnpekmbcjiidekjhkbcnpkf"
+            href="https://iron-wallet.xyz/extension"
             target="_blank"
             rel="nofollow noopener noreferrer"
           >
-            extension
+            Iron Wallet extension
           </Link>{" "}
-          is installed;
+          is installed on your browser;
         </Typography>
-        <Typography component="li">
-          Go to a website (such as{" "}
-          <Link
-            underline="hover"
-            href="https://app.uniswap.org/"
-            target="_blank"
-            rel="nofollow noopener noreferrer"
-          >
-            Uniswap
-          </Link>
-          ) and connect.
+        <Typography gutterBottom component="li">
+          Connect the wallet to continue the onboarding.
         </Typography>
       </Box>
       {loading ? (
