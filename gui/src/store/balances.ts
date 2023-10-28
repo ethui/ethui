@@ -36,7 +36,7 @@ const store: StateCreator<Store> = (set, get) => ({
     if (!address || !chainId) return;
 
     const [native, erc20Balances] = await Promise.all([
-      invoke<string>("db_get_native_balance", { address, chainId }),
+      invoke<string>("sync_get_native_balance", { address, chainId }),
       invoke<TokenBalance[]>("db_get_erc20_balances", {
         address,
         chainId,

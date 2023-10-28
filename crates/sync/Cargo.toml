@@ -15,6 +15,7 @@ tauri = { workspace = true }
 iron-db = { workspace = true }
 iron-types = { workspace = true }
 iron-broadcast = { workspace = true }
+iron-networks = { workspace = true }
 
 ethers = { workspace = true }
 tokio = { workspace = true }
@@ -23,3 +24,4 @@ serde_json = { workspace = true }
 thiserror = { workspace = true }
 once_cell = { workspace = true }
 tracing = { workspace = true }
+

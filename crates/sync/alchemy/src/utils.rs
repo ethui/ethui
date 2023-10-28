@@ -50,6 +50,7 @@ pub(super) async fn transfer_into_tx(
                 value: tx.value,
                 data: tx.input,
                 status: status.as_u64(),
+                deployed_contract: None,
             }
             .into(),
         );

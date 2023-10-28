@@ -52,6 +52,7 @@ async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Result<Vec<Eve
                     data: Bytes::new(),
                     status: receipt.status.unwrap().as_u64(),
                     block_number,
+                    deployed_contract: Some(address),
                 }
                 .into(),
                 ContractDeployed {
@@ -86,6 +87,7 @@ async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Result<Vec<Eve
             data: input,
             status: receipt.status.unwrap().as_u64(),
             block_number,
+            deployed_contract: None,
         }
         .into()],
 
