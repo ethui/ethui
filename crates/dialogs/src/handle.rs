@@ -102,15 +102,10 @@ pub struct Inner {
 
 impl Inner {
     fn new(preset: &str, payload: Json) -> Self {
-        // TODO: make this random as well, or just increment a counter. what if we open the same payload twice?
-        let mut s = DefaultHasher::new();
-        payload.to_string().hash(&mut s);
-        let id: u32 = s.finish() as u32;
-
         let (snd, rcv) = mpsc::unbounded_channel();
 
         Self {
-            id,
+            id: rand::random(),
             preset: preset.to_string(),
             payload,
             inbound_snd: snd,

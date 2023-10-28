@@ -65,13 +65,11 @@ impl WalletControl for PlaintextWallet {
     async fn build_signer(
         &self,
         chain_id: u32,
-        _path: &str,
+        path: &str,
     ) -> Result<ethers::signers::Wallet<SigningKey>> {
-        // TODO: ensure path exists
-
         Ok(MnemonicBuilder::<English>::default()
             .phrase(self.mnemonic.as_ref())
-            .derivation_path(&self.current_path)?
+            .derivation_path(path)?
             .build()
             .map(|v| v.with_chain_id(chain_id))?)
     }

@@ -24,7 +24,7 @@ export function SettingsFoundry() {
     resolver: zodResolver(schema),
     defaultValues: general,
   });
-  // TODO: https://github.com/react-hook-form/react-hook-form/issues/3213
+  // https://github.com/react-hook-form/react-hook-form/issues/3213
   const disabled = !Object.keys(dirtyFields).length || !isValid;
 
   // default values are async, need to reset once they're ready
