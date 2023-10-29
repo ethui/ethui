@@ -14,18 +14,9 @@ import { useEffect, useState } from "react";
 
 import { useEventListener, useInvoke } from "@/hooks";
 import { useNetworks } from "@/store";
-import { Affinity } from "@/types";
+import { Affinity, Peer } from "@/types";
 
 import { Panel } from "./";
-
-interface Peer {
-  origin: string;
-  tab_id?: number;
-  title?: string;
-  socket: string;
-  url: string;
-  favicon: string;
-}
 
 export function Connections() {
   const { data: peersByDomain, mutate } =

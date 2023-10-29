@@ -8,6 +8,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
+import { useState } from "react";
 
 import { type Step, type WizardFormData } from "./";
 
@@ -32,6 +33,7 @@ export function OnboardingCarousel({
   const theme = useTheme();
   const maxSteps = steps.length;
   const step = steps[activeStep];
+  const [stepCompleted, setStepCompleted] = useState<boolean>(true);
 
   return (
     <Container disableGutters maxWidth="sm" sx={{ mt: 8, mb: 10 }}>
@@ -61,7 +63,11 @@ export function OnboardingCarousel({
             {steps[activeStep].title}
           </Typography>
           <Box height={{ xs: "260px", sm: "180px" }} alignSelf="start">
-            <step.component setFormData={setFormData} formData={formData} />
+            <step.component
+              setFormData={setFormData}
+              formData={formData}
+              setStepCompleted={setStepCompleted}
+            />
           </Box>
           <MobileStepper
             steps={maxSteps}
@@ -75,7 +81,7 @@ export function OnboardingCarousel({
           color="inherit"
           size="medium"
           onClick={handleNext}
-          disabled={activeStep === maxSteps - 1}
+          disabled={activeStep === maxSteps - 1 || !stepCompleted}
           sx={{
             visibility: activeStep === maxSteps - 1 ? "hidden" : "visible",
             border: "1px solid currentColor",

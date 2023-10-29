@@ -1,5 +1,16 @@
-import { Link, Stack, TextField, Typography } from "@mui/material";
-import { ChangeEvent } from "react";
+import {
+  Alert,
+  Box,
+  CircularProgress,
+  Link,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { ChangeEvent, useEffect, useState } from "react";
+
+import { useInvoke } from "@/hooks";
+import { Peer } from "@/types";
 
 import { type WizardFormData } from "./";
 
@@ -8,9 +19,11 @@ export type Step = {
   component: ({
     formData,
     setFormData,
+    setStepCompleted,
   }: {
     formData: WizardFormData;
     setFormData: React.Dispatch<React.SetStateAction<WizardFormData>>;
+    setStepCompleted: React.Dispatch<React.SetStateAction<boolean>>;
   }) => JSX.Element;
 };
 
@@ -22,6 +35,10 @@ export const steps = [
   {
     title: "Live blockchains",
     component: LiveBlockchainsStep,
+  },
+  {
+    title: "Install extension",
+    component: InstallExtensionStep,
   },
   {
     title: "Thank you!",
@@ -97,6 +114,52 @@ function LiveBlockchainsStep({
         onChange={onChange}
         value={formData.alchemyApiKey}
       />
+    </Stack>
+  );
+}
+
+interface InstallExtensionStepProps {
+  setStepCompleted: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+function InstallExtensionStep({ setStepCompleted }: InstallExtensionStepProps) {
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const { data: peerCount } = useInvoke<number>("ws_peer_count");
+
+  useEffect(() => {
+    const peerDetected = !!peerCount && peerCount > 0;
+    setLoading(!peerDetected);
+    setStepCompleted(peerDetected);
+  }, [peerCount, setStepCompleted]);
+
+  return (
+    <Stack spacing={2} alignItems={"center"}>
+      <Typography width={"100%"} component="p">
+        Iron requires its browser extension to be installed:
+      </Typography>
+      <Box component="ol">
+        <Typography component="li">
+          Ensure the{" "}
+          <Link
+            underline="hover"
+            href="https://iron-wallet.xyz/extension"
+            target="_blank"
+            rel="nofollow noopener noreferrer"
+          >
+            Iron Wallet extension
+          </Link>{" "}
+          is installed on your browser;
+        </Typography>
+        <Typography gutterBottom component="li">
+          Connect the wallet to continue the onboarding.
+        </Typography>
+      </Box>
+      {loading ? (
+        <CircularProgress size={30} />
+      ) : (
+        <Alert severity="success">Extension detected!</Alert>
+      )}
     </Stack>
   );
 }
