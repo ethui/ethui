@@ -42,16 +42,6 @@
     },
     "updater": {
       "active": false
-    },
-    "windows": [
-      {
-        "fullscreen": false,
-        "resizable": true,
-        "title": "",
-        "width": 600,
-        "height": 800,
-        "titleBarStyle": "Overlay"
-      }
-    ]
+    }
   }
 }

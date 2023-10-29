@@ -2,10 +2,13 @@ use std::path::PathBuf;
 
 use iron_broadcast::UIMsg;
 use iron_db::DB;
-use iron_types::ui_events;
+use iron_settings::Settings;
+use iron_types::{ui_events, GlobalState};
 #[cfg(target_os = "macos")]
 use tauri::WindowEvent;
-use tauri::{AppHandle, Builder, GlobalWindowEvent, Manager, WindowBuilder, WindowUrl};
+use tauri::{
+    AppHandle, Builder, GlobalWindowEvent, Manager, Window, WindowBuilder, WindowUrl, Wry,
+};
 use tauri_plugin_window_state::Builder as windowStatePlugin;
 
 use crate::{commands, error::AppResult, menu};
@@ -85,6 +88,7 @@ impl IronApp {
             .expect("error while running tauri application");
 
         init(&app).await?;
+        build_main_window(&app).await?;
 
         Ok(Self { app })
     }
@@ -128,6 +132,21 @@ async fn init(app: &tauri::App) -> AppResult<()> {
     }
 
     Ok(())
+}
+
+async fn build_main_window(app: &tauri::App) -> tauri::Result<Window<Wry>> {
+    let onboarded = Settings::read().await.onboarded();
+    let url = if onboarded { "/" } else { "/onboarding" };
+
+    let builder = tauri::WindowBuilder::new(app, "main", tauri::WindowUrl::App(url.into()))
+        .fullscreen(false)
+        .resizable(true)
+        .inner_size(600.0, 800.0);
+
+    #[cfg(target_os = "macos")]
+    builder.title_bar_style(tauri::TitleBarStyle::Overlay);
+
+    builder.build()
 }
 
 #[cfg(target_os = "macos")]

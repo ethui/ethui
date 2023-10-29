@@ -1,4 +1,4 @@
-import { Alert, Typography } from "@mui/material";
+import { Alert } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { ErrorInfo, ReactNode } from "react";
 import { ErrorBoundary } from "react-error-boundary";
@@ -55,7 +55,7 @@ function logUnhandledRejection(reason: Error | string) {
 
 async function logError(err: Error, info?: ErrorInfo) {
   await invoke("ui_error", {
-    message: err?.message || err,
+    message: err?.message || err.toString(),
     stack: formatStack(info?.componentStack),
   });
 }

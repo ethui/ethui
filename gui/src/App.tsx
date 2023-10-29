@@ -19,7 +19,7 @@ import {
   TxReviewDialog,
   WalletUnlockDialog,
 } from "@/components/Dialogs";
-import { OnboardingWrapper } from "@/components/Onboarding";
+import { Onboarding } from "@/components/Onboarding";
 
 import { useTheme } from "./store/theme";
 
@@ -45,11 +45,9 @@ export default function App() {
         <ErrorHandler>
           <QueryClientProvider client={queryClient}>
             <DevBuildNotice />
-            <OnboardingWrapper>
-              <WagmiWrapper>
-                <Routes />
-              </WagmiWrapper>
-            </OnboardingWrapper>
+            <WagmiWrapper>
+              <Routes />
+            </WagmiWrapper>
           </QueryClientProvider>
         </ErrorHandler>
       </CssBaseline>
@@ -61,6 +59,10 @@ function Routes() {
   return (
     <Router>
       <Switch>
+        <Route path="/onboarding">
+          <Onboarding />
+        </Route>
+
         <Route path="/dialog/tx-review/:id">
           {({ id }: { id: string }) => <TxReviewDialog id={parseInt(id)} />}
         </Route>

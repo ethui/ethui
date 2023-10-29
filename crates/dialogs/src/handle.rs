@@ -1,8 +1,4 @@
-use std::{
-    collections::hash_map::DefaultHasher,
-    hash::{Hash, Hasher},
-    sync::Arc,
-};
+use std::sync::Arc;
 
 use iron_types::{
     ui_events::{DialogClose, DialogOpen, DialogSend},
