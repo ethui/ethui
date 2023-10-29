@@ -1,4 +1,7 @@
 pub mod commands;
+mod error;
+
+pub use error::{Error, Result};
 
 use std::{
     collections::{HashMap, HashSet},
@@ -39,7 +42,7 @@ enum Msg {
 impl TryFrom<InternalMsg> for Msg {
     type Error = ();
 
-    fn try_from(msg: InternalMsg) -> Result<Self, Self::Error> {
+    fn try_from(msg: InternalMsg) -> std::result::Result<Self, Self::Error> {
         let res = match msg {
             InternalMsg::AddressAdded(addr) => Msg::TrackAddress(addr),
             InternalMsg::AddressRemoved(addr) => Msg::UntrackAddress(addr),
@@ -57,7 +60,7 @@ impl TryFrom<InternalMsg> for Msg {
 /// Receives global messages
 /// if a msg is convertible to `Msg`, forward that to the sync worker
 #[instrument(skip(snd), level = "trace")]
-async fn receiver(snd: mpsc::UnboundedSender<Msg>) -> Result<(), ()> {
+async fn receiver(snd: mpsc::UnboundedSender<Msg>) -> std::result::Result<(), ()> {
     let mut rx = iron_broadcast::subscribe_internal().await;
 
     loop {
@@ -90,7 +93,7 @@ impl Worker {
             mutex: Arc::new(Mutex::new(())),
         }
     }
-    async fn run(db: DB, mut rcv: mpsc::UnboundedReceiver<Msg>) -> Result<(), ()> {
+    async fn run(db: DB, mut rcv: mpsc::UnboundedReceiver<Msg>) -> std::result::Result<(), ()> {
         let mut worker = Self::new(db);
 
         loop {
@@ -264,7 +267,7 @@ async fn unit_worker(
     }
 }
 
-fn log_if_error<T, E>(call: &str, err: Result<T, E>)
+fn log_if_error<T, E>(call: &str, err: std::result::Result<T, E>)
 where
     E: std::error::Error + std::fmt::Display,
 {

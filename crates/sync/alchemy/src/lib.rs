@@ -108,7 +108,7 @@ impl Alchemy {
         let balances: Vec<(Address, U256)> =
             res.token_balances.into_iter().map(Into::into).collect();
 
-        // TODO this should be done by a separate worker on iron_sync
+        // TODO: this should be done by a separate worker on iron_sync
         utils::fetch_erc20_metadata(balances.clone(), client, chain_id, &self.db).await?;
 
         Ok(balances)

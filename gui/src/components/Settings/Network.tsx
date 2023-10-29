@@ -48,7 +48,7 @@ export function SettingsNetwork() {
     resolver: zodResolver(networkSchema),
     defaultValues: { networks: networks as (Network & NewChild)[] },
   });
-  // TODO: https://github.com/react-hook-form/react-hook-form/issues/3213
+  // https://github.com/react-hook-form/react-hook-form/issues/3213
   const isDirtyAlt = !!Object.keys(dirtyFields).length;
 
   // default values are async, need to reset once they're ready

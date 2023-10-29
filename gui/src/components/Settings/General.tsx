@@ -69,7 +69,7 @@ export function SettingsGeneral() {
     resolver: zodResolver(schema),
     defaultValues: general,
   });
-  // TODO: https://github.com/react-hook-form/react-hook-form/issues/3213
+  // https://github.com/react-hook-form/react-hook-form/issues/3213
   const isDirtyAlt = !!Object.keys(dirtyFields).length;
 
   // default values are async, need to reset once they're ready

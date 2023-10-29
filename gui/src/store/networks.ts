@@ -30,17 +30,15 @@ const store: StateCreator<Store> = (set, get) => ({
   actions: [],
 
   async setNetworks(newNetworks) {
-    // TODO: this could return the new list directly
-    await invoke("networks_set_list", { newNetworks: newNetworks });
-    const networks = await invoke<Network[]>("networks_get_list");
+    const networks = await invoke<Network[]>("networks_set_list", {
+      newNetworks,
+    });
     set({ networks });
   },
 
-  async setCurrent(newNetwork) {
-    // TODO: this could return the new network directly
-    await invoke("networks_set_current", { network: newNetwork });
+  async setCurrent(network) {
+    const current = await invoke<Network>("networks_set_current", { network });
 
-    const current = await invoke<Network>("networks_get_current");
     set({ current });
   },
 

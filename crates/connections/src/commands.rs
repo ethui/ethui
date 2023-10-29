@@ -1,7 +1,7 @@
 use iron_networks::Networks;
 use iron_types::{Affinity, GlobalState};
 
-use crate::{Result, Store};
+use crate::{Error, Result, Store};
 
 #[tauri::command]
 pub async fn connections_affinity_for(domain: String) -> Affinity {
@@ -10,9 +10,13 @@ pub async fn connections_affinity_for(domain: String) -> Affinity {
 
 #[tauri::command]
 pub async fn connections_set_affinity(domain: &str, affinity: Affinity) -> Result<()> {
-    // TODO: validate this chain ID
     let new_chain_id = match affinity {
-        Affinity::Sticky(chain_id) => chain_id,
+        Affinity::Sticky(chain_id) => {
+            if !Networks::read().await.validate_chain_id(chain_id) {
+                return Err(Error::InvalidChainId(chain_id));
+            }
+            chain_id
+        }
         _ => Networks::read().await.get_current().chain_id,
     };
 

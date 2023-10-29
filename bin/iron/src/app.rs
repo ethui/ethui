@@ -46,6 +46,7 @@ impl IronApp {
                 iron_db::commands::db_get_native_balance,
                 iron_db::commands::db_get_erc721_tokens,
                 iron_ws::commands::ws_peers_by_domain,
+                iron_ws::commands::ws_peer_count,
                 iron_wallets::commands::wallets_get_all,
                 iron_wallets::commands::wallets_get_current,
                 iron_wallets::commands::wallets_get_current_address,
@@ -65,6 +66,7 @@ impl IronApp {
                 iron_connections::commands::connections_affinity_for,
                 iron_connections::commands::connections_set_affinity,
                 iron_sync::commands::sync_alchemy_is_network_supported,
+                iron_sync::commands::sync_get_native_balance,
                 iron_simulator::commands::simulator_run
             ])
             .on_window_event(on_window_event)

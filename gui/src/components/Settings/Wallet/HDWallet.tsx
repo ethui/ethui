@@ -75,7 +75,6 @@ function HDWalletCreateForm({
 
   useEffect(() => {
     if (!current || !mnemonic || !derivationPath || submitted) return;
-    // TODO
     onSubmit({
       type: wallet.type,
       count: 5,
