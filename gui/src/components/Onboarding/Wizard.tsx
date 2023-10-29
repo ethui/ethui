@@ -38,7 +38,7 @@ export function OnboardingWizard({ closeOnboarding }: Props) {
   const handleClose = async () => {
     if (formData.alchemyApiKey !== settings?.alchemyApiKey) {
       await invoke("settings_set", {
-        newSettings: { alchemyApiKey: formData.alchemyApiKey },
+        params: { alchemyApiKey: formData.alchemyApiKey },
       });
     }
 
