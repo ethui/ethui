@@ -1,9 +1,9 @@
 import { Button, Stack, Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect } from "react";
+import { Link } from "wouter";
 
 import { StepProps } from ".";
-import { Link } from "wouter";
 
 export function ThankYouStep({ onSubmit }: StepProps) {
   useEffect(() => {
