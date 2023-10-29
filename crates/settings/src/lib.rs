@@ -85,6 +85,10 @@ impl Settings {
         &self.inner
     }
 
+    pub fn onboarded(&self) -> bool {
+        self.inner.onboarded
+    }
+
     pub fn fast_mode(&self) -> bool {
         self.inner.fast_mode
     }
