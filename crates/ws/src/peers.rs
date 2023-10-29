@@ -143,7 +143,7 @@ impl Peers {
         })
     }
 
-    pub fn all_peers(&self) -> Vec<Peer> {
-        self.map.values().cloned().collect()
+    pub fn count(&self) -> usize {
+        self.map.len()
     }
 }

@@ -125,13 +125,13 @@ interface InstallExtensionStepProps {
 function InstallExtensionStep({ setStepCompleted }: InstallExtensionStepProps) {
   const [loading, setLoading] = useState<boolean>(true);
 
-  const { data: peers } = useInvoke<Peer[]>("ws_all_peers");
+  const { data: peerCount } = useInvoke<number>("ws_peer_count");
 
   useEffect(() => {
-    const peerDetected = peers?.length != 0;
+    const peerDetected = !!peerCount && peerCount > 0;
     setLoading(!peerDetected);
     setStepCompleted(peerDetected);
-  }, [peers, setStepCompleted]);
+  }, [peerCount, setStepCompleted]);
 
   return (
     <Stack spacing={2} alignItems={"center"}>
