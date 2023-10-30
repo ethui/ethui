@@ -13,11 +13,6 @@ import { useInvoke } from "@/hooks";
 
 import { StepProps } from ".";
 
-const URL =
-  process.env.NODE_ENV === "production"
-    ? "https://iron-wallet.xyz"
-    : "http://localhost:3000";
-
 export function InstallExtensionStep({ onSubmit }: StepProps) {
   const [detected, setDetected] = useState<boolean>(false);
 
@@ -44,7 +39,7 @@ export function InstallExtensionStep({ onSubmit }: StepProps) {
         Go to{" "}
         <Link
           underline="hover"
-          href={`${URL}/onboarding/extension`}
+          href="http://iron-wallet.xyz/onboarding/extension"
           target="_blank"
           rel="nofollow noopener noreferrer"
         >
