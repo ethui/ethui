@@ -12,6 +12,7 @@ export { Contracts } from "./Contracts";
 export { CopyToClipboard } from "./CopyToClipboard";
 export { Datapoint } from "./Datapoint";
 export { DevBuildNotice } from "./DevBuildNotice";
+export { DraggableToolbar } from "./DraggableToolbar";
 export { ErrorHandler } from "./ErrorHandler";
 export { HomePage } from "./HomePage";
 export { IconCrypto } from "./IconCrypto";
