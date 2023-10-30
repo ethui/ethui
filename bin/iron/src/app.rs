@@ -138,13 +138,13 @@ async fn build_main_window(app: &tauri::App) -> tauri::Result<Window<Wry>> {
     let onboarded = Settings::read().await.onboarded();
     let url = if onboarded { "/" } else { "/onboarding" };
 
-    let builder = tauri::WindowBuilder::new(app, "main", tauri::WindowUrl::App(url.into()))
+    let mut builder = tauri::WindowBuilder::new(app, "main", tauri::WindowUrl::App(url.into()))
         .fullscreen(false)
         .resizable(true)
         .inner_size(600.0, 800.0);
 
     #[cfg(target_os = "macos")]
-    builder.title_bar_style(tauri::TitleBarStyle::Overlay);
+    let builder = builder.title_bar_style(tauri::TitleBarStyle::Overlay);
 
     builder.build()
 }
