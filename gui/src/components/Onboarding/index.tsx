@@ -1,4 +1,4 @@
-import { Container, MobileStepper, Stack } from "@mui/material";
+import { Box, Container, MobileStepper, Stack } from "@mui/material";
 import { useState } from "react";
 
 import { AlchemyStep } from "./Alchemy";
@@ -29,18 +29,21 @@ export function Onboarding() {
   const step = steps[activeStep];
 
   return (
-    <Container disableGutters maxWidth="sm" sx={{ mt: 8, mb: 10, px: 3 }}>
-      <Stack alignItems="center">
-        <step.component onSubmit={handleNext} />
+    <>
+      <Box sx={{ height: 64 }} data-tauri-drag-region="true"></Box>
+      <Container disableGutters maxWidth="sm" sx={{ mt: 8, mb: 10, px: 3 }}>
+        <Stack alignItems="center">
+          <step.component onSubmit={handleNext} />
 
-        <MobileStepper
-          steps={steps.length}
-          position="static"
-          activeStep={activeStep}
-          nextButton={<></>}
-          backButton={<></>}
-        />
-      </Stack>
-    </Container>
+          <MobileStepper
+            steps={steps.length}
+            position="static"
+            activeStep={activeStep}
+            nextButton={<></>}
+            backButton={<></>}
+          />
+        </Stack>
+      </Container>
+    </>
   );
 }
