@@ -68,7 +68,16 @@ export function AlchemyStep({ onSubmit }: StepProps) {
           >
             alchemy.com
           </Link>{" "}
-          is recommended. Insert your personal API below.
+          is recommended. Go to your{" "}
+          <Link
+            underline="hover"
+            href="https://dashboard.alchemy.com/apps"
+            target="_blank"
+            rel="nofollow noopener noreferrer"
+          >
+            Alchemy dashboard
+          </Link>{" "}
+          and grab an API key.
         </Typography>
         <TextField
           label="API Key"
