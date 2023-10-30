@@ -1,5 +1,6 @@
-import { AppBar, Toolbar, Typography } from "@mui/material";
+import { AppBar, Typography } from "@mui/material";
 
+import { DraggableToolbar } from "./DraggableToolbar";
 import { TABS } from "./Sidebar";
 
 export function Navbar({ tab }: { tab: (typeof TABS)[number] }) {
@@ -11,11 +12,11 @@ export function Navbar({ tab }: { tab: (typeof TABS)[number] }) {
         borderBottomWidth: 1,
       }}
     >
-      <Toolbar data-tauri-drag-region="true">
+      <DraggableToolbar>
         <Typography variant="h6" component="div">
           {tab.name}
         </Typography>
-      </Toolbar>
+      </DraggableToolbar>
     </AppBar>
   );
 }

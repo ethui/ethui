@@ -1,10 +1,11 @@
-import { Box, Container, MobileStepper, Stack } from "@mui/material";
+import { Box, Container, MobileStepper, Stack, Toolbar } from "@mui/material";
 import { useState } from "react";
 
 import { AlchemyStep } from "./Alchemy";
 import { InstallExtensionStep } from "./Extension";
 import { ThankYouStep } from "./ThankYou";
 import { WelcomeStep } from "./Welcome";
+import { DraggableToolbar } from "../DraggableToolbar";
 
 export interface StepProps {
   onSubmit: () => unknown;
@@ -30,7 +31,7 @@ export function Onboarding() {
 
   return (
     <>
-      <Box sx={{ height: 64 }} data-tauri-drag-region="true"></Box>
+      <DraggableToolbar></DraggableToolbar>
       <Container disableGutters maxWidth="sm" sx={{ mt: 8, mb: 10, px: 3 }}>
         <Stack alignItems="center">
           <step.component onSubmit={handleNext} />
