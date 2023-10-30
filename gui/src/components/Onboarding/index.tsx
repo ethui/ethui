@@ -1,6 +1,8 @@
 import { Container, MobileStepper, Stack } from "@mui/material";
 import { useState } from "react";
 
+import { DraggableToolbar } from "@/components";
+
 import { AlchemyStep } from "./Alchemy";
 import { InstallExtensionStep } from "./Extension";
 import { ThankYouStep } from "./ThankYou";
@@ -29,18 +31,21 @@ export function Onboarding() {
   const step = steps[activeStep];
 
   return (
-    <Container disableGutters maxWidth="sm" sx={{ mt: 8, mb: 10, px: 3 }}>
-      <Stack alignItems="center">
-        <step.component onSubmit={handleNext} />
+    <>
+      <DraggableToolbar />
+      <Container disableGutters maxWidth="sm" sx={{ mt: 8, mb: 10, px: 3 }}>
+        <Stack alignItems="center">
+          <step.component onSubmit={handleNext} />
 
-        <MobileStepper
-          steps={steps.length}
-          position="static"
-          activeStep={activeStep}
-          nextButton={<></>}
-          backButton={<></>}
-        />
-      </Stack>
-    </Container>
+          <MobileStepper
+            steps={steps.length}
+            position="static"
+            activeStep={activeStep}
+            nextButton={<></>}
+            backButton={<></>}
+          />
+        </Stack>
+      </Container>
+    </>
   );
 }

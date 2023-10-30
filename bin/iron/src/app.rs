@@ -144,7 +144,9 @@ async fn build_main_window(app: &tauri::App) -> tauri::Result<Window<Wry>> {
         .inner_size(600.0, 800.0);
 
     #[cfg(target_os = "macos")]
-    let builder = builder.title_bar_style(tauri::TitleBarStyle::Overlay);
+    let builder = builder
+        .title_bar_style(tauri::TitleBarStyle::Overlay)
+        .hidden_title(true);
 
     builder.build()
 }
