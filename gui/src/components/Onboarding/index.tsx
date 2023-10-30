@@ -32,7 +32,7 @@ export function Onboarding() {
 
   return (
     <>
-      <DraggableToolbar></DraggableToolbar>
+      <DraggableToolbar />
       <Container disableGutters maxWidth="sm" sx={{ mt: 8, mb: 10, px: 3 }}>
         <Stack alignItems="center">
           <step.component onSubmit={handleNext} />
