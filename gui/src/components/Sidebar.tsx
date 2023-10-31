@@ -180,14 +180,12 @@ export function Sidebar() {
           >
             <div data-tour="step-1">
               <QuickWalletSelect />
-            </div>
-            <div data-tour="step-2">
               <QuickAddressSelect />
-            </div>
-            <div data-tour="step-3">
               <QuickNetworkSelect />
             </div>
-            <QuickFastModeToggle />
+            <div data-tour="step-2">
+              <QuickFastModeToggle />
+            </div>
           </Stack>
           <Stack
             p={3}
@@ -198,7 +196,7 @@ export function Sidebar() {
               },
             }}
           >
-            <div data-tour="step-4">
+            <div data-tour="step-3">
               <CommandBarButton />
             </div>
             <SettingsButton />

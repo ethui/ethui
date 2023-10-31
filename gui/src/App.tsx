@@ -3,7 +3,6 @@ import "react18-json-view/src/style.css";
 
 import { GlobalStyles, ThemeProvider } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
-import { StylesObj, TourProvider } from "@reactour/tour";
 import { SnackbarProvider } from "notistack";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Route, Router, Switch } from "wouter";
@@ -22,6 +21,7 @@ import {
 } from "@/components/Dialogs";
 import { Onboarding } from "@/components/Onboarding";
 
+import TourWrapper from "./components/Tour";
 import { useTheme } from "./store/theme";
 
 const queryClient = new QueryClient({
@@ -36,32 +36,6 @@ const globalStyles = {
   h3: { userSelect: "initial" },
 };
 
-const styles = {
-  popover: (base: StylesObj) => ({
-    ...base,
-    color: "black",
-  }),
-};
-
-const steps = [
-  {
-    selector: '[data-tour="step-1"]',
-    content: "This is the first Step",
-  },
-  {
-    selector: '[data-tour="step-2"]',
-    content: "This is the first Step",
-  },
-  {
-    selector: '[data-tour="step-3"]',
-    content: "This is the first Step",
-  },
-  {
-    selector: '[data-tour="step-4"]',
-    content: "This is the first Step",
-  },
-];
-
 export default function App() {
   const theme = useTheme((s) => s.theme);
 
@@ -69,21 +43,14 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <GlobalStyles styles={globalStyles} />
       <CssBaseline>
-        <TourProvider
-          steps={steps}
-          styles={styles}
-          showCloseButton={false}
-          disableInteraction
-        >
-          <ErrorHandler>
-            <QueryClientProvider client={queryClient}>
-              <DevBuildNotice />
-              <WagmiWrapper>
-                <Routes />
-              </WagmiWrapper>
-            </QueryClientProvider>
-          </ErrorHandler>
-        </TourProvider>
+        <ErrorHandler>
+          <QueryClientProvider client={queryClient}>
+            <DevBuildNotice />
+            <WagmiWrapper>
+              <Routes />
+            </WagmiWrapper>
+          </QueryClientProvider>
+        </ErrorHandler>
       </CssBaseline>
     </ThemeProvider>
   );
@@ -115,7 +82,9 @@ function Routes() {
             dense
           >
             <CommandBar>
-              <HomePage />
+              <TourWrapper>
+                <HomePage />
+              </TourWrapper>
             </CommandBar>
           </SnackbarProvider>
         </Route>
