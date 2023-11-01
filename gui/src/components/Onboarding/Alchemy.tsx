@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Link, Stack, TextField, Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { useCallback } from "react";
-import { FieldValues, useForm } from "react-hook-form";
+import { FieldValues, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
 import { StepProps } from ".";
@@ -29,8 +29,10 @@ export function AlchemyStep({ onSubmit }: StepProps) {
     handleSubmit,
     register,
     formState: { isValid, errors },
-    getValues,
+    control,
   } = useForm({ mode: "onChange", resolver: zodResolver(schema) });
+
+  const alchemyApiKey = useWatch({ control, name: "alchemyApiKey" });
 
   const localOnSubmit = useCallback(
     (params: FieldValues) => {
@@ -87,7 +89,7 @@ export function AlchemyStep({ onSubmit }: StepProps) {
           {...register("alchemyApiKey")}
         />
         <Button variant="contained" type="submit" disabled={!isValid}>
-          {getValues()?.alchemyApiKey?.length > 0 ? "Next" : "Skip"}
+          {alchemyApiKey?.length > 0 ? "Next" : "Skip"}
         </Button>
       </Stack>
     </form>
