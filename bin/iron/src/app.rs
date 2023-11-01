@@ -138,7 +138,7 @@ async fn build_main_window(app: &tauri::App) -> tauri::Result<Window<Wry>> {
     let onboarded = Settings::read().await.onboarded();
     let url = if onboarded { "/" } else { "/onboarding" };
 
-    let mut builder = tauri::WindowBuilder::new(app, "main", tauri::WindowUrl::App(url.into()))
+    let builder = tauri::WindowBuilder::new(app, "main", tauri::WindowUrl::App(url.into()))
         .fullscreen(false)
         .resizable(true)
         .inner_size(600.0, 800.0);
