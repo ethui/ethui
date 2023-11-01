@@ -54,6 +54,8 @@ impl Forge {
     pub(crate) async fn watch(&mut self, path: PathBuf) -> Result<()> {
         self.unwatch().await?;
 
+        tracing::trace!("watching {:?}", path);
+
         // watch the new path
         self.watch_path = Some(path.clone());
         self.watcher_snd
@@ -67,6 +69,8 @@ impl Forge {
 
     // stop current path watch if necessary
     pub(crate) async fn unwatch(&mut self) -> Result<()> {
+        tracing::trace!("unwatching {:?}", self.watch_path);
+
         if let Some(path) = &self.watch_path.take() {
             self.watcher_snd
                 .send(watcher::WatcherMsg::Stop(path.clone()))?;

@@ -20,6 +20,8 @@ pub(crate) async fn server_loop() {
     let addr = std::env::var("IRON_WS_SERVER_ENDPOINT").unwrap_or("127.0.0.1:9002".into());
     let listener = TcpListener::bind(&addr).await.expect("Can't listen to");
 
+    tracing::debug!("Listening on: {}", addr);
+
     while let Ok((stream, _)) = listener.accept().await {
         let peer = stream
             .peer_addr()
