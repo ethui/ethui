@@ -1,4 +1,11 @@
-import { Autocomplete, Box, Button, Chip, TextField } from "@mui/material";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  Chip,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { Stack } from "@mui/system";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Abi, AbiFunction, formatAbiItem } from "abitype";
@@ -114,7 +121,12 @@ function ItemForm({ contract, item }: ItemFormProps) {
       }
     } else {
       const result = await invoke<string>("rpc_send_transaction", {
-        params: { to: contract, value: params.value, data },
+        params: {
+          from: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+          to: contract,
+          value: params.value,
+          data,
+        },
       });
       setTxResult(result);
     }
@@ -148,8 +160,8 @@ function ItemForm({ contract, item }: ItemFormProps) {
             {item.stateMutability == "view" ? "Call" : "Send"}
           </Button>
         </Box>
-        {callResult && <Box>{callResult}</Box>}
-        {txResult && <Box>{txResult}</Box>}
+        {callResult && <Typography>{callResult}</Typography>}
+        {txResult && <Typography>{txResult}</Typography>}
       </Stack>
     </form>
   );

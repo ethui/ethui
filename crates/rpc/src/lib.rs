@@ -170,19 +170,13 @@ impl Handler {
     ) -> jsonrpc_core::Result<serde_json::Value> {
         use send_transaction::SendTransaction;
 
-        let wallets = Wallets::read().await;
-
-        let network = ctx.network().await;
-        let wallet = wallets.get_current_wallet();
-
-        // TODO: send correct path instead of hardcode to current
         // TODO: check that requested wallet is authorized
-        let mut sender = SendTransaction::build()
-            .set_wallet(wallet)
-            .set_wallet_path(wallet.get_current_path())
-            .set_network(network)
+        let mut sender = SendTransaction::build(&ctx)
             .set_request(params.into())
-            .build();
+            .await
+            .unwrap()
+            .build()
+            .await;
 
         let result = sender.estimate_gas().await.finish().await;
 

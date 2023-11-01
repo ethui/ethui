@@ -34,6 +34,18 @@ pub trait WalletControl: Sync + Send + Deserialize<'static> + Serialize + std::f
         self.build_signer(chain_id, &self.get_current_path()).await
     }
 
+    async fn find(&self, address: ChecksummedAddress) -> Option<String> {
+        let addresses = self.get_all_addresses().await;
+
+        addresses.iter().find_map(|(path, addr)| {
+            if *addr == address {
+                Some(path.clone())
+            } else {
+                None
+            }
+        })
+    }
+
     fn is_dev(&self) -> bool {
         false
     }

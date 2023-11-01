@@ -36,9 +36,23 @@ pub struct Wallets {
 }
 
 impl Wallets {
+    pub async fn find(&self, address: ChecksummedAddress) -> Option<(&Wallet, String)> {
+        for w in self.wallets.iter() {
+            if let Some(path) = w.find(address).await {
+                return Some((w, path));
+            }
+        }
+
+        None
+    }
+
     /// Gets a reference the current default wallet
     pub fn get_current_wallet(&self) -> &Wallet {
         &self.wallets[self.current]
+    }
+
+    pub fn get(&self, name: &str) -> Option<&Wallet> {
+        self.wallets.iter().find(|w| w.name() == name)
     }
 
     /// Sets the current key within the current default
