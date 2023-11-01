@@ -75,7 +75,11 @@ function Routes() {
           {({ id }: { id: string }) => <WalletUnlockDialog id={parseInt(id)} />}
         </Route>
         <Route>
-          <SnackbarProvider>
+          <SnackbarProvider
+            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+            preventDuplicate
+            dense
+          >
             <CommandBar>
               <HomePage />
             </CommandBar>
