@@ -35,9 +35,16 @@ pub(super) async fn async_watch(
     loop {
         tokio::select! {
             Some(msg) = rcv.recv() => {
-                match msg {
-                    WatcherMsg::Start(path) => watcher.watch(&path, RecursiveMode::Recursive)?,
-                    WatcherMsg::Stop(path) => watcher.unwatch(&path)?,
+                let res = match msg {
+                    WatcherMsg::Start(path) => watcher.watch(&path, RecursiveMode::Recursive),
+                    WatcherMsg::Stop(path) => watcher.unwatch(&path),
+                };
+
+                match res {
+                    Ok(_) => {},
+                    Err(e)=>{
+                        tracing::warn!("watch error: {:?}", e)
+                    }
                 }
             }
 
