@@ -2,6 +2,7 @@ use ethers::{
     core::k256::ecdsa::SigningKey,
     prelude::{signer::SignerMiddlewareError, *},
     signers,
+    types::Address,
 };
 use jsonrpc_core::ErrorCode;
 
@@ -12,6 +13,9 @@ pub enum Error {
 
     #[error("Signature rejected")]
     SignatureRejected,
+
+    #[error("Unknown wallet: {0}")]
+    WalletNotFound(Address),
 
     #[error("Error building signer: {0}")]
     SignerBuild(String),

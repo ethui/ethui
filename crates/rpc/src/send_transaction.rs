@@ -6,30 +6,31 @@ use ethers::{
     signers,
     types::{serde_helpers::StringifiedNumeric, transaction::eip2718::TypedTransaction},
 };
+use iron_connections::Ctx;
 use iron_dialogs::{Dialog, DialogMsg};
 use iron_networks::Network;
 use iron_settings::Settings;
 use iron_types::{ChecksummedAddress, GlobalState};
-use iron_wallets::{Wallet, WalletControl};
+use iron_wallets::{WalletControl, Wallets};
 
 use super::{Error, Result};
 
 /// Orchestrates the signing of a transaction
 /// Takes references to both the wallet and network where this
-pub struct SendTransaction<'a> {
-    pub wallet: &'a Wallet,
-    pub wallet_path: String,
+pub struct SendTransaction {
     pub network: Network,
+    pub wallet_name: String,
+    pub wallet_path: String,
     pub request: TypedTransaction,
     pub signer: Option<SignerMiddleware<Provider<Http>, signers::Wallet<SigningKey>>>,
 }
 
-impl<'a> SendTransaction<'a> {
-    pub fn build() -> SendTransactionBuilder<'a> {
-        Default::default()
+impl<'a> SendTransaction {
+    pub fn build(ctx: &Ctx) -> SendTransactionBuilder<'_> {
+        SendTransactionBuilder::new(ctx)
     }
 
-    pub async fn estimate_gas(&mut self) -> &mut SendTransaction<'a> {
+    pub async fn estimate_gas(&mut self) -> &mut SendTransaction {
         // TODO: we're defaulting to 1_000_000 gas cost if estimation fails
         // estimation failing means the tx will faill anyway, so this is fine'ish
         // but can probably be improved a lot in the future
@@ -45,10 +46,11 @@ impl<'a> SendTransaction<'a> {
     }
 
     pub async fn finish(&mut self) -> Result<PendingTransaction<'_, Http>> {
-        tracing::debug!("finishing transaction");
+        let wallets = Wallets::read().await;
+        let wallet = wallets.get(&self.wallet_name).unwrap();
 
         // skip the dialog if both network & wallet allow for it, and if fast_mode is enabled
-        if !(self.network.is_dev() && self.wallet.is_dev() && Settings::read().await.fast_mode()) {
+        if !(self.network.is_dev() && wallet.is_dev() && Settings::read().await.fast_mode()) {
             self.spawn_dialog().await?;
         }
         self.send().await
@@ -105,12 +107,15 @@ impl<'a> SendTransaction<'a> {
 
     async fn build_signer(&mut self) {
         if self.signer.is_none() {
-            let signer: signers::Wallet<SigningKey> = self
-                .wallet
+            let wallets = Wallets::read().await;
+            let wallet = wallets.get(&self.wallet_name).unwrap();
+
+            let signer: signers::Wallet<SigningKey> = wallet
                 .build_signer(self.network.chain_id, &self.wallet_path)
                 .await
                 .unwrap();
-            self.signer = Some(SignerMiddleware::new(self.network.get_provider(), signer));
+            let signer = SignerMiddleware::new(self.network.get_provider(), signer);
+            self.signer = Some(signer);
         }
     }
 
@@ -145,38 +150,37 @@ impl<'a> SendTransaction<'a> {
     }
 
     async fn from(&self) -> Result<ChecksummedAddress> {
-        self.wallet
+        let wallets = Wallets::read().await;
+        let wallet = wallets.get(&self.wallet_name).unwrap();
+
+        wallet
             .get_address(&self.wallet_path)
             .await
             .map_err(|_| Error::CannotSimulate)
     }
 }
 
-#[derive(Default)]
 pub struct SendTransactionBuilder<'a> {
-    pub wallet: Option<&'a Wallet>,
+    ctx: &'a Ctx,
+    pub wallet_name: Option<String>,
     pub wallet_path: Option<String>,
-    pub network: Option<Network>,
     pub request: TypedTransaction,
 }
 
 impl<'a> SendTransactionBuilder<'a> {
-    pub fn set_wallet(mut self, wallet: &'a Wallet) -> SendTransactionBuilder<'a> {
-        self.wallet = Some(wallet);
-        self
+    pub fn new(ctx: &'a Ctx) -> Self {
+        Self {
+            ctx,
+            wallet_name: None,
+            wallet_path: None,
+            request: Default::default(),
+        }
     }
 
-    pub fn set_wallet_path(mut self, wallet_path: String) -> SendTransactionBuilder<'a> {
-        self.wallet_path = Some(wallet_path);
-        self
-    }
-
-    pub fn set_network(mut self, network: Network) -> SendTransactionBuilder<'a> {
-        self.network = Some(network);
-        self
-    }
-
-    pub fn set_request(mut self, params: serde_json::Value) -> SendTransactionBuilder<'a> {
+    pub async fn set_request(
+        mut self,
+        params: serde_json::Value,
+    ) -> Result<SendTransactionBuilder<'a>> {
         // TODO: why is this an array?
         let params = if params.is_array() {
             &params.as_array().unwrap()[0]
@@ -184,8 +188,24 @@ impl<'a> SendTransactionBuilder<'a> {
             &params
         };
 
+        let wallets = Wallets::read().await;
         if let Some(from) = params["from"].as_str() {
-            self.request.set_from(Address::from_str(from).unwrap());
+            let address = Address::from_str(from).unwrap();
+            self.request.set_from(address);
+
+            let (wallet, path) = wallets
+                .find(address.into())
+                .await
+                .ok_or(Error::WalletNotFound(address))?;
+            self.wallet_name = Some(wallet.name());
+            self.wallet_path = Some(path);
+        } else {
+            let wallet = wallets.get_current_wallet();
+
+            self.wallet_path = Some(wallet.get_current_path());
+            self.request
+                .set_from(wallet.get_current_address().await.into());
+            self.wallet_name = Some(wallet.name());
         }
 
         if let Some(to) = params["to"].as_str() {
@@ -201,16 +221,14 @@ impl<'a> SendTransactionBuilder<'a> {
             self.request.set_data(Bytes::from_str(data).unwrap());
         }
 
-        self
+        Ok(self)
     }
 
-    pub fn build(self) -> SendTransaction<'a> {
-        tracing::debug!("building SendTransaction");
-
+    pub async fn build(self) -> SendTransaction {
         SendTransaction {
-            wallet: self.wallet.unwrap(),
+            wallet_name: self.wallet_name.unwrap(),
             wallet_path: self.wallet_path.unwrap(),
-            network: self.network.unwrap(),
+            network: self.ctx.network().await,
             request: self.request,
             signer: None,
         }
