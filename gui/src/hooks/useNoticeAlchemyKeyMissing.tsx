@@ -31,37 +31,30 @@ export function useNoticeAlchemyKeyMissing() {
       return;
     }
 
-    key = enqueueSnackbar(
-      <>
-        <Typography>Alchemy key missing</Typography>
-      </>,
-      {
-        key: "alchemy_key_missing",
-        preventDuplicate: true,
-        anchorOrigin: { vertical: "bottom", horizontal: "right" },
-        persist: true,
-        variant: "warning",
-        action: () => (
-          <>
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              sx={{ p: 0.5 }}
-              onClick={() => open()}
-            >
-              <OpenInNew />
-            </IconButton>
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              sx={{ p: 0.5 }}
-              onClick={() => closeSnackbar(key)}
-            >
-              <Close />
-            </IconButton>
-          </>
-        ),
-      },
-    );
+    key = enqueueSnackbar(<Typography>Alchemy key missing</Typography>, {
+      key: "alchemy_key_missing",
+      persist: true,
+      variant: "warning",
+      action: () => (
+        <>
+          <IconButton
+            aria-label="close"
+            color="inherit"
+            sx={{ p: 0.5 }}
+            onClick={() => open()}
+          >
+            <OpenInNew />
+          </IconButton>
+          <IconButton
+            aria-label="close"
+            color="inherit"
+            sx={{ p: 0.5 }}
+            onClick={() => closeSnackbar(key)}
+          >
+            <Close />
+          </IconButton>
+        </>
+      ),
+    });
   }, [closeSnackbar, enqueueSnackbar, open, requiresAlchemyKey]);
 }

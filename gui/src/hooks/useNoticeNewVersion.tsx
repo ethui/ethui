@@ -42,8 +42,6 @@ export function useNoticeNewVersion() {
       </Link>,
       {
         key: "new_release",
-        preventDuplicate: true,
-        anchorOrigin: { vertical: "bottom", horizontal: "right" },
         persist: true,
         action: () => (
           <IconButton

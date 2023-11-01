@@ -4,6 +4,8 @@ import { Address } from "viem";
 import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
+import { toast } from "@/components/Toast";
+
 import { useNetworks } from "./networks";
 
 interface State {
@@ -34,7 +36,11 @@ const store: StateCreator<Store> = (set, get) => ({
 
   add: async (address: Address) => {
     const { chainId } = get();
-    await invoke("db_insert_contract", { chainId, address });
+    try {
+      await invoke("db_insert_contract", { chainId, address });
+    } catch (err: unknown) {
+      toast("error", "contracts-add-error", err);
+    }
   },
 
   setChainId(chainId) {
