@@ -2,7 +2,7 @@ import { StepType, StylesObj, TourProvider } from "@reactour/tour";
 
 import { useTheme } from "@/store/theme";
 
-import ContentComponent from "./Content";
+import PopoverContent from "./PopoverContent";
 
 export default function TourWrapper({ children, steps, onClose }: Props) {
   const { theme } = useTheme();
@@ -22,7 +22,7 @@ export default function TourWrapper({ children, steps, onClose }: Props) {
   return (
     <TourProvider
       steps={steps}
-      ContentComponent={ContentComponent}
+      ContentComponent={PopoverContent}
       styles={styles}
       position="right"
       disableInteraction
