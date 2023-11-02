@@ -178,12 +178,12 @@ export function Sidebar() {
               },
             }}
           >
-            <div data-tour="step-1">
+            <div data-homepage-tour="quick-select">
               <QuickWalletSelect />
               <QuickAddressSelect />
               <QuickNetworkSelect />
             </div>
-            <div data-tour="step-2">
+            <div data-homepage-tour="fast-mode">
               <QuickFastModeToggle />
             </div>
           </Stack>
@@ -196,7 +196,7 @@ export function Sidebar() {
               },
             }}
           >
-            <div data-tour="step-3">
+            <div data-homepage-tour="command-bar">
               <CommandBarButton />
             </div>
             <SettingsButton />
