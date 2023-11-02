@@ -16,6 +16,19 @@ export default function PopoverContent(props: PopoverContentProps) {
   const isLastStep = currentStep === steps.length - 1;
   const content = steps[currentStep].content as string;
 
+  const previousStep = () => setCurrentStep((s) => s - 1);
+
+  const nextStep = () => setCurrentStep((s) => s + 1);
+
+  const onClickCloseButton = () => {
+    if (isLastStep && onClickClose) {
+      onClickClose({ setIsOpen, setCurrentStep, currentStep });
+      setIsOpen(false);
+    } else {
+      nextStep();
+    }
+  };
+
   return (
     <Container disableGutters>
       <Stack
@@ -23,17 +36,7 @@ export default function PopoverContent(props: PopoverContentProps) {
         justifyContent="space-between"
         alignItems="stretch"
       >
-        <Button
-          sx={{ alignSelf: "end" }}
-          onClick={() => {
-            if (isLastStep) {
-              onClickClose();
-              setIsOpen(false);
-            } else {
-              setCurrentStep((s) => s + 1);
-            }
-          }}
-        >
+        <Button sx={{ alignSelf: "end" }} onClick={onClickCloseButton}>
           <CloseIcon />
         </Button>
 
@@ -46,18 +49,12 @@ export default function PopoverContent(props: PopoverContentProps) {
           position="static"
           activeStep={currentStep}
           backButton={
-            <Button
-              disabled={isFirstStep}
-              onClick={() => setCurrentStep((s) => s - 1)}
-            >
+            <Button disabled={isFirstStep} onClick={previousStep}>
               <KeyboardArrowLeft />
             </Button>
           }
           nextButton={
-            <Button
-              onClick={() => setCurrentStep((s) => s + 1)}
-              disabled={isLastStep}
-            >
+            <Button disabled={isLastStep} onClick={nextStep}>
               <KeyboardArrowRight />
             </Button>
           }
