@@ -32,6 +32,7 @@ impl IronApp {
                 iron_settings::commands::settings_set_dark_mode,
                 iron_settings::commands::settings_set_fast_mode,
                 iron_settings::commands::settings_finish_onboarding,
+                iron_settings::commands::settings_finish_homepage_tour,
                 iron_settings::commands::settings_set_alias,
                 iron_settings::commands::settings_get_alias,
                 iron_settings::commands::settings_test_alchemy_api_key,

@@ -81,12 +81,23 @@ impl Settings {
         Ok(())
     }
 
+    pub async fn finish_homepage_tour(&mut self) -> Result<()> {
+        self.inner.homepage_tour_completed = true;
+        self.save().await?;
+
+        Ok(())
+    }
+
     pub fn get(&self) -> &SerializedSettings {
         &self.inner
     }
 
     pub fn onboarded(&self) -> bool {
         self.inner.onboarded
+    }
+
+    pub fn homepage_tour_completed(&self) -> bool {
+        self.inner.homepage_tour_completed
     }
 
     pub fn fast_mode(&self) -> bool {
@@ -148,6 +159,9 @@ pub struct SerializedSettings {
     onboarded: bool,
 
     #[serde(default)]
+    homepage_tour_completed: bool,
+
+    #[serde(default)]
     fast_mode: bool,
 }
 
@@ -161,6 +175,7 @@ impl Default for SerializedSettings {
             hide_empty_tokens: true,
             aliases: HashMap::new(),
             onboarded: false,
+            homepage_tour_completed: false,
             fast_mode: false,
         }
     }

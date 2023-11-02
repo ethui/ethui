@@ -2,22 +2,31 @@ import { useTour } from "@reactour/tour";
 import { useEffect } from "react";
 import { Route, Switch } from "wouter";
 
-import { useNoticeAlchemyKeyMissing, useNoticeNewVersion } from "@/hooks";
+import {
+  useInvoke,
+  useNoticeAlchemyKeyMissing,
+  useNoticeNewVersion,
+} from "@/hooks";
+import { GeneralSettings } from "@/types";
 
 import { ErrorHandler, Navbar, NestedRoutes } from "./";
 import { DEFAULT_TAB, SidebarLayout, TABS } from "./Sidebar";
 
 export function HomePage() {
   const { setIsOpen } = useTour();
+  const { data: settings } = useInvoke<GeneralSettings>("settings_get");
 
   useNoticeAlchemyKeyMissing();
   useNoticeNewVersion();
 
   useEffect(() => {
-    setTimeout(() => {
-      setIsOpen(true);
-    }, 1000);
-  }, [setIsOpen]);
+    if (!settings) return;
+
+    if (!settings.homepageTourCompleted)
+      setTimeout(() => {
+        setIsOpen(true);
+      }, 500);
+  }, [setIsOpen, settings, settings?.homepageTourCompleted]);
 
   return (
     <SidebarLayout>
