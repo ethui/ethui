@@ -36,7 +36,11 @@ export default function PopoverContent(props: PopoverContentProps) {
         justifyContent="space-between"
         alignItems="stretch"
       >
-        <Button sx={{ alignSelf: "end" }} onClick={onClickCloseButton}>
+        <Button
+          sx={{ alignSelf: "end" }}
+          disabled={!isLastStep}
+          onClick={onClickCloseButton}
+        >
           <CloseIcon />
         </Button>
 

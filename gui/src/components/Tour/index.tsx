@@ -27,6 +27,33 @@ export default function TourWrapper({ children, steps, onClose }: Props) {
       position="right"
       disableInteraction
       onClickClose={onClose}
+      onClickMask={({ setCurrentStep, currentStep, steps, setIsOpen }) => {
+        if (steps) {
+          if (currentStep === steps.length - 1) {
+            setIsOpen(false);
+            onClose();
+          } else {
+            setCurrentStep((s) => s + 1);
+          }
+        }
+      }}
+      keyboardHandler={(e, clickProps) => {
+        if (!clickProps || !clickProps.steps) return;
+
+        const { setCurrentStep, steps, currentStep, setIsOpen } = clickProps;
+        const lastStep = steps.length - 1;
+
+        if (e.key === "ArrowRight") {
+          setCurrentStep(Math.min(currentStep + 1, lastStep));
+        }
+        if (e.key === "ArrowLeft") {
+          setCurrentStep(Math.max(currentStep - 1, 0));
+        }
+        if (e.key === "Escape" && currentStep === lastStep) {
+          setIsOpen(false);
+          onClose();
+        }
+      }}
     >
       {children}
     </TourProvider>
