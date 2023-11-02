@@ -1,4 +1,4 @@
-export const steps = [
+export const homepageSteps = [
   {
     selector: '[data-tour="step-1"]',
     content: "Here you can quickly switch wallet, address and network.",
@@ -6,7 +6,7 @@ export const steps = [
   {
     selector: '[data-tour="step-2"]',
     content:
-      "Skip confirmation dialog when using a plaintext wallet on the anvil network",
+      "Skip confirmation dialog when using a plaintext wallet on the anvil network.",
   },
   {
     selector: '[data-tour="step-3"]',

@@ -27,6 +27,11 @@ pub async fn settings_finish_onboarding() -> Result<()> {
     Settings::write().await.finish_onboarding().await
 }
 
+#[tauri::command]
+pub async fn settings_finish_homepage_tour() -> Result<()> {
+    Settings::write().await.finish_homepage_tour().await
+}
+
 /// Gets the alias for an address
 #[tauri::command]
 pub async fn settings_get_alias(address: Address) -> Option<String> {

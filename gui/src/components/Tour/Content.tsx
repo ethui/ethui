@@ -10,7 +10,7 @@ import {
 import { PopoverContentProps } from "@reactour/tour";
 
 export default function ContentComponent(props: PopoverContentProps) {
-  const { steps, currentStep, setCurrentStep } = props;
+  const { steps, currentStep, setCurrentStep, setIsOpen, onClickClose } = props;
 
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === steps.length - 1;
@@ -23,7 +23,17 @@ export default function ContentComponent(props: PopoverContentProps) {
         justifyContent="space-between"
         alignItems="stretch"
       >
-        <Button sx={{ alignSelf: "end" }}>
+        <Button
+          sx={{ alignSelf: "end" }}
+          onClick={() => {
+            if (isLastStep) {
+              onClickClose();
+              setIsOpen(false);
+            } else {
+              setCurrentStep((s) => s + 1);
+            }
+          }}
+        >
           <CloseIcon />
         </Button>
 

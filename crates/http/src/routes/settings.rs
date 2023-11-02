@@ -16,6 +16,7 @@ pub(super) fn router() -> Router<Ctx> {
         .route("/set_dark_mode", post(set_dark_mode))
         .route("/set_fast_mode", post(set_fast_mode))
         .route("/finish_onboarding", post(finish_onboarding))
+        .route("/finish_homepage_tour", post(finish_homepage_tour))
         .route("/alias", get(alias))
         .route("/alias", post(set_alias))
 }
@@ -60,6 +61,12 @@ pub(crate) async fn set_fast_mode(Json(params): Json<SetFastModePayload>) -> Res
 
 pub(crate) async fn finish_onboarding() -> Result<()> {
     iron_settings::commands::settings_finish_onboarding().await?;
+
+    Ok(())
+}
+
+pub(crate) async fn finish_homepage_tour() -> Result<()> {
+    iron_settings::commands::settings_finish_homepage_tour().await?;
 
     Ok(())
 }

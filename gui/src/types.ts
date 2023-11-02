@@ -214,6 +214,7 @@ export const generalSettingsSchema = z.object({
   etherscanApiKey: z.string().optional().nullable(),
   hideEmptyTokens: z.boolean(),
   onboarded: z.boolean(),
+  homepageTourCompleted: z.boolean(),
   fastMode: z.boolean(),
 });
 

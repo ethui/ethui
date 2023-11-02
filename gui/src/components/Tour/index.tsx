@@ -1,11 +1,10 @@
-import { StylesObj, TourProvider } from "@reactour/tour";
+import { StepType, StylesObj, TourProvider } from "@reactour/tour";
 
 import { useTheme } from "@/store/theme";
 
 import ContentComponent from "./Content";
-import { steps } from "./Steps";
 
-export default function TourWrapper({ children }: Props) {
+export default function TourWrapper({ children, steps, onClose }: Props) {
   const { theme } = useTheme();
 
   const maskWrapperColor =
@@ -27,6 +26,7 @@ export default function TourWrapper({ children }: Props) {
       styles={styles}
       position="right"
       disableInteraction
+      onClickClose={onClose}
     >
       {children}
     </TourProvider>
@@ -35,4 +35,6 @@ export default function TourWrapper({ children }: Props) {
 
 interface Props {
   children: React.ReactNode;
+  steps: StepType[];
+  onClose: () => void;
 }
