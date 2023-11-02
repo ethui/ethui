@@ -1,37 +1,25 @@
 import { StylesObj, TourProvider } from "@reactour/tour";
 
+import { useTheme } from "@/store/theme";
+
 import ContentComponent from "./Content";
-
-const styles = {
-  popover: (base: StylesObj) => ({
-    ...base,
-    color: "black",
-    padding: 0,
-  }),
-  maskArea: (base: StylesObj) => ({ ...base, rx: 5 }),
-  maskWrapper: (base: StylesObj) => ({ ...base, color: "#ffffff" }),
-  controls: (base: StylesObj) => ({ ...base, marginTop: 50 }),
-  close: (base: StylesObj) => ({ ...base, left: "auto", right: 8, top: 8 }),
-};
-
-const steps = [
-  {
-    selector: '[data-tour="step-1"]',
-    content: "Here you can quickly switch wallets, address and networks.",
-  },
-  {
-    selector: '[data-tour="step-2"]',
-    content:
-      "Skip confirmation dialog when using a plaintext wallet on the anvil network",
-  },
-  {
-    selector: '[data-tour="step-3"]',
-    content:
-      "The main navigation tool within the app. Alternatively, use Ctrl+K/Cmd+K for prompting the command bar.",
-  },
-];
+import { steps } from "./Steps";
 
 export default function TourWrapper({ children }: Props) {
+  const { theme } = useTheme();
+
+  const maskWrapperColor =
+    theme.palette.mode === "dark" ? "#ffffff" : "#000000";
+
+  const styles = {
+    popover: (base: StylesObj) => ({
+      ...base,
+      padding: 0,
+      backgroundColor: theme.palette.background.default,
+    }),
+    maskWrapper: (base: StylesObj) => ({ ...base, color: maskWrapperColor }),
+  };
+
   return (
     <TourProvider
       steps={steps}
@@ -39,7 +27,6 @@ export default function TourWrapper({ children }: Props) {
       styles={styles}
       position="right"
       disableInteraction
-      showBadge={false}
     >
       {children}
     </TourProvider>
