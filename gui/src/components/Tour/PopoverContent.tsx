@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { PopoverContentProps } from "@reactour/tour";
 
-export default function ContentComponent(props: PopoverContentProps) {
+export default function PopoverContent(props: PopoverContentProps) {
   const { steps, currentStep, setCurrentStep, setIsOpen, onClickClose } = props;
 
   const isFirstStep = currentStep === 0;
