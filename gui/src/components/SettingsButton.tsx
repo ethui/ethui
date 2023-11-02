@@ -1,6 +1,8 @@
 import { SettingsSharp as SettingsSharpIcon } from "@mui/icons-material";
 import { Button, IconButton } from "@mui/material";
 
+import TourWrapper from "@/components/Tour";
+import { settingsSteps } from "@/components/Tour/Steps";
 import { useSettingsWindow, useTheme } from "@/store";
 
 import { Modal, Settings as SettingsPage } from "./";
@@ -50,7 +52,9 @@ export function SettingsButton() {
           maxWidth: "900px",
         }}
       >
-        <SettingsPage />
+        <TourWrapper steps={settingsSteps} onClose={() => {}}>
+          <SettingsPage />
+        </TourWrapper>
       </Modal>
     </>
   );

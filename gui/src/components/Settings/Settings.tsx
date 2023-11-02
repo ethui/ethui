@@ -6,8 +6,9 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { useTour } from "@reactour/tour";
 import { find } from "lodash-es";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { SettingsFoundry } from "./Foundry";
 import { SettingsGeneral } from "./General";
@@ -25,6 +26,13 @@ const WIDTH = 140;
 
 export function Settings() {
   const [currentTab, setCurrentTab] = useState(TABS[0].name);
+  const { setIsOpen } = useTour();
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsOpen(true);
+    }, 1000);
+  }, [setIsOpen]);
 
   const tab = find(TABS, { name: currentTab });
 
@@ -82,7 +90,12 @@ interface SidebarTabProps {
 
 function SidebarTab({ tab, onSelect, selected }: SidebarTabProps) {
   return (
-    <Button variant="sidebar" onClick={onSelect} disabled={selected}>
+    <Button
+      variant="sidebar"
+      onClick={onSelect}
+      disabled={selected}
+      data-settings-tour={tab.name}
+    >
       {tab.name}
     </Button>
   );

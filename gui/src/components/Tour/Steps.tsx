@@ -14,3 +14,22 @@ export const homepageSteps = [
       "The main navigation tool within the app. Alternatively, use Ctrl+K/Cmd+K for prompting the command bar.",
   },
 ];
+
+export const settingsSteps = [
+  {
+    selector: '[data-settings-tour="General"]',
+    content: "Here you can quickly switch wallet, address and network.",
+  },
+  {
+    selector: '[data-settings-tour="Wallets"]',
+    content: "Here you can quickly switch wallet, address and network.",
+  },
+  {
+    selector: '[data-settings-tour="Network"]',
+    content: "Here you can quickly switch wallet, address and network.",
+  },
+  {
+    selector: '[data-settings-tour="Foundry"]',
+    content: "Here you can quickly switch wallet, address and network.",
+  },
+];
