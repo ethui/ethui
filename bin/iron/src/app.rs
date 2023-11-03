@@ -219,7 +219,12 @@ async fn event_listener(handle: AppHandle) {
 }
 
 fn resource(app: &tauri::App, resource: &str) -> PathBuf {
-    app.path_resolver()
-        .resolve_resource(resource)
-        .unwrap_or_else(|| panic!("failed to resolve resource {}", resource))
+    let config_dir = app
+        .path_resolver()
+        .app_config_dir()
+        .unwrap_or_else(|| panic!("failed to resolve app_config_dir"));
+
+    std::fs::create_dir_all(&config_dir).expect("could not create config dir");
+
+    config_dir.join(resource)
 }

@@ -30,7 +30,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.naps26.iron",
+      "identifier": "iron-wallet",
       "targets": "all"
     },
     "systemTray": {
