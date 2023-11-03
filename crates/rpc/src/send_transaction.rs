@@ -200,7 +200,9 @@ impl<'a> SendTransactionBuilder<'a> {
             self.wallet_name = Some(wallet.name());
             self.wallet_path = Some(path);
         } else {
-            let wallet = wallets.get_current_wallet();
+            let wallet = wallets
+                .get_current_wallet()
+                .ok_or(Error::Wallets(iron_wallets::Error::NoWallet))?;
 
             self.wallet_path = Some(wallet.get_current_path());
             self.request

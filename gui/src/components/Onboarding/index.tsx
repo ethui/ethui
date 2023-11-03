@@ -5,6 +5,7 @@ import { DraggableToolbar } from "@/components";
 
 import { AlchemyStep } from "./Alchemy";
 import { InstallExtensionStep } from "./Extension";
+import { TestWalletStep } from "./TestWallet";
 import { ThankYouStep } from "./ThankYou";
 import { WelcomeStep } from "./Welcome";
 
@@ -15,6 +16,7 @@ export interface StepProps {
 export const steps: { component: React.FC<StepProps> }[] = [
   { component: WelcomeStep },
   { component: AlchemyStep },
+  { component: TestWalletStep },
   { component: InstallExtensionStep },
   { component: ThankYouStep },
 ];
