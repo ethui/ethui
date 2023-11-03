@@ -77,11 +77,9 @@ impl IronApp {
             .on_menu_event(menu::event_handler);
 
         #[cfg(not(target_os = "macos"))]
-        {
-            builder = builder
-                .system_tray(crate::system_tray::build())
-                .on_system_tray_event(crate::system_tray::event_handler);
-        }
+        let builder = builder
+            .system_tray(crate::system_tray::build())
+            .on_system_tray_event(crate::system_tray::event_handler);
 
         let app = builder
             .build(tauri::generate_context!())
