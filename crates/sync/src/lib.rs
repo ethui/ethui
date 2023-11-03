@@ -1,13 +1,12 @@
 pub mod commands;
 mod error;
 
-pub use error::{Error, Result};
-
 use std::{
     collections::{HashMap, HashSet},
     sync::Arc,
 };
 
+pub use error::{Error, Result};
 use iron_broadcast::InternalMsg;
 use iron_db::DB;
 use iron_sync_alchemy::Alchemy;
