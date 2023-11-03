@@ -19,7 +19,7 @@ pub struct IronApp {
 
 impl IronApp {
     pub async fn build() -> AppResult<Self> {
-        let mut builder = Builder::default()
+        let builder = Builder::default()
             .plugin(windowStatePlugin::default().build())
             .invoke_handler(tauri::generate_handler![
                 commands::get_build_mode,
