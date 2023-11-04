@@ -7,7 +7,7 @@ use ethers::{
 };
 use iron_crypto::{self, EncryptedData};
 use iron_dialogs::{Dialog, DialogMsg};
-use iron_types::ChecksummedAddress;
+use iron_types::Address;
 use secrets::SecretVec;
 use tokio::{
     sync::{Mutex, RwLock},
@@ -22,8 +22,8 @@ pub struct HDWallet {
     name: String,
     derivation_path: String,
     count: u32,
-    current: (String, ChecksummedAddress),
-    addresses: Vec<(String, ChecksummedAddress)>,
+    current: (String, Address),
+    addresses: Vec<(String, Address)>,
     ciphertext: EncryptedData<String>,
 
     /// The signer is cached inside a `RwLock` so we can have interior mutability
@@ -72,7 +72,7 @@ impl WalletControl for HDWallet {
         Ok(Wallet::HDWallet(self))
     }
 
-    async fn get_current_address(&self) -> ChecksummedAddress {
+    async fn get_current_address(&self) -> Address {
         self.current.1
     }
 
@@ -91,7 +91,7 @@ impl WalletControl for HDWallet {
         Ok(())
     }
 
-    async fn get_address(&self, path: &str) -> Result<ChecksummedAddress> {
+    async fn get_address(&self, path: &str) -> Result<Address> {
         self.addresses
             .iter()
             .find(|(p, _)| p == path)
@@ -118,7 +118,7 @@ impl WalletControl for HDWallet {
         Ok(signer.with_chain_id(chain_id))
     }
 
-    async fn get_all_addresses(&self) -> Vec<(String, ChecksummedAddress)> {
+    async fn get_all_addresses(&self) -> Vec<(String, Address)> {
         self.addresses.clone()
     }
 }

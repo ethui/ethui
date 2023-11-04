@@ -10,7 +10,7 @@ use iron_connections::Ctx;
 use iron_dialogs::{Dialog, DialogMsg};
 use iron_networks::Network;
 use iron_settings::Settings;
-use iron_types::{ChecksummedAddress, GlobalState};
+use iron_types::{Address, GlobalState};
 use iron_wallets::{WalletControl, Wallets};
 
 use super::{Error, Result};
@@ -149,7 +149,7 @@ impl<'a> SendTransaction {
         })
     }
 
-    async fn from(&self) -> Result<ChecksummedAddress> {
+    async fn from(&self) -> Result<Address> {
         let wallets = Wallets::read().await;
         let wallet = wallets.get(&self.wallet_name).unwrap();
 

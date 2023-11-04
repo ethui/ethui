@@ -1,14 +1,14 @@
 use std::str::FromStr;
 
-use ethers::types::{Address, U256};
+use ethers::types::U256;
 use serde::Serialize;
 use sqlx::{sqlite::SqliteRow, Row};
 
-use super::ChecksummedAddress;
+use crate::Address;
 
 #[derive(Debug, Serialize)]
 pub struct TokenBalance {
-    pub contract: ChecksummedAddress,
+    pub contract: Address,
     pub balance: U256,
     pub metadata: TokenMetadata,
 }
@@ -25,7 +25,7 @@ impl TryFrom<SqliteRow> for TokenBalance {
 
     fn try_from(row: SqliteRow) -> Result<Self, Self::Error> {
         Ok(Self {
-            contract: Address::from_str(row.get("contract")).unwrap().into(),
+            contract: Address::from_str(row.get("contract")).unwrap(),
             balance: U256::from_str_radix(row.get("balance"), 10).unwrap(),
             metadata: row.try_into().unwrap(),
         })

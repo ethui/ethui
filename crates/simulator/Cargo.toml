@@ -29,9 +29,9 @@ revm = { version = "3", default-features = false, features = [
   "optional_block_gas_limit",
   "optional_no_base_fee",
 ] }
-foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-c74fd945ed129d67b2df69386c3139750cb3c534" }
-foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-c74fd945ed129d67b2df69386c3139750cb3c534" }
-foundry-utils = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-c74fd945ed129d67b2df69386c3139750cb3c534" }
+foundry-config = { git = "https://github.com/foundry-rs/foundry" }
+foundry-evm = { git = "https://github.com/foundry-rs/foundry" }
+foundry-utils = { git = "https://github.com/foundry-rs/foundry" }
 
 [dev-dependencies]
 pretty_assertions = "1.4.0"

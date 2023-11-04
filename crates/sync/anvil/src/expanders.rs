@@ -7,7 +7,7 @@ use ethers::{
 use futures::future::join_all;
 use iron_types::{
     events::{ContractDeployed, ERC20Transfer, ERC721Transfer, Tx},
-    Event,
+    Address, Event,
 };
 
 use super::{Error, Result};
@@ -46,7 +46,7 @@ async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Result<Vec<Eve
                 Tx {
                     hash: trace.transaction_hash.unwrap(),
                     position: trace.transaction_position,
-                    from,
+                    from: Address::from_slice(from.as_slice()),
                     to: None,
                     value,
                     data: Bytes::new(),
@@ -56,7 +56,7 @@ async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Result<Vec<Eve
                 }
                 .into(),
                 ContractDeployed {
-                    address,
+                    address: Address::from_slice(address.as_slice()),
                     code: provider.get_code(address, None).await.ok(),
                     block_number,
                 }

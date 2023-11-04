@@ -10,7 +10,7 @@ pub use error::{Error, Result};
 use iron_broadcast::InternalMsg;
 use iron_db::DB;
 use iron_sync_alchemy::Alchemy;
-use iron_types::{ChecksummedAddress, GlobalState, UINotify};
+use iron_types::{Address, GlobalState, UINotify};
 use tokio::{
     select,
     sync::{mpsc, Mutex},
@@ -30,11 +30,11 @@ pub async fn init(db: DB) {
 
 #[derive(Debug)]
 enum Msg {
-    TrackAddress(ChecksummedAddress),
-    UntrackAddress(ChecksummedAddress),
+    TrackAddress(Address),
+    UntrackAddress(Address),
     TrackNetwork(u32),
     UntrackNetwork(u32),
-    PollAddress(ChecksummedAddress),
+    PollAddress(Address),
     PollNetwork(u32),
 }
 
@@ -74,10 +74,10 @@ async fn receiver(snd: mpsc::UnboundedSender<Msg>) -> std::result::Result<(), ()
 #[derive(Debug)]
 struct Worker {
     db: DB,
-    addresses: HashSet<ChecksummedAddress>,
+    addresses: HashSet<Address>,
     chain_ids: HashSet<u32>,
-    current: (Option<ChecksummedAddress>, Option<u32>),
-    workers: HashMap<(ChecksummedAddress, u32), (JoinHandle<()>, mpsc::UnboundedSender<()>)>,
+    current: (Option<Address>, Option<u32>),
+    workers: HashMap<(Address, u32), (JoinHandle<()>, mpsc::UnboundedSender<()>)>,
     mutex: Arc<Mutex<()>>,
 }
 
@@ -112,7 +112,7 @@ impl Worker {
 
     /// creates a new worker per chain ID for the incoming addr
     #[instrument(skip(self), level = "trace")]
-    fn track_addr(&mut self, addr: ChecksummedAddress) {
+    fn track_addr(&mut self, addr: Address) {
         self.addresses.insert(addr);
         for chain_id in self.chain_ids.iter() {
             let chain_id = *chain_id;
@@ -123,7 +123,7 @@ impl Worker {
 
     /// drops all existing workers for this addr
     #[instrument(skip(self), level = "trace")]
-    fn untrack_addr(&mut self, addr: ChecksummedAddress) {
+    fn untrack_addr(&mut self, addr: Address) {
         self.addresses.remove(&addr);
         self.workers.retain(|(a, _), _| a != &addr);
     }
@@ -150,7 +150,7 @@ impl Worker {
 
     /// replaces worker for this addr & current chain_id with a priority one
     #[instrument(skip(self), level = "trace")]
-    fn prioritize_addr(&mut self, addr: ChecksummedAddress) {
+    fn prioritize_addr(&mut self, addr: Address) {
         self.current.0 = Some(addr);
 
         if let (Some(address), Some(chain_id)) = self.current {
@@ -176,7 +176,7 @@ impl Worker {
 
     fn spawn(
         &self,
-        addr: ChecksummedAddress,
+        addr: Address,
         chain_id: u32,
     ) -> (JoinHandle<()>, mpsc::UnboundedSender<()>) {
         let mutex = self.mutex.clone();
@@ -196,7 +196,7 @@ impl Worker {
 /// * high-priority waits 30 seconds
 #[instrument(skip(mutex, db, rx), level = "trace")]
 async fn unit_worker(
-    addr: ChecksummedAddress,
+    addr: Address,
     chain_id: u32,
     mutex: Arc<Mutex<()>>,
     db: DB,

@@ -2,11 +2,12 @@ use std::{str::FromStr, sync::Arc};
 
 use ethers::{
     providers::{Http, Middleware, Provider, RetryClient},
-    types::{Address, H256, U256},
+    types::{H256, U256},
 };
 use iron_abis::IERC20;
 use iron_db::DB;
 use iron_types::{
+    Address,
     events::{ContractDeployed, Tx},
     Event, TokenMetadata,
 };

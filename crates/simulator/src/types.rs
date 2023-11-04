@@ -1,9 +1,10 @@
 use ethers::{
-    abi::{Address, Uint},
+    abi::Uint,
     core::types::Log,
     types::{Bytes, U256},
 };
 use foundry_evm::CallKind;
+use iron_types::Address;
 use revm::interpreter::InstructionResult;
 use serde::{Deserialize, Serialize};
 

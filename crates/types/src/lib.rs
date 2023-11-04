@@ -1,16 +1,12 @@
 mod affinity;
-mod checksummed_address;
 pub mod events;
 mod global_state;
 mod tokens;
 pub mod ui_events;
 
 pub use affinity::Affinity;
-pub use checksummed_address::ChecksummedAddress;
-pub use ethers::{
-    abi::Abi,
-    types::{Address, U256},
-};
+pub use alloy_primitives::{address, Address};
+pub use ethers::{abi::Abi, types::U256};
 pub use events::Event;
 pub use global_state::GlobalState;
 pub use tokens::{

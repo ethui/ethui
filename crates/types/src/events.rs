@@ -1,8 +1,10 @@
 use std::str::FromStr;
 
-use ethers::types::{Address, Bytes, H256, U256};
+use ethers::types::{Bytes, H256, U256};
 use serde::Serialize;
 use sqlx::{sqlite::SqliteRow, Row};
+
+use crate::Address;
 
 #[derive(Debug)]
 pub enum Event {

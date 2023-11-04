@@ -1,13 +1,10 @@
-use ethers::{
-    abi::{Address, Uint},
-    core::types::Log,
-    types::Bytes,
-};
+use ethers::{abi::Uint, core::types::Log, types::Bytes};
 use foundry_evm::{
     executor::{fork::CreateFork, opts::EvmOpts, Backend, Executor, ExecutorBuilder},
     trace::{node::CallTraceNode, CallTraceArena},
 };
 use foundry_utils::types::ToAlloy;
+use iron_types::Address;
 use revm::interpreter::InstructionResult;
 
 use crate::{
@@ -49,8 +46,8 @@ impl From<CallTraceNode> for CallTrace {
     fn from(item: CallTraceNode) -> Self {
         CallTrace {
             call_type: item.trace.kind,
-            from: item.trace.caller,
-            to: item.trace.address,
+            from: Address::from_slice(item.trace.caller.as_bytes()),
+            to: Address::from_slice(item.trace.address.as_bytes()),
             value: item.trace.value,
         }
     }
@@ -115,8 +112,8 @@ impl Evm {
 
     pub async fn call_raw(&mut self, call: CallRawRequest) -> SimulationResult<CallRawResult> {
         let res = self.executor.call_raw(
-            call.from.to_alloy(),
-            call.to.to_alloy(),
+            call.from,
+            call.to,
             call.data.unwrap_or_default().0.into(),
             call.value.unwrap_or_default().to_alloy(),
         )?;

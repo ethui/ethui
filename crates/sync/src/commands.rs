@@ -1,7 +1,6 @@
-use ethers::abi::Address;
 use iron_db::DB;
 use iron_networks::Networks;
-use iron_types::{GlobalState, U256};
+use iron_types::{Address, GlobalState, U256};
 
 use crate::{Error, Result};
 

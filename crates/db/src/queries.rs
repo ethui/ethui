@@ -1,5 +1,5 @@
-use ethers::core::types::{Address, U256};
-use iron_types::{events, TokenMetadata};
+use ethers::core::types::U256;
+use iron_types::{events, Address, TokenMetadata};
 use sqlx::{sqlite::SqliteRow, Row, Sqlite};
 
 type Query<'a> = sqlx::query::Query<'a, Sqlite, sqlx::sqlite::SqliteArguments<'a>>;

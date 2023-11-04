@@ -14,7 +14,8 @@ pub async fn forge_get_abi(address: Address, chain_id: u32) -> Result<Option<Abi
             .get_network(chain_id)
             .ok_or(Error::InvalidChainId)?;
         let provider = network.get_provider();
-        provider.get_code(address, None).await?
+        let ethers_addr = ethers::types::Address::from_slice(address.as_slice());
+        provider.get_code(ethers_addr, None).await?
     };
 
     if code.len() == 0 {
@@ -37,7 +38,8 @@ pub async fn forge_get_name(address: Address, chain_id: u32) -> Result<Option<St
             .get_network(chain_id)
             .ok_or(Error::InvalidChainId)?;
         let provider = network.get_provider();
-        provider.get_code(address, None).await?
+        let ethers_addr = ethers::types::Address::from_slice(address.as_slice());
+        provider.get_code(ethers_addr, None).await?
     };
 
     if code.len() == 0 {

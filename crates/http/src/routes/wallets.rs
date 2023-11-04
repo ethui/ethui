@@ -3,7 +3,7 @@ use axum::{
     routing::{delete, get, post, put},
     Json, Router,
 };
-use iron_types::ChecksummedAddress;
+use iron_types::Address;
 use iron_wallets::Wallet;
 use serde::Deserialize;
 
@@ -37,7 +37,7 @@ pub(crate) async fn current_wallet() -> Result<Json<Wallet>> {
     Ok(Json(iron_wallets::commands::wallets_get_current().await?))
 }
 
-pub(crate) async fn current_address() -> Result<Json<ChecksummedAddress>> {
+pub(crate) async fn current_address() -> Result<Json<Address>> {
     Ok(Json(
         iron_wallets::commands::wallets_get_current_address().await?,
     ))
@@ -92,7 +92,7 @@ pub(crate) struct GetWalletAddressParams {
 
 pub(crate) async fn get_wallet_addresses(
     Query(GetWalletAddressParams { name }): Query<GetWalletAddressParams>,
-) -> Result<Json<Vec<(String, ChecksummedAddress)>>> {
+) -> Result<Json<Vec<(String, Address)>>> {
     Ok(Json(
         iron_wallets::commands::wallets_get_wallet_addresses(name).await?,
     ))
@@ -107,7 +107,7 @@ pub(crate) struct GetMnemonicAddressesPayload {
 
 pub(crate) async fn get_mnemonic_addresses(
     Query(payload): Query<GetMnemonicAddressesPayload>,
-) -> Json<Vec<(String, ChecksummedAddress)>> {
+) -> Json<Vec<(String, Address)>> {
     Json(
         iron_wallets::commands::wallets_get_mnemonic_addresses(
             payload.mnemonic,
