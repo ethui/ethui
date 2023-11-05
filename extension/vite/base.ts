@@ -7,39 +7,37 @@ import tsconfigPaths from "vite-tsconfig-paths";
 const dist = process.env.DIST_DIR || "dist/dev";
 
 const fetchVersion = () => {
-  return {
-    name: "html-transform",
-    transformIndexHtml(html: string) {
-      return html.replace(
-        /__APP_VERSION__/,
-        `v${process.env.npm_package_version}`,
-      );
-    },
-  };
+	return {
+		name: "html-transform",
+		transformIndexHtml(html: string) {
+			return html.replace(/__APP_VERSION__/, `v${process.env.npm_package_version}`);
+		},
+	};
 };
 
 export default defineConfig({
-  root: "src",
-  plugins: [
-    fetchVersion(),
-    nodePolyfills({
-      exclude: ["fs"],
-    }),
-    tsconfigPaths(),
-  ],
-  build: {
-    minify: false,
-    outDir: path.resolve(__dirname, "..", dist),
-    emptyOutDir: false,
-    rollupOptions: {
-      input: {
-        options: new URL("../src/options/index.html", import.meta.url).pathname,
-        background: new URL("../src/background/index.html", import.meta.url)
-          .pathname,
-      },
-      output: {
-        entryFileNames: "[name]/[name].js",
-      },
-    },
-  },
+	root: "src",
+	plugins: [
+		fetchVersion(),
+		nodePolyfills({
+			exclude: ["fs"],
+		}),
+		tsconfigPaths(),
+	],
+	build: {
+		minify: false,
+		outDir: path.resolve(__dirname, "..", dist),
+		emptyOutDir: false,
+		rollupOptions: {
+			input: {
+				options: new URL("../src/options/index.html", import.meta.url).pathname,
+				background: new URL("../src/background/index.html", import.meta.url).pathname,
+				devtools: new URL("../src/devtools.html", import.meta.url).pathname,
+				panel: new URL("../src/panel.html", import.meta.url).pathname,
+			},
+			output: {
+				entryFileNames: (chunk) => (chunk.name === "devtools" || "panel" ? "[name].js" : "[name]/index.js"),
+			},
+		},
+	},
 });

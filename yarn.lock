@@ -1896,6 +1896,14 @@
     "@types/filesystem" "*"
     "@types/har-format" "*"
 
+"@types/chrome@^0.0.248":
+  version "0.0.248"
+  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.248.tgz#fdc188a4b7ab8cfd2c49cb666214ecab81599002"
+  integrity sha512-qtBzxZD1v3eWZn8XxH1i07pAhzJDHnxJBBVy7bmntXxXKxjzNXYxD41teqa5yOcX/Yy8brRFGZESEzGoINvBDg==
+  dependencies:
+    "@types/filesystem" "*"
+    "@types/har-format" "*"
+
 "@types/connect@^3.4.33":
   version "3.4.36"
   resolved "https://registry.yarnpkg.com/@types/connect/-/connect-3.4.36.tgz#e511558c15a39cb29bd5357eebb57bd1459cd1ab"

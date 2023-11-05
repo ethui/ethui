@@ -13,6 +13,7 @@
     "build:chrome": "./scripts/build.sh --target chrome"
   },
   "devDependencies": {
+    "@types/chrome": "^0.0.248",
     "@types/node": "^20.4.5",
     "@types/webextension-polyfill": "^0.10.2",
     "autoprefixer": "^10.4.14",

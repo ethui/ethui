@@ -54,6 +54,9 @@ export class IronProvider extends EventEmitter {
     log.debug("request", { method, params });
     this.initialize();
 
+    const event = new CustomEvent('rpc-request', { detail: { method, params } });
+    window.postMessage(event, '*');
+
     const resp: JsonRpcResponse<Json> = await this.engine.handle({
       method,
       params,
