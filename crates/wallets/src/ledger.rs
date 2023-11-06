@@ -19,10 +19,9 @@ pub struct Ledger {
 #[async_trait]
 impl WalletCreate for Ledger {
     async fn create(params: serde_json::Value) -> Result<Wallet> {
-        todo!()
-        // let foo = serde_json::from_value(params)?;
-        //
+        let _foo = serde_json::from_value(params)?;
         // Ok(Wallet::Ledger(Self::from_params(foo).await?))
+        todo!()
     }
 }
 
@@ -31,7 +30,7 @@ impl WalletControl for Ledger {
     fn name(&self) -> String {
         todo!()
     }
-    async fn update(mut self, params: Json) -> Result<Wallet> {
+    async fn update(mut self, _params: Json) -> Result<Wallet> {
         todo!()
     }
     async fn get_current_address(&self) -> Address {
@@ -40,19 +39,19 @@ impl WalletControl for Ledger {
     fn get_current_path(&self) -> String {
         todo!()
     }
-    async fn set_current_path(&mut self, path: String) -> Result<()> {
+    async fn set_current_path(&mut self, _path: String) -> Result<()> {
         todo!()
     }
     async fn get_all_addresses(&self) -> Vec<(String, Address)> {
         todo!()
     }
-    async fn get_address(&self, path: &str) -> Result<Address> {
+    async fn get_address(&self, _path: &str) -> Result<Address> {
         todo!()
     }
     async fn build_signer(
         &self,
-        chain_id: u32,
-        path: &str,
+        _chain_id: u32,
+        _path: &str,
     ) -> Result<ethers::signers::Wallet<SigningKey>> {
         todo!()
     }
@@ -90,13 +89,13 @@ impl Ledger {
         let addresses = Self::detect(params.derivation_path, params.count).await?;
         // dbg!(addresses);
 
-        todo!()
-        //
-        // Ok(Self {
-        //     name: params.name,
-        //     addresses,
-        //     current: 0,
-        // })
+        // todo!()
+
+        Ok(Self {
+            name: params.name,
+            addresses,
+            current: 0,
+        })
     }
 }
 
