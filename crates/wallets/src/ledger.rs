@@ -65,7 +65,7 @@ pub struct LedgerParams {
 }
 
 impl Ledger {
-    pub async fn detect(derivation_path: String, _count: u32) -> Result<Vec<(String, Address)>> {
+    pub async fn detect(derivation_path: String, count: u32) -> Result<Vec<(String, Address)>> {
         let mut res = vec![];
         for idx in 0..count {
             let path = format!("{}/{}", derivation_path, idx);
