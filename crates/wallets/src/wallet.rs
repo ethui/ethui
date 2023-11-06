@@ -4,6 +4,8 @@ use ethers::core::k256::ecdsa::SigningKey;
 use iron_types::{Address, Json};
 use serde::{Deserialize, Serialize};
 
+use crate::ledger::Ledger;
+
 use super::{
     hd_wallet::HDWallet, impersonator::Impersonator, json_keystore_wallet::JsonKeystoreWallet,
     plaintext::PlaintextWallet, Error, Result,
@@ -68,6 +70,8 @@ pub enum Wallet {
     HDWallet(HDWallet),
 
     Impersonator(Impersonator),
+
+    Ledger(Ledger),
 }
 
 #[async_trait]
@@ -80,6 +84,7 @@ impl WalletCreate for Wallet {
             "jsonKeystore" => JsonKeystoreWallet::create(params).await?,
             "HDWallet" => HDWallet::create(params).await?,
             "impersonator" => Impersonator::create(params).await?,
+            "ledger" => Ledger::create(params).await?,
             _ => return Err(Error::InvalidWalletType(wallet_type.into())),
         };
 
