@@ -37,7 +37,10 @@ iron-ledger = { path = "crates/ledger" }
 
 tokio = { version = "1.33", features = ["full", "sync"] }
 thiserror = "1.0"
-ethers = { version = "2", features = ["ws", "ledger"] }
+ethers = { features = [
+  "ws",
+  "ledger",
+], git = "https://github.com/gakonst/ethers-rs", rev = "841ff8c47980798fbb47991e047f8481b1d5eb39" }
 sqlx = { version = "0.7.2", features = [
   "runtime-tokio-rustls",
   "sqlite",

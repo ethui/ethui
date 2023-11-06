@@ -1,26 +1,31 @@
 use async_trait::async_trait;
 use coins_bip32::prelude::SigningKey;
-use iron_types::{Address, Json};
+use ethers::signers::HDPath;
+use iron_types::{Address, Json, ToAlloy};
 use serde::{Deserialize, Serialize};
+
+use crate::Error;
 
 use super::{Result, Wallet, WalletControl, WalletCreate};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct Ledger {
     name: String,
-    derivation_path: String,
-    count: u32,
-    current: (String, Address),
+    addresses: Vec<(String, Address)>,
+    current: usize,
 }
 
 #[async_trait]
 impl WalletCreate for Ledger {
     async fn create(params: serde_json::Value) -> Result<Wallet> {
-        Ok(Wallet::Ledger(
-            Self::from_params(serde_json::from_value(params)?).await?,
-        ))
+        let s = Self::from_params(serde_json::from_value(params)?).await?;
+
+        todo!()
+        // Ok(Wallet::Ledger(s))
     }
 }
+
 #[async_trait]
 impl WalletControl for Ledger {
     fn name(&self) -> String {
@@ -59,9 +64,47 @@ pub struct LedgerParams {
     name: String,
     derivation_path: String,
     count: u32,
-    current: (String, Address),
 }
 
 impl Ledger {
-    async fn from_params(params: LedgerParams) -> Result<Self> {}
+    pub async fn detect(derivation_path: String, count: u32) -> Result<Vec<(String, Address)>> {
+        let mut res = vec![];
+        for idx in 0..count {
+            let path = format!("{}/{}", derivation_path, idx);
+            let ledger = ethers::signers::Ledger::new(HDPath::Other(path.clone()), 1)
+                .await
+                .map_err(|e| Error::Ledger(e.to_string()))?;
+            let address = ledger
+                .get_address()
+                .await
+                .map_err(|e| Error::Ledger(e.to_string()))?
+                .to_alloy();
+
+            res.push((path, address))
+        }
+
+        Ok(res)
+    }
+
+    async fn from_params(params: LedgerParams) -> Result<Self> {
+        let addresses = Self::detect(params.derivation_path, params.count).await?;
+
+        Ok(Self {
+            name: params.name,
+            addresses,
+            current: 0,
+        })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn detect() {
+        let addresses = Ledger::detect("m/44'/60'/0'/0".to_string(), 5).await;
+
+        assert!(addresses.is_ok());
+    }
 }

@@ -44,6 +44,9 @@ pub enum Error {
 
     #[error(transparent)]
     ParseInto(#[from] std::num::ParseIntError),
+
+    #[error(transparent)]
+    Ledger(String),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
