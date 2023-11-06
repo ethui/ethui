@@ -4,7 +4,7 @@ use ethers::{
     types::Chain,
 };
 use iron_settings::Settings;
-use iron_types::{Address, GlobalState};
+use iron_types::{Address, GlobalState, ToEthers};
 
 use crate::Result;
 
@@ -16,8 +16,7 @@ pub async fn fetch_etherscan_contract_name(
 
     let client = Client::new(chain, api_key)?;
 
-    let ethers_addr = ethers::types::Address::from_slice(address.as_slice());
-    match client.contract_source_code(ethers_addr).await {
+    match client.contract_source_code(address.to_ethers()).await {
         Ok(metadata) => Ok(Some(metadata.items[0].contract_name.clone())),
         Err(EtherscanError::ContractCodeNotVerified(_)) => Ok(None),
         Err(err) => Err(err.into()),
@@ -29,8 +28,7 @@ pub async fn fetch_etherscan_abi(chain: Chain, address: Address) -> Result<Optio
 
     let client = Client::new(chain, api_key)?;
 
-    let ethers_addr = ethers::types::Address::from_slice(address.as_slice());
-    match client.contract_abi(ethers_addr).await {
+    match client.contract_abi(address.to_ethers()).await {
         Ok(abi) => Ok(Some(abi)),
         Err(EtherscanError::ContractCodeNotVerified(_)) => Ok(None),
         Err(err) => Err(err.into()),

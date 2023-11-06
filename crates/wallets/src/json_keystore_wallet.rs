@@ -2,7 +2,7 @@ use std::{fs::File, io::BufReader, path::PathBuf, str::FromStr, sync::Arc, time:
 
 use async_trait::async_trait;
 use ethers::{
-    core::{k256::ecdsa::SigningKey, types::Address},
+    core::k256::ecdsa::SigningKey,
     signers::{self, Signer},
 };
 use iron_dialogs::{Dialog, DialogMsg};
@@ -60,9 +60,7 @@ impl WalletControl for JsonKeystoreWallet {
         let mut res: serde_json::Value = serde_json::from_reader(reader).unwrap();
 
         // TODO: this should fail correctly
-        let address: Address = Address::from_str(res["address"].take().as_str().unwrap()).unwrap();
-
-        address.into()
+        Address::from_str(res["address"].take().as_str().unwrap()).unwrap()
     }
 
     fn get_current_path(&self) -> String {

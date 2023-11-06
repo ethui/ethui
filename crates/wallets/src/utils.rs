@@ -1,5 +1,5 @@
 use ethers::signers::{coins_bip39::English, MnemonicBuilder, Signer};
-use iron_types::Address;
+use iron_types::{Address, ToAlloy};
 
 use super::Result;
 
@@ -25,7 +25,7 @@ pub fn derive_from_builder_and_path(
     builder: MnemonicBuilder<English>,
     path: &str,
 ) -> Result<Address> {
-    Ok(builder.derivation_path(path)?.build()?.address().into())
+    Ok(builder.derivation_path(path)?.build()?.address().to_alloy())
 }
 
 pub fn validate_mnemonic(mnemonic: &str) -> bool {

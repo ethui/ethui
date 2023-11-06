@@ -3,6 +3,7 @@ pub mod events;
 mod global_state;
 mod tokens;
 pub mod ui_events;
+pub use foundry_utils::types::{ToAlloy, ToEthers};
 
 pub use affinity::Affinity;
 pub use alloy_primitives::{address, Address};

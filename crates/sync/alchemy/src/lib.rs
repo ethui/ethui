@@ -14,7 +14,7 @@ use futures::{stream, StreamExt};
 pub use init::init;
 use iron_db::DB;
 use iron_settings::Settings;
-use iron_types::{Address, Event, GlobalState, SyncUpdates};
+use iron_types::{Address, Event, GlobalState, SyncUpdates, ToEthers};
 use once_cell::sync::Lazy;
 use serde_json::json;
 use tracing::{instrument, trace};
@@ -117,8 +117,7 @@ impl Alchemy {
     async fn fetch_native_balance(&self, chain_id: u32, address: Address) -> Result<U256> {
         let client = self.client(chain_id).await?;
 
-        let ethers_addr = ethers::types::Address::from_slice(address.as_slice());
-        Ok(client.get_balance(ethers_addr, None).await?)
+        Ok(client.get_balance(address.to_ethers(), None).await?)
     }
 
     async fn fetch_transactions(

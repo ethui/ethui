@@ -1,10 +1,12 @@
 use ethers::{abi::Uint, core::types::Log, types::Bytes};
 use foundry_evm::{
-    executor::{fork::CreateFork, opts::EvmOpts, Backend, Executor, ExecutorBuilder},
-    trace::{node::CallTraceNode, CallTraceArena},
+    backend::Backend,
+    executors::{Executor, ExecutorBuilder},
+    fork::CreateFork,
+    opts::EvmOpts,
+    traces::{node::CallTraceNode, CallTraceArena},
 };
-use foundry_utils::types::ToAlloy;
-use iron_types::Address;
+use iron_types::{Address, ToAlloy, ToEthers};
 use revm::interpreter::InstructionResult;
 
 use crate::{
@@ -46,9 +48,9 @@ impl From<CallTraceNode> for CallTrace {
     fn from(item: CallTraceNode) -> Self {
         CallTrace {
             call_type: item.trace.kind,
-            from: Address::from_slice(item.trace.caller.as_bytes()),
-            to: Address::from_slice(item.trace.address.as_bytes()),
-            value: item.trace.value,
+            from: item.trace.caller,
+            to: item.trace.address,
+            value: item.trace.value.to_ethers(),
         }
     }
 }
@@ -63,7 +65,7 @@ impl Evm {
         let evm_opts = EvmOpts {
             fork_url: Some(fork_url.clone()),
             fork_block_number,
-            env: foundry_evm::executor::opts::Env {
+            env: foundry_evm::opts::Env {
                 gas_limit: u64::MAX,
                 ..Default::default()
             },

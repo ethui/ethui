@@ -3,7 +3,7 @@ use ethers::{
     core::types::Log,
     types::{Bytes, U256},
 };
-use foundry_evm::CallKind;
+use foundry_evm::utils::CallKind;
 use iron_types::Address;
 use revm::interpreter::InstructionResult;
 use serde::{Deserialize, Serialize};

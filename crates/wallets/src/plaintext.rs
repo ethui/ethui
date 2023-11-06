@@ -6,7 +6,7 @@ use ethers::{
     core::k256::ecdsa::SigningKey,
     signers::{coins_bip39::English, MnemonicBuilder, Signer},
 };
-use iron_types::Address;
+use iron_types::{Address, ToAlloy};
 use serde::{Deserialize, Serialize};
 
 use super::{utils, wallet::WalletCreate, Result, Wallet, WalletControl};
@@ -39,7 +39,11 @@ impl WalletControl for PlaintextWallet {
     }
 
     async fn get_current_address(&self) -> Address {
-        self.build_current_signer(1).await.unwrap().address().into()
+        self.build_current_signer(1)
+            .await
+            .unwrap()
+            .address()
+            .to_alloy()
     }
 
     fn get_current_path(&self) -> String {
@@ -59,7 +63,7 @@ impl WalletControl for PlaintextWallet {
     }
 
     async fn get_address(&self, path: &str) -> Result<Address> {
-        Ok(self.build_signer(1, path).await?.address().into())
+        Ok(self.build_signer(1, path).await?.address().to_alloy())
     }
 
     async fn build_signer(
