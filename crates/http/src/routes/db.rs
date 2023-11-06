@@ -3,15 +3,12 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
-use ethers::{
-    abi::Abi,
-    types::{Address, Chain},
-};
+use ethers::{abi::Abi, types::Chain};
 use iron_db::{
     utils::{fetch_etherscan_abi, fetch_etherscan_contract_name},
     Paginated, Pagination,
 };
-use iron_types::{events::Tx, Erc721TokenData, TokenBalance, UINotify, U256};
+use iron_types::{events::Tx, Address, Erc721TokenData, TokenBalance, UINotify, U256};
 use serde::Deserialize;
 
 use crate::{Ctx, Error, Result};
