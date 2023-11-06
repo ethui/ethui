@@ -2,7 +2,7 @@
 
 use std::{collections::BTreeMap, path::PathBuf};
 
-use ethers::types::Bytes;
+use iron_types::Bytes;
 use tokio::{spawn, sync::mpsc};
 
 use crate::{

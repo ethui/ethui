@@ -5,6 +5,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import truncateEthAddress from "truncate-eth-address";
+import { getAddress } from "viem";
 import { z } from "zod";
 
 import { useInvoke } from "@/hooks";
@@ -17,7 +18,8 @@ interface Props {
   copyIcon?: boolean;
 }
 
-export function AddressView({ contextMenu, address, copyIcon }: Props) {
+export function AddressView({ contextMenu, address: addr, copyIcon }: Props) {
+  const address = getAddress(addr);
   const { data: alias, mutate } = useInvoke<string>("settings_get_alias", {
     address,
   });

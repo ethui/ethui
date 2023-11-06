@@ -1,4 +1,4 @@
-use iron_types::{ChecksummedAddress, GlobalState, Json};
+use iron_types::{Address, GlobalState, Json};
 
 use super::{error, utils, Result, Wallet, WalletControl, Wallets};
 
@@ -20,7 +20,7 @@ pub async fn wallets_get_current() -> Result<Wallet> {
 
 /// Gets the current address ooof the current wallet
 #[tauri::command]
-pub async fn wallets_get_current_address() -> Result<ChecksummedAddress> {
+pub async fn wallets_get_current_address() -> Result<Address> {
     Ok(Wallets::read()
         .await
         .get_current_wallet()
@@ -60,7 +60,7 @@ pub async fn wallets_set_current_path(key: String) -> Result<()> {
 #[tauri::command]
 pub async fn wallets_get_wallet_addresses(
     name: String,
-) -> Result<Vec<(String, ChecksummedAddress)>> {
+) -> Result<Vec<(String, Address)>> {
     Ok(Wallets::read().await.get_wallet_addresses(name).await)
 }
 
@@ -70,7 +70,7 @@ pub async fn wallets_get_wallet_addresses(
 pub async fn wallets_get_mnemonic_addresses(
     mnemonic: String,
     derivation_path: String,
-) -> Vec<(String, ChecksummedAddress)> {
+) -> Vec<(String, Address)> {
     utils::derive_addresses(&mnemonic, &derivation_path, 5)
 }
 

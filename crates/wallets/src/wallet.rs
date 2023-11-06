@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use enum_dispatch::enum_dispatch;
 use ethers::core::k256::ecdsa::SigningKey;
-use iron_types::{ChecksummedAddress, Json};
+use iron_types::{Address, Json};
 use serde::{Deserialize, Serialize};
 
 use super::{
@@ -14,12 +14,12 @@ use super::{
 pub trait WalletControl: Sync + Send + Deserialize<'static> + Serialize + std::fmt::Debug {
     fn name(&self) -> String;
     async fn update(mut self, params: Json) -> Result<Wallet>;
-    async fn get_current_address(&self) -> ChecksummedAddress;
+    async fn get_current_address(&self) -> Address;
     fn get_current_path(&self) -> String;
     async fn set_current_path(&mut self, path: String) -> Result<()>;
-    async fn get_all_addresses(&self) -> Vec<(String, ChecksummedAddress)>;
+    async fn get_all_addresses(&self) -> Vec<(String, Address)>;
 
-    async fn get_address(&self, path: &str) -> Result<ChecksummedAddress>;
+    async fn get_address(&self, path: &str) -> Result<Address>;
 
     async fn build_signer(
         &self,
@@ -34,7 +34,7 @@ pub trait WalletControl: Sync + Send + Deserialize<'static> + Serialize + std::f
         self.build_signer(chain_id, &self.get_current_path()).await
     }
 
-    async fn find(&self, address: ChecksummedAddress) -> Option<String> {
+    async fn find(&self, address: Address) -> Option<String> {
         let addresses = self.get_all_addresses().await;
 
         addresses.iter().find_map(|(path, addr)| {

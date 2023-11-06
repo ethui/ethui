@@ -4,7 +4,7 @@ use axum::{
     Json, Router,
 };
 use iron_settings::{DarkMode, SerializedSettings};
-use iron_types::ChecksummedAddress;
+use iron_types::Address;
 use serde::Deserialize;
 
 use crate::{Ctx, Result};
@@ -66,7 +66,7 @@ pub(crate) async fn finish_onboarding() -> Result<()> {
 
 #[derive(Debug, Deserialize)]
 pub(crate) struct GetAliasPayload {
-    address: ChecksummedAddress,
+    address: Address,
 }
 
 pub(crate) async fn alias(Query(params): Query<GetAliasPayload>) -> Json<Option<String>> {
@@ -75,7 +75,7 @@ pub(crate) async fn alias(Query(params): Query<GetAliasPayload>) -> Json<Option<
 
 #[derive(Debug, Deserialize)]
 pub(crate) struct SetAliasPayload {
-    address: ChecksummedAddress,
+    address: Address,
     alias: Option<String>,
 }
 

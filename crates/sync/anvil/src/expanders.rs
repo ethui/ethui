@@ -2,12 +2,13 @@ use ethers::{
     abi::RawLog,
     contract::EthLogDecode,
     providers::{Http, Middleware, Provider},
-    types::{Action, Bytes, Call, Create, CreateResult, Log, Res, Trace},
+    types::{Action, Call, Create, CreateResult, Log, Res, Trace},
 };
 use futures::future::join_all;
+use iron_types::ToAlloy;
 use iron_types::{
     events::{ContractDeployed, ERC20Transfer, ERC721Transfer, Tx},
-    Event,
+    Bytes, Event,
 };
 
 use super::{Error, Result};
@@ -28,7 +29,7 @@ async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Result<Vec<Eve
     let receipt = provider
         .get_transaction_receipt(hash)
         .await?
-        .ok_or(Error::TxNotFound(hash))?;
+        .ok_or(Error::TxNotFound(hash.to_alloy()))?;
     let block_number = trace.block_number;
 
     let res = match (
@@ -44,19 +45,19 @@ async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Result<Vec<Eve
         ) => {
             vec![
                 Tx {
-                    hash: trace.transaction_hash.unwrap(),
+                    hash: trace.transaction_hash.unwrap().to_alloy(),
                     position: trace.transaction_position,
-                    from,
+                    from: from.to_alloy(),
                     to: None,
-                    value,
-                    data: Bytes::new(),
+                    value: value.to_alloy(),
+                    data: Bytes::default(),
                     status: receipt.status.unwrap().as_u64(),
                     block_number,
-                    deployed_contract: Some(address),
+                    deployed_contract: Some(address.to_alloy()),
                 }
                 .into(),
                 ContractDeployed {
-                    address,
+                    address: address.to_alloy(),
                     code: provider.get_code(address, None).await.ok(),
                     block_number,
                 }
@@ -79,11 +80,11 @@ async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Result<Vec<Eve
             _,
             0,
         ) => vec![Tx {
-            hash: trace.transaction_hash.unwrap(),
+            hash: trace.transaction_hash.unwrap().to_alloy(),
             position: trace.transaction_position,
-            from,
-            to: Some(to),
-            value,
+            from: from.to_alloy(),
+            to: Some(to.to_alloy()),
+            value: value.to_alloy(),
             data: input,
             status: receipt.status.unwrap().as_u64(),
             block_number,
@@ -112,10 +113,10 @@ fn expand_log(log: Log) -> Option<Event> {
     {
         return Some(
             ERC20Transfer {
-                from,
-                to,
-                value,
-                contract: log.address,
+                from: from.to_alloy(),
+                to: to.to_alloy(),
+                value: value.to_alloy(),
+                contract: log.address.to_alloy(),
                 block_number,
             }
             .into(),
@@ -128,10 +129,10 @@ fn expand_log(log: Log) -> Option<Event> {
     {
         return Some(
             ERC721Transfer {
-                from,
-                to,
-                token_id,
-                contract: log.address,
+                from: from.to_alloy(),
+                to: to.to_alloy(),
+                token_id: token_id.to_alloy(),
+                contract: log.address.to_alloy(),
                 block_number,
             }
             .into(),

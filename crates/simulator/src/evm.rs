@@ -1,13 +1,12 @@
-use ethers::{
-    abi::{Address, Uint},
-    core::types::Log,
-    types::Bytes,
-};
+use ethers::{abi::Uint, core::types::Log, types::Bytes};
 use foundry_evm::{
-    executor::{fork::CreateFork, opts::EvmOpts, Backend, Executor, ExecutorBuilder},
-    trace::{node::CallTraceNode, CallTraceArena},
+    backend::Backend,
+    executors::{Executor, ExecutorBuilder},
+    fork::CreateFork,
+    opts::EvmOpts,
+    traces::{node::CallTraceNode, CallTraceArena},
 };
-use foundry_utils::types::ToAlloy;
+use iron_types::{Address, ToAlloy, ToEthers};
 use revm::interpreter::InstructionResult;
 
 use crate::{
@@ -51,7 +50,7 @@ impl From<CallTraceNode> for CallTrace {
             call_type: item.trace.kind,
             from: item.trace.caller,
             to: item.trace.address,
-            value: item.trace.value,
+            value: item.trace.value.to_ethers(),
         }
     }
 }
@@ -66,7 +65,7 @@ impl Evm {
         let evm_opts = EvmOpts {
             fork_url: Some(fork_url.clone()),
             fork_block_number,
-            env: foundry_evm::executor::opts::Env {
+            env: foundry_evm::opts::Env {
                 gas_limit: u64::MAX,
                 ..Default::default()
             },
@@ -115,8 +114,8 @@ impl Evm {
 
     pub async fn call_raw(&mut self, call: CallRawRequest) -> SimulationResult<CallRawResult> {
         let res = self.executor.call_raw(
-            call.from.to_alloy(),
-            call.to.to_alloy(),
+            call.from,
+            call.to,
             call.data.unwrap_or_default().0.into(),
             call.value.unwrap_or_default().to_alloy(),
         )?;

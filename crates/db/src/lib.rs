@@ -6,11 +6,11 @@ pub mod utils;
 
 use std::{path::PathBuf, str::FromStr};
 
-use ethers::{
-    abi::Abi,
-    types::{Address, H256, U256},
+use ethers::abi::Abi;
+use iron_types::{
+    events::Tx, Address, Erc721Token, Erc721TokenData, Event, TokenBalance, TokenMetadata, B256,
+    U256,
 };
-use iron_types::{events::Tx, Erc721Token, Erc721TokenData, Event, TokenBalance, TokenMetadata};
 use sqlx::{
     sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous},
     Row,
@@ -157,7 +157,7 @@ impl DB {
                             queries::erc20_read_balance(transfer.contract, transfer.to, chain_id)
                                 .fetch_one(&mut *conn)
                                 .await
-                                .unwrap_or(U256::zero());
+                                .unwrap_or_default();
 
                         queries::erc20_update_balance(
                             transfer.contract,
@@ -185,7 +185,7 @@ impl DB {
         Ok(())
     }
 
-    pub async fn transaction_exists(&self, chain_id: u32, hash: H256) -> Result<bool> {
+    pub async fn transaction_exists(&self, chain_id: u32, hash: B256) -> Result<bool> {
         let res = sqlx::query(
             r#"SELECT COUNT(*) > 0 as result FROM transactions WHERE chain_id = ? AND hash = ?"#,
         )
@@ -313,7 +313,7 @@ impl DB {
         )
         .bind(chain_id)
         .bind(format!("0x{:x}", address))
-        .map(|row| U256::from_dec_str(row.get::<&str, _>("balance")).unwrap())
+        .map(|row| U256::from_str_radix(row.get::<&str, _>("balance"), 10).unwrap())
         .fetch_one(self.pool())
         .await
         .unwrap_or_default();

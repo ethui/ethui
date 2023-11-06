@@ -2,8 +2,8 @@ use ethers::{
     core::k256::ecdsa::SigningKey,
     prelude::{signer::SignerMiddlewareError, *},
     signers,
-    types::Address,
 };
+use iron_types::Address;
 use jsonrpc_core::ErrorCode;
 
 #[derive(thiserror::Error, Debug)]

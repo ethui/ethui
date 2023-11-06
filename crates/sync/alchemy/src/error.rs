@@ -1,4 +1,5 @@
-use ethers::{providers::JsonRpcError, types::H256};
+use ethers::providers::JsonRpcError;
+use iron_types::B256;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -30,7 +31,7 @@ pub enum Error {
     JsonRpcError(#[from] JsonRpcError),
 
     #[error("Transaction not found: {0}")]
-    TxNotFound(H256),
+    TxNotFound(B256),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

@@ -16,7 +16,7 @@ use std::{
 
 pub use error::{Error, Result};
 pub use init::init;
-use iron_types::{ChecksummedAddress, Json, UINotify};
+use iron_types::{Address, Json, UINotify};
 use serde::Serialize;
 
 use self::wallet::WalletCreate;
@@ -36,7 +36,7 @@ pub struct Wallets {
 }
 
 impl Wallets {
-    pub async fn find(&self, address: ChecksummedAddress) -> Option<(&Wallet, String)> {
+    pub async fn find(&self, address: Address) -> Option<(&Wallet, String)> {
         for w in self.wallets.iter() {
             if let Some(path) = w.find(address).await {
                 return Some((w, path));
@@ -66,7 +66,7 @@ impl Wallets {
         Ok(())
     }
 
-    async fn get_current_address(&self) -> Option<ChecksummedAddress> {
+    async fn get_current_address(&self) -> Option<Address> {
         Some(self.get_current_wallet()?.get_current_address().await)
     }
 
@@ -158,7 +158,7 @@ impl Wallets {
     }
 
     /// Get all addresses currently enabled in a given wallet
-    async fn get_wallet_addresses(&self, name: String) -> Vec<(String, ChecksummedAddress)> {
+    async fn get_wallet_addresses(&self, name: String) -> Vec<(String, Address)> {
         let wallet = self.find_wallet(&name).unwrap();
 
         wallet.get_all_addresses().await
