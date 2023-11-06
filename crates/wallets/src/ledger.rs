@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::Error;
 
-use super::{Result, Wallet, WalletControl, WalletCreate};
+use super::{wallet::WalletCreate, Result, Wallet, WalletControl};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -19,10 +19,10 @@ pub struct Ledger {
 #[async_trait]
 impl WalletCreate for Ledger {
     async fn create(params: serde_json::Value) -> Result<Wallet> {
-        let s = Self::from_params(serde_json::from_value(params)?).await?;
-
         todo!()
-        // Ok(Wallet::Ledger(s))
+        // let foo = serde_json::from_value(params)?;
+        //
+        // Ok(Wallet::Ledger(Self::from_params(foo).await?))
     }
 }
 
@@ -80,20 +80,23 @@ impl Ledger {
                 .map_err(|e| Error::Ledger(e.to_string()))?
                 .to_alloy();
 
-            res.push((path, address))
+            res.push((path, address));
         }
 
         Ok(res)
     }
 
-    async fn from_params(params: LedgerParams) -> Result<Self> {
+    pub async fn from_params(params: LedgerParams) -> Result<Self> {
         let addresses = Self::detect(params.derivation_path, params.count).await?;
+        // dbg!(addresses);
 
-        Ok(Self {
-            name: params.name,
-            addresses,
-            current: 0,
-        })
+        todo!()
+        //
+        // Ok(Self {
+        //     name: params.name,
+        //     addresses,
+        //     current: 0,
+        // })
     }
 }
 

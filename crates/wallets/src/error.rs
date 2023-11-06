@@ -45,7 +45,7 @@ pub enum Error {
     #[error(transparent)]
     ParseInto(#[from] std::num::ParseIntError),
 
-    #[error(transparent)]
+    #[error("ledger error: {0}")]
     Ledger(String),
 }
 
