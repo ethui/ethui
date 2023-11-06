@@ -1,8 +1,5 @@
-use ethers::{
-    abi::Abi,
-    types::{Chain, U256},
-};
-use iron_types::{events::Tx, Address, Erc721TokenData, TokenBalance, UINotify};
+use ethers::{abi::Abi, types::Chain};
+use iron_types::{events::Tx, Address, Erc721TokenData, TokenBalance, UINotify, U256};
 
 use super::{Paginated, Pagination, Result};
 use crate::{

@@ -1,10 +1,9 @@
 use std::str::FromStr;
 
-use ethers::types::U256;
 use serde::Serialize;
 use sqlx::{sqlite::SqliteRow, Row};
 
-use crate::Address;
+use crate::{Address, U256};
 
 #[derive(Debug, Serialize)]
 pub struct TokenBalance {
