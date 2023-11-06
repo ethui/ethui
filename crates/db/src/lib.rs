@@ -8,9 +8,11 @@ use std::{path::PathBuf, str::FromStr};
 
 use ethers::{
     abi::Abi,
-    types::{Address, H256, U256},
+    types::{H256, U256},
 };
-use iron_types::{events::Tx, Erc721Token, Erc721TokenData, Event, TokenBalance, TokenMetadata};
+use iron_types::{
+    events::Tx, Address, Erc721Token, Erc721TokenData, Event, TokenBalance, TokenMetadata,
+};
 use sqlx::{
     sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous},
     Row,

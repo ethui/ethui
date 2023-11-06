@@ -1,7 +1,8 @@
 use std::str::FromStr;
 
-use ethers::types::{Address, Bytes, Log, H256};
+use ethers::types::{Bytes, Log, H256};
 use iron_simulator::{Evm, Request};
+use iron_types::Address;
 use pretty_assertions::assert_eq;
 
 #[tokio::test(flavor = "multi_thread")]

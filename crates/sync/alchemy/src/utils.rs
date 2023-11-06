@@ -2,13 +2,14 @@ use std::{str::FromStr, sync::Arc};
 
 use ethers::{
     providers::{Http, Middleware, Provider, RetryClient},
-    types::{Address, H256, U256},
+    types::{H256, U256},
 };
 use iron_abis::IERC20;
 use iron_db::DB;
+use iron_types::ToEthers;
 use iron_types::{
     events::{ContractDeployed, Tx},
-    Event, TokenMetadata,
+    Address, Event, ToAlloy, TokenMetadata,
 };
 
 use super::{types::Transfer, Error, Result};
@@ -45,8 +46,8 @@ pub(super) async fn transfer_into_tx(
                 hash,
                 block_number,
                 position: tx.transaction_index.map(|p| p.as_usize()),
-                from: tx.from,
-                to: tx.to,
+                from: tx.from.to_alloy(),
+                to: tx.to.map(ToAlloy::to_alloy),
                 value: tx.value,
                 data: tx.input,
                 status: status.as_u64(),
@@ -61,7 +62,7 @@ pub(super) async fn transfer_into_tx(
 
         res.push(
             ContractDeployed {
-                address,
+                address: address.to_alloy(),
                 code,
                 block_number,
             }
@@ -82,7 +83,7 @@ pub(super) async fn fetch_erc20_metadata(
 
     for (address, _) in balances {
         if db.get_erc20_metadata(address, chain_id).await.is_err() {
-            let contract = IERC20::new(address, client.clone());
+            let contract = IERC20::new(address.to_ethers(), client.clone());
 
             let metadata = TokenMetadata {
                 name: contract.name().call().await.unwrap_or_default(),

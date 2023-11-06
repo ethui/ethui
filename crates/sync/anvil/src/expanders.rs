@@ -5,6 +5,7 @@ use ethers::{
     types::{Action, Bytes, Call, Create, CreateResult, Log, Res, Trace},
 };
 use futures::future::join_all;
+use iron_types::ToAlloy;
 use iron_types::{
     events::{ContractDeployed, ERC20Transfer, ERC721Transfer, Tx},
     Event,
@@ -46,17 +47,17 @@ async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Result<Vec<Eve
                 Tx {
                     hash: trace.transaction_hash.unwrap(),
                     position: trace.transaction_position,
-                    from,
+                    from: from.to_alloy(),
                     to: None,
                     value,
                     data: Bytes::new(),
                     status: receipt.status.unwrap().as_u64(),
                     block_number,
-                    deployed_contract: Some(address),
+                    deployed_contract: Some(address.to_alloy()),
                 }
                 .into(),
                 ContractDeployed {
-                    address,
+                    address: address.to_alloy(),
                     code: provider.get_code(address, None).await.ok(),
                     block_number,
                 }
@@ -81,8 +82,8 @@ async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Result<Vec<Eve
         ) => vec![Tx {
             hash: trace.transaction_hash.unwrap(),
             position: trace.transaction_position,
-            from,
-            to: Some(to),
+            from: from.to_alloy(),
+            to: Some(to.to_alloy()),
             value,
             data: input,
             status: receipt.status.unwrap().as_u64(),
@@ -112,10 +113,10 @@ fn expand_log(log: Log) -> Option<Event> {
     {
         return Some(
             ERC20Transfer {
-                from,
-                to,
+                from: from.to_alloy(),
+                to: to.to_alloy(),
                 value,
-                contract: log.address,
+                contract: log.address.to_alloy(),
                 block_number,
             }
             .into(),
@@ -128,10 +129,10 @@ fn expand_log(log: Log) -> Option<Event> {
     {
         return Some(
             ERC721Transfer {
-                from,
-                to,
+                from: from.to_alloy(),
+                to: to.to_alloy(),
                 token_id,
-                contract: log.address,
+                contract: log.address.to_alloy(),
                 block_number,
             }
             .into(),

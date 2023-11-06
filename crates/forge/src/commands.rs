@@ -1,6 +1,6 @@
 use ethers::{abi::Abi, providers::Middleware};
 use iron_networks::Networks;
-use iron_types::{Address, GlobalState};
+use iron_types::{Address, GlobalState, ToEthers};
 
 use super::{Error, Result};
 use crate::global::FORGE;
@@ -14,7 +14,7 @@ pub async fn forge_get_abi(address: Address, chain_id: u32) -> Result<Option<Abi
             .get_network(chain_id)
             .ok_or(Error::InvalidChainId)?;
         let provider = network.get_provider();
-        provider.get_code(address, None).await?
+        provider.get_code(address.to_ethers(), None).await?
     };
 
     if code.len() == 0 {
@@ -37,7 +37,7 @@ pub async fn forge_get_name(address: Address, chain_id: u32) -> Result<Option<St
             .get_network(chain_id)
             .ok_or(Error::InvalidChainId)?;
         let provider = network.get_provider();
-        provider.get_code(address, None).await?
+        provider.get_code(address.to_ethers(), None).await?
     };
 
     if code.len() == 0 {

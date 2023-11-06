@@ -57,7 +57,7 @@ iron-tracing = { path = "crates/tracing" }
 iron-exchange-rates = { path = "crates/exchange-rates" }
 tokio = { version = "1.32.0", features = ["full", "sync"] }
 thiserror = "1.0.40"
-ethers = { version = "2.0.10", features = ["ws"] }
+ethers = { version = "2", features = ["ws"] }
 sqlx = { version = "0.7.2", features = [
   "runtime-tokio-rustls",
   "sqlite",
@@ -71,9 +71,31 @@ once_cell = "1.17.1"
 secrets = { version = "1.2.0", features = ["use-libsodium-sys"] }
 tracing = "0.1.0"
 jsonrpc-core = "18.0.0"
+reqwest = { version = "0.11.18", default-features = false, features = [
+  "rustls-tls",
+] }
+alloy-primitives = { version = "0.4.1", features = ["serde"] }
+
+foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-6b72a8cabf247eb62fc432401264bc5cff0228a0" }
+foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-6b72a8cabf247eb62fc432401264bc5cff0228a0" }
+foundry-utils = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-6b72a8cabf247eb62fc432401264bc5cff0228a0" }
 
 [patch.crates-io]
-revm = { git = "https://github.com/Evalir/revm/", branch = "reintroduce-alloy-rebased" }
-revm-interpreter = { git = "https://github.com/Evalir/revm/", branch = "reintroduce-alloy-rebased" }
-revm-precompile = { git = "https://github.com/Evalir/revm/", branch = "reintroduce-alloy-rebased" }
-revm-primitives = { git = "https://github.com/Evalir/revm/", branch = "reintroduce-alloy-rebased" }
+ethers = { git = "https://github.com/gakonst/ethers-rs", rev = "841ff8c47980798fbb47991e047f8481b1d5eb39" }
+ethers-addressbook = { git = "https://github.com/gakonst/ethers-rs", rev = "841ff8c47980798fbb47991e047f8481b1d5eb39" }
+ethers-core = { git = "https://github.com/gakonst/ethers-rs", rev = "841ff8c47980798fbb47991e047f8481b1d5eb39" }
+ethers-contract = { git = "https://github.com/gakonst/ethers-rs", rev = "841ff8c47980798fbb47991e047f8481b1d5eb39" }
+ethers-contract-abigen = { git = "https://github.com/gakonst/ethers-rs", rev = "841ff8c47980798fbb47991e047f8481b1d5eb39" }
+ethers-providers = { git = "https://github.com/gakonst/ethers-rs", rev = "841ff8c47980798fbb47991e047f8481b1d5eb39" }
+ethers-signers = { git = "https://github.com/gakonst/ethers-rs", rev = "841ff8c47980798fbb47991e047f8481b1d5eb39" }
+ethers-middleware = { git = "https://github.com/gakonst/ethers-rs", rev = "841ff8c47980798fbb47991e047f8481b1d5eb39" }
+ethers-etherscan = { git = "https://github.com/gakonst/ethers-rs", rev = "841ff8c47980798fbb47991e047f8481b1d5eb39" }
+ethers-solc = { git = "https://github.com/gakonst/ethers-rs", rev = "841ff8c47980798fbb47991e047f8481b1d5eb39" }
+
+foundry-compilers = { git = "https://github.com/foundry-rs/compilers" }
+foundry-block-explorers = { git = "https://github.com/foundry-rs/block-explorers" }
+
+alloy-dyn-abi = { git = "https://github.com/alloy-rs/core/" }
+alloy-primitives = { git = "https://github.com/alloy-rs/core/" }
+alloy-json-abi = { git = "https://github.com/alloy-rs/core/" }
+alloy-sol-types = { git = "https://github.com/alloy-rs/core/" }

@@ -1,4 +1,4 @@
-use ethers::types::Address;
+use iron_types::Address;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
