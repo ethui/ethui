@@ -300,7 +300,7 @@ pub async fn fetch_erc721_token_data(
     let contract = IERC721::new(erc721_token.contract.to_ethers(), Arc::new(client));
 
     let contract_uri = contract
-        .token_uri(erc721_token.token_id)
+        .token_uri(erc721_token.token_id.to_ethers())
         .call()
         .await
         .map_err(|_| Error::Erc721FailedToFetchData)?;

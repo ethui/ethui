@@ -1,5 +1,4 @@
-use ethers::core::types::U256;
-use iron_types::{events, Address, TokenMetadata};
+use iron_types::{events, Address, TokenMetadata, U256};
 use sqlx::{sqlite::SqliteRow, Row, Sqlite};
 
 type Query<'a> = sqlx::query::Query<'a, Sqlite, sqlx::sqlite::SqliteArguments<'a>>;
@@ -95,7 +94,9 @@ pub(super) fn erc20_read_balance<'a>(
         .bind(chain_id)
         .bind(format!("0x{:x}", token))
         .bind(format!("0x{:x}", address))
-        .map(|r: SqliteRow| U256::from_dec_str(r.get::<&str, _>("balance")).unwrap_or_default())
+        .map(|r: SqliteRow| {
+            U256::from_str_radix(r.get::<&str, _>("balance"), 10).unwrap_or_default()
+        })
 }
 
 pub(super) fn erc20_update_balance<'a>(

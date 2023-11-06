@@ -1,10 +1,9 @@
 use std::str::FromStr;
 
-use ethers::types::{Bytes, H256, U256};
 use serde::Serialize;
 use sqlx::{sqlite::SqliteRow, Row};
 
-use crate::Address;
+use crate::{Address, Bytes, B256, U256};
 
 #[derive(Debug)]
 pub enum Event {
@@ -28,7 +27,7 @@ impl Event {
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Tx {
-    pub hash: H256,
+    pub hash: B256,
     pub from: Address,
     pub to: Option<Address>,
     pub value: U256,
@@ -93,7 +92,7 @@ impl TryFrom<&SqliteRow> for Tx {
 
     fn try_from(row: &SqliteRow) -> Result<Self, Self::Error> {
         Ok(Self {
-            hash: H256::from_str(row.get("hash")).unwrap(),
+            hash: B256::from_str(row.get("hash")).unwrap(),
             from: Address::from_str(row.get("from_address")).unwrap(),
             to: Address::from_str(row.get("to_address")).ok(),
             value: U256::from_str_radix(row.get("value"), 10).unwrap(),
