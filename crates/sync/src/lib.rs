@@ -174,11 +174,7 @@ impl Worker {
         }
     }
 
-    fn spawn(
-        &self,
-        addr: Address,
-        chain_id: u32,
-    ) -> (JoinHandle<()>, mpsc::UnboundedSender<()>) {
+    fn spawn(&self, addr: Address, chain_id: u32) -> (JoinHandle<()>, mpsc::UnboundedSender<()>) {
         let mutex = self.mutex.clone();
         let db = self.db.clone();
         let (tx, rx) = mpsc::unbounded_channel();
@@ -202,7 +198,7 @@ async fn unit_worker(
     db: DB,
     mut rx: mpsc::UnboundedReceiver<()>,
 ) {
-    let tip = db.get_tip(chain_id, addr.into()).await.ok();
+    let tip = db.get_tip(chain_id, addr).await.ok();
     let delay = 60;
 
     loop {
@@ -217,7 +213,7 @@ async fn unit_worker(
         // the alchemy global object acts as a mutex already
         let alchemy = Alchemy::read().await;
 
-        match alchemy.fetch_updates(chain_id, addr.into(), tip).await {
+        match alchemy.fetch_updates(chain_id, addr, tip).await {
             Ok(result) => {
                 if let Some(events) = result.events {
                     let res = db.save_events(chain_id, events).await;
@@ -228,14 +224,12 @@ async fn unit_worker(
                 }
 
                 if let Some(tip) = result.tip {
-                    let res = db.set_tip(chain_id, addr.into(), tip).await;
+                    let res = db.set_tip(chain_id, addr, tip).await;
                     log_if_error("set_tip", res);
                 }
 
                 if let Some(balances) = result.erc20_balances {
-                    let res = db
-                        .save_erc20_balances(chain_id, addr.into(), balances)
-                        .await;
+                    let res = db.save_erc20_balances(chain_id, addr, balances).await;
                     log_if_error("erc20_balances", res);
 
                     // TODO: this event should specify address and chain_id
@@ -243,7 +237,7 @@ async fn unit_worker(
                 }
 
                 if let Some(balance) = result.native_balance {
-                    let res = db.save_native_balance(balance, chain_id, addr.into()).await;
+                    let res = db.save_native_balance(balance, chain_id, addr).await;
                     log_if_error("native_balances", res);
 
                     // TODO: this event should specify address and chain_id

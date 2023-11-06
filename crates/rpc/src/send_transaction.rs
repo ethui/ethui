@@ -194,7 +194,7 @@ impl<'a> SendTransactionBuilder<'a> {
             self.request.set_from(address.to_ethers());
 
             let (wallet, path) = wallets
-                .find(address.into())
+                .find(address)
                 .await
                 .ok_or(Error::WalletNotFound(address))?;
             self.wallet_name = Some(wallet.name());

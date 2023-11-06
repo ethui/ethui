@@ -172,21 +172,15 @@ const fn default_true() -> bool {
 fn default_aliases() -> HashMap<Address, String> {
     let mut res = HashMap::new();
     res.insert(
-        Address::from_str("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
-            .unwrap()
-            .into(),
+        Address::from_str("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266").unwrap(),
         "alice".into(),
     );
     res.insert(
-        Address::from_str("0x70997970C51812dc3A010C7d01b50e0d17dc79C8")
-            .unwrap()
-            .into(),
+        Address::from_str("0x70997970C51812dc3A010C7d01b50e0d17dc79C8").unwrap(),
         "bob".into(),
     );
     res.insert(
-        Address::from_str("0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC")
-            .unwrap()
-            .into(),
+        Address::from_str("0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC").unwrap(),
         "charlie".into(),
     );
 
