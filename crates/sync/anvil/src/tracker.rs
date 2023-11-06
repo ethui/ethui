@@ -8,7 +8,7 @@ use ethers::{
     },
     types::{Filter, Log, Trace, U64},
 };
-use futures_util::StreamExt;
+use futures::StreamExt;
 use iron_abis::{IERC20, IERC721};
 use iron_db::DB;
 use iron_types::{Address, Erc721Token, Erc721TokenDetails, ToEthers, TokenMetadata, UINotify};

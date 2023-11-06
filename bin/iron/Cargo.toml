@@ -34,7 +34,7 @@ thiserror = { workspace = true }
 ethers = { workspace = true }
 tracing = { workspace = true }
 
-fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs", rev = "1a4c224" }
+fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs", rev = "016512b" }
 tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 
 [build-dependencies]
