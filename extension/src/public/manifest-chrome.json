@@ -28,11 +28,7 @@
   "web_accessible_resources": [
     {
       "matches": ["<all_urls>"],
-      "resources": [
-        "/inpage/inpage.js",
-        "devtools.html",
-        "panel.html"
-     ]
+      "resources": ["/inpage/inpage.js", "devtools.html", "panel.html"]
     }
   ],
   "permissions": ["storage"],

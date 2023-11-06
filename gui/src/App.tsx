@@ -7,13 +7,7 @@ import { SnackbarProvider } from "notistack";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Route, Router, Switch } from "wouter";
 
-import {
-  CommandBar,
-  DevBuildNotice,
-  ErrorHandler,
-  HomePage,
-  WagmiWrapper,
-} from "@/components";
+import { CommandBar, ErrorHandler, HomePage, WagmiWrapper } from "@/components";
 import {
   MsgSignDialog,
   TxReviewDialog,
