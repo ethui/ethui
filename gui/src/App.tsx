@@ -7,7 +7,13 @@ import { SnackbarProvider } from "notistack";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Route, Router, Switch } from "wouter";
 
-import { CommandBar, ErrorHandler, HomePage, WagmiWrapper } from "@/components";
+import {
+  CommandBar,
+  DevBuildNotice,
+  ErrorHandler,
+  HomePage,
+  WagmiWrapper,
+} from "@/components";
 import {
   MsgSignDialog,
   TxReviewDialog,
@@ -38,6 +44,7 @@ export default function App() {
       <CssBaseline>
         <ErrorHandler>
           <QueryClientProvider client={queryClient}>
+            <DevBuildNotice />
             <WagmiWrapper>
               <Routes />
             </WagmiWrapper>
