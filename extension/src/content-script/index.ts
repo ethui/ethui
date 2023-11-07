@@ -48,7 +48,6 @@ function initProviderForward() {
 
   // inpage -> bg
   inpageStream.on("data", (data) => {
-    console.log("posting data to bg", data)
     bgPort.postMessage(data);
   });
   // bg -> inpage

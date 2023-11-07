@@ -7,7 +7,7 @@ import { defaultSettings, loadSettings, type Settings } from "@/settings";
 (async () => init())();
 
 let settings: Settings = defaultSettings;
-var ports: browser.Runtime.Port[] = [];
+const ports: browser.Runtime.Port[] = [];
 
 /**
  * Loads the current settings, and listens for incoming connections (from the injected contentscript)
@@ -22,26 +22,30 @@ export async function init() {
 
 	// devtools handling
 	browser.runtime.onConnect.addListener(function (port) {
-		console.log("port", port);
 		if (port.name !== "devtools") return;
 		ports.push(port);
 		// Remove port when destroyed (eg when devtools instance is closed)
 		port.onDisconnect.addListener(function () {
-			var i = ports.indexOf(port);
+			const i = ports.indexOf(port);
 			if (i !== -1) ports.splice(i, 1);
 		});
-		port.onMessage.addListener(function (msg) {
+		// no need to listen to messages from devtools
+		/* port.onMessage.addListener(function (msg) {
 			// Received message from devtools. Do something:
 			console.log("Received message from devtools page", msg);
-		});
+		}); */
 	});
 }
 
 // Function to send a message to all devtools.html views:
-function notifyDevtools(msg: string) {
-	ports.forEach(function (port) {
-		port.postMessage(msg);
-	});
+function notifyDevtools(msg: unknown) {
+	if (typeof msg === "object" && msg !== null) {
+		// append current timestamp to the message
+		const msgWithTimestamp = { ...msg, timestamp: Date.now() };
+		ports.forEach(function (port) {
+			port.postMessage(JSON.stringify(msgWithTimestamp));
+		});
+	}
 }
 
 /**
@@ -64,9 +68,8 @@ export function setupProviderConnection(port: Runtime.Port) {
 
 	// forwarding incoming stream data to the WS server
 	port.onMessage.addListener((data: unknown) => {
-		console.log("bgport", data);
 		ws.send(JSON.stringify(data));
-		notifyDevtools(JSON.stringify(data));
+		notifyDevtools(data);
 	});
 }
 
