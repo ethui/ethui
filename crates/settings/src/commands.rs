@@ -1,4 +1,4 @@
-use iron_types::{ChecksummedAddress, GlobalState};
+use iron_types::{Address, GlobalState};
 
 use super::{DarkMode, Result, SerializedSettings, Settings};
 
@@ -29,13 +29,13 @@ pub async fn settings_finish_onboarding() -> Result<()> {
 
 /// Gets the alias for an address
 #[tauri::command]
-pub async fn settings_get_alias(address: ChecksummedAddress) -> Option<String> {
+pub async fn settings_get_alias(address: Address) -> Option<String> {
     Settings::read().await.get_alias(address)
 }
 
 /// Sets the alias for an address
 #[tauri::command]
-pub async fn settings_set_alias(address: ChecksummedAddress, alias: Option<String>) {
+pub async fn settings_set_alias(address: Address, alias: Option<String>) {
     Settings::write().await.set_alias(address, alias)
 }
 

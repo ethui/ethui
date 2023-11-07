@@ -10,7 +10,7 @@ use iron_connections::Ctx;
 use iron_dialogs::{Dialog, DialogMsg};
 use iron_networks::Network;
 use iron_settings::Settings;
-use iron_types::{ChecksummedAddress, GlobalState};
+use iron_types::{Address, GlobalState, ToAlloy, ToEthers};
 use iron_wallets::{WalletControl, Wallets};
 
 use super::{Error, Result};
@@ -130,13 +130,13 @@ impl<'a> SendTransaction {
         let tx_request = self.request.clone();
 
         Ok(iron_simulator::Request {
-            from: self.from().await.map_err(|_| Error::CannotSimulate)?.into(),
-            to: *tx_request
+            from: self.from().await.map_err(|_| Error::CannotSimulate)?,
+            to: tx_request
                 .to()
                 .ok_or(())
                 .and_then(|v| match v {
                     NameOrAddress::Name(_) => Err(()),
-                    NameOrAddress::Address(a) => Ok(a),
+                    NameOrAddress::Address(a) => Ok(a.to_alloy()),
                 })
                 .map_err(|_| Error::CannotSimulate)?,
             value: tx_request.value().cloned(),
@@ -149,7 +149,7 @@ impl<'a> SendTransaction {
         })
     }
 
-    async fn from(&self) -> Result<ChecksummedAddress> {
+    async fn from(&self) -> Result<Address> {
         let wallets = Wallets::read().await;
         let wallet = wallets.get(&self.wallet_name).unwrap();
 
@@ -191,10 +191,10 @@ impl<'a> SendTransactionBuilder<'a> {
         let wallets = Wallets::read().await;
         if let Some(from) = params["from"].as_str() {
             let address = Address::from_str(from).unwrap();
-            self.request.set_from(address);
+            self.request.set_from(address.to_ethers());
 
             let (wallet, path) = wallets
-                .find(address.into())
+                .find(address)
                 .await
                 .ok_or(Error::WalletNotFound(address))?;
             self.wallet_name = Some(wallet.name());
@@ -204,12 +204,13 @@ impl<'a> SendTransactionBuilder<'a> {
 
             self.wallet_path = Some(wallet.get_current_path());
             self.request
-                .set_from(wallet.get_current_address().await.into());
+                .set_from(wallet.get_current_address().await.to_ethers());
             self.wallet_name = Some(wallet.name());
         }
 
         if let Some(to) = params["to"].as_str() {
-            self.request.set_to(Address::from_str(to).unwrap());
+            self.request
+                .set_to(Address::from_str(to).unwrap().to_ethers());
         }
 
         if let Some(value) = params["value"].as_str() {

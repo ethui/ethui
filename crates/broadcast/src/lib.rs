@@ -1,5 +1,5 @@
 pub use internal_msgs::*;
-use iron_types::{ui_events, Affinity, ChecksummedAddress};
+use iron_types::{ui_events, Address, Affinity};
 use once_cell::sync::Lazy;
 use tokio::sync::{broadcast, RwLock};
 pub use ui_msgs::*;
@@ -9,14 +9,14 @@ use url::Url;
 #[derive(Debug, Clone)]
 pub enum InternalMsg {
     ChainChanged(u32, Option<String>, Affinity),
-    AccountsChanged(Vec<ChecksummedAddress>),
+    AccountsChanged(Vec<Address>),
     SettingsUpdated,
 
     ResetAnvilListener { chain_id: u32, http: Url, ws: Url },
 
-    AddressAdded(ChecksummedAddress),
-    AddressRemoved(ChecksummedAddress),
-    CurrentAddressChanged(ChecksummedAddress),
+    AddressAdded(Address),
+    AddressRemoved(Address),
+    CurrentAddressChanged(Address),
 
     NetworkAdded(u32),
     NetworkRemoved(u32),
@@ -54,7 +54,7 @@ mod internal_msgs {
     }
 
     /// Broadcasts `AccountsChanged` events
-    pub async fn accounts_changed(addresses: Vec<ChecksummedAddress>) {
+    pub async fn accounts_changed(addresses: Vec<Address>) {
         send(AccountsChanged(addresses)).await;
     }
 
@@ -68,15 +68,15 @@ mod internal_msgs {
         send(ResetAnvilListener { chain_id, http, ws }).await;
     }
 
-    pub async fn address_added(address: ChecksummedAddress) {
+    pub async fn address_added(address: Address) {
         send(AddressAdded(address)).await;
     }
 
-    pub async fn address_removed(address: ChecksummedAddress) {
+    pub async fn address_removed(address: Address) {
         send(AddressRemoved(address)).await;
     }
 
-    pub async fn current_address_changed(address: ChecksummedAddress) {
+    pub async fn current_address_changed(address: Address) {
         send(CurrentAddressChanged(address)).await;
     }
 

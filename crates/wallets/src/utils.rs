@@ -1,5 +1,5 @@
 use ethers::signers::{coins_bip39::English, MnemonicBuilder, Signer};
-use iron_types::ChecksummedAddress;
+use iron_types::{Address, ToAlloy};
 
 use super::Result;
 
@@ -7,7 +7,7 @@ pub fn derive_addresses(
     mnemonic: &str,
     derivation_path: &str,
     count: u32,
-) -> Vec<(String, ChecksummedAddress)> {
+) -> Vec<(String, Address)> {
     let builder = MnemonicBuilder::<English>::default().phrase(mnemonic);
 
     (0..count)
@@ -24,8 +24,8 @@ pub fn derive_addresses(
 pub fn derive_from_builder_and_path(
     builder: MnemonicBuilder<English>,
     path: &str,
-) -> Result<ChecksummedAddress> {
-    Ok(builder.derivation_path(path)?.build()?.address().into())
+) -> Result<Address> {
+    Ok(builder.derivation_path(path)?.build()?.address().to_alloy())
 }
 
 pub fn validate_mnemonic(mnemonic: &str) -> bool {

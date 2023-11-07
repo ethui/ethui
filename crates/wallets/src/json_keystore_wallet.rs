@@ -2,11 +2,11 @@ use std::{fs::File, io::BufReader, path::PathBuf, str::FromStr, sync::Arc, time:
 
 use async_trait::async_trait;
 use ethers::{
-    core::{k256::ecdsa::SigningKey, types::Address},
+    core::k256::ecdsa::SigningKey,
     signers::{self, Signer},
 };
 use iron_dialogs::{Dialog, DialogMsg};
-use iron_types::ChecksummedAddress;
+use iron_types::Address;
 use secrets::SecretVec;
 use tokio::{
     sync::{Mutex, RwLock},
@@ -54,15 +54,13 @@ impl WalletControl for JsonKeystoreWallet {
         Ok(Wallet::JsonKeystore(serde_json::from_value(params)?))
     }
 
-    async fn get_current_address(&self) -> ChecksummedAddress {
+    async fn get_current_address(&self) -> Address {
         let file = File::open(self.file.clone()).unwrap();
         let reader = BufReader::new(file);
         let mut res: serde_json::Value = serde_json::from_reader(reader).unwrap();
 
         // TODO: this should fail correctly
-        let address: Address = Address::from_str(res["address"].take().as_str().unwrap()).unwrap();
-
-        address.into()
+        Address::from_str(res["address"].take().as_str().unwrap()).unwrap()
     }
 
     fn get_current_path(&self) -> String {
@@ -73,7 +71,7 @@ impl WalletControl for JsonKeystoreWallet {
         Ok(())
     }
 
-    async fn get_address(&self, _path: &str) -> Result<ChecksummedAddress> {
+    async fn get_address(&self, _path: &str) -> Result<Address> {
         Ok(self.get_current_address().await)
     }
 
@@ -91,7 +89,7 @@ impl WalletControl for JsonKeystoreWallet {
         Ok(signer.with_chain_id(chain_id))
     }
 
-    async fn get_all_addresses(&self) -> Vec<(String, ChecksummedAddress)> {
+    async fn get_all_addresses(&self) -> Vec<(String, Address)> {
         vec![("default".into(), self.get_current_address().await)]
     }
 }
