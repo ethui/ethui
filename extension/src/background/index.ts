@@ -29,15 +29,21 @@ export async function init() {
       const i = ports.indexOf(port);
       if (i !== -1) ports.splice(i, 1);
     });
-    // no need to listen to messages from devtools
-    /* port.onMessage.addListener(function (msg) {
+    // no need to listen to messages from devtools yet
+    /*
+    port.onMessage.addListener(function (msg) {
 			// Received message from devtools. Do something:
 			console.log("Received message from devtools page", msg);
-		}); */
+		});
+    */
   });
 }
 
-// Function to send a message to all devtools.html views:
+/**
+ * Sends a message to the devtools in every page.
+ * Each message is appended with a timestamp.
+ * @param msg - message to be sent to the devtools
+ */
 function notifyDevtools(msg: unknown) {
   if (typeof msg === "object" && msg !== null) {
     // append current timestamp to the message
@@ -63,13 +69,24 @@ export function setupProviderConnection(port: Runtime.Port) {
       // forward WS server messages back to the stream (content script)
       const data = JSON.parse(event.data);
       port.postMessage(data);
+
+      // send RPC response to devtools
+      notifyDevtools({
+        type: "response",
+        data,
+      });
     })
     .build();
 
   // forwarding incoming stream data to the WS server
   port.onMessage.addListener((data: unknown) => {
     ws.send(JSON.stringify(data));
-    notifyDevtools(data);
+
+    // send RPC request to devtools
+    notifyDevtools({
+      type: "request",
+      data,
+    });
   });
 }
 
