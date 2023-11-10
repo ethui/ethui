@@ -10,8 +10,8 @@ use crate::Error;
 
 use super::{wallet::WalletCreate, Result, Wallet, WalletControl};
 
-/// Since all HID devices are accessed through the same interface, we need to block on it to avoid
-/// conflicting aynchronous calls
+/// Since all HID devices are accessed through the same interface, we need to globally block it to
+/// avoid conflicting aynchronous calls
 static HID_MUTEX: Lazy<Mutex<()>> = Lazy::new(Default::default);
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -35,26 +35,49 @@ impl WalletCreate for Ledger {
 #[async_trait]
 impl WalletControl for Ledger {
     fn name(&self) -> String {
-        todo!()
+        self.name.clone()
     }
-    async fn update(mut self, _params: Json) -> Result<Wallet> {
-        todo!()
+
+    async fn update(mut self, params: Json) -> Result<Wallet> {
+        if let Some(name) = params["name"].as_str() {
+            self.name = name.into();
+        }
+
+        // TODO: ability to update other fields
+
+        Ok(Wallet::Ledger(self))
     }
+
     async fn get_current_address(&self) -> Address {
-        todo!()
+        self.addresses.get(self.current).unwrap().1
     }
+
     fn get_current_path(&self) -> String {
-        todo!()
+        self.addresses.get(self.current).unwrap().0.clone()
     }
-    async fn set_current_path(&mut self, _path: String) -> Result<()> {
-        todo!()
+
+    async fn set_current_path(&mut self, path: String) -> Result<()> {
+        self.current = self
+            .addresses
+            .iter()
+            .position(|(p, _)| p == &path)
+            .ok_or(Error::InvalidKey(path))?;
+
+        Ok(())
     }
+
     async fn get_all_addresses(&self) -> Vec<(String, Address)> {
-        todo!()
+        self.addresses.clone()
     }
-    async fn get_address(&self, _path: &str) -> Result<Address> {
-        todo!()
+
+    async fn get_address(&self, path: &str) -> Result<Address> {
+        self.addresses
+            .iter()
+            .find(|(p, _)| p == path)
+            .map(|(_, a)| *a)
+            .ok_or(Error::InvalidKey(path.into()))
     }
+
     async fn build_signer(
         &self,
         _chain_id: u32,
@@ -123,7 +146,6 @@ mod tests {
         })
         .await;
 
-        dbg!(&ledger);
         assert!(ledger.is_ok());
     }
 }

@@ -136,11 +136,19 @@ export const impersonatorSchema = z.object({
   current: z.number().optional(),
 });
 
+export const ledgerSchema = z.object({
+  type: z.literal("ledger"),
+  name: z.string().min(1),
+  addresses: z.array(addressSchema).min(1),
+  current: z.number().optional(),
+});
+
 export const walletSchema = z.discriminatedUnion("type", [
   hdWalletSchema,
   jsonKeystoreSchema,
   plaintextSchema,
   impersonatorSchema,
+  ledgerSchema,
 ]);
 
 export const walletTypes: Wallet["type"][] = Array.from(
@@ -158,6 +166,8 @@ export type HdWallet = z.infer<typeof hdWalletSchema>;
 export type JsonKeystore = z.infer<typeof jsonKeystoreSchema>;
 export type Plaintext = z.infer<typeof plaintextSchema>;
 export type Impersonator = z.infer<typeof impersonatorSchema>;
+export type Ledger = z.infer<typeof ledgerSchema>;
+
 export type Network = z.infer<typeof networkSchema.shape.networks>[number];
 
 export interface TokenBalance {

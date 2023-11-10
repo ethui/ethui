@@ -22,6 +22,7 @@ import { HDWalletForm } from "./Wallet/HDWallet";
 import { ImpersonatorForm } from "./Wallet/Impersonator";
 import { JsonKeystore } from "./Wallet/JsonKeystore";
 import { Plaintext } from "./Wallet/Plaintext";
+import { Ledger } from "./Wallet/Ledger";
 
 type NewChild = { new?: boolean };
 
@@ -97,6 +98,9 @@ export function SettingsWallets() {
                 )}
                 {wallet.type === "impersonator" && (
                   <ImpersonatorForm wallet={wallet} {...props} />
+                )}
+                {wallet.type === "ledger" && (
+                  <Ledger wallet={wallet} {...props} />
                 )}
               </AccordionDetails>
             </Accordion>
