@@ -1,16 +1,31 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Stack, TextField } from "@mui/material";
 import { FieldValues, useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { Wallet, walletSchema } from "@/types";
+import { derivationPathSchema, LedgerWallet } from "@/types/wallets";
+
+export const createSchema = z.object({
+  name: z.string().min(1),
+  derivationPath: derivationPathSchema,
+  count: z.number().int().min(1).max(100),
+});
 
 export interface Props {
-  wallet: Wallet & { type: "plaintext" };
-  onSubmit: (data: FieldValues) => void;
+  wallet?: LedgerWallet;
+  onSubmit: (data: object) => void;
   onRemove: () => void;
 }
 
-export function Ledger({ wallet, onSubmit, onRemove }: Props) {
+export function Ledger({ wallet, ...props }: Props) {
+  if (!wallet) {
+    return <Create {...props} />;
+  } else {
+    return <Update wallet={wallet} {...props} />;
+  }
+}
+
+export function Create({ onSubmit, onRemove }: Props) {
   const {
     register,
     handleSubmit,
@@ -18,8 +33,7 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
     formState: { isValid, isDirty, errors },
   } = useForm({
     mode: "onBlur",
-    resolver: zodResolver(walletSchema),
-    defaultValues: wallet,
+    resolver: zodResolver(createSchema),
   });
 
   const prepareAndSubmit = (data: FieldValues) => {
@@ -39,13 +53,6 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
         error={!!errors.name}
         helperText={errors.name?.message?.toString()}
         {...register("name")}
-      />
-      <TextField
-        label="Mnemonic"
-        error={!!errors.mnemonic}
-        helperText={errors.mnemonic?.message?.toString() || ""}
-        fullWidth
-        {...register("mnemonic")}
       />
       <TextField
         label="Derivation Path"
@@ -77,4 +84,7 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
       </Stack>
     </Stack>
   );
+}
+function Update({}: Omit<Props, "type">) {
+  return <>TODO</>;
 }

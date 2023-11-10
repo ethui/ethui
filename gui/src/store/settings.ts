@@ -1,10 +1,10 @@
+import { invoke } from "@tauri-apps/api";
 import { listen } from "@tauri-apps/api/event";
-import { invoke } from "@tauri-apps/api/tauri";
 import { Action } from "kbar";
 import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { GeneralSettings } from "@/types";
+import { GeneralSettings } from "@/types/settings";
 
 interface State {
   settings?: GeneralSettings;
