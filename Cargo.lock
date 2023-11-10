@@ -914,6 +914,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "build-rs"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b00b8763668c99f8d9101b8a0dd82106f58265464531a79b2cef0d9a30c17dd2"
+
+[[package]]
 name = "build_const"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1406,6 +1412,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f7144d30dcf0fafbce74250a3963025d8d52177934239851c917d29f1df280c2"
 
 [[package]]
+name = "conv"
+version = "0.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "78ff10625fd0ac447827aa30ea8b861fead473bb60aeb73af6c1c58caf0d1299"
+dependencies = [
+ "custom_derive",
+]
+
+[[package]]
 name = "convert_case"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1616,6 +1631,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "cstr-argument"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b6bd9c8e659a473bce955ae5c35b116af38af11a7acb0b480e01f3ed348aeb40"
+dependencies = [
+ "cfg-if",
+ "memchr",
+]
+
+[[package]]
 name = "ctor"
 version = "0.1.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1633,6 +1658,12 @@ checksum = "0369ee1ad671834580515889b80f2ea915f23b8be8d0daa4bbaf2ac5c7590835"
 dependencies = [
  "cipher",
 ]
+
+[[package]]
+name = "custom_derive"
+version = "0.1.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ef8ae57c4978a2acd8b869ce6b9ca1dfe817bff704c220209fdef2c0b75a01b9"
 
 [[package]]
 name = "darling"
@@ -3329,6 +3360,47 @@ dependencies = [
 ]
 
 [[package]]
+name = "gpg-error"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d89aaeddbfb92313378c58e98abadaaa34082b3855f1d455576eeeda08bd592c"
+dependencies = [
+ "libgpg-error-sys",
+]
+
+[[package]]
+name = "gpgme"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "57539732fbe58eacdb984734b72b470ed0bca3ab7a49813271878567025ac44f"
+dependencies = [
+ "bitflags 1.3.2",
+ "cfg-if",
+ "conv",
+ "cstr-argument",
+ "gpg-error",
+ "gpgme-sys",
+ "libc",
+ "memoffset 0.7.1",
+ "once_cell",
+ "smallvec 1.11.0",
+ "static_assertions",
+]
+
+[[package]]
+name = "gpgme-sys"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "509223d659c06e4a26229437d6ac917723f02d31917c86c6ecd50e8369741cf7"
+dependencies = [
+ "build-rs",
+ "libc",
+ "libgpg-error-sys",
+ "system-deps 6.1.1",
+ "winreg 0.10.1",
+]
+
+[[package]]
 name = "group"
 version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4233,6 +4305,7 @@ dependencies = [
  "ethers",
  "futures",
  "futures-executor",
+ "gpgme",
  "hex",
  "iron-broadcast",
  "iron-crypto",
@@ -4568,6 +4641,17 @@ name = "libc"
 version = "0.2.147"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b4668fb0ea861c1df094127ac5f1da3409a82116a4ba74fca2e58ef927159bb3"
+
+[[package]]
+name = "libgpg-error-sys"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c97079310f39c835d3bd73578379d040f779614bb331c7ffbb6630fee6420290"
+dependencies = [
+ "build-rs",
+ "system-deps 6.1.1",
+ "winreg 0.10.1",
+]
 
 [[package]]
 name = "libloading"

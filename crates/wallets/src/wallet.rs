@@ -65,6 +65,7 @@ pub enum Wallet {
     Impersonator(Impersonator),
 
     Ledger(LedgerWallet),
+    Pgp(Pgp),
 }
 
 impl Wallet {
@@ -77,6 +78,7 @@ impl Wallet {
             "HDWallet" => HDWallet::create(params).await?,
             "impersonator" => Impersonator::create(params).await?,
             "ledger" => LedgerWallet::create(params).await?,
+            "pgp" => Pgp::create(params).await?,
             _ => return Err(Error::InvalidWalletType(wallet_type.into())),
         };
 
