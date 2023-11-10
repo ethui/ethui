@@ -1,12 +1,16 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Stack, TextField } from "@mui/material";
-import { FieldValues, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { derivationPathSchema, mnemonicSchema, PlaintextWallet } from "@/types";
+import {
+  derivationPathSchema,
+  mnemonicSchema,
+  PlaintextWallet,
+  Wallet,
+} from "@/types/wallets";
 
 const schema = z.object({
-  type: z.literal("plaintext"),
   name: z.string().min(1),
   mnemonic: mnemonicSchema,
   derivationPath: derivationPathSchema,
@@ -18,7 +22,7 @@ type Schema = z.infer<typeof schema>;
 
 export interface Props {
   wallet?: PlaintextWallet;
-  onSubmit: (data: FieldValues) => void;
+  onSubmit: (data: Wallet) => void;
   onRemove: () => void;
 }
 
@@ -35,7 +39,7 @@ export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
   });
 
   const prepareAndSubmit = (data: Schema) => {
-    onSubmit(data);
+    onSubmit({ type: "plaintext", ...data });
     reset(data);
   };
 

@@ -3,7 +3,6 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Box,
   Button,
   Chip,
   Menu,
@@ -15,16 +14,14 @@ import {
 import { invoke } from "@tauri-apps/api/tauri";
 import { startCase } from "lodash-es";
 import { useState } from "react";
-import { type FieldValues } from "react-hook-form";
 
 import { useWallets } from "@/store";
-import { Wallet, walletTypes } from "@/types";
+import { Wallet, walletTypes } from "@/types/wallets";
 
 import { HDWalletForm } from "./Wallet/HDWallet";
 import { ImpersonatorForm } from "./Wallet/Impersonator";
 import { JsonKeystore } from "./Wallet/JsonKeystore";
 import { Plaintext } from "./Wallet/Plaintext";
-import { Panel } from "../Panel";
 
 export function SettingsWallets() {
   const wallets = useWallets((s) => s.wallets);
@@ -32,13 +29,11 @@ export function SettingsWallets() {
 
   if (!wallets) return null;
 
-  const createNew = (type: Wallet["type"]) => {
+  const startNew = (type: Wallet["type"]) => {
     setNewType(type);
   };
 
-  const cancelNew = () => {
-    setNewType(null);
-  };
+  const closeNew = () => setNewType(null);
 
   return (
     <>
@@ -46,13 +41,11 @@ export function SettingsWallets() {
         {wallets.map((wallet) => (
           <ExistingItem key={wallet.name} wallet={wallet} />
         ))}
-        {newType && (
-          <NewItem key={`__new`} type={newType} onCancel={cancelNew} />
-        )}
+        {newType && <NewItem key={`_new`} type={newType} onFinish={closeNew} />}
       </Stack>
       {!newType && (
         <Stack spacing={2} direction="row" sx={{ mt: 4 }}>
-          <AddWalletButton onChoice={createNew} />
+          <AddWalletButton onChoice={startNew} />
         </Stack>
       )}
     </>
@@ -64,18 +57,10 @@ interface ItemProps {
 }
 
 function ExistingItem({ wallet }: ItemProps) {
-  const save = async (wallet: Wallet, params: object) => {
-    await invoke("wallets_update", { name: wallet.name, params });
-  };
-
-  const remove = () => {
-    invoke("wallets_remove", { name: wallet.name });
-  };
-
   const props = {
-    onSubmit: (params: FieldValues) => save(wallet, params),
-    onRemove: () => remove(),
-    onCancel: () => !wallet && remove(),
+    onSubmit: (params: object) =>
+      invoke("wallets_update", { name: wallet.name, params }),
+    onRemove: () => invoke("wallets_remove", { name: wallet.name }),
   };
 
   return (
@@ -106,17 +91,20 @@ function ExistingItem({ wallet }: ItemProps) {
 
 interface NewItemProps {
   type: Wallet["type"];
-  onCancel: () => void;
+  onFinish: () => void;
 }
 
-function NewItem({ type, onCancel }: NewItemProps) {
+function NewItem({ type, onFinish }: NewItemProps) {
   const save = async (params: object) => {
     await invoke("wallets_create", { params: { ...params, type } });
   };
 
   const props = {
-    onSubmit: (params: FieldValues) => save(params),
-    onRemove: onCancel,
+    onSubmit: (params: object) => {
+      save(params);
+      onFinish();
+    },
+    onRemove: onFinish,
   };
 
   return (
