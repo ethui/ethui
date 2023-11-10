@@ -155,9 +155,10 @@ export const walletsSchema = z.object({
 
 export type Wallet = z.infer<typeof walletSchema>;
 export type HdWallet = z.infer<typeof hdWalletSchema>;
-export type JsonKeystore = z.infer<typeof jsonKeystoreSchema>;
-export type Plaintext = z.infer<typeof plaintextSchema>;
-export type Impersonator = z.infer<typeof impersonatorSchema>;
+export type JsonKeystoreWallet = z.infer<typeof jsonKeystoreSchema>;
+export type PlaintextWallet = z.infer<typeof plaintextSchema>;
+export type ImpersonatorWallet = z.infer<typeof impersonatorSchema>;
+
 export type Network = z.infer<typeof networkSchema.shape.networks>[number];
 
 export interface TokenBalance {

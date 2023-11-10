@@ -45,10 +45,9 @@ const steps = ["Import", "Secure", "Review"];
 
 interface Props {
   type: "create" | "update";
-  wallet: Wallet & { type: "HDWallet" };
+  wallet?: Wallet & { type: "HDWallet" };
 
   onSubmit: (data: FormType) => void;
-  onCancel: () => void;
   onRemove: () => void;
 }
 
@@ -63,7 +62,7 @@ export function HDWalletForm({ type, ...props }: Props) {
 function HDWalletCreateForm({
   wallet,
   onSubmit,
-  onCancel,
+  onRemove,
 }: Omit<Props, "type">) {
   const [name, setName] = useState("");
   const [step, setStep] = useState(0);
@@ -76,7 +75,7 @@ function HDWalletCreateForm({
   useEffect(() => {
     if (!current || !mnemonic || !derivationPath || submitted) return;
     onSubmit({
-      type: wallet.type,
+      type: "HDWallet",
       count: 5,
       name,
       mnemonic,
@@ -91,7 +90,7 @@ function HDWalletCreateForm({
     mnemonic,
     derivationPath,
     password,
-    wallet.type,
+    wallet,
     onSubmit,
     submitted,
   ]);
@@ -112,7 +111,7 @@ function HDWalletCreateForm({
             setMnemonic(mnemonic);
             setStep(1);
           }}
-          onCancel={onCancel}
+          onCancel={onRemove}
         />
       )}
 
@@ -122,7 +121,7 @@ function HDWalletCreateForm({
             setPassword(p);
             setStep(2);
           }}
-          onCancel={onCancel}
+          onCancel={onRemove}
         />
       )}
 
@@ -133,7 +132,7 @@ function HDWalletCreateForm({
             setDerivationPath(derivationPath);
             setCurrent(current);
           }}
-          onCancel={onCancel}
+          onCancel={onRemove}
         />
       )}
     </Stack>
@@ -408,7 +407,6 @@ function HDWalletUpdateForm({
       component="form"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <input type="hidden" {...register("type")} />
       <TextField
         label="Name"
         error={!!errors.name}

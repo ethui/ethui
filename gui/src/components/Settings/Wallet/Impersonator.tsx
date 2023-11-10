@@ -3,7 +3,7 @@ import { Button, Stack, TextField } from "@mui/material";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { addressSchema, Wallet } from "@/types";
+import { addressSchema, ImpersonatorWallet } from "@/types";
 
 // react-hook-form doesn't support value-arrays, only object-arrays, so we need this type as a workaround for the impersonator form
 export const schema = z.object({
@@ -20,16 +20,19 @@ export const schema = z.object({
 type Schema = z.infer<typeof schema>;
 
 export interface Props {
-  wallet: Wallet & { type: "impersonator" };
-  onSubmit: (data: Wallet & { type: "impersonator" }) => void;
+  wallet?: ImpersonatorWallet;
+  onSubmit: (data: ImpersonatorWallet) => void;
   onRemove: () => void;
 }
 
 export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
-  const formWallet = {
-    ...wallet,
-    addresses: wallet.addresses.map((address) => ({ address })),
-  };
+  let formWallet = undefined;
+  if (wallet) {
+    formWallet = {
+      ...wallet,
+      addresses: wallet ? wallet.addresses.map((address) => ({ address })) : [],
+    };
+  }
 
   const {
     register,
