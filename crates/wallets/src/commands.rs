@@ -53,9 +53,7 @@ pub async fn wallets_set_current_path(key: String) -> Result<()> {
 
 /// Get all known addresses of a wallet
 #[tauri::command]
-pub async fn wallets_get_wallet_addresses(
-    name: String,
-) -> Result<Vec<(String, Address)>> {
+pub async fn wallets_get_wallet_addresses(name: String) -> Result<Vec<(String, Address)>> {
     Ok(Wallets::read().await.get_wallet_addresses(name).await)
 }
 
@@ -73,4 +71,9 @@ pub async fn wallets_get_mnemonic_addresses(
 #[tauri::command]
 pub fn wallets_validate_mnemonic(mnemonic: String) -> bool {
     utils::validate_mnemonic(&mnemonic)
+}
+
+#[tauri::command]
+pub async fn wallets_ledger_derive(path: &str) -> Result<Address> {
+    utils::ledger_derive(path).await
 }

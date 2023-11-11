@@ -8,9 +8,16 @@ import { derivationPathSchema, LedgerWallet } from "@/types/wallets";
 export const schema = z.object({
   name: z.string().min(1),
   paths: z.array(
-    z.object({
-      path: derivationPathSchema,
-    }),
+    z
+      .object({
+        path: derivationPathSchema,
+        address: z.string().optional(),
+      })
+      .transform(({ path, address }, _ctx) => {
+        // const addr = await invoke<Address>("wallets_ledger_detect", { path });
+        // console.log(addr);
+        return { path, address };
+      }),
   ),
 });
 
@@ -18,7 +25,7 @@ type Schema = z.infer<typeof schema>;
 
 const defaultValues: Schema = {
   name: "",
-  paths: [{ path: "m/44'/60'/0'/0/0" }],
+  paths: [{ path: "m/44'/60'/0'/0/0", address: undefined }],
 };
 
 export interface Props {
@@ -27,15 +34,17 @@ export interface Props {
   onRemove: () => void;
 }
 
-export function Ledger({ wallet, ...props }: Props) {
-  if (!wallet) {
-    return <Create {...props} />;
+export function Ledger({ wallet, onSubmit, onRemove }: Props) {
+  let formWallet;
+  if (wallet) {
+    formWallet = {
+      ...wallet,
+      paths: wallet ? wallet.addresses.map(([path]) => ({ path })) : [],
+    };
   } else {
-    return <Update wallet={wallet} {...props} />;
+    formWallet = defaultValues;
   }
-}
 
-export function Create({ onSubmit, onRemove }: Props) {
   const {
     register,
     handleSubmit,
@@ -45,7 +54,7 @@ export function Create({ onSubmit, onRemove }: Props) {
   } = useForm({
     mode: "onBlur",
     resolver: zodResolver(schema),
-    defaultValues,
+    defaultValues: formWallet,
   });
 
   const prepareAndSubmit = (data: Schema) => {
@@ -91,7 +100,10 @@ export function Create({ onSubmit, onRemove }: Props) {
           <Button onClick={() => remove(i)}>Remove</Button>
         </Stack>
       ))}
-      <Button color="secondary" onClick={() => append({ path: "" })}>
+      <Button
+        color="secondary"
+        onClick={() => append({ path: "", address: undefined })}
+      >
         Add
       </Button>
       <Stack direction="row" spacing={2}>
@@ -109,7 +121,4 @@ export function Create({ onSubmit, onRemove }: Props) {
       </Stack>
     </Stack>
   );
-}
-function Update({}: Omit<Props, "type">) {
-  return <>TODO</>;
 }

@@ -84,4 +84,5 @@ alloy-primitives = { git = "https://github.com/alloy-rs/core/" }
 alloy-json-abi = { git = "https://github.com/alloy-rs/core/" }
 alloy-sol-types = { git = "https://github.com/alloy-rs/core/" }
 
-# coins-ledger = { git = "https://github.com/iron-wallet/coins", branch = "send" }
+# https://github.com/summa-tx/coins/issues/124
+coins-ledger = { git = "https://github.com/iron-wallet/coins", branch = "send" }

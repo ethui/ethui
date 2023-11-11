@@ -1,5 +1,8 @@
+use ethers::signers::HDPath;
 use ethers::signers::{coins_bip39::English, MnemonicBuilder, Signer};
 use iron_types::{Address, ToAlloy};
+
+use crate::Error;
 
 use super::Result;
 
@@ -33,4 +36,28 @@ pub fn validate_mnemonic(mnemonic: &str) -> bool {
         .phrase(mnemonic)
         .build()
         .is_ok()
+}
+
+pub(crate) async fn ledger_derive(path: &str) -> Result<Address> {
+    let ledger = ethers::signers::Ledger::new(HDPath::Other(path.into()), 1)
+        .await
+        .map_err(|e| Error::Ledger(e.to_string()))?;
+
+    Ok(ledger
+        .get_address()
+        .await
+        .map_err(|e| Error::Ledger(e.to_string()))?
+        .to_alloy())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn detect() {
+        let addresses = ledger_derive("m/44'/60'/0'/0/0").await;
+
+        assert!(addresses.is_ok());
+    }
 }

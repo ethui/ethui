@@ -1,10 +1,9 @@
 use async_trait::async_trait;
 use coins_bip32::prelude::SigningKey;
-use ethers::signers::HDPath;
-use iron_types::{Address, Json, ToAlloy};
+use iron_types::{Address, Json};
 use serde::{Deserialize, Serialize};
 
-use crate::Error;
+use crate::{utils, Error};
 
 use super::{wallet::WalletCreate, Result, Wallet, WalletControl};
 
@@ -83,26 +82,15 @@ impl WalletControl for Ledger {
 #[serde(rename_all = "camelCase")]
 pub struct LedgerParams {
     name: String,
-    derivation_path: String,
-    count: u32,
+    paths: Vec<String>,
 }
 
 impl Ledger {
-    pub async fn detect(derivation_path: String, count: u32) -> Result<Vec<(String, Address)>> {
+    pub async fn detect(paths: Vec<String>) -> Result<Vec<(String, Address)>> {
         let mut res = vec![];
         // let _guard = HID_MUTEX.lock().await;
-        for idx in 0..count {
-            let path = format!("{}/{}", derivation_path, idx);
-
-            let ledger = ethers::signers::Ledger::new(HDPath::Other(path.clone()), 1)
-                .await
-                .map_err(|e| Error::Ledger(e.to_string()))?;
-            let address = ledger
-                .get_address()
-                .await
-                .map_err(|e| Error::Ledger(e.to_string()))?
-                .to_alloy();
-
+        for path in paths.into_iter() {
+            let address = utils::ledger_derive(&path).await?;
             res.push((path, address));
         }
 
@@ -110,36 +98,12 @@ impl Ledger {
     }
 
     pub async fn from_params(params: LedgerParams) -> Result<Self> {
-        let addresses = Self::detect(params.derivation_path, params.count).await?;
+        let addresses = Self::detect(params.paths).await?;
 
         Ok(Self {
             name: params.name,
             addresses,
             current: 0,
         })
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[tokio::test]
-    async fn detect() {
-        let addresses = Ledger::detect("m/44'/60'/0'/0".to_string(), 1).await;
-
-        assert!(addresses.is_ok());
-    }
-
-    #[tokio::test]
-    async fn instantiate_ledger() {
-        let ledger = Ledger::from_params(LedgerParams {
-            name: "asd".into(),
-            derivation_path: "m/44'/60'/0'/0".into(),
-            count: 1,
-        })
-        .await;
-
-        assert!(ledger.is_ok());
     }
 }
