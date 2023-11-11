@@ -5,7 +5,6 @@ mod impersonator;
 mod init;
 mod json_keystore_wallet;
 mod ledger;
-mod ledger_app;
 mod plaintext;
 mod utils;
 mod wallet;
