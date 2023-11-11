@@ -47,6 +47,9 @@ pub enum Error {
 
     #[error("ledger error: {0}")]
     Ledger(String),
+
+    #[error(transparent)]
+    Tokio(#[from] tokio::task::JoinError),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

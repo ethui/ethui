@@ -33,7 +33,6 @@ iron-sync-alchemy = { path = "crates/sync/alchemy" }
 iron-broadcast = { path = "crates/broadcast" }
 iron-tracing = { path = "crates/tracing" }
 iron-exchange-rates = { path = "crates/exchange-rates" }
-iron-ledger = { path = "crates/ledger" }
 
 tokio = { version = "1.33", features = ["full", "sync"] }
 thiserror = "1.0"

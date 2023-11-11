@@ -1,15 +1,25 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Stack, TextField } from "@mui/material";
-import { FieldValues, useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { derivationPathSchema, LedgerWallet } from "@/types/wallets";
 
-export const createSchema = z.object({
+export const schema = z.object({
   name: z.string().min(1),
-  derivationPath: derivationPathSchema,
-  count: z.number().int().min(1).max(100),
+  paths: z.array(
+    z.object({
+      path: derivationPathSchema,
+    }),
+  ),
 });
+
+type Schema = z.infer<typeof schema>;
+
+const defaultValues: Schema = {
+  name: "",
+  paths: [{ path: "m/44'/60'/0'/0/0" }],
+};
 
 export interface Props {
   wallet?: LedgerWallet;
@@ -30,16 +40,31 @@ export function Create({ onSubmit, onRemove }: Props) {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { isValid, isDirty, errors },
   } = useForm({
     mode: "onBlur",
-    resolver: zodResolver(createSchema),
+    resolver: zodResolver(schema),
+    defaultValues,
   });
 
-  const prepareAndSubmit = (data: FieldValues) => {
-    onSubmit(data);
+  const prepareAndSubmit = (data: Schema) => {
+    onSubmit({
+      ...data,
+      type: "ledger",
+      paths: data.paths.map(({ path }) => path),
+    });
     reset(data);
   };
+
+  const {
+    fields: pathsFields,
+    append,
+    remove,
+  } = useFieldArray({
+    control,
+    name: "paths",
+  });
 
   return (
     <Stack
@@ -54,21 +79,21 @@ export function Create({ onSubmit, onRemove }: Props) {
         helperText={errors.name?.message?.toString()}
         {...register("name")}
       />
-      <TextField
-        label="Derivation Path"
-        spellCheck="false"
-        error={!!errors.derivationPath}
-        helperText={errors.derivationPath?.message?.toString() || ""}
-        {...register("derivationPath")}
-      />
-      <TextField
-        label="Count"
-        spellCheck="false"
-        error={!!errors.count}
-        type="number"
-        helperText={errors.count?.message?.toString() || ""}
-        {...register("count", { valueAsNumber: true })}
-      />
+      {pathsFields.map((field, i) => (
+        <Stack alignSelf="stretch" key={field.id} direction="row" spacing={2}>
+          <TextField
+            label={`Derivation Path #${i + 1}`}
+            fullWidth
+            error={!!errors.paths && !!errors.paths[i]}
+            helperText={errors.paths && errors.paths[i]?.path?.message}
+            {...register(`paths.${i}.path`)}
+          />
+          <Button onClick={() => remove(i)}>Remove</Button>
+        </Stack>
+      ))}
+      <Button color="secondary" onClick={() => append({ path: "" })}>
+        Add
+      </Button>
       <Stack direction="row" spacing={2}>
         <Button
           color="primary"

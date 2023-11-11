@@ -8,7 +8,7 @@ use tokio::sync::Mutex;
 
 use crate::Error;
 
-use super::{wallet::WalletCreate, Result, Wallet, WalletControl};
+use super::{Result, Wallet, WalletControl};
 
 /// Since all HID devices are accessed through the same interface, we need to globally block it to
 /// avoid conflicting aynchronous calls
@@ -20,16 +20,6 @@ pub struct Ledger {
     name: String,
     addresses: Vec<(String, Address)>,
     current: usize,
-}
-
-#[async_trait]
-impl WalletCreate for Ledger {
-    async fn create(params: serde_json::Value) -> Result<Wallet> {
-        tokio::runtime::Handle::current().block_on(async {
-            let params = serde_json::from_value(params)?;
-            Ok(Wallet::Ledger(Self::from_params(params).await?))
-        })
-    }
 }
 
 #[async_trait]
@@ -91,36 +81,40 @@ impl WalletControl for Ledger {
 #[serde(rename_all = "camelCase")]
 pub struct LedgerParams {
     name: String,
-    derivation_path: String,
-    count: u32,
+    derivation_paths: Vec<String>,
 }
 
 impl Ledger {
-    pub async fn detect(derivation_path: String, count: u32) -> Result<Vec<(String, Address)>> {
-        let mut res = vec![];
-        let _guard = HID_MUTEX.lock().await;
-        for idx in 0..count {
-            let path = format!("{}/{}", derivation_path, idx);
-            let ledger = dbg!(ethers::signers::Ledger::new(HDPath::Other(path.clone()), 1).await)
-                .map_err(|e| Error::Ledger(e.to_string()))?;
-            let address = ledger
-                .get_address()
-                .await
-                .map_err(|e| Error::Ledger(e.to_string()))?
-                .to_alloy();
+    pub(crate) async fn create(params: serde_json::Value) -> Result<Wallet> {
+        let params = serde_json::from_value(params)?;
+        Ok(Wallet::Ledger(Self::from_params(params).await?))
+    }
 
-            res.push((path, address));
-        }
+    pub(crate) async fn detect(paths: Vec<String>) -> Result<Vec<(String, Address)>> {
+        let mut res = vec![];
+        // let _guard = HID_MUTEX.lock().await;
+        // for path in paths.iter() {
+        let fut = crate::ledger_app::LedgerEthereum::new(HDPath::Other(paths[0].clone()), 1);
+        tokio::pin!(fut);
+
+        // let mut fut = fut.lock().unwrap();
+        let ledger = fut.await.map_err(|e| Error::Ledger(e.to_string()))?;
+        let address = ledger
+            .get_address()
+            .await
+            .map_err(|e| Error::Ledger(e.to_string()))?
+            .to_alloy();
+
+        res.push((paths[0].clone(), address));
+        // }
 
         Ok(res)
     }
 
     pub async fn from_params(params: LedgerParams) -> Result<Self> {
-        let addresses = Self::detect(params.derivation_path, params.count).await?;
-
         Ok(Self {
             name: params.name,
-            addresses,
+            addresses: Self::detect(params.derivation_paths).await?,
             current: 0,
         })
     }
@@ -132,7 +126,7 @@ mod tests {
 
     #[tokio::test]
     async fn detect() {
-        let addresses = Ledger::detect("m/44'/60'/0'/0".to_string(), 1).await;
+        let addresses = Ledger::detect(vec!["m/44'/60'/0'/0/0".to_string()]).await;
 
         assert!(addresses.is_ok());
     }
@@ -141,8 +135,7 @@ mod tests {
     async fn instantiate_ledger() {
         let ledger = Ledger::from_params(LedgerParams {
             name: "asd".into(),
-            derivation_path: "m/44'/60'/0'/0".into(),
-            count: 1,
+            derivation_paths: vec!["m/44'/60'/0'/0/0".into()],
         })
         .await;
 

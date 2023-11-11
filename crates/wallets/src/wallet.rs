@@ -74,9 +74,8 @@ pub enum Wallet {
     Ledger(Ledger),
 }
 
-#[async_trait]
-impl WalletCreate for Wallet {
-    async fn create(params: Json) -> Result<Wallet> {
+impl Wallet {
+    pub(crate) async fn create(params: Json) -> Result<Wallet> {
         let wallet_type = params["type"].as_str().unwrap_or_default();
 
         let wallet = match wallet_type {

@@ -5,6 +5,7 @@ mod impersonator;
 mod init;
 mod json_keystore_wallet;
 mod ledger;
+mod ledger_app;
 mod plaintext;
 mod utils;
 mod wallet;
@@ -20,7 +21,6 @@ pub use init::init;
 use iron_types::{Address, Json, UINotify};
 use serde::Serialize;
 
-use self::wallet::WalletCreate;
 pub use self::wallet::{Wallet, WalletControl};
 
 /// Maintains a list of Ethereum wallets, including keeping track of the global current wallet &
