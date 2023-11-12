@@ -50,6 +50,16 @@ pub(crate) async fn ledger_derive(path: &str) -> Result<Address> {
         .to_alloy())
 }
 
+pub(crate) async fn ledger_derive_multiple(paths: Vec<String>) -> Result<Vec<(String, Address)>> {
+    let mut res = vec![];
+
+    for path in paths.into_iter() {
+        res.push((path.clone(), ledger_derive(&path).await?))
+    }
+
+    Ok(res)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

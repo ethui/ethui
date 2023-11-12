@@ -1,23 +1,28 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Stack, TextField } from "@mui/material";
-import { useFieldArray, useForm } from "react-hook-form";
+import {
+  Alert,
+  AlertTitle,
+  Button,
+  CircularProgress,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { invoke } from "@tauri-apps/api";
+import { Address } from "abitype";
+import { useEffect, useState } from "react";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
 import { derivationPathSchema, LedgerWallet } from "@/types/wallets";
+import { debounce } from "lodash-es";
 
 export const schema = z.object({
   name: z.string().min(1),
   paths: z.array(
-    z
-      .object({
-        path: derivationPathSchema,
-        address: z.string().optional(),
-      })
-      .transform(({ path, address }, _ctx) => {
-        // const addr = await invoke<Address>("wallets_ledger_detect", { path });
-        // console.log(addr);
-        return { path, address };
-      }),
+    z.object({
+      path: derivationPathSchema,
+    }),
   ),
 });
 
@@ -25,8 +30,13 @@ type Schema = z.infer<typeof schema>;
 
 const defaultValues: Schema = {
   name: "",
-  paths: [{ path: "m/44'/60'/0'/0/0", address: undefined }],
+  paths: [{ path: "m/44'/60'/0'/0/0" }],
 };
+
+const debouncedDerive = (paths: string[]) =>
+  invoke<[string, Address][]>("wallets_ledger_derive", {
+    paths,
+  });
 
 export interface Props {
   wallet?: LedgerWallet;
@@ -45,11 +55,14 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
     formWallet = defaultValues;
   }
 
+  const [addresses, setAddresses] = useState<Map<string, Address>>(new Map());
+
   const {
     register,
     handleSubmit,
     reset,
     control,
+    watch,
     formState: { isValid, isDirty, errors },
   } = useForm({
     mode: "onBlur",
@@ -65,6 +78,31 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
     });
     reset(data);
   };
+
+  const paths = watch("paths");
+  const pathsStr = paths.map(({ path }) => path).join("");
+
+  useEffect(() => {
+    (async () => {
+      const newPaths = paths
+        .filter(({ path }) => !addresses.has(path))
+        .map(({ path }) => path);
+
+      if (newPaths.length == 0) return;
+
+      const addrs = await invoke<[string, Address][]>("wallets_ledger_derive", {
+        paths: newPaths,
+      });
+
+      if (!addrs) return;
+
+      addrs.forEach(([path, address]) => {
+        addresses.set(path, address);
+      });
+
+      setAddresses(new Map(addresses));
+    })();
+  }, [paths, pathsStr, addresses, setAddresses]);
 
   const {
     fields: pathsFields,
@@ -82,28 +120,33 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
       component="form"
       onSubmit={handleSubmit(prepareAndSubmit)}
     >
+      <Detect />
       <TextField
         label="Name"
         error={!!errors.name}
         helperText={errors.name?.message?.toString()}
         {...register("name")}
       />
-      {pathsFields.map((field, i) => (
-        <Stack alignSelf="stretch" key={field.id} direction="row" spacing={2}>
-          <TextField
-            label={`Derivation Path #${i + 1}`}
-            fullWidth
-            error={!!errors.paths && !!errors.paths[i]}
-            helperText={errors.paths && errors.paths[i]?.path?.message}
-            {...register(`paths.${i}.path`)}
-          />
-          <Button onClick={() => remove(i)}>Remove</Button>
-        </Stack>
-      ))}
-      <Button
-        color="secondary"
-        onClick={() => append({ path: "", address: undefined })}
-      >
+      {pathsFields.map((field, i) => {
+        const error = errors.paths && errors.paths[i]?.path?.message;
+        const path = watch(`paths.${i}.path`);
+        const address = addresses.get(path);
+        return (
+          <Stack alignSelf="stretch" key={field.id}>
+            <Stack alignSelf="stretch" direction="row" spacing={2}>
+              <TextField
+                label={`Path #${i + 1}`}
+                fullWidth
+                error={!!error}
+                helperText={error || address}
+                {...register(`paths.${i}.path`)}
+              />
+              <Button onClick={() => remove(i)}>Remove</Button>
+            </Stack>
+          </Stack>
+        );
+      })}
+      <Button color="secondary" onClick={() => append({ path: "" })}>
         Add
       </Button>
       <Stack direction="row" spacing={2}>
@@ -121,4 +164,46 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
       </Stack>
     </Stack>
   );
+}
+
+const ledgerSkippableError =
+  "ledger error: hidapi error: hid_error is not implemented yet";
+
+function Detect() {
+  const [detected, setDetect] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(
+      () =>
+        invoke("wallets_ledger_derive", { paths: ["m/44'/60'/0'/0/0"] })
+          .then(() => setDetect(true))
+          .catch((err) => {
+            if (detected && err === ledgerSkippableError) {
+              console.warn("skipping ledger error:", err);
+              return;
+            }
+            console.warn(err);
+            setDetect(false);
+          }),
+      1000,
+    );
+
+    return () => clearInterval(interval);
+  }, [detected]);
+
+  if (!detected) {
+    return (
+      <Alert severity="warning">
+        <AlertTitle>Ledger not detected</AlertTitle>
+        Please unlock your Ledger, and open the Ethereum app
+      </Alert>
+    );
+  } else {
+    return (
+      <Alert severity="success">
+        <AlertTitle>Ledger detected</AlertTitle>
+        Please keep the Ethereum app open during this setup
+      </Alert>
+    );
+  }
 }

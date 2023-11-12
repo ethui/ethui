@@ -74,6 +74,6 @@ pub fn wallets_validate_mnemonic(mnemonic: String) -> bool {
 }
 
 #[tauri::command]
-pub async fn wallets_ledger_derive(path: &str) -> Result<Address> {
-    utils::ledger_derive(path).await
+pub async fn wallets_ledger_derive(paths: Vec<String>) -> Result<Vec<(String, Address)>> {
+    utils::ledger_derive_multiple(paths).await
 }
