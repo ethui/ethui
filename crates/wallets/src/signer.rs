@@ -4,6 +4,7 @@ use ethers::types::{
     Signature, H160,
 };
 
+use crate::utils::HID_MUTEX;
 use crate::{Error, Result};
 
 #[derive(Debug)]
@@ -28,10 +29,13 @@ impl ethers::signers::Signer for Signer {
     async fn sign_transaction(&self, message: &TypedTransaction) -> Result<Signature> {
         match self {
             Self::SigningKey(signer) => Ok(signer.sign_transaction(message).await?),
-            Self::Ledger(signer) => Ok(signer
-                .sign_transaction(message)
-                .await
-                .map_err(|e| Error::Ledger(e.to_string()))?),
+            Self::Ledger(signer) => {
+                let _guard = HID_MUTEX.lock().await;
+                Ok(signer
+                    .sign_transaction(message)
+                    .await
+                    .map_err(|e| Error::Ledger(e.to_string()))?)
+            }
         }
     }
 
@@ -41,10 +45,13 @@ impl ethers::signers::Signer for Signer {
     {
         match self {
             Self::SigningKey(signer) => Ok(signer.sign_message(message).await?),
-            Self::Ledger(signer) => Ok(signer
-                .sign_message(message)
-                .await
-                .map_err(|e| Error::Ledger(e.to_string()))?),
+            Self::Ledger(signer) => {
+                let _guard = HID_MUTEX.lock().await;
+                Ok(signer
+                    .sign_message(message)
+                    .await
+                    .map_err(|e| Error::Ledger(e.to_string()))?)
+            }
         }
     }
 
@@ -54,10 +61,13 @@ impl ethers::signers::Signer for Signer {
     {
         match self {
             Self::SigningKey(signer) => Ok(signer.sign_typed_data(payload).await?),
-            Self::Ledger(signer) => Ok(signer
-                .sign_typed_data(payload)
-                .await
-                .map_err(|e| Error::Ledger(e.to_string()))?),
+            Self::Ledger(signer) => {
+                let _guard = HID_MUTEX.lock().await;
+                Ok(signer
+                    .sign_typed_data(payload)
+                    .await
+                    .map_err(|e| Error::Ledger(e.to_string()))?)
+            }
         }
     }
 

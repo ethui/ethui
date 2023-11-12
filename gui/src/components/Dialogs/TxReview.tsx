@@ -1,5 +1,13 @@
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { Alert, Button, Grid, Stack, Tab, Typography } from "@mui/material";
+import {
+  Alert,
+  AlertTitle,
+  Button,
+  Grid,
+  Stack,
+  Tab,
+  Typography,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import JsonView from "react18-json-view";
 import { Address, formatEther } from "viem";
@@ -10,7 +18,7 @@ import {
   ContextMenu,
   Datapoint,
 } from "@/components";
-import { useDialog } from "@/hooks";
+import { useDialog, useLedgerDetect } from "@/hooks";
 
 import { DialogLayout } from "./Layout";
 
@@ -101,19 +109,12 @@ export function TxReviewDialog({ id }: { id: number }) {
         </TabPanel>
       </TabContext>
 
-      {accepted && data.walletType == "ledger" && (
-        <Alert severity="info">Check your ledger</Alert>
-      )}
-      {!accepted && (
-        <Stack direction="row" justifyContent="center" spacing={2}>
-          <Button variant="contained" color="error" onClick={onReject}>
-            Reject
-          </Button>
-          <Button variant="contained" type="submit" onClick={onConfirm}>
-            Confirm
-          </Button>
-        </Stack>
-      )}
+      <Actions
+        data={data}
+        onReject={onReject}
+        onConfirm={onConfirm}
+        accepted={accepted}
+      />
     </DialogLayout>
   );
 }
@@ -140,4 +141,46 @@ function SimulationResult({ simulation }: SimulationResultProps) {
       />
     </Grid>
   );
+}
+
+interface ActionsProps {
+  data: TxRequest;
+  onReject: () => void;
+  onConfirm: () => void;
+  accepted: boolean;
+}
+
+function Actions({ data, accepted, onReject, onConfirm }: ActionsProps) {
+  const ledgerDetected = useLedgerDetect({
+    disabled: data?.walletType !== "ledger",
+    stopOnDetected: true,
+  });
+
+  console.log(ledgerDetected);
+  if (data.walletType === "ledger" && !ledgerDetected) {
+    return (
+      <Alert severity="info">
+        <AlertTitle>Ledger not detected</AlertTitle>
+        Please unlock your Ledger, and open the Ethereum app
+      </Alert>
+    );
+  } else if (data.walletType === "ledger" && ledgerDetected && accepted) {
+    return (
+      <Alert severity="info">
+        <AlertTitle>Check your ledger</AlertTitle>
+        You need to confirm your transaction in your physical device
+      </Alert>
+    );
+  } else {
+    return (
+      <Stack direction="row" justifyContent="center" spacing={2}>
+        <Button variant="contained" color="error" onClick={onReject}>
+          Reject
+        </Button>
+        <Button variant="contained" type="submit" onClick={onConfirm}>
+          Confirm
+        </Button>
+      </Stack>
+    );
+  }
 }

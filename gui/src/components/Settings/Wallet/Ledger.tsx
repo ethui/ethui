@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { useLedgerDetect } from "@/hooks";
 import { derivationPathSchema, LedgerWallet } from "@/types/wallets";
 
 export const schema = z.object({
@@ -152,39 +153,17 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
   );
 }
 
-const ledgerSkippableError =
-  "ledger error: hidapi error: hid_error is not implemented yet";
-
 function Detect() {
-  const [detected, setDetect] = useState(0);
+  const detected = useLedgerDetect();
 
-  useEffect(() => {
-    const interval = setInterval(
-      () =>
-        invoke("wallets_ledger_derive", { paths: ["m/44'/60'/0'/0/0"] })
-          .then(() => setDetect(Math.max(1, detected + 1)))
-          .catch((err) => {
-            if (detected && err === ledgerSkippableError) {
-              console.warn("skipping ledger error:", err);
-              return;
-            }
-            console.warn(err);
-            setDetect(Math.min(-1, detected - 1));
-          }),
-      1000,
-    );
-
-    return () => clearInterval(interval);
-  }, [detected]);
-
-  if (detected > 0) {
+  if (detected === true) {
     return (
       <Alert severity="success">
         <AlertTitle>Ledger detected</AlertTitle>
         Please keep the Ethereum app open during this setup
       </Alert>
     );
-  } else if (detected <= -3) {
+  } else if (detected == false) {
     return (
       <Alert severity="warning">
         <AlertTitle>Failed to detect your ledger</AlertTitle>
