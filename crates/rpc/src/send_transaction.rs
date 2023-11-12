@@ -9,18 +9,9 @@ use iron_dialogs::{Dialog, DialogMsg};
 use iron_networks::Network;
 use iron_settings::Settings;
 use iron_types::{Address, GlobalState, ToAlloy, ToEthers};
-use iron_wallets::{WalletControl, Wallets};
-use serde::Deserialize;
+use iron_wallets::{WalletControl, WalletType, Wallets};
 
 use super::{Error, Result};
-
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub enum Msg {
-    Simulate,
-    Accept,
-    Reject,
-}
 
 /// Orchestrates the signing of a transaction
 /// Takes references to both the wallet and network where this
@@ -29,6 +20,7 @@ pub struct SendTransaction {
     pub network: Network,
     pub wallet_name: String,
     pub wallet_path: String,
+    pub wallet_type: WalletType,
     pub request: TypedTransaction,
     pub signer: Option<SignerMiddleware<Provider<Http>, iron_wallets::Signer>>,
 }
@@ -68,23 +60,20 @@ impl<'a> SendTransaction {
     async fn dialog_and_send(&mut self) -> Result<PendingTransaction<'_, Http>> {
         let mut params = serde_json::to_value(&self.request).unwrap();
         params["chainId"] = self.network.chain_id.into();
+        params["walletType"] = self.wallet_type.to_string().into();
 
         let dialog = Dialog::new("tx-review", params);
         dialog.open().await?;
 
         while let Some(msg) = dialog.recv().await {
+            dbg!(&msg);
             match msg {
-                DialogMsg::Data(data) => {
-                    if let Ok(data) = serde_json::from_value::<Msg>(data) {
-                        match data {
-                            Msg::Simulate => self.simulate(dialog.clone()).await?,
-                            Msg::Accept => break,
-                            Msg::Reject => return Err(Error::TxDialogRejected),
-                        }
-                    } else {
-                        return Err(Error::TxDialogRejected);
-                    }
-                }
+                DialogMsg::Data(data) => match data.as_str() {
+                    Some("simulate") => self.simulate(dialog.clone()).await?,
+                    Some("accept") => break,
+                    Some("reject") => return Err(Error::TxDialogRejected),
+                    _ => return Err(Error::TxDialogRejected),
+                },
 
                 DialogMsg::Accept(_response) => break,
 
@@ -97,25 +86,11 @@ impl<'a> SendTransaction {
             }
         }
 
-        let is_ledger = self
-            .signer
-            .as_ref()
-            .map(|s| s.signer().is_ledger())
-            .unwrap_or(false);
-
-        let tx = self.send().await?;
-
-        if is_ledger {
+        if self.is_ledger() {
             dialog.send("check-ledger", None).await.unwrap();
-
-            while let Some(msg) = dialog.recv().await {
-                match msg {
-                    DialogMsg::Data(data) => {}
-                    _ => break,
-                }
-            }
         }
 
+        let tx = self.send().await?;
         dialog.close().await?;
 
         Ok(tx)
@@ -194,12 +169,17 @@ impl<'a> SendTransaction {
             .await
             .map_err(|_| Error::CannotSimulate)
     }
+
+    fn is_ledger(&self) -> bool {
+        self.wallet_type == WalletType::Ledger
+    }
 }
 
 pub struct SendTransactionBuilder<'a> {
     ctx: &'a Ctx,
     pub wallet_name: Option<String>,
     pub wallet_path: Option<String>,
+    pub wallet_type: Option<WalletType>,
     pub request: TypedTransaction,
 }
 
@@ -209,6 +189,7 @@ impl<'a> SendTransactionBuilder<'a> {
             ctx,
             wallet_name: None,
             wallet_path: None,
+            wallet_type: None,
             request: Default::default(),
         }
     }
@@ -235,6 +216,7 @@ impl<'a> SendTransactionBuilder<'a> {
                 .ok_or(Error::WalletNotFound(address))?;
             self.wallet_name = Some(wallet.name());
             self.wallet_path = Some(path);
+            self.wallet_type = Some(wallet.into());
         } else {
             let wallet = wallets.get_current_wallet();
 
@@ -242,6 +224,7 @@ impl<'a> SendTransactionBuilder<'a> {
             self.request
                 .set_from(wallet.get_current_address().await.to_ethers());
             self.wallet_name = Some(wallet.name());
+            self.wallet_type = Some(wallet.into());
         }
 
         if let Some(to) = params["to"].as_str() {
@@ -265,6 +248,7 @@ impl<'a> SendTransactionBuilder<'a> {
         SendTransaction {
             wallet_name: self.wallet_name.unwrap(),
             wallet_path: self.wallet_path.unwrap(),
+            wallet_type: self.wallet_type.unwrap(),
             network: self.ctx.network().await,
             request: self.request,
             signer: None,

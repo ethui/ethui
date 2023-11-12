@@ -83,3 +83,40 @@ impl Wallet {
         Ok(wallet)
     }
 }
+
+#[derive(Debug, PartialEq)]
+pub enum WalletType {
+    Plaintext,
+    JsonKeystore,
+    HDWallet,
+    Impersonator,
+    Ledger,
+}
+
+impl std::fmt::Display for WalletType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                WalletType::Plaintext => "plaintext",
+                WalletType::JsonKeystore => "jsonKeystore",
+                WalletType::HDWallet => "HDWallet",
+                WalletType::Impersonator => "impersonator",
+                WalletType::Ledger => "ledger",
+            }
+        )
+    }
+}
+
+impl From<&Wallet> for WalletType {
+    fn from(wallet: &Wallet) -> Self {
+        match wallet {
+            Wallet::Plaintext(_) => Self::Plaintext,
+            Wallet::JsonKeystore(_) => Self::JsonKeystore,
+            Wallet::HDWallet(_) => Self::HDWallet,
+            Wallet::Impersonator(_) => Self::Impersonator,
+            Wallet::Ledger(_) => Self::Ledger,
+        }
+    }
+}

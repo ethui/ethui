@@ -1,5 +1,5 @@
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { Button, Grid, Stack, Tab, Typography } from "@mui/material";
+import { Alert, Button, Grid, Stack, Tab, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import JsonView from "react18-json-view";
 import { Address, formatEther } from "viem";
@@ -20,6 +20,12 @@ export interface TxRequest {
   to: Address;
   value: string;
   chainId: number;
+  walletType:
+    | "ledger"
+    | "HdWallet"
+    | "jsonKeystore"
+    | "plaintext"
+    | "impersonator";
 }
 
 interface Log {
@@ -39,18 +45,14 @@ export function TxReviewDialog({ id }: { id: number }) {
   const [simulation, setSimulation] = useState<Simulation | undefined>(
     undefined,
   );
-  const [checkLedger, setCheckLedger] = useState(false);
+  const [accepted, setAccepted] = useState(false);
   const [tab, setTab] = useState("1");
 
   useEffect(() => {
     listen("simulation-result", ({ payload }: { payload: Simulation }) =>
       setSimulation(payload),
     );
-
-    listen("check-ledger", () => setCheckLedger(true));
   }, [listen]);
-
-  console.log(checkLedger);
 
   useEffect(() => {
     send("simulate");
@@ -64,6 +66,7 @@ export function TxReviewDialog({ id }: { id: number }) {
 
   const onConfirm = () => {
     send("accept");
+    setAccepted(true);
   };
 
   const { from, to, value: valueStr, data: calldata, chainId } = data;
@@ -98,14 +101,19 @@ export function TxReviewDialog({ id }: { id: number }) {
         </TabPanel>
       </TabContext>
 
-      <Stack direction="row" justifyContent="center" spacing={2}>
-        <Button variant="contained" color="error" onClick={onReject}>
-          Reject
-        </Button>
-        <Button variant="contained" type="submit" onClick={onConfirm}>
-          Confirm
-        </Button>
-      </Stack>
+      {accepted && data.walletType == "ledger" && (
+        <Alert severity="info">Check your ledger</Alert>
+      )}
+      {!accepted && (
+        <Stack direction="row" justifyContent="center" spacing={2}>
+          <Button variant="contained" color="error" onClick={onReject}>
+            Reject
+          </Button>
+          <Button variant="contained" type="submit" onClick={onConfirm}>
+            Confirm
+          </Button>
+        </Stack>
+      )}
     </DialogLayout>
   );
 }
