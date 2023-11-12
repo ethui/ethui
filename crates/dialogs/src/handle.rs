@@ -8,15 +8,6 @@ use tokio::sync::{mpsc, RwLock};
 
 use super::{global::OPEN_DIALOGS, presets, Result};
 
-#[derive(Debug)]
-pub enum DialogMsg {
-    Data(Json),
-    Accept(Json),
-    Reject(Json),
-}
-
-pub type DialogResult = std::result::Result<Json, Json>;
-
 pub struct Dialog(Arc<RwLock<Inner>>);
 
 #[derive(Clone)]
@@ -53,7 +44,7 @@ impl Dialog {
     }
 
     /// Awaits data received from the dialog
-    pub async fn recv(&self) -> Option<DialogMsg> {
+    pub async fn recv(&self) -> Option<Json> {
         self.0.read().await.recv().await
     }
 }
@@ -76,7 +67,7 @@ impl DialogStore {
     }
 
     /// Data received from the dialog
-    pub async fn incoming(&self, result: DialogMsg) -> Result<()> {
+    pub async fn incoming(&self, result: Json) -> Result<()> {
         self.0.read().await.inbound_snd.send(result)?;
         Ok(())
     }
@@ -100,12 +91,12 @@ pub struct Inner {
     payload: Json,
 
     /// inbound msgs from dialog
-    inbound_snd: mpsc::UnboundedSender<DialogMsg>,
+    inbound_snd: mpsc::UnboundedSender<Json>,
 
     ///  receiver for inbound msgs behind a RwLock for interior mutability, since we need to be
     ///  able to `recv().await` here while the frontend may also need to write to this Inner object
     ///  to send a result
-    inbound_rcv: RwLock<mpsc::UnboundedReceiver<DialogMsg>>,
+    inbound_rcv: RwLock<mpsc::UnboundedReceiver<Json>>,
 }
 
 impl Inner {
@@ -158,7 +149,7 @@ impl Inner {
         Ok(())
     }
 
-    async fn recv(&self) -> Option<DialogMsg> {
+    async fn recv(&self) -> Option<Json> {
         self.inbound_rcv.write().await.recv().await
     }
 
