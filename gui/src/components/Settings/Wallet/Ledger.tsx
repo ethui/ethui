@@ -1,21 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Alert,
-  AlertTitle,
-  Button,
-  CircularProgress,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Alert, AlertTitle, Button, Stack, TextField } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { Address } from "abitype";
 import { useEffect, useState } from "react";
-import { useFieldArray, useForm, useWatch } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { derivationPathSchema, LedgerWallet } from "@/types/wallets";
-import { debounce } from "lodash-es";
 
 export const schema = z.object({
   name: z.string().min(1),
@@ -32,11 +23,6 @@ const defaultValues: Schema = {
   name: "",
   paths: [{ path: "m/44'/60'/0'/0/0" }],
 };
-
-const debouncedDerive = (paths: string[]) =>
-  invoke<[string, Address][]>("wallets_ledger_derive", {
-    paths,
-  });
 
 export interface Props {
   wallet?: LedgerWallet;
@@ -170,20 +156,20 @@ const ledgerSkippableError =
   "ledger error: hidapi error: hid_error is not implemented yet";
 
 function Detect() {
-  const [detected, setDetect] = useState(false);
+  const [detected, setDetect] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(
       () =>
         invoke("wallets_ledger_derive", { paths: ["m/44'/60'/0'/0/0"] })
-          .then(() => setDetect(true))
+          .then(() => setDetect(Math.max(1, detected + 1)))
           .catch((err) => {
             if (detected && err === ledgerSkippableError) {
               console.warn("skipping ledger error:", err);
               return;
             }
             console.warn(err);
-            setDetect(false);
+            setDetect(Math.min(-1, detected - 1));
           }),
       1000,
     );
@@ -191,18 +177,25 @@ function Detect() {
     return () => clearInterval(interval);
   }, [detected]);
 
-  if (!detected) {
+  if (detected > 0) {
+    return (
+      <Alert severity="success">
+        <AlertTitle>Ledger detected</AlertTitle>
+        Please keep the Ethereum app open during this setup
+      </Alert>
+    );
+  } else if (detected <= -3) {
     return (
       <Alert severity="warning">
-        <AlertTitle>Ledger not detected</AlertTitle>
+        <AlertTitle>Failed to detect your ledger</AlertTitle>
         Please unlock your Ledger, and open the Ethereum app
       </Alert>
     );
   } else {
     return (
-      <Alert severity="success">
-        <AlertTitle>Ledger detected</AlertTitle>
-        Please keep the Ethereum app open during this setup
+      <Alert severity="info">
+        <AlertTitle>Ledger not detected</AlertTitle>
+        Please unlock your Ledger, and open the Ethereum app
       </Alert>
     );
   }

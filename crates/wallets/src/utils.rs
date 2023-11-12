@@ -1,10 +1,14 @@
 use ethers::signers::HDPath;
 use ethers::signers::{coins_bip39::English, MnemonicBuilder, Signer};
 use iron_types::{Address, ToAlloy};
+use once_cell::sync::Lazy;
+use tokio::sync::Mutex;
 
 use crate::Error;
 
 use super::Result;
+
+pub(crate) static HID_MUTEX: Lazy<Mutex<()>> = Lazy::new(Default::default);
 
 pub fn derive_addresses(
     mnemonic: &str,
@@ -39,6 +43,8 @@ pub fn validate_mnemonic(mnemonic: &str) -> bool {
 }
 
 pub(crate) async fn ledger_derive(path: &str) -> Result<Address> {
+    let _guard = HID_MUTEX.lock().await;
+
     let ledger = ethers::signers::Ledger::new(HDPath::Other(path.into()), 1)
         .await
         .map_err(|e| Error::Ledger(e.to_string()))?;

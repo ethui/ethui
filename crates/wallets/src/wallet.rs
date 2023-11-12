@@ -27,7 +27,7 @@ pub trait WalletControl: Sync + Send + Deserialize<'static> + Serialize + std::f
         &self,
         chain_id: u32,
         path: &str,
-    ) -> Result<ethers::signers::Wallet<SigningKey>>;
+    ) -> Result<Box<dyn ethers::signers::Signer<Error=Error>>>;
 
     async fn build_current_signer(
         &self,

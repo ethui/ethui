@@ -34,7 +34,15 @@ impl WalletControl for Ledger {
             self.name = name.into();
         }
 
-        // TODO: ability to update other fields
+        if params["paths"].as_array().is_some() {
+            let paths: Vec<String> = serde_json::from_value(params["paths"].clone())?;
+            let addresses = utils::ledger_derive_multiple(paths).await?;
+            self.addresses = addresses;
+        }
+
+        if self.current >= self.addresses.len() {
+            self.current = 0;
+        }
 
         Ok(Wallet::Ledger(self))
     }
@@ -69,13 +77,17 @@ impl WalletControl for Ledger {
             .ok_or(Error::InvalidKey(path.into()))
     }
 
-    async fn build_signer(
-        &self,
-        _chain_id: u32,
-        _path: &str,
-    ) -> Result<ethers::signers::Wallet<SigningKey>> {
-        todo!()
-    }
+    // async fn build_signer(&self, chain_id: u32, path: &str) -> Result<Box<dyn ethers::signers::Signer<Error=Error>>> {
+    //     let ledger = ethers::signers::Ledger::new(
+    //         ethers::signers::HDPath::Other(path.into()),
+    //         chain_id as u64,
+    //     )
+    //     .await
+    //     .map_err(|e| Error::Ledger(e.to_string()))?;
+    //
+    //     // ethers::signers::Wallet::new_with_signer(ledger, self.get_address(path), chain_id);
+    //     todo!()
+    // }
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
@@ -86,19 +98,8 @@ pub struct LedgerParams {
 }
 
 impl Ledger {
-    pub async fn detect(paths: Vec<String>) -> Result<Vec<(String, Address)>> {
-        let mut res = vec![];
-        // let _guard = HID_MUTEX.lock().await;
-        for path in paths.into_iter() {
-            let address = utils::ledger_derive(&path).await?;
-            res.push((path, address));
-        }
-
-        Ok(res)
-    }
-
     pub async fn from_params(params: LedgerParams) -> Result<Self> {
-        let addresses = Self::detect(params.paths).await?;
+        let addresses = utils::ledger_derive_multiple(params.paths).await?;
 
         Ok(Self {
             name: params.name,
