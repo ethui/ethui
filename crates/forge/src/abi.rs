@@ -1,7 +1,8 @@
 #![allow(dead_code)]
 
-use iron_types::Bytes;
 use std::{fs::File, io::BufReader, path::PathBuf, str::FromStr};
+
+use iron_types::Bytes;
 
 use super::{
     error::{Error, Result},

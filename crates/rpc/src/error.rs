@@ -1,8 +1,4 @@
-use ethers::{
-    core::k256::ecdsa::SigningKey,
-    prelude::{signer::SignerMiddlewareError, *},
-    signers,
-};
+use ethers::prelude::{signer::SignerMiddlewareError, *};
 use iron_types::Address;
 use jsonrpc_core::ErrorCode;
 
@@ -21,7 +17,10 @@ pub enum Error {
     SignerBuild(String),
 
     #[error(transparent)]
-    SignerMiddleware(#[from] SignerMiddlewareError<Provider<Http>, signers::Wallet<SigningKey>>),
+    SignerMiddleware(#[from] SignerMiddlewareError<Provider<Http>, iron_wallets::Signer>),
+
+    #[error("Signer error: {0}")]
+    Signer(String),
 
     #[error(transparent)]
     Wallet(#[from] ethers::signers::WalletError),

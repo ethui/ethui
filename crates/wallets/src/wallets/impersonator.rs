@@ -1,11 +1,10 @@
 use std::str::FromStr;
 
 use async_trait::async_trait;
-use ethers::core::k256::ecdsa::SigningKey;
 use iron_types::Address;
 use serde::{Deserialize, Serialize};
 
-use crate::{wallet::WalletCreate, Result, Wallet, WalletControl};
+use crate::{wallet::WalletCreate, Result, Signer, Wallet, WalletControl};
 
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct Impersonator {
@@ -69,11 +68,7 @@ impl WalletControl for Impersonator {
         Ok(self.addresses[usize::from_str(path)?])
     }
 
-    async fn build_signer(
-        &self,
-        _chain_id: u32,
-        _path: &str,
-    ) -> Result<ethers::signers::Wallet<SigningKey>> {
+    async fn build_signer(&self, _chain_id: u32, _path: &str) -> Result<Signer> {
         Err(crate::Error::WalletCantSign)
     }
 }

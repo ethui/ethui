@@ -13,7 +13,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 
 import { ConfirmationDialog } from "@/components";
 import { useNetworks } from "@/store";
-import { Network, networkSchema } from "@/types";
+import { Network, networkSchema } from "@/types/network";
 
 type NewChild = { new?: boolean };
 

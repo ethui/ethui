@@ -1,12 +1,10 @@
 pub mod commands;
 mod error;
-mod hd_wallet;
-mod impersonator;
 mod init;
-mod json_keystore_wallet;
-mod plaintext;
+mod signer;
 mod utils;
 mod wallet;
+mod wallets;
 
 use std::{
     collections::HashSet,
@@ -18,9 +16,9 @@ pub use error::{Error, Result};
 pub use init::init;
 use iron_types::{Address, Json, UINotify};
 use serde::Serialize;
+pub use signer::Signer;
 
-use self::wallet::WalletCreate;
-pub use self::wallet::{Wallet, WalletControl};
+pub use self::wallet::{Wallet, WalletControl, WalletType};
 
 /// Maintains a list of Ethereum wallets, including keeping track of the global current wallet &
 /// address
@@ -184,7 +182,7 @@ impl Wallets {
     fn ensure_current(&mut self) {
         if self.wallets.is_empty() {
             self.wallets
-                .push(Wallet::Plaintext(plaintext::PlaintextWallet::default()));
+                .push(Wallet::Plaintext(wallets::PlaintextWallet::default()));
         }
 
         if self.current >= self.wallets.len() {
