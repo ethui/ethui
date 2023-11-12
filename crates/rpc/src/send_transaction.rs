@@ -70,8 +70,14 @@ impl<'a> SendTransaction {
                 DialogMsg::Data(data) => match data.as_str() {
                     Some("simulate") => self.simulate(dialog.clone()).await?,
                     Some("accept") => break,
-                    Some("reject") => return Err(Error::TxDialogRejected),
-                    _ => return Err(Error::TxDialogRejected),
+                    Some("reject") => {
+                        dialog.close().await?;
+                        return Err(Error::TxDialogRejected);
+                    }
+                    _ => {
+                        dialog.close().await?;
+                        return Err(Error::TxDialogRejected);
+                    }
                 },
 
                 DialogMsg::Accept(_response) => break,
@@ -80,7 +86,8 @@ impl<'a> SendTransaction {
                 // TODO: what's the appropriate error to return here?
                 // or should we return Ok(_)? Err(_) seems too close the ws connection
                 {
-                    return Err(Error::TxDialogRejected)
+                    dialog.close().await?;
+                    return Err(Error::TxDialogRejected);
                 }
             }
         }
