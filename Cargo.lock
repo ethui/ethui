@@ -1027,7 +1027,7 @@ checksum = "2d886547e41f740c616ae73108f6eb70afe6d940c7bc697cb30f13daec073037"
 dependencies = [
  "camino",
  "cargo-platform",
- "semver 1.0.18",
+ "semver 1.0.20",
  "serde",
  "serde_json",
  "thiserror",
@@ -1292,8 +1292,7 @@ dependencies = [
 [[package]]
 name = "coins-ledger"
 version = "0.8.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8fa6094030951ce3efad50fdba0efe088a93ffe05ec58c2f47cc60d9e90c715d"
+source = "git+https://github.com/iron-wallet/coins?branch=send#a6c1f0b539ab7d0833b4375c8a298d760d5275fb"
 dependencies = [
  "async-trait",
  "byteorder",
@@ -2192,7 +2191,7 @@ dependencies = [
  "ethers-core",
  "ethers-solc",
  "reqwest",
- "semver 1.0.18",
+ "semver 1.0.20",
  "serde",
  "serde_json",
  "thiserror",
@@ -2279,7 +2278,7 @@ dependencies = [
  "futures-executor",
  "futures-util",
  "rand 0.8.5",
- "semver 1.0.18",
+ "semver 1.0.20",
  "sha2",
  "thiserror",
  "tracing",
@@ -2303,7 +2302,7 @@ dependencies = [
  "path-slash",
  "rayon",
  "regex",
- "semver 1.0.18",
+ "semver 1.0.20",
  "serde",
  "serde_json",
  "solang-parser",
@@ -2535,7 +2534,7 @@ dependencies = [
  "ethers-core",
  "foundry-compilers",
  "reqwest",
- "semver 1.0.18",
+ "semver 1.0.20",
  "serde",
  "serde_json",
  "thiserror",
@@ -2606,7 +2605,7 @@ dependencies = [
  "once_cell",
  "regex",
  "reqwest",
- "semver 1.0.18",
+ "semver 1.0.20",
  "serde",
  "serde_json",
  "tempfile",
@@ -2638,7 +2637,7 @@ dependencies = [
  "path-slash",
  "rayon",
  "regex",
- "semver 1.0.18",
+ "semver 1.0.20",
  "serde",
  "serde_json",
  "sha2",
@@ -2674,7 +2673,7 @@ dependencies = [
  "regex",
  "reqwest",
  "revm-primitives",
- "semver 1.0.18",
+ "semver 1.0.20",
  "serde",
  "serde_json",
  "serde_regex",
@@ -2756,7 +2755,7 @@ dependencies = [
  "foundry-compilers",
  "foundry-evm-core",
  "revm",
- "semver 1.0.18",
+ "semver 1.0.20",
  "tracing",
 ]
 
@@ -2914,9 +2913,9 @@ dependencies = [
 
 [[package]]
 name = "futures-channel"
-version = "0.3.28"
+version = "0.3.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "955518d47e09b25bbebc7a18df10b81f0c766eaf4c4f1cccef2fca5f2a4fb5f2"
+checksum = "ff4dd66668b557604244583e3e1e1eada8c5c2e96a6d0d6653ede395b78bbacb"
 dependencies = [
  "futures-core",
  "futures-sink",
@@ -2924,15 +2923,15 @@ dependencies = [
 
 [[package]]
 name = "futures-core"
-version = "0.3.28"
+version = "0.3.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4bca583b7e26f571124fe5b7561d49cb2868d79116cfa0eefce955557c6fee8c"
+checksum = "eb1d22c66e66d9d72e1758f0bd7d4fd0bee04cad842ee34587d68c07e45d088c"
 
 [[package]]
 name = "futures-executor"
-version = "0.3.28"
+version = "0.3.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ccecee823288125bd88b4d7f565c9e58e41858e47ab72e8ea2d64e93624386e0"
+checksum = "0f4fb8693db0cf099eadcca0efe2a5a22e4550f98ed16aba6c48700da29597bc"
 dependencies = [
  "futures-core",
  "futures-task",
@@ -2952,9 +2951,9 @@ dependencies = [
 
 [[package]]
 name = "futures-io"
-version = "0.3.28"
+version = "0.3.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4fff74096e71ed47f8e023204cfd0aa1289cd54ae5430a9523be060cdb849964"
+checksum = "8bf34a163b5c4c52d0478a4d757da8fb65cabef42ba90515efee0f6f9fa45aaa"
 
 [[package]]
 name = "futures-lite"
@@ -2983,9 +2982,9 @@ dependencies = [
 
 [[package]]
 name = "futures-macro"
-version = "0.3.28"
+version = "0.3.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "89ca545a94061b6365f2c7355b4b32bd20df3ff95f02da9329b34ccc3bd6ee72"
+checksum = "53b153fd91e4b0147f4aced87be237c98248656bb01050b96bf3ee89220a8ddb"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2994,15 +2993,15 @@ dependencies = [
 
 [[package]]
 name = "futures-sink"
-version = "0.3.28"
+version = "0.3.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f43be4fe21a13b9781a69afa4985b0f6ee0e1afab2c6f454a8cf30e2b2237b6e"
+checksum = "e36d3378ee38c2a36ad710c5d30c2911d752cb941c00c72dbabfb786a7970817"
 
 [[package]]
 name = "futures-task"
-version = "0.3.28"
+version = "0.3.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "76d3d132be6c0e6aa1534069c705a74a5997a356c0dc2f86a47765e5617c5b65"
+checksum = "efd193069b0ddadc69c46389b740bbccdd97203899b48d09c5f7969591d6bae2"
 
 [[package]]
 name = "futures-timer"
@@ -3016,9 +3015,9 @@ dependencies = [
 
 [[package]]
 name = "futures-util"
-version = "0.3.28"
+version = "0.3.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "26b01e40b772d54cf6c6d721c1d1abd0647a0106a12ecaa1c186273392a69533"
+checksum = "a19526d624e703a3179b3d322efec918b6246ea0fa51d41124525f00f1cc8104"
 dependencies = [
  "futures-channel",
  "futures-core",
@@ -4183,20 +4182,25 @@ version = "1.0.0"
 dependencies = [
  "async-trait",
  "coins-bip32",
+ "coins-ledger",
  "enum_dispatch",
  "ethers",
  "futures",
+ "futures-executor",
+ "hex",
  "iron-broadcast",
  "iron-crypto",
  "iron-dialogs",
  "iron-types",
  "once_cell",
  "secrets",
+ "semver 1.0.20",
  "serde",
  "serde_json",
  "tauri",
  "thiserror",
  "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -6375,7 +6379,7 @@ version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bfa0f585226d2e68097d4f95d113b15b83a82e819ab25717ec0590d9584ef366"
 dependencies = [
- "semver 1.0.18",
+ "semver 1.0.20",
 ]
 
 [[package]]
@@ -6649,9 +6653,9 @@ dependencies = [
 
 [[package]]
 name = "semver"
-version = "1.0.18"
+version = "1.0.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b0293b4b29daaf487284529cc2f5675b8e57c61f70167ba415a463651fd6a918"
+checksum = "836fa6a3e1e547f9a2c4040802ec865b5d85f4014efe00555d7090a3dcaa1090"
 dependencies = [
  "serde",
 ]
@@ -7396,7 +7400,7 @@ dependencies = [
  "hex",
  "once_cell",
  "reqwest",
- "semver 1.0.18",
+ "semver 1.0.20",
  "serde",
  "serde_json",
  "sha2",
@@ -7413,7 +7417,7 @@ checksum = "2271abd7d01895a3e5bfa4b578e32f09155002ce1ec239532e297f82aafad06b"
 dependencies = [
  "build_const",
  "hex",
- "semver 1.0.18",
+ "semver 1.0.20",
  "serde_json",
  "svm-rs",
 ]
@@ -7632,7 +7636,7 @@ dependencies = [
  "regex",
  "reqwest",
  "rfd",
- "semver 1.0.18",
+ "semver 1.0.20",
  "serde",
  "serde_json",
  "serde_repr",
@@ -7666,7 +7670,7 @@ dependencies = [
  "dirs-next",
  "heck 0.4.1",
  "json-patch",
- "semver 1.0.18",
+ "semver 1.0.20",
  "serde",
  "serde_json",
  "tauri-utils",
@@ -7689,7 +7693,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "regex",
- "semver 1.0.18",
+ "semver 1.0.20",
  "serde",
  "serde_json",
  "sha2",
@@ -7789,7 +7793,7 @@ dependencies = [
  "phf 0.10.1",
  "proc-macro2",
  "quote",
- "semver 1.0.18",
+ "semver 1.0.20",
  "serde",
  "serde_json",
  "serde_with",

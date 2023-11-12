@@ -21,6 +21,7 @@ import { Wallet, walletTypes } from "@/types/wallets";
 import { HDWalletForm } from "./Wallet/HDWallet";
 import { ImpersonatorForm } from "./Wallet/Impersonator";
 import { JsonKeystore } from "./Wallet/JsonKeystore";
+import { Ledger } from "./Wallet/Ledger";
 import { Plaintext } from "./Wallet/Plaintext";
 
 export function SettingsWallets() {
@@ -79,11 +80,12 @@ function ExistingItem({ wallet }: ItemProps) {
           <JsonKeystore wallet={wallet} {...props} />
         )}
         {wallet.type === "HDWallet" && (
-          <HDWalletForm wallet={wallet} type="update" {...props} />
+          <HDWalletForm wallet={wallet} {...props} />
         )}
         {wallet.type === "impersonator" && (
           <ImpersonatorForm wallet={wallet} {...props} />
         )}
+        {wallet.type === "ledger" && <Ledger wallet={wallet} {...props} />}
       </AccordionDetails>
     </Accordion>
   );
@@ -113,8 +115,9 @@ function NewItem({ type, onFinish }: NewItemProps) {
 
       {type === "plaintext" && <Plaintext {...props} />}
       {type === "jsonKeystore" && <JsonKeystore {...props} />}
-      {type === "HDWallet" && <HDWalletForm type="update" {...props} />}
+      {type === "HDWallet" && <HDWalletForm {...props} />}
       {type === "impersonator" && <ImpersonatorForm {...props} />}
+      {type === "ledger" && <Ledger {...props} />}
     </Paper>
   );
 }

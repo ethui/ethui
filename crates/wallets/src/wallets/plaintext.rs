@@ -6,8 +6,7 @@ use ethers::signers::{coins_bip39::English, MnemonicBuilder, Signer as _};
 use iron_types::{Address, ToAlloy};
 use serde::{Deserialize, Serialize};
 
-use crate::Signer;
-use crate::{utils, wallet::WalletCreate, Result, Wallet, WalletControl};
+use crate::{utils, wallet::WalletCreate, Result, Signer, Wallet, WalletControl};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(try_from = "Deserializer", rename_all = "camelCase")]

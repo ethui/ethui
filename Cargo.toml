@@ -9,29 +9,7 @@ authors = ["Miguel Palhas <mpalhas@gmail.com>"]
 
 [workspace]
 resolver = "2"
-members = [
-  "bin/iron",
-  "crates/settings",
-  "crates/tracing",
-  "crates/networks",
-  "crates/wallets",
-  "crates/ws",
-  "crates/http",
-  "crates/rpc",
-  "crates/connections",
-  "crates/dialogs",
-  "crates/abis",
-  "crates/forge",
-  "crates/types",
-  "crates/db",
-  "crates/sync",
-  "crates/sync/anvil",
-  "crates/sync/alchemy",
-  "crates/crypto",
-  "crates/broadcast",
-  "crates/exchange-rates",
-  "crates/simulator",
-]
+members = ["bin/iron", "crates/*"]
 default-members = ["bin/iron"]
 
 [workspace.dependencies]
@@ -58,7 +36,10 @@ iron-exchange-rates = { path = "crates/exchange-rates" }
 
 tokio = { version = "1.33", features = ["full", "sync"] }
 thiserror = "1.0"
-ethers = { version = "2", features = ["ws", "ledger"] }
+ethers = { features = [
+  "ws",
+  "ledger",
+], git = "https://github.com/gakonst/ethers-rs", rev = "841ff8c47980798fbb47991e047f8481b1d5eb39" }
 sqlx = { version = "0.7.2", features = [
   "runtime-tokio-rustls",
   "sqlite",
@@ -102,3 +83,6 @@ alloy-dyn-abi = { git = "https://github.com/alloy-rs/core/" }
 alloy-primitives = { git = "https://github.com/alloy-rs/core/" }
 alloy-json-abi = { git = "https://github.com/alloy-rs/core/" }
 alloy-sol-types = { git = "https://github.com/alloy-rs/core/" }
+
+# https://github.com/summa-tx/coins/issues/124
+coins-ledger = { git = "https://github.com/iron-wallet/coins", branch = "send" }

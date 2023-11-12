@@ -13,8 +13,7 @@ use tokio::{
     task::JoinHandle,
 };
 
-use crate::Signer;
-use crate::{wallet::WalletCreate, Error, Result, Wallet, WalletControl};
+use crate::{wallet::WalletCreate, Error, Result, Signer, Wallet, WalletControl};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct JsonKeystoreWallet {

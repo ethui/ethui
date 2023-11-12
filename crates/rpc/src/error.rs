@@ -1,6 +1,4 @@
-use ethers::{
-    prelude::{signer::SignerMiddlewareError, *},
-};
+use ethers::prelude::{signer::SignerMiddlewareError, *};
 use iron_types::Address;
 use jsonrpc_core::ErrorCode;
 

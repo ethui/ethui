@@ -45,6 +45,9 @@ pub enum Error {
     #[error(transparent)]
     ParseInto(#[from] std::num::ParseIntError),
 
+    #[error(transparent)]
+    Tokio(#[from] tokio::task::JoinError),
+
     #[error("Ledger error: {0}")]
     Ledger(String),
 }

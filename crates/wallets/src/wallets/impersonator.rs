@@ -1,14 +1,10 @@
 use std::str::FromStr;
 
 use async_trait::async_trait;
-
 use iron_types::Address;
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    wallet::{WalletCreate},
-    Result, Signer, Wallet, WalletControl,
-};
+use crate::{wallet::WalletCreate, Result, Signer, Wallet, WalletControl};
 
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct Impersonator {

@@ -5,7 +5,7 @@ use iron_types::{Address, Json};
 use serde::{Deserialize, Serialize};
 
 use super::{
-    wallets::{HDWallet, Impersonator, JsonKeystoreWallet, PlaintextWallet},
+    wallets::{HDWallet, Impersonator, JsonKeystoreWallet, LedgerWallet, PlaintextWallet},
     Error, Result,
 };
 
@@ -22,13 +22,6 @@ pub trait WalletControl: Sync + Send + Deserialize<'static> + Serialize + std::f
     async fn get_address(&self, path: &str) -> Result<Address>;
 
     async fn build_signer(&self, chain_id: u32, path: &str) -> Result<crate::signer::Signer>;
-
-    // async fn build_current_signer(
-    //     &self,
-    //     chain_id: u32,
-    // ) -> Result<ethers::signers::Wallet<SigningKey>> {
-    //     self.build_signer(chain_id, &self.get_current_path()).await
-    // }
 
     async fn find(&self, address: Address) -> Option<String> {
         let addresses = self.get_all_addresses().await;
@@ -71,11 +64,12 @@ pub enum Wallet {
     HDWallet(HDWallet),
 
     Impersonator(Impersonator),
+
+    Ledger(LedgerWallet),
 }
 
-#[async_trait]
-impl WalletCreate for Wallet {
-    async fn create(params: Json) -> Result<Wallet> {
+impl Wallet {
+    pub(crate) async fn create(params: Json) -> Result<Wallet> {
         let wallet_type = params["type"].as_str().unwrap_or_default();
 
         let wallet = match wallet_type {
@@ -83,9 +77,47 @@ impl WalletCreate for Wallet {
             "jsonKeystore" => JsonKeystoreWallet::create(params).await?,
             "HDWallet" => HDWallet::create(params).await?,
             "impersonator" => Impersonator::create(params).await?,
+            "ledger" => LedgerWallet::create(params).await?,
             _ => return Err(Error::InvalidWalletType(wallet_type.into())),
         };
 
         Ok(wallet)
+    }
+}
+
+#[derive(Debug, PartialEq)]
+pub enum WalletType {
+    Plaintext,
+    JsonKeystore,
+    HDWallet,
+    Impersonator,
+    Ledger,
+}
+
+impl std::fmt::Display for WalletType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                WalletType::Plaintext => "plaintext",
+                WalletType::JsonKeystore => "jsonKeystore",
+                WalletType::HDWallet => "HDWallet",
+                WalletType::Impersonator => "impersonator",
+                WalletType::Ledger => "ledger",
+            }
+        )
+    }
+}
+
+impl From<&Wallet> for WalletType {
+    fn from(wallet: &Wallet) -> Self {
+        match wallet {
+            Wallet::Plaintext(_) => Self::Plaintext,
+            Wallet::JsonKeystore(_) => Self::JsonKeystore,
+            Wallet::HDWallet(_) => Self::HDWallet,
+            Wallet::Impersonator(_) => Self::Impersonator,
+            Wallet::Ledger(_) => Self::Ledger,
+        }
     }
 }

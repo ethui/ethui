@@ -18,8 +18,7 @@ use iron_types::{Address, Json, UINotify};
 use serde::Serialize;
 pub use signer::Signer;
 
-use self::wallet::WalletCreate;
-pub use self::wallet::{Wallet, WalletControl};
+pub use self::wallet::{Wallet, WalletControl, WalletType};
 
 /// Maintains a list of Ethereum wallets, including keeping track of the global current wallet &
 /// address

@@ -22,7 +22,11 @@ import { z } from "zod";
 
 import { useProvider } from "@/hooks";
 import { passwordFormSchema, passwordSchema } from "@/types/password";
-import { derivationPathSchema, mnemonicSchema, Wallet } from "@/types/wallets";
+import {
+  derivationPathSchema,
+  HdWallet,
+  mnemonicSchema,
+} from "@/types/wallets";
 
 export const schema = z.object({
   count: z.number().int().min(1).max(100),
@@ -49,8 +53,7 @@ type UpdateSchema = z.infer<typeof updateSchema>;
 const steps = ["Import", "Secure", "Review"];
 
 interface Props {
-  type: "create" | "update";
-  wallet?: Wallet & { type: "HDWallet" };
+  wallet?: HdWallet;
 
   onSubmit: (data: CreateSchema | UpdateSchema) => void;
   onRemove: () => void;
@@ -64,7 +67,7 @@ export function HDWalletForm({ wallet, ...props }: Props) {
   }
 }
 
-function Create({ onSubmit, onRemove }: Omit<Props, "type">) {
+function Create({ onSubmit, onRemove }: Props) {
   const [name, setName] = useState("");
   const [step, setStep] = useState(0);
   const [mnemonic, setMnemonic] = useState<string>("");
@@ -376,7 +379,7 @@ function NativeBalance({ address }: NativeBalanceProps) {
   );
 }
 
-function Update({ wallet, onSubmit, onRemove }: Omit<Props, "type">) {
+function Update({ wallet, onSubmit, onRemove }: Props) {
   const {
     register,
     handleSubmit,

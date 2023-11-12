@@ -9,16 +9,18 @@ use iron_dialogs::{Dialog, DialogMsg};
 use iron_networks::Network;
 use iron_settings::Settings;
 use iron_types::{Address, GlobalState, ToAlloy, ToEthers};
-use iron_wallets::{WalletControl, Wallets};
+use iron_wallets::{WalletControl, WalletType, Wallets};
 
 use super::{Error, Result};
 
 /// Orchestrates the signing of a transaction
 /// Takes references to both the wallet and network where this
+#[derive(Debug)]
 pub struct SendTransaction {
     pub network: Network,
     pub wallet_name: String,
     pub wallet_path: String,
+    pub wallet_type: WalletType,
     pub request: TypedTransaction,
     pub signer: Option<SignerMiddleware<Provider<Http>, iron_wallets::Signer>>,
 }
@@ -49,39 +51,57 @@ impl<'a> SendTransaction {
 
         // skip the dialog if both network & wallet allow for it, and if fast_mode is enabled
         if !(self.network.is_dev() && wallet.is_dev() && Settings::read().await.fast_mode()) {
-            self.spawn_dialog().await?;
+            self.dialog_and_send().await
+        } else {
+            self.send().await
         }
-        self.send().await
     }
 
-    async fn spawn_dialog(&mut self) -> Result<()> {
+    async fn dialog_and_send(&mut self) -> Result<PendingTransaction<'_, Http>> {
         let mut params = serde_json::to_value(&self.request).unwrap();
         params["chainId"] = self.network.chain_id.into();
+        params["walletType"] = self.wallet_type.to_string().into();
 
         let dialog = Dialog::new("tx-review", params);
         dialog.open().await?;
 
         while let Some(msg) = dialog.recv().await {
             match msg {
-                DialogMsg::Data(data) => {
-                    if data.as_str() == Some("simulate") {
-                        self.simulate(dialog.clone()).await?;
+                DialogMsg::Data(data) => match data.as_str() {
+                    Some("simulate") => self.simulate(dialog.clone()).await?,
+                    Some("accept") => break,
+                    Some("reject") => {
+                        dialog.close().await?;
+                        return Err(Error::TxDialogRejected);
                     }
-                }
+                    _ => {
+                        dialog.close().await?;
+                        return Err(Error::TxDialogRejected);
+                    }
+                },
 
-                // TODO: in the future, send json values here to override params
-                DialogMsg::Accept(_response) => return Ok(()),
+                DialogMsg::Accept(_response) => break,
 
                 _ =>
                 // TODO: what's the appropriate error to return here?
-                // or should we return Ok(_)? Err(_) seems to close the ws connection
+                // or should we return Ok(_)? Err(_) seems too close the ws connection
                 {
-                    return Err(Error::TxDialogRejected)
+                    dialog.close().await?;
+                    return Err(Error::TxDialogRejected);
                 }
             }
         }
 
-        Ok(())
+        if self.is_ledger() {
+            dialog.send("check-ledger", None).await.unwrap();
+        }
+
+        let tx = self.send().await?;
+
+        // TODO: can we implement this via Drop?
+        dialog.close().await?;
+
+        Ok(tx)
     }
 
     async fn simulate(&self, dialog: Dialog) -> Result<()> {
@@ -103,6 +123,13 @@ impl<'a> SendTransaction {
         Ok(())
     }
 
+    async fn send(&mut self) -> Result<PendingTransaction<'_, Http>> {
+        self.build_signer().await;
+        let signer = self.signer.as_ref().unwrap();
+
+        Ok(signer.send_transaction(self.request.clone(), None).await?)
+    }
+
     async fn build_signer(&mut self) {
         if self.signer.is_none() {
             let wallets = Wallets::read().await;
@@ -112,16 +139,10 @@ impl<'a> SendTransaction {
                 .build_signer(self.network.chain_id, &self.wallet_path)
                 .await
                 .unwrap();
+
             let signer = SignerMiddleware::new(self.network.get_provider(), signer);
             self.signer = Some(signer);
         }
-    }
-
-    async fn send(&mut self) -> Result<PendingTransaction<'_, Http>> {
-        self.build_signer().await;
-        let signer = self.signer.as_ref().unwrap();
-
-        Ok(signer.send_transaction(self.request.clone(), None).await?)
     }
 
     async fn simulation_request(&self) -> Result<iron_simulator::Request> {
@@ -156,12 +177,17 @@ impl<'a> SendTransaction {
             .await
             .map_err(|_| Error::CannotSimulate)
     }
+
+    fn is_ledger(&self) -> bool {
+        self.wallet_type == WalletType::Ledger
+    }
 }
 
 pub struct SendTransactionBuilder<'a> {
     ctx: &'a Ctx,
     pub wallet_name: Option<String>,
     pub wallet_path: Option<String>,
+    pub wallet_type: Option<WalletType>,
     pub request: TypedTransaction,
 }
 
@@ -171,6 +197,7 @@ impl<'a> SendTransactionBuilder<'a> {
             ctx,
             wallet_name: None,
             wallet_path: None,
+            wallet_type: None,
             request: Default::default(),
         }
     }
@@ -197,6 +224,7 @@ impl<'a> SendTransactionBuilder<'a> {
                 .ok_or(Error::WalletNotFound(address))?;
             self.wallet_name = Some(wallet.name());
             self.wallet_path = Some(path);
+            self.wallet_type = Some(wallet.into());
         } else {
             let wallet = wallets.get_current_wallet();
 
@@ -204,6 +232,7 @@ impl<'a> SendTransactionBuilder<'a> {
             self.request
                 .set_from(wallet.get_current_address().await.to_ethers());
             self.wallet_name = Some(wallet.name());
+            self.wallet_type = Some(wallet.into());
         }
 
         if let Some(to) = params["to"].as_str() {
@@ -227,6 +256,7 @@ impl<'a> SendTransactionBuilder<'a> {
         SendTransaction {
             wallet_name: self.wallet_name.unwrap(),
             wallet_path: self.wallet_path.unwrap(),
+            wallet_type: self.wallet_type.unwrap(),
             network: self.ctx.network().await,
             request: self.request,
             signer: None,
