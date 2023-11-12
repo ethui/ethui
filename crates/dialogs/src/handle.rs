@@ -8,9 +8,12 @@ use tokio::sync::{mpsc, RwLock};
 
 use super::{global::OPEN_DIALOGS, presets, Result};
 
+/// A handle to a dialog
+/// The dialog will automatically close on Drop
 pub struct Dialog(Arc<RwLock<Inner>>);
 
-#[derive(Clone)]
+/// Structurally the same type as `Dialog`, but without `Drop` logic.
+/// This is the version of the Dialog that will be stored in the global map to be used by tauri
 pub struct DialogStore(Arc<RwLock<Inner>>);
 
 impl Dialog {
