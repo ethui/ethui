@@ -9,7 +9,7 @@ interface Props {
   stopOnDetected?: boolean;
 }
 
-export const useLedgerDetect = ({ disabled, stopOnDetected }: Props) => {
+export const useLedgerDetect = ({ disabled, stopOnDetected }: Props = {}) => {
   const [count, setCount] = useState(0);
   const [detected, setDetected] = useState<boolean | undefined>(undefined);
 

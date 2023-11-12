@@ -154,7 +154,7 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
 }
 
 function Detect() {
-  const detected = useLedgerDetect();
+  const detected = useLedgerDetect({});
 
   if (detected === true) {
     return (
