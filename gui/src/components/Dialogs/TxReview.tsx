@@ -35,23 +35,36 @@ interface Simulation {
 }
 
 export function TxReviewDialog({ id }: { id: number }) {
-  const { data, accept, reject, send, listen } = useDialog<TxRequest>(id);
+  const { data, send, listen } = useDialog<TxRequest>(id);
   const [simulation, setSimulation] = useState<Simulation | undefined>(
     undefined,
   );
+  const [checkLedger, setCheckLedger] = useState(false);
   const [tab, setTab] = useState("1");
 
   useEffect(() => {
     listen("simulation-result", ({ payload }: { payload: Simulation }) =>
       setSimulation(payload),
     );
+
+    listen("check-ledger", () => setCheckLedger(true));
   }, [listen]);
+
+  console.log(checkLedger);
 
   useEffect(() => {
     send("simulate");
   }, [send]);
 
   if (!data) return null;
+
+  const onReject = () => {
+    send("reject");
+  };
+
+  const onConfirm = () => {
+    send("accept");
+  };
 
   const { from, to, value: valueStr, data: calldata, chainId } = data;
   const value = BigInt(valueStr || 0);
@@ -86,10 +99,10 @@ export function TxReviewDialog({ id }: { id: number }) {
       </TabContext>
 
       <Stack direction="row" justifyContent="center" spacing={2}>
-        <Button variant="contained" color="error" onClick={() => reject()}>
+        <Button variant="contained" color="error" onClick={onReject}>
           Reject
         </Button>
-        <Button variant="contained" type="submit" onClick={() => accept(data)}>
+        <Button variant="contained" type="submit" onClick={onConfirm}>
           Confirm
         </Button>
       </Stack>

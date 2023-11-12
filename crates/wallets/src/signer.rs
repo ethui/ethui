@@ -12,6 +12,15 @@ pub enum Signer {
     Ledger(ethers::signers::Ledger),
 }
 
+impl Signer {
+    pub fn is_ledger(&self) -> bool {
+        match self {
+            Self::SigningKey(_) => false,
+            Self::Ledger(_) => true,
+        }
+    }
+}
+
 #[async_trait]
 impl ethers::signers::Signer for Signer {
     type Error = crate::Error;
