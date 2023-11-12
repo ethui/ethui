@@ -3,7 +3,7 @@ use std::{fs::File, io::BufReader, path::PathBuf, str::FromStr, sync::Arc, time:
 use async_trait::async_trait;
 use ethers::{
     core::k256::ecdsa::SigningKey,
-    signers::{self, Signer},
+    signers::{self, Signer as _},
 };
 use iron_dialogs::{Dialog, DialogMsg};
 use iron_types::Address;
@@ -13,7 +13,8 @@ use tokio::{
     task::JoinHandle,
 };
 
-use super::{wallet::WalletCreate, Error, Result, Wallet, WalletControl};
+use crate::Signer;
+use crate::{wallet::WalletCreate, Error, Result, Wallet, WalletControl};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct JsonKeystoreWallet {
@@ -75,22 +76,18 @@ impl WalletControl for JsonKeystoreWallet {
         Ok(self.get_current_address().await)
     }
 
-    async fn build_signer(
-        &self,
-        chain_id: u32,
-        _path: &str,
-    ) -> Result<signers::Wallet<SigningKey>> {
+    async fn get_all_addresses(&self) -> Vec<(String, Address)> {
+        vec![("default".into(), self.get_current_address().await)]
+    }
+
+    async fn build_signer(&self, chain_id: u32, _path: &str) -> Result<Signer> {
         self.unlock().await?;
 
         let secret = self.secret.read().await;
         let secret = secret.as_ref().unwrap().lock().await;
 
         let signer = signer_from_secret(&secret);
-        Ok(signer.with_chain_id(chain_id))
-    }
-
-    async fn get_all_addresses(&self) -> Vec<(String, Address)> {
-        vec![("default".into(), self.get_current_address().await)]
+        Ok(Signer::SigningKey(signer.with_chain_id(chain_id)))
     }
 }
 

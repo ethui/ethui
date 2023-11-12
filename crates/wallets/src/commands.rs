@@ -53,9 +53,7 @@ pub async fn wallets_set_current_path(key: String) -> Result<()> {
 
 /// Get all known addresses of a wallet
 #[tauri::command]
-pub async fn wallets_get_wallet_addresses(
-    name: String,
-) -> Result<Vec<(String, Address)>> {
+pub async fn wallets_get_wallet_addresses(name: String) -> Result<Vec<(String, Address)>> {
     Ok(Wallets::read().await.get_wallet_addresses(name).await)
 }
 
