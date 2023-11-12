@@ -1,14 +1,11 @@
 use async_trait::async_trait;
 use enum_dispatch::enum_dispatch;
-use ethers::core::k256::ecdsa::SigningKey;
 use iron_types::{Address, Json};
 use serde::{Deserialize, Serialize};
 
-use crate::ledger::Ledger;
-
 use super::{
-    hd_wallet::HDWallet, impersonator::Impersonator, json_keystore_wallet::JsonKeystoreWallet,
-    plaintext::PlaintextWallet, Error, Result,
+    wallets::{HDWallet, Impersonator, JsonKeystoreWallet, LedgerWallet, PlaintextWallet},
+    Error, Result,
 };
 
 #[async_trait]
@@ -23,18 +20,7 @@ pub trait WalletControl: Sync + Send + Deserialize<'static> + Serialize + std::f
 
     async fn get_address(&self, path: &str) -> Result<Address>;
 
-    async fn build_signer(
-        &self,
-        chain_id: u32,
-        path: &str,
-    ) -> Result<Box<dyn ethers::signers::Signer<Error=Error>>>;
-
-    async fn build_current_signer(
-        &self,
-        chain_id: u32,
-    ) -> Result<ethers::signers::Wallet<SigningKey>> {
-        self.build_signer(chain_id, &self.get_current_path()).await
-    }
+    async fn build_signer(&self, chain_id: u32, path: &str) -> Result<crate::signer::Signer>;
 
     async fn find(&self, address: Address) -> Option<String> {
         let addresses = self.get_all_addresses().await;
@@ -51,6 +37,13 @@ pub trait WalletControl: Sync + Send + Deserialize<'static> + Serialize + std::f
     fn is_dev(&self) -> bool {
         false
     }
+}
+
+#[async_trait]
+pub trait WalletSigner {
+    type Signer: ethers::signers::Signer;
+
+    async fn build_signer(&self, chain_id: u32, path: &str) -> Result<Self::Signer>;
 }
 
 /// needs to be a separate trait, because enum_dispatch does not allow for static functions
@@ -71,7 +64,7 @@ pub enum Wallet {
 
     Impersonator(Impersonator),
 
-    Ledger(Ledger),
+    Ledger(LedgerWallet),
 }
 
 impl Wallet {
@@ -83,7 +76,7 @@ impl Wallet {
             "jsonKeystore" => JsonKeystoreWallet::create(params).await?,
             "HDWallet" => HDWallet::create(params).await?,
             "impersonator" => Impersonator::create(params).await?,
-            "ledger" => Ledger::create(params).await?,
+            "ledger" => LedgerWallet::create(params).await?,
             _ => return Err(Error::InvalidWalletType(wallet_type.into())),
         };
 

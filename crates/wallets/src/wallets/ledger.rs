@@ -1,22 +1,19 @@
 use async_trait::async_trait;
-use coins_bip32::prelude::SigningKey;
 use iron_types::{Address, Json};
 use serde::{Deserialize, Serialize};
 
-use crate::{utils, Error};
-
-use super::{wallet::WalletCreate, Result, Wallet, WalletControl};
+use crate::{utils, wallet::WalletCreate, Error, Result, Signer, Wallet, WalletControl};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
-pub struct Ledger {
+pub struct LedgerWallet {
     name: String,
     addresses: Vec<(String, Address)>,
     current: usize,
 }
 
 #[async_trait]
-impl WalletCreate for Ledger {
+impl WalletCreate for LedgerWallet {
     async fn create(params: serde_json::Value) -> Result<Wallet> {
         let params = serde_json::from_value(params)?;
         Ok(Wallet::Ledger(Self::from_params(params).await?))
@@ -24,7 +21,7 @@ impl WalletCreate for Ledger {
 }
 
 #[async_trait]
-impl WalletControl for Ledger {
+impl WalletControl for LedgerWallet {
     fn name(&self) -> String {
         self.name.clone()
     }
@@ -77,17 +74,16 @@ impl WalletControl for Ledger {
             .ok_or(Error::InvalidKey(path.into()))
     }
 
-    // async fn build_signer(&self, chain_id: u32, path: &str) -> Result<Box<dyn ethers::signers::Signer<Error=Error>>> {
-    //     let ledger = ethers::signers::Ledger::new(
-    //         ethers::signers::HDPath::Other(path.into()),
-    //         chain_id as u64,
-    //     )
-    //     .await
-    //     .map_err(|e| Error::Ledger(e.to_string()))?;
-    //
-    //     // ethers::signers::Wallet::new_with_signer(ledger, self.get_address(path), chain_id);
-    //     todo!()
-    // }
+    async fn build_signer(&self, chain_id: u32, path: &str) -> Result<Signer> {
+        let ledger = ethers::signers::Ledger::new(
+            ethers::signers::HDPath::Other(path.into()),
+            chain_id as u64,
+        )
+        .await
+        .map_err(|e| Error::Ledger(e.to_string()))?;
+
+        Ok(Signer::Ledger(ledger))
+    }
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
@@ -97,7 +93,7 @@ pub struct LedgerParams {
     paths: Vec<String>,
 }
 
-impl Ledger {
+impl LedgerWallet {
     pub async fn from_params(params: LedgerParams) -> Result<Self> {
         let addresses = utils::ledger_derive_multiple(params.paths).await?;
 

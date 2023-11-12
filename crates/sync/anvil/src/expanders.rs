@@ -5,10 +5,9 @@ use ethers::{
     types::{Action, Call, Create, CreateResult, Log, Res, Trace},
 };
 use futures::future::join_all;
-use iron_types::ToAlloy;
 use iron_types::{
     events::{ContractDeployed, ERC20Transfer, ERC721Transfer, Tx},
-    Bytes, Event,
+    Bytes, Event, ToAlloy,
 };
 
 use super::{Error, Result};

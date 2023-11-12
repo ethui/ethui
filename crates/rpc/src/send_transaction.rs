@@ -1,9 +1,7 @@
 use std::str::FromStr;
 
 use ethers::{
-    core::k256::ecdsa::SigningKey,
     prelude::*,
-    signers,
     types::{serde_helpers::StringifiedNumeric, transaction::eip2718::TypedTransaction},
 };
 use iron_connections::Ctx;
@@ -17,12 +15,13 @@ use super::{Error, Result};
 
 /// Orchestrates the signing of a transaction
 /// Takes references to both the wallet and network where this
+#[derive(Debug)]
 pub struct SendTransaction {
     pub network: Network,
     pub wallet_name: String,
     pub wallet_path: String,
     pub request: TypedTransaction,
-    pub signer: Option<SignerMiddleware<Provider<Http>, signers::Wallet<SigningKey>>>,
+    pub signer: Option<SignerMiddleware<Provider<Http>, iron_wallets::Signer>>,
 }
 
 impl<'a> SendTransaction {
@@ -110,7 +109,7 @@ impl<'a> SendTransaction {
             let wallets = Wallets::read().await;
             let wallet = wallets.get(&self.wallet_name).unwrap();
 
-            let signer: signers::Wallet<SigningKey> = wallet
+            let signer = wallet
                 .build_signer(self.network.chain_id, &self.wallet_path)
                 .await
                 .unwrap();

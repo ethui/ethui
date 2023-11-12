@@ -1,7 +1,7 @@
 use std::{collections::HashMap, net::SocketAddr};
 
 use iron_networks::Networks;
-use iron_types::{Affinity, Address, GlobalState, UINotify};
+use iron_types::{Address, Affinity, GlobalState, UINotify};
 use serde::Serialize;
 use serde_json::json;
 use tokio::sync::mpsc;

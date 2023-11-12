@@ -45,11 +45,11 @@ pub enum Error {
     #[error(transparent)]
     ParseInto(#[from] std::num::ParseIntError),
 
-    #[error("ledger error: {0}")]
-    Ledger(String),
-
     #[error(transparent)]
     Tokio(#[from] tokio::task::JoinError),
+
+    #[error("Ledger error: {0}")]
+    Ledger(String),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

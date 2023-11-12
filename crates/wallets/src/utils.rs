@@ -1,12 +1,10 @@
-use ethers::signers::HDPath;
-use ethers::signers::{coins_bip39::English, MnemonicBuilder, Signer};
+use ethers::signers::{coins_bip39::English, HDPath, MnemonicBuilder, Signer};
 use iron_types::{Address, ToAlloy};
 use once_cell::sync::Lazy;
 use tokio::sync::Mutex;
 
-use crate::Error;
-
 use super::Result;
+use crate::Error;
 
 pub(crate) static HID_MUTEX: Lazy<Mutex<()>> = Lazy::new(Default::default);
 

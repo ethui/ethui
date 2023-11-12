@@ -1,10 +1,7 @@
 use std::{sync::Arc, time::Duration};
 
 use async_trait::async_trait;
-use ethers::{
-    core::k256::ecdsa::SigningKey,
-    signers::{self, coins_bip39::English, MnemonicBuilder, Signer},
-};
+use ethers::signers::{coins_bip39::English, MnemonicBuilder, Signer as _};
 use iron_crypto::{self, EncryptedData};
 use iron_dialogs::{Dialog, DialogMsg};
 use iron_types::Address;
@@ -14,7 +11,7 @@ use tokio::{
     task::JoinHandle,
 };
 
-use super::{utils, wallet::WalletCreate, Error, Result, Wallet, WalletControl};
+use crate::{utils, wallet::WalletCreate, Error, Result, Signer, Wallet, WalletControl};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -99,7 +96,11 @@ impl WalletControl for HDWallet {
             .ok_or(Error::InvalidKey(path.into()))
     }
 
-    async fn build_signer(&self, chain_id: u32, path: &str) -> Result<signers::Wallet<SigningKey>> {
+    async fn get_all_addresses(&self) -> Vec<(String, Address)> {
+        self.addresses.clone()
+    }
+
+    async fn build_signer(&self, chain_id: u32, path: &str) -> Result<Signer> {
         if !self.addresses.iter().any(|(p, _)| p == path) {
             return Err(Error::InvalidKey(path.to_string()));
         }
@@ -115,11 +116,7 @@ impl WalletControl for HDWallet {
             .derivation_path(path)?
             .build()?;
 
-        Ok(signer.with_chain_id(chain_id))
-    }
-
-    async fn get_all_addresses(&self) -> Vec<(String, Address)> {
-        self.addresses.clone()
+        Ok(Signer::SigningKey(signer.with_chain_id(chain_id)))
     }
 }
 
