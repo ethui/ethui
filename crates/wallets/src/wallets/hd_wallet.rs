@@ -210,14 +210,12 @@ impl HDWallet {
             // if password was given, and correctly decrypts the keystore
             if let Ok(mnemonic) = iron_crypto::decrypt(&self.ciphertext, &password) {
                 self.store_secret(mnemonic).await;
-                dialog.close().await?;
                 return Ok(());
             }
 
             dialog.send("failed", None).await?;
         }
 
-        dialog.close().await?;
         Err(Error::UnlockDialogFailed)
     }
 

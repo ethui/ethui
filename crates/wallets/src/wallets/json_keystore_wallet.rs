@@ -122,14 +122,12 @@ impl JsonKeystoreWallet {
             // if password was given, and correctly decrypts the keystore
             if let Ok(keystore) = signers::Wallet::decrypt_keystore(self.file.clone(), password) {
                 self.store_secret(&keystore).await;
-                dialog.close().await?;
                 return Ok(());
             }
 
             dialog.send("failed", None).await?;
         }
 
-        dialog.close().await?;
         Err(Error::UnlockDialogFailed)
     }
 
