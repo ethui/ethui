@@ -41,7 +41,9 @@ impl Dialog {
 
     /// Closes the dialog window
     pub async fn close(self) -> Result<()> {
-        self.read().await.close().await
+        self.read().await.close().await?;
+        OPEN_DIALOGS.lock().await.remove(&self.read().await.id);
+        Ok(())
     }
 
     /// Gets a copy of the payload intended for the dialog

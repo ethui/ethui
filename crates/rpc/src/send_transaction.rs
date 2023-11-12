@@ -66,7 +66,6 @@ impl<'a> SendTransaction {
         dialog.open().await?;
 
         while let Some(msg) = dialog.recv().await {
-            dbg!(&msg);
             match msg {
                 DialogMsg::Data(data) => match data.as_str() {
                     Some("simulate") => self.simulate(dialog.clone()).await?,
@@ -91,6 +90,8 @@ impl<'a> SendTransaction {
         }
 
         let tx = self.send().await?;
+
+        // TODO: can we implement this via Drop?
         dialog.close().await?;
 
         Ok(tx)
