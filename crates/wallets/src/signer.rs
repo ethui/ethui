@@ -4,8 +4,7 @@ use ethers::types::{
     Signature, H160,
 };
 
-use crate::utils::HID_MUTEX;
-use crate::{Error, Result};
+use crate::{utils::HID_MUTEX, Error, Result};
 
 #[derive(Debug)]
 pub enum Signer {

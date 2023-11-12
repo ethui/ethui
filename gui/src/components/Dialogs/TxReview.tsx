@@ -156,7 +156,6 @@ function Actions({ data, accepted, onReject, onConfirm }: ActionsProps) {
     stopOnDetected: true,
   });
 
-  console.log(ledgerDetected);
   if (data.walletType === "ledger" && !ledgerDetected) {
     return (
       <Alert severity="info">
