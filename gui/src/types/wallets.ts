@@ -35,7 +35,7 @@ export const derivationPathSchema = z
 export const addressSchema = z
   .string()
   .refine((data) => data.match(/^0x[a-fA-F0-9]{40}$/), {
-    message: "not a valid ETH address",
+    message: "Not a valid ETH address",
   });
 
 // react-hook-form doesn't support value-arrays, only object-arrays, so we need this type as a workaround for the impersonator form

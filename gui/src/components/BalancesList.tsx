@@ -1,22 +1,36 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import SendIcon from "@mui/icons-material/Send";
 import {
   Avatar,
+  Button,
   List,
   ListItem,
   ListItemAvatar,
   ListItemButton,
   ListItemText,
+  Stack,
+  TextField,
+  Typography,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
+import { useState } from "react";
+import { FieldValues, useForm } from "react-hook-form";
 import truncateEthAddress from "truncate-eth-address";
-import { Address, encodeFunctionData, formatUnits } from "viem";
+import {
+  AbiItem,
+  Address,
+  encodeFunctionData,
+  formatUnits,
+  parseAbiItem,
+} from "viem";
+import { z } from "zod";
 
 import { useInvoke } from "@/hooks";
 import { useBalances, useNetworks, useWallets } from "@/store";
 import { GeneralSettings } from "@/types";
+import { addressSchema } from "@/types/wallets";
 
-import { CopyToClipboard, IconCrypto } from "./";
-import { Abi, AbiFunction } from "abitype";
+import { CopyToClipboard, IconCrypto, Modal } from "./";
 
 export function BalancesList() {
   return (
@@ -30,21 +44,18 @@ export function BalancesList() {
 function BalanceETH() {
   const currentNetwork = useNetworks((s) => s.current);
   const balance = useBalances((s) => s.nativeBalance);
-  const address = useWallets((s) => s.address);
+  const currAddress = useWallets((s) => s.address);
 
   if (!currentNetwork || !balance) return null;
 
-  const send = async () => {
-    const result = await invoke<string>("rpc_send_transaction", {
+  const transferEth = async (to: Address, amount: bigint) => {
+    await invoke<string>("rpc_send_transaction", {
       params: {
-        from: address,
-        to: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
-        value: 10000000000000000000n,
-        data: "",
+        from: currAddress,
+        to,
+        value: amount,
       },
     });
-
-    console.log(result);
   };
 
   return (
@@ -52,50 +63,42 @@ function BalanceETH() {
       balance={balance}
       decimals={currentNetwork.decimals}
       symbol={currentNetwork.currency}
-      transfer={send}
+      transfer={transferEth}
     />
   );
 }
 
 function BalancesERC20() {
   const balances = useBalances((s) => s.erc20Balances);
-  const address = useWallets((s) => s.address);
-  const chainId = useNetworks((s) => s.current?.chain_id);
+  const currAddress = useWallets((s) => s.address);
 
   const { data: settings } = useInvoke<GeneralSettings>("settings_get");
 
   const filteredBalances = (balances || []).filter(
-    (token) => !settings?.hideEmptyTokens || BigInt(token.balance) > 0
+    (token) => !settings?.hideEmptyTokens || BigInt(token.balance) > 0,
   );
 
-  const send = async (contract: string) => {
-    const abi = await invoke<Abi>("get_contract_abi", {
-      address: contract,
-      chainId,
-    });
-
-    const transferFunction = abi.find(
-      (f) => f.type === "function" && f.name === "transfer"
-    ) as AbiFunction;
+  const transferERC20 = async (
+    to: Address,
+    amount: bigint,
+    contract?: Address,
+  ) => {
+    const abiItem: AbiItem = parseAbiItem([
+      `function transfer(address to, uint amount) returns (bool)`,
+    ]);
 
     const data = encodeFunctionData({
-      abi: [transferFunction],
-      functionName: transferFunction.name,
-      args: [
-        "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
-        1000000000000000000n,
-      ],
+      abi: [abiItem],
+      args: [to, amount],
     });
 
-    const result = await invoke<string>("rpc_send_transaction", {
+    await invoke<string>("rpc_send_transaction", {
       params: {
-        from: address,
+        from: currAddress,
         to: contract,
         data,
       },
     });
-
-    console.log(result);
   };
 
   return (
@@ -107,7 +110,7 @@ function BalancesERC20() {
           balance={BigInt(balance)}
           decimals={metadata.decimals}
           symbol={metadata.symbol}
-          transfer={() => send(contract)}
+          transfer={transferERC20}
         />
       ))}
     </>
@@ -119,7 +122,7 @@ interface BalanceItemProps {
   balance: bigint;
   decimals: number;
   symbol: string;
-  transfer?: VoidFunction;
+  transfer: (to: Address, amount: bigint, contract?: Address) => void;
 }
 
 function BalanceItem({
@@ -129,6 +132,8 @@ function BalanceItem({
   contract,
   transfer,
 }: BalanceItemProps) {
+  const [transferFormOpen, setTransferFormOpen] = useState(false);
+
   const minimum = 0.001;
   // Some tokens respond with 1 decimals, that breaks this truncatedBalance without the Math.ceil
   const truncatedBalance =
@@ -137,26 +142,108 @@ function BalanceItem({
   if (!symbol || !decimals) return null;
 
   return (
-    <ListItem>
-      <ListItemAvatar>
-        <Avatar>
-          <IconCrypto ticker={symbol} />
-        </Avatar>
-      </ListItemAvatar>
-      <ListItemText
-        secondary={`${symbol} ${
-          contract ? `(${truncateEthAddress(contract)})` : ``
-        }`}
-      >
-        <CopyToClipboard label={balance.toString()}>
-          {truncatedBalance > 0
-            ? formatUnits(truncatedBalance, decimals)
-            : `< ${minimum}`}
-        </CopyToClipboard>
-      </ListItemText>
-      <ListItemButton onClick={transfer}>
-        <SendIcon></SendIcon>
-      </ListItemButton>
-    </ListItem>
+    <>
+      <ListItem>
+        <ListItemAvatar>
+          <Avatar>
+            <IconCrypto ticker={symbol} />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText
+          secondary={`${symbol} ${
+            contract ? `(${truncateEthAddress(contract)})` : ``
+          }`}
+        >
+          <CopyToClipboard label={balance.toString()}>
+            {truncatedBalance > 0
+              ? formatUnits(truncatedBalance, decimals)
+              : `< ${minimum}`}
+          </CopyToClipboard>
+        </ListItemText>
+        <ListItemButton onClick={() => setTransferFormOpen(true)}>
+          <SendIcon></SendIcon>
+        </ListItemButton>
+      </ListItem>
+
+      <Modal open={transferFormOpen} onClose={() => setTransferFormOpen(false)}>
+        <TransferForm
+          {...{ symbol, contract, decimals }}
+          onSubmit={transfer}
+          onClose={() => setTransferFormOpen(false)}
+        />
+      </Modal>
+    </>
+  );
+}
+
+interface TransferFormProps {
+  symbol: string;
+  contract?: Address;
+  decimals: number;
+  onSubmit: (to: Address, amount: bigint, contract?: Address) => void;
+  onClose: () => void;
+}
+
+function TransferForm({
+  symbol,
+  contract,
+  decimals,
+  onSubmit,
+  onClose,
+}: TransferFormProps) {
+  const {
+    handleSubmit,
+    register,
+    formState: { isDirty, isValid, errors },
+  } = useForm({
+    mode: "onChange",
+    resolver: zodResolver(
+      z.object({
+        address: addressSchema,
+        amount: z.number().positive(),
+      }),
+    ),
+  });
+
+  const submit = (data: FieldValues) => {
+    onSubmit(data.address, BigInt(data.amount * 10 ** decimals), contract);
+    onClose();
+  };
+
+  return (
+    <form onSubmit={handleSubmit(submit)}>
+      <Stack alignItems="flex-start" spacing={2}>
+        <Typography>Transfer {symbol}</Typography>
+
+        <TextField
+          label="To address"
+          error={!!errors.address}
+          helperText={errors.address?.message?.toString() || " "}
+          fullWidth
+          {...register("address")}
+        />
+
+        <TextField
+          label="Amount"
+          error={!!errors.amount}
+          helperText={errors.amount?.message?.toString() || " "}
+          fullWidth
+          {...register("amount", { valueAsNumber: true })}
+        />
+
+        <Stack width="100%" direction="row" justifyContent="space-between">
+          <Button variant="outlined" color="error" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            type="submit"
+            disabled={!isDirty || !isValid}
+          >
+            Transfer
+          </Button>
+        </Stack>
+      </Stack>
+    </form>
   );
 }
