@@ -1,6 +1,4 @@
-import SendIcon from "@mui/icons-material/Send";
-import { Box, Button, Card, CardContent, Typography } from "@mui/material";
-import { invoke } from "@tauri-apps/api/tauri";
+import { Box, Card, CardContent, Typography } from "@mui/material";
 
 import { useTheme, useWallets } from "@/store";
 
@@ -11,19 +9,6 @@ export function Account() {
   const address = useWallets((s) => s.address);
 
   if (!address) return null;
-
-  const send = async () => {
-    const result = await invoke<string>("rpc_send_transaction", {
-      params: {
-        from: address,
-        to: "0x3C44CdDdB6a900fa2b585dd299e0312FA42d93BC",
-        value: 1000000000000000000000000n,
-        data: "",
-      },
-    });
-
-    console.log(result);
-  };
 
   return (
     <Panel>
@@ -40,9 +25,6 @@ export function Account() {
           },
         }}
       >
-        <Button onClick={send}>
-          <SendIcon></SendIcon>
-        </Button>
         <Card sx={{ width: "fit-content" }}>
           <CardContent sx={{ pb: 0 }}>
             <Typography
