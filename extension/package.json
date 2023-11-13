@@ -13,9 +13,12 @@
     "build:chrome": "./scripts/build.sh --target chrome"
   },
   "devDependencies": {
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
     "@types/chrome": "^0.0.248",
     "@types/node": "^20.4.5",
     "@types/webextension-polyfill": "^0.10.2",
+    "@vitejs/plugin-react": "^4.1.1",
     "autoprefixer": "^10.4.14",
     "crx": "^5.0.1",
     "ts-node": "^10.9.1",
@@ -38,6 +41,8 @@
     "json-rpc-middleware-stream": "^5.0.1",
     "loglevel": "^1.8.1",
     "mipd": "^0.0.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "stream": "^0.0.2",
     "webextension-polyfill": "^0.10.0",
     "websocket-ts": "^2.1.5"
