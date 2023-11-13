@@ -5,7 +5,7 @@
   "version": "%VERSION%",
   "author": "Miguel Palhas <mpalhas@gmail.com>",
   "homepage_url": "https://github.com/iron-wallet",
-  "devtools_page": "devtools.html",
+  "devtools_page": "devtools/index.html",
   "minimum_chrome_version": "102",
   "content_scripts": [
     {
@@ -28,7 +28,11 @@
   "web_accessible_resources": [
     {
       "matches": ["<all_urls>"],
-      "resources": ["/inpage/inpage.js", "devtools.html", "panel.html"]
+      "resources": [
+        "/inpage/inpage.js",
+        "devtools/index.html",
+        "panel/index.html"
+      ]
     }
   ],
   "permissions": ["storage"],

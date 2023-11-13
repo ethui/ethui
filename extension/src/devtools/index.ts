@@ -11,7 +11,7 @@ let extensionWindow: Window;
 const requests: RPCNotificationDev[] = [];
 
 browser.devtools.panels
-  .create("RPC Iron Calls", "icons/iron-48.png", "panel.html")
+  .create("RPC Iron Calls", "icons/iron-48.png", "panel/index.html")
   .then((extensionPanel) => {
     try {
       const port = browser.runtime.connect({ name: "devtools" });
