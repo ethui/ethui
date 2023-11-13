@@ -7,7 +7,6 @@ import { defaultSettings, loadSettings, type Settings } from "@/settings";
 (async () => init())();
 
 let settings: Settings = defaultSettings;
-const ports: browser.Runtime.Port[] = [];
 
 interface Tab {
   port?: Runtime.Port;
@@ -31,22 +30,23 @@ export async function init() {
       const tab = tabs.get(tabId);
       if (tab) tab.devtools = port;
 
-      port.onDisconnect.addListener(function () {
+      port.onDisconnect.addListener(() => {
         const tab = tabs.get(tabId);
         if (tab) tab.devtools = undefined;
       });
-      // no need to listen to messages from devtools yet
-      /*
-    port.onMessage.addListener(function (msg) {
-			// Received message from devtools. Do something:
-			console.log("Received message from devtools page", msg);
-		});
-    */
     } else if (port.name.startsWith("iron:panel")) {
       const tabId = Number(port.name.split("/")[1]);
-      tabs.get(tabId)!.panel = port;
+
+      const tab = tabs.get(tabId);
+      if (tab) tab.panel = port;
+
+      port.onDisconnect.addListener(() => {
+        const tab = tabs.get(tabId);
+        if (tab) tab.panel = undefined;
+      });
     } else {
       const tabId = port.sender!.tab!.id!;
+
       tabs.set(tabId, { port });
       setupProviderConnection(tabId, port);
     }
