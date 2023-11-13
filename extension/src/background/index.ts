@@ -9,6 +9,14 @@ import { defaultSettings, loadSettings, type Settings } from "@/settings";
 let settings: Settings = defaultSettings;
 const ports: browser.Runtime.Port[] = [];
 
+interface Tab {
+  port?: Runtime.Port;
+  devtools?: Runtime.Port;
+  panel?: Runtime.Port;
+}
+
+const tabs: Map<number, Tab> = new Map();
+
 /**
  * Loads the current settings, and listens for incoming connections (from the injected contentscript)
  */
@@ -16,26 +24,32 @@ export async function init() {
   settings = await loadSettings();
 
   // handle each incoming content script connection
-  browser.runtime.onConnect.addListener((remotePort: Runtime.Port) => {
-    setupProviderConnection(remotePort);
-  });
+  browser.runtime.onConnect.addListener((port: Runtime.Port) => {
+    if (port.name.startsWith("iron:devtools/")) {
+      const tabId = Number(port.name.split("/")[1]);
 
-  // devtools handling
-  browser.runtime.onConnect.addListener(function (port) {
-    if (port.name !== "devtools") return;
-    ports.push(port);
-    // Remove port when destroyed (eg when devtools instance is closed)
-    port.onDisconnect.addListener(function () {
-      const i = ports.indexOf(port);
-      if (i !== -1) ports.splice(i, 1);
-    });
-    // no need to listen to messages from devtools yet
-    /*
+      const tab = tabs.get(tabId);
+      if (tab) tab.devtools = port;
+
+      port.onDisconnect.addListener(function () {
+        const tab = tabs.get(tabId);
+        if (tab) tab.devtools = undefined;
+      });
+      // no need to listen to messages from devtools yet
+      /*
     port.onMessage.addListener(function (msg) {
 			// Received message from devtools. Do something:
 			console.log("Received message from devtools page", msg);
 		});
     */
+    } else if (port.name.startsWith("iron:panel")) {
+      const tabId = Number(port.name.split("/")[1]);
+      tabs.get(tabId)!.panel = port;
+    } else {
+      const tabId = port.sender!.tab!.id!;
+      tabs.set(tabId, { port });
+      setupProviderConnection(tabId, port);
+    }
   });
 }
 
@@ -44,14 +58,10 @@ export async function init() {
  * Each message is appended with a timestamp.
  * @param msg - message to be sent to the devtools
  */
-function notifyDevtools(msg: unknown) {
-  if (typeof msg === "object" && msg !== null) {
-    // append current timestamp to the message
-    const msgWithTimestamp = { ...msg, timestamp: Date.now() };
-    ports.forEach(function (port) {
-      port.postMessage(JSON.stringify(msgWithTimestamp));
-    });
-  }
+function notifyDevtools(tabId: number, msg: object) {
+  const tab = tabs.get(tabId);
+  if (!tab?.devtools) return;
+  tab.devtools.postMessage({ ...msg, timestamp: Date.now() });
 }
 
 /**
@@ -61,7 +71,7 @@ function notifyDevtools(msg: unknown) {
  * The WS connection is created lazily (when the first data packet is sent).
  * This behaviour prevents initiating connections for browser tabs where `window.ethereum` is not actually used
  */
-export function setupProviderConnection(port: Runtime.Port) {
+export function setupProviderConnection(tabId: number, port: Runtime.Port) {
   const ws = new WebsocketBuilder(endpoint(port))
     .withBuffer(new ArrayQueue())
     .withBackoff(new ConstantBackoff(1000))
@@ -71,10 +81,7 @@ export function setupProviderConnection(port: Runtime.Port) {
       port.postMessage(data);
 
       // send RPC response to devtools
-      notifyDevtools({
-        type: "response",
-        data,
-      });
+      notifyDevtools(tabId, { type: "response", data });
     })
     .build();
 
@@ -83,10 +90,7 @@ export function setupProviderConnection(port: Runtime.Port) {
     ws.send(JSON.stringify(data));
 
     // send RPC request to devtools
-    notifyDevtools({
-      type: "request",
-      data,
-    });
+    notifyDevtools(tabId, { type: "request", data });
   });
 }
 

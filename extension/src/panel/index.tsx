@@ -2,12 +2,24 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import browser from "webextension-polyfill";
 
-const App = () => {
-  const port = browser.runtime.connect.toString();
+async function connect() {
+  const [{ id }] = await browser.tabs.query({
+    active: true,
+    currentWindow: true,
+  });
 
-  console.log(port);
-  return port;
-};
+  const port = browser.runtime.connect({
+    name: `iron:panel/${id}`,
+  });
+
+  return <></>;
+}
+
+function App() {
+  connect();
+
+  return <></>;
+}
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>

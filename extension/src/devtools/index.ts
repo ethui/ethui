@@ -1,27 +1,28 @@
-import { Json, JsonRpcRequest, JsonRpcResponse } from "@metamask/utils";
 import browser from "webextension-polyfill";
 
-interface RPCNotificationDev {
-  timestamp: number;
-  type: "request" | "response";
-  data: JsonRpcResponse<Json> | JsonRpcRequest;
-}
+import { type DevtoolsMsg } from "@/types";
 
 let extensionWindow: Window;
-const requests: RPCNotificationDev[] = [];
+const requests: DevtoolsMsg[] = [];
 
 browser.devtools.panels
-  .create("RPC Iron Calls", "icons/iron-48.png", "panel/index.html")
-  .then((extensionPanel) => {
+  .create("Iron Wallet", "icons/iron-48.png", "panel/index.html")
+  .then(async (extensionPanel) => {
     try {
-      const port = browser.runtime.connect({ name: "devtools" });
-      port.onMessage.addListener(function (msg) {
+      const [{ id }] = await browser.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
+      const port = browser.runtime.connect({
+        name: `iron:devtools/${id}`,
+      });
+      port.onMessage.addListener(function (msg: DevtoolsMsg) {
+        console.log("received", msg);
         // Write information to the panel, if exists.
-        const dataParsed: RPCNotificationDev = JSON.parse(msg);
-        requests.push(dataParsed);
+        requests.push(msg);
 
         // make sure identical ids are together in the array and by time using timestamp
-        requests.sort((a: RPCNotificationDev, b: RPCNotificationDev) => {
+        requests.sort((a: DevtoolsMsg, b: DevtoolsMsg) => {
           if (a.data.id === b.data.id) {
             return a.timestamp - b.timestamp;
           }
@@ -53,7 +54,7 @@ browser.devtools.panels
     }
   });
 
-function appendRequest(msg: RPCNotificationDev) {
+function appendRequest(msg: DevtoolsMsg) {
   //get the rpc-calls id in body and append the msg
   const rpcCalls = extensionWindow.document.getElementById("rpc-calls");
   if (!rpcCalls) {
