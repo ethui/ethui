@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import SendIcon from "@mui/icons-material/Send";
 import {
+  Alert,
   Avatar,
   Button,
   List,
@@ -49,7 +50,7 @@ function BalanceETH() {
   if (!currentNetwork || !balance) return null;
 
   const transferEth = async (to: Address, amount: bigint) => {
-    await invoke<string>("rpc_send_transaction", {
+    return await invoke<string>("rpc_send_transaction", {
       params: {
         from: currAddress,
         to,
@@ -92,7 +93,7 @@ function BalancesERC20() {
       args: [to, amount],
     });
 
-    await invoke<string>("rpc_send_transaction", {
+    return await invoke<string>("rpc_send_transaction", {
       params: {
         from: currAddress,
         to: contract,
@@ -122,7 +123,11 @@ interface BalanceItemProps {
   balance: bigint;
   decimals: number;
   symbol: string;
-  transfer: (to: Address, amount: bigint, contract?: Address) => void;
+  transfer: (
+    to: Address,
+    amount: bigint,
+    contract?: Address,
+  ) => Promise<string>;
 }
 
 function BalanceItem({
@@ -180,7 +185,11 @@ interface TransferFormProps {
   symbol: string;
   contract?: Address;
   decimals: number;
-  onSubmit: (to: Address, amount: bigint, contract?: Address) => void;
+  onSubmit: (
+    to: Address,
+    amount: bigint,
+    contract?: Address,
+  ) => Promise<string>;
   onClose: () => void;
 }
 
@@ -204,10 +213,26 @@ function TransferForm({
       }),
     ),
   });
+  const [txResult, setTxResult] = useState<{ success: boolean; msg: string }>({
+    success: false,
+    msg: "",
+  });
 
-  const submit = (data: FieldValues) => {
-    onSubmit(data.address, BigInt(data.amount * 10 ** decimals), contract);
-    onClose();
+  const submit = async (data: FieldValues) => {
+    const result = await onSubmit(
+      data.address,
+      BigInt(data.amount * 10 ** decimals),
+      contract,
+    );
+
+    if (result.match(/(0x[a-fA-F0-9]{40})/)) {
+      setTxResult({ success: true, msg: result });
+    } else {
+      const match = result.match(/message:\s([^\,]+)/);
+      let errorMsg = "Error";
+      if (match && match[1]) errorMsg = match[1];
+      setTxResult({ success: false, msg: errorMsg });
+    }
   };
 
   return (
@@ -231,16 +256,27 @@ function TransferForm({
           {...register("amount", { valueAsNumber: true })}
         />
 
+        {txResult.msg && (
+          <Alert
+            sx={{ alignSelf: "stretch" }}
+            variant="outlined"
+            severity={txResult.success ? "success" : "error"}
+          >
+            <Typography variant="body2" noWrap>
+              {txResult.msg}
+            </Typography>
+          </Alert>
+        )}
         <Stack width="100%" direction="row" justifyContent="space-between">
           <Button variant="outlined" color="error" onClick={onClose}>
-            Cancel
+            Close
           </Button>
           <Button
             variant="contained"
             type="submit"
             disabled={!isDirty || !isValid}
           >
-            Transfer
+            Send
           </Button>
         </Stack>
       </Stack>
