@@ -34,6 +34,7 @@ iron-broadcast = { path = "crates/broadcast" }
 iron-tracing = { path = "crates/tracing" }
 iron-exchange-rates = { path = "crates/exchange-rates" }
 iron-args = { path = "crates/args" }
+tokenlist = { path = "crates/tokenlist" }
 
 tokio = { version = "1.33", features = ["full", "sync"] }
 thiserror = "1.0"
@@ -63,6 +64,8 @@ futures = "0.3.28"
 clap = { version = "4.4.8", features = ["derive", "env"] }
 coins-ledger = "0.9.0"
 color-eyre = "0.6.2"
+chrono = "0.4.31"
+chrono = { version = "0.4.31", features = ["serde"] }
 
 foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-890bc7a03fd575fbfaf02a8870241f34760e65f1" }
 foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-890bc7a03fd575fbfaf02a8870241f34760e65f1" }

@@ -15,6 +15,8 @@ use crate::{
     utils::{main_window_hide, main_window_show},
 };
 
+use tokenlist;
+
 pub struct IronApp {
     app: tauri::App,
 }
@@ -126,6 +128,11 @@ async fn init(app: &tauri::App, args: &Args) -> AppResult<()> {
     iron_wallets::init(resource(app, "wallets.json")).await;
     iron_networks::init(resource(app, "networks.json")).await;
     iron_forge::init().await?;
+
+    
+    if let Err(err)= tokenlist::init().await {
+        eprintln!("Error while initializing tokenlist: {}", err)
+    }
 
     // automatically open devtools if env asks for it
     #[cfg(feature = "debug")]
