@@ -33,6 +33,8 @@ Here's a few suggestions on how to get started:
 
 - [**Tauri's requirements**][tauri-requirements];
 - **libsodium** ([macos][libsodium-macos], [Arch][libsodium-arch], [Ubuntu][libsodium-ubuntu])
+- **gpgme**
+- **pkg-config**
 - **Google Chrome**, running a profile without MetaMask or other wallet installed, to be solved once EIP-6963 is widely adopted
 - (optional) [**justfile**][Justfile], a simple task runner
 - (optional) [**Foundry**][foundry], the toolkit for Ethereum development. You'll want this to run [anvil][anvil] nodes locally to point to wallet to

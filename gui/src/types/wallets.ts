@@ -86,12 +86,22 @@ export const ledgerSchema = z.object({
   current: z.number().optional(),
 });
 
+export const pgpSchema = z.object({
+  type: z.literal("PGPWallet"),
+  name: z.string().min(1),
+  derivationPath: derivationPathSchema,
+  count: z.number().int().min(1).max(100),
+  current: z.array(z.string()).length(2).optional(),
+  file: z.string().min(1),
+});
+
 export const walletSchema = z.discriminatedUnion("type", [
   hdWalletSchema,
   jsonKeystoreSchema,
   plaintextSchema,
   impersonatorSchema,
   ledgerSchema,
+  pgpSchema,
 ]);
 
 export const walletTypes: Wallet["type"][] = Array.from(
@@ -106,3 +116,4 @@ export type JsonKeystoreWallet = z.infer<typeof jsonKeystoreSchema>;
 export type PlaintextWallet = z.infer<typeof plaintextSchema>;
 export type ImpersonatorWallet = z.infer<typeof impersonatorSchema>;
 export type LedgerWallet = z.infer<typeof ledgerSchema>;
+export type PGPWallet = z.infer<typeof pgpSchema>;
