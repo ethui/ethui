@@ -55,13 +55,16 @@ export async function init() {
 
 /**
  * Sends a message to the devtools in every page.
- * Each message is appended with a timestamp.
+ * Each message will include a timestamp.
  * @param msg - message to be sent to the devtools
  */
-function notifyDevtools(tabId: number, msg: object) {
-  const tab = tabs.get(tabId);
-  if (!tab?.devtools) return;
-  tab.devtools.postMessage({ ...msg, timestamp: Date.now() });
+function notifyDevtools(tabId: number, type: string, data: unknown) {
+  browser.runtime.sendMessage({
+    type,
+    tabId,
+    data,
+    timestamp: Date.now(),
+  });
 }
 
 /**
@@ -80,8 +83,7 @@ export function setupProviderConnection(tabId: number, port: Runtime.Port) {
       const data = JSON.parse(event.data);
       port.postMessage(data);
 
-      // send RPC response to devtools
-      notifyDevtools(tabId, { type: "response", data });
+      notifyDevtools(tabId, "response", data);
     })
     .build();
 
@@ -89,8 +91,7 @@ export function setupProviderConnection(tabId: number, port: Runtime.Port) {
   port.onMessage.addListener((data: unknown) => {
     ws.send(JSON.stringify(data));
 
-    // send RPC request to devtools
-    notifyDevtools(tabId, { type: "request", data });
+    notifyDevtools(tabId, "request", data);
   });
 }
 

@@ -8,6 +8,8 @@
     "gui:build": "yarn workspace @iron/gui build",
     "ext:dev": "yarn workspace @iron/extension dev",
     "ext:build": "yarn workspace @iron/extension build",
+    "ext:build:chrome": "yarn workspace @iron/extension build:chrome",
+    "ext:build:firefox": "yarn workspace @iron/extension build:firefox",
     "lint": "yarn lint:eslint && yarn lint:tsc && yarn lint:prettier",
     "lint:eslint": "eslint .",
     "lint:tsc": "tsc --noEmit",

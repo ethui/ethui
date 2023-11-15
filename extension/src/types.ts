@@ -1,15 +1,23 @@
 import { Json, JsonRpcRequest, JsonRpcResponse } from "@metamask/utils";
 
-export interface DevtoolsRequest {
+export interface Request {
   timestamp: number;
   type: "request";
+  tabId: number;
   data: JsonRpcRequest;
 }
 
-export interface DevtoolsResponse {
+export interface Response {
   timestamp: number;
   type: "response";
+  tabId: number;
   data: JsonRpcResponse<Json>;
 }
 
-export type DevtoolsMsg = DevtoolsRequest | DevtoolsResponse;
+export interface Start {
+  type: "devtools-panel-start";
+  tabId: number;
+  data: Array<Request | Response>;
+}
+
+export type Msg = Request | Response;

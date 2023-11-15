@@ -24,7 +24,7 @@ lint:
   yarn lint
 
 ext:
-  yarn run ext:build
+  yarn run ext:build:chrome
 
 ext-dev:
   yarn run ext:dev
