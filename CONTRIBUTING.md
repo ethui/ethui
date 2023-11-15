@@ -9,6 +9,7 @@
 [libsodium-ubuntu]: https://packages.ubuntu.com/search?keywords=libsodium-dev
 [foundry]: https://getfoundry.sh/
 [web3-demo]: https://github.com/iron-wallet/web3-demo
+[anvil]: https://book.getfoundry.sh/anvil/
 
 We welcome all kinds of contributions:
 
