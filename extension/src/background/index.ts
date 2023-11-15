@@ -1,3 +1,4 @@
+import { Json, JsonRpcRequest, JsonRpcResponse } from "@metamask/utils";
 import browser, { type Runtime } from "webextension-polyfill";
 import { ArrayQueue, ConstantBackoff, WebsocketBuilder } from "websocket-ts";
 
@@ -16,7 +17,7 @@ export async function init() {
 
   // handle each incoming content script connection
   browser.runtime.onConnect.addListener((port: Runtime.Port) => {
-    setupProviderConnection(port.sender!.tab!.id!, port);
+    setupProviderConnection(port);
   });
 }
 
@@ -25,7 +26,11 @@ export async function init() {
  * Each message will include a timestamp.
  * @param msg - message to be sent to the devtools
  */
-function notifyDevtools(tabId: number, type: string, data: unknown) {
+function notifyDevtools(
+  tabId: number,
+  type: "request" | "response",
+  data: JsonRpcResponse<Json> | JsonRpcRequest,
+) {
   browser.runtime.sendMessage({
     type,
     tabId,
@@ -41,7 +46,9 @@ function notifyDevtools(tabId: number, type: string, data: unknown) {
  * The WS connection is created lazily (when the first data packet is sent).
  * This behaviour prevents initiating connections for browser tabs where `window.ethereum` is not actually used
  */
-export function setupProviderConnection(tabId: number, port: Runtime.Port) {
+export function setupProviderConnection(port: Runtime.Port) {
+  const tabId = port.sender!.tab!.id!;
+
   const ws = new WebsocketBuilder(endpoint(port))
     .withBuffer(new ArrayQueue())
     .withBackoff(new ConstantBackoff(1000))
@@ -55,7 +62,7 @@ export function setupProviderConnection(tabId: number, port: Runtime.Port) {
     .build();
 
   // forwarding incoming stream data to the WS server
-  port.onMessage.addListener((data: unknown) => {
+  port.onMessage.addListener((data: JsonRpcResponse<Json>) => {
     ws.send(JSON.stringify(data));
 
     notifyDevtools(tabId, "request", data);
