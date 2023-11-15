@@ -6,7 +6,7 @@ use ethers::{
     signers::Signer as _,
     types::{transaction::eip712, Bytes, Signature},
 };
-use iron_dialogs::{Dialog, DialogMsg};
+use iron_dialogs::Dialog;
 use iron_networks::Network;
 use iron_wallets::{Wallet, WalletControl};
 use serde::Serialize;
@@ -43,15 +43,15 @@ impl<'a> SignMessage<'a> {
         let dialog = Dialog::new("msg-sign", params);
         dialog.open().await?;
 
-        match dialog.recv().await {
-            Some(DialogMsg::Accept(_)) => Ok(()),
-
-            _ =>
-            // TODO: what's the appropriate error to return here?
-            // or should we return Ok(_)? Err(_) seems to close the ws connection
-            {
-                Err(Error::TxDialogRejected)
+        if let Some(msg) = dialog.recv().await {
+            match msg.as_str() {
+                Some("accept") => Ok(()),
+                // TODO: what's the appropriate error to return here?
+                // or should we return Ok(_)? Err(_) seems to close the ws connection
+                _ => Err(Error::TxDialogRejected),
             }
+        } else {
+            Err(Error::TxDialogRejected)
         }
     }
 

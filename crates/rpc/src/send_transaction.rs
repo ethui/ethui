@@ -5,7 +5,7 @@ use ethers::{
     types::{serde_helpers::StringifiedNumeric, transaction::eip2718::TypedTransaction},
 };
 use iron_connections::Ctx;
-use iron_dialogs::{Dialog, DialogMsg};
+use iron_dialogs::Dialog;
 use iron_networks::Network;
 use iron_settings::Settings;
 use iron_types::{Address, GlobalState, ToAlloy, ToEthers};
@@ -66,27 +66,12 @@ impl<'a> SendTransaction {
         dialog.open().await?;
 
         while let Some(msg) = dialog.recv().await {
-            match msg {
-                DialogMsg::Data(data) => match data.as_str() {
-                    Some("simulate") => self.simulate(dialog.clone()).await?,
-                    Some("accept") => break,
-                    Some("reject") => {
-                        dialog.close().await?;
-                        return Err(Error::TxDialogRejected);
-                    }
-                    _ => {
-                        dialog.close().await?;
-                        return Err(Error::TxDialogRejected);
-                    }
-                },
-
-                DialogMsg::Accept(_response) => break,
-
-                _ =>
+            match msg.as_str() {
+                Some("simulate") => self.simulate(&dialog).await?,
+                Some("accept") => break,
                 // TODO: what's the appropriate error to return here?
                 // or should we return Ok(_)? Err(_) seems too close the ws connection
-                {
-                    dialog.close().await?;
+                _ => {
                     return Err(Error::TxDialogRejected);
                 }
             }
@@ -98,27 +83,22 @@ impl<'a> SendTransaction {
 
         let tx = self.send().await?;
 
-        // TODO: can we implement this via Drop?
-        dialog.close().await?;
-
         Ok(tx)
     }
 
-    async fn simulate(&self, dialog: Dialog) -> Result<()> {
+    async fn simulate(&self, dialog: &Dialog) -> Result<()> {
         let chain_id = self.network.chain_id;
         let request = self.simulation_request().await?;
 
-        tokio::spawn(async move {
-            if let Ok(sim) = iron_simulator::commands::simulator_run(chain_id, request).await {
-                dialog
-                    .send(
-                        "simulation-result",
-                        Some(serde_json::to_value(sim).unwrap()),
-                    )
-                    .await
-                    .unwrap()
-            }
-        });
+        if let Ok(sim) = iron_simulator::commands::simulator_run(chain_id, request).await {
+            dialog
+                .send(
+                    "simulation-result",
+                    Some(serde_json::to_value(sim).unwrap()),
+                )
+                .await
+                .unwrap()
+        }
 
         Ok(())
     }
