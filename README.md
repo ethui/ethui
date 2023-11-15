@@ -6,10 +6,6 @@
 [releases]: https://github.com/iron-wallet/iron/releases
 [prank-wallet]: https://ethglobal.com/showcase/prank-wallet-cgnb3
 [anvil]: https://book.getfoundry.sh/anvil/
-[tauri-requirements]: https://tauri.app/v1/guides/getting-started/prerequisites/
-[libsodium-macos]: https://formulae.brew.sh/formula/libsodium
-[libsodium-arch]: https://archlinux.org/packages/extra/x86_64/libsodium/
-[libsodium-ubuntu]: https://packages.ubuntu.com/search?keywords=libsodium-dev
 
 <p align="center">
     <img src="https://raw.githubusercontent.com/iron-wallet/.github/main/profile/banner.png" width=70%>
@@ -27,7 +23,7 @@ A developer's crypto wallet. Iron has the usual functionality of a crypto wallet
 
 ### Main features
 
-- **anvil-aware**: iron uses a dedicated syncing process for local anvil nodes, enabling real-time syncing which works across chain restarts, reverts, and downtime. No longer should you have to manually reset the `nonce` in your wallet
+- **anvil-aware**: iron uses a dedicated syncing process for local [anvil][anvil] nodes, enabling real-time syncing which works across chain restarts, reverts, and downtime. No longer should you have to manually reset the `nonce` in your wallet
 - **foundry-aware**: the wallet finds existing `forge` outputs in your filesystem, and matches them against on-chain bytecode to create a built-in explorer akin to Etherscan's contract interaction tool
 - **multiple wallets**: Iron is not restricted to a single mnemonic. Create as many wallets as you want, and switch seamlessly between them
 - **Desktop-native experience**: no longer tied to a browser's sandbox. Your wallet is now reachable across your entire system, and you can even use it as a proxy for your scripting RPC needs

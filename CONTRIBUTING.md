@@ -3,6 +3,10 @@
 [coc]: https://www.rust-lang.org/policies/code-of-conduct
 [contact]: https://linktr.ee/naps62
 [good-first-issue]: https://github.com/iron-wallet/iron/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22
+[tauri-requirements]: https://tauri.app/v1/guides/getting-started/prerequisites/
+[libsodium-macos]: https://formulae.brew.sh/formula/libsodium
+[libsodium-arch]: https://archlinux.org/packages/extra/x86_64/libsodium/
+[libsodium-ubuntu]: https://packages.ubuntu.com/search?keywords=libsodium-dev
 
 We welcome all kinds of contributions:
 
