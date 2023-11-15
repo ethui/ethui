@@ -8,14 +8,6 @@ import { defaultSettings, loadSettings, type Settings } from "@/settings";
 
 let settings: Settings = defaultSettings;
 
-interface Tab {
-  port?: Runtime.Port;
-  devtools?: Runtime.Port;
-  panel?: Runtime.Port;
-}
-
-const tabs: Map<number, Tab> = new Map();
-
 /**
  * Loads the current settings, and listens for incoming connections (from the injected contentscript)
  */
@@ -24,32 +16,7 @@ export async function init() {
 
   // handle each incoming content script connection
   browser.runtime.onConnect.addListener((port: Runtime.Port) => {
-    if (port.name.startsWith("iron:devtools/")) {
-      const tabId = Number(port.name.split("/")[1]);
-
-      const tab = tabs.get(tabId);
-      if (tab) tab.devtools = port;
-
-      port.onDisconnect.addListener(() => {
-        const tab = tabs.get(tabId);
-        if (tab) tab.devtools = undefined;
-      });
-    } else if (port.name.startsWith("iron:panel")) {
-      const tabId = Number(port.name.split("/")[1]);
-
-      const tab = tabs.get(tabId);
-      if (tab) tab.panel = port;
-
-      port.onDisconnect.addListener(() => {
-        const tab = tabs.get(tabId);
-        if (tab) tab.panel = undefined;
-      });
-    } else {
-      const tabId = port.sender!.tab!.id!;
-
-      tabs.set(tabId, { port });
-      setupProviderConnection(tabId, port);
-    }
+    setupProviderConnection(port.sender!.tab!.id!, port);
   });
 }
 
