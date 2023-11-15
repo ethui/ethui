@@ -3,9 +3,9 @@ import { DevtoolsPanels } from "webextension-polyfill/namespaces/devtools_panels
 
 import type { Request, Response } from "@/types";
 
-// let extensionWindow: Window;
 let panel: DevtoolsPanels.ExtensionPanel;
-const cache: Array<Request | Response> = [];
+let tabId: number | undefined;
+let cache: Array<Request | Response> = [];
 
 (async () => init())();
 
@@ -15,6 +15,7 @@ async function init() {
     active: true,
     currentWindow: true,
   });
+  tabId = id;
 
   // creating devtools panel
   panel = await browser.devtools.panels.create(
@@ -23,21 +24,24 @@ async function init() {
     "panel/index.html",
   );
 
-  // collecting each request/response for this tab
-  browser.runtime.onMessage.addListener((msg: Request | Response) => {
-    if (msg.tabId != id) return;
+  browser.runtime.onMessage.addListener(cacheListener);
+  panel.onShown.addListener(panelListener);
+}
 
-    cache.push(msg);
+function cacheListener(msg: Request | Response) {
+  if (msg.tabId != tabId) return;
+
+  cache.push(msg);
+}
+
+function panelListener() {
+  panel.onShown.removeListener(panelListener); // run only once
+
+  browser.runtime.sendMessage({
+    type: "devtools-panel-start",
+    tabId,
+    data: cache,
   });
-
-  panel.onShown.addListener(function tmp() {
-    // Run only once
-    panel.onShown.removeListener(tmp);
-
-    browser.runtime.sendMessage({
-      type: "devtools-panel-start",
-      tabId: id,
-      data: cache,
-    });
-  });
+  cache = [];
+  browser.runtime.onMessage.removeListener(cacheListener);
 }
