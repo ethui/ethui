@@ -111,11 +111,17 @@ impl PGPWallet {
     }
 
     async fn update_derivation_path(&mut self, derivation_path: String) -> Result<()> {
-        todo!()
+        self.derivation_path = derivation_path;
+
+        self.update_derived_addresses().await?;
+
+        Ok(())
     }
 
     async fn update_count(&mut self, count: u32) -> Result<()> {
-        self.update_derived_addresses(count).await?;
+        self.count = count;
+
+        self.update_derived_addresses().await?;
 
         Ok(())
     }
@@ -128,8 +134,16 @@ impl PGPWallet {
         todo!()
     }
 
-    async fn update_derived_addresses(&self, count: u32) -> Result<()> {
-        todo!()
+    async fn update_derived_addresses(&mut self) -> Result<()> {
+        let mnemonic: String = read_secret(&self.file)?;
+
+        let addresses = utils::derive_addresses(&mnemonic, &self.derivation_path, self.count);
+        let current = addresses.first().unwrap().clone();
+
+        self.current = current;
+        self.addresses = addresses;
+
+        Ok(())
     }
 }
 
