@@ -1,3 +1,4 @@
+use std::path::Path;
 pub(crate) use std::path::PathBuf;
 
 use async_trait::async_trait;
@@ -157,10 +158,10 @@ pub struct PGPWalletParams {
     count: u32,
 }
 
-fn read_secret(path: &PathBuf) -> Result<String> {
+fn read_secret(path: &Path) -> Result<String> {
     let mut ctx = gpgme::Context::from_protocol(gpgme::Protocol::OpenPgp)?;
 
-    let mut input = std::fs::File::open(path.as_path())?;
+    let mut input = std::fs::File::open(path)?;
     let mut output = vec![];
     ctx.decrypt(&mut input, &mut output)?;
 
