@@ -4,7 +4,9 @@ use iron_types::{Address, Json};
 use serde::{Deserialize, Serialize};
 
 use super::{
-    wallets::{HDWallet, Impersonator, JsonKeystoreWallet, LedgerWallet, PlaintextWallet},
+    wallets::{
+        HDWallet, Impersonator, JsonKeystoreWallet, LedgerWallet, PGPWallet, PlaintextWallet,
+    },
     Error, Result,
 };
 
@@ -65,7 +67,7 @@ pub enum Wallet {
     Impersonator(Impersonator),
 
     Ledger(LedgerWallet),
-    Pgp(Pgp),
+    PGP(PGPWallet),
 }
 
 impl Wallet {
@@ -78,7 +80,7 @@ impl Wallet {
             "HDWallet" => HDWallet::create(params).await?,
             "impersonator" => Impersonator::create(params).await?,
             "ledger" => LedgerWallet::create(params).await?,
-            "pgp" => Pgp::create(params).await?,
+            "PGP" => PGPWallet::create(params).await?,
             _ => return Err(Error::InvalidWalletType(wallet_type.into())),
         };
 
@@ -93,6 +95,7 @@ pub enum WalletType {
     HDWallet,
     Impersonator,
     Ledger,
+    PGP,
 }
 
 impl std::fmt::Display for WalletType {
@@ -106,6 +109,7 @@ impl std::fmt::Display for WalletType {
                 WalletType::HDWallet => "HDWallet",
                 WalletType::Impersonator => "impersonator",
                 WalletType::Ledger => "ledger",
+                WalletType::PGP => "PGP",
             }
         )
     }
@@ -119,6 +123,7 @@ impl From<&Wallet> for WalletType {
             Wallet::HDWallet(_) => Self::HDWallet,
             Wallet::Impersonator(_) => Self::Impersonator,
             Wallet::Ledger(_) => Self::Ledger,
+            Wallet::PGP(_) => Self::PGP,
         }
     }
 }

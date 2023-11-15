@@ -1,31 +1,33 @@
 pub(crate) use std::path::PathBuf;
 
 use async_trait::async_trait;
-use ethers::{core::k256::ecdsa::SigningKey, signers};
+use ethers::signers::{coins_bip39::English, MnemonicBuilder, Signer as _};
 use iron_types::Address;
 
-use super::{wallet::WalletCreate, Error, Result, Wallet, WalletControl};
+use crate::{utils, wallet::WalletCreate, Error, Result, Signer, Wallet, WalletControl};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
-pub struct Pgp {
+pub struct PGPWallet {
     name: String,
-    file: PathBuf,
+    derivation_path: String,
+    count: u32,
     addresses: Vec<(String, Address)>,
-    current: usize,
+    current: (String, Address),
+    file: PathBuf,
 }
 
 #[async_trait]
-impl WalletCreate for Pgp {
+impl WalletCreate for PGPWallet {
     async fn create(params: serde_json::Value) -> Result<Wallet> {
-        Ok(Wallet::Pgp(
+        Ok(Wallet::PGP(
             Self::from_params(serde_json::from_value(params)?).await?,
         ))
     }
 }
 
 #[async_trait]
-impl WalletControl for Pgp {
+impl WalletControl for PGPWallet {
     fn name(&self) -> String {
         self.name.clone()
     }
@@ -41,15 +43,15 @@ impl WalletControl for Pgp {
             self.update_count(count as u32).await?;
         }
 
-        Ok(Wallet::Pgp(self))
+        Ok(Wallet::PGP(self))
     }
 
     async fn get_current_address(&self) -> Address {
-        self.adddresses.get(self.current).unwrap().1
+        self.current.1
     }
 
     fn get_current_path(&self) -> String {
-        self.addresses.get(self.current).unwrap().0.clone()
+        self.current.0.clone()
     }
 
     async fn set_current_path(&mut self, path: String) -> Result<()> {
@@ -71,15 +73,15 @@ impl WalletControl for Pgp {
             .ok_or(Error::InvalidKey(path.into()))
     }
 
-    async fn build_signer(&self, chain_id: u32, path: &str) -> Result<signers::Wallet<SigningKey>> {
-        let mnemonic = read_secret(&params.file)?;
+    async fn build_signer(&self, chain_id: u32, path: &str) -> Result<Signer> {
+        let mnemonic: String = read_secret(&self.file)?;
 
         let signer = MnemonicBuilder::<English>::default()
             .phrase(mnemonic.as_str())
             .derivation_path(path)?
             .build()?;
 
-        Ok(signer.with_chain_id(chain_id))
+        Ok(Signer::SigningKey(signer.with_chain_id(chain_id)))
     }
 
     async fn get_all_addresses(&self) -> Vec<(String, Address)> {
@@ -87,10 +89,10 @@ impl WalletControl for Pgp {
     }
 }
 
-impl Pgp {
-    pub async fn from_params(params: PgpParams) -> Result<Self> {
-        let mnemonic = read_secret(&params.file)?;
-        let addresses = utils::derive_addresses(&mnemonic,&params.derivation_path, params.count);
+impl PGPWallet {
+    pub async fn from_params(params: PGPWalletParams) -> Result<Self> {
+        let mnemonic: String = read_secret(&params.file)?;
+        let addresses = utils::derive_addresses(&mnemonic, &params.derivation_path, params.count);
 
         let current = if let Some(current) = addresses.iter().find(|(p, _)| p == &params.current) {
             current.clone()
@@ -98,13 +100,14 @@ impl Pgp {
             return Err(Error::InvalidKey(params.current));
         };
 
-        Ok(Self{
+        Ok(Self {
             name: params.name,
             file: params.file,
-            addresses,
             derivation_path: params.derivation_path,
+            addresses,
+            current,
+            count: params.count,
         })
-        todo!()
     }
 
     async fn update_derivation_path(&mut self, derivation_path: String) -> Result<()> {
@@ -132,18 +135,20 @@ impl Pgp {
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
-pub struct PgpParams {
+pub struct PGPWalletParams {
+    name: String,
     file: PathBuf,
     derivation_path: String,
+    current: String,
     count: u32,
 }
 
 fn read_secret(path: &PathBuf) -> Result<String> {
     let mut ctx = gpgme::Context::from_protocol(gpgme::Protocol::OpenPgp)?;
 
-    let mut input = std::fs::File::open(path.to_string())?;
+    let mut input = std::fs::File::open(path.as_path())?;
     let mut output = vec![];
     ctx.decrypt(&mut input, &mut output)?;
 
-    Ok(output.to_string())
+    Ok(String::from_utf8(output)?)
 }
