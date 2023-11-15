@@ -3,6 +3,13 @@
 [coc]: https://www.rust-lang.org/policies/code-of-conduct
 [contact]: https://linktr.ee/naps62
 [good-first-issue]: https://github.com/iron-wallet/iron/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22
+[tauri-requirements]: https://tauri.app/v1/guides/getting-started/prerequisites/
+[libsodium-macos]: https://formulae.brew.sh/formula/libsodium
+[libsodium-arch]: https://archlinux.org/packages/extra/x86_64/libsodium/
+[libsodium-ubuntu]: https://packages.ubuntu.com/search?keywords=libsodium-dev
+[foundry]: https://getfoundry.sh/
+[web3-demo]: https://github.com/iron-wallet/web3-demo
+[anvil]: https://book.getfoundry.sh/anvil/
 
 We welcome all kinds of contributions:
 
@@ -27,7 +34,9 @@ Here's a few suggestions on how to get started:
 - [**Tauri's requirements**][tauri-requirements];
 - **libsodium** ([macos][libsodium-macos], [Arch][libsodium-arch], [Ubuntu][libsodium-ubuntu])
 - **Google Chrome**, running a profile without MetaMask or other wallet installed, to be solved once EIP-6963 is widely adopted
-- (optional) [**justfile**][Justfile]
+- (optional) [**justfile**][Justfile], a simple task runner
+- (optional) [**Foundry**][foundry], the toolkit for Ethereum development. You'll want this to run [anvil][anvil] nodes locally to point to wallet to
+- (optional) [**Our own web3-demo app**][web3-demo], to have some basic setup to test various transactions with
 
 ### Get started
 
