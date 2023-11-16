@@ -45,7 +45,7 @@ ext-source:
   local=$PWD
   dir=$(mktemp --directory --suffix=iron)
   shopt -s extglob
-  rsync -r . $dir --exclude '.git' --exclude target --exclude node_modules --exclude '.github' --exclude bin --exclude crates --exclude examples --exclude migrations --exclude '*.zip'
+  rsync -r . $dir --exclude '.git' --exclude target --exclude node_modules --exclude '.github' --exclude bin --exclude crates --exclude .envrc --exclude examples --exclude migrations --exclude '*.zip'
   cd $dir && zip -r $local/ext-source.zip . > /dev/null
   rm -rf $dir
   echo "Source zipped to $local/ext-source.zip"

@@ -64,7 +64,6 @@ impl IronApp {
                 iron_wallets::commands::wallets_ledger_derive,
                 iron_dialogs::commands::dialog_get_payload,
                 iron_dialogs::commands::dialog_send,
-                iron_dialogs::commands::dialog_finish,
                 iron_forge::commands::forge_get_abi,
                 iron_rpc::commands::rpc_send_transaction,
                 iron_connections::commands::connections_affinity_for,
