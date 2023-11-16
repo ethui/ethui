@@ -3,21 +3,14 @@ import { DevtoolsPanels } from "webextension-polyfill/namespaces/devtools_panels
 
 import type { Request, Response } from "@/types";
 
+const tabId = browser.devtools.inspectedWindow.tabId;
+
 let panel: DevtoolsPanels.ExtensionPanel;
-let tabId: number | undefined;
 let cache: Array<Request | Response> = [];
 
 (async () => init())();
 
 async function init() {
-  console.log("here", browser.devtools.inspectedWindow);
-  // get tab ID
-  const [{ id }] = await browser.tabs.query({
-    active: true,
-    currentWindow: true,
-  });
-  tabId = id;
-
   // creating devtools panel
   panel = await browser.devtools.panels.create(
     "Iron Wallet",

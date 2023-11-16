@@ -43,7 +43,6 @@ function App() {
       <Table.Head>
         <Table.Row>
           <Table.HeadCell style={{ width: "10%" }}>Method</Table.HeadCell>
-          <Table.HeadCell style={{ width: "10%" }}>Date</Table.HeadCell>
           <Table.HeadCell style={{ width: "5%" }}>Time</Table.HeadCell>
           <Table.HeadCell>Params</Table.HeadCell>
           <Table.HeadCell>Response</Table.HeadCell>
@@ -53,7 +52,6 @@ function App() {
         {requests.map(({ request, response }, id) => (
           <Table.Row key={id}>
             <Table.Cell>{request.data.method}</Table.Cell>
-            <Table.Cell>{request.timestamp}</Table.Cell>
             <Table.Cell>
               <Time
                 request={request.timestamp}
