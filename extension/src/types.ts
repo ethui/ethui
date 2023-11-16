@@ -15,9 +15,9 @@ export interface Response {
 }
 
 export interface Start {
-  type: "devtools-panel-start";
+  type: "start";
   tabId: number;
-  data: Array<Request | Response>;
+  data?: Array<Request | Response>;
 }
 
 export type Msg = Request | Response;

@@ -9,6 +9,7 @@ interface State {
 }
 
 interface Setters {
+  reset: () => void;
   processMsgs: (msg: Array<Request | Response>) => void;
 }
 
@@ -26,6 +27,10 @@ browser.tabs
 
 const store: StateCreator<Store> = (set, get) => ({
   requests: [],
+
+  reset() {
+    set({ requests: [] });
+  },
 
   processMsgs(msgs) {
     const { requests } = get();
@@ -53,8 +58,9 @@ export const useStore = create<Store>()(subscribeWithSelector(store));
 browser.runtime.onMessage.addListener((msg: Request | Response | Start) => {
   if (msg.tabId != tabId) return;
 
-  if (msg.type === "devtools-panel-start") {
-    useStore.getState().processMsgs(msg.data);
+  if (msg.type === "start") {
+    useStore.getState().reset();
+    useStore.getState().processMsgs(msg.data || []);
   } else {
     useStore.getState().processMsgs([msg]);
   }

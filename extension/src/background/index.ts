@@ -28,8 +28,8 @@ export async function init() {
  */
 function notifyDevtools(
   tabId: number,
-  type: "request" | "response",
-  data: JsonRpcResponse<Json> | JsonRpcRequest,
+  type: "request" | "response" | "start",
+  data?: JsonRpcResponse<Json> | JsonRpcRequest,
 ) {
   browser.runtime.sendMessage({
     type,
@@ -48,6 +48,8 @@ function notifyDevtools(
  */
 export function setupProviderConnection(port: Runtime.Port) {
   const tabId = port.sender!.tab!.id!;
+
+  notifyDevtools(tabId, "start");
 
   const ws = new WebsocketBuilder(endpoint(port))
     .withBuffer(new ArrayQueue())

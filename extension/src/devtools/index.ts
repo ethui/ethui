@@ -10,6 +10,7 @@ let cache: Array<Request | Response> = [];
 (async () => init())();
 
 async function init() {
+  console.log("here", browser.devtools.inspectedWindow);
   // get tab ID
   const [{ id }] = await browser.tabs.query({
     active: true,
@@ -38,7 +39,7 @@ function panelListener() {
   panel.onShown.removeListener(panelListener); // run only once
 
   browser.runtime.sendMessage({
-    type: "devtools-panel-start",
+    type: "start",
     tabId,
     data: cache,
   });
