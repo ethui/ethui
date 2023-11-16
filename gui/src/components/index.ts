@@ -28,5 +28,6 @@ export { QuickNetworkSelect } from "./QuickNetworkSelect";
 export { QuickWalletSelect } from "./QuickWalletSelect";
 export { Settings } from "./Settings/";
 export { SettingsButton } from "./SettingsButton";
+export { TransferForm } from "./TransferForm";
 export { Txs } from "./Txs";
 export { WagmiWrapper } from "./WagmiWrapper";
