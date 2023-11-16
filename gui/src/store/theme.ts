@@ -31,6 +31,7 @@ const store: StateCreator<Store> = (set, get) => ({
       id: `${actionId}/${mode}`,
       name: mode,
       parent: actionId,
+      shortcut: ["t", mode[0]],
       perform: () => get().changeMode(mode),
     })),
   ],

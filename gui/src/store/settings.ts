@@ -6,51 +6,36 @@ import { subscribeWithSelector } from "zustand/middleware";
 
 import { GeneralSettings } from "@/types/settings";
 
-interface State {
+interface Store {
   settings?: GeneralSettings;
   actions: Action[];
-}
 
-interface Setters {
   reload: () => void;
-  reloadActions: () => void;
 }
 
-type Store = State & Setters;
+const actionId = "settings/fastMode";
 
 const store: StateCreator<Store> = (set, get) => ({
   settings: undefined,
-  actions: [],
+  actions: [
+    {
+      id: actionId,
+      name: "Fast mode",
+    },
+    ...(["enable", "disable"] as const).map((mode) => ({
+      id: `${actionId}/${mode}`,
+      name: mode,
+      parent: actionId,
+      shortcut: ["f", mode[0]],
+      perform: () =>
+        invoke("settings_set_fast_mode", { mode: !get().settings?.fastMode }),
+    })),
+  ],
 
   async reload() {
     const settings = await invoke<GeneralSettings>("settings_get");
 
     set({ settings });
-    get().reloadActions();
-  },
-
-  reloadActions() {
-    const actions = [
-      {
-        id: "settings/fastMode",
-        name: "Fast mode",
-      },
-
-      {
-        id: `settings/fastMode/enable`,
-        parent: "settings/fastMode",
-        name: "Fast Mode > Enable",
-        perform: () => invoke("settings_set_fast_mode", { mode: true }),
-      },
-      {
-        id: `settings/fastMode/disable`,
-        parent: "settings/fastMode",
-        name: "Fast Mode > Disable",
-        perform: () => invoke("settings_set_fast_mode", { mode: false }),
-      },
-    ];
-
-    set({ actions });
   },
 });
 

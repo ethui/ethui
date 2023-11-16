@@ -15,13 +15,14 @@ interface Setters {
 
 type Store = State & Setters;
 
-const store: StateCreator<Store> = (set, _get) => ({
+const store: StateCreator<Store> = (set, get) => ({
   show: false,
   actions: [
     {
       id: "settings",
       name: "Open settings",
-      perform: () => set({ show: true }),
+      shortcut: ["s"],
+      perform: () => set({ show: !get().show }),
     },
   ],
   open() {

@@ -11,6 +11,7 @@ import { useState } from "react";
 
 import { SettingsFoundry } from "./Foundry";
 import { SettingsGeneral } from "./General";
+import { SettingsKeybinds } from "./Keybinds";
 import { SettingsNetwork } from "./Network";
 import { SettingsWallets } from "./Wallets";
 
@@ -19,6 +20,7 @@ const TABS = [
   { name: "Wallets", component: SettingsWallets },
   { name: "Network", component: SettingsNetwork },
   { name: "Foundry", component: SettingsFoundry },
+  { name: "Keybinds", component: SettingsKeybinds },
 ];
 
 const WIDTH = 140;
