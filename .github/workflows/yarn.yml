@@ -48,11 +48,11 @@ jobs:
       - name: rust cache
         uses: Swatinem/rust-cache@v2
 
-      - name: setup node
-        uses: actions/setup-node@v3
-        with:
-          cache: "yarn"
-          node-version-file: ".tool-versions"
+      # - name: setup node
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     cache: "yarn"
+      #     node-version-file: ".tool-versions"
 
       - run: yarn install --network-timeout 1000000 --verbose
 
