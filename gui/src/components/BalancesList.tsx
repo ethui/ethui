@@ -10,7 +10,7 @@ import { Address, formatUnits } from "viem";
 
 import { useInvoke } from "@/hooks";
 import { useBalances, useNetworks } from "@/store";
-import { GeneralSettings } from "@/types";
+import { GeneralSettings } from "@/types/settings";
 
 import { CopyToClipboard, IconCrypto } from "./";
 
