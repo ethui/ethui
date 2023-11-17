@@ -60,12 +60,6 @@ const transferERC20 = async (
   });
 };
 
-const formatTokenBalance = (balance: bigint, decimals: number) =>
-  formatUnits(
-    balance - (balance % BigInt(Math.ceil(0.001 * 10 ** decimals))),
-    decimals,
-  );
-
 interface TransferFormProps {
   onClose: () => void;
 }
@@ -136,24 +130,26 @@ export function TransferForm({ onClose }: TransferFormProps) {
   }, [allTokens, selectedToken]);
 
   const submitTransferForm = async (formData: FieldValues) => {
-    if (!currentAddress) {
-      setTxResult({ success: false, msg: "No current address" });
-      return;
-    }
+    const token = allTokens.find((t) => t.symbol === selectedToken);
 
-    const tokenInfo = allTokens.find((t) => t.symbol === selectedToken);
+    if (currentAddress && token && token.balance) {
+      const transferAmount = BigInt(formData.value * 10 ** token.decimals);
 
-    if (tokenInfo) {
-      const transferFunc =
+      if (transferAmount > token.balance) {
+        setTxResult({ success: false, msg: "Not enough balance" });
+        return;
+      }
+
+      const transfer =
         selectedToken === currentNetwork.currency
           ? transferNative
           : transferERC20;
 
-      const result = await transferFunc(
+      const result = await transfer(
         currentAddress,
         formData.address,
-        BigInt(formData.value * 10 ** tokenInfo.decimals),
-        tokenInfo.contract,
+        transferAmount,
+        token.contract,
       );
 
       if (result.match(/(0x[a-fA-F0-9]{40})/)) {
@@ -166,6 +162,12 @@ export function TransferForm({ onClose }: TransferFormProps) {
       }
     }
   };
+
+  const formatTokenBalance = (balance: bigint, decimals: number) =>
+    formatUnits(
+      balance - (balance % BigInt(Math.ceil(0.001 * 10 ** decimals))),
+      decimals,
+    );
 
   return (
     <form onSubmit={handleSubmit(submitTransferForm)}>
@@ -223,6 +225,7 @@ export function TransferForm({ onClose }: TransferFormProps) {
             </Typography>
           </Alert>
         )}
+
         <Stack width="100%" direction="row" justifyContent="space-between">
           <Button variant="outlined" color="error" onClick={onClose}>
             Close
