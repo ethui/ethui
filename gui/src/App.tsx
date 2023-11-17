@@ -44,7 +44,7 @@ export default function App() {
       <CssBaseline>
         <ErrorHandler>
           <QueryClientProvider client={queryClient}>
-            <DevBuildNotice />
+            {/* <DevBuildNotice /> */}
             <WagmiWrapper>
               <Routes />
             </WagmiWrapper>
