@@ -46,14 +46,19 @@ impl<'a> SendTransaction {
     }
 
     pub async fn finish(&mut self) -> Result<PendingTransaction<'_, Http>> {
-        let wallets = Wallets::read().await;
-        let wallet = wallets.get(&self.wallet_name).unwrap();
+        // inner scope so as not to lock wallets for the entire duration of the tx review
+        let skip = {
+            let wallets = Wallets::read().await;
+            let wallet = wallets.get(&self.wallet_name).unwrap();
+
+            self.network.is_dev() && wallet.is_dev() && Settings::read().await.fast_mode()
+        };
 
         // skip the dialog if both network & wallet allow for it, and if fast_mode is enabled
-        if !(self.network.is_dev() && wallet.is_dev() && Settings::read().await.fast_mode()) {
-            self.dialog_and_send().await
-        } else {
+        if skip {
             self.send().await
+        } else {
+            self.dialog_and_send().await
         }
     }
 
