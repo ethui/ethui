@@ -27,6 +27,36 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  osx:
+    strategy:
+      fail-fast: false
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: install dependencies (macos)
+        run: |
+          brew install libsodium
+
+      - name: setup rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: rust cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          cache: "yarn"
+          node-version-file: ".tool-versions"
+
+      - run: yarn install --network-timeout 1000000 --verbose
+
+
   lint:
     runs-on: ubuntu-latest
     steps:

@@ -42,5 +42,6 @@
   },
   "resolutions": {
     "postcss": "^8.4.31"
-  }
+  },
+  "packageManager": "yarn@3.6.1"
 }
