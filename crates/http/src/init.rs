@@ -30,6 +30,8 @@ pub async fn init(db: DB) {
             .layer(cors)
             .layer(TraceLayer::new_for_http());
 
+        tracing::debug!("HTTP server listening on: {}", addr);
+
         axum::Server::bind(&addr)
             .serve(app.into_make_service())
             .await
