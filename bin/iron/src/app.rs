@@ -216,13 +216,23 @@ async fn event_listener(handle: AppHandle) {
     }
 }
 
+/// Returns the resource path for the given resource.
+/// If the `IRON_CONFIG_DIR` env var is set, it will be used as the base path.
+/// Otherwise, the app's default config dir will be used.
 fn resource(app: &tauri::App, resource: &str) -> PathBuf {
-    let config_dir = app
-        .path_resolver()
+    let dir = config_dir(app);
+    std::fs::create_dir_all(&dir).expect("could not create config dir");
+    dir.join(resource)
+}
+
+#[cfg(debug_assertions)]
+fn config_dir(_app: &tauri::App) -> PathBuf {
+    PathBuf::from("../../target/debug/")
+}
+
+#[cfg(not(debug_assertions))]
+fn config_dir(_app: &tauri::App) -> PathBuf {
+    app.path_resolver()
         .app_config_dir()
-        .unwrap_or_else(|| panic!("failed to resolve app_config_dir"));
-
-    std::fs::create_dir_all(&config_dir).expect("could not create config dir");
-
-    config_dir.join(resource)
+        .expect("failed to resolve app_config_dir")
 }
