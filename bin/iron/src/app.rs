@@ -11,6 +11,7 @@ use tauri::{
 };
 use tauri_plugin_window_state::Builder as windowStatePlugin;
 
+use crate::utils::{main_window_hide, main_window_show};
 use crate::{commands, error::AppResult, menu};
 
 pub struct IronApp {
@@ -211,6 +212,9 @@ async fn event_listener(handle: AppHandle) {
                         .emit(&event_type, &payload)
                         .unwrap();
                 }
+
+                MainWindowShow => main_window_show(&handle),
+                MainWindowHide => main_window_hide(&handle),
             }
         }
     }
@@ -231,7 +235,7 @@ fn config_dir(_app: &tauri::App) -> PathBuf {
 }
 
 #[cfg(not(debug_assertions))]
-fn config_dir(_app: &tauri::App) -> PathBuf {
+fn config_dir(app: &tauri::App) -> PathBuf {
     app.path_resolver()
         .app_config_dir()
         .expect("failed to resolve app_config_dir")
