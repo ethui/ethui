@@ -1,4 +1,5 @@
 import { Json, JsonRpcRequest, JsonRpcResponse } from "@metamask/utils";
+import log from "loglevel";
 import browser, { type Runtime } from "webextension-polyfill";
 import { ArrayQueue, ConstantBackoff, WebsocketBuilder } from "websocket-ts";
 
@@ -14,6 +15,7 @@ let settings: Settings = defaultSettings;
  */
 export async function init() {
   settings = await loadSettings();
+  log.setLevel(settings.logLevel);
 
   // handle each incoming content script connection
   browser.runtime.onConnect.addListener((port: Runtime.Port) => {
@@ -26,17 +28,23 @@ export async function init() {
  * Each message will include a timestamp.
  * @param msg - message to be sent to the devtools
  */
-function notifyDevtools(
+async function notifyDevtools(
   tabId: number,
   type: "request" | "response" | "start",
   data?: JsonRpcResponse<Json> | JsonRpcRequest,
 ) {
-  browser.runtime.sendMessage({
-    type,
-    tabId,
-    data,
-    timestamp: Date.now(),
-  });
+  try {
+    await browser.runtime.sendMessage({
+      type,
+      tabId,
+      data,
+      timestamp: Date.now(),
+    });
+  } catch (e: unknown) {
+    if (!e?.message?.includes("Receiving end does not exist.")) {
+      throw e;
+    }
+  }
 }
 
 /**
@@ -52,6 +60,15 @@ export function setupProviderConnection(port: Runtime.Port) {
   notifyDevtools(tabId, "start");
 
   const ws = new WebsocketBuilder(endpoint(port))
+    .onOpen(() => {
+      log.debug("WS connection opened");
+    })
+    .onReconnect(() => {
+      log.debug("WS connection reconnected");
+    })
+    .onError((e) => {
+      log.error("[WS] error:", e);
+    })
     .withBuffer(new ArrayQueue())
     .withBackoff(new ConstantBackoff(1000))
     .onMessage((_ins, event) => {
@@ -59,6 +76,7 @@ export function setupProviderConnection(port: Runtime.Port) {
       const data = JSON.parse(event.data);
       port.postMessage(data);
 
+      log.debug("[WS] response:", data);
       notifyDevtools(tabId, "response", data);
     })
     .build();
@@ -67,6 +85,7 @@ export function setupProviderConnection(port: Runtime.Port) {
   port.onMessage.addListener((data: JsonRpcResponse<Json>) => {
     ws.send(JSON.stringify(data));
 
+    log.debug("[WS] request:", data);
     notifyDevtools(tabId, "request", data);
   });
 }
