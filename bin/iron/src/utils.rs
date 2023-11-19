@@ -9,6 +9,7 @@ pub(crate) async fn main_window_show(app: &AppHandle) {
         let app = app.clone();
         let onboarded = Settings::read().await.onboarded();
         let url = if onboarded { "/" } else { "/onboarding" };
+        dbg!(url);
 
         let builder = tauri::WindowBuilder::new(&app, "main", tauri::WindowUrl::App(url.into()))
             .fullscreen(false)
@@ -21,7 +22,7 @@ pub(crate) async fn main_window_show(app: &AppHandle) {
             .title_bar_style(tauri::TitleBarStyle::Overlay)
             .hidden_title(true);
 
-        builder.build().unwrap();
+        dbg!(builder.build()).unwrap();
     }
 }
 
