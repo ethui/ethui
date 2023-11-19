@@ -24,6 +24,9 @@ pub enum AppError {
     #[error(transparent)]
     Tracing(#[from] iron_tracing::TracingError),
 
+    #[error(transparent)]
+    Settings(#[from] iron_settings::Error),
+
     #[error("App already running")]
     NamedLock(#[from] named_lock::Error),
 }
