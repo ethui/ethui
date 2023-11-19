@@ -3,11 +3,9 @@ use std::path::PathBuf;
 use iron_args::Args;
 use iron_broadcast::UIMsg;
 use iron_db::DB;
-use iron_settings::Settings;
-use iron_types::GlobalState;
 #[cfg(target_os = "macos")]
 use tauri::WindowEvent;
-use tauri::{AppHandle, Builder, GlobalWindowEvent, Manager, Window, Wry};
+use tauri::{AppHandle, Builder, GlobalWindowEvent, Manager};
 use tauri_plugin_window_state::Builder as windowStatePlugin;
 
 use crate::{
@@ -90,7 +88,10 @@ impl IronApp {
             .expect("error while running tauri application");
 
         init(&app, args).await?;
-        build_main_window(&app).await?;
+
+        if !args.hidden {
+            main_window_show(&app.handle()).await;
+        }
 
         Ok(Self { app })
     }
@@ -136,23 +137,6 @@ async fn init(app: &tauri::App, args: &Args) -> AppResult<()> {
     Ok(())
 }
 
-async fn build_main_window(app: &tauri::App) -> tauri::Result<Window<Wry>> {
-    let onboarded = Settings::read().await.onboarded();
-    let url = if onboarded { "/" } else { "/onboarding" };
-
-    let builder = tauri::WindowBuilder::new(app, "main", tauri::WindowUrl::App(url.into()))
-        .fullscreen(false)
-        .resizable(true)
-        .inner_size(600.0, 800.0);
-
-    #[cfg(target_os = "macos")]
-    let builder = builder
-        .title_bar_style(tauri::TitleBarStyle::Overlay)
-        .hidden_title(true);
-
-    builder.build()
-}
-
 #[cfg(target_os = "macos")]
 fn on_window_event(event: GlobalWindowEvent) {
     if let WindowEvent::CloseRequested { api, .. } = event.event() {
@@ -187,7 +171,7 @@ async fn event_listener(handle: AppHandle) {
                 DialogClose(params) => dialogs::close(&handle, params),
                 DialogSend(params) => dialogs::send(&handle, params),
 
-                MainWindowShow => main_window_show(&handle),
+                MainWindowShow => main_window_show(&handle).await,
                 MainWindowHide => main_window_hide(&handle),
             }
         }

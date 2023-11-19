@@ -1,3 +1,5 @@
+set positional-arguments
+
 alias d := dev
 alias f := fix
 alias l := lint
@@ -10,8 +12,8 @@ build:
   yarn extension:build
   cargo build
 
-dev:
-  yarn run tauri dev --features ${IRON_FEATURES:-debug}
+dev *args='':
+  yarn run tauri dev --features ${IRON_FEATURES:-debug} -- -- -- $@
 
 fix:
   cargo +nightly fmt --all

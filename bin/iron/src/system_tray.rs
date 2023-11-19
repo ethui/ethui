@@ -1,7 +1,5 @@
 use tauri::{AppHandle, Manager, SystemTrayEvent};
 
-use crate::utils::main_window_show;
-
 pub(crate) fn build() -> tauri::SystemTray {
     use tauri::{CustomMenuItem, SystemTray, SystemTrayMenu, SystemTrayMenuItem};
 
@@ -24,10 +22,14 @@ pub(crate) fn event_handler(app: &AppHandle, event: SystemTrayEvent) {
         MenuItemClick { id, .. } => match id.as_str() {
             "quit" => app.exit(0),
             "hide" => app.get_window("main").unwrap().hide().unwrap(),
-            "show" => main_window_show(app),
+            "show" => {
+                tokio::spawn(async { iron_broadcast::main_window_show().await });
+            }
             _ => {}
         },
-        DoubleClick { .. } => main_window_show(app),
+        DoubleClick { .. } => {
+            tokio::spawn(async { iron_broadcast::main_window_show().await });
+        }
         _ => {}
     }
 }
