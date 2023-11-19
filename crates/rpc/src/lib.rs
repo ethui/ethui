@@ -182,7 +182,7 @@ impl Handler {
 
         match result {
             Ok(res) => Ok(res.tx_hash().encode_hex().into()),
-            Err(e) => Ok(e.to_string().into()),
+            Err(e) => Err(e.into()),
         }
     }
 
@@ -212,7 +212,7 @@ impl Handler {
 
         match result {
             Ok(res) => Ok(format!("0x{}", res).into()),
-            Err(e) => Ok(e.to_string().into()),
+            Err(e) => Err(e.into()),
         }
     }
 
@@ -242,7 +242,7 @@ impl Handler {
 
         match result {
             Ok(res) => Ok(format!("0x{}", res).into()),
-            Err(e) => Ok(e.to_string().into()),
+            Err(e) => Err(e.into()),
         }
     }
 
