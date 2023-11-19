@@ -22,7 +22,7 @@ pub(crate) async fn main_window_show(app: &AppHandle) {
             .title_bar_style(tauri::TitleBarStyle::Overlay)
             .hidden_title(true);
 
-        dbg!(builder.build()).unwrap();
+        builder.build().unwrap();
     }
 }
 
