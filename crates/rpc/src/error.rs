@@ -48,8 +48,14 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 impl From<Error> for jsonrpc_core::Error {
     fn from(value: Error) -> Self {
+        let code = match value {
+            Error::TxDialogRejected | Error::SignatureRejected => ErrorCode::ServerError(4001),
+            Error::WalletNotFound(..) => ErrorCode::ServerError(4100),
+            _ => ErrorCode::InternalError,
+        };
+
         Self {
-            code: ErrorCode::ServerError(0),
+            code,
             data: None,
             message: value.to_string(),
         }

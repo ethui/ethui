@@ -30,8 +30,8 @@ impl Handler {
         res
     }
 
-    pub async fn handle(&self, request: String) -> Option<String> {
-        self.io.handle_request(&request, self.ctx.clone()).await
+    pub async fn handle(&self, request: jsonrpc_core::Request) -> Option<jsonrpc_core::Response> {
+        self.io.handle_rpc_request(request, self.ctx.clone()).await
     }
 
     fn add_handlers(&mut self) {

@@ -25,8 +25,9 @@ async fn handler(
     let domain = params.domain;
     let handler = iron_rpc::Handler::new(domain);
 
-    let reply = handler.handle(payload).await;
-    let reply = reply.unwrap_or_else(|| serde_json::Value::Null.to_string());
-
-    Ok(Json(serde_json::from_str(&reply)?))
+    todo!();
+    // let reply = handler.handle(payload).await;
+    // let reply = reply.unwrap_or_else(|| serde_json::Value::Null.to_string());
+    //
+    // Ok(Json(serde_json::from_str(&reply)?))
 }

@@ -89,8 +89,10 @@ async fn handle_connection(
                         if let Message::Pong(_) = msg {
                             continue;
                         }
-                        let reply = handler.handle(msg.to_string()).await;
-                        let reply = reply.unwrap_or_else(||serde_json::Value::Null.to_string());
+                        let reply = handler.handle(serde_json::from_str(&msg.to_string()).unwrap()).await;
+                        let reply = reply
+                            .map(|r| serde_json::to_string(&r).unwrap())
+                            .unwrap_or_else(||serde_json::Value::Null.to_string());
 
                         ws_sender.send(reply.into()).await?;
                     },
