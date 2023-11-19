@@ -14,6 +14,7 @@ iron-rpc = { workspace = true }
 iron-broadcast = { workspace = true }
 iron-networks = { workspace = true }
 iron-connections = { workspace = true }
+iron-args = { workspace = true }
 
 ethers = { workspace = true }
 tokio = { workspace = true }

@@ -16,8 +16,8 @@ use url::Url;
 pub use crate::error::{WsError, WsResult};
 use crate::peers::{Peer, Peers};
 
-pub(crate) async fn server_loop() {
-    let addr = std::env::var("IRON_WS_SERVER_ENDPOINT").unwrap_or("127.0.0.1:9002".into());
+pub(crate) async fn server_loop(port: u16) {
+    let addr = format!("127.0.0.1:{}", port);
     let listener = TcpListener::bind(&addr).await.expect("Can't listen to");
 
     tracing::debug!("WS server listening on: {}", addr);

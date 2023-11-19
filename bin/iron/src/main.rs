@@ -20,20 +20,21 @@ static LOCK_NAME: &str = "iron-wallet-dev";
 
 #[tokio::main]
 async fn main() -> AppResult<()> {
+    iron_tracing::init()?;
+    fix_path_env::fix()?;
+
+    let args = iron_args::parse();
     let lock = NamedLock::create(LOCK_NAME)?;
 
     let _guard = match lock.try_lock() {
         Ok(g) => g,
         Err(_) => {
-            iron_http::request_main_window_open().await?;
+            iron_http::request_main_window_open(args.http_port).await?;
             return Ok(());
         }
     };
 
-    iron_tracing::init()?;
-    fix_path_env::fix()?;
-
-    app::IronApp::build().await?.run();
+    app::IronApp::build(&args).await?.run();
 
     Ok(())
 }

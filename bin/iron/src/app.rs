@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 
+use iron_args::Args;
 use iron_broadcast::UIMsg;
 use iron_db::DB;
 use iron_settings::Settings;
@@ -18,7 +19,7 @@ pub struct IronApp {
 }
 
 impl IronApp {
-    pub async fn build() -> AppResult<Self> {
+    pub async fn build(args: &iron_args::Args) -> AppResult<Self> {
         let builder = Builder::default()
             .plugin(windowStatePlugin::default().build())
             .invoke_handler(tauri::generate_handler![
@@ -85,7 +86,7 @@ impl IronApp {
             .build(tauri::generate_context!())
             .expect("error while running tauri application");
 
-        init(&app).await?;
+        init(&app, args).await?;
         build_main_window(&app).await?;
 
         Ok(Self { app })
@@ -101,7 +102,7 @@ impl IronApp {
 }
 
 /// Initialization logic
-async fn init(app: &tauri::App) -> AppResult<()> {
+async fn init(app: &tauri::App, args: &Args) -> AppResult<()> {
     let db = DB::connect(&resource(app, "db.sqlite3")).await?;
     app.manage(db.clone());
 
@@ -115,8 +116,8 @@ async fn init(app: &tauri::App) -> AppResult<()> {
     // otherwise the initial tracker won't be ready to spawn
     iron_sync::init(db.clone()).await;
     iron_settings::init(resource(app, "settings.json")).await;
-    iron_ws::init().await;
-    iron_http::init(db).await;
+    iron_ws::init(args).await;
+    iron_http::init(args, db).await;
     iron_connections::init(resource(app, "connections.json")).await;
     iron_wallets::init(resource(app, "wallets.json")).await;
     iron_networks::init(resource(app, "networks.json")).await;

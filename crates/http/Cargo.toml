@@ -21,6 +21,7 @@ iron-sync-alchemy = { workspace = true }
 iron-types = { workspace = true }
 iron-wallets = { workspace = true }
 iron-ws = { workspace = true }
+iron-args = { workspace = true }
 
 ethers = { workspace = true }
 serde = { workspace = true }
