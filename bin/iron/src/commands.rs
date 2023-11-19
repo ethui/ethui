@@ -60,7 +60,9 @@ pub async fn get_contract_abi(
 
 #[tauri::command]
 pub async fn ui_error(message: String, _stack: Option<Vec<String>>) -> AppResult<()> {
-    tracing::error!(error_type = "UI Error", message = message, stack = _stack);
+    tracing::error!(error_type = "UI Error", message = message);
+
+    dbg!(_stack);
 
     Ok(())
 }
