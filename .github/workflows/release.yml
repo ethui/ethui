@@ -113,8 +113,11 @@ jobs:
       - name: Install dependencies
         run: yarn workspace @iron/extension install
 
-      - name: Create bundles
-        run: yarn workspace @iron/extension build
+      - name: Create chrome bundle
+        run: yarn workspace @iron/extension build --target chrome --version {{ needs.setup.outputs.tag }}
+
+      - name: Create firefox bundle
+        run: yarn workspace @iron/extension build --target firefox --version {{ needs.setup.outputs.tag }}
 
       - name: Upload to release
         run: gh release upload ${{ needs.setup.outputs.tag }} ./extension/dist/*.{crx,zip,xpi}

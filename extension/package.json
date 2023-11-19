@@ -8,9 +8,7 @@
   "type": "module",
   "scripts": {
     "dev": "./scripts/build.sh",
-    "build": "yarn run build:chrome && yarn run build:firefox",
-    "build:firefox": "./scripts/build.sh --target firefox",
-    "build:chrome": "./scripts/build.sh --target chrome"
+    "build": "./scripts/build.sh $@"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.248",
