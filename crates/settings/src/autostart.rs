@@ -9,10 +9,8 @@ pub fn update(v: bool) -> Result<()> {
     }
 
     if v {
-        dbg!("enabling");
         handle.enable()?
     } else {
-        dbg!("disabling");
         handle.disable()?
     }
 
