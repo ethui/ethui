@@ -3,6 +3,7 @@
 
 mod app;
 mod commands;
+mod dialogs;
 mod error;
 mod menu;
 #[cfg(not(target_os = "macos"))]
@@ -29,7 +30,7 @@ async fn main() -> AppResult<()> {
         Ok(g) => g,
         Err(_) => {
             iron_http::request_main_window_open(args.http_port).await?;
-            panic!("App already running");
+            return Ok(());
         }
     };
 

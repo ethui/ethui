@@ -5,7 +5,7 @@ use ethers::{
     core::k256::ecdsa::SigningKey,
     signers::{self, Signer as _},
 };
-use iron_dialogs::Dialog;
+use iron_dialogs::{Dialog, DialogMsg};
 use iron_types::Address;
 use secrets::SecretVec;
 use tokio::{
@@ -108,7 +108,7 @@ impl JsonKeystoreWallet {
 
         // attempt to receive a password at most 3 times
         for _ in 0..3 {
-            let password = if let Some(payload) = dialog.recv().await {
+            let password = if let Some(DialogMsg::Data(payload)) = dialog.recv().await {
                 let password = payload["password"].clone();
                 password
                     .as_str()
