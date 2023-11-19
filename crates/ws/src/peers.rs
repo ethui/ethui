@@ -57,7 +57,7 @@ impl Peer {
 
 impl From<Peer> for iron_rpc::Handler {
     fn from(value: Peer) -> Self {
-        Self::new(value.domain())
+        Self::new(value.domain()).unwrap()
     }
 }
 

@@ -13,8 +13,6 @@ pub struct Ctx {
     pub domain: Option<String>,
 }
 
-impl jsonrpc_core::Metadata for Ctx {}
-
 impl Ctx {
     pub fn empty() -> Self {
         Self { domain: None }

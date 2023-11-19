@@ -4,60 +4,83 @@ mod send_transaction;
 mod sign_message;
 
 use std::collections::HashMap;
+use std::sync::Arc;
 
 use ethers::{abi::AbiEncode, types::transaction::eip712};
 use iron_connections::Ctx;
 use iron_types::GlobalState;
 use iron_wallets::{WalletControl, Wallets};
-use jsonrpc_core::{MetaIoHandler, Params};
+use jsonrpsee::types::Params;
+use jsonrpsee::{MethodResponse, RpcModule};
 use serde_json::json;
+use tokio::sync::{Mutex, MutexGuard};
 
 pub use self::error::{Error, Result};
 use self::sign_message::SignMessage;
 
 pub struct Handler {
-    io: MetaIoHandler<Ctx>,
-    ctx: Ctx,
+    rpc: RpcModule<Mutex<Ctx>>,
 }
 
 impl Handler {
-    pub fn new(domain: Option<String>) -> Self {
+    pub fn new(domain: Option<String>) -> Result<Self> {
+        let ctx = Mutex::new(Ctx { domain });
         let mut res = Self {
-            io: MetaIoHandler::default(),
-            ctx: Ctx { domain },
+            rpc: RpcModule::new(ctx),
         };
-        res.add_handlers();
-        res
+        res.add_handlers()?;
+        Ok(res)
     }
 
-    pub async fn handle(&self, request: jsonrpc_core::Request) -> Option<jsonrpc_core::Response> {
-        self.io.handle_rpc_request(request, self.ctx.clone()).await
+    pub async fn handle_raw(&self, raw: &str) -> Result<MethodResponse> {
+        let (rx, _) = self.rpc.raw_json_request(raw, 1).await?;
+        Ok(rx)
     }
 
-    fn add_handlers(&mut self) {
+    // pub async fn handle(
+    //     &self,
+    //     method: &str,
+    //     params: serde_json::value::RawValue,
+    // ) -> Result<MethodResponse> {
+    //     Ok(self.rpc.call(method, params).await?)
+    //     // self.io.handle_rpc_request(request, self.ctx.clone()).await
+    // }
+
+    fn add_handlers(&mut self) -> Result<()> {
         macro_rules! self_handler {
             ($name:literal, $fn:path) => {
-                self.io
-                    .add_method_with_meta($name, |params: Params, ctx: Ctx| async move {
-                        $fn(params, ctx).await
-                    });
+                self.rpc.register_async_method(
+                    $name,
+                    |params: Params<'static>, ctx: Arc<Mutex<Ctx>>| async move {
+                        $fn(params, ctx.lock().await)
+                            .await
+                            .map_err(error::to_jsonrpsee_error)
+                    },
+                )?;
             };
         }
 
         macro_rules! provider_handler {
             ($name:literal) => {
-                self.io
-                    .add_method_with_meta($name, |params: Params, ctx: Ctx| async move {
+                self.rpc.register_async_method(
+                    $name,
+                    |params: Params<'static>, ctx: Arc<Mutex<Ctx>>| async move {
                         tracing::debug!("{} {:?}", $name, params);
 
-                        let provider = ctx.network().await.get_provider();
+                        let provider = {
+                            let ctx = ctx.lock().await;
+                            ctx.network().await.get_provider()
+                        };
 
-                        let res: jsonrpc_core::Result<serde_json::Value> = provider
-                            .request::<_, serde_json::Value>($name, params)
+                        provider
+                            .request::<_, serde_json::Value>(
+                                $name,
+                                params.parse::<serde_json::Value>().unwrap(),
+                            )
                             .await
-                            .map_err(error::ethers_to_jsonrpc_error);
-                        res
-                    });
+                            .map_err(error::ethers_to_jsonrpsee_error)
+                    },
+                )?;
             };
         }
 
@@ -117,27 +140,30 @@ impl Handler {
         self_handler!("metamask_getProviderState", Self::provider_state);
 
         // not yet implemented
-        self_handler!("web3_clientVersion", Self::unimplemented);
-        self_handler!("web3_sha3", Self::unimplemented);
-        self_handler!("net_listening", Self::unimplemented);
-        self_handler!("net_peerCount", Self::unimplemented);
-        self_handler!("eth_gasPrice", Self::unimplemented);
-        self_handler!("eth_signTransaction", Self::unimplemented);
+        // TODO:
+        // self_handler!("web3_clientVersion", Self::unimplemented);
+        // self_handler!("web3_sha3", Self::unimplemented);
+        // self_handler!("net_listening", Self::unimplemented);
+        // self_handler!("net_peerCount", Self::unimplemented);
+        // self_handler!("eth_gasPrice", Self::unimplemented);
+        // self_handler!("eth_signTransaction", Self::unimplemented);
+
+        Ok(())
     }
 
-    async fn accounts(_: Params, _: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn accounts(_: Params<'_>, _: MutexGuard<'_, Ctx>) -> Result<serde_json::Value> {
         let wallets = Wallets::read().await;
         let address = wallets.get_current_wallet().get_current_address().await;
 
         Ok(json!([address]))
     }
 
-    async fn chain_id(_: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn chain_id(_: Params<'_>, ctx: MutexGuard<'_, Ctx>) -> Result<serde_json::Value> {
         let network = ctx.network().await;
         Ok(json!(network.chain_id_hex()))
     }
 
-    async fn provider_state(_: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn provider_state(_: Params<'_>, ctx: MutexGuard<'_, Ctx>) -> Result<serde_json::Value> {
         let wallets = Wallets::read().await;
 
         let network = ctx.network().await;
@@ -152,41 +178,40 @@ impl Handler {
     }
 
     #[tracing::instrument()]
-    async fn switch_chain(params: Params, mut ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn switch_chain(
+        params: Params<'_>,
+        mut ctx: MutexGuard<'_, Ctx>,
+    ) -> Result<serde_json::Value> {
         let params = params.parse::<Vec<HashMap<String, String>>>().unwrap();
         let chain_id_str = params[0].get("chainId").unwrap().clone();
         let new_chain_id = u32::from_str_radix(&chain_id_str[2..], 16).unwrap();
 
-        Ok(ctx
-            .switch_chain(new_chain_id)
+        ctx.switch_chain(new_chain_id)
             .await
             .map(|_| serde_json::Value::Null)
-            .map_err(Error::Connection)?)
+            .map_err(Error::Connection)
     }
 
-    async fn send_transaction<T: Into<serde_json::Value>>(
-        params: T,
-        ctx: Ctx,
-    ) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn send_transaction(
+        params: Params<'_>,
+        ctx: MutexGuard<'_, Ctx>,
+    ) -> Result<serde_json::Value> {
         use send_transaction::SendTransaction;
 
         // TODO: check that requested wallet is authorized
         let mut sender = SendTransaction::build(&ctx)
-            .set_request(params.into())
+            .set_request(params.parse()?)
             .await
             .unwrap()
             .build()
             .await;
 
-        let result = sender.estimate_gas().await.finish().await;
+        let result = sender.estimate_gas().await.finish().await?;
 
-        match result {
-            Ok(res) => Ok(res.tx_hash().encode_hex().into()),
-            Err(e) => Err(e.into()),
-        }
+        Ok(result.tx_hash().encode_hex().into())
     }
 
-    async fn eth_sign(params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn eth_sign(params: Params<'_>, ctx: MutexGuard<'_, Ctx>) -> Result<serde_json::Value> {
         use sign_message::*;
 
         let params = params.parse::<Vec<Option<String>>>().unwrap();
@@ -208,18 +233,15 @@ impl Handler {
 
         // TODO: ensure from == signer
 
-        let result = signer.finish().await;
+        let result = signer.finish().await?;
 
-        match result {
-            Ok(res) => Ok(format!("0x{}", res).into()),
-            Err(e) => Err(e.into()),
-        }
+        Ok(format!("0x{}", result).into())
     }
 
     async fn eth_sign_typed_data_v4(
-        params: Params,
-        ctx: Ctx,
-    ) -> jsonrpc_core::Result<serde_json::Value> {
+        params: Params<'_>,
+        ctx: MutexGuard<'_, Ctx>,
+    ) -> Result<serde_json::Value> {
         let params = params.parse::<Vec<Option<String>>>().unwrap();
         // TODO where should this be used?
         // let address = Address::from_str(&params[0].as_ref().cloned().unwrap()).unwrap();
@@ -238,17 +260,14 @@ impl Handler {
             .set_typed_data(typed_data)
             .build();
 
-        let result = signer.finish().await;
+        let result = signer.finish().await?;
 
-        match result {
-            Ok(res) => Ok(format!("0x{}", res).into()),
-            Err(e) => Err(e.into()),
-        }
+        Ok(format!("0x{}", result).into())
     }
 
-    async fn unimplemented(params: Params, _: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
-        tracing::warn!("unimplemented method called: {:?}", params);
-
-        Err(jsonrpc_core::Error::internal_error())
-    }
+    // async fn unimplemented(params: Params<'_>, _: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+    //     tracing::warn!("unimplemented method called: {:?}", params);
+    //
+    //     Err(jsonrpc_core::Error::internal_error())
+    // }
 }

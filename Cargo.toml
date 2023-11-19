@@ -53,7 +53,7 @@ tauri = { version = "1.5.2", features = ["api-all", "system-tray"] }
 once_cell = "1.18"
 secrets = { version = "1.2.0", features = ["use-libsodium-sys"] }
 tracing = "0.1"
-jsonrpc-core = "18.0.0"
+jsonrpsee = { version = "0.20.3", features = ["server"] }
 reqwest = { version = "0.11.22", default-features = false, features = [
   "rustls-tls",
 ] }

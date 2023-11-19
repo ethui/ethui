@@ -1,6 +1,5 @@
 use ethers::prelude::{signer::SignerMiddlewareError, *};
 use iron_types::Address;
-use jsonrpc_core::ErrorCode;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -19,6 +18,9 @@ pub enum Error {
     #[error(transparent)]
     SignerMiddleware(#[from] SignerMiddlewareError<Provider<Http>, iron_wallets::Signer>),
 
+    #[error(transparent)]
+    EthersProvider(#[from] ethers::providers::ProviderError),
+
     #[error("Signer error: {0}")]
     Signer(String),
 
@@ -26,7 +28,10 @@ pub enum Error {
     Wallet(#[from] ethers::signers::WalletError),
 
     #[error(transparent)]
-    JsonRpc(#[from] jsonrpc_core::Error),
+    JsonRpc(#[from] jsonrpsee::core::Error),
+
+    #[error("asd")]
+    JsonRpcObject(#[from] jsonrpsee::types::ErrorObjectOwned),
 
     #[error(transparent)]
     Dialog(#[from] iron_dialogs::Error),
@@ -46,20 +51,20 @@ pub enum Error {
 
 pub type Result<T> = std::result::Result<T, Error>;
 
-impl From<Error> for jsonrpc_core::Error {
-    fn from(value: Error) -> Self {
-        let code = match value {
-            Error::TxDialogRejected | Error::SignatureRejected => ErrorCode::ServerError(4001),
-            Error::WalletNotFound(..) => ErrorCode::ServerError(4100),
-            _ => ErrorCode::InternalError,
-        };
+pub(crate) fn to_jsonrpsee_error(err: Error) -> jsonrpsee::types::ErrorObjectOwned {
+    let code = match err {
+        Error::TxDialogRejected | Error::SignatureRejected => 4001,
+        Error::WalletNotFound(..) => 4100,
+        _ => -32603,
+    };
+    jsonrpsee::types::ErrorObject::owned(code, err.to_string(), Option::<()>::None)
+}
 
-        Self {
-            code,
-            data: None,
-            message: value.to_string(),
-        }
-    }
+pub(crate) fn ethers_to_jsonrpsee_error(
+    err: ethers::providers::ProviderError,
+) -> jsonrpsee::types::ErrorObjectOwned {
+    // TODO:
+    jsonrpsee::types::ErrorObject::owned(-32603, err.to_string(), Option::<()>::None)
 }
 
 impl serde::Serialize for Error {
@@ -68,25 +73,5 @@ impl serde::Serialize for Error {
         S: serde::Serializer,
     {
         serializer.serialize_str(self.to_string().as_ref())
-    }
-}
-
-pub(crate) fn ethers_to_jsonrpc_error(e: ProviderError) -> jsonrpc_core::Error {
-    // TODO: probable handle more error types here
-    match e {
-        ProviderError::JsonRpcClientError(e) => {
-            if let Some(e) = e.as_error_response() {
-                jsonrpc_core::Error {
-                    code: ErrorCode::ServerError(e.code),
-                    data: e.data.clone(),
-                    message: e.message.clone(),
-                }
-            } else if e.as_serde_error().is_some() {
-                jsonrpc_core::Error::invalid_request()
-            } else {
-                jsonrpc_core::Error::internal_error()
-            }
-        }
-        _ => jsonrpc_core::Error::internal_error(),
     }
 }
