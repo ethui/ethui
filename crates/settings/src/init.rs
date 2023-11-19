@@ -9,11 +9,11 @@ use iron_types::GlobalState;
 use once_cell::sync::OnceCell;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
-use super::{SerializedSettings, Settings};
+use crate::{Result, SerializedSettings, Settings};
 
 static SETTINGS: OnceCell<RwLock<Settings>> = OnceCell::new();
 
-pub async fn init(pathbuf: PathBuf) {
+pub async fn init(pathbuf: PathBuf) -> Result<()> {
     let path = Path::new(&pathbuf);
 
     let res: Settings = if path.exists() {
@@ -33,7 +33,10 @@ pub async fn init(pathbuf: PathBuf) {
         }
     };
 
+    res.init().await?;
     SETTINGS.set(RwLock::new(res)).unwrap();
+
+    Ok(())
 }
 
 #[async_trait]

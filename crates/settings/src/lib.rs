@@ -1,3 +1,4 @@
+mod autostart;
 pub mod commands;
 mod error;
 mod init;
@@ -33,6 +34,13 @@ pub enum DarkMode {
 }
 
 impl Settings {
+    pub async fn init(&self) -> Result<()> {
+        // make sure OS's autostart is synced with settings
+        crate::autostart::update(self.inner.autostart)?;
+
+        Ok(())
+    }
+
     pub async fn set(&mut self, params: serde_json::Map<String, serde_json::Value>) -> Result<()> {
         if let Some(v) = params.get("darkMode") {
             self.inner.dark_mode = serde_json::from_value(v.clone()).unwrap()
@@ -52,6 +60,11 @@ impl Settings {
 
         if let Some(v) = params.get("hideEmptyTokens") {
             self.inner.hide_empty_tokens = serde_json::from_value(v.clone()).unwrap()
+        }
+
+        if let Some(v) = params.get("autostart") {
+            self.inner.autostart = serde_json::from_value(v.clone()).unwrap();
+            crate::autostart::update(self.inner.autostart)?;
         }
 
         self.save().await?;
@@ -148,6 +161,9 @@ pub struct SerializedSettings {
 
     #[serde(default)]
     fast_mode: bool,
+
+    #[serde(default)]
+    autostart: bool,
 }
 
 impl Default for SerializedSettings {
@@ -161,6 +177,7 @@ impl Default for SerializedSettings {
             aliases: HashMap::new(),
             onboarded: false,
             fast_mode: false,
+            autostart: false,
         }
     }
 }
