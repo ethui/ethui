@@ -26,7 +26,7 @@ async fn main() -> AppResult<()> {
         Ok(g) => g,
         Err(_) => {
             iron_http::request_main_window_open().await?;
-            panic!("App already running");
+            return Ok(());
         }
     };
 
