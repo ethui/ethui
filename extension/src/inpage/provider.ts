@@ -61,10 +61,7 @@ export class IronProvider extends EventEmitter {
       jsonrpc: "2.0",
     });
 
-    console.log(resp);
-
     if ("error" in resp) {
-      console.log("error", resp);
       throw resp.error;
     }
 
