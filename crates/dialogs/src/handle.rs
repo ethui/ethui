@@ -4,9 +4,16 @@ use iron_types::{
     ui_events::{DialogClose, DialogOpen, DialogSend},
     Json,
 };
+use serde::{Deserialize, Serialize};
 use tokio::sync::{mpsc, RwLock};
 
 use super::{global::OPEN_DIALOGS, presets, Result};
+
+#[derive(Debug, Deserialize, Serialize)]
+pub enum DialogMsg {
+    Data(Json),
+    Close,
+}
 
 /// A handle to a dialog
 /// The dialog will automatically close on Drop
@@ -47,7 +54,7 @@ impl Dialog {
     }
 
     /// Awaits data received from the dialog
-    pub async fn recv(&self) -> Option<Json> {
+    pub async fn recv(&self) -> Option<DialogMsg> {
         self.0.read().await.recv().await
     }
 }
@@ -71,7 +78,16 @@ impl DialogStore {
 
     /// Data received from the dialog
     pub async fn incoming(&self, result: Json) -> Result<()> {
-        self.0.read().await.inbound_snd.send(result)?;
+        self.0
+            .read()
+            .await
+            .inbound_snd
+            .send(DialogMsg::Data(result))?;
+        Ok(())
+    }
+
+    pub async fn close(&self) -> Result<()> {
+        self.0.read().await.inbound_snd.send(DialogMsg::Close)?;
         Ok(())
     }
 }
@@ -94,12 +110,12 @@ pub struct Inner {
     payload: Json,
 
     /// inbound msgs from dialog
-    inbound_snd: mpsc::UnboundedSender<Json>,
+    inbound_snd: mpsc::UnboundedSender<DialogMsg>,
 
     ///  receiver for inbound msgs behind a RwLock for interior mutability, since we need to be
     ///  able to `recv().await` here while the frontend may also need to write to this Inner object
     ///  to send a result
-    inbound_rcv: RwLock<mpsc::UnboundedReceiver<Json>>,
+    inbound_rcv: RwLock<mpsc::UnboundedReceiver<DialogMsg>>,
 }
 
 impl Inner {
@@ -153,7 +169,7 @@ impl Inner {
         Ok(())
     }
 
-    async fn recv(&self) -> Option<Json> {
+    async fn recv(&self) -> Option<DialogMsg> {
         self.inbound_rcv.write().await.recv().await
     }
 

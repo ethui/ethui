@@ -9,7 +9,7 @@ pub(crate) fn open(handle: &AppHandle, params: ui_events::DialogOpen) {
         .build()
         .unwrap();
 
-    window.on_window_event(on_event);
+    window.on_window_event(move |event| on_event(params.id, event));
 }
 
 pub(crate) fn close(handle: &AppHandle, params: ui_events::DialogClose) {
@@ -24,14 +24,14 @@ pub(crate) fn send(handle: &AppHandle, params: ui_events::DialogSend) {
     }
 }
 
-fn on_event(event: &WindowEvent) {
-    match event {
-        tauri::WindowEvent::CloseRequested { .. } => {
-            dbg!("close requested");
-        }
-        tauri::WindowEvent::Destroyed => {
-            dbg!("destroyed");
-        }
-        _ => {}
+fn on_event(window_id: u32, event: &WindowEvent) {
+    if let tauri::WindowEvent::CloseRequested { .. } = event {
+        tokio::spawn(async move {
+            iron_dialogs::dialog_close(window_id)
+                .await
+                .unwrap_or_else(|_e| {
+                    tracing::warn!("failed to close dialog: {}", window_id);
+                });
+        });
     }
 }

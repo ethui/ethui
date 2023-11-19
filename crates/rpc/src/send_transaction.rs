@@ -5,7 +5,7 @@ use ethers::{
     types::{serde_helpers::StringifiedNumeric, transaction::eip2718::TypedTransaction},
 };
 use iron_connections::Ctx;
-use iron_dialogs::Dialog;
+use iron_dialogs::{Dialog, DialogMsg};
 use iron_networks::Network;
 use iron_settings::Settings;
 use iron_types::{Address, GlobalState, ToAlloy, ToEthers};
@@ -71,14 +71,18 @@ impl<'a> SendTransaction {
         dialog.open().await?;
 
         while let Some(msg) = dialog.recv().await {
-            match msg.as_str() {
-                Some("simulate") => self.simulate(&dialog).await?,
-                Some("accept") => break,
-                // TODO: what's the appropriate error to return here?
-                // or should we return Ok(_)? Err(_) seems too close the ws connection
-                _ => {
-                    return Err(Error::TxDialogRejected);
-                }
+            match msg {
+                DialogMsg::Data(msg) => match msg.as_str() {
+                    Some("simulate") => self.simulate(&dialog).await?,
+                    Some("accept") => break,
+                    // TODO: what's the appropriate error to return here?
+                    // or should we return Ok(_)? Err(_) seems too close the ws connection
+                    _ => {
+                        return Err(Error::TxDialogRejected);
+                    }
+                },
+
+                DialogMsg::Close => return Err(Error::TxDialogRejected),
             }
         }
 
