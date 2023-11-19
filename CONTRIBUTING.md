@@ -49,7 +49,7 @@ git clone git@github.com:iron-wallet/iron && cd iron
 **2. Run the initial build**, which will install dependencies and build the extension `dist`:
 
 ```sh
-yarn setup
+bun setup
 ```
 
 **3. Install the extension**
@@ -63,10 +63,10 @@ yarn setup
 **4. Start the app in development mode**
 
 ```sh
-yarn app:dev
+bun app:dev
 ```
 
-**Note:** If you change the extension' code, you may also need to use `yarn extension:dev`, and to manually reload it on `chrome://extensions`. Live code reloading is tricky with these.
+**Note:** If you change the extension' code, you may also need to use `bun extension:dev`, and to manually reload it on `chrome://extensions`. Live code reloading is tricky with these.
 
 ## Code of Conduct
 

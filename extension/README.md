@@ -14,17 +14,17 @@ This setup is adapted from [this starter kit][original]
 Install dependencies via:
 
 ```sh
-yarn install
+bun install
 ```
 
 then create a development build of the extension with:
 
 ```sh
-yarn dev
+bun dev
 ```
 
 ## Releasing
 
 ```sh
-yarn release
+bun release
 ```

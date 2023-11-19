@@ -5,31 +5,31 @@ alias f := fix
 alias l := lint
 
 setup:
-  yarn
+  bun install
   cargo build
 
 build:
-  yarn extension:build
+  bun extension:build
   cargo build
 
 dev *args='':
-  yarn run tauri dev --features ${IRON_FEATURES:-debug} -- -- -- $@
+  bun run tauri dev --features ${IRON_FEATURES:-debug} -- -- -- $@
 
 fix:
   cargo +nightly fmt --all
   cargo clippy --all --fix --allow-dirty
-  yarn fix
+  bun fix
 
 lint:
   cargo +nightly fmt --all -- --check
   cargo clippy --all -- -D clippy::all -D clippy::dbg_macro
-  yarn lint
+  bun lint
 
 ext:
-  yarn run ext:build:chrome
+  bun run ext:build
 
 ext-dev:
-  yarn run ext:dev
+  bun run ext:dev
 
 clean:
   rm -rf \

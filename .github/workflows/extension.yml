@@ -26,17 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: oven-sh/setup-bun@v1
 
-      - name: yarn cache
-        uses: actions/setup-node@v3
-        with:
-          cache: "yarn"
-          node-version-file: ".tool-versions"
-
-      - run: yarn global add node-gyp
-
-      - name: install
-        run: yarn workspace @iron/extension install
-
-      - name: bundle
-        run: yarn workspace @iron/extension build
+        run: bun run --cwd extension install
+        run: bun run --cwd extension build

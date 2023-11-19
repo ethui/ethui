@@ -5,19 +5,19 @@
   "description": "A dev-oriented web3 wallet",
   "scripts": {
     "app:dev": "rm -rf target/debug/db.* && RUST_LOG=iron=debug tauri dev",
-    "gui:build": "yarn workspace @iron/gui build",
-    "ext:dev": "yarn workspace @iron/extension dev",
-    "ext:build": "yarn workspace @iron/extension build",
-    "ext:build:chrome": "yarn workspace @iron/extension build:chrome",
-    "ext:build:firefox": "yarn workspace @iron/extension build:firefox",
-    "lint": "yarn lint:eslint && yarn lint:tsc && yarn lint:prettier",
+    "gui:build": "bun run --cwd gui build",
+    "ext:dev": "bun run --cwd extension dev",
+    "ext:build": "bun run --cwd extension build",
+    "ext:build:chrome": "bun run --cwd extension build:chrome",
+    "ext:build:firefox": "bun run --cwd extension build:firefox",
+    "lint": "bun run lint:eslint && bun run lint:tsc && bun run lint:prettier",
     "lint:eslint": "eslint .",
     "lint:tsc": "tsc --noEmit",
     "lint:prettier": "prettier --check .",
-    "fix": "yarn fix:eslint && yarn fix:prettier",
+    "fix": "bun fix:eslint && bun fix:prettier",
     "fix:eslint": "eslint --fix .",
     "fix:prettier": "prettier --write .",
-    "setup": "yarn install && yarn ext:build"
+    "setup": "bun install && bun ext:build"
   },
   "workspaces": [
     "extension",

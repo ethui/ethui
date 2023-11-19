@@ -1,4 +1,4 @@
-name: yarn
+name: typescript
 
 on:
   push:
@@ -31,17 +31,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: Swatinem/rust-cache@v2
+      - uses: oven-sh/setup-bun@v1
 
-      - name: rust cache
-        uses: Swatinem/rust-cache@v2
-
-      - name: yarn cache
-        uses: actions/setup-node@v3
-        with:
-          cache: "yarn"
-          node-version-file: ".tool-versions"
-
-      - run: yarn install
-
-      - name: ESLint
-        run: yarn lint
+      - run: bun install
+        run: bun lint

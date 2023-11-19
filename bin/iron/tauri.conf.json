@@ -1,7 +1,7 @@
 {
   "build": {
-    "beforeDevCommand": "yarn workspace @iron/gui dev",
-    "beforeBuildCommand": "yarn workspace @iron/gui build",
+    "beforeDevCommand": "bun run --cwd ../gui dev",
+    "beforeBuildCommand": "bun run --cwd ../gui build",
     "devPath": "http://localhost:1420",
     "distDir": "../../gui/dist",
     "withGlobalTauri": false

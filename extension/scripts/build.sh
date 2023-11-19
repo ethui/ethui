@@ -48,10 +48,10 @@ rm -rf $DIST_DIR
 
 basename=$target-$version
 
-yarn run vite build --config vite/base.ts
-yarn run vite build --config vite/content.ts
-yarn run vite build --config vite/inpage.ts
-yarn run vite build --config vite/background.ts
+bun run vite build --config vite/base.ts
+bun run vite build --config vite/content.ts
+bun run vite build --config vite/inpage.ts
+bun run vite build --config vite/background.ts
 
 # choose manifest
 mv $DIST_DIR/manifest-$target.json $DIST_DIR/manifest.json
@@ -70,12 +70,12 @@ sed "${sed_args[@]}" "s/%VERSION%/$version/g" $DIST_DIR/manifest.json
 case $target in
   # builds and publishes to the chrome extension store
   chrome)
-    yarn run crx pack $DIST_DIR -o ./dist/chrome-v$version.crx
+    bun run crx pack $DIST_DIR -o ./dist/chrome-v$version.crx
     ;;
 
   # builds and publishes to the firefox extension store
   firefox)
-    yarn run web-ext build -s $DIST_DIR -a .
+    bun run web-ext build -s $DIST_DIR -a .
     mv ./iron_wallet-$version.zip dist/firefox-v$version.xpi
     ;;
 esac
