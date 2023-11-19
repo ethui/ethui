@@ -1,12 +1,27 @@
+use iron_settings::Settings;
+use iron_types::GlobalState;
 use tauri::{AppHandle, Manager};
 
-pub(crate) fn main_window_show(app: &AppHandle) {
+pub(crate) async fn main_window_show(app: &AppHandle) {
     if let Some(w) = app.get_window("main") {
         w.show().unwrap()
     } else {
-        tauri::WindowBuilder::new(app, "main", tauri::WindowUrl::App("index.html".into()))
-            .build()
-            .unwrap();
+        let app = app.clone();
+        let onboarded = Settings::read().await.onboarded();
+        let url = if onboarded { "/" } else { "/onboarding" };
+
+        let builder = tauri::WindowBuilder::new(&app, "main", tauri::WindowUrl::App(url.into()))
+            .fullscreen(false)
+            .resizable(true)
+            .visible(false)
+            .inner_size(600.0, 800.0);
+
+        #[cfg(target_os = "macos")]
+        let builder = builder
+            .title_bar_style(tauri::TitleBarStyle::Overlay)
+            .hidden_title(true);
+
+        builder.build().unwrap();
     }
 }
 

@@ -12,4 +12,7 @@ pub struct Args {
 
     #[arg(long, default_value_t = 9002, env = "IRON_WS_PORT")]
     pub ws_port: u16,
+
+    #[arg(long, default_value_t = false)]
+    pub hidden: bool,
 }
