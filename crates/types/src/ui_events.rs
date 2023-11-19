@@ -2,6 +2,7 @@ use serde::Serialize;
 
 #[derive(Debug, Clone)]
 pub struct DialogOpen {
+    pub id: u32,
     pub label: String,
     pub title: String,
     pub url: String,

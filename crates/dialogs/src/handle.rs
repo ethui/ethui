@@ -121,6 +121,7 @@ impl Inner {
         let title = format!("Iron Dialog - {}", preset.title);
 
         iron_broadcast::dialog_open(DialogOpen {
+            id: self.id,
             label: self.label(),
             title,
             url,

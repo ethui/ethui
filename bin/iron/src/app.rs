@@ -3,14 +3,13 @@ use std::path::PathBuf;
 use iron_broadcast::UIMsg;
 use iron_db::DB;
 use iron_settings::Settings;
-use iron_types::{ui_events, GlobalState};
+use iron_types::GlobalState;
 #[cfg(target_os = "macos")]
 use tauri::WindowEvent;
-use tauri::{
-    AppHandle, Builder, GlobalWindowEvent, Manager, Window, WindowBuilder, WindowUrl, Wry,
-};
+use tauri::{AppHandle, Builder, GlobalWindowEvent, Manager, Window, Wry};
 use tauri_plugin_window_state::Builder as windowStatePlugin;
 
+use crate::dialogs;
 use crate::utils::{main_window_hide, main_window_show};
 use crate::{commands, error::AppResult, menu};
 
@@ -180,38 +179,9 @@ async fn event_listener(handle: AppHandle) {
                     }
                 }
 
-                DialogOpen(ui_events::DialogOpen {
-                    label,
-                    title,
-                    url,
-                    w,
-                    h,
-                }) => {
-                    WindowBuilder::new(&handle, label, WindowUrl::App(url.into()))
-                        .inner_size(w, h)
-                        .title(title)
-                        .resizable(true)
-                        .build()
-                        .unwrap();
-                }
-
-                DialogClose(ui_events::DialogClose { label }) => {
-                    if let Some(window) = handle.get_window(&label) {
-                        window.close().unwrap();
-                    }
-                }
-
-                DialogSend(ui_events::DialogSend {
-                    label,
-                    event_type,
-                    payload,
-                }) => {
-                    handle
-                        .get_window(&label)
-                        .unwrap()
-                        .emit(&event_type, &payload)
-                        .unwrap();
-                }
+                DialogOpen(params) => dialogs::open(&handle, params),
+                DialogClose(params) => dialogs::close(&handle, params),
+                DialogSend(params) => dialogs::send(&handle, params),
 
                 MainWindowShow => main_window_show(&handle),
                 MainWindowHide => main_window_hide(&handle),
