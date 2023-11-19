@@ -9,12 +9,10 @@ pub(crate) async fn main_window_show(app: &AppHandle) {
         let app = app.clone();
         let onboarded = Settings::read().await.onboarded();
         let url = if onboarded { "/" } else { "/onboarding" };
-        dbg!(url);
 
         let builder = tauri::WindowBuilder::new(&app, "main", tauri::WindowUrl::App(url.into()))
             .fullscreen(false)
             .resizable(true)
-            .visible(false)
             .inner_size(600.0, 800.0);
 
         #[cfg(target_os = "macos")]
@@ -23,8 +21,6 @@ pub(crate) async fn main_window_show(app: &AppHandle) {
             .hidden_title(true);
 
         builder.build().unwrap();
-        dbg!("built");
-    }
 }
 
 pub(crate) fn main_window_hide(app: &AppHandle) {
