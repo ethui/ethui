@@ -21,6 +21,7 @@ pub(crate) async fn main_window_show(app: &AppHandle) {
             .hidden_title(true);
 
         builder.build().unwrap();
+    }
 }
 
 pub(crate) fn main_window_hide(app: &AppHandle) {
