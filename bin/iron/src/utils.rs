@@ -23,6 +23,7 @@ pub(crate) async fn main_window_show(app: &AppHandle) {
             .hidden_title(true);
 
         builder.build().unwrap();
+        dbg!("built");
     }
 }
 
