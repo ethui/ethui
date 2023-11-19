@@ -30,8 +30,8 @@ impl Handler {
         res
     }
 
-    pub async fn handle(&self, request: String) -> Option<String> {
-        self.io.handle_request(&request, self.ctx.clone()).await
+    pub async fn handle(&self, request: jsonrpc_core::Request) -> Option<jsonrpc_core::Response> {
+        self.io.handle_rpc_request(request, self.ctx.clone()).await
     }
 
     fn add_handlers(&mut self) {
@@ -182,7 +182,7 @@ impl Handler {
 
         match result {
             Ok(res) => Ok(res.tx_hash().encode_hex().into()),
-            Err(e) => Ok(e.to_string().into()),
+            Err(e) => Err(e.into()),
         }
     }
 
@@ -212,7 +212,7 @@ impl Handler {
 
         match result {
             Ok(res) => Ok(format!("0x{}", res).into()),
-            Err(e) => Ok(e.to_string().into()),
+            Err(e) => Err(e.into()),
         }
     }
 
@@ -242,7 +242,7 @@ impl Handler {
 
         match result {
             Ok(res) => Ok(format!("0x{}", res).into()),
-            Err(e) => Ok(e.to_string().into()),
+            Err(e) => Err(e.into()),
         }
     }
 

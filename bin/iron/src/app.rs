@@ -10,9 +10,12 @@ use tauri::WindowEvent;
 use tauri::{AppHandle, Builder, GlobalWindowEvent, Manager, Window, Wry};
 use tauri_plugin_window_state::Builder as windowStatePlugin;
 
-use crate::dialogs;
-use crate::utils::{main_window_hide, main_window_show};
-use crate::{commands, error::AppResult, menu};
+use crate::{
+    commands, dialogs,
+    error::AppResult,
+    menu,
+    utils::{main_window_hide, main_window_show},
+};
 
 pub struct IronApp {
     app: tauri::App,
