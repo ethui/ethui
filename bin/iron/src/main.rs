@@ -3,6 +3,7 @@
 
 mod app;
 mod commands;
+mod dialogs;
 mod error;
 mod menu;
 #[cfg(not(target_os = "macos"))]
