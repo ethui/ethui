@@ -13,6 +13,9 @@ pub enum AppError {
     Forge(#[from] iron_forge::Error),
 
     #[error(transparent)]
+    Http(#[from] iron_http::Error),
+
+    #[error(transparent)]
     FixPathEnv(#[from] fix_path_env::Error),
 
     #[error(transparent)]
@@ -20,6 +23,12 @@ pub enum AppError {
 
     #[error(transparent)]
     Tracing(#[from] iron_tracing::TracingError),
+
+    #[error(transparent)]
+    Settings(#[from] iron_settings::Error),
+
+    #[error("App already running")]
+    NamedLock(#[from] named_lock::Error),
 }
 
 pub type AppResult<T> = std::result::Result<T, AppError>;

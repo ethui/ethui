@@ -1,25 +1,27 @@
 use std::path::PathBuf;
 
+use iron_args::Args;
 use iron_broadcast::UIMsg;
 use iron_db::DB;
-use iron_settings::Settings;
-use iron_types::{ui_events, GlobalState};
 #[cfg(target_os = "macos")]
 use tauri::WindowEvent;
-use tauri::{
-    AppHandle, Builder, GlobalWindowEvent, Manager, Window, WindowBuilder, WindowUrl, Wry,
-};
+use tauri::{AppHandle, Builder, GlobalWindowEvent, Manager};
 use tauri_plugin_window_state::Builder as windowStatePlugin;
 
-use crate::{commands, error::AppResult, menu};
+use crate::{
+    commands, dialogs,
+    error::AppResult,
+    menu,
+    utils::{main_window_hide, main_window_show},
+};
 
 pub struct IronApp {
     app: tauri::App,
 }
 
 impl IronApp {
-    pub async fn build() -> AppResult<Self> {
-        let mut builder = Builder::default()
+    pub async fn build(args: &iron_args::Args) -> AppResult<Self> {
+        let builder = Builder::default()
             .plugin(windowStatePlugin::default().build())
             .invoke_handler(tauri::generate_handler![
                 commands::get_build_mode,
@@ -62,9 +64,9 @@ impl IronApp {
                 iron_wallets::commands::wallets_get_wallet_addresses,
                 iron_wallets::commands::wallets_get_mnemonic_addresses,
                 iron_wallets::commands::wallets_validate_mnemonic,
+                iron_wallets::commands::wallets_ledger_derive,
                 iron_dialogs::commands::dialog_get_payload,
                 iron_dialogs::commands::dialog_send,
-                iron_dialogs::commands::dialog_finish,
                 iron_forge::commands::forge_get_abi,
                 iron_rpc::commands::rpc_send_transaction,
                 iron_connections::commands::connections_affinity_for,
@@ -78,18 +80,19 @@ impl IronApp {
             .on_menu_event(menu::event_handler);
 
         #[cfg(not(target_os = "macos"))]
-        {
-            builder = builder
-                .system_tray(crate::system_tray::build())
-                .on_system_tray_event(crate::system_tray::event_handler);
-        }
+        let builder = builder
+            .system_tray(crate::system_tray::build())
+            .on_system_tray_event(crate::system_tray::event_handler);
 
         let app = builder
             .build(tauri::generate_context!())
             .expect("error while running tauri application");
 
-        init(&app).await?;
-        build_main_window(&app).await?;
+        init(&app, args).await?;
+
+        if !args.hidden {
+            main_window_show(&app.handle()).await;
+        }
 
         Ok(Self { app })
     }
@@ -104,7 +107,7 @@ impl IronApp {
 }
 
 /// Initialization logic
-async fn init(app: &tauri::App) -> AppResult<()> {
+async fn init(app: &tauri::App, args: &Args) -> AppResult<()> {
     let db = DB::connect(&resource(app, "db.sqlite3")).await?;
     app.manage(db.clone());
 
@@ -117,9 +120,9 @@ async fn init(app: &tauri::App) -> AppResult<()> {
     // calls other crates' initialization logic. anvil needs to be started before networks,
     // otherwise the initial tracker won't be ready to spawn
     iron_sync::init(db.clone()).await;
-    iron_settings::init(resource(app, "settings.json")).await;
-    iron_ws::init().await;
-    iron_http::init(db).await;
+    iron_settings::init(resource(app, "settings.json")).await?;
+    iron_ws::init(args).await;
+    iron_http::init(args, db).await;
     iron_connections::init(resource(app, "connections.json")).await;
     iron_wallets::init(resource(app, "wallets.json")).await;
     iron_networks::init(resource(app, "networks.json")).await;
@@ -133,23 +136,6 @@ async fn init(app: &tauri::App) -> AppResult<()> {
     }
 
     Ok(())
-}
-
-async fn build_main_window(app: &tauri::App) -> tauri::Result<Window<Wry>> {
-    let onboarded = Settings::read().await.onboarded();
-    let url = if onboarded { "/" } else { "/onboarding" };
-
-    let builder = tauri::WindowBuilder::new(app, "main", tauri::WindowUrl::App(url.into()))
-        .fullscreen(false)
-        .resizable(true)
-        .inner_size(600.0, 800.0);
-
-    #[cfg(target_os = "macos")]
-    let builder = builder
-        .title_bar_style(tauri::TitleBarStyle::Overlay)
-        .hidden_title(true);
-
-    builder.build()
 }
 
 #[cfg(target_os = "macos")]
@@ -182,45 +168,34 @@ async fn event_listener(handle: AppHandle) {
                     }
                 }
 
-                DialogOpen(ui_events::DialogOpen {
-                    label,
-                    title,
-                    url,
-                    w,
-                    h,
-                }) => {
-                    WindowBuilder::new(&handle, label, WindowUrl::App(url.into()))
-                        .inner_size(w, h)
-                        .title(title)
-                        .resizable(true)
-                        .build()
-                        .unwrap();
-                }
+                DialogOpen(params) => dialogs::open(&handle, params),
+                DialogClose(params) => dialogs::close(&handle, params),
+                DialogSend(params) => dialogs::send(&handle, params),
 
-                DialogClose(ui_events::DialogClose { label }) => {
-                    if let Some(window) = handle.get_window(&label) {
-                        window.close().unwrap();
-                    }
-                }
-
-                DialogSend(ui_events::DialogSend {
-                    label,
-                    event_type,
-                    payload,
-                }) => {
-                    handle
-                        .get_window(&label)
-                        .unwrap()
-                        .emit(&event_type, &payload)
-                        .unwrap();
-                }
+                MainWindowShow => main_window_show(&handle).await,
+                MainWindowHide => main_window_hide(&handle),
             }
         }
     }
 }
 
+/// Returns the resource path for the given resource.
+/// If the `IRON_CONFIG_DIR` env var is set, it will be used as the base path.
+/// Otherwise, the app's default config dir will be used.
 fn resource(app: &tauri::App, resource: &str) -> PathBuf {
+    let dir = config_dir(app);
+    std::fs::create_dir_all(&dir).expect("could not create config dir");
+    dir.join(resource)
+}
+
+#[cfg(debug_assertions)]
+fn config_dir(_app: &tauri::App) -> PathBuf {
+    PathBuf::from("../../target/debug/")
+}
+
+#[cfg(not(debug_assertions))]
+fn config_dir(app: &tauri::App) -> PathBuf {
     app.path_resolver()
-        .resolve_resource(resource)
-        .unwrap_or_else(|| panic!("failed to resolve resource {}", resource))
+        .app_config_dir()
+        .expect("failed to resolve app_config_dir")
 }

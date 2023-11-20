@@ -8,6 +8,9 @@ pub enum Error {
 
     #[error("Etherscan API key not set")]
     EtherscanKeyNotSet,
+
+    #[error(transparent)]
+    AutoLaunch(#[from] auto_launch::Error),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

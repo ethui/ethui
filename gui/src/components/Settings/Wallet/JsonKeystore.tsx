@@ -1,14 +1,24 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Stack, TextField } from "@mui/material";
-import { FieldValues, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { Wallet, walletSchema } from "@/types";
+import { JsonKeystoreWallet, Wallet } from "@/types/wallets";
+
+export const schema = z.object({
+  name: z.string().min(1),
+  file: z.string().min(1),
+  currentPath: z.string().optional(),
+});
+
+type Schema = z.infer<typeof schema>;
 
 interface JsonKeystoreProps {
-  wallet: Wallet & { type: "jsonKeystore" };
-  onSubmit: (data: FieldValues) => void;
+  wallet?: JsonKeystoreWallet;
+  onSubmit: (data: Wallet) => void;
   onRemove: () => void;
 }
+
 export function JsonKeystore({
   wallet,
   onSubmit,
@@ -21,12 +31,12 @@ export function JsonKeystore({
     formState: { isValid, isDirty, errors },
   } = useForm({
     mode: "onBlur",
-    resolver: zodResolver(walletSchema),
+    resolver: zodResolver(schema),
     defaultValues: wallet,
   });
 
-  const prepareAndSubmit = (data: FieldValues) => {
-    onSubmit(data);
+  const prepareAndSubmit = (data: Schema) => {
+    onSubmit({ type: "jsonKeystore", ...data });
     reset(data);
   };
 
@@ -37,7 +47,6 @@ export function JsonKeystore({
       component="form"
       onSubmit={handleSubmit(prepareAndSubmit)}
     >
-      <input type="hidden" {...register("type")} />
       <TextField
         label="Name"
         error={!!errors.name}

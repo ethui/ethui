@@ -2,18 +2,18 @@ use std::{fs::File, io::BufReader, path::PathBuf, str::FromStr, sync::Arc, time:
 
 use async_trait::async_trait;
 use ethers::{
-    core::{k256::ecdsa::SigningKey, types::Address},
-    signers::{self, Signer},
+    core::k256::ecdsa::SigningKey,
+    signers::{self, Signer as _},
 };
 use iron_dialogs::{Dialog, DialogMsg};
-use iron_types::ChecksummedAddress;
+use iron_types::Address;
 use secrets::SecretVec;
 use tokio::{
     sync::{Mutex, RwLock},
     task::JoinHandle,
 };
 
-use super::{wallet::WalletCreate, Error, Result, Wallet, WalletControl};
+use crate::{wallet::WalletCreate, Error, Result, Signer, Wallet, WalletControl};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct JsonKeystoreWallet {
@@ -54,15 +54,13 @@ impl WalletControl for JsonKeystoreWallet {
         Ok(Wallet::JsonKeystore(serde_json::from_value(params)?))
     }
 
-    async fn get_current_address(&self) -> ChecksummedAddress {
+    async fn get_current_address(&self) -> Address {
         let file = File::open(self.file.clone()).unwrap();
         let reader = BufReader::new(file);
         let mut res: serde_json::Value = serde_json::from_reader(reader).unwrap();
 
         // TODO: this should fail correctly
-        let address: Address = Address::from_str(res["address"].take().as_str().unwrap()).unwrap();
-
-        address.into()
+        Address::from_str(res["address"].take().as_str().unwrap()).unwrap()
     }
 
     fn get_current_path(&self) -> String {
@@ -73,26 +71,22 @@ impl WalletControl for JsonKeystoreWallet {
         Ok(())
     }
 
-    async fn get_address(&self, _path: &str) -> Result<ChecksummedAddress> {
+    async fn get_address(&self, _path: &str) -> Result<Address> {
         Ok(self.get_current_address().await)
     }
 
-    async fn build_signer(
-        &self,
-        chain_id: u32,
-        _path: &str,
-    ) -> Result<signers::Wallet<SigningKey>> {
+    async fn get_all_addresses(&self) -> Vec<(String, Address)> {
+        vec![("default".into(), self.get_current_address().await)]
+    }
+
+    async fn build_signer(&self, chain_id: u32, _path: &str) -> Result<Signer> {
         self.unlock().await?;
 
         let secret = self.secret.read().await;
         let secret = secret.as_ref().unwrap().lock().await;
 
         let signer = signer_from_secret(&secret);
-        Ok(signer.with_chain_id(chain_id))
-    }
-
-    async fn get_all_addresses(&self) -> Vec<(String, ChecksummedAddress)> {
-        vec![("default".into(), self.get_current_address().await)]
+        Ok(Signer::SigningKey(signer.with_chain_id(chain_id)))
     }
 }
 
@@ -114,28 +108,25 @@ impl JsonKeystoreWallet {
 
         // attempt to receive a password at most 3 times
         for _ in 0..3 {
-            let password = match dialog.recv().await {
-                Some(DialogMsg::Data(payload)) | Some(DialogMsg::Accept(payload)) => {
-                    let password = payload["password"].clone();
-                    password
-                        .as_str()
-                        .ok_or(Error::UnlockDialogRejected)?
-                        .to_string()
-                }
-                _ => return Err(Error::UnlockDialogRejected),
+            let password = if let Some(DialogMsg::Data(payload)) = dialog.recv().await {
+                let password = payload["password"].clone();
+                password
+                    .as_str()
+                    .ok_or(Error::UnlockDialogRejected)?
+                    .to_string()
+            } else {
+                return Err(Error::UnlockDialogRejected);
             };
 
             // if password was given, and correctly decrypts the keystore
             if let Ok(keystore) = signers::Wallet::decrypt_keystore(self.file.clone(), password) {
                 self.store_secret(&keystore).await;
-                dialog.close().await?;
                 return Ok(());
             }
 
             dialog.send("failed", None).await?;
         }
 
-        dialog.close().await?;
         Err(Error::UnlockDialogFailed)
     }
 

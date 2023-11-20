@@ -7,7 +7,7 @@ pub enum Error {
     Tauri(#[from] tauri::Error),
 
     #[error(transparent)]
-    Send(#[from] mpsc::error::SendError<super::handle::DialogMsg>),
+    Send(#[from] mpsc::error::SendError<crate::handle::DialogMsg>),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

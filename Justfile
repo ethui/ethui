@@ -1,3 +1,5 @@
+set positional-arguments
+
 alias d := dev
 alias f := fix
 alias l := lint
@@ -10,8 +12,8 @@ build:
   yarn extension:build
   cargo build
 
-dev:
-  yarn run tauri dev --features ${IRON_FEATURES:-debug}
+dev *args='':
+  yarn run tauri dev --features ${IRON_FEATURES:-debug} -- -- -- $@
 
 fix:
   cargo +nightly fmt --all
@@ -37,6 +39,18 @@ clean:
     extension/node_modules \
     gui/dist \
     extension/dist
+
+# builds a zip from which the browser extension build process can be run
+# needs to be submitted to the Mozilla store for every new extension update
+ext-source:
+  #!/bin/bash
+  local=$PWD
+  dir=$(mktemp --directory --suffix=iron)
+  shopt -s extglob
+  rsync -r . $dir --exclude '.git' --exclude target --exclude node_modules --exclude '.github' --exclude bin --exclude crates --exclude .envrc --exclude examples --exclude migrations --exclude '*.zip'
+  cd $dir && zip -r $local/ext-source.zip . > /dev/null
+  rm -rf $dir
+  echo "Source zipped to $local/ext-source.zip"
 
 #
 # internal

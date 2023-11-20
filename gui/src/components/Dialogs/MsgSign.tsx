@@ -5,7 +5,7 @@ import { useDialog } from "@/hooks";
 import { DialogLayout } from "./Layout";
 
 export function MsgSignDialog({ id }: { id: number }) {
-  const { data, accept, reject } = useDialog<Record<string, string>>(id);
+  const { data, send } = useDialog<Record<string, string>>(id);
 
   if (!data) return null;
 
@@ -19,10 +19,18 @@ export function MsgSignDialog({ id }: { id: number }) {
       <Typography>{msg}</Typography>
 
       <Stack direction="row" justifyContent="center" spacing={2}>
-        <Button variant="contained" color="error" onClick={() => reject()}>
+        <Button
+          variant="contained"
+          color="error"
+          onClick={() => send("reject")}
+        >
           Reject
         </Button>
-        <Button variant="contained" type="submit" onClick={() => accept(data)}>
+        <Button
+          variant="contained"
+          type="submit"
+          onClick={() => send("accept")}
+        >
           Sign
         </Button>
       </Stack>

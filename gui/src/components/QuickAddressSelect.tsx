@@ -10,7 +10,7 @@ import { Address } from "viem";
 
 import { useInvoke } from "@/hooks";
 import { useWallets } from "@/store";
-import { Wallet } from "@/types";
+import { Wallet } from "@/types/wallets";
 
 import { AddressView } from "./";
 
@@ -65,7 +65,11 @@ function getCurrentPath(wallet: Wallet, addresses: [string, Address][]) {
     case "impersonator":
       return wallet.addresses[wallet.current || 0];
 
-    default:
-      return wallet.currentPath || addresses[0][0];
+    case "jsonKeystore":
+    case "plaintext":
+      return wallet.currentPath;
+
+    case "ledger":
+      return wallet.addresses[wallet.current || 0][0];
   }
 }

@@ -1,7 +1,8 @@
 use std::str::FromStr;
 
-use ethers::types::{Address, Bytes, Log, H256};
+use ethers::types::{Bytes, Log};
 use iron_simulator::{Evm, Request};
+use iron_types::{Address, ToEthers, B256};
 use pretty_assertions::assert_eq;
 
 #[tokio::test(flavor = "multi_thread")]
@@ -27,24 +28,30 @@ async fn simulate_detris() {
     assert_eq!(
         res.logs[0],
         Log {
-            address: Address::from_str("0xbdc105c068715d57860702da9fa0c5ead11fba51").unwrap(),
+            address: Address::from_str("0xbdc105c068715d57860702da9fa0c5ead11fba51")
+                .unwrap()
+                .to_ethers(),
             topics: vec![
-                H256::from_str(
+                B256::from_str(
                     "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
                 )
-                .unwrap(),
-                H256::from_str(
+                .unwrap()
+                .to_ethers(),
+                B256::from_str(
                     "0x0000000000000000000000000000000000000000000000000000000000000000"
                 )
-                .unwrap(),
-                H256::from_str(
+                .unwrap()
+                .to_ethers(),
+                B256::from_str(
                     "0x00000000000000000000000047ac0fb4f2d84898e4d9e7b4dab3c24507a6d503"
                 )
-                .unwrap(),
-                H256::from_str(
+                .unwrap()
+                .to_ethers(),
+                B256::from_str(
                     "0x0000000000000000000000000000000000000000000000000000000000000022"
                 )
-                .unwrap(),
+                .unwrap()
+                .to_ethers()
             ],
             data: Bytes::from_str("0x").unwrap(),
             ..Default::default()

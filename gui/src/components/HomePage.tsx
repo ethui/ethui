@@ -7,7 +7,7 @@ import {
   useNoticeAlchemyKeyMissing,
   useNoticeNewVersion,
 } from "@/hooks";
-import { GeneralSettings } from "@/types";
+import { GeneralSettings } from "@/types/settings";
 
 import { ErrorHandler, Navbar, NestedRoutes } from "./";
 import { DEFAULT_TAB, SidebarLayout, TABS } from "./Sidebar";

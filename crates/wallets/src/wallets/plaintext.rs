@@ -2,14 +2,11 @@ use std::str::FromStr;
 
 use async_trait::async_trait;
 use coins_bip32::path::DerivationPath;
-use ethers::{
-    core::k256::ecdsa::SigningKey,
-    signers::{coins_bip39::English, MnemonicBuilder, Signer},
-};
-use iron_types::ChecksummedAddress;
+use ethers::signers::{coins_bip39::English, MnemonicBuilder, Signer as _};
+use iron_types::{Address, ToAlloy};
 use serde::{Deserialize, Serialize};
 
-use super::{utils, wallet::WalletCreate, Result, Wallet, WalletControl};
+use crate::{utils, wallet::WalletCreate, Result, Signer, Wallet, WalletControl};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(try_from = "Deserializer", rename_all = "camelCase")]
@@ -38,8 +35,12 @@ impl WalletControl for PlaintextWallet {
         Ok(Wallet::Plaintext(serde_json::from_value(params)?))
     }
 
-    async fn get_current_address(&self) -> ChecksummedAddress {
-        self.build_current_signer(1).await.unwrap().address().into()
+    async fn get_current_address(&self) -> Address {
+        self.build_signer(1, &self.current_path)
+            .await
+            .unwrap()
+            .address()
+            .to_alloy()
     }
 
     fn get_current_path(&self) -> String {
@@ -58,28 +59,26 @@ impl WalletControl for PlaintextWallet {
         }
     }
 
-    async fn get_address(&self, path: &str) -> Result<ChecksummedAddress> {
-        Ok(self.build_signer(1, path).await?.address().into())
+    async fn get_address(&self, path: &str) -> Result<Address> {
+        Ok(self.build_signer(1, path).await?.address().to_alloy())
     }
 
-    async fn build_signer(
-        &self,
-        chain_id: u32,
-        path: &str,
-    ) -> Result<ethers::signers::Wallet<SigningKey>> {
-        Ok(MnemonicBuilder::<English>::default()
-            .phrase(self.mnemonic.as_ref())
-            .derivation_path(path)?
-            .build()
-            .map(|v| v.with_chain_id(chain_id))?)
-    }
-
-    async fn get_all_addresses(&self) -> Vec<(String, ChecksummedAddress)> {
+    async fn get_all_addresses(&self) -> Vec<(String, Address)> {
         utils::derive_addresses(&self.mnemonic, &self.derivation_path, self.count)
     }
 
     fn is_dev(&self) -> bool {
         true
+    }
+
+    async fn build_signer(&self, chain_id: u32, path: &str) -> Result<Signer> {
+        let signer = MnemonicBuilder::<English>::default()
+            .phrase(self.mnemonic.as_ref())
+            .derivation_path(path)?
+            .build()
+            .map(|v| v.with_chain_id(chain_id))?;
+
+        Ok(Signer::SigningKey(signer))
     }
 }
 

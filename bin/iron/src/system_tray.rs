@@ -22,20 +22,14 @@ pub(crate) fn event_handler(app: &AppHandle, event: SystemTrayEvent) {
         MenuItemClick { id, .. } => match id.as_str() {
             "quit" => app.exit(0),
             "hide" => app.get_window("main").unwrap().hide().unwrap(),
-            "show" => show_main_window(app),
+            "show" => {
+                tokio::spawn(async { iron_broadcast::main_window_show().await });
+            }
             _ => {}
         },
-        DoubleClick { .. } => show_main_window(app),
+        DoubleClick { .. } => {
+            tokio::spawn(async { iron_broadcast::main_window_show().await });
+        }
         _ => {}
-    }
-}
-
-fn show_main_window(app: &AppHandle) {
-    if let Some(w) = app.get_window("main") {
-        w.show().unwrap()
-    } else {
-        tauri::WindowBuilder::new(app, "main", tauri::WindowUrl::App("index.html".into()))
-            .build()
-            .unwrap();
     }
 }

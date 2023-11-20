@@ -1,5 +1,13 @@
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { Button, Grid, Stack, Tab, Typography } from "@mui/material";
+import {
+  Alert,
+  AlertTitle,
+  Button,
+  Grid,
+  Stack,
+  Tab,
+  Typography,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import JsonView from "react18-json-view";
 import { Address, formatEther } from "viem";
@@ -10,7 +18,7 @@ import {
   ContextMenu,
   Datapoint,
 } from "@/components";
-import { useDialog } from "@/hooks";
+import { useDialog, useLedgerDetect } from "@/hooks";
 
 import { DialogLayout } from "./Layout";
 
@@ -20,6 +28,12 @@ export interface TxRequest {
   to: Address;
   value: string;
   chainId: number;
+  walletType:
+    | "ledger"
+    | "HdWallet"
+    | "jsonKeystore"
+    | "plaintext"
+    | "impersonator";
 }
 
 interface Log {
@@ -35,10 +49,11 @@ interface Simulation {
 }
 
 export function TxReviewDialog({ id }: { id: number }) {
-  const { data, accept, reject, send, listen } = useDialog<TxRequest>(id);
+  const { data, send, listen } = useDialog<TxRequest>(id);
   const [simulation, setSimulation] = useState<Simulation | undefined>(
     undefined,
   );
+  const [accepted, setAccepted] = useState(false);
   const [tab, setTab] = useState("1");
 
   useEffect(() => {
@@ -52,6 +67,15 @@ export function TxReviewDialog({ id }: { id: number }) {
   }, [send]);
 
   if (!data) return null;
+
+  const onReject = () => {
+    send("reject");
+  };
+
+  const onConfirm = () => {
+    send("accept");
+    setAccepted(true);
+  };
 
   const { from, to, value: valueStr, data: calldata, chainId } = data;
   const value = BigInt(valueStr || 0);
@@ -85,14 +109,12 @@ export function TxReviewDialog({ id }: { id: number }) {
         </TabPanel>
       </TabContext>
 
-      <Stack direction="row" justifyContent="center" spacing={2}>
-        <Button variant="contained" color="error" onClick={() => reject()}>
-          Reject
-        </Button>
-        <Button variant="contained" type="submit" onClick={() => accept(data)}>
-          Confirm
-        </Button>
-      </Stack>
+      <Actions
+        data={data}
+        onReject={onReject}
+        onConfirm={onConfirm}
+        accepted={accepted}
+      />
     </DialogLayout>
   );
 }
@@ -119,4 +141,45 @@ function SimulationResult({ simulation }: SimulationResultProps) {
       />
     </Grid>
   );
+}
+
+interface ActionsProps {
+  data: TxRequest;
+  onReject: () => void;
+  onConfirm: () => void;
+  accepted: boolean;
+}
+
+function Actions({ data, accepted, onReject, onConfirm }: ActionsProps) {
+  const ledgerDetected = useLedgerDetect({
+    disabled: data?.walletType !== "ledger",
+    stopOnDetected: true,
+  });
+
+  if (data.walletType === "ledger" && !ledgerDetected) {
+    return (
+      <Alert severity="info">
+        <AlertTitle>Ledger not detected</AlertTitle>
+        Please unlock your Ledger, and open the Ethereum app
+      </Alert>
+    );
+  } else if (data.walletType === "ledger" && ledgerDetected && accepted) {
+    return (
+      <Alert severity="info">
+        <AlertTitle>Check your ledger</AlertTitle>
+        You need to confirm your transaction in your physical device
+      </Alert>
+    );
+  } else {
+    return (
+      <Stack direction="row" justifyContent="center" spacing={2}>
+        <Button variant="contained" color="error" onClick={onReject}>
+          Reject
+        </Button>
+        <Button variant="contained" type="submit" onClick={onConfirm}>
+          Confirm
+        </Button>
+      </Stack>
+    );
+  }
 }

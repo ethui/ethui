@@ -4,17 +4,14 @@ mod types;
 mod utils;
 use std::{collections::HashMap, time::Duration};
 
-use ethers::{
-    core::types::{Address, U256},
-    providers::{
-        Http, HttpRateLimitRetryPolicy, Middleware, Provider, RetryClient, RetryClientBuilder,
-    },
+use ethers::providers::{
+    Http, HttpRateLimitRetryPolicy, Middleware, Provider, RetryClient, RetryClientBuilder,
 };
 use futures::{stream, StreamExt};
 pub use init::init;
 use iron_db::DB;
 use iron_settings::Settings;
-use iron_types::{Event, GlobalState, SyncUpdates};
+use iron_types::{Address, Event, GlobalState, SyncUpdates, ToAlloy, ToEthers, U256};
 use once_cell::sync::Lazy;
 use serde_json::json;
 use tracing::{instrument, trace};
@@ -117,7 +114,10 @@ impl Alchemy {
     async fn fetch_native_balance(&self, chain_id: u32, address: Address) -> Result<U256> {
         let client = self.client(chain_id).await?;
 
-        Ok(client.get_balance(address, None).await?)
+        Ok(client
+            .get_balance(address.to_ethers(), None)
+            .await?
+            .to_alloy())
     }
 
     async fn fetch_transactions(

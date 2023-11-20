@@ -1,4 +1,5 @@
-use ethers::types::H256;
+use iron_types::B256;
+
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("Watcher error")]
@@ -11,7 +12,7 @@ pub enum Error {
     EthersProvider(#[from] ethers::providers::ProviderError),
 
     #[error("Transaction not found: {0}")]
-    TxNotFound(H256),
+    TxNotFound(B256),
 
     #[error("Block number missing from trace or transaction")]
     BlockNumberMissing,

@@ -36,9 +36,15 @@ export default defineConfig({
         options: new URL("../src/options/index.html", import.meta.url).pathname,
         background: new URL("../src/background/index.html", import.meta.url)
           .pathname,
+        devtools: new URL("../src/devtools/index.html", import.meta.url)
+          .pathname,
+        panel: new URL("../src/panel/index.html", import.meta.url).pathname,
       },
       output: {
-        entryFileNames: "[name]/[name].js",
+        entryFileNames: (chunk) =>
+          chunk.name === "devtools" || chunk.name === "panel"
+            ? "[name]/index.js"
+            : "[name]/index.js",
       },
     },
   },

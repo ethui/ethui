@@ -1,12 +1,10 @@
 pub mod commands;
 mod error;
-mod hd_wallet;
-mod impersonator;
 mod init;
-mod json_keystore_wallet;
-mod plaintext;
+mod signer;
 mod utils;
 mod wallet;
+mod wallets;
 
 use std::{
     collections::HashSet,
@@ -16,11 +14,11 @@ use std::{
 
 pub use error::{Error, Result};
 pub use init::init;
-use iron_types::{ChecksummedAddress, Json, UINotify};
+use iron_types::{Address, Json, UINotify};
 use serde::Serialize;
+pub use signer::Signer;
 
-use self::wallet::WalletCreate;
-pub use self::wallet::{Wallet, WalletControl};
+pub use self::wallet::{Wallet, WalletControl, WalletType};
 
 /// Maintains a list of Ethereum wallets, including keeping track of the global current wallet &
 /// address
@@ -36,7 +34,7 @@ pub struct Wallets {
 }
 
 impl Wallets {
-    pub async fn find(&self, address: ChecksummedAddress) -> Option<(&Wallet, String)> {
+    pub async fn find(&self, address: Address) -> Option<(&Wallet, String)> {
         for w in self.wallets.iter() {
             if let Some(path) = w.find(address).await {
                 return Some((w, path));
@@ -66,7 +64,7 @@ impl Wallets {
         Ok(())
     }
 
-    async fn get_current_address(&self) -> ChecksummedAddress {
+    async fn get_current_address(&self) -> Address {
         self.get_current_wallet().get_current_address().await
     }
 
@@ -158,7 +156,7 @@ impl Wallets {
     }
 
     /// Get all addresses currently enabled in a given wallet
-    async fn get_wallet_addresses(&self, name: String) -> Vec<(String, ChecksummedAddress)> {
+    async fn get_wallet_addresses(&self, name: String) -> Vec<(String, Address)> {
         let wallet = self.find_wallet(&name).unwrap();
 
         wallet.get_all_addresses().await
@@ -184,7 +182,7 @@ impl Wallets {
     fn ensure_current(&mut self) {
         if self.wallets.is_empty() {
             self.wallets
-                .push(Wallet::Plaintext(plaintext::PlaintextWallet::default()));
+                .push(Wallet::Plaintext(wallets::PlaintextWallet::default()));
         }
 
         if self.current >= self.wallets.len() {

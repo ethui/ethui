@@ -1,6 +1,6 @@
 import useSWR, { SWRResponse } from "swr";
 
-const HOST = import.meta.env.VITE_IRON_HTTP_SERVER_ENDPOINT || "localhost:9003";
+const PORT = import.meta.env.VITE_IRON_HTTP_PORT || "9003";
 
 type Parameters = Record<string, string | bigint | number | undefined>;
 
@@ -18,7 +18,7 @@ async function fetcher<T>([endpoint, query]: [string, Parameters]): Promise<T> {
     searchParams.append(key, value ? value.toString() : "");
   }
 
-  const fullUrl = `http://${HOST}/iron${endpoint}?${searchParams.toString()}`;
+  const fullUrl = `http://localhost:${PORT}/iron${endpoint}?${searchParams.toString()}`;
 
   return fetch(fullUrl).then((res) => res.json());
 }

@@ -1,16 +1,15 @@
 use std::str::FromStr;
 
 use async_trait::async_trait;
-use ethers::core::k256::ecdsa::SigningKey;
-use iron_types::ChecksummedAddress;
+use iron_types::Address;
 use serde::{Deserialize, Serialize};
 
-use crate::{wallet::WalletCreate, Result, Wallet, WalletControl};
+use crate::{wallet::WalletCreate, Result, Signer, Wallet, WalletControl};
 
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct Impersonator {
     pub name: String,
-    pub addresses: Vec<ChecksummedAddress>,
+    pub addresses: Vec<Address>,
 
     #[serde(default)]
     pub current: usize,
@@ -48,7 +47,7 @@ impl WalletControl for Impersonator {
         Ok(Wallet::Impersonator(self))
     }
 
-    async fn get_current_address(&self) -> ChecksummedAddress {
+    async fn get_current_address(&self) -> Address {
         self.addresses[self.current]
     }
 
@@ -61,19 +60,15 @@ impl WalletControl for Impersonator {
         Ok(())
     }
 
-    async fn get_all_addresses(&self) -> Vec<(String, ChecksummedAddress)> {
+    async fn get_all_addresses(&self) -> Vec<(String, Address)> {
         self.addresses.iter().map(|v| (v.to_string(), *v)).collect()
     }
 
-    async fn get_address(&self, path: &str) -> Result<ChecksummedAddress> {
+    async fn get_address(&self, path: &str) -> Result<Address> {
         Ok(self.addresses[usize::from_str(path)?])
     }
 
-    async fn build_signer(
-        &self,
-        _chain_id: u32,
-        _path: &str,
-    ) -> Result<ethers::signers::Wallet<SigningKey>> {
+    async fn build_signer(&self, _chain_id: u32, _path: &str) -> Result<Signer> {
         Err(crate::Error::WalletCantSign)
     }
 }

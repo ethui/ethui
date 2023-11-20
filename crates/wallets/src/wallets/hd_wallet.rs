@@ -1,20 +1,17 @@
 use std::{sync::Arc, time::Duration};
 
 use async_trait::async_trait;
-use ethers::{
-    core::k256::ecdsa::SigningKey,
-    signers::{self, coins_bip39::English, MnemonicBuilder, Signer},
-};
+use ethers::signers::{coins_bip39::English, MnemonicBuilder, Signer as _};
 use iron_crypto::{self, EncryptedData};
 use iron_dialogs::{Dialog, DialogMsg};
-use iron_types::ChecksummedAddress;
+use iron_types::Address;
 use secrets::SecretVec;
 use tokio::{
     sync::{Mutex, RwLock},
     task::JoinHandle,
 };
 
-use super::{utils, wallet::WalletCreate, Error, Result, Wallet, WalletControl};
+use crate::{utils, wallet::WalletCreate, Error, Result, Signer, Wallet, WalletControl};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -22,8 +19,8 @@ pub struct HDWallet {
     name: String,
     derivation_path: String,
     count: u32,
-    current: (String, ChecksummedAddress),
-    addresses: Vec<(String, ChecksummedAddress)>,
+    current: (String, Address),
+    addresses: Vec<(String, Address)>,
     ciphertext: EncryptedData<String>,
 
     /// The signer is cached inside a `RwLock` so we can have interior mutability
@@ -72,7 +69,7 @@ impl WalletControl for HDWallet {
         Ok(Wallet::HDWallet(self))
     }
 
-    async fn get_current_address(&self) -> ChecksummedAddress {
+    async fn get_current_address(&self) -> Address {
         self.current.1
     }
 
@@ -91,7 +88,7 @@ impl WalletControl for HDWallet {
         Ok(())
     }
 
-    async fn get_address(&self, path: &str) -> Result<ChecksummedAddress> {
+    async fn get_address(&self, path: &str) -> Result<Address> {
         self.addresses
             .iter()
             .find(|(p, _)| p == path)
@@ -99,7 +96,11 @@ impl WalletControl for HDWallet {
             .ok_or(Error::InvalidKey(path.into()))
     }
 
-    async fn build_signer(&self, chain_id: u32, path: &str) -> Result<signers::Wallet<SigningKey>> {
+    async fn get_all_addresses(&self) -> Vec<(String, Address)> {
+        self.addresses.clone()
+    }
+
+    async fn build_signer(&self, chain_id: u32, path: &str) -> Result<Signer> {
         if !self.addresses.iter().any(|(p, _)| p == path) {
             return Err(Error::InvalidKey(path.to_string()));
         }
@@ -115,11 +116,7 @@ impl WalletControl for HDWallet {
             .derivation_path(path)?
             .build()?;
 
-        Ok(signer.with_chain_id(chain_id))
-    }
-
-    async fn get_all_addresses(&self) -> Vec<(String, ChecksummedAddress)> {
-        self.addresses.clone()
+        Ok(Signer::SigningKey(signer.with_chain_id(chain_id)))
     }
 }
 
@@ -199,28 +196,25 @@ impl HDWallet {
 
         // attempt to receive a password at most 3 times
         for _ in 0..3 {
-            let password = match dialog.recv().await {
-                Some(DialogMsg::Data(payload)) | Some(DialogMsg::Accept(payload)) => {
-                    let password = payload["password"].clone();
-                    password
-                        .as_str()
-                        .ok_or(Error::UnlockDialogRejected)?
-                        .to_string()
-                }
-                _ => return Err(Error::UnlockDialogRejected),
+            let password = if let Some(DialogMsg::Data(payload)) = dialog.recv().await {
+                let password = payload["password"].clone();
+                password
+                    .as_str()
+                    .ok_or(Error::UnlockDialogRejected)?
+                    .to_string()
+            } else {
+                return Err(Error::UnlockDialogRejected);
             };
 
             // if password was given, and correctly decrypts the keystore
             if let Ok(mnemonic) = iron_crypto::decrypt(&self.ciphertext, &password) {
                 self.store_secret(mnemonic).await;
-                dialog.close().await?;
                 return Ok(());
             }
 
             dialog.send("failed", None).await?;
         }
 
-        dialog.close().await?;
         Err(Error::UnlockDialogFailed)
     }
 

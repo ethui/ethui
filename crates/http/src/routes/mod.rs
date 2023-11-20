@@ -5,6 +5,7 @@ use crate::Ctx;
 mod contracts;
 mod rpc;
 mod transactions;
+mod ui;
 
 #[cfg(feature = "http-insecure-endpoints")]
 mod connections;
@@ -36,6 +37,7 @@ fn iron_routes() -> Router<Ctx> {
     Router::new()
         .nest("/transactions", transactions::router())
         .nest("/contracts", contracts::router())
+        .nest("/ui", ui::router())
 }
 
 #[cfg(feature = "http-insecure-endpoints")]
@@ -43,6 +45,7 @@ fn iron_routes() -> Router<Ctx> {
     Router::new()
         .nest("/connections", connections::router())
         .nest("/contracts", contracts::router())
+        .nest("/ui", ui::router())
         .nest("/db", db::router())
         .nest("/forge", forge::router())
         .nest("/settings", settings::router())

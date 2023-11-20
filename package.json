@@ -1,13 +1,13 @@
 {
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.1",
   "license": "MIT",
   "description": "A dev-oriented web3 wallet",
   "scripts": {
     "app:dev": "rm -rf target/debug/db.* && RUST_LOG=iron=debug tauri dev",
     "gui:build": "yarn workspace @iron/gui build",
     "ext:dev": "yarn workspace @iron/extension dev",
-    "ext:build": "yarn workspace @iron/extension build",
+    "ext:build": "yarn workspace @iron/extension build $@",
     "lint": "yarn lint:eslint && yarn lint:tsc && yarn lint:prettier",
     "lint:eslint": "eslint .",
     "lint:tsc": "tsc --noEmit",
@@ -37,5 +37,8 @@
   },
   "dependencies": {
     "typescript": "5.2.2"
+  },
+  "resolutions": {
+    "postcss": "^8.4.31"
   }
 }

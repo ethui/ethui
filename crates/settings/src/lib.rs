@@ -1,3 +1,4 @@
+mod autostart;
 pub mod commands;
 mod error;
 mod init;
@@ -10,9 +11,8 @@ use std::{
     str::FromStr,
 };
 
-use ethers::core::types::Address;
 pub use init::init;
-use iron_types::{ChecksummedAddress, UINotify};
+use iron_types::{Address, UINotify};
 use serde::{Deserialize, Serialize};
 pub use utils::test_alchemy_api_key;
 
@@ -34,6 +34,13 @@ pub enum DarkMode {
 }
 
 impl Settings {
+    pub async fn init(&self) -> Result<()> {
+        // make sure OS's autostart is synced with settings
+        crate::autostart::update(self.inner.autostart)?;
+
+        Ok(())
+    }
+
     pub async fn set(&mut self, params: serde_json::Map<String, serde_json::Value>) -> Result<()> {
         if let Some(v) = params.get("darkMode") {
             self.inner.dark_mode = serde_json::from_value(v.clone()).unwrap()
@@ -53,6 +60,11 @@ impl Settings {
 
         if let Some(v) = params.get("hideEmptyTokens") {
             self.inner.hide_empty_tokens = serde_json::from_value(v.clone()).unwrap()
+        }
+
+        if let Some(v) = params.get("autostart") {
+            self.inner.autostart = serde_json::from_value(v.clone()).unwrap();
+            crate::autostart::update(self.inner.autostart)?;
         }
 
         self.save().await?;
@@ -111,11 +123,11 @@ impl Settings {
             .ok_or(Error::EtherscanKeyNotSet)
     }
 
-    fn get_alias(&self, address: ChecksummedAddress) -> Option<String> {
+    fn get_alias(&self, address: Address) -> Option<String> {
         self.inner.aliases.get(&address).cloned()
     }
 
-    fn set_alias(&mut self, address: ChecksummedAddress, alias: Option<String>) {
+    fn set_alias(&mut self, address: Address, alias: Option<String>) {
         // trim whitespaces
         // empty str becomes None
         let alias = alias.map(|v| v.trim().to_owned()).filter(|v| !v.is_empty());
@@ -153,7 +165,7 @@ pub struct SerializedSettings {
     pub hide_empty_tokens: bool,
 
     #[serde(default = "default_aliases")]
-    aliases: HashMap<ChecksummedAddress, String>,
+    aliases: HashMap<Address, String>,
 
     #[serde(default)]
     onboarded: bool,
@@ -163,6 +175,9 @@ pub struct SerializedSettings {
 
     #[serde(default)]
     fast_mode: bool,
+
+    #[serde(default)]
+    autostart: bool,
 }
 
 impl Default for SerializedSettings {
@@ -177,6 +192,7 @@ impl Default for SerializedSettings {
             onboarded: false,
             homepage_tour_completed: false,
             fast_mode: false,
+            autostart: false,
         }
     }
 }
@@ -185,24 +201,18 @@ const fn default_true() -> bool {
     true
 }
 
-fn default_aliases() -> HashMap<ChecksummedAddress, String> {
+fn default_aliases() -> HashMap<Address, String> {
     let mut res = HashMap::new();
     res.insert(
-        Address::from_str("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266")
-            .unwrap()
-            .into(),
+        Address::from_str("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266").unwrap(),
         "alice".into(),
     );
     res.insert(
-        Address::from_str("0x70997970C51812dc3A010C7d01b50e0d17dc79C8")
-            .unwrap()
-            .into(),
+        Address::from_str("0x70997970C51812dc3A010C7d01b50e0d17dc79C8").unwrap(),
         "bob".into(),
     );
     res.insert(
-        Address::from_str("0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC")
-            .unwrap()
-            .into(),
+        Address::from_str("0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC").unwrap(),
         "charlie".into(),
     );
 
