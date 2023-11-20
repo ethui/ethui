@@ -5,7 +5,7 @@ import { type Address } from "viem";
 import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { Wallet } from "@/types";
+import { Wallet } from "@/types/wallets";
 
 interface State {
   currentWallet?: Wallet;

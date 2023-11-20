@@ -5,7 +5,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { Action } from "kbar";
 import { create, StateCreator } from "zustand";
 
-import { GeneralSettings } from "@/types";
+import { GeneralSettings } from "@/types/settings";
 
 interface Store {
   mode: "auto" | "light" | "dark";

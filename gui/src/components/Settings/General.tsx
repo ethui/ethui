@@ -21,6 +21,7 @@ import { useSettings } from "@/store";
 
 export const schema = z.object({
   darkMode: z.enum(["auto", "dark", "light"]),
+  autostart: z.boolean(),
   alchemyApiKey: z
     .string()
     .optional()
@@ -110,6 +111,27 @@ export function SettingsGeneral() {
               </Select>
             )}
           />
+        </FormControl>
+
+        <FormControl error={!!errors.autostart}>
+          <FormGroup>
+            <Controller
+              name="autostart"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  sx={{ pointerEvents: "auto" }}
+                  label="Start automatically on boot (minized)"
+                  control={<Switch {...field} checked={field.value} />}
+                />
+              )}
+            />
+          </FormGroup>
+          {errors.abiWatch && (
+            <FormHelperText>
+              {errors.abiWatch.message?.toString()}
+            </FormHelperText>
+          )}
         </FormControl>
 
         <FormControl error={!!errors.fastMode}>

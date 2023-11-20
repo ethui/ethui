@@ -35,16 +35,20 @@ const store: StateCreator<Store> = (set, get) => ({
     const { address, chainId } = get();
     if (!address || !chainId) return;
 
-    const [native, erc20Balances] = await Promise.all([
-      invoke<string>("sync_get_native_balance", { address, chainId }),
-      invoke<TokenBalance[]>("db_get_erc20_balances", {
+    const nativeBalance = await invoke<string>("sync_get_native_balance", {
+      address,
+      chainId,
+    });
+    const erc20Balances = await invoke<TokenBalance[]>(
+      "db_get_erc20_balances",
+      {
         address,
         chainId,
-      }),
-    ]);
+      },
+    );
 
     set({
-      nativeBalance: BigInt(native),
+      nativeBalance: BigInt(nativeBalance),
       erc20Balances,
     });
   },

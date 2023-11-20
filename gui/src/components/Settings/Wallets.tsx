@@ -7,114 +7,126 @@ import {
   Chip,
   Menu,
   MenuItem,
+  Paper,
   Stack,
   Typography,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import { startCase } from "lodash-es";
 import { useState } from "react";
-import { type FieldValues } from "react-hook-form";
 
 import { useWallets } from "@/store";
-import { Wallet, walletTypes } from "@/types";
+import { Wallet, walletTypes } from "@/types/wallets";
 
 import { HDWalletForm } from "./Wallet/HDWallet";
 import { ImpersonatorForm } from "./Wallet/Impersonator";
 import { JsonKeystore } from "./Wallet/JsonKeystore";
+import { Ledger } from "./Wallet/Ledger";
 import { Plaintext } from "./Wallet/Plaintext";
-
-type NewChild = { new?: boolean };
 
 export function SettingsWallets() {
   const wallets = useWallets((s) => s.wallets);
-  const [newWallets, setNewWallets] = useState<Wallet[]>([]);
+  const [newType, setNewType] = useState<Wallet["type"] | null>(null);
 
   if (!wallets) return null;
 
-  const allWallets: (Wallet & NewChild)[] = wallets.concat(newWallets);
-
-  const append = (type: Wallet["type"]) => {
-    setNewWallets([...newWallets, emptyWallets[type]]);
+  const startNew = (type: Wallet["type"]) => {
+    setNewType(type);
   };
 
-  const save = async (
-    wallet: Wallet & NewChild,
-    params: object,
-    idx: number,
-  ) => {
-    if (wallet.new) {
-      invoke("wallets_create", { params });
-      setNewWallets(newWallets.filter((_, i) => i != idx - wallets.length));
-    } else {
-      await invoke("wallets_update", { name: wallet.name, params });
-    }
-  };
-
-  const remove = async (
-    wallet: { name: string; new?: boolean },
-    idx: number,
-  ) => {
-    if (wallet.new) {
-      setNewWallets(newWallets.filter((_, i) => i != idx - wallets.length));
-    } else {
-      await invoke("wallets_remove", { name: wallet.name });
-    }
-  };
+  const closeNew = () => setNewType(null);
 
   return (
     <>
       <Stack>
-        {allWallets.map((wallet, i) => {
-          const props = {
-            onSubmit: (params: FieldValues) => save(wallet, params, i),
-            onRemove: () => remove(wallet, i),
-            onCancel: () => wallet.new && remove(wallet, i),
-          };
-
-          return (
-            <Accordion key={wallet.name} defaultExpanded={wallet.new}>
-              <AccordionSummary expandIcon={<ExpandMore />}>
-                <Stack alignItems="center" direction="row">
-                  <Typography>
-                    {wallet.new ? `New ${startCase(wallet.type)}` : wallet.name}
-                  </Typography>
-                  <Chip sx={{ marginLeft: 2 }} label={wallet.type} />
-                </Stack>
-              </AccordionSummary>
-              <AccordionDetails>
-                {wallet.type === "plaintext" && (
-                  <Plaintext wallet={wallet} {...props} />
-                )}
-                {wallet.type === "jsonKeystore" && (
-                  <JsonKeystore wallet={wallet} {...props} />
-                )}
-                {wallet.type === "HDWallet" && (
-                  <HDWalletForm
-                    wallet={wallet}
-                    type={wallet.new ? "create" : "update"}
-                    {...props}
-                  />
-                )}
-                {wallet.type === "impersonator" && (
-                  <ImpersonatorForm wallet={wallet} {...props} />
-                )}
-              </AccordionDetails>
-            </Accordion>
-          );
-        })}
+        {wallets.map((wallet) => (
+          <ExistingItem key={wallet.name} wallet={wallet} />
+        ))}
+        {newType && <NewItem key={`_new`} type={newType} onFinish={closeNew} />}
       </Stack>
-      <Stack spacing={2} direction="row" sx={{ mt: 4 }}>
-        <AddWalletButton append={append} />
-      </Stack>
+      {!newType && (
+        <Stack spacing={2} direction="row" sx={{ mt: 4 }}>
+          <AddWalletButton onChoice={startNew} />
+        </Stack>
+      )}
     </>
   );
 }
 
-interface AddWalletButtonProps {
-  append: (type: Wallet["type"]) => void;
+interface ItemProps {
+  wallet: Wallet;
 }
 
-const AddWalletButton = ({ append }: AddWalletButtonProps) => {
+function ExistingItem({ wallet }: ItemProps) {
+  const props = {
+    onSubmit: (params: object) =>
+      invoke("wallets_update", { name: wallet.name, params }),
+    onRemove: () => invoke("wallets_remove", { name: wallet.name }),
+  };
+
+  return (
+    <Accordion defaultExpanded={!wallet}>
+      <AccordionSummary expandIcon={<ExpandMore />}>
+        <Stack alignItems="center" direction="row">
+          <Typography>{wallet.name}</Typography>
+          <Chip sx={{ marginLeft: 2 }} label={wallet.type} />
+        </Stack>
+      </AccordionSummary>
+      <AccordionDetails>
+        {wallet.type === "plaintext" && (
+          <Plaintext wallet={wallet} {...props} />
+        )}
+        {wallet.type === "jsonKeystore" && (
+          <JsonKeystore wallet={wallet} {...props} />
+        )}
+        {wallet.type === "HDWallet" && (
+          <HDWalletForm wallet={wallet} {...props} />
+        )}
+        {wallet.type === "impersonator" && (
+          <ImpersonatorForm wallet={wallet} {...props} />
+        )}
+        {wallet.type === "ledger" && <Ledger wallet={wallet} {...props} />}
+      </AccordionDetails>
+    </Accordion>
+  );
+}
+
+interface NewItemProps {
+  type: Wallet["type"];
+  onFinish: () => void;
+}
+
+function NewItem({ type, onFinish }: NewItemProps) {
+  const save = async (params: object) => {
+    await invoke("wallets_create", { params: { ...params, type } });
+  };
+
+  const props = {
+    onSubmit: (params: object) => {
+      save(params);
+      onFinish();
+    },
+    onRemove: onFinish,
+  };
+
+  return (
+    <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
+      <Typography sx={{ pb: 2 }}>New {type}</Typography>
+
+      {type === "plaintext" && <Plaintext {...props} />}
+      {type === "jsonKeystore" && <JsonKeystore {...props} />}
+      {type === "HDWallet" && <HDWalletForm {...props} />}
+      {type === "impersonator" && <ImpersonatorForm {...props} />}
+      {type === "ledger" && <Ledger {...props} />}
+    </Paper>
+  );
+}
+
+interface AddWalletButtonProps {
+  onChoice: (type: Wallet["type"]) => void;
+}
+
+const AddWalletButton = ({ onChoice }: AddWalletButtonProps) => {
   const [anchor, setAnchor] = useState<HTMLElement | undefined>();
   const open = Boolean(anchor);
 
@@ -123,7 +135,7 @@ const AddWalletButton = ({ append }: AddWalletButtonProps) => {
   };
   const handleClose = () => setAnchor(undefined);
   const handleChoice = (type: Wallet["type"]) => {
-    append(type);
+    onChoice(type);
     setAnchor(undefined);
   };
 
@@ -162,36 +174,4 @@ const AddWalletButton = ({ append }: AddWalletButtonProps) => {
       </Menu>
     </>
   );
-};
-
-const emptyWallets: Record<Wallet["type"], Wallet & NewChild> = {
-  plaintext: {
-    type: "plaintext",
-    name: "",
-    mnemonic: "",
-    derivationPath: "",
-    count: 1,
-    new: true,
-  },
-  jsonKeystore: {
-    type: "jsonKeystore",
-    name: "",
-    file: "",
-    new: true,
-  },
-  HDWallet: {
-    type: "HDWallet",
-    name: "",
-    count: 5,
-    derivationPath: "",
-    mnemonic: "",
-    password: "",
-    new: true,
-  },
-  impersonator: {
-    type: "impersonator",
-    name: "",
-    addresses: [""],
-    new: true,
-  },
 };

@@ -21,50 +21,53 @@ import { Address, formatUnits } from "viem";
 import { z } from "zod";
 
 import { useProvider } from "@/hooks";
+import { passwordFormSchema, passwordSchema } from "@/types/password";
 import {
   derivationPathSchema,
-  hdWalletSchema,
-  passwordFormSchema,
-  Wallet,
-} from "@/types";
+  HdWallet,
+  mnemonicSchema,
+} from "@/types/wallets";
 
-const createSchema = hdWalletSchema.extend({
+export const schema = z.object({
+  count: z.number().int().min(1).max(100),
+  name: z.string().min(1),
+  current: z.array(z.string()).length(2).optional(),
+  mnemonic: mnemonicSchema,
+  derivationPath: derivationPathSchema,
+  password: passwordSchema,
+});
+
+const createSchema = schema.extend({
   current: z.string(),
 });
 
-const updateSchema = hdWalletSchema.pick({
-  type: true,
+const updateSchema = schema.pick({
   name: true,
   derivationPath: true,
   count: true,
 });
 
-type FormType = z.infer<typeof createSchema> | z.infer<typeof updateSchema>;
+type CreateSchema = z.infer<typeof createSchema>;
+type UpdateSchema = z.infer<typeof updateSchema>;
 
 const steps = ["Import", "Secure", "Review"];
 
 interface Props {
-  type: "create" | "update";
-  wallet: Wallet & { type: "HDWallet" };
+  wallet?: HdWallet;
 
-  onSubmit: (data: FormType) => void;
-  onCancel: () => void;
+  onSubmit: (data: CreateSchema | UpdateSchema) => void;
   onRemove: () => void;
 }
 
-export function HDWalletForm({ type, ...props }: Props) {
-  if (type === "create") {
-    return <HDWalletCreateForm {...props} />;
+export function HDWalletForm({ wallet, ...props }: Props) {
+  if (!wallet) {
+    return <Create {...props} />;
   } else {
-    return <HDWalletUpdateForm {...props} />;
+    return <Update wallet={wallet} {...props} />;
   }
 }
 
-function HDWalletCreateForm({
-  wallet,
-  onSubmit,
-  onCancel,
-}: Omit<Props, "type">) {
+function Create({ onSubmit, onRemove }: Props) {
   const [name, setName] = useState("");
   const [step, setStep] = useState(0);
   const [mnemonic, setMnemonic] = useState<string>("");
@@ -76,7 +79,6 @@ function HDWalletCreateForm({
   useEffect(() => {
     if (!current || !mnemonic || !derivationPath || submitted) return;
     onSubmit({
-      type: wallet.type,
       count: 5,
       name,
       mnemonic,
@@ -85,16 +87,7 @@ function HDWalletCreateForm({
       password,
     });
     setSubmitted(true);
-  }, [
-    name,
-    current,
-    mnemonic,
-    derivationPath,
-    password,
-    wallet.type,
-    onSubmit,
-    submitted,
-  ]);
+  }, [name, current, mnemonic, derivationPath, password, onSubmit, submitted]);
 
   return (
     <Stack direction="column" spacing={2}>
@@ -112,7 +105,7 @@ function HDWalletCreateForm({
             setMnemonic(mnemonic);
             setStep(1);
           }}
-          onCancel={onCancel}
+          onCancel={onRemove}
         />
       )}
 
@@ -122,7 +115,7 @@ function HDWalletCreateForm({
             setPassword(p);
             setStep(2);
           }}
-          onCancel={onCancel}
+          onCancel={onRemove}
         />
       )}
 
@@ -133,7 +126,7 @@ function HDWalletCreateForm({
             setDerivationPath(derivationPath);
             setCurrent(current);
           }}
-          onCancel={onCancel}
+          onCancel={onRemove}
         />
       )}
     </Stack>
@@ -386,11 +379,7 @@ function NativeBalance({ address }: NativeBalanceProps) {
   );
 }
 
-function HDWalletUpdateForm({
-  wallet,
-  onSubmit,
-  onRemove,
-}: Omit<Props, "type">) {
+function Update({ wallet, onSubmit, onRemove }: Props) {
   const {
     register,
     handleSubmit,
@@ -408,7 +397,6 @@ function HDWalletUpdateForm({
       component="form"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <input type="hidden" {...register("type")} />
       <TextField
         label="Name"
         error={!!errors.name}

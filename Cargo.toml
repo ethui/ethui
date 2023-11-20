@@ -1,5 +1,5 @@
 [workspace.package]
-version = "1.0.0"
+version = "1.1.1"
 edition = "2021"
 license-file = "./LICENSE"
 homepage = "https://github.com/iron-wallet"
@@ -9,29 +9,7 @@ authors = ["Miguel Palhas <mpalhas@gmail.com>"]
 
 [workspace]
 resolver = "2"
-members = [
-  "bin/iron",
-  "crates/settings",
-  "crates/tracing",
-  "crates/networks",
-  "crates/wallets",
-  "crates/ws",
-  "crates/http",
-  "crates/rpc",
-  "crates/connections",
-  "crates/dialogs",
-  "crates/abis",
-  "crates/forge",
-  "crates/types",
-  "crates/db",
-  "crates/sync",
-  "crates/sync/anvil",
-  "crates/sync/alchemy",
-  "crates/crypto",
-  "crates/broadcast",
-  "crates/exchange-rates",
-  "crates/simulator",
-]
+members = ["bin/iron", "crates/*"]
 default-members = ["bin/iron"]
 
 [workspace.dependencies]
@@ -55,10 +33,14 @@ iron-sync-alchemy = { path = "crates/sync/alchemy" }
 iron-broadcast = { path = "crates/broadcast" }
 iron-tracing = { path = "crates/tracing" }
 iron-exchange-rates = { path = "crates/exchange-rates" }
+iron-args = { path = "crates/args" }
 
 tokio = { version = "1.33", features = ["full", "sync"] }
 thiserror = "1.0"
-ethers = { version = "2", features = ["ws"] }
+ethers = { features = [
+  "ws",
+  "ledger",
+], git = "https://github.com/gakonst/ethers-rs", rev = "841ff8c47980798fbb47991e047f8481b1d5eb39" }
 sqlx = { version = "0.7.2", features = [
   "runtime-tokio-rustls",
   "sqlite",
@@ -78,6 +60,7 @@ reqwest = { version = "0.11.22", default-features = false, features = [
 alloy-primitives = { version = "0.4.1", features = ["serde"] }
 url = "2.3"
 futures = "0.3.28"
+clap = "4.4.8"
 
 foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-6b72a8cabf247eb62fc432401264bc5cff0228a0" }
 foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-6b72a8cabf247eb62fc432401264bc5cff0228a0" }
@@ -102,3 +85,6 @@ alloy-dyn-abi = { git = "https://github.com/alloy-rs/core/" }
 alloy-primitives = { git = "https://github.com/alloy-rs/core/" }
 alloy-json-abi = { git = "https://github.com/alloy-rs/core/" }
 alloy-sol-types = { git = "https://github.com/alloy-rs/core/" }
+
+# https://github.com/summa-tx/coins/issues/124
+coins-ledger = { git = "https://github.com/iron-wallet/coins", branch = "send" }
