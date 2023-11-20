@@ -41,7 +41,7 @@ export function CommandBar({ children }: { children: ReactNode }) {
     networkActions,
     settingsActions,
     themeActions,
-    settingsWindowActions
+    settingsWindowActions,
   );
 
   return (
@@ -120,12 +120,12 @@ interface ResultItemProps {
 const ResultItem = forwardRef(
   (
     { action, active, currentRootActionId }: ResultItemProps,
-    ref: React.Ref<HTMLDivElement>
+    ref: React.Ref<HTMLDivElement>,
   ) => {
     const ancestors = useMemo(() => {
       if (!currentRootActionId) return action.ancestors;
       const index = action.ancestors.findIndex(
-        (ancestor) => ancestor.id === currentRootActionId
+        (ancestor) => ancestor.id === currentRootActionId,
       );
       // +1 removes the currentRootAction; e.g.
       // if we are on the "Set theme" parent action,
@@ -156,7 +156,7 @@ const ResultItem = forwardRef(
         ) : null}
       </ListItemButton>
     );
-  }
+  },
 );
 
 ResultItem.displayName = "ResultItem";

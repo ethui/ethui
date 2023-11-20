@@ -29,7 +29,7 @@ export function SettingsKeybinds() {
     setSearch(currentSearch);
 
     const filteredItems = KEYBINDS.filter((keybind) =>
-      keybind.name.toLowerCase().includes(currentSearch.toLowerCase())
+      keybind.name.toLowerCase().includes(currentSearch.toLowerCase()),
     );
 
     setFilteredKeybinds(filteredItems);
