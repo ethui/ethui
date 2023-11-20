@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { invoke } from "@tauri-apps/api/tauri";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import {
   AbiItem,
@@ -60,6 +60,19 @@ const transferERC20 = async (
   });
 };
 
+const formatTokenBalance = (balance: bigint, decimals: number) =>
+  formatUnits(
+    balance - (balance % BigInt(Math.ceil(0.001 * 10 ** decimals))),
+    decimals,
+  );
+
+interface Token {
+  symbol: string;
+  decimals: number;
+  balance: bigint;
+  contract: Address;
+}
+
 interface TransferFormProps {
   onClose: () => void;
 }
@@ -71,12 +84,12 @@ export function TransferForm({ onClose }: TransferFormProps) {
     return { nativeBalance: s.nativeBalance, erc20Balances: s.erc20Balances };
   });
 
-  const allTokens = [
+  const allTokens: Token[] = [
     {
-      symbol: currentNetwork.currency,
-      decimals: currentNetwork.decimals,
-      balance: nativeBalance,
-      contract: "" as `0x${string}`,
+      symbol: currentNetwork?.currency || "",
+      decimals: currentNetwork?.decimals || 18,
+      balance: nativeBalance || 0n,
+      contract: "" as Address,
     },
   ].concat(
     erc20Balances.map((token) => {
@@ -86,10 +99,10 @@ export function TransferForm({ onClose }: TransferFormProps) {
         contract,
       } = token;
       return {
-        contract,
         symbol,
         decimals,
         balance: BigInt(balance),
+        contract,
       };
     }),
   );
@@ -108,69 +121,54 @@ export function TransferForm({ onClose }: TransferFormProps) {
     ),
   });
 
-  const [selectedToken, setSelectedToken] = useState<string>("");
-  const [selectedTokenBalance, setSelectedTokenBalance] = useState<string>("");
+  const [selectedToken, setSelectedToken] = useState<Token>();
   const [txResult, setTxResult] = useState<{ success: boolean; msg: string }>({
     success: false,
     msg: "",
   });
 
-  useEffect(() => {
-    if (!selectedToken) return;
+  const handleSelect = (selectedSymbol: string) => {
+    const token = allTokens.find((t) => t.symbol === selectedSymbol);
+    setSelectedToken(token);
+  };
 
-    const tokenInfo = allTokens.find((t) => t.symbol === selectedToken);
+  const submitTransfer = async (formData: FieldValues) => {
+    if (currentNetwork && currentAddress && selectedToken) {
+      const { symbol, balance, decimals, contract } = selectedToken;
 
-    if (tokenInfo && tokenInfo.balance) {
-      const { balance, decimals } = tokenInfo;
+      const transferAmount = BigInt(formData.value * 10 ** decimals);
 
-      const tokenBalance = formatTokenBalance(balance, decimals);
-
-      setSelectedTokenBalance(tokenBalance);
-    }
-  }, [allTokens, selectedToken]);
-
-  const submitTransferForm = async (formData: FieldValues) => {
-    const token = allTokens.find((t) => t.symbol === selectedToken);
-
-    if (currentAddress && token && token.balance) {
-      const transferAmount = BigInt(formData.value * 10 ** token.decimals);
-
-      if (transferAmount > token.balance) {
+      if (transferAmount > balance) {
         setTxResult({ success: false, msg: "Not enough balance" });
         return;
       }
 
-      const transfer =
-        selectedToken === currentNetwork.currency
-          ? transferNative
-          : transferERC20;
+      let txResult;
+      if (symbol === currentNetwork.currency)
+        txResult = await transferNative(
+          currentAddress,
+          formData.address,
+          transferAmount,
+        );
+      else
+        txResult = await transferERC20(
+          currentAddress,
+          formData.address,
+          transferAmount,
+          contract,
+        );
 
-      const result = await transfer(
-        currentAddress,
-        formData.address,
-        transferAmount,
-        token.contract,
-      );
-
-      if (result.match(/(0x[a-fA-F0-9]{40})/)) {
-        setTxResult({ success: true, msg: result });
+      if (txResult.match(/(0x[a-fA-F0-9]{40})/)) {
+        setTxResult({ success: true, msg: txResult });
       } else {
-        const match = result.match(/message:\s([^\,]+)/);
-        let errorMsg = "Error";
-        if (match && match[1]) errorMsg = match[1];
+        const errorMsg = txResult.match(/message:\s([^\,]+)/)?.[1] || "Error";
         setTxResult({ success: false, msg: errorMsg });
       }
     }
   };
 
-  const formatTokenBalance = (balance: bigint, decimals: number) =>
-    formatUnits(
-      balance - (balance % BigInt(Math.ceil(0.001 * 10 ** decimals))),
-      decimals,
-    );
-
   return (
-    <form onSubmit={handleSubmit(submitTransferForm)}>
+    <form onSubmit={handleSubmit(submitTransfer)}>
       <Stack alignItems="flex-start" spacing={2}>
         <Typography>Transfer token</Typography>
 
@@ -179,9 +177,9 @@ export function TransferForm({ onClose }: TransferFormProps) {
           <Select
             labelId="select-token-label"
             label="Token"
-            value={selectedToken}
+            value={selectedToken?.symbol || ""}
             onChange={(e: SelectChangeEvent) => {
-              setSelectedToken(e.target.value);
+              handleSelect(e.target.value);
             }}
           >
             {allTokens.map(({ symbol }) => (
@@ -194,7 +192,8 @@ export function TransferForm({ onClose }: TransferFormProps) {
 
         {selectedToken && (
           <Typography variant="body2">
-            Balance: {selectedTokenBalance}
+            Balance:{" "}
+            {formatTokenBalance(selectedToken.balance, selectedToken.decimals)}
           </Typography>
         )}
 
