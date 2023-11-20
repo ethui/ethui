@@ -1,4 +1,4 @@
-import browser from "webextension-polyfill";
+import { storage } from "webextension-polyfill";
 
 import { defaultSettings, Settings } from "@/settings";
 
@@ -15,7 +15,7 @@ const saveOptions = () => {
     endpoint: $endpoint.value || defaultSettings.endpoint,
   };
 
-  browser.storage.sync.set(options).then(() => {
+  storage.sync.set(options).then(() => {
     // Update status to let user know options were saved.
     $status.textContent = "Options saved. Restart browser to take effect";
     setTimeout(() => {
@@ -27,7 +27,7 @@ const saveOptions = () => {
 // Restores select box and checkbox state using the preferences
 // stored in chrome.storage.
 const restoreOptions = () => {
-  browser.storage.sync.get(defaultSettings).then((items) => {
+  storage.sync.get(defaultSettings).then((items) => {
     $logLevel.value = items.logLevel;
     $endpoint.value = items.endpoint;
   });

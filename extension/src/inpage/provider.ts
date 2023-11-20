@@ -1,3 +1,4 @@
+import { type Duplex } from "stream";
 import {
   createIdRemapMiddleware,
   JsonRpcEngine,
@@ -8,7 +9,6 @@ import { EventEmitter } from "eventemitter3";
 import { isDuplexStream } from "is-stream";
 import { createStreamMiddleware } from "json-rpc-middleware-stream";
 import log from "loglevel";
-import { type Duplex } from "stream";
 
 import { Address, RequestArguments } from "./types";
 import { errorMiddleware } from "./utils";

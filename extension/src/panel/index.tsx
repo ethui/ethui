@@ -6,8 +6,8 @@ import {
   Json,
   JsonRpcResponse,
 } from "@metamask/utils";
-import React from "react";
-import ReactDOM from "react-dom/client";
+import React, { useState } from "react";
+import { createRoot } from "react-dom/client";
 
 import { useStore } from "./store";
 
@@ -31,7 +31,7 @@ function Response({ response }: { response?: JsonRpcResponse<Json> }) {
 
 function App() {
   const requests = useStore((s) => s.requests);
-  const [selected, setSelected] = React.useState<string | undefined>();
+  const [selected, setSelected] = useState<string | undefined>();
 
   return (
     <Table
@@ -73,7 +73,7 @@ function App() {
   );
 }
 
-ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>,

@@ -123,7 +123,7 @@ const ResultItem = forwardRef(
     { action, active, currentRootActionId }: ResultItemProps,
     ref: React.Ref<HTMLDivElement>,
   ) => {
-    const ancestors = React.useMemo(() => {
+    const ancestors = useMemo(() => {
       if (!currentRootActionId) return action.ancestors;
       const index = action.ancestors.findIndex(
         (ancestor) => ancestor.id === currentRootActionId,

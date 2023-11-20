@@ -1,6 +1,6 @@
 import { Json, JsonRpcRequest, JsonRpcResponse } from "@metamask/utils";
 import log from "loglevel";
-import browser, { type Runtime } from "webextension-polyfill";
+import { type Runtime, runtime } from "webextension-polyfill";
 import { ArrayQueue, ConstantBackoff, WebsocketBuilder } from "websocket-ts";
 
 import { defaultSettings, loadSettings, type Settings } from "@/settings";
@@ -18,7 +18,7 @@ export async function init() {
   log.setLevel(settings.logLevel);
 
   // handle each incoming content script connection
-  browser.runtime.onConnect.addListener((port: Runtime.Port) => {
+  runtime.onConnect.addListener((port: Runtime.Port) => {
     setupProviderConnection(port);
   });
 }
@@ -34,7 +34,7 @@ async function notifyDevtools(
   data?: JsonRpcResponse<Json> | JsonRpcRequest,
 ) {
   try {
-    await browser.runtime.sendMessage({
+    await runtime.sendMessage({
       type,
       tabId,
       data,

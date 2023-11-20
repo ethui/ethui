@@ -1,5 +1,5 @@
 import { z } from "zod";
-import zxcvbn from "zxcvbn-typescript";
+import { zxcvbn } from "zxcvbn-typescript";
 
 export const passwordSchema = z.string().superRefine((password, ctx) => {
   const { feedback, score } = zxcvbn(password);

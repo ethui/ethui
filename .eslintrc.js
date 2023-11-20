@@ -3,12 +3,13 @@ module.exports = {
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
     "plugin:@typescript-eslint/recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
     "prettier",
   ],
   plugins: ["react", "@typescript-eslint", "simple-import-sort", "import"],
 
   parser: "@typescript-eslint/parser",
-
   parserOptions: {
     sourceType: "module",
     project: [
@@ -18,9 +19,7 @@ module.exports = {
     ],
   },
 
-  plugins: ["react", "@typescript-eslint", "simple-import-sort", "import"],
   ignorePatterns: [
-    "**/*.generated.ts",
     "node_modules/*",
     "extension/dist/*",
     "gui/dist/*",
@@ -31,13 +30,18 @@ module.exports = {
     react: {
       version: "detect",
     },
+    "import/resolver": {
+      typescript: {
+        alwaysTryTypes: true,
+        project: ["tsconfig.json", "./*/tsconfig.json"],
+      },
+      node: true,
+    },
   },
 
   rules: {
     "no-console": ["error", { allow: ["warn", "error"] }],
-    "react/jsx-uses-react": "off",
     "react/react-in-jsx-scope": "off",
-    "no-unused-vars": "off",
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/await-thenable": "error",
     "@typescript-eslint/require-await": "error",
@@ -53,11 +57,32 @@ module.exports = {
         caughtErrorsIgnorePattern: "^_",
       },
     ],
-    "simple-import-sort/imports": "error",
-    "simple-import-sort/exports": "error",
+
+    // eslint-plugin-import
+    "import/no-deprecated": "warn",
+    "import/no-empty-named-blocks": "error",
+    "import/no-mutable-exports": "error",
+    "import/no-named-as-default": "error",
+    "import/no-unused-modules": "error",
+    "import/no-import-module-exports": "error",
     "import/first": "error",
     "import/newline-after-import": "error",
     "import/no-duplicates": "error",
+    "import/order": [
+      "error",
+      {
+        groups: [
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index",
+          "object",
+          "type",
+        ],
+      },
+    ],
     "no-restricted-imports": [
       "error",
       {
