@@ -3,8 +3,7 @@
     "beforeDevCommand": "bun run --cwd ../gui dev",
     "beforeBuildCommand": "bun run --cwd ../gui build",
     "devPath": "http://localhost:1420",
-    "distDir": "../../gui/dist",
-    "withGlobalTauri": false
+    "distDir": "../../gui/dist"
   },
   "package": {
     "productName": "iron",
@@ -38,10 +37,12 @@
       "iconAsTemplate": true
     },
     "security": {
-      "csp": null
-    },
-    "updater": {
-      "active": false
+      "csp": {
+        "default-src": "'self'",
+        "font-src": ["'self'", "data:"],
+        "style-src": ["'self'", "'unsafe-inline'"],
+        "connect-src": ["https://api.github.com"]
+      }
     }
   }
 }

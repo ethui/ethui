@@ -5,7 +5,7 @@
 # defaults
 #
 target=chrome
-version=latest
+version=0.0.0
 
 echo "$@"
 #
