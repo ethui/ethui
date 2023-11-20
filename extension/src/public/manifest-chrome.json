@@ -5,6 +5,8 @@
   "version": "%VERSION%",
   "author": "Miguel Palhas <mpalhas@gmail.com>",
   "homepage_url": "https://github.com/iron-wallet",
+  "devtools_page": "devtools/index.html",
+  "minimum_chrome_version": "102",
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
@@ -21,12 +23,16 @@
     "browser_style": false
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; frame-ancestors 'none';"
+    "extension_pages": "script-src 'self'; object-src 'self';"
   },
   "web_accessible_resources": [
     {
       "matches": ["<all_urls>"],
-      "resources": ["/inpage/inpage.js"]
+      "resources": [
+        "/inpage/inpage.js",
+        "devtools/index.html",
+        "panel/index.html"
+      ]
     }
   ],
   "permissions": ["storage"],

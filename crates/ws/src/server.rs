@@ -16,11 +16,11 @@ use url::Url;
 pub use crate::error::{WsError, WsResult};
 use crate::peers::{Peer, Peers};
 
-pub(crate) async fn server_loop() {
-    let addr = std::env::var("IRON_WS_SERVER_ENDPOINT").unwrap_or("127.0.0.1:9002".into());
+pub(crate) async fn server_loop(port: u16) {
+    let addr = format!("127.0.0.1:{}", port);
     let listener = TcpListener::bind(&addr).await.expect("Can't listen to");
 
-    tracing::debug!("Listening on: {}", addr);
+    tracing::debug!("WS server listening on: {}", addr);
 
     while let Ok((stream, _)) = listener.accept().await {
         let peer = stream
@@ -89,8 +89,10 @@ async fn handle_connection(
                         if let Message::Pong(_) = msg {
                             continue;
                         }
-                        let reply = handler.handle(msg.to_string()).await;
-                        let reply = reply.unwrap_or_else(||serde_json::Value::Null.to_string());
+                        let reply = handler.handle(serde_json::from_str(&msg.to_string()).unwrap()).await;
+                        let reply = reply
+                            .map(|r| serde_json::to_string(&r).unwrap())
+                            .unwrap_or_else(||serde_json::Value::Null.to_string());
 
                         ws_sender.send(reply.into()).await?;
                     },

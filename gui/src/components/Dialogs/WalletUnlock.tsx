@@ -23,7 +23,7 @@ interface Request {
 const schema = z.object({ password: z.string() });
 
 export function WalletUnlockDialog({ id }: { id: number }) {
-  const { data, send, reject, listen } = useDialog<Request>(id);
+  const { data, send, listen } = useDialog<Request>(id);
   const {
     handleSubmit,
     register,
@@ -78,7 +78,11 @@ export function WalletUnlockDialog({ id }: { id: number }) {
             >
               Unlock
             </Button>
-            <Button variant="contained" color="error" onClick={() => reject()}>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => send("reject")}
+            >
               Cancel
             </Button>
           </Stack>

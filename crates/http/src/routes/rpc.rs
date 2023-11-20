@@ -22,11 +22,14 @@ async fn handler(
     Query(params): Query<RpcParams>,
     payload: String,
 ) -> Result<Json<Value>> {
-    let domain = params.domain;
-    let handler = iron_rpc::Handler::new(domain);
+    let handler = iron_rpc::Handler::new(params.domain);
 
-    let reply = handler.handle(payload).await;
-    let reply = reply.unwrap_or_else(|| serde_json::Value::Null.to_string());
+    let reply = handler
+        .handle(serde_json::from_str(&payload.to_string()).unwrap())
+        .await;
+    let reply = reply
+        .map(|r| serde_json::to_value(&r).unwrap())
+        .unwrap_or_else(|| serde_json::Value::Null);
 
-    Ok(Json(serde_json::from_str(&reply)?))
+    Ok(Json(reply))
 }

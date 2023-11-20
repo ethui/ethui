@@ -1,5 +1,5 @@
 [workspace.package]
-version = "1.0.0"
+version = "1.1.1"
 edition = "2021"
 license-file = "./LICENSE"
 homepage = "https://github.com/iron-wallet"
@@ -33,6 +33,7 @@ iron-sync-alchemy = { path = "crates/sync/alchemy" }
 iron-broadcast = { path = "crates/broadcast" }
 iron-tracing = { path = "crates/tracing" }
 iron-exchange-rates = { path = "crates/exchange-rates" }
+iron-args = { path = "crates/args" }
 
 tokio = { version = "1.33", features = ["full", "sync"] }
 thiserror = "1.0"
@@ -59,6 +60,7 @@ reqwest = { version = "0.11.22", default-features = false, features = [
 alloy-primitives = { version = "0.4.1", features = ["serde"] }
 url = "2.3"
 futures = "0.3.28"
+clap = "4.4.8"
 
 foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-6b72a8cabf247eb62fc432401264bc5cff0228a0" }
 foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-6b72a8cabf247eb62fc432401264bc5cff0228a0" }

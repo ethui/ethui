@@ -40,6 +40,9 @@ pub enum Error {
 
     #[error("invalid network")]
     InvalidNetwork,
+
+    #[error(transparent)]
+    ReqwestError(#[from] reqwest::Error),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

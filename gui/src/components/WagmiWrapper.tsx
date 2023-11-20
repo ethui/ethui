@@ -12,7 +12,7 @@ import {
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
 import { useNetworks } from "@/store";
-import { Network } from "@/types";
+import { Network } from "@/types/network";
 
 interface Props {
   children: React.ReactNode;

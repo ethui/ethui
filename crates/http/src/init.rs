@@ -1,3 +1,4 @@
+use iron_args::Args;
 use iron_db::DB;
 use tower_http::{
     cors::{Any, CorsLayer},
@@ -12,12 +13,11 @@ pub(crate) struct Ctx {
     pub(crate) db: DB,
 }
 
-pub async fn init(db: DB) {
-    tokio::spawn(async {
-        let addr = std::env::var("IRON_HTTP_SERVER_ENDPOINT")
-            .unwrap_or("127.0.0.1:9003".into())
-            .parse()
-            .unwrap();
+pub async fn init(args: &Args, db: DB) {
+    let port = args.http_port;
+
+    tokio::spawn(async move {
+        let addr = format!("127.0.0.1:{}", port).parse().unwrap();
 
         let cors = CorsLayer::new()
             .allow_headers(Any)
@@ -29,6 +29,8 @@ pub async fn init(db: DB) {
             .with_state(Ctx { db })
             .layer(cors)
             .layer(TraceLayer::new_for_http());
+
+        tracing::debug!("HTTP server listening on: {}", addr);
 
         axum::Server::bind(&addr)
             .serve(app.into_make_service())
