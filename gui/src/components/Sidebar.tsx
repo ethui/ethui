@@ -6,12 +6,13 @@ import {
 } from "@mui/icons-material";
 import { Box, Button, Drawer, IconButton, Stack, Toolbar } from "@mui/material";
 import { blue } from "@mui/material/colors";
+import { invoke } from "@tauri-apps/api/tauri";
 import { findIndex, parseInt, range, toString } from "lodash-es";
 import { ReactNode } from "react";
 import { Link, useLocation, useRoute } from "wouter";
 
 import { useKeyPress, useMenuAction, useOS } from "@/hooks";
-import { useTheme } from "@/store";
+import { useSettings, useSettingsWindow, useTheme } from "@/store";
 
 import {
   Account,
@@ -65,23 +66,58 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
   const { theme } = useTheme();
   const breakpoint = theme.breakpoints.down("sm");
 
+  const { settings } = useSettings();
+  const fastMode = settings?.fastMode;
+
   const handleKeyboardNavigation = (event: KeyboardEvent) => {
     setLocation(TABS[parseInt(event.key) - 1].path);
   };
 
+  // const handleWalletsNavigation = (event: KeyboardEvent) => {
+  //   // logic here
+  // };
+
+  const handleFastModeToggle = () => {
+    invoke("settings_set_fast_mode", { mode: !fastMode });
+  };
+
+  const handleOpenCloseSettings = (event: KeyboardEvent) => {
+    event.preventDefault();
+    const { show } = useSettingsWindow.getState();
+    if (show) {
+      useSettingsWindow.getState().close();
+    } else {
+      useSettingsWindow.getState().open();
+    }
+  };
+
   useMenuAction((payload) => setLocation(payload));
 
+  //------------------------------------------------- switch between sidebar menus (Ctrl + 1...n)
   useKeyPress(
     range(1, TABS.length + 1).map(toString),
     { meta: true },
     handleKeyboardNavigation,
   );
-
   useKeyPress(
     range(1, TABS.length + 1).map(toString),
     { ctrl: true },
     handleKeyboardNavigation,
   );
+
+  //------------------------------------------------- switch between wallets (ctrl + p + 1...m)
+  // useKeyPress(
+  //   range(1, wallets.length + 1).map((num) => `${num}`),
+  //   { ctrl: true, alt: true },
+  //   handleWalletsNavigation
+  // );
+  // ----------------------------------------------- fast mode toggle (Ctrl + F)
+  useKeyPress(["F", "f"], { meta: true }, handleFastModeToggle);
+  useKeyPress(["F", "f"], { ctrl: true }, handleFastModeToggle);
+
+  // ----------------------------------------------- open/close settings menu (Ctrl + S)
+  useKeyPress(["S", "s"], { meta: true }, handleOpenCloseSettings);
+  useKeyPress(["S", "s"], { ctrl: true }, handleOpenCloseSettings);
 
   return (
     <>
@@ -102,28 +138,10 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
 
 export function Sidebar() {
   const [_match, params] = useRoute("/:path");
-  const [_location, setLocation] = useLocation();
+  const [_location] = useLocation();
   const { theme } = useTheme();
   const breakpoint = theme.breakpoints.down("sm");
   const { type } = useOS();
-
-  const handleKeyboardNavigation = (event: KeyboardEvent) => {
-    setLocation(TABS[parseInt(event.key) - 1].path);
-  };
-
-  useMenuAction((payload) => setLocation(payload));
-
-  useKeyPress(
-    range(1, TABS.length + 1).map(toString),
-    { meta: true },
-    handleKeyboardNavigation,
-  );
-
-  useKeyPress(
-    range(1, TABS.length + 1).map(toString),
-    { ctrl: true },
-    handleKeyboardNavigation,
-  );
 
   return (
     <Drawer

@@ -11,13 +11,10 @@ import {
 import { useState } from "react";
 
 const KEYBINDS = [
-  // TODO: Need to be able to switch between "Ctrl" and "Cmd" when necessary.
-  { name: "Switch between wallets", combination: "Ctrl + W" }, //Not working yet.
+  { name: "Switch between wallets", combination: "Shift + 1(...)n" }, //Not working yet.
   { name: "Switch between sidebar menus", combination: "Ctrl + 1(...)4" },
-  { name: "Open / Close Settings menu", combination: "Ctrl + S" }, //Not working yet, for now the combination is "S"
-  { name: "Enable Fast Mode", combination: "Ctrl + E" }, //Not working yet, for now the combination is "F + E"
-  { name: "Disable Fast Mode", combination: "Ctrl + D" }, //Not working yet, for now the combination is "F + D"
-  { name: "Switch theme", combination: "Ctrl + T" }, //Not working yet, for now the combination is "T + A" for auto, "T + D" for dark and "T + L" for light
+  { name: "Open / Close Settings menu", combination: "Ctrl + S" },
+  { name: "Toggle Fast Mode", combination: "Ctrl + F" },
 ];
 
 export function SettingsKeybinds() {

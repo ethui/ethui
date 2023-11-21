@@ -21,7 +21,6 @@ const store: StateCreator<Store> = (set, get) => ({
     {
       id: "settings",
       name: "Open settings",
-      shortcut: ["s"],
       perform: () => set({ show: !get().show }),
     },
   ],

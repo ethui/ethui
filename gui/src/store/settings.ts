@@ -26,7 +26,6 @@ const store: StateCreator<Store> = (set, get) => ({
       id: `${actionId}/${mode}`,
       name: mode,
       parent: actionId,
-      shortcut: ["f", mode[0]],
       perform: () =>
         invoke("settings_set_fast_mode", { mode: !get().settings?.fastMode }),
     })),
