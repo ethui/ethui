@@ -121,7 +121,7 @@ export function SettingsGeneral() {
               render={({ field }) => (
                 <FormControlLabel
                   sx={{ pointerEvents: "auto" }}
-                  label="Start automatically on boot (minized)"
+                  label="Start automatically on boot (minimized)"
                   control={<Switch {...field} checked={field.value} />}
                 />
               )}
