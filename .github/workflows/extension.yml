@@ -33,8 +33,6 @@ jobs:
           cache: "yarn"
           node-version-file: ".tool-versions"
 
-      - run: yarn global add node-gyp
-
       - name: install
         run: yarn workspace @iron/extension install
 
