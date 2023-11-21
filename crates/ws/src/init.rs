@@ -1,10 +1,9 @@
 use async_trait::async_trait;
+use iron_args::Args;
 use iron_broadcast::InternalMsg;
 use iron_types::GlobalState;
 use once_cell::sync::Lazy;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
-
-use iron_args::Args;
 
 use crate::{peers::Peers, server::server_loop};
 

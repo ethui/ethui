@@ -1,5 +1,6 @@
-use crate::Result;
 use auto_launch::{AutoLaunch, AutoLaunchBuilder};
+
+use crate::Result;
 
 pub fn update(v: bool) -> Result<()> {
     let handle = handle()?;

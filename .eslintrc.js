@@ -7,7 +7,7 @@ module.exports = {
     "plugin:import/typescript",
     "prettier",
   ],
-  plugins: ["react", "@typescript-eslint", "simple-import-sort", "import"],
+  plugins: ["react", "@typescript-eslint", "import"],
 
   parser: "@typescript-eslint/parser",
   parserOptions: {
