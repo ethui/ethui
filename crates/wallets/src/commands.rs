@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use iron_types::{Address, GlobalState, Json};
 
 use super::{utils, Result, Wallet, WalletControl, Wallets};
@@ -76,4 +78,9 @@ pub fn wallets_validate_mnemonic(mnemonic: String) -> bool {
 #[tauri::command]
 pub async fn wallets_ledger_derive(paths: Vec<String>) -> Result<Vec<(String, Address)>> {
     utils::ledger_derive_multiple(paths).await
+}
+
+#[tauri::command]
+pub fn wallets_read_pgp_secret(file: String) -> Result<String> {
+    utils::read_pgp_secret(Path::new(&file))
 }

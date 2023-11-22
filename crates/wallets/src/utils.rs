@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use ethers::signers::{coins_bip39::English, HDPath, MnemonicBuilder, Signer};
 use iron_types::{Address, ToAlloy};
 use once_cell::sync::Lazy;
@@ -62,6 +64,16 @@ pub(crate) async fn ledger_derive_multiple(paths: Vec<String>) -> Result<Vec<(St
     }
 
     Ok(res)
+}
+
+pub fn read_pgp_secret(file: &Path) -> Result<String> {
+    let mut ctx = gpgme::Context::from_protocol(gpgme::Protocol::OpenPgp)?;
+
+    let mut input = std::fs::File::open(file)?;
+    let mut output = vec![];
+    ctx.decrypt(&mut input, &mut output)?;
+
+    Ok(String::from_utf8(output)?.trim().to_owned())
 }
 
 #[cfg(test)]

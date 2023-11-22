@@ -89,10 +89,10 @@ export const ledgerSchema = z.object({
 export const pgpSchema = z.object({
   type: z.literal("PGPWallet"),
   name: z.string().min(1),
+  file: z.string().min(1),
   derivationPath: derivationPathSchema,
   count: z.number().int().min(1).max(100),
   current: z.array(z.string()).length(2).optional(),
-  file: z.string().min(1),
 });
 
 export const walletSchema = z.discriminatedUnion("type", [

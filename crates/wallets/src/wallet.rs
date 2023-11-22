@@ -67,7 +67,9 @@ pub enum Wallet {
     Impersonator(Impersonator),
 
     Ledger(LedgerWallet),
-    PGP(PGPWallet),
+
+    #[serde(rename = "PGPWallet")]
+    PGPWallet(PGPWallet),
 }
 
 impl Wallet {
@@ -80,7 +82,7 @@ impl Wallet {
             "HDWallet" => HDWallet::create(params).await?,
             "impersonator" => Impersonator::create(params).await?,
             "ledger" => LedgerWallet::create(params).await?,
-            "PGP" => PGPWallet::create(params).await?,
+            "PGPWallet" => PGPWallet::create(params).await?,
             _ => return Err(Error::InvalidWalletType(wallet_type.into())),
         };
 
@@ -95,7 +97,7 @@ pub enum WalletType {
     HDWallet,
     Impersonator,
     Ledger,
-    PGP,
+    PGPWallet,
 }
 
 impl std::fmt::Display for WalletType {
@@ -109,7 +111,7 @@ impl std::fmt::Display for WalletType {
                 WalletType::HDWallet => "HDWallet",
                 WalletType::Impersonator => "impersonator",
                 WalletType::Ledger => "ledger",
-                WalletType::PGP => "PGP",
+                WalletType::PGPWallet => "PGPWallet",
             }
         )
     }
@@ -123,7 +125,7 @@ impl From<&Wallet> for WalletType {
             Wallet::HDWallet(_) => Self::HDWallet,
             Wallet::Impersonator(_) => Self::Impersonator,
             Wallet::Ledger(_) => Self::Ledger,
-            Wallet::PGP(_) => Self::PGP,
+            Wallet::PGPWallet(_) => Self::PGPWallet,
         }
     }
 }

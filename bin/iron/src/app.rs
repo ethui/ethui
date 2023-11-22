@@ -64,6 +64,7 @@ impl IronApp {
                 iron_wallets::commands::wallets_get_mnemonic_addresses,
                 iron_wallets::commands::wallets_validate_mnemonic,
                 iron_wallets::commands::wallets_ledger_derive,
+                iron_wallets::commands::wallets_read_pgp_secret,
                 iron_dialogs::commands::dialog_get_payload,
                 iron_dialogs::commands::dialog_send,
                 iron_forge::commands::forge_get_abi,

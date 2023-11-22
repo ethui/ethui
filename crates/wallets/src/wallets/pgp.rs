@@ -1,29 +1,34 @@
-use std::path::Path;
 pub(crate) use std::path::PathBuf;
 
 use async_trait::async_trait;
 use ethers::signers::{coins_bip39::English, MnemonicBuilder, Signer as _};
 use iron_types::Address;
 
-use crate::{utils, wallet::WalletCreate, Error, Result, Signer, Wallet, WalletControl};
+use crate::{
+    utils::{self, read_pgp_secret},
+    wallet::WalletCreate,
+    Error, Result, Signer, Wallet, WalletControl,
+};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct PGPWallet {
     name: String,
+    file: PathBuf,
     derivation_path: String,
     count: u32,
-    addresses: Vec<(String, Address)>,
     current: (String, Address),
-    file: PathBuf,
+    addresses: Vec<(String, Address)>,
 }
 
 #[async_trait]
 impl WalletCreate for PGPWallet {
     async fn create(params: serde_json::Value) -> Result<Wallet> {
-        Ok(Wallet::PGP(
-            Self::from_params(serde_json::from_value(params)?).await?,
-        ))
+        let wallet = Wallet::PGPWallet(Self::from_params(serde_json::from_value(params)?).await?);
+
+        dbg!(&wallet);
+
+        Ok(wallet)
     }
 }
 
@@ -44,7 +49,7 @@ impl WalletControl for PGPWallet {
             self.update_count(count as u32).await?;
         }
 
-        Ok(Wallet::PGP(self))
+        Ok(Wallet::PGPWallet(self))
     }
 
     async fn get_current_address(&self) -> Address {
@@ -75,7 +80,7 @@ impl WalletControl for PGPWallet {
     }
 
     async fn build_signer(&self, chain_id: u32, path: &str) -> Result<Signer> {
-        let mnemonic: String = read_secret(&self.file)?;
+        let mnemonic: String = read_pgp_secret(&self.file)?;
 
         let signer = MnemonicBuilder::<English>::default()
             .phrase(mnemonic.as_str())
@@ -92,7 +97,7 @@ impl WalletControl for PGPWallet {
 
 impl PGPWallet {
     pub async fn from_params(params: PGPWalletParams) -> Result<Self> {
-        let mnemonic: String = read_secret(&params.file)?;
+        let mnemonic: String = read_pgp_secret(&params.file)?;
         let addresses = utils::derive_addresses(&mnemonic, &params.derivation_path, params.count);
 
         let current = if let Some(current) = addresses.iter().find(|(p, _)| p == &params.current) {
@@ -136,7 +141,7 @@ impl PGPWallet {
     }
 
     async fn update_derived_addresses(&mut self) -> Result<()> {
-        let mnemonic: String = read_secret(&self.file)?;
+        let mnemonic: String = read_pgp_secret(&self.file)?;
 
         let addresses = utils::derive_addresses(&mnemonic, &self.derivation_path, self.count);
         let current = addresses.first().unwrap().clone();
@@ -156,14 +161,4 @@ pub struct PGPWalletParams {
     derivation_path: String,
     current: String,
     count: u32,
-}
-
-fn read_secret(path: &Path) -> Result<String> {
-    let mut ctx = gpgme::Context::from_protocol(gpgme::Protocol::OpenPgp)?;
-
-    let mut input = std::fs::File::open(path)?;
-    let mut output = vec![];
-    ctx.decrypt(&mut input, &mut output)?;
-
-    Ok(String::from_utf8(output)?)
 }

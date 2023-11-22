@@ -21,7 +21,7 @@ export function QuickAddressSelect() {
   ]);
   const { data: addresses } = useInvoke<[string, Address][]>(
     "wallets_get_wallet_addresses",
-    { name: currentWallet?.name },
+    { name: currentWallet?.name }
   );
 
   const handleChange = (event: SelectChangeEvent<string | undefined>) => {
@@ -60,6 +60,9 @@ export function QuickAddressSelect() {
 function getCurrentPath(wallet: Wallet, addresses: [string, Address][]) {
   switch (wallet.type) {
     case "HDWallet":
+      return wallet.current ? wallet.current[0] : addresses[0][0];
+
+    case "PGPWallet":
       return wallet.current ? wallet.current[0] : addresses[0][0];
 
     case "impersonator":

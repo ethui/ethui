@@ -22,6 +22,7 @@ pub(super) fn router() -> Router<Ctx> {
         .route("/wallet_addresses", get(get_wallet_addresses))
         .route("/mnemonic_addresses", get(get_mnemonic_addresses))
         .route("/validate_mnemonic", get(validate_mnemonic))
+        .route("/read_pgp_secret", get(read_pgp_secret))
 }
 
 #[derive(Debug, Deserialize)]
@@ -128,4 +129,13 @@ pub(crate) async fn validate_mnemonic(
     Json(iron_wallets::commands::wallets_validate_mnemonic(
         payload.mnemonic,
     ))
+}
+
+#[derive(Debug, Deserialize)]
+pub(crate) struct ReadPGPSecretPayload {
+    path: String,
+}
+
+pub(crate) async fn read_pgp_secret(Query(payload): Query<ReadPGPSecretPayload>) -> Json<String> {
+    Json(iron_wallets::commands::read_pgp_secret(payload.path))
 }
