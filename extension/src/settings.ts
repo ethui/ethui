@@ -1,5 +1,5 @@
 import log from "loglevel";
-import browser from "webextension-polyfill";
+import { storage } from "webextension-polyfill";
 
 export interface Settings {
   logLevel: "info" | "debug" | "warn" | "error";
@@ -12,9 +12,7 @@ export const defaultSettings: Settings = {
 };
 
 export async function loadSettings() {
-  const settings = (await browser.storage.sync.get(
-    defaultSettings,
-  )) as Settings;
+  const settings = (await storage.sync.get(defaultSettings)) as Settings;
   log.setLevel(settings.logLevel);
   return settings;
 }

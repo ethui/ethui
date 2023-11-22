@@ -1,9 +1,9 @@
-import browser from "webextension-polyfill";
+import { devtools, runtime } from "webextension-polyfill";
 import { DevtoolsPanels } from "webextension-polyfill/namespaces/devtools_panels";
 
 import type { Request, Response } from "@/types";
 
-const tabId = browser.devtools.inspectedWindow.tabId;
+const tabId = devtools.inspectedWindow.tabId;
 
 let panel: DevtoolsPanels.ExtensionPanel;
 let cache: Array<Request | Response> = [];
@@ -12,13 +12,13 @@ let cache: Array<Request | Response> = [];
 
 async function init() {
   // creating devtools panel
-  panel = await browser.devtools.panels.create(
+  panel = await devtools.panels.create(
     "Iron Wallet",
     "icons/iron-48.png",
     "panel/index.html",
   );
 
-  browser.runtime.onMessage.addListener(cacheListener);
+  runtime.onMessage.addListener(cacheListener);
   panel.onShown.addListener(panelListener);
 }
 
@@ -31,11 +31,11 @@ function cacheListener(msg: Request | Response) {
 function panelListener() {
   panel.onShown.removeListener(panelListener); // run only once
 
-  browser.runtime.sendMessage({
+  runtime.sendMessage({
     type: "start",
     tabId,
     data: cache,
   });
   cache = [];
-  browser.runtime.onMessage.removeListener(cacheListener);
+  runtime.onMessage.removeListener(cacheListener);
 }
