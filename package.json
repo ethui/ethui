@@ -37,6 +37,7 @@
     "prettier": "^3.0.3"
   },
   "dependencies": {
+    "@tauri-apps/cli": "^1.5.6",
     "typescript": "5.2.2"
   },
   "resolutions": {
