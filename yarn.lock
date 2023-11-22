@@ -2833,7 +2833,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli@npm:^1.5.0":
+"@tauri-apps/cli@npm:^1.5.0, @tauri-apps/cli@npm:^1.5.6":
   version: 1.5.6
   resolution: "@tauri-apps/cli@npm:1.5.6"
   dependencies:
@@ -11807,6 +11807,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
+    "@tauri-apps/cli": "npm:^1.5.6"
     "@typescript-eslint/eslint-plugin": "npm:^6.6.0"
     "@typescript-eslint/parser": "npm:^6.11.0"
     assert: "npm:^2.1.0"
