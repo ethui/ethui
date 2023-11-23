@@ -21,7 +21,7 @@ import {
   useMatches,
   useRegisterActions,
 } from "kbar";
-import React, { forwardRef, ReactNode } from "react";
+import React, { forwardRef, ReactNode, useMemo } from "react";
 
 import {
   useNetworks,
