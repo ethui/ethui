@@ -48,7 +48,6 @@ export function PGPWalletForm({ wallet, onSubmit, onRemove }: Props) {
 
   const [name, setName] = useState<string>("");
   const [file, setFile] = useState<string>("");
-  const [mnemonic, setMnemonic] = useState<string>("");
   const [derivationPath, setDerivationPath] = useState<string | null>(null);
   const [current, setCurrent] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState<boolean>(false);
@@ -93,7 +92,6 @@ export function PGPWalletForm({ wallet, onSubmit, onRemove }: Props) {
               if (isValidMnemonic) {
                 setName(name);
                 setFile(file);
-                setMnemonic(mnemonic);
                 setStep(1);
               } else {
                 setErrorMsg("Invalid mnemonic");
@@ -109,7 +107,7 @@ export function PGPWalletForm({ wallet, onSubmit, onRemove }: Props) {
 
       {step == 1 && (
         <ReviewStep
-          mnemonic={mnemonic}
+          file={file}
           onSubmit={(derivationPath, current) => {
             setDerivationPath(derivationPath);
             setCurrent(current);
@@ -122,7 +120,7 @@ export function PGPWalletForm({ wallet, onSubmit, onRemove }: Props) {
 }
 
 interface ImportStepProps {
-  onSubmit: (name: string, mnemonic: string) => Promise<void>;
+  onSubmit: (name: string, file: string) => Promise<void>;
   onCancel: () => void;
   errorMsg: string;
 }
@@ -188,12 +186,12 @@ function ImportStep({ onSubmit, onCancel, errorMsg }: ImportStepProps) {
 }
 
 interface ReviewStepProps {
-  mnemonic: string;
+  file: string;
   onSubmit: (derivationPath: string, key: string) => void;
   onCancel: () => void;
 }
 
-function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
+function ReviewStep({ file, onSubmit, onCancel }: ReviewStepProps) {
   const schema = createSchema.pick({ derivationPath: true });
   const defaultValues = {
     derivationPath: derivationPathSchema.parse(undefined),
@@ -222,11 +220,11 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
 
   useEffect(() => {
     setCurrent(null);
-    invoke<[string, Address][]>("wallets_get_mnemonic_addresses", {
-      mnemonic,
+    invoke<[string, Address][]>("wallets_get_mnemonic_addresses_from_pgp", {
+      file,
       derivationPath,
     }).then(setAddresses);
-  }, [mnemonic, derivationPath]);
+  }, [file, derivationPath]);
 
   return (
     <Stack

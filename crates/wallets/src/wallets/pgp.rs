@@ -24,11 +24,9 @@ pub struct PGPWallet {
 #[async_trait]
 impl WalletCreate for PGPWallet {
     async fn create(params: serde_json::Value) -> Result<Wallet> {
-        let wallet = Wallet::PGPWallet(Self::from_params(serde_json::from_value(params)?).await?);
-
-        dbg!(&wallet);
-
-        Ok(wallet)
+        Ok(Wallet::PGPWallet(
+            Self::from_params(serde_json::from_value(params)?).await?,
+        ))
     }
 }
 

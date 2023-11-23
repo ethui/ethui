@@ -62,6 +62,7 @@ impl IronApp {
                 iron_wallets::commands::wallets_set_current_path,
                 iron_wallets::commands::wallets_get_wallet_addresses,
                 iron_wallets::commands::wallets_get_mnemonic_addresses,
+                iron_wallets::commands::wallets_get_mnemonic_addresses_from_pgp,
                 iron_wallets::commands::wallets_validate_mnemonic,
                 iron_wallets::commands::wallets_ledger_derive,
                 iron_wallets::commands::wallets_read_pgp_secret,
