@@ -88,3 +88,6 @@ alloy-sol-types = { git = "https://github.com/alloy-rs/core/" }
 
 # https://github.com/summa-tx/coins/issues/124
 coins-ledger = { git = "https://github.com/iron-wallet/coins", branch = "send" }
+
+# https://github.com/joshieDo/hidapi-rs/issues/6
+hidapi-rusb = { git = "https://github.com/naps62/hidapi-rs", branch = "libusb-macos" }
