@@ -1,10 +1,11 @@
-use ethers::{abi::Uint, core::types::Log, types::Bytes};
+use ethers::{abi::Uint, types::Bytes};
+use ethers_core::types::Log;
 use foundry_evm::{
     backend::Backend,
     executors::{Executor, ExecutorBuilder},
     fork::CreateFork,
     opts::EvmOpts,
-    traces::{node::CallTraceNode, CallTraceArena},
+    traces::{CallTraceArena, CallTraceNode},
 };
 use iron_types::{Address, ToAlloy, ToEthers};
 use revm::interpreter::InstructionResult;
@@ -104,7 +105,7 @@ impl Evm {
                 .unwrap_or_default()
                 .arena
                 .into_iter()
-                .map(CallTrace::from)
+                .map(CallTraceNode::from)
                 .collect(),
             logs: result.logs,
             exit_reason: result.exit_reason,

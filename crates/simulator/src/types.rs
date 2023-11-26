@@ -1,8 +1,9 @@
 use ethers::{
     abi::Uint,
-    core::types::Log,
     types::{Bytes, U256},
 };
+use ethers_core::types::Log;
+use foundry_evm::traces::CallTraceNode;
 use foundry_evm::utils::CallKind;
 use iron_types::Address;
 use revm::interpreter::InstructionResult;
@@ -27,7 +28,7 @@ pub struct Result {
     pub gas_used: u64,
     pub block_number: u64,
     pub success: bool,
-    pub trace: Vec<CallTrace>,
+    pub trace: Vec<CallTraceNode>,
     pub logs: Vec<Log>,
     pub exit_reason: InstructionResult,
     pub return_data: Bytes,

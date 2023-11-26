@@ -7,7 +7,7 @@ pub use affinity::Affinity;
 pub use alloy_primitives::{address, Address, B256, U256, U64};
 pub use ethers::{abi::Abi, types::Bytes};
 pub use events::Event;
-pub use foundry_utils::types::{ToAlloy, ToEthers};
+pub use foundry_common::types::{ToAlloy, ToEthers};
 pub use global_state::GlobalState;
 pub use tokens::{
     Erc721Collection, Erc721Token, Erc721TokenData, Erc721TokenDetails, TokenBalance, TokenMetadata,
