@@ -1,17 +1,16 @@
+use std::{collections::BTreeSet, path::PathBuf, time::Duration};
+
 use alloy_primitives::Address;
 use color_eyre::eyre::Result;
-use reth_db::mdbx::tx::Tx;
-use reth_db::mdbx::RO;
-use reth_db::DatabaseEnv;
+use reth_db::{
+    mdbx::{tx::Tx, RO},
+    DatabaseEnv,
+};
 use reth_primitives::Header;
 use reth_provider::{
-    BlockNumReader, BlockReader, DatabaseProvider, HeaderProvider, ProviderFactory,
-    ReceiptProvider, TransactionsProvider,
+    BlockNumReader, BlockReader, DatabaseProvider, HeaderProvider, ProviderFactory, TransactionsProvider,
 };
-use std::time::Duration;
-use std::{collections::BTreeSet, path::PathBuf};
-use tokio::task::JoinHandle;
-use tokio::time::sleep;
+use tokio::{task::JoinHandle, time::sleep};
 use tracing::{info, trace};
 
 use crate::config::Config;
@@ -28,7 +27,7 @@ pub struct Sync {
 
 impl Sync {
     #[tracing::instrument(skip(config))]
-    pub async fn start(config: &Config) -> Result<JoinHandle<Result<()>>> {
+    pub fn start(config: &Config) -> Result<JoinHandle<Result<()>>> {
         let sync: Self = config.try_into()?;
         Ok(tokio::spawn(async move { sync.run().await }))
     }
@@ -75,7 +74,7 @@ impl Sync {
     }
 
     async fn process_block(&self, header: &Header) -> Result<()> {
-        info!(event = "process", block = header.number);
+        // info!(event = "process", block = header.number);
 
         let indices = match self.provider.block_body_indices(header.number)? {
             Some(indices) => indices,

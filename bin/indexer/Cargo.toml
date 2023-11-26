@@ -19,7 +19,12 @@ serde.workspace = true
 color-eyre.workspace = true
 alloy-primitives.workspace = true
 tracing.workspace = true
+futures.workspace = true
+
 toml = "0.8.8"
+actix = "0.13.1"
+actix-web = "4"
+actix-cors = "0.6.4"
 
 reth-db = { git = "https://github.com/paradigmxyz/reth", package = "reth-db" }
 reth-primitives = { git = "https://github.com/paradigmxyz/reth", package = "reth-primitives", features = [
