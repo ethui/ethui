@@ -4342,6 +4342,7 @@ dependencies = [
 name = "iron-rpc"
 version = "1.1.1"
 dependencies = [
+ "alloy-primitives",
  "async-trait",
  "ethers",
  "iron-broadcast",
@@ -4384,8 +4385,7 @@ dependencies = [
 name = "iron-simulator"
 version = "1.1.1"
 dependencies = [
- "ethers",
- "ethers-core 2.0.11",
+ "alloy-primitives",
  "eyre",
  "foundry-config",
  "foundry-evm",
