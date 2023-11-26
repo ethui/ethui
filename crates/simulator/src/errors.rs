@@ -2,9 +2,6 @@
 pub enum SimulationError {
     #[error(transparent)]
     Evm(#[from] eyre::Report),
-
-    #[error(transparent)]
-    Provider(#[from] ethers::providers::ProviderError),
 }
 
 pub type SimulationResult<T> = std::result::Result<T, SimulationError>;
