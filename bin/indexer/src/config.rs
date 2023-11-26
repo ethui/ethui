@@ -12,13 +12,22 @@ struct Args {
 
 #[derive(Deserialize, Debug)]
 pub struct Config {
+    pub reth: RethConfig,
+    pub sync: SyncConfig,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct RethConfig {
     pub db: PathBuf,
     pub chain_id: u64,
 
     #[serde(default = "default_from_block")]
     pub start_block: u64,
+}
 
-    pub addresses: BTreeSet<Address>,
+#[derive(Deserialize, Debug)]
+pub struct SyncConfig {
+    pub seed_addresses: BTreeSet<Address>,
 }
 
 impl Config {

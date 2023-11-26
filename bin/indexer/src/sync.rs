@@ -1,5 +1,5 @@
 use alloy_primitives::Address;
-use color_eyre::eyre::{eyre, Result};
+use color_eyre::eyre::Result;
 use reth_db::mdbx::tx::Tx;
 use reth_db::mdbx::RO;
 use reth_db::DatabaseEnv;
@@ -15,7 +15,6 @@ use tokio::time::sleep;
 use tracing::{info, trace};
 
 use crate::config::Config;
-use crate::provider::get_reth_factory;
 
 pub struct Sync {
     db: PathBuf,
@@ -124,15 +123,15 @@ impl TryFrom<&Config> for Sync {
     type Error = color_eyre::eyre::Error;
 
     fn try_from(config: &Config) -> Result<Self, Self::Error> {
-        let factory = get_reth_factory(&config.db, config.chain_id)?;
+        let factory: ProviderFactory<reth_db::DatabaseEnv> = (&config.reth).try_into()?;
         let provider: reth_provider::DatabaseProvider<Tx<RO>> = factory.provider()?;
 
         Ok(Self {
-            db: config.db.clone(),
-            chain_id: config.chain_id,
-            from_block: config.start_block,
+            db: config.reth.db.clone(),
+            chain_id: config.reth.chain_id,
+            from_block: config.reth.start_block,
             to_block: None,
-            addresses: config.addresses.clone(),
+            addresses: config.sync.seed_addresses.clone(),
             factory,
             provider,
         })

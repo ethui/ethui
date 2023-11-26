@@ -1,18 +1,23 @@
-use std::path::Path;
-
-use color_eyre::eyre::Result;
+use color_eyre::eyre::{self};
 use reth_db::open_db_read_only;
-use reth_primitives::SEPOLIA;
 use reth_provider::ProviderFactory;
 
-pub fn get_reth_factory(
-    path: &Path,
-    chain_id: u64,
-) -> Result<ProviderFactory<reth_db::DatabaseEnv>> {
-    let db = open_db_read_only(path, None)?;
+use crate::config::RethConfig;
 
-    let spec = (*SEPOLIA).clone();
-    let factory: ProviderFactory<reth_db::DatabaseEnv> = ProviderFactory::new(db, spec);
+impl TryFrom<&RethConfig> for ProviderFactory<reth_db::DatabaseEnv> {
+    type Error = eyre::Error;
 
-    Ok(factory)
+    fn try_from(config: &RethConfig) -> std::result::Result<Self, Self::Error> {
+        let db = open_db_read_only(&config.db, None)?;
+
+        let spec = match config.chain_id {
+            1 => (*reth_primitives::MAINNET).clone(),
+            11155111 => (*reth_primitives::SEPOLIA).clone(),
+            _ => return Err(eyre::eyre!("unsupported chain id {}", config.chain_id)),
+        };
+
+        let factory: ProviderFactory<reth_db::DatabaseEnv> = ProviderFactory::new(db, spec);
+
+        Ok(factory)
+    }
 }
