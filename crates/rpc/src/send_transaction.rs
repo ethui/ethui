@@ -147,8 +147,11 @@ impl<'a> SendTransaction {
                     NameOrAddress::Address(a) => Ok(a.to_alloy()),
                 })
                 .map_err(|_| Error::CannotSimulate)?,
-            value: tx_request.value().cloned(),
-            data: tx_request.data().cloned(),
+            value: tx_request.value().cloned().map(|v| v.to_alloy()),
+            data: tx_request
+                .data()
+                .cloned()
+                .map(|v| alloy_primitives::Bytes(v.0)),
             gas_limit: tx_request
                 .gas()
                 .map(|v| v.as_u64())

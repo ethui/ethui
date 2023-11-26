@@ -1,8 +1,4 @@
-use ethers::{
-    abi::Uint,
-    types::{Bytes, U256},
-};
-use ethers_core::types::Log;
+use alloy_primitives::{Bytes, Log, U256};
 use foundry_evm::traces::CallTraceNode;
 use foundry_evm::utils::CallKind;
 use iron_types::Address;
@@ -40,5 +36,5 @@ pub struct CallTrace {
     pub call_type: CallKind,
     pub from: Address,
     pub to: Address,
-    pub value: Uint,
+    pub value: U256,
 }
