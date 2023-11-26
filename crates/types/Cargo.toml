@@ -17,4 +17,4 @@ async-trait = { workspace = true }
 tracing = { workspace = true }
 alloy-primitives = { workspace = true }
 foundry-config = { workspace = true }
-foundry-utils = { workspace = true }
+foundry-common = { workspace = true }

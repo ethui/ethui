@@ -57,34 +57,36 @@ jsonrpc-core = "18.0.0"
 reqwest = { version = "0.11.22", default-features = false, features = [
   "rustls-tls",
 ] }
-alloy-primitives = { version = "0.4.1", features = ["serde"] }
+alloy-primitives = { version = "0.5.0", features = ["serde"] }
 url = "2.3"
 futures = "0.3.28"
 clap = "4.4.8"
 
-foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-6b72a8cabf247eb62fc432401264bc5cff0228a0" }
-foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-6b72a8cabf247eb62fc432401264bc5cff0228a0" }
-foundry-utils = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-6b72a8cabf247eb62fc432401264bc5cff0228a0" }
+foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-890bc7a03fd575fbfaf02a8870241f34760e65f1" }
+foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-890bc7a03fd575fbfaf02a8870241f34760e65f1" }
+foundry-common = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-890bc7a03fd575fbfaf02a8870241f34760e65f1" }
 
 [patch.crates-io]
-ethers = { git = "https://github.com/gakonst/ethers-rs", rev = "841ff8c47980798fbb47991e047f8481b1d5eb39" }
-ethers-addressbook = { git = "https://github.com/gakonst/ethers-rs", rev = "841ff8c47980798fbb47991e047f8481b1d5eb39" }
-ethers-core = { git = "https://github.com/gakonst/ethers-rs", rev = "841ff8c47980798fbb47991e047f8481b1d5eb39" }
-ethers-contract = { git = "https://github.com/gakonst/ethers-rs", rev = "841ff8c47980798fbb47991e047f8481b1d5eb39" }
-ethers-contract-abigen = { git = "https://github.com/gakonst/ethers-rs", rev = "841ff8c47980798fbb47991e047f8481b1d5eb39" }
-ethers-providers = { git = "https://github.com/gakonst/ethers-rs", rev = "841ff8c47980798fbb47991e047f8481b1d5eb39" }
-ethers-signers = { git = "https://github.com/gakonst/ethers-rs", rev = "841ff8c47980798fbb47991e047f8481b1d5eb39" }
-ethers-middleware = { git = "https://github.com/gakonst/ethers-rs", rev = "841ff8c47980798fbb47991e047f8481b1d5eb39" }
-ethers-etherscan = { git = "https://github.com/gakonst/ethers-rs", rev = "841ff8c47980798fbb47991e047f8481b1d5eb39" }
-ethers-solc = { git = "https://github.com/gakonst/ethers-rs", rev = "841ff8c47980798fbb47991e047f8481b1d5eb39" }
+ethers = { git = "https://github.com/gakonst/ethers-rs", rev = "8175f0f97070ad69abd5dfa7b8df31f1c1dcc3d6" }
+ethers-core = { git = "https://github.com/gakonst/ethers-rs", rev = "8175f0f97070ad69abd5dfa7b8df31f1c1dcc3d6" }
+ethers-contract = { git = "https://github.com/gakonst/ethers-rs", rev = "8175f0f97070ad69abd5dfa7b8df31f1c1dcc3d6" }
+ethers-contract-abigen = { git = "https://github.com/gakonst/ethers-rs", rev = "8175f0f97070ad69abd5dfa7b8df31f1c1dcc3d6" }
+ethers-providers = { git = "https://github.com/gakonst/ethers-rs", rev = "8175f0f97070ad69abd5dfa7b8df31f1c1dcc3d6" }
+ethers-signers = { git = "https://github.com/gakonst/ethers-rs", rev = "8175f0f97070ad69abd5dfa7b8df31f1c1dcc3d6" }
+ethers-middleware = { git = "https://github.com/gakonst/ethers-rs", rev = "8175f0f97070ad69abd5dfa7b8df31f1c1dcc3d6" }
+ethers-solc = { git = "https://github.com/gakonst/ethers-rs", rev = "8175f0f97070ad69abd5dfa7b8df31f1c1dcc3d6" }
 
-foundry-compilers = { git = "https://github.com/foundry-rs/compilers" }
-foundry-block-explorers = { git = "https://github.com/foundry-rs/block-explorers" }
+# foundry-compilers = { git = "https://github.com/foundry-rs/compilers" }
+# foundry-block-explorers = { git = "https://github.com/foundry-rs/block-explorers" }
 
-alloy-dyn-abi = { git = "https://github.com/alloy-rs/core/" }
-alloy-primitives = { git = "https://github.com/alloy-rs/core/" }
-alloy-json-abi = { git = "https://github.com/alloy-rs/core/" }
-alloy-sol-types = { git = "https://github.com/alloy-rs/core/" }
+# alloy-dyn-abi = { git = "https://github.com/alloy-rs/core/" }
+# alloy-primitives = { git = "https://github.com/alloy-rs/core/" }
+# alloy-json-abi = { git = "https://github.com/alloy-rs/core/" }
+# alloy-sol-types = { git = "https://github.com/alloy-rs/core/" }
+revm = { git = "https://github.com/bluealloy/revm", branch = "reth_freeze" }
+revm-interpreter = { git = "https://github.com/bluealloy/revm", branch = "reth_freeze" }
+revm-precompile = { git = "https://github.com/bluealloy/revm", branch = "reth_freeze" }
+revm-primitives = { git = "https://github.com/bluealloy/revm", branch = "reth_freeze" }
 
 # https://github.com/summa-tx/coins/issues/124
 coins-ledger = { git = "https://github.com/iron-wallet/coins", branch = "send" }
