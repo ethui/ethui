@@ -14,6 +14,9 @@ struct Args {
 pub struct Config {
     pub reth: RethConfig,
     pub sync: SyncConfig,
+
+    #[serde(default)]
+    pub http: HttpConfig,
 }
 
 #[derive(Deserialize, Debug)]
@@ -30,6 +33,12 @@ pub struct SyncConfig {
     pub seed_addresses: BTreeSet<Address>,
 }
 
+#[derive(Deserialize, Debug)]
+pub struct HttpConfig {
+    #[serde(default = "default_http_port")]
+    pub port: u16,
+}
+
 impl Config {
     pub fn read() -> Result<Self> {
         let args = Args::parse();
@@ -40,6 +49,18 @@ impl Config {
     }
 }
 
+impl Default for HttpConfig {
+    fn default() -> Self {
+        Self {
+            port: default_http_port(),
+        }
+    }
+}
+
 fn default_from_block() -> u64 {
     1
+}
+
+fn default_http_port() -> u16 {
+    9500
 }

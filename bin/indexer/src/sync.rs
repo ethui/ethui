@@ -28,7 +28,7 @@ pub struct Sync {
 
 impl Sync {
     #[tracing::instrument(skip(config))]
-    pub async fn start(config: &Config) -> Result<JoinHandle<Result<()>>> {
+    pub fn start(config: &Config) -> Result<JoinHandle<Result<()>>> {
         let sync: Self = config.try_into()?;
         Ok(tokio::spawn(async move { sync.run().await }))
     }
@@ -75,7 +75,7 @@ impl Sync {
     }
 
     async fn process_block(&self, header: &Header) -> Result<()> {
-        info!(event = "process", block = header.number);
+        // info!(event = "process", block = header.number);
 
         let indices = match self.provider.block_body_indices(header.number)? {
             Some(indices) => indices,
