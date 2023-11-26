@@ -29,7 +29,6 @@ pub struct DB {
 
 impl DB {
     pub async fn connect(path: &PathBuf) -> Result<Self> {
-        dbg!(&path);
         let connect_options = SqliteConnectOptions::new()
             .filename(path)
             .create_if_missing(true)
