@@ -9,8 +9,8 @@ authors = ["Miguel Palhas <mpalhas@gmail.com>"]
 
 [workspace]
 resolver = "2"
-members = ["bin/iron", "crates/*"]
-default-members = ["bin/iron"]
+members = ["bin/*", "crates/*"]
+default-members = ["bin/iron", "bin/indexer"]
 
 [workspace.dependencies]
 iron-forge = { path = "crates/forge" }
@@ -60,8 +60,9 @@ reqwest = { version = "0.11.22", default-features = false, features = [
 alloy-primitives = { version = "0.5.0", features = ["serde"] }
 url = "2.3"
 futures = "0.3.28"
-clap = "4.4.8"
+clap = { version = "4.4.8", features = ["derive", "env"] }
 coins-ledger = "0.9.0"
+color-eyre = "0.6.2"
 
 foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-890bc7a03fd575fbfaf02a8870241f34760e65f1" }
 foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-890bc7a03fd575fbfaf02a8870241f34760e65f1" }
