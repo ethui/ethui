@@ -11,10 +11,7 @@ async fn main() -> Result<()> {
     iron_tracing::init()?;
 
     let config = Config::read()?;
-
-    dbg!(&config);
     let sync_handle = sync::Sync::start(&config).await?;
-
     sync_handle.await??;
 
     Ok(())

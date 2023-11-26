@@ -1,15 +1,18 @@
 use alloy_primitives::Address;
-use color_eyre::eyre::Result;
+use color_eyre::eyre::{eyre, Result};
 use reth_db::mdbx::tx::Tx;
 use reth_db::mdbx::RO;
 use reth_db::DatabaseEnv;
 use reth_primitives::Header;
-use reth_provider::{BlockNumReader, DatabaseProvider, HeaderProvider, ProviderFactory};
+use reth_provider::{
+    BlockNumReader, BlockReader, DatabaseProvider, HeaderProvider, ProviderFactory,
+    ReceiptProvider, TransactionsProvider,
+};
 use std::time::Duration;
 use std::{collections::BTreeSet, path::PathBuf};
 use tokio::task::JoinHandle;
 use tokio::time::sleep;
-use tracing::info;
+use tracing::{info, trace};
 
 use crate::config::Config;
 use crate::provider::get_reth_factory;
@@ -47,7 +50,7 @@ impl Sync {
                     }
                 }
                 Some(header) => {
-                    self.process_block(&header).await;
+                    self.process_block(&header).await?;
                     next_block += 1;
                 }
             }
@@ -57,7 +60,7 @@ impl Sync {
     }
 
     async fn wait_new_block(&mut self, block: u64) -> Result<()> {
-        info!(event = "wait", block);
+        trace!(event = "wait", block);
         loop {
             sleep(Duration::from_secs(2)).await;
 
@@ -65,28 +68,55 @@ impl Sync {
             let latest = provider.last_block_number().unwrap();
 
             if latest >= block {
-                info!("new block(s) found. from: {}, latest: {}", block, latest);
+                trace!("new block(s) found. from: {}, latest: {}", block, latest);
                 self.provider = provider;
                 return Ok(());
             }
         }
     }
 
-    async fn process_block(&self, header: &Header) {
+    async fn process_block(&self, header: &Header) -> Result<()> {
         info!(event = "process", block = header.number);
 
-        // let block = provider
-        //     .block_by_number(header.number)
-        //     .expect("Failed to get block");
-        // let mut tx = provider
-        //     .read_transaction()
-        //     .expect("Failed to create read transaction");
-        // for tx in block.transactions {
-        //     let tx = tx.expect("Failed to get transaction");
-        //     let from = tx.from.expect("Failed to get from address");
-        //     let to = tx.to.expect("Failed to get to address");
-        //     if self.addresses.contains(&from) || self.addresses.contains(&to) {
-        //         info!("found transaction: {}", tx.hash);
+        let indices = match self.provider.block_body_indices(header.number)? {
+            Some(indices) => indices,
+            None => return Ok(()),
+        };
+
+        for tx_id in indices.first_tx_num..indices.first_tx_num + indices.tx_count {
+            let tx = match self.provider.transaction_by_id_no_hash(tx_id)? {
+                Some(tx) => tx,
+                None => continue,
+            };
+
+            let receipt = match self.provider.receipt(tx_id)? {
+                Some(receipt) => receipt,
+                None => continue,
+            };
+
+            // check tx origin
+            if let Some(from) = tx.recover_signer() {
+                if self.addresses.contains(&from) {
+                    info!("found tx {} for address {}", tx.hash(), from);
+                }
+            }
+
+            // check tx destination
+            if let Some(to) = tx.to() {
+                if self.addresses.contains(&to) {
+                    info!("found tx {} for address {}", tx.hash(), to);
+                }
+            }
+
+            // dbg!(receipt.logs);
+
+            // let receipt = match self.provider.receipt(tx_id)? {
+            //     Some(receipt) => receipt,
+            //     None => continue,
+            // };
+        }
+
+        Ok(())
     }
 }
 

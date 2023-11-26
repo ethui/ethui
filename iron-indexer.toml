@@ -1,4 +1,7 @@
 db = "/mnt/data/eth/sepolia/reth/db"
 chain_id = 11155111
-start_block = 4000000
-addresses = ["0x7CBd790123255d9467d22baA806c9f059E558Dc1"]
+start_block = 4700000
+addresses = [
+  "0x7CBd790123255d9467d22baA806c9f059E558Dc1",
+  "0xe59C24676fBF48f2b3F52dbF4D4938610378B081",
+]
