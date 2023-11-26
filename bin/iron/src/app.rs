@@ -189,7 +189,7 @@ fn resource(app: &tauri::App, resource: &str) -> PathBuf {
 
 #[cfg(debug_assertions)]
 fn config_dir(_app: &tauri::App) -> PathBuf {
-    PathBuf::from("target/debug/")
+    PathBuf::from("../../target/debug/")
 }
 
 #[cfg(not(debug_assertions))]
