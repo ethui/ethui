@@ -26,10 +26,10 @@ once_cell = { workspace = true }
 async-trait = { workspace = true }
 futures = { workspace = true }
 tracing = { workspace = true }
+coins-ledger = { workspace = true }
 
 enum_dispatch = "0.3.11"
 coins-bip32 = "0.8.3"
-coins-ledger = "0.8.7"
 futures-executor = "0.3.29"
 hex = "0.4.3"
 semver = "1.0.20"
