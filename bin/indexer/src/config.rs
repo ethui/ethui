@@ -1,8 +1,9 @@
+use std::{collections::BTreeSet, path::PathBuf};
+
 use alloy_primitives::Address;
 use clap::Parser;
 use color_eyre::eyre::Result;
 use serde::Deserialize;
-use std::{collections::BTreeSet, path::PathBuf};
 
 #[derive(Debug, clap::Parser)]
 struct Args {

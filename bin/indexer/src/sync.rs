@@ -1,17 +1,16 @@
+use std::{collections::BTreeSet, path::PathBuf, time::Duration};
+
 use alloy_primitives::Address;
 use color_eyre::eyre::Result;
-use reth_db::mdbx::tx::Tx;
-use reth_db::mdbx::RO;
-use reth_db::DatabaseEnv;
+use reth_db::{
+    mdbx::{tx::Tx, RO},
+    DatabaseEnv,
+};
 use reth_primitives::Header;
 use reth_provider::{
-    BlockNumReader, BlockReader, DatabaseProvider, HeaderProvider, ProviderFactory,
-    ReceiptProvider, TransactionsProvider,
+    BlockNumReader, BlockReader, DatabaseProvider, HeaderProvider, ProviderFactory, TransactionsProvider,
 };
-use std::time::Duration;
-use std::{collections::BTreeSet, path::PathBuf};
-use tokio::task::JoinHandle;
-use tokio::time::sleep;
+use tokio::{task::JoinHandle, time::sleep};
 use tracing::{info, trace};
 
 use crate::config::Config;

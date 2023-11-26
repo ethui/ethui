@@ -4,4 +4,3 @@ use actix_web::{get, HttpResponse, Responder};
 async fn health() -> impl Responder {
     HttpResponse::Ok()
 }
-

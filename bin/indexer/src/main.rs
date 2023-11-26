@@ -16,7 +16,6 @@ async fn main() -> Result<()> {
     let config = Config::read()?;
     let sync = sync::Sync::start(&config)?;
     let api = api::server(&config.http);
-    dbg!("here");
 
     pin!(sync, api);
     future::select(sync, api).await;
