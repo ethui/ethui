@@ -88,10 +88,10 @@ impl Sync {
                 None => continue,
             };
 
-            let receipt = match self.provider.receipt(tx_id)? {
-                Some(receipt) => receipt,
-                None => continue,
-            };
+            // let receipt = match self.provider.receipt(tx_id)? {
+            //     Some(receipt) => receipt,
+            //     None => continue,
+            // };
 
             // check tx origin
             if let Some(from) = tx.recover_signer() {
