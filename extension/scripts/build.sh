@@ -37,7 +37,6 @@ while [ : ]; do
   esac
 done
 
-
 #
 # building
 #
