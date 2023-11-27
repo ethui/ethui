@@ -9,7 +9,7 @@ authors = ["Miguel Palhas <mpalhas@gmail.com>"]
 
 [workspace]
 resolver = "2"
-members = ["bin/*", "crates/*"]
+members = ["bin/iron", "crates/*"]
 default-members = ["bin/iron"]
 
 [workspace.dependencies]
