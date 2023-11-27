@@ -10,7 +10,7 @@ authors = ["Miguel Palhas <mpalhas@gmail.com>"]
 [workspace]
 resolver = "2"
 members = ["bin/*", "crates/*"]
-default-members = ["bin/iron", "bin/indexer"]
+default-members = ["bin/iron"]
 
 [workspace.dependencies]
 iron-forge = { path = "crates/forge" }
