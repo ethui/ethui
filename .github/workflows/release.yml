@@ -81,6 +81,8 @@ jobs:
       - name: rust cache
         uses: Swatinem/rust-cache@v2
 
+      - run: npm install -g yarn
+
       - name: setup node
         uses: actions/setup-node@v3
         with:
@@ -104,6 +106,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - run: npm install -g yarn
 
       - uses: actions/setup-node@v3
         with:
