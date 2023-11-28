@@ -90,6 +90,8 @@ jobs:
 
       - name: rust cache
         uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: "release"
 
       - run: npm install -g yarn
 

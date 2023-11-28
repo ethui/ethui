@@ -46,6 +46,9 @@ jobs:
 
       - name: rust cache
         uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: "debug"
+          save-if: ${{ github.ref == 'refs/heads/main' }}
 
       - name: cargo-check
         uses: actions-rs/cargo@v1
