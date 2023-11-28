@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.get-tag.outputs.tag }}
-      version: ${{ steps.get-version.output.version }}
+      version: ${{ steps.get-version.outputs.version }}
       release_id: ${{ steps.get-id.outputs.id }}
     steps:
       - uses: actions/checkout@v3
