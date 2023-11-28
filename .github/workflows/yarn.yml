@@ -31,14 +31,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
-      - name: rust cache
-        uses: Swatinem/rust-cache@v2
-
       - run: npm install -g yarn
 
-      - name: yarn cache
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
           cache: "yarn"
           node-version-file: ".tool-versions"
