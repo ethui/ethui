@@ -61,7 +61,6 @@ jobs:
             gh release delete-asset ${{needs.setup.output.tag}} $name
           done
 
-
   # build app
   # upload to draft release
   app:
