@@ -35,7 +35,7 @@ jobs:
       - id: get-version
         name: get version
         run: |
-          version=${{ steps.get-tag.outputs.tag }} | sed -i 's/^v//'
+          version=${{ steps.get-tag.outputs.tag }} | sed 's/^v//'
           echo "version=$version" >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
