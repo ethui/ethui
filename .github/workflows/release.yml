@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.get-tag.outputs.tag }}
+      version: ${{ steps.get-version.output.version }}
       release_id: ${{ steps.get-id.outputs.id }}
     steps:
       - uses: actions/checkout@v3
@@ -27,6 +28,15 @@ jobs:
           echo "tag=$(gh api /repos/iron-wallet/iron/releases |\
             jq -r '.[] | select(.draft == true) | .tag_name')" \
             >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # get the current version (tag without the `v`)
+      - id: get-version
+        name: get version
+        run: |
+          version=${{ steps.get-tag.outputs.tag }} | sed -i 's/^v//'
+          echo "version=$version" >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -118,10 +128,10 @@ jobs:
         run: yarn workspace @iron/extension install
 
       - name: Create chrome bundle
-        run: yarn workspace @iron/extension build --target chrome --version ${{ needs.setup.outputs.tag }}
+        run: yarn workspace @iron/extension build --target chrome --version ${{ needs.setup.outputs.version }}
 
       - name: Create firefox bundle
-        run: yarn workspace @iron/extension build --target firefox --version ${{ needs.setup.outputs.tag }}
+        run: yarn workspace @iron/extension build --target firefox --version ${{ needs.setup.outputs.version }}
 
       - name: Upload to release
         run: gh release upload ${{ needs.setup.outputs.tag }} ./extension/dist/*.{crx,zip,xpi}
