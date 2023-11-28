@@ -59,7 +59,7 @@ jobs:
       - uses: actions/checkout@v3
       - run: |
           for name in $(gh release view ${{needs.setup.outputs.tag}} --json assets | jq -r '.assets[].name'); do
-            gh release delete-asset ${{needs.setup.output.tag}} $name
+            gh release delete-asset ${{needs.setup.outputs.tag}} $name
           done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
