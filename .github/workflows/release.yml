@@ -50,10 +50,21 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  # deletes all assets previously uploaded to the current draft release
+  # necessary if we have to retry a release build due to a prior failure
+  clear-assets:
+    needs: [setup]
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          for name in $(gh release view ${{needs.setup.outputs.tag}} --json assets | jq -r '.assets[].name'); do
+            gh release delete-asset ${{needs.setup.output.tag}} $name
+          done
+
   # build app
   # upload to draft release
   app:
-    needs: [setup]
+    needs: [setup, clear-assets]
     strategy:
       fail-fast: false
       matrix:
