@@ -46,6 +46,10 @@ function initProviderForward() {
   // bg stream
   const bgPort = runtime.connect({ name: "iron:contentscript" });
 
+  window.onbeforeunload = () => {
+    bgPort.disconnect();
+  };
+
   // inpage -> bg
   inpageStream.on("data", (data) => {
     bgPort.postMessage(data);
@@ -54,9 +58,9 @@ function initProviderForward() {
   bgPort.onMessage.addListener((data) => {
     inpageStream.write(data);
   });
-  bgPort.onDisconnect.addListener(() =>
-    log.error("[Iron - contentscript] disconnected"),
-  );
+  bgPort.onDisconnect.addListener(() => {
+    log.warn("[Iron - contentscript] disconnected");
+  });
 }
 
 /**

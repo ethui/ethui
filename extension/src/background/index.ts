@@ -88,6 +88,10 @@ export function setupProviderConnection(port: Runtime.Port) {
     log.debug("[WS] request:", data);
     notifyDevtools(tabId, "request", data);
   });
+
+  port.onDisconnect.addListener(() => {
+    ws.close();
+  });
 }
 
 /**
