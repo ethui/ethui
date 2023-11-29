@@ -115,7 +115,6 @@ impl<'a> SendTransaction {
     async fn send(&mut self) -> Result<PendingTransaction<'_, Http>> {
         self.build_signer().await?;
         let signer = self.signer.as_ref().unwrap();
-        dbg!(&self.request);
 
         Ok(signer.send_transaction(self.request.clone(), None).await?)
     }
