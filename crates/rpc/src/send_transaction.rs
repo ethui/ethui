@@ -49,7 +49,9 @@ impl<'a> SendTransaction {
         // inner scope so as not to lock wallets for the entire duration of the tx review
         let skip = {
             let wallets = Wallets::read().await;
-            let wallet = wallets.get(&self.wallet_name).unwrap();
+            let wallet = wallets
+                .get(&self.wallet_name)
+                .ok_or_else(|| Error::WalletNameNotFound(self.wallet_name.clone()))?;
 
             self.network.is_dev() && wallet.is_dev() && Settings::read().await.fast_mode()
         };
@@ -87,7 +89,7 @@ impl<'a> SendTransaction {
         }
 
         if self.is_ledger() {
-            dialog.send("check-ledger", None).await.unwrap();
+            dialog.send("check-ledger", None).await?;
         }
 
         let tx = self.send().await?;
@@ -101,12 +103,8 @@ impl<'a> SendTransaction {
 
         if let Ok(sim) = iron_simulator::commands::simulator_run(chain_id, request).await {
             dialog
-                .send(
-                    "simulation-result",
-                    Some(serde_json::to_value(sim).unwrap()),
-                )
-                .await
-                .unwrap()
+                .send("simulation-result", Some(serde_json::to_value(sim)?))
+                .await?
         }
 
         Ok(())
@@ -125,7 +123,10 @@ impl<'a> SendTransaction {
         }
 
         let wallets = Wallets::read().await;
-        let wallet = wallets.get(&self.wallet_name).unwrap();
+        let wallet = wallets
+            .get(&self.wallet_name)
+            .ok_or(Error::WalletNameNotFound(self.wallet_name.clone()))?
+            .clone();
 
         let signer = wallet
             .build_signer(self.network.chain_id, &self.wallet_path)
@@ -164,7 +165,9 @@ impl<'a> SendTransaction {
 
     async fn from(&self) -> Result<Address> {
         let wallets = Wallets::read().await;
-        let wallet = wallets.get(&self.wallet_name).unwrap();
+        let wallet = wallets
+            .get(&self.wallet_name)
+            .ok_or_else(|| Error::WalletNameNotFound(self.wallet_name.clone()))?;
 
         wallet
             .get_address(&self.wallet_path)
