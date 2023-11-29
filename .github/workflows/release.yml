@@ -98,6 +98,9 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: "release"
+
       - run: npm install -g yarn
 
       - uses: actions/setup-node@v3

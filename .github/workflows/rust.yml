@@ -40,6 +40,9 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: "debug"
+          save-if: ${{ github.ref == 'refs/heads/main' }}
 
       - run: cargo check
       - run: cargo clippy --all -- -D clippy::all -D clippy::dbg_macro

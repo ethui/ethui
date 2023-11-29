@@ -32,7 +32,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: npm install -g yarn
-
       - uses: actions/setup-node@v3
         with:
           cache: "yarn"
