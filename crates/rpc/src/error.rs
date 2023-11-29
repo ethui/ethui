@@ -23,6 +23,9 @@ pub enum Error {
     Signer(String),
 
     #[error(transparent)]
+    IronWallet(#[from] iron_wallets::Error),
+
+    #[error(transparent)]
     Wallet(#[from] ethers::signers::WalletError),
 
     #[error(transparent)]

@@ -10,6 +10,7 @@ use iron_networks::Network;
 use iron_settings::Settings;
 use iron_types::{Address, GlobalState, ToAlloy, ToEthers};
 use iron_wallets::{WalletControl, WalletType, Wallets};
+use tracing::warn;
 
 use super::{Error, Result};
 
@@ -113,25 +114,37 @@ impl<'a> SendTransaction {
     }
 
     async fn send(&mut self) -> Result<PendingTransaction<'_, Http>> {
-        self.build_signer().await;
+        self.build_signer().await?;
         let signer = self.signer.as_ref().unwrap();
+        dbg!(&self.request);
 
         Ok(signer.send_transaction(self.request.clone(), None).await?)
     }
 
-    async fn build_signer(&mut self) {
-        if self.signer.is_none() {
-            let wallets = Wallets::read().await;
-            let wallet = wallets.get(&self.wallet_name).unwrap();
+    async fn build_signer(&mut self) -> Result<()> {
+        if self.signer.is_some() {
+            return Ok(());
+        }
 
-            let signer = wallet
+        let wallets = Wallets::read().await;
+        let wallet = wallets.get(&self.wallet_name).unwrap();
+
+        let mut attemps = 3;
+        let signer = loop {
+            attemps -= 1;
+            match wallet
                 .build_signer(self.network.chain_id, &self.wallet_path)
                 .await
-                .unwrap();
+            {
+                Ok(signer) => break signer,
+                Err(e) if attemps > 0 => warn!("Error: {}, retrying...", e),
+                Err(e) => return Err(e)?,
+            }
+        };
 
-            let signer = SignerMiddleware::new(self.network.get_provider(), signer);
-            self.signer = Some(signer);
-        }
+        let signer = SignerMiddleware::new(self.network.get_provider(), signer);
+        self.signer = Some(signer);
+        Ok(())
     }
 
     async fn simulation_request(&self) -> Result<iron_simulator::Request> {
