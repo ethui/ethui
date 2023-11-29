@@ -113,25 +113,27 @@ impl<'a> SendTransaction {
     }
 
     async fn send(&mut self) -> Result<PendingTransaction<'_, Http>> {
-        self.build_signer().await;
+        self.build_signer().await?;
         let signer = self.signer.as_ref().unwrap();
 
         Ok(signer.send_transaction(self.request.clone(), None).await?)
     }
 
-    async fn build_signer(&mut self) {
-        if self.signer.is_none() {
-            let wallets = Wallets::read().await;
-            let wallet = wallets.get(&self.wallet_name).unwrap();
-
-            let signer = wallet
-                .build_signer(self.network.chain_id, &self.wallet_path)
-                .await
-                .unwrap();
-
-            let signer = SignerMiddleware::new(self.network.get_provider(), signer);
-            self.signer = Some(signer);
+    async fn build_signer(&mut self) -> Result<()> {
+        if self.signer.is_some() {
+            return Ok(());
         }
+
+        let wallets = Wallets::read().await;
+        let wallet = wallets.get(&self.wallet_name).unwrap();
+
+        let signer = wallet
+            .build_signer(self.network.chain_id, &self.wallet_path)
+            .await?;
+
+        let signer = SignerMiddleware::new(self.network.get_provider(), signer);
+        self.signer = Some(signer);
+        Ok(())
     }
 
     async fn simulation_request(&self) -> Result<iron_simulator::Request> {
