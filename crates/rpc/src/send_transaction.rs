@@ -10,7 +10,6 @@ use iron_networks::Network;
 use iron_settings::Settings;
 use iron_types::{Address, GlobalState, ToAlloy, ToEthers};
 use iron_wallets::{WalletControl, WalletType, Wallets};
-use tracing::warn;
 
 use super::{Error, Result};
 
@@ -129,18 +128,9 @@ impl<'a> SendTransaction {
         let wallets = Wallets::read().await;
         let wallet = wallets.get(&self.wallet_name).unwrap();
 
-        let mut attemps = 3;
-        let signer = loop {
-            attemps -= 1;
-            match wallet
-                .build_signer(self.network.chain_id, &self.wallet_path)
-                .await
-            {
-                Ok(signer) => break signer,
-                Err(e) if attemps > 0 => warn!("Error: {}, retrying...", e),
-                Err(e) => return Err(e)?,
-            }
-        };
+        let signer = wallet
+            .build_signer(self.network.chain_id, &self.wallet_path)
+            .await?;
 
         let signer = SignerMiddleware::new(self.network.get_provider(), signer);
         self.signer = Some(signer);

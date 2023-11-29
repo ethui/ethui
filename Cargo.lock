@@ -1377,12 +1377,13 @@ dependencies = [
 
 [[package]]
 name = "coins-ledger"
-version = "0.8.8"
-source = "git+https://github.com/iron-wallet/coins?branch=iron-wallet#9eff708fe63ab968aa6e212f1056adc4c0263365"
+version = "0.8.7"
+source = "git+https://github.com/iron-wallet/coins?branch=send#a6c1f0b539ab7d0833b4375c8a298d760d5275fb"
 dependencies = [
  "async-trait",
  "byteorder",
  "cfg-if",
+ "futures",
  "getrandom 0.2.11",
  "hex",
  "hidapi-rusb",
@@ -1395,7 +1396,6 @@ dependencies = [
  "serde",
  "tap",
  "thiserror",
- "tokio",
  "tracing",
  "wasm-bindgen",
  "wasm-bindgen-futures",
@@ -2542,7 +2542,7 @@ dependencies = [
  "async-trait",
  "coins-bip32",
  "coins-bip39",
- "coins-ledger 0.8.8",
+ "coins-ledger 0.8.7",
  "const-hex",
  "elliptic-curve",
  "eth-keystore",
