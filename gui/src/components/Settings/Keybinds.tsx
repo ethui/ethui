@@ -21,7 +21,7 @@ export function SettingsKeybinds() {
       name: "Switch between Wallets",
       combination: `Ctrl + Shift + [1..${Math.min(
         wallets.length,
-        MAX_CHANGE_WALLET_SHORTCUTS
+        MAX_CHANGE_WALLET_SHORTCUTS,
       )}]`,
     },
     { name: "Open / Close Settings menu", combination: "Ctrl + S" },
@@ -35,7 +35,7 @@ export function SettingsKeybinds() {
     setSearch(currentSearch);
 
     const filteredItems = keybinds.filter((keybind) =>
-      keybind.name.toLowerCase().includes(currentSearch.toLowerCase())
+      keybind.name.toLowerCase().includes(currentSearch.toLowerCase()),
     );
 
     setFilteredKeybinds(filteredItems);
@@ -91,7 +91,7 @@ export function SettingsKeybinds() {
                       {keybind.combination}
                     </Typography>
                   </Box>
-                  {/* TODO: Add functionality to this button */}
+                  {/* TODO: Import and add functionality to this button */}
                   {/* <Button>
                     <AddCircleOutlineIcon />
                   </Button> */}
