@@ -10,23 +10,34 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 
-const KEYBINDS = [
-  { name: "Switch between wallets", combination: "Shift + 1(...)n" }, //Not working yet.
-  { name: "Switch between sidebar menus", combination: "Ctrl + 1(...)4" },
-  { name: "Open / Close Settings menu", combination: "Ctrl + S" },
-  { name: "Toggle Fast Mode", combination: "Ctrl + F" },
-];
+import { useWallets } from "@/store";
+
+export const MAX_CHANGE_WALLET_SHORTCUTS = 9;
 
 export function SettingsKeybinds() {
+  const { wallets } = useWallets();
+  const keybinds = [
+    { name: "Open / Close Search bar", combination: "Ctrl + K" },
+    { name: "Switch between Sidebar menus", combination: "Ctrl + [1..4]" },
+    {
+      name: "Switch between Wallets",
+      combination: `Ctrl + Shift + [1..${Math.min(
+        wallets.length,
+        MAX_CHANGE_WALLET_SHORTCUTS
+      )}]`,
+    },
+    { name: "Open / Close Settings menu", combination: "Ctrl + S" },
+    { name: "Toggle Fast Mode", combination: "Ctrl + F" },
+  ];
   const [search, setSearch] = useState("");
-  const [filteredKeybinds, setFilteredKeybinds] = useState(KEYBINDS);
+  const [filteredKeybinds, setFilteredKeybinds] = useState(keybinds);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const currentSearch = event.target.value;
     setSearch(currentSearch);
 
-    const filteredItems = KEYBINDS.filter((keybind) =>
-      keybind.name.toLowerCase().includes(currentSearch.toLowerCase()),
+    const filteredItems = keybinds.filter((keybind) =>
+      keybind.name.toLowerCase().includes(currentSearch.toLowerCase())
     );
 
     setFilteredKeybinds(filteredItems);
@@ -82,9 +93,10 @@ export function SettingsKeybinds() {
                       {keybind.combination}
                     </Typography>
                   </Box>
-                  <Button>
+                  {/* TODO: Add functionality to this button */}
+                  {/* <Button>
                     <AddCircleOutlineIcon />
-                  </Button>
+                  </Button> */}
                 </Stack>
               }
             >

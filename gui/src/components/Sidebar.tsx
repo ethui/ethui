@@ -12,7 +12,7 @@ import { ReactNode } from "react";
 import { Link, useLocation, useRoute } from "wouter";
 
 import { useKeyPress, useMenuAction, useOS } from "@/hooks";
-import { useSettings, useSettingsWindow, useTheme } from "@/store";
+import { useSettings, useSettingsWindow, useTheme, useWallets } from "@/store";
 
 import {
   Account,
@@ -27,6 +27,7 @@ import {
   SettingsButton,
   Txs,
 } from "./";
+import { MAX_CHANGE_WALLET_SHORTCUTS } from "./Settings/Keybinds";
 
 export const TABS = [
   {
@@ -69,13 +70,15 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
   const { settings } = useSettings();
   const fastMode = settings?.fastMode;
 
+  const { wallets } = useWallets();
+
   const handleKeyboardNavigation = (event: KeyboardEvent) => {
     setLocation(TABS[parseInt(event.key) - 1].path);
   };
 
-  // const handleWalletsNavigation = (event: KeyboardEvent) => {
-  //   // logic here
-  // };
+  const handleWalletsNavigation = (event: KeyboardEvent) => {
+    invoke("wallets_set_current_wallet", { idx: parseInt(event.key) - 1 });
+  };
 
   const handleFastModeToggle = () => {
     invoke("settings_set_fast_mode", { mode: !fastMode });
@@ -93,7 +96,7 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
 
   useMenuAction((payload) => setLocation(payload));
 
-  //------------------------------------------------- switch between sidebar menus (Ctrl + 1...n)
+  //------------------------------------------------- Switch between sidebar menus (Ctrl + number)
   useKeyPress(
     range(1, TABS.length + 1).map(toString),
     { meta: true },
@@ -105,17 +108,27 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
     handleKeyboardNavigation,
   );
 
-  //------------------------------------------------- switch between wallets (ctrl + p + 1...m)
-  // useKeyPress(
-  //   range(1, wallets.length + 1).map((num) => `${num}`),
-  //   { ctrl: true, alt: true },
-  //   handleWalletsNavigation
-  // );
-  // ----------------------------------------------- fast mode toggle (Ctrl + F)
+  //------------------------------------------------- Switch between wallets (Ctrl + Shift + number)
+  useKeyPress(
+    range(1, Math.min(wallets.length + 1, MAX_CHANGE_WALLET_SHORTCUTS)).map(
+      toString,
+    ),
+    { meta: true, shift: true },
+    handleWalletsNavigation,
+  );
+  useKeyPress(
+    range(1, Math.min(wallets.length + 1, MAX_CHANGE_WALLET_SHORTCUTS)).map(
+      toString,
+    ),
+    { ctrl: true, shift: true },
+    handleWalletsNavigation,
+  );
+
+  // ----------------------------------------------- Fast mode toggle (Ctrl + F)
   useKeyPress(["F", "f"], { meta: true }, handleFastModeToggle);
   useKeyPress(["F", "f"], { ctrl: true }, handleFastModeToggle);
 
-  // ----------------------------------------------- open/close settings menu (Ctrl + S)
+  // ----------------------------------------------- Open/Close settings menu (Ctrl + S)
   useKeyPress(["S", "s"], { meta: true }, handleOpenCloseSettings);
   useKeyPress(["S", "s"], { ctrl: true }, handleOpenCloseSettings);
 
