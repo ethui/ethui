@@ -27,7 +27,6 @@ import {
   SettingsButton,
   Txs,
 } from "./";
-import { MAX_CHANGE_WALLET_SHORTCUTS } from "./Settings/Keybinds";
 
 export const TABS = [
   {
@@ -59,6 +58,7 @@ export const TABS = [
 
 export const DEFAULT_TAB = TABS[0];
 
+const MAX_CHANGE_WALLET_SHORTCUTS = 9;
 const WIDTH_MD = 200;
 const WIDTH_SM = 72;
 
