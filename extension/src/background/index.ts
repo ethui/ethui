@@ -72,9 +72,8 @@ export function setupProviderConnection(port: Runtime.Port) {
     .withBuffer(new ArrayQueue())
     .withBackoff(new ConstantBackoff(1000))
     .onMessage((_ins, event) => {
-      console.log(event.data);
-      if (event.data === "foo") {
-        ws.send("bar");
+      if (event.data === "ping") {
+        ws.send("pong");
         return;
       }
       // forward WS server messages back to the stream (content script)
