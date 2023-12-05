@@ -80,7 +80,7 @@ async fn handle_connection(
     mut rcv: mpsc::UnboundedReceiver<serde_json::Value>,
 ) -> WsResult<()> {
     let handler: iron_rpc::Handler = peer.into();
-    let mut interval = tokio::time::interval(std::time::Duration::from_secs(15));
+    let mut interval = tokio::time::interval(std::time::Duration::from_secs(5));
     let (mut ws_sender, mut ws_receiver) = stream.split();
 
     loop {
@@ -88,8 +88,10 @@ async fn handle_connection(
             // RPC request
             Some(msg) = ws_receiver.next() => {
                 match msg {
+                    Ok(Message::Text(msg)) if msg == *"bar".to_string() => {dbg!("bar");continue},
                     Ok(Message::Text(msg)) => handle_message(msg, &handler, &mut ws_sender).await?,
-                    Ok(Message::Close(_)) => break,
+                    Ok(Message::Close(_)) => {dbg!("closing");break},
+                    Ok(Message::Pong(_))=>{dbg!("pong"); continue},
                     Ok(_) => continue,
                     Err(e) => warn!("websocket error: {}", e),
                 }
@@ -108,11 +110,12 @@ async fn handle_connection(
                 }
             }
 
-            // send a ping every 15 seconds
+            // send a ping every 1 seconds
             _ = interval.tick() => {
+                dbg!("ping");
+                ws_sender.send(Message::Text("foo".to_string())).await?;
                 ws_sender.send(Message::Ping(Default::default())).await?;
             }
-
         }
     }
 

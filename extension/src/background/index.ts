@@ -72,6 +72,11 @@ export function setupProviderConnection(port: Runtime.Port) {
     .withBuffer(new ArrayQueue())
     .withBackoff(new ConstantBackoff(1000))
     .onMessage((_ins, event) => {
+      console.log(event.data);
+      if (event.data === "foo") {
+        ws.send("bar");
+        return;
+      }
       // forward WS server messages back to the stream (content script)
       const data = JSON.parse(event.data);
       port.postMessage(data);
