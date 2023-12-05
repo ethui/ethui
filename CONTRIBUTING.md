@@ -66,7 +66,7 @@ yarn setup
 yarn app:dev
 ```
 
-**Note:** If you change the extension' code, you may also need to use `yarn extension:dev`, and to manually reload it on `chrome://extensions`. Live code reloading is tricky with these.
+**Note:** If you change the extension' code, you may also need to use `yarn ext:dev`, and to manually reload it on `chrome://extensions`. Live code reloading is tricky with these.
 
 ## Code of Conduct
 
