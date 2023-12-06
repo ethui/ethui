@@ -47,7 +47,7 @@ function initProviderForward() {
   const bgPort = runtime.connect({ name: "iron:contentscript" });
 
   window.onbeforeunload = () => {
-    console.log("onbeforeunload");
+    bgPort.disconnect();
   };
 
   // inpage -> bg

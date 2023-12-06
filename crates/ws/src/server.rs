@@ -1,7 +1,6 @@
 use std::{collections::HashMap, net::SocketAddr};
 
-use futures::stream::SplitSink;
-use futures::{SinkExt, StreamExt};
+use futures::{stream::SplitSink, SinkExt, StreamExt};
 use iron_types::GlobalState;
 use tokio::{
     net::{TcpListener, TcpStream},
