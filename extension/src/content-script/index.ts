@@ -46,10 +46,9 @@ function initProviderForward() {
   // bg stream
   const bgPort = runtime.connect({ name: "iron:contentscript" });
 
-  // window.onbeforeunload = () => {
-  //   console.log("onbeforeunload");
-  //   bgPort.disconnect();
-  // };
+  window.onbeforeunload = () => {
+    console.log("onbeforeunload");
+  };
 
   // inpage -> bg
   inpageStream.on("data", (data) => {
