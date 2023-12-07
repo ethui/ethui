@@ -15,8 +15,6 @@ use crate::{
     utils::{main_window_hide, main_window_show},
 };
 
-use tokenlist;
-
 pub struct IronApp {
     app: tauri::App,
 }
