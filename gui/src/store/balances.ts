@@ -26,8 +26,6 @@ interface Setters {
 
 type Store = State & Setters;
 
-// const actionId = "balances";
-
 const store: StateCreator<Store> = (set, get) => ({
   erc20Balances: [],
 

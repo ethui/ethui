@@ -25,46 +25,7 @@ import { z } from "zod";
 
 import { useBalances, useNetworks, useWallets } from "@/store";
 import { addressSchema } from "@/types/wallets";
-
-const transferNative = async (from: Address, to: Address, value: bigint) => {
-  return await invoke<string>("rpc_send_transaction", {
-    params: {
-      from,
-      to,
-      value,
-    },
-  });
-};
-
-const transferERC20 = async (
-  from: Address,
-  to: Address,
-  value: bigint,
-  contract: Address,
-) => {
-  const abiItem: AbiItem = parseAbiItem([
-    `function transfer(address to, uint amount) returns (bool)`,
-  ]);
-
-  const data = encodeFunctionData({
-    abi: [abiItem],
-    args: [to, value],
-  });
-
-  return await invoke<string>("rpc_send_transaction", {
-    params: {
-      from,
-      to: contract,
-      data,
-    },
-  });
-};
-
-const formatTokenBalance = (balance: bigint, decimals: number) =>
-  formatUnits(
-    balance - (balance % BigInt(Math.ceil(0.001 * 10 ** decimals))),
-    decimals,
-  );
+import { BigIntField } from "./Inputs";
 
 interface Token {
   currency: string;
@@ -86,57 +47,43 @@ export function TransferForm({
 }: TransferFormProps) {
   const network = useNetworks((s) => s.current);
   const address = useWallets((s) => s.address);
-  const { nativeBalance, erc20Balances } = useBalances((s) => {
-    return { nativeBalance: s.nativeBalance, erc20Balances: s.erc20Balances };
+  const { native, erc20s } = useBalances((s) => {
+    return { native: s.nativeBalance, erc20s: s.erc20Balances };
   });
 
+  // map list of tokens
   const [tokens, setTokens] = useState<Map<Address, Token>>(new Map());
-
   useEffect(() => {
+    if (!network || !native) return;
+
     const newTokens = new Map<Address, Token>(
-      erc20Balances.map((token) => {
-        const {
-          metadata: { symbol, decimals },
-          balance,
-          contract,
-        } = token;
-        return [
-          contract,
-          {
-            currency: symbol,
-            decimals,
-            balance: BigInt(balance),
-            contract,
-          },
-        ];
-      }),
+      erc20s.map(({ metadata, balance, contract }) => [
+        contract,
+        {
+          currency: metadata.symbol,
+          decimals: metadata.decimals,
+          balance: BigInt(balance),
+          contract: contract,
+        },
+      ]),
     );
     newTokens.set(ZeroAddress, {
-      currency: network?.currency || "ETH",
-      decimals: network?.decimals || 18,
-      balance: nativeBalance || 0n,
+      decimals: network.decimals,
+      currency: network.currency,
+      balance: native,
       contract: ZeroAddress,
     });
     setTokens(newTokens);
-  }, [
-    setTokens,
-    nativeBalance,
-    erc20Balances,
-    network?.currency,
-    network?.decimals,
-  ]);
+  }, [setTokens, native, erc20s, network]);
 
   const schema = z.object({
-    address: addressSchema,
+    to: addressSchema,
     currency: addressSchema,
     value: z
-      .number()
+      .bigint()
       .positive()
-      .superRefine((rawValue, ctx) => {
-        if (!currentToken) return;
-        const value =
-          BigInt(rawValue) * BigInt(10) ** BigInt(currentToken.decimals);
-        if (value <= currentToken.balance) return;
+      .superRefine((value, ctx) => {
+        if (!currentToken || value <= currentToken.balance) return;
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Not enough balance",
@@ -155,8 +102,8 @@ export function TransferForm({
     resolver: zodResolver(schema),
     defaultValues: {
       currency: contract,
-      address: null,
-      value: 0,
+      to: null,
+      value: 0n,
     },
   });
 
@@ -170,18 +117,14 @@ export function TransferForm({
 
   if (!network || !address || !currentToken) return null;
 
-  const onSubmit = async (formData: FieldValues) => {
-    console.log(formData);
-    return;
-    const { decimals, contract } = currentToken;
+  const onSubmit = async (data: FieldValues) => {
+    const { contract } = currentToken;
+    const { to, value } = data;
 
-    const value = BigInt(formData.value * 10 ** decimals);
-
-    let result;
-    if (!contract)
-      result = await transferNative(address, formData.address, value);
-    else
-      result = await transferERC20(address, formData.address, value, contract);
+    const result =
+      contract === ZeroAddress
+        ? await transferNative(address, to, value)
+        : await transferERC20(address, to, value, contract);
 
     if (result.match(/(0x[a-fA-F0-9]{40})/)) {
       setResult({ success: true, msg: result });
@@ -220,25 +163,22 @@ export function TransferForm({
 
         {currentToken && (
           <Typography variant="body2">
-            Balance:{" "}
-            {formatTokenBalance(currentToken.balance, currentToken.decimals)}
+            Balance: {formatUnits(currentToken.balance, currentToken.decimals)}
           </Typography>
         )}
 
         <TextField
           label="To"
-          error={!!errors.address}
-          helperText={errors.address?.message?.toString() || " "}
+          error={!!errors.to}
+          helperText={errors.to?.message?.toString() || ""}
           fullWidth
-          {...register("address")}
+          {...register("to")}
         />
 
-        <TextField
-          label="Amount"
-          error={!!errors.value}
-          helperText={errors.value?.message?.toString() || " "}
-          fullWidth
-          {...register("value", { valueAsNumber: true })}
+        <BigIntField
+          name="value"
+          control={control}
+          decimals={currentToken.decimals}
         />
 
         {result.msg && (
@@ -269,3 +209,37 @@ export function TransferForm({
     </form>
   );
 }
+
+const transferNative = async (from: Address, to: Address, value: bigint) => {
+  return await invoke<`0x${string}`>("rpc_send_transaction", {
+    params: {
+      from,
+      to,
+      value,
+    },
+  });
+};
+
+const erc20transfer: AbiItem = parseAbiItem(
+  `function transfer(address to, uint amount) returns (bool)`,
+);
+
+const transferERC20 = async (
+  from: Address,
+  to: Address,
+  value: bigint,
+  contract: Address,
+) => {
+  const data = encodeFunctionData({
+    abi: [erc20transfer],
+    args: [to, value],
+  });
+
+  return await invoke<`0x${string}`>("rpc_send_transaction", {
+    params: {
+      from,
+      to: contract,
+      data,
+    },
+  });
+};

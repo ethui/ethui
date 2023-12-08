@@ -34,6 +34,7 @@ export const derivationPathSchema = z
 
 export const addressSchema = z
   .string()
+  .startsWith("0x")
   .refine((data) => data.match(/^0x[a-fA-F0-9]{40}$/), {
     message: "Not a valid ETH address",
   });
