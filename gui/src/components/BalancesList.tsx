@@ -6,6 +6,7 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Tooltip,
 } from "@mui/material";
 import truncateEthAddress from "truncate-eth-address";
 import { Address, formatUnits } from "viem";
@@ -19,7 +20,7 @@ import { CopyToClipboard, IconCrypto, Modal, TransferForm } from "./";
 
 export function BalancesList() {
   return (
-    <List>
+    <List sx={{ maxWidth: 350 }}>
       <BalanceETH />
       <BalancesERC20 />
     </List>
@@ -89,13 +90,15 @@ function BalanceItem({
     <>
       <ListItem
         secondaryAction={
-          <IconButton
-            edge="end"
-            aria-label="transfer"
-            onClick={() => setTransferFormOpen(true)}
-          >
-            <SendIcon />
-          </IconButton>
+          <Tooltip title="Transfer">
+            <IconButton
+              edge="end"
+              aria-label="transfer"
+              onClick={() => setTransferFormOpen(true)}
+            >
+              <SendIcon />
+            </IconButton>
+          </Tooltip>
         }
       >
         <ListItemAvatar>
