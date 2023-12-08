@@ -1,8 +1,8 @@
+import { type Duplex } from "stream";
 import { v4 as uuidv4 } from "@lukeed/uuid";
 import { WindowPostMessageStream } from "@metamask/post-message-stream";
 import log from "loglevel";
 import { announceProvider, EIP1193Provider } from "mipd";
-import { type Duplex } from "stream";
 
 import { IronProvider } from "./provider";
 

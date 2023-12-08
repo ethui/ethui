@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use ethers::types::{Bytes, Log};
+use ethers_core::types::{Bytes, Log};
 use iron_simulator::{Evm, Request};
 use iron_types::{Address, ToEthers, B256};
 use pretty_assertions::assert_eq;

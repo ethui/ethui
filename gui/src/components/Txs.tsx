@@ -22,13 +22,13 @@ import truncateEthAddress from "truncate-eth-address";
 import { Address, formatEther, formatGwei } from "viem";
 import { useTransaction, useWaitForTransaction } from "wagmi";
 
+import { Paginated, Pagination, Tx } from "@/types";
 import { useEventListener } from "@/hooks";
 import { useNetworks, useWallets } from "@/store";
-import { Paginated, Pagination, Tx } from "@/types";
 
-import { AddressView, ContextMenu, Panel } from "./";
 import { CalldataView } from "./Calldata";
 import { Datapoint } from "./Datapoint";
+import { AddressView, ContextMenu, Panel } from "./";
 
 export function Txs() {
   const account = useWallets((s) => s.address);

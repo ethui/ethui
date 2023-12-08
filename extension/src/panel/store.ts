@@ -1,4 +1,4 @@
-import browser from "webextension-polyfill";
+import { runtime, tabs } from "webextension-polyfill";
 import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
@@ -18,7 +18,7 @@ type Store = State & Setters;
 let tabId: number | undefined;
 
 // get tab ID at startup
-browser.tabs
+tabs
   .query({
     active: true,
     currentWindow: true,
@@ -55,7 +55,7 @@ const store: StateCreator<Store> = (set, get) => ({
 
 export const useStore = create<Store>()(subscribeWithSelector(store));
 
-browser.runtime.onMessage.addListener((msg: Request | Response | Start) => {
+runtime.onMessage.addListener((msg: Request | Response | Start) => {
   if (msg.tabId != tabId) return;
 
   if (msg.type === "start") {

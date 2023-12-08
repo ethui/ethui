@@ -1,9 +1,5 @@
-use ethers::{
-    abi::Uint,
-    core::types::Log,
-    types::{Bytes, U256},
-};
-use foundry_evm::utils::CallKind;
+use alloy_primitives::{Bytes, Log, U256};
+use foundry_evm::{traces::CallTraceNode, utils::CallKind};
 use iron_types::Address;
 use revm::interpreter::InstructionResult;
 use serde::{Deserialize, Serialize};
@@ -27,7 +23,7 @@ pub struct Result {
     pub gas_used: u64,
     pub block_number: u64,
     pub success: bool,
-    pub trace: Vec<CallTrace>,
+    pub trace: Vec<CallTraceNode>,
     pub logs: Vec<Log>,
     pub exit_reason: InstructionResult,
     pub return_data: Bytes,
@@ -39,5 +35,5 @@ pub struct CallTrace {
     pub call_type: CallKind,
     pub from: Address,
     pub to: Address,
-    pub value: Uint,
+    pub value: U256,
 }

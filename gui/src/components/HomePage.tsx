@@ -2,8 +2,8 @@ import { Route, Switch } from "wouter";
 
 import { useNoticeAlchemyKeyMissing, useNoticeNewVersion } from "@/hooks";
 
-import { ErrorHandler, Navbar, NestedRoutes } from "./";
 import { DEFAULT_TAB, SidebarLayout, TABS } from "./Sidebar";
+import { ErrorHandler, Navbar, NestedRoutes } from "./";
 
 export function HomePage() {
   useNoticeAlchemyKeyMissing();

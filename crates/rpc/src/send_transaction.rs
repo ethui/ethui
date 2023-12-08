@@ -49,7 +49,9 @@ impl<'a> SendTransaction {
         // inner scope so as not to lock wallets for the entire duration of the tx review
         let skip = {
             let wallets = Wallets::read().await;
-            let wallet = wallets.get(&self.wallet_name).unwrap();
+            let wallet = wallets
+                .get(&self.wallet_name)
+                .ok_or_else(|| Error::WalletNameNotFound(self.wallet_name.clone()))?;
 
             self.network.is_dev() && wallet.is_dev() && Settings::read().await.fast_mode()
         };
@@ -87,7 +89,7 @@ impl<'a> SendTransaction {
         }
 
         if self.is_ledger() {
-            dialog.send("check-ledger", None).await.unwrap();
+            dialog.send("check-ledger", None).await?;
         }
 
         let tx = self.send().await?;
@@ -101,37 +103,38 @@ impl<'a> SendTransaction {
 
         if let Ok(sim) = iron_simulator::commands::simulator_run(chain_id, request).await {
             dialog
-                .send(
-                    "simulation-result",
-                    Some(serde_json::to_value(sim).unwrap()),
-                )
-                .await
-                .unwrap()
+                .send("simulation-result", Some(serde_json::to_value(sim)?))
+                .await?
         }
 
         Ok(())
     }
 
     async fn send(&mut self) -> Result<PendingTransaction<'_, Http>> {
-        self.build_signer().await;
+        self.build_signer().await?;
         let signer = self.signer.as_ref().unwrap();
 
         Ok(signer.send_transaction(self.request.clone(), None).await?)
     }
 
-    async fn build_signer(&mut self) {
-        if self.signer.is_none() {
-            let wallets = Wallets::read().await;
-            let wallet = wallets.get(&self.wallet_name).unwrap();
-
-            let signer = wallet
-                .build_signer(self.network.chain_id, &self.wallet_path)
-                .await
-                .unwrap();
-
-            let signer = SignerMiddleware::new(self.network.get_provider(), signer);
-            self.signer = Some(signer);
+    async fn build_signer(&mut self) -> Result<()> {
+        if self.signer.is_some() {
+            return Ok(());
         }
+
+        let wallets = Wallets::read().await;
+        let wallet = wallets
+            .get(&self.wallet_name)
+            .ok_or(Error::WalletNameNotFound(self.wallet_name.clone()))?
+            .clone();
+
+        let signer = wallet
+            .build_signer(self.network.chain_id, &self.wallet_path)
+            .await?;
+
+        let signer = SignerMiddleware::new(self.network.get_provider(), signer);
+        self.signer = Some(signer);
+        Ok(())
     }
 
     async fn simulation_request(&self) -> Result<iron_simulator::Request> {
@@ -147,8 +150,11 @@ impl<'a> SendTransaction {
                     NameOrAddress::Address(a) => Ok(a.to_alloy()),
                 })
                 .map_err(|_| Error::CannotSimulate)?,
-            value: tx_request.value().cloned(),
-            data: tx_request.data().cloned(),
+            value: tx_request.value().cloned().map(|v| v.to_alloy()),
+            data: tx_request
+                .data()
+                .cloned()
+                .map(|v| alloy_primitives::Bytes(v.0)),
             gas_limit: tx_request
                 .gas()
                 .map(|v| v.as_u64())
@@ -159,7 +165,9 @@ impl<'a> SendTransaction {
 
     async fn from(&self) -> Result<Address> {
         let wallets = Wallets::read().await;
-        let wallet = wallets.get(&self.wallet_name).unwrap();
+        let wallet = wallets
+            .get(&self.wallet_name)
+            .ok_or_else(|| Error::WalletNameNotFound(self.wallet_name.clone()))?;
 
         wallet
             .get_address(&self.wallet_path)

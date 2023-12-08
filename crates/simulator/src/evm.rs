@@ -1,12 +1,12 @@
-use ethers::{abi::Uint, core::types::Log, types::Bytes};
+use alloy_primitives::{Bytes, Log, U256};
 use foundry_evm::{
     backend::Backend,
     executors::{Executor, ExecutorBuilder},
     fork::CreateFork,
     opts::EvmOpts,
-    traces::{node::CallTraceNode, CallTraceArena},
+    traces::{CallTraceArena, CallTraceNode},
 };
-use iron_types::{Address, ToAlloy, ToEthers};
+use iron_types::{Address, ToAlloy};
 use revm::interpreter::InstructionResult;
 
 use crate::{
@@ -18,7 +18,7 @@ use crate::{
 pub struct CallRawRequest {
     pub from: Address,
     pub to: Address,
-    pub value: Option<Uint>,
+    pub value: Option<U256>,
     pub data: Option<Bytes>,
 }
 
@@ -50,7 +50,7 @@ impl From<CallTraceNode> for CallTrace {
             call_type: item.trace.kind,
             from: item.trace.caller,
             to: item.trace.address,
-            value: item.trace.value.to_ethers(),
+            value: item.trace.value,
         }
     }
 }
@@ -104,7 +104,7 @@ impl Evm {
                 .unwrap_or_default()
                 .arena
                 .into_iter()
-                .map(CallTrace::from)
+                .map(CallTraceNode::from)
                 .collect(),
             logs: result.logs,
             exit_reason: result.exit_reason,
@@ -117,7 +117,7 @@ impl Evm {
             call.from,
             call.to,
             call.data.unwrap_or_default().0.into(),
-            call.value.unwrap_or_default().to_alloy(),
+            call.value.unwrap_or_default(),
         )?;
 
         Ok(CallRawResult {
@@ -125,7 +125,16 @@ impl Evm {
             block_number: res.env.block.number.to(),
             success: !res.reverted,
             trace: res.traces,
-            logs: res.logs,
+            logs: res
+                .logs
+                .into_iter()
+                .map(|l| {
+                    Log::new_unchecked(
+                        l.topics.into_iter().map(|t| t.to_alloy()).collect(),
+                        l.data.to_alloy(),
+                    )
+                })
+                .collect(),
             exit_reason: res.exit_reason,
             return_data: res.result.0.into(),
         })

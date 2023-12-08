@@ -12,9 +12,9 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { map } from "lodash-es";
 import { useEffect, useState } from "react";
 
+import { Affinity, Peer } from "@/types";
 import { useEventListener, useInvoke } from "@/hooks";
 import { useNetworks } from "@/store";
-import { Affinity, Peer } from "@/types";
 
 import { Panel } from "./";
 

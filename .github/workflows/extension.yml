@@ -27,13 +27,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - run: npm install -g yarn
+
       - name: yarn cache
         uses: actions/setup-node@v3
         with:
           cache: "yarn"
           node-version-file: ".tool-versions"
-
-      - run: yarn global add node-gyp
 
       - name: install
         run: yarn workspace @iron/extension install

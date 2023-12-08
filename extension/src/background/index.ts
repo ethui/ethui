@@ -1,6 +1,6 @@
 import { Json, JsonRpcRequest, JsonRpcResponse } from "@metamask/utils";
 import log from "loglevel";
-import browser, { type Runtime } from "webextension-polyfill";
+import { type Runtime, runtime } from "webextension-polyfill";
 import { ArrayQueue, ConstantBackoff, WebsocketBuilder } from "websocket-ts";
 
 import { defaultSettings, loadSettings, type Settings } from "@/settings";
@@ -18,7 +18,7 @@ export async function init() {
   log.setLevel(settings.logLevel);
 
   // handle each incoming content script connection
-  browser.runtime.onConnect.addListener((port: Runtime.Port) => {
+  runtime.onConnect.addListener((port: Runtime.Port) => {
     setupProviderConnection(port);
   });
 }
@@ -34,7 +34,7 @@ async function notifyDevtools(
   data?: JsonRpcResponse<Json> | JsonRpcRequest,
 ) {
   try {
-    await browser.runtime.sendMessage({
+    await runtime.sendMessage({
       type,
       tabId,
       data,
@@ -72,6 +72,10 @@ export function setupProviderConnection(port: Runtime.Port) {
     .withBuffer(new ArrayQueue())
     .withBackoff(new ConstantBackoff(1000))
     .onMessage((_ins, event) => {
+      if (event.data === "ping") {
+        ws.send("pong");
+        return;
+      }
       // forward WS server messages back to the stream (content script)
       const data = JSON.parse(event.data);
       port.postMessage(data);
@@ -87,6 +91,10 @@ export function setupProviderConnection(port: Runtime.Port) {
 
     log.debug("[WS] request:", data);
     notifyDevtools(tabId, "request", data);
+  });
+
+  port.onDisconnect.addListener(() => {
+    ws.close();
   });
 }
 

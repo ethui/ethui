@@ -10,6 +10,9 @@ pub enum Error {
     #[error("Signature rejected")]
     SignatureRejected,
 
+    #[error("Unknown wallet name: {0}")]
+    WalletNameNotFound(String),
+
     #[error("Unknown wallet: {0}")]
     WalletNotFound(Address),
 
@@ -21,6 +24,9 @@ pub enum Error {
 
     #[error("Signer error: {0}")]
     Signer(String),
+
+    #[error(transparent)]
+    IronWallet(#[from] iron_wallets::Error),
 
     #[error(transparent)]
     Wallet(#[from] ethers::signers::WalletError),

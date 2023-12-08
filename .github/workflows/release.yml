@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.get-tag.outputs.tag }}
+      version: ${{ steps.get-version.outputs.version }}
       release_id: ${{ steps.get-id.outputs.id }}
     steps:
       - uses: actions/checkout@v3
@@ -30,6 +31,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # get the current version (tag without the `v`)
+      - id: get-version
+        name: get version
+        run: |
+          version=$(echo ${{ steps.get-tag.outputs.tag }} | sed 's/^v//')
+          echo "version=$version" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       # get the current release_id
       - id: get-id
         name: get release ID
@@ -40,10 +50,24 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  # deletes all assets previously uploaded to the current draft release
+  # necessary if we have to retry a release build due to a prior failure
+  clear-assets:
+    needs: [setup]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: |
+          for name in $(gh release view ${{needs.setup.outputs.tag}} --json assets | jq -r '.assets[].name'); do
+            gh release delete-asset ${{needs.setup.outputs.tag}} $name
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   # build app
   # upload to draft release
   app:
-    needs: [setup]
+    needs: [setup, clear-assets]
     strategy:
       fail-fast: false
       matrix:
@@ -72,17 +96,14 @@ jobs:
         run: |
           brew install libsodium libusb
 
-      - name: setup rust
-        uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
         with:
-          toolchain: stable
-          override: true
+          shared-key: "release"
 
-      - name: rust cache
-        uses: Swatinem/rust-cache@v2
+      - run: npm install -g yarn
 
-      - name: setup node
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
           cache: "yarn"
           node-version-file: ".tool-versions"
@@ -105,6 +126,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - run: npm install -g yarn
+
       - uses: actions/setup-node@v3
         with:
           cache: "yarn"
@@ -114,10 +137,10 @@ jobs:
         run: yarn workspace @iron/extension install
 
       - name: Create chrome bundle
-        run: yarn workspace @iron/extension build --target chrome --version {{ needs.setup.outputs.tag }}
+        run: yarn workspace @iron/extension build --target chrome --version ${{ needs.setup.outputs.version }}
 
       - name: Create firefox bundle
-        run: yarn workspace @iron/extension build --target firefox --version {{ needs.setup.outputs.tag }}
+        run: yarn workspace @iron/extension build --target firefox --version ${{ needs.setup.outputs.version }}
 
       - name: Upload to release
         run: gh release upload ${{ needs.setup.outputs.tag }} ./extension/dist/*.{crx,zip,xpi}
