@@ -50,6 +50,7 @@ export function TransferForm({
   const { native, erc20s } = useBalances((s) => {
     return { native: s.nativeBalance, erc20s: s.erc20Balances };
   });
+  const [result, setResult] = useState<string | null>(null);
 
   // map list of tokens
   const [tokens, setTokens] = useState<Map<Address, Token>>(new Map());
@@ -110,28 +111,18 @@ export function TransferForm({
   const currentContract = watch("currency");
   const currentToken = tokens.get(currentContract)!;
 
-  const [result, setResult] = useState({
-    success: false,
-    msg: "",
-  });
-
   if (!network || !address || !currentToken) return null;
 
   const onSubmit = async (data: FieldValues) => {
     const { contract } = currentToken;
     const { to, value } = data;
 
-    const result =
+    const hash =
       contract === ZeroAddress
         ? await transferNative(address, to, value)
         : await transferERC20(address, to, value, contract);
 
-    if (result.match(/(0x[a-fA-F0-9]{40})/)) {
-      setResult({ success: true, msg: result });
-    } else {
-      const errorMsg = result.match(/message:\s([^\,]+)/)?.[1] || "Error";
-      setResult({ success: false, msg: errorMsg });
-    }
+    setResult(hash);
   };
 
   return (
@@ -179,16 +170,17 @@ export function TransferForm({
           name="value"
           control={control}
           decimals={currentToken.decimals}
+          error={errors.value}
         />
 
-        {result.msg && (
+        {result && (
           <Alert
             sx={{ alignSelf: "stretch" }}
             variant="outlined"
-            severity={result.success ? "success" : "error"}
+            severity="success"
           >
             <Typography variant="body2" noWrap>
-              {result.msg}
+              {result}
             </Typography>
           </Alert>
         )}

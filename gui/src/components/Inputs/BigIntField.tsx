@@ -13,7 +13,7 @@ interface Props<
 > {
   name: TName;
   control: Control<TFieldValues>;
-  error: FieldError;
+  error?: FieldError;
   decimals: number;
 }
 
