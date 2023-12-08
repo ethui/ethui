@@ -1,8 +1,5 @@
-use ethers::{
-    core::k256::ecdsa::SigningKey,
-    prelude::{signer::SignerMiddlewareError, *},
-    signers,
-};
+use ethers::prelude::{signer::SignerMiddlewareError, *};
+use iron_types::Address;
 use jsonrpc_core::ErrorCode;
 
 #[derive(thiserror::Error, Debug)]
@@ -13,11 +10,23 @@ pub enum Error {
     #[error("Signature rejected")]
     SignatureRejected,
 
+    #[error("Unknown wallet name: {0}")]
+    WalletNameNotFound(String),
+
+    #[error("Unknown wallet: {0}")]
+    WalletNotFound(Address),
+
     #[error("Error building signer: {0}")]
     SignerBuild(String),
 
     #[error(transparent)]
-    SignerMiddleware(#[from] SignerMiddlewareError<Provider<Http>, signers::Wallet<SigningKey>>),
+    SignerMiddleware(#[from] SignerMiddlewareError<Provider<Http>, iron_wallets::Signer>),
+
+    #[error("Signer error: {0}")]
+    Signer(String),
+
+    #[error(transparent)]
+    IronWallet(#[from] iron_wallets::Error),
 
     #[error(transparent)]
     Wallet(#[from] ethers::signers::WalletError),
@@ -36,14 +45,23 @@ pub enum Error {
 
     #[error(transparent)]
     IO(#[from] std::io::Error),
+
+    #[error("cannot simulate transaction")]
+    CannotSimulate,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
 
 impl From<Error> for jsonrpc_core::Error {
     fn from(value: Error) -> Self {
+        let code = match value {
+            Error::TxDialogRejected | Error::SignatureRejected => ErrorCode::ServerError(4001),
+            Error::WalletNotFound(..) => ErrorCode::ServerError(4100),
+            _ => ErrorCode::InternalError,
+        };
+
         Self {
-            code: ErrorCode::ServerError(0),
+            code,
             data: None,
             message: value.to_string(),
         }

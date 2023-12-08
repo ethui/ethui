@@ -6,10 +6,12 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import { map } from "lodash-es";
+import { Address } from "viem";
 
-import { useInvoke } from "../hooks";
-import { useWallets } from "../store";
-import { Address, Wallet } from "../types";
+import { useInvoke } from "@/hooks";
+import { useWallets } from "@/store";
+import { Wallet } from "@/types/wallets";
+
 import { AddressView } from "./";
 
 export function QuickAddressSelect() {
@@ -63,7 +65,11 @@ function getCurrentPath(wallet: Wallet, addresses: [string, Address][]) {
     case "impersonator":
       return wallet.addresses[wallet.current || 0];
 
-    default:
-      return wallet.currentPath || addresses[0][0];
+    case "jsonKeystore":
+    case "plaintext":
+      return wallet.currentPath;
+
+    case "ledger":
+      return wallet.addresses[wallet.current || 0][0];
   }
 }

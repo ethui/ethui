@@ -1,4 +1,4 @@
-use ethers::types::{Address, U256, U64};
+use iron_types::{Address, U256, U64};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]

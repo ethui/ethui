@@ -1,9 +1,11 @@
 import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/tauri";
-import { StateCreator, create } from "zustand";
+import { Address } from "viem";
+import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { Address, TokenBalance } from "../types";
+import { TokenBalance } from "@/types";
+
 import { useNetworks } from "./networks";
 import { useWallets } from "./wallets";
 
@@ -24,8 +26,6 @@ interface Setters {
 
 type Store = State & Setters;
 
-// const actionId = "balances";
-
 const store: StateCreator<Store> = (set, get) => ({
   erc20Balances: [],
 
@@ -33,16 +33,20 @@ const store: StateCreator<Store> = (set, get) => ({
     const { address, chainId } = get();
     if (!address || !chainId) return;
 
-    const [native, erc20Balances] = await Promise.all([
-      invoke<string>("db_get_native_balance", { address, chainId }),
-      invoke<TokenBalance[]>("db_get_erc20_balances", {
+    const nativeBalance = await invoke<string>("sync_get_native_balance", {
+      address,
+      chainId,
+    });
+    const erc20Balances = await invoke<TokenBalance[]>(
+      "db_get_erc20_balances",
+      {
         address,
         chainId,
-      }),
-    ]);
+      },
+    );
 
     set({
-      nativeBalance: BigInt(native),
+      nativeBalance: BigInt(nativeBalance),
       erc20Balances,
     });
   },

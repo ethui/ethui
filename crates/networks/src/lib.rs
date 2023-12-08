@@ -123,8 +123,6 @@ impl Networks {
             }
         });
 
-        // TODO: check affinities
-
         if !self.networks.contains_key(&self.current) {
             self.current = first;
             self.on_network_changed().await?;

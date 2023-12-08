@@ -1,40 +1,40 @@
-use axum::{extract::Query, routing::post, Json, Router};
-use serde::Deserialize;
-use serde_json::Value;
+use iron_args::Args;
+use iron_db::DB;
+use tower_http::{
+    cors::{Any, CorsLayer},
+    trace::TraceLayer,
+};
 
-use crate::error::Result;
+use crate::routes::router;
 
-pub async fn init() {
-    tokio::spawn(async {
-        let routes = Router::new().merge(rpc_proxy());
+#[derive(Clone)]
+pub(crate) struct Ctx {
+    #[allow(unused)]
+    pub(crate) db: DB,
+}
 
-        let addr = std::env::var("IRON_HTTP_SERVER_ENDPOINT")
-            .unwrap_or("127.0.0.1:9003".into())
-            .parse()
-            .unwrap();
+pub async fn init(args: &Args, db: DB) {
+    let port = args.http_port;
+
+    tokio::spawn(async move {
+        let addr = format!("127.0.0.1:{}", port).parse().unwrap();
+
+        let cors = CorsLayer::new()
+            .allow_headers(Any)
+            .allow_methods(Any)
+            .allow_origin(Any)
+            .expose_headers(Any);
+
+        let app = router()
+            .with_state(Ctx { db })
+            .layer(cors)
+            .layer(TraceLayer::new_for_http());
+
+        tracing::debug!("HTTP server listening on: {}", addr);
 
         axum::Server::bind(&addr)
-            .serve(routes.into_make_service())
+            .serve(app.into_make_service())
             .await
             .unwrap();
     });
-}
-
-fn rpc_proxy() -> Router {
-    Router::new().route("/", post(rpc_handler))
-}
-
-#[derive(Debug, Deserialize)]
-struct RpcParams {
-    domain: Option<String>,
-}
-
-async fn rpc_handler(Query(params): Query<RpcParams>, payload: String) -> Result<Json<Value>> {
-    let domain = params.domain;
-    let handler = iron_rpc::Handler::new(domain);
-
-    let reply = handler.handle(payload).await;
-    let reply = reply.unwrap_or_else(|| serde_json::Value::Null.to_string());
-
-    Ok(Json(serde_json::from_str(&reply)?))
 }

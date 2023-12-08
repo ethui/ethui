@@ -1,33 +1,36 @@
 use std::str::FromStr;
 
 use ethers::{
-    core::k256::ecdsa::SigningKey,
     prelude::*,
-    signers,
     types::{serde_helpers::StringifiedNumeric, transaction::eip2718::TypedTransaction},
 };
+use iron_connections::Ctx;
 use iron_dialogs::{Dialog, DialogMsg};
 use iron_networks::Network;
-use iron_wallets::{Wallet, WalletControl};
+use iron_settings::Settings;
+use iron_types::{Address, GlobalState, ToAlloy, ToEthers};
+use iron_wallets::{WalletControl, WalletType, Wallets};
 
 use super::{Error, Result};
 
 /// Orchestrates the signing of a transaction
 /// Takes references to both the wallet and network where this
-pub struct SendTransaction<'a> {
-    pub wallet: &'a Wallet,
-    pub wallet_path: String,
+#[derive(Debug)]
+pub struct SendTransaction {
     pub network: Network,
+    pub wallet_name: String,
+    pub wallet_path: String,
+    pub wallet_type: WalletType,
     pub request: TypedTransaction,
-    pub signer: Option<SignerMiddleware<Provider<Http>, signers::Wallet<SigningKey>>>,
+    pub signer: Option<SignerMiddleware<Provider<Http>, iron_wallets::Signer>>,
 }
 
-impl<'a> SendTransaction<'a> {
-    pub fn build() -> SendTransactionBuilder<'a> {
-        Default::default()
+impl<'a> SendTransaction {
+    pub fn build(ctx: &Ctx) -> SendTransactionBuilder<'_> {
+        SendTransactionBuilder::new(ctx)
     }
 
-    pub async fn estimate_gas(&mut self) -> &mut SendTransaction<'a> {
+    pub async fn estimate_gas(&mut self) -> &mut SendTransaction {
         // TODO: we're defaulting to 1_000_000 gas cost if estimation fails
         // estimation failing means the tx will faill anyway, so this is fine'ish
         // but can probably be improved a lot in the future
@@ -43,78 +46,163 @@ impl<'a> SendTransaction<'a> {
     }
 
     pub async fn finish(&mut self) -> Result<PendingTransaction<'_, Http>> {
-        tracing::debug!("finishing transaction");
+        // inner scope so as not to lock wallets for the entire duration of the tx review
+        let skip = {
+            let wallets = Wallets::read().await;
+            let wallet = wallets
+                .get(&self.wallet_name)
+                .ok_or_else(|| Error::WalletNameNotFound(self.wallet_name.clone()))?;
 
-        let skip_dialog = self.network.is_dev() && self.wallet.is_dev();
-        if !skip_dialog {
-            self.spawn_dialog().await?;
+            self.network.is_dev() && wallet.is_dev() && Settings::read().await.fast_mode()
+        };
+
+        // skip the dialog if both network & wallet allow for it, and if fast_mode is enabled
+        if skip {
+            self.send().await
+        } else {
+            self.dialog_and_send().await
         }
-        self.send().await
     }
 
-    async fn spawn_dialog(&mut self) -> Result<()> {
-        let params = serde_json::to_value(&self.request).unwrap();
+    async fn dialog_and_send(&mut self) -> Result<PendingTransaction<'_, Http>> {
+        let mut params = serde_json::to_value(&self.request).unwrap();
+        params["chainId"] = self.network.chain_id.into();
+        params["walletType"] = self.wallet_type.to_string().into();
 
         let dialog = Dialog::new("tx-review", params);
         dialog.open().await?;
 
-        match dialog.recv().await {
-            // TODO: in the future, send json values here to override params
-            Some(DialogMsg::Accept(_response)) => Ok(()),
+        while let Some(msg) = dialog.recv().await {
+            match msg {
+                DialogMsg::Data(msg) => match msg.as_str() {
+                    Some("simulate") => self.simulate(&dialog).await?,
+                    Some("accept") => break,
+                    // TODO: what's the appropriate error to return here?
+                    // or should we return Ok(_)? Err(_) seems too close the ws connection
+                    _ => {
+                        return Err(Error::TxDialogRejected);
+                    }
+                },
 
-            _ =>
-            // TODO: what's the appropriate error to return here?
-            // or should we return Ok(_)? Err(_) seems to close the ws connection
-            {
-                Err(Error::TxDialogRejected)
+                DialogMsg::Close => return Err(Error::TxDialogRejected),
             }
         }
+
+        if self.is_ledger() {
+            dialog.send("check-ledger", None).await?;
+        }
+
+        let tx = self.send().await?;
+
+        Ok(tx)
     }
 
-    async fn build_signer(&mut self) {
-        if self.signer.is_none() {
-            let signer: signers::Wallet<SigningKey> = self
-                .wallet
-                .build_signer(self.network.chain_id, &self.wallet_path)
-                .await
-                .unwrap();
-            self.signer = Some(SignerMiddleware::new(self.network.get_provider(), signer));
+    async fn simulate(&self, dialog: &Dialog) -> Result<()> {
+        let chain_id = self.network.chain_id;
+        let request = self.simulation_request().await?;
+
+        if let Ok(sim) = iron_simulator::commands::simulator_run(chain_id, request).await {
+            dialog
+                .send("simulation-result", Some(serde_json::to_value(sim)?))
+                .await?
         }
+
+        Ok(())
     }
 
     async fn send(&mut self) -> Result<PendingTransaction<'_, Http>> {
-        self.build_signer().await;
+        self.build_signer().await?;
         let signer = self.signer.as_ref().unwrap();
 
         Ok(signer.send_transaction(self.request.clone(), None).await?)
     }
+
+    async fn build_signer(&mut self) -> Result<()> {
+        if self.signer.is_some() {
+            return Ok(());
+        }
+
+        let wallets = Wallets::read().await;
+        let wallet = wallets
+            .get(&self.wallet_name)
+            .ok_or(Error::WalletNameNotFound(self.wallet_name.clone()))?
+            .clone();
+
+        let signer = wallet
+            .build_signer(self.network.chain_id, &self.wallet_path)
+            .await?;
+
+        let signer = SignerMiddleware::new(self.network.get_provider(), signer);
+        self.signer = Some(signer);
+        Ok(())
+    }
+
+    async fn simulation_request(&self) -> Result<iron_simulator::Request> {
+        let tx_request = self.request.clone();
+
+        Ok(iron_simulator::Request {
+            from: self.from().await.map_err(|_| Error::CannotSimulate)?,
+            to: tx_request
+                .to()
+                .ok_or(())
+                .and_then(|v| match v {
+                    NameOrAddress::Name(_) => Err(()),
+                    NameOrAddress::Address(a) => Ok(a.to_alloy()),
+                })
+                .map_err(|_| Error::CannotSimulate)?,
+            value: tx_request.value().cloned().map(|v| v.to_alloy()),
+            data: tx_request
+                .data()
+                .cloned()
+                .map(|v| alloy_primitives::Bytes(v.0)),
+            gas_limit: tx_request
+                .gas()
+                .map(|v| v.as_u64())
+                .ok_or(())
+                .map_err(|_| Error::CannotSimulate)?,
+        })
+    }
+
+    async fn from(&self) -> Result<Address> {
+        let wallets = Wallets::read().await;
+        let wallet = wallets
+            .get(&self.wallet_name)
+            .ok_or_else(|| Error::WalletNameNotFound(self.wallet_name.clone()))?;
+
+        wallet
+            .get_address(&self.wallet_path)
+            .await
+            .map_err(|_| Error::CannotSimulate)
+    }
+
+    fn is_ledger(&self) -> bool {
+        self.wallet_type == WalletType::Ledger
+    }
 }
 
-#[derive(Default)]
 pub struct SendTransactionBuilder<'a> {
-    pub wallet: Option<&'a Wallet>,
+    ctx: &'a Ctx,
+    pub wallet_name: Option<String>,
     pub wallet_path: Option<String>,
-    pub network: Option<Network>,
+    pub wallet_type: Option<WalletType>,
     pub request: TypedTransaction,
 }
 
 impl<'a> SendTransactionBuilder<'a> {
-    pub fn set_wallet(mut self, wallet: &'a Wallet) -> SendTransactionBuilder<'a> {
-        self.wallet = Some(wallet);
-        self
+    pub fn new(ctx: &'a Ctx) -> Self {
+        Self {
+            ctx,
+            wallet_name: None,
+            wallet_path: None,
+            wallet_type: None,
+            request: Default::default(),
+        }
     }
 
-    pub fn set_wallet_path(mut self, wallet_path: String) -> SendTransactionBuilder<'a> {
-        self.wallet_path = Some(wallet_path);
-        self
-    }
-
-    pub fn set_network(mut self, network: Network) -> SendTransactionBuilder<'a> {
-        self.network = Some(network);
-        self
-    }
-
-    pub fn set_request(mut self, params: serde_json::Value) -> SendTransactionBuilder<'a> {
+    pub async fn set_request(
+        mut self,
+        params: serde_json::Value,
+    ) -> Result<SendTransactionBuilder<'a>> {
         // TODO: why is this an array?
         let params = if params.is_array() {
             &params.as_array().unwrap()[0]
@@ -122,12 +210,31 @@ impl<'a> SendTransactionBuilder<'a> {
             &params
         };
 
+        let wallets = Wallets::read().await;
         if let Some(from) = params["from"].as_str() {
-            self.request.set_from(Address::from_str(from).unwrap());
+            let address = Address::from_str(from).unwrap();
+            self.request.set_from(address.to_ethers());
+
+            let (wallet, path) = wallets
+                .find(address)
+                .await
+                .ok_or(Error::WalletNotFound(address))?;
+            self.wallet_name = Some(wallet.name());
+            self.wallet_path = Some(path);
+            self.wallet_type = Some(wallet.into());
+        } else {
+            let wallet = wallets.get_current_wallet();
+
+            self.wallet_path = Some(wallet.get_current_path());
+            self.request
+                .set_from(wallet.get_current_address().await.to_ethers());
+            self.wallet_name = Some(wallet.name());
+            self.wallet_type = Some(wallet.into());
         }
 
         if let Some(to) = params["to"].as_str() {
-            self.request.set_to(Address::from_str(to).unwrap());
+            self.request
+                .set_to(Address::from_str(to).unwrap().to_ethers());
         }
 
         if let Some(value) = params["value"].as_str() {
@@ -139,16 +246,15 @@ impl<'a> SendTransactionBuilder<'a> {
             self.request.set_data(Bytes::from_str(data).unwrap());
         }
 
-        self
+        Ok(self)
     }
 
-    pub fn build(self) -> SendTransaction<'a> {
-        tracing::debug!("building SendTransaction");
-
+    pub async fn build(self) -> SendTransaction {
         SendTransaction {
-            wallet: self.wallet.unwrap(),
+            wallet_name: self.wallet_name.unwrap(),
             wallet_path: self.wallet_path.unwrap(),
-            network: self.network.unwrap(),
+            wallet_type: self.wallet_type.unwrap(),
+            network: self.ctx.network().await,
             request: self.request,
             signer: None,
         }

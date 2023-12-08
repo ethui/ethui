@@ -1,12 +1,13 @@
 use std::{collections::HashMap, net::SocketAddr};
 
-use futures_util::{SinkExt, StreamExt};
+use futures::{stream::SplitSink, SinkExt, StreamExt};
 use iron_types::GlobalState;
 use tokio::{
     net::{TcpListener, TcpStream},
     sync::mpsc,
 };
 use tokio_tungstenite::{accept_hdr_async, WebSocketStream};
+use tracing::warn;
 use tungstenite::{
     handshake::server::{ErrorResponse, Request, Response},
     Message,
@@ -16,9 +17,11 @@ use url::Url;
 pub use crate::error::{WsError, WsResult};
 use crate::peers::{Peer, Peers};
 
-pub(crate) async fn server_loop() {
-    let addr = std::env::var("IRON_WS_SERVER_ENDPOINT").unwrap_or("127.0.0.1:9002".into());
+pub(crate) async fn server_loop(port: u16) {
+    let addr = format!("127.0.0.1:{}", port);
     let listener = TcpListener::bind(&addr).await.expect("Can't listen to");
+
+    tracing::debug!("WS server listening on: {}", addr);
 
     while let Ok((stream, _)) = listener.accept().await {
         let peer = stream
@@ -43,15 +46,17 @@ async fn accept_connection(socket: SocketAddr, stream: TcpStream) {
     let (snd, rcv) = mpsc::unbounded_channel::<serde_json::Value>();
     let url = query_params.get("url").cloned().unwrap_or_default();
 
-    tracing::debug!("Peer  {}", url);
+    tracing::debug!("Peer connected {}", url);
 
     let peer = Peer::new(socket, snd, &query_params);
 
     Peers::write().await.add_peer(peer.clone()).await;
-    let err = handle_connection(peer, ws_stream, rcv).await;
+    let res = handle_connection(peer, ws_stream, rcv).await;
     Peers::write().await.remove_peer(socket).await;
 
-    if let Err(e) = err {
+    tracing::debug!("Peer disconnected {}", url);
+
+    if let Err(e) = res {
         match e {
             WsError::Websocket(e) => match e {
                 tungstenite::Error::ConnectionClosed
@@ -80,42 +85,52 @@ async fn handle_connection(
     loop {
         tokio::select! {
             // RPC request
-            msg = ws_receiver.next() =>{
+            Some(msg) = ws_receiver.next() => {
                 match msg {
-                    Some(msg)=>{
-                        let msg = msg?;
-                        if let Message::Pong(_) = msg {
-                            continue;
-                        }
-                        let reply = handler.handle(msg.to_string()).await;
-                        let reply = reply.unwrap_or_else(||serde_json::Value::Null.to_string());
-
-                        ws_sender.send(reply.into()).await?;
-                    },
-                    None=>break
+                    Ok(Message::Text(msg)) => handle_message(msg, &handler, &mut ws_sender).await?,
+                    Ok(Message::Close(_)) => break,
+                    Ok(_) => continue,
+                    Err(e) => warn!("websocket error: {}", e),
                 }
             }
 
             // data sent from provider, or event broadcast
             msg = rcv.recv() =>{
                 match msg {
-                    Some(msg)=>{
+                    Some(msg) => {
                         ws_sender.send(msg.to_string().into()).await?;
                     },
-                    None=>{
+                    None => {
                         tracing::error!("unexpected error");
                         break
                     }
                 }
             }
 
-            // send a ping every 15 seconds
+            // send a ping every 1 seconds
             _ = interval.tick() => {
-                ws_sender.send(Message::Ping(Default::default())).await?;
+                ws_sender.send(Message::Text("ping".to_string())).await?;
             }
-
         }
     }
 
+    Ok(())
+}
+
+async fn handle_message(
+    text: String,
+    handler: &iron_rpc::Handler,
+    sender: &mut SplitSink<WebSocketStream<TcpStream>, Message>,
+) -> WsResult<()> {
+    if text == "pong" {
+        return Ok(());
+    }
+
+    let reply = handler.handle(serde_json::from_str(&text).unwrap()).await;
+    let reply = reply
+        .map(|r| serde_json::to_string(&r).unwrap())
+        .unwrap_or_else(|| serde_json::Value::Null.to_string());
+
+    sender.send(reply.into()).await?;
     Ok(())
 }

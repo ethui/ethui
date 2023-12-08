@@ -3,35 +3,95 @@ module.exports = {
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
     "plugin:@typescript-eslint/recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
     "prettier",
   ],
+  plugins: ["react", "@typescript-eslint", "import"],
+
   parser: "@typescript-eslint/parser",
-  plugins: ["react", "@typescript-eslint"],
+  parserOptions: {
+    sourceType: "module",
+    project: [
+      "./tsconfig.json",
+      "./gui/tsconfig.json",
+      "./extension/tsconfig.json",
+    ],
+  },
+
   ignorePatterns: [
-    "**/*.generated.ts",
     "node_modules/*",
     "extension/dist/*",
     "gui/dist/*",
-    "extension/provider-inpage/*",
     "target/*",
   ],
+
   settings: {
     react: {
       version: "detect",
     },
+    "import/resolver": {
+      typescript: {
+        alwaysTryTypes: true,
+        project: ["tsconfig.json", "./*/tsconfig.json"],
+      },
+      node: true,
+    },
   },
+
   rules: {
     "no-console": ["error", { allow: ["warn", "error"] }],
-    "react/jsx-uses-react": "off",
     "react/react-in-jsx-scope": "off",
-    "no-unused-vars": "off",
     "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/await-thenable": "error",
+    "@typescript-eslint/require-await": "error",
+    "@typescript-eslint/no-confusing-void-expression": [
+      "error",
+      { ignoreArrowShorthand: true },
+    ],
     "@typescript-eslint/no-unused-vars": [
       "warn",
       {
         argsIgnorePattern: "^_",
         varsIgnorePattern: "^_",
         caughtErrorsIgnorePattern: "^_",
+      },
+    ],
+
+    // eslint-plugin-import
+    "import/no-deprecated": "warn",
+    "import/no-empty-named-blocks": "error",
+    "import/no-mutable-exports": "error",
+    "import/no-named-as-default": "error",
+    "import/no-unused-modules": "error",
+    "import/no-import-module-exports": "error",
+    "import/first": "error",
+    "import/newline-after-import": "error",
+    "import/no-duplicates": "error",
+    "import/order": [
+      "error",
+      {
+        groups: [
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index",
+          "object",
+          "type",
+        ],
+      },
+    ],
+    "no-restricted-imports": [
+      "error",
+      {
+        patterns: [
+          {
+            group: ["**../"],
+            message: "Relative imports are not allowed.",
+          },
+        ],
       },
     ],
   },

@@ -1,11 +1,9 @@
 use std::str::FromStr;
 
 use ethers::{
-    core::k256::ecdsa::SigningKey,
     prelude::SignerMiddleware,
     providers::{Http, Middleware as _, Provider},
-    signers,
-    signers::Signer,
+    signers::Signer as _,
     types::{transaction::eip712, Bytes, Signature},
 };
 use iron_dialogs::{Dialog, DialogMsg};
@@ -15,7 +13,7 @@ use serde::Serialize;
 
 use super::{Error, Result};
 
-type Middleware = SignerMiddleware<Provider<Http>, signers::Wallet<SigningKey>>;
+type Middleware = SignerMiddleware<Provider<Http>, iron_wallets::Signer>;
 
 /// Orchestrates message signing
 /// Takes references to both the wallet and network
@@ -45,15 +43,19 @@ impl<'a> SignMessage<'a> {
         let dialog = Dialog::new("msg-sign", params);
         dialog.open().await?;
 
-        match dialog.recv().await {
-            Some(DialogMsg::Accept(_)) => Ok(()),
+        if let Some(msg) = dialog.recv().await {
+            match msg {
+                DialogMsg::Data(msg) => match msg.as_str() {
+                    Some("accept") => Ok(()),
+                    // TODO: what's the appropriate error to return here?
+                    // or should we return Ok(_)? Err(_) seems to close the ws connection
+                    _ => Err(Error::TxDialogRejected),
+                },
 
-            _ =>
-            // TODO: what's the appropriate error to return here?
-            // or should we return Ok(_)? Err(_) seems to close the ws connection
-            {
-                Err(Error::TxDialogRejected)
+                DialogMsg::Close => Err(Error::TxDialogRejected),
             }
+        } else {
+            Err(Error::TxDialogRejected)
         }
     }
 
@@ -65,12 +67,16 @@ impl<'a> SignMessage<'a> {
                 let bytes = Bytes::from_str(msg).unwrap();
                 Ok(signer.sign(bytes, &signer.address()).await?)
             }
-            Data::Typed(ref data) => Ok(signer.signer().sign_typed_data(&data.clone()).await?),
+            Data::Typed(ref data) => Ok(signer
+                .signer()
+                .sign_typed_data(&data.clone())
+                .await
+                .map_err(|e| Error::Signer(e.to_string()))?),
         }
     }
 
     async fn build_signer(&self) -> Middleware {
-        let signer: signers::Wallet<SigningKey> = self
+        let signer = self
             .wallet
             .build_signer(self.network.chain_id, &self.wallet_path)
             .await

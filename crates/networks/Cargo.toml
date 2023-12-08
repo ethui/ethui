@@ -19,6 +19,5 @@ serde_json = { workspace = true }
 tokio = { workspace = true }
 once_cell = { workspace = true }
 thiserror = { workspace = true }
-
-url = "2.3.1"
-async-trait = "0.1.68"
+url = { workspace = true }
+async-trait = { workspace = true }

@@ -1,7 +1,9 @@
-import browser, { type Runtime } from "webextension-polyfill";
-import { ConstantBackoff, Websocket, WebsocketBuilder } from "websocket-ts";
+import { Json, JsonRpcRequest, JsonRpcResponse } from "@metamask/utils";
+import log from "loglevel";
+import { type Runtime, runtime } from "webextension-polyfill";
+import { ArrayQueue, ConstantBackoff, WebsocketBuilder } from "websocket-ts";
 
-import { type Settings, defaultSettings, loadSettings } from "../settings";
+import { defaultSettings, loadSettings, type Settings } from "@/settings";
 
 // init on load
 (async () => init())();
@@ -13,11 +15,36 @@ let settings: Settings = defaultSettings;
  */
 export async function init() {
   settings = await loadSettings();
+  log.setLevel(settings.logLevel);
 
   // handle each incoming content script connection
-  browser.runtime.onConnect.addListener(async (remotePort: Runtime.Port) => {
-    setupProviderConnection(remotePort);
+  runtime.onConnect.addListener((port: Runtime.Port) => {
+    setupProviderConnection(port);
   });
+}
+
+/**
+ * Sends a message to the devtools in every page.
+ * Each message will include a timestamp.
+ * @param msg - message to be sent to the devtools
+ */
+async function notifyDevtools(
+  tabId: number,
+  type: "request" | "response" | "start",
+  data?: JsonRpcResponse<Json> | JsonRpcRequest,
+) {
+  try {
+    await runtime.sendMessage({
+      type,
+      tabId,
+      data,
+      timestamp: Date.now(),
+    });
+  } catch (e: unknown) {
+    if (!e?.message?.includes("Receiving end does not exist.")) {
+      throw e;
+    }
+  }
 }
 
 /**
@@ -28,39 +55,46 @@ export async function init() {
  * This behaviour prevents initiating connections for browser tabs where `window.ethereum` is not actually used
  */
 export function setupProviderConnection(port: Runtime.Port) {
-  // the future connection
-  let ws: Websocket | undefined;
+  const tabId = port.sender!.tab!.id!;
 
-  // because of the lazy connection, there is a slight delay between the first request being sent from the page,
-  // and the WS connection being ready to receive it.
-  // During that period, we keep a backlog of pending msgs to flush once the connection is ready
-  const backlog: unknown[] = [];
+  notifyDevtools(tabId, "start");
 
-  // pre-build the websocket connection
-  // not actually buit until the first message arrives
-  const wsBuilder = new WebsocketBuilder(endpoint(port))
-    .withBackoff(new ConstantBackoff(1000))
-    .onOpen((instance, _event) => {
-      // connection is ready. set the upper `ws` value, and flush the backlog
-      ws = instance;
-      backlog.map((data) => instance.send(JSON.stringify(data)));
+  const ws = new WebsocketBuilder(endpoint(port))
+    .onOpen(() => {
+      log.debug("WS connection opened");
     })
+    .onReconnect(() => {
+      log.debug("WS connection reconnected");
+    })
+    .onError((e) => {
+      log.error("[WS] error:", e);
+    })
+    .withBuffer(new ArrayQueue())
+    .withBackoff(new ConstantBackoff(1000))
     .onMessage((_ins, event) => {
+      if (event.data === "ping") {
+        ws.send("pong");
+        return;
+      }
       // forward WS server messages back to the stream (content script)
       const data = JSON.parse(event.data);
       port.postMessage(data);
-    });
+
+      log.debug("[WS] response:", data);
+      notifyDevtools(tabId, "response", data);
+    })
+    .build();
 
   // forwarding incoming stream data to the WS server
-  port.onMessage.addListener((data: unknown) => {
-    if (!ws) {
-      // connection not ready yet: push to backlog and initiate connection
-      backlog.push(data);
-      wsBuilder.build();
-    } else {
-      // connection is ready, forward the message normaly
-      ws.send(JSON.stringify(data));
-    }
+  port.onMessage.addListener((data: JsonRpcResponse<Json>) => {
+    ws.send(JSON.stringify(data));
+
+    log.debug("[WS] request:", data);
+    notifyDevtools(tabId, "request", data);
+  });
+
+  port.onDisconnect.addListener(() => {
+    ws.close();
   });
 }
 

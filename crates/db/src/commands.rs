@@ -1,10 +1,10 @@
-use ethers::types::{Address, Chain, U256};
-use iron_types::{events::Tx, Erc721TokenData, TokenBalance, UINotify};
+use ethers::{abi::Abi, types::Chain};
+use iron_types::{events::Tx, Address, Erc721TokenData, TokenBalance, UINotify, U256};
 
 use super::{Paginated, Pagination, Result};
 use crate::{
     utils::{fetch_etherscan_abi, fetch_etherscan_contract_name},
-    Error, StoredContract, DB,
+    Error, DB,
 };
 
 #[tauri::command]
@@ -36,13 +36,18 @@ pub async fn db_get_native_balance(
     Ok(db.get_native_balance(chain_id, address).await)
 }
 
+#[tauri::command]
+pub async fn db_get_contracts(chain_id: u32, db: tauri::State<'_, DB>) -> Result<Vec<Address>> {
+    db.get_contracts(chain_id).await
+}
 
 #[tauri::command]
-pub async fn db_get_contracts(
+pub async fn db_get_contract_abi(
+    address: Address,
     chain_id: u32,
     db: tauri::State<'_, DB>,
-) -> Result<Vec<StoredContract>> {
-    db.get_contracts(chain_id).await
+) -> Result<Abi> {
+    db.get_contract_abi(chain_id, address).await
 }
 
 #[tauri::command]
@@ -66,7 +71,6 @@ pub async fn db_insert_contract(
     iron_broadcast::ui_notify(UINotify::ContractsUpdated).await;
 
     Ok(())
-
 }
 
 #[tauri::command]

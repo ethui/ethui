@@ -1,6 +1,8 @@
 import path from "node:path";
+
 import { defineConfig } from "vite";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 const dist = process.env.DIST_DIR || "dist/dev";
 
@@ -10,11 +12,13 @@ export default defineConfig({
     nodePolyfills({
       exclude: ["fs"],
     }),
+    tsconfigPaths(),
   ],
   define: {
     "process.env": {},
   },
   build: {
+    minify: false,
     emptyOutDir: false,
     outDir: path.resolve(__dirname, "..", dist),
     lib: {

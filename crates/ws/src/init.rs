@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use iron_args::Args;
 use iron_broadcast::InternalMsg;
 use iron_types::GlobalState;
 use once_cell::sync::Lazy;
@@ -8,8 +9,10 @@ use crate::{peers::Peers, server::server_loop};
 
 static PEERS: Lazy<RwLock<Peers>> = Lazy::new(Default::default);
 
-pub async fn init() {
-    tokio::spawn(async { server_loop().await });
+pub async fn init(args: &Args) {
+    let port = args.ws_port;
+
+    tokio::spawn(async move { server_loop(port).await });
     tokio::spawn(async { receiver().await });
 }
 

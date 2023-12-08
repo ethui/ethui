@@ -15,19 +15,8 @@
     "jsx": "react-jsx",
     "incremental": true,
     "isolatedModules": true,
-    "types": ["node"],
-    "typeRoots": ["./src/global.d.ts", "node_modules/@types"]
+    "types": ["node"]
   },
-  "include": [
-    "gui",
-    "ui",
-    "extension",
-    "config",
-    "constants",
-    "provider-inpage",
-    "provider-worker",
-    "state",
-    "node_modules/@types"
-  ],
-  "exclude": ["build", "node_modules", "extension"]
+  "include": [".eslintrc.js"],
+  "references": [{ "path": "./gui" }, { "path": "./extension" }]
 }

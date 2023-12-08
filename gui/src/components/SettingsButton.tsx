@@ -1,7 +1,8 @@
-import Settings from "@mui/icons-material/SettingsSharp";
+import { SettingsSharp as SettingsSharpIcon } from "@mui/icons-material";
 import { Button, IconButton } from "@mui/material";
 
-import { useSettingsWindow, useTheme } from "../store";
+import { useSettingsWindow, useTheme } from "@/store";
+
 import { Modal, Settings as SettingsPage } from "./";
 
 export function SettingsButton() {
@@ -23,12 +24,12 @@ export function SettingsButton() {
           },
         }}
       >
-        <Settings />
+        <SettingsSharpIcon />
       </IconButton>
 
       <Button
         variant="sidebar"
-        startIcon={<Settings />}
+        startIcon={<SettingsSharpIcon />}
         onClick={open}
         sx={{
           [theme.breakpoints.down("sm")]: {

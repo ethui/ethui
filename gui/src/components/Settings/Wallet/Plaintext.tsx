@@ -1,21 +1,28 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Button,
-  Checkbox,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormHelperText,
-  Stack,
-  TextField,
-} from "@mui/material";
-import { Controller, useForm } from "react-hook-form";
+import { Button, Stack, TextField } from "@mui/material";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { Wallet, walletSchema } from "../../../types";
+import {
+  derivationPathSchema,
+  mnemonicSchema,
+  PlaintextWallet,
+  Wallet,
+} from "@/types/wallets";
+
+const schema = z.object({
+  name: z.string().min(1),
+  mnemonic: mnemonicSchema,
+  derivationPath: derivationPathSchema,
+  count: z.number().int().min(1),
+  currentPath: z.string().optional(),
+});
+
+type Schema = z.infer<typeof schema>;
 
 export interface Props {
-  wallet: Wallet & { type: "plaintext" };
-  onSubmit: (data: Wallet & { type: "plaintext" }) => void;
+  wallet?: PlaintextWallet;
+  onSubmit: (data: Wallet) => void;
   onRemove: () => void;
 }
 
@@ -23,56 +30,32 @@ export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
   const {
     register,
     handleSubmit,
-    control,
+    reset,
     formState: { isValid, isDirty, errors },
   } = useForm({
     mode: "onBlur",
-    resolver: zodResolver(walletSchema),
+    resolver: zodResolver(schema),
     defaultValues: wallet,
   });
+
+  const prepareAndSubmit = (data: Schema) => {
+    onSubmit({ type: "plaintext", ...data });
+    reset(data);
+  };
 
   return (
     <Stack
       spacing={2}
       alignItems="flex-start"
       component="form"
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(prepareAndSubmit)}
     >
-      <input type="hidden" {...register("type")} />
-      <input type="hidden" {...register("currentPath")} />
       <TextField
         label="Name"
         error={!!errors.name}
         helperText={errors.name?.message?.toString()}
         {...register("name")}
       />
-      <Stack spacing={2} direction="row">
-        <FormControl error={!!errors.dev}>
-          <FormGroup>
-            <FormControlLabel
-              label="Dev account"
-              control={
-                <Controller
-                  name="dev"
-                  control={control}
-                  render={({ field }) => {
-                    return (
-                      <Checkbox
-                        {...field}
-                        checked={field.value}
-                        onChange={(e) => field.onChange(e.target.checked)}
-                      />
-                    );
-                  }}
-                />
-              }
-            />
-          </FormGroup>
-          {errors.dev && (
-            <FormHelperText>{errors.dev.message?.toString()}</FormHelperText>
-          )}
-        </FormControl>
-      </Stack>
       <TextField
         label="Mnemonic"
         error={!!errors.mnemonic}

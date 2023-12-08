@@ -1,44 +1,61 @@
-import { Autocomplete, Box, Button, Chip, TextField } from "@mui/material";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  Chip,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { Stack } from "@mui/system";
 import { invoke } from "@tauri-apps/api/tauri";
-import { SyntheticEvent, useState } from "react";
+import { Abi, AbiFunction, formatAbiItem } from "abitype";
+import { SyntheticEvent, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { encodeFunctionData } from "viem";
+import { Address, encodeFunctionData } from "viem";
 
-import { useProvider } from "../hooks";
-import { ABIFunctionInput, ABIItem, Address } from "../types";
+import { useApi, useProvider } from "@/hooks";
 
 interface Props {
+  chainId: number;
   address: Address;
-  abi: ABIItem[];
 }
 
-export function ABIForm({ address, abi }: Props) {
-  const [currentItem, setCurrentItem] = useState<ABIItem | undefined>();
+export function ABIForm({ chainId, address }: Props) {
+  const [currentItem, setCurrentItem] = useState<AbiFunction | undefined>();
+
+  const { data: abi } = useApi<Abi>("/contracts/abi", {
+    address,
+    chainId,
+  });
+
+  if (!abi) return null;
 
   const options = abi
-    .filter((item) => item.type === "function")
-    .map((item, i) => ({
-      item,
-      label: functionSignature(item.name, item.inputs),
-      id: i,
-    }));
+    .filter(({ type }) => type === "function")
+    .map((item, i) => {
+      item = item as AbiFunction;
+      return {
+        item,
+        label: formatAbiItem(item).replace("function ", ""),
+        group: item.stateMutability === "view" ? "view" : "write",
+        id: i,
+      };
+    })
+    .sort((a, b) => -a.group.localeCompare(b.group));
 
   const handleChange = (
     _event: SyntheticEvent,
-    value: { item: ABIItem } | null,
+    value: { item: AbiFunction } | null,
   ) => {
-    if (value === null) {
-      setCurrentItem(undefined);
-    } else {
-      setCurrentItem(value.item);
-    }
+    setCurrentItem(value?.item);
   };
 
   return (
     <Stack alignItems="flex-start" spacing={2}>
       <Autocomplete
+        selectOnFocus
         sx={{ minWidth: "100%" }}
+        groupBy={(option) => option.group}
         options={options}
         onChange={handleChange}
         isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -53,7 +70,7 @@ export function ABIForm({ address, abi }: Props) {
         )}
       />
 
-      {currentItem && <ABIItemForm contract={address} item={currentItem} />}
+      {currentItem && <ItemForm contract={address} item={currentItem} />}
     </Stack>
   );
 }
@@ -63,16 +80,23 @@ interface CallArgs {
   args: Record<string, string>;
 }
 
-function ABIItemForm({ contract, item }: { contract: Address; item: ABIItem }) {
+interface ItemFormProps {
+  contract: Address;
+  item: AbiFunction;
+}
+
+function ItemForm({ contract, item }: ItemFormProps) {
   const provider = useProvider();
-  const { register, handleSubmit } = useForm<CallArgs>();
+  const { register, handleSubmit, reset } = useForm<CallArgs>();
   const [callResult, setCallResult] = useState<string>();
   const [txResult, setTxResult] = useState<string>();
+
+  useEffect(() => reset(), [item, reset]);
 
   if (!provider) return null;
 
   const onSubmit = async (params: CallArgs) => {
-    const args = item.inputs.map((input) => params.args[input.name]);
+    const args = item.inputs.map((input) => params.args[input.name!]);
 
     const data = encodeFunctionData({
       abi: [item],
@@ -84,7 +108,7 @@ function ABIItemForm({ contract, item }: { contract: Address; item: ABIItem }) {
       const result = await provider.readContract({
         address: contract,
         abi: [item],
-        functionName: item.name,
+        functionName: item.name as never, // TODO: no idea why ts thinks this is `never`. code seems to work
         args,
       });
 
@@ -97,7 +121,12 @@ function ABIItemForm({ contract, item }: { contract: Address; item: ABIItem }) {
       }
     } else {
       const result = await invoke<string>("rpc_send_transaction", {
-        params: { to: contract, data },
+        params: {
+          from: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+          to: contract,
+          value: params.value,
+          data,
+        },
       });
       setTxResult(result);
     }
@@ -117,21 +146,23 @@ function ABIItemForm({ contract, item }: { contract: Address; item: ABIItem }) {
           </Box>
         ))}
         {item.stateMutability === "payable" && (
-          <TextField size="small" {...register("value")} label="value" />
+          <Box>
+            <TextField
+              sx={{ minWidth: 300 }}
+              size="small"
+              {...register("value")}
+              label="value"
+            />
+          </Box>
         )}
         <Box>
           <Button sx={{ minWidth: 150 }} variant="contained" type="submit">
             {item.stateMutability == "view" ? "Call" : "Send"}
           </Button>
         </Box>
-        {callResult && <Box>{callResult}</Box>}
-        {txResult && <Box>{txResult}</Box>}
+        {callResult && <Typography>{callResult}</Typography>}
+        {txResult && <Typography>{txResult}</Typography>}
       </Stack>
     </form>
   );
-}
-
-// TODO: this may be missing some details, such as `calldata`
-function functionSignature(name: string, inputs: ABIFunctionInput[]) {
-  return `${name}(${inputs.map((i) => `${i.type} ${i.name}`).join(", ")})`;
 }

@@ -14,6 +14,7 @@ iron-rpc = { workspace = true }
 iron-broadcast = { workspace = true }
 iron-networks = { workspace = true }
 iron-connections = { workspace = true }
+iron-args = { workspace = true }
 
 ethers = { workspace = true }
 tokio = { workspace = true }
@@ -22,10 +23,10 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 once_cell = { workspace = true }
 tracing = { workspace = true }
+thiserror = { workspace = true }
+url = { workspace = true }
+futures = { workspace = true }
+async-trait = { workspace = true }
 
-futures-util = "0.3.27"
-tokio-tungstenite = "0.18.0"
-tungstenite = "0.18.0"
-thiserror = "1.0.40"
-url = "2.3.1"
-async-trait = "0.1.68"
+tokio-tungstenite = "0.20.1"
+tungstenite = "0.20.1"

@@ -1,18 +1,26 @@
+import "./global.css";
+import "react18-json-view/src/style.css";
+
 import { GlobalStyles, ThemeProvider } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
+import { SnackbarProvider } from "notistack";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Route, Router, Switch } from "wouter";
 
 import {
   CommandBar,
   DevBuildNotice,
+  ErrorHandler,
   HomePage,
+  WagmiWrapper,
+} from "@/components";
+import {
   MsgSignDialog,
   TxReviewDialog,
-  WagmiWrapper,
   WalletUnlockDialog,
-} from "./components";
-import { OnboardingWrapper } from "./components/Onboarding";
+} from "@/components/Dialogs";
+import { Onboarding } from "@/components/Onboarding";
+
 import { useTheme } from "./store/theme";
 
 const queryClient = new QueryClient({
@@ -34,14 +42,14 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <GlobalStyles styles={globalStyles} />
       <CssBaseline>
-        <QueryClientProvider client={queryClient}>
-          <DevBuildNotice />
-          <OnboardingWrapper>
+        <ErrorHandler>
+          <QueryClientProvider client={queryClient}>
+            <DevBuildNotice />
             <WagmiWrapper>
               <Routes />
             </WagmiWrapper>
-          </OnboardingWrapper>
-        </QueryClientProvider>
+          </QueryClientProvider>
+        </ErrorHandler>
       </CssBaseline>
     </ThemeProvider>
   );
@@ -51,6 +59,10 @@ function Routes() {
   return (
     <Router>
       <Switch>
+        <Route path="/onboarding">
+          <Onboarding />
+        </Route>
+
         <Route path="/dialog/tx-review/:id">
           {({ id }: { id: string }) => <TxReviewDialog id={parseInt(id)} />}
         </Route>
@@ -63,9 +75,15 @@ function Routes() {
           {({ id }: { id: string }) => <WalletUnlockDialog id={parseInt(id)} />}
         </Route>
         <Route>
-          <CommandBar>
-            <HomePage />
-          </CommandBar>
+          <SnackbarProvider
+            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+            preventDuplicate
+            dense
+          >
+            <CommandBar>
+              <HomePage />
+            </CommandBar>
+          </SnackbarProvider>
         </Route>
       </Switch>
     </Router>

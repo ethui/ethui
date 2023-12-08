@@ -11,6 +11,11 @@ on: # rebuild any PRs and main branch changes
       - "./gui/**"
       - "*.md"
       - "LICENSE"
+  merge_group:
+    paths-ignore:
+      - "./gui/**"
+      - "*.md"
+      - "LICENSE"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -22,10 +27,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - run: npm install -g yarn
+
       - name: yarn cache
         uses: actions/setup-node@v3
         with:
           cache: "yarn"
+          node-version-file: ".tool-versions"
 
       - name: install
         run: yarn workspace @iron/extension install

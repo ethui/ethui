@@ -21,10 +21,15 @@ import {
   useMatches,
   useRegisterActions,
 } from "kbar";
-import React, { ReactNode, forwardRef } from "react";
+import React, { forwardRef, ReactNode, useMemo } from "react";
 
-import { useNetworks, useSettingsWindow, useWallets } from "../store";
-import { useTheme } from "../store/theme";
+import {
+  useNetworks,
+  useSettings,
+  useSettingsWindow,
+  useWallets,
+} from "@/store";
+import { useTheme } from "@/store/theme";
 
 export function CommandBar({ children }: { children: ReactNode }) {
   const { theme } = useTheme();
@@ -70,12 +75,14 @@ function RenderResults() {
 function CommandBarInner() {
   const walletActions = useWallets((s) => s.actions);
   const networkActions = useNetworks((s) => s.actions);
+  const settingsActions = useSettings((s) => s.actions);
   const [theme, themeActions] = useTheme((s) => [s.theme, s.actions]);
   const settingsWindowActions = useSettingsWindow((s) => s.actions);
 
   useRegisterActions(walletActions, [walletActions]);
   useRegisterActions(networkActions, [networkActions]);
-  useRegisterActions(themeActions, [settingsWindowActions]);
+  useRegisterActions(settingsActions, [settingsActions]);
+  useRegisterActions(themeActions, [themeActions]);
   useRegisterActions(settingsWindowActions, [settingsWindowActions]);
 
   return (
@@ -116,7 +123,7 @@ const ResultItem = forwardRef(
     { action, active, currentRootActionId }: ResultItemProps,
     ref: React.Ref<HTMLDivElement>,
   ) => {
-    const ancestors = React.useMemo(() => {
+    const ancestors = useMemo(() => {
       if (!currentRootActionId) return action.ancestors;
       const index = action.ancestors.findIndex(
         (ancestor) => ancestor.id === currentRootActionId,

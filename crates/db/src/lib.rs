@@ -2,16 +2,19 @@ pub mod commands;
 mod error;
 mod pagination;
 mod queries;
-mod utils;
-use ethers::types::{Address, H256, U256};
+pub mod utils;
+
+use std::{path::PathBuf, str::FromStr};
+
+use ethers::abi::Abi;
 use iron_types::{
-    events::Tx, Erc721Token, Erc721TokenData, Event, StoredContract, TokenBalance, TokenMetadata,
+    events::Tx, Address, Erc721Token, Erc721TokenData, Event, TokenBalance, TokenMetadata, B256,
+    U256,
 };
 use sqlx::{
     sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous},
     Row,
 };
-use std::{path::PathBuf, str::FromStr};
 use tracing::{instrument, trace};
 
 pub use self::{
@@ -51,7 +54,7 @@ impl DB {
     ) -> Result<()> {
         let mut conn = self.tx().await?;
         queries::native_update_balance(balance, chain_id, address)
-            .execute(&mut conn)
+            .execute(&mut *conn)
             .await?;
         conn.commit().await?;
         Ok(())
@@ -67,7 +70,6 @@ impl DB {
             .await?)
     }
 
-    // TODO: Change this to an Into<T> of some kind, so we don't depend directly on AlchemyResponse here
     pub async fn save_erc20_balances(
         &self,
         chain_id: u32,
@@ -78,7 +80,7 @@ impl DB {
 
         for (contract, balance) in balances {
             queries::erc20_update_balance(contract, address, chain_id, balance)
-                .execute(&mut conn)
+                .execute(&mut *conn)
                 .await?;
         }
 
@@ -95,7 +97,7 @@ impl DB {
         let mut conn = self.tx().await?;
 
         queries::update_erc20_metadata(address, chain_id, metadata)
-            .execute(&mut conn)
+            .execute(&mut *conn)
             .await?;
 
         conn.commit().await?;
@@ -113,7 +115,7 @@ impl DB {
                     trace!(tx = tx.hash.to_string());
 
                     queries::insert_transaction(tx, chain_id)
-                        .execute(&mut conn)
+                        .execute(&mut *conn)
                         .await?;
                 }
 
@@ -121,7 +123,7 @@ impl DB {
                     trace!(contract = tx.address.to_string());
 
                     queries::insert_contract(tx, chain_id)
-                        .execute(&mut conn)
+                        .execute(&mut *conn)
                         .await?;
                 }
 
@@ -136,7 +138,7 @@ impl DB {
                     if !transfer.from.is_zero() {
                         let current =
                             queries::erc20_read_balance(transfer.contract, transfer.from, chain_id)
-                                .fetch_one(&mut conn)
+                                .fetch_one(&mut *conn)
                                 .await?;
 
                         queries::erc20_update_balance(
@@ -145,7 +147,7 @@ impl DB {
                             chain_id,
                             current - transfer.value,
                         )
-                        .execute(&mut conn)
+                        .execute(&mut *conn)
                         .await?;
                     }
 
@@ -153,9 +155,9 @@ impl DB {
                     if !transfer.to.is_zero() {
                         let current =
                             queries::erc20_read_balance(transfer.contract, transfer.to, chain_id)
-                                .fetch_one(&mut conn)
+                                .fetch_one(&mut *conn)
                                 .await
-                                .unwrap_or(U256::zero());
+                                .unwrap_or_default();
 
                         queries::erc20_update_balance(
                             transfer.contract,
@@ -163,7 +165,7 @@ impl DB {
                             chain_id,
                             current + transfer.value,
                         )
-                        .execute(&mut conn)
+                        .execute(&mut *conn)
                         .await?;
                     }
                 }
@@ -174,7 +176,7 @@ impl DB {
                         id = transfer.token_id.to_string()
                     );
                     queries::erc721_transfer(transfer, chain_id)
-                        .execute(&mut conn)
+                        .execute(&mut *conn)
                         .await?;
                 }
             }
@@ -183,7 +185,7 @@ impl DB {
         Ok(())
     }
 
-    pub async fn transaction_exists(&self, chain_id: u32, hash: H256) -> Result<bool> {
+    pub async fn transaction_exists(&self, chain_id: u32, hash: B256) -> Result<bool> {
         let res = sqlx::query(
             r#"SELECT COUNT(*) > 0 as result FROM transactions WHERE chain_id = ? AND hash = ?"#,
         )
@@ -196,7 +198,7 @@ impl DB {
         Ok(res)
     }
 
-    async fn get_transactions(
+    pub async fn get_transactions(
         &self,
         chain_id: u32,
         from_or_to: Address,
@@ -237,15 +239,45 @@ impl DB {
         Ok(Paginated::new(items, pagination, total))
     }
 
-    pub async fn get_contracts(&self, chain_id: u32) -> Result<Vec<StoredContract>> {
+    pub async fn get_contracts(&self, chain_id: u32) -> Result<Vec<Address>> {
         let res: Vec<_> = sqlx::query(
-            r#" SELECT *
+            r#" SELECT address
             FROM contracts
             WHERE chain_id = ? "#,
         )
         .bind(chain_id)
-        .map(|row| row.try_into().unwrap())
+        .map(|row| Address::from_str(row.get::<&str, _>("address")).unwrap())
         .fetch_all(self.pool())
+        .await?;
+
+        Ok(res)
+    }
+
+    pub async fn get_contract_name(&self, chain_id: u32, address: Address) -> Result<String> {
+        let res = sqlx::query(
+            r#" SELECT name
+            FROM contracts
+            WHERE chain_id = ? AND address = ? "#,
+        )
+        .bind(chain_id)
+        .bind(format!("0x{:x}", address))
+        .map(|row| row.get("name"))
+        .fetch_one(self.pool())
+        .await?;
+
+        Ok(res)
+    }
+
+    pub async fn get_contract_abi(&self, chain_id: u32, address: Address) -> Result<Abi> {
+        let res = sqlx::query(
+            r#" SELECT abi
+            FROM contracts
+            WHERE chain_id = ? AND address = ? "#,
+        )
+        .bind(chain_id)
+        .bind(format!("0x{:x}", address))
+        .map(|row| serde_json::from_str(row.get::<&str, _>("abi")).unwrap_or_default())
+        .fetch_one(self.pool())
         .await?;
 
         Ok(res)
@@ -281,7 +313,7 @@ impl DB {
         )
         .bind(chain_id)
         .bind(format!("0x{:x}", address))
-        .map(|row| U256::from_dec_str(row.get::<&str, _>("balance")).unwrap())
+        .map(|row| U256::from_str_radix(row.get::<&str, _>("balance"), 10).unwrap())
         .fetch_one(self.pool())
         .await
         .unwrap_or_default();
@@ -326,7 +358,10 @@ impl DB {
         Ok(res)
     }
 
-    pub async fn get_erc721_tokens_with_missing_data(&self, chain_id: u32) -> Result<Vec<Erc721Token>> {
+    pub async fn get_erc721_tokens_with_missing_data(
+        &self,
+        chain_id: u32,
+    ) -> Result<Vec<Erc721Token>> {
         let res: Vec<_> = sqlx::query(
             r#"SELECT *
         FROM erc721_tokens
@@ -350,14 +385,17 @@ impl DB {
     ) -> Result<()> {
         let mut conn = self.tx().await?;
         queries::update_erc721_token(address, chain_id, token_id, owner, uri, metadata)
-            .execute(&mut conn)
+            .execute(&mut *conn)
             .await?;
 
         conn.commit().await?;
         Ok(())
     }
 
-    pub async fn get_erc721_collections_with_missing_data(&self, chain_id: u32) -> Result<Vec<Address>> {
+    pub async fn get_erc721_collections_with_missing_data(
+        &self,
+        chain_id: u32,
+    ) -> Result<Vec<Address>> {
         let res: Vec<Address> = sqlx::query(
             r#"SELECT DISTINCT contract 
           FROM erc721_tokens
@@ -383,7 +421,7 @@ impl DB {
         let mut conn = self.tx().await?;
 
         queries::update_erc721_collection(address, chain_id, name, symbol)
-            .execute(&mut conn)
+            .execute(&mut *conn)
             .await?;
 
         conn.commit().await?;

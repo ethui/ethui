@@ -30,8 +30,8 @@ impl Handler {
         res
     }
 
-    pub async fn handle(&self, request: String) -> Option<String> {
-        self.io.handle_request(&request, self.ctx.clone()).await
+    pub async fn handle(&self, request: jsonrpc_core::Request) -> Option<jsonrpc_core::Response> {
+        self.io.handle_rpc_request(request, self.ctx.clone()).await
     }
 
     fn add_handlers(&mut self) {
@@ -76,8 +76,6 @@ impl Handler {
         provider_handler!("eth_protocolVersion");
         provider_handler!("eth_syncing");
         provider_handler!("eth_mining");
-
-        // TODO: handle this one internally
         provider_handler!("net_version");
 
         // history methods
@@ -172,23 +170,19 @@ impl Handler {
     ) -> jsonrpc_core::Result<serde_json::Value> {
         use send_transaction::SendTransaction;
 
-        let wallets = Wallets::read().await;
-
-        let network = ctx.network().await;
-        let wallet = wallets.get_current_wallet();
-
-        let mut sender = SendTransaction::build()
-            .set_wallet(wallet)
-            .set_wallet_path(wallet.get_current_path())
-            .set_network(network)
+        // TODO: check that requested wallet is authorized
+        let mut sender = SendTransaction::build(&ctx)
             .set_request(params.into())
-            .build();
+            .await
+            .unwrap()
+            .build()
+            .await;
 
         let result = sender.estimate_gas().await.finish().await;
 
         match result {
             Ok(res) => Ok(res.tx_hash().encode_hex().into()),
-            Err(e) => Ok(e.to_string().into()),
+            Err(e) => Err(e.into()),
         }
     }
 
@@ -218,7 +212,7 @@ impl Handler {
 
         match result {
             Ok(res) => Ok(format!("0x{}", res).into()),
-            Err(e) => Ok(e.to_string().into()),
+            Err(e) => Err(e.into()),
         }
     }
 
@@ -248,7 +242,7 @@ impl Handler {
 
         match result {
             Ok(res) => Ok(format!("0x{}", res).into()),
-            Err(e) => Ok(e.to_string().into()),
+            Err(e) => Err(e.into()),
         }
     }
 

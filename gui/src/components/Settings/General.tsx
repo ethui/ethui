@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Button,
-  Checkbox,
   FormControl,
   FormControlLabel,
   FormGroup,
@@ -10,14 +9,52 @@ import {
   MenuItem,
   Select,
   Stack,
+  Switch,
   TextField,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useCallback, useEffect } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { useSettings } from "../../store";
-import { generalSettingsSchema } from "../../types";
+import { useSettings } from "@/store";
+
+export const schema = z.object({
+  darkMode: z.enum(["auto", "dark", "light"]),
+  autostart: z.boolean(),
+  alchemyApiKey: z
+    .string()
+    .optional()
+    .nullable()
+    .superRefine(async (key, ctx) => {
+      if (!key) return;
+      const valid = await invoke("settings_test_alchemy_api_key", { key });
+      if (valid) return;
+
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Invalid key",
+      });
+    }),
+  etherscanApiKey: z
+    .string()
+    .optional()
+    .nullable()
+
+    .superRefine(async (key, ctx) => {
+      if (!key) return;
+      const valid = await invoke("settings_test_etherscan_api_key", { key });
+      if (valid) return;
+
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Invalid key",
+      });
+    }),
+  hideEmptyTokens: z.boolean(),
+  onboarded: z.boolean(),
+  fastMode: z.boolean(),
+});
 
 export function SettingsGeneral() {
   const general = useSettings((s) => s.settings);
@@ -30,21 +67,21 @@ export function SettingsGeneral() {
     register,
   } = useForm({
     mode: "onChange",
-    resolver: zodResolver(generalSettingsSchema),
+    resolver: zodResolver(schema),
     defaultValues: general,
   });
-  // TODO: https://github.com/react-hook-form/react-hook-form/issues/3213
+  // https://github.com/react-hook-form/react-hook-form/issues/3213
   const isDirtyAlt = !!Object.keys(dirtyFields).length;
 
   // default values are async, need to reset once they're ready
   useEffect(() => reset(general), [reset, general]);
 
   const onSubmit = useCallback(
-    async (data: FieldValues) => {
+    async (params: FieldValues) => {
       await invoke("settings_set", {
-        newSettings: data,
+        params,
       });
-      reset(data);
+      reset(params);
     },
     [reset],
   );
@@ -75,19 +112,19 @@ export function SettingsGeneral() {
             )}
           />
         </FormControl>
-        <FormControl error={!!errors.abiWatch}>
+
+        <FormControl error={!!errors.autostart}>
           <FormGroup>
-            <FormControlLabel
-              label="ABI Watcher"
-              control={
-                <Controller
-                  name="abiWatch"
-                  control={control}
-                  render={({ field }) => (
-                    <Checkbox {...field} checked={field.value} />
-                  )}
+            <Controller
+              name="autostart"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  sx={{ pointerEvents: "auto" }}
+                  label="Start automatically on boot (minimized)"
+                  control={<Switch {...field} checked={field.value} />}
                 />
-              }
+              )}
             />
           </FormGroup>
           {errors.abiWatch && (
@@ -96,14 +133,28 @@ export function SettingsGeneral() {
             </FormHelperText>
           )}
         </FormControl>
-        <TextField
-          label="ABI Watch path"
-          defaultValue={general.abiWatchPath}
-          error={!!errors.abiWatchPath}
-          helperText={errors.abiWatchPath?.message?.toString() || ""}
-          fullWidth
-          {...register("abiWatchPath")}
-        />
+
+        <FormControl error={!!errors.fastMode}>
+          <FormGroup>
+            <Controller
+              name="fastMode"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  sx={{ pointerEvents: "auto" }}
+                  label="Fast mode"
+                  control={<Switch {...field} checked={field.value} />}
+                />
+              )}
+            />
+          </FormGroup>
+          {errors.abiWatch && (
+            <FormHelperText>
+              {errors.abiWatch.message?.toString()}
+            </FormHelperText>
+          )}
+        </FormControl>
+
         <TextField
           label="Alchemy API Key"
           {...register("alchemyApiKey")}
@@ -120,23 +171,22 @@ export function SettingsGeneral() {
         />
         <FormControl error={!!errors.hideEmptyTokens}>
           <FormGroup>
-            <FormControlLabel
-              label="Hide Tokens Without Balance"
-              control={
-                <Controller
-                  name="hideEmptyTokens"
-                  control={control}
-                  render={({ field }) => (
-                    <Checkbox
-                      {...field}
-                      checked={field.value}
-                      onChange={(e) => field.onChange(e.target.checked)}
-                    />
-                  )}
+            <Controller
+              name="hideEmptyTokens"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  label="Hide Tokens Without Balance"
+                  control={<Switch {...field} checked={field.value} />}
                 />
-              }
+              )}
             />
           </FormGroup>
+          {errors.abiWatch && (
+            <FormHelperText>
+              {errors.hideEmptyTokens?.message?.toString()}
+            </FormHelperText>
+          )}
         </FormControl>
         <Button
           variant="contained"

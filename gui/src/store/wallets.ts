@@ -1,10 +1,11 @@
 import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Action } from "kbar";
-import { StateCreator, create } from "zustand";
+import { type Address } from "viem";
+import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { Address, Wallet } from "../types";
+import { Wallet } from "@/types/wallets";
 
 interface State {
   currentWallet?: Wallet;

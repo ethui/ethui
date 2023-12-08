@@ -1,11 +1,11 @@
-import { PaletteMode, Theme, ThemeOptions, createTheme } from "@mui/material";
+import { createTheme, PaletteMode, Theme, ThemeOptions } from "@mui/material";
 import { grey, lightBlue } from "@mui/material/colors";
 import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Action } from "kbar";
-import { StateCreator, create } from "zustand";
+import { create, StateCreator } from "zustand";
 
-import { GeneralSettings } from "../types";
+import { GeneralSettings } from "@/types/settings";
 
 interface Store {
   mode: "auto" | "light" | "dark";
@@ -125,7 +125,7 @@ function getDesignTokens(mode: PaletteMode): ThemeOptions {
           root: {
             borderColor,
             borderBottomStyle: "solid",
-            backgroundColor: "transparent",
+            backgroundColor: theme.palette.background.default,
             color: "inherit",
           },
         },
@@ -135,18 +135,6 @@ function getDesignTokens(mode: PaletteMode): ThemeOptions {
           paper: {
             borderColor,
             borderWidth: 1,
-          },
-        },
-      },
-      MuiAlert: {
-        styleOverrides: {
-          icon: {
-            color: `${theme.palette.text.primary} !important`,
-            backgroundColor: light ? grey[200] : grey[900],
-          },
-          standardInfo: {
-            color: theme.palette.text.primary,
-            backgroundColor: light ? grey[200] : grey[900],
           },
         },
       },

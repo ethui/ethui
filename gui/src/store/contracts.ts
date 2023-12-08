@@ -1,44 +1,49 @@
 import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Address } from "viem";
-import { StateCreator, create } from "zustand";
+import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { IContract } from "../types";
+import { errorToast } from "@/components/Toast";
+
 import { useNetworks } from "./networks";
 
 interface State {
   chainId?: number;
-  contracts: IContract[];
+  addresses: Address[];
 }
 
 interface Setters {
   reload: () => Promise<void>;
   add: (address: Address) => Promise<void>;
-  setChainId: (chainId?: number) => Promise<void>;
+  setChainId: (chainId?: number) => void;
 }
 
 type Store = State & Setters;
 
 const store: StateCreator<Store> = (set, get) => ({
-  contracts: [],
+  addresses: [],
 
   async reload() {
     const { chainId } = get();
     if (!chainId) return;
 
-    const contracts = await invoke<IContract[]>("db_get_contracts", {
+    const addresses = await invoke<Address[]>("db_get_contracts", {
       chainId,
     });
-    set({ contracts });
+    set({ addresses });
   },
 
   add: async (address: Address) => {
     const { chainId } = get();
-    await invoke("db_insert_contract", { chainId, address });
+    try {
+      await invoke("db_insert_contract", { chainId, address });
+    } catch (err: unknown) {
+      errorToast("contracts-add-error", err);
+    }
   },
 
-  async setChainId(chainId) {
+  setChainId(chainId) {
     set({ chainId });
     get().reload();
   },

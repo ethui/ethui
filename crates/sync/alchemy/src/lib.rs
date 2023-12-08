@@ -4,17 +4,14 @@ mod types;
 mod utils;
 use std::{collections::HashMap, time::Duration};
 
-use ethers::{
-    core::types::{Address, U256},
-    providers::{
-        Http, HttpRateLimitRetryPolicy, Middleware, Provider, RetryClient, RetryClientBuilder,
-    },
+use ethers::providers::{
+    Http, HttpRateLimitRetryPolicy, Middleware, Provider, RetryClient, RetryClientBuilder,
 };
 use futures::{stream, StreamExt};
 pub use init::init;
 use iron_db::DB;
 use iron_settings::Settings;
-use iron_types::{Event, GlobalState, SyncUpdates};
+use iron_types::{Address, Event, GlobalState, SyncUpdates, ToAlloy, ToEthers, U256};
 use once_cell::sync::Lazy;
 use serde_json::json;
 use tracing::{instrument, trace};
@@ -108,7 +105,7 @@ impl Alchemy {
         let balances: Vec<(Address, U256)> =
             res.token_balances.into_iter().map(Into::into).collect();
 
-        // TODO this should be done by a separate worker on iron_sync
+        // TODO: this should be done by a separate worker on iron_sync
         utils::fetch_erc20_metadata(balances.clone(), client, chain_id, &self.db).await?;
 
         Ok(balances)
@@ -117,7 +114,10 @@ impl Alchemy {
     async fn fetch_native_balance(&self, chain_id: u32, address: Address) -> Result<U256> {
         let client = self.client(chain_id).await?;
 
-        Ok(client.get_balance(address, None).await?)
+        Ok(client
+            .get_balance(address.to_ethers(), None)
+            .await?
+            .to_alloy())
     }
 
     async fn fetch_transactions(
@@ -137,33 +137,18 @@ impl Alchemy {
             return Ok(Default::default());
         }
 
-        // TODO: pagination?
-        let outgoing: Transfers = (client
-            .request(
-                "alchemy_getAssetTransfers",
-                json!([{
-                    "fromBlock": format!("0x{:x}", from_block),
-                    "toBlock": format!("0x{:x}",latest),
-                    "maxCount": "0x64",
-                    "fromAddress": format!("0x{:x}", addr),
-                    "category": ["external", "internal", "erc20", "erc721", "erc1155"],
-                }]),
-            )
-            .await)?;
+        let params = json!([{
+            "fromBlock": format!("0x{:x}", from_block),
+            "toBlock": format!("0x{:x}",latest),
+            "maxCount": "0x32",
+            "fromAddress": format!("0x{:x}", addr),
+            "category": ["external", "internal", "erc20", "erc721", "erc1155"],
+        }]);
 
-        // TODO: pagination?
-        let incoming: Transfers = (client
-            .request(
-                "alchemy_getAssetTransfers",
-                json!([{
-                    "fromBlock": format!("0x{:x}", from_block),
-                    "toBlock": format!("0x{:x}",latest),
-                    "toAddress": format!("0x{:x}", addr),
-                    "maxCount": "0x64",
-                    "category": ["external", "internal", "erc20", "erc721", "erc1155"],
-                }]),
-            )
+        let outgoing: Transfers = (client
+            .request("alchemy_getAssetTransfers", params.clone())
             .await)?;
+        let incoming: Transfers = (client.request("alchemy_getAssetTransfers", params).await)?;
 
         trace!(
             event = "fetched",

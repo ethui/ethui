@@ -1,23 +1,33 @@
-import { CallMade, CallReceived, NoteAdd } from "@mui/icons-material";
 import {
+  CallMade,
+  CallReceived,
+  ExpandMore,
+  NoteAdd,
+} from "@mui/icons-material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Badge,
   Box,
   CircularProgress,
-  List,
-  ListItem,
-  ListItemAvatar,
+  Grid,
   Stack,
   Typography,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/tauri";
-import "core-js/features/array/at";
 import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
-import { formatEther } from "viem";
+import truncateEthAddress from "truncate-eth-address";
+import { Address, formatEther, formatGwei } from "viem";
+import { useTransaction, useWaitForTransaction } from "wagmi";
 
-import { useEventListener } from "../hooks";
-import { useNetworks, useWallets } from "../store";
-import { Address, Paginated, Pagination, Tx } from "../types";
+import { Paginated, Pagination, Tx } from "@/types";
+import { useEventListener } from "@/hooks";
+import { useNetworks, useWallets } from "@/store";
+
+import { CalldataView } from "./Calldata";
+import { Datapoint } from "./Datapoint";
 import { AddressView, ContextMenu, Panel } from "./";
 
 export function Txs() {
@@ -52,7 +62,7 @@ export function Txs() {
   useEventListener("txs-updated", reload);
   useEffect(reload, [account, chainId]);
 
-  if (!account) return null;
+  if (!account || !chainId) return null;
 
   const loader = (
     <Box
@@ -73,54 +83,38 @@ export function Txs() {
         hasMore={!pages.at(-1)?.last}
         loader={loader}
       >
-        <List key={"list"}>
-          {pages.flatMap((page) =>
-            page.items.map((tx) => (
-              <Receipt account={account} tx={tx} key={tx.hash} />
-            )),
-          )}
-        </List>
+        {pages.flatMap((page) =>
+          page.items.map((tx) => (
+            <Accordion key={tx.hash} TransitionProps={{ unmountOnExit: true }}>
+              <AccordionSummary expandIcon={<ExpandMore />}>
+                <Summary account={account} tx={tx} />
+              </AccordionSummary>
+              <AccordionDetails>
+                <Details tx={tx} chainId={chainId} />
+              </AccordionDetails>
+            </Accordion>
+          )),
+        )}
       </InfiniteScroll>
     </Panel>
   );
 }
 
-interface ReceiptProps {
+interface SummaryProps {
   account: Address;
   tx: Tx;
 }
-
-function Receipt({ account, tx }: ReceiptProps) {
-  const value = BigInt(tx.value);
-
+function Summary({ account, tx }: SummaryProps) {
   return (
-    <ListItem>
-      <ListItemAvatar>
-        <Icon {...{ tx, account }} />
-      </ListItemAvatar>
-      <Box sx={{ flexGrow: 1 }}>
-        <Stack>
-          <Stack direction="row" spacing={1}>
-            <AddressView address={tx.from} /> <span>→</span>
-            {tx.to ? (
-              <AddressView address={tx.to} />
-            ) : (
-              <Typography component="span">Contract Deploy</Typography>
-            )}
-          </Stack>
-          <Typography variant="caption" fontSize="xl">
-            Block #{tx.blockNumber?.toLocaleString()}
-          </Typography>
-        </Stack>
-      </Box>
-      <Box>
-        {value > 0n && (
-          <ContextMenu copy={value.toString()}>
-            {formatEther(value)} Ξ
-          </ContextMenu>
-        )}
-      </Box>
-    </ListItem>
+    <Stack direction="row" spacing={1}>
+      <Icon {...{ tx, account }} />
+      <AddressView address={tx.from} /> <span>→</span>
+      {tx.to ? (
+        <AddressView address={tx.to} />
+      ) : (
+        <Typography component="span">Contract Deploy</Typography>
+      )}
+    </Stack>
   );
 }
 
@@ -141,4 +135,75 @@ function Icon({ account, tx }: IconProps) {
   }
 
   return <Badge>{createElement(icon, { color })}</Badge>;
+}
+
+interface DetailsProps {
+  tx: Tx;
+  chainId: number;
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: Unreachable code error
+BigInt.prototype.toJSON = function (): string {
+  return this.toString();
+};
+
+function Details({ tx, chainId }: DetailsProps) {
+  const { data: transaction } = useTransaction({ hash: tx.hash });
+  const { data: receipt } = useWaitForTransaction({ hash: tx.hash });
+
+  if (!receipt || !transaction) return null;
+
+  return (
+    <Grid container rowSpacing={2}>
+      <Datapoint label="hash" value={truncateEthAddress(tx.hash)} />
+      <Datapoint label="from" value={<AddressView address={tx.from} />} short />
+      <Datapoint
+        label="to"
+        value={tx.to ? <AddressView address={tx.to} /> : ""}
+        short
+      />
+      <Datapoint
+        label="value"
+        value={<ContextMenu>{formatEther(BigInt(tx.value))} Ξ</ContextMenu>}
+      />
+      <Datapoint
+        label="data"
+        value={
+          <CalldataView
+            data={transaction.input}
+            contract={tx.to}
+            chainId={chainId}
+          />
+        }
+      />
+      <Datapoint label="nonce" value={transaction.nonce} />
+      <Datapoint label="type" value={transaction.type} />
+      {/* TODO: other txs types */}
+      {transaction.type == "eip1559" && (
+        <>
+          <Datapoint
+            label="maxFeePerGas"
+            value={`${formatGwei(transaction.maxFeePerGas)} gwei`}
+            short
+          />
+          <Datapoint
+            label="maxPriorityFeePerGas"
+            value={`${formatGwei(transaction.maxPriorityFeePerGas)} gwei`}
+            short
+          />
+        </>
+      )}
+      <Datapoint
+        label="gasLimit"
+        value={`${formatGwei(transaction.gas)} gwei`}
+        short
+      />
+      <Datapoint
+        label="gasUsed"
+        value={`${formatGwei(receipt.gasUsed)} gwei`}
+        short
+      />
+    </Grid>
+  );
 }

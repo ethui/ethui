@@ -6,12 +6,12 @@ use ethers::{
         Http, HttpClientError, JsonRpcClient, Middleware, Provider, RetryClientBuilder,
         RetryPolicy, Ws,
     },
-    types::{Address, Filter, Log, Trace, U64},
+    types::{Filter, Log, Trace, U64},
 };
-use futures_util::StreamExt;
+use futures::StreamExt;
 use iron_abis::{IERC20, IERC721};
 use iron_db::DB;
-use iron_types::{Erc721Token, Erc721TokenDetails, TokenMetadata, UINotify};
+use iron_types::{Address, Erc721Token, Erc721TokenDetails, ToEthers, TokenMetadata, UINotify};
 use tokio::sync::mpsc;
 use tracing::warn;
 use url::Url;
@@ -125,6 +125,8 @@ async fn watch(
         .build(jsonrpc.clone(), Box::<AlwaysRetry>::default());
 
     'watcher: loop {
+        block_snd.send(Msg::Reset).map_err(|_| Error::Watcher)?;
+
         // retry forever
 
         // make a dummy request, retried forever
@@ -134,8 +136,6 @@ async fn watch(
             _ = quit_rcv.recv() => break 'watcher,
             Ok(res) = client.request::<_, U64>("eth_blockNumber", ()) => res
         };
-
-        block_snd.send(Msg::Reset).map_err(|_| Error::Watcher)?;
 
         let provider: Provider<Ws> = Provider::<Ws>::connect(&ctx.ws_url)
             .await?
@@ -203,7 +203,7 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
         match msg {
             Msg::Reset => {
                 ctx.db.truncate_events(ctx.chain_id).await?;
-                caught_up = false
+                caught_up = true
             }
             Msg::CaughtUp => caught_up = true,
             Msg::Traces(traces) => {
@@ -248,7 +248,7 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
             .into_iter()
         {
             let address = erc721_address;
-            let contract = IERC721::new(erc721_address, Arc::new(&provider));
+            let contract = IERC721::new(erc721_address.to_ethers(), Arc::new(&provider));
             let name = contract.name().call().await.unwrap_or_default();
             let symbol = contract.symbol().call().await.unwrap_or_default();
 
@@ -284,7 +284,7 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
 }
 
 pub async fn fetch_erc20_metadata(address: Address, client: &Provider<Http>) -> TokenMetadata {
-    let contract = IERC20::new(address, Arc::new(client));
+    let contract = IERC20::new(address.to_ethers(), Arc::new(client));
 
     TokenMetadata {
         name: contract.name().call().await.unwrap_or_default(),
@@ -297,10 +297,10 @@ pub async fn fetch_erc721_token_data(
     erc721_token: Erc721Token,
     client: &Provider<Http>,
 ) -> Result<Erc721TokenDetails> {
-    let contract = IERC721::new(erc721_token.contract, Arc::new(client));
+    let contract = IERC721::new(erc721_token.contract.to_ethers(), Arc::new(client));
 
     let contract_uri = contract
-        .token_uri(erc721_token.token_id)
+        .token_uri(erc721_token.token_id.to_ethers())
         .call()
         .await
         .map_err(|_| Error::Erc721FailedToFetchData)?;

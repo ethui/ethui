@@ -3,16 +3,16 @@ import { FallbackTransport } from "viem";
 import {
   Chain,
   type Config,
+  configureChains,
+  createConfig,
   PublicClient,
   WagmiConfig,
   WebSocketPublicClient,
-  configureChains,
-  createConfig,
 } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
-import { useNetworks } from "../store";
-import { Network } from "../types";
+import { useNetworks } from "@/store";
+import { Network } from "@/types/network";
 
 interface Props {
   children: React.ReactNode;

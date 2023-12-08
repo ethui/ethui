@@ -1,12 +1,16 @@
+pub mod commands;
+mod error;
+
 use std::{
     collections::{HashMap, HashSet},
     sync::Arc,
 };
 
+pub use error::{Error, Result};
 use iron_broadcast::InternalMsg;
 use iron_db::DB;
 use iron_sync_alchemy::Alchemy;
-use iron_types::{ChecksummedAddress, GlobalState, UINotify};
+use iron_types::{Address, GlobalState, UINotify};
 use tokio::{
     select,
     sync::{mpsc, Mutex},
@@ -26,18 +30,18 @@ pub async fn init(db: DB) {
 
 #[derive(Debug)]
 enum Msg {
-    TrackAddress(ChecksummedAddress),
-    UntrackAddress(ChecksummedAddress),
+    TrackAddress(Address),
+    UntrackAddress(Address),
     TrackNetwork(u32),
     UntrackNetwork(u32),
-    PollAddress(ChecksummedAddress),
+    PollAddress(Address),
     PollNetwork(u32),
 }
 
 impl TryFrom<InternalMsg> for Msg {
     type Error = ();
 
-    fn try_from(msg: InternalMsg) -> Result<Self, Self::Error> {
+    fn try_from(msg: InternalMsg) -> std::result::Result<Self, Self::Error> {
         let res = match msg {
             InternalMsg::AddressAdded(addr) => Msg::TrackAddress(addr),
             InternalMsg::AddressRemoved(addr) => Msg::UntrackAddress(addr),
@@ -55,7 +59,7 @@ impl TryFrom<InternalMsg> for Msg {
 /// Receives global messages
 /// if a msg is convertible to `Msg`, forward that to the sync worker
 #[instrument(skip(snd), level = "trace")]
-async fn receiver(snd: mpsc::UnboundedSender<Msg>) -> Result<(), ()> {
+async fn receiver(snd: mpsc::UnboundedSender<Msg>) -> std::result::Result<(), ()> {
     let mut rx = iron_broadcast::subscribe_internal().await;
 
     loop {
@@ -70,10 +74,10 @@ async fn receiver(snd: mpsc::UnboundedSender<Msg>) -> Result<(), ()> {
 #[derive(Debug)]
 struct Worker {
     db: DB,
-    addresses: HashSet<ChecksummedAddress>,
+    addresses: HashSet<Address>,
     chain_ids: HashSet<u32>,
-    current: (Option<ChecksummedAddress>, Option<u32>),
-    workers: HashMap<(ChecksummedAddress, u32), (JoinHandle<()>, mpsc::UnboundedSender<()>)>,
+    current: (Option<Address>, Option<u32>),
+    workers: HashMap<(Address, u32), (JoinHandle<()>, mpsc::UnboundedSender<()>)>,
     mutex: Arc<Mutex<()>>,
 }
 
@@ -88,7 +92,7 @@ impl Worker {
             mutex: Arc::new(Mutex::new(())),
         }
     }
-    async fn run(db: DB, mut rcv: mpsc::UnboundedReceiver<Msg>) -> Result<(), ()> {
+    async fn run(db: DB, mut rcv: mpsc::UnboundedReceiver<Msg>) -> std::result::Result<(), ()> {
         let mut worker = Self::new(db);
 
         loop {
@@ -108,7 +112,7 @@ impl Worker {
 
     /// creates a new worker per chain ID for the incoming addr
     #[instrument(skip(self), level = "trace")]
-    fn track_addr(&mut self, addr: ChecksummedAddress) {
+    fn track_addr(&mut self, addr: Address) {
         self.addresses.insert(addr);
         for chain_id in self.chain_ids.iter() {
             let chain_id = *chain_id;
@@ -119,7 +123,7 @@ impl Worker {
 
     /// drops all existing workers for this addr
     #[instrument(skip(self), level = "trace")]
-    fn untrack_addr(&mut self, addr: ChecksummedAddress) {
+    fn untrack_addr(&mut self, addr: Address) {
         self.addresses.remove(&addr);
         self.workers.retain(|(a, _), _| a != &addr);
     }
@@ -146,7 +150,7 @@ impl Worker {
 
     /// replaces worker for this addr & current chain_id with a priority one
     #[instrument(skip(self), level = "trace")]
-    fn prioritize_addr(&mut self, addr: ChecksummedAddress) {
+    fn prioritize_addr(&mut self, addr: Address) {
         self.current.0 = Some(addr);
 
         if let (Some(address), Some(chain_id)) = self.current {
@@ -170,11 +174,7 @@ impl Worker {
         }
     }
 
-    fn spawn(
-        &self,
-        addr: ChecksummedAddress,
-        chain_id: u32,
-    ) -> (JoinHandle<()>, mpsc::UnboundedSender<()>) {
+    fn spawn(&self, addr: Address, chain_id: u32) -> (JoinHandle<()>, mpsc::UnboundedSender<()>) {
         let mutex = self.mutex.clone();
         let db = self.db.clone();
         let (tx, rx) = mpsc::unbounded_channel();
@@ -192,13 +192,13 @@ impl Worker {
 /// * high-priority waits 30 seconds
 #[instrument(skip(mutex, db, rx), level = "trace")]
 async fn unit_worker(
-    addr: ChecksummedAddress,
+    addr: Address,
     chain_id: u32,
     mutex: Arc<Mutex<()>>,
     db: DB,
     mut rx: mpsc::UnboundedReceiver<()>,
 ) {
-    let tip = db.get_tip(chain_id, addr.into()).await.ok();
+    let tip = db.get_tip(chain_id, addr).await.ok();
     let delay = 60;
 
     loop {
@@ -213,7 +213,7 @@ async fn unit_worker(
         // the alchemy global object acts as a mutex already
         let alchemy = Alchemy::read().await;
 
-        match alchemy.fetch_updates(chain_id, addr.into(), tip).await {
+        match alchemy.fetch_updates(chain_id, addr, tip).await {
             Ok(result) => {
                 if let Some(events) = result.events {
                     let res = db.save_events(chain_id, events).await;
@@ -224,14 +224,12 @@ async fn unit_worker(
                 }
 
                 if let Some(tip) = result.tip {
-                    let res = db.set_tip(chain_id, addr.into(), tip).await;
+                    let res = db.set_tip(chain_id, addr, tip).await;
                     log_if_error("set_tip", res);
                 }
 
                 if let Some(balances) = result.erc20_balances {
-                    let res = db
-                        .save_erc20_balances(chain_id, addr.into(), balances)
-                        .await;
+                    let res = db.save_erc20_balances(chain_id, addr, balances).await;
                     log_if_error("erc20_balances", res);
 
                     // TODO: this event should specify address and chain_id
@@ -239,12 +237,15 @@ async fn unit_worker(
                 }
 
                 if let Some(balance) = result.native_balance {
-                    let res = db.save_native_balance(balance, chain_id, addr.into()).await;
+                    let res = db.save_native_balance(balance, chain_id, addr).await;
                     log_if_error("native_balances", res);
 
                     // TODO: this event should specify address and chain_id
                     iron_broadcast::ui_notify(UINotify::BalancesUpdated).await;
                 }
+            }
+            Err(iron_sync_alchemy::Error::NoAPIKey) => {
+                // silently ignore
             }
             Err(err) => {
                 error!(call = "txs", err = err.to_string());
@@ -259,7 +260,7 @@ async fn unit_worker(
     }
 }
 
-fn log_if_error<T, E>(call: &str, err: Result<T, E>)
+fn log_if_error<T, E>(call: &str, err: std::result::Result<T, E>)
 where
     E: std::error::Error + std::fmt::Display,
 {

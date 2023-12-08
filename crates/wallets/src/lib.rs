@@ -1,12 +1,10 @@
 pub mod commands;
 mod error;
-mod hd_wallet;
-mod impersonator;
 mod init;
-mod json_keystore_wallet;
-mod plaintext;
+mod signer;
 mod utils;
 mod wallet;
+mod wallets;
 
 use std::{
     collections::HashSet,
@@ -16,11 +14,11 @@ use std::{
 
 pub use error::{Error, Result};
 pub use init::init;
-use iron_types::{ChecksummedAddress, Json, UINotify};
+use iron_types::{Address, Json, UINotify};
 use serde::Serialize;
+pub use signer::Signer;
 
-use self::wallet::WalletCreate;
-pub use self::wallet::{Wallet, WalletControl};
+pub use self::wallet::{Wallet, WalletControl, WalletType};
 
 /// Maintains a list of Ethereum wallets, including keeping track of the global current wallet &
 /// address
@@ -36,9 +34,23 @@ pub struct Wallets {
 }
 
 impl Wallets {
+    pub async fn find(&self, address: Address) -> Option<(&Wallet, String)> {
+        for w in self.wallets.iter() {
+            if let Some(path) = w.find(address).await {
+                return Some((w, path));
+            }
+        }
+
+        None
+    }
+
     /// Gets a reference the current default wallet
     pub fn get_current_wallet(&self) -> &Wallet {
         &self.wallets[self.current]
+    }
+
+    pub fn get(&self, name: &str) -> Option<&Wallet> {
+        self.wallets.iter().find(|w| w.name() == name)
     }
 
     /// Sets the current key within the current default
@@ -52,7 +64,7 @@ impl Wallets {
         Ok(())
     }
 
-    async fn get_current_address(&self) -> ChecksummedAddress {
+    async fn get_current_address(&self) -> Address {
         self.get_current_wallet().get_current_address().await
     }
 
@@ -77,6 +89,8 @@ impl Wallets {
         let wallet = Wallet::create(params).await?;
         let addresses = wallet.get_all_addresses().await;
 
+        self.ensure_no_duplicates_of(&wallet.name())?;
+
         // TODO: ensure no duplicates
         self.wallets.push(wallet);
 
@@ -91,8 +105,11 @@ impl Wallets {
     }
 
     async fn update(&mut self, name: String, params: Json) -> Result<()> {
-        // TODO: should fail if no wallet of that name exists
-        let i = self.wallets.iter().position(|w| w.name() == name).unwrap();
+        let i = self
+            .wallets
+            .iter()
+            .position(|w| w.name() == name)
+            .ok_or(Error::InvalidWalletName(name))?;
 
         let before = self.wallets[i].get_all_addresses().await;
         self.wallets[i] = self.wallets[i].clone().update(params).await?;
@@ -139,7 +156,7 @@ impl Wallets {
     }
 
     /// Get all addresses currently enabled in a given wallet
-    async fn get_wallet_addresses(&self, name: String) -> Vec<(String, ChecksummedAddress)> {
+    async fn get_wallet_addresses(&self, name: String) -> Vec<(String, Address)> {
         let wallet = self.find_wallet(&name).unwrap();
 
         wallet.get_all_addresses().await
@@ -165,7 +182,7 @@ impl Wallets {
     fn ensure_current(&mut self) {
         if self.wallets.is_empty() {
             self.wallets
-                .push(Wallet::Plaintext(plaintext::PlaintextWallet::default()));
+                .push(Wallet::Plaintext(wallets::PlaintextWallet::default()));
         }
 
         if self.current >= self.wallets.len() {
@@ -198,5 +215,12 @@ impl Wallets {
     async fn notify_peers(&self) {
         let addresses = vec![self.get_current_wallet().get_current_address().await];
         iron_broadcast::accounts_changed(addresses).await;
+    }
+
+    fn ensure_no_duplicates_of(&self, name: &str) -> Result<()> {
+        if self.wallets.iter().any(|w| w.name() == name) {
+            return Err(Error::DuplicateWalletNames(name.to_owned()));
+        }
+        Ok(())
     }
 }

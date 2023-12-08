@@ -1,10 +1,10 @@
 import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Action } from "kbar";
-import { type StateCreator, create } from "zustand";
+import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { Network } from "../types";
+import { Network } from "@/types/network";
 
 interface State {
   networks: Network[];
@@ -17,7 +17,8 @@ interface Setters {
   setCurrent: (newNetwork: string) => Promise<void>;
   resetNetworks: () => Promise<void>;
   reload: () => Promise<void>;
-  reloadActions: () => Promise<void>;
+  reloadActions: () => void;
+  isAlchemySupportedNetwork: () => Promise<boolean>;
 }
 
 type Store = State & Setters;
@@ -29,17 +30,15 @@ const store: StateCreator<Store> = (set, get) => ({
   actions: [],
 
   async setNetworks(newNetworks) {
-    // TODO: this could return the new list directly
-    await invoke("networks_set_list", { newNetworks: newNetworks });
-    const networks = await invoke<Network[]>("networks_get_list");
+    const networks = await invoke<Network[]>("networks_set_list", {
+      newNetworks,
+    });
     set({ networks });
   },
 
-  async setCurrent(newNetwork) {
-    // TODO: this could return the new network directly
-    await invoke("networks_set_current", { network: newNetwork });
+  async setCurrent(network) {
+    const current = await invoke<Network>("networks_set_current", { network });
 
-    const current = await invoke<Network>("networks_get_current");
     set({ current });
   },
 
@@ -55,7 +54,7 @@ const store: StateCreator<Store> = (set, get) => ({
     get().reloadActions();
   },
 
-  async reloadActions() {
+  reloadActions() {
     const networks = get().networks;
 
     const actions = [
@@ -74,6 +73,16 @@ const store: StateCreator<Store> = (set, get) => ({
     ];
 
     set({ actions });
+  },
+
+  async isAlchemySupportedNetwork() {
+    const current = get().current;
+
+    if (!current) return false;
+
+    return await invoke<boolean>("sync_alchemy_is_network_supported", {
+      chainId: current.chain_id,
+    });
   },
 });
 

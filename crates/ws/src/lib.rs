@@ -1,7 +1,7 @@
 pub mod commands;
 mod error;
 mod init;
-mod peers;
+pub mod peers;
 mod server;
 
 pub use error::{WsError, WsResult};

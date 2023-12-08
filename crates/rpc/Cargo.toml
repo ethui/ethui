@@ -17,6 +17,7 @@ iron-networks = { workspace = true }
 iron-wallets = { workspace = true }
 iron-broadcast = { workspace = true }
 iron-connections = { workspace = true }
+iron-simulator = { workspace = true }
 
 ethers = { workspace = true }
 tokio = { workspace = true }
@@ -26,8 +27,6 @@ serde_json = { workspace = true }
 tracing = { workspace = true }
 once_cell = { workspace = true }
 jsonrpc-core = { workspace = true }
-
-futures-util = "0.3.27"
-thiserror = "1.0.40"
-enum_dispatch = "0.3.11"
-async-trait = "0.1.68"
+async-trait = { workspace = true }
+thiserror = { workspace = true }
+alloy-primitives = { workspace = true }

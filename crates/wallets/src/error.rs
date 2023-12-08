@@ -6,6 +6,9 @@ pub enum Error {
     #[error("duplicate wallet names `{0}`")]
     DuplicateWalletNames(String),
 
+    #[error("invalid wallet name `{0}`")]
+    InvalidWalletName(String),
+
     #[error("invalid wallet index {0}")]
     InvalidWallet(usize),
 
@@ -41,6 +44,12 @@ pub enum Error {
 
     #[error(transparent)]
     ParseInto(#[from] std::num::ParseIntError),
+
+    #[error(transparent)]
+    Tokio(#[from] tokio::task::JoinError),
+
+    #[error("Ledger error: {0}")]
+    Ledger(String),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

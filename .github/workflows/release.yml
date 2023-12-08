@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.get-tag.outputs.tag }}
+      version: ${{ steps.get-version.outputs.version }}
       release_id: ${{ steps.get-id.outputs.id }}
     steps:
       - uses: actions/checkout@v3
@@ -30,6 +31,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # get the current version (tag without the `v`)
+      - id: get-version
+        name: get version
+        run: |
+          version=$(echo ${{ steps.get-tag.outputs.tag }} | sed 's/^v//')
+          echo "version=$version" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       # get the current release_id
       - id: get-id
         name: get release ID
@@ -40,49 +50,24 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # build extension
-  # upload to draft release
-  # release to mozilla and google stores
-  extension:
+  # deletes all assets previously uploaded to the current draft release
+  # necessary if we have to retry a release build due to a prior failure
+  clear-assets:
     needs: [setup]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: "yarn"
-
-      - name: Install dependencies
-        run: yarn workspace @iron/extension install
-
-      - name: Create bundles
-        run: yarn workspace @iron/extension build
-
-      - name: Upload to release
-        run: gh release upload ${{ needs.setup.outputs.tag }} ./extension/dist/*.{crx,zip,xpi}
+      - run: |
+          for name in $(gh release view ${{needs.setup.outputs.tag}} --json assets | jq -r '.assets[].name'); do
+            gh release delete-asset ${{needs.setup.outputs.tag}} $name
+          done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Submit to Google
-        run: npx chrome-webstore-upload-cli@2 upload --source ./extension/dist/chrome
-        env:
-          EXTENSION_ID: ${{ secrets.CHROME_WEB_EXT_ID }}
-          CLIENT_ID: ${{ secrets.CHROME_WEB_EXT_CLIENT_ID }}
-          CLIENT_SECRET: ${{ secrets.CHROME_WEB_EXT_CLIENT_SECRET }}
-          REFRESH_TOKEN: ${{ secrets.CHROME_WEB_EXT_REFRESH_TOKEN }}
-
-      - name: Submit to Mozilla
-        run: npx web-ext-submit@7 --source-dir ./extension/dist/firefox
-        env:
-          WEB_EXT_API_KEY: ${{ secrets.FIREFOX_WEB_EXT_API_KEY }}
-          WEB_EXT_API_SECRET: ${{ secrets.FIREFOX_WEB_EXT_API_SECRET }}
 
   # build app
   # upload to draft release
   app:
-    needs: [setup]
+    needs: [setup, clear-assets]
     strategy:
       fail-fast: false
       matrix:
@@ -95,7 +80,7 @@ jobs:
         if: matrix.platform == 'ubuntu-20.04'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf libsodium-dev
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf libsodium-dev libusb-dev
 
       - name: install dependencies (windows)
         if: matrix.platform == 'windows-latest'
@@ -109,22 +94,19 @@ jobs:
       - name: install dependencies (macos)
         if: matrix.platform == 'macos-latest'
         run: |
-          brew install libsodium
+          brew install libsodium libusb
 
-      - name: setup rust
-        uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
         with:
-          toolchain: stable
-          override: true
+          shared-key: "release"
 
-      - name: rust cache
-        uses: Swatinem/rust-cache@v2
+      - run: npm install -g yarn
 
-      - name: setup node
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: 18
           cache: "yarn"
+          node-version-file: ".tool-versions"
 
       - run: yarn install --network-timeout 1000000
 
@@ -134,6 +116,50 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           releaseId: ${{ needs.setup.outputs.release_id }}
+
+  # build extension
+  # upload to draft release
+  # release to mozilla and google stores
+  extension:
+    needs: [setup, app]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - run: npm install -g yarn
+
+      - uses: actions/setup-node@v3
+        with:
+          cache: "yarn"
+          node-version-file: ".tool-versions"
+
+      - name: Install dependencies
+        run: yarn workspace @iron/extension install
+
+      - name: Create chrome bundle
+        run: yarn workspace @iron/extension build --target chrome --version ${{ needs.setup.outputs.version }}
+
+      - name: Create firefox bundle
+        run: yarn workspace @iron/extension build --target firefox --version ${{ needs.setup.outputs.version }}
+
+      - name: Upload to release
+        run: gh release upload ${{ needs.setup.outputs.tag }} ./extension/dist/*.{crx,zip,xpi}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Submit to Google
+        run: npx chrome-webstore-upload-cli@2 upload --source ./extension/dist/chrome --auto-publish
+        env:
+          EXTENSION_ID: ${{ secrets.CHROME_WEB_EXT_ID }}
+          CLIENT_ID: ${{ secrets.CHROME_WEB_EXT_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CHROME_WEB_EXT_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.CHROME_WEB_EXT_REFRESH_TOKEN }}
+
+      - name: Submit to Mozilla
+        run: npx web-ext-submit@7 --source-dir ./extension/dist/firefox
+        env:
+          WEB_EXT_API_KEY: ${{ secrets.FIREFOX_WEB_EXT_API_KEY }}
+          WEB_EXT_API_SECRET: ${{ secrets.FIREFOX_WEB_EXT_API_SECRET }}
 
   publish:
     needs: [setup, extension, app]

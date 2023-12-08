@@ -11,9 +11,9 @@ import {
 import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 
-import { ConfirmationDialog } from "../";
-import { useNetworks } from "../../store";
-import { Network, networkSchema } from "../../types";
+import { ConfirmationDialog } from "@/components";
+import { useNetworks } from "@/store";
+import { Network, networkSchema } from "@/types/network";
 
 type NewChild = { new?: boolean };
 
@@ -48,7 +48,7 @@ export function SettingsNetwork() {
     resolver: zodResolver(networkSchema),
     defaultValues: { networks: networks as (Network & NewChild)[] },
   });
-  // TODO: https://github.com/react-hook-form/react-hook-form/issues/3213
+  // https://github.com/react-hook-form/react-hook-form/issues/3213
   const isDirtyAlt = !!Object.keys(dirtyFields).length;
 
   // default values are async, need to reset once they're ready
