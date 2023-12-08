@@ -10,15 +10,15 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { SelectChangeEvent } from "@mui/material/Select";
 import { invoke } from "@tauri-apps/api/tauri";
-import { useState } from "react";
-import { FieldValues, useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { Controller, FieldValues, useForm } from "react-hook-form";
 import {
   AbiItem,
   Address,
   encodeFunctionData,
   formatUnits,
+  getAddress,
   parseAbiItem,
 } from "viem";
 import { z } from "zod";
@@ -67,138 +67,166 @@ const formatTokenBalance = (balance: bigint, decimals: number) =>
   );
 
 interface Token {
-  symbol: string;
+  currency: string;
   decimals: number;
   balance: bigint;
   contract: Address;
 }
 
 interface TransferFormProps {
+  contract?: Address;
   onClose: () => void;
 }
 
-export function TransferForm({ onClose }: TransferFormProps) {
-  const currentNetwork = useNetworks((s) => s.current);
-  const currentAddress = useWallets((s) => s.address);
+const ZeroAddress = getAddress("0x0000000000000000000000000000000000000000");
+
+export function TransferForm({
+  contract = ZeroAddress,
+  onClose,
+}: TransferFormProps) {
+  const network = useNetworks((s) => s.current);
+  const address = useWallets((s) => s.address);
   const { nativeBalance, erc20Balances } = useBalances((s) => {
     return { nativeBalance: s.nativeBalance, erc20Balances: s.erc20Balances };
   });
 
-  const allTokens: Token[] = [
-    {
-      symbol: currentNetwork?.currency || "",
-      decimals: currentNetwork?.decimals || 18,
+  const [tokens, setTokens] = useState<Map<Address, Token>>(new Map());
+
+  useEffect(() => {
+    const newTokens = new Map<Address, Token>(
+      erc20Balances.map((token) => {
+        const {
+          metadata: { symbol, decimals },
+          balance,
+          contract,
+        } = token;
+        return [
+          contract,
+          {
+            currency: symbol,
+            decimals,
+            balance: BigInt(balance),
+            contract,
+          },
+        ];
+      }),
+    );
+    newTokens.set(ZeroAddress, {
+      currency: network?.currency || "ETH",
+      decimals: network?.decimals || 18,
       balance: nativeBalance || 0n,
-      contract: "" as Address,
-    },
-  ].concat(
-    erc20Balances.map((token) => {
-      const {
-        metadata: { symbol, decimals },
-        balance,
-        contract,
-      } = token;
-      return {
-        symbol,
-        decimals,
-        balance: BigInt(balance),
-        contract,
-      };
-    }),
-  );
+      contract: ZeroAddress,
+    });
+    setTokens(newTokens);
+  }, [
+    setTokens,
+    nativeBalance,
+    erc20Balances,
+    network?.currency,
+    network?.decimals,
+  ]);
+
+  const schema = z.object({
+    address: addressSchema,
+    currency: addressSchema,
+    value: z
+      .number()
+      .positive()
+      .superRefine((rawValue, ctx) => {
+        if (!currentToken) return;
+        const value =
+          BigInt(rawValue) * BigInt(10) ** BigInt(currentToken.decimals);
+        if (value <= currentToken.balance) return;
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Not enough balance",
+        });
+      }),
+  });
 
   const {
     handleSubmit,
     register,
+    control,
+    watch,
     formState: { isDirty, isValid, errors },
   } = useForm({
     mode: "onChange",
-    resolver: zodResolver(
-      z.object({
-        address: addressSchema,
-        value: z.number().positive(),
-      }),
-    ),
+    resolver: zodResolver(schema),
+    defaultValues: {
+      currency: contract,
+      address: null,
+      value: 0,
+    },
   });
 
-  const [selectedToken, setSelectedToken] = useState<Token>();
-  const [txResult, setTxResult] = useState<{ success: boolean; msg: string }>({
+  const currentContract = watch("currency");
+  const currentToken = tokens.get(currentContract)!;
+
+  const [result, setResult] = useState({
     success: false,
     msg: "",
   });
 
-  const handleSelect = (selectedSymbol: string) => {
-    const token = allTokens.find((t) => t.symbol === selectedSymbol);
-    setSelectedToken(token);
-  };
+  if (!network || !address || !currentToken) return null;
 
-  const submitTransfer = async (formData: FieldValues) => {
-    if (currentNetwork && currentAddress && selectedToken) {
-      const { symbol, balance, decimals, contract } = selectedToken;
+  const onSubmit = async (formData: FieldValues) => {
+    console.log(formData);
+    return;
+    const { decimals, contract } = currentToken;
 
-      const transferAmount = BigInt(formData.value * 10 ** decimals);
+    const value = BigInt(formData.value * 10 ** decimals);
 
-      if (transferAmount > balance) {
-        setTxResult({ success: false, msg: "Not enough balance" });
-        return;
-      }
+    let result;
+    if (!contract)
+      result = await transferNative(address, formData.address, value);
+    else
+      result = await transferERC20(address, formData.address, value, contract);
 
-      let txResult;
-      if (symbol === currentNetwork.currency)
-        txResult = await transferNative(
-          currentAddress,
-          formData.address,
-          transferAmount,
-        );
-      else
-        txResult = await transferERC20(
-          currentAddress,
-          formData.address,
-          transferAmount,
-          contract,
-        );
-
-      if (txResult.match(/(0x[a-fA-F0-9]{40})/)) {
-        setTxResult({ success: true, msg: txResult });
-      } else {
-        const errorMsg = txResult.match(/message:\s([^\,]+)/)?.[1] || "Error";
-        setTxResult({ success: false, msg: errorMsg });
-      }
+    if (result.match(/(0x[a-fA-F0-9]{40})/)) {
+      setResult({ success: true, msg: result });
+    } else {
+      const errorMsg = result.match(/message:\s([^\,]+)/)?.[1] || "Error";
+      setResult({ success: false, msg: errorMsg });
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(submitTransfer)}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <Stack alignItems="flex-start" spacing={2}>
         <Typography>Transfer token</Typography>
 
         <FormControl fullWidth>
           <InputLabel id="select-token-label">Token</InputLabel>
-          <Select
-            labelId="select-token-label"
-            label="Token"
-            value={selectedToken?.symbol || ""}
-            onChange={(e: SelectChangeEvent) => {
-              handleSelect(e.target.value);
-            }}
-          >
-            {allTokens.map(({ symbol }) => (
-              <MenuItem key={symbol} value={symbol}>
-                {symbol}
-              </MenuItem>
-            ))}
-          </Select>
+          <Controller
+            name="currency"
+            control={control}
+            render={({ field }) => (
+              <Select
+                aria-labelledby="currency"
+                label="Currency"
+                sx={{ minWidth: 120 }}
+                {...field}
+              >
+                {Array.from(tokens.values()).map(({ currency, contract }) => (
+                  <MenuItem key={contract || ""} value={contract}>
+                    {currency}
+                  </MenuItem>
+                ))}
+              </Select>
+            )}
+          />
         </FormControl>
 
-        {selectedToken && (
+        {currentToken && (
           <Typography variant="body2">
             Balance:{" "}
-            {formatTokenBalance(selectedToken.balance, selectedToken.decimals)}
+            {formatTokenBalance(currentToken.balance, currentToken.decimals)}
           </Typography>
         )}
 
         <TextField
-          label="To address"
+          label="To"
           error={!!errors.address}
           helperText={errors.address?.message?.toString() || " "}
           fullWidth
@@ -206,21 +234,21 @@ export function TransferForm({ onClose }: TransferFormProps) {
         />
 
         <TextField
-          label="Value"
+          label="Amount"
           error={!!errors.value}
           helperText={errors.value?.message?.toString() || " "}
           fullWidth
           {...register("value", { valueAsNumber: true })}
         />
 
-        {txResult.msg && (
+        {result.msg && (
           <Alert
             sx={{ alignSelf: "stretch" }}
             variant="outlined"
-            severity={txResult.success ? "success" : "error"}
+            severity={result.success ? "success" : "error"}
           >
             <Typography variant="body2" noWrap>
-              {txResult.msg}
+              {result.msg}
             </Typography>
           </Alert>
         )}

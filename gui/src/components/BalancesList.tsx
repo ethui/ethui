@@ -1,5 +1,7 @@
+import SendIcon from "@mui/icons-material/Send";
 import {
   Avatar,
+  IconButton,
   List,
   ListItem,
   ListItemAvatar,
@@ -8,11 +10,12 @@ import {
 import truncateEthAddress from "truncate-eth-address";
 import { Address, formatUnits } from "viem";
 
+import { useState } from "react";
 import { useInvoke } from "@/hooks";
 import { useBalances, useNetworks } from "@/store";
 import { GeneralSettings } from "@/types/settings";
 
-import { CopyToClipboard, IconCrypto } from "./";
+import { CopyToClipboard, IconCrypto, Modal, TransferForm } from "./";
 
 export function BalancesList() {
   return (
@@ -74,6 +77,7 @@ function BalanceItem({
   symbol,
   contract,
 }: BalanceItemProps) {
+  const [transferFormOpen, setTransferFormOpen] = useState(false);
   const minimum = 0.001;
   // Some tokens respond with 1 decimals, that breaks this truncatedBalance without the Math.ceil
   const truncatedBalance =
@@ -82,23 +86,42 @@ function BalanceItem({
   if (!symbol || !decimals) return null;
 
   return (
-    <ListItem>
-      <ListItemAvatar>
-        <Avatar>
-          <IconCrypto ticker={symbol} />
-        </Avatar>
-      </ListItemAvatar>
-      <ListItemText
-        secondary={`${symbol} ${
-          contract ? `(${truncateEthAddress(contract)})` : ``
-        }`}
+    <>
+      <ListItem
+        secondaryAction={
+          <IconButton
+            edge="end"
+            aria-label="transfer"
+            onClick={() => setTransferFormOpen(true)}
+          >
+            <SendIcon />
+          </IconButton>
+        }
       >
-        <CopyToClipboard label={balance.toString()}>
-          {truncatedBalance > 0
-            ? formatUnits(truncatedBalance, decimals)
-            : `< ${minimum}`}
-        </CopyToClipboard>
-      </ListItemText>
-    </ListItem>
+        <ListItemAvatar>
+          <Avatar>
+            <IconCrypto ticker={symbol} />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText
+          secondary={`${symbol} ${
+            contract ? `(${truncateEthAddress(contract)})` : ``
+          }`}
+        >
+          <CopyToClipboard label={balance.toString()}>
+            {truncatedBalance > 0
+              ? formatUnits(truncatedBalance, decimals)
+              : `< ${minimum}`}
+          </CopyToClipboard>
+        </ListItemText>
+      </ListItem>
+
+      <Modal open={transferFormOpen} onClose={() => setTransferFormOpen(false)}>
+        <TransferForm
+          contract={contract}
+          onClose={() => setTransferFormOpen(false)}
+        />
+      </Modal>
+    </>
   );
 }
