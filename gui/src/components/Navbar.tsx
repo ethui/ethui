@@ -13,7 +13,7 @@ export function Navbar({ tab }: { tab: (typeof TABS)[number] }) {
       }}
     >
       <DraggableToolbar>
-        <Typography variant="h6" component="div">
+        <Typography variant="h6" component="h1">
           {tab.name}
         </Typography>
       </DraggableToolbar>

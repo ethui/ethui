@@ -18,7 +18,7 @@ import { GeneralSettings } from "@/types/settings";
 
 import { CopyToClipboard, IconCrypto, Modal, TransferForm } from "./";
 
-export function BalancesList() {
+export function Balances() {
   return (
     <List sx={{ maxWidth: 350 }}>
       <BalanceETH />

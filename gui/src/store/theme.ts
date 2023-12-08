@@ -153,6 +153,16 @@ function getDesignTokens(mode: PaletteMode): ThemeOptions {
           variant: "dense",
         },
       },
+      MuiImageListItemBar: {
+        styleOverrides: {
+          root: {
+            background: "initial",
+          },
+          title: {
+            color: theme.palette.text.primary,
+          },
+        },
+      },
     },
   };
 }

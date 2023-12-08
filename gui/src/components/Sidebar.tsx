@@ -37,6 +37,12 @@ export const TABS = [
     icon: RequestQuoteSharp,
   },
   {
+    path: "nfts",
+    name: "NFTs",
+    component: Nfts,
+    icon: Image,
+  },
+  {
     path: "transactions",
     name: "Transactions",
     component: Txs,
@@ -54,12 +60,6 @@ export const TABS = [
     name: "Connections",
     component: Connections,
     icon: OnlinePredictionSharp,
-  },
-  {
-    path: "nfts",
-    name: "NFTs",
-    component: Nfts,
-    icon: Image,
   },
 ];
 

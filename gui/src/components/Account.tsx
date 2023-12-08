@@ -2,7 +2,7 @@ import { Card, CardContent, Stack, Typography } from "@mui/material";
 
 import { useWallets } from "@/store";
 
-import { AddressView, BalancesList, Panel } from "./";
+import { AddressView, Balances, Nfts, Panel } from "./";
 
 export function Account() {
   const address = useWallets((s) => s.address);
@@ -33,7 +33,16 @@ export function Account() {
             </CardContent>
           </Card>
         </Stack>
-        <BalancesList />
+
+        <Typography variant="h6" component="h2">
+          Tokens
+        </Typography>
+        <Balances />
+
+        <Typography variant="h6" component="h2">
+          NFTs
+        </Typography>
+        <Nfts />
       </Stack>
     </Panel>
   );
