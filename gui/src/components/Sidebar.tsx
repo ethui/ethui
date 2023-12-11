@@ -4,17 +4,26 @@ import {
   Receipt,
   RequestQuoteSharp,
 } from "@mui/icons-material";
-import { Box, Button, Drawer, IconButton, Stack, Toolbar } from "@mui/material";
+import {
+  Box,
+  Button,
+  Drawer,
+  IconButton,
+  Stack,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import { blue } from "@mui/material/colors";
 import { findIndex, parseInt, range, toString } from "lodash-es";
 import { ReactNode } from "react";
 import { Link, useLocation, useRoute } from "wouter";
 
 import { useKeyPress, useMenuAction, useOS } from "@/hooks";
-import { useTheme } from "@/store";
+import { useTheme, useWallets } from "@/store";
 
 import {
   Account,
+  AddressView,
   CommandBarButton,
   Connections,
   Contracts,
@@ -32,6 +41,7 @@ export const TABS = [
     path: "account",
     name: "Account",
     component: Account,
+    navbarComponent: AccountsNavbar,
     icon: RequestQuoteSharp,
   },
   {
@@ -248,5 +258,17 @@ function SidebarTab({ tab, selected }: SidebarTabProps) {
         {tab.name}
       </Button>
     </>
+  );
+}
+
+function AccountsNavbar() {
+  const address = useWallets((s) => s.address);
+
+  if (!address) return null;
+
+  return (
+    <Stack direction="row">
+      <AddressView address={address} copyIcon />
+    </Stack>
   );
 }
