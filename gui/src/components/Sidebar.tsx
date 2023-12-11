@@ -4,15 +4,7 @@ import {
   Receipt,
   RequestQuoteSharp,
 } from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  Drawer,
-  IconButton,
-  Stack,
-  Toolbar,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Drawer, IconButton, Stack, Toolbar } from "@mui/material";
 import { blue } from "@mui/material/colors";
 import { findIndex, parseInt, range, toString } from "lodash-es";
 import { ReactNode } from "react";
@@ -112,28 +104,10 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
 
 export function Sidebar() {
   const [_match, params] = useRoute("/:path");
-  const [_location, setLocation] = useLocation();
+  const [_location] = useLocation();
   const { theme } = useTheme();
   const breakpoint = theme.breakpoints.down("sm");
   const { type } = useOS();
-
-  const handleKeyboardNavigation = (event: KeyboardEvent) => {
-    setLocation(TABS[parseInt(event.key) - 1].path);
-  };
-
-  useMenuAction((payload) => setLocation(payload));
-
-  useKeyPress(
-    range(1, TABS.length + 1).map(toString),
-    { meta: true },
-    handleKeyboardNavigation,
-  );
-
-  useKeyPress(
-    range(1, TABS.length + 1).map(toString),
-    { ctrl: true },
-    handleKeyboardNavigation,
-  );
 
   return (
     <Drawer
