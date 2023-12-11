@@ -76,26 +76,24 @@ export function Txs() {
   );
 
   return (
-    <Panel>
-      <InfiniteScroll
-        loadMore={loadMore}
-        hasMore={!pages.at(-1)?.last}
-        loader={loader}
-      >
-        {pages.flatMap((page) =>
-          page.items.map((tx) => (
-            <Accordion key={tx.hash}>
-              <AccordionSummary>
-                <Summary account={account} tx={tx} />
-              </AccordionSummary>
-              <AccordionDetails>
-                <Details tx={tx} chainId={chainId} />
-              </AccordionDetails>
-            </Accordion>
-          )),
-        )}
-      </InfiniteScroll>
-    </Panel>
+    <InfiniteScroll
+      loadMore={loadMore}
+      hasMore={!pages.at(-1)?.last}
+      loader={loader}
+    >
+      {pages.flatMap((page) =>
+        page.items.map((tx) => (
+          <Accordion key={tx.hash}>
+            <AccordionSummary>
+              <Summary account={account} tx={tx} />
+            </AccordionSummary>
+            <AccordionDetails>
+              <Details tx={tx} chainId={chainId} />
+            </AccordionDetails>
+          </Accordion>
+        )),
+      )}
+    </InfiniteScroll>
   );
 }
 

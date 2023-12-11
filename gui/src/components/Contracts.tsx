@@ -27,12 +27,12 @@ export function Contracts() {
   const addresses = useContracts((s) => s.addresses);
 
   return (
-    <Panel>
+    <>
       {chainId != 31337 && <AddressForm />}
       {Array.from(addresses || []).map((address) => (
         <Contract key={address} address={address} />
       ))}
-    </Panel>
+    </>
   );
 }
 
