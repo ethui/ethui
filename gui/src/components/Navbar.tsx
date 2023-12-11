@@ -14,7 +14,7 @@ export function Navbar({ tab }: { tab: (typeof TABS)[number] }) {
     >
       <DraggableToolbar>
         <Typography variant="h6" component="div">
-          {tab.name}
+          {tab.navbarComponent ? <tab.navbarComponent /> : tab.name}
         </Typography>
       </DraggableToolbar>
     </AppBar>

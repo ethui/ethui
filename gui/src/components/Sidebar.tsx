@@ -11,10 +11,11 @@ import { ReactNode } from "react";
 import { Link, useLocation, useRoute } from "wouter";
 
 import { useKeyPress, useMenuAction, useOS } from "@/hooks";
-import { useTheme } from "@/store";
+import { useTheme, useWallets } from "@/store";
 
 import {
   Account,
+  AddressView,
   CommandBarButton,
   Connections,
   Contracts,
@@ -32,6 +33,7 @@ export const TABS = [
     path: "account",
     name: "Account",
     component: Account,
+    navbarComponent: AccountsNavbar,
     icon: RequestQuoteSharp,
   },
   {
@@ -102,28 +104,10 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
 
 export function Sidebar() {
   const [_match, params] = useRoute("/:path");
-  const [_location, setLocation] = useLocation();
+  const [_location] = useLocation();
   const { theme } = useTheme();
   const breakpoint = theme.breakpoints.down("sm");
   const { type } = useOS();
-
-  const handleKeyboardNavigation = (event: KeyboardEvent) => {
-    setLocation(TABS[parseInt(event.key) - 1].path);
-  };
-
-  useMenuAction((payload) => setLocation(payload));
-
-  useKeyPress(
-    range(1, TABS.length + 1).map(toString),
-    { meta: true },
-    handleKeyboardNavigation,
-  );
-
-  useKeyPress(
-    range(1, TABS.length + 1).map(toString),
-    { ctrl: true },
-    handleKeyboardNavigation,
-  );
 
   return (
     <Drawer
@@ -248,5 +232,17 @@ function SidebarTab({ tab, selected }: SidebarTabProps) {
         {tab.name}
       </Button>
     </>
+  );
+}
+
+function AccountsNavbar() {
+  const address = useWallets((s) => s.address);
+
+  if (!address) return null;
+
+  return (
+    <Stack direction="row">
+      <AddressView address={address} copyIcon />
+    </Stack>
   );
 }
