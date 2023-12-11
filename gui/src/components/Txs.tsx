@@ -1,13 +1,5 @@
+import { CallMade, CallReceived, NoteAdd } from "@mui/icons-material";
 import {
-  CallMade,
-  CallReceived,
-  ExpandMore,
-  NoteAdd,
-} from "@mui/icons-material";
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Badge,
   Box,
   CircularProgress,
@@ -25,10 +17,17 @@ import { useTransaction, useWaitForTransaction } from "wagmi";
 import { Paginated, Pagination, Tx } from "@/types";
 import { useEventListener } from "@/hooks";
 import { useNetworks, useWallets } from "@/store";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  AddressView,
+  ContextMenu,
+  Panel,
+} from "@/components";
 
 import { CalldataView } from "./Calldata";
 import { Datapoint } from "./Datapoint";
-import { AddressView, ContextMenu, Panel } from "./";
 
 export function Txs() {
   const account = useWallets((s) => s.address);
@@ -85,8 +84,8 @@ export function Txs() {
       >
         {pages.flatMap((page) =>
           page.items.map((tx) => (
-            <Accordion key={tx.hash} TransitionProps={{ unmountOnExit: true }}>
-              <AccordionSummary expandIcon={<ExpandMore />}>
+            <Accordion key={tx.hash}>
+              <AccordionSummary>
                 <Summary account={account} tx={tx} />
               </AccordionSummary>
               <AccordionDetails>

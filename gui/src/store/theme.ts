@@ -153,6 +153,20 @@ function getDesignTokens(mode: PaletteMode): ThemeOptions {
           variant: "dense",
         },
       },
+
+      MuiAccordionSummary: {
+        styleOverrides: {
+          root: {
+            "&:hover": {
+              transition: "none",
+              background: theme.palette.action.hover,
+            },
+            "&.Mui-expanded": {
+              background: theme.palette.action.hover,
+            },
+          },
+        },
+      },
     },
   };
 }

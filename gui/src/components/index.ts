@@ -31,3 +31,4 @@ export { SettingsButton } from "./SettingsButton";
 export { TransferForm } from "./TransferForm";
 export { Txs } from "./Txs";
 export { WagmiWrapper } from "./WagmiWrapper";
+export * from "./Accordion";
