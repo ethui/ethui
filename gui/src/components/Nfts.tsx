@@ -1,4 +1,4 @@
-import { ImageList, ImageListItem, ImageListItemBar } from "@mui/material";
+import { Grid, ImageListItem, ImageListItemBar } from "@mui/material";
 
 import { Nft } from "@/types";
 import { useNfts } from "@/store/nfts";
@@ -7,16 +7,13 @@ export function Nfts() {
   const nfts = useNfts((s) => s.nfts);
 
   return (
-    <ImageList
-      sx={{ width: 500, height: 450 }}
-      variant="masonry"
-      cols={3}
-      gap={5}
-    >
+    <Grid container spacing={2}>
       {nfts.map((nft) => (
-        <Item key={`${nft.contract}/${nft.token_id}`} {...nft} />
+        <Grid item key={`${nft.contract}/${nft.token_id}`} xs={2}>
+          <Item {...nft} />
+        </Grid>
       ))}
-    </ImageList>
+    </Grid>
   );
 }
 
