@@ -2,6 +2,7 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 import {
   Alert,
   AlertTitle,
+  Box,
   Button,
   Grid,
   Stack,
@@ -17,6 +18,7 @@ import {
   CalldataView,
   ContextMenu,
   Datapoint,
+  HumanReadableCall,
 } from "@/components";
 import { useDialog, useLedgerDetect } from "@/hooks";
 
@@ -83,16 +85,21 @@ export function TxReviewDialog({ id }: { id: number }) {
   return (
     <DialogLayout>
       <Typography variant="h6" component="h1">
-        Transaction review
+        <Stack direction="row" justifyContent="space-between">
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <AddressView address={from} /> <span>→</span>{" "}
+            <AddressView address={to} />
+          </Stack>
+          <ContextMenu>{formatEther(BigInt(value))} Ξ</ContextMenu>
+        </Stack>
       </Typography>
 
-      <Stack direction="row" justifyContent="space-between">
-        <Stack direction="row" alignItems="center" spacing={1}>
-          <AddressView address={from} /> <span>→</span>{" "}
-          <AddressView address={to} />
-        </Stack>
-        <ContextMenu>{formatEther(BigInt(value))} Ξ</ContextMenu>
-      </Stack>
+      <HumanReadableCall
+        value={value}
+        data={calldata}
+        to={to}
+        chainId={chainId}
+      />
 
       <TabContext value={tab}>
         <TabList onChange={(_e: unknown, v: string) => setTab(v)}>

@@ -5,7 +5,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import truncateEthAddress from "truncate-eth-address";
-import { getAddress } from "viem";
+import { Address, getAddress } from "viem";
 import { z } from "zod";
 
 import { useInvoke } from "@/hooks";
@@ -13,7 +13,7 @@ import { useInvoke } from "@/hooks";
 import { ContextMenu, Modal } from "./";
 
 interface Props {
-  address: string;
+  address: Address;
   contextMenu?: boolean;
   copyIcon?: boolean;
 }
