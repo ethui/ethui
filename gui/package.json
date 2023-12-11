@@ -20,7 +20,7 @@
     "@mui/icons-material": "^5.14.19",
     "@mui/lab": "^5.0.0-alpha.155",
     "@mui/material": "^5.14.20",
-    "@tauri-apps/api": "^1.5.2",
+    "@tauri-apps/api": "1.5.2",
     "@tauri-apps/cli": "^1.5.7",
     "abitype": "^0.10.3",
     "core-js": "^3.34.0",

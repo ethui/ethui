@@ -1166,7 +1166,7 @@ __metadata:
     "@mui/icons-material": "npm:^5.14.19"
     "@mui/lab": "npm:^5.0.0-alpha.155"
     "@mui/material": "npm:^5.14.20"
-    "@tauri-apps/api": "npm:^1.5.2"
+    "@tauri-apps/api": "npm:1.5.2"
     "@tauri-apps/cli": "npm:^1.5.7"
     "@types/chrome": "npm:^0.0.254"
     "@types/core-js": "npm:^2.5.8"
@@ -2618,7 +2618,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tauri-apps/api@npm:^1.5.2":
+"@tauri-apps/api@npm:1.5.2":
   version: 1.5.2
   resolution: "@tauri-apps/api@npm:1.5.2"
   checksum: cab24ce689c7333eecbc26205127414adc2fb11aa3ee07253411ac53664f7d9f598ff74f4489484b39d9c6455d5a37584edc90bed2be3f7d8a26dcb620129868
