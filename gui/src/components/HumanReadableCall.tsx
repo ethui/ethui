@@ -94,7 +94,7 @@ function SummaryFunction({
   return (
     <Stack direction="row">
       <MonoText>{label}</MonoText>
-      {value == 0n && (
+      {value > 0n && (
         <>
           <MonoText>&#123;</MonoText>
 
