@@ -23,7 +23,6 @@ import {
   AccordionSummary,
   AddressView,
   ContextMenu,
-  Panel,
 } from "@/components";
 
 import { CalldataView } from "./Calldata";
