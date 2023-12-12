@@ -1,4 +1,4 @@
-import * as os from "@tauri-apps/api/os";
+import { os } from "@tauri-apps/api";
 import { useEffect, useState } from "react";
 
 export function useOS() {

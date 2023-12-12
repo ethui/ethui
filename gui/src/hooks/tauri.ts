@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api";
 import useSWR from "swr";
 import type { SWRConfiguration, SWRResponse } from "swr";
 

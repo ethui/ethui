@@ -1,9 +1,9 @@
-import { appWindow } from "@tauri-apps/api/window";
+import { window as tauriWindow } from "@tauri-apps/api";
 import { useEffect } from "react";
 
 export function useMenuGoAction(callback: (payload: string) => unknown) {
   useEffect(() => {
-    const unlisten = appWindow.listen(
+    const unlisten = tauriWindow.appWindow.listen(
       "go",
       ({ payload }: { payload: string }) => {
         callback(payload);

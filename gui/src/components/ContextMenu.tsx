@@ -1,5 +1,5 @@
 import { Button, Menu, MenuItem, SxProps, Tooltip } from "@mui/material";
-import { writeText } from "@tauri-apps/api/clipboard";
+import { clipboard } from "@tauri-apps/api";
 import React, { MouseEvent, ReactNode, useState } from "react";
 
 import { useNetworks } from "@/store";
@@ -43,7 +43,7 @@ export function ContextMenu({ children, sx, copy, explorer, actions }: Props) {
   const copyToClipboard = (text: string | null | undefined) => {
     if (!text) throw new Error("Nothing to copy to clipboard");
 
-    writeText(text);
+    clipboard.writeText(text);
     setCopied(true);
     setContextMenu(null);
   };

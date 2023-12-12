@@ -1144,7 +1144,7 @@ __metadata:
     stream: "npm:^0.0.2"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.3.3"
-    vite: "npm:^5.0.7"
+    vite: "npm:^5.0.8"
     vite-plugin-node-polyfills: "npm:^0.17.0"
     vite-tsconfig-paths: "npm:^4.2.2"
     web-ext: "npm:^7.9.0"
@@ -1193,9 +1193,9 @@ __metadata:
     truncate-eth-address: "npm:^1.0.2"
     typescript: "npm:^5.3.3"
     viem: "npm:^1.19.13"
-    vite: "npm:^5.0.7"
+    vite: "npm:^5.0.8"
     vite-tsconfig-paths: "npm:^4.2.2"
-    wagmi: "npm:^1.4.10"
+    wagmi: "npm:^1.4.11"
     wouter: "npm:^2.12.1"
     zod: "npm:^3.22.4"
     zustand: "npm:^4.4.7"
@@ -2248,27 +2248,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@safe-global/safe-apps-provider@npm:^0.17.1":
-  version: 0.17.1
-  resolution: "@safe-global/safe-apps-provider@npm:0.17.1"
+"@safe-global/safe-apps-provider@npm:^0.18.1":
+  version: 0.18.1
+  resolution: "@safe-global/safe-apps-provider@npm:0.18.1"
   dependencies:
-    "@safe-global/safe-apps-sdk": "npm:8.0.0"
+    "@safe-global/safe-apps-sdk": "npm:^8.1.0"
     events: "npm:^3.3.0"
-  checksum: cec18ade4630fbbee3a3fc39082a522b37f863461224e9dc9ba3858471bdb649c7e46cf07902d00fa8f638d30fb3d7cd2d4f5db89ac8d1cb41d6de51dd141625
+  checksum: 9e6375132930cedd0935baa83cd026eb7c76776c7285edb3ff8c463ccf48d1e30cea03e93ce7199d3d3efa3cd035495e5f85fc361e203a2c03a4459d1989e726
   languageName: node
   linkType: hard
 
-"@safe-global/safe-apps-sdk@npm:8.0.0":
-  version: 8.0.0
-  resolution: "@safe-global/safe-apps-sdk@npm:8.0.0"
-  dependencies:
-    "@safe-global/safe-gateway-typescript-sdk": "npm:^3.5.3"
-    viem: "npm:^1.0.0"
-  checksum: d8698518e0f386e444cae6115937f8c962839ee58a4dd3860ce0731c5c18928889bdcdbe68443edcc48fccc55776d90f47b1810833f9f71baac4a15491c2fc00
-  languageName: node
-  linkType: hard
-
-"@safe-global/safe-apps-sdk@npm:^8.0.0":
+"@safe-global/safe-apps-sdk@npm:^8.1.0":
   version: 8.1.0
   resolution: "@safe-global/safe-apps-sdk@npm:8.1.0"
   dependencies:
@@ -3290,14 +3280,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wagmi/connectors@npm:3.1.8":
-  version: 3.1.8
-  resolution: "@wagmi/connectors@npm:3.1.8"
+"@wagmi/connectors@npm:3.1.9":
+  version: 3.1.9
+  resolution: "@wagmi/connectors@npm:3.1.9"
   dependencies:
     "@coinbase/wallet-sdk": "npm:^3.6.6"
     "@ledgerhq/connect-kit-loader": "npm:^1.1.0"
-    "@safe-global/safe-apps-provider": "npm:^0.17.1"
-    "@safe-global/safe-apps-sdk": "npm:^8.0.0"
+    "@safe-global/safe-apps-provider": "npm:^0.18.1"
+    "@safe-global/safe-apps-sdk": "npm:^8.1.0"
     "@walletconnect/ethereum-provider": "npm:2.10.6"
     "@walletconnect/legacy-provider": "npm:^2.0.0"
     "@walletconnect/modal": "npm:2.6.2"
@@ -3310,15 +3300,15 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 3504b9cbae538c345bdb76183edb22d6b82b7970465fbcc6d9b9f73baef4796a127e4a2436eba367b3c0a89d81f7a44ba4d26beadfec266af1e63ba35f93f35e
+  checksum: b0bcb461cb7dc7c7ba57541783cd4127f3e5f468402ca35eb82f38f31ddc3ca7e2f3c22d3f1cad977cd86742fbaaa6e0023d778df9e92dff67cff0a9aa7446a6
   languageName: node
   linkType: hard
 
-"@wagmi/core@npm:1.4.10":
-  version: 1.4.10
-  resolution: "@wagmi/core@npm:1.4.10"
+"@wagmi/core@npm:1.4.11":
+  version: 1.4.11
+  resolution: "@wagmi/core@npm:1.4.11"
   dependencies:
-    "@wagmi/connectors": "npm:3.1.8"
+    "@wagmi/connectors": "npm:3.1.9"
     abitype: "npm:0.8.7"
     eventemitter3: "npm:^4.0.7"
     zustand: "npm:^4.3.1"
@@ -3328,7 +3318,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: d341ec794c28bc1fd0f67e6282b8c2ab4c5c621f6202c0d87a043e8090462116a463ff12e6bf54e9c808d80de4d2452428a8e5b46e4062f1694cc85c4c38a4cd
+  checksum: 3260df5d5723142052b3f248b157c04e09bf7fc4da44dbcabb642e703a3cce4ce505c73b51e4e4fe9801b191b54a0c7eb885260aa111d508bae1844e8d640e9e
   languageName: node
   linkType: hard
 
@@ -13052,9 +13042,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^5.0.7":
-  version: 5.0.7
-  resolution: "vite@npm:5.0.7"
+"vite@npm:^5.0.8":
+  version: 5.0.8
+  resolution: "vite@npm:5.0.8"
   dependencies:
     esbuild: "npm:^0.19.3"
     fsevents: "npm:~2.3.3"
@@ -13088,7 +13078,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: ae3a54bcb7933bc1420c54f7d72dfa88b80e53557e7de19dee018d5e8e2545d967bcbd6af48fa96dd132229f25334ff61df42621c034fe8275d9076dadb3ad7f
+  checksum: 74fa546f3eb16bd2c49f8267ec83f1aded8850cd5717b9809cead4c0178ee36462ef7723fe669e5801da86f9220b865689ed6ab94ee1965b92f0b122cdefb298
   languageName: node
   linkType: hard
 
@@ -13108,14 +13098,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"wagmi@npm:^1.4.10":
-  version: 1.4.10
-  resolution: "wagmi@npm:1.4.10"
+"wagmi@npm:^1.4.11":
+  version: 1.4.11
+  resolution: "wagmi@npm:1.4.11"
   dependencies:
     "@tanstack/query-sync-storage-persister": "npm:^4.27.1"
     "@tanstack/react-query": "npm:^4.28.0"
     "@tanstack/react-query-persist-client": "npm:^4.28.0"
-    "@wagmi/core": "npm:1.4.10"
+    "@wagmi/core": "npm:1.4.11"
     abitype: "npm:0.8.7"
     use-sync-external-store: "npm:^1.2.0"
   peerDependencies:
@@ -13125,7 +13115,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 3811c75c2ab17bae43c44be4d5a4f7165fb19ee4a1469ae4f13fe0e8298f5b64dfaefeece42c7ee274dcb65135274401a2f35fe5ed2bc38ee3c74451c1024e05
+  checksum: 922ffedef0fd117100ffd9debc7955cfe4d459d60ff60acbaa00c3c8343aef2bf9e9fe0ec8c733d186b2532ad32bc8d6ddc2c4848e3e3a7b24998345aa34f59e
   languageName: node
   linkType: hard
 

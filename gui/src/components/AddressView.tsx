@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ContentCopySharp } from "@mui/icons-material";
 import { Box, Button, Stack, TextField, Typography } from "@mui/material";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import truncateEthAddress from "truncate-eth-address";
