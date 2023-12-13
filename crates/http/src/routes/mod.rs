@@ -6,6 +6,7 @@ mod contracts;
 mod rpc;
 mod transactions;
 mod ui;
+mod tokens;
 
 #[cfg(feature = "http-insecure-endpoints")]
 mod connections;
@@ -38,6 +39,7 @@ fn iron_routes() -> Router<Ctx> {
         .nest("/transactions", transactions::router())
         .nest("/contracts", contracts::router())
         .nest("/ui", ui::router())
+        .nest("/tokens", tokens::router())
 }
 
 #[cfg(feature = "http-insecure-endpoints")]
