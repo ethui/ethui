@@ -1,8 +1,10 @@
 use axum::{
     extract::Query,
-    handler::get,
-    response::Json,
+    routing::get,
+    response::{Response, Json, Html},
     Router,
+    body::Body, 
+    http::StatusCode,
 };
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -33,12 +35,12 @@ pub struct Token {
 
 pub(super) fn router() -> Router<Ctx> {
     Router::new()
-        .route("/tokens", get(hello))
+        .route("/tokens", get(hello_world))
         //.route("/tokenpair/:chain_id/:address", get(check_id_address_pair))
 }
 
-pub fn hello() {
-    println!("HELLO THERE!!!!!!!!!!!!")
+async fn hello_world() -> &'static str {
+    "Hello world!!!!!!!!!!"
 }
 
 /*
