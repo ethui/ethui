@@ -9,7 +9,28 @@ authors = ["Miguel Palhas <mpalhas@gmail.com>"]
 
 [workspace]
 resolver = "2"
-members = ["bin/iron", "crates/*"]
+members = [
+  "bin/iron",
+  "crates/forge",
+  "crates/crypto",
+  "crates/settings",
+  "crates/networks",
+  "crates/wallets",
+  "crates/simulator",
+  "crates/ws",
+  "crates/http",
+  "crates/rpc",
+  "crates/connections",
+  "crates/dialogs",
+  "crates/types",
+  "crates/abis",
+  "crates/db",
+  "crates/sync",
+  "crates/broadcast",
+  "crates/tracing",
+  "crates/exchange-rates",
+  "crates/args",
+]
 default-members = ["bin/iron"]
 
 [workspace.dependencies]
