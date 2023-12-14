@@ -1,4 +1,5 @@
 use ethers::types::U64;
+use iron_dialogs::{Dialog, DialogMsg};
 use iron_networks::{Network, Networks};
 use iron_types::GlobalState;
 use serde::Deserialize;
@@ -17,14 +18,43 @@ impl NetworkAdd {
     }
 
     pub async fn run(self) -> Result<()> {
+        let dialog = Dialog::new("tx-review", serde_json::to_value(self.params).unwrap());
+        dialog.open().await?;
+
+        if self.already_exists().await {
+            return Ok(());
+        }
+
+        while let Some(msg) = dialog.recv().await {
+            match msg {
+                DialogMsg::Data(msg) => match msg.as_str() {
+                    Some("accept") => self.on_accept().await?,
+                    _ => return Ok(()),
+                },
+
+                DialogMsg::Close => return Ok(()),
+            }
+        }
+
+        Ok(())
+    }
+
+    pub async fn already_exists(&self) -> bool {
+        let networks = Networks::read().await;
+        networks.validate_chain_id(self.params.chain_id.as_u32())
+    }
+
+    pub async fn on_accept(&self) -> Result<()> {
         let mut networks = Networks::write().await;
-        networks.add_network(self.params.try_into()?).await?;
+        networks
+            .add_network(self.params.clone().try_into()?)
+            .await?;
 
         Ok(())
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Params {
     chain_id: U64,
@@ -34,7 +64,7 @@ pub struct Params {
     rpc_urls: Vec<Url>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Currency {
     decimals: u64,
