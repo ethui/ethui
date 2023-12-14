@@ -1192,10 +1192,10 @@ __metadata:
     swr: "npm:^2.2.4"
     truncate-eth-address: "npm:^1.0.2"
     typescript: "npm:^5.3.3"
-    viem: "npm:^1.19.13"
+    viem: "npm:^1.19.15"
     vite: "npm:^5.0.8"
     vite-tsconfig-paths: "npm:^4.2.2"
-    wagmi: "npm:^1.4.11"
+    wagmi: "npm:^1.4.12"
     wouter: "npm:^2.12.1"
     zod: "npm:^3.22.4"
     zustand: "npm:^4.4.7"
@@ -1290,13 +1290,6 @@ __metadata:
     "@jridgewell/resolve-uri": "npm:3.1.0"
     "@jridgewell/sourcemap-codec": "npm:1.4.14"
   checksum: 40b65fcbdd7cc5a60dbe0a2780b6670ebbc1a31c96e43833e0bf2fee0773b1ba5137ab7d137b28fc3f215567bd5f9d06b7b30634ba15636c13bd8a863c20ae9a
-  languageName: node
-  linkType: hard
-
-"@ledgerhq/connect-kit-loader@npm:^1.1.0":
-  version: 1.1.2
-  resolution: "@ledgerhq/connect-kit-loader@npm:1.1.2"
-  checksum: 82482d21db3cde4c4d8806cf20a2bd9ee23964d9dbaa349b631be5cc405b7f4562ba7285d3337e147936090955c278644f6d996e3e61a506fd9ccebdb1d45744
   languageName: node
   linkType: hard
 
@@ -3280,12 +3273,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wagmi/connectors@npm:3.1.9":
-  version: 3.1.9
-  resolution: "@wagmi/connectors@npm:3.1.9"
+"@wagmi/connectors@npm:3.1.10":
+  version: 3.1.10
+  resolution: "@wagmi/connectors@npm:3.1.10"
   dependencies:
     "@coinbase/wallet-sdk": "npm:^3.6.6"
-    "@ledgerhq/connect-kit-loader": "npm:^1.1.0"
     "@safe-global/safe-apps-provider": "npm:^0.18.1"
     "@safe-global/safe-apps-sdk": "npm:^8.1.0"
     "@walletconnect/ethereum-provider": "npm:2.10.6"
@@ -3300,15 +3292,15 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: b0bcb461cb7dc7c7ba57541783cd4127f3e5f468402ca35eb82f38f31ddc3ca7e2f3c22d3f1cad977cd86742fbaaa6e0023d778df9e92dff67cff0a9aa7446a6
+  checksum: c41f182a74c65c95e97fd453350825183e7a4c5961b5def90eb0a26a5d320bb81dcf1d93d48b0fbafe58a1445bce37d7480aa539c04a5567705032c630159776
   languageName: node
   linkType: hard
 
-"@wagmi/core@npm:1.4.11":
-  version: 1.4.11
-  resolution: "@wagmi/core@npm:1.4.11"
+"@wagmi/core@npm:1.4.12":
+  version: 1.4.12
+  resolution: "@wagmi/core@npm:1.4.12"
   dependencies:
-    "@wagmi/connectors": "npm:3.1.9"
+    "@wagmi/connectors": "npm:3.1.10"
     abitype: "npm:0.8.7"
     eventemitter3: "npm:^4.0.7"
     zustand: "npm:^4.3.1"
@@ -3318,7 +3310,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 3260df5d5723142052b3f248b157c04e09bf7fc4da44dbcabb642e703a3cce4ce505c73b51e4e4fe9801b191b54a0c7eb885260aa111d508bae1844e8d640e9e
+  checksum: 4924a0f14aa5b332032529939704df13d3ebbb6adfd060337277498912d0f3746cee0809e76e94017f4b0a983d380971b4f81469490e0b918192fe61b5ab82b6
   languageName: node
   linkType: hard
 
@@ -12991,9 +12983,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"viem@npm:^1.19.13":
-  version: 1.19.13
-  resolution: "viem@npm:1.19.13"
+"viem@npm:^1.19.15":
+  version: 1.19.15
+  resolution: "viem@npm:1.19.15"
   dependencies:
     "@adraffy/ens-normalize": "npm:1.10.0"
     "@noble/curves": "npm:1.2.0"
@@ -13008,7 +13000,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: b08cfbd11a5f8af458042e622bb3ea5273c4ea98a8962ff11f3c80308fe608d03c38d5729c5702d2c3d4ffd73d26e2c4daa97d793dd4cf41292f2eee8443b0c3
+  checksum: db04aa2d8560b252e7c8f498fdff735243eb38533fe210694fb3e768417c2fdba3bcf5f383575b8433c6de30e724855e5dcad1478f0ab1cb4f70bb0b0bf4327c
   languageName: node
   linkType: hard
 
@@ -13098,14 +13090,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"wagmi@npm:^1.4.11":
-  version: 1.4.11
-  resolution: "wagmi@npm:1.4.11"
+"wagmi@npm:^1.4.12":
+  version: 1.4.12
+  resolution: "wagmi@npm:1.4.12"
   dependencies:
     "@tanstack/query-sync-storage-persister": "npm:^4.27.1"
     "@tanstack/react-query": "npm:^4.28.0"
     "@tanstack/react-query-persist-client": "npm:^4.28.0"
-    "@wagmi/core": "npm:1.4.11"
+    "@wagmi/core": "npm:1.4.12"
     abitype: "npm:0.8.7"
     use-sync-external-store: "npm:^1.2.0"
   peerDependencies:
@@ -13115,7 +13107,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 922ffedef0fd117100ffd9debc7955cfe4d459d60ff60acbaa00c3c8343aef2bf9e9fe0ec8c733d186b2532ad32bc8d6ddc2c4848e3e3a7b24998345aa34f59e
+  checksum: 645211638117c24fb4d9229654b202c6d86da5ea268e919081b5ee2116388c0254ff37dcae3b6b90a8e88568915f056bdd44007041a51f5ea585ae78e5eeae6e
   languageName: node
   linkType: hard
 
