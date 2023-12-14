@@ -159,7 +159,9 @@ impl Handler {
             .build()
             .await;
 
-        method.run().await?;
+        dbg!(&method);
+
+        dbg!(method.run().await)?;
 
         Ok(serde_json::Value::Null)
     }

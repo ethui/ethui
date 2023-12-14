@@ -2,7 +2,7 @@ use ethers::types::U64;
 use iron_dialogs::{Dialog, DialogMsg};
 use iron_networks::{Network, Networks};
 use iron_types::GlobalState;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use url::Url;
 
 use crate::{Error, Result};
@@ -18,8 +18,8 @@ impl NetworkAdd {
     }
 
     pub async fn run(self) -> Result<()> {
-        let dialog = Dialog::new("tx-review", serde_json::to_value(self.params).unwrap());
-        dialog.open().await?;
+        let dialog = Dialog::new("network-add", serde_json::to_value(&self.params).unwrap());
+        dbg!(dialog.open().await)?;
 
         if self.already_exists().await {
             return Ok(());
@@ -54,7 +54,7 @@ impl NetworkAdd {
     }
 }
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Params {
     chain_id: U64,
@@ -64,7 +64,7 @@ pub struct Params {
     rpc_urls: Vec<Url>,
 }
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Currency {
     decimals: u64,

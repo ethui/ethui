@@ -16,6 +16,7 @@ import {
 } from "@/components";
 import {
   MsgSignDialog,
+  NetworkAddDialog,
   TxReviewDialog,
   WalletUnlockDialog,
 } from "@/components/Dialogs";
@@ -74,6 +75,11 @@ function Routes() {
         <Route path="/dialog/wallet-unlock/:id">
           {({ id }: { id: string }) => <WalletUnlockDialog id={parseInt(id)} />}
         </Route>
+
+        <Route path="/dialog/network-add/:id">
+          {({ id }: { id: string }) => <NetworkAddDialog id={parseInt(id)} />}
+        </Route>
+
         <Route>
           <SnackbarProvider
             anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
