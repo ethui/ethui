@@ -1,11 +1,12 @@
 pub mod commands;
 mod error;
-mod send_transaction;
-mod sign_message;
+mod methods;
 
 use std::collections::HashMap;
 
-use ethers::{abi::AbiEncode, types::transaction::eip712};
+use ethers::abi::AbiEncode;
+use ethers::types::transaction::eip712;
+
 use iron_connections::Ctx;
 use iron_types::GlobalState;
 use iron_wallets::{WalletControl, Wallets};
@@ -13,7 +14,6 @@ use jsonrpc_core::{MetaIoHandler, Params};
 use serde_json::json;
 
 pub use self::error::{Error, Result};
-use self::sign_message::SignMessage;
 
 pub struct Handler {
     io: MetaIoHandler<Ctx>,
@@ -111,6 +111,7 @@ impl Handler {
         self_handler!("personal_sign", Self::eth_sign);
         self_handler!("eth_signTypedData", Self::eth_sign_typed_data_v4);
         self_handler!("eth_signTypedData_v4", Self::eth_sign_typed_data_v4);
+        self_handler!("wallet_addEthereumChain", Self::add_chain);
         self_handler!("wallet_switchEthereumChain", Self::switch_chain);
 
         // metamask
@@ -152,6 +153,18 @@ impl Handler {
     }
 
     #[tracing::instrument()]
+    async fn add_chain(params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+        let method = methods::NetworkAdd::build()
+            .set_params(params.into())?
+            .build()
+            .await;
+
+        method.run().await?;
+
+        Ok(serde_json::Value::Null)
+    }
+
+    #[tracing::instrument()]
     async fn switch_chain(params: Params, mut ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
         let params = params.parse::<Vec<HashMap<String, String>>>().unwrap();
         let chain_id_str = params[0].get("chainId").unwrap().clone();
@@ -168,10 +181,8 @@ impl Handler {
         params: T,
         ctx: Ctx,
     ) -> jsonrpc_core::Result<serde_json::Value> {
-        use send_transaction::SendTransaction;
-
         // TODO: check that requested wallet is authorized
-        let mut sender = SendTransaction::build(&ctx)
+        let mut sender = methods::SendTransaction::build(&ctx)
             .set_request(params.into())
             .await
             .unwrap()
@@ -187,8 +198,6 @@ impl Handler {
     }
 
     async fn eth_sign(params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
-        use sign_message::*;
-
         let params = params.parse::<Vec<Option<String>>>().unwrap();
         let msg = params[0].as_ref().cloned().unwrap();
         // TODO where should this be used?
@@ -199,7 +208,7 @@ impl Handler {
         let network = ctx.network().await;
         let wallet = wallets.get_current_wallet();
 
-        let mut signer = SignMessage::build()
+        let mut signer = methods::SignMessage::build()
             .set_wallet(wallet)
             .set_wallet_path(wallet.get_current_path())
             .set_network(network)
@@ -231,7 +240,7 @@ impl Handler {
         let wallet = wallets.get_current_wallet();
         let network = ctx.network().await;
 
-        let mut signer = SignMessage::build()
+        let mut signer = methods::SignMessage::build()
             .set_wallet(wallet)
             .set_wallet_path(wallet.get_current_path())
             .set_network(network)

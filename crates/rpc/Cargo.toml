@@ -30,3 +30,4 @@ jsonrpc-core = { workspace = true }
 async-trait = { workspace = true }
 thiserror = { workspace = true }
 alloy-primitives = { workspace = true }
+url.workspace = true

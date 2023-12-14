@@ -83,6 +83,18 @@ impl Networks {
             .cloned()
     }
 
+    pub async fn add_network(&mut self, network: Network) -> Result<()> {
+        if self.validate_chain_id(network.chain_id) {
+            return Ok(());
+        }
+
+        self.networks.insert(network.name.clone(), network.clone());
+        self.save()?;
+        iron_broadcast::network_added(network.chain_id).await;
+
+        Ok(())
+    }
+
     pub async fn set_networks(&mut self, networks: Vec<Network>) -> Result<()> {
         self.do_set_networks(networks).await
     }

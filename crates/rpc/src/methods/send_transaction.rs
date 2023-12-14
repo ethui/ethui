@@ -11,7 +11,7 @@ use iron_settings::Settings;
 use iron_types::{Address, GlobalState, ToAlloy, ToEthers};
 use iron_wallets::{WalletControl, WalletType, Wallets};
 
-use super::{Error, Result};
+use crate::{Error, Result};
 
 /// Orchestrates the signing of a transaction
 /// Takes references to both the wallet and network where this

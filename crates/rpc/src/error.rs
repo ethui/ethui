@@ -32,6 +32,9 @@ pub enum Error {
     Wallet(#[from] ethers::signers::WalletError),
 
     #[error(transparent)]
+    Network(#[from] iron_networks::Error),
+
+    #[error(transparent)]
     JsonRpc(#[from] jsonrpc_core::Error),
 
     #[error(transparent)]
@@ -48,6 +51,9 @@ pub enum Error {
 
     #[error("cannot simulate transaction")]
     CannotSimulate,
+
+    #[error("RPC error: {0}")]
+    Rpc(i64),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
