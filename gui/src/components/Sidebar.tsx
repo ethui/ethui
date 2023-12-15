@@ -4,19 +4,10 @@ import {
   Receipt,
   RequestQuoteSharp,
 } from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  Drawer,
-  IconButton,
-  Stack,
-  Theme,
-  Toolbar,
-} from "@mui/material";
-import { lightBlue } from "@mui/material/colors";
+import { Box, Drawer, Stack, Theme, Toolbar } from "@mui/material";
 import { findIndex, parseInt, range, toString } from "lodash-es";
 import { ReactNode } from "react";
-import { Link, useLocation, useRoute } from "wouter";
+import { useLocation, useRoute } from "wouter";
 
 import { useKeyPress, useMenuAction, useOS } from "@/hooks";
 import { useTheme, useWallets } from "@/store";
@@ -33,6 +24,7 @@ import {
   QuickNetworkSelect,
   QuickWalletSelect,
   SettingsButton,
+  SidebarButton,
   Txs,
 } from "./";
 
@@ -99,6 +91,7 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
       <Box
         sx={{
           pl: `${WIDTH_MD}px`,
+          transition: theme.transitions.create("padding-left"),
           [breakpoint]: {
             pl: `${WIDTH_SM}px`,
           },
@@ -110,17 +103,10 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
   );
 }
 
-const sidebarBoxStyle = (theme: Theme) => {
-  return {
-    [theme.breakpoints.down("sm")]: {
-      alignItems: "center",
-    },
-  };
-};
-
 const drawerPaperStyle = (theme: Theme) => {
   return {
     width: WIDTH_MD,
+    transition: theme.transitions.create("width"),
     [theme.breakpoints.down("sm")]: {
       width: WIDTH_SM,
       justifyContent: "center",
@@ -146,23 +132,25 @@ export function Sidebar() {
       sx={{ flexShrink: 0 }}
       variant="permanent"
     >
-      <Box
-        flexGrow={1}
-        display="flex"
-        flexDirection="column"
-        sx={sidebarBoxStyle(theme)}
-      >
+      <Box flexGrow={1} display="flex" flexDirection="column">
         <Toolbar sx={{ p: 2 }} data-tauri-drag-region="true">
           {type !== "Darwin" && <Logo width={40} />}
         </Toolbar>
-        <Stack px={3} py={1} rowGap={1} flexGrow={1}>
+        <Stack
+          px={2}
+          rowGap={1}
+          flexGrow={1}
+          sx={{ [breakpoint]: { alignItems: "center" } }}
+        >
           {TABS.map((tab, index) => (
-            <SidebarTab
+            <SidebarButton
               key={index}
-              tab={tab}
               selected={
                 index === Math.max(findIndex(TABS, { path: params?.path }), 0)
               }
+              href={tab.path}
+              label={tab.name}
+              icon={tab.icon}
             />
           ))}
         </Stack>
@@ -186,56 +174,6 @@ export function Sidebar() {
         </Stack>
       </Box>
     </Drawer>
-  );
-}
-
-interface SidebarTabProps {
-  tab: (typeof TABS)[number];
-  selected: boolean;
-}
-
-function SidebarTab({ tab, selected }: SidebarTabProps) {
-  const { theme } = useTheme();
-  const breakpoint = theme.breakpoints.down("sm");
-
-  return (
-    <>
-      <IconButton
-        LinkComponent={Link}
-        href={tab.path}
-        disabled={selected}
-        color="inherit"
-        size="small"
-        sx={{
-          display: "none",
-          [breakpoint]: {
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          },
-          "&.Mui-disabled": {
-            backgroundColor: lightBlue[800],
-            color: "white",
-          },
-        }}
-      >
-        <tab.icon fontSize="medium" />
-      </IconButton>
-      <Button
-        variant="sidebar"
-        disabled={selected}
-        startIcon={<tab.icon fontSize="medium" />}
-        LinkComponent={Link}
-        href={tab.path}
-        sx={{
-          [breakpoint]: {
-            display: "none",
-          },
-        }}
-      >
-        {tab.name}
-      </Button>
-    </>
   );
 }
 
