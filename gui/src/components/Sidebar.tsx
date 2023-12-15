@@ -4,7 +4,15 @@ import {
   Receipt,
   RequestQuoteSharp,
 } from "@mui/icons-material";
-import { Box, Button, Drawer, IconButton, Stack, Toolbar } from "@mui/material";
+import {
+  Box,
+  Button,
+  Drawer,
+  IconButton,
+  Stack,
+  Theme,
+  Toolbar,
+} from "@mui/material";
 import { blue } from "@mui/material/colors";
 import { findIndex, parseInt, range, toString } from "lodash-es";
 import { ReactNode } from "react";
@@ -102,6 +110,24 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
   );
 }
 
+const sidebarBoxStyle = (theme: Theme) => {
+  return {
+    [theme.breakpoints.down("sm")]: {
+      alignItems: "center",
+    },
+  };
+};
+
+const drawerPaperStyle = (theme: Theme) => {
+  return {
+    width: WIDTH_MD,
+    [theme.breakpoints.down("sm")]: {
+      width: WIDTH_SM,
+      justifyContent: "center",
+    },
+  };
+};
+
 export function Sidebar() {
   const [_match, params] = useRoute("/:path");
   const [_location] = useLocation();
@@ -109,78 +135,56 @@ export function Sidebar() {
   const breakpoint = theme.breakpoints.down("sm");
   const { type } = useOS();
 
+  if (!type) return null;
+
   return (
     <Drawer
       PaperProps={{
         variant: "lighter",
-        sx: {
-          width: WIDTH_MD,
-          [breakpoint]: {
-            width: WIDTH_SM,
-            justifyContent: "center",
-          },
-        },
+        sx: drawerPaperStyle(theme),
       }}
       sx={{ flexShrink: 0 }}
       variant="permanent"
     >
-      {type && (
-        <Box
-          flexGrow={1}
-          display="flex"
-          flexDirection="column"
+      <Box
+        flexGrow={1}
+        display="flex"
+        flexDirection="column"
+        sx={sidebarBoxStyle(theme)}
+      >
+        <Toolbar sx={{ p: 2 }} data-tauri-drag-region="true">
+          {type !== "Darwin" && <Logo width={40} />}
+        </Toolbar>
+        <Stack px={3} py={1} rowGap={1} flexGrow={1}>
+          {TABS.map((tab, index) => (
+            <SidebarTab
+              key={index}
+              tab={tab}
+              selected={
+                index === Math.max(findIndex(TABS, { path: params?.path }), 0)
+              }
+            />
+          ))}
+        </Stack>
+        <Stack
+          rowGap={2}
+          p={3}
           sx={{
             [breakpoint]: {
-              alignItems: "center",
+              display: "none",
             },
           }}
         >
-          {type === "Darwin" ? (
-            <Toolbar data-tauri-drag-region="true"></Toolbar>
-          ) : (
-            <Toolbar sx={{ p: 2 }} data-tauri-drag-region="true">
-              <Logo width={40} />
-            </Toolbar>
-          )}
-          <Stack px={3} py={1} rowGap={1} flexGrow={1}>
-            {TABS.map((tab, index) => (
-              <SidebarTab
-                key={index}
-                tab={tab}
-                selected={
-                  index === Math.max(findIndex(TABS, { path: params?.path }), 0)
-                }
-              />
-            ))}
-          </Stack>
-          <Stack
-            rowGap={2}
-            p={3}
-            sx={{
-              [breakpoint]: {
-                display: "none",
-              },
-            }}
-          >
-            <QuickWalletSelect />
-            <QuickAddressSelect />
-            <QuickNetworkSelect />
-            <QuickFastModeToggle />
-          </Stack>
-          <Stack
-            p={3}
-            rowGap={1}
-            sx={{
-              [breakpoint]: {
-                justifyContent: "center",
-              },
-            }}
-          >
-            <CommandBarButton />
-            <SettingsButton />
-          </Stack>
-        </Box>
-      )}
+          <QuickWalletSelect />
+          <QuickAddressSelect />
+          <QuickNetworkSelect />
+          <QuickFastModeToggle />
+        </Stack>
+        <Stack p={3} rowGap={1}>
+          <CommandBarButton />
+          <SettingsButton />
+        </Stack>
+      </Box>
     </Drawer>
   );
 }
