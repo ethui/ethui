@@ -7,6 +7,7 @@ import {
 } from "@mui/material";
 
 import { useNetworks } from "@/store";
+import { ChainView } from "./ChainView";
 
 export function QuickNetworkSelect() {
   const [networks, current, setCurrent] = useNetworks((s) => [
@@ -32,7 +33,7 @@ export function QuickNetworkSelect() {
       >
         {networks.map((network) => (
           <MenuItem value={network.name} key={network.name}>
-            {network.name}
+            <ChainView network={network} />
           </MenuItem>
         ))}
       </Select>
