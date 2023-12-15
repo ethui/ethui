@@ -13,7 +13,7 @@ import {
   Theme,
   Toolbar,
 } from "@mui/material";
-import { blue } from "@mui/material/colors";
+import { lightBlue } from "@mui/material/colors";
 import { findIndex, parseInt, range, toString } from "lodash-es";
 import { ReactNode } from "react";
 import { Link, useLocation, useRoute } from "wouter";
@@ -214,7 +214,7 @@ function SidebarTab({ tab, selected }: SidebarTabProps) {
             justifyContent: "center",
           },
           "&.Mui-disabled": {
-            backgroundColor: blue[500],
+            backgroundColor: lightBlue[800],
             color: "white",
           },
         }}
