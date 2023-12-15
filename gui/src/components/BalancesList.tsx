@@ -16,7 +16,8 @@ import { useInvoke } from "@/hooks";
 import { useBalances, useNetworks } from "@/store";
 import { GeneralSettings } from "@/types/settings";
 
-import { CopyToClipboard, IconCrypto, Modal, TransferForm } from "./";
+import { IconCrypto } from "./Icons";
+import { CopyToClipboard, Modal, TransferForm } from "./";
 
 export function BalancesList() {
   return (

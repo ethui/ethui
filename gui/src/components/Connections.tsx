@@ -16,7 +16,7 @@ import { Affinity, Peer } from "@/types";
 import { useEventListener, useInvoke } from "@/hooks";
 import { useNetworks } from "@/store";
 
-import { Panel } from "./";
+import { ChainView, Panel } from "./";
 
 export function Connections() {
   const { data: peersByDomain, mutate } =
@@ -98,7 +98,7 @@ function AffinityForm({ domain }: { domain: string }) {
         </MenuItem>
         {networks.map((network) => (
           <MenuItem value={network.chain_id} key={network.name}>
-            {network.name}
+            <ChainView network={network} />
           </MenuItem>
         ))}
       </Select>

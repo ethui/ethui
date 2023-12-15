@@ -11,7 +11,7 @@ import {
 import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 
-import { ConfirmationDialog } from "@/components";
+import { ConfirmationDialog, ChainView } from "@/components";
 import { useNetworks } from "@/store";
 import { Network, networkSchema } from "@/types/network";
 
@@ -76,7 +76,8 @@ export function SettingsNetwork() {
         return (
           <Accordion key={field.id} defaultExpanded={field.new}>
             <AccordionSummary expandIcon={<ExpandMore />}>
-              {field.name} - {field.chain_id}
+              {field.chain_id && <ChainView network={field} />}
+              {!field.chain_id && "new network"}
             </AccordionSummary>
             <AccordionDetails>
               <Stack spacing={2} alignItems="flex-start">
