@@ -4,6 +4,7 @@ import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
 import { Network } from "@/types/network";
+import { IconChain } from "@/components/Icons";
 
 interface State {
   networks: Network[];
@@ -64,6 +65,7 @@ const store: StateCreator<Store> = (set, get) => ({
       ...(networks || []).map((network) => ({
         id: `${actionId}/${network.name}`,
         name: network.name,
+        icon: <IconChain network={network} />,
         parent: actionId,
         perform: () => {
           get().setCurrent(network.name);
