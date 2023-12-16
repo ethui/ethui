@@ -10,15 +10,21 @@ import { z } from "zod";
 
 import { useInvoke } from "@/hooks";
 
-import { ContextMenu, Modal } from "./";
+import { ContextMenu, Modal, MonoText } from "./";
 
 interface Props {
   address: Address;
   contextMenu?: boolean;
   copyIcon?: boolean;
+  mono?: boolean;
 }
 
-export function AddressView({ contextMenu, address: addr, copyIcon }: Props) {
+export function AddressView({
+  contextMenu,
+  address: addr,
+  copyIcon,
+  mono = false,
+}: Props) {
   const address = getAddress(addr);
   const { data: alias, mutate } = useInvoke<string>("settings_get_alias", {
     address,
@@ -37,9 +43,11 @@ export function AddressView({ contextMenu, address: addr, copyIcon }: Props) {
     },
   ];
 
+  const text = alias ? alias : truncateEthAddress(`${address}`);
   const content = (
     <>
-      {alias ? alias : truncateEthAddress(`${address}`)}
+      {mono && <MonoText>{text}</MonoText>}
+      {!mono && <Typography>{text}</Typography>}
       {copyIcon && <ContentCopySharp fontSize="small" sx={{ ml: 1 }} />}
     </>
   );

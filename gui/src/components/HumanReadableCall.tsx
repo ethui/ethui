@@ -1,4 +1,4 @@
-import { Stack, Chip, Typography } from "@mui/material";
+import { Stack, Chip, Typography, Avatar } from "@mui/material";
 import { Address, Abi, AbiFunction } from "abitype";
 import { useState, useEffect, Fragment } from "react";
 import { formatUnits, decodeFunctionData } from "viem";
@@ -24,7 +24,9 @@ export function HumanReadableCall({
   if (!data || data.length === 0) {
     return <SummaryBase {...{ value, to, decimals }} />;
   } else {
-    return <SummaryFunction {...{ value, data, contract: to, chainId }} />;
+    return (
+      <SummaryFunction {...{ value, data, contract: to, chainId, decimals }} />
+    );
   }
 }
 
@@ -92,25 +94,42 @@ function SummaryFunction({
   }, [abi, data]);
 
   return (
-    <Stack direction="row">
-      <MonoText>{label}</MonoText>
-      {value > 0n && (
-        <>
-          <MonoText>&#123;</MonoText>
+    <Chip
+      label={
+        <Stack direction="row" alignItems="center">
+          <Fragment>
+            <Arg
+              name="contract"
+              value={contract}
+              type="address"
+              color="primary"
+            />
+          </Fragment>
+          <MonoText>: {label}</MonoText>
+          {value > 0n && (
+            <>
+              <MonoText>&#123;</MonoText>
 
-          <Arg name="Ξ" type="bigint" value={formatUnits(value, decimals)} />
-          <MonoText>&#125;</MonoText>
-        </>
-      )}
-      <MonoText>(</MonoText>
-      {args.map(([value, type, name], i) => (
-        <Fragment key={i}>
-          {i! > 0 && ", "}
-          <Arg {...{ name, value, type }} />
-        </Fragment>
-      ))}
-      <MonoText>)</MonoText>
-    </Stack>
+              <Arg
+                name="Ξ"
+                type="bigint"
+                value={formatUnits(value, decimals)}
+                color="secondary"
+              />
+              <MonoText>&#125;</MonoText>
+            </>
+          )}
+          <MonoText>(</MonoText>
+          {args.map(([value, type, name], i) => (
+            <Fragment key={i}>
+              {i! > 0 && ", "}
+              <Arg {...{ name, value, type, color: "secondary" }} />
+            </Fragment>
+          ))}
+          <MonoText>)</MonoText>
+        </Stack>
+      }
+    />
   );
 }
 
@@ -118,19 +137,19 @@ interface ArgProps {
   name: string;
   value: Address | string | bigint;
   type: string;
+  color: "primary" | "secondary";
 }
 
-function Arg({ name, type, value }: ArgProps) {
+function Arg({ name, type, value, color }: ArgProps) {
   return (
     <Chip
-      size="small"
+      color={color}
+      sx={{ backgroundOpacity: 0.2 }}
       label={
         <Stack direction="row">
-          <Typography variant="body2" sx={{ pr: 1 }}>
-            {name}
-          </Typography>
+          <Chip color="secondary" label={<MonoText>{name}: </MonoText>} />
           {type === "address" ? (
-            <AddressView address={value as Address} />
+            <AddressView mono address={value as Address} />
           ) : (
             value.toString()
           )}

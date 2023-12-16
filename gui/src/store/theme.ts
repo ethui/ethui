@@ -72,6 +72,7 @@ function getDesignTokens(mode: PaletteMode): ThemeOptions {
   });
 
   const light = mode === "light";
+  console.log(theme.palette);
 
   const borderColor = light ? grey[300] : grey[800];
 

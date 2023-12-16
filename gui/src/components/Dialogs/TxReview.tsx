@@ -2,7 +2,6 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 import {
   Alert,
   AlertTitle,
-  Box,
   Button,
   Grid,
   Stack,
@@ -84,22 +83,21 @@ export function TxReviewDialog({ id }: { id: number }) {
 
   return (
     <DialogLayout>
-      <Typography variant="h6" component="h1">
-        <Stack direction="row" justifyContent="space-between">
+      <Stack spacing={2} alignItems="center">
+        <Typography variant="h6" component="h1">
           <Stack direction="row" alignItems="center" spacing={1}>
             <AddressView address={from} /> <span>→</span>{" "}
             <AddressView address={to} />
           </Stack>
-          <ContextMenu>{formatEther(BigInt(value))} Ξ</ContextMenu>
-        </Stack>
-      </Typography>
+        </Typography>
 
-      <HumanReadableCall
-        value={value}
-        data={calldata}
-        to={to}
-        chainId={chainId}
-      />
+        <HumanReadableCall
+          value={value}
+          data={calldata}
+          to={to}
+          chainId={chainId}
+        />
+      </Stack>
 
       <TabContext value={tab}>
         <TabList onChange={(_e: unknown, v: string) => setTab(v)}>
