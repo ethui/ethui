@@ -8,18 +8,18 @@ use url::Url;
 use crate::{Error, Result};
 
 #[derive(Debug)]
-pub struct NetworkAdd {
-    params: Params,
+pub struct ChainAdd {
+    network: Network,
 }
 
-impl NetworkAdd {
-    pub fn build() -> NetworkAddBuilder {
-        NetworkAddBuilder::default()
+impl ChainAdd {
+    pub fn build() -> ChainAddBuilder {
+        ChainAddBuilder::default()
     }
 
     pub async fn run(self) -> Result<()> {
-        let dialog = Dialog::new("network-add", serde_json::to_value(&self.params).unwrap());
-        dbg!(dialog.open().await)?;
+        let dialog = Dialog::new("chain-add", serde_json::to_value(&self.network).unwrap());
+        dialog.open().await?;
 
         if self.already_exists().await {
             return Ok(());
@@ -28,11 +28,14 @@ impl NetworkAdd {
         while let Some(msg) = dialog.recv().await {
             match msg {
                 DialogMsg::Data(msg) => match msg.as_str() {
-                    Some("accept") => self.on_accept().await?,
-                    _ => return Ok(()),
+                    Some("accept") => {
+                        self.on_accept().await?;
+                        break;
+                    }
+                    _ => {}
                 },
 
-                DialogMsg::Close => return Ok(()),
+                DialogMsg::Close => break,
             }
         }
 
@@ -41,14 +44,12 @@ impl NetworkAdd {
 
     pub async fn already_exists(&self) -> bool {
         let networks = Networks::read().await;
-        networks.validate_chain_id(self.params.chain_id.as_u32())
+        networks.validate_chain_id(self.network.chain_id)
     }
 
     pub async fn on_accept(&self) -> Result<()> {
         let mut networks = Networks::write().await;
-        networks
-            .add_network(self.params.clone().try_into()?)
-            .await?;
+        networks.add_network(self.network.clone()).await?;
 
         Ok(())
     }
@@ -73,7 +74,7 @@ pub struct Currency {
 }
 
 #[derive(Default)]
-pub struct NetworkAddBuilder {
+pub struct ChainAddBuilder {
     params: Option<Params>,
 }
 
@@ -96,7 +97,7 @@ impl TryFrom<Params> for Network {
     }
 }
 
-impl NetworkAddBuilder {
+impl ChainAddBuilder {
     pub fn set_params(mut self, params: serde_json::Value) -> Result<Self> {
         // TODO: why is this an array?
         let params: serde_json::Value = if params.is_array() {
@@ -109,9 +110,9 @@ impl NetworkAddBuilder {
         Ok(self)
     }
 
-    pub async fn build(self) -> NetworkAdd {
-        NetworkAdd {
-            params: self.params.unwrap(),
+    pub async fn build(self) -> ChainAdd {
+        ChainAdd {
+            network: self.params.unwrap().try_into().unwrap(),
         }
     }
 }

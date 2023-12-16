@@ -11,18 +11,5 @@ export function useDialog<T>(id: number) {
     [id],
   );
 
-  // const accept = useCallback(
-  //   (payload: unknown = {}) =>
-  //     invoke("dialog_finish", { id, result: { Ok: payload } }),
-  //   [id],
-  // );
-  //
-  // const reject = useCallback(
-  //   (payload: unknown = {}) => {
-  //     invoke("dialog_finish", { id, result: { Err: payload } });
-  //   },
-  //   [id],
-  // );
-
   return { data, send, listen: event.listen };
 }

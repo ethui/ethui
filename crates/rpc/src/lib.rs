@@ -154,14 +154,12 @@ impl Handler {
 
     #[tracing::instrument()]
     async fn add_chain(params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
-        let method = methods::NetworkAdd::build()
+        let method = methods::ChainAdd::build()
             .set_params(params.into())?
             .build()
             .await;
 
-        dbg!(&method);
-
-        dbg!(method.run().await)?;
+        method.run().await?;
 
         Ok(serde_json::Value::Null)
     }

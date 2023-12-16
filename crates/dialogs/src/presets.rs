@@ -39,11 +39,11 @@ pub(super) static PRESETS: Lazy<HashMap<String, Preset>> = Lazy::new(|| {
     );
 
     presets.insert(
-        "network-add".into(),
+        "chain-add".into(),
         Preset {
             title: "Add Chain".into(),
             w: 400.0,
-            h: 205.0,
+            h: 500.0,
         },
     );
 

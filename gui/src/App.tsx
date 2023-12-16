@@ -16,7 +16,7 @@ import {
 } from "@/components";
 import {
   MsgSignDialog,
-  NetworkAddDialog,
+  ChainAddDialog,
   TxReviewDialog,
   WalletUnlockDialog,
 } from "@/components/Dialogs";
@@ -76,8 +76,8 @@ function Routes() {
           {({ id }: { id: string }) => <WalletUnlockDialog id={parseInt(id)} />}
         </Route>
 
-        <Route path="/dialog/network-add/:id">
-          {({ id }: { id: string }) => <NetworkAddDialog id={parseInt(id)} />}
+        <Route path="/dialog/chain-add/:id">
+          {({ id }: { id: string }) => <ChainAddDialog id={parseInt(id)} />}
         </Route>
 
         <Route>
