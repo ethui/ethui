@@ -85,12 +85,9 @@ function getDesignTokens(mode: PaletteMode): ThemeOptions {
           {
             props: { variant: "sidebar" as const },
             style: {
-              padding: 0,
               textAlign: "left",
               height: theme.spacing(4),
               paddingLeft: theme.spacing(1),
-              marginLeft: `-${theme.spacing(1)}`,
-              marginRight: `-${theme.spacing(1)}`,
               fontWeight: "inherit",
               justifyContent: "flex-start",
               textTransform: "inherit",
