@@ -62,6 +62,7 @@ ethers = { features = [
   "ws",
   "ledger",
 ], git = "https://github.com/gakonst/ethers-rs", rev = "40cc8cc" }
+ethers-core = { git = "https://github.com/gakonst/ethers-rs", rev = "40cc8cc" }
 sqlx = { version = "0.7.2", features = [
   "runtime-tokio-rustls",
   "sqlite",
@@ -88,6 +89,7 @@ color-eyre = "0.6.2"
 foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-53b15e6cee787a7765988bb7228f26f62eb78129" }
 foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-53b15e6cee787a7765988bb7228f26f62eb78129" }
 foundry-common = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-53b15e6cee787a7765988bb7228f26f62eb78129" }
+hex = "0.4.3"
 
 [patch.crates-io]
 revm = { git = "https://github.com/bluealloy/revm", branch = "reth_freeze" }
