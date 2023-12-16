@@ -4322,6 +4322,7 @@ dependencies = [
  "thiserror",
  "tokio",
  "tracing",
+ "url",
 ]
 
 [[package]]
@@ -4346,6 +4347,7 @@ name = "iron-simulator"
 version = "1.3.0"
 dependencies = [
  "alloy-primitives",
+ "ethers",
  "eyre",
  "foundry-config",
  "foundry-evm",

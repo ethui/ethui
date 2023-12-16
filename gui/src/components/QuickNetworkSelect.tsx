@@ -32,7 +32,7 @@ export function QuickNetworkSelect() {
         value={current.name}
       >
         {networks.map((network) => (
-          <MenuItem value={network.name} key={network.name}>
+          <MenuItem key={network.chain_id} value={network.name}>
             <ChainView network={network} />
           </MenuItem>
         ))}

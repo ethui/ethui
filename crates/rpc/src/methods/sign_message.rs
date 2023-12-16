@@ -11,7 +11,7 @@ use iron_networks::Network;
 use iron_wallets::{Wallet, WalletControl};
 use serde::Serialize;
 
-use super::{Error, Result};
+use crate::{Error, Result};
 
 type Middleware = SignerMiddleware<Provider<Http>, iron_wallets::Signer>;
 
