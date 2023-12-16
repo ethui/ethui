@@ -1,0 +1,98 @@
+import { event, invoke } from "@tauri-apps/api";
+import { Action } from "kbar";
+import { create, type StateCreator } from "zustand";
+import { subscribeWithSelector } from "zustand/middleware";
+
+import { Network } from "@/types/network";
+import { IconChain } from "@/components/Icons";
+
+interface State {
+  networks: Network[];
+  current?: Network;
+  actions: Action[];
+}
+
+interface Setters {
+  setNetworks: (newNetworks: Network[]) => Promise<void>;
+  setCurrent: (newNetwork: string) => Promise<void>;
+  resetNetworks: () => Promise<void>;
+  reload: () => Promise<void>;
+  reloadActions: () => void;
+  isAlchemySupportedNetwork: () => Promise<boolean>;
+}
+
+type Store = State & Setters;
+
+const actionId = "networks";
+
+const store: StateCreator<Store> = (set, get) => ({
+  networks: [],
+  actions: [],
+
+  async setNetworks(newNetworks) {
+    const networks = await invoke<Network[]>("networks_set_list", {
+      newNetworks,
+    });
+    set({ networks });
+  },
+
+  async setCurrent(network) {
+    const current = await invoke<Network>("networks_set_current", { network });
+
+    set({ current });
+  },
+
+  async resetNetworks() {
+    const networks = await invoke<Network[]>("networks_reset");
+    set({ networks });
+  },
+
+  async reload() {
+    const current = await invoke<Network>("networks_get_current");
+    const networks = await invoke<Network[]>("networks_get_list");
+    set({ networks, current });
+    get().reloadActions();
+  },
+
+  reloadActions() {
+    const networks = get().networks;
+
+    const actions = [
+      {
+        id: actionId,
+        name: "Change network",
+      },
+      ...(networks || []).map((network) => ({
+        id: `${actionId}/${network.name}`,
+        name: network.name,
+        icon: <IconChain network={network} />,
+        parent: actionId,
+        perform: () => {
+          get().setCurrent(network.name);
+        },
+      })),
+    ];
+
+    set({ actions });
+  },
+
+  async isAlchemySupportedNetwork() {
+    const current = get().current;
+
+    if (!current) return false;
+
+    return await invoke<boolean>("sync_alchemy_is_network_supported", {
+      chainId: current.chain_id,
+    });
+  },
+});
+
+export const useNetworks = create<Store>()(subscribeWithSelector(store));
+
+event.listen("networks-changed", async () => {
+  await useNetworks.getState().reload();
+});
+
+(async () => {
+  await useNetworks.getState().reload();
+})();

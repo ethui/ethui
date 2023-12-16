@@ -61,7 +61,7 @@ thiserror = "1.0"
 ethers = { features = [
   "ws",
   "ledger",
-], git = "https://github.com/gakonst/ethers-rs", rev = "841ff8c47980798fbb47991e047f8481b1d5eb39" }
+], git = "https://github.com/gakonst/ethers-rs", rev = "40cc8cc" }
 sqlx = { version = "0.7.2", features = [
   "runtime-tokio-rustls",
   "sqlite",
@@ -85,26 +85,12 @@ clap = { version = "4.4.8", features = ["derive", "env"] }
 coins-ledger = "0.9.0"
 color-eyre = "0.6.2"
 
-foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-890bc7a03fd575fbfaf02a8870241f34760e65f1" }
-foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-890bc7a03fd575fbfaf02a8870241f34760e65f1" }
-foundry-common = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-890bc7a03fd575fbfaf02a8870241f34760e65f1" }
+foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-53b15e6cee787a7765988bb7228f26f62eb78129" }
+foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-53b15e6cee787a7765988bb7228f26f62eb78129" }
+foundry-common = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-53b15e6cee787a7765988bb7228f26f62eb78129" }
 
 [patch.crates-io]
-
-ethers-core = { git = "https://github.com/gakonst/ethers-rs", rev = "8175f0f97070ad69abd5dfa7b8df31f1c1dcc3d6" }
-ethers-contract = { git = "https://github.com/gakonst/ethers-rs", rev = "8175f0f97070ad69abd5dfa7b8df31f1c1dcc3d6" }
-ethers-contract-abigen = { git = "https://github.com/gakonst/ethers-rs", rev = "8175f0f97070ad69abd5dfa7b8df31f1c1dcc3d6" }
-ethers-providers = { git = "https://github.com/gakonst/ethers-rs", rev = "8175f0f97070ad69abd5dfa7b8df31f1c1dcc3d6" }
-# ethers-signers = { git = "https://github.com/gakonst/ethers-rs", rev = "8175f0f97070ad69abd5dfa7b8df31f1c1dcc3d6" }
-ethers-middleware = { git = "https://github.com/gakonst/ethers-rs", rev = "8175f0f97070ad69abd5dfa7b8df31f1c1dcc3d6" }
-
 revm = { git = "https://github.com/bluealloy/revm", branch = "reth_freeze" }
 revm-interpreter = { git = "https://github.com/bluealloy/revm", branch = "reth_freeze" }
 revm-precompile = { git = "https://github.com/bluealloy/revm", branch = "reth_freeze" }
 revm-primitives = { git = "https://github.com/bluealloy/revm", branch = "reth_freeze" }
-
-# https://github.com/summa-tx/coins/issues/124
-coins-ledger = { git = "https://github.com/iron-wallet/coins", branch = "send" }
-
-# https://github.com/joshieDo/hidapi-rs/issues/6
-hidapi-rusb = { git = "https://github.com/joshieDo/hidapi-rs", rev = "8f7bb8b" }
