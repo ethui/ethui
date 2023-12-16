@@ -1,4 +1,5 @@
-use alloy_primitives::{Bytes, Log, U256};
+use alloy_primitives::{Bytes, U256};
+use ethers_core::types::Log;
 use foundry_evm::{traces::CallTraceNode, utils::CallKind};
 use iron_types::Address;
 use revm::interpreter::InstructionResult;

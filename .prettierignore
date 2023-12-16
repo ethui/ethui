@@ -5,3 +5,4 @@ extension/scripts/start.js
 extension/wdio.e2e.conf.ts
 node_modules
 target
+.yarn

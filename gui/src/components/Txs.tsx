@@ -7,7 +7,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api";
 import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import truncateEthAddress from "truncate-eth-address";
@@ -23,7 +23,6 @@ import {
   AccordionSummary,
   AddressView,
   ContextMenu,
-  Panel,
 } from "@/components";
 
 import { CalldataView } from "./Calldata";

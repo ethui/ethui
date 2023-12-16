@@ -1,7 +1,6 @@
 import { createTheme, PaletteMode, Theme, ThemeOptions } from "@mui/material";
 import { grey, lightBlue } from "@mui/material/colors";
-import { listen } from "@tauri-apps/api/event";
-import { invoke } from "@tauri-apps/api/tauri";
+import { event, invoke } from "@tauri-apps/api";
 import { Action } from "kbar";
 import { create, StateCreator } from "zustand";
 
@@ -55,7 +54,7 @@ const store: StateCreator<Store> = (set, get) => ({
   },
 });
 
-listen("settings-changed", async () => {
+event.listen("settings-changed", async () => {
   await useTheme.getState().reload();
 });
 
@@ -86,12 +85,9 @@ function getDesignTokens(mode: PaletteMode): ThemeOptions {
           {
             props: { variant: "sidebar" as const },
             style: {
-              padding: 0,
               textAlign: "left",
               height: theme.spacing(4),
               paddingLeft: theme.spacing(1),
-              marginLeft: `-${theme.spacing(1)}`,
-              marginRight: `-${theme.spacing(1)}`,
               fontWeight: "inherit",
               justifyContent: "flex-start",
               textTransform: "inherit",

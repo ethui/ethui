@@ -1,5 +1,4 @@
-import { listen } from "@tauri-apps/api/event";
-import { invoke } from "@tauri-apps/api/tauri";
+import { event, invoke } from "@tauri-apps/api";
 import { useCallback } from "react";
 
 import { useInvoke } from "./tauri";
@@ -12,18 +11,5 @@ export function useDialog<T>(id: number) {
     [id],
   );
 
-  // const accept = useCallback(
-  //   (payload: unknown = {}) =>
-  //     invoke("dialog_finish", { id, result: { Ok: payload } }),
-  //   [id],
-  // );
-  //
-  // const reject = useCallback(
-  //   (payload: unknown = {}) => {
-  //     invoke("dialog_finish", { id, result: { Err: payload } });
-  //   },
-  //   [id],
-  // );
-
-  return { data, send, listen };
+  return { data, send, listen: event.listen };
 }
