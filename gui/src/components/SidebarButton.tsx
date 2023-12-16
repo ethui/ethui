@@ -4,25 +4,28 @@ import {
   type ButtonBaseProps,
   Stack,
   Collapse,
-  Box,
   SvgIcon,
+  Typography,
 } from "@mui/material";
 import { lightBlue } from "@mui/material/colors";
 import { Link } from "wouter";
 
 import { useTheme } from "@/store";
 
-type Props = Omit<
-  ButtonBaseProps<"a", { component: "a" }>,
+type Props<RootType extends React.ElementType> = Omit<
+  ButtonBaseProps<RootType>,
   "component" | "sx" | "disabled"
 > & {
-  href: string;
   label: string;
   icon: typeof SvgIcon;
-  selected: boolean;
+  selected?: boolean;
 };
 
-export function SidebarButton({ href, selected, label, ...props }: Props) {
+export function SidebarButton<R extends React.ElementType>({
+  label,
+  selected,
+  ...props
+}: Props<R>) {
   const { theme } = useTheme();
   const isLarge = useMediaQuery(theme.breakpoints.up("sm"));
 
@@ -30,10 +33,11 @@ export function SidebarButton({ href, selected, label, ...props }: Props) {
     <ButtonBase
       disabled={selected}
       LinkComponent={Link}
-      href={href}
+      {...props}
       sx={{
         height: 32,
         justifyContent: "flex-start",
+        transition: theme.transitions.create("border-radius"),
         [theme.breakpoints.up("sm")]: {
           borderRadius: 1,
           paddingLeft: "8px",
@@ -50,7 +54,12 @@ export function SidebarButton({ href, selected, label, ...props }: Props) {
         },
       }}
     >
-      <Stack direction="row" alignItems="center" spacing={0}>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="stretch"
+        spacing={0}
+      >
         <props.icon fontSize="small" />
 
         <Collapse
@@ -58,8 +67,11 @@ export function SidebarButton({ href, selected, label, ...props }: Props) {
           in={isLarge}
           collapsedSize={0}
           timeout={{ exit: 0 }}
+          sx={{ flexGrow: 1 }}
         >
-          <Box sx={{ pl: 1 }}>{label}</Box>
+          <Typography sx={{ pl: 1, display: "inline", whiteSpace: "nowrap" }}>
+            {label}
+          </Typography>
         </Collapse>
       </Stack>
     </ButtonBase>

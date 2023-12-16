@@ -3,19 +3,22 @@ import {
   OnlinePredictionSharp,
   Receipt,
   RequestQuoteSharp,
+  SettingsSharp as SettingsSharpIcon,
+  TerminalSharp as TerminalSharpIcon,
 } from "@mui/icons-material";
 import { Box, Drawer, Stack, Theme, Toolbar } from "@mui/material";
 import { findIndex, parseInt, range, toString } from "lodash-es";
 import { ReactNode } from "react";
 import { useLocation, useRoute } from "wouter";
 
+import { useKBar } from "kbar";
 import { useKeyPress, useMenuAction, useOS } from "@/hooks";
-import { useTheme, useWallets } from "@/store";
+import { useSettingsWindow, useTheme, useWallets } from "@/store";
 
 import {
+  Modal,
   Account,
   AddressView,
-  CommandBarButton,
   Connections,
   Contracts,
   Logo,
@@ -23,7 +26,7 @@ import {
   QuickFastModeToggle,
   QuickNetworkSelect,
   QuickWalletSelect,
-  SettingsButton,
+  Settings,
   SidebarButton,
   Txs,
 } from "./";
@@ -31,27 +34,27 @@ import {
 export const TABS = [
   {
     path: "account",
-    name: "Account",
+    label: "Account",
     component: Account,
     navbarComponent: AccountsNavbar,
     icon: RequestQuoteSharp,
   },
   {
     path: "transactions",
-    name: "Transactions",
+    label: "Transactions",
     component: Txs,
     icon: Receipt,
   },
   {
     path: "contracts",
-    name: "Contracts",
+    label: "Contracts",
     component: Contracts,
     devOnly: true,
     icon: CallToAction,
   },
   {
     path: "connections",
-    name: "Connections",
+    label: "Connections",
     component: Connections,
     icon: OnlinePredictionSharp,
   },
@@ -62,10 +65,30 @@ export const DEFAULT_TAB = TABS[0];
 const WIDTH_MD = 200;
 const WIDTH_SM = 72;
 
+const contentStyle = (theme: Theme) => {
+  return {
+    pl: `${WIDTH_MD}px`,
+    transition: theme.transitions.create("padding-left"),
+    [theme.breakpoints.down("sm")]: {
+      pl: `${WIDTH_SM}px`,
+    },
+  };
+};
+
+const drawerPaperStyle = (theme: Theme) => {
+  return {
+    width: WIDTH_MD,
+    transition: theme.transitions.create("width"),
+    [theme.breakpoints.down("sm")]: {
+      width: WIDTH_SM,
+      justifyContent: "center",
+    },
+  };
+};
+
 export function SidebarLayout({ children }: { children: ReactNode }) {
   const [_location, setLocation] = useLocation();
   const { theme } = useTheme();
-  const breakpoint = theme.breakpoints.down("sm");
 
   const handleKeyboardNavigation = (event: KeyboardEvent) => {
     setLocation(TABS[parseInt(event.key) - 1].path);
@@ -88,31 +111,10 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
   return (
     <>
       <Sidebar />
-      <Box
-        sx={{
-          pl: `${WIDTH_MD}px`,
-          transition: theme.transitions.create("padding-left"),
-          [breakpoint]: {
-            pl: `${WIDTH_SM}px`,
-          },
-        }}
-      >
-        {children}
-      </Box>
+      <Box sx={contentStyle(theme)}>{children}</Box>
     </>
   );
 }
-
-const drawerPaperStyle = (theme: Theme) => {
-  return {
-    width: WIDTH_MD,
-    transition: theme.transitions.create("width"),
-    [theme.breakpoints.down("sm")]: {
-      width: WIDTH_SM,
-      justifyContent: "center",
-    },
-  };
-};
 
 export function Sidebar() {
   const [_match, params] = useRoute("/:path");
@@ -120,6 +122,8 @@ export function Sidebar() {
   const { theme } = useTheme();
   const breakpoint = theme.breakpoints.down("sm");
   const { type } = useOS();
+  const kbar = useKBar();
+  const { open } = useSettingsWindow();
 
   if (!type) return null;
 
@@ -136,21 +140,14 @@ export function Sidebar() {
         <Toolbar sx={{ p: 2 }} data-tauri-drag-region="true">
           {type !== "Darwin" && <Logo width={40} />}
         </Toolbar>
-        <Stack
-          px={2}
-          rowGap={1}
-          flexGrow={1}
-          sx={{ [breakpoint]: { alignItems: "center" } }}
-        >
-          {TABS.map((tab, index) => (
+        <Stack px={2} rowGap={1} flexGrow={1}>
+          {TABS.map(({ path, label, icon }, index) => (
             <SidebarButton
               key={index}
               selected={
                 index === Math.max(findIndex(TABS, { path: params?.path }), 0)
               }
-              href={tab.path}
-              label={tab.name}
-              icon={tab.icon}
+              {...{ href: path, label, icon }}
             />
           ))}
         </Stack>
@@ -169,11 +166,34 @@ export function Sidebar() {
           <QuickFastModeToggle />
         </Stack>
         <Stack p={3} rowGap={1}>
-          <CommandBarButton />
-          <SettingsButton />
+          <SidebarButton
+            onClick={kbar.query.toggle}
+            icon={TerminalSharpIcon}
+            label="Command Bar"
+          />
+          <SidebarButton
+            onClick={open}
+            icon={SettingsSharpIcon}
+            label="Settings"
+          />
+          <SettingsModal />
         </Stack>
       </Box>
     </Drawer>
+  );
+}
+
+function SettingsModal() {
+  const { show, close } = useSettingsWindow();
+
+  return (
+    <Modal
+      open={show}
+      onClose={close}
+      sx={{ outline: "none", width: "90%", height: "90%", maxWidth: "900px" }}
+    >
+      <Settings />
+    </Modal>
   );
 }
 
