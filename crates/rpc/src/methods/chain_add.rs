@@ -27,13 +27,12 @@ impl ChainAdd {
 
         while let Some(msg) = dialog.recv().await {
             match msg {
-                DialogMsg::Data(msg) => match msg.as_str() {
-                    Some("accept") => {
+                DialogMsg::Data(msg) => {
+                    if let Some("accept") = msg.as_str() {
                         self.on_accept().await?;
                         break;
                     }
-                    _ => {}
-                },
+                }
 
                 DialogMsg::Close => break,
             }

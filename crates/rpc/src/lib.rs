@@ -4,9 +4,7 @@ mod methods;
 
 use std::collections::HashMap;
 
-use ethers::abi::AbiEncode;
-use ethers::types::transaction::eip712;
-
+use ethers::{abi::AbiEncode, types::transaction::eip712};
 use iron_connections::Ctx;
 use iron_types::GlobalState;
 use iron_wallets::{WalletControl, Wallets};
