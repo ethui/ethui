@@ -78,7 +78,7 @@ function getDesignTokens(mode: PaletteMode): ThemeOptions {
   const borderColor = light ? grey[300] : grey[800];
   const { augmentColor } = theme.palette;
 
-  return createTheme(theme, {
+  return {
     palette: {
       mode,
       highlight1: augmentColor({
@@ -190,5 +190,5 @@ function getDesignTokens(mode: PaletteMode): ThemeOptions {
         },
       },
     },
-  });
+  };
 }
