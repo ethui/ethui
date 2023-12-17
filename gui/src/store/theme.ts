@@ -1,8 +1,8 @@
-import { createTheme, PaletteMode, Theme, ThemeOptions } from "@mui/material";
-import { grey, lightBlue } from "@mui/material/colors";
+import { Theme } from "@mui/material";
 import { event, invoke } from "@tauri-apps/api";
 import { Action } from "kbar";
 import { create, StateCreator } from "zustand";
+import { lightTheme, darkTheme } from "@iron/ui/src/themes";
 
 import { GeneralSettings } from "@/types/settings";
 
@@ -19,7 +19,7 @@ const actionId = "themeMode";
 
 const store: StateCreator<Store> = (set, get) => ({
   mode: "auto",
-  theme: createTheme(getDesignTokens("light")),
+  theme: lightTheme,
 
   actions: [
     {
@@ -43,8 +43,9 @@ const store: StateCreator<Store> = (set, get) => ({
 
     const mode =
       darkMode == "auto" ? (prefersDarkMode ? "dark" : "light") : darkMode;
+    const theme: Theme = mode === "dark" ? darkTheme : lightTheme;
 
-    set({ mode, theme: createTheme(getDesignTokens(mode)) });
+    set({ mode, theme });
   },
 
   async changeMode(mode) {
@@ -63,106 +64,3 @@ export const useTheme = create<Store>()(store);
 (async () => {
   await useTheme.getState().reload();
 })();
-
-function getDesignTokens(mode: PaletteMode): ThemeOptions {
-  const theme = createTheme({
-    palette: {
-      mode,
-    },
-  });
-
-  const light = mode === "light";
-
-  const borderColor = light ? grey[300] : grey[800];
-
-  return {
-    palette: {
-      mode,
-    },
-    components: {
-      MuiButton: {
-        variants: [
-          {
-            props: { variant: "sidebar" as const },
-            style: {
-              textAlign: "left",
-              height: theme.spacing(4),
-              paddingLeft: theme.spacing(1),
-              fontWeight: "inherit",
-              justifyContent: "flex-start",
-              textTransform: "inherit",
-              "&.Mui-disabled": {
-                backgroundColor: lightBlue[800],
-                color: "white",
-              },
-              "& .MuiButton-startIcon": {
-                marginLeft: 0,
-              },
-            },
-          },
-        ],
-      },
-      MuiTypography: {
-        variants: [
-          {
-            props: { variant: "bordered" as const },
-            style: {
-              display: "block",
-              borderColor: borderColor,
-              borderBottomWidth: 1,
-              borderBottomStyle: "solid",
-              paddingBottom: "0.5em",
-            },
-          },
-        ],
-      },
-      MuiAppBar: {
-        styleOverrides: {
-          root: {
-            borderColor,
-            borderBottomStyle: "solid",
-            backgroundColor: theme.palette.background.default,
-            color: "inherit",
-          },
-        },
-      },
-      MuiDrawer: {
-        styleOverrides: {
-          paper: {
-            borderColor,
-            borderWidth: 1,
-          },
-        },
-      },
-      MuiPaper: {
-        variants: [
-          {
-            props: { variant: "lighter" as const },
-            style: {
-              background: light ? grey[100] : grey[900],
-            },
-          },
-        ],
-      },
-      MuiToolbar: {
-        defaultProps: {
-          variant: "dense",
-        },
-      },
-
-      MuiAccordionSummary: {
-        styleOverrides: {
-          root: {
-            "&:hover": {
-              transition: "none",
-              background: theme.palette.action.hover,
-            },
-            "&.Mui-expanded": {
-              background: theme.palette.action.hover,
-            },
-          },
-        },
-      },
-    },
-  };
-}

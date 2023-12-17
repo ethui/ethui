@@ -19,6 +19,7 @@
   },
   "workspaces": [
     "extension",
+    "packages/ui",
     "gui"
   ],
   "devDependencies": {

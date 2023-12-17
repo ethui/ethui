@@ -17,9 +17,10 @@
     "@fontsource/roboto": "^5.0.8",
     "@fontsource/roboto-mono": "^5.0.16",
     "@hookform/resolvers": "^3.3.2",
-    "@mui/icons-material": "^5.14.19",
-    "@mui/lab": "^5.0.0-alpha.155",
-    "@mui/material": "^5.14.20",
+    "@iron/ui": "file:../packages/ui",
+    "@mui/icons-material": "^5.15.0",
+    "@mui/lab": "^5.0.0-alpha.156",
+    "@mui/material": "^5.15.0",
     "@tauri-apps/api": "1.5.2",
     "@tauri-apps/cli": "^1.5.7",
     "abitype": "^0.10.3",
@@ -46,6 +47,7 @@
     "zxcvbn-typescript": "^5.0.1"
   },
   "devDependencies": {
+    "@storybook/builder-vite": "^7.6.5",
     "@types/chrome": "^0.0.254",
     "@types/core-js": "^2.5.8",
     "@types/lodash-es": "^4.17.12",
