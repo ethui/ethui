@@ -1,10 +1,16 @@
-import { Stack, Chip, Button, Box, Typography } from "@mui/material";
+import {
+  Stack,
+  Chip,
+  Button,
+  Box,
+  Typography,
+  useTheme,
+  styled,
+} from "@mui/material";
 import { Address, Abi, AbiFunction } from "abitype";
 import { useState, useEffect, Fragment } from "react";
 import { formatUnits, decodeFunctionData } from "viem";
 
-import { grey, yellow, cyan, red } from "@mui/material/colors";
-import { type } from "@tauri-apps/api/types/os";
 import { useInvoke } from "@/hooks";
 import { AddressView, MonoText } from "./";
 
@@ -67,6 +73,7 @@ function SummaryFunction({
     address: contract,
     chainId,
   });
+  const theme = useTheme();
 
   const [label, setLabel] = useState<string>(data);
   const [args, setArgs] = useState<[string, string, string][]>([]);
@@ -99,31 +106,41 @@ function SummaryFunction({
     <Stack
       direction="row"
       alignItems="center"
-      sx={{ backgroundColor: grey[200], px: 2, py: 1 }}
+      sx={{
+        backgroundColor: theme.palette.highlight1.main,
+        px: 2,
+        py: 1,
+        fontFamily: "monospace",
+      }}
     >
-      <Arg value={contract} type="address" color={red[200]} />
+      <Arg
+        value={contract}
+        type="address"
+        color={theme.palette.highlight2.main}
+      />
       <MonoText>.</MonoText>
-      <Box sx={{ backgroundColor: yellow[500], px: 1 }}>
+      <Box sx={{ backgroundColor: theme.palette.highlight3.main, px: 1 }}>
         <MonoText>{label}</MonoText>
       </Box>
       {value > 0n && (
         <>
-          <MonoText>&#123;</MonoText>
-
+          <MonoText>{"{"}</MonoText>
           <Arg
             name="Ξ"
             type="bigint"
             value={formatUnits(value, decimals)}
-            color={yellow[200]}
+            color={theme.palette.highlight3.main}
           />
-          <MonoText>&#125;</MonoText>
+          <MonoText>{"}"}</MonoText>
         </>
       )}
       <MonoText>(</MonoText>
       {[...args, ...args].map(([value, type, name], i) => (
         <Fragment key={i}>
           {i! > 0 && <MonoText sx={{ px: 1 }}>,</MonoText>}
-          <Arg {...{ name, value, type, color: cyan[200] }} />
+          <Arg
+            {...{ name, value, type, color: theme.palette.highlight4.main }}
+          />
         </Fragment>
       ))}
       <MonoText>)</MonoText>
@@ -150,3 +167,15 @@ function Arg({ name, type, value, color }: ArgProps) {
     </Stack>
   );
 }
+
+const Root = styled("div", {
+  name: "HumanReadableCall",
+  slot: "root",
+})(({ theme }) => ({
+  display: "flex",
+  flexDirection: "row",
+  backgroundColor: theme.palette.highlight1.main,
+  px: 2,
+  py: 1,
+  fontFamily: "monospace",
+}));

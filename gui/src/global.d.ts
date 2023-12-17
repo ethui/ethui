@@ -6,10 +6,10 @@ declare namespace chrome {
 
 declare module "@mui/material/styles" {
   interface Palette {
-    highlight1?: Palette["primary"];
-    highlight2?: Palette["primary"];
-    highlight3?: Palette["primary"];
-    highlight4?: Palette["primary"];
+    highlight1: Palette["primary"];
+    highlight2: Palette["primary"];
+    highlight3: Palette["primary"];
+    highlight4: Palette["primary"];
   }
 
   interface PaletteOptions {

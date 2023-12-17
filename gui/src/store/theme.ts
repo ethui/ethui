@@ -5,7 +5,7 @@ import {
   Theme,
   ThemeOptions,
 } from "@mui/material";
-import { grey, lightBlue } from "@mui/material/colors";
+import { grey, lightBlue, red, yellow } from "@mui/material/colors";
 import { event, invoke } from "@tauri-apps/api";
 import { Action } from "kbar";
 import { create, StateCreator } from "zustand";
@@ -71,27 +71,27 @@ export const useTheme = create<Store>()(store);
 })();
 
 function getDesignTokens(mode: PaletteMode): ThemeOptions {
-  const theme = createTheme({});
+  const theme = createTheme({ palette: { mode } });
 
   const light = mode === "light";
 
   const borderColor = light ? grey[300] : grey[800];
   const { augmentColor } = theme.palette;
 
-  return {
+  return createTheme(theme, {
     palette: {
       mode,
       highlight1: augmentColor({
-        color: { main: alpha("#a1c9f4", 0.5) },
+        color: { main: light ? grey[200] : grey[800] },
       }),
       highlight2: augmentColor({
-        color: { main: alpha("#ffb482", 0.5) },
+        color: { main: light ? red[200] : red[900] },
       }),
       highlight3: augmentColor({
-        color: { main: alpha("#8de5a1", 0.5) },
+        color: { main: light ? yellow[500] : yellow[900] },
       }),
       highlight4: augmentColor({
-        color: { main: alpha("#ff9f9b88", 0.5) },
+        color: { main: light ? lightBlue[200] : lightBlue[900] },
       }),
     },
     components: {
@@ -179,5 +179,5 @@ function getDesignTokens(mode: PaletteMode): ThemeOptions {
         },
       },
     },
-  };
+  });
 }
