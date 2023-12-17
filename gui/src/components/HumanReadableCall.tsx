@@ -1,8 +1,10 @@
-import { Stack, Chip, Typography, Avatar } from "@mui/material";
+import { Stack, Chip, Button, Box, Typography } from "@mui/material";
 import { Address, Abi, AbiFunction } from "abitype";
 import { useState, useEffect, Fragment } from "react";
 import { formatUnits, decodeFunctionData } from "viem";
 
+import { grey, yellow, cyan, red } from "@mui/material/colors";
+import { type } from "@tauri-apps/api/types/os";
 import { useInvoke } from "@/hooks";
 import { AddressView, MonoText } from "./";
 
@@ -94,67 +96,57 @@ function SummaryFunction({
   }, [abi, data]);
 
   return (
-    <Chip
-      label={
-        <Stack direction="row" alignItems="center">
-          <Fragment>
-            <Arg
-              name="contract"
-              value={contract}
-              type="address"
-              color="primary"
-            />
-          </Fragment>
-          <MonoText>: {label}</MonoText>
-          {value > 0n && (
-            <>
-              <MonoText>&#123;</MonoText>
+    <Stack
+      direction="row"
+      alignItems="center"
+      sx={{ backgroundColor: grey[200], px: 2, py: 1 }}
+    >
+      <Arg value={contract} type="address" color={red[200]} />
+      <MonoText>.</MonoText>
+      <Box sx={{ backgroundColor: yellow[500], px: 1 }}>
+        <MonoText>{label}</MonoText>
+      </Box>
+      {value > 0n && (
+        <>
+          <MonoText>&#123;</MonoText>
 
-              <Arg
-                name="Ξ"
-                type="bigint"
-                value={formatUnits(value, decimals)}
-                color="secondary"
-              />
-              <MonoText>&#125;</MonoText>
-            </>
-          )}
-          <MonoText>(</MonoText>
-          {args.map(([value, type, name], i) => (
-            <Fragment key={i}>
-              {i! > 0 && ", "}
-              <Arg {...{ name, value, type, color: "secondary" }} />
-            </Fragment>
-          ))}
-          <MonoText>)</MonoText>
-        </Stack>
-      }
-    />
+          <Arg
+            name="Ξ"
+            type="bigint"
+            value={formatUnits(value, decimals)}
+            color={yellow[200]}
+          />
+          <MonoText>&#125;</MonoText>
+        </>
+      )}
+      <MonoText>(</MonoText>
+      {[...args, ...args].map(([value, type, name], i) => (
+        <Fragment key={i}>
+          {i! > 0 && <MonoText sx={{ px: 1 }}>,</MonoText>}
+          <Arg {...{ name, value, type, color: cyan[200] }} />
+        </Fragment>
+      ))}
+      <MonoText>)</MonoText>
+    </Stack>
   );
 }
 
 interface ArgProps {
-  name: string;
+  name?: string;
   value: Address | string | bigint;
   type: string;
-  color: "primary" | "secondary";
+  color: string;
 }
 
 function Arg({ name, type, value, color }: ArgProps) {
   return (
-    <Chip
-      color={color}
-      sx={{ backgroundOpacity: 0.2 }}
-      label={
-        <Stack direction="row">
-          <Chip color="secondary" label={<MonoText>{name}: </MonoText>} />
-          {type === "address" ? (
-            <AddressView mono address={value as Address} />
-          ) : (
-            value.toString()
-          )}
-        </Stack>
-      }
-    />
+    <Stack direction="row" sx={{ backgroundColor: color, px: 1 }}>
+      {name && <MonoText>{name}:&nbsp;</MonoText>}
+      {type === "address" ? (
+        <AddressView mono address={value as Address} />
+      ) : (
+        value.toString()
+      )}
+    </Stack>
   );
 }

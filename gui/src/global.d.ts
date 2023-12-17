@@ -4,6 +4,22 @@ declare namespace chrome {
   export default Chrome;
 }
 
+declare module "@mui/material/styles" {
+  interface Palette {
+    highlight1?: Palette["primary"];
+    highlight2?: Palette["primary"];
+    highlight3?: Palette["primary"];
+    highlight4?: Palette["primary"];
+  }
+
+  interface PaletteOptions {
+    highlight1?: PaletteOptions["primary"];
+    highlight2?: PaletteOptions["primary"];
+    highlight3?: PaletteOptions["primary"];
+    highlight4?: PaletteOptions["primary"];
+  }
+}
+
 declare module "@mui/material/Paper" {
   interface PaperPropsVariantOverrides {
     lighter: true;
@@ -19,5 +35,27 @@ declare module "@mui/material/Typography" {
 declare module "@mui/material/Button" {
   interface ButtonPropsVariantOverrides {
     sidebar: true;
+  }
+}
+
+declare module "@mui/material/Chip" {
+  interface ChipPropsColorOverrides {
+    highlight1: true;
+    highlight2: true;
+    highlight3: true;
+    highlight4: true;
+  }
+
+  interface ChipPropsVariantOverrides {
+    foo: true;
+  }
+}
+
+declare module "@mui/material/Button" {
+  interface ButtonPropsColorOverrides {
+    highlight1: true;
+    highlight2: true;
+    highlight3: true;
+    highlight4: true;
   }
 }

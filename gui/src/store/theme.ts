@@ -1,4 +1,10 @@
-import { createTheme, PaletteMode, Theme, ThemeOptions } from "@mui/material";
+import {
+  alpha,
+  createTheme,
+  PaletteMode,
+  Theme,
+  ThemeOptions,
+} from "@mui/material";
 import { grey, lightBlue } from "@mui/material/colors";
 import { event, invoke } from "@tauri-apps/api";
 import { Action } from "kbar";
@@ -65,22 +71,41 @@ export const useTheme = create<Store>()(store);
 })();
 
 function getDesignTokens(mode: PaletteMode): ThemeOptions {
-  const theme = createTheme({
-    palette: {
-      mode,
-    },
-  });
+  const theme = createTheme({});
 
   const light = mode === "light";
-  console.log(theme.palette);
 
   const borderColor = light ? grey[300] : grey[800];
+  const { augmentColor } = theme.palette;
 
-  return {
+  return createTheme(theme, {
     palette: {
       mode,
+      highlight1: augmentColor({
+        color: { main: alpha("#a1c9f4", 0.5) },
+      }),
+      highlight2: augmentColor({
+        color: { main: alpha("#ffb482", 0.5) },
+      }),
+      highlight3: augmentColor({
+        color: { main: alpha("#8de5a1", 0.5) },
+      }),
+      highlight4: augmentColor({
+        color: { main: alpha("#ff9f9b88", 0.5) },
+      }),
     },
     components: {
+      MuiChip: {
+        variants: [
+          {
+            props: { variant: "foo" as const },
+            style: {
+              fontWeight: "bold",
+              border: "solid 2px red",
+            },
+          },
+        ],
+      },
       MuiButton: {
         variants: [
           {
@@ -165,5 +190,5 @@ function getDesignTokens(mode: PaletteMode): ThemeOptions {
         },
       },
     },
-  };
+  });
 }
