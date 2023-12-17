@@ -95,17 +95,6 @@ function getDesignTokens(mode: PaletteMode): ThemeOptions {
       }),
     },
     components: {
-      MuiChip: {
-        variants: [
-          {
-            props: { variant: "foo" as const },
-            style: {
-              fontWeight: "bold",
-              border: "solid 2px red",
-            },
-          },
-        ],
-      },
       MuiButton: {
         variants: [
           {

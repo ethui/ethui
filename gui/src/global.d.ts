@@ -37,25 +37,3 @@ declare module "@mui/material/Button" {
     sidebar: true;
   }
 }
-
-declare module "@mui/material/Chip" {
-  interface ChipPropsColorOverrides {
-    highlight1: true;
-    highlight2: true;
-    highlight3: true;
-    highlight4: true;
-  }
-
-  interface ChipPropsVariantOverrides {
-    foo: true;
-  }
-}
-
-declare module "@mui/material/Button" {
-  interface ButtonPropsColorOverrides {
-    highlight1: true;
-    highlight2: true;
-    highlight3: true;
-    highlight4: true;
-  }
-}
