@@ -1,5 +1,5 @@
 {
-  "name": "@iron/components",
+  "name": "@iron/react",
   "private": true,
   "type": "module",
   "main": "index.ts",

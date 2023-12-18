@@ -83,6 +83,7 @@ function Routes() {
           <SnackbarProvider
             anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
             preventDuplicate
+            maxSnack={3}
             dense
           >
             <CommandBar>

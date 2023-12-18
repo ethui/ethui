@@ -6,7 +6,7 @@
   "scripts": {
     "app:dev": "rm -rf target/debug/db.*; RUST_LOG=iron=debug tauri dev",
     "gui:build": "yarn workspace @iron/gui build",
-    "storybook": "yarn workspace @iron/components storybook",
+    "storybook": "yarn workspace @iron/react storybook",
     "ext:dev": "yarn workspace @iron/extension dev",
     "ext:build": "yarn workspace @iron/extension build \"$@\"",
     "lint": "yarn lint:eslint && yarn lint:tsc && yarn lint:prettier",
@@ -20,7 +20,7 @@
   },
   "workspaces": [
     "extension",
-    "packages/components",
+    "packages/react",
     "packages/types",
     "gui"
   ],

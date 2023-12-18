@@ -15,7 +15,7 @@ import { Address, formatEther } from "viem";
 import {
   AddressView,
   CalldataView,
-  ContextMenu,
+  ContextMenuWithTauri,
   Datapoint,
 } from "@/components";
 import { useDialog, useLedgerDetect } from "@/hooks";
@@ -90,7 +90,9 @@ export function TxReviewDialog({ id }: { id: number }) {
           <AddressView address={from} /> <span>→</span>{" "}
           <AddressView address={to} />
         </Stack>
-        <ContextMenu>{formatEther(BigInt(value))} Ξ</ContextMenu>
+        <ContextMenuWithTauri copy={BigInt(value)}>
+          {formatEther(BigInt(value))} Ξ
+        </ContextMenuWithTauri>
       </Stack>
 
       <TabContext value={tab}>

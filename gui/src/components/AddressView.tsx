@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ContentCopySharp } from "@mui/icons-material";
-import { Box, Button, Stack, TextField, Typography } from "@mui/material";
-import { invoke } from "@tauri-apps/api";
+import { Button, Stack, TextField, Typography } from "@mui/material";
+import { clipboard, invoke } from "@tauri-apps/api";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import truncateEthAddress from "truncate-eth-address";
@@ -9,75 +8,62 @@ import { getAddress } from "viem";
 import { z } from "zod";
 
 import { useInvoke } from "@/hooks";
-import { ContextMenu, Modal } from "./";
+import { ContextMenuWithTauri, Modal } from "./";
+import { useNetworks } from "@/store";
+import { errorToast } from "./Toast";
 
 interface Props {
   address: string;
-  contextMenu?: boolean;
-  copyIcon?: boolean;
 }
 
-export function AddressView({ contextMenu, address: addr, copyIcon }: Props) {
+export function AddressView({ address: addr }: Props) {
+  const network = useNetworks((s) => s.current);
   const address = getAddress(addr);
   const { data: alias, mutate } = useInvoke<string>("settings_get_alias", {
     address,
   });
   const [aliasFormOpen, setAliasFormOpen] = useState(false);
 
-  const contextActions = [
-    { label: "Set alias", action: () => setAliasFormOpen(true) },
-    {
-      label: "Clear alias",
-      action: () => {
-        invoke("settings_set_alias", { address, alias: null });
-        mutate();
-      },
-      disabled: !alias,
-    },
-  ];
+  if (!network) return;
 
-  const content = (
-    <>
-      {alias ? alias : truncateEthAddress(`${address}`)}
-      {copyIcon && <ContentCopySharp fontSize="small" sx={{ ml: 1 }} />}
-    </>
-  );
+  const content = <>{alias ? alias : truncateEthAddress(`${address}`)}</>;
+
+  const copyToClipboard = (text: string | null | undefined) => {
+    if (!text) throw new Error("Nothing to copy to clipboard");
+
+    clipboard.writeText(text);
+    errorToast("asd", "dsa");
+  };
 
   return (
-    <>
-      {!contextMenu && (
-        <Box fontSize="inherit" title={address}>
-          {content}
-        </Box>
-      )}
+    <ContextMenuWithTauri
+      copy={address}
+      actions={[
+        { label: "Copy", action: () => copyToClipboard(address) },
+        {
+          label: "Open in explorer",
+          href: `${network.explorer_url}${address}`,
+        },
+        { label: "Set alias", action: () => setAliasFormOpen(true) },
+        {
+          label: "Clear alias",
+          action: () => setAliasFormOpen(true),
+          disabled: !alias,
+        },
+      ]}
+      sx={{ textTransform: "none" }}
+    >
+      {content}
 
-      {contextMenu && (
-        <>
-          <ContextMenu
-            copy={address}
-            explorer={address}
-            actions={contextActions}
-            sx={{ textTransform: "none" }}
-          >
-            {content}
-          </ContextMenu>
-
-          <Modal open={aliasFormOpen} onClose={() => setAliasFormOpen(false)}>
-            <AliasForm
-              {...{ address, alias, mutate }}
-              onSubmit={() => setAliasFormOpen(false)}
-            />
-          </Modal>
-        </>
-      )}
-    </>
+      <Modal open={aliasFormOpen} onClose={() => setAliasFormOpen(false)}>
+        <AliasForm
+          {...{ address, alias, mutate }}
+          onSubmit={() => setAliasFormOpen(false)}
+        />
+      </Modal>
+    </ContextMenuWithTauri>
   );
 }
-
-AddressView.defaultProps = {
-  contextMenu: true,
-  copyIcon: false,
-};
 
 const schema = z.object({
   alias: z.string().optional(),
