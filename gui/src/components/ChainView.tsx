@@ -1,7 +1,7 @@
 import { Stack, Typography } from "@mui/material";
 
 import { type Network } from "@iron/types/network";
-import { IconChain } from "@/components/Icons";
+import { IconChain } from "@iron/components/icons";
 
 interface Props {
   network: Network;

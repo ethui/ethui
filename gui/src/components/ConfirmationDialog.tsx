@@ -6,7 +6,7 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import React, { ReactNode, useState } from "react";
+import { ReactNode, useState } from "react";
 
 interface Props {
   onConfirm: () => unknown;

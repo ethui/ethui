@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "typeRoots": ["./src/global.d.ts"]
+    "typeRoots": ["./global.d.ts"]
   },
-  "include": ["src", "vite.config.ts"]
+  "include": [".", "vite.config.ts"]
 }

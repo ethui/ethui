@@ -168,7 +168,7 @@ export function TransferForm({
 
         <BigIntField
           name="value"
-          control={control}
+          control={control as any}
           decimals={currentToken.decimals}
           error={errors.value}
         />
