@@ -3,7 +3,7 @@ import { Action } from "kbar";
 import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { Network } from "@/types/network";
+import { Network } from "@iron/types/network";
 import { IconChain } from "@/components/Icons";
 
 interface State {

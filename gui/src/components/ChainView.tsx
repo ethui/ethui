@@ -1,5 +1,6 @@
 import { Stack, Typography } from "@mui/material";
-import { type Network } from "@/types/network";
+
+import { type Network } from "@iron/types/network";
 import { IconChain } from "@/components/Icons";
 
 interface Props {

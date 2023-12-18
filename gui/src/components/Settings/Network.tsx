@@ -11,9 +11,9 @@ import {
 import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 
+import { Network, networkSchema } from "@iron/types/network";
 import { ConfirmationDialog, ChainView } from "@/components";
 import { useNetworks } from "@/store";
-import { Network, networkSchema } from "@/types/network";
 
 type NewChild = { new?: boolean };
 

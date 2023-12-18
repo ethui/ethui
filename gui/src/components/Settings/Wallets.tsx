@@ -12,10 +12,9 @@ import { invoke } from "@tauri-apps/api";
 import { startCase } from "lodash-es";
 import { useState } from "react";
 
+import { Wallet, walletTypes } from "@iron/types/wallets";
 import { Accordion, AccordionDetails, AccordionSummary } from "@/components";
 import { useWallets } from "@/store";
-import { Wallet, walletTypes } from "@/types/wallets";
-
 import { HDWalletForm } from "./Wallet/HDWallet";
 import { ImpersonatorForm } from "./Wallet/Impersonator";
 import { JsonKeystore } from "./Wallet/JsonKeystore";

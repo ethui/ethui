@@ -2,9 +2,9 @@ import { Theme } from "@mui/material";
 import { event, invoke } from "@tauri-apps/api";
 import { Action } from "kbar";
 import { create, StateCreator } from "zustand";
-import { lightTheme, darkTheme } from "@iron/ui/src/themes";
 
-import { GeneralSettings } from "@/types/settings";
+import { lightTheme, darkTheme } from "@iron/ui/src/themes";
+import { GeneralSettings } from "@iron/types/settings";
 
 interface Store {
   mode: "auto" | "light" | "dark";

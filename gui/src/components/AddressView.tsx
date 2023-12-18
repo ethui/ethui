@@ -9,7 +9,6 @@ import { getAddress } from "viem";
 import { z } from "zod";
 
 import { useInvoke } from "@/hooks";
-
 import { ContextMenu, Modal } from "./";
 
 interface Props {

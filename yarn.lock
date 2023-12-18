@@ -2536,6 +2536,7 @@ __metadata:
     "@fontsource/roboto": "npm:^5.0.8"
     "@fontsource/roboto-mono": "npm:^5.0.16"
     "@hookform/resolvers": "npm:^3.3.2"
+    "@iron/types": "file:../packages/types"
     "@iron/ui": "file:../packages/ui"
     "@mui/icons-material": "npm:^5.15.0"
     "@mui/lab": "npm:^5.0.0-alpha.156"
@@ -2578,9 +2579,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@iron/types@file:../packages/types::locator=%40iron%2Fgui%40workspace%3Agui":
+  version: 0.1.0
+  resolution: "@iron/types@file:../packages/types#../packages/types::hash=b7399f&locator=%40iron%2Fgui%40workspace%3Agui"
+  dependencies:
+    typescript: "npm:^5.3.3"
+    viem: "npm:^1.19.15"
+    wagmi: "npm:^1.4.12"
+    wouter: "npm:^2.12.1"
+    zod: "npm:^3.22.4"
+    zustand: "npm:^4.4.7"
+    zxcvbn-typescript: "npm:^5.0.1"
+  checksum: c4e3bb8cbcb7a6b538e9e392e13f94ea883dee30417b6bf7e0a707579d080ef260b29af88e86ccd73a1e72e094fcf3abe25dd089baca134267024108f6a1d13d
+  languageName: node
+  linkType: hard
+
 "@iron/ui@file:../packages/ui::locator=%40iron%2Fgui%40workspace%3Agui":
   version: 0.0.0
-  resolution: "@iron/ui@file:../packages/ui#../packages/ui::hash=de244b&locator=%40iron%2Fgui%40workspace%3Agui"
+  resolution: "@iron/ui@file:../packages/ui#../packages/ui::hash=d84760&locator=%40iron%2Fgui%40workspace%3Agui"
   dependencies:
     "@fontsource/material-icons": "npm:^5.0.11"
     "@fontsource/roboto": "npm:^5.0.8"
@@ -2591,7 +2607,7 @@ __metadata:
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
     react-hook-form: "npm:^7.49.2"
-  checksum: 35fd2edc1f006b6f41999600b75efb1e7af66c6ede0246bf9eade348679634dd4e72d6457f60e06f264c010a6ac11902eb82fcbb26d988aa0957bc02993bd8bd
+  checksum: f3a52ca22a6a2aa3b54ae1117a7170680e341a0b84f5e91357886a967d234e83635fdb7e3186636b3d880feee9da1e3d12abb715539397de4ad1ee8b7021775d
   languageName: node
   linkType: hard
 

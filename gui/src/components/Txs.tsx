@@ -14,7 +14,7 @@ import truncateEthAddress from "truncate-eth-address";
 import { Address, formatEther, formatGwei } from "viem";
 import { useTransaction, useWaitForTransaction } from "wagmi";
 
-import { Paginated, Pagination, Tx } from "@/types";
+import { Paginated, Pagination, Tx } from "@iron/types";
 import { useEventListener } from "@/hooks";
 import { useNetworks, useWallets } from "@/store";
 import {
@@ -24,7 +24,6 @@ import {
   AddressView,
   ContextMenu,
 } from "@/components";
-
 import { CalldataView } from "./Calldata";
 import { Datapoint } from "./Datapoint";
 

@@ -23,9 +23,9 @@ import {
 } from "viem";
 import { z } from "zod";
 
+import { BigIntField } from "@iron/ui/src/components";
+import { addressSchema } from "@iron/types/wallets";
 import { useBalances, useNetworks, useWallets } from "@/store";
-import { addressSchema } from "@/types/wallets";
-import { BigIntField } from "./Inputs";
 
 interface Token {
   currency: string;

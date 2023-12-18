@@ -1,5 +1,4 @@
 import { Avatar } from "@mui/material";
-
 import { Network } from "@iron/types/network";
 
 interface Props {

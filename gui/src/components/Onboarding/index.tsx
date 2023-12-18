@@ -2,7 +2,6 @@ import { Container, MobileStepper, Stack } from "@mui/material";
 import { useState } from "react";
 
 import { DraggableToolbar } from "@/components";
-
 import { AlchemyStep } from "./Alchemy";
 import { InstallExtensionStep } from "./Extension";
 import { ThankYouStep } from "./ThankYou";
