@@ -13,10 +13,10 @@ import { map } from "lodash-es";
 import { useEffect, useState } from "react";
 
 import { Affinity, Peer } from "@iron/types";
+import { ChainView } from "@iron/components";
 import { useEventListener, useInvoke } from "@/hooks";
 import { useNetworks } from "@/store";
 import { Panel } from "./";
-import {ChainView} from "@iron/components";
 
 export function Connections() {
   const { data: peersByDomain, mutate } =
