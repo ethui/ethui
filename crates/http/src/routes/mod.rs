@@ -4,9 +4,9 @@ use crate::Ctx;
 
 mod contracts;
 mod rpc;
+mod tokens;
 mod transactions;
 mod ui;
-mod tokens;
 
 #[cfg(feature = "http-insecure-endpoints")]
 mod connections;

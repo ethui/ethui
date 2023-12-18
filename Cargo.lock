@@ -4137,7 +4137,9 @@ checksum = "8f518f335dce6725a761382244631d86cf0ccb2863413590b31338feb467f9c3"
 name = "iron"
 version = "1.3.0"
 dependencies = [
+ "anyhow",
  "auto-launch",
+ "chrono",
  "ethers",
  "fix-path-env",
  "iron-args",
@@ -4158,6 +4160,7 @@ dependencies = [
  "iron-wallets",
  "iron-ws",
  "named-lock",
+ "reqwest",
  "serde",
  "serde_json",
  "tauri",
