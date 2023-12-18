@@ -33,7 +33,7 @@ pub struct Token {
 
 pub(super) fn router() -> Router<Ctx> {
     Router::new()
-        .route("/tokens", get(hello_world))
+        .route("/", get(hello_world))
         //.route("/tokenpair/:chain_id/:address", get(check_id_address_pair))
 }
 
