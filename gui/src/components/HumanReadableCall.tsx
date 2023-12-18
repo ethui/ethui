@@ -1,12 +1,4 @@
-import {
-  Stack,
-  Chip,
-  Button,
-  Box,
-  Typography,
-  useTheme,
-  styled,
-} from "@mui/material";
+import { Stack, Box, useTheme, styled } from "@mui/material";
 import { Address, Abi, AbiFunction } from "abitype";
 import { useState, useEffect, Fragment } from "react";
 import { formatUnits, decodeFunctionData } from "viem";
@@ -167,15 +159,3 @@ function Arg({ name, type, value, color }: ArgProps) {
     </Stack>
   );
 }
-
-const Root = styled("div", {
-  name: "HumanReadableCall",
-  slot: "root",
-})(({ theme }) => ({
-  display: "flex",
-  flexDirection: "row",
-  backgroundColor: theme.palette.highlight1.main,
-  px: 2,
-  py: 1,
-  fontFamily: "monospace",
-}));
