@@ -10,11 +10,10 @@ import { Box, Drawer, Stack, Theme, Toolbar } from "@mui/material";
 import { findIndex, parseInt, range, toString } from "lodash-es";
 import { ReactNode } from "react";
 import { useLocation, useRoute } from "wouter";
-
 import { useKBar } from "kbar";
+
 import { useKeyPress, useMenuAction, useOS } from "@/hooks";
 import { useSettingsWindow, useTheme, useWallets } from "@/store";
-
 import {
   Modal,
   Account,

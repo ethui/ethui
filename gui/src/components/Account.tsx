@@ -1,5 +1,4 @@
 import { useWallets } from "@/store";
-
 import { BalancesList, Panel } from "./";
 
 export function Account() {

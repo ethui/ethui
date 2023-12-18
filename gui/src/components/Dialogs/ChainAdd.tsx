@@ -1,7 +1,8 @@
 import { Stack, Typography, Button, Grid } from "@mui/material";
 import { isDirty, isValid } from "zod";
 import { window as tauriWindow } from "@tauri-apps/api";
-import { Network } from "@/types/network";
+
+import { Network } from "@iron/types/network";
 import { useDialog } from "@/hooks";
 import { ChainView, Datapoint } from "@/components";
 import { DialogLayout } from "./Layout";

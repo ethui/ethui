@@ -23,9 +23,9 @@ import {
 } from "viem";
 import { z } from "zod";
 
+import { BigIntField } from "@iron/components";
+import { addressSchema } from "@iron/types/wallets";
 import { useBalances, useNetworks, useWallets } from "@/store";
-import { addressSchema } from "@/types/wallets";
-import { BigIntField } from "./Inputs";
 
 interface Token {
   currency: string;
@@ -168,7 +168,7 @@ export function TransferForm({
 
         <BigIntField
           name="value"
-          control={control}
+          control={control as any}
           decimals={currentToken.decimals}
           error={errors.value}
         />

@@ -10,12 +10,11 @@ import {
 } from "@mui/material";
 import truncateEthAddress from "truncate-eth-address";
 import { Address, formatUnits } from "viem";
-
 import { useState } from "react";
+
+import { GeneralSettings } from "@iron/types/settings";
 import { useInvoke } from "@/hooks";
 import { useBalances, useNetworks } from "@/store";
-import { GeneralSettings } from "@/types/settings";
-
 import { IconCrypto } from "./Icons";
 import { CopyToClipboard, Modal, TransferForm } from "./";
 
