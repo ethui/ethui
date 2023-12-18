@@ -7,7 +7,7 @@ import { Typography } from "@iron/react/components";
 import { useInvoke } from "@/hooks";
 import { AddressView } from "./";
 
-interface SummaryProps {
+interface HumanReadableCallProps {
   value?: bigint;
   data: `0x${string}`;
   to: Address;
@@ -21,7 +21,7 @@ export function HumanReadableCall({
   to,
   chainId,
   decimals = 18,
-}: SummaryProps) {
+}: HumanReadableCallProps) {
   if (!data || data.length === 0) {
     return <SummaryBase {...{ value, to, decimals }} />;
   } else {
