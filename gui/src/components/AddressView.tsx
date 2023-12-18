@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ContentCopySharp } from "@mui/icons-material";
-import { Box, Button, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, Stack, TextField } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
@@ -8,8 +8,9 @@ import truncateEthAddress from "truncate-eth-address";
 import { Address, getAddress } from "viem";
 import { z } from "zod";
 
+import { Typography } from "@iron/react/components";
 import { useInvoke } from "@/hooks";
-import { ContextMenu, Modal, MonoText } from "./";
+import { ContextMenu, Modal } from "./";
 
 interface Props {
   address: Address;
@@ -45,7 +46,7 @@ export function AddressView({
   const text = alias ? alias : truncateEthAddress(`${address}`);
   const content = (
     <>
-      {mono && <MonoText>{text}</MonoText>}
+      {mono && <Typography mono>{text}</Typography>}
       {!mono && <Typography>{text}</Typography>}
       {copyIcon && <ContentCopySharp fontSize="small" sx={{ ml: 1 }} />}
     </>

@@ -3,9 +3,7 @@ import { Address, Abi, AbiFunction } from "abitype";
 import { useState, useEffect, Fragment } from "react";
 import { formatUnits, decodeFunctionData } from "viem";
 
-import { Typography } from "@iron/react/components";
-import { useInvoke } from "@/hooks";
-import { AddressView } from "./";
+import { Typography, AddressView } from "../";
 
 interface SummaryProps {
   value?: bigint;
