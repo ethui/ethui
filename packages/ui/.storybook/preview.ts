@@ -10,7 +10,7 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import "@fontsource/material-icons";
 
-const preview: Preview = {
+export const parameters: Preview["parameters"] = {
   actions: { argTypesRegex: "^on[A-Z].*" },
   controls: {
     expanded: true,
@@ -30,4 +30,4 @@ const preview: Preview = {
   // ],
 };
 
-export default preview;
+// export default preview;
