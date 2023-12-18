@@ -6,7 +6,7 @@ import anvil from "../images/chains/31337.webp";
 import unknown from "../images/chains/unknown.webp";
 
 export interface IconChainProps extends React.ComponentProps<typeof Avatar> {
-  chainId: number;
+  id: number;
 }
 
 const Mappings: Record<number, string> = {
@@ -15,13 +15,14 @@ const Mappings: Record<number, string> = {
   31337: anvil,
 };
 
-export function IconChain({ chainId, ...props }: IconChainProps) {
+export function IconChain({ id, ...props }: IconChainProps) {
   const size = 24;
+  console.log(Mappings[id]);
 
   return (
     <Avatar
       sx={{ width: size, height: size }}
-      src={Mappings[chainId] || unknown}
+      src={Mappings[id] || unknown}
       {...props}
     />
   );

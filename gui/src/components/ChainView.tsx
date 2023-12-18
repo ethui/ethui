@@ -10,7 +10,7 @@ interface Props {
 export function ChainView({ network }: Props) {
   return (
     <Stack direction="row" spacing={1}>
-      <IconChain network={network} />
+      <IconChain chainId={network.chain_id} />
       <Typography>{network.name}</Typography>
     </Stack>
   );
