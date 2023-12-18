@@ -6,8 +6,8 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 
+import { ChainView } from "@iron/components";
 import { useNetworks } from "@/store";
-import { ChainView } from "./ChainView";
 
 export function QuickNetworkSelect() {
   const [networks, current, setCurrent] = useNetworks((s) => [
@@ -33,7 +33,7 @@ export function QuickNetworkSelect() {
       >
         {networks.map((network) => (
           <MenuItem key={network.chain_id} value={network.name}>
-            <ChainView network={network} />
+            <ChainView chainId={network.chain_id} name={network.name} />
           </MenuItem>
         ))}
       </Select>

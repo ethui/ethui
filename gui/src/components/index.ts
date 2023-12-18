@@ -29,5 +29,4 @@ export { TransferForm } from "./TransferForm";
 export { Txs } from "./Txs";
 export { WagmiWrapper } from "./WagmiWrapper";
 export * from "./Accordion";
-export { ChainView } from "./ChainView";
 export { SidebarButton } from "./SidebarButton";

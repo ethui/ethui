@@ -12,7 +12,8 @@ import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 
 import { Network, networkSchema } from "@iron/types/network";
-import { ConfirmationDialog, ChainView } from "@/components";
+import { ChainView } from "@iron/components";
+import { ConfirmationDialog } from "@/components";
 import { useNetworks } from "@/store";
 
 type NewChild = { new?: boolean };
@@ -76,7 +77,9 @@ export function SettingsNetwork() {
         return (
           <Accordion key={field.id} defaultExpanded={field.new}>
             <AccordionSummary expandIcon={<ExpandMore />}>
-              {field.chain_id && <ChainView network={field} />}
+              {field.chain_id && (
+                <ChainView chainId={field.chain_id} name={field.name} />
+              )}
               {!field.chain_id && "new network"}
             </AccordionSummary>
             <AccordionDetails>
