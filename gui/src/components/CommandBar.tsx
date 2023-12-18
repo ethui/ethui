@@ -19,6 +19,7 @@ import {
   KBarResults,
   KBarSearch,
   useMatches,
+  useRegisterActions,
 } from "kbar";
 import React, { forwardRef, ReactNode, useMemo } from "react";
 
@@ -31,21 +32,10 @@ import {
 import { useTheme } from "@/store/theme";
 
 export function CommandBar({ children }: { children: ReactNode }) {
-  const walletActions = useWallets((s) => s.actions);
-  const networkActions = useNetworks((s) => s.actions);
-  const settingsActions = useSettings((s) => s.actions); //fast mode
-  const [theme, themeActions] = useTheme((s) => [s.theme, s.actions]); //switch theme
-  const settingsWindowActions = useSettingsWindow((s) => s.actions); //open settings
-
-  const actions = walletActions.concat(
-    networkActions,
-    settingsActions,
-    themeActions,
-    settingsWindowActions,
-  );
+  const { theme } = useTheme();
 
   return (
-    <KBarProvider actions={actions}>
+    <KBarProvider>
       <KBarPortal>
         <KBarPositioner style={{ zIndex: theme.zIndex.tooltip + 1 }}>
           <CommandBarInner />
@@ -82,7 +72,17 @@ function RenderResults() {
 }
 
 function CommandBarInner() {
-  const { theme } = useTheme();
+  const walletActions = useWallets((s) => s.actions);
+  const networkActions = useNetworks((s) => s.actions);
+  const settingsActions = useSettings((s) => s.actions);
+  const [theme, themeActions] = useTheme((s) => [s.theme, s.actions]);
+  const settingsWindowActions = useSettingsWindow((s) => s.actions);
+
+  useRegisterActions(walletActions, [walletActions]);
+  useRegisterActions(networkActions, [networkActions]);
+  useRegisterActions(settingsActions, [settingsActions]);
+  useRegisterActions(themeActions, [themeActions]);
+  useRegisterActions(settingsWindowActions, [settingsWindowActions]);
 
   return (
     <Paper

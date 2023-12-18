@@ -10,7 +10,7 @@ import { useState } from "react";
 
 import { useWallets } from "@/store";
 
-const MAX_CHANGE_WALLET_SHORTCUTS = 9;
+export const MAX_CHANGE_WALLET_SHORTCUTS = 9;
 
 export function SettingsKeybinds() {
   const { wallets } = useWallets();

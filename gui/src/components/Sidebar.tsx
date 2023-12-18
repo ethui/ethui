@@ -14,6 +14,8 @@ import { Link, useLocation, useRoute } from "wouter";
 import { useKeyPress, useMenuAction, useOS } from "@/hooks";
 import { useSettings, useSettingsWindow, useTheme, useWallets } from "@/store";
 
+import { MAX_CHANGE_WALLET_SHORTCUTS } from "./Settings/Keybinds";
+
 import {
   Account,
   CommandBarButton,
@@ -58,7 +60,6 @@ export const TABS = [
 
 export const DEFAULT_TAB = TABS[0];
 
-const MAX_CHANGE_WALLET_SHORTCUTS = 9;
 const WIDTH_MD = 200;
 const WIDTH_SM = 72;
 
@@ -96,7 +97,6 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
 
   useMenuAction((payload) => setLocation(payload));
 
-  //------------------------------------------------- Switch between sidebar menus (Ctrl + number)
   useKeyPress(
     range(1, TABS.length + 1).map(toString),
     { meta: true },
@@ -108,7 +108,6 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
     handleKeyboardNavigation,
   );
 
-  //------------------------------------------------- Switch between wallets (Ctrl + Shift + number)
   useKeyPress(
     range(1, Math.min(wallets.length + 1, MAX_CHANGE_WALLET_SHORTCUTS)).map(
       toString,
@@ -124,11 +123,9 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
     handleWalletsNavigation,
   );
 
-  // ----------------------------------------------- Fast mode toggle (Ctrl + F)
   useKeyPress(["F", "f"], { meta: true }, handleFastModeToggle);
   useKeyPress(["F", "f"], { ctrl: true }, handleFastModeToggle);
 
-  // ----------------------------------------------- Open/Close settings menu (Ctrl + S)
   useKeyPress(["S", "s"], { meta: true }, handleOpenCloseSettings);
   useKeyPress(["S", "s"], { ctrl: true }, handleOpenCloseSettings);
 
@@ -151,7 +148,6 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
 
 export function Sidebar() {
   const [_match, params] = useRoute("/:path");
-  const [_location] = useLocation();
   const { theme } = useTheme();
   const breakpoint = theme.breakpoints.down("sm");
   const { type } = useOS();
