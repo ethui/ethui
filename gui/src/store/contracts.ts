@@ -3,7 +3,6 @@ import { Address } from "viem";
 import { subscribeWithSelector } from "zustand/middleware";
 import { create, StateCreator } from "zustand";
 
-import * as T from "@iron/types";
 import { errorToast } from "@/components/Toast";
 import { useNetworks } from "./networks";
 
