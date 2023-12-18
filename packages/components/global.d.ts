@@ -1,3 +1,5 @@
+declare module "*.webp";
+
 declare module "@mui/material/Paper" {
   interface PaperPropsVariantOverrides {
     lighter: true;

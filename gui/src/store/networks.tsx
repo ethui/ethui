@@ -65,7 +65,7 @@ const store: StateCreator<Store> = (set, get) => ({
       ...(networks || []).map((network) => ({
         id: `${actionId}/${network.name}`,
         name: network.name,
-        icon: <IconChain network={network} />,
+        icon: <IconChain chainId={network.chain_id} />,
         parent: actionId,
         perform: () => {
           get().setCurrent(network.name);
