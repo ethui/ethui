@@ -46,6 +46,9 @@ export function ContextMenu({
     );
   };
 
+  const handleCopy = (e: MouseEvent) =>
+    handleAction(e, () => copy && clipboard.writeText(copy.toString()));
+
   const handleAction = (e: MouseEvent, action: () => unknown) => {
     e.stopPropagation();
     e.preventDefault();
@@ -81,6 +84,12 @@ export function ContextMenu({
             : undefined
         }
       >
+        {!!copy && (
+          <MenuItem component="a" onClick={handleCopy}>
+            Copy
+          </MenuItem>
+        )}
+
         {actions
           .filter(({ disabled }) => !disabled)
           .map(({ label, action, href }, i: number) => {

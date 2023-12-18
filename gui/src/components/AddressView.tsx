@@ -10,7 +10,6 @@ import { z } from "zod";
 import { useInvoke } from "@/hooks";
 import { ContextMenuWithTauri, Modal } from "./";
 import { useNetworks } from "@/store";
-import { errorToast } from "./Toast";
 
 interface Props {
   address: string;
@@ -28,18 +27,10 @@ export function AddressView({ address: addr }: Props) {
 
   const content = <>{alias ? alias : truncateEthAddress(`${address}`)}</>;
 
-  const copyToClipboard = (text: string | null | undefined) => {
-    if (!text) throw new Error("Nothing to copy to clipboard");
-
-    clipboard.writeText(text);
-    errorToast("asd", "dsa");
-  };
-
   return (
     <ContextMenuWithTauri
       copy={address}
       actions={[
-        { label: "Copy", action: () => copyToClipboard(address) },
         {
           label: "Open in explorer",
           href: `${network.explorer_url}${address}`,
