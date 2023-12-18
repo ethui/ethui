@@ -20,7 +20,6 @@ import {
   HumanReadableCall,
 } from "@/components";
 import { useDialog, useLedgerDetect } from "@/hooks";
-
 import { DialogLayout } from "./Layout";
 
 export interface TxRequest {

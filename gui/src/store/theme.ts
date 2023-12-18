@@ -1,16 +1,10 @@
-import {
-  alpha,
-  createTheme,
-  PaletteMode,
-  Theme,
-  ThemeOptions,
-} from "@mui/material";
-import { grey, lightBlue, red, yellow } from "@mui/material/colors";
+import { Theme } from "@mui/material";
 import { event, invoke } from "@tauri-apps/api";
 import { Action } from "kbar";
 import { create, StateCreator } from "zustand";
 
-import { GeneralSettings } from "@/types/settings";
+import { themes } from "@iron/components";
+import { GeneralSettings } from "@iron/types/settings";
 
 interface Store {
   mode: "auto" | "light" | "dark";
@@ -25,7 +19,7 @@ const actionId = "themeMode";
 
 const store: StateCreator<Store> = (set, get) => ({
   mode: "auto",
-  theme: createTheme(getDesignTokens("light")),
+  theme: themes.lightTheme,
 
   actions: [
     {
@@ -49,8 +43,9 @@ const store: StateCreator<Store> = (set, get) => ({
 
     const mode =
       darkMode == "auto" ? (prefersDarkMode ? "dark" : "light") : darkMode;
+    const theme: Theme = mode === "dark" ? themes.darkTheme : themes.lightTheme;
 
-    set({ mode, theme: createTheme(getDesignTokens(mode)) });
+    set({ mode, theme });
   },
 
   async changeMode(mode) {
@@ -69,115 +64,3 @@ export const useTheme = create<Store>()(store);
 (async () => {
   await useTheme.getState().reload();
 })();
-
-function getDesignTokens(mode: PaletteMode): ThemeOptions {
-  const theme = createTheme({ palette: { mode } });
-
-  const light = mode === "light";
-
-  const borderColor = light ? grey[300] : grey[800];
-  const { augmentColor } = theme.palette;
-
-  return createTheme(theme, {
-    palette: {
-      mode,
-      highlight1: augmentColor({
-        color: { main: light ? grey[200] : grey[800] },
-      }),
-      highlight2: augmentColor({
-        color: { main: light ? red[200] : red[900] },
-      }),
-      highlight3: augmentColor({
-        color: { main: light ? yellow[500] : yellow[900] },
-      }),
-      highlight4: augmentColor({
-        color: { main: light ? lightBlue[200] : lightBlue[900] },
-      }),
-    },
-    components: {
-      MuiButton: {
-        variants: [
-          {
-            props: { variant: "sidebar" as const },
-            style: {
-              textAlign: "left",
-              height: theme.spacing(4),
-              paddingLeft: theme.spacing(1),
-              fontWeight: "inherit",
-              justifyContent: "flex-start",
-              textTransform: "inherit",
-              "&.Mui-disabled": {
-                backgroundColor: lightBlue[800],
-                color: "white",
-              },
-              "& .MuiButton-startIcon": {
-                marginLeft: 0,
-              },
-            },
-          },
-        ],
-      },
-      MuiTypography: {
-        variants: [
-          {
-            props: { variant: "bordered" as const },
-            style: {
-              display: "block",
-              borderColor: borderColor,
-              borderBottomWidth: 1,
-              borderBottomStyle: "solid",
-              paddingBottom: "0.5em",
-            },
-          },
-        ],
-      },
-      MuiAppBar: {
-        styleOverrides: {
-          root: {
-            borderColor,
-            borderBottomStyle: "solid",
-            backgroundColor: theme.palette.background.default,
-            color: "inherit",
-          },
-        },
-      },
-      MuiDrawer: {
-        styleOverrides: {
-          paper: {
-            borderColor,
-            borderWidth: 1,
-          },
-        },
-      },
-      MuiPaper: {
-        variants: [
-          {
-            props: { variant: "lighter" as const },
-            style: {
-              background: light ? grey[100] : grey[900],
-            },
-          },
-        ],
-      },
-      MuiToolbar: {
-        defaultProps: {
-          variant: "dense",
-        },
-      },
-
-      MuiAccordionSummary: {
-        styleOverrides: {
-          root: {
-            "&:hover": {
-              transition: "none",
-              background: theme.palette.action.hover,
-            },
-            "&.Mui-expanded": {
-              background: theme.palette.action.hover,
-            },
-          },
-        },
-      },
-    },
-  });
-}

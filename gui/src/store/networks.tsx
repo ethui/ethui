@@ -3,8 +3,8 @@ import { Action } from "kbar";
 import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { Network } from "@/types/network";
-import { IconChain } from "@/components/Icons";
+import { Network } from "@iron/types/network";
+import { IconChain } from "@iron/components/icons";
 
 interface State {
   networks: Network[];
@@ -65,7 +65,7 @@ const store: StateCreator<Store> = (set, get) => ({
       ...(networks || []).map((network) => ({
         id: `${actionId}/${network.name}`,
         name: network.name,
-        icon: <IconChain network={network} />,
+        icon: <IconChain chainId={network.chain_id} />,
         parent: actionId,
         perform: () => {
           get().setCurrent(network.name);

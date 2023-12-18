@@ -8,7 +8,7 @@ import {
   mnemonicSchema,
   PlaintextWallet,
   Wallet,
-} from "@/types/wallets";
+} from "@iron/types/wallets";
 
 const schema = z.object({
   name: z.string().min(1),

@@ -23,8 +23,8 @@ import {
 } from "viem";
 import { z } from "zod";
 
+import { addressSchema } from "@iron/types/wallets";
 import { useBalances, useNetworks, useWallets } from "@/store";
-import { addressSchema } from "@/types/wallets";
 
 const transferNative = async (from: Address, to: Address, value: bigint) => {
   return await invoke<string>("rpc_send_transaction", {

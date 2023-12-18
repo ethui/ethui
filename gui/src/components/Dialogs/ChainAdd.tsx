@@ -1,9 +1,11 @@
 import { Stack, Typography, Button, Grid } from "@mui/material";
 import { isDirty, isValid } from "zod";
 import { window as tauriWindow } from "@tauri-apps/api";
-import { Network } from "@/types/network";
+
+import { Network } from "@iron/types/network";
+import { ChainView } from "@iron/components";
 import { useDialog } from "@/hooks";
-import { ChainView, Datapoint } from "@/components";
+import { Datapoint } from "@/components";
 import { DialogLayout } from "./Layout";
 
 export function ChainAddDialog({ id }: { id: number }) {
@@ -18,7 +20,7 @@ export function ChainAddDialog({ id }: { id: number }) {
           Add new network?
         </Typography>
 
-        <ChainView network={network} />
+        <ChainView chainId={network.chain_id} name={network.name} />
 
         <Grid container rowSpacing={2}>
           <Datapoint label="Chain ID" value={network.chain_id} />

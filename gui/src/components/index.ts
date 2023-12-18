@@ -30,5 +30,4 @@ export { Txs } from "./Txs";
 export { WagmiWrapper } from "./WagmiWrapper";
 export * from "./Accordion";
 export { HumanReadableCall } from "./HumanReadableCall";
-export { ChainView } from "./ChainView";
 export { SidebarButton } from "./SidebarButton";

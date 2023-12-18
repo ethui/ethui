@@ -4,7 +4,7 @@ import { type Address } from "viem";
 import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { Wallet } from "@/types/wallets";
+import { Wallet } from "@iron/types/wallets";
 
 interface State {
   currentWallet?: Wallet;

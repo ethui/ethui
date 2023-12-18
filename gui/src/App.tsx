@@ -21,7 +21,6 @@ import {
   WalletUnlockDialog,
 } from "@/components/Dialogs";
 import { Onboarding } from "@/components/Onboarding";
-
 import { useTheme } from "./store/theme";
 
 const queryClient = new QueryClient({

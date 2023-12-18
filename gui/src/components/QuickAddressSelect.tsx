@@ -8,10 +8,9 @@ import {
 import { map } from "lodash-es";
 import { Address } from "viem";
 
+import { Wallet } from "@iron/types/wallets";
 import { useInvoke } from "@/hooks";
 import { useWallets } from "@/store";
-import { Wallet } from "@/types/wallets";
-
 import { AddressView } from "./";
 
 export function QuickAddressSelect() {
