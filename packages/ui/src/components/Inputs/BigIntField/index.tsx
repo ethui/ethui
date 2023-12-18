@@ -7,22 +7,22 @@ import {
   FieldValues,
 } from "react-hook-form";
 
-interface Props<
+export type BigIntFieldProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> {
+> = {
   name: TName;
   control: Control<TFieldValues>;
   error?: FieldError;
   decimals: number;
-}
+};
 
 export function BigIntField<C extends FieldValues>({
   control,
   name,
   error,
   decimals = 18,
-}: Props<C>) {
+}: BigIntFieldProps<C>) {
   const multiplier = 10n ** BigInt(decimals);
 
   return (
