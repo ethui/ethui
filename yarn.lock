@@ -2485,6 +2485,42 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@iron/components@npm:*, @iron/components@workspace:packages/components":
+  version: 0.0.0-use.local
+  resolution: "@iron/components@workspace:packages/components"
+  dependencies:
+    "@fontsource/material-icons": "npm:^5.0.11"
+    "@fontsource/roboto": "npm:^5.0.8"
+    "@mui/icons-material": "npm:^5.15.0"
+    "@mui/lab": "npm:^5.0.0-alpha.156"
+    "@mui/material": "npm:^5.15.0"
+    "@storybook/addon-essentials": "npm:^7.6.5"
+    "@storybook/addon-interactions": "npm:^7.6.5"
+    "@storybook/addon-links": "npm:^7.6.5"
+    "@storybook/addon-onboarding": "npm:^1.0.10"
+    "@storybook/addon-themes": "npm:^7.6.5"
+    "@storybook/blocks": "npm:^7.6.5"
+    "@storybook/react": "npm:^7.6.5"
+    "@storybook/react-vite": "npm:^7.6.5"
+    "@storybook/test": "npm:^7.6.5"
+    "@types/react": "npm:^18.2.43"
+    "@types/react-dom": "npm:^18.2.17"
+    "@typescript-eslint/eslint-plugin": "npm:^6.14.0"
+    "@typescript-eslint/parser": "npm:^6.14.0"
+    "@vitejs/plugin-react-swc": "npm:^3.5.0"
+    eslint: "npm:^8.55.0"
+    eslint-plugin-react-hooks: "npm:^4.6.0"
+    eslint-plugin-react-refresh: "npm:^0.4.5"
+    eslint-plugin-storybook: "npm:^0.6.15"
+    react: "npm:^18.2.0"
+    react-dom: "npm:^18.2.0"
+    react-hook-form: "npm:^7.49.2"
+    storybook: "npm:^7.6.5"
+    typescript: "npm:^5.2.2"
+    vite: "npm:^5.0.8"
+  languageName: unknown
+  linkType: soft
+
 "@iron/extension@workspace:extension":
   version: 0.0.0-use.local
   resolution: "@iron/extension@workspace:extension"
@@ -2536,8 +2572,8 @@ __metadata:
     "@fontsource/roboto": "npm:^5.0.8"
     "@fontsource/roboto-mono": "npm:^5.0.16"
     "@hookform/resolvers": "npm:^3.3.2"
-    "@iron/types": "file:../packages/types"
-    "@iron/ui": "file:../packages/ui"
+    "@iron/components": "npm:*"
+    "@iron/types": "npm:*"
     "@mui/icons-material": "npm:^5.15.0"
     "@mui/lab": "npm:^5.0.0-alpha.156"
     "@mui/material": "npm:^5.15.0"
@@ -2579,10 +2615,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@iron/types@file:../packages/types::locator=%40iron%2Fgui%40workspace%3Agui":
-  version: 0.1.0
-  resolution: "@iron/types@file:../packages/types#../packages/types::hash=b7399f&locator=%40iron%2Fgui%40workspace%3Agui"
+"@iron/types@npm:*, @iron/types@workspace:packages/types":
+  version: 0.0.0-use.local
+  resolution: "@iron/types@workspace:packages/types"
   dependencies:
+    "@types/core-js": "npm:^2.5.8"
+    "@types/lodash-es": "npm:^4.17.12"
+    "@types/node": "npm:^20.10.4"
+    jsdom: "npm:^23.0.1"
     typescript: "npm:^5.3.3"
     viem: "npm:^1.19.15"
     wagmi: "npm:^1.4.12"
@@ -2590,60 +2630,6 @@ __metadata:
     zod: "npm:^3.22.4"
     zustand: "npm:^4.4.7"
     zxcvbn-typescript: "npm:^5.0.1"
-  checksum: c4e3bb8cbcb7a6b538e9e392e13f94ea883dee30417b6bf7e0a707579d080ef260b29af88e86ccd73a1e72e094fcf3abe25dd089baca134267024108f6a1d13d
-  languageName: node
-  linkType: hard
-
-"@iron/ui@file:../packages/ui::locator=%40iron%2Fgui%40workspace%3Agui":
-  version: 0.0.0
-  resolution: "@iron/ui@file:../packages/ui#../packages/ui::hash=d84760&locator=%40iron%2Fgui%40workspace%3Agui"
-  dependencies:
-    "@fontsource/material-icons": "npm:^5.0.11"
-    "@fontsource/roboto": "npm:^5.0.8"
-    "@mui/icons-material": "npm:^5.15.0"
-    "@mui/lab": "npm:^5.0.0-alpha.156"
-    "@mui/material": "npm:^5.15.0"
-    "@storybook/addon-themes": "npm:^7.6.5"
-    react: "npm:^18.2.0"
-    react-dom: "npm:^18.2.0"
-    react-hook-form: "npm:^7.49.2"
-  checksum: f3a52ca22a6a2aa3b54ae1117a7170680e341a0b84f5e91357886a967d234e83635fdb7e3186636b3d880feee9da1e3d12abb715539397de4ad1ee8b7021775d
-  languageName: node
-  linkType: hard
-
-"@iron/ui@workspace:packages/ui":
-  version: 0.0.0-use.local
-  resolution: "@iron/ui@workspace:packages/ui"
-  dependencies:
-    "@fontsource/material-icons": "npm:^5.0.11"
-    "@fontsource/roboto": "npm:^5.0.8"
-    "@mui/icons-material": "npm:^5.15.0"
-    "@mui/lab": "npm:^5.0.0-alpha.156"
-    "@mui/material": "npm:^5.15.0"
-    "@storybook/addon-essentials": "npm:^7.6.5"
-    "@storybook/addon-interactions": "npm:^7.6.5"
-    "@storybook/addon-links": "npm:^7.6.5"
-    "@storybook/addon-onboarding": "npm:^1.0.10"
-    "@storybook/addon-themes": "npm:^7.6.5"
-    "@storybook/blocks": "npm:^7.6.5"
-    "@storybook/react": "npm:^7.6.5"
-    "@storybook/react-vite": "npm:^7.6.5"
-    "@storybook/test": "npm:^7.6.5"
-    "@types/react": "npm:^18.2.43"
-    "@types/react-dom": "npm:^18.2.17"
-    "@typescript-eslint/eslint-plugin": "npm:^6.14.0"
-    "@typescript-eslint/parser": "npm:^6.14.0"
-    "@vitejs/plugin-react-swc": "npm:^3.5.0"
-    eslint: "npm:^8.55.0"
-    eslint-plugin-react-hooks: "npm:^4.6.0"
-    eslint-plugin-react-refresh: "npm:^0.4.5"
-    eslint-plugin-storybook: "npm:^0.6.15"
-    react: "npm:^18.2.0"
-    react-dom: "npm:^18.2.0"
-    react-hook-form: "npm:^7.49.2"
-    storybook: "npm:^7.6.5"
-    typescript: "npm:^5.2.2"
-    vite: "npm:^5.0.8"
   languageName: unknown
   linkType: soft
 

@@ -20,7 +20,7 @@
   },
   "workspaces": [
     "extension",
-    "packages/ui",
+    "packages/components",
     "packages/types",
     "gui"
   ],

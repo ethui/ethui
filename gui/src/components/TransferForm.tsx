@@ -23,7 +23,7 @@ import {
 } from "viem";
 import { z } from "zod";
 
-import { BigIntField } from "@iron/ui/src/components";
+import { BigIntField } from "@iron/components";
 import { addressSchema } from "@iron/types/wallets";
 import { useBalances, useNetworks, useWallets } from "@/store";
 

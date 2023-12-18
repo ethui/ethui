@@ -3,7 +3,7 @@ import { event, invoke } from "@tauri-apps/api";
 import { Action } from "kbar";
 import { create, StateCreator } from "zustand";
 
-import { lightTheme, darkTheme } from "@iron/ui/src/themes";
+import { themes } from "@iron/components";
 import { GeneralSettings } from "@iron/types/settings";
 
 interface Store {
@@ -19,7 +19,7 @@ const actionId = "themeMode";
 
 const store: StateCreator<Store> = (set, get) => ({
   mode: "auto",
-  theme: lightTheme,
+  theme: themes.lightTheme,
 
   actions: [
     {
@@ -43,7 +43,7 @@ const store: StateCreator<Store> = (set, get) => ({
 
     const mode =
       darkMode == "auto" ? (prefersDarkMode ? "dark" : "light") : darkMode;
-    const theme: Theme = mode === "dark" ? darkTheme : lightTheme;
+    const theme: Theme = mode === "dark" ? themes.darkTheme : themes.lightTheme;
 
     set({ mode, theme });
   },

@@ -1,6 +1,8 @@
 {
-  "name": "@iron/ui",
+  "name": "@iron/components",
   "private": true,
+  "type": "module",
+  "main": "src/index.ts",
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",

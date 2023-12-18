@@ -16,7 +16,7 @@ module.exports = {
       "./tsconfig.json",
       "./gui/tsconfig.json",
       "./extension/tsconfig.json",
-      "./packages/ui/tsconfig.json",
+      "./packages/components/tsconfig.json",
       "./packages/types/tsconfig.json",
     ],
   },
