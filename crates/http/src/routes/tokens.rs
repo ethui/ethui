@@ -1,7 +1,7 @@
 use axum::{
+    response::{Html, Json, Response},
     //extract::Query,
     routing::get,
-    response::{Response, Json, Html},
     Router,
 };
 use chrono::{DateTime, Utc};
@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{Ctx, Result};
 
-#[derive(Debug, Deserialize, Serialize )]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct TokenList {
     updated_at: Option<DateTime<Utc>>,
     name: String,
@@ -21,20 +21,18 @@ pub struct TokenList {
 pub struct Token {
     #[serde(rename = "chainId")]
     chain_id: i32,
-    
+
     address: String,
     name: String,
     //symbol: String,
     //decimals: i32,
-
     #[serde(rename = "logoURI")]
     logo_uri: String,
 }
 
 pub(super) fn router() -> Router<Ctx> {
-    Router::new()
-        .route("/", get(hello_world))
-        //.route("/tokenpair/:chain_id/:address", get(check_id_address_pair))
+    Router::new().route("/", get(hello_world))
+    //.route("/tokenpair/:chain_id/:address", get(check_id_address_pair))
 }
 
 async fn hello_world() -> &'static str {
