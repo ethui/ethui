@@ -2,25 +2,30 @@ import { type Meta, type StoryObj } from "@storybook/react";
 import Stack from "@mui/material/Stack";
 
 import { Button, ButtonProps } from "./";
+import { defaultDisabledArgs } from "../../utils";
 
-const meta: Meta<typeof Button> = {
+const meta: Meta<ButtonProps> = {
   title: "Components/Button",
   component: Button,
+  argTypes: {
+    ...defaultDisabledArgs(),
+  },
 };
 
 export default meta;
 
-const Template: StoryObj<typeof Button> = (args) => <Button {...args} />;
-
-export const Playground = Template.bind({});
-Playground.args = {
-  label: "Click me!",
-  variant: "contained",
-};
-
 type Story = StoryObj<ButtonProps>;
 
+export const Playground = {
+  render: (args: ButtonProps) => <Button {...args} />,
+  args: {
+    label: "Click me!",
+    variant: "contained",
+  },
+};
+
 export const Variants: Story = {
+  parameters: { controls: { exclude: ["classes"] } },
   render: () => {
     return (
       <Stack spacing={2} maxWidth={300}>

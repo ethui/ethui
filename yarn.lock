@@ -2580,7 +2580,7 @@ __metadata:
 
 "@iron/ui@file:../packages/ui::locator=%40iron%2Fgui%40workspace%3Agui":
   version: 0.0.0
-  resolution: "@iron/ui@file:../packages/ui#../packages/ui::hash=2ed7f3&locator=%40iron%2Fgui%40workspace%3Agui"
+  resolution: "@iron/ui@file:../packages/ui#../packages/ui::hash=de244b&locator=%40iron%2Fgui%40workspace%3Agui"
   dependencies:
     "@fontsource/material-icons": "npm:^5.0.11"
     "@fontsource/roboto": "npm:^5.0.8"
@@ -2590,7 +2590,8 @@ __metadata:
     "@storybook/addon-themes": "npm:^7.6.5"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
-  checksum: 1c32c68b3d48ba94b7e35eb6071b400f325164528bd96d8ee68596928d87c45f18537404713bf197a3d890e4bc20aede9c13a49ee125df5c9a5c6b8f48bf940e
+    react-hook-form: "npm:^7.49.2"
+  checksum: 35fd2edc1f006b6f41999600b75efb1e7af66c6ede0246bf9eade348679634dd4e72d6457f60e06f264c010a6ac11902eb82fcbb26d988aa0957bc02993bd8bd
   languageName: node
   linkType: hard
 
