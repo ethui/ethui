@@ -1,4 +1,4 @@
-import { type Meta, type StoryObj } from "@storybook/react";
+import { type Meta, type StoryObj, type StoryFn } from "@storybook/react";
 import Stack from "@mui/material/Stack";
 
 import { Button, ButtonProps } from "./";
@@ -14,8 +14,6 @@ const meta: Meta<ButtonProps> = {
 
 export default meta;
 
-type Story = StoryObj<ButtonProps>;
-
 export const Playground = {
   render: (args: ButtonProps) => <Button {...args} />,
   args: {
@@ -24,7 +22,7 @@ export const Playground = {
   },
 };
 
-export const Variants: Story = {
+export const Variants: StoryObj<ButtonProps> = {
   parameters: { controls: { exclude: ["classes"] } },
   render: () => {
     return (
@@ -37,23 +35,19 @@ export const Variants: Story = {
   },
 };
 
-export const Colors: Story = {
-  render: () => (
-    <Stack spacing={2} maxWidth={300}>
-      <Button variant="contained" label="Primary" />
-      <Button variant="contained" color="secondary" label="Secondary" />
-      <Button variant="contained" color="success" label="Success" />
-      <Button variant="contained" color="error" label="Error" />
-    </Stack>
-  ),
-};
+export const Colors: StoryFn<ButtonProps> = () => (
+  <Stack spacing={2} maxWidth={300}>
+    <Button variant="contained" label="Primary" />
+    <Button variant="contained" color="secondary" label="Secondary" />
+    <Button variant="contained" color="success" label="Success" />
+    <Button variant="contained" color="error" label="Error" />
+  </Stack>
+);
 
-export const Sizes: Story = {
-  render: () => (
-    <Stack spacing={2} maxWidth={300}>
-      <Button variant="contained" size="small" label="Small" />
-      <Button variant="contained" size="medium" label="Medium" />
-      <Button variant="contained" size="large" label="Large" />
-    </Stack>
-  ),
-};
+export const Sizes: StoryFn<ButtonProps> = () => (
+  <Stack spacing={2} maxWidth={300}>
+    <Button variant="contained" size="small" label="Small" />
+    <Button variant="contained" size="medium" label="Medium" />
+    <Button variant="contained" size="large" label="Large" />
+  </Stack>
+);

@@ -25,7 +25,7 @@ const preview: Preview = {
       defaultTheme: "dark",
       Provider: ThemeProvider,
       GlobalStyles: CssBaseline,
-    }),
+    }) as any,
   ],
 };
 

@@ -1,13 +1,14 @@
-import { StoryObj, type Meta } from "@storybook/react";
+import { type Meta, type StoryFn } from "@storybook/react";
 
-import { BigIntField } from "./BigIntField";
+import { BigIntField, BigIntFieldProps } from "./";
 import { Stack } from "@mui/material";
 import { useForm } from "react-hook-form";
 
 const meta: Meta<object> = {
-  title: "Components/Inputs",
+  title: "Inputs/BigIntField",
   component: BigIntField,
   argTypes: {},
+
   decorators: [
     (Story) => {
       const form = useForm({ defaultValues: { value: 0n } });
@@ -24,17 +25,13 @@ const meta: Meta<object> = {
 
 export default meta;
 
-type Story = StoryObj<typeof BigIntField>;
-
-export const BigInt: Story = {
-  render: (_story, { form }) => (
-    <Stack spacing={2} maxWidth={300}>
-      <BigIntField
-        control={form.control}
-        name="amount"
-        decimals={18}
-        {...form.register("value")}
-      />
-    </Stack>
-  ),
-};
+export const BigInt: StoryFn<BigIntFieldProps> = (_story, { form }) => (
+  <Stack spacing={2} maxWidth={300}>
+    <BigIntField
+      control={form.control}
+      name="amount"
+      decimals={18}
+      {...form.register("value")}
+    />
+  </Stack>
+);
