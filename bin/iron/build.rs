@@ -2,7 +2,8 @@ use anyhow::{anyhow, bail, Result};
 use chrono::{DateTime, Utc};
 use reqwest::blocking;
 use serde::{Deserialize, Serialize};
-use std::{error::Error, fs::File, io::Write};
+use serde_json::Value;
+use std::{error::Error, fs::File, fs, io::Write, path::Path};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct TokenList {
@@ -25,6 +26,13 @@ pub struct Token {
 }
 
 pub fn init() -> Result<()> {
+ let path_to_json = "list.json";
+ let does_file_exist = Path::new("list.json").exists();
+ let file_string = fs::read_to_string(path_to_json)?;
+ let list_to_json_value: TokenList = serde_json::from_str(&file_string)?;
+ let check_updated_at = list_to_json_value.updated_at;
+    if ( !does_file_exist || check_updated_at > )
+
     let response = blocking::get("https://gateway.ipfs.io/ipns/tokens.uniswap.org")
         .map_err(|err| anyhow!(err))?;
 
