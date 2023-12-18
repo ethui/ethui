@@ -58,7 +58,6 @@
     "@types/react-infinite-scroller": "^1.2.5",
     "@vitejs/plugin-react": "^4.2.1",
     "jsdom": "^23.0.1",
-    "vite-plugin-static-copy": "^1.0.0",
     "vite-tsconfig-paths": "^4.2.2"
   }
 }
