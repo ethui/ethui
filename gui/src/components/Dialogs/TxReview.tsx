@@ -10,11 +10,15 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import JsonView from "react18-json-view";
-import { Abi, Address } from "viem";
+import { Address, formatEther } from "viem";
 
-import { SolidityCall } from "@iron/react/components";
-import { AddressView, CalldataView, Datapoint } from "@/components";
-import { useDialog, useInvoke, useLedgerDetect } from "@/hooks";
+import {
+  AddressView,
+  CalldataView,
+  ContextMenuWithTauri,
+  Datapoint,
+} from "@/components";
+import { useDialog, useLedgerDetect } from "@/hooks";
 import { DialogLayout } from "./Layout";
 
 export interface TxRequest {
@@ -44,17 +48,12 @@ interface Simulation {
 }
 
 export function TxReviewDialog({ id }: { id: number }) {
-  const { data: request, send, listen } = useDialog<TxRequest>(id);
+  const { data, send, listen } = useDialog<TxRequest>(id);
   const [simulation, setSimulation] = useState<Simulation | undefined>(
     undefined,
   );
   const [accepted, setAccepted] = useState(false);
   const [tab, setTab] = useState("1");
-
-  const { data: abi } = useInvoke<Abi>("get_contract_abi", {
-    address: request?.to,
-    chainId: request?.chainId,
-  });
 
   useEffect(() => {
     listen("simulation-result", ({ payload }: { payload: Simulation }) =>
@@ -66,7 +65,7 @@ export function TxReviewDialog({ id }: { id: number }) {
     send("simulate");
   }, [send]);
 
-  if (!request) return null;
+  if (!data) return null;
 
   const onReject = () => {
     send("reject");
@@ -77,20 +76,23 @@ export function TxReviewDialog({ id }: { id: number }) {
     setAccepted(true);
   };
 
-  const { from, to, value: valueStr, data, chainId } = request;
+  const { from, to, value: valueStr, data: calldata, chainId } = data;
   const value = BigInt(valueStr || 0);
 
   return (
     <DialogLayout>
-      <Stack spacing={2} alignItems="center">
-        <Typography variant="h6" component="h1">
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <AddressView address={from} /> <span>→</span>{" "}
-            <AddressView address={to} />
-          </Stack>
-        </Typography>
+      <Typography variant="h6" component="h1">
+        Transaction review
+      </Typography>
 
-        <SolidityCall {...{ value, data, to, chainId, abi }} />
+      <Stack direction="row" justifyContent="space-between">
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <AddressView address={from} /> <span>→</span>{" "}
+          <AddressView address={to} />
+        </Stack>
+        <ContextMenuWithTauri copy={BigInt(value)}>
+          {formatEther(BigInt(value))} Ξ
+        </ContextMenuWithTauri>
       </Stack>
 
       <TabContext value={tab}>
@@ -100,7 +102,7 @@ export function TxReviewDialog({ id }: { id: number }) {
         </TabList>
 
         <TabPanel value="1" sx={{ flexGrow: 1, overflowY: "auto", px: 0 }}>
-          <CalldataView data={data} contract={to} chainId={chainId} />
+          <CalldataView data={calldata} contract={to} chainId={chainId} />
         </TabPanel>
 
         <TabPanel value="2" sx={{ flexGrow: 1, overflowY: "auto", px: 0 }}>
@@ -109,7 +111,7 @@ export function TxReviewDialog({ id }: { id: number }) {
       </TabContext>
 
       <Actions
-        request={request}
+        data={data}
         onReject={onReject}
         onConfirm={onConfirm}
         accepted={accepted}
@@ -143,26 +145,26 @@ function SimulationResult({ simulation }: SimulationResultProps) {
 }
 
 interface ActionsProps {
-  request: TxRequest;
+  data: TxRequest;
   onReject: () => void;
   onConfirm: () => void;
   accepted: boolean;
 }
 
-function Actions({ request, accepted, onReject, onConfirm }: ActionsProps) {
+function Actions({ data, accepted, onReject, onConfirm }: ActionsProps) {
   const ledgerDetected = useLedgerDetect({
-    disabled: request?.walletType !== "ledger",
+    disabled: data?.walletType !== "ledger",
     stopOnDetected: true,
   });
 
-  if (request.walletType === "ledger" && !ledgerDetected) {
+  if (data.walletType === "ledger" && !ledgerDetected) {
     return (
       <Alert severity="info">
         <AlertTitle>Ledger not detected</AlertTitle>
         Please unlock your Ledger, and open the Ethereum app
       </Alert>
     );
-  } else if (request.walletType === "ledger" && ledgerDetected && accepted) {
+  } else if (data.walletType === "ledger" && ledgerDetected && accepted) {
     return (
       <Alert severity="info">
         <AlertTitle>Check your ledger</AlertTitle>
