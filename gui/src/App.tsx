@@ -16,11 +16,11 @@ import {
 } from "@/components";
 import {
   MsgSignDialog,
+  ChainAddDialog,
   TxReviewDialog,
   WalletUnlockDialog,
 } from "@/components/Dialogs";
 import { Onboarding } from "@/components/Onboarding";
-
 import { useTheme } from "./store/theme";
 
 const queryClient = new QueryClient({
@@ -74,10 +74,16 @@ function Routes() {
         <Route path="/dialog/wallet-unlock/:id">
           {({ id }: { id: string }) => <WalletUnlockDialog id={parseInt(id)} />}
         </Route>
+
+        <Route path="/dialog/chain-add/:id">
+          {({ id }: { id: string }) => <ChainAddDialog id={parseInt(id)} />}
+        </Route>
+
         <Route>
           <SnackbarProvider
             anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
             preventDuplicate
+            maxSnack={3}
             dense
           >
             <CommandBar>

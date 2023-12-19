@@ -1,13 +1,5 @@
+import { CallMade, CallReceived, NoteAdd } from "@mui/icons-material";
 import {
-  CallMade,
-  CallReceived,
-  ExpandMore,
-  NoteAdd,
-} from "@mui/icons-material";
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Badge,
   Box,
   CircularProgress,
@@ -15,20 +7,25 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api";
 import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import truncateEthAddress from "truncate-eth-address";
 import { Address, formatEther, formatGwei } from "viem";
 import { useTransaction, useWaitForTransaction } from "wagmi";
 
-import { Paginated, Pagination, Tx } from "@/types";
+import { Paginated, Pagination, Tx } from "@iron/types";
 import { useEventListener } from "@/hooks";
 import { useNetworks, useWallets } from "@/store";
-
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  AddressView,
+  ContextMenuWithTauri,
+} from "@/components";
 import { CalldataView } from "./Calldata";
 import { Datapoint } from "./Datapoint";
-import { AddressView, ContextMenu, Panel } from "./";
 
 export function Txs() {
   const account = useWallets((s) => s.address);
@@ -77,26 +74,24 @@ export function Txs() {
   );
 
   return (
-    <Panel>
-      <InfiniteScroll
-        loadMore={loadMore}
-        hasMore={!pages.at(-1)?.last}
-        loader={loader}
-      >
-        {pages.flatMap((page) =>
-          page.items.map((tx) => (
-            <Accordion key={tx.hash} TransitionProps={{ unmountOnExit: true }}>
-              <AccordionSummary expandIcon={<ExpandMore />}>
-                <Summary account={account} tx={tx} />
-              </AccordionSummary>
-              <AccordionDetails>
-                <Details tx={tx} chainId={chainId} />
-              </AccordionDetails>
-            </Accordion>
-          )),
-        )}
-      </InfiniteScroll>
-    </Panel>
+    <InfiniteScroll
+      loadMore={loadMore}
+      hasMore={!pages.at(-1)?.last}
+      loader={loader}
+    >
+      {pages.flatMap((page) =>
+        page.items.map((tx) => (
+          <Accordion key={tx.hash}>
+            <AccordionSummary>
+              <Summary account={account} tx={tx} />
+            </AccordionSummary>
+            <AccordionDetails>
+              <Details tx={tx} chainId={chainId} />
+            </AccordionDetails>
+          </Accordion>
+        )),
+      )}
+    </InfiniteScroll>
   );
 }
 
@@ -165,7 +160,11 @@ function Details({ tx, chainId }: DetailsProps) {
       />
       <Datapoint
         label="value"
-        value={<ContextMenu>{formatEther(BigInt(tx.value))} Ξ</ContextMenu>}
+        value={
+          <ContextMenuWithTauri copy={BigInt(tx.value)}>
+            {formatEther(BigInt(tx.value))} Ξ
+          </ContextMenuWithTauri>
+        }
       />
       <Datapoint
         label="data"

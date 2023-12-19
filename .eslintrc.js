@@ -16,6 +16,8 @@ module.exports = {
       "./tsconfig.json",
       "./gui/tsconfig.json",
       "./extension/tsconfig.json",
+      "./packages/react/tsconfig.json",
+      "./packages/types/tsconfig.json",
     ],
   },
 
@@ -24,6 +26,7 @@ module.exports = {
     "extension/dist/*",
     "gui/dist/*",
     "target/*",
+    ".yarn/*",
   ],
 
   settings: {
@@ -71,15 +74,16 @@ module.exports = {
     "import/order": [
       "error",
       {
+        "newlines-between": "always",
+        pathGroups: [
+          { pattern: "@iron/**", group: "sibling", position: "before" },
+        ],
+        distinctGroup: false,
+        pathGroupsExcludedImportTypes: ["@iron"],
         groups: [
-          "builtin",
-          "external",
-          "internal",
-          "parent",
-          "sibling",
-          "index",
-          "object",
+          ["builtin", "external"],
           "type",
+          ["object", "internal", "sibling", "parent", "index"],
         ],
       },
     ],

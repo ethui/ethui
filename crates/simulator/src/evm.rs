@@ -1,4 +1,5 @@
-use alloy_primitives::{Bytes, Log, U256};
+use alloy_primitives::{Bytes, U256};
+use ethers::types::Log;
 use foundry_evm::{
     backend::Backend,
     executors::{Executor, ExecutorBuilder},
@@ -6,6 +7,7 @@ use foundry_evm::{
     opts::EvmOpts,
     traces::{CallTraceArena, CallTraceNode},
 };
+use hex::{FromHex, ToHex};
 use iron_types::{Address, ToAlloy};
 use revm::interpreter::InstructionResult;
 
@@ -128,11 +130,18 @@ impl Evm {
             logs: res
                 .logs
                 .into_iter()
-                .map(|l| {
-                    Log::new_unchecked(
-                        l.topics.into_iter().map(|t| t.to_alloy()).collect(),
-                        l.data.to_alloy(),
-                    )
+                .map(|l| Log {
+                    address: l.address,
+                    topics: l.topics,
+                    data: iron_types::Bytes::from_hex(l.data.encode_hex::<String>()).unwrap(),
+                    block_hash: l.block_hash,
+                    block_number: l.block_number,
+                    transaction_hash: l.transaction_hash,
+                    transaction_index: l.transaction_index,
+                    log_index: l.log_index,
+                    transaction_log_index: l.transaction_log_index,
+                    log_type: l.log_type,
+                    removed: l.removed,
                 })
                 .collect(),
             exit_reason: res.exit_reason,

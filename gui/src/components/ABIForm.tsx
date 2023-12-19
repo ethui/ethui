@@ -7,7 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Stack } from "@mui/system";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api";
 import { Abi, AbiFunction, formatAbiItem } from "abitype";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";

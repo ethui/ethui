@@ -1,11 +1,9 @@
-import { listen } from "@tauri-apps/api/event";
-import { invoke } from "@tauri-apps/api/tauri";
+import { event, invoke } from "@tauri-apps/api";
 import { Address } from "viem";
-import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
+import { create, StateCreator } from "zustand";
 
 import { errorToast } from "@/components/Toast";
-
 import { useNetworks } from "./networks";
 
 interface State {
@@ -51,7 +49,7 @@ const store: StateCreator<Store> = (set, get) => ({
 
 export const useContracts = create<Store>()(subscribeWithSelector(store));
 
-listen("contracts-updated", async () => {
+event.listen("contracts-updated", async () => {
   await useContracts.getState().reload();
 });
 

@@ -3,22 +3,29 @@ import {
   OnlinePredictionSharp,
   Receipt,
   RequestQuoteSharp,
+  SettingsSharp as SettingsSharpIcon,
+  TerminalSharp as TerminalSharpIcon,
 } from "@mui/icons-material";
 import { Box, Button, Drawer, IconButton, Stack, Toolbar } from "@mui/material";
 import { blue } from "@mui/material/colors";
 import { invoke } from "@tauri-apps/api/tauri";
+
 import { findIndex, parseInt, range, toString } from "lodash-es";
 import { ReactNode } from "react";
-import { Link, useLocation, useRoute } from "wouter";
+import { useLocation, useRoute } from "wouter";
+import { useKBar } from "kbar";
 
 import { useKeyPress, useMenuAction, useOS } from "@/hooks";
+
 import { useSettings, useSettingsWindow, useTheme, useWallets } from "@/store";
 
 import { MAX_CHANGE_WALLET_SHORTCUTS } from "./Settings/Keybinds";
 
+
 import {
+  Modal,
   Account,
-  CommandBarButton,
+  AddressView,
   Connections,
   Contracts,
   Logo,
@@ -26,33 +33,35 @@ import {
   QuickFastModeToggle,
   QuickNetworkSelect,
   QuickWalletSelect,
-  SettingsButton,
+  Settings,
+  SidebarButton,
   Txs,
 } from "./";
 
 export const TABS = [
   {
     path: "account",
-    name: "Account",
+    label: "Account",
     component: Account,
+    navbarComponent: AccountsNavbar,
     icon: RequestQuoteSharp,
   },
   {
     path: "transactions",
-    name: "Transactions",
+    label: "Transactions",
     component: Txs,
     icon: Receipt,
   },
   {
     path: "contracts",
-    name: "Contracts",
+    label: "Contracts",
     component: Contracts,
     devOnly: true,
     icon: CallToAction,
   },
   {
     path: "connections",
-    name: "Connections",
+    label: "Connections",
     component: Connections,
     icon: OnlinePredictionSharp,
   },
@@ -63,10 +72,30 @@ export const DEFAULT_TAB = TABS[0];
 const WIDTH_MD = 200;
 const WIDTH_SM = 72;
 
+const contentStyle = (theme: Theme) => {
+  return {
+    pl: `${WIDTH_MD}px`,
+    transition: theme.transitions.create("padding-left"),
+    [theme.breakpoints.down("sm")]: {
+      pl: `${WIDTH_SM}px`,
+    },
+  };
+};
+
+const drawerPaperStyle = (theme: Theme) => {
+  return {
+    width: WIDTH_MD,
+    transition: theme.transitions.create("width"),
+    [theme.breakpoints.down("sm")]: {
+      width: WIDTH_SM,
+      justifyContent: "center",
+    },
+  };
+};
+
 export function SidebarLayout({ children }: { children: ReactNode }) {
   const [_location, setLocation] = useLocation();
   const { theme } = useTheme();
-  const breakpoint = theme.breakpoints.down("sm");
 
   const { settings } = useSettings();
   const fastMode = settings?.fastMode;
@@ -132,16 +161,7 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
   return (
     <>
       <Sidebar />
-      <Box
-        sx={{
-          pl: `${WIDTH_MD}px`,
-          [breakpoint]: {
-            pl: `${WIDTH_SM}px`,
-          },
-        }}
-      >
-        {children}
-      </Box>
+      <Box sx={contentStyle(theme)}>{children}</Box>
     </>
   );
 }
@@ -151,129 +171,89 @@ export function Sidebar() {
   const { theme } = useTheme();
   const breakpoint = theme.breakpoints.down("sm");
   const { type } = useOS();
+  const kbar = useKBar();
+  const { open } = useSettingsWindow();
+
+  if (!type) return null;
 
   return (
     <Drawer
       PaperProps={{
         variant: "lighter",
-        sx: {
-          width: WIDTH_MD,
-          [breakpoint]: {
-            width: WIDTH_SM,
-            justifyContent: "center",
-          },
-        },
+        sx: drawerPaperStyle(theme),
       }}
       sx={{ flexShrink: 0 }}
       variant="permanent"
     >
-      {type && (
-        <Box
-          flexGrow={1}
-          display="flex"
-          flexDirection="column"
+      <Box flexGrow={1} display="flex" flexDirection="column">
+        <Toolbar sx={{ p: 2 }} data-tauri-drag-region="true">
+          {type !== "Darwin" && <Logo width={40} />}
+        </Toolbar>
+        <Stack px={2} rowGap={1} flexGrow={1}>
+          {TABS.map(({ path, label, icon }, index) => (
+            <SidebarButton
+              key={index}
+              selected={
+                index === Math.max(findIndex(TABS, { path: params?.path }), 0)
+              }
+              {...{ href: path, label, icon }}
+            />
+          ))}
+        </Stack>
+        <Stack
+          rowGap={2}
+          p={3}
           sx={{
             [breakpoint]: {
-              alignItems: "center",
+              display: "none",
             },
           }}
         >
-          {type === "Darwin" ? (
-            <Toolbar data-tauri-drag-region="true"></Toolbar>
-          ) : (
-            <Toolbar sx={{ p: 2 }} data-tauri-drag-region="true">
-              <Logo width={40} />
-            </Toolbar>
-          )}
-          <Stack px={3} py={1} rowGap={1} flexGrow={1}>
-            {TABS.map((tab, index) => (
-              <SidebarTab
-                key={index}
-                tab={tab}
-                selected={
-                  index === Math.max(findIndex(TABS, { path: params?.path }), 0)
-                }
-              />
-            ))}
-          </Stack>
-          <Stack
-            rowGap={2}
-            p={3}
-            sx={{
-              [breakpoint]: {
-                display: "none",
-              },
-            }}
-          >
-            <QuickWalletSelect />
-            <QuickAddressSelect />
-            <QuickNetworkSelect />
-            <QuickFastModeToggle />
-          </Stack>
-          <Stack
-            p={3}
-            rowGap={1}
-            sx={{
-              [breakpoint]: {
-                justifyContent: "center",
-              },
-            }}
-          >
-            <CommandBarButton />
-            <SettingsButton />
-          </Stack>
-        </Box>
-      )}
+          <QuickWalletSelect />
+          <QuickAddressSelect />
+          <QuickNetworkSelect />
+          <QuickFastModeToggle />
+        </Stack>
+        <Stack p={3} rowGap={1}>
+          <SidebarButton
+            onClick={kbar.query.toggle}
+            icon={TerminalSharpIcon}
+            label="Command Bar"
+          />
+          <SidebarButton
+            onClick={open}
+            icon={SettingsSharpIcon}
+            label="Settings"
+          />
+          <SettingsModal />
+        </Stack>
+      </Box>
     </Drawer>
   );
 }
 
-interface SidebarTabProps {
-  tab: (typeof TABS)[number];
-  selected: boolean;
-}
-
-function SidebarTab({ tab, selected }: SidebarTabProps) {
-  const { theme } = useTheme();
-  const breakpoint = theme.breakpoints.down("sm");
+function SettingsModal() {
+  const { show, close } = useSettingsWindow();
 
   return (
-    <>
-      <IconButton
-        LinkComponent={Link}
-        href={tab.path}
-        disabled={selected}
-        color="inherit"
-        size="small"
-        sx={{
-          display: "none",
-          [breakpoint]: {
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          },
-          "&.Mui-disabled": {
-            backgroundColor: blue[500],
-            color: "white",
-          },
-        }}
-      >
-        <tab.icon fontSize="medium" />
-      </IconButton>
-      <Button
-        variant="sidebar"
-        disabled={selected}
-        startIcon={<tab.icon fontSize="medium" />}
-        LinkComponent={Link}
-        href={tab.path}
-        sx={{
-          [breakpoint]: {
-            display: "none",
-          },
-        }}
-      >
-        {tab.name}
-      </Button>
-    </>
+    <Modal
+      open={show}
+      onClose={close}
+      sx={{ outline: "none", width: "90%", height: "90%", maxWidth: "900px" }}
+    >
+      <Settings />
+    </Modal>
+  );
+}
+
+function AccountsNavbar() {
+  const address = useWallets((s) => s.address);
+
+  if (!address) return null;
+
+  return (
+    <Stack direction="row">
+      <AddressView address={address} />
+    </Stack>
   );
 }

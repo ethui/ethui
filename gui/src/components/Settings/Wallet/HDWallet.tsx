@@ -13,20 +13,20 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api";
 import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import truncateEthAddress from "truncate-eth-address";
 import { Address, formatUnits } from "viem";
 import { z } from "zod";
 
-import { useProvider } from "@/hooks";
-import { passwordFormSchema, passwordSchema } from "@/types/password";
+import { passwordFormSchema, passwordSchema } from "@iron/types/password";
 import {
   derivationPathSchema,
   HdWallet,
   mnemonicSchema,
-} from "@/types/wallets";
+} from "@iron/types/wallets";
+import { useProvider } from "@/hooks";
 
 export const schema = z.object({
   count: z.number().int().min(1).max(100),

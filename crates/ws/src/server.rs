@@ -1,7 +1,6 @@
 use std::{collections::HashMap, net::SocketAddr};
 
-use futures::stream::SplitSink;
-use futures::{SinkExt, StreamExt};
+use futures::{stream::SplitSink, SinkExt, StreamExt};
 use iron_types::GlobalState;
 use tokio::{
     net::{TcpListener, TcpStream},
@@ -108,11 +107,10 @@ async fn handle_connection(
                 }
             }
 
-            // send a ping every 15 seconds
+            // send a ping every 1 seconds
             _ = interval.tick() => {
-                ws_sender.send(Message::Ping(Default::default())).await?;
+                ws_sender.send(Message::Text("ping".to_string())).await?;
             }
-
         }
     }
 
@@ -124,6 +122,10 @@ async fn handle_message(
     handler: &iron_rpc::Handler,
     sender: &mut SplitSink<WebSocketStream<TcpStream>, Message>,
 ) -> WsResult<()> {
+    if text == "pong" {
+        return Ok(());
+    }
+
     let reply = handler.handle(serde_json::from_str(&text).unwrap()).await;
     let reply = reply
         .map(|r| serde_json::to_string(&r).unwrap())

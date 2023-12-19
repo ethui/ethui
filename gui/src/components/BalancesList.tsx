@@ -1,22 +1,26 @@
+import SendIcon from "@mui/icons-material/Send";
 import {
   Avatar,
+  IconButton,
   List,
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Tooltip,
 } from "@mui/material";
 import truncateEthAddress from "truncate-eth-address";
 import { Address, formatUnits } from "viem";
+import { useState } from "react";
 
+import { GeneralSettings } from "@iron/types/settings";
 import { useInvoke } from "@/hooks";
 import { useBalances, useNetworks } from "@/store";
-import { GeneralSettings } from "@/types/settings";
-
-import { CopyToClipboard, IconCrypto } from "./";
+import { IconCrypto } from "./Icons";
+import { CopyToClipboard, Modal, TransferForm } from "./";
 
 export function BalancesList() {
   return (
-    <List>
+    <List sx={{ maxWidth: 350 }}>
       <BalanceETH />
       <BalancesERC20 />
     </List>
@@ -74,6 +78,7 @@ function BalanceItem({
   symbol,
   contract,
 }: BalanceItemProps) {
+  const [transferFormOpen, setTransferFormOpen] = useState(false);
   const minimum = 0.001;
   // Some tokens respond with 1 decimals, that breaks this truncatedBalance without the Math.ceil
   const truncatedBalance =
@@ -82,23 +87,44 @@ function BalanceItem({
   if (!symbol || !decimals) return null;
 
   return (
-    <ListItem>
-      <ListItemAvatar>
-        <Avatar>
-          <IconCrypto ticker={symbol} />
-        </Avatar>
-      </ListItemAvatar>
-      <ListItemText
-        secondary={`${symbol} ${
-          contract ? `(${truncateEthAddress(contract)})` : ``
-        }`}
+    <>
+      <ListItem
+        secondaryAction={
+          <Tooltip title="Transfer">
+            <IconButton
+              edge="end"
+              aria-label="transfer"
+              onClick={() => setTransferFormOpen(true)}
+            >
+              <SendIcon />
+            </IconButton>
+          </Tooltip>
+        }
       >
-        <CopyToClipboard label={balance.toString()}>
-          {truncatedBalance > 0
-            ? formatUnits(truncatedBalance, decimals)
-            : `< ${minimum}`}
-        </CopyToClipboard>
-      </ListItemText>
-    </ListItem>
+        <ListItemAvatar>
+          <Avatar>
+            <IconCrypto ticker={symbol} />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText
+          secondary={`${symbol} ${
+            contract ? `(${truncateEthAddress(contract)})` : ``
+          }`}
+        >
+          <CopyToClipboard label={balance.toString()}>
+            {truncatedBalance > 0
+              ? formatUnits(truncatedBalance, decimals)
+              : `< ${minimum}`}
+          </CopyToClipboard>
+        </ListItemText>
+      </ListItem>
+
+      <Modal open={transferFormOpen} onClose={() => setTransferFormOpen(false)}>
+        <TransferForm
+          contract={contract}
+          onClose={() => setTransferFormOpen(false)}
+        />
+      </Modal>
+    </>
   );
 }

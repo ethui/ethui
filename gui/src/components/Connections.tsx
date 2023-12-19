@@ -8,14 +8,14 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api";
 import { map } from "lodash-es";
 import { useEffect, useState } from "react";
 
-import { Affinity, Peer } from "@/types";
+import { Affinity, Peer } from "@iron/types";
+import { ChainView } from "@iron/react/components";
 import { useEventListener, useInvoke } from "@/hooks";
 import { useNetworks } from "@/store";
-
 import { Panel } from "./";
 
 export function Connections() {
@@ -98,7 +98,7 @@ function AffinityForm({ domain }: { domain: string }) {
         </MenuItem>
         {networks.map((network) => (
           <MenuItem value={network.chain_id} key={network.name}>
-            {network.name}
+            <ChainView chainId={network.chain_id} name={network.name} />
           </MenuItem>
         ))}
       </Select>
