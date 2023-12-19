@@ -1,11 +1,4 @@
-import {
-  Stack,
-  Box,
-  useTheme,
-  SxProps,
-  Palette,
-  PaletteColor,
-} from "@mui/material";
+import { Stack, useTheme, SxProps, Palette, PaletteColor } from "@mui/material";
 import { Address, Abi, AbiFunction } from "abitype";
 import { Fragment } from "react";
 import { formatUnits, decodeFunctionData, parseAbi } from "viem";
