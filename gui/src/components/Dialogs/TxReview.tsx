@@ -90,7 +90,10 @@ export function TxReviewDialog({ id }: { id: number }) {
           </Stack>
         </Typography>
 
-        <SolidityCall {...{ value, data, to, chainId, abi }} />
+        <SolidityCall
+          {...{ value, data, to, chainId, abi }}
+          ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
+        />
       </Stack>
 
       <TabContext value={tab}>
