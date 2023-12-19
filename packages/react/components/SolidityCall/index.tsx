@@ -1,9 +1,16 @@
-import { Stack, Box, useTheme, SxProps } from "@mui/material";
+import {
+  Stack,
+  Box,
+  useTheme,
+  SxProps,
+  Palette,
+  PaletteColor,
+} from "@mui/material";
 import { Address, Abi, AbiFunction } from "abitype";
 import { Fragment } from "react";
 import { formatUnits, decodeFunctionData, parseAbi } from "viem";
 
-import { Typography } from "../";
+import { ClickToCopy, Typography } from "../";
 
 export interface SolidityCallProps {
   value?: bigint;
@@ -65,6 +72,7 @@ function Fallback({ value, to, decimals, ArgProps }: FallbackProps) {
         type="uint256"
         {...ArgProps}
         value={formatUnits(value, decimals)}
+        variant="primary"
       />
       <Arg name="to" type="address" {...ArgProps} value={to} />
     </Stack>
@@ -123,23 +131,16 @@ function Call({ value, data, contract, decimals, abi, ArgProps }: CallProps) {
         fontFamily: "monospace",
       }}
     >
-      <Arg
-        type="address"
-        color={theme.palette.highlight2.main}
-        {...ArgProps}
-        value={contract}
-      />
+      <Arg type="address" variant="highlight2" {...ArgProps} value={contract} />
       <Separator text="." />
-      <Box sx={{ backgroundColor: theme.palette.highlight3.main, px: 1 }}>
-        <Typography mono>{label}</Typography>
-      </Box>
+      <Arg value={label} type="string" variant="highlight3" />
       {value > 0n && (
         <>
           <Separator text="{" />
           <Arg
             name="Ξ"
             type="uint256"
-            color={theme.palette.highlight3.main}
+            variant="highlight3"
             {...ArgProps}
             value={formatUnits(value, decimals)}
           />
@@ -150,10 +151,7 @@ function Call({ value, data, contract, decimals, abi, ArgProps }: CallProps) {
       {[...args].map(({ value, type, name }, i) => (
         <Fragment key={i}>
           {i! > 0 && <Separator text="," />}
-          <Arg
-            {...{ name, value, type, color: theme.palette.highlight4.main }}
-            {...ArgProps}
-          />
+          <Arg variant="highlight4" {...{ name, value, type }} {...ArgProps} />
         </Fragment>
       ))}
       <Separator text=")" />
@@ -161,9 +159,13 @@ function Call({ value, data, contract, decimals, abi, ArgProps }: CallProps) {
   );
 }
 
+type PaletteColorKey = {
+  [Key in keyof Palette]: Palette[Key] extends PaletteColor ? Key : never;
+}[keyof Palette];
+
 interface ArgProps {
   name?: string;
-  color?: string;
+  variant?: PaletteColorKey;
   type: string;
   sx?: SxProps;
   value: string | bigint;
@@ -174,16 +176,29 @@ interface ArgProps {
 function Arg({
   name,
   type,
-  color = "highligth1",
+  variant = "highlight1",
   value,
   sx = {},
   addressRenderer,
   defaultRenderer = (v: string | bigint) => (
-    <Typography mono>{v.toString()}</Typography>
+    <ClickToCopy text={v}>
+      <Typography mono>{v.toString()}</Typography>
+    </ClickToCopy>
   ),
 }: ArgProps) {
+  const theme = useTheme();
+
   return (
-    <Stack direction="row" sx={{ backgroundColor: color, px: 0.5, ...sx }}>
+    <Stack
+      direction="row"
+      sx={{
+        backgroundColor: theme.palette[variant].main,
+        transition: theme.transitions.create("background-color"),
+        px: 0.5,
+        "&:hover": { backgroundColor: theme.palette[variant].dark },
+        ...sx,
+      }}
+    >
       {name && <Typography mono>{name}:&nbsp;</Typography>}
       {type === "address" && !!addressRenderer
         ? addressRenderer(value as Address)
