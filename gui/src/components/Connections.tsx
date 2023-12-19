@@ -13,7 +13,7 @@ import { map } from "lodash-es";
 import { useEffect, useState } from "react";
 
 import { Affinity, Peer } from "@iron/types";
-import { ChainView } from "@iron/components";
+import { ChainView } from "@iron/react/components";
 import { useEventListener, useInvoke } from "@/hooks";
 import { useNetworks } from "@/store";
 import { Panel } from "./";

@@ -3,7 +3,7 @@ import { isDirty, isValid } from "zod";
 import { window as tauriWindow } from "@tauri-apps/api";
 
 import { Network } from "@iron/types/network";
-import { ChainView } from "@iron/components";
+import { ChainView } from "@iron/react/components";
 import { useDialog } from "@/hooks";
 import { Datapoint } from "@/components";
 import { DialogLayout } from "./Layout";

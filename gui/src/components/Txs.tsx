@@ -22,7 +22,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   AddressView,
-  ContextMenu,
+  ContextMenuWithTauri,
 } from "@/components";
 import { CalldataView } from "./Calldata";
 import { Datapoint } from "./Datapoint";
@@ -160,7 +160,11 @@ function Details({ tx, chainId }: DetailsProps) {
       />
       <Datapoint
         label="value"
-        value={<ContextMenu>{formatEther(BigInt(tx.value))} Ξ</ContextMenu>}
+        value={
+          <ContextMenuWithTauri copy={BigInt(tx.value)}>
+            {formatEther(BigInt(tx.value))} Ξ
+          </ContextMenuWithTauri>
+        }
       />
       <Datapoint
         label="data"
