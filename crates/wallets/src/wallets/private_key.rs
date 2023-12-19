@@ -95,9 +95,16 @@ impl WalletControl for PrivateKeyWallet {
 
 impl PrivateKeyWallet {
     pub async fn from_params(params: PrivateKeyWalletParams) -> Result<Self> {
-        let wallet: signers::Wallet<SigningKey> = params.private_key.clone().try_into().unwrap();
+        let key = params
+            .private_key
+            .clone()
+            .strip_prefix("0x")
+            .unwrap_or(&params.private_key)
+            .to_string();
 
-        let ciphertext = iron_crypto::encrypt(&params.private_key, &params.password).unwrap();
+        let wallet: signers::Wallet<SigningKey> = key.clone().try_into().unwrap();
+
+        let ciphertext = iron_crypto::encrypt(&key, &params.password).unwrap();
 
         Ok(Self {
             name: params.name,
@@ -136,8 +143,8 @@ impl PrivateKeyWallet {
             };
 
             // if password was given, and correctly decrypts the keystore
-            if let Ok(mnemonic) = iron_crypto::decrypt(&self.ciphertext, &password) {
-                self.store_secret(mnemonic).await;
+            if let Ok(private_key) = iron_crypto::decrypt(&self.ciphertext, &password) {
+                self.store_secret(private_key).await;
                 return Ok(());
             }
 
@@ -147,12 +154,12 @@ impl PrivateKeyWallet {
         Err(Error::UnlockDialogFailed)
     }
 
-    async fn store_secret(&self, mnemonic: String) {
+    async fn store_secret(&self, private_key: String) {
         // acquire both write locks
         let mut expirer_handle = self.expirer.write().await;
         let mut secret_handle = self.secret.write().await;
 
-        let secret = mnemonic_into_secret(mnemonic);
+        let secret = private_key_into_secret(private_key);
 
         *secret_handle = Some(Mutex::new(secret));
 
@@ -174,8 +181,8 @@ pub struct PrivateKeyWalletParams {
 }
 
 /// Converts a signer into a SecretVec
-pub fn mnemonic_into_secret(mnemonic: String) -> SecretVec<u8> {
-    let signer_bytes = mnemonic.into_bytes();
+pub fn private_key_into_secret(private_key: String) -> SecretVec<u8> {
+    let signer_bytes = private_key.into_bytes();
     let bytes = signer_bytes.as_slice();
 
     SecretVec::new(bytes.len(), |s| {
@@ -188,5 +195,6 @@ pub fn mnemonic_into_secret(mnemonic: String) -> SecretVec<u8> {
 /// Converts a SecretVec into a signer
 fn signer_from_secret(secret: &SecretVec<u8>) -> signers::Wallet<SigningKey> {
     let signer_bytes = secret.borrow();
-    signers::Wallet::from_bytes(&signer_bytes).unwrap()
+    let key = String::from_utf8(signer_bytes.to_vec()).unwrap();
+    key.try_into().unwrap()
 }
