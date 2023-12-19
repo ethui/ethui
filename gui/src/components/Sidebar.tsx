@@ -6,22 +6,16 @@ import {
   SettingsSharp as SettingsSharpIcon,
   TerminalSharp as TerminalSharpIcon,
 } from "@mui/icons-material";
-import { Box, Button, Drawer, IconButton, Stack, Toolbar } from "@mui/material";
-import { blue } from "@mui/material/colors";
-import { invoke } from "@tauri-apps/api/tauri";
-
+import { Box, Drawer, Stack, Theme, Toolbar } from "@mui/material";
 import { findIndex, parseInt, range, toString } from "lodash-es";
 import { ReactNode } from "react";
 import { useLocation, useRoute } from "wouter";
 import { useKBar } from "kbar";
+import { invoke } from "@tauri-apps/api";
 
 import { useKeyPress, useMenuAction, useOS } from "@/hooks";
-
 import { useSettings, useSettingsWindow, useTheme, useWallets } from "@/store";
-
 import { MAX_CHANGE_WALLET_SHORTCUTS } from "./Settings/Keybinds";
-
-
 import {
   Modal,
   Account,
