@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Stack, TextField, Box, Typography } from "@mui/material";
+import { Button, Stack, TextField } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
@@ -14,16 +14,11 @@ import { useNetworks } from "@/store";
 
 interface Props {
   address: Address;
-  contextMenu?: boolean;
   copyIcon?: boolean;
   mono?: boolean;
 }
 
-export function AddressView({
-  contextMenu,
-  address: addr,
-  mono = false,
-}: Props) {
+export function AddressView({ address: addr, mono = false }: Props) {
   const network = useNetworks((s) => s.current);
   const address = getAddress(addr);
   const { data: alias, mutate } = useInvoke<string>("settings_get_alias", {

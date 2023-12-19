@@ -4,8 +4,8 @@ import { useState } from "react";
 import JsonView from "react18-json-view";
 import { decodeFunctionData } from "viem";
 
+import { Typography } from "@iron/react/components";
 import { useInvoke } from "@/hooks";
-import { MonoText } from "./Typography";
 
 interface Props {
   contract?: Address;

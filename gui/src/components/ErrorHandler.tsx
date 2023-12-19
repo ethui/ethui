@@ -3,7 +3,7 @@ import { invoke } from "@tauri-apps/api";
 import { ErrorInfo, ReactNode } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { MonoText } from "./Typography";
+import { Typography } from "@iron/react/components";
 import { Panel } from "./Panel";
 
 interface Props {
