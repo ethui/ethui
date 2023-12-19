@@ -16,7 +16,6 @@ export { ErrorHandler } from "./ErrorHandler";
 export { HomePage } from "./HomePage";
 export { Logo } from "./Logo";
 export { Modal } from "./Modal";
-export { MonoText } from "./MonoText";
 export { Navbar } from "./Navbar";
 export { NestedRoutes } from "./NestedRoutes";
 export { Panel } from "./Panel";

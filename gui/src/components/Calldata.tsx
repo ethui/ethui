@@ -4,8 +4,8 @@ import { useState } from "react";
 import JsonView from "react18-json-view";
 import { decodeFunctionData } from "viem";
 
+import { Typography } from "@iron/react/components";
 import { useInvoke } from "@/hooks";
-import { MonoText } from "./MonoText";
 
 interface Props {
   contract?: Address;
@@ -37,7 +37,7 @@ export function CalldataView({ data, contract, chainId }: Props) {
           <TabChip label="Json" value="json" onClick={setTab} current={tab} />
         )}
       </Stack>
-      {tab == "hex" && <MonoText>{data}</MonoText>}
+      {tab == "hex" && <Typography mono>{data}</Typography>}
       {tab == "json" && <JsonView src={decoded} theme="default" />}
     </>
   );

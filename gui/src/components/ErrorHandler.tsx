@@ -3,7 +3,7 @@ import { invoke } from "@tauri-apps/api";
 import { ErrorInfo, ReactNode } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { MonoText } from "./MonoText";
+import { Typography } from "@iron/react/components";
 import { Panel } from "./Panel";
 
 interface Props {
@@ -28,14 +28,14 @@ function Fallback({ error }: { error: Error }) {
     <>
       <Alert severity="error">Something went wrong</Alert>
       <Panel>
-        <MonoText>
+        <Typography mono>
           {error.toString()}
           <br />
           <br />
           {formatStack(error.stack).map((line, i) => (
             <div key={i}>{line}</div>
           ))}
-        </MonoText>
+        </Typography>
       </Panel>
     </>
   );
