@@ -193,8 +193,8 @@ function Arg({
       direction="row"
       sx={{
         backgroundColor: theme.palette[variant].main,
-        transition: theme.transitions.create("background-color"),
         px: 0.5,
+        transition: theme.transitions.create("background-color"),
         "&:hover": { backgroundColor: theme.palette[variant].dark },
         ...sx,
       }}
