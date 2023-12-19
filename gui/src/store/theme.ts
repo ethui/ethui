@@ -3,7 +3,7 @@ import { event, invoke } from "@tauri-apps/api";
 import { Action } from "kbar";
 import { create, StateCreator } from "zustand";
 
-import * as themes from "@iron/react/themes";
+import { themes } from "@iron/react";
 import { GeneralSettings } from "@iron/types/settings";
 
 interface Store {

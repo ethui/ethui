@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ContentCopySharp } from "@mui/icons-material";
-import { Box, Button, Stack, TextField } from "@mui/material";
+import { Button, Stack, TextField, Box, Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
@@ -10,7 +9,8 @@ import { z } from "zod";
 
 import { Typography } from "@iron/react/components";
 import { useInvoke } from "@/hooks";
-import { ContextMenu, Modal } from "./";
+import { ContextMenuWithTauri, Modal } from "./";
+import { useNetworks } from "@/store";
 
 interface Props {
   address: Address;
@@ -22,71 +22,53 @@ interface Props {
 export function AddressView({
   contextMenu,
   address: addr,
-  copyIcon,
   mono = false,
 }: Props) {
+  const network = useNetworks((s) => s.current);
   const address = getAddress(addr);
   const { data: alias, mutate } = useInvoke<string>("settings_get_alias", {
     address,
   });
   const [aliasFormOpen, setAliasFormOpen] = useState(false);
 
-  const contextActions = [
-    { label: "Set alias", action: () => setAliasFormOpen(true) },
-    {
-      label: "Clear alias",
-      action: () => {
-        invoke("settings_set_alias", { address, alias: null });
-        mutate();
-      },
-      disabled: !alias,
-    },
-  ];
+  if (!network) return;
 
   const text = alias ? alias : truncateEthAddress(`${address}`);
   const content = (
     <>
       {mono && <Typography mono>{text}</Typography>}
       {!mono && <Typography>{text}</Typography>}
-      {copyIcon && <ContentCopySharp fontSize="small" sx={{ ml: 1 }} />}
     </>
   );
 
   return (
-    <>
-      {!contextMenu && (
-        <Box fontSize="inherit" title={address}>
-          {content}
-        </Box>
-      )}
+    <ContextMenuWithTauri
+      copy={address}
+      actions={[
+        {
+          label: "Open in explorer",
+          href: `${network.explorer_url}${address}`,
+        },
+        { label: "Set alias", action: () => setAliasFormOpen(true) },
+        {
+          label: "Clear alias",
+          action: () => setAliasFormOpen(true),
+          disabled: !alias,
+        },
+      ]}
+      sx={{ textTransform: "none" }}
+    >
+      {content}
 
-      {contextMenu && (
-        <>
-          <ContextMenu
-            copy={address}
-            explorer={address}
-            actions={contextActions}
-            sx={{ textTransform: "none" }}
-          >
-            {content}
-          </ContextMenu>
-
-          <Modal open={aliasFormOpen} onClose={() => setAliasFormOpen(false)}>
-            <AliasForm
-              {...{ address, alias, mutate }}
-              onSubmit={() => setAliasFormOpen(false)}
-            />
-          </Modal>
-        </>
-      )}
-    </>
+      <Modal open={aliasFormOpen} onClose={() => setAliasFormOpen(false)}>
+        <AliasForm
+          {...{ address, alias, mutate }}
+          onSubmit={() => setAliasFormOpen(false)}
+        />
+      </Modal>
+    </ContextMenuWithTauri>
   );
 }
-
-AddressView.defaultProps = {
-  contextMenu: true,
-  copyIcon: false,
-};
 
 const schema = z.object({
   alias: z.string().optional(),

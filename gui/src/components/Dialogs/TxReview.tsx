@@ -10,12 +10,11 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import JsonView from "react18-json-view";
-import { Address, formatEther } from "viem";
+import { Address } from "viem";
 
 import {
   AddressView,
   CalldataView,
-  ContextMenu,
   Datapoint,
   HumanReadableCall,
 } from "@/components";

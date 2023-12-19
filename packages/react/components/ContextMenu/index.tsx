@@ -1,62 +1,37 @@
-import { Button, Menu, MenuItem, SxProps, Tooltip } from "@mui/material";
-import { clipboard } from "@tauri-apps/api";
-import { MouseEvent, ReactNode, useState } from "react";
+import { Menu, MenuItem, MenuItemProps, SxProps } from "@mui/material";
+import React, { MouseEvent, ReactNode, useState } from "react";
 
-interface Props {
+import { ClickToCopy } from "@iron/react/components";
+
+export interface ContextMenuProps {
   children: ReactNode;
-  copy?: string;
-  explorer?: string;
+  copy?: string | bigint | number;
   sx?: SxProps;
   actions?: CustomAction[];
+  clipboard?: { writeText: (s: string) => void };
 }
 
 interface CustomAction {
   label: string;
-  action: () => unknown;
+  action?: () => unknown;
+  href?: string;
   disabled?: boolean;
 }
 
-const buttonSx = {
-  background: "transparent",
-  p: 0,
-  color: "inherit",
-  fontWeight: "inherit",
-  fontSize: "inherit",
-  border: 0,
-  minWidth: "inherit",
-};
-
-export function ContextMenu({ children, sx, copy, explorer, actions }: Props) {
-  const currentNetwork = useNetworks((s) => s.current);
-  const [copied, setCopied] = useState(false);
+export function ContextMenu({
+  children,
+  copy,
+  actions = [],
+  clipboard = navigator.clipboard,
+}: ContextMenuProps) {
   const [contextMenu, setContextMenu] = useState<{
-    target: HTMLElement;
     mouseX: number;
     mouseY: number;
   } | null>(null);
 
-  const contextMenuOpen = Boolean(contextMenu?.target);
-  const tooltipDelay = copied ? 0 : contextMenuOpen ? Infinity : 600;
+  const handleClose = () => setContextMenu(null);
 
-  const copyToClipboard = (text: string | null | undefined) => {
-    if (!text) throw new Error("Nothing to copy to clipboard");
-
-    clipboard.writeText(text);
-    setCopied(true);
-    setContextMenu(null);
-  };
-
-  const onContextCopy = () => copyToClipboard(copy);
-
-  const onCopyText = (event: MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-    event.preventDefault();
-    copyToClipboard(copy);
-  };
-
-  const onCloseMenu = () => setContextMenu(null);
-
-  const onContextMenu = (event: MouseEvent<HTMLButtonElement>) => {
+  const handleContextMenu = (event: React.MouseEvent) => {
     event.stopPropagation();
     event.preventDefault();
     setContextMenu(null);
@@ -64,7 +39,6 @@ export function ContextMenu({ children, sx, copy, explorer, actions }: Props) {
     setContextMenu(
       contextMenu === null
         ? {
-            target: event.currentTarget,
             mouseX: event.clientX + 2,
             mouseY: event.clientY - 6,
           }
@@ -72,10 +46,10 @@ export function ContextMenu({ children, sx, copy, explorer, actions }: Props) {
     );
   };
 
-  const onAction = (
-    e: MouseEvent<HTMLAnchorElement>,
-    action: () => unknown,
-  ) => {
+  const handleCopy = (e: MouseEvent) =>
+    handleAction(e, () => copy && clipboard.writeText(copy.toString()));
+
+  const handleAction = (e: MouseEvent, action: () => unknown) => {
     e.stopPropagation();
     e.preventDefault();
     setContextMenu(null);
@@ -84,72 +58,54 @@ export function ContextMenu({ children, sx, copy, explorer, actions }: Props) {
 
   return (
     <>
-      <Tooltip
-        onClose={() => setTimeout(() => setCopied(false), 500)}
-        title={copy && copied ? "Copied to clipboard" : copy}
-        arrow
-        enterDelay={tooltipDelay}
-        enterNextDelay={tooltipDelay}
-        leaveDelay={0}
-      >
-        <Button
-          disableRipple
-          disableFocusRipple
-          disableElevation
-          sx={{ ...buttonSx, ...sx }}
-          onClick={onCopyText}
-          onContextMenu={onContextMenu}
+      {copy ? (
+        <ClickToCopy
+          text={copy}
+          onContextMenu={handleContextMenu}
+          write={clipboard.writeText}
         >
           {children}
-        </Button>
-      </Tooltip>
-      {contextMenu?.target && (
-        <Menu
-          id="basic-menu"
-          anchorEl={contextMenu?.target}
-          open={contextMenuOpen}
-          onClose={onCloseMenu}
-          MenuListProps={{
-            "aria-labelledby": "basic-button",
-          }}
-          anchorReference="anchorPosition"
-          anchorPosition={
-            contextMenu !== null
-              ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
-              : undefined
-          }
-        >
-          {/* copy to clipboard */}
-          {copy && <MenuItem onClick={onContextCopy}>Copy</MenuItem>}
-
-          {/* open in explorer */}
-          {currentNetwork?.explorer_url && explorer && (
-            <MenuItem
-              component="a"
-              target="_blank"
-              href={`${currentNetwork.explorer_url}${explorer}`}
-              rel="noreferrer"
-              onClick={onCloseMenu}
-            >
-              Open in explorer
-            </MenuItem>
-          )}
-
-          {/* custom actions */}
-          {actions &&
-            actions
-              .filter(({ disabled }) => !disabled)
-              .map(({ label, action }) => (
-                <MenuItem
-                  component="a"
-                  key={label}
-                  onClick={(e) => onAction(e, action)}
-                >
-                  {label}
-                </MenuItem>
-              ))}
-        </Menu>
+        </ClickToCopy>
+      ) : (
+        children
       )}
+
+      <Menu
+        id="basic-menu"
+        anchorReference="anchorPosition"
+        open={contextMenu !== null}
+        onClose={handleClose}
+        MenuListProps={{
+          "aria-labelledby": "basic-button",
+        }}
+        anchorPosition={
+          contextMenu !== null
+            ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+            : undefined
+        }
+      >
+        {!!copy && (
+          <MenuItem component="a" onClick={handleCopy}>
+            Copy
+          </MenuItem>
+        )}
+
+        {actions
+          .filter(({ disabled }) => !disabled)
+          .map(({ label, action, href }, i: number) => {
+            const props: MenuItemProps<"a"> = {};
+            if (href) {
+              props.href = href;
+            } else if (action) {
+              props.onClick = (e) => handleAction(e, action);
+            }
+            return (
+              <MenuItem key={i} component="a" {...props}>
+                {label}
+              </MenuItem>
+            );
+          })}
+      </Menu>
     </>
   );
 }

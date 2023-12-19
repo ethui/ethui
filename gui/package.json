@@ -17,6 +17,7 @@
     "@fontsource/roboto": "^5.0.8",
     "@fontsource/roboto-mono": "^5.0.16",
     "@hookform/resolvers": "^3.3.2",
+    "@iron/react": "*",
     "@iron/types": "*",
     "@mui/icons-material": "^5.15.0",
     "@mui/lab": "^5.0.0-alpha.156",

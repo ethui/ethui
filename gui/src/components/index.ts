@@ -6,7 +6,7 @@ export { CalldataView } from "./Calldata";
 export { CommandBar } from "./CommandBar";
 export { ConfirmationDialog } from "./ConfirmationDialog";
 export { Connections } from "./Connections";
-export { ContextMenu } from "./ContextMenu";
+export { ContextMenuWithTauri } from "./ContextMenuWithTauri";
 export { Contracts } from "./Contracts";
 export { CopyToClipboard } from "./CopyToClipboard";
 export { Datapoint } from "./Datapoint";

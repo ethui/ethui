@@ -203,7 +203,7 @@ function AccountsNavbar() {
 
   return (
     <Stack direction="row">
-      <AddressView address={address} copyIcon />
+      <AddressView address={address} />
     </Stack>
   );
 }

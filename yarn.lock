@@ -2536,6 +2536,7 @@ __metadata:
     "@fontsource/roboto": "npm:^5.0.8"
     "@fontsource/roboto-mono": "npm:^5.0.16"
     "@hookform/resolvers": "npm:^3.3.2"
+    "@iron/react": "npm:*"
     "@iron/types": "npm:*"
     "@mui/icons-material": "npm:^5.15.0"
     "@mui/lab": "npm:^5.0.0-alpha.156"
@@ -2578,7 +2579,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@iron/react@workspace:packages/react":
+"@iron/react@npm:*, @iron/react@workspace:packages/react":
   version: 0.0.0-use.local
   resolution: "@iron/react@workspace:packages/react"
   dependencies:
