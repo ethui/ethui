@@ -3,6 +3,7 @@
   "compilerOptions": {
     "typeRoots": [
       "./src/global.d.ts",
+      "../packages/react/global.d.ts",
       "./node_modules/@types",
       "../node_modules/@types"
     ],

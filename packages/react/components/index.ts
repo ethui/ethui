@@ -5,3 +5,4 @@ export * from "./Typography";
 export * from "./ChainView";
 export * from "./ClickToCopy";
 export * from "./ContextMenu";
+export * from "./SolidityCall";

@@ -20,9 +20,11 @@
     "@mui/lab": "^5.0.0-alpha.156",
     "@mui/material": "^5.15.0",
     "@storybook/addon-themes": "^7.6.5",
+    "abitype": "^0.10.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-hook-form": "^7.49.0"
+    "react-hook-form": "^7.49.0",
+    "viem": "^1.20.2"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "^7.6.5",

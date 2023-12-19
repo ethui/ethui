@@ -1,14 +1,6 @@
-import Chrome from "chrome";
+import "@mui/material";
 
-declare namespace chrome {
-  export default Chrome;
-}
-
-interface myLib {
-  name: string;
-  length: number;
-  extras?: string[];
-}
+declare module "*.webp";
 
 declare module "@mui/material/styles" {
   interface Palette {

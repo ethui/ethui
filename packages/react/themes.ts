@@ -1,4 +1,6 @@
-import { PaletteMode, Theme, createTheme } from "@mui/material";
+import { PaletteMode } from "@mui/material";
+import { Theme, createTheme } from "@mui/material/styles";
+
 import { grey, lightBlue, red, yellow } from "@mui/material/colors";
 
 export const lightTheme = getTheme("light");
