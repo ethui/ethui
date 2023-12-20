@@ -20,6 +20,15 @@ export const Call: StoryObj<SolidityCallProps> = {
     return (
       <Stack direction="column" spacing={2}>
         <SolidityCall
+          from="0xalice"
+          to="0x6aD2...4E45"
+          value={BigInt(1e18)}
+          chainId={1}
+          decimals={18}
+        />
+
+        <SolidityCall
+          from="0x6aD2...4E45"
           to="0x6aD2...4E45"
           data="0xa9059cbb0000000000000000000000006ad20adf8ab9db9b3b3f47987b3d87bfc4674e450000000000000000000000000000000000000000000000000000000773594000"
           value={0n}
@@ -29,6 +38,7 @@ export const Call: StoryObj<SolidityCallProps> = {
         />
 
         <SolidityCall
+          from="0xalice"
           to="0x6aD20ADF8ab9DB9B3B3F47987B3d87bFc4674E45"
           data="0xa9059cbb0000000000000000000000006ad20adf8ab9db9b3b3f47987b3d87bfc4674e450000000000000000000000000000000000000000000000000000000773594000"
           value={0n}
@@ -36,12 +46,11 @@ export const Call: StoryObj<SolidityCallProps> = {
           decimals={18}
           abi={["function transfer(address from, uint256 amount)"]}
           ArgProps={{
-            addressRenderer: () => (
-              <Typography mono>custom address rendering</Typography>
-            ),
+            addressRenderer: () => <Typography mono>alias</Typography>,
           }}
         />
         <SolidityCall
+          from="0xalice"
           to="0x6aD2...4E45"
           data="0xa9059cbb0000000000000000000000006ad20adf8ab9db9b3b3f47987b3d87bfc4674e450000000000000000000000000000000000000000000000000000000773594000"
           value={0n}

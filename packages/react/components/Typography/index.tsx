@@ -12,8 +12,12 @@ export const Typography = ({ sx, mono, ...rest }: TypographyProps) => {
 
   if (mono) {
     sxFull = {
+      ...{
+        overflowWrap: "anywhere",
+        fontFamily: "Roboto Mono",
+        textAlign: "left",
+      },
       ...sx,
-      ...{ overflowWrap: "break-word", fontFamily: "Roboto Mono" },
     };
   }
 
