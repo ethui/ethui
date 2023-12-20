@@ -6,7 +6,7 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import { map } from "lodash-es";
-import { Address } from "viem";
+import { Address, getAddress } from "viem";
 
 import { Wallet } from "@iron/types/wallets";
 import { useInvoke } from "@/hooks";
@@ -70,5 +70,8 @@ function getCurrentPath(wallet: Wallet, addresses: [string, Address][]) {
 
     case "ledger":
       return wallet.addresses[wallet.current || 0][0];
+
+    case "privateKey":
+      return getAddress(wallet.address);
   }
 }

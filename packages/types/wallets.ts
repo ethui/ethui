@@ -64,6 +64,14 @@ export const jsonKeystoreSchema = z.object({
   currentPath: z.string().optional(),
 });
 
+export const privateKeySchema = z.object({
+  type: z.literal("privateKey"),
+  name: z.string().min(1),
+  address: addressSchema,
+  privateKey: z.string().regex(/^0x[a-fA-F0-9]{128}$/),
+  password: passwordSchema,
+});
+
 export const plaintextSchema = z.object({
   type: z.literal("plaintext"),
   name: z.string().min(1),
@@ -93,6 +101,7 @@ export const walletSchema = z.discriminatedUnion("type", [
   plaintextSchema,
   impersonatorSchema,
   ledgerSchema,
+  privateKeySchema,
 ]);
 
 export const walletTypes: Wallet["type"][] = Array.from(
@@ -107,3 +116,4 @@ export type JsonKeystoreWallet = z.infer<typeof jsonKeystoreSchema>;
 export type PlaintextWallet = z.infer<typeof plaintextSchema>;
 export type ImpersonatorWallet = z.infer<typeof impersonatorSchema>;
 export type LedgerWallet = z.infer<typeof ledgerSchema>;
+export type PrivateKeyWallet = z.infer<typeof privateKeySchema>;
