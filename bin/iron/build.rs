@@ -1,9 +1,10 @@
-use anyhow::{anyhow, bail, Result};
-use chrono::{DateTime, Utc};
+use anyhow::{anyhow, Result};
+use chrono::{DateTime, Duration, Utc};
 use reqwest::blocking;
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
-use std::{error::Error, fs::File, fs, io::Write, path::Path};
+//use serde_json::Value;
+use std::{fs, fs::File, io::Write, path::Path};
+use tracing::debug;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct TokenList {
@@ -26,12 +27,16 @@ pub struct Token {
 }
 
 pub fn init() -> Result<()> {
- let path_to_json = "list.json";
- let does_file_exist = Path::new("list.json").exists();
- let file_string = fs::read_to_string(path_to_json)?;
- let list_to_json_value: TokenList = serde_json::from_str(&file_string)?;
- let check_updated_at = list_to_json_value.updated_at;
-    if ( !does_file_exist || check_updated_at > )
+    let path_to_json = "list.json";
+    let does_file_exist = Path::new("list.json").exists();
+    let file_string = fs::read_to_string(path_to_json)?;
+    let list_to_json_value: TokenList = serde_json::from_str(&file_string)?;
+    let check_updated_at = list_to_json_value.updated_at;
+    let older_than_one_month = dbg!(check_updated_at.unwrap() - Duration::days(30));
+    dbg!("Está aqui o TESTEEEEEEEE: {:?}", older_than_one_month);
+    //if !does_file_exist || older_than_one_month {
+    //    println!("------Checked conditionals and ran the code!!!!!!!-----")
+    //}
 
     let response = blocking::get("https://gateway.ipfs.io/ipns/tokens.uniswap.org")
         .map_err(|err| anyhow!(err))?;
