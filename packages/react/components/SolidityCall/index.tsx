@@ -110,10 +110,6 @@ function Call({ value, data, from, to, decimals, abi, ArgProps }: CallProps) {
 
   return (
     <Stack spacing={0.5}>
-      <Stack direction="row" spacing={1}>
-        <Arg variant="highlight4" type="address" {...ArgProps} value={from} />
-        <Typography mono>calling</Typography>
-      </Stack>
       <Stack direction="row">
         <Arg type="address" variant="highlight2" value={to} {...ArgProps} />
         <Separator text="." sx={{ gridArea: "top" }} />
