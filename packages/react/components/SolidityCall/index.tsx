@@ -42,7 +42,6 @@ export function SolidityCall({
           {...{
             value,
             data,
-            from,
             to,
             chainId,
             decimals,
@@ -97,7 +96,6 @@ function Fallback({ value, from, to, decimals, ArgProps }: FallbackProps) {
 interface CallProps {
   value: bigint;
   data: `0x${string}`;
-  from: Address;
   to: Address;
   chainId?: number;
   decimals: number;
@@ -105,7 +103,7 @@ interface CallProps {
   ArgProps: Pick<ArgProps, "addressRenderer">;
 }
 
-function Call({ value, data, from, to, decimals, abi, ArgProps }: CallProps) {
+function Call({ value, data, to, decimals, abi, ArgProps }: CallProps) {
   const { label, args } = parseCall(data, abi);
 
   return (
