@@ -147,8 +147,6 @@ function Details({ tx, chainId }: DetailsProps) {
   const { data: transaction } = useTransaction({ hash: tx.hash });
   const { data: receipt } = useWaitForTransaction({ hash: tx.hash });
 
-  if (!receipt || !transaction) return null;
-
   return (
     <Grid container rowSpacing={2}>
       <Datapoint label="hash" value={truncateEthAddress(tx.hash)} />
@@ -169,17 +167,19 @@ function Details({ tx, chainId }: DetailsProps) {
       <Datapoint
         label="data"
         value={
-          <CalldataView
-            data={transaction.input}
-            contract={tx.to}
-            chainId={chainId}
-          />
+          transaction && (
+            <CalldataView
+              data={transaction.input}
+              contract={tx.to}
+              chainId={chainId}
+            />
+          )
         }
       />
-      <Datapoint label="nonce" value={transaction.nonce} />
-      <Datapoint label="type" value={transaction.type} />
+      <Datapoint label="nonce" value={transaction?.nonce} />
+      <Datapoint label="type" value={transaction?.type} />
       {/* TODO: other txs types */}
-      {transaction.type == "eip1559" && (
+      {transaction?.type == "eip1559" && (
         <>
           <Datapoint
             label="maxFeePerGas"
@@ -195,12 +195,12 @@ function Details({ tx, chainId }: DetailsProps) {
       )}
       <Datapoint
         label="gasLimit"
-        value={`${formatGwei(transaction.gas)} gwei`}
+        value={transaction && `${formatGwei(transaction?.gas)} gwei`}
         short
       />
       <Datapoint
         label="gasUsed"
-        value={`${formatGwei(receipt.gasUsed)} gwei`}
+        value={receipt && `${formatGwei(receipt?.gasUsed)} gwei`}
         short
       />
     </Grid>
