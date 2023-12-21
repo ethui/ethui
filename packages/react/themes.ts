@@ -13,7 +13,6 @@ function getTheme(mode: PaletteMode): Theme {
   const { augmentColor } = theme.palette;
 
   return createTheme(theme, {
-    shadows: Array(25).fill("none"),
     palette: {
       mode,
       highlight1: augmentColor({
