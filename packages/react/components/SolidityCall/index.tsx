@@ -37,7 +37,7 @@ export function SolidityCall({
       sx={{
         backgroundColor: theme.palette.highlight1.main,
         p: 2,
-        minWidth: 500,
+        maxWidth: "100%",
       }}
     >
       {isDeploy && <Deploy {...{ from, data, value, decimals, ArgProps }} />}
