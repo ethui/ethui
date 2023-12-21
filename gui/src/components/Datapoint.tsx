@@ -11,7 +11,7 @@ export function Datapoint({ label, value, size = "large" }: DatapointProps) {
   if (size === "medium") {
     xs = 6;
   } else if (size === "small") {
-    xs = 3;
+    xs = 4;
   }
   return (
     <Grid item xs={xs}>

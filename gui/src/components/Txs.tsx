@@ -156,19 +156,13 @@ function Details({ tx, chainId }: DetailsProps) {
       <Datapoint
         label="from"
         value={<AddressView address={tx.from} />}
-        size="medium"
+        size="small"
       />
       <Datapoint
         label="to"
         value={tx.to ? <AddressView address={tx.to} /> : ""}
-        size="medium"
-      />
-      <Datapoint
-        label="hash"
-        value={truncateEthAddress(tx.hash)}
         size="small"
       />
-      <Datapoint label="nonce" value={transaction?.nonce} size="small" />
       <Datapoint
         label="value"
         value={
@@ -178,6 +172,17 @@ function Details({ tx, chainId }: DetailsProps) {
         }
         size="small"
       />
+      <Datapoint
+        label="Block #"
+        value={receipt && receipt.blockNumber.toString()}
+        size="small"
+      />
+      <Datapoint
+        label="hash"
+        value={truncateEthAddress(tx.hash)}
+        size="small"
+      />
+      <Datapoint label="nonce" value={transaction?.nonce} size="small" />
       <Datapoint
         label="data"
         value={
@@ -213,7 +218,7 @@ function Details({ tx, chainId }: DetailsProps) {
       <Datapoint
         label="gasLimit"
         value={transaction && `${formatGwei(transaction?.gas)} gwei`}
-        size="medium"
+        size="small"
       />
       <Datapoint
         label="gasUsed"
