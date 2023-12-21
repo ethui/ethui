@@ -24,10 +24,8 @@ import {
   AddressView,
   ContextMenuWithTauri,
 } from "@/components";
-import { CalldataView } from "./Calldata";
 import { Datapoint } from "./Datapoint";
 import { SolidityCall } from "@iron/react/components";
-import { from } from "core-js/core/array";
 
 export function Txs() {
   const account = useWallets((s) => s.address);
@@ -153,8 +151,6 @@ function Details({ tx, chainId }: DetailsProps) {
     chainId,
   });
 
-  if (!receipt || !transaction) return null;
-
   return (
     <Grid container rowSpacing={2}>
       <Datapoint label="hash" value={truncateEthAddress(tx.hash)} />
@@ -175,21 +171,23 @@ function Details({ tx, chainId }: DetailsProps) {
       <Datapoint
         label=""
         value={
-          <SolidityCall
-            value={BigInt(tx.value)}
-            data={transaction.input}
-            from={tx.from}
-            to={tx.to}
-            chainId={chainId}
-            abi={abi}
-            ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
-          />
+          transaction && (
+            <SolidityCall
+              value={BigInt(tx.value)}
+              data={transaction.input}
+              from={tx.from}
+              to={tx.to}
+              chainId={chainId}
+              abi={abi}
+              ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
+            />
+          )
         }
       />
-      <Datapoint label="nonce" value={transaction.nonce} />
-      <Datapoint label="type" value={transaction.type} />
+      <Datapoint label="nonce" value={transaction?.nonce} />
+      <Datapoint label="type" value={transaction?.type} />
       {/* TODO: other txs types */}
-      {transaction.type == "eip1559" && (
+      {transaction?.type == "eip1559" && (
         <>
           <Datapoint
             label="maxFeePerGas"
@@ -205,12 +203,12 @@ function Details({ tx, chainId }: DetailsProps) {
       )}
       <Datapoint
         label="gasLimit"
-        value={`${formatGwei(transaction.gas)} gwei`}
+        value={transaction && `${formatGwei(transaction?.gas)} gwei`}
         short
       />
       <Datapoint
         label="gasUsed"
-        value={`${formatGwei(receipt.gasUsed)} gwei`}
+        value={receipt && `${formatGwei(receipt?.gasUsed)} gwei`}
         short
       />
     </Grid>
