@@ -19,13 +19,13 @@ function getTheme(mode: PaletteMode): Theme {
         color: { main: light ? grey[200] : grey[800] },
       }),
       highlight2: augmentColor({
-        color: { main: light ? red[200] : red[900] },
+        color: { main: light ? red[800] : red[500] },
       }),
       highlight3: augmentColor({
-        color: { main: light ? yellow[500] : yellow[900] },
+        color: { main: light ? yellow[900] : yellow[500] },
       }),
       highlight4: augmentColor({
-        color: { main: light ? lightBlue[200] : lightBlue[900] },
+        color: { main: light ? lightBlue[800] : lightBlue[500] },
       }),
     },
     components: {

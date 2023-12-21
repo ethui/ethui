@@ -11,11 +11,12 @@ import { invoke } from "@tauri-apps/api";
 import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import truncateEthAddress from "truncate-eth-address";
-import { Address, formatEther, formatGwei } from "viem";
+import { Abi, Address, formatEther, formatGwei } from "viem";
 import { useTransaction, useWaitForTransaction } from "wagmi";
 
 import { Paginated, Pagination, Tx } from "@iron/types";
-import { useEventListener } from "@/hooks";
+import { SolidityCall } from "@iron/react/components";
+import { useEventListener, useInvoke } from "@/hooks";
 import { useNetworks, useWallets } from "@/store";
 import {
   Accordion,
@@ -24,7 +25,6 @@ import {
   AddressView,
   ContextMenuWithTauri,
 } from "@/components";
-import { CalldataView } from "./Calldata";
 import { Datapoint } from "./Datapoint";
 
 export function Txs() {
@@ -146,15 +146,22 @@ BigInt.prototype.toJSON = function (): string {
 function Details({ tx, chainId }: DetailsProps) {
   const { data: transaction } = useTransaction({ hash: tx.hash });
   const { data: receipt } = useWaitForTransaction({ hash: tx.hash });
+  const { data: abi } = useInvoke<Abi>("get_contract_abi", {
+    address: tx.to,
+    chainId,
+  });
 
   return (
-    <Grid container rowSpacing={2}>
-      <Datapoint label="hash" value={truncateEthAddress(tx.hash)} />
-      <Datapoint label="from" value={<AddressView address={tx.from} />} short />
+    <Grid container rowSpacing={1}>
+      <Datapoint
+        label="from"
+        value={<AddressView address={tx.from} />}
+        size="small"
+      />
       <Datapoint
         label="to"
         value={tx.to ? <AddressView address={tx.to} /> : ""}
-        short
+        size="small"
       />
       <Datapoint
         label="value"
@@ -163,45 +170,60 @@ function Details({ tx, chainId }: DetailsProps) {
             {formatEther(BigInt(tx.value))} Ξ
           </ContextMenuWithTauri>
         }
+        size="small"
       />
+      <Datapoint
+        label="Block #"
+        value={receipt && receipt.blockNumber.toString()}
+        size="small"
+      />
+      <Datapoint
+        label="hash"
+        value={truncateEthAddress(tx.hash)}
+        size="small"
+      />
+      <Datapoint label="nonce" value={transaction?.nonce} size="small" />
       <Datapoint
         label="data"
         value={
           transaction && (
-            <CalldataView
+            <SolidityCall
+              value={BigInt(tx.value)}
               data={transaction.input}
-              contract={tx.to}
+              from={tx.from}
+              to={tx.to}
               chainId={chainId}
+              abi={abi}
+              ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
             />
           )
         }
       />
-      <Datapoint label="nonce" value={transaction?.nonce} />
-      <Datapoint label="type" value={transaction?.type} />
+      <Datapoint label="type" value={transaction?.type} size="small" />
       {/* TODO: other txs types */}
       {transaction?.type == "eip1559" && (
         <>
           <Datapoint
             label="maxFeePerGas"
             value={`${formatGwei(transaction.maxFeePerGas)} gwei`}
-            short
+            size="small"
           />
           <Datapoint
             label="maxPriorityFeePerGas"
             value={`${formatGwei(transaction.maxPriorityFeePerGas)} gwei`}
-            short
+            size="small"
           />
         </>
       )}
       <Datapoint
         label="gasLimit"
         value={transaction && `${formatGwei(transaction?.gas)} gwei`}
-        short
+        size="small"
       />
       <Datapoint
         label="gasUsed"
         value={receipt && `${formatGwei(receipt?.gasUsed)} gwei`}
-        short
+        size="medium"
       />
     </Grid>
   );
