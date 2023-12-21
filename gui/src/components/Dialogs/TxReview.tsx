@@ -1,11 +1,10 @@
-import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { Alert, AlertTitle, Button, Grid, Stack, Tab } from "@mui/material";
+import { Alert, AlertTitle, Button, Grid, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import JsonView from "react18-json-view";
-import { Abi, Address } from "viem";
+import { Abi, Address, Hex, decodeEventLog, parseAbi } from "viem";
 
 import { SolidityCall } from "@iron/react/components";
-import { AddressView, CalldataView, Datapoint } from "@/components";
+import { AddressView, Datapoint } from "@/components";
 import { useDialog, useInvoke, useLedgerDetect } from "@/hooks";
 import { DialogLayout } from "./Layout";
 
@@ -25,7 +24,8 @@ export interface TxRequest {
 
 interface Log {
   address: Address;
-  topics: string[];
+  data: Hex;
+  topics: [signature: Hex, ...args: Hex[]];
 }
 
 interface Simulation {
@@ -41,7 +41,6 @@ export function TxReviewDialog({ id }: { id: number }) {
     undefined,
   );
   const [accepted, setAccepted] = useState(false);
-  const [tab, setTab] = useState("1");
 
   const { data: abi } = useInvoke<Abi>("get_contract_abi", {
     address: request?.to,
@@ -81,20 +80,7 @@ export function TxReviewDialog({ id }: { id: number }) {
         />
       </Stack>
 
-      <TabContext value={tab}>
-        <TabList onChange={(_e: unknown, v: string) => setTab(v)}>
-          <Tab label="Summary" value="1" />
-          <Tab label="Simulation" value="2" />
-        </TabList>
-
-        <TabPanel value="1" sx={{ flexGrow: 1, overflowY: "auto", px: 0 }}>
-          <CalldataView data={data} contract={to} chainId={chainId} />
-        </TabPanel>
-
-        <TabPanel value="2" sx={{ flexGrow: 1, overflowY: "auto", px: 0 }}>
-          <SimulationResult simulation={simulation} />
-        </TabPanel>
-      </TabContext>
+      <SimulationResult simulation={simulation} />
 
       <Actions
         request={request}
@@ -114,19 +100,31 @@ function SimulationResult({ simulation }: SimulationResultProps) {
   if (!simulation) return null;
 
   return (
-    <Grid container rowSpacing={2}>
-      <Datapoint label="success" value={simulation.success.toString()} short />
-      <Datapoint
-        label="Block Nr"
-        value={simulation.blockNumber.toString()}
-        short
-      />
-      <Datapoint label="Gas Used" value={simulation.gasUsed.toString()} />
-      <Datapoint
-        label="Logs"
-        value={<JsonView src={simulation.logs} theme="default" />}
-      />
-    </Grid>
+    <>
+      <Stack direction="column" spacing={1}>
+        {simulation.logs.map((log, i) => (
+          <Log key={i} log={log} />
+        ))}
+      </Stack>
+
+      <Grid container rowSpacing={1}>
+        <Datapoint
+          label="success"
+          value={simulation.success.toString()}
+          short
+        />
+        <Datapoint
+          label="Block Nr"
+          value={simulation.blockNumber.toString()}
+          short
+        />
+        <Datapoint label="Gas Used" value={simulation.gasUsed.toString()} />
+        <Datapoint
+          label="Logs"
+          value={<JsonView src={simulation.logs} theme="default" />}
+        />
+      </Grid>
+    </>
   );
 }
 
@@ -168,5 +166,47 @@ function Actions({ request, accepted, onReject, onConfirm }: ActionsProps) {
         </Button>
       </Stack>
     );
+  }
+}
+
+interface LogProps {
+  log: Log;
+}
+
+const erc20Transfer = parseAbi([
+  "event Transfer(address indexed from, address indexed to, uint256 value)",
+]);
+
+function Log({ log }: LogProps) {
+  const [type, decoded] = decodeKnownLog(log);
+
+  switch (type) {
+    case "erc20transfer":
+      return (
+        <Stack direction="row" spacing={2}>
+          From&nbsp;
+          <AddressView address={decoded.args.from} />
+          &nbsp; To <AddressView address={decoded.args.to} />
+          For {decoded.args.value.toString()}
+          <AddressView address={log.address} />
+        </Stack>
+      );
+  }
+
+  return null;
+}
+
+function decodeKnownLog(log: Log) {
+  try {
+    return [
+      "erc20transfer",
+      decodeEventLog({
+        abi: erc20Transfer,
+        data: log.data,
+        topics: log.topics,
+      }),
+    ];
+  } catch (e) {
+    return null;
   }
 }

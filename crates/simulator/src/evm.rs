@@ -96,6 +96,7 @@ impl Evm {
 
         let result = self.call_raw(call).await?;
 
+        dbg!(&result.logs);
         Ok(Result {
             simulation_id: 1,
             gas_used: result.gas_used,
