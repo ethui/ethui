@@ -7,7 +7,7 @@ import truncateEthAddress from "truncate-eth-address";
 import { Address, getAddress } from "viem";
 import { z } from "zod";
 
-import { Typography } from "@iron/react/components";
+import { IconEffigy, Typography } from "@iron/react/components";
 import { useInvoke } from "@/hooks";
 import { ContextMenuWithTauri, Modal } from "./";
 import { useNetworks } from "@/store";
@@ -30,10 +30,10 @@ export function AddressView({ address: addr, mono = false }: Props) {
 
   const text = alias ? alias : truncateEthAddress(`${address}`);
   const content = (
-    <>
-      {mono && <Typography mono>{text}</Typography>}
-      {!mono && <Typography>{text}</Typography>}
-    </>
+    <Stack direction="row" alignItems="center" spacing={1}>
+      <IconEffigy address={address} />
+      <Typography mono={mono}>{text}</Typography>
+    </Stack>
   );
 
   return (

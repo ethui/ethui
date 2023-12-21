@@ -53,6 +53,7 @@ export function ABIForm({ chainId, address }: Props) {
   return (
     <Stack alignItems="flex-start" spacing={2}>
       <Autocomplete
+        autoFocus
         selectOnFocus
         sx={{ minWidth: "100%" }}
         groupBy={(option) => option.group}

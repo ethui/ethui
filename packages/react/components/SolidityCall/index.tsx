@@ -278,7 +278,6 @@ function parseCall(data: `0x${string}`, abi: Abi | string[] | undefined) {
     });
 
     label = decoded?.functionName;
-    console.log(args);
   } catch (e) {
     console.log(e);
   }
