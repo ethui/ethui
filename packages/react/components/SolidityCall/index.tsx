@@ -42,6 +42,7 @@ export function SolidityCall({
           {...{
             value,
             data,
+            from,
             to,
             chainId,
             decimals,

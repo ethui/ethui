@@ -11,11 +11,11 @@ import { invoke } from "@tauri-apps/api";
 import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import truncateEthAddress from "truncate-eth-address";
-import { Address, formatEther, formatGwei } from "viem";
+import { Abi, Address, formatEther, formatGwei } from "viem";
 import { useTransaction, useWaitForTransaction } from "wagmi";
 
 import { Paginated, Pagination, Tx } from "@iron/types";
-import { useEventListener } from "@/hooks";
+import { useEventListener, useInvoke } from "@/hooks";
 import { useNetworks, useWallets } from "@/store";
 import {
   Accordion,
@@ -26,6 +26,8 @@ import {
 } from "@/components";
 import { CalldataView } from "./Calldata";
 import { Datapoint } from "./Datapoint";
+import { SolidityCall } from "@iron/react/components";
+import { from } from "core-js/core/array";
 
 export function Txs() {
   const account = useWallets((s) => s.address);
@@ -146,6 +148,10 @@ BigInt.prototype.toJSON = function (): string {
 function Details({ tx, chainId }: DetailsProps) {
   const { data: transaction } = useTransaction({ hash: tx.hash });
   const { data: receipt } = useWaitForTransaction({ hash: tx.hash });
+  const { data: abi } = useInvoke<Abi>("get_contract_abi", {
+    address: tx.to,
+    chainId,
+  });
 
   if (!receipt || !transaction) return null;
 
@@ -167,12 +173,16 @@ function Details({ tx, chainId }: DetailsProps) {
         }
       />
       <Datapoint
-        label="data"
+        label=""
         value={
-          <CalldataView
+          <SolidityCall
+            value={BigInt(tx.value)}
             data={transaction.input}
-            contract={tx.to}
+            from={tx.from}
+            to={tx.to}
             chainId={chainId}
+            abi={abi}
+            ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
           />
         }
       />
