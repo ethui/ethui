@@ -1,13 +1,5 @@
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import {
-  Alert,
-  AlertTitle,
-  Button,
-  Grid,
-  Stack,
-  Tab,
-  Typography,
-} from "@mui/material";
+import { Alert, AlertTitle, Button, Grid, Stack, Tab } from "@mui/material";
 import { useEffect, useState } from "react";
 import JsonView from "react18-json-view";
 import { Abi, Address } from "viem";
@@ -83,15 +75,8 @@ export function TxReviewDialog({ id }: { id: number }) {
   return (
     <DialogLayout>
       <Stack spacing={2} alignItems="center">
-        <Typography variant="h6" component="h1">
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <AddressView address={from} /> <span>→</span>{" "}
-            <AddressView address={to} />
-          </Stack>
-        </Typography>
-
         <SolidityCall
-          {...{ value, data, to, chainId, abi }}
+          {...{ value, data, from, to, chainId, abi }}
           ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
         />
       </Stack>

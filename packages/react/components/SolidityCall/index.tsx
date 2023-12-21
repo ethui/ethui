@@ -30,14 +30,20 @@ export function SolidityCall({
   const isCall = data && data.length > 0 && data !== "0x";
 
   return (
-    <Box sx={{ backgroundColor: theme.palette.highlight1.main, p: 2 }}>
+    <Box
+      sx={{
+        backgroundColor: theme.palette.highlight1.main,
+        p: 2,
+        minWidth: 500,
+      }}
+    >
       {isCall && (
         <Call
           {...{
             value,
             data,
             from,
-            contract: to,
+            to,
             chainId,
             decimals,
             abi,
@@ -61,7 +67,7 @@ interface FallbackProps {
 
 function Fallback({ value, from, to, decimals, ArgProps }: FallbackProps) {
   return (
-    <Stack direction="row" spacing={0.5}>
+    <Stack direction="row" spacing={1}>
       <Typography mono>Sending</Typography>
       <Arg
         label="Ξ"
@@ -91,25 +97,25 @@ function Fallback({ value, from, to, decimals, ArgProps }: FallbackProps) {
 interface CallProps {
   value: bigint;
   data: `0x${string}`;
-  contract: Address;
+  from: Address;
+  to: Address;
   chainId?: number;
   decimals: number;
   abi?: Abi | string[];
   ArgProps: Pick<ArgProps, "addressRenderer">;
 }
 
-function Call({ value, data, contract, decimals, abi, ArgProps }: CallProps) {
+function Call({ value, data, from, to, decimals, abi, ArgProps }: CallProps) {
   const { label, args } = parseCall(data, abi);
 
   return (
     <Stack spacing={0.5}>
+      <Stack direction="row" spacing={1}>
+        <Arg variant="highlight4" type="address" {...ArgProps} value={from} />
+        <Typography mono>calling</Typography>
+      </Stack>
       <Stack direction="row">
-        <Arg
-          type="address"
-          variant="highlight2"
-          value={contract}
-          {...ArgProps}
-        />
+        <Arg type="address" variant="highlight2" value={to} {...ArgProps} />
         <Separator text="." sx={{ gridArea: "top" }} />
         <Arg value={label} type="string" variant="highlight3" />
         {value > 0n && (
