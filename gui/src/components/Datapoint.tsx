@@ -1,8 +1,8 @@
-import { Grid, Typography } from "@mui/material";
+import { Grid, Skeleton, Typography } from "@mui/material";
 
 interface DatapointProps {
   label: string;
-  value: React.ReactNode | string;
+  value?: React.ReactNode | string;
   short: boolean;
 }
 
@@ -12,7 +12,8 @@ export function Datapoint({ label, value, short }: DatapointProps) {
       <Typography color="gray" sx={{ fontSize: "12px" }}>
         {label}
       </Typography>
-      {value}
+      {value !== undefined && value}
+      {value === undefined && <Skeleton variant="text" width="80%" />}
     </Grid>
   );
 }
