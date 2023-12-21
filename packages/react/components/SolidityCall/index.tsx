@@ -9,7 +9,7 @@ export interface SolidityCallProps {
   value?: bigint;
   data?: `0x${string}`;
   from: Address;
-  to: Address;
+  to?: Address;
   chainId?: number;
   decimals?: number;
   abi?: Abi | string[];
@@ -27,7 +27,10 @@ export function SolidityCall({
   ArgProps = {},
 }: SolidityCallProps) {
   const theme = useTheme();
-  const isCall = data && data.length > 0 && data !== "0x";
+
+  const isDeploy = !to && !!data;
+  const isCall = to && !!data && data.length > 0 && data !== "0x";
+  const isFallback = !!to && (!data || data === "0x");
 
   return (
     <Box
@@ -37,6 +40,7 @@ export function SolidityCall({
         minWidth: 500,
       }}
     >
+      {isDeploy && <Deploy {...{ from, data, value, decimals, ArgProps }} />}
       {isCall && (
         <Call
           {...{
@@ -52,8 +56,41 @@ export function SolidityCall({
         />
       )}
 
-      {!isCall && <Fallback {...{ value, from, to, decimals, ArgProps }} />}
+      {isFallback && <Fallback {...{ value, from, to, decimals, ArgProps }} />}
     </Box>
+  );
+}
+
+interface DeployProps {
+  from: Address;
+  data: `0x${string}`;
+  value: bigint;
+  decimals: number;
+  ArgProps?: Pick<ArgProps, "addressRenderer" | "defaultRenderer">;
+}
+
+function Deploy({ value, from, decimals, ArgProps }: DeployProps) {
+  return (
+    <>
+      <Stack direction="row" spacing={1}>
+        <Typography mono>Sending</Typography>
+        <Arg
+          label="Ξ"
+          type="uint256"
+          {...ArgProps}
+          value={formatUnits(value, decimals)}
+          variant="primary"
+        />
+        <Arg
+          variant="highlight4"
+          label="from"
+          type="address"
+          {...ArgProps}
+          value={from}
+        />
+        <Typography mono>to newly deployed contract</Typography>
+      </Stack>
+    </>
   );
 }
 
