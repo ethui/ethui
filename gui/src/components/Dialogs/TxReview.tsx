@@ -3,6 +3,7 @@ import { Alert, AlertTitle, Button, Grid, Stack, Tab } from "@mui/material";
 import { useEffect, useState } from "react";
 import JsonView from "react18-json-view";
 import { Abi, Address } from "viem";
+import { Delete, Send } from "@mui/icons-material";
 
 import { SolidityCall } from "@iron/react/components";
 import { AddressView, CalldataView, Datapoint } from "@/components";
@@ -96,12 +97,14 @@ export function TxReviewDialog({ id }: { id: number }) {
         </TabPanel>
       </TabContext>
 
-      <Actions
-        request={request}
-        onReject={onReject}
-        onConfirm={onConfirm}
-        accepted={accepted}
-      />
+      <DialogLayout.Bottom>
+        <Actions
+          request={request}
+          onReject={onReject}
+          onConfirm={onConfirm}
+          accepted={accepted}
+        />
+      </DialogLayout.Bottom>
     </DialogLayout>
   );
 }
@@ -159,11 +162,29 @@ function Actions({ request, accepted, onReject, onConfirm }: ActionsProps) {
     );
   } else {
     return (
-      <Stack direction="row" justifyContent="center" spacing={2}>
-        <Button variant="contained" color="error" onClick={onReject}>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="center"
+        spacing={2}
+      >
+        <Button
+          size="large"
+          variant="outlined"
+          color="error"
+          onClick={onReject}
+          startIcon={<Delete />}
+        >
           Reject
         </Button>
-        <Button variant="contained" type="submit" onClick={onConfirm}>
+        <Button
+          size="large"
+          variant="contained"
+          color="primary"
+          type="submit"
+          onClick={onConfirm}
+          endIcon={<Send />}
+        >
           Confirm
         </Button>
       </Stack>
