@@ -5,10 +5,12 @@ import { Cancel, CheckCircle } from "@mui/icons-material";
 
 import { ChainView, SolidityCall, Typography } from "@iron/react/components";
 import { TokenMetadata } from "@iron/types";
+import { Network } from "@iron/types/network";
 import { AddressView, Datapoint } from "@/components";
 import { useDialog, useInvoke, useLedgerDetect } from "@/hooks";
 import { DialogLayout } from "./Layout";
 import { IconCrypto } from "@/components/Icons";
+import { useNetworks } from "@/store";
 
 export interface TxRequest {
   data: `0x${string}`;
@@ -43,6 +45,9 @@ export function TxReviewDialog({ id }: { id: number }) {
     undefined,
   );
   const [accepted, setAccepted] = useState(false);
+  const network = useNetworks((s) =>
+    s.networks.find((n) => n.chain_id == request?.chainId),
+  );
 
   const { data: abi } = useInvoke<Abi>("get_contract_abi", {
     address: request?.to,
@@ -59,7 +64,7 @@ export function TxReviewDialog({ id }: { id: number }) {
     send("simulate");
   }, [send]);
 
-  if (!request) return null;
+  if (!request || !network) return null;
 
   const onReject = () => {
     send("reject");
@@ -75,7 +80,7 @@ export function TxReviewDialog({ id }: { id: number }) {
 
   return (
     <DialogLayout>
-      <Header {...{ from, to }} />
+      <Header {...{ from, to, network }} />
 
       <SolidityCall
         {...{ value, data, from, to, chainId, abi }}
@@ -100,9 +105,10 @@ export function TxReviewDialog({ id }: { id: number }) {
 interface HeaderProps {
   from: Address;
   to: Address;
+  network: Network;
 }
 
-function Header({ from, to }: HeaderProps) {
+function Header({ from, to, network }: HeaderProps) {
   return (
     <Stack
       direction="row"
@@ -119,7 +125,7 @@ function Header({ from, to }: HeaderProps) {
         </Stack>
       </Typography>
       <Box ml={5}>
-        <ChainView name="asd" chainId={1} />
+        <ChainView name={network.name} chainId={network.chain_id} />
       </Box>
     </Stack>
   );
