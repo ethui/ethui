@@ -1,12 +1,14 @@
-import { Alert, AlertTitle, Button, Grid, Stack } from "@mui/material";
+import { Alert, AlertTitle, Box, Button, Grid, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
-import JsonView from "react18-json-view";
-import { Abi, Address, Hex, decodeEventLog, parseAbi } from "viem";
+import { Abi, Address, Hex, decodeEventLog, formatUnits, parseAbi } from "viem";
+import { Cancel, CheckCircle } from "@mui/icons-material";
 
-import { SolidityCall } from "@iron/react/components";
+import { ChainView, SolidityCall, Typography } from "@iron/react/components";
+import { TokenMetadata } from "@iron/types";
 import { AddressView, Datapoint } from "@/components";
 import { useDialog, useInvoke, useLedgerDetect } from "@/hooks";
 import { DialogLayout } from "./Layout";
+import { IconCrypto } from "@/components/Icons";
 
 export interface TxRequest {
   data: `0x${string}`;
@@ -73,14 +75,17 @@ export function TxReviewDialog({ id }: { id: number }) {
 
   return (
     <DialogLayout>
-      <Stack spacing={2} alignItems="center">
-        <SolidityCall
-          {...{ value, data, from, to, chainId, abi }}
-          ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
-        />
-      </Stack>
+      <Header {...{ from, to }} />
 
-      <SimulationResult simulation={simulation} />
+      <SolidityCall
+        {...{ value, data, from, to, chainId, abi }}
+        ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
+        sx={{ width: "100%" }}
+      />
+
+      <Box alignSelf="center">
+        <SimulationResult simulation={simulation} chainId={chainId} />
+      </Box>
 
       <Actions
         request={request}
@@ -92,39 +97,68 @@ export function TxReviewDialog({ id }: { id: number }) {
   );
 }
 
-interface SimulationResultProps {
-  simulation: Simulation | undefined;
+interface HeaderProps {
+  from: Address;
+  to: Address;
 }
 
-function SimulationResult({ simulation }: SimulationResultProps) {
+function Header({ from, to }: HeaderProps) {
+  return (
+    <Stack
+      direction="row"
+      justifyContent="space-between"
+      alignItems="center"
+      alignSelf="center"
+      width="100%"
+    >
+      <Typography variant="h6" component="h1">
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <AddressView address={from} />
+          <span>→</span>
+          <AddressView address={to} />
+        </Stack>
+      </Typography>
+      <Box ml={5}>
+        <ChainView name="asd" chainId={1} />
+      </Box>
+    </Stack>
+  );
+}
+
+interface SimulationResultProps {
+  simulation: Simulation | undefined;
+  chainId: number;
+}
+
+function SimulationResult({ simulation, chainId }: SimulationResultProps) {
   if (!simulation) return null;
 
   return (
-    <>
-      <Stack direction="column" spacing={1}>
+    <Grid container rowSpacing={1}>
+      <Datapoint
+        label="Status"
+        value={
+          simulation.success ? (
+            <CheckCircle color="success" />
+          ) : (
+            <Cancel color="error" />
+          )
+        }
+        size="small"
+      />
+      {simulation.success && (
+        <Datapoint
+          label="Expected Gas Usage"
+          value={simulation.gasUsed.toString()}
+          size="small"
+        />
+      )}
+      <Grid item xs={12}>
         {simulation.logs.map((log, i) => (
-          <Log key={i} log={log} />
+          <Log key={i} log={log} chainId={chainId} />
         ))}
-      </Stack>
-
-      <Grid container rowSpacing={1}>
-        <Datapoint
-          label="success"
-          value={simulation.success.toString()}
-          short
-        />
-        <Datapoint
-          label="Block Nr"
-          value={simulation.blockNumber.toString()}
-          short
-        />
-        <Datapoint label="Gas Used" value={simulation.gasUsed.toString()} />
-        <Datapoint
-          label="Logs"
-          value={<JsonView src={simulation.logs} theme="default" />}
-        />
       </Grid>
-    </>
+    </Grid>
   );
 }
 
@@ -171,29 +205,32 @@ function Actions({ request, accepted, onReject, onConfirm }: ActionsProps) {
 
 interface LogProps {
   log: Log;
+  chainId: number;
 }
 
 const erc20Transfer = parseAbi([
   "event Transfer(address indexed from, address indexed to, uint256 value)",
 ]);
 
-function Log({ log }: LogProps) {
-  const [type, decoded] = decodeKnownLog(log);
+function Log({ log, chainId }: LogProps) {
+  const result = decodeKnownLog(log);
+  if (!result) return null;
+  const [type, decoded] = result;
 
   switch (type) {
+    case null:
+      return null;
     case "erc20transfer":
       return (
-        <Stack direction="row" spacing={2}>
-          From&nbsp;
-          <AddressView address={decoded.args.from} />
-          &nbsp; To <AddressView address={decoded.args.to} />
-          For {decoded.args.value.toString()}
-          <AddressView address={log.address} />
-        </Stack>
+        <Erc20Transfer
+          from={decoded.args.from}
+          to={decoded.args.to}
+          value={decoded.args.value}
+          contract={log.address}
+          chainId={chainId}
+        />
       );
   }
-
-  return null;
 }
 
 function decodeKnownLog(log: Log) {
@@ -205,8 +242,42 @@ function decodeKnownLog(log: Log) {
         data: log.data,
         topics: log.topics,
       }),
-    ];
+    ] as const;
   } catch (e) {
     return null;
   }
+}
+
+interface Erc20TransferProps {
+  chainId: number;
+  from: Address;
+  to: Address;
+  value: bigint;
+  contract: Address;
+}
+
+function Erc20Transfer({
+  chainId,
+  from,
+  to,
+  value,
+  contract,
+}: Erc20TransferProps) {
+  const { data: metadata } = useInvoke<TokenMetadata>("db_get_erc20_metadata", {
+    chainId,
+    contract,
+  });
+
+  return (
+    <Stack direction="row" alignItems="center" spacing={1}>
+      <AddressView address={from} />
+      <span>→</span>
+      <AddressView address={to} />
+      <IconCrypto ticker={metadata?.symbol} />
+      {metadata?.decimals
+        ? formatUnits(value, metadata.decimals)
+        : value.toString()}{" "}
+      {metadata?.symbol && `${metadata.symbol}`}
+    </Stack>
+  );
 }

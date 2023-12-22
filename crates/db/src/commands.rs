@@ -1,5 +1,7 @@
 use ethers::{abi::Abi, types::Chain};
-use iron_types::{events::Tx, Address, Erc721TokenData, TokenBalance, UINotify, U256};
+use iron_types::{
+    events::Tx, Address, Erc721TokenData, TokenBalance, TokenMetadata, UINotify, U256,
+};
 
 use super::{Paginated, Pagination, Result};
 use crate::{
@@ -16,6 +18,15 @@ pub async fn db_get_transactions(
 ) -> Result<Paginated<Tx>> {
     db.get_transactions(chain_id, address, pagination.unwrap_or_default())
         .await
+}
+
+#[tauri::command]
+pub async fn db_get_erc20_metadata(
+    chain_id: u32,
+    contract: Address,
+    db: tauri::State<'_, DB>,
+) -> Result<TokenMetadata> {
+    db.get_erc20_metadata(contract, chain_id).await
 }
 
 #[tauri::command]

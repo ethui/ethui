@@ -102,9 +102,7 @@ function BalanceItem({
         }
       >
         <ListItemAvatar>
-          <Avatar>
-            <IconCrypto ticker={symbol} />
-          </Avatar>
+          <IconCrypto ticker={symbol} />
         </ListItemAvatar>
         <ListItemText
           secondary={`${symbol} ${

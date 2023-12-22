@@ -13,6 +13,7 @@ export interface SolidityCallProps {
   chainId?: number;
   decimals?: number;
   abi?: Abi | string[];
+  sx?: SxProps;
   ArgProps?: Pick<ArgProps, "addressRenderer" | "defaultRenderer">;
 }
 
@@ -24,6 +25,7 @@ export function SolidityCall({
   chainId,
   decimals = 18,
   abi,
+  sx = {},
   ArgProps = {},
 }: SolidityCallProps) {
   const theme = useTheme();
@@ -38,6 +40,7 @@ export function SolidityCall({
         backgroundColor: theme.palette.highlight1.main,
         p: 2,
         maxWidth: "100%",
+        ...sx,
       }}
     >
       {isDeploy && <Deploy {...{ from, data, value, decimals, ArgProps }} />}

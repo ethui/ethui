@@ -1,4 +1,4 @@
-import { Stack } from "@mui/material";
+import { Stack, SxProps } from "@mui/material";
 
 import { Typography } from "../";
 import { IconChain } from "../icons";
