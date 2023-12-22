@@ -4,7 +4,6 @@ use reqwest::blocking;
 use serde::{Deserialize, Serialize};
 //use serde_json::Value;
 use std::{fs, fs::File, io::Write, path::Path};
-use tracing::debug;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct TokenList {
@@ -33,7 +32,7 @@ pub fn init() -> Result<()> {
     let list_to_json_value: TokenList = serde_json::from_str(&file_string)?;
     let check_updated_at = list_to_json_value.updated_at;
     let older_than_one_month = dbg!(check_updated_at.unwrap() - Duration::days(30));
-    dbg!("Está aqui o TESTEEEEEEEE: {:?}", older_than_one_month);
+    println!("Está aqui o TESTEEEEEEEE: {:?}", older_than_one_month);
     //if !does_file_exist || older_than_one_month {
     //    println!("------Checked conditionals and ran the code!!!!!!!-----")
     //}
