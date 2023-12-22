@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Badge,
   Box,
   FormControl,
@@ -39,7 +40,9 @@ function Domain({ domain, peers }: { domain: string; peers: Peer[] }) {
   return (
     <Stack direction="row" alignItems="center" spacing={2}>
       <Badge>
-        <img width="30" height="30" src={peers[0].favicon} />
+        <Avatar sx={{ width: 30, height: 30 }} src={peers[0].favicon}>
+          {peers[0].origin.replace(/https?:\/\//, "").slice(0, 2)}
+        </Avatar>
       </Badge>
       <Typography> {peers[0].origin}</Typography>
       <Box sx={{ "&&": { ml: "auto" } }}>
