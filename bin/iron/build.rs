@@ -28,29 +28,29 @@ pub struct Token {
 pub fn init() -> Result<()> {
     let path_to_json = "list.json";
     let does_file_exist = Path::new("list.json").exists();
+
     let file_string = fs::read_to_string(path_to_json)?;
     let list_to_json_value: TokenList = serde_json::from_str(&file_string)?;
     let check_updated_at = list_to_json_value.updated_at;
-    let older_than_one_month = dbg!(check_updated_at.unwrap() - Duration::days(30));
-    println!("Está aqui o TESTEEEEEEEE: {:?}", older_than_one_month);
-    //if !does_file_exist || older_than_one_month {
-    //    println!("------Checked conditionals and ran the code!!!!!!!-----")
-    //}
+    let current_date_minus_30_days = Utc::now() - Duration::days(30);
+    let older_than_one_month: bool = check_updated_at.unwrap() < current_date_minus_30_days;
 
-    let response = blocking::get("https://gateway.ipfs.io/ipns/tokens.uniswap.org")
-        .map_err(|err| anyhow!(err))?;
+    if !does_file_exist || older_than_one_month {
+        let response = blocking::get("https://gateway.ipfs.io/ipns/tokens.uniswap.org")
+            .map_err(|err| anyhow!(err))?;
 
-    let mut token_list: TokenList = response.json().map_err(|err| anyhow!(err))?;
+        let mut token_list: TokenList = response.json().map_err(|err| anyhow!(err))?;
 
-    // Add local timestamp
-    let updated_at: DateTime<Utc> = chrono::Utc::now();
-    token_list.updated_at = Some(updated_at);
+        // Add local timestamp
+        let updated_at: DateTime<Utc> = chrono::Utc::now();
+        token_list.updated_at = Some(updated_at);
 
-    let updated_json = serde_json::to_string_pretty(&token_list)?;
+        let updated_json = serde_json::to_string_pretty(&token_list)?;
 
-    //Create JSON file
-    let mut file = File::create("list.json")?;
-    file.write_all(updated_json.as_bytes())?;
+        //Create JSON file
+        let mut file = File::create("list.json")?;
+        file.write_all(updated_json.as_bytes())?;
+    }
 
     Ok(())
 }
