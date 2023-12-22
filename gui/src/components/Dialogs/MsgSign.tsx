@@ -1,4 +1,5 @@
 import { Button, Stack, Typography } from "@mui/material";
+import { Delete, Task } from "@mui/icons-material";
 
 import { useDialog } from "@/hooks";
 import { DialogLayout } from "./Layout";
@@ -17,22 +18,28 @@ export function MsgSignDialog({ id }: { id: number }) {
       </Typography>
       <Typography>{msg}</Typography>
 
-      <Stack direction="row" justifyContent="center" spacing={2}>
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() => send("reject")}
-        >
-          Reject
-        </Button>
-        <Button
-          variant="contained"
-          type="submit"
-          onClick={() => send("accept")}
-        >
-          Sign
-        </Button>
-      </Stack>
+      <DialogLayout.Bottom>
+        <Stack direction="row" justifyContent="center" spacing={2}>
+          <Button
+            size="large"
+            variant="contained"
+            color="error"
+            onClick={() => send("reject")}
+            startIcon={<Delete />}
+          >
+            Reject
+          </Button>
+          <Button
+            size="large"
+            variant="contained"
+            type="submit"
+            onClick={() => send("accept")}
+            endIcon={<Task />}
+          >
+            Sign
+          </Button>
+        </Stack>
+      </DialogLayout.Bottom>
     </DialogLayout>
   );
 }

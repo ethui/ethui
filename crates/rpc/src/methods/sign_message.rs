@@ -8,7 +8,9 @@ use ethers::{
 };
 use iron_dialogs::{Dialog, DialogMsg};
 use iron_networks::Network;
-use iron_wallets::{Wallet, WalletControl};
+use iron_settings::Settings;
+use iron_types::GlobalState;
+use iron_wallets::{Wallet, WalletControl, Wallets};
 use serde::Serialize;
 
 use crate::{Error, Result};
@@ -30,10 +32,13 @@ impl<'a> SignMessage<'a> {
     }
 
     pub async fn finish(&mut self) -> Result<Signature> {
-        let skip_dialog = self.network.is_dev() && self.wallet.is_dev();
-        if !skip_dialog {
+        let skip =
+            { self.network.is_dev() && self.wallet.is_dev() && Settings::read().await.fast_mode() };
+
+        if !skip {
             self.spawn_dialog().await?;
         }
+
         self.sign().await
     }
 
