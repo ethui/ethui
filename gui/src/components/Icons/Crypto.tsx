@@ -7,7 +7,7 @@ interface Props extends AvatarProps {
   size?: "small" | "medium" | "large";
 }
 
-export function IconCrypto({ ticker, size = "medium", ...props }: Props) {
+export function IconCrypto({ size = "medium", ...props }: Props) {
   const theme = useTheme((s) => s.theme);
   const themeMode = useTheme((s) => s.theme.palette.mode);
 

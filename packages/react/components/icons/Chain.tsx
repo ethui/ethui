@@ -1,4 +1,4 @@
-import { Avatar, useTheme } from "@mui/material";
+import { Avatar } from "@mui/material";
 
 import mainnet from "../../images/chains/1.webp";
 import optimism from "../../images/chains/10.webp";
