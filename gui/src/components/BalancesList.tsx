@@ -1,6 +1,5 @@
 import SendIcon from "@mui/icons-material/Send";
 import {
-  Avatar,
   IconButton,
   List,
   ListItem,
@@ -102,9 +101,7 @@ function BalanceItem({
         }
       >
         <ListItemAvatar>
-          <Avatar>
-            <IconCrypto ticker={symbol} />
-          </Avatar>
+          <IconCrypto ticker={symbol} />
         </ListItemAvatar>
         <ListItemText
           secondary={`${symbol} ${

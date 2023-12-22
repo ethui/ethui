@@ -1,14 +1,16 @@
-import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { Alert, AlertTitle, Button, Grid, Stack, Tab } from "@mui/material";
+import { Alert, AlertTitle, Box, Button, Grid, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
-import JsonView from "react18-json-view";
-import { Abi, Address } from "viem";
-import { Delete, Send } from "@mui/icons-material";
+import { Cancel, CheckCircle, Delete, Send } from "@mui/icons-material";
+import { Abi, Address, Hex, decodeEventLog, formatUnits, parseAbi } from "viem";
 
-import { SolidityCall } from "@iron/react/components";
-import { AddressView, CalldataView, Datapoint } from "@/components";
+import { ChainView, SolidityCall, Typography } from "@iron/react/components";
+import { TokenMetadata } from "@iron/types";
+import { Network } from "@iron/types/network";
+import { AddressView, Datapoint } from "@/components";
 import { useDialog, useInvoke, useLedgerDetect } from "@/hooks";
 import { DialogLayout } from "./Layout";
+import { IconCrypto } from "@/components/Icons";
+import { useNetworks } from "@/store";
 
 export interface TxRequest {
   data: `0x${string}`;
@@ -26,7 +28,8 @@ export interface TxRequest {
 
 interface Log {
   address: Address;
-  topics: string[];
+  data: Hex;
+  topics: [signature: Hex, ...args: Hex[]];
 }
 
 interface Simulation {
@@ -42,7 +45,9 @@ export function TxReviewDialog({ id }: { id: number }) {
     undefined,
   );
   const [accepted, setAccepted] = useState(false);
-  const [tab, setTab] = useState("1");
+  const network = useNetworks((s) =>
+    s.networks.find((n) => n.chain_id == request?.chainId),
+  );
 
   const { data: abi } = useInvoke<Abi>("get_contract_abi", {
     address: request?.to,
@@ -59,7 +64,7 @@ export function TxReviewDialog({ id }: { id: number }) {
     send("simulate");
   }, [send]);
 
-  if (!request) return null;
+  if (!request || !network) return null;
 
   const onReject = () => {
     send("reject");
@@ -75,27 +80,17 @@ export function TxReviewDialog({ id }: { id: number }) {
 
   return (
     <DialogLayout>
-      <Stack spacing={2} alignItems="center">
-        <SolidityCall
-          {...{ value, data, from, to, chainId, abi }}
-          ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
-        />
-      </Stack>
+      <Header {...{ from, to, network }} />
 
-      <TabContext value={tab}>
-        <TabList onChange={(_e: unknown, v: string) => setTab(v)}>
-          <Tab label="Summary" value="1" />
-          <Tab label="Simulation" value="2" />
-        </TabList>
+      <SolidityCall
+        {...{ value, data, from, to, chainId, abi }}
+        ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
+        sx={{ width: "100%" }}
+      />
 
-        <TabPanel value="1" sx={{ flexGrow: 1, overflowY: "auto", px: 0 }}>
-          <CalldataView data={data} contract={to} chainId={chainId} />
-        </TabPanel>
-
-        <TabPanel value="2" sx={{ flexGrow: 1, overflowY: "auto", px: 0 }}>
-          <SimulationResult simulation={simulation} />
-        </TabPanel>
-      </TabContext>
+      <Box alignSelf="center">
+        <SimulationResult simulation={simulation} chainId={chainId} />
+      </Box>
 
       <DialogLayout.Bottom>
         <Actions
@@ -109,26 +104,68 @@ export function TxReviewDialog({ id }: { id: number }) {
   );
 }
 
-interface SimulationResultProps {
-  simulation: Simulation | undefined;
+interface HeaderProps {
+  from: Address;
+  to: Address;
+  network: Network;
 }
 
-function SimulationResult({ simulation }: SimulationResultProps) {
+function Header({ from, to, network }: HeaderProps) {
+  return (
+    <Stack
+      direction="row"
+      justifyContent="space-between"
+      alignItems="center"
+      alignSelf="center"
+      width="100%"
+    >
+      <Typography variant="h6" component="h1">
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <AddressView address={from} />
+          <span>→</span>
+          <AddressView address={to} />
+        </Stack>
+      </Typography>
+      <Box ml={5}>
+        <ChainView name={network.name} chainId={network.chain_id} />
+      </Box>
+    </Stack>
+  );
+}
+
+interface SimulationResultProps {
+  simulation: Simulation | undefined;
+  chainId: number;
+}
+
+function SimulationResult({ simulation, chainId }: SimulationResultProps) {
   if (!simulation) return null;
 
   return (
-    <Grid container rowSpacing={2}>
-      <Datapoint label="success" value={simulation.success.toString()} short />
+    <Grid container rowSpacing={1}>
       <Datapoint
-        label="Block Nr"
-        value={simulation.blockNumber.toString()}
-        short
+        label="Status"
+        value={
+          simulation.success ? (
+            <CheckCircle color="success" />
+          ) : (
+            <Cancel color="error" />
+          )
+        }
+        size="small"
       />
-      <Datapoint label="Gas Used" value={simulation.gasUsed.toString()} />
-      <Datapoint
-        label="Logs"
-        value={<JsonView src={simulation.logs} theme="default" />}
-      />
+      {simulation.success && (
+        <Datapoint
+          label="Expected Gas Usage"
+          value={simulation.gasUsed.toString()}
+          size="small"
+        />
+      )}
+      <Grid item xs={12}>
+        {simulation.logs.map((log, i) => (
+          <Log key={i} log={log} chainId={chainId} />
+        ))}
+      </Grid>
     </Grid>
   );
 }
@@ -190,4 +227,83 @@ function Actions({ request, accepted, onReject, onConfirm }: ActionsProps) {
       </Stack>
     );
   }
+}
+
+interface LogProps {
+  log: Log;
+  chainId: number;
+}
+
+const erc20Transfer = parseAbi([
+  "event Transfer(address indexed from, address indexed to, uint256 value)",
+]);
+
+function Log({ log, chainId }: LogProps) {
+  const result = decodeKnownLog(log);
+  if (!result) return null;
+  const [type, decoded] = result;
+
+  switch (type) {
+    case null:
+      return null;
+    case "erc20transfer":
+      return (
+        <Erc20Transfer
+          from={decoded.args.from}
+          to={decoded.args.to}
+          value={decoded.args.value}
+          contract={log.address}
+          chainId={chainId}
+        />
+      );
+  }
+}
+
+function decodeKnownLog(log: Log) {
+  try {
+    return [
+      "erc20transfer",
+      decodeEventLog({
+        abi: erc20Transfer,
+        data: log.data,
+        topics: log.topics,
+      }),
+    ] as const;
+  } catch (e) {
+    return null;
+  }
+}
+
+interface Erc20TransferProps {
+  chainId: number;
+  from: Address;
+  to: Address;
+  value: bigint;
+  contract: Address;
+}
+
+function Erc20Transfer({
+  chainId,
+  from,
+  to,
+  value,
+  contract,
+}: Erc20TransferProps) {
+  const { data: metadata } = useInvoke<TokenMetadata>("db_get_erc20_metadata", {
+    chainId,
+    contract,
+  });
+
+  return (
+    <Stack direction="row" alignItems="center" spacing={1}>
+      <AddressView address={from} />
+      <span>→</span>
+      <AddressView address={to} />
+      <IconCrypto ticker={metadata?.symbol} />
+      {metadata?.decimals
+        ? formatUnits(value, metadata.decimals)
+        : value.toString()}{" "}
+      {metadata?.symbol && `${metadata.symbol}`}
+    </Stack>
+  );
 }
