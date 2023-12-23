@@ -1,7 +1,7 @@
 import { SettingsSharp, TerminalSharp } from "@mui/icons-material";
 import { Drawer, Stack, SxProps, Toolbar } from "@mui/material";
 import { findIndex, parseInt, range, toString } from "lodash-es";
-import { redirect, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useKBar } from "kbar";
 
 import { useKeyPress, useMenuAction, useOS } from "@/hooks";
@@ -36,7 +36,7 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
     navigate(tabs[parseInt(event.key) - 1].path);
   };
 
-  useMenuAction((payload) => redirect(payload));
+  useMenuAction((payload) => navigate(payload));
 
   useKeyPress(
     range(1, tabs.length + 1).map(toString),
