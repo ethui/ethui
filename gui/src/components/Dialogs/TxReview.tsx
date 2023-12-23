@@ -39,8 +39,8 @@ interface Simulation {
   logs: Log[];
 }
 
-export function TxReviewDialog({ id }: { id: number }) {
-  const { data: request, send, listen } = useDialog<TxRequest>(id);
+export function TxReviewDialog() {
+  const { data: request, send, listen } = useDialog<TxRequest>();
   const [simulation, setSimulation] = useState<Simulation | undefined>(
     undefined,
   );
@@ -79,7 +79,7 @@ export function TxReviewDialog({ id }: { id: number }) {
   const value = BigInt(valueStr || 0);
 
   return (
-    <DialogLayout>
+    <>
       <Header {...{ from, to, network }} />
 
       <SolidityCall
@@ -100,7 +100,7 @@ export function TxReviewDialog({ id }: { id: number }) {
           accepted={accepted}
         />
       </DialogLayout.Bottom>
-    </DialogLayout>
+    </>
   );
 }
 

@@ -8,6 +8,9 @@ pub enum Error {
 
     #[error(transparent)]
     Send(#[from] mpsc::error::SendError<crate::handle::DialogMsg>),
+
+    #[error("Dialog not found")]
+    DialogNotFound,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

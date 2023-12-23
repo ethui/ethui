@@ -3,7 +3,6 @@ import "react18-json-view/src/style.css";
 
 import { GlobalStyles, ThemeProvider } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
-import { SnackbarProvider } from "notistack";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 
@@ -24,7 +23,8 @@ import {
 } from "@/components/Dialogs";
 import { Onboarding } from "@/components/Onboarding";
 import { useTheme } from "./store/theme";
-import { HomePageLayout } from "./components/Home";
+import { HomePageLayout } from "./components/Home/Layout";
+import { DialogLayout } from "./components/Dialogs/Layout";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { suspense: true } },
@@ -56,11 +56,15 @@ const router = createBrowserRouter([
       { path: "onboarding/", element: <Onboarding /> },
       {
         path: "dialog/",
+        element: <DialogLayout />,
         children: [
-          { path: "tx-review/:id", element: <TxReviewDialog id={1} /> },
-          { path: "msg-sign/:id", element: <MsgSignDialog id={1} /> },
-          { path: "wallet-unlock/:id", element: <WalletUnlockDialog id={1} /> },
-          { path: "chain-add/:id", element: <ChainAddDialog id={1} /> },
+          { path: "tx-review/:dialogId", element: <TxReviewDialog /> },
+          { path: "msg-sign/:dialogId", element: <MsgSignDialog /> },
+          {
+            path: "wallet-unlock/:dialogId",
+            element: <WalletUnlockDialog />,
+          },
+          { path: "chain-add/:dialogId", element: <ChainAddDialog /> },
         ],
       },
     ],
