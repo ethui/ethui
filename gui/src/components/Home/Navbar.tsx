@@ -1,9 +1,9 @@
 import { AppBar, Typography } from "@mui/material";
 
-import { DraggableToolbar } from "./DraggableToolbar";
-import { TABS } from "./Sidebar";
+import { DraggableToolbar } from "@/components/DraggableToolbar";
+import { type Tab } from "./Layout";
 
-export function Navbar({ tab }: { tab: (typeof TABS)[number] }) {
+export function Navbar({ tab }: { tab: Tab }) {
   return (
     <AppBar
       position="sticky"

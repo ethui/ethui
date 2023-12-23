@@ -6,7 +6,7 @@ import {
   CallToAction,
   OnlinePredictionSharp,
 } from "@mui/icons-material";
-import { ReactNode, createElement } from "react";
+import { createElement } from "react";
 
 import { useNoticeAlchemyKeyMissing, useNoticeNewVersion } from "@/hooks";
 import {
@@ -14,12 +14,12 @@ import {
   AddressView,
   Connections,
   Contracts,
-  Navbar,
   NestedRoutes,
   Txs,
 } from "@/components";
 import { useTheme, useWallets } from "@/store";
 import { Sidebar } from "./Sidebar";
+import { Navbar } from "./Navbar";
 
 const sidebarWidth = { md: 200, sm: 72 };
 
