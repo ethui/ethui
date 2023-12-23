@@ -20,8 +20,8 @@ export function ThankYouStep({ onSubmit }: StepProps) {
         on GitHub.
       </Typography>
 
-      <Link to="/">
-        <Button href="/" variant="contained" onClick={onSubmit}>
+      <Link to="/home/account">
+        <Button variant="contained" onClick={onSubmit}>
           Finish
         </Button>
       </Link>

@@ -1,7 +1,7 @@
 import { SettingsSharp, TerminalSharp } from "@mui/icons-material";
 import { Drawer, Stack, SxProps, Toolbar } from "@mui/material";
 import { findIndex, parseInt, range, toString } from "lodash-es";
-import { redirect, useLocation } from "react-router-dom";
+import { redirect, useLocation, useNavigate } from "react-router-dom";
 import { useKBar } from "kbar";
 
 import { useKeyPress, useMenuAction, useOS } from "@/hooks";
@@ -25,6 +25,7 @@ interface SidebarProps {
 
 export function Sidebar({ sx, tabs }: SidebarProps) {
   const location = useLocation();
+  const navigate = useNavigate();
   const { theme } = useTheme();
   const breakpoint = theme.breakpoints.down("sm");
   const { type } = useOS();
@@ -32,7 +33,7 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
   const { open } = useSettingsWindow();
 
   const handleKeyboardNavigation = (event: KeyboardEvent) => {
-    redirect(tabs[parseInt(event.key) - 1].path);
+    navigate(tabs[parseInt(event.key) - 1].path);
   };
 
   useMenuAction((payload) => redirect(payload));
