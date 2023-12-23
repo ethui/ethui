@@ -2564,6 +2564,7 @@ __metadata:
     react-hook-form: "npm:^7.49.0"
     react-infinite-scroller: "npm:^1.2.6"
     react-query: "npm:^3.39.3"
+    react-router-dom: "npm:^6.21.1"
     react18-json-view: "npm:^0.2.6"
     swr: "npm:^2.2.4"
     truncate-eth-address: "npm:^1.0.2"
@@ -2572,7 +2573,6 @@ __metadata:
     vite: "npm:^5.0.8"
     vite-tsconfig-paths: "npm:^4.2.2"
     wagmi: "npm:^1.4.12"
-    wouter: "npm:^2.12.1"
     zod: "npm:^3.22.4"
     zustand: "npm:^4.4.7"
     zxcvbn-typescript: "npm:^5.0.1"
@@ -2629,7 +2629,6 @@ __metadata:
     typescript: "npm:^5.3.3"
     viem: "npm:^1.19.15"
     wagmi: "npm:^1.4.12"
-    wouter: "npm:^2.12.1"
     zod: "npm:^3.22.4"
     zustand: "npm:^4.4.7"
     zxcvbn-typescript: "npm:^5.0.1"
@@ -4260,6 +4259,13 @@ __metadata:
   version: 1.2.0
   resolution: "@reach/observe-rect@npm:1.2.0"
   checksum: e2d2b399381e466705bcf7535ba1ed29866792d7aff386a2a41ca1f5ae9d8920f21c769d67b82b38045cd14e1c2aa29dbf6f37a77f323d16d01378eb02ad2925
+  languageName: node
+  linkType: hard
+
+"@remix-run/router@npm:1.14.1":
+  version: 1.14.1
+  resolution: "@remix-run/router@npm:1.14.1"
+  checksum: aa179e96fa7da5bdb86e6887219613cbe47b67d6595564b4f8fe7e80f8980f9c76e120524f0864aa8af46ac0f1a06bcdb4d20058d770c9199e5af599f772c0a9
   languageName: node
   linkType: hard
 
@@ -16568,6 +16574,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-router-dom@npm:^6.21.1":
+  version: 6.21.1
+  resolution: "react-router-dom@npm:6.21.1"
+  dependencies:
+    "@remix-run/router": "npm:1.14.1"
+    react-router: "npm:6.21.1"
+  peerDependencies:
+    react: ">=16.8"
+    react-dom: ">=16.8"
+  checksum: 2c2b653de8cc90397e5b057c0d32dd780fe894c4bd36397005da169a7422b31988ebc14ef0da3ac3f2b7286b244f97a141974acaa86c731715816e64c8cd2912
+  languageName: node
+  linkType: hard
+
+"react-router@npm:6.21.1":
+  version: 6.21.1
+  resolution: "react-router@npm:6.21.1"
+  dependencies:
+    "@remix-run/router": "npm:1.14.1"
+  peerDependencies:
+    react: ">=16.8"
+  checksum: 81278cf25a999d7c93a31d540102e3b74b696eb4349779e22bba77b633e4e5f8f91b8c6f7946c9572a1e92f64363724150216f5643a6f9817f8bc1643cb8bdbc
+  languageName: node
+  linkType: hard
+
 "react-style-singleton@npm:^2.2.1":
   version: 2.2.1
   resolution: "react-style-singleton@npm:2.2.1"
@@ -19215,7 +19245,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-sync-external-store@npm:1.2.0, use-sync-external-store@npm:^1.0.0, use-sync-external-store@npm:^1.2.0":
+"use-sync-external-store@npm:1.2.0, use-sync-external-store@npm:^1.2.0":
   version: 1.2.0
   resolution: "use-sync-external-store@npm:1.2.0"
   peerDependencies:
@@ -19815,17 +19845,6 @@ __metadata:
   version: 1.0.0
   resolution: "wordwrap@npm:1.0.0"
   checksum: 7ed2e44f3c33c5c3e3771134d2b0aee4314c9e49c749e37f464bf69f2bcdf0cbf9419ca638098e2717cff4875c47f56a007532f6111c3319f557a2ca91278e92
-  languageName: node
-  linkType: hard
-
-"wouter@npm:^2.12.1":
-  version: 2.12.1
-  resolution: "wouter@npm:2.12.1"
-  dependencies:
-    use-sync-external-store: "npm:^1.0.0"
-  peerDependencies:
-    react: ">=16.8.0"
-  checksum: 55f7c56439ca8ea27203d3cc3c2d6682ac3488e060e71398c266d7ee4dd1239da45d26f0fcdbb4fcc4d06ba715b49af8388f016d70c0e9d35d11b845a67b1061
   languageName: node
   linkType: hard
 

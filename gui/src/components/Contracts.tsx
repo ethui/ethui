@@ -19,6 +19,7 @@ import {
   AccordionDetails,
   AccordionSummary,
 } from "./";
+import { Navbar } from "./Home/Navbar";
 
 export function Contracts() {
   const chainId = useNetworks((s) => s.current?.chain_id);
@@ -26,6 +27,7 @@ export function Contracts() {
 
   return (
     <>
+      <Navbar>Contracts</Navbar>
       {chainId != 31337 && <AddressForm />}
       {Array.from(addresses || []).map((address) => (
         <Contract key={address} address={address} />

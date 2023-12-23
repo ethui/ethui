@@ -1,7 +1,7 @@
 import { Button, Stack, Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { useEffect } from "react";
-import { Link } from "wouter";
+import { Link } from "react-router-dom";
 
 import { StepProps } from ".";
 
@@ -20,7 +20,7 @@ export function ThankYouStep({ onSubmit }: StepProps) {
         on GitHub.
       </Typography>
 
-      <Link href="/">
+      <Link to="/">
         <Button href="/" variant="contained" onClick={onSubmit}>
           Finish
         </Button>

@@ -1,4 +1,3 @@
-import { Route, Switch } from "wouter";
 import { Box, Stack, SvgIcon, Theme } from "@mui/material";
 import {
   RequestQuoteSharp,
@@ -7,11 +6,14 @@ import {
   OnlinePredictionSharp,
 } from "@mui/icons-material";
 import { createElement } from "react";
+import { Outlet } from "react-router-dom";
+import { SnackbarProvider } from "notistack";
 
 import { useNoticeAlchemyKeyMissing, useNoticeNewVersion } from "@/hooks";
 import {
   Account,
   AddressView,
+  CommandBar,
   Connections,
   Contracts,
   NestedRoutes,
@@ -33,26 +35,26 @@ export interface Tab {
 
 export const tabs: Tab[] = [
   {
-    path: "account",
+    path: "/home/account",
     label: "Account",
     component: Account,
     navbarComponent: AccountsNavbar,
     icon: RequestQuoteSharp,
   },
   {
-    path: "transactions",
+    path: "/home/transactions",
     label: "Transactions",
     component: Txs,
     icon: Receipt,
   },
   {
-    path: "contracts",
+    path: "/home/contracts",
     label: "Contracts",
     component: Contracts,
     icon: CallToAction,
   },
   {
-    path: "connections",
+    path: "/home/connections",
     label: "Connections",
     component: Connections,
     icon: OnlinePredictionSharp,
@@ -85,25 +87,28 @@ export function HomePageLayout() {
   const { theme } = useTheme();
 
   return (
-    <>
-      <Sidebar sx={drawerPaperStyle(theme)} tabs={tabs} />
-      <Box sx={contentStyle(theme)}>
-        <NestedRoutes base="/">
-          <Switch>
-            {tabs.map((tab) => (
-              <Route key={tab.path} path={tab.path}>
-                <Navbar tab={tab} />
-                <tab.component />
-              </Route>
-            ))}
-            <Route>
-              <Navbar tab={tabs[0]} />
-              {createElement(tabs[0].component)}
-            </Route>
-          </Switch>
-        </NestedRoutes>
-      </Box>
-    </>
+    <CommandBar>
+      <SnackbarProvider>
+        <Sidebar sx={drawerPaperStyle(theme)} tabs={tabs} />
+        <Box sx={contentStyle(theme)}>
+          <Outlet />
+          {/* <NestedRoutes base="/"> */}
+          {/*   <Switch> */}
+          {/*     {tabs.map((tab) => ( */}
+          {/*       <Route key={tab.path} path={tab.path}> */}
+          {/*         <Navbar tab={tab} /> */}
+          {/*         <tab.component /> */}
+          {/*       </Route> */}
+          {/*     ))} */}
+          {/*     <Route> */}
+          {/*       <Navbar tab={tabs[0]} /> */}
+          {/*       {createElement(tabs[0].component)} */}
+          {/*     </Route> */}
+          {/*   </Switch> */}
+          {/* </NestedRoutes> */}
+        </Box>
+      </SnackbarProvider>
+    </CommandBar>
   );
 }
 

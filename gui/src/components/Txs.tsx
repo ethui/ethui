@@ -26,6 +26,7 @@ import {
   ContextMenuWithTauri,
 } from "@/components";
 import { Datapoint } from "./Datapoint";
+import { Navbar } from "./Home/Navbar";
 
 export function Txs() {
   const account = useWallets((s) => s.address);
@@ -74,24 +75,27 @@ export function Txs() {
   );
 
   return (
-    <InfiniteScroll
-      loadMore={loadMore}
-      hasMore={!pages.at(-1)?.last}
-      loader={loader}
-    >
-      {pages.flatMap((page) =>
-        page.items.map((tx) => (
-          <Accordion key={tx.hash}>
-            <AccordionSummary>
-              <Summary account={account} tx={tx} />
-            </AccordionSummary>
-            <AccordionDetails>
-              <Details tx={tx} chainId={chainId} />
-            </AccordionDetails>
-          </Accordion>
-        )),
-      )}
-    </InfiniteScroll>
+    <>
+      <Navbar>Transactions</Navbar>
+      <InfiniteScroll
+        loadMore={loadMore}
+        hasMore={!pages.at(-1)?.last}
+        loader={loader}
+      >
+        {pages.flatMap((page) =>
+          page.items.map((tx) => (
+            <Accordion key={tx.hash}>
+              <AccordionSummary>
+                <Summary account={account} tx={tx} />
+              </AccordionSummary>
+              <AccordionDetails>
+                <Details tx={tx} chainId={chainId} />
+              </AccordionDetails>
+            </Accordion>
+          )),
+        )}
+      </InfiniteScroll>
+    </>
   );
 }
 

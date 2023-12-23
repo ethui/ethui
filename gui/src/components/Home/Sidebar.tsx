@@ -1,7 +1,7 @@
 import { SettingsSharp, TerminalSharp } from "@mui/icons-material";
 import { Drawer, Stack, SxProps, Toolbar } from "@mui/material";
 import { findIndex, parseInt, range, toString } from "lodash-es";
-import { useLocation, useRoute } from "wouter";
+import { redirect, useLocation } from "react-router-dom";
 import { useKBar } from "kbar";
 
 import { useKeyPress, useMenuAction, useOS } from "@/hooks";
@@ -24,8 +24,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ sx, tabs }: SidebarProps) {
-  const [_match, params] = useRoute("/:path");
-  const [_location, setLocation] = useLocation();
+  const location = useLocation();
   const { theme } = useTheme();
   const breakpoint = theme.breakpoints.down("sm");
   const { type } = useOS();
@@ -33,10 +32,10 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
   const { open } = useSettingsWindow();
 
   const handleKeyboardNavigation = (event: KeyboardEvent) => {
-    setLocation(tabs[parseInt(event.key) - 1].path);
+    redirect(tabs[parseInt(event.key) - 1].path);
   };
 
-  useMenuAction((payload) => setLocation(payload));
+  useMenuAction((payload) => redirect(payload));
 
   useKeyPress(
     range(1, tabs.length + 1).map(toString),
@@ -62,9 +61,10 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
           <SidebarButton
             key={index}
             selected={
-              index === Math.max(findIndex(tabs, { path: params?.path }), 0)
+              index ===
+              Math.max(findIndex(tabs, { path: location.pathname }), 0)
             }
-            {...{ href: path, label, icon }}
+            {...{ to: path, label, icon }}
           />
         ))}
       </Stack>

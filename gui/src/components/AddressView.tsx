@@ -17,12 +17,14 @@ interface Props {
   copyIcon?: boolean;
   mono?: boolean;
   contextMenu?: boolean;
+  variant?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 }
 
 export function AddressView({
   address: addr,
   mono = false,
   contextMenu = true,
+  variant,
 }: Props) {
   const network = useNetworks((s) => s.current);
   const address = getAddress(addr);
@@ -35,10 +37,9 @@ export function AddressView({
 
   const text = alias ? alias : truncateEthAddress(`${address}`);
   const content = (
-    <>
-      {mono && <Typography mono>{text}</Typography>}
-      {!mono && <Typography>{text}</Typography>}
-    </>
+    <Typography mono={mono} variant={variant}>
+      {text}
+    </Typography>
   );
 
   if (!contextMenu) return content;
