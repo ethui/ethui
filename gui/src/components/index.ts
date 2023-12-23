@@ -13,7 +13,6 @@ export { Datapoint } from "./Datapoint";
 export { DevBuildNotice } from "./DevBuildNotice";
 export { DraggableToolbar } from "./DraggableToolbar";
 export { ErrorHandler } from "./ErrorHandler";
-export { HomePage } from "./HomePage";
 export { Logo } from "./Logo";
 export { Modal } from "./Modal";
 export { Navbar } from "./Navbar";

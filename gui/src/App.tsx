@@ -11,7 +11,6 @@ import {
   CommandBar,
   DevBuildNotice,
   ErrorHandler,
-  HomePage,
   WagmiWrapper,
 } from "@/components";
 import {
@@ -22,6 +21,7 @@ import {
 } from "@/components/Dialogs";
 import { Onboarding } from "@/components/Onboarding";
 import { useTheme } from "./store/theme";
+import { HomePageLayout } from "./components/Home/Layout";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { suspense: true } },
@@ -87,7 +87,7 @@ function Routes() {
             dense
           >
             <CommandBar>
-              <HomePage />
+              <HomePageLayout />
             </CommandBar>
           </SnackbarProvider>
         </Route>

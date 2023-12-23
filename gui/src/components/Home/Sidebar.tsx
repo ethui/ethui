@@ -8,7 +8,6 @@ import {
 } from "@mui/icons-material";
 import { Box, Drawer, Stack, Theme, Toolbar } from "@mui/material";
 import { findIndex, parseInt, range, toString } from "lodash-es";
-import { ReactNode } from "react";
 import { useLocation, useRoute } from "wouter";
 import { useKBar } from "kbar";
 
@@ -28,7 +27,7 @@ import {
   Settings,
   SidebarButton,
   Txs,
-} from "./";
+} from "@/components";
 
 export const TABS = [
   {
@@ -64,16 +63,6 @@ export const DEFAULT_TAB = TABS[0];
 const WIDTH_MD = 200;
 const WIDTH_SM = 72;
 
-const contentStyle = (theme: Theme) => {
-  return {
-    pl: `${WIDTH_MD}px`,
-    transition: theme.transitions.create("padding-left"),
-    [theme.breakpoints.down("sm")]: {
-      pl: `${WIDTH_SM}px`,
-    },
-  };
-};
-
 const drawerPaperStyle = (theme: Theme) => {
   return {
     width: WIDTH_MD,
@@ -85,9 +74,14 @@ const drawerPaperStyle = (theme: Theme) => {
   };
 };
 
-export function SidebarLayout({ children }: { children: ReactNode }) {
+export function Sidebar() {
+  const [_match, params] = useRoute("/:path");
   const [_location, setLocation] = useLocation();
   const { theme } = useTheme();
+  const breakpoint = theme.breakpoints.down("sm");
+  const { type } = useOS();
+  const kbar = useKBar();
+  const { open } = useSettingsWindow();
 
   const handleKeyboardNavigation = (event: KeyboardEvent) => {
     setLocation(TABS[parseInt(event.key) - 1].path);
@@ -106,23 +100,6 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
     { ctrl: true },
     handleKeyboardNavigation,
   );
-
-  return (
-    <>
-      <Sidebar />
-      <Box sx={contentStyle(theme)}>{children}</Box>
-    </>
-  );
-}
-
-export function Sidebar() {
-  const [_match, params] = useRoute("/:path");
-  const [_location] = useLocation();
-  const { theme } = useTheme();
-  const breakpoint = theme.breakpoints.down("sm");
-  const { type } = useOS();
-  const kbar = useKBar();
-  const { open } = useSettingsWindow();
 
   if (!type) return null;
 
