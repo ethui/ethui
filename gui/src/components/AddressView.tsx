@@ -17,7 +17,7 @@ interface Props {
   copyIcon?: boolean;
   mono?: boolean;
   contextMenu?: boolean;
-  variant?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+  variant?: "h6";
 }
 
 export function AddressView({
