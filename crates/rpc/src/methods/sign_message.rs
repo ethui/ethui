@@ -10,7 +10,7 @@ use iron_dialogs::{Dialog, DialogMsg};
 use iron_networks::Network;
 use iron_settings::Settings;
 use iron_types::GlobalState;
-use iron_wallets::{Wallet, WalletControl, Wallets};
+use iron_wallets::{Wallet, WalletControl};
 use serde::Serialize;
 
 use crate::{Error, Result};

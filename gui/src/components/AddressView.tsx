@@ -16,9 +16,14 @@ interface Props {
   address: Address;
   copyIcon?: boolean;
   mono?: boolean;
+  contextMenu?: boolean;
 }
 
-export function AddressView({ address: addr, mono = false }: Props) {
+export function AddressView({
+  address: addr,
+  mono = false,
+  contextMenu = true,
+}: Props) {
   const network = useNetworks((s) => s.current);
   const address = getAddress(addr);
   const { data: alias, mutate } = useInvoke<string>("settings_get_alias", {
@@ -35,6 +40,8 @@ export function AddressView({ address: addr, mono = false }: Props) {
       {!mono && <Typography>{text}</Typography>}
     </>
   );
+
+  if (!contextMenu) return content;
 
   return (
     <ContextMenuWithTauri
