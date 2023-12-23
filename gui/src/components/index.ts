@@ -2,7 +2,6 @@ export { ABIForm } from "./ABIForm";
 export { Account } from "./Account";
 export { AddressView } from "./AddressView";
 export { BalancesList } from "./BalancesList";
-export { CalldataView } from "./Calldata";
 export { CommandBar } from "./CommandBar";
 export { ConfirmationDialog } from "./ConfirmationDialog";
 export { Connections } from "./Connections";
