@@ -8,7 +8,11 @@ pub(crate) async fn main_window_show(app: &AppHandle) {
     } else {
         let app = app.clone();
         let onboarded = Settings::read().await.onboarded();
-        let url = if onboarded { "/" } else { "/onboarding" };
+        let url = if onboarded {
+            "/home/account"
+        } else {
+            "/onboarding"
+        };
 
         let builder = tauri::WindowBuilder::new(&app, "main", tauri::WindowUrl::App(url.into()))
             .fullscreen(false)

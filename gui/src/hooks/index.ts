@@ -2,7 +2,6 @@ export { useInvoke } from "./tauri";
 export { useApi } from "./useApi";
 export { useDialog } from "./useDialog";
 export { useEventListener } from "./useEventListener";
-export { useHashLocation } from "./useHashLocation";
 export { useKeyPress } from "./useKeyPress";
 export { useLedgerDetect } from "./useLedgerDetect";
 export { useMenuGoAction as useMenuAction } from "./useMenuAction";

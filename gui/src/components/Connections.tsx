@@ -18,6 +18,7 @@ import { ChainView } from "@iron/react/components";
 import { useEventListener, useInvoke } from "@/hooks";
 import { useNetworks } from "@/store";
 import { Panel } from "./";
+import { Navbar } from "./Home/Navbar";
 
 export function Connections() {
   const { data: peersByDomain, mutate } =
@@ -26,13 +27,16 @@ export function Connections() {
   useEventListener("peers-updated", mutate);
 
   return (
-    <Panel>
-      <Stack spacing={2}>
-        {map(peersByDomain, (peers, domain) => (
-          <Domain key={domain} domain={domain} peers={peers} />
-        ))}
-      </Stack>
-    </Panel>
+    <>
+      <Navbar>Connections</Navbar>
+      <Panel>
+        <Stack spacing={2}>
+          {map(peersByDomain, (peers, domain) => (
+            <Domain key={domain} domain={domain} peers={peers} />
+          ))}
+        </Stack>
+      </Panel>
+    </>
   );
 }
 

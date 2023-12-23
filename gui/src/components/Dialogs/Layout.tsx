@@ -1,13 +1,14 @@
 import { Box, Stack } from "@mui/material";
 import { ReactNode } from "react";
+import { Outlet } from "react-router-dom";
 
-export function DialogLayout({ children }: { children: ReactNode }) {
+export function DialogLayout() {
   return (
     <Stack
       spacing={2}
       sx={{ widht: "100vw", height: "100vh", overflow: "hidden", p: 2 }}
     >
-      {children}
+      <Outlet />
     </Stack>
   );
 }

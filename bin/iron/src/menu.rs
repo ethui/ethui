@@ -42,14 +42,14 @@ pub(crate) fn build() -> Menu {
         .add_native_item(MenuItem::SelectAll);
 
     let go_menu = Menu::new()
-        .add_item(CustomMenuItem::new("balances".to_string(), "Balances"))
+        .add_item(CustomMenuItem::new("/home/account".to_string(), "Account"))
         .add_item(CustomMenuItem::new(
-            "transactions".to_string(),
+            "/home/transactions".to_string(),
             "Transactions",
         ))
         .add_item(CustomMenuItem::new("contracts".to_string(), "Contracts"))
         .add_item(CustomMenuItem::new(
-            "connections".to_string(),
+            "/home/connections".to_string(),
             "Connections",
         ));
 

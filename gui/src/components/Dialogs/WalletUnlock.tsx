@@ -12,7 +12,6 @@ import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { useDialog } from "@/hooks";
-import { DialogLayout } from "./Layout";
 
 interface Request {
   name: string;
@@ -21,8 +20,8 @@ interface Request {
 
 const schema = z.object({ password: z.string() });
 
-export function WalletUnlockDialog({ id }: { id: number }) {
-  const { data, send, listen } = useDialog<Request>(id);
+export function WalletUnlockDialog() {
+  const { data, send, listen } = useDialog<Request>();
   const {
     handleSubmit,
     register,
@@ -53,7 +52,7 @@ export function WalletUnlockDialog({ id }: { id: number }) {
   };
 
   return (
-    <DialogLayout>
+    <>
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <Stack spacing={2}>
           <Typography>
@@ -90,6 +89,6 @@ export function WalletUnlockDialog({ id }: { id: number }) {
       <Backdrop open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>
-    </DialogLayout>
+    </>
   );
 }

@@ -1,9 +1,13 @@
 import { AppBar, Typography } from "@mui/material";
+import { ReactNode } from "react";
 
 import { DraggableToolbar } from "@/components/DraggableToolbar";
-import { type Tab } from "./Layout";
 
-export function Navbar({ tab }: { tab: Tab }) {
+interface NavbarProps {
+  children: ReactNode;
+}
+
+export function Navbar({ children }: NavbarProps) {
   return (
     <AppBar
       position="sticky"
@@ -14,7 +18,7 @@ export function Navbar({ tab }: { tab: Tab }) {
     >
       <DraggableToolbar>
         <Typography variant="h6" component="div">
-          {tab.navbarComponent ? <tab.navbarComponent /> : tab.label}
+          {children}
         </Typography>
       </DraggableToolbar>
     </AppBar>
