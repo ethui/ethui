@@ -15,7 +15,6 @@ export { DraggableToolbar } from "./DraggableToolbar";
 export { ErrorHandler } from "./ErrorHandler";
 export { Logo } from "./Logo";
 export { Modal } from "./Modal";
-export { Navbar } from "./Navbar";
 export { NestedRoutes } from "./NestedRoutes";
 export { Panel } from "./Panel";
 export { QuickAddressSelect } from "./QuickAddressSelect";
