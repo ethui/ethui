@@ -21,7 +21,7 @@ import {
 } from "@/components/Dialogs";
 import { Onboarding } from "@/components/Onboarding";
 import { useTheme } from "./store/theme";
-import { HomePageLayout } from "./components/Home/Layout";
+import { HomePageLayout } from "./components/Home";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { suspense: true } },

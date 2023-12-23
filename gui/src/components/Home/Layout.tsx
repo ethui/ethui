@@ -1,36 +1,80 @@
 import { Route, Switch } from "wouter";
-import { Box, Theme } from "@mui/material";
+import { Box, Stack, SvgIcon, Theme } from "@mui/material";
+import {
+  RequestQuoteSharp,
+  Receipt,
+  CallToAction,
+  OnlinePredictionSharp,
+} from "@mui/icons-material";
+import { ReactNode, createElement } from "react";
 
 import { useNoticeAlchemyKeyMissing, useNoticeNewVersion } from "@/hooks";
 import {
-  DEFAULT_TAB,
-  SidebarLayout,
-  TABS,
-  Sidebar,
-} from "@/components/Sidebar";
-import { ErrorHandler, Navbar, NestedRoutes } from "@/components";
-import { useTheme } from "@/store";
+  Account,
+  AddressView,
+  Connections,
+  Contracts,
+  Navbar,
+  NestedRoutes,
+  Txs,
+} from "@/components";
+import { useTheme, useWallets } from "@/store";
+import { Sidebar } from "./Sidebar";
 
-const WIDTH_MD = 200;
-const WIDTH_SM = 72;
+const sidebarWidth = { md: 200, sm: 72 };
+
+export interface Tab {
+  path: string;
+  label: string;
+  component: React.FC;
+  icon: typeof SvgIcon;
+  navbarComponent?: React.FC;
+}
+
+export const tabs: Tab[] = [
+  {
+    path: "account",
+    label: "Account",
+    component: Account,
+    navbarComponent: AccountsNavbar,
+    icon: RequestQuoteSharp,
+  },
+  {
+    path: "transactions",
+    label: "Transactions",
+    component: Txs,
+    icon: Receipt,
+  },
+  {
+    path: "contracts",
+    label: "Contracts",
+    component: Contracts,
+    icon: CallToAction,
+  },
+  {
+    path: "connections",
+    label: "Connections",
+    component: Connections,
+    icon: OnlinePredictionSharp,
+  },
+];
 
 const contentStyle = (theme: Theme) => {
   return {
-    pl: `${WIDTH_MD}px`,
+    pl: `${sidebarWidth.md}px`,
     transition: theme.transitions.create("padding-left"),
     [theme.breakpoints.down("sm")]: {
-      pl: `${WIDTH_SM}px`,
+      pl: `${sidebarWidth.sm}px`,
     },
   };
 };
 
 const drawerPaperStyle = (theme: Theme) => {
   return {
-    width: WIDTH_MD,
+    width: sidebarWidth.md,
     transition: theme.transitions.create("width"),
     [theme.breakpoints.down("sm")]: {
-      width: WIDTH_SM,
-      justifyContent: "center",
+      width: sidebarWidth.sm,
     },
   };
 };
@@ -42,29 +86,35 @@ export function HomePageLayout() {
 
   return (
     <>
-      <Sidebar />
+      <Sidebar sx={drawerPaperStyle(theme)} tabs={tabs} />
       <Box sx={contentStyle(theme)}>
         <NestedRoutes base="/">
           <Switch>
-            {TABS.map((tab) => (
+            {tabs.map((tab) => (
               <Route key={tab.path} path={tab.path}>
-                <>
-                  <ErrorHandler>
-                    <Navbar tab={tab} />
-                    <tab.component />
-                  </ErrorHandler>
-                </>
+                <Navbar tab={tab} />
+                <tab.component />
               </Route>
             ))}
             <Route>
-              <ErrorHandler>
-                <Navbar tab={DEFAULT_TAB} />
-                <DEFAULT_TAB.component />
-              </ErrorHandler>
+              <Navbar tab={tabs[0]} />
+              {createElement(tabs[0].component)}
             </Route>
           </Switch>
         </NestedRoutes>
       </Box>
     </>
+  );
+}
+
+function AccountsNavbar() {
+  const address = useWallets((s) => s.address);
+
+  if (!address) return null;
+
+  return (
+    <Stack direction="row">
+      <AddressView address={address} />
+    </Stack>
   );
 }
