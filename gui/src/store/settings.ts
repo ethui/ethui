@@ -14,19 +14,23 @@ interface Store {
 
 const actionId = "settings/fastMode";
 
-const store: StateCreator<Store> = (set, get) => ({
+const store: StateCreator<Store> = (set) => ({
   settings: undefined,
   actions: [
     {
       id: actionId,
       name: "Fast mode",
+      subtitle: "enable/disable",
+      shortcut: ["˄ ", "+", " F"],
     },
-    ...(["enable", "disable"] as const).map((mode) => ({
+    ...(["Enable", "Disable"] as const).map((mode, index) => ({
       id: `${actionId}/${mode}`,
-      name: mode,
+      name: `${index + 1}: ${mode}`,
       parent: actionId,
-      perform: () =>
-        invoke("settings_set_fast_mode", { mode: !get().settings?.fastMode }),
+      perform: () => {
+        const currentMode = mode === "Disable" ? false : true;
+        invoke("settings_set_fast_mode", { mode: currentMode });
+      },
     })),
   ],
 

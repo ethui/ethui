@@ -31,14 +31,41 @@ import {
 } from "@/store";
 import { useTheme } from "@/store/theme";
 
+function useActions() {
+  const walletActions = useWallets((s) => s.actions);
+  const networkActions = useNetworks((s) => s.actions);
+  const settingsActions = useSettings((s) => s.actions);
+  const [theme, themeActions] = useTheme((s) => [s.theme, s.actions]);
+  const settingsWindowActions = useSettingsWindow((s) => s.actions);
+
+  return {
+    walletActions,
+    networkActions,
+    settingsActions,
+    theme,
+    themeActions,
+    settingsWindowActions,
+  };
+}
+
 export function CommandBar({ children }: { children: ReactNode }) {
-  const { theme } = useTheme();
+  const actions = useActions();
+
+  if (actions.walletActions.length === 0) return null;
+
+  const allActions = [
+    actions.walletActions,
+    actions.networkActions,
+    actions.settingsActions,
+    actions.themeActions,
+    actions.settingsWindowActions,
+  ].flat();
 
   return (
-    <KBarProvider>
+    <KBarProvider actions={allActions}>
       <KBarPortal>
-        <KBarPositioner style={{ zIndex: theme.zIndex.tooltip + 1 }}>
-          <CommandBarInner />
+        <KBarPositioner style={{ zIndex: actions.theme.zIndex.tooltip + 1 }}>
+          <CommandBarInner actions={actions} />
         </KBarPositioner>
       </KBarPortal>
       {children}
@@ -71,19 +98,18 @@ function RenderResults() {
   );
 }
 
-function CommandBarInner() {
-  const walletActions = useWallets((s) => s.actions);
-  const networkActions = useNetworks((s) => s.actions);
-  const settingsActions = useSettings((s) => s.actions);
-  const [theme, themeActions] = useTheme((s) => [s.theme, s.actions]);
-  const settingsWindowActions = useSettingsWindow((s) => s.actions);
-
-  useRegisterActions(walletActions, [walletActions]);
-  useRegisterActions(networkActions, [networkActions]);
-  useRegisterActions(settingsActions, [settingsActions]);
-  useRegisterActions(themeActions, [themeActions]);
-  useRegisterActions(settingsWindowActions, [settingsWindowActions]);
-
+function CommandBarInner({
+  actions,
+}: {
+  actions: ReturnType<typeof useActions>;
+}) {
+  useRegisterActions(actions.walletActions, [actions.walletActions]);
+  useRegisterActions(actions.networkActions, [actions.networkActions]);
+  useRegisterActions(actions.settingsActions, [actions.settingsActions]);
+  useRegisterActions(actions.themeActions, [actions.themeActions]);
+  useRegisterActions(actions.settingsWindowActions, [
+    actions.settingsWindowActions,
+  ]);
   return (
     <Paper
       component={KBarAnimator}
@@ -100,10 +126,10 @@ function CommandBarInner() {
           width: "100%",
           outline: "none",
           border: "none",
-          p: theme.spacing(2),
-          color: theme.palette.text.primary,
+          p: actions.theme.spacing(2),
+          color: actions.theme.palette.text.primary,
           background: "transparent",
-          ...theme.typography.body1,
+          ...actions.theme.typography.body1,
         }}
       />
       <RenderResults />

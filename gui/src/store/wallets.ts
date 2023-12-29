@@ -19,6 +19,7 @@ interface WalletInfo {
 }
 
 interface AddressInfo {
+  walletName: string;
   key: string;
   address: Address;
   alias: string;
@@ -73,24 +74,37 @@ const store: StateCreator<Store> = (set, get) => ({
       {
         id: actionId,
         name: "Change wallet",
+        subtitle: `${wallets.length} wallet${
+          wallets.length > 1 ? "s" : ""
+        } available`,
+        shortcut: ["W"],
       },
       ...info
-        .map(({ wallet, addresses }) => [
-          {
-            id: `${actionId}/${wallet.name}`,
-            name: wallet.name,
-            parent: actionId,
-          },
-          ...(addresses || []).map(({ key, address, alias }) => ({
-            id: `${actionId}/${wallet.name}/${key}`,
-            name: alias || address,
-            parent: `${actionId}/${wallet.name}`,
-            perform: () => {
-              get().setCurrentWallet(wallet.name);
-              get().setCurrentAddress(key);
+        .map(({ wallet, addresses }, index) => {
+          return [
+            {
+              id: `${actionId}/${wallet.name}`,
+              //Since the kbar searches through its options by "name" (and not "shortcut"),
+              //we pass the index in the name.
+              //Users can then type the number > press Enter > view available accounts from the chosen wallet.
+              name: `${index + 1}: ${wallet.name}`,
+              parent: actionId,
             },
-          })),
-        ])
+            ...(addresses || []).map(({ key, address }, index) => {
+              return {
+                id: `${actionId}/${wallet.name}/${key}`,
+                name: `${index + 1}: ${address}`,
+                section: "Choose account:",
+                parent: `${actionId}/${wallet.name}`,
+                perform: () => {
+                  get().setCurrentWallet(wallet.name);
+                  get().setCurrentAddress(key);
+                  get().reload();
+                },
+              };
+            }),
+          ];
+        })
         .flat(),
     ];
 

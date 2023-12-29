@@ -2,33 +2,33 @@ import {
   Box,
   ListItem,
   ListItemText,
-  Stack,
   TextField,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import { useState } from "react";
 
-import { useWallets } from "@/store";
-
-export const MAX_CHANGE_WALLET_SHORTCUTS = 9;
+import { useTheme } from "@/store";
 
 export function SettingsKeybinds() {
-  const { wallets } = useWallets();
+  const { theme } = useTheme();
+  const isSmallerScreen = useMediaQuery(theme.breakpoints.down("md"));
+
   const keybinds = [
-    { name: "Open / Close Search bar", combination: "Ctrl + K" },
-    { name: "Switch between Sidebar menus", combination: "Ctrl + [1..4]" },
+    { name: "Toggle Command Bar", combination: "Ctrl + K" },
+    { name: "Switch between tabs", combination: "Ctrl + [1..4]" },
     {
-      name: "Switch between Wallets",
-      combination: `Ctrl + Shift + [1..${Math.min(
-        wallets.length,
-        MAX_CHANGE_WALLET_SHORTCUTS,
-      )}]`,
+      name: "Change Wallet",
+      combination: `W`,
     },
     { name: "Open / Close Settings menu", combination: "Ctrl + S" },
-    { name: "Toggle Fast Mode", combination: "Ctrl + F" },
+    { name: "Toggle Fast mode", combination: "Ctrl + F" },
   ];
+
   const [search, setSearch] = useState("");
-  const [filteredKeybinds, setFilteredKeybinds] = useState(keybinds);
+  const [filteredKeybinds, setFilteredKeybinds] = useState(
+    keybinds.filter((keybind) => keybind),
+  );
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const currentSearch = event.target.value;
@@ -42,69 +42,67 @@ export function SettingsKeybinds() {
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column" }}>
+    <>
       <Box
         sx={{
           display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
+          gap: isSmallerScreen ? "0px" : "30px",
+          flexDirection: "column",
         }}
       >
-        <Box>
-          <Typography variant="h6">Search keybinds</Typography>
-          <Typography>Showing {filteredKeybinds.length} keybinds.</Typography>
+        <Box
+          sx={{
+            display: "flex",
+            gap: "15px",
+            flexDirection: isSmallerScreen ? "column" : "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Box>
+            <Typography variant="h6">Search keybinds</Typography>
+            <Typography>Showing {filteredKeybinds.length} keybinds.</Typography>
+          </Box>
+          <TextField
+            value={search}
+            onChange={handleSearch}
+            id="outlined-required"
+            label="Filter..."
+          />
         </Box>
-        <TextField
-          value={search}
-          onChange={handleSearch}
-          id="outlined-required"
-          label="Filter..."
-        />
-      </Box>
-      <Box sx={{ marginTop: 4 }}>
-        {filteredKeybinds.length != 0 ? (
-          filteredKeybinds.map((keybind) => (
-            <ListItem
-              key={keybind.combination}
-              sx={{ borderBottom: 1, px: 0, py: 3 }}
-              secondaryAction={
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="center"
-                >
-                  <Box
+        <Box>
+          {filteredKeybinds.length ? (
+            filteredKeybinds.map((keybind) => (
+              <ListItem
+                key={keybind.combination}
+                sx={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  flexDirection: isSmallerScreen ? "column" : "row",
+                  borderBottom: 1,
+                  pr: 3,
+                  py: 3,
+                }}
+              >
+                <ListItemText primary={keybind.name} />
+                <Box sx={{ border: 1, borderRadius: 2, paddingInline: 1 }}>
+                  <Typography
                     sx={{
-                      border: 1,
-                      borderRadius: 2,
-                      paddingInline: 1,
+                      overflowWrap: "break-word",
+                      fontFamily: "Roboto Mono",
+                      borderRadius: 1,
+                      padding: 0.3,
                     }}
                   >
-                    <Typography
-                      sx={{
-                        overflowWrap: "break-word",
-                        fontFamily: "Roboto Mono",
-                        borderRadius: 1,
-                        padding: 0.3,
-                      }}
-                    >
-                      {keybind.combination}
-                    </Typography>
-                  </Box>
-                  {/* TODO: Import and add functionality to this button */}
-                  {/* <Button>
-                    <AddCircleOutlineIcon />
-                  </Button> */}
-                </Stack>
-              }
-            >
-              <ListItemText primary={`${keybind.name}`} />
-            </ListItem>
-          ))
-        ) : (
-          <ListItem>No keybinds found.</ListItem>
-        )}
+                    {keybind.combination}
+                  </Typography>
+                </Box>
+              </ListItem>
+            ))
+          ) : (
+            <ListItem>No keybinds found.</ListItem>
+          )}
+        </Box>
       </Box>
-    </Box>
+    </>
   );
 }

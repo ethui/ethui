@@ -7,7 +7,7 @@ import {
   TerminalSharp as TerminalSharpIcon,
 } from "@mui/icons-material";
 import { Box, Drawer, Stack, Theme, Toolbar } from "@mui/material";
-import { findIndex, parseInt, range, toString } from "lodash-es";
+import { findIndex, parseInt, range } from "lodash-es";
 import { ReactNode } from "react";
 import { useLocation, useRoute } from "wouter";
 import { useKBar } from "kbar";
@@ -15,7 +15,6 @@ import { invoke } from "@tauri-apps/api";
 
 import { useKeyPress, useMenuAction, useOS } from "@/hooks";
 import { useSettings, useSettingsWindow, useTheme, useWallets } from "@/store";
-import { MAX_CHANGE_WALLET_SHORTCUTS } from "./Settings/Keybinds";
 import {
   Modal,
   Account,
@@ -94,14 +93,8 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
   const { settings } = useSettings();
   const fastMode = settings?.fastMode;
 
-  const { wallets } = useWallets();
-
   const handleKeyboardNavigation = (event: KeyboardEvent) => {
     setLocation(TABS[parseInt(event.key) - 1].path);
-  };
-
-  const handleWalletsNavigation = (event: KeyboardEvent) => {
-    invoke("wallets_set_current_wallet", { idx: parseInt(event.key) - 1 });
   };
 
   const handleFastModeToggle = () => {
@@ -111,39 +104,21 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
   const handleOpenCloseSettings = (event: KeyboardEvent) => {
     event.preventDefault();
     const { show } = useSettingsWindow.getState();
-    if (show) {
-      useSettingsWindow.getState().close();
-    } else {
-      useSettingsWindow.getState().open();
-    }
+    const windowState = useSettingsWindow.getState();
+    show ? windowState.close() : windowState.open();
   };
 
   useMenuAction((payload) => setLocation(payload));
 
   useKeyPress(
-    range(1, TABS.length + 1).map(toString),
+    range(1, TABS.length + 1),
     { meta: true },
     handleKeyboardNavigation,
   );
   useKeyPress(
-    range(1, TABS.length + 1).map(toString),
+    range(1, TABS.length + 1),
     { ctrl: true },
     handleKeyboardNavigation,
-  );
-
-  useKeyPress(
-    range(1, Math.min(wallets.length + 1, MAX_CHANGE_WALLET_SHORTCUTS)).map(
-      toString,
-    ),
-    { meta: true, shift: true },
-    handleWalletsNavigation,
-  );
-  useKeyPress(
-    range(1, Math.min(wallets.length + 1, MAX_CHANGE_WALLET_SHORTCUTS)).map(
-      toString,
-    ),
-    { ctrl: true, shift: true },
-    handleWalletsNavigation,
   );
 
   useKeyPress(["F", "f"], { meta: true }, handleFastModeToggle);
