@@ -19,7 +19,6 @@ import {
   KBarResults,
   KBarSearch,
   useMatches,
-  useRegisterActions,
 } from "kbar";
 import React, { forwardRef, ReactNode, useMemo } from "react";
 
@@ -103,13 +102,6 @@ function CommandBarInner({
 }: {
   actions: ReturnType<typeof useActions>;
 }) {
-  useRegisterActions(actions.walletActions, [actions.walletActions]);
-  useRegisterActions(actions.networkActions, [actions.networkActions]);
-  useRegisterActions(actions.settingsActions, [actions.settingsActions]);
-  useRegisterActions(actions.themeActions, [actions.themeActions]);
-  useRegisterActions(actions.settingsWindowActions, [
-    actions.settingsWindowActions,
-  ]);
   return (
     <Paper
       component={KBarAnimator}
