@@ -1,3 +1,9 @@
+import { Palette, PaletteColor } from "@mui/material";
+
+export type PaletteColorKey = {
+  [Key in keyof Palette]: Palette[Key] extends PaletteColor ? Key : never;
+}[keyof Palette];
+
 const defaultDisabledArgsList = [
   "disableElevation",
   "tabIndex",

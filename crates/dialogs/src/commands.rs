@@ -1,4 +1,7 @@
-use super::{error::Result, global::OPEN_DIALOGS};
+use super::{
+    error::{Error, Result},
+    global::OPEN_DIALOGS,
+};
 
 /// Retrieves the payload for a dialog window
 /// Dialogs can call this once ready to retrieve the data they're meant to display
@@ -13,7 +16,7 @@ pub async fn dialog_get_payload(id: u32) -> Result<serde_json::Value> {
 #[tauri::command]
 pub async fn dialog_send(id: u32, payload: serde_json::Value) -> Result<()> {
     let dialogs = OPEN_DIALOGS.lock().await;
-    let dialog = dialogs.get(&id).unwrap();
+    let dialog = dialogs.get(&id).ok_or(Error::DialogNotFound)?;
 
     dialog.incoming(payload).await?;
 

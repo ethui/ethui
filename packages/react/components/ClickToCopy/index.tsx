@@ -52,7 +52,12 @@ export function ClickToCopy({
       arrow
       {...props}
     >
-      <Button sx={{ ...buttonSx }} onClick={handleCopy}>
+      <Button
+        disableTouchRipple
+        disableFocusRipple
+        sx={{ transition: "none", ...buttonSx }}
+        onClick={handleCopy}
+      >
         {children}
       </Button>
     </Tooltip>

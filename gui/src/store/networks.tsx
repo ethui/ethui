@@ -4,7 +4,7 @@ import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
 import { Network } from "@iron/types/network";
-import { IconChain } from "@iron/react/components/icons";
+import { IconChain } from "@iron/react/components";
 
 interface State {
   networks: Network[];

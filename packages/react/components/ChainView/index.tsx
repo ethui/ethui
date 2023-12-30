@@ -1,5 +1,6 @@
-import { Stack, Typography } from "@mui/material";
+import { Stack } from "@mui/material";
 
+import { Typography } from "../";
 import { IconChain } from "../icons";
 
 export interface ChainViewProps {
@@ -9,7 +10,7 @@ export interface ChainViewProps {
 
 export function ChainView({ name, chainId }: ChainViewProps) {
   return (
-    <Stack direction="row" spacing={1}>
+    <Stack direction="row" alignItems="center" spacing={1}>
       <IconChain chainId={chainId} />
       <Typography>{name}</Typography>
     </Stack>

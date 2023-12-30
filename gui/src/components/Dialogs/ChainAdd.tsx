@@ -6,15 +6,14 @@ import { Network } from "@iron/types/network";
 import { ChainView } from "@iron/react/components";
 import { useDialog } from "@/hooks";
 import { Datapoint } from "@/components";
-import { DialogLayout } from "./Layout";
 
-export function ChainAddDialog({ id }: { id: number }) {
-  const { data: network, send } = useDialog<Network>(id);
+export function ChainAddDialog() {
+  const { data: network, send } = useDialog<Network>();
 
   if (!network) return null;
 
   return (
-    <DialogLayout>
+    <>
       <Stack spacing={2} alignItems="center">
         <Typography variant="h6" component="h1">
           Add new network?
@@ -54,6 +53,6 @@ export function ChainAddDialog({ id }: { id: number }) {
           </Button>
         </Stack>
       </Stack>
-    </DialogLayout>
+    </>
   );
 }

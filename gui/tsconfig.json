@@ -3,6 +3,7 @@
   "compilerOptions": {
     "typeRoots": [
       "./src/global.d.ts",
+      "../packages/react/@types",
       "./node_modules/@types",
       "../node_modules/@types"
     ],
@@ -10,6 +11,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["./src", "vite.config.ts"],
+  "include": ["./src", "vite.config.ts", "../packages/react/@types"],
   "exclude": ["dist", "node_modules", "../node_modules"]
 }

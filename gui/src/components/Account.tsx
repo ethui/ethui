@@ -1,5 +1,6 @@
 import { useWallets } from "@/store";
-import { BalancesList, Panel } from "./";
+import { AddressView, BalancesList } from "./";
+import { Navbar } from "./Home/Navbar";
 
 export function Account() {
   const address = useWallets((s) => s.address);
@@ -7,8 +8,11 @@ export function Account() {
   if (!address) return null;
 
   return (
-    <Panel>
+    <>
+      <Navbar>
+        <AddressView variant="h6" address={address} />
+      </Navbar>
       <BalancesList />
-    </Panel>
+    </>
   );
 }

@@ -1,21 +1,31 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Stack, TextField, Typography } from "@mui/material";
+import { Button, Stack, TextField } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import truncateEthAddress from "truncate-eth-address";
-import { getAddress } from "viem";
+import { Address, getAddress } from "viem";
 import { z } from "zod";
 
+import { Typography } from "@iron/react/components";
 import { useInvoke } from "@/hooks";
 import { ContextMenuWithTauri, Modal } from "./";
 import { useNetworks } from "@/store";
 
 interface Props {
-  address: string;
+  address: Address;
+  copyIcon?: boolean;
+  mono?: boolean;
+  contextMenu?: boolean;
+  variant?: "h6";
 }
 
-export function AddressView({ address: addr }: Props) {
+export function AddressView({
+  address: addr,
+  mono = false,
+  contextMenu = true,
+  variant,
+}: Props) {
   const network = useNetworks((s) => s.current);
   const address = getAddress(addr);
   const { data: alias, mutate } = useInvoke<string>("settings_get_alias", {
@@ -25,7 +35,14 @@ export function AddressView({ address: addr }: Props) {
 
   if (!network) return;
 
-  const content = <>{alias ? alias : truncateEthAddress(`${address}`)}</>;
+  const text = alias ? alias : truncateEthAddress(`${address}`);
+  const content = (
+    <Typography mono={mono} variant={variant}>
+      {text}
+    </Typography>
+  );
+
+  if (!contextMenu) return content;
 
   return (
     <ContextMenuWithTauri

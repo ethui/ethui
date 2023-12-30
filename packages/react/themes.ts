@@ -1,5 +1,7 @@
-import { PaletteMode, Theme, createTheme } from "@mui/material";
-import { grey, lightBlue } from "@mui/material/colors";
+import { PaletteMode } from "@mui/material";
+import { Theme, createTheme } from "@mui/material/styles";
+
+import { grey, lightBlue, red, yellow } from "@mui/material/colors";
 
 export const lightTheme = getTheme("light");
 export const darkTheme = getTheme("dark");
@@ -8,10 +10,23 @@ function getTheme(mode: PaletteMode): Theme {
   const theme = createTheme({ palette: { mode } });
   const light = mode === "light";
   const borderColor = light ? grey[300] : grey[800];
+  const { augmentColor } = theme.palette;
 
   return createTheme(theme, {
     palette: {
       mode,
+      highlight1: augmentColor({
+        color: { main: light ? grey[200] : grey[800] },
+      }),
+      highlight2: augmentColor({
+        color: { main: light ? red[800] : red[500] },
+      }),
+      highlight3: augmentColor({
+        color: { main: light ? yellow[900] : yellow[500] },
+      }),
+      highlight4: augmentColor({
+        color: { main: light ? lightBlue[800] : lightBlue[500] },
+      }),
     },
     components: {
       MuiButton: {
