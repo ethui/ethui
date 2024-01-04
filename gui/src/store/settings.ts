@@ -28,8 +28,7 @@ const store: StateCreator<Store> = (set) => ({
       name: `${index + 1}: ${mode}`,
       parent: actionId,
       perform: () => {
-        const currentMode = mode === "Disable" ? false : true;
-        invoke("settings_set_fast_mode", { mode: currentMode });
+        invoke("settings_set_fast_mode", { mode: mode == "Enable" });
       },
     })),
   ],

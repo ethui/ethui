@@ -31,7 +31,7 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
   const breakpoint = theme.breakpoints.down("sm");
   const { type } = useOS();
   const kbar = useKBar();
-  const { open } = useSettingsWindow();
+  const { toggle } = useSettingsWindow();
 
   const { settings } = useSettings();
   const fastMode = settings?.fastMode;
@@ -46,9 +46,7 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
 
   const handleOpenCloseSettings = (event: KeyboardEvent) => {
     event.preventDefault();
-    const { show } = useSettingsWindow.getState();
-    const windowState = useSettingsWindow.getState();
-    show ? windowState.close() : windowState.open();
+    useSettingsWindow.getState().toggle();
   };
 
   useMenuAction((payload) => navigate(payload));
@@ -110,7 +108,7 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
           icon={TerminalSharp}
           label="Command Bar"
         />
-        <SidebarButton onClick={open} icon={SettingsSharp} label="Settings" />
+        <SidebarButton onClick={toggle} icon={SettingsSharp} label="Settings" />
         <SettingsModal />
       </Stack>
     </Drawer>
@@ -118,12 +116,12 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
 }
 
 function SettingsModal() {
-  const { show, close } = useSettingsWindow();
+  const { show, toggle } = useSettingsWindow();
 
   return (
     <Modal
       open={show}
-      onClose={close}
+      onClose={toggle}
       sx={{ outline: "none", width: "90%", height: "90%", maxWidth: "900px" }}
     >
       <Settings />
