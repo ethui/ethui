@@ -17,12 +17,20 @@ export function SettingsKeybinds() {
   const keybinds = [
     { name: "Toggle Command Bar", combination: "Ctrl + K" },
     { name: "Switch between tabs", combination: "Ctrl + [1..4]" },
-    {
-      name: "Change Wallet",
-      combination: `W`,
-    },
     { name: "Open / Close Settings menu", combination: "Ctrl + S" },
     { name: "Toggle Fast mode", combination: "Ctrl + F" },
+    {
+      name: "Change wallet",
+      combination: `W`,
+    },
+    {
+      name: "Change network",
+      combination: `N`,
+    },
+    {
+      name: "Change theme",
+      combination: `T`,
+    },
   ];
 
   const [search, setSearch] = useState("");
