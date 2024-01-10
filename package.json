@@ -37,6 +37,7 @@
     "prettier": "^3.1.0"
   },
   "dependencies": {
+    "@devtools-ds/icon": "^1.2.1",
     "@tauri-apps/cli": "^1.5.6",
     "typescript": "5.3.2"
   },

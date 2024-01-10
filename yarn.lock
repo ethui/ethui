@@ -506,6 +506,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@devtools-ds/icon@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "@devtools-ds/icon@npm:1.2.1"
+  dependencies:
+    "@babel/runtime": "npm:7.7.2"
+    "@design-systems/utils": "npm:2.12.0"
+    "@devtools-ds/themes": "npm:^1.2.1"
+    clsx: "npm:1.1.0"
+  peerDependencies:
+    react: ">= 16.8.6"
+  checksum: bc5032b8cd9cb8e139f301a128a7c4ee761a70ab9ba9dc6682bb86073c126b84cec41b21f9b6d1fec340db65b95946b60212ab337f3a18485365cb3f9d94ae03
+  languageName: node
+  linkType: hard
+
 "@devtools-ds/object-inspector@npm:^1.2.1":
   version: 1.2.1
   resolution: "@devtools-ds/object-inspector@npm:1.2.1"
@@ -10848,6 +10862,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
+    "@devtools-ds/icon": "npm:^1.2.1"
     "@tauri-apps/cli": "npm:^1.5.6"
     "@typescript-eslint/eslint-plugin": "npm:^6.12.0"
     "@typescript-eslint/parser": "npm:^6.12.0"
