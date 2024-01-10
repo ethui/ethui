@@ -3,8 +3,10 @@ import { Table } from "@devtools-ds/table";
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
 import ReportIcon from "@mui/icons-material/Report";
+import CircularProgress from "@mui/material/CircularProgress";
+import Button from "@mui/material/Button";
 import { ChevronDownIcon, ChevronUpIcon } from "@devtools-ds/icon";
-import { JsonRpcError } from "@metamask/utils";
+import { JsonRpcError, PendingJsonRpcResponse } from "@metamask/utils";
 import { Response } from "@/types";
 import ExpandedRowWithParams from "./components/ExpandedRowWithParams";
 import ExpandedRowWithoutParams, {
@@ -17,11 +19,16 @@ type TableCellProps = {
   textAlign?: string;
 };
 
+type StatusCellProps = {
+  error?: JsonRpcError;
+  pending?: PendingJsonRpcResponse<unknown>;
+};
+
 const TableCell: React.FC<TableCellProps> = ({ children }) => (
   <Table.Cell>{children}</Table.Cell>
 );
 
-const StatusCell: React.FC<{ error?: JsonRpcError }> = ({ error }) => (
+const StatusCell: React.FC<StatusCellProps> = ({ error, pending }) => (
   <TableCell textAlign="start">
     {error ? (
       <div style={{ color: "#ff4545", display: "flex", alignItems: "center" }}>
@@ -29,6 +36,10 @@ const StatusCell: React.FC<{ error?: JsonRpcError }> = ({ error }) => (
         <div>
           {error.code}: {error.message}
         </div>
+      </div>
+    ) : pending ? (
+      <div style={{ color: "#202020", display: "flex", alignItems: "center" }}>
+        <CircularProgress size={20} color="primary" />
       </div>
     ) : (
       <CheckCircleIcon color="success" />
@@ -47,9 +58,12 @@ const ResponseCell: React.FC<{ response?: Response }> = ({ response }) => (
   </TableCell>
 );
 
-const DetailsCell: React.FC<{ expanded: boolean }> = ({ expanded }) => (
+const DetailsCell: React.FC<{ expanded: boolean; onClick: () => void }> = ({
+  expanded,
+  onClick,
+}) => (
   <TableCell>
-    <button>
+    <Button variant="text" onClick={onClick}>
       {expanded ? (
         <>
           <ChevronUpIcon fill="rgba(0,0,0,.8)" inline />
@@ -61,7 +75,7 @@ const DetailsCell: React.FC<{ expanded: boolean }> = ({ expanded }) => (
           Show details
         </>
       )}
-    </button>
+    </Button>
   </TableCell>
 );
 
@@ -78,10 +92,15 @@ function App() {
   const requests = useStore((s) => s.requests);
 
   const [selected, setSelected] = useState<string | undefined>();
-  const [expandedRow, setExpandedRow] = useState<string | null>(null);
+  const [expandedRows, setExpandedRows] = useState<string[]>([]);
 
   const handleClick = (id: string) => {
-    setExpandedRow(id === expandedRow ? null : id);
+    const isRowExpanded = expandedRows.includes(id);
+    const newExpandedRows = isRowExpanded
+      ? expandedRows.filter((rowId) => rowId !== id)
+      : [...expandedRows, id];
+
+    setExpandedRows(newExpandedRows);
     setSelected(id);
   };
 
@@ -109,22 +128,22 @@ function App() {
       <Table.Body>
         {requests.map(({ request, response }, index) => (
           <React.Fragment key={index}>
-            <Table.Row
-              onClick={() => handleClick(index.toString())}
-              style={{ cursor: "pointer", backgroundColor: "#ffffff" }}
-            >
+            <Table.Row>
               <TableCell textAlign="center">{index + 1}</TableCell>
               <TableCell>{request.data.method}</TableCell>
               <TimeCell
                 request={request.timestamp}
                 response={response?.timestamp}
               />
-              <StatusCell error={response?.data.error} />
+              <StatusCell error={response?.data.error} pending={!response} />
               <ResponseCell response={response?.data} />
-              <DetailsCell expanded={expandedRow === index.toString()} />
+              <DetailsCell
+                onClick={() => handleClick(index.toString())}
+                expanded={expandedRows.includes(index.toString())}
+              />
             </Table.Row>
 
-            {expandedRow === index.toString() && (
+            {expandedRows.includes(index.toString()) && (
               <Table.Row style={{ backgroundColor: "#ffffff" }}>
                 {request.data.params && Array.isArray(request.data.params) ? (
                   <ExpandedRowWithParams index={index} request={request} />
@@ -147,5 +166,5 @@ function App() {
 createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>
+  </React.StrictMode>,
 );

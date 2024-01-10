@@ -38,7 +38,7 @@ const ExpandedRowWithoutParams = ({
         borderRadius: "5px",
       }}
     >
-      <div>#{index + 1} </div>
+      <h3 style={{ fontWeight: "bold" }}>#{index + 1} </h3>
       <div
         style={{
           display: "flex",
@@ -47,7 +47,6 @@ const ExpandedRowWithoutParams = ({
           position: "relative",
         }}
       >
-        {/* REQUEST: */}
         <div
           style={{
             padding: 8,
@@ -92,8 +91,6 @@ const ExpandedRowWithoutParams = ({
             <ObjectInspector data={request} />
           </div>
         </div>
-
-        {/* RESPONSE: */}
         <div
           style={{
             padding: 8,

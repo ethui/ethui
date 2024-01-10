@@ -31,7 +31,7 @@ export async function init() {
 async function notifyDevtools(
   tabId: number,
   type: "request" | "response" | "start",
-  data?: JsonRpcResponse<Json> | JsonRpcRequest
+  data?: JsonRpcResponse<Json> | JsonRpcRequest,
 ) {
   try {
     await runtime.sendMessage({
@@ -131,7 +131,7 @@ function connParams(port: Runtime.Port) {
  */
 function encodeUrlParams(p: Record<string, string | undefined>) {
   const filtered: Record<string, string> = Object.fromEntries(
-    Object.entries(p).filter(([, v]) => v !== undefined)
+    Object.entries(p).filter(([, v]) => v !== undefined),
   ) as Record<string, string>;
 
   return Object.entries(filtered)

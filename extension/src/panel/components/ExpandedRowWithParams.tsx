@@ -25,9 +25,9 @@ const ExpandedRowWithParams = ({
           borderRadius: "5px",
         }}
       >
-        <div style={{ fontWeight: "bold" }}>
+        <h3 style={{ fontWeight: "bold" }}>
           #{index + 1} Transaction Details:
-        </div>
+        </h3>
         <div>
           <p style={{ fontWeight: "bold" }}>PARAMS:</p>
           {request.data.params &&
