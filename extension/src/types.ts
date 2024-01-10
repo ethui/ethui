@@ -20,4 +20,10 @@ export interface Start {
   data?: Array<Request | Response>;
 }
 
+export interface Params {
+  data: string;
+  from: string;
+  to: string;
+}
+
 export type Msg = Request | Response;

@@ -1,61 +1,78 @@
-import { ObjectInspector } from "@devtools-ds/object-inspector";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { Table } from "@devtools-ds/table";
-import {
-  isJsonRpcError,
-  isJsonRpcSuccess,
-  Json,
-  JsonRpcError,
-  JsonRpcResponse,
-} from "@metamask/utils";
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
 import ReportIcon from "@mui/icons-material/Report";
-
 import { ChevronDownIcon, ChevronUpIcon } from "@devtools-ds/icon";
+import { JsonRpcError } from "@metamask/utils";
+import { Response } from "@/types";
+import ExpandedRowWithParams from "./components/ExpandedRowWithParams";
+import ExpandedRowWithoutParams, {
+  RpcResponse,
+} from "./components/ExpandedRowWithoutParams";
 import { useStore } from "./store";
 
-function Time({ request, response }: { request: number; response?: number }) {
-  if (!response) return null;
+type TableCellProps = {
+  children: React.ReactNode;
+  textAlign?: string;
+};
 
-  return <span>{response - request} ms</span>;
-}
+const TableCell: React.FC<TableCellProps> = ({ children }) => (
+  <Table.Cell>{children}</Table.Cell>
+);
 
-function Error({ error }: { error?: JsonRpcError }) {
-  return (
-    <>
-      {isJsonRpcError(error) ? (
-        <div
-          style={{
-            color: "#ff4545",
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <ReportIcon />
-          <div>
-            {error.code}: {error.message}
-          </div>
-        </div>
-      ) : (
-        <CheckCircleIcon color="success" />
-      )}
-    </>
-  );
-}
-
-function Response({ response }: { response?: JsonRpcResponse<Json> }) {
-  if (!response) return null;
-  return (
-    <>
-      {isJsonRpcSuccess(response) && (
+const StatusCell: React.FC<{ error?: JsonRpcError }> = ({ error }) => (
+  <TableCell textAlign="start">
+    {error ? (
+      <div style={{ color: "#ff4545", display: "flex", alignItems: "center" }}>
+        <ReportIcon />
         <div>
-          {JSON.stringify(response.result).replace(/[^a-zA-Z0-9 ]/g, "")}
+          {error.code}: {error.message}
         </div>
+      </div>
+    ) : (
+      <CheckCircleIcon color="success" />
+    )}
+  </TableCell>
+);
+
+const TimeCell: React.FC<{ request: number; response?: number }> = ({
+  request,
+  response,
+}) => <TableCell>{response && <span>{response - request} ms</span>}</TableCell>;
+
+const ResponseCell: React.FC<{ response?: Response }> = ({ response }) => (
+  <TableCell textAlign="start">
+    {response && <RpcResponse response={response} />}
+  </TableCell>
+);
+
+const DetailsCell: React.FC<{ expanded: boolean }> = ({ expanded }) => (
+  <TableCell>
+    <button>
+      {expanded ? (
+        <>
+          <ChevronUpIcon fill="rgba(0,0,0,.8)" inline />
+          Close details
+        </>
+      ) : (
+        <>
+          <ChevronDownIcon fill="rgba(0,0,0,.8)" inline />
+          Show details
+        </>
       )}
-    </>
-  );
-}
+    </button>
+  </TableCell>
+);
+
+const tableheads = [
+  { title: "", width: "2%" },
+  { title: "Method", width: "20%" },
+  { title: "Response Time", width: "10%" },
+  { title: "Status", width: "15%" },
+  { title: "Response", width: "40%" },
+  { title: "Details", width: "15%" },
+];
 
 function App() {
   const requests = useStore((s) => s.requests);
@@ -64,24 +81,15 @@ function App() {
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
 
   const handleClick = (id: string) => {
-    if (id === expandedRow) {
-      setExpandedRow(null);
-    } else {
-      setExpandedRow(id);
-    }
+    setExpandedRow(id === expandedRow ? null : id);
     setSelected(id);
   };
 
   return (
     <Table
       selected={selected}
-      onSelected={(id) => {
-        setSelected(id);
-      }}
-      style={{
-        border: "none",
-        borderCollapse: "collapse",
-      }}
+      onSelected={(id) => setSelected(id)}
+      style={{ border: "none", borderCollapse: "collapse" }}
     >
       <Table.Head
         style={{
@@ -90,23 +98,12 @@ function App() {
           color: "#ffffff",
         }}
       >
-        <Table.Row
-          style={{
-            fontSize: "1em",
-          }}
-        >
-          <Table.HeadCell style={{ width: "2%", textAlign: "center" }}>
-            #
-          </Table.HeadCell>
-          <Table.HeadCell style={{ width: "20%" }}>Method</Table.HeadCell>
-          <Table.HeadCell style={{ width: "10%" }}>
-            Response Time
-          </Table.HeadCell>
-          <Table.HeadCell style={{ width: "15%" }}>Status</Table.HeadCell>
-          {/* "Response" Can be the account address or the txn hash */}
-          <Table.HeadCell>Response</Table.HeadCell>
-          <Table.HeadCell style={{ width: "15%" }}>Network</Table.HeadCell>
-          <Table.HeadCell style={{ width: "15%" }} />
+        <Table.Row style={{ fontSize: "1em" }}>
+          {tableheads.map((head, index) => (
+            <Table.HeadCell key={index} style={{ width: head.width }}>
+              {head.title}
+            </Table.HeadCell>
+          ))}
         </Table.Row>
       </Table.Head>
       <Table.Body>
@@ -114,201 +111,29 @@ function App() {
           <React.Fragment key={index}>
             <Table.Row
               onClick={() => handleClick(index.toString())}
-              style={{
-                backgroundColor: "#ffffff",
-              }}
+              style={{ cursor: "pointer", backgroundColor: "#ffffff" }}
             >
-              <Table.Cell style={{ textAlign: "center" }}>
-                {index + 1}
-              </Table.Cell>
-              <Table.Cell>{request.data.method}</Table.Cell>
-              <Table.Cell>
-                <Time
-                  request={request.timestamp}
-                  response={response?.timestamp}
-                />
-              </Table.Cell>
-              <Table.Cell>
-                <Error error={response?.data.error} />
-              </Table.Cell>
-              <Table.Cell>
-                <Response response={response?.data} />
-              </Table.Cell>
-
-              <Table.Cell>network</Table.Cell>
-
-              <Table.Cell style={{ cursor: "pointer", fontWeight: "bold" }}>
-                {expandedRow !== index.toString() ? (
-                  <span>
-                    <ChevronDownIcon fill="rgba(0,0,0,.8)" inline />
-                    Show details
-                  </span>
-                ) : (
-                  <span>
-                    <ChevronUpIcon fill="rgba(0,0,0,.8)" inline />
-                    Close details
-                  </span>
-                )}
-              </Table.Cell>
+              <TableCell textAlign="center">{index + 1}</TableCell>
+              <TableCell>{request.data.method}</TableCell>
+              <TimeCell
+                request={request.timestamp}
+                response={response?.timestamp}
+              />
+              <StatusCell error={response?.data.error} />
+              <ResponseCell response={response?.data} />
+              <DetailsCell expanded={expandedRow === index.toString()} />
             </Table.Row>
 
-            {/* expanded row */}
             {expandedRow === index.toString() && (
               <Table.Row style={{ backgroundColor: "#ffffff" }}>
                 {request.data.params && Array.isArray(request.data.params) ? (
-                  // WITH PARAMS
-                  <Table.Cell colSpan={7}>
-                    <div
-                      style={{
-                        padding: "20px",
-                        border: "2px solid #bababa",
-                        backgroundColor: "#ffffff",
-                        borderRadius: "5px",
-                      }}
-                    >
-                      <div style={{ fontWeight: "bold" }}>
-                        #{index + 1} Transaction Details:
-                      </div>
-                      <div>
-                        <p style={{ fontWeight: "bold" }}>PARAMS:</p>
-                        {request.data.params &&
-                          Array.isArray(request.data.params) &&
-                          request.data.params[0] && (
-                            <div
-                              style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: "4px",
-                                paddingLeft: "8px",
-                              }}
-                            >
-                              <div>
-                                <strong>Data: </strong>
-                                {(request.data.params[0] as any)?.data}
-                              </div>
-                              <div>
-                                <strong>From: </strong>
-                                {(request.data.params[0] as any)?.from}
-                              </div>
-                              <div>
-                                <strong>To: </strong>
-                                {(request.data.params[0] as any)?.to}
-                              </div>
-                            </div>
-                          )}
-                      </div>
-                      <div>
-                        <p style={{ fontWeight: "bold" }}>RAW REQUEST:</p>
-                        {request.data.params && (
-                          <ObjectInspector data={request.data} />
-                        )}
-                      </div>
-                    </div>
-                  </Table.Cell>
+                  <ExpandedRowWithParams index={index} request={request} />
                 ) : (
-                  // NO PARAMS
-                  <Table.Cell colSpan={7}>
-                    <div
-                      style={{
-                        padding: "20px",
-                        border: "2px solid #bababa",
-                        backgroundColor: "#ffffff",
-                        borderRadius: "5px",
-                      }}
-                    >
-                      <div>#{index + 1} </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "start",
-                          gap: "10%",
-                          position: "relative",
-                        }}
-                      >
-                        {/* REQUEST without params */}
-                        <div
-                          style={{
-                            padding: 8,
-                            border: "2px solid #bababa",
-                            borderRadius: "5px",
-                          }}
-                        >
-                          <div
-                            style={{
-                              fontWeight: "bold",
-                              textTransform: "uppercase",
-                              paddingBottom: 8,
-                            }}
-                          >
-                            {request.type} :
-                          </div>
-                          <div>
-                            {request.data && (
-                              <div
-                                style={{
-                                  display: "flex",
-                                  flexDirection: "column",
-                                  gap: "4px",
-                                  paddingLeft: "8px",
-                                }}
-                              >
-                                <div>
-                                  <strong>ID:</strong> {request.data.id}
-                                </div>
-                                <div>
-                                  <strong>JSON-RPC:</strong>
-                                  {request.data.jsonrpc}
-                                </div>
-                                <div>
-                                  <strong>Method:</strong> {request.data.method}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                          <div>
-                            <p style={{ fontWeight: "bold" }}>RAW REQUEST:</p>
-                            <ObjectInspector data={request} />
-                          </div>
-                        </div>
-
-                        {/* RESPONSE without params */}
-                        <div
-                          style={{
-                            padding: 8,
-                            border: "2px solid #bababa",
-                            borderRadius: "5px",
-                          }}
-                        >
-                          <div
-                            style={{
-                              fontWeight: "bold",
-                              textTransform: "uppercase",
-                              paddingBottom: 8,
-                            }}
-                          >
-                            {response?.type}:
-                          </div>
-                          <div>
-                            {response?.data && (
-                              <div
-                                style={{
-                                  display: "flex",
-                                  paddingLeft: "8px",
-                                }}
-                              >
-                                <strong>Result:</strong>
-                                <Response response={response?.data} />
-                              </div>
-                            )}
-                          </div>
-                          <div>
-                            <p style={{ fontWeight: "bold" }}>RAW RESPONSE:</p>
-                            <ObjectInspector data={response} />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </Table.Cell>
+                  <ExpandedRowWithoutParams
+                    index={index}
+                    request={request}
+                    response={response}
+                  />
                 )}
               </Table.Row>
             )}
