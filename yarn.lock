@@ -690,25 +690,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-
-"@devtools-ds/icon@npm:^1.2.1":
-  version: 1.2.1
-  resolution: "@devtools-ds/icon@npm:1.2.1"
-  dependencies:
-    "@babel/runtime": "npm:7.7.2"
-    "@design-systems/utils": "npm:2.12.0"
-    "@devtools-ds/themes": "npm:^1.2.1"
-    clsx: "npm:1.1.0"
-  peerDependencies:
-    react: ">= 16.8.6"
-  checksum: bc5032b8cd9cb8e139f301a128a7c4ee761a70ab9ba9dc6682bb86073c126b84cec41b21f9b6d1fec340db65b95946b60212ab337f3a18485365cb3f9d94ae03
-  languageName: node
-  linkType: hard
-
-"@devtools-ds/object-inspector@npm:^1.2.1":
-  version: 1.2.1
-  resolution: "@devtools-ds/object-inspector@npm:1.2.1"
-
+"@babel/plugin-syntax-optional-chaining@npm:^7.8.3":
+  version: 7.8.3
+  resolution: "@babel/plugin-syntax-optional-chaining@npm:7.8.3"
   dependencies:
     "@babel/helper-plugin-utils": "npm:^7.8.0"
   peerDependencies:
@@ -1774,6 +1758,20 @@ __metadata:
   bin:
     adbkit: bin/adbkit
   checksum: c3ed4590d4b5743dbba557dedfed506001befa1dd7c7cbd78c7620b0d6d50dceb9e7b20a55247860b7f5d9c324e33de6fff2922893054bb8f5dff18a931a480a
+  languageName: node
+  linkType: hard
+
+"@devtools-ds/icon@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "@devtools-ds/icon@npm:1.2.1"
+  dependencies:
+    "@babel/runtime": "npm:7.7.2"
+    "@design-systems/utils": "npm:2.12.0"
+    "@devtools-ds/themes": "npm:^1.2.1"
+    clsx: "npm:1.1.0"
+  peerDependencies:
+    react: ">= 16.8.6"
+  checksum: bc5032b8cd9cb8e139f301a128a7c4ee761a70ab9ba9dc6682bb86073c126b84cec41b21f9b6d1fec340db65b95946b60212ab337f3a18485365cb3f9d94ae03
   languageName: node
   linkType: hard
 
@@ -5724,9 +5722,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tauri-apps/cli-darwin-arm64@npm:1.5.9":
+  version: 1.5.9
+  resolution: "@tauri-apps/cli-darwin-arm64@npm:1.5.9"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
 "@tauri-apps/cli-darwin-x64@npm:1.5.7":
   version: 1.5.7
   resolution: "@tauri-apps/cli-darwin-x64@npm:1.5.7"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@tauri-apps/cli-darwin-x64@npm:1.5.9":
+  version: 1.5.9
+  resolution: "@tauri-apps/cli-darwin-x64@npm:1.5.9"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
@@ -5738,9 +5750,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tauri-apps/cli-linux-arm-gnueabihf@npm:1.5.9":
+  version: 1.5.9
+  resolution: "@tauri-apps/cli-linux-arm-gnueabihf@npm:1.5.9"
+  conditions: os=linux & cpu=arm
+  languageName: node
+  linkType: hard
+
 "@tauri-apps/cli-linux-arm64-gnu@npm:1.5.7":
   version: 1.5.7
   resolution: "@tauri-apps/cli-linux-arm64-gnu@npm:1.5.7"
+  conditions: os=linux & cpu=arm64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@tauri-apps/cli-linux-arm64-gnu@npm:1.5.9":
+  version: 1.5.9
+  resolution: "@tauri-apps/cli-linux-arm64-gnu@npm:1.5.9"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
@@ -5752,9 +5778,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tauri-apps/cli-linux-arm64-musl@npm:1.5.9":
+  version: 1.5.9
+  resolution: "@tauri-apps/cli-linux-arm64-musl@npm:1.5.9"
+  conditions: os=linux & cpu=arm64 & libc=musl
+  languageName: node
+  linkType: hard
+
 "@tauri-apps/cli-linux-x64-gnu@npm:1.5.7":
   version: 1.5.7
   resolution: "@tauri-apps/cli-linux-x64-gnu@npm:1.5.7"
+  conditions: os=linux & cpu=x64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@tauri-apps/cli-linux-x64-gnu@npm:1.5.9":
+  version: 1.5.9
+  resolution: "@tauri-apps/cli-linux-x64-gnu@npm:1.5.9"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
@@ -5766,9 +5806,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tauri-apps/cli-linux-x64-musl@npm:1.5.9":
+  version: 1.5.9
+  resolution: "@tauri-apps/cli-linux-x64-musl@npm:1.5.9"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
 "@tauri-apps/cli-win32-arm64-msvc@npm:1.5.7":
   version: 1.5.7
   resolution: "@tauri-apps/cli-win32-arm64-msvc@npm:1.5.7"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@tauri-apps/cli-win32-arm64-msvc@npm:1.5.9":
+  version: 1.5.9
+  resolution: "@tauri-apps/cli-win32-arm64-msvc@npm:1.5.9"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
@@ -5780,10 +5834,65 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tauri-apps/cli-win32-ia32-msvc@npm:1.5.9":
+  version: 1.5.9
+  resolution: "@tauri-apps/cli-win32-ia32-msvc@npm:1.5.9"
+  conditions: os=win32 & cpu=ia32
+  languageName: node
+  linkType: hard
+
 "@tauri-apps/cli-win32-x64-msvc@npm:1.5.7":
   version: 1.5.7
   resolution: "@tauri-apps/cli-win32-x64-msvc@npm:1.5.7"
   conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@tauri-apps/cli-win32-x64-msvc@npm:1.5.9":
+  version: 1.5.9
+  resolution: "@tauri-apps/cli-win32-x64-msvc@npm:1.5.9"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@tauri-apps/cli@npm:^1.5.6":
+  version: 1.5.9
+  resolution: "@tauri-apps/cli@npm:1.5.9"
+  dependencies:
+    "@tauri-apps/cli-darwin-arm64": "npm:1.5.9"
+    "@tauri-apps/cli-darwin-x64": "npm:1.5.9"
+    "@tauri-apps/cli-linux-arm-gnueabihf": "npm:1.5.9"
+    "@tauri-apps/cli-linux-arm64-gnu": "npm:1.5.9"
+    "@tauri-apps/cli-linux-arm64-musl": "npm:1.5.9"
+    "@tauri-apps/cli-linux-x64-gnu": "npm:1.5.9"
+    "@tauri-apps/cli-linux-x64-musl": "npm:1.5.9"
+    "@tauri-apps/cli-win32-arm64-msvc": "npm:1.5.9"
+    "@tauri-apps/cli-win32-ia32-msvc": "npm:1.5.9"
+    "@tauri-apps/cli-win32-x64-msvc": "npm:1.5.9"
+  dependenciesMeta:
+    "@tauri-apps/cli-darwin-arm64":
+      optional: true
+    "@tauri-apps/cli-darwin-x64":
+      optional: true
+    "@tauri-apps/cli-linux-arm-gnueabihf":
+      optional: true
+    "@tauri-apps/cli-linux-arm64-gnu":
+      optional: true
+    "@tauri-apps/cli-linux-arm64-musl":
+      optional: true
+    "@tauri-apps/cli-linux-x64-gnu":
+      optional: true
+    "@tauri-apps/cli-linux-x64-musl":
+      optional: true
+    "@tauri-apps/cli-win32-arm64-msvc":
+      optional: true
+    "@tauri-apps/cli-win32-ia32-msvc":
+      optional: true
+    "@tauri-apps/cli-win32-x64-msvc":
+      optional: true
+  bin:
+    tauri: tauri.js
+  checksum: 511fbe90e0bad09ca29a803d833b2fb31c02f87fdd13946390dae129142119fd22b21111d90e21a288f0bc3c99c26e7163f1ec06c7ef460419ffd121d8a91495
   languageName: node
   linkType: hard
 
@@ -17291,9 +17400,8 @@ __metadata:
   dependencies:
     "@devtools-ds/icon": "npm:^1.2.1"
     "@tauri-apps/cli": "npm:^1.5.6"
-    "@typescript-eslint/eslint-plugin": "npm:^6.12.0"
-    "@typescript-eslint/parser": "npm:^6.12.0"
-
+    "@typescript-eslint/eslint-plugin": "npm:^6.14.0"
+    "@typescript-eslint/parser": "npm:^6.14.0"
     assert: "npm:^2.1.0"
     eslint: "npm:^8.55.0"
     eslint-config-prettier: "npm:^9.1.0"
@@ -17305,7 +17413,7 @@ __metadata:
     eslint-plugin-react: "npm:^7.33.2"
     eslint-plugin-react-hooks: "npm:^4.6.0"
     prettier: "npm:^3.1.1"
-    typescript: "npm:5.3.3"
+    typescript: "npm:5.3.2"
   languageName: unknown
   linkType: soft
 
@@ -18823,7 +18931,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:5.3.3, typescript@npm:^5.2.2, typescript@npm:^5.3.3":
+"typescript@npm:5.3.2":
+  version: 5.3.2
+  resolution: "typescript@npm:5.3.2"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: d7dbe1fbe19039e36a65468ea64b5d338c976550394ba576b7af9c68ed40c0bc5d12ecce390e4b94b287a09a71bd3229f19c2d5680611f35b7c53a3898791159
+  languageName: node
+  linkType: hard
+
+"typescript@npm:^5.2.2, typescript@npm:^5.3.3":
   version: 5.3.3
   resolution: "typescript@npm:5.3.3"
   bin:
@@ -18833,7 +18951,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.2.2#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.3.3#optional!builtin<compat/typescript>":
+"typescript@patch:typescript@npm%3A5.3.2#optional!builtin<compat/typescript>":
+  version: 5.3.2
+  resolution: "typescript@patch:typescript@npm%3A5.3.2#optional!builtin<compat/typescript>::version=5.3.2&hash=e012d7"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 73c8bad74e732d93211c9d77f28b03307e2f5fc6a0afc73f4b783261ab567686a16d6ae958bdaef383a00be1b0b8c8b6741dd6ca3d13af4963fa7e47456d49c7
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@npm%3A^5.2.2#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.3.3#optional!builtin<compat/typescript>":
   version: 5.3.3
   resolution: "typescript@patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"
   bin:
