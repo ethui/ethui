@@ -1,6 +1,7 @@
 import { Table } from "@devtools-ds/table";
 import { ObjectInspector } from "@devtools-ds/object-inspector";
 import { Json, JsonRpcResponse, isJsonRpcSuccess } from "@metamask/utils";
+
 import { Request, Response } from "@/types";
 
 export function RpcResponse({

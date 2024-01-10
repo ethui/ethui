@@ -7,6 +7,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Button from "@mui/material/Button";
 import { ChevronDownIcon, ChevronUpIcon } from "@devtools-ds/icon";
 import { JsonRpcError, PendingJsonRpcResponse } from "@metamask/utils";
+
 import { Response } from "@/types";
 import ExpandedRowWithParams from "./components/ExpandedRowWithParams";
 import ExpandedRowWithoutParams, {

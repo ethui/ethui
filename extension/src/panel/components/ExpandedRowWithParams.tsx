@@ -1,5 +1,6 @@
 import { Table } from "@devtools-ds/table";
 import { ObjectInspector } from "@devtools-ds/object-inspector";
+
 import { Request, Params } from "@/types";
 
 const ExpandedRowWithParams = ({
