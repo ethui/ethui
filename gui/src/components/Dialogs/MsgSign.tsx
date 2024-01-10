@@ -1,39 +1,45 @@
 import { Button, Stack, Typography } from "@mui/material";
+import { Delete, Task } from "@mui/icons-material";
 
 import { useDialog } from "@/hooks";
-
 import { DialogLayout } from "./Layout";
 
-export function MsgSignDialog({ id }: { id: number }) {
-  const { data, send } = useDialog<Record<string, string>>(id);
+export function MsgSignDialog() {
+  const { data, send } = useDialog<Record<string, string>>();
 
   if (!data) return null;
 
   const msg = data["Raw"] || JSON.stringify(data["Typed"], null, 2);
 
   return (
-    <DialogLayout>
+    <>
       <Typography variant="h6" component="h1">
         Sign Message
       </Typography>
       <Typography>{msg}</Typography>
 
-      <Stack direction="row" justifyContent="center" spacing={2}>
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() => send("reject")}
-        >
-          Reject
-        </Button>
-        <Button
-          variant="contained"
-          type="submit"
-          onClick={() => send("accept")}
-        >
-          Sign
-        </Button>
-      </Stack>
-    </DialogLayout>
+      <DialogLayout.Bottom>
+        <Stack direction="row" justifyContent="center" spacing={2}>
+          <Button
+            size="large"
+            variant="contained"
+            color="error"
+            onClick={() => send("reject")}
+            startIcon={<Delete />}
+          >
+            Reject
+          </Button>
+          <Button
+            size="large"
+            variant="contained"
+            type="submit"
+            onClick={() => send("accept")}
+            endIcon={<Task />}
+          >
+            Sign
+          </Button>
+        </Stack>
+      </DialogLayout.Bottom>
+    </>
   );
 }

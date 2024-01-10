@@ -1,0 +1,1 @@
+export { IconCrypto } from "./Crypto";

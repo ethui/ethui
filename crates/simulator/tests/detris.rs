@@ -1,20 +1,20 @@
 use std::str::FromStr;
 
-use ethers_core::types::{Bytes, Log};
+use ethers::types::{Bytes, Log};
 use iron_simulator::{Evm, Request};
 use iron_types::{Address, ToEthers, B256};
 use pretty_assertions::assert_eq;
 
 #[tokio::test(flavor = "multi_thread")]
 async fn simulate_detris() {
-    let fork_url = "https://ethereum.publicnode.com".to_string();
+    let fork_url = "https://eth.llamarpc.com".to_string();
     let fork_block_number = Some(17579630);
 
     let tx = Request {
         from: Address::from_str("0x47ac0fb4f2d84898e4d9e7b4dab3c24507a6d503").unwrap(),
         to: Address::from_str("0xf0f8628d496782d6a9c724f047d14b4fc2569ea1").unwrap(),
         value: None,
-        data: Some(Bytes::from_str("0x1249c58b").unwrap()),
+        data: Some(alloy_primitives::Bytes::from_str("0x1249c58b").unwrap()),
         gas_limit: 0,
     };
 
@@ -51,7 +51,7 @@ async fn simulate_detris() {
                     "0x0000000000000000000000000000000000000000000000000000000000000022"
                 )
                 .unwrap()
-                .to_ethers()
+                .to_ethers(),
             ],
             data: Bytes::from_str("0x").unwrap(),
             ..Default::default()

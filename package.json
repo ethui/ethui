@@ -1,11 +1,12 @@
 {
   "private": true,
-  "version": "1.3.0",
+  "version": "1.4.0",
   "license": "MIT",
   "description": "A dev-oriented web3 wallet",
   "scripts": {
     "app:dev": "rm -rf target/debug/db.*; RUST_LOG=iron=debug tauri dev",
     "gui:build": "yarn workspace @iron/gui build",
+    "storybook": "yarn workspace @iron/react storybook",
     "ext:dev": "yarn workspace @iron/extension dev",
     "ext:build": "yarn workspace @iron/extension build \"$@\"",
     "lint": "yarn lint:eslint && yarn lint:tsc && yarn lint:prettier",
@@ -19,22 +20,24 @@
   },
   "workspaces": [
     "extension",
+    "packages/react",
+    "packages/types",
     "gui"
   ],
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.12.0",
-    "@typescript-eslint/parser": "^6.12.0",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
     "assert": "^2.1.0",
-    "eslint": "^8.54.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-config-standard-with-typescript": "^40.0.0",
+    "eslint": "^8.55.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-config-standard-with-typescript": "^42.0.0",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-import": "^2.29.0",
-    "eslint-plugin-n": "^16.3.1",
+    "eslint-plugin-n": "^16.4.0",
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "prettier": "^3.1.0"
+    "prettier": "^3.1.1"
   },
   "dependencies": {
     "@devtools-ds/icon": "^1.2.1",

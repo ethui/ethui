@@ -13,7 +13,7 @@ build:
   cargo build
 
 dev *args='':
-  yarn run tauri dev --features ${IRON_FEATURES:-debug} -- -- -- $@
+  cargo tauri dev --features ${IRON_FEATURES:-debug} -- -- -- $@
 
 fix:
   cargo +nightly fmt --all

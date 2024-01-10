@@ -1,4 +1,4 @@
-import { listen } from "@tauri-apps/api/event";
+import * as tauri from "@tauri-apps/api";
 import { useEffect } from "react";
 
 type Event =
@@ -9,7 +9,7 @@ type Event =
 
 export function useEventListener(event: Event, callback: () => unknown) {
   useEffect(() => {
-    const unlisten = listen(event, () => {
+    const unlisten = tauri.event.listen(event, () => {
       callback();
     });
 

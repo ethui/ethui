@@ -25,13 +25,18 @@ pub(crate) fn send(handle: &AppHandle, params: ui_events::DialogSend) {
 }
 
 fn on_event(window_id: u32, event: &WindowEvent) {
-    if let tauri::WindowEvent::CloseRequested { .. } = event {
-        tokio::spawn(async move {
-            iron_dialogs::dialog_close(window_id)
-                .await
-                .unwrap_or_else(|_e| {
-                    tracing::warn!("failed to close dialog: {}", window_id);
-                });
-        });
+    use tauri::WindowEvent as E;
+
+    match &event {
+        E::CloseRequested { .. } | E::Destroyed => {
+            tokio::spawn(async move {
+                iron_dialogs::dialog_close(window_id)
+                    .await
+                    .unwrap_or_else(|_e| {
+                        tracing::warn!("failed to close dialog: {}", window_id);
+                    });
+            });
+        }
+        _ => {}
     }
 }

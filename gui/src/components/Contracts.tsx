@@ -1,9 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ExpandMore } from "@mui/icons-material";
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Button,
   Chip,
   CircularProgress,
@@ -16,20 +12,27 @@ import { z } from "zod";
 
 import { useApi } from "@/hooks";
 import { useContracts, useNetworks } from "@/store";
-
-import { ABIForm, AddressView, Panel } from "./";
+import {
+  ABIForm,
+  AddressView,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+} from "./";
+import { Navbar } from "./Home/Navbar";
 
 export function Contracts() {
   const chainId = useNetworks((s) => s.current?.chain_id);
   const addresses = useContracts((s) => s.addresses);
 
   return (
-    <Panel>
+    <>
+      <Navbar>Contracts</Navbar>
       {chainId != 31337 && <AddressForm />}
       {Array.from(addresses || []).map((address) => (
         <Contract key={address} address={address} />
       ))}
-    </Panel>
+    </>
   );
 }
 
@@ -43,8 +46,8 @@ function Contract({ address }: { address: Address }) {
   if (!chainId) return null;
 
   return (
-    <Accordion TransitionProps={{ unmountOnExit: true }}>
-      <AccordionSummary expandIcon={<ExpandMore />}>
+    <Accordion>
+      <AccordionSummary>
         <AddressView address={address} />
         <Chip sx={{ marginLeft: 2 }} label={name} />
       </AccordionSummary>

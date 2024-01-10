@@ -3,25 +3,28 @@ import "react18-json-view/src/style.css";
 
 import { GlobalStyles, ThemeProvider } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
-import { SnackbarProvider } from "notistack";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { Route, Router, Switch } from "wouter";
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 
 import {
-  CommandBar,
+  Account,
+  Connections,
+  Contracts,
   DevBuildNotice,
   ErrorHandler,
-  HomePage,
+  Txs,
   WagmiWrapper,
 } from "@/components";
 import {
   MsgSignDialog,
+  ChainAddDialog,
   TxReviewDialog,
   WalletUnlockDialog,
 } from "@/components/Dialogs";
 import { Onboarding } from "@/components/Onboarding";
-
 import { useTheme } from "./store/theme";
+import { HomePageLayout } from "./components/Home/Layout";
+import { DialogLayout } from "./components/Dialogs/Layout";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { suspense: true } },
@@ -35,7 +38,44 @@ const globalStyles = {
   h3: { userSelect: "initial" },
 };
 
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Base />,
+    children: [
+      {
+        path: "home/",
+        element: <HomePageLayout />,
+        children: [
+          { path: "account", element: <Account /> },
+          { path: "transactions", element: <Txs /> },
+          { path: "contracts", element: <Contracts /> },
+          { path: "connections", element: <Connections /> },
+        ],
+      },
+      { path: "onboarding/", element: <Onboarding /> },
+      {
+        path: "dialog/",
+        element: <DialogLayout />,
+        children: [
+          { path: "tx-review/:dialogId", element: <TxReviewDialog /> },
+          { path: "msg-sign/:dialogId", element: <MsgSignDialog /> },
+          {
+            path: "wallet-unlock/:dialogId",
+            element: <WalletUnlockDialog />,
+          },
+          { path: "chain-add/:dialogId", element: <ChainAddDialog /> },
+        ],
+      },
+    ],
+  },
+]);
+
 export default function App() {
+  return <RouterProvider router={router} />;
+}
+
+function Base() {
   const theme = useTheme((s) => s.theme);
 
   return (
@@ -46,46 +86,11 @@ export default function App() {
           <QueryClientProvider client={queryClient}>
             <DevBuildNotice />
             <WagmiWrapper>
-              <Routes />
+              <Outlet />
             </WagmiWrapper>
           </QueryClientProvider>
         </ErrorHandler>
       </CssBaseline>
     </ThemeProvider>
-  );
-}
-
-function Routes() {
-  return (
-    <Router>
-      <Switch>
-        <Route path="/onboarding">
-          <Onboarding />
-        </Route>
-
-        <Route path="/dialog/tx-review/:id">
-          {({ id }: { id: string }) => <TxReviewDialog id={parseInt(id)} />}
-        </Route>
-
-        <Route path="/dialog/msg-sign/:id">
-          {({ id }: { id: string }) => <MsgSignDialog id={parseInt(id)} />}
-        </Route>
-
-        <Route path="/dialog/wallet-unlock/:id">
-          {({ id }: { id: string }) => <WalletUnlockDialog id={parseInt(id)} />}
-        </Route>
-        <Route>
-          <SnackbarProvider
-            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-            preventDuplicate
-            dense
-          >
-            <CommandBar>
-              <HomePage />
-            </CommandBar>
-          </SnackbarProvider>
-        </Route>
-      </Switch>
-    </Router>
   );
 }

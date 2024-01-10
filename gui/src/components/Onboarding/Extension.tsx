@@ -10,7 +10,6 @@ import {
 import { useEffect, useState } from "react";
 
 import { useInvoke } from "@/hooks";
-
 import { StepProps } from ".";
 
 export function InstallExtensionStep({ onSubmit }: StepProps) {

@@ -1,10 +1,9 @@
-import { invoke } from "@tauri-apps/api";
-import { listen } from "@tauri-apps/api/event";
+import { invoke, event } from "@tauri-apps/api";
 import { Action } from "kbar";
 import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { GeneralSettings } from "@/types/settings";
+import { GeneralSettings } from "@iron/types/settings";
 
 interface State {
   settings?: GeneralSettings;
@@ -56,7 +55,7 @@ const store: StateCreator<Store> = (set, get) => ({
 
 export const useSettings = create<Store>()(subscribeWithSelector(store));
 
-listen("settings-changed", () => {
+event.listen("settings-changed", () => {
   useSettings.getState().reload();
 });
 

@@ -1,13 +1,5 @@
+import { CallMade, CallReceived, NoteAdd } from "@mui/icons-material";
 import {
-  CallMade,
-  CallReceived,
-  ExpandMore,
-  NoteAdd,
-} from "@mui/icons-material";
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Badge,
   Box,
   CircularProgress,
@@ -15,20 +7,26 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api";
 import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import truncateEthAddress from "truncate-eth-address";
-import { Address, formatEther, formatGwei } from "viem";
+import { Abi, Address, formatEther, formatGwei } from "viem";
 import { useTransaction, useWaitForTransaction } from "wagmi";
 
-import { Paginated, Pagination, Tx } from "@/types";
-import { useEventListener } from "@/hooks";
+import { Paginated, Pagination, Tx } from "@iron/types";
+import { SolidityCall } from "@iron/react/components";
+import { useEventListener, useInvoke } from "@/hooks";
 import { useNetworks, useWallets } from "@/store";
-
-import { CalldataView } from "./Calldata";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  AddressView,
+  ContextMenuWithTauri,
+} from "@/components";
 import { Datapoint } from "./Datapoint";
-import { AddressView, ContextMenu, Panel } from "./";
+import { Navbar } from "./Home/Navbar";
 
 export function Txs() {
   const account = useWallets((s) => s.address);
@@ -77,7 +75,8 @@ export function Txs() {
   );
 
   return (
-    <Panel>
+    <>
+      <Navbar>Transactions</Navbar>
       <InfiniteScroll
         loadMore={loadMore}
         hasMore={!pages.at(-1)?.last}
@@ -85,8 +84,8 @@ export function Txs() {
       >
         {pages.flatMap((page) =>
           page.items.map((tx) => (
-            <Accordion key={tx.hash} TransitionProps={{ unmountOnExit: true }}>
-              <AccordionSummary expandIcon={<ExpandMore />}>
+            <Accordion key={tx.hash}>
+              <AccordionSummary>
                 <Summary account={account} tx={tx} />
               </AccordionSummary>
               <AccordionDetails>
@@ -96,7 +95,7 @@ export function Txs() {
           )),
         )}
       </InfiniteScroll>
-    </Panel>
+    </>
   );
 }
 
@@ -151,58 +150,84 @@ BigInt.prototype.toJSON = function (): string {
 function Details({ tx, chainId }: DetailsProps) {
   const { data: transaction } = useTransaction({ hash: tx.hash });
   const { data: receipt } = useWaitForTransaction({ hash: tx.hash });
-
-  if (!receipt || !transaction) return null;
+  const { data: abi } = useInvoke<Abi>("get_contract_abi", {
+    address: tx.to,
+    chainId,
+  });
 
   return (
-    <Grid container rowSpacing={2}>
-      <Datapoint label="hash" value={truncateEthAddress(tx.hash)} />
-      <Datapoint label="from" value={<AddressView address={tx.from} />} short />
+    <Grid container rowSpacing={1}>
+      <Datapoint
+        label="from"
+        value={<AddressView address={tx.from} />}
+        size="small"
+      />
       <Datapoint
         label="to"
         value={tx.to ? <AddressView address={tx.to} /> : ""}
-        short
+        size="small"
       />
       <Datapoint
         label="value"
-        value={<ContextMenu>{formatEther(BigInt(tx.value))} Ξ</ContextMenu>}
+        value={
+          <ContextMenuWithTauri copy={BigInt(tx.value)}>
+            {formatEther(BigInt(tx.value))} Ξ
+          </ContextMenuWithTauri>
+        }
+        size="small"
       />
+      <Datapoint
+        label="Block #"
+        value={receipt && receipt.blockNumber.toString()}
+        size="small"
+      />
+      <Datapoint
+        label="hash"
+        value={truncateEthAddress(tx.hash)}
+        size="small"
+      />
+      <Datapoint label="nonce" value={transaction?.nonce} size="small" />
       <Datapoint
         label="data"
         value={
-          <CalldataView
-            data={transaction.input}
-            contract={tx.to}
-            chainId={chainId}
-          />
+          transaction && (
+            <SolidityCall
+              value={BigInt(tx.value)}
+              data={transaction.input}
+              from={tx.from}
+              to={tx.to}
+              chainId={chainId}
+              abi={abi}
+              ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
+            />
+          )
         }
       />
-      <Datapoint label="nonce" value={transaction.nonce} />
-      <Datapoint label="type" value={transaction.type} />
+      <Datapoint label="type" value={transaction?.type} size="small" />
       {/* TODO: other txs types */}
-      {transaction.type == "eip1559" && (
+      {transaction?.type == "eip1559" && (
         <>
           <Datapoint
             label="maxFeePerGas"
             value={`${formatGwei(transaction.maxFeePerGas)} gwei`}
-            short
+            size="small"
           />
           <Datapoint
             label="maxPriorityFeePerGas"
             value={`${formatGwei(transaction.maxPriorityFeePerGas)} gwei`}
-            short
+            size="small"
           />
         </>
       )}
       <Datapoint
         label="gasLimit"
-        value={`${formatGwei(transaction.gas)} gwei`}
-        short
+        value={transaction && `${formatGwei(transaction?.gas)} gwei`}
+        size="small"
       />
       <Datapoint
         label="gasUsed"
-        value={`${formatGwei(receipt.gasUsed)} gwei`}
-        short
+        value={receipt && `${formatGwei(receipt?.gasUsed)} gwei`}
+        size="medium"
       />
     </Grid>
   );

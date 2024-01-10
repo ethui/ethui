@@ -1,4 +1,4 @@
-import { appWindow } from "@tauri-apps/api/window";
+import { window as tauriWindow } from "@tauri-apps/api";
 import { Action } from "kbar";
 import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
@@ -34,6 +34,6 @@ const store: StateCreator<Store> = (set, _get) => ({
 
 export const useSettingsWindow = create<Store>()(subscribeWithSelector(store));
 
-appWindow.listen("menu:settings", () => {
+tauriWindow.appWindow.listen("menu:settings", () => {
   useSettingsWindow.getState().open();
 });
