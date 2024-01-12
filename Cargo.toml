@@ -55,6 +55,7 @@ iron-broadcast = { path = "crates/broadcast" }
 iron-tracing = { path = "crates/tracing" }
 iron-exchange-rates = { path = "crates/exchange-rates" }
 iron-args = { path = "crates/args" }
+iron-token-list = { path = "crates/token-list" }
 
 tokio = { version = "1.33", features = ["full", "sync"] }
 thiserror = "1.0"
