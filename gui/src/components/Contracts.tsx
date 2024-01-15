@@ -1,5 +1,12 @@
 import {zodResolver} from "@hookform/resolvers/zod";
-import {Button, Chip, CircularProgress, Stack, TextField} from "@mui/material";
+import {
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Stack,
+  TextField,
+} from "@mui/material";
 import {FieldValues, useForm} from "react-hook-form";
 import {Address} from "viem";
 import {z} from "zod";
@@ -36,7 +43,9 @@ export function Contracts() {
   return (
     <>
       <Navbar>Contracts</Navbar>
-      <SearchBar onSearch={handleSearch} />
+      <Box sx={{p: 2}}>
+        <SearchBar onSearch={handleSearch} />
+      </Box>
       {chainId != 31337 && <AddressForm />}
       {Array.from(contracts || []).map(([address, name]) => (
         <Contract key={address} address={address} name={name} />
