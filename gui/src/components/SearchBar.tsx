@@ -9,6 +9,8 @@ interface SearchBarProps {
 
 const SearchBar = ({onSelect}: SearchBarProps) => {
   const addresses = useContracts((s) => s.addresses);
+const SearchBar = ({onSelect}: SearchBarProps) => {
+  const addresses = useContracts((s) => s.addresses);
   //eslint-disable-next-line
   console.log("TESTEEEEEEEE: " + addresses);
 
