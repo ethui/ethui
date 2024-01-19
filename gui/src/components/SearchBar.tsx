@@ -1,22 +1,21 @@
-import React, {ChangeEvent} from "react";
+import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 
+import {useContracts} from "@/store";
+
 interface SearchBarProps {
-  onSearch: (term: string) => void;
+  onSelect: (value: `0x${string}` | null) => void;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({onSearch}) => {
-  const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
-    const searchTerm = event.target.value;
-    onSearch(searchTerm);
-  };
+const SearchBar = ({onSelect}: SearchBarProps) => {
+  const addresses = useContracts((s) => s.addresses);
 
   return (
-    <TextField
-      label='Search'
-      variant='outlined'
-      fullWidth
-      onChange={handleSearch}
+    <Autocomplete
+      options={addresses}
+      getOptionLabel={(option) => option}
+      renderInput={(params) => <TextField {...params} label='Search...' />}
+      onChange={(event, value) => onSelect(value)}
     />
   );
 };

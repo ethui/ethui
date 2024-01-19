@@ -25,12 +25,10 @@ import {Navbar} from "./Home/Navbar";
 import SearchBar from "./SearchBar";
 
 export function Contracts() {
-  const chainId = useNetworks((s) => s.current?.chain_id);
+  const [searchTerm, setSearchTerm] = useState<`0x${string}` | null>(null);
   const addresses = useContracts((s) => s.addresses);
 
-  const [searchTerm, setSearchTerm] = useState<string>("");
-
-  const handleSearch = (term: string) => {
+  const handleSearch = (term: `0x${string}` | null) => {
     setSearchTerm(term);
   };
 
@@ -38,12 +36,15 @@ export function Contracts() {
     <>
       <Navbar>Contracts</Navbar>
       <Box sx={{p: 2}}>
-        <SearchBar onSearch={handleSearch} />
+        <SearchBar onSelect={handleSearch} />
       </Box>
-      {chainId != 31337 && <AddressForm />}
-      {Array.from(addresses || []).map((address) => (
-        <Contract key={address} address={address} />
-      ))}
+      {searchTerm === null ? (
+        Array.from(addresses || []).map((address) => (
+          <Contract key={address} address={address} />
+        ))
+      ) : (
+        <Contract key={searchTerm} address={searchTerm} />
+      )}
     </>
   );
 }
