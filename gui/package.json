@@ -41,7 +41,7 @@
     "truncate-eth-address": "^1.0.2",
     "typescript": "^5.3.3",
     "viem": "^1.19.15",
-    "vite": "^5.0.8",
+    "vite": "^5.0.12",
     "wagmi": "^1.4.12",
     "zod": "^3.22.4",
     "zustand": "^4.4.7",
