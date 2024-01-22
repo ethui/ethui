@@ -1,6 +1,7 @@
 use axum::{extract::Path, routing::get, Json, Router};
 
-use crate::{Ctx, Result};
+use crate::{Ctx, Error, Result};
+use iron_token_list::Token;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -16,6 +17,9 @@ pub(super) fn router() -> Router<Ctx> {
 
 pub(crate) async fn token(
     Path(TokenParams { chain_id, address }): Path<TokenParams>,
-) -> Result<Json<()>> {
-    Ok(Json(()))
+) -> Result<Json<Token>> {
+    match iron_token_list::get_token(chain_id, address) {
+        Ok(token) => Ok(Json(token)),
+        Err(_) => Err(Error::NotFound),
+    }
 }

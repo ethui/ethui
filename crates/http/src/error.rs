@@ -41,6 +41,9 @@ pub enum Error {
     #[error("invalid network")]
     InvalidNetwork,
 
+    #[error("Not found")]
+    NotFound,
+
     #[error(transparent)]
     ReqwestError(#[from] reqwest::Error),
 }
