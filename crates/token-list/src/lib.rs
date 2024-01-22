@@ -1,4 +1,9 @@
-use std::{fs, fs::File, io::Write, path::Path};
+use std::{
+    fs,
+    fs::File,
+    io::{BufReader, Write},
+    path::Path,
+};
 
 use chrono::{DateTime, Duration, Utc};
 use reqwest::blocking;
@@ -17,6 +22,12 @@ pub enum TokenListError {
     FailedToCreateFile(#[from] std::io::Error),
     #[error("updated_at field doesn't exist.")]
     FieldNotFound,
+    #[error("Failed to deserialize JSON.")]
+    FailedToDeserialize,
+    #[error("Failed to open file.")]
+    FailedToOpenFile,
+    #[error("Token not found.")]
+    TokenNotFound,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -79,4 +90,31 @@ fn create_json() -> Result<(), TokenListError> {
     file.write_all(updated_json.as_bytes())?;
 
     Ok(())
+}
+
+fn get_token_list() -> Result<TokenList, TokenListError> {
+    match File::open(TOKEN_LIST) {
+        Ok(file) => {
+            let reader = BufReader::new(file);
+
+            match serde_json::from_reader(reader) {
+                Ok(token_list) => Ok(token_list),
+                Err(_) => Err(TokenListError::FailedToDeserialize),
+            }
+        }
+
+        Err(_) => Err(TokenListError::FailedToOpenFile),
+    }
+}
+
+pub fn get_token(chain_id: i32, address: String) -> Result<Token, TokenListError> {
+    match get_token_list() {
+        Ok(token_list) => token_list
+            .tokens
+            .into_iter()
+            .find(|token| token.chain_id == chain_id && token.address == address)
+            .ok_or(TokenListError::TokenNotFound),
+
+        Err(_) => Err(TokenListError::TokenNotFound),
+    }
 }
