@@ -4272,6 +4272,7 @@ dependencies = [
  "iron-settings",
  "iron-simulator",
  "iron-sync-alchemy",
+ "iron-token-list",
  "iron-types",
  "iron-wallets",
  "iron-ws",
