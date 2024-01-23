@@ -18,8 +18,7 @@ pub(super) fn router() -> Router<Ctx> {
 pub(crate) async fn token(
     Path(TokenParams { chain_id, address }): Path<TokenParams>,
 ) -> Result<Json<Token>> {
-    match iron_token_list::get_token(chain_id, address) {
-        Ok(token) => Ok(Json(token)),
-        Err(_) => Err(Error::NotFound),
-    }
+    iron_token_list::get_token(chain_id, address)
+        .map(Json)
+        .map_err(|_| Error::NotFound)
 }

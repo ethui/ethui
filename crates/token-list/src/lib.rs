@@ -93,28 +93,17 @@ fn create_json() -> Result<(), TokenListError> {
 }
 
 fn get_token_list() -> Result<TokenList, TokenListError> {
-    match File::open(TOKEN_LIST) {
-        Ok(file) => {
-            let reader = BufReader::new(file);
+    let file = File::open(TOKEN_LIST).map_err(|_| TokenListError::FailedToOpenFile)?;
+    let reader = BufReader::new(file);
 
-            match serde_json::from_reader(reader) {
-                Ok(token_list) => Ok(token_list),
-                Err(_) => Err(TokenListError::FailedToDeserialize),
-            }
-        }
-
-        Err(_) => Err(TokenListError::FailedToOpenFile),
-    }
+    serde_json::from_reader(reader).map_err(|_| TokenListError::FailedToDeserialize)
 }
 
 pub fn get_token(chain_id: i32, address: String) -> Result<Token, TokenListError> {
-    match get_token_list() {
-        Ok(token_list) => token_list
-            .tokens
-            .into_iter()
-            .find(|token| token.chain_id == chain_id && token.address == address)
-            .ok_or(TokenListError::TokenNotFound),
-
-        Err(_) => Err(TokenListError::TokenNotFound),
-    }
+    get_token_list()
+        .map_err(|_| TokenListError::TokenNotFound)?
+        .tokens
+        .into_iter()
+        .find(|token| token.chain_id == chain_id && token.address == address)
+        .ok_or(TokenListError::TokenNotFound)
 }
