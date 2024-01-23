@@ -14,18 +14,22 @@ const TOKEN_LIST_URI: &str = "https://gateway.ipfs.io/ipns/tokens.uniswap.org";
 
 #[derive(thiserror::Error, Debug)]
 pub enum TokenListError {
-    #[error("GET request failed.")]
-    FailedRequest(#[from] reqwest::Error),
+    #[error("HTTP request failed.")]
+    FailedRequest,
     #[error("Failed to serialize JSON.")]
-    FailedToSerialize(#[from] serde_json::Error),
-    #[error("Failed to create file.")]
-    FailedToCreateFile(#[from] std::io::Error),
-    #[error("updated_at field doesn't exist.")]
-    FieldNotFound,
+    FailedToSerialize,
     #[error("Failed to deserialize JSON.")]
     FailedToDeserialize,
+    #[error("Failed to create file.")]
+    FailedToCreateFile,
     #[error("Failed to open file.")]
     FailedToOpenFile,
+    #[error("Failed to read file.")]
+    FailedToReadFile,
+    #[error("Failed to write file.")]
+    FailedToWriteFile,
+    #[error("updated_at field doesn't exist.")]
+    FieldNotFound,
     #[error("Token not found.")]
     TokenNotFound,
 }
@@ -64,8 +68,10 @@ fn init() -> Result<(), TokenListError> {
 }
 
 fn is_older_than_one_month() -> Result<bool, TokenListError> {
-    let file_string = fs::read_to_string(TOKEN_LIST)?;
-    let list_to_json_value: TokenList = serde_json::from_str(&file_string)?;
+    let file_string =
+        fs::read_to_string(TOKEN_LIST).map_err(|_| TokenListError::FailedToReadFile)?;
+    let list_to_json_value: TokenList =
+        serde_json::from_str(&file_string).map_err(|_| TokenListError::FailedToDeserialize)?;
     let check_updated_at = list_to_json_value
         .updated_at
         .ok_or(TokenListError::FieldNotFound)?;
@@ -76,18 +82,22 @@ fn is_older_than_one_month() -> Result<bool, TokenListError> {
 }
 
 fn create_json() -> Result<(), TokenListError> {
-    let response = blocking::get(TOKEN_LIST_URI)?;
-    let checked_response = response.error_for_status()?;
-
-    let mut token_list: TokenList = checked_response.json()?;
+    let mut token_list: TokenList = blocking::get(TOKEN_LIST_URI)
+        .map_err(|_| TokenListError::FailedRequest)?
+        .error_for_status()
+        .map_err(|_| TokenListError::FailedRequest)?
+        .json()
+        .map_err(|_| TokenListError::FailedRequest)?;
 
     let updated_at: DateTime<Utc> = chrono::Utc::now();
     token_list.updated_at = Some(updated_at);
+    let updated_json =
+        serde_json::to_string_pretty(&token_list).map_err(|_| TokenListError::FailedToSerialize)?;
 
-    let updated_json = serde_json::to_string_pretty(&token_list)?;
-
-    let mut file = File::create(TOKEN_LIST)?;
-    file.write_all(updated_json.as_bytes())?;
+    File::create(TOKEN_LIST)
+        .map_err(|_| TokenListError::FailedToCreateFile)?
+        .write_all(updated_json.as_bytes())
+        .map_err(|_| TokenListError::FailedToWriteFile)?;
 
     Ok(())
 }
