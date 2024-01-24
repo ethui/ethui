@@ -24,11 +24,14 @@ const store: StateCreator<Store> = (set, get) => ({
   actions: [
     {
       id: actionId,
-      name: "Change theme mode",
+      name: "Change theme",
+      subtitle: "auto/dark/light",
+      section: "Appearence",
+      shortcut: ["T"],
     },
-    ...(["auto", "dark", "light"] as const).map((mode) => ({
+    ...(["auto", "dark", "light"] as const).map((mode, index) => ({
       id: `${actionId}/${mode}`,
-      name: mode,
+      name: `${index + 1}: ${mode}`,
       parent: actionId,
       perform: () => get().changeMode(mode),
     })),

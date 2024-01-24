@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 
 export const useKeyPress = (
-  keys: string[],
+  keys: number[] | string[],
   modifiers: { alt?: boolean; meta?: boolean; ctrl?: boolean; shift?: boolean },
   callback: (event: KeyboardEvent) => unknown,
   node = null,
@@ -15,8 +15,10 @@ export const useKeyPress = (
     (event: KeyboardEvent) => {
       const { metaKey, ctrlKey, altKey, shiftKey } = event;
 
+      const keyString = event.key;
+
       if (
-        keys.some((key) => event.key === key) &&
+        keys.some((key) => key.toString() === keyString) && // Convert the keys of the array to string
         metaKey === !!modifiers.meta &&
         ctrlKey === !!modifiers.ctrl &&
         altKey === !!modifiers.alt &&

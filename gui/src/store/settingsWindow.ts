@@ -9,31 +9,29 @@ interface State {
 }
 
 interface Setters {
-  open: () => unknown;
-  close: () => unknown;
+  toggle: () => unknown;
 }
 
 type Store = State & Setters;
 
-const store: StateCreator<Store> = (set, _get) => ({
+const store: StateCreator<Store> = (set, get) => ({
   show: false,
   actions: [
     {
       id: "settings",
-      name: "Open settings",
-      perform: () => set({ show: true }),
+      name: "Settings",
+      subtitle: "open/close",
+      shortcut: ["˄ ", "+", " S"],
+      perform: () => set({ show: !get().show }),
     },
   ],
-  open() {
-    set({ show: true });
-  },
-  close() {
-    set({ show: false });
+  toggle() {
+    set({ show: !get().show });
   },
 });
 
 export const useSettingsWindow = create<Store>()(subscribeWithSelector(store));
 
 tauriWindow.appWindow.listen("menu:settings", () => {
-  useSettingsWindow.getState().open();
+  useSettingsWindow.getState().toggle();
 });

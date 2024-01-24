@@ -1,11 +1,12 @@
 import { SettingsSharp, TerminalSharp } from "@mui/icons-material";
 import { Drawer, Stack, SxProps, Toolbar } from "@mui/material";
-import { findIndex, parseInt, range, toString } from "lodash-es";
+import { findIndex, parseInt, range } from "lodash-es";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useKBar } from "kbar";
+import { invoke } from "@tauri-apps/api";
 
 import { useKeyPress, useMenuAction, useOS } from "@/hooks";
-import { useSettingsWindow, useTheme } from "@/store";
+import { useSettings, useSettingsWindow, useTheme } from "@/store";
 import {
   Modal,
   Logo,
@@ -30,25 +31,43 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
   const breakpoint = theme.breakpoints.down("sm");
   const { type } = useOS();
   const kbar = useKBar();
-  const { open } = useSettingsWindow();
+  const { toggle } = useSettingsWindow();
+
+  const { settings } = useSettings();
+  const fastMode = settings?.fastMode;
 
   const handleKeyboardNavigation = (event: KeyboardEvent) => {
     navigate(tabs[parseInt(event.key) - 1].path);
   };
 
+  const handleFastModeToggle = () => {
+    invoke("settings_set_fast_mode", { mode: !fastMode });
+  };
+
+  const handleOpenCloseSettings = (event: KeyboardEvent) => {
+    event.preventDefault();
+    useSettingsWindow.getState().toggle();
+  };
+
   useMenuAction((payload) => navigate(payload));
 
   useKeyPress(
-    range(1, tabs.length + 1).map(toString),
+    range(1, tabs.length + 1),
     { meta: true },
     handleKeyboardNavigation,
   );
 
   useKeyPress(
-    range(1, tabs.length + 1).map(toString),
+    range(1, tabs.length + 1),
     { ctrl: true },
     handleKeyboardNavigation,
   );
+
+  useKeyPress(["F", "f"], { meta: true }, handleFastModeToggle);
+  useKeyPress(["F", "f"], { ctrl: true }, handleFastModeToggle);
+
+  useKeyPress(["S", "s"], { meta: true }, handleOpenCloseSettings);
+  useKeyPress(["S", "s"], { ctrl: true }, handleOpenCloseSettings);
 
   if (!type) return null;
 
@@ -89,7 +108,7 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
           icon={TerminalSharp}
           label="Command Bar"
         />
-        <SidebarButton onClick={open} icon={SettingsSharp} label="Settings" />
+        <SidebarButton onClick={toggle} icon={SettingsSharp} label="Settings" />
         <SettingsModal />
       </Stack>
     </Drawer>
@@ -97,12 +116,12 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
 }
 
 function SettingsModal() {
-  const { show, close } = useSettingsWindow();
+  const { show, toggle } = useSettingsWindow();
 
   return (
     <Modal
       open={show}
-      onClose={close}
+      onClose={toggle}
       sx={{ outline: "none", width: "90%", height: "90%", maxWidth: "900px" }}
     >
       <Settings />
