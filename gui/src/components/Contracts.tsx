@@ -23,26 +23,27 @@ import { Navbar } from "./Home/Navbar";
 
 export function Contracts() {
   const chainId = useNetworks((s) => s.current?.chain_id);
-  const addresses = useContracts((s) => s.addresses);
+  if (!chainId) return null;
+
+  const { data: contracts } = useApi<[Address, string][]>("/contracts/contracts", {
+    chainId,
+  });
+
+  if (!contracts) return null;
 
   return (
     <>
       <Navbar>Contracts</Navbar>
       {chainId != 31337 && <AddressForm />}
-      {Array.from(addresses || []).map((address) => (
-        <Contract key={address} address={address} />
+      {Array.from(contracts || []).map(([address, name]) => (
+        <Contract key={address} address={address} name={name} />
       ))}
     </>
   );
 }
 
-function Contract({ address }: { address: Address }) {
+function Contract({ address, name }: { address: Address, name: string }) {
   const chainId = useNetworks((s) => s.current?.chain_id);
-  const { data: name } = useApi<string>("/contracts/name", {
-    address,
-    chainId,
-  });
-
   if (!chainId) return null;
 
   return (

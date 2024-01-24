@@ -9,6 +9,7 @@ import { useNetworks } from "./networks";
 interface State {
   chainId?: number;
   addresses: Address[];
+  names: String[];
 }
 
 interface Setters {
@@ -21,15 +22,11 @@ type Store = State & Setters;
 
 const store: StateCreator<Store> = (set, get) => ({
   addresses: [],
+  names: [],
 
   async reload() {
     const { chainId } = get();
     if (!chainId) return;
-
-    const addresses = await invoke<Address[]>("db_get_contracts", {
-      chainId,
-    });
-    set({ addresses });
   },
 
   add: async (address: Address) => {
