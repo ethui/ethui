@@ -3,9 +3,10 @@ use tauri::{AppHandle, Manager, SystemTrayEvent};
 pub(crate) fn build() -> tauri::SystemTray {
     use tauri::{CustomMenuItem, SystemTray, SystemTrayMenu, SystemTrayMenuItem};
 
-    let quit = CustomMenuItem::new("quit".to_string(), "Quit");
+    let quit = CustomMenuItem::new("quit".to_string(), "Quit Iron Wallet").accelerator("Cmd+Q");
     let hide = CustomMenuItem::new("hide".to_string(), "Hide");
-    let show = CustomMenuItem::new("show".to_string(), "Show");
+    let show =
+        CustomMenuItem::new("show".to_string(), "Show Iron Wallet").accelerator("Ctrl+Cmd+W");
     let tray_menu = SystemTrayMenu::new()
         .add_item(show)
         .add_item(hide)
@@ -30,6 +31,7 @@ pub(crate) fn event_handler(app: &AppHandle, event: SystemTrayEvent) {
         DoubleClick { .. } => {
             tokio::spawn(async { iron_broadcast::main_window_show().await });
         }
+
         _ => {}
     }
 }

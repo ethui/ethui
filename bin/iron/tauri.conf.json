@@ -11,6 +11,9 @@
   },
   "tauri": {
     "allowlist": {
+      "globalShortcut": {
+        "all": true
+      },
       "all": true,
       "shell": {
         "all": false,
@@ -33,8 +36,8 @@
       "targets": "all"
     },
     "systemTray": {
-      "iconPath": "icons/icon.png",
-      "iconAsTemplate": true
+      "iconPath": "icons/icon_dark.png",
+      "iconAsTemplate": false
     },
     "security": {
       "csp": {

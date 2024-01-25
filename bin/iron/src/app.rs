@@ -5,13 +5,13 @@ use iron_broadcast::UIMsg;
 use iron_db::DB;
 #[cfg(target_os = "macos")]
 use tauri::WindowEvent;
-use tauri::{AppHandle, Builder, GlobalWindowEvent, Manager};
+use tauri::{AppHandle, Builder, GlobalShortcutManager, GlobalWindowEvent, Manager};
 use tauri_plugin_window_state::Builder as windowStatePlugin;
 
 use crate::{
     commands, dialogs,
     error::AppResult,
-    menu,
+    menu, system_tray,
     utils::{main_window_hide, main_window_show},
 };
 
@@ -79,10 +79,9 @@ impl IronApp {
             .menu(menu::build())
             .on_menu_event(menu::event_handler);
 
-        #[cfg(not(target_os = "macos"))]
         let builder = builder
-            .system_tray(crate::system_tray::build())
-            .on_system_tray_event(crate::system_tray::event_handler);
+            .system_tray(system_tray::build())
+            .on_system_tray_event(system_tray::event_handler);
 
         let app = builder
             .build(tauri::generate_context!())
@@ -98,11 +97,27 @@ impl IronApp {
     }
 
     pub fn run(self) {
-        self.app.run(|_, event| {
-            if let tauri::RunEvent::ExitRequested { api, .. } = event {
+        self.app.run(|app_handle, e| match e {
+            tauri::RunEvent::Ready => {
+                let app_handle = app_handle.clone();
+
+                let _ = app_handle
+                    .global_shortcut_manager()
+                    .register("CmdOrCtrl+1", move || {
+                        println!("rfvdfvdv");
+                        let app_handle = app_handle.clone();
+                        app_handle
+                            .get_window("main")
+                            .unwrap()
+                            .show()
+                            .expect("error")
+                    });
+            }
+            tauri::RunEvent::ExitRequested { api, .. } => {
                 api.prevent_exit();
             }
-        });
+            _ => (),
+        })
     }
 }
 
