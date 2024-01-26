@@ -43,7 +43,6 @@ impl IronApp {
                 iron_networks::commands::networks_set_list,
                 iron_networks::commands::networks_set_current,
                 iron_networks::commands::networks_reset,
-                iron_db::commands::db_get_contracts,
                 iron_db::commands::db_get_contracts_with_name,
                 iron_db::commands::db_insert_contract,
                 iron_db::commands::db_get_transactions,

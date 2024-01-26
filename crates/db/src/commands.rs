@@ -48,8 +48,8 @@ pub async fn db_get_native_balance(
 }
 
 #[tauri::command]
-pub async fn db_get_contracts(chain_id: u32, db: tauri::State<'_, DB>) -> Result<Vec<Address>> {
-    db.get_contracts(chain_id).await
+pub async fn db_get_contracts_with_name(chain_id: u32, db: tauri::State<'_, DB>) -> Result<Vec<(Address, String)>> {
+    db.get_contracts_with_name(chain_id).await
 }
 
 #[tauri::command]
