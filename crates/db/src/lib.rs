@@ -253,6 +253,25 @@ impl DB {
         Ok(res)
     }
 
+    pub async fn get_contracts_with_name(&self, chain_id: u32) -> Result<Vec<(Address, String)>> {
+        let res: Vec<_> = sqlx::query(
+            r#" SELECT address, name
+            FROM contracts
+            WHERE chain_id = ? "#,
+        )
+        .bind(chain_id)
+        .map(|row| {
+            (
+                Address::from_str(row.get::<&str, _>("address")).unwrap(),
+                row.get("name"),
+            )
+        })
+        .fetch_all(self.pool())
+        .await?;
+
+        Ok(res)
+    }
+
     pub async fn get_contract_name(&self, chain_id: u32, address: Address) -> Result<String> {
         let res = sqlx::query(
             r#" SELECT name

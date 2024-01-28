@@ -49,6 +49,8 @@ async fn abi(ctx: State<Ctx>, params: Query<AbiParams>) -> Result<Json<Option<Ab
 struct NameParams {
     address: Address,
     chain_id: u32,
+    //adicionei isto:
+    contract_name: String,
 }
 
 /// Retrieves the name for a given chain_id/address
@@ -63,6 +65,7 @@ async fn name(
         .ok_or(Error::InvalidNetwork)?;
 
     if network.is_dev() {
+        //lógica: se for === Token ou NFT...
         Ok(Json(
             iron_forge::commands::forge_get_name(params.address, params.chain_id).await?,
         ))
