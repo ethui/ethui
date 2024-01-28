@@ -26,10 +26,8 @@ import SearchBar from "./SearchBar";
 
 export function Contracts() {
   const [searchTerm, setSearchTerm] = useState<`0x${string}` | null>(null);
-  const [searchTerm, setSearchTerm] = useState<`0x${string}` | null>(null);
   const addresses = useContracts((s) => s.addresses);
 
-  const handleSearch = (term: `0x${string}` | null) => {
   const handleSearch = (term: `0x${string}` | null) => {
     setSearchTerm(term);
   };
