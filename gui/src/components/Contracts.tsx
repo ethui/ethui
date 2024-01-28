@@ -25,7 +25,7 @@ export function Contracts() {
   const chainId = useNetworks((s) => s.current?.chain_id);
   if (!chainId) return null;
 
-  const { data: contracts } = useApi<[Address, string][]>("/contracts/contracts", {
+  const { data: contracts } = useApi<[Address, string][]>("/contracts", {
     chainId,
   });
 

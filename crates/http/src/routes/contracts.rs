@@ -13,7 +13,7 @@ pub(super) fn router() -> Router<Ctx> {
     Router::new()
         .route("/name", get(name))
         .route("/abi", get(abi))
-        .route("/contracts", get(contracts))
+        .route("/", get(contracts))
 }
 
 #[derive(Debug, Deserialize)]
@@ -97,12 +97,10 @@ async fn contracts(
     let mut contracts = ctx.db.get_contracts_with_name(params.chain_id).await?;
 
     if network.is_dev() {
-        for (a, n) in contracts.iter_mut() {
-            if n.is_empty() {
-                *n = iron_forge::commands::forge_get_name(*a, params.chain_id)
-                    .await?
-                    .unwrap_or(String::new());
-            }
+        for (address, name) in contracts.iter_mut().filter(|(_, n)| n.is_empty()) {
+            *name = iron_forge::commands::forge_get_name(*address, params.chain_id)
+                .await?
+                .unwrap_or_else(String::new);
         }
     }
 

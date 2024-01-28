@@ -9,7 +9,6 @@ import { useNetworks } from "./networks";
 interface State {
   chainId?: number;
   addresses: Address[];
-  names: String[];
 }
 
 interface Setters {
@@ -22,7 +21,6 @@ type Store = State & Setters;
 
 const store: StateCreator<Store> = (set, get) => ({
   addresses: [],
-  names: [],
 
   async reload() {
     const { chainId } = get();
