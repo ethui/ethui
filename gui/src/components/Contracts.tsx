@@ -1,7 +1,5 @@
 import {zodResolver} from "@hookform/resolvers/zod";
-import {zodResolver} from "@hookform/resolvers/zod";
 import {
-  Box,
   Box,
   Button,
   Chip,
@@ -13,13 +11,7 @@ import {FieldValues, useForm} from "react-hook-form";
 import {Address} from "viem";
 import {z} from "zod";
 import {useState} from "react";
-import {FieldValues, useForm} from "react-hook-form";
-import {Address} from "viem";
-import {z} from "zod";
-import {useState} from "react";
 
-import {useApi} from "@/hooks";
-import {useContracts, useNetworks} from "@/store";
 import {useApi} from "@/hooks";
 import {useContracts, useNetworks} from "@/store";
 import {
@@ -31,59 +23,36 @@ import {
 } from "./";
 import {Navbar} from "./Home/Navbar";
 import SearchBar from "./SearchBar";
-import {Navbar} from "./Home/Navbar";
-import SearchBar from "./SearchBar";
 
 export function Contracts() {
   const [searchTerm, setSearchTerm] = useState<`0x${string}` | null>(null);
+  const chainId = useNetworks((s) => s.current?.chain_id);
+
+  const handleSearch = (term: `0x${string}` | null) => {
+    setSearchTerm(term);
+  };
 
   const {data: contracts} = useApi<[Address, string][]>("/contracts", {
     chainId,
   });
-
   if (!chainId || !contracts) return null;
-  const addresses = useContracts((s) => s.addresses);
-
-  const handleSearch = (term: `0x${string}` | null) => {
-    setSearchTerm(term);
-  };
-
-  const handleSearch = (term: `0x${string}` | null) => {
-    setSearchTerm(term);
-  };
-
   return (
     <>
       <Navbar>Contracts</Navbar>
-      {addresses.length > 0 && (
+      {contracts.length > 0 && (
         <Box sx={{p: 2}}>
           <SearchBar onSelect={handleSearch} />
         </Box>
       )}
       {searchTerm === null ? (
         <>
-          {Array.from(addresses || []).map((address) => (
-            <Contract key={address} address={address} />
+          {Array.from(contracts || []).map(([address, name]) => (
+            <Contract key={address} address={address} name={name} />
           ))}
-          {addresses.length === 0 && <AddressForm />}
+          {contracts.length === 0 && <AddressForm />}
         </>
       ) : (
-        <Contract key={searchTerm} address={searchTerm} />
-      )}
-      {addresses.length > 0 && (
-        <Box sx={{p: 2}}>
-          <SearchBar onSelect={handleSearch} />
-        </Box>
-      )}
-      {searchTerm === null ? (
-        <>
-          {Array.from(addresses || []).map((address) => (
-            <Contract key={address} address={address} />
-          ))}
-          {addresses.length === 0 && <AddressForm />}
-        </>
-      ) : (
-        <Contract key={searchTerm} address={searchTerm} />
+        <Contract key={searchTerm} address={searchTerm} name={"lol"} />
       )}
     </>
   );
@@ -91,13 +60,13 @@ export function Contracts() {
 
 function Contract({address, name}: {address: Address; name: string}) {
   const chainId = useNetworks((s) => s.current?.chain_id);
+
   if (!chainId) return null;
 
   return (
     <Accordion>
       <AccordionSummary>
         <AddressView address={address} />
-        <Chip sx={{marginLeft: 2}} label={name} />
         <Chip sx={{marginLeft: 2}} label={name} />
       </AccordionSummary>
       <AccordionDetails>
@@ -117,7 +86,6 @@ function AddressForm() {
   const {
     handleSubmit,
     formState: {isValid, errors, isSubmitting},
-    formState: {isValid, errors, isSubmitting},
     register,
   } = useForm({
     mode: "onChange",
@@ -129,9 +97,7 @@ function AddressForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Stack direction='row' spacing={2}>
-      <Stack direction='row' spacing={2}>
         <TextField
-          label='Contract Address'
           label='Contract Address'
           error={!!errors.address}
           helperText={errors.address?.message?.toString() || ""}
@@ -139,8 +105,6 @@ function AddressForm() {
           {...register("address")}
         />
         <Button
-          variant='contained'
-          type='submit'
           variant='contained'
           type='submit'
           disabled={!isValid || isSubmitting}

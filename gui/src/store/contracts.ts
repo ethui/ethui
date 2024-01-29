@@ -50,7 +50,6 @@ const store: StateCreator<Store> = (set, get) => ({
 
   setChainId(chainId) {
     set({chainId});
-    get().reload();
   },
 });
 
