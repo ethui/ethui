@@ -25,35 +25,35 @@ import {Navbar} from "./Home/Navbar";
 import SearchBar from "./SearchBar";
 
 export function Contracts() {
-  const [searchTerm, setSearchTerm] = useState<`0x${string}` | null>(null);
+  const [searchTerm, setSearchTerm] = useState<[`0x${string}`, string] | null>(
+    null
+  );
   const chainId = useNetworks((s) => s.current?.chain_id);
-
-  const handleSearch = (term: `0x${string}` | null) => {
-    setSearchTerm(term);
-  };
-
-  const {data: contracts} = useApi<[Address, string][]>("/contracts", {
+  const {data: contracts} = useApi<[`0x${string}`, string][]>("/contracts", {
     chainId,
   });
+
   if (!chainId || !contracts) return null;
+
+  const handleSearch = (contract: [`0x${string}`, string] | null) => {
+    setSearchTerm(contract);
+  };
+
+  let filteredContracts = contracts;
+  if (searchTerm !== null) {
+    filteredContracts = [searchTerm];
+  }
+
   return (
     <>
       <Navbar>Contracts</Navbar>
-      {contracts.length > 0 && (
-        <Box sx={{p: 2}}>
-          <SearchBar onSelect={handleSearch} />
-        </Box>
-      )}
-      {searchTerm === null ? (
-        <>
-          {Array.from(contracts || []).map(([address, name]) => (
-            <Contract key={address} address={address} name={name} />
-          ))}
-          {contracts.length === 0 && <AddressForm />}
-        </>
-      ) : (
-        <Contract key={searchTerm} address={searchTerm} name={"lol"} />
-      )}
+      <Box sx={{p: 2}}>
+        <SearchBar onSelect={handleSearch} />
+      </Box>
+      {filteredContracts.map(([address, name]) => (
+        <Contract key={address} address={address} name={name} />
+      ))}
+      {filteredContracts.length === 0 && <AddressForm />}
     </>
   );
 }

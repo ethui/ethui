@@ -50,8 +50,6 @@ async fn abi(ctx: State<Ctx>, params: Query<AbiParams>) -> Result<Json<Option<Ab
 struct NameParams {
     address: Address,
     chain_id: u32,
-    //adicionei isto:
-    contract_name: String,
 }
 
 /// Retrieves the name for a given chain_id/address
