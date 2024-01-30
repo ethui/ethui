@@ -47,13 +47,15 @@ export function Contracts() {
   return (
     <>
       <Navbar>Contracts</Navbar>
-      <Box sx={{p: 2}}>
-        <SearchBar onSelect={handleSearch} />
-      </Box>
+      <AddressForm />
+      {contracts.length > 0 && (
+        <Box sx={{p: 2}}>
+          <SearchBar onSelect={handleSearch} />
+        </Box>
+      )}
       {filteredContracts.map(([address, name]) => (
         <Contract key={address} address={address} name={name} />
       ))}
-      {filteredContracts.length === 0 && <AddressForm />}
     </>
   );
 }
