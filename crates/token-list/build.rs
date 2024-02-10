@@ -8,6 +8,8 @@ use serde::{Deserialize, Serialize};
 const TOKEN_LIST: &str = "token_list.json";
 const TOKEN_LIST_URI: &str = "https://tokens.1inch.eth.link/";
 
+const CHAIN_ID_WHITELIST: [i32; 3] = [1, 137, 10];
+
 #[derive(Debug, Deserialize, Serialize)]
 pub struct TokenList {
     tokens: Vec<Token>,
@@ -48,8 +50,14 @@ fn should_update() -> Result<bool> {
 }
 
 fn update() -> Result<()> {
-    let token_list: TokenList = blocking::get(TOKEN_LIST_URI)?.json()?;
-    let updated_json = serde_json::to_string_pretty(&token_list)?;
+    let tokens: Vec<Token> = blocking::get(TOKEN_LIST_URI)?
+        .json::<TokenList>()?
+        .tokens
+        .into_iter()
+        .filter(|token| CHAIN_ID_WHITELIST.contains(&token.chain_id))
+        .collect();
+
+    let updated_json = serde_json::to_string_pretty(&tokens)?;
 
     let mut file = File::create(TOKEN_LIST)?;
     file.write_all(updated_json.as_bytes())?;

@@ -4097,6 +4097,7 @@ checksum = "8f518f335dce6725a761382244631d86cf0ccb2863413590b31338feb467f9c3"
 name = "iron"
 version = "1.4.0"
 dependencies = [
+ "anyhow",
  "auto-launch",
  "ethers",
  "fix-path-env",
