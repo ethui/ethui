@@ -3,7 +3,7 @@ import { Delete, Task } from "@mui/icons-material";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
 import { useDialog } from "@/hooks";
-import { DialogLayout } from "@/components/Dialogs/Layout";
+import { DialogBottom } from "@/components/Dialogs/Bottom";
 
 export const Route = createLazyFileRoute("/_dialog/dialog/msg-sign/$id")({
   component: MsgSignDialog,
@@ -24,7 +24,7 @@ export function MsgSignDialog() {
       </Typography>
       <Typography>{msg}</Typography>
 
-      <DialogLayout.Bottom>
+      <DialogBottom>
         <Stack direction="row" justifyContent="center" spacing={2}>
           <Button
             size="large"
@@ -45,7 +45,7 @@ export function MsgSignDialog() {
             Sign
           </Button>
         </Stack>
-      </DialogLayout.Bottom>
+      </DialogBottom>
     </>
   );
 }
