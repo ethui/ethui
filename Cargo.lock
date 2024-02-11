@@ -290,9 +290,9 @@ dependencies = [
 
 [[package]]
 name = "anyhow"
-version = "1.0.75"
+version = "1.0.79"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a4668cab20f66d8d020e1fbc0ebe47217433c1b6c8f2040faf858554e394ace6"
+checksum = "080e9890a082662b09c1ad45f567faeeb47f22b5fb23895fbe1e651e718e25ca"
 
 [[package]]
 name = "arbitrary"
@@ -4097,6 +4097,7 @@ checksum = "8f518f335dce6725a761382244631d86cf0ccb2863413590b31338feb467f9c3"
 name = "iron"
 version = "1.4.0"
 dependencies = [
+ "anyhow",
  "auto-launch",
  "ethers",
  "fix-path-env",
@@ -4119,7 +4120,6 @@ dependencies = [
  "iron-wallets",
  "iron-ws",
  "named-lock",
- "reqwest",
  "serde",
  "serde_json",
  "tauri",
@@ -4433,11 +4433,11 @@ dependencies = [
 name = "iron-token-list"
 version = "1.4.0"
 dependencies = [
+ "anyhow",
  "chrono",
  "reqwest",
  "serde",
  "serde_json",
- "thiserror",
  "tokio",
 ]
 
