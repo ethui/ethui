@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { Box, SvgIcon, Theme } from "@mui/material";
+import { Box, Theme } from "@mui/material";
 import {
   RequestQuoteSharp,
   Receipt,
@@ -8,6 +8,7 @@ import {
 } from "@mui/icons-material";
 import { SnackbarProvider } from "notistack";
 
+import { Tab } from "@iron/types/ui";
 import { useNoticeAlchemyKeyMissing, useNoticeNewVersion } from "@/hooks";
 import { CommandBar } from "@/components";
 import { useTheme } from "@/store";
@@ -18,12 +19,6 @@ export const Route = createFileRoute("/_home")({
 });
 
 const sidebarWidth = { md: 200, sm: 72 };
-
-export interface Tab {
-  path: string;
-  label: string;
-  icon: typeof SvgIcon;
-}
 
 export const tabs: Tab[] = [
   {

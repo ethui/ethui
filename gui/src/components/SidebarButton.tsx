@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import { lightBlue } from "@mui/material/colors";
-import { Link } from "react-router-dom";
+import { Link } from "@tanstack/react-router";
 
 import { useTheme } from "@/store";
 

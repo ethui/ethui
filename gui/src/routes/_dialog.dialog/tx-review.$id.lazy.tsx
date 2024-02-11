@@ -9,15 +9,13 @@ import { TokenMetadata } from "@iron/types";
 import { Network } from "@iron/types/network";
 import { AddressView, Datapoint } from "@/components";
 import { useDialog, useInvoke, useLedgerDetect } from "@/hooks";
-import { DialogLayout } from "@/components/Dialogs/Layout";
+import { DialogBottom } from "@/components/Dialogs/Bottom";
 import { IconCrypto } from "@/components/Icons";
 import { useNetworks } from "@/store";
 
-export const Route = createLazyFileRoute("/_dialog/dialog/tx-review/$id")(
-  {
-    component: TxReviewDialog,
-  },
-);
+export const Route = createLazyFileRoute("/_dialog/dialog/tx-review/$id")({
+  component: TxReviewDialog,
+});
 
 export interface TxRequest {
   data: `0x${string}`;
@@ -100,14 +98,14 @@ export function TxReviewDialog() {
         <SimulationResult simulation={simulation} chainId={chainId} />
       </Box>
 
-      <DialogLayout.Bottom>
+      <DialogBottom>
         <Actions
           request={request}
           onReject={onReject}
           onConfirm={onConfirm}
           accepted={accepted}
         />
-      </DialogLayout.Bottom>
+      </DialogBottom>
     </>
   );
 }

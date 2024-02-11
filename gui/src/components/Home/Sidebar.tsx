@@ -5,6 +5,7 @@ import { useKBar } from "kbar";
 import { invoke } from "@tauri-apps/api";
 import { Link, useNavigate } from "@tanstack/react-router";
 
+import { type Tab } from "@iron/types/ui";
 import { useKeyPress, useMenuAction, useOS } from "@/hooks";
 import { useSettings, useSettingsWindow, useTheme } from "@/store";
 import {
@@ -17,7 +18,6 @@ import {
   Settings,
   SidebarButton,
 } from "@/components";
-import { type Tab } from "./Layout";
 
 interface SidebarProps {
   sx?: SxProps;
