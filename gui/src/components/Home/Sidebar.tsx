@@ -1,9 +1,9 @@
 import { SettingsSharp, TerminalSharp } from "@mui/icons-material";
 import { Drawer, Stack, SxProps, Toolbar } from "@mui/material";
-import { findIndex, parseInt, range } from "lodash-es";
-import { useLocation, useNavigate } from "react-router-dom";
+import { parseInt, range } from "lodash-es";
 import { useKBar } from "kbar";
 import { invoke } from "@tauri-apps/api";
+import { Link, useNavigate } from "@tanstack/react-router";
 
 import { useKeyPress, useMenuAction, useOS } from "@/hooks";
 import { useSettings, useSettingsWindow, useTheme } from "@/store";
@@ -25,7 +25,6 @@ interface SidebarProps {
 }
 
 export function Sidebar({ sx, tabs }: SidebarProps) {
-  const location = useLocation();
   const navigate = useNavigate();
   const { theme } = useTheme();
   const breakpoint = theme.breakpoints.down("sm");
@@ -37,7 +36,7 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
   const fastMode = settings?.fastMode;
 
   const handleKeyboardNavigation = (event: KeyboardEvent) => {
-    navigate(tabs[parseInt(event.key) - 1].path);
+    navigate({ to: tabs[parseInt(event.key) - 1].path });
   };
 
   const handleFastModeToggle = () => {
@@ -49,7 +48,9 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
     useSettingsWindow.getState().toggle();
   };
 
-  useMenuAction((payload) => navigate(payload));
+  useMenuAction((payload) => {
+    navigate({ to: payload });
+  });
 
   useKeyPress(
     range(1, tabs.length + 1),
@@ -80,11 +81,10 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
         {tabs.map(({ path, label, icon }, index) => (
           <SidebarButton
             key={index}
-            selected={
-              index ===
-              Math.max(findIndex(tabs, { path: location.pathname }), 0)
-            }
-            {...{ to: path, label, icon }}
+            component={Link}
+            to={path}
+            activeProps={{ selected: true }}
+            {...{ label, icon }}
           />
         ))}
       </Stack>
