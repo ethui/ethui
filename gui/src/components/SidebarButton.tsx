@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import { lightBlue } from "@mui/material/colors";
-import { Link } from "@tanstack/react-router";
+import { Link, useMatchRoute } from "@tanstack/react-router";
 
 import { useTheme } from "@/store";
 
@@ -18,21 +18,21 @@ type Props<RootType extends React.ElementType> = Omit<
 > & {
   label: string;
   icon: typeof SvgIcon;
-  selected?: boolean;
 };
 
 export function SidebarButton<R extends React.ElementType>({
   label,
-  selected,
   ...props
 }: Props<R>) {
+  const matchRoute = useMatchRoute();
+  const params = props.to && matchRoute({ to: props.to });
   const { theme } = useTheme();
   const isLarge = useMediaQuery(theme.breakpoints.up("sm"));
 
   return (
     <ButtonBase
-      disabled={selected}
       LinkComponent={Link}
+      disabled={!!params}
       {...props}
       sx={{
         height: 32,
