@@ -5,5 +5,6 @@ extension/dist
 extension/scripts/start.js
 extension/wdio.e2e.conf.ts
 node_modules
+crates/token-list/token_list.json
 target
 .yarn
