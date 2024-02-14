@@ -5,8 +5,8 @@ use chrono::{Duration, Utc};
 use reqwest::blocking;
 use serde::{Deserialize, Serialize};
 
-const TOKEN_LIST: &str = "token_list.json";
-const TOKEN_LIST_URI: &str = "https://tokens.1inch.eth.link/";
+const FILE: &str = "../../packages/data/tokens.json";
+const URI: &str = "https://tokens.1inch.eth.link/";
 
 const CHAIN_ID_WHITELIST: [i32; 3] = [1, 137, 10];
 
@@ -31,11 +31,11 @@ pub fn main() {
 }
 
 fn should_update() -> Result<bool> {
-    if !Path::new(TOKEN_LIST).exists() {
+    if !Path::new(FILE).exists() {
         return Ok(true);
     }
 
-    let metadata = fs::metadata(TOKEN_LIST)?;
+    let metadata = fs::metadata(FILE)?;
     if let Ok(modified) = metadata.modified() {
         let modified_date = modified
             .duration_since(std::time::UNIX_EPOCH)
@@ -50,7 +50,7 @@ fn should_update() -> Result<bool> {
 }
 
 fn update() -> Result<()> {
-    let tokens: Vec<Token> = blocking::get(TOKEN_LIST_URI)?
+    let tokens: Vec<Token> = blocking::get(URI)?
         .json::<TokenList>()?
         .tokens
         .into_iter()
@@ -59,7 +59,7 @@ fn update() -> Result<()> {
 
     let updated_json = serde_json::to_string_pretty(&tokens)?;
 
-    let mut file = File::create(TOKEN_LIST)?;
+    let mut file = File::create(FILE)?;
     file.write_all(updated_json.as_bytes())?;
 
     Ok(())

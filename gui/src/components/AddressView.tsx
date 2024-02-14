@@ -8,6 +8,7 @@ import { Address, getAddress } from "viem";
 import { z } from "zod";
 
 import { Typography } from "@iron/react/components";
+import { isWhitelistedToken } from "@iron/data";
 import { useInvoke } from "@/hooks";
 import { ContextMenuWithTauri, Modal } from "./";
 import { useNetworks } from "@/store";
@@ -35,11 +36,15 @@ export function AddressView({
 
   if (!network) return;
 
+  const icon = isWhitelistedToken(network.chain_id, address) ? <IconCrypto chainId={chain" : null;
   const text = alias ? alias : truncateEthAddress(`${address}`);
   const content = (
-    <Typography mono={mono} variant={variant}>
-      {text}
-    </Typography>
+    <Stack direction="row" alignItems="center" spacing={1}>
+      {icon}
+      <Typography mono={mono} variant={variant}>
+        {text}
+      </Typography>
+    </Stack>
   );
 
   if (!contextMenu) return content;
