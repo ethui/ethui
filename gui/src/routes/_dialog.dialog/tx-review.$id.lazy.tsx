@@ -2,15 +2,20 @@ import { Alert, AlertTitle, Box, Button, Grid, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Cancel, CheckCircle, Delete, Send } from "@mui/icons-material";
 import { Abi, Address, Hex, decodeEventLog, formatUnits, parseAbi } from "viem";
+import { createLazyFileRoute } from "@tanstack/react-router";
 
 import { ChainView, SolidityCall, Typography } from "@iron/react/components";
 import { TokenMetadata } from "@iron/types";
 import { Network } from "@iron/types/network";
 import { AddressView, Datapoint } from "@/components";
 import { useDialog, useInvoke, useLedgerDetect } from "@/hooks";
-import { DialogLayout } from "./Layout";
+import { DialogBottom } from "@/components/Dialogs/Bottom";
 import { IconCrypto } from "@/components/Icons";
 import { useNetworks } from "@/store";
+
+export const Route = createLazyFileRoute("/_dialog/dialog/tx-review/$id")({
+  component: TxReviewDialog,
+});
 
 export interface TxRequest {
   data: `0x${string}`;
@@ -40,7 +45,8 @@ interface Simulation {
 }
 
 export function TxReviewDialog() {
-  const { data: request, send, listen } = useDialog<TxRequest>();
+  const { id } = Route.useParams();
+  const { data: request, send, listen } = useDialog<TxRequest>(id);
   const [simulation, setSimulation] = useState<Simulation | undefined>(
     undefined,
   );
@@ -92,14 +98,14 @@ export function TxReviewDialog() {
         <SimulationResult simulation={simulation} chainId={chainId} />
       </Box>
 
-      <DialogLayout.Bottom>
+      <DialogBottom>
         <Actions
           request={request}
           onReject={onReject}
           onConfirm={onConfirm}
           accepted={accepted}
         />
-      </DialogLayout.Bottom>
+      </DialogBottom>
     </>
   );
 }

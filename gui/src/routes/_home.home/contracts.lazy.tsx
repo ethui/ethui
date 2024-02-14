@@ -9,6 +9,7 @@ import {
 import { FieldValues, useForm } from "react-hook-form";
 import { Address } from "viem";
 import { z } from "zod";
+import { createLazyFileRoute } from "@tanstack/react-router";
 
 import { useApi } from "@/hooks";
 import { useContracts, useNetworks } from "@/store";
@@ -18,8 +19,12 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-} from "./";
-import { Navbar } from "./Home/Navbar";
+} from "@/components";
+import { Navbar } from "@/components/Home/Navbar";
+
+export const Route = createLazyFileRoute("/_home/home/contracts")({
+  component: Contracts,
+});
 
 export function Contracts() {
   const chainId = useNetworks((s) => s.current?.chain_id);

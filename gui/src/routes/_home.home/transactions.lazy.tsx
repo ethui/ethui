@@ -13,6 +13,7 @@ import InfiniteScroll from "react-infinite-scroller";
 import truncateEthAddress from "truncate-eth-address";
 import { Abi, Address, formatEther, formatGwei } from "viem";
 import { useTransaction, useWaitForTransaction } from "wagmi";
+import { createLazyFileRoute } from "@tanstack/react-router";
 
 import { Paginated, Pagination, Tx } from "@iron/types";
 import { SolidityCall } from "@iron/react/components";
@@ -25,8 +26,12 @@ import {
   AddressView,
   ContextMenuWithTauri,
 } from "@/components";
-import { Datapoint } from "./Datapoint";
-import { Navbar } from "./Home/Navbar";
+import { Datapoint } from "@/components/Datapoint";
+import { Navbar } from "@/components/Home/Navbar";
+
+export const Route = createLazyFileRoute("/_home/home/transactions")({
+  component: Txs,
+});
 
 export function Txs() {
   const account = useWallets((s) => s.address);

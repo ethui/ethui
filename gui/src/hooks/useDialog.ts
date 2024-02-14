@@ -1,12 +1,10 @@
 import { event, invoke } from "@tauri-apps/api";
 import { useCallback } from "react";
-import { useParams } from "react-router-dom";
 
 import { useInvoke } from "./tauri";
 
-export function useDialog<T>() {
-  const { dialogId } = useParams();
-  const id = parseInt(dialogId!);
+export function useDialog<T>(idStr: string) {
+  const id = Number(idStr);
   const { data } = useInvoke<T>("dialog_get_payload", { id });
 
   const send = useCallback(

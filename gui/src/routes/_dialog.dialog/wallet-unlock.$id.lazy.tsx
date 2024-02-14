@@ -1,3 +1,4 @@
+import { createLazyFileRoute } from "@tanstack/react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Backdrop,
@@ -13,6 +14,10 @@ import { z } from "zod";
 
 import { useDialog } from "@/hooks";
 
+export const Route = createLazyFileRoute("/_dialog/dialog/wallet-unlock/$id")({
+  component: WalletUnlockDialog,
+});
+
 interface Request {
   name: string;
   file: string;
@@ -21,7 +26,8 @@ interface Request {
 const schema = z.object({ password: z.string() });
 
 export function WalletUnlockDialog() {
-  const { data, send, listen } = useDialog<Request>();
+  const { id } = Route.useParams();
+  const { data, send, listen } = useDialog<Request>(id);
   const {
     handleSubmit,
     register,

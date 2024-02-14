@@ -1573,6 +1573,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.21.0":
+  version: 7.23.9
+  resolution: "@babel/runtime@npm:7.23.9"
+  dependencies:
+    regenerator-runtime: "npm:^0.14.0"
+  checksum: e71205fdd7082b2656512cc98e647d9ea7e222e4fe5c36e9e5adc026446fcc3ba7b3cdff8b0b694a0b78bb85db83e7b1e3d4c56ef90726682b74f13249cf952d
+  languageName: node
+  linkType: hard
+
 "@babel/runtime@npm:~7.5.4":
   version: 7.5.5
   resolution: "@babel/runtime@npm:7.5.5"
@@ -2542,6 +2551,9 @@ __metadata:
     "@mui/lab": "npm:^5.0.0-alpha.156"
     "@mui/material": "npm:^5.15.0"
     "@storybook/builder-vite": "npm:^7.6.5"
+    "@tanstack/react-router": "npm:^1.16.0"
+    "@tanstack/router-devtools": "npm:^1.16.0"
+    "@tanstack/router-vite-plugin": "npm:^1.16.1"
     "@tauri-apps/api": "npm:1.5.2"
     "@tauri-apps/cli": "npm:^1.5.7"
     "@types/chrome": "npm:^0.0.254"
@@ -2564,7 +2576,6 @@ __metadata:
     react-hook-form: "npm:^7.49.0"
     react-infinite-scroller: "npm:^1.2.6"
     react-query: "npm:^3.39.3"
-    react-router-dom: "npm:^6.21.1"
     react18-json-view: "npm:^0.2.6"
     swr: "npm:^2.2.4"
     truncate-eth-address: "npm:^1.0.2"
@@ -4262,13 +4273,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@remix-run/router@npm:1.14.1":
-  version: 1.14.1
-  resolution: "@remix-run/router@npm:1.14.1"
-  checksum: aa179e96fa7da5bdb86e6887219613cbe47b67d6595564b4f8fe7e80f8980f9c76e120524f0864aa8af46ac0f1a06bcdb4d20058d770c9199e5af599f772c0a9
-  languageName: node
-  linkType: hard
-
 "@rollup/plugin-inject@npm:^5.0.5":
   version: 5.0.5
   resolution: "@rollup/plugin-inject@npm:5.0.5"
@@ -5639,6 +5643,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/history@npm:1.15.13":
+  version: 1.15.13
+  resolution: "@tanstack/history@npm:1.15.13"
+  checksum: 6a37e857657dcefd220c450b1c1b88ab0ffa62c80ab8a0aa1f334c454aaf934370f4781b06908571caf5157efabe6f52cffccd7470cfa51c821b012d0f53bc4b
+  languageName: node
+  linkType: hard
+
 "@tanstack/query-core@npm:4.36.1":
   version: 4.36.1
   resolution: "@tanstack/query-core@npm:4.36.1"
@@ -5691,6 +5702,73 @@ __metadata:
     react-native:
       optional: true
   checksum: 15d9c98269d52fbdd49f4eb4b077b5d70346f904ea2ae51fd0400949d731afde658919a1143dd849fb50d4c5b6d0ab072e7b313a098ef316dd1c24089653f626
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-router@npm:1.16.0, @tanstack/react-router@npm:^1.16.0":
+  version: 1.16.0
+  resolution: "@tanstack/react-router@npm:1.16.0"
+  dependencies:
+    "@tanstack/history": "npm:1.15.13"
+    "@tanstack/react-store": "npm:^0.2.1"
+    tiny-invariant: "npm:^1.3.1"
+    tiny-warning: "npm:^1.0.3"
+  peerDependencies:
+    react: ">=16"
+    react-dom: ">=16"
+  checksum: 6bec65f61e80625b41aa0c2afc9ca8cd091ae52eddf76355ecbb2efb10f5625723832f5ff2cc756321e7c1706b54163b1306dacc2dad9b7925ad25c5f5b7499f
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-store@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "@tanstack/react-store@npm:0.2.1"
+  dependencies:
+    "@tanstack/store": "npm:0.1.3"
+    use-sync-external-store: "npm:^1.2.0"
+  peerDependencies:
+    react: ">=16"
+    react-dom: ">=16"
+  checksum: b4feb33c4eea6a1185cd8a9401864a02601cb833c8cde221bf8bca657b0d9b90aeab87775500dcf1417f724ea33f28a9728cd9d4acbed4619068048cc089bb3f
+  languageName: node
+  linkType: hard
+
+"@tanstack/router-devtools@npm:^1.16.0":
+  version: 1.16.0
+  resolution: "@tanstack/router-devtools@npm:1.16.0"
+  dependencies:
+    "@tanstack/react-router": "npm:1.16.0"
+    date-fns: "npm:^2.29.1"
+  peerDependencies:
+    react: ">=16"
+    react-dom: ">=16"
+  checksum: a026515c82ae91e920eab4b58363b6ef1688c2015cc7c02af033bd882ce4487282ba5152f3a2365a761b26c72553d64faeb1b1bc775406d07efdcce283ee7d53
+  languageName: node
+  linkType: hard
+
+"@tanstack/router-generator@npm:1.16.1":
+  version: 1.16.1
+  resolution: "@tanstack/router-generator@npm:1.16.1"
+  dependencies:
+    prettier: "npm:^3.1.1"
+    zod: "npm:^3.22.4"
+  checksum: db4ab7506bc3a028d6c3f4fad71f60ec722cd902a70158a7100cfeb4b63ed5dffebcb9e6a415623061777f32966a6be8d42bdd0c9565d44c924f457c7d7513d2
+  languageName: node
+  linkType: hard
+
+"@tanstack/router-vite-plugin@npm:^1.16.1":
+  version: 1.16.1
+  resolution: "@tanstack/router-vite-plugin@npm:1.16.1"
+  dependencies:
+    "@tanstack/router-generator": "npm:1.16.1"
+  checksum: 5b154b9e61f9c7f0a113a2e5ef0ea08f659ed64e3116b7a4fd083617d58c155d1b7881e8c04e0fd61b4a846db08edaff33031d07810089150fd8cfebafdb18d1
+  languageName: node
+  linkType: hard
+
+"@tanstack/store@npm:0.1.3":
+  version: 0.1.3
+  resolution: "@tanstack/store@npm:0.1.3"
+  checksum: e56b2576cd963a7c4ca945fb16f2adf6692143aff1fb62c7a6739c7c004c3e3848d66d6838109f56236ee8988c69d3c807389db39011c59a53abc761df1b9ac0
   languageName: node
   linkType: hard
 
@@ -9693,6 +9771,15 @@ __metadata:
     whatwg-mimetype: "npm:^4.0.0"
     whatwg-url: "npm:^14.0.0"
   checksum: 1b894d7d41c861f3a4ed2ae9b1c3f0909d4575ada02e36d3d3bc584bdd84278e20709070c79c3b3bff7ac98598cb191eb3e86a89a79ea4ee1ef360e1694f92ad
+  languageName: node
+  linkType: hard
+
+"date-fns@npm:^2.29.1":
+  version: 2.30.0
+  resolution: "date-fns@npm:2.30.0"
+  dependencies:
+    "@babel/runtime": "npm:^7.21.0"
+  checksum: e4b521fbf22bc8c3db332bbfb7b094fd3e7627de0259a9d17c7551e2d2702608a7307a449206065916538e384f37b181565447ce2637ae09828427aed9cb5581
   languageName: node
   linkType: hard
 
@@ -16574,30 +16661,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router-dom@npm:^6.21.1":
-  version: 6.21.1
-  resolution: "react-router-dom@npm:6.21.1"
-  dependencies:
-    "@remix-run/router": "npm:1.14.1"
-    react-router: "npm:6.21.1"
-  peerDependencies:
-    react: ">=16.8"
-    react-dom: ">=16.8"
-  checksum: 2c2b653de8cc90397e5b057c0d32dd780fe894c4bd36397005da169a7422b31988ebc14ef0da3ac3f2b7286b244f97a141974acaa86c731715816e64c8cd2912
-  languageName: node
-  linkType: hard
-
-"react-router@npm:6.21.1":
-  version: 6.21.1
-  resolution: "react-router@npm:6.21.1"
-  dependencies:
-    "@remix-run/router": "npm:1.14.1"
-  peerDependencies:
-    react: ">=16.8"
-  checksum: 81278cf25a999d7c93a31d540102e3b74b696eb4349779e22bba77b633e4e5f8f91b8c6f7946c9572a1e92f64363724150216f5643a6f9817f8bc1643cb8bdbc
-  languageName: node
-  linkType: hard
-
 "react-style-singleton@npm:^2.2.1":
   version: 2.2.1
   resolution: "react-style-singleton@npm:2.2.1"
@@ -18410,6 +18473,13 @@ __metadata:
   version: 1.3.1
   resolution: "tiny-invariant@npm:1.3.1"
   checksum: 5b87c1d52847d9452b60d0dcb77011b459044e0361ca8253bfe7b43d6288106e12af926adb709a6fc28900e3864349b91dad9a4ac93c39aa15f360b26c2ff4db
+  languageName: node
+  linkType: hard
+
+"tiny-warning@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "tiny-warning@npm:1.0.3"
+  checksum: ef8531f581b30342f29670cb41ca248001c6fd7975ce22122bd59b8d62b4fc84ad4207ee7faa95cde982fa3357cd8f4be650142abc22805538c3b1392d7084fa
   languageName: node
   linkType: hard
 

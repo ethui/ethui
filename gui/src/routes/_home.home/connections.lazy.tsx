@@ -12,13 +12,18 @@ import {
 import { invoke } from "@tauri-apps/api";
 import { map } from "lodash-es";
 import { useEffect, useState } from "react";
+import { createLazyFileRoute } from "@tanstack/react-router";
 
 import { Affinity, Peer } from "@iron/types";
 import { ChainView } from "@iron/react/components";
 import { useEventListener, useInvoke } from "@/hooks";
 import { useNetworks } from "@/store";
-import { Panel } from "./";
-import { Navbar } from "./Home/Navbar";
+import { Panel } from "@/components";
+import { Navbar } from "@/components/Home/Navbar";
+
+export const Route = createLazyFileRoute("/_home/home/connections")({
+  component: Connections,
+});
 
 export function Connections() {
   const { data: peersByDomain, mutate } =

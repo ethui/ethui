@@ -1,11 +1,17 @@
 import { Button, Stack, Typography } from "@mui/material";
 import { Delete, Task } from "@mui/icons-material";
+import { createLazyFileRoute } from "@tanstack/react-router";
 
 import { useDialog } from "@/hooks";
-import { DialogLayout } from "./Layout";
+import { DialogBottom } from "@/components/Dialogs/Bottom";
+
+export const Route = createLazyFileRoute("/_dialog/dialog/msg-sign/$id")({
+  component: MsgSignDialog,
+});
 
 export function MsgSignDialog() {
-  const { data, send } = useDialog<Record<string, string>>();
+  const { id } = Route.useParams();
+  const { data, send } = useDialog<Record<string, string>>(id);
 
   if (!data) return null;
 
@@ -18,7 +24,7 @@ export function MsgSignDialog() {
       </Typography>
       <Typography>{msg}</Typography>
 
-      <DialogLayout.Bottom>
+      <DialogBottom>
         <Stack direction="row" justifyContent="center" spacing={2}>
           <Button
             size="large"
@@ -39,7 +45,7 @@ export function MsgSignDialog() {
             Sign
           </Button>
         </Stack>
-      </DialogLayout.Bottom>
+      </DialogBottom>
     </>
   );
 }

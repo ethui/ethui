@@ -1,7 +1,7 @@
 import { Button, Stack, Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@tanstack/react-router";
 
 import { StepProps } from ".";
 

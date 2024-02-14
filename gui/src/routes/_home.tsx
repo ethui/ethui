@@ -1,25 +1,24 @@
-import { Box, SvgIcon, Theme } from "@mui/material";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { Box, Theme } from "@mui/material";
 import {
   RequestQuoteSharp,
   Receipt,
   CallToAction,
   OnlinePredictionSharp,
 } from "@mui/icons-material";
-import { Outlet } from "react-router-dom";
 import { SnackbarProvider } from "notistack";
 
+import { Tab } from "@iron/types/ui";
 import { useNoticeAlchemyKeyMissing, useNoticeNewVersion } from "@/hooks";
 import { CommandBar } from "@/components";
 import { useTheme } from "@/store";
-import { Sidebar } from "./Sidebar";
+import { Sidebar } from "@/components/Home/Sidebar";
+
+export const Route = createFileRoute("/_home")({
+  component: HomePageLayout,
+});
 
 const sidebarWidth = { md: 200, sm: 72 };
-
-export interface Tab {
-  path: string;
-  label: string;
-  icon: typeof SvgIcon;
-}
 
 export const tabs: Tab[] = [
   {
@@ -77,6 +76,7 @@ export function HomePageLayout() {
       >
         <Sidebar sx={drawerPaperStyle(theme)} tabs={tabs} />
         <Box sx={contentStyle(theme)}>
+          asd
           <Outlet />
         </Box>
         <Notifications />
