@@ -76,7 +76,6 @@ export function HomePageLayout() {
       >
         <Sidebar sx={drawerPaperStyle(theme)} tabs={tabs} />
         <Box sx={contentStyle(theme)}>
-          asd
           <Outlet />
         </Box>
         <Notifications />

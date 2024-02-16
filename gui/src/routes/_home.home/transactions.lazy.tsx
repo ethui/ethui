@@ -114,7 +114,7 @@ function Summary({ account, tx }: SummaryProps) {
       <Icon {...{ tx, account }} />
       <AddressView address={tx.from} /> <span>→</span>
       {tx.to ? (
-        <AddressView address={tx.to} />
+        <AddressView address={tx.to} tokenIcon />
       ) : (
         <Typography component="span">Contract Deploy</Typography>
       )}
@@ -169,7 +169,7 @@ function Details({ tx, chainId }: DetailsProps) {
       />
       <Datapoint
         label="to"
-        value={tx.to ? <AddressView address={tx.to} /> : ""}
+        value={tx.to ? <AddressView tokenIcon address={tx.to} /> : ""}
         size="small"
       />
       <Datapoint

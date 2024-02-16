@@ -11,6 +11,7 @@ import { Typography } from "@iron/react/components";
 import { useInvoke } from "@/hooks";
 import { ContextMenuWithTauri, Modal } from "./";
 import { useNetworks } from "@/store";
+import { IconCrypto } from "./Icons";
 
 interface Props {
   address: Address;
@@ -18,6 +19,7 @@ interface Props {
   mono?: boolean;
   contextMenu?: boolean;
   variant?: "h6";
+  tokenIcon?: boolean;
 }
 
 export function AddressView({
@@ -25,6 +27,7 @@ export function AddressView({
   mono = false,
   contextMenu = true,
   variant,
+  tokenIcon = false,
 }: Props) {
   const network = useNetworks((s) => s.current);
   const address = getAddress(addr);
@@ -37,9 +40,14 @@ export function AddressView({
 
   const text = alias ? alias : truncateEthAddress(`${address}`);
   const content = (
-    <Typography mono={mono} variant={variant}>
-      {text}
-    </Typography>
+    <Stack direction="row" alignItems="center" spacing={1}>
+      {tokenIcon && (
+        <IconCrypto chainId={network.chain_id} address={address} size="small" />
+      )}
+      <Typography mono={mono} variant={variant}>
+        {text}
+      </Typography>
+    </Stack>
   );
 
   if (!contextMenu) return content;
