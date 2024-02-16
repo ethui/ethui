@@ -1,7 +1,6 @@
 import { Avatar, type AvatarProps } from "@mui/material";
 
 import { getWhitelistedTokenNameAndSymbol } from "@iron/data";
-import { useTheme } from "@/store/theme";
 
 interface Props extends AvatarProps {
   chainId: number;
@@ -9,27 +8,34 @@ interface Props extends AvatarProps {
   size?: "small" | "medium" | "large";
 }
 
-export function IconCrypto({ size = "medium", chainId, address }: Props) {
-  const theme = useTheme((s) => s.theme);
-  const themeMode = useTheme((s) => s.theme.palette.mode);
-
-  const mode = themeMode === "dark" ? "black" : "white";
-
+export function IconCrypto({ chainId, address, size = "medium" }: Props) {
   const data = getWhitelistedTokenNameAndSymbol(chainId, address);
   if (!data) return null;
 
-  let width = 24;
-  if (size === "small") width = 16;
+  let width = 28;
+  if (size === "small") width = 20;
   if (size === "large") width = 40;
 
   return (
     <Avatar
-      sx={{ bgcolor: theme.palette.grey[400], width, height: width }}
-      src={urlFor(data.symbol.toLowerCase() || "generic", mode)}
+      sx={{
+        width,
+        height: width,
+      }}
+      src={urlFor(data.symbol)}
       alt={data.symbol}
-    />
+    >
+      <Avatar
+        sx={{
+          width,
+          height: width,
+        }}
+        src={urlFor("generic")}
+        alt={data.symbol}
+      />
+    </Avatar>
   );
 }
 
-const urlFor = (ticker: string, type: "color" | "black" | "white") =>
-  `/cryptocurrency-icons/${type}/${ticker.toLowerCase()}.svg`;
+const urlFor = (ticker: string) =>
+  `/cryptocurrency-icons/${ticker.toLowerCase()}.svg`;

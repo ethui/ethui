@@ -42,7 +42,9 @@ export function AddressView({
   const text = alias ? alias : truncateEthAddress(`${address}`);
   const content = (
     <Stack direction="row" alignItems="center" spacing={1}>
-      {tokenIcon && <IconCrypto chainId={network.chain_id} address={address} />}
+      {tokenIcon && (
+        <IconCrypto chainId={network.chain_id} address={address} size="small" />
+      )}
       <Typography mono={mono} variant={variant}>
         {text}
       </Typography>
