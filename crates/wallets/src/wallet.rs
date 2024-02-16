@@ -3,12 +3,11 @@ use enum_dispatch::enum_dispatch;
 use iron_types::{Address, Json};
 use serde::{Deserialize, Serialize};
 
-use crate::wallets::PrivateKeyWallet;
-
 use super::{
     wallets::{HDWallet, Impersonator, JsonKeystoreWallet, LedgerWallet, PlaintextWallet},
     Error, Result,
 };
+use crate::wallets::PrivateKeyWallet;
 
 #[async_trait]
 #[enum_dispatch(Wallet)]

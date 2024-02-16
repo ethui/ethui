@@ -2,8 +2,7 @@ use std::{sync::Arc, time::Duration};
 
 use async_trait::async_trait;
 use coins_bip32::prelude::SigningKey;
-use ethers::signers;
-use ethers::signers::Signer as _;
+use ethers::{signers, signers::Signer as _};
 use iron_crypto::{self, EncryptedData};
 use iron_dialogs::{Dialog, DialogMsg};
 use iron_types::{Address, ToAlloy};

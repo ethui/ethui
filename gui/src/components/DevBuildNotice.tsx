@@ -1,27 +1,36 @@
-import { Stack, Typography } from "@mui/material";
+import { Box, useTheme } from "@mui/material";
 import { red } from "@mui/material/colors";
 
 import { useInvoke } from "@/hooks";
 
 export function DevBuildNotice() {
+  const theme = useTheme();
   const { data: buildMode } = useInvoke<string>("get_build_mode");
+  const size = 80;
 
   if (buildMode === "debug") {
     return (
-      <Stack
-        alignItems="center"
+      <Box
         sx={{
+          width: size,
+          height: size,
           backgroundColor: red[300],
-          position: "fixed",
-          left: 0,
-          right: 0,
-          bottom: 0,
-          height: "15px",
           zIndex: 1000000,
+          position: "fixed",
+          top: -size / 2,
+          right: -size / 2,
+          transform: "rotateZ(-135deg)",
+          textAlign: "center",
+          transition: theme.transitions.create(["backgroundColor", "opacity"]),
+          "&:hover": {
+            backgroundColor: red[200],
+            opacity: "0",
+            cursor: "initial",
+          },
         }}
       >
-        <Typography sx={{ fontSize: "10px" }}>dev build</Typography>
-      </Stack>
+        <Box sx={{ transform: "rotateZ(180deg)" }}>{"debug"}</Box>
+      </Box>
     );
   } else {
     return null;

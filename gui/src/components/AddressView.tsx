@@ -11,14 +11,24 @@ import { IconEffigy, Typography } from "@iron/react/components";
 import { useInvoke } from "@/hooks";
 import { ContextMenuWithTauri, Modal } from "./";
 import { useNetworks } from "@/store";
+import { IconAddress } from "./Icons";
 
 interface Props {
   address: Address;
   copyIcon?: boolean;
   mono?: boolean;
+  contextMenu?: boolean;
+  variant?: "h6";
+  icon?: boolean;
 }
 
-export function AddressView({ address: addr, mono = false }: Props) {
+export function AddressView({
+  address: addr,
+  mono = false,
+  contextMenu = true,
+  variant,
+  icon = false,
+}: Props) {
   const network = useNetworks((s) => s.current);
   const address = getAddress(addr);
   const { data: alias, mutate } = useInvoke<string>("settings_get_alias", {
@@ -31,10 +41,21 @@ export function AddressView({ address: addr, mono = false }: Props) {
   const text = alias ? alias : truncateEthAddress(`${address}`);
   const content = (
     <Stack direction="row" alignItems="center" spacing={1}>
-      <IconEffigy address={address} />
-      <Typography mono={mono}>{text}</Typography>
+      {icon && (
+        <IconAddress
+          chainId={network.chain_id}
+          address={address}
+          size="small"
+          effigy
+        />
+      )}
+      <Typography mono={mono} variant={variant}>
+        {text}
+      </Typography>
     </Stack>
   );
+
+  if (!contextMenu) return content;
 
   return (
     <ContextMenuWithTauri

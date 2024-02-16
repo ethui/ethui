@@ -47,6 +47,7 @@ impl IronApp {
                 iron_db::commands::db_insert_contract,
                 iron_db::commands::db_get_transactions,
                 iron_db::commands::db_get_contracts,
+                iron_db::commands::db_get_erc20_metadata,
                 iron_db::commands::db_get_erc20_balances,
                 iron_db::commands::db_get_native_balance,
                 iron_db::commands::db_get_erc721_tokens,

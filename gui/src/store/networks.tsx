@@ -61,10 +61,14 @@ const store: StateCreator<Store> = (set, get) => ({
       {
         id: actionId,
         name: "Change network",
+        subtitle: `${networks.length} network${
+          networks.length > 1 ? "s" : ""
+        } available`,
+        shortcut: ["N"],
       },
-      ...(networks || []).map((network) => ({
+      ...(networks || []).map((network, index) => ({
         id: `${actionId}/${network.name}`,
-        name: network.name,
+        name: `${index + 1}: ${network.name}`,
         icon: <IconChain chainId={network.chain_id} />,
         parent: actionId,
         perform: () => {

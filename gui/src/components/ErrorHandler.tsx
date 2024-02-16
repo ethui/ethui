@@ -42,7 +42,7 @@ function Fallback({ error }: { error: Error }) {
 }
 
 function logWindowError(event: string | Event, error: Error | undefined) {
-  const message = error ? error : event;
+  const message = error ? error.toString() : event.toString();
   const stack = error?.stack?.split("\n").filter((n) => n.length > 0);
   invoke("ui_error", { message, stack });
 }
@@ -55,7 +55,7 @@ function logUnhandledRejection(reason: Error | string) {
 
 async function logError(err: Error, info?: ErrorInfo) {
   await invoke("ui_error", {
-    message: err?.message || err.toString(),
+    message: err?.message?.toString() || err.toString(),
     stack: formatStack(info?.componentStack),
   });
 }

@@ -5,51 +5,38 @@ import { subscribeWithSelector } from "zustand/middleware";
 
 import { GeneralSettings } from "@iron/types/settings";
 
-interface State {
+interface Store {
   settings?: GeneralSettings;
   actions: Action[];
-}
 
-interface Setters {
   reload: () => void;
-  reloadActions: () => void;
 }
 
-type Store = State & Setters;
+const actionId = "settings/fastMode";
 
-const store: StateCreator<Store> = (set, get) => ({
+const store: StateCreator<Store> = (set) => ({
   settings: undefined,
-  actions: [],
+  actions: [
+    {
+      id: actionId,
+      name: "Fast mode",
+      subtitle: "enable/disable",
+      shortcut: ["˄ ", "+", " F"],
+    },
+    ...(["Enable", "Disable"] as const).map((mode, index) => ({
+      id: `${actionId}/${mode}`,
+      name: `${index + 1}: ${mode}`,
+      parent: actionId,
+      perform: () => {
+        invoke("settings_set_fast_mode", { mode: mode == "Enable" });
+      },
+    })),
+  ],
 
   async reload() {
     const settings = await invoke<GeneralSettings>("settings_get");
 
     set({ settings });
-    get().reloadActions();
-  },
-
-  reloadActions() {
-    const actions = [
-      {
-        id: "settings/fastMode",
-        name: "Fast mode",
-      },
-
-      {
-        id: `settings/fastMode/enable`,
-        parent: "settings/fastMode",
-        name: "Fast Mode > Enable",
-        perform: () => invoke("settings_set_fast_mode", { mode: true }),
-      },
-      {
-        id: `settings/fastMode/disable`,
-        parent: "settings/fastMode",
-        name: "Fast Mode > Disable",
-        perform: () => invoke("settings_set_fast_mode", { mode: false }),
-      },
-    ];
-
-    set({ actions });
   },
 });
 

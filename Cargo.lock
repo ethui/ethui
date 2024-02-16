@@ -290,9 +290,9 @@ dependencies = [
 
 [[package]]
 name = "anyhow"
-version = "1.0.75"
+version = "1.0.79"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a4668cab20f66d8d020e1fbc0ebe47217433c1b6c8f2040faf858554e394ace6"
+checksum = "080e9890a082662b09c1ad45f567faeeb47f22b5fb23895fbe1e651e718e25ca"
 
 [[package]]
 name = "arbitrary"
@@ -1223,8 +1223,10 @@ checksum = "7f2c685bad3eb3d45a01354cedb7d5faa66194d1d58ba6e267a8de788f79db38"
 dependencies = [
  "android-tzdata",
  "iana-time-zone",
+ "js-sys",
  "num-traits",
  "serde",
+ "wasm-bindgen",
  "windows-targets 0.48.5",
 ]
 
@@ -4093,10 +4095,10 @@ checksum = "8f518f335dce6725a761382244631d86cf0ccb2863413590b31338feb467f9c3"
 
 [[package]]
 name = "iron"
-version = "1.3.0"
+version = "1.4.0"
 dependencies = [
+ "anyhow",
  "auto-launch",
- "clap",
  "ethers",
  "fix-path-env",
  "iron-args",
@@ -4112,6 +4114,7 @@ dependencies = [
  "iron-settings",
  "iron-simulator",
  "iron-sync",
+ "iron-token-list",
  "iron-tracing",
  "iron-types",
  "iron-wallets",
@@ -4129,7 +4132,7 @@ dependencies = [
 
 [[package]]
 name = "iron-abis"
-version = "1.3.0"
+version = "1.4.0"
 dependencies = [
  "ethers",
  "serde",
@@ -4137,14 +4140,14 @@ dependencies = [
 
 [[package]]
 name = "iron-args"
-version = "1.3.0"
+version = "1.4.0"
 dependencies = [
  "clap",
 ]
 
 [[package]]
 name = "iron-broadcast"
-version = "1.3.0"
+version = "1.4.0"
 dependencies = [
  "iron-types",
  "once_cell",
@@ -4154,7 +4157,7 @@ dependencies = [
 
 [[package]]
 name = "iron-connections"
-version = "1.3.0"
+version = "1.4.0"
 dependencies = [
  "async-trait",
  "ethers",
@@ -4173,7 +4176,7 @@ dependencies = [
 
 [[package]]
 name = "iron-crypto"
-version = "1.3.0"
+version = "1.4.0"
 dependencies = [
  "aead",
  "anyhow",
@@ -4188,7 +4191,7 @@ dependencies = [
 
 [[package]]
 name = "iron-db"
-version = "1.3.0"
+version = "1.4.0"
 dependencies = [
  "ethers",
  "iron-broadcast",
@@ -4205,7 +4208,7 @@ dependencies = [
 
 [[package]]
 name = "iron-dialogs"
-version = "1.3.0"
+version = "1.4.0"
 dependencies = [
  "iron-broadcast",
  "iron-types",
@@ -4220,7 +4223,7 @@ dependencies = [
 
 [[package]]
 name = "iron-exchange-rates"
-version = "1.3.0"
+version = "1.4.0"
 dependencies = [
  "async-trait",
  "ethers",
@@ -4233,7 +4236,7 @@ dependencies = [
 
 [[package]]
 name = "iron-forge"
-version = "1.3.0"
+version = "1.4.0"
 dependencies = [
  "ethers",
  "futures",
@@ -4255,7 +4258,7 @@ dependencies = [
 
 [[package]]
 name = "iron-http"
-version = "1.3.0"
+version = "1.4.0"
 dependencies = [
  "axum",
  "ethers",
@@ -4283,7 +4286,7 @@ dependencies = [
 
 [[package]]
 name = "iron-networks"
-version = "1.3.0"
+version = "1.4.0"
 dependencies = [
  "async-trait",
  "ethers",
@@ -4300,7 +4303,7 @@ dependencies = [
 
 [[package]]
 name = "iron-rpc"
-version = "1.3.0"
+version = "1.4.0"
 dependencies = [
  "alloy-primitives",
  "async-trait",
@@ -4327,7 +4330,7 @@ dependencies = [
 
 [[package]]
 name = "iron-settings"
-version = "1.3.0"
+version = "1.4.0"
 dependencies = [
  "async-trait",
  "auto-launch",
@@ -4344,7 +4347,7 @@ dependencies = [
 
 [[package]]
 name = "iron-simulator"
-version = "1.3.0"
+version = "1.4.0"
 dependencies = [
  "alloy-primitives",
  "ethers",
@@ -4366,7 +4369,7 @@ dependencies = [
 
 [[package]]
 name = "iron-sync"
-version = "1.3.0"
+version = "1.4.0"
 dependencies = [
  "ethers",
  "iron-broadcast",
@@ -4386,7 +4389,7 @@ dependencies = [
 
 [[package]]
 name = "iron-sync-alchemy"
-version = "1.3.0"
+version = "1.4.0"
 dependencies = [
  "async-trait",
  "ethers",
@@ -4406,7 +4409,7 @@ dependencies = [
 
 [[package]]
 name = "iron-sync-anvil"
-version = "1.3.0"
+version = "1.4.0"
 dependencies = [
  "base64 0.21.5",
  "ethers",
@@ -4427,8 +4430,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "iron-token-list"
+version = "1.4.0"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "iron-tracing"
-version = "1.3.0"
+version = "1.4.0"
 dependencies = [
  "thiserror",
  "tracing",
@@ -4437,7 +4452,7 @@ dependencies = [
 
 [[package]]
 name = "iron-types"
-version = "1.3.0"
+version = "1.4.0"
 dependencies = [
  "alloy-primitives",
  "async-trait",
@@ -4453,7 +4468,7 @@ dependencies = [
 
 [[package]]
 name = "iron-wallets"
-version = "1.3.0"
+version = "1.4.0"
 dependencies = [
  "async-trait",
  "coins-bip32",
@@ -4480,7 +4495,7 @@ dependencies = [
 
 [[package]]
 name = "iron-ws"
-version = "1.3.0"
+version = "1.4.0"
 dependencies = [
  "async-trait",
  "ethers",
