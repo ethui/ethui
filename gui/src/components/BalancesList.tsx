@@ -37,13 +37,17 @@ function BalanceETH() {
       balance={balance}
       decimals={currentNetwork.decimals}
       symbol={currentNetwork.currency}
+      chainId={currentNetwork.chain_id}
     />
   );
 }
 
 function BalancesERC20() {
+  const currentNetwork = useNetworks((s) => s.current);
   const balances = useBalances((s) => s.erc20Balances);
   const { data: settings } = useInvoke<GeneralSettings>("settings_get");
+
+  if (!currentNetwork) return null;
 
   const filteredBalances = (balances || []).filter(
     (token) => !settings?.hideEmptyTokens || BigInt(token.balance) > 0,
@@ -58,6 +62,7 @@ function BalancesERC20() {
           balance={BigInt(balance)}
           decimals={metadata.decimals}
           symbol={metadata.symbol}
+          chainId={currentNetwork.chain_id}
         />
       ))}
     </>
@@ -69,6 +74,7 @@ interface BalanceItemProps {
   balance: bigint;
   decimals: number;
   symbol: string;
+  chainId: number;
 }
 
 function BalanceItem({
@@ -76,6 +82,7 @@ function BalanceItem({
   decimals,
   symbol,
   contract,
+  chainId,
 }: BalanceItemProps) {
   const [transferFormOpen, setTransferFormOpen] = useState(false);
   const minimum = 0.001;
@@ -101,7 +108,7 @@ function BalanceItem({
         }
       >
         <ListItemAvatar>
-          <IconCrypto ticker={symbol} />
+          <IconCrypto chainId={chainId} address={contract} />
         </ListItemAvatar>
         <ListItemText
           secondary={`${symbol} ${

@@ -8,10 +8,11 @@ import { Address, getAddress } from "viem";
 import { z } from "zod";
 
 import { Typography } from "@iron/react/components";
-import { isWhitelistedToken } from "@iron/data";
+import { getWhitelistedTokenNameAndSymbol } from "@iron/data";
 import { useInvoke } from "@/hooks";
 import { ContextMenuWithTauri, Modal } from "./";
 import { useNetworks } from "@/store";
+import { IconCrypto } from "./Icons";
 
 interface Props {
   address: Address;
@@ -19,6 +20,16 @@ interface Props {
   mono?: boolean;
   contextMenu?: boolean;
   variant?: "h6";
+  tokenIcon?: boolean;
+}
+
+function TokenIcon({ chainId, address }: { chainId: number; address: string }) {
+  const data = getWhitelistedTokenNameAndSymbol(chainId, address);
+
+  if (data) {
+    console.log(data);
+  }
+  return data ? <IconCrypto {...{ chainId, address }} /> : null;
 }
 
 export function AddressView({
@@ -26,6 +37,7 @@ export function AddressView({
   mono = false,
   contextMenu = true,
   variant,
+  tokenIcon = false,
 }: Props) {
   const network = useNetworks((s) => s.current);
   const address = getAddress(addr);
@@ -36,11 +48,10 @@ export function AddressView({
 
   if (!network) return;
 
-  const icon = isWhitelistedToken(network.chain_id, address) ? <IconCrypto chainId={chain" : null;
   const text = alias ? alias : truncateEthAddress(`${address}`);
   const content = (
     <Stack direction="row" alignItems="center" spacing={1}>
-      {icon}
+      {tokenIcon && <TokenIcon chainId={network.chain_id} address={address} />}
       <Typography mono={mono} variant={variant}>
         {text}
       </Typography>

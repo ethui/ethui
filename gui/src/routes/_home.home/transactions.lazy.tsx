@@ -169,7 +169,7 @@ function Details({ tx, chainId }: DetailsProps) {
       />
       <Datapoint
         label="to"
-        value={tx.to ? <AddressView address={tx.to} /> : ""}
+        value={tx.to ? <AddressView tokenIcon address={tx.to} /> : ""}
         size="small"
       />
       <Datapoint

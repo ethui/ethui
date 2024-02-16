@@ -1,10 +1,20 @@
 import tokens from "@iron/data/tokens.json" with { type: "json" };
 
-const tokensHash = tokens.reduce((acc, { address, chainId }) => {
-  acc.add([chainId, address]);
-  return acc;
-}, new Set<[number, string]>());
+export interface TokenNameAndSymbol {
+  name: string;
+  symbol: string;
+}
 
-export function isWhitelistedToken(chainId: number, address: string): boolean {
-  return tokensHash.has([chainId, address]);
+const tokensHash = tokens.reduce((acc, { address, chainId, name, symbol }) => {
+  acc.set([chainId, address], { name, symbol });
+  return acc;
+}, new Map<[number, string], TokenNameAndSymbol>());
+
+export function getWhitelistedTokenNameAndSymbol(
+  chainId: number,
+  address?: string,
+): TokenNameAndSymbol | undefined {
+  if (!address) return undefined;
+
+  return tokensHash.get([chainId, address]);
 }

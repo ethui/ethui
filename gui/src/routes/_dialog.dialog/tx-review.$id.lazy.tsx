@@ -305,7 +305,7 @@ function Erc20Transfer({
       <AddressView address={from} />
       <span>→</span>
       <AddressView address={to} />
-      <IconCrypto ticker={metadata?.symbol} />
+      <IconCrypto chainId={chainId} address={contract} />
       {metadata?.decimals
         ? formatUnits(value, metadata.decimals)
         : value.toString()}{" "}
