@@ -2494,7 +2494,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@iron/data@npm:*, @iron/data@workspace:packages/data":
+"@iron/data@workspace:*, @iron/data@workspace:packages/data":
   version: 0.0.0-use.local
   resolution: "@iron/data@workspace:packages/data"
   dependencies:
@@ -2557,9 +2557,9 @@ __metadata:
     "@fontsource/roboto": "npm:^5.0.8"
     "@fontsource/roboto-mono": "npm:^5.0.16"
     "@hookform/resolvers": "npm:^3.3.2"
-    "@iron/data": "npm:*"
-    "@iron/react": "npm:*"
-    "@iron/types": "npm:*"
+    "@iron/data": "workspace:*"
+    "@iron/react": "workspace:*"
+    "@iron/types": "workspace:*"
     "@mui/icons-material": "npm:^5.15.0"
     "@mui/lab": "npm:^5.0.0-alpha.156"
     "@mui/material": "npm:^5.15.0"
@@ -2603,7 +2603,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@iron/react@npm:*, @iron/react@workspace:packages/react":
+"@iron/react@workspace:*, @iron/react@workspace:packages/react":
   version: 0.0.0-use.local
   resolution: "@iron/react@workspace:packages/react"
   dependencies:
@@ -2642,7 +2642,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@iron/types@npm:*, @iron/types@workspace:packages/types":
+"@iron/types@npm:*, @iron/types@workspace:*, @iron/types@workspace:packages/types":
   version: 0.0.0-use.local
   resolution: "@iron/types@workspace:packages/types"
   dependencies:
