@@ -8,7 +8,6 @@ import { Address, getAddress } from "viem";
 import { z } from "zod";
 
 import { Typography } from "@iron/react/components";
-import { getWhitelistedTokenNameAndSymbol } from "@iron/data";
 import { useInvoke } from "@/hooks";
 import { ContextMenuWithTauri, Modal } from "./";
 import { useNetworks } from "@/store";
