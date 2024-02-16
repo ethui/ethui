@@ -5,7 +5,7 @@ use chrono::{Duration, Utc};
 use reqwest::blocking;
 use serde::{Deserialize, Serialize};
 
-const FILE: &str = "../../packages/data/tokens.json";
+const FILE: &str = "../../packages/data/gen/tokens.json";
 const URI: &str = "https://tokens.1inch.eth.link/";
 
 const CHAIN_ID_WHITELIST: [i32; 3] = [1, 137, 10];

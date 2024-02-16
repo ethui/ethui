@@ -23,15 +23,6 @@ interface Props {
   tokenIcon?: boolean;
 }
 
-function TokenIcon({ chainId, address }: { chainId: number; address: string }) {
-  const data = getWhitelistedTokenNameAndSymbol(chainId, address);
-
-  if (data) {
-    console.log(data);
-  }
-  return data ? <IconCrypto {...{ chainId, address }} /> : null;
-}
-
 export function AddressView({
   address: addr,
   mono = false,
@@ -51,7 +42,7 @@ export function AddressView({
   const text = alias ? alias : truncateEthAddress(`${address}`);
   const content = (
     <Stack direction="row" alignItems="center" spacing={1}>
-      {tokenIcon && <TokenIcon chainId={network.chain_id} address={address} />}
+      {tokenIcon && <IconCrypto chainId={network.chain_id} address={address} />}
       <Typography mono={mono} variant={variant}>
         {text}
       </Typography>

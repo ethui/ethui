@@ -16,17 +16,17 @@ export function IconCrypto({ size = "medium", chainId, address }: Props) {
   const mode = themeMode === "dark" ? "black" : "white";
 
   const data = getWhitelistedTokenNameAndSymbol(chainId, address);
+  if (!data) return null;
 
   let width = 24;
   if (size === "small") width = 16;
   if (size === "large") width = 40;
 
-  console.log(data);
   return (
     <Avatar
       sx={{ bgcolor: theme.palette.grey[400], width, height: width }}
-      src={urlFor(data?.symbol || "generic", mode)}
-      alt={data?.symbol}
+      src={urlFor(data.symbol.toLowerCase() || "generic", mode)}
+      alt={data.symbol}
     />
   );
 }

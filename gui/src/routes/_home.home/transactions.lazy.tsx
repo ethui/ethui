@@ -114,7 +114,7 @@ function Summary({ account, tx }: SummaryProps) {
       <Icon {...{ tx, account }} />
       <AddressView address={tx.from} /> <span>→</span>
       {tx.to ? (
-        <AddressView address={tx.to} />
+        <AddressView address={tx.to} tokenIcon />
       ) : (
         <Typography component="span">Contract Deploy</Typography>
       )}
