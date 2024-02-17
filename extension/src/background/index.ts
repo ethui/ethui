@@ -41,7 +41,9 @@ async function notifyDevtools(
       timestamp: Date.now(),
     });
   } catch (e: unknown) {
-    if (!e?.message?.includes("Receiving end does not exist.")) {
+    if (
+      !(e as unknown as any)?.message?.includes("Receiving end does not exist.")
+    ) {
       throw e;
     }
   }
