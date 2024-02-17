@@ -1,5 +1,5 @@
 import React from "react";
-import { defineChain, http } from "viem";
+import { type Chain, defineChain, http } from "viem";
 import { createConfig, WagmiProvider } from "wagmi";
 
 import { useNetworks } from "@/store";
@@ -18,7 +18,7 @@ export function WagmiWrapper({ children }: Props) {
     ws: network.ws_url ? [network.ws_url] : [],
   };
 
-  const chain = defineChain({
+  const chain = {
     id: network.chain_id,
     network: network.name,
     name: network.name,
@@ -33,7 +33,7 @@ export function WagmiWrapper({ children }: Props) {
     },
     blockExplorers: { default: { name: "", url: "" } },
     contracts: {},
-  });
+  } as const satisfies Chain;
 
   // const { publicClient, webSocketPublicClient } = configureChains(
   //   [buildChain(network)],
@@ -48,7 +48,6 @@ export function WagmiWrapper({ children }: Props) {
   //
   const config = createConfig({
     chains: [chain],
-    transports: { [chain.id.toString()]: http() },
   });
 
   return <WagmiProvider config={config}>{children}</WagmiProvider>;
