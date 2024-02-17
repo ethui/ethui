@@ -1,7 +1,4 @@
-import {
-  type UseSuspenseQueryResult,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
+import { type UseQueryResult, useQuery } from "@tanstack/react-query";
 
 const PORT = import.meta.env.VITE_IRON_HTTP_PORT || "9003";
 
@@ -10,8 +7,8 @@ type Parameters = Record<string, string | bigint | number | undefined>;
 export function useApi<T>(
   endpoint: string,
   query: Parameters,
-): UseSuspenseQueryResult<T, unknown> {
-  return useSuspenseQuery({
+): UseQueryResult<T, unknown> {
+  return useQuery({
     queryKey: [endpoint, query],
     queryFn: async () => {
       const params = Object.entries(query).reduce((acc, [key, value]) => {

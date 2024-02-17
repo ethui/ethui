@@ -4,7 +4,7 @@ import { SnackbarKey, useSnackbar } from "notistack";
 import { useEffect } from "react";
 
 import { useNetworks, useSettings, useSettingsWindow } from "@/store";
-import { useInvoke } from "./tauri";
+import { useInvoke } from "./useInvoke";
 
 let key: SnackbarKey;
 
