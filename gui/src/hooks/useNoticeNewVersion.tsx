@@ -3,7 +3,7 @@ import { IconButton, Link, Typography } from "@mui/material";
 import { SnackbarKey, useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 
-import { useInvoke } from "./tauri";
+import { useInvoke } from "./useInvoke";
 
 export async function getLatestVersion() {
   const response = await fetch(
