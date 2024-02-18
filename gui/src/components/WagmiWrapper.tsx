@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react";
-import { type Chain, http } from "viem";
-import { createConfig, WagmiProvider } from "wagmi";
+import { type Chain } from "viem";
+import { createConfig, WagmiProvider, http } from "wagmi";
 
 import { useNetworks } from "@/store";
 
@@ -33,7 +33,9 @@ export function WagmiWrapper({ children }: PropsWithChildren) {
 
   const config = createConfig({
     chains: [chain],
-    transports: { [chain.id]: http() },
+    transports: {
+      [chain.id]: http(),
+    },
   });
 
   return <WagmiProvider config={config}>{children}</WagmiProvider>;
