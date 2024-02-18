@@ -26,10 +26,10 @@ export const Route = createLazyFileRoute("/_home/home/connections")({
 });
 
 export function Connections() {
-  const { data: peersByDomain, mutate } =
+  const { data: peersByDomain, refetch } =
     useInvoke<Record<string, Peer[]>>("ws_peers_by_domain");
 
-  useEventListener("peers-updated", mutate);
+  useEventListener("peers-updated", refetch);
 
   return (
     <>
@@ -63,14 +63,14 @@ function Domain({ domain, peers }: { domain: string; peers: Peer[] }) {
 
 function AffinityForm({ domain }: { domain: string }) {
   const networks = useNetworks((s) => s.networks);
-  const { data: affinity, mutate } = useInvoke<Affinity>(
+  const { data: affinity, refetch } = useInvoke<Affinity>(
     "connections_affinity_for",
     {
       domain,
     },
   );
 
-  useEventListener("peers-updated", mutate);
+  useEventListener("peers-updated", refetch);
 
   const [current, setCurrent] = useState<Affinity>("global");
 
