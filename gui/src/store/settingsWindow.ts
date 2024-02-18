@@ -9,6 +9,7 @@ interface State {
 }
 
 interface Setters {
+  open: () => unknown;
   toggle: () => unknown;
 }
 
@@ -25,6 +26,9 @@ const store: StateCreator<Store> = (set, get) => ({
       perform: () => set({ show: !get().show }),
     },
   ],
+  open() {
+    set({ show: true });
+  },
   toggle() {
     set({ show: !get().show });
   },

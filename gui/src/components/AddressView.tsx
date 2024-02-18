@@ -73,7 +73,7 @@ export function AddressView({
 
       <Modal open={aliasFormOpen} onClose={() => setAliasFormOpen(false)}>
         <AliasForm
-          {...{ address, alias, refetch: refetch }}
+          {...{ address, alias, refetch }}
           onSubmit={() => setAliasFormOpen(false)}
         />
       </Modal>

@@ -149,7 +149,7 @@ export class IronProvider extends EventEmitter {
     connection.stream.pipe(this.stream).pipe(connection.stream);
 
     // Wire up the JsonRpcEngine to the JSON-RPC connection stream
-    this.engine.push(connection.middleware);
+    this.engine.push(connection.middleware as unknown as any);
 
     // Handle JSON-RPC notifications
     connection.events.on("notification", ({ method, params }) => {
