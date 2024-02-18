@@ -11,7 +11,7 @@
     "ext:build": "yarn workspace @iron/extension build \"$@\"",
     "lint": "yarn lint:eslint && yarn lint:tsc && yarn lint:prettier",
     "lint:eslint": "eslint .",
-    "lint:tsc": "tsc --noEmit",
+    "lint:tsc": "yarn workspace @iron/gui tsc --noEmit && yarn workspace @iron/extension tsc --noEmit",
     "lint:prettier": "prettier --check .",
     "fix": "yarn fix:eslint && yarn fix:prettier",
     "fix:eslint": "eslint --fix .",
