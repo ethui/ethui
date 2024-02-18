@@ -12,7 +12,7 @@ import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import truncateEthAddress from "truncate-eth-address";
 import { Abi, Address, formatEther, formatGwei } from "viem";
-import { useTransaction, useWaitForTransactionReceipt } from "wagmi";
+import { useTransaction, useTransactionReceipt } from "wagmi";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
 import { Paginated, Pagination, Tx } from "@iron/types";
@@ -153,8 +153,8 @@ BigInt.prototype.toJSON = function (): string {
 };
 
 function Details({ tx, chainId }: DetailsProps) {
-  const { data: transaction } = useTransaction({ hash: tx.hash });
-  const { data: receipt } = useWaitForTransactionReceipt({ hash: tx.hash });
+  const { data: transaction } = useTransaction({ hash: tx.hash, chainId });
+  const { data: receipt } = useTransactionReceipt({ hash: tx.hash, chainId });
   const { data: abi } = useInvoke<Abi>("get_contract_abi", {
     address: tx.to,
     chainId,
