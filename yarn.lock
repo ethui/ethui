@@ -2665,6 +2665,8 @@ __metadata:
     typescript: "npm:^5.3.3"
     viem: "npm:^2.7.10"
     vite: "npm:^5.0.12"
+  peerDependencies:
+    "@tanstack/react-query": ^5.21.4
   languageName: unknown
   linkType: soft
 
@@ -2682,6 +2684,9 @@ __metadata:
     zod: "npm:^3.22.4"
     zustand: "npm:^4.4.7"
     zxcvbn-typescript: "npm:^5.0.1"
+  peerDependencies:
+    "@tanstack/react-query": ^5.21.4
+    react: ^18.2.0
   languageName: unknown
   linkType: soft
 

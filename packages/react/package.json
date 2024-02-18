@@ -46,5 +46,8 @@
     "storybook": "^7.6.5",
     "typescript": "^5.3.3",
     "vite": "^5.0.12"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.21.4"
   }
 }
