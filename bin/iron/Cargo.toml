@@ -8,6 +8,13 @@ repository.workspace = true
 exclude.workspace = true
 authors.workspace = true
 
+[lib]
+name = "iron_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[bin]
+name = "iron"
+
 [dependencies]
 iron-forge = { workspace = true }
 iron-settings = { workspace = true }
