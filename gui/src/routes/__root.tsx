@@ -39,9 +39,9 @@ function Root() {
       <GlobalStyles styles={globalStyles} />
       <CssBaseline>
         <ErrorHandler>
-          <QueryClientProvider client={queryClient}>
-            <DevBuildNotice />
-            <WagmiWrapper>
+          <WagmiWrapper>
+            <QueryClientProvider client={queryClient}>
+              <DevBuildNotice />
               <Suspense>
                 <Outlet />
               </Suspense>
@@ -52,8 +52,8 @@ function Root() {
                 </Box>
                 <RouterDevtools position="bottom-left" />
               </Suspense>
-            </WagmiWrapper>
-          </QueryClientProvider>
+            </QueryClientProvider>
+          </WagmiWrapper>
         </ErrorHandler>
       </CssBaseline>
     </ThemeProvider>

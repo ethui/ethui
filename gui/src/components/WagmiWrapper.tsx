@@ -1,70 +1,41 @@
-import React from "react";
-import { FallbackTransport } from "viem";
-import {
-  Chain,
-  type Config,
-  configureChains,
-  createConfig,
-  PublicClient,
-  WagmiConfig,
-  WebSocketPublicClient,
-} from "wagmi";
-import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+import { PropsWithChildren } from "react";
+import { type Chain } from "viem";
+import { createConfig, WagmiProvider, http } from "wagmi";
 
-import { Network } from "@iron/types/network";
 import { useNetworks } from "@/store";
 
-interface Props {
-  children: React.ReactNode;
-}
-
-type WagmiConfig = Config<
-  PublicClient<FallbackTransport>,
-  WebSocketPublicClient<FallbackTransport>
->;
-
-export function WagmiWrapper({ children }: Props) {
+export function WagmiWrapper({ children }: PropsWithChildren) {
   const network = useNetworks((s) => s.current);
 
   if (!network) return null;
 
-  const { publicClient, webSocketPublicClient } = configureChains(
-    [buildChain(network)],
-    [
-      jsonRpcProvider({
-        rpc: (_chain: Chain) => ({
-          http: network.http_url,
-        }),
-      }),
-    ],
-  );
-  const config = createConfig({
-    autoConnect: true,
-    publicClient,
-    webSocketPublicClient,
-  });
-
-  return <WagmiConfig config={config}>{children}</WagmiConfig>;
-}
-
-function buildChain(network: Network): Chain {
   const rpcs = {
     http: [network.http_url],
     ws: network.ws_url ? [network.ws_url] : [],
   };
 
-  return {
+  const chain = {
     id: network.chain_id,
-    network: network.name,
-    name: "Ethereum",
+    name: network.name,
     nativeCurrency: {
       name: "Ether",
       symbol: network.currency,
       decimals: network.decimals,
     },
     rpcUrls: {
-      default: rpcs,
-      public: rpcs,
+      default: { http: rpcs.http },
+      public: { http: rpcs.http },
     },
-  };
+    blockExplorers: { default: { name: "", url: "" } },
+    contracts: {},
+  } as const satisfies Chain;
+
+  const config = createConfig({
+    chains: [chain],
+    transports: {
+      [chain.id]: http(),
+    },
+  });
+
+  return <WagmiProvider config={config}>{children}</WagmiProvider>;
 }
