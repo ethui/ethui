@@ -37,6 +37,7 @@ jobs:
           cache: "yarn"
           node-version-file: ".tool-versions"
 
-      - run: rm -rf node_modules && yarn install --frozen-lockfile
+      - run: yarn install --frozen-lockfile
 
-      - run: yarn workspace @iron/gui run tsc --noEmit
+      - name: ESLint
+        run: yarn lint
