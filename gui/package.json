@@ -55,7 +55,7 @@
     "@types/chrome": "^0.0.254",
     "@types/core-js": "^2.5.8",
     "@types/lodash-es": "^4.17.12",
-    "@types/node": "^20.10.4",
+    "@types/node": "^20.11.19",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@types/react-infinite-scroller": "^1.2.5",
