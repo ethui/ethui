@@ -12,7 +12,7 @@ authors.workspace = true
 name = "iron_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
-[bin]
+[[bin]]
 name = "iron"
 
 [dependencies]
@@ -44,7 +44,6 @@ ethers = { workspace = true }
 tracing = { workspace = true }
 
 fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs", rev = "016512b" }
-tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 named-lock = "0.3.0"
 auto-launch = "0.5.0"
 anyhow = "1.0.79"

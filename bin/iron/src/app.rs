@@ -22,7 +22,6 @@ pub struct IronApp {
 impl IronApp {
     pub async fn build(args: &iron_args::Args) -> AppResult<Self> {
         let builder = Builder::default()
-            .plugin(windowStatePlugin::default().build())
             .invoke_handler(tauri::generate_handler![
                 commands::get_build_mode,
                 commands::get_version,
