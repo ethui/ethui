@@ -24,7 +24,7 @@ export default defineConfig({
     nodePolyfills({
       exclude: ["fs"],
     }),
-    tsconfigPaths(),
+    tsconfigPaths({ parseNative: true }),
   ],
   build: {
     minify: false,

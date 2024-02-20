@@ -8,7 +8,11 @@ import tsconfigPaths from "vite-tsconfig-paths";
 //   process.env.TAURI_PLATFORM === "ios";
 
 export default defineConfig(() => ({
-  plugins: [react(), TanStackRouterVite(), tsconfigPaths()],
+  plugins: [
+    react(),
+    TanStackRouterVite(),
+    tsconfigPaths({ parseNative: true }),
+  ],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   // prevent vite from obscuring rust errors
