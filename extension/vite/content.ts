@@ -11,7 +11,7 @@ export default defineConfig({
     nodePolyfills({
       exclude: ["fs"],
     }),
-    tsconfigPaths(),
+    tsconfigPaths({ parseNative: true }),
   ],
   define: {
     "process.env": {},
