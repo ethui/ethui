@@ -16,7 +16,6 @@ export function WagmiWrapper({ children }: PropsWithChildren) {
 
   const chain = {
     id: network.chain_id,
-    network: network.name,
     name: network.name,
     nativeCurrency: {
       name: "Ether",
