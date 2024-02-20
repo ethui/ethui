@@ -6,7 +6,7 @@
   "type": "module",
   "dependencies": {
     "typescript": "^5.3.3",
-    "viem": "^2.7.10",
+    "viem": "^2.7.11",
     "wagmi": "^2.5.7",
     "zod": "^3.22.4",
     "zustand": "^4.4.7",

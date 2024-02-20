@@ -2528,7 +2528,7 @@ __metadata:
     "@types/lodash-es": "npm:^4.17.12"
     "@types/node": "npm:^20.11.19"
     typescript: "npm:^5.3.3"
-    viem: "npm:^2.7.10"
+    viem: "npm:^2.7.11"
   languageName: unknown
   linkType: soft
 
@@ -2605,7 +2605,7 @@ __metadata:
     "@types/react-dom": "npm:^18.2.17"
     "@types/react-infinite-scroller": "npm:^1.2.5"
     "@vitejs/plugin-react": "npm:^4.2.1"
-    abitype: "npm:^0.10.3"
+    abitype: "npm:^1.0.0"
     core-js: "npm:^3.34.0"
     jsdom: "npm:^23.0.1"
     kbar: "npm:^0.1.0-beta.44"
@@ -2619,7 +2619,7 @@ __metadata:
     react18-json-view: "npm:^0.2.6"
     truncate-eth-address: "npm:^1.0.2"
     typescript: "npm:^5.3.3"
-    viem: "npm:^2.7.10"
+    viem: "npm:^2.7.11"
     vite: "npm:^5.0.12"
     vite-tsconfig-paths: "npm:^4.2.2"
     wagmi: "npm:^2.5.7"
@@ -2663,7 +2663,7 @@ __metadata:
     react-hook-form: "npm:^7.49.0"
     storybook: "npm:^7.6.5"
     typescript: "npm:^5.3.3"
-    viem: "npm:^2.7.10"
+    viem: "npm:^2.7.11"
     vite: "npm:^5.0.12"
   peerDependencies:
     "@tanstack/react-query": ^5.21.4
@@ -2679,7 +2679,7 @@ __metadata:
     "@types/node": "npm:^20.11.19"
     jsdom: "npm:^23.0.1"
     typescript: "npm:^5.3.3"
-    viem: "npm:^2.7.10"
+    viem: "npm:^2.7.11"
     wagmi: "npm:^2.5.7"
     zod: "npm:^3.22.4"
     zustand: "npm:^4.4.7"
@@ -7560,7 +7560,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"abitype@npm:1.0.0":
+"abitype@npm:1.0.0, abitype@npm:^1.0.0":
   version: 1.0.0
   resolution: "abitype@npm:1.0.0"
   peerDependencies:
@@ -7572,21 +7572,6 @@ __metadata:
     zod:
       optional: true
   checksum: d685351a725c49f81bdc588e2f3825c28ad96c59048d4f36bf5e4ef30935c31f7e60b5553c70177b77a9e4d8b04290eea43d3d9c1c2562cb130381c88b15d39f
-  languageName: node
-  linkType: hard
-
-"abitype@npm:^0.10.3":
-  version: 0.10.3
-  resolution: "abitype@npm:0.10.3"
-  peerDependencies:
-    typescript: ">=5.0.4"
-    zod: ^3 >=3.22.0
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-    zod:
-      optional: true
-  checksum: f9e302a5761bf0b1c71b4e90f06d078e34d8ab1df3161c4353a3e3792e85b4997ef87bd1ed899fc3309775e3422f696254a24377b70897143b6d6ffce94b458a
   languageName: node
   linkType: hard
 
@@ -19407,9 +19392,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"viem@npm:^2.7.10":
-  version: 2.7.10
-  resolution: "viem@npm:2.7.10"
+"viem@npm:^2.7.11":
+  version: 2.7.11
+  resolution: "viem@npm:2.7.11"
   dependencies:
     "@adraffy/ens-normalize": "npm:1.10.0"
     "@noble/curves": "npm:1.2.0"
@@ -19424,7 +19409,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 263591120709cb5d72203d8b7d146f9c2aac3fd53488985bd665baf41f2c2c4bda75fcec93111c6a2d22069afe16dfa1ae7a178f339a1388b9a9aa9df809e225
+  checksum: 26786ca126df84b41120a5affb99950c1cc1fd782cbf317d901585750551a0bba59a9efc7d48817e8846a57d0626d655407e3a9fd521e1ff1fd7cf9ecade3183
   languageName: node
   linkType: hard
 
