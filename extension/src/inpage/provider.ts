@@ -138,8 +138,6 @@ export class IronProvider extends EventEmitter {
 
     const connection = createStreamMiddleware();
 
-    console.log(this.stream);
-
     this.engine.push(createIdRemapMiddleware());
     this.engine.push(errorMiddleware);
 
