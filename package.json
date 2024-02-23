@@ -4,7 +4,7 @@
   "license": "MIT",
   "description": "A dev-oriented web3 wallet",
   "scripts": {
-    "app:dev": "rm -rf target/debug/db.*; RUST_LOG=iron=debug tauri dev",
+    "app:dev": "rm -rf target/debug/db.*; RUST_LOG=iron=debug cargo tauri dev --config bin/iron/tauri-dev.conf.json --features debug",
     "gui:build": "yarn workspace @iron/gui build",
     "storybook": "yarn workspace @iron/react storybook",
     "ext:dev": "yarn workspace @iron/extension dev",
