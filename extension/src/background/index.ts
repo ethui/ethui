@@ -8,7 +8,6 @@ import { defaultSettings, loadSettings, type Settings } from "@/settings";
 // init on load
 (async () => init())();
 
-console.log("background");
 let settings: Settings = defaultSettings;
 
 /**
@@ -20,7 +19,6 @@ export async function init() {
 
   // handle each incoming content script connection
   runtime.onConnect.addListener((port: Runtime.Port) => {
-    console.log("conn");
     setupProviderConnection(port);
   });
 }
