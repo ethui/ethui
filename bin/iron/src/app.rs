@@ -7,6 +7,7 @@ use iron_db::DB;
 use tauri::WindowEvent;
 use tauri::{AppHandle, Builder, GlobalWindowEvent, Manager};
 use tauri_plugin_window_state::Builder as windowStatePlugin;
+use tracing::debug;
 
 use crate::{
     commands, dialogs,
@@ -84,9 +85,7 @@ impl IronApp {
             .system_tray(crate::system_tray::build())
             .on_system_tray_event(crate::system_tray::event_handler);
 
-        let app = builder
-            .build(tauri::generate_context!())
-            .expect("error while running tauri application");
+        let app = builder.build(tauri::generate_context!())?;
 
         init(&app, args).await?;
 
@@ -184,6 +183,7 @@ async fn event_listener(handle: AppHandle) {
 /// Otherwise, the app's default config dir will be used.
 fn resource(app: &tauri::App, resource: &str) -> PathBuf {
     let dir = config_dir(app);
+    debug!("config dir: {:?}", dir);
     std::fs::create_dir_all(&dir).expect("could not create config dir");
     dir.join(resource)
 }

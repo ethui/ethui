@@ -9,9 +9,9 @@ pub(crate) async fn main_window_show(app: &AppHandle) {
         let app = app.clone();
         let onboarded = Settings::read().await.onboarded();
         let url = if onboarded {
-            "/home/account"
+            "index.html#/home/account"
         } else {
-            "/onboarding"
+            "index.html#/onboarding"
         };
 
         let builder = tauri::WindowBuilder::new(&app, "main", tauri::WindowUrl::App(url.into()))
