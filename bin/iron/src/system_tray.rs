@@ -6,7 +6,14 @@ pub(crate) fn build() -> tauri::SystemTray {
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
     let hide = CustomMenuItem::new("hide".to_string(), "Hide");
     let show = CustomMenuItem::new("show".to_string(), "Show");
-    let tray_menu = SystemTrayMenu::new()
+    let tray_menu = SystemTrayMenu::new();
+
+    #[cfg(feature = "debug")]
+    let tray_menu = tray_menu
+        .add_item(CustomMenuItem::new("dev_mode".to_string(), "Dev Mode"))
+        .add_native_item(SystemTrayMenuItem::Separator);
+
+    let tray_menu = tray_menu
         .add_item(show)
         .add_item(hide)
         .add_native_item(SystemTrayMenuItem::Separator)
