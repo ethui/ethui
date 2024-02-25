@@ -2571,7 +2571,6 @@ __metadata:
     eth-json-rpc-filters: "npm:^6.0.1"
     eth-rpc-errors: "npm:^4.0.3"
     eventemitter3: "npm:^5.0.1"
-    is-stream: "npm:^4.0.1"
     json-rpc-middleware-stream: "npm:^5.0.1"
     loglevel: "npm:^1.9.1"
     mipd: "npm:^0.0.5"
@@ -13267,13 +13266,6 @@ __metadata:
   version: 2.0.1
   resolution: "is-stream@npm:2.0.1"
   checksum: 7c284241313fc6efc329b8d7f08e16c0efeb6baab1b4cd0ba579eb78e5af1aa5da11e68559896a2067cd6c526bd29241dda4eb1225e627d5aa1a89a76d4635a5
-  languageName: node
-  linkType: hard
-
-"is-stream@npm:^4.0.1":
-  version: 4.0.1
-  resolution: "is-stream@npm:4.0.1"
-  checksum: 2706c7f19b851327ba374687bc4a3940805e14ca496dc672b9629e744d143b1ad9c6f1b162dece81c7bfbc0f83b32b61ccc19ad2e05aad2dd7af347408f60c7f
   languageName: node
   linkType: hard
 
