@@ -2,7 +2,7 @@ use std::{str::FromStr, sync::Arc};
 
 use ethers::providers::{Http, Middleware, Provider, RetryClient};
 use iron_abis::IERC20;
-use iron_db::DB;
+use iron_db::Db;
 use iron_types::{
     events::{ContractDeployed, Tx},
     Address, Event, ToAlloy, ToEthers, TokenMetadata, B256, U256,
@@ -73,7 +73,7 @@ pub(super) async fn fetch_erc20_metadata(
     balances: Vec<(Address, U256)>,
     client: Provider<RetryClient<Http>>,
     chain_id: u32,
-    db: &DB,
+    db: &Db,
 ) -> Result<()> {
     let client = Arc::new(client);
 

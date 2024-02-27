@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use iron_args::Args;
 use iron_broadcast::UIMsg;
-use iron_db::DB;
+use iron_db::Db;
 #[cfg(target_os = "macos")]
 use tauri::WindowEvent;
 use tauri::{AppHandle, Builder, GlobalWindowEvent, Manager};
@@ -107,7 +107,7 @@ impl IronApp {
 
 /// Initialization logic
 async fn init(app: &tauri::App, args: &Args) -> AppResult<()> {
-    let db = DB::connect(&resource(app, "db.sqlite3")).await?;
+    let db = iron_db::init(resource(app, "db.sqlite3")).await?;
     app.manage(db.clone());
 
     // set up app's event listener

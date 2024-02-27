@@ -8,7 +8,7 @@ use std::{
 
 pub use error::{Error, Result};
 use iron_broadcast::InternalMsg;
-use iron_db::DB;
+use iron_db::Db;
 use iron_sync_alchemy::Alchemy;
 use iron_types::{Address, GlobalState, UINotify};
 use tokio::{
@@ -19,9 +19,9 @@ use tokio::{
 };
 use tracing::{error, instrument};
 
-pub async fn init(db: DB) {
+pub async fn init(db: Db) {
     iron_sync_anvil::init(db.clone());
-    iron_sync_alchemy::init(db.clone()).await;
+    iron_sync_alchemy::init().await;
 
     let (snd, rcv) = mpsc::unbounded_channel();
     tokio::spawn(async { receiver(snd).await });
@@ -73,7 +73,7 @@ async fn receiver(snd: mpsc::UnboundedSender<Msg>) -> std::result::Result<(), ()
 
 #[derive(Debug)]
 struct Worker {
-    db: DB,
+    db: Db,
     addresses: HashSet<Address>,
     chain_ids: HashSet<u32>,
     current: (Option<Address>, Option<u32>),
@@ -82,7 +82,7 @@ struct Worker {
 }
 
 impl Worker {
-    fn new(db: DB) -> Self {
+    fn new(db: Db) -> Self {
         Self {
             db,
             addresses: Default::default(),
@@ -92,7 +92,7 @@ impl Worker {
             mutex: Arc::new(Mutex::new(())),
         }
     }
-    async fn run(db: DB, mut rcv: mpsc::UnboundedReceiver<Msg>) -> std::result::Result<(), ()> {
+    async fn run(db: Db, mut rcv: mpsc::UnboundedReceiver<Msg>) -> std::result::Result<(), ()> {
         let mut worker = Self::new(db);
 
         loop {
@@ -195,7 +195,7 @@ async fn unit_worker(
     addr: Address,
     chain_id: u32,
     mutex: Arc<Mutex<()>>,
-    db: DB,
+    db: Db,
     mut rx: mpsc::UnboundedReceiver<()>,
 ) {
     let tip = db.get_tip(chain_id, addr).await.ok();

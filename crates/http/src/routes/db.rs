@@ -77,7 +77,7 @@ pub(crate) async fn contracts(
     State(Ctx { db }): State<Ctx>,
     Query(ChainIdPayload { chain_id }): Query<ChainIdPayload>,
 ) -> Result<Json<Vec<Address>>> {
-    Ok(Json(db.get_contracts(chain_id).await?))
+    Ok(Json(db.get_contract_addresses(chain_id).await?))
 }
 
 pub(crate) async fn contract_abi(

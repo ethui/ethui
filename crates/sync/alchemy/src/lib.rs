@@ -9,7 +9,7 @@ use ethers::providers::{
 };
 use futures::{stream, StreamExt};
 pub use init::init;
-use iron_db::DB;
+use iron_db::Db;
 use iron_settings::Settings;
 use iron_types::{Address, Event, GlobalState, SyncUpdates, ToAlloy, ToEthers, U256};
 use once_cell::sync::Lazy;
@@ -60,12 +60,12 @@ pub fn supports_network(chain_id: u32) -> bool {
 
 #[derive(Debug)]
 pub struct Alchemy {
-    db: DB,
+    db: Db,
 }
 
 impl Alchemy {
-    pub fn new(db: DB) -> Self {
-        Self { db }
+    pub fn new() -> Self {
+        Self { db: iron_db::get() }
     }
 
     #[instrument(skip(self))]
