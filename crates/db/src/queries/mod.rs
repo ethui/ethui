@@ -1,9 +1,17 @@
-use iron_types::{events, Address, TokenMetadata, U256};
+mod chain_tip;
+mod contracts;
+mod erc20;
+mod erc721;
+mod events;
+mod native_balance;
+mod transactions;
+
+use iron_types::{Address, TokenMetadata, U256};
 use sqlx::{sqlite::SqliteRow, Row, Sqlite};
 
 type Query<'a> = sqlx::query::Query<'a, Sqlite, sqlx::sqlite::SqliteArguments<'a>>;
 
-pub(super) fn insert_transaction(tx: &events::Tx, chain_id: u32) -> Query {
+pub(super) fn insert_transaction(tx: &iron_types::events::Tx, chain_id: u32) -> Query {
     sqlx::query(
         r#" INSERT INTO transactions (hash, chain_id, from_address, to_address, block_number, position, value, status)
         VALUES (?,?,?,?,?,?,?,?)
@@ -19,7 +27,7 @@ pub(super) fn insert_transaction(tx: &events::Tx, chain_id: u32) -> Query {
     .bind(tx.status as u32)
 }
 
-pub(super) fn insert_contract(tx: &events::ContractDeployed, chain_id: u32) -> Query {
+pub(super) fn insert_contract(tx: &iron_types::events::ContractDeployed, chain_id: u32) -> Query {
     sqlx::query(
         r#" INSERT INTO contracts (address, chain_id)
                         VALUES (?,?)
@@ -27,20 +35,6 @@ pub(super) fn insert_contract(tx: &events::ContractDeployed, chain_id: u32) -> Q
     )
     .bind(format!("0x{:x}", tx.address))
     .bind(chain_id)
-}
-
-pub(super) fn native_update_balance<'a>(
-    balance: U256,
-    chain_id: u32,
-    address: Address,
-) -> Query<'a> {
-    sqlx::query(
-        r#" INSERT OR REPLACE INTO native_balances (balance, chain_id, owner)
-                        VALUES (?,?,?) "#,
-    )
-    .bind(balance.to_string())
-    .bind(chain_id)
-    .bind(format!("0x{:x}", address))
 }
 
 pub(super) fn erc20_read_metadata<'a>(
@@ -115,7 +109,10 @@ pub(super) fn erc20_update_balance<'a>(
     .bind(balance.to_string())
 }
 
-pub(super) fn erc721_transfer<'a>(tx: &events::ERC721Transfer, chain_id: u32) -> Query<'a> {
+pub(super) fn erc721_transfer<'a>(
+    tx: &iron_types::events::ERC721Transfer,
+    chain_id: u32,
+) -> Query<'a> {
     if tx.to.is_zero() {
         // burning
         sqlx::query(
