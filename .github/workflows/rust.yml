@@ -46,7 +46,7 @@ jobs:
 
       - run: cargo check
       - run: cargo clippy --all -- -D clippy::all -D clippy::dbg_macro
-      - run: cargo install sqlx-cli && cargo sqlx prepare --check
+      - run: cargo install sqlx-cli && cargo sqlx prepare --workspace --check
 
   cargo-deny:
     runs-on: ubuntu-latest
