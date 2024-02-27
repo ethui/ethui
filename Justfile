@@ -15,7 +15,6 @@ build:
   yarn extension:build
   cargo build
 
-
 fix:
   cargo +nightly fmt --all
   cargo clippy --all --fix --allow-dirty
