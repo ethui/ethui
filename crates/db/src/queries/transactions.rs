@@ -2,7 +2,6 @@ use std::str::FromStr;
 
 use iron_types::events::Tx;
 use iron_types::{Address, Bytes, B256, U256};
-use sqlx::Row;
 use tracing::instrument;
 
 use crate::{Paginated, Pagination, Result, DB};

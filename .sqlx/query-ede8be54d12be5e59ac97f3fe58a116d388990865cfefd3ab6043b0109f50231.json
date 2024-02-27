@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT DISTINCT balances.contract\n                FROM balances\n                LEFT JOIN tokens_metadata AS meta\n                ON meta.chain_id = balances.chain_id AND meta.contract = balances.contract\n                WHERE balances.chain_id = ? AND meta.chain_id IS NULL",
+  "describe": {
+    "columns": [
+      {
+        "name": "contract",
+        "ordinal": 0,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "ede8be54d12be5e59ac97f3fe58a116d388990865cfefd3ab6043b0109f50231"
+}
