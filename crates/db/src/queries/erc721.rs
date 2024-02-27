@@ -5,6 +5,39 @@ use crate::{Result, DB};
 use iron_types::{Address, Erc721Token, Erc721TokenData, U256};
 
 impl DB {
+    pub async fn process_erc721_transfer(
+        &self,
+        chain_id: u32,
+        contract: Address,
+        _from: Address,
+        to: Address,
+        token_id: U256,
+    ) -> Result<()> {
+        if to.is_zero() {
+            // burning
+            sqlx::query(
+                r#" DELETE FROM erc721_tokens WHERE chain_id = ? AND contract = ? AND token_id = ? "#,
+            )
+            .bind(chain_id)
+            .bind(format!("0x{:x}", contract))
+            .bind(format!("0x{:x}", token_id))
+            .execute(self.pool()).await?;
+        } else {
+            // minting or transfer
+            sqlx::query(
+                r#" INSERT OR REPLACE INTO erc721_tokens (contract, chain_id, token_id, owner)
+                        VALUES (?,?,?,?)"#,
+            )
+            .bind(format!("0x{:x}", contract))
+            .bind(chain_id)
+            .bind(format!("0x{:x}", token_id))
+            .bind(format!("0x{:x}", to))
+            .execute(self.pool())
+            .await?;
+        }
+
+        Ok(())
+    }
     pub async fn get_erc721_tokens_with_missing_data(
         &self,
         chain_id: u32,
@@ -30,12 +63,18 @@ impl DB {
         uri: String,
         metadata: String,
     ) -> Result<()> {
-        let mut conn = self.tx().await?;
-        super::update_erc721_token(address, chain_id, token_id, owner, uri, metadata)
-            .execute(&mut *conn)
-            .await?;
+        sqlx::query(
+        r#" INSERT OR REPLACE INTO erc721_tokens (contract, chain_id, token_id, owner, uri, metadata)
+                        VALUES (?,?,?,?,?,?) "#,
+    )
+    .bind(format!("0x{:x}", address))
+    .bind(chain_id)
+    .bind(format!("0x{:x}", token_id))
+    .bind(format!("0x{:x}", owner))
+    .bind(uri)
+    .bind(metadata)
+            .execute(self.pool()).await?;
 
-        conn.commit().await?;
         Ok(())
     }
 
@@ -65,13 +104,17 @@ impl DB {
         name: String,
         symbol: String,
     ) -> Result<()> {
-        let mut conn = self.tx().await?;
+        sqlx::query(
+            r#" INSERT OR REPLACE INTO erc721_collections (contract, chain_id, name, symbol)
+                      VALUES (?,?,?,?) "#,
+        )
+        .bind(format!("0x{:x}", address))
+        .bind(chain_id)
+        .bind(name)
+        .bind(symbol)
+        .execute(self.pool())
+        .await?;
 
-        super::update_erc721_collection(address, chain_id, name, symbol)
-            .execute(&mut *conn)
-            .await?;
-
-        conn.commit().await?;
         Ok(())
     }
 

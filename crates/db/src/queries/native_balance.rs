@@ -10,8 +10,6 @@ impl DB {
         chain_id: u32,
         address: Address,
     ) -> Result<()> {
-        let mut conn = self.tx().await?;
-
         sqlx::query(
             r#" INSERT OR REPLACE INTO native_balances (balance, chain_id, owner)
                         VALUES (?,?,?) "#,
@@ -19,10 +17,8 @@ impl DB {
         .bind(balance.to_string())
         .bind(chain_id)
         .bind(format!("0x{:x}", address))
-        .execute(&mut *conn)
+        .execute(self.pool())
         .await?;
-
-        conn.commit().await?;
 
         Ok(())
     }

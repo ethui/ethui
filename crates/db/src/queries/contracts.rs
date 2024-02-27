@@ -1,5 +1,6 @@
 use sqlx::Row;
 use std::str::FromStr;
+use tracing::instrument;
 
 use iron_types::{Abi, Address};
 
@@ -49,6 +50,7 @@ impl DB {
         Ok(res)
     }
 
+    #[instrument(level = "trace", skip(self, abi))]
     pub async fn insert_contract_with_abi(
         &self,
         chain_id: u32,
