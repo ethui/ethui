@@ -100,20 +100,32 @@ impl DB {
         chain_id: u32,
         address: Address,
     ) -> Result<Vec<TokenBalance>> {
-        let res: Vec<_> = sqlx::query(
+        let address = address.to_string();
+
+        let rows = sqlx::query!(
             r#"SELECT balances.contract, balances.balance, meta.decimals, meta.name, meta.symbol
             FROM balances
             LEFT JOIN tokens_metadata AS meta
               ON meta.chain_id = balances.chain_id AND meta.contract = balances.contract
             WHERE balances.chain_id = ? AND balances.owner = ? "#,
+            chain_id,
+            address
         )
-        .bind(chain_id)
-        .bind(format!("0x{:x}", address))
-        .map(|row| row.try_into().unwrap())
         .fetch_all(self.pool())
         .await?;
 
-        Ok(res)
+        Ok(rows
+            .into_iter()
+            .map(|r| TokenBalance {
+                contract: Address::from_str(&r.contract.unwrap()).unwrap(),
+                balance: U256::from_str_radix(&r.balance, 10).unwrap(),
+                metadata: TokenMetadata {
+                    name: r.name.unwrap(),
+                    symbol: r.symbol.unwrap(),
+                    decimals: r.decimals.unwrap() as u8,
+                },
+            })
+            .collect())
     }
 
     pub async fn get_erc20_missing_metadata(&self, chain_id: u32) -> Result<Vec<Address>> {

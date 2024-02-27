@@ -11,6 +11,11 @@ setup:
   yarn
   cargo build
 
+sqlx:
+  #!/bin/sh
+  export DATABASE_URL=sqlite://target/debug/db.sqlite3
+  cargo sqlx prepare --workspace
+
 build:
   yarn extension:build
   cargo build
