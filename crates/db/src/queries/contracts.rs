@@ -4,6 +4,7 @@ use tracing::instrument;
 use iron_types::{Abi, Address};
 
 use crate::{Error, Result, DB};
+
 impl DB {
     pub async fn get_contracts(&self, chain_id: u32) -> Result<Vec<Address>> {
         let rows = sqlx::query!(
