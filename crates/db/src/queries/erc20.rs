@@ -1,8 +1,6 @@
 use std::str::FromStr;
 
 use iron_types::{Address, TokenBalance, TokenMetadata, U256};
-use sqlx::sqlite::SqliteRow;
-use sqlx::Row;
 use tracing::instrument;
 
 use crate::{Result, DB};
@@ -14,19 +12,19 @@ impl DB {
         contract: Address,
         address: Address,
     ) -> Result<U256> {
-        let balance = sqlx::query(
+        let contract = contract.to_string();
+        let address = address.to_string();
+
+        let row = sqlx::query!(
             r#"SELECT balance FROM balances WHERE chain_id = ? AND contract = ? AND owner = ?"#,
+            chain_id,
+            contract,
+            address
         )
-        .bind(chain_id)
-        .bind(format!("0x{:x}", contract))
-        .bind(format!("0x{:x}", address))
-        .map(|r: SqliteRow| {
-            U256::from_str_radix(r.get::<&str, _>("balance"), 10).unwrap_or_default()
-        })
         .fetch_one(self.pool())
         .await?;
 
-        Ok(balance)
+        Ok(U256::from_str_radix(&row.balance, 10).unwrap_or_default())
     }
 
     pub async fn save_erc20_balance(
@@ -36,14 +34,18 @@ impl DB {
         address: Address,
         balance: U256,
     ) -> Result<()> {
-        sqlx::query(
-            r#" INSERT OR REPLACE INTO balances (chain_id, contract, owner, balance)
+        let contract = contract.to_string();
+        let address = address.to_string();
+        let balance = balance.to_string();
+
+        sqlx::query!(
+            r#"INSERT OR REPLACE INTO balances (chain_id, contract, owner, balance)
                         VALUES (?,?,?,?) "#,
+            chain_id,
+            contract,
+            address,
+            balance
         )
-        .bind(chain_id)
-        .bind(format!("0x{:x}", contract))
-        .bind(format!("0x{:x}", address))
-        .bind(balance.to_string())
         .execute(self.pool())
         .await?;
 
@@ -98,36 +100,50 @@ impl DB {
         chain_id: u32,
         address: Address,
     ) -> Result<Vec<TokenBalance>> {
-        let res: Vec<_> = sqlx::query(
+        let address = address.to_string();
+
+        let rows = sqlx::query!(
             r#"SELECT balances.contract, balances.balance, meta.decimals, meta.name, meta.symbol
             FROM balances
             LEFT JOIN tokens_metadata AS meta
               ON meta.chain_id = balances.chain_id AND meta.contract = balances.contract
             WHERE balances.chain_id = ? AND balances.owner = ? "#,
+            chain_id,
+            address
         )
-        .bind(chain_id)
-        .bind(format!("0x{:x}", address))
-        .map(|row| row.try_into().unwrap())
         .fetch_all(self.pool())
         .await?;
 
-        Ok(res)
+        Ok(rows
+            .into_iter()
+            .map(|r| TokenBalance {
+                contract: Address::from_str(&r.contract.unwrap()).unwrap(),
+                balance: U256::from_str_radix(&r.balance, 10).unwrap(),
+                metadata: TokenMetadata {
+                    name: r.name.unwrap(),
+                    symbol: r.symbol.unwrap(),
+                    decimals: r.decimals.unwrap() as u8,
+                },
+            })
+            .collect())
     }
 
     pub async fn get_erc20_missing_metadata(&self, chain_id: u32) -> Result<Vec<Address>> {
-        let res: Vec<_> = sqlx::query(
+        let res: Vec<_> = sqlx::query!(
             r#"SELECT DISTINCT balances.contract
-        FROM balances
-        LEFT JOIN tokens_metadata AS meta
-          ON meta.chain_id = balances.chain_id AND meta.contract = balances.contract
-        WHERE balances.chain_id = ? AND meta.chain_id IS NULL"#,
+                FROM balances
+                LEFT JOIN tokens_metadata AS meta
+                ON meta.chain_id = balances.chain_id AND meta.contract = balances.contract
+                WHERE balances.chain_id = ? AND meta.chain_id IS NULL"#,
+            chain_id
         )
-        .bind(chain_id)
-        .map(|row| Address::from_str(row.get::<&str, _>("contract")).unwrap())
         .fetch_all(self.pool())
         .await?;
 
-        Ok(res)
+        Ok(res
+            .into_iter()
+            .filter_map(|r| Address::from_str(&r.contract.unwrap_or_default()).ok())
+            .collect())
     }
 
     pub async fn get_erc20_metadata(
@@ -135,18 +151,23 @@ impl DB {
         contract: Address,
         chain_id: u32,
     ) -> Result<TokenMetadata> {
-        let metadata = sqlx::query(
+        let contract = contract.to_string();
+
+        let row = sqlx::query!(
             r#"SELECT decimals, name, symbol
-        FROM tokens_metadata
-        WHERE contract = ? AND chain_id = ?"#,
+                FROM tokens_metadata
+                WHERE contract = ? AND chain_id = ?"#,
+            contract,
+            chain_id
         )
-        .bind(format!("0x{:x}", contract))
-        .bind(chain_id)
-        .map(|row| row.try_into().unwrap())
         .fetch_one(self.pool())
         .await?;
 
-        Ok(metadata)
+        Ok(TokenMetadata {
+            name: row.name,
+            symbol: row.symbol,
+            decimals: row.decimals as u8,
+        })
     }
 
     pub async fn save_erc20_metadata(
@@ -155,15 +176,17 @@ impl DB {
         chain_id: u32,
         metadata: TokenMetadata,
     ) -> Result<()> {
-        sqlx::query(
+        let address = address.to_string();
+
+        sqlx::query!(
             r#" INSERT OR REPLACE INTO tokens_metadata (contract, chain_id, decimals, name,symbol)
                         VALUES (?,?,?,?,?) "#,
+            address,
+            chain_id,
+            metadata.decimals,
+            metadata.name,
+            metadata.symbol
         )
-        .bind(format!("0x{:x}", address))
-        .bind(chain_id)
-        .bind(metadata.decimals)
-        .bind(metadata.name)
-        .bind(metadata.symbol)
         .execute(self.pool())
         .await?;
 

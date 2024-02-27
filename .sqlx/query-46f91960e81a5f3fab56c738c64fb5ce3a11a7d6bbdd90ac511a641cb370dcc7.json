@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "DELETE FROM erc721_tokens WHERE chain_id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "46f91960e81a5f3fab56c738c64fb5ce3a11a7d6bbdd90ac511a641cb370dcc7"
+}

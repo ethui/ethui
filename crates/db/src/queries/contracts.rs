@@ -1,53 +1,60 @@
-use sqlx::Row;
 use std::str::FromStr;
 use tracing::instrument;
 
 use iron_types::{Abi, Address};
 
-use crate::{Result, DB};
+use crate::{Error, Result, DB};
+
 impl DB {
     pub async fn get_contracts(&self, chain_id: u32) -> Result<Vec<Address>> {
-        let res: Vec<_> = sqlx::query(
+        let rows = sqlx::query!(
             r#" SELECT address
-            FROM contracts
-            WHERE chain_id = ? "#,
+                FROM contracts
+                WHERE chain_id = ? "#,
+            chain_id
         )
-        .bind(chain_id)
-        .map(|row| Address::from_str(row.get::<&str, _>("address")).unwrap())
         .fetch_all(self.pool())
         .await?;
 
-        Ok(res)
+        Ok(rows
+            .into_iter()
+            .filter_map(|r| Address::from_str(&r.address.unwrap_or_default()).ok())
+            .collect())
     }
 
     pub async fn get_contract_name(&self, chain_id: u32, address: Address) -> Result<String> {
-        let res = sqlx::query(
+        let address = format!("0x{:x}", address);
+
+        let res = sqlx::query!(
             r#" SELECT name
-            FROM contracts
-            WHERE chain_id = ? AND address = ? "#,
+                FROM contracts
+                WHERE chain_id = ? AND address = ? "#,
+            chain_id,
+            address
         )
-        .bind(chain_id)
-        .bind(format!("0x{:x}", address))
-        .map(|row| row.get("name"))
         .fetch_one(self.pool())
         .await?;
 
-        Ok(res)
+        res.name.ok_or(Error::NotFound)
     }
 
     pub async fn get_contract_abi(&self, chain_id: u32, address: Address) -> Result<Abi> {
-        let res = sqlx::query(
+        let address = format!("0x{:x}", address);
+
+        let res = sqlx::query!(
             r#" SELECT abi
-            FROM contracts
-            WHERE chain_id = ? AND address = ? "#,
+                FROM contracts
+                WHERE chain_id = ? AND address = ? "#,
+            chain_id,
+            address
         )
-        .bind(chain_id)
-        .bind(format!("0x{:x}", address))
-        .map(|row| serde_json::from_str(row.get::<&str, _>("abi")).unwrap_or_default())
         .fetch_one(self.pool())
         .await?;
 
-        Ok(res)
+        match res.abi {
+            None => Err(Error::NotFound),
+            Some(abi) => Ok(serde_json::from_str(&abi).unwrap_or_default()),
+        }
     }
 
     #[instrument(level = "trace", skip(self, abi))]
@@ -58,15 +65,17 @@ impl DB {
         abi: Option<String>,
         name: Option<String>,
     ) -> Result<()> {
-        sqlx::query(
+        let address = format!("0x{:x}", address);
+
+        sqlx::query!(
             r#" INSERT INTO contracts (address, chain_id, abi, name)
                 VALUES (?,?,?,?)
                 ON CONFLICT(address, chain_id) DO NOTHING "#,
+            address,
+            chain_id,
+            abi,
+            name
         )
-        .bind(format!("0x{:x}", address))
-        .bind(chain_id)
-        .bind(abi)
-        .bind(name)
         .execute(self.pool())
         .await?;
 

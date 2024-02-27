@@ -38,23 +38,20 @@ impl DB {
     }
 
     pub async fn truncate_events(&self, chain_id: u32) -> Result<()> {
-        sqlx::query("DELETE FROM transactions WHERE chain_id = ?")
+        sqlx::query!(r#"DELETE FROM transactions WHERE chain_id = ?"#, chain_id)
+            .execute(self.pool())
+            .await?;
+
+        sqlx::query!(r#"DELETE FROM contracts WHERE chain_id = ?"#, chain_id)
+            .execute(self.pool())
+            .await?;
+
+        sqlx::query!(r#"DELETE FROM balances WHERE chain_id = ?"#, chain_id)
             .bind(chain_id)
             .execute(self.pool())
             .await?;
 
-        sqlx::query("DELETE FROM contracts WHERE chain_id = ?")
-            .bind(chain_id)
-            .execute(self.pool())
-            .await?;
-
-        sqlx::query("DELETE FROM balances WHERE chain_id = ?")
-            .bind(chain_id)
-            .execute(self.pool())
-            .await?;
-
-        sqlx::query("DELETE FROM erc721_tokens WHERE chain_id = ?")
-            .bind(chain_id)
+        sqlx::query!(r#"DELETE FROM erc721_tokens WHERE chain_id = ?"#, chain_id)
             .execute(self.pool())
             .await?;
 

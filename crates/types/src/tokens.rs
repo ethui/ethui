@@ -19,30 +19,6 @@ pub struct TokenMetadata {
     pub decimals: u8,
 }
 
-impl TryFrom<SqliteRow> for TokenBalance {
-    type Error = ();
-
-    fn try_from(row: SqliteRow) -> Result<Self, Self::Error> {
-        Ok(Self {
-            contract: Address::from_str(row.get("contract")).unwrap(),
-            balance: U256::from_str_radix(row.get("balance"), 10).unwrap(),
-            metadata: row.try_into().unwrap(),
-        })
-    }
-}
-
-impl TryFrom<SqliteRow> for TokenMetadata {
-    type Error = ();
-
-    fn try_from(row: SqliteRow) -> Result<Self, Self::Error> {
-        Ok(Self {
-            name: row.get("name"),
-            decimals: row.get("decimals"),
-            symbol: row.get("symbol"),
-        })
-    }
-}
-
 #[derive(Debug, Serialize)]
 pub struct Erc721TokenDetails {
     pub uri: String,
@@ -81,18 +57,6 @@ pub struct Erc721Collection {
     pub contract: Address,
     pub name: String,
     pub symbol: String,
-}
-
-impl TryFrom<SqliteRow> for Erc721Collection {
-    type Error = ();
-
-    fn try_from(row: SqliteRow) -> Result<Self, Self::Error> {
-        Ok(Self {
-            contract: Address::from_str(row.get("contract")).unwrap(),
-            name: row.get("name"),
-            symbol: row.get("symbol"),
-        })
-    }
 }
 
 #[derive(Debug, Serialize)]

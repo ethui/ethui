@@ -1,5 +1,4 @@
 use iron_types::{Address, U256};
-use sqlx::Row;
 
 use crate::{Result, DB};
 
@@ -10,13 +9,16 @@ impl DB {
         chain_id: u32,
         address: Address,
     ) -> Result<()> {
-        sqlx::query(
+        let balance = balance.to_string();
+        let address = format!("0x{:x}", address);
+
+        sqlx::query!(
             r#" INSERT OR REPLACE INTO native_balances (balance, chain_id, owner)
                         VALUES (?,?,?) "#,
+            balance,
+            chain_id,
+            address
         )
-        .bind(balance.to_string())
-        .bind(chain_id)
-        .bind(format!("0x{:x}", address))
         .execute(self.pool())
         .await?;
 
@@ -24,18 +26,22 @@ impl DB {
     }
 
     pub async fn get_native_balance(&self, chain_id: u32, address: Address) -> U256 {
-        let res: U256 = sqlx::query(
+        let address = address.to_string();
+
+        let res = sqlx::query!(
             r#" SELECT balance
             FROM native_balances
             WHERE chain_id = ? AND owner = ? "#,
+            chain_id,
+            address
         )
-        .bind(chain_id)
-        .bind(format!("0x{:x}", address))
-        .map(|row| U256::from_str_radix(row.get::<&str, _>("balance"), 10).unwrap())
         .fetch_one(self.pool())
-        .await
-        .unwrap_or_default();
+        .await;
 
-        res
+        if let Ok(res) = res {
+            U256::from_str_radix(&res.balance, 10).unwrap_or_default()
+        } else {
+            U256::default()
+        }
     }
 }
