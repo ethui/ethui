@@ -1,9 +1,5 @@
 use std::collections::HashMap;
-use std::time::Duration;
 
-use ethers::providers::{
-    Http, HttpRateLimitRetryPolicy, Provider, RetryClient, RetryClientBuilder,
-};
 use once_cell::sync::Lazy;
 use url::Url;
 

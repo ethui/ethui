@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": " INSERT INTO kv (key, value)\n                VALUES (?,?)\n                ON CONFLICT(key) DO UPDATE SET value = ? ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": []
+  },
+  "hash": "7211566c45e89e60d32618ebef59c4875b66dfd33b8b82622e8bac7fbbab3f29"
+}

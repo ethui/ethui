@@ -9,6 +9,9 @@ pub enum Error {
     #[error("IO error: {0}")]
     IO(#[from] std::io::Error),
 
+    #[error(transparent)]
+    KV(#[from] iron_kv::KvError),
+
     #[error("serialization error: {0}")]
     Serde(#[from] serde_json::Error),
 

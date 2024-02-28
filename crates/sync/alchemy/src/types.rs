@@ -1,4 +1,4 @@
-use iron_types::{Address, B256, U256, U64};
+use iron_types::{Address, U256};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]

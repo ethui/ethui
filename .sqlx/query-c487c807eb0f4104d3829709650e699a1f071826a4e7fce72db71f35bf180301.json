@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": " SELECT value\n                FROM kv\n                WHERE key = ? ",
+  "describe": {
+    "columns": [
+      {
+        "name": "value",
+        "ordinal": 0,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "c487c807eb0f4104d3829709650e699a1f071826a4e7fce72db71f35bf180301"
+}

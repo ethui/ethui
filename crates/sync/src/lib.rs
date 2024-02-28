@@ -200,53 +200,59 @@ async fn unit_worker(
     loop {
         tracing::trace!("waiting again");
 
-        // The alchemy global object already acts as a mutex,
-        // but that's an implementation detail that may change, so we track our own mutex to ensure
-        // only 1 worker at a time
         let _guard = mutex.lock().await;
         tracing::trace!(event = "working");
 
-        // the alchemy global object acts as a mutex already
-        let alchemy = Alchemy::read().await;
+        use iron_sync_alchemy::*;
 
-        match alchemy.fetch_updates(chain_id, addr, tip).await {
-            Ok(result) => {
-                if let Some(events) = result.events {
-                    let res = db.save_events(chain_id, events).await;
-                    log_if_error("save_events", res);
+        let api_key = match get_current_api_key().await {
+            Ok(Some(api_key)) => api_key,
+            _ => continue,
+        };
 
-                    // TODO: this event should specify address and chain_id
-                    iron_broadcast::ui_notify(UINotify::TxsUpdated).await;
-                }
+        let res = fetch_transactions(&api_key, chain_id, addr).await;
+        log_if_error("alchemy::fetch_transactions", res);
 
-                if let Some(tip) = result.tip {
-                    let res = db.set_tip(chain_id, addr, tip).await;
-                    log_if_error("set_tip", res);
-                }
-
-                if let Some(balances) = result.erc20_balances {
-                    let res = db.save_erc20_balances(chain_id, addr, balances).await;
-                    log_if_error("erc20_balances", res);
-
-                    // TODO: this event should specify address and chain_id
-                    iron_broadcast::ui_notify(UINotify::BalancesUpdated).await;
-                }
-
-                if let Some(balance) = result.native_balance {
-                    let res = db.save_native_balance(balance, chain_id, addr).await;
-                    log_if_error("native_balances", res);
-
-                    // TODO: this event should specify address and chain_id
-                    iron_broadcast::ui_notify(UINotify::BalancesUpdated).await;
-                }
-            }
-            Err(iron_sync_alchemy::Error::NoAPIKey) => {
-                // silently ignore
-            }
-            Err(err) => {
-                error!(call = "txs", err = err.to_string());
-            }
-        }
+        // // the alchemy global object acts as a mutex already
+        // let alchemy = Alchemy::read().await;
+        // match alchemy.fetch_updates(chain_id, addr, tip).await {
+        //     Ok(result) => {
+        //         if let Some(events) = result.events {
+        //             let res = db.save_events(chain_id, events).await;
+        //             log_if_error("save_events", res);
+        //
+        //             // TODO: this event should specify address and chain_id
+        //             iron_broadcast::ui_notify(UINotify::TxsUpdated).await;
+        //         }
+        //
+        //         if let Some(tip) = result.tip {
+        //             let res = db.set_tip(chain_id, addr, tip).await;
+        //             log_if_error("set_tip", res);
+        //         }
+        //
+        //         if let Some(balances) = result.erc20_balances {
+        //             let res = db.save_erc20_balances(chain_id, addr, balances).await;
+        //             log_if_error("erc20_balances", res);
+        //
+        //             // TODO: this event should specify address and chain_id
+        //             iron_broadcast::ui_notify(UINotify::BalancesUpdated).await;
+        //         }
+        //
+        //         if let Some(balance) = result.native_balance {
+        //             let res = db.save_native_balance(balance, chain_id, addr).await;
+        //             log_if_error("native_balances", res);
+        //
+        //             // TODO: this event should specify address and chain_id
+        //             iron_broadcast::ui_notify(UINotify::BalancesUpdated).await;
+        //         }
+        //     }
+        //     Err(iron_sync_alchemy::Error::NoAPIKey) => {
+        //         // silently ignore
+        //     }
+        //     Err(err) => {
+        //         error!(call = "txs", err = err.to_string());
+        //     }
+        // }
 
         // wait for either a set delay, or for an outside poll request
         select! {

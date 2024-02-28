@@ -6,6 +6,8 @@ mod networks;
 mod types;
 mod utils;
 
+pub use alchemy2::fetch_transactions;
+
 // use ethers::providers::Middleware;
 // use futures::{stream, StreamExt};
 // pub use init::init;
@@ -19,6 +21,7 @@ mod utils;
 pub use self::error::{Error, Result};
 pub use init::init;
 pub use networks::supports_network;
+pub use utils::get_current_api_key;
 
 #[derive(Debug, Default)]
 pub struct Alchemy {

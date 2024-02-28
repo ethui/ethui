@@ -1,11 +1,11 @@
-use std::{str::FromStr, sync::Arc};
+use iron_types::GlobalState;
 
-use ethers::providers::{Http, Middleware, Provider, RetryClient};
-use iron_abis::IERC20;
-use iron_types::{
-    events::{ContractDeployed, Tx},
-    Address, Event, ToAlloy, ToEthers, TokenMetadata, B256, U256,
-};
+use crate::Result;
+// use iron_abis::IERC20;
+// use iron_types::{
+//     events::{ContractDeployed, Tx},
+//     Address, Event, ToAlloy, ToEthers, TokenMetadata, B256, U256,
+// };
 
 // use super::{types::Transfer, Error, Result};
 //
@@ -94,3 +94,9 @@ use iron_types::{
 //
 //     Ok(())
 // }
+
+pub async fn get_current_api_key() -> Result<Option<String>> {
+    let settings = iron_settings::Settings::read().await;
+
+    Ok(settings.inner.alchemy_api_key.clone())
+}

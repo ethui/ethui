@@ -1,6 +1,5 @@
 use std::str::FromStr;
 
-use super::U64;
 use serde::Serialize;
 use sqlx::{sqlite::SqliteRow, Row};
 

@@ -1,26 +1,17 @@
-use std::path::PathBuf;
-
-use iron_types::{Address, Event, U64};
+use iron_types::{Address, ToEthers, U64};
 
 use crate::{
     client::{Client, Direction},
-    networks::default_from_block,
     Result,
 };
 
 pub async fn fetch_transactions(api_key: &str, chain_id: u32, address: Address) -> Result<()> {
     let client = Client::new(chain_id, api_key)?;
     let db = iron_db::get();
-    let kv = iron_kv::Kv::<(u32, Address), u64>::open(PathBuf::from(
-        "sync/alchemy/transaction_tips.json",
-    ));
 
-    let from_block: U64 = U64::from(
-        kv.get(&(chain_id, address))
-            .cloned()
-            .unwrap_or_else(|| default_from_block(chain_id)),
-    );
+    let last_tip: u64 = db.kv_get(&(chain_id, address)).await?.unwrap_or_default();
 
+    let from_block = U64::from(last_tip);
     let latest = client.get_block_number().await?;
 
     // if tip - 1 == latest, we're up to date, nothing to do
@@ -35,8 +26,18 @@ pub async fn fetch_transactions(api_key: &str, chain_id: u32, address: Address) 
         .get_asset_transfers(Direction::To(address), from_block, latest)
         .await?;
 
-    db.save_alchemy_transfers(inc).await?;
-    db.save_alchemy_transfers(out).await?;
+    let tip = out
+        .iter()
+        .chain(inc.iter())
+        .map(|tx| tx.block_num.to_ethers().as_u64())
+        .fold(std::u64::MIN, |a, b| a.max(b));
+
+    db.save_alchemy_transfers(chain_id, inc).await?;
+    db.save_alchemy_transfers(chain_id, out).await?;
+
+    if tip > std::u64::MIN {
+        db.kv_set(&(chain_id, address), &tip).await?;
+    }
 
     Ok(())
 }
