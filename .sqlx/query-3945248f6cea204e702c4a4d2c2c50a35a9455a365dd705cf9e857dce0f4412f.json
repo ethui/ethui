@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": " INSERT INTO contracts (address, chain_id, abi, name)\n                VALUES (?,?,?,?)\n                ON CONFLICT(address, chain_id) DO NOTHING ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 4
+    },
+    "nullable": []
+  },
+  "hash": "3945248f6cea204e702c4a4d2c2c50a35a9455a365dd705cf9e857dce0f4412f"
+}

@@ -3,7 +3,7 @@ use std::str::FromStr;
 use iron_types::{Address, TokenBalance, TokenMetadata, U256};
 use tracing::instrument;
 
-use crate::{Result, Db};
+use crate::{Db, Result};
 
 impl Db {
     pub async fn read_erc20_balance(

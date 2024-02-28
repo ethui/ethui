@@ -1,0 +1,32 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT decimals, name, symbol\n                FROM tokens_metadata\n                WHERE contract = ? AND chain_id = ?",
+  "describe": {
+    "columns": [
+      {
+        "name": "decimals",
+        "ordinal": 0,
+        "type_info": "Int64"
+      },
+      {
+        "name": "name",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "symbol",
+        "ordinal": 2,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "b806f9437cd9d215dda0805ac616f6fe7abd9cbcf7bc46a2e47dc76d85e4efe0"
+}
