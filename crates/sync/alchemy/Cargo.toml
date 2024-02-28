@@ -14,6 +14,7 @@ iron-types = { workspace = true }
 iron-db = { workspace = true }
 iron-abis = { workspace = true }
 iron-kv = { workspace = true }
+iron-broadcast = { workspace = true }
 
 ethers = { workspace = true }
 serde = { workspace = true }
