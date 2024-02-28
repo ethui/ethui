@@ -1,8 +1,7 @@
 use std::collections::HashMap;
 
 use iron_broadcast::InternalMsg;
-use iron_db::Db;
-use once_cell::sync::{Lazy, OnceCell};
+use once_cell::sync::Lazy;
 use tokio::sync::Mutex;
 use url::Url;
 

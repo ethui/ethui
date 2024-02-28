@@ -10,7 +10,6 @@ use ethers::{
 };
 use futures::StreamExt;
 use iron_abis::{IERC20, IERC721};
-use iron_db::Db;
 use iron_types::{Address, Erc721Token, Erc721TokenDetails, ToEthers, TokenMetadata, UINotify};
 use tokio::sync::mpsc;
 use tracing::warn;

@@ -8,7 +8,6 @@ use std::{
 
 pub use error::{Error, Result};
 use iron_broadcast::InternalMsg;
-use iron_db::Db;
 use iron_sync_alchemy::Alchemy;
 use iron_types::{Address, GlobalState, UINotify};
 use tokio::{
@@ -19,13 +18,13 @@ use tokio::{
 };
 use tracing::{error, instrument};
 
-pub async fn init(db: Db) {
-    iron_sync_anvil::init(db.clone());
+pub async fn init() {
+    iron_sync_anvil::init();
     iron_sync_alchemy::init().await;
 
     let (snd, rcv) = mpsc::unbounded_channel();
     tokio::spawn(async { receiver(snd).await });
-    tokio::spawn(async { Worker::run(db, rcv).await });
+    tokio::spawn(async { Worker::run(rcv).await });
 }
 
 #[derive(Debug)]
@@ -73,7 +72,6 @@ async fn receiver(snd: mpsc::UnboundedSender<Msg>) -> std::result::Result<(), ()
 
 #[derive(Debug)]
 struct Worker {
-    db: Db,
     addresses: HashSet<Address>,
     chain_ids: HashSet<u32>,
     current: (Option<Address>, Option<u32>),
@@ -82,9 +80,8 @@ struct Worker {
 }
 
 impl Worker {
-    fn new(db: Db) -> Self {
+    fn new() -> Self {
         Self {
-            db,
             addresses: Default::default(),
             chain_ids: Default::default(),
             current: (None, None),
@@ -92,8 +89,8 @@ impl Worker {
             mutex: Arc::new(Mutex::new(())),
         }
     }
-    async fn run(db: Db, mut rcv: mpsc::UnboundedReceiver<Msg>) -> std::result::Result<(), ()> {
-        let mut worker = Self::new(db);
+    async fn run(mut rcv: mpsc::UnboundedReceiver<Msg>) -> std::result::Result<(), ()> {
+        let mut worker = Self::new();
 
         loop {
             use Msg::*;
@@ -176,11 +173,10 @@ impl Worker {
 
     fn spawn(&self, addr: Address, chain_id: u32) -> (JoinHandle<()>, mpsc::UnboundedSender<()>) {
         let mutex = self.mutex.clone();
-        let db = self.db.clone();
         let (tx, rx) = mpsc::unbounded_channel();
 
         (
-            tokio::spawn(async move { unit_worker(addr, chain_id, mutex, db, rx).await }),
+            tokio::spawn(async move { unit_worker(addr, chain_id, mutex, rx).await }),
             tx,
         )
     }
@@ -190,14 +186,14 @@ impl Worker {
 /// the wait period between each update will depend on the priority value:
 /// * low-priority pairs wait 10 minutes
 /// * high-priority waits 30 seconds
-#[instrument(skip(mutex, db, rx), level = "trace")]
+#[instrument(skip(mutex, rx), level = "trace")]
 async fn unit_worker(
     addr: Address,
     chain_id: u32,
     mutex: Arc<Mutex<()>>,
-    db: Db,
     mut rx: mpsc::UnboundedReceiver<()>,
 ) {
+    let db = iron_db::get();
     let tip = db.get_tip(chain_id, addr).await.ok();
     let delay = 60;
 

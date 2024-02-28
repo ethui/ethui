@@ -3,7 +3,7 @@ use iron_networks::Networks;
 use iron_types::{Address, GlobalState, ToEthers};
 
 use super::{Error, Result};
-use crate::global::FORGE;
+use crate::init::FORGE;
 
 /// Gets the ABI, if known, for a given address and chain_id
 #[tauri::command]
