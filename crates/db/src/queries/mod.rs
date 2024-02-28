@@ -1,3 +1,4 @@
+mod alchemy;
 mod chain_tip;
 mod contracts;
 mod erc20;

@@ -13,6 +13,7 @@ pub use init::init;
 
 use self::init::KV_DIR;
 
+#[derive(Debug, Default)]
 pub struct Kv<K, V> {
     path: PathBuf,
     data: HashMap<K, V>,

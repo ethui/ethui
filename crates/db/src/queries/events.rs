@@ -1,7 +1,7 @@
 use iron_types::Event;
 use tracing::{instrument, trace};
 
-use crate::{Result, Db};
+use crate::{Db, Result};
 
 impl Db {
     #[instrument(level = "trace", skip(self, events))]

@@ -1,4 +1,5 @@
 mod affinity;
+pub mod alchemy;
 pub mod events;
 mod global_state;
 mod tokens;

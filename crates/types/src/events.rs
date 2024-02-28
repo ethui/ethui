@@ -1,5 +1,6 @@
 use std::str::FromStr;
 
+use super::U64;
 use serde::Serialize;
 use sqlx::{sqlite::SqliteRow, Row};
 
@@ -11,17 +12,6 @@ pub enum Event {
     ContractDeployed(ContractDeployed),
     ERC20Transfer(ERC20Transfer),
     ERC721Transfer(ERC721Transfer),
-}
-
-impl Event {
-    pub fn block_number(&self) -> u64 {
-        match self {
-            Event::Tx(tx) => tx.block_number,
-            Event::ContractDeployed(deploy) => deploy.block_number,
-            Event::ERC20Transfer(transfer) => transfer.block_number,
-            Event::ERC721Transfer(transfer) => transfer.block_number,
-        }
-    }
 }
 
 #[derive(Debug, Serialize)]

@@ -1,7 +1,13 @@
 use std::collections::HashMap;
+use std::time::Duration;
 
+use ethers::providers::{
+    Http, HttpRateLimitRetryPolicy, Provider, RetryClient, RetryClientBuilder,
+};
 use once_cell::sync::Lazy;
 use url::Url;
+
+use crate::{Error, Result};
 
 #[derive(Debug, Clone)]
 pub struct Network {
@@ -52,4 +58,13 @@ pub fn default_from_block(chain_id: u32) -> u64 {
         .get(&chain_id)
         .map(|network| network.default_from_block)
         .unwrap_or(0)
+}
+
+pub fn get_endpoint(chain_id: u32, api_key: &str) -> Result<Url> {
+    let endpoint = match get_network(&chain_id) {
+        Some(network) => network.base_url,
+        None => return Err(Error::UnsupportedChainId(chain_id)),
+    };
+
+    Ok(endpoint.join(&api_key)?)
 }
