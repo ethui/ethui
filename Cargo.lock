@@ -4515,6 +4515,7 @@ dependencies = [
  "ethers",
  "futures",
  "iron-abis",
+ "iron-broadcast",
  "iron-db",
  "iron-settings",
  "iron-types",
