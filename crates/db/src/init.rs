@@ -6,7 +6,7 @@ use crate::{Db, Result};
 static DB: OnceCell<Db> = OnceCell::new();
 
 pub async fn init(path: &PathBuf) -> Result<Db> {
-    let db = Db::connect(&path).await.unwrap();
+    let db = Db::connect(path).await.unwrap();
     DB.set(db.clone()).unwrap();
     Ok(db)
 }
