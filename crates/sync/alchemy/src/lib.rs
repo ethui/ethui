@@ -1,66 +1,38 @@
 mod error;
 mod init;
+mod networks;
 mod types;
 mod utils;
-use std::{collections::HashMap, time::Duration};
+use std::time::Duration;
 
 use ethers::providers::{
     Http, HttpRateLimitRetryPolicy, Middleware, Provider, RetryClient, RetryClientBuilder,
 };
 use futures::{stream, StreamExt};
 pub use init::init;
-use iron_settings::Settings;
-use iron_types::{Address, Event, GlobalState, SyncUpdates, ToAlloy, ToEthers, U256};
-use once_cell::sync::Lazy;
+use iron_types::{Address, Event, SyncUpdates, ToAlloy, ToEthers, U256};
 use serde_json::json;
 use tracing::{instrument, trace};
 use types::{Balances, Transfers};
 use url::Url;
 
 pub use self::error::{Error, Result};
-
-struct Network {
-    base_url: Url,
-    default_from_block: u64,
-}
-static NETWORKS: Lazy<HashMap<u32, Network>> = Lazy::new(|| {
-    let mut map: HashMap<u32, Network> = Default::default();
-
-    map.insert(
-        1,
-        Network {
-            base_url: Url::parse("https://eth-mainnet.g.alchemy.com/v2/").unwrap(),
-            default_from_block: 15537393, // September 15 2022 - The Merge
-        },
-    );
-
-    map.insert(
-        5,
-        Network {
-            base_url: Url::parse("https://eth-goerli.g.alchemy.com/v2/").unwrap(),
-            default_from_block: 7245414, // July 18th 2022
-        },
-    );
-
-    map.insert(
-        11155111,
-        Network {
-            base_url: Url::parse("https://eth-sepolia.g.alchemy.com/v2/").unwrap(),
-            default_from_block: 3000000, // May 1st 2023
-        },
-    );
-
-    map
-});
-
-pub fn supports_network(chain_id: u32) -> bool {
-    NETWORKS.get(&chain_id).is_some()
-}
+pub use networks::supports_network;
 
 #[derive(Debug, Default)]
-pub struct Alchemy;
+pub struct Alchemy {
+    api_key: Option<String>,
+}
 
 impl Alchemy {
+    pub fn new(api_key: Option<String>) -> Self {
+        Self { api_key }
+    }
+
+    pub fn set_api_key(&mut self, api_key: Option<String>) {
+        self.api_key = api_key;
+    }
+
     #[instrument(skip(self))]
     pub async fn fetch_updates(
         &self,
@@ -122,7 +94,7 @@ impl Alchemy {
         trace!("fetching");
         let client = self.client(chain_id).await?;
 
-        let from_block = from_block.unwrap_or_else(|| default_from_block(chain_id));
+        let from_block = from_block.unwrap_or_else(|| networks::default_from_block(chain_id));
         let latest = client.get_block_number().await?;
 
         // if tip - 1 == latest, we're up to date, nothing to do
@@ -189,24 +161,15 @@ impl Alchemy {
     }
 
     async fn endpoint(&self, chain_id: u32) -> Result<Url> {
-        let endpoint = match NETWORKS.get(&chain_id) {
-            Some(network) => network.base_url.clone(),
-            None => return Err(Error::UnsupportedChainId(chain_id)),
-        };
+        if let Some(api_key) = &self.api_key {
+            let endpoint = match networks::get_network(&chain_id) {
+                Some(network) => network.base_url,
+                None => return Err(Error::UnsupportedChainId(chain_id)),
+            };
 
-        let settings = Settings::read().await;
-        let api_key = match settings.inner.alchemy_api_key.as_ref() {
-            Some(api_key) => api_key,
-            None => return Err(Error::NoAPIKey),
-        };
-
-        Ok(endpoint.join(api_key)?)
+            Ok(endpoint.join(api_key)?)
+        } else {
+            Err(Error::NoAPIKey)
+        }
     }
-}
-
-fn default_from_block(chain_id: u32) -> u64 {
-    NETWORKS
-        .get(&chain_id)
-        .map(|network| network.default_from_block)
-        .unwrap_or(0)
 }
