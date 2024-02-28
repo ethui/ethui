@@ -25,11 +25,13 @@ members = [
   "crates/types",
   "crates/abis",
   "crates/db",
+  "crates/kv",
   "crates/sync",
   "crates/broadcast",
   "crates/tracing",
   "crates/exchange-rates",
   "crates/args",
+  "crates/kv",
 ]
 default-members = ["bin/iron"]
 
@@ -48,6 +50,7 @@ iron-dialogs = { path = "crates/dialogs" }
 iron-types = { path = "crates/types" }
 iron-abis = { path = "crates/abis" }
 iron-db = { path = "crates/db" }
+iron-kv = { path = "crates/kv" }
 iron-sync = { path = "crates/sync" }
 iron-sync-anvil = { path = "crates/sync/anvil" }
 iron-sync-alchemy = { path = "crates/sync/alchemy" }

@@ -20,6 +20,7 @@ iron-http = { workspace = true }
 iron-connections = { workspace = true }
 iron-types = { workspace = true }
 iron-db = { workspace = true }
+iron-kv = { workspace = true }
 iron-sync = { workspace = true }
 iron-tracing = { workspace = true }
 iron-exchange-rates = { workspace = true }

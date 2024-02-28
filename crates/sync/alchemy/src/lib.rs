@@ -119,7 +119,6 @@ impl Alchemy {
         addr: Address,
         from_block: Option<u64>,
     ) -> Result<(Vec<Event>, Option<u64>)> {
-        trace!("fetching");
         let client = self.client(chain_id).await?;
 
         let from_block = from_block.unwrap_or_else(|| default_from_block(chain_id));
@@ -138,9 +137,11 @@ impl Alchemy {
             "category": ["external", "internal", "erc20", "erc721", "erc1155"],
         }]);
 
+        dbg!("outgoing");
         let outgoing: Transfers = (client
             .request("alchemy_getAssetTransfers", params.clone())
             .await)?;
+        dbg!("incoming");
         let incoming: Transfers = (client.request("alchemy_getAssetTransfers", params).await)?;
 
         trace!(

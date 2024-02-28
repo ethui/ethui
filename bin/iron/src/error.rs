@@ -7,6 +7,9 @@ pub enum AppError {
     DB(#[from] iron_db::Error),
 
     #[error(transparent)]
+    KV(#[from] iron_kv::KvError),
+
+    #[error(transparent)]
     Network(#[from] iron_networks::Error),
 
     #[error(transparent)]

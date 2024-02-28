@@ -117,6 +117,7 @@ async fn init(app: &tauri::App, args: &Args) -> AppResult<()> {
 
     // calls other crates' initialization logic. anvil needs to be started before networks,
     // otherwise the initial tracker won't be ready to spawn
+    iron_kv::init(&resource(app, "data"))?;
     iron_sync::init().await;
     iron_settings::init(resource(app, "settings.json")).await?;
     iron_ws::init(args).await;

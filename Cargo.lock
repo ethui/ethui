@@ -4228,6 +4228,7 @@ dependencies = [
  "iron-exchange-rates",
  "iron-forge",
  "iron-http",
+ "iron-kv",
  "iron-networks",
  "iron-rpc",
  "iron-settings",
@@ -4405,6 +4406,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "iron-kv"
+version = "1.4.0"
+dependencies = [
+ "once_cell",
+ "serde",
+ "serde_json",
+ "thiserror",
+]
+
+[[package]]
 name = "iron-networks"
 version = "1.4.0"
 dependencies = [
@@ -4516,6 +4527,7 @@ dependencies = [
  "futures",
  "iron-abis",
  "iron-db",
+ "iron-kv",
  "iron-settings",
  "iron-types",
  "once_cell",
