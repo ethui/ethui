@@ -1,6 +1,6 @@
 {
   "db_name": "SQLite",
-  "query": " SELECT address\n                FROM contracts\n                WHERE chain_id = ? ",
+  "query": "SELECT address FROM contracts WHERE chain_id = ?",
   "describe": {
     "columns": [
       {
@@ -13,8 +13,8 @@
       "Right": 1
     },
     "nullable": [
-      true
+      false
     ]
   },
-  "hash": "9df6ed9e432f1984b14dbbe5ab27345cdb7dc2e300ea82824dbefc13a00b4723"
+  "hash": "c896b9fa8e0ae4a1f0580cf774f539dc047acc8e5e1d78308e8a46d55e9410e5"
 }

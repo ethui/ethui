@@ -1,8 +1,8 @@
-use crate::{Result, DB};
+use crate::{Result, Db};
 use iron_types::Address;
 use tracing::instrument;
 
-impl DB {
+impl Db {
     pub async fn get_tip(&self, chain_id: u32, addr: Address) -> Result<u64> {
         let addr = format!("0x{:x}", addr);
 

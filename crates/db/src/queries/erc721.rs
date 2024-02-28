@@ -1,10 +1,10 @@
 use sqlx::Row;
 use std::str::FromStr;
 
-use crate::{Result, DB};
+use crate::{Result, Db};
 use iron_types::{Address, Erc721Token, Erc721TokenData, U256};
 
-impl DB {
+impl Db {
     pub async fn process_erc721_transfer(
         &self,
         chain_id: u32,

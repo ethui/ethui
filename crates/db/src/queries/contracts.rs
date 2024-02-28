@@ -3,14 +3,12 @@ use tracing::instrument;
 
 use iron_types::{Abi, Address};
 
-use crate::{Error, Result, DB};
+use crate::{Db, Error, Result};
 
-impl DB {
-    pub async fn get_contracts(&self, chain_id: u32) -> Result<Vec<Address>> {
+impl Db {
+    pub async fn get_contract_addresses(&self, chain_id: u32) -> Result<Vec<Address>> {
         let rows = sqlx::query!(
-            r#" SELECT address
-                FROM contracts
-                WHERE chain_id = ? "#,
+            r#"SELECT address FROM contracts WHERE chain_id = ?"#,
             chain_id
         )
         .fetch_all(self.pool())
@@ -18,7 +16,7 @@ impl DB {
 
         Ok(rows
             .into_iter()
-            .filter_map(|r| Address::from_str(&r.address.unwrap_or_default()).ok())
+            .filter_map(|r| Address::from_str(&r.address).ok())
             .collect())
     }
 

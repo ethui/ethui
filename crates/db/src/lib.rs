@@ -1,5 +1,6 @@
 pub mod commands;
 mod error;
+mod init;
 mod pagination;
 mod queries;
 pub mod utils;
@@ -8,17 +9,19 @@ use std::path::PathBuf;
 
 use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous};
 
+pub use init::{get, init};
+
 pub use self::{
     error::{Error, Result},
     pagination::{Paginated, Pagination},
 };
 
 #[derive(Debug, Clone)]
-pub struct DB {
+pub struct Db {
     pub pool: sqlx::Pool<sqlx::Sqlite>,
 }
 
-impl DB {
+impl Db {
     pub async fn connect(path: &PathBuf) -> Result<Self> {
         let connect_options = SqliteConnectOptions::new()
             .filename(path)

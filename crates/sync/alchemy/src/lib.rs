@@ -9,7 +9,6 @@ use ethers::providers::{
 };
 use futures::{stream, StreamExt};
 pub use init::init;
-use iron_db::DB;
 use iron_settings::Settings;
 use iron_types::{Address, Event, GlobalState, SyncUpdates, ToAlloy, ToEthers, U256};
 use once_cell::sync::Lazy;
@@ -58,16 +57,10 @@ pub fn supports_network(chain_id: u32) -> bool {
     NETWORKS.get(&chain_id).is_some()
 }
 
-#[derive(Debug)]
-pub struct Alchemy {
-    db: DB,
-}
+#[derive(Debug, Default)]
+pub struct Alchemy;
 
 impl Alchemy {
-    pub fn new(db: DB) -> Self {
-        Self { db }
-    }
-
     #[instrument(skip(self))]
     pub async fn fetch_updates(
         &self,
@@ -106,7 +99,7 @@ impl Alchemy {
             res.token_balances.into_iter().map(Into::into).collect();
 
         // TODO: this should be done by a separate worker on iron_sync
-        utils::fetch_erc20_metadata(balances.clone(), client, chain_id, &self.db).await?;
+        utils::fetch_erc20_metadata(balances.clone(), client, chain_id).await?;
 
         Ok(balances)
     }

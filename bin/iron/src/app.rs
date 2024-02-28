@@ -2,7 +2,6 @@ use std::path::PathBuf;
 
 use iron_args::Args;
 use iron_broadcast::UIMsg;
-use iron_db::DB;
 #[cfg(target_os = "macos")]
 use tauri::WindowEvent;
 use tauri::{AppHandle, Builder, GlobalWindowEvent, Manager};
@@ -107,7 +106,7 @@ impl IronApp {
 
 /// Initialization logic
 async fn init(app: &tauri::App, args: &Args) -> AppResult<()> {
-    let db = DB::connect(&resource(app, "db.sqlite3")).await?;
+    let db = iron_db::init(&resource(app, "db.sqlite3")).await?;
     app.manage(db.clone());
 
     // set up app's event listener
@@ -118,7 +117,7 @@ async fn init(app: &tauri::App, args: &Args) -> AppResult<()> {
 
     // calls other crates' initialization logic. anvil needs to be started before networks,
     // otherwise the initial tracker won't be ready to spawn
-    iron_sync::init(db.clone()).await;
+    iron_sync::init().await;
     iron_settings::init(resource(app, "settings.json")).await?;
     iron_ws::init(args).await;
     iron_http::init(args, db).await;

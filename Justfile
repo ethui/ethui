@@ -14,6 +14,9 @@ setup:
 sqlx:
   #!/bin/sh
   export DATABASE_URL=sqlite://target/debug/db.sqlite3
+  mkdir -p target/debug
+  sqlx database create
+  sqlx migrate run
   cargo sqlx prepare --workspace
 
 build:

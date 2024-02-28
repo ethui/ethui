@@ -4,9 +4,9 @@ use iron_types::events::Tx;
 use iron_types::{Address, Bytes, B256, U256};
 use tracing::instrument;
 
-use crate::{Paginated, Pagination, Result, DB};
+use crate::{Paginated, Pagination, Result, Db};
 
-impl DB {
+impl Db {
     #[instrument(level = "trace", skip(self))]
     pub async fn insert_transaction(&self, chain_id: u32, tx: &Tx) -> Result<()> {
         let hash = format!("0x{:x}", tx.hash);
@@ -65,7 +65,7 @@ impl DB {
             .map(|r| Tx {
                 hash: B256::from_str(&r.hash.unwrap()).unwrap(),
                 from: Address::from_str(&r.from_address).unwrap(),
-                to: Address::from_str(&r.to_address.unwrap()).ok(),
+                to: r.to_address.and_then(|r| Address::from_str(&r).ok()),
                 value: U256::from_str_radix(&r.value, 10).unwrap(),
                 data: Bytes::from_str(&r.data).unwrap(),
                 block_number: r.block_number as u64,

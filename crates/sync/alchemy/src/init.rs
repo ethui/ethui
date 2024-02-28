@@ -1,5 +1,4 @@
 use async_trait::async_trait;
-use iron_db::DB;
 use iron_types::GlobalState;
 use once_cell::sync::OnceCell;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
@@ -8,8 +7,8 @@ use super::Alchemy;
 
 static ALCHEMY: OnceCell<RwLock<Alchemy>> = OnceCell::new();
 
-pub async fn init(db: DB) {
-    let instance = Alchemy::new(db);
+pub async fn init() {
+    let instance = Alchemy;
     ALCHEMY.set(RwLock::new(instance)).unwrap();
 }
 
