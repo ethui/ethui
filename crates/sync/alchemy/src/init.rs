@@ -8,7 +8,7 @@ use super::Alchemy;
 static ALCHEMY: OnceCell<RwLock<Alchemy>> = OnceCell::new();
 
 pub async fn init() {
-    let instance = Alchemy::new();
+    let instance = Alchemy;
     ALCHEMY.set(RwLock::new(instance)).unwrap();
 }
 
