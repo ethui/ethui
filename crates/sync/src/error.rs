@@ -5,6 +5,18 @@ pub enum Error {
 
     #[error(transparent)]
     Anvil(#[from] iron_sync_anvil::Error),
+
+    #[error(transparent)]
+    Ethers(#[from] ethers::providers::ProviderError),
+
+    #[error("TX not found {0}")]
+    TxNotFound(iron_types::B256),
+
+    #[error(transparent)]
+    Db(#[from] iron_db::Error),
+
+    #[error("No API Key")]
+    NoApiKey,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

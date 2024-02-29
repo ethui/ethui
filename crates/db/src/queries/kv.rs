@@ -38,9 +38,9 @@ impl Db {
                 WHERE key = ? "#,
             key
         )
-        .fetch_one(self.pool())
+        .fetch_optional(self.pool())
         .await?;
 
-        Ok(serde_json::from_str(&res.value)?)
+        Ok(res.map(|r| serde_json::from_str(&r.value).unwrap()))
     }
 }

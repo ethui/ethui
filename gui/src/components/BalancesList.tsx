@@ -60,8 +60,8 @@ function BalancesERC20() {
           key={contract}
           contract={contract}
           balance={BigInt(balance)}
-          decimals={metadata.decimals}
-          symbol={metadata.symbol}
+          decimals={metadata?.decimals || 0}
+          symbol={metadata?.symbol}
           chainId={currentNetwork.chain_id}
         />
       ))}
@@ -73,7 +73,7 @@ interface BalanceItemProps {
   contract?: Address;
   balance: bigint;
   decimals: number;
-  symbol: string;
+  symbol?: string;
   chainId: number;
 }
 
@@ -111,9 +111,8 @@ function BalanceItem({
           <IconCrypto chainId={chainId} address={contract} />
         </ListItemAvatar>
         <ListItemText
-          secondary={`${symbol} ${
-            contract ? `(${truncateEthAddress(contract)})` : ``
-          }`}
+          secondary={`${symbol} ${contract ? `(${truncateEthAddress(contract)})` : ``
+            }`}
         >
           <CopyToClipboard label={balance.toString()}>
             {truncatedBalance > 0

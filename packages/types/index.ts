@@ -16,11 +16,18 @@ export interface Tx {
   hash: `0x${string}`;
   from: Address;
   to: Address;
-  value: string;
-  data: string;
+  value?: string;
+  data?: string;
   blockNumber: number;
-  position: number;
-  status: number;
+  position?: number;
+  status?: number;
+}
+
+export interface PaginatedTx {
+  hash: `0x${string}`;
+  from: Address;
+  to: Address;
+  status?: number;
 }
 
 export interface Peer {

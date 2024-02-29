@@ -4,7 +4,8 @@ mod networks;
 mod types;
 mod utils;
 
-use iron_types::{Address, ToEthers, U64};
+use iron_types::{Address, U64};
+use tracing::{instrument, trace};
 
 use crate::client::{Client, Direction};
 use iron_db::Db;
@@ -30,14 +31,15 @@ impl Alchemy {
         })
     }
 
-    pub async fn fetch(&self, address: Address) -> Result<()> {
+    pub async fn fetch_updates(&self, address: Address) -> Result<()> {
         self.fetch_native_balances(address).await?;
         self.fetch_erc20_balances(address).await?;
-        self.fetch_transactions(address).await?;
+        self.fetch_transfers(address).await?;
         Ok(())
     }
 
-    async fn fetch_transactions(&self, address: Address) -> Result<()> {
+    #[instrument(skip(self))]
+    async fn fetch_transfers(&self, address: Address) -> Result<()> {
         let key = (self.chain_id, "transactions", address);
         let last_tip: Option<u64> = self.db.kv_get(&key).await?;
 
@@ -59,13 +61,18 @@ impl Alchemy {
             .await?;
 
         let tip = out
+            .0
             .iter()
-            .chain(inc.iter())
-            .map(|tx| tx.block_num.to_ethers().as_u64())
-            .fold(std::u64::MIN, |a, b| a.max(b));
+            .chain(inc.0.iter())
+            .map(|tx| tx.block_number)
+            .fold(std::u64::MIN, |a, b| a.max(b.unwrap_or(0)));
 
-        self.db.save_alchemy_transfers(self.chain_id, inc).await?;
-        self.db.save_alchemy_transfers(self.chain_id, out).await?;
+        trace!("saving");
+        self.db.insert_transactions(self.chain_id, inc.0).await?;
+        self.db.insert_transactions(self.chain_id, out.0).await?;
+        self.db.save_erc20_metadatas(self.chain_id, inc.1).await?;
+        self.db.save_erc20_metadatas(self.chain_id, out.1).await?;
+        trace!("saved");
 
         if tip > std::u64::MIN {
             self.db.kv_set(&(self.chain_id, address), &tip).await?;
@@ -74,6 +81,7 @@ impl Alchemy {
         Ok(())
     }
 
+    #[instrument(skip(self))]
     async fn fetch_native_balances(&self, address: Address) -> Result<()> {
         let balance = self.client.get_native_balance(address).await?;
         self.db
@@ -83,6 +91,7 @@ impl Alchemy {
         Ok(())
     }
 
+    #[instrument(skip(self))]
     async fn fetch_erc20_balances(&self, address: Address) -> Result<()> {
         let balances = self.client.get_erc20_balances(address).await?;
         self.db

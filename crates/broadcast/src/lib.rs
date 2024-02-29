@@ -1,7 +1,9 @@
+use std::sync::Arc;
+
 pub use internal_msgs::*;
-use iron_types::{ui_events, Address, Affinity};
+use iron_types::{ui_events, Address, Affinity, B256};
 use once_cell::sync::Lazy;
-use tokio::sync::{broadcast, RwLock};
+use tokio::sync::{broadcast, oneshot, Mutex, RwLock};
 pub use ui_msgs::*;
 use url::Url;
 
@@ -12,7 +14,11 @@ pub enum InternalMsg {
     AccountsChanged(Vec<Address>),
     SettingsUpdated,
 
-    ResetAnvilListener { chain_id: u32, http: Url, ws: Url },
+    ResetAnvilListener {
+        chain_id: u32,
+        http: Url,
+        ws: Url,
+    },
 
     AddressAdded(Address),
     AddressRemoved(Address),
@@ -21,6 +27,9 @@ pub enum InternalMsg {
     NetworkAdded(u32),
     NetworkRemoved(u32),
     CurrentNetworkChanged(u32),
+
+    /// Request a full update of a TX. oneshot channel included to notify when job is done
+    FetchFullTxSync(u32, B256, Arc<Mutex<Option<oneshot::Sender<()>>>>),
 }
 
 #[derive(Debug, Clone)]
@@ -93,6 +102,17 @@ mod internal_msgs {
 
     pub async fn current_network_changed(chain_id: u32) {
         send(CurrentNetworkChanged(chain_id)).await;
+    }
+
+    pub async fn fetch_full_tx_sync(chain_id: u32, hash: B256) {
+        let (tx, rx) = oneshot::channel();
+        send(FetchFullTxSync(
+            chain_id,
+            hash,
+            Arc::new(Mutex::new(Some(tx))),
+        ))
+        .await;
+        let _ = rx.await;
     }
 
     /// broadcaster for internal msgs

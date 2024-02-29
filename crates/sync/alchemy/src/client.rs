@@ -3,12 +3,12 @@ use std::time::Duration;
 use ethers::providers::{
     Http, HttpRateLimitRetryPolicy, Middleware, Provider, RetryClient, RetryClientBuilder,
 };
-use iron_types::{alchemy::AlchemyAssetTransfer, Address, ToAlloy, U64};
-use iron_types::{ToEthers, U256};
+use iron_types::events::Tx;
+use iron_types::{Address, ToAlloy, ToEthers, TokenMetadata, U256, U64};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
-use crate::{networks, Result};
+use crate::{networks, types::AlchemyAssetTransfer, Result};
 
 #[derive(Debug)]
 pub(crate) struct Client(Provider<RetryClient<Http>>);
@@ -45,18 +45,20 @@ impl Client {
         addr: Direction,
         from_block: U64,
         latest: U64,
-    ) -> Result<Vec<AlchemyAssetTransfer>> {
-        let mut params = json!([{
+    ) -> Result<(Vec<Tx>, Vec<TokenMetadata>)> {
+        let mut params = json!({
             "fromBlock": format!("0x{:x}", from_block),
             "toBlock": format!("0x{:x}",latest),
             "maxCount": "0x32",
-            "category": ["external", "internal", "erc20", "erc721", "erc1155"],
-        }]);
+            "category": [ "erc721", "erc1155"],
+        });
+
+        let params_obj = params.as_object_mut().unwrap();
 
         match addr {
-            Direction::From(addr) => params["fromAddress"] = json!(addr),
-            Direction::To(addr) => params["toAddress"] = json!(addr),
-        }
+            Direction::From(addr) => params_obj.insert("fromAddress".to_string(), json!(addr)),
+            Direction::To(addr) => params_obj.insert("toAddress".to_string(), json!(addr)),
+        };
 
         #[derive(Debug, Serialize, Deserialize)]
         #[serde(rename_all = "camelCase")]
@@ -64,9 +66,19 @@ impl Client {
             transfers: Vec<AlchemyAssetTransfer>,
         }
 
-        let req: AssetTransfers = self.0.request("alchemy_getAssetTransfers", &params).await?;
+        let req: AssetTransfers = self
+            .0
+            .request("alchemy_getAssetTransfers", json!([params]))
+            .await?;
 
-        Ok(req.transfers)
+        let txs: Vec<Tx> = req.transfers.iter().map(Into::into).collect();
+        let erc20_metadatas: Vec<TokenMetadata> = req
+            .transfers
+            .iter()
+            .filter_map(|t| t.try_into().ok())
+            .collect();
+
+        Ok((txs, erc20_metadatas))
     }
 
     pub async fn get_native_balance(&self, address: Address) -> Result<U256> {

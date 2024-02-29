@@ -100,7 +100,7 @@ impl Db {
         chain_id: u32,
         address: Address,
     ) -> Result<Vec<TokenBalance>> {
-        let address = address.to_string();
+        let address_str = address.to_string();
 
         let rows = sqlx::query!(
             r#"SELECT balances.contract, balances.balance, meta.decimals, meta.name, meta.symbol
@@ -109,7 +109,7 @@ impl Db {
               ON meta.chain_id = balances.chain_id AND meta.contract = balances.contract
             WHERE balances.chain_id = ? AND balances.owner = ? "#,
             chain_id,
-            address
+            address_str
         )
         .fetch_all(self.pool())
         .await?;
@@ -120,9 +120,10 @@ impl Db {
                 contract: Address::from_str(&r.contract.unwrap()).unwrap(),
                 balance: U256::from_str_radix(&r.balance, 10).unwrap(),
                 metadata: TokenMetadata {
-                    name: r.name.unwrap(),
-                    symbol: r.symbol.unwrap(),
-                    decimals: r.decimals.unwrap() as u8,
+                    address,
+                    name: r.name,
+                    symbol: r.symbol,
+                    decimals: r.decimals.map(|r| r as u8),
                 },
             })
             .collect())
@@ -148,13 +149,13 @@ impl Db {
 
     pub async fn get_erc20_metadata(
         &self,
-        contract: Address,
+        address: Address,
         chain_id: u32,
     ) -> Result<TokenMetadata> {
-        let contract = contract.to_string();
+        let contract = address.to_string();
 
         let row = sqlx::query!(
-            r#"SELECT decimals, name, symbol
+            r#"SELECT decimals as 'decimals?', name as 'name?', symbol as 'symbol?'
                 FROM tokens_metadata
                 WHERE contract = ? AND chain_id = ?"#,
             contract,
@@ -164,19 +165,26 @@ impl Db {
         .await?;
 
         Ok(TokenMetadata {
+            address,
             name: row.name,
             symbol: row.symbol,
-            decimals: row.decimals as u8,
+            decimals: row.decimals.map(|d| d as u8),
         })
     }
 
-    pub async fn save_erc20_metadata(
+    pub async fn save_erc20_metadatas(
         &self,
-        address: Address,
         chain_id: u32,
-        metadata: TokenMetadata,
+        metadatas: Vec<TokenMetadata>,
     ) -> Result<()> {
-        let address = address.to_string();
+        for metadata in metadatas {
+            self.save_erc20_metadata(chain_id, metadata).await?;
+        }
+        Ok(())
+    }
+
+    pub async fn save_erc20_metadata(&self, chain_id: u32, metadata: TokenMetadata) -> Result<()> {
+        let address = metadata.address.to_string();
 
         sqlx::query!(
             r#" INSERT OR REPLACE INTO tokens_metadata (contract, chain_id, decimals, name,symbol)

@@ -14,9 +14,10 @@ pub struct TokenBalance {
 
 #[derive(Debug, Serialize)]
 pub struct TokenMetadata {
-    pub name: String,
-    pub symbol: String,
-    pub decimals: u8,
+    pub address: Address,
+    pub name: Option<String>,
+    pub symbol: Option<String>,
+    pub decimals: Option<u8>,
 }
 
 #[derive(Debug, Serialize)]

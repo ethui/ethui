@@ -62,5 +62,5 @@ pub fn get_endpoint(chain_id: u32, api_key: &str) -> Result<Url> {
         None => return Err(Error::UnsupportedChainId(chain_id)),
     };
 
-    Ok(endpoint.join(&api_key)?)
+    Ok(endpoint.join(api_key)?)
 }

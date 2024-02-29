@@ -28,8 +28,8 @@ import { addressSchema } from "@iron/types/wallets";
 import { useBalances, useNetworks, useWallets } from "@/store";
 
 interface Token {
-  currency: string;
-  decimals: number;
+  currency?: string;
+  decimals?: number;
   balance: bigint;
   contract: Address;
 }
@@ -61,8 +61,8 @@ export function TransferForm({
       erc20s.map(({ metadata, balance, contract }) => [
         contract,
         {
-          currency: metadata.symbol,
-          decimals: metadata.decimals,
+          currency: metadata?.symbol,
+          decimals: metadata?.decimals,
           balance: BigInt(balance),
           contract: contract,
         },
