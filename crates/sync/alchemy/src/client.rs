@@ -4,6 +4,7 @@ use ethers::providers::{
     Http, HttpRateLimitRetryPolicy, Middleware, Provider, RetryClient, RetryClientBuilder,
 };
 use iron_types::{alchemy::AlchemyAssetTransfer, Address, ToAlloy, U64};
+use iron_types::{ToEthers, U256};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
@@ -66,5 +67,40 @@ impl Client {
         let req: AssetTransfers = self.0.request("alchemy_getAssetTransfers", &params).await?;
 
         Ok(req.transfers)
+    }
+
+    pub async fn get_native_balance(&self, address: Address) -> Result<U256> {
+        Ok(self
+            .0
+            .get_balance(address.to_ethers(), None)
+            .await
+            .map(|x| x.to_alloy())?)
+    }
+
+    pub async fn get_erc20_balances(&self, address: Address) -> Result<Vec<(Address, U256)>> {
+        #[derive(Debug, Serialize, Deserialize)]
+        #[serde(rename_all = "camelCase")]
+        struct Balances {
+            pub address: Address,
+            pub token_balances: Vec<TokenBalance>,
+        }
+
+        #[derive(Debug, Serialize, Deserialize)]
+        #[serde(rename_all = "camelCase")]
+        struct TokenBalance {
+            pub contract_address: Address,
+            pub token_balance: U256,
+        }
+
+        impl From<TokenBalance> for (Address, U256) {
+            fn from(value: TokenBalance) -> Self {
+                (value.contract_address, value.token_balance)
+            }
+        }
+
+        let params = json!([format!("0x{:x}", address), "erc20"]);
+        let res: Balances = self.0.request("alchemy_getTokenBalances", params).await?;
+
+        Ok(res.token_balances.into_iter().map(Into::into).collect())
     }
 }

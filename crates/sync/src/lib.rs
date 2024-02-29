@@ -8,8 +8,7 @@ use std::{
 
 pub use error::{Error, Result};
 use iron_broadcast::InternalMsg;
-use iron_sync_alchemy::Alchemy;
-use iron_types::{Address, GlobalState, UINotify};
+use iron_types::Address;
 use tokio::{
     select,
     sync::{mpsc, Mutex},
@@ -20,7 +19,6 @@ use tracing::{error, instrument};
 
 pub async fn init() {
     iron_sync_anvil::init();
-    iron_sync_alchemy::init().await;
 
     let (snd, rcv) = mpsc::unbounded_channel();
     tokio::spawn(async { receiver(snd).await });
@@ -193,25 +191,19 @@ async fn unit_worker(
     mutex: Arc<Mutex<()>>,
     mut rx: mpsc::UnboundedReceiver<()>,
 ) {
-    let db = iron_db::get();
-    let tip = db.get_tip(chain_id, addr).await.ok();
-    let delay = 60;
+    use iron_sync_alchemy::*;
 
     loop {
-        tracing::trace!("waiting again");
-
         let _guard = mutex.lock().await;
-        tracing::trace!(event = "working");
-
-        use iron_sync_alchemy::*;
 
         let api_key = match get_current_api_key().await {
             Ok(Some(api_key)) => api_key,
             _ => continue,
         };
+        let alchemy = Alchemy::new(&api_key, iron_db::get(), chain_id).unwrap();
 
-        let res = fetch_transactions(&api_key, chain_id, addr).await;
-        log_if_error("alchemy::fetch_transactions", res);
+        let res = alchemy.fetch(addr).await;
+        log_if_error("alchemy::fetch", res);
 
         // // the alchemy global object acts as a mutex already
         // let alchemy = Alchemy::read().await;
@@ -257,7 +249,7 @@ async fn unit_worker(
         // wait for either a set delay, or for an outside poll request
         select! {
             _ = rx.recv() => {},
-            _ = sleep(Duration::from_secs(delay)) => {}
+            _ = sleep(Duration::from_secs(60)) => {}
         };
     }
 }
