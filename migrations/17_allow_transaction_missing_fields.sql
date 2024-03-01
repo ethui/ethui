@@ -15,5 +15,8 @@ INSERT INTO new_transactions (hash, chain_id, from_address, to_address, block_nu
   SELECT hash, chain_id, from_address, to_address, block_number, position, value, data, status
     FROM transactions;
 
+-- mark all existing transactions as incomplete to force refetch
+UPDATE new_transactions SET incomplete = true;
+
 DROP TABLE transactions;
 ALTER TABLE new_transactions RENAME TO transactions;

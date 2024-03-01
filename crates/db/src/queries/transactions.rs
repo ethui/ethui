@@ -25,11 +25,11 @@ impl Db {
         let position = tx.position.unwrap_or(0) as u32;
         let value = tx.value.map(|v| v.to_string());
         let status = tx.status as u32;
+        let incomplete = tx.incomplete;
 
         sqlx::query!(
-            r#" INSERT INTO transactions (hash, chain_id, from_address, to_address, block_number, position, value, status)
-            VALUES (?,?,?,?,?,?,?,?)
-            ON CONFLICT(hash) DO NOTHING "#,
+            r#" INSERT OR REPLACE INTO transactions (hash, chain_id, from_address, to_address, block_number, position, value, status, incomplete)
+            VALUES (?,?,?,?,?,?,?,?,?)"#,
             hash,
             chain_id,
             from,
@@ -37,22 +37,11 @@ impl Db {
             block_number,
             position,
             value,
-            status
+            status,
+            incomplete
         )
         .execute(self.pool()).await?;
 
-        Ok(())
-    }
-
-    pub async fn complete_transaction(&self, chain_id: u32, hash: B256) -> Result<()> {
-        let hash = hash.to_string();
-        sqlx::query!(
-            r#" UPDATE transactions SET incomplete = true WHERE chain_id = ? AND hash = ? "#,
-            chain_id,
-            hash
-        )
-        .execute(self.pool())
-        .await?;
         Ok(())
     }
 
@@ -109,8 +98,6 @@ impl Db {
         )
         .fetch_all(self.pool())
         .await?;
-
-        dbg!(rows.len());
 
         let items = rows
             .into_iter()

@@ -4,6 +4,7 @@ use iron_types::B256;
 use iron_types::{
     events::Tx, Address, Erc721TokenData, TokenBalance, TokenMetadata, UINotify, U256,
 };
+use tracing::instrument;
 
 use super::{Paginated, Pagination, Result};
 use crate::{
@@ -23,6 +24,7 @@ pub async fn db_get_transactions(
 }
 
 #[tauri::command]
+#[instrument(skip(db))]
 pub async fn db_get_transaction_by_hash(
     chain_id: u32,
     hash: B256,
@@ -33,9 +35,9 @@ pub async fn db_get_transaction_by_hash(
     if tx.incomplete {
         // force fetch, and read again from DB
         iron_broadcast::fetch_full_tx_sync(chain_id, hash).await;
-        Ok(db.get_transaction_by_hash(chain_id, hash).await?)
+        dbg!(Ok(db.get_transaction_by_hash(chain_id, hash).await?))
     } else {
-        Ok(tx)
+        dbg!(Ok(tx))
     }
 }
 

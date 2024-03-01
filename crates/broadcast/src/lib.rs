@@ -51,6 +51,7 @@ pub enum UIMsg {
 }
 
 mod internal_msgs {
+    use tracing::instrument;
     use InternalMsg::*;
 
     use super::*;
@@ -104,6 +105,7 @@ mod internal_msgs {
         send(CurrentNetworkChanged(chain_id)).await;
     }
 
+    #[instrument(level = "trace")]
     pub async fn fetch_full_tx_sync(chain_id: u32, hash: B256) {
         let (tx, rx) = oneshot::channel();
         send(FetchFullTxSync(

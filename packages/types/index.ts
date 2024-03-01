@@ -15,12 +15,12 @@ export interface TokenMetadata {
 export interface Tx {
   hash: `0x${string}`;
   from: Address;
-  to: Address;
+  status: number;
+  to?: Address;
   value?: string;
   data?: string;
-  blockNumber: number;
+  blockNumber?: number;
   position?: number;
-  status?: number;
 }
 
 export interface PaginatedTx {

@@ -4271,6 +4271,7 @@ dependencies = [
  "iron-types",
  "once_cell",
  "tokio",
+ "tracing",
  "url",
 ]
 
