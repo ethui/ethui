@@ -48,11 +48,12 @@ async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Result<Vec<Eve
                     position: trace.transaction_position,
                     from: from.to_alloy(),
                     to: None,
-                    value: value.to_alloy(),
-                    data: Bytes::default(),
+                    value: Some(value.to_alloy()),
+                    data: Some(Bytes::default()),
                     status: receipt.status.unwrap().as_u64(),
-                    block_number,
+                    block_number: Some(block_number),
                     deployed_contract: Some(address.to_alloy()),
+                    incomplete: false,
                 }
                 .into(),
                 ContractDeployed {
@@ -83,11 +84,12 @@ async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Result<Vec<Eve
             position: trace.transaction_position,
             from: from.to_alloy(),
             to: Some(to.to_alloy()),
-            value: value.to_alloy(),
-            data: input,
+            value: Some(value.to_alloy()),
+            data: Some(input),
             status: receipt.status.unwrap().as_u64(),
-            block_number,
+            block_number: Some(block_number),
             deployed_contract: None,
+            incomplete: false,
         }
         .into()],
 

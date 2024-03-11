@@ -13,29 +13,23 @@ pub enum Event {
     ERC721Transfer(ERC721Transfer),
 }
 
-impl Event {
-    pub fn block_number(&self) -> u64 {
-        match self {
-            Event::Tx(tx) => tx.block_number,
-            Event::ContractDeployed(deploy) => deploy.block_number,
-            Event::ERC20Transfer(transfer) => transfer.block_number,
-            Event::ERC721Transfer(transfer) => transfer.block_number,
-        }
-    }
-}
-
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Tx {
     pub hash: B256,
+
     pub from: Address,
+    /// Optional because it could be a contract creation
     pub to: Option<Address>,
-    pub value: U256,
-    pub data: Bytes,
-    pub block_number: u64,
+
+    // Other optional fields indicate we don't yet have this data
+    pub block_number: Option<u64>,
+    pub value: Option<U256>,
+    pub data: Option<Bytes>,
     pub position: Option<usize>,
     pub status: u64,
     pub deployed_contract: Option<Address>,
+    pub incomplete: bool,
 }
 
 #[derive(Debug)]
@@ -95,11 +89,17 @@ impl TryFrom<&SqliteRow> for Tx {
             hash: B256::from_str(row.get("hash")).unwrap(),
             from: Address::from_str(row.get("from_address")).unwrap(),
             to: Address::from_str(row.get("to_address")).ok(),
-            value: U256::from_str_radix(row.get("value"), 10).unwrap(),
-            data: Bytes::from_str(row.get("data")).unwrap(),
-            block_number: row.get::<i64, _>("block_number") as u64,
+            value: row
+                .get::<Option<String>, _>("value")
+                .map(|v| U256::from_str_radix(&v, 10).unwrap()),
+            data: row
+                .get::<Option<String>, _>("data")
+                .map(|b| Bytes::from_str(&b).unwrap()),
+
+            block_number: row.get::<Option<i64>, _>("block_number").map(|b| b as u64),
             position: Some(row.get::<i32, _>("position") as usize),
             status: row.get::<i32, _>("status") as u64,
+            incomplete: row.get::<bool, _>("incomplete"),
             deployed_contract: None,
         })
     }

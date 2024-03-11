@@ -3,9 +3,9 @@ use tracing::instrument;
 
 use iron_types::{Abi, Address};
 
-use crate::{Db, Error, Result};
+use crate::{DbInner, Error, Result};
 
-impl Db {
+impl DbInner {
     pub async fn get_contract_addresses(&self, chain_id: u32) -> Result<Vec<Address>> {
         let rows = sqlx::query!(
             r#"SELECT address FROM contracts WHERE chain_id = ?"#,

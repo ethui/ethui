@@ -1,9 +1,9 @@
 use iron_types::Event;
 use tracing::{instrument, trace};
 
-use crate::{Result, Db};
+use crate::{DbInner, Result};
 
-impl Db {
+impl DbInner {
     #[instrument(level = "trace", skip(self, events))]
     pub async fn save_events(&self, chain_id: u32, events: Vec<Event>) -> Result<()> {
         for tx in events.iter() {

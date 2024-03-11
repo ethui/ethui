@@ -258,7 +258,7 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
         {
             let metadata = fetch_erc20_metadata(address, &provider).await;
 
-            db.save_erc20_metadata(address, ctx.chain_id, metadata)
+            db.save_erc20_metadata(ctx.chain_id, metadata)
                 .await
                 .unwrap();
         }
@@ -279,9 +279,10 @@ pub async fn fetch_erc20_metadata(address: Address, client: &Provider<Http>) -> 
     let contract = IERC20::new(address.to_ethers(), Arc::new(client));
 
     TokenMetadata {
-        name: contract.name().call().await.unwrap_or_default(),
-        symbol: contract.symbol().call().await.unwrap_or_default(),
-        decimals: contract.decimals().call().await.unwrap_or_default(),
+        address,
+        name: contract.name().call().await.ok(),
+        symbol: contract.symbol().call().await.ok(),
+        decimals: contract.decimals().call().await.ok(),
     }
 }
 

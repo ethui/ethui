@@ -15,7 +15,7 @@ import { Abi, Address, formatEther, formatGwei } from "viem";
 import { useTransaction, useTransactionReceipt } from "wagmi";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
-import { Paginated, Pagination, Tx } from "@iron/types";
+import { Paginated, PaginatedTx, Pagination, Tx } from "@iron/types";
 import { SolidityCall } from "@iron/react/components";
 import { useEventListener, useInvoke } from "@/hooks";
 import { useNetworks, useWallets } from "@/store";
@@ -37,7 +37,7 @@ export function Txs() {
   const account = useWallets((s) => s.address);
   const chainId = useNetworks((s) => s.current?.chain_id);
 
-  const [pages, setPages] = useState<Paginated<Tx>[]>([]);
+  const [pages, setPages] = useState<Paginated<PaginatedTx>[]>([]);
 
   const loadMore = useCallback(() => {
     let pagination: Pagination = {};
@@ -47,7 +47,7 @@ export function Txs() {
       pagination.page = (pagination.page || 0) + 1;
     }
 
-    invoke<Paginated<Tx>>("db_get_transactions", {
+    invoke<Paginated<PaginatedTx>>("db_get_transactions", {
       address: account,
       chainId,
       pagination,
@@ -106,7 +106,7 @@ export function Txs() {
 
 interface SummaryProps {
   account: Address;
-  tx: Tx;
+  tx: PaginatedTx;
 }
 function Summary({ account, tx }: SummaryProps) {
   return (
@@ -124,7 +124,7 @@ function Summary({ account, tx }: SummaryProps) {
 
 interface IconProps {
   account: Address;
-  tx: Tx;
+  tx: PaginatedTx;
 }
 
 function Icon({ account, tx }: IconProps) {
@@ -142,7 +142,7 @@ function Icon({ account, tx }: IconProps) {
 }
 
 interface DetailsProps {
-  tx: Tx;
+  tx: PaginatedTx;
   chainId: number;
 }
 
@@ -153,12 +153,20 @@ BigInt.prototype.toJSON = function (): string {
 };
 
 function Details({ tx, chainId }: DetailsProps) {
+  const { data: fullTx } = useInvoke<Tx>("db_get_transaction_by_hash", {
+    hash: tx.hash,
+    chainId,
+  });
   const { data: transaction } = useTransaction({ hash: tx.hash, chainId });
   const { data: receipt } = useTransactionReceipt({ hash: tx.hash, chainId });
   const { data: abi } = useInvoke<Abi>("get_contract_abi", {
     address: tx.to,
     chainId,
   });
+
+  if (!fullTx) return null;
+
+  const value = fullTx.value ? BigInt(fullTx.value) : undefined;
 
   return (
     <Grid container rowSpacing={1}>
@@ -175,9 +183,11 @@ function Details({ tx, chainId }: DetailsProps) {
       <Datapoint
         label="value"
         value={
-          <ContextMenuWithTauri copy={BigInt(tx.value)}>
-            {formatEther(BigInt(tx.value))} Ξ
-          </ContextMenuWithTauri>
+          value ? (
+            <ContextMenuWithTauri copy={value}>
+              {formatEther(value)} Ξ
+            </ContextMenuWithTauri>
+          ) : null
         }
         size="small"
       />
@@ -197,7 +207,7 @@ function Details({ tx, chainId }: DetailsProps) {
         value={
           transaction && (
             <SolidityCall
-              value={BigInt(tx.value)}
+              value={value}
               data={transaction.input}
               from={tx.from}
               to={tx.to}

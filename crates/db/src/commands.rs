@@ -1,12 +1,15 @@
 use ethers::{abi::Abi, types::Chain};
+use iron_types::transactions::PaginatedTx;
+use iron_types::B256;
 use iron_types::{
     events::Tx, Address, Erc721TokenData, TokenBalance, TokenMetadata, UINotify, U256,
 };
+use tracing::instrument;
 
 use super::{Paginated, Pagination, Result};
 use crate::{
     utils::{fetch_etherscan_abi, fetch_etherscan_contract_name},
-    Error, Db,
+    Db, Error,
 };
 
 #[tauri::command]
@@ -15,9 +18,27 @@ pub async fn db_get_transactions(
     chain_id: u32,
     pagination: Option<Pagination>,
     db: tauri::State<'_, Db>,
-) -> Result<Paginated<Tx>> {
+) -> Result<Paginated<PaginatedTx>> {
     db.get_transactions(chain_id, address, pagination.unwrap_or_default())
         .await
+}
+
+#[tauri::command]
+#[instrument(skip(db))]
+pub async fn db_get_transaction_by_hash(
+    chain_id: u32,
+    hash: B256,
+    db: tauri::State<'_, Db>,
+) -> Result<Tx> {
+    let tx = db.get_transaction_by_hash(chain_id, hash).await?;
+
+    if tx.incomplete {
+        // force fetch, and read again from DB
+        iron_broadcast::fetch_full_tx_sync(chain_id, hash).await;
+        Ok(db.get_transaction_by_hash(chain_id, hash).await?)
+    } else {
+        Ok(tx)
+    }
 }
 
 #[tauri::command]
