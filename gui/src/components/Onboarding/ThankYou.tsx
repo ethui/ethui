@@ -3,9 +3,7 @@ import { invoke } from "@tauri-apps/api";
 import { useEffect } from "react";
 import { Link } from "@tanstack/react-router";
 
-import { StepProps } from ".";
-
-export function ThankYouStep({ onSubmit }: StepProps) {
+export function ThankYouStep() {
   useEffect(() => {
     invoke("settings_finish_onboarding");
   });
@@ -21,9 +19,7 @@ export function ThankYouStep({ onSubmit }: StepProps) {
       </Typography>
 
       <Link to="/home/account">
-        <Button variant="contained" onClick={onSubmit}>
-          Finish
-        </Button>
+        <Button variant="contained">Finish</Button>
       </Link>
     </Stack>
   );
