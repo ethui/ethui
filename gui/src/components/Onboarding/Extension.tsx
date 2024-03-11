@@ -19,7 +19,7 @@ export function InstallExtensionStep({ onSubmit }: StepProps) {
     "ws_peer_count",
     {},
     {
-      refreshInterval: 200,
+      refetchInterval: 200,
     },
   );
 
