@@ -111,8 +111,9 @@ function BalanceItem({
           <IconCrypto chainId={chainId} address={contract} />
         </ListItemAvatar>
         <ListItemText
-          secondary={`${symbol} ${contract ? `(${truncateEthAddress(contract)})` : ``
-            }`}
+          secondary={`${symbol} ${
+            contract ? `(${truncateEthAddress(contract)})` : ``
+          }`}
         >
           <CopyToClipboard label={balance.toString()}>
             {truncatedBalance > 0
