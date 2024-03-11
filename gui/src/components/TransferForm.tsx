@@ -152,7 +152,7 @@ export function TransferForm({
           />
         </FormControl>
 
-        {currentToken && (
+        {currentToken?.decimals && (
           <Typography variant="body2">
             Balance: {formatUnits(currentToken.balance, currentToken.decimals)}
           </Typography>
@@ -166,12 +166,14 @@ export function TransferForm({
           {...register("to")}
         />
 
-        <BigIntField
-          name="value"
-          control={control}
-          decimals={currentToken.decimals}
-          error={errors.value}
-        />
+        {currentToken?.decimals && (
+          <BigIntField
+            name="value"
+            control={control}
+            decimals={currentToken.decimals}
+            error={errors.value}
+          />
+        )}
 
         {result && (
           <Alert
