@@ -14,7 +14,6 @@ pub(crate) async fn fetch_full_tx(chain_id: u32, hash: B256) -> Result<()> {
     let tx = provider.get_transaction(hash.to_ethers()).await?;
     let receipt = provider.get_transaction_receipt(hash.to_ethers()).await?;
 
-    dbg!(&tx, &receipt);
     if tx.is_none() || receipt.is_none() {
         return Err(Error::TxNotFound(hash));
     }
@@ -36,7 +35,6 @@ pub(crate) async fn fetch_full_tx(chain_id: u32, hash: B256) -> Result<()> {
     };
 
     let db = iron_db::get();
-    dbg!(&tx);
     db.insert_transaction(chain_id, &tx).await?;
 
     Ok(())
