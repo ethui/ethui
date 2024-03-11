@@ -133,7 +133,7 @@ impl Inner {
 
     async fn open(&self) -> Result<()> {
         let preset = presets::PRESETS.get(&self.preset).unwrap();
-        let url = format!("/dialog/{}/{}", self.preset, self.id);
+        let url = format!("index.html#/dialog/{}/{}", self.preset, self.id);
         let title = format!("Iron Dialog - {}", preset.title);
 
         iron_broadcast::dialog_open(DialogOpen {
