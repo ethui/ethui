@@ -158,7 +158,6 @@ function SimulationResult({ simulation, chainId, to }: SimulationResultProps) {
     to,
   });
 
-  console.log(callCount);
   if (!simulation) return null;
 
   return (
