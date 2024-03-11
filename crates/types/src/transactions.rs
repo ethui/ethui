@@ -7,6 +7,7 @@ pub struct PaginatedTx {
     pub hash: B256,
     pub from: Address,
     pub to: Option<Address>,
+    pub block_number: Option<u64>,
     pub status: u64,
     pub incomplete: bool,
 }

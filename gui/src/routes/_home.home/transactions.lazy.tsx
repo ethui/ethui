@@ -2,6 +2,7 @@ import { CallMade, CallReceived, NoteAdd } from "@mui/icons-material";
 import {
   Badge,
   Box,
+  Button,
   CircularProgress,
   Grid,
   Stack,
@@ -15,8 +16,8 @@ import { Abi, Address, formatEther, formatGwei } from "viem";
 import { useTransaction, useTransactionReceipt } from "wagmi";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
+import { BlockNumber, SolidityCall } from "@iron/react/components";
 import { Paginated, PaginatedTx, Pagination, Tx } from "@iron/types";
-import { SolidityCall } from "@iron/react/components";
 import { useEventListener, useInvoke } from "@/hooks";
 import { useNetworks, useWallets } from "@/store";
 import {
@@ -110,14 +111,17 @@ interface SummaryProps {
 }
 function Summary({ account, tx }: SummaryProps) {
   return (
-    <Stack direction="row" spacing={1}>
+    <Stack direction="row" alignItems="center" spacing={3}>
       <Icon {...{ tx, account }} />
-      <AddressView address={tx.from} /> <span>→</span>
-      {tx.to ? (
-        <AddressView address={tx.to} tokenIcon />
-      ) : (
-        <Typography component="span">Contract Deploy</Typography>
-      )}
+      <BlockNumber number={tx.blockNumber} />
+      <Stack direction="row" alignItems="center" spacing={1}>
+        <AddressView address={tx.from} /> <span>→</span>
+        {tx.to ? (
+          <AddressView address={tx.to} tokenIcon />
+        ) : (
+          <Typography component="span">Contract Deploy</Typography>
+        )}
+      </Stack>
     </Stack>
   );
 }
@@ -244,6 +248,28 @@ function Details({ tx, chainId }: DetailsProps) {
         value={receipt && `${formatGwei(receipt?.gasUsed)} gwei`}
         size="medium"
       />
+
+      <Grid item xs={12}>
+        <Button variant="contained" onClick={() => resend(transaction!)}>
+          Send again
+        </Button>
+      </Grid>
     </Grid>
   );
+}
+
+function resend({
+  from,
+  to,
+  value,
+  input,
+}: {
+  from: Address;
+  to: Address | null;
+  value: bigint;
+  input: `0x${string}` | null;
+}) {
+  invoke<string>("rpc_send_transaction", {
+    params: { from, to, value, data: input },
+  });
 }

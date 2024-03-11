@@ -28,6 +28,7 @@ export interface PaginatedTx {
   from: Address;
   to: Address;
   status?: number;
+  blockNumber?: number;
 }
 
 export interface Peer {

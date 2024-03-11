@@ -6,3 +6,4 @@ export * from "./ChainView";
 export * from "./ClickToCopy";
 export * from "./ContextMenu";
 export * from "./SolidityCall";
+export * from "./BlockNumber";

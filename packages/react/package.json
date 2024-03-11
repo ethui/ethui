@@ -20,6 +20,7 @@
     "@mui/lab": "^5.0.0-alpha.165",
     "@mui/material": "^5.15.10",
     "@storybook/addon-themes": "^7.6.17",
+    "lucide-react": "^0.356.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.50.1",
