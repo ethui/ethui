@@ -30,6 +30,7 @@ pub enum InternalMsg {
 
     /// Request a full update of a TX. oneshot channel included to notify when job is done
     FetchFullTxSync(u32, B256, Arc<Mutex<Option<oneshot::Sender<()>>>>),
+    FetchERC20Metadata(u32, Address),
 }
 
 #[derive(Debug, Clone)]

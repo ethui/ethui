@@ -3,12 +3,10 @@ use std::str::FromStr;
 use iron_types::events::Tx;
 use iron_types::transactions::PaginatedTx;
 use iron_types::{Address, Bytes, B256, U256};
-use tracing::instrument;
 
-use crate::{Db, Paginated, Pagination, Result};
+use crate::{DbInner, Paginated, Pagination, Result};
 
-impl Db {
-    #[instrument(level = "trace", skip(self))]
+impl DbInner {
     pub async fn insert_transactions(&self, chain_id: u32, txs: Vec<Tx>) -> Result<()> {
         for tx in txs.iter() {
             self.insert_transaction(chain_id, tx).await?;
@@ -16,7 +14,6 @@ impl Db {
         Ok(())
     }
 
-    #[instrument(level = "trace", skip(self))]
     pub async fn insert_transaction(&self, chain_id: u32, tx: &Tx) -> Result<()> {
         let hash = format!("0x{:x}", tx.hash);
         let from = format!("0x{:x}", tx.from);

@@ -1,15 +1,11 @@
 use crate::{Error, Result};
-use ethers::providers::Middleware;
+use ethers::providers::{Http, Middleware, Provider};
+use iron_abis::IERC20;
 use iron_types::events::Tx;
-use iron_types::{GlobalState, ToAlloy, ToEthers, B256};
+use iron_types::{Address, GlobalState, ToAlloy, ToEthers, TokenMetadata, B256};
 
 pub(crate) async fn fetch_full_tx(chain_id: u32, hash: B256) -> Result<()> {
-    let networks = iron_networks::Networks::read().await;
-
-    let provider = match networks.get_network(chain_id) {
-        Some(network) => network.get_provider(),
-        _ => return Err(Error::InvalidNetwork(chain_id)),
-    };
+    let provider = provider(chain_id).await?;
 
     let tx = provider.get_transaction(hash.to_ethers()).await?;
     let receipt = provider.get_transaction_receipt(hash.to_ethers()).await?;
@@ -38,4 +34,33 @@ pub(crate) async fn fetch_full_tx(chain_id: u32, hash: B256) -> Result<()> {
     db.insert_transaction(chain_id, &tx).await?;
 
     Ok(())
+}
+
+pub(crate) async fn fetch_erc20_metadata(chain_id: u32, address: Address) -> Result<()> {
+    let provider = provider(chain_id).await?;
+
+    let contract = IERC20::new(address.to_ethers(), provider.into());
+
+    let metadata = TokenMetadata {
+        address,
+        name: contract.name().call().await.ok(),
+        symbol: contract.symbol().call().await.ok(),
+        decimals: contract.decimals().call().await.ok(),
+    };
+
+    let db = iron_db::get();
+    db.save_erc20_metadatas(chain_id, vec![metadata])
+        .await
+        .unwrap();
+
+    Ok(())
+}
+
+async fn provider(chain_id: u32) -> Result<Provider<Http>> {
+    let networks = iron_networks::Networks::read().await;
+
+    match networks.get_network(chain_id) {
+        Some(network) => Ok(network.get_provider()),
+        _ => Err(Error::InvalidNetwork(chain_id)),
+    }
 }

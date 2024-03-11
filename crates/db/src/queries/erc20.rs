@@ -3,9 +3,9 @@ use std::str::FromStr;
 use iron_types::{Address, TokenBalance, TokenMetadata, U256};
 use tracing::instrument;
 
-use crate::{Db, Result};
+use crate::{DbInner, Result};
 
-impl Db {
+impl DbInner {
     pub async fn read_erc20_balance(
         &self,
         chain_id: u32,
@@ -187,7 +187,7 @@ impl Db {
         let address = metadata.address.to_string();
 
         sqlx::query!(
-            r#" INSERT OR REPLACE INTO tokens_metadata (contract, chain_id, decimals, name,symbol)
+            r#" INSERT OR REPLACE INTO tokens_metadata (contract, chain_id, decimals, name, symbol)
                         VALUES (?,?,?,?,?) "#,
             address,
             chain_id,

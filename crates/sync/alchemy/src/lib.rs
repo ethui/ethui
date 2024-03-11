@@ -5,7 +5,7 @@ mod types;
 mod utils;
 
 use iron_types::{Address, U64};
-use tracing::{instrument, trace};
+use tracing::instrument;
 
 use crate::client::{Client, Direction};
 use iron_db::Db;
@@ -67,12 +67,10 @@ impl Alchemy {
             .map(|tx| tx.block_number)
             .fold(std::u64::MIN, |a, b| a.max(b.unwrap_or(0)));
 
-        trace!("saving");
         self.db.insert_transactions(self.chain_id, inc.0).await?;
         self.db.insert_transactions(self.chain_id, out.0).await?;
         self.db.save_erc20_metadatas(self.chain_id, inc.1).await?;
         self.db.save_erc20_metadatas(self.chain_id, out.1).await?;
-        trace!("saved");
 
         if tip > std::u64::MIN {
             self.db.kv_set(&(self.chain_id, address), &tip).await?;

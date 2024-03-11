@@ -1,9 +1,9 @@
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 
-use crate::{Db, Result};
+use crate::{DbInner, Result};
 
-impl Db {
+impl DbInner {
     pub async fn kv_set<K, V>(&self, key: &K, value: &V) -> Result<()>
     where
         K: Serialize,

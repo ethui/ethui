@@ -1,8 +1,8 @@
 use iron_types::{Address, U256};
 
-use crate::{Result, Db};
+use crate::{DbInner, Result};
 
-impl Db {
+impl DbInner {
     pub async fn save_native_balance(
         &self,
         balance: U256,

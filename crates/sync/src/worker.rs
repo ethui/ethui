@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 
 use crate::{utils, Error, Msg, Result};
-use iron_types::{Address, B256};
+use iron_types::{Address, UINotify, B256};
 use tokio::sync::{oneshot, Mutex};
 use tokio::{
     select,
@@ -46,24 +46,10 @@ impl Worker {
                         worker.fetch_full_tx_sync(chain_id, hash, oneshot)
                     }
                 };
+
+                worker.update_erc20_metadata().await;
             }
         }
-    }
-
-    #[instrument(skip(self), level = "trace")]
-    fn fetch_full_tx_sync(
-        &self,
-        chain_id: u32,
-        hash: B256,
-        oneshot: Arc<Mutex<Option<oneshot::Sender<()>>>>,
-    ) {
-        tokio::spawn(async move {
-            if iron_sync_alchemy::supports_network(chain_id) {
-                fetch_full_tx_worker(chain_id, hash).await.unwrap();
-            }
-            let mut oneshot = oneshot.lock().await;
-            oneshot.take().map(|tx| tx.send(()));
-        });
     }
 
     /// creates a new worker per chain ID for the incoming addr
@@ -136,10 +122,45 @@ impl Worker {
             tx,
         )
     }
-}
 
-async fn fetch_full_tx_worker(chain_id: u32, hash: B256) -> Result<()> {
-    utils::fetch_full_tx(chain_id, hash).await
+    async fn update_erc20_metadata(&self) {
+        for chain_id in self.chain_ids.iter() {
+            if iron_sync_alchemy::supports_network(*chain_id) {
+                let db = iron_db::get();
+                let missing = db.get_erc20_missing_metadata(*chain_id).await.unwrap();
+                missing.iter().for_each(|address| {
+                    self.fetch_erc20_metadata(*chain_id, *address);
+                });
+                iron_broadcast::ui_notify(UINotify::BalancesUpdated).await;
+            }
+        }
+    }
+
+    #[instrument(skip(self), level = "trace")]
+    fn fetch_full_tx_sync(
+        &self,
+        chain_id: u32,
+        hash: B256,
+        oneshot: Arc<Mutex<Option<oneshot::Sender<()>>>>,
+    ) {
+        tokio::spawn(async move {
+            if iron_sync_alchemy::supports_network(chain_id) {
+                utils::fetch_full_tx(chain_id, hash).await.unwrap();
+                let mut oneshot = oneshot.lock().await;
+                oneshot.take().map(|tx| tx.send(()));
+            }
+        });
+    }
+
+    fn fetch_erc20_metadata(&self, chain_id: u32, address: Address) {
+        tokio::spawn(async move {
+            if iron_sync_alchemy::supports_network(chain_id) {
+                utils::fetch_erc20_metadata(chain_id, address)
+                    .await
+                    .unwrap();
+            };
+        });
+    }
 }
 
 /// tracks a single (addr, chain_id) pair

@@ -4493,6 +4493,7 @@ name = "iron-sync"
 version = "1.4.0"
 dependencies = [
  "ethers",
+ "iron-abis",
  "iron-broadcast",
  "iron-db",
  "iron-networks",

@@ -6,6 +6,7 @@ mod queries;
 pub mod utils;
 
 use std::path::PathBuf;
+use std::sync::Arc;
 
 use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous};
 
@@ -17,11 +18,12 @@ pub use self::{
 };
 
 #[derive(Debug, Clone)]
-pub struct Db {
+pub struct DbInner {
     pub pool: sqlx::Pool<sqlx::Sqlite>,
 }
+pub type Db = Arc<DbInner>;
 
-impl Db {
+impl DbInner {
     pub async fn connect(path: &PathBuf) -> Result<Self> {
         let connect_options = SqliteConnectOptions::new()
             .filename(path)
