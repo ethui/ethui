@@ -123,4 +123,20 @@ impl DbInner {
 
         Ok(Paginated::new(items, pagination, total_row.total as u32))
     }
+
+    pub async fn get_call_count(&self, chain_id: u32, from: Address, to: Address) -> Result<u32> {
+        let from = format!("0x{:x}", from);
+        let to = format!("0x{:x}", to);
+
+        let row = sqlx::query!(
+            r#"SELECT count(*) as count FROM transactions WHERE chain_id = ? AND from_address = ? AND to_address = ?"#,
+            chain_id,
+            from,
+            to
+        )
+        .fetch_one(self.pool())
+        .await?;
+
+        Ok(row.count as u32)
+    }
 }
