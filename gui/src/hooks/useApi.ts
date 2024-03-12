@@ -1,24 +1,31 @@
-import useSWR, { SWRResponse } from "swr";
+import { type UseQueryResult, useQuery } from "@tanstack/react-query";
 
-const PORT = import.meta.env.VITE_IRON_HTTP_PORT || "9003";
+const { VITE_IRON_HTTP_PORT, VITE_IRON_DEV_HTTP_PORT, NODE_ENV } = import.meta
+  .env;
+
+const PORT =
+  NODE_ENV === "production"
+    ? VITE_IRON_HTTP_PORT || "9003"
+    : VITE_IRON_DEV_HTTP_PORT || "9103";
 
 type Parameters = Record<string, string | bigint | number | undefined>;
 
 export function useApi<T>(
   endpoint: string,
   query: Parameters,
-): SWRResponse<T, unknown> {
-  return useSWR([endpoint, query], fetcher<T>);
-}
+): UseQueryResult<T, unknown> {
+  return useQuery({
+    queryKey: [endpoint, query],
+    queryFn: async () => {
+      const params = Object.entries(query).reduce((acc, [key, value]) => {
+        acc.append(key, value ? value.toString() : "");
+        return acc;
+      }, new URLSearchParams());
 
-async function fetcher<T>([endpoint, query]: [string, Parameters]): Promise<T> {
-  const searchParams = new URLSearchParams();
-
-  for (const [key, value] of Object.entries(query)) {
-    searchParams.append(key, value ? value.toString() : "");
-  }
-
-  const fullUrl = `http://localhost:${PORT}/iron${endpoint}?${searchParams.toString()}`;
-
-  return fetch(fullUrl).then((res) => res.json());
+      const res = await fetch(
+        `http://localhost:${PORT}/iron${endpoint}?${params.toString()}`,
+      );
+      return res.json();
+    },
+  });
 }

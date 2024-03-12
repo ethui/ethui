@@ -11,6 +11,8 @@ authors.workspace = true
 [dependencies]
 iron-networks = { workspace = true }
 iron-types = { workspace = true }
+iron-wallets = { workspace = true }
+iron-db = { workspace = true }
 
 tauri = { workspace = true }
 tokio = { workspace = true }
@@ -25,15 +27,6 @@ ethers-core = { workspace = true }
 hex = { workspace = true }
 
 eyre = "*"
-
-revm = { version = "3", default-features = false, features = [
-  "std",
-  "serde",
-  "memory_limit",
-  "optional_eip3607",
-  "optional_block_gas_limit",
-  "optional_no_base_fee",
-] }
 
 [dev-dependencies]
 pretty_assertions = "1.4.0"

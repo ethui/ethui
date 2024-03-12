@@ -1,4 +1,4 @@
-use iron_db::DB;
+use iron_db::Db;
 use iron_networks::Networks;
 use iron_types::{Address, GlobalState, U256};
 
@@ -13,7 +13,7 @@ pub async fn sync_alchemy_is_network_supported(chain_id: u32) -> bool {
 pub async fn sync_get_native_balance(
     chain_id: u32,
     address: Address,
-    db: tauri::State<'_, DB>,
+    db: tauri::State<'_, Db>,
 ) -> Result<U256> {
     let network = Networks::read()
         .await

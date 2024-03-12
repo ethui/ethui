@@ -2,6 +2,7 @@ mod affinity;
 pub mod events;
 mod global_state;
 mod tokens;
+pub mod transactions;
 pub mod ui_events;
 pub use affinity::Affinity;
 pub use alloy_primitives::{address, Address, B256, U256, U64};

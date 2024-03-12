@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT address FROM contracts WHERE chain_id = ?",
+  "describe": {
+    "columns": [
+      {
+        "name": "address",
+        "ordinal": 0,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "c896b9fa8e0ae4a1f0580cf774f539dc047acc8e5e1d78308e8a46d55e9410e5"
+}

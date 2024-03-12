@@ -4,14 +4,14 @@
   "license": "MIT",
   "description": "A dev-oriented web3 wallet",
   "scripts": {
-    "app:dev": "rm -rf target/debug/db.*; RUST_LOG=iron=debug tauri dev",
+    "app:dev": "rm -rf target/debug/db.*; RUST_LOG=iron=debug cargo tauri dev --config bin/iron/tauri-dev.conf.json --features debug",
     "gui:build": "yarn workspace @iron/gui build",
     "storybook": "yarn workspace @iron/react storybook",
     "ext:dev": "yarn workspace @iron/extension dev",
     "ext:build": "yarn workspace @iron/extension build \"$@\"",
     "lint": "yarn lint:eslint && yarn lint:tsc && yarn lint:prettier",
     "lint:eslint": "eslint .",
-    "lint:tsc": "tsc --noEmit",
+    "lint:tsc": "yarn workspaces foreach --all --parallel run tsc --noEmit",
     "lint:prettier": "prettier --check .",
     "fix": "yarn fix:eslint && yarn fix:prettier",
     "fix:eslint": "eslint --fix .",
@@ -26,22 +26,22 @@
     "gui"
   ],
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.14.0",
-    "@typescript-eslint/parser": "^6.14.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.2",
+    "@typescript-eslint/parser": "^7.0.2",
     "assert": "^2.1.0",
-    "eslint": "^8.55.0",
+    "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-config-standard-with-typescript": "^42.0.0",
+    "eslint-config-standard-with-typescript": "^43.0.1",
     "eslint-import-resolver-typescript": "^3.6.1",
-    "eslint-plugin-import": "^2.29.0",
-    "eslint-plugin-n": "^16.4.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-n": "^16.6.2",
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "prettier": "^3.1.1"
+    "prettier": "^3.2.5"
   },
   "dependencies": {
-    "@tauri-apps/cli": "^1.5.7",
+    "@tauri-apps/cli": "^1.5.10",
     "typescript": "5.3.3"
   },
   "resolutions": {

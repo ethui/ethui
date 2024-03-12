@@ -1,3 +1,4 @@
+use ethers::types::CallResult;
 use ethers::{
     abi::RawLog,
     contract::EthLogDecode,
@@ -25,6 +26,10 @@ pub(super) fn expand_logs(traces: Vec<Log>) -> Vec<iron_types::Event> {
 
 async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Result<Vec<Event>> {
     let hash = trace.transaction_hash.unwrap();
+    let tx = provider
+        .get_transaction(hash)
+        .await?
+        .ok_or(Error::TxNotFound(hash.to_alloy()))?;
     let receipt = provider
         .get_transaction_receipt(hash)
         .await?
@@ -38,8 +43,12 @@ async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Result<Vec<Eve
     ) {
         // contract deploys
         (
-            Action::Create(Create { from, value, .. }),
-            Some(Res::Create(CreateResult { address, .. })),
+            Action::Create(Create {
+                from, value, gas, ..
+            }),
+            Some(Res::Create(CreateResult {
+                address, gas_used, ..
+            })),
             _,
         ) => {
             vec![
@@ -48,11 +57,18 @@ async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Result<Vec<Eve
                     position: trace.transaction_position,
                     from: from.to_alloy(),
                     to: None,
-                    value: value.to_alloy(),
-                    data: Bytes::default(),
+                    value: Some(value.to_alloy()),
+                    data: Some(Bytes::default()),
                     status: receipt.status.unwrap().as_u64(),
-                    block_number,
+                    block_number: Some(block_number),
                     deployed_contract: Some(address.to_alloy()),
+                    gas_limit: Some(gas.to_alloy()),
+                    gas_used: Some(gas_used.to_alloy()),
+                    max_fee_per_gas: tx.max_fee_per_gas.map(|g| g.to_alloy()),
+                    max_priority_fee_per_gas: tx.max_fee_per_gas.map(|g| g.to_alloy()),
+                    r#type: tx.transaction_type.map(|t| t.as_u64()),
+                    nonce: Some(tx.nonce.as_u64()),
+                    incomplete: false,
                 }
                 .into(),
                 ContractDeployed {
@@ -74,20 +90,28 @@ async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Result<Vec<Eve
                 to,
                 value,
                 input,
+                gas,
                 ..
             }),
-            _,
+            Some(Res::Call(CallResult { gas_used, .. })),
             0,
         ) => vec![Tx {
             hash: trace.transaction_hash.unwrap().to_alloy(),
             position: trace.transaction_position,
             from: from.to_alloy(),
             to: Some(to.to_alloy()),
-            value: value.to_alloy(),
-            data: input,
+            value: Some(value.to_alloy()),
+            data: Some(input),
             status: receipt.status.unwrap().as_u64(),
-            block_number,
+            block_number: Some(block_number),
+            gas_limit: Some(gas.to_alloy()),
+            gas_used: Some(gas_used.to_alloy()),
+            max_fee_per_gas: tx.max_fee_per_gas.map(|g| g.to_alloy()),
+            max_priority_fee_per_gas: tx.max_fee_per_gas.map(|g| g.to_alloy()),
+            nonce: Some(tx.nonce.as_u64()),
+            r#type: tx.transaction_type.map(|t| t.as_u64()),
             deployed_contract: None,
+            incomplete: false,
         }
         .into()],
 

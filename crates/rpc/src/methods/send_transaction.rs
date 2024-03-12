@@ -22,7 +22,7 @@ pub struct SendTransaction {
     pub wallet_path: String,
     pub wallet_type: WalletType,
     pub request: TypedTransaction,
-    pub signer: Option<SignerMiddleware<Provider<Http>, iron_wallets::Signer>>,
+    pub signer: Option<SignerMiddleware<Provider<RetryClient<Http>>, iron_wallets::Signer>>,
 }
 
 impl<'a> SendTransaction {
@@ -45,7 +45,7 @@ impl<'a> SendTransaction {
         self
     }
 
-    pub async fn finish(&mut self) -> Result<PendingTransaction<'_, Http>> {
+    pub async fn finish(&mut self) -> Result<PendingTransaction<'_, RetryClient<Http>>> {
         // inner scope so as not to lock wallets for the entire duration of the tx review
         let skip = {
             let wallets = Wallets::read().await;
@@ -64,7 +64,7 @@ impl<'a> SendTransaction {
         }
     }
 
-    async fn dialog_and_send(&mut self) -> Result<PendingTransaction<'_, Http>> {
+    async fn dialog_and_send(&mut self) -> Result<PendingTransaction<'_, RetryClient<Http>>> {
         let mut params = serde_json::to_value(&self.request).unwrap();
         params["chainId"] = self.network.chain_id.into();
         params["walletType"] = self.wallet_type.to_string().into();
@@ -110,7 +110,7 @@ impl<'a> SendTransaction {
         Ok(())
     }
 
-    async fn send(&mut self) -> Result<PendingTransaction<'_, Http>> {
+    async fn send(&mut self) -> Result<PendingTransaction<'_, RetryClient<Http>>> {
         self.build_signer().await?;
         let signer = self.signer.as_ref().unwrap();
 

@@ -8,7 +8,8 @@ use iron_db::{
     utils::{fetch_etherscan_abi, fetch_etherscan_contract_name},
     Paginated, Pagination,
 };
-use iron_types::{events::Tx, Address, Erc721TokenData, TokenBalance, UINotify, U256};
+use iron_types::transactions::PaginatedTx;
+use iron_types::{Address, Erc721TokenData, TokenBalance, UINotify, U256};
 use serde::Deserialize;
 
 use crate::{Ctx, Error, Result};
@@ -52,7 +53,7 @@ pub(crate) async fn transactions(
         chain_id,
         pagination,
     }): Query<TransactionsPayload>,
-) -> Result<Json<Paginated<Tx>>> {
+) -> Result<Json<Paginated<PaginatedTx>>> {
     Ok(Json(
         db.get_transactions(chain_id, address, pagination.unwrap_or_default())
             .await?,
@@ -77,7 +78,7 @@ pub(crate) async fn contracts(
     State(Ctx { db }): State<Ctx>,
     Query(ChainIdPayload { chain_id }): Query<ChainIdPayload>,
 ) -> Result<Json<Vec<Address>>> {
-    Ok(Json(db.get_contracts(chain_id).await?))
+    Ok(Json(db.get_contract_addresses(chain_id).await?))
 }
 
 pub(crate) async fn contract_abi(

@@ -2,11 +2,11 @@ use std::path::PathBuf;
 
 use iron_args::Args;
 use iron_broadcast::UIMsg;
-use iron_db::DB;
 #[cfg(target_os = "macos")]
 use tauri::WindowEvent;
 use tauri::{AppHandle, Builder, GlobalWindowEvent, Manager};
 use tauri_plugin_window_state::Builder as windowStatePlugin;
+use tracing::debug;
 
 use crate::{
     commands, dialogs,
@@ -46,6 +46,7 @@ impl IronApp {
                 iron_db::commands::db_get_contracts,
                 iron_db::commands::db_insert_contract,
                 iron_db::commands::db_get_transactions,
+                iron_db::commands::db_get_transaction_by_hash,
                 iron_db::commands::db_get_contracts,
                 iron_db::commands::db_get_erc20_metadata,
                 iron_db::commands::db_get_erc20_balances,
@@ -73,7 +74,8 @@ impl IronApp {
                 iron_connections::commands::connections_set_affinity,
                 iron_sync::commands::sync_alchemy_is_network_supported,
                 iron_sync::commands::sync_get_native_balance,
-                iron_simulator::commands::simulator_run
+                iron_simulator::commands::simulator_run,
+                iron_simulator::commands::simulator_get_call_count,
             ])
             .on_window_event(on_window_event)
             .menu(menu::build())
@@ -84,9 +86,7 @@ impl IronApp {
             .system_tray(crate::system_tray::build())
             .on_system_tray_event(crate::system_tray::event_handler);
 
-        let app = builder
-            .build(tauri::generate_context!())
-            .expect("error while running tauri application");
+        let app = builder.build(tauri::generate_context!())?;
 
         init(&app, args).await?;
 
@@ -108,7 +108,7 @@ impl IronApp {
 
 /// Initialization logic
 async fn init(app: &tauri::App, args: &Args) -> AppResult<()> {
-    let db = DB::connect(&resource(app, "db.sqlite3")).await?;
+    let db = iron_db::init(&resource(app, "db.sqlite3")).await?;
     app.manage(db.clone());
 
     // set up app's event listener
@@ -119,7 +119,7 @@ async fn init(app: &tauri::App, args: &Args) -> AppResult<()> {
 
     // calls other crates' initialization logic. anvil needs to be started before networks,
     // otherwise the initial tracker won't be ready to spawn
-    iron_sync::init(db.clone()).await;
+    iron_sync::init().await;
     iron_settings::init(resource(app, "settings.json")).await?;
     iron_ws::init(args).await;
     iron_http::init(args, db).await;
@@ -184,13 +184,14 @@ async fn event_listener(handle: AppHandle) {
 /// Otherwise, the app's default config dir will be used.
 fn resource(app: &tauri::App, resource: &str) -> PathBuf {
     let dir = config_dir(app);
+    debug!("config dir: {:?}", dir);
     std::fs::create_dir_all(&dir).expect("could not create config dir");
     dir.join(resource)
 }
 
 #[cfg(debug_assertions)]
 fn config_dir(_app: &tauri::App) -> PathBuf {
-    PathBuf::from("../../target/debug/")
+    PathBuf::from("../../dev-data/default/")
 }
 
 #[cfg(not(debug_assertions))]

@@ -4,16 +4,23 @@ alias d := dev
 alias f := fix
 alias l := lint
 
+dev *args='':
+  cargo tauri dev --config bin/iron/tauri-dev.conf.json --features ${IRON_FEATURES:-debug} -- -- -- $@
+
 setup:
   yarn
   cargo build
 
+sqlx:
+  #!/bin/sh
+  export DATABASE_URL=sqlite://dev-data/default/db.sqlite3
+  sqlx database create
+  sqlx migrate run
+  cargo sqlx prepare --workspace
+
 build:
   yarn extension:build
   cargo build
-
-dev *args='':
-  cargo tauri dev --features ${IRON_FEATURES:-debug} -- -- -- $@
 
 fix:
   cargo +nightly fmt --all

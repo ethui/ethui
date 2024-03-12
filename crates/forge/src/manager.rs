@@ -8,7 +8,7 @@ use tokio::{spawn, sync::mpsc};
 use crate::{
     abi::Abi,
     error::Result,
-    global::FORGE,
+    init::FORGE,
     watcher::{self, Match},
 };
 

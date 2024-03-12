@@ -53,7 +53,9 @@ yarn run vite build --config vite/inpage.ts
 yarn run vite build --config vite/background.ts
 
 # choose manifest
+echo asd $DIST_DIR
 mv $DIST_DIR/manifest-$target.json $DIST_DIR/manifest.json
+echo dsa
 rm $DIST_DIR/manifest-*.json
 
 sed_args=(-i)

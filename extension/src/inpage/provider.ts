@@ -6,7 +6,6 @@ import {
 import { type Json, type JsonRpcResponse } from "@metamask/utils";
 import { EthereumRpcError } from "eth-rpc-errors";
 import { EventEmitter } from "eventemitter3";
-import { isDuplexStream } from "is-stream";
 import { createStreamMiddleware } from "json-rpc-middleware-stream";
 import log from "loglevel";
 
@@ -139,17 +138,13 @@ export class IronProvider extends EventEmitter {
 
     const connection = createStreamMiddleware();
 
-    if (!isDuplexStream(this.stream)) {
-      throw new Error("IronProvider - Invalid Duplex Stream");
-    }
-
     this.engine.push(createIdRemapMiddleware());
     this.engine.push(errorMiddleware);
 
     connection.stream.pipe(this.stream).pipe(connection.stream);
 
     // Wire up the JsonRpcEngine to the JSON-RPC connection stream
-    this.engine.push(connection.middleware);
+    this.engine.push(connection.middleware as unknown as any);
 
     // Handle JSON-RPC notifications
     connection.events.on("notification", ({ method, params }) => {

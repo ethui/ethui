@@ -9,7 +9,6 @@ use foundry_evm::{
 };
 use hex::{FromHex, ToHex};
 use iron_types::{Address, ToAlloy};
-use revm::interpreter::InstructionResult;
 
 use crate::{
     errors::SimulationResult,
@@ -31,7 +30,6 @@ pub struct CallRawResult {
     pub success: bool,
     pub trace: Option<CallTraceArena>,
     pub logs: Vec<Log>,
-    pub exit_reason: InstructionResult,
     pub return_data: Bytes,
 }
 
@@ -109,7 +107,6 @@ impl Evm {
                 .map(CallTraceNode::from)
                 .collect(),
             logs: result.logs,
-            exit_reason: result.exit_reason,
             return_data: result.return_data,
         })
     }
@@ -144,7 +141,6 @@ impl Evm {
                     removed: l.removed,
                 })
                 .collect(),
-            exit_reason: res.exit_reason,
             return_data: res.result.0.into(),
         })
     }

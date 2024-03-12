@@ -1,15 +1,14 @@
 import { lazy, Suspense } from "react";
 import { createRootRoute, Outlet } from "@tanstack/react-router";
-import { GlobalStyles, ThemeProvider } from "@mui/material";
+import { Box, GlobalStyles, ThemeProvider } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import { DevBuildNotice, ErrorHandler, WagmiWrapper } from "@/components";
 import { useTheme } from "@/store/theme";
 
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { suspense: true } },
-});
+const queryClient = new QueryClient();
 
 const RouterDevtools =
   process.env.NODE_ENV === "production"
@@ -40,18 +39,21 @@ function Root() {
       <GlobalStyles styles={globalStyles} />
       <CssBaseline>
         <ErrorHandler>
-          <QueryClientProvider client={queryClient}>
-            <DevBuildNotice />
-            <WagmiWrapper>
+          <WagmiWrapper>
+            <QueryClientProvider client={queryClient}>
+              <DevBuildNotice />
               <Suspense>
                 <Outlet />
               </Suspense>
 
               <Suspense>
-                <RouterDevtools position="bottom-right" />
+                <Box sx={{ position: "absolute", bottom: 50, left: 0 }}>
+                  <ReactQueryDevtools buttonPosition="relative" />
+                </Box>
+                <RouterDevtools position="bottom-left" />
               </Suspense>
-            </WagmiWrapper>
-          </QueryClientProvider>
+            </QueryClientProvider>
+          </WagmiWrapper>
         </ErrorHandler>
       </CssBaseline>
     </ThemeProvider>

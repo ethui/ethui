@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": " SELECT name\n                FROM contracts\n                WHERE chain_id = ? AND address = ? ",
+  "describe": {
+    "columns": [
+      {
+        "name": "name",
+        "ordinal": 0,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "92f3d5f6ed0173f0558a3edb939d434626d6f93afdb4cf57b6469aaab60f94c4"
+}

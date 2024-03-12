@@ -106,12 +106,12 @@ function ItemForm({ contract, item }: ItemFormProps) {
     });
 
     if (item.stateMutability === "view") {
-      const result = await provider.readContract({
+      const result = (await provider.readContract({
         address: contract,
         abi: [item],
-        functionName: item.name as never, // TODO: no idea why ts thinks this is `never`. code seems to work
+        functionName: item.name,
         args,
-      });
+      })) as bigint;
 
       if (typeof result === "bigint") {
         setCallResult(result.toString());

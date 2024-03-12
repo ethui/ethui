@@ -1,4 +1,4 @@
-use iron_db::DB;
+use iron_db::Db;
 use iron_networks::Networks;
 use iron_types::{Abi, Address, GlobalState};
 
@@ -22,7 +22,7 @@ pub fn get_version() -> String {
 pub async fn get_contract_name(
     chain_id: u32,
     address: Address,
-    db: tauri::State<'_, DB>,
+    db: tauri::State<'_, Db>,
 ) -> AppResult<Option<String>> {
     let network = Networks::read()
         .await
@@ -42,7 +42,7 @@ pub async fn get_contract_name(
 pub async fn get_contract_abi(
     chain_id: u32,
     address: Address,
-    db: tauri::State<'_, DB>,
+    db: tauri::State<'_, Db>,
 ) -> AppResult<Option<Abi>> {
     let network = Networks::read()
         .await

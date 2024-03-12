@@ -31,7 +31,7 @@ export function AddressView({
 }: Props) {
   const network = useNetworks((s) => s.current);
   const address = getAddress(addr);
-  const { data: alias, mutate } = useInvoke<string>("settings_get_alias", {
+  const { data: alias, refetch } = useInvoke<string>("settings_get_alias", {
     address,
   });
   const [aliasFormOpen, setAliasFormOpen] = useState(false);
@@ -78,7 +78,7 @@ export function AddressView({
 
       <Modal open={aliasFormOpen} onClose={() => setAliasFormOpen(false)}>
         <AliasForm
-          {...{ address, alias, mutate }}
+          {...{ address, alias, refetch }}
           onSubmit={() => setAliasFormOpen(false)}
         />
       </Modal>
@@ -93,11 +93,11 @@ const schema = z.object({
 interface AliasFormProps {
   address: string;
   alias?: string;
-  mutate: () => void;
+  refetch: () => void;
   onSubmit: () => void;
 }
 
-function AliasForm({ address, alias, mutate, onSubmit }: AliasFormProps) {
+function AliasForm({ address, alias, refetch, onSubmit }: AliasFormProps) {
   const {
     handleSubmit,
     register,
@@ -109,7 +109,7 @@ function AliasForm({ address, alias, mutate, onSubmit }: AliasFormProps) {
 
   const submit = (data: FieldValues) => {
     invoke("settings_set_alias", { address, alias: data.alias });
-    mutate();
+    refetch();
     onSubmit();
   };
 

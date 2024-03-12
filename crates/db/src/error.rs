@@ -16,6 +16,12 @@ pub enum Error {
 
     #[error(transparent)]
     Settings(#[from] iron_settings::Error),
+
+    #[error(transparent)]
+    Serde(#[from] serde_json::Error),
+
+    #[error("not found")]
+    NotFound,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
