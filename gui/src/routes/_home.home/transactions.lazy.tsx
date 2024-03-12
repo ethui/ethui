@@ -12,7 +12,6 @@ import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import truncateEthAddress from "truncate-eth-address";
 import { Abi, Address, formatEther, formatGwei } from "viem";
-// import { useTransaction } from "wagmi";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
 import { Paginated, PaginatedTx, Pagination, Tx } from "@iron/types";

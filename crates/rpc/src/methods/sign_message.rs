@@ -1,9 +1,8 @@
 use std::str::FromStr;
 
-use ethers::providers::RetryClient;
 use ethers::{
     prelude::SignerMiddleware,
-    providers::{Http, Middleware as _, Provider},
+    providers::{Http, Middleware as _, Provider, RetryClient},
     signers::Signer as _,
     types::{transaction::eip712, Bytes, Signature},
 };
