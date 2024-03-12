@@ -3,7 +3,7 @@ import { Box as BoxIcon } from "lucide-react";
 import { Typography } from "../Typography";
 
 export interface BlockNumberProps {
-  number: number;
+  number?: number;
 }
 
 export const BlockNumber = ({ number }: BlockNumberProps) => (
