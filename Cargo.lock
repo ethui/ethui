@@ -2926,7 +2926,7 @@ dependencies = [
 [[package]]
 name = "foundry-cheatcodes"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry?rev=nightly-53b15e6cee787a7765988bb7228f26f62eb78129#53b15e6cee787a7765988bb7228f26f62eb78129"
+source = "git+https://github.com/foundry-rs/foundry?rev=4777fbb#4777fbb271e465e57b9e4e175abb000f375eb680"
 dependencies = [
  "alloy-dyn-abi",
  "alloy-json-abi",
@@ -2953,7 +2953,7 @@ dependencies = [
 [[package]]
 name = "foundry-cheatcodes-spec"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry?rev=nightly-53b15e6cee787a7765988bb7228f26f62eb78129#53b15e6cee787a7765988bb7228f26f62eb78129"
+source = "git+https://github.com/foundry-rs/foundry?rev=4777fbb#4777fbb271e465e57b9e4e175abb000f375eb680"
 dependencies = [
  "alloy-sol-types",
  "foundry-macros",
@@ -2963,13 +2963,14 @@ dependencies = [
 [[package]]
 name = "foundry-common"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry?rev=nightly-53b15e6cee787a7765988bb7228f26f62eb78129#53b15e6cee787a7765988bb7228f26f62eb78129"
+source = "git+https://github.com/foundry-rs/foundry?rev=4777fbb#4777fbb271e465e57b9e4e175abb000f375eb680"
 dependencies = [
  "alloy-dyn-abi",
  "alloy-json-abi",
  "alloy-primitives",
  "alloy-sol-types",
  "async-trait",
+ "auto_impl",
  "clap",
  "comfy-table",
  "const-hex",
@@ -3038,7 +3039,7 @@ dependencies = [
 [[package]]
 name = "foundry-config"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry?rev=nightly-53b15e6cee787a7765988bb7228f26f62eb78129#53b15e6cee787a7765988bb7228f26f62eb78129"
+source = "git+https://github.com/foundry-rs/foundry?rev=4777fbb#4777fbb271e465e57b9e4e175abb000f375eb680"
 dependencies = [
  "Inflector",
  "alloy-chains",
@@ -3069,7 +3070,7 @@ dependencies = [
 [[package]]
 name = "foundry-evm"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry?rev=nightly-53b15e6cee787a7765988bb7228f26f62eb78129#53b15e6cee787a7765988bb7228f26f62eb78129"
+source = "git+https://github.com/foundry-rs/foundry?rev=4777fbb#4777fbb271e465e57b9e4e175abb000f375eb680"
 dependencies = [
  "alloy-dyn-abi",
  "alloy-json-abi",
@@ -3088,10 +3089,8 @@ dependencies = [
  "foundry-evm-fuzz",
  "foundry-evm-traces",
  "hashbrown 0.14.3",
- "itertools 0.11.0",
  "parking_lot",
  "proptest",
- "rayon",
  "revm",
  "thiserror",
  "tracing",
@@ -3100,7 +3099,7 @@ dependencies = [
 [[package]]
 name = "foundry-evm-core"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry?rev=nightly-53b15e6cee787a7765988bb7228f26f62eb78129#53b15e6cee787a7765988bb7228f26f62eb78129"
+source = "git+https://github.com/foundry-rs/foundry?rev=4777fbb#4777fbb271e465e57b9e4e175abb000f375eb680"
 dependencies = [
  "alloy-dyn-abi",
  "alloy-json-abi",
@@ -3132,7 +3131,7 @@ dependencies = [
 [[package]]
 name = "foundry-evm-coverage"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry?rev=nightly-53b15e6cee787a7765988bb7228f26f62eb78129#53b15e6cee787a7765988bb7228f26f62eb78129"
+source = "git+https://github.com/foundry-rs/foundry?rev=4777fbb#4777fbb271e465e57b9e4e175abb000f375eb680"
 dependencies = [
  "alloy-primitives",
  "eyre",
@@ -3147,7 +3146,7 @@ dependencies = [
 [[package]]
 name = "foundry-evm-fuzz"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry?rev=nightly-53b15e6cee787a7765988bb7228f26f62eb78129#53b15e6cee787a7765988bb7228f26f62eb78129"
+source = "git+https://github.com/foundry-rs/foundry?rev=4777fbb#4777fbb271e465e57b9e4e175abb000f375eb680"
 dependencies = [
  "alloy-dyn-abi",
  "alloy-json-abi",
@@ -3175,7 +3174,7 @@ dependencies = [
 [[package]]
 name = "foundry-evm-traces"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry?rev=nightly-53b15e6cee787a7765988bb7228f26f62eb78129#53b15e6cee787a7765988bb7228f26f62eb78129"
+source = "git+https://github.com/foundry-rs/foundry?rev=4777fbb#4777fbb271e465e57b9e4e175abb000f375eb680"
 dependencies = [
  "alloy-dyn-abi",
  "alloy-json-abi",
@@ -3204,7 +3203,7 @@ dependencies = [
 [[package]]
 name = "foundry-macros"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry?rev=nightly-53b15e6cee787a7765988bb7228f26f62eb78129#53b15e6cee787a7765988bb7228f26f62eb78129"
+source = "git+https://github.com/foundry-rs/foundry?rev=4777fbb#4777fbb271e465e57b9e4e175abb000f375eb680"
 dependencies = [
  "proc-macro-error",
  "proc-macro2",
@@ -7894,9 +7893,9 @@ dependencies = [
 
 [[package]]
 name = "syn-solidity"
-version = "0.5.0"
+version = "0.5.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e349ed2ca56eff703d7c3ea013771bcbab9ad2ad39dddf863fc51d820329dc41"
+checksum = "91ede2e5b2c6bfac4bc0ff4499957a11725dc12a7ddb86270e827ef575892553"
 dependencies = [
  "paste",
  "proc-macro2",
