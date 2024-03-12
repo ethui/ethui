@@ -154,7 +154,6 @@ function SimulationResult({ simulation, chainId, to }: SimulationResultProps) {
 
   return (
     <Grid container rowSpacing={1}>
-      { }
       <Datapoint
         label="Trust"
         value={
