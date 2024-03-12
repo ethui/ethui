@@ -1,10 +1,10 @@
-import { Button, Link, Stack, Typography } from "@mui/material";
+import { Box, Button, Link, Stack, Typography } from "@mui/material";
 
 import { StepProps } from ".";
 
 export function WelcomeStep({ onSubmit }: StepProps) {
   return (
-    <Stack alignItems="flex-end" spacing={3}>
+    <Stack spacing={3} sx={{ width: "100%" }}>
       <Typography variant="h6" component="h1" alignSelf="start">
         Welcome
       </Typography>
@@ -31,9 +31,11 @@ export function WelcomeStep({ onSubmit }: StepProps) {
         <br />
         Contributors are welcome!
       </Typography>
-      <Button variant="contained" type="submit" onClick={onSubmit}>
-        Next
-      </Button>
+      <Box alignSelf="flex-end">
+        <Button variant="contained" type="submit" onClick={onSubmit}>
+          Next
+        </Button>
+      </Box>
     </Stack>
   );
 }
