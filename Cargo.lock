@@ -2926,7 +2926,7 @@ dependencies = [
 [[package]]
 name = "foundry-cheatcodes"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry?rev=4777fbb#4777fbb271e465e57b9e4e175abb000f375eb680"
+source = "git+https://github.com/foundry-rs/foundry?rev=c312c0d#c312c0da8eea81515f35cb12d106314cd737d170"
 dependencies = [
  "alloy-dyn-abi",
  "alloy-json-abi",
@@ -2953,7 +2953,7 @@ dependencies = [
 [[package]]
 name = "foundry-cheatcodes-spec"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry?rev=4777fbb#4777fbb271e465e57b9e4e175abb000f375eb680"
+source = "git+https://github.com/foundry-rs/foundry?rev=c312c0d#c312c0da8eea81515f35cb12d106314cd737d170"
 dependencies = [
  "alloy-sol-types",
  "foundry-macros",
@@ -2963,14 +2963,13 @@ dependencies = [
 [[package]]
 name = "foundry-common"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry?rev=4777fbb#4777fbb271e465e57b9e4e175abb000f375eb680"
+source = "git+https://github.com/foundry-rs/foundry?rev=c312c0d#c312c0da8eea81515f35cb12d106314cd737d170"
 dependencies = [
  "alloy-dyn-abi",
  "alloy-json-abi",
  "alloy-primitives",
  "alloy-sol-types",
  "async-trait",
- "auto_impl",
  "clap",
  "comfy-table",
  "const-hex",
@@ -3039,7 +3038,7 @@ dependencies = [
 [[package]]
 name = "foundry-config"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry?rev=4777fbb#4777fbb271e465e57b9e4e175abb000f375eb680"
+source = "git+https://github.com/foundry-rs/foundry?rev=c312c0d#c312c0da8eea81515f35cb12d106314cd737d170"
 dependencies = [
  "Inflector",
  "alloy-chains",
@@ -3070,7 +3069,7 @@ dependencies = [
 [[package]]
 name = "foundry-evm"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry?rev=4777fbb#4777fbb271e465e57b9e4e175abb000f375eb680"
+source = "git+https://github.com/foundry-rs/foundry?rev=c312c0d#c312c0da8eea81515f35cb12d106314cd737d170"
 dependencies = [
  "alloy-dyn-abi",
  "alloy-json-abi",
@@ -3089,8 +3088,10 @@ dependencies = [
  "foundry-evm-fuzz",
  "foundry-evm-traces",
  "hashbrown 0.14.3",
+ "itertools 0.11.0",
  "parking_lot",
  "proptest",
+ "rayon",
  "revm",
  "thiserror",
  "tracing",
@@ -3099,7 +3100,7 @@ dependencies = [
 [[package]]
 name = "foundry-evm-core"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry?rev=4777fbb#4777fbb271e465e57b9e4e175abb000f375eb680"
+source = "git+https://github.com/foundry-rs/foundry?rev=c312c0d#c312c0da8eea81515f35cb12d106314cd737d170"
 dependencies = [
  "alloy-dyn-abi",
  "alloy-json-abi",
@@ -3131,7 +3132,7 @@ dependencies = [
 [[package]]
 name = "foundry-evm-coverage"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry?rev=4777fbb#4777fbb271e465e57b9e4e175abb000f375eb680"
+source = "git+https://github.com/foundry-rs/foundry?rev=c312c0d#c312c0da8eea81515f35cb12d106314cd737d170"
 dependencies = [
  "alloy-primitives",
  "eyre",
@@ -3146,7 +3147,7 @@ dependencies = [
 [[package]]
 name = "foundry-evm-fuzz"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry?rev=4777fbb#4777fbb271e465e57b9e4e175abb000f375eb680"
+source = "git+https://github.com/foundry-rs/foundry?rev=c312c0d#c312c0da8eea81515f35cb12d106314cd737d170"
 dependencies = [
  "alloy-dyn-abi",
  "alloy-json-abi",
@@ -3174,7 +3175,7 @@ dependencies = [
 [[package]]
 name = "foundry-evm-traces"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry?rev=4777fbb#4777fbb271e465e57b9e4e175abb000f375eb680"
+source = "git+https://github.com/foundry-rs/foundry?rev=c312c0d#c312c0da8eea81515f35cb12d106314cd737d170"
 dependencies = [
  "alloy-dyn-abi",
  "alloy-json-abi",
@@ -3203,7 +3204,7 @@ dependencies = [
 [[package]]
 name = "foundry-macros"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry?rev=4777fbb#4777fbb271e465e57b9e4e175abb000f375eb680"
+source = "git+https://github.com/foundry-rs/foundry?rev=c312c0d#c312c0da8eea81515f35cb12d106314cd737d170"
 dependencies = [
  "proc-macro-error",
  "proc-macro2",

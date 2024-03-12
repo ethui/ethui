@@ -88,11 +88,11 @@ clap = { version = "4.4.8", features = ["derive", "env"] }
 coins-ledger = "0.9.0"
 color-eyre = "0.6.12"
 
-# Foundry - December 1st
-foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "4777fbb" }
-foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "4777fbb" }
-foundry-common = { git = "https://github.com/foundry-rs/foundry", rev = "4777fbb" }
-foundry-compilers = { git = "https://github.com/foundry-rs/foundry", rev = "4777fb" }
+# Foundry - December 21st
+foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "c312c0d" }
+foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "c312c0d" }
+foundry-common = { git = "https://github.com/foundry-rs/foundry", rev = "c312c0d" }
+foundry-compilers = { git = "https://github.com/foundry-rs/foundry", rev = "c312c0d" }
 hex = "0.4.3"
 
 [patch.crates-io]
