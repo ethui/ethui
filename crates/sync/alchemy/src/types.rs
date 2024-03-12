@@ -57,6 +57,12 @@ impl From<&AlchemyAssetTransfer> for Tx {
             data: None,
             position: None,
             deployed_contract: None,
+            gas_limit: None,
+            gas_used: None,
+            max_fee_per_gas: None,
+            max_priority_fee_per_gas: None,
+            r#type: None,
+            nonce: None,
 
             incomplete: true,
         }

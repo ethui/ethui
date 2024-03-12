@@ -29,6 +29,12 @@ pub struct Tx {
     pub position: Option<usize>,
     pub status: u64,
     pub deployed_contract: Option<Address>,
+    pub gas_limit: Option<U256>,
+    pub gas_used: Option<U256>,
+    pub max_fee_per_gas: Option<U256>,
+    pub max_priority_fee_per_gas: Option<U256>,
+    pub nonce: Option<u64>,
+    pub r#type: Option<u64>,
     pub incomplete: bool,
 }
 
@@ -95,8 +101,22 @@ impl TryFrom<&SqliteRow> for Tx {
             data: row
                 .get::<Option<String>, _>("data")
                 .map(|b| Bytes::from_str(&b).unwrap()),
+            gas_limit: row
+                .get::<Option<String>, _>("gas_limit")
+                .map(|v| U256::from_str_radix(&v, 10).unwrap()),
+            gas_used: row
+                .get::<Option<String>, _>("gas_used")
+                .map(|v| U256::from_str_radix(&v, 10).unwrap()),
+            max_fee_per_gas: row
+                .get::<Option<String>, _>("max_fee_per_gas")
+                .map(|v| U256::from_str_radix(&v, 10).unwrap()),
+            max_priority_fee_per_gas: row
+                .get::<Option<String>, _>("max_priority_fee_per_gas")
+                .map(|v| U256::from_str_radix(&v, 10).unwrap()),
+            r#type: row.get::<Option<i32>, _>("type").map(|b| b as u64),
 
             block_number: row.get::<Option<i64>, _>("block_number").map(|b| b as u64),
+            nonce: row.get::<Option<i64>, _>("nonce").map(|b| b as u64),
             position: Some(row.get::<i32, _>("position") as usize),
             status: row.get::<i32, _>("status") as u64,
             incomplete: row.get::<bool, _>("incomplete"),

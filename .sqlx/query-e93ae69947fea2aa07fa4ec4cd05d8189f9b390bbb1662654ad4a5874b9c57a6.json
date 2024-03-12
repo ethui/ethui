@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": " INSERT OR REPLACE INTO transactions (hash, chain_id, from_address, to_address, block_number, position, value, gas_limit, gas_used, max_fee_per_gas, max_priority_fee_per_gas, type, nonce, status, incomplete)\n            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 15
+    },
+    "nullable": []
+  },
+  "hash": "e93ae69947fea2aa07fa4ec4cd05d8189f9b390bbb1662654ad4a5874b9c57a6"
+}
