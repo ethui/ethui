@@ -26,14 +26,5 @@ hex = { workspace = true }
 
 eyre = "*"
 
-revm = { version = "3", default-features = false, features = [
-  "std",
-  "serde",
-  "memory_limit",
-  "optional_eip3607",
-  "optional_block_gas_limit",
-  "optional_no_base_fee",
-] }
-
 [dev-dependencies]
 pretty_assertions = "1.4.0"

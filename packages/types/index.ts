@@ -18,8 +18,14 @@ export interface Tx {
   status: number;
   to?: Address;
   value?: string;
-  data?: string;
+  data?: `0x${string}`;
   blockNumber?: number;
+  gasLimit?: string;
+  gasUsed?: string;
+  maxFeePerGas?: string;
+  maxPriorityFeePerGas?: string;
+  type?: number;
+  nonce?: number;
   position?: number;
 }
 

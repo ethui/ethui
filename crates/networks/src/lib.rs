@@ -9,7 +9,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use ethers::providers::{Http, Provider};
+use ethers::providers::{Http, Provider, RetryClient};
 pub use init::init;
 use iron_types::{Affinity, UINotify};
 use serde::Serialize;
@@ -103,7 +103,7 @@ impl Networks {
         self.do_set_networks(Network::all_default()).await
     }
 
-    pub fn get_current_provider(&self) -> Provider<Http> {
+    pub fn get_current_provider(&self) -> Provider<RetryClient<Http>> {
         self.get_current().get_provider()
     }
 

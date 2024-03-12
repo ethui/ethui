@@ -20,7 +20,9 @@ pub enum Error {
     SignerBuild(String),
 
     #[error(transparent)]
-    SignerMiddleware(#[from] SignerMiddlewareError<Provider<Http>, iron_wallets::Signer>),
+    SignerMiddleware(
+        #[from] SignerMiddlewareError<Provider<RetryClient<Http>>, iron_wallets::Signer>,
+    ),
 
     #[error("Signer error: {0}")]
     Signer(String),
