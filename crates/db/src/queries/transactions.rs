@@ -23,10 +23,16 @@ impl DbInner {
         let value = tx.value.map(|v| v.to_string());
         let status = tx.status as u32;
         let incomplete = tx.incomplete;
+        let gas_limit = tx.gas_limit.map(|v| v.to_string());
+        let gas_used = tx.gas_used.map(|v| v.to_string());
+        let max_fee_per_gas = tx.max_fee_per_gas.map(|v| v.to_string());
+        let max_priority_fee_per_gas = tx.max_priority_fee_per_gas.map(|v| v.to_string());
+        let r#type = tx.r#type.map(|t| t as i64);
+        let nonce = tx.nonce.map(|n| n as i64);
 
         sqlx::query!(
-            r#" INSERT OR REPLACE INTO transactions (hash, chain_id, from_address, to_address, block_number, position, value, status, incomplete)
-            VALUES (?,?,?,?,?,?,?,?,?)"#,
+            r#" INSERT OR REPLACE INTO transactions (hash, chain_id, from_address, to_address, block_number, position, value, gas_limit, gas_used, max_fee_per_gas, max_priority_fee_per_gas, type, nonce, status, incomplete)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"#,
             hash,
             chain_id,
             from,
@@ -34,6 +40,12 @@ impl DbInner {
             block_number,
             position,
             value,
+            gas_limit,
+            gas_used,
+            max_fee_per_gas,
+            max_priority_fee_per_gas,
+            r#type,
+            nonce,
             status,
             incomplete
         )
@@ -46,7 +58,7 @@ impl DbInner {
         let hash = hash.to_string();
 
         let row = sqlx::query!(
-            r#" SELECT hash, from_address, to_address, data as 'data?', value as 'value?', block_number, position, status, incomplete as 'incomplete!'
+            r#" SELECT hash, from_address, to_address, data as 'data?', value as 'value?', block_number, position, gas_limit, gas_used, max_fee_per_gas, max_priority_fee_per_gas, type, nonce, status, incomplete as 'incomplete!'
                 FROM transactions
                 WHERE chain_id = ? AND hash = ? "#,
             chain_id,
@@ -64,6 +76,16 @@ impl DbInner {
             block_number: row.block_number.map(|b| b as u64),
             position: row.position.map(|p| p as usize),
             status: row.status.unwrap_or_default() as u64,
+            gas_limit: row.gas_limit.map(|v| U256::from_str_radix(&v, 10).unwrap()),
+            gas_used: row.gas_used.map(|v| U256::from_str_radix(&v, 10).unwrap()),
+            max_fee_per_gas: row
+                .max_fee_per_gas
+                .map(|v| U256::from_str_radix(&v, 10).unwrap()),
+            max_priority_fee_per_gas: row
+                .max_priority_fee_per_gas
+                .map(|v| U256::from_str_radix(&v, 10).unwrap()),
+            r#type: row.r#type.map(|t| t as u64),
+            nonce: row.nonce.map(|n| n as u64),
             incomplete: row.incomplete,
             deployed_contract: None,
         };

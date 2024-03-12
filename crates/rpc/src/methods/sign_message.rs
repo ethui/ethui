@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use ethers::{
     prelude::SignerMiddleware,
-    providers::{Http, Middleware as _, Provider},
+    providers::{Http, Middleware as _, Provider, RetryClient},
     signers::Signer as _,
     types::{transaction::eip712, Bytes, Signature},
 };
@@ -15,7 +15,7 @@ use serde::Serialize;
 
 use crate::{Error, Result};
 
-type Middleware = SignerMiddleware<Provider<Http>, iron_wallets::Signer>;
+type Middleware = SignerMiddleware<Provider<RetryClient<Http>>, iron_wallets::Signer>;
 
 /// Orchestrates message signing
 /// Takes references to both the wallet and network

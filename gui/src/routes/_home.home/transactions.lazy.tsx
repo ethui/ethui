@@ -12,7 +12,6 @@ import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import truncateEthAddress from "truncate-eth-address";
 import { Abi, Address, formatEther, formatGwei } from "viem";
-import { useTransaction, useTransactionReceipt } from "wagmi";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
 import { Paginated, PaginatedTx, Pagination, Tx } from "@iron/types";
@@ -157,8 +156,7 @@ function Details({ tx, chainId }: DetailsProps) {
     hash: tx.hash,
     chainId,
   });
-  const { data: transaction } = useTransaction({ hash: tx.hash, chainId });
-  const { data: receipt } = useTransactionReceipt({ hash: tx.hash, chainId });
+  // const { data: transaction } = useTransaction({ hash: tx.hash, chainId });
   const { data: abi } = useInvoke<Abi>("get_contract_abi", {
     address: tx.to,
     chainId,
@@ -166,7 +164,7 @@ function Details({ tx, chainId }: DetailsProps) {
 
   if (!fullTx) return null;
 
-  const value = fullTx.value ? BigInt(fullTx.value) : undefined;
+  const value = BigInt(fullTx.value || 0);
 
   return (
     <Grid container rowSpacing={1}>
@@ -183,17 +181,15 @@ function Details({ tx, chainId }: DetailsProps) {
       <Datapoint
         label="value"
         value={
-          value ? (
-            <ContextMenuWithTauri copy={value}>
-              {formatEther(value)} Ξ
-            </ContextMenuWithTauri>
-          ) : null
+          <ContextMenuWithTauri copy={value}>
+            {formatEther(value)} Ξ
+          </ContextMenuWithTauri>
         }
         size="small"
       />
       <Datapoint
         label="Block #"
-        value={receipt && receipt.blockNumber.toString()}
+        value={fullTx?.blockNumber?.toString()}
         size="small"
       />
       <Datapoint
@@ -201,49 +197,60 @@ function Details({ tx, chainId }: DetailsProps) {
         value={truncateEthAddress(tx.hash)}
         size="small"
       />
-      <Datapoint label="nonce" value={transaction?.nonce} size="small" />
+      <Datapoint label="nonce" value={fullTx.nonce} size="small" />
       <Datapoint
         label="data"
         value={
-          transaction && (
-            <SolidityCall
-              value={value}
-              data={transaction.input}
-              from={tx.from}
-              to={tx.to}
-              chainId={chainId}
-              abi={abi}
-              ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
-            />
-          )
+          <SolidityCall
+            value={value}
+            data={fullTx.data}
+            from={tx.from}
+            to={tx.to}
+            chainId={chainId}
+            abi={abi}
+            ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
+          />
         }
       />
-      <Datapoint label="type" value={transaction?.type} size="small" />
+      <Datapoint label="type" value={formatTxType(fullTx?.type)} size="small" />
       {/* TODO: other txs types */}
-      {transaction?.type == "eip1559" && (
+      {fullTx?.type == 2 && (
         <>
           <Datapoint
             label="maxFeePerGas"
-            value={`${formatGwei(transaction.maxFeePerGas)} gwei`}
+            value={`${fullTx.maxFeePerGas && formatGwei(BigInt(fullTx.maxFeePerGas))} gwei`}
             size="small"
           />
           <Datapoint
             label="maxPriorityFeePerGas"
-            value={`${formatGwei(transaction.maxPriorityFeePerGas)} gwei`}
+            value={`${fullTx.maxPriorityFeePerGas && formatGwei(BigInt(fullTx.maxPriorityFeePerGas))} gwei`}
             size="small"
           />
         </>
       )}
       <Datapoint
         label="gasLimit"
-        value={transaction && `${formatGwei(transaction?.gas)} gwei`}
+        value={fullTx.gasLimit && `${formatGwei(BigInt(fullTx.gasLimit))} gwei`}
         size="small"
       />
       <Datapoint
         label="gasUsed"
-        value={receipt && `${formatGwei(receipt?.gasUsed)} gwei`}
+        value={fullTx.gasUsed && `${formatGwei(BigInt(fullTx.gasUsed))} gwei`}
         size="medium"
       />
     </Grid>
   );
+}
+
+function formatTxType(type: number | undefined): import("react").ReactNode {
+  switch (type) {
+    case 0:
+      return "Legacy";
+    case 1:
+      return "EIP-1559";
+    case 2:
+      return "EIP-2930";
+    case 3:
+      return "EIP-4844";
+  }
 }

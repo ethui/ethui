@@ -5,8 +5,8 @@ const { VITE_IRON_HTTP_PORT, VITE_IRON_DEV_HTTP_PORT, NODE_ENV } = import.meta
 
 const PORT =
   NODE_ENV === "production"
-    ? VITE_IRON_DEV_HTTP_PORT || "9103"
-    : VITE_IRON_HTTP_PORT || "9003";
+    ? VITE_IRON_HTTP_PORT || "9003"
+    : VITE_IRON_DEV_HTTP_PORT || "9103";
 
 type Parameters = Record<string, string | bigint | number | undefined>;
 

@@ -1,5 +1,5 @@
 use crate::{Error, Result};
-use ethers::providers::{Http, Middleware, Provider};
+use ethers::providers::{Http, Middleware, Provider, RetryClient};
 use iron_abis::IERC20;
 use iron_types::events::Tx;
 use iron_types::{Address, GlobalState, ToAlloy, ToEthers, TokenMetadata, B256};
@@ -26,6 +26,12 @@ pub(crate) async fn fetch_full_tx(chain_id: u32, hash: B256) -> Result<()> {
         data: Some(tx.input),
         position: Some(receipt.transaction_index.as_u64() as usize),
         status: receipt.status.unwrap().as_u64(),
+        gas_limit: Some(tx.gas.to_alloy()),
+        gas_used: receipt.gas_used.map(|g| g.to_alloy()),
+        max_fee_per_gas: tx.max_fee_per_gas.map(|g| g.to_alloy()),
+        max_priority_fee_per_gas: tx.max_priority_fee_per_gas.map(|g| g.to_alloy()),
+        r#type: tx.transaction_type.map(|t| t.as_u64()),
+        nonce: Some(tx.nonce.as_u64()),
         deployed_contract: None,
         incomplete: false,
     };
@@ -56,7 +62,7 @@ pub(crate) async fn fetch_erc20_metadata(chain_id: u32, address: Address) -> Res
     Ok(())
 }
 
-async fn provider(chain_id: u32) -> Result<Provider<Http>> {
+async fn provider(chain_id: u32) -> Result<Provider<RetryClient<Http>>> {
     let networks = iron_networks::Networks::read().await;
 
     match networks.get_network(chain_id) {
