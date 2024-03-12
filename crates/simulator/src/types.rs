@@ -2,7 +2,6 @@ use alloy_primitives::{Bytes, U256};
 use ethers_core::types::Log;
 use foundry_evm::{traces::CallTraceNode, utils::CallKind};
 use iron_types::Address;
-use revm::interpreter::InstructionResult;
 use serde::{Deserialize, Serialize};
 
 /// Simulation request
@@ -26,7 +25,6 @@ pub struct Result {
     pub success: bool,
     pub trace: Vec<CallTraceNode>,
     pub logs: Vec<Log>,
-    pub exit_reason: InstructionResult,
     pub return_data: Bytes,
 }
 

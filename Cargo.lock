@@ -4480,7 +4480,6 @@ dependencies = [
  "iron-networks",
  "iron-types",
  "pretty_assertions",
- "revm",
  "serde",
  "serde_json",
  "tauri",
