@@ -123,6 +123,7 @@ impl DbInner {
             .map(|r| PaginatedTx {
                 hash: B256::from_str(&r.hash.unwrap()).unwrap(),
                 from: Address::from_str(&r.from_address).unwrap(),
+                block_number: r.block_number.map(|b| b as u64),
                 to: r.to_address.and_then(|r| Address::from_str(&r).ok()),
                 status: r.status.unwrap_or_default() as u64,
                 incomplete: r.incomplete,
