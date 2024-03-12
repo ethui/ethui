@@ -1,6 +1,6 @@
 import { Alert, AlertTitle, Box, Button, Grid, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Cancel, CheckCircle, Delete, Send } from "@mui/icons-material";
+import { Cancel, CheckCircle, Delete, Send, Report } from "@mui/icons-material";
 import { Abi, Address, Hex, decodeEventLog, formatUnits, parseAbi } from "viem";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
@@ -38,6 +38,7 @@ interface Log {
 }
 
 interface Simulation {
+  pastInteractions: number;
   success: boolean;
   gasUsed: bigint;
   blockNumber: bigint;
@@ -94,9 +95,7 @@ export function TxReviewDialog() {
         sx={{ width: "100%" }}
       />
 
-      <Box alignSelf="center">
-        <SimulationResult simulation={simulation} chainId={chainId} />
-      </Box>
+      <SimulationResult simulation={simulation} chainId={chainId} to={to} />
 
       <DialogBottom>
         <Actions
@@ -121,7 +120,7 @@ function Header({ from, to, network }: HeaderProps) {
     <Stack
       direction="row"
       justifyContent="space-between"
-      alignItems="center"
+      alignItems="stretch"
       alignSelf="center"
       width="100%"
     >
@@ -142,13 +141,37 @@ function Header({ from, to, network }: HeaderProps) {
 interface SimulationResultProps {
   simulation: Simulation | undefined;
   chainId: number;
+  to: Address;
 }
 
-function SimulationResult({ simulation, chainId }: SimulationResultProps) {
+function SimulationResult({ simulation, chainId, to }: SimulationResultProps) {
+  const { data: callCount } = useInvoke<number>("simulator_get_call_count", {
+    chainId,
+    to,
+  });
+
   if (!simulation) return null;
 
   return (
     <Grid container rowSpacing={1}>
+      <Datapoint
+        label="Trust"
+        value={
+          callCount &&
+          (callCount > 0 ? (
+            <Stack direction="row">
+              <CheckCircle color="success" />
+              <Typography>Called {callCount} time(s) before.</Typography>
+            </Stack>
+          ) : (
+            <Stack direction="row">
+              <Report color="error" />
+              <Typography>First interaction with this contract.</Typography>
+            </Stack>
+          ))
+        }
+        size="large"
+      />
       <Datapoint
         label="Status"
         value={
@@ -158,13 +181,13 @@ function SimulationResult({ simulation, chainId }: SimulationResultProps) {
             <Cancel color="error" />
           )
         }
-        size="small"
+        size="medium"
       />
       {simulation.success && (
         <Datapoint
           label="Expected Gas Usage"
           value={simulation.gasUsed.toString()}
-          size="small"
+          size="medium"
         />
       )}
       <Grid item xs={12}>
