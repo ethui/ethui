@@ -19,26 +19,6 @@ pub fn get_version() -> String {
 }
 
 #[tauri::command]
-pub async fn get_contract_name(
-    chain_id: u32,
-    address: Address,
-    db: tauri::State<'_, Db>,
-) -> AppResult<Option<String>> {
-    let network = Networks::read()
-        .await
-        .get_network(chain_id)
-        .ok_or(AppError::InvalidNetwork)?;
-
-    if network.is_dev() {
-        Ok(iron_forge::commands::forge_get_name(address, chain_id).await?)
-    } else {
-        let abi = db.get_contract_name(chain_id, address).await?;
-
-        Ok(Some(abi))
-    }
-}
-
-#[tauri::command]
 pub async fn get_contract_abi(
     chain_id: u32,
     address: Address,

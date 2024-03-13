@@ -1,8 +1,9 @@
-use sqlx::Row;
 use std::str::FromStr;
 
-use crate::{DbInner, Result};
 use iron_types::{Address, Erc721Token, Erc721TokenData, U256};
+use sqlx::Row;
+
+use crate::{DbInner, Result};
 
 impl DbInner {
     pub async fn process_erc721_transfer(

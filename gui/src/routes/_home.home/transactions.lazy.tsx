@@ -112,11 +112,12 @@ function Summary({ account, tx }: SummaryProps) {
   return (
     <Stack direction="row" alignItems="center" spacing={3}>
       <Icon {...{ tx, account }} />
+
       <BlockNumber number={tx.blockNumber} />
       <Stack direction="row" alignItems="center" spacing={1}>
         <AddressView address={tx.from} /> <span>→</span>
         {tx.to ? (
-          <AddressView address={tx.to} tokenIcon />
+          <AddressView address={tx.to} />
         ) : (
           <Typography component="span">Contract Deploy</Typography>
         )}
@@ -174,12 +175,12 @@ function Details({ tx, chainId }: DetailsProps) {
     <Grid container rowSpacing={1}>
       <Datapoint
         label="from"
-        value={<AddressView address={tx.from} />}
+        value={<AddressView icon address={tx.from} />}
         size="small"
       />
       <Datapoint
         label="to"
-        value={tx.to ? <AddressView tokenIcon address={tx.to} /> : ""}
+        value={tx.to ? <AddressView icon address={tx.to} /> : ""}
         size="small"
       />
       <Datapoint

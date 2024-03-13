@@ -30,7 +30,9 @@ export function QuickAddressSelect() {
 
   const renderValue = (v: string) => {
     const address = addresses?.find(([key]) => key === v)?.[1];
-    return address && <AddressView contextMenu={false} address={address} />;
+    return (
+      address && <AddressView icon contextMenu={false} address={address} />
+    );
   };
 
   if (!addresses || !currentWallet) return <>Loading</>;
@@ -48,7 +50,7 @@ export function QuickAddressSelect() {
       >
         {map(addresses, ([key, address]) => (
           <MenuItem value={key} key={key}>
-            <AddressView contextMenu={false} address={address} />
+            <AddressView icon contextMenu={false} address={address} />
           </MenuItem>
         ))}
       </Select>

@@ -40,6 +40,7 @@ pub async fn forge_get_name(address: Address, chain_id: u32) -> Result<Option<St
         provider.get_code(address.to_ethers(), None).await?
     };
 
+    dbg!(&code);
     if code.len() == 0 {
         return Ok(None);
     }

@@ -1,6 +1,6 @@
+use std::{path::PathBuf, sync::Arc};
+
 use once_cell::sync::OnceCell;
-use std::path::PathBuf;
-use std::sync::Arc;
 
 use crate::{Db, DbInner, Result};
 

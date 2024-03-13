@@ -205,7 +205,7 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
             }
             Msg::CaughtUp => caught_up = true,
             Msg::Traces(traces) => {
-                let events = expand_traces(traces, &provider).await;
+                let events = expand_traces(traces, &provider, ctx.chain_id).await;
                 db.save_events(ctx.chain_id, events).await?
             }
             Msg::Logs(logs) => {

@@ -1,15 +1,7 @@
 use std::str::FromStr;
-use tracing::instrument;
 
-<<<<<<< Updated upstream
-use iron_types::{Abi, Address};
-||||||| Stash base
-use iron_types::{Abi, Address};
+use iron_types::{Abi, Address, Contract, ContractWithAbi};
 use tracing::instrument;
-=======
-use iron_types::{Abi, Address, Contract};
-use tracing::instrument;
->>>>>>> Stashed changes
 
 use crate::{DbInner, Error, Result};
 
@@ -32,25 +24,15 @@ impl DbInner {
             .collect())
     }
 
-    pub async fn get_contract_addresses(&self, chain_id: u32) -> Result<Vec<Address>> {
-        let rows = sqlx::query!(
-            r#"SELECT address FROM contracts WHERE chain_id = ?"#,
-            chain_id
-        )
-        .fetch_all(self.pool())
-        .await?;
-
-        Ok(rows
-            .into_iter()
-            .filter_map(|r| Address::from_str(&r.address).ok())
-            .collect())
-    }
-
-    pub async fn get_contract_name(&self, chain_id: u32, address: Address) -> Result<String> {
+    pub async fn get_contract(
+        &self,
+        chain_id: u32,
+        address: Address,
+    ) -> Result<Option<ContractWithAbi>> {
         let address = format!("0x{:x}", address);
 
         let res = sqlx::query!(
-            r#" SELECT name
+            r#" SELECT abi, name, address
                 FROM contracts
                 WHERE chain_id = ? AND address = ? "#,
             chain_id,
@@ -59,7 +41,15 @@ impl DbInner {
         .fetch_one(self.pool())
         .await?;
 
-        res.name.ok_or(Error::NotFound)
+        match res.abi {
+            None => Ok(None),
+            Some(abi) => Ok(Some(ContractWithAbi {
+                abi: serde_json::from_str(&abi).unwrap_or_default(),
+                chain_id,
+                name: res.name,
+                address: Address::from_str(&res.address).unwrap(),
+            })),
+        }
     }
 
     pub async fn get_contract_abi(&self, chain_id: u32, address: Address) -> Result<Abi> {

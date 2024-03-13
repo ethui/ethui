@@ -1,5 +1,6 @@
-use crate::{Address, B256};
 use serde::Serialize;
+
+use crate::{Address, B256};
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]

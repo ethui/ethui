@@ -1,16 +1,18 @@
-use std::collections::{HashMap, HashSet};
-use std::sync::Arc;
+use std::{
+    collections::{HashMap, HashSet},
+    sync::Arc,
+};
 
-use crate::{utils, Error, Msg, Result};
 use iron_types::{Address, UINotify, B256};
-use tokio::sync::{oneshot, Mutex};
 use tokio::{
     select,
-    sync::mpsc,
+    sync::{mpsc, oneshot, Mutex},
     task::JoinHandle,
     time::{sleep, Duration},
 };
 use tracing::instrument;
+
+use crate::{utils, Error, Msg, Result};
 
 #[derive(Debug)]
 pub struct Worker {
