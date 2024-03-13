@@ -8,10 +8,8 @@ use std::sync::Arc;
 pub use error::{Error, Result};
 use iron_broadcast::InternalMsg;
 use iron_types::{Address, B256};
-use tokio::sync::oneshot;
-use tokio::sync::{mpsc, Mutex};
+use tokio::sync::{mpsc, oneshot, Mutex};
 use tracing::instrument;
-
 pub use worker::Worker;
 
 pub async fn init() {

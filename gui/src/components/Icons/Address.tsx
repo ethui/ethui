@@ -1,16 +1,27 @@
 import { Avatar, type AvatarProps } from "@mui/material";
 
 import { getWhitelistedTokenNameAndSymbol } from "@iron/data";
+import { IconEffigy } from "@iron/react/components";
 
 interface Props extends AvatarProps {
   chainId: number;
   address?: string;
   size?: "small" | "medium" | "large";
+  effigy?: boolean;
 }
 
-export function IconCrypto({ chainId, address, size = "medium" }: Props) {
+export function IconAddress({
+  chainId,
+  address,
+  size = "medium",
+  effigy = false,
+}: Props) {
   const data = getWhitelistedTokenNameAndSymbol(chainId, address);
-  if (!data) return null;
+
+  if (!data) {
+    if (effigy) return <IconEffigy address={address || "0x0"} />;
+    else return null;
+  }
 
   let width = 28;
   if (size === "small") width = 20;

@@ -1,1 +1,1 @@
-export { IconCrypto } from "./Crypto";
+export { IconAddress } from "./Address";

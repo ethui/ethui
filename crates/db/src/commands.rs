@@ -1,8 +1,7 @@
 use ethers::{abi::Abi, types::Chain};
-use iron_types::transactions::PaginatedTx;
-use iron_types::B256;
 use iron_types::{
-    events::Tx, Address, Erc721TokenData, TokenBalance, TokenMetadata, UINotify, U256,
+    events::Tx, transactions::PaginatedTx, Address, Erc721TokenData, TokenBalance, TokenMetadata,
+    UINotify, B256, U256,
 };
 use tracing::instrument;
 

@@ -1,13 +1,12 @@
 use iron_db::Db;
 use iron_networks::Networks;
-use iron_types::GlobalState;
+use iron_types::{Address, GlobalState};
 
 use crate::{
     errors::SimulationResult,
     evm::Evm,
     types::{Request, Result},
 };
-use iron_types::Address;
 
 #[tauri::command]
 pub async fn simulator_run(chain_id: u32, request: Request) -> SimulationResult<Result> {

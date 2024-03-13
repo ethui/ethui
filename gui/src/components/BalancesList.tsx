@@ -14,7 +14,7 @@ import { useState } from "react";
 import { GeneralSettings } from "@iron/types/settings";
 import { useInvoke } from "@/hooks";
 import { useBalances, useNetworks } from "@/store";
-import { IconCrypto } from "./Icons";
+import { IconAddress } from "./Icons";
 import { CopyToClipboard, Modal, TransferForm } from "./";
 
 export function BalancesList() {
@@ -108,7 +108,7 @@ function BalanceItem({
         }
       >
         <ListItemAvatar>
-          <IconCrypto chainId={chainId} address={contract} />
+          <IconAddress chainId={chainId} address={contract} />
         </ListItemAvatar>
         <ListItemText
           secondary={`${symbol} ${

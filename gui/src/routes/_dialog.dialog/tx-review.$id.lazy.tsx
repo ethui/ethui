@@ -10,7 +10,7 @@ import { Network } from "@iron/types/network";
 import { AddressView, Datapoint } from "@/components";
 import { useDialog, useInvoke, useLedgerDetect } from "@/hooks";
 import { DialogBottom } from "@/components/Dialogs/Bottom";
-import { IconCrypto } from "@/components/Icons";
+import { IconAddress } from "@/components/Icons";
 import { useNetworks } from "@/store";
 
 export const Route = createLazyFileRoute("/_dialog/dialog/tx-review/$id")({
@@ -328,7 +328,7 @@ function Erc20Transfer({
       <AddressView address={from} />
       <span>→</span>
       <AddressView address={to} />
-      <IconCrypto chainId={chainId} address={contract} />
+      <IconAddress chainId={chainId} address={contract} />
       {metadata?.decimals
         ? formatUnits(value, metadata.decimals)
         : value.toString()}{" "}

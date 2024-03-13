@@ -5,12 +5,10 @@ mod pagination;
 mod queries;
 pub mod utils;
 
-use std::path::PathBuf;
-use std::sync::Arc;
-
-use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous};
+use std::{path::PathBuf, sync::Arc};
 
 pub use init::{get, init};
+use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous};
 
 pub use self::{
     error::{Error, Result},

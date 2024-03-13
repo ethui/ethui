@@ -1,6 +1,7 @@
-use crate::{DbInner, Result};
 use iron_types::Address;
 use tracing::instrument;
+
+use crate::{DbInner, Result};
 
 impl DbInner {
     pub async fn get_tip(&self, chain_id: u32, addr: Address) -> Result<u64> {
