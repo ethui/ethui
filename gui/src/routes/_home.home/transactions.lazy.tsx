@@ -115,9 +115,9 @@ function Summary({ account, tx }: SummaryProps) {
 
       <BlockNumber number={tx.blockNumber} />
       <Stack direction="row" alignItems="center" spacing={1}>
-        <AddressView icon address={tx.from} /> <span>→</span>
+        <AddressView address={tx.from} /> <span>→</span>
         {tx.to ? (
-          <AddressView icon address={tx.to} />
+          <AddressView address={tx.to} />
         ) : (
           <Typography component="span">Contract Deploy</Typography>
         )}
