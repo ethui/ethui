@@ -3,8 +3,7 @@ use std::time::Duration;
 use ethers::providers::{
     Http, HttpRateLimitRetryPolicy, Middleware, Provider, RetryClient, RetryClientBuilder,
 };
-use iron_types::events::Tx;
-use iron_types::{Address, ToAlloy, ToEthers, TokenMetadata, U256, U64};
+use iron_types::{events::Tx, Address, ToAlloy, ToEthers, TokenMetadata, U256, U64};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 

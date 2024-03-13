@@ -1,8 +1,8 @@
-use crate::{Error, Result};
 use ethers::providers::{Http, Middleware, Provider, RetryClient};
 use iron_abis::IERC20;
-use iron_types::events::Tx;
-use iron_types::{Address, GlobalState, ToAlloy, ToEthers, TokenMetadata, B256};
+use iron_types::{events::Tx, Address, GlobalState, ToAlloy, ToEthers, TokenMetadata, B256};
+
+use crate::{Error, Result};
 
 pub(crate) async fn fetch_full_tx(chain_id: u32, hash: B256) -> Result<()> {
     let provider = provider(chain_id).await?;

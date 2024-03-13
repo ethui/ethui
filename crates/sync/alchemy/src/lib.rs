@@ -4,16 +4,15 @@ mod networks;
 mod types;
 mod utils;
 
-use iron_types::{Address, U64};
-use tracing::instrument;
-
-use crate::client::{Client, Direction};
 use iron_db::Db;
+use iron_types::{Address, U64};
+pub use networks::supports_network;
+use tracing::instrument;
+pub use utils::get_current_api_key;
 
 pub use self::error::{Error, Result};
 use self::networks::default_from_block;
-pub use networks::supports_network;
-pub use utils::get_current_api_key;
+use crate::client::{Client, Direction};
 
 #[derive(Debug)]
 pub struct Alchemy {

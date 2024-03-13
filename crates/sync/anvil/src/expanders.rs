@@ -1,9 +1,8 @@
-use ethers::types::CallResult;
 use ethers::{
     abi::RawLog,
     contract::EthLogDecode,
     providers::{Http, Middleware, Provider},
-    types::{Action, Call, Create, CreateResult, Log, Res, Trace},
+    types::{Action, Call, CallResult, Create, CreateResult, Log, Res, Trace},
 };
 use futures::future::join_all;
 use iron_types::{

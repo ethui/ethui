@@ -1,7 +1,7 @@
 use std::str::FromStr;
-use tracing::instrument;
 
 use iron_types::{Abi, Address};
+use tracing::instrument;
 
 use crate::{DbInner, Error, Result};
 

@@ -1,5 +1,4 @@
-use serde::de::DeserializeOwned;
-use serde::Serialize;
+use serde::{de::DeserializeOwned, Serialize};
 
 use crate::{DbInner, Result};
 
