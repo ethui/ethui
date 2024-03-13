@@ -76,7 +76,6 @@ function Deploy({ value, from, decimals, ArgProps }: DeployProps) {
   return (
     <>
       <Stack direction="row" spacing={1}>
-        <Typography mono>Sending</Typography>
         <Arg
           label="Ξ"
           type="uint256"
@@ -108,7 +107,6 @@ interface FallbackProps {
 function Fallback({ value, from, to, decimals, ArgProps }: FallbackProps) {
   return (
     <Stack direction="row" spacing={1}>
-      <Typography mono>Sending</Typography>
       <Arg
         label="Ξ"
         type="uint256"
