@@ -23,8 +23,6 @@ foundry-config = { workspace = true }
 foundry-evm = { workspace = true }
 alloy-primitives = { workspace = true }
 ethers = { workspace = true }
-ethers-core = { workspace = true }
-hex = { workspace = true }
 
 eyre = "*"
 
