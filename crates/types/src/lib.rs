@@ -1,4 +1,5 @@
 mod affinity;
+mod contracts;
 pub mod events;
 mod global_state;
 mod tokens;
@@ -6,6 +7,7 @@ pub mod transactions;
 pub mod ui_events;
 pub use affinity::Affinity;
 pub use alloy_primitives::{address, Address, B256, U256, U64};
+pub use contracts::Contract;
 pub use ethers::{abi::Abi, types::Bytes};
 pub use events::Event;
 pub use foundry_common::types::{ToAlloy, ToEthers};

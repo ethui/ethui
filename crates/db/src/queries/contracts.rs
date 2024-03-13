@@ -1,11 +1,37 @@
 use std::str::FromStr;
 use tracing::instrument;
 
+<<<<<<< Updated upstream
 use iron_types::{Abi, Address};
+||||||| Stash base
+use iron_types::{Abi, Address};
+use tracing::instrument;
+=======
+use iron_types::{Abi, Address, Contract};
+use tracing::instrument;
+>>>>>>> Stashed changes
 
 use crate::{DbInner, Error, Result};
 
 impl DbInner {
+    pub async fn get_contracts(&self, chain_id: u32) -> Result<Vec<Contract>> {
+        let rows = sqlx::query!(
+            r#"SELECT address, name FROM contracts WHERE chain_id = ?"#,
+            chain_id
+        )
+        .fetch_all(self.pool())
+        .await?;
+
+        Ok(rows
+            .into_iter()
+            .map(|r| Contract {
+                address: Address::from_str(&r.address).unwrap(),
+                chain_id,
+                name: r.name,
+            })
+            .collect())
+    }
+
     pub async fn get_contract_addresses(&self, chain_id: u32) -> Result<Vec<Address>> {
         let rows = sqlx::query!(
             r#"SELECT address FROM contracts WHERE chain_id = ?"#,

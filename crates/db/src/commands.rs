@@ -1,6 +1,11 @@
 use ethers::{abi::Abi, types::Chain};
+<<<<<<< Updated upstream
 use iron_types::transactions::PaginatedTx;
 use iron_types::B256;
+||||||| Stash base
+=======
+use iron_types::Contract;
+>>>>>>> Stashed changes
 use iron_types::{
     events::Tx, Address, Erc721TokenData, TokenBalance, TokenMetadata, UINotify, U256,
 };
@@ -69,8 +74,8 @@ pub async fn db_get_native_balance(
 }
 
 #[tauri::command]
-pub async fn db_get_contracts(chain_id: u32, db: tauri::State<'_, Db>) -> Result<Vec<Address>> {
-    db.get_contract_addresses(chain_id).await
+pub async fn db_get_contracts(chain_id: u32, db: tauri::State<'_, Db>) -> Result<Vec<Contract>> {
+    db.get_contracts(chain_id).await
 }
 
 #[tauri::command]
