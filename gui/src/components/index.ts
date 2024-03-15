@@ -18,6 +18,5 @@ export { QuickNetworkSelect } from "./QuickNetworkSelect";
 export { QuickWalletSelect } from "./QuickWalletSelect";
 export { Settings } from "./Settings/";
 export { TransferForm } from "./TransferForm";
-export { WagmiWrapper } from "./WagmiWrapper";
 export * from "./Accordion";
 export { SidebarButton } from "./SidebarButton";
