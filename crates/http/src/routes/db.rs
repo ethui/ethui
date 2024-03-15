@@ -8,9 +8,8 @@ use iron_db::{
     utils::{fetch_etherscan_abi, fetch_etherscan_contract_name},
     Paginated, Pagination,
 };
-use iron_types::Contract;
 use iron_types::{
-    transactions::PaginatedTx, Address, Erc721TokenData, TokenBalance, UINotify, U256,
+    transactions::PaginatedTx, Address, Contract, Erc721TokenData, TokenBalance, UINotify, U256,
 };
 use serde::Deserialize;
 

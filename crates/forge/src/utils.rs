@@ -3,8 +3,7 @@ use iron_networks::Networks;
 use iron_types::{GlobalState, ToEthers as _, UINotify};
 use tracing::trace;
 
-use crate::init::FORGE;
-use crate::{Error, Result};
+use crate::{init::FORGE, Error, Result};
 
 pub(crate) async fn update_db_contracts() -> Result<()> {
     let db = iron_db::get();

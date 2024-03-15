@@ -1,15 +1,15 @@
-use std::path::PathBuf;
-use std::time::Duration;
+use std::{path::PathBuf, time::Duration};
 
 use iron_broadcast::InternalMsg;
 use iron_settings::Settings;
 use iron_types::GlobalState;
 use once_cell::sync::Lazy;
-use tokio::sync::{mpsc, RwLock};
-use tokio::time;
+use tokio::{
+    sync::{RwLock},
+    time,
+};
 
-use crate::manager::Forge;
-use crate::utils;
+use crate::{manager::Forge, utils};
 
 pub(crate) static FORGE: Lazy<RwLock<Forge>> = Lazy::new(Default::default);
 

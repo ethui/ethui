@@ -1,5 +1,4 @@
-use std::path::PathBuf;
-use std::sync::Arc;
+use std::{sync::Arc};
 
 pub use internal_msgs::*;
 use iron_types::{ui_events, Address, Affinity, B256};

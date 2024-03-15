@@ -32,7 +32,7 @@ pub(super) fn expand_logs(traces: Vec<Log>) -> Vec<iron_types::Event> {
 async fn expand_trace(
     trace: Trace,
     provider: &Provider<Http>,
-    chain_id: u32,
+    _chain_id: u32,
 ) -> Result<Vec<Event>> {
     let hash = trace.transaction_hash.unwrap();
     let tx = provider

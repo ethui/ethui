@@ -1,5 +1,8 @@
 use ethers::{abi::Abi, types::Chain};
-use iron_types::{Contract, events::Tx, transactions::PaginatedTx, Address, Erc721TokenData, TokenBalance, TokenMetadata, UINotify, B256, U256};
+use iron_types::{
+    events::Tx, transactions::PaginatedTx, Address, Contract, Erc721TokenData, TokenBalance,
+    TokenMetadata, UINotify, B256, U256,
+};
 use tracing::instrument;
 
 use super::{Paginated, Pagination, Result};

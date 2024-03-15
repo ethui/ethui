@@ -1,5 +1,6 @@
-use crate::{Abi, Address};
 use serde::Serialize;
+
+use crate::{Abi, Address};
 
 #[derive(Debug, Serialize)]
 pub struct Contract {
