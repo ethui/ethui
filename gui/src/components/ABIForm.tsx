@@ -13,7 +13,7 @@ import { SyntheticEvent, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Address, encodeFunctionData } from "viem";
 
-import { useApi, useProvider } from "@/hooks";
+import { useInvoke, useProvider } from "@/hooks";
 
 interface Props {
   chainId: number;
@@ -23,7 +23,7 @@ interface Props {
 export function ABIForm({ chainId, address }: Props) {
   const [currentItem, setCurrentItem] = useState<AbiFunction | undefined>();
 
-  const { data: abi } = useApi<Abi>("/contracts/abi", {
+  const { data: abi } = useInvoke<Abi>("db_get_contract_abi", {
     address,
     chainId,
   });
