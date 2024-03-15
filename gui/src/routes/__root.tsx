@@ -5,7 +5,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-import { DevBuildNotice, ErrorHandler, WagmiWrapper } from "@/components";
+import { DevBuildNotice, ErrorHandler } from "@/components";
 import { useTheme } from "@/store/theme";
 
 const queryClient = new QueryClient();
@@ -14,10 +14,10 @@ const RouterDevtools =
   process.env.NODE_ENV === "production"
     ? () => null
     : lazy(() =>
-        import("@tanstack/router-devtools").then((res) => ({
-          default: res.TanStackRouterDevtools,
-        })),
-      );
+      import("@tanstack/router-devtools").then((res) => ({
+        default: res.TanStackRouterDevtools,
+      })),
+    );
 
 const globalStyles = {
   body: { userSelect: "none" },
@@ -39,21 +39,19 @@ function Root() {
       <GlobalStyles styles={globalStyles} />
       <CssBaseline>
         <ErrorHandler>
-          <WagmiWrapper>
-            <QueryClientProvider client={queryClient}>
-              <DevBuildNotice />
-              <Suspense>
-                <Outlet />
-              </Suspense>
+          <QueryClientProvider client={queryClient}>
+            <DevBuildNotice />
+            <Suspense>
+              <Outlet />
+            </Suspense>
 
-              <Suspense>
-                <Box sx={{ position: "absolute", bottom: 50, left: 0 }}>
-                  <ReactQueryDevtools buttonPosition="relative" />
-                </Box>
-                <RouterDevtools position="bottom-left" />
-              </Suspense>
-            </QueryClientProvider>
-          </WagmiWrapper>
+            <Suspense>
+              <Box sx={{ position: "absolute", bottom: 50, left: 0 }}>
+                <ReactQueryDevtools buttonPosition="relative" />
+              </Box>
+              <RouterDevtools position="bottom-left" />
+            </Suspense>
+          </QueryClientProvider>
         </ErrorHandler>
       </CssBaseline>
     </ThemeProvider>
