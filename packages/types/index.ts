@@ -37,6 +37,12 @@ export interface PaginatedTx {
   blockNumber?: number;
 }
 
+export interface Contract {
+  name?: string;
+  address: Address;
+  chainId: number;
+}
+
 export interface Peer {
   origin: string;
   tab_id?: number;

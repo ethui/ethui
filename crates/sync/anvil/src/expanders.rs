@@ -12,8 +12,14 @@ use iron_types::{
 
 use super::{Error, Result};
 
-pub(super) async fn expand_traces(traces: Vec<Trace>, provider: &Provider<Http>) -> Vec<Event> {
-    let result = traces.into_iter().map(|t| expand_trace(t, provider));
+pub(super) async fn expand_traces(
+    traces: Vec<Trace>,
+    provider: &Provider<Http>,
+    chain_id: u32,
+) -> Vec<Event> {
+    let result = traces
+        .into_iter()
+        .map(|t| expand_trace(t, provider, chain_id));
     let res = join_all(result).await.into_iter().filter_map(|r| r.ok());
 
     res.flatten().collect()
@@ -23,7 +29,11 @@ pub(super) fn expand_logs(traces: Vec<Log>) -> Vec<iron_types::Event> {
     traces.into_iter().filter_map(expand_log).collect()
 }
 
-async fn expand_trace(trace: Trace, provider: &Provider<Http>) -> Result<Vec<Event>> {
+async fn expand_trace(
+    trace: Trace,
+    provider: &Provider<Http>,
+    _chain_id: u32,
+) -> Result<Vec<Event>> {
     let hash = trace.transaction_hash.unwrap();
     let tx = provider
         .get_transaction(hash)

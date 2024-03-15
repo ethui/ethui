@@ -162,7 +162,7 @@ function Details({ tx, chainId }: DetailsProps) {
     chainId,
   });
   // const { data: transaction } = useTransaction({ hash: tx.hash, chainId });
-  const { data: abi } = useInvoke<Abi>("get_contract_abi", {
+  const { data: abi } = useInvoke<Abi>("db_get_contract_abi", {
     address: tx.to,
     chainId,
   });

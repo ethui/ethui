@@ -1,8 +1,8 @@
 mod abi;
-pub mod commands;
 pub mod error;
 mod init;
 mod manager;
+mod utils;
 mod watcher;
 
 pub use abi::Abi;

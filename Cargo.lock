@@ -4371,6 +4371,7 @@ dependencies = [
  "futures",
  "glob",
  "iron-broadcast",
+ "iron-db",
  "iron-networks",
  "iron-settings",
  "iron-types",

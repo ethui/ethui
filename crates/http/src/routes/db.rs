@@ -9,7 +9,7 @@ use iron_db::{
     Paginated, Pagination,
 };
 use iron_types::{
-    transactions::PaginatedTx, Address, Erc721TokenData, TokenBalance, UINotify, U256,
+    transactions::PaginatedTx, Address, Contract, Erc721TokenData, TokenBalance, UINotify, U256,
 };
 use serde::Deserialize;
 
@@ -78,8 +78,8 @@ pub(crate) async fn native_balance(
 pub(crate) async fn contracts(
     State(Ctx { db }): State<Ctx>,
     Query(ChainIdPayload { chain_id }): Query<ChainIdPayload>,
-) -> Result<Json<Vec<Address>>> {
-    Ok(Json(db.get_contract_addresses(chain_id).await?))
+) -> Result<Json<Vec<Contract>>> {
+    Ok(Json(db.get_contracts(chain_id).await?))
 }
 
 pub(crate) async fn contract_abi(

@@ -1,7 +1,7 @@
 use ethers::{abi::Abi, types::Chain};
 use iron_types::{
-    events::Tx, transactions::PaginatedTx, Address, Erc721TokenData, TokenBalance, TokenMetadata,
-    UINotify, B256, U256,
+    events::Tx, transactions::PaginatedTx, Address, Contract, Erc721TokenData, TokenBalance,
+    TokenMetadata, UINotify, B256, U256,
 };
 use tracing::instrument;
 
@@ -68,8 +68,8 @@ pub async fn db_get_native_balance(
 }
 
 #[tauri::command]
-pub async fn db_get_contracts(chain_id: u32, db: tauri::State<'_, Db>) -> Result<Vec<Address>> {
-    db.get_contract_addresses(chain_id).await
+pub async fn db_get_contracts(chain_id: u32, db: tauri::State<'_, Db>) -> Result<Vec<Contract>> {
+    db.get_contracts(chain_id).await
 }
 
 #[tauri::command]
