@@ -1,8 +1,4 @@
-
-
-
-
-use crate::error::{AppResult};
+use crate::error::AppResult;
 
 #[tauri::command]
 pub fn get_build_mode() -> String {
