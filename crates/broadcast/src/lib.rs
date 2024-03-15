@@ -1,3 +1,4 @@
+use std::path::PathBuf;
 use std::sync::Arc;
 
 pub use internal_msgs::*;
@@ -31,6 +32,8 @@ pub enum InternalMsg {
     /// Request a full update of a TX. oneshot channel included to notify when job is done
     FetchFullTxSync(u32, B256, Arc<Mutex<Option<oneshot::Sender<()>>>>),
     FetchERC20Metadata(u32, Address),
+
+    ForgeAbiFound,
 }
 
 #[derive(Debug, Clone)]
@@ -104,6 +107,10 @@ mod internal_msgs {
 
     pub async fn current_network_changed(chain_id: u32) {
         send(CurrentNetworkChanged(chain_id)).await;
+    }
+
+    pub async fn forge_abi_found() {
+        send(ForgeAbiFound).await;
     }
 
     #[instrument(level = "trace")]

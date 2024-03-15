@@ -26,7 +26,6 @@ impl IronApp {
             .invoke_handler(tauri::generate_handler![
                 commands::get_build_mode,
                 commands::get_version,
-                commands::get_contract_abi,
                 commands::ui_error,
                 iron_settings::commands::settings_get,
                 iron_settings::commands::settings_set,
@@ -67,7 +66,6 @@ impl IronApp {
                 iron_wallets::commands::wallets_ledger_derive,
                 iron_dialogs::commands::dialog_get_payload,
                 iron_dialogs::commands::dialog_send,
-                iron_forge::commands::forge_get_abi,
                 iron_rpc::commands::rpc_send_transaction,
                 iron_connections::commands::connections_affinity_for,
                 iron_connections::commands::connections_set_affinity,

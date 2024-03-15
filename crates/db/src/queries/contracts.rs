@@ -84,15 +84,30 @@ impl DbInner {
         sqlx::query!(
             r#" INSERT INTO contracts (address, chain_id, abi, name)
                 VALUES (?,?,?,?)
-                ON CONFLICT(address, chain_id) DO NOTHING "#,
+                ON CONFLICT(address, chain_id) DO UPDATE SET name=?, abi=?"#,
             address,
             chain_id,
             abi,
-            name
+            name,
+            name,
+            abi
         )
         .execute(self.pool())
         .await?;
 
         Ok(())
+    }
+
+    pub async fn get_incomplete_contracts(&self) -> Result<Vec<(u32, Address)>> {
+        let rows = sqlx::query!(
+            r#"SELECT address, chain_id FROM contracts WHERE name IS NULL or ABI IS NULL"#,
+        )
+        .fetch_all(self.pool())
+        .await?;
+
+        Ok(rows
+            .into_iter()
+            .map(|r| (r.chain_id as u32, Address::from_str(&r.address).unwrap()))
+            .collect())
     }
 }

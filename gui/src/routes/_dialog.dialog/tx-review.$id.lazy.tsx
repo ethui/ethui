@@ -24,11 +24,11 @@ export interface TxRequest {
   value: string;
   chainId: number;
   walletType:
-    | "ledger"
-    | "HdWallet"
-    | "jsonKeystore"
-    | "plaintext"
-    | "impersonator";
+  | "ledger"
+  | "HdWallet"
+  | "jsonKeystore"
+  | "plaintext"
+  | "impersonator";
 }
 
 interface Log {
@@ -56,7 +56,7 @@ export function TxReviewDialog() {
     s.networks.find((n) => n.chain_id == request?.chainId),
   );
 
-  const { data: abi } = useInvoke<Abi>("get_contract_abi", {
+  const { data: abi } = useInvoke<Abi>("db_get_contract_abi", {
     address: request?.to,
     chainId: request?.chainId,
   });

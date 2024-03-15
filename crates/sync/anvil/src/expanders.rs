@@ -80,11 +80,11 @@ async fn expand_trace(
                     incomplete: false,
                 }
                 .into(),
-                dbg!(ContractDeployed {
+                ContractDeployed {
                     address: address.to_alloy(),
                     code: provider.get_code(address, None).await.ok(),
                     block_number,
-                })
+                }
                 .into(),
             ]
         }
