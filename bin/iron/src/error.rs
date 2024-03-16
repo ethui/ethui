@@ -7,9 +7,6 @@ pub enum AppError {
     DB(#[from] iron_db::Error),
 
     #[error(transparent)]
-    Network(#[from] iron_networks::Error),
-
-    #[error(transparent)]
     Forge(#[from] iron_forge::Error),
 
     #[error(transparent)]
