@@ -1,5 +1,5 @@
-import tokens from "@iron/data/tokens.json" with { type: "json" };
-import genTokens from "@iron/data/gen/tokens.json" with { type: "json" };
+import tokens from "@ethui/data/tokens.json" with { type: "json" };
+import genTokens from "@ethui/data/gen/tokens.json" with { type: "json" };
 
 export interface Token {
   chainId: number;

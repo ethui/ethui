@@ -3,7 +3,7 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
-use iron_networks::Network;
+use ethui_networks::Network;
 use serde::Deserialize;
 
 use crate::{Ctx, Result};
@@ -29,25 +29,25 @@ pub(super) fn router() -> Router<Ctx> {
 }
 
 pub(crate) async fn current() -> Result<Json<Network>> {
-    Ok(Json(iron_networks::commands::networks_get_current().await?))
+    Ok(Json(ethui_networks::commands::networks_get_current().await?))
 }
 
 pub(crate) async fn set_current(Query(params): Query<SetNetworkParams>) -> Result<()> {
-    iron_networks::commands::networks_set_current(params.network).await?;
+    ethui_networks::commands::networks_set_current(params.network).await?;
 
     Ok(())
 }
 
 pub(crate) async fn list() -> Result<Json<Vec<Network>>> {
-    Ok(Json(iron_networks::commands::networks_get_list().await?))
+    Ok(Json(ethui_networks::commands::networks_get_list().await?))
 }
 
 pub(crate) async fn set_list(Json(payload): Json<SetNetworkListParams>) -> Result<()> {
-    iron_networks::commands::networks_set_list(payload.new_networks).await?;
+    ethui_networks::commands::networks_set_list(payload.new_networks).await?;
 
     Ok(())
 }
 
 pub(crate) async fn reset() -> Result<Json<Vec<Network>>> {
-    Ok(Json(iron_networks::commands::networks_reset().await?))
+    Ok(Json(ethui_networks::commands::networks_reset().await?))
 }

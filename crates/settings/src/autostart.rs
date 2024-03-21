@@ -26,7 +26,7 @@ fn handle() -> Result<AutoLaunch> {
         .to_owned();
 
     Ok(AutoLaunchBuilder::new()
-        .set_app_name("iron")
+        .set_app_name("ethui")
         .set_app_path(&app_path)
         .set_use_launch_agent(true)
         .set_args(&["--hidden"])

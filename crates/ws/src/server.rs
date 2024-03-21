@@ -1,7 +1,7 @@
 use std::{collections::HashMap, net::SocketAddr};
 
 use futures::{stream::SplitSink, SinkExt, StreamExt};
-use iron_types::GlobalState;
+use ethui_types::GlobalState;
 use tokio::{
     net::{TcpListener, TcpStream},
     sync::mpsc,
@@ -78,7 +78,7 @@ async fn handle_connection(
     stream: WebSocketStream<TcpStream>,
     mut rcv: mpsc::UnboundedReceiver<serde_json::Value>,
 ) -> WsResult<()> {
-    let handler: iron_rpc::Handler = peer.into();
+    let handler: ethui_rpc::Handler = peer.into();
     let mut interval = tokio::time::interval(std::time::Duration::from_secs(15));
     let (mut ws_sender, mut ws_receiver) = stream.split();
 
@@ -119,7 +119,7 @@ async fn handle_connection(
 
 async fn handle_message(
     text: String,
-    handler: &iron_rpc::Handler,
+    handler: &ethui_rpc::Handler,
     sender: &mut SplitSink<WebSocketStream<TcpStream>, Message>,
 ) -> WsResult<()> {
     if text == "pong" {

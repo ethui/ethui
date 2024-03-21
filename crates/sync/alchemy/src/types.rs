@@ -1,4 +1,4 @@
-use iron_types::{events::Tx, Address, ToEthers, TokenMetadata, B256, U256, U64};
+use ethui_types::{events::Tx, Address, ToEthers, TokenMetadata, B256, U256, U64};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]

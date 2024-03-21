@@ -8,7 +8,7 @@ import {
 } from "@mui/icons-material";
 import { SnackbarProvider } from "notistack";
 
-import { Tab } from "@iron/types/ui";
+import { Tab } from "@ethui/types/ui";
 import { useNoticeAlchemyKeyMissing, useNoticeNewVersion } from "@/hooks";
 import { CommandBar } from "@/components";
 import { useTheme } from "@/store";

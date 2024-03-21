@@ -6,8 +6,8 @@ use std::{
 };
 
 use async_trait::async_trait;
-use iron_broadcast::InternalMsg;
-use iron_types::{GlobalState, UINotify};
+use ethui_broadcast::InternalMsg;
+use ethui_types::{GlobalState, UINotify};
 use once_cell::sync::OnceCell;
 use serde::Deserialize;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
@@ -67,14 +67,14 @@ impl GlobalState for Networks {
 }
 
 async fn receiver() -> ! {
-    let mut rx = iron_broadcast::subscribe_internal().await;
+    let mut rx = ethui_broadcast::subscribe_internal().await;
 
     loop {
         if let Ok(msg) = rx.recv().await {
             use InternalMsg::*;
 
             if let ChainChanged(chain_id, _domain, affinity) = msg {
-                iron_broadcast::ui_notify(UINotify::PeersUpdated).await;
+                ethui_broadcast::ui_notify(UINotify::PeersUpdated).await;
                 if affinity.is_global() || affinity.is_unset() {
                     // TODO: handle this error
                     let _ = Networks::write().await.set_current_by_id(chain_id).await;

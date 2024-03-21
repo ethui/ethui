@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
-use iron_args::Args;
-use iron_broadcast::UIMsg;
+use ethui_args::Args;
+use ethui_broadcast::UIMsg;
 #[cfg(target_os = "macos")]
 use tauri::WindowEvent;
 use tauri::{AppHandle, Builder, GlobalWindowEvent, Manager};
@@ -15,64 +15,64 @@ use crate::{
     utils::{main_window_hide, main_window_show},
 };
 
-pub struct IronApp {
+pub struct EthUIApp {
     app: tauri::App,
 }
 
-impl IronApp {
-    pub async fn build(args: &iron_args::Args) -> AppResult<Self> {
+impl EthUIApp {
+    pub async fn build(args: &ethui_args::Args) -> AppResult<Self> {
         let builder = Builder::default()
             .plugin(windowStatePlugin::default().build())
             .invoke_handler(tauri::generate_handler![
                 commands::get_build_mode,
                 commands::get_version,
                 commands::ui_error,
-                iron_settings::commands::settings_get,
-                iron_settings::commands::settings_set,
-                iron_settings::commands::settings_set_dark_mode,
-                iron_settings::commands::settings_set_fast_mode,
-                iron_settings::commands::settings_finish_onboarding,
-                iron_settings::commands::settings_set_alias,
-                iron_settings::commands::settings_get_alias,
-                iron_settings::commands::settings_test_alchemy_api_key,
-                iron_settings::commands::settings_test_etherscan_api_key,
-                iron_networks::commands::networks_get_list,
-                iron_networks::commands::networks_get_current,
-                iron_networks::commands::networks_set_list,
-                iron_networks::commands::networks_set_current,
-                iron_networks::commands::networks_reset,
-                iron_db::commands::db_get_contracts,
-                iron_db::commands::db_insert_contract,
-                iron_db::commands::db_get_transactions,
-                iron_db::commands::db_get_transaction_by_hash,
-                iron_db::commands::db_get_contract_abi,
-                iron_db::commands::db_get_erc20_metadata,
-                iron_db::commands::db_get_erc20_balances,
-                iron_db::commands::db_get_native_balance,
-                iron_db::commands::db_get_erc721_tokens,
-                iron_ws::commands::ws_peers_by_domain,
-                iron_ws::commands::ws_peer_count,
-                iron_wallets::commands::wallets_get_all,
-                iron_wallets::commands::wallets_get_current,
-                iron_wallets::commands::wallets_get_current_address,
-                iron_wallets::commands::wallets_create,
-                iron_wallets::commands::wallets_update,
-                iron_wallets::commands::wallets_remove,
-                iron_wallets::commands::wallets_set_current_wallet,
-                iron_wallets::commands::wallets_set_current_path,
-                iron_wallets::commands::wallets_get_wallet_addresses,
-                iron_wallets::commands::wallets_get_mnemonic_addresses,
-                iron_wallets::commands::wallets_validate_mnemonic,
-                iron_wallets::commands::wallets_ledger_derive,
-                iron_dialogs::commands::dialog_get_payload,
-                iron_dialogs::commands::dialog_send,
-                iron_rpc::commands::rpc_send_transaction,
-                iron_connections::commands::connections_affinity_for,
-                iron_connections::commands::connections_set_affinity,
-                iron_sync::commands::sync_alchemy_is_network_supported,
-                iron_sync::commands::sync_get_native_balance,
-                iron_simulator::commands::simulator_run,
-                iron_simulator::commands::simulator_get_call_count,
+                ethui_settings::commands::settings_get,
+                ethui_settings::commands::settings_set,
+                ethui_settings::commands::settings_set_dark_mode,
+                ethui_settings::commands::settings_set_fast_mode,
+                ethui_settings::commands::settings_finish_onboarding,
+                ethui_settings::commands::settings_set_alias,
+                ethui_settings::commands::settings_get_alias,
+                ethui_settings::commands::settings_test_alchemy_api_key,
+                ethui_settings::commands::settings_test_etherscan_api_key,
+                ethui_networks::commands::networks_get_list,
+                ethui_networks::commands::networks_get_current,
+                ethui_networks::commands::networks_set_list,
+                ethui_networks::commands::networks_set_current,
+                ethui_networks::commands::networks_reset,
+                ethui_db::commands::db_get_contracts,
+                ethui_db::commands::db_insert_contract,
+                ethui_db::commands::db_get_transactions,
+                ethui_db::commands::db_get_transaction_by_hash,
+                ethui_db::commands::db_get_contract_abi,
+                ethui_db::commands::db_get_erc20_metadata,
+                ethui_db::commands::db_get_erc20_balances,
+                ethui_db::commands::db_get_native_balance,
+                ethui_db::commands::db_get_erc721_tokens,
+                ethui_ws::commands::ws_peers_by_domain,
+                ethui_ws::commands::ws_peer_count,
+                ethui_wallets::commands::wallets_get_all,
+                ethui_wallets::commands::wallets_get_current,
+                ethui_wallets::commands::wallets_get_current_address,
+                ethui_wallets::commands::wallets_create,
+                ethui_wallets::commands::wallets_update,
+                ethui_wallets::commands::wallets_remove,
+                ethui_wallets::commands::wallets_set_current_wallet,
+                ethui_wallets::commands::wallets_set_current_path,
+                ethui_wallets::commands::wallets_get_wallet_addresses,
+                ethui_wallets::commands::wallets_get_mnemonic_addresses,
+                ethui_wallets::commands::wallets_validate_mnemonic,
+                ethui_wallets::commands::wallets_ledger_derive,
+                ethui_dialogs::commands::dialog_get_payload,
+                ethui_dialogs::commands::dialog_send,
+                ethui_rpc::commands::rpc_send_transaction,
+                ethui_connections::commands::connections_affinity_for,
+                ethui_connections::commands::connections_set_affinity,
+                ethui_sync::commands::sync_alchemy_is_network_supported,
+                ethui_sync::commands::sync_get_native_balance,
+                ethui_simulator::commands::simulator_run,
+                ethui_simulator::commands::simulator_get_call_count,
             ])
             .on_window_event(on_window_event)
             .menu(menu::build())
@@ -105,7 +105,7 @@ impl IronApp {
 
 /// Initialization logic
 async fn init(app: &tauri::App, args: &Args) -> AppResult<()> {
-    let db = iron_db::init(&resource(app, "db.sqlite3")).await?;
+    let db = ethui_db::init(&resource(app, "db.sqlite3")).await?;
     app.manage(db.clone());
 
     // set up app's event listener
@@ -116,18 +116,18 @@ async fn init(app: &tauri::App, args: &Args) -> AppResult<()> {
 
     // calls other crates' initialization logic. anvil needs to be started before networks,
     // otherwise the initial tracker won't be ready to spawn
-    iron_sync::init().await;
-    iron_settings::init(resource(app, "settings.json")).await?;
-    iron_ws::init(args).await;
-    iron_http::init(args, db).await;
-    iron_connections::init(resource(app, "connections.json")).await;
-    iron_wallets::init(resource(app, "wallets.json")).await;
-    iron_networks::init(resource(app, "networks.json")).await;
-    iron_forge::init().await?;
+    ethui_sync::init().await;
+    ethui_settings::init(resource(app, "settings.json")).await?;
+    ethui_ws::init(args).await;
+    ethui_http::init(args, db).await;
+    ethui_connections::init(resource(app, "connections.json")).await;
+    ethui_wallets::init(resource(app, "wallets.json")).await;
+    ethui_networks::init(resource(app, "networks.json")).await;
+    ethui_forge::init().await?;
 
     // automatically open devtools if env asks for it
     #[cfg(feature = "debug")]
-    if std::env::var("IRON_OPEN_DEVTOOLS").is_ok() {
+    if std::env::var("ethui_OPEN_DEVTOOLS").is_ok() {
         let window = app.get_window("main").unwrap();
         window.open_devtools();
     }
@@ -150,7 +150,7 @@ fn on_window_event(event: GlobalWindowEvent) {
 fn on_window_event(_event: GlobalWindowEvent) {}
 
 async fn event_listener(handle: AppHandle) {
-    let mut rx = iron_broadcast::subscribe_ui().await;
+    let mut rx = ethui_broadcast::subscribe_ui().await;
 
     loop {
         if let Ok(msg) = rx.recv().await {
@@ -177,7 +177,7 @@ async fn event_listener(handle: AppHandle) {
 }
 
 /// Returns the resource path for the given resource.
-/// If the `IRON_CONFIG_DIR` env var is set, it will be used as the base path.
+/// If the `ethui_CONFIG_DIR` env var is set, it will be used as the base path.
 /// Otherwise, the app's default config dir will be used.
 fn resource(app: &tauri::App, resource: &str) -> PathBuf {
     let dir = config_dir(app);

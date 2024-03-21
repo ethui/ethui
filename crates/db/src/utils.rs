@@ -3,8 +3,8 @@ use ethers::{
     prelude::{errors::EtherscanError, Client},
     types::Chain,
 };
-use iron_settings::Settings;
-use iron_types::{Address, GlobalState, ToEthers};
+use ethui_settings::Settings;
+use ethui_types::{Address, GlobalState, ToEthers};
 
 use crate::Result;
 

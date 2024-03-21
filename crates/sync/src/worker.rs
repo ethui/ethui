@@ -3,7 +3,7 @@ use std::{
     sync::Arc,
 };
 
-use iron_types::{Address, UINotify, B256};
+use ethui_types::{Address, UINotify, B256};
 use tokio::{
     select,
     sync::{mpsc, oneshot, Mutex},
@@ -74,7 +74,7 @@ impl Worker {
     /// creates a new worker per addr for this chain_id
     #[instrument(skip(self), level = "trace")]
     fn track_network(&mut self, chain_id: u32) {
-        if iron_sync_alchemy::supports_network(chain_id) {
+        if ethui_sync_alchemy::supports_network(chain_id) {
             self.chain_ids.insert(chain_id);
             for addr in self.addresses.iter() {
                 let task = self.spawn(*addr, chain_id);
@@ -105,7 +105,7 @@ impl Worker {
     /// replaces worker for this chain_id & current addr with a priority one
     #[instrument(skip(self), level = "trace")]
     fn prioritize_network(&mut self, chain_id: u32) {
-        if iron_sync_alchemy::supports_network(chain_id) {
+        if ethui_sync_alchemy::supports_network(chain_id) {
             self.current.1 = Some(chain_id);
 
             if let (Some(address), Some(chain_id)) = self.current {
@@ -127,13 +127,13 @@ impl Worker {
 
     async fn update_erc20_metadata(&self) {
         for chain_id in self.chain_ids.iter() {
-            if iron_sync_alchemy::supports_network(*chain_id) {
-                let db = iron_db::get();
+            if ethui_sync_alchemy::supports_network(*chain_id) {
+                let db = ethui_db::get();
                 let missing = db.get_erc20_missing_metadata(*chain_id).await.unwrap();
                 missing.iter().for_each(|address| {
                     self.fetch_erc20_metadata(*chain_id, *address);
                 });
-                iron_broadcast::ui_notify(UINotify::BalancesUpdated).await;
+                ethui_broadcast::ui_notify(UINotify::BalancesUpdated).await;
             }
         }
     }
@@ -146,7 +146,7 @@ impl Worker {
         oneshot: Arc<Mutex<Option<oneshot::Sender<()>>>>,
     ) {
         tokio::spawn(async move {
-            if iron_sync_alchemy::supports_network(chain_id) {
+            if ethui_sync_alchemy::supports_network(chain_id) {
                 utils::fetch_full_tx(chain_id, hash).await.unwrap();
                 let mut oneshot = oneshot.lock().await;
                 oneshot.take().map(|tx| tx.send(()));
@@ -156,7 +156,7 @@ impl Worker {
 
     fn fetch_erc20_metadata(&self, chain_id: u32, address: Address) {
         tokio::spawn(async move {
-            if iron_sync_alchemy::supports_network(chain_id) {
+            if ethui_sync_alchemy::supports_network(chain_id) {
                 utils::fetch_erc20_metadata(chain_id, address)
                     .await
                     .unwrap();
@@ -187,12 +187,12 @@ async fn unit_worker(
     }
 }
 
-async fn get_alchemy(chain_id: u32) -> Result<iron_sync_alchemy::Alchemy> {
-    let api_key = match iron_sync_alchemy::get_current_api_key().await {
+async fn get_alchemy(chain_id: u32) -> Result<ethui_sync_alchemy::Alchemy> {
+    let api_key = match ethui_sync_alchemy::get_current_api_key().await {
         Ok(Some(api_key)) => api_key,
         _ => return Err(Error::NoApiKey),
     };
-    let alchemy = iron_sync_alchemy::Alchemy::new(&api_key, iron_db::get(), chain_id).unwrap();
+    let alchemy = ethui_sync_alchemy::Alchemy::new(&api_key, ethui_db::get(), chain_id).unwrap();
 
     Ok(alchemy)
 }

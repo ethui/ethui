@@ -8,7 +8,7 @@ import {
 import { map } from "lodash-es";
 import { Address, getAddress } from "viem";
 
-import { Wallet } from "@iron/types/wallets";
+import { Wallet } from "@ethui/types/wallets";
 import { useInvoke } from "@/hooks";
 import { useWallets } from "@/store";
 import { AddressView } from "./";

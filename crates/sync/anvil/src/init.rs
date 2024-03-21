@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use iron_broadcast::InternalMsg;
+use ethui_broadcast::InternalMsg;
 use once_cell::sync::Lazy;
 use tokio::sync::Mutex;
 use url::Url;
@@ -14,7 +14,7 @@ pub fn init() {
 }
 
 async fn receiver() -> ! {
-    let mut rx = iron_broadcast::subscribe_internal().await;
+    let mut rx = ethui_broadcast::subscribe_internal().await;
 
     loop {
         if let Ok(InternalMsg::ResetAnvilListener { chain_id, http, ws }) = rx.recv().await {

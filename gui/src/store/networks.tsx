@@ -3,8 +3,8 @@ import { Action } from "kbar";
 import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { Network } from "@iron/types/network";
-import { IconChain } from "@iron/react/components";
+import { Network } from "@ethui/types/network";
+import { IconChain } from "@ethui/react/components";
 
 interface State {
   networks: Network[];

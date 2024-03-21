@@ -4221,31 +4221,31 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8f518f335dce6725a761382244631d86cf0ccb2863413590b31338feb467f9c3"
 
 [[package]]
-name = "iron"
+name = "ethui"
 version = "1.4.0"
 dependencies = [
  "anyhow",
  "auto-launch",
  "ethers",
  "fix-path-env",
- "iron-args",
- "iron-broadcast",
- "iron-connections",
- "iron-db",
- "iron-dialogs",
- "iron-exchange-rates",
- "iron-forge",
- "iron-http",
- "iron-networks",
- "iron-rpc",
- "iron-settings",
- "iron-simulator",
- "iron-sync",
- "iron-token-list",
- "iron-tracing",
- "iron-types",
- "iron-wallets",
- "iron-ws",
+ "ethui-args",
+ "ethui-broadcast",
+ "ethui-connections",
+ "ethui-db",
+ "ethui-dialogs",
+ "ethui-exchange-rates",
+ "ethui-forge",
+ "ethui-http",
+ "ethui-networks",
+ "ethui-rpc",
+ "ethui-settings",
+ "ethui-simulator",
+ "ethui-sync",
+ "ethui-token-list",
+ "ethui-tracing",
+ "ethui-types",
+ "ethuis",
+ "ethui-ws",
  "named-lock",
  "serde",
  "serde_json",
@@ -4258,7 +4258,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "iron-abis"
+name = "ethui-abis"
 version = "1.4.0"
 dependencies = [
  "ethers",
@@ -4266,17 +4266,17 @@ dependencies = [
 ]
 
 [[package]]
-name = "iron-args"
+name = "ethui-args"
 version = "1.4.0"
 dependencies = [
  "clap",
 ]
 
 [[package]]
-name = "iron-broadcast"
+name = "ethui-broadcast"
 version = "1.4.0"
 dependencies = [
- "iron-types",
+ "ethui-types",
  "once_cell",
  "tokio",
  "tracing",
@@ -4284,14 +4284,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "iron-connections"
+name = "ethui-connections"
 version = "1.4.0"
 dependencies = [
  "async-trait",
  "ethers",
- "iron-broadcast",
- "iron-networks",
- "iron-types",
+ "ethui-broadcast",
+ "ethui-networks",
+ "ethui-types",
  "jsonrpc-core",
  "once_cell",
  "serde",
@@ -4303,7 +4303,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "iron-crypto"
+name = "ethui-crypto"
 version = "1.4.0"
 dependencies = [
  "aead",
@@ -4318,13 +4318,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "iron-db"
+name = "ethui-db"
 version = "1.4.0"
 dependencies = [
  "ethers",
- "iron-broadcast",
- "iron-settings",
- "iron-types",
+ "ethui-broadcast",
+ "ethui-settings",
+ "ethui-types",
  "once_cell",
  "serde",
  "serde_json",
@@ -4336,11 +4336,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "iron-dialogs"
+name = "ethui-dialogs"
 version = "1.4.0"
 dependencies = [
- "iron-broadcast",
- "iron-types",
+ "ethui-broadcast",
+ "ethui-types",
  "once_cell",
  "rand 0.8.5",
  "serde",
@@ -4351,12 +4351,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "iron-exchange-rates"
+name = "ethui-exchange-rates"
 version = "1.4.0"
 dependencies = [
  "async-trait",
  "ethers",
- "iron-types",
+ "ethui-types",
  "once_cell",
  "serde",
  "serde_json",
@@ -4364,17 +4364,17 @@ dependencies = [
 ]
 
 [[package]]
-name = "iron-forge"
+name = "ethui-forge"
 version = "1.4.0"
 dependencies = [
  "ethers",
  "futures",
  "glob",
- "iron-broadcast",
- "iron-db",
- "iron-networks",
- "iron-settings",
- "iron-types",
+ "ethui-broadcast",
+ "ethui-db",
+ "ethui-networks",
+ "ethui-settings",
+ "ethui-types",
  "notify",
  "once_cell",
  "regex",
@@ -4387,24 +4387,24 @@ dependencies = [
 ]
 
 [[package]]
-name = "iron-http"
+name = "ethui-http"
 version = "1.4.0"
 dependencies = [
  "axum",
  "ethers",
- "iron-args",
- "iron-broadcast",
- "iron-connections",
- "iron-db",
- "iron-forge",
- "iron-networks",
- "iron-rpc",
- "iron-settings",
- "iron-simulator",
- "iron-sync-alchemy",
- "iron-types",
- "iron-wallets",
- "iron-ws",
+ "ethui-args",
+ "ethui-broadcast",
+ "ethui-connections",
+ "ethui-db",
+ "ethui-forge",
+ "ethui-networks",
+ "ethui-rpc",
+ "ethui-settings",
+ "ethui-simulator",
+ "ethui-sync-alchemy",
+ "ethui-types",
+ "ethuis",
+ "ethui-ws",
  "reqwest",
  "serde",
  "serde_json",
@@ -4415,13 +4415,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "iron-networks"
+name = "ethui-networks"
 version = "1.4.0"
 dependencies = [
  "async-trait",
  "ethers",
- "iron-broadcast",
- "iron-types",
+ "ethui-broadcast",
+ "ethui-types",
  "once_cell",
  "serde",
  "serde_json",
@@ -4432,21 +4432,21 @@ dependencies = [
 ]
 
 [[package]]
-name = "iron-rpc"
+name = "ethui-rpc"
 version = "1.4.0"
 dependencies = [
  "alloy-primitives",
  "async-trait",
  "ethers",
- "iron-broadcast",
- "iron-connections",
- "iron-db",
- "iron-dialogs",
- "iron-networks",
- "iron-settings",
- "iron-simulator",
- "iron-types",
- "iron-wallets",
+ "ethui-broadcast",
+ "ethui-connections",
+ "ethui-db",
+ "ethui-dialogs",
+ "ethui-networks",
+ "ethui-settings",
+ "ethui-simulator",
+ "ethui-types",
+ "ethuis",
  "jsonrpc-core",
  "once_cell",
  "serde",
@@ -4459,14 +4459,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "iron-settings"
+name = "ethui-settings"
 version = "1.4.0"
 dependencies = [
  "async-trait",
  "auto-launch",
  "ethers",
- "iron-broadcast",
- "iron-types",
+ "ethui-broadcast",
+ "ethui-types",
  "once_cell",
  "serde",
  "serde_json",
@@ -4476,7 +4476,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "iron-simulator"
+name = "ethui-simulator"
 version = "1.4.0"
 dependencies = [
  "alloy-primitives",
@@ -4484,10 +4484,10 @@ dependencies = [
  "eyre",
  "foundry-config",
  "foundry-evm",
- "iron-db",
- "iron-networks",
- "iron-types",
- "iron-wallets",
+ "ethui-db",
+ "ethui-networks",
+ "ethui-types",
+ "ethuis",
  "pretty_assertions",
  "serde",
  "serde_json",
@@ -4497,17 +4497,17 @@ dependencies = [
 ]
 
 [[package]]
-name = "iron-sync"
+name = "ethui-sync"
 version = "1.4.0"
 dependencies = [
  "ethers",
- "iron-abis",
- "iron-broadcast",
- "iron-db",
- "iron-networks",
- "iron-sync-alchemy",
- "iron-sync-anvil",
- "iron-types",
+ "ethui-abis",
+ "ethui-broadcast",
+ "ethui-db",
+ "ethui-networks",
+ "ethui-sync-alchemy",
+ "ethui-sync-anvil",
+ "ethui-types",
  "once_cell",
  "serde",
  "serde_json",
@@ -4518,17 +4518,17 @@ dependencies = [
 ]
 
 [[package]]
-name = "iron-sync-alchemy"
+name = "ethui-sync-alchemy"
 version = "1.4.0"
 dependencies = [
  "async-trait",
  "ethers",
  "futures",
- "iron-abis",
- "iron-broadcast",
- "iron-db",
- "iron-settings",
- "iron-types",
+ "ethui-abis",
+ "ethui-broadcast",
+ "ethui-db",
+ "ethui-settings",
+ "ethui-types",
  "once_cell",
  "serde",
  "serde_json",
@@ -4539,16 +4539,16 @@ dependencies = [
 ]
 
 [[package]]
-name = "iron-sync-anvil"
+name = "ethui-sync-anvil"
 version = "1.4.0"
 dependencies = [
  "base64 0.21.5",
  "ethers",
  "futures",
- "iron-abis",
- "iron-broadcast",
- "iron-db",
- "iron-types",
+ "ethui-abis",
+ "ethui-broadcast",
+ "ethui-db",
+ "ethui-types",
  "once_cell",
  "reqwest",
  "serde",
@@ -4561,7 +4561,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "iron-token-list"
+name = "ethui-token-list"
 version = "1.4.0"
 dependencies = [
  "anyhow",
@@ -4573,7 +4573,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "iron-tracing"
+name = "ethui-tracing"
 version = "1.4.0"
 dependencies = [
  "thiserror",
@@ -4582,7 +4582,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "iron-types"
+name = "ethui-types"
 version = "1.4.0"
 dependencies = [
  "alloy-primitives",
@@ -4598,7 +4598,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "iron-wallets"
+name = "ethuis"
 version = "1.4.0"
 dependencies = [
  "async-trait",
@@ -4609,10 +4609,10 @@ dependencies = [
  "futures",
  "futures-executor",
  "hex",
- "iron-broadcast",
- "iron-crypto",
- "iron-dialogs",
- "iron-types",
+ "ethui-broadcast",
+ "ethui-crypto",
+ "ethui-dialogs",
+ "ethui-types",
  "once_cell",
  "secrets",
  "semver 1.0.20",
@@ -4625,18 +4625,18 @@ dependencies = [
 ]
 
 [[package]]
-name = "iron-ws"
+name = "ethui-ws"
 version = "1.4.0"
 dependencies = [
  "async-trait",
  "ethers",
  "futures",
- "iron-args",
- "iron-broadcast",
- "iron-connections",
- "iron-networks",
- "iron-rpc",
- "iron-types",
+ "ethui-args",
+ "ethui-broadcast",
+ "ethui-connections",
+ "ethui-networks",
+ "ethui-rpc",
+ "ethui-types",
  "once_cell",
  "serde",
  "serde_json",

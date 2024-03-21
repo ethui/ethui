@@ -14,8 +14,8 @@ import { map } from "lodash-es";
 import { useEffect, useState } from "react";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
-import { Affinity, Peer } from "@iron/types";
-import { ChainView } from "@iron/react/components";
+import { Affinity, Peer } from "@ethui/types";
+import { ChainView } from "@ethui/react/components";
 import { useEventListener, useInvoke } from "@/hooks";
 import { useNetworks } from "@/store";
 import { Panel } from "@/components";

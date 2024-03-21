@@ -1,12 +1,12 @@
 {
   "build": {
-    "beforeDevCommand": "yarn workspace @iron/gui dev",
-    "beforeBuildCommand": "yarn workspace @iron/gui build",
+    "beforeDevCommand": "yarn workspace @ethui/gui dev",
+    "beforeBuildCommand": "yarn workspace @ethui/gui build",
     "devPath": "http://localhost:1420",
     "distDir": "../../gui/dist"
   },
   "package": {
-    "productName": "iron",
+    "productName": "ethui",
     "version": "../../package.json"
   },
   "tauri": {
@@ -29,7 +29,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "iron-wallet",
+      "identifier": "ethui",
       "targets": "all"
     },
     "systemTray": {

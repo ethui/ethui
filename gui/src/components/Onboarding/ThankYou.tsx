@@ -14,7 +14,7 @@ export function ThankYouStep() {
         Thank you
       </Typography>
       <Typography component="p">
-        Thank you for using Iron. If you find any problems, please open an issue
+        Thank you for using EthUI. If you find any problems, please open an issue
         on GitHub.
       </Typography>
 

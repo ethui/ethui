@@ -12,7 +12,7 @@ use std::{
 };
 
 pub use init::init;
-use iron_types::{Address, UINotify};
+use ethui_types::{Address, UINotify};
 use serde::{Deserialize, Serialize};
 pub use utils::test_alchemy_api_key;
 
@@ -135,8 +135,8 @@ impl Settings {
         let file = File::create(path)?;
 
         serde_json::to_writer_pretty(file, &self.inner)?;
-        iron_broadcast::settings_updated().await;
-        iron_broadcast::ui_notify(UINotify::SettingsChanged).await;
+        ethui_broadcast::settings_updated().await;
+        ethui_broadcast::ui_notify(UINotify::SettingsChanged).await;
 
         Ok(())
     }

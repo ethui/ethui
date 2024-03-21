@@ -1,4 +1,4 @@
-use iron_types::ui_events;
+use ethui_types::ui_events;
 use tauri::{AppHandle, Manager, WindowBuilder, WindowEvent, WindowUrl};
 
 pub(crate) fn open(handle: &AppHandle, params: ui_events::DialogOpen) {
@@ -30,7 +30,7 @@ fn on_event(window_id: u32, event: &WindowEvent) {
     match &event {
         E::CloseRequested { .. } | E::Destroyed => {
             tokio::spawn(async move {
-                iron_dialogs::dialog_close(window_id)
+                ethui_dialogs::dialog_close(window_id)
                     .await
                     .unwrap_or_else(|_e| {
                         tracing::warn!("failed to close dialog: {}", window_id);

@@ -1,5 +1,5 @@
 [package]
-name = "iron-abis"
+name = "ethui-abis"
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true

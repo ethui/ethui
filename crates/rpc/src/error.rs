@@ -1,5 +1,5 @@
 use ethers::prelude::{signer::SignerMiddlewareError, *};
-use iron_types::Address;
+use ethui_types::Address;
 use jsonrpc_core::ErrorCode;
 
 #[derive(thiserror::Error, Debug)]
@@ -21,29 +21,29 @@ pub enum Error {
 
     #[error(transparent)]
     SignerMiddleware(
-        #[from] SignerMiddlewareError<Provider<RetryClient<Http>>, iron_wallets::Signer>,
+        #[from] SignerMiddlewareError<Provider<RetryClient<Http>>, ethui_wallets::Signer>,
     ),
 
     #[error("Signer error: {0}")]
     Signer(String),
 
     #[error(transparent)]
-    IronWallet(#[from] iron_wallets::Error),
+    EthUIWallets(#[from] ethui_wallets::Error),
 
     #[error(transparent)]
     Wallet(#[from] ethers::signers::WalletError),
 
     #[error(transparent)]
-    Network(#[from] iron_networks::Error),
+    Network(#[from] ethui_networks::Error),
 
     #[error(transparent)]
     JsonRpc(#[from] jsonrpc_core::Error),
 
     #[error(transparent)]
-    Dialog(#[from] iron_dialogs::Error),
+    Dialog(#[from] ethui_dialogs::Error),
 
     #[error(transparent)]
-    Connection(#[from] iron_connections::Error),
+    Connection(#[from] ethui_connections::Error),
 
     #[error("serialization error: {0}")]
     Serde(#[from] serde_json::Error),

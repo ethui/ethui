@@ -28,12 +28,12 @@ mod ws;
 
 pub(crate) fn router() -> Router<Ctx> {
     Router::new()
-        .nest("/iron", iron_routes())
+        .nest("/ethui", ethui_routes())
         .nest("/", rpc::router())
 }
 
 #[cfg(not(feature = "http-insecure-endpoints"))]
-fn iron_routes() -> Router<Ctx> {
+fn ethui_routes() -> Router<Ctx> {
     Router::new()
         .nest("/transactions", transactions::router())
         .nest("/contracts", contracts::router())
@@ -41,7 +41,7 @@ fn iron_routes() -> Router<Ctx> {
 }
 
 #[cfg(feature = "http-insecure-endpoints")]
-fn iron_routes() -> Router<Ctx> {
+fn ethui_routes() -> Router<Ctx> {
     Router::new()
         .nest("/connections", connections::router())
         .nest("/contracts", contracts::router())

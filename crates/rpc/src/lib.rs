@@ -5,9 +5,9 @@ mod methods;
 use std::collections::HashMap;
 
 use ethers::{abi::AbiEncode, types::transaction::eip712};
-use iron_connections::Ctx;
-use iron_types::GlobalState;
-use iron_wallets::{WalletControl, Wallets};
+use ethui_connections::Ctx;
+use ethui_types::GlobalState;
+use ethui_wallets::{WalletControl, Wallets};
 use jsonrpc_core::{MetaIoHandler, Params};
 use serde_json::json;
 

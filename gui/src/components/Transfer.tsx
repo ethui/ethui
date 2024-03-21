@@ -23,7 +23,7 @@ import {
 } from "viem";
 import { z } from "zod";
 
-import { addressSchema } from "@iron/types/wallets";
+import { addressSchema } from "@ethui/types/wallets";
 import { useBalances, useNetworks, useWallets } from "@/store";
 
 const transferNative = async (from: Address, to: Address, value: bigint) => {

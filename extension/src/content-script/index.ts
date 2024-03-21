@@ -39,12 +39,12 @@ function initProviderForward() {
   }
 
   const inpageStream = new WindowPostMessageStream({
-    name: "iron:contentscript",
-    target: "iron:inpage",
+    name: "ethui:contentscript",
+    target: "ethui:inpage",
   }) as unknown as Duplex;
 
   // bg stream
-  const bgPort = runtime.connect({ name: "iron:contentscript" });
+  const bgPort = runtime.connect({ name: "ethui:contentscript" });
 
   window.onbeforeunload = () => {
     bgPort.disconnect();
@@ -59,7 +59,7 @@ function initProviderForward() {
     inpageStream.write(data);
   });
   bgPort.onDisconnect.addListener(() => {
-    log.warn("[Iron - contentscript] disconnected");
+    log.warn("[EthUI - contentscript] disconnected");
   });
 }
 
@@ -80,6 +80,6 @@ export function injectInPageScript() {
     container.insertBefore(scriptTag, container.children[0]);
     container.removeChild(scriptTag);
   } catch (error) {
-    log.error("Iron Wallet: Provider injection failed.", error);
+    log.error("EthUI: Provider injection failed.", error);
   }
 }

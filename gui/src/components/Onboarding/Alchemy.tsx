@@ -52,7 +52,7 @@ export function AlchemyStep({ onSubmit }: StepProps) {
         </Typography>
 
         <Typography component="p">
-          Iron works with{" "}
+          EthUI works with{" "}
           <Link
             underline="hover"
             href="https://book.getfoundry.sh/anvil/"

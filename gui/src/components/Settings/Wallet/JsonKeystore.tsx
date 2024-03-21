@@ -3,7 +3,7 @@ import { Button, Stack, TextField } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { JsonKeystoreWallet, Wallet } from "@iron/types/wallets";
+import { JsonKeystoreWallet, Wallet } from "@ethui/types/wallets";
 
 export const schema = z.object({
   name: z.string().min(1),

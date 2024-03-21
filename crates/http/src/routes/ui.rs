@@ -9,11 +9,11 @@ pub(super) fn router() -> Router<Ctx> {
 }
 
 pub(crate) async fn show() -> Result<()> {
-    iron_broadcast::main_window_show().await;
+    ethui_broadcast::main_window_show().await;
     Ok(())
 }
 
 pub(crate) async fn hide() -> Result<()> {
-    iron_broadcast::main_window_hide().await;
+    ethui_broadcast::main_window_hide().await;
     Ok(())
 }

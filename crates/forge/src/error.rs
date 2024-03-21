@@ -11,7 +11,7 @@ pub enum Error {
     Json(#[from] serde_json::Error),
 
     #[error(transparent)]
-    Db(#[from] iron_db::Error),
+    Db(#[from] ethui_db::Error),
 
     #[error("file does not have the expected schema: {0}")]
     NotAnABI(PathBuf),

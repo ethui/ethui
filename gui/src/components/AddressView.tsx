@@ -7,7 +7,7 @@ import truncateEthAddress from "truncate-eth-address";
 import { Address, getAddress } from "viem";
 import { z } from "zod";
 
-import { Typography } from "@iron/react/components";
+import { Typography } from "@ethui/react/components";
 import { useInvoke } from "@/hooks";
 import { ContextMenuWithTauri, Modal } from "./";
 import { useNetworks } from "@/store";

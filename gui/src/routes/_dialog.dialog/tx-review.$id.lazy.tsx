@@ -4,9 +4,9 @@ import { Cancel, CheckCircle, Delete, Send, Report } from "@mui/icons-material";
 import { Abi, Address, Hex, decodeEventLog, formatUnits, parseAbi } from "viem";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
-import { ChainView, SolidityCall, Typography } from "@iron/react/components";
-import { TokenMetadata } from "@iron/types";
-import { Network } from "@iron/types/network";
+import { ChainView, SolidityCall, Typography } from "@ethui/react/components";
+import { TokenMetadata } from "@ethui/types";
+import { Network } from "@ethui/types/network";
 import { AddressView, Datapoint } from "@/components";
 import { useDialog, useInvoke, useLedgerDetect } from "@/hooks";
 import { DialogBottom } from "@/components/Dialogs/Bottom";

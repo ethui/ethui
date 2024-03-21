@@ -4,11 +4,11 @@ use axum::{
     Json, Router,
 };
 use ethers::{abi::Abi, types::Chain};
-use iron_db::{
+use ethui_db::{
     utils::{fetch_etherscan_abi, fetch_etherscan_contract_name},
     Paginated, Pagination,
 };
-use iron_types::{
+use ethui_types::{
     transactions::PaginatedTx, Address, Contract, Erc721TokenData, TokenBalance, UINotify, U256,
 };
 use serde::Deserialize;
@@ -102,7 +102,7 @@ pub(crate) async fn insert_contract(
     db.insert_contract_with_abi(chain_id, address, abi, name)
         .await?;
 
-    iron_broadcast::ui_notify(UINotify::ContractsUpdated).await;
+    ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
 
     Ok(())
 }

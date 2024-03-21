@@ -1,8 +1,8 @@
 use std::{path::PathBuf, time::Duration};
 
-use iron_broadcast::InternalMsg;
-use iron_settings::Settings;
-use iron_types::GlobalState;
+use ethui_broadcast::InternalMsg;
+use ethui_settings::Settings;
+use ethui_types::GlobalState;
 use once_cell::sync::Lazy;
 use tokio::{sync::RwLock, time};
 
@@ -25,7 +25,7 @@ pub async fn init() -> crate::Result<()> {
 }
 
 async fn receiver() -> ! {
-    let mut rx = iron_broadcast::subscribe_internal().await;
+    let mut rx = ethui_broadcast::subscribe_internal().await;
 
     loop {
         if let Ok(msg) = rx.recv().await {
@@ -56,7 +56,7 @@ async fn receiver() -> ! {
 /// Will listen for new ABI updates, and poll the database for new contracts
 /// the work itself is debounced with a 500ms delay, to batch together multiple updates
 async fn worker() -> ! {
-    let mut rx = iron_broadcast::subscribe_internal().await;
+    let mut rx = ethui_broadcast::subscribe_internal().await;
 
     loop {
         if let Ok(msg) = rx.recv().await {

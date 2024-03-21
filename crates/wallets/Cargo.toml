@@ -1,5 +1,5 @@
 [package]
-name = "iron-wallets"
+name = "ethuis"
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true
@@ -10,10 +10,10 @@ authors.workspace = true
 
 
 [dependencies]
-iron-types = { workspace = true }
-iron-dialogs = { workspace = true }
-iron-crypto = { workspace = true }
-iron-broadcast = { workspace = true }
+ethui-types = { workspace = true }
+ethui-dialogs = { workspace = true }
+ethui-crypto = { workspace = true }
+ethui-broadcast = { workspace = true }
 
 ethers = { workspace = true }
 tauri = { workspace = true }

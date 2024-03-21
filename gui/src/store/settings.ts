@@ -3,7 +3,7 @@ import { Action } from "kbar";
 import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { GeneralSettings } from "@iron/types/settings";
+import { GeneralSettings } from "@ethui/types/settings";
 
 interface Store {
   settings?: GeneralSettings;

@@ -1,6 +1,6 @@
-use iron_db::Db;
-use iron_networks::Networks;
-use iron_types::{Address, GlobalState};
+use ethui_db::Db;
+use ethui_networks::Networks;
+use ethui_types::{Address, GlobalState};
 
 use crate::{
     errors::SimulationResult,
@@ -23,7 +23,7 @@ pub async fn simulator_get_call_count(
     to: Address,
     db: tauri::State<'_, Db>,
 ) -> SimulationResult<u32> {
-    let addrs = iron_wallets::Wallets::read()
+    let addrs = ethui_wallets::Wallets::read()
         .await
         .get_all_addresses()
         .await;

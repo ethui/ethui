@@ -30,12 +30,12 @@ pub(crate) fn event_handler(app: &AppHandle, event: SystemTrayEvent) {
             "quit" => app.exit(0),
             "hide" => app.get_window("main").unwrap().hide().unwrap(),
             "show" => {
-                tokio::spawn(async { iron_broadcast::main_window_show().await });
+                tokio::spawn(async { ethui_broadcast::main_window_show().await });
             }
             _ => {}
         },
         DoubleClick { .. } => {
-            tokio::spawn(async { iron_broadcast::main_window_show().await });
+            tokio::spawn(async { ethui_broadcast::main_window_show().await });
         }
         _ => {}
     }

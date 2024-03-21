@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use iron_types::{Address, TokenBalance, TokenMetadata, U256};
+use ethui_types::{Address, TokenBalance, TokenMetadata, U256};
 use tracing::instrument;
 
 use crate::{DbInner, Result};

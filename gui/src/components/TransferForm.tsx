@@ -23,8 +23,8 @@ import {
 } from "viem";
 import { z } from "zod";
 
-import { BigIntField } from "@iron/react/components";
-import { addressSchema } from "@iron/types/wallets";
+import { BigIntField } from "@ethui/react/components";
+import { addressSchema } from "@ethui/types/wallets";
 import { useBalances, useNetworks, useWallets } from "@/store";
 
 interface Token {

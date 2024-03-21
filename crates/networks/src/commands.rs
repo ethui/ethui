@@ -1,4 +1,4 @@
-use iron_types::GlobalState;
+use ethui_types::GlobalState;
 
 use super::{network::Network, Networks, Result};
 

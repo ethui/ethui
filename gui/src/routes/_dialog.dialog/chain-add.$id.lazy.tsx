@@ -3,8 +3,8 @@ import { Stack, Typography, Button, Grid } from "@mui/material";
 import { isDirty, isValid } from "zod";
 import { window as tauriWindow } from "@tauri-apps/api";
 
-import { Network } from "@iron/types/network";
-import { ChainView } from "@iron/react/components";
+import { Network } from "@ethui/types/network";
+import { ChainView } from "@ethui/react/components";
 import { useDialog } from "@/hooks";
 import { Datapoint } from "@/components";
 

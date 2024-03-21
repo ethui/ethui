@@ -6,16 +6,16 @@ use ethers::{
     signers::Signer as _,
     types::{transaction::eip712, Bytes, Signature},
 };
-use iron_dialogs::{Dialog, DialogMsg};
-use iron_networks::Network;
-use iron_settings::Settings;
-use iron_types::GlobalState;
-use iron_wallets::{Wallet, WalletControl};
+use ethui_dialogs::{Dialog, DialogMsg};
+use ethui_networks::Network;
+use ethui_settings::Settings;
+use ethui_types::GlobalState;
+use ethui_wallets::{Wallet, WalletControl};
 use serde::Serialize;
 
 use crate::{Error, Result};
 
-type Middleware = SignerMiddleware<Provider<RetryClient<Http>>, iron_wallets::Signer>;
+type Middleware = SignerMiddleware<Provider<RetryClient<Http>>, ethui_wallets::Signer>;
 
 /// Orchestrates message signing
 /// Takes references to both the wallet and network

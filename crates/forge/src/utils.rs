@@ -1,12 +1,12 @@
 use ethers::providers::Middleware as _;
-use iron_networks::Networks;
-use iron_types::{GlobalState, ToEthers as _, UINotify};
+use ethui_networks::Networks;
+use ethui_types::{GlobalState, ToEthers as _, UINotify};
 use tracing::trace;
 
 use crate::{init::FORGE, Error, Result};
 
 pub(crate) async fn update_db_contracts() -> Result<()> {
-    let db = iron_db::get();
+    let db = ethui_db::get();
 
     let contracts = db.get_incomplete_contracts().await?;
     let mut any_updates = false;
@@ -47,7 +47,7 @@ pub(crate) async fn update_db_contracts() -> Result<()> {
     }
 
     if any_updates {
-        iron_broadcast::ui_notify(UINotify::ContractsUpdated).await;
+        ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
     }
 
     Ok(())

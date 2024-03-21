@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 pub use internal_msgs::*;
-use iron_types::{ui_events, Address, Affinity, B256};
+use ethui_types::{ui_events, Address, Affinity, B256};
 use once_cell::sync::Lazy;
 use tokio::sync::{broadcast, oneshot, Mutex, RwLock};
 pub use ui_msgs::*;

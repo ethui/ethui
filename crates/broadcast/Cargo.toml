@@ -1,5 +1,5 @@
 [package]
-name = "iron-broadcast"
+name = "ethui-broadcast"
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true
@@ -9,7 +9,7 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-iron-types = { workspace = true }
+ethui-types = { workspace = true }
 tokio = { workspace = true }
 once_cell = { workspace = true }
 url = { workspace = true }

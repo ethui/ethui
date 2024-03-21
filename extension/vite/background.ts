@@ -33,7 +33,7 @@ export default defineConfig({
     lib: {
       formats: ["iife"],
       entry: path.resolve(__dirname, "..", "src", "background", "index.ts"),
-      name: "Iron Wallet - Background Script",
+      name: "EthUI - Background Script",
     },
     rollupOptions: {
       output: {

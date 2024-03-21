@@ -5,7 +5,7 @@ use ethers::{
     types::{Action, Call, CallResult, Create, CreateResult, Log, Res, Trace},
 };
 use futures::future::join_all;
-use iron_types::{
+use ethui_types::{
     events::{ContractDeployed, ERC20Transfer, ERC721Transfer, Tx},
     Bytes, Event, ToAlloy,
 };
@@ -25,7 +25,7 @@ pub(super) async fn expand_traces(
     res.flatten().collect()
 }
 
-pub(super) fn expand_logs(traces: Vec<Log>) -> Vec<iron_types::Event> {
+pub(super) fn expand_logs(traces: Vec<Log>) -> Vec<ethui_types::Event> {
     traces.into_iter().filter_map(expand_log).collect()
 }
 
@@ -134,7 +134,7 @@ fn expand_log(log: Log) -> Option<Event> {
     let raw = RawLog::from((log.topics, log.data.to_vec()));
     let block_number = log.block_number?.as_u64();
 
-    use iron_abis::{
+    use ethui_abis::{
         ierc20::{self, IERC20Events},
         ierc721::{self, IERC721Events},
     };

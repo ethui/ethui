@@ -1,5 +1,5 @@
 [package]
-name = "iron-http"
+name = "ethui-http"
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true
@@ -9,19 +9,19 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-iron-broadcast = { workspace = true }
-iron-connections = { workspace = true }
-iron-db = { workspace = true }
-iron-forge = { workspace = true }
-iron-networks = { workspace = true }
-iron-rpc = { workspace = true }
-iron-settings = { workspace = true }
-iron-simulator = { workspace = true }
-iron-sync-alchemy = { workspace = true }
-iron-types = { workspace = true }
-iron-wallets = { workspace = true }
-iron-ws = { workspace = true }
-iron-args = { workspace = true }
+ethui-broadcast = { workspace = true }
+ethui-connections = { workspace = true }
+ethui-db = { workspace = true }
+ethui-forge = { workspace = true }
+ethui-networks = { workspace = true }
+ethui-rpc = { workspace = true }
+ethui-settings = { workspace = true }
+ethui-simulator = { workspace = true }
+ethui-sync-alchemy = { workspace = true }
+ethui-types = { workspace = true }
+ethuis = { workspace = true }
+ethui-ws = { workspace = true }
+ethui-args = { workspace = true }
 
 ethers = { workspace = true }
 serde = { workspace = true }

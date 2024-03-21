@@ -12,7 +12,7 @@ import log from "loglevel";
 import { Address, RequestArguments } from "./types";
 import { errorMiddleware } from "./utils";
 
-export class IronProvider extends EventEmitter {
+export class EthUIProvider extends EventEmitter {
   protected initialized = false;
   protected autoId = 0;
   protected engine: JsonRpcEngine;
@@ -76,7 +76,7 @@ export class IronProvider extends EventEmitter {
    * required events. Idempotent.
    *
    * @param chainId - The ID of the newly connected chain.
-   * @emits IronProvider#connect
+   * @emits EthUIProvider#connect
    */
   protected handleConnect(chainId: string) {
     this.emit("connect", { chainId });
@@ -160,7 +160,7 @@ export class IronProvider extends EventEmitter {
         case "METAMASK_STREAM_FAILURE":
           this.stream.destroy(
             new Error(
-              "Iron: Disconnected from Iron background. Page reload required.",
+              "EthUI: Disconnected from EthUI background. Page reload required.",
             ),
           );
           break;

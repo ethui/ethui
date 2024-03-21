@@ -1,5 +1,5 @@
 [package]
-name = "iron-crypto"
+name = "ethui-crypto"
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true

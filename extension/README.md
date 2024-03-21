@@ -1,4 +1,4 @@
-# Iron Wallet extension
+# EthUI extension
 
 [original]: https://github.com/stateful/web-extension-starter-kit/tree/20266f1ca8ddbfe63e5d830dd846937a233a6abe
 [safari-issue]: https://github.com/stateful/web-extension-starter-kit/issues/1

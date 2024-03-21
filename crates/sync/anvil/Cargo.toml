@@ -1,5 +1,5 @@
 [package]
-name = "iron-sync-anvil"
+name = "ethui-sync-anvil"
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true
@@ -9,10 +9,10 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-iron-db = { workspace = true }
-iron-abis = { workspace = true }
-iron-types = { workspace = true }
-iron-broadcast = { workspace = true }
+ethui-db = { workspace = true }
+ethui-abis = { workspace = true }
+ethui-types = { workspace = true }
+ethui-broadcast = { workspace = true }
 
 ethers = { workspace = true }
 tokio = { workspace = true }

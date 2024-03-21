@@ -4,7 +4,7 @@ use foundry_evm::{
     fork::CreateFork,
     opts::EvmOpts,
 };
-use iron_types::ToAlloy;
+use ethui_types::ToAlloy;
 
 use crate::{
     errors::SimulationResult,

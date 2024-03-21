@@ -3,8 +3,8 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
-use iron_settings::{DarkMode, SerializedSettings};
-use iron_types::Address;
+use ethui_settings::{DarkMode, SerializedSettings};
+use ethui_types::Address;
 use serde::Deserialize;
 
 use crate::{Ctx, Result};
@@ -21,7 +21,7 @@ pub(super) fn router() -> Router<Ctx> {
 }
 
 pub(crate) async fn settings() -> Json<SerializedSettings> {
-    Json(iron_settings::commands::settings_get().await)
+    Json(ethui_settings::commands::settings_get().await)
 }
 
 #[derive(Debug, Deserialize)]
@@ -31,7 +31,7 @@ pub(crate) struct SetSettings {
 }
 
 pub(crate) async fn set_settings(Json(payload): Json<SetSettings>) -> Result<()> {
-    iron_settings::commands::settings_set(payload.new_settings).await?;
+    ethui_settings::commands::settings_set(payload.new_settings).await?;
 
     Ok(())
 }
@@ -42,7 +42,7 @@ pub(crate) struct SetDarkModePayload {
 }
 
 pub(crate) async fn set_dark_mode(Json(params): Json<SetDarkModePayload>) -> Result<()> {
-    iron_settings::commands::settings_set_dark_mode(params.mode).await?;
+    ethui_settings::commands::settings_set_dark_mode(params.mode).await?;
 
     Ok(())
 }
@@ -53,13 +53,13 @@ pub(crate) struct SetFastModePayload {
 }
 
 pub(crate) async fn set_fast_mode(Json(params): Json<SetFastModePayload>) -> Result<()> {
-    iron_settings::commands::settings_set_fast_mode(params.mode).await?;
+    ethui_settings::commands::settings_set_fast_mode(params.mode).await?;
 
     Ok(())
 }
 
 pub(crate) async fn finish_onboarding() -> Result<()> {
-    iron_settings::commands::settings_finish_onboarding().await?;
+    ethui_settings::commands::settings_finish_onboarding().await?;
 
     Ok(())
 }
@@ -70,7 +70,7 @@ pub(crate) struct GetAliasPayload {
 }
 
 pub(crate) async fn alias(Query(params): Query<GetAliasPayload>) -> Json<Option<String>> {
-    Json(iron_settings::commands::settings_get_alias(params.address).await)
+    Json(ethui_settings::commands::settings_get_alias(params.address).await)
 }
 
 #[derive(Debug, Deserialize)]
@@ -80,7 +80,7 @@ pub(crate) struct SetAliasPayload {
 }
 
 pub(crate) async fn set_alias(Json(params): Json<SetAliasPayload>) -> Result<()> {
-    iron_settings::commands::settings_set_alias(params.address, params.alias).await;
+    ethui_settings::commands::settings_set_alias(params.address, params.alias).await;
 
     Ok(())
 }

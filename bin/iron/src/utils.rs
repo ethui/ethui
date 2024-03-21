@@ -1,5 +1,5 @@
-use iron_settings::Settings;
-use iron_types::GlobalState;
+use ethui_settings::Settings;
+use ethui_types::GlobalState;
 use tauri::{AppHandle, Manager};
 
 pub(crate) async fn main_window_show(app: &AppHandle) {

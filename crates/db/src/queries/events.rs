@@ -1,4 +1,4 @@
-use iron_types::Event;
+use ethui_types::Event;
 use tracing::{instrument, trace};
 
 use crate::{DbInner, Result};

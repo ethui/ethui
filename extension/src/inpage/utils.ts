@@ -26,7 +26,7 @@ export const errorMiddleware: JsonRpcMiddleware<JsonRpcParams, Json> = (
 
   next((done) => {
     if (res.error) {
-      log.error(`Iron - RPC Error: ${res.error.message}`, res.error, req);
+      log.error(`EthUI - RPC Error: ${res.error.message}`, res.error, req);
     }
     done();
   });

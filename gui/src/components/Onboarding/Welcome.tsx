@@ -9,10 +9,10 @@ export function WelcomeStep({ onSubmit }: StepProps) {
         Welcome
       </Typography>
       <Typography component="p">
-        Iron is an Ethereum wallet for developers. Check out{" "}
+        EthUI is an Ethereum wallet for developers. Check out{" "}
         <Link
           underline="hover"
-          href="https://mirror.xyz/iron-wallet.eth"
+          href="https://mirror.xyz/ethui.eth"
           target="_blank"
           rel="nofollow noopener noreferrer"
         >
@@ -21,7 +21,7 @@ export function WelcomeStep({ onSubmit }: StepProps) {
         to learn more, or check out the&nbsp;
         <Link
           underline="hover"
-          href="https://mirror.xyz/iron-wallet.eth"
+          href="https://mirror.xyz/ethui.eth"
           target="_blank"
           rel="nofollow noopener noreferrer"
         >
