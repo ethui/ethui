@@ -5,7 +5,7 @@ alias f := fix
 alias l := lint
 
 dev *args='':
-  cargo tauri dev --config bin/ethui/tauri-dev.conf.json --features ${ethui_FEATURES:-debug} -- -- -- $@
+  cargo tauri dev --config bin/ethui/tauri-dev.conf.json --features ${ETHUI_FEATURES:-debug} -- -- -- $@
 
 setup:
   yarn
