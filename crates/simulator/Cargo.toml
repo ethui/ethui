@@ -11,7 +11,7 @@ authors.workspace = true
 [dependencies]
 ethui-networks = { workspace = true }
 ethui-types = { workspace = true }
-ethuis = { workspace = true }
+ethui-wallets = { workspace = true }
 ethui-db = { workspace = true }
 
 tauri = { workspace = true }

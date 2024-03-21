@@ -38,7 +38,7 @@ ethui-forge = { path = "crates/forge" }
 ethui-crypto = { path = "crates/crypto" }
 ethui-settings = { path = "crates/settings" }
 ethui-networks = { path = "crates/networks" }
-ethuis = { path = "crates/wallets" }
+ethui-wallets = { path = "crates/wallets" }
 ethui-simulator = { path = "crates/simulator" }
 ethui-ws = { path = "crates/ws" }
 ethui-http = { path = "crates/http" }

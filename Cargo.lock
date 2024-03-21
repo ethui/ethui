@@ -2673,6 +2673,435 @@ dependencies = [
 ]
 
 [[package]]
+name = "ethui"
+version = "1.4.0"
+dependencies = [
+ "anyhow",
+ "auto-launch",
+ "ethers",
+ "ethui-args",
+ "ethui-broadcast",
+ "ethui-connections",
+ "ethui-db",
+ "ethui-dialogs",
+ "ethui-exchange-rates",
+ "ethui-forge",
+ "ethui-http",
+ "ethui-networks",
+ "ethui-rpc",
+ "ethui-settings",
+ "ethui-simulator",
+ "ethui-sync",
+ "ethui-token-list",
+ "ethui-tracing",
+ "ethui-types",
+ "ethui-wallets",
+ "ethui-ws",
+ "fix-path-env",
+ "named-lock",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-window-state",
+ "thiserror",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "ethui-abis"
+version = "1.4.0"
+dependencies = [
+ "ethers",
+ "serde",
+]
+
+[[package]]
+name = "ethui-args"
+version = "1.4.0"
+dependencies = [
+ "clap",
+]
+
+[[package]]
+name = "ethui-broadcast"
+version = "1.4.0"
+dependencies = [
+ "ethui-types",
+ "once_cell",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "ethui-connections"
+version = "1.4.0"
+dependencies = [
+ "async-trait",
+ "ethers",
+ "ethui-broadcast",
+ "ethui-networks",
+ "ethui-types",
+ "jsonrpc-core",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "ethui-crypto"
+version = "1.4.0"
+dependencies = [
+ "aead",
+ "anyhow",
+ "chacha20poly1305",
+ "ethers",
+ "rust-argon2",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "zeroize",
+]
+
+[[package]]
+name = "ethui-db"
+version = "1.4.0"
+dependencies = [
+ "ethers",
+ "ethui-broadcast",
+ "ethui-settings",
+ "ethui-types",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "tauri",
+ "thiserror",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "ethui-dialogs"
+version = "1.4.0"
+dependencies = [
+ "ethui-broadcast",
+ "ethui-types",
+ "once_cell",
+ "rand 0.8.5",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
+name = "ethui-exchange-rates"
+version = "1.4.0"
+dependencies = [
+ "async-trait",
+ "ethers",
+ "ethui-types",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
+name = "ethui-forge"
+version = "1.4.0"
+dependencies = [
+ "ethers",
+ "ethui-broadcast",
+ "ethui-db",
+ "ethui-networks",
+ "ethui-settings",
+ "ethui-types",
+ "futures",
+ "glob",
+ "notify",
+ "once_cell",
+ "regex",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "ethui-http"
+version = "1.4.0"
+dependencies = [
+ "axum",
+ "ethers",
+ "ethui-args",
+ "ethui-broadcast",
+ "ethui-connections",
+ "ethui-db",
+ "ethui-forge",
+ "ethui-networks",
+ "ethui-rpc",
+ "ethui-settings",
+ "ethui-simulator",
+ "ethui-sync-alchemy",
+ "ethui-types",
+ "ethui-wallets",
+ "ethui-ws",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tokio",
+ "tower-http",
+ "tracing",
+]
+
+[[package]]
+name = "ethui-networks"
+version = "1.4.0"
+dependencies = [
+ "async-trait",
+ "ethers",
+ "ethui-broadcast",
+ "ethui-types",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+ "url",
+]
+
+[[package]]
+name = "ethui-rpc"
+version = "1.4.0"
+dependencies = [
+ "alloy-primitives",
+ "async-trait",
+ "ethers",
+ "ethui-broadcast",
+ "ethui-connections",
+ "ethui-db",
+ "ethui-dialogs",
+ "ethui-networks",
+ "ethui-settings",
+ "ethui-simulator",
+ "ethui-types",
+ "ethui-wallets",
+ "jsonrpc-core",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "ethui-settings"
+version = "1.4.0"
+dependencies = [
+ "async-trait",
+ "auto-launch",
+ "ethers",
+ "ethui-broadcast",
+ "ethui-types",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
+name = "ethui-simulator"
+version = "1.4.0"
+dependencies = [
+ "alloy-primitives",
+ "ethers",
+ "ethui-db",
+ "ethui-networks",
+ "ethui-types",
+ "ethui-wallets",
+ "eyre",
+ "foundry-config",
+ "foundry-evm",
+ "pretty_assertions",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
+name = "ethui-sync"
+version = "1.4.0"
+dependencies = [
+ "ethers",
+ "ethui-abis",
+ "ethui-broadcast",
+ "ethui-db",
+ "ethui-networks",
+ "ethui-sync-alchemy",
+ "ethui-sync-anvil",
+ "ethui-types",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "ethui-sync-alchemy"
+version = "1.4.0"
+dependencies = [
+ "async-trait",
+ "ethers",
+ "ethui-abis",
+ "ethui-broadcast",
+ "ethui-db",
+ "ethui-settings",
+ "ethui-types",
+ "futures",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "ethui-sync-anvil"
+version = "1.4.0"
+dependencies = [
+ "base64 0.21.5",
+ "ethers",
+ "ethui-abis",
+ "ethui-broadcast",
+ "ethui-db",
+ "ethui-types",
+ "futures",
+ "once_cell",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "thiserror",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "ethui-token-list"
+version = "1.4.0"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
+name = "ethui-tracing"
+version = "1.4.0"
+dependencies = [
+ "thiserror",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "ethui-types"
+version = "1.4.0"
+dependencies = [
+ "alloy-primitives",
+ "async-trait",
+ "ethers",
+ "foundry-common",
+ "foundry-config",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "ethui-wallets"
+version = "1.4.0"
+dependencies = [
+ "async-trait",
+ "coins-bip32",
+ "coins-ledger 0.9.3",
+ "enum_dispatch",
+ "ethers",
+ "ethui-broadcast",
+ "ethui-crypto",
+ "ethui-dialogs",
+ "ethui-types",
+ "futures",
+ "futures-executor",
+ "hex",
+ "once_cell",
+ "secrets",
+ "semver 1.0.20",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "ethui-ws"
+version = "1.4.0"
+dependencies = [
+ "async-trait",
+ "ethers",
+ "ethui-args",
+ "ethui-broadcast",
+ "ethui-connections",
+ "ethui-networks",
+ "ethui-rpc",
+ "ethui-types",
+ "futures",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tokio",
+ "tokio-tungstenite",
+ "tracing",
+ "tungstenite",
+ "url",
+]
+
+[[package]]
 name = "event-listener"
 version = "2.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4219,435 +4648,6 @@ name = "ipnet"
 version = "2.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8f518f335dce6725a761382244631d86cf0ccb2863413590b31338feb467f9c3"
-
-[[package]]
-name = "ethui"
-version = "1.4.0"
-dependencies = [
- "anyhow",
- "auto-launch",
- "ethers",
- "fix-path-env",
- "ethui-args",
- "ethui-broadcast",
- "ethui-connections",
- "ethui-db",
- "ethui-dialogs",
- "ethui-exchange-rates",
- "ethui-forge",
- "ethui-http",
- "ethui-networks",
- "ethui-rpc",
- "ethui-settings",
- "ethui-simulator",
- "ethui-sync",
- "ethui-token-list",
- "ethui-tracing",
- "ethui-types",
- "ethuis",
- "ethui-ws",
- "named-lock",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "tauri-plugin-window-state",
- "thiserror",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "ethui-abis"
-version = "1.4.0"
-dependencies = [
- "ethers",
- "serde",
-]
-
-[[package]]
-name = "ethui-args"
-version = "1.4.0"
-dependencies = [
- "clap",
-]
-
-[[package]]
-name = "ethui-broadcast"
-version = "1.4.0"
-dependencies = [
- "ethui-types",
- "once_cell",
- "tokio",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "ethui-connections"
-version = "1.4.0"
-dependencies = [
- "async-trait",
- "ethers",
- "ethui-broadcast",
- "ethui-networks",
- "ethui-types",
- "jsonrpc-core",
- "once_cell",
- "serde",
- "serde_json",
- "tauri",
- "thiserror",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "ethui-crypto"
-version = "1.4.0"
-dependencies = [
- "aead",
- "anyhow",
- "chacha20poly1305",
- "ethers",
- "rust-argon2",
- "serde",
- "serde_json",
- "thiserror",
- "zeroize",
-]
-
-[[package]]
-name = "ethui-db"
-version = "1.4.0"
-dependencies = [
- "ethers",
- "ethui-broadcast",
- "ethui-settings",
- "ethui-types",
- "once_cell",
- "serde",
- "serde_json",
- "sqlx",
- "tauri",
- "thiserror",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "ethui-dialogs"
-version = "1.4.0"
-dependencies = [
- "ethui-broadcast",
- "ethui-types",
- "once_cell",
- "rand 0.8.5",
- "serde",
- "serde_json",
- "tauri",
- "thiserror",
- "tokio",
-]
-
-[[package]]
-name = "ethui-exchange-rates"
-version = "1.4.0"
-dependencies = [
- "async-trait",
- "ethers",
- "ethui-types",
- "once_cell",
- "serde",
- "serde_json",
- "tokio",
-]
-
-[[package]]
-name = "ethui-forge"
-version = "1.4.0"
-dependencies = [
- "ethers",
- "futures",
- "glob",
- "ethui-broadcast",
- "ethui-db",
- "ethui-networks",
- "ethui-settings",
- "ethui-types",
- "notify",
- "once_cell",
- "regex",
- "serde",
- "serde_json",
- "tauri",
- "thiserror",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "ethui-http"
-version = "1.4.0"
-dependencies = [
- "axum",
- "ethers",
- "ethui-args",
- "ethui-broadcast",
- "ethui-connections",
- "ethui-db",
- "ethui-forge",
- "ethui-networks",
- "ethui-rpc",
- "ethui-settings",
- "ethui-simulator",
- "ethui-sync-alchemy",
- "ethui-types",
- "ethuis",
- "ethui-ws",
- "reqwest",
- "serde",
- "serde_json",
- "thiserror",
- "tokio",
- "tower-http",
- "tracing",
-]
-
-[[package]]
-name = "ethui-networks"
-version = "1.4.0"
-dependencies = [
- "async-trait",
- "ethers",
- "ethui-broadcast",
- "ethui-types",
- "once_cell",
- "serde",
- "serde_json",
- "tauri",
- "thiserror",
- "tokio",
- "url",
-]
-
-[[package]]
-name = "ethui-rpc"
-version = "1.4.0"
-dependencies = [
- "alloy-primitives",
- "async-trait",
- "ethers",
- "ethui-broadcast",
- "ethui-connections",
- "ethui-db",
- "ethui-dialogs",
- "ethui-networks",
- "ethui-settings",
- "ethui-simulator",
- "ethui-types",
- "ethuis",
- "jsonrpc-core",
- "once_cell",
- "serde",
- "serde_json",
- "tauri",
- "thiserror",
- "tokio",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "ethui-settings"
-version = "1.4.0"
-dependencies = [
- "async-trait",
- "auto-launch",
- "ethers",
- "ethui-broadcast",
- "ethui-types",
- "once_cell",
- "serde",
- "serde_json",
- "tauri",
- "thiserror",
- "tokio",
-]
-
-[[package]]
-name = "ethui-simulator"
-version = "1.4.0"
-dependencies = [
- "alloy-primitives",
- "ethers",
- "eyre",
- "foundry-config",
- "foundry-evm",
- "ethui-db",
- "ethui-networks",
- "ethui-types",
- "ethuis",
- "pretty_assertions",
- "serde",
- "serde_json",
- "tauri",
- "thiserror",
- "tokio",
-]
-
-[[package]]
-name = "ethui-sync"
-version = "1.4.0"
-dependencies = [
- "ethers",
- "ethui-abis",
- "ethui-broadcast",
- "ethui-db",
- "ethui-networks",
- "ethui-sync-alchemy",
- "ethui-sync-anvil",
- "ethui-types",
- "once_cell",
- "serde",
- "serde_json",
- "tauri",
- "thiserror",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "ethui-sync-alchemy"
-version = "1.4.0"
-dependencies = [
- "async-trait",
- "ethers",
- "futures",
- "ethui-abis",
- "ethui-broadcast",
- "ethui-db",
- "ethui-settings",
- "ethui-types",
- "once_cell",
- "serde",
- "serde_json",
- "thiserror",
- "tokio",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "ethui-sync-anvil"
-version = "1.4.0"
-dependencies = [
- "base64 0.21.5",
- "ethers",
- "futures",
- "ethui-abis",
- "ethui-broadcast",
- "ethui-db",
- "ethui-types",
- "once_cell",
- "reqwest",
- "serde",
- "serde_json",
- "sqlx",
- "thiserror",
- "tokio",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "ethui-token-list"
-version = "1.4.0"
-dependencies = [
- "anyhow",
- "chrono",
- "reqwest",
- "serde",
- "serde_json",
- "tokio",
-]
-
-[[package]]
-name = "ethui-tracing"
-version = "1.4.0"
-dependencies = [
- "thiserror",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "ethui-types"
-version = "1.4.0"
-dependencies = [
- "alloy-primitives",
- "async-trait",
- "ethers",
- "foundry-common",
- "foundry-config",
- "serde",
- "serde_json",
- "sqlx",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "ethuis"
-version = "1.4.0"
-dependencies = [
- "async-trait",
- "coins-bip32",
- "coins-ledger 0.9.3",
- "enum_dispatch",
- "ethers",
- "futures",
- "futures-executor",
- "hex",
- "ethui-broadcast",
- "ethui-crypto",
- "ethui-dialogs",
- "ethui-types",
- "once_cell",
- "secrets",
- "semver 1.0.20",
- "serde",
- "serde_json",
- "tauri",
- "thiserror",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "ethui-ws"
-version = "1.4.0"
-dependencies = [
- "async-trait",
- "ethers",
- "futures",
- "ethui-args",
- "ethui-broadcast",
- "ethui-connections",
- "ethui-networks",
- "ethui-rpc",
- "ethui-types",
- "once_cell",
- "serde",
- "serde_json",
- "tauri",
- "thiserror",
- "tokio",
- "tokio-tungstenite",
- "tracing",
- "tungstenite",
- "url",
-]
 
 [[package]]
 name = "is-terminal"

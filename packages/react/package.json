@@ -12,10 +12,10 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@ethui/types": "*",
     "@fontsource/material-icons": "^5.0.13",
     "@fontsource/roboto": "^5.0.8",
     "@fontsource/roboto-mono": "^5.0.16",
-    "@ethui/types": "*",
     "@mui/icons-material": "^5.15.10",
     "@mui/lab": "^5.0.0-alpha.165",
     "@mui/material": "^5.15.10",
