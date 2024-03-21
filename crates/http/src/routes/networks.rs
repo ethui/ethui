@@ -29,7 +29,9 @@ pub(super) fn router() -> Router<Ctx> {
 }
 
 pub(crate) async fn current() -> Result<Json<Network>> {
-    Ok(Json(ethui_networks::commands::networks_get_current().await?))
+    Ok(Json(
+        ethui_networks::commands::networks_get_current().await?,
+    ))
 }
 
 pub(crate) async fn set_current(Query(params): Query<SetNetworkParams>) -> Result<()> {

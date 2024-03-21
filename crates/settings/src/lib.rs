@@ -11,8 +11,8 @@ use std::{
     str::FromStr,
 };
 
-pub use init::init;
 use ethui_types::{Address, UINotify};
+pub use init::init;
 use serde::{Deserialize, Serialize};
 pub use utils::test_alchemy_api_key;
 

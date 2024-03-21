@@ -8,9 +8,9 @@ use ethers::{
     },
     types::{Filter, Log, Trace, U64},
 };
-use futures::StreamExt;
 use ethui_abis::{IERC20, IERC721};
 use ethui_types::{Address, Erc721Token, Erc721TokenDetails, ToEthers, TokenMetadata, UINotify};
+use futures::StreamExt;
 use tokio::sync::mpsc;
 use tracing::warn;
 use url::Url;

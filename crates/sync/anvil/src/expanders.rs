@@ -4,11 +4,11 @@ use ethers::{
     providers::{Http, Middleware, Provider},
     types::{Action, Call, CallResult, Create, CreateResult, Log, Res, Trace},
 };
-use futures::future::join_all;
 use ethui_types::{
     events::{ContractDeployed, ERC20Transfer, ERC721Transfer, Tx},
     Bytes, Event, ToAlloy,
 };
+use futures::future::join_all;
 
 use super::{Error, Result};
 

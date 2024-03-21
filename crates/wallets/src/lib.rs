@@ -13,8 +13,8 @@ use std::{
 };
 
 pub use error::{Error, Result};
-pub use init::init;
 use ethui_types::{Address, Json, UINotify};
+pub use init::init;
 use serde::Serialize;
 pub use signer::Signer;
 

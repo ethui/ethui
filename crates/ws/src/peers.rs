@@ -107,7 +107,8 @@ impl Peers {
             });
 
             for (_, peer) in self.map.iter() {
-                if ethui_connections::utils::affinity_matches(peer.domain(), &domain, affinity).await
+                if ethui_connections::utils::affinity_matches(peer.domain(), &domain, affinity)
+                    .await
                 {
                     tracing::info!(
                         event = "peer chain changed",

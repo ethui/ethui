@@ -1,7 +1,7 @@
 use std::{collections::HashMap, net::SocketAddr};
 
-use futures::{stream::SplitSink, SinkExt, StreamExt};
 use ethui_types::GlobalState;
+use futures::{stream::SplitSink, SinkExt, StreamExt};
 use tokio::{
     net::{TcpListener, TcpStream},
     sync::mpsc,

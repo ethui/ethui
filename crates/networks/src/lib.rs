@@ -10,8 +10,8 @@ use std::{
 };
 
 use ethers::providers::{Http, Provider, RetryClient};
-pub use init::init;
 use ethui_types::{Affinity, UINotify};
+pub use init::init;
 use serde::Serialize;
 
 pub use self::{
