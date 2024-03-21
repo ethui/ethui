@@ -38,7 +38,7 @@ export function InstallExtensionStep({ onSubmit }: StepProps) {
         Go to{" "}
         <Link
           underline="hover"
-          href="http://ethui.xyz/onboarding/extension"
+          href="http://ethui.dev/onboarding/extension"
           target="_blank"
           rel="nofollow noopener noreferrer"
         >
