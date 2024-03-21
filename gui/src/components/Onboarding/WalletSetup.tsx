@@ -1,6 +1,6 @@
 import { Box, Stack, Typography } from "@mui/material";
 
-import { Button } from "@iron/react/components";
+import { Button } from "@ethui/react/components";
 import { StepProps } from ".";
 import { SettingsWallets } from "@/components/Settings/Wallets";
 

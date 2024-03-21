@@ -1,10 +1,10 @@
+use ethui_types::ToAlloy;
 use foundry_evm::{
     backend::Backend,
     executors::{Executor, ExecutorBuilder},
     fork::CreateFork,
     opts::EvmOpts,
 };
-use iron_types::ToAlloy;
 
 use crate::{
     errors::SimulationResult,

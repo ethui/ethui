@@ -11,7 +11,7 @@ import truncateEthAddress from "truncate-eth-address";
 import { Address, formatUnits } from "viem";
 import { useState } from "react";
 
-import { GeneralSettings } from "@iron/types/settings";
+import { GeneralSettings } from "@ethui/types/settings";
 import { useInvoke } from "@/hooks";
 import { useBalances, useNetworks } from "@/store";
 import { IconAddress } from "./Icons";

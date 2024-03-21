@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use iron_types::{Address, Erc721Token, Erc721TokenData, U256};
+use ethui_types::{Address, Erc721Token, Erc721TokenData, U256};
 use sqlx::Row;
 
 use crate::{DbInner, Result};

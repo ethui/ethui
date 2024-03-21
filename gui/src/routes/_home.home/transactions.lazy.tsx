@@ -15,8 +15,8 @@ import truncateEthAddress from "truncate-eth-address";
 import { Abi, Address, formatEther, formatGwei } from "viem";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
-import { BlockNumber, SolidityCall } from "@iron/react/components";
-import { Paginated, PaginatedTx, Pagination, Tx } from "@iron/types";
+import { BlockNumber, SolidityCall } from "@ethui/react/components";
+import { Paginated, PaginatedTx, Pagination, Tx } from "@ethui/types";
 import { useEventListener, useInvoke } from "@/hooks";
 import { useNetworks, useWallets } from "@/store";
 import {

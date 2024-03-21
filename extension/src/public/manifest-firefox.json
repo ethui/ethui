@@ -1,10 +1,10 @@
 {
   "manifest_version": 3,
-  "name": "Iron Wallet",
+  "name": "EthUI",
   "description": "A developer-focused Ethereum wallet",
   "version": "%VERSION%",
   "author": "Miguel Palhas <mpalhas@gmail.com>",
-  "homepage_url": "https://github.com/iron-wallet",
+  "homepage_url": "https://github.com/ethui",
   "devtools_page": "devtools/index.html",
   "minimum_chrome_version": "102",
   "content_scripts": [
@@ -37,14 +37,14 @@
   ],
   "permissions": ["storage", "scripting"],
   "icons": {
-    "16": "icons/iron-16.png",
-    "48": "icons/iron-48.png",
-    "96": "icons/iron-96.png",
-    "128": "icons/iron-128.png"
+    "16": "icons/ethui-16.png",
+    "48": "icons/ethui-48.png",
+    "96": "icons/ethui-96.png",
+    "128": "icons/ethui-128.png"
   },
   "browser_specific_settings": {
     "gecko": {
-      "id": "iron-wallet@naps62.com"
+      "id": "ethui@naps62.com"
     }
   }
 }

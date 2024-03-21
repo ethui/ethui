@@ -20,12 +20,12 @@ import truncateEthAddress from "truncate-eth-address";
 import { Address, formatUnits } from "viem";
 import { z } from "zod";
 
-import { passwordFormSchema, passwordSchema } from "@iron/types/password";
+import { passwordFormSchema, passwordSchema } from "@ethui/types/password";
 import {
   derivationPathSchema,
   HdWallet,
   mnemonicSchema,
-} from "@iron/types/wallets";
+} from "@ethui/types/wallets";
 import { useProvider } from "@/hooks";
 
 export const schema = z.object({

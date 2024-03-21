@@ -9,7 +9,7 @@ pub(crate) fn build() -> Menu {
 pub(crate) fn build() -> Menu {
     use tauri::{AboutMetadata, CustomMenuItem, MenuItem, Submenu};
 
-    let app_name = "Iron".to_string();
+    let app_name = "ethui".to_string();
 
     let main_menu = Menu::new()
         .add_native_item(MenuItem::About(app_name.clone(), AboutMetadata::default()))

@@ -101,7 +101,7 @@ impl Network {
         if self.is_dev() {
             let http = Url::parse(&self.http_url)?;
             let ws = Url::parse(&self.ws_url.clone().unwrap())?;
-            iron_broadcast::reset_anvil_listener(self.chain_id, http, ws).await;
+            ethui_broadcast::reset_anvil_listener(self.chain_id, http, ws).await;
         }
 
         Ok(())

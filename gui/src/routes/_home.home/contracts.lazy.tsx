@@ -10,7 +10,7 @@ import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
-import { Contract } from "@iron/types";
+import { Contract } from "@ethui/types";
 import { useContracts, useNetworks } from "@/store";
 import {
   ABIForm,

@@ -1,6 +1,6 @@
 use ethers::providers::{Http, Middleware, Provider, RetryClient};
-use iron_abis::IERC20;
-use iron_types::{events::Tx, Address, GlobalState, ToAlloy, ToEthers, TokenMetadata, B256};
+use ethui_abis::IERC20;
+use ethui_types::{events::Tx, Address, GlobalState, ToAlloy, ToEthers, TokenMetadata, B256};
 
 use crate::{Error, Result};
 
@@ -36,7 +36,7 @@ pub(crate) async fn fetch_full_tx(chain_id: u32, hash: B256) -> Result<()> {
         incomplete: false,
     };
 
-    let db = iron_db::get();
+    let db = ethui_db::get();
     db.insert_transaction(chain_id, &tx).await?;
 
     Ok(())
@@ -54,7 +54,7 @@ pub(crate) async fn fetch_erc20_metadata(chain_id: u32, address: Address) -> Res
         decimals: contract.decimals().call().await.ok(),
     };
 
-    let db = iron_db::get();
+    let db = ethui_db::get();
     db.save_erc20_metadatas(chain_id, vec![metadata])
         .await
         .unwrap();
@@ -63,7 +63,7 @@ pub(crate) async fn fetch_erc20_metadata(chain_id: u32, address: Address) -> Res
 }
 
 async fn provider(chain_id: u32) -> Result<Provider<RetryClient<Http>>> {
-    let networks = iron_networks::Networks::read().await;
+    let networks = ethui_networks::Networks::read().await;
 
     match networks.get_network(chain_id) {
         Some(network) => Ok(network.get_provider()),

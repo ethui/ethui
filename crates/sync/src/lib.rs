@@ -6,14 +6,14 @@ mod worker;
 use std::sync::Arc;
 
 pub use error::{Error, Result};
-use iron_broadcast::InternalMsg;
-use iron_types::{Address, B256};
+use ethui_broadcast::InternalMsg;
+use ethui_types::{Address, B256};
 use tokio::sync::{mpsc, oneshot, Mutex};
 use tracing::instrument;
 pub use worker::Worker;
 
 pub async fn init() {
-    iron_sync_anvil::init();
+    ethui_sync_anvil::init();
 
     let (snd, rcv) = mpsc::unbounded_channel();
     tokio::spawn(async { receiver(snd).await });
@@ -56,7 +56,7 @@ impl TryFrom<InternalMsg> for Msg {
 /// if a msg is convertible to `Msg`, forward that to the sync worker
 #[instrument(skip(snd), level = "trace")]
 async fn receiver(snd: mpsc::UnboundedSender<Msg>) -> std::result::Result<(), ()> {
-    let mut rx = iron_broadcast::subscribe_internal().await;
+    let mut rx = ethui_broadcast::subscribe_internal().await;
 
     loop {
         if let Ok(internal_msg) = rx.recv().await {

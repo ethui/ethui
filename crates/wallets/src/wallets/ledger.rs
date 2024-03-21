@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use iron_types::{Address, Json};
+use ethui_types::{Address, Json};
 use serde::{Deserialize, Serialize};
 
 use crate::{utils, wallet::WalletCreate, Error, Result, Signer, Wallet, WalletControl};

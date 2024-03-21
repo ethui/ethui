@@ -4,13 +4,13 @@ pub enum AppError {
     InvalidNetwork,
 
     #[error(transparent)]
-    DB(#[from] iron_db::Error),
+    DB(#[from] ethui_db::Error),
 
     #[error(transparent)]
-    Forge(#[from] iron_forge::Error),
+    Forge(#[from] ethui_forge::Error),
 
     #[error(transparent)]
-    Http(#[from] iron_http::Error),
+    Http(#[from] ethui_http::Error),
 
     #[error(transparent)]
     FixPathEnv(#[from] fix_path_env::Error),
@@ -19,10 +19,10 @@ pub enum AppError {
     TauriError(#[from] tauri::Error),
 
     #[error(transparent)]
-    Tracing(#[from] iron_tracing::TracingError),
+    Tracing(#[from] ethui_tracing::TracingError),
 
     #[error(transparent)]
-    Settings(#[from] iron_settings::Error),
+    Settings(#[from] ethui_settings::Error),
 
     #[error("App already running")]
     NamedLock(#[from] named_lock::Error),

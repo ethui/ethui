@@ -1,14 +1,14 @@
-# Contributing to Iron Wallet
+# Contributing to EthUI
 
 [coc]: https://www.rust-lang.org/policies/code-of-conduct
 [contact]: https://linktr.ee/naps62
-[good-first-issue]: https://github.com/iron-wallet/iron/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22
+[good-first-issue]: https://github.com/ethui/ethui/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22
 [tauri-requirements]: https://tauri.app/v1/guides/getting-started/prerequisites/
 [libsodium-macos]: https://formulae.brew.sh/formula/libsodium
 [libsodium-arch]: https://archlinux.org/packages/extra/x86_64/libsodium/
 [libsodium-ubuntu]: https://packages.ubuntu.com/search?keywords=libsodium-dev
 [foundry]: https://getfoundry.sh/
-[web3-demo]: https://github.com/iron-wallet/web3-demo
+[web3-demo]: https://github.com/ethui/web3-demo
 [anvil]: https://book.getfoundry.sh/anvil/
 
 We welcome all kinds of contributions:
@@ -43,7 +43,7 @@ Here's a few suggestions on how to get started:
 **1. Clone the repo and install dependencies:**
 
 ```sh
-git clone git@github.com:iron-wallet/iron && cd iron
+git clone git@github.com:ethui/ethui && cd ethui
 ```
 
 **2. Run the initial build**, which will install dependencies and build the extension `dist`:
@@ -57,8 +57,8 @@ yarn setup
 1. Open Google Chrome
 2. go to `chrome://extensions`
 3. enable `Developer mode` (upper right corner)
-4. Load unpacked -> choose the `iron/extension/dist` directory
-5. Iron should now be running
+4. Load unpacked -> choose the `ethui/extension/dist` directory
+5. EthUI should now be running
 
 **4. Start the app in development mode**
 

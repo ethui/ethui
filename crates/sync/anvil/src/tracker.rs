@@ -8,9 +8,9 @@ use ethers::{
     },
     types::{Filter, Log, Trace, U64},
 };
+use ethui_abis::{IERC20, IERC721};
+use ethui_types::{Address, Erc721Token, Erc721TokenDetails, ToEthers, TokenMetadata, UINotify};
 use futures::StreamExt;
-use iron_abis::{IERC20, IERC721};
-use iron_types::{Address, Erc721Token, Erc721TokenDetails, ToEthers, TokenMetadata, UINotify};
 use tokio::sync::mpsc;
 use tracing::warn;
 use url::Url;
@@ -195,7 +195,7 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
     let mut caught_up = false;
 
     let provider: Provider<Http> = Provider::<Http>::try_from(&ctx.http_url.to_string()).unwrap();
-    let db = iron_db::get();
+    let db = ethui_db::get();
 
     while let Some(msg) = block_rcv.recv().await {
         match msg {
@@ -266,9 +266,9 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
         // don't emit events until we're catching up
         // otherwise we spam too much during that phase
         if caught_up {
-            iron_broadcast::ui_notify(UINotify::TxsUpdated).await;
-            iron_broadcast::ui_notify(UINotify::BalancesUpdated).await;
-            iron_broadcast::ui_notify(UINotify::Erc721Updated).await;
+            ethui_broadcast::ui_notify(UINotify::TxsUpdated).await;
+            ethui_broadcast::ui_notify(UINotify::BalancesUpdated).await;
+            ethui_broadcast::ui_notify(UINotify::Erc721Updated).await;
         }
     }
 

@@ -1,5 +1,5 @@
 [package]
-name = "iron"
+name = "ethui"
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true
@@ -9,24 +9,24 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-iron-forge = { workspace = true }
-iron-settings = { workspace = true }
-iron-networks = { workspace = true }
-iron-wallets = { workspace = true }
-iron-dialogs = { workspace = true }
-iron-rpc = { workspace = true }
-iron-ws = { workspace = true }
-iron-http = { workspace = true }
-iron-connections = { workspace = true }
-iron-types = { workspace = true }
-iron-db = { workspace = true }
-iron-sync = { workspace = true }
-iron-tracing = { workspace = true }
-iron-exchange-rates = { workspace = true }
-iron-broadcast = { workspace = true }
-iron-simulator = { workspace = true }
-iron-args = { workspace = true }
-iron-token-list = { workspace = true }
+ethui-forge = { workspace = true }
+ethui-settings = { workspace = true }
+ethui-networks = { workspace = true }
+ethui-wallets = { workspace = true }
+ethui-dialogs = { workspace = true }
+ethui-rpc = { workspace = true }
+ethui-ws = { workspace = true }
+ethui-http = { workspace = true }
+ethui-connections = { workspace = true }
+ethui-types = { workspace = true }
+ethui-db = { workspace = true }
+ethui-sync = { workspace = true }
+ethui-tracing = { workspace = true }
+ethui-exchange-rates = { workspace = true }
+ethui-broadcast = { workspace = true }
+ethui-simulator = { workspace = true }
+ethui-args = { workspace = true }
+ethui-token-list = { workspace = true }
 
 serde = { workspace = true }
 serde_json = { workspace = true }
@@ -44,7 +44,7 @@ anyhow = "1.0.79"
 
 [build-dependencies]
 tauri-build = { version = "1.2", features = [] }
-iron-token-list = { workspace = true }
+ethui-token-list = { workspace = true }
 
 [features]
 default = []

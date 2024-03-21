@@ -1,5 +1,5 @@
 [package]
-name = "iron-sync-alchemy"
+name = "ethui-sync-alchemy"
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true
@@ -9,11 +9,11 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-iron-settings = { workspace = true }
-iron-types = { workspace = true }
-iron-db = { workspace = true }
-iron-abis = { workspace = true }
-iron-broadcast = { workspace = true }
+ethui-settings = { workspace = true }
+ethui-types = { workspace = true }
+ethui-db = { workspace = true }
+ethui-abis = { workspace = true }
+ethui-broadcast = { workspace = true }
 
 ethers = { workspace = true }
 serde = { workspace = true }

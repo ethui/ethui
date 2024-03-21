@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use iron_types::GlobalState;
+use ethui_types::GlobalState;
 
 use crate::{Peer, Peers};
 

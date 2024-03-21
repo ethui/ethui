@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use iron_types::{events::Tx, transactions::PaginatedTx, Address, Bytes, B256, U256};
+use ethui_types::{events::Tx, transactions::PaginatedTx, Address, Bytes, B256, U256};
 
 use crate::{DbInner, Paginated, Pagination, Result};
 

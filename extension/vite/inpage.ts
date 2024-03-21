@@ -33,7 +33,7 @@ export default defineConfig({
     lib: {
       formats: ["iife"],
       entry: path.resolve(__dirname, "..", "src", "inpage", "index.ts"),
-      name: "Iron Wallet - inpage script",
+      name: "EthUI - inpage script",
     },
     rollupOptions: {
       output: {

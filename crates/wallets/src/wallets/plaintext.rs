@@ -3,7 +3,7 @@ use std::str::FromStr;
 use async_trait::async_trait;
 use coins_bip32::path::DerivationPath;
 use ethers::signers::{coins_bip39::English, MnemonicBuilder, Signer as _};
-use iron_types::{Address, ToAlloy};
+use ethui_types::{Address, ToAlloy};
 use serde::{Deserialize, Serialize};
 
 use crate::{utils, wallet::WalletCreate, Result, Signer, Wallet, WalletControl};

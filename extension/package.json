@@ -1,9 +1,9 @@
 {
-  "name": "@iron/extension",
+  "name": "@ethui/extension",
   "private": true,
   "version": "1.4.0",
   "description": "A developer-focused Ethereum wallet",
-  "homepage": "https://github.com/iron-wallet/iron",
+  "homepage": "https://github.com/ethui/ethui",
   "license": "MIT",
   "type": "module",
   "scripts": {

@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use iron_types::{Abi, Address, Contract, ContractWithAbi};
+use ethui_types::{Abi, Address, Contract, ContractWithAbi};
 use tracing::instrument;
 
 use crate::{DbInner, Error, Result};

@@ -1,8 +1,8 @@
-use iron_types::GlobalState;
+use ethui_types::GlobalState;
 
 use crate::Result;
-// use iron_abis::IERC20;
-// use iron_types::{
+// use ethui_abis::IERC20;
+// use ethui_types::{
 //     events::{ContractDeployed, Tx},
 //     Address, Event, ToAlloy, ToEthers, TokenMetadata, B256, U256,
 // };
@@ -74,7 +74,7 @@ use crate::Result;
 //     chain_id: u32,
 // ) -> Result<()> {
 //     let client = Arc::new(client);
-//     let db = iron_db::get();
+//     let db = ethui_db::get();
 //
 //     for (address, _) in balances {
 //         if db.get_erc20_metadata(address, chain_id).await.is_err() {
@@ -96,7 +96,7 @@ use crate::Result;
 // }
 
 pub async fn get_current_api_key() -> Result<Option<String>> {
-    let settings = iron_settings::Settings::read().await;
+    let settings = ethui_settings::Settings::read().await;
 
     Ok(settings.inner.alchemy_api_key.clone())
 }

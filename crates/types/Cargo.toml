@@ -1,5 +1,5 @@
 [package]
-name = "iron-types"
+name = "ethui-types"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true

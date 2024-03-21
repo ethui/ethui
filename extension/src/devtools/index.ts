@@ -13,8 +13,8 @@ let cache: Array<Request | Response> = [];
 async function init() {
   // creating devtools panel
   panel = await devtools.panels.create(
-    "Iron Wallet",
-    "icons/iron-48.png",
+    "EthUI",
+    "icons/ethui-48.png",
     "panel/index.html",
   );
 

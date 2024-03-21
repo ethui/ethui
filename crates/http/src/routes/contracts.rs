@@ -3,7 +3,7 @@ use axum::{
     routing::get,
     Json, Router,
 };
-use iron_types::{Address, Contract, ContractWithAbi};
+use ethui_types::{Address, Contract, ContractWithAbi};
 use serde::Deserialize;
 
 use crate::{Ctx, Result};

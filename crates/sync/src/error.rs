@@ -4,16 +4,16 @@ pub enum Error {
     InvalidNetwork(u32),
 
     #[error(transparent)]
-    Anvil(#[from] iron_sync_anvil::Error),
+    Anvil(#[from] ethui_sync_anvil::Error),
 
     #[error(transparent)]
     Ethers(#[from] ethers::providers::ProviderError),
 
     #[error("TX not found {0}")]
-    TxNotFound(iron_types::B256),
+    TxNotFound(ethui_types::B256),
 
     #[error(transparent)]
-    Db(#[from] iron_db::Error),
+    Db(#[from] ethui_db::Error),
 
     #[error("No API Key")]
     NoApiKey,

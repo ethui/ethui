@@ -4,7 +4,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use iron_types::Affinity;
+use ethui_types::Affinity;
 use serde::{Deserialize, Serialize};
 
 use crate::Result;

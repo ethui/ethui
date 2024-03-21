@@ -12,8 +12,8 @@ import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { passwordFormSchema, passwordSchema } from "@iron/types/password";
-import { PrivateKeyWallet } from "@iron/types/wallets";
+import { passwordFormSchema, passwordSchema } from "@ethui/types/password";
+import { PrivateKeyWallet } from "@ethui/types/wallets";
 
 export const schema = z.object({
   name: z.string().min(1),

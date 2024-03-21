@@ -5,7 +5,7 @@ import { useKBar } from "kbar";
 import { invoke } from "@tauri-apps/api";
 import { Link, useNavigate } from "@tanstack/react-router";
 
-import { type Tab } from "@iron/types/ui";
+import { type Tab } from "@ethui/types/ui";
 import { useKeyPress, useMenuAction, useOS } from "@/hooks";
 import { useSettings, useSettingsWindow, useTheme } from "@/store";
 import {

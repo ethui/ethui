@@ -1,4 +1,4 @@
-use iron_types::B256;
+use ethui_types::B256;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -6,7 +6,7 @@ pub enum Error {
     Watcher,
 
     #[error(transparent)]
-    DB(#[from] iron_db::Error),
+    DB(#[from] ethui_db::Error),
 
     #[error(transparent)]
     EthersProvider(#[from] ethers::providers::ProviderError),

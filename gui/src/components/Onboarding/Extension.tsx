@@ -38,13 +38,13 @@ export function InstallExtensionStep({ onSubmit }: StepProps) {
         Go to{" "}
         <Link
           underline="hover"
-          href="http://iron-wallet.xyz/onboarding/extension"
+          href="http://ethui.dev/onboarding/extension"
           target="_blank"
           rel="nofollow noopener noreferrer"
         >
           this page
         </Link>{" "}
-        to install the Iron wallet extension.
+        to install the EthUI extension.
       </Typography>
 
       <Box sx={{ alignSelf: "stretch" }}>

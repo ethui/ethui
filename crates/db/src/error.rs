@@ -15,7 +15,7 @@ pub enum Error {
     InvalidChain,
 
     #[error(transparent)]
-    Settings(#[from] iron_settings::Error),
+    Settings(#[from] ethui_settings::Error),
 
     #[error(transparent)]
     Serde(#[from] serde_json::Error),

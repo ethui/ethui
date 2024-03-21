@@ -53,4 +53,4 @@ template: |
     2.2. go to chrome://extensions
     2.3. enable Developer mode (upper right corner)
     2.4. Load unpacked -> choose the directory you extracted from the ZIP file
-  3. Run iron.
+  3. Run ethui.

@@ -6,7 +6,7 @@ use std::{
 };
 
 use async_trait::async_trait;
-use iron_types::{Affinity, GlobalState};
+use ethui_types::{Affinity, GlobalState};
 use once_cell::sync::OnceCell;
 use serde::Deserialize;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};

@@ -1,5 +1,5 @@
 [package]
-name = "iron-simulator"
+name = "ethui-simulator"
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true
@@ -9,10 +9,10 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-iron-networks = { workspace = true }
-iron-types = { workspace = true }
-iron-wallets = { workspace = true }
-iron-db = { workspace = true }
+ethui-networks = { workspace = true }
+ethui-types = { workspace = true }
+ethui-wallets = { workspace = true }
+ethui-db = { workspace = true }
 
 tauri = { workspace = true }
 tokio = { workspace = true }

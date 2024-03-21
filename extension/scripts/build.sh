@@ -77,6 +77,6 @@ case $target in
   # builds and publishes to the firefox extension store
   firefox)
     yarn run web-ext build -s $DIST_DIR -a .
-    mv ./iron_wallet-$version.zip dist/firefox-v$version.xpi
+    mv ./ethui_wallet-$version.zip dist/firefox-v$version.xpi
     ;;
 esac
