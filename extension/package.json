@@ -2,7 +2,7 @@
   "name": "@ethui/extension",
   "private": true,
   "version": "1.4.0",
-  "description": "A developer-focused Ethereum wallet",
+  "description": "An Ethereum toolkit",
   "homepage": "https://github.com/ethui/ethui",
   "license": "MIT",
   "type": "module",

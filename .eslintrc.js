@@ -1,4 +1,4 @@
-module.exports = {
+module.texports = {
   extends: [
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",

@@ -9,10 +9,10 @@ export function WelcomeStep({ onSubmit }: StepProps) {
         Welcome
       </Typography>
       <Typography component="p">
-        EthUI is an Ethereum wallet for developers. Check out{" "}
+        EthUI is a toolkit for fullstack Ethereum development. Check out{" "}
         <Link
           underline="hover"
-          href="https://mirror.xyz/ethui.eth"
+          href="https://ethui.dev"
           target="_blank"
           rel="nofollow noopener noreferrer"
         >
@@ -21,7 +21,7 @@ export function WelcomeStep({ onSubmit }: StepProps) {
         to learn more, or check out the&nbsp;
         <Link
           underline="hover"
-          href="https://mirror.xyz/ethui.eth"
+          href="https://github.com/ethui/ethui"
           target="_blank"
           rel="nofollow noopener noreferrer"
         >

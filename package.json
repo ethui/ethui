@@ -2,7 +2,7 @@
   "private": true,
   "version": "1.4.0",
   "license": "MIT",
-  "description": "A dev-oriented web3 wallet",
+  "description": "An Ethereum toolkit",
   "scripts": {
     "app:dev": "rm -rf target/debug/db.*; RUST_LOG=ethui=debug cargo tauri dev --config bin/ethui/tauri-dev.conf.json --features debug",
     "gui:build": "yarn workspace @ethui/gui build",

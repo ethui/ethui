@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "EthUI",
-  "description": "A developer-focused Ethereum wallet",
+  "description": "An Ethereum toolkit",
   "version": "%VERSION%",
   "author": "Miguel Palhas <mpalhas@gmail.com>",
   "homepage_url": "https://github.com/ethui",
