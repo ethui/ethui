@@ -1,4 +1,4 @@
-# Contributing to EthUI
+# Contributing to ethui
 
 [coc]: https://www.rust-lang.org/policies/code-of-conduct
 [contact]: https://linktr.ee/naps62
@@ -58,7 +58,7 @@ yarn setup
 2. go to `chrome://extensions`
 3. enable `Developer mode` (upper right corner)
 4. Load unpacked -> choose the `ethui/extension/dist` directory
-5. EthUI should now be running
+5. ethui should now be running
 
 **4. Start the app in development mode**
 

@@ -59,7 +59,7 @@ function initProviderForward() {
     inpageStream.write(data);
   });
   bgPort.onDisconnect.addListener(() => {
-    log.warn("[EthUI - contentscript] disconnected");
+    log.warn("[ethui - contentscript] disconnected");
   });
 }
 
@@ -80,6 +80,6 @@ export function injectInPageScript() {
     container.insertBefore(scriptTag, container.children[0]);
     container.removeChild(scriptTag);
   } catch (error) {
-    log.error("EthUI: Provider injection failed.", error);
+    log.error("ethui: Provider injection failed.", error);
   }
 }

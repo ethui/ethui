@@ -28,7 +28,7 @@ pub enum Error {
     Signer(String),
 
     #[error(transparent)]
-    EthUIWallets(#[from] ethui_wallets::Error),
+    EthuiWallets(#[from] ethui_wallets::Error),
 
     #[error(transparent)]
     Wallet(#[from] ethers::signers::WalletError),

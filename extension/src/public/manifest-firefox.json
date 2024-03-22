@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "EthUI",
+  "name": "ethui",
   "description": "An Ethereum toolkit",
   "version": "%VERSION%",
   "author": "Miguel Palhas <mpalhas@gmail.com>",
