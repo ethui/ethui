@@ -44,7 +44,7 @@ export function InstallExtensionStep({ onSubmit }: StepProps) {
         >
           this page
         </Link>{" "}
-        to install the EthUI extension.
+        to install the ethui extension.
       </Typography>
 
       <Box sx={{ alignSelf: "stretch" }}>
