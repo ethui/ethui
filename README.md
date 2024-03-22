@@ -8,7 +8,7 @@
 [anvil]: https://book.getfoundry.sh/anvil/
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/ethui/.github/main/profile/banner.png" width=70%>
+    <img src="https://raw.githubusercontent.com/ethui/.github/main/banner/github.png" width=70%>
 </>
 
 <p align="center">
