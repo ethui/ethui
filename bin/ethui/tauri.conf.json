@@ -4,71 +4,11 @@
   "build": {
     "beforeDevCommand": "yarn workspace @ethui/gui dev",
     "beforeBuildCommand": "yarn workspace @ethui/gui build",
-    "devPath": "http://localhost:1420",
-    "distDir": "../../gui/dist"
+    "frontendDist": "../../gui/dist",
+    "devUrl": "http://localhost:1420"
   },
-<<<<<<< HEAD:bin/iron/tauri.conf.json
   "app": {
     "trayIcon": {
-||||||| 4aec147:bin/iron/tauri.conf.json
-  "package": {
-    "productName": "iron",
-    "version": "../../package.json"
-  },
-  "tauri": {
-    "allowlist": {
-      "all": true,
-      "shell": {
-        "all": false,
-        "open": true
-      },
-      "fs": {
-        "scope": ["$APPDATA/*"]
-      }
-    },
-    "bundle": {
-      "active": true,
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "identifier": "iron-wallet",
-      "targets": "all"
-    },
-    "systemTray": {
-=======
-  "package": {
-    "productName": "ethui",
-    "version": "../../package.json"
-  },
-  "tauri": {
-    "allowlist": {
-      "all": true,
-      "shell": {
-        "all": false,
-        "open": true
-      },
-      "fs": {
-        "scope": ["$APPDATA/*"]
-      }
-    },
-    "bundle": {
-      "active": true,
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "identifier": "ethui",
-      "targets": "all"
-    },
-    "systemTray": {
->>>>>>> main:bin/ethui/tauri.conf.json
       "iconPath": "icons/icon.png",
       "iconAsTemplate": true
     },
@@ -90,7 +30,6 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "identifier": "iron-wallet",
     "targets": "all"
   }
 }

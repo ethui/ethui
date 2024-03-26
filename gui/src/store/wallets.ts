@@ -1,4 +1,5 @@
-import { invoke, event } from "@tauri-apps/api";
+import { event } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { Action } from "kbar";
 import { type Address } from "viem";
 import { create, StateCreator } from "zustand";
@@ -74,9 +75,8 @@ const store: StateCreator<Store> = (set, get) => ({
       {
         id: actionId,
         name: "Change wallet",
-        subtitle: `${wallets.length} wallet${
-          wallets.length > 1 ? "s" : ""
-        } available`,
+        subtitle: `${wallets.length} wallet${wallets.length > 1 ? "s" : ""
+          } available`,
         shortcut: ["W"],
       },
       ...info

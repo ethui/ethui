@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert, AlertTitle, Button, Stack, TextField } from "@mui/material";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { Address } from "abitype";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";

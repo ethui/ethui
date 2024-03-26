@@ -1,4 +1,5 @@
-import { event, invoke } from "@tauri-apps/api";
+import { event } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { Action } from "kbar";
 import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
@@ -61,9 +62,8 @@ const store: StateCreator<Store> = (set, get) => ({
       {
         id: actionId,
         name: "Change network",
-        subtitle: `${networks.length} network${
-          networks.length > 1 ? "s" : ""
-        } available`,
+        subtitle: `${networks.length} network${networks.length > 1 ? "s" : ""
+          } available`,
         shortcut: ["N"],
       },
       ...(networks || []).map((network, index) => ({

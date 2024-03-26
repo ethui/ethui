@@ -1,0 +1,9 @@
+{
+  "identifier": "capabilities",
+  "windows": ["*"],
+  "permissions": [
+    "event:allow-listen",
+    "event:allow-unlisten",
+    "os:allow-os-type"
+  ]
+}

@@ -1,5 +1,6 @@
 import { Theme } from "@mui/material";
-import { event, invoke } from "@tauri-apps/api";
+import { event } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { Action } from "kbar";
 import { create, StateCreator } from "zustand";
 

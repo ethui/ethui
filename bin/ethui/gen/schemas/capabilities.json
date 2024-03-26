@@ -1,0 +1,1 @@
+{"capabilities":{"identifier":"capabilities","description":"","local":true,"windows":["*"],"permissions":["event:allow-listen","event:allow-unlisten","os:allow-os-type"]}}

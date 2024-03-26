@@ -11,7 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import {

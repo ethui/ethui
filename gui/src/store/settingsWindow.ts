@@ -1,4 +1,4 @@
-import { window as tauriWindow } from "@tauri-apps/api";
+import { getCurrent } from "@tauri-apps/api/webviewWindow";
 import { Action } from "kbar";
 import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
@@ -36,6 +36,6 @@ const store: StateCreator<Store> = (set, get) => ({
 
 export const useSettingsWindow = create<Store>()(subscribeWithSelector(store));
 
-tauriWindow.appWindow.listen("menu:settings", () => {
+getCurrent().listen("menu:settings", () => {
   useSettingsWindow.getState().toggle();
 });

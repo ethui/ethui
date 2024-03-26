@@ -9,11 +9,11 @@ exclude.workspace = true
 authors.workspace = true
 
 [lib]
-name = "iron_lib"
+name = "ethui_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [[bin]]
-name = "iron"
+name = "ethui"
 
 [dependencies]
 ethui-forge = { workspace = true }
@@ -47,9 +47,10 @@ fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs", rev = "0
 named-lock = "0.3.0"
 auto-launch = "0.5.0"
 anyhow = "1.0.79"
+tauri-plugin-os = "2.0.0-beta.3"
 
 [build-dependencies]
-tauri-build = { version = "1.2", features = [] }
+tauri-build = { version = "2.0.0-beta.10", features = [] }
 ethui-token-list = { workspace = true }
 
 [features]

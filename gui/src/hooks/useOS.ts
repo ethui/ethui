@@ -1,14 +1,14 @@
-import { os } from "@tauri-apps/api";
+import { type OsType, type } from "@tauri-apps/plugin-os";
 import { useEffect, useState } from "react";
 
 export function useOS() {
-  const [type, setType] = useState<os.OsType | undefined>();
+  const [t, setT] = useState<OsType | undefined>();
 
   useEffect(() => {
     (async () => {
-      setType(await os.type());
+      setT(await type());
     })();
   }, []);
 
-  return { type };
+  return { type: t };
 }
