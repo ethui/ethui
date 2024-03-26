@@ -45,5 +45,6 @@ pub(crate) fn event_handler(app: &AppHandle, event: MenuEvent) {
         "show" => {
             tokio::spawn(async { ethui_broadcast::main_window_show().await });
         }
+        _ => {}
     }
 }
