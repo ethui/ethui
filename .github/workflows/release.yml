@@ -19,7 +19,7 @@ jobs:
       version: ${{ steps.get-version.outputs.version }}
       release_id: ${{ steps.get-id.outputs.id }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # get the current draft release
       - id: get-tag
@@ -56,7 +56,7 @@ jobs:
     needs: [setup]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: |
           for name in $(gh release view ${{needs.setup.outputs.tag}} --json assets | jq -r '.assets[].name'); do
             gh release delete-asset ${{needs.setup.outputs.tag}} $name
@@ -74,7 +74,7 @@ jobs:
         platform: [ubuntu-20.04, macos-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: install dependencies (ubuntu)
         if: matrix.platform == 'ubuntu-20.04'
@@ -124,7 +124,7 @@ jobs:
     needs: [setup, app]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - run: npm install -g yarn
 
@@ -165,7 +165,7 @@ jobs:
     needs: [setup, extension, app]
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: publish release
         run: gh release edit ${{ needs.setup.outputs.tag }} --draft=false
