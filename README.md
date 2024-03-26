@@ -9,13 +9,13 @@
 
 <p align="center">
     <img src="https://raw.githubusercontent.com/ethui/.github/main/banner/github.png" width=70%>
-</>
+</p>
 
 <p align="center">
     <img alt="licence badge" src="https://img.shields.io/github/license/ethui/ethui">
     <img alt="release badge" src="https://img.shields.io/github/v/release/ethui/ethui">
     <img alt="build badge" src="https://img.shields.io/github/actions/workflow/status/ethui/ethui/rust.yml">
-</>
+</p>
 
 ## What is ethui?
 

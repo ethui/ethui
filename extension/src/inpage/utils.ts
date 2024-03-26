@@ -6,7 +6,7 @@ import log from "loglevel";
 export type Maybe<T> = T | null | undefined;
 
 /**
- * json-rpc-engine middleware that logs RPC errors and and validates req.method.
+ * json-rpc-engine middleware that logs RPC errors and validates req.method.
  *
  * @param log - The logging API to use.
  * @returns A json-rpc-engine middleware function.

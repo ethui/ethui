@@ -21,7 +21,7 @@ pub struct Abi {
 
 impl Abi {
     pub(super) fn try_from_match(m: Match) -> Result<Self> {
-        // TODO: this won't work in windows I supose
+        // TODO: this won't work in windows I suppose
 
         if !m.full_path.exists() {
             return Err(Error::FileNotFound(m.full_path));
