@@ -1,5 +1,5 @@
 [package]
-name = "iron-simulator"
+name = "ethui-simulator"
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true
@@ -9,8 +9,10 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-iron-networks = { workspace = true }
-iron-types = { workspace = true }
+ethui-networks = { workspace = true }
+ethui-types = { workspace = true }
+ethui-wallets = { workspace = true }
+ethui-db = { workspace = true }
 
 tauri = { workspace = true }
 tokio = { workspace = true }
@@ -21,19 +23,8 @@ foundry-config = { workspace = true }
 foundry-evm = { workspace = true }
 alloy-primitives = { workspace = true }
 ethers = { workspace = true }
-ethers-core = { workspace = true }
-hex = { workspace = true }
 
 eyre = "*"
-
-revm = { version = "3", default-features = false, features = [
-  "std",
-  "serde",
-  "memory_limit",
-  "optional_eip3607",
-  "optional_block_gas_limit",
-  "optional_no_base_fee",
-] }
 
 [dev-dependencies]
 pretty_assertions = "1.4.0"

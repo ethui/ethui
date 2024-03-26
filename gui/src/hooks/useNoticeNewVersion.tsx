@@ -7,7 +7,7 @@ import { useInvoke } from "./useInvoke";
 
 export async function getLatestVersion() {
   const response = await fetch(
-    "https://api.github.com/repos/iron-wallet/iron/releases?per_page=1",
+    "https://api.github.com/repos/ethui/ethui/releases?per_page=1",
   );
   const json = await response.json();
   return json[0].tag_name.replace("v", "");
@@ -29,7 +29,7 @@ export function useNoticeNewVersion() {
 
     key = enqueueSnackbar(
       <Link
-        href="https://github.com/iron-wallet/iron/releases"
+        href="https://github.com/ethui/ethui/releases"
         sx={{
           "&&": {
             color: "inherit",

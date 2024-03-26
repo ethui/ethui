@@ -1,4 +1,4 @@
-use iron_types::{Affinity, GlobalState};
+use ethui_types::{Affinity, GlobalState};
 
 use crate::Store;
 

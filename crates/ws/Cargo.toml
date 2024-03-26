@@ -1,5 +1,5 @@
 [package]
-name = "iron-ws"
+name = "ethui-ws"
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true
@@ -9,12 +9,12 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-iron-types = { workspace = true }
-iron-rpc = { workspace = true }
-iron-broadcast = { workspace = true }
-iron-networks = { workspace = true }
-iron-connections = { workspace = true }
-iron-args = { workspace = true }
+ethui-types = { workspace = true }
+ethui-rpc = { workspace = true }
+ethui-broadcast = { workspace = true }
+ethui-networks = { workspace = true }
+ethui-connections = { workspace = true }
+ethui-args = { workspace = true }
 
 ethers = { workspace = true }
 tokio = { workspace = true }

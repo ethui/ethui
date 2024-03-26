@@ -1,5 +1,5 @@
-use iron_args::Args;
-use iron_db::DB;
+use ethui_args::Args;
+use ethui_db::Db;
 use tower_http::{
     cors::{Any, CorsLayer},
     trace::TraceLayer,
@@ -10,10 +10,10 @@ use crate::routes::router;
 #[derive(Clone)]
 pub(crate) struct Ctx {
     #[allow(unused)]
-    pub(crate) db: DB,
+    pub(crate) db: Db,
 }
 
-pub async fn init(args: &Args, db: DB) {
+pub async fn init(args: &Args, db: Db) {
     let port = args.http_port;
 
     tokio::spawn(async move {

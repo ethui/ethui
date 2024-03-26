@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": " SELECT balance\n            FROM native_balances\n            WHERE chain_id = ? AND owner = ? ",
+  "describe": {
+    "columns": [
+      {
+        "name": "balance",
+        "ordinal": 0,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "72b1318b0c0ac7341bc8d71116f898d2258aa47cdc9b3a0205a532eb97126a5e"
+}

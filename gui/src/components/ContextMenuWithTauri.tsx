@@ -1,6 +1,6 @@
 import * as tauri from "@tauri-apps/api";
 
-import { ContextMenu, ContextMenuProps } from "@iron/react/components";
+import { ContextMenu, ContextMenuProps } from "@ethui/react/components";
 
 export interface ContextMenuWithTauriProps extends ContextMenuProps {}
 

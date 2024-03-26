@@ -1,16 +1,16 @@
 import { Alert, AlertTitle, Box, Button, Grid, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Cancel, CheckCircle, Delete, Send } from "@mui/icons-material";
+import { Cancel, CheckCircle, Delete, Send, Report } from "@mui/icons-material";
 import { Abi, Address, Hex, decodeEventLog, formatUnits, parseAbi } from "viem";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
-import { ChainView, SolidityCall, Typography } from "@iron/react/components";
-import { TokenMetadata } from "@iron/types";
-import { Network } from "@iron/types/network";
+import { ChainView, SolidityCall, Typography } from "@ethui/react/components";
+import { TokenMetadata } from "@ethui/types";
+import { Network } from "@ethui/types/network";
 import { AddressView, Datapoint } from "@/components";
 import { useDialog, useInvoke, useLedgerDetect } from "@/hooks";
 import { DialogBottom } from "@/components/Dialogs/Bottom";
-import { IconCrypto } from "@/components/Icons";
+import { IconAddress } from "@/components/Icons";
 import { useNetworks } from "@/store";
 
 export const Route = createLazyFileRoute("/_dialog/dialog/tx-review/$id")({
@@ -38,6 +38,7 @@ interface Log {
 }
 
 interface Simulation {
+  pastInteractions: number;
   success: boolean;
   gasUsed: bigint;
   blockNumber: bigint;
@@ -55,7 +56,7 @@ export function TxReviewDialog() {
     s.networks.find((n) => n.chain_id == request?.chainId),
   );
 
-  const { data: abi } = useInvoke<Abi>("get_contract_abi", {
+  const { data: abi } = useInvoke<Abi>("db_get_contract_abi", {
     address: request?.to,
     chainId: request?.chainId,
   });
@@ -94,9 +95,7 @@ export function TxReviewDialog() {
         sx={{ width: "100%" }}
       />
 
-      <Box alignSelf="center">
-        <SimulationResult simulation={simulation} chainId={chainId} />
-      </Box>
+      <SimulationResult simulation={simulation} chainId={chainId} to={to} />
 
       <DialogBottom>
         <Actions
@@ -121,7 +120,7 @@ function Header({ from, to, network }: HeaderProps) {
     <Stack
       direction="row"
       justifyContent="space-between"
-      alignItems="center"
+      alignItems="stretch"
       alignSelf="center"
       width="100%"
     >
@@ -142,13 +141,37 @@ function Header({ from, to, network }: HeaderProps) {
 interface SimulationResultProps {
   simulation: Simulation | undefined;
   chainId: number;
+  to: Address;
 }
 
-function SimulationResult({ simulation, chainId }: SimulationResultProps) {
+function SimulationResult({ simulation, chainId, to }: SimulationResultProps) {
+  const { data: callCount } = useInvoke<number>("simulator_get_call_count", {
+    chainId,
+    to,
+  });
+
   if (!simulation) return null;
 
   return (
     <Grid container rowSpacing={1}>
+      <Datapoint
+        label="Trust"
+        value={
+          callCount &&
+          (callCount > 0 ? (
+            <Stack direction="row">
+              <CheckCircle color="success" />
+              <Typography>Called {callCount} time(s) before.</Typography>
+            </Stack>
+          ) : (
+            <Stack direction="row">
+              <Report color="error" />
+              <Typography>First interaction with this contract.</Typography>
+            </Stack>
+          ))
+        }
+        size="large"
+      />
       <Datapoint
         label="Status"
         value={
@@ -158,13 +181,13 @@ function SimulationResult({ simulation, chainId }: SimulationResultProps) {
             <Cancel color="error" />
           )
         }
-        size="small"
+        size="medium"
       />
       {simulation.success && (
         <Datapoint
           label="Expected Gas Usage"
           value={simulation.gasUsed.toString()}
-          size="small"
+          size="medium"
         />
       )}
       <Grid item xs={12}>
@@ -305,7 +328,7 @@ function Erc20Transfer({
       <AddressView address={from} />
       <span>→</span>
       <AddressView address={to} />
-      <IconCrypto chainId={chainId} address={contract} />
+      <IconAddress chainId={chainId} address={contract} />
       {metadata?.decimals
         ? formatUnits(value, metadata.decimals)
         : value.toString()}{" "}

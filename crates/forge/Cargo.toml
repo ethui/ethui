@@ -1,6 +1,6 @@
 [package]
-name = "iron-forge"
-description = "Iron Wallet forge integration"
+name = "ethui-forge"
+description = "ethui forge integration"
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true
@@ -10,10 +10,11 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-iron-types = { workspace = true }
-iron-settings = { workspace = true }
-iron-networks = { workspace = true }
-iron-broadcast = { workspace = true }
+ethui-types = { workspace = true }
+ethui-settings = { workspace = true }
+ethui-networks = { workspace = true }
+ethui-broadcast = { workspace = true }
+ethui-db = { workspace = true }
 
 ethers = { workspace = true }
 tauri = { workspace = true }

@@ -23,7 +23,7 @@ export default defineConfig({
     lib: {
       formats: ["iife"],
       entry: path.resolve(__dirname, "..", "src", "content-script", "index.ts"),
-      name: "Iron Wallet - Content Script",
+      name: "ethui - Content Script",
     },
     rollupOptions: {
       output: {

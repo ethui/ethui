@@ -16,5 +16,5 @@ pub(crate) struct ChainIdParams {
 pub(crate) async fn alchemy_supported(
     Query(ChainIdParams { chain_id }): Query<ChainIdParams>,
 ) -> Json<bool> {
-    Json(iron_sync_alchemy::supports_network(chain_id))
+    Json(ethui_sync_alchemy::supports_network(chain_id))
 }

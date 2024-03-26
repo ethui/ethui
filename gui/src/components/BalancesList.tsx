@@ -11,10 +11,10 @@ import truncateEthAddress from "truncate-eth-address";
 import { Address, formatUnits } from "viem";
 import { useState } from "react";
 
-import { GeneralSettings } from "@iron/types/settings";
+import { GeneralSettings } from "@ethui/types/settings";
 import { useInvoke } from "@/hooks";
 import { useBalances, useNetworks } from "@/store";
-import { IconCrypto } from "./Icons";
+import { IconAddress } from "./Icons";
 import { CopyToClipboard, Modal, TransferForm } from "./";
 
 export function BalancesList() {
@@ -60,8 +60,8 @@ function BalancesERC20() {
           key={contract}
           contract={contract}
           balance={BigInt(balance)}
-          decimals={metadata.decimals}
-          symbol={metadata.symbol}
+          decimals={metadata?.decimals || 0}
+          symbol={metadata?.symbol}
           chainId={currentNetwork.chain_id}
         />
       ))}
@@ -73,7 +73,7 @@ interface BalanceItemProps {
   contract?: Address;
   balance: bigint;
   decimals: number;
-  symbol: string;
+  symbol?: string;
   chainId: number;
 }
 
@@ -108,7 +108,7 @@ function BalanceItem({
         }
       >
         <ListItemAvatar>
-          <IconCrypto chainId={chainId} address={contract} />
+          <IconAddress chainId={chainId} address={contract} />
         </ListItemAvatar>
         <ListItemText
           secondary={`${symbol} ${

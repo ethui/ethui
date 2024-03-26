@@ -1,5 +1,5 @@
-use iron_networks::{Network, Networks};
-use iron_types::{Affinity, GlobalState};
+use ethui_networks::{Network, Networks};
+use ethui_types::{Affinity, GlobalState};
 
 use crate::{Error, Result, Store};
 
@@ -58,14 +58,14 @@ impl Ctx {
                     let affinity = new_chain_id.into();
                     self.set_affinity(affinity).await?;
 
-                    iron_broadcast::chain_changed(new_chain_id, self.domain.clone(), affinity)
+                    ethui_broadcast::chain_changed(new_chain_id, self.domain.clone(), affinity)
                         .await;
                 }
 
                 // If current affinity is global, there's nothing to update on this Ctx, and the
                 // domain is irrelevant in the update,
                 Affinity::Global => {
-                    iron_broadcast::chain_changed(new_chain_id, None, Affinity::Global).await;
+                    ethui_broadcast::chain_changed(new_chain_id, None, Affinity::Global).await;
                 }
             };
 

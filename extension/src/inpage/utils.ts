@@ -6,7 +6,7 @@ import log from "loglevel";
 export type Maybe<T> = T | null | undefined;
 
 /**
- * json-rpc-engine middleware that logs RPC errors and and validates req.method.
+ * json-rpc-engine middleware that logs RPC errors and validates req.method.
  *
  * @param log - The logging API to use.
  * @returns A json-rpc-engine middleware function.
@@ -26,7 +26,7 @@ export const errorMiddleware: JsonRpcMiddleware<JsonRpcParams, Json> = (
 
   next((done) => {
     if (res.error) {
-      log.error(`Iron - RPC Error: ${res.error.message}`, res.error, req);
+      log.error(`ethui - RPC Error: ${res.error.message}`, res.error, req);
     }
     done();
   });

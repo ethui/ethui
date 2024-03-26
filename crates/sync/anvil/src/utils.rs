@@ -1,5 +1,5 @@
 use ethers::providers::{Http, Middleware, Provider};
-use iron_types::{Address, ToAlloy, ToEthers, U256};
+use ethui_types::{Address, ToAlloy, ToEthers, U256};
 
 use crate::Result;
 

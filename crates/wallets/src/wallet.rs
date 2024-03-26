@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 use enum_dispatch::enum_dispatch;
-use iron_types::{Address, Json};
+use ethui_types::{Address, Json};
 use serde::{Deserialize, Serialize};
 
 use super::{

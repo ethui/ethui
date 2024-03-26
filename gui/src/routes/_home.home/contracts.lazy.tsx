@@ -7,11 +7,10 @@ import {
   TextField,
 } from "@mui/material";
 import { FieldValues, useForm } from "react-hook-form";
-import { Address } from "viem";
 import { z } from "zod";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
-import { useApi } from "@/hooks";
+import { Contract } from "@ethui/types";
 import { useContracts, useNetworks } from "@/store";
 import {
   ABIForm,
@@ -28,28 +27,24 @@ export const Route = createLazyFileRoute("/_home/home/contracts")({
 
 export function Contracts() {
   const chainId = useNetworks((s) => s.current?.chain_id);
-  const addresses = useContracts((s) => s.addresses);
+  const contracts = useContracts((s) => s.contracts);
 
   return (
     <>
       <Navbar>Contracts</Navbar>
       {chainId != 31337 && <AddressForm />}
-      {Array.from(addresses || []).map((address) => (
-        <Contract key={address} address={address} />
+      {Array.from(contracts || []).map((contract) => (
+        <ContractView key={contract.address} contract={contract} />
       ))}
     </>
   );
 }
 
-function Contract({ address }: { address: Address }) {
-  const chainId = useNetworks((s) => s.current?.chain_id);
-  const { data: name } = useApi<string>("/contracts/name", {
-    address,
-    chainId,
-  });
-
-  if (!chainId) return null;
-
+function ContractView({
+  contract: { address, name, chainId },
+}: {
+  contract: Contract;
+}) {
   return (
     <Accordion>
       <AccordionSummary>

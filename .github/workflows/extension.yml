@@ -25,7 +25,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - run: npm install -g yarn
 
@@ -36,7 +36,7 @@ jobs:
           node-version-file: ".tool-versions"
 
       - name: install
-        run: yarn workspace @iron/extension install --frozen-lockfile
+        run: yarn workspace @ethui/extension install --frozen-lockfile
 
       - name: bundle
-        run: yarn workspace @iron/extension build
+        run: yarn workspace @ethui/extension build

@@ -3,7 +3,7 @@ use axum::{
     routing::get,
     Json, Router,
 };
-use iron_types::{Abi, Address};
+use ethui_types::{Abi, Address};
 use serde::Deserialize;
 
 use crate::{Ctx, Result};
@@ -25,12 +25,12 @@ pub(crate) async fn abi(
     Query(params): Query<ForgeParams>,
 ) -> Result<Json<Option<Abi>>> {
     Ok(Json(
-        iron_forge::commands::forge_get_abi(params.address, params.chain_id).await?,
+        ethui_forge::commands::forge_get_abi(params.address, params.chain_id).await?,
     ))
 }
 
 pub(crate) async fn name(Query(params): Query<ForgeParams>) -> Result<Json<Option<String>>> {
     Ok(Json(
-        iron_forge::commands::forge_get_name(params.address, params.chain_id).await?,
+        ethui_forge::commands::forge_get_name(params.address, params.chain_id).await?,
     ))
 }

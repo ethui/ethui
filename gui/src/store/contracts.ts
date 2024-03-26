@@ -3,12 +3,13 @@ import { Address } from "viem";
 import { subscribeWithSelector } from "zustand/middleware";
 import { create, StateCreator } from "zustand";
 
+import { Contract } from "@ethui/types";
 import { errorToast } from "@/components/Toast";
 import { useNetworks } from "./networks";
 
 interface State {
   chainId?: number;
-  addresses: Address[];
+  contracts: Contract[];
 }
 
 interface Setters {
@@ -20,16 +21,16 @@ interface Setters {
 type Store = State & Setters;
 
 const store: StateCreator<Store> = (set, get) => ({
-  addresses: [],
+  contracts: [],
 
   async reload() {
     const { chainId } = get();
     if (!chainId) return;
 
-    const addresses = await invoke<Address[]>("db_get_contracts", {
+    const contracts = await invoke<Contract[]>("db_get_contracts", {
       chainId,
     });
-    set({ addresses });
+    set({ contracts });
   },
 
   add: async (address: Address) => {

@@ -62,7 +62,7 @@ export function WalletUnlockDialog() {
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <Stack spacing={2}>
           <Typography>
-            Iron Wallet is asking to unlock wallet <b>{name}:</b>
+            ethui is asking to unlock wallet <b>{name}:</b>
           </Typography>
 
           <TextField

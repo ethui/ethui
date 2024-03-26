@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use iron_types::{
+use ethui_types::{
     ui_events::{DialogClose, DialogOpen, DialogSend},
     Json,
 };
@@ -133,10 +133,10 @@ impl Inner {
 
     async fn open(&self) -> Result<()> {
         let preset = presets::PRESETS.get(&self.preset).unwrap();
-        let url = format!("/dialog/{}/{}", self.preset, self.id);
-        let title = format!("Iron Dialog - {}", preset.title);
+        let url = format!("index.html#/dialog/{}/{}", self.preset, self.id);
+        let title = format!("ethui Dialog - {}", preset.title);
 
-        iron_broadcast::dialog_open(DialogOpen {
+        ethui_broadcast::dialog_open(DialogOpen {
             id: self.id,
             label: self.label(),
             title,
@@ -150,7 +150,7 @@ impl Inner {
     }
 
     async fn close(&self) -> Result<()> {
-        iron_broadcast::dialog_close(DialogClose {
+        ethui_broadcast::dialog_close(DialogClose {
             label: self.label(),
         })
         .await;
@@ -159,7 +159,7 @@ impl Inner {
     }
 
     async fn send(&self, event_type: &str, payload: Option<Json>) -> Result<()> {
-        iron_broadcast::dialog_send(DialogSend {
+        ethui_broadcast::dialog_send(DialogSend {
             label: self.label(),
             event_type: event_type.into(),
             payload,

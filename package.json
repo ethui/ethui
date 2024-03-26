@@ -1,14 +1,14 @@
 {
   "private": true,
-  "version": "1.4.0",
+  "version": "1.5.2",
   "license": "MIT",
-  "description": "A dev-oriented web3 wallet",
+  "description": "An Ethereum toolkit",
   "scripts": {
-    "app:dev": "rm -rf target/debug/db.*; RUST_LOG=iron=debug tauri dev",
-    "gui:build": "yarn workspace @iron/gui build",
-    "storybook": "yarn workspace @iron/react storybook",
-    "ext:dev": "yarn workspace @iron/extension dev",
-    "ext:build": "yarn workspace @iron/extension build \"$@\"",
+    "app:dev": "rm -rf target/debug/db.*; RUST_LOG=ethui=debug cargo tauri dev --config bin/ethui/tauri-dev.conf.json --features debug",
+    "gui:build": "yarn workspace @ethui/gui build",
+    "storybook": "yarn workspace @ethui/react storybook",
+    "ext:dev": "yarn workspace @ethui/extension dev",
+    "ext:build": "yarn workspace @ethui/extension build \"$@\"",
     "lint": "yarn lint:eslint && yarn lint:tsc && yarn lint:prettier",
     "lint:eslint": "eslint .",
     "lint:tsc": "yarn workspaces foreach --all --parallel run tsc --noEmit",
@@ -26,26 +26,27 @@
     "gui"
   ],
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^7.0.2",
-    "@typescript-eslint/parser": "^7.0.2",
+    "@typescript-eslint/eslint-plugin": "^7.4.0",
+    "@typescript-eslint/parser": "^7.4.0",
     "assert": "^2.1.0",
-    "eslint": "^8.56.0",
+    "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-standard-with-typescript": "^43.0.1",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-n": "^16.6.2",
     "eslint-plugin-promise": "^6.1.1",
-    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "prettier": "^3.2.5"
   },
   "dependencies": {
-    "@tauri-apps/cli": "^1.5.10",
-    "typescript": "5.3.3"
+    "@tauri-apps/cli": "^1.5.11",
+    "typescript": "5.4.3"
   },
   "resolutions": {
-    "postcss": "^8.4.31"
+    "postcss": "^8.4.31",
+    "jose": "4.15.5"
   },
   "packageManager": "yarn@4.0.2"
 }

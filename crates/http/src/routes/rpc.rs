@@ -22,7 +22,7 @@ async fn handler(
     Query(params): Query<RpcParams>,
     payload: String,
 ) -> Result<Json<Value>> {
-    let handler = iron_rpc::Handler::new(params.domain);
+    let handler = ethui_rpc::Handler::new(params.domain);
 
     let reply = handler
         .handle(serde_json::from_str(&payload.to_string()).unwrap())

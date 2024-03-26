@@ -5,8 +5,8 @@ use ethers::{
     core::k256::ecdsa::SigningKey,
     signers::{self, Signer as _},
 };
-use iron_dialogs::{Dialog, DialogMsg};
-use iron_types::Address;
+use ethui_dialogs::{Dialog, DialogMsg};
+use ethui_types::Address;
 use secrets::SecretVec;
 use tokio::{
     sync::{Mutex, RwLock},

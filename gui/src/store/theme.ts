@@ -3,8 +3,8 @@ import { event, invoke } from "@tauri-apps/api";
 import { Action } from "kbar";
 import { create, StateCreator } from "zustand";
 
-import { themes } from "@iron/react";
-import { GeneralSettings } from "@iron/types/settings";
+import { themes } from "@ethui/react";
+import { GeneralSettings } from "@ethui/types/settings";
 
 interface Store {
   mode: "auto" | "light" | "dark";

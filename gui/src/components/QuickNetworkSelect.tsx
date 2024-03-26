@@ -6,7 +6,7 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 
-import { ChainView } from "@iron/react/components";
+import { ChainView } from "@ethui/react/components";
 import { useNetworks } from "@/store";
 
 export function QuickNetworkSelect() {

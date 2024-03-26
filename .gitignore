@@ -6,6 +6,7 @@ tsconfig.tsbuildinfo
 target/
 !migrations/*.sql
 gui/vite.config.ts.timestamp-*
+dev-data
 
 # extension artifacts
 extension/*.zip

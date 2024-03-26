@@ -14,7 +14,7 @@ export function Accordion(
   return (
     <MuiAccordion
       disableGutters
-      TransitionProps={{ unmountOnExit: true }}
+      slotProps={{ transition: { unmountOnExit: true } }}
       {...props}
     />
   );

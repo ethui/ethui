@@ -1,7 +1,7 @@
 use std::{collections::HashMap, net::SocketAddr};
 
-use iron_networks::Networks;
-use iron_types::{Address, Affinity, GlobalState, UINotify};
+use ethui_networks::Networks;
+use ethui_types::{Address, Affinity, GlobalState, UINotify};
 use serde::Serialize;
 use serde_json::json;
 use tokio::sync::mpsc;
@@ -55,7 +55,7 @@ impl Peer {
     }
 }
 
-impl From<Peer> for iron_rpc::Handler {
+impl From<Peer> for ethui_rpc::Handler {
     fn from(value: Peer) -> Self {
         Self::new(value.domain())
     }
@@ -72,14 +72,14 @@ impl Peers {
     /// Adds a new peer
     pub async fn add_peer(&mut self, peer: Peer) {
         self.map.insert(peer.socket, peer);
-        iron_broadcast::ui_notify(UINotify::PeersUpdated).await;
+        ethui_broadcast::ui_notify(UINotify::PeersUpdated).await;
         //self.window_snd.send(UINotify::PeersUpdated.into()).unwrap();
     }
 
     /// Removes an existing peer
     pub async fn remove_peer(&mut self, peer: SocketAddr) {
         self.map.remove(&peer);
-        iron_broadcast::ui_notify(UINotify::PeersUpdated).await;
+        ethui_broadcast::ui_notify(UINotify::PeersUpdated).await;
         //self.window_snd.send(UINotify::PeersUpdated.into()).unwrap();
     }
 
@@ -107,7 +107,8 @@ impl Peers {
             });
 
             for (_, peer) in self.map.iter() {
-                if iron_connections::utils::affinity_matches(peer.domain(), &domain, affinity).await
+                if ethui_connections::utils::affinity_matches(peer.domain(), &domain, affinity)
+                    .await
                 {
                     tracing::info!(
                         event = "peer chain changed",

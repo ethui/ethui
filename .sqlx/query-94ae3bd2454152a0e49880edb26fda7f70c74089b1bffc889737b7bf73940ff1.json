@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT count(*) as count FROM transactions WHERE chain_id = ? AND from_address = ? AND to_address = ?",
+  "describe": {
+    "columns": [
+      {
+        "name": "count",
+        "ordinal": 0,
+        "type_info": "Int"
+      }
+    ],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "94ae3bd2454152a0e49880edb26fda7f70c74089b1bffc889737b7bf73940ff1"
+}

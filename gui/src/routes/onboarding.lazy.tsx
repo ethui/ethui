@@ -2,23 +2,22 @@ import { Container, MobileStepper, Stack } from "@mui/material";
 import { useState } from "react";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
-import { DraggableToolbar } from "@/components";
+import { DraggableToolbar, Logo } from "@/components";
 import { AlchemyStep } from "@/components/Onboarding/Alchemy";
 import { InstallExtensionStep } from "@/components/Onboarding/Extension";
 import { ThankYouStep } from "@/components/Onboarding/ThankYou";
 import { WelcomeStep } from "@/components/Onboarding/Welcome";
+import { WalletSetupStep } from "@/components/Onboarding/WalletSetup";
+import { StepProps } from "@/components/Onboarding";
 
 export const Route = createLazyFileRoute("/onboarding")({
   component: Onboarding,
 });
 
-export interface StepProps {
-  onSubmit: () => unknown;
-}
-
 export const steps: { component: React.FC<StepProps> }[] = [
   { component: WelcomeStep },
   { component: AlchemyStep },
+  { component: WalletSetupStep },
   { component: InstallExtensionStep },
   { component: ThankYouStep },
 ];
@@ -37,8 +36,9 @@ export function Onboarding() {
   return (
     <>
       <DraggableToolbar />
-      <Container disableGutters maxWidth="sm" sx={{ mt: 8, mb: 10, px: 3 }}>
+      <Container disableGutters sx={{ px: 2 }}>
         <Stack alignItems="center">
+          <Logo width={40} />
           <step.component onSubmit={handleNext} />
 
           <MobileStepper

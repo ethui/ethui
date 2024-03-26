@@ -1,4 +1,4 @@
-module.exports = {
+module.texports = {
   extends: [
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
@@ -77,10 +77,10 @@ module.exports = {
       {
         "newlines-between": "always",
         pathGroups: [
-          { pattern: "@iron/**", group: "sibling", position: "before" },
+          { pattern: "@ethui/**", group: "sibling", position: "before" },
         ],
         distinctGroup: false,
-        pathGroupsExcludedImportTypes: ["@iron"],
+        pathGroupsExcludedImportTypes: ["@ethui"],
         groups: [
           ["builtin", "external"],
           "type",

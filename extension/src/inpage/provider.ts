@@ -6,14 +6,13 @@ import {
 import { type Json, type JsonRpcResponse } from "@metamask/utils";
 import { EthereumRpcError } from "eth-rpc-errors";
 import { EventEmitter } from "eventemitter3";
-import { isDuplexStream } from "is-stream";
 import { createStreamMiddleware } from "json-rpc-middleware-stream";
 import log from "loglevel";
 
 import { Address, RequestArguments } from "./types";
 import { errorMiddleware } from "./utils";
 
-export class IronProvider extends EventEmitter {
+export class EthUIProvider extends EventEmitter {
   protected initialized = false;
   protected autoId = 0;
   protected engine: JsonRpcEngine;
@@ -77,7 +76,7 @@ export class IronProvider extends EventEmitter {
    * required events. Idempotent.
    *
    * @param chainId - The ID of the newly connected chain.
-   * @emits IronProvider#connect
+   * @emits EthUIProvider#connect
    */
   protected handleConnect(chainId: string) {
     this.emit("connect", { chainId });
@@ -139,10 +138,6 @@ export class IronProvider extends EventEmitter {
 
     const connection = createStreamMiddleware();
 
-    if (!isDuplexStream(this.stream)) {
-      throw new Error("IronProvider - Invalid Duplex Stream");
-    }
-
     this.engine.push(createIdRemapMiddleware());
     this.engine.push(errorMiddleware);
 
@@ -165,7 +160,7 @@ export class IronProvider extends EventEmitter {
         case "METAMASK_STREAM_FAILURE":
           this.stream.destroy(
             new Error(
-              "Iron: Disconnected from Iron background. Page reload required.",
+              "ethui: Disconnected from ethui background. Page reload required.",
             ),
           );
           break;

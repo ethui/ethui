@@ -9,9 +9,9 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use ethers::providers::{Http, Provider};
+use ethers::providers::{Http, Provider, RetryClient};
+use ethui_types::{Affinity, UINotify};
 pub use init::init;
-use iron_types::{Affinity, UINotify};
 use serde::Serialize;
 
 pub use self::{
@@ -90,7 +90,7 @@ impl Networks {
 
         self.networks.insert(network.name.clone(), network.clone());
         self.save()?;
-        iron_broadcast::network_added(network.chain_id).await;
+        ethui_broadcast::network_added(network.chain_id).await;
 
         Ok(())
     }
@@ -103,17 +103,17 @@ impl Networks {
         self.do_set_networks(Network::all_default()).await
     }
 
-    pub fn get_current_provider(&self) -> Provider<Http> {
+    pub fn get_current_provider(&self) -> Provider<RetryClient<Http>> {
         self.get_current().get_provider()
     }
 
     async fn on_network_changed(&self) -> Result<()> {
         // TODO: check domain
         self.notify_peers();
-        iron_broadcast::ui_notify(UINotify::NetworkChanged).await;
+        ethui_broadcast::ui_notify(UINotify::NetworkChanged).await;
 
         let chain_id = self.get_current().chain_id;
-        iron_broadcast::current_network_changed(chain_id).await;
+        ethui_broadcast::current_network_changed(chain_id).await;
 
         Ok(())
     }
@@ -128,10 +128,10 @@ impl Networks {
 
         tokio::spawn(async move {
             for c in after.difference(&before) {
-                iron_broadcast::network_added(*c).await;
+                ethui_broadcast::network_added(*c).await;
             }
             for c in before.difference(&after) {
-                iron_broadcast::network_removed(*c).await;
+                ethui_broadcast::network_removed(*c).await;
             }
         });
 
@@ -147,17 +147,17 @@ impl Networks {
     fn notify_peers(&self) {
         let current = self.get_current().clone();
         tokio::spawn(async move {
-            iron_broadcast::chain_changed(current.chain_id, None, Affinity::Global).await;
+            ethui_broadcast::chain_changed(current.chain_id, None, Affinity::Global).await;
         });
     }
 
     async fn broadcast_init(&self) {
         for network in self.networks.values() {
-            iron_broadcast::network_added(network.chain_id).await;
+            ethui_broadcast::network_added(network.chain_id).await;
         }
 
         let chain_id = self.get_current().chain_id;
-        iron_broadcast::current_network_changed(chain_id).await;
+        ethui_broadcast::current_network_changed(chain_id).await;
     }
 
     async fn reset_listeners(&mut self) {

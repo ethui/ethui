@@ -19,7 +19,7 @@ export function InstallExtensionStep({ onSubmit }: StepProps) {
     "ws_peer_count",
     {},
     {
-      refreshInterval: 200,
+      refetchInterval: 200,
     },
   );
 
@@ -29,7 +29,7 @@ export function InstallExtensionStep({ onSubmit }: StepProps) {
   }, [detected, peerCount, setDetected]);
 
   return (
-    <Stack spacing={2} alignItems="flex-end">
+    <Stack spacing={2} sx={{ width: "100%" }}>
       <Typography variant="h6" component="h1" alignSelf="start">
         Install Extension
       </Typography>
@@ -38,13 +38,13 @@ export function InstallExtensionStep({ onSubmit }: StepProps) {
         Go to{" "}
         <Link
           underline="hover"
-          href="http://iron-wallet.xyz/onboarding/extension"
+          href="http://ethui.dev/onboarding/extension"
           target="_blank"
           rel="nofollow noopener noreferrer"
         >
           this page
         </Link>{" "}
-        to install the Iron wallet extension.
+        to install the ethui extension.
       </Typography>
 
       <Box sx={{ alignSelf: "stretch" }}>
@@ -57,9 +57,11 @@ export function InstallExtensionStep({ onSubmit }: StepProps) {
         )}
       </Box>
 
-      <Button variant="contained" onClick={onSubmit} disabled={!detected}>
-        Next
-      </Button>
+      <Box alignSelf="flex-end">
+        <Button variant="contained" onClick={onSubmit} disabled={!detected}>
+          Next
+        </Button>
+      </Box>
     </Stack>
   );
 }

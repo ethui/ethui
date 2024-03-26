@@ -11,8 +11,8 @@ import {
 import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 
-import { Network, networkSchema } from "@iron/types/network";
-import { ChainView } from "@iron/react/components";
+import { Network, networkSchema } from "@ethui/types/network";
+import { ChainView } from "@ethui/react/components";
 import { ConfirmationDialog } from "@/components";
 import { useNetworks } from "@/store";
 

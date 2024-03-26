@@ -23,13 +23,13 @@ import {
 } from "viem";
 import { z } from "zod";
 
-import { BigIntField } from "@iron/react/components";
-import { addressSchema } from "@iron/types/wallets";
+import { BigIntField } from "@ethui/react/components";
+import { addressSchema } from "@ethui/types/wallets";
 import { useBalances, useNetworks, useWallets } from "@/store";
 
 interface Token {
-  currency: string;
-  decimals: number;
+  currency?: string;
+  decimals?: number;
   balance: bigint;
   contract: Address;
 }
@@ -61,8 +61,8 @@ export function TransferForm({
       erc20s.map(({ metadata, balance, contract }) => [
         contract,
         {
-          currency: metadata.symbol,
-          decimals: metadata.decimals,
+          currency: metadata?.symbol,
+          decimals: metadata?.decimals,
           balance: BigInt(balance),
           contract: contract,
         },
@@ -152,7 +152,7 @@ export function TransferForm({
           />
         </FormControl>
 
-        {currentToken && (
+        {currentToken?.decimals && (
           <Typography variant="body2">
             Balance: {formatUnits(currentToken.balance, currentToken.decimals)}
           </Typography>
@@ -166,12 +166,14 @@ export function TransferForm({
           {...register("to")}
         />
 
-        <BigIntField
-          name="value"
-          control={control}
-          decimals={currentToken.decimals}
-          error={errors.value}
-        />
+        {currentToken?.decimals && (
+          <BigIntField
+            name="value"
+            control={control}
+            decimals={currentToken.decimals}
+            error={errors.value}
+          />
+        )}
 
         {result && (
           <Alert

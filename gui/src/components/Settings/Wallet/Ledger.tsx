@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { derivationPathSchema, LedgerWallet } from "@iron/types/wallets";
+import { derivationPathSchema, LedgerWallet } from "@ethui/types/wallets";
 import { useLedgerDetect } from "@/hooks";
 
 export const schema = z.object({

@@ -1,7 +1,7 @@
 import { Menu, MenuItem, MenuItemProps, SxProps } from "@mui/material";
 import React, { MouseEvent, ReactNode, useState } from "react";
 
-import { ClickToCopy } from "@iron/react/components";
+import { ClickToCopy } from "@ethui/react/components";
 
 export interface ContextMenuProps {
   children: ReactNode;
