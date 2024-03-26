@@ -23,14 +23,6 @@ pub static NETWORKS: Lazy<HashMap<u32, Network>> = Lazy::new(|| {
     );
 
     map.insert(
-        5,
-        Network {
-            base_url: Url::parse("https://eth-goerli.g.alchemy.com/v2/").unwrap(),
-            default_from_block: 7245414, // July 18th 2022
-        },
-    );
-
-    map.insert(
         11155111,
         Network {
             base_url: Url::parse("https://eth-sepolia.g.alchemy.com/v2/").unwrap(),
