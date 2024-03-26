@@ -75,8 +75,9 @@ const store: StateCreator<Store> = (set, get) => ({
       {
         id: actionId,
         name: "Change wallet",
-        subtitle: `${wallets.length} wallet${wallets.length > 1 ? "s" : ""
-          } available`,
+        subtitle: `${wallets.length} wallet${
+          wallets.length > 1 ? "s" : ""
+        } available`,
         shortcut: ["W"],
       },
       ...info

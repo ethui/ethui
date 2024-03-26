@@ -1,9 +1,10 @@
-use crate::AppResult;
 use tauri::{
     menu::{MenuBuilder, MenuEvent, MenuItemBuilder},
     tray::{ClickType, TrayIconBuilder},
     AppHandle, Manager,
 };
+
+use crate::AppResult;
 
 pub(crate) fn build(app: &AppHandle) -> AppResult<()> {
     let menu_builder = MenuBuilder::new(app);

@@ -7,11 +7,10 @@ use tauri::WindowEvent;
 use tauri::{AppHandle, Builder, Manager as _};
 use tracing::debug;
 
-use crate::system_tray;
 use crate::{
     commands, dialogs,
     error::AppResult,
-    menu,
+    menu, system_tray,
     utils::{main_window_hide, main_window_show},
 };
 
@@ -88,7 +87,7 @@ impl EthUIApp {
         init(&app, args).await?;
 
         if !args.hidden {
-            main_window_show(&app.handle()).await;
+            main_window_show(app.handle()).await;
         }
 
         Ok(Self { app })

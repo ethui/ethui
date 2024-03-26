@@ -62,8 +62,9 @@ const store: StateCreator<Store> = (set, get) => ({
       {
         id: actionId,
         name: "Change network",
-        subtitle: `${networks.length} network${networks.length > 1 ? "s" : ""
-          } available`,
+        subtitle: `${networks.length} network${
+          networks.length > 1 ? "s" : ""
+        } available`,
         shortcut: ["N"],
       },
       ...(networks || []).map((network, index) => ({

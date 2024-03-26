@@ -1,5 +1,6 @@
-use crate::AppResult;
 use tauri::{menu::MenuEvent, AppHandle, Manager as _, Window};
+
+use crate::AppResult;
 
 #[cfg(not(target_os = "macos"))]
 pub(crate) fn build(_app: &AppHandle) -> AppResult<()> {
