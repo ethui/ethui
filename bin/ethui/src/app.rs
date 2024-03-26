@@ -76,8 +76,6 @@ impl EthUIApp {
             .setup(|app| {
                 let handle = app.handle();
                 let _ = menu::build(handle);
-
-                #[cfg(not(target_os = "macos"))]
                 let _ = system_tray::build(handle);
                 Ok(())
             });
