@@ -13,7 +13,7 @@ let cache: Array<Request | Response> = [];
 async function init() {
   // creating devtools panel
   panel = await devtools.panels.create(
-    "EthUI",
+    "ethui",
     "icons/ethui-48.png",
     "panel/index.html",
   );

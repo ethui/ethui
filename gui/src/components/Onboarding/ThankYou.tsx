@@ -14,7 +14,7 @@ export function ThankYouStep() {
         Thank you
       </Typography>
       <Typography component="p">
-        Thank you for using EthUI. If you find any problems, please open an
+        Thank you for using ethui. If you find any problems, please open an
         issue on GitHub.
       </Typography>
 

@@ -46,7 +46,7 @@ export function SettingsFoundry() {
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
       <Stack alignItems="flex-start" spacing={2}>
         <Typography>
-          EthUI can monitor your filesystem for foundry projects, indexing the
+          ethui can monitor your filesystem for foundry projects, indexing the
           output ABIs automatically.
         </Typography>
 

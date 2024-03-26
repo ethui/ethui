@@ -9,7 +9,7 @@ export function WelcomeStep({ onSubmit }: StepProps) {
         Welcome
       </Typography>
       <Typography component="p">
-        EthUI is a toolkit for fullstack Ethereum development. Check out{" "}
+        ethui is a toolkit for fullstack Ethereum development. Check out{" "}
         <Link
           underline="hover"
           href="https://ethui.dev"

@@ -33,7 +33,7 @@ export default defineConfig({
     lib: {
       formats: ["iife"],
       entry: path.resolve(__dirname, "..", "src", "inpage", "index.ts"),
-      name: "EthUI - inpage script",
+      name: "ethui - inpage script",
     },
     rollupOptions: {
       output: {

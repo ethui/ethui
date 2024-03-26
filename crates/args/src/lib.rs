@@ -5,7 +5,7 @@ pub fn parse() -> Args {
 }
 
 #[derive(Parser, Debug)]
-#[command(name = "EthUI", author, version, about, long_about = None)]
+#[command(name = "ethui", author, version, about, long_about = None)]
 pub struct Args {
     #[arg(long, default_value_t = 9003, env = "ethui_HTTP_PORT")]
     pub http_port: u16,

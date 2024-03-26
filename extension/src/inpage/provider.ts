@@ -160,7 +160,7 @@ export class EthUIProvider extends EventEmitter {
         case "METAMASK_STREAM_FAILURE":
           this.stream.destroy(
             new Error(
-              "EthUI: Disconnected from EthUI background. Page reload required.",
+              "ethui: Disconnected from ethui background. Page reload required.",
             ),
           );
           break;
