@@ -187,7 +187,7 @@ fn config_dir(_app: &tauri::App) -> PathBuf {
 
 #[cfg(not(debug_assertions))]
 fn config_dir(app: &tauri::App) -> PathBuf {
-    app.path_resolver()
+    app.path()
         .app_config_dir()
         .expect("failed to resolve app_config_dir")
 }
