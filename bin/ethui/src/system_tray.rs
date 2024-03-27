@@ -1,3 +1,5 @@
+#![cfg(desktop)]
+
 use tauri::{
     menu::{MenuBuilder, MenuEvent, MenuItemBuilder},
     tray::{ClickType, TrayIconBuilder},

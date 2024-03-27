@@ -49,7 +49,10 @@ pub enum UIMsg {
     /// sends a new event to a dialog
     DialogSend(ui_events::DialogSend),
 
+    #[cfg(desktop)]
     MainWindowShow,
+
+    #[cfg(desktop)]
     MainWindowHide,
 }
 
@@ -161,10 +164,12 @@ mod ui_msgs {
         send(DialogSend(params)).await;
     }
 
+    #[cfg(desktop)]
     pub async fn main_window_show() {
         send(MainWindowShow).await;
     }
 
+    #[cfg(desktop)]
     pub async fn main_window_hide() {
         send(MainWindowHide).await;
     }

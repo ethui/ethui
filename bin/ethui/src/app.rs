@@ -7,12 +7,7 @@ use tauri::WindowEvent;
 use tauri::{AppHandle, Builder, Manager as _};
 use tracing::debug;
 
-use crate::{
-    commands, dialogs,
-    error::AppResult,
-    menu, system_tray,
-    utils::{main_window_hide, main_window_show},
-};
+use crate::{commands, dialogs, error::AppResult};
 
 pub struct EthUIApp {
     app: tauri::App,
@@ -74,9 +69,12 @@ impl EthUIApp {
             ])
             .plugin(tauri_plugin_os::init())
             .setup(|app| {
-                let handle = app.handle();
-                let _ = menu::build(handle);
-                let _ = system_tray::build(handle);
+                #[cfg(desktop)]
+                {
+                    let handle = app.handle();
+                    let _ = crate::menu::build(handle);
+                    let _ = crate::system_tray::build(handle);
+                }
                 Ok(())
             });
 
@@ -84,8 +82,9 @@ impl EthUIApp {
 
         init(&app, args).await?;
 
+        #[cfg(desktop)]
         if !args.hidden {
-            main_window_show(app.handle()).await;
+            crate::utils::main_window_show(app.handle()).await;
         }
 
         Ok(Self { app })
@@ -163,8 +162,11 @@ async fn event_listener(handle: AppHandle) {
                 DialogClose(params) => dialogs::close(&handle, params),
                 DialogSend(params) => dialogs::send(&handle, params),
 
-                MainWindowShow => main_window_show(&handle).await,
-                MainWindowHide => main_window_hide(&handle),
+                #[cfg(desktop)]
+                MainWindowShow => crate::utils::main_window_show(&handle).await,
+
+                #[cfg(desktop)]
+                MainWindowHide => crate::utils::main_window_hide(&handle),
             }
         }
     }

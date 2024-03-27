@@ -18,6 +18,7 @@ static LOCK_NAME: &str = "iron-wallet";
 #[cfg(debug_assertions)]
 static LOCK_NAME: &str = "iron-wallet-dev";
 
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
 #[tokio::main]
 pub async fn run() -> AppResult<()> {
     ethui_tracing::init()?;

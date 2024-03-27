@@ -1,4 +1,4 @@
-use tauri::{menu::MenuEvent, AppHandle, Manager as _, Window};
+#![cfg(desktop)]
 
 use crate::AppResult;
 
@@ -70,7 +70,10 @@ pub(crate) fn build(app: &AppHandle) -> AppResult<()> {
     Ok(())
 }
 
+#[cfg(not(target_os = "android"))]
 pub(crate) fn event_handler(window: &Window, event: MenuEvent) {
+    use tauri::{menu::MenuEvent, AppHandle, Manager as _, Window};
+
     match event.id().as_ref() {
         "quit" => {
             std::process::exit(0);

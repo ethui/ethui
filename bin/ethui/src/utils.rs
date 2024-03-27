@@ -1,8 +1,8 @@
+#![cfg(desktop)]
+
 use ethui_settings::Settings;
 use ethui_types::GlobalState;
 use tauri::{AppHandle, Manager, WebviewWindowBuilder};
-
-use crate::menu;
 
 pub(crate) async fn main_window_show(app: &AppHandle) {
     if let Some(w) = app.get_webview_window("main") {
@@ -19,7 +19,7 @@ pub(crate) async fn main_window_show(app: &AppHandle) {
             .fullscreen(false)
             .resizable(true)
             .inner_size(600.0, 800.0)
-            .on_menu_event(menu::event_handler);
+            .on_menu_event(crate::menu::event_handler);
 
         #[cfg(target_os = "macos")]
         let builder = builder

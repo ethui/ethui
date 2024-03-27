@@ -1,3 +1,4 @@
+#[cfg(not(target_os = "android"))]
 mod autostart;
 pub mod commands;
 mod error;
@@ -36,6 +37,7 @@ pub enum DarkMode {
 impl Settings {
     pub async fn init(&self) -> Result<()> {
         // make sure OS's autostart is synced with settings
+        #[cfg(not(target_os = "android"))]
         crate::autostart::update(self.inner.autostart)?;
 
         Ok(())
@@ -62,6 +64,7 @@ impl Settings {
             self.inner.hide_empty_tokens = serde_json::from_value(v.clone()).unwrap()
         }
 
+        #[cfg(not(target_os = "android"))]
         if let Some(v) = params.get("autostart") {
             self.inner.autostart = serde_json::from_value(v.clone()).unwrap();
             crate::autostart::update(self.inner.autostart)?;
