@@ -44,6 +44,7 @@ impl From<&AlchemyAssetTransfer> for Tx {
     fn from(value: &AlchemyAssetTransfer) -> Self {
         Self {
             hash: value.hash,
+            trace_address: None,
             block_number: Some(value.block_num.to_ethers().as_u64()),
             from: value.from,
             to: value.to,
