@@ -153,6 +153,7 @@ async fn watch(
         // from the moment the fork started (or genesis if not a fork)
         let past_range = fork_block..=block_number.low_u64();
         for b in past_range.into_iter() {
+            dbg!("catchup", b);
             let traces = provider.trace_block(b.into()).await?;
             block_snd
                 .send(Msg::Traces(traces))
@@ -175,6 +176,7 @@ async fn watch(
                 b = stream.next() => {
                     match b {
                         Some(b) => {
+                            dbg!("loop", b.number.unwrap());
                             let block_traces = provider.trace_block(b.number.unwrap().into()).await?;
                             block_snd.send(Msg::Traces(block_traces)).map_err(|_|Error::Watcher)?;
 
@@ -206,10 +208,12 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
             Msg::CaughtUp => caught_up = true,
             Msg::Traces(traces) => {
                 let events = expand_traces(traces, &provider, ctx.chain_id).await;
+                dbg!(&events);
                 db.save_events(ctx.chain_id, events).await?
             }
             Msg::Logs(logs) => {
                 let events = expand_logs(logs);
+                dbg!(&events);
                 db.save_events(ctx.chain_id, events).await?
             }
         }

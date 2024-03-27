@@ -17,6 +17,7 @@ pub enum Event {
 #[serde(rename_all = "camelCase")]
 pub struct Tx {
     pub hash: B256,
+    pub trace_address: Option<Vec<usize>>,
 
     pub from: Address,
     /// Optional because it could be a contract creation
@@ -93,6 +94,9 @@ impl TryFrom<&SqliteRow> for Tx {
     fn try_from(row: &SqliteRow) -> Result<Self, Self::Error> {
         Ok(Self {
             hash: B256::from_str(row.get("hash")).unwrap(),
+            trace_address: row
+                .get::<Option<String>, _>("trace_address")
+                .map(|t| t.split('/').map(|v| v.parse().unwrap()).collect()),
             from: Address::from_str(row.get("from_address")).unwrap(),
             to: Address::from_str(row.get("to_address")).ok(),
             value: row

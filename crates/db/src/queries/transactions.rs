@@ -14,11 +14,18 @@ impl DbInner {
 
     pub async fn insert_transaction(&self, chain_id: u32, tx: &Tx) -> Result<()> {
         let hash = format!("0x{:x}", tx.hash);
+        let trace_address = tx.trace_address.clone().map(|t| {
+            t.into_iter()
+                .map(|i| i.to_string())
+                .collect::<Vec<_>>()
+                .join("/")
+        });
         let from = format!("0x{:x}", tx.from);
         let to = tx.to.map(|a| format!("0x{:x}", a));
         let block_number = tx.block_number.map(|b| b as i64);
         let position = tx.position.unwrap_or(0) as u32;
         let value = tx.value.map(|v| v.to_string());
+        let data = tx.data.clone().map(|d| d.to_string());
         let status = tx.status as u32;
         let incomplete = tx.incomplete;
         let gas_limit = tx.gas_limit.map(|v| v.to_string());
@@ -29,15 +36,17 @@ impl DbInner {
         let nonce = tx.nonce.map(|n| n as i64);
 
         sqlx::query!(
-            r#" INSERT OR REPLACE INTO transactions (hash, chain_id, from_address, to_address, block_number, position, value, gas_limit, gas_used, max_fee_per_gas, max_priority_fee_per_gas, type, nonce, status, incomplete)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"#,
+            r#" INSERT OR IGNORE INTO transactions (hash, chain_id, trace_address, from_address, to_address, block_number, position, value, data, gas_limit, gas_used, max_fee_per_gas, max_priority_fee_per_gas, type, nonce, status, incomplete)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"#,
             hash,
             chain_id,
+            trace_address,
             from,
             to,
             block_number,
             position,
             value,
+            data,
             gas_limit,
             gas_used,
             max_fee_per_gas,
@@ -56,7 +65,7 @@ impl DbInner {
         let hash = hash.to_string();
 
         let row = sqlx::query!(
-            r#" SELECT hash, from_address, to_address, data as 'data?', value as 'value?', block_number, position, gas_limit, gas_used, max_fee_per_gas, max_priority_fee_per_gas, type, nonce, status, incomplete as 'incomplete!'
+            r#" SELECT hash, trace_address, from_address, to_address, data as 'data?', value as 'value?', block_number, position, gas_limit, gas_used, max_fee_per_gas, max_priority_fee_per_gas, type, nonce, status, incomplete as 'incomplete!'
                 FROM transactions
                 WHERE chain_id = ? AND hash = ? "#,
             chain_id,
@@ -65,8 +74,17 @@ impl DbInner {
         .fetch_one(self.pool())
         .await?;
 
+        let trace_address = match row.trace_address {
+            None => None,
+            Some(t) if t.is_empty() => None,
+            Some(t) => Some(t.split('/').map(|v| v.parse().unwrap()).collect()),
+        };
+
+        dbg!(&row.data);
+
         let tx = Tx {
             hash: B256::from_str(&row.hash.unwrap()).unwrap(),
+            trace_address,
             from: Address::from_str(&row.from_address).unwrap(),
             to: row.to_address.and_then(|v| Address::from_str(&v).ok()),
             value: row.value.map(|v| U256::from_str_radix(&v, 10).unwrap()),
