@@ -80,8 +80,6 @@ impl DbInner {
             Some(t) => Some(t.split('/').map(|v| v.parse().unwrap()).collect()),
         };
 
-        dbg!(&row.data);
-
         let tx = Tx {
             hash: B256::from_str(&row.hash.unwrap()).unwrap(),
             trace_address,
