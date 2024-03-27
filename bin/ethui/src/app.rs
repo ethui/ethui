@@ -132,17 +132,6 @@ async fn init(app: &tauri::App, args: &Args) -> AppResult<()> {
     Ok(())
 }
 
-#[cfg(target_os = "macos")]
-fn on_window_event(event: WindowEvent) {
-    if let WindowEvent::CloseRequested { api, .. } = event.event() {
-        {
-            let app = event.window().app_handle();
-            app.hide().unwrap();
-            api.prevent_close();
-        }
-    }
-}
-
 async fn event_listener(handle: AppHandle) {
     let mut rx = ethui_broadcast::subscribe_ui().await;
 

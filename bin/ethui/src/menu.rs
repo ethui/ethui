@@ -2,14 +2,14 @@ use tauri::{menu::MenuEvent, AppHandle, Manager as _, Window};
 
 use crate::AppResult;
 
-#[cfg(not(target_os = "macos"))]
-pub(crate) fn build(_app: &AppHandle) -> AppResult<()> {
-    Ok(())
-}
-
-#[cfg(target_os = "macos")]
+// #[cfg(not(target_os = "macos"))]
+// pub(crate) fn build(_app: &AppHandle) -> AppResult<()> {
+//     Ok(())
+// }
+//
+// #[cfg(target_os = "macos")]
 pub(crate) fn build(app: &AppHandle) -> AppResult<()> {
-    use tauri::menu::{MenuItem, Submenu, SubmenuBuilder};
+    use tauri::menu::{MenuBuilder, MenuItemBuilder, SubmenuBuilder};
 
     let app_name = "ethui".to_string();
 
