@@ -33,6 +33,7 @@ pub enum InternalMsg {
     FetchERC20Metadata(u32, Address),
 
     ForgeAbiFound,
+    ContractFound,
 }
 
 #[derive(Debug, Clone)]
@@ -110,6 +111,10 @@ mod internal_msgs {
 
     pub async fn forge_abi_found() {
         send(ForgeAbiFound).await;
+    }
+
+    pub async fn contract_found() {
+        send(ContractFound).await
     }
 
     #[instrument(level = "trace")]

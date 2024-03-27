@@ -47,6 +47,7 @@ pub(crate) async fn update_db_contracts() -> Result<()> {
     }
 
     if any_updates {
+        dbg!("any updates");
         ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
     }
 
