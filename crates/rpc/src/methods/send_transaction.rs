@@ -99,13 +99,13 @@ impl<'a> SendTransaction {
 
     async fn simulate(&self, dialog: &Dialog) -> Result<()> {
         let chain_id = self.network.chain_id;
-        let request = self.simulation_request().await?;
+        // let request = self.simulation_request().await?;
 
-        if let Ok(sim) = ethui_simulator::commands::simulator_run(chain_id, request).await {
-            dialog
-                .send("simulation-result", Some(serde_json::to_value(sim)?))
-                .await?
-        }
+        // if let Ok(sim) = ethui_simulator::commands::simulator_run(chain_id, request).await {
+        //     dialog
+        //         .send("simulation-result", Some(serde_json::to_value(sim)?))
+        //         .await?
+        // }
 
         Ok(())
     }
@@ -137,31 +137,31 @@ impl<'a> SendTransaction {
         Ok(())
     }
 
-    async fn simulation_request(&self) -> Result<ethui_simulator::Request> {
-        let tx_request = self.request.clone();
-
-        Ok(ethui_simulator::Request {
-            from: self.from().await.map_err(|_| Error::CannotSimulate)?,
-            to: tx_request
-                .to()
-                .ok_or(())
-                .and_then(|v| match v {
-                    NameOrAddress::Name(_) => Err(()),
-                    NameOrAddress::Address(a) => Ok(a.to_alloy()),
-                })
-                .map_err(|_| Error::CannotSimulate)?,
-            value: tx_request.value().cloned().map(|v| v.to_alloy()),
-            data: tx_request
-                .data()
-                .cloned()
-                .map(|v| alloy_primitives::Bytes(v.0)),
-            gas_limit: tx_request
-                .gas()
-                .map(|v| v.as_u64())
-                .ok_or(())
-                .map_err(|_| Error::CannotSimulate)?,
-        })
-    }
+    // async fn simulation_request(&self) -> Result<ethui_simulator::Request> {
+    //     let tx_request = self.request.clone();
+    //
+    //     Ok(ethui_simulator::Request {
+    //         from: self.from().await.map_err(|_| Error::CannotSimulate)?,
+    //         to: tx_request
+    //             .to()
+    //             .ok_or(())
+    //             .and_then(|v| match v {
+    //                 NameOrAddress::Name(_) => Err(()),
+    //                 NameOrAddress::Address(a) => Ok(a.to_alloy()),
+    //             })
+    //             .map_err(|_| Error::CannotSimulate)?,
+    //         value: tx_request.value().cloned().map(|v| v.to_alloy()),
+    //         data: tx_request
+    //             .data()
+    //             .cloned()
+    //             .map(|v| alloy_primitives::Bytes(v.0)),
+    //         gas_limit: tx_request
+    //             .gas()
+    //             .map(|v| v.as_u64())
+    //             .ok_or(())
+    //             .map_err(|_| Error::CannotSimulate)?,
+    //     })
+    // }
 
     async fn from(&self) -> Result<Address> {
         let wallets = Wallets::read().await;

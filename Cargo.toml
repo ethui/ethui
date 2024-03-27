@@ -39,7 +39,7 @@ ethui-crypto = { path = "crates/crypto" }
 ethui-settings = { path = "crates/settings" }
 ethui-networks = { path = "crates/networks" }
 ethui-wallets = { path = "crates/wallets" }
-ethui-simulator = { path = "crates/simulator" }
+# ethui-simulator = { path = "crates/simulator" }
 ethui-ws = { path = "crates/ws" }
 ethui-http = { path = "crates/http" }
 ethui-rpc = { path = "crates/rpc" }

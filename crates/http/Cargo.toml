@@ -16,7 +16,7 @@ ethui-forge = { workspace = true }
 ethui-networks = { workspace = true }
 ethui-rpc = { workspace = true }
 ethui-settings = { workspace = true }
-ethui-simulator = { workspace = true }
+# ethui-simulator = { workspace = true }
 ethui-sync-alchemy = { workspace = true }
 ethui-types = { workspace = true }
 ethui-wallets = { workspace = true }

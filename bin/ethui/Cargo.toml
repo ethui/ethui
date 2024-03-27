@@ -31,7 +31,6 @@ ethui-sync = { workspace = true }
 ethui-tracing = { workspace = true }
 ethui-exchange-rates = { workspace = true }
 ethui-broadcast = { workspace = true }
-ethui-simulator = { workspace = true }
 ethui-args = { workspace = true }
 ethui-token-list = { workspace = true }
 
@@ -48,6 +47,9 @@ named-lock = "0.3.0"
 auto-launch = "0.5.0"
 anyhow = "1.0.79"
 tauri-plugin-os = "2.0.0-beta.3"
+
+[target.'cfg(desktop)'.dependencies]
+# ethui-simulator = { workspace = true }
 
 [build-dependencies]
 tauri-build = { version = "2.0.0-beta.10", features = [] }

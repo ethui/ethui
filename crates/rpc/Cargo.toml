@@ -17,7 +17,7 @@ ethui-networks = { workspace = true }
 ethui-wallets = { workspace = true }
 ethui-broadcast = { workspace = true }
 ethui-connections = { workspace = true }
-ethui-simulator = { workspace = true }
+# ethui-simulator = { workspace = true }
 
 ethers = { workspace = true }
 tokio = { workspace = true }

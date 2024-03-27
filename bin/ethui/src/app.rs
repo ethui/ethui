@@ -64,8 +64,8 @@ impl EthUIApp {
                 ethui_connections::commands::connections_set_affinity,
                 ethui_sync::commands::sync_alchemy_is_network_supported,
                 ethui_sync::commands::sync_get_native_balance,
-                ethui_simulator::commands::simulator_run,
-                ethui_simulator::commands::simulator_get_call_count,
+                // ethui_simulator::commands::simulator_run,
+                // ethui_simulator::commands::simulator_get_call_count,
             ])
             .plugin(tauri_plugin_os::init())
             .setup(|app| {

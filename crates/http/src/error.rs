@@ -26,9 +26,8 @@ pub enum Error {
     #[error(transparent)]
     Settings(#[from] ethui_settings::Error),
 
-    #[error(transparent)]
-    Simulation(#[from] ethui_simulator::errors::SimulationError),
-
+    // #[error(transparent)]
+    // Simulation(#[from] ethui_simulator::errors::SimulationError),
     #[error(transparent)]
     Wallets(#[from] ethui_wallets::Error),
 
