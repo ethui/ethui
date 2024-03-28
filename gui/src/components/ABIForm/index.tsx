@@ -97,8 +97,8 @@ function ItemForm({ contract, item }: ItemFormProps) {
   if (!provider) return null;
 
   const onSubmit = async (params: CallArgs) => {
-    const args = item.inputs.map((input) => {
-      let arg = params.args[input.name!];
+    const args = item.inputs.map((input, i) => {
+      let arg = params.args[input.name || i.toString()];
 
       // type is an array
       // TODO: this is a bit of a hack. doesn't deal with more complex cases such as nested arrays
@@ -109,9 +109,11 @@ function ItemForm({ contract, item }: ItemFormProps) {
       return arg;
     });
 
+    console.log("here", item, args);
     const data = encodeFunctionData({ abi: [item], functionName: item.name, args });
 
     if (item.stateMutability === "view") {
+      console.log(item);
       const result = (await provider.readContract({
         address: contract,
         abi: [item],
@@ -119,6 +121,7 @@ function ItemForm({ contract, item }: ItemFormProps) {
         args,
       })) as bigint;
 
+      console.log(result);
       if (typeof result === "bigint") {
         setCallResult(result.toString());
       } else if (typeof result === "string") {
@@ -142,12 +145,12 @@ function ItemForm({ contract, item }: ItemFormProps) {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Stack direction="column" spacing={2} justifyContent="flex-start">
-        {item.inputs.map(({ name, type }, key) => (
-          <Box key={key}>
+        {item.inputs.map(({ name, type }, index) => (
+          <Box key={index}>
             <TextField
               sx={{ minWidth: 300 }}
               size="small"
-              {...register(`args.${name}`)}
+              {...register(`args.${name || index}`)}
               label={`${name} (${type})`}
             />
           </Box>
