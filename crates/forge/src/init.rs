@@ -65,7 +65,6 @@ async fn worker() -> ! {
             // trigger an update
             match msg {
                 ForgeAbiFound | ContractFound => {
-                    dbg!("updating");
                     utils::update_db_contracts().await.unwrap();
                     time::sleep(Duration::from_secs(1)).await;
                 }
