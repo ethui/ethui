@@ -10,7 +10,7 @@ authors = ["Miguel Palhas <mpalhas@gmail.com>"]
 [workspace]
 resolver = "2"
 members = [
-  "bin/ethui",
+  "bin",
   "crates/forge",
   "crates/crypto",
   "crates/settings",
@@ -31,7 +31,7 @@ members = [
   "crates/exchange-rates",
   "crates/args",
 ]
-default-members = ["bin/ethui"]
+default-members = ["bin"]
 
 [workspace.dependencies]
 ethui-forge = { path = "crates/forge" }

@@ -3,11 +3,11 @@
     "beforeDevCommand": "yarn workspace @ethui/gui dev",
     "beforeBuildCommand": "yarn workspace @ethui/gui build",
     "devPath": "http://localhost:1420",
-    "distDir": "../../gui/dist"
+    "distDir": "../gui/dist"
   },
   "package": {
-    "productName": "ethui_dev",
-    "version": "../../package.json"
+    "productName": "ethui",
+    "version": "../package.json"
   },
   "tauri": {
     "allowlist": {
