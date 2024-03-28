@@ -88,7 +88,7 @@ interface ItemFormProps {
 }
 
 function ItemForm({ contract, item }: ItemFormProps) {
-  const account = useWallets(s => s.address);
+  const account = useWallets((s) => s.address);
   const provider = useProvider();
   const { register, handleSubmit, reset } = useForm<CallArgs>();
   const [callResult, setCallResult] = useState<string>();
