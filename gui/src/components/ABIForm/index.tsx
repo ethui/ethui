@@ -10,10 +10,11 @@ import { Stack } from "@mui/system";
 import { invoke } from "@tauri-apps/api";
 import { Abi, AbiFunction, formatAbiItem } from "abitype";
 import { SyntheticEvent, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { Address, encodeFunctionData } from "viem";
 
 import { useInvoke, useProvider } from "@/hooks";
+import { ABIInput } from "./ABIInput";
 
 interface Props {
   chainId: number;
@@ -88,11 +89,11 @@ interface ItemFormProps {
 
 function ItemForm({ contract, item }: ItemFormProps) {
   const provider = useProvider();
-  const { register, handleSubmit, reset } = useForm<CallArgs>();
+  const form = useForm<CallArgs>();
   const [callResult, setCallResult] = useState<string>();
   const [txResult, setTxResult] = useState<string>();
 
-  useEffect(() => reset(), [item, reset]);
+  useEffect(() => form.reset(), [item, form]);
 
   if (!provider) return null;
 
@@ -134,36 +135,24 @@ function ItemForm({ contract, item }: ItemFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Stack direction="column" spacing={2} justifyContent="flex-start">
-        {item.inputs.map(({ name, type }, key) => (
-          <Box key={key}>
-            <TextField
-              sx={{ minWidth: 300 }}
-              size="small"
-              {...register(`args.${name}`)}
-              label={`${name} (${type})`}
-            />
-          </Box>
-        ))}
-        {item.stateMutability === "payable" && (
+    <FormProvider {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <Stack direction="column" spacing={2} justifyContent="flex-start">
+          {item.inputs.map(({ name, type }, index) => (
+            <ABIInput key={index} name={name || index.toString()} type={type} />
+          ))}
+          {item.stateMutability === "payable" && (
+            <ABIInput name="value" type="uint256" />
+          )}
           <Box>
-            <TextField
-              sx={{ minWidth: 300 }}
-              size="small"
-              {...register("value")}
-              label="value"
-            />
+            <Button sx={{ minWidth: 150 }} variant="contained" type="submit">
+              {item.stateMutability == "view" ? "Call" : "Send"}
+            </Button>
           </Box>
-        )}
-        <Box>
-          <Button sx={{ minWidth: 150 }} variant="contained" type="submit">
-            {item.stateMutability == "view" ? "Call" : "Send"}
-          </Button>
-        </Box>
-        {callResult && <Typography>{callResult}</Typography>}
-        {txResult && <Typography>{txResult}</Typography>}
-      </Stack>
-    </form>
+          {callResult && <Typography>{callResult}</Typography>}
+          {txResult && <Typography>{txResult}</Typography>}
+        </Stack>
+      </form>
+    </FormProvider>
   );
 }
