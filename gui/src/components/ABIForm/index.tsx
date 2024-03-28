@@ -99,7 +99,19 @@ function ItemForm({ contract, item }: ItemFormProps) {
   if (!provider) return null;
 
   const onSubmit = async (params: CallArgs) => {
-    const args = item.inputs.map((input) => params.args[input.name!]);
+    const args = item.inputs.map((input, i) => {
+      let arg = params.args[input.name || i.toString()];
+
+      // type is an array
+      // TODO: this is a bit of a hack. doesn't deal with more complex cases such as nested arrays
+      // it's a temporary improvement that will need a much larger solution
+      if (input.type.match(/\[\]$/)) {
+        arg = JSON.parse(
+          "[" + arg.replace(/^\s*\[/, "").replace(/\]\s*$/, "") + "]",
+        );
+      }
+      return arg;
+    });
 
     const data = encodeFunctionData({
       abi: [item],
@@ -138,12 +150,12 @@ function ItemForm({ contract, item }: ItemFormProps) {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Stack direction="column" spacing={2} justifyContent="flex-start">
-        {item.inputs.map(({ name, type }, key) => (
-          <Box key={key}>
+        {item.inputs.map(({ name, type }, index) => (
+          <Box key={index}>
             <TextField
               sx={{ minWidth: 300 }}
               size="small"
-              {...register(`args.${name}`)}
+              {...register(`args.${name || index}`)}
               label={`${name} (${type})`}
             />
           </Box>
