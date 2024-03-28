@@ -109,11 +109,9 @@ function ItemForm({ contract, item }: ItemFormProps) {
       return arg;
     });
 
-    console.log("here", item, args);
     const data = encodeFunctionData({ abi: [item], functionName: item.name, args });
 
     if (item.stateMutability === "view") {
-      console.log(item);
       const result = (await provider.readContract({
         address: contract,
         abi: [item],
@@ -121,7 +119,6 @@ function ItemForm({ contract, item }: ItemFormProps) {
         args,
       })) as bigint;
 
-      console.log(result);
       if (typeof result === "bigint") {
         setCallResult(result.toString());
       } else if (typeof result === "string") {
