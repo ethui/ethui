@@ -16,6 +16,7 @@ import { Address, encodeFunctionData } from "viem";
 import { useInvoke, useProvider } from "@/hooks";
 import { ABIInput } from "./ABIInput";
 import { useWallets } from "@/store";
+import { Abi as AbiSchema } from "abitype/zod";
 
 interface Props {
   chainId: number;
@@ -99,6 +100,7 @@ function ItemForm({ contract, item }: ItemFormProps) {
 
   if (!provider) return null;
 
+
   const onSubmit = async (params: CallArgs) => {
     const args = item.inputs.map((input, i) => {
       let arg = params.args[input.name || i.toString()];
@@ -113,6 +115,7 @@ function ItemForm({ contract, item }: ItemFormProps) {
       }
       return arg;
     });
+
 
     const data = encodeFunctionData({
       abi: [item],
@@ -158,11 +161,9 @@ function ItemForm({ contract, item }: ItemFormProps) {
           {item.stateMutability === "payable" && (
             <ABIInput name="value" type="uint256" />
           )}
-          <Box>
-            <Button sx={{ minWidth: 150 }} variant="contained" type="submit">
-              {item.stateMutability == "view" ? "Call" : "Send"}
-            </Button>
-          </Box>
+          <Button sx={{ minWidth: 150 }} variant="contained" type="submit">
+            {item.stateMutability == "view" ? "Call" : "Send"}
+          </Button>
           {callResult && <Typography>{callResult}</Typography>}
           {txResult && <Typography>{txResult}</Typography>}
         </Stack>

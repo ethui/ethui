@@ -73,6 +73,7 @@ impl EthUIApp {
                 ethui_sync::commands::sync_get_native_balance,
                 ethui_simulator::commands::simulator_run,
                 ethui_simulator::commands::simulator_get_call_count,
+                ethui_abis::commands::abi_parse_argument,
             ])
             .on_window_event(on_window_event)
             .menu(menu::build())
