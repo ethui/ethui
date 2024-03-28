@@ -14,6 +14,7 @@ import { useForm } from "react-hook-form";
 import { Address, encodeFunctionData } from "viem";
 
 import { useInvoke, useProvider } from "@/hooks";
+import { useWallets } from "@/store";
 
 interface Props {
   chainId: number;
@@ -87,6 +88,7 @@ interface ItemFormProps {
 }
 
 function ItemForm({ contract, item }: ItemFormProps) {
+  const account = useWallets((s) => s.address);
   const provider = useProvider();
   const { register, handleSubmit, reset } = useForm<CallArgs>();
   const [callResult, setCallResult] = useState<string>();
@@ -123,7 +125,7 @@ function ItemForm({ contract, item }: ItemFormProps) {
     } else {
       const result = await invoke<string>("rpc_send_transaction", {
         params: {
-          from: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+          from: account,
           to: contract,
           value: params.value,
           data,
