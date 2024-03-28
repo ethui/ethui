@@ -16,7 +16,7 @@ tauri = { workspace = true }
 
 alloy-dyn-abi = { version = "0.6.4", features = ["eip712"] }
 alloy-primitives.workspace = true
-rstest = "0.18.2"
 
 [dev-dependencies]
 anyhow.workspace = true
+rstest = "0.18.2"
