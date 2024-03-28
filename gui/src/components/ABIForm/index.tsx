@@ -106,12 +106,18 @@ function ItemForm({ contract, item }: ItemFormProps) {
       // TODO: this is a bit of a hack. doesn't deal with more complex cases such as nested arrays
       // it's a temporary improvement that will need a much larger solution
       if (input.type.match(/\[\]$/)) {
-        arg = JSON.parse("[" + arg.replace(/^\s*\[/, "").replace(/\]\s*$/, "") + "]");
+        arg = JSON.parse(
+          "[" + arg.replace(/^\s*\[/, "").replace(/\]\s*$/, "") + "]",
+        );
       }
       return arg;
     });
 
-    const data = encodeFunctionData({ abi: [item], functionName: item.name, args });
+    const data = encodeFunctionData({
+      abi: [item],
+      functionName: item.name,
+      args,
+    });
 
     if (item.stateMutability === "view") {
       const result = (await provider.readContract({
@@ -175,4 +181,3 @@ function ItemForm({ contract, item }: ItemFormProps) {
     </form>
   );
 }
-
