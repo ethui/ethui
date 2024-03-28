@@ -94,7 +94,6 @@ pub async fn db_insert_contract(
         .map(|abi| serde_json::to_string(&abi).unwrap());
 
     // self.window_snd.send(UINotify::BalancesUpdated.into())?;
-    // send ContractsUpdated event to UI using ethui_broadcast
 
     db.insert_contract_with_abi(chain_id, address, abi, name)
         .await?;

@@ -63,9 +63,12 @@ async fn worker() -> ! {
             use InternalMsg::*;
 
             // trigger an update
-            if let ForgeAbiFound = msg {
-                utils::update_db_contracts().await.unwrap();
-                time::sleep(Duration::from_secs(1)).await;
+            match msg {
+                ForgeAbiFound | ContractFound => {
+                    utils::update_db_contracts().await.unwrap();
+                    time::sleep(Duration::from_secs(1)).await;
+                }
+                _ => (),
             }
         }
     }

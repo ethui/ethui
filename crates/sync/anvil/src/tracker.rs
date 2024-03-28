@@ -269,6 +269,8 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
             ethui_broadcast::ui_notify(UINotify::TxsUpdated).await;
             ethui_broadcast::ui_notify(UINotify::BalancesUpdated).await;
             ethui_broadcast::ui_notify(UINotify::Erc721Updated).await;
+            ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
+            ethui_broadcast::contract_found().await;
         }
     }
 

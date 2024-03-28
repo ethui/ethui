@@ -49,7 +49,7 @@ function ContractView({
     <Accordion>
       <AccordionSummary>
         <AddressView address={address} />
-        <Chip sx={{ marginLeft: 2 }} label={name} />
+        {name && <Chip sx={{ marginLeft: 2 }} label={name} />}
       </AccordionSummary>
       <AccordionDetails>
         <ABIForm address={address} chainId={chainId} />
