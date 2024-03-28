@@ -1,8 +1,5 @@
 #[derive(thiserror::Error, Debug)]
 pub enum AppError {
-    #[error("invalid network")]
-    InvalidNetwork,
-
     #[error(transparent)]
     DB(#[from] ethui_db::Error),
 
