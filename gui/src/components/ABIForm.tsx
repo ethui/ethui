@@ -97,13 +97,19 @@ function ItemForm({ contract, item }: ItemFormProps) {
   if (!provider) return null;
 
   const onSubmit = async (params: CallArgs) => {
-    const args = item.inputs.map((input) => params.args[input.name!]);
+    const args = item.inputs.map((input) => {
+      let arg = params.args[input.name!];
 
-    const data = encodeFunctionData({
-      abi: [item],
-      functionName: item.name,
-      args,
+      // type is an array
+      // TODO: this is a bit of a hack. doesn't deal with more complex cases such as nested arrays
+      // it's a temporary improvement that will need a much larger solution
+      if (input.type.match(/\[\]$/)) {
+        arg = JSON.parse("[" + arg.replace(/^\s*\[/, "").replace(/\]\s*$/, "") + "]");
+      }
+      return arg;
     });
+
+    const data = encodeFunctionData({ abi: [item], functionName: item.name, args });
 
     if (item.stateMutability === "view") {
       const result = (await provider.readContract({
@@ -167,3 +173,4 @@ function ItemForm({ contract, item }: ItemFormProps) {
     </form>
   );
 }
+
