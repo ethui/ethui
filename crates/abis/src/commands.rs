@@ -22,29 +22,38 @@ impl Serialize for Encodable {
             DynSolValue::Uint(v, _) => v.serialize(serializer),
             DynSolValue::FixedBytes(v, _) => v.serialize(serializer),
             DynSolValue::Address(v) => v.serialize(serializer),
-            DynSolValue::Function(_) => unreachable!(),
+            DynSolValue::Function(_) => {
+                unreachable!("we only expect to parse function arguments and responses")
+            }
             DynSolValue::Bytes(v) => v.serialize(serializer),
             DynSolValue::String(v) => v.serialize(serializer),
-            DynSolValue::Array(v) => {
+            DynSolValue::Array(v)
+            | DynSolValue::FixedArray(v)
+            | DynSolValue::Tuple(v)
+            | DynSolValue::CustomStruct { tuple: v, .. } => {
                 let mut seq = serializer.serialize_seq(Some(v.len()))?;
                 for elem in v.iter() {
                     seq.serialize_element(&Encodable(elem.clone()))?;
                 }
                 seq.end()
-            }
-            DynSolValue::FixedArray(v) => {
-                let mut seq = serializer.serialize_seq(Some(v.len()))?;
-                for elem in v.iter() {
-                    seq.serialize_element(&Encodable(elem.clone()))?;
-                }
-                seq.end()
-            }
-            DynSolValue::Tuple(_) => todo!(),
-            DynSolValue::CustomStruct {
-                name: _,
-                prop_names: _,
-                tuple: _,
-            } => todo!(),
+            } // DynSolValue::Tuple(v) => {
+              //     let mut seq = serializer.serialize_seq(Some(v.len()))?;
+              //     for elem in v.iter() {
+              //         seq.serialize_element(&Encodable(elem.clone()))?;
+              //     }
+              //     seq.end()
+              // }
+              // DynSolValue::CustomStruct {
+              //     name: _,
+              //     prop_names: _,
+              //     tuple: v,
+              // } => {
+              //     let mut seq = serializer.serialize_seq(Some(v.len()))?;
+              //     for elem in v.iter() {
+              //         seq.serialize_element(&Encodable(elem.clone()))?;
+              //     }
+              //     seq.end()
+              // }
         }
     }
 }
@@ -59,8 +68,14 @@ mod tests {
     #[rstest]
     #[case("uint256", json!("1"), json!("0x1"))]
     #[case("string", json!("asd"), json!("asd"))]
+    #[case("address", json!("0xe592427a0aece92de3edee1f18e0157c05861564"), json!("0xe592427a0aece92de3edee1f18e0157c05861564"))]
+    #[case("address", json!("e592427a0aece92de3edee1f18e0157c05861564"), json!("0xe592427a0aece92de3edee1f18e0157c05861564"))]
+    #[case("bytes32", json!("0x03"), json!("0x0300000000000000000000000000000000000000000000000000000000000000"))]
     #[case("uint256[]", json!([1, 2, 3]), json!(["0x1", "0x2", "0x3"]))]
+    #[case("uint256[3]", json!([1, 2, 3]), json!(["0x1", "0x2", "0x3"]))]
     #[case("uint256[][]", json!([[1, 2],[3, 4]]), json!([["0x1", "0x2"], ["0x3", "0x4"]]))]
+    #[case("(string,uint256)", json!(["asd", 2]), json!(["asd", "0x2"]))]
+    #[case("(string,uint256[2])", json!(["asd", [1,2]]), json!(["asd", ["0x1", "0x2"]]))]
     fn happy_path(
         #[case] r#type: &str,
         #[case] data: serde_json::Value,
