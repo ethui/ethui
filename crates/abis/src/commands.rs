@@ -10,7 +10,7 @@ pub fn abi_parse_argument(r#type: &str, data: serde_json::Value) -> Result<Encod
 
     dyn_type
         .coerce_json(&data)
-        .map(|v| Encodable(v))
+        .map(Encodable)
         .map_err(|e| e.to_string())
 }
 
@@ -41,9 +41,9 @@ impl Serialize for Encodable {
             }
             DynSolValue::Tuple(_) => todo!(),
             DynSolValue::CustomStruct {
-                name,
-                prop_names,
-                tuple,
+                name: _,
+                prop_names: _,
+                tuple: _,
             } => todo!(),
         }
     }
@@ -51,9 +51,10 @@ impl Serialize for Encodable {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use rstest::*;
     use serde_json::json;
+
+    use super::*;
 
     #[rstest]
     #[case("uint256", json!("1"), json!("0x1"))]
@@ -65,7 +66,7 @@ mod tests {
         #[case] data: serde_json::Value,
         #[case] expected: serde_json::Value,
     ) -> anyhow::Result<()> {
-        let r = serde_json::to_value(abiparser_parse_argument(r#type, data).unwrap())?;
+        let r = serde_json::to_value(abi_parse_argument(r#type, data).unwrap())?;
         assert_eq!(r, expected);
 
         Ok(())
@@ -74,7 +75,7 @@ mod tests {
     #[rstest]
     #[case("uint256", json!("asd"))]
     fn sad_path(#[case] r#type: &str, #[case] data: serde_json::Value) -> anyhow::Result<()> {
-        let r = abiparser_parse_argument(r#type, data);
+        let r = abi_parse_argument(r#type, data);
 
         assert!(r.is_err());
 
