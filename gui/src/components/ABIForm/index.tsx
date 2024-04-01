@@ -80,7 +80,7 @@ export function ABIForm({ chainId, address }: Props) {
 
 interface CallArgs {
   value?: string;
-  args: Record<string, { raw: string, parsed: string }>;
+  args: Record<string, { raw: string; parsed: string }>;
 }
 
 interface ItemFormProps {
@@ -99,12 +99,10 @@ function ItemForm({ contract, item }: ItemFormProps) {
 
   if (!provider) return null;
 
-
   const onSubmit = async (params: CallArgs) => {
     const args = item.inputs.map((input, i) =>
-      JSON.parse(params.args[input.name || i.toString()].parsed)
+      JSON.parse(params.args[input.name || i.toString()].parsed),
     );
-
 
     const data = encodeFunctionData({
       abi: [item],
