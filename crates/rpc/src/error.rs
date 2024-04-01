@@ -24,6 +24,9 @@ pub enum Error {
         #[from] SignerMiddlewareError<Provider<RetryClient<Http>>, ethui_wallets::Signer>,
     ),
 
+    #[error(transparent)]
+    Provider(#[from] ethers::providers::ProviderError),
+
     #[error("Signer error: {0}")]
     Signer(String),
 

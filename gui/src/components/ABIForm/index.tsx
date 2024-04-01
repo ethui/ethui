@@ -11,9 +11,9 @@ import { invoke } from "@tauri-apps/api";
 import { Abi, AbiFunction, formatAbiItem } from "abitype";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Address, encodeFunctionData } from "viem";
+import { Address, decodeFunctionResult, encodeFunctionData } from "viem";
 
-import { useInvoke, useProvider } from "@/hooks";
+import { useInvoke } from "@/hooks";
 import { useWallets } from "@/store";
 
 interface Props {
@@ -89,14 +89,11 @@ interface ItemFormProps {
 
 function ItemForm({ contract, item }: ItemFormProps) {
   const account = useWallets((s) => s.address);
-  const provider = useProvider();
   const { register, handleSubmit, reset } = useForm<CallArgs>();
   const [callResult, setCallResult] = useState<string>();
   const [txResult, setTxResult] = useState<string>();
 
   useEffect(() => reset(), [item, reset]);
-
-  if (!provider) return null;
 
   const onSubmit = async (params: CallArgs) => {
     const args = item.inputs.map((input, i) => {
@@ -120,12 +117,20 @@ function ItemForm({ contract, item }: ItemFormProps) {
     });
 
     if (item.stateMutability === "view") {
-      const result = (await provider.readContract({
-        address: contract,
+      const rawResult = await invoke<`0x${string}`>("rpc_eth_call", {
+        params: {
+          from: account,
+          to: contract,
+          value: params.value,
+          data,
+        },
+      });
+
+      const result = decodeFunctionResult({
         abi: [item],
         functionName: item.name,
-        args,
-      })) as bigint;
+        data: rawResult,
+      });
 
       if (typeof result === "bigint") {
         setCallResult(result.toString());

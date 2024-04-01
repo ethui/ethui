@@ -6,7 +6,7 @@ use std::collections::HashMap;
 
 use ethers::{abi::AbiEncode, types::transaction::eip712};
 use ethui_connections::Ctx;
-use ethui_types::GlobalState;
+use ethui_types::{Bytes, GlobalState};
 use ethui_wallets::{WalletControl, Wallets};
 use jsonrpc_core::{MetaIoHandler, Params};
 use serde_json::json;
@@ -193,6 +193,17 @@ impl Handler {
             Ok(res) => Ok(res.tx_hash().encode_hex().into()),
             Err(e) => Err(e.into()),
         }
+    }
+
+    async fn send_call(params: serde_json::Value, ctx: Ctx) -> jsonrpc_core::Result<Bytes> {
+        let mut sender = methods::SendCall::build(&ctx)
+            .set_request(params.into())
+            .await
+            .unwrap()
+            .build()
+            .await;
+
+        Ok(sender.finish().await?)
     }
 
     async fn eth_sign(params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {

@@ -41,7 +41,8 @@
         "default-src": "'self'",
         "font-src": ["'self'", "data:"],
         "style-src": ["'self'", "'unsafe-inline'"],
-        "connect-src": ["https://api.github.com"]
+        "connect-src": ["https://api.github.com", "http://localhost:*"],
+        "img-src": ["'self'", "https://effigy.im", "data:"]
       }
     }
   }

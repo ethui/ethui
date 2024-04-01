@@ -67,6 +67,7 @@ impl EthUIApp {
                 ethui_dialogs::commands::dialog_get_payload,
                 ethui_dialogs::commands::dialog_send,
                 ethui_rpc::commands::rpc_send_transaction,
+                ethui_rpc::commands::rpc_eth_call,
                 ethui_connections::commands::connections_affinity_for,
                 ethui_connections::commands::connections_set_affinity,
                 ethui_sync::commands::sync_alchemy_is_network_supported,
@@ -186,9 +187,10 @@ fn resource(app: &tauri::App, resource: &str) -> PathBuf {
     dir.join(resource)
 }
 
-#[cfg(debug_assertions)]
+// #[cfg(debug_assertions)]
 fn config_dir(_app: &tauri::App) -> PathBuf {
-    PathBuf::from("../dev-data/default/")
+    // PathBuf::from("../dev-data/default/")
+    PathBuf::from("/home/naps62/.config/ethui")
 }
 
 #[cfg(not(debug_assertions))]
