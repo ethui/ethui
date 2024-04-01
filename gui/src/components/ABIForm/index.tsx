@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { Stack } from "@mui/system";
 import { invoke } from "@tauri-apps/api";
-import { Abi, AbiFunction, formatAbiItem } from "abitype";
+import { Abi, AbiFunction, formatAbiItem, formatAbiParameter } from "abitype";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { Address, encodeFunctionData } from "viem";
@@ -137,13 +137,17 @@ function ItemForm({ contract, item }: ItemFormProps) {
       setTxResult(result);
     }
   };
+  // console.log(item)
+  // console.log(formatAbiParameter({
+  //   type: 'tuple', components: [{ type: 'string' }, { type: 'uint256' }]
+  // }));
 
   return (
     <FormProvider {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <Stack direction="column" spacing={2} justifyContent="flex-start">
-          {item.inputs.map(({ name, type }, index) => (
-            <ABIInput key={index} name={`args.${name || index}`} type={type} />
+          {item.inputs.map((item, index) => (
+            <ABIInput key={index} name={`args.${item.name || index}`} type={item} />
           ))}
           {item.stateMutability === "payable" && (
             <ABIInput name="value" type="uint256" />

@@ -2,10 +2,12 @@ import { TextField } from "@mui/material";
 import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { invoke } from "@tauri-apps/api";
+import { formatAbiParameter, type AbiParameter } from "abitype";
+import omit from "lodash-es/omit";
 
 export interface ABIInputProps {
   name: string;
-  type: string;
+  type: AbiParameter | string;
 }
 
 export function ABIInput({ name, type }: ABIInputProps) {
@@ -13,12 +15,15 @@ export function ABIInput({ name, type }: ABIInputProps) {
   const raw = watch(`${name}.raw`);
   const parsed = watch(`${name}.parsed`);
 
+  const humanReadable: string =
+    typeof type === "string" ? type : formatAbiParameter(omit(type, "name"));
+
   useEffect(() => {
     (async () => {
       try {
         const parsed = await invoke<unknown>("abi_parse_argument", {
           data: JSON.parse(raw),
-          type,
+          type: humanReadable,
         });
         setValue(`${name}.parsed`, JSON.stringify(parsed));
       } catch (e: any) {
@@ -26,7 +31,7 @@ export function ABIInput({ name, type }: ABIInputProps) {
         setError(`${name}.raw`, e.toString());
       }
     })();
-  }, [raw, setValue, setError, name, type]);
+  }, [raw, setValue, setError, name, humanReadable]);
 
   return (
     <>

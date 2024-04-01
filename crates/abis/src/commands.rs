@@ -6,12 +6,13 @@ pub struct Encodable(DynSolValue);
 
 #[tauri::command]
 pub fn abi_parse_argument(r#type: &str, data: serde_json::Value) -> Result<Encodable, String> {
-    let dyn_type: DynSolType = r#type.parse().unwrap();
-
-    dyn_type
-        .coerce_json(&data)
-        .map(Encodable)
-        .map_err(|e| e.to_string())
+    match r#type.parse::<DynSolType>() {
+        Ok(dyn_type) => dyn_type
+            .coerce_json(&data)
+            .map(Encodable)
+            .map_err(|e| e.to_string()),
+        Err(e) => Err(format!("Failed to parse type: {}", e)),
+    }
 }
 
 impl Serialize for Encodable {
@@ -36,24 +37,7 @@ impl Serialize for Encodable {
                     seq.serialize_element(&Encodable(elem.clone()))?;
                 }
                 seq.end()
-            } // DynSolValue::Tuple(v) => {
-              //     let mut seq = serializer.serialize_seq(Some(v.len()))?;
-              //     for elem in v.iter() {
-              //         seq.serialize_element(&Encodable(elem.clone()))?;
-              //     }
-              //     seq.end()
-              // }
-              // DynSolValue::CustomStruct {
-              //     name: _,
-              //     prop_names: _,
-              //     tuple: v,
-              // } => {
-              //     let mut seq = serializer.serialize_seq(Some(v.len()))?;
-              //     for elem in v.iter() {
-              //         seq.serialize_element(&Encodable(elem.clone()))?;
-              //     }
-              //     seq.end()
-              // }
+            }
         }
     }
 }
