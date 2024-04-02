@@ -187,10 +187,9 @@ fn resource(app: &tauri::App, resource: &str) -> PathBuf {
     dir.join(resource)
 }
 
-// #[cfg(debug_assertions)]
+#[cfg(debug_assertions)]
 fn config_dir(_app: &tauri::App) -> PathBuf {
-    // PathBuf::from("../dev-data/default/")
-    PathBuf::from("/home/naps62/.config/ethui")
+    PathBuf::from("../dev-data/default/")
 }
 
 #[cfg(not(debug_assertions))]
