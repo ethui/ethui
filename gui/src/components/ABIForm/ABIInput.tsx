@@ -20,9 +20,16 @@ export function ABIInput({ name, type }: ABIInputProps) {
 
   useEffect(() => {
     (async () => {
+      let data;
+      try {
+        data = JSON.parse(raw);
+      } catch (e) {
+        data = JSON.parse(`"${raw}"`);
+      }
+
       try {
         const parsed = await invoke<unknown>("abi_parse_argument", {
-          data: JSON.parse(raw),
+          data,
           type: humanReadable,
         });
         setValue(`${name}.parsed`, JSON.stringify(parsed));
@@ -38,10 +45,9 @@ export function ABIInput({ name, type }: ABIInputProps) {
       <TextField
         sx={{ minWidth: 300 }}
         size="small"
-        label={`${name} (${type})`}
+        label={`${name} (${humanReadable})`}
         {...register(`${name}.raw`)}
       />
-      parsed: {parsed}
     </>
   );
 }
