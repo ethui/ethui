@@ -133,7 +133,7 @@ function ItemForm({ contract, item }: ItemFormProps) {
       });
 
       if (typeof result === "bigint") {
-        setCallResult(result.toString());
+        setCallResult((result as bigint).toString());
       } else if (typeof result === "string") {
         setCallResult(result);
       } else {
