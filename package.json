@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "1.5.2",
+  "version": "1.5.3",
   "license": "MIT",
   "description": "An Ethereum toolkit",
   "scripts": {
