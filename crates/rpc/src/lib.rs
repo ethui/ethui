@@ -197,7 +197,7 @@ impl Handler {
 
     async fn send_call(params: serde_json::Value, ctx: Ctx) -> jsonrpc_core::Result<Bytes> {
         let mut sender = methods::SendCall::build(&ctx)
-            .set_request(params.into())
+            .set_request(params)
             .await
             .unwrap()
             .build()
