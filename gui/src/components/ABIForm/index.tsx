@@ -10,9 +10,10 @@ import { Stack } from "@mui/system";
 import { invoke } from "@tauri-apps/api";
 import { Abi, AbiFunction, formatAbiItem } from "abitype";
 import { SyntheticEvent, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { Address, decodeFunctionResult, encodeFunctionData } from "viem";
 
+import { ABIInput } from "./ABIInput";
 import { useInvoke } from "@/hooks";
 import { useWallets } from "@/store";
 
@@ -79,7 +80,7 @@ export function ABIForm({ chainId, address }: Props) {
 
 interface CallArgs {
   value?: string;
-  args: Record<string, string>;
+  args: Record<string, { raw: string; parsed: string }>;
 }
 
 interface ItemFormProps {
@@ -89,26 +90,16 @@ interface ItemFormProps {
 
 function ItemForm({ contract, item }: ItemFormProps) {
   const account = useWallets((s) => s.address);
-  const { register, handleSubmit, reset } = useForm<CallArgs>();
+  const form = useForm<CallArgs>();
   const [callResult, setCallResult] = useState<string>();
   const [txResult, setTxResult] = useState<string>();
 
-  useEffect(() => reset(), [item, reset]);
+  useEffect(() => form.reset(), [item, form]);
 
   const onSubmit = async (params: CallArgs) => {
-    const args = item.inputs.map((input, i) => {
-      let arg = params.args[input.name || i.toString()];
-
-      // type is an array
-      // TODO: this is a bit of a hack. doesn't deal with more complex cases such as nested arrays
-      // it's a temporary improvement that will need a much larger solution
-      if (input.type.match(/\[\]$/)) {
-        arg = JSON.parse(
-          "[" + arg.replace(/^\s*\[/, "").replace(/\]\s*$/, "") + "]",
-        );
-      }
-      return arg;
-    });
+    const args = item.inputs.map((input, i) =>
+      JSON.parse(params.args[input.name || i.toString()].parsed),
+    );
 
     const data = encodeFunctionData({
       abi: [item],
@@ -154,36 +145,26 @@ function ItemForm({ contract, item }: ItemFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Stack direction="column" spacing={2} justifyContent="flex-start">
-        {item.inputs.map(({ name, type }, index) => (
-          <Box key={index}>
-            <TextField
-              sx={{ minWidth: 300 }}
-              size="small"
-              {...register(`args.${name || index}`)}
-              label={`${name} (${type})`}
+    <FormProvider {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <Stack direction="column" spacing={2} justifyContent="flex-start">
+          {item.inputs.map((item, index) => (
+            <ABIInput
+              key={index}
+              name={`args.${item.name || index}`}
+              type={item}
             />
-          </Box>
-        ))}
-        {item.stateMutability === "payable" && (
-          <Box>
-            <TextField
-              sx={{ minWidth: 300 }}
-              size="small"
-              {...register("value")}
-              label="value"
-            />
-          </Box>
-        )}
-        <Box>
+          ))}
+          {item.stateMutability === "payable" && (
+            <ABIInput name="value" type="uint256" />
+          )}
           <Button sx={{ minWidth: 150 }} variant="contained" type="submit">
             {item.stateMutability == "view" ? "Call" : "Send"}
           </Button>
-        </Box>
-        {callResult && <Typography>{callResult}</Typography>}
-        {txResult && <Typography>{txResult}</Typography>}
-      </Stack>
-    </form>
+          {callResult && <Typography>{callResult}</Typography>}
+          {txResult && <Typography>{txResult}</Typography>}
+        </Stack>
+      </form>
+    </FormProvider>
   );
 }

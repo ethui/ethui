@@ -11,3 +11,12 @@ authors.workspace = true
 [dependencies]
 ethers = { workspace = true }
 serde = { workspace = true }
+serde_json.workspace = true
+tauri = { workspace = true }
+
+alloy-dyn-abi = { version = "0.6.4", features = ["eip712"] }
+alloy-primitives.workspace = true
+
+[dev-dependencies]
+anyhow.workspace = true
+rstest = "0.18.2"

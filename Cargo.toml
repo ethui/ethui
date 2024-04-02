@@ -94,6 +94,7 @@ foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "c312c0d" }
 foundry-common = { git = "https://github.com/foundry-rs/foundry", rev = "c312c0d" }
 foundry-compilers = { git = "https://github.com/foundry-rs/foundry", rev = "c312c0d" }
 hex = "0.4.3"
+anyhow = "1.0.79"
 
 [patch.crates-io]
 revm = { git = "https://github.com/bluealloy/revm", branch = "reth_freeze" }
