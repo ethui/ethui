@@ -103,7 +103,7 @@ jobs:
 
       - run: npm install -g yarn
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           cache: "yarn"
           node-version-file: ".tool-versions"
@@ -128,7 +128,7 @@ jobs:
 
       - run: npm install -g yarn
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           cache: "yarn"
           node-version-file: ".tool-versions"
