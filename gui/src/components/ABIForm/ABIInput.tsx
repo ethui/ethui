@@ -13,7 +13,6 @@ export interface ABIInputProps {
 export function ABIInput({ name, type }: ABIInputProps) {
   const { register, watch, setValue, setError } = useFormContext();
   const raw = watch(`${name}.raw`);
-  const parsed = watch(`${name}.parsed`);
 
   const humanReadable: string =
     typeof type === "string" ? type : formatAbiParameter(omit(type, "name"));
