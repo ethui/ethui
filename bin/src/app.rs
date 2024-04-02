@@ -67,6 +67,7 @@ impl EthUIApp {
                 ethui_dialogs::commands::dialog_get_payload,
                 ethui_dialogs::commands::dialog_send,
                 ethui_rpc::commands::rpc_send_transaction,
+                ethui_rpc::commands::rpc_eth_call,
                 ethui_connections::commands::connections_affinity_for,
                 ethui_connections::commands::connections_set_affinity,
                 ethui_sync::commands::sync_alchemy_is_network_supported,
