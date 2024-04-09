@@ -48,6 +48,7 @@ impl EthUIApp {
                 ethui_db::commands::db_get_contract_abi,
                 ethui_db::commands::db_get_erc20_metadata,
                 ethui_db::commands::db_get_erc20_balances,
+                ethui_db::commands::db_set_erc20_blacklist,
                 ethui_db::commands::db_get_native_balance,
                 ethui_db::commands::db_get_erc721_tokens,
                 ethui_ws::commands::ws_peers_by_domain,

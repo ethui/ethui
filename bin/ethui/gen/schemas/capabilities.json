@@ -1,0 +1,14 @@
+{
+  "capabilities": {
+    "identifier": "capabilities",
+    "description": "",
+    "local": true,
+    "windows": ["*"],
+    "permissions": [
+      "window:allow-start-dragging",
+      "event:allow-listen",
+      "event:allow-unlisten",
+      "os:allow-os-type"
+    ]
+  }
+}
