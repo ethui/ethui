@@ -19,7 +19,7 @@ export function IconAddress({
   const data = getWhitelistedTokenNameAndSymbol(chainId, address);
 
   if (!data && effigy) {
-    return <IconEffigy address={address || "0x0"} />
+    return <IconEffigy address={address || "0x0"} />;
   }
 
   let width = 28;

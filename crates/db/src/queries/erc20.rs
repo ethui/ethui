@@ -1,5 +1,4 @@
-use std::collections::HashSet;
-use std::str::FromStr;
+use std::{collections::HashSet, str::FromStr};
 
 use ethui_types::{Address, TokenBalance, TokenMetadata, U256};
 use tracing::instrument;

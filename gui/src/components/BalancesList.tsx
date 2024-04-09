@@ -1,21 +1,8 @@
-import SendIcon from "@mui/icons-material/Send";
-import {
-  IconButton,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Tooltip,
-} from "@mui/material";
-import truncateEthAddress from "truncate-eth-address";
-import { Address, formatUnits } from "viem";
-import { useState } from "react";
+import { List } from "@mui/material";
 
 import { GeneralSettings } from "@ethui/types/settings";
 import { useInvoke } from "@/hooks";
 import { useBalances, useNetworks } from "@/store";
-import { IconAddress } from "./Icons";
-import { CopyToClipboard, Modal, TransferForm } from "./";
 import { ERC20View } from "./ERC20View";
 
 export function BalancesList() {
@@ -69,4 +56,3 @@ function BalancesERC20() {
     </>
   );
 }
-
