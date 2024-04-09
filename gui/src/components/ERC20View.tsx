@@ -107,6 +107,7 @@ export function ERC20View({
             component="a"
             target="_blank"
             href={`${network.explorer_url}${contract}`}
+            onClick={() => setMenuAnchor(null)}
           >
             Open on explorer
           </MenuItem>
