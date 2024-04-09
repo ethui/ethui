@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT address FROM erc20_blacklist WHERE chain_id = ? AND blacklisted = true",
+  "describe": {
+    "columns": [
+      {
+        "name": "address",
+        "ordinal": 0,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "430ce94ca4734958e9658826b6ce84ca79e77d0af9b5abbf711c4fad08c86055"
+}
