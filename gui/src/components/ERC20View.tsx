@@ -6,6 +6,7 @@ import {
   CardHeader,
   Menu,
   MenuItem,
+  Box,
 } from "@mui/material";
 import {
   Send as SendIcon,
@@ -15,7 +16,7 @@ import { type Address, formatUnits } from "viem";
 import truncateEthAddress from "truncate-eth-address";
 import { invoke } from "@tauri-apps/api";
 
-import { CopyToClipboard, Modal, TransferForm } from "./";
+import { AddressView, CopyToClipboard, Modal, TransferForm } from "./";
 import { IconAddress } from "./Icons";
 import { useNetworks } from "@/store";
 
@@ -74,7 +75,18 @@ export function ERC20View({
             </IconButton>
           </Stack>
         }
-        title={`${symbol} ${contract ? `${truncateEthAddress(contract)}` : ""}`}
+        title={
+          <>
+            <Box component="span" sx={{ mr: 1 }}>
+              {symbol}
+            </Box>
+            {contract && (
+              <>
+                (<AddressView address={contract} />)
+              </>
+            )}
+          </>
+        }
         subheader={
           <CopyToClipboard label={balance.toString()}>
             {truncatedBalance > 0
