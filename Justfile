@@ -38,10 +38,10 @@ ext-dev:
 # icon generation
 #
 icons-prod:
-  ./icon/generate.sh
+  ./icons/generate.sh
 
 icons-dev:
-  ./icon/generate.sh dev
+  ./icons/generate.sh dev
 
 #
 # internal build commands
