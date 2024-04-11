@@ -110,6 +110,8 @@ jobs:
 
       - run: yarn install --frozen-lockfile --network-timeout 1000000
 
+      - run: icons/generate.sh
+
       - uses: tauri-apps/tauri-action@v0
         id: tauri
         env:

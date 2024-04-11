@@ -23,8 +23,3 @@ extension/*.zip
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-
-# icons are generated through ./icons/generate.sh
-bin/icons*
-extension/src/public/icons
-gui/public/logo

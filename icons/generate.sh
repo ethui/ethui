@@ -2,40 +2,27 @@
 
 env=${1:-prod}
 
-tauri() {
-  color=$1
-  cargo tauri icon --output bin/icons icons/symbol-$color.png
-  cargo tauri icon --output bin/icons-attention icons/symbol-$color-attention.png
-}
+# cleanup
+rm -rf gui/public/logo
+rm -rf extension/src/public/icons
+rm -rf bin/icons*
+mkdir -p gui/public/logo
+mkdir -p extension/src/public/icons
 
-gui() {
-  color=$1
-  dest=$2
-  mkdir -p gui/public/logo
-  cp icons/symbol-$color.svg gui/public/logo/symbol-$dest.svg
-  cp icons/symbol-$color-attention.svg gui/public/logo/symbol-$dest-attention.svg
-}
+# white icons for tauri production
+cargo tauri icon --output bin/icons icons/symbol-white.png
+cargo tauri icon --output bin/icons-attention icons/symbol-white-attention.png
 
-extension() {
-  color=$1
-  for size in 16 48 128; do
-    mkdir -p extension/src/public/icons
-    convert icons/symbol-$color.png -resize ${size}x extension/src/public/icons/ethui-${size}.png
-    convert icons/symbol-$color-attention.png -resize ${size}x extension/src/public/icons/ethui-attention-${size}.png
+# purple icons for tauri dev
+cargo tauri icon --output bin/icons-dev icons/symbol-purple.png
+cargo tauri icon --output bin/icons-dev-attention icons/symbol-purple-attention.png
+
+
+cp icons/symbol-{white,black,purple}{,-attention}.svg gui/public/logo/
+
+for size in 16 48 96 128; do
+  for color in purple white black; do
+    convert icons/symbol-$color.png -resize ${size}x extension/src/public/icons/ethui-$color-$size.png
+    convert icons/symbol-$color-attention.png -resize ${size}x extension/src/public/icons/ethui-$color-attention-$size.png
   done
-}
-
-if [[ "$env" == "prod" ]]; then
-  echo "Generating production icons..."
-  tauri "white"
-  gui white white
-  gui black black
-  extension black
-else
-  echo "Generating dev icon..."
-  tauri purple
-  gui purple white
-  gui purple black
-  extension purple
-fi
-
+done

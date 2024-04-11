@@ -40,7 +40,7 @@ export function initializeProvider() {
   announceProvider({
     info: {
       icon,
-      name: "ethui",
+      name: process.env.NODE_ENV === "production" ? "ethui" : "ethui (dev)",
       rdns: "eth.ethui",
       uuid: uuidv4(),
     },
