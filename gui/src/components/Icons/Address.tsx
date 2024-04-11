@@ -18,9 +18,8 @@ export function IconAddress({
 }: Props) {
   const data = getWhitelistedTokenNameAndSymbol(chainId, address);
 
-  if (!data) {
-    if (effigy) return <IconEffigy address={address || "0x0"} />;
-    else return null;
+  if (!data && effigy) {
+    return <IconEffigy address={address || "0x0"} />;
   }
 
   let width = 28;
@@ -33,8 +32,8 @@ export function IconAddress({
         width,
         height: width,
       }}
-      src={urlFor(data.symbol)}
-      alt={data.symbol}
+      src={data && urlFor(data.symbol)}
+      alt={data && data.symbol}
     >
       <Avatar
         sx={{
@@ -42,7 +41,7 @@ export function IconAddress({
           height: width,
         }}
         src={urlFor("generic")}
-        alt={data.symbol}
+        alt={data && data.symbol}
       />
     </Avatar>
   );

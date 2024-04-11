@@ -20,13 +20,25 @@ export function ABIInput({ name, type }: ABIInputProps) {
   useEffect(() => {
     (async () => {
       let data;
-      try {
-        data = JSON.parse(raw);
-      } catch (e) {
+      if (
+        type === "string" ||
+        (typeof type === "object" && type.type === "string")
+      ) {
+        data = raw;
+      } else if (type === "string" || isNaN(parseInt(raw))) {
         data = JSON.parse(`"${raw}"`);
+      } else {
+        data = BigInt(raw);
       }
 
+      data = JSON.parse(
+        JSON.stringify(data, (_k, v) =>
+          ["number", "bigint"].includes(typeof v) ? `0x${v.toString(16)}` : v,
+        ),
+      );
+
       try {
+        // TODO: replace this with a
         const parsed = await invoke<unknown>("abi_parse_argument", {
           data,
           type: humanReadable,
@@ -37,14 +49,14 @@ export function ABIInput({ name, type }: ABIInputProps) {
         setError(`${name}.raw`, e.toString());
       }
     })();
-  }, [raw, setValue, setError, name, humanReadable]);
+  }, [raw, setValue, setError, name, humanReadable, type]);
 
   return (
     <>
       <TextField
         sx={{ minWidth: 300 }}
         size="small"
-        label={`${name} (${humanReadable})`}
+        label={`${name}(${humanReadable})`}
         {...register(`${name}.raw`)}
       />
     </>

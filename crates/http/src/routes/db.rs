@@ -65,7 +65,7 @@ pub(crate) async fn erc20_balances(
     State(Ctx { db }): State<Ctx>,
     Query(AddressChainIdPayload { chain_id, address }): Query<AddressChainIdPayload>,
 ) -> Result<Json<Vec<TokenBalance>>> {
-    Ok(Json(db.get_erc20_balances(chain_id, address).await?))
+    Ok(Json(db.get_erc20_balances(chain_id, address, false).await?))
 }
 
 pub(crate) async fn native_balance(
