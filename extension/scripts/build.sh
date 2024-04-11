@@ -41,7 +41,7 @@ done
 # building
 #
 
-if [[ "$target" =~ ".*-dev" ]]; then
+if ! [[ $target =~ .*dev ]]; then
   export NODE_ENV=production
 fi
 export DIST_DIR=./dist/$target

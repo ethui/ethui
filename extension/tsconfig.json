@@ -4,7 +4,8 @@
     "typeRoots": ["./node_modules/@types", "../node_modules/@types"],
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "types": ["vite/client"]
   },
   "include": ["src", "vite"],
   "exclude": ["dist", "node_modules", "../node_modules"]
