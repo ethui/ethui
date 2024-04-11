@@ -13,7 +13,6 @@ import {
   MoreVert as MoreVertIcon,
 } from "@mui/icons-material";
 import { type Address, formatUnits } from "viem";
-import truncateEthAddress from "truncate-eth-address";
 import { invoke } from "@tauri-apps/api";
 
 import { AddressView, CopyToClipboard, Modal, TransferForm } from "./";
