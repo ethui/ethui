@@ -18,10 +18,6 @@ sqlx:
   sqlx migrate run
   cargo sqlx prepare --workspace
 
-build:
-  yarn extension:build
-  cargo build
-
 fix:
   cargo +nightly fmt --all
   cargo clippy --all --fix --allow-dirty
@@ -37,6 +33,23 @@ ext:
 
 ext-dev:
   yarn run ext:dev
+
+#
+# icon generation
+#
+icons-prod:
+  ./icon/generate.sh
+
+icons-dev:
+  ./icon/generate.sh dev
+
+#
+# internal build commands
+# 
+build:
+  yarn extension:build
+  cargo build
+
 
 clean:
   rm -rf \
