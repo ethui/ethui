@@ -4,6 +4,7 @@ import log from "loglevel";
 import { runtime } from "webextension-polyfill";
 
 import { loadSettings } from "@/settings";
+import { name } from "@/inpage/utils";
 
 declare global {
   interface Document {
@@ -39,12 +40,12 @@ function initProviderForward() {
   }
 
   const inpageStream = new WindowPostMessageStream({
-    name: "ethui:contentscript",
-    target: "ethui:inpage",
+    name: `${name}:contentscript`,
+    target: `${name}:inpage`,
   }) as unknown as Duplex;
 
   // bg stream
-  const bgPort = runtime.connect({ name: "ethui:contentscript" });
+  const bgPort = runtime.connect({ name: `${name}:contentscript` });
 
   window.onbeforeunload = () => {
     bgPort.disconnect();
@@ -59,7 +60,7 @@ function initProviderForward() {
     inpageStream.write(data);
   });
   bgPort.onDisconnect.addListener(() => {
-    log.warn("[ethui - contentscript] disconnected");
+    log.warn(`[${name} - contentscript] disconnected`);
   });
 }
 
@@ -80,6 +81,6 @@ export function injectInPageScript() {
     container.insertBefore(scriptTag, container.children[0]);
     container.removeChild(scriptTag);
   } catch (error) {
-    log.error("ethui: Provider injection failed.", error);
+    log.error(`${name}: Provider injection failed.`, error);
   }
 }

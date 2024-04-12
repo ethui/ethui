@@ -5,6 +5,7 @@ import log from "loglevel";
 import { announceProvider, EIP1193Provider } from "mipd";
 
 import { EthUIProvider } from "./provider";
+import { name } from "./utils";
 
 // URI-encoded SVG logo (symbol-offblack-transparent version of EthUI's logo, 96x96)
 const icon =
@@ -28,8 +29,8 @@ export function init() {
  */
 export function initializeProvider() {
   const connectionStream = new WindowPostMessageStream({
-    name: "ethui:inpage",
-    target: "ethui:contentscript",
+    name: `${name}:inpage`,
+    target: `${name}:contentscript`,
   }) as unknown as Duplex;
 
   const provider = new EthUIProvider(connectionStream);
@@ -40,7 +41,7 @@ export function initializeProvider() {
   announceProvider({
     info: {
       icon,
-      name: process.env.NODE_ENV === "production" ? "ethui" : "ethui (dev)",
+      name,
       rdns: "eth.ethui",
       uuid: uuidv4(),
     },
