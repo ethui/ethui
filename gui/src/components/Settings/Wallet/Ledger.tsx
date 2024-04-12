@@ -3,7 +3,7 @@ import { Alert, AlertTitle, Button, Stack } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { Address } from "abitype";
 import { useEffect, useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
 import { derivationPathSchema, LedgerWallet } from "@ethui/types/wallets";
@@ -57,7 +57,7 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
     form.reset(data);
   };
 
-  const paths = form.watch("paths");
+  const paths = useWatch({ control: form.control, name: "paths" });
   const pathsStr = paths.map(({ path }) => path).join("");
 
   useEffect(() => {
