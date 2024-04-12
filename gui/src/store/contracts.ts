@@ -16,6 +16,7 @@ interface Setters {
   reload: () => Promise<void>;
   add: (chainId: number, address: Address) => Promise<void>;
   setChainId: (chainId?: number) => void;
+  filteredContracts: (filter: string) => Contract[];
 }
 
 type Store = State & Setters;
@@ -39,6 +40,16 @@ const store: StateCreator<Store> = (set, get) => ({
     } catch (err: unknown) {
       errorToast("contracts-add-error", err);
     }
+  },
+
+  filteredContracts(filter: string) {
+    filter = filter.toLowerCase();
+    const { contracts } = get();
+
+    if (filter === "") return contracts;
+    return contracts.filter((contract) =>
+      `${contract.address} ${contract.name}`.toLowerCase().includes(filter),
+    );
   },
 
   setChainId(chainId) {
