@@ -30,8 +30,6 @@ export function ABIForm({ chainId, address }: Props) {
     chainId,
   });
 
-  if (!abi) return null;
-
   const options = abi
     .filter(({ type }) => type === "function")
     .map((item, i) => {

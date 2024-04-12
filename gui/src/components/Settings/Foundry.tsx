@@ -31,8 +31,6 @@ export function SettingsFoundry() {
     [form],
   );
 
-  if (!general) return null;
-
   return (
     <Form form={form} onSubmit={onSubmit} className="flex flex-col gap-4">
       <Stack alignItems="flex-start" spacing={2}>

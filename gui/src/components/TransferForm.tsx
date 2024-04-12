@@ -95,7 +95,7 @@ export function TransferForm({
 
   const currentToken = tokens.get(form.watch("currency") as Address)!;
 
-  if (!network || !address || !currentToken) return null;
+  if (!network || !address) return null;
 
   const onSubmit = async (data: FieldValues) => {
     const { contract } = currentToken;

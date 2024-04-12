@@ -13,8 +13,6 @@ export function MsgSignDialog() {
   const { id } = Route.useParams();
   const { data, send } = useDialog<Record<string, string>>(id);
 
-  if (!data) return null;
-
   const msg = data["Raw"] || JSON.stringify(data["Typed"], null, 2);
 
   return (
