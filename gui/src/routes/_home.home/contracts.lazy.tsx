@@ -1,24 +1,20 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  Button,
   Chip,
   CircularProgress,
   Stack,
   TextField,
   SpeedDial,
   SpeedDialIcon,
-  Select,
-  MenuItem,
-  FormControl,
 } from "@mui/material";
-import { Controller, FieldValues, useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import debounce from "lodash-es/debounce";
 
 import { Contract } from "@ethui/types";
-import { ChainView } from "@ethui/react/components";
+import { ChainView, Form } from "@ethui/react/components";
 import {
   Modal,
   AddressView,
@@ -109,12 +105,7 @@ function AddressForm() {
 
   const add = useContracts((s) => s.add);
 
-  const {
-    handleSubmit,
-    formState: { isValid, errors, isSubmitting },
-    control,
-    register,
-  } = useForm({
+  const form = useForm({
     mode: "onChange",
     resolver: zodResolver(schema),
     defaultValues: { chainId: currentNetwork?.chain_id } as Schema,
@@ -125,47 +116,30 @@ function AddressForm() {
   if (!currentNetwork) return null;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <Form form={form} onSubmit={onSubmit}>
       <Stack alignItems="flex-start" spacing={2}>
-        <FormControl>
-          <Controller
-            name="chainId"
-            defaultValue={currentNetwork.chain_id}
-            control={control}
-            render={({ field }) => (
-              <Select
-                label="Network"
-                size="small"
-                error={!!errors.chainId}
-                {...field}
-              >
-                {networks.map(({ chain_id, name }) => (
-                  <MenuItem key={chain_id} value={chain_id}>
-                    <ChainView chainId={chain_id} name={name} />
-                  </MenuItem>
-                ))}
-              </Select>
-            )}
-          />
-        </FormControl>
-
-        <TextField
-          label="Contract Address"
-          size="small"
-          error={!!errors.address}
-          helperText={errors.address?.message?.toString() || ""}
-          fullWidth
-          {...register("address")}
+        <Form.Select
+          label="Network"
+          name="chainId"
+          defaultValue={currentNetwork.chain_id}
+          items={networks}
+          toValue={(n) => n.chain_id.toString()}
+          render={({ chain_id, name }) => (
+            <ChainView chainId={chain_id} name={name} />
+          )}
         />
 
-        <Button
-          variant="contained"
-          type="submit"
-          disabled={!isValid || isSubmitting}
-        >
-          {isSubmitting ? <CircularProgress /> : "Add"}
-        </Button>
+        <Form.Text
+          label="Contract Address"
+          name="address"
+          size="small"
+          fullWidth
+        />
+
+        <Form.Submit
+          label={form.formState.isSubmitting ? <CircularProgress /> : "Add"}
+        />
       </Stack>
-    </form>
+    </Form>
   );
 }

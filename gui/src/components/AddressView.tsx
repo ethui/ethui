@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Stack, TextField } from "@mui/material";
+import { Stack } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
@@ -7,7 +7,7 @@ import truncateEthAddress from "truncate-eth-address";
 import { Address, getAddress } from "viem";
 import { z } from "zod";
 
-import { Typography } from "@ethui/react/components";
+import { Form, Typography } from "@ethui/react/components";
 import { useInvoke } from "@/hooks";
 import { ContextMenuWithTauri, Modal } from "./";
 import { useNetworks } from "@/store";
@@ -98,11 +98,7 @@ interface AliasFormProps {
 }
 
 function AliasForm({ address, alias, refetch, onSubmit }: AliasFormProps) {
-  const {
-    handleSubmit,
-    register,
-    formState: { isDirty, isValid, errors },
-  } = useForm({
+  const form = useForm({
     mode: "onChange",
     resolver: zodResolver(schema),
   });
@@ -114,26 +110,13 @@ function AliasForm({ address, alias, refetch, onSubmit }: AliasFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(submit)}>
+    <Form form={form} onSubmit={submit}>
       <Stack alignItems="flex-start" spacing={2}>
         <Typography>Set alias for {truncateEthAddress(address)}</Typography>
-        <TextField
-          label="Alias"
-          defaultValue={alias}
-          error={!!errors.alias}
-          helperText={errors.alias?.message?.toString() || ""}
-          fullWidth
-          {...register("alias")}
-        />
+        <Form.Text label="Alias" name="alias" defaultValue={alias} />
 
-        <Button
-          variant="contained"
-          type="submit"
-          disabled={!isDirty || !isValid}
-        >
-          Save
-        </Button>
+        <Form.Submit label="Save" />
       </Stack>
-    </form>
+    </Form>
   );
 }
