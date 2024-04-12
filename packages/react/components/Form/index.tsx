@@ -9,6 +9,8 @@ import {
   TextField,
   Select,
   MenuItem,
+  StandardTextFieldProps,
+  BaseSelectProps as MuiBaseSelectProps,
 } from "@mui/material";
 import {
   Controller,
@@ -44,17 +46,15 @@ export function Form<S extends FieldValues>({
   );
 }
 
-interface BaseInputProps<T extends FieldValues> {
+interface BaseInputProps<T extends FieldValues> extends StandardTextFieldProps {
   label?: string;
   name: Path<T>;
-  autoFocus?: boolean;
-  fullWidth?: boolean;
 }
 
 function Text<T extends FieldValues>({
   name,
   label,
-  fullWidth = false,
+  ...props
 }: BaseInputProps<T>) {
   const { register, formState } = useFormContext();
   const error = formState.errors[name];
@@ -65,11 +65,65 @@ function Text<T extends FieldValues>({
       {...register(name)}
       error={!!error}
       helperText={error?.message?.toString()}
-      fullWidth={fullWidth}
+      {...props}
     />
   );
 }
 Form.Text = Text;
+
+function Number<T extends FieldValues>({
+  name,
+  label,
+  ...props
+}: BaseInputProps<T>) {
+  const { register, formState } = useFormContext();
+  const error = formState.errors[name];
+
+  return (
+    <TextField
+      label={label}
+      {...register(name, { valueAsNumber: true })}
+      type="number"
+      error={!!error}
+      helperText={error?.message?.toString()}
+      {...props}
+    />
+  );
+}
+Form.Number = Number;
+
+interface BigIntProps<T extends FieldValues> extends BaseInputProps<T> {
+  decimals: number;
+}
+
+function BigIntField<T extends FieldValues>({
+  name,
+  label,
+  decimals = 18,
+  ...props
+}: BigIntProps<T>) {
+  const multiplier = 10n ** BigInt(decimals);
+  const { control, formState } = useFormContext();
+  const error = formState.errors[name];
+
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field }) => (
+        <TextField
+          label={label}
+          type="number"
+          error={!!error}
+          {...props}
+          onChange={(e) => field.onChange(BigInt(e.target.value) * multiplier)}
+          value={(BigInt(field.value) / multiplier).toString()}
+        />
+      )}
+    />
+  );
+}
+Form.BigInt = BigIntField;
 
 function Checkbox<T extends FieldValues>({ name, label }: BaseInputProps<T>) {
   const { control, formState } = useFormContext();
@@ -122,13 +176,14 @@ interface SelectProps<
   T extends FieldValues,
   TName extends FieldPath<T> = FieldPath<T>,
   Item extends { toString: () => string } = string,
-> {
+> extends MuiBaseSelectProps {
   name: TName;
   label: string;
   defaultValue?: FieldPathValue<T, TName>;
   items: Item[];
   toValue?: (v: Item) => string;
   render?: (v: Item) => React.ReactNode;
+  fullWidth?: boolean;
 }
 
 function SelectInput<
@@ -142,12 +197,14 @@ function SelectInput<
   items,
   toValue = (v) => v.toString(),
   render = (v) => v.toString(),
+  fullWidth = false,
+  ...props
 }: SelectProps<T, TName, Item>) {
   const { control, formState } = useFormContext();
   const error = formState.errors[name];
 
   return (
-    <FormControl>
+    <FormControl fullWidth={fullWidth}>
       <InputLabel id={name}>{label}</InputLabel>
       <Controller
         name={name}
@@ -158,8 +215,8 @@ function SelectInput<
             aria-labelledby={name}
             size="small"
             label={label}
-            sx={{ minWidth: 120 }}
             {...field}
+            {...props}
           >
             {items.map((v: Item) => (
               <MenuItem value={toValue(v)}>{render(v)}</MenuItem>

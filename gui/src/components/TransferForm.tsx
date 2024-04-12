@@ -1,18 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Alert,
-  Button,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Alert, Button, Stack, Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { useEffect, useState } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 import {
   AbiItem,
   Address,
@@ -23,13 +13,13 @@ import {
 } from "viem";
 import { z } from "zod";
 
-import { BigIntField } from "@ethui/react/components";
+import { Form } from "@ethui/react/components";
 import { addressSchema } from "@ethui/types/wallets";
 import { useBalances, useNetworks, useWallets } from "@/store";
 
 interface Token {
   currency?: string;
-  decimals?: number;
+  decimals: number;
   balance: bigint;
   contract: Address;
 }
@@ -78,7 +68,7 @@ export function TransferForm({
   }, [setTokens, native, erc20s, network]);
 
   const schema = z.object({
-    to: addressSchema,
+    to: addressSchema.optional(),
     currency: addressSchema,
     value: z
       .bigint()
@@ -92,24 +82,18 @@ export function TransferForm({
       }),
   });
 
-  const {
-    handleSubmit,
-    register,
-    control,
-    watch,
-    formState: { isDirty, isValid, errors },
-  } = useForm({
+  type Schema = z.infer<typeof schema>;
+
+  const form = useForm<Schema>({
     mode: "onChange",
     resolver: zodResolver(schema),
     defaultValues: {
       currency: contract,
-      to: null,
       value: 0n,
     },
   });
 
-  const currentContract = watch("currency");
-  const currentToken = tokens.get(currentContract)!;
+  const currentToken = tokens.get(form.watch("currency") as Address)!;
 
   if (!network || !address || !currentToken) return null;
 
@@ -126,54 +110,31 @@ export function TransferForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <Form form={form} onSubmit={onSubmit}>
       <Stack alignItems="flex-start" spacing={2}>
         <Typography>Transfer token</Typography>
 
-        <FormControl fullWidth>
-          <InputLabel id="select-token-label">Token</InputLabel>
-          <Controller
-            name="currency"
-            control={control}
-            render={({ field }) => (
-              <Select
-                aria-labelledby="currency"
-                label="Currency"
-                sx={{ minWidth: 120 }}
-                {...field}
-              >
-                {Array.from(tokens.values()).map(({ currency, contract }) => (
-                  <MenuItem key={contract || ""} value={contract}>
-                    {currency}
-                  </MenuItem>
-                ))}
-              </Select>
-            )}
-          />
-        </FormControl>
-
-        {currentToken?.decimals && (
-          <Typography variant="body2">
-            Balance: {formatUnits(currentToken.balance, currentToken.decimals)}
-          </Typography>
-        )}
-
-        <TextField
-          label="To"
-          error={!!errors.to}
-          helperText={errors.to?.message?.toString() || ""}
+        <Form.Select
           fullWidth
-          {...register("to")}
+          name="currency"
+          label="Currency"
+          items={Array.from(tokens.values())}
+          toValue={(v) => v.contract}
+          render={(v) => v.currency}
+          sx={{ minWidth: 120 }}
         />
 
-        {currentToken?.decimals && (
-          <BigIntField
-            name="value"
-            control={control}
-            decimals={currentToken.decimals}
-            error={errors.value}
-          />
-        )}
+        <Typography variant="body2">
+          Balance: {formatUnits(currentToken.balance, currentToken.decimals)}
+        </Typography>
+
+        <Form.Text label="To" name="to" fullWidth />
+        <Form.BigInt
+          label="Amount"
+          name="value"
+          fullWidth
+          decimals={currentToken.decimals}
+        />
 
         {result && (
           <Alert
@@ -191,16 +152,11 @@ export function TransferForm({
           <Button variant="outlined" color="error" onClick={onClose}>
             Close
           </Button>
-          <Button
-            variant="contained"
-            type="submit"
-            disabled={!isDirty || !isValid}
-          >
-            Send
-          </Button>
+
+          <Form.Submit label="Send" />
         </Stack>
       </Stack>
-    </form>
+    </Form>
   );
 }
 

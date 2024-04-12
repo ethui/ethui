@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Stack } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -54,19 +54,14 @@ export function SettingsGeneral() {
     defaultValues: general,
   });
 
-  const { reset } = form;
-
-  // default values are async, need to reset once they're ready
-  useEffect(() => reset(general), [reset, general]);
-
   const onSubmit = useCallback(
     async (params: FieldValues) => {
       await invoke("settings_set", {
         params,
       });
-      reset(params);
+      form.reset(params);
     },
-    [reset],
+    [form],
   );
 
   if (!general) return null;
