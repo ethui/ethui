@@ -1,5 +1,5 @@
 [workspace.package]
-version = "1.5.2"
+version = "1.6.0"
 edition = "2021"
 license-file = "./LICENSE"
 homepage = "https://github.com/ethui"
@@ -10,7 +10,7 @@ authors = ["Miguel Palhas <mpalhas@gmail.com>"]
 [workspace]
 resolver = "2"
 members = [
-  "bin/ethui",
+  "bin",
   "crates/forge",
   "crates/crypto",
   "crates/settings",
@@ -31,7 +31,7 @@ members = [
   "crates/exchange-rates",
   "crates/args",
 ]
-default-members = ["bin/ethui"]
+default-members = ["bin"]
 
 [workspace.dependencies]
 ethui-forge = { path = "crates/forge" }
@@ -94,6 +94,7 @@ foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "c312c0d" }
 foundry-common = { git = "https://github.com/foundry-rs/foundry", rev = "c312c0d" }
 foundry-compilers = { git = "https://github.com/foundry-rs/foundry", rev = "c312c0d" }
 hex = "0.4.3"
+anyhow = "1.0.79"
 
 [patch.crates-io]
 revm = { git = "https://github.com/bluealloy/revm", branch = "reth_freeze" }

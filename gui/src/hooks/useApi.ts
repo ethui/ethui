@@ -1,12 +1,12 @@
 import { type UseQueryResult, useQuery } from "@tanstack/react-query";
 
-const { VITE_ethui_HTTP_PORT, VITE_ethui_DEV_HTTP_PORT, NODE_ENV } = import.meta
+const { VITE_ETHUI_HTTP_PORT, VITE_ETHUI_DEV_HTTP_PORT, NODE_ENV } = import.meta
   .env;
 
 const PORT =
   NODE_ENV === "production"
-    ? VITE_ethui_HTTP_PORT || "9003"
-    : VITE_ethui_DEV_HTTP_PORT || "9103";
+    ? VITE_ETHUI_HTTP_PORT || "9003"
+    : VITE_ETHUI_DEV_HTTP_PORT || "9103";
 
 type Parameters = Record<string, string | bigint | number | undefined>;
 

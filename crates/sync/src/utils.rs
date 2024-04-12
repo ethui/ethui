@@ -19,6 +19,7 @@ pub(crate) async fn fetch_full_tx(chain_id: u32, hash: B256) -> Result<()> {
 
     let tx = Tx {
         hash,
+        trace_address: None,
         block_number: receipt.block_number.map(|b| b.as_u64()),
         from: tx.from.to_alloy(),
         to: tx.to.map(|a| a.to_alloy()),

@@ -1,10 +1,10 @@
 {
   "private": true,
-  "version": "1.5.2",
+  "version": "1.6.0",
   "license": "MIT",
   "description": "An Ethereum toolkit",
   "scripts": {
-    "app:dev": "rm -rf target/debug/db.*; RUST_LOG=ethui=debug cargo tauri dev --config bin/ethui/tauri-dev.conf.json --features debug",
+    "app:dev": "rm -rf target/debug/db.*; RUST_LOG=ethui=debug cargo tauri dev --config bin/tauri-dev.conf.json --features debug",
     "gui:build": "yarn workspace @ethui/gui build",
     "storybook": "yarn workspace @ethui/react storybook",
     "ext:dev": "yarn workspace @ethui/extension dev",

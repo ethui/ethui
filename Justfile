@@ -5,7 +5,7 @@ alias f := fix
 alias l := lint
 
 dev *args='':
-  cargo tauri dev --config bin/ethui/tauri-dev.conf.json --features ${ETHUI_FEATURES:-debug} -- -- -- $@
+  cargo tauri dev --config bin/tauri-dev.conf.json --features ${ETHUI_FEATURES:-debug} -- -- -- $@
 
 setup:
   yarn
@@ -17,10 +17,6 @@ sqlx:
   sqlx database create
   sqlx migrate run
   cargo sqlx prepare --workspace
-
-build:
-  yarn extension:build
-  cargo build
 
 fix:
   cargo +nightly fmt --all
@@ -37,6 +33,20 @@ ext:
 
 ext-dev:
   yarn run ext:dev
+
+#
+# icon generation
+#
+icons:
+  ./icons/generate.sh
+
+#
+# internal build commands
+# 
+build:
+  yarn extension:build
+  cargo build
+
 
 clean:
   rm -rf \

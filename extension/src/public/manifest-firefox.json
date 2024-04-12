@@ -37,10 +37,10 @@
   ],
   "permissions": ["storage", "scripting"],
   "icons": {
-    "16": "icons/ethui-16.png",
-    "48": "icons/ethui-48.png",
-    "96": "icons/ethui-96.png",
-    "128": "icons/ethui-128.png"
+    "16": "icons/ethui-black-16.png",
+    "48": "icons/ethui-black-48.png",
+    "96": "icons/ethui-black-96.png",
+    "128": "icons/ethui-black-128.png"
   },
   "browser_specific_settings": {
     "gecko": {

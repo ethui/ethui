@@ -1,0 +1,51 @@
+{
+  "productName": "iron",
+  "version": "../../package.json",
+  "identifier": "dev.ethui",
+  "build": {
+    "beforeDevCommand": "yarn workspace @ethui/gui dev",
+    "beforeBuildCommand": "yarn workspace @ethui/gui build",
+    "frontendDist": "../gui/dist",
+    "devUrl": "http://localhost:1420"
+  },
+  "app": {
+    "trayIcon": {
+  "package": {
+    "productName": "ethui",
+    "version": "../package.json"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": true,
+      "shell": {
+        "all": false,
+        "open": true
+      },
+      "fs": {
+        "scope": ["$APPDATA/*"]
+      }
+    },
+    "bundle": {
+      "active": true,
+      "identifier": "ethui",
+      "targets": "all"
+    },
+    "systemTray": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": true
+    },
+    "security": {
+      "csp": {
+        "default-src": "'self'",
+        "font-src": ["'self'", "data:"],
+        "style-src": ["'self'", "'unsafe-inline'"],
+        "connect-src": ["https://api.github.com"],
+        "img-src": ["'self'", "https://effigy.im", "data:"]
+      }
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all"
+  }
+}

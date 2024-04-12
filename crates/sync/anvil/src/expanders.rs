@@ -63,6 +63,7 @@ async fn expand_trace(
             vec![
                 Tx {
                     hash: trace.transaction_hash.unwrap().to_alloy(),
+                    trace_address: Some(trace.trace_address.clone()),
                     position: trace.transaction_position,
                     from: from.to_alloy(),
                     to: None,
@@ -106,6 +107,7 @@ async fn expand_trace(
             0,
         ) => vec![Tx {
             hash: trace.transaction_hash.unwrap().to_alloy(),
+            trace_address: Some(trace.trace_address.clone()),
             position: trace.transaction_position,
             from: from.to_alloy(),
             to: Some(to.to_alloy()),

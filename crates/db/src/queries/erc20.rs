@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{collections::HashSet, str::FromStr};
 
 use ethui_types::{Address, TokenBalance, TokenMetadata, U256};
 use tracing::instrument;
@@ -99,6 +99,7 @@ impl DbInner {
         &self,
         chain_id: u32,
         address: Address,
+        include_blacklisted: bool,
     ) -> Result<Vec<TokenBalance>> {
         let address_str = address.to_string();
 
@@ -114,6 +115,21 @@ impl DbInner {
         .fetch_all(self.pool())
         .await?;
 
+        let blacklist: HashSet<Address> = if include_blacklisted {
+            Default::default()
+        } else {
+            let rows = sqlx::query!(
+                r#"SELECT address FROM erc20_blacklist WHERE chain_id = ? AND blacklisted = true"#,
+                chain_id
+            )
+            .fetch_all(self.pool())
+            .await?;
+
+            rows.into_iter()
+                .map(|r| Address::from_str(&r.address).unwrap())
+                .collect()
+        };
+
         Ok(rows
             .into_iter()
             .map(|r| TokenBalance {
@@ -126,6 +142,7 @@ impl DbInner {
                     decimals: r.decimals.map(|r| r as u8),
                 },
             })
+            .filter(|b| !blacklist.contains(&b.contract))
             .collect())
     }
 
@@ -194,6 +211,27 @@ impl DbInner {
             metadata.decimals,
             metadata.name,
             metadata.symbol
+        )
+        .execute(self.pool())
+        .await?;
+
+        Ok(())
+    }
+
+    pub async fn set_erc20_blacklist(
+        &self,
+        chain_id: u32,
+        address: Address,
+        blacklisted: bool,
+    ) -> Result<()> {
+        let address = address.to_string();
+
+        sqlx::query!(
+            r#"INSERT INTO erc20_blacklist (chain_id,address,blacklisted) VALUES (?,?,?) ON CONFLICT DO UPDATE set blacklisted = ?"#,
+            chain_id,
+            address,
+            blacklisted,
+            blacklisted
         )
         .execute(self.pool())
         .await?;

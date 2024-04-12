@@ -7,8 +7,8 @@ export interface Settings {
 }
 
 export const defaultSettings: Settings = {
-  logLevel: "info",
-  endpoint: "ws://localhost:9002",
+  logLevel: "debug",
+  endpoint: `ws://localhost:9002`,
 };
 
 export async function loadSettings() {

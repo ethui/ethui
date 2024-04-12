@@ -53,9 +53,11 @@ pub async fn db_get_erc20_metadata(
 pub async fn db_get_erc20_balances(
     chain_id: u32,
     address: Address,
+    include_blacklisted: Option<bool>,
     db: tauri::State<'_, Db>,
 ) -> Result<Vec<TokenBalance>> {
-    db.get_erc20_balances(chain_id, address).await
+    db.get_erc20_balances(chain_id, address, include_blacklisted.unwrap_or_default())
+        .await
 }
 
 #[tauri::command]
@@ -93,9 +95,6 @@ pub async fn db_insert_contract(
         .await?
         .map(|abi| serde_json::to_string(&abi).unwrap());
 
-    // self.window_snd.send(UINotify::BalancesUpdated.into())?;
-    // send ContractsUpdated event to UI using ethui_broadcast
-
     db.insert_contract_with_abi(chain_id, address, abi, name)
         .await?;
 
@@ -111,4 +110,18 @@ pub async fn db_get_erc721_tokens(
     db: tauri::State<'_, Db>,
 ) -> Result<Vec<Erc721TokenData>> {
     db.get_erc721_tokens(chain_id, owner).await
+}
+
+#[tauri::command]
+pub async fn db_set_erc20_blacklist(
+    chain_id: u32,
+    address: Address,
+    blacklisted: bool,
+    db: tauri::State<'_, Db>,
+) -> Result<()> {
+    db.set_erc20_blacklist(chain_id, address, blacklisted)
+        .await?;
+    ethui_broadcast::ui_notify(UINotify::BalancesUpdated).await;
+
+    Ok(())
 }

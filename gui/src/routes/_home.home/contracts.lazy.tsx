@@ -5,20 +5,28 @@ import {
   CircularProgress,
   Stack,
   TextField,
+  SpeedDial,
+  SpeedDialIcon,
+  Select,
+  MenuItem,
+  FormControl,
 } from "@mui/material";
-import { FieldValues, useForm } from "react-hook-form";
+import { Controller, FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 import { createLazyFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 
 import { Contract } from "@ethui/types";
-import { useContracts, useNetworks } from "@/store";
+import { ChainView } from "@ethui/react/components";
 import {
-  ABIForm,
+  Modal,
   AddressView,
+  ABIForm,
   Accordion,
   AccordionDetails,
   AccordionSummary,
-} from "@/components";
+} from "@/components/";
+import { useContracts, useNetworks } from "@/store";
 import { Navbar } from "@/components/Home/Navbar";
 
 export const Route = createLazyFileRoute("/_home/home/contracts")({
@@ -26,16 +34,26 @@ export const Route = createLazyFileRoute("/_home/home/contracts")({
 });
 
 export function Contracts() {
-  const chainId = useNetworks((s) => s.current?.chain_id);
   const contracts = useContracts((s) => s.contracts);
+  const [addContractOpen, setAddContractOpen] = useState(false);
 
   return (
     <>
       <Navbar>Contracts</Navbar>
-      {chainId != 31337 && <AddressForm />}
       {Array.from(contracts || []).map((contract) => (
         <ContractView key={contract.address} contract={contract} />
       ))}
+
+      <SpeedDial
+        ariaLabel="Add contract"
+        sx={{ position: "absolute", bottom: 16, right: 16 }}
+        icon={<SpeedDialIcon />}
+        onClick={() => setAddContractOpen(true)}
+      ></SpeedDial>
+
+      <Modal open={addContractOpen} onClose={() => setAddContractOpen(false)}>
+        <AddressForm />
+      </Modal>
     </>
   );
 }
@@ -49,7 +67,7 @@ function ContractView({
     <Accordion>
       <AccordionSummary>
         <AddressView address={address} />
-        <Chip sx={{ marginLeft: 2 }} label={name} />
+        {name && <Chip sx={{ marginLeft: 2 }} label={name} />}
       </AccordionSummary>
       <AccordionDetails>
         <ABIForm address={address} chainId={chainId} />
@@ -59,33 +77,68 @@ function ContractView({
 }
 
 function AddressForm() {
+  const [networks, currentNetwork] = useNetworks((s) => [
+    s.networks,
+    s.current,
+  ]);
   const schema = z.object({
+    chainId: z.number(),
     address: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid format"),
   });
+
+  type Schema = z.infer<typeof schema>;
 
   const add = useContracts((s) => s.add);
 
   const {
     handleSubmit,
     formState: { isValid, errors, isSubmitting },
+    control,
     register,
   } = useForm({
     mode: "onChange",
     resolver: zodResolver(schema),
+    defaultValues: { chainId: currentNetwork?.chain_id } as Schema,
   });
 
-  const onSubmit = (data: FieldValues) => add(data.address);
+  const onSubmit = (data: FieldValues) => add(data.chainId, data.address);
+
+  if (!currentNetwork) return null;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Stack direction="row" spacing={2}>
+      <Stack alignItems="flex-start" spacing={2}>
+        <FormControl>
+          <Controller
+            name="chainId"
+            defaultValue={currentNetwork.chain_id}
+            control={control}
+            render={({ field }) => (
+              <Select
+                label="Network"
+                size="small"
+                error={!!errors.chainId}
+                {...field}
+              >
+                {networks.map(({ chain_id, name }) => (
+                  <MenuItem key={chain_id} value={chain_id}>
+                    <ChainView chainId={chain_id} name={name} />
+                  </MenuItem>
+                ))}
+              </Select>
+            )}
+          />
+        </FormControl>
+
         <TextField
           label="Contract Address"
+          size="small"
           error={!!errors.address}
           helperText={errors.address?.message?.toString() || ""}
           fullWidth
           {...register("address")}
         />
+
         <Button
           variant="contained"
           type="submit"

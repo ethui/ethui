@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT INTO erc20_blacklist (chain_id,address,blacklisted) VALUES (?,?,?) ON CONFLICT DO UPDATE set blacklisted = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 4
+    },
+    "nullable": []
+  },
+  "hash": "458e20979f3840e4dfe1f24cdbd68f64c029090fbe6ace1ec9635ab6ac7f5e9b"
+}

@@ -1,8 +1,12 @@
 import { useTheme } from "@/store/theme";
 
+const { NODE_ENV } = import.meta.env;
+
 export function Logo({ width }: { width: number }) {
   const darkMode = useTheme((s) => s.mode === "dark");
-  const logo = darkMode ? "/logo/logo-white.svg" : "/logo/logo-black.svg";
+  const color =
+    NODE_ENV === "production" ? (darkMode ? "white" : "black") : "purple";
+  const logo = `/logo/symbol-${color}.svg`;
 
   return <img width={width} src={logo} />;
 }

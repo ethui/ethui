@@ -1,0 +1,29 @@
+{
+  "productName": "ethui (dev)",
+  "version": "../package.json",
+  "identifier": "dev.ethui.dev-build",
+  "build": {
+    "beforeDevCommand": "yarn workspace @ethui/gui dev",
+    "beforeBuildCommand": "yarn workspace @ethui/gui build",
+    "frontendDist": "../gui/dist",
+    "devUrl": "http://localhost:1420"
+  },
+  "app": {
+    "trayIcon": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": true
+    },
+    "security": {
+      "csp": {
+        "default-src": "'self'",
+        "font-src": ["'self'", "data:"],
+        "style-src": ["'self'", "'unsafe-inline'"],
+        "connect-src": ["https://api.github.com"]
+      }
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all"
+  }
+}
