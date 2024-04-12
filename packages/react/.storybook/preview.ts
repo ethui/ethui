@@ -11,7 +11,6 @@ import "@fontsource/material-icons";
 import "@fontsource/roboto-mono/400.css";
 
 const preview: Preview = {
-  actions: { argTypesRegex: "^on[A-Z].*" },
   controls: {
     expanded: true,
     hideNoControlsWarning: true,
