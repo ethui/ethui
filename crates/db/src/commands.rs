@@ -95,8 +95,6 @@ pub async fn db_insert_contract(
         .await?
         .map(|abi| serde_json::to_string(&abi).unwrap());
 
-    // self.window_snd.send(UINotify::BalancesUpdated.into())?;
-
     db.insert_contract_with_abi(chain_id, address, abi, name)
         .await?;
 

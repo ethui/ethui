@@ -126,6 +126,7 @@ async fn handle_message(
         return Ok(());
     }
 
+    dbg!(&text);
     let reply = handler.handle(serde_json::from_str(&text).unwrap()).await;
     let reply = reply
         .map(|r| serde_json::to_string(&r).unwrap())
