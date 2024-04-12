@@ -49,11 +49,13 @@ export function Form<S extends FieldValues>({
 interface BaseInputProps<T extends FieldValues> extends StandardTextFieldProps {
   label?: string;
   name: Path<T>;
+  helperText?: string;
 }
 
 function Text<T extends FieldValues>({
   name,
   label,
+  helperText = "",
   ...props
 }: BaseInputProps<T>) {
   const { register, formState } = useFormContext();
@@ -64,7 +66,7 @@ function Text<T extends FieldValues>({
       label={label}
       {...register(name)}
       error={!!error}
-      helperText={error?.message?.toString()}
+      helperText={error?.message?.toString() || helperText}
       {...props}
     />
   );
@@ -150,7 +152,7 @@ function Checkbox<T extends FieldValues>({ name, label }: BaseInputProps<T>) {
 Form.Checkbox = Checkbox;
 
 interface SubmitProps {
-  label: string;
+  label: React.ReactNode;
 }
 
 function Submit({ label }: SubmitProps) {
