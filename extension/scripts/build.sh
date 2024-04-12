@@ -4,7 +4,7 @@
 #
 # defaults
 #
-target=chrome
+target=chrome-dev
 version=0.0.0
 
 echo "$@"
@@ -41,7 +41,9 @@ done
 # building
 #
 
-export NODE_ENV=production
+if ! [[ $target =~ .*dev ]]; then
+  export NODE_ENV=production
+fi
 export DIST_DIR=./dist/$target
 rm -rf $DIST_DIR
 
@@ -69,6 +71,11 @@ sed "${sed_args[@]}" "s/%VERSION%/$version/g" $DIST_DIR/manifest.json
 
 # create crx / xpi
 case $target in
+  # builds and publishes to the chrome extension store
+  chrome-dev)
+    yarn run crx pack $DIST_DIR -o ./dist/chrome-dev-v$version.crx
+    ;;
+
   # builds and publishes to the chrome extension store
   chrome)
     yarn run crx pack $DIST_DIR -o ./dist/chrome-v$version.crx
