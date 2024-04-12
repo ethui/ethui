@@ -15,6 +15,7 @@ import { Controller, FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import debounce from "lodash-es/debounce";
 
 import { Contract } from "@ethui/types";
 import { ChainView } from "@ethui/react/components";
@@ -34,12 +35,16 @@ export const Route = createLazyFileRoute("/_home/home/contracts")({
 });
 
 export function Contracts() {
-  const contracts = useContracts((s) => s.contracts);
+  const [filter, setFilter] = useState("");
+  const contracts = useContracts((s) => s.filteredContracts(filter));
   const [addContractOpen, setAddContractOpen] = useState(false);
 
   return (
     <>
       <Navbar>Contracts</Navbar>
+
+      <Filter onChange={(f) => setFilter(f)} />
+
       {Array.from(contracts || []).map((contract) => (
         <ContractView key={contract.address} contract={contract} />
       ))}
@@ -55,6 +60,20 @@ export function Contracts() {
         <AddressForm />
       </Modal>
     </>
+  );
+}
+
+function Filter({ onChange }: { onChange: (f: string) => void }) {
+  return (
+    <form>
+      <Stack direction="row" alignItems="stretch" spacing={2}>
+        <TextField
+          onChange={debounce((e) => onChange(e.target.value), 100)}
+          fullWidth
+          placeholder="Filter..."
+        />
+      </Stack>
+    </form>
   );
 }
 
