@@ -30,6 +30,7 @@ export function SettingsWallets({ extraAction }: Props) {
   const wallets = useWallets((s) => s.wallets);
   const [newType, setNewType] = useState<Wallet["type"] | null>(null);
 
+  if (!wallets) return null;
 
   const startNew = (type: Wallet["type"]) => {
     setNewType(type);

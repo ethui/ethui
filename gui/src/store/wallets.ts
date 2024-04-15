@@ -43,7 +43,8 @@ const store: StateCreator<Store> = (set, get) => ({
   async setCurrentWallet(name: string) {
     const { wallets, currentWallet } = get();
     const idx = (wallets || []).findIndex((w) => w.name === name);
-    if (!currentWallet || wallets[idx].name === currentWallet.name) return;
+    if (!wallets || !currentWallet || wallets[idx].name === currentWallet.name)
+      return;
 
     await invoke("wallets_set_current_wallet", { idx });
     get().reload();

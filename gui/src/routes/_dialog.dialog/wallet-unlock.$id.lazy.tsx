@@ -47,6 +47,8 @@ export function WalletUnlockDialog() {
     };
   }, [attempts, listen]);
 
+  if (!data) return null;
+
   const { name } = data;
 
   const onSubmit = (data: FieldValues) => {
