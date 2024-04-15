@@ -40,8 +40,8 @@ function Root() {
       <CssBaseline>
         <ErrorHandler>
           <QueryClientProvider client={queryClient}>
+            <DevBuildNotice />
             <Suspense>
-              <DevBuildNotice />
               <Outlet />
             </Suspense>
 
