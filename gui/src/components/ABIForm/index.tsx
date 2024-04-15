@@ -10,12 +10,15 @@ import { Stack } from "@mui/system";
 import { invoke } from "@tauri-apps/api";
 import { Abi, AbiFunction, formatAbiItem } from "abitype";
 import { SyntheticEvent, useEffect, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { Address, decodeFunctionResult, encodeFunctionData } from "viem";
+import { useDebounce } from "@uidotdev/usehooks";
 
+import { SolidityCall } from "@ethui/react/components";
 import { ABIInput } from "./ABIInput";
 import { useInvoke } from "@/hooks";
-import { useWallets } from "@/store";
+import { useWallets, useNetworks } from "@/store";
+import { AddressView } from "@/components";
 
 interface Props {
   chainId: number;
@@ -90,23 +93,39 @@ interface ItemFormProps {
 
 function ItemForm({ contract, item }: ItemFormProps) {
   const account = useWallets((s) => s.address);
+  const chainId = useNetworks((s) => s.current?.chain_id);
   const form = useForm<CallArgs>();
   const [callResult, setCallResult] = useState<string>();
   const [txResult, setTxResult] = useState<string>();
 
   useEffect(() => form.reset(), [item, form]);
 
+  const watcher = useWatch({ control: form.control });
+  const debouncedParams = useDebounce(watcher, 200);
+  const [data, setData] = useState<`0x${string}` | undefined>();
+  const [value, setValue] = useState<bigint | undefined>();
+
+  useEffect(() => {
+    const params = form.getValues();
+    try {
+      const args = item.inputs.map((input, i) =>
+        JSON.parse(params.args[input.name || i.toString()].parsed),
+      );
+
+      const data = encodeFunctionData({
+        abi: [item],
+        functionName: item.name,
+        args,
+      });
+      setData(data);
+      setValue(BigInt(params.value || 0));
+    } catch (e) {
+      setData(undefined);
+      setValue(undefined);
+    }
+  }, [debouncedParams, item, form, setData]);
+
   const onSubmit = async (params: CallArgs) => {
-    const args = item.inputs.map((input, i) =>
-      JSON.parse(params.args[input.name || i.toString()].parsed),
-    );
-
-    const data = encodeFunctionData({
-      abi: [item],
-      functionName: item.name,
-      args,
-    });
-
     if (item.stateMutability === "view") {
       const rawResult = await invoke<`0x${string}`>("rpc_eth_call", {
         params: {
@@ -145,26 +164,42 @@ function ItemForm({ contract, item }: ItemFormProps) {
   };
 
   return (
-    <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <Stack direction="column" spacing={2} justifyContent="flex-start">
-          {item.inputs.map((item, index) => (
-            <ABIInput
-              key={index}
-              name={`args.${item.name || index}`}
-              type={item}
-            />
-          ))}
-          {item.stateMutability === "payable" && (
-            <ABIInput name="value" type="uint256" />
-          )}
-          <Button sx={{ minWidth: 150 }} variant="contained" type="submit">
-            {item.stateMutability == "view" ? "Call" : "Send"}
-          </Button>
-          {callResult && <Typography>{callResult}</Typography>}
-          {txResult && <Typography>{txResult}</Typography>}
-        </Stack>
-      </form>
-    </FormProvider>
+    <Stack direction="row" justifyContent="space-between" spacing={2}>
+      <FormProvider {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <Stack direction="column" spacing={2} justifyContent="flex-start">
+            {item.inputs.map((item, index) => (
+              <ABIInput
+                key={index}
+                name={`args.${item.name || index}`}
+                type={item}
+              />
+            ))}
+            {item.stateMutability === "payable" && (
+              <ABIInput name="value" type="uint256" />
+            )}
+            <Button sx={{ minWidth: 150 }} variant="contained" type="submit">
+              {item.stateMutability == "view" ? "Call" : "Send"}
+            </Button>
+            {callResult && <Typography>{callResult}</Typography>}
+            {txResult && <Typography>{txResult}</Typography>}
+          </Stack>
+        </form>
+      </FormProvider>
+
+      {data && account && (
+        <SolidityCall
+          {...{
+            abi: [item],
+            data,
+            value,
+            chainId,
+            from: account,
+            to: contract,
+          }}
+          ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
+        />
+      )}
+    </Stack>
   );
 }

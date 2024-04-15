@@ -52,13 +52,12 @@ export function ABIInput({ name, type }: ABIInputProps) {
   }, [raw, setValue, setError, name, humanReadable, type]);
 
   return (
-    <>
-      <TextField
-        sx={{ minWidth: 300 }}
-        size="small"
-        label={`${name}(${humanReadable})`}
-        {...register(`${name}.raw`)}
-      />
-    </>
+    <TextField
+      sx={{ minWidth: 300 }}
+      size="small"
+      label={`${name}(${humanReadable})`}
+      {...register(`${name}.raw`)}
+      fullWidth
+    />
   );
 }
