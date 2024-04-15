@@ -78,7 +78,10 @@ async fn handle_connection(
     stream: WebSocketStream<TcpStream>,
     mut rcv: mpsc::UnboundedReceiver<serde_json::Value>,
 ) -> WsResult<()> {
-    let handler: ethui_rpc::Handler = peer.into();
+    let handler: ethui_rpc::Handler = peer.clone().into();
+
+    // will be used at most once to mark the peer as live once the first message comes in
+    let mut liveness_checker = Some(peer);
     let mut interval = tokio::time::interval(std::time::Duration::from_secs(15));
     let (mut ws_sender, mut ws_receiver) = stream.split();
 
@@ -86,8 +89,9 @@ async fn handle_connection(
         tokio::select! {
             // RPC request
             Some(msg) = ws_receiver.next() => {
+
                 match msg {
-                    Ok(Message::Text(msg)) => handle_message(msg, &handler, &mut ws_sender).await?,
+                    Ok(Message::Text(msg)) => handle_message(msg, &handler, &mut ws_sender, &mut liveness_checker).await?,
                     Ok(Message::Close(_)) => break,
                     Ok(_) => continue,
                     Err(e) => warn!("websocket error: {}", e),
@@ -121,9 +125,14 @@ async fn handle_message(
     text: String,
     handler: &ethui_rpc::Handler,
     sender: &mut SplitSink<WebSocketStream<TcpStream>, Message>,
+    liveness_checker: &mut Option<Peer>,
 ) -> WsResult<()> {
     if text == "pong" {
         return Ok(());
+    }
+
+    if let Some(p) = liveness_checker.take() {
+        Peers::write().await.peer_alive(p).await;
     }
 
     let reply = handler.handle(serde_json::from_str(&text).unwrap()).await;
