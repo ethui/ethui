@@ -45,9 +45,11 @@ export function ABIInput({ name, type }: ABIInputProps) {
           type: humanReadable,
         });
         setValue(`${name}.parsed`, JSON.stringify(parsed));
-      } catch (e: any) {
+      } catch (e: unknown) {
         setValue(`${name}.parsed`, null);
-        setError(`${name}.raw`, e.toString());
+        setError(`${name}.raw`, {
+          message: e instanceof Error ? e.message.toString() : "Unknown error",
+        });
       }
     })();
   }, [raw, setValue, setError, name, humanReadable, type]);
