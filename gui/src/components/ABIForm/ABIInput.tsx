@@ -4,6 +4,7 @@ import { useFormContext } from "react-hook-form";
 import { invoke } from "@tauri-apps/api";
 import { formatAbiParameter, type AbiParameter } from "abitype";
 import omit from "lodash-es/omit";
+import { Form } from "@ethui/react/components";
 
 export interface ABIInputProps {
   name: string;
@@ -11,7 +12,7 @@ export interface ABIInputProps {
 }
 
 export function ABIInput({ name, type }: ABIInputProps) {
-  const { register, watch, setValue, setError } = useFormContext();
+  const { watch, setValue, setError } = useFormContext();
   const raw = watch(`${name}.raw`);
 
   const humanReadable: string =
@@ -53,11 +54,10 @@ export function ABIInput({ name, type }: ABIInputProps) {
 
   return (
     <>
-      <TextField
-        sx={{ minWidth: 300 }}
+      <Form.Text
+        name={`${name}.raw`}
+        label={`${name} (${humanReadable})`}
         size="small"
-        label={`${name}(${humanReadable})`}
-        {...register(`${name}.raw`)}
       />
     </>
   );

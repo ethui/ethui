@@ -10,12 +10,13 @@ import { Stack } from "@mui/system";
 import { invoke } from "@tauri-apps/api";
 import { Abi, AbiFunction, formatAbiItem } from "abitype";
 import { SyntheticEvent, useEffect, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 import { Address, decodeFunctionResult, encodeFunctionData } from "viem";
 
 import { ABIInput } from "./ABIInput";
 import { useInvoke } from "@/hooks";
 import { useWallets } from "@/store";
+import { Form } from "@ethui/react/components";
 
 interface Props {
   chainId: number;
@@ -96,7 +97,7 @@ function ItemForm({ contract, item }: ItemFormProps) {
 
   useEffect(() => form.reset(), [item, form]);
 
-  const onSubmit = async (params: CallArgs) => {
+  const onSubmit = async (params: FieldValues) => {
     const args = item.inputs.map((input, i) =>
       JSON.parse(params.args[input.name || i.toString()].parsed),
     );
@@ -145,26 +146,24 @@ function ItemForm({ contract, item }: ItemFormProps) {
   };
 
   return (
-    <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <Stack direction="column" spacing={2} justifyContent="flex-start">
-          {item.inputs.map((item, index) => (
-            <ABIInput
-              key={index}
-              name={`args.${item.name || index}`}
-              type={item}
-            />
-          ))}
-          {item.stateMutability === "payable" && (
-            <ABIInput name="value" type="uint256" />
-          )}
-          <Button sx={{ minWidth: 150 }} variant="contained" type="submit">
-            {item.stateMutability == "view" ? "Call" : "Send"}
-          </Button>
-          {callResult && <Typography>{callResult}</Typography>}
-          {txResult && <Typography>{txResult}</Typography>}
-        </Stack>
-      </form>
-    </FormProvider>
+    <Form form={form} onSubmit={onSubmit}>
+      <Stack direction="column" spacing={2} justifyContent="flex-start">
+        {item.inputs.map((item, index) => (
+          <ABIInput
+            key={index}
+            name={`args.${item.name || index}`}
+            type={item}
+          />
+        ))}
+        {item.stateMutability === "payable" && (
+          <ABIInput name="value" type="uint256" />
+        )}
+        <Button sx={{ minWidth: 150 }} variant="contained" type="submit">
+          {item.stateMutability == "view" ? "Call" : "Send"}
+        </Button>
+        {callResult && <Typography>{callResult}</Typography>}
+        {txResult && <Typography>{txResult}</Typography>}
+      </Stack>
+    </Form>
   );
 }
