@@ -42,7 +42,10 @@ async function notifyDevtools(
     });
   } catch (e: unknown) {
     if (
-      !(e as unknown as any)?.message?.includes("Receiving end does not exist.")
+      !(
+        e instanceof Error &&
+        e.message.includes("Receiving end does not exist.")
+      )
     ) {
       throw e;
     }
