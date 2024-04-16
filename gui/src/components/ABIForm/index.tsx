@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Chip,
+  Grid,
   TextField,
   Typography,
 } from "@mui/material";
@@ -14,7 +15,7 @@ import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { Address, decodeFunctionResult, encodeFunctionData } from "viem";
 import { useDebounce } from "@uidotdev/usehooks";
 
-import { SolidityCall } from "@ethui/react/components";
+import { SolidityCall, HighlightBox } from "@ethui/react/components";
 import { ABIInput } from "./ABIInput";
 import { useInvoke } from "@/hooks";
 import { useWallets, useNetworks } from "@/store";
@@ -164,53 +165,54 @@ function ItemForm({ contract, item }: ItemFormProps) {
   };
 
   return (
-    <Stack
-      direction="row"
-      justifyContent="space-between"
-      spacing={2}
-      sx={{ width: "100%" }}
-    >
-      <FormProvider {...form} sx={{ flexBasis: "50%" }}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <Stack direction="column" spacing={2} justifyContent="flex-start">
-            {item.inputs.map((item, index) => (
-              <ABIInput
-                key={index}
-                name={`args.${item.name || index}`}
-                type={item}
-              />
-            ))}
-            {item.stateMutability === "payable" && (
-              <ABIInput name="value" type="uint256" />
-            )}
-            <Button
-              sx={{ minWidth: 150 }}
-              variant="contained"
-              type="submit"
-              disabled={!data || !account}
-            >
-              {item.stateMutability == "view" ? "Call" : "Send"}
-            </Button>
-            {callResult && <Typography>{callResult}</Typography>}
-            {txResult && <Typography>{txResult}</Typography>}
-          </Stack>
-        </form>
-      </FormProvider>
-
-      {data && account && (
-        <SolidityCall
-          sx={{ flexBasis: "50%" }}
-          {...{
-            abi: [item],
-            data,
-            value,
-            chainId,
-            from: account,
-            to: contract,
-          }}
-          ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
-        />
-      )}
-    </Stack>
+    <Grid container>
+      <Grid item xs={12} md={5}>
+        <FormProvider {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <Stack direction="column" spacing={2} justifyContent="flex-start">
+              {item.inputs.map((item, index) => (
+                <ABIInput
+                  key={index}
+                  name={`args.${item.name || index}`}
+                  type={item}
+                />
+              ))}
+              {item.stateMutability === "payable" && (
+                <ABIInput name="value" type="uint256" />
+              )}
+              <Button
+                sx={{ minWidth: 150 }}
+                variant="contained"
+                type="submit"
+                disabled={!data || !account}
+              >
+                {item.stateMutability == "view" ? "Call" : "Send"}
+              </Button>
+              {callResult && <Typography>{callResult}</Typography>}
+              {txResult && <Typography>{txResult}</Typography>}
+            </Stack>
+          </form>
+        </FormProvider>
+      </Grid>
+      <Grid item xs={12} md={7} sx={{ pl: { md: 2 }, pt: { xs: 2, md: 0 } }}>
+        <HighlightBox fullWidth>
+          {data && account ? (
+            <SolidityCall
+              {...{
+                abi: [item],
+                data,
+                value,
+                chainId,
+                from: account,
+                to: contract,
+              }}
+              ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
+            />
+          ) : (
+            "Preview not ready. Fill in the form"
+          )}
+        </HighlightBox>
+      </Grid>
+    </Grid>
   );
 }

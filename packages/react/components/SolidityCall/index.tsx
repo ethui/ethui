@@ -1,4 +1,4 @@
-import { Stack, useTheme, SxProps, Box } from "@mui/material";
+import { Stack, useTheme, SxProps } from "@mui/material";
 import { Address, Abi, AbiFunction } from "abitype";
 import { formatUnits, decodeFunctionData, parseAbi } from "viem";
 
@@ -13,7 +13,6 @@ export interface SolidityCallProps {
   chainId?: number;
   decimals?: number;
   abi?: Abi | string[];
-  sx?: SxProps;
   ArgProps?: Pick<ArgProps, "addressRenderer" | "defaultRenderer">;
 }
 
@@ -25,24 +24,14 @@ export function SolidityCall({
   chainId,
   decimals = 18,
   abi,
-  sx = {},
   ArgProps = {},
 }: SolidityCallProps) {
-  const theme = useTheme();
-
   const isDeploy = !to && !!data;
   const isCall = to && !!data && data.length > 0 && data !== "0x";
   const isFallback = !!to && (!data || data === "0x");
 
   return (
-    <Box
-      sx={{
-        backgroundColor: theme.palette.highlight1.main,
-        p: 2,
-        maxWidth: "100%",
-        ...sx,
-      }}
-    >
+    <>
       {isDeploy && <Deploy {...{ from, data, value, decimals, ArgProps }} />}
       {isCall && (
         <Call
@@ -60,7 +49,7 @@ export function SolidityCall({
       )}
 
       {isFallback && <Fallback {...{ value, from, to, decimals, ArgProps }} />}
-    </Box>
+    </>
   );
 }
 

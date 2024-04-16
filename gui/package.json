@@ -32,6 +32,7 @@
     "@tauri-apps/cli": "^1.5.11",
     "@uidotdev/usehooks": "^2.4.1",
     "abitype": "^1.0.2",
+    "classnames": "^2.5.1",
     "core-js": "^3.36.1",
     "kbar": "^0.1.0-beta.45",
     "lodash-es": "^4.17.21",

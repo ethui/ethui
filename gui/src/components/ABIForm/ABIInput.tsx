@@ -53,7 +53,6 @@ export function ABIInput({ name, type }: ABIInputProps) {
 
   return (
     <TextField
-      sx={{ minWidth: 300 }}
       size="small"
       label={`${name} (${humanReadable})`}
       {...register(`${name}.raw`)}
