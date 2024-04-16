@@ -11,6 +11,7 @@ import {
   MenuItem,
   StandardTextFieldProps,
   BaseSelectProps as MuiBaseSelectProps,
+  SxProps,
 } from "@mui/material";
 import {
   Controller,
@@ -153,9 +154,10 @@ Form.Checkbox = Checkbox;
 
 interface SubmitProps {
   label: React.ReactNode;
+  sx?: SxProps;
 }
 
-function Submit({ label }: SubmitProps) {
+function Submit({ label, sx }: SubmitProps) {
   const {
     formState: { isValid, dirtyFields },
   } = useFormContext();
@@ -167,6 +169,7 @@ function Submit({ label }: SubmitProps) {
       variant="contained"
       type="submit"
       disabled={!isDirtyAlt || !isValid}
+      sx={sx}
     >
       {label}
     </Button>

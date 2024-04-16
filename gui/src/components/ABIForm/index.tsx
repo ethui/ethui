@@ -164,8 +164,13 @@ function ItemForm({ contract, item }: ItemFormProps) {
   };
 
   return (
-    <Stack direction="row" justifyContent="space-between" spacing={2}>
-      <FormProvider {...form}>
+    <Stack
+      direction="row"
+      justifyContent="space-between"
+      spacing={2}
+      sx={{ width: "100%" }}
+    >
+      <FormProvider {...form} sx={{ flexBasis: "50%" }}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <Stack direction="column" spacing={2} justifyContent="flex-start">
             {item.inputs.map((item, index) => (
@@ -178,7 +183,12 @@ function ItemForm({ contract, item }: ItemFormProps) {
             {item.stateMutability === "payable" && (
               <ABIInput name="value" type="uint256" />
             )}
-            <Button sx={{ minWidth: 150 }} variant="contained" type="submit">
+            <Button
+              sx={{ minWidth: 150 }}
+              variant="contained"
+              type="submit"
+              disabled={!data || !account}
+            >
               {item.stateMutability == "view" ? "Call" : "Send"}
             </Button>
             {callResult && <Typography>{callResult}</Typography>}
@@ -189,6 +199,7 @@ function ItemForm({ contract, item }: ItemFormProps) {
 
       {data && account && (
         <SolidityCall
+          sx={{ flexBasis: "50%" }}
           {...{
             abi: [item],
             data,

@@ -55,7 +55,7 @@ export function ABIInput({ name, type }: ABIInputProps) {
     <TextField
       sx={{ minWidth: 300 }}
       size="small"
-      label={`${name}(${humanReadable})`}
+      label={`${name} (${humanReadable})`}
       {...register(`${name}.raw`)}
       fullWidth
     />
