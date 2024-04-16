@@ -103,7 +103,6 @@ function ItemForm({ contract, item }: ItemFormProps) {
 
   useEffect(() => form.reset(), [item, form]);
 
-<<<<<<< HEAD
   const watcher = useWatch({ control: form.control });
   const debouncedParams = useDebounce(watcher, 200);
   const [data, setData] = useState<`0x${string}` | undefined>();
@@ -130,16 +129,6 @@ function ItemForm({ contract, item }: ItemFormProps) {
   }, [debouncedParams, item, form, setData]);
 
   const onSubmit = async (params: FieldValues) => {
-    const args = item.inputs.map((input, i) =>
-      JSON.parse(params.args[input.name || i.toString()].parsed),
-    );
-
-    const data = encodeFunctionData({
-      abi: [item],
-      functionName: item.name,
-      args,
-    });
-
     if (item.stateMutability === "view") {
       const rawResult = await invoke<`0x${string}`>("rpc_eth_call", {
         params: {
@@ -181,29 +170,29 @@ function ItemForm({ contract, item }: ItemFormProps) {
     <Grid container>
       <Grid item xs={12} md={5}>
         <Form form={form} onSubmit={onSubmit}>
-            <Stack direction="column" spacing={2} justifyContent="flex-start">
-              {item.inputs.map((item, index) => (
-                <ABIInput
-                  key={index}
-                  name={`args.${item.name || index}`}
-                  type={item}
-                />
-              ))}
-              {item.stateMutability === "payable" && (
-                <ABIInput name="value" type="uint256" />
-              )}
-              <Button
-                sx={{ minWidth: 150 }}
-                variant="contained"
-                type="submit"
-                disabled={!data || !account}
-              >
-                {item.stateMutability == "view" ? "Call" : "Send"}
-              </Button>
-              {callResult && <Typography>{callResult}</Typography>}
-              {txResult && <Typography>{txResult}</Typography>}
-            </Stack>
-          </Form>
+          <Stack direction="column" spacing={2} justifyContent="flex-start">
+            {item.inputs.map((item, index) => (
+              <ABIInput
+                key={index}
+                name={`args.${item.name || index}`}
+                type={item}
+              />
+            ))}
+            {item.stateMutability === "payable" && (
+              <ABIInput name="value" type="uint256" />
+            )}
+            <Button
+              sx={{ minWidth: 150 }}
+              variant="contained"
+              type="submit"
+              disabled={!data || !account}
+            >
+              {item.stateMutability == "view" ? "Call" : "Send"}
+            </Button>
+            {callResult && <Typography>{callResult}</Typography>}
+            {txResult && <Typography>{txResult}</Typography>}
+          </Stack>
+        </Form>
       </Grid>
       <Grid item xs={12} md={7} sx={{ pl: { md: 2 }, pt: { xs: 2, md: 0 } }}>
         <HighlightBox fullWidth>
