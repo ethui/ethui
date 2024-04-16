@@ -16,7 +16,7 @@ interface Props {
 
 export function ABIForm({ chainId, address }: Props) {
   const [currentItem, setCurrentItem] = useState<
-    AbiFunction | null | undefined
+    AbiFunction | "raw" | undefined
   >();
 
   const { data: abi } = useInvoke<Abi>("db_get_contract_abi", {
@@ -31,7 +31,7 @@ export function ABIForm({ chainId, address }: Props) {
     .map((item, i) => {
       item = item as AbiFunction;
       return {
-        item: item as AbiFunction | null,
+        item: item as AbiFunction | "raw",
         label: formatAbiItem(item).replace("function ", ""),
         group: item.stateMutability === "view" ? "view" : "write",
         id: i,
@@ -39,7 +39,7 @@ export function ABIForm({ chainId, address }: Props) {
     })
     .concat([
       {
-        item: null,
+        item: "raw",
         label: "Raw",
         group: "Raw",
         id: -1,
@@ -49,7 +49,7 @@ export function ABIForm({ chainId, address }: Props) {
 
   const handleChange = (
     _event: SyntheticEvent,
-    value: { item: AbiFunction | null } | null,
+    value: { item: AbiFunction | "raw" } | null,
   ) => {
     setCurrentItem(value?.item);
   };
@@ -68,15 +68,18 @@ export function ABIForm({ chainId, address }: Props) {
         renderOption={(props, { label, item }) => (
           <Box component="li" {...props}>
             <Stack direction="row" spacing={1} alignItems="center">
-              {item && <Chip label={item.stateMutability} />}
+              {item !== "raw" && <Chip label={item.stateMutability} />}
               <Box>{label}</Box>
             </Stack>
           </Box>
         )}
       />
 
-      {currentItem !== undefined && (
-        <ABIItemForm contract={address} abiItem={currentItem} />
+      {currentItem && (
+        <ABIItemForm
+          contract={address}
+          abiItem={currentItem !== "raw" ? currentItem : undefined}
+        />
       )}
     </Stack>
   );
