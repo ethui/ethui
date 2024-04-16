@@ -4,7 +4,12 @@ import { Cancel, CheckCircle, Delete, Send, Report } from "@mui/icons-material";
 import { Abi, Address, Hex, decodeEventLog, formatUnits, parseAbi } from "viem";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
-import { ChainView, SolidityCall, Typography } from "@ethui/react/components";
+import {
+  ChainView,
+  HighlightBox,
+  SolidityCall,
+  Typography,
+} from "@ethui/react/components";
 import { TokenMetadata } from "@ethui/types";
 import { Network } from "@ethui/types/network";
 import { AddressView, Datapoint } from "@/components";
@@ -89,11 +94,12 @@ export function TxReviewDialog() {
     <>
       <Header {...{ from, to, network }} />
 
-      <SolidityCall
-        {...{ value, data, from, to, chainId, abi }}
-        ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
-        sx={{ width: "100%" }}
-      />
+      <HighlightBox fullWidth>
+        <SolidityCall
+          {...{ value, data, from, to, chainId, abi }}
+          ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
+        />
+      </HighlightBox>
 
       <SimulationResult simulation={simulation} chainId={chainId} to={to} />
 
