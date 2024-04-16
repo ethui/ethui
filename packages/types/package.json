@@ -5,8 +5,8 @@
   "version": "0.1.0",
   "type": "module",
   "dependencies": {
-    "typescript": "^5.4.3",
-    "viem": "^2.9.2",
+    "typescript": "^5.4.5",
+    "viem": "^2.9.19",
     "zod": "^3.22.4",
     "zustand": "^4.5.2",
     "zxcvbn-typescript": "^5.0.1"
@@ -14,7 +14,7 @@
   "devDependencies": {
     "@types/core-js": "^2.5.8",
     "@types/lodash-es": "^4.17.12",
-    "@types/node": "^20.11.30",
+    "@types/node": "^20.12.7",
     "jsdom": "^24.0.0"
   },
   "peerDependencies": {
