@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Cancel, CheckCircle, Delete, Send, Report } from "@mui/icons-material";
 import { Abi, Address, Hex, decodeEventLog, formatUnits, parseAbi } from "viem";
 import { createLazyFileRoute } from "@tanstack/react-router";
+// import { AbiFunction } from "abitype";
 
 import {
   ChainView,
@@ -17,6 +18,7 @@ import { useDialog, useInvoke, useLedgerDetect } from "@/hooks";
 import { DialogBottom } from "@/components/Dialogs/Bottom";
 import { IconAddress } from "@/components/Icons";
 import { useNetworks } from "@/store";
+// import { ABIItemForm } from "@/components/ABIForm";
 
 export const Route = createLazyFileRoute("/_dialog/dialog/tx-review/$id")({
   component: TxReviewDialog,
@@ -90,9 +92,14 @@ export function TxReviewDialog() {
   const { from, to, value: valueStr, data, chainId } = request;
   const value = BigInt(valueStr || 0);
 
+  // if (!abi) return;
+  // const item = abi?.find((s) => s.name === "transfer") as AbiFunction;
+
   return (
     <>
       <Header {...{ from, to, network }} />
+
+      {/* <ABIItemForm contract={to} abiItem={item} /> */}
 
       <HighlightBox fullWidth>
         <SolidityCall
