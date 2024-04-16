@@ -11,7 +11,8 @@ import { Stack } from "@mui/system";
 import { invoke } from "@tauri-apps/api";
 import { Abi, AbiFunction, formatAbiItem } from "abitype";
 import { SyntheticEvent, useEffect, useState } from "react";
-import { FormProvider, useForm, useWatch } from "react-hook-form";
+import { useWatch } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 import { Address, decodeFunctionResult, encodeFunctionData } from "viem";
 import { useDebounce } from "@uidotdev/usehooks";
 
@@ -20,6 +21,7 @@ import { ABIInput } from "./ABIInput";
 import { useInvoke } from "@/hooks";
 import { useWallets, useNetworks } from "@/store";
 import { AddressView } from "@/components";
+import { Form } from "@ethui/react/components";
 
 interface Props {
   chainId: number;
@@ -101,6 +103,7 @@ function ItemForm({ contract, item }: ItemFormProps) {
 
   useEffect(() => form.reset(), [item, form]);
 
+<<<<<<< HEAD
   const watcher = useWatch({ control: form.control });
   const debouncedParams = useDebounce(watcher, 200);
   const [data, setData] = useState<`0x${string}` | undefined>();
@@ -126,7 +129,17 @@ function ItemForm({ contract, item }: ItemFormProps) {
     }
   }, [debouncedParams, item, form, setData]);
 
-  const onSubmit = async (params: CallArgs) => {
+  const onSubmit = async (params: FieldValues) => {
+    const args = item.inputs.map((input, i) =>
+      JSON.parse(params.args[input.name || i.toString()].parsed),
+    );
+
+    const data = encodeFunctionData({
+      abi: [item],
+      functionName: item.name,
+      args,
+    });
+
     if (item.stateMutability === "view") {
       const rawResult = await invoke<`0x${string}`>("rpc_eth_call", {
         params: {
@@ -167,8 +180,7 @@ function ItemForm({ contract, item }: ItemFormProps) {
   return (
     <Grid container>
       <Grid item xs={12} md={5}>
-        <FormProvider {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+        <Form form={form} onSubmit={onSubmit}>
             <Stack direction="column" spacing={2} justifyContent="flex-start">
               {item.inputs.map((item, index) => (
                 <ABIInput
@@ -191,8 +203,7 @@ function ItemForm({ contract, item }: ItemFormProps) {
               {callResult && <Typography>{callResult}</Typography>}
               {txResult && <Typography>{txResult}</Typography>}
             </Stack>
-          </form>
-        </FormProvider>
+          </Form>
       </Grid>
       <Grid item xs={12} md={7} sx={{ pl: { md: 2 }, pt: { xs: 2, md: 0 } }}>
         <HighlightBox fullWidth>
