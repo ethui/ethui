@@ -16,6 +16,9 @@ pub struct Peer {
     pub socket: SocketAddr,
     #[serde(skip)]
     pub sender: mpsc::UnboundedSender<serde_json::Value>,
+
+    // non-alive peers can represent browser tabs with now web3 connection
+    pub alive: bool,
 }
 
 impl Peer {
@@ -35,6 +38,7 @@ impl Peer {
         let title = params.get("title").cloned();
 
         Self {
+            alive: false,
             socket,
             sender,
             origin,
@@ -81,6 +85,10 @@ impl Peers {
         self.map.remove(&peer);
         ethui_broadcast::ui_notify(UINotify::PeersUpdated).await;
         //self.window_snd.send(UINotify::PeersUpdated.into()).unwrap();
+    }
+
+    pub async fn peer_alive(&mut self, peer: Peer) {
+        self.map.get_mut(&peer.socket).unwrap().alive = true;
     }
 
     /// Broadcasts an `accountsChanged` event to all peers
@@ -135,8 +143,12 @@ impl Peers {
         });
     }
 
-    pub(crate) fn all_by_domain(&self) -> HashMap<String, Vec<Peer>> {
+    pub(crate) fn by_domain(&self) -> HashMap<String, Vec<Peer>> {
         self.map.values().fold(Default::default(), |mut acc, p| {
+            if !p.alive {
+                return acc;
+            }
+
             acc.entry(p.domain().unwrap_or_default())
                 .or_default()
                 .push(p.clone());
