@@ -2,13 +2,8 @@ import { type Duplex } from "stream";
 import {
   createIdRemapMiddleware,
   JsonRpcEngine,
-  JsonRpcMiddleware,
 } from "@metamask/json-rpc-engine";
-import {
-  JsonRpcParams,
-  type Json,
-  type JsonRpcResponse,
-} from "@metamask/utils";
+import { type Json, type JsonRpcResponse } from "@metamask/utils";
 import { EthereumRpcError } from "eth-rpc-errors";
 import { EventEmitter } from "eventemitter3";
 import { createStreamMiddleware } from "@metamask/json-rpc-middleware-stream";
