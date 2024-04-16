@@ -11,17 +11,15 @@ import { Stack } from "@mui/system";
 import { invoke } from "@tauri-apps/api";
 import { Abi, AbiFunction, formatAbiItem } from "abitype";
 import { SyntheticEvent, useEffect, useState } from "react";
-import { useWatch } from "react-hook-form";
-import { FieldValues, useForm } from "react-hook-form";
+import { FieldValues, useForm, useWatch } from "react-hook-form";
 import { Address, decodeFunctionResult, encodeFunctionData } from "viem";
 import { useDebounce } from "@uidotdev/usehooks";
 
-import { SolidityCall, HighlightBox } from "@ethui/react/components";
+import { Form, SolidityCall, HighlightBox } from "@ethui/react/components";
 import { ABIInput } from "./ABIInput";
 import { useInvoke } from "@/hooks";
 import { useWallets, useNetworks } from "@/store";
 import { AddressView } from "@/components";
-import { Form } from "@ethui/react/components";
 
 interface Props {
   chainId: number;
