@@ -191,7 +191,11 @@ function Arg({
   addressRenderer,
   defaultRenderer = (v: string | bigint) => (
     <ClickToCopy text={v}>
-      <Typography mono>{v.toString()}</Typography>
+      <Typography mono>
+        {JSON.stringify(v, (_k, v) => {
+          return typeof v === "bigint" ? v.toString(16) : v;
+        })}
+      </Typography>
     </ClickToCopy>
   ),
 }: ArgProps) {
