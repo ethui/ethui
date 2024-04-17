@@ -4,7 +4,12 @@ import { invoke } from "@tauri-apps/api";
 import { AbiFunction } from "abitype";
 import { useEffect, useState } from "react";
 import { FieldValues, useForm, useWatch } from "react-hook-form";
-import { Address, decodeFunctionResult, encodeFunctionData } from "viem";
+import {
+  Address,
+  decodeFunctionData,
+  decodeFunctionResult,
+  encodeFunctionData,
+} from "viem";
 import { useDebounce } from "@uidotdev/usehooks";
 
 import { Form, SolidityCall, HighlightBox } from "@ethui/react/components";
@@ -21,21 +26,59 @@ interface CallArgs {
 interface ItemFormProps {
   contract: Address;
   abiItem?: AbiFunction;
+  defaultData?: `0x${string}`;
+  defaultValue?: bigint;
 }
 
-export function ABIItemForm({ contract, abiItem }: ItemFormProps) {
+export function ABIItemForm({
+  contract,
+  abiItem,
+  defaultData,
+  defaultValue,
+}: ItemFormProps) {
   const account = useWallets((s) => s.address);
   const chainId = useNetworks((s) => s.current?.chain_id);
-  const form = useForm<CallArgs>();
+
+  const defaultValues: FieldValues = { raw: {}, parsed: {} };
+  if (defaultData && abiItem) {
+    if (abiItem) {
+      const { args } = decodeFunctionData({
+        abi: [abiItem],
+        data: defaultData,
+      });
+      abiItem.inputs.forEach((input, i) => {
+        defaultValues.raw[`${input.name || i.toString()}`] = JSON.stringify(
+          args![i],
+          (_k, v) => {
+            return typeof v === "bigint" ? v.toString(16) : v;
+          },
+        );
+        defaultValues.parsed[`${input.name || i.toString()}`] = args[i];
+      });
+      console.log(defaultValues);
+    } else {
+      defaultValues.raw[`-data-`] = defaultData;
+    }
+  }
+  if (defaultValue !== undefined) {
+    console.log(defaultValue);
+    defaultValues.raw[`-value-`] = defaultValue.toString();
+    defaultValues.parsed[`-value-`] = defaultValue;
+  }
+
+  // TODO: value
+
+  const form = useForm<CallArgs>({ defaultValues });
   const [callResult, setCallResult] = useState<string>();
   const [txResult, setTxResult] = useState<string>();
+  console.log(form.getValues());
 
   useEffect(() => form.reset(), [abiItem, form]);
 
   const watcher = useWatch({ control: form.control });
   const debouncedParams = useDebounce(watcher, 200);
-  const [data, setData] = useState<`0x${string}` | undefined>();
-  const [value, setValue] = useState<bigint | undefined>();
+  const [data, setData] = useState<`0x${string}` | undefined>(defaultData);
+  const [value, setValue] = useState<bigint | undefined>(defaultValue);
 
   useEffect(() => {
     const params = form.getValues();
@@ -68,7 +111,7 @@ export function ABIItemForm({ contract, abiItem }: ItemFormProps) {
         params: {
           from: account,
           to: contract,
-          value: params.value,
+          value: `0x${value?.toString(16)}`,
           data,
         },
       });
@@ -88,11 +131,12 @@ export function ABIItemForm({ contract, abiItem }: ItemFormProps) {
         setCallResult(JSON.stringify(result));
       }
     } else {
+      console.log("v", value);
       const result = await invoke<string>("rpc_send_transaction", {
         params: {
           from: account,
           to: contract,
-          value: params.value,
+          value: `0x${value?.toString(16)}`,
           data,
         },
       });
