@@ -15,50 +15,15 @@ export interface ABIInputProps {
 export function ABIInput({ name, label, type }: ABIInputProps) {
   const { watch, setValue, setError } = useFormContext();
   const raw = watch(`raw.${name}`);
-  const parsed2 = watch(`parsed.${name}`);
 
-  const humanReadable: string =
+  const humanReadableType: string =
     typeof type === "string" ? type : formatAbiParameter(omit(type, "name"));
 
   useEffect(() => {
     (async () => {
-      let data;
-      console.log("raw", raw);
-      console.log(humanReadable);
-      console.log(typeof type);
-
-      // strings are used directly
-      if (humanReadable === "string") {
-        data = raw;
-
-        // if array
-      } else if (humanReadable.endsWith("[]")) {
-        data = JSON.parse(`"${raw}"`);
-
-        // if tuple
-      } else if (humanReadable.startsWith("(") && humanReadable.endsWith(")")) {
-        data = JSON.parse(`"${raw}"`);
-      } else if (type === "string" || isNaN(parseInt(raw))) {
-        data = JSON.parse(`"${raw}"`);
-      } else {
-        data = raw;
-      }
-      console.log(data);
-
-      data = JSON.parse(
-        JSON.stringify(data, (_k, v) =>
-          ["number", "bigint"].includes(typeof v) ? `0x${v.toString(16)}` : v,
-        ),
-      );
-
       try {
-        // TODO: replace this with a
-        console.log(parsed, humanReadable);
-        const parsed = await invoke<unknown>("abi_parse_argument", {
-          data,
-          type: humanReadable,
-        });
-        setValue(`parsed.${name}`, JSON.stringify(parsed));
+        const parsed = await parse(raw, humanReadableType);
+        setValue(`parsed.${name}`, parsed);
       } catch (e: unknown) {
         setValue(`parsed.${name}`, null);
         setError(`raw.${name}`, {
@@ -66,19 +31,37 @@ export function ABIInput({ name, label, type }: ABIInputProps) {
         });
       }
     })();
-  }, [raw, setValue, setError, name, humanReadable, type]);
+  }, [raw, setValue, setError, name, humanReadableType, type]);
 
   return (
-    <>
-      <Form.Text
-        name={`raw.${name}`}
-        label={`${label || name} (${humanReadable})`}
-        fullWidth
-        size="small"
-      />
-      {JSON.stringify(raw)}
-      <br />
-      {JSON.stringify(parsed2)}
-    </>
+    <Form.Text
+      name={`raw.${name}`}
+      label={`${label || name} (${humanReadableType})`}
+      fullWidth
+      size="small"
+    />
   );
+}
+
+async function parse(raw: string, type: string) {
+  let data;
+  try {
+    data = JSON.parse(`${raw}`);
+  } catch (e) {
+    data = JSON.parse(`"${raw}"`);
+  }
+
+  // convert each numeric value to hex to prevent floating point conversion issues with JS stringification
+  data = JSON.parse(
+    JSON.stringify(data, (_k, v) =>
+      ["number", "bigint"].includes(typeof v) ? `0x${v.toString(16)}` : v,
+    ),
+  );
+
+  const parsed = await invoke<unknown>("abi_parse_argument", {
+    data,
+    type,
+  });
+
+  return JSON.stringify(parsed);
 }
