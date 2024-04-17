@@ -15,6 +15,7 @@ export interface ABIInputProps {
 export function ABIInput({ name, label, type }: ABIInputProps) {
   const { watch, setValue, setError } = useFormContext();
   const raw = watch(`raw.${name}`);
+  const parsed2 = watch(`parsed.${name}`);
 
   const humanReadable: string =
     typeof type === "string" ? type : formatAbiParameter(omit(type, "name"));
@@ -22,16 +23,27 @@ export function ABIInput({ name, label, type }: ABIInputProps) {
   useEffect(() => {
     (async () => {
       let data;
-      if (
-        type === "string" ||
-        (typeof type === "object" && type.type === "string")
-      ) {
+      console.log("raw", raw);
+      console.log(humanReadable);
+      console.log(typeof type);
+
+      // strings are used directly
+      if (humanReadable === "string") {
         data = raw;
+
+        // if array
+      } else if (humanReadable.endsWith("[]")) {
+        data = JSON.parse(`"${raw}"`);
+
+        // if tuple
+      } else if (humanReadable.startsWith("(") && humanReadable.endsWith(")")) {
+        data = JSON.parse(`"${raw}"`);
       } else if (type === "string" || isNaN(parseInt(raw))) {
         data = JSON.parse(`"${raw}"`);
       } else {
-        data = BigInt(raw);
+        data = raw;
       }
+      console.log(data);
 
       data = JSON.parse(
         JSON.stringify(data, (_k, v) =>
@@ -41,6 +53,7 @@ export function ABIInput({ name, label, type }: ABIInputProps) {
 
       try {
         // TODO: replace this with a
+        console.log(parsed, humanReadable);
         const parsed = await invoke<unknown>("abi_parse_argument", {
           data,
           type: humanReadable,
@@ -56,11 +69,16 @@ export function ABIInput({ name, label, type }: ABIInputProps) {
   }, [raw, setValue, setError, name, humanReadable, type]);
 
   return (
-    <Form.Text
-      name={`raw.${name}`}
-      label={`${label || name} (${humanReadable})`}
-      fullWidth
-      size="small"
-    />
+    <>
+      <Form.Text
+        name={`raw.${name}`}
+        label={`${label || name} (${humanReadable})`}
+        fullWidth
+        size="small"
+      />
+      {JSON.stringify(raw)}
+      <br />
+      {JSON.stringify(parsed2)}
+    </>
   );
 }

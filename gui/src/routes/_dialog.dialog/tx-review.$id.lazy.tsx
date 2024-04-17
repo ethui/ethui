@@ -1,7 +1,16 @@
 import { Alert, AlertTitle, Box, Button, Grid, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Cancel, CheckCircle, Delete, Send, Report } from "@mui/icons-material";
-import { Abi, Address, Hex, decodeEventLog, formatUnits, parseAbi } from "viem";
+import {
+  Abi,
+  Address,
+  Hex,
+  type AbiFunction,
+  decodeEventLog,
+  formatUnits,
+  parseAbi,
+  getAbiItem,
+} from "viem";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
 import {
@@ -12,7 +21,7 @@ import {
 } from "@ethui/react/components";
 import { TokenMetadata } from "@ethui/types";
 import { Network } from "@ethui/types/network";
-import { AddressView, Datapoint } from "@/components";
+import { ABIItemForm, AddressView, Datapoint } from "@/components";
 import { useDialog, useInvoke, useLedgerDetect } from "@/hooks";
 import { DialogBottom } from "@/components/Dialogs/Bottom";
 import { IconAddress } from "@/components/Icons";
@@ -90,9 +99,16 @@ export function TxReviewDialog() {
   const { from, to, value: valueStr, data, chainId } = request;
   const value = BigInt(valueStr || 0);
 
+  let item = undefined;
+  if (abi) {
+    item = getAbiItem({ abi, name: data.slice(0, 10) }) as AbiFunction;
+  }
+
   return (
     <>
       <Header {...{ from, to, network }} />
+
+      {item && <ABIItemForm abiItem={item} contract={to} defaultData={data} />}
 
       <HighlightBox fullWidth>
         <SolidityCall

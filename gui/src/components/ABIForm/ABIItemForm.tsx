@@ -4,7 +4,12 @@ import { invoke } from "@tauri-apps/api";
 import { AbiFunction } from "abitype";
 import { useEffect, useState } from "react";
 import { FieldValues, useForm, useWatch } from "react-hook-form";
-import { Address, decodeFunctionResult, encodeFunctionData } from "viem";
+import {
+  Address,
+  decodeFunctionResult,
+  decodeFunctionData,
+  encodeFunctionData,
+} from "viem";
 import { useDebounce } from "@uidotdev/usehooks";
 
 import { Form, SolidityCall, HighlightBox } from "@ethui/react/components";
@@ -21,12 +26,24 @@ interface CallArgs {
 interface ItemFormProps {
   contract: Address;
   abiItem?: AbiFunction;
+  defaultData?: `0x${string}`;
 }
 
-export function ABIItemForm({ contract, abiItem }: ItemFormProps) {
+export function ABIItemForm({ contract, abiItem, defaultData }: ItemFormProps) {
   const account = useWallets((s) => s.address);
   const chainId = useNetworks((s) => s.current?.chain_id);
-  const form = useForm<CallArgs>();
+  const defaultValues = {};
+  if (defaultData) {
+    const { args } = decodeFunctionData({ abi: [abiItem], data: defaultData });
+    console.log(abiItem);
+    console.log(args);
+    abiItem.inputs.forEach((input, i) => {
+      defaultValues[`raw.${input.name || i.toString()}`] = args[i];
+      defaultValues[`parsed.${input.name || i.toString()}`] = args[i];
+    });
+    console.log(defaultValues);
+  }
+  const form = useForm<CallArgs>({ defaultValues });
   const [callResult, setCallResult] = useState<string>();
   const [txResult, setTxResult] = useState<string>();
 
@@ -34,7 +51,7 @@ export function ABIItemForm({ contract, abiItem }: ItemFormProps) {
 
   const watcher = useWatch({ control: form.control });
   const debouncedParams = useDebounce(watcher, 200);
-  const [data, setData] = useState<`0x${string}` | undefined>();
+  const [data, setData] = useState<`0x${string}` | undefined>(defaultData);
   const [value, setValue] = useState<bigint | undefined>();
 
   useEffect(() => {

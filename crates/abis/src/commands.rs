@@ -6,6 +6,7 @@ pub struct Encodable(DynSolValue);
 
 #[tauri::command]
 pub fn abi_parse_argument(r#type: &str, data: serde_json::Value) -> Result<Encodable, String> {
+    dbg!(&data);
     match r#type.parse::<DynSolType>() {
         Ok(dyn_type) => dyn_type
             .coerce_json(&data)
