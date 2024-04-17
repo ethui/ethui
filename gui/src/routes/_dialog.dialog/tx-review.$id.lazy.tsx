@@ -13,12 +13,7 @@ import {
 } from "viem";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
-import {
-  ChainView,
-  HighlightBox,
-  SolidityCall,
-  Typography,
-} from "@ethui/react/components";
+import { ChainView, Typography } from "@ethui/react/components";
 import { TokenMetadata } from "@ethui/types";
 import { Network } from "@ethui/types/network";
 import { ABIItemForm, AddressView, Datapoint } from "@/components";
@@ -108,14 +103,14 @@ export function TxReviewDialog() {
     <>
       <Header {...{ from, to, network }} />
 
-      {item && <ABIItemForm abiItem={item} contract={to} defaultData={data} />}
-
-      <HighlightBox fullWidth>
-        <SolidityCall
-          {...{ value, data, from, to, chainId, abi }}
-          ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
+      {item && (
+        <ABIItemForm
+          abiItem={item}
+          contract={to}
+          defaultData={data}
+          defaultValue={value}
         />
-      </HighlightBox>
+      )}
 
       <SimulationResult simulation={simulation} chainId={chainId} to={to} />
 

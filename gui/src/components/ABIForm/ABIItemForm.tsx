@@ -27,9 +27,15 @@ interface ItemFormProps {
   contract: Address;
   abiItem?: AbiFunction;
   defaultData?: `0x${string}`;
+  defaultValue?: string | bigint;
 }
 
-export function ABIItemForm({ contract, abiItem, defaultData }: ItemFormProps) {
+export function ABIItemForm({
+  contract,
+  abiItem,
+  defaultData,
+  defaultValue,
+}: ItemFormProps) {
   const account = useWallets((s) => s.address);
   const chainId = useNetworks((s) => s.current?.chain_id);
   const defaultValues = {};
@@ -38,11 +44,19 @@ export function ABIItemForm({ contract, abiItem, defaultData }: ItemFormProps) {
     console.log(abiItem);
     console.log(args);
     abiItem.inputs.forEach((input, i) => {
-      defaultValues[`raw.${input.name || i.toString()}`] = args[i];
+      defaultValues[`raw.${input.name || i.toString()}`] = JSON.stringify(
+        args![i],
+        (_k, v) => {
+          return typeof v === "bigint" ? v.toString(16) : v;
+        },
+      );
       defaultValues[`parsed.${input.name || i.toString()}`] = args[i];
     });
     console.log(defaultValues);
   }
+
+  // TODO: value
+
   const form = useForm<CallArgs>({ defaultValues });
   const [callResult, setCallResult] = useState<string>();
   const [txResult, setTxResult] = useState<string>();
