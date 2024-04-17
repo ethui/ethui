@@ -130,6 +130,13 @@ export function ABIItemForm({ contract, abiItem }: ItemFormProps) {
               <>
                 <ABIInput name="-data-" label="raw data" type="bytes" />
                 <ABIInput name="-value-" label="value" type="uint256" />
+                <Button
+                  sx={{ minWidth: 150 }}
+                  variant="contained"
+                  type="submit"
+                >
+                  Call
+                </Button>
               </>
             )}
             {callResult && <Typography>{callResult}</Typography>}
