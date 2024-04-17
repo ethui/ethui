@@ -27,7 +27,7 @@ export function ABIItemForm({ contract, abiItem }: ItemFormProps) {
   const account = useWallets((s) => s.address);
   const chainId = useNetworks((s) => s.current?.chain_id);
   const form = useForm<CallArgs>();
-  const [result, setResult] = useState<string | bigint>();
+  const [result, setResult] = useState<string>();
 
   useEffect(() => form.reset(), [abiItem, form]);
 
@@ -80,7 +80,7 @@ export function ABIItemForm({ contract, abiItem }: ItemFormProps) {
 
       switch (typeof result) {
         case "bigint":
-          setResult(result as bigint);
+          setResult((result as bigint).toString());
           break;
         case "string":
           setResult(result);
