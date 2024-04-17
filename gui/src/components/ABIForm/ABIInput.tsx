@@ -7,13 +7,14 @@ import omit from "lodash-es/omit";
 import { Form } from "@ethui/react/components";
 
 export interface ABIInputProps {
-  name: string;
+  name: string | number;
+  label?: string;
   type: AbiParameter | string;
 }
 
-export function ABIInput({ name, type }: ABIInputProps) {
+export function ABIInput({ name, label, type }: ABIInputProps) {
   const { watch, setValue, setError } = useFormContext();
-  const raw = watch(`${name}.raw`);
+  const raw = watch(`raw.${name}`);
 
   const humanReadable: string =
     typeof type === "string" ? type : formatAbiParameter(omit(type, "name"));
@@ -44,10 +45,10 @@ export function ABIInput({ name, type }: ABIInputProps) {
           data,
           type: humanReadable,
         });
-        setValue(`${name}.parsed`, JSON.stringify(parsed));
+        setValue(`parsed.${name}`, JSON.stringify(parsed));
       } catch (e: unknown) {
-        setValue(`${name}.parsed`, null);
-        setError(`${name}.raw`, {
+        setValue(`parsed.${name}`, null);
+        setError(`raw.${name}`, {
           message: e instanceof Error ? e.message.toString() : "Unknown error",
         });
       }
@@ -56,8 +57,8 @@ export function ABIInput({ name, type }: ABIInputProps) {
 
   return (
     <Form.Text
-      name={`${name}.raw`}
-      label={`${name} (${humanReadable})`}
+      name={`raw.${name}`}
+      label={`${label || name} (${humanReadable})`}
       fullWidth
       size="small"
     />
