@@ -26,15 +26,15 @@ interface CallArgs {
 interface ItemFormProps {
   contract: Address;
   abiItem?: AbiFunction;
-  defaultData?: `0x${string}`;
-  defaultValue?: bigint;
+  data?: `0x${string}`;
+  value?: bigint;
 }
 
 export function ABIItemForm({
   contract,
   abiItem,
-  defaultData,
-  defaultValue,
+  data: defaultData,
+  value: defaultValue,
 }: ItemFormProps) {
   const account = useWallets((s) => s.address);
   const chainId = useNetworks((s) => s.current?.chain_id);

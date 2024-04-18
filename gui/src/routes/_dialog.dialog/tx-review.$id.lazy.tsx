@@ -110,8 +110,8 @@ export function TxReviewDialog() {
         <ABIItemForm
           abiItem={item}
           contract={to}
-          defaultData={data}
-          defaultValue={value}
+          data={data}
+          value={value}
         />
       )}
 
