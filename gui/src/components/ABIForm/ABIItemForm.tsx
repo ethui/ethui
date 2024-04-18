@@ -3,13 +3,13 @@ import { Stack } from "@mui/system";
 import { invoke } from "@tauri-apps/api";
 import { AbiFunction } from "abitype";
 import { useEffect, useState } from "react";
-import { FieldValues, useForm, useWatch } from "react-hook-form";
 import {
   Address,
   decodeFunctionResult,
   decodeFunctionData,
   encodeFunctionData,
 } from "viem";
+import { FieldValues, useForm, useWatch } from "react-hook-form";
 import { useDebounce } from "@uidotdev/usehooks";
 
 import { Form, SolidityCall, HighlightBox } from "@ethui/react/components";
@@ -68,9 +68,8 @@ export function ABIItemForm({
 
   const form = useForm<CallArgs>({ defaultValues });
 
-  const [callResult, setCallResult] = useState<string>();
-  const [txResult, setTxResult] = useState<string>();
   console.log(form.getValues());
+  const [result, setResult] = useState<string>();
 
   useEffect(() => form.reset(), [abiItem, form]);
 
@@ -104,7 +103,7 @@ export function ABIItemForm({
     }
   }, [debouncedParams, abiItem, form, setData]);
 
-  const onSubmit = async (params: FieldValues) => {
+  const onSubmit = async () => {
     if (abiItem?.stateMutability === "view") {
       const rawResult = await invoke<`0x${string}`>("rpc_eth_call", {
         params: {
@@ -121,16 +120,18 @@ export function ABIItemForm({
         data: rawResult,
       });
 
-      if (typeof result === "bigint") {
-        // TODO: why is this cast necessary?
-        setCallResult((result as bigint).toString());
-      } else if (typeof result === "string") {
-        setCallResult(result);
-      } else {
-        setCallResult(JSON.stringify(result));
+      switch (typeof result) {
+        case "bigint":
+          setResult((result as bigint).toString());
+          break;
+        case "string":
+          setResult(result);
+          break;
+        default:
+          setResult(JSON.stringify(result));
+          break;
       }
     } else {
-      console.log("v", value);
       const result = await invoke<string>("rpc_send_transaction", {
         params: {
           from: account,
@@ -139,7 +140,7 @@ export function ABIItemForm({
           data,
         },
       });
-      setTxResult(result);
+      setResult(result);
     }
   };
 
@@ -182,8 +183,7 @@ export function ABIItemForm({
                 </Button>
               </>
             )}
-            {callResult && <Typography>{callResult}</Typography>}
-            {txResult && <Typography>{txResult}</Typography>}
+            {result && <Typography>{result.toString()}</Typography>}
           </Stack>
         </Form>
       </Grid>
