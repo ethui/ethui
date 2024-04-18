@@ -55,20 +55,17 @@ export function ABIItemForm({
         );
         defaultValues.parsed[`${input.name || i.toString()}`] = args[i];
       });
-      console.log(defaultValues);
     } else {
       defaultValues.raw[`-data-`] = defaultData;
     }
   }
   if (defaultValue !== undefined) {
-    console.log(defaultValue);
     defaultValues.raw[`-value-`] = defaultValue.toString();
     defaultValues.parsed[`-value-`] = defaultValue;
   }
 
   const form = useForm<CallArgs>({ defaultValues });
 
-  console.log(form.getValues());
   const [result, setResult] = useState<string>();
 
   useEffect(() => form.reset(), [abiItem, form]);
