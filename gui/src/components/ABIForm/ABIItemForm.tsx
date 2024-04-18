@@ -3,7 +3,7 @@ import { Stack } from "@mui/system";
 import { invoke } from "@tauri-apps/api";
 import { AbiFunction } from "abitype";
 import { useEffect, useState } from "react";
-import { FieldValues, useForm, useWatch } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { Address, decodeFunctionResult, encodeFunctionData } from "viem";
 import { useDebounce } from "@uidotdev/usehooks";
 
@@ -27,8 +27,7 @@ export function ABIItemForm({ contract, abiItem }: ItemFormProps) {
   const account = useWallets((s) => s.address);
   const chainId = useNetworks((s) => s.current?.chain_id);
   const form = useForm<CallArgs>();
-  const [callResult, setCallResult] = useState<string>();
-  const [txResult, setTxResult] = useState<string>();
+  const [result, setResult] = useState<string>();
 
   useEffect(() => form.reset(), [abiItem, form]);
 
@@ -62,13 +61,13 @@ export function ABIItemForm({ contract, abiItem }: ItemFormProps) {
     }
   }, [debouncedParams, abiItem, form, setData]);
 
-  const onSubmit = async (params: FieldValues) => {
+  const onSubmit = async () => {
     if (abiItem?.stateMutability === "view") {
       const rawResult = await invoke<`0x${string}`>("rpc_eth_call", {
         params: {
           from: account,
           to: contract,
-          value: params.value,
+          value: `0x${value}`,
           data,
         },
       });
@@ -79,24 +78,27 @@ export function ABIItemForm({ contract, abiItem }: ItemFormProps) {
         data: rawResult,
       });
 
-      if (typeof result === "bigint") {
-        // TODO: why is this cast necessary?
-        setCallResult((result as bigint).toString());
-      } else if (typeof result === "string") {
-        setCallResult(result);
-      } else {
-        setCallResult(JSON.stringify(result));
+      switch (typeof result) {
+        case "bigint":
+          setResult((result as bigint).toString());
+          break;
+        case "string":
+          setResult(result);
+          break;
+        default:
+          setResult(JSON.stringify(result));
+          break;
       }
     } else {
       const result = await invoke<string>("rpc_send_transaction", {
         params: {
           from: account,
           to: contract,
-          value: params.value,
+          value: `0x${value}`,
           data,
         },
       });
-      setTxResult(result);
+      setResult(result);
     }
   };
 
@@ -139,8 +141,7 @@ export function ABIItemForm({ contract, abiItem }: ItemFormProps) {
                 </Button>
               </>
             )}
-            {callResult && <Typography>{callResult}</Typography>}
-            {txResult && <Typography>{txResult}</Typography>}
+            {result && <Typography>{result.toString()}</Typography>}
           </Stack>
         </Form>
       </Grid>
