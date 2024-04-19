@@ -26,7 +26,7 @@ const store: StateCreator<Store> = (set, get) => ({
       id: actionId,
       name: "Change theme",
       subtitle: "auto/dark/light",
-      section: "Appearence",
+      section: "Appearance",
       shortcut: ["T"],
     },
     ...(["auto", "dark", "light"] as const).map((mode, index) => ({

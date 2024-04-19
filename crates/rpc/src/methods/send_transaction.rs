@@ -32,7 +32,7 @@ impl<'a> SendTransaction {
 
     pub async fn estimate_gas(&mut self) -> &mut SendTransaction {
         // TODO: we're defaulting to 1_000_000 gas cost if estimation fails
-        // estimation failing means the tx will faill anyway, so this is fine'ish
+        // estimation failing means the tx will fail anyway, so this is fine'ish
         // but can probably be improved a lot in the future
         let gas_limit = self
             .network

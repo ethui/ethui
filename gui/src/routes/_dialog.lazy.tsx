@@ -9,7 +9,7 @@ export function DialogLayout() {
   return (
     <Stack
       spacing={2}
-      sx={{ widht: "100vw", height: "100vh", overflow: "hidden", p: 2 }}
+      sx={{ width: "100vw", height: "100vh", overflow: "hidden", p: 2 }}
     >
       <Outlet />
     </Stack>
