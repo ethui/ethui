@@ -44,9 +44,6 @@
     "postcss": "^8.4.31",
     "jose": "4.15.5"
   },
-  "name": "app",
-  "module": "index.ts",
-  "type": "module",
   "peerDependencies": {
     "typescript": "^5.0.0"
   }
