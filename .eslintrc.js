@@ -20,7 +20,7 @@ module.exports = {
       "./packages/types/tsconfig.json",
       "./packages/data/tsconfig.json",
       "./packages/form/tsconfig.json",
-      "./packages/abiparser/tsconfig.json",
+      "./packages/abiparse/tsconfig.json",
     ],
   },
 
@@ -70,6 +70,7 @@ module.exports = {
     "import/no-mutable-exports": "error",
     "import/no-named-as-default": "error",
     "import/no-unused-modules": "error",
+    "import/no-unresolved": ["error", {ignore: ["bun:test"]}],
     "import/no-import-module-exports": "error",
     "import/first": "error",
     "import/newline-after-import": "error",
