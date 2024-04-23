@@ -50,7 +50,7 @@ export function ABIItemForm({ contract, abiItem }: ItemFormProps) {
           args,
         });
         setData(data);
-        setValue(BigInt(params.raw["-value-"] || 0));
+        setValue(BigInt((params.raw && params.raw["-value-"]) || 0));
       } else {
         setData((params.raw["-data-"] as `0x${string}`) || "0x");
         setValue(BigInt(params.raw["-value-"] || 0));
