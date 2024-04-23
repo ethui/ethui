@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "typeRoots": ["./node_modules/@types", "node_modules/chevrotain/@types"],
+    "typeRoots": ["./node_modules/@types", "node_modules/chevrotain/@types", "../../node_modules"],
+    "types": ["bun-types"],
     "lib": ["ESNext", "dom"],
     "target": "ESNext",
     "module": "ESNext",

@@ -20,8 +20,8 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    "types": ["node"]
+    "types": ["node", "bun-types"]
   },
   "include": [".eslintrc.js"],
-  "references": [{ "path": "./gui" }, { "path": "./extension" }]
+  "references": [{ "path": "./gui" }, { "path": "./extension" }, {"path":"./packages/abiparse"}]
 }

@@ -6,6 +6,9 @@
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
+  "devDependencies": {
+    "bun-types": "^1.1.4"
+  },
   "dependencies": {
     "chevrotain": "^11.0.3",
     "nearly": "^1.8.1",
