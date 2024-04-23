@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Stack, TextField } from "@mui/material";
+import { Stack } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
@@ -7,11 +7,11 @@ import truncateEthAddress from "truncate-eth-address";
 import { Address, getAddress } from "viem";
 import { z } from "zod";
 
-import { Typography } from "@iron/react/components";
+import { Form, Typography } from "@ethui/react/components";
 import { useInvoke } from "@/hooks";
 import { ContextMenuWithTauri, Modal } from "./";
 import { useNetworks } from "@/store";
-import { IconCrypto } from "./Icons";
+import { IconAddress } from "./Icons";
 
 interface Props {
   address: Address;
@@ -19,7 +19,7 @@ interface Props {
   mono?: boolean;
   contextMenu?: boolean;
   variant?: "h6";
-  tokenIcon?: boolean;
+  icon?: boolean;
 }
 
 export function AddressView({
@@ -27,11 +27,11 @@ export function AddressView({
   mono = false,
   contextMenu = true,
   variant,
-  tokenIcon = false,
+  icon = false,
 }: Props) {
   const network = useNetworks((s) => s.current);
   const address = getAddress(addr);
-  const { data: alias, mutate } = useInvoke<string>("settings_get_alias", {
+  const { data: alias, refetch } = useInvoke<string>("settings_get_alias", {
     address,
   });
   const [aliasFormOpen, setAliasFormOpen] = useState(false);
@@ -41,8 +41,13 @@ export function AddressView({
   const text = alias ? alias : truncateEthAddress(`${address}`);
   const content = (
     <Stack direction="row" alignItems="center" spacing={1}>
-      {tokenIcon && (
-        <IconCrypto chainId={network.chain_id} address={address} size="small" />
+      {icon && (
+        <IconAddress
+          chainId={network.chain_id}
+          address={address}
+          size="small"
+          effigy
+        />
       )}
       <Typography mono={mono} variant={variant}>
         {text}
@@ -73,7 +78,7 @@ export function AddressView({
 
       <Modal open={aliasFormOpen} onClose={() => setAliasFormOpen(false)}>
         <AliasForm
-          {...{ address, alias, mutate }}
+          {...{ address, alias, refetch }}
           onSubmit={() => setAliasFormOpen(false)}
         />
       </Modal>
@@ -88,47 +93,30 @@ const schema = z.object({
 interface AliasFormProps {
   address: string;
   alias?: string;
-  mutate: () => void;
+  refetch: () => void;
   onSubmit: () => void;
 }
 
-function AliasForm({ address, alias, mutate, onSubmit }: AliasFormProps) {
-  const {
-    handleSubmit,
-    register,
-    formState: { isDirty, isValid, errors },
-  } = useForm({
+function AliasForm({ address, alias, refetch, onSubmit }: AliasFormProps) {
+  const form = useForm({
     mode: "onChange",
     resolver: zodResolver(schema),
   });
 
   const submit = (data: FieldValues) => {
     invoke("settings_set_alias", { address, alias: data.alias });
-    mutate();
+    refetch();
     onSubmit();
   };
 
   return (
-    <form onSubmit={handleSubmit(submit)}>
+    <Form form={form} onSubmit={submit}>
       <Stack alignItems="flex-start" spacing={2}>
         <Typography>Set alias for {truncateEthAddress(address)}</Typography>
-        <TextField
-          label="Alias"
-          defaultValue={alias}
-          error={!!errors.alias}
-          helperText={errors.alias?.message?.toString() || ""}
-          fullWidth
-          {...register("alias")}
-        />
+        <Form.Text label="Alias" name="alias" defaultValue={alias} />
 
-        <Button
-          variant="contained"
-          type="submit"
-          disabled={!isDirty || !isValid}
-        >
-          Save
-        </Button>
+        <Form.Submit label="Save" />
       </Stack>
-    </form>
+    </Form>
   );
 }

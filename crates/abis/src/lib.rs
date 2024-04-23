@@ -1,3 +1,5 @@
+pub mod commands;
+
 use ethers::prelude::abigen;
 
 abigen!(

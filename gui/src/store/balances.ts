@@ -3,7 +3,7 @@ import { Address } from "viem";
 import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { TokenBalance } from "@iron/types";
+import { TokenBalance } from "@ethui/types";
 import { useNetworks } from "./networks";
 import { useWallets } from "./wallets";
 

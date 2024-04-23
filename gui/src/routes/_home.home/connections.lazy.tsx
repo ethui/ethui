@@ -14,8 +14,8 @@ import { map } from "lodash-es";
 import { useEffect, useState } from "react";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
-import { Affinity, Peer } from "@iron/types";
-import { ChainView } from "@iron/react/components";
+import { Affinity, Peer } from "@ethui/types";
+import { ChainView } from "@ethui/react/components";
 import { useEventListener, useInvoke } from "@/hooks";
 import { useNetworks } from "@/store";
 import { Panel } from "@/components";
@@ -26,10 +26,10 @@ export const Route = createLazyFileRoute("/_home/home/connections")({
 });
 
 export function Connections() {
-  const { data: peersByDomain, mutate } =
+  const { data: peersByDomain, refetch } =
     useInvoke<Record<string, Peer[]>>("ws_peers_by_domain");
 
-  useEventListener("peers-updated", mutate);
+  useEventListener("peers-updated", refetch);
 
   return (
     <>
@@ -63,14 +63,14 @@ function Domain({ domain, peers }: { domain: string; peers: Peer[] }) {
 
 function AffinityForm({ domain }: { domain: string }) {
   const networks = useNetworks((s) => s.networks);
-  const { data: affinity, mutate } = useInvoke<Affinity>(
+  const { data: affinity, refetch } = useInvoke<Affinity>(
     "connections_affinity_for",
     {
       domain,
     },
   );
 
-  useEventListener("peers-updated", mutate);
+  useEventListener("peers-updated", refetch);
 
   const [current, setCurrent] = useState<Affinity>("global");
 

@@ -1,4 +1,4 @@
-use iron_types::{Address, GlobalState, Json};
+use ethui_types::{Address, GlobalState, Json};
 
 use super::{utils, Result, Wallet, WalletControl, Wallets};
 

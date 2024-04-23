@@ -4,7 +4,7 @@
 #
 # defaults
 #
-target=chrome
+target=chrome-dev
 version=0.0.0
 
 echo "$@"
@@ -41,7 +41,11 @@ done
 # building
 #
 
-export NODE_ENV=production
+if [[ $target =~ .*dev ]]; then
+  export NODE_ENV=development
+else
+  export NODE_ENV=production
+fi
 export DIST_DIR=./dist/$target
 rm -rf $DIST_DIR
 
@@ -53,7 +57,9 @@ yarn run vite build --config vite/inpage.ts
 yarn run vite build --config vite/background.ts
 
 # choose manifest
+echo asd $DIST_DIR
 mv $DIST_DIR/manifest-$target.json $DIST_DIR/manifest.json
+echo dsa
 rm $DIST_DIR/manifest-*.json
 
 sed_args=(-i)
@@ -68,6 +74,11 @@ sed "${sed_args[@]}" "s/%VERSION%/$version/g" $DIST_DIR/manifest.json
 # create crx / xpi
 case $target in
   # builds and publishes to the chrome extension store
+  chrome-dev)
+    yarn run crx pack $DIST_DIR -o ./dist/chrome-dev-v$version.crx
+    ;;
+
+  # builds and publishes to the chrome extension store
   chrome)
     yarn run crx pack $DIST_DIR -o ./dist/chrome-v$version.crx
     ;;
@@ -75,6 +86,6 @@ case $target in
   # builds and publishes to the firefox extension store
   firefox)
     yarn run web-ext build -s $DIST_DIR -a .
-    mv ./iron_wallet-$version.zip dist/firefox-v$version.xpi
+    mv ./ethui-$version.zip dist/firefox-v$version.xpi
     ;;
 esac

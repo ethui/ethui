@@ -1,0 +1,32 @@
+{
+  "db_name": "SQLite",
+  "query": " SELECT abi, name, address\n                FROM contracts\n                WHERE chain_id = ? AND address = ? ",
+  "describe": {
+    "columns": [
+      {
+        "name": "abi",
+        "ordinal": 0,
+        "type_info": "Text"
+      },
+      {
+        "name": "name",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "address",
+        "ordinal": 2,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": [
+      true,
+      true,
+      false
+    ]
+  },
+  "hash": "a46dd2077632c1760ce88c36d9858879265d9b7d8cf75046fe51796d18082e1f"
+}

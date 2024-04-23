@@ -8,4 +8,4 @@ curl \
     "data": "0x6a627842000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266",
     "gasLimit": 669107
 }}' \
-  http://localhost:9103/iron/transactions/simulate | jq
+  http://localhost:9103/ethui/transactions/simulate | jq

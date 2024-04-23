@@ -1,1 +1,1 @@
-export { BigIntField } from "./BigIntField";
+export { BigIntField, type BigIntFieldProps } from "./BigIntField";

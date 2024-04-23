@@ -1,4 +1,8 @@
-use ethers::providers::{Http, Provider};
+use std::time::Duration;
+
+use ethers::providers::{
+    Http, HttpRateLimitRetryPolicy, Provider, RetryClient, RetryClientBuilder,
+};
 use serde::{Deserialize, Serialize};
 use url::Url;
 
@@ -21,7 +25,7 @@ impl Network {
             name: String::from("mainnet"),
             chain_id: 1,
             explorer_url: Some(String::from("https://etherscan.io/search?q=")),
-            http_url: String::from("https://ethereum.publicnode.com"),
+            http_url: String::from("https://eth.llamarpc.com"),
             ws_url: None,
             currency: String::from("ETH"),
             decimals: 18,
@@ -81,15 +85,23 @@ impl Network {
         self.chain_id == 31337
     }
 
-    pub fn get_provider(&self) -> Provider<Http> {
-        Provider::<Http>::try_from(self.http_url.clone()).unwrap()
+    pub fn get_provider(&self) -> Provider<RetryClient<Http>> {
+        let url = Url::parse(&self.http_url).unwrap();
+        let http = Http::new(url);
+        let policy = Box::<HttpRateLimitRetryPolicy>::default();
+        let client = RetryClientBuilder::default()
+            .rate_limit_retries(10)
+            .timeout_retries(3)
+            .initial_backoff(Duration::from_millis(500))
+            .build(http, policy);
+        Provider::new(client)
     }
 
     pub async fn reset_listener(&mut self) -> Result<()> {
         if self.is_dev() {
             let http = Url::parse(&self.http_url)?;
             let ws = Url::parse(&self.ws_url.clone().unwrap())?;
-            iron_broadcast::reset_anvil_listener(self.chain_id, http, ws).await;
+            ethui_broadcast::reset_anvil_listener(self.chain_id, http, ws).await;
         }
 
         Ok(())

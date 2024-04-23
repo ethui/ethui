@@ -11,7 +11,7 @@ export default defineConfig({
     nodePolyfills({
       exclude: ["fs"],
     }),
-    tsconfigPaths(),
+    tsconfigPaths({ parseNative: true }),
   ],
   define: {
     "process.env": {},
@@ -23,7 +23,7 @@ export default defineConfig({
     lib: {
       formats: ["iife"],
       entry: path.resolve(__dirname, "..", "src", "content-script", "index.ts"),
-      name: "Iron Wallet - Content Script",
+      name: "ethui - Content Script",
     },
     rollupOptions: {
       output: {

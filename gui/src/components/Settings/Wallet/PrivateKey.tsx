@@ -5,15 +5,15 @@ import {
   Step,
   StepLabel,
   Stepper,
-  TextField,
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { passwordFormSchema, passwordSchema } from "@iron/types/password";
-import { PrivateKeyWallet } from "@iron/types/wallets";
+import { passwordFormSchema, passwordSchema } from "@ethui/types/password";
+import { PrivateKeyWallet } from "@ethui/types/wallets";
+import { Form } from "@ethui/react/components";
 
 export const schema = z.object({
   name: z.string().min(1),
@@ -104,56 +104,32 @@ interface PrivateKeyStepProps {
 
 function PrivateKeyStep({ onSubmit, onCancel }: PrivateKeyStepProps) {
   const schema = createSchema.pick({ name: true, privateKey: true });
-  const {
-    handleSubmit,
-    reset,
-    register,
-    formState: { errors, isDirty, isValid },
-  } = useForm({
+  const form = useForm({
     mode: "onChange",
     resolver: zodResolver(schema),
   });
+
   const onSubmitInternal = (data: FieldValues) => {
     onSubmit(data.name, data.privateKey);
-    reset(data);
+    form.reset(data);
   };
 
   return (
-    <Stack
-      direction="column"
-      spacing={2}
-      component="form"
-      onSubmit={handleSubmit(onSubmitInternal)}
-    >
-      <TextField
-        multiline
-        label="Name"
-        error={!!errors.name}
-        helperText={errors.name?.message?.toString()}
-        {...register("name")}
-      />
-      <Typography>Insert your 12-word privateKey</Typography>
-      <TextField
-        multiline
-        label="privateKey"
-        error={!!errors.privateKey}
-        helperText={errors.privateKey?.message?.toString()}
-        {...register("privateKey")}
-      />
+    <Form form={form} onSubmit={onSubmitInternal}>
+      <Stack direction="column" spacing={2}>
+        <Form.Text multiline label="Name" name="name" />
+        <Typography>Insert your 12-word privateKey</Typography>
+        <Form.Text multiline label="Private Key" name="privateKey" />
 
-      <Stack direction="row" spacing={2} justifyContent="flex-end">
-        <Button color="warning" variant="contained" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button
-          variant="contained"
-          type="submit"
-          disabled={!isDirty || !isValid}
-        >
-          Continue
-        </Button>
+        <Stack direction="row" spacing={2} justifyContent="flex-end">
+          <Button color="warning" variant="contained" onClick={onCancel}>
+            Cancel
+          </Button>
+
+          <Form.Submit label="Continue" />
+        </Stack>
       </Stack>
-    </Stack>
+    </Form>
   );
 }
 
@@ -163,94 +139,57 @@ interface PasswordStepProps {
 }
 
 function PasswordStep({ onSubmit, onCancel }: PasswordStepProps) {
-  const {
-    handleSubmit,
-    register,
-    formState: { errors, isDirty, isValid },
-  } = useForm({
+  const form = useForm({
     mode: "onChange",
     resolver: zodResolver(passwordFormSchema),
   });
+
   const onSubmitInternal = (data: FieldValues) => {
     onSubmit(data.password);
   };
 
   return (
-    <Stack
-      direction="column"
-      spacing={2}
-      component="form"
-      onSubmit={handleSubmit(onSubmitInternal)}
-    >
-      <Typography>Choose a secure password</Typography>
-      <TextField
-        type="password"
-        label="Password"
-        error={!!errors.password}
-        helperText={errors.password?.message?.toString()}
-        {...register("password")}
-      />
-      <TextField
-        type="password"
-        label="Password Confirmation"
-        error={!!errors.passwordConfirmation}
-        helperText={errors.passwordConfirmation?.message?.toString()}
-        {...register("passwordConfirmation")}
-      />
+    <Form form={form} onSubmit={onSubmitInternal}>
+      <Stack direction="column" spacing={2}>
+        <Typography>Choose a secure password</Typography>
+        <Form.Text type="password" label="Password" name="password" />
+        <Form.Text
+          type="password"
+          label="Password Confirmation"
+          name="passwordConfirmation"
+        />
 
-      <Stack direction="row" spacing={2} justifyContent="flex-end">
-        <Button color="warning" variant="contained" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button
-          variant="contained"
-          type="submit"
-          disabled={!isDirty || !isValid}
-        >
-          Continue
-        </Button>
+        <Stack direction="row" spacing={2} justifyContent="flex-end">
+          <Button color="warning" variant="contained" onClick={onCancel}>
+            Cancel
+          </Button>
+
+          <Form.Submit label="Continue" />
+        </Stack>
       </Stack>
-    </Stack>
+    </Form>
   );
 }
 
 function Update({ wallet, onSubmit, onRemove }: Props) {
-  const {
-    register,
-    handleSubmit,
-    formState: { isValid, isDirty, errors },
-  } = useForm({
+  const form = useForm({
     mode: "onBlur",
     resolver: zodResolver(updateSchema),
     defaultValues: wallet,
   });
 
   return (
-    <Stack
-      spacing={2}
-      alignItems="flex-start"
-      component="form"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <TextField
-        label="Name"
-        error={!!errors.name}
-        helperText={errors.name?.message?.toString()}
-        {...register("name")}
-      />
-      <Stack direction="row" spacing={2}>
-        <Button
-          color="primary"
-          variant="contained"
-          type="submit"
-          disabled={!isDirty || !isValid}
-        >
-          Save
-        </Button>
-        <Button color="warning" variant="contained" onClick={onRemove}>
-          Remove
-        </Button>
+    <Form form={form} onSubmit={onSubmit}>
+      <Stack spacing={2} alignItems="flex-start">
+        <Form.Text label="Name" name="name" />
+        <Stack direction="row" spacing={2}>
+          <Form.Submit label="Save" />
+
+          <Button color="warning" variant="contained" onClick={onRemove}>
+            Remove
+          </Button>
+        </Stack>
       </Stack>
-    </Stack>
+    </Form>
   );
 }

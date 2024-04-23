@@ -2,9 +2,9 @@ use std::{sync::Arc, time::Duration};
 
 use async_trait::async_trait;
 use ethers::signers::{coins_bip39::English, MnemonicBuilder, Signer as _};
-use iron_crypto::{self, EncryptedData};
-use iron_dialogs::{Dialog, DialogMsg};
-use iron_types::Address;
+use ethui_crypto::{self, EncryptedData};
+use ethui_dialogs::{Dialog, DialogMsg};
+use ethui_types::Address;
 use secrets::SecretVec;
 use tokio::{
     sync::{Mutex, RwLock},
@@ -132,7 +132,7 @@ impl HDWallet {
             return Err(Error::InvalidKey(params.current));
         };
 
-        let ciphertext = iron_crypto::encrypt(&params.mnemonic, &params.password).unwrap();
+        let ciphertext = ethui_crypto::encrypt(&params.mnemonic, &params.password).unwrap();
 
         Ok(Self {
             name: params.name,
@@ -207,7 +207,7 @@ impl HDWallet {
             };
 
             // if password was given, and correctly decrypts the keystore
-            if let Ok(mnemonic) = iron_crypto::decrypt(&self.ciphertext, &password) {
+            if let Ok(mnemonic) = ethui_crypto::decrypt(&self.ciphertext, &password) {
                 self.store_secret(mnemonic).await;
                 return Ok(());
             }

@@ -1,5 +1,5 @@
 [package]
-name = "iron-networks"
+name = "ethui-networks"
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true
@@ -9,8 +9,8 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-iron-types = { workspace = true }
-iron-broadcast = { workspace = true }
+ethui-types = { workspace = true }
+ethui-broadcast = { workspace = true }
 
 ethers = { workspace = true }
 tauri = { workspace = true }

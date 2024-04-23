@@ -1,10 +1,10 @@
 use ethers::providers::JsonRpcError;
-use iron_types::B256;
+use ethui_types::B256;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error(transparent)]
-    DB(#[from] iron_db::Error),
+    DB(#[from] ethui_db::Error),
 
     #[error("IO error: {0}")]
     IO(#[from] std::io::Error),

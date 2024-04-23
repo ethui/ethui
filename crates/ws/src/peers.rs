@@ -1,7 +1,7 @@
 use std::{collections::HashMap, net::SocketAddr};
 
-use iron_networks::Networks;
-use iron_types::{Address, Affinity, GlobalState, UINotify};
+use ethui_networks::Networks;
+use ethui_types::{Address, Affinity, GlobalState, UINotify};
 use serde::Serialize;
 use serde_json::json;
 use tokio::sync::mpsc;
@@ -16,6 +16,9 @@ pub struct Peer {
     pub socket: SocketAddr,
     #[serde(skip)]
     pub sender: mpsc::UnboundedSender<serde_json::Value>,
+
+    // non-alive peers can represent browser tabs with now web3 connection
+    pub alive: bool,
 }
 
 impl Peer {
@@ -35,6 +38,7 @@ impl Peer {
         let title = params.get("title").cloned();
 
         Self {
+            alive: false,
             socket,
             sender,
             origin,
@@ -55,7 +59,7 @@ impl Peer {
     }
 }
 
-impl From<Peer> for iron_rpc::Handler {
+impl From<Peer> for ethui_rpc::Handler {
     fn from(value: Peer) -> Self {
         Self::new(value.domain())
     }
@@ -72,15 +76,19 @@ impl Peers {
     /// Adds a new peer
     pub async fn add_peer(&mut self, peer: Peer) {
         self.map.insert(peer.socket, peer);
-        iron_broadcast::ui_notify(UINotify::PeersUpdated).await;
+        ethui_broadcast::ui_notify(UINotify::PeersUpdated).await;
         //self.window_snd.send(UINotify::PeersUpdated.into()).unwrap();
     }
 
     /// Removes an existing peer
     pub async fn remove_peer(&mut self, peer: SocketAddr) {
         self.map.remove(&peer);
-        iron_broadcast::ui_notify(UINotify::PeersUpdated).await;
+        ethui_broadcast::ui_notify(UINotify::PeersUpdated).await;
         //self.window_snd.send(UINotify::PeersUpdated.into()).unwrap();
+    }
+
+    pub async fn peer_alive(&mut self, peer: Peer) {
+        self.map.get_mut(&peer.socket).unwrap().alive = true;
     }
 
     /// Broadcasts an `accountsChanged` event to all peers
@@ -107,7 +115,8 @@ impl Peers {
             });
 
             for (_, peer) in self.map.iter() {
-                if iron_connections::utils::affinity_matches(peer.domain(), &domain, affinity).await
+                if ethui_connections::utils::affinity_matches(peer.domain(), &domain, affinity)
+                    .await
                 {
                     tracing::info!(
                         event = "peer chain changed",
@@ -134,8 +143,12 @@ impl Peers {
         });
     }
 
-    pub(crate) fn all_by_domain(&self) -> HashMap<String, Vec<Peer>> {
+    pub(crate) fn by_domain(&self) -> HashMap<String, Vec<Peer>> {
         self.map.values().fold(Default::default(), |mut acc, p| {
+            if !p.alive {
+                return acc;
+            }
+
             acc.entry(p.domain().unwrap_or_default())
                 .or_default()
                 .push(p.clone());

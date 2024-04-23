@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": " INSERT OR REPLACE INTO tokens_metadata (contract, chain_id, decimals, name, symbol)\n                        VALUES (?,?,?,?,?) ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": []
+  },
+  "hash": "541de45d00b6f30d546525cf483fceea2489c85ce33ec31297d702329c2b8da0"
+}

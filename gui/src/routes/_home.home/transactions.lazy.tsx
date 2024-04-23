@@ -2,6 +2,7 @@ import { CallMade, CallReceived, NoteAdd } from "@mui/icons-material";
 import {
   Badge,
   Box,
+  Button,
   CircularProgress,
   Grid,
   Stack,
@@ -12,11 +13,10 @@ import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import truncateEthAddress from "truncate-eth-address";
 import { Abi, Address, formatEther, formatGwei } from "viem";
-import { useTransaction, useWaitForTransaction } from "wagmi";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
-import { Paginated, Pagination, Tx } from "@iron/types";
-import { SolidityCall } from "@iron/react/components";
+import { BlockNumber, SolidityCall } from "@ethui/react/components";
+import { Paginated, PaginatedTx, Pagination, Tx } from "@ethui/types";
 import { useEventListener, useInvoke } from "@/hooks";
 import { useNetworks, useWallets } from "@/store";
 import {
@@ -37,7 +37,7 @@ export function Txs() {
   const account = useWallets((s) => s.address);
   const chainId = useNetworks((s) => s.current?.chain_id);
 
-  const [pages, setPages] = useState<Paginated<Tx>[]>([]);
+  const [pages, setPages] = useState<Paginated<PaginatedTx>[]>([]);
 
   const loadMore = useCallback(() => {
     let pagination: Pagination = {};
@@ -47,7 +47,7 @@ export function Txs() {
       pagination.page = (pagination.page || 0) + 1;
     }
 
-    invoke<Paginated<Tx>>("db_get_transactions", {
+    invoke<Paginated<PaginatedTx>>("db_get_transactions", {
       address: account,
       chainId,
       pagination,
@@ -106,25 +106,29 @@ export function Txs() {
 
 interface SummaryProps {
   account: Address;
-  tx: Tx;
+  tx: PaginatedTx;
 }
 function Summary({ account, tx }: SummaryProps) {
   return (
-    <Stack direction="row" spacing={1}>
+    <Stack direction="row" alignItems="center" spacing={3}>
       <Icon {...{ tx, account }} />
-      <AddressView address={tx.from} /> <span>→</span>
-      {tx.to ? (
-        <AddressView address={tx.to} tokenIcon />
-      ) : (
-        <Typography component="span">Contract Deploy</Typography>
-      )}
+
+      <BlockNumber number={tx.blockNumber} />
+      <Stack direction="row" alignItems="center" spacing={1}>
+        <AddressView address={tx.from} /> <span>→</span>
+        {tx.to ? (
+          <AddressView address={tx.to} />
+        ) : (
+          <Typography component="span">Contract Deploy</Typography>
+        )}
+      </Stack>
     </Stack>
   );
 }
 
 interface IconProps {
   account: Address;
-  tx: Tx;
+  tx: PaginatedTx;
 }
 
 function Icon({ account, tx }: IconProps) {
@@ -142,7 +146,7 @@ function Icon({ account, tx }: IconProps) {
 }
 
 interface DetailsProps {
-  tx: Tx;
+  tx: PaginatedTx;
   chainId: number;
 }
 
@@ -153,37 +157,44 @@ BigInt.prototype.toJSON = function (): string {
 };
 
 function Details({ tx, chainId }: DetailsProps) {
-  const { data: transaction } = useTransaction({ hash: tx.hash });
-  const { data: receipt } = useWaitForTransaction({ hash: tx.hash });
-  const { data: abi } = useInvoke<Abi>("get_contract_abi", {
+  const { data: fullTx } = useInvoke<Tx>("db_get_transaction_by_hash", {
+    hash: tx.hash,
+    chainId,
+  });
+  // const { data: transaction } = useTransaction({ hash: tx.hash, chainId });
+  const { data: abi } = useInvoke<Abi>("db_get_contract_abi", {
     address: tx.to,
     chainId,
   });
+
+  if (!fullTx) return null;
+
+  const value = BigInt(fullTx.value || 0);
 
   return (
     <Grid container rowSpacing={1}>
       <Datapoint
         label="from"
-        value={<AddressView address={tx.from} />}
+        value={<AddressView icon address={tx.from} />}
         size="small"
       />
       <Datapoint
         label="to"
-        value={tx.to ? <AddressView tokenIcon address={tx.to} /> : ""}
+        value={tx.to ? <AddressView icon address={tx.to} /> : ""}
         size="small"
       />
       <Datapoint
         label="value"
         value={
-          <ContextMenuWithTauri copy={BigInt(tx.value)}>
-            {formatEther(BigInt(tx.value))} Ξ
+          <ContextMenuWithTauri copy={value}>
+            {formatEther(value)} Ξ
           </ContextMenuWithTauri>
         }
         size="small"
       />
       <Datapoint
         label="Block #"
-        value={receipt && receipt.blockNumber.toString()}
+        value={fullTx?.blockNumber?.toString()}
         size="small"
       />
       <Datapoint
@@ -191,49 +202,72 @@ function Details({ tx, chainId }: DetailsProps) {
         value={truncateEthAddress(tx.hash)}
         size="small"
       />
-      <Datapoint label="nonce" value={transaction?.nonce} size="small" />
+      <Datapoint label="nonce" value={fullTx.nonce} size="small" />
       <Datapoint
         label="data"
         value={
-          transaction && (
-            <SolidityCall
-              value={BigInt(tx.value)}
-              data={transaction.input}
-              from={tx.from}
-              to={tx.to}
-              chainId={chainId}
-              abi={abi}
-              ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
-            />
-          )
+          <SolidityCall
+            value={value}
+            data={fullTx.data}
+            from={tx.from}
+            to={tx.to}
+            chainId={chainId}
+            abi={abi}
+            ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
+          />
         }
       />
-      <Datapoint label="type" value={transaction?.type} size="small" />
+      <Datapoint label="type" value={formatTxType(fullTx?.type)} size="small" />
       {/* TODO: other txs types */}
-      {transaction?.type == "eip1559" && (
+      {fullTx?.type == 2 && (
         <>
           <Datapoint
             label="maxFeePerGas"
-            value={`${formatGwei(transaction.maxFeePerGas)} gwei`}
+            value={`${fullTx.maxFeePerGas && formatGwei(BigInt(fullTx.maxFeePerGas))} gwei`}
             size="small"
           />
           <Datapoint
             label="maxPriorityFeePerGas"
-            value={`${formatGwei(transaction.maxPriorityFeePerGas)} gwei`}
+            value={`${fullTx.maxPriorityFeePerGas && formatGwei(BigInt(fullTx.maxPriorityFeePerGas))} gwei`}
             size="small"
           />
         </>
       )}
       <Datapoint
         label="gasLimit"
-        value={transaction && `${formatGwei(transaction?.gas)} gwei`}
+        value={fullTx.gasLimit && `${formatGwei(BigInt(fullTx.gasLimit))} gwei`}
         size="small"
       />
       <Datapoint
         label="gasUsed"
-        value={receipt && `${formatGwei(receipt?.gasUsed)} gwei`}
+        value={fullTx.gasUsed && `${formatGwei(BigInt(fullTx.gasUsed))} gwei`}
         size="medium"
       />
+
+      <Grid item xs={12}>
+        <Button variant="contained" onClick={() => resend(fullTx)}>
+          Send again
+        </Button>
+      </Grid>
     </Grid>
   );
+}
+
+function resend({ from, to, value, data }: Tx) {
+  invoke<string>("rpc_send_transaction", {
+    params: { from, to, value, data },
+  });
+}
+
+function formatTxType(type: number | undefined): import("react").ReactNode {
+  switch (type) {
+    case 0:
+      return "Legacy";
+    case 1:
+      return "EIP-1559";
+    case 2:
+      return "EIP-2930";
+    case 3:
+      return "EIP-4844";
+  }
 }

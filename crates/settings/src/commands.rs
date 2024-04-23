@@ -1,4 +1,4 @@
-use iron_types::{Address, GlobalState};
+use ethui_types::{Address, GlobalState};
 
 use super::{DarkMode, Result, SerializedSettings, Settings};
 

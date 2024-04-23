@@ -4,12 +4,12 @@ use ethers::{
     prelude::*,
     types::{serde_helpers::StringifiedNumeric, transaction::eip2718::TypedTransaction},
 };
-use iron_connections::Ctx;
-use iron_dialogs::{Dialog, DialogMsg};
-use iron_networks::Network;
-use iron_settings::Settings;
-use iron_types::{Address, GlobalState, ToAlloy, ToEthers};
-use iron_wallets::{WalletControl, WalletType, Wallets};
+use ethui_connections::Ctx;
+use ethui_dialogs::{Dialog, DialogMsg};
+use ethui_networks::Network;
+use ethui_settings::Settings;
+use ethui_types::{Address, GlobalState, ToAlloy, ToEthers};
+use ethui_wallets::{WalletControl, WalletType, Wallets};
 
 use crate::{Error, Result};
 
@@ -22,7 +22,7 @@ pub struct SendTransaction {
     pub wallet_path: String,
     pub wallet_type: WalletType,
     pub request: TypedTransaction,
-    pub signer: Option<SignerMiddleware<Provider<Http>, iron_wallets::Signer>>,
+    pub signer: Option<SignerMiddleware<Provider<RetryClient<Http>>, ethui_wallets::Signer>>,
 }
 
 impl<'a> SendTransaction {
@@ -45,7 +45,7 @@ impl<'a> SendTransaction {
         self
     }
 
-    pub async fn finish(&mut self) -> Result<PendingTransaction<'_, Http>> {
+    pub async fn finish(&mut self) -> Result<PendingTransaction<'_, RetryClient<Http>>> {
         // inner scope so as not to lock wallets for the entire duration of the tx review
         let skip = {
             let wallets = Wallets::read().await;
@@ -64,7 +64,7 @@ impl<'a> SendTransaction {
         }
     }
 
-    async fn dialog_and_send(&mut self) -> Result<PendingTransaction<'_, Http>> {
+    async fn dialog_and_send(&mut self) -> Result<PendingTransaction<'_, RetryClient<Http>>> {
         let mut params = serde_json::to_value(&self.request).unwrap();
         params["chainId"] = self.network.chain_id.into();
         params["walletType"] = self.wallet_type.to_string().into();
@@ -101,7 +101,7 @@ impl<'a> SendTransaction {
         let chain_id = self.network.chain_id;
         let request = self.simulation_request().await?;
 
-        if let Ok(sim) = iron_simulator::commands::simulator_run(chain_id, request).await {
+        if let Ok(sim) = ethui_simulator::commands::simulator_run(chain_id, request).await {
             dialog
                 .send("simulation-result", Some(serde_json::to_value(sim)?))
                 .await?
@@ -110,7 +110,7 @@ impl<'a> SendTransaction {
         Ok(())
     }
 
-    async fn send(&mut self) -> Result<PendingTransaction<'_, Http>> {
+    async fn send(&mut self) -> Result<PendingTransaction<'_, RetryClient<Http>>> {
         self.build_signer().await?;
         let signer = self.signer.as_ref().unwrap();
 
@@ -137,10 +137,10 @@ impl<'a> SendTransaction {
         Ok(())
     }
 
-    async fn simulation_request(&self) -> Result<iron_simulator::Request> {
+    async fn simulation_request(&self) -> Result<ethui_simulator::Request> {
         let tx_request = self.request.clone();
 
-        Ok(iron_simulator::Request {
+        Ok(ethui_simulator::Request {
             from: self.from().await.map_err(|_| Error::CannotSimulate)?,
             to: tx_request
                 .to()

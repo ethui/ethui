@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Stack, TextField } from "@mui/material";
-import { useForm } from "react-hook-form";
+import { Button, Stack } from "@mui/material";
+import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import {
@@ -8,7 +8,8 @@ import {
   mnemonicSchema,
   PlaintextWallet,
   Wallet,
-} from "@iron/types/wallets";
+} from "@ethui/types/wallets";
+import { Form } from "@ethui/react/components";
 
 const schema = z.object({
   name: z.string().min(1),
@@ -27,70 +28,33 @@ export interface Props {
 }
 
 export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { isValid, isDirty, errors },
-  } = useForm({
+  const form = useForm<Schema>({
     mode: "onBlur",
     resolver: zodResolver(schema),
-    defaultValues: wallet,
+    defaultValues: wallet as Schema,
   });
 
-  const prepareAndSubmit = (data: Schema) => {
-    onSubmit({ type: "plaintext", ...data });
-    reset(data);
+  const prepareAndSubmit = (data: FieldValues) => {
+    onSubmit({ type: "plaintext", ...(data as Schema) });
+    form.reset(data);
   };
 
   return (
-    <Stack
-      spacing={2}
-      alignItems="flex-start"
-      component="form"
-      onSubmit={handleSubmit(prepareAndSubmit)}
-    >
-      <TextField
-        label="Name"
-        error={!!errors.name}
-        helperText={errors.name?.message?.toString()}
-        {...register("name")}
-      />
-      <TextField
-        label="Mnemonic"
-        error={!!errors.mnemonic}
-        helperText={errors.mnemonic?.message?.toString() || ""}
-        fullWidth
-        {...register("mnemonic")}
-      />
-      <TextField
-        label="Derivation Path"
-        spellCheck="false"
-        error={!!errors.derivationPath}
-        helperText={errors.derivationPath?.message?.toString() || ""}
-        {...register("derivationPath")}
-      />
-      <TextField
-        label="Count"
-        spellCheck="false"
-        error={!!errors.count}
-        type="number"
-        helperText={errors.count?.message?.toString() || ""}
-        {...register("count", { valueAsNumber: true })}
-      />
-      <Stack direction="row" spacing={2}>
-        <Button
-          color="primary"
-          variant="contained"
-          type="submit"
-          disabled={!isDirty || !isValid}
-        >
-          Save
-        </Button>
-        <Button color="warning" variant="contained" onClick={onRemove}>
-          Remove
-        </Button>
+    <Form form={form} onSubmit={prepareAndSubmit}>
+      <Stack spacing={2} alignItems="flex-start">
+        <Form.Text label="Name" name="name" />
+        <Form.Text label="Mnemonic" name="mnemonic" fullWidth />
+        <Form.Text label="Derivation Path" name="derivationPath" />
+        <Form.Number label="Count" name="count" />
+
+        <Stack direction="row" spacing={2}>
+          <Form.Submit label="Save" />
+
+          <Button color="warning" variant="contained" onClick={onRemove}>
+            Remove
+          </Button>
+        </Stack>
       </Stack>
-    </Stack>
+    </Form>
   );
 }

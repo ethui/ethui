@@ -3,9 +3,9 @@ use std::{sync::Arc, time::Duration};
 use async_trait::async_trait;
 use coins_bip32::prelude::SigningKey;
 use ethers::{signers, signers::Signer as _};
-use iron_crypto::{self, EncryptedData};
-use iron_dialogs::{Dialog, DialogMsg};
-use iron_types::{Address, ToAlloy};
+use ethui_crypto::{self, EncryptedData};
+use ethui_dialogs::{Dialog, DialogMsg};
+use ethui_types::{Address, ToAlloy};
 use secrets::SecretVec;
 use tokio::{
     sync::{Mutex, RwLock},
@@ -103,7 +103,7 @@ impl PrivateKeyWallet {
 
         let wallet: signers::Wallet<SigningKey> = key.clone().try_into().unwrap();
 
-        let ciphertext = iron_crypto::encrypt(&key, &params.password).unwrap();
+        let ciphertext = ethui_crypto::encrypt(&key, &params.password).unwrap();
 
         Ok(Self {
             name: params.name,
@@ -142,7 +142,7 @@ impl PrivateKeyWallet {
             };
 
             // if password was given, and correctly decrypts the keystore
-            if let Ok(private_key) = iron_crypto::decrypt(&self.ciphertext, &password) {
+            if let Ok(private_key) = ethui_crypto::decrypt(&self.ciphertext, &password) {
                 self.store_secret(private_key).await;
                 return Ok(());
             }

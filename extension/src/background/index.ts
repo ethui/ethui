@@ -41,7 +41,12 @@ async function notifyDevtools(
       timestamp: Date.now(),
     });
   } catch (e: unknown) {
-    if (!e?.message?.includes("Receiving end does not exist.")) {
+    if (
+      !(
+        e instanceof Error &&
+        e.message.includes("Receiving end does not exist.")
+      )
+    ) {
       throw e;
     }
   }
@@ -49,7 +54,7 @@ async function notifyDevtools(
 
 /**
  * Set up connection stream to new content scripts.
- * The stream data is attached to a WebsocketConnection to server run by the Iron desktop app
+ * The stream data is attached to a WebsocketConnection to server run by the ethui desktop app
  *
  * The WS connection is created lazily (when the first data packet is sent).
  * This behaviour prevents initiating connections for browser tabs where `window.ethereum` is not actually used
@@ -99,7 +104,7 @@ export function setupProviderConnection(port: Runtime.Port) {
 }
 
 /**
- * The URL of the Iron server if given from the settings, with connection metadata being appended as URL params
+ * The URL of the ethui server if given from the settings, with connection metadata being appended as URL params
  */
 function endpoint(port: Runtime.Port) {
   return `${settings.endpoint}?${connParams(port)}`;
@@ -108,7 +113,7 @@ function endpoint(port: Runtime.Port) {
 /**
  * URL-encoded connection info
  *
- * This includes all info that may be useful for the Iron server.
+ * This includes all info that may be useful for the ethui server.
  */
 function connParams(port: Runtime.Port) {
   const sender = port.sender;

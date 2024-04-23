@@ -1,25 +1,29 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  Button,
   Chip,
   CircularProgress,
   Stack,
   TextField,
+  SpeedDial,
+  SpeedDialIcon,
 } from "@mui/material";
 import { FieldValues, useForm } from "react-hook-form";
-import { Address } from "viem";
 import { z } from "zod";
 import { createLazyFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import debounce from "lodash-es/debounce";
 
-import { useApi } from "@/hooks";
-import { useContracts, useNetworks } from "@/store";
+import { Contract } from "@ethui/types";
+import { ChainView, Form } from "@ethui/react/components";
 import {
-  ABIForm,
+  Modal,
   AddressView,
+  ABIForm,
   Accordion,
   AccordionDetails,
   AccordionSummary,
-} from "@/components";
+} from "@/components/";
+import { useContracts, useNetworks } from "@/store";
 import { Navbar } from "@/components/Home/Navbar";
 
 export const Route = createLazyFileRoute("/_home/home/contracts")({
@@ -27,34 +31,58 @@ export const Route = createLazyFileRoute("/_home/home/contracts")({
 });
 
 export function Contracts() {
-  const chainId = useNetworks((s) => s.current?.chain_id);
-  const addresses = useContracts((s) => s.addresses);
+  const [filter, setFilter] = useState("");
+  const contracts = useContracts((s) => s.filteredContracts(filter));
+  const [addContractOpen, setAddContractOpen] = useState(false);
 
   return (
     <>
       <Navbar>Contracts</Navbar>
-      {chainId != 31337 && <AddressForm />}
-      {Array.from(addresses || []).map((address) => (
-        <Contract key={address} address={address} />
+
+      <Filter onChange={(f) => setFilter(f)} />
+
+      {Array.from(contracts || []).map((contract) => (
+        <ContractView key={contract.address} contract={contract} />
       ))}
+
+      <SpeedDial
+        ariaLabel="Add contract"
+        sx={{ position: "absolute", bottom: 16, right: 16 }}
+        icon={<SpeedDialIcon />}
+        onClick={() => setAddContractOpen(true)}
+      ></SpeedDial>
+
+      <Modal open={addContractOpen} onClose={() => setAddContractOpen(false)}>
+        <AddressForm />
+      </Modal>
     </>
   );
 }
 
-function Contract({ address }: { address: Address }) {
-  const chainId = useNetworks((s) => s.current?.chain_id);
-  const { data: name } = useApi<string>("/contracts/name", {
-    address,
-    chainId,
-  });
+function Filter({ onChange }: { onChange: (f: string) => void }) {
+  return (
+    <form>
+      <Stack direction="row" alignItems="stretch" spacing={2}>
+        <TextField
+          onChange={debounce((e) => onChange(e.target.value), 100)}
+          fullWidth
+          placeholder="Filter..."
+        />
+      </Stack>
+    </form>
+  );
+}
 
-  if (!chainId) return null;
-
+function ContractView({
+  contract: { address, name, chainId },
+}: {
+  contract: Contract;
+}) {
   return (
     <Accordion>
       <AccordionSummary>
         <AddressView address={address} />
-        <Chip sx={{ marginLeft: 2 }} label={name} />
+        {name && <Chip sx={{ marginLeft: 2 }} label={name} />}
       </AccordionSummary>
       <AccordionDetails>
         <ABIForm address={address} chainId={chainId} />
@@ -64,41 +92,54 @@ function Contract({ address }: { address: Address }) {
 }
 
 function AddressForm() {
+  const [networks, currentNetwork] = useNetworks((s) => [
+    s.networks,
+    s.current,
+  ]);
   const schema = z.object({
+    chainId: z.number(),
     address: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid format"),
   });
 
+  type Schema = z.infer<typeof schema>;
+
   const add = useContracts((s) => s.add);
 
-  const {
-    handleSubmit,
-    formState: { isValid, errors, isSubmitting },
-    register,
-  } = useForm({
+  const form = useForm({
     mode: "onChange",
     resolver: zodResolver(schema),
+    defaultValues: { chainId: currentNetwork?.chain_id } as Schema,
   });
 
-  const onSubmit = (data: FieldValues) => add(data.address);
+  const onSubmit = (data: FieldValues) => add(data.chainId, data.address);
+
+  if (!currentNetwork) return null;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Stack direction="row" spacing={2}>
-        <TextField
-          label="Contract Address"
-          error={!!errors.address}
-          helperText={errors.address?.message?.toString() || ""}
-          fullWidth
-          {...register("address")}
+    <Form form={form} onSubmit={onSubmit}>
+      <Stack alignItems="flex-start" spacing={2}>
+        <Form.Select
+          label="Network"
+          name="chainId"
+          defaultValue={currentNetwork.chain_id}
+          items={networks}
+          toValue={(n) => n.chain_id.toString()}
+          render={({ chain_id, name }) => (
+            <ChainView chainId={chain_id} name={name} />
+          )}
         />
-        <Button
-          variant="contained"
-          type="submit"
-          disabled={!isValid || isSubmitting}
-        >
-          {isSubmitting ? <CircularProgress /> : "Add"}
-        </Button>
+
+        <Form.Text
+          label="Contract Address"
+          name="address"
+          size="small"
+          fullWidth
+        />
+
+        <Form.Submit
+          label={form.formState.isSubmitting ? <CircularProgress /> : "Add"}
+        />
       </Stack>
-    </form>
+    </Form>
   );
 }

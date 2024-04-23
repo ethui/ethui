@@ -3,15 +3,7 @@ vulnerability = "deny"
 unmaintained = "warn"
 yanked = "warn"
 notice = "warn"
-ignore = [
-  # kuchiki is unmaintained
-  "RUSTSEC-2023-0019",
-  # lbisqlite3-sys vulneratility
-  # currently waiting for an sqlx update
-  "RUSTSEC-2022-0090",
-  # sqlx again
-  "RUSTSEC-2023-0052",
-]
+ignore = ["RUSTSEC-2023-0081"]
 
 [licenses]
 allow = [
@@ -25,6 +17,7 @@ allow = [
   "MPL-2.0",
   "BSD-2-Clause",
   "BSD-3-Clause",
+  "BSL-1.0",
   "OpenSSL",
   "CC0-1.0",
 ]

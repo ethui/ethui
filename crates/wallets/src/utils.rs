@@ -1,5 +1,5 @@
 use ethers::signers::{coins_bip39::English, HDPath, MnemonicBuilder, Signer};
-use iron_types::{Address, ToAlloy};
+use ethui_types::{Address, ToAlloy};
 use once_cell::sync::Lazy;
 use tokio::sync::Mutex;
 

@@ -8,10 +8,9 @@ use ethers::{
     },
     types::{Filter, Log, Trace, U64},
 };
+use ethui_abis::{IERC20, IERC721};
+use ethui_types::{Address, Erc721Token, Erc721TokenDetails, ToEthers, TokenMetadata, UINotify};
 use futures::StreamExt;
-use iron_abis::{IERC20, IERC721};
-use iron_db::DB;
-use iron_types::{Address, Erc721Token, Erc721TokenDetails, ToEthers, TokenMetadata, UINotify};
 use tokio::sync::mpsc;
 use tracing::warn;
 use url::Url;
@@ -29,7 +28,6 @@ pub struct Ctx {
     chain_id: u32,
     http_url: Url,
     ws_url: Url,
-    db: DB,
 }
 
 #[derive(Debug)]
@@ -41,14 +39,13 @@ enum Msg {
 }
 
 impl Tracker {
-    pub fn run(chain_id: u32, http_url: Url, ws_url: Url, db: DB) -> Self {
+    pub fn run(chain_id: u32, http_url: Url, ws_url: Url) -> Self {
         tracing::debug!("Starting anvil tracker");
 
         let ctx = Ctx {
             chain_id,
             http_url,
             ws_url,
-            db,
         };
 
         // TODO: I think this could be a oneshot::channel, but I was running into `Copy` trait problems
@@ -198,27 +195,27 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
     let mut caught_up = false;
 
     let provider: Provider<Http> = Provider::<Http>::try_from(&ctx.http_url.to_string()).unwrap();
+    let db = ethui_db::get();
 
     while let Some(msg) = block_rcv.recv().await {
         match msg {
             Msg::Reset => {
-                ctx.db.truncate_events(ctx.chain_id).await?;
+                db.truncate_events(ctx.chain_id).await?;
                 caught_up = true
             }
             Msg::CaughtUp => caught_up = true,
             Msg::Traces(traces) => {
-                let events = expand_traces(traces, &provider).await;
-                ctx.db.save_events(ctx.chain_id, events).await?
+                let events = expand_traces(traces, &provider, ctx.chain_id).await;
+                db.save_events(ctx.chain_id, events).await?
             }
             Msg::Logs(logs) => {
                 let events = expand_logs(logs);
-                ctx.db.save_events(ctx.chain_id, events).await?
+                db.save_events(ctx.chain_id, events).await?
             }
         }
 
         /* ERC721 - contract tokens' uri and metadata  */
-        for erc721_token in ctx
-            .db
+        for erc721_token in db
             .get_erc721_tokens_with_missing_data(ctx.chain_id)
             .await?
             .into_iter()
@@ -228,21 +225,19 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
             let owner = erc721_token.owner;
             let erc721_data = fetch_erc721_token_data(erc721_token, &provider).await?;
 
-            ctx.db
-                .save_erc721_token_data(
-                    address,
-                    ctx.chain_id,
-                    token_id,
-                    owner,
-                    erc721_data.uri,
-                    erc721_data.metadata,
-                )
-                .await?;
+            db.save_erc721_token_data(
+                address,
+                ctx.chain_id,
+                token_id,
+                owner,
+                erc721_data.uri,
+                erc721_data.metadata,
+            )
+            .await?;
         }
 
         /* ERC721 - contract's name and symbol  */
-        for erc721_address in ctx
-            .db
+        for erc721_address in db
             .get_erc721_collections_with_missing_data(ctx.chain_id)
             .await?
             .into_iter()
@@ -252,21 +247,18 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
             let name = contract.name().call().await.unwrap_or_default();
             let symbol = contract.symbol().call().await.unwrap_or_default();
 
-            ctx.db
-                .save_erc721_collection(address, ctx.chain_id, name, symbol)
+            db.save_erc721_collection(address, ctx.chain_id, name, symbol)
                 .await?;
         }
 
-        for address in ctx
-            .db
+        for address in db
             .get_erc20_missing_metadata(ctx.chain_id)
             .await?
             .into_iter()
         {
             let metadata = fetch_erc20_metadata(address, &provider).await;
 
-            ctx.db
-                .save_erc20_metadata(address, ctx.chain_id, metadata)
+            db.save_erc20_metadata(ctx.chain_id, metadata)
                 .await
                 .unwrap();
         }
@@ -274,9 +266,11 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
         // don't emit events until we're catching up
         // otherwise we spam too much during that phase
         if caught_up {
-            iron_broadcast::ui_notify(UINotify::TxsUpdated).await;
-            iron_broadcast::ui_notify(UINotify::BalancesUpdated).await;
-            iron_broadcast::ui_notify(UINotify::Erc721Updated).await;
+            ethui_broadcast::ui_notify(UINotify::TxsUpdated).await;
+            ethui_broadcast::ui_notify(UINotify::BalancesUpdated).await;
+            ethui_broadcast::ui_notify(UINotify::Erc721Updated).await;
+            ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
+            ethui_broadcast::contract_found().await;
         }
     }
 
@@ -287,9 +281,10 @@ pub async fn fetch_erc20_metadata(address: Address, client: &Provider<Http>) -> 
     let contract = IERC20::new(address.to_ethers(), Arc::new(client));
 
     TokenMetadata {
-        name: contract.name().call().await.unwrap_or_default(),
-        symbol: contract.symbol().call().await.unwrap_or_default(),
-        decimals: contract.decimals().call().await.unwrap_or_default(),
+        address,
+        name: contract.name().call().await.ok(),
+        symbol: contract.symbol().call().await.ok(),
+        decimals: contract.decimals().call().await.ok(),
     }
 }
 

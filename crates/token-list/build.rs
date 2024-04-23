@@ -41,7 +41,7 @@ fn should_update() -> Result<bool> {
             .duration_since(std::time::UNIX_EPOCH)
             .expect("time went backwards")
             .as_secs();
-        let one_month_ago = (Utc::now() - Duration::days(30)).timestamp() as u64;
+        let one_month_ago = (Utc::now() - Duration::try_days(30).unwrap()).timestamp() as u64;
 
         return Ok(modified_date < one_month_ago);
     }

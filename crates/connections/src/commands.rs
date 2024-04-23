@@ -1,5 +1,5 @@
-use iron_networks::Networks;
-use iron_types::{Affinity, GlobalState};
+use ethui_networks::Networks;
+use ethui_types::{Affinity, GlobalState};
 
 use crate::{Error, Result, Store};
 
@@ -21,7 +21,7 @@ pub async fn connections_set_affinity(domain: &str, affinity: Affinity) -> Resul
     };
 
     Store::write().await.set_affinity(domain, affinity)?;
-    iron_broadcast::chain_changed(new_chain_id, Some(domain.into()), affinity).await;
+    ethui_broadcast::chain_changed(new_chain_id, Some(domain.into()), affinity).await;
 
     Ok(())
 }

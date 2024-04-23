@@ -1,4 +1,4 @@
-import { Stack, useTheme, SxProps, Box } from "@mui/material";
+import { Stack, useTheme, SxProps } from "@mui/material";
 import { Address, Abi, AbiFunction } from "abitype";
 import { formatUnits, decodeFunctionData, parseAbi } from "viem";
 
@@ -13,7 +13,6 @@ export interface SolidityCallProps {
   chainId?: number;
   decimals?: number;
   abi?: Abi | string[];
-  sx?: SxProps;
   ArgProps?: Pick<ArgProps, "addressRenderer" | "defaultRenderer">;
 }
 
@@ -25,24 +24,14 @@ export function SolidityCall({
   chainId,
   decimals = 18,
   abi,
-  sx = {},
   ArgProps = {},
 }: SolidityCallProps) {
-  const theme = useTheme();
-
   const isDeploy = !to && !!data;
   const isCall = to && !!data && data.length > 0 && data !== "0x";
   const isFallback = !!to && (!data || data === "0x");
 
   return (
-    <Box
-      sx={{
-        backgroundColor: theme.palette.highlight1.main,
-        p: 2,
-        maxWidth: "100%",
-        ...sx,
-      }}
-    >
+    <>
       {isDeploy && <Deploy {...{ from, data, value, decimals, ArgProps }} />}
       {isCall && (
         <Call
@@ -60,7 +49,7 @@ export function SolidityCall({
       )}
 
       {isFallback && <Fallback {...{ value, from, to, decimals, ArgProps }} />}
-    </Box>
+    </>
   );
 }
 
@@ -76,7 +65,6 @@ function Deploy({ value, from, decimals, ArgProps }: DeployProps) {
   return (
     <>
       <Stack direction="row" spacing={1}>
-        <Typography mono>Sending</Typography>
         <Arg
           label="Ξ"
           type="uint256"
@@ -108,7 +96,6 @@ interface FallbackProps {
 function Fallback({ value, from, to, decimals, ArgProps }: FallbackProps) {
   return (
     <Stack direction="row" spacing={1}>
-      <Typography mono>Sending</Typography>
       <Arg
         label="Ξ"
         type="uint256"
@@ -204,7 +191,11 @@ function Arg({
   addressRenderer,
   defaultRenderer = (v: string | bigint) => (
     <ClickToCopy text={v}>
-      <Typography mono>{v.toString()}</Typography>
+      <Typography mono>
+        {JSON.stringify(v, (_k, v) => {
+          return typeof v === "bigint" ? v.toString(16) : v;
+        })}
+      </Typography>
     </ClickToCopy>
   ),
 }: ArgProps) {
@@ -281,7 +272,6 @@ function parseCall(data: `0x${string}`, abi: Abi | string[] | undefined) {
     });
 
     label = decoded?.functionName;
-    console.log(args);
   } catch (e) {
     console.log(e);
   }

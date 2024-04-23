@@ -19,13 +19,13 @@ jobs:
       version: ${{ steps.get-version.outputs.version }}
       release_id: ${{ steps.get-id.outputs.id }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # get the current draft release
       - id: get-tag
         name: get tag
         run: |
-          echo "tag=$(gh api /repos/iron-wallet/iron/releases |\
+          echo "tag=$(gh api /repos/ethui/ethui/releases |\
             jq -r '.[] | select(.draft == true) | .tag_name')" \
             >> $GITHUB_OUTPUT
         env:
@@ -44,7 +44,7 @@ jobs:
       - id: get-id
         name: get release ID
         run: |
-          echo "id=$(gh api /repos/iron-wallet/iron/releases |\
+          echo "id=$(gh api /repos/ethui/ethui/releases |\
             jq -r '.[] | select(.draft == true) | .id')" \
             >> $GITHUB_OUTPUT
         env:
@@ -56,7 +56,7 @@ jobs:
     needs: [setup]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: |
           for name in $(gh release view ${{needs.setup.outputs.tag}} --json assets | jq -r '.assets[].name'); do
             gh release delete-asset ${{needs.setup.outputs.tag}} $name
@@ -74,7 +74,7 @@ jobs:
         platform: [ubuntu-20.04, macos-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: install dependencies (ubuntu)
         if: matrix.platform == 'ubuntu-20.04'
@@ -103,12 +103,14 @@ jobs:
 
       - run: npm install -g yarn
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           cache: "yarn"
           node-version-file: ".tool-versions"
 
-      - run: yarn install --network-timeout 1000000
+      - run: yarn install --frozen-lockfile --network-timeout 1000000
+
+      - run: icons/generate.sh
 
       - uses: tauri-apps/tauri-action@v0
         id: tauri
@@ -124,48 +126,48 @@ jobs:
     needs: [setup, app]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - run: npm install -g yarn
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           cache: "yarn"
           node-version-file: ".tool-versions"
 
       - name: Install dependencies
-        run: yarn workspace @iron/extension install
+        run: yarn workspace @ethui/extension install
 
       - name: Create chrome bundle
-        run: yarn workspace @iron/extension build --target chrome --version ${{ needs.setup.outputs.version }}
+        run: yarn workspace @ethui/extension build --target chrome --version ${{ needs.setup.outputs.version }}
 
       - name: Create firefox bundle
-        run: yarn workspace @iron/extension build --target firefox --version ${{ needs.setup.outputs.version }}
+        run: yarn workspace @ethui/extension build --target firefox --version ${{ needs.setup.outputs.version }}
 
       - name: Upload to release
         run: gh release upload ${{ needs.setup.outputs.tag }} ./extension/dist/*.{crx,zip,xpi}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Submit to Google
-        run: npx chrome-webstore-upload-cli@2 upload --source ./extension/dist/chrome --auto-publish
-        env:
-          EXTENSION_ID: ${{ secrets.CHROME_WEB_EXT_ID }}
-          CLIENT_ID: ${{ secrets.CHROME_WEB_EXT_CLIENT_ID }}
-          CLIENT_SECRET: ${{ secrets.CHROME_WEB_EXT_CLIENT_SECRET }}
-          REFRESH_TOKEN: ${{ secrets.CHROME_WEB_EXT_REFRESH_TOKEN }}
-
-      - name: Submit to Mozilla
-        run: npx web-ext-submit@7 --source-dir ./extension/dist/firefox
-        env:
-          WEB_EXT_API_KEY: ${{ secrets.FIREFOX_WEB_EXT_API_KEY }}
-          WEB_EXT_API_SECRET: ${{ secrets.FIREFOX_WEB_EXT_API_SECRET }}
+      # - name: Submit to Google
+      #   run: npx chrome-webstore-upload-cli@2 upload --source ./extension/dist/chrome --auto-publish
+      #   env:
+      #     EXTENSION_ID: ${{ secrets.CHROME_WEB_EXT_ID }}
+      #     CLIENT_ID: ${{ secrets.CHROME_WEB_EXT_CLIENT_ID }}
+      #     CLIENT_SECRET: ${{ secrets.CHROME_WEB_EXT_CLIENT_SECRET }}
+      #     REFRESH_TOKEN: ${{ secrets.CHROME_WEB_EXT_REFRESH_TOKEN }}
+      #
+      # - name: Submit to Mozilla
+      #   run: npx web-ext-submit@7 --source-dir ./extension/dist/firefox
+      #   env:
+      #     WEB_EXT_API_KEY: ${{ secrets.FIREFOX_WEB_EXT_API_KEY }}
+      #     WEB_EXT_API_SECRET: ${{ secrets.FIREFOX_WEB_EXT_API_SECRET }}
 
   publish:
     needs: [setup, extension, app]
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: publish release
         run: gh release edit ${{ needs.setup.outputs.tag }} --draft=false

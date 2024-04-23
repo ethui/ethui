@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT balance FROM balances WHERE chain_id = ? AND contract = ? AND owner = ?",
+  "describe": {
+    "columns": [
+      {
+        "name": "balance",
+        "ordinal": 0,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "7c6e1a1cedee797c48a67181a0fe19bb6fabe165444c31d3ce47bad2fa902d5e"
+}

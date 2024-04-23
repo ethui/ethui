@@ -1,4 +1,4 @@
-export { useInvoke } from "./tauri";
+export { useInvoke } from "./useInvoke";
 export { useApi } from "./useApi";
 export { useDialog } from "./useDialog";
 export { useEventListener } from "./useEventListener";

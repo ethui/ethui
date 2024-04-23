@@ -1,7 +1,7 @@
 import { devtools, runtime } from "webextension-polyfill";
 import { DevtoolsPanels } from "webextension-polyfill/namespaces/devtools_panels";
 
-import type { Request, Response } from "@iron/types";
+import type { Request, Response } from "@/types";
 
 const tabId = devtools.inspectedWindow.tabId;
 
@@ -13,8 +13,8 @@ let cache: Array<Request | Response> = [];
 async function init() {
   // creating devtools panel
   panel = await devtools.panels.create(
-    "Iron Wallet",
-    "icons/iron-48.png",
+    "ethui",
+    "icons/ethui-48.png",
     "panel/index.html",
   );
 

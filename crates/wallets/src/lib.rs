@@ -13,8 +13,8 @@ use std::{
 };
 
 pub use error::{Error, Result};
+use ethui_types::{Address, Json, UINotify};
 pub use init::init;
-use iron_types::{Address, Json, UINotify};
 use serde::Serialize;
 pub use signer::Signer;
 
@@ -85,6 +85,15 @@ impl Wallets {
         &self.wallets
     }
 
+    pub async fn get_all_addresses(&self) -> Vec<(String, Address)> {
+        let mut res = vec![];
+        for wallet in self.wallets.iter() {
+            res.extend(wallet.get_all_addresses().await.into_iter());
+        }
+
+        res
+    }
+
     async fn create(&mut self, params: Json) -> Result<()> {
         let wallet = Wallet::create(params).await?;
         let addresses = wallet.get_all_addresses().await;
@@ -98,7 +107,7 @@ impl Wallets {
         self.save()?;
 
         for (_, a) in addresses {
-            iron_broadcast::address_added(a).await;
+            ethui_broadcast::address_added(a).await;
         }
 
         Ok(())
@@ -119,10 +128,10 @@ impl Wallets {
             let before: HashSet<_> = before.into_iter().collect();
             let after: HashSet<_> = after.into_iter().collect();
             for (_, a) in after.difference(&before) {
-                iron_broadcast::address_added(*a).await;
+                ethui_broadcast::address_added(*a).await;
             }
             for (_, a) in before.difference(&after) {
-                iron_broadcast::address_removed(*a).await;
+                ethui_broadcast::address_removed(*a).await;
             }
         });
 
@@ -144,7 +153,7 @@ impl Wallets {
             let removed = self.wallets.remove(i);
 
             for (_, a) in removed.get_all_addresses().await {
-                iron_broadcast::address_removed(a).await;
+                ethui_broadcast::address_removed(a).await;
             }
 
             self.ensure_current();
@@ -193,20 +202,20 @@ impl Wallets {
     async fn init_broadcast(&self) {
         for wallet in self.wallets.iter() {
             for (_, addr) in wallet.get_all_addresses().await {
-                iron_broadcast::address_added(addr).await;
+                ethui_broadcast::address_added(addr).await;
             }
         }
 
         let addr = self.get_current_address().await;
-        iron_broadcast::current_address_changed(addr).await;
+        ethui_broadcast::current_address_changed(addr).await;
     }
 
     async fn on_wallet_changed(&self) -> Result<()> {
         let addr = self.get_current_address().await;
 
         self.notify_peers().await;
-        iron_broadcast::ui_notify(UINotify::WalletsChanged).await;
-        iron_broadcast::current_address_changed(addr).await;
+        ethui_broadcast::ui_notify(UINotify::WalletsChanged).await;
+        ethui_broadcast::current_address_changed(addr).await;
 
         Ok(())
     }
@@ -214,7 +223,7 @@ impl Wallets {
     // broadcasts `accountsChanged` to all peers
     async fn notify_peers(&self) {
         let addresses = vec![self.get_current_wallet().get_current_address().await];
-        iron_broadcast::accounts_changed(addresses).await;
+        ethui_broadcast::accounts_changed(addresses).await;
     }
 
     fn ensure_no_duplicates_of(&self, name: &str) -> Result<()> {

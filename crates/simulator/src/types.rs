@@ -1,8 +1,7 @@
 use alloy_primitives::{Bytes, U256};
-use ethers_core::types::Log;
-use foundry_evm::{traces::CallTraceNode, utils::CallKind};
-use iron_types::Address;
-use revm::interpreter::InstructionResult;
+use ethers::types::Log;
+use ethui_types::Address;
+use foundry_evm::traces::CallTraceNode;
 use serde::{Deserialize, Serialize};
 
 /// Simulation request
@@ -20,21 +19,10 @@ pub struct Request {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Result {
-    pub simulation_id: u64,
     pub gas_used: u64,
     pub block_number: u64,
     pub success: bool,
-    pub trace: Vec<CallTraceNode>,
+    pub traces: Vec<CallTraceNode>,
     pub logs: Vec<Log>,
-    pub exit_reason: InstructionResult,
     pub return_data: Bytes,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-#[serde(rename_all = "camelCase")]
-pub struct CallTrace {
-    pub call_type: CallKind,
-    pub from: Address,
-    pub to: Address,
-    pub value: U256,
 }

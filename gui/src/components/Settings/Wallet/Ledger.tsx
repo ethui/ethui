@@ -1,12 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Alert, AlertTitle, Button, Stack, TextField } from "@mui/material";
+import { Alert, AlertTitle, Button, Stack } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { Address } from "abitype";
 import { useEffect, useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
-import { derivationPathSchema, LedgerWallet } from "@iron/types/wallets";
+import { derivationPathSchema, LedgerWallet } from "@ethui/types/wallets";
+import { Form } from "@ethui/react/components";
 import { useLedgerDetect } from "@/hooks";
 
 export const schema = z.object({
@@ -32,26 +33,16 @@ export interface Props {
 }
 
 export function Ledger({ wallet, onSubmit, onRemove }: Props) {
-  let formWallet;
-  if (wallet) {
-    formWallet = {
-      ...wallet,
-      paths: wallet ? wallet.addresses.map(([path]) => ({ path })) : [],
-    };
-  } else {
-    formWallet = defaultValues;
-  }
+  const formWallet = wallet
+    ? {
+        ...wallet,
+        paths: wallet ? wallet.addresses.map(([path]) => ({ path })) : [],
+      }
+    : defaultValues;
 
   const [addresses, setAddresses] = useState<Map<string, Address>>(new Map());
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    control,
-    watch,
-    formState: { isValid, isDirty, errors },
-  } = useForm({
+  const form = useForm({
     mode: "onBlur",
     resolver: zodResolver(schema),
     defaultValues: formWallet,
@@ -63,10 +54,10 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
       type: "ledger",
       paths: data.paths.map(({ path }) => path),
     });
-    reset(data);
+    form.reset(data);
   };
 
-  const paths = watch("paths");
+  const paths = useWatch({ control: form.control, name: "paths" });
   const pathsStr = paths.map(({ path }) => path).join("");
 
   useEffect(() => {
@@ -96,60 +87,45 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
     append,
     remove,
   } = useFieldArray({
-    control,
+    control: form.control,
     name: "paths",
   });
 
   return (
-    <Stack
-      spacing={2}
-      alignItems="flex-start"
-      component="form"
-      onSubmit={handleSubmit(prepareAndSubmit)}
-    >
-      <Detect />
-      <TextField
-        label="Name"
-        error={!!errors.name}
-        helperText={errors.name?.message?.toString()}
-        {...register("name")}
-      />
-      {pathsFields.map((field, i) => {
-        const error = errors.paths && errors.paths[i]?.path?.message;
-        const path = watch(`paths.${i}.path`);
-        const address = addresses.get(path);
-        return (
-          <Stack alignSelf="stretch" key={field.id}>
-            <Stack alignSelf="stretch" direction="row" spacing={2}>
-              <TextField
-                label={`Path #${i + 1}`}
-                fullWidth
-                error={!!error}
-                helperText={error || address}
-                {...register(`paths.${i}.path`)}
-              />
-              <Button onClick={() => remove(i)}>Remove</Button>
+    <Form form={form} onSubmit={prepareAndSubmit}>
+      <Stack spacing={2} alignItems="flex-start">
+        <Detect />
+        <Form.Text label="Name" name="name" />
+
+        {pathsFields.map((field, i) => {
+          const path = form.watch(`paths.${i}.path`);
+          const address = addresses.get(path);
+          return (
+            <Stack alignSelf="stretch" key={field.id}>
+              <Stack alignSelf="stretch" direction="row" spacing={2}>
+                <Form.Text
+                  label={`Path #${i + 1}`}
+                  name={`paths.${i}.path`}
+                  helperText={address}
+                  fullWidth
+                />
+
+                <Button onClick={() => remove(i)}>Remove</Button>
+              </Stack>
             </Stack>
-          </Stack>
-        );
-      })}
-      <Button color="secondary" onClick={() => append({ path: "" })}>
-        Add
-      </Button>
-      <Stack direction="row" spacing={2}>
-        <Button
-          color="primary"
-          variant="contained"
-          type="submit"
-          disabled={!isDirty || !isValid}
-        >
-          Save
+          );
+        })}
+        <Button color="secondary" onClick={() => append({ path: "" })}>
+          Add
         </Button>
-        <Button color="warning" variant="contained" onClick={onRemove}>
-          Remove
-        </Button>
+        <Stack direction="row" spacing={2}>
+          <Form.Submit label="Save" />
+          <Button color="warning" variant="contained" onClick={onRemove}>
+            Remove
+          </Button>
+        </Stack>
       </Stack>
-    </Stack>
+    </Form>
   );
 }
 

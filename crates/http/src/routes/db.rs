@@ -4,11 +4,13 @@ use axum::{
     Json, Router,
 };
 use ethers::{abi::Abi, types::Chain};
-use iron_db::{
+use ethui_db::{
     utils::{fetch_etherscan_abi, fetch_etherscan_contract_name},
     Paginated, Pagination,
 };
-use iron_types::{events::Tx, Address, Erc721TokenData, TokenBalance, UINotify, U256};
+use ethui_types::{
+    transactions::PaginatedTx, Address, Contract, Erc721TokenData, TokenBalance, UINotify, U256,
+};
 use serde::Deserialize;
 
 use crate::{Ctx, Error, Result};
@@ -52,7 +54,7 @@ pub(crate) async fn transactions(
         chain_id,
         pagination,
     }): Query<TransactionsPayload>,
-) -> Result<Json<Paginated<Tx>>> {
+) -> Result<Json<Paginated<PaginatedTx>>> {
     Ok(Json(
         db.get_transactions(chain_id, address, pagination.unwrap_or_default())
             .await?,
@@ -63,7 +65,7 @@ pub(crate) async fn erc20_balances(
     State(Ctx { db }): State<Ctx>,
     Query(AddressChainIdPayload { chain_id, address }): Query<AddressChainIdPayload>,
 ) -> Result<Json<Vec<TokenBalance>>> {
-    Ok(Json(db.get_erc20_balances(chain_id, address).await?))
+    Ok(Json(db.get_erc20_balances(chain_id, address, false).await?))
 }
 
 pub(crate) async fn native_balance(
@@ -76,7 +78,7 @@ pub(crate) async fn native_balance(
 pub(crate) async fn contracts(
     State(Ctx { db }): State<Ctx>,
     Query(ChainIdPayload { chain_id }): Query<ChainIdPayload>,
-) -> Result<Json<Vec<Address>>> {
+) -> Result<Json<Vec<Contract>>> {
     Ok(Json(db.get_contracts(chain_id).await?))
 }
 
@@ -100,7 +102,7 @@ pub(crate) async fn insert_contract(
     db.insert_contract_with_abi(chain_id, address, abi, name)
         .await?;
 
-    iron_broadcast::ui_notify(UINotify::ContractsUpdated).await;
+    ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
 
     Ok(())
 }

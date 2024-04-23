@@ -24,7 +24,7 @@ export default defineConfig({
     nodePolyfills({
       exclude: ["fs"],
     }),
-    tsconfigPaths(),
+    tsconfigPaths({ parseNative: true }),
   ],
   build: {
     minify: false,
@@ -33,7 +33,7 @@ export default defineConfig({
     lib: {
       formats: ["iife"],
       entry: path.resolve(__dirname, "..", "src", "inpage", "index.ts"),
-      name: "Iron Wallet - inpage script",
+      name: "ethui - inpage script",
     },
     rollupOptions: {
       output: {

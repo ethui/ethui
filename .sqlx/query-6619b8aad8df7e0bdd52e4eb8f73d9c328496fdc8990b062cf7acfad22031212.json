@@ -1,0 +1,56 @@
+{
+  "db_name": "SQLite",
+  "query": " SELECT value as 'value?', hash, from_address, to_address, block_number, status, incomplete as 'incomplete!'\n                FROM transactions\n                WHERE chain_id = ?\n                AND (from_address = ? or to_address = ?) COLLATE NOCASE\n                ORDER BY block_number DESC, position DESC\n                LIMIT ? OFFSET ?",
+  "describe": {
+    "columns": [
+      {
+        "name": "value?",
+        "ordinal": 0,
+        "type_info": "Text"
+      },
+      {
+        "name": "hash",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "from_address",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "to_address",
+        "ordinal": 3,
+        "type_info": "Text"
+      },
+      {
+        "name": "block_number",
+        "ordinal": 4,
+        "type_info": "Int64"
+      },
+      {
+        "name": "status",
+        "ordinal": 5,
+        "type_info": "Int64"
+      },
+      {
+        "name": "incomplete!",
+        "ordinal": 6,
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": [
+      true,
+      true,
+      false,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "6619b8aad8df7e0bdd52e4eb8f73d9c328496fdc8990b062cf7acfad22031212"
+}

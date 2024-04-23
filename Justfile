@@ -4,16 +4,19 @@ alias d := dev
 alias f := fix
 alias l := lint
 
+dev *args='':
+  cargo tauri dev --config bin/tauri-dev.conf.json --features ${ETHUI_FEATURES:-debug} -- -- -- $@
+
 setup:
   yarn
   cargo build
 
-build:
-  yarn extension:build
-  cargo build
-
-dev *args='':
-  cargo tauri dev --features ${IRON_FEATURES:-debug} -- -- -- $@
+sqlx:
+  #!/bin/sh
+  export DATABASE_URL=sqlite://dev-data/default/db.sqlite3
+  sqlx database create
+  sqlx migrate run
+  cargo sqlx prepare --workspace
 
 fix:
   cargo +nightly fmt --all
@@ -31,6 +34,20 @@ ext:
 ext-dev:
   yarn run ext:dev
 
+#
+# icon generation
+#
+icons:
+  ./icons/generate.sh
+
+#
+# internal build commands
+# 
+build:
+  yarn extension:build
+  cargo build
+
+
 clean:
   rm -rf \
     target \
@@ -45,7 +62,7 @@ clean:
 ext-source:
   #!/bin/bash
   local=$PWD
-  dir=$(mktemp --directory --suffix=iron)
+  dir=$(mktemp --directory --suffix=ethui)
   shopt -s extglob
   rsync -r . $dir --exclude '.git' --exclude target --exclude node_modules --exclude '.github' --exclude bin --exclude crates --exclude .envrc --exclude examples --exclude migrations --exclude '*.zip'
   cd $dir && zip -r $local/ext-source.zip . > /dev/null

@@ -12,7 +12,7 @@ import { invoke } from "@tauri-apps/api";
 import { startCase } from "lodash-es";
 import { useState } from "react";
 
-import { Wallet, walletTypes } from "@iron/types/wallets";
+import { Wallet, walletTypes } from "@ethui/types/wallets";
 import { Accordion, AccordionDetails, AccordionSummary } from "@/components";
 import { useWallets } from "@/store";
 import { HDWalletForm } from "./Wallet/HDWallet";
@@ -22,7 +22,11 @@ import { Ledger } from "./Wallet/Ledger";
 import { Plaintext } from "./Wallet/Plaintext";
 import { PrivateKeyForm } from "./Wallet/PrivateKey";
 
-export function SettingsWallets() {
+interface Props {
+  extraAction?: React.ReactNode;
+}
+
+export function SettingsWallets({ extraAction }: Props) {
   const wallets = useWallets((s) => s.wallets);
   const [newType, setNewType] = useState<Wallet["type"] | null>(null);
 
@@ -43,8 +47,14 @@ export function SettingsWallets() {
         {newType && <NewItem key={`_new`} type={newType} onFinish={closeNew} />}
       </Stack>
       {!newType && (
-        <Stack spacing={2} direction="row" sx={{ mt: 4 }}>
+        <Stack
+          spacing={2}
+          direction="row"
+          justifyContent="space-between"
+          sx={{ mt: 4 }}
+        >
           <AddWalletButton onChoice={startNew} />
+          {extraAction && extraAction}
         </Stack>
       )}
     </>
@@ -155,7 +165,7 @@ const AddWalletButton = ({ onChoice }: AddWalletButtonProps) => {
         color="info"
         size="medium"
       >
-        Add wallet
+        Add
       </Button>
       <Menu
         id="add-wallet-type-menu"

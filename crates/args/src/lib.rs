@@ -5,12 +5,12 @@ pub fn parse() -> Args {
 }
 
 #[derive(Parser, Debug)]
-#[command(name = "Iron Wallet", author, version, about, long_about = None)]
+#[command(name = "ethui", author, version, about, long_about = None)]
 pub struct Args {
-    #[arg(long, default_value_t = 9003, env = "IRON_HTTP_PORT")]
+    #[arg(long, default_value_t = 9003, env = "ETHUI_HTTP_PORT")]
     pub http_port: u16,
 
-    #[arg(long, default_value_t = 9002, env = "IRON_WS_PORT")]
+    #[arg(long, default_value_t = 9002, env = "ETHUI_WS_PORT")]
     pub ws_port: u16,
 
     #[arg(long, default_value_t = false)]

@@ -1,7 +1,9 @@
+use std::sync::Arc;
+
+use ethui_types::{ui_events, Address, Affinity, B256};
 pub use internal_msgs::*;
-use iron_types::{ui_events, Address, Affinity};
 use once_cell::sync::Lazy;
-use tokio::sync::{broadcast, RwLock};
+use tokio::sync::{broadcast, oneshot, Mutex, RwLock};
 pub use ui_msgs::*;
 use url::Url;
 
@@ -12,7 +14,11 @@ pub enum InternalMsg {
     AccountsChanged(Vec<Address>),
     SettingsUpdated,
 
-    ResetAnvilListener { chain_id: u32, http: Url, ws: Url },
+    ResetAnvilListener {
+        chain_id: u32,
+        http: Url,
+        ws: Url,
+    },
 
     AddressAdded(Address),
     AddressRemoved(Address),
@@ -21,6 +27,13 @@ pub enum InternalMsg {
     NetworkAdded(u32),
     NetworkRemoved(u32),
     CurrentNetworkChanged(u32),
+
+    /// Request a full update of a TX. oneshot channel included to notify when job is done
+    FetchFullTxSync(u32, B256, Arc<Mutex<Option<oneshot::Sender<()>>>>),
+    FetchERC20Metadata(u32, Address),
+
+    ForgeAbiFound,
+    ContractFound,
 }
 
 #[derive(Debug, Clone)]
@@ -42,6 +55,7 @@ pub enum UIMsg {
 }
 
 mod internal_msgs {
+    use tracing::instrument;
     use InternalMsg::*;
 
     use super::*;
@@ -93,6 +107,26 @@ mod internal_msgs {
 
     pub async fn current_network_changed(chain_id: u32) {
         send(CurrentNetworkChanged(chain_id)).await;
+    }
+
+    pub async fn forge_abi_found() {
+        send(ForgeAbiFound).await;
+    }
+
+    pub async fn contract_found() {
+        send(ContractFound).await
+    }
+
+    #[instrument(level = "trace")]
+    pub async fn fetch_full_tx_sync(chain_id: u32, hash: B256) {
+        let (tx, rx) = oneshot::channel();
+        send(FetchFullTxSync(
+            chain_id,
+            hash,
+            Arc::new(Mutex::new(Some(tx))),
+        ))
+        .await;
+        let _ = rx.await;
     }
 
     /// broadcaster for internal msgs

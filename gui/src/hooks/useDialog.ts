@@ -1,7 +1,7 @@
 import { event, invoke } from "@tauri-apps/api";
 import { useCallback } from "react";
 
-import { useInvoke } from "./tauri";
+import { useInvoke } from "./useInvoke";
 
 export function useDialog<T>(idStr: string) {
   const id = Number(idStr);
