@@ -43,14 +43,12 @@ export function ABIItemForm({ contract, abiItem }: ItemFormProps) {
         const args = abiItem.inputs.map((input, i) =>
           JSON.parse(params.parsed[input.name || i.toString()]),
         );
-        console.log(args);
 
         const data = encodeFunctionData({
           abi: [abiItem],
           functionName: abiItem.name,
           args,
         });
-        console.log(data);
         setData(data);
         setValue(BigInt((params.raw && params.raw["-value-"]) || 0));
       } else {
@@ -58,7 +56,6 @@ export function ABIItemForm({ contract, abiItem }: ItemFormProps) {
         setValue(BigInt(params.raw["-value-"] || 0));
       }
     } catch (e) {
-      console.log(e);
       setData(undefined);
       setValue(undefined);
     }
