@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { parseAbiItem, type AbiFunction, type AbiItem } from "viem";
 import { encodeFunctionData } from "viem/utils";
-import { parse } from "./parser";
 import {
   Alert,
   Box,
@@ -19,6 +18,8 @@ import {
 } from "@mui/material";
 import { Delete as DeleteIcon, Add as AddIcon } from "@mui/icons-material";
 import { grey, red } from "@mui/material/colors";
+
+import { parse } from "@ethui/abiparse";
 
 interface AbiFormProps {
   abiItem: AbiItem | string;
@@ -45,10 +46,19 @@ export function AbiForm({ abiItem, debug = false, preview }: AbiFormProps) {
       typeof abiItem === "string" ? parseAbiItem(abiItem) : abiItem
     ) as AbiFunction;
   } catch (e: any) {
-    let msg = e.message.replace(/Version: abitype.*$/, "");
+    const msg = e.message.replace(/Version: abitype.*$/, "");
     return <Alert severity="error">{msg}</Alert>;
   }
 
+  return <AbiFormInner {...{ item, debug, preview }} />;
+}
+
+type AbiFormInnerProps = Omit<AbiFormProps, "abiItem" | "debug"> & {
+  item: AbiFunction;
+  debug: boolean;
+};
+
+export function AbiFormInner({ item, debug, preview }: AbiFormInnerProps) {
   const [callData, setCalldata] = useState<`0x${string}` | undefined>();
   const [values, setValues] = useState(
     Array(item.inputs.length).fill(undefined),
@@ -63,10 +73,9 @@ export function AbiForm({ abiItem, debug = false, preview }: AbiFormProps) {
       });
       setCalldata(encoded);
     } catch (e) {
-      console.log(e);
       setCalldata(undefined);
     }
-  }, [values]);
+  }, [values, item]);
 
   return (
     <Grid container spacing={2} onSubmit={(e) => e.preventDefault()}>
@@ -81,7 +90,7 @@ export function AbiForm({ abiItem, debug = false, preview }: AbiFormProps) {
               debug={debug}
               depth={1}
               onChange={(e) => {
-                let newValues = [...values];
+                const newValues = [...values];
                 newValues[i] = e;
                 setValues(newValues);
               }}
@@ -264,13 +273,13 @@ function ArrayElements({
 
   const update = (idx: number, v: any) => {
     value[idx] = v;
-    let newValue = [...value];
+    const newValue = [...value];
     setValue(newValue);
     onChange(newValue);
   };
 
   const remove = (idx: number) => {
-    let newValue = value.filter((_v, i) => i !== idx);
+    const newValue = value.filter((_v, i) => i !== idx);
     setValue(newValue);
     onChange(newValue);
   };

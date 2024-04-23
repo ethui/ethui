@@ -27,7 +27,7 @@ const whitespace = createToken({
 // keep most common tokens first to improve performance,
 // but otherwise keep in mind if two tokens are a possible match, priority is giving to first items here
 // e.g. if unquotedStr is moved to the beginning, it would match things intended to be numbers, or just pure whitespaces
-let tokens = [
+const tokens = [
 	whitespace,
 	comma,
 	arrayOpen,
@@ -38,7 +38,7 @@ let tokens = [
 	unquotedStr,
 ];
 
-let Lexer = new ChevrotainLexer(tokens);
+const Lexer = new ChevrotainLexer(tokens);
 
 class Parser extends CstParser {
 	constructor() {
