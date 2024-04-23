@@ -20,9 +20,8 @@
   },
   "workspaces": [
     "extension",
-    "packages/react",
-    "packages/types",
-    "packages/data",
+    "packages/*",
+    "www/form.ethui.dev",
     "gui"
   ],
   "devDependencies": {
