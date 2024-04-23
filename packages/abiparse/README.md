@@ -22,13 +22,13 @@ yarn add @ethui/abiparser
 import { parse } from "@ethui/abiparser";
 
 parse("-1");
-// -1
+// => -1
 
 parse("[[1], 2]");
-// [[1n], 2n]
+// => [[1n], 2n]
 
 parse('[0x1234, "foo", [1, 2, 3]]');
-// ["0x1234", "foo", [1n, 2n, 3n]]
+// => ["0x1234", "foo", [1n, 2n, 3n]]
 ```
 
 ## TODO
