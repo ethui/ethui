@@ -1,0 +1,14 @@
+{
+  "name": "@ethui/abiparse",
+  "version": "0.0.1",
+  "module": "index.ts",
+  "type": "module",
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "chevrotain": "^11.0.3",
+    "nearly": "^1.8.1",
+    "viem": "^2.9.20"
+  }
+}

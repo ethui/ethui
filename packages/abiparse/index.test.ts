@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { parse } from "./parser";
+import { parse } from "./";
 
 test("uints", () => {
 	expect(parse("1234")).toEqual(1234n);
