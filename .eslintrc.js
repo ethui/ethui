@@ -20,6 +20,7 @@ module.exports = {
       "./packages/types/tsconfig.json",
       "./packages/data/tsconfig.json",
       "./packages/form/tsconfig.json",
+      "./packages/abiparser/tsconfig.json",
     ],
   },
 

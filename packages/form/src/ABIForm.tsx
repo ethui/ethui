@@ -184,7 +184,7 @@ function ArrayInput({
     setValue(v);
   };
 
-  useEffect(() => parentOnChange(value), [value]);
+  useEffect(() => parentOnChange(value), [value, parentOnChange]);
 
   return (
     <Stack spacing={1}>
@@ -236,7 +236,7 @@ function Basic({ name, defaultValue, onChange, debug }: BasicProps) {
     setValue(parse(e.target.value));
   };
 
-  useEffect(() => onChange(value), [value]);
+  useEffect(() => onChange(value), [value, onChange]);
 
   return (
     <Stack spacing={1}>
