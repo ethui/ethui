@@ -75,7 +75,6 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v1
 
       - name: install dependencies (ubuntu)
         if: matrix.platform == 'ubuntu-20.04'
@@ -102,7 +101,14 @@ jobs:
         with:
           shared-key: "release"
 
-      - run: bun install --frozen-lockfile
+      - run: npm install -g yarn
+
+      - uses: actions/setup-node@v4
+        with:
+          cache: "yarn"
+          node-version-file: ".tool-versions"
+
+      - run: yarn install --frozen-lockfile --network-timeout 1000000
 
       - run: icons/generate.sh
 
@@ -121,35 +127,41 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v1
+
+      - run: npm install -g yarn
+
+      - uses: actions/setup-node@v4
+        with:
+          cache: "yarn"
+          node-version-file: ".tool-versions"
 
       - name: Install dependencies
-        run: bun install --cwd ./extension
+        run: yarn workspace @ethui/extension install
 
       - name: Create chrome bundle
-        run: bun run ./extension build --target chrome --version ${{ needs.setup.outputs.version }}
+        run: yarn workspace @ethui/extension build --target chrome --version ${{ needs.setup.outputs.version }}
 
       - name: Create firefox bundle
-        run: bun run --cwd ./extension build --target firefox --version ${{ needs.setup.outputs.version }}
+        run: yarn workspace @ethui/extension build --target firefox --version ${{ needs.setup.outputs.version }}
 
       - name: Upload to release
         run: gh release upload ${{ needs.setup.outputs.tag }} ./extension/dist/*.{crx,zip,xpi}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Submit to Google
-        run: npx chrome-webstore-upload-cli@2 upload --source ./extension/dist/chrome --auto-publish
-        env:
-          EXTENSION_ID: ${{ secrets.CHROME_WEB_EXT_ID }}
-          CLIENT_ID: ${{ secrets.CHROME_WEB_EXT_CLIENT_ID }}
-          CLIENT_SECRET: ${{ secrets.CHROME_WEB_EXT_CLIENT_SECRET }}
-          REFRESH_TOKEN: ${{ secrets.CHROME_WEB_EXT_REFRESH_TOKEN }}
-
-      - name: Submit to Mozilla
-        run: npx web-ext-submit@7 --source-dir ./extension/dist/firefox
-        env:
-          WEB_EXT_API_KEY: ${{ secrets.FIREFOX_WEB_EXT_API_KEY }}
-          WEB_EXT_API_SECRET: ${{ secrets.FIREFOX_WEB_EXT_API_SECRET }}
+      # - name: Submit to Google
+      #   run: npx chrome-webstore-upload-cli@2 upload --source ./extension/dist/chrome --auto-publish
+      #   env:
+      #     EXTENSION_ID: ${{ secrets.CHROME_WEB_EXT_ID }}
+      #     CLIENT_ID: ${{ secrets.CHROME_WEB_EXT_CLIENT_ID }}
+      #     CLIENT_SECRET: ${{ secrets.CHROME_WEB_EXT_CLIENT_SECRET }}
+      #     REFRESH_TOKEN: ${{ secrets.CHROME_WEB_EXT_REFRESH_TOKEN }}
+      #
+      # - name: Submit to Mozilla
+      #   run: npx web-ext-submit@7 --source-dir ./extension/dist/firefox
+      #   env:
+      #     WEB_EXT_API_KEY: ${{ secrets.FIREFOX_WEB_EXT_API_KEY }}
+      #     WEB_EXT_API_SECRET: ${{ secrets.FIREFOX_WEB_EXT_API_SECRET }}
 
   publish:
     needs: [setup, extension, app]

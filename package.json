@@ -5,19 +5,24 @@
   "description": "An Ethereum toolkit",
   "scripts": {
     "app:dev": "rm -rf target/debug/db.*; RUST_LOG=ethui=debug cargo tauri dev --config bin/tauri-dev.conf.json --features debug",
-    "gui:build": "bun run --cwd gui build",
-    "lint": "bun run lint:eslint && bun run lint:tsc && bun run lint:prettier",
+    "gui:build": "yarn workspace @ethui/gui build",
+    "storybook": "yarn workspace @ethui/react storybook",
+    "ext:dev": "yarn workspace @ethui/extension dev",
+    "ext:build": "yarn workspace @ethui/extension build \"$@\"",
+    "lint": "yarn lint:eslint && yarn lint:tsc && yarn lint:prettier",
     "lint:eslint": "eslint .",
-    "lint:tsc": "./scripts/bun-foreach.sh tsc --noEmit",
+    "lint:tsc": "yarn workspaces foreach --all --parallel run tsc --noEmit",
     "lint:prettier": "prettier --check .",
-    "fix": "bun run fix:eslint && bun run fix:prettier",
+    "fix": "yarn fix:eslint && yarn fix:prettier",
     "fix:eslint": "eslint --fix .",
     "fix:prettier": "prettier --write .",
-    "setup": "bun run install && bun run ext:build"
+    "setup": "yarn install && yarn ext:build"
   },
   "workspaces": [
     "extension",
-    "packages/*",
+    "packages/react",
+    "packages/types",
+    "packages/data",
     "gui"
   ],
   "devDependencies": {
@@ -42,5 +47,6 @@
   "resolutions": {
     "postcss": "^8.4.31",
     "jose": "4.15.5"
-  }
+  },
+  "packageManager": "yarn@4.0.2"
 }

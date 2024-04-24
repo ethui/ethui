@@ -1,7 +1,7 @@
 {
   "build": {
-    "beforeDevCommand": "bun run --cwd ../gui dev",
-    "beforeBuildCommand": "bun run --cwd ../gui build",
+    "beforeDevCommand": "yarn workspace @ethui/gui dev",
+    "beforeBuildCommand": "yarn workspace @ethui/gui build",
     "devPath": "http://localhost:1420",
     "distDir": "../gui/dist"
   },
