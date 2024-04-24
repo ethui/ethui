@@ -6,9 +6,9 @@
     "module": "ESNext",
     "moduleDetection": "force",
     "allowJs": true,
+    "outDir": "dist",
 
-    /* Bundler mode */
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,
