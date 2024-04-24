@@ -5,22 +5,22 @@ const arrayOpen = createToken({ name: "arrayOpen", pattern: /\[/ });
 const arrayClose = createToken({ name: "arrayClose", pattern: /\]/ });
 const comma = createToken({ name: "comma", pattern: /,/ });
 const hex = createToken({
-	name: "hex",
-	pattern: /0x([0-9a-fA-F][0-9a-fA-F])*/,
+  name: "hex",
+  pattern: /0x([0-9a-fA-F][0-9a-fA-F])*/,
 });
 const quotedStr = createToken({
-	name: "quotedStr",
-	pattern: /".*"/,
+  name: "quotedStr",
+  pattern: /"(?:[^"\\]|\\.)*"/,
 });
 const unquotedStr = createToken({
-	name: "unquotedStr",
-	pattern: /[^\[\]\",]+/,
+  name: "unquotedStr",
+  pattern: /[^\[\]\",]+/,
 });
 
 const whitespace = createToken({
-	name: "whitespace",
-	pattern: /\s+/,
-	group: ChevrotainLexer.SKIPPED,
+  name: "whitespace",
+  pattern: /\s+/,
+  group: ChevrotainLexer.SKIPPED,
 });
 
 // order matters here
@@ -28,120 +28,120 @@ const whitespace = createToken({
 // but otherwise keep in mind if two tokens are a possible match, priority is giving to first items here
 // e.g. if unquotedStr is moved to the beginning, it would match things intended to be numbers, or just pure whitespaces
 const tokens = [
-	whitespace,
-	comma,
-	arrayOpen,
-	arrayClose,
-	hex,
-	int,
-	quotedStr,
-	unquotedStr,
+  whitespace,
+  comma,
+  arrayOpen,
+  arrayClose,
+  hex,
+  int,
+  quotedStr,
+  unquotedStr,
 ];
 
 const Lexer = new ChevrotainLexer(tokens);
 
 class Parser extends CstParser {
-	constructor() {
-		super(tokens);
-		this.performSelfAnalysis();
-	}
+  constructor() {
+    super(tokens);
+    this.performSelfAnalysis();
+  }
 
-	public any = this.RULE("any", () => {
-		this.OR([
-			{ ALT: () => this.SUBRULE(this.primitive) },
-			{ ALT: () => this.SUBRULE(this.composed) },
-		]);
-	});
+  public any = this.RULE("any", () => {
+    this.OR([
+      { ALT: () => this.SUBRULE(this.primitive) },
+      { ALT: () => this.SUBRULE(this.composed) },
+    ]);
+  });
 
-	private array = this.RULE("array", () => {
-		this.CONSUME(arrayOpen);
-		this.MANY_SEP({
-			SEP: comma,
-			DEF: () => {
-				// TODO
-				this.SUBRULE(this.any);
-			},
-		});
-		this.CONSUME(arrayClose);
-	});
+  private array = this.RULE("array", () => {
+    this.CONSUME(arrayOpen);
+    this.MANY_SEP({
+      SEP: comma,
+      DEF: () => {
+        // TODO
+        this.SUBRULE(this.any);
+      },
+    });
+    this.CONSUME(arrayClose);
+  });
 
-	private composed = this.RULE("composed", () => {
-		this.OR([{ ALT: () => this.SUBRULE(this.array) }]);
-	});
+  private composed = this.RULE("composed", () => {
+    this.OR([{ ALT: () => this.SUBRULE(this.array) }]);
+  });
 
-	private primitive = this.RULE("primitive", () => {
-		this.OR([
-			{ ALT: () => this.CONSUME(int) },
-			{ ALT: () => this.CONSUME(hex) },
-			{ ALT: () => this.CONSUME(quotedStr) },
-			{ ALT: () => this.CONSUME(unquotedStr) },
-		]);
-	});
+  private primitive = this.RULE("primitive", () => {
+    this.OR([
+      { ALT: () => this.CONSUME(int) },
+      { ALT: () => this.CONSUME(hex) },
+      { ALT: () => this.CONSUME(quotedStr) },
+      { ALT: () => this.CONSUME(unquotedStr) },
+    ]);
+  });
 }
 
 const parser = new Parser();
 
 class Visitor extends parser.getBaseCstVisitorConstructorWithDefaults() {
-	constructor() {
-		super();
-		this.validateVisitor();
-	}
+  constructor() {
+    super();
+    this.validateVisitor();
+  }
 
-	any(ctx: any) {
-		if (ctx.primitive) {
-			return this.visit(ctx.primitive[0]);
-		} else if (ctx.composed) {
-			return this.visit(ctx.composed[0]);
-		}
-		return "error";
-	}
+  any(ctx: any) {
+    if (ctx.primitive) {
+      return this.visit(ctx.primitive[0]);
+    } else if (ctx.composed) {
+      return this.visit(ctx.composed[0]);
+    }
+    return "error";
+  }
 
-	array(ctx: any) {
-		return (ctx.any || []).map((v: any) => this.visit(v));
-	}
+  array(ctx: any) {
+    return (ctx.any || []).map((v: any) => this.visit(v));
+  }
 
-	composed(ctx: any) {
-		if (ctx.array) {
-			return this.visit(ctx.array);
-		} else {
-			return "err";
-		}
-	}
+  composed(ctx: any) {
+    if (ctx.array) {
+      return this.visit(ctx.array);
+    } else {
+      return "err";
+    }
+  }
 
-	primitive(ctx: any) {
-		if (ctx.uint) {
-			return BigInt(ctx.uint[0].image);
-		} else if (ctx.int) {
-			return BigInt(ctx.int[0].image);
-		} else if (ctx.quotedStr) {
-			return ctx.quotedStr[0].image.slice(1, -1);
-		} else if (ctx.unquotedStr) {
-			return ctx.unquotedStr[0].image;
-		} else if (ctx.hex) {
-			return ctx.hex[0].image;
-		} else if (ctx.array) {
-			return this.visit(ctx.array[0]);
-		} else {
-			return `unknown ${ctx}`;
-		}
-	}
+  primitive(ctx: any) {
+    if (ctx.uint) {
+      return BigInt(ctx.uint[0].image);
+    } else if (ctx.int) {
+      return BigInt(ctx.int[0].image);
+    } else if (ctx.quotedStr) {
+      return ctx.quotedStr[0].image.slice(1, -1).replace('\\"', '"');
+    } else if (ctx.unquotedStr) {
+      return ctx.unquotedStr[0].image;
+    } else if (ctx.hex) {
+      return ctx.hex[0].image;
+    } else if (ctx.array) {
+      return this.visit(ctx.array[0]);
+    } else {
+      return `unknown ${ctx}`;
+    }
+  }
 }
 
 const visitor = new Visitor();
 
 export function parse(text: string) {
-	if (!text || text.length === 0) return undefined;
+  if (!text || text.length === 0) return undefined;
 
-	const lexResult = Lexer.tokenize(text);
-	parser.input = lexResult.tokens;
-	const cst = parser.any();
+  const lexResult = Lexer.tokenize(text);
+  parser.input = lexResult.tokens;
+  const cst = parser.any();
 
-	if (parser.errors.length > 0) {
-		return null;
-		// throw Error("Parsing errors detected!\n" + parser.errors[0].message);
-	}
+  if (parser.errors.length > 0) {
+    return null;
+    // throw Error("Parsing errors detected!\n" + parser.errors[0].message);
+  }
 
-	return visitor.visit(cst);
+  return visitor.visit(cst);
 }
 
 parse("[[123],2]");

@@ -13,6 +13,7 @@ test("ints", () => {
 
 test("quoted strings", () => {
 	expect(parse('"asd"')).toEqual("asd");
+	expect(parse('"asd\\"dsa"')).toEqual('asd"dsa');
 });
 
 test("unquoted strings", () => {
@@ -22,6 +23,10 @@ test("unquoted strings", () => {
 test("arrays", () => {
 	expect(parse("[]")).toEqual([]);
 	expect(parse("[1,2]")).toEqual([1n, 2n]);
+});
+
+test("arrays of quoted strings", () => {
+	expect(parse('["asd","dsa"]')).toEqual(["asd", "dsa"]);
 });
 
 test("uints", () => {
