@@ -12,7 +12,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@ethui/types": "workspace:*",
+    "@ethui/types": "*",
     "@fontsource/material-icons": "^5.0.17",
     "@fontsource/roboto": "^5.0.12",
     "@fontsource/roboto-mono": "^5.0.17",

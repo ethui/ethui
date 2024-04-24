@@ -1,4 +1,4 @@
-name: node
+name: yarn
 
 on:
   push:
@@ -31,8 +31,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v1
+      - run: npm install -g yarn
+      - uses: actions/setup-node@v4
+        with:
+          cache: "yarn"
+          node-version-file: ".tool-versions"
 
-      - run: bun install --frozen-lockfile
-      - run: bun run lint
-      - run: bun test
+      - name: ESLint
+        run: bun run lint
+      - run: yarn install --frozen-lockfile
+
+      - name: ESLint
+        run: yarn lint
+
+      - name: Tests
+        run: yarn test

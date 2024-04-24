@@ -12,12 +12,11 @@
     "test:ui:watch": "vitest"
   },
   "dependencies": {
-    "@ethui/data": "workspace:*",
-    "@ethui/react": "workspace:*",
-    "@ethui/types": "workspace:*",
-    "abitype": "^0.10.3",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
+    "@ethui/data": "*",
+    "@ethui/react": "*",
+    "@ethui/types": "*",
     "@fontsource/roboto": "^5.0.12",
     "@fontsource/roboto-mono": "^5.0.17",
     "@hookform/resolvers": "^3.3.4",
@@ -32,6 +31,7 @@
     "@tauri-apps/api": "1.5.3",
     "@tauri-apps/cli": "^1.5.11",
     "@uidotdev/usehooks": "^2.4.1",
+    "abitype": "^1.0.2",
     "classnames": "^2.5.1",
     "core-js": "^3.36.1",
     "kbar": "^0.1.0-beta.45",

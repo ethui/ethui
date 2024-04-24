@@ -26,10 +26,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v1
+
+      - run: npm install -g yarn
+
+      - name: yarn cache
+        uses: actions/setup-node@v4
+        with:
+          cache: "yarn"
+          node-version-file: ".tool-versions"
 
       - name: install
-        run: bun install --cwd ./extension --frozen-lockfile
+        run: yarn workspace @ethui/extension install --frozen-lockfile
 
       - name: bundle
-        run: bun run --cwd ./extension build
+        run: yarn workspace @ethui/extension build
