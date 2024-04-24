@@ -3,15 +3,19 @@
   "version": "0.0.1",
   "module": "index.ts",
   "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
   "peerDependencies": {
     "typescript": "^5.0.0"
-  },
-  "devDependencies": {
-    "bun-types": "^1.1.4"
   },
   "dependencies": {
     "chevrotain": "^11.0.3",
     "nearly": "^1.8.1",
     "viem": "^2.9.20"
+  },
+  "devDependencies": {
+    "vitest": "^1.5.0"
   }
 }
