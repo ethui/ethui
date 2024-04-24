@@ -1,6 +1,12 @@
 import { createToken, Lexer as ChevrotainLexer, CstParser } from "chevrotain";
 
+import { ethUnitRegex, parseIntWithUnit, type TEthUnit } from "./src/utils";
+
 const int = createToken({ name: "int", pattern: /-?\d+/ });
+const ethUnit = createToken({
+  name: "ethUnit",
+  pattern: ethUnitRegex,
+});
 const arrayOpen = createToken({ name: "arrayOpen", pattern: /\[/ });
 const arrayClose = createToken({ name: "arrayClose", pattern: /\]/ });
 const comma = createToken({ name: "comma", pattern: /,/ });
@@ -34,6 +40,7 @@ const tokens = [
   arrayClose,
   hex,
   int,
+  ethUnit,
   quotedStr,
   unquotedStr,
 ];
@@ -65,14 +72,26 @@ class Parser extends CstParser {
     this.CONSUME(arrayClose);
   });
 
+  private number = this.RULE("number", () => {
+    this.OR([
+      { ALT: () => this.CONSUME(int) },
+      { ALT: () => this.CONSUME(hex) },
+    ]);
+  });
+
+  private numberWithSubunit = this.RULE("numberWithSubunit", () => {
+    this.SUBRULE(this.number);
+    this.CONSUME(ethUnit);
+  });
+
   private composed = this.RULE("composed", () => {
     this.OR([{ ALT: () => this.SUBRULE(this.array) }]);
   });
 
   private primitive = this.RULE("primitive", () => {
     this.OR([
-      { ALT: () => this.CONSUME(int) },
-      { ALT: () => this.CONSUME(hex) },
+      { ALT: () => this.SUBRULE(this.numberWithSubunit) },
+      { ALT: () => this.SUBRULE(this.number) },
       { ALT: () => this.CONSUME(quotedStr) },
       { ALT: () => this.CONSUME(unquotedStr) },
     ]);
@@ -108,11 +127,29 @@ class Visitor extends parser.getBaseCstVisitorConstructorWithDefaults() {
     }
   }
 
+  number(ctx: any) {
+    if (ctx.int) {
+      return BigInt(ctx.int[0].image);
+    } else if (ctx.hex) {
+      return ctx.hex[0].image;
+    }
+  }
+
+  numberWithSubunit(ctx: any) {
+    const n = BigInt(this.visit(ctx.number));
+    const unit = ctx.ethUnit[0].image as TEthUnit;
+    return parseIntWithUnit(n, unit);
+  }
+
   primitive(ctx: any) {
     if (ctx.uint) {
       return BigInt(ctx.uint[0].image);
     } else if (ctx.int) {
       return BigInt(ctx.int[0].image);
+    } else if (ctx.number) {
+      return this.visit(ctx.number);
+    } else if (ctx.numberWithSubunit) {
+      return this.visit(ctx.numberWithSubunit);
     } else if (ctx.quotedStr) {
       return ctx.quotedStr[0].image.slice(1, -1).replace('\\"', '"');
     } else if (ctx.unquotedStr) {

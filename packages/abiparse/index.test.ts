@@ -51,3 +51,12 @@ test("unquoted strings inside nested values", () => {
 	expect(parse("[[1],dsa]")).toEqual([[1n], "dsa"]);
 	expect(parse("[[foo],[[bar]]]")).toEqual([["foo"], [["bar"]]]);
 });
+
+test("number with subunit", () => {
+	expect(parse("1 wei")).toEqual(1n);
+	expect(parse("1 kwei")).toEqual(1000n);
+	expect(parse("1 mwei")).toEqual(1000000n);
+	expect(parse("1 gwei")).toEqual(1n * 10n ** 9n);
+	expect(parse("1 szabo")).toEqual(1n * 10n ** 12n);
+	expect(parse("1 ether")).toEqual(1n * 10n ** 18n);
+});
