@@ -16,13 +16,15 @@
     "fix": "yarn fix:eslint && yarn fix:prettier",
     "fix:eslint": "eslint --fix .",
     "fix:prettier": "prettier --write .",
-    "setup": "yarn install && yarn ext:build"
+    "setup": "yarn install && yarn ext:build",
+    "test": "yarn workspaces foreach --all run test"
   },
   "workspaces": [
     "extension",
     "packages/react",
     "packages/types",
     "packages/data",
+    "packages/abiparse",
     "gui"
   ],
   "devDependencies": {
@@ -47,6 +49,9 @@
   "resolutions": {
     "postcss": "^8.4.31",
     "jose": "4.15.5"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
   },
   "packageManager": "yarn@4.0.2"
 }

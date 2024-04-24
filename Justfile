@@ -34,6 +34,10 @@ ext:
 ext-dev:
   yarn run ext:dev
 
+www *site='':
+  yarn workspace @ethui/{{site}}.ethui.dev dev
+
+
 #
 # icon generation
 #
