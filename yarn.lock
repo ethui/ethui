@@ -2630,7 +2630,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethui/abiparse@workspace:packages/abiparse":
+"@ethui/abiparse@npm:*, @ethui/abiparse@workspace:packages/abiparse":
   version: 0.0.0-use.local
   resolution: "@ethui/abiparse@workspace:packages/abiparse"
   dependencies:
@@ -2693,6 +2693,26 @@ __metadata:
     webextension-polyfill: "npm:^0.10.0"
     websocket-ts: "npm:^2.1.5"
     zustand: "npm:^4.5.2"
+  languageName: unknown
+  linkType: soft
+
+"@ethui/form@workspace:packages/form":
+  version: 0.0.0-use.local
+  resolution: "@ethui/form@workspace:packages/form"
+  dependencies:
+    "@emotion/react": "npm:^11.11.4"
+    "@emotion/styled": "npm:^11.11.5"
+    "@ethui/abiparse": "npm:*"
+    "@mui/material": "npm:^5.15.15"
+    "@types/react": "npm:^18.2.79"
+    chevrotain: "npm:^11.0.3"
+    nearly: "npm:^1.8.1"
+    react: "npm:^18.2.0"
+    react-dom: "npm:^18.2.0"
+    viem: "npm:^2.9.20"
+  peerDependencies:
+    react: ^17 || ^18
+    typescript: ^5.0.0
   languageName: unknown
   linkType: soft
 

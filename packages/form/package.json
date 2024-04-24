@@ -13,12 +13,15 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@ethui/abiparse": "workspace:*",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
+    "@ethui/abiparse": "*",
     "@mui/material": "^5.15.15",
     "chevrotain": "^11.0.3",
     "nearly": "^1.8.1",
     "viem": "^2.9.20"
+  },
+  "resolutions": {
+    "@ethui/abiparse": "0.0.2"
   }
 }

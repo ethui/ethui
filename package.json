@@ -25,6 +25,7 @@
     "packages/types",
     "packages/data",
     "packages/abiparse",
+    "packages/form",
     "gui"
   ],
   "devDependencies": {
