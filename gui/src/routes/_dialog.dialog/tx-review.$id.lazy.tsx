@@ -94,7 +94,7 @@ export function TxReviewDialog() {
   const { from, to, value: valueStr, data, chainId } = request;
   const value = BigInt(valueStr || 0);
 
-  const item = abi ??
+  const item = abi
     ? (getAbiItem({ abi, name: data.slice(0, 10) }) as AbiFunction)
     : undefined;
 
