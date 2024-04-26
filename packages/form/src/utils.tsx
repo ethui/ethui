@@ -1,4 +1,5 @@
 import { Typography } from "@mui/material";
+import { type AbiFunction, decodeFunctionData } from "viem";
 
 export function Debug({ value }: { value: any }) {
   return <Typography fontFamily="mono">{stringify(value)}</Typography>;
@@ -32,4 +33,21 @@ export function matchArrayType(type: string) {
     base: type.substring(0, type.length - groups.arrays.length),
     subarrays,
   };
+}
+
+export function decodeDefaultArgs(
+  item: AbiFunction,
+  calldata?: `0x${string}`,
+): any[] {
+  if (!calldata) return Array(item.inputs.length).fill(undefined);
+
+  try {
+    const { args } = decodeFunctionData({
+      abi: [item],
+      data: calldata,
+    });
+    return [...args];
+  } catch (e) {
+    return Array(item.inputs.length).fill(undefined);
+  }
 }
