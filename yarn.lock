@@ -2630,20 +2630,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethui/abiparse@npm:0.0.4":
-  version: 0.0.4
-  resolution: "@ethui/abiparse@npm:0.0.4"
-  dependencies:
-    chevrotain: "npm:^11.0.3"
-    nearly: "npm:^1.8.1"
-    viem: "npm:^2.9.20"
-  peerDependencies:
-    typescript: ^5.0.0
-  checksum: a69cc08a166a745689d7428dcb44da5e0f91d73695640eb06484495961c33b9ce8ecad63f04483c99d214ef899e65e7a56ccf77f2af9bd5a303368040eec5026
-  languageName: node
-  linkType: hard
-
-"@ethui/abiparse@workspace:packages/abiparse":
+"@ethui/abiparse@npm:*, @ethui/abiparse@workspace:packages/abiparse":
   version: 0.0.0-use.local
   resolution: "@ethui/abiparse@workspace:packages/abiparse"
   dependencies:
@@ -2714,7 +2701,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@ethui/form@workspace:packages/form"
   dependencies:
-    "@ethui/abiparse": "npm:0.0.4"
+    "@ethui/abiparse": "npm:*"
     "@types/react": "npm:^18.2.79"
     nearly: "npm:^1.8.1"
     react: "npm:^18.2.0"
