@@ -26,7 +26,6 @@ export function ABIItemForm({ to, abiItem }: ItemFormProps) {
     const params = { value: `0x${(value || 0).toString(16)}`, data, from, to };
     if (abiItem?.stateMutability === "view") {
       const rawResult = await invoke<`0x${string}`>("rpc_eth_call", { params });
-      console.log(rawResult);
       const result = decodeFunctionResult({
         abi: [abiItem],
         functionName: abiItem.name,
