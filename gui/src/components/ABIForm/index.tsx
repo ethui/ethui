@@ -78,7 +78,7 @@ export function ABIForm({ chainId, address }: Props) {
       {currentItem && (
         <Fragment key={JSON.stringify(currentItem)}>
           <ABIItemForm
-            contract={address}
+            to={address}
             abiItem={currentItem !== "raw" ? currentItem : undefined}
           />
         </Fragment>

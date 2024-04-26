@@ -9,8 +9,11 @@ interface AbiFormProps {
   abiItem?: AbiItem | string;
   preview?: boolean;
   debug?: boolean;
-  onCalldataChange?: (calldata: `0x${string}`) => void;
-  onValueChange?: (value: bigint) => void;
+  onChange?: (params: {
+    value?: bigint;
+    data?: `0x${string}`;
+    args?: any[];
+  }) => void;
   onSubmit?: () => void;
 }
 
@@ -18,8 +21,7 @@ export function AbiForm({
   abiItem,
   debug = false,
   preview,
-  onCalldataChange,
-  onValueChange,
+  onChange,
   onSubmit = () => {},
 }: AbiFormProps) {
   if (!abiItem || abiItem === "") {
@@ -28,8 +30,7 @@ export function AbiForm({
         {...{
           debug,
           preview,
-          onCalldataChange,
-          onValueChange,
+          onChange,
           onSubmit,
         }}
       />
@@ -48,7 +49,13 @@ export function AbiForm({
 
   return (
     <AbiFormInner
-      {...{ item, debug, preview, onCalldataChange, onValueChange, onSubmit }}
+      {...{
+        item,
+        debug,
+        preview,
+        onChange,
+        onSubmit,
+      }}
     />
   );
 }
@@ -56,24 +63,14 @@ export function AbiForm({
 type RawFormProps = Omit<AbiFormProps, "abiItem" | "debug"> & {
   debug: boolean;
 };
-export function RawForm({
-  debug,
-  onCalldataChange,
-  onValueChange,
-  onSubmit,
-}: RawFormProps) {
+export function RawForm({ debug, onChange, onSubmit }: RawFormProps) {
   const [calldata, setCalldata] = useState<`0x${string}`>("0x");
   const [ether, setEther] = useState<bigint>(0n);
 
   useEffect(() => {
-    if (!onCalldataChange) return;
-    onCalldataChange(calldata);
-  }, [calldata, onCalldataChange]);
-
-  useEffect(() => {
-    if (!onValueChange) return;
-    onValueChange(ether);
-  }, [ether, onValueChange]);
+    if (!onChange) return;
+    onChange({ data: calldata, value: ether });
+  }, [onChange, calldata, ether]);
 
   return (
     <Stack
@@ -126,8 +123,7 @@ export function AbiFormInner({
   item,
   debug,
   preview,
-  onCalldataChange,
-  onValueChange,
+  onChange: parentOnChange,
   onSubmit,
 }: AbiFormInnerProps) {
   const [calldata, setCalldata] = useState<`0x${string}` | undefined>();
@@ -143,6 +139,11 @@ export function AbiFormInner({
   };
 
   useEffect(() => {
+    if (!parentOnChange) return;
+    parentOnChange({ data: calldata, value: ether, args: values });
+  }, [parentOnChange, calldata, ether, values]);
+
+  useEffect(() => {
     try {
       const encoded = encodeFunctionData({
         abi: [item],
@@ -155,64 +156,52 @@ export function AbiFormInner({
     }
   }, [values, item]);
 
-  useEffect(() => {
-    if (!calldata || !onCalldataChange) return;
-    onCalldataChange(calldata);
-  }, [calldata, onCalldataChange]);
-
-  useEffect(() => {
-    if (!ether || !onValueChange) return;
-    onValueChange(ether);
-  }, [ether, onValueChange]);
-
   return (
     <Grid container spacing={2} onSubmit={(e) => e.preventDefault()}>
-      <Grid item xs={12} md={preview ? 4 : 12}>
-        <Stack
-          component="form"
-          spacing={2}
-          sx={{ p: 2 }}
-          onSubmit={(e) => {
-            e.preventDefault();
-            onSubmit && onSubmit();
-          }}
-        >
-          {item.inputs.map((input, i) => (
-            <AbiInput
-              key={i}
-              name={input.name || i.toString()}
-              label={input.name || i.toString()}
-              type={input.type}
-              debug={debug}
-              depth={1}
-              onChange={(e) => {
-                onChange(e, i);
-              }}
-            />
-          ))}
-          {item.stateMutability === "payable" && (
-            <AbiInput
-              name="value"
-              label="value"
-              type="uint256"
-              debug={debug}
-              depth={1}
-              onChange={(e) => {
-                try {
-                  setEther(BigInt(e));
-                } catch (e) {
-                  setEther(undefined);
-                }
-              }}
-            />
-          )}
-          <Box>
-            <Button variant="contained" type="submit" disabled={!calldata}>
-              Submit
-            </Button>
-          </Box>
-        </Stack>
-      </Grid>
+      <Stack
+        component="form"
+        spacing={2}
+        sx={{ p: 2 }}
+        onSubmit={(e) => {
+          e.preventDefault();
+          onSubmit && onSubmit();
+        }}
+      >
+        {item.inputs.map((input, i) => (
+          <AbiInput
+            key={i}
+            name={input.name || i.toString()}
+            label={input.name || i.toString()}
+            type={input.type}
+            debug={debug}
+            depth={1}
+            onChange={(e) => {
+              onChange(e, i);
+            }}
+          />
+        ))}
+        {item.stateMutability === "payable" && (
+          <AbiInput
+            name="value"
+            label="value"
+            type="uint256"
+            debug={debug}
+            depth={1}
+            onChange={(e) => {
+              try {
+                setEther(BigInt(e));
+              } catch (e) {
+                setEther(undefined);
+              }
+            }}
+          />
+        )}
+        <Box>
+          <Button variant="contained" type="submit" disabled={!calldata}>
+            Submit
+          </Button>
+        </Box>
+      </Stack>
     </Grid>
   );
 }

@@ -1,7 +1,7 @@
 import { Grid, Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { AbiFunction } from "abitype";
-import { useState} from "react";
+import { useState, useCallback } from "react";
 import { Address, decodeFunctionResult } from "viem";
 
 import { AbiForm } from "@ethui/form";
@@ -10,29 +10,23 @@ import { useWallets, useNetworks } from "@/store";
 import { AddressView } from "@/components";
 
 interface ItemFormProps {
-  contract: Address;
+  to: Address;
   abiItem?: AbiFunction;
 }
 
-export function ABIItemForm({ contract, abiItem }: ItemFormProps) {
-  const account = useWallets((s) => s.address);
+export function ABIItemForm({ to, abiItem }: ItemFormProps) {
+  const from = useWallets((s) => s.address);
   const chainId = useNetworks((s) => s.current?.chain_id);
   const [result, setResult] = useState<string>();
 
   const [value, setValue] = useState<bigint | undefined>();
-  const [calldata, setCalldata] = useState<`0x${string}` | undefined>();
+  const [data, setData] = useState<`0x${string}` | undefined>();
 
   const onSubmit = async () => {
+    const params = { value: `0x${(value || 0).toString(16)}`, data, from, to };
     if (abiItem?.stateMutability === "view") {
-      const rawResult = await invoke<`0x${string}`>("rpc_eth_call", {
-        params: {
-          from: account,
-          to: contract,
-          value: `0x${(value || 0n).toString(16)}`,
-          data: calldata,
-        },
-      });
-
+      const rawResult = await invoke<`0x${string}`>("rpc_eth_call", { params });
+      console.log(rawResult);
       const result = decodeFunctionResult({
         abi: [abiItem],
         functionName: abiItem.name,
@@ -51,42 +45,38 @@ export function ABIItemForm({ contract, abiItem }: ItemFormProps) {
           break;
       }
     } else {
-      const result = await invoke<string>("rpc_send_transaction", {
-        params: {
-          from: account,
-          to: contract,
-          value: `0x${(value || 0n).toString(16)}`,
-          data: calldata,
-        },
-      });
+      const result = await invoke<string>("rpc_send_transaction", { params });
       setResult(result);
     }
   };
 
+  const onChange = useCallback(
+    ({ value, data }: { value?: bigint; data?: `0x${string}` }) => {
+      setValue(value);
+      setData(data);
+    },
+    [setValue, setData],
+  );
+
   return (
     <Grid container>
       <Grid item xs={12} md={5}>
-        <AbiForm
-          abiItem={abiItem!}
-          onCalldataChange={setCalldata}
-          onValueChange={setValue}
-          onSubmit={onSubmit}
-        />
+        <AbiForm abiItem={abiItem!} onChange={onChange} onSubmit={onSubmit} />
 
         {result && <Typography>{result.toString()}</Typography>}
       </Grid>
 
       <Grid item xs={12} md={7} sx={{ pl: { md: 2 }, pt: { xs: 2, md: 0 } }}>
         <HighlightBox fullWidth>
-          {calldata && account ? (
+          {data && from ? (
             <SolidityCall
               {...{
-                abi: abiItem ? [abiItem] : [],
-                data: calldata,
                 value,
+                data,
+                from,
+                to,
+                abi: abiItem ? [abiItem] : [],
                 chainId,
-                from: account,
-                to: contract,
               }}
               ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
             />
