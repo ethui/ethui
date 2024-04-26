@@ -1,1 +1,1 @@
-export { AbiForm } from "./src/ABIForm";
+export { AbiForm } from "./src/AbiForm";
