@@ -1,4 +1,3 @@
-import { useRef, useEffect } from "react";
 import { Typography } from "@mui/material";
 
 export function Debug({ value }: { value: any }) {
@@ -19,9 +18,6 @@ export function stringify(v: any, indent = 2) {
 
 export function matchArrayType(type: string) {
   const match = /(?<arrays>(\[\d*\])+)$/.exec(type);
-  // const match = /(?<base>.*)\[(?<length>\d*)\](?<subarrays>(\[\d*)\])*)$/.exec(
-  //   type,
-  // );
 
   if (!match) return null;
 
