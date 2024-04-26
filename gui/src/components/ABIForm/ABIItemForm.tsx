@@ -1,7 +1,7 @@
 import { Grid, Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { AbiFunction } from "abitype";
-import { useState, useEffect } from "react";
+import { useState} from "react";
 import { Address, decodeFunctionResult } from "viem";
 
 import { AbiForm } from "@ethui/form";
@@ -21,7 +21,6 @@ export function ABIItemForm({ contract, abiItem }: ItemFormProps) {
 
   const [value, setValue] = useState<bigint | undefined>();
   const [calldata, setCalldata] = useState<`0x${string}` | undefined>();
-
 
   const onSubmit = async () => {
     if (abiItem?.stateMutability === "view") {
