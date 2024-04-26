@@ -1,7 +1,7 @@
 import { Autocomplete, Box, Chip, TextField } from "@mui/material";
 import { Stack } from "@mui/system";
 import { Abi, AbiFunction, formatAbiItem } from "abitype";
-import { SyntheticEvent, useState } from "react";
+import { Fragment, SyntheticEvent, useState } from "react";
 import { Address } from "viem";
 
 import { useInvoke } from "@/hooks";
@@ -76,10 +76,12 @@ export function ABIForm({ chainId, address }: Props) {
       />
 
       {currentItem && (
-        <ABIItemForm
-          contract={address}
-          abiItem={currentItem !== "raw" ? currentItem : undefined}
-        />
+        <Fragment key={JSON.stringify(currentItem)}>
+          <ABIItemForm
+            contract={address}
+            abiItem={currentItem !== "raw" ? currentItem : undefined}
+          />
+        </Fragment>
       )}
     </Stack>
   );

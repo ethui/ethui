@@ -1,18 +1,9 @@
 import { useEffect, useState } from "react";
 import { parseAbiItem, type AbiFunction, type AbiItem } from "viem";
 import { encodeFunctionData } from "viem/utils";
-import {
-  Alert,
-  Box,
-  Button,
-  Grid,
-  Paper,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Alert, Box, Button, Grid, Stack } from "@mui/material";
 
 import { AbiInput } from "./AbiInput";
-import { Debug } from "./utils";
 
 interface AbiFormProps {
   abiItem?: AbiItem | string;
@@ -77,12 +68,12 @@ export function RawForm({
   useEffect(() => {
     if (!onCalldataChange) return;
     onCalldataChange(calldata);
-  });
+  }, [calldata, onCalldataChange]);
 
   useEffect(() => {
     if (!onValueChange) return;
     onValueChange(ether);
-  });
+  }, [ether, onValueChange]);
 
   return (
     <Stack
@@ -145,6 +136,12 @@ export function AbiFormInner({
   );
   const [ether, setEther] = useState<bigint | undefined>(undefined);
 
+  const onChange = (newValue: any, i: number) => {
+    const newValues = [...values];
+    newValues[i] = newValue;
+    setValues(newValues);
+  };
+
   useEffect(() => {
     try {
       const encoded = encodeFunctionData({
@@ -166,11 +163,11 @@ export function AbiFormInner({
   useEffect(() => {
     if (!ether || !onValueChange) return;
     onValueChange(ether);
-  });
+  }, [ether, onValueChange]);
 
   return (
     <Grid container spacing={2} onSubmit={(e) => e.preventDefault()}>
-      <Grid component="form" item xs={12} md={preview ? 4 : 12}>
+      <Grid item xs={12} md={preview ? 4 : 12}>
         <Stack
           component="form"
           spacing={2}
@@ -189,9 +186,7 @@ export function AbiFormInner({
               debug={debug}
               depth={1}
               onChange={(e) => {
-                const newValues = [...values];
-                newValues[i] = e;
-                setValues(newValues);
+                onChange(e, i);
               }}
             />
           ))}
@@ -218,26 +213,6 @@ export function AbiFormInner({
           </Box>
         </Stack>
       </Grid>
-      {preview && (
-        <Grid item xs={12} md={8}>
-          <Paper sx={{ width: "100%", height: "100%" }}>
-            <Stack spacing={1} sx={{ p: 2 }}>
-              {item.inputs.map((input, i) => (
-                <div key={i}>
-                  <Typography fontWeight="bold">
-                    {input.name || i.toString()}:
-                  </Typography>
-                  <Debug value={values[i]} />
-                </div>
-              ))}
-              <Typography fontWeight="bold">calldata:</Typography>
-              <Typography fontFamily="mono" sx={{ overflowWrap: "break-word" }}>
-                {calldata}
-              </Typography>
-            </Stack>
-          </Paper>
-        </Grid>
-      )}
     </Grid>
   );
 }

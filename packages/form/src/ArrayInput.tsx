@@ -158,7 +158,8 @@ function ArrayElements({
   );
 }
 
-type AbiArrayItemInputProps = Omit<InnerProps, "label"> & {
+type AbiArrayItemInputProps = Omit<InnerProps, "label" | "label"> & {
+  depth: number;
   removable: boolean;
   onRemove: () => void;
 };

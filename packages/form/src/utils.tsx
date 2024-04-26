@@ -1,3 +1,4 @@
+import { useRef, useEffect } from "react";
 import { Typography } from "@mui/material";
 
 export function Debug({ value }: { value: any }) {
