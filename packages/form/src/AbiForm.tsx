@@ -4,10 +4,10 @@ import { encodeFunctionData } from "viem/utils";
 import { Alert, Box, Button, Grid, Stack } from "@mui/material";
 
 import { AbiInput } from "./AbiInput";
+import { decodeDefaultArgs } from "./utils";
 
 interface AbiFormProps {
   abiItem?: AbiItem | string;
-  preview?: boolean;
   debug?: boolean;
   onChange?: (params: {
     value?: bigint;
@@ -15,12 +15,15 @@ interface AbiFormProps {
     args?: any[];
   }) => void;
   onSubmit?: () => void;
+  defaultCalldata?: `0x${string}`;
+  defaultEther?: bigint;
 }
 
 export function AbiForm({
   abiItem,
   debug = false,
-  preview,
+  defaultCalldata,
+  defaultEther,
   onChange,
   onSubmit = () => {},
 }: AbiFormProps) {
@@ -29,9 +32,10 @@ export function AbiForm({
       <RawForm
         {...{
           debug,
-          preview,
           onChange,
           onSubmit,
+          defaultCalldata,
+          defaultEther,
         }}
       />
     );
@@ -52,9 +56,10 @@ export function AbiForm({
       {...{
         item,
         debug,
-        preview,
         onChange,
         onSubmit,
+        defaultCalldata,
+        defaultEther,
       }}
     />
   );
@@ -63,7 +68,13 @@ export function AbiForm({
 type RawFormProps = Omit<AbiFormProps, "abiItem" | "debug"> & {
   debug: boolean;
 };
-export function RawForm({ debug, onChange, onSubmit }: RawFormProps) {
+export function RawForm({
+  debug,
+  onChange,
+  onSubmit,
+  defaultCalldata,
+  defaultEther,
+}: RawFormProps) {
   const [calldata, setCalldata] = useState<`0x${string}`>("0x");
   const [ether, setEther] = useState<bigint>(0n);
 
@@ -87,7 +98,7 @@ export function RawForm({ debug, onChange, onSubmit }: RawFormProps) {
         label="calldata"
         type="bytes"
         debug={debug}
-        depth={1}
+        defaultValue={defaultCalldata}
         onChange={(e) => {
           setCalldata(e);
         }}
@@ -97,7 +108,7 @@ export function RawForm({ debug, onChange, onSubmit }: RawFormProps) {
         label="value"
         type="uint256"
         debug={debug}
-        depth={1}
+        defaultValue={defaultEther}
         onChange={(e) => {
           setEther(e);
         }}
@@ -122,13 +133,16 @@ type AbiFormInnerProps = Omit<AbiFormProps, "abiItem" | "debug"> & {
 export function AbiFormInner({
   item,
   debug,
-  preview,
   onChange: parentOnChange,
   onSubmit,
+  defaultCalldata,
+  defaultValue,
 }: AbiFormInnerProps) {
-  const [calldata, setCalldata] = useState<`0x${string}` | undefined>();
+  const [calldata, setCalldata] = useState<`0x${string}` | undefined>(
+    defaultCalldata,
+  );
   const [values, setValues] = useState(
-    Array(item.inputs.length).fill(undefined),
+    decodeDefaultArgs(item, defaultCalldata),
   );
   const [ether, setEther] = useState<bigint | undefined>(undefined);
 
@@ -174,7 +188,7 @@ export function AbiFormInner({
             label={input.name || i.toString()}
             type={input.type}
             debug={debug}
-            depth={1}
+            defaultValue={values[i]}
             onChange={(e) => {
               onChange(e, i);
             }}
@@ -186,7 +200,7 @@ export function AbiFormInner({
             label="value"
             type="uint256"
             debug={debug}
-            depth={1}
+            defaultValue={defaultValue}
             onChange={(e) => {
               try {
                 setEther(BigInt(e));
