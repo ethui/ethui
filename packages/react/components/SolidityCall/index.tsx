@@ -139,7 +139,7 @@ function Call({ value, data, to, decimals, abi, ArgProps }: CallProps) {
       <Stack direction="row">
         <Arg type="address" variant="highlight2" value={to} {...ArgProps} />
         <Separator text="." sx={{ gridArea: "top" }} />
-        <Arg value={label} type="string" variant="highlight3" />
+        <Arg value={label} raw type="string" variant="highlight3" />
         {value > 0n && (
           <>
             <Separator text="{" />
@@ -177,6 +177,7 @@ interface ArgProps {
   variant?: PaletteColorKey;
   type: string;
   sx?: SxProps;
+  raw?: boolean;
   value: string | bigint;
   addressRenderer?: (a: Address) => React.ReactNode;
   defaultRenderer?: (a: string | bigint) => React.ReactNode;
@@ -185,6 +186,7 @@ interface ArgProps {
 function Arg({
   label,
   type,
+  raw = false,
   variant = "highlight1",
   value,
   sx = {},
@@ -192,9 +194,11 @@ function Arg({
   defaultRenderer = (v: string | bigint) => (
     <ClickToCopy text={v}>
       <Typography mono>
-        {JSON.stringify(v, (_k, v) => {
-          return typeof v === "bigint" ? v.toString(16) : v;
-        })}
+        {raw && v.toString()}
+        {!raw &&
+          JSON.stringify(v, (_k, v) => {
+            return typeof v === "bigint" ? `0x${v.toString(16)}` : v;
+          })}
       </Typography>
     </ClickToCopy>
   ),
@@ -251,7 +255,7 @@ function parseCall(data: `0x${string}`, abi: Abi | string[] | undefined) {
 
   let label = data.slice(0, 10);
   let args = [
-    { value: `0x${data.slice(8)}`, type: "string", label: "calldata:" },
+    { value: `0x${data.slice(10)}`, type: "string", label: "calldata:" },
   ];
 
   try {

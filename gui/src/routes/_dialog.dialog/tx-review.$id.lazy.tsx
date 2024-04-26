@@ -109,9 +109,9 @@ export function TxReviewDialog() {
       {item && (
         <ABIItemForm
           abiItem={item}
-          contract={to}
-          data={data}
-          value={value}
+          to={to}
+          defaultCalldata={data}
+          defaultEther={value}
         />
       )}
 

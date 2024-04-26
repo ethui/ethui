@@ -1,116 +1,38 @@
-import { Button, Grid, Typography } from "@mui/material";
-import { Stack } from "@mui/system";
+import { Grid, Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { AbiFunction } from "abitype";
-import { useEffect, useState } from "react";
-import {
-  Address,
-  decodeFunctionResult,
-  decodeFunctionData,
-  encodeFunctionData,
-} from "viem";
-import { FieldValues, useForm, useWatch } from "react-hook-form";
-import { useDebounce } from "@uidotdev/usehooks";
+import { useState, useCallback } from "react";
+import { Address, decodeFunctionResult } from "viem";
 
-import { Form, SolidityCall, HighlightBox } from "@ethui/react/components";
-import { ABIInput } from "./ABIInput";
+import { AbiForm } from "@ethui/form";
+import { SolidityCall, HighlightBox } from "@ethui/react/components";
 import { useWallets, useNetworks } from "@/store";
 import { AddressView } from "@/components";
 
-interface CallArgs {
-  value?: string;
-  raw: Record<string, string>;
-  parsed: Record<string, string>;
-}
-
 interface ItemFormProps {
-  contract: Address;
+  to: Address;
   abiItem?: AbiFunction;
-  data?: `0x${string}`;
-  value?: bigint;
+  defaultCalldata?: `0x${string}`;
+  defaultEther?: bigint;
 }
 
 export function ABIItemForm({
-  contract,
+  to,
   abiItem,
-  data: defaultData,
-  value: defaultValue,
+  defaultCalldata,
+  defaultEther,
 }: ItemFormProps) {
-  const account = useWallets((s) => s.address);
+  const from = useWallets((s) => s.address);
   const chainId = useNetworks((s) => s.current?.chain_id);
-
-  const defaultValues: FieldValues = { raw: {}, parsed: {} };
-  if (defaultData && abiItem) {
-    if (abiItem) {
-      const { args } = decodeFunctionData({
-        abi: [abiItem],
-        data: defaultData,
-      });
-      abiItem.inputs.forEach((input, i) => {
-        defaultValues.raw[`${input.name || i.toString()}`] = JSON.stringify(
-          args![i],
-          (_k, v) => {
-            return typeof v === "bigint" ? v.toString(16) : v;
-          },
-        );
-        defaultValues.parsed[`${input.name || i.toString()}`] = args[i];
-      });
-    } else {
-      defaultValues.raw[`-data-`] = defaultData;
-    }
-  }
-  if (defaultValue !== undefined) {
-    defaultValues.raw[`-value-`] = defaultValue.toString();
-    defaultValues.parsed[`-value-`] = defaultValue;
-  }
-
-  const form = useForm<CallArgs>({ defaultValues });
-
   const [result, setResult] = useState<string>();
 
-  useEffect(() => form.reset(), [abiItem, form]);
-
-  const watcher = useWatch({ control: form.control });
-  const debouncedParams = useDebounce(watcher, 200);
-  const [data, setData] = useState<`0x${string}` | undefined>(defaultData);
-  const [value, setValue] = useState<bigint | undefined>(defaultValue);
-
-  useEffect(() => {
-    const params = form.getValues();
-    try {
-      if (abiItem) {
-        const args = abiItem.inputs.map((input, i) =>
-          JSON.parse(params.parsed[input.name || i.toString()]),
-        );
-
-        const data = encodeFunctionData({
-          abi: [abiItem],
-          functionName: abiItem.name,
-          args,
-        });
-        setData(data);
-        setValue(BigInt(params.raw["-value-"] || 0));
-      } else {
-        setData((params.raw["-data-"] as `0x${string}`) || "0x");
-        setValue(BigInt(params.raw["-value-"] || 0));
-      }
-    } catch (e) {
-      setData(undefined);
-      setValue(undefined);
-    }
-  }, [debouncedParams, abiItem, form, setData]);
+  const [value, setValue] = useState<bigint | undefined>();
+  const [data, setData] = useState<`0x${string}` | undefined>();
 
   const onSubmit = async () => {
+    const params = { value: `0x${(value || 0).toString(16)}`, data, from, to };
     if (abiItem?.stateMutability === "view") {
-      const rawResult = await invoke<`0x${string}`>("rpc_eth_call", {
-        params: {
-          from: account,
-          to: contract,
-          value: `0x${value?.toString(16)}`,
-          data,
-        },
-      });
-
+      const rawResult = await invoke<`0x${string}`>("rpc_eth_call", { params });
       const result = decodeFunctionResult({
         abi: [abiItem],
         functionName: abiItem.name,
@@ -129,73 +51,41 @@ export function ABIItemForm({
           break;
       }
     } else {
-      const result = await invoke<string>("rpc_send_transaction", {
-        params: {
-          from: account,
-          to: contract,
-          value: `0x${value?.toString(16)}`,
-          data,
-        },
-      });
+      const result = await invoke<string>("rpc_send_transaction", { params });
       setResult(result);
     }
   };
 
+  const onChange = useCallback(
+    ({ value, data }: { value?: bigint; data?: `0x${string}` }) => {
+      setValue(value);
+      setData(data);
+    },
+    [setValue, setData],
+  );
+
   return (
     <Grid container>
       <Grid item xs={12} md={5}>
-        <Form form={form} onSubmit={onSubmit}>
-          <Stack direction="column" spacing={2} justifyContent="flex-start">
-            {/* if calling an ABI function */}
-            {abiItem && (
-              <>
-                {abiItem.inputs.map((item, index) => (
-                  <ABIInput key={index} name={item.name || index} type={item} />
-                ))}
-                {abiItem.stateMutability === "payable" && (
-                  <ABIInput name="-value-" label="value" type="uint256" />
-                )}
-                <Button
-                  sx={{ minWidth: 150 }}
-                  variant="contained"
-                  type="submit"
-                  disabled={!data || !account}
-                >
-                  {abiItem.stateMutability == "view" ? "Call" : "Send"}
-                </Button>
-              </>
-            )}
+        <AbiForm
+          abiItem={abiItem!}
+          {...{ onChange, onSubmit, defaultCalldata, defaultEther }}
+        />
 
-            {/* if doing a raw call */}
-            {!abiItem && (
-              <>
-                <ABIInput name="-data-" label="raw data" type="bytes" />
-                <ABIInput name="-value-" label="value" type="uint256" />
-                <Button
-                  sx={{ minWidth: 150 }}
-                  variant="contained"
-                  type="submit"
-                >
-                  Call
-                </Button>
-              </>
-            )}
-            {result && <Typography>{result.toString()}</Typography>}
-          </Stack>
-        </Form>
+        {result && <Typography>{result.toString()}</Typography>}
       </Grid>
 
       <Grid item xs={12} md={7} sx={{ pl: { md: 2 }, pt: { xs: 2, md: 0 } }}>
         <HighlightBox fullWidth>
-          {data && account ? (
+          {data && from ? (
             <SolidityCall
               {...{
-                abi: abiItem ? [abiItem] : [],
-                data,
                 value,
+                data,
+                from,
+                to,
+                abi: abiItem ? [abiItem] : [],
                 chainId,
-                from: account,
-                to: contract,
               }}
               ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
             />

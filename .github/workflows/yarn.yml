@@ -38,6 +38,5 @@ jobs:
           node-version-file: ".tool-versions"
 
       - run: yarn install --frozen-lockfile
-
-      - name: ESLint
         run: yarn lint
+        run: yarn test
