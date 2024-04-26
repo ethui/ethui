@@ -23,5 +23,10 @@
     "types": ["node"]
   },
   "include": [".eslintrc.js"],
-  "references": [{ "path": "./gui" }, { "path": "./extension" }, {"path": "./packages/form"}]
+  "references": [
+    { "path": "./gui" },
+    { "path": "./extension" },
+    { "path": "./packages/form" },
+    { "path": "./packages/abiparse" }
+  ]
 }
