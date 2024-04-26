@@ -197,7 +197,7 @@ function Arg({
         {raw && v.toString()}
         {!raw &&
           JSON.stringify(v, (_k, v) => {
-            return typeof v === "bigint" ? v.toString(16) : v;
+            return typeof v === "bigint" ? `0x${v.toString(16)}` : v;
           })}
       </Typography>
     </ClickToCopy>
@@ -255,7 +255,7 @@ function parseCall(data: `0x${string}`, abi: Abi | string[] | undefined) {
 
   let label = data.slice(0, 10);
   let args = [
-    { value: `0x${data.slice(8)}`, type: "string", label: "calldata:" },
+    { value: `0x${data.slice(10)}`, type: "string", label: "calldata:" },
   ];
 
   try {
