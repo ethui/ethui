@@ -113,11 +113,13 @@ export function RawForm({
           setEther(e);
         }}
       />
-      <Box>
-        <Button variant="contained" type="submit" disabled={!calldata}>
-          Submit
-        </Button>
-      </Box>
+      {onSubmit && (
+        <Box>
+          <Button variant="contained" type="submit" disabled={!calldata}>
+            Submit
+          </Button>
+        </Box>
+      )}
     </Stack>
   );
 }
@@ -136,7 +138,7 @@ export function AbiFormInner({
   onChange: parentOnChange,
   onSubmit,
   defaultCalldata,
-  defaultValue,
+  defaultEther,
 }: AbiFormInnerProps) {
   const [calldata, setCalldata] = useState<`0x${string}` | undefined>(
     defaultCalldata,
@@ -200,7 +202,7 @@ export function AbiFormInner({
             label="value"
             type="uint256"
             debug={debug}
-            defaultValue={defaultValue}
+            defaultValue={defaultEther}
             onChange={(e) => {
               try {
                 setEther(BigInt(e));

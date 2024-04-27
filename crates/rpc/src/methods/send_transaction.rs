@@ -73,10 +73,15 @@ impl<'a> SendTransaction {
         dialog.open().await?;
 
         while let Some(msg) = dialog.recv().await {
+            dbg!(&msg);
             match msg {
-                DialogMsg::Data(msg) => match msg.as_str() {
+                DialogMsg::Data(msg) => match &msg["event"].as_str() {
                     Some("simulate") => self.simulate(&dialog).await?,
                     Some("accept") => break,
+                    Some("update") => {
+                        self.update(msg);
+                        self.simulate(&dialog).await?
+                    }
                     // TODO: what's the appropriate error to return here?
                     // or should we return Ok(_)? Err(_) seems too close the ws connection
                     _ => {
@@ -95,6 +100,17 @@ impl<'a> SendTransaction {
         let tx = self.send().await?;
 
         Ok(tx)
+    }
+
+    fn update(&mut self, data: serde_json::Value) {
+        if let Some(data) = data["data"].as_str() {
+            self.request.set_data(Bytes::from_str(data).unwrap());
+        }
+
+        if let Some(value) = data["value"].as_str() {
+            let v = StringifiedNumeric::String(value.to_string());
+            self.request.set_value(U256::try_from(v).unwrap());
+        }
     }
 
     async fn simulate(&self, dialog: &Dialog) -> Result<()> {

@@ -14,6 +14,7 @@ interface ItemFormProps {
   abiItem?: AbiFunction;
   defaultCalldata?: `0x${string}`;
   defaultEther?: bigint;
+  onChange?: (params: { value?: bigint; data?: `0x${string}` }) => void;
 }
 
 export function ABIItemForm({
@@ -21,6 +22,7 @@ export function ABIItemForm({
   abiItem,
   defaultCalldata,
   defaultEther,
+  onChange: parentOnChange,
 }: ItemFormProps) {
   const from = useWallets((s) => s.address);
   const chainId = useNetworks((s) => s.current?.chain_id);
@@ -60,6 +62,7 @@ export function ABIItemForm({
     ({ value, data }: { value?: bigint; data?: `0x${string}` }) => {
       setValue(value);
       setData(data);
+      parentOnChange?.({ value, data });
     },
     [setValue, setData],
   );
