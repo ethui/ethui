@@ -12,9 +12,16 @@ import { AddressView } from "@/components";
 interface ItemFormProps {
   to: Address;
   abiItem?: AbiFunction;
+  defaultCalldata?: `0x${string}`;
+  defaultEther?: bigint;
 }
 
-export function ABIItemForm({ to, abiItem }: ItemFormProps) {
+export function ABIItemForm({
+  to,
+  abiItem,
+  defaultCalldata,
+  defaultEther,
+}: ItemFormProps) {
   const from = useWallets((s) => s.address);
   const chainId = useNetworks((s) => s.current?.chain_id);
   const [result, setResult] = useState<string>();
@@ -60,7 +67,10 @@ export function ABIItemForm({ to, abiItem }: ItemFormProps) {
   return (
     <Grid container>
       <Grid item xs={12} md={5}>
-        <AbiForm abiItem={abiItem!} onChange={onChange} onSubmit={onSubmit} />
+        <AbiForm
+          abiItem={abiItem!}
+          {...{ onChange, onSubmit, defaultCalldata, defaultEther }}
+        />
 
         {result && <Typography>{result.toString()}</Typography>}
       </Grid>

@@ -1,4 +1,4 @@
-export { ABIForm } from "./ABIForm";
+export { ABIForm, ABIItemForm } from "./ABIForm";
 export { AddressView } from "./AddressView";
 export { BalancesList } from "./BalancesList";
 export { CommandBar } from "./CommandBar";
