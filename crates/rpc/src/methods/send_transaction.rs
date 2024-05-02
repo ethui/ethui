@@ -73,7 +73,6 @@ impl<'a> SendTransaction {
         dialog.open().await?;
 
         while let Some(msg) = dialog.recv().await {
-            dbg!(&msg);
             match msg {
                 DialogMsg::Data(msg) => match &msg["event"].as_str() {
                     Some("simulate") => self.simulate(&dialog).await?,
