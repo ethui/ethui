@@ -1,5 +1,5 @@
 import { Alert, AlertTitle, Box, Button, Grid, Stack } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Cancel, CheckCircle, Delete, Send, Report } from "@mui/icons-material";
 import {
   Abi,
@@ -16,11 +16,13 @@ import { createLazyFileRoute } from "@tanstack/react-router";
 import { ChainView, Typography } from "@ethui/react/components";
 import { TokenMetadata } from "@ethui/types";
 import { Network } from "@ethui/types/network";
+import { AbiForm } from "@ethui/form";
 import { ABIItemForm, AddressView, Datapoint } from "@/components";
 import { useDialog, useInvoke, useLedgerDetect } from "@/hooks";
 import { DialogBottom } from "@/components/Dialogs/Bottom";
 import { IconAddress } from "@/components/Icons";
 import { useNetworks } from "@/store";
+import { Dialog } from "@/hooks/useDialog";
 
 export const Route = createLazyFileRoute("/_dialog/dialog/tx-review/$id")({
   component: TxReviewDialog,
@@ -56,14 +58,32 @@ interface Simulation {
 
 export function TxReviewDialog() {
   const { id } = Route.useParams();
-  const { data: request, send, listen } = useDialog<TxRequest>(id);
+  const dialog = useDialog<TxRequest>(id);
+  const network = useNetworks((s) =>
+    s.networks.find((n) => n.chain_id == dialog.data?.chainId),
+  );
+
+  if (!dialog.data || !network) return null;
+
+  return <Inner {...{ dialog, request: dialog.data, network }} />;
+}
+
+interface InnerProps {
+  dialog: Dialog<TxRequest>;
+  request: TxRequest;
+  network: Network;
+}
+
+function Inner({ dialog, request, network }: InnerProps) {
+  const { send, listen } = dialog;
+  const { from, to, chainId, data, value: valueStr } = request;
+
   const [simulation, setSimulation] = useState<Simulation | undefined>(
     undefined,
   );
   const [accepted, setAccepted] = useState(false);
-  const network = useNetworks((s) =>
-    s.networks.find((n) => n.chain_id == request?.chainId),
-  );
+  const [calldata, setCalldata] = useState<`0x${string}` | undefined>(data);
+  const [value, setValue] = useState<bigint>(BigInt(valueStr || 0));
 
   const { data: abi } = useInvoke<Abi>("db_get_contract_abi", {
     address: request?.to,
@@ -77,22 +97,26 @@ export function TxReviewDialog() {
   }, [listen]);
 
   useEffect(() => {
-    send("simulate");
+    send({ event: "simulate" });
   }, [send]);
 
-  if (!request || !network) return null;
-
   const onReject = () => {
-    send("reject");
+    send({ event: "reject" });
   };
 
   const onConfirm = () => {
-    send("accept");
+    send({ event: "accept" });
     setAccepted(true);
   };
 
-  const { from, to, value: valueStr, data, chainId } = request;
-  const value = BigInt(valueStr || 0);
+  const onChange = useCallback(
+    ({ value, data }: { value?: bigint; data?: `0x${string}` }) => {
+      setValue(value || 0n);
+      setCalldata(data);
+      send({ event: "update", value, data });
+    },
+    [setValue, setCalldata],
+  );
 
   const item = abi
     ? (getAbiItem({ abi, name: data.slice(0, 10) }) as AbiFunction)
@@ -104,10 +128,11 @@ export function TxReviewDialog() {
 
       {item && (
         <ABIItemForm
-          abiItem={item}
           to={to}
-          defaultCalldata={data}
+          abiItem={item}
+          defaultCalldata={calldata}
           defaultEther={value}
+          onChange={onChange}
         />
       )}
 

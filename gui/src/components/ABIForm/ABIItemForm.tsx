@@ -14,6 +14,7 @@ interface ItemFormProps {
   abiItem?: AbiFunction;
   defaultCalldata?: `0x${string}`;
   defaultEther?: bigint;
+  onChange?: (params: { value?: bigint; data?: `0x${string}` }) => void;
 }
 
 export function ABIItemForm({
@@ -21,6 +22,7 @@ export function ABIItemForm({
   abiItem,
   defaultCalldata,
   defaultEther,
+  onChange: parentOnChange,
 }: ItemFormProps) {
   const from = useWallets((s) => s.address);
   const chainId = useNetworks((s) => s.current?.chain_id);
@@ -60,13 +62,14 @@ export function ABIItemForm({
     ({ value, data }: { value?: bigint; data?: `0x${string}` }) => {
       setValue(value);
       setData(data);
+      parentOnChange?.({ value, data });
     },
     [setValue, setData],
   );
 
   return (
     <Grid container>
-      <Grid item xs={12} md={5}>
+      <Grid item xs={12} sm={4}>
         <AbiForm
           abiItem={abiItem!}
           {...{ onChange, onSubmit, defaultCalldata, defaultEther }}
@@ -75,7 +78,7 @@ export function ABIItemForm({
         {result && <Typography>{result.toString()}</Typography>}
       </Grid>
 
-      <Grid item xs={12} md={7} sx={{ pl: { md: 2 }, pt: { xs: 2, md: 0 } }}>
+      <Grid item xs={12} sm={8} sx={{ pl: { md: 2 }, pt: { xs: 2, md: 0 } }}>
         <HighlightBox fullWidth>
           {data && from ? (
             <SolidityCall
