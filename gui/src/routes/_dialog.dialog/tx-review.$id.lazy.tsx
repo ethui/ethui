@@ -111,7 +111,6 @@ function Inner({ dialog, request, network }: InnerProps) {
 
   const onChange = useCallback(
     ({ value, data }: { value?: bigint; data?: `0x${string}` }) => {
-      console.log("here", value, data);
       setValue(value || 0n);
       setCalldata(data);
       send({ event: "update", value, data });

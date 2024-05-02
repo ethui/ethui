@@ -69,7 +69,7 @@ export function ABIItemForm({
 
   return (
     <Grid container>
-      <Grid item xs={12} md={5}>
+      <Grid item xs={12} sm={4}>
         <AbiForm
           abiItem={abiItem!}
           {...{ onChange, onSubmit, defaultCalldata, defaultEther }}
@@ -78,7 +78,7 @@ export function ABIItemForm({
         {result && <Typography>{result.toString()}</Typography>}
       </Grid>
 
-      <Grid item xs={12} md={7} sx={{ pl: { md: 2 }, pt: { xs: 2, md: 0 } }}>
+      <Grid item xs={12} sm={8} sx={{ pl: { md: 2 }, pt: { xs: 2, md: 0 } }}>
         <HighlightBox fullWidth>
           {data && from ? (
             <SolidityCall
