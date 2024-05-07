@@ -1,1 +1,2 @@
-export { AbiForm } from "./src/AbiForm";
+export { AbiForm, type AbiFunction } from "./src/AbiForm";
+export { Debug } from "./src/utils";

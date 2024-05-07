@@ -46,7 +46,7 @@ export function AbiInput({
         >
           <Typography fontWeight="bold">
             {label}
-            <Typography sx={{ pl: 2 }} component="span" fontFamily="mono">
+            <Typography sx={{ pl: 2 }} component="span" fontFamily="monospace">
               {type}
             </Typography>
           </Typography>

@@ -36,13 +36,10 @@ export function ArrayInput({
     setTab(v);
   };
 
-  const onChange = useCallback((v: any) => {
+  const onChange = (v: any[]) => {
     setValue(v);
-  }, []);
-
-  useEffect(() => {
-    parentOnChange(value);
-  }, [value, parentOnChange]);
+    parentOnChange(v);
+  };
 
   return (
     <Stack spacing={1}>

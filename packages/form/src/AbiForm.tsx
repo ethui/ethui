@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { parseAbiItem, type AbiFunction, type AbiItem } from "viem";
 import { encodeFunctionData } from "viem/utils";
 import { Alert, Box, Button, Grid, Stack } from "@mui/material";
@@ -10,6 +10,7 @@ interface AbiFormProps {
   abiItem?: AbiItem | string;
   debug?: boolean;
   onChange?: (params: {
+    item?: AbiFunction;
     value?: bigint;
     data?: `0x${string}`;
     args?: any[];
@@ -18,6 +19,8 @@ interface AbiFormProps {
   defaultCalldata?: `0x${string}`;
   defaultEther?: bigint;
 }
+
+export type { AbiFunction };
 
 export function AbiForm({
   abiItem,
@@ -148,16 +151,14 @@ export function AbiFormInner({
   );
   const [ether, setEther] = useState<bigint | undefined>(undefined);
 
-  const onChange = (newValue: any, i: number) => {
-    const newValues = [...values];
-    newValues[i] = newValue;
-    setValues(newValues);
-  };
-
-  useEffect(() => {
-    if (!parentOnChange) return;
-    parentOnChange({ data: calldata, value: ether, args: values });
-  }, [parentOnChange, calldata, ether, values]);
+  const onChange = useCallback(
+    (newValue: any, i: number) => {
+      const newValues = [...values];
+      newValues[i] = newValue;
+      setValues(newValues);
+    },
+    [values],
+  );
 
   useEffect(() => {
     try {
@@ -171,6 +172,11 @@ export function AbiFormInner({
       setCalldata(undefined);
     }
   }, [values, item]);
+
+  useEffect(() => {
+    if (!parentOnChange) return;
+    parentOnChange({ item: item, data: calldata, value: ether, args: values });
+  }, [parentOnChange, calldata, ether, values]);
 
   return (
     <Grid container spacing={2} onSubmit={(e) => e.preventDefault()}>
