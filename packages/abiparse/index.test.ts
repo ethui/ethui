@@ -9,6 +9,7 @@ test("uints", () => {
 
 test("ints", () => {
 	expect(parse("-1")).toEqual(-1n);
+	expect(parse("0x1")).toEqual(1n);
 });
 
 test("quoted strings", () => {
