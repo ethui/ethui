@@ -176,7 +176,7 @@ export function AbiFormInner({
   useEffect(() => {
     if (!parentOnChange) return;
     parentOnChange({ item: item, data: calldata, value: ether, args: values });
-  }, [parentOnChange, calldata, ether, values]);
+  }, [item, parentOnChange, calldata, ether, values]);
 
   return (
     <Grid container spacing={2} onSubmit={(e) => e.preventDefault()}>

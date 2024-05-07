@@ -10,11 +10,14 @@ export type BasicProps = Omit<InnerProps, "depth" | "type" | "label">;
 export function Basic({ name, defaultValue, onChange, debug }: BasicProps) {
   const [value, setValue] = useState(defaultValue);
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parse(e.target.value);
-    setValue(value);
-    onChange(value);
-  }, []);
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = parse(e.target.value);
+      setValue(value);
+      onChange(value);
+    },
+    [onChange],
+  );
 
   return (
     <Stack spacing={1}>

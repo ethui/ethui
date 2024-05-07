@@ -66,7 +66,7 @@ export function ABIForm({ chainId, address }: Props) {
         isOptionEqualToValue={(option, value) => option.id === value.id}
         renderInput={(params) => <TextField {...params}>as</TextField>}
         renderOption={(props, { label, item }) => (
-          <Box component="li" {...props}>
+          <Box component="li" {...props} key={JSON.stringify(item)}>
             <Stack direction="row" spacing={1} alignItems="center">
               {item !== "raw" && <Chip label={item.stateMutability} />}
               <Box>{label}</Box>

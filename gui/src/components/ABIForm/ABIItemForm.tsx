@@ -64,7 +64,7 @@ export function ABIItemForm({
       setData(data);
       parentOnChange?.({ value, data });
     },
-    [setValue, setData],
+    [setValue, setData, parentOnChange],
   );
 
   return (
