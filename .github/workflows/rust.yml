@@ -38,6 +38,8 @@ jobs:
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf libsodium-dev
 
       - uses: dtolnay/rust-toolchain@1.74.0
+        with:
+          components: clippy, rustfmt
       - uses: Swatinem/rust-cache@v2
         with:
           shared-key: "debug"
