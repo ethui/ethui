@@ -1,7 +1,5 @@
 #!/bin/bash
 
-env=${1:-prod}
-
 # cleanup
 rm -rf gui/public/logo
 rm -rf extension/src/public/icons
