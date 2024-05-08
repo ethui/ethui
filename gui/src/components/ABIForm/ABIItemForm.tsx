@@ -15,6 +15,7 @@ interface ItemFormProps {
   defaultCalldata?: `0x${string}`;
   defaultEther?: bigint;
   onChange?: (params: { value?: bigint; data?: `0x${string}` }) => void;
+  submit?: boolean;
 }
 
 export function ABIItemForm({
@@ -22,6 +23,7 @@ export function ABIItemForm({
   abiItem,
   defaultCalldata,
   defaultEther,
+  submit = true,
   onChange: parentOnChange,
 }: ItemFormProps) {
   const from = useWallets((s) => s.address);
@@ -71,6 +73,7 @@ export function ABIItemForm({
     <Grid container>
       <Grid item xs={12} sm={4}>
         <AbiForm
+          submit={submit}
           abiItem={abiItem!}
           {...{ onChange, onSubmit, defaultCalldata, defaultEther }}
         />
