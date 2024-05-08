@@ -127,7 +127,6 @@ function Inner({ dialog, request, network }: InnerProps) {
 
       {item && (
         <ABIItemForm
-          submit={false}
           to={to}
           abiItem={item}
           defaultCalldata={calldata}
