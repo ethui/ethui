@@ -102,6 +102,7 @@ jobs:
           shared-key: "release"
 
       - run: npm install -g yarn
+      - run: cargo install --git https://github.com/tauri-apps/tauri --branch 1.x tauri-cli
 
       - uses: actions/setup-node@v4
         with:
