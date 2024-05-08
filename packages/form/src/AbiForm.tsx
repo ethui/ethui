@@ -16,6 +16,7 @@ interface AbiFormProps {
     args?: any[];
   }) => void;
   onSubmit?: () => void;
+  submit?: boolean;
   defaultCalldata?: `0x${string}`;
   defaultEther?: bigint;
 }
@@ -29,6 +30,7 @@ export function AbiForm({
   defaultEther,
   onChange,
   onSubmit = () => {},
+  submit = false,
 }: AbiFormProps) {
   if (!abiItem || abiItem === "") {
     return (
@@ -57,6 +59,7 @@ export function AbiForm({
   return (
     <AbiFormInner
       {...{
+        submit,
         item,
         debug,
         onChange,
@@ -77,6 +80,7 @@ export function RawForm({
   onSubmit,
   defaultCalldata,
   defaultEther,
+  submit,
 }: RawFormProps) {
   const [calldata, setCalldata] = useState<`0x${string}`>("0x");
   const [ether, setEther] = useState<bigint>(0n);
@@ -116,7 +120,7 @@ export function RawForm({
           setEther(e);
         }}
       />
-      {onSubmit && (
+      {onSubmit && submit && (
         <Box>
           <Button variant="contained" type="submit" disabled={!calldata}>
             Submit
@@ -133,6 +137,7 @@ type AbiFormInnerProps = Omit<AbiFormProps, "abiItem" | "debug"> & {
   onCalldataChange?: (calldata: `0x${string}`) => void;
   onValueChange?: (value: bigint) => void;
   onSubmit: () => void;
+  submit: boolean;
 };
 
 export function AbiFormInner({
@@ -142,6 +147,7 @@ export function AbiFormInner({
   onSubmit,
   defaultCalldata,
   defaultEther,
+  submit,
 }: AbiFormInnerProps) {
   const [calldata, setCalldata] = useState<`0x${string}` | undefined>(
     defaultCalldata,
@@ -218,11 +224,13 @@ export function AbiFormInner({
             }}
           />
         )}
-        <Box>
-          <Button variant="contained" type="submit" disabled={!calldata}>
-            Submit
-          </Button>
-        </Box>
+        {submit && (
+          <Box>
+            <Button variant="contained" type="submit" disabled={!calldata}>
+              Submit
+            </Button>
+          </Box>
+        )}
       </Stack>
     </Grid>
   );
