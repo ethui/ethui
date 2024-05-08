@@ -1,7 +1,7 @@
 {
   "name": "@ethui/extension",
   "private": true,
-  "version": "1.6.0",
+  "version": "1.7.1",
   "description": "An Ethereum toolkit",
   "homepage": "https://github.com/ethui/ethui",
   "license": "MIT",
