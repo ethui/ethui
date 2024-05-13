@@ -12,8 +12,6 @@ mod connections;
 #[cfg(feature = "http-insecure-endpoints")]
 mod db;
 #[cfg(feature = "http-insecure-endpoints")]
-mod forge;
-#[cfg(feature = "http-insecure-endpoints")]
 mod internals;
 #[cfg(feature = "http-insecure-endpoints")]
 mod networks;
@@ -47,7 +45,6 @@ fn ethui_routes() -> Router<Ctx> {
         .nest("/contracts", contracts::router())
         .nest("/ui", ui::router())
         .nest("/db", db::router())
-        .nest("/forge", forge::router())
         .nest("/settings", settings::router())
         .nest("/sync", sync::router())
         .nest("/transactions", transactions::router())
