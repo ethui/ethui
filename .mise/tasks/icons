@@ -1,7 +1,6 @@
 #!/bin/bash
+# mise description="Regenerate icons for all components"
 
-pwd
-exit 0
 # cleanup
 rm -rf gui/public/logo
 rm -rf extension/src/public/icons
