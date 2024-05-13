@@ -9,20 +9,20 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-ethui-networks .workspace = true
-ethui-types .workspace = true
-ethui-wallets .workspace = true
-ethui-db .workspace = true
+ethui-networks.workspace = true
+ethui-types.workspace = true
+ethui-wallets.workspace = true
+ethui-db.workspace = true
 
-tauri .workspace = true
-tokio .workspace = true
-serde .workspace = true
-serde_json .workspace = true
-thiserror .workspace = true
-foundry-config .workspace = true
-foundry-evm .workspace = true
-alloy-primitives .workspace = true
-ethers .workspace = true
+tauri.workspace = true
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+foundry-config.workspace = true
+foundry-evm.workspace = true
+alloy-primitives.workspace = true
+ethers.workspace = true
 
 eyre = "*"
 
