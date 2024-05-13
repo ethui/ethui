@@ -36,7 +36,7 @@ impl Evm {
             evm_opts,
         };
 
-        let db = Backend::spawn(Some(fork_opts.clone())).await;
+        let db = Backend::spawn(Some(fork_opts.clone()));
 
         let executor = ExecutorBuilder::default()
             .gas_limit(gas_limit.to_alloy())
@@ -57,7 +57,7 @@ impl Evm {
             gas_used: res.gas_used,
             block_number: res.env.block.number.to(),
             success: !res.reverted,
-            traces: res.traces.unwrap_or_default().arena,
+            traces: res.traces.unwrap_or_default().nodes().to_vec(),
             logs: res.logs,
             return_data: res.result.0.into(),
         })

@@ -252,27 +252,6 @@ dependencies = [
 
 [[package]]
 name = "alloy-primitives"
-version = "0.5.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9c234f92024707f224510ff82419b2be0e1d8e1fd911defcac5a085cd7f83898"
-dependencies = [
- "alloy-rlp",
- "bytes",
- "cfg-if",
- "const-hex",
- "derive_more",
- "hex-literal",
- "itoa 1.0.9",
- "keccak-asm",
- "proptest",
- "rand 0.8.5",
- "ruint",
- "serde",
- "tiny-keccak",
-]
-
-[[package]]
-name = "alloy-primitives"
 version = "0.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "600d34d8de81e23b6d909c094e23b3d357e01ca36b78a8c5424c501eedbe86f0"
@@ -741,9 +720,9 @@ dependencies = [
 
 [[package]]
 name = "anstyle"
-version = "1.0.4"
+version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7079075b41f533b8c61d2a4d073c4676e1f8b249ff94a393b0595db304e0dd87"
+checksum = "038dfcf04a5feb68e9c60b21c9625a54c2c0616e79b72b0fd87075a056ae1d1b"
 
 [[package]]
 name = "anstyle-parse"
@@ -3444,7 +3423,7 @@ name = "ethui-abis"
 version = "1.7.1"
 dependencies = [
  "alloy-dyn-abi 0.6.4",
- "alloy-primitives 0.5.4",
+ "alloy-primitives 0.7.2",
  "anyhow",
  "ethers",
  "rstest",
@@ -3623,7 +3602,7 @@ dependencies = [
 name = "ethui-rpc"
 version = "1.7.1"
 dependencies = [
- "alloy-primitives 0.5.4",
+ "alloy-primitives 0.7.2",
  "async-trait",
  "ethers",
  "ethui-broadcast",
@@ -3667,7 +3646,7 @@ dependencies = [
 name = "ethui-simulator"
 version = "1.7.1"
 dependencies = [
- "alloy-primitives 0.5.4",
+ "alloy-primitives 0.7.2",
  "ethers",
  "ethui-db",
  "ethui-networks",
@@ -3773,7 +3752,8 @@ dependencies = [
 name = "ethui-types"
 version = "1.7.1"
 dependencies = [
- "alloy-primitives 0.5.4",
+ "alloy-json-abi 0.7.2",
+ "alloy-primitives 0.7.2",
  "async-trait",
  "ethers",
  "foundry-common",
@@ -7932,9 +7912,9 @@ dependencies = [
 
 [[package]]
 name = "ruint"
-version = "1.11.1"
+version = "1.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "608a5726529f2f0ef81b8fde9873c4bb829d6b5b5ca6be4d97345ddf0749c825"
+checksum = "8f308135fef9fc398342da5472ce7c484529df23743fb7c734e0f3d472971e62"
 dependencies = [
  "alloy-rlp",
  "arbitrary",
@@ -7957,9 +7937,9 @@ dependencies = [
 
 [[package]]
 name = "ruint-macro"
-version = "1.1.0"
+version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e666a5496a0b2186dbcd0ff6106e29e093c15591bde62c20d3842007c6978a09"
+checksum = "f86854cf50259291520509879a5c294c3c9a4c334e9ff65071c51e42ef1e2343"
 
 [[package]]
 name = "rusb"

@@ -81,7 +81,15 @@ jsonrpc-core = "18.0.0"
 reqwest = { version = "0.11.22", default-features = false, features = [
   "rustls-tls",
 ] }
-alloy-primitives = { version = "0.5.0", features = ["serde"] }
+alloy-primitives = { version = "0.7.1", features = [
+  "serde",
+  "rlp",
+  "getrandom",
+] }
+revm-inspectors = { git = "https://github.com/paradigmxyz/evm-inspectors", rev = "c1b5dd0", features = [
+  "serde",
+] }
+alloy-json-abi = { version = "0.7.1" }
 url = { version = "2.5", features = ["serde"] }
 futures = "0.3.28"
 clap = { version = "4.4.8", features = ["derive", "env"] }
