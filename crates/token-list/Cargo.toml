@@ -11,7 +11,7 @@ authors.workspace = true
 [build-dependencies]
 chrono = { version = "0.4.31", features = ["serde"] }
 reqwest = { workspace = true, features = ["blocking", "json"] }
-serde = { workspace = true }
-serde_json = { workspace = true }
-tokio = { workspace = true }
-anyhow = "1.0.79"
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+anyhow.workspace = true

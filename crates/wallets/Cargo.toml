@@ -10,26 +10,26 @@ authors.workspace = true
 
 
 [dependencies]
-ethui-types = { workspace = true }
-ethui-dialogs = { workspace = true }
-ethui-crypto = { workspace = true }
-ethui-broadcast = { workspace = true }
+ethui-types.workspace = true
+ethui-dialogs.workspace = true
+ethui-crypto.workspace = true
+ethui-broadcast.workspace = true
 
-ethers = { workspace = true }
-tauri = { workspace = true }
-serde = { workspace = true }
-serde_json = { workspace = true }
-tokio = { workspace = true }
-secrets = { workspace = true }
-thiserror = { workspace = true }
-once_cell = { workspace = true }
-async-trait = { workspace = true }
-futures = { workspace = true }
-tracing = { workspace = true }
-coins-ledger = { workspace = true }
+ethers.workspace = true
+tauri.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+secrets.workspace = true
+thiserror.workspace = true
+once_cell.workspace = true
+async-trait.workspace = true
+futures.workspace = true
+tracing.workspace = true
+coins-ledger.workspace = true
+hex.workspace = true
 
 enum_dispatch = "0.3.11"
 coins-bip32 = "0.8.3"
 futures-executor = "0.3.29"
-hex = "0.4.3"
 semver = "1.0.20"
