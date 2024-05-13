@@ -133,7 +133,7 @@ pub fn diff_score(a: &[u8], b: &[u8]) -> f64 {
 mod tests {
     use std::str::FromStr;
 
-    use ethers::types::Bytes;
+    use ethui_types::Bytes;
 
     use super::*;
 

@@ -1,7 +1,6 @@
-use ethers::types::U64;
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_networks::{Network, Networks};
-use ethui_types::GlobalState;
+use ethui_types::{GlobalState, U64};
 use serde::{Deserialize, Serialize};
 use url::Url;
 
@@ -82,7 +81,7 @@ impl TryFrom<Params> for Network {
     fn try_from(params: Params) -> Result<Self> {
         Ok(Self {
             name: params.chain_name,
-            chain_id: params.chain_id.as_u32(),
+            chain_id: params.chain_id.try_into().unwrap(),
             explorer_url: params.block_explorer_urls.first().map(|u| u.to_string()),
             http_url: params
                 .rpc_urls
