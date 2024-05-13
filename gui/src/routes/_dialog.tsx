@@ -1,7 +1,7 @@
 import { Stack } from "@mui/material";
-import { createLazyFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 
-export const Route = createLazyFileRoute("/_dialog")({
+export const Route = createFileRoute("/_dialog")({
   component: DialogLayout,
 });
 

@@ -106,7 +106,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           cache: "yarn"
-          node-version-file: ".tool-versions"
+          node-version: "20"
 
       - run: yarn install --frozen-lockfile --network-timeout 1000000
 
@@ -131,7 +131,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           cache: "yarn"
-          node-version-file: ".tool-versions"
+          node-version: "20"
 
       - name: Install dependencies
         run: yarn workspace @ethui/extension install

@@ -1,4 +1,4 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Stack, Typography, Button, Grid } from "@mui/material";
 import { isDirty, isValid } from "zod";
 import { window as tauriWindow } from "@tauri-apps/api";
@@ -8,7 +8,7 @@ import { ChainView } from "@ethui/react/components";
 import { useDialog } from "@/hooks";
 import { Datapoint } from "@/components";
 
-export const Route = createLazyFileRoute("/_dialog/dialog/chain-add/$id")({
+export const Route = createFileRoute("/_dialog/dialog/chain-add/$id")({
   component: ChainAddDialog,
 });
 

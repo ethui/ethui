@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import debounce from "lodash-es/debounce";
 
@@ -26,7 +26,7 @@ import {
 import { useContracts, useNetworks } from "@/store";
 import { Navbar } from "@/components/Home/Navbar";
 
-export const Route = createLazyFileRoute("/_home/home/contracts")({
+export const Route = createFileRoute("/_home/home/contracts")({
   component: Contracts,
 });
 

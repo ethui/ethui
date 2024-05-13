@@ -1,6 +1,6 @@
 import { Container, MobileStepper, Stack } from "@mui/material";
 import { useState } from "react";
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 import { DraggableToolbar, Logo } from "@/components";
 import { AlchemyStep } from "@/components/Onboarding/Alchemy";
@@ -10,7 +10,7 @@ import { WelcomeStep } from "@/components/Onboarding/Welcome";
 import { WalletSetupStep } from "@/components/Onboarding/WalletSetup";
 import { StepProps } from "@/components/Onboarding";
 
-export const Route = createLazyFileRoute("/onboarding")({
+export const Route = createFileRoute("/onboarding")({
   component: Onboarding,
 });
 
