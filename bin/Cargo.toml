@@ -9,43 +9,43 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-ethui-forge = { workspace = true }
-ethui-settings = { workspace = true }
-ethui-networks = { workspace = true }
-ethui-wallets = { workspace = true }
-ethui-dialogs = { workspace = true }
-ethui-rpc = { workspace = true }
-ethui-ws = { workspace = true }
-ethui-http = { workspace = true }
-ethui-connections = { workspace = true }
-ethui-types = { workspace = true }
-ethui-db = { workspace = true }
-ethui-sync = { workspace = true }
-ethui-tracing = { workspace = true }
-ethui-exchange-rates = { workspace = true }
-ethui-broadcast = { workspace = true }
-ethui-simulator = { workspace = true }
-ethui-args = { workspace = true }
-ethui-token-list = { workspace = true }
-ethui-abis = { workspace = true }
+ethui-forge.workspace = true
+ethui-settings.workspace = true
+ethui-networks.workspace = true
+ethui-wallets.workspace = true
+ethui-dialogs.workspace = true
+ethui-rpc.workspace = true
+ethui-ws.workspace = true
+ethui-http.workspace = true
+ethui-connections.workspace = true
+ethui-types.workspace = true
+ethui-db.workspace = true
+ethui-sync.workspace = true
+ethui-tracing.workspace = true
+ethui-exchange-rates.workspace = true
+ethui-broadcast.workspace = true
+ethui-simulator.workspace = true
+ethui-args.workspace = true
+ethui-token-list.workspace = true
+ethui-abis.workspace = true
 
-serde = { workspace = true }
-serde_json = { workspace = true }
-tauri = { workspace = true }
-tokio = { workspace = true }
-thiserror = { workspace = true }
-ethers = { workspace = true }
-tracing = { workspace = true }
+serde.workspace = true
+serde_json.workspace = true
+tauri.workspace = true
+tokio.workspace = true
+thiserror.workspace = true
+ethers.workspace = true
+tracing.workspace = true
+anyhow.workspace = true
 
 fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs", rev = "016512b" }
 tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 named-lock = "0.3.0"
 auto-launch = "0.5.0"
-anyhow = "1.0.79"
 
 [build-dependencies]
 tauri-build = { version = "1.2", features = [] }
-ethui-token-list = { workspace = true }
+ethui-token-list.workspace = true
 
 [features]
 default = []
