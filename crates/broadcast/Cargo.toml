@@ -9,8 +9,8 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-ethui-types = { workspace = true }
-tokio = { workspace = true }
-once_cell = { workspace = true }
-url = { workspace = true }
-tracing = { workspace = true }
+ethui-types .workspace = true
+tokio .workspace = true
+once_cell .workspace = true
+url .workspace = true
+tracing .workspace = true

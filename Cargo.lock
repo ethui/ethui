@@ -9446,8 +9446,8 @@ dependencies = [
 
 [[package]]
 name = "tauri-plugin-window-state"
-version = "0.1.0"
-source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v1#4f9e58d751769e8e34d4b46b5ee109c8fd1f8b9d"
+version = "0.1.1"
+source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v1#5e3900e682e13f3759b439116ae2f77a6d389ca2"
 dependencies = [
  "bincode",
  "bitflags 2.5.0",

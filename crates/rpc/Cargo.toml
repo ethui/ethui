@@ -9,25 +9,25 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-ethui-types = { workspace = true }
-ethui-settings = { workspace = true }
-ethui-db = { workspace = true }
-ethui-dialogs = { workspace = true }
-ethui-networks = { workspace = true }
-ethui-wallets = { workspace = true }
-ethui-broadcast = { workspace = true }
-ethui-connections = { workspace = true }
-ethui-simulator = { workspace = true }
+ethui-types.workspace = true
+ethui-settings.workspace = true
+ethui-db.workspace = true
+ethui-dialogs.workspace = true
+ethui-networks.workspace = true
+ethui-wallets.workspace = true
+ethui-broadcast.workspace = true
+ethui-connections.workspace = true
+ethui-simulator.workspace = true
 
-ethers = { workspace = true }
-tokio = { workspace = true }
-tauri = { workspace = true }
-serde = { workspace = true }
-serde_json = { workspace = true }
-tracing = { workspace = true }
-once_cell = { workspace = true }
-jsonrpc-core = { workspace = true }
-async-trait = { workspace = true }
-thiserror = { workspace = true }
-alloy-primitives = { workspace = true }
+ethers.workspace = true
+tokio.workspace = true
+tauri.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tracing.workspace = true
+once_cell.workspace = true
+jsonrpc-core.workspace = true
+async-trait.workspace = true
+thiserror.workspace = true
+alloy-primitives.workspace = true
 url.workspace = true
