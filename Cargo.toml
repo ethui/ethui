@@ -81,24 +81,28 @@ jsonrpc-core = "18.0.0"
 reqwest = { version = "0.11.22", default-features = false, features = [
   "rustls-tls",
 ] }
-alloy-primitives = { version = "0.5.0", features = ["serde"] }
+alloy-primitives = { version = "0.7.1", features = [
+  "serde",
+  "rlp",
+  "getrandom",
+] }
+revm-inspectors = { git = "https://github.com/paradigmxyz/evm-inspectors", rev = "c1b5dd0", features = [
+  "serde",
+] }
+alloy-json-abi = { version = "0.7.1" }
 url = { version = "2.5", features = ["serde"] }
 futures = "0.3.28"
 clap = { version = "4.4.8", features = ["derive", "env"] }
 coins-ledger = "0.9.0"
 color-eyre = "0.6.12"
 
-# Foundry - December 21st
-foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "c312c0d" }
-foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "c312c0d" }
-foundry-common = { git = "https://github.com/foundry-rs/foundry", rev = "c312c0d" }
-foundry-compilers = { git = "https://github.com/foundry-rs/foundry", rev = "c312c0d" }
+# Foundry - May 12th 2024
+foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-a117fbfa41edbaa1618ed099d78d65727bff4790" }
+foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-a117fbfa41edbaa1618ed099d78d65727bff4790" }
+foundry-common = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-a117fbfa41edbaa1618ed099d78d65727bff4790" }
+foundry-compilers = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-a117fbfa41edbaa1618ed099d78d65727bff4790" }
 hex = "0.4.3"
 anyhow = "1.0.79"
 
 [patch.crates-io]
-revm = { git = "https://github.com/bluealloy/revm", branch = "reth_freeze" }
-revm-interpreter = { git = "https://github.com/bluealloy/revm", branch = "reth_freeze" }
-revm-precompile = { git = "https://github.com/bluealloy/revm", branch = "reth_freeze" }
-revm-primitives = { git = "https://github.com/bluealloy/revm", branch = "reth_freeze" }
 ethers-core = { git = "https://github.com/gakonst/ethers-rs", rev = "5394d89" }

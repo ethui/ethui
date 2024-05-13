@@ -2,6 +2,7 @@ mod affinity;
 mod contracts;
 pub mod events;
 mod global_state;
+mod to_alloy;
 mod tokens;
 pub mod transactions;
 pub mod ui_events;
@@ -10,8 +11,8 @@ pub use alloy_primitives::{address, Address, B256, U256, U64};
 pub use contracts::{Contract, ContractWithAbi};
 pub use ethers::{abi::Abi, types::Bytes};
 pub use events::Event;
-pub use foundry_common::types::{ToAlloy, ToEthers};
 pub use global_state::GlobalState;
+pub use to_alloy::{ToAlloy, ToEthers};
 pub use tokens::{
     Erc721Collection, Erc721Token, Erc721TokenData, Erc721TokenDetails, TokenBalance, TokenMetadata,
 };
