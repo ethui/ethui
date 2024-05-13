@@ -1,4 +1,4 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Backdrop,
@@ -14,7 +14,7 @@ import { z } from "zod";
 import { Form } from "@ethui/react/components";
 import { useDialog } from "@/hooks";
 
-export const Route = createLazyFileRoute("/_dialog/dialog/wallet-unlock/$id")({
+export const Route = createFileRoute("/_dialog/dialog/wallet-unlock/$id")({
   component: WalletUnlockDialog,
 });
 

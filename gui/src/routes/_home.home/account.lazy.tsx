@@ -1,10 +1,10 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 import { useWallets } from "@/store";
 import { AddressView, BalancesList } from "@/components";
 import { Navbar } from "@/components/Home/Navbar";
 
-export const Route = createLazyFileRoute("/_home/home/account")({
+export const Route = createFileRoute("/_home/home/account")({
   component: Account,
 });
 

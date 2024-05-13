@@ -13,7 +13,7 @@ import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import truncateEthAddress from "truncate-eth-address";
 import { Abi, Address, formatEther, formatGwei } from "viem";
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 import { BlockNumber, SolidityCall } from "@ethui/react/components";
 import { Paginated, PaginatedTx, Pagination, Tx } from "@ethui/types";
@@ -29,7 +29,7 @@ import {
 import { Datapoint } from "@/components/Datapoint";
 import { Navbar } from "@/components/Home/Navbar";
 
-export const Route = createLazyFileRoute("/_home/home/transactions")({
+export const Route = createFileRoute("/_home/home/transactions")({
   component: Txs,
 });
 

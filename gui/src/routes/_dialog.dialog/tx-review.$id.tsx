@@ -11,7 +11,7 @@ import {
   parseAbi,
   getAbiItem,
 } from "viem";
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 import { ChainView, Typography } from "@ethui/react/components";
 import { TokenMetadata } from "@ethui/types";
@@ -23,7 +23,7 @@ import { IconAddress } from "@/components/Icons";
 import { useNetworks } from "@/store";
 import { Dialog } from "@/hooks/useDialog";
 
-export const Route = createLazyFileRoute("/_dialog/dialog/tx-review/$id")({
+export const Route = createFileRoute("/_dialog/dialog/tx-review/$id")({
   component: TxReviewDialog,
 });
 

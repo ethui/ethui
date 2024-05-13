@@ -1,11 +1,11 @@
 import { Button, Stack, Typography } from "@mui/material";
 import { Delete, Task } from "@mui/icons-material";
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 import { useDialog } from "@/hooks";
 import { DialogBottom } from "@/components/Dialogs/Bottom";
 
-export const Route = createLazyFileRoute("/_dialog/dialog/msg-sign/$id")({
+export const Route = createFileRoute("/_dialog/dialog/msg-sign/$id")({
   component: MsgSignDialog,
 });
 
