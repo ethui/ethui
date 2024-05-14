@@ -2763,8 +2763,6 @@ __metadata:
     react-error-boundary: "npm:^4.0.13"
     react-hook-form: "npm:^7.51.3"
     react-infinite-scroller: "npm:^1.2.6"
-    react18-json-view: "npm:^0.2.8"
-    truncate-eth-address: "npm:^1.0.2"
     typescript: "npm:^5.4.5"
     viem: "npm:^2.9.28"
     vite: "npm:^5.2.10"
@@ -15312,15 +15310,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react18-json-view@npm:^0.2.8":
-  version: 0.2.8
-  resolution: "react18-json-view@npm:0.2.8"
-  peerDependencies:
-    react: ">=16.8.0"
-  checksum: 97d0d1558e2b68f9611b5d5fbb3ff067031a3d7842805fb487fcdeaeb3a1d024ffe467ca8b137c8134b11ce4f5747057b698afe9f3c28f72276019a103dba92a
-  languageName: node
-  linkType: hard
-
 "react@npm:^16.8.0 || ^17.0.0 || ^18.0.0":
   version: 18.2.0
   resolution: "react@npm:18.2.0"
@@ -17274,13 +17263,6 @@ __metadata:
   version: 0.0.3
   resolution: "tr46@npm:0.0.3"
   checksum: 047cb209a6b60c742f05c9d3ace8fa510bff609995c129a37ace03476a9b12db4dbf975e74600830ef0796e18882b2381fb5fb1f6b4f96b832c374de3ab91a11
-  languageName: node
-  linkType: hard
-
-"truncate-eth-address@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "truncate-eth-address@npm:1.0.2"
-  checksum: 7af0462d14217509babba82cfda1a50f29eb931be2709efe73268b22d9ddb9dd96543b2c5e3f59f4287cc37d15c5580f7862787f81cea607a5ff5ba868746c02
   languageName: node
   linkType: hard
 
