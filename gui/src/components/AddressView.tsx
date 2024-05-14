@@ -3,7 +3,6 @@ import { Stack } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import truncateEthAddress from "truncate-eth-address";
 import { Address, getAddress } from "viem";
 import { z } from "zod";
 
@@ -12,6 +11,7 @@ import { useInvoke } from "@/hooks";
 import { ContextMenuWithTauri, Modal } from "./";
 import { useNetworks } from "@/store";
 import { IconAddress } from "./Icons";
+import { truncateHex } from "@/utils";
 
 interface Props {
   address: Address;
@@ -38,7 +38,7 @@ export function AddressView({
 
   if (!network) return;
 
-  const text = alias ? alias : truncateEthAddress(`${address}`);
+  const text = alias ? alias : truncateHex(address);
   const content = (
     <Stack direction="row" alignItems="center" spacing={1}>
       {icon && (
@@ -64,6 +64,7 @@ export function AddressView({
         {
           label: "Open in explorer",
           href: `${network.explorer_url}${address}`,
+          disabled: !network.explorer_url,
         },
         { label: "Set alias", action: () => setAliasFormOpen(true) },
         {
@@ -112,7 +113,7 @@ function AliasForm({ address, alias, refetch, onSubmit }: AliasFormProps) {
   return (
     <Form form={form} onSubmit={submit}>
       <Stack alignItems="flex-start" spacing={2}>
-        <Typography>Set alias for {truncateEthAddress(address)}</Typography>
+        <Typography>Set alias for {truncateHex(address)}</Typography>
         <Form.Text label="Alias" name="alias" defaultValue={alias} />
 
         <Form.Submit label="Save" />

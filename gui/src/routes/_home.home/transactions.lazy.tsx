@@ -11,7 +11,6 @@ import {
 import { invoke } from "@tauri-apps/api";
 import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
-import truncateEthAddress from "truncate-eth-address";
 import { Abi, Address, formatEther, formatGwei } from "viem";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -28,6 +27,7 @@ import {
 } from "@/components";
 import { Datapoint } from "@/components/Datapoint";
 import { Navbar } from "@/components/Home/Navbar";
+import { HashView } from "@/components/HashView";
 
 export const Route = createFileRoute("/_home/home/transactions")({
   component: Txs,
@@ -199,7 +199,7 @@ function Details({ tx, chainId }: DetailsProps) {
       />
       <Datapoint
         label="hash"
-        value={truncateEthAddress(tx.hash)}
+        value={<HashView hash={tx.hash} />}
         size="small"
       />
       <Datapoint label="nonce" value={fullTx.nonce} size="small" />

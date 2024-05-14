@@ -16,7 +16,6 @@ import {
 import { invoke } from "@tauri-apps/api";
 import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import truncateEthAddress from "truncate-eth-address";
 import { Address, formatUnits } from "viem";
 import { z } from "zod";
 
@@ -258,7 +257,7 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
                       onClick={() => setCurrent(key)}
                       key={key}
                     >
-                      <TableCell>{truncateEthAddress(address)}</TableCell>
+                      <TableCell>{truncateHex(address)}</TableCell>
                       <TableCell align="right">
                         <NativeBalance address={address} />
                       </TableCell>

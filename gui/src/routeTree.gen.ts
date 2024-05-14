@@ -16,6 +16,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as OnboardingImport } from './routes/onboarding'
 import { Route as HomeImport } from './routes/_home'
 import { Route as DialogImport } from './routes/_dialog'
+import { Route as HomeHomeAccountImport } from './routes/_home.home/account'
 import { Route as DialogDialogWalletUnlockIdImport } from './routes/_dialog.dialog/wallet-unlock.$id'
 import { Route as DialogDialogTxReviewIdImport } from './routes/_dialog.dialog/tx-review.$id'
 import { Route as DialogDialogMsgSignIdImport } from './routes/_dialog.dialog/msg-sign.$id'
@@ -30,7 +31,6 @@ const HomeHomeContractsLazyImport = createFileRoute('/_home/home/contracts')()
 const HomeHomeConnectionsLazyImport = createFileRoute(
   '/_home/home/connections',
 )()
-const HomeHomeAccountLazyImport = createFileRoute('/_home/home/account')()
 
 // Create/Update Routes
 
@@ -70,12 +70,10 @@ const HomeHomeConnectionsLazyRoute = HomeHomeConnectionsLazyImport.update({
   import('./routes/_home.home/connections.lazy').then((d) => d.Route),
 )
 
-const HomeHomeAccountLazyRoute = HomeHomeAccountLazyImport.update({
+const HomeHomeAccountRoute = HomeHomeAccountImport.update({
   path: '/home/account',
   getParentRoute: () => HomeRoute,
-} as any).lazy(() =>
-  import('./routes/_home.home/account.lazy').then((d) => d.Route),
-)
+} as any)
 
 const DialogDialogWalletUnlockIdRoute = DialogDialogWalletUnlockIdImport.update(
   {
@@ -116,7 +114,7 @@ declare module '@tanstack/react-router' {
       parentRoute: typeof rootRoute
     }
     '/_home/home/account': {
-      preLoaderRoute: typeof HomeHomeAccountLazyImport
+      preLoaderRoute: typeof HomeHomeAccountImport
       parentRoute: typeof HomeImport
     }
     '/_home/home/connections': {
@@ -160,7 +158,7 @@ export const routeTree = rootRoute.addChildren([
     DialogDialogWalletUnlockIdRoute,
   ]),
   HomeRoute.addChildren([
-    HomeHomeAccountLazyRoute,
+    HomeHomeAccountRoute,
     HomeHomeConnectionsLazyRoute,
     HomeHomeContractsLazyRoute,
     HomeHomeTransactionsLazyRoute,
