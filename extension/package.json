@@ -11,9 +11,9 @@
     "build": "./scripts/build.sh \"$@\""
   },
   "devDependencies": {
-    "@types/chrome": "^0.0.266",
-    "@types/node": "^20.12.7",
-    "@types/react": "^18.3.1",
+    "@types/chrome": "^0.0.268",
+    "@types/node": "^20.12.12",
+    "@types/react": "^18.3.2",
     "@types/react-dom": "^18.3.0",
     "@types/webextension-polyfill": "^0.10.7",
     "@vitejs/plugin-react": "^4.2.1",
@@ -22,7 +22,7 @@
     "postcss": "^8.4.38",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5",
-    "vite": "^5.2.10",
+    "vite": "^5.2.11",
     "vite-plugin-node-polyfills": "^0.21.0",
     "vite-tsconfig-paths": "^4.3.2",
     "web-ext": "^7.11.0"
@@ -32,7 +32,7 @@
     "@devtools-ds/table": "^1.2.1",
     "@lukeed/uuid": "^2.0.1",
     "@metamask/eth-json-rpc-middleware": "^12.1.0",
-    "@metamask/json-rpc-engine": "^8.0.1",
+    "@metamask/json-rpc-engine": "^8.0.2",
     "@metamask/json-rpc-middleware-stream": "^7.0.1",
     "@metamask/post-message-stream": "^8.0.0",
     "@metamask/utils": "^8.4.0",
