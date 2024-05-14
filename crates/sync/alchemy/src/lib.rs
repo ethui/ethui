@@ -59,6 +59,8 @@ impl Alchemy {
             .get_asset_transfers(Direction::To(address), from_block, latest)
             .await?;
 
+        tracing::trace!("inc {}, out {}", inc.0.len(), out.0.len());
+
         let tip = out
             .0
             .iter()
@@ -72,7 +74,7 @@ impl Alchemy {
         self.db.save_erc20_metadatas(self.chain_id, out.1).await?;
 
         if tip > std::u64::MIN {
-            self.db.kv_set(&(self.chain_id, address), &tip).await?;
+            self.db.kv_set(&key, &tip).await?;
         }
 
         Ok(())
