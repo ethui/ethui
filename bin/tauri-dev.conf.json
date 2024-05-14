@@ -33,7 +33,7 @@
       "targets": "all"
     },
     "systemTray": {
-      "iconPath": "icons/icon.png",
+      "iconPath": "icons-dev/icon.png",
       "iconAsTemplate": true
     },
     "security": {

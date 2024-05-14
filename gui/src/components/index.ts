@@ -18,5 +18,6 @@ export { QuickNetworkSelect } from "./QuickNetworkSelect";
 export { QuickWalletSelect } from "./QuickWalletSelect";
 export { Settings } from "./Settings/";
 export { TransferForm } from "./TransferForm";
-export * from "./Accordion";
+export { Accordion, AccordionDetails, AccordionSummary } from "./Accordion";
 export { SidebarButton } from "./SidebarButton";
+export { HashView } from "./HashView";

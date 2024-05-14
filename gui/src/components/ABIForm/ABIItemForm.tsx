@@ -1,13 +1,17 @@
-import { Grid, Typography } from "@mui/material";
+import { Grid } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { AbiFunction } from "abitype";
 import { useState, useCallback } from "react";
-import { Address, decodeFunctionResult } from "viem";
+import { Address, Hash, decodeFunctionResult } from "viem";
 
 import { AbiForm } from "@ethui/form";
-import { SolidityCall, HighlightBox } from "@ethui/react/components";
+import {
+  SolidityCall,
+  HighlightBox,
+  Typography,
+} from "@ethui/react/components";
 import { useWallets, useNetworks } from "@/store";
-import { AddressView } from "@/components";
+import { AddressView, HashView } from "@/components";
 
 interface ItemFormProps {
   to: Address;
@@ -17,6 +21,14 @@ interface ItemFormProps {
   onChange?: (params: { value?: bigint; data?: `0x${string}` }) => void;
   submit?: boolean;
 }
+
+type Result =
+  | {
+      write: Hash;
+    }
+  | {
+      read: string;
+    };
 
 export function ABIItemForm({
   to,
@@ -28,7 +40,7 @@ export function ABIItemForm({
 }: ItemFormProps) {
   const from = useWallets((s) => s.address);
   const chainId = useNetworks((s) => s.current?.chain_id);
-  const [result, setResult] = useState<string>();
+  const [result, setResult] = useState<Result>();
 
   const [value, setValue] = useState<bigint | undefined>();
   const [data, setData] = useState<`0x${string}` | undefined>();
@@ -45,18 +57,18 @@ export function ABIItemForm({
 
       switch (typeof result) {
         case "bigint":
-          setResult((result as bigint).toString());
+          setResult({ read: (result as bigint).toString() });
           break;
         case "string":
-          setResult(result);
+          setResult({ read: result });
           break;
         default:
-          setResult(JSON.stringify(result));
+          setResult({ read: JSON.stringify(result) });
           break;
       }
     } else {
-      const result = await invoke<string>("rpc_send_transaction", { params });
-      setResult(result);
+      const result = await invoke<Hash>("rpc_send_transaction", { params });
+      setResult({ write: result });
     }
   };
 
@@ -78,7 +90,10 @@ export function ABIItemForm({
           {...{ onChange, onSubmit, defaultCalldata, defaultEther }}
         />
 
-        {result && <Typography>{result.toString()}</Typography>}
+        {result && "read" in result && (
+          <Typography mono>{result.toString()}</Typography>
+        )}
+        {result && "write" in result && <HashView hash={result.write} />}
       </Grid>
 
       <Grid item xs={12} sm={8} sx={{ pl: { md: 2 }, pt: { xs: 2, md: 0 } }}>
