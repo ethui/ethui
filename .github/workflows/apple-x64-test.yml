@@ -107,7 +107,7 @@ jobs:
           releaseId: ${{ needs.setup.outputs.release_id }}
           args: "--target x86_64-apple-darwin"
 
-      - run: ls -R target/release/bundle
+      - run: ls -R target/release
 
       # - uses: actions/upload-artifact
       #   name: ethui_x64.dmg
