@@ -1,4 +1,4 @@
-name: release
+name: apple-x86-test
 
 on:
   push:
