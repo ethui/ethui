@@ -85,6 +85,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           shared-key: "release"
+          targets: "x86_64-apple-darwin"
 
       - run: npm install -g yarn
 
