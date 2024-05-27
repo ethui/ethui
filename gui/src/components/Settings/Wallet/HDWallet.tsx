@@ -27,6 +27,7 @@ import {
   mnemonicSchema,
 } from "@ethui/types/wallets";
 import { useProvider } from "@/hooks";
+import { truncateHex } from "@/utils";
 
 export const schema = z.object({
   count: z.number().int().min(1).max(100),
