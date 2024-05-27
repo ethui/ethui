@@ -59,7 +59,7 @@ export function InstallExtensionStep({ onSubmit }: StepProps) {
 
       <Box alignSelf="flex-end">
         <Button variant="contained" onClick={onSubmit} disabled={!detected}>
-          Next
+          {detected ? "Next" : "Skip"}
         </Button>
       </Box>
     </Stack>

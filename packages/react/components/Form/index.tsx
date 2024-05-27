@@ -155,20 +155,27 @@ Form.Checkbox = Checkbox;
 interface SubmitProps {
   label: React.ReactNode;
   sx?: SxProps;
+  useDirtyAlt?: boolean;
 }
 
-function Submit({ label, sx }: SubmitProps) {
+function Submit({
+  label,
+  sx,
+  // this arg was kept here and defaulted to true for backwards compatibility,
+  // need to double check if the issue linked above is still required (for cases where array fields are present)
+  useDirtyAlt = true,
+}: SubmitProps) {
   const {
     formState: { isValid, dirtyFields },
   } = useFormContext();
   // https://github.com/react-hook-form/react-hook-form/issues/3213
-  const isDirtyAlt = !!Object.keys(dirtyFields).length;
+  const isDirtyAlt = useDirtyAlt && !!Object.keys(dirtyFields).length;
 
   return (
     <Button
       variant="contained"
       type="submit"
-      disabled={!isDirtyAlt || !isValid}
+      disabled={!isDirtyAlt && !isValid}
       sx={sx}
     >
       {label}
