@@ -108,5 +108,6 @@ jobs:
           args: "--target x86_64-apple-darwin"
 
       - uses: actions/upload-artifact
+        with:
           name: ethui_x64-apple-darwin
           path: target/x86_64-apple-darwin/release/bundle/**/*
