@@ -1,0 +1,104 @@
+name: release
+
+on:
+  push:
+    branch:
+      - apple-x86
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.sha }}
+permissions:
+  contents: write
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.get-tag.outputs.tag }}
+      version: ${{ steps.get-version.outputs.version }}
+      release_id: ${{ steps.get-id.outputs.id }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # get the current draft release
+      - id: get-tag
+        name: get tag
+        run: |
+          echo "tag=$(gh api /repos/ethui/ethui/releases |\
+            jq -r '.[] | select(.draft == true) | .tag_name')" \
+            >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # get the current version (tag without the `v`)
+      - id: get-version
+        name: get version
+        run: |
+          version=$(echo ${{ steps.get-tag.outputs.tag }} | sed 's/^v//')
+          echo "version=$version" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # get the current release_id
+      - id: get-id
+        name: get release ID
+        run: |
+          echo "id=$(gh api /repos/ethui/ethui/releases |\
+            jq -r '.[] | select(.draft == true) | .id')" \
+            >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # build app
+  # upload to draft release
+  app:
+    needs: [setup, clear-assets]
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: install dependencies (ubuntu)
+        if: matrix.platform == 'ubuntu-20.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf libsodium-dev libusb-dev
+
+      - name: install dependencies (windows)
+        if: matrix.platform == 'windows-latest'
+        run: |
+          curl https://download.libsodium.org/libsodium/releases/libsodium-1.0.18-msvc.zip --output libsodium.zip
+          7z x libsodium.zip
+          cp libsodium/x64/Release/v142/static/libsodium.lib sodium.lib
+          ls
+        shell: bash
+
+      - name: install dependencies (macos)
+        if: matrix.platform == 'macos-latest'
+        run: |
+          brew install libsodium libusb
+
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: "release"
+
+      - run: npm install -g yarn
+
+      - uses: actions/setup-node@v4
+        with:
+          cache: "yarn"
+          node-version: "20"
+
+      - run: yarn install --frozen-lockfile --network-timeout 1000000
+
+      - uses: tauri-apps/tauri-action@v0
+        id: tauri
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          releaseId: ${{ needs.setup.outputs.release_id }}
+          args: "--target x86_64-apple-darwin"
