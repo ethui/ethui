@@ -52,7 +52,7 @@ jobs:
   # build app
   # upload to draft release
   app:
-    needs: [setup, clear-assets]
+    needs: [setup]
     strategy:
       fail-fast: false
       matrix:
