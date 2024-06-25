@@ -102,10 +102,10 @@ jobs:
       # install rust, forcing x86_64 on macos
       #
       - uses: dtolnay/rust-toolchain@stable
-        if: ${{ matrix.os != 'macos-latest' }}
+        if: ${{ matrix.platform != 'macos-latest' }}
 
       - uses: dtolnay/rust-toolchain@stable
-        if: ${{ matrix.os == 'macos-latest' }}
+        if: ${{ matrix.platform == 'macos-latest' }}
         with:
           targets: "x86_64-apple-darwin"
 
@@ -126,14 +126,14 @@ jobs:
       # run tauri build, forcing x86_64 on macos
       #
       - uses: tauri-apps/tauri-action@v0
-        if: ${{ matrix.os != 'macos-latest' }}
+        if: ${{ matrix.platform != 'macos-latest' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           releaseId: ${{ needs.setup.outputs.release_id }}
 
       - uses: tauri-apps/tauri-action@v0
-        if: ${{ matrix.os == 'macos-latest' }}
+        if: ${{ matrix.platform == 'macos-latest' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
