@@ -91,7 +91,7 @@ export function ABIItemForm({
         />
 
         {result && "read" in result && (
-          <Typography mono>{result.toString()}</Typography>
+          <Typography mono>{result.read.toString()}</Typography>
         )}
         {result && "write" in result && <HashView hash={result.write} />}
       </Grid>
