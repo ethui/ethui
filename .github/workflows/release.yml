@@ -127,7 +127,6 @@ jobs:
       #
       - uses: tauri-apps/tauri-action@v0
         if: ${{ matrix.os != 'macos-latest' }}
-        id: tauri
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -135,7 +134,6 @@ jobs:
 
       - uses: tauri-apps/tauri-action@v0
         if: ${{ matrix.os == 'macos-latest' }}
-        id: tauri
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
