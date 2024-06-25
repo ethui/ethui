@@ -102,46 +102,79 @@ const DialogDialogChainAddIdRoute = DialogDialogChainAddIdImport.update({
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
     '/_dialog': {
+      id: '/_dialog'
+      path: ''
+      fullPath: ''
       preLoaderRoute: typeof DialogImport
       parentRoute: typeof rootRoute
     }
     '/_home': {
+      id: '/_home'
+      path: ''
+      fullPath: ''
       preLoaderRoute: typeof HomeImport
       parentRoute: typeof rootRoute
     }
     '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingImport
       parentRoute: typeof rootRoute
     }
     '/_home/home/account': {
+      id: '/_home/home/account'
+      path: '/home/account'
+      fullPath: '/home/account'
       preLoaderRoute: typeof HomeHomeAccountImport
       parentRoute: typeof HomeImport
     }
     '/_home/home/connections': {
+      id: '/_home/home/connections'
+      path: '/home/connections'
+      fullPath: '/home/connections'
       preLoaderRoute: typeof HomeHomeConnectionsLazyImport
       parentRoute: typeof HomeImport
     }
     '/_home/home/contracts': {
+      id: '/_home/home/contracts'
+      path: '/home/contracts'
+      fullPath: '/home/contracts'
       preLoaderRoute: typeof HomeHomeContractsLazyImport
       parentRoute: typeof HomeImport
     }
     '/_home/home/transactions': {
+      id: '/_home/home/transactions'
+      path: '/home/transactions'
+      fullPath: '/home/transactions'
       preLoaderRoute: typeof HomeHomeTransactionsLazyImport
       parentRoute: typeof HomeImport
     }
     '/_dialog/dialog/chain-add/$id': {
+      id: '/_dialog/dialog/chain-add/$id'
+      path: '/dialog/chain-add/$id'
+      fullPath: '/dialog/chain-add/$id'
       preLoaderRoute: typeof DialogDialogChainAddIdImport
       parentRoute: typeof DialogImport
     }
     '/_dialog/dialog/msg-sign/$id': {
+      id: '/_dialog/dialog/msg-sign/$id'
+      path: '/dialog/msg-sign/$id'
+      fullPath: '/dialog/msg-sign/$id'
       preLoaderRoute: typeof DialogDialogMsgSignIdImport
       parentRoute: typeof DialogImport
     }
     '/_dialog/dialog/tx-review/$id': {
+      id: '/_dialog/dialog/tx-review/$id'
+      path: '/dialog/tx-review/$id'
+      fullPath: '/dialog/tx-review/$id'
       preLoaderRoute: typeof DialogDialogTxReviewIdImport
       parentRoute: typeof DialogImport
     }
     '/_dialog/dialog/wallet-unlock/$id': {
+      id: '/_dialog/dialog/wallet-unlock/$id'
+      path: '/dialog/wallet-unlock/$id'
+      fullPath: '/dialog/wallet-unlock/$id'
       preLoaderRoute: typeof DialogDialogWalletUnlockIdImport
       parentRoute: typeof DialogImport
     }
@@ -150,20 +183,20 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren([
-  DialogRoute.addChildren([
+export const routeTree = rootRoute.addChildren({
+  DialogRoute: DialogRoute.addChildren({
     DialogDialogChainAddIdRoute,
     DialogDialogMsgSignIdRoute,
     DialogDialogTxReviewIdRoute,
     DialogDialogWalletUnlockIdRoute,
-  ]),
-  HomeRoute.addChildren([
+  }),
+  HomeRoute: HomeRoute.addChildren({
     HomeHomeAccountRoute,
     HomeHomeConnectionsLazyRoute,
     HomeHomeContractsLazyRoute,
     HomeHomeTransactionsLazyRoute,
-  ]),
+  }),
   OnboardingRoute,
-])
+})
 
 /* prettier-ignore-end */

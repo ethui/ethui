@@ -15,7 +15,9 @@ export function AlchemyStep({ onSubmit }: StepProps) {
       .optional()
       .nullable()
       .superRefine(async (key, ctx) => {
+        console.log(key);
         if (!key) return;
+        console.log(key);
         const valid = await invoke("settings_test_alchemy_api_key", { key });
         if (valid) return;
 
@@ -82,7 +84,10 @@ export function AlchemyStep({ onSubmit }: StepProps) {
         </Typography>
         <Form.Text label="API Key" name="alchemyApiKey" fullWidth />
 
-        <Form.Submit label={alchemyApiKey?.length > 0 ? "Next" : "Skip"} />
+        <Form.Submit
+          useDirtyAlt={false}
+          label={alchemyApiKey?.length > 0 ? "Next" : "Skip"}
+        />
       </Stack>
     </Form>
   );
