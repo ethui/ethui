@@ -111,4 +111,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: ethui_x64-apple-darwin
-          path: target/x86_64-apple-darwin/release/bundle/**/*
+          path: target/aarch64-apple-darwin/release/bundle/**/*
