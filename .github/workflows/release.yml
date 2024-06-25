@@ -96,7 +96,17 @@ jobs:
         run: |
           brew install libsodium libusb
 
+      #
+      # install rust, forcing x86_64 on macos
+      #
       - uses: dtolnay/rust-toolchain@stable
+        if: ${{ matrix.os != 'macos-latest' }}
+
+      - uses: dtolnay/rust-toolchain@stable
+        if: ${{ matrix.os == 'macos-latest' }}
+        with:
+          targets: "x86_64-apple-darwin"
+
       - uses: Swatinem/rust-cache@v2
         with:
           shared-key: "release"
@@ -110,12 +120,25 @@ jobs:
 
       - run: yarn install --frozen-lockfile --network-timeout 1000000
 
+      #
+      # run tauri build, forcing x86_64 on macos
+      #
       - uses: tauri-apps/tauri-action@v0
+        if: ${{ matrix.os != 'macos-latest' }}
         id: tauri
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           releaseId: ${{ needs.setup.outputs.release_id }}
+
+      - uses: tauri-apps/tauri-action@v0
+        if: ${{ matrix.os == 'macos-latest' }}
+        id: tauri
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          releaseId: ${{ needs.setup.outputs.release_id }}
+          args: "--target x86_64-apple-darwin"
 
   # build extension
   # upload to draft release
