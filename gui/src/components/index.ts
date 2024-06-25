@@ -6,7 +6,6 @@ export { ConfirmationDialog } from "./ConfirmationDialog";
 export { ContextMenuWithTauri } from "./ContextMenuWithTauri";
 export { CopyToClipboard } from "./CopyToClipboard";
 export { Datapoint } from "./Datapoint";
-export { DevBuildNotice } from "./DevBuildNotice";
 export { DraggableToolbar } from "./DraggableToolbar";
 export { ErrorHandler } from "./ErrorHandler";
 export { Logo } from "./Logo";
