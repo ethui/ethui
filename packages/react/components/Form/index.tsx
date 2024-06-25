@@ -231,7 +231,9 @@ function SelectInput<
             {...props}
           >
             {items.map((v: Item) => (
-              <MenuItem value={toValue(v)}>{render(v)}</MenuItem>
+              <MenuItem key={toValue(v)} value={toValue(v)}>
+                {render(v)}
+              </MenuItem>
             ))}
           </Select>
         )}
