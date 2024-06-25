@@ -66,14 +66,14 @@ impl Alchemy {
             .iter()
             .chain(inc.0.iter())
             .map(|tx| tx.block_number)
-            .fold(std::u64::MIN, |a, b| a.max(b.unwrap_or(0)));
+            .fold(u64::MIN, |a, b| a.max(b.unwrap_or(0)));
 
         self.db.insert_transactions(self.chain_id, inc.0).await?;
         self.db.insert_transactions(self.chain_id, out.0).await?;
         self.db.save_erc20_metadatas(self.chain_id, inc.1).await?;
         self.db.save_erc20_metadatas(self.chain_id, out.1).await?;
 
-        if tip > std::u64::MIN {
+        if tip > u64::MIN {
             self.db.kv_set(&key, &tip).await?;
         }
 
