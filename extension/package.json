@@ -12,18 +12,18 @@
   },
   "devDependencies": {
     "@types/chrome": "^0.0.268",
-    "@types/node": "^20.14.9",
-    "@types/react": "^18.3.3",
+    "@types/node": "^20.12.12",
+    "@types/react": "^18.3.2",
     "@types/react-dom": "^18.3.0",
     "@types/webextension-polyfill": "^0.10.7",
-    "@vitejs/plugin-react": "^4.3.1",
+    "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.19",
     "crx": "^5.0.1",
     "postcss": "^8.4.38",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.2",
-    "vite": "^5.3.1",
-    "vite-plugin-node-polyfills": "^0.22.0",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.11",
+    "vite-plugin-node-polyfills": "^0.21.0",
     "vite-tsconfig-paths": "^4.3.2",
     "web-ext": "^8.2.0"
   },
@@ -31,7 +31,7 @@
     "@devtools-ds/object-inspector": "^1.2.1",
     "@devtools-ds/table": "^1.2.1",
     "@lukeed/uuid": "^2.0.1",
-    "@metamask/eth-json-rpc-middleware": "^12.1.2",
+    "@metamask/eth-json-rpc-middleware": "^12.1.0",
     "@metamask/json-rpc-engine": "^8.0.2",
     "@metamask/json-rpc-middleware-stream": "^7.0.1",
     "@metamask/post-message-stream": "^8.0.0",
@@ -44,8 +44,8 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "stream": "^0.0.2",
-    "webextension-polyfill": "^0.12.0",
+    "webextension-polyfill": "^0.11.0",
     "websocket-ts": "^2.1.5",
-    "zustand": "^4.5.3"
+    "zustand": "^4.5.2"
   }
 }

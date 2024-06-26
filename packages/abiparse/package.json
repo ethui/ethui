@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "bun-plugin-dts": "^0.2.3",
-    "bun-types": "^1.1.17",
+    "bun-types": "^1.1.5",
     "vitest": "^1.6.0"
   }
 }
