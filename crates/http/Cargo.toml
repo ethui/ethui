@@ -9,27 +9,27 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-ethui-broadcast = { workspace = true }
-ethui-connections = { workspace = true }
-ethui-db = { workspace = true }
-ethui-forge = { workspace = true }
-ethui-networks = { workspace = true }
-ethui-rpc = { workspace = true }
-ethui-settings = { workspace = true }
-ethui-simulator = { workspace = true }
-ethui-sync-alchemy = { workspace = true }
-ethui-types = { workspace = true }
-ethui-wallets = { workspace = true }
-ethui-ws = { workspace = true }
-ethui-args = { workspace = true }
+ethui-broadcast.workspace = true
+ethui-connections.workspace = true
+ethui-db.workspace = true
+ethui-forge.workspace = true
+ethui-networks.workspace = true
+ethui-rpc.workspace = true
+ethui-settings.workspace = true
+ethui-simulator.workspace = true
+ethui-sync-alchemy.workspace = true
+ethui-types.workspace = true
+ethui-wallets.workspace = true
+ethui-ws.workspace = true
+ethui-args.workspace = true
 
-ethers = { workspace = true }
-serde = { workspace = true }
-serde_json = { workspace = true }
-tokio = { workspace = true }
-thiserror = { workspace = true }
-reqwest = { workspace = true }
-tracing = { workspace = true }
+ethers.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+thiserror.workspace = true
+reqwest.workspace = true
+tracing.workspace = true
 
 axum = "0.6"
 tower-http = { version = "0.4.4", features = ["cors", "trace"] }

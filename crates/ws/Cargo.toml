@@ -9,24 +9,24 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-ethui-types = { workspace = true }
-ethui-rpc = { workspace = true }
-ethui-broadcast = { workspace = true }
-ethui-networks = { workspace = true }
-ethui-connections = { workspace = true }
-ethui-args = { workspace = true }
+ethui-types.workspace = true
+ethui-rpc.workspace = true
+ethui-broadcast.workspace = true
+ethui-networks.workspace = true
+ethui-connections.workspace = true
+ethui-args.workspace = true
 
-ethers = { workspace = true }
-tokio = { workspace = true }
-tauri = { workspace = true }
-serde = { workspace = true }
-serde_json = { workspace = true }
-once_cell = { workspace = true }
-tracing = { workspace = true }
-thiserror = { workspace = true }
-url = { workspace = true }
-futures = { workspace = true }
-async-trait = { workspace = true }
+ethers.workspace = true
+tokio.workspace = true
+tauri.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+once_cell.workspace = true
+tracing.workspace = true
+thiserror.workspace = true
+url.workspace = true
+futures.workspace = true
+async-trait.workspace = true
 
 tokio-tungstenite = "0.20.1"
 tungstenite = "0.20.1"

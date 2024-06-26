@@ -8,7 +8,7 @@ mod error;
 /// the ChaCha20poly1305 scheme to encrypt the data.
 use aead::{KeyInit, OsRng};
 use chacha20poly1305::XChaCha20Poly1305;
-use ethers::core::rand::RngCore;
+use rand::RngCore;
 use zeroize::Zeroize;
 
 use self::error::CryptoResult;

@@ -1,21 +1,14 @@
-import {
-  Autocomplete,
-  Box,
-  Button,
-  Chip,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Autocomplete, Box, Chip, TextField } from "@mui/material";
 import { Stack } from "@mui/system";
 import { invoke } from "@tauri-apps/api/core";
 import { Abi, AbiFunction, formatAbiItem } from "abitype";
-import { SyntheticEvent, useEffect, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import { Address, decodeFunctionResult, encodeFunctionData } from "viem";
+import { Fragment, SyntheticEvent, useState } from "react";
+import { Address } from "viem";
 
-import { ABIInput } from "./ABIInput";
 import { useInvoke } from "@/hooks";
-import { useWallets } from "@/store";
+import { ABIItemForm } from "./ABIItemForm";
+
+export { ABIItemForm };
 
 interface Props {
   chainId: number;
@@ -23,7 +16,9 @@ interface Props {
 }
 
 export function ABIForm({ chainId, address }: Props) {
-  const [currentItem, setCurrentItem] = useState<AbiFunction | undefined>();
+  const [currentItem, setCurrentItem] = useState<
+    AbiFunction | "raw" | undefined
+  >();
 
   const { data: abi } = useInvoke<Abi>("db_get_contract_abi", {
     address,
@@ -37,17 +32,25 @@ export function ABIForm({ chainId, address }: Props) {
     .map((item, i) => {
       item = item as AbiFunction;
       return {
-        item,
+        item: item as AbiFunction | "raw",
         label: formatAbiItem(item).replace("function ", ""),
         group: item.stateMutability === "view" ? "view" : "write",
         id: i,
       };
     })
+    .concat([
+      {
+        item: "raw",
+        label: "Raw",
+        group: "Raw",
+        id: -1,
+      },
+    ])
     .sort((a, b) => -a.group.localeCompare(b.group));
 
   const handleChange = (
     _event: SyntheticEvent,
-    value: { item: AbiFunction } | null,
+    value: { item: AbiFunction | "raw" } | null,
   ) => {
     setCurrentItem(value?.item);
   };
@@ -64,107 +67,23 @@ export function ABIForm({ chainId, address }: Props) {
         isOptionEqualToValue={(option, value) => option.id === value.id}
         renderInput={(params) => <TextField {...params}>as</TextField>}
         renderOption={(props, { label, item }) => (
-          <Box component="li" {...props}>
+          <Box component="li" {...props} key={JSON.stringify(item)}>
             <Stack direction="row" spacing={1} alignItems="center">
-              <Chip label={item.stateMutability} />
+              {item !== "raw" && <Chip label={item.stateMutability} />}
               <Box>{label}</Box>
             </Stack>
           </Box>
         )}
       />
 
-      {currentItem && <ItemForm contract={address} item={currentItem} />}
+      {currentItem && (
+        <Fragment key={JSON.stringify(currentItem)}>
+          <ABIItemForm
+            to={address}
+            abiItem={currentItem !== "raw" ? currentItem : undefined}
+          />
+        </Fragment>
+      )}
     </Stack>
-  );
-}
-
-interface CallArgs {
-  value?: string;
-  args: Record<string, { raw: string; parsed: string }>;
-}
-
-interface ItemFormProps {
-  contract: Address;
-  item: AbiFunction;
-}
-
-function ItemForm({ contract, item }: ItemFormProps) {
-  const account = useWallets((s) => s.address);
-  const form = useForm<CallArgs>();
-  const [callResult, setCallResult] = useState<string>();
-  const [txResult, setTxResult] = useState<string>();
-
-  useEffect(() => form.reset(), [item, form]);
-
-  const onSubmit = async (params: CallArgs) => {
-    const args = item.inputs.map((input, i) =>
-      JSON.parse(params.args[input.name || i.toString()].parsed),
-    );
-
-    const data = encodeFunctionData({
-      abi: [item],
-      functionName: item.name,
-      args,
-    });
-
-    if (item.stateMutability === "view") {
-      const rawResult = await invoke<`0x${string}`>("rpc_eth_call", {
-        params: {
-          from: account,
-          to: contract,
-          value: params.value,
-          data,
-        },
-      });
-
-      const result = decodeFunctionResult({
-        abi: [item],
-        functionName: item.name,
-        data: rawResult,
-      });
-
-      if (typeof result === "bigint") {
-        // TODO: why is this cast necessary?
-        setCallResult((result as bigint).toString());
-      } else if (typeof result === "string") {
-        setCallResult(result);
-      } else {
-        setCallResult(JSON.stringify(result));
-      }
-    } else {
-      const result = await invoke<string>("rpc_send_transaction", {
-        params: {
-          from: account,
-          to: contract,
-          value: params.value,
-          data,
-        },
-      });
-      setTxResult(result);
-    }
-  };
-
-  return (
-    <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <Stack direction="column" spacing={2} justifyContent="flex-start">
-          {item.inputs.map((item, index) => (
-            <ABIInput
-              key={index}
-              name={`args.${item.name || index}`}
-              type={item}
-            />
-          ))}
-          {item.stateMutability === "payable" && (
-            <ABIInput name="value" type="uint256" />
-          )}
-          <Button sx={{ minWidth: 150 }} variant="contained" type="submit">
-            {item.stateMutability == "view" ? "Call" : "Send"}
-          </Button>
-          {callResult && <Typography>{callResult}</Typography>}
-          {txResult && <Typography>{txResult}</Typography>}
-        </Stack>
-      </form>
-    </FormProvider>
   );
 }

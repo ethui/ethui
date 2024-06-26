@@ -96,6 +96,7 @@ export function ContextMenu({
             const props: MenuItemProps<"a"> = {};
             if (href) {
               props.href = href;
+              props.target = "_blank";
             } else if (action) {
               props.onClick = (e) => handleAction(e, action);
             }

@@ -1,0 +1,10 @@
+#!/bin/bash
+# mise description="build a zip from which the browser ext build can be run. was used to submit to mozilla store for validation"
+
+local=$PWD
+dir=$(mktemp --directory --suffix=ethui)
+shopt -s extglob
+rsync -r . $dir --exclude '.git' --exclude target --exclude node_modules --exclude '.github' --exclude bin --exclude crates --exclude .envrc --exclude examples --exclude migrations --exclude '*.zip'
+cd $dir && zip -r $local/ext-source.zip . > /dev/null
+rm -rf $dir
+echo "Source zipped to $local/ext-source.zip"

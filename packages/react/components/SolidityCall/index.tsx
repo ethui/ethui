@@ -1,4 +1,4 @@
-import { Stack, useTheme, SxProps, Box } from "@mui/material";
+import { Stack, useTheme, SxProps } from "@mui/material";
 import { Address, Abi, AbiFunction } from "abitype";
 import { formatUnits, decodeFunctionData, parseAbi } from "viem";
 
@@ -13,7 +13,6 @@ export interface SolidityCallProps {
   chainId?: number;
   decimals?: number;
   abi?: Abi | string[];
-  sx?: SxProps;
   ArgProps?: Pick<ArgProps, "addressRenderer" | "defaultRenderer">;
 }
 
@@ -25,24 +24,14 @@ export function SolidityCall({
   chainId,
   decimals = 18,
   abi,
-  sx = {},
   ArgProps = {},
 }: SolidityCallProps) {
-  const theme = useTheme();
-
   const isDeploy = !to && !!data;
   const isCall = to && !!data && data.length > 0 && data !== "0x";
   const isFallback = !!to && (!data || data === "0x");
 
   return (
-    <Box
-      sx={{
-        backgroundColor: theme.palette.highlight1.main,
-        p: 2,
-        maxWidth: "100%",
-        ...sx,
-      }}
-    >
+    <>
       {isDeploy && <Deploy {...{ from, data, value, decimals, ArgProps }} />}
       {isCall && (
         <Call
@@ -60,7 +49,7 @@ export function SolidityCall({
       )}
 
       {isFallback && <Fallback {...{ value, from, to, decimals, ArgProps }} />}
-    </Box>
+    </>
   );
 }
 
@@ -150,7 +139,7 @@ function Call({ value, data, to, decimals, abi, ArgProps }: CallProps) {
       <Stack direction="row">
         <Arg type="address" variant="highlight2" value={to} {...ArgProps} />
         <Separator text="." sx={{ gridArea: "top" }} />
-        <Arg value={label} type="string" variant="highlight3" />
+        <Arg value={label} raw type="string" variant="highlight3" />
         {value > 0n && (
           <>
             <Separator text="{" />
@@ -188,6 +177,7 @@ interface ArgProps {
   variant?: PaletteColorKey;
   type: string;
   sx?: SxProps;
+  raw?: boolean;
   value: string | bigint;
   addressRenderer?: (a: Address) => React.ReactNode;
   defaultRenderer?: (a: string | bigint) => React.ReactNode;
@@ -196,13 +186,20 @@ interface ArgProps {
 function Arg({
   label,
   type,
+  raw = false,
   variant = "highlight1",
   value,
   sx = {},
   addressRenderer,
   defaultRenderer = (v: string | bigint) => (
     <ClickToCopy text={v}>
-      <Typography mono>{v.toString()}</Typography>
+      <Typography mono>
+        {raw && v.toString()}
+        {!raw &&
+          JSON.stringify(v, (_k, v) => {
+            return typeof v === "bigint" ? `0x${v.toString(16)}` : v;
+          })}
+      </Typography>
     </ClickToCopy>
   ),
 }: ArgProps) {
@@ -258,7 +255,7 @@ function parseCall(data: `0x${string}`, abi: Abi | string[] | undefined) {
 
   let label = data.slice(0, 10);
   let args = [
-    { value: `0x${data.slice(8)}`, type: "string", label: "calldata:" },
+    { value: `0x${data.slice(10)}`, type: "string", label: "calldata:" },
   ];
 
   try {

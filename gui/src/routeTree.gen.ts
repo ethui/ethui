@@ -13,12 +13,17 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as OnboardingImport } from './routes/onboarding'
 import { Route as HomeImport } from './routes/_home'
+import { Route as DialogImport } from './routes/_dialog'
+import { Route as HomeHomeAccountImport } from './routes/_home.home/account'
+import { Route as DialogDialogWalletUnlockIdImport } from './routes/_dialog.dialog/wallet-unlock.$id'
+import { Route as DialogDialogTxReviewIdImport } from './routes/_dialog.dialog/tx-review.$id'
+import { Route as DialogDialogMsgSignIdImport } from './routes/_dialog.dialog/msg-sign.$id'
+import { Route as DialogDialogChainAddIdImport } from './routes/_dialog.dialog/chain-add.$id'
 
 // Create Virtual Routes
 
-const OnboardingLazyImport = createFileRoute('/onboarding')()
-const DialogLazyImport = createFileRoute('/_dialog')()
 const HomeHomeTransactionsLazyImport = createFileRoute(
   '/_home/home/transactions',
 )()
@@ -26,34 +31,21 @@ const HomeHomeContractsLazyImport = createFileRoute('/_home/home/contracts')()
 const HomeHomeConnectionsLazyImport = createFileRoute(
   '/_home/home/connections',
 )()
-const HomeHomeAccountLazyImport = createFileRoute('/_home/home/account')()
-const DialogDialogWalletUnlockIdLazyImport = createFileRoute(
-  '/_dialog/dialog/wallet-unlock/$id',
-)()
-const DialogDialogTxReviewIdLazyImport = createFileRoute(
-  '/_dialog/dialog/tx-review/$id',
-)()
-const DialogDialogMsgSignIdLazyImport = createFileRoute(
-  '/_dialog/dialog/msg-sign/$id',
-)()
-const DialogDialogChainAddIdLazyImport = createFileRoute(
-  '/_dialog/dialog/chain-add/$id',
-)()
 
 // Create/Update Routes
 
-const OnboardingLazyRoute = OnboardingLazyImport.update({
+const OnboardingRoute = OnboardingImport.update({
   path: '/onboarding',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/onboarding.lazy').then((d) => d.Route))
-
-const DialogLazyRoute = DialogLazyImport.update({
-  id: '/_dialog',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/_dialog.lazy').then((d) => d.Route))
+} as any)
 
 const HomeRoute = HomeImport.update({
   id: '/_home',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const DialogRoute = DialogImport.update({
+  id: '/_dialog',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -78,115 +70,133 @@ const HomeHomeConnectionsLazyRoute = HomeHomeConnectionsLazyImport.update({
   import('./routes/_home.home/connections.lazy').then((d) => d.Route),
 )
 
-const HomeHomeAccountLazyRoute = HomeHomeAccountLazyImport.update({
+const HomeHomeAccountRoute = HomeHomeAccountImport.update({
   path: '/home/account',
   getParentRoute: () => HomeRoute,
-} as any).lazy(() =>
-  import('./routes/_home.home/account.lazy').then((d) => d.Route),
-)
+} as any)
 
-const DialogDialogWalletUnlockIdLazyRoute =
-  DialogDialogWalletUnlockIdLazyImport.update({
+const DialogDialogWalletUnlockIdRoute = DialogDialogWalletUnlockIdImport.update(
+  {
     path: '/dialog/wallet-unlock/$id',
-    getParentRoute: () => DialogLazyRoute,
-  } as any).lazy(() =>
-    import('./routes/_dialog.dialog/wallet-unlock.$id.lazy').then(
-      (d) => d.Route,
-    ),
-  )
-
-const DialogDialogTxReviewIdLazyRoute = DialogDialogTxReviewIdLazyImport.update(
-  {
-    path: '/dialog/tx-review/$id',
-    getParentRoute: () => DialogLazyRoute,
+    getParentRoute: () => DialogRoute,
   } as any,
-).lazy(() =>
-  import('./routes/_dialog.dialog/tx-review.$id.lazy').then((d) => d.Route),
 )
 
-const DialogDialogMsgSignIdLazyRoute = DialogDialogMsgSignIdLazyImport.update({
+const DialogDialogTxReviewIdRoute = DialogDialogTxReviewIdImport.update({
+  path: '/dialog/tx-review/$id',
+  getParentRoute: () => DialogRoute,
+} as any)
+
+const DialogDialogMsgSignIdRoute = DialogDialogMsgSignIdImport.update({
   path: '/dialog/msg-sign/$id',
-  getParentRoute: () => DialogLazyRoute,
-} as any).lazy(() =>
-  import('./routes/_dialog.dialog/msg-sign.$id.lazy').then((d) => d.Route),
-)
+  getParentRoute: () => DialogRoute,
+} as any)
 
-const DialogDialogChainAddIdLazyRoute = DialogDialogChainAddIdLazyImport.update(
-  {
-    path: '/dialog/chain-add/$id',
-    getParentRoute: () => DialogLazyRoute,
-  } as any,
-).lazy(() =>
-  import('./routes/_dialog.dialog/chain-add.$id.lazy').then((d) => d.Route),
-)
+const DialogDialogChainAddIdRoute = DialogDialogChainAddIdImport.update({
+  path: '/dialog/chain-add/$id',
+  getParentRoute: () => DialogRoute,
+} as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/_dialog': {
+      id: '/_dialog'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof DialogImport
+      parentRoute: typeof rootRoute
+    }
     '/_home': {
+      id: '/_home'
+      path: ''
+      fullPath: ''
       preLoaderRoute: typeof HomeImport
       parentRoute: typeof rootRoute
     }
-    '/_dialog': {
-      preLoaderRoute: typeof DialogLazyImport
-      parentRoute: typeof rootRoute
-    }
     '/onboarding': {
-      preLoaderRoute: typeof OnboardingLazyImport
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingImport
       parentRoute: typeof rootRoute
     }
     '/_home/home/account': {
-      preLoaderRoute: typeof HomeHomeAccountLazyImport
+      id: '/_home/home/account'
+      path: '/home/account'
+      fullPath: '/home/account'
+      preLoaderRoute: typeof HomeHomeAccountImport
       parentRoute: typeof HomeImport
     }
     '/_home/home/connections': {
+      id: '/_home/home/connections'
+      path: '/home/connections'
+      fullPath: '/home/connections'
       preLoaderRoute: typeof HomeHomeConnectionsLazyImport
       parentRoute: typeof HomeImport
     }
     '/_home/home/contracts': {
+      id: '/_home/home/contracts'
+      path: '/home/contracts'
+      fullPath: '/home/contracts'
       preLoaderRoute: typeof HomeHomeContractsLazyImport
       parentRoute: typeof HomeImport
     }
     '/_home/home/transactions': {
+      id: '/_home/home/transactions'
+      path: '/home/transactions'
+      fullPath: '/home/transactions'
       preLoaderRoute: typeof HomeHomeTransactionsLazyImport
       parentRoute: typeof HomeImport
     }
     '/_dialog/dialog/chain-add/$id': {
-      preLoaderRoute: typeof DialogDialogChainAddIdLazyImport
-      parentRoute: typeof DialogLazyImport
+      id: '/_dialog/dialog/chain-add/$id'
+      path: '/dialog/chain-add/$id'
+      fullPath: '/dialog/chain-add/$id'
+      preLoaderRoute: typeof DialogDialogChainAddIdImport
+      parentRoute: typeof DialogImport
     }
     '/_dialog/dialog/msg-sign/$id': {
-      preLoaderRoute: typeof DialogDialogMsgSignIdLazyImport
-      parentRoute: typeof DialogLazyImport
+      id: '/_dialog/dialog/msg-sign/$id'
+      path: '/dialog/msg-sign/$id'
+      fullPath: '/dialog/msg-sign/$id'
+      preLoaderRoute: typeof DialogDialogMsgSignIdImport
+      parentRoute: typeof DialogImport
     }
     '/_dialog/dialog/tx-review/$id': {
-      preLoaderRoute: typeof DialogDialogTxReviewIdLazyImport
-      parentRoute: typeof DialogLazyImport
+      id: '/_dialog/dialog/tx-review/$id'
+      path: '/dialog/tx-review/$id'
+      fullPath: '/dialog/tx-review/$id'
+      preLoaderRoute: typeof DialogDialogTxReviewIdImport
+      parentRoute: typeof DialogImport
     }
     '/_dialog/dialog/wallet-unlock/$id': {
-      preLoaderRoute: typeof DialogDialogWalletUnlockIdLazyImport
-      parentRoute: typeof DialogLazyImport
+      id: '/_dialog/dialog/wallet-unlock/$id'
+      path: '/dialog/wallet-unlock/$id'
+      fullPath: '/dialog/wallet-unlock/$id'
+      preLoaderRoute: typeof DialogDialogWalletUnlockIdImport
+      parentRoute: typeof DialogImport
     }
   }
 }
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren([
-  HomeRoute.addChildren([
-    HomeHomeAccountLazyRoute,
+export const routeTree = rootRoute.addChildren({
+  DialogRoute: DialogRoute.addChildren({
+    DialogDialogChainAddIdRoute,
+    DialogDialogMsgSignIdRoute,
+    DialogDialogTxReviewIdRoute,
+    DialogDialogWalletUnlockIdRoute,
+  }),
+  HomeRoute: HomeRoute.addChildren({
+    HomeHomeAccountRoute,
     HomeHomeConnectionsLazyRoute,
     HomeHomeContractsLazyRoute,
     HomeHomeTransactionsLazyRoute,
-  ]),
-  DialogLazyRoute.addChildren([
-    DialogDialogChainAddIdLazyRoute,
-    DialogDialogMsgSignIdLazyRoute,
-    DialogDialogTxReviewIdLazyRoute,
-    DialogDialogWalletUnlockIdLazyRoute,
-  ]),
-  OnboardingLazyRoute,
-])
+  }),
+  OnboardingRoute,
+})
 
 /* prettier-ignore-end */

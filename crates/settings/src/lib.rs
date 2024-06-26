@@ -67,6 +67,10 @@ impl Settings {
             crate::autostart::update(self.inner.autostart)?;
         }
 
+        if let Some(v) = params.get("fastMode") {
+            self.inner.fast_mode = serde_json::from_value(v.clone()).unwrap();
+        }
+
         self.save().await?;
 
         Ok(())

@@ -2,7 +2,6 @@
 
 [announcement]: https://mirror.xyz/ethui.eth/OnCNvwKBs6ZpJrOVQQqsqHFW1RkqEK7MAsbPSIQNRFo
 [good-first-issue]: https://github.com/naps62/ethui/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22
-[justfile]: https://github.com/casey/just
 [releases]: https://github.com/ethui/ethui/releases
 [prank-wallet]: https://ethglobal.com/showcase/prank-wallet-cgnb3
 [anvil]: https://book.getfoundry.sh/anvil/

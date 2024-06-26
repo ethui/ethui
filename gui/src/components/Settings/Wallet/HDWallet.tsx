@@ -16,10 +16,10 @@ import {
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import truncateEthAddress from "truncate-eth-address";
 import { Address, formatUnits } from "viem";
 import { z } from "zod";
 
+import { Form } from "@ethui/react/components";
 import { passwordFormSchema, passwordSchema } from "@ethui/types/password";
 import {
   derivationPathSchema,
@@ -27,6 +27,7 @@ import {
   mnemonicSchema,
 } from "@ethui/types/wallets";
 import { useProvider } from "@/hooks";
+import { truncateHex } from "@/utils";
 
 export const schema = z.object({
   count: z.number().int().min(1).max(100),
@@ -140,56 +141,32 @@ interface MnemonicStepProps {
 
 function MnemonicStep({ onSubmit, onCancel }: MnemonicStepProps) {
   const schema = createSchema.pick({ name: true, mnemonic: true });
-  const {
-    handleSubmit,
-    reset,
-    register,
-    formState: { errors, isDirty, isValid },
-  } = useForm({
+  const form = useForm({
     mode: "onChange",
     resolver: zodResolver(schema),
   });
   const onSubmitInternal = (data: FieldValues) => {
     onSubmit(data.name, data.mnemonic);
-    reset(data);
+    form.reset(data);
   };
 
   return (
-    <Stack
-      direction="column"
-      spacing={2}
-      component="form"
-      onSubmit={handleSubmit(onSubmitInternal)}
-    >
-      <TextField
-        multiline
-        label="Name"
-        error={!!errors.name}
-        helperText={errors.name?.message?.toString()}
-        {...register("name")}
-      />
-      <Typography>Insert your 12-word mnemonic</Typography>
-      <TextField
-        multiline
-        label="12-word mnemonic"
-        error={!!errors.mnemonic}
-        helperText={errors.mnemonic?.message?.toString()}
-        {...register("mnemonic")}
-      />
+    <Form form={form} onSubmit={onSubmitInternal}>
+      <Stack direction="column" spacing={2}>
+        <Form.Text label="Name" name="name" multiline />
 
-      <Stack direction="row" spacing={2} justifyContent="flex-end">
-        <Button color="warning" variant="contained" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button
-          variant="contained"
-          type="submit"
-          disabled={!isDirty || !isValid}
-        >
-          Continue
-        </Button>
+        <Typography>Insert your 12-word mnemonic</Typography>
+        <TextField label="12-word mnemonic" name="mnemonic" multiline />
+
+        <Stack direction="row" spacing={2} justifyContent="flex-end">
+          <Button color="warning" variant="contained" onClick={onCancel}>
+            Cancel
+          </Button>
+
+          <Form.Submit label="Continue" />
+        </Stack>
       </Stack>
-    </Stack>
+    </Form>
   );
 }
 
@@ -199,54 +176,31 @@ interface PasswordStepProps {
 }
 
 function PasswordStep({ onSubmit, onCancel }: PasswordStepProps) {
-  const {
-    handleSubmit,
-    register,
-    formState: { errors, isDirty, isValid },
-  } = useForm({
+  const form = useForm({
     mode: "onChange",
     resolver: zodResolver(passwordFormSchema),
   });
-  const onSubmitInternal = (data: FieldValues) => {
-    onSubmit(data.password);
-  };
 
   return (
-    <Stack
-      direction="column"
-      spacing={2}
-      component="form"
-      onSubmit={handleSubmit(onSubmitInternal)}
-    >
-      <Typography>Choose a secure password</Typography>
-      <TextField
-        type="password"
-        label="Password"
-        error={!!errors.password}
-        helperText={errors.password?.message?.toString()}
-        {...register("password")}
-      />
-      <TextField
-        type="password"
-        label="Password Confirmation"
-        error={!!errors.passwordConfirmation}
-        helperText={errors.passwordConfirmation?.message?.toString()}
-        {...register("passwordConfirmation")}
-      />
+    <Form form={form} onSubmit={(d) => onSubmit(d.password)}>
+      <Stack direction="column" spacing={2}>
+        <Typography>Choose a secure password</Typography>
+        <Form.Text type="password" label="Password" name="password" />
+        <Form.Text
+          type="password"
+          label="Password Confirmation"
+          name="passwordConfirmation"
+        />
 
-      <Stack direction="row" spacing={2} justifyContent="flex-end">
-        <Button color="warning" variant="contained" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button
-          variant="contained"
-          type="submit"
-          disabled={!isDirty || !isValid}
-        >
-          Continue
-        </Button>
+        <Stack direction="row" spacing={2} justifyContent="flex-end">
+          <Button color="warning" variant="contained" onClick={onCancel}>
+            Cancel
+          </Button>
+
+          <Form.Submit label="Continue" />
+        </Stack>
       </Stack>
-    </Stack>
+    </Form>
   );
 }
 
@@ -262,12 +216,7 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
     derivationPath: derivationPathSchema.parse(undefined),
   };
 
-  const {
-    register,
-    watch,
-    handleSubmit,
-    formState: { errors, isValid },
-  } = useForm({
+  const form = useForm({
     mode: "onChange",
     resolver: zodResolver(schema),
     defaultValues,
@@ -281,7 +230,7 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
     onSubmit(data.derivationPath, current);
   };
 
-  const derivationPath = watch("derivationPath");
+  const derivationPath = form.watch("derivationPath");
 
   useEffect(() => {
     setCurrent(null);
@@ -292,56 +241,44 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
   }, [mnemonic, derivationPath]);
 
   return (
-    <Stack
-      spacing={2}
-      component="form"
-      direction="column"
-      onSubmit={handleSubmit(onSubmitInternal)}
-    >
-      <TextField
-        label="Derivation Path"
-        error={!!errors.derivationPath}
-        helperText={errors.derivationPath?.message?.toString()}
-        {...register("derivationPath")}
-      />
-      {isValid && (
-        <Stack direction="column" spacing={2}>
-          <TableContainer>
-            <Table size="small">
-              <TableBody>
-                {addresses.map(([key, address]) => (
-                  <TableRow
-                    hover
-                    selected={current == key}
-                    sx={{ cursor: "pointer" }}
-                    onClick={() => setCurrent(key)}
-                    key={key}
-                  >
-                    <TableCell>{truncateEthAddress(address)}</TableCell>
-                    <TableCell align="right">
-                      <NativeBalance address={address} />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+    <Form form={form} onSubmit={onSubmitInternal}>
+      <Stack spacing={2} direction="column">
+        <Form.Text label="Derivation Path" name="derivationPath" />
 
-          <Stack direction="row" spacing={2} justifyContent="flex-end">
-            <Button color="warning" variant="contained" onClick={onCancel}>
-              Cancel
-            </Button>
-            <Button
-              variant="contained"
-              type="submit"
-              disabled={!isValid || !current}
-            >
-              Save
-            </Button>
+        {form.formState.isValid && (
+          <Stack direction="column" spacing={2}>
+            <TableContainer>
+              <Table size="small">
+                <TableBody>
+                  {addresses.map(([key, address]) => (
+                    <TableRow
+                      hover
+                      selected={current == key}
+                      sx={{ cursor: "pointer" }}
+                      onClick={() => setCurrent(key)}
+                      key={key}
+                    >
+                      <TableCell>{truncateHex(address)}</TableCell>
+                      <TableCell align="right">
+                        <NativeBalance address={address} />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+
+            <Stack direction="row" spacing={2} justifyContent="flex-end">
+              <Button color="warning" variant="contained" onClick={onCancel}>
+                Cancel
+              </Button>
+
+              <Form.Submit label="Save" />
+            </Stack>
           </Stack>
-        </Stack>
-      )}
-    </Stack>
+        )}
+      </Stack>
+    </Form>
   );
 }
 
@@ -380,56 +317,25 @@ function NativeBalance({ address }: NativeBalanceProps) {
 }
 
 function Update({ wallet, onSubmit, onRemove }: Props) {
-  const {
-    register,
-    handleSubmit,
-    formState: { isValid, isDirty, errors },
-  } = useForm({
+  const form = useForm({
     mode: "onBlur",
     resolver: zodResolver(updateSchema),
     defaultValues: wallet,
   });
 
   return (
-    <Stack
-      spacing={2}
-      alignItems="flex-start"
-      component="form"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <TextField
-        label="Name"
-        error={!!errors.name}
-        helperText={errors.name?.message?.toString()}
-        {...register("name")}
-      />
-      <TextField
-        label="Derivation Path"
-        spellCheck="false"
-        error={!!errors.derivationPath}
-        helperText={errors.derivationPath?.message?.toString() || ""}
-        {...register("derivationPath")}
-      />
-      <TextField
-        label="Address count"
-        spellCheck="false"
-        error={!!errors.count}
-        helperText={errors.count?.message?.toString() || ""}
-        {...register("count", { valueAsNumber: true })}
-      />
-      <Stack direction="row" spacing={2}>
-        <Button
-          color="primary"
-          variant="contained"
-          type="submit"
-          disabled={!isDirty || !isValid}
-        >
-          Save
-        </Button>
-        <Button color="warning" variant="contained" onClick={onRemove}>
-          Remove
-        </Button>
+    <Form form={form} onSubmit={onSubmit}>
+      <Stack spacing={2} alignItems="flex-start">
+        <Form.Text label="Name" name="name" />
+        <Form.Text label="Derivation Path" name="derivationPath" />
+        <Form.Number label="Address count" name="count" />
+        <Stack direction="row" spacing={2}>
+          <Form.Submit label="Save" />
+          <Button color="warning" variant="contained" onClick={onRemove}>
+            Remove
+          </Button>
+        </Stack>
       </Stack>
-    </Stack>
+    </Form>
   );
 }

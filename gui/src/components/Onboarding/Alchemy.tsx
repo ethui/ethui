@@ -5,6 +5,7 @@ import { useCallback } from "react";
 import { FieldValues, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
+import { Form } from "@ethui/react/components";
 import { StepProps } from ".";
 
 export function AlchemyStep({ onSubmit }: StepProps) {
@@ -14,7 +15,9 @@ export function AlchemyStep({ onSubmit }: StepProps) {
       .optional()
       .nullable()
       .superRefine(async (key, ctx) => {
+        console.log(key);
         if (!key) return;
+        console.log(key);
         const valid = await invoke("settings_test_alchemy_api_key", { key });
         if (valid) return;
 
@@ -25,14 +28,12 @@ export function AlchemyStep({ onSubmit }: StepProps) {
       }),
   });
 
-  const {
-    handleSubmit,
-    register,
-    formState: { isValid, errors },
-    control,
-  } = useForm({ mode: "onChange", resolver: zodResolver(schema) });
+  const form = useForm({ mode: "onChange", resolver: zodResolver(schema) });
 
-  const alchemyApiKey = useWatch({ control, name: "alchemyApiKey" });
+  const alchemyApiKey = useWatch({
+    control: form.control,
+    name: "alchemyApiKey",
+  });
 
   const localOnSubmit = useCallback(
     (params: FieldValues) => {
@@ -45,7 +46,7 @@ export function AlchemyStep({ onSubmit }: StepProps) {
   );
 
   return (
-    <form onSubmit={handleSubmit(localOnSubmit)}>
+    <Form form={form} onSubmit={localOnSubmit}>
       <Stack alignItems="flex-end" spacing={3}>
         <Typography variant="h6" component="h1" alignSelf="start">
           Alchemy
@@ -81,17 +82,13 @@ export function AlchemyStep({ onSubmit }: StepProps) {
           </Link>{" "}
           and grab an API key.
         </Typography>
-        <TextField
-          label="API Key"
-          error={!!errors.alchemyApiKey}
-          helperText={errors.alchemyApiKey?.message?.toString() || ""}
-          fullWidth
-          {...register("alchemyApiKey")}
+        <Form.Text label="API Key" name="alchemyApiKey" fullWidth />
+
+        <Form.Submit
+          useDirtyAlt={false}
+          label={alchemyApiKey?.length > 0 ? "Next" : "Skip"}
         />
-        <Button variant="contained" type="submit" disabled={!isValid}>
-          {alchemyApiKey?.length > 0 ? "Next" : "Skip"}
-        </Button>
       </Stack>
-    </form>
+    </Form>
   );
 }

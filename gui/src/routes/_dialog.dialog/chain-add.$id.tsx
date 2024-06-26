@@ -1,4 +1,4 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Stack, Typography, Button, Grid } from "@mui/material";
 import { isDirty, isValid } from "zod";
 import { getCurrent } from "@tauri-apps/api/webviewWindow";
@@ -8,7 +8,7 @@ import { ChainView } from "@ethui/react/components";
 import { useDialog } from "@/hooks";
 import { Datapoint } from "@/components";
 
-export const Route = createLazyFileRoute("/_dialog/dialog/chain-add/$id")({
+export const Route = createFileRoute("/_dialog/dialog/chain-add/$id")({
   component: ChainAddDialog,
 });
 
@@ -28,9 +28,9 @@ export function ChainAddDialog() {
 
       <Grid container rowSpacing={2}>
         <Datapoint label="Chain ID" value={network.chain_id} />
-        <Datapoint short label="Currency" value={network.currency} />
-        <Datapoint short label="Decimals" value={network.decimals} />
-        <Datapoint short label="Decimals" value={network.decimals} />
+        <Datapoint size="small" label="Currency" value={network.currency} />
+        <Datapoint size="small" label="Decimals" value={network.decimals} />
+        <Datapoint size="small" label="Decimals" value={network.decimals} />
         <Datapoint label="RPC (HTTP)" value={network.http_url} />
         {network.ws_url && (
           <Datapoint label="RPC (WS)" value={network.ws_url} />

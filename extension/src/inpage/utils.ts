@@ -5,6 +5,8 @@ import log from "loglevel";
 
 export type Maybe<T> = T | null | undefined;
 
+export const name = import.meta.env.PROD ? "ethui" : "ethui-dev";
+
 /**
  * json-rpc-engine middleware that logs RPC errors and validates req.method.
  *
@@ -26,7 +28,7 @@ export const errorMiddleware: JsonRpcMiddleware<JsonRpcParams, Json> = (
 
   next((done) => {
     if (res.error) {
-      log.error(`ethui - RPC Error: ${res.error.message}`, res.error, req);
+      log.error(`${name} - RPC Error: ${res.error.message}`, res.error, req);
     }
     done();
   });

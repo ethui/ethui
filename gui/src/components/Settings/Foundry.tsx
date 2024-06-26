@@ -5,6 +5,7 @@ import { useCallback, useEffect } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { Form } from "@ethui/react/components";
 import { useSettings } from "@/store";
 
 export const schema = z.object({
@@ -14,54 +15,35 @@ export const schema = z.object({
 export function SettingsFoundry() {
   const general = useSettings((s) => s.settings);
 
-  const {
-    handleSubmit,
-    reset,
-    formState: { isValid, dirtyFields, errors },
-    register,
-  } = useForm({
+  const form = useForm({
     mode: "onChange",
     resolver: zodResolver(schema),
     defaultValues: general,
   });
-  // https://github.com/react-hook-form/react-hook-form/issues/3213
-  const disabled = !Object.keys(dirtyFields).length || !isValid;
-
-  // default values are async, need to reset once they're ready
-  useEffect(() => reset(general), [reset, general]);
 
   const onSubmit = useCallback(
     async (params: FieldValues) => {
       await invoke("settings_set", {
         params,
       });
-      reset(params);
+      form.reset(params);
     },
-    [reset],
+    [form],
   );
 
   if (!general) return null;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+    <Form form={form} onSubmit={onSubmit} className="flex flex-col gap-4">
       <Stack alignItems="flex-start" spacing={2}>
         <Typography>
           ethui can monitor your filesystem for foundry projects, indexing the
           output ABIs automatically.
         </Typography>
 
-        <TextField
-          label="ABI Watch path"
-          defaultValue={general.abiWatchPath}
-          error={!!errors.abiWatchPath}
-          helperText={errors.abiWatchPath?.message?.toString() || ""}
-          fullWidth
-          {...register("abiWatchPath")}
-        />
-        <Button variant="contained" type="submit" disabled={disabled}>
-          Save
-        </Button>
+        <Form.Text name="abiWatchPath" label="ABI Watch path" fullWidth />
+        <Form.Submit label="Save" />
       </Stack>
-    </form>
+    </Form>
   );
 }

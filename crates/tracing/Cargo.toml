@@ -9,7 +9,7 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-tracing = { workspace = true }
-thiserror = { workspace = true }
+tracing .workspace = true
+thiserror .workspace = true
 
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }

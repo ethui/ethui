@@ -40,13 +40,6 @@ pub trait WalletControl: Sync + Send + Deserialize<'static> + Serialize + std::f
     }
 }
 
-#[async_trait]
-pub trait WalletSigner {
-    type Signer: ethers::signers::Signer;
-
-    async fn build_signer(&self, chain_id: u32, path: &str) -> Result<Self::Signer>;
-}
-
 /// needs to be a separate trait, because enum_dispatch does not allow for static functions
 #[async_trait]
 pub trait WalletCreate {

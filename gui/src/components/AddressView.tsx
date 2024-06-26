@@ -3,15 +3,15 @@ import { Button, Stack, TextField } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import truncateEthAddress from "truncate-eth-address";
 import { Address, getAddress } from "viem";
 import { z } from "zod";
 
-import { Typography } from "@ethui/react/components";
+import { Form, Typography } from "@ethui/react/components";
 import { useInvoke } from "@/hooks";
 import { ContextMenuWithTauri, Modal } from "./";
 import { useNetworks } from "@/store";
 import { IconAddress } from "./Icons";
+import { truncateHex } from "@/utils";
 
 interface Props {
   address: Address;
@@ -38,7 +38,7 @@ export function AddressView({
 
   if (!network) return;
 
-  const text = alias ? alias : truncateEthAddress(`${address}`);
+  const text = alias ? alias : truncateHex(address);
   const content = (
     <Stack direction="row" alignItems="center" spacing={1}>
       {icon && (
@@ -64,6 +64,7 @@ export function AddressView({
         {
           label: "Open in explorer",
           href: `${network.explorer_url}${address}`,
+          disabled: !network.explorer_url,
         },
         { label: "Set alias", action: () => setAliasFormOpen(true) },
         {
@@ -98,11 +99,7 @@ interface AliasFormProps {
 }
 
 function AliasForm({ address, alias, refetch, onSubmit }: AliasFormProps) {
-  const {
-    handleSubmit,
-    register,
-    formState: { isDirty, isValid, errors },
-  } = useForm({
+  const form = useForm({
     mode: "onChange",
     resolver: zodResolver(schema),
   });
@@ -114,26 +111,13 @@ function AliasForm({ address, alias, refetch, onSubmit }: AliasFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(submit)}>
+    <Form form={form} onSubmit={submit}>
       <Stack alignItems="flex-start" spacing={2}>
-        <Typography>Set alias for {truncateEthAddress(address)}</Typography>
-        <TextField
-          label="Alias"
-          defaultValue={alias}
-          error={!!errors.alias}
-          helperText={errors.alias?.message?.toString() || ""}
-          fullWidth
-          {...register("alias")}
-        />
+        <Typography>Set alias for {truncateHex(address)}</Typography>
+        <Form.Text label="Alias" name="alias" defaultValue={alias} />
 
-        <Button
-          variant="contained"
-          type="submit"
-          disabled={!isDirty || !isValid}
-        >
-          Save
-        </Button>
+        <Form.Submit label="Save" />
       </Stack>
-    </form>
+    </Form>
   );
 }

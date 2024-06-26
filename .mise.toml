@@ -1,0 +1,34 @@
+[tasks.default]
+depends = ["dev"]
+
+[tasks.dev]
+run = "cargo tauri dev --config bin/tauri-dev.conf.json --features ${ETHUI_FEATURES:-debug} -- -- -- $@"
+alias = "d"
+
+[tasks.setup]
+run = ["yarn", "cargo build"]
+
+[tasks.fix]
+run = [
+  "cargo +nightly fmt --all -- --check",
+  "cargo clippy --all -- -D clippy::all -D clippy::dbg_macro",
+  "yarn lint",
+]
+alias = "f"
+
+[tasks.ext]
+run = "yarn run ext:build"
+
+[tasks.ext-dev]
+run = "yarn run ext:dev"
+
+[tools]
+node = "20"
+
+[env]
+RUST_LOG = "ethui_sync_alchemy=trace"
+IRON_WS_PORT = 9102
+IRON_HTTP_PORT = 9103
+ETHUI_WS_PORT = 9102
+ETHUI_HTTP_PORT = 9103
+DATABASE_URL = "sqlite://dev-data/default/db.sqlite3"

@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Stack, TextField } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import { Address } from "abitype";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -9,6 +9,7 @@ import {
   ImpersonatorWallet,
   Wallet,
 } from "@ethui/types/wallets";
+import { Form } from "@ethui/react/components";
 
 // react-hook-form doesn't support value-arrays, only object-arrays, so we need this type as a workaround for the impersonator form
 export const schema = z.object({
@@ -30,21 +31,16 @@ export interface Props {
 }
 
 export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
-  let formWallet = undefined;
-  if (wallet) {
-    formWallet = {
-      ...wallet,
-      addresses: wallet ? wallet.addresses.map((address) => ({ address })) : [],
-    };
-  }
+  const formWallet = wallet
+    ? {
+        ...wallet,
+        addresses: wallet
+          ? wallet.addresses.map((address) => ({ address }))
+          : [],
+      }
+    : undefined;
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    control,
-    formState: { isValid, isDirty, errors },
-  } = useForm({
+  const form = useForm({
     mode: "onBlur",
     resolver: zodResolver(schema),
     defaultValues: formWallet,
@@ -56,7 +52,7 @@ export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
       type: "impersonator",
       addresses: data.addresses.map(({ address }) => address as Address),
     });
-    reset(data);
+    form.reset(data);
   };
 
   const {
@@ -64,53 +60,36 @@ export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
     append,
     remove,
   } = useFieldArray({
-    control,
+    control: form.control,
     name: "addresses",
   });
 
   return (
-    <Stack
-      spacing={2}
-      alignItems="flex-start"
-      component="form"
-      onSubmit={handleSubmit(prepareAndSubmit)}
-    >
-      <TextField
-        label="Name"
-        error={!!errors.name}
-        helperText={errors.name?.message?.toString()}
-        {...register("name")}
-      />
-      {addressFields.map((field, i) => (
-        <Stack alignSelf="stretch" key={field.id} direction="row" spacing={2}>
-          <TextField
-            label="Address"
-            fullWidth
-            error={!!errors.addresses && !!errors.addresses[i]}
-            helperText={
-              errors.addresses && errors.addresses[i]?.address?.message
-            }
-            {...register(`addresses.${i}.address`)}
-          />
-          <Button onClick={() => remove(i)}>Remove</Button>
+    <Form form={form} onSubmit={prepareAndSubmit}>
+      <Stack spacing={2} alignItems="flex-start">
+        <Form.Text label="Name" name="name" />
+        {addressFields.map((field, i) => (
+          <Stack alignSelf="stretch" key={field.id} direction="row" spacing={2}>
+            <Form.Text
+              label="Address"
+              name={`addresses.${i}.address`}
+              fullWidth
+            />
+            <Button onClick={() => remove(i)}>Remove</Button>
+          </Stack>
+        ))}
+
+        <Button color="secondary" onClick={() => append({ address: "" })}>
+          Add
+        </Button>
+
+        <Stack direction="row" spacing={2}>
+          <Form.Submit label="Save" />
+          <Button color="warning" variant="contained" onClick={onRemove}>
+            Remove
+          </Button>
         </Stack>
-      ))}
-      <Button color="secondary" onClick={() => append({ address: "" })}>
-        Add
-      </Button>
-      <Stack direction="row" spacing={2}>
-        <Button
-          color="primary"
-          variant="contained"
-          type="submit"
-          disabled={!isDirty || !isValid}
-        >
-          Save
-        </Button>
-        <Button color="warning" variant="contained" onClick={onRemove}>
-          Remove
-        </Button>
       </Stack>
-    </Stack>
+    </Form>
   );
 }

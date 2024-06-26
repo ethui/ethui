@@ -6,7 +6,7 @@ import {
 import { type Json, type JsonRpcResponse } from "@metamask/utils";
 import { EthereumRpcError } from "eth-rpc-errors";
 import { EventEmitter } from "eventemitter3";
-import { createStreamMiddleware } from "json-rpc-middleware-stream";
+import { createStreamMiddleware } from "@metamask/json-rpc-middleware-stream";
 import log from "loglevel";
 
 import { Address, RequestArguments } from "./types";
@@ -137,14 +137,11 @@ export class EthUIProvider extends EventEmitter {
     }
 
     const connection = createStreamMiddleware();
+    connection.stream.pipe(this.stream).pipe(connection.stream);
 
     this.engine.push(createIdRemapMiddleware());
     this.engine.push(errorMiddleware);
-
-    connection.stream.pipe(this.stream).pipe(connection.stream);
-
-    // Wire up the JsonRpcEngine to the JSON-RPC connection stream
-    this.engine.push(connection.middleware as unknown as any);
+    this.engine.push(connection.middleware);
 
     // Handle JSON-RPC notifications
     connection.events.on("notification", ({ method, params }) => {

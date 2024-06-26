@@ -23,8 +23,3 @@ export function Datapoint({ label, value, size = "large" }: DatapointProps) {
     </Grid>
   );
 }
-
-Datapoint.defaultProps = {
-  short: false,
-  mono: false,
-};

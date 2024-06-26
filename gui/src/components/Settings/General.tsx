@@ -17,6 +17,7 @@ import { useCallback, useEffect } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { Form } from "@ethui/react/components";
 import { useSettings } from "@/store";
 
 export const schema = z.object({
@@ -59,143 +60,51 @@ export const schema = z.object({
 export function SettingsGeneral() {
   const general = useSettings((s) => s.settings);
 
-  const {
-    handleSubmit,
-    reset,
-    formState: { isValid, dirtyFields, errors },
-    control,
-    register,
-  } = useForm({
+  const form = useForm({
     mode: "onChange",
     resolver: zodResolver(schema),
     defaultValues: general,
   });
-  // https://github.com/react-hook-form/react-hook-form/issues/3213
-  const isDirtyAlt = !!Object.keys(dirtyFields).length;
-
-  // default values are async, need to reset once they're ready
-  useEffect(() => reset(general), [reset, general]);
 
   const onSubmit = useCallback(
     async (params: FieldValues) => {
       await invoke("settings_set", {
         params,
       });
-      reset(params);
+      form.reset(params);
     },
-    [reset],
+    [form],
   );
 
   if (!general) return null;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+    <Form form={form} onSubmit={onSubmit} className="flex flex-col gap-4">
       <Stack alignItems="flex-start" spacing={2}>
-        <FormControl>
-          <InputLabel id="darkMode">Dark mode</InputLabel>
-          <Controller
-            name="darkMode"
-            defaultValue={general.darkMode}
-            control={control}
-            render={({ field }) => (
-              <Select
-                aria-labelledby="darkMode"
-                size="small"
-                label="Dark mode"
-                sx={{ minWidth: 120 }}
-                {...field}
-              >
-                <MenuItem value={"auto"}>Auto</MenuItem>
-                <MenuItem value={"dark"}>Dark</MenuItem>
-                <MenuItem value={"light"}>Light</MenuItem>
-              </Select>
-            )}
-          />
-        </FormControl>
-
-        <FormControl error={!!errors.autostart}>
-          <FormGroup>
-            <Controller
-              name="autostart"
-              control={control}
-              render={({ field }) => (
-                <FormControlLabel
-                  sx={{ pointerEvents: "auto" }}
-                  label="Start automatically on boot (minimized)"
-                  control={<Switch {...field} checked={field.value} />}
-                />
-              )}
-            />
-          </FormGroup>
-          {errors.abiWatch && (
-            <FormHelperText>
-              {errors.abiWatch.message?.toString()}
-            </FormHelperText>
-          )}
-        </FormControl>
-
-        <FormControl error={!!errors.fastMode}>
-          <FormGroup>
-            <Controller
-              name="fastMode"
-              control={control}
-              render={({ field }) => (
-                <FormControlLabel
-                  sx={{ pointerEvents: "auto" }}
-                  label="Fast mode"
-                  control={<Switch {...field} checked={field.value} />}
-                />
-              )}
-            />
-          </FormGroup>
-          {errors.abiWatch && (
-            <FormHelperText>
-              {errors.abiWatch.message?.toString()}
-            </FormHelperText>
-          )}
-        </FormControl>
-
-        <TextField
-          label="Alchemy API Key"
-          {...register("alchemyApiKey")}
-          fullWidth
-          error={!!errors.alchemyApiKey}
-          helperText={errors.alchemyApiKey?.message?.toString()}
+        <Form.Select
+          name="darkMode"
+          label="Dark mode"
+          defaultValue={general.darkMode}
+          items={["auto", "dark", "light"]}
         />
-        <TextField
-          label="Etherscan API Key"
-          {...register("etherscanApiKey")}
-          fullWidth
-          error={!!errors.etherscanApiKey}
-          helperText={errors.etherscanApiKey?.message?.toString()}
+
+        <Form.Checkbox
+          name="autostart"
+          label="Start automatically on boot (minimized)"
         />
-        <FormControl error={!!errors.hideEmptyTokens}>
-          <FormGroup>
-            <Controller
-              name="hideEmptyTokens"
-              control={control}
-              render={({ field }) => (
-                <FormControlLabel
-                  label="Hide Tokens Without Balance"
-                  control={<Switch {...field} checked={field.value} />}
-                />
-              )}
-            />
-          </FormGroup>
-          {errors.abiWatch && (
-            <FormHelperText>
-              {errors.hideEmptyTokens?.message?.toString()}
-            </FormHelperText>
-          )}
-        </FormControl>
-        <Button
-          variant="contained"
-          type="submit"
-          disabled={!isDirtyAlt || !isValid}
-        >
-          Save
-        </Button>
+
+        <Form.Checkbox name="fastMode" label="Fast mode" />
+
+        <Form.Text name="alchemyApiKey" label="Alchemy API Key" fullWidth />
+        <Form.Text label="Etherscan API Key" name="etherscanApiKey" fullWidth />
+
+        <Form.Checkbox
+          label="Hide Tokens Without Balance"
+          name="hideEmptyTokens"
+        />
+
+        <Form.Submit label="Save" />
       </Stack>
-    </form>
+    </Form>
   );
 }

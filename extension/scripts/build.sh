@@ -7,7 +7,6 @@
 target=chrome-dev
 version=0.0.0
 
-echo "$@"
 #
 # parse args
 #
@@ -41,7 +40,9 @@ done
 # building
 #
 
-if ! [[ $target =~ .*dev ]]; then
+if [[ $target =~ .*dev ]]; then
+  export NODE_ENV=development
+else
   export NODE_ENV=production
 fi
 export DIST_DIR=./dist/$target
@@ -55,9 +56,7 @@ yarn run vite build --config vite/inpage.ts
 yarn run vite build --config vite/background.ts
 
 # choose manifest
-echo asd $DIST_DIR
 mv $DIST_DIR/manifest-$target.json $DIST_DIR/manifest.json
-echo dsa
 rm $DIST_DIR/manifest-*.json
 
 sed_args=(-i)
@@ -69,6 +68,7 @@ sed "${sed_args[@]}" "s/%VERSION%/$version/g" $DIST_DIR/manifest.json
 # create zip
 (cd $DIST_DIR && zip -r ../$basename.zip .)
 
+echo target $target
 # create crx / xpi
 case $target in
   # builds and publishes to the chrome extension store

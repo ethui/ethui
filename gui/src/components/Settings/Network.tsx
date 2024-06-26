@@ -6,13 +6,11 @@ import {
   AccordionSummary,
   Button,
   Stack,
-  TextField,
 } from "@mui/material";
-import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 
 import { Network, networkSchema } from "@ethui/types/network";
-import { ChainView } from "@ethui/react/components";
+import { ChainView, Form } from "@ethui/react/components";
 import { ConfirmationDialog } from "@/components";
 import { useNetworks } from "@/store";
 
@@ -38,25 +36,14 @@ export function SettingsNetwork() {
     s.resetNetworks,
   ]);
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    control,
-    formState: { isValid, dirtyFields, errors },
-  } = useForm({
+  const form = useForm({
     mode: "onBlur",
     resolver: zodResolver(networkSchema),
     defaultValues: { networks: networks as (Network & NewChild)[] },
   });
-  // https://github.com/react-hook-form/react-hook-form/issues/3213
-  const isDirtyAlt = !!Object.keys(dirtyFields).length;
-
-  // default values are async, need to reset once they're ready
-  useEffect(() => reset({ networks }), [reset, networks]);
 
   const { fields, append, remove } = useFieldArray({
-    control,
+    control: form.control,
     name: "networks",
   });
 
@@ -64,16 +51,14 @@ export function SettingsNetwork() {
     if (!data.networks) return;
 
     await setNetworks(data.networks);
-    reset(data);
+    form.reset(data);
   };
 
   if (!networks) return <>Loading</>;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <Form form={form} onSubmit={onSubmit}>
       {fields.map((field, index) => {
-        //        const item = networks[index];
-        const err = (errors.networks && errors.networks[index]) || {};
         return (
           <Accordion key={field.id} defaultExpanded={field.new}>
             <AccordionSummary expandIcon={<ExpandMore />}>
@@ -85,58 +70,39 @@ export function SettingsNetwork() {
             <AccordionDetails>
               <Stack spacing={2} alignItems="flex-start">
                 <Stack spacing={2} direction="row">
-                  <TextField
-                    label="Name"
-                    error={!!err.name}
-                    helperText={err.name?.message?.toString()}
-                    {...register(`networks.${index}.name`)}
-                  />
-                  <TextField
+                  <Form.Number label="Name" name={`networks.${index}.name`} />
+                  <Form.Number
                     label="Chain Id"
-                    error={!!err.chain_id}
-                    helperText={err.chain_id?.message?.toString()}
-                    {...register(`networks.${index}.chain_id`, {
-                      valueAsNumber: true,
-                    })}
+                    name={`networks.${index}.chain_id`}
                   />
                 </Stack>
-                <TextField
+
+                <Form.Text
                   label="HTTP RPC"
-                  {...register(`networks.${index}.http_url`)}
+                  name={`networks.${index}.http_url`}
                   fullWidth
-                  error={!!err.http_url}
-                  helperText={err.http_url?.message?.toString()}
                 />
-                <TextField
-                  label="WebSockets URL"
-                  {...register(`networks.${index}.ws_url`)}
+                <Form.Text
+                  label="WebSockets RPC"
+                  name={`networks.${index}.ws_url`}
                   fullWidth
-                  error={!!err.ws_url}
-                  helperText={err.ws_url?.message?.toString()}
                 />
-                <TextField
+                <Form.Text
                   label="Explorer URL"
-                  {...register(`networks.${index}.explorer_url`)}
+                  name={`networks.${index}.explorer_url`}
                   fullWidth
-                  error={!!err.explorer_url}
-                  helperText={err.explorer_url?.message?.toString()}
                 />
                 <Stack spacing={2} direction="row">
-                  <TextField
+                  <Form.Text
                     label="Currency"
-                    {...register(`networks.${index}.currency`)}
-                    error={!!err.currency}
-                    helperText={err.currency?.message?.toString()}
+                    name={`networks.${index}.currency`}
                   />
-                  <TextField
+                  <Form.Number
                     label="Decimals"
-                    {...register(`networks.${index}.decimals`, {
-                      valueAsNumber: true,
-                    })}
-                    error={!!err.decimals}
-                    helperText={err.decimals?.message?.toString()}
+                    name={`networks.${index}.decimals`}
                   />
                 </Stack>
+
                 <Button
                   color="warning"
                   size="small"
@@ -150,14 +116,8 @@ export function SettingsNetwork() {
         );
       })}
       <Stack spacing={2} direction="row" sx={{ mt: 4, mb: 2 }}>
-        <Button
-          color="primary"
-          variant="contained"
-          type="submit"
-          disabled={!isDirtyAlt || !isValid}
-        >
-          Save
-        </Button>
+        <Form.Submit label="Save" />
+
         <Button
           variant="outlined"
           color="info"
@@ -167,6 +127,7 @@ export function SettingsNetwork() {
           Add network
         </Button>
       </Stack>
+
       <ConfirmationDialog
         content={
           <>
@@ -189,6 +150,6 @@ export function SettingsNetwork() {
           </Button>
         )}
       </ConfirmationDialog>
-    </form>
+    </Form>
   );
 }

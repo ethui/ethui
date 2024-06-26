@@ -5,7 +5,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-import { DevBuildNotice, ErrorHandler } from "@/components";
+import { ErrorHandler } from "@/components";
 import { useTheme } from "@/store/theme";
 
 const queryClient = new QueryClient();
@@ -40,7 +40,6 @@ function Root() {
       <CssBaseline>
         <ErrorHandler>
           <QueryClientProvider client={queryClient}>
-            <DevBuildNotice />
             <Suspense>
               <Outlet />
             </Suspense>

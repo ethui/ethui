@@ -12,7 +12,7 @@ import {
 import { invoke } from "@tauri-apps/api/core";
 import { map } from "lodash-es";
 import { useEffect, useState } from "react";
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 import { Affinity, Peer } from "@ethui/types";
 import { ChainView } from "@ethui/react/components";
@@ -21,7 +21,7 @@ import { useNetworks } from "@/store";
 import { Panel } from "@/components";
 import { Navbar } from "@/components/Home/Navbar";
 
-export const Route = createLazyFileRoute("/_home/home/connections")({
+export const Route = createFileRoute("/_home/home/connections")({
   component: Connections,
 });
 
