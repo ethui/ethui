@@ -48,10 +48,10 @@ anyhow.workspace = true
 fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs", rev = "016512b" }
 named-lock = "0.3.0"
 auto-launch = "0.5.0"
-tauri-plugin-os = "2.0.0-beta.3"
+tauri-plugin-os = "2.0.0-beta.6"
 
 [build-dependencies]
-tauri-build = { version = "2.0.0-beta.10", features = [] }
+tauri-build = { version = "2.0.0-beta.17", features = [] }
 ethui-token-list.workspace = true
 
 [features]
