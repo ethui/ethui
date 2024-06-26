@@ -3359,7 +3359,7 @@ dependencies = [
 
 [[package]]
 name = "ethui"
-version = "1.7.1"
+version = "1.8.0"
 dependencies = [
  "anyhow",
  "auto-launch",
@@ -3397,7 +3397,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-abis"
-version = "1.7.1"
+version = "1.8.0"
 dependencies = [
  "alloy-dyn-abi 0.6.4",
  "alloy-primitives 0.7.2",
@@ -3411,14 +3411,14 @@ dependencies = [
 
 [[package]]
 name = "ethui-args"
-version = "1.7.1"
+version = "1.8.0"
 dependencies = [
  "clap",
 ]
 
 [[package]]
 name = "ethui-broadcast"
-version = "1.7.1"
+version = "1.8.0"
 dependencies = [
  "ethui-types",
  "once_cell",
@@ -3429,7 +3429,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-connections"
-version = "1.7.1"
+version = "1.8.0"
 dependencies = [
  "async-trait",
  "ethers",
@@ -3448,7 +3448,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-crypto"
-version = "1.7.1"
+version = "1.8.0"
 dependencies = [
  "aead",
  "anyhow",
@@ -3464,7 +3464,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-db"
-version = "1.7.1"
+version = "1.8.0"
 dependencies = [
  "ethers",
  "ethui-broadcast",
@@ -3482,7 +3482,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-dialogs"
-version = "1.7.1"
+version = "1.8.0"
 dependencies = [
  "ethui-broadcast",
  "ethui-types",
@@ -3497,7 +3497,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-exchange-rates"
-version = "1.7.1"
+version = "1.8.0"
 dependencies = [
  "async-trait",
  "ethers",
@@ -3510,7 +3510,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-forge"
-version = "1.7.1"
+version = "1.8.0"
 dependencies = [
  "ethers",
  "ethui-broadcast",
@@ -3533,7 +3533,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-http"
-version = "1.7.1"
+version = "1.8.0"
 dependencies = [
  "axum",
  "ethers",
@@ -3561,7 +3561,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-networks"
-version = "1.7.1"
+version = "1.8.0"
 dependencies = [
  "async-trait",
  "ethers",
@@ -3578,7 +3578,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-rpc"
-version = "1.7.1"
+version = "1.8.0"
 dependencies = [
  "alloy-primitives 0.7.2",
  "async-trait",
@@ -3605,7 +3605,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-settings"
-version = "1.7.1"
+version = "1.8.0"
 dependencies = [
  "async-trait",
  "auto-launch",
@@ -3622,7 +3622,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-simulator"
-version = "1.7.1"
+version = "1.8.0"
 dependencies = [
  "alloy-primitives 0.7.2",
  "ethers",
@@ -3643,7 +3643,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-sync"
-version = "1.7.1"
+version = "1.8.0"
 dependencies = [
  "ethers",
  "ethui-abis",
@@ -3664,7 +3664,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-sync-alchemy"
-version = "1.7.1"
+version = "1.8.0"
 dependencies = [
  "async-trait",
  "ethers",
@@ -3685,7 +3685,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-sync-anvil"
-version = "1.7.1"
+version = "1.8.0"
 dependencies = [
  "base64 0.21.5",
  "ethers",
@@ -3707,7 +3707,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-token-list"
-version = "1.7.1"
+version = "1.8.0"
 dependencies = [
  "anyhow",
  "chrono",
@@ -3719,7 +3719,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-tracing"
-version = "1.7.1"
+version = "1.8.0"
 dependencies = [
  "thiserror",
  "tracing",
@@ -3728,7 +3728,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-types"
-version = "1.7.1"
+version = "1.8.0"
 dependencies = [
  "alloy-json-abi 0.7.2",
  "alloy-primitives 0.7.2",
@@ -3745,7 +3745,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-wallets"
-version = "1.7.1"
+version = "1.8.0"
 dependencies = [
  "async-trait",
  "coins-bip32",
@@ -3772,7 +3772,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-ws"
-version = "1.7.1"
+version = "1.8.0"
 dependencies = [
  "async-trait",
  "ethers",
