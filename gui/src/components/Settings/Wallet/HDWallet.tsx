@@ -10,7 +10,6 @@ import {
   TableCell,
   TableContainer,
   TableRow,
-  TextField,
   Typography,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
