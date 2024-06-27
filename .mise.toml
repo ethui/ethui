@@ -5,6 +5,10 @@ depends = ["dev"]
 run = "cargo tauri dev --config bin/tauri-dev.conf.json --features ${ETHUI_FEATURES:-debug} -- -- -- $@"
 alias = "d"
 
+[tasks.prod]
+run = "echo $NODE_ENV && yarn run tauri build"
+env = { NODE_ENV = "production" }
+
 [tasks.setup]
 run = ["yarn", "cargo build"]
 
@@ -26,6 +30,7 @@ run = "yarn run ext:dev"
 node = "20"
 
 [env]
+NODE_ENV = "development"
 RUST_LOG = "ethui_sync_alchemy=trace"
 IRON_WS_PORT = 9102
 IRON_HTTP_PORT = 9103
