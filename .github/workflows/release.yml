@@ -177,7 +177,7 @@ jobs:
           REFRESH_TOKEN: ${{ secrets.CHROME_WEB_EXT_REFRESH_TOKEN }}
 
       - name: Submit to Mozilla
-        run: yarn run web-ext sign --use-submission-api --channel listed --source-dir ./extension/dist/firefox
+        run: yarn workspace @ethui/extension run web-ext sign --use-submission-api --channel listed --source-dir ./extension/dist/firefox
         env:
           WEB_EXT_API_KEY: ${{ secrets.FIREFOX_WEB_EXT_API_KEY }}
           WEB_EXT_API_SECRET: ${{ secrets.FIREFOX_WEB_EXT_API_SECRET }}
