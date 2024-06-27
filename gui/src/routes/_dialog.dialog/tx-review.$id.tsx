@@ -192,7 +192,6 @@ function SimulationResult({ simulation, chainId, to }: SimulationResultProps) {
   });
 
   if (!simulation) return null;
-  console.log("logs", simulation.logs);
 
   return (
     <Grid container rowSpacing={1}>

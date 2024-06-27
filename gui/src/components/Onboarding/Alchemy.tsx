@@ -15,9 +15,7 @@ export function AlchemyStep({ onSubmit }: StepProps) {
       .optional()
       .nullable()
       .superRefine(async (key, ctx) => {
-        console.log(key);
         if (!key) return;
-        console.log(key);
         const valid = await invoke("settings_test_alchemy_api_key", { key });
         if (valid) return;
 
