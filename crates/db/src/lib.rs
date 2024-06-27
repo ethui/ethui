@@ -54,6 +54,14 @@ impl DbInner {
             .execute(self.pool())
             .await?;
 
+        sqlx::query!(
+            r#"DELETE FROM tokens_metadata WHERE chain_id = ?"#,
+            chain_id
+        )
+        .bind(chain_id)
+        .execute(self.pool())
+        .await?;
+
         sqlx::query!(r#"DELETE FROM erc721_tokens WHERE chain_id = ?"#, chain_id)
             .execute(self.pool())
             .await?;
