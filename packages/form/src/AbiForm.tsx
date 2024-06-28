@@ -46,7 +46,7 @@ export function AbiForm({
     );
   }
 
-  let item;
+  let item: AbiFunction;
   try {
     item = (
       typeof abiItem === "string" ? parseAbiItem(abiItem) : abiItem
@@ -97,7 +97,7 @@ export function RawForm({
       sx={{ p: 2 }}
       onSubmit={(e) => {
         e.preventDefault();
-        onSubmit && onSubmit();
+        onSubmit?.();
       }}
     >
       <AbiInput
@@ -192,7 +192,7 @@ export function AbiFormInner({
         sx={{ p: 2 }}
         onSubmit={(e) => {
           e.preventDefault();
-          onSubmit && onSubmit();
+          onSubmit?.();
         }}
       >
         {item.inputs.map((input, i) => (

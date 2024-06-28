@@ -11,11 +11,11 @@ import {
 import { invoke } from "@tauri-apps/api";
 import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
-import { Abi, Address, formatEther, formatGwei } from "viem";
+import { type Abi, type Address, formatEther, formatGwei } from "viem";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
 import { BlockNumber, SolidityCall } from "@ethui/react/components";
-import { Paginated, PaginatedTx, Pagination, Tx } from "@ethui/types";
+import type { Paginated, PaginatedTx, Pagination, Tx } from "@ethui/types";
 import { useEventListener, useInvoke } from "@/hooks";
 import { useNetworks, useWallets } from "@/store";
 import {

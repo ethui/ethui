@@ -1,4 +1,4 @@
-import { Box, SxProps, useTheme } from "@mui/material";
+import { Box, type SxProps, useTheme } from "@mui/material";
 
 export interface HighlightBoxProps {
   children: React.ReactNode;

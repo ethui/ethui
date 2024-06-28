@@ -9,19 +9,19 @@ import {
   TextField,
   Select,
   MenuItem,
-  StandardTextFieldProps,
-  BaseSelectProps as MuiBaseSelectProps,
-  SxProps,
+  type StandardTextFieldProps,
+  type BaseSelectProps as MuiBaseSelectProps,
+  type SxProps,
 } from "@mui/material";
 import {
   Controller,
-  FieldPath,
-  FieldPathValue,
-  FieldValues,
+  type FieldPath,
+  type FieldPathValue,
+  type FieldValues,
   FormProvider,
-  Path,
-  SubmitHandler,
-  UseFormReturn,
+  type Path,
+  type SubmitHandler,
+  type UseFormReturn,
   useFormContext,
 } from "react-hook-form";
 
@@ -74,7 +74,7 @@ function Text<T extends FieldValues>({
 }
 Form.Text = Text;
 
-function Number<T extends FieldValues>({
+function NumberField<T extends FieldValues>({
   name,
   label,
   ...props
@@ -93,7 +93,7 @@ function Number<T extends FieldValues>({
     />
   );
 }
-Form.Number = Number;
+Form.NumberField = NumberField;
 
 interface BigIntProps<T extends FieldValues> extends BaseInputProps<T> {
   decimals: number;

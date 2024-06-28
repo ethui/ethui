@@ -1,6 +1,6 @@
 import { List } from "@mui/material";
 
-import { GeneralSettings } from "@ethui/types/settings";
+import type { GeneralSettings } from "@ethui/types/settings";
 import { useInvoke } from "@/hooks";
 import { useBalances, useNetworks } from "@/store";
 import { ERC20View } from "./ERC20View";

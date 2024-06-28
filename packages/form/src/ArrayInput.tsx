@@ -183,7 +183,7 @@ function AbiArrayItemInput({
       type={type}
       onChange={onChange}
       sx={{
-        backgroundColor: deleteHover ? alpha(red["A100"], 0.1) : "initial",
+        backgroundColor: deleteHover ? alpha(red.A100, 0.1) : "initial",
         transition: "background-color 0.2s",
       }}
       headerActions={

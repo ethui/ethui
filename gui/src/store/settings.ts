@@ -1,9 +1,9 @@
 import { invoke, event } from "@tauri-apps/api";
-import { Action } from "kbar";
-import { create, StateCreator } from "zustand";
+import type { Action } from "kbar";
+import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { GeneralSettings } from "@ethui/types/settings";
+import type { GeneralSettings } from "@ethui/types/settings";
 
 interface Store {
   settings?: GeneralSettings;

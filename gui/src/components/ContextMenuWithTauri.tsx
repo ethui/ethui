@@ -1,6 +1,6 @@
 import { clipboard } from "@tauri-apps/api";
 
-import { ContextMenu, ContextMenuProps } from "@ethui/react/components";
+import { ContextMenu, type ContextMenuProps } from "@ethui/react/components";
 
 export interface ContextMenuWithTauriProps extends ContextMenuProps {}
 

@@ -1,4 +1,4 @@
-import { Hash } from "viem";
+import type { Hash } from "viem";
 
 import { Typography } from "@ethui/react/components";
 import { useNetworks } from "@/store";

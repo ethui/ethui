@@ -1,4 +1,4 @@
-import { type Preview } from "@storybook/react";
+import type { Preview } from "@storybook/react";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import { lightTheme, darkTheme } from "../themes";
 import { withThemeFromJSXProvider } from "@storybook/addon-themes";

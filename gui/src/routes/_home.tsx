@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { Box, Theme } from "@mui/material";
+import { Box, type Theme } from "@mui/material";
 import {
   RequestQuoteSharp,
   Receipt,
@@ -8,7 +8,7 @@ import {
 } from "@mui/icons-material";
 import { SnackbarProvider } from "notistack";
 
-import { Tab } from "@ethui/types/ui";
+import type { Tab } from "@ethui/types/ui";
 import { useNoticeAlchemyKeyMissing, useNoticeNewVersion } from "@/hooks";
 import { CommandBar } from "@/components";
 import { useTheme } from "@/store";

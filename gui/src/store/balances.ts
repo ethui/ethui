@@ -1,9 +1,9 @@
 import { event, invoke } from "@tauri-apps/api";
-import { Address } from "viem";
-import { create, StateCreator } from "zustand";
+import type { Address } from "viem";
+import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { TokenBalance } from "@ethui/types";
+import type { TokenBalance } from "@ethui/types";
 import { useNetworks } from "./networks";
 import { useWallets } from "./wallets";
 

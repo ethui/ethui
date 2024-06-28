@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { useFieldArray, useForm } from "react-hook-form";
 
-import { Network, networkSchema } from "@ethui/types/network";
+import { type Network, networkSchema } from "@ethui/types/network";
 import { ChainView, Form } from "@ethui/react/components";
 import { ConfirmationDialog } from "@/components";
 import { useNetworks } from "@/store";
@@ -71,7 +71,7 @@ export function SettingsNetwork() {
               <Stack spacing={2} alignItems="flex-start">
                 <Stack spacing={2} direction="row">
                   <Form.Text label="Name" name={`networks.${index}.name`} />
-                  <Form.Number
+                  <Form.NumberField
                     label="Chain Id"
                     name={`networks.${index}.chain_id`}
                   />
@@ -97,7 +97,7 @@ export function SettingsNetwork() {
                     label="Currency"
                     name={`networks.${index}.currency`}
                   />
-                  <Form.Number
+                  <Form.NumberField
                     label="Decimals"
                     name={`networks.${index}.decimals`}
                   />

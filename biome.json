@@ -1,0 +1,35 @@
+{
+  "formatter": {
+    "indentStyle": "space",
+    "ignore": [
+      ".sqlx",
+      "**/*.gen.ts",
+      "packages/data/**/*.json",
+      "packages/**/dist/**"
+    ]
+  },
+  "linter": {
+    "rules": {
+      "suspicious": {
+        "noExplicitAny": "off",
+        "noArrayIndexKey": "off"
+      },
+      "style": {
+        "noUselessElse": "off",
+        "noNonNullAssertion": "warn"
+      },
+      "performance": {
+        "noAccumulatingSpread": "warn"
+      }
+    },
+    "ignore": [
+      ".sqlx",
+      "**/*.gen.ts",
+      "packages/data/**/*.json",
+      "packages/**/dist/**"
+    ]
+  },
+  "vcs": {
+    "useIgnoreFile": true
+  }
+}

@@ -1,5 +1,5 @@
 import { runtime, tabs } from "webextension-polyfill";
-import { create, StateCreator } from "zustand";
+import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
 import type { Request, Response, Start } from "@/types";

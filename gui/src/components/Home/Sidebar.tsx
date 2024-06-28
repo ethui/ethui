@@ -1,11 +1,11 @@
 import { SettingsSharp, TerminalSharp } from "@mui/icons-material";
-import { Drawer, Stack, SxProps, Toolbar } from "@mui/material";
+import { Drawer, Stack, type SxProps, Toolbar } from "@mui/material";
 import { parseInt, range } from "lodash-es";
 import { useKBar } from "kbar";
 import { invoke } from "@tauri-apps/api";
 import { Link, useNavigate } from "@tanstack/react-router";
 
-import { type Tab } from "@ethui/types/ui";
+import type { Tab } from "@ethui/types/ui";
 import { useKeyPress, useMenuAction, useOS } from "@/hooks";
 import { useSettings, useSettingsWindow, useTheme } from "@/store";
 import {

@@ -8,7 +8,7 @@ import { InstallExtensionStep } from "@/components/Onboarding/Extension";
 import { ThankYouStep } from "@/components/Onboarding/ThankYou";
 import { WelcomeStep } from "@/components/Onboarding/Welcome";
 import { WalletSetupStep } from "@/components/Onboarding/WalletSetup";
-import { StepProps } from "@/components/Onboarding";
+import type { StepProps } from "@/components/Onboarding";
 
 export const Route = createFileRoute("/onboarding")({
   component: Onboarding,

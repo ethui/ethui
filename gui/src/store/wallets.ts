@@ -1,10 +1,10 @@
 import { invoke, event } from "@tauri-apps/api";
-import { Action } from "kbar";
-import { type Address } from "viem";
-import { create, StateCreator } from "zustand";
+import type { Action } from "kbar";
+import type { Address } from "viem";
+import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { Wallet } from "@ethui/types/wallets";
+import type { Wallet } from "@ethui/types/wallets";
 
 interface State {
   currentWallet?: Wallet;
@@ -80,7 +80,7 @@ const store: StateCreator<Store> = (set, get) => ({
         shortcut: ["W"],
       },
       ...info
-        .map(({ wallet, addresses }, index) => {
+        .flatMap(({ wallet, addresses }, index) => {
           return [
             {
               id: `${actionId}/${wallet.name}`,
@@ -104,8 +104,7 @@ const store: StateCreator<Store> = (set, get) => ({
               };
             }),
           ];
-        })
-        .flat(),
+        }),
     ];
 
     set({ actions });

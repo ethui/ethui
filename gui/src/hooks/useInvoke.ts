@@ -1,4 +1,4 @@
-import { UseQueryResult, useQuery } from "@tanstack/react-query";
+import { type UseQueryResult, useQuery } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api";
 
 type TArgs = Record<string, unknown>;

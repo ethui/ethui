@@ -3,8 +3,8 @@ import { Table } from "@devtools-ds/table";
 import {
   isJsonRpcError,
   isJsonRpcSuccess,
-  Json,
-  JsonRpcResponse,
+  type Json,
+  type JsonRpcResponse,
 } from "@metamask/utils";
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";

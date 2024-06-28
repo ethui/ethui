@@ -1,9 +1,9 @@
 import { event, invoke } from "@tauri-apps/api";
-import { Action } from "kbar";
+import type { Action } from "kbar";
 import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { Network } from "@ethui/types/network";
+import type { Network } from "@ethui/types/network";
 import { IconChain } from "@ethui/react/components";
 
 interface State {

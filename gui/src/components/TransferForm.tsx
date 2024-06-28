@@ -2,10 +2,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert, Button, Stack, Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { useEffect, useState } from "react";
-import { FieldValues, useForm } from "react-hook-form";
+import { type FieldValues, useForm } from "react-hook-form";
 import {
-  AbiItem,
-  Address,
+  type AbiItem,
+  type Address,
   encodeFunctionData,
   formatUnits,
   getAddress,

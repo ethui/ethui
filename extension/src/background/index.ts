@@ -1,4 +1,4 @@
-import { Json, JsonRpcRequest, JsonRpcResponse } from "@metamask/utils";
+import type { Json, JsonRpcRequest, JsonRpcResponse } from "@metamask/utils";
 import log from "loglevel";
 import { type Runtime, runtime } from "webextension-polyfill";
 import { ArrayQueue, ConstantBackoff, WebsocketBuilder } from "websocket-ts";

@@ -1,7 +1,7 @@
-import { type Meta, type StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react";
 import Stack from "@mui/material/Stack";
 
-import { Button, ButtonProps } from "./";
+import { Button, type ButtonProps } from "./";
 import { defaultDisabledArgs } from "../../utils";
 
 const meta: Meta<ButtonProps> = {

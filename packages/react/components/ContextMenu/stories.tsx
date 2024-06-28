@@ -1,4 +1,4 @@
-import { type Meta, type StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react";
 
 import { ContextMenu, type ContextMenuProps } from "./";
 import { defaultDisabledArgs } from "../../utils";

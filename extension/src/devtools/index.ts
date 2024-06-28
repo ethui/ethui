@@ -1,5 +1,5 @@
 import { devtools, runtime } from "webextension-polyfill";
-import { DevtoolsPanels } from "webextension-polyfill/namespaces/devtools_panels";
+import type { DevtoolsPanels } from "webextension-polyfill/namespaces/devtools_panels";
 
 import type { Request, Response } from "@/types";
 

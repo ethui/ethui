@@ -1,6 +1,6 @@
 import { window as tauriWindow } from "@tauri-apps/api";
-import { Action } from "kbar";
-import { create, StateCreator } from "zustand";
+import type { Action } from "kbar";
+import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
 interface State {

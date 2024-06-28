@@ -1,12 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert, AlertTitle, Button, Stack } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
-import { Address } from "abitype";
+import type { Address } from "abitype";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
-import { derivationPathSchema, LedgerWallet } from "@ethui/types/wallets";
+import { derivationPathSchema, type LedgerWallet } from "@ethui/types/wallets";
 import { Form } from "@ethui/react/components";
 import { useLedgerDetect } from "@/hooks";
 

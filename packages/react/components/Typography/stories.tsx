@@ -1,7 +1,7 @@
-import { type Meta, type StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react";
 import Stack from "@mui/material/Stack";
 
-import { Typography, TypographyProps } from "./";
+import { Typography, type TypographyProps } from "./";
 import { defaultDisabledArgs } from "../../utils";
 
 const meta: Meta<TypographyProps> = {

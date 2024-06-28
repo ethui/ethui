@@ -1,4 +1,4 @@
-import { type Duplex } from "stream";
+import type { Duplex } from "stream";
 import { WindowPostMessageStream } from "@metamask/post-message-stream";
 import log from "loglevel";
 import { runtime } from "webextension-polyfill";

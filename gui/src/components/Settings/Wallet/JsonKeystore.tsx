@@ -3,7 +3,7 @@ import { Button, Stack } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { JsonKeystoreWallet, Wallet } from "@ethui/types/wallets";
+import type { JsonKeystoreWallet, Wallet } from "@ethui/types/wallets";
 import { Form } from "@ethui/react/components";
 
 export const schema = z.object({

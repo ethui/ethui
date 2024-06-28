@@ -29,7 +29,7 @@ export function matchArrayType(type: string) {
   const { length, subarrays } = first!.groups!;
 
   return {
-    length: length ? parseInt(length) : undefined,
+    length: length ? Number.parseInt(length) : undefined,
     base: type.substring(0, type.length - groups.arrays.length),
     subarrays,
   };

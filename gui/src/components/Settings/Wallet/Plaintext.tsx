@@ -1,13 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Stack } from "@mui/material";
-import { FieldValues, useForm } from "react-hook-form";
+import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import {
   derivationPathSchema,
   mnemonicSchema,
-  PlaintextWallet,
-  Wallet,
+  type PlaintextWallet,
+  type Wallet,
 } from "@ethui/types/wallets";
 import { Form } from "@ethui/react/components";
 
@@ -45,7 +45,7 @@ export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
         <Form.Text label="Name" name="name" />
         <Form.Text label="Mnemonic" name="mnemonic" fullWidth />
         <Form.Text label="Derivation Path" name="derivationPath" />
-        <Form.Number label="Count" name="count" />
+        <Form.NumberField label="Count" name="count" />
 
         <Stack direction="row" spacing={2}>
           <Form.Submit label="Save" />

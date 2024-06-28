@@ -14,15 +14,15 @@ import {
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { useEffect, useState } from "react";
-import { FieldValues, useForm } from "react-hook-form";
-import { Address, formatUnits } from "viem";
+import { type FieldValues, useForm } from "react-hook-form";
+import { type Address, formatUnits } from "viem";
 import { z } from "zod";
 
 import { Form } from "@ethui/react/components";
 import { passwordFormSchema, passwordSchema } from "@ethui/types/password";
 import {
   derivationPathSchema,
-  HdWallet,
+  type HdWallet,
   mnemonicSchema,
 } from "@ethui/types/wallets";
 import { useProvider } from "@/hooks";
@@ -327,7 +327,7 @@ function Update({ wallet, onSubmit, onRemove }: Props) {
       <Stack spacing={2} alignItems="flex-start">
         <Form.Text label="Name" name="name" />
         <Form.Text label="Derivation Path" name="derivationPath" />
-        <Form.Number label="Address count" name="count" />
+        <Form.NumberField label="Address count" name="count" />
         <Stack direction="row" spacing={2}>
           <Form.Submit label="Save" />
           <Button color="warning" variant="contained" onClick={onRemove}>

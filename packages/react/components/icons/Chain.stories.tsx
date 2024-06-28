@@ -1,6 +1,6 @@
-import { type Meta, type StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react";
 
-import { IconChain, IconChainProps } from "./Chain";
+import { IconChain, type IconChainProps } from "./Chain";
 import { defaultDisabledArgs } from "../../utils";
 import { Stack } from "@mui/material";
 
