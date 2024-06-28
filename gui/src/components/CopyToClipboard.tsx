@@ -1,7 +1,7 @@
 import { Button, type SxProps, Tooltip } from "@mui/material";
 import { clipboard } from "@tauri-apps/api";
 import type React from "react";
-import { type ReactNode, useState } from "react"
+import { type ReactNode, useState } from "react";
 
 export function CopyToClipboard({
   children,

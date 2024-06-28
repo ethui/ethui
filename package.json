@@ -12,10 +12,10 @@
     "lint": "yarn lint:eslint && yarn lint:tsc && yarn lint:biome",
     "lint:eslint": "eslint .",
     "lint:tsc": "yarn workspaces foreach --all --parallel run tsc --noEmit",
-    "lint:biome": "biome lint .",
+    "lint:biome": "biome format . && biome lint .",
     "fix": "yarn fix:eslint && yarn fix:biome",
     "fix:eslint": "eslint --fix .",
-    "fix:biome": "biome format --write .",
+    "fix:biome": "biome format --write . && biome lint --write .",
     "setup": "yarn install && yarn ext:build",
     "test": "yarn workspaces foreach --all run test"
   },

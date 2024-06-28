@@ -79,32 +79,31 @@ const store: StateCreator<Store> = (set, get) => ({
         } available`,
         shortcut: ["W"],
       },
-      ...info
-        .flatMap(({ wallet, addresses }, index) => {
-          return [
-            {
-              id: `${actionId}/${wallet.name}`,
-              //Since the kbar searches through its options by "name" (and not "shortcut"),
-              //we pass the index in the name.
-              //Users can then type the number > press Enter > view available accounts from the chosen wallet.
-              name: `${index + 1}: ${wallet.name}`,
-              parent: actionId,
-            },
-            ...(addresses || []).map(({ key, address }, index) => {
-              return {
-                id: `${actionId}/${wallet.name}/${key}`,
-                name: `${index + 1}: ${address}`,
-                section: "Choose account:",
-                parent: `${actionId}/${wallet.name}`,
-                perform: () => {
-                  get().setCurrentWallet(wallet.name);
-                  get().setCurrentAddress(key);
-                  get().reload();
-                },
-              };
-            }),
-          ];
-        }),
+      ...info.flatMap(({ wallet, addresses }, index) => {
+        return [
+          {
+            id: `${actionId}/${wallet.name}`,
+            //Since the kbar searches through its options by "name" (and not "shortcut"),
+            //we pass the index in the name.
+            //Users can then type the number > press Enter > view available accounts from the chosen wallet.
+            name: `${index + 1}: ${wallet.name}`,
+            parent: actionId,
+          },
+          ...(addresses || []).map(({ key, address }, index) => {
+            return {
+              id: `${actionId}/${wallet.name}/${key}`,
+              name: `${index + 1}: ${address}`,
+              section: "Choose account:",
+              parent: `${actionId}/${wallet.name}`,
+              perform: () => {
+                get().setCurrentWallet(wallet.name);
+                get().setCurrentAddress(key);
+                get().reload();
+              },
+            };
+          }),
+        ];
+      }),
     ];
 
     set({ actions });

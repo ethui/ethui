@@ -25,11 +25,11 @@ interface ItemFormProps {
 
 type Result =
   | {
-    write: Hash;
-  }
+      write: Hash;
+    }
   | {
-    read: string;
-  };
+      read: string;
+    };
 
 export function ABIItemForm({
   to,
