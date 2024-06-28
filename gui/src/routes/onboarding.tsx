@@ -2,13 +2,14 @@ import { Container, MobileStepper, Stack } from "@mui/material";
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 
+import type { StepProps } from "@/components/Onboarding";
+
 import { DraggableToolbar, Logo } from "@/components";
 import { AlchemyStep } from "@/components/Onboarding/Alchemy";
 import { InstallExtensionStep } from "@/components/Onboarding/Extension";
 import { ThankYouStep } from "@/components/Onboarding/ThankYou";
 import { WelcomeStep } from "@/components/Onboarding/Welcome";
 import { WalletSetupStep } from "@/components/Onboarding/WalletSetup";
-import type { StepProps } from "@/components/Onboarding";
 
 export const Route = createFileRoute("/onboarding")({
   component: Onboarding,
@@ -45,8 +46,8 @@ export function Onboarding() {
             steps={steps.length}
             position="static"
             activeStep={activeStep}
-            nextButton={<></>}
-            backButton={<></>}
+            nextButton={null}
+            backButton={null}
           />
         </Stack>
       </Container>

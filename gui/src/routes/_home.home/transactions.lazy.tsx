@@ -42,7 +42,7 @@ export function Txs() {
   const loadMore = useCallback(() => {
     let pagination: Pagination = {};
     const last = pages?.at(-1)?.pagination;
-    if (!!last) {
+    if (last) {
       pagination = last;
       pagination.page = (pagination.page || 0) + 1;
     }
@@ -52,18 +52,24 @@ export function Txs() {
       chainId,
       pagination,
     }).then((page) => setPages([...pages, page]));
-  }, [account, chainId, pages, setPages]);
+  }, [account, chainId, pages]);
 
   useEffect(() => {
-    if (pages.length == 0) loadMore();
+    if (pages.length === 0) loadMore();
   }, [pages, loadMore]);
 
-  const reload = () => {
+  const reload = useCallback(() => {
     setPages([]);
-  };
+  }, []);
 
   useEventListener("txs-updated", reload);
-  useEffect(reload, [account, chainId]);
+  useEffect(() => {
+    // using account and chain-id here so biome doesn't complain
+    // we want to trigger a reload when those two change
+    account;
+    chainId;
+    reload();
+  }, [account, chainId, reload]);
 
   if (!account || !chainId) return null;
 
@@ -138,7 +144,7 @@ function Icon({ account, tx }: IconProps) {
 
   if (!tx.to) {
     icon = NoteAdd;
-  } else if (tx.to.toLowerCase() == account.toLowerCase()) {
+  } else if (tx.to.toLowerCase() === account.toLowerCase()) {
     icon = CallReceived;
   }
 
@@ -219,7 +225,7 @@ function Details({ tx, chainId }: DetailsProps) {
       />
       <Datapoint label="type" value={formatTxType(fullTx?.type)} size="small" />
       {/* TODO: other txs types */}
-      {fullTx?.type == 2 && (
+      {fullTx?.type === 2 && (
         <>
           <Datapoint
             label="maxFeePerGas"

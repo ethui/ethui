@@ -91,7 +91,7 @@ function AffinityForm({ domain }: { domain: string }) {
   };
 
   const value =
-    current == "global" || current == "unset"
+    current === "global" || current === "unset"
       ? "global"
       : current.sticky.toString();
 

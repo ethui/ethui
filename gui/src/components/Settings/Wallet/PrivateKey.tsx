@@ -73,7 +73,7 @@ function Create({ onSubmit, onRemove }: Props) {
           </Step>
         ))}
       </Stepper>
-      {step == 0 && (
+      {step === 0 && (
         <PrivateKeyStep
           onSubmit={(name: string, privateKey) => {
             setName(name);
@@ -84,7 +84,7 @@ function Create({ onSubmit, onRemove }: Props) {
         />
       )}
 
-      {step == 1 && (
+      {step === 1 && (
         <PasswordStep
           onSubmit={(p) => {
             setPassword(p);

@@ -13,6 +13,8 @@ import {
 } from "viem";
 import { createFileRoute } from "@tanstack/react-router";
 
+import type { Dialog } from "@/hooks/useDialog";
+
 import { ChainView, Typography } from "@ethui/react/components";
 import type { TokenMetadata } from "@ethui/types";
 import type { Network } from "@ethui/types/network";
@@ -21,7 +23,6 @@ import { useDialog, useInvoke, useLedgerDetect } from "@/hooks";
 import { DialogBottom } from "@/components/Dialogs/Bottom";
 import { IconAddress } from "@/components/Icons";
 import { useNetworks } from "@/store";
-import type { Dialog } from "@/hooks/useDialog";
 
 export const Route = createFileRoute("/_dialog/dialog/tx-review/$id")({
   component: TxReviewDialog,
@@ -34,11 +35,11 @@ export interface TxRequest {
   value: string;
   chainId: number;
   walletType:
-    | "ledger"
-    | "HdWallet"
-    | "jsonKeystore"
-    | "plaintext"
-    | "impersonator";
+  | "ledger"
+  | "HdWallet"
+  | "jsonKeystore"
+  | "plaintext"
+  | "impersonator";
 }
 
 interface Log {
@@ -59,7 +60,7 @@ export function TxReviewDialog() {
   const { id } = Route.useParams();
   const dialog = useDialog<TxRequest>(id);
   const network = useNetworks((s) =>
-    s.networks.find((n) => n.chain_id == dialog.data?.chainId),
+    s.networks.find((n) => n.chain_id === dialog.data?.chainId),
   );
 
   if (!dialog.data || !network) return null;
@@ -114,7 +115,7 @@ function Inner({ dialog, request, network }: InnerProps) {
       setCalldata(data);
       send({ event: "update", value, data });
     },
-    [setValue, setCalldata],
+    [send],
   );
 
   const item = abi

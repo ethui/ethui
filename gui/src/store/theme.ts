@@ -1,7 +1,8 @@
-import type { Theme } from "@mui/material";
 import { event, invoke } from "@tauri-apps/api";
-import type { Action } from "kbar";
 import { create, type StateCreator } from "zustand";
+
+import type { Theme } from "@mui/material";
+import type { Action } from "kbar";
 
 import { lightTheme, darkTheme } from "@ethui/react";
 import type { GeneralSettings } from "@ethui/types/settings";
@@ -45,7 +46,7 @@ const store: StateCreator<Store> = (set, get) => ({
     ).matches;
 
     const mode =
-      darkMode == "auto" ? (prefersDarkMode ? "dark" : "light") : darkMode;
+      darkMode === "auto" ? (prefersDarkMode ? "dark" : "light") : darkMode;
     const theme: Theme = mode === "dark" ? darkTheme : lightTheme;
 
     set({ mode, theme });

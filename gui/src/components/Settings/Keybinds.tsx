@@ -21,15 +21,15 @@ export function SettingsKeybinds() {
     { name: "Toggle Fast mode", combination: "Ctrl + F" },
     {
       name: "Change wallet",
-      combination: `W`,
+      combination: "W",
     },
     {
       name: "Change network",
-      combination: `N`,
+      combination: "N",
     },
     {
       name: "Change theme",
-      combination: `T`,
+      combination: "T",
     },
   ];
 

@@ -1,6 +1,6 @@
 import { devtools, runtime } from "webextension-polyfill";
-import type { DevtoolsPanels } from "webextension-polyfill/namespaces/devtools_panels";
 
+import type { DevtoolsPanels } from "webextension-polyfill/namespaces/devtools_panels";
 import type { Request, Response } from "@/types";
 
 const tabId = devtools.inspectedWindow.tabId;
@@ -23,7 +23,7 @@ async function init() {
 }
 
 function cacheListener(msg: Request | Response) {
-  if (msg.tabId != tabId) return;
+  if (msg.tabId !== tabId) return;
 
   cache.push(msg);
 }

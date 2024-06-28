@@ -65,7 +65,7 @@ export function TransferForm({
       contract: ZeroAddress,
     });
     setTokens(newTokens);
-  }, [setTokens, native, erc20s, network]);
+  }, [native, erc20s, network]);
 
   const schema = z.object({
     to: addressSchema.optional(),
@@ -171,7 +171,7 @@ const transferNative = async (from: Address, to: Address, value: bigint) => {
 };
 
 const erc20transfer: AbiItem = parseAbiItem(
-  `function transfer(address to, uint amount) returns (bool)`,
+  "function transfer(address to, uint amount) returns (bool)",
 );
 
 const transferERC20 = async (

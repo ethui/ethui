@@ -50,7 +50,7 @@ export function Contracts() {
         sx={{ position: "absolute", bottom: 16, right: 16 }}
         icon={<SpeedDialIcon />}
         onClick={() => setAddContractOpen(true)}
-      ></SpeedDial>
+      />
 
       <Modal open={addContractOpen} onClose={() => setAddContractOpen(false)}>
         <AddressForm />

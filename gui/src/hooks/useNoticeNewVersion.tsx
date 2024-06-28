@@ -22,7 +22,7 @@ export function useNoticeNewVersion() {
 
   useEffect(() => {
     getLatestVersion().then(setLatest);
-  }, [setLatest]);
+  }, []);
 
   useEffect(() => {
     if (!latest || current === latest) return;

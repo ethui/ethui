@@ -44,7 +44,7 @@ export function SettingsWallets({ extraAction }: Props) {
         {wallets.map((wallet) => (
           <ExistingItem key={wallet.name} wallet={wallet} />
         ))}
-        {newType && <NewItem key={`_new`} type={newType} onFinish={closeNew} />}
+        {newType && <NewItem key="_new" type={newType} onFinish={closeNew} />}
       </Stack>
       {!newType && (
         <Stack

@@ -1,7 +1,8 @@
 import { event, invoke } from "@tauri-apps/api";
-import type { Address } from "viem";
 import { subscribeWithSelector } from "zustand/middleware";
 import { create, type StateCreator } from "zustand";
+
+import type { Address } from "viem";
 
 import type { Contract } from "@ethui/types";
 import { errorToast } from "@/components/Toast";
@@ -50,8 +51,8 @@ const store: StateCreator<Store> = (set, get) => ({
     }
   },
 
-  filteredContracts(filter: string) {
-    filter = filter.toLowerCase();
+  filteredContracts(filterArg: string) {
+    const filter = filterArg.toLowerCase();
     const { contracts } = get();
 
     if (filter === "") return contracts;

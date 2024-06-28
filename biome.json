@@ -5,7 +5,10 @@
       ".sqlx",
       "**/*.gen.ts",
       "packages/data/**/*.json",
-      "packages/**/dist/**"
+      "packages/**/dist/**",
+      "extension/dist",
+      "gui/dist",
+      "target"
     ]
   },
   "linter": {
@@ -26,7 +29,10 @@
       ".sqlx",
       "**/*.gen.ts",
       "packages/data/**/*.json",
-      "packages/**/dist/**"
+      "packages/**/dist/**",
+      "extension/dist",
+      "gui/dist",
+      "target"
     ]
   },
   "vcs": {
