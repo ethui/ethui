@@ -20,8 +20,9 @@ import {
   KBarSearch,
   useMatches,
 } from "kbar";
-import type React from "react";
 import { forwardRef, type ReactNode, useMemo } from "react";
+
+import type React from "react";
 
 import {
   useNetworks,

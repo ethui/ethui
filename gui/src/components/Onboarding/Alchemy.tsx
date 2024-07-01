@@ -5,8 +5,9 @@ import { useCallback } from "react";
 import { type FieldValues, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
-import { Form } from "@ethui/react/components";
 import type { StepProps } from ".";
+
+import { Form } from "@ethui/react/components";
 
 export function AlchemyStep({ onSubmit }: StepProps) {
   const schema = z.object({

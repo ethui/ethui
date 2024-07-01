@@ -1,8 +1,9 @@
 import { invoke, event } from "@tauri-apps/api";
-import type { Action } from "kbar";
-import type { Address } from "viem";
 import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
+
+import type { Action } from "kbar";
+import type { Address } from "viem";
 
 import type { Wallet } from "@ethui/types/wallets";
 
