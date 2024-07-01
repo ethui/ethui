@@ -29,7 +29,7 @@ module.exports = {
     "gui/dist/*",
     "target/*",
     ".yarn/*",
-    "**/dist/**"
+    "**/dist/**",
   ],
 
   settings: {
