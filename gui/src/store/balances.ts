@@ -10,6 +10,7 @@ import { useWallets } from "./wallets";
 interface State {
   nativeBalance?: bigint;
   erc20Balances: TokenBalance[];
+  erc20DenyBalances: TokenBalance[];
 
   address?: Address;
   chainId?: number;
@@ -26,6 +27,7 @@ type Store = State & Setters;
 
 const store: StateCreator<Store> = (set, get) => ({
   erc20Balances: [],
+  erc20DenyBalances:[],
 
   async reload() {
     const { address, chainId } = get();
@@ -42,10 +44,18 @@ const store: StateCreator<Store> = (set, get) => ({
         chainId,
       },
     );
+    const erc20DenyBalances = await invoke<TokenBalance[]>(
+      "db_get_erc20_denylist_balances",
+      {
+        address,
+        chainId,
+      },
+    );
 
     set({
       nativeBalance: BigInt(nativeBalance),
       erc20Balances,
+      erc20DenyBalances,
     });
   },
 

@@ -9,13 +9,12 @@ import {
   Box,
 } from "@mui/material";
 import {
-  Send as SendIcon,
   MoreVert as MoreVertIcon,
 } from "@mui/icons-material";
 import { type Address, formatUnits } from "viem";
 import { invoke } from "@tauri-apps/api";
 
-import { AddressView, CopyToClipboard, Modal, TransferForm } from "./";
+import { AddressView, CopyToClipboard, Modal, TransferForm } from ".";
 import { IconAddress } from "./Icons";
 import { useNetworks } from "@/store";
 
@@ -29,7 +28,7 @@ interface Props {
 
 const minimum = 0.001;
 
-export function ERC20View({
+export function ERC20ViewDenylist({
   chainId,
   contract,
   symbol,
@@ -48,11 +47,10 @@ export function ERC20View({
   const onMenuOpen = (event: React.MouseEvent<HTMLElement>) =>
     setMenuAnchor(event.currentTarget);
 
-  const blacklist = () => {
-    invoke("db_set_erc20_blacklist", {
+  const allowlist = () => {
+    invoke("db_set_erc20_allowlist", {
       chainId: network.chain_id,
       address: contract,
-      blacklisted: true,
     });
     setMenuAnchor(null);
   };
@@ -63,12 +61,6 @@ export function ERC20View({
         avatar={<IconAddress chainId={chainId} address={contract} />}
         action={
           <Stack direction="row">
-            <IconButton
-              aria-label="transfer"
-              onClick={() => setTransferFormOpen(true)}
-            >
-              <SendIcon />
-            </IconButton>
             <IconButton aria-label="more" onClick={onMenuOpen}>
               <MoreVertIcon />
             </IconButton>
@@ -111,7 +103,7 @@ export function ERC20View({
             Open on explorer
           </MenuItem>
         )}
-        <MenuItem onClick={blacklist}>Hide token</MenuItem>
+        <MenuItem onClick={allowlist}>Show token</MenuItem>
       </Menu>
 
       <Modal open={transferFormOpen} onClose={() => setTransferFormOpen(false)}>

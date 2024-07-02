@@ -146,6 +146,58 @@ impl DbInner {
             .collect())
     }
 
+    pub async fn get_erc20_denylist_balances(
+        &self,
+        chain_id: u32,
+        address: Address,
+        include_blacklisted: bool,
+    ) -> Result<Vec<TokenBalance>> {
+        let address_str = address.to_string();
+
+        let rows = sqlx::query!(
+            r#"SELECT balances.contract, balances.balance, meta.decimals, meta.name, meta.symbol
+            FROM balances
+            LEFT JOIN tokens_metadata AS meta
+              ON meta.chain_id = balances.chain_id AND meta.contract = balances.contract
+            WHERE balances.chain_id = ? AND balances.owner = ? "#,
+            chain_id,
+            address_str
+      )
+      .fetch_all(self.pool())
+      .await?;
+
+      let blacklist: HashSet<Address> = if include_blacklisted {
+          Default::default()
+      } else {
+          let rows = sqlx::query!(
+              r#"SELECT address FROM erc20_blacklist WHERE chain_id = ? AND blacklisted = true"#,
+              chain_id
+          )
+          .fetch_all(self.pool())
+          .await?;
+
+          rows.into_iter()
+              .map(|r| Address::from_str(&r.address).unwrap())
+              .collect()
+      };
+
+      Ok(rows
+          .into_iter()
+          .map(|r| TokenBalance {
+              contract: Address::from_str(&r.contract.unwrap()).unwrap(),
+              balance: U256::from_str_radix(&r.balance, 10).unwrap(),
+              metadata: TokenMetadata {
+                  address,
+                  name: r.name,
+                  symbol: r.symbol,
+                  decimals: r.decimals.map(|r| r as u8),
+              },
+          })
+          .filter(|b| blacklist.contains(&b.contract))
+          .collect())
+    }
+
+
     pub async fn get_erc20_missing_metadata(&self, chain_id: u32) -> Result<Vec<Address>> {
         let res: Vec<_> = sqlx::query!(
             r#"SELECT DISTINCT balances.contract
@@ -232,6 +284,24 @@ impl DbInner {
             address,
             blacklisted,
             blacklisted
+        )
+        .execute(self.pool())
+        .await?;
+
+        Ok(())
+    }
+
+    pub async fn set_erc20_allowlist(
+        &self,
+        chain_id: u32,
+        address: Address,
+    ) -> Result<()> {
+        let address = address.to_string();
+
+        sqlx::query!(
+            r#"DELETE FROM erc20_blacklist WHERE chain_id = ? AND address = ?"#,
+            chain_id,
+            address,
         )
         .execute(self.pool())
         .await?;

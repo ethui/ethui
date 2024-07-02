@@ -19,6 +19,7 @@ pub(super) fn router() -> Router<Ctx> {
     Router::new()
         .route("/transactions", get(transactions))
         .route("/erc20_balances", get(erc20_balances))
+        .route("/erc20_denylist_balances", get(erc20_denylist_balances)) // NEW
         .route("/native_balance", get(native_balance))
         .route("/contracts", get(contracts))
         .route("/contract_abi", get(contract_abi))
@@ -66,6 +67,14 @@ pub(crate) async fn erc20_balances(
     Query(AddressChainIdPayload { chain_id, address }): Query<AddressChainIdPayload>,
 ) -> Result<Json<Vec<TokenBalance>>> {
     Ok(Json(db.get_erc20_balances(chain_id, address, false).await?))
+}
+
+/* NEW */
+pub(crate) async fn erc20_denylist_balances(
+  State(Ctx { db }): State<Ctx>,
+  Query(AddressChainIdPayload { chain_id, address }): Query<AddressChainIdPayload>,
+) -> Result<Json<Vec<TokenBalance>>> {
+  Ok(Json(db.get_erc20_denylist_balances(chain_id, address, false).await?))
 }
 
 pub(crate) async fn native_balance(
