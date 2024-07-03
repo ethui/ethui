@@ -1,10 +1,10 @@
 import { List, Stack, IconButton, CardHeader, Box } from "@mui/material";
-import { AddressView } from "..";
-import { IconAddress } from "../Icons";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-
 import { type Address } from "viem";
 import { invoke } from "@tauri-apps/api";
+
+import { AddressView } from "..";
+import { IconAddress } from "@/components/Icons";
 import { useDenylist, useNetworks } from "@/store";
 
 export function SettingsDenylist() {
@@ -25,6 +25,7 @@ export function SettingsDenylist() {
       <>
         {denylist.map(({ contract, metadata }) => (
           <CardHeader
+          key={contract}
           sx={{ marginTop: -2 }}
           avatar={<IconAddress chainId={currentNetwork.chain_id} address={contract} />}
           action={
