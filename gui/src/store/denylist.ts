@@ -3,13 +3,12 @@ import { Address } from "viem";
 import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { TokenBalance } from "@ethui/types";
+import { Token } from "@ethui/types";
 import { useNetworks } from "./networks";
 import { useWallets } from "./wallets";
 
 interface State {
-  nativeBalance?: bigint;
-  erc20Balances: TokenBalance[];
+  erc20Denylist: Token[];
 
   address?: Address;
   chainId?: number;
@@ -25,18 +24,14 @@ interface Setters {
 type Store = State & Setters;
 
 const store: StateCreator<Store> = (set, get) => ({
-  erc20Balances: [],
+  erc20Denylist: [],
 
   async reload() {
     const { address, chainId } = get();
     if (!address || !chainId) return;
 
-    const nativeBalance = await invoke<string>("sync_get_native_balance", {
-      address,
-      chainId,
-    });
-    const erc20Balances = await invoke<TokenBalance[]>(
-      "db_get_erc20_balances",
+    const erc20Denylist = await invoke<Token[]>(
+      "db_get_erc20_denylist",
       {
         address,
         chainId,
@@ -44,8 +39,7 @@ const store: StateCreator<Store> = (set, get) => ({
     );
 
     set({
-      nativeBalance: BigInt(nativeBalance),
-      erc20Balances,
+      erc20Denylist,
     });
   },
 
@@ -60,24 +54,24 @@ const store: StateCreator<Store> = (set, get) => ({
   },
 });
 
-export const useBalances = create<Store>()(subscribeWithSelector(store));
+export const useDenylist = create<Store>()(subscribeWithSelector(store));
 
 event.listen("balances-updated", async () => {
-  await useBalances.getState().reload();
+  await useDenylist.getState().reload();
 });
 
 (async () => {
-  await useBalances.getState().reload();
+  await useDenylist.getState().reload();
 
   useWallets.subscribe(
     (s) => s.address,
-    (address?: Address) => useBalances.getState().setAddress(address),
+    (address?: Address) => useDenylist.getState().setAddress(address),
     { fireImmediately: true },
   );
 
   useNetworks.subscribe(
     (s) => s.current?.chain_id,
-    (chainId) => useBalances.getState().setChainId(chainId),
+    (chainId) => useDenylist.getState().setChainId(chainId),
     { fireImmediately: true },
   );
 })();

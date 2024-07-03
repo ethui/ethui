@@ -5,3 +5,4 @@ export { useSettings } from "./settings";
 export { useSettingsWindow } from "./settingsWindow";
 export { useTheme } from "./theme";
 export { useWallets } from "./wallets";
+export { useDenylist } from "./denylist";

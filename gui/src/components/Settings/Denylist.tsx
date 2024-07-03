@@ -1,33 +1,52 @@
-import { List } from "@mui/material";
+import { List, Stack, IconButton, CardHeader, Box } from "@mui/material";
+import { AddressView } from "..";
+import { IconAddress } from "../Icons";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
-import { GeneralSettings } from "@ethui/types/settings";
-import { useInvoke } from "@/hooks";
-import { useBalances, useNetworks } from "@/store";
-import { ERC20ViewDenylist } from "../ERC20ViewDenylist";
+import { type Address } from "viem";
+import { invoke } from "@tauri-apps/api";
+import { useDenylist, useNetworks } from "@/store";
 
 export function SettingsDenylist() {
   const currentNetwork = useNetworks((s) => s.current);
-  const balances = useBalances((s) => s.erc20DenyBalances);
-  const { data: settings } = useInvoke<GeneralSettings>("settings_get");
+  const denylist = useDenylist((s) => s.erc20Denylist);
 
   if (!currentNetwork) return null;
 
-  const filteredBalances = (balances || []).filter(
-    (token) => !settings?.hideEmptyTokens || BigInt(token.balance) > 0,
-  );
+  const allowlist = (contract: Address) => {
+    invoke("db_set_erc20_allowlist", {
+      chainId: currentNetwork.chain_id,
+      address: contract,
+    });
+  };
 
   return (
     <List sx={{ maxWidth: 350 }}>
       <>
-        {filteredBalances.map(({ contract, balance, metadata }) => (
-          <ERC20ViewDenylist
-            key={contract}
-            contract={contract}
-            balance={BigInt(balance)}
-            decimals={metadata?.decimals || 0}
-            symbol={metadata?.symbol}
-            chainId={currentNetwork.chain_id}
-          />
+        {denylist.map(({ contract, metadata }) => (
+          <CardHeader
+          sx={{ marginTop: -2 }}
+          avatar={<IconAddress chainId={currentNetwork.chain_id} address={contract} />}
+          action={
+            <Stack direction="row" justifyContent="center">
+              <IconButton title={"Unhide token"} onClick={() => allowlist(contract)}>
+                <VisibilityOffIcon />
+              </IconButton>
+            </Stack>
+          }
+          title={
+            <>
+              <Box component="span" sx={{ mr: 1 }}>
+                {metadata?.symbol}
+              </Box>
+              {contract && (
+                <>
+                  (<AddressView address={contract} />)
+                </>
+              )}
+            </>
+          }
+        />
         ))}
       </>
     </List>

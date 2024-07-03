@@ -60,9 +60,8 @@ pub async fn db_get_erc20_balances(
         .await
 }
 
-/* NEW */
 #[tauri::command]
-pub async fn db_get_erc20_denylist_balances(
+pub async fn db_get_erc20_denylist(
     chain_id: u32,
     address: Address,
     include_blacklisted: Option<bool>,
