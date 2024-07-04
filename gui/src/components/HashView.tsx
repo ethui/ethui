@@ -8,7 +8,6 @@ import { useNetworks } from "@/store";
 import { ContextMenuWithTauri } from "./ContextMenuWithTauri";
 import { truncateHex } from "@/utils";
 
-
 interface Props {
   hash: Hash;
 }

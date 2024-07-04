@@ -97,7 +97,7 @@ export function Txs() {
                 <Details tx={tx} chainId={chainId} />
               </AccordionDetails>
             </Accordion>
-          )),
+          ))
         )}
       </InfiniteScroll>
     </>
@@ -185,7 +185,7 @@ function Details({ tx, chainId }: DetailsProps) {
       />
       <Datapoint
         label="value"
-        value={fullTx.value ? <NumberView value={Number(fullTx.value)}/> : 0}
+        value={fullTx.value ? <NumberView value={Number(fullTx.value)} /> : 0}
         size="small"
       />
       <Datapoint
@@ -219,24 +219,40 @@ function Details({ tx, chainId }: DetailsProps) {
         <>
           <Datapoint
             label="maxFeePerGas"
-            value={fullTx.maxFeePerGas ? <NumberView value={Number(fullTx.maxFeePerGas)}/> : 0}
+            value={
+              fullTx.maxFeePerGas ? (
+                <NumberView value={Number(fullTx.maxFeePerGas)} />
+              ) : (
+                0
+              )
+            }
             size="small"
           />
           <Datapoint
             label="maxPriorityFeePerGas"
-            value={fullTx.maxPriorityFeePerGas ? <NumberView value={Number(fullTx.maxPriorityFeePerGas)}/> : 0}
+            value={
+              fullTx.maxPriorityFeePerGas ? (
+                <NumberView value={Number(fullTx.maxPriorityFeePerGas)} />
+              ) : (
+                0
+              )
+            }
             size="small"
           />
         </>
       )}
       <Datapoint
         label="gasLimit"
-        value={fullTx.gasLimit ? <NumberView value={Number(fullTx.gasLimit)}/> : 0}
+        value={
+          fullTx.gasLimit ? <NumberView value={Number(fullTx.gasLimit)} /> : 0
+        }
         size="small"
       />
       <Datapoint
         label="gasUsed"
-        value={fullTx.gasUsed ? <NumberView value={Number(fullTx.gasUsed)}/> : 0}
+        value={
+          fullTx.gasUsed ? <NumberView value={Number(fullTx.gasUsed)} /> : 0
+        }
         size="medium"
       />
 

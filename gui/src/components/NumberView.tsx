@@ -7,16 +7,14 @@ import { Typography } from "@ethui/react/components";
 import { ContextMenuWithTauri } from "./ContextMenuWithTauri";
 import { useNetworks } from "@/store";
 
-
-
 interface Props {
   value: number;
 }
 
-export function NumberView({ value}: Props) {
+export function NumberView({ value }: Props) {
   const [displayValue, setDisplayValue] = useState(value.toString());
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
-  const [formatValue, setFormatValue] = useState('Hexadecimal');
+  const [formatValue, setFormatValue] = useState("Hexadecimal");
 
   const network = useNetworks((s) => s.current);
   if (!network) return null;
@@ -37,25 +35,20 @@ export function NumberView({ value}: Props) {
     setMenuAnchor(null);
   };
 
-
-
-const changeFormat = () => {
-  if (formatValue == 'Decimal') {
-    setFormatValue('Hexadecimal');
-    setDisplayValue(value.toString());
-
-  } else if (formatValue == 'Hexadecimal') {
-    setFormatValue('Decimal');
-    const numberValue = Number(value);
-    const hexadecimalValue = numberValue.toString(16).toUpperCase();
-    setDisplayValue('0x' + hexadecimalValue);
-
-  } else {
-    setDisplayValue(value.toString());
-  }
-  setMenuAnchor(null);
-};
-
+  const changeFormat = () => {
+    if (formatValue == "Decimal") {
+      setFormatValue("Hexadecimal");
+      setDisplayValue(value.toString());
+    } else if (formatValue == "Hexadecimal") {
+      setFormatValue("Decimal");
+      const numberValue = Number(value);
+      const hexadecimalValue = numberValue.toString(16).toUpperCase();
+      setDisplayValue("0x" + hexadecimalValue);
+    } else {
+      setDisplayValue(value.toString());
+    }
+    setMenuAnchor(null);
+  };
 
   const content = <Typography mono>{displayValue}</Typography>;
 
