@@ -11,7 +11,7 @@ import {
 import { invoke } from "@tauri-apps/api";
 import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
-import { Abi, Address, formatGwei } from "viem";
+import { Abi, Address } from "viem";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
 import { BlockNumber, SolidityCall } from "@ethui/react/components";
