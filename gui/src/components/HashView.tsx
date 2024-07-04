@@ -1,12 +1,12 @@
+import { IconButton, Menu, MenuItem } from "@mui/material";
+import { MoreVert as MoreVertIcon } from "@mui/icons-material";
 import { Hash } from "viem";
 import { useState } from "react";
-
 import { Typography } from "@ethui/react/components";
 import { useNetworks } from "@/store";
 import { ContextMenuWithTauri } from "./ContextMenuWithTauri";
 import { truncateHex } from "@/utils";
-import { IconButton, Menu, MenuItem } from "@mui/material";
-import { MoreVert as MoreVertIcon } from "@mui/icons-material";
+
 
 interface Props {
   hash: Hash;

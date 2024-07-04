@@ -1,18 +1,21 @@
-import { useState } from "react";
-import { useNetworks } from "@/store";
-import { ContextMenuWithTauri } from "./ContextMenuWithTauri";
-import { Typography } from "@ethui/react/components";
 import { IconButton, Menu, MenuItem } from "@mui/material";
 import { MoreVert as MoreVertIcon } from "@mui/icons-material";
+import { useState } from "react";
 import { formatEther, formatGwei, parseEther } from "viem";
+import { Typography } from "@ethui/react/components";
+import { ContextMenuWithTauri } from "./ContextMenuWithTauri";
+import { useNetworks } from "@/store";
+
+
 
 interface Props {
   value: number;
 }
 
 export function NumberView({ value}: Props) {
-  const [displayValue, setDisplayValue] = useState(formatEther(BigInt(value)) + ' eth');
+  const [displayValue, setDisplayValue] = useState(value.toString());
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+  const [formatValue, setFormatValue] = useState('Hexadecimal');
 
   const network = useNetworks((s) => s.current);
   if (!network) return null;
@@ -34,25 +37,23 @@ export function NumberView({ value}: Props) {
   };
 
 
-  const changeFormat = () => {
-    const newValue = displayValue.split(' ')[0];
-    const isHexadecimal = /^(.*[A-Za-z])[0-9A-Za-z]*$/.test(newValue);
-    const isDecimal = /^([+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?)$/.test(newValue);
 
-    if (isHexadecimal) {
-      setDisplayValue(formatEther(BigInt(value)) + ' eth');
-  
-    } else if (isDecimal) {
-      const numberValue = Number(newValue);
-      const hexadecimalValue = numberValue.toString(16).toUpperCase();
-      setDisplayValue('0x' + hexadecimalValue + " " + displayValue.split(' ')[1]);
-  
-    } else {
-      setDisplayValue(newValue);
-    }
-    setMenuAnchor(null);
-  };
-  
+const changeFormat = () => {
+  if (formatValue == 'Decimal') {
+    setFormatValue('Hexadecimal');
+    setDisplayValue(value.toString());
+
+  } else if (formatValue == 'Hexadecimal') {
+    setFormatValue('Decimal');
+    const numberValue = Number(value);
+    const hexadecimalValue = numberValue.toString(16).toUpperCase();
+    setDisplayValue('0x' + hexadecimalValue);
+
+  } else {
+    setDisplayValue(value.toString());
+  }
+  setMenuAnchor(null);
+};
 
 
   const content = <Typography mono>{displayValue}</Typography>;
@@ -83,7 +84,7 @@ export function NumberView({ value}: Props) {
         <MenuItem onClick={formatWeiValue}>Wei</MenuItem>
         <MenuItem onClick={formatGweiValue}>Gwei</MenuItem>
         <MenuItem onClick={formatEtherValue}>Ether</MenuItem>
-        <MenuItem onClick={changeFormat}>Change Format</MenuItem>
+        <MenuItem onClick={changeFormat}>Change to {formatValue}</MenuItem>
       </Menu>
     </div>
   );
