@@ -2,6 +2,7 @@ import { IconButton, Menu, MenuItem } from "@mui/material";
 import { MoreVert as MoreVertIcon } from "@mui/icons-material";
 import { useState } from "react";
 import { formatEther, formatGwei, parseEther } from "viem";
+
 import { Typography } from "@ethui/react/components";
 import { ContextMenuWithTauri } from "./ContextMenuWithTauri";
 import { useNetworks } from "@/store";
