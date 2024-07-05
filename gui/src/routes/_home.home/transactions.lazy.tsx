@@ -168,7 +168,7 @@ function Details({ tx, chainId }: DetailsProps) {
   });
 
   if (!fullTx) return null;
-
+  console.log(JSON.stringify(fullTx));
   const value = BigInt(fullTx.value || 0);
 
   return (
@@ -185,7 +185,7 @@ function Details({ tx, chainId }: DetailsProps) {
       />
       <Datapoint
         label="value"
-        value={fullTx.value ? <NumberView value={Number(fullTx.value)} /> : 0}
+        value={fullTx.value ? <NumberView value={fullTx.value}/> : 0}
         size="small"
       />
       <Datapoint
@@ -221,7 +221,7 @@ function Details({ tx, chainId }: DetailsProps) {
             label="maxFeePerGas"
             value={
               fullTx.maxFeePerGas ? (
-                <NumberView value={Number(fullTx.maxFeePerGas)} />
+                <NumberView value={fullTx.maxFeePerGas} unit="gwei"/>
               ) : (
                 0
               )
@@ -232,7 +232,7 @@ function Details({ tx, chainId }: DetailsProps) {
             label="maxPriorityFeePerGas"
             value={
               fullTx.maxPriorityFeePerGas ? (
-                <NumberView value={Number(fullTx.maxPriorityFeePerGas)} />
+                <NumberView value={fullTx.maxPriorityFeePerGas} unit="gwei" />
               ) : (
                 0
               )
@@ -244,14 +244,14 @@ function Details({ tx, chainId }: DetailsProps) {
       <Datapoint
         label="gasLimit"
         value={
-          fullTx.gasLimit ? <NumberView value={Number(fullTx.gasLimit)} /> : 0
+          fullTx.gasLimit ? <NumberView value={fullTx.gasLimit} unit="wei"/> : 0
         }
         size="small"
       />
       <Datapoint
         label="gasUsed"
         value={
-          fullTx.gasUsed ? <NumberView value={Number(fullTx.gasUsed)} /> : 0
+          fullTx.gasUsed ? <NumberView value={fullTx.gasUsed} unit="wei" /> : 0
         }
         size="medium"
       />

@@ -1,85 +1,201 @@
-import { IconButton, Menu, MenuItem } from "@mui/material";
+import { Grid, IconButton, Stack } from "@mui/material";
 import { MoreVert as MoreVertIcon } from "@mui/icons-material";
-import { useState } from "react";
-import { formatEther, formatGwei, parseEther } from "viem";
+import { useEffect, useState } from "react";
+import { formatEther, formatGwei, parseEther, parseGwei } from "viem";
 
-import { Typography } from "@ethui/react/components";
 import { ContextMenuWithTauri } from "./ContextMenuWithTauri";
-import { useNetworks } from "@/store";
+
+import { Modal } from "./Modal";
+import { Datapoint } from "./Datapoint";
 
 interface Props {
-  value: number;
+  value: bigint | string;
+  unit?: string;
 }
 
-export function NumberView({ value }: Props) {
-  const [displayValue, setDisplayValue] = useState(value.toString());
-  const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
-  const [formatValue, setFormatValue] = useState("Hexadecimal");
+export function NumberView({ value, unit }: Props) {
+  const [unitValues, setUnitValues] = useState({
+    wei: "",
+    gwei: "",
+    eth: "",
+    decimal: "",
+    hex: "",
+  });
 
-  const network = useNetworks((s) => s.current);
-  if (!network) return null;
+  const [unitValuesOpen, setUnitValuesOpen] = useState(false);
 
-  const formatGweiValue = () => {
-    setDisplayValue(formatGwei(BigInt(value)) + " gwei");
-    setMenuAnchor(null);
-  };
-
-  const formatWeiValue = () => {
-    const weiValue = parseEther(formatEther(BigInt(value)).toString());
-    setDisplayValue(weiValue.toString() + " wei");
-    setMenuAnchor(null);
-  };
-
-  const formatEtherValue = () => {
-    setDisplayValue(formatEther(BigInt(value)) + " eth");
-    setMenuAnchor(null);
-  };
-
-  const changeFormat = () => {
-    if (formatValue == "Decimal") {
-      setFormatValue("Hexadecimal");
-      setDisplayValue(value.toString());
-    } else if (formatValue == "Hexadecimal") {
-      setFormatValue("Decimal");
-      const numberValue = Number(value);
-      const hexadecimalValue = numberValue.toString(16).toUpperCase();
-      setDisplayValue("0x" + hexadecimalValue);
-    } else {
-      setDisplayValue(value.toString());
+  useEffect(() => {
+    switch (unit) {
+      case "wei":
+        convertFromWei(value);
+        break;
+      case "gwei":
+        convertFromGwei(value);
+        break;
+      case "eth":
+        convertFromEther(value);
+        break;
+      case "decimal":
+        convertFromDecimal(value);
+        break;
+      case "hex":
+        convertFromHex(value);
+        break;
+      default:
+        convertFromDecimal(value);
+        break;
     }
-    setMenuAnchor(null);
+  }, [value, unit]);
+
+  const convertFromWei = (value: string | bigint) => {
+    const weiValue = BigInt(value);
+    const gweiValue = formatGwei(weiValue);
+    const ethValue = formatEther(weiValue);
+    const decimalValue = weiValue.toString(10);
+    const hexValue = '0x' + weiValue.toString(16);
+
+    setUnitValues({
+      wei: weiValue.toString(),
+      gwei: gweiValue,
+      eth: ethValue,
+      decimal: decimalValue,
+      hex: hexValue,
+    });
   };
 
-  const content = <Typography mono>{displayValue}</Typography>;
+  const convertFromGwei = (value: string | bigint) => {
+    const gweiValue = BigInt(value);
+    const weiValue = parseGwei(gweiValue.toString(), "wei");
+    const ethValue = formatEther(BigInt(value), "gwei"); 
+    const decimalValue = gweiValue.toString(10);
+    const hexValue = '0x' + gweiValue.toString(16);
 
-  const onMenuOpen = (event: React.MouseEvent<HTMLElement>) =>
-    setMenuAnchor(event.currentTarget);
+    setUnitValues({
+      wei: weiValue.toString(),
+      gwei: gweiValue.toString(),
+      eth: ethValue,
+      decimal: decimalValue,
+      hex: hexValue,
+    });
+  };
+
+  const convertFromEther = (value: string | bigint) => {
+    const weiValue = parseEther(value.toString(), "wei");
+    const gweiValue = parseEther(value.toString(), "gwei");
+    const ethValue = value.toString();
+    const decimalValue = value.toString(10);
+    const hexValue = '0x' + value.toString(16);
+
+    setUnitValues({
+      wei: weiValue.toString(),
+      gwei: gweiValue.toString(),
+      eth: ethValue,
+      decimal: decimalValue,
+      hex: hexValue,
+    });
+  };
+
+  const convertFromDecimal = (value: string | bigint) => {
+    const weiValue = BigInt(value);
+    const gweiValue = formatGwei(weiValue);
+    const ethValue = formatEther(weiValue);
+    const decimalValue = weiValue.toString(10);
+    const hexValue = '0x' + weiValue.toString(16);
+
+    setUnitValues({
+      wei: weiValue.toString(),
+      gwei: gweiValue,
+      eth: ethValue,
+      decimal: decimalValue,
+      hex: hexValue,
+    });
+  };
+
+  const convertFromHex = (value: string | bigint) => {
+    const weiValue = BigInt(value);
+    const gweiValue = formatGwei(weiValue);
+    const ethValue = formatEther(weiValue);
+    const decimalValue = weiValue.toString(10);
+    const hexValue = '0x' + weiValue.toString(16);
+
+    setUnitValues({
+      wei: weiValue.toString(),
+      gwei: gweiValue,
+      eth: ethValue,
+      decimal: decimalValue,
+      hex: hexValue,
+    });
+  };
+
+  const content = (
+    <Grid container rowSpacing={1} columns={1}>
+      <Datapoint
+        label="Ether"
+        value={
+          <ContextMenuWithTauri copy={unitValues.eth}>
+            {unitValues.eth}
+          </ContextMenuWithTauri>
+        }
+        size="small"
+      />
+
+      <Datapoint
+        label="Wei"
+        value={
+          <ContextMenuWithTauri copy={unitValues.wei}>
+            {unitValues.wei}
+          </ContextMenuWithTauri>
+        }
+        size="small"
+      />
+      <Datapoint
+        label="Gwei"
+        value={
+          <ContextMenuWithTauri copy={unitValues.gwei}>
+            {unitValues.gwei}
+          </ContextMenuWithTauri>
+        }
+        size="small"
+      />
+      <Datapoint
+        label="Hexadecimal"
+        value={
+          <ContextMenuWithTauri copy={unitValues.hex}>
+            {unitValues.hex}
+          </ContextMenuWithTauri>
+        }
+        size="small"
+      />
+      <Datapoint
+        label="Decimal"
+        value={
+          <ContextMenuWithTauri copy={unitValues.decimal}>
+            {unitValues.decimal}
+          </ContextMenuWithTauri>
+        }
+        size="small"
+      />
+    </Grid>
+  );
 
   return (
-    <div style={{ display: "flex", alignItems: "center" }}>
-      <ContextMenuWithTauri
-        copy={displayValue}
-        actions={[
-          {
-            label: "Open in explorer",
-            href: `${network.explorer_url}${displayValue}`,
-            disabled: !network.explorer_url,
-          },
-        ]}
-      >
-        {content}
-      </ContextMenuWithTauri>
+    <Stack direction="row">
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <ContextMenuWithTauri copy={value}>
+          {value.toString()}
+        </ContextMenuWithTauri>
 
-      <IconButton aria-label="more" onClick={onMenuOpen}>
-        <MoreVertIcon />
-      </IconButton>
+        <IconButton
+          aria-label="transfer"
+          onClick={() => setUnitValuesOpen(true)}
+        >
+          <MoreVertIcon />
+        </IconButton>
 
-      <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)}>
-        <MenuItem onClick={formatWeiValue}>Wei</MenuItem>
-        <MenuItem onClick={formatGweiValue}>Gwei</MenuItem>
-        <MenuItem onClick={formatEtherValue}>Ether</MenuItem>
-        <MenuItem onClick={changeFormat}>Change to {formatValue}</MenuItem>
-      </Menu>
-    </div>
+        <Modal open={unitValuesOpen} onClose={() => setUnitValuesOpen(false)}>
+          {content}
+        </Modal>
+      </div>
+    </Stack>
   );
 }
