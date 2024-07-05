@@ -146,7 +146,7 @@ impl DbInner {
             .collect())
     }
 
-    pub async fn get_erc20_denylist_balances(
+    pub async fn get_erc20_blacklist(
         &self,
         chain_id: u32,
         address: Address,
@@ -196,7 +196,6 @@ impl DbInner {
           .filter(|b| blacklist.contains(&b.contract))
           .collect())
     }
-
 
     pub async fn get_erc20_missing_metadata(&self, chain_id: u32) -> Result<Vec<Address>> {
         let res: Vec<_> = sqlx::query!(
@@ -291,7 +290,7 @@ impl DbInner {
         Ok(())
     }
 
-    pub async fn set_erc20_allowlist(
+    pub async fn clear_erc20_blacklist(
         &self,
         chain_id: u32,
         address: Address,

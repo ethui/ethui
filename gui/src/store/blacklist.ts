@@ -8,7 +8,7 @@ import { useNetworks } from "./networks";
 import { useWallets } from "./wallets";
 
 interface State {
-  erc20Denylist: Token[];
+  erc20Blacklist: Token[];
 
   address?: Address;
   chainId?: number;
@@ -24,22 +24,19 @@ interface Setters {
 type Store = State & Setters;
 
 const store: StateCreator<Store> = (set, get) => ({
-  erc20Denylist: [],
+  erc20Blacklist: [],
 
   async reload() {
     const { address, chainId } = get();
     if (!address || !chainId) return;
 
-    const erc20Denylist = await invoke<Token[]>(
-      "db_get_erc20_denylist",
-      {
-        address,
-        chainId,
-      },
-    );
+    const erc20Blacklist = await invoke<Token[]>("db_get_erc20_blacklist", {
+      address,
+      chainId,
+    });
 
     set({
-      erc20Denylist,
+      erc20Blacklist,
     });
   },
 
@@ -54,24 +51,24 @@ const store: StateCreator<Store> = (set, get) => ({
   },
 });
 
-export const useDenylist = create<Store>()(subscribeWithSelector(store));
+export const useBlacklist = create<Store>()(subscribeWithSelector(store));
 
 event.listen("balances-updated", async () => {
-  await useDenylist.getState().reload();
+  await useBlacklist.getState().reload();
 });
 
 (async () => {
-  await useDenylist.getState().reload();
+  await useBlacklist.getState().reload();
 
   useWallets.subscribe(
     (s) => s.address,
-    (address?: Address) => useDenylist.getState().setAddress(address),
+    (address?: Address) => useBlacklist.getState().setAddress(address),
     { fireImmediately: true },
   );
 
   useNetworks.subscribe(
     (s) => s.current?.chain_id,
-    (chainId) => useDenylist.getState().setChainId(chainId),
+    (chainId) => useBlacklist.getState().setChainId(chainId),
     { fireImmediately: true },
   );
 })();

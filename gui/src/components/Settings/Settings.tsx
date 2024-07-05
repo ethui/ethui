@@ -14,7 +14,7 @@ import { SettingsGeneral } from "./General";
 import { SettingsKeybinds } from "./Keybinds";
 import { SettingsNetwork } from "./Network";
 import { SettingsWallets } from "./Wallets";
-import { SettingsDenylist } from "./Denylist";
+import { SettingsBlacklist } from "./Blacklist";
 
 const TABS = [
   { name: "General", component: SettingsGeneral },
@@ -22,7 +22,7 @@ const TABS = [
   { name: "Network", component: SettingsNetwork },
   { name: "Foundry", component: SettingsFoundry },
   { name: "Keybinds", component: SettingsKeybinds },
-  { name: "Denylist", component: SettingsDenylist },
+  { name: "Tokens", component: SettingsBlacklist },
 ];
 
 const WIDTH = 140;
