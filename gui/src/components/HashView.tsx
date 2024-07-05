@@ -13,30 +13,20 @@ interface Props {
 }
 
 export function HashView({ hash }: Props) {
-  const [displayValue] = useState(hash.toString());
-  const [decimalValue, setDecimalValue] = useState('');
+  const [decimalValue, setDecimalValue] = useState("");
   const [unitValuesOpen, setUnitValuesOpen] = useState(false);
 
-
   useEffect(() => {
-    convertToDecimal(hash);
+    setDecimalValue(BigInt(hash).toString(10));
   }, [hash]);
-
-  const convertToDecimal = (hash: string | bigint) => {
-
-    const decimalValue = BigInt(hash).toString(10);
-    setDecimalValue(decimalValue);
-
-  };
-
 
   const content = (
     <Grid container rowSpacing={1} columns={1}>
       <Datapoint
         label="Hexadecimal"
         value={
-          <ContextMenuWithTauri copy={displayValue}>
-            {truncateHex(displayValue)}
+          <ContextMenuWithTauri copy={hash}>
+            {truncateHex(hash)}
           </ContextMenuWithTauri>
         }
         size="small"
@@ -56,8 +46,8 @@ export function HashView({ hash }: Props) {
   return (
     <Stack direction="row">
       <div style={{ display: "flex", alignItems: "center" }}>
-        <ContextMenuWithTauri copy={displayValue}>
-          {truncateHex(displayValue)}
+        <ContextMenuWithTauri copy={hash}>
+          {truncateHex(hash)}
         </ContextMenuWithTauri>
 
         <IconButton

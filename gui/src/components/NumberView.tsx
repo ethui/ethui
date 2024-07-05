@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { formatEther, formatGwei, parseEther, parseGwei } from "viem";
 
 import { ContextMenuWithTauri } from "./ContextMenuWithTauri";
-
 import { Modal } from "./Modal";
 import { Datapoint } from "./Datapoint";
 
@@ -25,98 +24,24 @@ export function NumberView({ value, unit }: Props) {
   const [unitValuesOpen, setUnitValuesOpen] = useState(false);
 
   useEffect(() => {
-    switch (unit) {
-      case "wei":
-        convertFromWei(value);
-        break;
-      case "gwei":
-        convertFromGwei(value);
-        break;
-      case "eth":
-        convertFromEther(value);
-        break;
-      case "decimal":
-        convertFromDecimal(value);
-        break;
-      case "hex":
-        convertFromHex(value);
-        break;
-      default:
-        convertFromDecimal(value);
-        break;
-    }
+    convertUnit(value, unit || "decimal");
   }, [value, unit]);
 
-  const convertFromWei = (value: string | bigint) => {
-    const weiValue = BigInt(value);
+  const convertUnit = (value: string | bigint, unit: string) => {
+    const bigIntValue = BigInt(value);
+    const weiValue =
+      unit === "wei"
+        ? bigIntValue
+        : unit === "gwei"
+          ? parseGwei(bigIntValue.toString(), "wei")
+          : unit === "eth"
+            ? parseEther(bigIntValue.toString(), "wei")
+            : bigIntValue;
+
     const gweiValue = formatGwei(weiValue);
     const ethValue = formatEther(weiValue);
     const decimalValue = weiValue.toString(10);
-    const hexValue = '0x' + weiValue.toString(16);
-
-    setUnitValues({
-      wei: weiValue.toString(),
-      gwei: gweiValue,
-      eth: ethValue,
-      decimal: decimalValue,
-      hex: hexValue,
-    });
-  };
-
-  const convertFromGwei = (value: string | bigint) => {
-    const gweiValue = BigInt(value);
-    const weiValue = parseGwei(gweiValue.toString(), "wei");
-    const ethValue = formatEther(BigInt(value), "gwei"); 
-    const decimalValue = gweiValue.toString(10);
-    const hexValue = '0x' + gweiValue.toString(16);
-
-    setUnitValues({
-      wei: weiValue.toString(),
-      gwei: gweiValue.toString(),
-      eth: ethValue,
-      decimal: decimalValue,
-      hex: hexValue,
-    });
-  };
-
-  const convertFromEther = (value: string | bigint) => {
-    const weiValue = parseEther(value.toString(), "wei");
-    const gweiValue = parseEther(value.toString(), "gwei");
-    const ethValue = value.toString();
-    const decimalValue = value.toString(10);
-    const hexValue = '0x' + value.toString(16);
-
-    setUnitValues({
-      wei: weiValue.toString(),
-      gwei: gweiValue.toString(),
-      eth: ethValue,
-      decimal: decimalValue,
-      hex: hexValue,
-    });
-  };
-
-  const convertFromDecimal = (value: string | bigint) => {
-    const weiValue = BigInt(value);
-    const gweiValue = formatGwei(weiValue);
-    const ethValue = formatEther(weiValue);
-    const decimalValue = weiValue.toString(10);
-    const hexValue = '0x' + weiValue.toString(16);
-
-    setUnitValues({
-      wei: weiValue.toString(),
-      gwei: gweiValue,
-      eth: ethValue,
-      decimal: decimalValue,
-      hex: hexValue,
-    });
-  };
-
-  const convertFromHex = (value: string | bigint) => {
-    const weiValue = BigInt(value);
-    const gweiValue = formatGwei(weiValue);
-    const ethValue = formatEther(weiValue);
-    const decimalValue = weiValue.toString(10);
-    const hexValue = '0x' + weiValue.toString(16);
+    const hexValue = "0x" + weiValue.toString(16);
 
     setUnitValues({
       wei: weiValue.toString(),
@@ -138,7 +63,6 @@ export function NumberView({ value, unit }: Props) {
         }
         size="small"
       />
-
       <Datapoint
         label="Wei"
         value={
@@ -184,14 +108,12 @@ export function NumberView({ value, unit }: Props) {
         <ContextMenuWithTauri copy={value}>
           {value.toString()}
         </ContextMenuWithTauri>
-
         <IconButton
           aria-label="transfer"
           onClick={() => setUnitValuesOpen(true)}
         >
           <MoreVertIcon />
         </IconButton>
-
         <Modal open={unitValuesOpen} onClose={() => setUnitValuesOpen(false)}>
           {content}
         </Modal>
