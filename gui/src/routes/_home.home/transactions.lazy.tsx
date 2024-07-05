@@ -168,7 +168,6 @@ function Details({ tx, chainId }: DetailsProps) {
   });
 
   if (!fullTx) return null;
-  console.log(JSON.stringify(fullTx));
   const value = BigInt(fullTx.value || 0);
 
   return (
