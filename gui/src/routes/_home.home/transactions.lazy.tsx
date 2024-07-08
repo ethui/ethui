@@ -90,14 +90,14 @@ export function Txs() {
         {pages.flatMap((page) =>
           page.items.map((tx) => (
             <Accordion key={tx.hash}>
-              <AccordionSummary>
+              <AccordionSummary homepage-tour="transactions">
                 <Summary account={account} tx={tx} />
               </AccordionSummary>
               <AccordionDetails>
                 <Details tx={tx} chainId={chainId} />
               </AccordionDetails>
             </Accordion>
-          )),
+          ))
         )}
       </InfiniteScroll>
     </>

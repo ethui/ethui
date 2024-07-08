@@ -21,12 +21,12 @@ function BalanceETH() {
   if (!currentNetwork || !balance) return null;
 
   return (
-    <ERC20View
-      balance={balance}
-      decimals={currentNetwork.decimals}
-      symbol={currentNetwork.currency}
-      chainId={currentNetwork.chain_id}
-    />
+      <ERC20View
+        balance={balance}
+        decimals={currentNetwork.decimals}
+        symbol={currentNetwork.currency}
+        chainId={currentNetwork.chain_id}
+      />
   );
 }
 
