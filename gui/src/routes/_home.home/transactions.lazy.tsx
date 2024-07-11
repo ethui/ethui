@@ -184,7 +184,7 @@ function Details({ tx, chainId }: DetailsProps) {
       />
       <Datapoint
         label="value"
-        value={fullTx.value ? <NumberView value={fullTx.value}/> : 0}
+        value={fullTx.value ? <NumberView value={fullTx.value} unit="wei"/> : 0}
         size="small"
       />
       <Datapoint

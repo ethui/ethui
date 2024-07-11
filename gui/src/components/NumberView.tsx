@@ -1,104 +1,87 @@
-import { Grid, IconButton, Stack } from "@mui/material";
+import { Box, Grid, IconButton, Stack, Typography } from "@mui/material";
 import { MoreVert as MoreVertIcon } from "@mui/icons-material";
 import { useEffect, useState } from "react";
-import { formatEther, formatGwei, parseEther, parseGwei } from "viem";
+import { formatUnits, parseUnits } from "viem";
 
 import { ContextMenuWithTauri } from "./ContextMenuWithTauri";
 import { Modal } from "./Modal";
-import { Datapoint } from "./Datapoint";
+import { Datapoint } from ".";
 
 interface Props {
   value: bigint | string;
-  unit?: string;
+  unit: string;
 }
 
 export function NumberView({ value, unit }: Props) {
-  const [unitValues, setUnitValues] = useState({
-    wei: "",
-    gwei: "",
-    eth: "",
-    decimal: "",
-    hex: "",
-  });
-
   const [unitValuesOpen, setUnitValuesOpen] = useState(false);
+  const [conversionResults, setConversionResults] = useState<{
+    [key: string]: string | bigint;
+  }>({});
 
   useEffect(() => {
-    convertUnit(value, unit || "decimal");
+    try {
+      const bigintValue = BigInt(value);
+      const results = convertToAllUnits(bigintValue, unit);
+      setConversionResults(results);
+    } catch (error) {
+      console.error("Failed to convert value to BigInt:", error);
+      setConversionResults({});
+    }
   }, [value, unit]);
 
-  const convertUnit = (value: string | bigint, unit: string) => {
-    const bigIntValue = BigInt(value);
-    const weiValue =
-      unit === "wei"
-        ? bigIntValue
-        : unit === "gwei"
-          ? parseGwei(bigIntValue.toString(), "wei")
-          : unit === "eth"
-            ? parseEther(bigIntValue.toString(), "wei")
-            : bigIntValue;
-
-    const gweiValue = formatGwei(weiValue);
-    const ethValue = formatEther(weiValue);
-    const decimalValue = weiValue.toString(10);
-    const hexValue = "0x" + weiValue.toString(16);
-
-    setUnitValues({
-      wei: weiValue.toString(),
-      gwei: gweiValue,
-      eth: ethValue,
-      decimal: decimalValue,
-      hex: hexValue,
-    });
+  const unitMapping: { [key: string]: number } = {
+    wei: 0,
+    kwei: 3,
+    babbage: 3,
+    mwei: 6,
+    lovelace: 6,
+    gwei: 9,
+    shannon: 9,
+    microether: 12,
+    szabo: 12,
+    milliether: 15,
+    finney: 15,
+    ether: 18,
+    eth: 18,
   };
 
+  function convertUnits(val: bigint, fromUnit: string, toUnit: string): string {
+    if (!(fromUnit in unitMapping) || !(toUnit in unitMapping)) {
+      throw new Error("Invalid unit provided.");
+    }
+    const fromUnitDecimals = unitMapping[fromUnit];
+    const toUnitDecimals = unitMapping[toUnit];
+    const weiValue = formatUnits(val, fromUnitDecimals);
+    const result = parseUnits(weiValue, toUnitDecimals);
+    return result.toString();
+  }
+
+  function convertToAllUnits(value: bigint, fromUnit: string) {
+    const results: { [key: string]: string } = {};
+
+    for (const toUnit in unitMapping) {
+      if (toUnit !== fromUnit) {
+        results[toUnit] = convertUnits(value, fromUnit, toUnit);
+      }
+    }
+    return results;
+  }
+
   const content = (
-    <Grid container rowSpacing={1} columns={1}>
-      <Datapoint
-        label="Ether"
-        value={
-          <ContextMenuWithTauri copy={unitValues.eth}>
-            {unitValues.eth}
-          </ContextMenuWithTauri>
-        }
-        size="small"
-      />
-      <Datapoint
-        label="Wei"
-        value={
-          <ContextMenuWithTauri copy={unitValues.wei}>
-            {unitValues.wei}
-          </ContextMenuWithTauri>
-        }
-        size="small"
-      />
-      <Datapoint
-        label="Gwei"
-        value={
-          <ContextMenuWithTauri copy={unitValues.gwei}>
-            {unitValues.gwei}
-          </ContextMenuWithTauri>
-        }
-        size="small"
-      />
-      <Datapoint
-        label="Hexadecimal"
-        value={
-          <ContextMenuWithTauri copy={unitValues.hex}>
-            {unitValues.hex}
-          </ContextMenuWithTauri>
-        }
-        size="small"
-      />
-      <Datapoint
-        label="Decimal"
-        value={
-          <ContextMenuWithTauri copy={unitValues.decimal}>
-            {unitValues.decimal}
-          </ContextMenuWithTauri>
-        }
-        size="small"
-      />
+    <Grid container spacing={2}>
+      {Object.keys(conversionResults).map((unit) => (
+        <Grid item xs={12} sm={6} md={4} lg={3} key={unit}>
+          <Datapoint
+            label={unit}
+            value={
+              <ContextMenuWithTauri copy={conversionResults[unit]}>
+                {conversionResults[unit].toString()}
+              </ContextMenuWithTauri>
+            }
+            size="small"
+          />
+        </Grid>
+      ))}
     </Grid>
   );
 
@@ -114,7 +97,15 @@ export function NumberView({ value, unit }: Props) {
         >
           <MoreVertIcon />
         </IconButton>
-        <Modal open={unitValuesOpen} onClose={() => setUnitValuesOpen(false)}>
+        <Modal
+          open={unitValuesOpen}
+          onClose={() => setUnitValuesOpen(false)}
+          sx={{
+            top: "50%",
+            left: "50%",
+            width: "auto",
+          }}
+        >
           {content}
         </Modal>
       </div>
