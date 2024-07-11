@@ -64,10 +64,9 @@ pub async fn db_get_erc20_balances(
 pub async fn db_get_erc20_blacklist(
     chain_id: u32,
     address: Address,
-    include_blacklisted: Option<bool>,
     db: tauri::State<'_, Db>,
 ) -> Result<Vec<TokenBalance>> {
-    db.get_erc20_blacklist(chain_id, address, include_blacklisted.unwrap_or_default())
+    db.get_erc20_blacklist(chain_id, address)
         .await
 }
 

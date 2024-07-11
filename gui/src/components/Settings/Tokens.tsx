@@ -7,7 +7,7 @@ import { AddressView } from "..";
 import { IconAddress } from "@/components/Icons";
 import { useBlacklist, useNetworks } from "@/store";
 
-export function SettingsBlacklist() {
+export function SettingsTokens() {
   const currentNetwork = useNetworks((s) => s.current);
   const blacklist = useBlacklist((s) => s.erc20Blacklist);
 
