@@ -1,4 +1,4 @@
-import { Grid, IconButton, Popover, Stack, Tooltip } from "@mui/material";
+import { Grid, IconButton, Popover, Stack } from "@mui/material";
 import { MoreVert as MoreVertIcon } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { formatUnits, parseUnits } from "viem";
@@ -12,7 +12,9 @@ interface Props {
 }
 
 export function NumberView({ value, unit }: Props) {
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [anchorEl, setAnchorEl] = useState<{
+    [key: string]: HTMLElement | null;
+  }>({});
   const [unitValuesOpen, setUnitValuesOpen] = useState(false);
   const [conversionResults, setConversionResults] = useState<{
     [key: string]: string | bigint;
@@ -29,30 +31,25 @@ export function NumberView({ value, unit }: Props) {
     }
   }, [value, unit]);
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+  const handleClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    unit: string
+  ) => {
+    setAnchorEl((prev) => ({ ...prev, [unit]: event.currentTarget }));
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
+  const handleClose = (unit: string) => {
+    setAnchorEl((prev) => ({ ...prev, [unit]: null }));
   };
-
-  const open = Boolean(anchorEl);
 
   const unitMapping: { [key: string]: number } = {
     wei: 0,
     kwei: 3,
-    babbage: 3,
     mwei: 6,
-    lovelace: 6,
     gwei: 9,
-    shannon: 9,
     microether: 12,
-    szabo: 12,
     milliether: 15,
-    finney: 15,
     ether: 18,
-    eth: 18,
   };
 
   function convertUnits(val: bigint, fromUnit: string, toUnit: string): string {
@@ -85,28 +82,30 @@ export function NumberView({ value, unit }: Props) {
   const content = (
     <Grid container spacing={2}>
       {Object.keys(conversionResults).map((unit) => (
-        <Grid item xs={12} sm={6} md={4} lg={3} key={unit}>
+        <Grid item xs={12} sm={6} key={unit}>
           <Datapoint
             label={unit}
             value={
-              <div style={{ display: "flex", alignItems: "center" }} key={unit}>
+              <div style={{ display: "flex", alignItems: "center" }}>
                 <ContextMenuWithTauri copy={conversionResults[unit]}>
                   {conversionResults[unit].toString()}
                 </ContextMenuWithTauri>
-                <IconButton aria-label="transfer" onClick={handleClick}>
+                <IconButton
+                  aria-label="transfer"
+                  onClick={(event) => handleClick(event, unit)}
+                >
                   <MoreVertIcon />
                 </IconButton>
                 <Popover
-                  key={unit}
-                  open={open}
-                  anchorEl={anchorEl}
-                  onClose={handleClose}
+                  open={Boolean(anchorEl[unit])}
+                  anchorEl={anchorEl[unit]}
+                  onClose={() => handleClose(unit)}
                   anchorOrigin={{
                     vertical: "bottom",
                     horizontal: "left",
                   }}
                 >
-                  <Grid container key={unit} rowSpacing={1} columns={1} sx={{ p: 2 }}>
+                  <Grid container rowSpacing={1} columns={1} sx={{ p: 2 }}>
                     <Datapoint
                       label="hexadecimal"
                       value={
