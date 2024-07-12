@@ -2,6 +2,7 @@ import { Grid, IconButton, Popover, Stack } from "@mui/material";
 import { MoreVert as MoreVertIcon } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { formatUnits, parseUnits } from "viem";
+
 import { ContextMenuWithTauri } from "./ContextMenuWithTauri";
 import { Modal } from "./Modal";
 import { Datapoint } from ".";
