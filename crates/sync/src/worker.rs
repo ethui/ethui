@@ -192,7 +192,7 @@ async fn get_alchemy(chain_id: u32) -> Result<ethui_sync_alchemy::Alchemy> {
         Ok(Some(api_key)) => api_key,
         _ => return Err(Error::NoApiKey),
     };
-    let alchemy = ethui_sync_alchemy::Alchemy::new(&api_key, ethui_db::get(), chain_id).unwrap();
+    let alchemy = ethui_sync_alchemy::Alchemy::new(&api_key, ethui_db::get(), chain_id, "").unwrap();
 
     Ok(alchemy)
 }

@@ -6,7 +6,6 @@ use ethers::providers::{
 use ethui_types::{events::Tx, Address, ToAlloy, ToEthers, TokenMetadata, U256, U64};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use url::Url;
 
 use crate::{networks, types::AlchemyAssetTransfer, Result};
 
@@ -23,9 +22,9 @@ pub(crate) enum Direction {
 }
 
 impl Client {
-    pub fn new(chain_id: u32, api_key: &str) -> Result<Self> {
+    pub fn new(chain_id: u32, api_key: &str, path: &str) -> Result<Self> {
         let provider = {
-            let endpoint = networks::get_endpoint(chain_id, "/", api_key)?;
+            let endpoint = networks::get_endpoint(chain_id, path, api_key)?;
             let http = Http::new(endpoint);
             let policy = Box::<HttpRateLimitRetryPolicy>::default();
 
@@ -46,12 +45,10 @@ impl Client {
         })
     }
 
-    async fn build_url(&self, path: &str) -> Result<Url> {
-        networks::get_endpoint(self.chain_id, path, &self.api_key)
-    }
-
     pub async fn get_block_number(&self) -> Result<U64> {
-        let block = self.provider.get_block_number().await?;
+        let client = Client::new(self.chain_id, &self.api_key, "v2/");
+
+        let block = client.unwrap().provider.get_block_number().await?;
         Ok(block.to_alloy())
     }
 
@@ -81,11 +78,11 @@ impl Client {
             transfers: Vec<AlchemyAssetTransfer>,
         }
 
-        let url = self.build_url("/v2/").await?;
-        let http = Http::new(url);
-        let provider = Provider::new(http);
+        let client = Client::new(self.chain_id, &self.api_key, "v2/");
 
-        let req: AssetTransfers = provider
+        let req: AssetTransfers = client
+            .unwrap()
+            .provider
             .request("alchemy_getAssetTransfers", json!([params]))
             .await?;
 
@@ -100,11 +97,11 @@ impl Client {
     }
 
     pub async fn get_native_balance(&self, address: Address) -> Result<U256> {
-        let url = self.build_url("/v2/").await?;
-        let http = Http::new(url);
-        let provider = Provider::new(http);
+        let client = Client::new(self.chain_id, &self.api_key, "v2/");
 
-        Ok(provider
+        Ok(client
+            .unwrap()
+            .provider
             .get_balance(address.to_ethers(), None)
             .await
             .map(|x| x.to_alloy())?)
@@ -131,13 +128,13 @@ impl Client {
             }
         }
 
-        let url = self.build_url("/v2/").await?;
-        let http = Http::new(url);
-        // panic!("\n\nURL-> \n\n{:?}", http);
-        let provider = Provider::new(http);
-
+        let client = Client::new(self.chain_id, &self.api_key, "v2/");
         let params = json!([format!("0x{:x}", address), "erc20"]);
-        let res: Balances = provider.request("alchemy_getTokenBalances", params).await?;
+        let res: Balances = client
+            .unwrap()
+            .provider
+            .request("alchemy_getTokenBalances", params)
+            .await?;
 
         Ok(res.token_balances.into_iter().map(Into::into).collect())
     }
