@@ -6,11 +6,16 @@ use ethers::providers::{
 use ethui_types::{events::Tx, Address, ToAlloy, ToEthers, TokenMetadata, U256, U64};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
+use url::Url;
 
 use crate::{networks, types::AlchemyAssetTransfer, Result};
 
 #[derive(Debug)]
-pub(crate) struct Client(Provider<RetryClient<Http>>);
+pub(crate) struct Client {
+    provider: Provider<RetryClient<Http>>,
+    chain_id: u32,
+    api_key: String,
+}
 
 pub(crate) enum Direction {
     From(Address),
@@ -19,23 +24,34 @@ pub(crate) enum Direction {
 
 impl Client {
     pub fn new(chain_id: u32, api_key: &str) -> Result<Self> {
-        let endpoint = networks::get_endpoint(chain_id, api_key)?;
-        let http = Http::new(endpoint);
+        let provider = {
+            let endpoint = networks::get_endpoint(chain_id, "/", api_key)?;
+            let http = Http::new(endpoint);
+            let policy = Box::<HttpRateLimitRetryPolicy>::default();
 
-        let policy = Box::<HttpRateLimitRetryPolicy>::default();
+            let res = RetryClientBuilder::default()
+                .rate_limit_retries(10)
+                .timeout_retries(3)
+                .initial_backoff(Duration::from_millis(500))
+                .compute_units_per_second(300)
+                .build(http, policy);
 
-        let res = RetryClientBuilder::default()
-            .rate_limit_retries(10)
-            .timeout_retries(3)
-            .initial_backoff(Duration::from_millis(500))
-            .compute_units_per_second(300)
-            .build(http, policy);
+            Provider::new(res)
+        };
 
-        Ok(Self(Provider::new(res)))
+        Ok(Self {
+            provider,
+            chain_id,
+            api_key: api_key.to_string(),
+        })
+    }
+
+    async fn build_url(&self, path: &str) -> Result<Url> {
+        networks::get_endpoint(self.chain_id, path, &self.api_key)
     }
 
     pub async fn get_block_number(&self) -> Result<U64> {
-        let block = self.0.get_block_number().await?;
+        let block = self.provider.get_block_number().await?;
         Ok(block.to_alloy())
     }
 
@@ -65,8 +81,11 @@ impl Client {
             transfers: Vec<AlchemyAssetTransfer>,
         }
 
-        let req: AssetTransfers = self
-            .0
+        let url = self.build_url("/v2/").await?;
+        let http = Http::new(url);
+        let provider = Provider::new(http);
+
+        let req: AssetTransfers = provider
             .request("alchemy_getAssetTransfers", json!([params]))
             .await?;
 
@@ -81,8 +100,11 @@ impl Client {
     }
 
     pub async fn get_native_balance(&self, address: Address) -> Result<U256> {
-        Ok(self
-            .0
+        let url = self.build_url("/v2/").await?;
+        let http = Http::new(url);
+        let provider = Provider::new(http);
+
+        Ok(provider
             .get_balance(address.to_ethers(), None)
             .await
             .map(|x| x.to_alloy())?)
@@ -109,8 +131,13 @@ impl Client {
             }
         }
 
+        let url = self.build_url("/v2/").await?;
+        let http = Http::new(url);
+        // panic!("\n\nURL-> \n\n{:?}", http);
+        let provider = Provider::new(http);
+
         let params = json!([format!("0x{:x}", address), "erc20"]);
-        let res: Balances = self.0.request("alchemy_getTokenBalances", params).await?;
+        let res: Balances = provider.request("alchemy_getTokenBalances", params).await?;
 
         Ok(res.token_balances.into_iter().map(Into::into).collect())
     }

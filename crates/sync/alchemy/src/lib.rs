@@ -42,8 +42,10 @@ impl Alchemy {
         let key = (self.chain_id, "transactions", address);
         let last_tip: Option<u64> = self.db.kv_get(&key).await?;
 
+
         let from_block = U64::from(last_tip.unwrap_or_else(|| default_from_block(self.chain_id)));
         let latest = self.client.get_block_number().await?;
+        // panic!("\nHello!\n");
 
         // if tip - 1 == latest, we're up to date, nothing to do
         if from_block.saturating_sub(U64::from(1)) == latest {

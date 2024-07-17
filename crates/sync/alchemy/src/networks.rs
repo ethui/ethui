@@ -17,7 +17,7 @@ pub static NETWORKS: Lazy<HashMap<u32, Network>> = Lazy::new(|| {
     map.insert(
         1,
         Network {
-            base_url: Url::parse("https://eth-mainnet.g.alchemy.com/v2/").unwrap(),
+            base_url: Url::parse("https://eth-mainnet.g.alchemy.com").unwrap(),
             default_from_block: 15537393, // September 15 2022 - The Merge
         },
     );
@@ -25,8 +25,16 @@ pub static NETWORKS: Lazy<HashMap<u32, Network>> = Lazy::new(|| {
     map.insert(
         11155111,
         Network {
-            base_url: Url::parse("https://eth-sepolia.g.alchemy.com/v2/").unwrap(),
+            base_url: Url::parse("https://eth-sepolia.g.alchemy.com").unwrap(),
             default_from_block: 3000000, // May 1st 2023
+        },
+    );
+
+    map.insert(
+        84532,
+        Network {
+            base_url: Url::parse("https://base-sepolia.g.alchemy.com").unwrap(),
+            default_from_block: 1, // September 26th 2023
         },
     );
 
@@ -48,11 +56,11 @@ pub fn default_from_block(chain_id: u32) -> u64 {
         .unwrap_or(0)
 }
 
-pub fn get_endpoint(chain_id: u32, api_key: &str) -> Result<Url> {
+pub fn get_endpoint(chain_id: u32, path: &str, api_key: &str) -> Result<Url> {
     let endpoint = match get_network(&chain_id) {
         Some(network) => network.base_url,
         None => return Err(Error::UnsupportedChainId(chain_id)),
     };
 
-    Ok(endpoint.join(api_key)?)
+    Ok(endpoint.join(path)?.join(api_key)?)
 }
