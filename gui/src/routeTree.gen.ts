@@ -20,6 +20,9 @@ import { Route as HomeHomeAccountImport } from './routes/_home.home/account'
 import { Route as DialogDialogWalletUnlockIdImport } from './routes/_dialog.dialog/wallet-unlock.$id'
 import { Route as DialogDialogTxReviewIdImport } from './routes/_dialog.dialog/tx-review.$id'
 import { Route as DialogDialogMsgSignIdImport } from './routes/_dialog.dialog/msg-sign.$id'
+import { Route as DialogDialogErc721tokenAddIdImport } from './routes/_dialog.dialog/erc721token-add.$id'
+import { Route as DialogDialogErc20tokenAddIdImport } from './routes/_dialog.dialog/erc20token-add.$id'
+import { Route as DialogDialogErc1155tokenAddIdImport } from './routes/_dialog.dialog/erc1155token-add.$id'
 import { Route as DialogDialogChainAddIdImport } from './routes/_dialog.dialog/chain-add.$id'
 
 // Create Virtual Routes
@@ -92,6 +95,24 @@ const DialogDialogMsgSignIdRoute = DialogDialogMsgSignIdImport.update({
   getParentRoute: () => DialogRoute,
 } as any)
 
+const DialogDialogErc721tokenAddIdRoute =
+  DialogDialogErc721tokenAddIdImport.update({
+    path: '/dialog/erc721token-add/$id',
+    getParentRoute: () => DialogRoute,
+  } as any)
+
+const DialogDialogErc20tokenAddIdRoute =
+  DialogDialogErc20tokenAddIdImport.update({
+    path: '/dialog/erc20token-add/$id',
+    getParentRoute: () => DialogRoute,
+  } as any)
+
+const DialogDialogErc1155tokenAddIdRoute =
+  DialogDialogErc1155tokenAddIdImport.update({
+    path: '/dialog/erc1155token-add/$id',
+    getParentRoute: () => DialogRoute,
+  } as any)
+
 const DialogDialogChainAddIdRoute = DialogDialogChainAddIdImport.update({
   path: '/dialog/chain-add/$id',
   getParentRoute: () => DialogRoute,
@@ -157,6 +178,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DialogDialogChainAddIdImport
       parentRoute: typeof DialogImport
     }
+    '/_dialog/dialog/erc1155token-add/$id': {
+      id: '/_dialog/dialog/erc1155token-add/$id'
+      path: '/dialog/erc1155token-add/$id'
+      fullPath: '/dialog/erc1155token-add/$id'
+      preLoaderRoute: typeof DialogDialogErc1155tokenAddIdImport
+      parentRoute: typeof DialogImport
+    }
+    '/_dialog/dialog/erc20token-add/$id': {
+      id: '/_dialog/dialog/erc20token-add/$id'
+      path: '/dialog/erc20token-add/$id'
+      fullPath: '/dialog/erc20token-add/$id'
+      preLoaderRoute: typeof DialogDialogErc20tokenAddIdImport
+      parentRoute: typeof DialogImport
+    }
+    '/_dialog/dialog/erc721token-add/$id': {
+      id: '/_dialog/dialog/erc721token-add/$id'
+      path: '/dialog/erc721token-add/$id'
+      fullPath: '/dialog/erc721token-add/$id'
+      preLoaderRoute: typeof DialogDialogErc721tokenAddIdImport
+      parentRoute: typeof DialogImport
+    }
     '/_dialog/dialog/msg-sign/$id': {
       id: '/_dialog/dialog/msg-sign/$id'
       path: '/dialog/msg-sign/$id'
@@ -186,6 +228,9 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren({
   DialogRoute: DialogRoute.addChildren({
     DialogDialogChainAddIdRoute,
+    DialogDialogErc1155tokenAddIdRoute,
+    DialogDialogErc20tokenAddIdRoute,
+    DialogDialogErc721tokenAddIdRoute,
     DialogDialogMsgSignIdRoute,
     DialogDialogTxReviewIdRoute,
     DialogDialogWalletUnlockIdRoute,
