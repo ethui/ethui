@@ -33,7 +33,10 @@ export function ERC20TokenAddDialog() {
         <Datapoint label="Token Name" value={token.name} />
         <Datapoint size="small" label="Symbol" value={token.symbol} />
         <Datapoint size="small" label="Decimals" value={token.decimals} />
-        <Datapoint label="Address" value={<AddressView address={token.address} />} />
+        <Datapoint
+          label="Address"
+          value={<AddressView address={token.address} />}
+        />
       </Grid>
 
       <Stack direction="row" spacing={2}>
