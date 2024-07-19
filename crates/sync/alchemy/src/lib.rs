@@ -22,11 +22,11 @@ pub struct Alchemy {
 }
 
 impl Alchemy {
-    pub fn new(api_key: &str, db: Db, chain_id: u32, path: &str) -> Result<Self> {
+    pub fn new(api_key: &str, db: Db, chain_id: u32) -> Result<Self> {
         Ok(Self {
             chain_id,
             db,
-            client: Client::new(chain_id, api_key, path)?,
+            client: Client::new(chain_id, api_key)?,
         })
     }
 
