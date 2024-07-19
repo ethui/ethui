@@ -8,8 +8,8 @@ import { useDialog } from "@/hooks";
 import { AddressView, Datapoint } from "@/components";
 import { useNetworks } from "@/store";
 
-export const Route = createFileRoute("/_dialog/dialog/erc1155token-add/$id")({
-  component: ERC1155TokenAddDialog,
+export const Route = createFileRoute("/_dialog/dialog/erc1155-add/$id")({
+  component: ERC1155AddDialog,
 });
 
 export interface ERC1155Data {
@@ -17,7 +17,7 @@ export interface ERC1155Data {
   token_id: number;
 }
 
-export function ERC1155TokenAddDialog() {
+export function ERC1155AddDialog() {
   const { id } = Route.useParams();
   const { data: token, send } = useDialog<ERC1155Data>(id);
   const network = useNetworks((s) => s.current);

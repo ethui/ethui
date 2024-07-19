@@ -8,11 +8,11 @@ import { useDialog } from "@/hooks";
 import { AddressView, Datapoint } from "@/components";
 import { useNetworks } from "@/store";
 
-export const Route = createFileRoute("/_dialog/dialog/erc20token-add/$id")({
-  component: ERC20TokenAddDialog,
+export const Route = createFileRoute("/_dialog/dialog/erc20-add/$id")({
+  component: ERC20AddDialog,
 });
 
-export function ERC20TokenAddDialog() {
+export function ERC20AddDialog() {
   const { id } = Route.useParams();
   const { data: token, send } = useDialog<TokenMetadata>(id);
   const network = useNetworks((s) => s.current);

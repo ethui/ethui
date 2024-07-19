@@ -31,16 +31,16 @@ impl TokenAdd {
         TokenAddBuilder::default()
     }
 
-    pub async fn get_current_chain_id(&self) -> Result<u32> {
+    pub async fn get_current_chain_id(&self) -> u32 {
         let networks = Networks::read().await;
         let current_network = networks.get_current();
-        Ok(current_network.chain_id)
+        current_network.chain_id
     }
 
-    pub async fn get_current_wallet_address(&self) -> Result<Address> {
+    pub async fn get_current_wallet_address(&self) -> Address {
         let wallets = Wallets::read().await;
         let wallet_address = wallets.get_current_wallet().get_current_address().await;
-        Ok(wallet_address)
+        wallet_address
     }
 
     pub fn check_type(&self) -> Result<()> {
@@ -57,8 +57,10 @@ impl TokenAdd {
             if symbol.len() > 11 {
                 return Err(Error::SymbolInvalid(symbol));
             }
+            Ok(())
+        } else {
+            Err(Error::ParseError)
         }
-        Ok(())
     }
 
     pub fn check_decimals(&self) -> Result<()> {
@@ -67,12 +69,14 @@ impl TokenAdd {
             if decimals > 36 {
                 return Err(Error::DecimalsInvalid(decimals));
             }
+            Ok(())
+        } else {
+            Err(Error::ParseError)
         }
-        Ok(())
     }
 
     pub async fn check_network(&self) -> Result<()> {
-        let current_chain_id = self.get_current_chain_id().await?;
+        let current_chain_id = self.get_current_chain_id().await;
         let chain_id = self.chain_id.unwrap_or(current_chain_id);
         if current_chain_id != chain_id {
             return Err(Error::NetworkInvalid);
@@ -84,36 +88,32 @@ impl TokenAdd {
         self.check_type()?;
         self.check_network().await?;
 
-        match self._type.as_str() {
+        let dialog = match self._type.as_str() {
             "ERC20" => {
                 self.check_symbol()?;
                 self.check_decimals()?;
                 // TODO: check if 'type' from call matches the added 'tokenType'
+                Dialog::new(
+                    "erc20-add",
+                    serde_json::to_value(&self.erc20_token).unwrap(),
+                )
             }
             "ERC721" => {
                 // TODO: check if 'type' from call matches the added 'tokenType'
                 // TODO: check if wallet is the owner of the token
+                Dialog::new(
+                    "erc721-add",
+                    serde_json::to_value(&self.erc721_token).unwrap(),
+                )
             }
             "ERC1155" => {
                 // TODO: check if 'type' from call matches the added 'tokenType'
                 // TODO: check if wallet is the owner of the token
+                Dialog::new(
+                    "erc1155-add",
+                    serde_json::to_value(&self.erc1155_token).unwrap(),
+                )
             }
-            _ => return Err(Error::TypeInvalid(self._type.clone())),
-        }
-
-        let dialog = match self._type.as_str() {
-            "ERC20" => Dialog::new(
-                "erc20token-add",
-                serde_json::to_value(&self.erc20_token).unwrap(),
-            ),
-            "ERC721" => Dialog::new(
-                "erc721token-add",
-                serde_json::to_value(&self.erc721_token).unwrap(),
-            ),
-            "ERC1155" => Dialog::new(
-                "erc1155token-add",
-                serde_json::to_value(&self.erc1155_token).unwrap(),
-            ),
             _ => return Err(Error::TypeInvalid(self._type.clone())),
         };
         dialog.open().await?;
@@ -127,7 +127,7 @@ impl TokenAdd {
                     }
                 }
 
-                DialogMsg::Close => return Err(Error::UserRejected),
+                DialogMsg::Close => return Err(Error::UserRejectedDialog),
             }
         }
 
@@ -135,24 +135,12 @@ impl TokenAdd {
     }
 
     pub async fn on_accept(&self) -> Result<()> {
-        let current_wallet_address = self.get_current_wallet_address().await?;
-        let current_chain_id = self.get_current_chain_id().await?;
+        let current_wallet_address = self.get_current_wallet_address().await;
+        let current_chain_id = self.get_current_chain_id().await;
         match self._type.as_str() {
-            "ERC20" => {
-                if let Some(erc20_token) = &self.erc20_token {
-                    print!("\nAdd ERC20: {}\n", erc20_token.address);
-                }
-            }
-            "ERC721" => {
-                if let Some(erc721_token) = &self.erc721_token {
-                    print!("\nAdd ERC721: {}\n", erc721_token.address);
-                }
-            }
-            "ERC1155" => {
-                if let Some(erc1155_token) = &self.erc1155_token {
-                    print!("\nAdd ERC1155: {}\n", erc1155_token.address);
-                }
-            }
+            "ERC20" => if let Some(erc20_token) = &self.erc20_token {},
+            "ERC721" => if let Some(erc721_token) = &self.erc721_token {},
+            "ERC1155" => if let Some(erc1155_token) = &self.erc1155_token {},
             _ => return Err(Error::TypeInvalid(self._type.clone())),
         }
 

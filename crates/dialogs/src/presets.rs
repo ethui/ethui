@@ -48,27 +48,27 @@ pub(super) static PRESETS: Lazy<HashMap<String, Preset>> = Lazy::new(|| {
     );
 
     presets.insert(
-        "erc20token-add".into(),
+        "erc20-add".into(),
         Preset {
-            title: "Add ERC20 Token".into(),
+            title: "Add ERC20".into(),
             w: 400.0,
             h: 500.0,
         },
     );
 
     presets.insert(
-        "erc721token-add".into(),
+        "erc721-add".into(),
         Preset {
-            title: "Add ERC721 Token".into(),
+            title: "Add ERC721".into(),
             w: 400.0,
             h: 500.0,
         },
     );
 
     presets.insert(
-        "erc1155token-add".into(),
+        "erc1155-add".into(),
         Preset {
-            title: "Add ERC1155 Token".into(),
+            title: "Add ERC1155".into(),
             w: 400.0,
             h: 500.0,
         },
