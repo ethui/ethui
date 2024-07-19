@@ -10,7 +10,10 @@ use serde_json::json;
 use crate::{networks, types::AlchemyAssetTransfer, Result};
 
 #[derive(Debug)]
-pub(crate) struct Client(Provider<RetryClient<Http>>);
+pub(crate) struct Client {
+    v2_provider: Provider<RetryClient<Http>>,
+    nft_v3_provider: Provider<RetryClient<Http>>,
+}
 
 pub(crate) enum Direction {
     From(Address),
@@ -19,23 +22,44 @@ pub(crate) enum Direction {
 
 impl Client {
     pub fn new(chain_id: u32, api_key: &str) -> Result<Self> {
-        let endpoint = networks::get_endpoint(chain_id, api_key)?;
-        let http = Http::new(endpoint);
+        let v2_provider = {
+            let endpoint = networks::get_endpoint(chain_id, "v2/", api_key)?;
+            let http = Http::new(endpoint);
+            let policy = Box::<HttpRateLimitRetryPolicy>::default();
 
-        let policy = Box::<HttpRateLimitRetryPolicy>::default();
+            let res = RetryClientBuilder::default()
+                .rate_limit_retries(10)
+                .timeout_retries(3)
+                .initial_backoff(Duration::from_millis(500))
+                .compute_units_per_second(300)
+                .build(http, policy);
 
-        let res = RetryClientBuilder::default()
-            .rate_limit_retries(10)
-            .timeout_retries(3)
-            .initial_backoff(Duration::from_millis(500))
-            .compute_units_per_second(300)
-            .build(http, policy);
+            Provider::new(res)
+        };
 
-        Ok(Self(Provider::new(res)))
+        let nft_v3_provider = {
+            let endpoint = networks::get_endpoint(chain_id, "nft/v3/", api_key)?;
+            let http = Http::new(endpoint);
+            let policy = Box::<HttpRateLimitRetryPolicy>::default();
+
+            let res = RetryClientBuilder::default()
+                .rate_limit_retries(10)
+                .timeout_retries(3)
+                .initial_backoff(Duration::from_millis(500))
+                .compute_units_per_second(300)
+                .build(http, policy);
+
+            Provider::new(res)
+        };
+
+        Ok(Self {
+            v2_provider,
+            nft_v3_provider,
+        })
     }
 
     pub async fn get_block_number(&self) -> Result<U64> {
-        let block = self.0.get_block_number().await?;
+        let block = self.v2_provider.get_block_number().await?;
         Ok(block.to_alloy())
     }
 
@@ -66,7 +90,7 @@ impl Client {
         }
 
         let req: AssetTransfers = self
-            .0
+            .v2_provider
             .request("alchemy_getAssetTransfers", json!([params]))
             .await?;
 
@@ -82,7 +106,7 @@ impl Client {
 
     pub async fn get_native_balance(&self, address: Address) -> Result<U256> {
         Ok(self
-            .0
+            .v2_provider
             .get_balance(address.to_ethers(), None)
             .await
             .map(|x| x.to_alloy())?)
@@ -110,7 +134,10 @@ impl Client {
         }
 
         let params = json!([format!("0x{:x}", address), "erc20"]);
-        let res: Balances = self.0.request("alchemy_getTokenBalances", params).await?;
+        let res: Balances = self
+            .v2_provider
+            .request("alchemy_getTokenBalances", params)
+            .await?;
 
         Ok(res.token_balances.into_iter().map(Into::into).collect())
     }
