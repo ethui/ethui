@@ -16,7 +16,7 @@ export function Account() {
   return (
     <>
       <Navbar homepage-tour="account">
-        <AddressView variant="h6" address={address}/>
+        <AddressView variant="h6" address={address} />
       </Navbar>
       <BalancesList />
     </>

@@ -97,7 +97,7 @@ export function HomePageLayout() {
   }, []);
 
   useEffect(() => {
-    if (!settings?.onboarded) {
+    if (settings?.onboarded) {
       const timer = setTimeout(() => {
         setRun(true);
       }, 500);
@@ -163,17 +163,16 @@ export function HomePageLayout() {
             backgroundColor: "white",
             color: "black",
             "& .MuiMobileStepper-dot": {
-              backgroundColor: "grey", 
+              backgroundColor: "grey",
             },
             "& .MuiMobileStepper-dotActive": {
-              backgroundColor: "black", 
+              backgroundColor: "black",
             },
           }}
           nextButton={
             <Button
               size="small"
               onClick={primaryProps.onClick}
-              disabled={stepIndex === totalSteps - 1}
               style={{ color: "black" }}
             >
               {theme.direction === "rtl" ? (
@@ -202,6 +201,8 @@ export function HomePageLayout() {
     );
   };
 
+  const isDarkTheme = theme.palette.mode !== "light";
+
   return (
     <>
       <Joyride
@@ -211,6 +212,8 @@ export function HomePageLayout() {
         steps={steps}
         stepIndex={stepIndex}
         tooltipComponent={CustomTooltip}
+        disableOverlayClose
+        spotlightClicks
         styles={{
           options: {
             arrowColor: "white",
@@ -225,6 +228,9 @@ export function HomePageLayout() {
             boxShadow: "0 0 0 9999px rgba(0, 0, 0, 0.8)",
             borderRadius: 3,
           },
+          beaconInner: {
+            backgroundColor: isDarkTheme ? "#fff" : "#000",
+          },
         }}
       />
       <CommandBar>
@@ -234,7 +240,14 @@ export function HomePageLayout() {
           maxSnack={3}
           dense
         >
-          <Sidebar sx={drawerPaperStyle(theme)} tabs={tabs} />
+          <Sidebar
+            sx={drawerPaperStyle(theme)}
+            tabs={tabs}
+            onStartTour={() => {
+              setStepIndex(0);
+              setRun(true);
+            }}
+          />
           <Box sx={contentStyle(theme)}>
             <Outlet />
           </Box>

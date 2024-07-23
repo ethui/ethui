@@ -1,4 +1,4 @@
-import { SettingsSharp, TerminalSharp } from "@mui/icons-material";
+import { SettingsSharp, TerminalSharp, HelpSharp } from "@mui/icons-material";
 import { Drawer, Stack, SxProps, Toolbar } from "@mui/material";
 import { parseInt, range } from "lodash-es";
 import { useKBar } from "kbar";
@@ -19,15 +19,13 @@ import {
   SidebarButton,
 } from "@/components";
 
-
-
 interface SidebarProps {
   sx?: SxProps;
   tabs: Tab[];
+  onStartTour: () => void;
 }
 
-export function Sidebar({ sx, tabs}: SidebarProps) {
-
+export function Sidebar({ sx, tabs, onStartTour }: SidebarProps) {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const breakpoint = theme.breakpoints.down("sm");
@@ -78,8 +76,7 @@ export function Sidebar({ sx, tabs}: SidebarProps) {
 
   return (
     <Drawer PaperProps={{ variant: "lighter", sx }} variant="permanent">
-      <header>
-      </header>
+      <header></header>
       <Toolbar sx={{ p: 2 }} data-tauri-drag-region="true">
         {type !== "Darwin" && <Logo width={40} />}
       </Toolbar>
@@ -126,6 +123,13 @@ export function Sidebar({ sx, tabs}: SidebarProps) {
             onClick={toggle}
             icon={SettingsSharp}
             label="Settings"
+          />
+        </div>
+        <div className="tour">
+          <SidebarButton
+            onClick={onStartTour}
+            icon={HelpSharp}
+            label="Start Tour"
           />
         </div>
         <SettingsModal />

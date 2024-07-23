@@ -47,7 +47,12 @@ export function Connections() {
 
 function Domain({ domain, peers }: { domain: string; peers: Peer[] }) {
   return (
-    <Stack direction="row" alignItems="center" spacing={2} homepage-tour="connections">
+    <Stack
+      direction="row"
+      alignItems="center"
+      spacing={2}
+      homepage-tour="connections"
+    >
       <Badge>
         <Avatar sx={{ width: 30, height: 30 }} src={peers[0].favicon}>
           {peers[0].origin.replace(/https?:\/\//, "").slice(0, 2)}
@@ -96,7 +101,11 @@ function AffinityForm({ domain }: { domain: string }) {
       : current.sticky.toString();
 
   return (
-    <FormControl fullWidth variant="standard" homepage-tour="connections-networks">
+    <FormControl
+      fullWidth
+      variant="standard"
+      homepage-tour="connections-networks"
+    >
       <Select
         labelId="network-select-label"
         label="Network"

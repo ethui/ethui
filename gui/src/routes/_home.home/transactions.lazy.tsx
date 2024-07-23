@@ -97,7 +97,7 @@ export function Txs() {
                 <Details tx={tx} chainId={chainId} />
               </AccordionDetails>
             </Accordion>
-          ))
+          )),
         )}
       </InfiniteScroll>
     </>
