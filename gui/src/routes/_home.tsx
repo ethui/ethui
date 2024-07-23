@@ -97,7 +97,7 @@ export function HomePageLayout() {
   }, []);
 
   useEffect(() => {
-    if (settings?.onboarded) {
+    if (!settings?.onboarded) {
       const timer = setTimeout(() => {
         setRun(true);
       }, 500);

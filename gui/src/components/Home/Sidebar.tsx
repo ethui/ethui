@@ -57,13 +57,13 @@ export function Sidebar({ sx, tabs, onStartTour }: SidebarProps) {
   useKeyPress(
     range(1, tabs.length + 1),
     { meta: true },
-    handleKeyboardNavigation
+    handleKeyboardNavigation,
   );
 
   useKeyPress(
     range(1, tabs.length + 1),
     { ctrl: true },
-    handleKeyboardNavigation
+    handleKeyboardNavigation,
   );
 
   useKeyPress(["F", "f"], { meta: true }, handleFastModeToggle);
