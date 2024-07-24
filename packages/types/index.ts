@@ -13,6 +13,18 @@ export interface TokenMetadata {
   decimals: number;
 }
 
+export interface Erc20Metadata {
+  decimals: number;
+  logo: string;
+  name: string;
+  symbol: string;
+}
+
+export interface Erc20FullData {
+  metadata: TokenMetadata;
+  alchemy_metadata: Erc20Metadata;
+}
+
 export interface Tx {
   hash: `0x${string}`;
   from: Address;

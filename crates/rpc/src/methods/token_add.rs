@@ -1,6 +1,7 @@
 use crate::{Error, Result};
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_networks::Networks;
+use ethui_sync::{get_alchemy, Erc20Metadata};
 use ethui_types::{Address, GlobalState, TokenMetadata, U256};
 use ethui_wallets::{WalletControl, Wallets};
 use serde::{Deserialize, Serialize};
@@ -12,6 +13,12 @@ pub struct TokenAdd {
     erc1155_token: Option<ERC1155Data>,
     chain_id: Option<u32>,
     _type: String,
+}
+
+#[derive(Debug, Serialize, Clone)]
+pub struct Erc20FullData {
+    metadata: TokenMetadata,
+    alchemy_metadata: Erc20Metadata,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -43,36 +50,56 @@ impl TokenAdd {
         wallet_address
     }
 
+    pub async fn get_erc20_metadata(&self, chain_id: u32) -> Result<Erc20Metadata> {
+        if let Some(erc20_token) = &self.erc20_token {
+            let alchemy = get_alchemy(chain_id).await.unwrap();
+            let metadata = alchemy
+                .fetch_erc20_metadata(erc20_token.address.clone())
+                .await
+                .map_err(|_| Error::ParseError)?;
+            Ok(metadata)
+        } else {
+            Err(Error::ParseError)
+        }
+    }
+
+    pub async fn set_erc20_metadata(
+        &self,
+        metadata: TokenMetadata,
+        alchemy_metadata: Erc20Metadata,
+    ) -> Result<TokenMetadata> {
+        // NOTE: metadata fetched from Alchemy is prioritized
+        let metadata = TokenMetadata {
+            address: metadata.address,
+            name: if alchemy_metadata.name == Some("".to_string()) {
+                metadata.name
+            } else {
+                alchemy_metadata.name
+            },
+            symbol: if alchemy_metadata.symbol == Some("".to_string()) {
+                metadata.symbol
+            } else {
+                alchemy_metadata.symbol
+            },
+            decimals: if (alchemy_metadata.decimals == None || alchemy_metadata.decimals == Some(0))
+                && (metadata.decimals == None || metadata.decimals == Some(0))
+            {
+                Some(18)
+            } else if alchemy_metadata.decimals == None || alchemy_metadata.decimals == Some(0) {
+                metadata.decimals
+            } else {
+                alchemy_metadata.decimals
+            },
+        };
+        Ok(metadata)
+    }
+
     pub fn check_type(&self) -> Result<()> {
         if self._type != "ERC20" && self._type != "ERC721" && self._type != "ERC1155" {
             return Err(Error::TypeInvalid(self._type.clone()));
         }
 
         Ok(())
-    }
-
-    pub fn check_symbol(&self) -> Result<()> {
-        if let Some(erc20_token) = &self.erc20_token {
-            let symbol = erc20_token.symbol.clone().unwrap_or_default();
-            if symbol.len() > 11 {
-                return Err(Error::SymbolInvalid(symbol));
-            }
-            Ok(())
-        } else {
-            Err(Error::ParseError)
-        }
-    }
-
-    pub fn check_decimals(&self) -> Result<()> {
-        if let Some(erc20_token) = &self.erc20_token {
-            let decimals = erc20_token.decimals.unwrap_or(0);
-            if decimals > 36 {
-                return Err(Error::DecimalsInvalid(decimals));
-            }
-            Ok(())
-        } else {
-            Err(Error::ParseError)
-        }
     }
 
     pub async fn check_network(&self) -> Result<()> {
@@ -84,19 +111,54 @@ impl TokenAdd {
         Ok(())
     }
 
+    pub async fn check_erc20_metadata(
+        &self,
+        metadata: TokenMetadata,
+        alchemy_metadata: Erc20Metadata,
+    ) -> Result<()> {
+        // NOTE: symbol is required for the token to be added/rendered
+        if alchemy_metadata.symbol == Some("".to_string())
+            && (metadata.symbol == None || metadata.symbol == Some("".to_string()))
+        {
+            return Err(Error::SymbolMissing);
+        } else if alchemy_metadata.symbol.unwrap_or("".to_string()).len() > 11
+            || metadata.symbol.unwrap_or("".to_string()).len() > 11
+        {
+            return Err(Error::SymbolInvalid);
+        } else if alchemy_metadata.decimals.unwrap_or(0) > 36 || metadata.decimals.unwrap_or(0) > 36
+        {
+            return Err(Error::DecimalsInvalid);
+        }
+        Ok(())
+    }
+
     pub async fn run(self) -> Result<()> {
         self.check_type()?;
         self.check_network().await?;
-
+        let chain_id = self.get_current_chain_id().await;
+        let mut erc20_full_data: Option<Erc20FullData> = None;
         let dialog = match self._type.as_str() {
             "ERC20" => {
-                self.check_symbol()?;
-                self.check_decimals()?;
-                // TODO: check if 'type' from call matches the added 'tokenType'
-                Dialog::new(
-                    "erc20-add",
-                    serde_json::to_value(&self.erc20_token).unwrap(),
+                let alchemy_metadata;
+                match self.get_erc20_metadata(chain_id).await {
+                    Ok(metadata) => alchemy_metadata = metadata,
+                    Err(_e) => {
+                        return Err(Error::TokenInvalid);
+                    }
+                }
+                self.check_erc20_metadata(
+                    self.erc20_token.clone().unwrap(),
+                    alchemy_metadata.clone(),
                 )
+                .await?;
+                let final_metadata = self
+                    .set_erc20_metadata(self.erc20_token.clone().unwrap(), alchemy_metadata.clone())
+                    .await?;
+                erc20_full_data = Some(Erc20FullData {
+                    metadata: final_metadata,
+                    alchemy_metadata,
+                });
+                Dialog::new("erc20-add", serde_json::to_value(&erc20_full_data).unwrap())
             }
             "ERC721" => {
                 // TODO: check if 'type' from call matches the added 'tokenType'
@@ -122,7 +184,14 @@ impl TokenAdd {
             match msg {
                 DialogMsg::Data(msg) => {
                     if let Some("accept") = msg.as_str() {
-                        self.on_accept().await?;
+                        match self._type.as_str() {
+                            "ERC20" => self.on_accept_erc20(chain_id, erc20_full_data).await?,
+                            // TODO
+                            "ERC721" => self.on_accept_erc721().await?,
+                            // TODO
+                            "ERC1155" => self.on_accept_erc1155().await?,
+                            _ => return Err(Error::TypeInvalid(self._type.clone())),
+                        }
                         break;
                     }
                 }
@@ -134,15 +203,42 @@ impl TokenAdd {
         Ok(())
     }
 
-    pub async fn on_accept(&self) -> Result<()> {
+    pub async fn on_accept_erc20(
+        &self,
+        chain_id: u32,
+        erc20_full_data: Option<Erc20FullData>,
+    ) -> Result<()> {
+        let db = ethui_db::get();
+        let current_wallet_address = self.get_current_wallet_address().await;
+        let erc20_data = erc20_full_data.unwrap();
+        let _save_metadata = db
+            .save_erc20_metadata(chain_id, erc20_data.metadata.clone())
+            .await;
+        let _save_balance = db
+            .save_erc20_balance(
+                chain_id,
+                erc20_data.metadata.address,
+                current_wallet_address,
+                U256::from(0),
+            )
+            .await;
+        Ok(())
+    }
+
+    // TODO
+    pub async fn on_accept_erc721(&self) -> Result<()> {
+        let db = ethui_db::get();
         let current_wallet_address = self.get_current_wallet_address().await;
         let current_chain_id = self.get_current_chain_id().await;
-        match self._type.as_str() {
-            "ERC20" => if let Some(erc20_token) = &self.erc20_token {},
-            "ERC721" => if let Some(erc721_token) = &self.erc721_token {},
-            "ERC1155" => if let Some(erc1155_token) = &self.erc1155_token {},
-            _ => return Err(Error::TypeInvalid(self._type.clone())),
-        }
+
+        Ok(())
+    }
+
+    // TODO
+    pub async fn on_accept_erc1155(&self) -> Result<()> {
+        let db = ethui_db::get();
+        let current_wallet_address = self.get_current_wallet_address().await;
+        let current_chain_id = self.get_current_chain_id().await;
 
         Ok(())
     }

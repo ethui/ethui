@@ -4,11 +4,12 @@ mod networks;
 mod types;
 mod utils;
 
+pub use client::Erc20Metadata;
 use ethui_db::Db;
 use ethui_types::{Address, U64};
 pub use networks::supports_network;
 use tracing::instrument;
-pub use utils::get_current_api_key;
+pub use utils::{get_alchemy, get_current_api_key};
 
 pub use self::error::{Error, Result};
 use self::networks::default_from_block;
@@ -98,5 +99,10 @@ impl Alchemy {
             .await?;
 
         Ok(())
+    }
+
+    pub async fn fetch_erc20_metadata(&self, address: Address) -> Result<Erc20Metadata> {
+        let metadata = self.client.get_erc20_metadata(address).await?;
+        Ok(metadata)
     }
 }

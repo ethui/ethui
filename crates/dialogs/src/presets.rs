@@ -52,7 +52,7 @@ pub(super) static PRESETS: Lazy<HashMap<String, Preset>> = Lazy::new(|| {
         Preset {
             title: "Add ERC20".into(),
             w: 400.0,
-            h: 500.0,
+            h: 400.0,
         },
     );
 

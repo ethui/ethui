@@ -66,11 +66,20 @@ pub enum Error {
     #[error("The user rejected the request")]
     UserRejectedDialog,
 
-    #[error("Invalid symbol {0}: longer than 11 characters")]
-    SymbolInvalid(String),
+    #[error("Invalid token")]
+    TokenInvalid,
 
-    #[error("Invalid decimals {0}: must be 0 <= 36")]
-    DecimalsInvalid(u8),
+    #[error("Invalid token: 'symbol' is needed")]
+    SymbolMissing,
+
+    #[error("Invalid symbol : longer than 11 characters")]
+    SymbolInvalid,
+
+    #[error("Invalid token: 'decimals' is needed")]
+    DecimalsMissing,
+
+    #[error("Invalid decimals : must be 0 <= 36")]
+    DecimalsInvalid,
 
     #[error("The Provider is not connected to the requested chain")]
     NetworkInvalid,
@@ -88,8 +97,10 @@ impl From<Error> for jsonrpc_core::Error {
             Error::WalletNotFound(..) => ErrorCode::ServerError(4100),
             Error::ParseError => ErrorCode::ServerError(-32700),
             Error::UserRejectedDialog => ErrorCode::ServerError(4001),
-            Error::SymbolInvalid(..) => ErrorCode::ServerError(-32602),
-            Error::DecimalsInvalid(..) => ErrorCode::ServerError(-32602),
+            Error::TokenInvalid => ErrorCode::ServerError(-32602),
+            Error::SymbolMissing => ErrorCode::ServerError(-32602),
+            Error::SymbolInvalid => ErrorCode::ServerError(-32602),
+            Error::DecimalsInvalid => ErrorCode::ServerError(-32602),
             Error::NetworkInvalid => ErrorCode::ServerError(4901),
             Error::TypeInvalid(..) => ErrorCode::ServerError(-32603),
             _ => ErrorCode::InternalError,

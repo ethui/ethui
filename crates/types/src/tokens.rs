@@ -12,7 +12,7 @@ pub struct TokenBalance {
     pub metadata: TokenMetadata,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Clone)]
 pub struct TokenMetadata {
     pub address: Address,
     pub name: Option<String>,

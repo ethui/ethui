@@ -3,10 +3,11 @@ import { Stack, Typography, Button, Grid } from "@mui/material";
 import { isDirty, isValid } from "zod";
 import { window as tauriWindow } from "@tauri-apps/api";
 
-import { TokenMetadata } from "@ethui/types";
+import { Erc20FullData } from "@ethui/types";
 import { useDialog } from "@/hooks";
 import { AddressView, Datapoint } from "@/components";
 import { useNetworks } from "@/store";
+import { IconToken } from "@/components/Icons";
 
 export const Route = createFileRoute("/_dialog/dialog/erc20-add/$id")({
   component: ERC20AddDialog,
@@ -14,7 +15,7 @@ export const Route = createFileRoute("/_dialog/dialog/erc20-add/$id")({
 
 export function ERC20AddDialog() {
   const { id } = Route.useParams();
-  const { data: token, send } = useDialog<TokenMetadata>(id);
+  const { data: token, send } = useDialog<Erc20FullData>(id);
   const network = useNetworks((s) => s.current);
 
   if (!network) return null;
@@ -28,14 +29,27 @@ export function ERC20AddDialog() {
       <Typography textAlign={"center"}>
         This allows the following token to be added to your wallet.
       </Typography>
-
       <Grid container rowSpacing={2}>
-        <Datapoint label="Token Name" value={token.name} />
-        <Datapoint size="small" label="Symbol" value={token.symbol} />
-        <Datapoint size="small" label="Decimals" value={token.decimals} />
+        <Datapoint
+          label=""
+          value={
+            <Stack direction="row" spacing={1.5} textAlign="center">
+              <IconToken iconUrl={token.alchemy_metadata.logo} />
+              <Typography alignSelf={"center"}>
+                {token.metadata.name}
+              </Typography>
+            </Stack>
+          }
+        />
+        <Datapoint size="small" label="Symbol" value={token.metadata.symbol} />
+        <Datapoint
+          size="small"
+          label="Decimals"
+          value={token.metadata.decimals}
+        />
         <Datapoint
           label="Address"
-          value={<AddressView address={token.address} />}
+          value={<AddressView address={token.metadata.address} />}
         />
       </Grid>
 

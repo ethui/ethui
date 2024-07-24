@@ -20,6 +20,21 @@ pub(crate) enum Direction {
     To(Address),
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Erc20MetadataResponse {
+    pub result: Erc20Metadata,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct Erc20Metadata {
+    pub decimals: Option<u8>,
+    pub logo: Option<String>,
+    pub name: Option<String>,
+    pub symbol: Option<String>,
+}
+
 impl Client {
     pub fn new(chain_id: u32, api_key: &str) -> Result<Self> {
         let v2_provider = {
@@ -140,5 +155,14 @@ impl Client {
             .await?;
 
         Ok(res.token_balances.into_iter().map(Into::into).collect())
+    }
+
+    pub async fn get_erc20_metadata(&self, address: Address) -> Result<Erc20Metadata> {
+        let params = json!([format!("0x{:x}", address)]);
+        let response: Erc20Metadata = self
+            .v2_provider
+            .request("alchemy_getTokenMetadata", params)
+            .await?;
+        Ok(response)
     }
 }
