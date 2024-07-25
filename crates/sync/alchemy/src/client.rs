@@ -6,33 +6,23 @@ use ethers::providers::{
 use ethui_types::{events::Tx, Address, ToAlloy, ToEthers, TokenMetadata, U256, U64};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
+use url::Url;
 
-use crate::{networks, types::AlchemyAssetTransfer, Result};
+use crate::{
+    networks,
+    types::{AlchemyAssetTransfer, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse},
+    Error, Result,
+};
 
 #[derive(Debug)]
 pub(crate) struct Client {
     v2_provider: Provider<RetryClient<Http>>,
-    nft_v3_provider: Provider<RetryClient<Http>>,
+    nft_v3_endpoint: Url,
 }
 
 pub(crate) enum Direction {
     From(Address),
     To(Address),
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Erc20MetadataResponse {
-    pub result: Erc20Metadata,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct Erc20Metadata {
-    pub decimals: Option<u8>,
-    pub logo: Option<String>,
-    pub name: Option<String>,
-    pub symbol: Option<String>,
 }
 
 impl Client {
@@ -52,24 +42,11 @@ impl Client {
             Provider::new(res)
         };
 
-        let nft_v3_provider = {
-            let endpoint = networks::get_endpoint(chain_id, "nft/v3/", api_key)?;
-            let http = Http::new(endpoint);
-            let policy = Box::<HttpRateLimitRetryPolicy>::default();
-
-            let res = RetryClientBuilder::default()
-                .rate_limit_retries(10)
-                .timeout_retries(3)
-                .initial_backoff(Duration::from_millis(500))
-                .compute_units_per_second(300)
-                .build(http, policy);
-
-            Provider::new(res)
-        };
+        let nft_v3_endpoint = networks::get_endpoint(chain_id, "nft/v3/", api_key)?;
 
         Ok(Self {
             v2_provider,
-            nft_v3_provider,
+            nft_v3_endpoint,
         })
     }
 
@@ -164,5 +141,49 @@ impl Client {
             .request("alchemy_getTokenMetadata", params)
             .await?;
         Ok(response)
+    }
+
+    pub async fn get_erc721_metadata(
+        &self,
+        address: Address,
+        token_id: U256,
+    ) -> Result<ErcMetadataResponse> {
+        let path = format!(
+            "{}/getNFTMetadata?contractAddress={}&tokenId={}&tokenType=ERC721&refreshCache=false",
+            self.nft_v3_endpoint, address, token_id
+        );
+        let response = reqwest::get(&path)
+            .await
+            .map_err(|_e| Error::ErcInvalid)?
+            .text()
+            .await
+            .map_err(|_e| Error::ErcInvalid)?;
+
+        let response_json: ErcMetadataResponse =
+            serde_json::from_str(&response).map_err(|_e| Error::ErcInvalid)?;
+
+        Ok(response_json)
+    }
+
+    pub async fn get_erc721_owners(
+        &self,
+        address: Address,
+        token_id: U256,
+    ) -> Result<ErcOwnersResponse> {
+        let path = format!(
+            "{}/getOwnersForNFT?contractAddress={}&tokenId={}",
+            self.nft_v3_endpoint, address, token_id
+        );
+        let response = reqwest::get(&path)
+            .await
+            .map_err(|_e| Error::ErcInvalid)?
+            .text()
+            .await
+            .map_err(|_e| Error::ErcInvalid)?;
+
+        let response_json: ErcOwnersResponse =
+            serde_json::from_str(&response).map_err(|_e| Error::ErcInvalid)?;
+
+        Ok(response_json)
     }
 }

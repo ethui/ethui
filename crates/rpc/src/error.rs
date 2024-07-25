@@ -75,9 +75,6 @@ pub enum Error {
     #[error("Invalid symbol : longer than 11 characters")]
     SymbolInvalid,
 
-    #[error("Invalid token: 'decimals' is needed")]
-    DecimalsMissing,
-
     #[error("Invalid decimals : must be 0 <= 36")]
     DecimalsInvalid,
 
@@ -86,6 +83,15 @@ pub enum Error {
 
     #[error("Asset type {0} not supported")]
     TypeInvalid(String),
+
+    #[error("Added asset type {0} does not match existing token type {1}")]
+    ErcTypeInvalid(String, String),
+
+    #[error("Suggested asset is not owned by the selected account")]
+    ErcWrongOwner,
+
+    #[error("Unable to verify ownership. Possibly because the standard is not supported or the user's currently selected network does not match the chain of the asset in question.")]
+    ErcInvalid,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -103,6 +109,9 @@ impl From<Error> for jsonrpc_core::Error {
             Error::DecimalsInvalid => ErrorCode::ServerError(-32602),
             Error::NetworkInvalid => ErrorCode::ServerError(4901),
             Error::TypeInvalid(..) => ErrorCode::ServerError(-32603),
+            Error::ErcTypeInvalid(..) => ErrorCode::ServerError(-32002),
+            Error::ErcWrongOwner => ErrorCode::ServerError(-32002),
+            Error::ErcInvalid => ErrorCode::ServerError(-32002),
             _ => ErrorCode::InternalError,
         };
 

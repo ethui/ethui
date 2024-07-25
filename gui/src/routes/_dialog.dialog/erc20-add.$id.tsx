@@ -27,7 +27,7 @@ export function ERC20AddDialog() {
         Add suggested token
       </Typography>
       <Typography textAlign={"center"}>
-        This allows the following token to be added to your wallet.
+        This allows the following asset to be added to your wallet.
       </Typography>
       <Grid container rowSpacing={2}>
         <Datapoint
