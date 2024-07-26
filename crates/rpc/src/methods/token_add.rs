@@ -324,7 +324,7 @@ impl TokenAdd {
                     serde_json::to_value(erc1155_full_data.clone()).unwrap(),
                 )
             }
-
+          
             _ => return Err(Error::TypeInvalid(self._type.clone())),
         };
         dialog.open().await?;

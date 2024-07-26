@@ -61,6 +61,16 @@ pub async fn db_get_erc20_balances(
 }
 
 #[tauri::command]
+pub async fn db_get_erc20_blacklist(
+    chain_id: u32,
+    address: Address,
+    db: tauri::State<'_, Db>,
+) -> Result<Vec<TokenBalance>> {
+    db.get_erc20_blacklist(chain_id, address)
+        .await
+}
+
+#[tauri::command]
 pub async fn db_get_native_balance(
     chain_id: u32,
     address: Address,
@@ -120,6 +130,19 @@ pub async fn db_set_erc20_blacklist(
     db: tauri::State<'_, Db>,
 ) -> Result<()> {
     db.set_erc20_blacklist(chain_id, address, blacklisted)
+        .await?;
+    ethui_broadcast::ui_notify(UINotify::BalancesUpdated).await;
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn db_clear_erc20_blacklist(
+    chain_id: u32,
+    address: Address,
+    db: tauri::State<'_, Db>,
+) -> Result<()> {
+    db.clear_erc20_blacklist(chain_id, address)
         .await?;
     ethui_broadcast::ui_notify(UINotify::BalancesUpdated).await;
 
