@@ -8,8 +8,7 @@ use std::sync::Arc;
 pub use error::{Error, Result};
 use ethui_broadcast::InternalMsg;
 pub use ethui_sync_alchemy::{
-    get_alchemy, Alchemy, Erc1155BalanceResponse, Erc20Metadata, ErcMetadataResponse,
-    ErcOwnersResponse,
+    get_alchemy, Alchemy, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse,
 };
 use ethui_types::{Address, B256};
 use tokio::sync::{mpsc, oneshot, Mutex};

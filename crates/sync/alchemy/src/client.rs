@@ -10,10 +10,7 @@ use url::Url;
 
 use crate::{
     networks,
-    types::{
-        AlchemyAssetTransfer, Erc1155BalanceResponse, Erc20Metadata, ErcMetadataResponse,
-        ErcOwnersResponse,
-    },
+    types::{AlchemyAssetTransfer, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse},
     Error, Result,
 };
 
@@ -146,14 +143,15 @@ impl Client {
         Ok(response)
     }
 
-    pub async fn get_erc721_metadata(
+    pub async fn get_erc_metadata(
         &self,
         address: Address,
         token_id: U256,
+        _type: String,
     ) -> Result<ErcMetadataResponse> {
         let path = format!(
-            "{}/getNFTMetadata?contractAddress={}&tokenId={}&tokenType=ERC721&refreshCache=false",
-            self.nft_v3_endpoint, address, token_id
+            "{}/getNFTMetadata?contractAddress={}&tokenId={}&tokenType={}&refreshCache=false",
+            self.nft_v3_endpoint, address, token_id, _type,
         );
         let response = reqwest::get(&path)
             .await
@@ -168,77 +166,7 @@ impl Client {
         Ok(response_json)
     }
 
-    pub async fn get_erc721_owners(
-        &self,
-        address: Address,
-        token_id: U256,
-    ) -> Result<ErcOwnersResponse> {
-        let path = format!(
-            "{}/getOwnersForNFT?contractAddress={}&tokenId={}",
-            self.nft_v3_endpoint, address, token_id
-        );
-        let response = reqwest::get(&path)
-            .await
-            .map_err(|_e| Error::ErcInvalid)?
-            .text()
-            .await
-            .map_err(|_e| Error::ErcInvalid)?;
-
-        let response_json: ErcOwnersResponse =
-            serde_json::from_str(&response).map_err(|_e| Error::ErcInvalid)?;
-
-        Ok(response_json)
-    }
-
-    pub async fn get_erc1155_metadata(
-        &self,
-        address: Address,
-        token_id: U256,
-    ) -> Result<ErcMetadataResponse> {
-        let path = format!(
-            "{}/getNFTMetadata?contractAddress={}&tokenId={}&tokenType=ERC1155&refreshCache=false",
-            self.nft_v3_endpoint, address, token_id
-        );
-        let response = reqwest::get(&path)
-            .await
-            .map_err(|_e| Error::ErcInvalid)?
-            .text()
-            .await
-            .map_err(|_e| Error::ErcInvalid)?;
-
-        let response_json: ErcMetadataResponse =
-            serde_json::from_str(&response).map_err(|_e| Error::ErcInvalid)?;
-
-        Ok(response_json)
-    }
-
-    pub async fn get_erc1155_owners(
-        &self,
-        address: Address,
-        token_id: U256,
-    ) -> Result<ErcOwnersResponse> {
-        let path = format!(
-            "{}/getOwnersForNFT?contractAddress={}&tokenId={}",
-            self.nft_v3_endpoint, address, token_id
-        );
-        let response = reqwest::get(&path)
-            .await
-            .map_err(|_e| Error::ErcInvalid)?
-            .text()
-            .await
-            .map_err(|_e| Error::ErcInvalid)?;
-
-        let response_json: ErcOwnersResponse =
-            serde_json::from_str(&response).map_err(|_e| Error::ErcInvalid)?;
-
-        Ok(response_json)
-    }
-
-    pub async fn get_erc1155_balances(
-        &self,
-        address: Address,
-        _token_id: U256,
-    ) -> Result<Erc1155BalanceResponse> {
+    pub async fn get_erc_owners(&self, address: Address) -> Result<ErcOwnersResponse> {
         let path = format!(
             "{}/getOwnersForContract?contractAddress={}&withTokenBalances=true",
             self.nft_v3_endpoint, address
@@ -250,7 +178,7 @@ impl Client {
             .await
             .map_err(|_e| Error::ErcInvalid)?;
 
-        let response_json: Erc1155BalanceResponse =
+        let response_json: ErcOwnersResponse =
             serde_json::from_str(&response).map_err(|_e| Error::ErcInvalid)?;
 
         Ok(response_json)

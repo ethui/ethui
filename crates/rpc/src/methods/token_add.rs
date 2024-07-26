@@ -3,9 +3,7 @@ use std::collections::HashSet;
 use crate::{Error, Result};
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_networks::Networks;
-use ethui_sync::{
-    get_alchemy, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse,
-};
+use ethui_sync::{get_alchemy, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse};
 use ethui_types::{Address, GlobalState, TokenMetadata, U256};
 use ethui_wallets::{WalletControl, Wallets};
 use serde::{Deserialize, Serialize};
@@ -65,66 +63,76 @@ impl TokenAdd {
         }
     }
 
-    pub async fn get_erc721_metadata(&self, chain_id: u32) -> Result<ErcMetadataResponse> {
-        if let Some(erc721_token) = &self.erc721_token {
-            let alchemy = get_alchemy(chain_id).await.unwrap();
-            let metadata_response = alchemy
-                .fetch_erc721_metadata(erc721_token.address, erc721_token.token_id)
-                .await
-                .map_err(|_| Error::ParseError)?;
-            Ok(metadata_response)
-        } else {
-            Err(Error::ParseError)
+    pub async fn get_erc_metadata(&self, chain_id: u32) -> Result<ErcMetadataResponse> {
+        let alchemy = get_alchemy(chain_id).await.unwrap();
+        match self._type.as_str() {
+            "ERC721" => {
+                if let Some(erc721_token) = &self.erc721_token {
+                    let metadata_response = alchemy
+                        .fetch_erc_metadata(
+                            erc721_token.address,
+                            erc721_token.token_id,
+                            self._type.clone(),
+                        )
+                        .await
+                        .map_err(|_| Error::ParseError)?;
+                    Ok(metadata_response)
+                } else {
+                    Err(Error::ParseError)
+                }
+            }
+            "ERC1155" => {
+                if let Some(erc1155_token) = &self.erc1155_token {
+                    let metadata_response = alchemy
+                        .fetch_erc_metadata(
+                            erc1155_token.address,
+                            erc1155_token.token_id,
+                            self._type.clone(),
+                        )
+                        .await
+                        .map_err(|_| Error::ParseError)?;
+                    Ok(metadata_response)
+                } else {
+                    Err(Error::ParseError)
+                }
+            }
+            _ => return Err(Error::TypeInvalid(self._type.clone())),
         }
     }
 
-    pub async fn get_erc721_owners(&self, chain_id: u32) -> Result<ErcOwnersResponse> {
-        if let Some(erc721_token) = &self.erc721_token {
-            let alchemy = get_alchemy(chain_id).await.unwrap();
-            let owners_response = alchemy
-                .fetch_erc721_owners(erc721_token.address, erc721_token.token_id)
-                .await
-                .map_err(|_| Error::ParseError)?;
-            Ok(owners_response)
-        } else {
-            Err(Error::ParseError)
-        }
-    }
-
-    pub async fn get_erc1155_metadata(&self, chain_id: u32) -> Result<ErcMetadataResponse> {
-        if let Some(erc1155_token) = &self.erc1155_token {
-            let alchemy = get_alchemy(chain_id).await.unwrap();
-            let metadata_response = alchemy
-                .fetch_erc1155_metadata(erc1155_token.address, erc1155_token.token_id)
-                .await
-                .map_err(|_| Error::ParseError)?;
-            Ok(metadata_response)
-        } else {
-            Err(Error::ParseError)
-        }
-    }
-
-    pub async fn get_erc1155_owners(&self, chain_id: u32) -> Result<ErcOwnersResponse> {
-        if let Some(erc1155_token) = &self.erc1155_token {
-            let alchemy = get_alchemy(chain_id).await.unwrap();
-            let owners_response = alchemy
-                .fetch_erc1155_owners(erc1155_token.address, erc1155_token.token_id)
-                .await
-                .map_err(|_| Error::ParseError)?;
-            Ok(owners_response)
-        } else {
-            Err(Error::ParseError)
+    pub async fn get_erc_owners(&self, chain_id: u32) -> Result<ErcOwnersResponse> {
+        let alchemy = get_alchemy(chain_id).await.unwrap();
+        match self._type.as_str() {
+            "ERC721" => {
+                if let Some(erc721_token) = &self.erc721_token {
+                    let owners_response = alchemy
+                        .fetch_erc_owners(erc721_token.address)
+                        .await
+                        .map_err(|_| Error::ParseError)?;
+                    return Ok(owners_response);
+                } else {
+                    return Err(Error::ParseError);
+                }
+            }
+            "ERC1155" => {
+                if let Some(erc1155_token) = &self.erc1155_token {
+                    let owners_response = alchemy
+                        .fetch_erc_owners(erc1155_token.address)
+                        .await
+                        .map_err(|_| Error::ParseError)?;
+                    return Ok(owners_response);
+                } else {
+                    return Err(Error::ParseError);
+                }
+            }
+            _ => return Err(Error::TypeInvalid(self._type.clone())),
         }
     }
 
     pub async fn get_erc1155_balances(&self, chain_id: u32) -> Result<U256> {
         if let Some(erc1155_token) = &self.erc1155_token {
-            let alchemy = get_alchemy(chain_id).await.unwrap();
-            let current_wallet_address = self.get_current_wallet_address().await;
-            let balances_response = alchemy
-                .fetch_erc1155_balances(erc1155_token.address, erc1155_token.token_id)
-                .await
-                .map_err(|_| Error::ParseError)?;
+            let wallet_address = self.get_current_wallet_address().await;
+            let balances_response = self.get_erc_owners(chain_id).await.unwrap();
 
             let owners: HashSet<String> = balances_response
                 .owners
@@ -132,11 +140,11 @@ impl TokenAdd {
                 .map(|owner| owner.owner_address.clone())
                 .collect();
 
-            if !owners.contains(&current_wallet_address.to_string()) {
+            if !owners.contains(&wallet_address.to_string()) {
                 return Err(Error::ErcWrongOwner);
             } else {
                 for owner in balances_response.owners {
-                    if owner.owner_address == current_wallet_address.to_string() {
+                    if owner.owner_address == wallet_address.to_string() {
                         for token_balance in owner.token_balances {
                             if token_balance.token_id == erc1155_token.token_id.to_string() {
                                 let balance: U256 = token_balance
@@ -225,43 +233,24 @@ impl TokenAdd {
         Ok(())
     }
 
-    pub fn check_erc721_type(&self, erc721_data: Option<ErcMetadataResponse>) -> Result<()> {
-        let token_type = erc721_data.unwrap().contract.token_type;
+    pub fn check_erc_type(&self, erc_data: Option<ErcMetadataResponse>) -> Result<()> {
+        let token_type = erc_data.unwrap().contract.token_type;
         if token_type != self._type {
             return Err(Error::ErcTypeInvalid(self._type.clone(), token_type));
         }
         Ok(())
     }
 
-    pub fn check_erc1155_type(&self, erc1155_data: Option<ErcMetadataResponse>) -> Result<()> {
-        let token_type = erc1155_data.unwrap().contract.token_type;
-        if token_type != self._type {
-            return Err(Error::ErcTypeInvalid(self._type.clone(), token_type));
-        }
-        Ok(())
-    }
+    pub async fn check_erc_owner(&self, chain_id: u32) -> Result<()> {
+        let wallet_address = self.get_current_wallet_address().await;
+        let owners_response = self.get_erc_owners(chain_id).await.unwrap();
 
-    pub async fn check_erc721_owner(&self, chain_id: u32) -> Result<()> {
-        let current_wallet_address = self.get_current_wallet_address().await;
-        let owners_response = self.get_erc721_owners(chain_id).await.unwrap();
-
-        let owner = owners_response
+        let owners: HashSet<String> = owners_response
             .owners
-            .first()
-            .ok_or_else(|| Error::ErcInvalid)?;
-        if &current_wallet_address.to_string() != owner {
-            Err(Error::ErcWrongOwner)
-        } else {
-            Ok(())
-        }
-    }
-
-    pub async fn check_erc1155_owner(&self, chain_id: u32) -> Result<()> {
-        let current_wallet_address = self.get_current_wallet_address().await;
-        let owners_response = self.get_erc1155_owners(chain_id).await.unwrap();
-
-        let owners: HashSet<String> = owners_response.owners.into_iter().collect();
-        if !owners.contains(&current_wallet_address.to_string()) {
+            .iter()
+            .map(|owner| owner.owner_address.clone())
+            .collect();
+        if !owners.contains(&wallet_address.to_string()) {
             return Err(Error::ErcWrongOwner);
         } else {
             Ok(())
@@ -280,8 +269,10 @@ impl TokenAdd {
 
         let dialog = match self._type.as_str() {
             "ERC20" => {
-                let alchemy_metadata = self.get_erc20_metadata(chain_id).await
-                .map_err(|_e| Error::TokenInvalid)?;
+                let alchemy_metadata = self
+                    .get_erc20_metadata(chain_id)
+                    .await
+                    .map_err(|_e| Error::TokenInvalid)?;
                 self.check_erc20_metadata(
                     self.erc20_token.clone().unwrap(),
                     alchemy_metadata.clone(),
@@ -297,14 +288,14 @@ impl TokenAdd {
                 Dialog::new("erc20-add", serde_json::to_value(&erc20_full_data).unwrap())
             }
             "ERC721" => {
-                erc721_full_data = match self.get_erc721_metadata(chain_id).await {
+                erc721_full_data = match self.get_erc_metadata(chain_id).await {
                     Ok(metadata_response) => Some(metadata_response),
                     Err(_e) => {
                         return Err(Error::TokenInvalid);
                     }
                 };
-                self.check_erc721_type(erc721_full_data.clone())?;
-                self.check_erc721_owner(chain_id).await?;
+                self.check_erc_type(erc721_full_data.clone())?;
+                self.check_erc_owner(chain_id).await?;
                 Dialog::new(
                     "erc721-add",
                     serde_json::to_value(erc721_full_data.clone()).unwrap(),
@@ -312,12 +303,12 @@ impl TokenAdd {
             }
             "ERC1155" => {
                 let metadata_response = self
-                    .get_erc1155_metadata(chain_id)
+                    .get_erc_metadata(chain_id)
                     .await
                     .map_err(|_e| Error::TokenInvalid)?;
                 erc1155_full_data = Some(metadata_response.clone());
-                self.check_erc1155_type(erc1155_full_data.clone())?;
-                self.check_erc1155_owner(chain_id).await?;
+                self.check_erc_type(erc1155_full_data.clone())?;
+                self.check_erc_owner(chain_id).await?;
                 let balance = self.get_erc1155_balances(chain_id).await?;
                 erc1155_full_data = Some(ErcMetadataResponse {
                     contract: metadata_response.contract,
@@ -423,7 +414,6 @@ impl TokenAdd {
         Ok(())
     }
 
-    // TODO
     pub async fn on_accept_erc1155(
         &self,
         chain_id: u32,
