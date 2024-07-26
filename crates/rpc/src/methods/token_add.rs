@@ -39,8 +39,7 @@ impl TokenAdd {
 
     pub async fn get_current_wallet_address(&self) -> Address {
         let wallets = Wallets::read().await;
-        let wallet_address = wallets.get_current_wallet().get_current_address().await;
-        wallet_address
+        wallets.get_current_wallet().get_current_address().await
     }
 
     pub fn check_type(&self) -> Result<()> {
