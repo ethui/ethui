@@ -143,11 +143,33 @@ pub struct ErcMetadataResponse {
     pub image: ErcImageData,
     pub raw: ErcRawMetadata,
     pub collection: Option<ErcCollectionData>,
+    pub balance: Option<U256>, 
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ErcOwnersResponse {
     pub owners: Vec<String>,
+    pub page_key: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Erc1155Balances {
+    pub token_id: String,
+    pub balance: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Erc1155Owners {
+    pub owner_address: String,
+    pub token_balances: Vec<Erc1155Balances>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Erc1155BalanceResponse {
+    pub owners: Vec<Erc1155Owners>,
     pub page_key: Option<String>,
 }

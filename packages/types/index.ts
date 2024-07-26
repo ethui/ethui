@@ -52,6 +52,7 @@ export interface ErcFullData {
   tokenId: number;
   image: ErcImageData;
   raw: ErcRawMetadata;
+  balance: number;
 }
 
 export interface Tx {

@@ -14,7 +14,8 @@ pub use events::Event;
 pub use global_state::GlobalState;
 pub use to_alloy::{ToAlloy, ToEthers};
 pub use tokens::{
-    Erc721Collection, Erc721Token, Erc721TokenData, Erc721TokenDetails, TokenBalance, TokenMetadata,
+    Erc1155Token, Erc1155TokenData, Erc721Collection, Erc721Token, Erc721TokenData,
+    Erc721TokenDetails, TokenBalance, TokenMetadata,
 };
 pub use ui_events::UINotify;
 

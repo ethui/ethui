@@ -8,7 +8,7 @@ use ethui_db::Db;
 use ethui_types::{Address, U256, U64};
 pub use networks::supports_network;
 use tracing::instrument;
-pub use types::{Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse};
+pub use types::{Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse, Erc1155BalanceResponse};
 pub use utils::{get_alchemy, get_current_api_key};
 
 pub use self::error::{Error, Result};
@@ -121,6 +121,33 @@ impl Alchemy {
         token_id: U256,
     ) -> Result<ErcOwnersResponse> {
         let owners_response = self.client.get_erc721_owners(address, token_id).await?;
+        Ok(owners_response)
+    }
+
+    pub async fn fetch_erc1155_metadata(
+        &self,
+        address: Address,
+        token_id: U256,
+    ) -> Result<ErcMetadataResponse> {
+        let metadata_response = self.client.get_erc1155_metadata(address, token_id).await?;
+        Ok(metadata_response)
+    }
+
+    pub async fn fetch_erc1155_owners(
+        &self,
+        address: Address,
+        token_id: U256,
+    ) -> Result<ErcOwnersResponse> {
+        let owners_response = self.client.get_erc1155_owners(address, token_id).await?;
+        Ok(owners_response)
+    }
+
+    pub async fn fetch_erc1155_balances(
+        &self,
+        address: Address,
+        token_id: U256,
+    ) -> Result<Erc1155BalanceResponse> {
+        let owners_response = self.client.get_erc1155_balances(address, token_id).await?;
         Ok(owners_response)
     }
 }
