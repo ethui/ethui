@@ -12,6 +12,7 @@ export interface TokenBalance {
 }
 
 export interface TokenMetadata {
+  address: Address;
   name: string;
   symbol: string;
   decimals: number;

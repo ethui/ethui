@@ -59,6 +59,24 @@ pub enum Error {
 
     #[error("RPC error: {0}")]
     Rpc(i64),
+
+    #[error("Parse error")]
+    ParseError,
+
+    #[error("The user rejected the request")]
+    UserRejectedDialog,
+
+    #[error("Invalid symbol {0}: longer than 11 characters")]
+    SymbolInvalid(String),
+
+    #[error("Invalid decimals {0}: must be 0 <= 36")]
+    DecimalsInvalid(u8),
+
+    #[error("The Provider is not connected to the requested chain")]
+    NetworkInvalid,
+
+    #[error("Asset type {0} not supported")]
+    TypeInvalid(String),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -68,6 +86,12 @@ impl From<Error> for jsonrpc_core::Error {
         let code = match value {
             Error::TxDialogRejected | Error::SignatureRejected => ErrorCode::ServerError(4001),
             Error::WalletNotFound(..) => ErrorCode::ServerError(4100),
+            Error::ParseError => ErrorCode::ServerError(-32700),
+            Error::UserRejectedDialog => ErrorCode::ServerError(4001),
+            Error::SymbolInvalid(..) => ErrorCode::ServerError(-32602),
+            Error::DecimalsInvalid(..) => ErrorCode::ServerError(-32602),
+            Error::NetworkInvalid => ErrorCode::ServerError(4901),
+            Error::TypeInvalid(..) => ErrorCode::ServerError(-32603),
             _ => ErrorCode::InternalError,
         };
 
