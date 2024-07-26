@@ -18,6 +18,48 @@ export interface TokenMetadata {
   decimals: number;
 }
 
+export interface Erc20Metadata {
+  decimals: number;
+  logo: string;
+  name: string;
+  symbol: string;
+}
+
+export interface Erc20FullData {
+  metadata: TokenMetadata;
+  alchemy_metadata: Erc20Metadata;
+}
+
+// the single 'Erc' naming refers to ERC721 and ERC1155 tokens
+
+export interface ErcMetadata {
+  name: string;
+  description: string;
+}
+
+export interface ErcContract {
+  address: Address;
+  name: string;
+  symbol: string;
+  tokenType: string;
+}
+
+export interface ErcImageData {
+  originalUrl: string;
+}
+
+export interface ErcRawMetadata {
+  metadata: ErcMetadata;
+}
+
+export interface ErcFullData {
+  contract: ErcContract;
+  tokenId: number;
+  image: ErcImageData;
+  raw: ErcRawMetadata;
+  balance: number;
+}
+
 export interface Tx {
   hash: `0x${string}`;
   from: Address;
