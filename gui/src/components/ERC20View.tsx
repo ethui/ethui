@@ -111,7 +111,7 @@ export function ERC20View({
             Open on explorer
           </MenuItem>
         )}
-        <MenuItem onClick={blacklist}>Blacklist token</MenuItem>
+        <MenuItem onClick={blacklist}>Hide token</MenuItem>
       </Menu>
 
       <Modal open={transferFormOpen} onClose={() => setTransferFormOpen(false)}>

@@ -1,5 +1,10 @@
 import { Address } from "viem";
 
+export interface Token {
+  contract: Address;
+  metadata: TokenMetadata;
+}
+
 export interface TokenBalance {
   contract: Address;
   balance: string;
