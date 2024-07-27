@@ -1,4 +1,4 @@
-import { SettingsSharp, TerminalSharp } from "@mui/icons-material";
+import { SettingsSharp, TerminalSharp, HelpSharp } from "@mui/icons-material";
 import { Drawer, Stack, SxProps, Toolbar } from "@mui/material";
 import { parseInt, range } from "lodash-es";
 import { useKBar } from "kbar";
@@ -22,9 +22,10 @@ import {
 interface SidebarProps {
   sx?: SxProps;
   tabs: Tab[];
+  onStartTour: () => void;
 }
 
-export function Sidebar({ sx, tabs }: SidebarProps) {
+export function Sidebar({ sx, tabs, onStartTour }: SidebarProps) {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const breakpoint = theme.breakpoints.down("sm");
@@ -36,7 +37,8 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
   const fastMode = settings?.fastMode;
 
   const handleKeyboardNavigation = (event: KeyboardEvent) => {
-    navigate({ to: tabs[parseInt(event.key) - 1].path });
+    const tabIndex = parseInt(event.key) - 1;
+    navigate({ to: tabs[tabIndex].path });
   };
 
   const handleFastModeToggle = () => {
@@ -74,6 +76,7 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
 
   return (
     <Drawer PaperProps={{ variant: "lighter", sx }} variant="permanent">
+      <header></header>
       <Toolbar sx={{ p: 2 }} data-tauri-drag-region="true">
         {type !== "Darwin" && <Logo width={40} />}
       </Toolbar>
@@ -85,6 +88,7 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
             to={path}
             activeProps={{ selected: true }}
             {...{ label, icon }}
+            homepage-tour={`actions-${label}`}
           />
         ))}
       </Stack>
@@ -97,18 +101,37 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
           },
         }}
       >
-        <QuickWalletSelect />
-        <QuickAddressSelect />
-        <QuickNetworkSelect />
-        <QuickFastModeToggle />
+        <div className="quick-select">
+          <QuickWalletSelect />
+          <QuickAddressSelect />
+          <QuickNetworkSelect />
+        </div>
+        <div className="fast-mode">
+          <QuickFastModeToggle />
+        </div>
       </Stack>
       <Stack p={3} rowGap={1}>
-        <SidebarButton
-          onClick={kbar.query.toggle}
-          icon={TerminalSharp}
-          label="Command Bar"
-        />
-        <SidebarButton onClick={toggle} icon={SettingsSharp} label="Settings" />
+        <div className="command-bar">
+          <SidebarButton
+            onClick={kbar.query.toggle}
+            icon={TerminalSharp}
+            label="Command Bar"
+          />
+        </div>
+        <div className="settings">
+          <SidebarButton
+            onClick={toggle}
+            icon={SettingsSharp}
+            label="Settings"
+          />
+        </div>
+        <div className="tour">
+          <SidebarButton
+            onClick={onStartTour}
+            icon={HelpSharp}
+            label="Start Tour"
+          />
+        </div>
         <SettingsModal />
       </Stack>
     </Drawer>

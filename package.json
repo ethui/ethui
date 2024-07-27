@@ -44,7 +44,9 @@
     "prettier": "^3.2.5"
   },
   "dependencies": {
+    "@reactour/tour": "^3.7.0",
     "@tauri-apps/cli": "^1.5.14",
+    "react-joyride": "^2.8.2",
     "typescript": "5.4.5"
   },
   "resolutions": {

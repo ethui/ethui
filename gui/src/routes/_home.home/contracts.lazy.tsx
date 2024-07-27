@@ -80,7 +80,7 @@ function ContractView({
 }) {
   return (
     <Accordion>
-      <AccordionSummary>
+      <AccordionSummary homepage-tour="contracts">
         <AddressView address={address} />
         {name && (
           <Chip
@@ -91,6 +91,7 @@ function ContractView({
           />
         )}
       </AccordionSummary>
+
       <AccordionDetails>
         <ABIForm address={address} chainId={chainId} />
       </AccordionDetails>
