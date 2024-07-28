@@ -11,7 +11,7 @@ import {
 import { invoke } from "@tauri-apps/api";
 import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
-import { Abi, Address, formatEther, formatGwei } from "viem";
+import { Abi, Address } from "viem";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
 import { BlockNumber, SolidityCall } from "@ethui/react/components";
@@ -23,11 +23,11 @@ import {
   AccordionDetails,
   AccordionSummary,
   AddressView,
-  ContextMenuWithTauri,
 } from "@/components";
 import { Datapoint } from "@/components/Datapoint";
 import { Navbar } from "@/components/Home/Navbar";
 import { HashView } from "@/components/HashView";
+import { NumberView } from "@/components/NumberView";
 
 export const Route = createLazyFileRoute("/_home/home/transactions")({
   component: Txs,
@@ -97,7 +97,7 @@ export function Txs() {
                 <Details tx={tx} chainId={chainId} />
               </AccordionDetails>
             </Accordion>
-          )),
+          ))
         )}
       </InfiniteScroll>
     </>
@@ -168,7 +168,6 @@ function Details({ tx, chainId }: DetailsProps) {
   });
 
   if (!fullTx) return null;
-
   const value = BigInt(fullTx.value || 0);
 
   return (
@@ -185,11 +184,7 @@ function Details({ tx, chainId }: DetailsProps) {
       />
       <Datapoint
         label="value"
-        value={
-          <ContextMenuWithTauri copy={value}>
-            {formatEther(value)} Ξ
-          </ContextMenuWithTauri>
-        }
+        value={fullTx.value ? <NumberView value={fullTx.value} unit="wei"/> : 0}
         size="small"
       />
       <Datapoint
@@ -223,24 +218,40 @@ function Details({ tx, chainId }: DetailsProps) {
         <>
           <Datapoint
             label="maxFeePerGas"
-            value={`${fullTx.maxFeePerGas && formatGwei(BigInt(fullTx.maxFeePerGas))} gwei`}
+            value={
+              fullTx.maxFeePerGas ? (
+                <NumberView value={fullTx.maxFeePerGas} unit="gwei"/>
+              ) : (
+                0
+              )
+            }
             size="small"
           />
           <Datapoint
             label="maxPriorityFeePerGas"
-            value={`${fullTx.maxPriorityFeePerGas && formatGwei(BigInt(fullTx.maxPriorityFeePerGas))} gwei`}
+            value={
+              fullTx.maxPriorityFeePerGas ? (
+                <NumberView value={fullTx.maxPriorityFeePerGas} unit="gwei" />
+              ) : (
+                0
+              )
+            }
             size="small"
           />
         </>
       )}
       <Datapoint
         label="gasLimit"
-        value={fullTx.gasLimit && `${formatGwei(BigInt(fullTx.gasLimit))} gwei`}
+        value={
+          fullTx.gasLimit ? <NumberView value={fullTx.gasLimit} unit="wei"/> : 0
+        }
         size="small"
       />
       <Datapoint
         label="gasUsed"
-        value={fullTx.gasUsed && `${formatGwei(BigInt(fullTx.gasUsed))} gwei`}
+        value={
+          fullTx.gasUsed ? <NumberView value={fullTx.gasUsed} unit="wei" /> : 0
+        }
         size="medium"
       />
 
