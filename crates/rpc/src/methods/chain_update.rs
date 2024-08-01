@@ -1,13 +1,21 @@
+use crate::{Error, Result};
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_networks::{Network, Networks};
 use ethui_types::{GlobalState, U64};
 use serde::{Deserialize, Serialize};
 use url::Url;
-use crate::{Error, Result};
 
 #[derive(Debug)]
 pub struct ChainUpdate {
     network: Network,
+}
+
+#[derive(Debug, Serialize, Clone)]
+pub struct NetworkSwitch {
+    pub current_id: u32,
+    pub current_name: String,
+    pub new_id: u32,
+    pub new_name: String,
 }
 
 impl ChainUpdate {
@@ -16,28 +24,81 @@ impl ChainUpdate {
     }
 
     pub async fn run(self) -> Result<()> {
-        let dialog = Dialog::new("chain-update", serde_json::to_value(&self.network).unwrap());
-        dialog.open().await?;
-
-        if self.already_exists().await {
-
+        if self.already_active().await {
             return Ok(());
-        }
+        } else if self.already_exists().await {
+            let switch_data = self.get_switch_data().await;
+            let switch_dialog =
+                Dialog::new("chain-switch", serde_json::to_value(switch_data).unwrap());
+            switch_dialog.open().await?;
 
-        while let Some(msg) = dialog.recv().await {
-            match msg {
-                DialogMsg::Data(msg) => {
-                    if let Some("accept") = msg.as_str() {
-                        self.on_accept().await?;
-                        break;
+            while let Some(msg) = switch_dialog.recv().await {
+                match msg {
+                    DialogMsg::Data(msg) => {
+                        if let Some("accept") = msg.as_str() {
+                            self.switch_on_accept().await?;
+                            break;
+                        }
+                    }
+                    DialogMsg::Close => return Err(Error::UserRejectedDialog),
+                }
+            }
+            return Ok(());
+        } else {
+            let add_dialog = Dialog::new("chain-add", serde_json::to_value(&self.network).unwrap());
+            add_dialog.open().await?;
+
+            let mut add_accepted = false;
+            while let Some(msg) = add_dialog.recv().await {
+                match msg {
+                    DialogMsg::Data(msg) => {
+                        if let Some("accept") = msg.as_str() {
+                            self.add_on_accept().await?;
+                            add_accepted = true;
+                            break;
+                        }
+                    }
+                    DialogMsg::Close => return Err(Error::UserRejectedDialog),
+                }
+            }
+            if add_accepted {
+                add_dialog.close().await?;
+                let switch_data = self.get_switch_data().await;
+                let switch_dialog =
+                    Dialog::new("chain-switch", serde_json::to_value(switch_data).unwrap());
+                switch_dialog.open().await?;
+
+                while let Some(msg) = switch_dialog.recv().await {
+                    match msg {
+                        DialogMsg::Data(msg) => {
+                            if let Some("accept") = msg.as_str() {
+                                self.switch_on_accept().await?;
+                                break;
+                            }
+                        }
+                        DialogMsg::Close => return Err(Error::UserRejectedDialog),
                     }
                 }
-
-                DialogMsg::Close => break,
             }
         }
 
         Ok(())
+    }
+
+    pub async fn get_switch_data(&self) -> NetworkSwitch {
+        let networks = Networks::read().await;
+        let current_chain = networks.get_current();
+        NetworkSwitch {
+            current_id: current_chain.chain_id,
+            current_name: current_chain.name.to_string(),
+            new_id: self.network.chain_id,
+            new_name: self.network.clone().name,
+        }
+    }
+
+    pub async fn already_active(&self) -> bool {
+        let networks = Networks::read().await;
+        networks.get_current().chain_id == self.network.chain_id
     }
 
     pub async fn already_exists(&self) -> bool {
@@ -45,7 +106,16 @@ impl ChainUpdate {
         networks.validate_chain_id(self.network.chain_id)
     }
 
-    pub async fn on_accept(&self) -> Result<()> {
+    pub async fn switch_on_accept(&self) -> Result<()> {
+        let _ = Networks::write()
+            .await
+            .set_current_by_id(self.network.chain_id)
+            .await;
+
+        Ok(())
+    }
+
+    pub async fn add_on_accept(&self) -> Result<()> {
         let mut networks = Networks::write().await;
         networks.add_network(self.network.clone()).await?;
 

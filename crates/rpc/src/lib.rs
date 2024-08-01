@@ -173,7 +173,7 @@ impl Handler {
 
         method.run().await?;
 
-        Ok(serde_json::Value::Null)
+        Ok(true.into())
     }
 
     #[tracing::instrument()]

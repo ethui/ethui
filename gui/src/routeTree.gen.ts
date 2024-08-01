@@ -23,6 +23,7 @@ import { Route as DialogDialogMsgSignIdImport } from './routes/_dialog.dialog/ms
 import { Route as DialogDialogErc721AddIdImport } from './routes/_dialog.dialog/erc721-add.$id'
 import { Route as DialogDialogErc20AddIdImport } from './routes/_dialog.dialog/erc20-add.$id'
 import { Route as DialogDialogErc1155AddIdImport } from './routes/_dialog.dialog/erc1155-add.$id'
+import { Route as DialogDialogChainSwitchIdImport } from './routes/_dialog.dialog/chain-switch.$id'
 import { Route as DialogDialogChainAddIdImport } from './routes/_dialog.dialog/chain-add.$id'
 
 // Create Virtual Routes
@@ -110,6 +111,11 @@ const DialogDialogErc1155AddIdRoute = DialogDialogErc1155AddIdImport.update({
   getParentRoute: () => DialogRoute,
 } as any)
 
+const DialogDialogChainSwitchIdRoute = DialogDialogChainSwitchIdImport.update({
+  path: '/dialog/chain-switch/$id',
+  getParentRoute: () => DialogRoute,
+} as any)
+
 const DialogDialogChainAddIdRoute = DialogDialogChainAddIdImport.update({
   path: '/dialog/chain-add/$id',
   getParentRoute: () => DialogRoute,
@@ -175,6 +181,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DialogDialogChainAddIdImport
       parentRoute: typeof DialogImport
     }
+    '/_dialog/dialog/chain-switch/$id': {
+      id: '/_dialog/dialog/chain-switch/$id'
+      path: '/dialog/chain-switch/$id'
+      fullPath: '/dialog/chain-switch/$id'
+      preLoaderRoute: typeof DialogDialogChainSwitchIdImport
+      parentRoute: typeof DialogImport
+    }
     '/_dialog/dialog/erc1155-add/$id': {
       id: '/_dialog/dialog/erc1155-add/$id'
       path: '/dialog/erc1155-add/$id'
@@ -225,6 +238,7 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren({
   DialogRoute: DialogRoute.addChildren({
     DialogDialogChainAddIdRoute,
+    DialogDialogChainSwitchIdRoute,
     DialogDialogErc1155AddIdRoute,
     DialogDialogErc20AddIdRoute,
     DialogDialogErc721AddIdRoute,
