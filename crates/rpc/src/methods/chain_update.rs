@@ -10,7 +10,7 @@ pub struct ChainUpdate {
     network: Network,
 }
 
-#[derive(Debug, Serialize, Clone)]
+#[derive(Debug, Serialize)]
 pub struct NetworkSwitch {
     pub current_id: u32,
     pub current_name: String,
@@ -167,7 +167,6 @@ impl TryFrom<Params> for Network {
 
 impl ChainUpdateBuilder {
     pub fn set_params(mut self, params: serde_json::Value) -> Result<Self> {
-        // TODO: why is this an array?
         let params: serde_json::Value = if params.is_array() {
             params.as_array().unwrap()[0].clone()
         } else {
