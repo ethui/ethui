@@ -30,7 +30,6 @@ export function ChainAddDialog() {
         <Datapoint label="Chain ID" value={network.chain_id} />
         <Datapoint size="small" label="Currency" value={network.currency} />
         <Datapoint size="small" label="Decimals" value={network.decimals} />
-        <Datapoint size="small" label="Decimals" value={network.decimals} />
         <Datapoint label="RPC (HTTP)" value={network.http_url} />
         {network.ws_url && (
           <Datapoint label="RPC (WS)" value={network.ws_url} />
