@@ -129,7 +129,7 @@ async fn init(app: &tauri::App, args: &Args) -> AppResult<()> {
     ethui_wallets::init(resource(app, "wallets.json")).await;
     ethui_networks::init(resource(app, "networks.json")).await;
     ethui_forge::init().await?;
-    ethui_exchange_rates::init().await;
+    let _ = ethui_exchange_rates::init().await;
 
     // automatically open devtools if env asks for it
     #[cfg(feature = "debug")]

@@ -1,12 +1,13 @@
-use std::path::PathBuf;
-
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("file not found: {0}")]
-    FileNotFound(PathBuf),
+    #[error("request error: {0}")]
+    Reqwest(#[from] reqwest::Error),
 
     #[error("error parsing JSON: {0}")]
     Json(#[from] serde_json::Error),
+
+    #[error("error reading file: {0}")]
+    InvalidFile(#[from] std::io::Error),
 
     #[error("invalid chain ID")]
     InvalidChainId,
