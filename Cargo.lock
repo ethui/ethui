@@ -3503,9 +3503,12 @@ dependencies = [
  "ethers",
  "ethui-types",
  "once_cell",
+ "reqwest 0.12.4",
  "serde",
  "serde_json",
+ "thiserror",
  "tokio",
+ "tracing",
 ]
 
 [[package]]
