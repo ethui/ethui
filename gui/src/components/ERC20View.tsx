@@ -25,6 +25,7 @@ interface Props {
   symbol?: string;
   balance: bigint;
   decimals?: number;
+  price: number;
 }
 
 const minimum = 0.001;
@@ -35,6 +36,7 @@ export function ERC20View({
   symbol,
   balance,
   decimals,
+  price,
 }: Props) {
   const [transferFormOpen, setTransferFormOpen] = useState(false);
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
@@ -44,6 +46,17 @@ export function ERC20View({
 
   const truncatedBalance =
     balance - (balance % BigInt(Math.ceil(minimum * 10 ** decimals)));
+
+  const truncatedPrice = price / 10 ** 6;
+
+  const balanceValue = truncatedPrice * (Number(balance) / 10 ** decimals);
+
+  const formattedValue = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(Number(balanceValue));
 
   const onMenuOpen = (event: React.MouseEvent<HTMLElement>) =>
     setMenuAnchor(event.currentTarget);
@@ -87,11 +100,20 @@ export function ERC20View({
           </>
         }
         subheader={
-          <CopyToClipboard label={balance.toString()}>
-            {truncatedBalance > 0
-              ? formatUnits(truncatedBalance, decimals)
-              : `< ${minimum}`}
-          </CopyToClipboard>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <CopyToClipboard label={balance.toString()}>
+              {truncatedBalance > 0
+                ? formatUnits(truncatedBalance, decimals)
+                : `< ${minimum}`}
+            </CopyToClipboard>
+            <CopyToClipboard label={balanceValue.toString()}>
+              {formattedValue}
+            </CopyToClipboard>
+          </Box>
         }
       />
 

@@ -1,8 +1,9 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
 
+use crate::feed::get_chainlink_price;
+use crate::types::{ChainlinkFeedData, ChainlinkFeeds, ChainlinkId};
 use crate::Error;
-use crate::types::{ChainlinkFeedData, ChainlinkId, Feeds};
 use async_trait::async_trait;
 use ethui_types::GlobalState;
 use once_cell::sync::Lazy;
@@ -12,23 +13,28 @@ use tokio::fs::File;
 use tokio::io::AsyncWriteExt;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
-pub(crate) static FEEDS: Lazy<RwLock<Feeds>> = Lazy::new(|| {
-    RwLock::new(Feeds {
+pub(crate) static CHAINLINK_FEEDS: Lazy<RwLock<ChainlinkFeeds>> = Lazy::new(|| {
+    RwLock::new(ChainlinkFeeds {
         feeds: HashMap::new(),
     })
 });
 
-pub async fn init() -> Result<(), Error> {
+pub async fn init() {
+    let _ = init_chainlink_feeds().await;
+    get_chainlink_price("ETH".to_string(), "USD".to_string()).await;
+}
+
+pub async fn init_chainlink_feeds() -> Result<(), Error> {
     let config_url = "../crates/exchange-rates/data/chainlink.json";
     let config_str = tokio::fs::read_to_string(config_url).await?;
 
     let response: ChainlinkId = serde_json::from_str(&config_str)?;
     let client = Client::new();
-    let mut feeds = Feeds {
+    let mut feeds = ChainlinkFeeds {
         feeds: HashMap::new(),
     };
 
-    let base_path = PathBuf::from("../target/tmp/exchange-rates/chainlink");
+    let base_path = PathBuf::from("../target/exchange-rates/chainlink");
     tokio::fs::create_dir_all(&base_path).await?;
 
     for (id, network) in response.networks {
@@ -50,12 +56,12 @@ pub async fn init() -> Result<(), Error> {
 }
 
 #[async_trait]
-impl GlobalState for Feeds {
+impl GlobalState for ChainlinkFeeds {
     async fn read<'a>() -> RwLockReadGuard<'a, Self> {
-        Lazy::get(&FEEDS).unwrap().read().await
+        Lazy::get(&CHAINLINK_FEEDS).unwrap().read().await
     }
 
     async fn write<'a>() -> RwLockWriteGuard<'a, Self> {
-        Lazy::get(&FEEDS).unwrap().write().await
+        Lazy::get(&CHAINLINK_FEEDS).unwrap().write().await
     }
 }

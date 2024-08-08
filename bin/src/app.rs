@@ -78,6 +78,7 @@ impl EthUIApp {
                 ethui_simulator::commands::simulator_run,
                 ethui_simulator::commands::simulator_get_call_count,
                 ethui_abis::commands::abi_parse_argument,
+                ethui_exchange_rates::commands::exchange_rates_get_price,
             ])
             .on_window_event(on_window_event)
             .menu(menu::build())
@@ -129,7 +130,7 @@ async fn init(app: &tauri::App, args: &Args) -> AppResult<()> {
     ethui_wallets::init(resource(app, "wallets.json")).await;
     ethui_networks::init(resource(app, "networks.json")).await;
     ethui_forge::init().await?;
-    let _ = ethui_exchange_rates::init().await;
+    ethui_exchange_rates::init().await;
 
     // automatically open devtools if env asks for it
     #[cfg(feature = "debug")]

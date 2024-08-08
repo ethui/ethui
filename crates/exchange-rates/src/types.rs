@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 #[derive(Debug, Deserialize)]
-pub struct Feeds {
+pub struct ChainlinkFeeds {
     pub feeds: HashMap<String, Value>,
 }
 
