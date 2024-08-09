@@ -1,11 +1,5 @@
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
-
-#[derive(Debug, Deserialize)]
-pub struct ChainlinkFeeds {
-    pub feeds: HashMap<String, Value>,
-}
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
