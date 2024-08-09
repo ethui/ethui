@@ -1,45 +1,37 @@
-use std::collections::HashMap;
+use std::path::PathBuf;
 
-use async_trait::async_trait;
-use ethui_types::GlobalState;
-use once_cell::sync::Lazy;
-use serde::Deserialize;
-use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
+use crate::types::{ChainlinkFeedData, ChainlinkId};
+use crate::Error;
+use reqwest::Client;
+use serde_json::Value;
+use tokio::fs::File;
+use tokio::io::AsyncWriteExt;
 
-use super::{feed::Feed, Feeds};
+pub async fn init() {
+    let _ = init_chainlink_feeds().await;
+}
 
-static FEEDS: Lazy<RwLock<Feeds>> = Lazy::new(|| {
-    // Embed the JSON file in the binary
-    let feeds_str = include_str!("../res/feeds.json");
+pub async fn init_chainlink_feeds() -> Result<(), Error> {
+    let config_url = "../crates/exchange-rates/data/chainlink.json";
+    let config_str = tokio::fs::read_to_string(config_url).await?;
 
-    #[derive(Deserialize)]
-    struct InputFeeds {
-        feeds: HashMap<u64, HashMap<String, HashMap<String, Vec<Feed>>>>,
+    let response: ChainlinkId = serde_json::from_str(&config_str)?;
+    let client = Client::new();
+
+    let base_path = PathBuf::from("../target/exchange-rates/chainlink");
+    tokio::fs::create_dir_all(&base_path).await?;
+
+    for (id, network) in response.networks {
+        let rdd_response = client.get(&network.rdd_url).send().await?;
+        let rdd_data: Value = rdd_response.json().await?;
+
+        let chainlink_feed: Vec<ChainlinkFeedData> = serde_json::from_value(rdd_data.clone())?;
+
+        let file_name = format!("{}.json", id);
+        let file_path = base_path.join(file_name);
+        let mut file = File::create(file_path).await?;
+        let serialized_data = serde_json::to_string_pretty(&chainlink_feed)?;
+        file.write_all(serialized_data.as_bytes()).await?;
     }
-
-    let res: InputFeeds = serde_json::from_str(feeds_str).unwrap();
-    let mut feeds = Feeds {
-        feeds: HashMap::new(),
-    };
-
-    for (k1, v1) in res.feeds {
-        for (k2, v2) in v1 {
-            for (k3, v3) in v2 {
-                feeds.feeds.insert((k1, k2.clone(), k3.clone()), v3);
-            }
-        }
-    }
-
-    RwLock::new(feeds)
-});
-
-#[async_trait]
-impl GlobalState for Feeds {
-    async fn read<'a>() -> RwLockReadGuard<'a, Self> {
-        Lazy::get(&FEEDS).unwrap().read().await
-    }
-
-    async fn write<'a>() -> RwLockWriteGuard<'a, Self> {
-        Lazy::get(&FEEDS).unwrap().write().await
-    }
+    Ok(())
 }
