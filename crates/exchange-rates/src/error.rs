@@ -9,9 +9,6 @@ pub enum Error {
     #[error("error reading file: {0}")]
     InvalidFile(#[from] std::io::Error),
 
-    #[error("invalid chain ID")]
-    InvalidChainId,
-
     #[error(transparent)]
     Ethers(#[from] ethers::providers::ProviderError),
 }

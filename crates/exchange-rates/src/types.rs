@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -24,4 +24,34 @@ pub struct ChainlinkFeedData {
     pub feed_category: String,
     pub feed_type: String,
     pub decimals: u8,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct PythIdData {
+    pub base: String,
+    pub description: String,
+    pub generic_symbol: String,
+    pub quote_currency: String,
+    pub symbol: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct PythId {
+    pub id: String,
+    pub attributes: PythIdData,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct PythFeedData {
+    pub id: String,
+    pub price: PythPriceData,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct PythPriceData {
+    pub price: String,
+    pub conf: String,
+    pub expo: i32,
+    pub publish_time: u64,
 }
