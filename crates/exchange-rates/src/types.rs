@@ -43,15 +43,20 @@ pub struct PythId {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct PythFeedData {
-    pub id: String,
-    pub price: PythPriceData,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
 pub struct PythPriceData {
     pub price: String,
     pub conf: String,
     pub expo: i32,
     pub publish_time: u64,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct PythParsedData {
+    pub id: String,
+    pub price: PythPriceData,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct PythFeedData {
+    pub parsed: Vec<PythParsedData>,
 }

@@ -1,9 +1,13 @@
-use crate::feed::get_chainlink_price;
+use crate::feed::{get_chainlink_price, get_pyth_price};
 use ethers::types::I256;
-use crate::Error;
 
 #[tauri::command(rename_all = "snake_case")]
-pub async fn exchange_rates_get_price(base_asset: String, quote_asset: String) -> Result<I256, Error> {
-    let price = get_chainlink_price(base_asset, quote_asset).await;
-    Ok(price)
+pub async fn exchange_rates_get_price(base_asset: String, quote_asset: String) -> I256 {
+    let chainlink_price = get_chainlink_price(base_asset.clone(), quote_asset.clone()).await;
+
+    if chainlink_price != I256::from(0) {
+       chainlink_price
+    } else {
+        get_pyth_price(base_asset, quote_asset).await
+    }
 }
