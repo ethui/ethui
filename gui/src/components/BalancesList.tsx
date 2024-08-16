@@ -35,6 +35,10 @@ function BalanceETH() {
     }
 
     fetchPrice();
+
+    const interval = setInterval(fetchPrice, 30000);
+
+    return () => clearInterval(interval);
   }, [currentNetwork?.currency]);
   if (!currentNetwork || !balance) return null;
 
@@ -72,6 +76,10 @@ function BalancesERC20() {
     };
 
     fetchPrices();
+
+    const interval = setInterval(fetchPrices, 30000);
+
+    return () => clearInterval(interval);
   }, [balances]);
 
   if (!currentNetwork) return null;
