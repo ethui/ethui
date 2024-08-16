@@ -7,16 +7,32 @@ import { useInvoke } from "@/hooks";
 import { useBalances, useNetworks } from "@/store";
 import { ERC20View } from "./ERC20View";
 
-export function BalancesList() {
+export function BalancesList({
+  onTotalPriceChange,
+}: {
+  onTotalPriceChange: (totalPrice: number) => void;
+}) {
+  const [ethPrice, setEthPrice] = useState<number>(0);
+  const [erc20Price, setErc20Price] = useState<number>(0);
+
+  useEffect(() => {
+    const combinedPrice = ethPrice + erc20Price;
+    onTotalPriceChange(combinedPrice);
+  }, [ethPrice, erc20Price, onTotalPriceChange]);
+
   return (
     <List sx={{ maxWidth: 350 }}>
-      <BalanceETH />
-      <BalancesERC20 />
+      <BalanceETH onPriceChange={setEthPrice} />
+      <BalancesERC20 onPriceChange={setErc20Price} />
     </List>
   );
 }
 
-function BalanceETH() {
+function BalanceETH({
+  onPriceChange,
+}: {
+  onPriceChange: (price: number) => void;
+}) {
   const currentNetwork = useNetworks((s) => s.current);
   const balance = useBalances((s) => s.nativeBalance);
   const [price, setPrice] = useState<bigint | null>(null);
@@ -40,6 +56,14 @@ function BalanceETH() {
 
     return () => clearInterval(interval);
   }, [currentNetwork?.currency]);
+
+  useEffect(() => {
+    if (price && balance) {
+      const totalETHPrice = (Number(price) * Number(balance)) / 10 ** 18;
+      onPriceChange(totalETHPrice);
+    }
+  }, [price, balance, currentNetwork?.decimals, onPriceChange]);
+
   if (!currentNetwork || !balance) return null;
 
   return (
@@ -53,7 +77,11 @@ function BalanceETH() {
   );
 }
 
-function BalancesERC20() {
+function BalancesERC20({
+  onPriceChange,
+}: {
+  onPriceChange: (price: number) => void;
+}) {
   const currentNetwork = useNetworks((s) => s.current);
   const balances = useBalances((s) => s.erc20Balances);
   const { data: settings } = useInvoke<GeneralSettings>("settings_get");
@@ -81,6 +109,18 @@ function BalancesERC20() {
 
     return () => clearInterval(interval);
   }, [balances]);
+
+  useEffect(() => {
+    let totalERC20Price = 0;
+    (balances || []).forEach(({ balance, metadata }) => {
+      const tokenPrice =
+        (Number(prices[metadata?.symbol || ""]) * Number(balance)) /
+          10 ** metadata?.decimals || 0;
+      totalERC20Price += tokenPrice;
+    });
+
+    onPriceChange(totalERC20Price);
+  }, [prices, balances, onPriceChange]);
 
   if (!currentNetwork) return null;
 
