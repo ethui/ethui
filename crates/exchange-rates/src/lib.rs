@@ -1,5 +1,6 @@
 mod init;
 mod types;
+mod utils;
 pub mod feed;
 pub mod error;
 pub mod commands;

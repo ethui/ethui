@@ -1,6 +1,6 @@
 use std::{fs::File, io::BufReader, path::PathBuf, sync::Arc};
 
-use crate::types::{ChainlinkFeedData, PythFeedData, PythId};
+use crate::{types::{ChainlinkFeedData, PythFeedData, PythId}, utils::get_asset_match};
 use ethers::types::{Address, I256};
 use ethui_abis::ChainlinkAgregatorV3;
 use ethui_networks::Networks;
@@ -33,17 +33,7 @@ pub async fn get_chainlink_price(base_asset: String, quote_asset: String) -> I25
         }
     };
 
-    let base_asset = if base_asset == "WETH" {
-        "ETH".to_string()
-    } else {
-        base_asset
-    };
-
-    let quote_asset = if quote_asset == "WETH" {
-        "ETH".to_string()
-    } else {
-        quote_asset
-    };
+    let (base_asset, quote_asset) = get_asset_match(base_asset, quote_asset);
 
     let asset_path = format!(
         "{}-{}",
@@ -99,17 +89,7 @@ pub async fn get_pyth_price(base_asset: String, quote_asset: String) -> I256 {
         }
     };
 
-    let base_asset = if base_asset == "WETH" {
-        "ETH".to_string()
-    } else {
-        base_asset
-    };
-
-    let quote_asset = if quote_asset == "WETH" {
-        "ETH".to_string()
-    } else {
-        quote_asset
-    };
+    let (base_asset, quote_asset) = get_asset_match(base_asset, quote_asset);
 
     let asset_symbol = format!(
         "Crypto.{}/{}",
