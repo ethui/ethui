@@ -1,4 +1,4 @@
-use crate::feed::{get_chainlink_price, get_pyth_price};
+use crate::feeds::{get_chainlink_price, get_pyth_price};
 use ethers::types::I256;
 
 #[tauri::command(rename_all = "snake_case")]
