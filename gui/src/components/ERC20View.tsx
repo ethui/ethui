@@ -110,7 +110,7 @@ export function ERC20View({
                 ? formatUnits(truncatedBalance, decimals)
                 : `< ${minimum}`}
             </CopyToClipboard>
-            <CopyToClipboard label={balanceValue.toString()}>
+            <CopyToClipboard label={balanceValue.toFixed(2).toString()}>
               {formattedValue}
             </CopyToClipboard>
           </Box>

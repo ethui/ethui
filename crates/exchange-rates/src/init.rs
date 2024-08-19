@@ -16,7 +16,7 @@ pub async fn init_pyth_feeds() -> Result<(), Error> {
     let url = "https://hermes.pyth.network/v2/price_feeds?asset_type=crypto";
     let response = reqwest::get(url)
         .await
-        .map_err(Error::Reqwest)? // Convert reqwest::Error to Error
+        .map_err(Error::Reqwest)?
         .text()
         .await
         .map_err(Error::Reqwest)?;

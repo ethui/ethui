@@ -28,7 +28,10 @@ export function Account() {
       <Navbar>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <AddressView variant="h6" address={address} />
-          <CopyToClipboard label={totalPrice.toString()} sx={{ ml: 8 }}>
+          <CopyToClipboard
+            label={(totalPrice / 10 ** 6).toFixed(2).toString()}
+            sx={{ ml: 8 }}
+          >
             {formattedValue}
           </CopyToClipboard>
         </Box>
