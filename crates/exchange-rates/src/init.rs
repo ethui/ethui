@@ -1,11 +1,13 @@
-use std::path::PathBuf;
+use std::collections::HashMap;
 
 use crate::types::{ChainlinkFeedData, ChainlinkId, PythId};
 use crate::Error;
+use once_cell::sync::OnceCell;
 use reqwest::Client;
 use serde_json::Value;
-use tokio::fs::File;
-use tokio::io::AsyncWriteExt;
+
+pub static CHAINLINK_FEEDS: OnceCell<HashMap<String, Vec<ChainlinkFeedData>>> = OnceCell::new();
+pub static PYTH_FEEDS: OnceCell<String> = OnceCell::new();
 
 pub async fn init() {
     let _chainlink = init_chainlink_feeds().await;
@@ -22,27 +24,18 @@ pub async fn init_pyth_feeds() -> Result<(), Error> {
         .map_err(Error::Reqwest)?;
     let response_json: Vec<PythId> = serde_json::from_str(&response).map_err(Error::Json)?;
 
-    let base_path = PathBuf::from("../target/exchange-rates/pyth");
-    tokio::fs::create_dir_all(&base_path).await?;
-
-    let file_name = "pyth.json".to_string();
-    let file_path = base_path.join(file_name);
-    let mut file = File::create(file_path).await?;
-    let data = serde_json::to_string_pretty(&response_json)?;
-    file.write_all(data.as_bytes()).await?;
+    let _ = PYTH_FEEDS.set(serde_json::to_string_pretty(&response_json)?);
 
     Ok(())
 }
 
 pub async fn init_chainlink_feeds() -> Result<(), Error> {
-    let config_url = "../crates/exchange-rates/data/chainlink.json";
-    let config_str = tokio::fs::read_to_string(config_url).await?;
+    let config_str = include_str!("../../../crates/exchange-rates/data/chainlink.json");
 
     let response: ChainlinkId = serde_json::from_str(&config_str)?;
     let client = Client::new();
 
-    let base_path = PathBuf::from("../target/exchange-rates/chainlink");
-    tokio::fs::create_dir_all(&base_path).await?;
+    let mut accum_feeds: HashMap<String, Vec<ChainlinkFeedData>> = HashMap::new();
 
     for (id, network) in response.networks {
         let rdd_response = client.get(&network.rdd_url).send().await?;
@@ -50,11 +43,9 @@ pub async fn init_chainlink_feeds() -> Result<(), Error> {
 
         let chainlink_feed: Vec<ChainlinkFeedData> = serde_json::from_value(rdd_data.clone())?;
 
-        let file_name = format!("{}.json", id);
-        let file_path = base_path.join(file_name);
-        let mut file = File::create(file_path).await?;
-        let serialized_data = serde_json::to_string_pretty(&chainlink_feed)?;
-        file.write_all(serialized_data.as_bytes()).await?;
+        accum_feeds.insert(id, chainlink_feed);
     }
+
+    let _ = CHAINLINK_FEEDS.set(accum_feeds);
     Ok(())
 }

@@ -1,6 +1,10 @@
-use std::{fs::File, io::BufReader, path::PathBuf, sync::Arc};
+use std::sync::Arc;
 
-use crate::{types::{ChainlinkFeedData, PythFeedData, PythId}, utils::get_asset_match};
+use crate::init::{CHAINLINK_FEEDS, PYTH_FEEDS};
+use crate::{
+    types::{PythFeedData, PythId},
+    utils::get_asset_match,
+};
 use ethers::types::{Address, I256};
 use ethui_abis::ChainlinkAgregatorV3;
 use ethui_networks::Networks;
@@ -13,22 +17,11 @@ pub async fn get_chainlink_price(base_asset: String, quote_asset: String) -> I25
     let provider = network.get_provider();
     let client = Arc::new(provider);
 
-    let filename = format!("{}.json", current_chain_id);
-    let base_path = PathBuf::from("../target/exchange-rates/chainlink/");
-    let file_path = base_path.join(&filename);
-    let file = match File::open(&file_path) {
-        Ok(file) => file,
-        Err(e) => {
-            eprintln!("Failed to open file {}: {e}", filename);
-            return I256::from(0);
-        }
-    };
-
-    let reader = BufReader::new(file);
-    let contracts: Vec<ChainlinkFeedData> = match serde_json::from_reader(reader) {
-        Ok(contracts) => contracts,
-        Err(e) => {
-            eprintln!("Failed to parse JSON: {e}");
+    let feeds = CHAINLINK_FEEDS.get().unwrap();
+    let contracts = match feeds.get(&current_chain_id.to_string()) {
+        Some(contracts) => contracts,
+        None => {
+            eprintln!("No contracts found for chain ID: {}", current_chain_id);
             return I256::from(0);
         }
     };
@@ -69,19 +62,7 @@ pub async fn get_chainlink_price(base_asset: String, quote_asset: String) -> I25
 }
 
 pub async fn get_pyth_price(base_asset: String, quote_asset: String) -> I256 {
-    let filename = "pyth.json".to_string();
-    let base_path = PathBuf::from("../target/exchange-rates/pyth/");
-    let file_path = base_path.join(&filename);
-    let file = match File::open(&file_path) {
-        Ok(file) => file,
-        Err(e) => {
-            eprintln!("Failed to open file {}: {e}", filename);
-            return I256::from(0);
-        }
-    };
-
-    let reader = BufReader::new(file);
-    let feed_ids: Vec<PythId> = match serde_json::from_reader(reader) {
+    let feed_ids: Vec<PythId> = match serde_json::from_str(PYTH_FEEDS.get().unwrap()) {
         Ok(ids) => ids,
         Err(e) => {
             eprintln!("Failed to parse JSON: {e}");
