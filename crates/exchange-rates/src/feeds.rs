@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use crate::init::{CHAINLINK_FEEDS, PYTH_FEEDS};
+use crate::Error;
 use crate::{
     types::{PythFeedData, PythId},
     utils::get_asset_match,
@@ -10,7 +11,7 @@ use ethui_abis::ChainlinkAgregatorV3;
 use ethui_networks::Networks;
 use ethui_types::GlobalState;
 
-pub async fn get_chainlink_price(base_asset: String, quote_asset: String) -> I256 {
+pub async fn get_chainlink_price(base_asset: String, quote_asset: String) -> Result<I256, Error> {
     let networks = Networks::read().await;
     let network = networks.get_current();
     let current_chain_id = network.chain_id;
@@ -22,7 +23,7 @@ pub async fn get_chainlink_price(base_asset: String, quote_asset: String) -> I25
         Some(contracts) => contracts,
         None => {
             eprintln!("No contracts found for chain ID: {}", current_chain_id);
-            return I256::from(0);
+            return Ok(I256::from(0));
         }
     };
 
@@ -40,36 +41,23 @@ pub async fn get_chainlink_price(base_asset: String, quote_asset: String) -> I25
     let (proxy_address, decimals) = match contract_info {
         Some(contract) => (contract.proxy_address.as_ref().unwrap(), contract.decimals),
         None => {
-            return I256::from(0);
+            return Ok(I256::from(0));
         }
     };
 
-    let address: Address = match proxy_address.parse() {
-        Ok(value) => value,
-        Err(e) => {
-            eprintln!("Invalid address: {e}");
-            return I256::from(0);
-        }
-    };
+    let address: Address = proxy_address.parse().unwrap();
 
     let contract = ChainlinkAgregatorV3::new(address, client);
 
     if let Ok(round_data) = contract.latest_round_data().call().await {
         let price: I256 = round_data.1 / I256::exp10((decimals - 6) as usize);
-        return price;
+        return Ok(price);
     }
-    I256::from(0)
+    Ok(I256::from(0))
 }
 
-pub async fn get_pyth_price(base_asset: String, quote_asset: String) -> I256 {
-    let feed_ids: Vec<PythId> = match serde_json::from_str(PYTH_FEEDS.get().unwrap()) {
-        Ok(ids) => ids,
-        Err(e) => {
-            eprintln!("Failed to parse JSON: {e}");
-            return I256::from(0);
-        }
-    };
-
+pub async fn get_pyth_price(base_asset: String, quote_asset: String) -> Result<I256, Error> {
+    let feed_ids: Vec<PythId> = serde_json::from_str(PYTH_FEEDS.get().unwrap())?;
     let (base_asset, quote_asset) = get_asset_match(base_asset, quote_asset);
 
     let asset_symbol = format!(
@@ -84,7 +72,7 @@ pub async fn get_pyth_price(base_asset: String, quote_asset: String) -> I256 {
     let id_address = match contract_info {
         Some(contract) => &contract.id,
         None => {
-            return I256::from(0);
+            return Ok(I256::from(0));
         }
     };
 
@@ -93,29 +81,10 @@ pub async fn get_pyth_price(base_asset: String, quote_asset: String) -> I256 {
         id_address
     );
 
-    let response = match reqwest::get(api_url).await {
-        Ok(response) => response,
-        Err(e) => {
-            eprintln!("Failed to fetch price data: {}", e);
-            return I256::from(0);
-        }
-    };
+    let response = reqwest::get(api_url).await?;
+    let response_text = response.text().await;
 
-    let response_text = match response.text().await {
-        Ok(text) => text,
-        Err(e) => {
-            eprintln!("Failed to read response text: {}", e);
-            return I256::from(0);
-        }
-    };
-
-    let response_json: PythFeedData = match serde_json::from_str(&response_text) {
-        Ok(data) => data,
-        Err(e) => {
-            eprintln!("Failed to deserialize response: {}", e);
-            return I256::from(0);
-        }
-    };
+    let response_json: PythFeedData = serde_json::from_str(&response_text.unwrap())?;
 
     if let Some(parsed_data) = response_json.parsed.first() {
         let price_data = &parsed_data.price;
@@ -123,9 +92,9 @@ pub async fn get_pyth_price(base_asset: String, quote_asset: String) -> I256 {
         let decimals: i32 = price_data.expo;
 
         let price: I256 = parsed_price / I256::exp10((-decimals - 6) as usize);
-        price
+        Ok(price)
     } else {
         eprintln!("No parsed data found.");
-        I256::from(0)
+        Ok(I256::from(0))
     }
 }

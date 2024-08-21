@@ -32,7 +32,7 @@ pub async fn init_pyth_feeds() -> Result<(), Error> {
 pub async fn init_chainlink_feeds() -> Result<(), Error> {
     let config_str = include_str!("../../../crates/exchange-rates/data/chainlink.json");
 
-    let response: ChainlinkId = serde_json::from_str(&config_str)?;
+    let response: ChainlinkId = serde_json::from_str(config_str)?;
     let client = Client::new();
 
     let mut accum_feeds: HashMap<String, Vec<ChainlinkFeedData>> = HashMap::new();
