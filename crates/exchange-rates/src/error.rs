@@ -11,6 +11,15 @@ pub enum Error {
 
     #[error(transparent)]
     Ethers(#[from] ethers::providers::ProviderError),
+
+    #[error("No contracts found for chain ID: {0}")]
+    InvalidChain(u32),
+
+    #[error("No price feed found for pair: {0}")]
+    InvalidPair(String),
+
+    #[error("No available price for pair: {0}")]
+    InvalidPrice(String),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

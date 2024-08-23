@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { useState } from "react";
 import {
   Stack,
@@ -25,7 +26,7 @@ interface Props {
   symbol?: string;
   balance: bigint;
   decimals?: number;
-  price: number;
+  price?: number | null;
 }
 
 const minimum = 0.001;
@@ -47,7 +48,7 @@ export function ERC20View({
   const truncatedBalance =
     balance - (balance % BigInt(Math.ceil(minimum * 10 ** decimals)));
 
-  const truncatedPrice = price / 10 ** 6;
+  const truncatedPrice = (price ?? 0) / 10 ** 6;
 
   const balanceValue = truncatedPrice * (Number(balance) / 10 ** decimals);
 
@@ -58,6 +59,7 @@ export function ERC20View({
     maximumFractionDigits: 2,
   }).format(Number(balanceValue));
 
+  console.log("Symbol: %s\n Price: %i", symbol, price);
   const onMenuOpen = (event: React.MouseEvent<HTMLElement>) =>
     setMenuAnchor(event.currentTarget);
 
@@ -110,9 +112,11 @@ export function ERC20View({
                 ? formatUnits(truncatedBalance, decimals)
                 : `< ${minimum}`}
             </CopyToClipboard>
-            <CopyToClipboard label={balanceValue.toFixed(2).toString()}>
-              {formattedValue}
-            </CopyToClipboard>
+            {price !== null && (
+              <CopyToClipboard label={balanceValue.toFixed(2).toString()}>
+                {formattedValue}
+              </CopyToClipboard>
+            )}
           </Box>
         }
       />

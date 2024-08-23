@@ -138,7 +138,7 @@ function BalancesERC20({
           decimals={metadata?.decimals || 0}
           symbol={metadata?.symbol}
           chainId={currentNetwork.chain_id}
-          price={Number(prices[metadata?.symbol || ""]) || 0.0}
+          price={Number(prices[metadata?.symbol || ""]) || null}
         />
       ))}
     </>

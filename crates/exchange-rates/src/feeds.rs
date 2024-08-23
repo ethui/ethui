@@ -22,8 +22,7 @@ pub async fn get_chainlink_price(base_asset: String, quote_asset: String) -> Res
     let contracts = match feeds.get(&current_chain_id.to_string()) {
         Some(contracts) => contracts,
         None => {
-            eprintln!("No contracts found for chain ID: {}", current_chain_id);
-            return Ok(I256::from(0));
+            return Err(Error::InvalidChain(current_chain_id));
         }
     };
 
@@ -41,7 +40,7 @@ pub async fn get_chainlink_price(base_asset: String, quote_asset: String) -> Res
     let (proxy_address, decimals) = match contract_info {
         Some(contract) => (contract.proxy_address.as_ref().unwrap(), contract.decimals),
         None => {
-            return Ok(I256::from(0));
+            return Err(Error::InvalidPair(asset_path));
         }
     };
 
@@ -53,7 +52,7 @@ pub async fn get_chainlink_price(base_asset: String, quote_asset: String) -> Res
         let price: I256 = round_data.1 / I256::exp10((decimals - 6) as usize);
         return Ok(price);
     }
-    Ok(I256::from(0))
+    Err(Error::InvalidPrice(asset_path))
 }
 
 pub async fn get_pyth_price(base_asset: String, quote_asset: String) -> Result<I256, Error> {
@@ -72,7 +71,7 @@ pub async fn get_pyth_price(base_asset: String, quote_asset: String) -> Result<I
     let id_address = match contract_info {
         Some(contract) => &contract.id,
         None => {
-            return Ok(I256::from(0));
+            return Err(Error::InvalidPair(asset_symbol));
         }
     };
 
@@ -94,7 +93,6 @@ pub async fn get_pyth_price(base_asset: String, quote_asset: String) -> Result<I
         let price: I256 = parsed_price / I256::exp10((-decimals - 6) as usize);
         Ok(price)
     } else {
-        eprintln!("No parsed data found.");
-        Ok(I256::from(0))
+        Err(Error::InvalidPrice(asset_symbol))
     }
 }
