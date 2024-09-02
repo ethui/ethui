@@ -22,7 +22,7 @@ pub struct Network {
 impl Network {
     pub fn mainnet() -> Self {
         Self {
-            name: String::from("mainnet"),
+            name: String::from("Mainnet"),
             chain_id: 1,
             explorer_url: Some(String::from("https://etherscan.io/search?q=")),
             http_url: String::from("https://eth.llamarpc.com"),
@@ -34,7 +34,7 @@ impl Network {
 
     pub fn goerli() -> Self {
         Self {
-            name: String::from("goerli"),
+            name: String::from("Goerli"),
             chain_id: 5,
             explorer_url: Some(String::from("https://goerli.etherscan.io/search?q=")),
             http_url: String::from("https://rpc.ankr.com/eth_goerli"),
@@ -46,7 +46,7 @@ impl Network {
 
     pub fn sepolia() -> Self {
         Self {
-            name: String::from("sepolia"),
+            name: String::from("Sepolia"),
             chain_id: 11155111,
             explorer_url: Some(String::from("https://sepolia.etherscan.io/search?q=")),
             http_url: String::from("https://rpc2.sepolia.org"),
@@ -58,7 +58,7 @@ impl Network {
 
     pub fn anvil() -> Self {
         Self {
-            name: String::from("anvil"),
+            name: String::from("Anvil"),
             chain_id: 31337,
             explorer_url: None,
             http_url: String::from("http://localhost:8545"),
