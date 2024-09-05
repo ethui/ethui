@@ -1,13 +1,9 @@
-mod feed;
 mod init;
+mod types;
+mod utils;
+pub mod feeds;
+pub mod error;
+pub mod commands;
 
-use std::collections::HashMap;
-
-use feed::Feed;
-use serde::Deserialize;
-
-#[derive(Debug, Deserialize)]
-pub struct Feeds {
-    // Tuple structure: (network, currency, token symbol)
-    feeds: HashMap<(u64, String, String), Vec<Feed>>,
-}
+pub use error::{Error, Result};
+pub use init::init;
