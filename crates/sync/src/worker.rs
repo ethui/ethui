@@ -3,6 +3,7 @@ use std::{
     sync::Arc,
 };
 
+use ethui_safe::Safe;
 use ethui_types::{Address, UINotify, B256};
 use tokio::{
     select,
@@ -178,6 +179,8 @@ async fn unit_worker(
     loop {
         let alchemy = get_alchemy(chain_id).await?;
         alchemy.fetch_updates(addr).await.unwrap();
+        let safe = get_safe(chain_id).await?;
+        safe.fetch_updates(addr).await.unwrap();
 
         // wait for either a set delay, or for an outside poll request
         select! {
@@ -195,4 +198,10 @@ async fn get_alchemy(chain_id: u32) -> Result<ethui_sync_alchemy::Alchemy> {
     let alchemy = ethui_sync_alchemy::Alchemy::new(&api_key, ethui_db::get(), chain_id).unwrap();
 
     Ok(alchemy)
+}
+
+async fn get_safe(chain_id: u32) -> Result<Safe> {
+    let safe = Safe::new(ethui_db::get(), chain_id).unwrap();
+
+    Ok(safe)
 }

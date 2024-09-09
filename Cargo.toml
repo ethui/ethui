@@ -10,26 +10,27 @@ authors = ["Miguel Palhas <mpalhas@gmail.com>"]
 [workspace]
 resolver = "2"
 members = [
-  "bin",
-  "crates/forge",
-  "crates/crypto",
-  "crates/settings",
-  "crates/networks",
-  "crates/wallets",
-  "crates/simulator",
-  "crates/ws",
-  "crates/http",
-  "crates/rpc",
-  "crates/connections",
-  "crates/dialogs",
-  "crates/types",
-  "crates/abis",
-  "crates/db",
-  "crates/sync",
-  "crates/broadcast",
-  "crates/tracing",
-  "crates/exchange-rates",
-  "crates/args",
+    "bin",
+    "crates/forge",
+    "crates/crypto",
+    "crates/settings",
+    "crates/networks",
+    "crates/wallets",
+    "crates/simulator",
+    "crates/ws",
+    "crates/http",
+    "crates/rpc",
+    "crates/connections",
+    "crates/dialogs",
+    "crates/types",
+    "crates/abis",
+    "crates/db",
+    "crates/sync",
+    "crates/broadcast",
+    "crates/tracing",
+    "crates/exchange-rates",
+    "crates/args",
+    "crates/safe",
 ]
 default-members = ["bin"]
 
@@ -56,18 +57,19 @@ ethui-tracing = { path = "crates/tracing" }
 ethui-exchange-rates = { path = "crates/exchange-rates" }
 ethui-args = { path = "crates/args" }
 ethui-token-list = { path = "crates/token-list" }
+ethui-safe = { path = "crates/safe" }
 
 tokio = { version = "1.37", features = ["full", "sync"] }
 thiserror = "1.0"
 ethers = { features = [
-  "ws",
-  "ledger",
+    "ws",
+    "ledger",
 ], git = "https://github.com/gakonst/ethers-rs", rev = "5394d89" }
 sqlx = { version = "0.7.4", features = [
-  "runtime-tokio-rustls",
-  "sqlite",
-  "migrate",
-  "json",
+    "runtime-tokio-rustls",
+    "sqlite",
+    "migrate",
+    "json",
 ] }
 serde = { version = "1.0", features = ["derive", "std"] }
 serde_json = "1.0"
@@ -78,15 +80,15 @@ secrets = { version = "1.2.0", features = ["use-libsodium-sys"] }
 tracing = "0.1"
 jsonrpc-core = "18.0.0"
 reqwest = { version = "0.12", default-features = false, features = [
-  "rustls-tls",
+    "rustls-tls",
 ] }
 alloy-primitives = { version = "0.7.1", features = [
-  "serde",
-  "rlp",
-  "getrandom",
+    "serde",
+    "rlp",
+    "getrandom",
 ] }
 revm-inspectors = { git = "https://github.com/paradigmxyz/evm-inspectors", rev = "c1b5dd0", features = [
-  "serde",
+    "serde",
 ] }
 alloy-json-abi = { version = "0.7.1" }
 url = { version = "2.5", features = ["serde"] }

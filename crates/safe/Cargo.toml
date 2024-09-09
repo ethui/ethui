@@ -1,5 +1,6 @@
+
 [package]
-name = "ethui-sync"
+name = "ethui-safe"
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true
@@ -9,15 +10,11 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-ethui-sync-anvil.workspace = true
-ethui-sync-alchemy.workspace = true
 tauri.workspace = true
 ethui-db.workspace = true
 ethui-types.workspace = true
-ethui-broadcast.workspace = true
 ethui-networks.workspace = true
-ethui-abis.workspace = true
-ethui-safe.workspace = true
+ethui-wallets.workspace = true
 
 ethers.workspace = true
 tokio.workspace = true
@@ -26,3 +23,8 @@ serde_json.workspace = true
 thiserror.workspace = true
 once_cell.workspace = true
 tracing.workspace = true
+url.workspace = true
+async-trait.workspace = true
+futures.workspace = true
+reqwest.workspace = true
+jsonrpc-core.workspace = true
