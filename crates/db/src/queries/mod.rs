@@ -1,10 +1,11 @@
 mod alchemy;
 mod chain_tip;
 mod contracts;
+mod erc1155;
 mod erc20;
 mod erc721;
-mod erc1155;
 mod events;
 mod kv;
 mod native_balance;
+mod safe;
 mod transactions;

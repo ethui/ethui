@@ -14,10 +14,7 @@ tauri.workspace = true
 ethui-db.workspace = true
 ethui-types.workspace = true
 ethui-networks.workspace = true
-ethui-wallets.workspace = true
 
-ethers.workspace = true
-tokio.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true
@@ -27,4 +24,3 @@ url.workspace = true
 async-trait.workspace = true
 futures.workspace = true
 reqwest.workspace = true
-jsonrpc-core.workspace = true

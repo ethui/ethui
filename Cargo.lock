@@ -3609,20 +3609,16 @@ name = "ethui-safe"
 version = "1.8.0"
 dependencies = [
  "async-trait",
- "ethers",
  "ethui-db",
  "ethui-networks",
  "ethui-types",
- "ethui-wallets",
  "futures",
- "jsonrpc-core",
  "once_cell",
  "reqwest 0.12.4",
  "serde",
  "serde_json",
  "tauri",
  "thiserror",
- "tokio",
  "tracing",
  "url",
 ]

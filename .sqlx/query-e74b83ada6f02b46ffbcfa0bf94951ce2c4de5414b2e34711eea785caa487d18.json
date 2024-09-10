@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": " INSERT OR REPLACE INTO safe_contracts (contract, owner, chain_id, signers, threshold, nonce, modules, master_copy, fallback_handler, guard, version)\n                        VALUES (?,?,?,?,?,?,?,?,?,?,?) ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 11
+    },
+    "nullable": []
+  },
+  "hash": "e74b83ada6f02b46ffbcfa0bf94951ce2c4de5414b2e34711eea785caa487d18"
+}
