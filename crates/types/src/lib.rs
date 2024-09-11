@@ -13,7 +13,7 @@ pub use contracts::{Contract, ContractWithAbi};
 pub use ethers::{abi::Abi, types::Bytes};
 pub use events::Event;
 pub use global_state::GlobalState;
-pub use safe::{SafeContractData, SafeMultisigTxsData};
+pub use safe::{SafeConfirmations, SafeContractData, SafeMultisigTxData};
 pub use to_alloy::{ToAlloy, ToEthers};
 pub use tokens::{
     Erc1155Token, Erc1155TokenData, Erc721Collection, Erc721Token, Erc721TokenData,

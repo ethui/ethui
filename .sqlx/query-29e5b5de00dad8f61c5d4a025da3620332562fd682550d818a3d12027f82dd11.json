@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": " INSERT OR REPLACE INTO safe_pending_transactions (contract, owner, chain_id, nonce, confirmations, safe_tx_hash, \"to\", data, proposer, is_executed, is_successful, confirmations_required)\n                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 12
+    },
+    "nullable": []
+  },
+  "hash": "29e5b5de00dad8f61c5d4a025da3620332562fd682550d818a3d12027f82dd11"
+}

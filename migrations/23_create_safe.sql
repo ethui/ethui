@@ -22,5 +22,9 @@ CREATE TABLE safe_pending_transactions (
     safe_tx_hash VARCHAR COLLATE NOCASE,
     "to" VARCHAR COLLATE NOCASE,
     data VARCHAR,
+    proposer VARCHAR COLLATE NOCASE,
+    is_executed BOLL,
+    is_successful BOOL,
+    confirmations_required INTEGER NOT NULL,
     PRIMARY KEY (contract, owner, chain_id, safe_tx_hash)
 );

@@ -1,4 +1,4 @@
-use ethui_types::SafeMultisigTxsData;
+use ethui_types::SafeMultisigTxData;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -10,5 +10,5 @@ pub struct SafeContracts {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SafeMultisigTxs {
-    pub results: Vec<SafeMultisigTxsData>,
+    pub results: Vec<SafeMultisigTxData>,
 }

@@ -8,23 +8,30 @@ pub struct SafeContractData {
     pub owners: Vec<Address>,
     pub threshold: u32,
     pub nonce: u32,
-    pub modules: Vec<Address>,
+    pub modules: Vec<Option<Address>>,
     pub master_copy: Address,
     pub fallback_handler: Address,
     pub guard: Address,
-    pub version: String,
+    pub version: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
-pub struct SafeMultisigTxsData {
+pub struct SafeMultisigTxData {
+    pub safe: Address,
     pub to: Address,
-    pub data: String,
+    pub data: Option<String>,
     pub nonce: u32,
     pub safe_tx_hash: String,
-    pub proposer: Address,
+    pub proposer: Option<Address>,
     pub is_executed: bool,
-    pub is_sucessfull: bool,
+    pub is_successful: Option<bool>,
     pub confirmations_required: u32,
-    pub confirmations: Vec<Address>,
+    pub confirmations: Vec<SafeConfirmations>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct SafeConfirmations {
+    pub owner: Address,
 }
