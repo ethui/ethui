@@ -1,33 +1,66 @@
+import { Grid, IconButton, Stack } from "@mui/material";
+import { MoreVert as MoreVertIcon } from "@mui/icons-material";
 import { Hash } from "viem";
+import { useEffect, useState } from "react";
 
-import { Typography } from "@ethui/react/components";
-import { useNetworks } from "@/store";
 import { ContextMenuWithTauri } from "./ContextMenuWithTauri";
 import { truncateHex } from "@/utils";
+import { Datapoint } from "./Datapoint";
+import { Modal } from "./Modal";
 
 interface Props {
   hash: Hash;
 }
 
 export function HashView({ hash }: Props) {
-  const network = useNetworks((s) => s.current);
+  const [decimalValue, setDecimalValue] = useState("");
+  const [unitValuesOpen, setUnitValuesOpen] = useState(false);
 
-  if (!network) return null;
+  useEffect(() => {
+    setDecimalValue(BigInt(hash).toString(10));
+  }, [hash]);
 
-  const content = <Typography mono>{truncateHex(hash)}</Typography>;
+  const content = (
+    <Grid container rowSpacing={1} columns={1}>
+      <Datapoint
+        label="Hexadecimal"
+        value={
+          <ContextMenuWithTauri copy={hash}>
+            {truncateHex(hash)}
+          </ContextMenuWithTauri>
+        }
+        size="small"
+      />
+      <Datapoint
+        label="Decimal"
+        value={
+          <ContextMenuWithTauri copy={decimalValue}>
+            {truncateHex(decimalValue)}
+          </ContextMenuWithTauri>
+        }
+        size="small"
+      />
+    </Grid>
+  );
 
   return (
-    <ContextMenuWithTauri
-      copy={hash}
-      actions={[
-        {
-          label: "Open in explorer",
-          href: `${network.explorer_url}${hash}`,
-          disabled: !network.explorer_url,
-        },
-      ]}
-    >
-      {content}
-    </ContextMenuWithTauri>
+    <Stack direction="row">
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <ContextMenuWithTauri copy={hash}>
+          {truncateHex(hash)}
+        </ContextMenuWithTauri>
+
+        <IconButton
+          aria-label="transfer"
+          onClick={() => setUnitValuesOpen(true)}
+        >
+          <MoreVertIcon />
+        </IconButton>
+
+        <Modal open={unitValuesOpen} onClose={() => setUnitValuesOpen(false)}>
+          {content}
+        </Modal>
+      </div>
+    </Stack>
   );
 }
