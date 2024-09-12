@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "DELETE FROM safe_pending_transactions WHERE owner = ? AND chain_id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "07be4e555dd052f270eb0658e806de0344c1bef283b9bf6458713725347714d3"
+}

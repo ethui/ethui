@@ -108,9 +108,12 @@ impl DbInner {
         Ok(())
     }
 
-    pub async fn clean_safe_executed_txs(&self, chain_id: u32) -> Result<()> {
+    pub async fn clear_safe_pending_txs(&self, owner: Address, chain_id: u32) -> Result<()> {
+        let owner = owner.to_string();
+
         sqlx::query!(
-            r#"DELETE FROM safe_pending_transactions WHERE chain_id = ? AND is_executed = true"#,
+            r#"DELETE FROM safe_pending_transactions WHERE owner = ? AND chain_id = ?"#,
+            owner,
             chain_id,
         )
         .execute(self.pool())

@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT nonce FROM safe_contracts WHERE contract = ? AND chain_id = ?",
+  "describe": {
+    "columns": [
+      {
+        "name": "nonce",
+        "ordinal": 0,
+        "type_info": "Int64"
+      }
+    ],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "451c9ec446bbea6f9491a7e80ab0da229ed828164e10ead1711e2b24c736257a"
+}

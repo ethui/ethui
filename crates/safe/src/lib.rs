@@ -34,8 +34,8 @@ impl Safe {
         self.clear_safe_contract_data(address).await?;
         self.fetch_safe_contract_data(address, safe_contracts.clone())
             .await?;
+        self.clear_safe_pending_txs(address).await?;
         self.fetch_safe_pending_txs(address, safe_contracts).await?;
-        self.clean_safe_executed_txs().await?;
         Ok(())
     }
 
@@ -122,8 +122,8 @@ impl Safe {
         Ok(())
     }
 
-    pub async fn clean_safe_executed_txs(&self) -> Result<()> {
-        let _ = self.db.clean_safe_executed_txs(self.chain_id).await;
+    pub async fn clear_safe_pending_txs(&self, address: Address) -> Result<()> {
+        let _ = self.db.clear_safe_pending_txs(address, self.chain_id).await;
 
         Ok(())
     }
