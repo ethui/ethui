@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "DELETE FROM safe_contracts WHERE owner = ? AND chain_id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "39da5906d6328eb3daec3c7d2d7d76be1af49cd0c9d78aeb11a7e2f6141fdefe"
+}
