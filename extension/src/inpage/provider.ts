@@ -131,6 +131,11 @@ export class EthUIProvider extends EventEmitter {
     this.emit("accountsChanged", accounts);
   }
 
+  protected enable() {
+    console.warn("ethui: enable is deprecated. Use request({ method: 'eth_requestAccounts' }) instead.");
+    return this.request({ method: "eth_requestAccounts" });
+  }
+
   protected initialize() {
     if (this.initialized) {
       return;
