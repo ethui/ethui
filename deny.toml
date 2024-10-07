@@ -3,6 +3,7 @@ vulnerability = "deny"
 unmaintained = "warn"
 yanked = "warn"
 notice = "warn"
+ignore = ["RUSTSEC-2024-0370"]
 
 [licenses]
 allow = [
