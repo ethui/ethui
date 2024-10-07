@@ -63,7 +63,7 @@ ethers = { features = [
   "ws",
   "ledger",
 ], git = "https://github.com/gakonst/ethers-rs", rev = "5394d89" }
-sqlx = { version = "0.7.4", features = [
+sqlx = { version = "0.8", features = [
   "runtime-tokio-rustls",
   "sqlite",
   "migrate",
