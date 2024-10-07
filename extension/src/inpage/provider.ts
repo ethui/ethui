@@ -132,7 +132,9 @@ export class EthUIProvider extends EventEmitter {
   }
 
   protected enable() {
-    console.warn("ethui: enable is deprecated. Use request({ method: 'eth_requestAccounts' }) instead.");
+    console.warn(
+      "ethui: enable is deprecated. Use request({ method: 'eth_requestAccounts' }) instead.",
+    );
     return this.request({ method: "eth_requestAccounts" });
   }
 
