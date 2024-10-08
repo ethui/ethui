@@ -110,7 +110,7 @@ impl EthUIApp {
 
 /// Initialization logic
 async fn init(app: &tauri::App, args: &Args) -> AppResult<()> {
-    let db = ethui_db::init(&resource(app, "db.sqlite3")).await?;
+    let db = ethui_db::init(&resource(app, "db.sqlite3", args)).await?;
     app.manage(db.clone());
 
     // set up app's event listener
@@ -122,12 +122,12 @@ async fn init(app: &tauri::App, args: &Args) -> AppResult<()> {
     // calls other crates' initialization logic. anvil needs to be started before networks,
     // otherwise the initial tracker won't be ready to spawn
     ethui_sync::init().await;
-    ethui_settings::init(resource(app, "settings.json")).await?;
+    ethui_settings::init(resource(app, "settings.json", args)).await?;
     ethui_ws::init(args).await;
     ethui_http::init(args, db).await;
-    ethui_connections::init(resource(app, "connections.json")).await;
-    ethui_wallets::init(resource(app, "wallets.json")).await;
-    ethui_networks::init(resource(app, "networks.json")).await;
+    ethui_connections::init(resource(app, "connections.json", args)).await;
+    ethui_wallets::init(resource(app, "wallets.json", args)).await;
+    ethui_networks::init(resource(app, "networks.json", args)).await;
     ethui_forge::init().await?;
 
     // automatically open devtools if env asks for it
@@ -182,23 +182,33 @@ async fn event_listener(handle: AppHandle) {
 }
 
 /// Returns the resource path for the given resource.
-/// If the `ethui_CONFIG_DIR` env var is set, it will be used as the base path.
+/// If the `ETHUI_CONFIG_DIR` env var is set, it will be used as the base path.
 /// Otherwise, the app's default config dir will be used.
-fn resource(app: &tauri::App, resource: &str) -> PathBuf {
-    let dir = config_dir(app);
+fn resource(app: &tauri::App, resource: &str, args: &Args) -> PathBuf {
+    let dir = config_dir(app, args);
     debug!("config dir: {:?}", dir);
     std::fs::create_dir_all(&dir).expect("could not create config dir");
     dir.join(resource)
 }
 
 #[cfg(debug_assertions)]
-fn config_dir(_app: &tauri::App) -> PathBuf {
-    PathBuf::from("../dev-data/default/")
+fn config_dir(_app: &tauri::App, args: &Args) -> PathBuf {
+    let path = args
+        .config_dir
+        .clone()
+        .unwrap_or(String::from("../dev/data/default"));
+
+    PathBuf::from(path)
 }
 
 #[cfg(not(debug_assertions))]
-fn config_dir(app: &tauri::App) -> PathBuf {
-    app.path_resolver()
-        .app_config_dir()
-        .expect("failed to resolve app_config_dir")
+fn config_dir(app: &tauri::App, args: &Args) -> PathBuf {
+    args.config_dir
+        .clone()
+        .map(PathBuf::from)
+        .unwrap_or_else(|| {
+            app.path_resolver()
+                .app_config_dir()
+                .expect("failed to resolve app_config_dir")
+        })
 }
