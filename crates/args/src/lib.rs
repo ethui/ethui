@@ -7,6 +7,9 @@ pub fn parse() -> Args {
 #[derive(Parser, Debug)]
 #[command(name = "ethui", author, version, about, long_about = None)]
 pub struct Args {
+    #[arg(long, env = "ETHUI_CONFIG_DIR")]
+    pub config_dir: Option<String>,
+
     #[arg(long, default_value_t = 9003, env = "ETHUI_HTTP_PORT")]
     pub http_port: u16,
 
