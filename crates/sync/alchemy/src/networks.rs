@@ -110,6 +110,22 @@ pub static NETWORKS: Lazy<HashMap<u32, Network>> = Lazy::new(|| {
         },
     );
 
+    map.insert(
+        534352,
+        Network {
+            base_url: Url::parse("https://scroll-mainnet.g.alchemy.com").unwrap(),
+            default_from_block: 1, // October 1st 2024
+        },
+    );
+
+    map.insert(
+        534351,
+        Network {
+            base_url: Url::parse("https://scroll-sepolia.g.alchemy.com").unwrap(),
+            default_from_block: 1, // October 1st 2024
+        },
+    );
+
     map
 });
 

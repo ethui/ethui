@@ -17,6 +17,11 @@ pub struct Network {
     pub ws_url: Option<String>,
     pub currency: String,
     pub decimals: u32,
+
+    /// Ability to forcefully tell ethui that a given chain is anvil, even if chain ID is not the
+    /// expected 31337
+    #[serde(default = "default_force_is_anvil")]
+    pub force_is_anvil: bool,
 }
 
 impl Network {
@@ -29,6 +34,7 @@ impl Network {
             ws_url: None,
             currency: String::from("ETH"),
             decimals: 18,
+            force_is_anvil: false,
         }
     }
 
@@ -41,6 +47,7 @@ impl Network {
             ws_url: None,
             currency: String::from("ETH"),
             decimals: 18,
+            force_is_anvil: false,
         }
     }
 
@@ -53,6 +60,7 @@ impl Network {
             ws_url: None,
             currency: String::from("ETH"),
             decimals: 18,
+            force_is_anvil: false,
         }
     }
 
@@ -65,6 +73,7 @@ impl Network {
             ws_url: Some(String::from("ws://localhost:8545")),
             currency: String::from("ETH"),
             decimals: 18,
+            force_is_anvil: false,
         }
     }
 
@@ -82,7 +91,7 @@ impl Network {
     }
 
     pub fn is_dev(&self) -> bool {
-        self.chain_id == 31337
+        self.force_is_anvil || self.chain_id == 31337
     }
 
     pub fn get_provider(&self) -> Provider<RetryClient<Http>> {
@@ -112,4 +121,8 @@ impl std::fmt::Display for Network {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}-{}", self.chain_id, self.name)
     }
+}
+
+fn default_force_is_anvil() -> bool {
+    false
 }

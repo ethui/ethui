@@ -14,6 +14,8 @@ import zksync from "../../images/chains/324.webp";
 import zksyncSepolia from "../../images/chains/300.webp";
 import anvil from "../../images/chains/31337.webp";
 import unknown from "../../images/chains/unknown.webp";
+import scroll from "../../images/chains/534352.webp";
+import scrollSepolia from "../../images/chains/534351.webp";
 
 export interface IconChainProps extends React.ComponentProps<typeof Avatar> {
   chainId: number;
@@ -34,6 +36,8 @@ const Mappings: Record<number, string> = {
   324: zksync,
   300: zksyncSepolia,
   31337: anvil,
+  534352: scroll,
+  534351: scrollSepolia,
 };
 
 export function IconChain({

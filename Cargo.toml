@@ -56,14 +56,13 @@ ethui-tracing = { path = "crates/tracing" }
 ethui-exchange-rates = { path = "crates/exchange-rates" }
 ethui-args = { path = "crates/args" }
 ethui-token-list = { path = "crates/token-list" }
-
 tokio = { version = "1.37", features = ["full", "sync"] }
 thiserror = "1.0"
 ethers = { features = [
   "ws",
   "ledger",
 ], git = "https://github.com/gakonst/ethers-rs", rev = "5394d89" }
-sqlx = { version = "0.7.4", features = [
+sqlx = { version = "0.8", features = [
   "runtime-tokio-rustls",
   "sqlite",
   "migrate",
@@ -80,7 +79,7 @@ jsonrpc-core = "18.0.0"
 reqwest = { version = "0.12", default-features = false, features = [
   "rustls-tls",
 ] }
-alloy-primitives = { version = "0.7.1", features = [
+alloy-primitives = { version = "0.8.6", features = [
   "serde",
   "rlp",
   "getrandom",
@@ -88,7 +87,7 @@ alloy-primitives = { version = "0.7.1", features = [
 revm-inspectors = { git = "https://github.com/paradigmxyz/evm-inspectors", rev = "c1b5dd0", features = [
   "serde",
 ] }
-alloy-json-abi = { version = "0.7.1" }
+alloy-json-abi = { version = "0.8.6" }
 url = { version = "2.5", features = ["serde"] }
 futures = "0.3.28"
 clap = { version = "4.4.8", features = ["derive", "env"] }
@@ -96,9 +95,9 @@ coins-ledger = "0.10.1"
 rand = "0.8.5"
 
 # Foundry - May 12th 2024
-foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-a117fbfa41edbaa1618ed099d78d65727bff4790" }
-foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-a117fbfa41edbaa1618ed099d78d65727bff4790" }
-foundry-common = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-a117fbfa41edbaa1618ed099d78d65727bff4790" }
+foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-e10ab3d7010b2cbe2b76030d6638c49a3cec696d" }
+foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-e10ab3d7010b2cbe2b76030d6638c49a3cec696d" }
+foundry-common = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-e10ab3d7010b2cbe2b76030d6638c49a3cec696d" }
 hex = "0.4.3"
 anyhow = "1.0.83"
 
