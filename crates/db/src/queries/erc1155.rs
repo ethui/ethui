@@ -104,7 +104,8 @@ impl DbInner {
                 to,
                 to_balance + value,
                 self.read_erc1155_uri(chain_id, contract, token_id).await?,
-                self.read_erc1155_metadata(chain_id, contract, token_id).await?,
+                self.read_erc1155_metadata(chain_id, contract, token_id)
+                    .await?,
             )
             .await?;
         }
@@ -142,6 +143,7 @@ impl DbInner {
         Ok(res)
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub async fn save_erc1155_token_data(
         &self,
         contract: Address,
