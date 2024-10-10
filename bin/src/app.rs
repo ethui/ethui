@@ -196,7 +196,8 @@ fn config_dir(_app: &tauri::App, args: &Args) -> PathBuf {
     let path = args
         .config_dir
         .clone()
-        .unwrap_or(String::from("../dev/data/default"));
+        .unwrap_or(String::from("../dev-data/default"));
+    dbg!(&path);
 
     PathBuf::from(path)
 }
