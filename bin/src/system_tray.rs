@@ -1,40 +1,48 @@
-use tauri::{AppHandle, Manager, SystemTrayEvent};
+use tauri::{
+    menu::{MenuBuilder, MenuEvent, MenuItemBuilder},
+    tray::{ClickType, TrayIconBuilder},
+    AppHandle, Manager,
+};
 
-pub(crate) fn build() -> tauri::SystemTray {
-    use tauri::{CustomMenuItem, SystemTray, SystemTrayMenu, SystemTrayMenuItem};
+use crate::AppResult;
 
-    let quit = CustomMenuItem::new("quit".to_string(), "Quit");
-    let hide = CustomMenuItem::new("hide".to_string(), "Hide");
-    let show = CustomMenuItem::new("show".to_string(), "Show");
-    let tray_menu = SystemTrayMenu::new();
+pub(crate) fn build(app: &AppHandle) -> AppResult<()> {
+    let menu_builder = MenuBuilder::new(app);
 
     #[cfg(feature = "debug")]
-    let tray_menu = tray_menu
-        .add_item(CustomMenuItem::new("dev_mode".to_string(), "Dev Mode"))
-        .add_native_item(SystemTrayMenuItem::Separator);
+    let menu_builder = menu_builder
+        .item(&MenuItemBuilder::with_id("dev_mode", "Dev Mode").build(app)?)
+        .separator();
 
-    let tray_menu = tray_menu
-        .add_item(show)
-        .add_item(hide)
-        .add_native_item(SystemTrayMenuItem::Separator)
-        .add_item(quit);
+    let menu = menu_builder
+        .item(&MenuItemBuilder::with_id("show", "Show").build(app)?)
+        .item(&MenuItemBuilder::with_id("hide", "Hide").build(app)?)
+        .separator()
+        .item(&MenuItemBuilder::with_id("quit", "Quit").build(app)?)
+        .build()?;
 
-    SystemTray::new().with_menu(tray_menu)
+    TrayIconBuilder::new()
+        .menu(&menu)
+        .on_menu_event(event_handler)
+        .on_tray_icon_event(|tray, event| {
+            if event.click_type == ClickType::Left {
+                let app = tray.app_handle();
+                if let Some(window) = app.get_webview_window("main") {
+                    let _ = window.show();
+                    let _ = window.set_focus();
+                }
+            }
+        })
+        .build(app)?;
+
+    Ok(())
 }
 
-pub(crate) fn event_handler(app: &AppHandle, event: SystemTrayEvent) {
-    use SystemTrayEvent::*;
-
-    match event {
-        MenuItemClick { id, .. } => match id.as_str() {
-            "quit" => app.exit(0),
-            "hide" => app.get_window("main").unwrap().hide().unwrap(),
-            "show" => {
-                tokio::spawn(async { ethui_broadcast::main_window_show().await });
-            }
-            _ => {}
-        },
-        DoubleClick { .. } => {
+pub(crate) fn event_handler(app: &AppHandle, event: MenuEvent) {
+    match event.id().as_ref() {
+        "quit" => app.exit(0),
+        "hide" => app.get_webview_window("main").unwrap().hide().unwrap(),
+        "show" => {
             tokio::spawn(async { ethui_broadcast::main_window_show().await });
         }
         _ => {}

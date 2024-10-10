@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Stack, Typography, Button, Grid } from "@mui/material";
 import { isDirty, isValid } from "zod";
-import { window as tauriWindow } from "@tauri-apps/api";
+import { getCurrent } from "@tauri-apps/api/webviewWindow";
 
 import { Network } from "@ethui/types/network";
 import { ChainView } from "@ethui/react/components";
@@ -44,7 +44,7 @@ export function ChainAddDialog() {
         <Button
           variant="contained"
           color="error"
-          onClick={() => tauriWindow.appWindow.close()}
+          onClick={() => getCurrent().close()}
         >
           Cancel
         </Button>

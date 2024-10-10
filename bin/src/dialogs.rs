@@ -1,25 +1,26 @@
 use ethui_types::ui_events;
-use tauri::{AppHandle, Manager, WindowBuilder, WindowEvent, WindowUrl};
+use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindowBuilder, WindowEvent};
 
 pub(crate) fn open(handle: &AppHandle, params: ui_events::DialogOpen) {
-    let window = WindowBuilder::new(handle, params.label, WindowUrl::App(params.url.into()))
-        .inner_size(params.w, params.h)
-        .title(params.title)
-        .resizable(true)
-        .build()
-        .unwrap();
+    let window =
+        WebviewWindowBuilder::new(handle, params.label, WebviewUrl::App(params.url.into()))
+            .inner_size(params.w, params.h)
+            .title(params.title)
+            .resizable(true)
+            .build()
+            .unwrap();
 
     window.on_window_event(move |event| on_event(params.id, event));
 }
 
 pub(crate) fn close(handle: &AppHandle, params: ui_events::DialogClose) {
-    if let Some(window) = handle.get_window(&params.label) {
+    if let Some(window) = handle.get_webview_window(&params.label) {
         window.close().unwrap();
     }
 }
 
 pub(crate) fn send(handle: &AppHandle, params: ui_events::DialogSend) {
-    if let Some(window) = handle.get_window(&params.label) {
+    if let Some(window) = handle.get_webview_window(&params.label) {
         window.emit(&params.event_type, &params.payload).unwrap();
     }
 }

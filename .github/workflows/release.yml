@@ -80,7 +80,7 @@ jobs:
         if: matrix.platform == 'ubuntu-20.04'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf libsodium-dev libusb-dev
+          sudo apt-get install -y build-essential curl wget file libssl-dev libayatana-appindicator3-dev librsvg2-dev libwebkit2gtk-4.1-dev libjavascriptcoregtk-4.1 libsoup-3.0-dev patchelf libsodium-dev
 
       - name: install dependencies (windows)
         if: matrix.platform == 'windows-latest'

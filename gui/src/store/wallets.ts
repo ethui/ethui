@@ -1,4 +1,5 @@
-import { invoke, event } from "@tauri-apps/api";
+import { event } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { Action } from "kbar";
 import { type Address } from "viem";
 import { create, StateCreator } from "zustand";

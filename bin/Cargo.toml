@@ -8,6 +8,13 @@ repository.workspace = true
 exclude.workspace = true
 authors.workspace = true
 
+[lib]
+name = "ethui_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[[bin]]
+name = "ethui"
+
 [dependencies]
 ethui-forge.workspace = true
 ethui-settings.workspace = true
@@ -39,12 +46,12 @@ tracing.workspace = true
 anyhow.workspace = true
 
 fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs", rev = "016512b" }
-tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 named-lock = "0.3.0"
 auto-launch = "0.5.0"
+tauri-plugin-os = "2.0.0-beta.6"
 
 [build-dependencies]
-tauri-build = { version = "1.2", features = [] }
+tauri-build = { version = "2.0.0-beta.17", features = [] }
 ethui-token-list.workspace = true
 
 [features]

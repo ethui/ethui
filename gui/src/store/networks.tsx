@@ -1,4 +1,5 @@
-import { event, invoke } from "@tauri-apps/api";
+import { event } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { Action } from "kbar";
 import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";

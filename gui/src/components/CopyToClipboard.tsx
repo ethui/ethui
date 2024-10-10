@@ -1,5 +1,5 @@
 import { Button, SxProps, Tooltip } from "@mui/material";
-import { clipboard } from "@tauri-apps/api";
+import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import React, { ReactNode, useState } from "react";
 
 export function CopyToClipboard({
@@ -15,9 +15,9 @@ export function CopyToClipboard({
 
   const copyToClipboard = (event: React.MouseEvent<HTMLButtonElement>) => {
     if (label) {
-      clipboard.writeText(label);
+      writeText(label);
     } else if (event?.currentTarget?.textContent) {
-      clipboard.writeText(event.currentTarget.textContent);
+      writeText(event.currentTarget.textContent);
     } else {
       throw new Error("Nothing to copy to clipboard");
     }

@@ -1,87 +1,88 @@
-use tauri::{Menu, WindowMenuEvent};
+use tauri::{menu::MenuEvent, AppHandle, Manager as _, Window};
 
-#[cfg(not(target_os = "macos"))]
-pub(crate) fn build() -> Menu {
-    Default::default()
-}
+use crate::AppResult;
 
-#[cfg(target_os = "macos")]
-pub(crate) fn build() -> Menu {
-    use tauri::{AboutMetadata, CustomMenuItem, MenuItem, Submenu};
+// #[cfg(not(target_os = "macos"))]
+// pub(crate) fn build(_app: &AppHandle) -> AppResult<()> {
+//     Ok(())
+// }
+//
+// #[cfg(target_os = "macos")]
+pub(crate) fn build(app: &AppHandle) -> AppResult<()> {
+    use tauri::menu::{MenuBuilder, MenuItemBuilder, SubmenuBuilder};
 
     let app_name = "ethui".to_string();
 
-    let main_menu = Menu::new()
-        .add_native_item(MenuItem::About(app_name.clone(), AboutMetadata::default()))
-        .add_native_item(MenuItem::Separator)
-        .add_item(
-            CustomMenuItem::new("settings".to_string(), "Settings...")
-                .accelerator("CmdOrCtrl+Comma"),
-        )
-        .add_native_item(MenuItem::Separator)
-        .add_native_item(MenuItem::Services)
-        .add_native_item(MenuItem::Separator)
-        .add_native_item(MenuItem::Hide)
-        .add_native_item(MenuItem::HideOthers)
-        .add_native_item(MenuItem::ShowAll)
-        .add_native_item(MenuItem::Separator)
-        .add_native_item(MenuItem::Quit);
+    let settings = MenuItemBuilder::with_id("settings", "Settings")
+        .accelerator("CmdOrCtrl+Comma")
+        .build(app)?;
 
-    let file_menu = Menu::new().add_native_item(MenuItem::CloseWindow);
+    let main_menu = SubmenuBuilder::new(app, "ethui")
+        .about(None)
+        .separator()
+        .item(&settings)
+        .separator()
+        .hide()
+        .hide_others()
+        .show_all()
+        .separator()
+        .quit()
+        .build()?;
 
-    let view_menu = Menu::new().add_native_item(MenuItem::EnterFullScreen);
+    let file_menu = SubmenuBuilder::new(app, "File").close_window().build()?;
+
+    let view_menu = SubmenuBuilder::new(app, "View").fullscreen().build()?;
 
     // edit submenu
-    let edit_menu = Menu::new()
-        .add_native_item(MenuItem::Undo)
-        .add_native_item(MenuItem::Redo)
-        .add_native_item(MenuItem::Separator)
-        .add_native_item(MenuItem::Cut)
-        .add_native_item(MenuItem::Copy)
-        .add_native_item(MenuItem::Paste)
-        .add_native_item(MenuItem::SelectAll);
+    let edit_menu = SubmenuBuilder::new(app, "Edit")
+        .undo()
+        .redo()
+        .separator()
+        .cut()
+        .copy()
+        .paste()
+        .select_all()
+        .build()?;
 
-    let go_menu = Menu::new()
-        .add_item(CustomMenuItem::new("/home/account".to_string(), "Account"))
-        .add_item(CustomMenuItem::new(
-            "/home/transactions".to_string(),
-            "Transactions",
-        ))
-        .add_item(CustomMenuItem::new("contracts".to_string(), "Contracts"))
-        .add_item(CustomMenuItem::new(
-            "/home/connections".to_string(),
-            "Connections",
-        ));
-
-    let menu = Menu::new()
-        .add_submenu(Submenu::new(app_name, main_menu))
-        .add_submenu(Submenu::new("File", file_menu))
-        .add_submenu(Submenu::new("Edit", edit_menu))
-        .add_submenu(Submenu::new("View", view_menu))
-        .add_submenu(Submenu::new("Go", go_menu));
+    let go_menu = SubmenuBuilder::new(app, "Go")
+        .item(&MenuItemBuilder::with_id("/home/account", "Account").build(app)?)
+        .item(&MenuItemBuilder::with_id("/home/transactions", "Transactions").build(app)?)
+        .item(&MenuItemBuilder::with_id("/home/contracts", "Contracts").build(app)?)
+        .item(&MenuItemBuilder::with_id("/home/connections", "Connections").build(app)?)
+        .build()?;
 
     // window submenu
-    let mut window_menu = Menu::new();
-    window_menu = window_menu.add_native_item(MenuItem::Minimize);
-    window_menu = window_menu.add_native_item(MenuItem::Zoom);
-    window_menu = window_menu.add_native_item(MenuItem::Separator);
-    window_menu = window_menu.add_native_item(MenuItem::CloseWindow);
-    menu.add_submenu(Submenu::new("Window", window_menu))
+    let mut window_menu = SubmenuBuilder::new(app, "Window")
+        .minimize()
+        .separator()
+        .close_window()
+        .build()?;
+
+    let menu = MenuBuilder::new(app)
+        .item(&main_menu)
+        .item(&file_menu)
+        .item(&view_menu)
+        .item(&edit_menu)
+        .item(&go_menu)
+        .item(&window_menu)
+        .build()?;
+
+    Ok(())
 }
 
-pub(crate) fn event_handler(event: WindowMenuEvent) {
-    match event.menu_item_id() {
+pub(crate) fn event_handler(window: &Window, event: MenuEvent) {
+    match event.id().as_ref() {
         "quit" => {
             std::process::exit(0);
         }
         "close" => {
-            event.window().close().unwrap();
+            window.close().unwrap();
         }
         "settings" => {
-            event.window().emit("menu:settings", ()).unwrap();
+            window.emit("menu:settings", ()).unwrap();
         }
         path => {
-            event.window().emit("go", path).unwrap();
+            window.emit("go", path).unwrap();
         }
     }
 }

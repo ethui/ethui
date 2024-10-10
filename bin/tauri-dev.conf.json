@@ -1,39 +1,16 @@
 {
+  "productName": "ethui (dev)",
+  "version": "../package.json",
+  "identifier": "dev.ethui.dev-build",
   "build": {
     "beforeDevCommand": "yarn workspace @ethui/gui dev",
     "beforeBuildCommand": "yarn workspace @ethui/gui build",
-    "devPath": "http://localhost:1420",
-    "distDir": "../gui/dist"
+    "frontendDist": "../gui/dist",
+    "devUrl": "http://localhost:1420"
   },
-  "package": {
-    "productName": "ethui_dev",
-    "version": "../package.json"
-  },
-  "tauri": {
-    "allowlist": {
-      "all": true,
-      "shell": {
-        "all": false,
-        "open": true
-      },
-      "fs": {
-        "scope": ["$APPDATA/*"]
-      }
-    },
-    "bundle": {
-      "active": true,
-      "icon": [
-        "icons-dev/32x32.png",
-        "icons-dev/128x128.png",
-        "icons-dev/128x128@2x.png",
-        "icons-dev/icon.icns",
-        "icons-dev/icon.ico"
-      ],
-      "identifier": "ethui",
-      "targets": "all"
-    },
-    "systemTray": {
-      "iconPath": "icons-dev/icon.png",
+  "app": {
+    "trayIcon": {
+      "iconPath": "icons/icon.png",
       "iconAsTemplate": true
     },
     "security": {
@@ -44,5 +21,9 @@
         "connect-src": ["https://api.github.com"]
       }
     }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all"
   }
 }
