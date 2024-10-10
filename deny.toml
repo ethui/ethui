@@ -21,6 +21,7 @@ allow = [
   "OpenSSL",
   "0BSD",
   "CC0-1.0",
+  "Zlib"
 ]
 exceptions = [
   # As stated in https://github.com/gakonst/ethers-rs/blob/master/deny.toml
