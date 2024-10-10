@@ -61,6 +61,7 @@ pub struct Params {
     native_currency: Currency,
     block_explorer_urls: Vec<Url>,
     rpc_urls: Vec<Url>,
+    force_is_anvil: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -91,6 +92,7 @@ impl TryFrom<Params> for Network {
             ws_url: None,
             currency: params.native_currency.symbol,
             decimals: params.native_currency.decimals as u32,
+            force_is_anvil: params.force_is_anvil,
         })
     }
 }
