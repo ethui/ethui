@@ -10,7 +10,6 @@ import {
   TableCell,
   TableContainer,
   TableRow,
-  TextField,
   Typography,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
@@ -156,7 +155,7 @@ function MnemonicStep({ onSubmit, onCancel }: MnemonicStepProps) {
         <Form.Text label="Name" name="name" multiline />
 
         <Typography>Insert your 12-word mnemonic</Typography>
-        <TextField label="12-word mnemonic" name="mnemonic" multiline />
+        <Form.Text label="12-word mnemonic" name="mnemonic" multiline />
 
         <Stack direction="row" spacing={2} justifyContent="flex-end">
           <Button color="warning" variant="contained" onClick={onCancel}>

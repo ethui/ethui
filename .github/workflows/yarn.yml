@@ -38,5 +38,5 @@ jobs:
           node-version: "20"
 
       - run: yarn install --frozen-lockfile
-        run: yarn lint
-        run: yarn test
+      - run: yarn lint
+      - run: yarn test

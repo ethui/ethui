@@ -96,7 +96,17 @@ jobs:
         run: |
           brew install libsodium libusb
 
+      #
+      # install rust, forcing x86_64 on macos
+      #
       - uses: dtolnay/rust-toolchain@stable
+        if: ${{ matrix.platform != 'macos-latest' }}
+
+      - uses: dtolnay/rust-toolchain@stable
+        if: ${{ matrix.platform == 'macos-latest' }}
+        with:
+          targets: "x86_64-apple-darwin"
+
       - uses: Swatinem/rust-cache@v2
         with:
           shared-key: "release"
@@ -110,12 +120,23 @@ jobs:
 
       - run: yarn install --frozen-lockfile --network-timeout 1000000
 
+      #
+      # run tauri build, forcing x86_64 on macos
+      #
       - uses: tauri-apps/tauri-action@v0
-        id: tauri
+        if: ${{ matrix.platform != 'macos-latest' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           releaseId: ${{ needs.setup.outputs.release_id }}
+
+      - uses: tauri-apps/tauri-action@v0
+        if: ${{ matrix.platform == 'macos-latest' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          releaseId: ${{ needs.setup.outputs.release_id }}
+          args: "--target x86_64-apple-darwin"
 
   # build extension
   # upload to draft release
@@ -148,7 +169,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Submit to Google
-        run: npx chrome-webstore-upload-cli@2 upload --source ./extension/dist/chrome --auto-publish
+        run: npx chrome-webstore-upload-cli@2 upload --source ./extension/dist/chrome --auto-publish || true
         env:
           EXTENSION_ID: ${{ secrets.CHROME_WEB_EXT_ID }}
           CLIENT_ID: ${{ secrets.CHROME_WEB_EXT_CLIENT_ID }}
@@ -156,7 +177,7 @@ jobs:
           REFRESH_TOKEN: ${{ secrets.CHROME_WEB_EXT_REFRESH_TOKEN }}
 
       - name: Submit to Mozilla
-        run: yarn run web-ext sign --use-submission-api --channel listed --source-dir ./extension/dist/firefox
+        run: yarn workspace @ethui/extension run web-ext sign --channel listed --source-dir ./extension/dist/firefox || true
         env:
           WEB_EXT_API_KEY: ${{ secrets.FIREFOX_WEB_EXT_API_KEY }}
           WEB_EXT_API_SECRET: ${{ secrets.FIREFOX_WEB_EXT_API_SECRET }}

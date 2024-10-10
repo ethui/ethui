@@ -26,6 +26,7 @@ const emptyNetwork: Network & NewChild = {
   chain_id: undefined!,
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   decimals: undefined!,
+  force_is_anvil: false,
   new: true,
 };
 
@@ -70,10 +71,15 @@ export function SettingsNetwork() {
             <AccordionDetails>
               <Stack spacing={2} alignItems="flex-start">
                 <Stack spacing={2} direction="row">
-                  <Form.Number label="Name" name={`networks.${index}.name`} />
+                  <Form.Text label="Name" name={`networks.${index}.name`} />
                   <Form.Number
                     label="Chain Id"
                     name={`networks.${index}.chain_id`}
+                  />
+
+                  <Form.Checkbox
+                    label="Anvil"
+                    name={`networks.${index}.force_is_anvil`}
                   />
                 </Stack>
 

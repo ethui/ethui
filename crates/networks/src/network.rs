@@ -17,54 +17,63 @@ pub struct Network {
     pub ws_url: Option<String>,
     pub currency: String,
     pub decimals: u32,
+
+    /// Ability to forcefully tell ethui that a given chain is anvil, even if chain ID is not the
+    /// expected 31337
+    #[serde(default = "default_force_is_anvil")]
+    pub force_is_anvil: bool,
 }
 
 impl Network {
     pub fn mainnet() -> Self {
         Self {
-            name: String::from("mainnet"),
+            name: String::from("Mainnet"),
             chain_id: 1,
             explorer_url: Some(String::from("https://etherscan.io/search?q=")),
             http_url: String::from("https://eth.llamarpc.com"),
             ws_url: None,
             currency: String::from("ETH"),
             decimals: 18,
+            force_is_anvil: false,
         }
     }
 
     pub fn goerli() -> Self {
         Self {
-            name: String::from("goerli"),
+            name: String::from("Goerli"),
             chain_id: 5,
             explorer_url: Some(String::from("https://goerli.etherscan.io/search?q=")),
             http_url: String::from("https://rpc.ankr.com/eth_goerli"),
             ws_url: None,
             currency: String::from("ETH"),
             decimals: 18,
+            force_is_anvil: false,
         }
     }
 
     pub fn sepolia() -> Self {
         Self {
-            name: String::from("sepolia"),
+            name: String::from("Sepolia"),
             chain_id: 11155111,
             explorer_url: Some(String::from("https://sepolia.etherscan.io/search?q=")),
             http_url: String::from("https://rpc2.sepolia.org"),
             ws_url: None,
             currency: String::from("ETH"),
             decimals: 18,
+            force_is_anvil: false,
         }
     }
 
     pub fn anvil() -> Self {
         Self {
-            name: String::from("anvil"),
+            name: String::from("Anvil"),
             chain_id: 31337,
             explorer_url: None,
             http_url: String::from("http://localhost:8545"),
             ws_url: Some(String::from("ws://localhost:8545")),
             currency: String::from("ETH"),
             decimals: 18,
+            force_is_anvil: false,
         }
     }
 
@@ -82,7 +91,7 @@ impl Network {
     }
 
     pub fn is_dev(&self) -> bool {
-        self.chain_id == 31337
+        self.force_is_anvil || self.chain_id == 31337
     }
 
     pub fn get_provider(&self) -> Provider<RetryClient<Http>> {
@@ -112,4 +121,8 @@ impl std::fmt::Display for Network {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}-{}", self.chain_id, self.name)
     }
+}
+
+fn default_force_is_anvil() -> bool {
+    false
 }

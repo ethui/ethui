@@ -12,7 +12,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { Abi, Address, formatEther, formatGwei } from "viem";
-import { createFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute } from "@tanstack/react-router";
 
 import { BlockNumber, SolidityCall } from "@ethui/react/components";
 import { Paginated, PaginatedTx, Pagination, Tx } from "@ethui/types";
@@ -29,7 +29,7 @@ import { Datapoint } from "@/components/Datapoint";
 import { Navbar } from "@/components/Home/Navbar";
 import { HashView } from "@/components/HashView";
 
-export const Route = createFileRoute("/_home/home/transactions")({
+export const Route = createLazyFileRoute("/_home/home/transactions")({
   component: Txs,
 });
 
