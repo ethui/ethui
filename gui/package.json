@@ -48,7 +48,7 @@
     "react-infinite-scroller": "^1.2.6",
     "typescript": "^5.4.5",
     "viem": "^2.16.2",
-    "vite": "^5.2.11",
+    "vite": "^5.2.14",
     "zod": "^3.23.8",
     "zustand": "^4.5.2",
     "zxcvbn-typescript": "^5.0.1"
