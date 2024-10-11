@@ -1,6 +1,5 @@
 {
   "productName": "ethui (dev)",
-  "version": "../package.json",
   "identifier": "dev.ethui.dev-build",
   "build": {
     "beforeDevCommand": "yarn workspace @ethui/gui dev",
