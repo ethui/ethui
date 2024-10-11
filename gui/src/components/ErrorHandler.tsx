@@ -1,5 +1,5 @@
 import { Alert } from "@mui/material";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { ErrorInfo, ReactNode } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 

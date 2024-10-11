@@ -1,12 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Stack, Typography, Button, Grid } from "@mui/material";
 import { isDirty, isValid } from "zod";
-import { window as tauriWindow } from "@tauri-apps/api";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 
 import { ErcFullData } from "@ethui/types";
 import { useDialog } from "@/hooks";
 import { AddressView, Datapoint } from "@/components";
 import { useNetworks } from "@/store";
+
+const tauriWindow = getCurrentWindow();
 
 export const Route = createFileRoute("/_dialog/dialog/erc721-add/$id")({
   component: ERC721AddDialog,
@@ -57,7 +59,7 @@ export function ERC721AddDialog() {
         <Button
           variant="contained"
           color="error"
-          onClick={() => tauriWindow.appWindow.close()}
+          onClick={() => tauriWindow.close()}
         >
           Cancel
         </Button>

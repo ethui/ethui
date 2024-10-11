@@ -2,7 +2,7 @@ import { SettingsSharp, TerminalSharp } from "@mui/icons-material";
 import { Drawer, Stack, SxProps, Toolbar } from "@mui/material";
 import { parseInt, range } from "lodash-es";
 import { useKBar } from "kbar";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { Link, useNavigate } from "@tanstack/react-router";
 
 import { type Tab } from "@ethui/types/ui";
@@ -75,7 +75,7 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
   return (
     <Drawer PaperProps={{ variant: "lighter", sx }} variant="permanent">
       <Toolbar sx={{ p: 2 }} data-tauri-drag-region="true">
-        {type !== "Darwin" && <Logo width={40} />}
+        {type !== "macos" && <Logo width={40} />}
       </Toolbar>
       <Stack px={2} rowGap={1} flexGrow={1}>
         {tabs.map(({ path, label, icon }, index) => (
