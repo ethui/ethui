@@ -18,6 +18,7 @@ pub(crate) async fn main_window_show(app: &AppHandle) {
         let builder = WebviewWindowBuilder::new(app, "main", tauri::WebviewUrl::App(url.into()))
             .fullscreen(false)
             .resizable(true)
+            .decorations(false)
             .inner_size(600.0, 800.0)
             .on_menu_event(menu::event_handler);
 

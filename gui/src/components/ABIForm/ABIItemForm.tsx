@@ -1,5 +1,5 @@
 import { Grid } from "@mui/material";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { AbiFunction } from "abitype";
 import { useState, useCallback } from "react";
 import { Address, Hash, decodeFunctionResult } from "viem";
@@ -24,11 +24,11 @@ interface ItemFormProps {
 
 type Result =
   | {
-      write: Hash;
-    }
+    write: Hash;
+  }
   | {
-      read: string;
-    };
+    read: string;
+  };
 
 export function ABIItemForm({
   to,

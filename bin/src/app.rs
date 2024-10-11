@@ -4,7 +4,7 @@ use ethui_args::Args;
 use ethui_broadcast::UIMsg;
 #[cfg(target_os = "macos")]
 use tauri::WindowEvent;
-use tauri::{AppHandle, Builder, Manager as _};
+use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
 use tracing::debug;
 
 use crate::{
@@ -128,7 +128,7 @@ async fn init(app: &tauri::App, args: &Args) -> AppResult<()> {
     ethui_forge::init().await?;
 
     // automatically open devtools if env asks for it
-    #[cfg(feature = "debug")]
+    //#[cfg(feature = "debug")]
     if std::env::var("ethui_OPEN_DEVTOOLS").is_ok() {
         let window = app.get_webview_window("main").unwrap();
         window.open_devtools();
@@ -179,7 +179,7 @@ fn config_dir(_app: &tauri::App, args: &Args) -> PathBuf {
     let path = args
         .config_dir
         .clone()
-        .unwrap_or(String::from("../dev/data/default"));
+        .unwrap_or(String::from("../dev-data/default"));
 
     PathBuf::from(path)
 }

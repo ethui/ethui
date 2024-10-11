@@ -1,6 +1,6 @@
 use tauri::{
     menu::{MenuBuilder, MenuEvent, MenuItemBuilder},
-    tray::{ClickType, TrayIconBuilder},
+    tray::{MouseButton, TrayIconBuilder, TrayIconEvent},
     AppHandle, Manager,
 };
 
@@ -9,7 +9,7 @@ use crate::AppResult;
 pub(crate) fn build(app: &AppHandle) -> AppResult<()> {
     let menu_builder = MenuBuilder::new(app);
 
-    #[cfg(feature = "debug")]
+    //#[cfg(feature = "debug")]
     let menu_builder = menu_builder
         .item(&MenuItemBuilder::with_id("dev_mode", "Dev Mode").build(app)?)
         .separator();
@@ -24,14 +24,18 @@ pub(crate) fn build(app: &AppHandle) -> AppResult<()> {
     TrayIconBuilder::new()
         .menu(&menu)
         .on_menu_event(event_handler)
-        .on_tray_icon_event(|tray, event| {
-            if event.click_type == ClickType::Left {
+        .on_tray_icon_event(|tray, event| match event {
+            TrayIconEvent::Click {
+                button: MouseButton::Left,
+                ..
+            } => {
                 let app = tray.app_handle();
                 if let Some(window) = app.get_webview_window("main") {
                     let _ = window.show();
                     let _ = window.set_focus();
                 }
             }
+            _ => {}
         })
         .build(app)?;
 

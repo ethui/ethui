@@ -1,5 +1,5 @@
 use ethui_types::ui_events;
-use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindowBuilder, WindowEvent};
+use tauri::{AppHandle, Emitter as _, Manager, WebviewUrl, WebviewWindowBuilder, WindowEvent};
 
 pub(crate) fn open(handle: &AppHandle, params: ui_events::DialogOpen) {
     let window =

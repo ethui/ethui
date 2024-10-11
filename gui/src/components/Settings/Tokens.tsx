@@ -1,7 +1,7 @@
 import { List, Stack, IconButton, CardHeader, Box } from "@mui/material";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { type Address } from "viem";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 
 import { AddressView } from "..";
 import { IconAddress } from "@/components/Icons";

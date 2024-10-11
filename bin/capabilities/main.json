@@ -5,6 +5,6 @@
     "core:window:allow-start-dragging",
     "core:event:allow-listen",
     "core:event:allow-unlisten",
-    "core:os:allow-os-type"
+    "os:allow-os-type"
   ]
 }

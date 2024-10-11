@@ -1,4 +1,4 @@
-use tauri::{menu::MenuEvent, AppHandle, Manager as _, Window};
+use tauri::{menu::MenuEvent, AppHandle, Emitter as _, Window};
 
 use crate::AppResult;
 
@@ -10,8 +10,6 @@ use crate::AppResult;
 // #[cfg(target_os = "macos")]
 pub(crate) fn build(app: &AppHandle) -> AppResult<()> {
     use tauri::menu::{MenuBuilder, MenuItemBuilder, SubmenuBuilder};
-
-    let app_name = "ethui".to_string();
 
     let settings = MenuItemBuilder::with_id("settings", "Settings")
         .accelerator("CmdOrCtrl+Comma")
@@ -52,13 +50,13 @@ pub(crate) fn build(app: &AppHandle) -> AppResult<()> {
         .build()?;
 
     // window submenu
-    let mut window_menu = SubmenuBuilder::new(app, "Window")
+    let window_menu = SubmenuBuilder::new(app, "Window")
         .minimize()
         .separator()
         .close_window()
         .build()?;
 
-    let menu = MenuBuilder::new(app)
+    MenuBuilder::new(app)
         .item(&main_menu)
         .item(&file_menu)
         .item(&view_menu)

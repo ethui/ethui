@@ -1,9 +1,9 @@
-import { getCurrent } from "@tauri-apps/api/webviewWindow";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { useEffect } from "react";
 
 export function useMenuGoAction(callback: (payload: string) => unknown) {
   useEffect(() => {
-    const unlisten = getCurrent().listen(
+    const unlisten = getCurrentWebviewWindow().listen(
       "go",
       ({ payload }: { payload: string }) => {
         callback(payload);
