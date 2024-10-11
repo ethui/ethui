@@ -13,7 +13,7 @@ import {
   MoreVert as MoreVertIcon,
 } from "@mui/icons-material";
 import { type Address, formatUnits } from "viem";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 
 import { AddressView, CopyToClipboard, Modal, TransferForm } from "./";
 import { IconAddress } from "./Icons";

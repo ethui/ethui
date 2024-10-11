@@ -17,7 +17,6 @@ export const networkSchema = z.object({
       .refine(
         (data) => {
           const isAnvil = data.chain_id === 31337 || data.force_is_anvil;
-          console.log(isAnvil);
           return !isAnvil || (!!data.ws_url && data.ws_url.length > 0);
         },
         {

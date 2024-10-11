@@ -1,6 +1,7 @@
 gui/dist
 gui/vite.config.ts.timestamp-*
 gui/src/routeTree.gen.ts
+bin/ethui/gen/
 extension/dist
 extension/scripts/start.js
 extension/wdio.e2e.conf.ts
