@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpks/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     utils.url = "github:numtide/flake-utils";
     rust.url = "github:oxalica/rust-overlay";
   };
@@ -17,12 +17,24 @@
       let
         overlays = [ (import rust) ];
         pkgs = import nixpkgs {
-          inherit system overlay;
+          inherit system overlays;
         };
       in
+      with pkgs;
       {
         devShells.default = mkShell {
-          buildInputs = [ rust-bin.stable.latest.default ];
+          buildInputs = [
+            rust-bin.stable.latest.default
+            gtk3
+            bacon
+            openssl
+            pkg-config
+            glib
+            glib.dev
+            gtk3
+            libsoup
+            webkitgtk
+          ];
         };
       }
     );
