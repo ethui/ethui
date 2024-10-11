@@ -20,7 +20,7 @@ export default defineConfig(() => ({
     host: host || false,
     port: 1420,
     strictPort: true,
-    hmr: host ? { protocol: 'ws', host, port: 1421 } : undefined
+    hmr: host ? { protocol: "ws", host, port: 1421 } : undefined,
   },
   // to make use of `TAURI_DEBUG` and other env variables
   // https://tauri.studio/v1/api/config#buildconfig.beforedevcommand

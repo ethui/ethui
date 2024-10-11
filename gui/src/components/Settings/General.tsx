@@ -1,20 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Button,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormHelperText,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  Switch,
-  TextField,
-} from "@mui/material";
+import { Stack } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
-import { useCallback, useEffect } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
+import { useCallback } from "react";
+import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Form } from "@ethui/react/components";

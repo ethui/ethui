@@ -114,7 +114,7 @@ function Inner({ dialog, request, network }: InnerProps) {
       setCalldata(data);
       send({ event: "update", value, data });
     },
-    [setValue, setCalldata],
+    [setValue, setCalldata, send],
   );
 
   const item = abi

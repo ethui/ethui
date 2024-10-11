@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Link, Stack, TextField, Typography } from "@mui/material";
+import { Link, Stack, Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { useCallback } from "react";
 import { FieldValues, useForm, useWatch } from "react-hook-form";
