@@ -7,6 +7,7 @@ pub(crate) fn open(handle: &AppHandle, params: ui_events::DialogOpen) {
             .inner_size(params.w, params.h)
             .title(params.title)
             .resizable(true)
+            .decorations(false)
             .build()
             .unwrap();
 
