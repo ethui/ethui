@@ -45,6 +45,8 @@ export function Onboarding() {
             steps={Object.keys(steps).length}
             position="static"
             activeStep={activeStep}
+            backButton={null}
+            nextButton={null}
           />
         </Stack>
       </Container>
