@@ -3,11 +3,11 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  SelectChangeEvent,
+  type SelectChangeEvent,
 } from "@mui/material";
 
 import { ChainView } from "@ethui/react/components";
-import { useNetworks } from "@/store";
+import { useNetworks } from "#/store";
 
 export function QuickNetworkSelect() {
   const [networks, current, setCurrent] = useNetworks((s) => [

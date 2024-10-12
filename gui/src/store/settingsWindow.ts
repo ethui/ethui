@@ -1,6 +1,6 @@
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
-import { Action } from "kbar";
-import { create, StateCreator } from "zustand";
+import type { Action } from "kbar";
+import { type StateCreator, create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
 interface State {

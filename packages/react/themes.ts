@@ -1,5 +1,5 @@
-import { PaletteMode } from "@mui/material";
-import { Theme, createTheme } from "@mui/material/styles";
+import type { PaletteMode } from "@mui/material";
+import { type Theme, createTheme } from "@mui/material/styles";
 
 import { grey, lightBlue, red, yellow } from "@mui/material/colors";
 

@@ -2,16 +2,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Stack } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
-import { FieldValues, useForm } from "react-hook-form";
-import { Address, getAddress } from "viem";
+import { type FieldValues, useForm } from "react-hook-form";
+import { type Address, getAddress } from "viem";
 import { z } from "zod";
 
 import { Form, Typography } from "@ethui/react/components";
-import { useInvoke } from "@/hooks";
+import { useInvoke } from "#/hooks";
+import { useNetworks } from "#/store";
+import { truncateHex } from "#/utils";
 import { ContextMenuWithTauri, Modal } from "./";
-import { useNetworks } from "@/store";
 import { IconAddress } from "./Icons";
-import { truncateHex } from "@/utils";
 
 interface Props {
   address: Address;

@@ -8,7 +8,7 @@
       "../node_modules/@types"
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "#/*": ["./src/*"]
     }
   },
   "include": ["./src", "vite.config.ts", "../packages/react/@types"],

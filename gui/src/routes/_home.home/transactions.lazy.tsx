@@ -8,26 +8,26 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
-import { Abi, Address, formatEther, formatGwei } from "viem";
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { type Abi, type Address, formatEther, formatGwei } from "viem";
 
 import { BlockNumber, SolidityCall } from "@ethui/react/components";
-import { Paginated, PaginatedTx, Pagination, Tx } from "@ethui/types";
-import { useEventListener, useInvoke } from "@/hooks";
-import { useNetworks, useWallets } from "@/store";
+import type { Paginated, PaginatedTx, Pagination, Tx } from "@ethui/types";
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
   AddressView,
   ContextMenuWithTauri,
-} from "@/components";
-import { Datapoint } from "@/components/Datapoint";
-import { Navbar } from "@/components/Home/Navbar";
-import { HashView } from "@/components/HashView";
+} from "#/components";
+import { Datapoint } from "#/components/Datapoint";
+import { HashView } from "#/components/HashView";
+import { Navbar } from "#/components/Home/Navbar";
+import { useEventListener, useInvoke } from "#/hooks";
+import { useNetworks, useWallets } from "#/store";
 
 export const Route = createLazyFileRoute("/_home/home/transactions")({
   component: Txs,
@@ -42,7 +42,7 @@ export function Txs() {
   const loadMore = useCallback(() => {
     let pagination: Pagination = {};
     const last = pages?.at(-1)?.pagination;
-    if (!!last) {
+    if (last) {
       pagination = last;
       pagination.page = (pagination.page || 0) + 1;
     }
@@ -52,10 +52,10 @@ export function Txs() {
       chainId,
       pagination,
     }).then((page) => setPages([...pages, page]));
-  }, [account, chainId, pages, setPages]);
+  }, [account, chainId, pages]);
 
   useEffect(() => {
-    if (pages.length == 0) loadMore();
+    if (pages.length === 0) loadMore();
   }, [pages, loadMore]);
 
   const reload = () => {
@@ -63,7 +63,12 @@ export function Txs() {
   };
 
   useEventListener("txs-updated", reload);
-  useEffect(reload, [account, chainId]);
+  useEffect(() => {
+    // TODO: this needs to depend on account and chainId, because biome complains but shouldn't
+    account;
+    chainId;
+    setPages([]);
+  }, [account, chainId]);
 
   if (!account || !chainId) return null;
 
@@ -138,7 +143,7 @@ function Icon({ account, tx }: IconProps) {
 
   if (!tx.to) {
     icon = NoteAdd;
-  } else if (tx.to.toLowerCase() == account.toLowerCase()) {
+  } else if (tx.to.toLowerCase() === account.toLowerCase()) {
     icon = CallReceived;
   }
 
@@ -219,7 +224,7 @@ function Details({ tx, chainId }: DetailsProps) {
       />
       <Datapoint label="type" value={formatTxType(fullTx?.type)} size="small" />
       {/* TODO: other txs types */}
-      {fullTx?.type == 2 && (
+      {fullTx?.type === 2 && (
         <>
           <Datapoint
             label="maxFeePerGas"

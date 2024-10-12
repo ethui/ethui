@@ -1,15 +1,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Stack } from "@mui/material";
-import { FieldValues, useForm } from "react-hook-form";
+import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { Form } from "@ethui/react/components";
 import {
+  type PlaintextWallet,
+  type Wallet,
   derivationPathSchema,
   mnemonicSchema,
-  PlaintextWallet,
-  Wallet,
 } from "@ethui/types/wallets";
-import { Form } from "@ethui/react/components";
 
 const schema = z.object({
   name: z.string().min(1),

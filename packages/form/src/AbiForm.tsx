@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
-import { parseAbiItem, type AbiFunction, type AbiItem } from "viem";
-import { encodeFunctionData } from "viem/utils";
 import { Alert, Box, Button, Grid, Stack } from "@mui/material";
+import { useCallback, useEffect, useState } from "react";
+import { type AbiFunction, type AbiItem, parseAbiItem } from "viem";
+import { encodeFunctionData } from "viem/utils";
 
 import { AbiInput } from "./AbiInput";
 import { decodeDefaultArgs } from "./utils";
@@ -46,7 +46,7 @@ export function AbiForm({
     );
   }
 
-  let item;
+  let item: AbiFunction;
   try {
     item = (
       typeof abiItem === "string" ? parseAbiItem(abiItem) : abiItem
@@ -97,7 +97,7 @@ export function RawForm({
       sx={{ p: 2 }}
       onSubmit={(e) => {
         e.preventDefault();
-        onSubmit && onSubmit();
+        onSubmit?.();
       }}
     >
       <AbiInput
@@ -192,7 +192,7 @@ export function AbiFormInner({
         sx={{ p: 2 }}
         onSubmit={(e) => {
           e.preventDefault();
-          onSubmit && onSubmit();
+          onSubmit?.();
         }}
       >
         {item.inputs.map((input, i) => (

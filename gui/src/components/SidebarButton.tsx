@@ -1,16 +1,16 @@
 import {
-  useMediaQuery,
   ButtonBase,
   type ButtonBaseProps,
-  Stack,
   Collapse,
-  SvgIcon,
+  Stack,
+  type SvgIcon,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import { lightBlue } from "@mui/material/colors";
 import { Link, useMatchRoute } from "@tanstack/react-router";
 
-import { useTheme } from "@/store";
+import { useTheme } from "#/store";
 
 type Props<RootType extends React.ElementType> = Omit<
   ButtonBaseProps<RootType>,

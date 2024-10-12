@@ -1,9 +1,9 @@
-import { Button, Stack } from "@mui/material";
 import { Delete, Task } from "@mui/icons-material";
+import { Button, Stack } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { HighlightBox, Typography } from "@ethui/react/components";
-import { useDialog } from "@/hooks";
+import { useDialog } from "#/hooks";
 
 export const Route = createFileRoute("/_dialog/dialog/msg-sign/$id")({
   component: MsgSignDialog,
@@ -15,7 +15,7 @@ export function MsgSignDialog() {
 
   if (!data) return null;
 
-  const msg = data["Raw"] || JSON.stringify(data["Typed"], null, 2);
+  const msg = data.Raw || JSON.stringify(data.Typed, null, 2);
 
   return (
     <Stack

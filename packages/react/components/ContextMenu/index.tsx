@@ -1,5 +1,11 @@
-import { Menu, MenuItem, MenuItemProps, SxProps } from "@mui/material";
-import React, { MouseEvent, ReactNode, useState } from "react";
+import {
+  Menu,
+  MenuItem,
+  type MenuItemProps,
+  type SxProps,
+} from "@mui/material";
+import type React from "react";
+import { type MouseEvent, type ReactNode, useState } from "react";
 
 import { ClickToCopy } from "@ethui/react/components";
 

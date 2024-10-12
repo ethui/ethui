@@ -12,9 +12,9 @@ import { invoke } from "@tauri-apps/api/core";
 import { startCase } from "lodash-es";
 import { useState } from "react";
 
-import { Wallet, walletTypes } from "@ethui/types/wallets";
-import { Accordion, AccordionDetails, AccordionSummary } from "@/components";
-import { useWallets } from "@/store";
+import { type Wallet, walletTypes } from "@ethui/types/wallets";
+import { Accordion, AccordionDetails, AccordionSummary } from "#/components";
+import { useWallets } from "#/store";
 import { HDWalletForm } from "./Wallet/HDWallet";
 import { ImpersonatorForm } from "./Wallet/Impersonator";
 import { JsonKeystore } from "./Wallet/JsonKeystore";
@@ -44,7 +44,7 @@ export function SettingsWallets({ extraAction }: Props) {
         {wallets.map((wallet) => (
           <ExistingItem key={wallet.name} wallet={wallet} />
         ))}
-        {newType && <NewItem key={`_new`} type={newType} onFinish={closeNew} />}
+        {newType && <NewItem key="_new" type={newType} onFinish={closeNew} />}
       </Stack>
       {!newType && (
         <Stack

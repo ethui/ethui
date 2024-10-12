@@ -1,14 +1,14 @@
 import "@fontsource/roboto-mono/latin.css";
 import "@fontsource/roboto/latin.css";
 
-import React from "react";
-import { createRoot } from "react-dom/client";
 import {
   RouterProvider,
   createHashHistory,
   createRouter,
 } from "@tanstack/react-router";
+import React from "react";
 
+import { createRoot } from "react-dom/client";
 import { routeTree } from "./routeTree.gen";
 
 const router = createRouter({ routeTree, history: createHashHistory() });

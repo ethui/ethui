@@ -1,8 +1,8 @@
-import { type Meta, type StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react";
 
-import { IconEffigy, IconEffigyProps } from "./Effigy";
-import { defaultDisabledArgs } from "../../utils";
 import { Stack } from "@mui/material";
+import { defaultDisabledArgs } from "../../utils";
+import { IconEffigy, type IconEffigyProps } from "./Effigy";
 
 const meta: Meta<IconEffigyProps> = {
   title: "Icons/IconEffigy",

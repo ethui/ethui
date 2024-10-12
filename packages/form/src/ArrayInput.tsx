@@ -1,3 +1,4 @@
+import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import {
   Box,
   IconButton,
@@ -6,9 +7,8 @@ import {
   ToggleButtonGroup,
   alpha,
 } from "@mui/material";
+import { grey, red } from "@mui/material/colors";
 import { useState } from "react";
-import { red, grey } from "@mui/material/colors";
-import { Delete as DeleteIcon, Add as AddIcon } from "@mui/icons-material";
 
 import { AbiInput, type InnerProps } from "./AbiInput";
 import { Basic } from "./Basic";
@@ -183,7 +183,7 @@ function AbiArrayItemInput({
       type={type}
       onChange={onChange}
       sx={{
-        backgroundColor: deleteHover ? alpha(red["A100"], 0.1) : "initial",
+        backgroundColor: deleteHover ? alpha(red.A100, 0.1) : "initial",
         transition: "background-color 0.2s",
       }}
       headerActions={

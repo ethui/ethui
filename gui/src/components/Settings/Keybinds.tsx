@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 
-import { useTheme } from "@/store";
+import { useTheme } from "#/store";
 
 export function SettingsKeybinds() {
   const { theme } = useTheme();
@@ -21,15 +21,15 @@ export function SettingsKeybinds() {
     { name: "Toggle Fast mode", combination: "Ctrl + F" },
     {
       name: "Change wallet",
-      combination: `W`,
+      combination: "W",
     },
     {
       name: "Change network",
-      combination: `N`,
+      combination: "N",
     },
     {
       name: "Change theme",
-      combination: `T`,
+      combination: "T",
     },
   ];
 

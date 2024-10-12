@@ -1,8 +1,8 @@
-import { Box, Stack, Typography, type SxProps } from "@mui/material";
+import { Box, Stack, type SxProps, Typography } from "@mui/material";
 import { useCallback } from "react";
 
-import { Basic } from "./Basic";
 import { ArrayInput } from "./ArrayInput";
+import { Basic } from "./Basic";
 import { matchArrayType } from "./utils";
 
 export interface BaseProps {

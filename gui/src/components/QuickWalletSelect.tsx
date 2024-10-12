@@ -3,10 +3,10 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  SelectChangeEvent,
+  type SelectChangeEvent,
 } from "@mui/material";
 
-import { useWallets } from "@/store";
+import { useWallets } from "#/store";
 
 export function QuickWalletSelect() {
   const [wallets, currentWallet, setCurrentWallet] = useWallets((s) => [

@@ -13,8 +13,8 @@ import { SettingsFoundry } from "./Foundry";
 import { SettingsGeneral } from "./General";
 import { SettingsKeybinds } from "./Keybinds";
 import { SettingsNetwork } from "./Network";
-import { SettingsWallets } from "./Wallets";
 import { SettingsTokens } from "./Tokens";
+import { SettingsWallets } from "./Wallets";
 
 const TABS = [
   { name: "General", component: SettingsGeneral },

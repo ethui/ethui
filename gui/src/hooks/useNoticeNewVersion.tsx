@@ -1,6 +1,6 @@
 import CloseIcon from "@mui/icons-material/Close";
 import { IconButton, Link, Typography } from "@mui/material";
-import { SnackbarKey, useSnackbar } from "notistack";
+import { type SnackbarKey, useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 
 import { useInvoke } from "./useInvoke";
@@ -22,7 +22,7 @@ export function useNoticeNewVersion() {
 
   useEffect(() => {
     getLatestVersion().then(setLatest);
-  }, [setLatest]);
+  }, []);
 
   useEffect(() => {
     if (!latest || current === latest) return;
