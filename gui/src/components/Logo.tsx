@@ -1,4 +1,4 @@
-import { useTheme } from "@/store/theme";
+import { useTheme } from "#/store/theme";
 
 const { NODE_ENV } = import.meta.env;
 

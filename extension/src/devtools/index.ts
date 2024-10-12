@@ -1,6 +1,6 @@
-import type { Request, Response } from "@/types";
 import { devtools, runtime } from "webextension-polyfill";
 import type { DevtoolsPanels } from "webextension-polyfill/namespaces/devtools_panels";
+import type { Request, Response } from "#/types";
 
 const tabId = devtools.inspectedWindow.tabId;
 

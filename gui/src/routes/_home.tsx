@@ -8,11 +8,11 @@ import { Box, type Theme } from "@mui/material";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 import { SnackbarProvider } from "notistack";
 
-import { CommandBar } from "@/components";
-import { Sidebar } from "@/components/Home/Sidebar";
-import { useNoticeAlchemyKeyMissing, useNoticeNewVersion } from "@/hooks";
-import { useTheme } from "@/store";
 import type { Tab } from "@ethui/types/ui";
+import { CommandBar } from "#/components";
+import { Sidebar } from "#/components/Home/Sidebar";
+import { useNoticeAlchemyKeyMissing, useNoticeNewVersion } from "#/hooks";
+import { useTheme } from "#/store";
 
 export const Route = createFileRoute("/_home")({
   component: HomePageLayout,

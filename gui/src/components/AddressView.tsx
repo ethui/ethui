@@ -6,10 +6,10 @@ import { type FieldValues, useForm } from "react-hook-form";
 import { type Address, getAddress } from "viem";
 import { z } from "zod";
 
-import { useInvoke } from "@/hooks";
-import { useNetworks } from "@/store";
-import { truncateHex } from "@/utils";
 import { Form, Typography } from "@ethui/react/components";
+import { useInvoke } from "#/hooks";
+import { useNetworks } from "#/store";
+import { truncateHex } from "#/utils";
 import { ContextMenuWithTauri, Modal } from "./";
 import { IconAddress } from "./Icons";
 

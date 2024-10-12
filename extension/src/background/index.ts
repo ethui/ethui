@@ -4,7 +4,7 @@ import { ArrayQueue, ConstantBackoff, WebsocketBuilder } from "websocket-ts";
 
 import type { Json, JsonRpcRequest, JsonRpcResponse } from "@metamask/utils";
 
-import { type Settings, defaultSettings, loadSettings } from "@/settings";
+import { type Settings, defaultSettings, loadSettings } from "#/settings";
 
 // init on load
 (async () => init())();

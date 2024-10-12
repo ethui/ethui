@@ -4,14 +4,14 @@ import type { AbiFunction } from "abitype";
 import { useCallback, useState } from "react";
 import { type Address, type Hash, decodeFunctionResult } from "viem";
 
-import { AddressView, HashView } from "@/components";
-import { useNetworks, useWallets } from "@/store";
 import { AbiForm } from "@ethui/form";
 import {
   HighlightBox,
   SolidityCall,
   Typography,
 } from "@ethui/react/components";
+import { AddressView, HashView } from "#/components";
+import { useNetworks, useWallets } from "#/store";
 
 interface ItemFormProps {
   to: Address;
@@ -78,7 +78,7 @@ export function ABIItemForm({
       setData(data);
       parentOnChange?.({ value, data });
     },
-    [setValue, setData, parentOnChange],
+    [parentOnChange],
   );
 
   return (

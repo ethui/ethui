@@ -2,7 +2,7 @@ import { runtime, tabs } from "webextension-polyfill";
 import { type StateCreator, create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import type { Request, Response, Start } from "@/types";
+import type { Request, Response, Start } from "#/types";
 
 interface State {
   requests: { request: Request; response?: Response }[];

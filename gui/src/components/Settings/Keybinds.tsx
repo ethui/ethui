@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 
-import { useTheme } from "@/store";
+import { useTheme } from "#/store";
 
 export function SettingsKeybinds() {
   const { theme } = useTheme();

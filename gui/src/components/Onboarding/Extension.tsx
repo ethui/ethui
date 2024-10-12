@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 
-import { useInvoke } from "@/hooks";
+import { useInvoke } from "#/hooks";
 import type { StepProps } from ".";
 
 export function InstallExtensionStep({ onSubmit }: StepProps) {

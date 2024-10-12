@@ -6,9 +6,9 @@ import { useEffect, useState } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
-import { useLedgerDetect } from "@/hooks";
 import { Form } from "@ethui/react/components";
 import { type LedgerWallet, derivationPathSchema } from "@ethui/types/wallets";
+import { useLedgerDetect } from "#/hooks";
 
 export const schema = z.object({
   name: z.string().min(1),

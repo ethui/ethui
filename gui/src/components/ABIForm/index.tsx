@@ -4,7 +4,7 @@ import { type Abi, type AbiFunction, formatAbiItem } from "abitype";
 import { Fragment, type SyntheticEvent, useState } from "react";
 import type { Address } from "viem";
 
-import { useInvoke } from "@/hooks";
+import { useInvoke } from "#/hooks";
 import { ABIItemForm } from "./ABIItemForm";
 
 export { ABIItemForm };

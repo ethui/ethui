@@ -3,10 +3,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { isDirty, isValid } from "zod";
 
-import { AddressView, Datapoint } from "@/components";
-import { useDialog } from "@/hooks";
-import { useNetworks } from "@/store";
 import type { ErcFullData } from "@ethui/types";
+import { AddressView, Datapoint } from "#/components";
+import { useDialog } from "#/hooks";
+import { useNetworks } from "#/store";
 
 const tauriWindow = getCurrentWindow();
 

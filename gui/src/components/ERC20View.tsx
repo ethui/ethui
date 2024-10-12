@@ -15,7 +15,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
 import { type Address, formatUnits } from "viem";
 
-import { useNetworks } from "@/store";
+import { useNetworks } from "#/store";
 import { AddressView, CopyToClipboard, Modal, TransferForm } from "./";
 import { IconAddress } from "./Icons";
 

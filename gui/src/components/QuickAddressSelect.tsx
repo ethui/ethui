@@ -8,9 +8,9 @@ import {
 import { map } from "lodash-es";
 import { type Address, getAddress } from "viem";
 
-import { useInvoke } from "@/hooks";
-import { useWallets } from "@/store";
 import type { Wallet } from "@ethui/types/wallets";
+import { useInvoke } from "#/hooks";
+import { useWallets } from "#/store";
 import { AddressView } from "./";
 
 export function QuickAddressSelect() {

@@ -28,8 +28,8 @@ import {
   useSettings,
   useSettingsWindow,
   useWallets,
-} from "@/store";
-import { useTheme } from "@/store/theme";
+} from "#/store";
+import { useTheme } from "#/store/theme";
 
 function useActions() {
   const walletActions = useWallets((s) => s.actions);

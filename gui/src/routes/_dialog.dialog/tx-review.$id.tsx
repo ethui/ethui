@@ -13,15 +13,15 @@ import {
   parseAbi,
 } from "viem";
 
-import { ABIItemForm, AddressView, Datapoint } from "@/components";
-import { DialogBottom } from "@/components/Dialogs/Bottom";
-import { IconAddress } from "@/components/Icons";
-import { useDialog, useInvoke, useLedgerDetect } from "@/hooks";
-import type { Dialog } from "@/hooks/useDialog";
-import { useNetworks } from "@/store";
 import { ChainView, Typography } from "@ethui/react/components";
 import type { TokenMetadata } from "@ethui/types";
 import type { Network } from "@ethui/types/network";
+import { ABIItemForm, AddressView, Datapoint } from "#/components";
+import { DialogBottom } from "#/components/Dialogs/Bottom";
+import { IconAddress } from "#/components/Icons";
+import { useDialog, useInvoke, useLedgerDetect } from "#/hooks";
+import type { Dialog } from "#/hooks/useDialog";
+import { useNetworks } from "#/store";
 
 export const Route = createFileRoute("/_dialog/dialog/tx-review/$id")({
   component: TxReviewDialog,
@@ -114,7 +114,7 @@ function Inner({ dialog, request, network }: InnerProps) {
       setCalldata(data);
       send({ event: "update", value, data });
     },
-    [setValue, setCalldata, send],
+    [send],
   );
 
   const item = abi

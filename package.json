@@ -9,12 +9,10 @@
     "storybook": "yarn workspace @ethui/react storybook",
     "ext:dev": "yarn workspace @ethui/extension dev",
     "ext:build": "yarn workspace @ethui/extension build \"$@\"",
-    "lint": "yarn lint:eslint && yarn lint:tsc && yarn lint:biome",
-    "lint:eslint": "eslint .",
-    "lint:tsc": "yarn workspaces foreach --all --parallel run tsc --noEmit",
+    "lint": "yarn lint:biome && yarn lint:tsc",
     "lint:biome": "biome check .",
-    "fix": "yarn fix:eslint && yarn fix:biome",
-    "fix:eslint": "eslint --fix .",
+    "lint:tsc": "yarn workspaces foreach --all --parallel run tsc --noEmit",
+    "fix": "yarn fix:biome",
     "fix:biome": "biome check --write .",
     "setup": "yarn install && yarn ext:build",
     "test": "yarn workspaces foreach --all run test"
@@ -30,17 +28,7 @@
   ],
   "devDependencies": {
     "@biomejs/biome": "^1.9.3",
-    "@typescript-eslint/eslint-plugin": "^7.9.0",
-    "@typescript-eslint/parser": "^7.9.0",
-    "assert": "^2.1.0",
-    "eslint": "^8.57.0",
-    "eslint-config-standard-with-typescript": "^43.0.1",
-    "eslint-import-resolver-typescript": "^3.6.1",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-n": "^16.6.2",
-    "eslint-plugin-promise": "^6.1.1",
-    "eslint-plugin-react": "^7.34.1",
-    "eslint-plugin-react-hooks": "^4.6.2"
+    "assert": "^2.1.0"
   },
   "dependencies": {
     "@tauri-apps/cli": "^2.0.2",

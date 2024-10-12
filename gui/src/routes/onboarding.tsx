@@ -2,13 +2,13 @@ import { Container, MobileStepper, Stack } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { DraggableToolbar, Logo } from "@/components";
-import type { StepProps } from "@/components/Onboarding";
-import { AlchemyStep } from "@/components/Onboarding/Alchemy";
-import { InstallExtensionStep } from "@/components/Onboarding/Extension";
-import { ThankYouStep } from "@/components/Onboarding/ThankYou";
-import { WalletSetupStep } from "@/components/Onboarding/WalletSetup";
-import { WelcomeStep } from "@/components/Onboarding/Welcome";
+import { DraggableToolbar, Logo } from "#/components";
+import type { StepProps } from "#/components/Onboarding";
+import { AlchemyStep } from "#/components/Onboarding/Alchemy";
+import { InstallExtensionStep } from "#/components/Onboarding/Extension";
+import { ThankYouStep } from "#/components/Onboarding/ThankYou";
+import { WalletSetupStep } from "#/components/Onboarding/WalletSetup";
+import { WelcomeStep } from "#/components/Onboarding/Welcome";
 
 export const Route = createFileRoute("/onboarding")({
   component: Onboarding,

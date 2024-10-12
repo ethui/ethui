@@ -5,6 +5,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useKBar } from "kbar";
 import { parseInt as lodashParseInt, range } from "lodash-es";
 
+import type { Tab } from "@ethui/types/ui";
 import {
   Logo,
   Modal,
@@ -14,10 +15,9 @@ import {
   QuickWalletSelect,
   Settings,
   SidebarButton,
-} from "@/components";
-import { useKeyPress, useMenuAction, useOS } from "@/hooks";
-import { useSettings, useSettingsWindow, useTheme } from "@/store";
-import type { Tab } from "@ethui/types/ui";
+} from "#/components";
+import { useKeyPress, useMenuAction, useOS } from "#/hooks";
+import { useSettings, useSettingsWindow, useTheme } from "#/store";
 
 interface SidebarProps {
   sx?: SxProps;

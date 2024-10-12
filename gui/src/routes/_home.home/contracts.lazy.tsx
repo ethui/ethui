@@ -13,6 +13,8 @@ import { useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { ChainView, Form } from "@ethui/react/components";
+import type { Contract } from "@ethui/types";
 import {
   ABIForm,
   Accordion,
@@ -20,11 +22,9 @@ import {
   AccordionSummary,
   AddressView,
   Modal,
-} from "@/components/";
-import { Navbar } from "@/components/Home/Navbar";
-import { useContracts, useNetworks } from "@/store";
-import { ChainView, Form } from "@ethui/react/components";
-import type { Contract } from "@ethui/types";
+} from "#/components/";
+import { Navbar } from "#/components/Home/Navbar";
+import { useContracts, useNetworks } from "#/store";
 
 export const Route = createLazyFileRoute("/_home/home/contracts")({
   component: Contracts,
