@@ -14,13 +14,13 @@ let settings: Settings = defaultSettings;
  * Loads the current settings, and listens for incoming connections (from the injected contentscript)
  */
 export async function init() {
-  settings = await loadSettings();
-  log.setLevel(settings.logLevel);
+	settings = await loadSettings();
+	log.setLevel(settings.logLevel);
 
-  // handle each incoming content script connection
-  runtime.onConnect.addListener((port: Runtime.Port) => {
-    setupProviderConnection(port);
-  });
+	// handle each incoming content script connection
+	runtime.onConnect.addListener((port: Runtime.Port) => {
+		setupProviderConnection(port);
+	});
 }
 
 /**
@@ -29,27 +29,27 @@ export async function init() {
  * @param msg - message to be sent to the devtools
  */
 async function notifyDevtools(
-  tabId: number,
-  type: "request" | "response" | "start",
-  data?: JsonRpcResponse<Json> | JsonRpcRequest,
+	tabId: number,
+	type: "request" | "response" | "start",
+	data?: JsonRpcResponse<Json> | JsonRpcRequest,
 ) {
-  try {
-    await runtime.sendMessage({
-      type,
-      tabId,
-      data,
-      timestamp: Date.now(),
-    });
-  } catch (e: unknown) {
-    if (
-      !(
-        e instanceof Error &&
-        e.message.includes("Receiving end does not exist.")
-      )
-    ) {
-      throw e;
-    }
-  }
+	try {
+		await runtime.sendMessage({
+			type,
+			tabId,
+			data,
+			timestamp: Date.now(),
+		});
+	} catch (e: unknown) {
+		if (
+			!(
+				e instanceof Error &&
+				e.message.includes("Receiving end does not exist.")
+			)
+		) {
+			throw e;
+		}
+	}
 }
 
 /**
@@ -60,54 +60,54 @@ async function notifyDevtools(
  * This behaviour prevents initiating connections for browser tabs where `window.ethereum` is not actually used
  */
 export function setupProviderConnection(port: Runtime.Port) {
-  const tabId = port.sender!.tab!.id!;
+	const tabId = port.sender!.tab!.id!;
 
-  notifyDevtools(tabId, "start");
+	notifyDevtools(tabId, "start");
 
-  const ws = new WebsocketBuilder(endpoint(port))
-    .onOpen(() => {
-      log.debug("WS connection opened");
-    })
-    .onReconnect(() => {
-      log.debug("WS connection reconnected");
-    })
-    .onError((e) => {
-      log.error("[WS] error:", e);
-    })
-    .withBuffer(new ArrayQueue())
-    .withBackoff(new ConstantBackoff(1000))
-    .onMessage((_ins, event) => {
-      if (event.data === "ping") {
-        ws.send("pong");
-        return;
-      }
-      // forward WS server messages back to the stream (content script)
-      const data = JSON.parse(event.data);
-      port.postMessage(data);
+	const ws = new WebsocketBuilder(endpoint(port))
+		.onOpen(() => {
+			log.debug("WS connection opened");
+		})
+		.onReconnect(() => {
+			log.debug("WS connection reconnected");
+		})
+		.onError((e) => {
+			log.error("[WS] error:", e);
+		})
+		.withBuffer(new ArrayQueue())
+		.withBackoff(new ConstantBackoff(1000))
+		.onMessage((_ins, event) => {
+			if (event.data === "ping") {
+				ws.send("pong");
+				return;
+			}
+			// forward WS server messages back to the stream (content script)
+			const data = JSON.parse(event.data);
+			port.postMessage(data);
 
-      log.debug("[WS] response:", data);
-      notifyDevtools(tabId, "response", data);
-    })
-    .build();
+			log.debug("[WS] response:", data);
+			notifyDevtools(tabId, "response", data);
+		})
+		.build();
 
-  // forwarding incoming stream data to the WS server
-  port.onMessage.addListener((data: JsonRpcResponse<Json>) => {
-    ws.send(JSON.stringify(data));
+	// forwarding incoming stream data to the WS server
+	port.onMessage.addListener((data: JsonRpcResponse<Json>) => {
+		ws.send(JSON.stringify(data));
 
-    log.debug("[WS] request:", data);
-    notifyDevtools(tabId, "request", data);
-  });
+		log.debug("[WS] request:", data);
+		notifyDevtools(tabId, "request", data);
+	});
 
-  port.onDisconnect.addListener(() => {
-    ws.close();
-  });
+	port.onDisconnect.addListener(() => {
+		ws.close();
+	});
 }
 
 /**
  * The URL of the ethui server if given from the settings, with connection metadata being appended as URL params
  */
 function endpoint(port: Runtime.Port) {
-  return `${settings.endpoint}?${connParams(port)}`;
+	return `${settings.endpoint}?${connParams(port)}`;
 }
 
 /**
@@ -116,29 +116,29 @@ function endpoint(port: Runtime.Port) {
  * This includes all info that may be useful for the ethui server.
  */
 function connParams(port: Runtime.Port) {
-  const sender = port.sender;
-  const tab = sender?.tab;
+	const sender = port.sender;
+	const tab = sender?.tab;
 
-  const params: Record<string, string | undefined> = {
-    origin: (port.sender as unknown as { origin: string }).origin,
-    tabId: tab?.id?.toString(10),
-    favicon: tab?.favIconUrl,
-    url: tab?.url,
-    title: tab?.title,
-  };
+	const params: Record<string, string | undefined> = {
+		origin: (port.sender as unknown as { origin: string }).origin,
+		tabId: tab?.id?.toString(10),
+		favicon: tab?.favIconUrl,
+		url: tab?.url,
+		title: tab?.title,
+	};
 
-  return encodeUrlParams(params);
+	return encodeUrlParams(params);
 }
 
 /**
  * URL-encode a set of params
  */
 function encodeUrlParams(p: Record<string, string | undefined>) {
-  const filtered: Record<string, string> = Object.fromEntries(
-    Object.entries(p).filter(([, v]) => v !== undefined),
-  ) as Record<string, string>;
+	const filtered: Record<string, string> = Object.fromEntries(
+		Object.entries(p).filter(([, v]) => v !== undefined),
+	) as Record<string, string>;
 
-  return Object.entries(filtered)
-    .map((kv) => kv.map(encodeURIComponent).join("="))
-    .join("&");
+	return Object.entries(filtered)
+		.map((kv) => kv.map(encodeURIComponent).join("="))
+		.join("&");
 }
