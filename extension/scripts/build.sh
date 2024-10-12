@@ -1,5 +1,6 @@
-#!/bin/bash -ue
+#!/usr/bin/env bash
 
+set -ue
 
 #
 # defaults
