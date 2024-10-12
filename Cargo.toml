@@ -79,27 +79,24 @@ jsonrpc-core = "18.0.0"
 reqwest = { version = "0.12", default-features = false, features = [
   "rustls-tls",
 ] }
-alloy-primitives = { version = "0.8.6", features = [
+alloy = { version = "0.4", features = [
   "serde",
   "rlp",
   "getrandom",
+  "json-abi"
 ] }
 revm-inspectors = { git = "https://github.com/paradigmxyz/evm-inspectors", rev = "c1b5dd0", features = [
   "serde",
 ] }
-alloy-json-abi = { version = "0.8.6" }
 url = { version = "2.5", features = ["serde"] }
 futures = "0.3.28"
 clap = { version = "4.4.8", features = ["derive", "env"] }
 coins-ledger = "0.10.1"
 rand = "0.8.5"
 
-# Foundry - May 12th 2024
-foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-e10ab3d7010b2cbe2b76030d6638c49a3cec696d" }
-foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-e10ab3d7010b2cbe2b76030d6638c49a3cec696d" }
-foundry-common = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-e10ab3d7010b2cbe2b76030d6638c49a3cec696d" }
+# Foundry - October 11th 2024
+foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-bcacf39e43812e50a124e3ba60d1becd9866534d" }
+foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-bcacf39e43812e50a124e3ba60d1becd9866534d" }
+foundry-common = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-bcacf39e43812e50a124e3ba60d1becd9866534d" }
 hex = "0.4.3"
 anyhow = "1.0.83"
-
-# [patch.crates-io]
-# ethers-core = { git = "https://github.com/gakonst/ethers-rs", rev = "5394d89" }
