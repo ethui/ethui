@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
+    "composite": true,
     "target": "esnext",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": false,
     "skipLibCheck": true,
-    "noEmit": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
@@ -22,6 +22,7 @@
 
     "types": ["node"]
   },
+  "files": [],
   "references": [
     { "path": "./gui" },
     { "path": "./extension" },

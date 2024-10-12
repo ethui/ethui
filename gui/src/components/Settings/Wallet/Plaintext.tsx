@@ -45,7 +45,7 @@ export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
         <Form.Text label="Name" name="name" />
         <Form.Text label="Mnemonic" name="mnemonic" fullWidth />
         <Form.Text label="Derivation Path" name="derivationPath" />
-        <Form.Number label="Count" name="count" />
+        <Form.NumberField label="Count" name="count" />
 
         <Stack direction="row" spacing={2}>
           <Form.Submit label="Save" />

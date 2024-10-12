@@ -30,15 +30,21 @@ const defaultDisabledArgsList = [
 ];
 
 export function disabledArgs(args: string[]) {
-  return args.reduce((a, v) => {
-    a[v] = { table: { disable: true } };
-    return a;
-  }, {});
+  return args.reduce(
+    (a, v) => {
+      a[v] = { table: { disable: true } };
+      return a;
+    },
+    {} as Record<string, any>,
+  );
 }
 
 export function defaultDisabledArgs() {
-  return defaultDisabledArgsList.reduce((a, v) => {
-    a[v] = { table: { disable: true } };
-    return a;
-  }, {});
+  return defaultDisabledArgsList.reduce(
+    (a, v) => {
+      a[v] = { table: { disable: true } };
+      return a;
+    },
+    {} as Record<string, any>,
+  );
 }

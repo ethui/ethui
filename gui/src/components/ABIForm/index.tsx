@@ -31,9 +31,9 @@ export function ABIForm({ chainId, address }: Props) {
     .map((item, i) => {
       const abiItem = item as AbiFunction;
       return {
-        item: abiItem | "raw",
+        item: abiItem as AbiFunction | "raw",
         label: formatAbiItem(abiItem).replace("function ", ""),
-        group: item.stateMutability === "view" ? "view" : "write",
+        group: abiItem.stateMutability === "view" ? "view" : "write",
         id: i,
       };
     })
