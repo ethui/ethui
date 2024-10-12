@@ -1,17 +1,17 @@
 import { Grid } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
-import { AbiFunction } from "abitype";
-import { useState, useCallback } from "react";
-import { Address, Hash, decodeFunctionResult } from "viem";
+import type { AbiFunction } from "abitype";
+import { useCallback, useState } from "react";
+import { type Address, type Hash, decodeFunctionResult } from "viem";
 
 import { AbiForm } from "@ethui/form";
 import {
-  SolidityCall,
   HighlightBox,
+  SolidityCall,
   Typography,
 } from "@ethui/react/components";
-import { useWallets, useNetworks } from "@/store";
-import { AddressView, HashView } from "@/components";
+import { AddressView, HashView } from "#/components";
+import { useNetworks, useWallets } from "#/store";
 
 interface ItemFormProps {
   to: Address;
@@ -78,7 +78,7 @@ export function ABIItemForm({
       setData(data);
       parentOnChange?.({ value, data });
     },
-    [setValue, setData, parentOnChange],
+    [parentOnChange],
   );
 
   return (

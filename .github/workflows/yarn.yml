@@ -38,5 +38,6 @@ jobs:
           node-version: "20"
 
       - run: yarn install --frozen-lockfile
+      - run: cat packages/abiparse/package.json
       - run: yarn lint
       - run: yarn test

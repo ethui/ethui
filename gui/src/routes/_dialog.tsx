@@ -1,5 +1,5 @@
 import { Stack } from "@mui/material";
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { Outlet, createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_dialog")({
   component: DialogLayout,

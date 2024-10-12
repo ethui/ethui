@@ -1,10 +1,10 @@
 import { Autocomplete, Box, Chip, TextField } from "@mui/material";
 import { Stack } from "@mui/system";
-import { Abi, AbiFunction, formatAbiItem } from "abitype";
-import { Fragment, SyntheticEvent, useState } from "react";
-import { Address } from "viem";
+import { type Abi, type AbiFunction, formatAbiItem } from "abitype";
+import { Fragment, type SyntheticEvent, useState } from "react";
+import type { Address } from "viem";
 
-import { useInvoke } from "@/hooks";
+import { useInvoke } from "#/hooks";
 import { ABIItemForm } from "./ABIItemForm";
 
 export { ABIItemForm };
@@ -29,11 +29,11 @@ export function ABIForm({ chainId, address }: Props) {
   const options = abi
     .filter(({ type }) => type === "function")
     .map((item, i) => {
-      item = item as AbiFunction;
+      const abiItem = item as AbiFunction;
       return {
-        item: item as AbiFunction | "raw",
-        label: formatAbiItem(item).replace("function ", ""),
-        group: item.stateMutability === "view" ? "view" : "write",
+        item: abiItem as AbiFunction | "raw",
+        label: formatAbiItem(abiItem).replace("function ", ""),
+        group: abiItem.stateMutability === "view" ? "view" : "write",
         id: i,
       };
     })

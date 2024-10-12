@@ -1,15 +1,16 @@
-import { type Duplex } from "stream";
 import {
-  createIdRemapMiddleware,
   JsonRpcEngine,
+  createIdRemapMiddleware,
 } from "@metamask/json-rpc-engine";
-import { type Json, type JsonRpcResponse } from "@metamask/utils";
+import { createStreamMiddleware } from "@metamask/json-rpc-middleware-stream";
 import { EthereumRpcError } from "eth-rpc-errors";
 import { EventEmitter } from "eventemitter3";
-import { createStreamMiddleware } from "@metamask/json-rpc-middleware-stream";
 import log from "loglevel";
 
-import { Address, RequestArguments } from "./types";
+import type { Duplex } from "node:stream";
+import type { Json, JsonRpcResponse } from "@metamask/utils";
+import type { Address, RequestArguments } from "./types";
+
 import { errorMiddleware } from "./utils";
 
 export class EthUIProvider extends EventEmitter {

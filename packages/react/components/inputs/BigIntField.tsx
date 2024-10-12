@@ -1,10 +1,10 @@
 import { TextField } from "@mui/material";
 import {
-  Control,
+  type Control,
   Controller,
-  FieldError,
-  FieldPath,
-  FieldValues,
+  type FieldError,
+  type FieldPath,
+  type FieldValues,
 } from "react-hook-form";
 
 export type BigIntFieldProps<

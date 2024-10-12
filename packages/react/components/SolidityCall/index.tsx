@@ -1,9 +1,9 @@
-import { Stack, useTheme, SxProps } from "@mui/material";
-import { Address, Abi, AbiFunction } from "abitype";
-import { formatUnits, decodeFunctionData, parseAbi } from "viem";
+import { Stack, type SxProps, useTheme } from "@mui/material";
+import type { Abi, AbiFunction, Address } from "abitype";
+import { decodeFunctionData, formatUnits, parseAbi } from "viem";
 
 import { ClickToCopy, Typography } from "../";
-import { PaletteColorKey } from "../../utils";
+import type { PaletteColorKey } from "../../utils";
 
 export interface SolidityCallProps {
   value?: bigint;
@@ -265,7 +265,7 @@ function parseCall(data: `0x${string}`, abi: Abi | string[] | undefined) {
     });
 
     const item = parsedAbi?.find(
-      (i) => i.type == "function" && i.name === decoded?.functionName,
+      (i) => i.type === "function" && i.name === decoded?.functionName,
     ) as AbiFunction;
 
     args = (decoded.args ?? []).map((arg, i) => {

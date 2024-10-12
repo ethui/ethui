@@ -1,15 +1,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Stack } from "@mui/material";
-import { Address } from "abitype";
+import type { Address } from "abitype";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import {
-  addressSchema,
-  ImpersonatorWallet,
-  Wallet,
-} from "@ethui/types/wallets";
 import { Form } from "@ethui/react/components";
+import {
+  type ImpersonatorWallet,
+  type Wallet,
+  addressSchema,
+} from "@ethui/types/wallets";
 
 // react-hook-form doesn't support value-arrays, only object-arrays, so we need this type as a workaround for the impersonator form
 export const schema = z.object({

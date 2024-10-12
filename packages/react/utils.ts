@@ -1,4 +1,4 @@
-import { Palette, PaletteColor } from "@mui/material";
+import type { Palette, PaletteColor } from "@mui/material";
 
 export type PaletteColorKey = {
   [Key in keyof Palette]: Palette[Key] extends PaletteColor ? Key : never;
@@ -31,20 +31,20 @@ const defaultDisabledArgsList = [
 
 export function disabledArgs(args: string[]) {
   return args.reduce(
-    (a, v) => ({
-      ...a,
-      [v]: { table: { disable: true } },
-    }),
-    {},
+    (a, v) => {
+      a[v] = { table: { disable: true } };
+      return a;
+    },
+    {} as Record<string, any>,
   );
 }
 
 export function defaultDisabledArgs() {
   return defaultDisabledArgsList.reduce(
-    (a, v) => ({
-      ...a,
-      [v]: { table: { disable: true } },
-    }),
-    {},
+    (a, v) => {
+      a[v] = { table: { disable: true } };
+      return a;
+    },
+    {} as Record<string, any>,
   );
 }

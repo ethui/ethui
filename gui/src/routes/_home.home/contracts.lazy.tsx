@@ -2,29 +2,29 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Chip,
   CircularProgress,
-  Stack,
-  TextField,
   SpeedDial,
   SpeedDialIcon,
+  Stack,
+  TextField,
 } from "@mui/material";
-import { FieldValues, useForm } from "react-hook-form";
-import { z } from "zod";
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
 import debounce from "lodash-es/debounce";
+import { useState } from "react";
+import { type FieldValues, useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { Contract } from "@ethui/types";
 import { ChainView, Form } from "@ethui/react/components";
+import type { Contract } from "@ethui/types";
 import {
-  Modal,
-  AddressView,
   ABIForm,
   Accordion,
   AccordionDetails,
   AccordionSummary,
-} from "@/components/";
-import { useContracts, useNetworks } from "@/store";
-import { Navbar } from "@/components/Home/Navbar";
+  AddressView,
+  Modal,
+} from "#/components/";
+import { Navbar } from "#/components/Home/Navbar";
+import { useContracts, useNetworks } from "#/store";
 
 export const Route = createLazyFileRoute("/_home/home/contracts")({
   component: Contracts,
@@ -50,7 +50,7 @@ export function Contracts() {
         sx={{ position: "absolute", bottom: 16, right: 16 }}
         icon={<SpeedDialIcon />}
         onClick={() => setAddContractOpen(true)}
-      ></SpeedDial>
+      />
 
       <Modal open={addContractOpen} onClose={() => setAddContractOpen(false)}>
         <AddressForm />

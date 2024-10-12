@@ -1,5 +1,5 @@
-import react from "@vitejs/plugin-react";
 import { TanStackRouterVite } from "@tanstack/router-vite-plugin";
+import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
@@ -29,7 +29,7 @@ export default defineConfig(() => ({
   build: {
     // Tauri supports es2021
     target:
-      process.env.TAURI_ENV_PLATFORM == "windows" ? "chrome105" : "safari14",
+      process.env.TAURI_ENV_PLATFORM === "windows" ? "chrome105" : "safari14",
     // don't minify for debug builds
     minify: !process.env.TAURI_ENV_DEBUG ? ("esbuild" as const) : false,
     // produce sourcemaps for debug builds

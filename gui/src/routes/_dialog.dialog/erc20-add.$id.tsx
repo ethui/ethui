@@ -1,13 +1,13 @@
+import { Button, Grid, Stack, Typography } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
-import { Stack, Typography, Button, Grid } from "@mui/material";
-import { isDirty, isValid } from "zod";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { isDirty, isValid } from "zod";
 
-import { Erc20FullData } from "@ethui/types";
-import { useDialog } from "@/hooks";
-import { AddressView, Datapoint } from "@/components";
-import { useNetworks } from "@/store";
-import { IconToken } from "@/components/Icons";
+import type { Erc20FullData } from "@ethui/types";
+import { AddressView, Datapoint } from "#/components";
+import { IconToken } from "#/components/Icons";
+import { useDialog } from "#/hooks";
+import { useNetworks } from "#/store";
 
 const tauriWindow = getCurrentWindow();
 

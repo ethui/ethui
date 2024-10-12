@@ -1,6 +1,7 @@
-import { Button, SxProps, Tooltip } from "@mui/material";
+import { Button, type SxProps, Tooltip } from "@mui/material";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
-import React, { ReactNode, useState } from "react";
+import type React from "react";
+import { type ReactNode, useState } from "react";
 
 export function CopyToClipboard({
   children,

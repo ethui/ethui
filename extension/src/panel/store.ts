@@ -1,8 +1,8 @@
 import { runtime, tabs } from "webextension-polyfill";
-import { create, StateCreator } from "zustand";
+import { type StateCreator, create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import type { Request, Response, Start } from "@/types";
+import type { Request, Response, Start } from "#/types";
 
 interface State {
   requests: { request: Request; response?: Response }[];
@@ -23,7 +23,9 @@ tabs
     active: true,
     currentWindow: true,
   })
-  .then(([{ id }]) => (tabId = id));
+  .then(([{ id }]) => {
+    tabId = id;
+  });
 
 const store: StateCreator<Store> = (set, get) => ({
   requests: [],
@@ -36,18 +38,17 @@ const store: StateCreator<Store> = (set, get) => ({
     const { requests } = get();
     const newRequests = [...requests];
 
-    msgs.forEach((msg) => {
+    for (const msg of msgs) {
       if (msg.type === "request") {
         newRequests.push({ request: msg });
       } else if (msg.type === "response") {
-        newRequests.forEach((r) => {
+        for (const r of newRequests) {
           if (r.request.data.id === msg.data.id) {
             r.response = msg;
-            return;
           }
-        });
+        }
       }
-    });
+    }
 
     set({ requests: newRequests });
   },
@@ -56,7 +57,7 @@ const store: StateCreator<Store> = (set, get) => ({
 export const useStore = create<Store>()(subscribeWithSelector(store));
 
 runtime.onMessage.addListener((msg: Request | Response | Start) => {
-  if (msg.tabId != tabId) return;
+  if (msg.tabId !== tabId) return;
 
   if (msg.type === "start") {
     useStore.getState().reset();

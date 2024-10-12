@@ -33,7 +33,7 @@ export function IconAddress({
         height: width,
       }}
       src={data && urlFor(data.symbol)}
-      alt={data && data.symbol}
+      alt={data?.symbol}
     >
       <Avatar
         sx={{
@@ -41,7 +41,7 @@ export function IconAddress({
           height: width,
         }}
         src={urlFor("generic")}
-        alt={data && data.symbol}
+        alt={data?.symbol}
       />
     </Avatar>
   );

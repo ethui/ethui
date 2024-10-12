@@ -1,21 +1,21 @@
 import { Avatar } from "@mui/material";
 
 import mainnet from "../../images/chains/1.webp";
-import sepolia from "../../images/chains/11155111.webp";
-import polygon from "../../images/chains/137.webp";
-import polygonAmoy from "../../images/chains/80002.webp";
-import arbitrum from "../../images/chains/42161.webp";
-import arbitrumSepolia from "../../images/chains/421614.webp";
 import optimism from "../../images/chains/10.webp";
-import optimismSepolia from "../../images/chains/11155420.webp";
-import base from "../../images/chains/8453.webp";
-import baseSepolia from "../../images/chains/84532.webp";
-import zksync from "../../images/chains/324.webp";
+import polygon from "../../images/chains/137.webp";
 import zksyncSepolia from "../../images/chains/300.webp";
+import zksync from "../../images/chains/324.webp";
+import base from "../../images/chains/8453.webp";
 import anvil from "../../images/chains/31337.webp";
-import unknown from "../../images/chains/unknown.webp";
-import scroll from "../../images/chains/534352.webp";
+import arbitrum from "../../images/chains/42161.webp";
+import polygonAmoy from "../../images/chains/80002.webp";
+import baseSepolia from "../../images/chains/84532.webp";
+import arbitrumSepolia from "../../images/chains/421614.webp";
 import scrollSepolia from "../../images/chains/534351.webp";
+import scroll from "../../images/chains/534352.webp";
+import sepolia from "../../images/chains/11155111.webp";
+import optimismSepolia from "../../images/chains/11155420.webp";
+import unknown from "../../images/chains/unknown.webp";
 
 export interface IconChainProps extends React.ComponentProps<typeof Avatar> {
   chainId: number;

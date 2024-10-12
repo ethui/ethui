@@ -10,8 +10,8 @@ import {
   Typography,
 } from "@mui/material";
 import {
-  ActionId,
-  ActionImpl,
+  type ActionId,
+  type ActionImpl,
   KBarAnimator,
   KBarPortal,
   KBarPositioner,
@@ -20,15 +20,16 @@ import {
   KBarSearch,
   useMatches,
 } from "kbar";
-import React, { forwardRef, ReactNode, useMemo } from "react";
+import type React from "react";
+import { type ReactNode, forwardRef, useMemo } from "react";
 
 import {
   useNetworks,
   useSettings,
   useSettingsWindow,
   useWallets,
-} from "@/store";
-import { useTheme } from "@/store/theme";
+} from "#/store";
+import { useTheme } from "#/store/theme";
 
 function useActions() {
   const walletActions = useWallets((s) => s.actions);

@@ -1,0 +1,43 @@
+{
+  "files": {
+    "ignore": [
+      ".sqlx",
+      ".direnv",
+      ".pnp.cjs",
+      ".pnp.loader.mjs",
+      "**/*.gen.ts",
+      "**/package.json",
+      "packages/data/**/*.json",
+      "packages/**/dist/**",
+      "extension/dist",
+      "gui/dist",
+      "target"
+    ]
+  },
+  "formatter": {
+    "indentStyle": "space"
+  },
+  "linter": {
+    "rules": {
+      "suspicious": {
+        "noExplicitAny": "off",
+        "noArrayIndexKey": "off"
+      },
+      "style": {
+        "noUselessElse": "off",
+        "noNonNullAssertion": "off"
+      },
+      "performance": {
+        "noAccumulatingSpread": "warn"
+      },
+      "complexity": {
+        "useOptionalChain": {
+          "fix": "safe"
+        }
+      }
+    }
+  },
+  "vcs": {
+    "useIgnoreFile": true
+  }
+}

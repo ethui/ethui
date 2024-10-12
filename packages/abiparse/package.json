@@ -9,7 +9,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "build": "bun run build.mjs",
-    "prepblishOnly": "bun run build"
+    "prepublishOnly": "bun run build"
   },
   "files": [
     "dist"

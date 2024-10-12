@@ -1,6 +1,6 @@
 import {
   Typography as MuiTypography,
-  TypographyProps as MuiTypographyProps,
+  type TypographyProps as MuiTypographyProps,
 } from "@mui/material";
 
 export interface TypographyProps extends MuiTypographyProps {
