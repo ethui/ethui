@@ -3465,6 +3465,7 @@ dependencies = [
 name = "ethui-sync-alchemy"
 version = "1.8.0"
 dependencies = [
+ "alloy",
  "async-trait",
  "ethers",
  "ethui-abis",

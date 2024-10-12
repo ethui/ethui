@@ -1,8 +1,11 @@
 use std::time::Duration;
 
-use ethers::providers::{
-    Http, HttpRateLimitRetryPolicy, Middleware, Provider, RetryClient, RetryClientBuilder,
+use alloy::{
+    providers::{ProviderBuilder, RootProvider},
+    rpc::client::ClientBuilder,
+    transports::layers::{RateLimitRetryPolicy, RetryBackoffLayer, RetryBackoffService},
 };
+use ethers::providers::{Http, Middleware, Provider, RetryClient, RetryClientBuilder};
 use ethui_types::{events::Tx, Address, ToAlloy, ToEthers, TokenMetadata, U256, U64};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -16,7 +19,7 @@ use crate::{
 
 #[derive(Debug)]
 pub(crate) struct Client {
-    v2_provider: Provider<RetryClient<Http>>,
+    v2_provider: RootProvider<RetryClient<Http>>,
     nft_v3_endpoint: Url,
 }
 
@@ -27,22 +30,17 @@ pub(crate) enum Direction {
 
 impl Client {
     pub fn new(chain_id: u32, api_key: &str) -> Result<Self> {
-        let v2_provider = {
-            let endpoint = networks::get_endpoint(chain_id, "v2/", api_key)?;
-            let http = Http::new(endpoint);
-            let policy = Box::<HttpRateLimitRetryPolicy>::default();
+        let v2_url = networks::get_endpoint(chain_id, "v2/", api_key)?;
+        let v2_client = ClientBuilder::default()
+            .layer(RetryBackoffLayer::new(10, 500, 300))
+            .http(v2_url);
+        let v2_provider = ProviderBuilder::new().on_client(v2_client);
 
-            let res = RetryClientBuilder::default()
-                .rate_limit_retries(10)
-                .timeout_retries(3)
-                .initial_backoff(Duration::from_millis(500))
-                .compute_units_per_second(300)
-                .build(http, policy);
-
-            Provider::new(res)
-        };
-
-        let nft_v3_endpoint = networks::get_endpoint(chain_id, "nft/v3/", api_key)?;
+        let v3_url = networks::get_endpoint(chain_id, "nft/v3/", api_key)?;
+        let v3_client = ClientBuilder::default()
+            .layer(RetryBackoffLayer::new(10, 500, 300))
+            .http(v3_url);
+        let nft_v3_provider = ProviderBuilder::new().on_client(v3_client);
 
         Ok(Self {
             v2_provider,
