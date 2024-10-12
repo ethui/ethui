@@ -327,7 +327,7 @@ function Update({ wallet, onSubmit, onRemove }: Props) {
       <Stack spacing={2} alignItems="flex-start">
         <Form.Text label="Name" name="name" />
         <Form.Text label="Derivation Path" name="derivationPath" />
-        <Form.Number label="Address count" name="count" />
+        <Form.NumberField label="Address count" name="count" />
         <Stack direction="row" spacing={2}>
           <Form.Submit label="Save" />
           <Button color="warning" variant="contained" onClick={onRemove}>
