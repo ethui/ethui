@@ -80,11 +80,9 @@ reqwest = { version = "0.12", default-features = false, features = [
   "rustls-tls",
 ] }
 alloy = { version = "0.4", features = [
-  "serde",
-  "rlp",
-  "getrandom",
-  "json-abi"
+  "full"
 ] }
+  alloy-chains = "0.1.38"
 revm-inspectors = { git = "https://github.com/paradigmxyz/evm-inspectors", rev = "c1b5dd0", features = [
   "serde",
 ] }
@@ -98,5 +96,6 @@ rand = "0.8.5"
 foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-bcacf39e43812e50a124e3ba60d1becd9866534d" }
 foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-bcacf39e43812e50a124e3ba60d1becd9866534d" }
 foundry-common = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-bcacf39e43812e50a124e3ba60d1becd9866534d" }
+foundry-block-explorers = "0.8.0"
 hex = "0.4.3"
 anyhow = "1.0.83"

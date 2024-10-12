@@ -20,7 +20,6 @@
           inherit system overlays;
         };
         buildInputs = with pkgs; [
-          rust-bin.stable.latest.default
           pkg-config
           dbus
           glib
