@@ -6,6 +6,7 @@
       ".pnp.cjs",
       ".pnp.loader.mjs",
       "**/*.gen.ts",
+      "**/package.json",
       "packages/data/**/*.json",
       "packages/**/dist/**",
       "extension/dist",

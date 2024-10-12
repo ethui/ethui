@@ -11,7 +11,9 @@
     "build": "bun run build.mjs",
     "prepublishOnly": "bun run build"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
