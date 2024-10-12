@@ -1,8 +1,7 @@
-import { ethErrors } from "eth-rpc-errors";
-import log from "loglevel";
-
 import type { JsonRpcMiddleware } from "@metamask/json-rpc-engine";
 import type { Json, JsonRpcParams } from "@metamask/utils";
+import { ethErrors } from "eth-rpc-errors";
+import log from "loglevel";
 
 export type Maybe<T> = T | null | undefined;
 

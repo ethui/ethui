@@ -4,8 +4,8 @@ import type { Address } from "viem";
 import { type StateCreator, create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { errorToast } from "#/components/Toast";
 import type { Contract } from "@ethui/types";
+import { errorToast } from "#/components/Toast";
 import { useNetworks } from "./networks";
 
 interface State {
