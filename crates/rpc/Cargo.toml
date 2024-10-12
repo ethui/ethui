@@ -30,5 +30,5 @@ once_cell.workspace = true
 jsonrpc-core.workspace = true
 async-trait.workspace = true
 thiserror.workspace = true
-alloy-primitives.workspace = true
+alloy.workspace = true
 url.workspace = true

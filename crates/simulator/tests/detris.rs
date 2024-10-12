@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use alloy_primitives::{Bytes, Log, LogData};
+use alloy::primitives::{Bytes, Log, LogData};
 use ethui_simulator::{Evm, Request};
 use ethui_types::{Address, B256};
 use pretty_assertions::assert_eq;

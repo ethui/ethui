@@ -1,4 +1,4 @@
-use alloy_primitives::{Bytes, Log, U256};
+use alloy::primitives::{Bytes, Log, U256};
 use ethui_types::Address;
 use foundry_evm::traces::CallTraceNode;
 use serde::{Deserialize, Serialize};
