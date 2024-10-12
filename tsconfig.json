@@ -22,7 +22,6 @@
 
     "types": ["node"]
   },
-  "include": [".eslintrc.js"],
   "references": [
     { "path": "./gui" },
     { "path": "./extension" },
