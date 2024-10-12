@@ -1,5 +1,5 @@
-use alloy_json_abi::{Event, EventParam, Function, InternalType, Param, StateMutability};
-use alloy_primitives::{Address, Bloom, Bytes, B256, B64, I256, U256, U64};
+use alloy::json_abi::{Event, EventParam, Function, InternalType, Param, StateMutability};
+use alloy::primitives::{Address, Bloom, Bytes, B256, B64, I256, U256, U64};
 use ethers::core::{
     abi as ethabi,
     types::{
