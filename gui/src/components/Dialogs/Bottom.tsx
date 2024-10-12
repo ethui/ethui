@@ -1,6 +1,5 @@
 import { Box } from "@mui/material";
-
-import type { ReactNode } from "react";
+import { ReactNode } from "react";
 
 export function DialogBottom({ children }: { children: ReactNode }) {
   return (

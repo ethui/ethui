@@ -3,12 +3,12 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  type SelectChangeEvent,
+  SelectChangeEvent,
 } from "@mui/material";
 import { map } from "lodash-es";
-import { type Address, getAddress } from "viem";
+import { Address, getAddress } from "viem";
 
-import type { Wallet } from "@ethui/types/wallets";
+import { Wallet } from "@ethui/types/wallets";
 import { useInvoke } from "@/hooks";
 import { useWallets } from "@/store";
 import { AddressView } from "./";

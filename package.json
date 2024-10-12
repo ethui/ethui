@@ -43,7 +43,7 @@
     "eslint-plugin-react-hooks": "^4.6.2"
   },
   "dependencies": {
-    "@tauri-apps/cli": "^1.5.14",
+    "@tauri-apps/cli": "^2.0.2",
     "typescript": "5.4.5"
   },
   "resolutions": {

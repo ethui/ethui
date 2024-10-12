@@ -8,5 +8,5 @@ export function Logo({ width }: { width: number }) {
     NODE_ENV === "development" ? "purple" : darkMode ? "white" : "black";
   const logo = `/logo/symbol-${color}.svg`;
 
-  return <img width={width} src={logo} alt="Logo" />;
+  return <img width={width} src={logo} />;
 }

@@ -3,7 +3,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  type SelectChangeEvent,
+  SelectChangeEvent,
 } from "@mui/material";
 
 import { useWallets } from "@/store";

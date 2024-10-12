@@ -1,9 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Stack } from "@mui/material";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
-import { type FieldValues, useForm } from "react-hook-form";
-import { type Address, getAddress } from "viem";
+import { FieldValues, useForm } from "react-hook-form";
+import { Address, getAddress } from "viem";
 import { z } from "zod";
 
 import { Form, Typography } from "@ethui/react/components";

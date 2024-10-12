@@ -10,8 +10,8 @@ import {
   Typography,
 } from "@mui/material";
 import {
-  type ActionId,
-  type ActionImpl,
+  ActionId,
+  ActionImpl,
   KBarAnimator,
   KBarPortal,
   KBarPositioner,
@@ -20,9 +20,7 @@ import {
   KBarSearch,
   useMatches,
 } from "kbar";
-import { forwardRef, type ReactNode, useMemo } from "react";
-
-import type React from "react";
+import React, { forwardRef, ReactNode, useMemo } from "react";
 
 import {
   useNetworks,

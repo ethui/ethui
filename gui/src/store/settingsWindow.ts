@@ -1,8 +1,7 @@
-import { window as tauriWindow } from "@tauri-apps/api";
-import { create, type StateCreator } from "zustand";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
+import { Action } from "kbar";
+import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
-
-import type { Action } from "kbar";
 
 interface State {
   show: boolean;
@@ -37,6 +36,6 @@ const store: StateCreator<Store> = (set, get) => ({
 
 export const useSettingsWindow = create<Store>()(subscribeWithSelector(store));
 
-tauriWindow.appWindow.listen("menu:settings", () => {
+getCurrentWebviewWindow().listen("menu:settings", () => {
   useSettingsWindow.getState().toggle();
 });

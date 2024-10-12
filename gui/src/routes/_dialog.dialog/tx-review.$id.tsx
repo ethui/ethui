@@ -2,9 +2,9 @@ import { Alert, AlertTitle, Box, Button, Grid, Stack } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { Cancel, CheckCircle, Delete, Send, Report } from "@mui/icons-material";
 import {
-  type Abi,
-  type Address,
-  type Hex,
+  Abi,
+  Address,
+  Hex,
   type AbiFunction,
   decodeEventLog,
   formatUnits,
@@ -13,16 +13,15 @@ import {
 } from "viem";
 import { createFileRoute } from "@tanstack/react-router";
 
-import type { Dialog } from "@/hooks/useDialog";
-
 import { ChainView, Typography } from "@ethui/react/components";
-import type { TokenMetadata } from "@ethui/types";
-import type { Network } from "@ethui/types/network";
+import { TokenMetadata } from "@ethui/types";
+import { Network } from "@ethui/types/network";
 import { ABIItemForm, AddressView, Datapoint } from "@/components";
 import { useDialog, useInvoke, useLedgerDetect } from "@/hooks";
 import { DialogBottom } from "@/components/Dialogs/Bottom";
 import { IconAddress } from "@/components/Icons";
 import { useNetworks } from "@/store";
+import { Dialog } from "@/hooks/useDialog";
 
 export const Route = createFileRoute("/_dialog/dialog/tx-review/$id")({
   component: TxReviewDialog,
@@ -60,7 +59,7 @@ export function TxReviewDialog() {
   const { id } = Route.useParams();
   const dialog = useDialog<TxRequest>(id);
   const network = useNetworks((s) =>
-    s.networks.find((n) => n.chain_id === dialog.data?.chainId),
+    s.networks.find((n) => n.chain_id == dialog.data?.chainId),
   );
 
   if (!dialog.data || !network) return null;
@@ -115,7 +114,7 @@ function Inner({ dialog, request, network }: InnerProps) {
       setCalldata(data);
       send({ event: "update", value, data });
     },
-    [send],
+    [setValue, setCalldata, send],
   );
 
   const item = abi

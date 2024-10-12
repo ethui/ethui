@@ -9,9 +9,8 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 
-import type { StepProps } from ".";
-
 import { useInvoke } from "@/hooks";
+import { StepProps } from ".";
 
 export function InstallExtensionStep({ onSubmit }: StepProps) {
   const [detected, setDetected] = useState<boolean>(false);
@@ -27,7 +26,7 @@ export function InstallExtensionStep({ onSubmit }: StepProps) {
   useEffect(() => {
     if (detected) return;
     setDetected(!!peerCount && peerCount > 0);
-  }, [detected, peerCount]);
+  }, [detected, peerCount, setDetected]);
 
   return (
     <Stack spacing={2} sx={{ width: "100%" }}>

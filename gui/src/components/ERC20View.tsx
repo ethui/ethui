@@ -13,7 +13,7 @@ import {
   MoreVert as MoreVertIcon,
 } from "@mui/icons-material";
 import { type Address, formatUnits } from "viem";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 
 import { AddressView, CopyToClipboard, Modal, TransferForm } from "./";
 import { IconAddress } from "./Icons";
@@ -111,7 +111,7 @@ export function ERC20View({
             Open on explorer
           </MenuItem>
         )}
-        <MenuItem onClick={blacklist}>Blacklist token</MenuItem>
+        <MenuItem onClick={blacklist}>Hide token</MenuItem>
       </Menu>
 
       <Modal open={transferFormOpen} onClose={() => setTransferFormOpen(false)}>

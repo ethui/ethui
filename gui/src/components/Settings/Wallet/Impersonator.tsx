@@ -1,14 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Stack } from "@mui/material";
+import { Address } from "abitype";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import type { Address } from "abitype";
-
 import {
   addressSchema,
-  type ImpersonatorWallet,
-  type Wallet,
+  ImpersonatorWallet,
+  Wallet,
 } from "@ethui/types/wallets";
 import { Form } from "@ethui/react/components";
 

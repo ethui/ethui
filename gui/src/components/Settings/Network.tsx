@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { useFieldArray, useForm } from "react-hook-form";
 
-import { type Network, networkSchema } from "@ethui/types/network";
+import { Network, networkSchema } from "@ethui/types/network";
 import { ChainView, Form } from "@ethui/react/components";
 import { ConfirmationDialog } from "@/components";
 import { useNetworks } from "@/store";
@@ -26,6 +26,7 @@ const emptyNetwork: Network & NewChild = {
   chain_id: undefined!,
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   decimals: undefined!,
+  force_is_anvil: false,
   new: true,
 };
 
@@ -71,9 +72,14 @@ export function SettingsNetwork() {
               <Stack spacing={2} alignItems="flex-start">
                 <Stack spacing={2} direction="row">
                   <Form.Text label="Name" name={`networks.${index}.name`} />
-                  <Form.NumberField
+                  <Form.Number
                     label="Chain Id"
                     name={`networks.${index}.chain_id`}
+                  />
+
+                  <Form.Checkbox
+                    label="Anvil"
+                    name={`networks.${index}.force_is_anvil`}
                   />
                 </Stack>
 
@@ -97,7 +103,7 @@ export function SettingsNetwork() {
                     label="Currency"
                     name={`networks.${index}.currency`}
                   />
-                  <Form.NumberField
+                  <Form.Number
                     label="Decimals"
                     name={`networks.${index}.decimals`}
                   />

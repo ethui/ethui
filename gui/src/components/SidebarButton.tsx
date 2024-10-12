@@ -4,7 +4,7 @@ import {
   type ButtonBaseProps,
   Stack,
   Collapse,
-  type SvgIcon,
+  SvgIcon,
   Typography,
 } from "@mui/material";
 import { lightBlue } from "@mui/material/colors";

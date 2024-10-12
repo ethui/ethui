@@ -111,6 +111,7 @@ impl Handler {
         self_handler!("eth_signTypedData_v4", Self::eth_sign_typed_data_v4);
         self_handler!("wallet_addEthereumChain", Self::add_chain);
         self_handler!("wallet_switchEthereumChain", Self::switch_chain);
+        self_handler!("wallet_watchAsset", Self::add_token);
 
         // metamask
         self_handler!("metamask_getProviderState", Self::provider_state);
@@ -160,6 +161,18 @@ impl Handler {
         method.run().await?;
 
         Ok(serde_json::Value::Null)
+    }
+
+    #[tracing::instrument()]
+    async fn add_token(params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+        let method = methods::TokenAdd::build()
+            .set_params(params.into())?
+            .build()
+            .await;
+
+        method.run().await?;
+
+        Ok(true.into())
     }
 
     #[tracing::instrument()]

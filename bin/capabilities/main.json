@@ -1,0 +1,10 @@
+{
+  "identifier": "capabilities",
+  "windows": ["*"],
+  "permissions": [
+    "core:window:allow-start-dragging",
+    "core:event:allow-listen",
+    "core:event:allow-unlisten",
+    "os:allow-os-type"
+  ]
+}

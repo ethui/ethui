@@ -1,40 +1,7 @@
-// Prevents additional console window on Windows in release, DO NOT REMOVE!!
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+use ethui_lib::error::AppResult;
 
-mod app;
-mod commands;
-mod dialogs;
-mod error;
-mod menu;
-#[cfg(not(target_os = "macos"))]
-mod system_tray;
-mod utils;
-
-use error::AppResult;
-use named_lock::NamedLock;
-
-#[cfg(not(debug_assertions))]
-static LOCK_NAME: &str = "ethui";
-#[cfg(debug_assertions)]
-static LOCK_NAME: &str = "ethui-dev";
-
-#[tokio::main]
-async fn main() -> AppResult<()> {
-    ethui_tracing::init()?;
-    fix_path_env::fix()?;
-
-    let args = ethui_args::parse();
-    let lock = NamedLock::create(LOCK_NAME)?;
-
-    let _guard = match lock.try_lock() {
-        Ok(g) => g,
-        Err(_) => {
-            ethui_http::request_main_window_open(args.http_port).await?;
-            return Ok(());
-        }
-    };
-
-    app::EthUIApp::build(&args).await?.run();
+fn main() -> AppResult<()> {
+    ethui_lib::run()?;
 
     Ok(())
 }

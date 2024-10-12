@@ -59,6 +59,39 @@ pub enum Error {
 
     #[error("RPC error: {0}")]
     Rpc(i64),
+
+    #[error("Parse error")]
+    ParseError,
+
+    #[error("The user rejected the request")]
+    UserRejectedDialog,
+
+    #[error("Invalid token")]
+    TokenInvalid,
+
+    #[error("Invalid token: 'symbol' is needed")]
+    SymbolMissing,
+
+    #[error("Invalid symbol : longer than 11 characters")]
+    SymbolInvalid,
+
+    #[error("Invalid decimals : must be 0 <= 36")]
+    DecimalsInvalid,
+
+    #[error("The Provider is not connected to the requested chain")]
+    NetworkInvalid,
+
+    #[error("Asset type {0} not supported")]
+    TypeInvalid(String),
+
+    #[error("Added asset type {0} does not match existing token type {1}")]
+    ErcTypeInvalid(String, String),
+
+    #[error("Suggested asset is not owned by the selected account")]
+    ErcWrongOwner,
+
+    #[error("Unable to verify ownership. Possibly because the standard is not supported or the user's currently selected network does not match the chain of the asset in question.")]
+    ErcInvalid,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -68,6 +101,17 @@ impl From<Error> for jsonrpc_core::Error {
         let code = match value {
             Error::TxDialogRejected | Error::SignatureRejected => ErrorCode::ServerError(4001),
             Error::WalletNotFound(..) => ErrorCode::ServerError(4100),
+            Error::ParseError => ErrorCode::ServerError(-32700),
+            Error::UserRejectedDialog => ErrorCode::ServerError(4001),
+            Error::TokenInvalid => ErrorCode::ServerError(-32602),
+            Error::SymbolMissing => ErrorCode::ServerError(-32602),
+            Error::SymbolInvalid => ErrorCode::ServerError(-32602),
+            Error::DecimalsInvalid => ErrorCode::ServerError(-32602),
+            Error::NetworkInvalid => ErrorCode::ServerError(4901),
+            Error::TypeInvalid(..) => ErrorCode::ServerError(-32603),
+            Error::ErcTypeInvalid(..) => ErrorCode::ServerError(-32002),
+            Error::ErcWrongOwner => ErrorCode::ServerError(-32002),
+            Error::ErcInvalid => ErrorCode::ServerError(-32002),
             _ => ErrorCode::InternalError,
         };
 

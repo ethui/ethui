@@ -1,11 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert, Button, Stack, Typography } from "@mui/material";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
-import { type FieldValues, useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 import {
-  type AbiItem,
-  type Address,
+  AbiItem,
+  Address,
   encodeFunctionData,
   formatUnits,
   getAddress,
@@ -65,7 +65,7 @@ export function TransferForm({
       contract: ZeroAddress,
     });
     setTokens(newTokens);
-  }, [native, erc20s, network]);
+  }, [setTokens, native, erc20s, network]);
 
   const schema = z.object({
     to: addressSchema.optional(),
@@ -171,7 +171,7 @@ const transferNative = async (from: Address, to: Address, value: bigint) => {
 };
 
 const erc20transfer: AbiItem = parseAbiItem(
-  "function transfer(address to, uint amount) returns (bool)",
+  `function transfer(address to, uint amount) returns (bool)`,
 );
 
 const transferERC20 = async (

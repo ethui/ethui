@@ -25,3 +25,5 @@ tracing .workspace = true
 url .workspace = true
 async-trait .workspace = true
 futures .workspace = true
+reqwest.workspace = true
+jsonrpc-core.workspace = true

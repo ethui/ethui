@@ -4,14 +4,13 @@ use ethui_args::Args;
 use ethui_broadcast::UIMsg;
 #[cfg(target_os = "macos")]
 use tauri::WindowEvent;
-use tauri::{AppHandle, Builder, GlobalWindowEvent, Manager};
-use tauri_plugin_window_state::Builder as windowStatePlugin;
+use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
 use tracing::debug;
 
 use crate::{
     commands, dialogs,
     error::AppResult,
-    menu,
+    menu, system_tray,
     utils::{main_window_hide, main_window_show},
 };
 
@@ -22,7 +21,6 @@ pub struct EthUIApp {
 impl EthUIApp {
     pub async fn build(args: &ethui_args::Args) -> AppResult<Self> {
         let builder = Builder::default()
-            .plugin(windowStatePlugin::default().build())
             .invoke_handler(tauri::generate_handler![
                 commands::get_build_mode,
                 commands::get_version,
@@ -48,7 +46,9 @@ impl EthUIApp {
                 ethui_db::commands::db_get_contract_abi,
                 ethui_db::commands::db_get_erc20_metadata,
                 ethui_db::commands::db_get_erc20_balances,
+                ethui_db::commands::db_get_erc20_blacklist,
                 ethui_db::commands::db_set_erc20_blacklist,
+                ethui_db::commands::db_clear_erc20_blacklist,
                 ethui_db::commands::db_get_native_balance,
                 ethui_db::commands::db_get_erc721_tokens,
                 ethui_ws::commands::ws_peers_by_domain,
@@ -77,21 +77,20 @@ impl EthUIApp {
                 ethui_simulator::commands::simulator_get_call_count,
                 ethui_abis::commands::abi_parse_argument,
             ])
-            .on_window_event(on_window_event)
-            .menu(menu::build())
-            .on_menu_event(menu::event_handler);
-
-        #[cfg(not(target_os = "macos"))]
-        let builder = builder
-            .system_tray(crate::system_tray::build())
-            .on_system_tray_event(crate::system_tray::event_handler);
+            .plugin(tauri_plugin_os::init())
+            .setup(|app| {
+                let handle = app.handle();
+                let _ = menu::build(handle);
+                let _ = system_tray::build(handle);
+                Ok(())
+            });
 
         let app = builder.build(tauri::generate_context!())?;
 
         init(&app, args).await?;
 
         if !args.hidden {
-            main_window_show(&app.handle()).await;
+            main_window_show(app.handle()).await;
         }
 
         Ok(Self { app })
@@ -108,11 +107,11 @@ impl EthUIApp {
 
 /// Initialization logic
 async fn init(app: &tauri::App, args: &Args) -> AppResult<()> {
-    let db = ethui_db::init(&resource(app, "db.sqlite3")).await?;
+    let db = ethui_db::init(&resource(app, "db.sqlite3", args)).await?;
     app.manage(db.clone());
 
     // set up app's event listener
-    let handle = app.handle();
+    let handle = app.handle().clone();
     tauri::async_runtime::spawn(async move {
         event_listener(handle).await;
     });
@@ -120,37 +119,23 @@ async fn init(app: &tauri::App, args: &Args) -> AppResult<()> {
     // calls other crates' initialization logic. anvil needs to be started before networks,
     // otherwise the initial tracker won't be ready to spawn
     ethui_sync::init().await;
-    ethui_settings::init(resource(app, "settings.json")).await?;
+    ethui_settings::init(resource(app, "settings.json", args)).await?;
     ethui_ws::init(args).await;
     ethui_http::init(args, db).await;
-    ethui_connections::init(resource(app, "connections.json")).await;
-    ethui_wallets::init(resource(app, "wallets.json")).await;
-    ethui_networks::init(resource(app, "networks.json")).await;
+    ethui_connections::init(resource(app, "connections.json", args)).await;
+    ethui_wallets::init(resource(app, "wallets.json", args)).await;
+    ethui_networks::init(resource(app, "networks.json", args)).await;
     ethui_forge::init().await?;
 
     // automatically open devtools if env asks for it
-    #[cfg(feature = "debug")]
+    //#[cfg(feature = "debug")]
     if std::env::var("ethui_OPEN_DEVTOOLS").is_ok() {
-        let window = app.get_window("main").unwrap();
+        let window = app.get_webview_window("main").unwrap();
         window.open_devtools();
     }
 
     Ok(())
 }
-
-#[cfg(target_os = "macos")]
-fn on_window_event(event: GlobalWindowEvent) {
-    if let WindowEvent::CloseRequested { api, .. } = event.event() {
-        {
-            let app = event.window().app_handle();
-            app.hide().unwrap();
-            api.prevent_close();
-        }
-    }
-}
-
-#[cfg(not(target_os = "macos"))]
-fn on_window_event(_event: GlobalWindowEvent) {}
 
 async fn event_listener(handle: AppHandle) {
     let mut rx = ethui_broadcast::subscribe_ui().await;
@@ -163,7 +148,7 @@ async fn event_listener(handle: AppHandle) {
                 Notify(msg) => {
                     // forward directly to main window
                     // if window is not open, just ignore them
-                    if let Some(window) = handle.get_window("main") {
+                    if let Some(window) = handle.get_webview_window("main") {
                         window.emit(msg.label(), &msg).unwrap();
                     }
                 }
@@ -180,23 +165,33 @@ async fn event_listener(handle: AppHandle) {
 }
 
 /// Returns the resource path for the given resource.
-/// If the `ethui_CONFIG_DIR` env var is set, it will be used as the base path.
+/// If the `ETHUI_CONFIG_DIR` env var is set, it will be used as the base path.
 /// Otherwise, the app's default config dir will be used.
-fn resource(app: &tauri::App, resource: &str) -> PathBuf {
-    let dir = config_dir(app);
+fn resource(app: &tauri::App, resource: &str, args: &Args) -> PathBuf {
+    let dir = config_dir(app, args);
     debug!("config dir: {:?}", dir);
     std::fs::create_dir_all(&dir).expect("could not create config dir");
     dir.join(resource)
 }
 
 #[cfg(debug_assertions)]
-fn config_dir(_app: &tauri::App) -> PathBuf {
-    PathBuf::from("../dev-data/default/")
+fn config_dir(_app: &tauri::App, args: &Args) -> PathBuf {
+    let path = args
+        .config_dir
+        .clone()
+        .unwrap_or(String::from("../dev-data/default"));
+
+    PathBuf::from(path)
 }
 
 #[cfg(not(debug_assertions))]
-fn config_dir(app: &tauri::App) -> PathBuf {
-    app.path_resolver()
-        .app_config_dir()
-        .expect("failed to resolve app_config_dir")
+fn config_dir(app: &tauri::App, args: &Args) -> PathBuf {
+    args.config_dir
+        .clone()
+        .map(PathBuf::from)
+        .unwrap_or_else(|| {
+            app.path_resolver()
+                .app_config_dir()
+                .expect("failed to resolve app_config_dir")
+        })
 }

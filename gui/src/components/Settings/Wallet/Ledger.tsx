@@ -1,13 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert, AlertTitle, Button, Stack } from "@mui/material";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
+import { Address } from "abitype";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
-import type { Address } from "abitype";
-
-import { derivationPathSchema, type LedgerWallet } from "@ethui/types/wallets";
+import { derivationPathSchema, LedgerWallet } from "@ethui/types/wallets";
 import { Form } from "@ethui/react/components";
 import { useLedgerDetect } from "@/hooks";
 
@@ -59,6 +58,7 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
   };
 
   const paths = useWatch({ control: form.control, name: "paths" });
+  const pathsStr = paths.map(({ path }) => path).join("");
 
   useEffect(() => {
     (async () => {
@@ -66,7 +66,7 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
         .filter(({ path }) => !addresses.has(path))
         .map(({ path }) => path);
 
-      if (newPaths.length === 0) return;
+      if (newPaths.length == 0) return;
 
       const addrs = await invoke<[string, Address][]>("wallets_ledger_derive", {
         paths: newPaths,
@@ -74,13 +74,13 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
 
       if (!addrs) return;
 
-      for (const [path, address] of addrs) {
+      addrs.forEach(([path, address]) => {
         addresses.set(path, address);
-      }
+      });
 
       setAddresses(new Map(addresses));
     })();
-  }, [paths, addresses]);
+  }, [paths, pathsStr, addresses, setAddresses]);
 
   const {
     fields: pathsFields,
@@ -139,7 +139,7 @@ function Detect() {
         Please keep the Ethereum app open during this setup
       </Alert>
     );
-  } else if (detected === false) {
+  } else if (detected == false) {
     return (
       <Alert severity="warning">
         <AlertTitle>Failed to detect your ledger</AlertTitle>

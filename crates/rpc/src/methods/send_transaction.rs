@@ -169,7 +169,7 @@ impl<'a> SendTransaction {
             data: tx_request
                 .data()
                 .cloned()
-                .map(|v| alloy_primitives::Bytes(v.0)),
+                .map(|v| alloy::primitives::Bytes(v.0)),
             gas_limit: tx_request
                 .gas()
                 .map(|v| v.as_u64())

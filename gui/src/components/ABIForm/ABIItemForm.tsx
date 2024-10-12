@@ -1,9 +1,8 @@
 import { Grid } from "@mui/material";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
+import { AbiFunction } from "abitype";
 import { useState, useCallback } from "react";
-import { type Address, type Hash, decodeFunctionResult } from "viem";
-
-import type { AbiFunction } from "abitype";
+import { Address, Hash, decodeFunctionResult } from "viem";
 
 import { AbiForm } from "@ethui/form";
 import {
@@ -73,7 +72,6 @@ export function ABIItemForm({
     }
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies:
   const onChange = useCallback(
     ({ value, data }: { value?: bigint; data?: `0x${string}` }) => {
       setValue(value);

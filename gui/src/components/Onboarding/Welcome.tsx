@@ -1,6 +1,6 @@
 import { Box, Button, Link, Stack, Typography } from "@mui/material";
 
-import type { StepProps } from ".";
+import { StepProps } from ".";
 
 export function WelcomeStep({ onSubmit }: StepProps) {
   return (

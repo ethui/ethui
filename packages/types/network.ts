@@ -12,10 +12,13 @@ export const networkSchema = z.object({
         currency: z.string().min(1),
         chain_id: z.number(),
         decimals: z.number(),
+        force_is_anvil: z.boolean(),
       })
       .refine(
-        (data) =>
-          data.chain_id !== 31337 || (!!data.ws_url && data.ws_url.length > 0),
+        (data) => {
+          const isAnvil = data.chain_id === 31337 || data.force_is_anvil;
+          return !isAnvil || (!!data.ws_url && data.ws_url.length > 0);
+        },
         {
           path: ["ws_url"],
           message: "WebSockets are mandatory for dev networks",

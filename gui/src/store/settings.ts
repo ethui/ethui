@@ -1,10 +1,10 @@
-import { invoke, event } from "@tauri-apps/api";
-import { create, type StateCreator } from "zustand";
+import { event } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
+import { Action } from "kbar";
+import { create, StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import type { Action } from "kbar";
-
-import type { GeneralSettings } from "@ethui/types/settings";
+import { GeneralSettings } from "@ethui/types/settings";
 
 interface Store {
   settings?: GeneralSettings;
@@ -29,7 +29,7 @@ const store: StateCreator<Store> = (set) => ({
       name: `${index + 1}: ${mode}`,
       parent: actionId,
       perform: () => {
-        invoke("settings_set_fast_mode", { mode: mode === "Enable" });
+        invoke("settings_set_fast_mode", { mode: mode == "Enable" });
       },
     })),
   ],
