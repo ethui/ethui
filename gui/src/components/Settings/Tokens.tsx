@@ -1,6 +1,6 @@
 import { List, Stack, IconButton, CardHeader, Box } from "@mui/material";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { type Address } from "viem";
+import type { Address } from "viem";
 import { invoke } from "@tauri-apps/api/core";
 
 import { AddressView } from "..";
@@ -22,42 +22,37 @@ export function SettingsTokens() {
 
   return (
     <List sx={{ maxWidth: 350 }}>
-      <>
-        {blacklist.map(({ contract, metadata }) => (
-          <CardHeader
-            key={contract}
-            sx={{ marginTop: -2 }}
-            avatar={
-              <IconAddress
-                chainId={currentNetwork.chain_id}
-                address={contract}
-              />
-            }
-            action={
-              <Stack direction="row" justifyContent="center">
-                <IconButton
-                  title={"Unhide token"}
-                  onClick={() => unhide(contract)}
-                >
-                  <VisibilityOffIcon />
-                </IconButton>
-              </Stack>
-            }
-            title={
-              <>
-                <Box component="span" sx={{ mr: 1 }}>
-                  {metadata?.symbol}
-                </Box>
-                {contract && (
-                  <>
-                    (<AddressView address={contract} />)
-                  </>
-                )}
-              </>
-            }
-          />
-        ))}
-      </>
+      {blacklist.map(({ contract, metadata }) => (
+        <CardHeader
+          key={contract}
+          sx={{ marginTop: -2 }}
+          avatar={
+            <IconAddress chainId={currentNetwork.chain_id} address={contract} />
+          }
+          action={
+            <Stack direction="row" justifyContent="center">
+              <IconButton
+                title={"Unhide token"}
+                onClick={() => unhide(contract)}
+              >
+                <VisibilityOffIcon />
+              </IconButton>
+            </Stack>
+          }
+          title={
+            <>
+              <Box component="span" sx={{ mr: 1 }}>
+                {metadata?.symbol}
+              </Box>
+              {contract && (
+                <>
+                  (<AddressView address={contract} />)
+                </>
+              )}
+            </>
+          }
+        />
+      ))}
     </List>
   );
 }

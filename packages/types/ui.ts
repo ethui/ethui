@@ -1,4 +1,4 @@
-import { SvgIcon } from "@mui/material";
+import type { SvgIcon } from "@mui/material";
 
 export interface Tab {
   path: string;

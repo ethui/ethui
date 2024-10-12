@@ -3,7 +3,7 @@ import { Stack, Typography, Button, Grid } from "@mui/material";
 import { isDirty, isValid } from "zod";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 
-import { Erc20FullData } from "@ethui/types";
+import type { Erc20FullData } from "@ethui/types";
 import { useDialog } from "@/hooks";
 import { AddressView, Datapoint } from "@/components";
 import { useNetworks } from "@/store";

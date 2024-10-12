@@ -14,15 +14,15 @@ import {
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
-import { FieldValues, useForm } from "react-hook-form";
-import { Address, formatUnits } from "viem";
+import { type FieldValues, useForm } from "react-hook-form";
+import { type Address, formatUnits } from "viem";
 import { z } from "zod";
 
 import { Form } from "@ethui/react/components";
 import { passwordFormSchema, passwordSchema } from "@ethui/types/password";
 import {
   derivationPathSchema,
-  HdWallet,
+  type HdWallet,
   mnemonicSchema,
 } from "@ethui/types/wallets";
 import { useProvider } from "@/hooks";
@@ -98,7 +98,7 @@ function Create({ onSubmit, onRemove }: Props) {
           </Step>
         ))}
       </Stepper>
-      {step == 0 && (
+      {step === 0 && (
         <MnemonicStep
           onSubmit={(name: string, mnemonic) => {
             setName(name);
@@ -109,7 +109,7 @@ function Create({ onSubmit, onRemove }: Props) {
         />
       )}
 
-      {step == 1 && (
+      {step === 1 && (
         <PasswordStep
           onSubmit={(p) => {
             setPassword(p);
@@ -119,7 +119,7 @@ function Create({ onSubmit, onRemove }: Props) {
         />
       )}
 
-      {step == 2 && (
+      {step === 2 && (
         <ReviewStep
           mnemonic={mnemonic}
           onSubmit={(derivationPath, current) => {
@@ -252,7 +252,7 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
                   {addresses.map(([key, address]) => (
                     <TableRow
                       hover
-                      selected={current == key}
+                      selected={current === key}
                       sx={{ cursor: "pointer" }}
                       onClick={() => setCurrent(key)}
                       key={key}
@@ -294,7 +294,7 @@ function NativeBalance({ address }: NativeBalanceProps) {
   useEffect(() => {
     if (!provider) return;
     provider.getBalance({ address }).then((balance: bigint) => {
-      if (balance == 0n) return;
+      if (balance === 0n) return;
 
       const threshold = BigInt(0.001 * 10 ** decimals);
       if (balance < threshold) {

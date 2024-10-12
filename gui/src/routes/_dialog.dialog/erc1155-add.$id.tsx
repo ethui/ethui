@@ -3,7 +3,7 @@ import { Stack, Typography, Button, Grid } from "@mui/material";
 import { isDirty, isValid } from "zod";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 
-import { ErcFullData } from "@ethui/types";
+import type { ErcFullData } from "@ethui/types";
 import { useDialog } from "@/hooks";
 import { AddressView, Datapoint } from "@/components";
 import { useNetworks } from "@/store";
@@ -33,6 +33,7 @@ export function ERC1155AddDialog() {
       <Grid container rowSpacing={1} justifyItems={"center"}>
         <Grid container justifyContent={"center"} sx={{ mb: 2 }}>
           <img
+            alt="Token"
             height={400}
             src={token.image.originalUrl || "../public/default_nft.svg"}
           />

@@ -1,6 +1,6 @@
 import { Alert } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
-import { ErrorInfo, ReactNode } from "react";
+import type { ErrorInfo, ReactNode } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { Typography } from "@ethui/react/components";

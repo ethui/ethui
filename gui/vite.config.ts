@@ -29,7 +29,7 @@ export default defineConfig(() => ({
   build: {
     // Tauri supports es2021
     target:
-      process.env.TAURI_ENV_PLATFORM == "windows" ? "chrome105" : "safari14",
+      process.env.TAURI_ENV_PLATFORM === "windows" ? "chrome105" : "safari14",
     // don't minify for debug builds
     minify: !process.env.TAURI_ENV_DEBUG ? ("esbuild" as const) : false,
     // produce sourcemaps for debug builds

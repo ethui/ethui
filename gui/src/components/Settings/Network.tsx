@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { useFieldArray, useForm } from "react-hook-form";
 
-import { Network, networkSchema } from "@ethui/types/network";
+import { type Network, networkSchema } from "@ethui/types/network";
 import { ChainView, Form } from "@ethui/react/components";
 import { ConfirmationDialog } from "@/components";
 import { useNetworks } from "@/store";

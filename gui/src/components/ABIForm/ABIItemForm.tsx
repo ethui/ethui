@@ -1,8 +1,8 @@
 import { Grid } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
-import { AbiFunction } from "abitype";
+import type { AbiFunction } from "abitype";
 import { useState, useCallback } from "react";
-import { Address, Hash, decodeFunctionResult } from "viem";
+import { type Address, type Hash, decodeFunctionResult } from "viem";
 
 import { AbiForm } from "@ethui/form";
 import {

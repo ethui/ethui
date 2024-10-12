@@ -1,6 +1,6 @@
 import { Close, OpenInNew } from "@mui/icons-material";
 import { IconButton, Typography } from "@mui/material";
-import { SnackbarKey, useSnackbar } from "notistack";
+import { type SnackbarKey, useSnackbar } from "notistack";
 import { useEffect } from "react";
 
 import { useNetworks, useSettings, useSettingsWindow } from "@/store";

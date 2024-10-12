@@ -7,13 +7,13 @@ import {
   SpeedDial,
   SpeedDialIcon,
 } from "@mui/material";
-import { FieldValues, useForm } from "react-hook-form";
+import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import debounce from "lodash-es/debounce";
 
-import { Contract } from "@ethui/types";
+import type { Contract } from "@ethui/types";
 import { ChainView, Form } from "@ethui/react/components";
 import {
   Modal,
@@ -50,7 +50,7 @@ export function Contracts() {
         sx={{ position: "absolute", bottom: 16, right: 16 }}
         icon={<SpeedDialIcon />}
         onClick={() => setAddContractOpen(true)}
-      ></SpeedDial>
+      />
 
       <Modal open={addContractOpen} onClose={() => setAddContractOpen(false)}>
         <AddressForm />

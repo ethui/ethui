@@ -32,9 +32,8 @@ export const useKeyPress = (
 
   useEffect(() => {
     const targetNode = node ?? document;
-    targetNode && targetNode.addEventListener("keydown", handleKeyPress);
+    targetNode?.addEventListener("keydown", handleKeyPress);
 
-    return () =>
-      targetNode && targetNode.removeEventListener("keydown", handleKeyPress);
+    return () => targetNode?.removeEventListener("keydown", handleKeyPress);
   }, [handleKeyPress, node]);
 };

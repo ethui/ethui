@@ -1,12 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert, AlertTitle, Button, Stack } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
-import { Address } from "abitype";
+import type { Address } from "abitype";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
-import { derivationPathSchema, LedgerWallet } from "@ethui/types/wallets";
+import { derivationPathSchema, type LedgerWallet } from "@ethui/types/wallets";
 import { Form } from "@ethui/react/components";
 import { useLedgerDetect } from "@/hooks";
 
@@ -66,7 +66,7 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
         .filter(({ path }) => !addresses.has(path))
         .map(({ path }) => path);
 
-      if (newPaths.length == 0) return;
+      if (newPaths.length === 0) return;
 
       const addrs = await invoke<[string, Address][]>("wallets_ledger_derive", {
         paths: newPaths,
@@ -74,13 +74,13 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
 
       if (!addrs) return;
 
-      addrs.forEach(([path, address]) => {
+      for (const [path, address] of addrs) {
         addresses.set(path, address);
-      });
+      }
 
       setAddresses(new Map(addresses));
     })();
-  }, [paths, pathsStr, addresses, setAddresses]);
+  }, [paths, addresses]);
 
   const {
     fields: pathsFields,
@@ -139,7 +139,7 @@ function Detect() {
         Please keep the Ethereum app open during this setup
       </Alert>
     );
-  } else if (detected == false) {
+  } else if (detected === false) {
     return (
       <Alert severity="warning">
         <AlertTitle>Failed to detect your ledger</AlertTitle>

@@ -10,7 +10,7 @@ import {
 import { useEffect, useState } from "react";
 
 import { useInvoke } from "@/hooks";
-import { StepProps } from ".";
+import type { StepProps } from ".";
 
 export function InstallExtensionStep({ onSubmit }: StepProps) {
   const [detected, setDetected] = useState<boolean>(false);
@@ -26,7 +26,7 @@ export function InstallExtensionStep({ onSubmit }: StepProps) {
   useEffect(() => {
     if (detected) return;
     setDetected(!!peerCount && peerCount > 0);
-  }, [detected, peerCount, setDetected]);
+  }, [detected, peerCount]);
 
   return (
     <Stack spacing={2} sx={{ width: "100%" }}>

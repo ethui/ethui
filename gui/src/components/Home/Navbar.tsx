@@ -1,5 +1,5 @@
 import { AppBar, Typography } from "@mui/material";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { DraggableToolbar } from "@/components/DraggableToolbar";
 

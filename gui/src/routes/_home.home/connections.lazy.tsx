@@ -5,7 +5,7 @@ import {
   FormControl,
   MenuItem,
   Select,
-  SelectChangeEvent,
+  type SelectChangeEvent,
   Stack,
   Typography,
 } from "@mui/material";
@@ -14,7 +14,7 @@ import { map } from "lodash-es";
 import { useEffect, useState } from "react";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
-import { Affinity, Peer } from "@ethui/types";
+import type { Affinity, Peer } from "@ethui/types";
 import { ChainView } from "@ethui/react/components";
 import { useEventListener, useInvoke } from "@/hooks";
 import { useNetworks } from "@/store";
@@ -81,7 +81,7 @@ function AffinityForm({ domain }: { domain: string }) {
   const handleChange = (event: SelectChangeEvent<string>) => {
     let affinity: Affinity = "global";
     if (event.target.value !== "global") {
-      affinity = { sticky: parseInt(event.target.value) };
+      affinity = { sticky: Number.parseInt(event.target.value) };
     }
     invoke("connections_set_affinity", {
       domain,
@@ -91,7 +91,7 @@ function AffinityForm({ domain }: { domain: string }) {
   };
 
   const value =
-    current == "global" || current == "unset"
+    current === "global" || current === "unset"
       ? "global"
       : current.sticky.toString();
 

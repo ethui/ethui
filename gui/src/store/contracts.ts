@@ -1,10 +1,10 @@
 import { event } from "@tauri-apps/api";
 import { invoke } from "@tauri-apps/api/core";
-import { Address } from "viem";
+import type { Address } from "viem";
 import { subscribeWithSelector } from "zustand/middleware";
-import { create, StateCreator } from "zustand";
+import { create, type StateCreator } from "zustand";
 
-import { Contract } from "@ethui/types";
+import type { Contract } from "@ethui/types";
 import { errorToast } from "@/components/Toast";
 import { useNetworks } from "./networks";
 
@@ -52,14 +52,14 @@ const store: StateCreator<Store> = (set, get) => ({
   },
 
   filteredContracts(filter: string) {
-    filter = filter.toLowerCase();
+    const lowerCaseFilter = filter.toLowerCase();
     const { contracts } = get();
 
-    if (filter === "") return contracts;
+    if (lowerCaseFilter === "") return contracts;
     return contracts.filter((contract) =>
       `${contract.address} ${contract.name} ${contract.alias}`
         .toLowerCase()
-        .includes(filter),
+        .includes(lowerCaseFilter),
     );
   },
 

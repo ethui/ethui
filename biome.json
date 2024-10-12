@@ -1,8 +1,10 @@
 {
-  "formatter": {
-    "indentStyle": "space",
+  "files": {
     "ignore": [
       ".sqlx",
+      ".direnv",
+      ".pnp.cjs",
+      ".pnp.loader.mjs",
       "**/*.gen.ts",
       "packages/data/**/*.json",
       "packages/**/dist/**",
@@ -10,6 +12,9 @@
       "gui/dist",
       "target"
     ]
+  },
+  "formatter": {
+    "indentStyle": "space"
   },
   "linter": {
     "rules": {
@@ -19,21 +24,17 @@
       },
       "style": {
         "noUselessElse": "off",
-        "noNonNullAssertion": "warn"
+        "noNonNullAssertion": "off"
       },
       "performance": {
         "noAccumulatingSpread": "warn"
+      },
+      "complexity": {
+        "useOptionalChain": {
+          "fix": "safe"
+        }
       }
-    },
-    "ignore": [
-      ".sqlx",
-      "**/*.gen.ts",
-      "packages/data/**/*.json",
-      "packages/**/dist/**",
-      "extension/dist",
-      "gui/dist",
-      "target"
-    ]
+    }
   },
   "vcs": {
     "useIgnoreFile": true

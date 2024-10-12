@@ -8,11 +8,11 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { FieldValues, useForm } from "react-hook-form";
+import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { passwordFormSchema, passwordSchema } from "@ethui/types/password";
-import { PrivateKeyWallet } from "@ethui/types/wallets";
+import type { PrivateKeyWallet } from "@ethui/types/wallets";
 import { Form } from "@ethui/react/components";
 
 export const schema = z.object({
@@ -73,7 +73,7 @@ function Create({ onSubmit, onRemove }: Props) {
           </Step>
         ))}
       </Stepper>
-      {step == 0 && (
+      {step === 0 && (
         <PrivateKeyStep
           onSubmit={(name: string, privateKey) => {
             setName(name);
@@ -84,7 +84,7 @@ function Create({ onSubmit, onRemove }: Props) {
         />
       )}
 
-      {step == 1 && (
+      {step === 1 && (
         <PasswordStep
           onSubmit={(p) => {
             setPassword(p);

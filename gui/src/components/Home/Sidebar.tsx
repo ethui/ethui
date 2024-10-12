@@ -1,11 +1,11 @@
 import { SettingsSharp, TerminalSharp } from "@mui/icons-material";
-import { Drawer, Stack, SxProps, Toolbar } from "@mui/material";
-import { parseInt, range } from "lodash-es";
+import { Drawer, Stack, type SxProps, Toolbar } from "@mui/material";
+import { parseInt as lodashParseInt, range } from "lodash-es";
 import { useKBar } from "kbar";
 import { invoke } from "@tauri-apps/api/core";
 import { Link, useNavigate } from "@tanstack/react-router";
 
-import { type Tab } from "@ethui/types/ui";
+import type { Tab } from "@ethui/types/ui";
 import { useKeyPress, useMenuAction, useOS } from "@/hooks";
 import { useSettings, useSettingsWindow, useTheme } from "@/store";
 import {
@@ -36,7 +36,7 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
   const fastMode = settings?.fastMode;
 
   const handleKeyboardNavigation = (event: KeyboardEvent) => {
-    navigate({ to: tabs[parseInt(event.key) - 1].path });
+    navigate({ to: tabs[lodashParseInt(event.key) - 1].path });
   };
 
   const handleFastModeToggle = () => {
