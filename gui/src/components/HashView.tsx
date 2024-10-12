@@ -1,9 +1,9 @@
 import type { Hash } from "viem";
 
-import { Typography } from "@ethui/react/components";
 import { useNetworks } from "@/store";
-import { ContextMenuWithTauri } from "./ContextMenuWithTauri";
 import { truncateHex } from "@/utils";
+import { Typography } from "@ethui/react/components";
+import { ContextMenuWithTauri } from "./ContextMenuWithTauri";
 
 interface Props {
   hash: Hash;

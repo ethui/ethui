@@ -3,13 +3,13 @@ import { Button, Stack } from "@mui/material";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { Form } from "@ethui/react/components";
 import {
-  derivationPathSchema,
-  mnemonicSchema,
   type PlaintextWallet,
   type Wallet,
+  derivationPathSchema,
+  mnemonicSchema,
 } from "@ethui/types/wallets";
-import { Form } from "@ethui/react/components";
 
 const schema = z.object({
   name: z.string().min(1),

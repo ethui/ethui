@@ -1,23 +1,23 @@
-import { useState } from "react";
 import {
-  Stack,
-  IconButton,
+  MoreVert as MoreVertIcon,
+  Send as SendIcon,
+} from "@mui/icons-material";
+import {
+  Box,
   Card,
   CardHeader,
+  IconButton,
   Menu,
   MenuItem,
-  Box,
+  Stack,
 } from "@mui/material";
-import {
-  Send as SendIcon,
-  MoreVert as MoreVertIcon,
-} from "@mui/icons-material";
-import { type Address, formatUnits } from "viem";
 import { invoke } from "@tauri-apps/api/core";
+import { useState } from "react";
+import { type Address, formatUnits } from "viem";
 
+import { useNetworks } from "@/store";
 import { AddressView, CopyToClipboard, Modal, TransferForm } from "./";
 import { IconAddress } from "./Icons";
-import { useNetworks } from "@/store";
 
 interface Props {
   chainId: number;

@@ -1,11 +1,11 @@
-import { List, Stack, IconButton, CardHeader, Box } from "@mui/material";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import type { Address } from "viem";
+import { Box, CardHeader, IconButton, List, Stack } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
+import type { Address } from "viem";
 
-import { AddressView } from "..";
 import { IconAddress } from "@/components/Icons";
 import { useBlacklist, useNetworks } from "@/store";
+import { AddressView } from "..";
 
 export function SettingsTokens() {
   const currentNetwork = useNetworks((s) => s.current);

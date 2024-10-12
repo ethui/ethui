@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { ContextMenu, type ContextMenuProps } from "./";
 import { defaultDisabledArgs } from "../../utils";
+import { ContextMenu, type ContextMenuProps } from "./";
 
 const meta: Meta<ContextMenuProps> = {
   title: "Components/ContextMenu",

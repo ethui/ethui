@@ -1,8 +1,8 @@
 import { Box, Stack, Typography } from "@mui/material";
 
+import { SettingsWallets } from "@/components/Settings/Wallets";
 import { Button } from "@ethui/react/components";
 import type { StepProps } from ".";
-import { SettingsWallets } from "@/components/Settings/Wallets";
 
 export function WalletSetupStep({ onSubmit }: StepProps) {
   return (

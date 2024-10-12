@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { ClickToCopy, type ClickToCopyProps } from "./";
 import { defaultDisabledArgs } from "../../utils";
+import { ClickToCopy, type ClickToCopyProps } from "./";
 
 const meta: Meta<ClickToCopyProps> = {
   title: "Components/ClickToCopy",

@@ -1,9 +1,9 @@
 import { ExpandMore } from "@mui/icons-material";
 import {
-  Accordion as MuiAccordion,
-  AccordionSummary as MuiAccordionSummary,
   type AccordionProps,
   type AccordionSummaryProps,
+  Accordion as MuiAccordion,
+  AccordionSummary as MuiAccordionSummary,
 } from "@mui/material";
 
 export { AccordionDetails } from "@mui/material";

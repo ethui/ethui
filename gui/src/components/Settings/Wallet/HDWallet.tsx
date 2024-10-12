@@ -18,15 +18,15 @@ import { type FieldValues, useForm } from "react-hook-form";
 import { type Address, formatUnits } from "viem";
 import { z } from "zod";
 
+import { useProvider } from "@/hooks";
+import { truncateHex } from "@/utils";
 import { Form } from "@ethui/react/components";
 import { passwordFormSchema, passwordSchema } from "@ethui/types/password";
 import {
-  derivationPathSchema,
   type HdWallet,
+  derivationPathSchema,
   mnemonicSchema,
 } from "@ethui/types/wallets";
-import { useProvider } from "@/hooks";
-import { truncateHex } from "@/utils";
 
 export const schema = z.object({
   count: z.number().int().min(1).max(100),

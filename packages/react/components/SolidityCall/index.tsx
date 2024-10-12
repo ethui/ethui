@@ -1,6 +1,6 @@
-import { Stack, useTheme, type SxProps } from "@mui/material";
-import type { Address, Abi, AbiFunction } from "abitype";
-import { formatUnits, decodeFunctionData, parseAbi } from "viem";
+import { Stack, type SxProps, useTheme } from "@mui/material";
+import type { Abi, AbiFunction, Address } from "abitype";
+import { decodeFunctionData, formatUnits, parseAbi } from "viem";
 
 import { ClickToCopy, Typography } from "../";
 import type { PaletteColorKey } from "../../utils";

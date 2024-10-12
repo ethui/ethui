@@ -1,4 +1,4 @@
-import { Tooltip, Button, type TooltipProps } from "@mui/material";
+import { Button, Tooltip, type TooltipProps } from "@mui/material";
 import { useEffect, useState } from "react";
 
 export interface ClickToCopyProps

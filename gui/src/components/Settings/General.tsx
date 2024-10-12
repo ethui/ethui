@@ -5,8 +5,8 @@ import { useCallback } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Form } from "@ethui/react/components";
 import { useSettings } from "@/store";
+import { Form } from "@ethui/react/components";
 
 export const schema = z.object({
   darkMode: z.enum(["auto", "dark", "light"]),

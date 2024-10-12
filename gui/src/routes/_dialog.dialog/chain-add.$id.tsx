@@ -1,12 +1,12 @@
+import { Button, Grid, Stack, Typography } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
-import { Stack, Typography, Button, Grid } from "@mui/material";
-import { isDirty, isValid } from "zod";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
+import { isDirty, isValid } from "zod";
 
-import type { Network } from "@ethui/types/network";
-import { ChainView } from "@ethui/react/components";
-import { useDialog } from "@/hooks";
 import { Datapoint } from "@/components";
+import { useDialog } from "@/hooks";
+import { ChainView } from "@ethui/react/components";
+import type { Network } from "@ethui/types/network";
 
 export const Route = createFileRoute("/_dialog/dialog/chain-add/$id")({
   component: ChainAddDialog,

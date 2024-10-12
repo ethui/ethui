@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createPublicClient, http } from "viem";
+import { http, createPublicClient } from "viem";
 
 import type { Network } from "@ethui/types/network";
 import { useInvoke } from "./useInvoke";

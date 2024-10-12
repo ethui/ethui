@@ -2,29 +2,29 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Chip,
   CircularProgress,
-  Stack,
-  TextField,
   SpeedDial,
   SpeedDialIcon,
+  Stack,
+  TextField,
 } from "@mui/material";
+import { createLazyFileRoute } from "@tanstack/react-router";
+import debounce from "lodash-es/debounce";
+import { useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import debounce from "lodash-es/debounce";
 
-import type { Contract } from "@ethui/types";
-import { ChainView, Form } from "@ethui/react/components";
 import {
-  Modal,
-  AddressView,
   ABIForm,
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  AddressView,
+  Modal,
 } from "@/components/";
-import { useContracts, useNetworks } from "@/store";
 import { Navbar } from "@/components/Home/Navbar";
+import { useContracts, useNetworks } from "@/store";
+import { ChainView, Form } from "@ethui/react/components";
+import type { Contract } from "@ethui/types";
 
 export const Route = createLazyFileRoute("/_home/home/contracts")({
   component: Contracts,

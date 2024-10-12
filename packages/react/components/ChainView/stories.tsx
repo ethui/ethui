@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { ChainView, type ChainViewProps } from "./";
-import { defaultDisabledArgs } from "../../utils";
 import { Stack } from "@mui/material";
+import { defaultDisabledArgs } from "../../utils";
+import { ChainView, type ChainViewProps } from "./";
 
 const meta: Meta<ChainViewProps> = {
   title: "Components/ChainView",

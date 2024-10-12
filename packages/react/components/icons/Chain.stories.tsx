@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { IconChain, type IconChainProps } from "./Chain";
-import { defaultDisabledArgs } from "../../utils";
 import { Stack } from "@mui/material";
+import { defaultDisabledArgs } from "../../utils";
+import { IconChain, type IconChainProps } from "./Chain";
 
 const meta: Meta<IconChainProps> = {
   title: "Icons/IconChain",

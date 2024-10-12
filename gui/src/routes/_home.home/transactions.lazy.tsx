@@ -8,16 +8,12 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { type Abi, type Address, formatEther, formatGwei } from "viem";
-import { createLazyFileRoute } from "@tanstack/react-router";
 
-import { BlockNumber, SolidityCall } from "@ethui/react/components";
-import type { Paginated, PaginatedTx, Pagination, Tx } from "@ethui/types";
-import { useEventListener, useInvoke } from "@/hooks";
-import { useNetworks, useWallets } from "@/store";
 import {
   Accordion,
   AccordionDetails,
@@ -26,8 +22,12 @@ import {
   ContextMenuWithTauri,
 } from "@/components";
 import { Datapoint } from "@/components/Datapoint";
-import { Navbar } from "@/components/Home/Navbar";
 import { HashView } from "@/components/HashView";
+import { Navbar } from "@/components/Home/Navbar";
+import { useEventListener, useInvoke } from "@/hooks";
+import { useNetworks, useWallets } from "@/store";
+import { BlockNumber, SolidityCall } from "@ethui/react/components";
+import type { Paginated, PaginatedTx, Pagination, Tx } from "@ethui/types";
 
 export const Route = createLazyFileRoute("/_home/home/transactions")({
   component: Txs,

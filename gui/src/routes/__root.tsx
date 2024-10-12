@@ -1,9 +1,9 @@
-import { lazy, Suspense } from "react";
-import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { Box, GlobalStyles, ThemeProvider } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { Outlet, createRootRoute } from "@tanstack/react-router";
+import { Suspense, lazy } from "react";
 
 import { ErrorHandler } from "@/components";
 import { useTheme } from "@/store/theme";

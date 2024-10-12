@@ -1,7 +1,7 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
+import { Link } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect } from "react";
-import { Link } from "@tanstack/react-router";
 
 export function ThankYouStep() {
   useEffect(() => {

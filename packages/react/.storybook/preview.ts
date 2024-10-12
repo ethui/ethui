@@ -1,7 +1,7 @@
-import type { Preview } from "@storybook/react";
-import { ThemeProvider, CssBaseline } from "@mui/material";
-import { lightTheme, darkTheme } from "../themes";
+import { CssBaseline, ThemeProvider } from "@mui/material";
 import { withThemeFromJSXProvider } from "@storybook/addon-themes";
+import type { Preview } from "@storybook/react";
+import { darkTheme, lightTheme } from "../themes";
 
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";

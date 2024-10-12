@@ -2,9 +2,9 @@ import type { Theme } from "@mui/material";
 import { event } from "@tauri-apps/api";
 import { invoke } from "@tauri-apps/api/core";
 import type { Action } from "kbar";
-import { create, type StateCreator } from "zustand";
+import { type StateCreator, create } from "zustand";
 
-import { lightTheme, darkTheme } from "@ethui/react";
+import { darkTheme, lightTheme } from "@ethui/react";
 import type { GeneralSettings } from "@ethui/types/settings";
 
 interface Store {

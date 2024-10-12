@@ -1,11 +1,11 @@
 import { event } from "@tauri-apps/api";
 import { invoke } from "@tauri-apps/api/core";
 import type { Address } from "viem";
+import { type StateCreator, create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
-import { create, type StateCreator } from "zustand";
 
-import type { Contract } from "@ethui/types";
 import { errorToast } from "@/components/Toast";
+import type { Contract } from "@ethui/types";
 import { useNetworks } from "./networks";
 
 interface State {

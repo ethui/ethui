@@ -2159,7 +2159,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@biomejs/biome@npm:^1.8.3":
+"@biomejs/biome@npm:^1.9.3":
   version: 1.9.3
   resolution: "@biomejs/biome@npm:1.9.3"
   dependencies:
@@ -16803,7 +16803,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
-    "@biomejs/biome": "npm:^1.8.3"
+    "@biomejs/biome": "npm:^1.9.3"
     "@tauri-apps/cli": "npm:^2.0.2"
     "@typescript-eslint/eslint-plugin": "npm:^7.9.0"
     "@typescript-eslint/parser": "npm:^7.9.0"

@@ -1,18 +1,18 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { Box, type Theme } from "@mui/material";
 import {
-  RequestQuoteSharp,
-  Receipt,
   CallToAction,
   OnlinePredictionSharp,
+  Receipt,
+  RequestQuoteSharp,
 } from "@mui/icons-material";
+import { Box, type Theme } from "@mui/material";
+import { Outlet, createFileRoute } from "@tanstack/react-router";
 import { SnackbarProvider } from "notistack";
 
-import type { Tab } from "@ethui/types/ui";
-import { useNoticeAlchemyKeyMissing, useNoticeNewVersion } from "@/hooks";
 import { CommandBar } from "@/components";
-import { useTheme } from "@/store";
 import { Sidebar } from "@/components/Home/Sidebar";
+import { useNoticeAlchemyKeyMissing, useNoticeNewVersion } from "@/hooks";
+import { useTheme } from "@/store";
+import type { Tab } from "@ethui/types/ui";
 
 export const Route = createFileRoute("/_home")({
   component: HomePageLayout,

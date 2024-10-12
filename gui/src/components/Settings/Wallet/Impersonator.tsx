@@ -4,12 +4,12 @@ import type { Address } from "abitype";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { Form } from "@ethui/react/components";
 import {
-  addressSchema,
   type ImpersonatorWallet,
   type Wallet,
+  addressSchema,
 } from "@ethui/types/wallets";
-import { Form } from "@ethui/react/components";
 
 // react-hook-form doesn't support value-arrays, only object-arrays, so we need this type as a workaround for the impersonator form
 export const schema = z.object({

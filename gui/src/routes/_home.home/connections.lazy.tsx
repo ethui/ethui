@@ -9,17 +9,17 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { map } from "lodash-es";
 import { useEffect, useState } from "react";
-import { createLazyFileRoute } from "@tanstack/react-router";
 
-import type { Affinity, Peer } from "@ethui/types";
-import { ChainView } from "@ethui/react/components";
-import { useEventListener, useInvoke } from "@/hooks";
-import { useNetworks } from "@/store";
 import { Panel } from "@/components";
 import { Navbar } from "@/components/Home/Navbar";
+import { useEventListener, useInvoke } from "@/hooks";
+import { useNetworks } from "@/store";
+import { ChainView } from "@ethui/react/components";
+import type { Affinity, Peer } from "@ethui/types";
 
 export const Route = createLazyFileRoute("/_home/home/connections")({
   component: Connections,

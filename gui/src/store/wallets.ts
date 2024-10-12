@@ -2,7 +2,7 @@ import { event } from "@tauri-apps/api";
 import { invoke } from "@tauri-apps/api/core";
 import type { Action } from "kbar";
 import type { Address } from "viem";
-import { create, type StateCreator } from "zustand";
+import { type StateCreator, create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
 import type { Wallet } from "@ethui/types/wallets";
