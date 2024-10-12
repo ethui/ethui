@@ -7,6 +7,7 @@ target/
 !migrations/*.sql
 gui/vite.config.ts.timestamp-*
 dev-data
+.direnv/
 
 # extension artifacts
 extension/*.zip
