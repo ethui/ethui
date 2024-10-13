@@ -144,7 +144,7 @@ pub fn default_from_block(chain_id: u32) -> u64 {
         .unwrap_or(0)
 }
 
-pub fn get_endpoint(chain_id: u32, path: &str, api_key: &str) -> Result<Url> {
+pub fn get_endpoint(chain_id: u32, path: &str, api_key: &str) -> Result<reqwest::Url> {
     let endpoint = match get_network(&chain_id) {
         Some(network) => network.base_url,
         None => return Err(Error::UnsupportedChainId(chain_id)),

@@ -10,7 +10,7 @@ use tokio::{
     task::JoinHandle,
     time::{sleep, Duration},
 };
-use tracing::instrument;
+use tracing::{instrument, warn};
 
 use crate::{utils, Error, Msg, Result};
 
@@ -177,7 +177,9 @@ async fn unit_worker(
 ) -> Result<()> {
     loop {
         let alchemy = get_alchemy(chain_id).await?;
-        alchemy.fetch_updates(addr).await.unwrap();
+        if alchemy.fetch_updates(addr).await.is_err() {
+            warn!("Alchemy sync not set up");
+        };
 
         // wait for either a set delay, or for an outside poll request
         select! {
