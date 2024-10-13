@@ -1,3 +1,4 @@
+use alloy::transports::TransportErrorKind;
 use ethers::providers::JsonRpcError;
 use ethui_types::B256;
 use jsonrpc_core::ErrorCode;
@@ -26,6 +27,9 @@ pub enum Error {
     JoinError(#[from] tokio::task::JoinError),
 
     #[error(transparent)]
+    Alloy(#[from] alloy::transports::RpcError<TransportErrorKind>),
+
+    #[error(transparent)]
     ProviderError(#[from] ethers::providers::ProviderError),
 
     #[error(transparent)]
@@ -36,7 +40,6 @@ pub enum Error {
 
     #[error("Unable to verify ownership. Possibly because the standard is not supported or the user's currently selected network does not match the chain of the asset in question.")]
     ErcInvalid,
-
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
