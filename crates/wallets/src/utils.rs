@@ -50,10 +50,10 @@ pub(crate) async fn ledger_derive(path: &str) -> Result<Address> {
         .await
         .map_err(|e| Error::Ledger(e.to_string()))?;
 
-    Ok(ledger
+    ledger
         .get_address()
         .await
-        .map_err(|e| Error::Ledger(e.to_string()))?)
+        .map_err(|e| Error::Ledger(e.to_string()))
 }
 
 pub(crate) async fn ledger_derive_multiple(paths: Vec<String>) -> Result<Vec<(String, Address)>> {

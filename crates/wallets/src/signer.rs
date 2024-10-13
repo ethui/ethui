@@ -1,14 +1,15 @@
+use alloy::network::EthereumWallet;
 use alloy::primitives::{Address, B256};
+use alloy::signers::ledger::LedgerSigner;
+use alloy::signers::local::PrivateKeySigner;
 use alloy::signers::Signature;
-use alloy::signers::{ledger::LedgerSigner, local::LocalSigner};
 use async_trait::async_trait;
-use coins_bip32::ecdsa;
 
 //use crate::{utils::HID_MUTEX, Error, Result};
 
 #[derive(Debug)]
 pub enum Signer {
-    Local(LocalSigner<ecdsa::SigningKey>),
+    Local(PrivateKeySigner),
     Ledger(LedgerSigner),
 }
 
@@ -48,6 +49,15 @@ impl alloy::signers::Signer<Signature> for Signer {
         match self {
             Self::Local(signer) => signer.sign_hash(hash).await,
             Self::Ledger(signer) => signer.sign_hash(hash).await,
+        }
+    }
+}
+
+impl Signer {
+    pub fn to_wallet(self) -> EthereumWallet {
+        match self {
+            Self::Local(signer) => EthereumWallet::from(signer),
+            Self::Ledger(signer) => EthereumWallet::from(signer),
         }
     }
 }

@@ -1,11 +1,10 @@
-use std::{sync::Arc, time::Duration};
+use std::{str::FromStr, sync::Arc, time::Duration};
 
 use alloy::{
     primitives::B256,
-    signers::{local::LocalSigner, Signer as _},
+    signers::{local::PrivateKeySigner, Signer as _},
 };
 use async_trait::async_trait;
-use coins_bip32::ecdsa;
 use ethui_crypto::{self, EncryptedData};
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_types::Address;
@@ -106,7 +105,7 @@ impl PrivateKeyWallet {
             .unwrap_or(&params.private_key)
             .to_string();
 
-        let wallet: LocalSigner<ecdsa::SigningKey> = key.clone().try_into().unwrap();
+        let wallet: PrivateKeySigner = PrivateKeySigner::from_str(&key)?;
 
         let ciphertext = ethui_crypto::encrypt(&key, &params.password).unwrap();
 
@@ -197,11 +196,11 @@ pub fn private_key_into_secret(private_key: String) -> SecretVec<u8> {
 }
 
 /// Converts a SecretVec into a signer
-fn signer_from_secret(secret: &SecretVec<u8>) -> LocalSigner<ecdsa::SigningKey> {
+fn signer_from_secret(secret: &SecretVec<u8>) -> PrivateKeySigner {
     let signer_bytes = secret.borrow();
-    let key = String::from_utf8(signer_bytes.to_vec()).unwrap();
+    // TODO: double check if this works
+    //let key = String::from_utf8(signer_bytes.to_vec()).unwrap();
 
     let key = B256::from_slice(&signer_bytes);
-    LocalSigner::from_bytes(&key).unwrap();
-    key.try_into().unwrap()
+    PrivateKeySigner::from_bytes(&key).unwrap()
 }

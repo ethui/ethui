@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 pub struct Request {
     pub from: Address,
-    pub to: Address,
+    pub to: Option<Address>,
     pub data: Option<Bytes>,
     pub gas_limit: u64,
     pub value: Option<U256>,
