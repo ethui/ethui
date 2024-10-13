@@ -114,14 +114,12 @@ impl WalletControl for HDWallet {
         let secret = secret.as_ref().unwrap().lock().await;
 
         let mnemonic = mnemonic_from_secret(&secret);
-        let signer = MnemonicBuilder::<English>::default()
+        let mut signer = MnemonicBuilder::<English>::default()
             .phrase(mnemonic.as_str())
             .derivation_path(path)?
-            .build()
-            .map(|mut v| {
-                v.set_chain_id(Some(chain_id.into()));
-                v
-            })?;
+            .build()?;
+
+        signer.set_chain_id(Some(chain_id.into()));
 
         Ok(Signer::Local(signer))
     }
