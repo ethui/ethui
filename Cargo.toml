@@ -80,7 +80,10 @@ reqwest = { version = "0.12", default-features = false, features = [
   "rustls-tls",
 ] }
 alloy = { version = "0.4", features = [
-  "full"
+  "full",
+  "rpc",
+  "rpc-types",
+  "signer-ledger"
 ] }
   alloy-chains = "0.1.38"
 revm-inspectors = { git = "https://github.com/paradigmxyz/evm-inspectors", rev = "c1b5dd0", features = [

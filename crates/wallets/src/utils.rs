@@ -1,5 +1,8 @@
-use ethers::signers::{coins_bip39::English, HDPath, MnemonicBuilder, Signer};
-use ethui_types::{Address, ToAlloy};
+use alloy::signers::{
+    ledger::{HDPath, LedgerSigner},
+    local::{coins_bip39::English, MnemonicBuilder},
+};
+use ethui_types::Address;
 use once_cell::sync::Lazy;
 use tokio::sync::Mutex;
 
@@ -30,7 +33,7 @@ pub fn derive_from_builder_and_path(
     builder: MnemonicBuilder<English>,
     path: &str,
 ) -> Result<Address> {
-    Ok(builder.derivation_path(path)?.build()?.address().to_alloy())
+    Ok(builder.derivation_path(path)?.build()?.address())
 }
 
 pub fn validate_mnemonic(mnemonic: &str) -> bool {
@@ -43,15 +46,14 @@ pub fn validate_mnemonic(mnemonic: &str) -> bool {
 pub(crate) async fn ledger_derive(path: &str) -> Result<Address> {
     let _guard = HID_MUTEX.lock().await;
 
-    let ledger = ethers::signers::Ledger::new(HDPath::Other(path.into()), 1)
+    let ledger = LedgerSigner::new(HDPath::Other(path.into()), Some(1))
         .await
         .map_err(|e| Error::Ledger(e.to_string()))?;
 
     Ok(ledger
         .get_address()
         .await
-        .map_err(|e| Error::Ledger(e.to_string()))?
-        .to_alloy())
+        .map_err(|e| Error::Ledger(e.to_string()))?)
 }
 
 pub(crate) async fn ledger_derive_multiple(paths: Vec<String>) -> Result<Vec<(String, Address)>> {

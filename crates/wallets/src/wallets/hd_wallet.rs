@@ -1,7 +1,10 @@
 use std::{sync::Arc, time::Duration};
 
+use alloy::signers::{
+    local::{coins_bip39::English, MnemonicBuilder},
+    Signer as _,
+};
 use async_trait::async_trait;
-use ethers::signers::{coins_bip39::English, MnemonicBuilder, Signer as _};
 use ethui_crypto::{self, EncryptedData};
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_types::Address;
@@ -114,9 +117,13 @@ impl WalletControl for HDWallet {
         let signer = MnemonicBuilder::<English>::default()
             .phrase(mnemonic.as_str())
             .derivation_path(path)?
-            .build()?;
+            .build()
+            .map(|mut v| {
+                v.set_chain_id(Some(chain_id.into()));
+                v
+            })?;
 
-        Ok(Signer::SigningKey(signer.with_chain_id(chain_id)))
+        Ok(Signer::Local(signer))
     }
 }
 

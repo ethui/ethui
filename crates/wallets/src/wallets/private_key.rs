@@ -1,11 +1,14 @@
 use std::{sync::Arc, time::Duration};
 
+use alloy::{
+    primitives::B256,
+    signers::{local::LocalSigner, Signer as _},
+};
 use async_trait::async_trait;
-use coins_bip32::prelude::SigningKey;
-use ethers::{signers, signers::Signer as _};
+use coins_bip32::ecdsa;
 use ethui_crypto::{self, EncryptedData};
 use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_types::{Address, ToAlloy};
+use ethui_types::Address;
 use secrets::SecretVec;
 use tokio::{
     sync::{Mutex, RwLock},
@@ -87,8 +90,10 @@ impl WalletControl for PrivateKeyWallet {
         let secret = self.secret.read().await;
         let secret = secret.as_ref().unwrap().lock().await;
 
-        let signer = signer_from_secret(&secret);
-        Ok(Signer::SigningKey(signer.with_chain_id(chain_id)))
+        let mut signer = signer_from_secret(&secret);
+        // TODO: use u64 for chain id
+        signer.set_chain_id(Some(chain_id.into()));
+        Ok(Signer::Local(signer))
     }
 }
 
@@ -101,13 +106,13 @@ impl PrivateKeyWallet {
             .unwrap_or(&params.private_key)
             .to_string();
 
-        let wallet: signers::Wallet<SigningKey> = key.clone().try_into().unwrap();
+        let wallet: LocalSigner<ecdsa::SigningKey> = key.clone().try_into().unwrap();
 
         let ciphertext = ethui_crypto::encrypt(&key, &params.password).unwrap();
 
         Ok(Self {
             name: params.name,
-            address: wallet.address().to_alloy(),
+            address: wallet.address(),
             ciphertext,
             secret: Default::default(),
             expirer: Default::default(),
@@ -192,8 +197,11 @@ pub fn private_key_into_secret(private_key: String) -> SecretVec<u8> {
 }
 
 /// Converts a SecretVec into a signer
-fn signer_from_secret(secret: &SecretVec<u8>) -> signers::Wallet<SigningKey> {
+fn signer_from_secret(secret: &SecretVec<u8>) -> LocalSigner<ecdsa::SigningKey> {
     let signer_bytes = secret.borrow();
     let key = String::from_utf8(signer_bytes.to_vec()).unwrap();
+
+    let key = B256::from_slice(&signer_bytes);
+    LocalSigner::from_bytes(&key).unwrap();
     key.try_into().unwrap()
 }
