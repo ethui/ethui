@@ -89,7 +89,7 @@ impl Client {
     }
 
     pub async fn get_native_balance(&self, address: Address) -> Result<U256> {
-        Ok(self.v2_provider.get_balance(address).await.map(|x| x)?)
+        Ok(self.v2_provider.get_balance(address).await?)
     }
 
     pub async fn get_erc20_balances(&self, address: Address) -> Result<Vec<(Address, U256)>> {

@@ -1,7 +1,4 @@
 use alloy::transports::TransportErrorKind;
-use ethers::providers::JsonRpcError;
-use ethui_types::B256;
-use jsonrpc_core::ErrorCode;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -29,35 +26,11 @@ pub enum Error {
     #[error(transparent)]
     Alloy(#[from] alloy::transports::RpcError<TransportErrorKind>),
 
-    #[error(transparent)]
-    ProviderError(#[from] ethers::providers::ProviderError),
-
-    #[error(transparent)]
-    JsonRpcError(#[from] JsonRpcError),
-
-    #[error("Transaction not found: {0}")]
-    TxNotFound(B256),
-
     #[error("Unable to verify ownership. Possibly because the standard is not supported or the user's currently selected network does not match the chain of the asset in question.")]
     ErcInvalid,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
-
-impl From<Error> for jsonrpc_core::Error {
-    fn from(value: Error) -> Self {
-        let code = match value {
-            Error::ErcInvalid => ErrorCode::ServerError(-32002),
-            _ => ErrorCode::InternalError,
-        };
-
-        Self {
-            code,
-            data: None,
-            message: value.to_string(),
-        }
-    }
-}
 
 impl serde::Serialize for Error {
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>

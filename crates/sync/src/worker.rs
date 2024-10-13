@@ -177,7 +177,7 @@ async fn unit_worker(
 ) -> Result<()> {
     loop {
         let alchemy = get_alchemy(chain_id).await?;
-        if let Err(_) = alchemy.fetch_updates(addr).await {
+        if alchemy.fetch_updates(addr).await.is_err() {
             warn!("Alchemy sync not set up");
         };
 
