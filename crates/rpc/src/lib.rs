@@ -238,7 +238,6 @@ impl Handler {
 
         let result = signer.finish().await?;
 
-        // TODO: test this
         Ok(format!("0x{}", hex::encode(result.as_bytes())).into())
     }
 
