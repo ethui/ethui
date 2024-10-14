@@ -174,9 +174,8 @@ fn signer_from_secret(secret: &SecretVec<u8>) -> LocalSigner<ecdsa::SigningKey> 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rstest::rstest;
 
-    #[rstest]
+    #[test]
     fn secret() {
         let signer = LocalSigner::random();
 
@@ -185,22 +184,5 @@ mod tests {
 
         assert_eq!(signer.address(), recovered_signer.address());
         assert_eq!(signer.credential(), recovered_signer.credential());
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use ethers::core::rand::thread_rng;
-    use signers::LocalWallet;
-
-    #[test]
-    fn secret() {
-        let signer = LocalWallet::new(&mut thread_rng());
-
-        let secret = signer_into_secret(&signer);
-        let recovered_signer = signer_from_secret(&secret);
-
-        assert_eq!(signer.address(), recovered_signer.address());
     }
 }
