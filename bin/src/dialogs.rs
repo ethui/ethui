@@ -23,14 +23,9 @@ pub(crate) fn close(handle: &AppHandle, params: ui_events::DialogClose) {
 }
 
 pub(crate) fn send(handle: &AppHandle, params: ui_events::DialogSend) {
-    dbg!(&params);
     handle
-        .emit_to(EventTarget::any(), &params.event_type, &params.payload)
+        .emit_to(&params.label, &params.event_type, &params.payload)
         .unwrap();
-    //if let Some(window) = handle.get_webview_window(&params.label) {
-    //    dbg!(&params.label);
-    //    window.emit(&params.event_type, &params.payload).unwrap();
-    //}
 }
 
 fn on_event(window_id: u32, event: &WindowEvent) {

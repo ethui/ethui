@@ -1,4 +1,3 @@
-import { listen } from "@tauri-apps/api/event";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { useEffect } from "react";
 
@@ -12,10 +11,10 @@ export function useEventListener(event: Event, callback: () => unknown) {
   const view = getCurrentWebviewWindow();
 
   useEffect(() => {
-    const unlisten = listen(event, callback, { target: view.label });
+    const unlisten = view.listen(event, callback);
 
     return () => {
       unlisten.then((cb) => cb());
     };
-  }, [event, callback, view.label]);
+  }, [event, callback, view.listen]);
 }

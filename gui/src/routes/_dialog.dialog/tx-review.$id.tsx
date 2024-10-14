@@ -33,8 +33,12 @@ export interface TxRequest {
   to: Address;
   value: string;
   chainId: number;
-  walletType: "ledger" | "HdWallet" | "jsonKeystore" | "plaintext";
-  impersonator;
+  walletType:
+  | "ledger"
+  | "HdWallet"
+  | "jsonKeystore"
+  | "plaintext"
+  | "impersonator";
 }
 
 interface Log {
