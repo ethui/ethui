@@ -264,3 +264,18 @@ pub fn mnemonic_from_secret(secret: &SecretVec<u8>) -> String {
     let signer_bytes = secret.borrow();
     String::from_utf8(signer_bytes.to_vec()).unwrap()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn secret() {
+        let signer = "test test test test test test test test test test test junk".to_string();
+
+        let secret = mnemonic_into_secret(signer.clone());
+        let recovered_signer = mnemonic_from_secret(&secret);
+
+        assert_eq!(signer, recovered_signer);
+    }
+}
