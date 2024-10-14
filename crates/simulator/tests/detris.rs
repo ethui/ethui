@@ -14,7 +14,7 @@ async fn simulate_detris() {
         from: Address::from_str("0x47ac0fb4f2d84898e4d9e7b4dab3c24507a6d503").unwrap(),
         to: Address::from_str("0xf0f8628d496782d6a9c724f047d14b4fc2569ea1").unwrap(),
         value: None,
-        data: Some(alloy_primitives::Bytes::from_str("0x1249c58b").unwrap()),
+        data: Some(alloy::primitives::Bytes::from_str("0x1249c58b").unwrap()),
         gas_limit: 0,
     };
 
