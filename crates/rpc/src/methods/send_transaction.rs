@@ -106,7 +106,10 @@ impl SendTransaction {
         while let Some(msg) = dialog.recv().await {
             match msg {
                 DialogMsg::Data(msg) => match &msg["event"].as_str() {
-                    Some("simulate") => self.simulate(&dialog).await?,
+                    Some("simulate") => {
+                        dialog.send("trying", None).await?;
+                        self.simulate(&dialog).await?
+                    }
                     Some("accept") => break,
                     Some("update") => {
                         self.update(msg);
@@ -147,10 +150,15 @@ impl SendTransaction {
         let chain_id = self.network.chain_id;
         let request = self.simulation_request().await?;
 
+        dbg!(&request);
         if let Ok(sim) = ethui_simulator::commands::simulator_run(chain_id, request).await {
-            dialog
-                .send("simulation-result", Some(serde_json::to_value(sim)?))
-                .await?
+            dbg!(&sim);
+            dialog.send("foo", None).await?;
+            dbg!(
+                dialog
+                    .send("simulation-result", Some(serde_json::to_value(sim)?))
+                    .await
+            )?
         }
 
         Ok(())

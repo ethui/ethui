@@ -28,17 +28,17 @@ export const Route = createFileRoute("/_dialog/dialog/tx-review/$id")({
 });
 
 export interface TxRequest {
-  data: `0x${string}`;
+  input: `0x${string}`;
   from: Address;
   to: Address;
   value: string;
   chainId: number;
   walletType:
-    | "ledger"
-    | "HdWallet"
-    | "jsonKeystore"
-    | "plaintext"
-    | "impersonator";
+  | "ledger"
+  | "HdWallet"
+  | "jsonKeystore"
+  | "plaintext"
+  | "impersonator";
 }
 
 interface Log {
@@ -75,7 +75,7 @@ interface InnerProps {
 
 function Inner({ dialog, request, network }: InnerProps) {
   const { send, listen } = dialog;
-  const { from, to, chainId, data, value: valueStr } = request;
+  const { from, to, chainId, input: data, value: valueStr } = request;
 
   const [simulation, setSimulation] = useState<Simulation | undefined>(
     undefined,
@@ -90,9 +90,17 @@ function Inner({ dialog, request, network }: InnerProps) {
   });
 
   useEffect(() => {
-    listen("simulation-result", ({ payload }: { payload: Simulation }) =>
-      setSimulation(payload),
-    );
+    listen<unknown>("trying", (p) => {
+      console.log("trying result", p);
+    });
+    //listen("foo", () => {
+    //  console.log("foo result");
+    //});
+    console.log("listening");
+    listen("simulation-result", (foo) => {
+      console.log("listened", foo);
+      //setSimulation(payload);
+    });
   }, [listen]);
 
   useEffect(() => {
