@@ -29,10 +29,7 @@ command = [
   "--config",
   "bin/tauri-dev.conf.json",
   "--features",
-  "${ETHUI_FEATURES:-debug}",
-  "--",
-  "--",
-  "$@",
+  "debug",
 ]
 need_stdout = true
 allow_warnings = true
