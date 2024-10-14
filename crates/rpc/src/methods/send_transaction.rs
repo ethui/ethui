@@ -106,7 +106,7 @@ impl SendTransaction {
         while let Some(msg) = dialog.recv().await {
             match msg {
                 DialogMsg::Data(msg) => match &msg["event"].as_str() {
-                    Some("simulatU") => self.simulate(&dialog).await?,
+                    Some("simulate") => self.simulate(&dialog).await?,
                     Some("accept") => break,
                     Some("update") => {
                         self.update(msg);
