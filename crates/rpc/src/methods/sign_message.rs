@@ -69,10 +69,7 @@ impl<'a> SignMessage<'a> {
                 let bytes = Bytes::from_str(msg).unwrap();
                 Ok(signer.sign_message(&bytes).await?)
             }
-            Data::Typed(ref _data) => {
-                todo!();
-                //Ok(signer.sign_typed_data(todo!()).await?)
-            }
+            Data::Typed(ref data) => Ok(signer.sign_dynamic_typed_data(data).await?),
         }
     }
 
