@@ -2,7 +2,6 @@ use std::path::PathBuf;
 
 use ethui_args::Args;
 use ethui_broadcast::UIMsg;
-use ethui_types::ui_events::DialogOpen;
 #[cfg(target_os = "macos")]
 use tauri::WindowEvent;
 use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
