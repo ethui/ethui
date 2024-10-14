@@ -5,7 +5,7 @@ mod types;
 mod utils;
 
 use ethui_db::Db;
-use ethui_types::{Address, U256, U64};
+use ethui_types::{Address, U256};
 pub use networks::supports_network;
 use tracing::instrument;
 pub use types::{Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse};
@@ -15,7 +15,6 @@ pub use self::error::{Error, Result};
 use self::networks::default_from_block;
 use crate::client::{Client, Direction};
 
-#[derive(Debug)]
 pub struct Alchemy {
     chain_id: u32,
     db: Db,
@@ -43,11 +42,11 @@ impl Alchemy {
         let key = (self.chain_id, "transactions", address);
         let last_tip: Option<u64> = self.db.kv_get(&key).await?;
 
-        let from_block = U64::from(last_tip.unwrap_or_else(|| default_from_block(self.chain_id)));
+        let from_block = last_tip.unwrap_or_else(|| default_from_block(self.chain_id));
         let latest = self.client.get_block_number().await?;
 
         // if tip - 1 == latest, we're up to date, nothing to do
-        if from_block.saturating_sub(U64::from(1)) == latest {
+        if from_block.saturating_sub(1) == latest {
             return Ok(());
         }
 

@@ -83,9 +83,9 @@ alloy = { version = "0.4", features = [
   "full",
   "rpc",
   "rpc-types",
-  "signer-ledger"
+  "signer-ledger",
 ] }
-  alloy-chains = "0.1.38"
+alloy-chains = "0.1.38"
 revm-inspectors = { git = "https://github.com/paradigmxyz/evm-inspectors", rev = "c1b5dd0", features = [
   "serde",
 ] }

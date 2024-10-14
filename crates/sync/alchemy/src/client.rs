@@ -1,9 +1,12 @@
-use std::time::Duration;
-
-use ethers::providers::{
-    Http, HttpRateLimitRetryPolicy, Middleware, Provider, RetryClient, RetryClientBuilder,
+use alloy::{
+    providers::{Provider, ProviderBuilder, RootProvider},
+    rpc::client::ClientBuilder,
+    transports::{
+        http::Http,
+        layers::{RetryBackoffLayer, RetryBackoffService},
+    },
 };
-use ethui_types::{events::Tx, Address, ToAlloy, ToEthers, TokenMetadata, U256, U64};
+use ethui_types::{events::Tx, Address, TokenMetadata, U256};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use url::Url;
@@ -14,9 +17,8 @@ use crate::{
     Error, Result,
 };
 
-#[derive(Debug)]
 pub(crate) struct Client {
-    v2_provider: Provider<RetryClient<Http>>,
+    v2_provider: Box<RootProvider<RetryBackoffService<Http<reqwest::Client>>>>,
     nft_v3_endpoint: Url,
 }
 
@@ -27,20 +29,11 @@ pub(crate) enum Direction {
 
 impl Client {
     pub fn new(chain_id: u32, api_key: &str) -> Result<Self> {
-        let v2_provider = {
-            let endpoint = networks::get_endpoint(chain_id, "v2/", api_key)?;
-            let http = Http::new(endpoint);
-            let policy = Box::<HttpRateLimitRetryPolicy>::default();
-
-            let res = RetryClientBuilder::default()
-                .rate_limit_retries(10)
-                .timeout_retries(3)
-                .initial_backoff(Duration::from_millis(500))
-                .compute_units_per_second(300)
-                .build(http, policy);
-
-            Provider::new(res)
-        };
+        let v2_url = networks::get_endpoint(chain_id, "v2/", api_key)?;
+        let v2_client = ClientBuilder::default()
+            .layer(RetryBackoffLayer::new(10, 500, 300))
+            .http(v2_url);
+        let v2_provider = Box::new(ProviderBuilder::new().on_client(v2_client));
 
         let nft_v3_endpoint = networks::get_endpoint(chain_id, "nft/v3/", api_key)?;
 
@@ -50,20 +43,19 @@ impl Client {
         })
     }
 
-    pub async fn get_block_number(&self) -> Result<U64> {
-        let block = self.v2_provider.get_block_number().await?;
-        Ok(block.to_alloy())
+    pub async fn get_block_number(&self) -> Result<u64> {
+        Ok(self.v2_provider.get_block_number().await?)
     }
 
     pub async fn get_asset_transfers(
         &self,
         addr: Direction,
-        from_block: U64,
-        latest: U64,
+        from_block: u64,
+        latest: u64,
     ) -> Result<(Vec<Tx>, Vec<TokenMetadata>)> {
         let mut params = json!({
             "fromBlock": format!("0x{:x}", from_block),
-            "toBlock": format!("0x{:x}",latest),
+            "toBlock": format!("0x{:x}", latest),
             "maxCount": "0x32",
             "category": [ "external", "internal", "erc20", "erc721", "erc1155", "specialnft"],
         });
@@ -83,7 +75,7 @@ impl Client {
 
         let req: AssetTransfers = self
             .v2_provider
-            .request("alchemy_getAssetTransfers", json!([params]))
+            .raw_request("alchemy_getAssetTransfers".into(), json!([params]))
             .await?;
 
         let txs: Vec<Tx> = req.transfers.iter().map(Into::into).collect();
@@ -97,11 +89,7 @@ impl Client {
     }
 
     pub async fn get_native_balance(&self, address: Address) -> Result<U256> {
-        Ok(self
-            .v2_provider
-            .get_balance(address.to_ethers(), None)
-            .await
-            .map(|x| x.to_alloy())?)
+        Ok(self.v2_provider.get_balance(address).await?)
     }
 
     pub async fn get_erc20_balances(&self, address: Address) -> Result<Vec<(Address, U256)>> {
@@ -128,7 +116,7 @@ impl Client {
         let params = json!([format!("0x{:x}", address), "erc20"]);
         let res: Balances = self
             .v2_provider
-            .request("alchemy_getTokenBalances", params)
+            .raw_request("alchemy_getTokenBalances".into(), params)
             .await?;
 
         Ok(res.token_balances.into_iter().map(Into::into).collect())
@@ -138,7 +126,7 @@ impl Client {
         let params = json!([format!("0x{:x}", address)]);
         let response: Erc20Metadata = self
             .v2_provider
-            .request("alchemy_getTokenMetadata", params)
+            .raw_request("alchemy_getTokenMetadata".into(), params)
             .await?;
         Ok(response)
     }
