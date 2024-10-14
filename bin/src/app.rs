@@ -5,7 +5,7 @@ use ethui_broadcast::UIMsg;
 use ethui_types::ui_events::DialogOpen;
 #[cfg(target_os = "macos")]
 use tauri::WindowEvent;
-use tauri::{AppHandle, Builder, Emitter as _, EventTarget, Manager as _};
+use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
 use tracing::debug;
 
 use crate::{
