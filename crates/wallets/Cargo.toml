@@ -33,3 +33,6 @@ enum_dispatch = "0.3.11"
 coins-bip32 = "0.8.3"
 futures-executor = "0.3.29"
 semver = "1.0.20"
+
+[dev-dependencies]
+rstest.workspace = true

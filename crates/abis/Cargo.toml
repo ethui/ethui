@@ -19,4 +19,4 @@ alloy.workspace = true
 
 [dev-dependencies]
 anyhow.workspace = true
-rstest = "0.18.2"
+rstest.workspace = true

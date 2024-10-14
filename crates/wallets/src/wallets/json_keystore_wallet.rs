@@ -165,3 +165,20 @@ fn signer_from_secret(secret: &SecretVec<u8>) -> signers::Wallet<SigningKey> {
     let signer_bytes = secret.borrow();
     signers::Wallet::from_bytes(&signer_bytes).unwrap()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use ethers::core::rand::thread_rng;
+    use signers::LocalWallet;
+
+    #[test]
+    fn secret() {
+        let signer = LocalWallet::new(&mut thread_rng());
+
+        let secret = signer_into_secret(&signer);
+        let recovered_signer = signer_from_secret(&secret);
+
+        assert_eq!(signer.address(), recovered_signer.address());
+    }
+}
