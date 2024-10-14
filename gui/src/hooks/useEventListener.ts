@@ -1,4 +1,4 @@
-import { event as tauriEvents } from "@tauri-apps/api";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { useEffect } from "react";
 
 type Event =
@@ -8,13 +8,13 @@ type Event =
   | "txs-updated";
 
 export function useEventListener(event: Event, callback: () => unknown) {
+  const view = getCurrentWebviewWindow();
+
   useEffect(() => {
-    const unlisten = tauriEvents.listen(event, () => {
-      callback();
-    });
+    const unlisten = view.listen(event, callback);
 
     return () => {
       unlisten.then((cb) => cb());
     };
-  }, [event, callback]);
+  }, [event, callback, view.listen]);
 }

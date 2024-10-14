@@ -1,4 +1,4 @@
-import { event } from "@tauri-apps/api";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { invoke } from "@tauri-apps/api/core";
 import { useCallback } from "react";
 
@@ -13,7 +13,8 @@ export function useDialog<T>(idStr: string) {
     [id],
   );
 
-  return { id, data, send, listen: event.listen };
+  const view = getCurrentWebviewWindow();
+  return { id, data, send, listen: view.listen };
 }
 
 export type Dialog<T> = ReturnType<typeof useDialog<T>>;
