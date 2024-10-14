@@ -1,5 +1,7 @@
 use ethui_types::ui_events;
-use tauri::{AppHandle, Emitter as _, Manager, WebviewUrl, WebviewWindowBuilder, WindowEvent};
+use tauri::{
+    AppHandle, Emitter as _, EventTarget, Manager, WebviewUrl, WebviewWindowBuilder, WindowEvent,
+};
 
 pub(crate) fn open(handle: &AppHandle, params: ui_events::DialogOpen) {
     let window =
@@ -21,9 +23,14 @@ pub(crate) fn close(handle: &AppHandle, params: ui_events::DialogClose) {
 }
 
 pub(crate) fn send(handle: &AppHandle, params: ui_events::DialogSend) {
-    if let Some(window) = handle.get_webview_window(&params.label) {
-        window.emit(&params.event_type, &params.payload).unwrap();
-    }
+    dbg!(&params);
+    handle
+        .emit_to(EventTarget::any(), &params.event_type, &params.payload)
+        .unwrap();
+    //if let Some(window) = handle.get_webview_window(&params.label) {
+    //    dbg!(&params.label);
+    //    window.emit(&params.event_type, &params.payload).unwrap();
+    //}
 }
 
 fn on_event(window_id: u32, event: &WindowEvent) {

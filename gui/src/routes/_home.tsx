@@ -1,3 +1,5 @@
+import { listen } from "@tauri-apps/api/event";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import {
   CallToAction,
   OnlinePredictionSharp,
@@ -65,6 +67,9 @@ const drawerPaperStyle = (theme: Theme) => {
 
 export function HomePageLayout() {
   const { theme } = useTheme();
+  listen("simulation-result", (e) => console.log(e), {
+    target: "dialog/483391759",
+  });
 
   return (
     <CommandBar>

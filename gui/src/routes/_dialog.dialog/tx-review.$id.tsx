@@ -22,6 +22,7 @@ import { IconAddress } from "#/components/Icons";
 import { useDialog, useInvoke, useLedgerDetect } from "#/hooks";
 import type { Dialog } from "#/hooks/useDialog";
 import { useNetworks } from "#/store";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 
 export const Route = createFileRoute("/_dialog/dialog/tx-review/$id")({
   component: TxReviewDialog,
@@ -33,12 +34,8 @@ export interface TxRequest {
   to: Address;
   value: string;
   chainId: number;
-  walletType:
-    | "ledger"
-    | "HdWallet"
-    | "jsonKeystore"
-    | "plaintext"
-    | "impersonator";
+  walletType: "ledger" | "HdWallet" | "jsonKeystore" | "plaintext";
+  impersonator;
 }
 
 interface Log {
@@ -90,8 +87,10 @@ function Inner({ dialog, request, network }: InnerProps) {
   });
 
   useEffect(() => {
-    listen("simulation-result", ({ payload }: { payload: Simulation }) =>
-      setSimulation(payload),
+    listen(
+      "simulation-result",
+      ({ payload }: { payload: Simulation }) => setSimulation(payload),
+      { target: "dialog/483391759" },
     );
   }, [listen]);
 
@@ -112,7 +111,7 @@ function Inner({ dialog, request, network }: InnerProps) {
     ({ value, data }: { value?: bigint; data?: `0x${string}` }) => {
       setValue(value || 0n);
       setCalldata(data);
-      send({ event: "update", value, data });
+      //send({ event: "update", value, data });
     },
     [send],
   );
