@@ -153,6 +153,7 @@ impl JsonKeystoreWallet {
 
 /// Converts a signer into a SecretVec
 fn signer_into_secret(keystore: &LocalSigner<ecdsa::SigningKey>) -> SecretVec<u8> {
+    // TODO: test this encoding
     let signer_bytes = keystore.credential().to_bytes();
     let bytes = signer_bytes.as_slice();
 
@@ -168,4 +169,21 @@ fn signer_from_secret(secret: &SecretVec<u8>) -> LocalSigner<ecdsa::SigningKey> 
     let signer_bytes = secret.borrow();
     let key = B256::from_slice(&signer_bytes);
     LocalSigner::from_bytes(&key).unwrap()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use rstest::rstest;
+
+    #[rstest]
+    fn secret() {
+        let signer = LocalSigner::random();
+
+        let secret = signer_into_secret(&signer);
+        let recovered_signer = signer_from_secret(&secret);
+
+        assert_eq!(signer.address(), recovered_signer.address());
+        assert_eq!(signer.credential(), recovered_signer.credential());
+    }
 }

@@ -94,6 +94,7 @@ futures = "0.3.28"
 clap = { version = "4.4.8", features = ["derive", "env"] }
 coins-ledger = "0.10.1"
 rand = "0.8.5"
+rstest = "0.23"
 
 # Foundry - October 11th 2024
 foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-bcacf39e43812e50a124e3ba60d1becd9866534d" }
