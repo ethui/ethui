@@ -28,7 +28,8 @@ pub async fn run() -> AppResult<()> {
     let _guard = match lock.try_lock() {
         Ok(g) => g,
         Err(_) => {
-            ethui_http::request_main_window_open(args.http_port).await?;
+            ethui_broadcast::main_window_show().await;
+            //ethui_http::request_main_window_open(args.http_port).await?;
             return Ok(());
         }
     };
