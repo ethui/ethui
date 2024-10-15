@@ -8,19 +8,29 @@ on:
       - "*"
   pull_request:
     types: [opened, synchronize]
-    paths-ignore:
-      - "./extension/**"
-      - "./gui/**"
-      - "*.json"
-      - "*.md"
-      - "LICENSE"
+    paths:
+      - ".github/workflows/rust.yml"
+      - "bin/**"
+      - "migrations/**"
+      - "crates/**"
+      - "sqlx/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "deny.toml"
+      - "rustfmt.toml"
+      - "rust-toolchain.toml"
   merge_group:
-    paths-ignore:
-      - "./extension/**"
-      - "./gui/**"
-      - "*.json"
-      - "*.md"
-      - "LICENSE"
+    paths:
+      - ".github/workflows/rust.yml"
+      - "bin/**"
+      - "migrations/**"
+      - "crates/**"
+      - "sqlx/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "deny.toml"
+      - "rustfmt.toml"
+      - "rust-toolchain.toml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
