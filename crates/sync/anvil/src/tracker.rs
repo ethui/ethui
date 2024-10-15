@@ -1,16 +1,17 @@
 use std::{sync::Arc, time::Duration};
 
+use alloy::providers::ext::TraceApi as _;
+use alloy::providers::{Provider as _, ProviderBuilder, RootProvider};
+use alloy::rpc::client::ClientBuilder;
+use alloy::rpc::types::trace::parity::LocalizedTransactionTrace;
+use alloy::rpc::types::{Filter, Log};
+use alloy::transports::http::Http;
+use alloy::transports::layers::RetryBackoffLayer;
 use base64::{self, Engine as _};
-use ethers::{
-    providers::{
-        Http, HttpClientError, JsonRpcClient, Middleware, Provider, RetryClientBuilder,
-        RetryPolicy, Ws,
-    },
-    types::{Filter, Log, Trace, U64},
-};
 use ethui_abis::{IERC20, IERC721};
 use ethui_types::{Address, Erc721Token, Erc721TokenDetails, ToEthers, TokenMetadata, UINotify};
-use futures::StreamExt;
+use futures::StreamExt as _;
+use reqwest::Client;
 use tokio::sync::mpsc;
 use tracing::warn;
 use url::Url;
@@ -34,7 +35,7 @@ pub struct Ctx {
 enum Msg {
     CaughtUp,
     Reset,
-    Traces(Vec<Trace>),
+    Traces(Vec<LocalizedTransactionTrace>),
     Logs(Vec<Log>),
 }
 
@@ -88,19 +89,6 @@ impl Drop for Tracker {
     }
 }
 
-#[derive(Debug, Default)]
-struct AlwaysRetry;
-
-impl RetryPolicy<HttpClientError> for AlwaysRetry {
-    fn should_retry(&self, _error: &HttpClientError) -> bool {
-        true
-    }
-
-    fn backoff_hint(&self, _error: &HttpClientError) -> Option<Duration> {
-        Some(Duration::from_millis(1000))
-    }
-}
-
 /// Watches a chain for new blocks and sends them to the block processor This monster is very
 /// convoluted:
 ///     1. waits for an RPC node to be available (since local devnets may be intermittent)
@@ -114,12 +102,10 @@ async fn watch(
     block_snd: mpsc::UnboundedSender<Msg>,
 ) -> Result<()> {
     // retryclient with infinite retries
-    let jsonrpc = Http::new(ctx.http_url);
-    let client = RetryClientBuilder::default()
-        .rate_limit_retries(u32::MAX)
-        .timeout_retries(u32::MAX)
-        .initial_backoff(Duration::from_millis(1000))
-        .build(jsonrpc.clone(), Box::<AlwaysRetry>::default());
+    let retry_client = ClientBuilder::default()
+        .layer(RetryBackoffLayer::new(u32::MAX, 1000, u64::MAX))
+        .http(ctx.http_url);
+    let retry_provider = ProviderBuilder::new().on_client(retry_client);
 
     'watcher: loop {
         block_snd.send(Msg::Reset).map_err(|_| Error::Watcher)?;
@@ -131,16 +117,15 @@ async fn watch(
         // retries forever, or until watcher close signal received
         let block_number = tokio::select! {
             _ = quit_rcv.recv() => break 'watcher,
-            Ok(res) = client.request::<_, U64>("eth_blockNumber", ()) => res
+            Ok(res) = retry_provider.get_block_number() => res
         };
 
-        let provider: Provider<Ws> = Provider::<Ws>::connect(&ctx.ws_url)
-            .await?
-            .interval(Duration::from_secs(1));
+        let provider = ProviderBuilder::new().on_http(ctx.http_url);
+        //.interval(Duration::from_secs(1));
 
         // if we're in a forked anvil, grab the fork block number, so we don't index too much
         let node_info: serde_json::Value = provider
-            .request("anvil_nodeInfo", ())
+            .raw_request("anvil_nodeInfo".into(), ())
             .await
             .unwrap_or(serde_json::Value::Null);
         let fork_block = node_info["forkConfig"]["forkBlockNumber"]
@@ -151,7 +136,7 @@ async fn watch(
 
         // catch up with everything behind
         // from the moment the fork started (or genesis if not a fork)
-        let past_range = fork_block..=block_number.low_u64();
+        let past_range = fork_block..=block_number;
         for b in past_range.into_iter() {
             let traces = provider.trace_block(b.into()).await?;
             block_snd
@@ -194,7 +179,7 @@ async fn watch(
 async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Result<()> {
     let mut caught_up = false;
 
-    let provider: Provider<Http> = Provider::<Http>::try_from(&ctx.http_url.to_string()).unwrap();
+    let provider = ProviderBuilder::new().on_http(ctx.http_url);
     let db = ethui_db::get();
 
     while let Some(msg) = block_rcv.recv().await {
@@ -277,7 +262,10 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
     Ok(())
 }
 
-pub async fn fetch_erc20_metadata(address: Address, client: &Provider<Http>) -> TokenMetadata {
+pub async fn fetch_erc20_metadata(
+    address: Address,
+    client: &alloy::providers::RootProvider<Http<Client>>,
+) -> TokenMetadata {
     let contract = IERC20::new(address.to_ethers(), Arc::new(client));
 
     TokenMetadata {
@@ -290,7 +278,7 @@ pub async fn fetch_erc20_metadata(address: Address, client: &Provider<Http>) -> 
 
 pub async fn fetch_erc721_token_data(
     erc721_token: Erc721Token,
-    client: &Provider<Http>,
+    client: &RootProvider<Http<Client>>,
 ) -> Result<Erc721TokenDetails> {
     let contract = IERC721::new(erc721_token.contract.to_ethers(), Arc::new(client));
 

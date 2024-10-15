@@ -1,3 +1,4 @@
+use alloy::transports::{RpcError, TransportErrorKind};
 use ethui_types::B256;
 
 #[derive(Debug, thiserror::Error)]
@@ -19,6 +20,9 @@ pub enum Error {
 
     #[error("Failed to fetch ERC721 data")]
     Erc721FailedToFetchData,
+
+    #[error(transparent)]
+    Rpc(#[from] RpcError<TransportErrorKind>),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

@@ -364,6 +364,7 @@ dependencies = [
  "alloy-pubsub",
  "alloy-rpc-client",
  "alloy-rpc-types-eth",
+ "alloy-rpc-types-trace",
  "alloy-transport",
  "alloy-transport-http",
  "alloy-transport-ipc",
@@ -461,6 +462,7 @@ dependencies = [
  "alloy-primitives",
  "alloy-rpc-types-engine",
  "alloy-rpc-types-eth",
+ "alloy-rpc-types-trace",
  "alloy-serde",
  "serde",
 ]
@@ -3203,6 +3205,7 @@ dependencies = [
 name = "ethui-db"
 version = "1.8.0"
 dependencies = [
+ "alloy",
  "ethers",
  "ethui-broadcast",
  "ethui-settings",
@@ -3387,6 +3390,7 @@ dependencies = [
 name = "ethui-sync-anvil"
 version = "1.8.0"
 dependencies = [
+ "alloy",
  "base64 0.21.7",
  "ethers",
  "ethui-abis",

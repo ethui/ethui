@@ -1,20 +1,18 @@
-use ethers::{
-    abi::RawLog,
-    contract::EthLogDecode,
-    providers::{Http, Middleware, Provider},
-    types::{Action, Call, CallResult, Create, CreateResult, Log, Res, Trace},
+use alloy::{
+    providers::{Provider as _, RootProvider}, rpc::types::{trace::parity::{Action, LocalizedTransactionTrace}, Log}, transports::{http::Http, BoxTransport}
 };
 use ethui_types::{
     events::{ContractDeployed, ERC20Transfer, ERC721Transfer, Tx},
     Bytes, Event, ToAlloy,
 };
 use futures::future::join_all;
+use reqwest::Client;
 
 use super::{Error, Result};
 
 pub(super) async fn expand_traces(
-    traces: Vec<Trace>,
-    provider: &Provider<Http>,
+    traces: Vec<LocalizedTransactionTrace>,
+    provider: &RootProvider<Http<Client>>,
     chain_id: u32,
 ) -> Vec<Event> {
     let result = traces
@@ -30,25 +28,25 @@ pub(super) fn expand_logs(traces: Vec<Log>) -> Vec<ethui_types::Event> {
 }
 
 async fn expand_trace(
-    trace: Trace,
-    provider: &Provider<Http>,
+    trace: LocalizedTransactionTrace,
+    provider: &RootProvider<Http<Client>>,
     _chain_id: u32,
 ) -> Result<Vec<Event>> {
     let hash = trace.transaction_hash.unwrap();
     let tx = provider
-        .get_transaction(hash)
+        .get_transaction_by_hash(hash)
         .await?
-        .ok_or(Error::TxNotFound(hash.to_alloy()))?;
+        .ok_or(Error::TxNotFound(hash))?;
     let receipt = provider
         .get_transaction_receipt(hash)
         .await?
-        .ok_or(Error::TxNotFound(hash.to_alloy()))?;
+        .ok_or(Error::TxNotFound(hash))?;
     let block_number = trace.block_number;
 
     let res = match (
-        trace.action.clone(),
-        trace.result.clone(),
-        trace.trace_address.len(),
+        trace.trace.action.clone(),
+        trace.trace.result.clone(),
+        trace.trace.trace_address.len(),
     ) {
         // contract deploys
         (
@@ -62,7 +60,7 @@ async fn expand_trace(
         ) => {
             vec![
                 Tx {
-                    hash: trace.transaction_hash.unwrap().to_alloy(),
+                    hash: trace.transaction_hash.unwrap(),
                     trace_address: Some(trace.trace_address.clone()),
                     position: trace.transaction_position,
                     from: from.to_alloy(),
@@ -74,16 +72,16 @@ async fn expand_trace(
                     deployed_contract: Some(address.to_alloy()),
                     gas_limit: Some(gas.to_alloy()),
                     gas_used: Some(gas_used.to_alloy()),
-                    max_fee_per_gas: tx.max_fee_per_gas.map(|g| g.to_alloy()),
-                    max_priority_fee_per_gas: tx.max_fee_per_gas.map(|g| g.to_alloy()),
-                    r#type: tx.transaction_type.map(|t| t.as_u64()),
-                    nonce: Some(tx.nonce.as_u64()),
+                    max_fee_per_gas: tx.max_fee_per_gas.map(|g| g),
+                    max_priority_fee_per_gas: tx.max_fee_per_gas.map(|g| g),
+                    r#type: tx.transaction_type.map(|t| t as u64),
+                    nonce: Some(tx.nonce),
                     incomplete: false,
                 }
                 .into(),
                 ContractDeployed {
                     address: address.to_alloy(),
-                    code: provider.get_code(address, None).await.ok(),
+                    code: provider.get_code(address).await.ok(),
                     block_number,
                 }
                 .into(),
@@ -117,10 +115,10 @@ async fn expand_trace(
             block_number: Some(block_number),
             gas_limit: Some(gas.to_alloy()),
             gas_used: Some(gas_used.to_alloy()),
-            max_fee_per_gas: tx.max_fee_per_gas.map(|g| g.to_alloy()),
-            max_priority_fee_per_gas: tx.max_fee_per_gas.map(|g| g.to_alloy()),
-            nonce: Some(tx.nonce.as_u64()),
-            r#type: tx.transaction_type.map(|t| t.as_u64()),
+            max_fee_per_gas: tx.max_fee_per_gas.map(|g| ginto()),
+            max_priority_fee_per_gas: tx.max_fee_per_gas.map(|g| g.into()),
+            nonce: Some(tx.nonce),
+            r#type: tx.transaction_type.map(|t| t as u64),
             deployed_contract: None,
             incomplete: false,
         }
