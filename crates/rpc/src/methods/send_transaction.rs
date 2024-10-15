@@ -150,15 +150,11 @@ impl SendTransaction {
         let chain_id = self.network.chain_id;
         let request = self.simulation_request().await?;
 
-        dbg!(&request);
         if let Ok(sim) = ethui_simulator::commands::simulator_run(chain_id, request).await {
-            dbg!(&sim);
             dialog.send("foo", None).await?;
-            dbg!(
-                dialog
-                    .send("simulation-result", Some(serde_json::to_value(sim)?))
-                    .await
-            )?
+            dialog
+                .send("simulation-result", Some(serde_json::to_value(sim)?))
+                .await?
         }
 
         Ok(())

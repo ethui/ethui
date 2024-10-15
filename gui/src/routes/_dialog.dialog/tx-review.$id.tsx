@@ -90,16 +90,8 @@ function Inner({ dialog, request, network }: InnerProps) {
   });
 
   useEffect(() => {
-    listen<unknown>("trying", (p) => {
-      console.log("trying result", p);
-    });
-    //listen("foo", () => {
-    //  console.log("foo result");
-    //});
-    console.log("listening");
-    listen("simulation-result", (foo) => {
-      console.log("listened", foo);
-      //setSimulation(payload);
+    listen<Simulation>("simulation-result", ({ payload }) => {
+      setSimulation(payload);
     });
   }, [listen]);
 
