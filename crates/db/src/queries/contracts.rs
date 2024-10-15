@@ -1,6 +1,7 @@
 use std::str::FromStr;
 
-use ethui_types::{Abi, Address, Contract, ContractWithAbi};
+use alloy::json_abi::JsonAbi;
+use ethui_types::{Address, Contract, ContractWithAbi};
 use tracing::instrument;
 
 use crate::{DbInner, Error, Result};
@@ -52,7 +53,7 @@ impl DbInner {
         }
     }
 
-    pub async fn get_contract_abi(&self, chain_id: u32, address: Address) -> Result<Abi> {
+    pub async fn get_contract_abi(&self, chain_id: u32, address: Address) -> Result<JsonAbi> {
         let address = format!("0x{:x}", address);
 
         let res = sqlx::query!(

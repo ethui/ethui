@@ -102,6 +102,7 @@ dependencies = [
  "alloy-core",
  "alloy-eips",
  "alloy-genesis",
+ "alloy-json-rpc",
  "alloy-network",
  "alloy-provider",
  "alloy-pubsub",
@@ -364,6 +365,7 @@ dependencies = [
  "alloy-pubsub",
  "alloy-rpc-client",
  "alloy-rpc-types-eth",
+ "alloy-rpc-types-trace",
  "alloy-transport",
  "alloy-transport-http",
  "alloy-transport-ipc",
@@ -461,6 +463,7 @@ dependencies = [
  "alloy-primitives",
  "alloy-rpc-types-engine",
  "alloy-rpc-types-eth",
+ "alloy-rpc-types-trace",
  "alloy-serde",
  "serde",
 ]
@@ -3109,7 +3112,6 @@ dependencies = [
 name = "ethui"
 version = "1.8.0"
 dependencies = [
- "ethui-abis",
  "ethui-args",
  "ethui-broadcast",
  "ethui-connections",
@@ -3141,13 +3143,7 @@ dependencies = [
 name = "ethui-abis"
 version = "1.8.0"
 dependencies = [
- "alloy-dyn-abi",
- "anyhow",
- "ethers",
- "rstest",
- "serde",
- "serde_json",
- "tauri",
+ "alloy",
 ]
 
 [[package]]
@@ -3203,6 +3199,7 @@ dependencies = [
 name = "ethui-db"
 version = "1.8.0"
 dependencies = [
+ "alloy",
  "ethers",
  "ethui-broadcast",
  "ethui-settings",
@@ -3247,7 +3244,7 @@ dependencies = [
 name = "ethui-forge"
 version = "1.8.0"
 dependencies = [
- "ethers",
+ "alloy",
  "ethui-broadcast",
  "ethui-db",
  "ethui-networks",
@@ -3269,6 +3266,7 @@ dependencies = [
 name = "ethui-networks"
 version = "1.8.0"
 dependencies = [
+ "alloy",
  "async-trait",
  "ethers",
  "ethui-broadcast",
@@ -3348,7 +3346,7 @@ dependencies = [
 name = "ethui-sync"
 version = "1.8.0"
 dependencies = [
- "ethers",
+ "alloy",
  "ethui-abis",
  "ethui-broadcast",
  "ethui-db",
@@ -3385,8 +3383,8 @@ dependencies = [
 name = "ethui-sync-anvil"
 version = "1.8.0"
 dependencies = [
+ "alloy",
  "base64 0.21.7",
- "ethers",
  "ethui-abis",
  "ethui-broadcast",
  "ethui-db",

@@ -1,13 +1,18 @@
+use alloy::transports::{RpcError, TransportErrorKind};
+
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("Invalid Network {0}")]
     InvalidNetwork(u32),
 
     #[error(transparent)]
-    Anvil(#[from] ethui_sync_anvil::Error),
+    Network(#[from] ethui_networks::Error),
 
     #[error(transparent)]
-    Ethers(#[from] ethers::providers::ProviderError),
+    Provider(#[from] RpcError<TransportErrorKind>),
+
+    #[error(transparent)]
+    Anvil(#[from] ethui_sync_anvil::Error),
 
     #[error("TX not found {0}")]
     TxNotFound(ethui_types::B256),

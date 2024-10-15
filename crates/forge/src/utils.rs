@@ -1,6 +1,6 @@
-use ethers::providers::Middleware as _;
+use alloy::providers::Provider as _;
 use ethui_networks::Networks;
-use ethui_types::{GlobalState, ToEthers as _, UINotify};
+use ethui_types::{GlobalState, UINotify};
 use tracing::trace;
 
 use crate::{init::FORGE, Error, Result};
@@ -17,8 +17,8 @@ pub(crate) async fn update_db_contracts() -> Result<()> {
             let network = networks
                 .get_network(chain_id)
                 .ok_or(Error::InvalidChainId)?;
-            let provider = network.get_provider();
-            provider.get_code(address.to_ethers(), None).await?
+            let provider = network.get_alloy_provider().await?;
+            provider.get_code_at(address).await?
         };
 
         if code.len() == 0 {

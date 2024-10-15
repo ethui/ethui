@@ -1,4 +1,5 @@
-use ethers::{abi::Abi, types::Chain};
+use alloy::json_abi::JsonAbi;
+use ethers::types::Chain;
 use ethui_types::{
     events::Tx, transactions::PaginatedTx, Address, Contract, Erc721TokenData, TokenBalance,
     TokenMetadata, UINotify, B256, U256,
@@ -66,8 +67,7 @@ pub async fn db_get_erc20_blacklist(
     address: Address,
     db: tauri::State<'_, Db>,
 ) -> Result<Vec<TokenBalance>> {
-    db.get_erc20_blacklist(chain_id, address)
-        .await
+    db.get_erc20_blacklist(chain_id, address).await
 }
 
 #[tauri::command]
@@ -89,7 +89,7 @@ pub async fn db_get_contract_abi(
     address: Address,
     chain_id: u32,
     db: tauri::State<'_, Db>,
-) -> Result<Abi> {
+) -> Result<JsonAbi> {
     db.get_contract_abi(chain_id, address).await
 }
 
@@ -142,8 +142,7 @@ pub async fn db_clear_erc20_blacklist(
     address: Address,
     db: tauri::State<'_, Db>,
 ) -> Result<()> {
-    db.clear_erc20_blacklist(chain_id, address)
-        .await?;
+    db.clear_erc20_blacklist(chain_id, address).await?;
     ethui_broadcast::ui_notify(UINotify::BalancesUpdated).await;
 
     Ok(())

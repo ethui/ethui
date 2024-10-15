@@ -1,20 +1,28 @@
-use ethers::{
-    abi::RawLog,
-    contract::EthLogDecode,
-    providers::{Http, Middleware, Provider},
-    types::{Action, Call, CallResult, Create, CreateResult, Log, Res, Trace},
+use alloy::{
+    primitives::Log,
+    providers::{Provider as _, RootProvider},
+    rpc::types::{
+        trace::parity::{
+            Action, CallAction, CallOutput, CreateAction, CreateOutput, LocalizedTransactionTrace,
+            TraceOutput,
+        },
+        Log as RpcLog,
+    },
+    sol_types::SolEvent as _,
+    transports::http::Http,
 };
 use ethui_types::{
     events::{ContractDeployed, ERC20Transfer, ERC721Transfer, Tx},
-    Bytes, Event, ToAlloy,
+    Bytes, Event,
 };
 use futures::future::join_all;
+use reqwest::Client;
 
 use super::{Error, Result};
 
 pub(super) async fn expand_traces(
-    traces: Vec<Trace>,
-    provider: &Provider<Http>,
+    traces: Vec<LocalizedTransactionTrace>,
+    provider: &RootProvider<Http<Client>>,
     chain_id: u32,
 ) -> Vec<Event> {
     let result = traces
@@ -25,65 +33,65 @@ pub(super) async fn expand_traces(
     res.flatten().collect()
 }
 
-pub(super) fn expand_logs(traces: Vec<Log>) -> Vec<ethui_types::Event> {
+pub(super) fn expand_logs(traces: Vec<RpcLog>) -> Vec<ethui_types::Event> {
     traces.into_iter().filter_map(expand_log).collect()
 }
 
 async fn expand_trace(
-    trace: Trace,
-    provider: &Provider<Http>,
+    trace: LocalizedTransactionTrace,
+    provider: &RootProvider<Http<Client>>,
     _chain_id: u32,
 ) -> Result<Vec<Event>> {
     let hash = trace.transaction_hash.unwrap();
     let tx = provider
-        .get_transaction(hash)
+        .get_transaction_by_hash(hash)
         .await?
-        .ok_or(Error::TxNotFound(hash.to_alloy()))?;
+        .ok_or(Error::TxNotFound(hash))?;
     let receipt = provider
         .get_transaction_receipt(hash)
         .await?
-        .ok_or(Error::TxNotFound(hash.to_alloy()))?;
+        .ok_or(Error::TxNotFound(hash))?;
     let block_number = trace.block_number;
 
     let res = match (
-        trace.action.clone(),
-        trace.result.clone(),
-        trace.trace_address.len(),
+        trace.trace.action.clone(),
+        trace.trace.result.clone(),
+        trace.trace.trace_address.len(),
     ) {
         // contract deploys
         (
-            Action::Create(Create {
+            Action::Create(CreateAction {
                 from, value, gas, ..
             }),
-            Some(Res::Create(CreateResult {
+            Some(TraceOutput::Create(CreateOutput {
                 address, gas_used, ..
             })),
             _,
         ) => {
             vec![
                 Tx {
-                    hash: trace.transaction_hash.unwrap().to_alloy(),
-                    trace_address: Some(trace.trace_address.clone()),
-                    position: trace.transaction_position,
-                    from: from.to_alloy(),
+                    hash: trace.transaction_hash.unwrap(),
+                    trace_address: Some(trace.trace.trace_address.clone()),
+                    position: trace.transaction_position.map(|p| p as usize),
+                    from,
                     to: None,
-                    value: Some(value.to_alloy()),
+                    value: Some(value),
                     data: Some(Bytes::default()),
-                    status: receipt.status.unwrap().as_u64(),
-                    block_number: Some(block_number),
-                    deployed_contract: Some(address.to_alloy()),
-                    gas_limit: Some(gas.to_alloy()),
-                    gas_used: Some(gas_used.to_alloy()),
-                    max_fee_per_gas: tx.max_fee_per_gas.map(|g| g.to_alloy()),
-                    max_priority_fee_per_gas: tx.max_fee_per_gas.map(|g| g.to_alloy()),
-                    r#type: tx.transaction_type.map(|t| t.as_u64()),
-                    nonce: Some(tx.nonce.as_u64()),
+                    status: if receipt.status() { 1 } else { 0 },
+                    block_number,
+                    deployed_contract: Some(address),
+                    gas_limit: Some(gas),
+                    gas_used: Some(gas_used),
+                    max_fee_per_gas: tx.max_fee_per_gas,
+                    max_priority_fee_per_gas: tx.max_fee_per_gas,
+                    r#type: tx.transaction_type.map(|t| t as u64),
+                    nonce: Some(tx.nonce),
                     incomplete: false,
                 }
                 .into(),
                 ContractDeployed {
-                    address: address.to_alloy(),
-                    code: provider.get_code(address, None).await.ok(),
+                    address,
+                    code: provider.get_code_at(address).await.ok(),
                     block_number,
                 }
                 .into(),
@@ -95,7 +103,7 @@ async fn expand_trace(
         // top-level trace of a transaction
         // other regular calls
         (
-            Action::Call(Call {
+            Action::Call(CallAction {
                 from,
                 to,
                 value,
@@ -103,24 +111,24 @@ async fn expand_trace(
                 gas,
                 ..
             }),
-            Some(Res::Call(CallResult { gas_used, .. })),
+            Some(TraceOutput::Call(CallOutput { gas_used, .. })),
             0,
         ) => vec![Tx {
-            hash: trace.transaction_hash.unwrap().to_alloy(),
-            trace_address: Some(trace.trace_address.clone()),
-            position: trace.transaction_position,
-            from: from.to_alloy(),
-            to: Some(to.to_alloy()),
-            value: Some(value.to_alloy()),
+            hash: trace.transaction_hash.unwrap(),
+            trace_address: Some(trace.trace.trace_address.clone()),
+            position: trace.transaction_position.map(|p| p as usize),
+            from,
+            to: Some(to),
+            value: Some(value),
             data: Some(input),
-            status: receipt.status.unwrap().as_u64(),
-            block_number: Some(block_number),
-            gas_limit: Some(gas.to_alloy()),
-            gas_used: Some(gas_used.to_alloy()),
-            max_fee_per_gas: tx.max_fee_per_gas.map(|g| g.to_alloy()),
-            max_priority_fee_per_gas: tx.max_fee_per_gas.map(|g| g.to_alloy()),
-            nonce: Some(tx.nonce.as_u64()),
-            r#type: tx.transaction_type.map(|t| t.as_u64()),
+            status: if receipt.status() { 1 } else { 0 },
+            block_number,
+            gas_limit: Some(gas),
+            gas_used: Some(gas_used),
+            max_fee_per_gas: tx.max_fee_per_gas,
+            max_priority_fee_per_gas: tx.max_fee_per_gas,
+            nonce: Some(tx.nonce),
+            r#type: tx.transaction_type.map(|t| t as u64),
             deployed_contract: None,
             incomplete: false,
         }
@@ -132,41 +140,31 @@ async fn expand_trace(
     Ok(res)
 }
 
-fn expand_log(log: Log) -> Option<Event> {
-    let raw = RawLog::from((log.topics, log.data.to_vec()));
-    let block_number = log.block_number?.as_u64();
+fn expand_log(log: RpcLog) -> Option<Event> {
+    let block_number = log.block_number?;
 
-    use ethui_abis::{
-        ierc20::{self, IERC20Events},
-        ierc721::{self, IERC721Events},
-    };
+    use ethui_abis::{IERC20, IERC721};
 
-    // decode ERC20 calls
-    if let Ok(IERC20Events::TransferFilter(ierc20::TransferFilter { from, to, value })) =
-        IERC20Events::decode_log(&raw)
-    {
+    if let Ok(Log { data, .. }) = IERC20::Transfer::decode_log(&log.inner, true) {
         return Some(
             ERC20Transfer {
-                from: from.to_alloy(),
-                to: to.to_alloy(),
-                value: value.to_alloy(),
-                contract: log.address.to_alloy(),
+                from: data.from,
+                to: data.to,
+                value: data.value,
+                contract: log.inner.address,
                 block_number,
             }
             .into(),
         );
     };
 
-    // decode ERC721 calls
-    if let Ok(IERC721Events::TransferFilter(ierc721::TransferFilter { from, to, token_id })) =
-        IERC721Events::decode_log(&raw)
-    {
+    if let Ok(Log { data, .. }) = IERC721::Transfer::decode_log(&log.inner, true) {
         return Some(
             ERC721Transfer {
-                from: from.to_alloy(),
-                to: to.to_alloy(),
-                token_id: token_id.to_alloy(),
-                contract: log.address.to_alloy(),
+                from: data.from,
+                to: data.to,
+                token_id: data.tokenId,
+                contract: log.inner.address,
                 block_number,
             }
             .into(),

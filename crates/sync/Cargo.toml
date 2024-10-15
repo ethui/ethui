@@ -18,7 +18,7 @@ ethui-broadcast.workspace = true
 ethui-networks.workspace = true
 ethui-abis.workspace = true
 
-ethers.workspace = true
+alloy.workspace = true
 tokio.workspace = true
 serde.workspace = true
 thiserror.workspace = true

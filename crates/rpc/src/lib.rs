@@ -6,7 +6,7 @@ use std::collections::HashMap;
 
 use alloy::{dyn_abi::TypedData, hex};
 use ethui_connections::Ctx;
-use ethui_types::{Bytes, GlobalState};
+use ethui_types::{Bytes, GlobalState, ToAlloy as _};
 use ethui_wallets::{WalletControl, Wallets};
 use jsonrpc_core::{MetaIoHandler, Params};
 use serde_json::json;
@@ -213,7 +213,7 @@ impl Handler {
             .build()
             .await;
 
-        Ok(sender.finish().await?)
+        Ok(sender.finish().await?.to_alloy())
     }
 
     async fn eth_sign(params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {

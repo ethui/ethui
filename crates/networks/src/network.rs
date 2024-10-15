@@ -1,5 +1,9 @@
 use std::time::Duration;
 
+use alloy::{
+    providers::{ProviderBuilder, RootProvider},
+    transports::BoxTransport,
+};
 use ethers::providers::{
     Http, HttpRateLimitRetryPolicy, Provider, RetryClient, RetryClientBuilder,
 };
@@ -92,6 +96,10 @@ impl Network {
 
     pub fn is_dev(&self) -> bool {
         self.force_is_anvil || self.chain_id == 31337
+    }
+
+    pub async fn get_alloy_provider(&self) -> Result<RootProvider<BoxTransport>> {
+        Ok(ProviderBuilder::new().on_builtin(&self.http_url).await?)
     }
 
     pub fn get_provider(&self) -> Provider<RetryClient<Http>> {
