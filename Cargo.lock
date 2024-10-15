@@ -101,14 +101,12 @@ dependencies = [
  "alloy-contract",
  "alloy-core",
  "alloy-eips",
- "alloy-genesis",
  "alloy-json-rpc",
  "alloy-network",
  "alloy-provider",
  "alloy-pubsub",
  "alloy-rpc-client",
  "alloy-rpc-types",
- "alloy-serde",
  "alloy-signer",
  "alloy-signer-ledger",
  "alloy-signer-local",
@@ -175,7 +173,6 @@ dependencies = [
  "alloy-dyn-abi",
  "alloy-json-abi",
  "alloy-primitives",
- "alloy-rlp",
  "alloy-sol-types",
 ]
 

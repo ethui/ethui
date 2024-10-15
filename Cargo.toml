@@ -75,7 +75,6 @@ reqwest = { version = "0.12", default-features = false, features = [
   "rustls-tls",
 ] }
 alloy = { version = "0.4", default-features = false, features = [
-  "std",
   "sol-types",
   "contract",
   "signer-local",
@@ -89,10 +88,15 @@ alloy = { version = "0.4", default-features = false, features = [
   "rpc-types",
   "reqwest-rustls-tls",
 ] }
-alloy-chains = { version = "0.1", features = ["serde"] }
+alloy-chains = { version = "0.1", default-features = false, features = [
+  "serde",
+] }
 url = { version = "2.5", features = ["serde"] }
 futures = "0.3.28"
-clap = { version = "4.4", features = ["derive", "env"] }
+clap = { version = "4.4", default-features = false, features = [
+  "derive",
+  "env",
+] }
 coins-ledger = "0.12"
 rand = "0.8"
 rstest = "0.23"
@@ -102,4 +106,4 @@ foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "nightly
 foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-bcacf39e43812e50a124e3ba60d1becd9866534d" }
 # foundry-common = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-bcacf39e43812e50a124e3ba60d1becd9866534d" }
 foundry-block-explorers = "0.8"
-anyhow = "1.0.83"
+anyhow = { version = "1.0.83", default-features = false }
