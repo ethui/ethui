@@ -1,4 +1,4 @@
-use ethers::providers::ProviderError;
+use alloy::transports::{RpcError, TransportErrorKind};
 use ethui_types::Address;
 use jsonrpc_core::ErrorCode;
 
@@ -19,9 +19,6 @@ pub enum Error {
     #[error("Error building signer: {0}")]
     SignerBuild(String),
 
-    #[error(transparent)]
-    Provider(#[from] ethers::providers::ProviderError),
-
     #[error("failed to parse URL {0}")]
     CannotParseUrl(String),
 
@@ -33,9 +30,6 @@ pub enum Error {
 
     #[error(transparent)]
     EthuiWallets(#[from] ethui_wallets::Error),
-
-    #[error(transparent)]
-    Wallet(#[from] ethers::signers::WalletError),
 
     #[error(transparent)]
     Network(#[from] ethui_networks::Error),
@@ -133,22 +127,15 @@ impl serde::Serialize for Error {
     }
 }
 
-pub(crate) fn ethers_to_jsonrpc_error(e: ProviderError) -> jsonrpc_core::Error {
+pub(crate) fn alloy_to_jsonrpc_error(e: RpcError<TransportErrorKind>) -> jsonrpc_core::Error {
     // TODO: probable handle more error types here
-    match e {
-        ProviderError::JsonRpcClientError(e) => {
-            if let Some(e) = e.as_error_response() {
-                jsonrpc_core::Error {
-                    code: ErrorCode::ServerError(e.code),
-                    data: e.data.clone(),
-                    message: e.message.clone(),
-                }
-            } else if e.as_serde_error().is_some() {
-                jsonrpc_core::Error::invalid_request()
-            } else {
-                jsonrpc_core::Error::internal_error()
-            }
+    if let Some(e) = e.as_error_resp() {
+        jsonrpc_core::Error {
+            code: ErrorCode::ServerError(e.code),
+            data: e.data.clone().map(|d| serde_json::to_value(d).unwrap()),
+            message: e.message.to_string(),
         }
-        _ => jsonrpc_core::Error::internal_error(),
+    } else {
+        jsonrpc_core::Error::internal_error()
     }
 }

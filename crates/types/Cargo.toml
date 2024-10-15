@@ -13,5 +13,4 @@ serde_json.workspace = true
 sqlx.workspace = true
 tokio.workspace = true
 async-trait.workspace = true
-ethers.workspace = true
 alloy.workspace = true

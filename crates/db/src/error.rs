@@ -1,4 +1,4 @@
-use ethers::prelude::errors::EtherscanError;
+use foundry_block_explorers::errors::EtherscanError;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {

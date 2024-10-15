@@ -4,9 +4,10 @@ mod methods;
 
 use std::collections::HashMap;
 
-use alloy::{dyn_abi::TypedData, hex};
+use alloy::providers::Provider as _;
+use alloy::{dyn_abi::TypedData, hex, primitives::Bytes};
 use ethui_connections::Ctx;
-use ethui_types::{Bytes, GlobalState, ToAlloy as _};
+use ethui_types::GlobalState;
 use ethui_wallets::{WalletControl, Wallets};
 use jsonrpc_core::{MetaIoHandler, Params};
 use serde_json::json;
@@ -51,9 +52,9 @@ impl Handler {
                         let provider = ctx.network().await.get_provider();
 
                         let res: jsonrpc_core::Result<serde_json::Value> = provider
-                            .request::<_, serde_json::Value>($name, params)
+                            .raw_request::<_, serde_json::Value>($name.into(), params)
                             .await
-                            .map_err(error::ethers_to_jsonrpc_error);
+                            .map_err(error::alloy_to_jsonrpc_error);
                         res
                     });
             };
@@ -213,7 +214,7 @@ impl Handler {
             .build()
             .await;
 
-        Ok(sender.finish().await?.to_alloy())
+        Ok(sender.finish().await?)
     }
 
     async fn eth_sign(params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {

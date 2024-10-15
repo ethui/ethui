@@ -1,5 +1,5 @@
 use alloy::{
-    primitives::Log,
+    primitives::{Bytes, Log},
     providers::{Provider as _, RootProvider},
     rpc::types::{
         trace::parity::{
@@ -13,7 +13,7 @@ use alloy::{
 };
 use ethui_types::{
     events::{ContractDeployed, ERC20Transfer, ERC721Transfer, Tx},
-    Bytes, Event,
+    Event,
 };
 use futures::future::join_all;
 use reqwest::Client;

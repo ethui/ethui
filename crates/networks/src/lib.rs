@@ -9,7 +9,13 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use ethers::providers::{Http, Provider, RetryClient};
+use alloy::{
+    providers::RootProvider,
+    transports::{
+        http::{Client, Http},
+        layers::RetryBackoffService,
+    },
+};
 use ethui_types::{Affinity, UINotify};
 pub use init::init;
 use serde::Serialize;
@@ -103,7 +109,7 @@ impl Networks {
         self.do_set_networks(Network::all_default()).await
     }
 
-    pub fn get_current_provider(&self) -> Provider<RetryClient<Http>> {
+    pub fn get_current_provider(&self) -> RootProvider<RetryBackoffService<Http<Client>>> {
         self.get_current().get_provider()
     }
 
