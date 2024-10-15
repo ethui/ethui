@@ -2005,7 +2005,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@ethui/abiparse@workspace:packages/abiparse"
   dependencies:
-    bun-plugin-dts: "npm:^0.2.4"
+    bun-plugin-dts: "npm:^0.3.0"
     bun-types: "npm:^1.1.30"
     chevrotain: "npm:^11.0.3"
     nearly: "npm:^1.8.1"
@@ -6031,13 +6031,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bun-plugin-dts@npm:^0.2.4":
-  version: 0.2.4
-  resolution: "bun-plugin-dts@npm:0.2.4"
+"bun-plugin-dts@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "bun-plugin-dts@npm:0.3.0"
   dependencies:
+    common-path-prefix: "npm:^3.0.0"
     dts-bundle-generator: "npm:^9.5.1"
     get-tsconfig: "npm:^4.8.1"
-  checksum: ffa52d76bcf93c15ca0d5e7c16527a946e76bab6d55e1e7aaa5ac4bd258219c89652ac1df485860e831bfbb5ae13f915dbc14b865ed1c3327d824fe0e31da2a5
+  checksum: 4875b7c30652200a7a4ef226de346ff998016a7cab90f25a36831b52e98523db47bffd074140d70d27cb12aa30fdce4ff8ca0bfab7de6dfdb6517ad401770ab2
   languageName: node
   linkType: hard
 
@@ -6459,6 +6460,13 @@ __metadata:
   version: 9.5.0
   resolution: "commander@npm:9.5.0"
   checksum: 5f7784fbda2aaec39e89eb46f06a999e00224b3763dc65976e05929ec486e174fe9aac2655f03ba6a5e83875bd173be5283dc19309b7c65954701c02025b3c1d
+  languageName: node
+  linkType: hard
+
+"common-path-prefix@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "common-path-prefix@npm:3.0.0"
+  checksum: c4a74294e1b1570f4a8ab435285d185a03976c323caa16359053e749db4fde44e3e6586c29cd051100335e11895767cbbd27ea389108e327d62f38daf4548fdb
   languageName: node
   linkType: hard
 

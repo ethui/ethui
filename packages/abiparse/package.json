@@ -22,7 +22,7 @@
     "nearly": "^1.8.1"
   },
   "devDependencies": {
-    "bun-plugin-dts": "^0.2.4",
+    "bun-plugin-dts": "^0.3.0",
     "bun-types": "^1.1.30",
     "vitest": "^1.6.0"
   }
