@@ -90,14 +90,10 @@ impl DbInner {
             block_number: row.block_number.map(|b| b as u64),
             position: row.position.map(|p| p as usize),
             status: row.status.unwrap_or_default() as u64,
-            gas_limit: row.gas_limit.map(|v| U256::from_str_radix(&v, 10).unwrap()),
-            gas_used: row.gas_used.map(|v| U256::from_str_radix(&v, 10).unwrap()),
-            max_fee_per_gas: row
-                .max_fee_per_gas
-                .map(|v| U256::from_str_radix(&v, 10).unwrap()),
-            max_priority_fee_per_gas: row
-                .max_priority_fee_per_gas
-                .map(|v| U256::from_str_radix(&v, 10).unwrap()),
+            gas_limit: row.gas_limit.map(|v| v.parse().unwrap()),
+            gas_used: row.gas_used.map(|v| v.parse().unwrap()),
+            max_fee_per_gas: row.max_fee_per_gas.map(|v| v.parse().unwrap()),
+            max_priority_fee_per_gas: row.max_priority_fee_per_gas.map(|v| v.parse().unwrap()),
             r#type: row.r#type.map(|t| t as u64),
             nonce: row.nonce.map(|n| n as u64),
             incomplete: row.incomplete,

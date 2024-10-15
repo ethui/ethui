@@ -1,14 +1,17 @@
-use ethers::providers::{Http, Middleware, Provider, RetryClient};
+use alloy::{
+    providers::{Provider as _, RootProvider},
+    transports::BoxTransport,
+};
 use ethui_abis::IERC20;
-use ethui_types::{events::Tx, Address, GlobalState, ToAlloy, ToEthers, TokenMetadata, B256};
+use ethui_types::{events::Tx, Address, GlobalState, TokenMetadata, B256};
 
 use crate::{Error, Result};
 
 pub(crate) async fn fetch_full_tx(chain_id: u32, hash: B256) -> Result<()> {
     let provider = provider(chain_id).await?;
 
-    let tx = provider.get_transaction(hash.to_ethers()).await?;
-    let receipt = provider.get_transaction_receipt(hash.to_ethers()).await?;
+    let tx = provider.get_transaction_by_hash(hash).await?;
+    let receipt = provider.get_transaction_receipt(hash).await?;
 
     if tx.is_none() || receipt.is_none() {
         return Err(Error::TxNotFound(hash));
@@ -20,19 +23,19 @@ pub(crate) async fn fetch_full_tx(chain_id: u32, hash: B256) -> Result<()> {
     let tx = Tx {
         hash,
         trace_address: None,
-        block_number: receipt.block_number.map(|b| b.as_u64()),
-        from: tx.from.to_alloy(),
-        to: tx.to.map(|a| a.to_alloy()),
-        value: Some(tx.value.to_alloy()),
+        block_number: receipt.block_number,
+        from: tx.from,
+        to: tx.to,
+        value: Some(tx.value),
         data: Some(tx.input),
-        position: Some(receipt.transaction_index.as_u64() as usize),
-        status: receipt.status.unwrap().as_u64(),
-        gas_limit: Some(tx.gas.to_alloy()),
-        gas_used: receipt.gas_used.map(|g| g.to_alloy()),
-        max_fee_per_gas: tx.max_fee_per_gas.map(|g| g.to_alloy()),
-        max_priority_fee_per_gas: tx.max_priority_fee_per_gas.map(|g| g.to_alloy()),
-        r#type: tx.transaction_type.map(|t| t.as_u64()),
-        nonce: Some(tx.nonce.as_u64()),
+        position: receipt.transaction_index.map(|r| r as usize),
+        status: if receipt.status() { 1 } else { 0 },
+        gas_limit: Some(tx.gas),
+        gas_used: Some(receipt.gas_used as u64),
+        max_fee_per_gas: tx.max_fee_per_gas,
+        max_priority_fee_per_gas: tx.max_priority_fee_per_gas,
+        r#type: tx.transaction_type.map(|t| t as u64),
+        nonce: Some(tx.nonce),
         deployed_contract: None,
         incomplete: false,
     };
@@ -46,13 +49,13 @@ pub(crate) async fn fetch_full_tx(chain_id: u32, hash: B256) -> Result<()> {
 pub(crate) async fn fetch_erc20_metadata(chain_id: u32, address: Address) -> Result<()> {
     let provider = provider(chain_id).await?;
 
-    let contract = IERC20::new(address.to_ethers(), provider.into());
+    let contract = IERC20::new(address, provider);
 
     let metadata = TokenMetadata {
         address,
-        name: contract.name().call().await.ok(),
-        symbol: contract.symbol().call().await.ok(),
-        decimals: contract.decimals().call().await.ok(),
+        name: contract.name().call().await.map(|r| r.name).ok(),
+        symbol: contract.symbol().call().await.map(|r| r.symbol).ok(),
+        decimals: contract.decimals().call().await.map(|r| r.decimals).ok(),
     };
 
     let db = ethui_db::get();
@@ -63,11 +66,11 @@ pub(crate) async fn fetch_erc20_metadata(chain_id: u32, address: Address) -> Res
     Ok(())
 }
 
-async fn provider(chain_id: u32) -> Result<Provider<RetryClient<Http>>> {
+async fn provider(chain_id: u32) -> Result<RootProvider<BoxTransport>> {
     let networks = ethui_networks::Networks::read().await;
 
     match networks.get_network(chain_id) {
-        Some(network) => Ok(network.get_provider()),
+        Some(network) => Ok(network.get_alloy_provider().await?),
         _ => Err(Error::InvalidNetwork(chain_id)),
     }
 }

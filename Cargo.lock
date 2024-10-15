@@ -102,6 +102,7 @@ dependencies = [
  "alloy-core",
  "alloy-eips",
  "alloy-genesis",
+ "alloy-json-rpc",
  "alloy-network",
  "alloy-provider",
  "alloy-pubsub",
@@ -3143,9 +3144,9 @@ dependencies = [
 name = "ethui-abis"
 version = "1.8.0"
 dependencies = [
+ "alloy",
  "alloy-dyn-abi",
  "anyhow",
- "ethers",
  "rstest",
  "serde",
  "serde_json",
@@ -3353,6 +3354,7 @@ dependencies = [
 name = "ethui-sync"
 version = "1.8.0"
 dependencies = [
+ "alloy",
  "ethers",
  "ethui-abis",
  "ethui-broadcast",
@@ -3398,12 +3400,14 @@ dependencies = [
  "ethui-db",
  "ethui-types",
  "futures",
+ "futures-util",
  "once_cell",
  "reqwest 0.12.4",
  "serde",
  "serde_json",
  "thiserror",
  "tokio",
+ "tower 0.4.13",
  "tracing",
  "url",
 ]

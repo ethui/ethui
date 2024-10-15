@@ -1,5 +1,5 @@
 use alloy::json_abi::JsonAbi;
-use ethers::{abi::Abi, types::Chain};
+use ethers::types::Chain;
 use ethui_types::{
     events::Tx, transactions::PaginatedTx, Address, Contract, Erc721TokenData, TokenBalance,
     TokenMetadata, UINotify, B256, U256,

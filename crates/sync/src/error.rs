@@ -1,7 +1,15 @@
+use alloy::transports::{RpcError, TransportErrorKind};
+
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("Invalid Network {0}")]
     InvalidNetwork(u32),
+
+    #[error(transparent)]
+    Network(#[from] ethui_networks::Error),
+
+    #[error(transparent)]
+    Provider(#[from] RpcError<TransportErrorKind>),
 
     #[error(transparent)]
     Anvil(#[from] ethui_sync_anvil::Error),

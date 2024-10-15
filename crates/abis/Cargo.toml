@@ -9,7 +9,7 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-ethers.workspace = true
+alloy.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 tauri.workspace = true

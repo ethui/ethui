@@ -1,15 +1,11 @@
-use std::{sync::Arc, time::Duration};
-
 use alloy::providers::ext::TraceApi as _;
-use alloy::providers::{Provider as _, ProviderBuilder, RootProvider};
-use alloy::rpc::client::ClientBuilder;
+use alloy::providers::{Provider as _, ProviderBuilder, RootProvider, WsConnect};
 use alloy::rpc::types::trace::parity::LocalizedTransactionTrace;
 use alloy::rpc::types::{Filter, Log};
 use alloy::transports::http::Http;
-use alloy::transports::layers::RetryBackoffLayer;
 use base64::{self, Engine as _};
-use ethui_abis::{IERC20, IERC721};
-use ethui_types::{Address, Erc721Token, Erc721TokenDetails, ToEthers, TokenMetadata, UINotify};
+use ethui_abis::{IERC721WithMetadata, IERC20, IERC721};
+use ethui_types::{Address, Erc721Token, Erc721TokenDetails, TokenMetadata, UINotify};
 use futures::StreamExt as _;
 use reqwest::Client;
 use tokio::sync::mpsc;
@@ -101,27 +97,23 @@ async fn watch(
     mut quit_rcv: mpsc::Receiver<()>,
     block_snd: mpsc::UnboundedSender<Msg>,
 ) -> Result<()> {
-    // retryclient with infinite retries
-    let retry_client = ClientBuilder::default()
-        .layer(RetryBackoffLayer::new(u32::MAX, 1000, u64::MAX))
-        .http(ctx.http_url);
-    let retry_provider = ProviderBuilder::new().on_client(retry_client);
-
     'watcher: loop {
         block_snd.send(Msg::Reset).map_err(|_| Error::Watcher)?;
 
         // retry forever
+        let block_number = 'wait: loop {
+            let http_provider = ProviderBuilder::new().on_http(ctx.http_url.clone());
 
-        // make a dummy request, retried forever
-        // this is to wait for anvil to be up
-        // retries forever, or until watcher close signal received
-        let block_number = tokio::select! {
-            _ = quit_rcv.recv() => break 'watcher,
-            Ok(res) = retry_provider.get_block_number() => res
+            tokio::select! {
+                _ = quit_rcv.recv() => break 'watcher,
+                res = http_provider.get_block_number() => {
+                    if let Ok(b) = res { break 'wait b }
+                }
+            };
         };
 
-        let provider = ProviderBuilder::new().on_http(ctx.http_url);
-        //.interval(Duration::from_secs(1));
+        let ws_connect = WsConnect::new(ctx.ws_url.to_string());
+        let provider = ProviderBuilder::new().on_ws(ws_connect).await?;
 
         // if we're in a forked anvil, grab the fork block number, so we don't index too much
         let node_info: serde_json::Value = provider
@@ -132,7 +124,7 @@ async fn watch(
             .as_u64()
             .unwrap_or(0);
 
-        let mut stream = provider.subscribe_blocks().await?;
+        let mut stream = provider.subscribe_blocks().await?.into_stream();
 
         // catch up with everything behind
         // from the moment the fork started (or genesis if not a fork)
@@ -160,10 +152,10 @@ async fn watch(
                 b = stream.next() => {
                     match b {
                         Some(b) => {
-                            let block_traces = provider.trace_block(b.number.unwrap().into()).await?;
+                            let block_traces = provider.trace_block(b.header.number.into()).await?;
                             block_snd.send(Msg::Traces(block_traces)).map_err(|_|Error::Watcher)?;
 
-                            let logs = provider.get_logs(&Filter::new().select(b.number.unwrap())).await?;
+                            let logs = provider.get_logs(&Filter::new().select(b.header.number)).await?;
                             block_snd.send(Msg::Logs(logs)).map_err(|_| Error::Watcher)?;
                         },
                         None => break 'ws,
@@ -228,9 +220,19 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
             .into_iter()
         {
             let address = erc721_address;
-            let contract = IERC721::new(erc721_address.to_ethers(), Arc::new(&provider));
-            let name = contract.name().call().await.unwrap_or_default();
-            let symbol = contract.symbol().call().await.unwrap_or_default();
+            let contract = IERC721::new(erc721_address, &provider);
+            let name = contract
+                .name()
+                .call()
+                .await
+                .map(|r| r.name)
+                .unwrap_or_default();
+            let symbol = contract
+                .symbol()
+                .call()
+                .await
+                .map(|r| r.symbol)
+                .unwrap_or_default();
 
             db.save_erc721_collection(address, ctx.chain_id, name, symbol)
                 .await?;
@@ -266,13 +268,13 @@ pub async fn fetch_erc20_metadata(
     address: Address,
     client: &alloy::providers::RootProvider<Http<Client>>,
 ) -> TokenMetadata {
-    let contract = IERC20::new(address.to_ethers(), Arc::new(client));
+    let contract = IERC20::new(address, client);
 
     TokenMetadata {
         address,
-        name: contract.name().call().await.ok(),
-        symbol: contract.symbol().call().await.ok(),
-        decimals: contract.decimals().call().await.ok(),
+        name: contract.name().call().await.ok().map(|r| r.name),
+        symbol: contract.symbol().call().await.ok().map(|r| r.symbol),
+        decimals: contract.decimals().call().await.ok().map(|r| r.decimals),
     }
 }
 
@@ -280,13 +282,15 @@ pub async fn fetch_erc721_token_data(
     erc721_token: Erc721Token,
     client: &RootProvider<Http<Client>>,
 ) -> Result<Erc721TokenDetails> {
-    let contract = IERC721::new(erc721_token.contract.to_ethers(), Arc::new(client));
+    let contract = IERC721WithMetadata::new(erc721_token.contract, client);
 
     let contract_uri = contract
-        .token_uri(erc721_token.token_id.to_ethers())
+        .tokenURI(erc721_token.token_id)
         .call()
         .await
-        .map_err(|_| Error::Erc721FailedToFetchData)?;
+        .map_err(|_| Error::Erc721FailedToFetchData)?
+        .uri
+        .to_owned();
 
     let mut md = "".to_string();
     if contract_uri.contains("data:application/json;base64,") {
