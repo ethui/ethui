@@ -70,8 +70,6 @@ impl<'a> SendCallBuilder<'a> {
             self.request.set_input(Bytes::from_str(data).unwrap());
         }
 
-        dbg!(&params);
-
         Ok(self)
     }
 
