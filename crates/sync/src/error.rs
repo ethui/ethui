@@ -14,9 +14,6 @@ pub enum Error {
     #[error(transparent)]
     Anvil(#[from] ethui_sync_anvil::Error),
 
-    #[error(transparent)]
-    Ethers(#[from] ethers::providers::ProviderError),
-
     #[error("TX not found {0}")]
     TxNotFound(ethui_types::B256),
 

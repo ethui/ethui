@@ -3355,7 +3355,6 @@ name = "ethui-sync"
 version = "1.8.0"
 dependencies = [
  "alloy",
- "ethers",
  "ethui-abis",
  "ethui-broadcast",
  "ethui-db",
@@ -3394,7 +3393,6 @@ version = "1.8.0"
 dependencies = [
  "alloy",
  "base64 0.21.7",
- "ethers",
  "ethui-abis",
  "ethui-broadcast",
  "ethui-db",

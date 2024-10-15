@@ -9,9 +9,6 @@ pub enum Error {
     #[error(transparent)]
     DB(#[from] ethui_db::Error),
 
-    #[error(transparent)]
-    EthersProvider(#[from] ethers::providers::ProviderError),
-
     #[error("Transaction not found: {0}")]
     TxNotFound(B256),
 
