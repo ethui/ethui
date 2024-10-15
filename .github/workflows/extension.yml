@@ -7,15 +7,17 @@ on: # rebuild any PRs and main branch changes
       - "*"
   pull_request:
     types: [opened, synchronize]
-    paths-ignore:
-      - "./gui/**"
-      - "*.md"
-      - "LICENSE"
+    paths:
+      - ".github/workflows/extension.yml"
+      - "./extension/**"
+      - "./*.json"
+      - "./yarn.lock"
   merge_group:
-    paths-ignore:
-      - "./gui/**"
-      - "*.md"
-      - "LICENSE"
+    paths:
+      - ".github/workflows/extension.yml"
+      - "./extension/**"
+      - "./*.json"
+      - "./yarn.lock"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

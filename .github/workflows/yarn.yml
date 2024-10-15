@@ -8,19 +8,21 @@ on:
       - "*"
   pull_request:
     types: [opened, synchronize]
-    paths-ignore:
-      - "./migrations/**"
-      - "./tauri/**"
-      - "*.toml"
-      - "*.md"
-      - "LICENSE"
+    paths:
+      - "./.github/workflows/yarn.yml"
+      - "./gui/**"
+      - "./extension/**"
+      - "./packages/**"
+      - "./package.json"
+      - "./yarn.lock"
   merge_group:
-    paths-ignore:
-      - "./migrations/**"
-      - "./tauri/**"
-      - "*.toml"
-      - "*.md"
-      - "LICENSE"
+    paths:
+      - "./.github/workflows/yarn.yml"
+      - "./gui/**"
+      - "./extension/**"
+      - "./packages/**"
+      - "./package.json"
+      - "./yarn.lock"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
