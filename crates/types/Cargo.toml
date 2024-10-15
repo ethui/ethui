@@ -14,7 +14,4 @@ serde_json.workspace = true
 sqlx.workspace = true
 tokio.workspace = true
 async-trait.workspace = true
-tracing.workspace = true
 alloy.workspace = true
-foundry-config.workspace = true
-foundry-common.workspace = true

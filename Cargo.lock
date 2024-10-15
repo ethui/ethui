@@ -946,9 +946,9 @@ dependencies = [
 
 [[package]]
 name = "arrayref"
-version = "0.3.7"
+version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6b4930d2cb77ce62f89ee5d5289b4ac049559b1c45539271f5ed4fdc7db34545"
+checksum = "76a2e8124351fda1ef8aaaa3bbd7ebbcb486bbcd4225aca0aa0d84bb2db8fecb"
 
 [[package]]
 name = "arrayvec"
@@ -1457,7 +1457,7 @@ checksum = "23285ad32269793932e830392f2fe2f83e26488fd3ec778883a93c8323735780"
 dependencies = [
  "arrayref",
  "arrayvec",
- "constant_time_eq 0.3.0",
+ "constant_time_eq 0.3.1",
 ]
 
 [[package]]
@@ -2088,9 +2088,9 @@ checksum = "245097e9a4535ee1e3e3931fcfcd55a796a44c643e8596ff6566d68f09b87bbc"
 
 [[package]]
 name = "constant_time_eq"
-version = "0.3.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f7144d30dcf0fafbce74250a3963025d8d52177934239851c917d29f1df280c2"
+checksum = "7c74b8349d32d297c9134b8c88677813a227df8f779daa29bfc29c183fe3dca6"
 
 [[package]]
 name = "convert_case"
@@ -3285,7 +3285,6 @@ name = "ethui-exchange-rates"
 version = "1.8.0"
 dependencies = [
  "async-trait",
- "ethers",
  "ethui-types",
  "once_cell",
  "serde",
@@ -3416,7 +3415,7 @@ dependencies = [
  "foundry-config",
  "foundry-evm",
  "pretty_assertions",
- "serde_json",
+ "serde",
  "tauri",
  "thiserror",
  "tokio",
@@ -3434,9 +3433,7 @@ dependencies = [
  "ethui-sync-alchemy",
  "ethui-sync-anvil",
  "ethui-types",
- "once_cell",
  "serde",
- "serde_json",
  "tauri",
  "thiserror",
  "tokio",
@@ -3510,13 +3507,10 @@ dependencies = [
  "alloy",
  "async-trait",
  "ethers",
- "foundry-common",
- "foundry-config",
  "serde",
  "serde_json",
  "sqlx",
  "tokio",
- "tracing",
 ]
 
 [[package]]
@@ -3546,7 +3540,6 @@ name = "ethui-ws"
 version = "1.8.0"
 dependencies = [
  "async-trait",
- "ethers",
  "ethui-args",
  "ethui-broadcast",
  "ethui-connections",
@@ -7839,7 +7832,7 @@ checksum = "9d9848531d60c9cbbcf9d166c885316c24bc0e2a9d3eba0956bb6cbbd79bc6e8"
 dependencies = [
  "base64 0.21.7",
  "blake2b_simd",
- "constant_time_eq 0.3.0",
+ "constant_time_eq 0.3.1",
 ]
 
 [[package]]
@@ -8349,9 +8342,9 @@ dependencies = [
 
 [[package]]
 name = "serde_spanned"
-version = "0.6.4"
+version = "0.6.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "12022b835073e5b11e90a14f86838ceb1c8fb0325b72416845c487ac0fa95e80"
+checksum = "87607cb1398ed59d48732e575a4c28a7a8ebf2454b964fe3f224f2afc07909e1"
 dependencies = [
  "serde",
 ]
@@ -9752,7 +9745,7 @@ dependencies = [
  "serde",
  "serde_spanned",
  "toml_datetime",
- "toml_edit 0.21.0",
+ "toml_edit 0.21.1",
 ]
 
 [[package]]
@@ -9774,7 +9767,7 @@ dependencies = [
  "serde",
  "serde_spanned",
  "toml_datetime",
- "winnow 0.5.19",
+ "winnow 0.5.40",
 ]
 
 [[package]]
@@ -9785,20 +9778,20 @@ checksum = "70f427fce4d84c72b5b732388bf4a9f4531b53f74e2887e3ecb2481f68f66d81"
 dependencies = [
  "indexmap 2.6.0",
  "toml_datetime",
- "winnow 0.5.19",
+ "winnow 0.5.40",
 ]
 
 [[package]]
 name = "toml_edit"
-version = "0.21.0"
+version = "0.21.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d34d383cd00a163b4a5b85053df514d45bc330f6de7737edfe0a93311d1eaa03"
+checksum = "6a8534fd7f78b5405e860340ad6575217ce99f38d4d5c8f2442cb5ecb50090e1"
 dependencies = [
  "indexmap 2.6.0",
  "serde",
  "serde_spanned",
  "toml_datetime",
- "winnow 0.5.19",
+ "winnow 0.5.40",
 ]
 
 [[package]]
@@ -10916,9 +10909,9 @@ checksum = "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec"
 
 [[package]]
 name = "winnow"
-version = "0.5.19"
+version = "0.5.40"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "829846f3e3db426d4cee4510841b71a8e58aa2a76b1132579487ae430ccd9c7b"
+checksum = "f593a95398737aeed53e489c785df13f3618e41dbcd6718c6addbf1395aa6876"
 dependencies = [
  "memchr",
 ]

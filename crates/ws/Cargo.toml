@@ -16,7 +16,6 @@ ethui-networks.workspace = true
 ethui-connections.workspace = true
 ethui-args.workspace = true
 
-ethers.workspace = true
 tokio.workspace = true
 tauri.workspace = true
 serde.workspace = true
