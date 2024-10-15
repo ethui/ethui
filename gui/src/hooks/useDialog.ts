@@ -14,7 +14,6 @@ export function useDialog<T>(idStr: string) {
     [id],
   );
 
-  console.log(view);
   return { id, data, send, listen: view.listen };
 }
 
