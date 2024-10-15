@@ -9,15 +9,15 @@ on: # rebuild any PRs and main branch changes
     types: [opened, synchronize]
     paths:
       - ".github/workflows/extension.yml"
-      - "./extension/**"
-      - "./*.json"
-      - "./yarn.lock"
+      - "extension/**"
+      - "*.json"
+      - "yarn.lock"
   merge_group:
     paths:
       - ".github/workflows/extension.yml"
-      - "./extension/**"
-      - "./*.json"
-      - "./yarn.lock"
+      - "extension/**"
+      - "*.json"
+      - "yarn.lock"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

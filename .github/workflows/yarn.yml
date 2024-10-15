@@ -9,20 +9,20 @@ on:
   pull_request:
     types: [opened, synchronize]
     paths:
-      - "./.github/workflows/yarn.yml"
-      - "./gui/**"
-      - "./extension/**"
-      - "./packages/**"
-      - "./package.json"
-      - "./yarn.lock"
+      - ".github/workflows/yarn.yml"
+      - "gui/**"
+      - "extension/**"
+      - "packages/**"
+      - "package.json"
+      - "yarn.lock"
   merge_group:
     paths:
-      - "./.github/workflows/yarn.yml"
-      - "./gui/**"
-      - "./extension/**"
-      - "./packages/**"
-      - "./package.json"
-      - "./yarn.lock"
+      - ".github/workflows/yarn.yml"
+      - "gui/**"
+      - "extension/**"
+      - "packages/**"
+      - "package.json"
+      - "yarn.lock"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
