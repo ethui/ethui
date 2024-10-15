@@ -1,5 +1,7 @@
 use std::path::PathBuf;
 
+use alloy::transports::{RpcError, TransportErrorKind};
+
 use crate::watcher::WatcherMsg;
 
 #[derive(thiserror::Error, Debug)]
@@ -23,10 +25,13 @@ pub enum Error {
     InvalidChainId,
 
     #[error(transparent)]
-    Ethers(#[from] ethers::providers::ProviderError),
+    WatcherSendError(#[from] tokio::sync::mpsc::error::SendError<WatcherMsg>),
 
     #[error(transparent)]
-    WatcherSendError(#[from] tokio::sync::mpsc::error::SendError<WatcherMsg>),
+    Network(#[from] ethui_networks::Error),
+
+    #[error(transparent)]
+    Rpc(#[from] RpcError<TransportErrorKind>),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

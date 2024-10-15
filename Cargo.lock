@@ -3297,6 +3297,7 @@ dependencies = [
 name = "ethui-forge"
 version = "1.8.0"
 dependencies = [
+ "alloy",
  "ethers",
  "ethui-broadcast",
  "ethui-db",
@@ -3310,6 +3311,7 @@ dependencies = [
  "regex",
  "serde",
  "serde_json",
+ "tauri",
  "thiserror",
  "tokio",
  "tracing",
@@ -3347,6 +3349,7 @@ dependencies = [
 name = "ethui-networks"
 version = "1.8.0"
 dependencies = [
+ "alloy",
  "async-trait",
  "ethers",
  "ethui-broadcast",
