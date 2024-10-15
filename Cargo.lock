@@ -114,7 +114,6 @@ dependencies = [
  "alloy-signer-local",
  "alloy-transport",
  "alloy-transport-http",
- "alloy-transport-ipc",
  "alloy-transport-ws",
 ]
 
@@ -364,11 +363,11 @@ dependencies = [
  "alloy-primitives",
  "alloy-pubsub",
  "alloy-rpc-client",
+ "alloy-rpc-types-anvil",
  "alloy-rpc-types-eth",
  "alloy-rpc-types-trace",
  "alloy-transport",
  "alloy-transport-http",
- "alloy-transport-ipc",
  "alloy-transport-ws",
  "async-stream",
  "async-trait",
@@ -439,7 +438,6 @@ dependencies = [
  "alloy-pubsub",
  "alloy-transport",
  "alloy-transport-http",
- "alloy-transport-ipc",
  "alloy-transport-ws",
  "futures",
  "pin-project",
@@ -460,9 +458,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9ffc534b7919e18f35e3aa1f507b6f3d9d92ec298463a9f6beaac112809d8d06"
 dependencies = [
  "alloy-primitives",
+ "alloy-rpc-types-anvil",
  "alloy-rpc-types-engine",
  "alloy-rpc-types-eth",
  "alloy-rpc-types-trace",
+ "alloy-serde",
+ "serde",
+]
+
+[[package]]
+name = "alloy-rpc-types-anvil"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d780adaa5d95b07ad92006b2feb68ecfa7e2015f7d5976ceaac4c906c73ebd07"
+dependencies = [
+ "alloy-primitives",
  "alloy-serde",
  "serde",
 ]
@@ -8802,7 +8812,6 @@ dependencies = [
  "bytes",
  "libc",
  "mio 1.0.2",
- "parking_lot",
  "pin-project-lite",
  "signal-hook-registry",
  "socket2",

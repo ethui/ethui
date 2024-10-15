@@ -43,7 +43,7 @@ named-lock = "0.3.0"
 tauri-plugin-os = "2.0.0-beta.6"
 
 [build-dependencies]
-tauri-build = { version = "2.0.1", features = [] }
+tauri-build = { version = "2.0.1", default-features = false }
 ethui-token-list.workspace = true
 
 [features]
