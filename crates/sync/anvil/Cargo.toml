@@ -24,7 +24,5 @@ tracing.workspace = true
 reqwest.workspace = true
 url.workspace = true
 futures.workspace = true
-futures-util.workspace = true
-tower.workspace = true
 
 base64 = "0.21.2"

@@ -31,7 +31,6 @@ ethui-tracing.workspace = true
 ethui-broadcast.workspace = true
 ethui-simulator.workspace = true
 ethui-args.workspace = true
-ethui-abis.workspace = true
 
 serde.workspace = true
 tauri.workspace = true
