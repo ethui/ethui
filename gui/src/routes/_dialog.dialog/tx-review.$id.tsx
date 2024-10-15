@@ -34,11 +34,11 @@ export interface TxRequest {
   value: string;
   chainId: number;
   walletType:
-  | "ledger"
-  | "HdWallet"
-  | "jsonKeystore"
-  | "plaintext"
-  | "impersonator";
+    | "ledger"
+    | "HdWallet"
+    | "jsonKeystore"
+    | "plaintext"
+    | "impersonator";
 }
 
 interface Log {
@@ -90,9 +90,9 @@ function Inner({ dialog, request, network }: InnerProps) {
   });
 
   useEffect(() => {
-    listen("simulation-result", ({ payload }: { payload: Simulation }) =>
-      setSimulation(payload),
-    );
+    listen<Simulation>("simulation-result", ({ payload }) => {
+      setSimulation(payload);
+    });
   }, [listen]);
 
   useEffect(() => {
