@@ -56,7 +56,8 @@ ethui-args = { path = "crates/args" }
 ethui-token-list = { path = "crates/token-list" }
 tokio = { version = "1.40", features = ["rt-multi-thread", "sync"] }
 thiserror = "1.0"
-sqlx = { version = "0.8", features = [
+sqlx = { version = "0.8", default-features = false, features = [
+  "macros",
   "runtime-tokio-rustls",
   "sqlite",
   "migrate",
@@ -73,7 +74,8 @@ jsonrpc-core = "18.0"
 reqwest = { version = "0.12", default-features = false, features = [
   "rustls-tls",
 ] }
-alloy = { version = "0.4", features = [
+alloy = { version = "0.4", default-features = false, features = [
+  "std",
   "sol-types",
   "contract",
   "signer-local",
@@ -88,9 +90,6 @@ alloy = { version = "0.4", features = [
   "reqwest-rustls-tls",
 ] }
 alloy-chains = { version = "0.1", features = ["serde"] }
-revm-inspectors = { git = "https://github.com/paradigmxyz/evm-inspectors", rev = "c1b5dd0", features = [
-  "serde",
-] }
 url = { version = "2.5", features = ["serde"] }
 futures = "0.3.28"
 clap = { version = "4.4", features = ["derive", "env"] }
