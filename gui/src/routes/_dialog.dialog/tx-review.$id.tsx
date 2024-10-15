@@ -1,4 +1,6 @@
 import { Cancel, CheckCircle, Delete, Report, Send } from "@mui/icons-material";
+import { listen } from "@tauri-apps/api/event";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { Alert, AlertTitle, Box, Button, Grid, Stack } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
@@ -90,9 +92,9 @@ function Inner({ dialog, request, network }: InnerProps) {
   });
 
   useEffect(() => {
-    listen("simulation-result", ({ payload }: { payload: Simulation }) =>
-      setSimulation(payload),
-    );
+    listen<Simulation>("simulation-result", ({ payload }) => {
+      setSimulation(payload);
+    });
   }, [listen]);
 
   useEffect(() => {
