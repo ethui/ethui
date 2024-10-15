@@ -23,7 +23,6 @@ ethui-wallets.workspace = true
 ethui-dialogs.workspace = true
 ethui-rpc.workspace = true
 ethui-ws.workspace = true
-ethui-http.workspace = true
 ethui-connections.workspace = true
 ethui-types.workspace = true
 ethui-db.workspace = true
