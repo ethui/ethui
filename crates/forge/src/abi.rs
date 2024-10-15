@@ -1,8 +1,7 @@
 #![allow(dead_code)]
 
+use alloy::primitives::Bytes;
 use std::{fs::File, io::BufReader, path::PathBuf, str::FromStr};
-
-use ethui_types::Bytes;
 
 use super::{
     error::{Error, Result},

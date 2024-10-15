@@ -56,10 +56,6 @@ ethui-args = { path = "crates/args" }
 ethui-token-list = { path = "crates/token-list" }
 tokio = { version = "1.37", features = ["full", "sync"] }
 thiserror = "1.0"
-ethers = { features = [
-  "ws",
-  "ledger",
-], git = "https://github.com/gakonst/ethers-rs", rev = "5394d89" }
 sqlx = { version = "0.8", features = [
   "runtime-tokio-rustls",
   "sqlite",
@@ -86,7 +82,7 @@ alloy = { version = "0.4", features = [
   "provider-trace-api",
 ] }
 tower = "*"
-alloy-chains = "0.1.38"
+alloy-chains = { version = "0.1.38", features = ["serde"] }
 revm-inspectors = { git = "https://github.com/paradigmxyz/evm-inspectors", rev = "c1b5dd0", features = [
   "serde",
 ] }

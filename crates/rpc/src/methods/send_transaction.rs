@@ -290,6 +290,7 @@ impl<'a> SendTransactionBuilder<'a> {
         }
 
         if let Some(value) = params["value"].as_str() {
+            // TODO: does this support both hex and decimal?
             self.request.set_value(U256::from_str(value).unwrap());
         }
 

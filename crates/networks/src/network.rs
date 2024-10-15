@@ -1,11 +1,11 @@
-use std::time::Duration;
-
 use alloy::{
     providers::{ProviderBuilder, RootProvider},
-    transports::BoxTransport,
-};
-use ethers::providers::{
-    Http, HttpRateLimitRetryPolicy, Provider, RetryClient, RetryClientBuilder,
+    rpc::client::ClientBuilder,
+    transports::{
+        http::{Client, Http},
+        layers::{RetryBackoffLayer, RetryBackoffService},
+        BoxTransport,
+    },
 };
 use serde::{Deserialize, Serialize};
 use url::Url;
@@ -102,16 +102,24 @@ impl Network {
         Ok(ProviderBuilder::new().on_builtin(&self.http_url).await?)
     }
 
-    pub fn get_provider(&self) -> Provider<RetryClient<Http>> {
+    pub fn get_provider(&self) -> RootProvider<RetryBackoffService<Http<Client>>> {
         let url = Url::parse(&self.http_url).unwrap();
-        let http = Http::new(url);
-        let policy = Box::<HttpRateLimitRetryPolicy>::default();
-        let client = RetryClientBuilder::default()
-            .rate_limit_retries(10)
-            .timeout_retries(3)
-            .initial_backoff(Duration::from_millis(500))
-            .build(http, policy);
-        Provider::new(client)
+
+        //let url = Url::parse(&self.http_url).unwrap();
+        let client = ClientBuilder::default()
+            .layer(RetryBackoffLayer::new(10, 500, 300))
+            .http(url);
+
+        ProviderBuilder::new().on_client(client)
+        //let url = Url::parse(&self.http_url).unwrap();
+        //let http = Http::new(url);
+        //let policy = Box::<HttpRateLimitRetryPolicy>::default();
+        //let client = RetryClientBuilder::default()
+        //    .rate_limit_retries(10)
+        //    .timeout_retries(3)
+        //    .initial_backoff(Duration::from_millis(500))
+        //    .build(http, policy);
+        //Provider::new(client)
     }
 
     pub async fn reset_listener(&mut self) -> Result<()> {

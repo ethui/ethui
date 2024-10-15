@@ -13,8 +13,9 @@ ethui-types.workspace = true
 ethui-settings.workspace = true
 ethui-broadcast.workspace = true
 
-ethers.workspace = true
 alloy.workspace = true
+alloy-chains.workspace = true
+foundry-block-explorers.workspace = true
 sqlx = { workspace = true, features = ["json"] }
 tauri.workspace = true
 serde.workspace = true
