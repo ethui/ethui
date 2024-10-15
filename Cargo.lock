@@ -109,6 +109,7 @@ dependencies = [
  "alloy-rpc-types",
  "alloy-serde",
  "alloy-signer",
+ "alloy-signer-ledger",
  "alloy-signer-local",
  "alloy-transport",
  "alloy-transport-http",
@@ -3249,7 +3250,6 @@ dependencies = [
  "aead",
  "anyhow",
  "chacha20poly1305",
- "ethers",
  "rand 0.8.5",
  "rust-argon2",
  "serde",
@@ -3544,11 +3544,11 @@ dependencies = [
 name = "ethui-wallets"
 version = "1.8.0"
 dependencies = [
+ "alloy",
  "async-trait",
  "coins-bip32 0.8.7",
  "coins-ledger 0.10.1",
  "enum_dispatch",
- "ethers",
  "ethui-broadcast",
  "ethui-crypto",
  "ethui-dialogs",

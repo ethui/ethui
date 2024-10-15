@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use alloy::primitives::{Bytes, Log, LogData};
 use ethui_simulator::{Evm, Request};
-use ethui_types::{Address, B256};
+use ethui_types::{address, Address, B256};
 use pretty_assertions::assert_eq;
 
 #[tokio::test(flavor = "multi_thread")]
@@ -11,10 +11,10 @@ async fn simulate_detris() {
     let fork_block_number = Some(17579630);
 
     let tx = Request {
-        from: Address::from_str("0x47ac0fb4f2d84898e4d9e7b4dab3c24507a6d503").unwrap(),
-        to: Address::from_str("0xf0f8628d496782d6a9c724f047d14b4fc2569ea1").unwrap(),
+        from: address!("47ac0fb4f2d84898e4d9e7b4dab3c24507a6d503"),
+        to: Some(address!("f0f8628d496782d6a9c724f047d14b4fc2569ea1")),
         value: None,
-        data: Some(alloy::primitives::Bytes::from_str("0x1249c58b").unwrap()),
+        data: Some(Bytes::from_str("0x1249c58b").unwrap()),
         gas_limit: 0,
     };
 
