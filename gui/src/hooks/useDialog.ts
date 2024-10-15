@@ -1,6 +1,6 @@
-import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
-import type { EventCallback, EventName } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/core";
+import type { EventCallback, EventName } from "@tauri-apps/api/event";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { useCallback } from "react";
 
 import { useInvoke } from "./useInvoke";
