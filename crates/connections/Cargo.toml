@@ -9,17 +9,15 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-ethui-types .workspace = true
-ethui-networks .workspace = true
-ethui-broadcast .workspace = true
+ethui-types.workspace = true
+ethui-networks.workspace = true
+ethui-broadcast.workspace = true
 
-ethers .workspace = true
-tokio .workspace = true
-serde .workspace = true
-serde_json .workspace = true
-tracing .workspace = true
-once_cell .workspace = true
-jsonrpc-core .workspace = true
-tauri .workspace = true
-thiserror .workspace = true
-async-trait .workspace = true
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+once_cell.workspace = true
+jsonrpc-core.workspace = true
+tauri.workspace = true
+thiserror.workspace = true
+async-trait.workspace = true

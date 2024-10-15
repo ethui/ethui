@@ -24,16 +24,9 @@ secrets.workspace = true
 thiserror.workspace = true
 once_cell.workspace = true
 async-trait.workspace = true
-futures.workspace = true
-tracing.workspace = true
-coins-ledger.workspace = true
-hex.workspace = true
-rstest.workspace = true
 
 enum_dispatch = "0.3.11"
 coins-bip32 = "0.8.3"
-futures-executor = "0.3.29"
-semver = "1.0.20"
 
 [dev-dependencies]
 rstest.workspace = true

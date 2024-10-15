@@ -15,7 +15,6 @@ serde_json.workspace = true
 tauri.workspace = true
 
 alloy-dyn-abi = { version = "0.8", features = ["eip712"] }
-alloy.workspace = true
 
 [dev-dependencies]
 anyhow.workspace = true

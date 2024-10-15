@@ -9,11 +9,9 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-ethui-settings .workspace = true
-ethui-types .workspace = true
-ethui-db .workspace = true
-ethui-abis .workspace = true
-ethui-broadcast .workspace = true
+ethui-settings.workspace = true
+ethui-types.workspace = true
+ethui-db.workspace = true
 
 serde.workspace = true
 serde_json.workspace = true
