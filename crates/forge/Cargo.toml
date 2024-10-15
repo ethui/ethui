@@ -16,7 +16,6 @@ ethui-networks.workspace = true
 ethui-broadcast.workspace = true
 ethui-db.workspace = true
 
-ethers.workspace = true
 alloy.workspace = true
 tauri.workspace = true
 serde.workspace = true

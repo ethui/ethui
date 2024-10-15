@@ -3248,7 +3248,6 @@ name = "ethui-forge"
 version = "1.8.0"
 dependencies = [
  "alloy",
- "ethers",
  "ethui-broadcast",
  "ethui-db",
  "ethui-networks",
