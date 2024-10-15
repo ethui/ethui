@@ -1,10 +1,11 @@
 use std::{fs::File, io::BufReader, path::PathBuf, str::FromStr, sync::Arc, time::Duration};
 
-use async_trait::async_trait;
-use ethers::{
-    core::k256::ecdsa::SigningKey,
-    signers::{self, Signer as _},
+use alloy::{
+    primitives::B256,
+    signers::{local::LocalSigner, Signer as _},
 };
+use async_trait::async_trait;
+use coins_bip32::ecdsa;
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_types::Address;
 use secrets::SecretVec;
@@ -85,8 +86,10 @@ impl WalletControl for JsonKeystoreWallet {
         let secret = self.secret.read().await;
         let secret = secret.as_ref().unwrap().lock().await;
 
-        let signer = signer_from_secret(&secret);
-        Ok(Signer::SigningKey(signer.with_chain_id(chain_id)))
+        let mut signer = signer_from_secret(&secret);
+        // TODO: use u64 for chain id
+        signer.set_chain_id(Some(chain_id.into()));
+        Ok(Signer::Local(signer))
     }
 }
 
@@ -119,7 +122,7 @@ impl JsonKeystoreWallet {
             };
 
             // if password was given, and correctly decrypts the keystore
-            if let Ok(keystore) = signers::Wallet::decrypt_keystore(self.file.clone(), password) {
+            if let Ok(keystore) = LocalSigner::decrypt_keystore(self.file.clone(), password) {
                 self.store_secret(&keystore).await;
                 return Ok(());
             }
@@ -130,7 +133,7 @@ impl JsonKeystoreWallet {
         Err(Error::UnlockDialogFailed)
     }
 
-    async fn store_secret(&self, keystore: &signers::Wallet<SigningKey>) {
+    async fn store_secret(&self, keystore: &LocalSigner<ecdsa::SigningKey>) {
         // acquire both write locks
         let mut expirer_handle = self.expirer.write().await;
         let mut secret_handle = self.secret.write().await;
@@ -149,8 +152,9 @@ impl JsonKeystoreWallet {
 }
 
 /// Converts a signer into a SecretVec
-fn signer_into_secret(keystore: &signers::Wallet<SigningKey>) -> SecretVec<u8> {
-    let signer_bytes = keystore.signer().to_bytes();
+fn signer_into_secret(keystore: &LocalSigner<ecdsa::SigningKey>) -> SecretVec<u8> {
+    // TODO: test this encoding
+    let signer_bytes = keystore.credential().to_bytes();
     let bytes = signer_bytes.as_slice();
 
     SecretVec::new(bytes.len(), |s| {
@@ -161,24 +165,24 @@ fn signer_into_secret(keystore: &signers::Wallet<SigningKey>) -> SecretVec<u8> {
 }
 
 /// Converts a SecretVec into a signer
-fn signer_from_secret(secret: &SecretVec<u8>) -> signers::Wallet<SigningKey> {
+fn signer_from_secret(secret: &SecretVec<u8>) -> LocalSigner<ecdsa::SigningKey> {
     let signer_bytes = secret.borrow();
-    signers::Wallet::from_bytes(&signer_bytes).unwrap()
+    let key = B256::from_slice(&signer_bytes);
+    LocalSigner::from_bytes(&key).unwrap()
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use ethers::core::rand::thread_rng;
-    use signers::LocalWallet;
 
     #[test]
     fn secret() {
-        let signer = LocalWallet::new(&mut thread_rng());
+        let signer = LocalSigner::random();
 
         let secret = signer_into_secret(&signer);
         let recovered_signer = signer_from_secret(&secret);
 
         assert_eq!(signer.address(), recovered_signer.address());
+        assert_eq!(signer.credential(), recovered_signer.credential());
     }
 }

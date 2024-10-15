@@ -28,7 +28,7 @@ export const Route = createFileRoute("/_dialog/dialog/tx-review/$id")({
 });
 
 export interface TxRequest {
-  data: `0x${string}`;
+  input: `0x${string}`;
   from: Address;
   to: Address;
   value: string;
@@ -75,7 +75,7 @@ interface InnerProps {
 
 function Inner({ dialog, request, network }: InnerProps) {
   const { send, listen } = dialog;
-  const { from, to, chainId, data, value: valueStr } = request;
+  const { from, to, chainId, input: data, value: valueStr } = request;
 
   const [simulation, setSimulation] = useState<Simulation | undefined>(
     undefined,

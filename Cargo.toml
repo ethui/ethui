@@ -79,7 +79,12 @@ jsonrpc-core = "18.0.0"
 reqwest = { version = "0.12", default-features = false, features = [
   "rustls-tls",
 ] }
-alloy = { version = "0.4", features = ["full"] }
+alloy = { version = "0.4", features = [
+  "full",
+  "rpc",
+  "rpc-types",
+  "signer-ledger",
+] }
 alloy-chains = "0.1.38"
 revm-inspectors = { git = "https://github.com/paradigmxyz/evm-inspectors", rev = "c1b5dd0", features = [
   "serde",
@@ -98,3 +103,13 @@ foundry-common = { git = "https://github.com/foundry-rs/foundry", rev = "nightly
 foundry-block-explorers = "0.8.0"
 hex = "0.4.3"
 anyhow = "1.0.83"
+
+# Speed up compilation time for dev builds by reducing emitted debug info.
+# NOTE: Debuggers may provide less useful information with this setting.
+# Uncomment this section if you're using a debugger.
+[profile.dev]
+# https://davidlattimore.github.io/posts/2024/02/04/speeding-up-the-rust-edit-build-run-cycle.html
+debug = 0
+strip = "debuginfo"
+split-debuginfo = "unpacked"
+build-override.opt-level = 3

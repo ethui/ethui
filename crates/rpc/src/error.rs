@@ -1,4 +1,4 @@
-use ethers::prelude::{signer::SignerMiddlewareError, *};
+use ethers::providers::ProviderError;
 use ethui_types::Address;
 use jsonrpc_core::ErrorCode;
 
@@ -20,15 +20,16 @@ pub enum Error {
     SignerBuild(String),
 
     #[error(transparent)]
-    SignerMiddleware(
-        #[from] SignerMiddlewareError<Provider<RetryClient<Http>>, ethui_wallets::Signer>,
-    ),
-
-    #[error(transparent)]
     Provider(#[from] ethers::providers::ProviderError),
 
-    #[error("Signer error: {0}")]
-    Signer(String),
+    #[error("failed to parse URL {0}")]
+    CannotParseUrl(String),
+
+    #[error(transparent)]
+    SignerError(#[from] alloy::signers::Error),
+
+    #[error(transparent)]
+    Transport(#[from] alloy::transports::TransportError),
 
     #[error(transparent)]
     EthuiWallets(#[from] ethui_wallets::Error),

@@ -1,3 +1,4 @@
+use alloy::signers::local::LocalSignerError;
 use serde::Serialize;
 use tokio::sync::oneshot;
 
@@ -18,8 +19,6 @@ pub enum Error {
     #[error("serialization error: {0}")]
     Serde(#[from] serde_json::Error),
 
-    #[error(transparent)]
-    SignerError(#[from] ethers::signers::WalletError),
 
     #[error("wallet unlock rejected by user")]
     UnlockDialogRejected,
@@ -50,6 +49,9 @@ pub enum Error {
 
     #[error("Ledger error: {0}")]
     Ledger(String),
+
+    #[error(transparent)]
+    LocalSigner(#[from] LocalSignerError),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

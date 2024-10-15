@@ -4,7 +4,7 @@ mod methods;
 
 use std::collections::HashMap;
 
-use ethers::{abi::AbiEncode, types::transaction::eip712};
+use alloy::{dyn_abi::TypedData, hex};
 use ethui_connections::Ctx;
 use ethui_types::{Bytes, GlobalState};
 use ethui_wallets::{WalletControl, Wallets};
@@ -200,12 +200,9 @@ impl Handler {
             .build()
             .await;
 
-        let result = sender.estimate_gas().await.finish().await;
+        let result = sender.estimate_gas().await.finish().await?;
 
-        match result {
-            Ok(res) => Ok(res.tx_hash().encode_hex().into()),
-            Err(e) => Err(e.into()),
-        }
+        Ok(format!("0x{:x}", result.tx_hash()).into())
     }
 
     async fn send_call(params: serde_json::Value, ctx: Ctx) -> jsonrpc_core::Result<Bytes> {
@@ -239,12 +236,9 @@ impl Handler {
 
         // TODO: ensure from == signer
 
-        let result = signer.finish().await;
+        let result = signer.finish().await?;
 
-        match result {
-            Ok(res) => Ok(format!("0x{}", res).into()),
-            Err(e) => Err(e.into()),
-        }
+        Ok(format!("0x{}", hex::encode(result.as_bytes())).into())
     }
 
     async fn eth_sign_typed_data_v4(
@@ -255,7 +249,7 @@ impl Handler {
         // TODO where should this be used?
         // let address = Address::from_str(&params[0].as_ref().cloned().unwrap()).unwrap();
         let data = params[1].as_ref().cloned().unwrap();
-        let typed_data: eip712::TypedData = serde_json::from_str(&data).unwrap();
+        let typed_data: TypedData = serde_json::from_str(&data).unwrap();
 
         let wallets = Wallets::read().await;
 
@@ -269,12 +263,9 @@ impl Handler {
             .set_typed_data(typed_data)
             .build();
 
-        let result = signer.finish().await;
+        let result = signer.finish().await?;
 
-        match result {
-            Ok(res) => Ok(format!("0x{}", res).into()),
-            Err(e) => Err(e.into()),
-        }
+        Ok(format!("0x{}", hex::encode(result.as_bytes())).into())
     }
 
     async fn unimplemented(params: Params, _: Ctx) -> jsonrpc_core::Result<serde_json::Value> {

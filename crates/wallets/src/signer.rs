@@ -1,95 +1,63 @@
+use alloy::network::EthereumWallet;
+use alloy::primitives::{Address, B256};
+use alloy::signers::ledger::LedgerSigner;
+use alloy::signers::local::PrivateKeySigner;
+use alloy::signers::Signature;
 use async_trait::async_trait;
-use ethers::types::{
-    transaction::{eip2718::TypedTransaction, eip712::Eip712},
-    Signature, H160,
-};
 
-use crate::{utils::HID_MUTEX, Error, Result};
+//use crate::{utils::HID_MUTEX, Error, Result};
 
 #[derive(Debug)]
 pub enum Signer {
-    SigningKey(ethers::signers::Wallet<ethers::core::k256::ecdsa::SigningKey>),
-    Ledger(ethers::signers::Ledger),
+    Local(PrivateKeySigner),
+    Ledger(LedgerSigner),
 }
 
 impl Signer {
     pub fn is_ledger(&self) -> bool {
         match self {
-            Self::SigningKey(_) => false,
+            Self::Local(_) => false,
             Self::Ledger(_) => true,
         }
     }
 }
 
 #[async_trait]
-impl ethers::signers::Signer for Signer {
-    type Error = crate::Error;
-
-    async fn sign_transaction(&self, message: &TypedTransaction) -> Result<Signature> {
+impl alloy::signers::Signer<Signature> for Signer {
+    fn address(&self) -> Address {
         match self {
-            Self::SigningKey(signer) => Ok(signer.sign_transaction(message).await?),
-            Self::Ledger(signer) => {
-                let _guard = HID_MUTEX.lock().await;
-                Ok(signer
-                    .sign_transaction(message)
-                    .await
-                    .map_err(|e| Error::Ledger(e.to_string()))?)
-            }
-        }
-    }
-
-    async fn sign_message<S>(&self, message: S) -> Result<Signature>
-    where
-        S: AsRef<[u8]> + Send + Sync,
-    {
-        match self {
-            Self::SigningKey(signer) => Ok(signer.sign_message(message).await?),
-            Self::Ledger(signer) => {
-                let _guard = HID_MUTEX.lock().await;
-                Ok(signer
-                    .sign_message(message)
-                    .await
-                    .map_err(|e| Error::Ledger(e.to_string()))?)
-            }
-        }
-    }
-
-    async fn sign_typed_data<T>(&self, payload: &T) -> Result<Signature>
-    where
-        T: Eip712 + Send + Sync,
-    {
-        match self {
-            Self::SigningKey(signer) => Ok(signer.sign_typed_data(payload).await?),
-            Self::Ledger(signer) => {
-                let _guard = HID_MUTEX.lock().await;
-                Ok(signer
-                    .sign_typed_data(payload)
-                    .await
-                    .map_err(|e| Error::Ledger(e.to_string()))?)
-            }
-        }
-    }
-
-    fn address(&self) -> H160 {
-        match self {
-            Self::SigningKey(signer) => signer.address(),
+            Self::Local(signer) => signer.address(),
             Self::Ledger(signer) => signer.address(),
         }
     }
-    fn chain_id(&self) -> u64 {
+
+    fn chain_id(&self) -> Option<u64> {
         match self {
-            Self::SigningKey(signer) => signer.chain_id(),
+            Self::Local(signer) => signer.chain_id(),
             Self::Ledger(signer) => signer.chain_id(),
         }
     }
 
-    fn with_chain_id<T>(self, chain_id: T) -> Self
-    where
-        T: Into<u64>,
-    {
+    fn set_chain_id(&mut self, chain_id: Option<u64>) {
         match self {
-            Self::SigningKey(signer) => Self::SigningKey(signer.with_chain_id(chain_id)),
-            Self::Ledger(signer) => Self::Ledger(signer.with_chain_id(chain_id)),
+            Self::Local(signer) => signer.set_chain_id(chain_id),
+            Self::Ledger(signer) => signer.set_chain_id(chain_id),
+        };
+    }
+
+    async fn sign_hash(&self, hash: &B256) -> alloy::signers::Result<Signature> {
+        match self {
+            Self::Local(signer) => signer.sign_hash(hash).await,
+            Self::Ledger(signer) => signer.sign_hash(hash).await,
+        }
+    }
+}
+
+impl Signer {
+    pub fn to_wallet(self) -> EthereumWallet {
+        match self {
+            Self::Local(signer) => EthereumWallet::from(signer),
+            Self::Ledger(signer) => EthereumWallet::from(signer),
         }
     }
 }

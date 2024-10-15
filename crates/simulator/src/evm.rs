@@ -47,17 +47,17 @@ impl Evm {
     pub async fn call(&mut self, tx: Request) -> SimulationResult<Result> {
         let res = self.executor.call_raw(
             tx.from,
-            tx.to,
+            tx.to.unwrap_or_default(),
             tx.data.unwrap_or_default(),
             tx.value.unwrap_or_default(),
         )?;
-    
+
         let traces = if let Some(traces) = res.traces {
             traces.nodes().to_vec()
         } else {
             Vec::new() // Provide a default empty vector
         };
-    
+
         Ok(Result {
             gas_used: res.gas_used,
             block_number: res.env.block.number.to(),

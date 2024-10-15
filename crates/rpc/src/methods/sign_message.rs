@@ -1,21 +1,18 @@
 use std::str::FromStr;
 
-use ethers::{
-    prelude::SignerMiddleware,
-    providers::{Http, Middleware as _, Provider, RetryClient},
-    signers::Signer as _,
-    types::{transaction::eip712, Bytes, Signature},
+use alloy::{
+    dyn_abi::TypedData,
+    primitives::Bytes,
+    signers::{Signature, Signer as _},
 };
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_networks::Network;
 use ethui_settings::Settings;
 use ethui_types::GlobalState;
-use ethui_wallets::{Wallet, WalletControl};
+use ethui_wallets::{Signer, Wallet, WalletControl};
 use serde::Serialize;
 
 use crate::{Error, Result};
-
-type Middleware = SignerMiddleware<Provider<RetryClient<Http>>, ethui_wallets::Signer>;
 
 /// Orchestrates message signing
 /// Takes references to both the wallet and network
@@ -70,31 +67,24 @@ impl<'a> SignMessage<'a> {
         match self.data {
             Data::Raw(ref msg) => {
                 let bytes = Bytes::from_str(msg).unwrap();
-                Ok(signer.sign(bytes, &signer.address()).await?)
+                Ok(signer.sign_message(&bytes).await?)
             }
-            Data::Typed(ref data) => Ok(signer
-                .signer()
-                .sign_typed_data(&data.clone())
-                .await
-                .map_err(|e| Error::Signer(e.to_string()))?),
+            Data::Typed(ref data) => Ok(signer.sign_dynamic_typed_data(data).await?),
         }
     }
 
-    async fn build_signer(&self) -> Middleware {
-        let signer = self
-            .wallet
+    async fn build_signer(&self) -> Signer {
+        self.wallet
             .build_signer(self.network.chain_id, &self.wallet_path)
             .await
-            .unwrap();
-
-        SignerMiddleware::new(self.network.get_provider(), signer)
+            .unwrap()
     }
 }
 
 #[derive(Serialize)]
 enum Data {
     Raw(String),
-    Typed(eip712::TypedData),
+    Typed(TypedData),
 }
 
 #[derive(Default)]
@@ -126,7 +116,7 @@ impl<'a> SignMessageBuilder<'a> {
         self
     }
 
-    pub fn set_typed_data(mut self, data: eip712::TypedData) -> SignMessageBuilder<'a> {
+    pub fn set_typed_data(mut self, data: TypedData) -> SignMessageBuilder<'a> {
         self.data = Some(Data::Typed(data));
         self
     }
