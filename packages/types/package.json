@@ -5,7 +5,7 @@
   "version": "0.1.0",
   "type": "module",
   "dependencies": {
-    "typescript": "^5.4.5",
+    "typescript": "^5.6.3",
     "viem": "^2.21.26",
     "zod": "^3.23.8",
     "zustand": "^4.5.5",

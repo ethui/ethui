@@ -32,15 +32,12 @@
   },
   "dependencies": {
     "@tauri-apps/cli": "^2.0.3",
-    "typescript": "5.4.5"
+    "typescript": "5.6.3"
   },
   "resolutions": {
     "postcss": "^8.4.31",
     "jose": "4.15.5",
     "ws": "8.17.1"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
   },
   "packageManager": "yarn@4.0.2"
 }

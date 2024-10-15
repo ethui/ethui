@@ -2022,7 +2022,7 @@ __metadata:
     "@types/core-js": "npm:^2.5.8"
     "@types/lodash-es": "npm:^4.17.12"
     "@types/node": "npm:^20.16.11"
-    typescript: "npm:^5.4.5"
+    typescript: "npm:^5.6.3"
     viem: "npm:^2.21.26"
   languageName: unknown
   linkType: soft
@@ -2057,7 +2057,7 @@ __metadata:
     react-dom: "npm:^18.3.1"
     stream: "npm:^0.0.3"
     ts-node: "npm:^10.9.2"
-    typescript: "npm:^5.4.5"
+    typescript: "npm:^5.6.3"
     vite: "npm:^5.4.9"
     vite-plugin-node-polyfills: "npm:^0.22.0"
     vite-tsconfig-paths: "npm:^4.3.2"
@@ -2136,7 +2136,7 @@ __metadata:
     react-error-boundary: "npm:^4.0.13"
     react-hook-form: "npm:^7.53.0"
     react-infinite-scroller: "npm:^1.2.6"
-    typescript: "npm:^5.4.5"
+    typescript: "npm:^5.6.3"
     viem: "npm:^2.21.26"
     vite: "npm:^5.4.9"
     vite-tsconfig-paths: "npm:^4.3.2"
@@ -2174,7 +2174,7 @@ __metadata:
     react-dom: "npm:^18.3.1"
     react-hook-form: "npm:^7.53.0"
     storybook: "npm:^8.3.5"
-    typescript: "npm:^5.4.5"
+    typescript: "npm:^5.6.3"
     viem: "npm:^2.21.26"
     vite: "npm:^5.4.9"
   peerDependencies:
@@ -2190,7 +2190,7 @@ __metadata:
     "@types/lodash-es": "npm:^4.17.12"
     "@types/node": "npm:^20.16.11"
     jsdom: "npm:^25.0.1"
-    typescript: "npm:^5.4.5"
+    typescript: "npm:^5.6.3"
     viem: "npm:^2.21.26"
     zod: "npm:^3.23.8"
     zustand: "npm:^4.5.5"
@@ -11992,7 +11992,7 @@ __metadata:
     "@biomejs/biome": "npm:^1.9.3"
     "@tauri-apps/cli": "npm:^2.0.3"
     assert: "npm:^2.1.0"
-    typescript: "npm:5.4.5"
+    typescript: "npm:5.6.3"
   peerDependencies:
     typescript: ^5.0.0
   languageName: unknown
@@ -13076,7 +13076,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:5.4.5, typescript@npm:>=5.0.2, typescript@npm:^5.4.5":
+"typescript@npm:5.6.3, typescript@npm:^5.6.3":
+  version: 5.6.3
+  resolution: "typescript@npm:5.6.3"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 44f61d3fb15c35359bc60399cb8127c30bae554cd555b8e2b46d68fa79d680354b83320ad419ff1b81a0bdf324197b29affe6cc28988cd6a74d4ac60c94f9799
+  languageName: node
+  linkType: hard
+
+"typescript@npm:>=5.0.2":
   version: 5.4.5
   resolution: "typescript@npm:5.4.5"
   bin:
@@ -13086,7 +13096,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A5.4.5#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A>=5.0.2#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.4.5#optional!builtin<compat/typescript>":
+"typescript@patch:typescript@npm%3A5.6.3#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.6.3#optional!builtin<compat/typescript>":
+  version: 5.6.3
+  resolution: "typescript@patch:typescript@npm%3A5.6.3#optional!builtin<compat/typescript>::version=5.6.3&hash=e012d7"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: ac8307bb06bbfd08ae7137da740769b7d8c3ee5943188743bb622c621f8ad61d244767480f90fbd840277fbf152d8932aa20c33f867dea1bb5e79b187ca1a92f
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@npm%3A>=5.0.2#optional!builtin<compat/typescript>":
   version: 5.4.5
   resolution: "typescript@patch:typescript@npm%3A5.4.5#optional!builtin<compat/typescript>::version=5.4.5&hash=e012d7"
   bin:
