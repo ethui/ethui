@@ -12,18 +12,18 @@
   },
   "dependencies": {
     "@ethui/types": "*",
-    "@fontsource/material-icons": "^5.0.18",
-    "@fontsource/roboto": "^5.0.13",
-    "@fontsource/roboto-mono": "^5.0.18",
+    "@fontsource/material-icons": "^5.1.0",
+    "@fontsource/roboto": "^5.1.0",
+    "@fontsource/roboto-mono": "^5.1.0",
     "@mui/icons-material": "^5.15.17",
     "@mui/lab": "^5.0.0-alpha.170",
     "@mui/material": "^5.15.17",
     "@storybook/addon-themes": "^8.1.0",
-    "lucide-react": "^0.378.0",
+    "lucide-react": "^0.453.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-hook-form": "^7.51.4",
-    "viem": "^2.16.2"
+    "react-hook-form": "^7.53.0",
+    "viem": "^2.21.26"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "^8.1.0",
@@ -37,9 +37,9 @@
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react-swc": "^3.7.1",
-    "storybook": "^8.1.0",
+    "storybook": "^8.3.5",
     "typescript": "^5.4.5",
-    "vite": "^5.2.14"
+    "vite": "^5.4.9"
   },
   "peerDependencies": {
     "@tanstack/react-query": "^5.21.4"
