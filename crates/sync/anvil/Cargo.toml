@@ -9,21 +9,20 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-ethui-db .workspace = true
-ethui-abis .workspace = true
-ethui-types .workspace = true
-ethui-broadcast .workspace = true
+ethui-db.workspace = true
+ethui-abis.workspace = true
+ethui-types.workspace = true
+ethui-broadcast.workspace = true
 
-ethers .workspace = true
-tokio .workspace = true
-sqlx .workspace = true
-serde .workspace = true
-serde_json .workspace = true
-thiserror .workspace = true
-once_cell .workspace = true
-tracing .workspace = true
-reqwest .workspace = true
-url .workspace = true
-futures .workspace = true
+ethers.workspace = true
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+once_cell.workspace = true
+tracing.workspace = true
+reqwest.workspace = true
+url.workspace = true
+futures.workspace = true
 
 base64 = "0.21.2"

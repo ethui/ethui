@@ -17,7 +17,6 @@ ethui-broadcast.workspace = true
 ethui-db.workspace = true
 
 ethers.workspace = true
-tauri.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 tokio.workspace = true

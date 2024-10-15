@@ -18,7 +18,6 @@ sqlx = { workspace = true, features = ["json"] }
 tauri.workspace = true
 serde.workspace = true
 serde_json.workspace = true
-tokio.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
 once_cell.workspace = true
