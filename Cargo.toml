@@ -63,14 +63,14 @@ sqlx = { version = "0.8", default-features = false, features = [
   "migrate",
   "json",
 ] }
-serde = { version = "1.0", features = ["derive", "std"] }
+serde = { version = "1.0", default-features = false, features = ["derive"] }
 serde_json = "1.0"
 async-trait = "0.1"
 tauri = { version = "2.0", features = ["tray-icon"] }
-once_cell = "1.19"
+once_cell = { version = "1.19", default-features = false }
 secrets = { version = "1.2", features = ["use-libsodium-sys"] }
 tracing = "0.1"
-jsonrpc-core = "18.0"
+jsonrpc-core = { version = "18.0", default-features = false }
 reqwest = { version = "0.12", default-features = false, features = [
   "rustls-tls",
 ] }
@@ -92,7 +92,7 @@ alloy-chains = { version = "0.1", default-features = false, features = [
   "serde",
 ] }
 url = { version = "2.5", features = ["serde"] }
-futures = "0.3.28"
+futures = { version = "0.3.28", default-features = false }
 clap = { version = "4.4", default-features = false, features = [
   "derive",
   "env",
