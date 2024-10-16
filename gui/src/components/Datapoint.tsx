@@ -1,4 +1,4 @@
-import { Grid, Skeleton, Typography } from "@mui/material";
+import { Grid2 as Grid, Skeleton, Typography } from "@mui/material";
 
 interface DatapointProps {
   label: string;
@@ -14,10 +14,8 @@ export function Datapoint({ label, value, size = "large" }: DatapointProps) {
     xs = 4;
   }
   return (
-    <Grid item xs={xs}>
-      <Typography color="gray" sx={{ fontSize: "12px" }}>
-        {label}
-      </Typography>
+    <Grid size={{ xs }}>
+      <Typography sx={{ color: "gray", fontSize: "12px" }}>{label}</Typography>
       {value !== undefined && value}
       {value === undefined && <Skeleton variant="text" width="80%" />}
     </Grid>

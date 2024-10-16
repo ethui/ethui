@@ -1,4 +1,4 @@
-import { Button, Grid, Stack, Typography } from "@mui/material";
+import { Button, Grid2 as Grid, Stack, Typography } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { isDirty, isValid } from "zod";
@@ -39,13 +39,13 @@ export function ERC721AddDialog() {
           />
         </Grid>
         <Grid container spacing={4}>
-          <Grid item>
+          <Grid>
             <Datapoint
               label="Contract Address"
               value={<AddressView address={token.contract.address} />}
             />
           </Grid>
-          <Grid item>
+          <Grid>
             <Datapoint label="Token ID" value={`#${Number(token.tokenId)}`} />
           </Grid>
         </Grid>

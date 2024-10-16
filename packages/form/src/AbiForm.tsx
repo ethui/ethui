@@ -1,4 +1,4 @@
-import { Alert, Box, Button, Grid, Stack } from "@mui/material";
+import { Alert, Box, Button, Grid2 as Grid, Stack } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { type AbiFunction, type AbiItem, parseAbiItem } from "viem";
 import { encodeFunctionData } from "viem/utils";
@@ -29,7 +29,7 @@ export function AbiForm({
   defaultCalldata,
   defaultEther,
   onChange,
-  onSubmit = () => {},
+  onSubmit = () => { },
   submit = false,
 }: AbiFormProps) {
   if (!abiItem || abiItem === "") {

@@ -4,7 +4,7 @@ import {
   Box,
   Button,
   CircularProgress,
-  Grid,
+  Grid2 as Grid,
   Stack,
   Typography,
 } from "@mui/material";
@@ -249,7 +249,7 @@ function Details({ tx, chainId }: DetailsProps) {
         size="medium"
       />
 
-      <Grid item xs={12}>
+      <Grid size={{ xs: 12 }}>
         <Button variant="contained" onClick={() => resend(fullTx)}>
           Send again
         </Button>
