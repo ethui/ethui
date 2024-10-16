@@ -1826,7 +1826,7 @@ __metadata:
   dependencies:
     "@types/core-js": "npm:^2.5.8"
     "@types/lodash-es": "npm:^4.17.12"
-    "@types/node": "npm:^20.16.11"
+    "@types/node": "npm:^22.7.5"
     typescript: "npm:^5.6.3"
     viem: "npm:^2.21.27"
   languageName: unknown
@@ -1845,7 +1845,7 @@ __metadata:
     "@metamask/post-message-stream": "npm:^8.1.0"
     "@metamask/utils": "npm:^8.3.0"
     "@types/chrome": "npm:^0.0.278"
-    "@types/node": "npm:^20.16.11"
+    "@types/node": "npm:^22.7.5"
     "@types/react": "npm:^18.3.11"
     "@types/react-dom": "npm:^18.3.1"
     "@types/webextension-polyfill": "npm:^0.10.7"
@@ -1922,7 +1922,7 @@ __metadata:
     "@types/chrome": "npm:^0.0.278"
     "@types/core-js": "npm:^2.5.8"
     "@types/lodash-es": "npm:^4.17.12"
-    "@types/node": "npm:^20.16.11"
+    "@types/node": "npm:^22.7.5"
     "@types/react": "npm:^18.3.11"
     "@types/react-dom": "npm:^18.3.1"
     "@types/react-infinite-scroller": "npm:^1.2.5"
@@ -1993,7 +1993,7 @@ __metadata:
   dependencies:
     "@types/core-js": "npm:^2.5.8"
     "@types/lodash-es": "npm:^4.17.12"
-    "@types/node": "npm:^20.16.11"
+    "@types/node": "npm:^22.7.5"
     jsdom: "npm:^25.0.1"
     typescript: "npm:^5.6.3"
     viem: "npm:^2.21.27"
@@ -4290,16 +4290,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^20.16.11":
-  version: 20.16.11
-  resolution: "@types/node@npm:20.16.11"
-  dependencies:
-    undici-types: "npm:~6.19.2"
-  checksum: bba43f447c3c80548513954dae174e18132e9149d572c09df4a282772960d33e229d05680fb5364997c03489c22fe377d1dbcd018a3d4ff1cfbcfcdaa594a9c3
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^22.0.0":
+"@types/node@npm:^22.0.0, @types/node@npm:^22.7.5":
   version: 22.7.5
   resolution: "@types/node@npm:22.7.5"
   dependencies:

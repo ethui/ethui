@@ -27,7 +27,7 @@ run = "yarn run ext:build"
 run = "yarn run ext:dev"
 
 [tools]
-node = "20"
+node = "22"
 
 [env]
 NODE_ENV = "development"
