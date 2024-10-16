@@ -47,5 +47,8 @@
     "webextension-polyfill": "^0.12.0",
     "websocket-ts": "^2.1.5",
     "zustand": "^4.5.5"
+  },
+  "resolutions": {
+    "rollup": "4.22.4"
   }
 }
