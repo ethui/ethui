@@ -4,7 +4,7 @@ import type { Action } from "kbar";
 import { type StateCreator, create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { IconChain } from "@ethui/react/components";
+import IconChain from "@ethui/react/components/icons/Chain";
 import type { Network } from "@ethui/types/network";
 
 interface State {
@@ -62,9 +62,8 @@ const store: StateCreator<Store> = (set, get) => ({
       {
         id: actionId,
         name: "Change network",
-        subtitle: `${networks.length} network${
-          networks.length > 1 ? "s" : ""
-        } available`,
+        subtitle: `${networks.length} network${networks.length > 1 ? "s" : ""
+          } available`,
         shortcut: ["N"],
       },
       ...(networks || []).map((network, index) => ({
@@ -92,7 +91,7 @@ const store: StateCreator<Store> = (set, get) => ({
   },
 });
 
-export const useNetworks = create<Store>()(subscribeWithSelector(store));
+const useNetworks = create<Store>()(subscribeWithSelector(store));
 
 event.listen("networks-changed", async () => {
   await useNetworks.getState().reload();
@@ -109,3 +108,5 @@ event.listen("networks-removed", async () => {
 (async () => {
   await useNetworks.getState().reload();
 })();
+
+export default useNetworks;

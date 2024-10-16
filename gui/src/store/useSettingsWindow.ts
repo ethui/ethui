@@ -34,8 +34,10 @@ const store: StateCreator<Store> = (set, get) => ({
   },
 });
 
-export const useSettingsWindow = create<Store>()(subscribeWithSelector(store));
+const useSettingsWindow = create<Store>()(subscribeWithSelector(store));
 
 getCurrentWebviewWindow().listen("menu:settings", () => {
   useSettingsWindow.getState().toggle();
 });
+
+export default useSettingsWindow;

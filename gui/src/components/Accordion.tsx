@@ -6,9 +6,11 @@ import {
   AccordionSummary as MuiAccordionSummary,
 } from "@mui/material";
 
-export { AccordionDetails } from "@mui/material";
+import * as MuiAccordionDetails from "@mui/material/AccordionDetails";
 
-export function Accordion(
+export const AccordionDetails = MuiAccordionDetails;
+
+export default function Accordion(
   props: Omit<AccordionProps, "disableGutters" | "TransitionProps">,
 ) {
   return (

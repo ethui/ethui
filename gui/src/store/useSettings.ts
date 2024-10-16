@@ -41,10 +41,12 @@ const store: StateCreator<Store> = (set) => ({
   },
 });
 
-export const useSettings = create<Store>()(subscribeWithSelector(store));
+const useSettings = create<Store>()(subscribeWithSelector(store));
 
 event.listen("settings-changed", () => {
   useSettings.getState().reload();
 });
 
 useSettings.getState().reload();
+
+export default useSettings;

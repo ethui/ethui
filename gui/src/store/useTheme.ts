@@ -63,8 +63,10 @@ event.listen("settings-changed", async () => {
   await useTheme.getState().reload();
 });
 
-export const useTheme = create<Store>()(store);
+const useTheme = create<Store>()(store);
 
 (async () => {
   await useTheme.getState().reload();
 })();
+
+export default useTheme;
