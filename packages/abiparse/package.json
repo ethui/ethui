@@ -24,6 +24,6 @@
   "devDependencies": {
     "bun-plugin-dts": "^0.3.0",
     "bun-types": "^1.1.30",
-    "vitest": "^1.6.0"
+    "vitest": "^2.1.3"
   }
 }
