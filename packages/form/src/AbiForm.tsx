@@ -29,7 +29,7 @@ export function AbiForm({
   defaultCalldata,
   defaultEther,
   onChange,
-  onSubmit = () => { },
+  onSubmit = () => {},
   submit = false,
 }: AbiFormProps) {
   if (!abiItem || abiItem === "") {
