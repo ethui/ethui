@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Grid2 as Grid } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import type { AbiFunction } from "abitype";
 import { useCallback, useState } from "react";
@@ -24,11 +24,11 @@ interface ItemFormProps {
 
 type Result =
   | {
-      write: Hash;
-    }
+    write: Hash;
+  }
   | {
-      read: string;
-    };
+    read: string;
+  };
 
 export function ABIItemForm({
   to,
@@ -83,7 +83,7 @@ export function ABIItemForm({
 
   return (
     <Grid container>
-      <Grid item xs={12} sm={4}>
+      <Grid size={{ xs: 12, sm: 4 }}>
         <AbiForm
           submit={submit}
           abiItem={abiItem!}
@@ -96,7 +96,10 @@ export function ABIItemForm({
         {result && "write" in result && <HashView hash={result.write} />}
       </Grid>
 
-      <Grid item xs={12} sm={8} sx={{ pl: { md: 2 }, pt: { xs: 2, md: 0 } }}>
+      <Grid
+        size={{ xs: 12, sm: 8 }}
+        sx={{ pl: { md: 2 }, pt: { xs: 2, md: 0 } }}
+      >
         <HighlightBox fullWidth>
           {data && from ? (
             <SolidityCall

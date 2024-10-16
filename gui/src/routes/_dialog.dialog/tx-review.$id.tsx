@@ -1,5 +1,12 @@
 import { Cancel, CheckCircle, Delete, Report, Send } from "@mui/icons-material";
-import { Alert, AlertTitle, Box, Button, Grid, Stack } from "@mui/material";
+import {
+  Alert,
+  AlertTitle,
+  Box,
+  Button,
+  Grid2 as Grid,
+  Stack,
+} from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -34,11 +41,11 @@ export interface TxRequest {
   value: string;
   chainId: number;
   walletType:
-    | "ledger"
-    | "HdWallet"
-    | "jsonKeystore"
-    | "plaintext"
-    | "impersonator";
+  | "ledger"
+  | "HdWallet"
+  | "jsonKeystore"
+  | "plaintext"
+  | "impersonator";
 }
 
 interface Log {
@@ -231,7 +238,7 @@ function SimulationResult({ simulation, chainId, to }: SimulationResultProps) {
           size="medium"
         />
       )}
-      <Grid item xs={12}>
+      <Grid size={{ xs: 12 }}>
         {simulation.logs.map((log, i) => (
           <Log key={i} log={log} chainId={chainId} />
         ))}

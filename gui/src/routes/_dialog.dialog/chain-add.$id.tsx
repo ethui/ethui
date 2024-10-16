@@ -1,4 +1,4 @@
-import { Button, Grid, Stack, Typography } from "@mui/material";
+import { Button, Grid2 as Grid, Stack, Typography } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { isDirty, isValid } from "zod";
