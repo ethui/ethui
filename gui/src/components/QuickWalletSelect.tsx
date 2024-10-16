@@ -5,15 +5,14 @@ import {
   Select,
   type SelectChangeEvent,
 } from "@mui/material";
+import { useShallow } from "zustand/shallow";
 
 import { useWallets } from "#/store";
 
 export function QuickWalletSelect() {
-  const [wallets, currentWallet, setCurrentWallet] = useWallets((s) => [
-    s.wallets,
-    s.currentWallet,
-    s.setCurrentWallet,
-  ]);
+  const [wallets, currentWallet, setCurrentWallet] = useWallets(
+    useShallow((s) => [s.wallets, s.currentWallet, s.setCurrentWallet]),
+  );
 
   const handleChange = (event: SelectChangeEvent<string>) => {
     setCurrentWallet(event.target.value);

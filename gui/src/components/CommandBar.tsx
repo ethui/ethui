@@ -22,6 +22,7 @@ import {
 } from "kbar";
 import type React from "react";
 import { type ReactNode, forwardRef, useMemo } from "react";
+import { useShallow } from "zustand/shallow";
 
 import {
   useNetworks,
@@ -35,7 +36,9 @@ function useActions() {
   const walletActions = useWallets((s) => s.actions);
   const networkActions = useNetworks((s) => s.actions);
   const settingsActions = useSettings((s) => s.actions);
-  const [theme, themeActions] = useTheme((s) => [s.theme, s.actions]);
+  const [theme, themeActions] = useTheme(
+    useShallow((s) => [s.theme, s.actions]),
+  );
   const settingsWindowActions = useSettingsWindow((s) => s.actions);
 
   return {
