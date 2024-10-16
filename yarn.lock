@@ -1869,7 +1869,7 @@ __metadata:
     web-ext: "npm:^8.3.0"
     webextension-polyfill: "npm:^0.12.0"
     websocket-ts: "npm:^2.1.5"
-    zustand: "npm:^4.5.5"
+    zustand: "npm:^5.0.0"
   languageName: unknown
   linkType: soft
 
@@ -1946,7 +1946,7 @@ __metadata:
     vite: "npm:^5.4.9"
     vite-tsconfig-paths: "npm:^5.0.1"
     zod: "npm:^3.23.8"
-    zustand: "npm:^4.5.5"
+    zustand: "npm:^5.0.0"
     zxcvbn-typescript: "npm:^5.0.1"
   languageName: unknown
   linkType: soft
@@ -1998,7 +1998,6 @@ __metadata:
     typescript: "npm:^5.6.3"
     viem: "npm:^2.21.27"
     zod: "npm:^3.23.8"
-    zustand: "npm:^4.5.5"
     zxcvbn-typescript: "npm:^5.0.1"
   peerDependencies:
     "@tanstack/react-query": ^5.21.4
@@ -12269,7 +12268,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-sync-external-store@npm:1.2.2, use-sync-external-store@npm:^1.2.2":
+"use-sync-external-store@npm:^1.2.2":
   version: 1.2.2
   resolution: "use-sync-external-store@npm:1.2.2"
   peerDependencies:
@@ -12978,15 +12977,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zustand@npm:^4.5.5":
-  version: 4.5.5
-  resolution: "zustand@npm:4.5.5"
-  dependencies:
-    use-sync-external-store: "npm:1.2.2"
+"zustand@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "zustand@npm:5.0.0"
   peerDependencies:
-    "@types/react": ">=16.8"
+    "@types/react": ">=18.0.0"
     immer: ">=9.0.6"
-    react: ">=16.8"
+    react: ">=18.0.0"
+    use-sync-external-store: ">=1.2.0"
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -12994,7 +12992,9 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: d04469d76b29c7e4070da269886de4efdadedd3d3824dc2a06ac4ff62e3b5877f925e927afe7382de651829872b99adec48082f1bd69fe486149be666345e626
+    use-sync-external-store:
+      optional: true
+  checksum: 7546df78aa512f1d2271e238c44699c0ac4bc57f12ae46fcfe8ba1e8a97686fc690596e654101acfabcd706099aa5d3519fc3f22d32b3082baa60699bb333e9a
   languageName: node
   linkType: hard
 

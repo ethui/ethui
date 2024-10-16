@@ -7,6 +7,7 @@ import {
 } from "@mui/material";
 import { map } from "lodash-es";
 import { type Address, getAddress } from "viem";
+import { useShallow } from "zustand/shallow";
 
 import type { Wallet } from "@ethui/types/wallets";
 import { useInvoke } from "#/hooks";
@@ -14,10 +15,9 @@ import { useWallets } from "#/store";
 import { AddressView } from "./";
 
 export function QuickAddressSelect() {
-  const [currentWallet, setCurrentAddress] = useWallets((s) => [
-    s.currentWallet,
-    s.setCurrentAddress,
-  ]);
+  const [currentWallet, setCurrentAddress] = useWallets(
+    useShallow((s) => [s.currentWallet, s.setCurrentAddress]),
+  );
   const { data: addresses } = useInvoke<[string, Address][]>(
     "wallets_get_wallet_addresses",
     { name: currentWallet?.name },
