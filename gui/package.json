@@ -53,7 +53,7 @@
     "zxcvbn-typescript": "^5.0.1"
   },
   "devDependencies": {
-    "@storybook/builder-vite": "^7.6.20",
+    "@storybook/builder-vite": "^8.3.5",
     "@tanstack/react-query-devtools": "^5.59.15",
     "@tanstack/router-devtools": "^1.69.1",
     "@types/chrome": "^0.0.278",
