@@ -1839,11 +1839,11 @@ __metadata:
     "@devtools-ds/object-inspector": "npm:^1.2.1"
     "@devtools-ds/table": "npm:^1.2.1"
     "@lukeed/uuid": "npm:^2.0.1"
-    "@metamask/eth-json-rpc-middleware": "npm:^12.1.2"
-    "@metamask/json-rpc-engine": "npm:^9.0.0"
-    "@metamask/json-rpc-middleware-stream": "npm:^7.0.2"
-    "@metamask/post-message-stream": "npm:^8.1.0"
-    "@metamask/utils": "npm:^8.3.0"
+    "@metamask/eth-json-rpc-middleware": "npm:^14.0.2"
+    "@metamask/json-rpc-engine": "npm:^9.0.3"
+    "@metamask/json-rpc-middleware-stream": "npm:^8.0.3"
+    "@metamask/post-message-stream": "npm:^8.1.1"
+    "@metamask/utils": "npm:^9.3.0"
     "@types/chrome": "npm:^0.0.278"
     "@types/node": "npm:^20.16.11"
     "@types/react": "npm:^18.3.11"
@@ -2284,133 +2284,115 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/abi-utils@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "@metamask/abi-utils@npm:2.0.2"
+"@metamask/abi-utils@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "@metamask/abi-utils@npm:2.0.4"
   dependencies:
-    "@metamask/utils": "npm:^8.0.0"
-    superstruct: "npm:^1.0.3"
-  checksum: 3906e58f6f3a762162b8301bb3509973f7c31699b099fe016d76c69f668542f713f135a405b8bbe731813d8eda3bf203167beeab47d16e49241a94140f48093a
+    "@metamask/superstruct": "npm:^3.1.0"
+    "@metamask/utils": "npm:^9.0.0"
+  checksum: 747fe2f6f6f788af16bdbaeac8e7cfbce956c0b59bc47c59fc34eb228dd94048ce9b1fbef3d4c975c50db4434f961fa21d22f2000e9af78d2dc820bad250f250
   languageName: node
   linkType: hard
 
-"@metamask/eth-block-tracker@npm:^9.0.3":
-  version: 9.0.3
-  resolution: "@metamask/eth-block-tracker@npm:9.0.3"
+"@metamask/eth-block-tracker@npm:^11.0.1":
+  version: 11.0.1
+  resolution: "@metamask/eth-block-tracker@npm:11.0.1"
   dependencies:
-    "@metamask/eth-json-rpc-provider": "npm:^3.0.2"
-    "@metamask/safe-event-emitter": "npm:^3.0.0"
-    "@metamask/utils": "npm:^8.1.0"
+    "@metamask/eth-json-rpc-provider": "npm:^4.1.1"
+    "@metamask/safe-event-emitter": "npm:^3.1.1"
+    "@metamask/utils": "npm:^9.1.0"
     json-rpc-random-id: "npm:^1.0.1"
     pify: "npm:^5.0.0"
-  checksum: 66fd3ebf254ffb73f8771575333d022612b6e3aad5b615932b2448a31e5b4c92ad6d9d7ca0196601a1d04d3d25c8cb0894abb1f8684ce030dfd0cb0b58f3a199
+  checksum: 244b9c5f6645196db86ead0c7be10ae0d80da85ba7e24b8f341bfc5dfbc2294681db8400db915e4249687e510b075e5ed7dbc81c146e98783454c264ea3ca966
   languageName: node
   linkType: hard
 
-"@metamask/eth-json-rpc-middleware@npm:^12.1.2":
-  version: 12.1.2
-  resolution: "@metamask/eth-json-rpc-middleware@npm:12.1.2"
+"@metamask/eth-json-rpc-middleware@npm:^14.0.2":
+  version: 14.0.2
+  resolution: "@metamask/eth-json-rpc-middleware@npm:14.0.2"
   dependencies:
-    "@metamask/eth-block-tracker": "npm:^9.0.3"
-    "@metamask/eth-json-rpc-provider": "npm:^3.0.2"
-    "@metamask/eth-sig-util": "npm:^7.0.0"
-    "@metamask/json-rpc-engine": "npm:^8.0.2"
-    "@metamask/rpc-errors": "npm:^6.0.0"
-    "@metamask/utils": "npm:^8.1.0"
+    "@metamask/eth-block-tracker": "npm:^11.0.1"
+    "@metamask/eth-json-rpc-provider": "npm:^4.1.1"
+    "@metamask/eth-sig-util": "npm:^7.0.3"
+    "@metamask/json-rpc-engine": "npm:^9.0.2"
+    "@metamask/rpc-errors": "npm:^6.3.1"
+    "@metamask/utils": "npm:^9.1.0"
+    "@types/bn.js": "npm:^5.1.5"
+    bn.js: "npm:^5.2.1"
     klona: "npm:^2.0.6"
     pify: "npm:^5.0.0"
     safe-stable-stringify: "npm:^2.4.3"
-  checksum: d37967be4fc258d5ad7f342f5a39ec60835464229bb9823e738cb3e4925d30c68cdb1374bfccc038722acece805bce2c875c73245f04d72c8c3f8e05d164a5f3
+  checksum: ffad394f0d5ffc798a6fe73a3725c180a71b4d4c14b9e89b1e56e47fb2970342d280e6d9249ea1fa93712f45ca2736d359a7db05a2e46116f7e559675fb6aaab
   languageName: node
   linkType: hard
 
-"@metamask/eth-json-rpc-provider@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "@metamask/eth-json-rpc-provider@npm:3.0.2"
+"@metamask/eth-json-rpc-provider@npm:^4.1.1":
+  version: 4.1.4
+  resolution: "@metamask/eth-json-rpc-provider@npm:4.1.4"
   dependencies:
-    "@metamask/json-rpc-engine": "npm:^8.0.2"
+    "@metamask/json-rpc-engine": "npm:^9.0.3"
+    "@metamask/rpc-errors": "npm:^6.3.1"
     "@metamask/safe-event-emitter": "npm:^3.0.0"
-    "@metamask/utils": "npm:^8.3.0"
-  checksum: 3be3c567190d8f59f9a525f0365a914271d1b7305664225eb498b583dd52fe1ad8eac7969e0cd5d19dd5ce8c462b7778db7d08c2bfc05b4f9b7b7591de3e4c78
+    "@metamask/utils": "npm:^9.1.0"
+    uuid: "npm:^8.3.2"
+  checksum: 2ae71d9eea49ae40af18f7d34abbb22112f87d6cfbf90e2bda47eab7c820ac43100ff5ad3e04b13547e61d1a39098bcb177e342f945f5569369b8cde2fcb9e84
   languageName: node
   linkType: hard
 
-"@metamask/eth-sig-util@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "@metamask/eth-sig-util@npm:7.0.0"
+"@metamask/eth-sig-util@npm:^7.0.3":
+  version: 7.0.3
+  resolution: "@metamask/eth-sig-util@npm:7.0.3"
   dependencies:
     "@ethereumjs/util": "npm:^8.1.0"
-    "@metamask/abi-utils": "npm:^2.0.2"
-    "@metamask/utils": "npm:^8.1.0"
+    "@metamask/abi-utils": "npm:^2.0.4"
+    "@metamask/utils": "npm:^9.0.0"
+    "@scure/base": "npm:~1.1.3"
     ethereum-cryptography: "npm:^2.1.2"
-    ethjs-util: "npm:^0.1.6"
     tweetnacl: "npm:^1.0.3"
-    tweetnacl-util: "npm:^0.15.1"
-  checksum: 7e370f30d4be783c6be21c136451f895ff43add1398aa704fe5041ff03167af66308493913f9cd3ef9df3d37d13df35784dcf5f43b10aa13db3075b4344f479d
+  checksum: dd581266e2c995f8b0b3d895fd41f3edaa09bc2419f841253040450eddbb9e4f65134195b6b2050da92acfc79aad92b0983e9f2362cee49d7c07ad12ea07fd64
   languageName: node
   linkType: hard
 
-"@metamask/json-rpc-engine@npm:^8.0.2":
-  version: 8.0.2
-  resolution: "@metamask/json-rpc-engine@npm:8.0.2"
+"@metamask/json-rpc-engine@npm:^9.0.2, @metamask/json-rpc-engine@npm:^9.0.3":
+  version: 9.0.3
+  resolution: "@metamask/json-rpc-engine@npm:9.0.3"
   dependencies:
-    "@metamask/rpc-errors": "npm:^6.2.1"
+    "@metamask/rpc-errors": "npm:^6.3.1"
     "@metamask/safe-event-emitter": "npm:^3.0.0"
-    "@metamask/utils": "npm:^8.3.0"
-  checksum: 57a584e713be98837b56b1985fc14020b74939af200c304e9dcde0a59b622f0d4b1fd07a9032dd3652b72ce330e47db8b9aa13402a443ad8c09667a4204c4c17
+    "@metamask/utils": "npm:^9.1.0"
+  checksum: 628c7ccb839fe8583186aab3cee11185f203bce49c9f0b5bd03ced99205d6d1fd571fd2a71fffba02077016853a5392ac037d7e74b79f3bd0ccf67b0ddd0a049
   languageName: node
   linkType: hard
 
-"@metamask/json-rpc-engine@npm:^9.0.0":
-  version: 9.0.0
-  resolution: "@metamask/json-rpc-engine@npm:9.0.0"
+"@metamask/json-rpc-middleware-stream@npm:^8.0.3":
+  version: 8.0.3
+  resolution: "@metamask/json-rpc-middleware-stream@npm:8.0.3"
   dependencies:
-    "@metamask/rpc-errors": "npm:^6.2.1"
+    "@metamask/json-rpc-engine": "npm:^9.0.3"
     "@metamask/safe-event-emitter": "npm:^3.0.0"
-    "@metamask/utils": "npm:^8.3.0"
-  checksum: d5c366aab41acfe5becd666269099e09f6e095204ad13be182def42aada83b89c6aac180a81bdef5b1370914e42849b7eefcabba48f3bf3fca58dca919ddca20
-  languageName: node
-  linkType: hard
-
-"@metamask/json-rpc-middleware-stream@npm:^7.0.2":
-  version: 7.0.2
-  resolution: "@metamask/json-rpc-middleware-stream@npm:7.0.2"
-  dependencies:
-    "@metamask/json-rpc-engine": "npm:^8.0.2"
-    "@metamask/safe-event-emitter": "npm:^3.0.0"
-    "@metamask/utils": "npm:^8.3.0"
+    "@metamask/utils": "npm:^9.1.0"
     readable-stream: "npm:^3.6.2"
-  checksum: 5819e5cd1460046d309218110a76727d5b5b7b0fb379efd2e938e145905a359c2b6d4278d390760227ad5823e3f4bcaa001cbb5abeeeb014b08badbb1fa29f1f
+  checksum: a9eee516dec2b83b2e9846ff85026993b781c869b145521e723bed53a746434036873bb0fd3ca12b70c125abf34907363d355bb9d6b8d72d51d92f154c2a9acd
   languageName: node
   linkType: hard
 
-"@metamask/post-message-stream@npm:^8.1.0":
-  version: 8.1.0
-  resolution: "@metamask/post-message-stream@npm:8.1.0"
+"@metamask/post-message-stream@npm:^8.1.1":
+  version: 8.1.1
+  resolution: "@metamask/post-message-stream@npm:8.1.1"
   dependencies:
-    "@metamask/utils": "npm:^8.1.0"
+    "@metamask/utils": "npm:^9.0.0"
     readable-stream: "npm:3.6.2"
-  checksum: 6082c486513a139fbe3a791bf1e569d7eeb44e13235addff435cc70823513687ea354813fd7d10083a9e7f33d02bd7d138fa6df9504f11ffc6c2b96a03f84bbb
+  checksum: 0cd568625bb59b745de8f64a8cf1083823533841147379912db8769cef244c320076065c91e79a32ccbe69a7d414e47f2168cac28e5ba72377528fa755dc8301
   languageName: node
   linkType: hard
 
-"@metamask/rpc-errors@npm:^6.0.0":
-  version: 6.1.0
-  resolution: "@metamask/rpc-errors@npm:6.1.0"
+"@metamask/rpc-errors@npm:^6.3.1":
+  version: 6.4.0
+  resolution: "@metamask/rpc-errors@npm:6.4.0"
   dependencies:
-    "@metamask/utils": "npm:^8.1.0"
+    "@metamask/utils": "npm:^9.0.0"
     fast-safe-stringify: "npm:^2.0.6"
-  checksum: 2085ad2df9cfddc49d84662adc864e9950725706704206e93491fb9d95181404519f989f40ca2171ed1badaeccfac69271159106540a9bf32654cf62c5243106
-  languageName: node
-  linkType: hard
-
-"@metamask/rpc-errors@npm:^6.2.1":
-  version: 6.2.1
-  resolution: "@metamask/rpc-errors@npm:6.2.1"
-  dependencies:
-    "@metamask/utils": "npm:^8.3.0"
-    fast-safe-stringify: "npm:^2.0.6"
-  checksum: 512a312fa9962dbb0d0e165ffb17a1e65ade51148f8fd360846a7629269d35425388c4e08a8521177a412e8c2161cd04f8673959d65f4c5e1bb3ef258993b848
+  checksum: eeca3a2316c97f2f0e8922fc3a0625a704f76a1dd3b0cc78ed54dcc3c4ca7f5c3f5c90880e74c748f09f075cc21f176f3498421ad75a5c323535e454a7896c21
   languageName: node
   linkType: hard
 
@@ -2428,35 +2410,34 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/utils@npm:^8.0.0, @metamask/utils@npm:^8.1.0":
-  version: 8.2.0
-  resolution: "@metamask/utils@npm:8.2.0"
-  dependencies:
-    "@ethereumjs/tx": "npm:^4.2.0"
-    "@noble/hashes": "npm:^1.3.1"
-    "@scure/base": "npm:^1.1.3"
-    "@types/debug": "npm:^4.1.7"
-    debug: "npm:^4.3.4"
-    pony-cause: "npm:^2.1.10"
-    semver: "npm:^7.5.4"
-    superstruct: "npm:^1.0.3"
-  checksum: 5048924656e83c5d15d866f1a3591918d67dc04577b820a2a7b861ad05a9e565d955f89d976442b7a970006b5962bbbf202a8d6a45ca8dc89691c6fa7b59a1c7
+"@metamask/safe-event-emitter@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "@metamask/safe-event-emitter@npm:3.1.1"
+  checksum: 4dd51651fa69adf65952449b20410acac7edad06f176dc6f0a5d449207527a2e85d5a21a864566e3d8446fb259f8840bd69fdb65932007a882f771f473a2b682
   languageName: node
   linkType: hard
 
-"@metamask/utils@npm:^8.3.0":
-  version: 8.3.0
-  resolution: "@metamask/utils@npm:8.3.0"
+"@metamask/superstruct@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@metamask/superstruct@npm:3.1.0"
+  checksum: 8820e76582b3d735a2142c878ac4830d962f7a9c0776cb31bafdff646ff701657b9be192601d7f96834c3a8edd87677650f5bfa1a29d945e8dbc77a8d788b3fc
+  languageName: node
+  linkType: hard
+
+"@metamask/utils@npm:^9.0.0, @metamask/utils@npm:^9.1.0, @metamask/utils@npm:^9.3.0":
+  version: 9.3.0
+  resolution: "@metamask/utils@npm:9.3.0"
   dependencies:
     "@ethereumjs/tx": "npm:^4.2.0"
+    "@metamask/superstruct": "npm:^3.1.0"
     "@noble/hashes": "npm:^1.3.1"
     "@scure/base": "npm:^1.1.3"
     "@types/debug": "npm:^4.1.7"
     debug: "npm:^4.3.4"
     pony-cause: "npm:^2.1.10"
     semver: "npm:^7.5.4"
-    superstruct: "npm:^1.0.3"
-  checksum: 1f33ad3d61528be8e39a269ad9082e36827675c9df4fa84cf57e7468be0da405690a062df3a960da39e6175c9e4aa87a98ede40ef3cc701f8773c143b1121c6e
+    uuid: "npm:^9.0.1"
+  checksum: 8298d6f58d1cf8f5b3e057a4fdf364466f6d7d860e2950713690c5b4be3edb48d952f20982af66f83753596dc2bcd5b23cb53721b389ca134117b20ef0ebf04f
   languageName: node
   linkType: hard
 
@@ -3022,7 +3003,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@scure/base@npm:~1.1.7, @scure/base@npm:~1.1.8":
+"@scure/base@npm:~1.1.3, @scure/base@npm:~1.1.7, @scure/base@npm:~1.1.8":
   version: 1.1.9
   resolution: "@scure/base@npm:1.1.9"
   checksum: 77a06b9a2db8144d22d9bf198338893d77367c51b58c72b99df990c0a11f7cadd066d4102abb15e3ca6798d1529e3765f55c4355742465e49aed7a0c01fe76e8
@@ -4053,6 +4034,15 @@ __metadata:
   dependencies:
     "@babel/types": "npm:^7.20.7"
   checksum: 033abcb2f4c084ad33e30c3efaad82161240f351e3c71b6154ed289946b33b363696c0fbd42502b68e4582a87413c418321f40eb1ea863e34fe525641345e05b
+  languageName: node
+  linkType: hard
+
+"@types/bn.js@npm:^5.1.5":
+  version: 5.1.6
+  resolution: "@types/bn.js@npm:5.1.6"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 073d383d87afea513a8183ce34af7bc0a7a798d057c7ae651982b7f30dd7d93f33247323bca3ba39f1f6af146b564aff547b15467bdf9fc922796c17e8426bf6
   languageName: node
   linkType: hard
 
@@ -7185,16 +7175,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ethjs-util@npm:^0.1.6":
-  version: 0.1.6
-  resolution: "ethjs-util@npm:0.1.6"
-  dependencies:
-    is-hex-prefixed: "npm:1.0.0"
-    strip-hex-prefix: "npm:1.0.0"
-  checksum: 9b4d6268705fd0620e73a56d2fa7b8a7c6b9770b2cf7f8ffe3a9c46b8bd1c5a08fff3d1181bb18cf85cf12b6fdbb6dca6d9aff6506005f3f565e742f026e6339
-  languageName: node
-  linkType: hard
-
 "event-target-shim@npm:^5.0.0":
   version: 5.0.1
   resolution: "event-target-shim@npm:5.0.1"
@@ -8410,13 +8390,6 @@ __metadata:
   dependencies:
     is-extglob: "npm:^2.1.1"
   checksum: 17fb4014e22be3bbecea9b2e3a76e9e34ff645466be702f1693e8f1ee1adac84710d0be0bd9f967d6354036fd51ab7c2741d954d6e91dae6bb69714de92c197a
-  languageName: node
-  linkType: hard
-
-"is-hex-prefixed@npm:1.0.0":
-  version: 1.0.0
-  resolution: "is-hex-prefixed@npm:1.0.0"
-  checksum: 767fa481020ae654ab085ca24c63c518705ff36fdfbfc732292dc69092c6f8fdc551f6ce8c5f6ae704b0a19294e6f62be1b4b9859f0e1ac76e3b1b0733599d94
   languageName: node
   linkType: hard
 
@@ -11627,15 +11600,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"strip-hex-prefix@npm:1.0.0":
-  version: 1.0.0
-  resolution: "strip-hex-prefix@npm:1.0.0"
-  dependencies:
-    is-hex-prefixed: "npm:1.0.0"
-  checksum: ec9a48c334c2ba4afff2e8efebb42c3ab5439f0e1ec2b8525e184eabef7fecade7aee444af802b1be55d2df6da5b58c55166c32f8461cc7559b401137ad51851
-  languageName: node
-  linkType: hard
-
 "strip-indent@npm:^3.0.0":
   version: 3.0.0
   resolution: "strip-indent@npm:3.0.0"
@@ -11686,13 +11650,6 @@ __metadata:
   version: 4.2.0
   resolution: "stylis@npm:4.2.0"
   checksum: a7128ad5a8ed72652c6eba46bed4f416521bc9745a460ef5741edc725252cebf36ee45e33a8615a7057403c93df0866ab9ee955960792db210bb80abd5ac6543
-  languageName: node
-  linkType: hard
-
-"superstruct@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "superstruct@npm:1.0.3"
-  checksum: 45ed9c41016641161a2ed93723d2cf6efc6fb2552ebb747b8df94cb73a37acd95288baad42c2d51ffe77956caf5c5200cd22622e166c6951777acd2fb11a7da5
   languageName: node
   linkType: hard
 
@@ -12032,13 +11989,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tweetnacl-util@npm:^0.15.1":
-  version: 0.15.1
-  resolution: "tweetnacl-util@npm:0.15.1"
-  checksum: 796fad76238e40e853dff79516406a27b41549bfd6fabf4ba89d87ca31acf232122f825daf955db8c8573cc98190d7a6d39ece9ed8ae0163370878c310650a80
-  languageName: node
-  linkType: hard
-
 "tweetnacl@npm:^1.0.3":
   version: 1.0.3
   resolution: "tweetnacl@npm:1.0.3"
@@ -12364,7 +12314,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^9.0.0":
+"uuid@npm:^9.0.0, uuid@npm:^9.0.1":
   version: 9.0.1
   resolution: "uuid@npm:9.0.1"
   bin:

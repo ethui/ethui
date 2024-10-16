@@ -10,6 +10,27 @@
     "dev": "./scripts/build.sh",
     "build": "./scripts/build.sh \"$@\""
   },
+  "dependencies": {
+    "@devtools-ds/object-inspector": "^1.2.1",
+    "@devtools-ds/table": "^1.2.1",
+    "@lukeed/uuid": "^2.0.1",
+    "@metamask/eth-json-rpc-middleware": "^14.0.2",
+    "@metamask/json-rpc-engine": "^9.0.3",
+    "@metamask/json-rpc-middleware-stream": "^8.0.3",
+    "@metamask/post-message-stream": "^8.1.1",
+    "@metamask/utils": "^9.3.0",
+    "eth-json-rpc-filters": "^6.0.1",
+    "eth-rpc-errors": "^4.0.3",
+    "eventemitter3": "^5.0.1",
+    "loglevel": "^1.9.2",
+    "mipd": "^0.0.7",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "stream": "^0.0.3",
+    "webextension-polyfill": "^0.12.0",
+    "websocket-ts": "^2.1.5",
+    "zustand": "^4.5.5"
+  },
   "devDependencies": {
     "@types/chrome": "^0.0.278",
     "@types/node": "^20.16.11",
@@ -26,27 +47,6 @@
     "vite-plugin-node-polyfills": "^0.22.0",
     "vite-tsconfig-paths": "^5.0.1",
     "web-ext": "^8.3.0"
-  },
-  "dependencies": {
-    "@devtools-ds/object-inspector": "^1.2.1",
-    "@devtools-ds/table": "^1.2.1",
-    "@lukeed/uuid": "^2.0.1",
-    "@metamask/eth-json-rpc-middleware": "^12.1.2",
-    "@metamask/json-rpc-engine": "^9.0.0",
-    "@metamask/json-rpc-middleware-stream": "^7.0.2",
-    "@metamask/post-message-stream": "^8.1.0",
-    "@metamask/utils": "^8.3.0",
-    "eth-json-rpc-filters": "^6.0.1",
-    "eth-rpc-errors": "^4.0.3",
-    "eventemitter3": "^5.0.1",
-    "loglevel": "^1.9.2",
-    "mipd": "^0.0.7",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "stream": "^0.0.3",
-    "webextension-polyfill": "^0.12.0",
-    "websocket-ts": "^2.1.5",
-    "zustand": "^4.5.5"
   },
   "resolutions": {
     "rollup": "4.22.4"
