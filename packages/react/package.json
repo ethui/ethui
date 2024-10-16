@@ -16,14 +16,14 @@
     "@fontsource/roboto": "^5.1.0",
     "@fontsource/roboto-mono": "^5.1.0",
     "@mui/icons-material": "^6.1.4",
-    "@mui/lab": "6.0.0-beta.12",
+    "@mui/lab": "6.0.0-dev.240424162023-9968b4889d",
     "@mui/material": "^6.1.4",
     "@storybook/addon-themes": "^8.3.5",
     "lucide-react": "^0.453.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.0",
-    "viem": "^2.21.26"
+    "viem": "^2.21.27"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "^8.3.5",
