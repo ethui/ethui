@@ -11,5 +11,14 @@
       "#/*": ["./*"]
     }
   },
-  "include": ["components", "lib", "./*.ts", "@types", "vite.config.ts"]
+  "include": [
+    "components",
+    "lib",
+    "./*.ts",
+    "@types",
+    "vite.config.ts",
+    ".storybook",
+    "stories",
+    "node_modules"
+  ]
 }

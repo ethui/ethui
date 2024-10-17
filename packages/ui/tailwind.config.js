@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./**/*.tsx"],
-  darkMode: ["class", '[data-mode="dark"]'],
+  content: ["./**/*.{ts,tsx}", ".storybook/*.ts"],
+  darkMode: "selector",
   plugins: [require("tailwindcss-animate")],
   theme: {
     extend: {

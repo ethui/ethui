@@ -1,4 +1,4 @@
-import { withThemeByDataAttribute } from "@storybook/addon-themes";
+import { withThemeByClassName } from "@storybook/addon-themes";
 import type { Preview } from "@storybook/react";
 import "../tailwind.css";
 
@@ -13,9 +13,9 @@ const preview: Preview = {
   },
 
   decorators: [
-    withThemeByDataAttribute({
+    withThemeByClassName({
       themes: {
-        light: "light",
+        light: "",
         dark: "dark",
       },
       defaultTheme: "light",
