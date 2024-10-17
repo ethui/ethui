@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Alert, AlertTitle, Button, Stack } from "@mui/material";
+import { Alert, AlertTitle, Button } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import type { Address } from "abitype";
 import { useEffect, useState } from "react";
@@ -92,7 +92,7 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
 
   return (
     <Form form={form} onSubmit={prepareAndSubmit}>
-      <Stack spacing={2} alignItems="flex-start">
+      <div className="m-2 flex items-start">
         <Detect />
         <Form.Text label="Name" name="name" />
 
@@ -100,8 +100,8 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
           const path = form.watch(`paths.${i}.path`);
           const address = addresses.get(path);
           return (
-            <Stack alignSelf="stretch" key={field.id}>
-              <Stack alignSelf="stretch" direction="row" spacing={2}>
+            <div className="flex self-stretch" key={field.id}>
+              <div className="m-2 flex flex self-stretch">
                 <Form.Text
                   label={`Path #${i + 1}`}
                   name={`paths.${i}.path`}
@@ -110,20 +110,20 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
                 />
 
                 <Button onClick={() => remove(i)}>Remove</Button>
-              </Stack>
-            </Stack>
+              </div>
+            </div>
           );
         })}
         <Button color="secondary" onClick={() => append({ path: "" })}>
           Add
         </Button>
-        <Stack direction="row" spacing={2}>
+        <div className="m-2 flex">
           <Form.Submit label="Save" />
-          <Button color="warning" variant="contained" onClick={onRemove}>
+          <Button color="warning" onClick={onRemove}>
             Remove
           </Button>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </Form>
   );
 }

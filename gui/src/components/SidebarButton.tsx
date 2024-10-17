@@ -2,7 +2,6 @@ import {
   ButtonBase,
   type ButtonBaseProps,
   Collapse,
-  Stack,
   type SvgIcon,
   Typography,
   useMediaQuery,
@@ -54,12 +53,7 @@ export function SidebarButton<R extends React.ElementType>({
         },
       }}
     >
-      <Stack
-        direction="row"
-        alignItems="center"
-        justifyContent="stretch"
-        spacing={0}
-      >
+      <div className="m-3 flex items-center justify-stretch">
         <props.icon fontSize="small" />
 
         <Collapse
@@ -73,7 +67,7 @@ export function SidebarButton<R extends React.ElementType>({
             {label}
           </Typography>
         </Collapse>
-      </Stack>
+      </div>
     </ButtonBase>
   );
 }

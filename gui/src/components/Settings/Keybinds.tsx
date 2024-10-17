@@ -63,7 +63,7 @@ export function SettingsKeybinds() {
             display: "flex",
             gap: "15px",
             flexDirection: isSmallerScreen ? "column" : "row",
-            justifyContent: "space-between",
+            justifyContent: "justify-between",
           }}
         >
           <Box>

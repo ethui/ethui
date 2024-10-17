@@ -1,13 +1,4 @@
-import { KeyboardArrowDown } from "@mui/icons-material";
-import {
-  Button,
-  Chip,
-  Menu,
-  MenuItem,
-  Paper,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Chip, Menu, MenuItem, Paper, Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { startCase } from "lodash-es";
 import { useState } from "react";
@@ -15,9 +6,12 @@ import { useState } from "react";
 import { type Wallet, walletTypes } from "@ethui/types/wallets";
 import {
   Accordion,
-  AccordionDetails,
-  AccordionSummary,
-} from "#/components/Accordion";
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@ethui/ui/components/ui/accordion";
+import { Button } from "@ethui/ui/components/ui/button";
+import { CaretDownIcon } from "@radix-ui//react-icons";
 import { useWallets } from "#/store/useWallets";
 import { HDWalletForm } from "./Wallet/HDWallet";
 import { ImpersonatorForm } from "./Wallet/Impersonator";
@@ -44,22 +38,19 @@ export function SettingsWallets({ extraAction }: Props) {
 
   return (
     <>
-      <Stack>
-        {wallets.map((wallet) => (
-          <ExistingItem key={wallet.name} wallet={wallet} />
-        ))}
+      <div>
+        <Accordion type="single" collapsible className="w-full">
+          {wallets.map((wallet) => (
+            <ExistingItem key={wallet.name} wallet={wallet} />
+          ))}
+        </Accordion>
         {newType && <NewItem key="_new" type={newType} onFinish={closeNew} />}
-      </Stack>
+      </div>
       {!newType && (
-        <Stack
-          spacing={2}
-          direction="row"
-          justifyContent="space-between"
-          sx={{ mt: 4 }}
-        >
+        <div className="m-2 mt-4 flex justify-between justify-between">
           <AddWalletButton onChoice={startNew} />
           {extraAction && extraAction}
-        </Stack>
+        </div>
       )}
     </>
   );
@@ -77,14 +68,14 @@ function ExistingItem({ wallet }: ItemProps) {
   };
 
   return (
-    <Accordion defaultExpanded={!wallet}>
-      <AccordionSummary>
-        <Stack alignItems="center" direction="row">
+    <AccordionItem value={wallet.name}>
+      <AccordionTrigger>
+        <div className="flex items-center">
           <Typography>{wallet.name}</Typography>
           <Chip sx={{ marginLeft: 2 }} label={wallet.type} />
-        </Stack>
-      </AccordionSummary>
-      <AccordionDetails>
+        </div>
+      </AccordionTrigger>
+      <AccordionContent>
         {wallet.type === "plaintext" && (
           <Plaintext wallet={wallet} {...props} />
         )}
@@ -101,8 +92,8 @@ function ExistingItem({ wallet }: ItemProps) {
           <PrivateKeyForm wallet={wallet} {...props} />
         )}
         {wallet.type === "ledger" && <Ledger wallet={wallet} {...props} />}
-      </AccordionDetails>
-    </Accordion>
+      </AccordionContent>
+    </AccordionItem>
   );
 }
 
@@ -156,19 +147,10 @@ const AddWalletButton = ({ onChoice }: AddWalletButtonProps) => {
   };
 
   return (
+    // TODO: make this button into a dropdown
     <>
-      <Button
-        id="add-wallet-btn"
-        aria-controls={open ? "add-wallet-type-menu" : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? "true" : undefined}
-        variant="contained"
-        disableElevation
-        onClick={handleOpen}
-        endIcon={<KeyboardArrowDown />}
-        color="info"
-        size="medium"
-      >
+      <Button id="add-wallet-btn" onClick={handleOpen}>
+        <CaretDownIcon />
         Add
       </Button>
       <Menu

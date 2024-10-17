@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { Link } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect } from "react";
@@ -9,7 +9,7 @@ export function ThankYouStep() {
   });
 
   return (
-    <Stack spacing={3} width="100%">
+    <div className="m-3 w-full">
       <Typography variant="h6" component="h1" alignSelf="start">
         Thank you
       </Typography>
@@ -20,9 +20,9 @@ export function ThankYouStep() {
 
       <Box alignSelf="flex-end">
         <Link to="/home/account">
-          <Button variant="contained">Finish</Button>
+          <Button>Finish</Button>
         </Link>
       </Box>
-    </Stack>
+    </div>
   );
 }

@@ -1,10 +1,11 @@
-import { Box, Button, Link, Stack, Typography } from "@mui/material";
+import { Box, Button, Link } from "@mui/material";
 
+import { Typography } from "@ethui/react/components/Typography";
 import type { StepProps } from ".";
 
 export function WelcomeStep({ onSubmit }: StepProps) {
   return (
-    <Stack spacing={3} sx={{ width: "100%" }}>
+    <div className="m-3 flex w-full">
       <Typography variant="h6" component="h1" alignSelf="start">
         Welcome
       </Typography>
@@ -32,10 +33,10 @@ export function WelcomeStep({ onSubmit }: StepProps) {
         Contributors are welcome!
       </Typography>
       <Box alignSelf="flex-end">
-        <Button variant="contained" type="submit" onClick={onSubmit}>
+        <Button type="submit" onClick={onSubmit}>
           Next
         </Button>
       </Box>
-    </Stack>
+    </div>
   );
 }

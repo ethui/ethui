@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Button,
-  Stack,
   Step,
   StepLabel,
   Stepper,
@@ -90,7 +89,7 @@ function Create({ onSubmit, onRemove }: Props) {
   }, [name, current, mnemonic, derivationPath, password, onSubmit, submitted]);
 
   return (
-    <Stack direction="column" spacing={2}>
+    <div className="m-2 flex flex-col">
       <Stepper activeStep={step} alternativeLabel>
         {steps.map((label) => (
           <Step key={label}>
@@ -129,7 +128,7 @@ function Create({ onSubmit, onRemove }: Props) {
           onCancel={onRemove}
         />
       )}
-    </Stack>
+    </div>
   );
 }
 
@@ -151,20 +150,20 @@ function MnemonicStep({ onSubmit, onCancel }: MnemonicStepProps) {
 
   return (
     <Form form={form} onSubmit={onSubmitInternal}>
-      <Stack direction="column" spacing={2}>
+      <div className="m-2 flex flex-col">
         <Form.Text label="Name" name="name" multiline />
 
         <Typography>Insert your 12-word mnemonic</Typography>
         <Form.Text label="12-word mnemonic" name="mnemonic" multiline />
 
-        <Stack direction="row" spacing={2} justifyContent="flex-end">
-          <Button color="warning" variant="contained" onClick={onCancel}>
+        <div className="m-2 flex justify-end">
+          <Button color="warning" onClick={onCancel}>
             Cancel
           </Button>
 
           <Form.Submit label="Continue" />
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </Form>
   );
 }
@@ -182,7 +181,7 @@ function PasswordStep({ onSubmit, onCancel }: PasswordStepProps) {
 
   return (
     <Form form={form} onSubmit={(d) => onSubmit(d.password)}>
-      <Stack direction="column" spacing={2}>
+      <div className="m-2 flex flex-col">
         <Typography>Choose a secure password</Typography>
         <Form.Text type="password" label="Password" name="password" />
         <Form.Text
@@ -191,14 +190,14 @@ function PasswordStep({ onSubmit, onCancel }: PasswordStepProps) {
           name="passwordConfirmation"
         />
 
-        <Stack direction="row" spacing={2} justifyContent="flex-end">
-          <Button color="warning" variant="contained" onClick={onCancel}>
+        <div className="m-2 flex justify-end">
+          <Button color="warning" onClick={onCancel}>
             Cancel
           </Button>
 
           <Form.Submit label="Continue" />
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </Form>
   );
 }
@@ -241,11 +240,11 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
 
   return (
     <Form form={form} onSubmit={onSubmitInternal}>
-      <Stack spacing={2} direction="column">
+      <div className="m-2 flex flex-col">
         <Form.Text label="Derivation Path" name="derivationPath" />
 
         {form.formState.isValid && (
-          <Stack direction="column" spacing={2}>
+          <div className="m-2 flex flex-col">
             <TableContainer>
               <Table size="small">
                 <TableBody>
@@ -267,16 +266,16 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
               </Table>
             </TableContainer>
 
-            <Stack direction="row" spacing={2} justifyContent="flex-end">
-              <Button color="warning" variant="contained" onClick={onCancel}>
+            <div className="m-2 flex justify-end">
+              <Button color="warning" onClick={onCancel}>
                 Cancel
               </Button>
 
               <Form.Submit label="Save" />
-            </Stack>
-          </Stack>
+            </div>
+          </div>
         )}
-      </Stack>
+      </div>
     </Form>
   );
 }
@@ -324,17 +323,17 @@ function Update({ wallet, onSubmit, onRemove }: Props) {
 
   return (
     <Form form={form} onSubmit={onSubmit}>
-      <Stack spacing={2} alignItems="flex-start">
+      <div className="m-2 flex items-start">
         <Form.Text label="Name" name="name" />
         <Form.Text label="Derivation Path" name="derivationPath" />
         <Form.NumberField label="Address count" name="count" />
-        <Stack direction="row" spacing={2}>
+        <div className="m-2 flex">
           <Form.Submit label="Save" />
-          <Button color="warning" variant="contained" onClick={onRemove}>
+          <Button color="warning" onClick={onRemove}>
             Remove
           </Button>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </Form>
   );
 }

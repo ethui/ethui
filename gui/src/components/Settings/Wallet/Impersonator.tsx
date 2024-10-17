@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Stack } from "@mui/material";
+import { Button } from "@mui/material";
 import type { Address } from "abitype";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -66,30 +66,30 @@ export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
 
   return (
     <Form form={form} onSubmit={prepareAndSubmit}>
-      <Stack spacing={2} alignItems="flex-start">
+      <div className="m-2 flex items-start">
         <Form.Text label="Name" name="name" />
         {addressFields.map((field, i) => (
-          <Stack alignSelf="stretch" key={field.id} direction="row" spacing={2}>
+          <div className="m-2 flex self-stretch" key={field.id}>
             <Form.Text
               label="Address"
               name={`addresses.${i}.address`}
               fullWidth
             />
             <Button onClick={() => remove(i)}>Remove</Button>
-          </Stack>
+          </div>
         ))}
 
         <Button color="secondary" onClick={() => append({ address: "" })}>
           Add
         </Button>
 
-        <Stack direction="row" spacing={2}>
+        <div className="m-2 flex">
           <Form.Submit label="Save" />
-          <Button color="warning" variant="contained" onClick={onRemove}>
+          <Button color="warning" onClick={onRemove}>
             Remove
           </Button>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </Form>
   );
 }

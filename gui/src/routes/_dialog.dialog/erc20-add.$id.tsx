@@ -1,4 +1,4 @@
-import { Button, Grid2 as Grid, Stack, Typography } from "@mui/material";
+import { Button, Grid2 as Grid, Typography } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { isDirty, isValid } from "zod";
@@ -25,7 +25,7 @@ export function ERC20AddDialog() {
   if (!token) return null;
 
   return (
-    <Stack spacing={2} alignItems="center">
+    <div className="m-2 flex items-center">
       <Typography variant="h6" component="h1">
         Add suggested token
       </Typography>
@@ -36,12 +36,12 @@ export function ERC20AddDialog() {
         <Datapoint
           label=""
           value={
-            <Stack direction="row" spacing={1.5} textAlign="center">
+            <div className="m-1 flex flex text-center">
               <IconToken iconUrl={token.alchemy_metadata.logo} />
               <Typography alignSelf={"center"}>
                 {token.metadata.name}
               </Typography>
-            </Stack>
+            </div>
           }
         />
         <Datapoint size="small" label="Symbol" value={token.metadata.symbol} />
@@ -56,23 +56,18 @@ export function ERC20AddDialog() {
         />
       </Grid>
 
-      <Stack direction="row" spacing={2}>
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() => tauriWindow.close()}
-        >
+      <div className="m-2 flex">
+        <Button color="error" onClick={() => tauriWindow.close()}>
           Cancel
         </Button>
         <Button
-          variant="contained"
           type="submit"
           disabled={!isDirty || !isValid}
           onClick={() => send("accept")}
         >
           Add
         </Button>
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }

@@ -1,4 +1,4 @@
-import { Container, MobileStepper, Stack } from "@mui/material";
+import { Container, MobileStepper } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
@@ -38,7 +38,7 @@ export function Onboarding() {
     <>
       <DraggableToolbar />
       <Container disableGutters sx={{ px: 2 }}>
-        <Stack alignItems="center">
+        <div className="flex items-center">
           <Logo width={40} />
           <step.component onSubmit={handleNext} />
 
@@ -49,7 +49,7 @@ export function Onboarding() {
             backButton={null}
             nextButton={null}
           />
-        </Stack>
+        </div>
       </Container>
     </>
   );

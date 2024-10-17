@@ -1,12 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Button,
-  Stack,
-  Step,
-  StepLabel,
-  Stepper,
-  Typography,
-} from "@mui/material";
+import { Button, Step, StepLabel, Stepper, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -65,7 +58,7 @@ function Create({ onSubmit, onRemove }: Props) {
   }, [name, privateKey, password, onSubmit, submitted]);
 
   return (
-    <Stack direction="column" spacing={2}>
+    <div className="m-2 flex flex-col">
       <Stepper activeStep={step} alternativeLabel>
         {steps.map((label) => (
           <Step key={label}>
@@ -93,7 +86,7 @@ function Create({ onSubmit, onRemove }: Props) {
           onCancel={onRemove}
         />
       )}
-    </Stack>
+    </div>
   );
 }
 
@@ -116,19 +109,19 @@ function PrivateKeyStep({ onSubmit, onCancel }: PrivateKeyStepProps) {
 
   return (
     <Form form={form} onSubmit={onSubmitInternal}>
-      <Stack direction="column" spacing={2}>
+      <div className="m-2 flex flex-col">
         <Form.Text multiline label="Name" name="name" />
         <Typography>Insert your 12-word privateKey</Typography>
         <Form.Text multiline label="Private Key" name="privateKey" />
 
-        <Stack direction="row" spacing={2} justifyContent="flex-end">
-          <Button color="warning" variant="contained" onClick={onCancel}>
+        <div className="m-2 flex justify-end">
+          <Button color="warning" onClick={onCancel}>
             Cancel
           </Button>
 
           <Form.Submit label="Continue" />
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </Form>
   );
 }
@@ -150,7 +143,7 @@ function PasswordStep({ onSubmit, onCancel }: PasswordStepProps) {
 
   return (
     <Form form={form} onSubmit={onSubmitInternal}>
-      <Stack direction="column" spacing={2}>
+      <div className="m-2 flex flex-col">
         <Typography>Choose a secure password</Typography>
         <Form.Text type="password" label="Password" name="password" />
         <Form.Text
@@ -159,14 +152,14 @@ function PasswordStep({ onSubmit, onCancel }: PasswordStepProps) {
           name="passwordConfirmation"
         />
 
-        <Stack direction="row" spacing={2} justifyContent="flex-end">
-          <Button color="warning" variant="contained" onClick={onCancel}>
+        <div className="m-2 flex justify-end">
+          <Button color="warning" onClick={onCancel}>
             Cancel
           </Button>
 
           <Form.Submit label="Continue" />
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </Form>
   );
 }
@@ -180,16 +173,16 @@ function Update({ wallet, onSubmit, onRemove }: Props) {
 
   return (
     <Form form={form} onSubmit={onSubmit}>
-      <Stack spacing={2} alignItems="flex-start">
+      <div className="m-2 flex items-start">
         <Form.Text label="Name" name="name" />
-        <Stack direction="row" spacing={2}>
+        <div className="m-2 flex">
           <Form.Submit label="Save" />
 
-          <Button color="warning" variant="contained" onClick={onRemove}>
+          <Button color="warning" onClick={onRemove}>
             Remove
           </Button>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </Form>
   );
 }

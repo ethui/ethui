@@ -1,7 +1,8 @@
 import { Form } from "@ethui/react/components/Form";
 import { addressSchema } from "@ethui/types/wallets";
+import { Button } from "@ethui/ui/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Alert, Button, Stack, Typography } from "@mui/material";
+import { Alert, Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
@@ -112,7 +113,7 @@ export function TransferForm({
 
   return (
     <Form form={form} onSubmit={onSubmit}>
-      <Stack alignItems="flex-start" spacing={2}>
+      <div className="m-2 flex items-start">
         <Typography>Transfer token</Typography>
 
         <Form.Select
@@ -149,14 +150,14 @@ export function TransferForm({
           </Alert>
         )}
 
-        <Stack width="100%" direction="row" justifyContent="space-between">
-          <Button variant="outlined" color="error" onClick={onClose}>
+        <div className="flex w-full justify-between">
+          <Button variant="outline" color="error" onClick={onClose}>
             Close
           </Button>
 
           <Form.Submit label="Send" />
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </Form>
   );
 }

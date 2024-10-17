@@ -1,4 +1,6 @@
 import "./global.css";
+//import "./tailwind.css";
+import "@ethui/ui/tailwind.css";
 
 import {
   RouterProvider,

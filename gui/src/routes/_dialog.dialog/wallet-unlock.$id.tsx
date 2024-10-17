@@ -1,11 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Backdrop,
-  Button,
-  CircularProgress,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Backdrop, Button, CircularProgress, Typography } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
@@ -58,8 +52,12 @@ export function WalletUnlockDialog() {
 
   return (
     <>
-      <Form form={form} onSubmit={onSubmit} className="flex flex-col gap-4">
-        <Stack spacing={2}>
+      <Form
+        form={form}
+        onSubmit={onSubmit}
+        className="flex flex flex-col gap-4"
+      >
+        <div className="m-2 flex">
           <Typography>
             ethui is asking to unlock wallet <b>{name}:</b>
           </Typography>
@@ -75,17 +73,13 @@ export function WalletUnlockDialog() {
             }
             fullWidth
           />
-          <Stack direction="row" spacing={2}>
+          <div className="m-1 flex">
             <Form.Submit label="Unlock" />
-            <Button
-              variant="contained"
-              color="error"
-              onClick={() => send("reject")}
-            >
+            <Button color="error" onClick={() => send("reject")}>
               Cancel
             </Button>
-          </Stack>
-        </Stack>
+          </div>
+        </div>
       </Form>
       <Backdrop open={loading}>
         <CircularProgress color="inherit" />

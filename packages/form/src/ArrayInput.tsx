@@ -2,7 +2,6 @@ import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import {
   Box,
   IconButton,
-  Stack,
   ToggleButton,
   ToggleButtonGroup,
 } from "@mui/material";
@@ -42,7 +41,7 @@ export function ArrayInput({
   };
 
   return (
-    <Stack spacing={1}>
+    <div className="m-1">
       <ToggleButtonGroup
         color="primary"
         value={tab}
@@ -77,7 +76,7 @@ export function ArrayInput({
           </Box>
         )}
       </>
-    </Stack>
+    </div>
   );
 }
 
@@ -120,9 +119,9 @@ function ArrayElements({
   };
 
   return (
-    <Stack direction="column" spacing={1}>
+    <div className=" m-1 flex-col">
       {value.map((v, i) => (
-        <Stack direction="row" key={i} spacing={1}>
+        <div className="" key={i}>
           <AbiArrayItemInput
             name={`${name}[${i}]`}
             depth={depth + 1}
@@ -133,7 +132,7 @@ function ArrayElements({
             onChange={(v) => update(i, v)}
             onRemove={() => remove(i)}
           />
-        </Stack>
+        </div>
       ))}
       {!length && (
         <Box>
@@ -151,7 +150,7 @@ function ArrayElements({
         </Box>
       )}
       {debug && <Debug value={value} />}
-    </Stack>
+    </div>
   );
 }
 

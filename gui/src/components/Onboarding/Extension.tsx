@@ -4,7 +4,6 @@ import {
   Button,
   CircularProgress,
   Link,
-  Stack,
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
@@ -29,7 +28,7 @@ export function InstallExtensionStep({ onSubmit }: StepProps) {
   }, [detected, peerCount]);
 
   return (
-    <Stack spacing={2} sx={{ width: "100%" }}>
+    <div className="m-2 flex w-full">
       <Typography variant="h6" component="h1" alignSelf="start">
         Install Extension
       </Typography>
@@ -57,11 +56,11 @@ export function InstallExtensionStep({ onSubmit }: StepProps) {
         )}
       </Box>
 
-      <Box alignSelf="flex-end">
-        <Button variant="contained" onClick={onSubmit} disabled={!detected}>
+      <div className="self-end">
+        <Button onClick={onSubmit} disabled={!detected}>
           {detected ? "Next" : "Skip"}
         </Button>
-      </Box>
-    </Stack>
+      </div>
+    </div>
   );
 }
