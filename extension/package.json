@@ -37,7 +37,6 @@
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
     "@types/webextension-polyfill": "^0.10.7",
-    "@vitejs/plugin-react": "^4.3.2",
     "autoprefixer": "^10.4.20",
     "crx": "^5.0.1",
     "postcss": "^8.4.47",
