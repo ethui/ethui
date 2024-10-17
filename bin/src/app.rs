@@ -188,7 +188,7 @@ fn config_dir(app: &tauri::App, args: &Args) -> PathBuf {
         .clone()
         .map(PathBuf::from)
         .unwrap_or_else(|| {
-            app.path_resolver()
+            app.path()
                 .app_config_dir()
                 .expect("failed to resolve app_config_dir")
         })
