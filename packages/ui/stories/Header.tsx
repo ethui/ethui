@@ -29,6 +29,7 @@ export const Header = ({
           viewBox="0 0 32 32"
           xmlns="http://www.w3.org/2000/svg"
         >
+          <title>Header</title>
           <g fill="none" fillRule="evenodd">
             <path
               d="M10 0h12a10 10 0 0110 10v12a10 10 0 01-10 10H10A10 10 0 010 22V10A10 10 0 0110 0z"

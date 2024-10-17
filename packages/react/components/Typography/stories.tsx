@@ -1,4 +1,3 @@
-import from "@mui/material";
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { defaultDisabledArgs } from "../../utils";
@@ -24,4 +23,11 @@ export const Variants: StoryObj<TypographyProps> = {
   parameters: { controls: { exclude: ["classes"] } },
   render: () => {
     return (
-      <div className=" maxWidth={300}> <Typography>The quick brown fox</Typography> <Typography mono>The quick brown fox</Typography> </div> ); }, }; m-4 flex-col"
+      <div className="m-4 flex-col" maxWidth={300}>
+        {" "}
+        <Typography>The quick brown fox</Typography>{" "}
+        <Typography mono>The quick brown fox</Typography>{" "}
+      </div>
+    );
+  },
+};

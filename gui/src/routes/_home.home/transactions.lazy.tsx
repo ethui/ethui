@@ -5,7 +5,6 @@ import {
   Button,
   CircularProgress,
   Grid2 as Grid,
- ,
   Typography,
 } from "@mui/material";
 import { createLazyFileRoute } from "@tanstack/react-router";
@@ -121,7 +120,10 @@ interface SummaryProps {
 }
 function Summary({ account, tx }: SummaryProps) {
   return (
-    <div className=" <Icon {...{ tx, account }} /> <BlockNumber number={tx.blockNumber} /> <div className= m-8> items-center" items-center m-4">
+    <div className="m-4 flex items-center">
+      <Icon {...{ tx, account }} />
+      <BlockNumber number={tx.blockNumber} />
+      <div className="m-8">
         <AddressView address={tx.from} /> <span>→</span>
         {tx.to ? (
           <AddressView address={tx.to} />
@@ -179,7 +181,7 @@ function Details({ tx, chainId }: DetailsProps) {
   const value = BigInt(fullTx.value || 0);
 
   return (
-    <Grid container rowm-4">
+    <Grid container row className="m-4">
       <Datapoint
         label="from"
         value={<AddressView icon address={tx.from} />}
