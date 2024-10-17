@@ -35,15 +35,6 @@
         "useOptionalChain": {
           "fix": "safe"
         }
-      },
-      "nursery": {
-        "noRestrictedImports": {
-          "options": {
-            "paths": {
-              "@mui/material": "Using @mui's root import is discouraged"
-            }
-          }
-        }
       }
     }
   },
