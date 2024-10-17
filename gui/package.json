@@ -17,8 +17,8 @@
     "@ethui/data": "*",
     "@ethui/form": "*",
     "@ethui/react": "*",
-    "@ethui/ui": "*",
     "@ethui/types": "*",
+    "@ethui/ui": "*",
     "@fontsource/roboto": "^5.1.0",
     "@fontsource/roboto-mono": "^5.1.0",
     "@hookform/resolvers": "^3.9.0",
@@ -71,10 +71,10 @@
     "@vitejs/plugin-react-swc": "^3.7.1",
     "autoprefixer": "^10.4.20",
     "jsdom": "^25.0.1",
-    "vite-plugin-babel-import": "^2.0.5",
-    "vite-plugin-imp": "^2.4.0",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.14",
+    "vite-plugin-babel-import": "^2.0.5",
+    "vite-plugin-imp": "^2.4.0",
     "vite-tsconfig-paths": "^5.0.1"
   },
   "resolutions": {
