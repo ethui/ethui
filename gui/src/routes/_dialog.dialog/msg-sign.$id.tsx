@@ -1,5 +1,5 @@
 import { Delete, Task } from "@mui/icons-material";
-import { Button, } from "@mui/material";
+import { Button } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { HighlightBox } from "@ethui/react/components/HighlightBox";

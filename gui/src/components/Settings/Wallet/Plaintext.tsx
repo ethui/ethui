@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, } from "@mui/material";
+import { Button } from "@mui/material";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -50,7 +50,7 @@ export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
         <div className=" m-4">
           <Form.Submit label="Save" />
 
-          <Button color="warning"  onClick={onRemove}>
+          <Button color="warning" onClick={onRemove}>
             Remove
           </Button>
         </div>

@@ -1,5 +1,5 @@
 import { Autocomplete, Box, Chip, TextField } from "@mui/material";
-import { } from "@mui/system";
+import {} from "@mui/system";
 import { type Abi, type AbiFunction, formatAbiItem } from "abitype";
 import { Fragment, type SyntheticEvent, useState } from "react";
 import type { Address } from "viem";

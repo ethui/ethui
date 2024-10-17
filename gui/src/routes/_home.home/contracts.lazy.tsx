@@ -15,13 +15,13 @@ import { z } from "zod";
 import { ChainView } from "@ethui/react/components/ChainView";
 import { Form } from "@ethui/react/components/Form";
 import type { Contract } from "@ethui/types";
-import { ABIForm } from "#/components/ABIForm";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@ethui/ui/components/ui/accordion";
+import { ABIForm } from "#/components/ABIForm";
 import { AddressView } from "#/components/AddressView";
 import { Navbar } from "#/components/Home/Navbar";
 import { Modal } from "#/components/Modal";

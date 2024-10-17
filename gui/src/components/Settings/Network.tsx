@@ -1,20 +1,20 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ExpandMore } from "@mui/icons-material";
-import { useShallow } from "zustand/shallow";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@ethui/ui/components/ui/accordion";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ExpandMore } from "@mui/icons-material";
 import { useFieldArray, useForm } from "react-hook-form";
+import { useShallow } from "zustand/shallow";
 
 import { ChainView } from "@ethui/react/components/ChainView";
 import { Form } from "@ethui/react/components/Form";
 import { type Network, networkSchema } from "@ethui/types/network";
+import { Button } from "@ethui/ui/components/ui/button";
 import { ConfirmationDialog } from "#/components/ConfirmationDialog";
 import { useNetworks } from "#/store/useNetworks";
-import { Button } from "@ethui/ui/components/ui/button";
 
 type NewChild = { new?: boolean };
 

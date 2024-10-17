@@ -1,7 +1,5 @@
 import { KeyboardArrowDown } from "@mui/icons-material";
-import {
-  Chip, Menu, MenuItem, Paper, hy
-} from "@mui/material"; 
+import { Chip, Menu, MenuItem, Paper, hy } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { startCase } from "lodash-es";
 import { useState } from "react";
@@ -13,6 +11,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@ethui/ui/components/ui/accordion";
+import { Button } from "@ethui/ui/components/ui/button";
 import { useWallets } from "#/store/useWallets";
 import { HDWalletForm } from "./Wallet/HDWallet";
 import { ImpersonatorForm } from "./Wallet/Impersonator";
@@ -20,7 +19,6 @@ import { JsonKeystore } from "./Wallet/JsonKeystore";
 import { Ledger } from "./Wallet/Ledger";
 import { Plaintext } from "./Wallet/Plaintext";
 import { PrivateKeyForm } from "./Wallet/PrivateKey";
-import { Button } from "@ethui/ui/components/ui/button";
 
 interface Props {
   extraAction?: React.ReactNode;

@@ -5,9 +5,9 @@ import { isDirty, isValid } from "zod";
 
 import { ChainView } from "@ethui/react/components/ChainView";
 import type { Network } from "@ethui/types/network";
+import { Button } from "@ethui/ui/components/ui/button";
 import { Datapoint } from "#/components/Datapoint";
 import { useDialog } from "#/hooks/useDialog";
-import { Button } from "@ethui/ui/components/ui/button";
 
 export const Route = createFileRoute("/_dialog/dialog/chain-add/$id")({
   component: ChainAddDialog,

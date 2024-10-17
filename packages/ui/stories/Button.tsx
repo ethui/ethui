@@ -17,7 +17,7 @@ export interface ButtonProps {
 }
 
 /** Primary UI component for user interaction */
-export const Button = ({ }: ButtonProps) => {
+export const Button = ({}: ButtonProps) => {
   return (
     <>
       <UIButton>Click</UIButton>

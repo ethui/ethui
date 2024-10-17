@@ -58,7 +58,11 @@ export function WalletUnlockDialog() {
 
   return (
     <>
-      <Form form={form} onSubmit={onSubmit} className="flex flex flex-col gap-4">
+      <Form
+        form={form}
+        onSubmit={onSubmit}
+        className="flex flex flex-col gap-4"
+      >
         <div className="m-4">
           <Typography>
             ethui is asking to unlock wallet <b>{name}:</b>
@@ -77,11 +81,7 @@ export function WalletUnlockDialog() {
           />
           <div className=" m-4">
             <Form.Submit label="Unlock" />
-            <Button
-              
-              color="error"
-              onClick={() => send("reject")}
-            >
+            <Button color="error" onClick={() => send("reject")}>
               Cancel
             </Button>
           </div>

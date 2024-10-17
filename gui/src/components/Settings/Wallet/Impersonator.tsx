@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, } from "@mui/material";
+import { Button } from "@mui/material";
 import type { Address } from "abitype";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -33,11 +33,11 @@ export interface Props {
 export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
   const formWallet = wallet
     ? {
-      ...wallet,
-      addresses: wallet
-        ? wallet.addresses.map((address) => ({ address }))
-        : [],
-    }
+        ...wallet,
+        addresses: wallet
+          ? wallet.addresses.map((address) => ({ address }))
+          : [],
+      }
     : undefined;
 
   const form = useForm({

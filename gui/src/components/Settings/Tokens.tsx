@@ -1,5 +1,5 @@
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { Box, CardHeader, IconButton, List, } from "@mui/material";
+import { Box, CardHeader, IconButton, List } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import type { Address } from "viem";
 

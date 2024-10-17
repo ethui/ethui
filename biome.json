@@ -35,6 +35,9 @@
         "useOptionalChain": {
           "fix": "safe"
         }
+      },
+      "nursery": {
+        "useSortedClasses": "error"
       }
     }
   },

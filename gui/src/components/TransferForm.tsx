@@ -1,5 +1,6 @@
 import { Form } from "@ethui/react/components/Form";
 import { addressSchema } from "@ethui/types/wallets";
+import { Button } from "@ethui/ui/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert, Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
@@ -17,7 +18,6 @@ import { z } from "zod";
 import { useBalances } from "#/store/useBalances";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
-import { Button } from "@ethui/ui/components/ui/button";
 
 interface Token {
   currency?: string;

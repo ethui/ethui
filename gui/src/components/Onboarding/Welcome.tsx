@@ -1,5 +1,4 @@
-import {
-  Box, Button, Link, hy } from "@mui/material";
+import { Box, Button, Link, hy } from "@mui/material";
 
 import type { StepProps } from ".";
 

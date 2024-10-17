@@ -1,4 +1,4 @@
-import { type SxProps } from "@mui/material";
+import type { SxProps } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import type { Abi, AbiFunction, Address } from "abitype";
 import { decodeFunctionData, formatUnits, parseAbi } from "viem";
