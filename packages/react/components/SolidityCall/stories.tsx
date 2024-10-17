@@ -18,7 +18,7 @@ export const Call: StoryObj<SolidityCallProps> = {
   parameters: { controls: { exclude: ["classes"] } },
   render: () => {
     return (
-      <Stack direction="column" spacing={2}>
+      <div className=" flex-col m-4">
         <SolidityCall
           from="0xalice"
           to="0x6aD2...4E45"
@@ -57,7 +57,7 @@ export const Call: StoryObj<SolidityCallProps> = {
           chainId={1}
           decimals={18}
         />
-      </Stack>
+      </div>
     );
   },
 };

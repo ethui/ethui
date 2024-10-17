@@ -4,7 +4,7 @@ import type { StepProps } from ".";
 
 export function WelcomeStep({ onSubmit }: StepProps) {
   return (
-    <Stack spacing={3} sx={{ width: "100%" }}>
+    <div className="m-8" sx={{ width: "100%" }}>
       <Typography variant="h6" component="h1" alignSelf="start">
         Welcome
       </Typography>
@@ -32,10 +32,10 @@ export function WelcomeStep({ onSubmit }: StepProps) {
         Contributors are welcome!
       </Typography>
       <Box alignSelf="flex-end">
-        <Button variant="contained" type="submit" onClick={onSubmit}>
+        <Button type="submit" onClick={onSubmit}>
           Next
         </Button>
       </Box>
-    </Stack>
+    </div>
   );
 }

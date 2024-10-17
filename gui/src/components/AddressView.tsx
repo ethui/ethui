@@ -42,7 +42,7 @@ export function AddressView({
 
   const text = alias ? alias : truncateHex(address);
   const content = (
-    <Stack direction="row" alignItems="center" spacing={1}>
+    <div className=" items-center m-4">
       {icon && (
         <IconAddress
           chainId={network.chain_id}
@@ -54,7 +54,7 @@ export function AddressView({
       <Typography mono={mono} variant={variant}>
         {text}
       </Typography>
-    </Stack>
+    </div>
   );
 
   if (!contextMenu) return content;
@@ -114,12 +114,12 @@ function AliasForm({ address, alias, refetch, onSubmit }: AliasFormProps) {
 
   return (
     <Form form={form} onSubmit={submit}>
-      <Stack alignItems="flex-start" spacing={2}>
+      <div className="items-start m-4">
         <Typography>Set alias for {truncateHex(address)}</Typography>
         <Form.Text label="Alias" name="alias" defaultValue={alias} />
 
         <Form.Submit label="Save" />
-      </Stack>
+      </div>
     </Form>
   );
 }

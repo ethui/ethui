@@ -1,12 +1,5 @@
 import { Cancel, CheckCircle, Delete, Report, Send } from "@mui/icons-material";
-import {
-  Alert,
-  AlertTitle,
-  Box,
-  Button,
-  Grid2 as Grid,
-  Stack,
-} from "@mui/material";
+import { Alert, AlertTitle, Box, Button, Grid2 as Grid } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -46,11 +39,11 @@ export interface TxRequest {
   value: string;
   chainId: number;
   walletType:
-    | "ledger"
-    | "HdWallet"
-    | "jsonKeystore"
-    | "plaintext"
-    | "impersonator";
+  | "ledger"
+  | "HdWallet"
+  | "jsonKeystore"
+  | "plaintext"
+  | "impersonator";
 }
 
 interface Log {
@@ -170,24 +163,18 @@ interface HeaderProps {
 
 function Header({ from, to, network }: HeaderProps) {
   return (
-    <Stack
-      direction="row"
-      justifyContent="space-between"
-      alignItems="stretch"
-      alignSelf="center"
-      width="100%"
-    >
+    <div className=" flex space-between items-stretch self-center" width="100%">
       <Typography variant="h6" component="h1">
-        <Stack direction="row" alignItems="center" spacing={1}>
+        <div className=" items-center m-4">
           <AddressView address={from} />
           <span>→</span>
           <AddressView address={to} />
-        </Stack>
+        </div>
       </Typography>
       <Box ml={5}>
         <ChainView name={network.name} chainId={network.chain_id} />
       </Box>
-    </Stack>
+    </div>
   );
 }
 
@@ -212,15 +199,15 @@ function SimulationResult({ simulation, chainId, to }: SimulationResultProps) {
         value={
           callCount &&
           (callCount > 0 ? (
-            <Stack direction="row">
+            <div className="">
               <CheckCircle color="success" />
               <Typography>Called {callCount} time(s) before.</Typography>
-            </Stack>
+            </div>
           ) : (
-            <Stack direction="row">
+            <div className="">
               <Report color="error" />
               <Typography>First interaction with this contract.</Typography>
-            </Stack>
+            </div>
           ))
         }
         size="large"
@@ -281,15 +268,10 @@ function Actions({ request, accepted, onReject, onConfirm }: ActionsProps) {
     );
   } else {
     return (
-      <Stack
-        direction="row"
-        alignItems="center"
-        justifyContent="center"
-        spacing={2}
-      >
+      <div className=" flex items-center center m-4">
         <Button
           size="large"
-          variant="outlined"
+          variant="outline"
           color="error"
           onClick={onReject}
           startIcon={<Delete />}
@@ -298,7 +280,6 @@ function Actions({ request, accepted, onReject, onConfirm }: ActionsProps) {
         </Button>
         <Button
           size="large"
-          variant="contained"
           color="primary"
           type="submit"
           onClick={onConfirm}
@@ -306,7 +287,7 @@ function Actions({ request, accepted, onReject, onConfirm }: ActionsProps) {
         >
           Confirm
         </Button>
-      </Stack>
+      </div>
     );
   }
 }
@@ -377,7 +358,7 @@ function Erc20Transfer({
   });
 
   return (
-    <Stack direction="row" alignItems="center" spacing={1}>
+    <div className=" items-center m-4">
       <AddressView address={from} />
       <span>→</span>
       <AddressView address={to} />
@@ -386,6 +367,6 @@ function Erc20Transfer({
         ? formatUnits(value, metadata.decimals)
         : value.toString()}{" "}
       {metadata?.symbol && `${metadata.symbol}`}
-    </Stack>
+    </div>
   );
 }

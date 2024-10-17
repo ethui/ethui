@@ -1,12 +1,12 @@
 import { Box, Stack, Typography } from "@mui/material";
 
-import { Button } from "@ethui/react/components/Button";
+import { Button } from "@ethui/ui/components/ui/button";
 import { SettingsWallets } from "#/components/Settings/Wallets";
 import type { StepProps } from ".";
 
 export function WalletSetupStep({ onSubmit }: StepProps) {
   return (
-    <Stack alignItems="flex-end" spacing={3}>
+    <div alignItems="flex-end" m-8>
       <Typography variant="h6" component="h1" alignSelf="start">
         Wallet setup
       </Typography>
@@ -18,11 +18,9 @@ export function WalletSetupStep({ onSubmit }: StepProps) {
       </Typography>
       <Box sx={{ maxWidth: "100%", width: "100%" }}>
         <SettingsWallets
-          extraAction={
-            <Button label="Next" variant="contained" onClick={onSubmit} />
-          }
+          extraAction={<Button onClick={onSubmit}>Next</Button>}
         />
       </Box>
-    </Stack>
+    </div>
   );
 }

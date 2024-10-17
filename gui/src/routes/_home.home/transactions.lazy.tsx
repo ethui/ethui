@@ -19,9 +19,10 @@ import { SolidityCall } from "@ethui/react/components/SolidityCall";
 import type { Paginated, PaginatedTx, Pagination, Tx } from "@ethui/types";
 import {
   Accordion,
-  AccordionDetails,
-  AccordionSummary,
-} from "#/components/Accordion";
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@ethui/ui/components/ui/accordion";
 import { AddressView } from "#/components/AddressView";
 import { ContextMenuWithTauri } from "#/components/ContextMenuWithTauri";
 import { Datapoint } from "#/components/Datapoint";
@@ -90,24 +91,26 @@ export function Txs() {
   return (
     <>
       <Navbar>Transactions</Navbar>
-      <InfiniteScroll
-        loadMore={loadMore}
-        hasMore={!pages.at(-1)?.last}
-        loader={loader}
-      >
-        {pages.flatMap((page) =>
-          page.items.map((tx) => (
-            <Accordion key={tx.hash}>
-              <AccordionSummary>
-                <Summary account={account} tx={tx} />
-              </AccordionSummary>
-              <AccordionDetails>
-                <Details tx={tx} chainId={chainId} />
-              </AccordionDetails>
-            </Accordion>
-          )),
-        )}
-      </InfiniteScroll>
+      <Accordion type="single" collapsible className="w-full">
+        <InfiniteScroll
+          loadMore={loadMore}
+          hasMore={!pages.at(-1)?.last}
+          loader={loader}
+        >
+          {pages.flatMap((page) =>
+            page.items.map((tx) => (
+              <AccordionItem key={tx.hash} value={tx.hash}>
+                <AccordionTrigger>
+                  <Summary account={account} tx={tx} />
+                </AccordionTrigger>
+                <AccordionContent>
+                  <Details tx={tx} chainId={chainId} />
+                </AccordionContent>
+              </AccordionItem>
+            )),
+          )}
+        </InfiniteScroll>
+      </Accordion>
     </>
   );
 }
@@ -118,19 +121,19 @@ interface SummaryProps {
 }
 function Summary({ account, tx }: SummaryProps) {
   return (
-    <Stack direction="row" alignItems="center" spacing={3}>
+    <div className=" items-center m-8>
       <Icon {...{ tx, account }} />
 
       <BlockNumber number={tx.blockNumber} />
-      <Stack direction="row" alignItems="center" spacing={1}>
+      <div className=" items-center m-4">
         <AddressView address={tx.from} /> <span>→</span>
         {tx.to ? (
           <AddressView address={tx.to} />
         ) : (
           <Typography component="span">Contract Deploy</Typography>
         )}
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }
 
@@ -180,7 +183,7 @@ function Details({ tx, chainId }: DetailsProps) {
   const value = BigInt(fullTx.value || 0);
 
   return (
-    <Grid container rowSpacing={1}>
+    <Grid container rowm-4">
       <Datapoint
         label="from"
         value={<AddressView icon address={tx.from} />}
@@ -253,9 +256,7 @@ function Details({ tx, chainId }: DetailsProps) {
       />
 
       <Grid size={{ xs: 12 }}>
-        <Button variant="contained" onClick={() => resend(fullTx)}>
-          Send again
-        </Button>
+        <Button onClick={() => resend(fullTx)}>Send again</Button>
       </Grid>
     </Grid>
   );

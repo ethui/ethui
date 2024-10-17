@@ -1,4 +1,4 @@
-import baseConfig from "@ethui/react/tailwind.config";
+import baseConfig from "@ethui/ui/tailwind.config";
 
 console.log(baseConfig);
 /** @type {import('tailwindcss').Config} */
@@ -6,7 +6,7 @@ export default {
   content: [
     "./src/components/**/*.tsx",
     "./src/routes/**/*.tsx",
-    "../packages/react/**/*.tsx",
+    "../packages/ui/**/*.tsx",
   ],
   presets: [baseConfig],
 };

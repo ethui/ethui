@@ -31,14 +31,14 @@ export function SettingsTokens() {
             <IconAddress chainId={currentNetwork.chain_id} address={contract} />
           }
           action={
-            <Stack direction="row" justifyContent="center">
+            <div className=" center">
               <IconButton
                 title={"Unhide token"}
                 onClick={() => unhide(contract)}
               >
                 <VisibilityOffIcon />
               </IconButton>
-            </Stack>
+            </div>
           }
           title={
             <>

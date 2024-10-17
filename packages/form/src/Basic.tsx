@@ -1,4 +1,4 @@
-import { Stack, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 import { useCallback, useState } from "react";
 
 import type { InnerProps } from "./AbiInput";
@@ -20,7 +20,7 @@ export function Basic({ name, defaultValue, onChange, debug }: BasicProps) {
   );
 
   return (
-    <Stack spacing={1}>
+    <div className="m-4">
       <TextField
         size="small"
         variant="standard"
@@ -29,6 +29,6 @@ export function Basic({ name, defaultValue, onChange, debug }: BasicProps) {
         defaultValue={defaultValue && stringify(defaultValue, 0)}
       />
       {debug && <Debug value={value} />}
-    </Stack>
+    </div>
   );
 }

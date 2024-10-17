@@ -19,7 +19,7 @@ export function MsgSignDialog() {
   const msg = data.Raw || JSON.stringify(data.Typed, null, 2);
 
   return (
-    <Stack
+    <div
       sx={{
         height: "100%",
         gap: "15px",
@@ -41,16 +41,10 @@ export function MsgSignDialog() {
           </Typography>
         </HighlightBox>
       )}
-      <Stack
-        direction="row"
-        justifyContent="center"
-        spacing={2}
-        marginTop="auto"
-      >
+      <div className="flex center m-4" marginTop="auto">
         <Button
           disabled={!msg}
           size="large"
-          variant="contained"
           color="error"
           onClick={() => send("reject")}
           startIcon={<Delete />}
@@ -60,14 +54,13 @@ export function MsgSignDialog() {
         <Button
           disabled={!msg}
           size="large"
-          variant="contained"
           type="submit"
           onClick={() => send("accept")}
           endIcon={<Task />}
         >
           Sign
         </Button>
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }

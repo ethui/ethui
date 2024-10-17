@@ -98,20 +98,6 @@ function getTheme(mode: PaletteMode): Theme {
           variant: "dense",
         },
       },
-
-      MuiAccordionSummary: {
-        styleOverrides: {
-          root: {
-            "&:hover": {
-              transition: "none",
-              background: theme.palette.action.hover,
-            },
-            "&.Mui-expanded": {
-              background: theme.palette.action.hover,
-            },
-          },
-        },
-      },
     },
   });
 }

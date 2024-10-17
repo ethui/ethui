@@ -1,7 +1,7 @@
 import { Form } from "@ethui/react/components/Form";
 import { addressSchema } from "@ethui/types/wallets";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Alert, Button, Stack, Typography } from "@mui/material";
+import { Alert, Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
@@ -17,6 +17,7 @@ import { z } from "zod";
 import { useBalances } from "#/store/useBalances";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
+import { Button } from "@ethui/ui/components/ui/button";
 
 interface Token {
   currency?: string;
@@ -112,7 +113,7 @@ export function TransferForm({
 
   return (
     <Form form={form} onSubmit={onSubmit}>
-      <Stack alignItems="flex-start" spacing={2}>
+      <div className="items-start m-4">
         <Typography>Transfer token</Typography>
 
         <Form.Select
@@ -140,7 +141,7 @@ export function TransferForm({
         {result && (
           <Alert
             sx={{ alignSelf: "stretch" }}
-            variant="outlined"
+            variant="outline"
             severity="success"
           >
             <Typography variant="body2" noWrap>
@@ -149,14 +150,14 @@ export function TransferForm({
           </Alert>
         )}
 
-        <Stack width="100%" direction="row" justifyContent="space-between">
-          <Button variant="outlined" color="error" onClick={onClose}>
+        <div width="100%" className="flex space-between">
+          <Button variant="outline" color="error" onClick={onClose}>
             Close
           </Button>
 
           <Form.Submit label="Send" />
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </Form>
   );
 }

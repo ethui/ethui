@@ -36,11 +36,11 @@ export function Connections() {
     <>
       <Navbar>Connections</Navbar>
       <Panel>
-        <Stack spacing={2}>
+        <div className="m-4">
           {map(peersByDomain, (peers, domain) => (
             <Domain key={domain} domain={domain} peers={peers} />
           ))}
-        </Stack>
+        </div>
       </Panel>
     </>
   );
@@ -48,7 +48,7 @@ export function Connections() {
 
 function Domain({ domain, peers }: { domain: string; peers: Peer[] }) {
   return (
-    <Stack direction="row" alignItems="center" spacing={2}>
+    <div className=" items-center m-4">
       <Badge>
         <Avatar sx={{ width: 30, height: 30 }} src={peers[0].favicon}>
           {peers[0].origin.replace(/https?:\/\//, "").slice(0, 2)}
@@ -58,7 +58,7 @@ function Domain({ domain, peers }: { domain: string; peers: Peer[] }) {
       <Box sx={{ "&&": { ml: "auto" } }}>
         <AffinityForm domain={domain} />
       </Box>
-    </Stack>
+    </div>
   );
 }
 

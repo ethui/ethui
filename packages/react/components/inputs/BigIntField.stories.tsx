@@ -14,9 +14,9 @@ const meta: Meta<object> = {
       const form = useForm({ defaultValues: { value: 0n } });
       return (
         <form>
-          <Stack spacing={2} maxWidth={300}>
+          <div className="m-4 maxWidth={300}>
             <Story form={form} />
-          </Stack>
+          </div>
         </form>
       );
     },
@@ -26,12 +26,12 @@ const meta: Meta<object> = {
 export default meta;
 
 export const BigIntExample: StoryFn<BigIntFieldProps> = (_story, { form }) => (
-  <Stack spacing={2} maxWidth={300}>
+  <div className="m-4 maxWidth={300}>
     <BigIntField
       control={form.control}
       name="amount"
       decimals={18}
       {...form.register("value")}
     />
-  </Stack>
+  </div>
 );

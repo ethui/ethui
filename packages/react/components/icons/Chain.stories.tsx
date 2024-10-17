@@ -18,12 +18,12 @@ export const Chain: StoryObj<IconChainProps> = {
   parameters: { controls: { exclude: ["classes"] } },
   render: () => {
     return (
-      <Stack spacing={2} direction="row">
+      <div className="m-4 flex">
         <IconChain chainId={1} />
         <IconChain chainId={10} />
         <IconChain chainId={31337} />
         <IconChain chainId={2} />
-      </Stack>
+      </div>
     );
   },
 };

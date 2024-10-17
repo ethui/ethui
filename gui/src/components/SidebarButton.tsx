@@ -54,12 +54,7 @@ export function SidebarButton<R extends React.ElementType>({
         },
       }}
     >
-      <Stack
-        direction="row"
-        alignItems="center"
-        justifyContent="stretch"
-        spacing={0}
-      >
+      <div className=" flex items-center stretch" m-8>
         <props.icon fontSize="small" />
 
         <Collapse
@@ -73,7 +68,7 @@ export function SidebarButton<R extends React.ElementType>({
             {label}
           </Typography>
         </Collapse>
-      </Stack>
+      </div>
     </ButtonBase>
   );
 }

@@ -45,7 +45,7 @@ export function AlchemyStep({ onSubmit }: StepProps) {
 
   return (
     <Form form={form} onSubmit={localOnSubmit}>
-      <Stack alignItems="flex-end" spacing={3}>
+      <div alignItems="flex-end" m-8>
         <Typography variant="h6" component="h1" alignSelf="start">
           Alchemy
         </Typography>
@@ -86,7 +86,7 @@ export function AlchemyStep({ onSubmit }: StepProps) {
           useDirtyAlt={false}
           label={alchemyApiKey?.length > 0 ? "Next" : "Skip"}
         />
-      </Stack>
+      </div>
     </Form>
   );
 }

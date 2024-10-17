@@ -7,11 +7,11 @@ export const Route = createFileRoute("/_dialog")({
 
 export function DialogLayout() {
   return (
-    <Stack
-      spacing={2}
+    <div
+      m-4
       sx={{ widht: "100vw", height: "100vh", overflow: "hidden", p: 2 }}
     >
       <Outlet />
-    </Stack>
+    </div>
   );
 }

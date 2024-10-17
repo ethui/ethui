@@ -1,4 +1,4 @@
-import { Box, Stack, type SxProps, Typography } from "@mui/material";
+import { Box, type SxProps, Typography } from "@mui/material";
 import { useCallback } from "react";
 
 import { ArrayInput } from "./ArrayInput";
@@ -38,12 +38,8 @@ export function AbiInput({
 
   return (
     <Box sx={{ width: "100%", pl: 1, ...sx }}>
-      <Stack>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-        >
+      <div>
+        <div className=" flex items-center space-between">
           <Typography fontWeight="bold">
             {label}
             <Typography sx={{ pl: 2 }} component="span" fontFamily="monospace">
@@ -51,7 +47,7 @@ export function AbiInput({
             </Typography>
           </Typography>
           {headerActions}
-        </Stack>
+        </div>
         {arrayMatch ? (
           <ArrayInput
             {...{
@@ -67,7 +63,7 @@ export function AbiInput({
         ) : (
           <Basic {...{ type, onChange, ...rest }} />
         )}
-      </Stack>
+      </div>
     </Box>
   );
 }

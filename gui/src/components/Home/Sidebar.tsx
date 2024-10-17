@@ -79,7 +79,7 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
       <Toolbar sx={{ p: 2 }} data-tauri-drag-region="true">
         {type !== "macos" && <Logo width={40} />}
       </Toolbar>
-      <Stack px={2} rowGap={1} flexGrow={1}>
+      <div px={2} rowGap={1} flexGrow={1}>
         {tabs.map(({ path, label, icon }, index) => (
           <SidebarButton
             key={index}
@@ -89,8 +89,8 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
             {...{ label, icon }}
           />
         ))}
-      </Stack>
-      <Stack
+      </div>
+      <div
         rowGap={2}
         p={3}
         sx={{
@@ -103,8 +103,8 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
         <QuickAddressSelect />
         <QuickNetworkSelect />
         <QuickFastModeToggle />
-      </Stack>
-      <Stack p={3} rowGap={1}>
+      </div>
+      <div p={3} rowGap={1}>
         <SidebarButton
           onClick={kbar.query.toggle}
           icon={TerminalSharp}
@@ -112,7 +112,7 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
         />
         <SidebarButton onClick={toggle} icon={SettingsSharp} label="Settings" />
         <SettingsModal />
-      </Stack>
+      </div>
     </Drawer>
   );
 }

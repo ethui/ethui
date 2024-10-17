@@ -65,7 +65,7 @@ export function ERC20View({
       <CardHeader
         avatar={<IconAddress chainId={chainId} address={contract} />}
         action={
-          <Stack direction="row">
+          <div className="">
             <IconButton
               aria-label="transfer"
               onClick={() => setTransferFormOpen(true)}
@@ -75,7 +75,7 @@ export function ERC20View({
             <IconButton aria-label="more" onClick={onMenuOpen}>
               <MoreVertIcon />
             </IconButton>
-          </Stack>
+          </div>
         }
         title={
           <>

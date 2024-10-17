@@ -18,11 +18,11 @@ export const Chain: StoryObj<ChainViewProps> = {
   parameters: { controls: { exclude: ["classes"] } },
   render: () => {
     return (
-      <Stack spacing={2} direction="column">
+      <div className="m-4 flex flex-col>
         <ChainView chainId={1} name="Mainnet" />
         <ChainView chainId={10} name="Optimism" />
         <ChainView chainId={31337} name="Anvil" />
-      </Stack>
+      </div>
     );
   },
 };

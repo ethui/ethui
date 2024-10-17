@@ -10,9 +10,9 @@ export interface ChainViewProps {
 
 export function ChainView({ name, chainId }: ChainViewProps) {
   return (
-    <Stack direction="row" alignItems="center" spacing={1}>
+    <div className=" items-center m-4">
       <IconChain chainId={chainId} />
       <Typography>{name}</Typography>
-    </Stack>
+    </div>
   );
 }

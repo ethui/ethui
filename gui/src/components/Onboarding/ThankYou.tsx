@@ -9,7 +9,7 @@ export function ThankYouStep() {
   });
 
   return (
-    <Stack spacing={3} width="100%">
+    <div m-8 width="100%">
       <Typography variant="h6" component="h1" alignSelf="start">
         Thank you
       </Typography>
@@ -20,9 +20,9 @@ export function ThankYouStep() {
 
       <Box alignSelf="flex-end">
         <Link to="/home/account">
-          <Button variant="contained">Finish</Button>
+          <Button >Finish</Button>
         </Link>
       </Box>
-    </Stack>
+    </div>
   );
 }

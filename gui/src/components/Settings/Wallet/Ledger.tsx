@@ -35,9 +35,9 @@ export interface Props {
 export function Ledger({ wallet, onSubmit, onRemove }: Props) {
   const formWallet = wallet
     ? {
-        ...wallet,
-        paths: wallet ? wallet.addresses.map(([path]) => ({ path })) : [],
-      }
+      ...wallet,
+      paths: wallet ? wallet.addresses.map(([path]) => ({ path })) : [],
+    }
     : defaultValues;
 
   const [addresses, setAddresses] = useState<Map<string, Address>>(new Map());
@@ -92,7 +92,7 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
 
   return (
     <Form form={form} onSubmit={prepareAndSubmit}>
-      <Stack spacing={2} alignItems="flex-start">
+      <div className="m-4 items-start">
         <Detect />
         <Form.Text label="Name" name="name" />
 
@@ -100,8 +100,8 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
           const path = form.watch(`paths.${i}.path`);
           const address = addresses.get(path);
           return (
-            <Stack alignSelf="stretch" key={field.id}>
-              <Stack alignSelf="stretch" direction="row" spacing={2}>
+            <div className="self-stretch" key={field.id}>
+              <div className="self-stretch flex m-4">
                 <Form.Text
                   label={`Path #${i + 1}`}
                   name={`paths.${i}.path`}
@@ -110,20 +110,20 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
                 />
 
                 <Button onClick={() => remove(i)}>Remove</Button>
-              </Stack>
-            </Stack>
+              </div>
+            </div>
           );
         })}
         <Button color="secondary" onClick={() => append({ path: "" })}>
           Add
         </Button>
-        <Stack direction="row" spacing={2}>
+        <div className=" m-4">
           <Form.Submit label="Save" />
-          <Button color="warning" variant="contained" onClick={onRemove}>
+          <Button color="warning" onClick={onRemove}>
             Remove
           </Button>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </Form>
   );
 }

@@ -38,7 +38,7 @@ export function Onboarding() {
     <>
       <DraggableToolbar />
       <Container disableGutters sx={{ px: 2 }}>
-        <Stack alignItems="center">
+        <div className="items-center">
           <Logo width={40} />
           <step.component onSubmit={handleNext} />
 
@@ -49,7 +49,7 @@ export function Onboarding() {
             backButton={null}
             nextButton={null}
           />
-        </Stack>
+        </div>
       </Container>
     </>
   );

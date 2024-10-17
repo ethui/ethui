@@ -91,9 +91,9 @@ export function RawForm({
   }, [onChange, calldata, ether]);
 
   return (
-    <Stack
+    <div
       component="form"
-      spacing={2}
+      m-4
       sx={{ p: 2 }}
       onSubmit={(e) => {
         e.preventDefault();
@@ -127,7 +127,7 @@ export function RawForm({
           </Button>
         </Box>
       )}
-    </Stack>
+    </div>
   );
 }
 
@@ -185,10 +185,10 @@ export function AbiFormInner({
   }, [item, parentOnChange, calldata, ether, values]);
 
   return (
-    <Grid container spacing={2} onSubmit={(e) => e.preventDefault()}>
-      <Stack
+    <Grid container m-4 onSubmit={(e) => e.preventDefault()}>
+      <div
         component="form"
-        spacing={2}
+        m-4
         sx={{ p: 2 }}
         onSubmit={(e) => {
           e.preventDefault();
@@ -231,7 +231,7 @@ export function AbiFormInner({
             </Button>
           </Box>
         )}
-      </Stack>
+      </div>
     </Grid>
   );
 }

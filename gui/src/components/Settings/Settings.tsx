@@ -45,8 +45,8 @@ export function Settings() {
         sx={{ flexShrink: 0 }}
         variant="permanent"
       >
-        <Box flexGrow={1} display="flex" flexDirection="column">
-          <Stack py={2} px={3} rowGap={1} flexGrow={1}>
+        <Box flexGrow={1} display="flex" flexflex flex-col>
+          <div py={2} px={3} rowGap={1} flexGrow={1}>
             {TABS.map((tab) => (
               <SidebarTab
                 key={tab.name}
@@ -55,7 +55,7 @@ export function Settings() {
                 onSelect={() => setCurrentTab(tab.name)}
               />
             ))}
-          </Stack>
+          </div>
         </Box>
       </Drawer>
       <Box

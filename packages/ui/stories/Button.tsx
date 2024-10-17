@@ -21,6 +21,7 @@ export const Button = ({ }: ButtonProps) => {
   return (
     <>
       <UIButton>Click</UIButton>
+      <UIButton variant="destructive">Click</UIButton>
     </>
   );
 };

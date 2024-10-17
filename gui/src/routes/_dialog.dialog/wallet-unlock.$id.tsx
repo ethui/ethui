@@ -58,8 +58,8 @@ export function WalletUnlockDialog() {
 
   return (
     <>
-      <Form form={form} onSubmit={onSubmit} className="flex flex-col gap-4">
-        <Stack spacing={2}>
+      <Form form={form} onSubmit={onSubmit} className="flex flex flex-col gap-4">
+        <div className="m-4">
           <Typography>
             ethui is asking to unlock wallet <b>{name}:</b>
           </Typography>
@@ -75,17 +75,17 @@ export function WalletUnlockDialog() {
             }
             fullWidth
           />
-          <Stack direction="row" spacing={2}>
+          <div className=" m-4">
             <Form.Submit label="Unlock" />
             <Button
-              variant="contained"
+              
               color="error"
               onClick={() => send("reject")}
             >
               Cancel
             </Button>
-          </Stack>
-        </Stack>
+          </div>
+        </div>
       </Form>
       <Backdrop open={loading}>
         <CircularProgress color="inherit" />

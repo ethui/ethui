@@ -24,14 +24,14 @@ export function ERC721AddDialog() {
   if (!token) return null;
 
   return (
-    <Stack spacing={2} alignItems="center">
+    <div className="m-4 items-center">
       <Typography variant="h6" component="h1">
         Add suggested NFT
       </Typography>
       <Typography textAlign={"center"}>
         This allows the following asset to be added to your wallet.
       </Typography>
-      <Grid container rowSpacing={1} justifyItems={"center"}>
+      <Grid container rowm-4 justifyItems={"center"}>
         <Grid container justifyContent={"center"} sx={{ mb: 2 }}>
           <img
             alt="Token"
@@ -39,7 +39,7 @@ export function ERC721AddDialog() {
             src={token.image.originalUrl || "../public/default_nft.svg"}
           />
         </Grid>
-        <Grid container spacing={4}>
+        <Grid container m-8>
           <Grid>
             <Datapoint
               label="Contract Address"
@@ -57,23 +57,23 @@ export function ERC721AddDialog() {
         />
       </Grid>
 
-      <Stack direction="row" spacing={2}>
+      <div className=" m-4">
         <Button
-          variant="contained"
+          
           color="error"
           onClick={() => tauriWindow.close()}
         >
           Cancel
         </Button>
         <Button
-          variant="contained"
+          
           type="submit"
           disabled={!isDirty || !isValid}
           onClick={() => send("accept")}
         >
           Add
         </Button>
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }

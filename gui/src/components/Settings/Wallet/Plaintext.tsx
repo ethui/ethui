@@ -41,20 +41,20 @@ export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
 
   return (
     <Form form={form} onSubmit={prepareAndSubmit}>
-      <Stack spacing={2} alignItems="flex-start">
+      <div className="m-4 items-start">
         <Form.Text label="Name" name="name" />
         <Form.Text label="Mnemonic" name="mnemonic" fullWidth />
         <Form.Text label="Derivation Path" name="derivationPath" />
         <Form.NumberField label="Count" name="count" />
 
-        <Stack direction="row" spacing={2}>
+        <div className=" m-4">
           <Form.Submit label="Save" />
 
-          <Button color="warning" variant="contained" onClick={onRemove}>
+          <Button color="warning"  onClick={onRemove}>
             Remove
           </Button>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </Form>
   );
 }

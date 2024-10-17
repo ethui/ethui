@@ -34,8 +34,8 @@ export function SettingsFoundry() {
   if (!general) return null;
 
   return (
-    <Form form={form} onSubmit={onSubmit} className="flex flex-col gap-4">
-      <Stack alignItems="flex-start" spacing={2}>
+    <Form form={form} onSubmit={onSubmit} className="flex flex flex-col gap-4">
+      <div className="items-start m-4">
         <Typography>
           ethui can monitor your filesystem for foundry projects, indexing the
           output ABIs automatically.
@@ -43,7 +43,7 @@ export function SettingsFoundry() {
 
         <Form.Text name="abiWatchPath" label="ABI Watch path" fullWidth />
         <Form.Submit label="Save" />
-      </Stack>
+      </div>
     </Form>
   );
 }

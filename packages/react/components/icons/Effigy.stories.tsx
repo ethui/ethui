@@ -18,13 +18,13 @@ export const Effigy: StoryObj<IconEffigyProps> = {
   parameters: { controls: { exclude: ["classes"] } },
   render: () => {
     return (
-      <Stack spacing={2} direction="row">
+      <div className="m-4 flex">
         <IconEffigy address="vitalik.eth" />
         <IconEffigy address="brantly.eth" />
         <IconEffigy address="huh.eth" />
         <IconEffigy address="galligan.eth" />
         <IconEffigy address="0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045" />
-      </Stack>
+      </div>
     );
   },
 };

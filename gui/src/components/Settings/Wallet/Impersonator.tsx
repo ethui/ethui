@@ -33,11 +33,11 @@ export interface Props {
 export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
   const formWallet = wallet
     ? {
-        ...wallet,
-        addresses: wallet
-          ? wallet.addresses.map((address) => ({ address }))
-          : [],
-      }
+      ...wallet,
+      addresses: wallet
+        ? wallet.addresses.map((address) => ({ address }))
+        : [],
+    }
     : undefined;
 
   const form = useForm({
@@ -66,30 +66,30 @@ export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
 
   return (
     <Form form={form} onSubmit={prepareAndSubmit}>
-      <Stack spacing={2} alignItems="flex-start">
+      <div className="m-4 items-start">
         <Form.Text label="Name" name="name" />
         {addressFields.map((field, i) => (
-          <Stack alignSelf="stretch" key={field.id} direction="row" spacing={2}>
+          <div className="self-stretch flex m-4" key={field.id}>
             <Form.Text
               label="Address"
               name={`addresses.${i}.address`}
               fullWidth
             />
             <Button onClick={() => remove(i)}>Remove</Button>
-          </Stack>
+          </div>
         ))}
 
         <Button color="secondary" onClick={() => append({ address: "" })}>
           Add
         </Button>
 
-        <Stack direction="row" spacing={2}>
+        <div className=" m-4">
           <Form.Submit label="Save" />
-          <Button color="warning" variant="contained" onClick={onRemove}>
+          <Button color="warning" onClick={onRemove}>
             Remove
           </Button>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </Form>
   );
 }
