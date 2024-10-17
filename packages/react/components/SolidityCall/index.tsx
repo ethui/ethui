@@ -1,4 +1,4 @@
-import type { SxProps } from "@mui/material";
+import { Stack, type SxProps } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import type { Abi, AbiFunction, Address } from "abitype";
 import { decodeFunctionData, formatUnits, parseAbi } from "viem";
@@ -66,7 +66,7 @@ interface DeployProps {
 function Deploy({ value, from, decimals, ArgProps }: DeployProps) {
   return (
     <>
-      <div className=" m-1">
+      <Stack direction="row" spacing={1}>
         <Arg
           label="Ξ"
           type="uint256"
@@ -82,7 +82,7 @@ function Deploy({ value, from, decimals, ArgProps }: DeployProps) {
           value={from}
         />
         <Typography mono>to newly deployed contract</Typography>
-      </div>
+      </Stack>
     </>
   );
 }
@@ -97,7 +97,7 @@ interface FallbackProps {
 
 function Fallback({ value, from, to, decimals, ArgProps }: FallbackProps) {
   return (
-    <div className=" m-1">
+    <Stack direction="row" spacing={1}>
       <Arg
         label="Ξ"
         type="uint256"
@@ -119,7 +119,7 @@ function Fallback({ value, from, to, decimals, ArgProps }: FallbackProps) {
         {...ArgProps}
         value={to}
       />
-    </div>
+    </Stack>
   );
 }
 
@@ -137,8 +137,8 @@ function Call({ value, data, to, decimals, abi, ArgProps }: CallProps) {
   const { label, args } = parseCall(data, abi);
 
   return (
-    <div className="m-3">
-      <div className="">
+    <Stack spacing={0.5}>
+      <Stack direction="row">
         <Arg type="address" variant="highlight2" value={to} {...ArgProps} />
         <Separator text="." sx={{ gridArea: "top" }} />
         <Arg value={label} raw type="string" variant="highlight3" />
@@ -156,21 +156,21 @@ function Call({ value, data, to, decimals, abi, ArgProps }: CallProps) {
           </>
         )}
         <Separator text="(" />
-      </div>
-      <div className="m-3">
+      </Stack>
+      <Stack spacing={0.5}>
         {[...args].map(({ value, type, label }, i) => (
-          <div className="pl-4" key={i}>
+          <Stack direction="row" key={i} pl={4}>
             <Arg
               variant="highlight4"
               {...{ label, value, type }}
               {...ArgProps}
             />
             {i! < args.length - 1 && <Separator text="," />}
-          </div>
+          </Stack>
         ))}
-      </div>
+      </Stack>
       <Separator text=")" />
-    </div>
+    </Stack>
   );
 }
 
@@ -208,8 +208,8 @@ function Arg({
   const theme = useTheme();
 
   return (
-    <div
-      flex
+    <Stack
+      direction="row"
       sx={{
         color: theme.palette[variant].main,
         transition: theme.transitions.create(["background-color", "color"]),
@@ -231,7 +231,7 @@ function Arg({
       {type === "address" && !!addressRenderer
         ? addressRenderer(value as Address)
         : defaultRenderer(value)}
-    </div>
+    </Stack>
   );
 }
 

@@ -1,4 +1,3 @@
-import { KeyboardArrowDown } from "@mui/icons-material";
 import { Chip, Menu, MenuItem, Paper, Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { startCase } from "lodash-es";

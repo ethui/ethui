@@ -91,10 +91,8 @@ export function RawForm({
   }, [onChange, calldata, ether]);
 
   return (
-    <div
-      component="form"
-      m-1
-      sx={{ p: 2 }}
+    <form
+      className="m-1 flex p-2"
       onSubmit={(e) => {
         e.preventDefault();
         onSubmit?.();
@@ -127,7 +125,7 @@ export function RawForm({
           </Button>
         </Box>
       )}
-    </div>
+    </form>
   );
 }
 
@@ -186,10 +184,8 @@ export function AbiFormInner({
 
   return (
     <Grid container m-1 onSubmit={(e) => e.preventDefault()}>
-      <div
-        component="form"
-        m-1
-        sx={{ p: 2 }}
+      <form
+        className="m-2 flex p-2"
         onSubmit={(e) => {
           e.preventDefault();
           onSubmit?.();
@@ -231,7 +227,7 @@ export function AbiFormInner({
             </Button>
           </Box>
         )}
-      </div>
+      </form>
     </Grid>
   );
 }

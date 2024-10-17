@@ -1,5 +1,6 @@
-import { Box, Button, Link, hy } from "@mui/material";
+import { Box, Button, Link } from "@mui/material";
 
+import { Typography } from "@ethui/react/components/Typography";
 import type { StepProps } from ".";
 
 export function WelcomeStep({ onSubmit }: StepProps) {

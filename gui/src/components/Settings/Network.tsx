@@ -5,7 +5,6 @@ import {
   AccordionTrigger,
 } from "@ethui/ui/components/ui/accordion";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ExpandMore } from "@mui/icons-material";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useShallow } from "zustand/shallow";
 
@@ -62,8 +61,8 @@ export function SettingsNetwork() {
       <Accordion type="single" collapsible className="w-full">
         {fields.map((field, index) => {
           return (
-            <AccordionItem key={field.id} defaultExpanded={field.new}>
-              <AccordionTrigger expandIcon={<ExpandMore />}>
+            <AccordionItem value={field.id} key={field.id}>
+              <AccordionTrigger>
                 {field.chain_id && (
                   <ChainView chainId={field.chain_id} name={field.name} />
                 )}

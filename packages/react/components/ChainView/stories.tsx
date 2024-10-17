@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
+import { Stack } from "@mui/material";
 import { defaultDisabledArgs } from "../../utils";
 import { ChainView, type ChainViewProps } from "./";
 
@@ -17,11 +18,11 @@ export const Chain: StoryObj<ChainViewProps> = {
   parameters: { controls: { exclude: ["classes"] } },
   render: () => {
     return (
-      <div className="m-1 flex flex-col">
+      <Stack spacing={2} direction="column">
         <ChainView chainId={1} name="Mainnet" />
         <ChainView chainId={10} name="Optimism" />
         <ChainView chainId={31337} name="Anvil" />
-      </div>
+      </Stack>
     );
   },
 };

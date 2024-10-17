@@ -163,10 +163,7 @@ interface HeaderProps {
 
 function Header({ from, to, network }: HeaderProps) {
   return (
-    <div
-      className="flex items-stretch justify-between self-center"
-      width="100%"
-    >
+    <div className="flex w-full items-stretch justify-between self-center">
       <Typography variant="h6" component="h1">
         <div className="m-1 flex items-center">
           <AddressView address={from} />

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import {} from "@mui/material";
+import { Stack } from "@mui/material";
 import { defaultDisabledArgs } from "../../utils";
 import IconChain, { type IconChainProps } from "./Chain";
 
@@ -18,12 +18,12 @@ export const Chain: StoryObj<IconChainProps> = {
   parameters: { controls: { exclude: ["classes"] } },
   render: () => {
     return (
-      <div className="m-1 flex">
+      <Stack spacing={2} direction="row">
         <IconChain chainId={1} />
         <IconChain chainId={10} />
         <IconChain chainId={31337} />
         <IconChain chainId={2} />
-      </div>
+      </Stack>
     );
   },
 };

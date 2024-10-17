@@ -19,7 +19,6 @@ import { useMenuAction } from "#/hooks/useMenuAction";
 import { useOS } from "#/hooks/useOS";
 import { useSettings } from "#/store/useSettings";
 import { useSettingsWindow } from "#/store/useSettingsWindow";
-import { useTheme } from "#/store/useTheme";
 
 interface SidebarProps {
   sx?: SxProps;
@@ -28,8 +27,6 @@ interface SidebarProps {
 
 export function Sidebar({ sx, tabs }: SidebarProps) {
   const navigate = useNavigate();
-  const { theme } = useTheme();
-  const breakpoint = theme.breakpoints.down("sm");
   const { type } = useOS();
   const kbar = useKBar();
   const { toggle } = useSettingsWindow();
@@ -90,14 +87,7 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
           />
         ))}
       </div>
-      <div
-        className="flex gap-y-0.5 p-3"
-        sx={{
-          [breakpoint]: {
-            display: "none",
-          },
-        }}
-      >
+      <div className="flex gap-y-0.5 p-3 sm:hidden">
         <QuickWalletSelect />
         <QuickAddressSelect />
         <QuickNetworkSelect />

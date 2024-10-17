@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import {} from "@mui/material";
+import { Stack } from "@mui/material";
 import { defaultDisabledArgs } from "../../utils";
 import { Typography } from "../Typography";
 import { SolidityCall, type SolidityCallProps } from "./";
@@ -18,7 +18,7 @@ export const Call: StoryObj<SolidityCallProps> = {
   parameters: { controls: { exclude: ["classes"] } },
   render: () => {
     return (
-      <div className=" m-1 flex-col">
+      <Stack direction="column" spacing={2}>
         <SolidityCall
           from="0xalice"
           to="0x6aD2...4E45"
@@ -57,7 +57,7 @@ export const Call: StoryObj<SolidityCallProps> = {
           chainId={1}
           decimals={18}
         />
-      </div>
+      </Stack>
     );
   },
 };

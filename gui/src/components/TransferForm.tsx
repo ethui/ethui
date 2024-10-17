@@ -141,7 +141,7 @@ export function TransferForm({
         {result && (
           <Alert
             sx={{ alignSelf: "stretch" }}
-            variant="outline"
+            variant="outlined"
             severity="success"
           >
             <Typography variant="body2" noWrap>
