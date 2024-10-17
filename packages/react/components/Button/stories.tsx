@@ -3,6 +3,8 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import { defaultDisabledArgs } from "../../utils";
 import { Button, type ButtonProps } from "./";
+import { Button as ShadButton } from "../../components/ui/button";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 const meta: Meta<ButtonProps> = {
   title: "Components/Button",
@@ -26,11 +28,10 @@ export const Variants: StoryObj<ButtonProps> = {
   parameters: { controls: { exclude: ["classes"] } },
   render: () => {
     return (
-      <Stack spacing={2} maxWidth={300}>
-        <Button variant="text" label="Text Button" />
-        <Button variant="contained" label="Contained Button" />
-        <Button variant="outlined" label="Outlined Button" />
-      </Stack>
+      <ShadButton variant="destructive">
+        <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+        Click
+      </ShadButton>
     );
   },
 };

@@ -1,5 +1,13 @@
+<<<<<<< Updated upstream
 import "@fontsource/roboto-mono/latin.css";
 import "@fontsource/roboto/latin.css";
+||||||| Stash base
+import "./global.css";
+=======
+//import "./global.css";
+import "./tailwind.css";
+import "@ethui/react/index.css";
+>>>>>>> Stashed changes
 
 import {
   RouterProvider,

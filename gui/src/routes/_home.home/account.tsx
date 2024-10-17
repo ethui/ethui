@@ -5,6 +5,8 @@ import { BalancesList } from "#/components/BalancesList";
 import { Navbar } from "#/components/Home/Navbar";
 import { useWallets } from "#/store/useWallets";
 
+import { Button } from "@ethui/react/components/ui/button";
+
 export const Route = createFileRoute("/_home/home/account")({
   component: Account,
 });
@@ -18,6 +20,7 @@ export function Account() {
     <>
       <Navbar>
         <AddressView variant="h6" address={address} />
+        <Button>Click</Button>
       </Navbar>
       <BalancesList />
     </>
