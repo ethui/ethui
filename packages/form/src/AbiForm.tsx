@@ -174,7 +174,7 @@ export function AbiFormInner({
         args: values,
       });
       setCalldata(encoded);
-    } catch (e) {
+    } catch (_e) {
       setCalldata(undefined);
     }
   }, [values, item]);
@@ -218,7 +218,7 @@ export function AbiFormInner({
             onChange={(e) => {
               try {
                 setEther(BigInt(e));
-              } catch (e) {
+              } catch (_e) {
                 setEther(undefined);
               }
             }}
