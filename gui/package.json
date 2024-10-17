@@ -67,25 +67,13 @@
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
     "@types/react-infinite-scroller": "^1.2.5",
-<<<<<<< Updated upstream
-    "@vitejs/plugin-react": "^4.3.2",
-||||||| Stash base
-    "@vitejs/plugin-react-swc": "^3.7.1",
-=======
     "@vitejs/plugin-react-swc": "^3.7.1",
     "autoprefixer": "^10.4.20",
->>>>>>> Stashed changes
     "jsdom": "^25.0.1",
-<<<<<<< Updated upstream
-||||||| Stash base
     "vite-plugin-babel-import": "^2.0.5",
     "vite-plugin-imp": "^2.4.0",
-=======
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.14",
-    "vite-plugin-babel-import": "^2.0.5",
-    "vite-plugin-imp": "^2.4.0",
->>>>>>> Stashed changes
     "vite-tsconfig-paths": "^5.0.1"
   },
   "resolutions": {

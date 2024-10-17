@@ -1,5 +1,6 @@
-import { Box, GlobalStyles, ThemeProvider } from "@mui/material";
+import { Box, GlobalStyles } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider } from "@mui/material/styles";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Outlet, createRootRoute } from "@tanstack/react-router";

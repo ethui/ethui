@@ -1,4 +1,5 @@
-import { Stack, type SxProps, useTheme } from "@mui/material";
+import { Stack, type SxProps } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import type { Abi, AbiFunction, Address } from "abitype";
 import { decodeFunctionData, formatUnits, parseAbi } from "viem";
 
