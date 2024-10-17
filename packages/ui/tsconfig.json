@@ -5,7 +5,11 @@
       "@types",
       "./node_modules/@types",
       "../../node_modules/@types"
-    ]
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "#/*": ["./*"]
+    }
   },
-  "include": ["components", "./*.ts", "@types", "vite.config.ts"]
+  "include": ["components", "lib", "./*.ts", "@types", "vite.config.ts"]
 }

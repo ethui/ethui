@@ -17,6 +17,7 @@
     "@ethui/data": "*",
     "@ethui/form": "*",
     "@ethui/react": "*",
+    "@ethui/ui": "*",
     "@ethui/types": "*",
     "@fontsource/roboto": "^5.1.0",
     "@fontsource/roboto-mono": "^5.1.0",

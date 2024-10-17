@@ -5,7 +5,7 @@ import { BalancesList } from "#/components/BalancesList";
 import { Navbar } from "#/components/Home/Navbar";
 import { useWallets } from "#/store/useWallets";
 
-import { Button } from "@ethui/react/components/ui/button";
+import { Button } from "@ethui/ui/components/ui/button";
 
 export const Route = createFileRoute("/_home/home/account")({
   component: Account,
