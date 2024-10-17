@@ -69,7 +69,7 @@ export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
       <div className="m-4 items-start">
         <Form.Text label="Name" name="name" />
         {addressFields.map((field, i) => (
-          <div className="self-stretch flex m-4" key={field.id}>
+          <div className="m-4 flex self-stretch" key={field.id}>
             <Form.Text
               label="Address"
               name={`addresses.${i}.address`}

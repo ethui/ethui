@@ -121,11 +121,7 @@ interface SummaryProps {
 }
 function Summary({ account, tx }: SummaryProps) {
   return (
-    <div className=" items-center m-8>
-      <Icon {...{ tx, account }} />
-
-      <BlockNumber number={tx.blockNumber} />
-      <div className=" items-center m-4">
+    <div className=" <Icon {...{ tx, account }} /> <BlockNumber number={tx.blockNumber} /> <div className= m-8> items-center" items-center m-4">
         <AddressView address={tx.from} /> <span>→</span>
         {tx.to ? (
           <AddressView address={tx.to} />

@@ -36,7 +36,7 @@ export function ERC20AddDialog() {
         <Datapoint
           label=""
           value={
-            <div className="flex m-8" textAlign="center">
+            <div className="m-8 flex" textAlign="center">
               <IconToken iconUrl={token.alchemy_metadata.logo} />
               <Typography alignSelf={"center"}>
                 {token.metadata.name}

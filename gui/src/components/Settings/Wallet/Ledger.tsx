@@ -101,7 +101,7 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
           const address = addresses.get(path);
           return (
             <div className="self-stretch" key={field.id}>
-              <div className="self-stretch flex m-4">
+              <div className="m-4 flex self-stretch">
                 <Form.Text
                   label={`Path #${i + 1}`}
                   name={`paths.${i}.path`}

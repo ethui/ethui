@@ -119,7 +119,7 @@ function ArrayElements({
   };
 
   return (
-    <div className=" flex-col m-4">
+    <div className=" m-4 flex-col">
       {value.map((v, i) => (
         <div className=" key={i} m-4">
           <AbiArrayItemInput

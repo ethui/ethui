@@ -24,10 +24,4 @@ export const Variants: StoryObj<TypographyProps> = {
   parameters: { controls: { exclude: ["classes"] } },
   render: () => {
     return (
-      <div className=" flex-col m-4 maxWidth={300}>
-        <Typography>The quick brown fox</Typography>
-        <Typography mono>The quick brown fox</Typography>
-      </div>
-    );
-  },
-};
+      <div className=" maxWidth={300}> <Typography>The quick brown fox</Typography> <Typography mono>The quick brown fox</Typography> </div> ); }, }; m-4 flex-col"

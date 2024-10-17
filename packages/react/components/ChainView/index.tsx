@@ -8,7 +8,7 @@ export interface ChainViewProps {
 
 export function ChainView({ name, chainId }: ChainViewProps) {
   return (
-    <div className=" items-center m-4">
+    <div className=" m-4 items-center">
       <IconChain chainId={chainId} />
       <Typography>{name}</Typography>
     </div>

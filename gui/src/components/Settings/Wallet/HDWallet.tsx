@@ -89,7 +89,7 @@ function Create({ onSubmit, onRemove }: Props) {
   }, [name, current, mnemonic, derivationPath, password, onSubmit, submitted]);
 
   return (
-    <div className=" flex-col m-4">
+    <div className=" m-4 flex-col">
       <Stepper activeStep={step} alternativeLabel>
         {steps.map((label) => (
           <Step key={label}>
@@ -150,7 +150,7 @@ function MnemonicStep({ onSubmit, onCancel }: MnemonicStepProps) {
 
   return (
     <Form form={form} onSubmit={onSubmitInternal}>
-      <div className=" flex-col m-4">
+      <div className=" m-4 flex-col">
         <Form.Text label="Name" name="name" multiline />
 
         <Typography>Insert your 12-word mnemonic</Typography>
@@ -181,7 +181,7 @@ function PasswordStep({ onSubmit, onCancel }: PasswordStepProps) {
 
   return (
     <Form form={form} onSubmit={(d) => onSubmit(d.password)}>
-      <div className=" flex-col m-4">
+      <div className=" m-4 flex-col">
         <Typography>Choose a secure password</Typography>
         <Form.Text type="password" label="Password" name="password" />
         <Form.Text
@@ -244,7 +244,7 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
         <Form.Text label="Derivation Path" name="derivationPath" />
 
         {form.formState.isValid && (
-          <div className=" flex-col m-4">
+          <div className=" m-4 flex-col">
             <TableContainer>
               <Table size="small">
                 <TableBody>

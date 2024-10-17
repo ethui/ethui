@@ -18,7 +18,7 @@ export const Call: StoryObj<SolidityCallProps> = {
   parameters: { controls: { exclude: ["classes"] } },
   render: () => {
     return (
-      <div className=" flex-col m-4">
+      <div className=" m-4 flex-col">
         <SolidityCall
           from="0xalice"
           to="0x6aD2...4E45"

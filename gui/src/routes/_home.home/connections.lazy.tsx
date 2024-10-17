@@ -48,7 +48,7 @@ export function Connections() {
 
 function Domain({ domain, peers }: { domain: string; peers: Peer[] }) {
   return (
-    <div className=" items-center m-4">
+    <div className=" m-4 items-center">
       <Badge>
         <Avatar sx={{ width: 30, height: 30 }} src={peers[0].favicon}>
           {peers[0].origin.replace(/https?:\/\//, "").slice(0, 2)}

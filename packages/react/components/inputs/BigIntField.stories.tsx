@@ -14,19 +14,7 @@ const meta: Meta<object> = {
       const form = useForm({ defaultValues: { value: 0n } });
       return (
         <form>
-          <div className="m-4 maxWidth={300}>
-            <Story form={form} />
-          </div>
-        </form>
-      );
-    },
-  ],
-};
-
-export default meta;
-
-export const BigIntExample: StoryFn<BigIntFieldProps> = (_story, { form }) => (
-  <div className="m-4 maxWidth={300}>
+          <div className="maxWidth={300}> <Story form={form} /> </div> </form> ); }, ], }; export default meta; export const BigIntExample: StoryFn<BigIntFieldProps> = (_story, { form }) => ( <div className= m-4"m-4 maxWidth={300}>
     <BigIntField
       control={form.control}
       name="amount"
