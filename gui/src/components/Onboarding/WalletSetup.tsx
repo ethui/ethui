@@ -6,7 +6,7 @@ import type { StepProps } from ".";
 
 export function WalletSetupStep({ onSubmit }: StepProps) {
   return (
-    <div alignItems="flex-end" m-8>
+    <div className="flex flex-end" m-8>
       <Typography variant="h6" component="h1" alignSelf="start">
         Wallet setup
       </Typography>
