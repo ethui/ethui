@@ -1,6 +1,6 @@
 import { Box, GlobalStyles } from "@mui/material";
-import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider } from "@mui/material/styles";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Outlet, createRootRoute } from "@tanstack/react-router";
@@ -15,10 +15,10 @@ const RouterDevtools =
   process.env.NODE_ENV === "production"
     ? () => null
     : lazy(() =>
-      import("@tanstack/router-devtools").then((res) => ({
-        default: res.TanStackRouterDevtools,
-      })),
-    );
+        import("@tanstack/router-devtools").then((res) => ({
+          default: res.TanStackRouterDevtools,
+        })),
+      );
 
 const globalStyles = {
   body: { userSelect: "none" },
