@@ -7,7 +7,7 @@ export const Route = createFileRoute("/_dialog")({
 
 export function DialogLayout() {
   return (
-    <div m-4 sx={{ widht: "100vw", height: "100vh", overflow: "hidden", p: 2 }}>
+    <div m-1 sx={{ widht: "100vw", height: "100vh", overflow: "hidden", p: 2 }}>
       <Outlet />
     </div>
   );

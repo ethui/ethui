@@ -93,7 +93,7 @@ export function RawForm({
   return (
     <div
       component="form"
-      m-4
+      m-1
       sx={{ p: 2 }}
       onSubmit={(e) => {
         e.preventDefault();
@@ -185,10 +185,10 @@ export function AbiFormInner({
   }, [item, parentOnChange, calldata, ether, values]);
 
   return (
-    <Grid container m-4 onSubmit={(e) => e.preventDefault()}>
+    <Grid container m-1 onSubmit={(e) => e.preventDefault()}>
       <div
         component="form"
-        m-4
+        m-1
         sx={{ p: 2 }}
         onSubmit={(e) => {
           e.preventDefault();

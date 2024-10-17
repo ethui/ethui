@@ -28,7 +28,7 @@ export function InstallExtensionStep({ onSubmit }: StepProps) {
   }, [detected, peerCount]);
 
   return (
-    <div className="m-4" sx={{ width: "100 % " }}>
+    <div className="m-1" sx={{ width: "100 % " }}>
       <Typography variant="h6" component="h1" alignSelf="start">
         Install Extension
       </Typography>

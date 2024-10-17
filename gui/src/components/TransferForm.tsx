@@ -113,7 +113,7 @@ export function TransferForm({
 
   return (
     <Form form={form} onSubmit={onSubmit}>
-      <div className="m-4 items-start">
+      <div className="m-1 items-start">
         <Typography>Transfer token</Typography>
 
         <Form.Select

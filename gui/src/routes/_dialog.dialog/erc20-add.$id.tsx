@@ -25,7 +25,7 @@ export function ERC20AddDialog() {
   if (!token) return null;
 
   return (
-    <div className="m-4 items-center">
+    <div className="m-1 items-center">
       <Typography variant="h6" component="h1">
         Add suggested token
       </Typography>
@@ -56,7 +56,7 @@ export function ERC20AddDialog() {
         />
       </Grid>
 
-      <div className=" m-4">
+      <div className=" m-1">
         <Button color="error" onClick={() => tauriWindow.close()}>
           Cancel
         </Button>

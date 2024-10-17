@@ -18,7 +18,7 @@ export const Effigy: StoryObj<IconEffigyProps> = {
   parameters: { controls: { exclude: ["classes"] } },
   render: () => {
     return (
-      <div className="m-4 flex">
+      <div className="m-1 flex">
         <IconEffigy address="vitalik.eth" />
         <IconEffigy address="brantly.eth" />
         <IconEffigy address="huh.eth" />

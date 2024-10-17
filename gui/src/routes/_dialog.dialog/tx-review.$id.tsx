@@ -165,7 +165,7 @@ function Header({ from, to, network }: HeaderProps) {
   return (
     <div className=" space-between flex items-stretch self-center" width="100%">
       <Typography variant="h6" component="h1">
-        <div className=" m-4 items-center">
+        <div className=" m-1 items-center">
           <AddressView address={from} />
           <span>→</span>
           <AddressView address={to} />
@@ -268,7 +268,7 @@ function Actions({ request, accepted, onReject, onConfirm }: ActionsProps) {
     );
   } else {
     return (
-      <div className=" center m-4 flex items-center">
+      <div className=" center m-1 flex items-center">
         <Button
           size="large"
           variant="outline"
@@ -358,7 +358,7 @@ function Erc20Transfer({
   });
 
   return (
-    <div className=" m-4 items-center">
+    <div className=" m-1 items-center">
       <AddressView address={from} />
       <span>→</span>
       <AddressView address={to} />

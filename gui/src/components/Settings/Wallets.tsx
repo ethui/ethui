@@ -47,7 +47,7 @@ export function SettingsWallets({ extraAction }: Props) {
         {newType && <NewItem key="_new" type={newType} onFinish={closeNew} />}
       </div>
       {!newType && (
-        <div className=" space-between m-4 flex" sx={{ mt: 4 }}>
+        <div className=" space-between m-1 flex" sx={{ mt: 4 }}>
           <AddWalletButton onChoice={startNew} />
           {extraAction && extraAction}
         </div>

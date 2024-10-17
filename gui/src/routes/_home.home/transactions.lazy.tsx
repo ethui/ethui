@@ -120,7 +120,7 @@ interface SummaryProps {
 }
 function Summary({ account, tx }: SummaryProps) {
   return (
-    <div className="m-4 flex items-center">
+    <div className="m-1 flex items-center">
       <Icon {...{ tx, account }} />
       <BlockNumber number={tx.blockNumber} />
       <div className="m-8">
@@ -181,7 +181,7 @@ function Details({ tx, chainId }: DetailsProps) {
   const value = BigInt(fullTx.value || 0);
 
   return (
-    <Grid container row className="m-4">
+    <Grid container row className="m-1">
       <Datapoint
         label="from"
         value={<AddressView icon address={tx.from} />}

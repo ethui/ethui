@@ -41,7 +41,7 @@ export function ArrayInput({
   };
 
   return (
-    <div className="m-4">
+    <div className="m-1">
       <ToggleButtonGroup
         color="primary"
         value={tab}
@@ -119,7 +119,7 @@ function ArrayElements({
   };
 
   return (
-    <div className=" m-4 flex-col">
+    <div className=" m-1 flex-col">
       {value.map((v, i) => (
         <div className="" key={i}>
           <AbiArrayItemInput

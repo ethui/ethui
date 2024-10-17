@@ -92,7 +92,7 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
 
   return (
     <Form form={form} onSubmit={prepareAndSubmit}>
-      <div className="m-4 items-start">
+      <div className="m-1 items-start">
         <Detect />
         <Form.Text label="Name" name="name" />
 
@@ -101,7 +101,7 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
           const address = addresses.get(path);
           return (
             <div className="self-stretch" key={field.id}>
-              <div className="m-4 flex self-stretch">
+              <div className="m-1 flex self-stretch">
                 <Form.Text
                   label={`Path #${i + 1}`}
                   name={`paths.${i}.path`}
@@ -117,7 +117,7 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
         <Button color="secondary" onClick={() => append({ path: "" })}>
           Add
         </Button>
-        <div className=" m-4">
+        <div className=" m-1">
           <Form.Submit label="Save" />
           <Button color="warning" onClick={onRemove}>
             Remove

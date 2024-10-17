@@ -18,7 +18,7 @@ export const Chain: StoryObj<IconChainProps> = {
   parameters: { controls: { exclude: ["classes"] } },
   render: () => {
     return (
-      <div className="m-4 flex">
+      <div className="m-1 flex">
         <IconChain chainId={1} />
         <IconChain chainId={10} />
         <IconChain chainId={31337} />

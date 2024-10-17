@@ -54,7 +54,7 @@ export function ABIForm({ chainId, address }: Props) {
   };
 
   return (
-    <div className="m-4 items-start">
+    <div className="m-1 items-start">
       <Autocomplete
         autoFocus
         selectOnFocus

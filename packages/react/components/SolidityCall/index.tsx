@@ -66,7 +66,7 @@ interface DeployProps {
 function Deploy({ value, from, decimals, ArgProps }: DeployProps) {
   return (
     <>
-      <div className=" m-4">
+      <div className=" m-1">
         <Arg
           label="Ξ"
           type="uint256"
@@ -97,7 +97,7 @@ interface FallbackProps {
 
 function Fallback({ value, from, to, decimals, ArgProps }: FallbackProps) {
   return (
-    <div className=" m-4">
+    <div className=" m-1">
       <Arg
         label="Ξ"
         type="uint256"
