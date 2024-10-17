@@ -5,9 +5,9 @@ import {
   Stack,
   ToggleButton,
   ToggleButtonGroup,
-  alpha,
 } from "@mui/material";
 import { grey, red } from "@mui/material/colors";
+import { alpha } from "@mui/material/styles";
 import { useState } from "react";
 
 import { AbiInput, type InnerProps } from "./AbiInput";

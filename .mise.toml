@@ -32,6 +32,7 @@ node = "22"
 [env]
 NODE_ENV = "development"
 RUST_LOG = "ethui_sync=info,ethui_sync_alchemy=trace"
+ETHUI_FEATURES = "debug"
 IRON_WS_PORT = 9102
 IRON_HTTP_PORT = 9103
 ETHUI_WS_PORT = 9102

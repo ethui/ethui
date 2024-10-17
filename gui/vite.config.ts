@@ -1,6 +1,7 @@
 import { TanStackRouterVite } from "@tanstack/router-vite-plugin";
-import react from "@vitejs/plugin-react";
+import react from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
+import vitePluginImp from "vite-plugin-imp";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 const host = process.env.TAURI_DEV_HOST;
@@ -10,7 +11,25 @@ export default defineConfig(() => ({
     react(),
     TanStackRouterVite(),
     tsconfigPaths({ parseNative: true }),
+    vitePluginImp({
+      libList: [
+        {
+          libName: "@mui/material",
+          libDirectory: "",
+          camel2DashComponentName: false,
+        },
+        {
+          libName: "@mui/icons-material",
+          libDirectory: "",
+          camel2DashComponentName: false,
+        },
+      ],
+    }),
   ],
+
+  resolve: {
+    alias: [{ find: "@mui/material", replacement: "@mui/material/modern" }],
+  },
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   // prevent vite from obscuring rust errors
