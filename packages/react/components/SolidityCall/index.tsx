@@ -159,7 +159,7 @@ function Call({ value, data, to, decimals, abi, ArgProps }: CallProps) {
       </div>
       <div className="m-3">
         {[...args].map(({ value, type, label }, i) => (
-          <div className="" key={i} pl={4}>
+          <div className="pl-4" key={i}>
             <Arg
               variant="highlight4"
               {...{ label, value, type }}

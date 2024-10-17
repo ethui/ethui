@@ -12,6 +12,7 @@ import {
   AccordionTrigger,
 } from "@ethui/ui/components/ui/accordion";
 import { Button } from "@ethui/ui/components/ui/button";
+import { CaretDownIcon } from "@radix-ui//react-icons";
 import { useWallets } from "#/store/useWallets";
 import { HDWalletForm } from "./Wallet/HDWallet";
 import { ImpersonatorForm } from "./Wallet/Impersonator";
@@ -68,7 +69,7 @@ function ExistingItem({ wallet }: ItemProps) {
   };
 
   return (
-    <AccordionItem defaultExpanded={!wallet}>
+    <AccordionItem value={wallet.name}>
       <AccordionTrigger>
         <div className="flex items-center">
           <Typography>{wallet.name}</Typography>
@@ -149,11 +150,8 @@ const AddWalletButton = ({ onChoice }: AddWalletButtonProps) => {
   return (
     // TODO: make this button into a dropdown
     <>
-      <Button
-        id="add-wallet-btn"
-        onClick={handleOpen}
-        endIcon={<KeyboardArrowDown />}
-      >
+      <Button id="add-wallet-btn" onClick={handleOpen}>
+        <CaretDownIcon />
         Add
       </Button>
       <Menu

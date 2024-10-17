@@ -274,7 +274,6 @@ function Actions({ request, accepted, onReject, onConfirm }: ActionsProps) {
       <div className="m-2 flex items-center justify-center">
         <Button
           size="large"
-          variant="outline"
           color="error"
           onClick={onReject}
           startIcon={<Delete />}
