@@ -47,7 +47,7 @@ export function decodeDefaultArgs(
       data: calldata,
     });
     return [...args];
-  } catch (e) {
+  } catch (_e) {
     return Array(item.inputs.length).fill(undefined);
   }
 }
