@@ -79,7 +79,7 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
       <Toolbar sx={{ p: 2 }} data-tauri-drag-region="true">
         {type !== "macos" && <Logo width={40} />}
       </Toolbar>
-      <div px={2} rowGap={1} flexGrow={1}>
+      <div className="px-2 flex grow gap-0">
         {tabs.map(({ path, label, icon }, index) => (
           <SidebarButton
             key={index}
