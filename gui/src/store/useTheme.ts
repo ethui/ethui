@@ -4,7 +4,7 @@ import { invoke } from "@tauri-apps/api/core";
 import type { Action } from "kbar";
 import { type StateCreator, create } from "zustand";
 
-import { darkTheme, lightTheme } from "@ethui/react";
+import { darkTheme, lightTheme } from "@ethui/react/themes";
 import type { GeneralSettings } from "@ethui/types/settings";
 
 interface Store {
@@ -63,10 +63,8 @@ event.listen("settings-changed", async () => {
   await useTheme.getState().reload();
 });
 
-const useTheme = create<Store>()(store);
+export const useTheme = create<Store>()(store);
 
 (async () => {
   await useTheme.getState().reload();
 })();
-
-export default useTheme;

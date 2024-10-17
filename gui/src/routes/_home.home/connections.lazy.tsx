@@ -14,12 +14,13 @@ import { invoke } from "@tauri-apps/api/core";
 import { map } from "lodash-es";
 import { useEffect, useState } from "react";
 
-import { ChainView } from "@ethui/react/components";
+import { ChainView } from "@ethui/react/components/ChainView";
 import type { Affinity, Peer } from "@ethui/types";
-import { Panel } from "#/components";
 import { Navbar } from "#/components/Home/Navbar";
-import { useEventListener, useInvoke } from "#/hooks";
-import { useNetworks } from "#/store";
+import { Panel } from "#/components/Panel";
+import { useEventListener } from "#/hooks/useEventListener";
+import { useInvoke } from "#/hooks/useInvoke";
+import { useNetworks } from "#/store/useNetworks";
 
 export const Route = createLazyFileRoute("/_home/home/connections")({
   component: Connections,

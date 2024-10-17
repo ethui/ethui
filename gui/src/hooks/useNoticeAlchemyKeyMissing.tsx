@@ -3,7 +3,9 @@ import { IconButton, Typography } from "@mui/material";
 import { type SnackbarKey, useSnackbar } from "notistack";
 import { useEffect } from "react";
 
-import { useNetworks, useSettings, useSettingsWindow } from "#/store";
+import { useNetworks } from "#/store/useNetworks";
+import { useSettings } from "#/store/useSettings";
+import { useSettingsWindow } from "#/store/useSettingsWindow";
 import { useInvoke } from "./useInvoke";
 
 let key: SnackbarKey;

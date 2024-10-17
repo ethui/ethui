@@ -111,7 +111,7 @@ const store: StateCreator<Store> = (set, get) => ({
   },
 });
 
-const useWallets = create<Store>()(subscribeWithSelector(store));
+export const useWallets = create<Store>()(subscribeWithSelector(store));
 
 event.listen("wallets-changed", async () => {
   await useWallets.getState().reload();
@@ -147,5 +147,3 @@ const fetchAllWalletInfo = async (wallets: Wallet[]): Promise<WalletInfo[]> =>
       }),
     )
   ).flat();
-
-export default useWallets;

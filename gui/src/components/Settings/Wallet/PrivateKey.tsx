@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Form } from "@ethui/react/components";
+import { Form } from "@ethui/react/components/Form";
 import { passwordFormSchema, passwordSchema } from "@ethui/types/password";
 import type { PrivateKeyWallet } from "@ethui/types/wallets";
 

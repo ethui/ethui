@@ -1,4 +1,4 @@
-import { Form } from "@ethui/react/components";
+import { Form } from "@ethui/react/components/Form";
 import { addressSchema } from "@ethui/types/wallets";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert, Button, Stack, Typography } from "@mui/material";
@@ -14,7 +14,9 @@ import {
   parseAbiItem,
 } from "viem";
 import { z } from "zod";
-import { useBalances, useNetworks, useWallets } from "#/store";
+import { useBalances } from "#/store/useBalances";
+import { useNetworks } from "#/store/useNetworks";
+import { useWallets } from "#/store/useWallets";
 
 interface Token {
   currency?: string;

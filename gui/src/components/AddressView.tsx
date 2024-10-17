@@ -6,12 +6,14 @@ import { type FieldValues, useForm } from "react-hook-form";
 import { type Address, getAddress } from "viem";
 import { z } from "zod";
 
-import { Form, Typography } from "@ethui/react/components";
-import { useInvoke } from "#/hooks";
-import { useNetworks } from "#/store";
+import { Form } from "@ethui/react/components/Form";
+import { Typography } from "@ethui/react/components/Typography";
+import { useInvoke } from "#/hooks/useInvoke";
+import { useNetworks } from "#/store/useNetworks";
 import { truncateHex } from "#/utils";
-import { ContextMenuWithTauri, Modal } from "./";
-import { IconAddress } from "./Icons";
+import { ContextMenuWithTauri } from "./ContextMenuWithTauri";
+import { IconAddress } from "./Icons/Address";
+import { Modal } from "./Modal";
 
 interface Props {
   address: Address;

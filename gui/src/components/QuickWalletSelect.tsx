@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import { useShallow } from "zustand/shallow";
 
-import { useWallets } from "#/store";
+import { useWallets } from "#/store/useWallets";
 
 export function QuickWalletSelect() {
   const [wallets, currentWallet, setCurrentWallet] = useWallets(

@@ -4,7 +4,7 @@ import type { Address } from "abitype";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Form } from "@ethui/react/components";
+import { Form } from "@ethui/react/components/Form";
 import {
   type ImpersonatorWallet,
   type Wallet,

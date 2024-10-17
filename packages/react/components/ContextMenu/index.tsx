@@ -7,7 +7,7 @@ import {
 import type React from "react";
 import { type MouseEvent, type ReactNode, useState } from "react";
 
-import { ClickToCopy } from "@ethui/react/components";
+import { ClickToCopy } from "@ethui/react/components/ClickToCopy";
 
 export interface ContextMenuProps {
   children: ReactNode;

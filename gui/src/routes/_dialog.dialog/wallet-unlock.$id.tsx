@@ -11,8 +11,8 @@ import { useEffect, useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Form } from "@ethui/react/components";
-import { useDialog } from "#/hooks";
+import { Form } from "@ethui/react/components/Form";
+import { useDialog } from "#/hooks/useDialog";
 
 export const Route = createFileRoute("/_dialog/dialog/wallet-unlock/$id")({
   component: WalletUnlockDialog,

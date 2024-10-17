@@ -10,7 +10,7 @@ import {
 import { lightBlue } from "@mui/material/colors";
 import { Link, useMatchRoute } from "@tanstack/react-router";
 
-import { useTheme } from "#/store";
+import { useTheme } from "#/store/useTheme";
 
 type Props<RootType extends React.ElementType> = Omit<
   ButtonBaseProps<RootType>,

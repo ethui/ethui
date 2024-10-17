@@ -4,10 +4,11 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { isDirty, isValid } from "zod";
 
 import type { Erc20FullData } from "@ethui/types";
-import { AddressView, Datapoint } from "#/components";
-import { IconToken } from "#/components/Icons";
-import { useDialog } from "#/hooks";
-import { useNetworks } from "#/store";
+import { AddressView } from "#/components/AddressView";
+import { Datapoint } from "#/components/Datapoint";
+import { IconToken } from "#/components/Icons/Token";
+import { useDialog } from "#/hooks/useDialog";
+import { useNetworks } from "#/store/useNetworks";
 
 const tauriWindow = getCurrentWindow();
 

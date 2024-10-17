@@ -3,9 +3,10 @@ import { Box, CardHeader, IconButton, List, Stack } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import type { Address } from "viem";
 
-import { IconAddress } from "#/components/Icons";
-import { useBlacklist, useNetworks } from "#/store";
-import { AddressView } from "..";
+import { IconAddress } from "#/components/Icons/Address";
+import { useBlacklist } from "#/store/useBlacklist";
+import { useNetworks } from "#/store/useNetworks";
+import { AddressView } from "../AddressView";
 
 export function SettingsTokens() {
   const currentNetwork = useNetworks((s) => s.current);

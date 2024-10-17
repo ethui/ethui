@@ -24,11 +24,11 @@ import type React from "react";
 import { type ReactNode, forwardRef, useMemo } from "react";
 import { useShallow } from "zustand/shallow";
 
-import useNetworks from "#/store/useNetworks";
-import useSettings from "#/store/useSettings";
-import useSettingsWindow from "#/store/useSettingsWindow";
-import useWallets from "#/store/useWallets";
-import useTheme from "#/store/useTheme";
+import { useNetworks } from "#/store/useNetworks";
+import { useSettings } from "#/store/useSettings";
+import { useSettingsWindow } from "#/store/useSettingsWindow";
+import { useTheme } from "#/store/useTheme";
+import { useWallets } from "#/store/useWallets";
 
 function useActions() {
   const walletActions = useWallets((s) => s.actions);

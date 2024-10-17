@@ -9,10 +9,11 @@ import { Outlet, createFileRoute } from "@tanstack/react-router";
 import { SnackbarProvider } from "notistack";
 
 import type { Tab } from "@ethui/types/ui";
-import { CommandBar } from "#/components";
+import { CommandBar } from "#/components/CommandBar";
 import { Sidebar } from "#/components/Home/Sidebar";
-import { useNoticeAlchemyKeyMissing, useNoticeNewVersion } from "#/hooks";
-import { useTheme } from "#/store";
+import { useNoticeAlchemyKeyMissing } from "#/hooks/useNoticeAlchemyKeyMissing";
+import { useNoticeNewVersion } from "#/hooks/useNoticeNewVersion";
+import { useTheme } from "#/store/useTheme";
 
 export const Route = createFileRoute("/_home")({
   component: HomePageLayout,

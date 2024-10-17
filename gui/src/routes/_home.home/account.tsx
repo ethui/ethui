@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { AddressView, BalancesList } from "#/components";
+import { AddressView } from "#/components/AddressView";
+import { BalancesList } from "#/components/BalancesList";
 import { Navbar } from "#/components/Home/Navbar";
-import { useWallets } from "#/store";
+import { useWallets } from "#/store/useWallets";
 
 export const Route = createFileRoute("/_home/home/account")({
   component: Account,

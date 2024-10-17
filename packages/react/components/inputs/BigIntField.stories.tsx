@@ -2,7 +2,7 @@ import type { Meta, StoryFn } from "@storybook/react";
 
 import { Stack } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { BigIntField, type BigIntFieldProps } from "./";
+import { BigIntField, type BigIntFieldProps } from "./BigIntField";
 
 const meta: Meta<object> = {
   title: "Inputs/BigIntField",

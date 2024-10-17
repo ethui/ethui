@@ -62,8 +62,9 @@ const store: StateCreator<Store> = (set, get) => ({
       {
         id: actionId,
         name: "Change network",
-        subtitle: `${networks.length} network${networks.length > 1 ? "s" : ""
-          } available`,
+        subtitle: `${networks.length} network${
+          networks.length > 1 ? "s" : ""
+        } available`,
         shortcut: ["N"],
       },
       ...(networks || []).map((network, index) => ({
@@ -91,7 +92,7 @@ const store: StateCreator<Store> = (set, get) => ({
   },
 });
 
-const useNetworks = create<Store>()(subscribeWithSelector(store));
+export const useNetworks = create<Store>()(subscribeWithSelector(store));
 
 event.listen("networks-changed", async () => {
   await useNetworks.getState().reload();
@@ -108,5 +109,3 @@ event.listen("networks-removed", async () => {
 (async () => {
   await useNetworks.getState().reload();
 })();
-
-export default useNetworks;

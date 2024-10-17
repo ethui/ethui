@@ -2,8 +2,9 @@ import { Stack, type SxProps, useTheme } from "@mui/material";
 import type { Abi, AbiFunction, Address } from "abitype";
 import { decodeFunctionData, formatUnits, parseAbi } from "viem";
 
-import { ClickToCopy, Typography } from "../";
 import type { PaletteColorKey } from "../../utils";
+import { ClickToCopy } from "../ClickToCopy";
+import { Typography } from "../Typography";
 
 export interface SolidityCallProps {
   value?: bigint;

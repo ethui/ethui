@@ -5,12 +5,11 @@ import {
   Accordion as MuiAccordion,
   AccordionSummary as MuiAccordionSummary,
 } from "@mui/material";
-
-import * as MuiAccordionDetails from "@mui/material/AccordionDetails";
+import MuiAccordionDetails from "@mui/material/AccordionDetails";
 
 export const AccordionDetails = MuiAccordionDetails;
 
-export default function Accordion(
+export function Accordion(
   props: Omit<AccordionProps, "disableGutters" | "TransitionProps">,
 ) {
   return (
@@ -21,6 +20,8 @@ export default function Accordion(
     />
   );
 }
+
+export default Accordion;
 
 export function AccordionSummary(
   props: Omit<AccordionSummaryProps, "expandIcon">,
