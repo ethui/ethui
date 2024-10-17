@@ -1,4 +1,4 @@
-import { Button, Grid2 as Grid, Stack, Typography } from "@mui/material";
+import { Button, Grid2 as Grid, Typography } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { isDirty, isValid } from "zod";
@@ -58,15 +58,10 @@ export function ERC721AddDialog() {
       </Grid>
 
       <div className=" m-4">
-        <Button
-          
-          color="error"
-          onClick={() => tauriWindow.close()}
-        >
+        <Button color="error" onClick={() => tauriWindow.close()}>
           Cancel
         </Button>
         <Button
-          
           type="submit"
           disabled={!isDirty || !isValid}
           onClick={() => send("accept")}

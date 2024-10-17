@@ -1,5 +1,5 @@
 import { SettingsSharp, TerminalSharp } from "@mui/icons-material";
-import { Drawer, Stack, type SxProps, Toolbar } from "@mui/material";
+import { Drawer, type SxProps, Toolbar } from "@mui/material";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { useKBar } from "kbar";

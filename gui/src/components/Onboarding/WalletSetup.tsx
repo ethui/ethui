@@ -1,4 +1,4 @@
-import { Box, Stack, Typography } from "@mui/material";
+import { Box Typography } from "@mui/material";
 
 import { Button } from "@ethui/ui/components/ui/button";
 import { SettingsWallets } from "#/components/Settings/Wallets";

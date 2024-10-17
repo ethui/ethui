@@ -1,4 +1,4 @@
-import { Container, MobileStepper, Stack } from "@mui/material";
+import { Container, MobileStepper, } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 

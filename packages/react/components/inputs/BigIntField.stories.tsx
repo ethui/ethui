@@ -1,6 +1,6 @@
 import type { Meta, StoryFn } from "@storybook/react";
 
-import { Stack } from "@mui/material";
+import { } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { BigIntField, type BigIntFieldProps } from "./BigIntField";
 

@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { Link } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect } from "react";
@@ -20,7 +20,7 @@ export function ThankYouStep() {
 
       <Box alignSelf="flex-end">
         <Link to="/home/account">
-          <Button >Finish</Button>
+          <Button>Finish</Button>
         </Link>
       </Box>
     </div>

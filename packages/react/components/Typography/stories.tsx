@@ -1,4 +1,4 @@
-import Stack from "@mui/material/Stack";
+import from "@mui/material";
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { defaultDisabledArgs } from "../../utils";
