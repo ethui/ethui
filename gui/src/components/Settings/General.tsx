@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import {} from "@mui/material";
+import { } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { useCallback } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
@@ -67,8 +67,8 @@ export function SettingsGeneral() {
   if (!general) return null;
 
   return (
-    <Form form={form} onSubmit={onSubmit} className="flex flex flex-col gap-4">
-      <div className="m-1 flex items-start">
+    <Form form={form} onSubmit={onSubmit} className="flex flex-col gap-2">
+      <div className="m-2 flex items-start">
         <Form.Select
           name="darkMode"
           label="Dark mode"

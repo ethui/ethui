@@ -4,7 +4,7 @@ import type { StepProps } from ".";
 
 export function WelcomeStep({ onSubmit }: StepProps) {
   return (
-    <div className="m-8 flex" sx={{ width: "100%" }}>
+    <div className="m-3 flex w-full">
       <Typography variant="h6" component="h1" alignSelf="start">
         Welcome
       </Typography>

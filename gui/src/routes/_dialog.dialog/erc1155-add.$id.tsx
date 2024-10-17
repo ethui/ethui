@@ -24,7 +24,7 @@ export function ERC1155AddDialog() {
   if (!token) return null;
 
   return (
-    <div className="m-1 flex items-center">
+    <div className="m-2 flex items-center">
       <Typography variant="h6" component="h1">
         Add suggested token
       </Typography>
@@ -39,7 +39,7 @@ export function ERC1155AddDialog() {
             src={token.image.originalUrl || "../public/default_nft.svg"}
           />
         </Grid>
-        <Grid container className="m-8">
+        <Grid container className="m-4">
           <Grid>
             <Datapoint
               label="Contract Address"
@@ -60,7 +60,7 @@ export function ERC1155AddDialog() {
         />
       </Grid>
 
-      <div className="m-1 flex">
+      <div className="m-2 flex">
         <Button color="error" onClick={() => tauriWindow.close()}>
           Cancel
         </Button>

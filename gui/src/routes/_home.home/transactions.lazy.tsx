@@ -120,10 +120,10 @@ interface SummaryProps {
 }
 function Summary({ account, tx }: SummaryProps) {
   return (
-    <div className="m-1 flex flex items-center">
+    <div className="m-3 flex items-center">
       <Icon {...{ tx, account }} />
       <BlockNumber number={tx.blockNumber} />
-      <div className="m-8 flex">
+      <div className="m-1 items-center flex">
         <AddressView address={tx.from} /> <span>→</span>
         {tx.to ? (
           <AddressView address={tx.to} />
@@ -181,7 +181,7 @@ function Details({ tx, chainId }: DetailsProps) {
   const value = BigInt(fullTx.value || 0);
 
   return (
-    <Grid container row className="m-1">
+    <Grid container rowSpacing={1}>
       <Datapoint
         label="from"
         value={<AddressView icon address={tx.from} />}

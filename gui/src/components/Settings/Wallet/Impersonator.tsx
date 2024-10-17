@@ -33,11 +33,11 @@ export interface Props {
 export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
   const formWallet = wallet
     ? {
-        ...wallet,
-        addresses: wallet
-          ? wallet.addresses.map((address) => ({ address }))
-          : [],
-      }
+      ...wallet,
+      addresses: wallet
+        ? wallet.addresses.map((address) => ({ address }))
+        : [],
+    }
     : undefined;
 
   const form = useForm({
@@ -66,10 +66,10 @@ export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
 
   return (
     <Form form={form} onSubmit={prepareAndSubmit}>
-      <div className="m-1 flex items-start">
+      <div className="m-2 flex items-start">
         <Form.Text label="Name" name="name" />
         {addressFields.map((field, i) => (
-          <div className="m-1 flex flex self-stretch" key={field.id}>
+          <div className="m-2 flex self-stretch" key={field.id}>
             <Form.Text
               label="Address"
               name={`addresses.${i}.address`}
@@ -83,7 +83,7 @@ export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
           Add
         </Button>
 
-        <div className="m-1 flex">
+        <div className="m-2 flex">
           <Form.Submit label="Save" />
           <Button color="warning" onClick={onRemove}>
             Remove

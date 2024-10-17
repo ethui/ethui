@@ -137,7 +137,7 @@ function Call({ value, data, to, decimals, abi, ArgProps }: CallProps) {
   const { label, args } = parseCall(data, abi);
 
   return (
-    <div className="m-8">
+    <div className="m-3">
       <div className="">
         <Arg type="address" variant="highlight2" value={to} {...ArgProps} />
         <Separator text="." sx={{ gridArea: "top" }} />
@@ -157,7 +157,7 @@ function Call({ value, data, to, decimals, abi, ArgProps }: CallProps) {
         )}
         <Separator text="(" />
       </div>
-      <div className="m-8">
+      <div className="m-3">
         {[...args].map(({ value, type, label }, i) => (
           <div className="" key={i} pl={4}>
             <Arg

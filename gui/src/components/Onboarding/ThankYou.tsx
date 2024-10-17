@@ -9,7 +9,7 @@ export function ThankYouStep() {
   });
 
   return (
-    <div m-8 width="100%">
+    <div className="m-3 w-full">
       <Typography variant="h6" component="h1" alignSelf="start">
         Thank you
       </Typography>

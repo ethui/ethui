@@ -6,7 +6,7 @@ export interface BlockNumberProps {
 }
 
 export const BlockNumber = ({ number }: BlockNumberProps) => (
-  <div className=" m-8 items-center">
+  <div className="flex m-3 items-center">
     <BoxIcon size={14} />
     <Typography variant="caption" color="success">
       {number}

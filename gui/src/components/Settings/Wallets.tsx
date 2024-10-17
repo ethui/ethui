@@ -1,5 +1,5 @@
 import { KeyboardArrowDown } from "@mui/icons-material";
-import { Chip, Menu, MenuItem, Paper, hy } from "@mui/material";
+import { Chip, Menu, MenuItem, Paper, Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { startCase } from "lodash-es";
 import { useState } from "react";
@@ -47,7 +47,7 @@ export function SettingsWallets({ extraAction }: Props) {
         {newType && <NewItem key="_new" type={newType} onFinish={closeNew} />}
       </div>
       {!newType && (
-        <div className="space-between m-1 flex flex" sx={{ mt: 4 }}>
+        <div className="justify-between m-2 flex justify-between mt-4">
           <AddWalletButton onChoice={startNew} />
           {extraAction && extraAction}
         </div>

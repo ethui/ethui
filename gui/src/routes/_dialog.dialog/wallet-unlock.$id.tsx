@@ -57,7 +57,7 @@ export function WalletUnlockDialog() {
         onSubmit={onSubmit}
         className="flex flex flex-col gap-4"
       >
-        <div className="m-1 flex">
+        <div className="m-2 flex">
           <Typography>
             ethui is asking to unlock wallet <b>{name}:</b>
           </Typography>

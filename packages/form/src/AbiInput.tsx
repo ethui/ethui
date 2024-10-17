@@ -39,7 +39,7 @@ export function AbiInput({
   return (
     <Box sx={{ width: "100%", pl: 1, ...sx }}>
       <div>
-        <div className=" space-between flex items-center">
+        <div className=" justify-between flex items-center">
           <Typography fontWeight="bold">
             {label}
             <Typography sx={{ pl: 2 }} component="span" fontFamily="monospace">

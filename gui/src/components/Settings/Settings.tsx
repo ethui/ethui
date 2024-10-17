@@ -38,8 +38,8 @@ export function Settings() {
         sx={{ flexShrink: 0 }}
         variant="permanent"
       >
-        <Box flexGrow={1} display="flex" flexflex flex-col>
-          <div py={2} px={3} rowGap={1} flexGrow={1}>
+        <Box className="flex grow flex-col">
+          <div className="py-2 px-3 gap-y-px grow">
             {TABS.map((tab) => (
               <SidebarTab
                 key={tab.name}

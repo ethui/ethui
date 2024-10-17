@@ -58,7 +58,7 @@ function Create({ onSubmit, onRemove }: Props) {
   }, [name, privateKey, password, onSubmit, submitted]);
 
   return (
-    <div className="m-1 flex flex-col">
+    <div className="m-2 flex flex-col">
       <Stepper activeStep={step} alternativeLabel>
         {steps.map((label) => (
           <Step key={label}>
@@ -109,12 +109,12 @@ function PrivateKeyStep({ onSubmit, onCancel }: PrivateKeyStepProps) {
 
   return (
     <Form form={form} onSubmit={onSubmitInternal}>
-      <div className="m-1 flex flex-col">
+      <div className="m-2 flex flex-col">
         <Form.Text multiline label="Name" name="name" />
         <Typography>Insert your 12-word privateKey</Typography>
         <Form.Text multiline label="Private Key" name="privateKey" />
 
-        <div className="m-1 flex flex-end">
+        <div className="m-2 flex justify-end">
           <Button color="warning" onClick={onCancel}>
             Cancel
           </Button>
@@ -143,7 +143,7 @@ function PasswordStep({ onSubmit, onCancel }: PasswordStepProps) {
 
   return (
     <Form form={form} onSubmit={onSubmitInternal}>
-      <div className="m-1 flex flex-col">
+      <div className="m-2 flex flex-col">
         <Typography>Choose a secure password</Typography>
         <Form.Text type="password" label="Password" name="password" />
         <Form.Text
@@ -152,7 +152,7 @@ function PasswordStep({ onSubmit, onCancel }: PasswordStepProps) {
           name="passwordConfirmation"
         />
 
-        <div className="m-1 flex flex-end">
+        <div className="m-2 flex justify-end">
           <Button color="warning" onClick={onCancel}>
             Cancel
           </Button>
@@ -173,9 +173,9 @@ function Update({ wallet, onSubmit, onRemove }: Props) {
 
   return (
     <Form form={form} onSubmit={onSubmit}>
-      <div className="m-1 flex items-start">
+      <div className="m-2 flex items-start">
         <Form.Text label="Name" name="name" />
-        <div className="m-1 flex">
+        <div className="m-2 flex">
           <Form.Submit label="Save" />
 
           <Button color="warning" onClick={onRemove}>

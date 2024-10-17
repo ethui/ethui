@@ -35,9 +35,9 @@ export interface Props {
 export function Ledger({ wallet, onSubmit, onRemove }: Props) {
   const formWallet = wallet
     ? {
-        ...wallet,
-        paths: wallet ? wallet.addresses.map(([path]) => ({ path })) : [],
-      }
+      ...wallet,
+      paths: wallet ? wallet.addresses.map(([path]) => ({ path })) : [],
+    }
     : defaultValues;
 
   const [addresses, setAddresses] = useState<Map<string, Address>>(new Map());
@@ -92,7 +92,7 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
 
   return (
     <Form form={form} onSubmit={prepareAndSubmit}>
-      <div className="m-1 flex items-start">
+      <div className="m-2 flex items-start">
         <Detect />
         <Form.Text label="Name" name="name" />
 
@@ -101,7 +101,7 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
           const address = addresses.get(path);
           return (
             <div className="flex self-stretch" key={field.id}>
-              <div className="m-1 flex flex self-stretch">
+              <div className="m-2 flex flex self-stretch">
                 <Form.Text
                   label={`Path #${i + 1}`}
                   name={`paths.${i}.path`}
@@ -117,7 +117,7 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
         <Button color="secondary" onClick={() => append({ path: "" })}>
           Add
         </Button>
-        <div className="m-1 flex">
+        <div className="m-2 flex">
           <Form.Submit label="Save" />
           <Button color="warning" onClick={onRemove}>
             Remove

@@ -1,6 +1,6 @@
 .storybook-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: justify-between;
   align-items: center;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   padding: 15px 20px;

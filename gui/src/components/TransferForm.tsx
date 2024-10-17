@@ -113,7 +113,7 @@ export function TransferForm({
 
   return (
     <Form form={form} onSubmit={onSubmit}>
-      <div className="m-1 flex items-start">
+      <div className="m-2 flex items-start">
         <Typography>Transfer token</Typography>
 
         <Form.Select
@@ -150,7 +150,7 @@ export function TransferForm({
           </Alert>
         )}
 
-        <div width="100%" className="space-between flex">
+        <div className="justify-between flex w-full">
           <Button variant="outline" color="error" onClick={onClose}>
             Close
           </Button>

@@ -113,7 +113,7 @@ function AliasForm({ address, alias, refetch, onSubmit }: AliasFormProps) {
 
   return (
     <Form form={form} onSubmit={submit}>
-      <div className="m-1 flex items-start">
+      <div className="m-2 flex items-start">
         <Typography>Set alias for {truncateHex(address)}</Typography>
         <Form.Text label="Alias" name="alias" defaultValue={alias} />
 
