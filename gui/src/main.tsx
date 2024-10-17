@@ -1,5 +1,4 @@
-import "@fontsource/roboto-mono/latin.css";
-import "@fontsource/roboto/latin.css";
+import "./global.css";
 
 import {
   RouterProvider,

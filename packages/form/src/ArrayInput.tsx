@@ -5,8 +5,8 @@ import {
   Stack,
   ToggleButton,
   ToggleButtonGroup,
-  alpha,
 } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import { grey, red } from "@mui/material/colors";
 import { useState } from "react";
 
