@@ -38,7 +38,7 @@ export function Onboarding() {
     <>
       <DraggableToolbar />
       <Container disableGutters sx={{ px: 2 }}>
-        <div className="items-center">
+        <div className="flex items-center">
           <Logo width={40} />
           <step.component onSubmit={handleNext} />
 

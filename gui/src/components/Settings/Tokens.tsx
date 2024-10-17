@@ -31,7 +31,7 @@ export function SettingsTokens() {
             <IconAddress chainId={currentNetwork.chain_id} address={contract} />
           }
           action={
-            <div className=" center">
+            <div className="flex  center">
               <IconButton
                 title={"Unhide token"}
                 onClick={() => unhide(contract)}
