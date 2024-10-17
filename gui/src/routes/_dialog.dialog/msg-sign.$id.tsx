@@ -41,7 +41,7 @@ export function MsgSignDialog() {
           </Typography>
         </HighlightBox>
       )}
-      <div className="flex center m-1 flex" marginTop="auto">
+      <div className="center m-1 flex flex" marginTop="auto">
         <Button
           disabled={!msg}
           size="large"

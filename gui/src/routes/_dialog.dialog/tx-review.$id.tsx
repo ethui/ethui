@@ -163,9 +163,12 @@ interface HeaderProps {
 
 function Header({ from, to, network }: HeaderProps) {
   return (
-    <div className="flex  space-between flex items-stretch self-center" width="100%">
+    <div
+      className="space-between flex flex items-stretch self-center"
+      width="100%"
+    >
       <Typography variant="h6" component="h1">
-        <div className="flex  m-1 items-center">
+        <div className="m-1 flex items-center">
           <AddressView address={from} />
           <span>→</span>
           <AddressView address={to} />
@@ -268,7 +271,7 @@ function Actions({ request, accepted, onReject, onConfirm }: ActionsProps) {
     );
   } else {
     return (
-      <div className="flex  center m-1 flex items-center">
+      <div className="center m-1 flex flex items-center">
         <Button
           size="large"
           variant="outline"
@@ -358,7 +361,7 @@ function Erc20Transfer({
   });
 
   return (
-    <div className="flex  m-1 items-center">
+    <div className="m-1 flex items-center">
       <AddressView address={from} />
       <span>→</span>
       <AddressView address={to} />

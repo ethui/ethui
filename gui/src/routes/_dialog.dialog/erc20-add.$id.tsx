@@ -25,7 +25,7 @@ export function ERC20AddDialog() {
   if (!token) return null;
 
   return (
-    <div className="flex m-1 items-center">
+    <div className="m-1 flex items-center">
       <Typography variant="h6" component="h1">
         Add suggested token
       </Typography>
@@ -36,7 +36,7 @@ export function ERC20AddDialog() {
         <Datapoint
           label=""
           value={
-            <div className="flex m-8 flex" textAlign="center">
+            <div className="m-8 flex flex" textAlign="center">
               <IconToken iconUrl={token.alchemy_metadata.logo} />
               <Typography alignSelf={"center"}>
                 {token.metadata.name}
@@ -56,7 +56,7 @@ export function ERC20AddDialog() {
         />
       </Grid>
 
-      <div className="flex  m-1">
+      <div className="m-1 flex">
         <Button color="error" onClick={() => tauriWindow.close()}>
           Cancel
         </Button>

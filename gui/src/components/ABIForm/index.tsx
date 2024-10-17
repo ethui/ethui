@@ -54,7 +54,7 @@ export function ABIForm({ chainId, address }: Props) {
   };
 
   return (
-    <div className="flex m-1 items-start">
+    <div className="m-1 flex items-start">
       <Autocomplete
         autoFocus
         selectOnFocus
@@ -66,7 +66,7 @@ export function ABIForm({ chainId, address }: Props) {
         renderInput={(params) => <TextField {...params}>as</TextField>}
         renderOption={(props, { label, item }) => (
           <Box component="li" {...props} key={JSON.stringify(item)}>
-            <div className="flex m-1 items-center">
+            <div className="m-1 flex items-center">
               {item !== "raw" && <Chip label={item.stateMutability} />}
               <Box>{label}</Box>
             </div>

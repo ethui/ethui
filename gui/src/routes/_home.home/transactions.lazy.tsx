@@ -120,10 +120,10 @@ interface SummaryProps {
 }
 function Summary({ account, tx }: SummaryProps) {
   return (
-    <div className="flex m-1 flex items-center">
+    <div className="m-1 flex flex items-center">
       <Icon {...{ tx, account }} />
       <BlockNumber number={tx.blockNumber} />
-      <div className="flex m-8">
+      <div className="m-8 flex">
         <AddressView address={tx.from} /> <span>→</span>
         {tx.to ? (
           <AddressView address={tx.to} />

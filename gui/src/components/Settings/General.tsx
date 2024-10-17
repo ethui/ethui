@@ -68,7 +68,7 @@ export function SettingsGeneral() {
 
   return (
     <Form form={form} onSubmit={onSubmit} className="flex flex flex-col gap-4">
-      <div className="flex m-1 items-start">
+      <div className="m-1 flex items-start">
         <Form.Select
           name="darkMode"
           label="Dark mode"

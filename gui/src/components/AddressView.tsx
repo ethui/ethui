@@ -41,7 +41,7 @@ export function AddressView({
 
   const text = alias ? alias : truncateHex(address);
   const content = (
-    <div className="flex m-1 items-center">
+    <div className="m-1 flex items-center">
       {icon && (
         <IconAddress
           chainId={network.chain_id}
@@ -113,7 +113,7 @@ function AliasForm({ address, alias, refetch, onSubmit }: AliasFormProps) {
 
   return (
     <Form form={form} onSubmit={submit}>
-      <div className="flex m-1 items-start">
+      <div className="m-1 flex items-start">
         <Typography>Set alias for {truncateHex(address)}</Typography>
         <Form.Text label="Alias" name="alias" defaultValue={alias} />
 

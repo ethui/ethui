@@ -66,7 +66,7 @@ export function Contracts() {
 function Filter({ onChange }: { onChange: (f: string) => void }) {
   return (
     <form>
-      <div className="flex m-1 items-stretch">
+      <div className="m-1 flex items-stretch">
         <TextField
           onChange={debounce((e) => onChange(e.target.value), 100)}
           fullWidth
@@ -128,7 +128,7 @@ function AddressForm() {
 
   return (
     <Form form={form} onSubmit={onSubmit}>
-      <div className="flex m-1 items-start">
+      <div className="m-1 flex items-start">
         <Form.Select
           label="Network"
           name="chainId"
