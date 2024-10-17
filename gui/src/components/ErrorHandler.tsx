@@ -1,10 +1,8 @@
-import { Alert } from "@mui/material";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@ethui/ui/components/shadcn/alert";
 import { invoke } from "@tauri-apps/api/core";
 import type { ErrorInfo, ReactNode } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-
-import { Typography } from "@ethui/react/components/Typography";
-import { Panel } from "./Panel";
 
 interface Props {
   children: ReactNode;
@@ -26,17 +24,18 @@ export function ErrorHandler({ children }: Props) {
 function Fallback({ error }: { error: Error }) {
   return (
     <>
-      <Alert severity="error">Something went wrong</Alert>
-      <Panel>
-        <Typography mono>
-          {error.toString()}
-          <br />
-          <br />
-          {formatStack(error.stack).map((line, i) => (
-            <div key={i}>{line}</div>
-          ))}
-        </Typography>
-      </Panel>
+      <Alert variant="destructive">
+        <AlertCircle className="h-4 w-4" />
+        <AlertDescription>Something went wrong</AlertDescription>
+      </Alert>
+      <span className="font-mono">
+        {error.toString()}
+        <br />
+        <br />
+        {formatStack(error.stack).map((line, i) => (
+          <div key={i}>{line}</div>
+        ))}
+      </span>
     </>
   );
 }

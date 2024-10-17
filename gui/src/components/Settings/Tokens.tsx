@@ -1,8 +1,8 @@
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { Box, CardHeader, IconButton, List, Stack } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import type { Address } from "viem";
 
+import { Button } from "@ethui/ui/components/shadcn/button";
+import { EyeOff } from "lucide-react";
 import { IconAddress } from "#/components/Icons/Address";
 import { useBlacklist } from "#/store/useBlacklist";
 import { useNetworks } from "#/store/useNetworks";
@@ -22,38 +22,25 @@ export function SettingsTokens() {
   };
 
   return (
-    <List sx={{ maxWidth: 350 }}>
+    <ul className="w-full">
       {blacklist.map(({ contract, metadata }) => (
-        <CardHeader
-          key={contract}
-          sx={{ marginTop: -2 }}
-          avatar={
-            <IconAddress chainId={currentNetwork.chain_id} address={contract} />
-          }
-          action={
-            <Stack direction="row" justifyContent="center">
-              <IconButton
-                title={"Unhide token"}
-                onClick={() => unhide(contract)}
-              >
-                <VisibilityOffIcon />
-              </IconButton>
-            </Stack>
-          }
-          title={
-            <>
-              <Box component="span" sx={{ mr: 1 }}>
-                {metadata?.symbol}
-              </Box>
-              {contract && (
-                <>
-                  (<AddressView address={contract} />)
-                </>
-              )}
-            </>
-          }
-        />
+        <li className="flex gap-5 w-full items-center justify-between">
+          <IconAddress chainId={currentNetwork.chain_id} address={contract} />
+
+          <span className="flex gap-1 items-center">
+            {metadata?.symbol}
+            {contract && <AddressView address={contract} />}
+          </span>
+
+          <Button
+            size="icon"
+            title={"Unhide token"}
+            onClick={() => unhide(contract)}
+          >
+            <EyeOff />
+          </Button>
+        </li>
       ))}
-    </List>
+    </ul>
   );
 }

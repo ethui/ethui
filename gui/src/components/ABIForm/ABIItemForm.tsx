@@ -1,13 +1,12 @@
-import { Grid2 as Grid } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import type { AbiFunction } from "abitype";
 import { useCallback, useState } from "react";
 import { type Address, type Hash, decodeFunctionResult } from "viem";
 
 import { AbiForm } from "@ethui/form/src/AbiForm";
-import { SolidityCall } from "@ethui/react/components//SolidityCall";
-import { HighlightBox } from "@ethui/react/components/HighlightBox";
-import { Typography } from "@ethui/react/components/Typography";
+import { HighlightBox } from "@ethui/ui/components/highlight-box";
+import { SolidityCall } from "@ethui/ui/components/solidity-call";
+
 import { AddressView } from "#/components/AddressView";
 import { HashView } from "#/components/HashView";
 import { useNetworks } from "#/store/useNetworks";
@@ -24,11 +23,11 @@ interface ItemFormProps {
 
 type Result =
   | {
-      write: Hash;
-    }
+    write: Hash;
+  }
   | {
-      read: string;
-    };
+    read: string;
+  };
 
 export function ABIItemForm({
   to,
@@ -82,8 +81,8 @@ export function ABIItemForm({
   );
 
   return (
-    <Grid container>
-      <Grid size={{ xs: 12, sm: 4 }}>
+    <div className="grid grid-cols-3 gap-2">
+      <div className="col-span-3 md:col-span-1">
         <AbiForm
           submit={submit}
           abiItem={abiItem!}
@@ -91,16 +90,13 @@ export function ABIItemForm({
         />
 
         {result && "read" in result && (
-          <Typography mono>{result.read.toString()}</Typography>
+          <span className="font-mono">{result.read.toString()}</span>
         )}
         {result && "write" in result && <HashView hash={result.write} />}
-      </Grid>
+      </div>
 
-      <Grid
-        size={{ xs: 12, sm: 8 }}
-        sx={{ pl: { md: 2 }, pt: { xs: 2, md: 0 } }}
-      >
-        <HighlightBox fullWidth>
+      <div className="col-span-3 md:col-span-2">
+        <HighlightBox className="w-full">
           {data && from ? (
             <SolidityCall
               {...{
@@ -117,7 +113,7 @@ export function ABIItemForm({
             "Preview not ready. Fill in the form"
           )}
         </HighlightBox>
-      </Grid>
-    </Grid>
+      </div>
+    </div>
   );
 }

@@ -1,19 +1,8 @@
-import {
-  Box,
-  ListItem,
-  ListItemText,
-  TextField,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
 import { useState } from "react";
 
-import { useTheme } from "#/store/useTheme";
+import { Input } from "@ethui/ui/components/shadcn/input";
 
 export function SettingsKeybinds() {
-  const { theme } = useTheme();
-  const isSmallerScreen = useMediaQuery(theme.breakpoints.down("md"));
-
   const keybinds = [
     { name: "Toggle Command Bar", combination: "Ctrl + K" },
     { name: "Switch between tabs", combination: "Ctrl + [1..4]" },
@@ -51,66 +40,36 @@ export function SettingsKeybinds() {
 
   return (
     <>
-      <Box
-        sx={{
-          display: "flex",
-          gap: isSmallerScreen ? "0px" : "30px",
-          flexDirection: "column",
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            gap: "15px",
-            flexDirection: isSmallerScreen ? "column" : "row",
-            justifyContent: "space-between",
-          }}
-        >
-          <Box>
-            <Typography variant="h6">Search keybinds</Typography>
-            <Typography>Showing {filteredKeybinds.length} keybinds.</Typography>
-          </Box>
-          <TextField
+      <div className="flex flex-col gap-0">
+        <div className="flex flex-row justify-between gap-3.5">
+          <div className="shrink-0">
+            <h6>Search keybinds</h6>
+            <span>Showing {filteredKeybinds.length} keybinds.</span>
+          </div>
+          <Input
             value={search}
             onChange={handleSearch}
             id="outlined-required"
-            label="Filter..."
+            placeholder="Filter..."
           />
-        </Box>
-        <Box>
+        </div>
+        <ul>
           {filteredKeybinds.length ? (
             filteredKeybinds.map((keybind) => (
-              <ListItem
-                key={keybind.combination}
-                sx={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  flexDirection: isSmallerScreen ? "column" : "row",
-                  borderBottom: 1,
-                  pr: 3,
-                  py: 3,
-                }}
-              >
-                <ListItemText primary={keybind.name} />
-                <Box sx={{ border: 1, borderRadius: 2, paddingInline: 1 }}>
-                  <Typography
-                    sx={{
-                      overflowWrap: "break-word",
-                      fontFamily: "Roboto Mono",
-                      borderRadius: 1,
-                      padding: 0.3,
-                    }}
-                  >
+              <li className="flex p-3" key={keybind.combination}>
+                {keybind.name}
+                <div className="border">
+                  <span className="break-words font-mono">
                     {keybind.combination}
-                  </Typography>
-                </Box>
-              </ListItem>
+                  </span>
+                </div>
+              </li>
             ))
           ) : (
-            <ListItem>No keybinds found.</ListItem>
+            <li>No keybinds found.</li>
           )}
-        </Box>
-      </Box>
+        </ul>
+      </div>
     </>
   );
 }

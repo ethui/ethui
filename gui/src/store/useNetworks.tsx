@@ -1,11 +1,11 @@
 import { event } from "@tauri-apps/api";
 import { invoke } from "@tauri-apps/api/core";
-import type { Action } from "kbar";
 import { type StateCreator, create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import IconChain from "@ethui/react/components/icons/Chain";
 import type { Network } from "@ethui/types/network";
+import { ChainIcon } from "@ethui/ui/components/icons/chain";
+import type { Action } from "#/components/CommandBar";
 
 interface State {
   networks: Network[];
@@ -58,25 +58,14 @@ const store: StateCreator<Store> = (set, get) => ({
   reloadActions() {
     const networks = get().networks;
 
-    const actions = [
-      {
-        id: actionId,
-        name: "Change network",
-        subtitle: `${networks.length} network${
-          networks.length > 1 ? "s" : ""
-        } available`,
-        shortcut: ["N"],
+    const actions = (networks || []).map((network) => ({
+      id: `${actionId}/${network.name}`,
+      text: `${network.name}`,
+      icon: <ChainIcon chainId={network.chain_id} />,
+      run: () => {
+        get().setCurrent(network.name);
       },
-      ...(networks || []).map((network, index) => ({
-        id: `${actionId}/${network.name}`,
-        name: `${index + 1}: ${network.name}`,
-        icon: <IconChain chainId={network.chain_id} />,
-        parent: actionId,
-        perform: () => {
-          get().setCurrent(network.name);
-        },
-      })),
-    ];
+    }));
 
     set({ actions });
   },

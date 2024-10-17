@@ -1,14 +1,8 @@
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  Link,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { LoaderCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@ethui/ui/components/shadcn/alert";
 import { useEffect, useState } from "react";
 
+import { Button } from "@ethui/ui/components/shadcn/button";
 import { useInvoke } from "#/hooks/useInvoke";
 import type { StepProps } from ".";
 
@@ -29,39 +23,40 @@ export function InstallExtensionStep({ onSubmit }: StepProps) {
   }, [detected, peerCount]);
 
   return (
-    <Stack spacing={2} sx={{ width: "100%" }}>
-      <Typography variant="h6" component="h1" alignSelf="start">
-        Install Extension
-      </Typography>
+    <div className="m-2 flex w-full flex-col">
+      <h1 className="self-start text-xl">Install Extension</h1>
 
-      <Typography>
+      <span>
         Go to{" "}
-        <Link
-          underline="hover"
+        <a
+          className="underline"
           href="http://ethui.dev/onboarding/extension"
           target="_blank"
           rel="nofollow noopener noreferrer"
         >
           this page
-        </Link>{" "}
+        </a>{" "}
         to install the ethui extension.
-      </Typography>
+      </span>
 
-      <Box sx={{ alignSelf: "stretch" }}>
+      <div className="self-stretch">
         {!detected ? (
-          <Alert severity="info">
-            <CircularProgress size={10} /> Waiting...
+          <Alert>
+            <LoaderCircle className="animate-spin" />{" "}
+            <AlertDescription>Waiting...</AlertDescription>
           </Alert>
         ) : (
-          <Alert severity="success">Extension detected!</Alert>
+          <Alert>
+            <AlertDescription>Extension detected!</AlertDescription>
+          </Alert>
         )}
-      </Box>
+      </div>
 
-      <Box alignSelf="flex-end">
-        <Button variant="contained" onClick={onSubmit} disabled={!detected}>
+      <div className=" self-end">
+        <Button onClick={onSubmit} disabled={!detected}>
           {detected ? "Next" : "Skip"}
         </Button>
-      </Box>
-    </Stack>
+      </div>
+    </div>
   );
 }

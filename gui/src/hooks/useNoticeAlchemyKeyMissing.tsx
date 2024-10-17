@@ -1,8 +1,8 @@
-import { Close, OpenInNew } from "@mui/icons-material";
-import { IconButton, Typography } from "@mui/material";
 import { type SnackbarKey, useSnackbar } from "notistack";
 import { useEffect } from "react";
 
+import { Button } from "@ethui/ui/components/shadcn/button";
+import { CircleX, SquareArrowOutUpRight } from "lucide-react";
 import { useNetworks } from "#/store/useNetworks";
 import { useSettings } from "#/store/useSettings";
 import { useSettingsWindow } from "#/store/useSettingsWindow";
@@ -32,28 +32,28 @@ export function useNoticeAlchemyKeyMissing() {
       return;
     }
 
-    key = enqueueSnackbar(<Typography>Alchemy key missing</Typography>, {
+    key = enqueueSnackbar(<span>Alchemy key missing</span>, {
       key: "alchemy_key_missing",
       persist: true,
       variant: "warning",
       action: () => (
         <>
-          <IconButton
+          <Button
+            size="icon"
             aria-label="close"
             color="inherit"
-            sx={{ p: 0.5 }}
             onClick={() => open()}
           >
-            <OpenInNew />
-          </IconButton>
-          <IconButton
+            <SquareArrowOutUpRight />
+          </Button>
+          <Button
+            size="icon"
             aria-label="close"
             color="inherit"
-            sx={{ p: 0.5 }}
             onClick={() => closeSnackbar(key)}
           >
-            <Close />
-          </IconButton>
+            <CircleX />
+          </Button>
         </>
       ),
     });

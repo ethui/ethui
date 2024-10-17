@@ -1,15 +1,12 @@
-import type { Theme } from "@mui/material";
 import { event } from "@tauri-apps/api";
 import { invoke } from "@tauri-apps/api/core";
-import type { Action } from "kbar";
 import { type StateCreator, create } from "zustand";
 
-import { darkTheme, lightTheme } from "@ethui/react/themes";
 import type { GeneralSettings } from "@ethui/types/settings";
+import type { Action } from "#/components/CommandBar";
 
 interface Store {
   mode: "auto" | "light" | "dark";
-  theme: Theme;
   actions: Action[];
 
   reload: () => Promise<void>;
@@ -20,21 +17,12 @@ const actionId = "themeMode";
 
 const store: StateCreator<Store> = (set, get) => ({
   mode: "auto",
-  theme: lightTheme,
 
   actions: [
-    {
-      id: actionId,
-      name: "Change theme",
-      subtitle: "auto/dark/light",
-      section: "Appearence",
-      shortcut: ["T"],
-    },
-    ...(["auto", "dark", "light"] as const).map((mode, index) => ({
+    ...(["auto", "dark", "light"] as const).map((mode) => ({
       id: `${actionId}/${mode}`,
-      name: `${index + 1}: ${mode}`,
-      parent: actionId,
-      perform: () => get().changeMode(mode),
+      text: `${mode}`,
+      run: () => get().changeMode(mode),
     })),
   ],
 
@@ -47,9 +35,14 @@ const store: StateCreator<Store> = (set, get) => ({
 
     const mode =
       darkMode === "auto" ? (prefersDarkMode ? "dark" : "light") : darkMode;
-    const theme: Theme = mode === "dark" ? darkTheme : lightTheme;
 
-    set({ mode, theme });
+    if (mode === "dark") {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
+
+    set({ mode });
   },
 
   async changeMode(mode) {

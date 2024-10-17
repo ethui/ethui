@@ -1,26 +1,20 @@
 import {
-  MoreVert as MoreVertIcon,
-  Send as SendIcon,
-} from "@mui/icons-material";
-import {
-  Box,
-  Card,
-  CardHeader,
-  IconButton,
-  Menu,
-  MenuItem,
-  Stack,
-} from "@mui/material";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@ethui/ui/components/shadcn/dropdown-menu";
 import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
 import { type Address, formatUnits } from "viem";
 
+import { Button } from "@ethui/ui/components/shadcn/button";
+import { ArrowTopRightIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
 import { useNetworks } from "#/store/useNetworks";
 import { AddressView } from "./AddressView";
-import { CopyToClipboard } from "./CopyToClipboard";
 import { IconAddress } from "./Icons/Address";
-import { Modal } from "./Modal";
 import { TransferForm } from "./TransferForm";
+import { Dialog, DialogContent } from "@ethui/ui/components/shadcn/dialog";
 
 interface Props {
   chainId: number;
@@ -40,7 +34,6 @@ export function ERC20View({
   decimals,
 }: Props) {
   const [transferFormOpen, setTransferFormOpen] = useState(false);
-  const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const network = useNetworks((s) => s.current);
 
   if (!symbol || !decimals || !network) return null;
@@ -48,81 +41,70 @@ export function ERC20View({
   const truncatedBalance =
     balance - (balance % BigInt(Math.ceil(minimum * 10 ** decimals)));
 
-  const onMenuOpen = (event: React.MouseEvent<HTMLElement>) =>
-    setMenuAnchor(event.currentTarget);
-
   const blacklist = () => {
     invoke("db_set_erc20_blacklist", {
       chainId: network.chain_id,
       address: contract,
       blacklisted: true,
     });
-    setMenuAnchor(null);
   };
 
   return (
-    <Card elevation={0}>
-      <CardHeader
-        avatar={<IconAddress chainId={chainId} address={contract} />}
-        action={
-          <Stack direction="row">
-            <IconButton
-              aria-label="transfer"
-              onClick={() => setTransferFormOpen(true)}
-            >
-              <SendIcon />
-            </IconButton>
-            <IconButton aria-label="more" onClick={onMenuOpen}>
-              <MoreVertIcon />
-            </IconButton>
-          </Stack>
-        }
-        title={
-          <>
-            <Box component="span" sx={{ mr: 1 }}>
-              {symbol}
-            </Box>
+    <div className="p-4 flex items-center justify-between hover:bg-accent">
+      <div className="flex items-center">
+        <IconAddress chainId={chainId} address={contract} />
+        <div className="flex flex-col">
+          <div className="items-bottom flex">
+            {symbol}
             {contract && (
               <>
                 (<AddressView address={contract} />)
               </>
             )}
-          </>
-        }
-        subheader={
-          <CopyToClipboard label={balance.toString()}>
+          </div>
+          <span>
             {truncatedBalance > 0
               ? formatUnits(truncatedBalance, decimals)
               : `< ${minimum}`}
-          </CopyToClipboard>
-        }
-      />
+          </span>
+        </div>
+      </div>
 
-      <Menu
-        open={Boolean(menuAnchor)}
-        id={`erc20-${contract}-menu`}
-        anchorEl={menuAnchor}
-        onClose={() => setMenuAnchor(null)}
-      >
-        {contract && network?.explorer_url && (
-          <MenuItem
-            component="a"
-            target="_blank"
-            href={`${network.explorer_url}${contract}`}
-            onClick={() => setMenuAnchor(null)}
-          >
-            Open on explorer
-          </MenuItem>
-        )}
-        <MenuItem onClick={blacklist}>Hide token</MenuItem>
-      </Menu>
+      <div className="flex">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setTransferFormOpen(true)}
+        >
+          <ArrowTopRightIcon />
+        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <DotsVerticalIcon />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            {contract && network?.explorer_url && (
+              <DropdownMenuItem asChild>
+                <a href={`${network.explorer_url}${contract}`}>
+                  Open on explorer
+                </a>
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuItem onClick={blacklist}>Hide token</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
 
-      <Modal open={transferFormOpen} onClose={() => setTransferFormOpen(false)}>
-        <TransferForm
-          contract={contract}
-          onClose={() => setTransferFormOpen(false)}
-        />
-      </Modal>
-    </Card>
+      <Dialog open={transferFormOpen} onOpenChange={setTransferFormOpen}>
+        <DialogContent>
+          <TransferForm
+            {...{ chainId, contract }}
+            onClose={() => setTransferFormOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }

@@ -1,8 +1,6 @@
-import { Container, MobileStepper, Stack } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { DraggableToolbar } from "#/components/DraggableToolbar";
 import { Logo } from "#/components/Logo";
 import type { StepProps } from "#/components/Onboarding";
 import { AlchemyStep } from "#/components/Onboarding/Alchemy";
@@ -36,21 +34,16 @@ export function Onboarding() {
 
   return (
     <>
-      <DraggableToolbar />
-      <Container disableGutters sx={{ px: 2 }}>
-        <Stack alignItems="center">
-          <Logo width={40} />
-          <step.component onSubmit={handleNext} />
-
-          <MobileStepper
-            steps={Object.keys(steps).length}
-            position="static"
-            activeStep={activeStep}
-            backButton={null}
-            nextButton={null}
-          />
-        </Stack>
-      </Container>
+      <header
+        data-tauri-drag-region="true"
+        className="sticky top-0 z-10 w-full"
+      >
+        &nbsp;
+      </header>
+      <div className="flex flex-col items-center m-4">
+        <Logo width={40} />
+        <step.component onSubmit={handleNext} />
+      </div>
     </>
   );
 }
