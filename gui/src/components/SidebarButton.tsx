@@ -53,7 +53,7 @@ export function SidebarButton<R extends React.ElementType>({
         },
       }}
     >
-      <div className="justify-stretch flex items-center m-3">
+      <div className="m-3 flex items-center justify-stretch">
         <props.icon fontSize="small" />
 
         <Collapse

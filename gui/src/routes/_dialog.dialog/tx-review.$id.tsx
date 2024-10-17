@@ -39,11 +39,11 @@ export interface TxRequest {
   value: string;
   chainId: number;
   walletType:
-  | "ledger"
-  | "HdWallet"
-  | "jsonKeystore"
-  | "plaintext"
-  | "impersonator";
+    | "ledger"
+    | "HdWallet"
+    | "jsonKeystore"
+    | "plaintext"
+    | "impersonator";
 }
 
 interface Log {
@@ -164,7 +164,7 @@ interface HeaderProps {
 function Header({ from, to, network }: HeaderProps) {
   return (
     <div
-      className="justify-between flex items-stretch self-center"
+      className="flex items-stretch justify-between self-center"
       width="100%"
     >
       <Typography variant="h6" component="h1">
@@ -271,7 +271,7 @@ function Actions({ request, accepted, onReject, onConfirm }: ActionsProps) {
     );
   } else {
     return (
-      <div className="justify-center m-2 flex items-center">
+      <div className="m-2 flex items-center justify-center">
         <Button
           size="large"
           variant="outline"

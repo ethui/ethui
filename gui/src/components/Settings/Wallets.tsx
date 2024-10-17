@@ -47,7 +47,7 @@ export function SettingsWallets({ extraAction }: Props) {
         {newType && <NewItem key="_new" type={newType} onFinish={closeNew} />}
       </div>
       {!newType && (
-        <div className="justify-between m-2 flex justify-between mt-4">
+        <div className="m-2 mt-4 flex justify-between justify-between">
           <AddWalletButton onChoice={startNew} />
           {extraAction && extraAction}
         </div>

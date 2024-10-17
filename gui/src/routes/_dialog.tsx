@@ -1,4 +1,4 @@
-import { } from "@mui/material";
+import {} from "@mui/material";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_dialog")({
@@ -7,7 +7,7 @@ export const Route = createFileRoute("/_dialog")({
 
 export function DialogLayout() {
   return (
-    <div className="flex m-2 w-screen h-screen overflow-hidden p2">
+    <div className="p2 m-2 flex h-screen w-screen overflow-hidden">
       <Outlet />
     </div>
   );

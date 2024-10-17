@@ -79,7 +79,7 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
       <Toolbar sx={{ p: 2 }} data-tauri-drag-region="true">
         {type !== "macos" && <Logo width={40} />}
       </Toolbar>
-      <div className="flex px-2 grow gap-y-px">
+      <div className="flex grow gap-y-px px-2">
         {tabs.map(({ path, label, icon }, index) => (
           <SidebarButton
             key={index}
@@ -103,7 +103,7 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
         <QuickNetworkSelect />
         <QuickFastModeToggle />
       </div>
-      <div className="flex p-3 gap-y-1">
+      <div className="flex gap-y-1 p-3">
         <SidebarButton
           onClick={kbar.query.toggle}
           icon={TerminalSharp}

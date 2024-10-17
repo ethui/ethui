@@ -39,7 +39,7 @@ export function Settings() {
         variant="permanent"
       >
         <Box className="flex grow flex-col">
-          <div className="py-2 px-3 gap-y-px grow">
+          <div className="grow gap-y-px px-3 py-2">
             {TABS.map((tab) => (
               <SidebarTab
                 key={tab.name}

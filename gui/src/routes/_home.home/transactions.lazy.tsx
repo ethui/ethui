@@ -123,7 +123,7 @@ function Summary({ account, tx }: SummaryProps) {
     <div className="m-3 flex items-center">
       <Icon {...{ tx, account }} />
       <BlockNumber number={tx.blockNumber} />
-      <div className="m-1 items-center flex">
+      <div className="m-1 flex items-center">
         <AddressView address={tx.from} /> <span>→</span>
         {tx.to ? (
           <AddressView address={tx.to} />

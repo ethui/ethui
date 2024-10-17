@@ -119,7 +119,7 @@ export function SettingsNetwork() {
           );
         })}
       </Accordion>
-      <div className="m-2 flex mt-4 mb-2">
+      <div className="m-2 mt-4 mb-2 flex">
         <Form.Submit label="Save" />
 
         <Button variant="outline" onClick={() => append(emptyNetwork)}>

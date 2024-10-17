@@ -150,7 +150,7 @@ export function TransferForm({
           </Alert>
         )}
 
-        <div className="justify-between flex w-full">
+        <div className="flex w-full justify-between">
           <Button variant="outline" color="error" onClick={onClose}>
             Close
           </Button>
