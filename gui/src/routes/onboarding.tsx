@@ -2,7 +2,8 @@ import { Container, MobileStepper, Stack } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { DraggableToolbar, Logo } from "#/components";
+import { DraggableToolbar } from "#/components/DraggableToolbar";
+import { Logo } from "#/components/Logo";
 import type { StepProps } from "#/components/Onboarding";
 import { AlchemyStep } from "#/components/Onboarding/Alchemy";
 import { InstallExtensionStep } from "#/components/Onboarding/Extension";

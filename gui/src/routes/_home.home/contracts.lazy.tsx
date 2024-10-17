@@ -13,18 +13,20 @@ import { useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { ChainView, Form } from "@ethui/react/components";
+import { ChainView } from "@ethui/react/components/ChainView";
+import { Form } from "@ethui/react/components/Form";
 import type { Contract } from "@ethui/types";
+import { ABIForm } from "#/components/ABIForm";
 import {
-  ABIForm,
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  AddressView,
-  Modal,
-} from "#/components/";
+} from "#/components/Accordion";
+import { AddressView } from "#/components/AddressView";
 import { Navbar } from "#/components/Home/Navbar";
-import { useContracts, useNetworks } from "#/store";
+import { Modal } from "#/components/Modal";
+import { useContracts } from "#/store/useContracts";
+import { useNetworks } from "#/store/useNetworks";
 
 export const Route = createLazyFileRoute("/_home/home/contracts")({
   component: Contracts,

@@ -20,15 +20,20 @@ import {
   parseAbi,
 } from "viem";
 
-import { ChainView, Typography } from "@ethui/react/components";
+import { ChainView } from "@ethui/react/components/ChainView";
+import { Typography } from "@ethui/react/components/Typography";
 import type { TokenMetadata } from "@ethui/types";
 import type { Network } from "@ethui/types/network";
-import { ABIItemForm, AddressView, Datapoint } from "#/components";
+import { ABIItemForm } from "#/components/ABIForm";
+import { AddressView } from "#/components/AddressView";
+import { Datapoint } from "#/components/Datapoint";
 import { DialogBottom } from "#/components/Dialogs/Bottom";
-import { IconAddress } from "#/components/Icons";
-import { useDialog, useInvoke, useLedgerDetect } from "#/hooks";
+import { IconAddress } from "#/components/Icons/Address";
+import { useDialog } from "#/hooks/useDialog";
 import type { Dialog } from "#/hooks/useDialog";
-import { useNetworks } from "#/store";
+import { useInvoke } from "#/hooks/useInvoke";
+import { useLedgerDetect } from "#/hooks/useLedgerDetect";
+import { useNetworks } from "#/store/useNetworks";
 
 export const Route = createFileRoute("/_dialog/dialog/tx-review/$id")({
   component: TxReviewDialog,

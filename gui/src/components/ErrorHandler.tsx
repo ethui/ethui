@@ -3,7 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 import type { ErrorInfo, ReactNode } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { Typography } from "@ethui/react/components";
+import { Typography } from "@ethui/react/components/Typography";
 import { Panel } from "./Panel";
 
 interface Props {

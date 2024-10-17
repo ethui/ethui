@@ -28,7 +28,8 @@
         "noNonNullAssertion": "off"
       },
       "performance": {
-        "noAccumulatingSpread": "warn"
+        "noAccumulatingSpread": "warn",
+        "noBarrelFile": "error"
       },
       "complexity": {
         "useOptionalChain": {

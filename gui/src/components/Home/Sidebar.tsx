@@ -6,18 +6,20 @@ import { useKBar } from "kbar";
 import { parseInt as lodashParseInt, range } from "lodash-es";
 
 import type { Tab } from "@ethui/types/ui";
-import {
-  Logo,
-  Modal,
-  QuickAddressSelect,
-  QuickFastModeToggle,
-  QuickNetworkSelect,
-  QuickWalletSelect,
-  Settings,
-  SidebarButton,
-} from "#/components";
-import { useKeyPress, useMenuAction, useOS } from "#/hooks";
-import { useSettings, useSettingsWindow, useTheme } from "#/store";
+import { Logo } from "#/components/Logo";
+import { Modal } from "#/components/Modal";
+import { QuickAddressSelect } from "#/components/QuickAddressSelect";
+import { QuickFastModeToggle } from "#/components/QuickFastModeToggle";
+import { QuickNetworkSelect } from "#/components/QuickNetworkSelect";
+import { QuickWalletSelect } from "#/components/QuickWalletSelect";
+import { Settings } from "#/components/Settings/Settings";
+import { SidebarButton } from "#/components/SidebarButton";
+import { useKeyPress } from "#/hooks/useKeyPress";
+import { useMenuAction } from "#/hooks/useMenuAction";
+import { useOS } from "#/hooks/useOS";
+import { useSettings } from "#/store/useSettings";
+import { useSettingsWindow } from "#/store/useSettingsWindow";
+import { useTheme } from "#/store/useTheme";
 
 interface SidebarProps {
   sx?: SxProps;

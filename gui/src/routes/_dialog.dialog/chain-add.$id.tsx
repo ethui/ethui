@@ -3,10 +3,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { isDirty, isValid } from "zod";
 
-import { ChainView } from "@ethui/react/components";
+import { ChainView } from "@ethui/react/components/ChainView";
 import type { Network } from "@ethui/types/network";
-import { Datapoint } from "#/components";
-import { useDialog } from "#/hooks";
+import { Datapoint } from "#/components/Datapoint";
+import { useDialog } from "#/hooks/useDialog";
 
 export const Route = createFileRoute("/_dialog/dialog/chain-add/$id")({
   component: ChainAddDialog,

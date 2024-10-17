@@ -1,7 +1,7 @@
 import { FormControlLabel, Switch } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 
-import { useSettings } from "#/store";
+import { useSettings } from "#/store/useSettings";
 
 export function QuickFastModeToggle() {
   const fastMode = useSettings((s) => s.settings?.fastMode);

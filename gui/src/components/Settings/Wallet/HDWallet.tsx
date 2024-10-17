@@ -18,14 +18,14 @@ import { type FieldValues, useForm } from "react-hook-form";
 import { type Address, formatUnits } from "viem";
 import { z } from "zod";
 
-import { Form } from "@ethui/react/components";
+import { Form } from "@ethui/react/components/Form";
 import { passwordFormSchema, passwordSchema } from "@ethui/types/password";
 import {
   type HdWallet,
   derivationPathSchema,
   mnemonicSchema,
 } from "@ethui/types/wallets";
-import { useProvider } from "#/hooks";
+import { useProvider } from "#/hooks/useProvider";
 import { truncateHex } from "#/utils";
 
 export const schema = z.object({

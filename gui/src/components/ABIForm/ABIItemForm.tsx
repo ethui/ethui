@@ -4,14 +4,14 @@ import type { AbiFunction } from "abitype";
 import { useCallback, useState } from "react";
 import { type Address, type Hash, decodeFunctionResult } from "viem";
 
-import { AbiForm } from "@ethui/form";
-import {
-  HighlightBox,
-  SolidityCall,
-  Typography,
-} from "@ethui/react/components";
-import { AddressView, HashView } from "#/components";
-import { useNetworks, useWallets } from "#/store";
+import { AbiForm } from "@ethui/form/src/AbiForm";
+import { SolidityCall } from "@ethui/react/components//SolidityCall";
+import { HighlightBox } from "@ethui/react/components/HighlightBox";
+import { Typography } from "@ethui/react/components/Typography";
+import { AddressView } from "#/components/AddressView";
+import { HashView } from "#/components/HashView";
+import { useNetworks } from "#/store/useNetworks";
+import { useWallets } from "#/store/useWallets";
 
 interface ItemFormProps {
   to: Address;

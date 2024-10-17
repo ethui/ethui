@@ -40,7 +40,7 @@ const Mappings: Record<number, string> = {
   534351: scrollSepolia,
 };
 
-export function IconChain({
+export default function IconChain({
   chainId,
   size = "medium",
   ...props

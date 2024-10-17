@@ -13,8 +13,12 @@ import { startCase } from "lodash-es";
 import { useState } from "react";
 
 import { type Wallet, walletTypes } from "@ethui/types/wallets";
-import { Accordion, AccordionDetails, AccordionSummary } from "#/components";
-import { useWallets } from "#/store";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+} from "#/components/Accordion";
+import { useWallets } from "#/store/useWallets";
 import { HDWalletForm } from "./Wallet/HDWallet";
 import { ImpersonatorForm } from "./Wallet/Impersonator";
 import { JsonKeystore } from "./Wallet/JsonKeystore";

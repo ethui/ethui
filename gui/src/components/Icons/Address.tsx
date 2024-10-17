@@ -1,7 +1,7 @@
 import { Avatar, type AvatarProps } from "@mui/material";
 
 import { getWhitelistedTokenNameAndSymbol } from "@ethui/data";
-import { IconEffigy } from "@ethui/react/components";
+import { IconEffigy } from "@ethui/react/components/icons/Effigy";
 
 interface Props extends AvatarProps {
   chainId: number;

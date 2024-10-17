@@ -15,9 +15,12 @@ import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
 import { type Address, formatUnits } from "viem";
 
-import { useNetworks } from "#/store";
-import { AddressView, CopyToClipboard, Modal, TransferForm } from "./";
-import { IconAddress } from "./Icons";
+import { useNetworks } from "#/store/useNetworks";
+import { AddressView } from "./AddressView";
+import { CopyToClipboard } from "./CopyToClipboard";
+import { IconAddress } from "./Icons/Address";
+import { Modal } from "./Modal";
+import { TransferForm } from "./TransferForm";
 
 interface Props {
   chainId: number;

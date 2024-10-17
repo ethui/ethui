@@ -4,7 +4,7 @@ import type { Action } from "kbar";
 import { type StateCreator, create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { IconChain } from "@ethui/react/components";
+import IconChain from "@ethui/react/components/icons/Chain";
 import type { Network } from "@ethui/types/network";
 
 interface State {

@@ -1,9 +1,11 @@
 import { List } from "@mui/material";
 
 import type { GeneralSettings } from "@ethui/types/settings";
-import { useInvoke } from "#/hooks";
-import { useBalances, useNetworks } from "#/store";
+import { useInvoke } from "#/hooks/useInvoke";
 import { ERC20View } from "./ERC20View";
+
+import { useBalances } from "#/store/useBalances";
+import { useNetworks } from "#/store/useNetworks";
 
 export function BalancesList() {
   return (

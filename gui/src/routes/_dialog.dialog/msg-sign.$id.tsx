@@ -2,8 +2,9 @@ import { Delete, Task } from "@mui/icons-material";
 import { Button, Stack } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { HighlightBox, Typography } from "@ethui/react/components";
-import { useDialog } from "#/hooks";
+import { HighlightBox } from "@ethui/react/components/HighlightBox";
+import { Typography } from "@ethui/react/components/Typography";
+import { useDialog } from "#/hooks/useDialog";
 
 export const Route = createFileRoute("/_dialog/dialog/msg-sign/$id")({
   component: MsgSignDialog,

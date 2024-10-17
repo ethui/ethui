@@ -14,20 +14,23 @@ import { createElement, useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { type Abi, type Address, formatEther, formatGwei } from "viem";
 
-import { BlockNumber, SolidityCall } from "@ethui/react/components";
+import { BlockNumber } from "@ethui/react/components/BlockNumber";
+import { SolidityCall } from "@ethui/react/components/SolidityCall";
 import type { Paginated, PaginatedTx, Pagination, Tx } from "@ethui/types";
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  AddressView,
-  ContextMenuWithTauri,
-} from "#/components";
+} from "#/components/Accordion";
+import { AddressView } from "#/components/AddressView";
+import { ContextMenuWithTauri } from "#/components/ContextMenuWithTauri";
 import { Datapoint } from "#/components/Datapoint";
 import { HashView } from "#/components/HashView";
 import { Navbar } from "#/components/Home/Navbar";
-import { useEventListener, useInvoke } from "#/hooks";
-import { useNetworks, useWallets } from "#/store";
+import { useEventListener } from "#/hooks/useEventListener";
+import { useInvoke } from "#/hooks/useInvoke";
+import { useNetworks } from "#/store/useNetworks";
+import { useWallets } from "#/store/useWallets";
 
 export const Route = createLazyFileRoute("/_home/home/transactions")({
   component: Txs,

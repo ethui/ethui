@@ -3,7 +3,7 @@ import { Button, Stack } from "@mui/material";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Form } from "@ethui/react/components";
+import { Form } from "@ethui/react/components/Form";
 import {
   type PlaintextWallet,
   type Wallet,

@@ -7,8 +7,8 @@ import {
 } from "@mui/material";
 import { useShallow } from "zustand/shallow";
 
-import { ChainView } from "@ethui/react/components";
-import { useNetworks } from "#/store";
+import { ChainView } from "@ethui/react/components/ChainView";
+import { useNetworks } from "#/store/useNetworks";
 
 export function QuickNetworkSelect() {
   const [networks, current, setCurrent] = useNetworks(

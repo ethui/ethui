@@ -9,10 +9,11 @@ import {
 } from "@mui/material";
 import { useFieldArray, useForm } from "react-hook-form";
 
-import { ChainView, Form } from "@ethui/react/components";
+import { ChainView } from "@ethui/react/components/ChainView";
+import { Form } from "@ethui/react/components/Form";
 import { type Network, networkSchema } from "@ethui/types/network";
-import { ConfirmationDialog } from "#/components";
-import { useNetworks } from "#/store";
+import { ConfirmationDialog } from "#/components/ConfirmationDialog";
+import { useNetworks } from "#/store/useNetworks";
 
 type NewChild = { new?: boolean };
 

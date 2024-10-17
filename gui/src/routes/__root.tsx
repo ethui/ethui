@@ -5,8 +5,8 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Outlet, createRootRoute } from "@tanstack/react-router";
 import { Suspense, lazy } from "react";
 
-import { ErrorHandler } from "#/components";
-import { useTheme } from "#/store/theme";
+import { ErrorHandler } from "#/components/ErrorHandler";
+import { useTheme } from "#/store/useTheme";
 
 const queryClient = new QueryClient();
 
