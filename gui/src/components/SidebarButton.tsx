@@ -2,7 +2,6 @@ import {
   ButtonBase,
   type ButtonBaseProps,
   Collapse,
- ,
   type SvgIcon,
   Typography,
   useMediaQuery,

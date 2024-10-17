@@ -9,7 +9,6 @@ import {
   IconButton,
   Menu,
   MenuItem,
- ,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";

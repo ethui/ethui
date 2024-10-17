@@ -6,7 +6,6 @@ import {
   MenuItem,
   Select,
   type SelectChangeEvent,
- ,
   Typography,
 } from "@mui/material";
 import { createLazyFileRoute } from "@tanstack/react-router";
