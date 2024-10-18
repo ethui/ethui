@@ -1,13 +1,5 @@
 import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
-import {
-  Box,
-  IconButton,
-  Stack,
-  ToggleButton,
-  ToggleButtonGroup,
-} from "@mui/material";
-import { grey, red } from "@mui/material/colors";
-import { alpha } from "@mui/material/styles";
+import { IconButton, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { useState } from "react";
 
 import { AbiInput, type InnerProps } from "./AbiInput";
@@ -42,7 +34,7 @@ export function ArrayInput({
   };
 
   return (
-    <Stack spacing={1}>
+    <div className="m-1">
       <ToggleButtonGroup
         color="primary"
         value={tab}
@@ -65,7 +57,7 @@ export function ArrayInput({
           />
         )}
         {tab === "expanded" && (
-          <Box sx={{ borderLeft: `solid 3px ${grey[100]}`, pl: 1 }}>
+          <div className="border-bg-secondary border-l-2 border-solid pl-1">
             <ArrayElements
               {...{
                 ...rest,
@@ -74,10 +66,10 @@ export function ArrayInput({
               }}
               onChange={onChange}
             />
-          </Box>
+          </div>
         )}
       </>
-    </Stack>
+    </div>
   );
 }
 
@@ -120,9 +112,9 @@ function ArrayElements({
   };
 
   return (
-    <Stack direction="column" spacing={1}>
+    <div className=" m-1 flex-col">
       {value.map((v, i) => (
-        <Stack direction="row" key={i} spacing={1}>
+        <div className="" key={i}>
           <AbiArrayItemInput
             name={`${name}[${i}]`}
             depth={depth + 1}
@@ -133,10 +125,10 @@ function ArrayElements({
             onChange={(v) => update(i, v)}
             onRemove={() => remove(i)}
           />
-        </Stack>
+        </div>
       ))}
       {!length && (
-        <Box>
+        <div>
           <IconButton
             aria-label="delete"
             color="primary"
@@ -148,10 +140,10 @@ function ArrayElements({
           >
             <AddIcon />
           </IconButton>
-        </Box>
+        </div>
       )}
       {debug && <Debug value={value} />}
-    </Stack>
+    </div>
   );
 }
 
@@ -182,10 +174,8 @@ function AbiArrayItemInput({
       defaultValue={defaultValue}
       type={type}
       onChange={onChange}
-      sx={{
-        backgroundColor: deleteHover ? alpha(red.A100, 0.1) : "initial",
-        transition: "background-color 0.2s",
-      }}
+      red
+      deleteHover={deleteHover}
       headerActions={
         removable && (
           <IconButton

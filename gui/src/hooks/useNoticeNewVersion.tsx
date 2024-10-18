@@ -1,5 +1,5 @@
 import CloseIcon from "@mui/icons-material/Close";
-import { IconButton, Link, Typography } from "@mui/material";
+import { IconButton, Link } from "@mui/material";
 import { type SnackbarKey, useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 
@@ -38,7 +38,7 @@ export function useNoticeNewVersion() {
         }}
         target="_blank"
       >
-        <Typography>New release available.</Typography>
+        <span>New release available.</span>
       </Link>,
       {
         key: "new_release",

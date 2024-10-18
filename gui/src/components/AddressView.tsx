@@ -1,5 +1,4 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Stack } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
@@ -7,7 +6,8 @@ import { type Address, getAddress } from "viem";
 import { z } from "zod";
 
 import { Form } from "@ethui/react/components/Form";
-import { Typography } from "@ethui/react/components/Typography";
+
+import clsx from "clsx";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { truncateHex } from "#/utils";
@@ -20,7 +20,6 @@ interface Props {
   copyIcon?: boolean;
   mono?: boolean;
   contextMenu?: boolean;
-  variant?: "h6";
   icon?: boolean;
 }
 
@@ -28,7 +27,6 @@ export function AddressView({
   address: addr,
   mono = false,
   contextMenu = true,
-  variant,
   icon = false,
 }: Props) {
   const network = useNetworks((s) => s.current);
@@ -42,7 +40,7 @@ export function AddressView({
 
   const text = alias ? alias : truncateHex(address);
   const content = (
-    <Stack direction="row" alignItems="center" spacing={1}>
+    <div className=" m-1 flex items-center">
       {icon && (
         <IconAddress
           chainId={network.chain_id}
@@ -51,10 +49,8 @@ export function AddressView({
           effigy
         />
       )}
-      <Typography mono={mono} variant={variant}>
-        {text}
-      </Typography>
-    </Stack>
+      <span className={clsx({ "font-mono": mono })}>{text}</span>
+    </div>
   );
 
   if (!contextMenu) return content;
@@ -114,12 +110,12 @@ function AliasForm({ address, alias, refetch, onSubmit }: AliasFormProps) {
 
   return (
     <Form form={form} onSubmit={submit}>
-      <Stack alignItems="flex-start" spacing={2}>
-        <Typography>Set alias for {truncateHex(address)}</Typography>
+      <div className="m-2 flex flex-col items-start">
+        <span>Set alias for {truncateHex(address)}</span>
         <Form.Text label="Alias" name="alias" defaultValue={alias} />
 
         <Form.Submit label="Save" />
-      </Stack>
+      </div>
     </Form>
   );
 }

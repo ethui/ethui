@@ -1,5 +1,5 @@
 import { Close, OpenInNew } from "@mui/icons-material";
-import { IconButton, Typography } from "@mui/material";
+import { IconButton } from "@mui/material";
 import { type SnackbarKey, useSnackbar } from "notistack";
 import { useEffect } from "react";
 
@@ -32,7 +32,7 @@ export function useNoticeAlchemyKeyMissing() {
       return;
     }
 
-    key = enqueueSnackbar(<Typography>Alchemy key missing</Typography>, {
+    key = enqueueSnackbar(<span>Alchemy key missing</span>, {
       key: "alchemy_key_missing",
       persist: true,
       variant: "warning",

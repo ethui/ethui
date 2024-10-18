@@ -1,9 +1,9 @@
 import { Delete, Task } from "@mui/icons-material";
-import { Button, Stack } from "@mui/material";
+import { Button } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { HighlightBox } from "@ethui/react/components/HighlightBox";
-import { Typography } from "@ethui/react/components/Typography";
+
 import { useDialog } from "#/hooks/useDialog";
 
 export const Route = createFileRoute("/_dialog/dialog/msg-sign/$id")({
@@ -19,38 +19,17 @@ export function MsgSignDialog() {
   const msg = data.Raw || JSON.stringify(data.Typed, null, 2);
 
   return (
-    <Stack
-      sx={{
-        height: "100%",
-        gap: "15px",
-      }}
-    >
-      <Typography variant="h6" component="h1">
-        Sign Message
-      </Typography>
+    <div className="h-full flex-col gap-3.5">
+      <h1 className="font-xl">Sign Message</h1>
       {msg && (
-        <HighlightBox
-          fullWidth
-          sx={{
-            overflowY: "auto",
-            minHeight: 100,
-          }}
-        >
-          <Typography whiteSpace="pre-wrap" variant="body2" mono>
-            {msg}
-          </Typography>
+        <HighlightBox fullWidth>
+          <span className="whitespace-pre-wrap font-mono">{msg}</span>
         </HighlightBox>
       )}
-      <Stack
-        direction="row"
-        justifyContent="center"
-        spacing={2}
-        marginTop="auto"
-      >
+      <div className=" center m-2 mt-auto flex justify-center">
         <Button
           disabled={!msg}
           size="large"
-          variant="contained"
           color="error"
           onClick={() => send("reject")}
           startIcon={<Delete />}
@@ -60,14 +39,13 @@ export function MsgSignDialog() {
         <Button
           disabled={!msg}
           size="large"
-          variant="contained"
           type="submit"
           onClick={() => send("accept")}
           endIcon={<Task />}
         >
           Sign
         </Button>
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }

@@ -1,14 +1,13 @@
-import { Box, Button, Link, Stack, Typography } from "@mui/material";
+import { Button, Link } from "@mui/material";
 
 import type { StepProps } from ".";
 
 export function WelcomeStep({ onSubmit }: StepProps) {
   return (
-    <Stack spacing={3} sx={{ width: "100%" }}>
-      <Typography variant="h6" component="h1" alignSelf="start">
-        Welcome
-      </Typography>
-      <Typography component="p">
+    <div className="m-3 flex w-full flex-col">
+      <h1 className="self-start text-xl">Welcome</h1>
+
+      <p>
         ethui is a toolkit for fullstack Ethereum development. Check out{" "}
         <Link
           underline="hover"
@@ -30,12 +29,12 @@ export function WelcomeStep({ onSubmit }: StepProps) {
         .
         <br />
         Contributors are welcome!
-      </Typography>
-      <Box alignSelf="flex-end">
-        <Button variant="contained" type="submit" onClick={onSubmit}>
+      </p>
+      <div className="self-end">
+        <Button type="submit" onClick={onSubmit}>
           Next
         </Button>
-      </Box>
-    </Stack>
+      </div>
+    </div>
   );
 }

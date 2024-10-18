@@ -1,6 +1,5 @@
 import type { Hash } from "viem";
 
-import { Typography } from "@ethui/react/components/Typography";
 import { useNetworks } from "#/store/useNetworks";
 import { truncateHex } from "#/utils";
 import { ContextMenuWithTauri } from "./ContextMenuWithTauri";
@@ -14,7 +13,7 @@ export function HashView({ hash }: Props) {
 
   if (!network) return null;
 
-  const content = <Typography mono>{truncateHex(hash)}</Typography>;
+  const content = <span className="font-mono">{truncateHex(hash)}</span>;
 
   return (
     <ContextMenuWithTauri

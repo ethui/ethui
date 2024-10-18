@@ -1,5 +1,5 @@
 import { SettingsSharp, TerminalSharp } from "@mui/icons-material";
-import { Drawer, Stack, type SxProps, Toolbar } from "@mui/material";
+import { Drawer, type SxProps, Toolbar } from "@mui/material";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { useKBar } from "kbar";
@@ -19,7 +19,6 @@ import { useMenuAction } from "#/hooks/useMenuAction";
 import { useOS } from "#/hooks/useOS";
 import { useSettings } from "#/store/useSettings";
 import { useSettingsWindow } from "#/store/useSettingsWindow";
-import { useTheme } from "#/store/useTheme";
 
 interface SidebarProps {
   sx?: SxProps;
@@ -28,8 +27,6 @@ interface SidebarProps {
 
 export function Sidebar({ sx, tabs }: SidebarProps) {
   const navigate = useNavigate();
-  const { theme } = useTheme();
-  const breakpoint = theme.breakpoints.down("sm");
   const { type } = useOS();
   const kbar = useKBar();
   const { toggle } = useSettingsWindow();
@@ -79,7 +76,7 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
       <Toolbar sx={{ p: 2 }} data-tauri-drag-region="true">
         {type !== "macos" && <Logo width={40} />}
       </Toolbar>
-      <Stack px={2} rowGap={1} flexGrow={1}>
+      <div className="flex grow flex-col flex-col gap-y-px px-2">
         {tabs.map(({ path, label, icon }, index) => (
           <SidebarButton
             key={index}
@@ -89,22 +86,14 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
             {...{ label, icon }}
           />
         ))}
-      </Stack>
-      <Stack
-        rowGap={2}
-        p={3}
-        sx={{
-          [breakpoint]: {
-            display: "none",
-          },
-        }}
-      >
+      </div>
+      <div className="hidden flex-col flex-col gap-y-0.5 p-3 sm:visible sm:flex">
         <QuickWalletSelect />
         <QuickAddressSelect />
         <QuickNetworkSelect />
         <QuickFastModeToggle />
-      </Stack>
-      <Stack p={3} rowGap={1}>
+      </div>
+      <div className="flex flex-col flex-col gap-y-1 p-3">
         <SidebarButton
           onClick={kbar.query.toggle}
           icon={TerminalSharp}
@@ -112,12 +101,12 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
         />
         <SidebarButton onClick={toggle} icon={SettingsSharp} label="Settings" />
         <SettingsModal />
-      </Stack>
+      </div>
     </Drawer>
   );
 }
 
-function SettingsModal() {
+export function SettingsModal() {
   const { show, toggle } = useSettingsWindow();
 
   return (

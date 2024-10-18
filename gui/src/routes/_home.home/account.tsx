@@ -2,8 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { AddressView } from "#/components/AddressView";
 import { BalancesList } from "#/components/BalancesList";
-import { Navbar } from "#/components/Home/Navbar";
 import { useWallets } from "#/store/useWallets";
+import { ContentLayout } from "#/components/home-layout/content-layout";
 
 export const Route = createFileRoute("/_home/home/account")({
   component: Account,
@@ -15,11 +15,8 @@ export function Account() {
   if (!address) return null;
 
   return (
-    <>
-      <Navbar>
-        <AddressView variant="h6" address={address} />
-      </Navbar>
+    <ContentLayout title={<AddressView address={address} />}>
       <BalancesList />
-    </>
+    </ContentLayout>
   );
 }

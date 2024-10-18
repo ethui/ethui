@@ -7,7 +7,7 @@ import { type Address, type Hash, decodeFunctionResult } from "viem";
 import { AbiForm } from "@ethui/form/src/AbiForm";
 import { SolidityCall } from "@ethui/react/components//SolidityCall";
 import { HighlightBox } from "@ethui/react/components/HighlightBox";
-import { Typography } from "@ethui/react/components/Typography";
+
 import { AddressView } from "#/components/AddressView";
 import { HashView } from "#/components/HashView";
 import { useNetworks } from "#/store/useNetworks";
@@ -91,7 +91,7 @@ export function ABIItemForm({
         />
 
         {result && "read" in result && (
-          <Typography mono>{result.read.toString()}</Typography>
+          <span className="font-mono">{result.read.toString()}</span>
         )}
         {result && "write" in result && <HashView hash={result.write} />}
       </Grid>

@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, Stack, Typography } from "@mui/material";
+import { Link } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { useCallback } from "react";
 import { type FieldValues, useForm, useWatch } from "react-hook-form";
@@ -45,12 +45,10 @@ export function AlchemyStep({ onSubmit }: StepProps) {
 
   return (
     <Form form={form} onSubmit={localOnSubmit}>
-      <Stack alignItems="flex-end" spacing={3}>
-        <Typography variant="h6" component="h1" alignSelf="start">
-          Alchemy
-        </Typography>
+      <div className="m-3 flex flex-end flex-col">
+        <h1 className="self-start text-xl">Alchemy</h1>
 
-        <Typography component="p">
+        <p>
           ethui works with{" "}
           <Link
             underline="hover"
@@ -79,14 +77,14 @@ export function AlchemyStep({ onSubmit }: StepProps) {
             Alchemy dashboard
           </Link>{" "}
           and grab an API key.
-        </Typography>
+        </p>
         <Form.Text label="API Key" name="alchemyApiKey" fullWidth />
 
         <Form.Submit
           useDirtyAlt={false}
           label={alchemyApiKey?.length > 0 ? "Next" : "Skip"}
         />
-      </Stack>
+      </div>
     </Form>
   );
 }

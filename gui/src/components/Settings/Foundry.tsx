@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Stack, Typography } from "@mui/material";
+
 import { invoke } from "@tauri-apps/api/core";
 import { useCallback } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
@@ -35,15 +35,15 @@ export function SettingsFoundry() {
 
   return (
     <Form form={form} onSubmit={onSubmit} className="flex flex-col gap-4">
-      <Stack alignItems="flex-start" spacing={2}>
-        <Typography>
+      <div className="m-2 flex flex-col items-start">
+        <span>
           ethui can monitor your filesystem for foundry projects, indexing the
           output ABIs automatically.
-        </Typography>
+        </span>
 
         <Form.Text name="abiWatchPath" label="ABI Watch path" fullWidth />
         <Form.Submit label="Save" />
-      </Stack>
+      </div>
     </Form>
   );
 }

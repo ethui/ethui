@@ -1,4 +1,4 @@
-import { Button, Grid2 as Grid, Stack, Typography } from "@mui/material";
+import { Button, Grid2 as Grid } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { isDirty, isValid } from "zod";
@@ -24,13 +24,11 @@ export function ERC1155AddDialog() {
   if (!token) return null;
 
   return (
-    <Stack spacing={2} alignItems="center">
-      <Typography variant="h6" component="h1">
-        Add suggested token
-      </Typography>
-      <Typography textAlign={"center"}>
+    <div className="m-2 flex flex-col items-center">
+      <h1 className="font-xl">Add suggested token</h1>
+      <span className="text-center">
         This allows the following asset to be added to your wallet.
-      </Typography>
+      </span>
       <Grid container rowSpacing={1} justifyItems={"center"}>
         <Grid container justifyContent={"center"} sx={{ mb: 2 }}>
           <img
@@ -39,7 +37,7 @@ export function ERC1155AddDialog() {
             src={token.image.originalUrl || "../public/default_nft.svg"}
           />
         </Grid>
-        <Grid container spacing={4}>
+        <Grid container className="m-4">
           <Grid>
             <Datapoint
               label="Contract Address"
@@ -60,23 +58,18 @@ export function ERC1155AddDialog() {
         />
       </Grid>
 
-      <Stack direction="row" spacing={2}>
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() => tauriWindow.close()}
-        >
+      <div className="m-2 flex flex-col">
+        <Button color="error" onClick={() => tauriWindow.close()}>
           Cancel
         </Button>
         <Button
-          variant="contained"
           type="submit"
           disabled={!isDirty || !isValid}
           onClick={() => send("accept")}
         >
           Add
         </Button>
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }

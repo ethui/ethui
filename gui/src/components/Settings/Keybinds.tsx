@@ -1,13 +1,12 @@
 import {
-  Box,
   ListItem,
   ListItemText,
   TextField,
-  Typography,
   useMediaQuery,
 } from "@mui/material";
 import { useState } from "react";
 
+import { clsx } from "clsx";
 import { useTheme } from "#/store/useTheme";
 
 export function SettingsKeybinds() {
@@ -51,33 +50,27 @@ export function SettingsKeybinds() {
 
   return (
     <>
-      <Box
-        sx={{
-          display: "flex",
-          gap: isSmallerScreen ? "0px" : "30px",
-          flexDirection: "column",
-        }}
+      <div
+        className={clsx("flex flex-col", isSmallerScreen ? "gap-0" : "gap-7")}
       >
-        <Box
-          sx={{
-            display: "flex",
-            gap: "15px",
-            flexDirection: isSmallerScreen ? "column" : "row",
-            justifyContent: "space-between",
-          }}
+        <div
+          className={clsx(
+            "flex justify-between gap-3.5",
+            isSmallerScreen ? "flex-col" : "flex-row",
+          )}
         >
-          <Box>
-            <Typography variant="h6">Search keybinds</Typography>
-            <Typography>Showing {filteredKeybinds.length} keybinds.</Typography>
-          </Box>
+          <div>
+            <h6>Search keybinds</h6>
+            <span>Showing {filteredKeybinds.length} keybinds.</span>
+          </div>
           <TextField
             value={search}
             onChange={handleSearch}
             id="outlined-required"
             label="Filter..."
           />
-        </Box>
-        <Box>
+        </div>
+        <div>
           {filteredKeybinds.length ? (
             filteredKeybinds.map((keybind) => (
               <ListItem
@@ -92,25 +85,18 @@ export function SettingsKeybinds() {
                 }}
               >
                 <ListItemText primary={keybind.name} />
-                <Box sx={{ border: 1, borderRadius: 2, paddingInline: 1 }}>
-                  <Typography
-                    sx={{
-                      overflowWrap: "break-word",
-                      fontFamily: "Roboto Mono",
-                      borderRadius: 1,
-                      padding: 0.3,
-                    }}
-                  >
+                <div className="rounded-sm border">
+                  <span className="break-words rounded-sm font-mono">
                     {keybind.combination}
-                  </Typography>
-                </Box>
+                  </span>
+                </div>
               </ListItem>
             ))
           ) : (
             <ListItem>No keybinds found.</ListItem>
           )}
-        </Box>
-      </Box>
+        </div>
+      </div>
     </>
   );
 }

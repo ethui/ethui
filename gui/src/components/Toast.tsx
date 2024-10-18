@@ -1,5 +1,5 @@
 import CloseIcon from "@mui/icons-material/Close";
-import { IconButton, Typography } from "@mui/material";
+import { IconButton } from "@mui/material";
 import { closeSnackbar, enqueueSnackbar } from "notistack";
 
 export function errorToast(key: string, err: unknown) {
@@ -12,7 +12,7 @@ export function errorToast(key: string, err: unknown) {
     msg = JSON.stringify(err);
   }
 
-  enqueueSnackbar(<Typography>{msg}</Typography>, {
+  enqueueSnackbar(<span>{msg}</span>, {
     key,
     variant: "error",
     action: () => (

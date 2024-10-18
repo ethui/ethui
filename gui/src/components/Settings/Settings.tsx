@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  Container,
-  Drawer,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Button, Container, Drawer } from "@mui/material";
 import { find } from "lodash-es";
 import { useState } from "react";
 
@@ -45,8 +38,8 @@ export function Settings() {
         sx={{ flexShrink: 0 }}
         variant="permanent"
       >
-        <Box flexGrow={1} display="flex" flexDirection="column">
-          <Stack py={2} px={3} rowGap={1} flexGrow={1}>
+        <div className="flex grow flex-col">
+          <div className="grow flex-col gap-y-px px-3 py-2">
             {TABS.map((tab) => (
               <SidebarTab
                 key={tab.name}
@@ -55,25 +48,17 @@ export function Settings() {
                 onSelect={() => setCurrentTab(tab.name)}
               />
             ))}
-          </Stack>
-        </Box>
+          </div>
+        </div>
       </Drawer>
-      <Box
-        sx={{
-          maxWidth: `calc(100% - ${WIDTH}px)`,
-          ml: `${WIDTH}px`,
-          width: "100%",
-        }}
-      >
+      <div className="ml-36 w-full">
         {tab && (
           <>
-            <Typography mb={3} fontWeight="bold" variant="bordered">
-              {tab.name}
-            </Typography>
+            <span className="mb-3 font-bold">{tab.name}</span>
             <tab.component />
           </>
         )}
-      </Box>
+      </div>
     </Container>
   );
 }

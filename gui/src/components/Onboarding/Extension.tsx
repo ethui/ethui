@@ -1,12 +1,4 @@
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  Link,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Alert, Button, CircularProgress, Link } from "@mui/material";
 import { useEffect, useState } from "react";
 
 import { useInvoke } from "#/hooks/useInvoke";
@@ -29,12 +21,10 @@ export function InstallExtensionStep({ onSubmit }: StepProps) {
   }, [detected, peerCount]);
 
   return (
-    <Stack spacing={2} sx={{ width: "100%" }}>
-      <Typography variant="h6" component="h1" alignSelf="start">
-        Install Extension
-      </Typography>
+    <div className="m-2 flex w-full flex-col">
+      <h1 className="self-start text-xl">Install Extension</h1>
 
-      <Typography>
+      <span>
         Go to{" "}
         <Link
           underline="hover"
@@ -45,9 +35,9 @@ export function InstallExtensionStep({ onSubmit }: StepProps) {
           this page
         </Link>{" "}
         to install the ethui extension.
-      </Typography>
+      </span>
 
-      <Box sx={{ alignSelf: "stretch" }}>
+      <div className="self-stretch">
         {!detected ? (
           <Alert severity="info">
             <CircularProgress size={10} /> Waiting...
@@ -55,13 +45,13 @@ export function InstallExtensionStep({ onSubmit }: StepProps) {
         ) : (
           <Alert severity="success">Extension detected!</Alert>
         )}
-      </Box>
+      </div>
 
-      <Box alignSelf="flex-end">
-        <Button variant="contained" onClick={onSubmit} disabled={!detected}>
+      <div className=" self-end">
+        <Button onClick={onSubmit} disabled={!detected}>
           {detected ? "Next" : "Skip"}
         </Button>
-      </Box>
-    </Stack>
+      </div>
+    </div>
   );
 }

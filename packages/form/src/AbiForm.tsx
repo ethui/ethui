@@ -1,4 +1,4 @@
-import { Alert, Box, Button, Grid2 as Grid, Stack } from "@mui/material";
+import { Alert, Button, Grid2 as Grid } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { type AbiFunction, type AbiItem, parseAbiItem } from "viem";
 import { encodeFunctionData } from "viem/utils";
@@ -91,10 +91,8 @@ export function RawForm({
   }, [onChange, calldata, ether]);
 
   return (
-    <Stack
-      component="form"
-      spacing={2}
-      sx={{ p: 2 }}
+    <form
+      className="m-1 flex p-2"
       onSubmit={(e) => {
         e.preventDefault();
         onSubmit?.();
@@ -121,13 +119,13 @@ export function RawForm({
         }}
       />
       {onSubmit && submit && (
-        <Box>
+        <div>
           <Button variant="contained" type="submit" disabled={!calldata}>
             Submit
           </Button>
-        </Box>
+        </div>
       )}
-    </Stack>
+    </form>
   );
 }
 
@@ -185,11 +183,9 @@ export function AbiFormInner({
   }, [item, parentOnChange, calldata, ether, values]);
 
   return (
-    <Grid container spacing={2} onSubmit={(e) => e.preventDefault()}>
-      <Stack
-        component="form"
-        spacing={2}
-        sx={{ p: 2 }}
+    <Grid container m-1 onSubmit={(e) => e.preventDefault()}>
+      <form
+        className="m-2 flex p-2"
         onSubmit={(e) => {
           e.preventDefault();
           onSubmit?.();
@@ -225,13 +221,13 @@ export function AbiFormInner({
           />
         )}
         {submit && (
-          <Box>
+          <div>
             <Button variant="contained" type="submit" disabled={!calldata}>
               Submit
             </Button>
-          </Box>
+          </div>
         )}
-      </Stack>
+      </form>
     </Grid>
   );
 }

@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "typeRoots": [
+      "@types",
+      "./node_modules/@types",
+      "../../node_modules/@types"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "#/*": ["./*"]
+    }
+  },
+  "include": ["components", "lib", "./*.ts", "@types", "vite.config.ts"]
+}

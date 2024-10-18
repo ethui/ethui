@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Stack } from "@mui/material";
+import { Button } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -38,16 +38,16 @@ export function JsonKeystore({
 
   return (
     <Form form={form} onSubmit={prepareAndSubmit}>
-      <Stack spacing={2} alignItems="flex-start">
+      <div className="m-2 flex flex-col items-start">
         <Form.Text label="Name" name="name" />
         <Form.Text label="Keystore file" name="file" fullWidth />
-        <Stack direction="row" spacing={2}>
+        <div className=" m-2 flex">
           <Form.Submit label="Save" />
-          <Button color="warning" variant="contained" onClick={onRemove}>
+          <Button color="warning" onClick={onRemove}>
             Remove
           </Button>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </Form>
   );
 }

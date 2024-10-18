@@ -24,12 +24,6 @@ declare module "@mui/material/Paper" {
   }
 }
 
-declare module "@mui/material/Typography" {
-  interface TypographyPropsVariantOverrides {
-    bordered: true;
-  }
-}
-
 declare module "@mui/material/Button" {
   interface ButtonPropsVariantOverrides {
     sidebar: true;

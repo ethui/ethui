@@ -1,10 +1,11 @@
-import { Button, Grid2 as Grid, Stack, Typography } from "@mui/material";
+import { Grid2 as Grid } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { isDirty, isValid } from "zod";
 
 import { ChainView } from "@ethui/react/components/ChainView";
 import type { Network } from "@ethui/types/network";
+import { Button } from "@ethui/ui/components/ui/button";
 import { Datapoint } from "#/components/Datapoint";
 import { useDialog } from "#/hooks/useDialog";
 
@@ -19,10 +20,8 @@ export function ChainAddDialog() {
   if (!network) return null;
 
   return (
-    <Stack spacing={2} alignItems="center">
-      <Typography variant="h6" component="h1">
-        Add new network?
-      </Typography>
+    <div className="m-1 flex flex-col items-center">
+      <h1 className="font-xl">Add new network?</h1>
 
       <ChainView chainId={network.chain_id} name={network.name} />
 
@@ -40,23 +39,21 @@ export function ChainAddDialog() {
         )}
       </Grid>
 
-      <Stack direction="row" spacing={2}>
+      <div className=" m-1 flex">
         <Button
-          variant="contained"
-          color="error"
+          variant="destructive"
           onClick={() => getCurrentWebviewWindow().close()}
         >
           Cancel
         </Button>
         <Button
-          variant="contained"
           type="submit"
           disabled={!isDirty || !isValid}
           onClick={() => send("accept")}
         >
           Add
         </Button>
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }

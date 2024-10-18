@@ -2,15 +2,7 @@ import {
   MoreVert as MoreVertIcon,
   Send as SendIcon,
 } from "@mui/icons-material";
-import {
-  Box,
-  Card,
-  CardHeader,
-  IconButton,
-  Menu,
-  MenuItem,
-  Stack,
-} from "@mui/material";
+import { Card, CardHeader, IconButton, Menu, MenuItem } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
 import { type Address, formatUnits } from "viem";
@@ -65,7 +57,7 @@ export function ERC20View({
       <CardHeader
         avatar={<IconAddress chainId={chainId} address={contract} />}
         action={
-          <Stack direction="row">
+          <div className="flex ">
             <IconButton
               aria-label="transfer"
               onClick={() => setTransferFormOpen(true)}
@@ -75,13 +67,11 @@ export function ERC20View({
             <IconButton aria-label="more" onClick={onMenuOpen}>
               <MoreVertIcon />
             </IconButton>
-          </Stack>
+          </div>
         }
         title={
           <>
-            <Box component="span" sx={{ mr: 1 }}>
-              {symbol}
-            </Box>
+            <span className="mr-1">{symbol}</span>
             {contract && (
               <>
                 (<AddressView address={contract} />)

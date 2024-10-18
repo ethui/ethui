@@ -1,13 +1,5 @@
 import { CallMade, CallReceived, NoteAdd } from "@mui/icons-material";
-import {
-  Badge,
-  Box,
-  Button,
-  CircularProgress,
-  Grid2 as Grid,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Badge, Button, CircularProgress, Grid2 as Grid } from "@mui/material";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { createElement, useCallback, useEffect, useState } from "react";
@@ -19,18 +11,19 @@ import { SolidityCall } from "@ethui/react/components/SolidityCall";
 import type { Paginated, PaginatedTx, Pagination, Tx } from "@ethui/types";
 import {
   Accordion,
-  AccordionDetails,
-  AccordionSummary,
-} from "#/components/Accordion";
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@ethui/ui/components/ui/accordion";
 import { AddressView } from "#/components/AddressView";
 import { ContextMenuWithTauri } from "#/components/ContextMenuWithTauri";
 import { Datapoint } from "#/components/Datapoint";
 import { HashView } from "#/components/HashView";
-import { Navbar } from "#/components/Home/Navbar";
 import { useEventListener } from "#/hooks/useEventListener";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
+import { ContentLayout } from "#/components/home-layout/content-layout";
 
 export const Route = createLazyFileRoute("/_home/home/transactions")({
   component: Txs,
@@ -76,39 +69,34 @@ export function Txs() {
   if (!account || !chainId) return null;
 
   const loader = (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-      }}
-      key="loader"
-    >
+    <div className="flex justify-center" key="loader">
       <CircularProgress />
-    </Box>
+    </div>
   );
 
   return (
-    <>
-      <Navbar>Transactions</Navbar>
-      <InfiniteScroll
-        loadMore={loadMore}
-        hasMore={!pages.at(-1)?.last}
-        loader={loader}
-      >
-        {pages.flatMap((page) =>
-          page.items.map((tx) => (
-            <Accordion key={tx.hash}>
-              <AccordionSummary>
-                <Summary account={account} tx={tx} />
-              </AccordionSummary>
-              <AccordionDetails>
-                <Details tx={tx} chainId={chainId} />
-              </AccordionDetails>
-            </Accordion>
-          )),
-        )}
-      </InfiniteScroll>
-    </>
+    <ContentLayout title="Transactions">
+      <Accordion type="single" collapsible className="w-full">
+        <InfiniteScroll
+          loadMore={loadMore}
+          hasMore={!pages.at(-1)?.last}
+          loader={loader}
+        >
+          {pages.flatMap((page) =>
+            page.items.map((tx) => (
+              <AccordionItem key={tx.hash} value={tx.hash}>
+                <AccordionTrigger>
+                  <Summary account={account} tx={tx} />
+                </AccordionTrigger>
+                <AccordionContent>
+                  <Details tx={tx} chainId={chainId} />
+                </AccordionContent>
+              </AccordionItem>
+            )),
+          )}
+        </InfiniteScroll>
+      </Accordion>
+    </ContentLayout>
   );
 }
 
@@ -118,19 +106,14 @@ interface SummaryProps {
 }
 function Summary({ account, tx }: SummaryProps) {
   return (
-    <Stack direction="row" alignItems="center" spacing={3}>
+    <div className=" flex flex-rowtes-center">
       <Icon {...{ tx, account }} />
-
       <BlockNumber number={tx.blockNumber} />
-      <Stack direction="row" alignItems="center" spacing={1}>
+      <div className=" ms-center flex">
         <AddressView address={tx.from} /> <span>→</span>
-        {tx.to ? (
-          <AddressView address={tx.to} />
-        ) : (
-          <Typography component="span">Contract Deploy</Typography>
-        )}
-      </Stack>
-    </Stack>
+        {tx.to ? <AddressView address={tx.to} /> : <span>Contract Deploy</span>}
+      </div>
+    </div>
   );
 }
 
@@ -253,9 +236,7 @@ function Details({ tx, chainId }: DetailsProps) {
       />
 
       <Grid size={{ xs: 12 }}>
-        <Button variant="contained" onClick={() => resend(fullTx)}>
-          Send again
-        </Button>
+        <Button onClick={() => resend(fullTx)}>Send again</Button>
       </Grid>
     </Grid>
   );

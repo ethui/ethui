@@ -5,7 +5,6 @@ import { decodeFunctionData, formatUnits, parseAbi } from "viem";
 
 import type { PaletteColorKey } from "../../utils";
 import { ClickToCopy } from "../ClickToCopy";
-import { Typography } from "../Typography";
 
 export interface SolidityCallProps {
   value?: bigint;
@@ -81,7 +80,7 @@ function Deploy({ value, from, decimals, ArgProps }: DeployProps) {
           {...ArgProps}
           value={from}
         />
-        <Typography mono>to newly deployed contract</Typography>
+        <span className="font-mono">to newly deployed contract</span>
       </Stack>
     </>
   );
@@ -140,7 +139,7 @@ function Call({ value, data, to, decimals, abi, ArgProps }: CallProps) {
     <Stack spacing={0.5}>
       <Stack direction="row">
         <Arg type="address" variant="highlight2" value={to} {...ArgProps} />
-        <Separator text="." sx={{ gridArea: "top" }} />
+        <Separator text="." />
         <Arg value={label} raw type="string" variant="highlight3" />
         {value > 0n && (
           <>
@@ -195,13 +194,13 @@ function Arg({
   addressRenderer,
   defaultRenderer = (v: string | bigint) => (
     <ClickToCopy text={v}>
-      <Typography mono>
+      <span className="font-mono">
         {raw && v.toString()}
         {!raw &&
           JSON.stringify(v, (_k, v) => {
             return typeof v === "bigint" ? `0x${v.toString(16)}` : v;
           })}
-      </Typography>
+      </span>
     </ClickToCopy>
   ),
 }: ArgProps) {
@@ -221,12 +220,9 @@ function Arg({
       }}
     >
       {label && (
-        <Typography
-          sx={{ flexShrink: 0, color: theme.palette.text.primary }}
-          mono
-        >
+        <span className="shrink-0 font-mono text-primary-background">
           {label}&nbsp;
-        </Typography>
+        </span>
       )}
       {type === "address" && !!addressRenderer
         ? addressRenderer(value as Address)
@@ -237,15 +233,11 @@ function Arg({
 
 interface SeparatorProps {
   text: string;
-  sx?: SxProps;
+  className?: string;
 }
 
-function Separator({ text, sx }: SeparatorProps) {
-  return (
-    <Typography mono sx={sx}>
-      {text}
-    </Typography>
-  );
+function Separator({ text, className }: SeparatorProps) {
+  return <span className={`${className} font-mono`}>{text}</span>;
 }
 
 function parseCall(data: `0x${string}`, abi: Abi | string[] | undefined) {
