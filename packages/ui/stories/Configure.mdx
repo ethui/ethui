@@ -33,14 +33,14 @@ export const RightArrow = () => <svg
 
 <Meta title="Configure your project" />
 
-<div className="sb-container">
+<div className="flex-col sb-container">
   <div className='sb-section-title'>
     # Configure your project
 
     Because Storybook works separately from your app, you'll need to configure it for your specific stack and setup. Below, explore guides for configuring Storybook with popular frameworks and tools. If you get stuck, learn how you can ask for help from our community.
   </div>
-  <div className="sb-section">
-    <div className="sb-section-item">
+  <div className="flex-col sb-section">
+    <div className="flex-col sb-section-item">
       <img
         src={Styling}
         alt="A wall of logos representing different styling technologies"
@@ -52,7 +52,7 @@ export const RightArrow = () => <svg
         target="_blank"
       >Learn more<RightArrow /></a>
     </div>
-    <div className="sb-section-item">
+    <div className="flex-col sb-section-item">
       <img
         src={Context}
         alt="An abstraction representing the composition of data for a component"
@@ -64,7 +64,7 @@ export const RightArrow = () => <svg
         target="_blank"
       >Learn more<RightArrow /></a>
     </div>
-    <div className="sb-section-item">
+    <div className="flex-col sb-section-item">
       <img src={Assets} alt="A representation of typography and image assets" />
       <div>
         <h4 className="sb-section-item-heading">Load assets and resources</h4>
@@ -79,16 +79,16 @@ export const RightArrow = () => <svg
     </div>
   </div>
 </div>
-<div className="sb-container">
+<div className="flex-col sb-container">
   <div className='sb-section-title'>
     # Do more with Storybook
 
     Now that you know the basics, let's explore other parts of Storybook that will improve your experience. This list is just to get you started. You can customise Storybook in many ways to fit your needs.
   </div>
 
-  <div className="sb-section">
-    <div className="sb-features-grid">
-      <div className="sb-grid-item">
+  <div className="flex-col sb-section">
+    <div className="flex-col sb-features-grid">
+      <div className="flex-col sb-grid-item">
         <img src={Docs} alt="A screenshot showing the autodocs tag being set, pointing a docs page being generated" />
         <h4 className="sb-section-item-heading">Autodocs</h4>
         <p className="sb-section-item-paragraph">Auto-generate living,
@@ -98,7 +98,7 @@ export const RightArrow = () => <svg
           target="_blank"
         >Learn more<RightArrow /></a>
       </div>
-      <div className="sb-grid-item">
+      <div className="flex-col sb-grid-item">
         <img src={Share} alt="A browser window showing a Storybook being published to a chromatic.com URL" />
         <h4 className="sb-section-item-heading">Publish to Chromatic</h4>
         <p className="sb-section-item-paragraph">Publish your Storybook to review and collaborate with your entire team.</p>
@@ -107,7 +107,7 @@ export const RightArrow = () => <svg
           target="_blank"
         >Learn more<RightArrow /></a>
       </div>
-      <div className="sb-grid-item">
+      <div className="flex-col sb-grid-item">
         <img src={FigmaPlugin} alt="Windows showing the Storybook plugin in Figma" />
         <h4 className="sb-section-item-heading">Figma Plugin</h4>
         <p className="sb-section-item-paragraph">Embed your stories into Figma to cross-reference the design and live
@@ -117,7 +117,7 @@ export const RightArrow = () => <svg
           target="_blank"
         >Learn more<RightArrow /></a>
       </div>
-      <div className="sb-grid-item">
+      <div className="flex-col sb-grid-item">
         <img src={Testing} alt="Screenshot of tests passing and failing" />
         <h4 className="sb-section-item-heading">Testing</h4>
         <p className="sb-section-item-paragraph">Use stories to test a component in all its variations, no matter how
@@ -127,7 +127,7 @@ export const RightArrow = () => <svg
           target="_blank"
         >Learn more<RightArrow /></a>
       </div>
-      <div className="sb-grid-item">
+      <div className="flex-col sb-grid-item">
         <img src={Accessibility} alt="Screenshot of accessibility tests passing and failing" />
         <h4 className="sb-section-item-heading">Accessibility</h4>
         <p className="sb-section-item-paragraph">Automatically test your components for a11y issues as you develop.</p>
@@ -136,7 +136,7 @@ export const RightArrow = () => <svg
           target="_blank"
         >Learn more<RightArrow /></a>
       </div>
-      <div className="sb-grid-item">
+      <div className="flex-col sb-grid-item">
         <img src={Theming} alt="Screenshot of Storybook in light and dark mode" />
         <h4 className="sb-section-item-heading">Theming</h4>
         <p className="sb-section-item-paragraph">Theme Storybook's UI to personalize it to your project.</p>
@@ -162,8 +162,8 @@ export const RightArrow = () => <svg
   </div>
 </div>
 
-<div className="sb-section sb-socials">
-    <div className="sb-section-item">
+<div className="flex-col sb-section sb-socials">
+    <div className="flex-col sb-section-item">
       <img src={Github} alt="Github logo" className="sb-explore-image"/>
       Join our contributors building the future of UI development.
 
@@ -172,7 +172,7 @@ export const RightArrow = () => <svg
         target="_blank"
       >Star on GitHub<RightArrow /></a>
     </div>
-    <div className="sb-section-item">
+    <div className="flex-col sb-section-item">
       <img src={Discord} alt="Discord logo" className="sb-explore-image"/>
       <div>
         Get support and chat with frontend developers.
@@ -183,7 +183,7 @@ export const RightArrow = () => <svg
         >Join Discord server<RightArrow /></a>
       </div>
     </div>
-    <div className="sb-section-item">
+    <div className="flex-col sb-section-item">
       <img src={Youtube} alt="Youtube logo" className="sb-explore-image"/>
       <div>
         Watch tutorials, feature previews and interviews.
@@ -194,7 +194,7 @@ export const RightArrow = () => <svg
         >Watch on YouTube<RightArrow /></a>
       </div>
     </div>
-    <div className="sb-section-item">
+    <div className="flex-col sb-section-item">
       <img src={Tutorials} alt="A book" className="sb-explore-image"/>
       <p>Follow guided walkthroughs on for key workflows.</p>
 

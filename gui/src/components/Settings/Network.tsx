@@ -69,8 +69,8 @@ export function SettingsNetwork() {
                 {!field.chain_id && "new network"}
               </AccordionTrigger>
               <AccordionContent>
-                <div className="m-2 flex items-start">
-                  <div className="m-2 flex">
+                <div className="m-2 flex flex-col items-start">
+                  <div className="m-2 flex flex-col">
                     <Form.Text label="Name" name={`networks.${index}.name`} />
                     <Form.NumberField
                       label="Chain Id"
@@ -98,7 +98,7 @@ export function SettingsNetwork() {
                     name={`networks.${index}.explorer_url`}
                     fullWidth
                   />
-                  <div className="m-2 flex">
+                  <div className="m-2 flex flex-col">
                     <Form.Text
                       label="Currency"
                       name={`networks.${index}.currency`}
@@ -118,7 +118,7 @@ export function SettingsNetwork() {
           );
         })}
       </Accordion>
-      <div className="m-2 mt-4 mb-2 flex">
+      <div className="m-2 mt-4 mb-2 flex flex-col">
         <Form.Submit label="Save" />
 
         <Button variant="outline" onClick={() => append(emptyNetwork)}>

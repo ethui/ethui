@@ -24,7 +24,7 @@ export function ERC1155AddDialog() {
   if (!token) return null;
 
   return (
-    <div className="m-2 flex items-center">
+    <div className="m-2 flex flex-col items-center">
       <Typography variant="h6" component="h1">
         Add suggested token
       </Typography>
@@ -60,7 +60,7 @@ export function ERC1155AddDialog() {
         />
       </Grid>
 
-      <div className="m-2 flex">
+      <div className="m-2 flex flex-col">
         <Button color="error" onClick={() => tauriWindow.close()}>
           Cancel
         </Button>

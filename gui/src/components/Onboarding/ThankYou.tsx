@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { Link } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect } from "react";
@@ -9,7 +9,7 @@ export function ThankYouStep() {
   });
 
   return (
-    <div className="m-3 w-full">
+    <div className="m-3 flex w-full flex-col">
       <Typography variant="h6" component="h1" alignSelf="start">
         Thank you
       </Typography>
@@ -18,11 +18,11 @@ export function ThankYouStep() {
         issue on GitHub.
       </Typography>
 
-      <Box alignSelf="flex-end">
+      <div alignSelf="flex-end">
         <Link to="/home/account">
           <Button>Finish</Button>
         </Link>
-      </Box>
+      </div>
     </div>
   );
 }

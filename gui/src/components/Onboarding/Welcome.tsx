@@ -5,7 +5,7 @@ import type { StepProps } from ".";
 
 export function WelcomeStep({ onSubmit }: StepProps) {
   return (
-    <div className="m-3 flex w-full">
+    <div className="m-3 flex w-full flex-col">
       <Typography variant="h6" component="h1" alignSelf="start">
         Welcome
       </Typography>

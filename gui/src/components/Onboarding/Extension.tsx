@@ -28,7 +28,7 @@ export function InstallExtensionStep({ onSubmit }: StepProps) {
   }, [detected, peerCount]);
 
   return (
-    <div className="m-2 flex w-full">
+    <div className="m-2 flex w-full flex-col">
       <Typography variant="h6" component="h1" alignSelf="start">
         Install Extension
       </Typography>
@@ -56,7 +56,7 @@ export function InstallExtensionStep({ onSubmit }: StepProps) {
         )}
       </Box>
 
-      <div className="self-end">
+      <div className=" self-end">
         <Button onClick={onSubmit} disabled={!detected}>
           {detected ? "Next" : "Skip"}
         </Button>

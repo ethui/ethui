@@ -35,7 +35,7 @@ export function Connections() {
     <>
       <Navbar>Connections</Navbar>
       <Panel>
-        <div className="m-1 flex">
+        <div className="m-1 flex flex-col">
           {map(peersByDomain, (peers, domain) => (
             <Domain key={domain} domain={domain} peers={peers} />
           ))}
@@ -47,7 +47,7 @@ export function Connections() {
 
 function Domain({ domain, peers }: { domain: string; peers: Peer[] }) {
   return (
-    <div className="m-1 flex items-center">
+    <div className=" m-1 flex items-center">
       <Badge>
         <Avatar sx={{ width: 30, height: 30 }} src={peers[0].favicon}>
           {peers[0].origin.replace(/https?:\/\//, "").slice(0, 2)}

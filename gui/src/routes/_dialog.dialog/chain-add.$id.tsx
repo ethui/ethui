@@ -20,7 +20,7 @@ export function ChainAddDialog() {
   if (!network) return null;
 
   return (
-    <div className="m-1 flex items-center">
+    <div className="m-1 flex flex-col items-center">
       <Typography variant="h6" component="h1">
         Add new network?
       </Typography>
@@ -41,7 +41,7 @@ export function ChainAddDialog() {
         )}
       </Grid>
 
-      <div className="m-1 flex">
+      <div className=" m-1 flex">
         <Button
           variant="destructive"
           onClick={() => getCurrentWebviewWindow().close()}

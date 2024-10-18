@@ -89,7 +89,7 @@ function Create({ onSubmit, onRemove }: Props) {
   }, [name, current, mnemonic, derivationPath, password, onSubmit, submitted]);
 
   return (
-    <div className="m-2 flex flex-col">
+    <div className="m-2 flex flex-col flex-col">
       <Stepper activeStep={step} alternativeLabel>
         {steps.map((label) => (
           <Step key={label}>
@@ -150,13 +150,13 @@ function MnemonicStep({ onSubmit, onCancel }: MnemonicStepProps) {
 
   return (
     <Form form={form} onSubmit={onSubmitInternal}>
-      <div className="m-2 flex flex-col">
+      <div className="m-2 flex flex-col flex-col">
         <Form.Text label="Name" name="name" multiline />
 
         <Typography>Insert your 12-word mnemonic</Typography>
         <Form.Text label="12-word mnemonic" name="mnemonic" multiline />
 
-        <div className="m-2 flex justify-end">
+        <div className=" m-2 flex justify-end">
           <Button color="warning" onClick={onCancel}>
             Cancel
           </Button>
@@ -181,7 +181,7 @@ function PasswordStep({ onSubmit, onCancel }: PasswordStepProps) {
 
   return (
     <Form form={form} onSubmit={(d) => onSubmit(d.password)}>
-      <div className="m-2 flex flex-col">
+      <div className="m-2 flex flex-col flex-col">
         <Typography>Choose a secure password</Typography>
         <Form.Text type="password" label="Password" name="password" />
         <Form.Text
@@ -190,7 +190,7 @@ function PasswordStep({ onSubmit, onCancel }: PasswordStepProps) {
           name="passwordConfirmation"
         />
 
-        <div className="m-2 flex justify-end">
+        <div className="m-2 flex flex-col justify-end">
           <Button color="warning" onClick={onCancel}>
             Cancel
           </Button>
@@ -240,11 +240,11 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
 
   return (
     <Form form={form} onSubmit={onSubmitInternal}>
-      <div className="m-2 flex flex-col">
+      <div className="m-2 flex flex-col flex-col">
         <Form.Text label="Derivation Path" name="derivationPath" />
 
         {form.formState.isValid && (
-          <div className="m-2 flex flex-col">
+          <div className="m-2 flex flex-col flex-col">
             <TableContainer>
               <Table size="small">
                 <TableBody>
@@ -266,7 +266,7 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
               </Table>
             </TableContainer>
 
-            <div className="m-2 flex justify-end">
+            <div className=" m-2 flex justify-end">
               <Button color="warning" onClick={onCancel}>
                 Cancel
               </Button>
@@ -323,11 +323,11 @@ function Update({ wallet, onSubmit, onRemove }: Props) {
 
   return (
     <Form form={form} onSubmit={onSubmit}>
-      <div className="m-2 flex items-start">
+      <div className="m-2 flex flex-col items-start">
         <Form.Text label="Name" name="name" />
         <Form.Text label="Derivation Path" name="derivationPath" />
         <Form.NumberField label="Address count" name="count" />
-        <div className="m-2 flex">
+        <div className=" m-2 flex">
           <Form.Submit label="Save" />
           <Button color="warning" onClick={onRemove}>
             Remove

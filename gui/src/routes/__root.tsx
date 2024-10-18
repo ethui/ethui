@@ -15,10 +15,10 @@ const RouterDevtools =
   process.env.NODE_ENV === "production"
     ? () => null
     : lazy(() =>
-      import("@tanstack/router-devtools").then((res) => ({
-        default: res.TanStackRouterDevtools,
-      })),
-    );
+        import("@tanstack/router-devtools").then((res) => ({
+          default: res.TanStackRouterDevtools,
+        })),
+      );
 
 const globalStyles = {
   body: { userSelect: "none" },
@@ -46,7 +46,10 @@ function Root() {
             </Suspense>
 
             <Suspense>
-              <Box sx={{ position: "absolute", bottom: 50, left: 0 }}></Box>
+              <Box sx={{ position: "absolute", bottom: 50, left: 0 }}>
+                <ReactQueryDevtools buttonPosition="relative" />
+              </Box>
+              <RouterDevtools position="bottom-left" />
             </Suspense>
           </QueryClientProvider>
         </ErrorHandler>

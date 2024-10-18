@@ -19,7 +19,7 @@ export function MsgSignDialog() {
   const msg = data.Raw || JSON.stringify(data.Typed, null, 2);
 
   return (
-    <div className="h-full gap-3.5">
+    <div className="h-full flex-col gap-3.5">
       <Typography variant="h6" component="h1">
         Sign Message
       </Typography>
@@ -36,7 +36,7 @@ export function MsgSignDialog() {
           </Typography>
         </HighlightBox>
       )}
-      <div className="center m-2 mt-auto flex justify-center">
+      <div className=" center m-2 mt-auto flex justify-center">
         <Button
           disabled={!msg}
           size="large"

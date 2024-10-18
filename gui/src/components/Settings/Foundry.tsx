@@ -35,7 +35,7 @@ export function SettingsFoundry() {
 
   return (
     <Form form={form} onSubmit={onSubmit} className="flex flex-col gap-4">
-      <div className="m-2 flex items-start">
+      <div className="m-2 flex flex-col items-start">
         <Typography>
           ethui can monitor your filesystem for foundry projects, indexing the
           output ABIs automatically.

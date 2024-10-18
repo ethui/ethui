@@ -163,9 +163,9 @@ interface HeaderProps {
 
 function Header({ from, to, network }: HeaderProps) {
   return (
-    <div className="flex w-full items-stretch justify-between self-center">
+    <div className=" flex w-full items-stretch justify-between self-center">
       <Typography variant="h6" component="h1">
-        <div className="m-1 flex items-center">
+        <div className=" m-1 flex items-center">
           <AddressView address={from} />
           <span>→</span>
           <AddressView address={to} />
@@ -199,12 +199,12 @@ function SimulationResult({ simulation, chainId, to }: SimulationResultProps) {
         value={
           callCount &&
           (callCount > 0 ? (
-            <div className="flex ">
+            <div className="flex">
               <CheckCircle color="success" />
               <Typography>Called {callCount} time(s) before.</Typography>
             </div>
           ) : (
-            <div className="flex ">
+            <div className="flex">
               <Report color="error" />
               <Typography>First interaction with this contract.</Typography>
             </div>
@@ -268,7 +268,7 @@ function Actions({ request, accepted, onReject, onConfirm }: ActionsProps) {
     );
   } else {
     return (
-      <div className="m-2 flex items-center justify-center">
+      <div className=" m-2 flex items-center justify-center">
         <Button
           size="large"
           color="error"
@@ -357,7 +357,7 @@ function Erc20Transfer({
   });
 
   return (
-    <div className="m-1 flex items-center">
+    <div className=" m-1 flex items-center">
       <AddressView address={from} />
       <span>→</span>
       <AddressView address={to} />

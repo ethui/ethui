@@ -38,7 +38,7 @@ export function SettingsWallets({ extraAction }: Props) {
 
   return (
     <>
-      <div>
+      <div className="flex flex-col">
         <Accordion type="single" collapsible className="w-full">
           {wallets.map((wallet) => (
             <ExistingItem key={wallet.name} wallet={wallet} />
@@ -70,7 +70,7 @@ function ExistingItem({ wallet }: ItemProps) {
   return (
     <AccordionItem value={wallet.name}>
       <AccordionTrigger>
-        <div className="flex items-center">
+        <div className=" flex items-center">
           <Typography>{wallet.name}</Typography>
           <Chip sx={{ marginLeft: 2 }} label={wallet.type} />
         </div>

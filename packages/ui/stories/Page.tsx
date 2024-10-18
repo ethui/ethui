@@ -66,7 +66,7 @@ export const Page: React.FC = () => {
           </a>
           .
         </p>
-        <div className="tip-wrapper">
+        <div className="tip-wrapper flex-col">
           <span className="tip">Tip</span> Adjust the width of the canvas with
           the{" "}
           <svg

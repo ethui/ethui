@@ -45,7 +45,7 @@ export function AlchemyStep({ onSubmit }: StepProps) {
 
   return (
     <Form form={form} onSubmit={localOnSubmit}>
-      <div className="m-3 flex flex-end">
+      <div className="m-3 flex flex-end flex-col">
         <Typography variant="h6" component="h1" alignSelf="start">
           Alchemy
         </Typography>
