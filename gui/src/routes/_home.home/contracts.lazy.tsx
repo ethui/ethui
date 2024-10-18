@@ -23,10 +23,10 @@ import {
 } from "@ethui/ui/components/ui/accordion";
 import { ABIForm } from "#/components/ABIForm";
 import { AddressView } from "#/components/AddressView";
-import { Navbar } from "#/components/Home/Navbar";
 import { Modal } from "#/components/Modal";
 import { useContracts } from "#/store/useContracts";
 import { useNetworks } from "#/store/useNetworks";
+import { ContentLayout } from "#/components/home-layout/content-layout";
 
 export const Route = createLazyFileRoute("/_home/home/contracts")({
   component: Contracts,
@@ -38,9 +38,7 @@ export function Contracts() {
   const [addContractOpen, setAddContractOpen] = useState(false);
 
   return (
-    <>
-      <Navbar>Contracts</Navbar>
-
+    <ContentLayout title="Contracts">
       <Filter onChange={(f) => setFilter(f)} />
 
       <Accordion type="single" collapsible className="w-full">
@@ -59,7 +57,7 @@ export function Contracts() {
       <Modal open={addContractOpen} onClose={() => setAddContractOpen(false)}>
         <AddressForm />
       </Modal>
-    </>
+    </ContentLayout>
   );
 }
 

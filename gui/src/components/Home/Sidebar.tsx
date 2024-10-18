@@ -106,7 +106,7 @@ export function Sidebar({ sx, tabs }: SidebarProps) {
   );
 }
 
-function SettingsModal() {
+export function SettingsModal() {
   const { show, toggle } = useSettingsWindow();
 
   return (

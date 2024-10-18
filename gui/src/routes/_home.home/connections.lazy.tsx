@@ -13,11 +13,11 @@ import { useEffect, useState } from "react";
 
 import { ChainView } from "@ethui/react/components/ChainView";
 import type { Affinity, Peer } from "@ethui/types";
-import { Navbar } from "#/components/Home/Navbar";
 import { Panel } from "#/components/Panel";
 import { useEventListener } from "#/hooks/useEventListener";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
+import { ContentLayout } from "#/components/home-layout/content-layout";
 
 export const Route = createLazyFileRoute("/_home/home/connections")({
   component: Connections,
@@ -30,8 +30,7 @@ export function Connections() {
   useEventListener("peers-updated", refetch);
 
   return (
-    <>
-      <Navbar>Connections</Navbar>
+    <ContentLayout title="Connections">
       <Panel>
         <div className="m-1 flex flex-col">
           {map(peersByDomain, (peers, domain) => (
@@ -39,7 +38,7 @@ export function Connections() {
           ))}
         </div>
       </Panel>
-    </>
+    </ContentLayout>
   );
 }
 

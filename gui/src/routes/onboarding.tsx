@@ -1,8 +1,7 @@
-import { Container, MobileStepper } from "@mui/material";
+import { Container, MobileStepper, Toolbar } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { DraggableToolbar } from "#/components/DraggableToolbar";
 import { Logo } from "#/components/Logo";
 import type { StepProps } from "#/components/Onboarding";
 import { AlchemyStep } from "#/components/Onboarding/Alchemy";
@@ -36,7 +35,7 @@ export function Onboarding() {
 
   return (
     <>
-      <DraggableToolbar />
+      <Toolbar data-tauri-drag-region="true" />
       <Container disableGutters sx={{ px: 2 }}>
         <div className="flex flex-col items-center">
           <Logo width={40} />

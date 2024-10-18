@@ -19,11 +19,11 @@ import { AddressView } from "#/components/AddressView";
 import { ContextMenuWithTauri } from "#/components/ContextMenuWithTauri";
 import { Datapoint } from "#/components/Datapoint";
 import { HashView } from "#/components/HashView";
-import { Navbar } from "#/components/Home/Navbar";
 import { useEventListener } from "#/hooks/useEventListener";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
+import { ContentLayout } from "#/components/home-layout/content-layout";
 
 export const Route = createLazyFileRoute("/_home/home/transactions")({
   component: Txs,
@@ -75,8 +75,7 @@ export function Txs() {
   );
 
   return (
-    <>
-      <Navbar>Transactions</Navbar>
+    <ContentLayout title="Transactions">
       <Accordion type="single" collapsible className="w-full">
         <InfiniteScroll
           loadMore={loadMore}
@@ -97,7 +96,7 @@ export function Txs() {
           )}
         </InfiniteScroll>
       </Accordion>
-    </>
+    </ContentLayout>
   );
 }
 

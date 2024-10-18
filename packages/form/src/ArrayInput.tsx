@@ -1,6 +1,5 @@
 import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { IconButton, ToggleButton, ToggleButtonGroup } from "@mui/material";
-import { grey } from "@mui/material/colors";
 import { useState } from "react";
 
 import { AbiInput, type InnerProps } from "./AbiInput";
