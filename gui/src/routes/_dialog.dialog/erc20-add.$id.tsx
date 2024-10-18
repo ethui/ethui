@@ -1,4 +1,4 @@
-import { Button, Grid2 as Grid, Typography } from "@mui/material";
+import { Button, Grid2 as Grid } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { isDirty, isValid } from "zod";
@@ -38,9 +38,7 @@ export function ERC20AddDialog() {
           value={
             <div className="m-1 flex flex flex-col text-center">
               <IconToken iconUrl={token.alchemy_metadata.logo} />
-              <span alignSelf={"center"}>
-                {token.metadata.name}
-              </span>
+              <span alignSelf={"center"}>{token.metadata.name}</span>
             </div>
           }
         />

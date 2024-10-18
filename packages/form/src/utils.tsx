@@ -1,4 +1,3 @@
-
 import { type AbiFunction, decodeFunctionData } from "viem";
 
 export function Debug({ value }: { value: any }) {

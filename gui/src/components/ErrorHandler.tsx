@@ -3,7 +3,6 @@ import { invoke } from "@tauri-apps/api/core";
 import type { ErrorInfo, ReactNode } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
-
 import { Panel } from "./Panel";
 
 interface Props {

@@ -1,4 +1,4 @@
-import { Grid2 as Grid, Skeleton, Typography } from "@mui/material";
+import { Grid2 as Grid, Skeleton } from "@mui/material";
 
 interface DatapointProps {
   label: string;

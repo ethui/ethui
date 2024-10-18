@@ -5,7 +5,6 @@ import { decodeFunctionData, formatUnits, parseAbi } from "viem";
 
 import type { PaletteColorKey } from "../../utils";
 import { ClickToCopy } from "../ClickToCopy";
-import { Typography } from "../Typography";
 
 export interface SolidityCallProps {
   value?: bigint;
@@ -81,7 +80,7 @@ function Deploy({ value, from, decimals, ArgProps }: DeployProps) {
           {...ArgProps}
           value={from}
         />
-        <span mono>to newly deployed contract</span>
+        <span className="font-mono">to newly deployed contract</span>
       </Stack>
     </>
   );
@@ -221,10 +220,7 @@ function Arg({
       }}
     >
       {label && (
-        <span
-          sx={{ flexShrink: 0, color: theme.palette.text.primary }}
-          mono
-        >
+        <span sx={{ flexShrink: 0, color: theme.palette.text.primary }} mono>
           {label}&nbsp;
         </span>
       )}
@@ -242,7 +238,7 @@ interface SeparatorProps {
 
 function Separator({ text, sx }: SeparatorProps) {
   return (
-    <span mono sx={sx}>
+    <span className="font-mono" sx={sx}>
       {text}
     </span>
   );

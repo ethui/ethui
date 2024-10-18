@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Backdrop, Button, CircularProgress, Typography } from "@mui/material";
+import { Backdrop, Button, CircularProgress } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";

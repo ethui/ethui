@@ -1,6 +1,5 @@
 import type { Hash } from "viem";
 
-
 import { useNetworks } from "#/store/useNetworks";
 import { truncateHex } from "#/utils";
 import { ContextMenuWithTauri } from "./ContextMenuWithTauri";

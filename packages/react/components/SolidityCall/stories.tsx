@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import { Stack } from "@mui/material";
 import { defaultDisabledArgs } from "../../utils";
-import { Typography } from "../Typography";
 import { SolidityCall, type SolidityCallProps } from "./";
 
 const meta: Meta<SolidityCallProps> = {

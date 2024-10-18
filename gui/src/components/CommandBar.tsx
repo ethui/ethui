@@ -7,7 +7,6 @@ import {
   ListItemSecondaryAction,
   ListItemText,
   Paper,
-  Typography,
 } from "@mui/material";
 import {
   type ActionId,

@@ -1,6 +1,5 @@
 import { Stack } from "@mui/material";
 
-import { Typography } from "../Typography";
 import IconChain from "../icons/Chain";
 
 export interface ChainViewProps {

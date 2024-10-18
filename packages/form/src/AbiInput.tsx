@@ -1,4 +1,4 @@
-import { Box, type SxProps, Typography } from "@mui/material";
+import { Box, type SxProps } from "@mui/material";
 import { useCallback } from "react";
 
 import { ArrayInput } from "./ArrayInput";

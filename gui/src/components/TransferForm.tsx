@@ -2,7 +2,7 @@ import { Form } from "@ethui/react/components/Form";
 import { addressSchema } from "@ethui/types/wallets";
 import { Button } from "@ethui/ui/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Alert, Typography } from "@mui/material";
+import { Alert } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";

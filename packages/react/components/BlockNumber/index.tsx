@@ -1,6 +1,5 @@
 import { Stack } from "@mui/material";
 import { Box as BoxIcon } from "lucide-react";
-import { Typography } from "../Typography";
 
 export interface BlockNumberProps {
   number?: number;

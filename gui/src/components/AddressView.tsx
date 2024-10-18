@@ -7,13 +7,13 @@ import { z } from "zod";
 
 import { Form } from "@ethui/react/components/Form";
 
+import clsx from "clsx";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { truncateHex } from "#/utils";
 import { ContextMenuWithTauri } from "./ContextMenuWithTauri";
 import { IconAddress } from "./Icons/Address";
 import { Modal } from "./Modal";
-import clsx from "clsx";
 
 interface Props {
   address: Address;

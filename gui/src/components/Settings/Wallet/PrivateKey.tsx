@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Step, StepLabel, Stepper, Typography } from "@mui/material";
+import { Button, Step, StepLabel, Stepper } from "@mui/material";
 import { useEffect, useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";

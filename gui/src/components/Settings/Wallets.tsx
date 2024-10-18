@@ -1,4 +1,4 @@
-import { Chip, Menu, MenuItem, Paper, Typography } from "@mui/material";
+import { Chip, Menu, MenuItem, Paper } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { startCase } from "lodash-es";
 import { useState } from "react";

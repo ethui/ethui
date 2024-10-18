@@ -3,7 +3,6 @@ import {
   ListItem,
   ListItemText,
   TextField,
-  Typography,
   useMediaQuery,
 } from "@mui/material";
 import { useState } from "react";
@@ -67,7 +66,7 @@ export function SettingsKeybinds() {
           }}
         >
           <Box>
-            <span variant="h6">Search keybinds</span>
+            <h6>Search keybinds</h6>
             <span>Showing {filteredKeybinds.length} keybinds.</span>
           </Box>
           <TextField
@@ -94,9 +93,9 @@ export function SettingsKeybinds() {
                 <ListItemText primary={keybind.name} />
                 <Box sx={{ border: 1, borderRadius: 2, paddingInline: 1 }}>
                   <span
+                    className="font-mono"
                     sx={{
                       overflowWrap: "break-word",
-                      fontFamily: "Roboto className="font-mono"",
                       borderRadius: 1,
                       padding: 0.3,
                     }}
