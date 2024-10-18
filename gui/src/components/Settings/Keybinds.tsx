@@ -67,8 +67,8 @@ export function SettingsKeybinds() {
           }}
         >
           <Box>
-            <Typography variant="h6">Search keybinds</Typography>
-            <Typography>Showing {filteredKeybinds.length} keybinds.</Typography>
+            <span variant="h6">Search keybinds</span>
+            <span>Showing {filteredKeybinds.length} keybinds.</span>
           </Box>
           <TextField
             value={search}
@@ -93,16 +93,16 @@ export function SettingsKeybinds() {
               >
                 <ListItemText primary={keybind.name} />
                 <Box sx={{ border: 1, borderRadius: 2, paddingInline: 1 }}>
-                  <Typography
+                  <span
                     sx={{
                       overflowWrap: "break-word",
-                      fontFamily: "Roboto Mono",
+                      fontFamily: "Roboto className="font-mono"",
                       borderRadius: 1,
                       padding: 0.3,
                     }}
                   >
                     {keybind.combination}
-                  </Typography>
+                  </span>
                 </Box>
               </ListItem>
             ))

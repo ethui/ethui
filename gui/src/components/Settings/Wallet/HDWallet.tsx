@@ -153,7 +153,7 @@ function MnemonicStep({ onSubmit, onCancel }: MnemonicStepProps) {
       <div className="m-2 flex flex-col flex-col">
         <Form.Text label="Name" name="name" multiline />
 
-        <Typography>Insert your 12-word mnemonic</Typography>
+        <span>Insert your 12-word mnemonic</span>
         <Form.Text label="12-word mnemonic" name="mnemonic" multiline />
 
         <div className=" m-2 flex justify-end">
@@ -182,7 +182,7 @@ function PasswordStep({ onSubmit, onCancel }: PasswordStepProps) {
   return (
     <Form form={form} onSubmit={(d) => onSubmit(d.password)}>
       <div className="m-2 flex flex-col flex-col">
-        <Typography>Choose a secure password</Typography>
+        <span>Choose a secure password</span>
         <Form.Text type="password" label="Password" name="password" />
         <Form.Text
           type="password"

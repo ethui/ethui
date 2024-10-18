@@ -12,7 +12,7 @@ export function ChainView({ name, chainId }: ChainViewProps) {
   return (
     <Stack direction="row" alignItems="center" spacing={1}>
       <IconChain chainId={chainId} />
-      <Typography>{name}</Typography>
+      <span>{name}</span>
     </Stack>
   );
 }

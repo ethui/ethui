@@ -29,11 +29,11 @@ export function InstallExtensionStep({ onSubmit }: StepProps) {
 
   return (
     <div className="m-2 flex w-full flex-col">
-      <Typography variant="h6" component="h1" alignSelf="start">
+      <span variant="h6" component="h1" alignSelf="start">
         Install Extension
-      </Typography>
+      </span>
 
-      <Typography>
+      <span>
         Go to{" "}
         <Link
           underline="hover"
@@ -44,7 +44,7 @@ export function InstallExtensionStep({ onSubmit }: StepProps) {
           this page
         </Link>{" "}
         to install the ethui extension.
-      </Typography>
+      </span>
 
       <Box sx={{ alignSelf: "stretch" }}>
         {!detected ? (

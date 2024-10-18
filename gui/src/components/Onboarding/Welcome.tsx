@@ -1,15 +1,15 @@
 import { Box, Button, Link } from "@mui/material";
 
-import { Typography } from "@ethui/react/components/Typography";
+
 import type { StepProps } from ".";
 
 export function WelcomeStep({ onSubmit }: StepProps) {
   return (
     <div className="m-3 flex w-full flex-col">
-      <Typography variant="h6" component="h1" alignSelf="start">
+      <span variant="h6" component="h1" alignSelf="start">
         Welcome
-      </Typography>
-      <Typography component="p">
+      </span>
+      <span component="p">
         ethui is a toolkit for fullstack Ethereum development. Check out{" "}
         <Link
           underline="hover"
@@ -31,7 +31,7 @@ export function WelcomeStep({ onSubmit }: StepProps) {
         .
         <br />
         Contributors are welcome!
-      </Typography>
+      </span>
       <Box alignSelf="flex-end">
         <Button type="submit" onClick={onSubmit}>
           Next

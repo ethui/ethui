@@ -12,7 +12,7 @@ export function errorToast(key: string, err: unknown) {
     msg = JSON.stringify(err);
   }
 
-  enqueueSnackbar(<Typography>{msg}</Typography>, {
+  enqueueSnackbar(<span>{msg}</span>, {
     key,
     variant: "error",
     action: () => (

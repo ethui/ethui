@@ -58,9 +58,9 @@ export function WalletUnlockDialog() {
         className="flex flex flex-col gap-4"
       >
         <div className="m-2 flex flex-col">
-          <Typography>
+          <span>
             ethui is asking to unlock wallet <b>{name}:</b>
-          </Typography>
+          </span>
 
           <Form.Text
             label="Password"

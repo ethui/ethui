@@ -14,7 +14,7 @@ import {
 } from "viem";
 
 import { ChainView } from "@ethui/react/components/ChainView";
-import { Typography } from "@ethui/react/components/Typography";
+
 import type { TokenMetadata } from "@ethui/types";
 import type { Network } from "@ethui/types/network";
 import { ABIItemForm } from "#/components/ABIForm";
@@ -164,13 +164,13 @@ interface HeaderProps {
 function Header({ from, to, network }: HeaderProps) {
   return (
     <div className=" flex w-full items-stretch justify-between self-center">
-      <Typography variant="h6" component="h1">
+      <span variant="h6" component="h1">
         <div className=" m-1 flex items-center">
           <AddressView address={from} />
           <span>→</span>
           <AddressView address={to} />
         </div>
-      </Typography>
+      </span>
       <Box ml={5}>
         <ChainView name={network.name} chainId={network.chain_id} />
       </Box>
@@ -201,12 +201,12 @@ function SimulationResult({ simulation, chainId, to }: SimulationResultProps) {
           (callCount > 0 ? (
             <div className="flex">
               <CheckCircle color="success" />
-              <Typography>Called {callCount} time(s) before.</Typography>
+              <span>Called {callCount} time(s) before.</span>
             </div>
           ) : (
             <div className="flex">
               <Report color="error" />
-              <Typography>First interaction with this contract.</Typography>
+              <span>First interaction with this contract.</span>
             </div>
           ))
         }

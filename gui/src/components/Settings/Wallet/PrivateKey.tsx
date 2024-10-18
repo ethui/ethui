@@ -111,7 +111,7 @@ function PrivateKeyStep({ onSubmit, onCancel }: PrivateKeyStepProps) {
     <Form form={form} onSubmit={onSubmitInternal}>
       <div className="m-2 flex flex-col flex-col">
         <Form.Text multiline label="Name" name="name" />
-        <Typography>Insert your 12-word privateKey</Typography>
+        <span>Insert your 12-word privateKey</span>
         <Form.Text multiline label="Private Key" name="privateKey" />
 
         <div className=" m-2 flex justify-end">
@@ -144,7 +144,7 @@ function PasswordStep({ onSubmit, onCancel }: PasswordStepProps) {
   return (
     <Form form={form} onSubmit={onSubmitInternal}>
       <div className="m-2 flex flex-col flex-col">
-        <Typography>Choose a secure password</Typography>
+        <span>Choose a secure password</span>
         <Form.Text type="password" label="Password" name="password" />
         <Form.Text
           type="password"

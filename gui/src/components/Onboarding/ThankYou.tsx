@@ -10,13 +10,13 @@ export function ThankYouStep() {
 
   return (
     <div className="m-3 flex w-full flex-col">
-      <Typography variant="h6" component="h1" alignSelf="start">
+      <span variant="h6" component="h1" alignSelf="start">
         Thank you
-      </Typography>
-      <Typography component="p">
+      </span>
+      <span component="p">
         Thank you for using ethui. If you find any problems, please open an
         issue on GitHub.
-      </Typography>
+      </span>
 
       <div alignSelf="flex-end">
         <Link to="/home/account">

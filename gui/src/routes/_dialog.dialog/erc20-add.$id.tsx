@@ -26,21 +26,21 @@ export function ERC20AddDialog() {
 
   return (
     <div className="m-2 flex flex-col items-center">
-      <Typography variant="h6" component="h1">
+      <span variant="h6" component="h1">
         Add suggested token
-      </Typography>
-      <Typography textAlign={"center"}>
+      </span>
+      <span textAlign={"center"}>
         This allows the following asset to be added to your wallet.
-      </Typography>
+      </span>
       <Grid container rowSpacing={2}>
         <Datapoint
           label=""
           value={
             <div className="m-1 flex flex flex-col text-center">
               <IconToken iconUrl={token.alchemy_metadata.logo} />
-              <Typography alignSelf={"center"}>
+              <span alignSelf={"center"}>
                 {token.metadata.name}
-              </Typography>
+              </span>
             </div>
           }
         />

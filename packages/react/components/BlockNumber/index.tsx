@@ -9,8 +9,8 @@ export interface BlockNumberProps {
 export const BlockNumber = ({ number }: BlockNumberProps) => (
   <Stack direction="row" alignItems="center" spacing={0}>
     <BoxIcon size={14} />
-    <Typography variant="caption" color="success">
+    <span variant="caption" color="success">
       {number}
-    </Typography>
+    </span>
   </Stack>
 );

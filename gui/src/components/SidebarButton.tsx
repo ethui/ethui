@@ -63,9 +63,9 @@ export function SidebarButton<R extends React.ElementType>({
           timeout={{ exit: 0 }}
           sx={{ flexGrow: 1 }}
         >
-          <Typography sx={{ pl: 1, display: "inline", whiteSpace: "nowrap" }}>
+          <span sx={{ pl: 1, display: "inline", whiteSpace: "nowrap" }}>
             {label}
-          </Typography>
+          </span>
         </Collapse>
       </div>
     </ButtonBase>

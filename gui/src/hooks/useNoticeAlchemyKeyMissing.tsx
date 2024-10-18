@@ -32,7 +32,7 @@ export function useNoticeAlchemyKeyMissing() {
       return;
     }
 
-    key = enqueueSnackbar(<Typography>Alchemy key missing</Typography>, {
+    key = enqueueSnackbar(<span>Alchemy key missing</span>, {
       key: "alchemy_key_missing",
       persist: true,
       variant: "warning",

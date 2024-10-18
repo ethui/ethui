@@ -46,11 +46,11 @@ export function AlchemyStep({ onSubmit }: StepProps) {
   return (
     <Form form={form} onSubmit={localOnSubmit}>
       <div className="m-3 flex flex-end flex-col">
-        <Typography variant="h6" component="h1" alignSelf="start">
+        <span variant="h6" component="h1" alignSelf="start">
           Alchemy
-        </Typography>
+        </span>
 
-        <Typography component="p">
+        <span component="p">
           ethui works with{" "}
           <Link
             underline="hover"
@@ -79,7 +79,7 @@ export function AlchemyStep({ onSubmit }: StepProps) {
             Alchemy dashboard
           </Link>{" "}
           and grab an API key.
-        </Typography>
+        </span>
         <Form.Text label="API Key" name="alchemyApiKey" fullWidth />
 
         <Form.Submit

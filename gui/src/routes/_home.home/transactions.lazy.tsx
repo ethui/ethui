@@ -128,7 +128,7 @@ function Summary({ account, tx }: SummaryProps) {
         {tx.to ? (
           <AddressView address={tx.to} />
         ) : (
-          <Typography component="span">Contract Deploy</Typography>
+          <span component="span">Contract Deploy</span>
         )}
       </div>
     </div>

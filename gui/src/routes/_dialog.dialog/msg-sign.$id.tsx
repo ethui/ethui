@@ -3,7 +3,7 @@ import { Button } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { HighlightBox } from "@ethui/react/components/HighlightBox";
-import { Typography } from "@ethui/react/components/Typography";
+
 import { useDialog } from "#/hooks/useDialog";
 
 export const Route = createFileRoute("/_dialog/dialog/msg-sign/$id")({
@@ -20,9 +20,9 @@ export function MsgSignDialog() {
 
   return (
     <div className="h-full flex-col gap-3.5">
-      <Typography variant="h6" component="h1">
+      <span variant="h6" component="h1">
         Sign Message
-      </Typography>
+      </span>
       {msg && (
         <HighlightBox
           fullWidth
@@ -31,9 +31,9 @@ export function MsgSignDialog() {
             minHeight: 100,
           }}
         >
-          <Typography whiteSpace="pre-wrap" variant="body2" mono>
+          <span whiteSpace="pre-wrap" variant="body2" className="font-mono">
             {msg}
-          </Typography>
+          </span>
         </HighlightBox>
       )}
       <div className=" center m-2 mt-auto flex justify-center">

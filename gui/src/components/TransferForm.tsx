@@ -114,7 +114,7 @@ export function TransferForm({
   return (
     <Form form={form} onSubmit={onSubmit}>
       <div className="m-2 flex flex-col items-start">
-        <Typography>Transfer token</Typography>
+        <span>Transfer token</span>
 
         <Form.Select
           fullWidth
@@ -126,9 +126,9 @@ export function TransferForm({
           sx={{ minWidth: 120 }}
         />
 
-        <Typography variant="body2">
+        <span variant="body2">
           Balance: {formatUnits(currentToken.balance, currentToken.decimals)}
-        </Typography>
+        </span>
 
         <Form.Text label="To" name="to" fullWidth />
         <Form.BigInt
@@ -144,9 +144,9 @@ export function TransferForm({
             variant="outlined"
             severity="success"
           >
-            <Typography variant="body2" noWrap>
+            <span variant="body2" noWrap>
               {result}
-            </Typography>
+            </span>
           </Alert>
         )}
 

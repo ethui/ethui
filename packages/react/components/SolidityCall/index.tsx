@@ -81,7 +81,7 @@ function Deploy({ value, from, decimals, ArgProps }: DeployProps) {
           {...ArgProps}
           value={from}
         />
-        <Typography mono>to newly deployed contract</Typography>
+        <span mono>to newly deployed contract</span>
       </Stack>
     </>
   );
@@ -195,13 +195,13 @@ function Arg({
   addressRenderer,
   defaultRenderer = (v: string | bigint) => (
     <ClickToCopy text={v}>
-      <Typography mono>
+      <span mono>
         {raw && v.toString()}
         {!raw &&
           JSON.stringify(v, (_k, v) => {
             return typeof v === "bigint" ? `0x${v.toString(16)}` : v;
           })}
-      </Typography>
+      </span>
     </ClickToCopy>
   ),
 }: ArgProps) {
@@ -221,12 +221,12 @@ function Arg({
       }}
     >
       {label && (
-        <Typography
+        <span
           sx={{ flexShrink: 0, color: theme.palette.text.primary }}
           mono
         >
           {label}&nbsp;
-        </Typography>
+        </span>
       )}
       {type === "address" && !!addressRenderer
         ? addressRenderer(value as Address)
@@ -242,9 +242,9 @@ interface SeparatorProps {
 
 function Separator({ text, sx }: SeparatorProps) {
   return (
-    <Typography mono sx={sx}>
+    <span mono sx={sx}>
       {text}
-    </Typography>
+    </span>
   );
 }
 

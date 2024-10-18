@@ -38,7 +38,7 @@ export function useNoticeNewVersion() {
         }}
         target="_blank"
       >
-        <Typography>New release available.</Typography>
+        <span>New release available.</span>
       </Link>,
       {
         key: "new_release",

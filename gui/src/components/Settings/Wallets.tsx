@@ -71,7 +71,7 @@ function ExistingItem({ wallet }: ItemProps) {
     <AccordionItem value={wallet.name}>
       <AccordionTrigger>
         <div className=" flex items-center">
-          <Typography>{wallet.name}</Typography>
+          <span>{wallet.name}</span>
           <Chip sx={{ marginLeft: 2 }} label={wallet.type} />
         </div>
       </AccordionTrigger>
@@ -117,7 +117,7 @@ function NewItem({ type, onFinish }: NewItemProps) {
 
   return (
     <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
-      <Typography sx={{ pb: 2 }}>New {type}</Typography>
+      <span sx={{ pb: 2 }}>New {type}</span>
 
       {type === "plaintext" && <Plaintext {...props} />}
       {type === "jsonKeystore" && <JsonKeystore {...props} />}

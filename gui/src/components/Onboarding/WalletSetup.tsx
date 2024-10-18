@@ -7,15 +7,15 @@ import type { StepProps } from ".";
 export function WalletSetupStep({ onSubmit }: StepProps) {
   return (
     <div className="m-3 flex flex-col items-end">
-      <Typography variant="h6" component="h1" alignSelf="start">
+      <span variant="h6" component="h1" alignSelf="start">
         Wallet setup
-      </Typography>
+      </span>
 
-      <Typography component="p">
+      <span component="p">
         A default (insecure) developer wallet is already set up for you. You can
         opt out by deleting it, and create additional secure wallets for daily
         use.
-      </Typography>
+      </span>
       <Box sx={{ maxWidth: "100%", width: "100%" }}>
         <SettingsWallets
           extraAction={<Button onClick={onSubmit}>Next</Button>}

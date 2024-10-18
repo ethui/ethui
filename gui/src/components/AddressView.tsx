@@ -6,13 +6,14 @@ import { type Address, getAddress } from "viem";
 import { z } from "zod";
 
 import { Form } from "@ethui/react/components/Form";
-import { Typography } from "@ethui/react/components/Typography";
+
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { truncateHex } from "#/utils";
 import { ContextMenuWithTauri } from "./ContextMenuWithTauri";
 import { IconAddress } from "./Icons/Address";
 import { Modal } from "./Modal";
+import clsx from "clsx";
 
 interface Props {
   address: Address;
@@ -50,9 +51,9 @@ export function AddressView({
           effigy
         />
       )}
-      <Typography mono={mono} variant={variant}>
+      <span className={clsx({ "font-mono": mono })} variant={variant}>
         {text}
-      </Typography>
+      </span>
     </div>
   );
 
@@ -114,7 +115,7 @@ function AliasForm({ address, alias, refetch, onSubmit }: AliasFormProps) {
   return (
     <Form form={form} onSubmit={submit}>
       <div className="m-2 flex flex-col items-start">
-        <Typography>Set alias for {truncateHex(address)}</Typography>
+        <span>Set alias for {truncateHex(address)}</span>
         <Form.Text label="Alias" name="alias" defaultValue={alias} />
 
         <Form.Submit label="Save" />

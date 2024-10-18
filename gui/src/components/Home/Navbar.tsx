@@ -17,9 +17,9 @@ export function Navbar({ children }: NavbarProps) {
       }}
     >
       <DraggableToolbar>
-        <Typography variant="h6" component="div">
+        <span variant="h6" component="div">
           {children}
-        </Typography>
+        </span>
       </DraggableToolbar>
     </AppBar>
   );
