@@ -26,10 +26,8 @@ export function ERC20AddDialog() {
 
   return (
     <div className="m-2 flex flex-col items-center">
-      <span variant="h6" component="h1">
-        Add suggested token
-      </span>
-      <span textAlign={"center"}>
+      <h1 className="font-bold">Add suggested token</h1>
+      <span className="text-center">
         This allows the following asset to be added to your wallet.
       </span>
       <Grid container rowSpacing={2}>
@@ -38,7 +36,7 @@ export function ERC20AddDialog() {
           value={
             <div className="m-1 flex flex flex-col text-center">
               <IconToken iconUrl={token.alchemy_metadata.logo} />
-              <span alignSelf={"center"}>{token.metadata.name}</span>
+              <span className="self-center">{token.metadata.name}</span>
             </div>
           }
         />

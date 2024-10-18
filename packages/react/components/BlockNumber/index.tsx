@@ -1,4 +1,3 @@
-import { Stack } from "@mui/material";
 import { Box as BoxIcon } from "lucide-react";
 
 export interface BlockNumberProps {
@@ -6,10 +5,8 @@ export interface BlockNumberProps {
 }
 
 export const BlockNumber = ({ number }: BlockNumberProps) => (
-  <Stack direction="row" alignItems="center" spacing={0}>
+  <div className="flex flex-ro items-center">
     <BoxIcon size={14} />
-    <span variant="caption" color="success">
-      {number}
-    </span>
-  </Stack>
+    {number}
+  </div>
 );

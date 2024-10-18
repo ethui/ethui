@@ -92,14 +92,7 @@ export function SettingsKeybinds() {
               >
                 <ListItemText primary={keybind.name} />
                 <Box sx={{ border: 1, borderRadius: 2, paddingInline: 1 }}>
-                  <span
-                    className="font-mono"
-                    sx={{
-                      overflowWrap: "break-word",
-                      borderRadius: 1,
-                      padding: 0.3,
-                    }}
-                  >
+                  <span className="font-mono break-words rounded-sm">
                     {keybind.combination}
                   </span>
                 </Box>

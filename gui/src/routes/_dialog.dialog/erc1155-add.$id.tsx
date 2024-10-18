@@ -25,10 +25,8 @@ export function ERC1155AddDialog() {
 
   return (
     <div className="m-2 flex flex-col items-center">
-      <span variant="h6" component="h1">
-        Add suggested token
-      </span>
-      <span textAlign={"center"}>
+      <h1 className="font-xl">Add suggested token</h1>
+      <span className="text-center">
         This allows the following asset to be added to your wallet.
       </span>
       <Grid container rowSpacing={1} justifyItems={"center"}>

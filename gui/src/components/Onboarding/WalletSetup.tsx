@@ -7,9 +7,7 @@ import type { StepProps } from ".";
 export function WalletSetupStep({ onSubmit }: StepProps) {
   return (
     <div className="m-3 flex flex-col items-end">
-      <span variant="h6" component="h1" alignSelf="start">
-        Wallet setup
-      </span>
+      <h1 className="self-start text-xl">Wallet setup</h1>
 
       <p>
         A default (insecure) developer wallet is already set up for you. You can

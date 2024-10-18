@@ -10,15 +10,14 @@ export function ThankYouStep() {
 
   return (
     <div className="m-3 flex w-full flex-col">
-      <span variant="h6" component="h1" alignSelf="start">
-        Thank you
-      </span>
+      <h1 className="self-start text-xl">Thank you</h1>
+
       <p>
         Thank you for using ethui. If you find any problems, please open an
         issue on GitHub.
       </p>
 
-      <div alignSelf="flex-end">
+      <div className="self-end">
         <Link to="/home/account">
           <Button>Finish</Button>
         </Link>

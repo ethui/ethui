@@ -20,7 +20,6 @@ interface Props {
   copyIcon?: boolean;
   mono?: boolean;
   contextMenu?: boolean;
-  variant?: "h6";
   icon?: boolean;
 }
 
@@ -28,7 +27,6 @@ export function AddressView({
   address: addr,
   mono = false,
   contextMenu = true,
-  variant,
   icon = false,
 }: Props) {
   const network = useNetworks((s) => s.current);
@@ -51,9 +49,7 @@ export function AddressView({
           effigy
         />
       )}
-      <span className={clsx({ "font-mono": mono })} variant={variant}>
-        {text}
-      </span>
+      <span className={clsx({ "font-mono": mono })}>{text}</span>
     </div>
   );
 

@@ -139,7 +139,7 @@ function Call({ value, data, to, decimals, abi, ArgProps }: CallProps) {
     <Stack spacing={0.5}>
       <Stack direction="row">
         <Arg type="address" variant="highlight2" value={to} {...ArgProps} />
-        <Separator text="." sx={{ gridArea: "top" }} />
+        <Separator text="." />
         <Arg value={label} raw type="string" variant="highlight3" />
         {value > 0n && (
           <>
@@ -194,7 +194,7 @@ function Arg({
   addressRenderer,
   defaultRenderer = (v: string | bigint) => (
     <ClickToCopy text={v}>
-      <span mono>
+      <span className="font-mono">
         {raw && v.toString()}
         {!raw &&
           JSON.stringify(v, (_k, v) => {
@@ -220,7 +220,7 @@ function Arg({
       }}
     >
       {label && (
-        <span sx={{ flexShrink: 0, color: theme.palette.text.primary }} mono>
+        <span className="shrink-0 font-mono text-primary-background">
           {label}&nbsp;
         </span>
       )}
@@ -233,15 +233,11 @@ function Arg({
 
 interface SeparatorProps {
   text: string;
-  sx?: SxProps;
+  className?: string;
 }
 
-function Separator({ text, sx }: SeparatorProps) {
-  return (
-    <span className="font-mono" sx={sx}>
-      {text}
-    </span>
-  );
+function Separator({ text, className }: SeparatorProps) {
+  return <span className={`${className} font-mono`}>{text}</span>;
 }
 
 function parseCall(data: `0x${string}`, abi: Abi | string[] | undefined) {

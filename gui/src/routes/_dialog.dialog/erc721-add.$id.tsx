@@ -25,10 +25,8 @@ export function ERC721AddDialog() {
 
   return (
     <div className="m-2 flex flex-col items-center">
-      <span variant="h6" component="h1">
-        Add suggested NFT
-      </span>
-      <span textAlign={"center"}>
+      <h1 className="font-xl">Add suggested NFT</h1>
+      <span className="text-center">
         This allows the following asset to be added to your wallet.
       </span>
       <Grid container rowm-1 justifyItems={"center"}>

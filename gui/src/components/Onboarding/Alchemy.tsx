@@ -46,9 +46,7 @@ export function AlchemyStep({ onSubmit }: StepProps) {
   return (
     <Form form={form} onSubmit={localOnSubmit}>
       <div className="m-3 flex flex-end flex-col">
-        <span variant="h6" component="h1" alignSelf="start">
-          Alchemy
-        </span>
+        <h1 className="self-start text-xl">Alchemy</h1>
 
         <p>
           ethui works with{" "}

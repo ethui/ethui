@@ -60,9 +60,7 @@ export function Settings() {
       >
         {tab && (
           <>
-            <span mb={3} fontWeight="bold" variant="bordered">
-              {tab.name}
-            </span>
+            <span className="mb-3 font-bold">{tab.name}</span>
             <tab.component />
           </>
         )}

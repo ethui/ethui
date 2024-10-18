@@ -82,9 +82,7 @@ function RenderResults() {
       onRender={({ item, active }) =>
         typeof item === "string" ? (
           <ListItem dense>
-            <span sx={{ color: "gray" }} variant="subtitle2">
-              {item}
-            </span>
+            <span className="text-muted-foreground">{item}</span>
           </ListItem>
         ) : (
           <ResultItem

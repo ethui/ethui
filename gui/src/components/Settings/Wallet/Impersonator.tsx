@@ -84,7 +84,7 @@ export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
         </Button>
 
         <div className=" m-2 flex">
-          <Form.Submit labeo="Save" />
+          <Form.Submit label="Save" />
           <Button color="warning" onClick={onRemove}>
             Remove
           </Button>

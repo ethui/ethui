@@ -20,9 +20,7 @@ export function MsgSignDialog() {
 
   return (
     <div className="h-full flex-col gap-3.5">
-      <span variant="h6" component="h1">
-        Sign Message
-      </span>
+      <h1 className="font-xl">Sign Message</h1>
       {msg && (
         <HighlightBox
           fullWidth
@@ -31,9 +29,7 @@ export function MsgSignDialog() {
             minHeight: 100,
           }}
         >
-          <span whiteSpace="pre-wrap" variant="body2" className="font-mono">
-            {msg}
-          </span>
+          <span className="whitespace-pre-wrap font-mono">{msg}</span>
         </HighlightBox>
       )}
       <div className=" center m-2 mt-auto flex justify-center">

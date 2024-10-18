@@ -39,11 +39,11 @@ export interface TxRequest {
   value: string;
   chainId: number;
   walletType:
-    | "ledger"
-    | "HdWallet"
-    | "jsonKeystore"
-    | "plaintext"
-    | "impersonator";
+  | "ledger"
+  | "HdWallet"
+  | "jsonKeystore"
+  | "plaintext"
+  | "impersonator";
 }
 
 interface Log {
@@ -164,13 +164,13 @@ interface HeaderProps {
 function Header({ from, to, network }: HeaderProps) {
   return (
     <div className=" flex w-full items-stretch justify-between self-center">
-      <span variant="h6" component="h1">
+      <h1 className="font-xl">
         <div className=" m-1 flex items-center">
           <AddressView address={from} />
           <span>→</span>
           <AddressView address={to} />
         </div>
-      </span>
+      </h1>
       <Box ml={5}>
         <ChainView name={network.name} chainId={network.chain_id} />
       </Box>

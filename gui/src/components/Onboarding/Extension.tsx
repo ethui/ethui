@@ -22,9 +22,7 @@ export function InstallExtensionStep({ onSubmit }: StepProps) {
 
   return (
     <div className="m-2 flex w-full flex-col">
-      <span variant="h6" component="h1" alignSelf="start">
-        Install Extension
-      </span>
+      <h1 className="self-start text-xl">Install Extension</h1>
 
       <span>
         Go to{" "}

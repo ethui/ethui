@@ -17,9 +17,7 @@ export function Navbar({ children }: NavbarProps) {
       }}
     >
       <DraggableToolbar>
-        <span variant="h6" component="div">
-          {children}
-        </span>
+        <h1 className="font text-xl">{children}</h1>
       </DraggableToolbar>
     </AppBar>
   );

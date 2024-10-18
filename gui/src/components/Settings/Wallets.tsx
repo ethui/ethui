@@ -117,7 +117,7 @@ function NewItem({ type, onFinish }: NewItemProps) {
 
   return (
     <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
-      <span sx={{ pb: 2 }}>New {type}</span>
+      <span className="pb-2">New {type}</span>
 
       {type === "plaintext" && <Plaintext {...props} />}
       {type === "jsonKeystore" && <JsonKeystore {...props} />}

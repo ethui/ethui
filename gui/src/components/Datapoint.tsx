@@ -15,7 +15,7 @@ export function Datapoint({ label, value, size = "large" }: DatapointProps) {
   }
   return (
     <Grid size={{ xs }}>
-      <span sx={{ color: "gray", fontSize: "12px" }}>{label}</span>
+      <span className="text-muted-foreground">{label}</span>
       {value !== undefined && value}
       {value === undefined && <Skeleton variant="text" width="80%" />}
     </Grid>

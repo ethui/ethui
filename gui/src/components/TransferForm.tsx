@@ -126,7 +126,7 @@ export function TransferForm({
           sx={{ minWidth: 120 }}
         />
 
-        <span variant="body2">
+        <span>
           Balance: {formatUnits(currentToken.balance, currentToken.decimals)}
         </span>
 
@@ -144,9 +144,7 @@ export function TransferForm({
             variant="outlined"
             severity="success"
           >
-            <span variant="body2" noWrap>
-              {result}
-            </span>
+            <span>{result}</span>
           </Alert>
         )}
 

@@ -17,7 +17,7 @@ export function Account() {
   return (
     <>
       <Navbar>
-        <AddressView variant="h6" address={address} />
+        <AddressView address={address} />
       </Navbar>
       <BalancesList />
     </>

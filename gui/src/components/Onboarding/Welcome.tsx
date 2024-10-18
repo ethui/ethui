@@ -5,9 +5,8 @@ import type { StepProps } from ".";
 export function WelcomeStep({ onSubmit }: StepProps) {
   return (
     <div className="m-3 flex w-full flex-col">
-      <span variant="h6" component="h1" alignSelf="start">
-        Welcome
-      </span>
+      <h1 className="self-start text-xl">Welcome</h1>
+
       <p>
         ethui is a toolkit for fullstack Ethereum development. Check out{" "}
         <Link

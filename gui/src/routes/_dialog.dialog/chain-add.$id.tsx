@@ -21,9 +21,7 @@ export function ChainAddDialog() {
 
   return (
     <div className="m-1 flex flex-col items-center">
-      <span variant="h6" component="h1">
-        Add new network?
-      </span>
+      <h1 className="font-xl">Add new network?</h1>
 
       <ChainView chainId={network.chain_id} name={network.name} />
 
