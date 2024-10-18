@@ -1,6 +1,5 @@
-import { Box } from "@mui/material";
 import type { ReactNode } from "react";
 
 export function Panel({ children }: { children: ReactNode }) {
-  return <Box sx={{ pb: 4, pt: 2, px: 4, minHeight: 300 }}>{children}</Box>;
+  return <div className="min-h-80 px-4 pt-2 pb-4">{children}</div>;
 }

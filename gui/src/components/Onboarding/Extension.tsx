@@ -1,4 +1,4 @@
-import { Alert, Box, Button, CircularProgress, Link } from "@mui/material";
+import { Alert, Button, CircularProgress, Link } from "@mui/material";
 import { useEffect, useState } from "react";
 
 import { useInvoke } from "#/hooks/useInvoke";
@@ -37,7 +37,7 @@ export function InstallExtensionStep({ onSubmit }: StepProps) {
         to install the ethui extension.
       </span>
 
-      <Box sx={{ alignSelf: "stretch" }}>
+      <div className="self-stretch">
         {!detected ? (
           <Alert severity="info">
             <CircularProgress size={10} /> Waiting...
@@ -45,7 +45,7 @@ export function InstallExtensionStep({ onSubmit }: StepProps) {
         ) : (
           <Alert severity="success">Extension detected!</Alert>
         )}
-      </Box>
+      </div>
 
       <div className=" self-end">
         <Button onClick={onSubmit} disabled={!detected}>

@@ -45,7 +45,7 @@ export const Call: StoryObj<SolidityCallProps> = {
           decimals={18}
           abi={["function transfer(address from, uint256 amount)"]}
           ArgProps={{
-            addressRenderer: () => <span mono>alias</span>,
+            addressRenderer: () => <span className="font-mono">alias</span>,
           }}
         />
         <SolidityCall

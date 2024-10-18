@@ -1,11 +1,5 @@
 import { CallMade, CallReceived, NoteAdd } from "@mui/icons-material";
-import {
-  Badge,
-  Box,
-  Button,
-  CircularProgress,
-  Grid2 as Grid,
-} from "@mui/material";
+import { Badge, Button, CircularProgress, Grid2 as Grid } from "@mui/material";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { createElement, useCallback, useEffect, useState } from "react";
@@ -75,15 +69,9 @@ export function Txs() {
   if (!account || !chainId) return null;
 
   const loader = (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-      }}
-      key="loader"
-    >
+    <div className="flex justify-center" key="loader">
       <CircularProgress />
-    </Box>
+    </div>
   );
 
   return (

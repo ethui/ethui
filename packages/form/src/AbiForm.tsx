@@ -1,4 +1,4 @@
-import { Alert, Box, Button, Grid2 as Grid } from "@mui/material";
+import { Alert, Button, Grid2 as Grid } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { type AbiFunction, type AbiItem, parseAbiItem } from "viem";
 import { encodeFunctionData } from "viem/utils";
@@ -119,11 +119,11 @@ export function RawForm({
         }}
       />
       {onSubmit && submit && (
-        <Box>
+        <div>
           <Button variant="contained" type="submit" disabled={!calldata}>
             Submit
           </Button>
-        </Box>
+        </div>
       )}
     </form>
   );
@@ -221,11 +221,11 @@ export function AbiFormInner({
           />
         )}
         {submit && (
-          <Box>
+          <div>
             <Button variant="contained" type="submit" disabled={!calldata}>
               Submit
             </Button>
-          </Box>
+          </div>
         )}
       </form>
     </Grid>

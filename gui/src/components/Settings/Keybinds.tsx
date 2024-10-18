@@ -1,5 +1,4 @@
 import {
-  Box,
   ListItem,
   ListItemText,
   TextField,
@@ -7,6 +6,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 
+import { clsx } from "clsx";
 import { useTheme } from "#/store/useTheme";
 
 export function SettingsKeybinds() {
@@ -50,33 +50,27 @@ export function SettingsKeybinds() {
 
   return (
     <>
-      <Box
-        sx={{
-          display: "flex",
-          gap: isSmallerScreen ? "0px" : "30px",
-          flexDirection: "column",
-        }}
+      <div
+        className={clsx("flex flex-col", isSmallerScreen ? "gap-0" : "gap-7")}
       >
-        <Box
-          sx={{
-            display: "flex",
-            gap: "15px",
-            flexDirection: isSmallerScreen ? "column" : "row",
-            justifyContent: "justify-between",
-          }}
+        <div
+          className={clsx(
+            "flex justify-between gap-3.5",
+            isSmallerScreen ? "flex-col" : "flex-row",
+          )}
         >
-          <Box>
+          <div>
             <h6>Search keybinds</h6>
             <span>Showing {filteredKeybinds.length} keybinds.</span>
-          </Box>
+          </div>
           <TextField
             value={search}
             onChange={handleSearch}
             id="outlined-required"
             label="Filter..."
           />
-        </Box>
-        <Box>
+        </div>
+        <div>
           {filteredKeybinds.length ? (
             filteredKeybinds.map((keybind) => (
               <ListItem
@@ -91,18 +85,18 @@ export function SettingsKeybinds() {
                 }}
               >
                 <ListItemText primary={keybind.name} />
-                <Box sx={{ border: 1, borderRadius: 2, paddingInline: 1 }}>
-                  <span className="font-mono break-words rounded-sm">
+                <div className="rounded-sm border">
+                  <span className="break-words rounded-sm font-mono">
                     {keybind.combination}
                   </span>
-                </Box>
+                </div>
               </ListItem>
             ))
           ) : (
             <ListItem>No keybinds found.</ListItem>
           )}
-        </Box>
-      </Box>
+        </div>
+      </div>
     </>
   );
 }

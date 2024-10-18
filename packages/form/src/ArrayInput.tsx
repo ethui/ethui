@@ -1,12 +1,6 @@
 import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
-import {
-  Box,
-  IconButton,
-  ToggleButton,
-  ToggleButtonGroup,
-} from "@mui/material";
-import { grey, red } from "@mui/material/colors";
-import { alpha } from "@mui/material/styles";
+import { IconButton, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { grey } from "@mui/material/colors";
 import { useState } from "react";
 
 import { AbiInput, type InnerProps } from "./AbiInput";
@@ -64,7 +58,7 @@ export function ArrayInput({
           />
         )}
         {tab === "expanded" && (
-          <Box sx={{ borderLeft: `solid 3px ${grey[100]}`, pl: 1 }}>
+          <div className="border-bg-secondary border-l-2 border-solid pl-1">
             <ArrayElements
               {...{
                 ...rest,
@@ -73,7 +67,7 @@ export function ArrayInput({
               }}
               onChange={onChange}
             />
-          </Box>
+          </div>
         )}
       </>
     </div>
@@ -135,7 +129,7 @@ function ArrayElements({
         </div>
       ))}
       {!length && (
-        <Box>
+        <div>
           <IconButton
             aria-label="delete"
             color="primary"
@@ -147,7 +141,7 @@ function ArrayElements({
           >
             <AddIcon />
           </IconButton>
-        </Box>
+        </div>
       )}
       {debug && <Debug value={value} />}
     </div>
@@ -181,10 +175,8 @@ function AbiArrayItemInput({
       defaultValue={defaultValue}
       type={type}
       onChange={onChange}
-      sx={{
-        backgroundColor: deleteHover ? alpha(red.A100, 0.1) : "initial",
-        transition: "background-color 0.2s",
-      }}
+      red
+      deleteHover={deleteHover}
       headerActions={
         removable && (
           <IconButton

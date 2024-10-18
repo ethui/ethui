@@ -4,7 +4,7 @@ import {
   Receipt,
   RequestQuoteSharp,
 } from "@mui/icons-material";
-import { Box, type Theme } from "@mui/material";
+import type { Theme } from "@mui/material";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 import { SnackbarProvider } from "notistack";
 
@@ -44,16 +44,6 @@ export const tabs: Tab[] = [
   },
 ];
 
-const contentStyle = (theme: Theme) => {
-  return {
-    pl: `${sidebarWidth.md}px`,
-    transition: theme.transitions.create("padding-left"),
-    [theme.breakpoints.down("sm")]: {
-      pl: `${sidebarWidth.sm}px`,
-    },
-  };
-};
-
 const drawerPaperStyle = (theme: Theme) => {
   return {
     width: sidebarWidth.md,
@@ -76,9 +66,9 @@ export function HomePageLayout() {
         dense
       >
         <Sidebar sx={drawerPaperStyle(theme)} tabs={tabs} />
-        <Box sx={contentStyle(theme)}>
+        <div className="w-full transition-all ">
           <Outlet />
-        </Box>
+        </div>
         <Notifications />
       </SnackbarProvider>
     </CommandBar>

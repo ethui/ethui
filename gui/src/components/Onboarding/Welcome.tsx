@@ -1,4 +1,4 @@
-import { Box, Button, Link } from "@mui/material";
+import { Button, Link } from "@mui/material";
 
 import type { StepProps } from ".";
 
@@ -30,11 +30,11 @@ export function WelcomeStep({ onSubmit }: StepProps) {
         <br />
         Contributors are welcome!
       </p>
-      <Box alignSelf="flex-end">
+      <div className="self-end">
         <Button type="submit" onClick={onSubmit}>
           Next
         </Button>
-      </Box>
+      </div>
     </div>
   );
 }

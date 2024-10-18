@@ -2,14 +2,7 @@ import {
   MoreVert as MoreVertIcon,
   Send as SendIcon,
 } from "@mui/icons-material";
-import {
-  Box,
-  Card,
-  CardHeader,
-  IconButton,
-  Menu,
-  MenuItem,
-} from "@mui/material";
+import { Card, CardHeader, IconButton, Menu, MenuItem } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
 import { type Address, formatUnits } from "viem";
@@ -78,9 +71,7 @@ export function ERC20View({
         }
         title={
           <>
-            <Box component="span" sx={{ mr: 1 }}>
-              {symbol}
-            </Box>
+            <span className="mr-1">{symbol}</span>
             {contract && (
               <>
                 (<AddressView address={contract} />)

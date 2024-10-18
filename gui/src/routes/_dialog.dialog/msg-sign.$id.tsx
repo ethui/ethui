@@ -22,13 +22,7 @@ export function MsgSignDialog() {
     <div className="h-full flex-col gap-3.5">
       <h1 className="font-xl">Sign Message</h1>
       {msg && (
-        <HighlightBox
-          fullWidth
-          sx={{
-            overflowY: "auto",
-            minHeight: 100,
-          }}
-        >
+        <HighlightBox fullWidth>
           <span className="whitespace-pre-wrap font-mono">{msg}</span>
         </HighlightBox>
       )}

@@ -1,4 +1,4 @@
-import { Box, GlobalStyles } from "@mui/material";
+import { GlobalStyles } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -46,9 +46,9 @@ function Root() {
             </Suspense>
 
             <Suspense>
-              <Box sx={{ position: "absolute", bottom: 50, left: 0 }}>
+              <div className="absolute bottom-0 left-0">
                 <ReactQueryDevtools buttonPosition="relative" />
-              </Box>
+              </div>
               <RouterDevtools position="bottom-left" />
             </Suspense>
           </QueryClientProvider>

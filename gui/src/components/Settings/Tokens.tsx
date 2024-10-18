@@ -1,5 +1,5 @@
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { Box, CardHeader, IconButton, List } from "@mui/material";
+import { CardHeader, IconButton, List } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import type { Address } from "viem";
 
@@ -42,9 +42,7 @@ export function SettingsTokens() {
           }
           title={
             <>
-              <Box component="span" sx={{ mr: 1 }}>
-                {metadata?.symbol}
-              </Box>
+              <span className="mr-1">{metadata?.symbol}</span>
               {contract && (
                 <>
                   (<AddressView address={contract} />)

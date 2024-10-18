@@ -1,5 +1,5 @@
 import { Cancel, CheckCircle, Delete, Report, Send } from "@mui/icons-material";
-import { Alert, AlertTitle, Box, Button, Grid2 as Grid } from "@mui/material";
+import { Alert, AlertTitle, Button, Grid2 as Grid } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -39,11 +39,11 @@ export interface TxRequest {
   value: string;
   chainId: number;
   walletType:
-  | "ledger"
-  | "HdWallet"
-  | "jsonKeystore"
-  | "plaintext"
-  | "impersonator";
+    | "ledger"
+    | "HdWallet"
+    | "jsonKeystore"
+    | "plaintext"
+    | "impersonator";
 }
 
 interface Log {
@@ -171,9 +171,9 @@ function Header({ from, to, network }: HeaderProps) {
           <AddressView address={to} />
         </div>
       </h1>
-      <Box ml={5}>
+      <div className="ml-5">
         <ChainView name={network.name} chainId={network.chain_id} />
-      </Box>
+      </div>
     </div>
   );
 }

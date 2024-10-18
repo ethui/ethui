@@ -1,4 +1,4 @@
-import { Box, type SxProps } from "@mui/material";
+import clsx from "clsx";
 import { useCallback } from "react";
 
 import { ArrayInput } from "./ArrayInput";
@@ -17,14 +17,18 @@ export interface BaseProps {
 
 export type InnerProps = BaseProps & { depth?: number };
 
-export type AbiInputProps = InnerProps & { sx?: SxProps };
+export type AbiInputProps = InnerProps & {
+  red?: boolean;
+  deleteHover?: boolean;
+};
 
 export function AbiInput({
   label,
   type,
   onChange: parentOnChange,
   headerActions,
-  sx = {},
+  red = false,
+  deleteHover = false,
   ...rest
 }: AbiInputProps) {
   const arrayMatch = matchArrayType(type);
@@ -37,7 +41,12 @@ export function AbiInput({
   );
 
   return (
-    <Box sx={{ width: "100%", pl: 1, ...sx }}>
+    <div
+      className={clsx(
+        "w-full pl-1 transition-colors",
+        red && deleteHover && "bg-red-500",
+      )}
+    >
       <div>
         <div className=" flex items-center justify-between">
           <span className="font-bold">
@@ -62,6 +71,6 @@ export function AbiInput({
           <Basic {...{ type, onChange, ...rest }} />
         )}
       </div>
-    </Box>
+    </div>
   );
 }

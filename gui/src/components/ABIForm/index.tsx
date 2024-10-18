@@ -1,4 +1,4 @@
-import { Autocomplete, Box, Chip, TextField } from "@mui/material";
+import { Autocomplete, Chip, TextField } from "@mui/material";
 import { type Abi, type AbiFunction, formatAbiItem } from "abitype";
 import { Fragment, type SyntheticEvent, useState } from "react";
 import type { Address } from "viem";
@@ -65,12 +65,12 @@ export function ABIForm({ chainId, address }: Props) {
         isOptionEqualToValue={(option, value) => option.id === value.id}
         renderInput={(params) => <TextField {...params}>as</TextField>}
         renderOption={(props, { label, item }) => (
-          <Box component="li" {...props} key={JSON.stringify(item)}>
+          <li {...props} key={JSON.stringify(item)}>
             <div className=" m-1 flex items-center">
               {item !== "raw" && <Chip label={item.stateMutability} />}
-              <Box>{label}</Box>
+              <div>{label}</div>
             </div>
-          </Box>
+          </li>
         )}
       />
 
