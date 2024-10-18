@@ -8,7 +8,7 @@ export function WelcomeStep({ onSubmit }: StepProps) {
       <span variant="h6" component="h1" alignSelf="start">
         Welcome
       </span>
-      <span component="p">
+      <p>
         ethui is a toolkit for fullstack Ethereum development. Check out{" "}
         <Link
           underline="hover"
@@ -30,7 +30,7 @@ export function WelcomeStep({ onSubmit }: StepProps) {
         .
         <br />
         Contributors are welcome!
-      </span>
+      </p>
       <Box alignSelf="flex-end">
         <Button type="submit" onClick={onSubmit}>
           Next

@@ -13,10 +13,10 @@ export function ThankYouStep() {
       <span variant="h6" component="h1" alignSelf="start">
         Thank you
       </span>
-      <span component="p">
+      <p>
         Thank you for using ethui. If you find any problems, please open an
         issue on GitHub.
-      </span>
+      </p>
 
       <div alignSelf="flex-end">
         <Link to="/home/account">

@@ -124,11 +124,7 @@ function Summary({ account, tx }: SummaryProps) {
       <BlockNumber number={tx.blockNumber} />
       <div className=" ms-center flex">
         <AddressView address={tx.from} /> <span>→</span>
-        {tx.to ? (
-          <AddressView address={tx.to} />
-        ) : (
-          <span component="span">Contract Deploy</span>
-        )}
+        {tx.to ? <AddressView address={tx.to} /> : <span>Contract Deploy</span>}
       </div>
     </div>
   );
