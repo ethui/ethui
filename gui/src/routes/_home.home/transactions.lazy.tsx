@@ -24,6 +24,7 @@ import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
 import { ContentLayout } from "#/components/home-layout/content-layout";
+import { AppNavbar } from "#/components/AppNavbar";
 
 export const Route = createLazyFileRoute("/_home/home/transactions")({
   component: Txs,
@@ -75,7 +76,8 @@ export function Txs() {
   );
 
   return (
-    <ContentLayout title="Transactions">
+    <>
+      <AppNavbar title="Transactions" />
       <Accordion type="single" collapsible className="w-full">
         <InfiniteScroll
           loadMore={loadMore}
@@ -96,7 +98,7 @@ export function Txs() {
           )}
         </InfiniteScroll>
       </Accordion>
-    </ContentLayout>
+    </>
   );
 }
 
