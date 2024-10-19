@@ -11,6 +11,14 @@ import {
   SidebarRail,
 } from "#/components/ui/sidebar";
 import { Link } from "@tanstack/react-router";
+import { Calendar, Home, Inbox, Search, Cog } from "lucide-react";
+import { Logo } from "./Logo";
+import { useSettingsWindow } from "#/store/useSettingsWindow";
+import { QuickWalletSelect } from "./QuickWalletSelect";
+import { QuickAddressSelect } from "./QuickAddressSelect";
+import { QuickNetworkSelect } from "./QuickNetworkSelect";
+import { QuickFastModeToggle } from "./QuickFastModeToggle";
+import { useKBar } from "kbar";
 
 export function AppSidebar() {
   const { toggle: settingsToggle } = useSettingsWindow();
@@ -65,22 +73,9 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarFooter>
       <SidebarRail />
-
-      <SettingsModal />
     </Sidebar>
   );
 }
-
-import { Calendar, Home, Inbox, Search, Cog } from "lucide-react";
-import { Logo } from "./Logo";
-import { useSettingsWindow } from "#/store/useSettingsWindow";
-import { Settings } from "./Settings/Settings";
-import { Modal } from "./Modal";
-import { QuickWalletSelect } from "./QuickWalletSelect";
-import { QuickAddressSelect } from "./QuickAddressSelect";
-import { QuickNetworkSelect } from "./QuickNetworkSelect";
-import { QuickFastModeToggle } from "./QuickFastModeToggle";
-import { useKBar } from "kbar";
 
 // Menu items.
 const items = [
@@ -105,17 +100,3 @@ const items = [
     icon: Search,
   },
 ];
-
-function SettingsModal() {
-  const { show, toggle } = useSettingsWindow();
-
-  return (
-    <Modal
-      open={show}
-      onClose={toggle}
-      sx={{ outline: "none", width: "90%", height: "90%", maxWidth: "900px" }}
-    >
-      <Settings />
-    </Modal>
-  );
-}

@@ -54,7 +54,6 @@ const store: StateCreator<Store> = (set, get) => ({
     } else {
       document.body.classList.remove("dark");
     }
-    console.log(mode);
 
     set({ mode, theme });
   },

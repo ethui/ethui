@@ -12,6 +12,7 @@ import { useNoticeAlchemyKeyMissing } from "#/hooks/useNoticeAlchemyKeyMissing";
 import { useNoticeNewVersion } from "#/hooks/useNoticeNewVersion";
 import { SidebarProvider } from "#/components/ui/sidebar";
 import { AppSidebar } from "#/components/AppSidebar";
+import { SettingsDialog } from "#/components/Settings/SettingsDialog";
 
 export const Route = createFileRoute("/_home")({
   component: HomePageLayout,
@@ -46,7 +47,7 @@ export function HomePageLayout() {
       <SidebarProvider
         style={{
           "--sidebar-width": "15rem",
-          "--sidebar-width-mobile": "15rem",
+          "--sidebar-width-mobile": "10rem",
         }}
       >
         <AppSidebar />
@@ -55,6 +56,8 @@ export function HomePageLayout() {
           <Notifications />
         </main>
       </SidebarProvider>
+
+      <SettingsDialog />
     </CommandBar>
   );
 }
