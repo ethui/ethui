@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Outlet, createRootRoute } from "@tanstack/react-router";
 import { Suspense, lazy } from "react";
+import { useShallow } from "zustand/shallow";
 
 import { ErrorHandler } from "#/components/ErrorHandler";
 import { useTheme } from "#/store/useTheme";
@@ -33,7 +34,7 @@ export const Route = createRootRoute({
 });
 
 function Root() {
-  const theme = useTheme((s) => s.theme);
+  const [theme, mode] = useTheme(useShallow((s) => [s.theme, s.mode]));
 
   return (
     <ThemeProvider theme={theme}>

@@ -49,6 +49,13 @@ const store: StateCreator<Store> = (set, get) => ({
       darkMode === "auto" ? (prefersDarkMode ? "dark" : "light") : darkMode;
     const theme: Theme = mode === "dark" ? darkTheme : lightTheme;
 
+    if (mode === "dark") {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
+    console.log(mode);
+
     set({ mode, theme });
   },
 

@@ -1,5 +1,3 @@
-import { ModeToggle } from "#/components/mode-toggle";
-
 interface NavbarProps {
   title: React.ReactNode;
 }
@@ -13,9 +11,6 @@ export function AppNavbar({ title }: NavbarProps) {
       <div className="mx-4 flex h-14 items-center sm:mx-8">
         <div className="flex items-center space-x-4 space-x-0">
           <h1 className="font-bold">{title}</h1>
-        </div>
-        <div className="flex flex-1 items-center justify-end">
-          <ModeToggle />
         </div>
       </div>
     </header>
