@@ -1,9 +1,4 @@
-import {
-  ListItem,
-  ListItemText,
-  TextField,
-  useMediaQuery,
-} from "@mui/material";
+import { TextField, useMediaQuery } from "@mui/material";
 import { useState } from "react";
 
 import { clsx } from "clsx";
@@ -70,32 +65,28 @@ export function SettingsKeybinds() {
             label="Filter..."
           />
         </div>
-        <div>
+        <ul>
           {filteredKeybinds.length ? (
             filteredKeybinds.map((keybind) => (
-              <ListItem
+              <li
+                className="flex items-start bt-1 pr-3 py-3"
                 key={keybind.combination}
                 sx={{
-                  display: "flex",
-                  alignItems: "flex-start",
                   flexDirection: isSmallerScreen ? "column" : "row",
-                  borderBottom: 1,
-                  pr: 3,
-                  py: 3,
                 }}
               >
-                <ListItemText primary={keybind.name} />
+                <p>{keybind.name}</p>
                 <div className="rounded-sm border">
                   <span className="break-words rounded-sm font-mono">
                     {keybind.combination}
                   </span>
                 </div>
-              </ListItem>
+              </li>
             ))
           ) : (
-            <ListItem>No keybinds found.</ListItem>
+            <li>No keybinds found.</li>
           )}
-        </div>
+        </ul>
       </div>
     </>
   );
