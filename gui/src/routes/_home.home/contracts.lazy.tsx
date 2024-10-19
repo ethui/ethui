@@ -26,7 +26,7 @@ import { AddressView } from "#/components/AddressView";
 import { Modal } from "#/components/Modal";
 import { useContracts } from "#/store/useContracts";
 import { useNetworks } from "#/store/useNetworks";
-import { ContentLayout } from "#/components/home-layout/content-layout";
+import { AppNavbar } from "#/components/AppNavbar";
 
 export const Route = createLazyFileRoute("/_home/home/contracts")({
   component: Contracts,
@@ -38,7 +38,8 @@ export function Contracts() {
   const [addContractOpen, setAddContractOpen] = useState(false);
 
   return (
-    <ContentLayout title="Contracts">
+    <>
+      <AppNavbar title="Contracts" />
       <Filter onChange={(f) => setFilter(f)} />
 
       <Accordion type="single" collapsible className="w-full">
@@ -57,7 +58,7 @@ export function Contracts() {
       <Modal open={addContractOpen} onClose={() => setAddContractOpen(false)}>
         <AddressForm />
       </Modal>
-    </ContentLayout>
+    </>
   );
 }
 

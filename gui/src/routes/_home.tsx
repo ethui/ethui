@@ -5,12 +5,14 @@ import {
   RequestQuoteSharp,
 } from "@mui/icons-material";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
-import HomeLayout from "#/components/home-layout/home-layout";
 
 import type { Tab } from "@ethui/types/ui";
 import { CommandBar } from "#/components/CommandBar";
 import { useNoticeAlchemyKeyMissing } from "#/hooks/useNoticeAlchemyKeyMissing";
 import { useNoticeNewVersion } from "#/hooks/useNoticeNewVersion";
+import { SidebarProvider } from "#/components/ui/sidebar";
+import { AppSidebar } from "#/components/AppSidebar";
+import { SettingsDialog } from "#/components/Settings/SettingsDialog";
 
 export const Route = createFileRoute("/_home")({
   component: HomePageLayout,
@@ -42,10 +44,20 @@ export const tabs: Tab[] = [
 export function HomePageLayout() {
   return (
     <CommandBar>
-      <HomeLayout>
-        <Outlet />
-        <Notifications />
-      </HomeLayout>
+      <SidebarProvider
+        style={{
+          "--sidebar-width": "15rem",
+          "--sidebar-width-mobile": "10rem",
+        }}
+      >
+        <AppSidebar />
+        <main className="relative flex flex-col min-h-svh flex-1">
+          <Outlet />
+          <Notifications />
+        </main>
+      </SidebarProvider>
+
+      <SettingsDialog />
     </CommandBar>
   );
 }

@@ -2,7 +2,7 @@ import {
   MoreVert as MoreVertIcon,
   Send as SendIcon,
 } from "@mui/icons-material";
-import { Card, CardHeader, IconButton, Menu, MenuItem } from "@mui/material";
+import { CardHeader, IconButton, Menu, MenuItem } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
 import { type Address, formatUnits } from "viem";
@@ -53,7 +53,7 @@ export function ERC20View({
   };
 
   return (
-    <Card elevation={0}>
+    <div>
       <CardHeader
         avatar={<IconAddress chainId={chainId} address={contract} />}
         action={
@@ -113,6 +113,6 @@ export function ERC20View({
           onClose={() => setTransferFormOpen(false)}
         />
       </Modal>
-    </Card>
+    </div>
   );
 }
