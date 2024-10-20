@@ -39,7 +39,7 @@ export function AddressView({
 
   const text = alias ? alias : truncateHex(address);
   const content = (
-    <div className="flex items-bottom gap-x-1">
+    <div className="items-bottom flex gap-x-1">
       {icon && (
         <IconAddress
           chainId={network.chain_id}

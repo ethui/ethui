@@ -1,9 +1,16 @@
-import { Button } from "@mui/material";
 import { find } from "lodash-es";
 import { useState } from "react";
 
 import { useSettingsWindow } from "#/store/useSettingsWindow";
 import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarProvider,
+} from "../ui/sidebar";
 import { SettingsFoundry } from "./Foundry";
 import { SettingsGeneral } from "./General";
 import { SettingsKeybinds } from "./Keybinds";
@@ -28,43 +35,34 @@ export function SettingsDialog() {
 
   return (
     <Dialog open={open} onOpenChange={toggle}>
-      <DialogContent className="min-h-[50vh] min-w-[70vw]">
-        <div className="flex">
-          <div className="flex grow flex-col">
-            <div className="grow flex-col gap-y-px px-3 py-2">
-              {TABS.map((tab) => (
-                <SidebarTab
-                  key={tab.name}
-                  tab={tab}
-                  selected={tab.name === currentTab}
-                  onSelect={() => setCurrentTab(tab.name)}
-                />
-              ))}
-            </div>
-          </div>
-          <div className="ml-36 w-full">
+      <DialogContent className="max-h-[70vh] min-h-[50vh] min-w-[70vw]">
+        <SidebarProvider style={{ "--sidebar-width": "8rem" }}>
+          <Sidebar className="h-full">
+            <SidebarContent>
+              <SidebarGroup>
+                <SidebarMenu>
+                  {TABS.map((tab) => (
+                    <SidebarMenuButton
+                      key={tab.name}
+                      isActive={currentTab === tab.name}
+                      onClick={() => setCurrentTab(tab.name)}
+                    >
+                      {tab.name}
+                    </SidebarMenuButton>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroup>
+            </SidebarContent>
+          </Sidebar>
+          <div>
             {tab && (
               <>
                 <DialogTitle>{tab.name}</DialogTitle> <tab.component />
               </>
             )}
           </div>
-        </div>
+        </SidebarProvider>
       </DialogContent>
     </Dialog>
-  );
-}
-
-interface SidebarTabProps {
-  tab: (typeof TABS)[number];
-  selected: boolean;
-  onSelect: () => unknown;
-}
-
-function SidebarTab({ tab, onSelect, selected }: SidebarTabProps) {
-  return (
-    <Button variant="sidebar" onClick={onSelect} disabled={selected}>
-      {tab.name}
-    </Button>
   );
 }

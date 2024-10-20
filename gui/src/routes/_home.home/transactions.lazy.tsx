@@ -14,6 +14,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@ethui/ui/components/ui/accordion";
+import { Button } from "@ethui/ui/components/ui/button";
+import { MoveDownLeft, MoveUpRight, ReceiptText } from "lucide-react";
 import { AddressView } from "#/components/AddressView";
 import { AppNavbar } from "#/components/AppNavbar";
 import { ContextMenuWithTauri } from "#/components/ContextMenuWithTauri";
@@ -23,8 +25,6 @@ import { useEventListener } from "#/hooks/useEventListener";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
-import { Button } from "@ethui/ui/components/ui/button";
-import { MoveDownLeft, MoveUpRight, ReceiptText } from "lucide-react";
 
 export const Route = createLazyFileRoute("/_home/home/transactions")({
   component: Txs,
