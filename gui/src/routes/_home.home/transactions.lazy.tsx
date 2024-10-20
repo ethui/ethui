@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { type Abi, type Address, formatEther, formatGwei } from "viem";
 
-import { BlockNumber } from "@ethui/react/components/BlockNumber";
+import { BlockNumber } from "@ethui/ui/components/block-number";
 import { SolidityCall } from "@ethui/react/components/SolidityCall";
 import type { Paginated, PaginatedTx, Pagination, Tx } from "@ethui/types";
 import {
