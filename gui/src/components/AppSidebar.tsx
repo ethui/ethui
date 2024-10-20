@@ -1,3 +1,6 @@
+import { Link } from "@tanstack/react-router";
+import { useKBar } from "kbar";
+import { Calendar, Cog, Home, Inbox, Search } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -10,15 +13,12 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "#/components/ui/sidebar";
-import { Link } from "@tanstack/react-router";
-import { Calendar, Home, Inbox, Search, Cog } from "lucide-react";
-import { Logo } from "./Logo";
 import { useSettingsWindow } from "#/store/useSettingsWindow";
-import { QuickWalletSelect } from "./QuickWalletSelect";
+import { Logo } from "./Logo";
 import { QuickAddressSelect } from "./QuickAddressSelect";
-import { QuickNetworkSelect } from "./QuickNetworkSelect";
 import { QuickFastModeToggle } from "./QuickFastModeToggle";
-import { useKBar } from "kbar";
+import { QuickNetworkSelect } from "./QuickNetworkSelect";
+import { QuickWalletSelect } from "./QuickWalletSelect";
 
 export function AppSidebar() {
   const { toggle: settingsToggle } = useSettingsWindow();

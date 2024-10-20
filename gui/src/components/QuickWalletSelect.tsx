@@ -1,4 +1,3 @@
-import { useShallow } from "zustand/shallow";
 import {
   Select,
   SelectContent,
@@ -7,6 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@ethui/ui/components/ui/select";
+import { useShallow } from "zustand/shallow";
 
 import { useWallets } from "#/store/useWallets";
 

@@ -1,8 +1,7 @@
-import { CallMade, CallReceived, NoteAdd } from "@mui/icons-material";
-import { Badge, Button, CircularProgress, Grid2 as Grid } from "@mui/material";
+import { CircularProgress, Grid2 as Grid } from "@mui/material";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
-import { createElement, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { type Abi, type Address, formatEther, formatGwei } from "viem";
 
@@ -16,6 +15,7 @@ import {
   AccordionTrigger,
 } from "@ethui/ui/components/ui/accordion";
 import { AddressView } from "#/components/AddressView";
+import { AppNavbar } from "#/components/AppNavbar";
 import { ContextMenuWithTauri } from "#/components/ContextMenuWithTauri";
 import { Datapoint } from "#/components/Datapoint";
 import { HashView } from "#/components/HashView";
@@ -23,8 +23,8 @@ import { useEventListener } from "#/hooks/useEventListener";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
-import { ContentLayout } from "#/components/home-layout/content-layout";
-import { AppNavbar } from "#/components/AppNavbar";
+import { Button } from "@ethui/ui/components/ui/button";
+import { MoveDownLeft, MoveUpRight, ReceiptText } from "lucide-react";
 
 export const Route = createLazyFileRoute("/_home/home/transactions")({
   component: Txs,
@@ -78,7 +78,7 @@ export function Txs() {
   return (
     <>
       <AppNavbar title="Transactions" />
-      <Accordion type="single" collapsible className="w-full">
+      <Accordion type="multiple" className="w-full">
         <InfiniteScroll
           loadMore={loadMore}
           hasMore={!pages.at(-1)?.last}
@@ -108,13 +108,11 @@ interface SummaryProps {
 }
 function Summary({ account, tx }: SummaryProps) {
   return (
-    <div className=" flex flex-rowtes-center">
+    <div className="flex items-center gap-x-3">
       <Icon {...{ tx, account }} />
       <BlockNumber number={tx.blockNumber} />
-      <div className=" ms-center flex">
-        <AddressView address={tx.from} /> <span>→</span>
-        {tx.to ? <AddressView address={tx.to} /> : <span>Contract Deploy</span>}
-      </div>
+      <AddressView address={tx.from} /> <span>→</span>
+      {tx.to ? <AddressView address={tx.to} /> : <span>Contract Deploy</span>}
     </div>
   );
 }
@@ -125,17 +123,13 @@ interface IconProps {
 }
 
 function Icon({ account, tx }: IconProps) {
-  const color = tx.status === 1 ? "success" : "error";
-
-  let icon = CallMade;
-
   if (!tx.to) {
-    icon = NoteAdd;
+    <ReceiptText size={15} />;
   } else if (tx.to.toLowerCase() === account.toLowerCase()) {
-    icon = CallReceived;
+    return <MoveDownLeft size={15} />;
+  } else {
+    return <MoveUpRight size={15} />;
   }
-
-  return <Badge>{createElement(icon, { color })}</Badge>;
 }
 
 interface DetailsProps {
@@ -154,7 +148,7 @@ function Details({ tx, chainId }: DetailsProps) {
     hash: tx.hash,
     chainId,
   });
-  // const { data: transaction } = useTransaction({ hash: tx.hash, chainId });
+
   const { data: abi } = useInvoke<Abi>("db_get_contract_abi", {
     address: tx.to,
     chainId,

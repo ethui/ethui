@@ -1,5 +1,3 @@
-import { List } from "@mui/material";
-
 import type { GeneralSettings } from "@ethui/types/settings";
 import { useInvoke } from "#/hooks/useInvoke";
 import { ERC20View } from "./ERC20View";

@@ -188,7 +188,6 @@ function Arg({
   label,
   type,
   raw = false,
-  variant = "highlight1",
   value,
   sx = {},
   addressRenderer,
@@ -210,12 +209,7 @@ function Arg({
     <Stack
       direction="row"
       sx={{
-        color: theme.palette[variant].main,
         transition: theme.transitions.create(["background-color", "color"]),
-        "&:hover": {
-          color: theme.palette[variant].contrastText,
-          backgroundColor: theme.palette[variant].main,
-        },
         ...sx,
       }}
     >

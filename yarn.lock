@@ -3419,28 +3419,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"@radix-ui/react-separator@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "@radix-ui/react-separator@npm:1.1.0"
-  dependencies:
-    "@radix-ui/react-primitive": "npm:2.0.0"
-  peerDependencies:
-    "@types/react": "*"
-    "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-    "@types/react-dom":
-      optional: true
-  checksum: 0ca9e25db27b6b001f3c0c50b2df9d6cf070b949f183043e263115d694a25b7268fecd670572469a512e556deca25ebb08b3aec4a870f0309eed728eef19ab8a
-  languageName: node
-  linkType: hard
-
-||||||| 4f0e222
-=======
 "@radix-ui/react-select@npm:^2.1.2":
   version: 2.1.2
   resolution: "@radix-ui/react-select@npm:2.1.2"
@@ -3499,7 +3477,6 @@ __metadata:
   languageName: node
   linkType: hard
 
->>>>>>> selects
 "@radix-ui/react-slot@npm:1.0.1":
   version: 1.0.1
   resolution: "@radix-ui/react-slot@npm:1.0.1"
@@ -6811,8 +6788,8 @@ __metadata:
   linkType: hard
 
 "chromatic@npm:^11.4.0":
-  version: 11.12.5
-  resolution: "chromatic@npm:11.12.5"
+  version: 11.12.6
+  resolution: "chromatic@npm:11.12.6"
   peerDependencies:
     "@chromatic-com/cypress": ^0.*.* || ^1.0.0
     "@chromatic-com/playwright": ^0.*.* || ^1.0.0
@@ -6825,7 +6802,7 @@ __metadata:
     chroma: dist/bin.js
     chromatic: dist/bin.js
     chromatic-cli: dist/bin.js
-  checksum: 4a083e4b12ebd0e1f04f944fef66c8345d0895e4c42e253cc4726328b13207553d860fbd5955804fbea806ae06a58d88f8ef845e6c90ce8ce2bc62f5660a3c8e
+  checksum: 7d161c52bc239ac6e8380f9a64533dd3792819d8f103d0083a805d5c9ece0844787eedd45c19c41e69d0ef0a3756051fa3e5c1f2fc9630d60f2ada4d5452e929
   languageName: node
   linkType: hard
 

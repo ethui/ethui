@@ -1,16 +1,16 @@
-import { IconButton, Menu, MenuItem } from "@mui/material";
+import { Menu, MenuItem } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
 import { type Address, formatUnits } from "viem";
 
+import { Button } from "@ethui/ui/components/ui/button";
+import { ArrowTopRightIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
 import { useNetworks } from "#/store/useNetworks";
 import { AddressView } from "./AddressView";
 import { CopyToClipboard } from "./CopyToClipboard";
 import { IconAddress } from "./Icons/Address";
 import { Modal } from "./Modal";
 import { TransferForm } from "./TransferForm";
-import { ArrowTopRightIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
-import { Button } from "@ethui/ui/components/ui/button";
 
 interface Props {
   chainId: number;
@@ -51,11 +51,11 @@ export function ERC20View({
   };
 
   return (
-    <div className="flex items-center mb-5">
+    <div className="mb-5 flex items-center">
       <div className="flex items-center">
         <IconAddress chainId={chainId} address={contract} />
         <div className="flex flex-col">
-          <div className="flex items-bottom">
+          <div className="items-bottom flex">
             {symbol}
             {contract && (
               <>

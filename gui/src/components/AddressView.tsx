@@ -7,7 +7,6 @@ import { z } from "zod";
 
 import { Form } from "@ethui/react/components/Form";
 
-import clsx from "clsx";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { truncateHex } from "#/utils";
@@ -40,7 +39,7 @@ export function AddressView({
 
   const text = alias ? alias : truncateHex(address);
   const content = (
-    <div className=" m-1 flex items-center">
+    <div className="flex items-bottom gap-x-1">
       {icon && (
         <IconAddress
           chainId={network.chain_id}
@@ -49,7 +48,7 @@ export function AddressView({
           effigy
         />
       )}
-      <span className={clsx({ "font-mono": mono })}>{text}</span>
+      <span className="font-mono">{text}</span>
     </div>
   );
 

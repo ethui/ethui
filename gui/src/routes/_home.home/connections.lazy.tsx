@@ -13,11 +13,11 @@ import { useEffect, useState } from "react";
 
 import { ChainView } from "@ethui/react/components/ChainView";
 import type { Affinity, Peer } from "@ethui/types";
+import { AppNavbar } from "#/components/AppNavbar";
 import { Panel } from "#/components/Panel";
 import { useEventListener } from "#/hooks/useEventListener";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
-import { AppNavbar } from "#/components/AppNavbar";
 
 export const Route = createLazyFileRoute("/_home/home/connections")({
   component: Connections,

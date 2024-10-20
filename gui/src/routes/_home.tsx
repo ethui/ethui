@@ -7,12 +7,12 @@ import {
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 
 import type { Tab } from "@ethui/types/ui";
+import { AppSidebar } from "#/components/AppSidebar";
 import { CommandBar } from "#/components/CommandBar";
+import { SettingsDialog } from "#/components/Settings/SettingsDialog";
+import { SidebarProvider } from "#/components/ui/sidebar";
 import { useNoticeAlchemyKeyMissing } from "#/hooks/useNoticeAlchemyKeyMissing";
 import { useNoticeNewVersion } from "#/hooks/useNoticeNewVersion";
-import { SidebarProvider } from "#/components/ui/sidebar";
-import { AppSidebar } from "#/components/AppSidebar";
-import { SettingsDialog } from "#/components/Settings/SettingsDialog";
 
 export const Route = createFileRoute("/_home")({
   component: HomePageLayout,
@@ -51,7 +51,7 @@ export function HomePageLayout() {
         }}
       >
         <AppSidebar />
-        <main className="relative flex flex-col min-h-svh flex-1">
+        <main className="relative flex min-h-svh flex-1 flex-col">
           <Outlet />
           <Notifications />
         </main>

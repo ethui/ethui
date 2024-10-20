@@ -2,14 +2,14 @@ import { Button } from "@mui/material";
 import { find } from "lodash-es";
 import { useState } from "react";
 
+import { useSettingsWindow } from "#/store/useSettingsWindow";
+import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
 import { SettingsFoundry } from "./Foundry";
 import { SettingsGeneral } from "./General";
 import { SettingsKeybinds } from "./Keybinds";
 import { SettingsNetwork } from "./Network";
 import { SettingsTokens } from "./Tokens";
 import { SettingsWallets } from "./Wallets";
-import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
-import { useSettingsWindow } from "#/store/useSettingsWindow";
 
 const TABS = [
   { name: "General", component: SettingsGeneral },
@@ -28,7 +28,7 @@ export function SettingsDialog() {
 
   return (
     <Dialog open={open} onOpenChange={toggle}>
-      <DialogContent className="min-w-[70vw] min-h-[50vh]">
+      <DialogContent className="min-h-[50vh] min-w-[70vw]">
         <div className="flex">
           <div className="flex grow flex-col">
             <div className="grow flex-col gap-y-px px-3 py-2">
