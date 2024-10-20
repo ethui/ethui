@@ -26,7 +26,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader>
+      <SidebarHeader className="flex items-center">
         <Logo width={40} />
       </SidebarHeader>
 
@@ -49,10 +49,12 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <QuickWalletSelect />
-          <QuickAddressSelect />
-          <QuickNetworkSelect />
-          <QuickFastModeToggle />
+          <div className="flex flex-col gap-y-3">
+            <QuickWalletSelect />
+            <QuickAddressSelect />
+            <QuickNetworkSelect />
+            <QuickFastModeToggle />
+          </div>
         </SidebarGroup>
       </SidebarContent>
 
