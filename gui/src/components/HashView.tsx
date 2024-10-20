@@ -9,6 +9,7 @@ import {
 
 import { useNetworks } from "#/store/useNetworks";
 import { truncateHex } from "#/utils";
+import { Link } from "@tanstack/react-router";
 
 interface Props {
   hash: Hash;
@@ -31,7 +32,7 @@ export function HashView({ hash }: Props) {
           Copy to clipboard
         </ContextMenuItem>
         <ContextMenuItem>
-          <Link target="_blank" href={`${network.explorer_url}${address}`}>
+          <Link target="_blank" href={`${network.explorer_url}${hash}`}>
             Open in explorer
           </Link>
         </ContextMenuItem>

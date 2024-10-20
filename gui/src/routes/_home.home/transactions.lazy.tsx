@@ -1,9 +1,16 @@
+import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
 import { CircularProgress, Grid2 as Grid } from "@mui/material";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { type Abi, type Address, formatEther, formatGwei } from "viem";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@ethui/ui/components/ui/context-menu";
 
 import { BlockNumber } from "@ethui/ui/components/block-number";
 import { SolidityCall } from "@ethui/react/components/SolidityCall";
@@ -18,7 +25,6 @@ import { Button } from "@ethui/ui/components/ui/button";
 import { MoveDownLeft, MoveUpRight, ReceiptText } from "lucide-react";
 import { AddressView } from "#/components/AddressView";
 import { AppNavbar } from "#/components/AppNavbar";
-import { ContextMenuWithTauri } from "#/components/ContextMenuWithTauri";
 import { Datapoint } from "#/components/Datapoint";
 import { HashView } from "#/components/HashView";
 import { useEventListener } from "#/hooks/useEventListener";
@@ -173,9 +179,16 @@ function Details({ tx, chainId }: DetailsProps) {
       <Datapoint
         label="value"
         value={
-          <ContextMenuWithTauri copy={value}>
-            {formatEther(value)} Ξ
-          </ContextMenuWithTauri>
+          <ContextMenu>
+            <ContextMenuTrigger>{formatEther(value)} Ξ</ContextMenuTrigger>
+            <ContextMenuContent>
+              <ContextMenuItem
+                onClick={() => tauriClipboard.writeText(value.toString())}
+              >
+                Copy to clipboard
+              </ContextMenuItem>
+            </ContextMenuContent>
+          </ContextMenu>
         }
         size="small"
       />

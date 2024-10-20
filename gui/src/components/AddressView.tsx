@@ -44,16 +44,16 @@ export function AddressView({
 
   const text = alias ? alias : truncateHex(address);
   const content = (
-    <div className="items-bottom flex gap-x-1">
+    <div className="items-center text-base flex gap-x-1 font-mono">
       {icon && (
         <IconAddress
           chainId={network.chain_id}
           address={address}
-          size="small"
           effigy
+          className="h-4"
         />
       )}
-      <span className="font-mono">{text}</span>
+      {text}
     </div>
   );
 
@@ -65,10 +65,7 @@ export function AddressView({
         {content}
       </ContextMenuTrigger>
       <ContextMenuContent>
-        <ContextMenuItem
-          asChild
-          onClick={() => tauriClipboard.writeText(address)}
-        >
+        <ContextMenuItem onClick={() => tauriClipboard.writeText(address)}>
           Copy to clipboard
         </ContextMenuItem>
         <ContextMenuItem onClick={() => setAliasFormOpen(true)}>
