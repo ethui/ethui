@@ -1,14 +1,9 @@
-import { GlobalStyles } from "@mui/material";
-import CssBaseline from "@mui/material/CssBaseline";
-import { ThemeProvider } from "@mui/material/styles";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Outlet, createRootRoute } from "@tanstack/react-router";
 import { Suspense, lazy } from "react";
-import { useShallow } from "zustand/shallow";
 
 import { ErrorHandler } from "#/components/ErrorHandler";
-import { useTheme } from "#/store/useTheme";
 
 const queryClient = new QueryClient();
 
@@ -21,40 +16,25 @@ const RouterDevtools =
       })),
     );
 
-const globalStyles = {
-  body: { userSelect: "none" },
-  p: { userSelect: "initial" },
-  h1: { userSelect: "initial" },
-  h2: { userSelect: "initial" },
-  h3: { userSelect: "initial" },
-};
-
 export const Route = createRootRoute({
   component: () => <Root />,
 });
 
 function Root() {
-  const [theme, mode] = useTheme(useShallow((s) => [s.theme, s.mode]));
-
   return (
-    <ThemeProvider theme={theme}>
-      <GlobalStyles styles={globalStyles} />
-      <CssBaseline>
-        <ErrorHandler>
-          <QueryClientProvider client={queryClient}>
-            <Suspense>
-              <Outlet />
-            </Suspense>
+    <ErrorHandler>
+      <QueryClientProvider client={queryClient}>
+        <Suspense>
+          <Outlet />
+        </Suspense>
 
-            <Suspense>
-              <div className="absolute bottom-0 left-0">
-                <ReactQueryDevtools buttonPosition="relative" />
-              </div>
-              <RouterDevtools position="bottom-left" />
-            </Suspense>
-          </QueryClientProvider>
-        </ErrorHandler>
-      </CssBaseline>
-    </ThemeProvider>
+        <Suspense>
+          <div className="absolute bottom-0 left-0">
+            <ReactQueryDevtools buttonPosition="relative" />
+          </div>
+          <RouterDevtools position="bottom-left" />
+        </Suspense>
+      </QueryClientProvider>
+    </ErrorHandler>
   );
 }

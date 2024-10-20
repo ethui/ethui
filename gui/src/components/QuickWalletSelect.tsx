@@ -1,10 +1,3 @@
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  //Select,
-  type SelectChangeEvent,
-} from "@mui/material";
 import { useShallow } from "zustand/shallow";
 import {
   Select,
@@ -30,7 +23,7 @@ export function QuickWalletSelect() {
 
   return (
     <Select defaultValue={currentWallet.name} onValueChange={handleChange}>
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger>
         <SelectValue />
       </SelectTrigger>
 
@@ -45,20 +38,4 @@ export function QuickWalletSelect() {
       </SelectContent>
     </Select>
   );
-//<FormControl variant="standard" fullWidth>
-//  <InputLabel id="wallet-select-label">Wallet</InputLabel>
-//  <Select
-//    label="Wallet"
-//    labelId="wallet-select-label"
-//    onChange={handleChange}
-//    size="small"
-//    value={currentWallet.name}
-//  >
-//    {wallets.map(({ name }) => (
-//      <MenuItem value={name} key={name}>
-//        {name}
-//      </MenuItem>
-//    ))}
-//  </Select>
-//</FormControl>
 }

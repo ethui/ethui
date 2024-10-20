@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "test:ui": "vitest run",
-    "test:ui:watch": "vitest"
+    "test:ui:watch": "vitest",
+    "devtools": "react-devtools"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
@@ -83,6 +84,7 @@
     "autoprefixer": "^10.4.20",
     "jsdom": "^25.0.1",
     "postcss": "^8.4.47",
+    "react-devtools": "^6.0.1",
     "tailwindcss": "^3.4.14",
     "vite-plugin-babel-import": "^2.0.5",
     "vite-plugin-imp": "^2.4.0",
