@@ -9,10 +9,10 @@ import { useNetworks } from "#/store/useNetworks";
 
 export function BalancesList() {
   return (
-    <List sx={{ maxWidth: 350 }}>
+    <ul>
       <BalanceETH />
       <BalancesERC20 />
-    </List>
+    </ul>
   );
 }
 
@@ -23,12 +23,14 @@ function BalanceETH() {
   if (!currentNetwork || !balance) return null;
 
   return (
-    <ERC20View
-      balance={balance}
-      decimals={currentNetwork.decimals}
-      symbol={currentNetwork.currency}
-      chainId={currentNetwork.chain_id}
-    />
+    <li>
+      <ERC20View
+        balance={balance}
+        decimals={currentNetwork.decimals}
+        symbol={currentNetwork.currency}
+        chainId={currentNetwork.chain_id}
+      />
+    </li>
   );
 }
 
@@ -43,18 +45,15 @@ function BalancesERC20() {
     (token) => !settings?.hideEmptyTokens || BigInt(token.balance) > 0,
   );
 
-  return (
-    <>
-      {filteredBalances.map(({ contract, balance, metadata }) => (
-        <ERC20View
-          key={contract}
-          contract={contract}
-          balance={BigInt(balance)}
-          decimals={metadata?.decimals || 0}
-          symbol={metadata?.symbol}
-          chainId={currentNetwork.chain_id}
-        />
-      ))}
-    </>
-  );
+  return filteredBalances.map(({ contract, balance, metadata }) => (
+    <li key={contract}>
+      <ERC20View
+        contract={contract}
+        balance={BigInt(balance)}
+        decimals={metadata?.decimals || 0}
+        symbol={metadata?.symbol}
+        chainId={currentNetwork.chain_id}
+      />
+    </li>
+  ));
 }
