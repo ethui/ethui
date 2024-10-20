@@ -1,30 +1,35 @@
+import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { type Address, getAddress } from "viem";
 import { z } from "zod";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@ethui/ui/components/ui/context-menu";
 
 import { Form } from "@ethui/react/components/Form";
 
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { truncateHex } from "#/utils";
-import { ContextMenuWithTauri } from "./ContextMenuWithTauri";
 import { IconAddress } from "./Icons/Address";
 import { Modal } from "./Modal";
+import { Link } from "@tanstack/react-router";
 
 interface Props {
   address: Address;
   copyIcon?: boolean;
-  mono?: boolean;
   contextMenu?: boolean;
   icon?: boolean;
 }
 
 export function AddressView({
   address: addr,
-  mono = false,
   contextMenu = true,
   icon = false,
 }: Props) {
@@ -55,24 +60,29 @@ export function AddressView({
   if (!contextMenu) return content;
 
   return (
-    <ContextMenuWithTauri
-      copy={address}
-      actions={[
-        {
-          label: "Open in explorer",
-          href: `${network.explorer_url}${address}`,
-          disabled: !network.explorer_url,
-        },
-        { label: "Set alias", action: () => setAliasFormOpen(true) },
-        {
-          label: "Clear alias",
-          action: () => setAliasFormOpen(true),
-          disabled: !alias,
-        },
-      ]}
-      sx={{ textTransform: "none" }}
-    >
-      {content}
+    <ContextMenu>
+      <ContextMenuTrigger className="cursor-pointer">
+        {content}
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem
+          asChild
+          onClick={() => tauriClipboard.writeText(address)}
+        >
+          Copy to clipboard
+        </ContextMenuItem>
+        <ContextMenuItem onClick={() => setAliasFormOpen(true)}>
+          Set alias
+        </ContextMenuItem>
+        <ContextMenuItem onClick={() => setAliasFormOpen(true)}>
+          Clear alias
+        </ContextMenuItem>
+        <ContextMenuItem>
+          <Link target="_blank" href={`${network.explorer_url}${address}`}>
+            Open in explorer
+          </Link>
+        </ContextMenuItem>
+      </ContextMenuContent>
 
       <Modal open={aliasFormOpen} onClose={() => setAliasFormOpen(false)}>
         <AliasForm
@@ -80,7 +90,7 @@ export function AddressView({
           onSubmit={() => setAliasFormOpen(false)}
         />
       </Modal>
-    </ContextMenuWithTauri>
+    </ContextMenu>
   );
 }
 
