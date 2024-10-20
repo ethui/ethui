@@ -165,7 +165,7 @@ function Details({ tx, chainId }: DetailsProps) {
   const value = BigInt(fullTx.value || 0);
 
   return (
-    <Grid container rowSpacing={1}>
+    <div className="grid grid-cols-4">
       <Datapoint
         label="from"
         value={<AddressView icon address={tx.from} />}
@@ -247,7 +247,7 @@ function Details({ tx, chainId }: DetailsProps) {
       <Grid size={{ xs: 12 }}>
         <Button onClick={() => resend(fullTx)}>Send again</Button>
       </Grid>
-    </Grid>
+    </div>
   );
 }
 

@@ -14,10 +14,10 @@ export function Datapoint({ label, value, size = "large" }: DatapointProps) {
     xs = 4;
   }
   return (
-    <Grid size={{ xs }}>
+    <div className="flex flex-col">
       <span className="text-muted-foreground">{label}</span>
       {value !== undefined && value}
       {value === undefined && <Skeleton variant="text" width="80%" />}
-    </Grid>
+    </div>
   );
 }
