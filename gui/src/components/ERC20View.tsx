@@ -1,8 +1,4 @@
-import {
-  MoreVert as MoreVertIcon,
-  Send as SendIcon,
-} from "@mui/icons-material";
-import { CardHeader, IconButton, Menu, MenuItem } from "@mui/material";
+import { IconButton, Menu, MenuItem } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
 import { type Address, formatUnits } from "viem";
@@ -13,6 +9,8 @@ import { CopyToClipboard } from "./CopyToClipboard";
 import { IconAddress } from "./Icons/Address";
 import { Modal } from "./Modal";
 import { TransferForm } from "./TransferForm";
+import { ArrowTopRightIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
+import { Button } from "@ethui/ui/components/ui/button";
 
 interface Props {
   chainId: number;
@@ -53,40 +51,40 @@ export function ERC20View({
   };
 
   return (
-    <div>
-      <CardHeader
-        avatar={<IconAddress chainId={chainId} address={contract} />}
-        action={
-          <div className="flex ">
-            <IconButton
-              aria-label="transfer"
-              onClick={() => setTransferFormOpen(true)}
-            >
-              <SendIcon />
-            </IconButton>
-            <IconButton aria-label="more" onClick={onMenuOpen}>
-              <MoreVertIcon />
-            </IconButton>
-          </div>
-        }
-        title={
-          <>
-            <span className="mr-1">{symbol}</span>
+    <div className="flex items-center mb-5">
+      <div className="flex items-center">
+        <IconAddress chainId={chainId} address={contract} />
+        <div className="flex flex-col">
+          <div className="flex items-bottom">
+            {symbol}
             {contract && (
               <>
                 (<AddressView address={contract} />)
               </>
             )}
-          </>
-        }
-        subheader={
-          <CopyToClipboard label={balance.toString()}>
-            {truncatedBalance > 0
-              ? formatUnits(truncatedBalance, decimals)
-              : `< ${minimum}`}
-          </CopyToClipboard>
-        }
-      />
+          </div>
+          <span>
+            <CopyToClipboard label={balance.toString()}>
+              {truncatedBalance > 0
+                ? formatUnits(truncatedBalance, decimals)
+                : `< ${minimum}`}
+            </CopyToClipboard>
+          </span>
+        </div>
+      </div>
+
+      <div className="flex ">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setTransferFormOpen(true)}
+        >
+          <ArrowTopRightIcon />
+        </Button>
+        <Button variant="ghost" size="icon" onClick={onMenuOpen}>
+          <DotsVerticalIcon />
+        </Button>
+      </div>
 
       <Menu
         open={Boolean(menuAnchor)}
