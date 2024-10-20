@@ -17,6 +17,7 @@ import { SettingsKeybinds } from "./Keybinds";
 import { SettingsNetwork } from "./Network";
 import { SettingsTokens } from "./Tokens";
 import { SettingsWallets } from "./Wallets";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 const TABS = [
   { name: "General", component: SettingsGeneral },
@@ -54,13 +55,14 @@ export function SettingsDialog() {
               </SidebarGroup>
             </SidebarContent>
           </Sidebar>
-          <div>
-            {tab && (
-              <>
-                <DialogTitle>{tab.name}</DialogTitle> <tab.component />
-              </>
-            )}
-          </div>
+          {tab && (
+            <div className="w-full">
+              <DialogTitle className="mb-5">{tab.name}</DialogTitle>
+              <DialogDescription>
+                <tab.component />
+              </DialogDescription>
+            </div>
+          )}
         </SidebarProvider>
       </DialogContent>
     </Dialog>
