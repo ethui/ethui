@@ -69,6 +69,12 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        solidity: {
+          caller: "var(--solidity-caller)",
+          value: "var(--solidity-value)",
+          callname: "var(--solidity-callname)",
+          arg: "var(--solidity-arg)",
+        },
       },
       keyframes: {
         "accordion-down": {

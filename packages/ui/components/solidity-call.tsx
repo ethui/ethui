@@ -1,13 +1,11 @@
-import { Stack, type SxProps } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
 import type { Abi, AbiFunction, Address } from "abitype";
 import { decodeFunctionData, formatUnits, parseAbi } from "viem";
 
-import type { PaletteColorKey } from "../../utils";
-import { ClickToCopy } from "../ClickToCopy";
+import { ClickToCopy } from "./click-to-copy";
+import clsx from "clsx";
 
 export interface SolidityCallProps {
-  value?: bigint;
+  value?: string | bigint;
   data?: `0x${string}`;
   from: Address;
   to?: Address;
@@ -18,7 +16,7 @@ export interface SolidityCallProps {
 }
 
 export function SolidityCall({
-  value = 0n,
+  value: valueStr = 0n,
   data,
   from,
   to,
@@ -30,6 +28,8 @@ export function SolidityCall({
   const isDeploy = !to && !!data;
   const isCall = to && !!data && data.length > 0 && data !== "0x";
   const isFallback = !!to && (!data || data === "0x");
+  const value = BigInt(valueStr);
+  console.log(typeof value);
 
   return (
     <>
@@ -65,23 +65,23 @@ interface DeployProps {
 function Deploy({ value, from, decimals, ArgProps }: DeployProps) {
   return (
     <>
-      <Stack direction="row" spacing={1}>
+      <div className="flex gap-x-1">
         <Arg
           label="Ξ"
           type="uint256"
           {...ArgProps}
           value={formatUnits(value, decimals)}
-          variant="primary"
+          variant="value"
         />
         <Arg
-          variant="highlight4"
           label="from"
           type="address"
           {...ArgProps}
           value={from}
+          variant="caller"
         />
         <span className="font-mono">to newly deployed contract</span>
-      </Stack>
+      </div>
     </>
   );
 }
@@ -89,36 +89,35 @@ function Deploy({ value, from, decimals, ArgProps }: DeployProps) {
 interface FallbackProps {
   from: Address;
   to: Address;
-  value: bigint;
+  value: string | bigint;
   decimals: number;
   ArgProps?: Pick<ArgProps, "addressRenderer" | "defaultRenderer">;
 }
 
 function Fallback({ value, from, to, decimals, ArgProps }: FallbackProps) {
   return (
-    <Stack direction="row" spacing={1}>
+    <div className="flex gap-1">
       <Arg
         label="Ξ"
         type="uint256"
-        {...ArgProps}
-        value={formatUnits(value, decimals)}
-        variant="primary"
+        value={formatUnits(BigInt(value), decimals)}
+        variant="caller"
       />
       <Arg
-        variant="highlight4"
         label="from"
         type="address"
         {...ArgProps}
         value={from}
+        variant="value"
       />
       <Arg
-        variant="highlight4"
         label="to"
         type="address"
         {...ArgProps}
         value={to}
+        variant="callname"
       />
-    </Stack>
+    </div>
   );
 }
 
@@ -136,18 +135,18 @@ function Call({ value, data, to, decimals, abi, ArgProps }: CallProps) {
   const { label, args } = parseCall(data, abi);
 
   return (
-    <Stack spacing={0.5}>
-      <Stack direction="row">
-        <Arg type="address" variant="highlight2" value={to} {...ArgProps} />
+    <div>
+      <div className="flex items-baseline">
+        <Arg type="address" variant="caller" value={to} {...ArgProps} />
         <Separator text="." />
-        <Arg value={label} raw type="string" variant="highlight3" />
+        <Arg value={label} raw type="string" variant="callname" />
         {value > 0n && (
           <>
             <Separator text="{" />
             <Arg
               label="Ξ"
               type="uint256"
-              variant="highlight4"
+              variant="arg"
               {...ArgProps}
               value={formatUnits(value, decimals)}
             />
@@ -155,33 +154,28 @@ function Call({ value, data, to, decimals, abi, ArgProps }: CallProps) {
           </>
         )}
         <Separator text="(" />
-      </Stack>
-      <Stack spacing={0.5}>
+      </div>
+      <div>
         {[...args].map(({ value, type, label }, i) => (
-          <Stack direction="row" key={i} pl={4}>
-            <Arg
-              variant="highlight4"
-              {...{ label, value, type }}
-              {...ArgProps}
-            />
+          <div className="flex pl-8" key={i}>
+            <Arg variant="arg" {...{ label, value, type }} {...ArgProps} />
             {i! < args.length - 1 && <Separator text="," />}
-          </Stack>
+          </div>
         ))}
-      </Stack>
+      </div>
       <Separator text=")" />
-    </Stack>
+    </div>
   );
 }
 
 interface ArgProps {
   label?: string;
-  variant?: PaletteColorKey;
   type: string;
-  sx?: SxProps;
   raw?: boolean;
   value: string | bigint;
   addressRenderer?: (a: Address) => React.ReactNode;
   defaultRenderer?: (a: string | bigint) => React.ReactNode;
+  variant: "caller" | "value" | "arg" | "callname";
 }
 
 function Arg({
@@ -189,7 +183,7 @@ function Arg({
   type,
   raw = false,
   value,
-  sx = {},
+  variant,
   addressRenderer,
   defaultRenderer = (v: string | bigint) => (
     <ClickToCopy text={v}>
@@ -203,25 +197,30 @@ function Arg({
     </ClickToCopy>
   ),
 }: ArgProps) {
-  const theme = useTheme();
+  const variants = {
+    caller: "text-solidity-caller hover:text-white hover:bg-solidity-caller",
+    value: "text-solidity-value hover:text-white hover:bg-solidity-value",
+    callname:
+      "text-solidity-callname hover:text-white hover:bg-solidity-callname",
+    arg: "text-solidity-arg hover:text-white hover:bg-solidity-arg",
+  };
 
   return (
-    <Stack
-      direction="row"
-      sx={{
-        transition: theme.transitions.create(["background-color", "color"]),
-        ...sx,
-      }}
+    <div
+      className={clsx(
+        "rounded-md flex px-1 py-0.5 items-baseline transition-colors",
+        variants[variant],
+      )}
     >
       {label && (
-        <span className="shrink-0 font-mono text-primary-background">
-          {label}&nbsp;
+        <span className="shrink-0 font-mono text-primary-background mr-1">
+          {label}
         </span>
       )}
       {type === "address" && !!addressRenderer
         ? addressRenderer(value as Address)
         : defaultRenderer(value)}
-    </Stack>
+    </div>
   );
 }
 

@@ -2,7 +2,7 @@ import { Delete, Task } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { HighlightBox } from "@ethui/react/components/HighlightBox";
+import { HighlightBox } from "@ethui/ui/components/highlight-box";
 
 import { useDialog } from "#/hooks/useDialog";
 

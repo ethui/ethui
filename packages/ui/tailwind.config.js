@@ -51,6 +51,12 @@ export default {
           4: "hsl(var(--chart-4))",
           5: "hsl(var(--chart-5))",
         },
+        solidity: {
+          caller: "var(--solidity-caller)",
+          value: "var(--solidity-value)",
+          callname: "var(--solidity-callname)",
+          arg: "var(--solidity-arg)",
+        },
       },
       keyframes: {
         "accordion-down": {

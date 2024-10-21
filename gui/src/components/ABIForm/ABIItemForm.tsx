@@ -5,8 +5,8 @@ import { useCallback, useState } from "react";
 import { type Address, type Hash, decodeFunctionResult } from "viem";
 
 import { AbiForm } from "@ethui/form/src/AbiForm";
-import { SolidityCall } from "@ethui/react/components//SolidityCall";
-import { HighlightBox } from "@ethui/react/components/HighlightBox";
+import { SolidityCall } from "@ethui/ui/components/solidity-call";
+import { HighlightBox } from "@ethui/ui/components/highlight-box";
 
 import { AddressView } from "#/components/AddressView";
 import { HashView } from "#/components/HashView";
@@ -24,11 +24,11 @@ interface ItemFormProps {
 
 type Result =
   | {
-      write: Hash;
-    }
+    write: Hash;
+  }
   | {
-      read: string;
-    };
+    read: string;
+  };
 
 export function ABIItemForm({
   to,
@@ -100,7 +100,7 @@ export function ABIItemForm({
         size={{ xs: 12, sm: 8 }}
         sx={{ pl: { md: 2 }, pt: { xs: 2, md: 0 } }}
       >
-        <HighlightBox fullWidth>
+        <HighlightBox className="w-full">
           {data && from ? (
             <SolidityCall
               {...{

@@ -57,9 +57,9 @@ export function ClickToCopy({
           onMouseLeave={() => setOpening(false)}
           {...props}
         >
-          <Button variant="ghost" onClick={handleCopy}>
+          <span className="cursor-pointer" onClick={handleCopy}>
             {children}
-          </Button>
+          </span>
         </TooltipTrigger>
         <TooltipContent asChild>
           <p>{copied ? "Copied to clipboard" : text.toString()}</p>

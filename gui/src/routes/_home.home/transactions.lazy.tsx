@@ -13,7 +13,7 @@ import {
 } from "@ethui/ui/components/ui/context-menu";
 
 import { BlockNumber } from "@ethui/ui/components/block-number";
-import { SolidityCall } from "@ethui/react/components/SolidityCall";
+import { SolidityCall } from "@ethui/ui/components/solidity-call";
 import type { Paginated, PaginatedTx, Pagination, Tx } from "@ethui/types";
 import {
   Accordion,
