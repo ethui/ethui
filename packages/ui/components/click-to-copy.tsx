@@ -4,7 +4,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "./ui/tooltip";
+} from "./shadcn/tooltip";
 
 export interface ClickToCopyProps {
   text: string | bigint | number;

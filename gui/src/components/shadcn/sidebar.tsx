@@ -3,24 +3,23 @@ import { type VariantProps, cva } from "class-variance-authority";
 import { PanelLeft } from "lucide-react";
 import * as React from "react";
 
-import { Button } from "#/components/ui/button";
-import { Input } from "#/components/ui/input";
-import { Separator } from "#/components/ui/separator";
-import { Sheet, SheetContent } from "#/components/ui/sheet";
-import { Skeleton } from "#/components/ui/skeleton";
+import { Button } from "@ethui/ui/components/shadcn/button";
+import { Input } from "@ethui/ui/components/shadcn/input";
+import { Separator } from "@ethui/ui/components/shadcn/separator";
+import { Sheet, SheetContent } from "@ethui/ui/components/shadcn/sheet";
+import { Skeleton } from "@ethui/ui/components/shadcn/skeleton";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "#/components/ui/tooltip";
+} from "@ethui/ui/components/shadcn/tooltip";
 import { useIsMobile } from "#/hooks/use-mobile";
 import { cn } from "#/lib/utils";
 
 const SIDEBAR_COOKIE_NAME = "sidebar:state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 const SIDEBAR_WIDTH = "16rem";
-const SIDEBAR_WIDTH_MOBILE = "18rem";
 const SIDEBAR_WIDTH_ICON = "3rem";
 const SIDEBAR_KEYBOARD_SHORTCUT = "b";
 
@@ -93,7 +92,7 @@ const SidebarProvider = React.forwardRef<
       return isMobile
         ? setOpenMobile((open) => !open)
         : setOpen((open) => !open);
-    }, [isMobile, setOpen, setOpenMobile]);
+    }, [isMobile, setOpen]);
 
     // Adds a keyboard shortcut to toggle the sidebar.
     React.useEffect(() => {
@@ -125,15 +124,7 @@ const SidebarProvider = React.forwardRef<
         setOpenMobile,
         toggleSidebar,
       }),
-      [
-        state,
-        open,
-        setOpen,
-        isMobile,
-        openMobile,
-        setOpenMobile,
-        toggleSidebar,
-      ],
+      [state, open, setOpen, isMobile, openMobile, toggleSidebar],
     );
 
     return (
@@ -616,7 +607,7 @@ const SidebarMenuAction = React.forwardRef<
         "peer-data-[size=lg]/menu-button:top-2.5",
         "group-data-[collapsible=icon]:hidden",
         showOnHover &&
-          "group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 peer-data-[active=true]/menu-button:text-sidebar-accent-foreground md:opacity-0",
+        "group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 peer-data-[active=true]/menu-button:text-sidebar-accent-foreground md:opacity-0",
         className,
       )}
       {...props}

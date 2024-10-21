@@ -1910,7 +1910,6 @@ __metadata:
     "@emotion/styled": "npm:^11.13.0"
     "@ethui/data": "npm:*"
     "@ethui/form": "npm:*"
-    "@ethui/react": "npm:*"
     "@ethui/types": "npm:*"
     "@ethui/ui": "npm:*"
     "@fontsource/roboto": "npm:^5.1.0"
@@ -1982,43 +1981,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@ethui/react@npm:*, @ethui/react@workspace:packages/react":
-  version: 0.0.0-use.local
-  resolution: "@ethui/react@workspace:packages/react"
-  dependencies:
-    "@ethui/types": "npm:*"
-    "@fontsource/material-icons": "npm:^5.1.0"
-    "@fontsource/roboto": "npm:^5.1.0"
-    "@fontsource/roboto-mono": "npm:^5.1.0"
-    "@mui/icons-material": "npm:^6.1.4"
-    "@mui/lab": "npm:6.0.0-dev.240424162023-9968b4889d"
-    "@mui/material": "npm:^6.1.4"
-    "@storybook/addon-essentials": "npm:^8.3.5"
-    "@storybook/addon-interactions": "npm:^8.3.5"
-    "@storybook/addon-links": "npm:^8.3.5"
-    "@storybook/addon-onboarding": "npm:^8.3.5"
-    "@storybook/addon-themes": "npm:^8.3.5"
-    "@storybook/blocks": "npm:^8.3.5"
-    "@storybook/react": "npm:^8.3.5"
-    "@storybook/react-vite": "npm:^8.3.5"
-    "@storybook/test": "npm:^8.3.5"
-    "@types/react": "npm:^18.3.11"
-    "@types/react-dom": "npm:^18.3.1"
-    "@vitejs/plugin-react-swc": "npm:^3.7.1"
-    clsx: "npm:^2.1.1"
-    lucide-react: "npm:^0.453.0"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
-    react-hook-form: "npm:^7.53.1"
-    storybook: "npm:^8.3.5"
-    typescript: "npm:^5.6.3"
-    viem: "npm:^2.21.27"
-    vite: "npm:^5.4.9"
-  peerDependencies:
-    "@tanstack/react-query": ^5.21.4
-  languageName: unknown
-  linkType: soft
-
 "@ethui/types@npm:*, @ethui/types@workspace:packages/types":
   version: 0.0.0-use.local
   resolution: "@ethui/types@workspace:packages/types"
@@ -2055,6 +2017,7 @@ __metadata:
     "@radix-ui/react-label": "npm:^2.1.0"
     "@radix-ui/react-scroll-area": "npm:^1.2.0"
     "@radix-ui/react-select": "npm:^2.1.2"
+    "@radix-ui/react-separator": "npm:^1.1.0"
     "@radix-ui/react-slot": "npm:^1.1.0"
     "@radix-ui/react-switch": "npm:^1.1.1"
     "@radix-ui/react-tooltip": "npm:^1.1.3"
@@ -2136,13 +2099,6 @@ __metadata:
   version: 0.19.0
   resolution: "@fluent/syntax@npm:0.19.0"
   checksum: a8691402b140e726ea5e47988a7e27ad836a33bb85382eb5a013799a384ffc8852eaf3ec1acaca481306f49ff3514fccaff7acf5bb2225c94752794ff6dbc38e
-  languageName: node
-  linkType: hard
-
-"@fontsource/material-icons@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "@fontsource/material-icons@npm:5.1.0"
-  checksum: b4bd6436c3f4c62753d913c3ba8f1b3b87dede33bdb0b25198e8991610d06890d036a71ccb47ce660395da30ed0a106dc1475e209669274e87bd1bc4a8701741
   languageName: node
   linkType: hard
 

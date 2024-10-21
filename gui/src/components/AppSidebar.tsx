@@ -12,7 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "#/components/ui/sidebar";
+} from "#/components/shadcn/sidebar";
 import { useSettingsWindow } from "#/store/useSettingsWindow";
 import { Logo } from "./Logo";
 import { QuickAddressSelect } from "./QuickAddressSelect";

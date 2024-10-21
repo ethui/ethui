@@ -17,7 +17,6 @@
     "@emotion/styled": "^11.13.0",
     "@ethui/data": "*",
     "@ethui/form": "*",
-    "@ethui/react": "*",
     "@ethui/types": "*",
     "@ethui/ui": "*",
     "@fontsource/roboto": "^5.1.0",

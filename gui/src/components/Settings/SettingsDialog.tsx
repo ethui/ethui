@@ -3,7 +3,11 @@ import { useState } from "react";
 
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { useSettingsWindow } from "#/store/useSettingsWindow";
-import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@ethui/ui/components/shadcn/dialog";
 import {
   Sidebar,
   SidebarContent,
@@ -11,7 +15,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarProvider,
-} from "../ui/sidebar";
+} from "#/components/shadcn/sidebar";
 import { SettingsFoundry } from "./Foundry";
 import { SettingsGeneral } from "./General";
 import { SettingsKeybinds } from "./Keybinds";
