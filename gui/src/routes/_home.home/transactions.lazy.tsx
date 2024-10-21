@@ -1,32 +1,32 @@
-import { CallMade, CallReceived, NoteAdd } from "@mui/icons-material";
-import {
-  Badge,
-  Box,
-  Button,
-  CircularProgress,
-  Grid2 as Grid,
-  Stack,
-  Typography,
-} from "@mui/material";
+import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
+import { CircularProgress, Grid2 as Grid } from "@mui/material";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
-import { createElement, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { type Abi, type Address, formatEther, formatGwei } from "viem";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@ethui/ui/components/ui/context-menu";
 
-import { BlockNumber } from "@ethui/react/components/BlockNumber";
+import { BlockNumber } from "@ethui/ui/components/block-number";
 import { SolidityCall } from "@ethui/react/components/SolidityCall";
 import type { Paginated, PaginatedTx, Pagination, Tx } from "@ethui/types";
 import {
   Accordion,
-  AccordionDetails,
-  AccordionSummary,
-} from "#/components/Accordion";
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@ethui/ui/components/ui/accordion";
+import { Button } from "@ethui/ui/components/ui/button";
+import { MoveDownLeft, MoveUpRight, ReceiptText } from "lucide-react";
 import { AddressView } from "#/components/AddressView";
-import { ContextMenuWithTauri } from "#/components/ContextMenuWithTauri";
+import { AppNavbar } from "#/components/AppNavbar";
 import { Datapoint } from "#/components/Datapoint";
 import { HashView } from "#/components/HashView";
-import { Navbar } from "#/components/Home/Navbar";
 import { useEventListener } from "#/hooks/useEventListener";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
@@ -76,38 +76,34 @@ export function Txs() {
   if (!account || !chainId) return null;
 
   const loader = (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-      }}
-      key="loader"
-    >
+    <div className="flex justify-center" key="loader">
       <CircularProgress />
-    </Box>
+    </div>
   );
 
   return (
     <>
-      <Navbar>Transactions</Navbar>
-      <InfiniteScroll
-        loadMore={loadMore}
-        hasMore={!pages.at(-1)?.last}
-        loader={loader}
-      >
-        {pages.flatMap((page) =>
-          page.items.map((tx) => (
-            <Accordion key={tx.hash}>
-              <AccordionSummary>
-                <Summary account={account} tx={tx} />
-              </AccordionSummary>
-              <AccordionDetails>
-                <Details tx={tx} chainId={chainId} />
-              </AccordionDetails>
-            </Accordion>
-          )),
-        )}
-      </InfiniteScroll>
+      <AppNavbar title="Transactions" />
+      <Accordion type="multiple" className="w-full">
+        <InfiniteScroll
+          loadMore={loadMore}
+          hasMore={!pages.at(-1)?.last}
+          loader={loader}
+        >
+          {pages.flatMap((page) =>
+            page.items.map((tx) => (
+              <AccordionItem key={tx.hash} value={tx.hash}>
+                <AccordionTrigger>
+                  <Summary account={account} tx={tx} />
+                </AccordionTrigger>
+                <AccordionContent>
+                  <Details tx={tx} chainId={chainId} />
+                </AccordionContent>
+              </AccordionItem>
+            )),
+          )}
+        </InfiniteScroll>
+      </Accordion>
     </>
   );
 }
@@ -118,19 +114,12 @@ interface SummaryProps {
 }
 function Summary({ account, tx }: SummaryProps) {
   return (
-    <Stack direction="row" alignItems="center" spacing={3}>
+    <div className="flex items-center gap-x-3">
       <Icon {...{ tx, account }} />
-
       <BlockNumber number={tx.blockNumber} />
-      <Stack direction="row" alignItems="center" spacing={1}>
-        <AddressView address={tx.from} /> <span>→</span>
-        {tx.to ? (
-          <AddressView address={tx.to} />
-        ) : (
-          <Typography component="span">Contract Deploy</Typography>
-        )}
-      </Stack>
-    </Stack>
+      <AddressView address={tx.from} /> <span>→</span>
+      {tx.to ? <AddressView address={tx.to} /> : <span>Contract Deploy</span>}
+    </div>
   );
 }
 
@@ -140,17 +129,13 @@ interface IconProps {
 }
 
 function Icon({ account, tx }: IconProps) {
-  const color = tx.status === 1 ? "success" : "error";
-
-  let icon = CallMade;
-
   if (!tx.to) {
-    icon = NoteAdd;
+    <ReceiptText size={15} />;
   } else if (tx.to.toLowerCase() === account.toLowerCase()) {
-    icon = CallReceived;
+    return <MoveDownLeft size={15} />;
+  } else {
+    return <MoveUpRight size={15} />;
   }
-
-  return <Badge>{createElement(icon, { color })}</Badge>;
 }
 
 interface DetailsProps {
@@ -169,7 +154,7 @@ function Details({ tx, chainId }: DetailsProps) {
     hash: tx.hash,
     chainId,
   });
-  // const { data: transaction } = useTransaction({ hash: tx.hash, chainId });
+
   const { data: abi } = useInvoke<Abi>("db_get_contract_abi", {
     address: tx.to,
     chainId,
@@ -180,7 +165,7 @@ function Details({ tx, chainId }: DetailsProps) {
   const value = BigInt(fullTx.value || 0);
 
   return (
-    <Grid container rowSpacing={1}>
+    <div className="grid grid-cols-4">
       <Datapoint
         label="from"
         value={<AddressView icon address={tx.from} />}
@@ -194,9 +179,16 @@ function Details({ tx, chainId }: DetailsProps) {
       <Datapoint
         label="value"
         value={
-          <ContextMenuWithTauri copy={value}>
-            {formatEther(value)} Ξ
-          </ContextMenuWithTauri>
+          <ContextMenu>
+            <ContextMenuTrigger>{formatEther(value)} Ξ</ContextMenuTrigger>
+            <ContextMenuContent>
+              <ContextMenuItem
+                onClick={() => tauriClipboard.writeText(value.toString())}
+              >
+                Copy to clipboard
+              </ContextMenuItem>
+            </ContextMenuContent>
+          </ContextMenu>
         }
         size="small"
       />
@@ -253,11 +245,9 @@ function Details({ tx, chainId }: DetailsProps) {
       />
 
       <Grid size={{ xs: 12 }}>
-        <Button variant="contained" onClick={() => resend(fullTx)}>
-          Send again
-        </Button>
+        <Button onClick={() => resend(fullTx)}>Send again</Button>
       </Grid>
-    </Grid>
+    </div>
   );
 }
 

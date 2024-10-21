@@ -19,6 +19,7 @@
     "@mui/lab": "6.0.0-dev.240424162023-9968b4889d",
     "@mui/material": "^6.1.4",
     "@storybook/addon-themes": "^8.3.5",
+    "clsx": "^2.1.1",
     "lucide-react": "^0.453.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

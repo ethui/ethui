@@ -4,7 +4,6 @@ import {
   CircularProgress,
   SpeedDial,
   SpeedDialIcon,
-  Stack,
   TextField,
 } from "@mui/material";
 import { createLazyFileRoute } from "@tanstack/react-router";
@@ -13,17 +12,18 @@ import { useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { ChainView } from "@ethui/react/components/ChainView";
+import { ChainView } from "@ethui/ui/components/chain-view";
 import { Form } from "@ethui/react/components/Form";
 import type { Contract } from "@ethui/types";
-import { ABIForm } from "#/components/ABIForm";
 import {
   Accordion,
-  AccordionDetails,
-  AccordionSummary,
-} from "#/components/Accordion";
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@ethui/ui/components/ui/accordion";
+import { ABIForm } from "#/components/ABIForm";
 import { AddressView } from "#/components/AddressView";
-import { Navbar } from "#/components/Home/Navbar";
+import { AppNavbar } from "#/components/AppNavbar";
 import { Modal } from "#/components/Modal";
 import { useContracts } from "#/store/useContracts";
 import { useNetworks } from "#/store/useNetworks";
@@ -39,13 +39,14 @@ export function Contracts() {
 
   return (
     <>
-      <Navbar>Contracts</Navbar>
-
+      <AppNavbar title="Contracts" />
       <Filter onChange={(f) => setFilter(f)} />
 
-      {Array.from(contracts || []).map((contract) => (
-        <ContractView key={contract.address} contract={contract} />
-      ))}
+      <Accordion type="multiple" className="w-full">
+        {Array.from(contracts || []).map((contract) => (
+          <ContractView key={contract.address} contract={contract} />
+        ))}
+      </Accordion>
 
       <SpeedDial
         ariaLabel="Add contract"
@@ -64,13 +65,13 @@ export function Contracts() {
 function Filter({ onChange }: { onChange: (f: string) => void }) {
   return (
     <form>
-      <Stack direction="row" alignItems="stretch" spacing={2}>
+      <div className=" m-2 flex items-stretch">
         <TextField
           onChange={debounce((e) => onChange(e.target.value), 100)}
           fullWidth
           placeholder="Filter..."
         />
-      </Stack>
+      </div>
     </form>
   );
 }
@@ -81,8 +82,8 @@ function ContractView({
   contract: Contract;
 }) {
   return (
-    <Accordion>
-      <AccordionSummary>
+    <AccordionItem value={address}>
+      <AccordionTrigger>
         <AddressView address={address} />
         {name && (
           <Chip
@@ -92,11 +93,11 @@ function ContractView({
             variant="outlined"
           />
         )}
-      </AccordionSummary>
-      <AccordionDetails>
+      </AccordionTrigger>
+      <AccordionContent>
         <ABIForm address={address} chainId={chainId} />
-      </AccordionDetails>
-    </Accordion>
+      </AccordionContent>
+    </AccordionItem>
   );
 }
 
@@ -126,7 +127,7 @@ function AddressForm() {
 
   return (
     <Form form={form} onSubmit={onSubmit}>
-      <Stack alignItems="flex-start" spacing={2}>
+      <div className="m-2 flex flex-col items-start">
         <Form.Select
           label="Network"
           name="chainId"
@@ -148,7 +149,7 @@ function AddressForm() {
         <Form.Submit
           label={form.formState.isSubmitting ? <CircularProgress /> : "Add"}
         />
-      </Stack>
+      </div>
     </Form>
   );
 }

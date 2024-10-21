@@ -1,5 +1,5 @@
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { Box, CardHeader, IconButton, List, Stack } from "@mui/material";
+import { CardHeader, IconButton, List } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import type { Address } from "viem";
 
@@ -31,20 +31,18 @@ export function SettingsTokens() {
             <IconAddress chainId={currentNetwork.chain_id} address={contract} />
           }
           action={
-            <Stack direction="row" justifyContent="center">
+            <div className=" center flex">
               <IconButton
                 title={"Unhide token"}
                 onClick={() => unhide(contract)}
               >
                 <VisibilityOffIcon />
               </IconButton>
-            </Stack>
+            </div>
           }
           title={
             <>
-              <Box component="span" sx={{ mr: 1 }}>
-                {metadata?.symbol}
-              </Box>
+              <span className="mr-1">{metadata?.symbol}</span>
               {contract && (
                 <>
                   (<AddressView address={contract} />)

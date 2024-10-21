@@ -1,20 +1,10 @@
-import {
-  MoreVert as MoreVertIcon,
-  Send as SendIcon,
-} from "@mui/icons-material";
-import {
-  Box,
-  Card,
-  CardHeader,
-  IconButton,
-  Menu,
-  MenuItem,
-  Stack,
-} from "@mui/material";
+import { Menu, MenuItem } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
 import { type Address, formatUnits } from "viem";
 
+import { Button } from "@ethui/ui/components/ui/button";
+import { ArrowTopRightIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
 import { useNetworks } from "#/store/useNetworks";
 import { AddressView } from "./AddressView";
 import { CopyToClipboard } from "./CopyToClipboard";
@@ -61,42 +51,40 @@ export function ERC20View({
   };
 
   return (
-    <Card elevation={0}>
-      <CardHeader
-        avatar={<IconAddress chainId={chainId} address={contract} />}
-        action={
-          <Stack direction="row">
-            <IconButton
-              aria-label="transfer"
-              onClick={() => setTransferFormOpen(true)}
-            >
-              <SendIcon />
-            </IconButton>
-            <IconButton aria-label="more" onClick={onMenuOpen}>
-              <MoreVertIcon />
-            </IconButton>
-          </Stack>
-        }
-        title={
-          <>
-            <Box component="span" sx={{ mr: 1 }}>
-              {symbol}
-            </Box>
+    <div className="mb-5 flex items-center">
+      <div className="flex items-center">
+        <IconAddress chainId={chainId} address={contract} />
+        <div className="flex flex-col">
+          <div className="items-bottom flex">
+            {symbol}
             {contract && (
               <>
                 (<AddressView address={contract} />)
               </>
             )}
-          </>
-        }
-        subheader={
-          <CopyToClipboard label={balance.toString()}>
-            {truncatedBalance > 0
-              ? formatUnits(truncatedBalance, decimals)
-              : `< ${minimum}`}
-          </CopyToClipboard>
-        }
-      />
+          </div>
+          <span>
+            <CopyToClipboard label={balance.toString()}>
+              {truncatedBalance > 0
+                ? formatUnits(truncatedBalance, decimals)
+                : `< ${minimum}`}
+            </CopyToClipboard>
+          </span>
+        </div>
+      </div>
+
+      <div className="flex ">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setTransferFormOpen(true)}
+        >
+          <ArrowTopRightIcon />
+        </Button>
+        <Button variant="ghost" size="icon" onClick={onMenuOpen}>
+          <DotsVerticalIcon />
+        </Button>
+      </div>
 
       <Menu
         open={Boolean(menuAnchor)}
@@ -123,6 +111,6 @@ export function ERC20View({
           onClose={() => setTransferFormOpen(false)}
         />
       </Modal>
-    </Card>
+    </div>
   );
 }

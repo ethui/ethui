@@ -51,20 +51,6 @@ function getTheme(mode: PaletteMode): Theme {
           },
         ],
       },
-      MuiTypography: {
-        variants: [
-          {
-            props: { variant: "bordered" as const },
-            style: {
-              display: "block",
-              borderColor: borderColor,
-              borderBottomWidth: 1,
-              borderBottomStyle: "solid",
-              paddingBottom: "0.5em",
-            },
-          },
-        ],
-      },
       MuiAppBar: {
         styleOverrides: {
           root: {

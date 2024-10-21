@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import { Stack } from "@mui/material";
 import { defaultDisabledArgs } from "../../utils";
-import { Typography } from "../Typography";
 import { SolidityCall, type SolidityCallProps } from "./";
 
 const meta: Meta<SolidityCallProps> = {
@@ -46,7 +45,7 @@ export const Call: StoryObj<SolidityCallProps> = {
           decimals={18}
           abi={["function transfer(address from, uint256 amount)"]}
           ArgProps={{
-            addressRenderer: () => <Typography mono>alias</Typography>,
+            addressRenderer: () => <span className="font-mono">alias</span>,
           }}
         />
         <SolidityCall

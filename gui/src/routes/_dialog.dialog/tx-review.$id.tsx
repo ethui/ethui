@@ -1,12 +1,5 @@
 import { Cancel, CheckCircle, Delete, Report, Send } from "@mui/icons-material";
-import {
-  Alert,
-  AlertTitle,
-  Box,
-  Button,
-  Grid2 as Grid,
-  Stack,
-} from "@mui/material";
+import { Alert, AlertTitle, Button, Grid2 as Grid } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -20,8 +13,8 @@ import {
   parseAbi,
 } from "viem";
 
-import { ChainView } from "@ethui/react/components/ChainView";
-import { Typography } from "@ethui/react/components/Typography";
+import { ChainView } from "@ethui/ui/components/chain-view";
+
 import type { TokenMetadata } from "@ethui/types";
 import type { Network } from "@ethui/types/network";
 import { ABIItemForm } from "#/components/ABIForm";
@@ -170,24 +163,18 @@ interface HeaderProps {
 
 function Header({ from, to, network }: HeaderProps) {
   return (
-    <Stack
-      direction="row"
-      justifyContent="space-between"
-      alignItems="stretch"
-      alignSelf="center"
-      width="100%"
-    >
-      <Typography variant="h6" component="h1">
-        <Stack direction="row" alignItems="center" spacing={1}>
+    <div className=" flex w-full items-stretch justify-between self-center">
+      <h1 className="font-xl">
+        <div className=" m-1 flex items-center">
           <AddressView address={from} />
           <span>→</span>
           <AddressView address={to} />
-        </Stack>
-      </Typography>
-      <Box ml={5}>
+        </div>
+      </h1>
+      <div className="ml-5">
         <ChainView name={network.name} chainId={network.chain_id} />
-      </Box>
-    </Stack>
+      </div>
+    </div>
   );
 }
 
@@ -212,15 +199,15 @@ function SimulationResult({ simulation, chainId, to }: SimulationResultProps) {
         value={
           callCount &&
           (callCount > 0 ? (
-            <Stack direction="row">
+            <div className="flex">
               <CheckCircle color="success" />
-              <Typography>Called {callCount} time(s) before.</Typography>
-            </Stack>
+              <span>Called {callCount} time(s) before.</span>
+            </div>
           ) : (
-            <Stack direction="row">
+            <div className="flex">
               <Report color="error" />
-              <Typography>First interaction with this contract.</Typography>
-            </Stack>
+              <span>First interaction with this contract.</span>
+            </div>
           ))
         }
         size="large"
@@ -281,15 +268,9 @@ function Actions({ request, accepted, onReject, onConfirm }: ActionsProps) {
     );
   } else {
     return (
-      <Stack
-        direction="row"
-        alignItems="center"
-        justifyContent="center"
-        spacing={2}
-      >
+      <div className=" m-2 flex items-center justify-center">
         <Button
           size="large"
-          variant="outlined"
           color="error"
           onClick={onReject}
           startIcon={<Delete />}
@@ -298,7 +279,6 @@ function Actions({ request, accepted, onReject, onConfirm }: ActionsProps) {
         </Button>
         <Button
           size="large"
-          variant="contained"
           color="primary"
           type="submit"
           onClick={onConfirm}
@@ -306,7 +286,7 @@ function Actions({ request, accepted, onReject, onConfirm }: ActionsProps) {
         >
           Confirm
         </Button>
-      </Stack>
+      </div>
     );
   }
 }
@@ -377,7 +357,7 @@ function Erc20Transfer({
   });
 
   return (
-    <Stack direction="row" alignItems="center" spacing={1}>
+    <div className=" m-1 flex items-center">
       <AddressView address={from} />
       <span>→</span>
       <AddressView address={to} />
@@ -386,6 +366,6 @@ function Erc20Transfer({
         ? formatUnits(value, metadata.decimals)
         : value.toString()}{" "}
       {metadata?.symbol && `${metadata.symbol}`}
-    </Stack>
+    </div>
   );
 }

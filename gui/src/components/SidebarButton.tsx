@@ -2,9 +2,7 @@ import {
   ButtonBase,
   type ButtonBaseProps,
   Collapse,
-  Stack,
   type SvgIcon,
-  Typography,
   useMediaQuery,
 } from "@mui/material";
 import { lightBlue } from "@mui/material/colors";
@@ -54,12 +52,7 @@ export function SidebarButton<R extends React.ElementType>({
         },
       }}
     >
-      <Stack
-        direction="row"
-        alignItems="center"
-        justifyContent="stretch"
-        spacing={0}
-      >
+      <div className=" m-3 flex items-center justify-stretch">
         <props.icon fontSize="small" />
 
         <Collapse
@@ -69,11 +62,9 @@ export function SidebarButton<R extends React.ElementType>({
           timeout={{ exit: 0 }}
           sx={{ flexGrow: 1 }}
         >
-          <Typography sx={{ pl: 1, display: "inline", whiteSpace: "nowrap" }}>
-            {label}
-          </Typography>
+          <span className="whitespace-nowrap pl-1">{label}</span>
         </Collapse>
-      </Stack>
+      </div>
     </ButtonBase>
   );
 }

@@ -1,9 +1,15 @@
+import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
 import type { Hash } from "viem";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@ethui/ui/components/ui/context-menu";
 
-import { Typography } from "@ethui/react/components/Typography";
 import { useNetworks } from "#/store/useNetworks";
 import { truncateHex } from "#/utils";
-import { ContextMenuWithTauri } from "./ContextMenuWithTauri";
+import { Link } from "@tanstack/react-router";
 
 interface Props {
   hash: Hash;
@@ -14,20 +20,23 @@ export function HashView({ hash }: Props) {
 
   if (!network) return null;
 
-  const content = <Typography mono>{truncateHex(hash)}</Typography>;
+  const content = <span className="font-mono">{truncateHex(hash)}</span>;
 
   return (
-    <ContextMenuWithTauri
-      copy={hash}
-      actions={[
-        {
-          label: "Open in explorer",
-          href: `${network.explorer_url}${hash}`,
-          disabled: !network.explorer_url,
-        },
-      ]}
-    >
-      {content}
-    </ContextMenuWithTauri>
+    <ContextMenu>
+      <ContextMenuTrigger className="cursor-pointer">
+        {content}
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem asChild onClick={() => tauriClipboard.writeText(hash)}>
+          Copy to clipboard
+        </ContextMenuItem>
+        <ContextMenuItem>
+          <Link target="_blank" href={`${network.explorer_url}${hash}`}>
+            Open in explorer
+          </Link>
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   );
 }
