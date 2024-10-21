@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { Button } from "./ui/button";
 import {
+  Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-  Tooltip,
 } from "./ui/tooltip";
 
 export interface ClickToCopyProps {

@@ -1,8 +1,8 @@
 import type { Abi, AbiFunction, Address } from "abitype";
 import { decodeFunctionData, formatUnits, parseAbi } from "viem";
 
-import { ClickToCopy } from "./click-to-copy";
 import clsx from "clsx";
+import { ClickToCopy } from "./click-to-copy";
 
 export interface SolidityCallProps {
   value?: string | bigint;
@@ -208,12 +208,12 @@ function Arg({
   return (
     <div
       className={clsx(
-        "rounded-md flex px-1 py-0.5 items-baseline transition-colors",
+        "flex items-baseline rounded-md px-1 py-0.5 transition-colors",
         variants[variant],
       )}
     >
       {label && (
-        <span className="shrink-0 font-mono text-primary-background mr-1">
+        <span className="mr-1 shrink-0 font-mono text-primary-background">
           {label}
         </span>
       )}

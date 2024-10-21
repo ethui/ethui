@@ -1,20 +1,20 @@
-import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
-import { CircularProgress, Grid2 as Grid } from "@mui/material";
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { invoke } from "@tauri-apps/api/core";
-import { useCallback, useEffect, useState } from "react";
-import InfiniteScroll from "react-infinite-scroller";
-import { type Abi, type Address, formatEther, formatGwei } from "viem";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@ethui/ui/components/ui/context-menu";
+import { CircularProgress, Grid2 as Grid } from "@mui/material";
+import { createLazyFileRoute } from "@tanstack/react-router";
+import { invoke } from "@tauri-apps/api/core";
+import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
+import { useCallback, useEffect, useState } from "react";
+import InfiniteScroll from "react-infinite-scroller";
+import { type Abi, type Address, formatEther, formatGwei } from "viem";
 
+import type { Paginated, PaginatedTx, Pagination, Tx } from "@ethui/types";
 import { BlockNumber } from "@ethui/ui/components/block-number";
 import { SolidityCall } from "@ethui/ui/components/solidity-call";
-import type { Paginated, PaginatedTx, Pagination, Tx } from "@ethui/types";
 import {
   Accordion,
   AccordionContent,

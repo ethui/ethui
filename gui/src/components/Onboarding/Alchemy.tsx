@@ -5,7 +5,7 @@ import { useCallback } from "react";
 import { type FieldValues, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
-import { Form } from "@ethui/react/components/Form";
+import { Form } from "@ethui/ui/components/form";
 import type { StepProps } from ".";
 
 export function AlchemyStep({ onSubmit }: StepProps) {
@@ -78,7 +78,7 @@ export function AlchemyStep({ onSubmit }: StepProps) {
           </Link>{" "}
           and grab an API key.
         </p>
-        <Form.Text label="API Key" name="alchemyApiKey" fullWidth />
+        <Form.Text label="API Key" name="alchemyApiKey" />
 
         <Form.Submit
           useDirtyAlt={false}

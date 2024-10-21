@@ -5,7 +5,7 @@ import { useCallback } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Form } from "@ethui/react/components/Form";
+import { Form } from "@ethui/ui/components/form";
 import { useSettings } from "#/store/useSettings";
 
 export const schema = z.object({
@@ -35,15 +35,13 @@ export function SettingsFoundry() {
 
   return (
     <Form form={form} onSubmit={onSubmit} className="flex flex-col gap-4">
-      <div className="m-2 flex flex-col items-start">
-        <span>
-          ethui can monitor your filesystem for foundry projects, indexing the
-          output ABIs automatically.
-        </span>
+      <span>
+        ethui can monitor your filesystem for foundry projects, indexing the
+        output ABIs automatically.
+      </span>
 
-        <Form.Text name="abiWatchPath" label="ABI Watch path" fullWidth />
-        <Form.Submit label="Save" />
-      </div>
+      <Form.Text name="abiWatchPath" label="ABI Watch path" />
+      <Form.Submit label="Save" />
     </Form>
   );
 }

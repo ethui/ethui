@@ -11,8 +11,8 @@ import { invoke } from "@tauri-apps/api/core";
 import { map } from "lodash-es";
 import { useEffect, useState } from "react";
 
-import { ChainView } from "@ethui/ui/components/chain-view";
 import type { Affinity, Peer } from "@ethui/types";
+import { ChainView } from "@ethui/ui/components/chain-view";
 import { AppNavbar } from "#/components/AppNavbar";
 import { Panel } from "#/components/Panel";
 import { useEventListener } from "#/hooks/useEventListener";

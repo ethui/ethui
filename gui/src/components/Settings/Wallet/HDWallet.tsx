@@ -16,13 +16,13 @@ import { type FieldValues, useForm } from "react-hook-form";
 import { type Address, formatUnits } from "viem";
 import { z } from "zod";
 
-import { Form } from "@ethui/react/components/Form";
 import { passwordFormSchema, passwordSchema } from "@ethui/types/password";
 import {
   type HdWallet,
   derivationPathSchema,
   mnemonicSchema,
 } from "@ethui/types/wallets";
+import { Form } from "@ethui/ui/components/form";
 import { useProvider } from "#/hooks/useProvider";
 import { truncateHex } from "#/utils";
 
@@ -149,19 +149,17 @@ function MnemonicStep({ onSubmit, onCancel }: MnemonicStepProps) {
 
   return (
     <Form form={form} onSubmit={onSubmitInternal}>
-      <div className="m-2 flex flex-col flex-col">
-        <Form.Text label="Name" name="name" multiline />
+      <Form.Text label="Name" name="name" multiline />
 
-        <span>Insert your 12-word mnemonic</span>
-        <Form.Text label="12-word mnemonic" name="mnemonic" multiline />
+      <span>Insert your 12-word mnemonic</span>
+      <Form.Text label="12-word mnemonic" name="mnemonic" multiline />
 
-        <div className=" m-2 flex justify-end">
-          <Button color="warning" onClick={onCancel}>
-            Cancel
-          </Button>
+      <div className=" m-2 flex justify-end">
+        <Button color="warning" onClick={onCancel}>
+          Cancel
+        </Button>
 
-          <Form.Submit label="Continue" />
-        </div>
+        <Form.Submit label="Continue" />
       </div>
     </Form>
   );
@@ -180,22 +178,20 @@ function PasswordStep({ onSubmit, onCancel }: PasswordStepProps) {
 
   return (
     <Form form={form} onSubmit={(d) => onSubmit(d.password)}>
-      <div className="m-2 flex flex-col flex-col">
-        <span>Choose a secure password</span>
-        <Form.Text type="password" label="Password" name="password" />
-        <Form.Text
-          type="password"
-          label="Password Confirmation"
-          name="passwordConfirmation"
-        />
+      <span>Choose a secure password</span>
+      <Form.Text type="password" label="Password" name="password" />
+      <Form.Text
+        type="password"
+        label="Password Confirmation"
+        name="passwordConfirmation"
+      />
 
-        <div className="m-2 flex flex-col justify-end">
-          <Button color="warning" onClick={onCancel}>
-            Cancel
-          </Button>
+      <div className="m-2 flex flex-col justify-end">
+        <Button color="warning" onClick={onCancel}>
+          Cancel
+        </Button>
 
-          <Form.Submit label="Continue" />
-        </div>
+        <Form.Submit label="Continue" />
       </div>
     </Form>
   );
@@ -239,42 +235,40 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
 
   return (
     <Form form={form} onSubmit={onSubmitInternal}>
-      <div className="m-2 flex flex-col flex-col">
-        <Form.Text label="Derivation Path" name="derivationPath" />
+      <Form.Text label="Derivation Path" name="derivationPath" />
 
-        {form.formState.isValid && (
-          <div className="m-2 flex flex-col flex-col">
-            <TableContainer>
-              <Table size="small">
-                <TableBody>
-                  {addresses.map(([key, address]) => (
-                    <TableRow
-                      hover
-                      selected={current === key}
-                      sx={{ cursor: "pointer" }}
-                      onClick={() => setCurrent(key)}
-                      key={key}
-                    >
-                      <TableCell>{truncateHex(address)}</TableCell>
-                      <TableCell align="right">
-                        <NativeBalance address={address} />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+      {form.formState.isValid && (
+        <div className="m-2 flex flex-col flex-col">
+          <TableContainer>
+            <Table size="small">
+              <TableBody>
+                {addresses.map(([key, address]) => (
+                  <TableRow
+                    hover
+                    selected={current === key}
+                    sx={{ cursor: "pointer" }}
+                    onClick={() => setCurrent(key)}
+                    key={key}
+                  >
+                    <TableCell>{truncateHex(address)}</TableCell>
+                    <TableCell align="right">
+                      <NativeBalance address={address} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
 
-            <div className=" m-2 flex justify-end">
-              <Button color="warning" onClick={onCancel}>
-                Cancel
-              </Button>
+          <div className=" m-2 flex justify-end">
+            <Button color="warning" onClick={onCancel}>
+              Cancel
+            </Button>
 
-              <Form.Submit label="Save" />
-            </div>
+            <Form.Submit label="Save" />
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </Form>
   );
 }
@@ -322,16 +316,14 @@ function Update({ wallet, onSubmit, onRemove }: Props) {
 
   return (
     <Form form={form} onSubmit={onSubmit}>
-      <div className="m-2 flex flex-col items-start">
-        <Form.Text label="Name" name="name" />
-        <Form.Text label="Derivation Path" name="derivationPath" />
-        <Form.NumberField label="Address count" name="count" />
-        <div className=" m-2 flex">
-          <Form.Submit label="Save" />
-          <Button color="warning" onClick={onRemove}>
-            Remove
-          </Button>
-        </div>
+      <Form.Text label="Name" name="name" />
+      <Form.Text label="Derivation Path" name="derivationPath" />
+      <Form.NumberField label="Address count" name="count" />
+      <div className=" m-2 flex">
+        <Form.Submit label="Save" />
+        <Button color="warning" onClick={onRemove}>
+          Remove
+        </Button>
       </div>
     </Form>
   );

@@ -3,8 +3,8 @@ import { Button } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Form } from "@ethui/react/components/Form";
 import type { JsonKeystoreWallet, Wallet } from "@ethui/types/wallets";
+import { Form } from "@ethui/ui/components/form";
 
 export const schema = z.object({
   name: z.string().min(1),
@@ -38,15 +38,13 @@ export function JsonKeystore({
 
   return (
     <Form form={form} onSubmit={prepareAndSubmit}>
-      <div className="m-2 flex flex-col items-start">
-        <Form.Text label="Name" name="name" />
-        <Form.Text label="Keystore file" name="file" fullWidth />
-        <div className=" m-2 flex">
-          <Form.Submit label="Save" />
-          <Button color="warning" onClick={onRemove}>
-            Remove
-          </Button>
-        </div>
+      <Form.Text label="Name" name="name" />
+      <Form.Text label="Keystore file" name="file" />
+      <div className=" m-2 flex">
+        <Form.Submit label="Save" />
+        <Button color="warning" onClick={onRemove}>
+          Remove
+        </Button>
       </div>
     </Form>
   );

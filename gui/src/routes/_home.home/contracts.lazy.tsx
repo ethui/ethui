@@ -12,9 +12,9 @@ import { useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { ChainView } from "@ethui/ui/components/chain-view";
-import { Form } from "@ethui/react/components/Form";
 import type { Contract } from "@ethui/types";
+import { ChainView } from "@ethui/ui/components/chain-view";
+import { Form } from "@ethui/ui/components/form";
 import {
   Accordion,
   AccordionContent,
@@ -139,12 +139,7 @@ function AddressForm() {
           )}
         />
 
-        <Form.Text
-          label="Contract Address"
-          name="address"
-          size="small"
-          fullWidth
-        />
+        <Form.Text label="Contract Address" name="address" />
 
         <Form.Submit
           label={form.formState.isSubmitting ? <CircularProgress /> : "Add"}

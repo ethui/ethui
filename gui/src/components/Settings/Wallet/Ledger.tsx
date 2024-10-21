@@ -6,8 +6,8 @@ import { useEffect, useState } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
-import { Form } from "@ethui/react/components/Form";
 import { type LedgerWallet, derivationPathSchema } from "@ethui/types/wallets";
+import { Form } from "@ethui/ui/components/form";
 import { useLedgerDetect } from "#/hooks/useLedgerDetect";
 
 export const schema = z.object({
@@ -92,37 +92,34 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
 
   return (
     <Form form={form} onSubmit={prepareAndSubmit}>
-      <div className="m-2 flex flex-col items-start">
-        <Detect />
-        <Form.Text label="Name" name="name" />
+      <Detect />
+      <Form.Text label="Name" name="name" />
 
-        {pathsFields.map((field, i) => {
-          const path = form.watch(`paths.${i}.path`);
-          const address = addresses.get(path);
-          return (
-            <div className="flex flex-col self-stretch" key={field.id}>
-              <div className=" m-2 flex flex self-stretch">
-                <Form.Text
-                  label={`Path #${i + 1}`}
-                  name={`paths.${i}.path`}
-                  helperText={address}
-                  fullWidth
-                />
+      {pathsFields.map((field, i) => {
+        const path = form.watch(`paths.${i}.path`);
+        const address = addresses.get(path);
+        return (
+          <div className="flex flex-col self-stretch" key={field.id}>
+            <div className=" m-2 flex flex self-stretch">
+              <Form.Text
+                label={`Path #${i + 1}`}
+                name={`paths.${i}.path`}
+                helperText={address}
+              />
 
-                <Button onClick={() => remove(i)}>Remove</Button>
-              </div>
+              <Button onClick={() => remove(i)}>Remove</Button>
             </div>
-          );
-        })}
-        <Button color="secondary" onClick={() => append({ path: "" })}>
-          Add
+          </div>
+        );
+      })}
+      <Button color="secondary" onClick={() => append({ path: "" })}>
+        Add
+      </Button>
+      <div className=" m-2 flex">
+        <Form.Submit label="Save" />
+        <Button color="warning" onClick={onRemove}>
+          Remove
         </Button>
-        <div className=" m-2 flex">
-          <Form.Submit label="Save" />
-          <Button color="warning" onClick={onRemove}>
-            Remove
-          </Button>
-        </div>
       </div>
     </Form>
   );

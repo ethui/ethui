@@ -1,15 +1,15 @@
-import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
-import type { Hash } from "viem";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@ethui/ui/components/ui/context-menu";
+import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
+import type { Hash } from "viem";
 
+import { Link } from "@tanstack/react-router";
 import { useNetworks } from "#/store/useNetworks";
 import { truncateHex } from "#/utils";
-import { Link } from "@tanstack/react-router";
 
 interface Props {
   hash: Hash;

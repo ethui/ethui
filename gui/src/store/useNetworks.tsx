@@ -4,8 +4,8 @@ import type { Action } from "kbar";
 import { type StateCreator, create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import { ChainIcon } from "@ethui/ui/components/icons/chain";
 import type { Network } from "@ethui/types/network";
+import { ChainIcon } from "@ethui/ui/components/icons/chain";
 
 interface State {
   networks: Network[];
@@ -62,8 +62,9 @@ const store: StateCreator<Store> = (set, get) => ({
       {
         id: actionId,
         name: "Change network",
-        subtitle: `${networks.length} network${networks.length > 1 ? "s" : ""
-          } available`,
+        subtitle: `${networks.length} network${
+          networks.length > 1 ? "s" : ""
+        } available`,
         shortcut: ["N"],
       },
       ...(networks || []).map((network, index) => ({

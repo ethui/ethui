@@ -1,25 +1,25 @@
-import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { invoke } from "@tauri-apps/api/core";
-import { useState } from "react";
-import { type FieldValues, useForm } from "react-hook-form";
-import { type Address, getAddress } from "viem";
-import { z } from "zod";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@ethui/ui/components/ui/context-menu";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { invoke } from "@tauri-apps/api/core";
+import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
+import { useState } from "react";
+import { type FieldValues, useForm } from "react-hook-form";
+import { type Address, getAddress } from "viem";
+import { z } from "zod";
 
-import { Form } from "@ethui/react/components/Form";
+import { Form } from "@ethui/ui/components/form";
 
+import { Link } from "@tanstack/react-router";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { truncateHex } from "#/utils";
 import { IconAddress } from "./Icons/Address";
 import { Modal } from "./Modal";
-import { Link } from "@tanstack/react-router";
 
 interface Props {
   address: Address;
@@ -44,7 +44,7 @@ export function AddressView({
 
   const text = alias ? alias : truncateHex(address);
   const content = (
-    <div className="items-center text-base flex gap-x-1 font-mono">
+    <div className="flex items-center gap-x-1 font-mono text-base">
       {icon && (
         <IconAddress
           chainId={network.chain_id}

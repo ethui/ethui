@@ -1965,7 +1965,7 @@ __metadata:
     react-devtools: "npm:^6.0.1"
     react-dom: "npm:^18.3.1"
     react-error-boundary: "npm:^4.1.0"
-    react-hook-form: "npm:^7.53.0"
+    react-hook-form: "npm:^7.53.1"
     react-infinite-scroller: "npm:^1.2.6"
     tailwind-merge: "npm:^2.5.4"
     tailwindcss: "npm:^3.4.14"
@@ -2009,7 +2009,7 @@ __metadata:
     lucide-react: "npm:^0.453.0"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
-    react-hook-form: "npm:^7.53.0"
+    react-hook-form: "npm:^7.53.1"
     storybook: "npm:^8.3.5"
     typescript: "npm:^5.6.3"
     viem: "npm:^2.21.27"
@@ -2046,6 +2046,7 @@ __metadata:
     "@hookform/resolvers": "npm:^3.9.0"
     "@radix-ui/react-accordion": "npm:^1.2.1"
     "@radix-ui/react-avatar": "npm:^1.1.1"
+    "@radix-ui/react-checkbox": "npm:^1.1.2"
     "@radix-ui/react-collapsible": "npm:^1.1.1"
     "@radix-ui/react-context-menu": "npm:^2.2.2"
     "@radix-ui/react-dialog": "npm:^1.1.2"
@@ -2946,6 +2947,32 @@ __metadata:
     "@types/react-dom":
       optional: true
   checksum: e8e712d8bf80eae9a0cac176dc5c0d631cefc11466bd62fa262d517b149836e1e7ca794998177acb82f0455a96ced0d21878a73900ca62bc96ccacb32c9b2e69
+  languageName: node
+  linkType: hard
+
+"@radix-ui/react-checkbox@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "@radix-ui/react-checkbox@npm:1.1.2"
+  dependencies:
+    "@radix-ui/primitive": "npm:1.1.0"
+    "@radix-ui/react-compose-refs": "npm:1.1.0"
+    "@radix-ui/react-context": "npm:1.1.1"
+    "@radix-ui/react-presence": "npm:1.1.1"
+    "@radix-ui/react-primitive": "npm:2.0.0"
+    "@radix-ui/react-use-controllable-state": "npm:1.1.0"
+    "@radix-ui/react-use-previous": "npm:1.1.0"
+    "@radix-ui/react-use-size": "npm:1.1.0"
+  peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+  checksum: 3b94434e0988100091eea7905fa939e808b49709be2ec371111829b75873f8820499d95f7e769fa31ba6adc48d6a58afd383d26f2a8a92edf0f88cb68c1de3ed
   languageName: node
   linkType: hard
 
@@ -12538,15 +12565,6 @@ __metadata:
   peerDependencies:
     react: ">=16.13.1"
   checksum: 97eb114503ec2e88fb7d5cea02df43f38a7d9cec95497fd9ddd342750fd7ea01ca4b83ac92db9842d2a7b61e813e33440eb48d1901317c5d77584134ab90c788
-  languageName: node
-  linkType: hard
-
-"react-hook-form@npm:^7.53.0":
-  version: 7.53.0
-  resolution: "react-hook-form@npm:7.53.0"
-  peerDependencies:
-    react: ^16.8.0 || ^17 || ^18 || ^19
-  checksum: 6d62b150618a833c17d59e669b707661499e2bb516a8d340ca37699f99eb448bbba7b5b78324938c8948014e21efaa32e3510c2ba246fd5e97a96fca0cfa7c98
   languageName: node
   linkType: hard
 

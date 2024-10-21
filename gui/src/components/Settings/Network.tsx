@@ -8,9 +8,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useShallow } from "zustand/shallow";
 
-import { ChainView } from "@ethui/ui/components/chain-view";
-import { Form } from "@ethui/react/components/Form";
 import { type Network, networkSchema } from "@ethui/types/network";
+import { ChainView } from "@ethui/ui/components/chain-view";
+import { Form } from "@ethui/ui/components/form";
 import { Button } from "@ethui/ui/components/ui/button";
 import { ConfirmationDialog } from "#/components/ConfirmationDialog";
 import { useNetworks } from "#/store/useNetworks";
@@ -86,17 +86,14 @@ export function SettingsNetwork() {
                   <Form.Text
                     label="HTTP RPC"
                     name={`networks.${index}.http_url`}
-                    fullWidth
                   />
                   <Form.Text
                     label="WebSockets RPC"
                     name={`networks.${index}.ws_url`}
-                    fullWidth
                   />
                   <Form.Text
                     label="Explorer URL"
                     name={`networks.${index}.explorer_url`}
-                    fullWidth
                   />
                   <div className="m-2 flex flex-col">
                     <Form.Text

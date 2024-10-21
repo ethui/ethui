@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Form } from "@ethui/react/components/Form";
 import { passwordFormSchema, passwordSchema } from "@ethui/types/password";
 import type { PrivateKeyWallet } from "@ethui/types/wallets";
+import { Form } from "@ethui/ui/components/form";
 
 export const schema = z.object({
   name: z.string().min(1),
@@ -109,18 +109,16 @@ function PrivateKeyStep({ onSubmit, onCancel }: PrivateKeyStepProps) {
 
   return (
     <Form form={form} onSubmit={onSubmitInternal}>
-      <div className="m-2 flex flex-col flex-col">
-        <Form.Text multiline label="Name" name="name" />
-        <span>Insert your 12-word privateKey</span>
-        <Form.Text multiline label="Private Key" name="privateKey" />
+      <Form.Text multiline label="Name" name="name" />
+      <span>Insert your 12-word privateKey</span>
+      <Form.Text multiline label="Private Key" name="privateKey" />
 
-        <div className=" m-2 flex justify-end">
-          <Button color="warning" onClick={onCancel}>
-            Cancel
-          </Button>
+      <div className=" m-2 flex justify-end">
+        <Button color="warning" onClick={onCancel}>
+          Cancel
+        </Button>
 
-          <Form.Submit label="Continue" />
-        </div>
+        <Form.Submit label="Continue" />
       </div>
     </Form>
   );

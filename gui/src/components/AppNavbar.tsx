@@ -20,7 +20,7 @@ export function AppNavbar({ title }: NavbarProps) {
       <div className="flex h-14 items-center">
         <Button
           className={clsx(!isMobile && "hidden")}
-          variant=" ghost"
+          variant="ghost"
           onClick={() => sidebar.toggleSidebar()}
         >
           <HamburgerMenuIcon />

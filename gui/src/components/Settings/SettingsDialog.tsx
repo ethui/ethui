@@ -1,6 +1,7 @@
 import { find } from "lodash-es";
 import { useState } from "react";
 
+import { DialogDescription } from "@radix-ui/react-dialog";
 import { useSettingsWindow } from "#/store/useSettingsWindow";
 import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
 import {
@@ -17,7 +18,6 @@ import { SettingsKeybinds } from "./Keybinds";
 import { SettingsNetwork } from "./Network";
 import { SettingsTokens } from "./Tokens";
 import { SettingsWallets } from "./Wallets";
-import { DialogDescription } from "@radix-ui/react-dialog";
 
 const TABS = [
   { name: "General", component: SettingsGeneral },

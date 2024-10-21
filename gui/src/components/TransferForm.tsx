@@ -1,5 +1,5 @@
-import { Form } from "@ethui/react/components/Form";
 import { addressSchema } from "@ethui/types/wallets";
+import { Form } from "@ethui/ui/components/form";
 import { Button } from "@ethui/ui/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert } from "@mui/material";
@@ -117,24 +117,21 @@ export function TransferForm({
         <span>Transfer token</span>
 
         <Form.Select
-          fullWidth
           name="currency"
           label="Currency"
           items={Array.from(tokens.values())}
           toValue={(v) => v.contract}
           render={(v) => v.currency}
-          sx={{ minWidth: 120 }}
         />
 
         <span>
           Balance: {formatUnits(currentToken.balance, currentToken.decimals)}
         </span>
 
-        <Form.Text label="To" name="to" fullWidth />
+        <Form.Text label="To" name="to" />
         <Form.BigInt
           label="Amount"
           name="value"
-          fullWidth
           decimals={currentToken.decimals}
         />
 

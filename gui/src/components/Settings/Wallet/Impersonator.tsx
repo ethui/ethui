@@ -4,12 +4,12 @@ import type { Address } from "abitype";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Form } from "@ethui/react/components/Form";
 import {
   type ImpersonatorWallet,
   type Wallet,
   addressSchema,
 } from "@ethui/types/wallets";
+import { Form } from "@ethui/ui/components/form";
 
 // react-hook-form doesn't support value-arrays, only object-arrays, so we need this type as a workaround for the impersonator form
 export const schema = z.object({
@@ -66,29 +66,23 @@ export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
 
   return (
     <Form form={form} onSubmit={prepareAndSubmit}>
-      <div className="m-2 flex flex-col items-start">
-        <Form.Text label="Name" name="name" />
-        {addressFields.map((field, i) => (
-          <div className=" m-2 flex self-stretch" key={field.id}>
-            <Form.Text
-              label="Address"
-              name={`addresses.${i}.address`}
-              fullWidth
-            />
-            <Button onClick={() => remove(i)}>Remove</Button>
-          </div>
-        ))}
-
-        <Button color="secondary" onClick={() => append({ address: "" })}>
-          Add
-        </Button>
-
-        <div className=" m-2 flex">
-          <Form.Submit label="Save" />
-          <Button color="warning" onClick={onRemove}>
-            Remove
-          </Button>
+      <Form.Text label="Name" name="name" />
+      {addressFields.map((field, i) => (
+        <div className=" m-2 flex self-stretch" key={field.id}>
+          <Form.Text label="Address" name={`addresses.${i}.address`} />
+          <Button onClick={() => remove(i)}>Remove</Button>
         </div>
+      ))}
+
+      <Button color="secondary" onClick={() => append({ address: "" })}>
+        Add
+      </Button>
+
+      <div className=" m-2 flex">
+        <Form.Submit label="Save" />
+        <Button color="warning" onClick={onRemove}>
+          Remove
+        </Button>
       </div>
     </Form>
   );
