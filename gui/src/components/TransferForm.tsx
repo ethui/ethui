@@ -113,45 +113,43 @@ export function TransferForm({
 
   return (
     <Form form={form} onSubmit={onSubmit}>
-      <div className="m-2 flex flex-col items-start">
-        <span>Transfer token</span>
+      <span>Transfer token</span>
 
-        <Form.Select
-          name="currency"
-          label="Currency"
-          items={Array.from(tokens.values())}
-          toValue={(v) => v.contract}
-          render={(v) => v.currency}
-        />
+      <Form.Select
+        name="currency"
+        label="Currency"
+        items={Array.from(tokens.values())}
+        toValue={(v) => v.contract}
+        render={(v) => v.currency}
+      />
 
-        <span>
-          Balance: {formatUnits(currentToken.balance, currentToken.decimals)}
-        </span>
+      <span>
+        Balance: {formatUnits(currentToken.balance, currentToken.decimals)}
+      </span>
 
-        <Form.Text label="To" name="to" />
-        <Form.BigInt
-          label="Amount"
-          name="value"
-          decimals={currentToken.decimals}
-        />
+      <Form.Text label="To" name="to" />
+      <Form.BigInt
+        label="Amount"
+        name="value"
+        decimals={currentToken.decimals}
+      />
 
-        {result && (
-          <Alert
-            sx={{ alignSelf: "stretch" }}
-            variant="outlined"
-            severity="success"
-          >
-            <span>{result}</span>
-          </Alert>
-        )}
+      {result && (
+        <Alert
+          sx={{ alignSelf: "stretch" }}
+          variant="outlined"
+          severity="success"
+        >
+          <span>{result}</span>
+        </Alert>
+      )}
 
-        <div className=" flex w-full justify-between">
-          <Button variant="outline" color="error" onClick={onClose}>
-            Close
-          </Button>
+      <div className=" flex w-full justify-between">
+        <Button variant="outline" color="error" onClick={onClose}>
+          Close
+        </Button>
 
-          <Form.Submit label="Send" />
-        </div>
+        <Form.Submit label="Send" />
       </div>
     </Form>
   );

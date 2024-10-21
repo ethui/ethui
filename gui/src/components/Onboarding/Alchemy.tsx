@@ -45,46 +45,44 @@ export function AlchemyStep({ onSubmit }: StepProps) {
 
   return (
     <Form form={form} onSubmit={localOnSubmit}>
-      <div className="m-3 flex flex-end flex-col">
-        <h1 className="self-start text-xl">Alchemy</h1>
+      <h1 className="self-start text-xl">Alchemy</h1>
 
-        <p>
-          ethui works with{" "}
-          <Link
-            underline="hover"
-            href="https://book.getfoundry.sh/anvil/"
-            target="_blank"
-            rel="nofollow noopener noreferrer"
-          >
-            Anvil
-          </Link>{" "}
-          out of the box. But for live blockchains, a connection to{" "}
-          <Link
-            underline="hover"
-            href="https://www.alchemy.com/"
-            target="_blank"
-            rel="nofollow noopener noreferrer"
-          >
-            alchemy.com
-          </Link>{" "}
-          is recommended. Go to your{" "}
-          <Link
-            underline="hover"
-            href="https://dashboard.alchemy.com/apps"
-            target="_blank"
-            rel="nofollow noopener noreferrer"
-          >
-            Alchemy dashboard
-          </Link>{" "}
-          and grab an API key.
-        </p>
-        <Form.Text label="API Key" name="alchemyApiKey" />
+      <p>
+        ethui works with{" "}
+        <Link
+          underline="hover"
+          href="https://book.getfoundry.sh/anvil/"
+          target="_blank"
+          rel="nofollow noopener noreferrer"
+        >
+          Anvil
+        </Link>{" "}
+        out of the box. But for live blockchains, a connection to{" "}
+        <Link
+          underline="hover"
+          href="https://www.alchemy.com/"
+          target="_blank"
+          rel="nofollow noopener noreferrer"
+        >
+          alchemy.com
+        </Link>{" "}
+        is recommended. Go to your{" "}
+        <Link
+          underline="hover"
+          href="https://dashboard.alchemy.com/apps"
+          target="_blank"
+          rel="nofollow noopener noreferrer"
+        >
+          Alchemy dashboard
+        </Link>{" "}
+        and grab an API key.
+      </p>
+      <Form.Text label="API Key" name="alchemyApiKey" />
 
-        <Form.Submit
-          useDirtyAlt={false}
-          label={alchemyApiKey?.length > 0 ? "Next" : "Skip"}
-        />
-      </div>
+      <Form.Submit
+        useDirtyAlt={false}
+        label={alchemyApiKey?.length > 0 ? "Next" : "Skip"}
+      />
     </Form>
   );
 }

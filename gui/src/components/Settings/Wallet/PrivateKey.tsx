@@ -171,15 +171,13 @@ function Update({ wallet, onSubmit, onRemove }: Props) {
 
   return (
     <Form form={form} onSubmit={onSubmit}>
-      <div className="m-2 flex flex-col items-start">
-        <Form.Text label="Name" name="name" />
-        <div className=" m-2 flex">
-          <Form.Submit label="Save" />
+      <Form.Text label="Name" name="name" />
+      <div className=" m-2 flex">
+        <Form.Submit label="Save" />
 
-          <Button color="warning" onClick={onRemove}>
-            Remove
-          </Button>
-        </div>
+        <Button color="warning" onClick={onRemove}>
+          Remove
+        </Button>
       </div>
     </Form>
   );

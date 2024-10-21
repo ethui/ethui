@@ -127,24 +127,22 @@ function AddressForm() {
 
   return (
     <Form form={form} onSubmit={onSubmit}>
-      <div className="m-2 flex flex-col items-start">
-        <Form.Select
-          label="Network"
-          name="chainId"
-          defaultValue={currentNetwork.chain_id}
-          items={networks}
-          toValue={(n) => n.chain_id.toString()}
-          render={({ chain_id, name }) => (
-            <ChainView chainId={chain_id} name={name} />
-          )}
-        />
+      <Form.Select
+        label="Network"
+        name="chainId"
+        defaultValue={currentNetwork.chain_id}
+        items={networks}
+        toValue={(n) => n.chain_id.toString()}
+        render={({ chain_id, name }) => (
+          <ChainView chainId={chain_id} name={name} />
+        )}
+      />
 
-        <Form.Text label="Contract Address" name="address" />
+      <Form.Text label="Contract Address" name="address" />
 
-        <Form.Submit
-          label={form.formState.isSubmitting ? <CircularProgress /> : "Add"}
-        />
-      </div>
+      <Form.Submit
+        label={form.formState.isSubmitting ? <CircularProgress /> : "Add"}
+      />
     </Form>
   );
 }
