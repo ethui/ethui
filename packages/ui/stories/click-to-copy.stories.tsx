@@ -5,7 +5,7 @@ import { ClickToCopy } from "../components/click-to-copy";
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 const meta = {
-  title: "Example/ClickToCopy",
+  title: "Components/ClickToCopy",
   component: ClickToCopy,
   parameters: {
     layout: "centered",

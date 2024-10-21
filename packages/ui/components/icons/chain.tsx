@@ -1,4 +1,4 @@
-import { Avatar } from "@mui/material";
+import { clsx } from "clsx";
 
 import mainnet from "../../images/chains/1.webp";
 import optimism from "../../images/chains/10.webp";
@@ -17,9 +17,9 @@ import sepolia from "../../images/chains/11155111.webp";
 import optimismSepolia from "../../images/chains/11155420.webp";
 import unknown from "../../images/chains/unknown.webp";
 
-export interface IconChainProps extends React.ComponentProps<typeof Avatar> {
+export interface IconChainProps {
   chainId: number;
-  size?: "small" | "medium" | "large";
+  className?: string;
 }
 
 const Mappings: Record<number, string> = {
@@ -40,20 +40,12 @@ const Mappings: Record<number, string> = {
   534351: scrollSepolia,
 };
 
-export default function IconChain({
-  chainId,
-  size = "medium",
-  ...props
-}: IconChainProps) {
-  let width = 24;
-  if (size === "small") width = 16;
-  if (size === "large") width = 40;
-
+export function ChainIcon({ chainId, className }: IconChainProps) {
   return (
-    <Avatar
-      sx={{ width, height: width }}
+    <img
+      alt={`Chain ${chainId}`}
+      className={clsx("h-6 w-6", className)}
       src={Mappings[chainId] || unknown}
-      {...props}
     />
   );
 }

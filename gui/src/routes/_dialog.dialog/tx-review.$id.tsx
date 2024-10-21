@@ -13,7 +13,7 @@ import {
   parseAbi,
 } from "viem";
 
-import { ChainView } from "@ethui/react/components/ChainView";
+import { ChainView } from "@ethui/ui/components/chain-view";
 
 import type { TokenMetadata } from "@ethui/types";
 import type { Network } from "@ethui/types/network";

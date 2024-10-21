@@ -8,8 +8,8 @@ import {
 } from "@ethui/ui/components/ui/select";
 import { useShallow } from "zustand/shallow";
 
-import { ChainView } from "@ethui/react/components/ChainView";
 import { useNetworks } from "#/store/useNetworks";
+import { ChainView } from "@ethui/ui/components/chain-view";
 
 export function QuickNetworkSelect() {
   const [networks, current, setCurrent] = useNetworks(

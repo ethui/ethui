@@ -12,7 +12,7 @@ import { useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { ChainView } from "@ethui/react/components/ChainView";
+import { ChainView } from "@ethui/ui/components/chain-view";
 import { Form } from "@ethui/react/components/Form";
 import type { Contract } from "@ethui/types";
 import {

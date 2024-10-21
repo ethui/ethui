@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useShallow } from "zustand/shallow";
 
-import { ChainView } from "@ethui/react/components/ChainView";
+import { ChainView } from "@ethui/ui/components/chain-view";
 import { Form } from "@ethui/react/components/Form";
 import { type Network, networkSchema } from "@ethui/types/network";
 import { Button } from "@ethui/ui/components/ui/button";
