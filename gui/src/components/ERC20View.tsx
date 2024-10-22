@@ -1,4 +1,9 @@
-import { Menu, MenuItem } from "@mui/material";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@ethui/ui/components/shadcn/dropdown-menu";
 import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
 import { type Address, formatUnits } from "viem";
@@ -7,7 +12,6 @@ import { Button } from "@ethui/ui/components/shadcn/button";
 import { ArrowTopRightIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
 import { useNetworks } from "#/store/useNetworks";
 import { AddressView } from "./AddressView";
-import { CopyToClipboard } from "./CopyToClipboard";
 import { IconAddress } from "./Icons/Address";
 import { Modal } from "./Modal";
 import { TransferForm } from "./TransferForm";
@@ -30,7 +34,6 @@ export function ERC20View({
   decimals,
 }: Props) {
   const [transferFormOpen, setTransferFormOpen] = useState(false);
-  const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const network = useNetworks((s) => s.current);
 
   if (!symbol || !decimals || !network) return null;
@@ -38,16 +41,12 @@ export function ERC20View({
   const truncatedBalance =
     balance - (balance % BigInt(Math.ceil(minimum * 10 ** decimals)));
 
-  const onMenuOpen = (event: React.MouseEvent<HTMLElement>) =>
-    setMenuAnchor(event.currentTarget);
-
   const blacklist = () => {
     invoke("db_set_erc20_blacklist", {
       chainId: network.chain_id,
       address: contract,
       blacklisted: true,
     });
-    setMenuAnchor(null);
   };
 
   return (
@@ -64,11 +63,9 @@ export function ERC20View({
             )}
           </div>
           <span>
-            <CopyToClipboard label={balance.toString()}>
-              {truncatedBalance > 0
-                ? formatUnits(truncatedBalance, decimals)
-                : `< ${minimum}`}
-            </CopyToClipboard>
+            {truncatedBalance > 0
+              ? formatUnits(truncatedBalance, decimals)
+              : `< ${minimum}`}
           </span>
         </div>
       </div>
@@ -81,29 +78,24 @@ export function ERC20View({
         >
           <ArrowTopRightIcon />
         </Button>
-        <Button variant="ghost" size="icon" onClick={onMenuOpen}>
-          <DotsVerticalIcon />
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <DotsVerticalIcon />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            {contract && network?.explorer_url && (
+              <DropdownMenuItem asChild>
+                <a href={`${network.explorer_url}${contract}`}>
+                  Open on explorer
+                </a>
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuItem onClick={blacklist}>Hide token</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
-
-      <Menu
-        open={Boolean(menuAnchor)}
-        id={`erc20-${contract}-menu`}
-        anchorEl={menuAnchor}
-        onClose={() => setMenuAnchor(null)}
-      >
-        {contract && network?.explorer_url && (
-          <MenuItem
-            component="a"
-            target="_blank"
-            href={`${network.explorer_url}${contract}`}
-            onClick={() => setMenuAnchor(null)}
-          >
-            Open on explorer
-          </MenuItem>
-        )}
-        <MenuItem onClick={blacklist}>Hide token</MenuItem>
-      </Menu>
 
       <Modal open={transferFormOpen} onClose={() => setTransferFormOpen(false)}>
         <TransferForm

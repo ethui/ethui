@@ -1,8 +1,9 @@
-import { Alert, Button, CircularProgress, Link } from "@mui/material";
+import { Alert, CircularProgress, Link } from "@mui/material";
 import { useEffect, useState } from "react";
 
 import { useInvoke } from "#/hooks/useInvoke";
 import type { StepProps } from ".";
+import { Button } from "@ethui/ui/components/shadcn/button";
 
 export function InstallExtensionStep({ onSubmit }: StepProps) {
   const [detected, setDetected] = useState<boolean>(false);

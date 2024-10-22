@@ -1,5 +1,4 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@mui/material";
 import type { Address } from "abitype";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -10,6 +9,7 @@ import {
   addressSchema,
 } from "@ethui/types/wallets";
 import { Form } from "@ethui/ui/components/form";
+import { Button } from "@ethui/ui/components/shadcn/button";
 
 // react-hook-form doesn't support value-arrays, only object-arrays, so we need this type as a workaround for the impersonator form
 export const schema = z.object({
@@ -33,11 +33,11 @@ export interface Props {
 export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
   const formWallet = wallet
     ? {
-        ...wallet,
-        addresses: wallet
-          ? wallet.addresses.map((address) => ({ address }))
-          : [],
-      }
+      ...wallet,
+      addresses: wallet
+        ? wallet.addresses.map((address) => ({ address }))
+        : [],
+    }
     : undefined;
 
   const form = useForm({

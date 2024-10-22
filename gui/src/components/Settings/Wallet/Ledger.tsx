@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Alert, AlertTitle, Button } from "@mui/material";
+import { Alert, AlertTitle } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import type { Address } from "abitype";
 import { useEffect, useState } from "react";
@@ -9,6 +9,7 @@ import { z } from "zod";
 import { type LedgerWallet, derivationPathSchema } from "@ethui/types/wallets";
 import { Form } from "@ethui/ui/components/form";
 import { useLedgerDetect } from "#/hooks/useLedgerDetect";
+import { Button } from "@ethui/ui/components/shadcn/button";
 
 export const schema = z.object({
   name: z.string().min(1),
@@ -35,9 +36,9 @@ export interface Props {
 export function Ledger({ wallet, onSubmit, onRemove }: Props) {
   const formWallet = wallet
     ? {
-        ...wallet,
-        paths: wallet ? wallet.addresses.map(([path]) => ({ path })) : [],
-      }
+      ...wallet,
+      paths: wallet ? wallet.addresses.map(([path]) => ({ path })) : [],
+    }
     : defaultValues;
 
   const [addresses, setAddresses] = useState<Map<string, Address>>(new Map());
@@ -112,12 +113,12 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
           </div>
         );
       })}
-      <Button color="secondary" onClick={() => append({ path: "" })}>
+      <Button variant="outline" onClick={() => append({ path: "" })}>
         Add
       </Button>
       <div className=" m-2 flex">
         <Form.Submit label="Save" />
-        <Button color="warning" onClick={onRemove}>
+        <Button variant="destructive" onClick={onRemove}>
           Remove
         </Button>
       </div>

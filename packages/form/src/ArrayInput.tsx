@@ -1,10 +1,11 @@
 import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
-import { IconButton, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { useState } from "react";
 
 import { AbiInput, type InnerProps } from "./AbiInput";
 import { Basic } from "./Basic";
 import { Debug } from "./utils";
+import { Button } from "@ethui/ui/components/shadcn/button";
 
 type ArrayInputProps = InnerProps & {
   length?: number;
@@ -129,17 +130,17 @@ function ArrayElements({
       ))}
       {!length && (
         <div>
-          <IconButton
+          <Button
             aria-label="delete"
             color="primary"
-            size="small"
+            size="icon"
             onClick={(e) => {
               e.preventDefault();
               append();
             }}
           >
             <AddIcon />
-          </IconButton>
+          </Button>
         </div>
       )}
       {debug && <Debug value={value} />}

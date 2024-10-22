@@ -1,5 +1,5 @@
+import { Button } from "@ethui/ui/components/shadcn/button";
 import CloseIcon from "@mui/icons-material/Close";
-import { IconButton } from "@mui/material";
 import { closeSnackbar, enqueueSnackbar } from "notistack";
 
 export function errorToast(key: string, err: unknown) {
@@ -17,14 +17,15 @@ export function errorToast(key: string, err: unknown) {
     variant: "error",
     action: () => (
       <>
-        <IconButton
+        <Button
+          size="icon"
           aria-label="close"
           color="inherit"
           sx={{ p: 0.5 }}
           onClick={() => closeSnackbar(key)}
         >
           <CloseIcon />
-        </IconButton>
+        </Button>
       </>
     ),
   });

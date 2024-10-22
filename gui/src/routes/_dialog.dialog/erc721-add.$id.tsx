@@ -1,4 +1,4 @@
-import { Button, Grid2 as Grid } from "@mui/material";
+import { Grid2 as Grid } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { isDirty, isValid } from "zod";
@@ -8,6 +8,7 @@ import { AddressView } from "#/components/AddressView";
 import { Datapoint } from "#/components/Datapoint";
 import { useDialog } from "#/hooks/useDialog";
 import { useNetworks } from "#/store/useNetworks";
+import { Button } from "@ethui/ui/components/shadcn/button";
 
 const tauriWindow = getCurrentWindow();
 

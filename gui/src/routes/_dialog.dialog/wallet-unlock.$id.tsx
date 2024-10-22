@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Backdrop, Button, CircularProgress } from "@mui/material";
+import { Backdrop, CircularProgress } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
@@ -7,6 +7,7 @@ import { z } from "zod";
 
 import { Form } from "@ethui/ui/components/form";
 import { useDialog } from "#/hooks/useDialog";
+import { Button } from "@ethui/ui/components/shadcn/button";
 
 export const Route = createFileRoute("/_dialog/dialog/wallet-unlock/$id")({
   component: WalletUnlockDialog,

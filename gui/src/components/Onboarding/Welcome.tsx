@@ -1,4 +1,5 @@
-import { Button, Link } from "@mui/material";
+import { Button } from "@ethui/ui/components/shadcn/button";
+import { Link } from "@mui/material";
 
 import type { StepProps } from ".";
 

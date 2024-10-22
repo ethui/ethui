@@ -1,10 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import type { JsonKeystoreWallet, Wallet } from "@ethui/types/wallets";
 import { Form } from "@ethui/ui/components/form";
+import { Button } from "@ethui/ui/components/shadcn/button";
 
 export const schema = z.object({
   name: z.string().min(1),
@@ -42,7 +42,7 @@ export function JsonKeystore({
       <Form.Text label="Keystore file" name="file" />
       <div className=" m-2 flex">
         <Form.Submit label="Save" />
-        <Button color="warning" onClick={onRemove}>
+        <Button variant="destructive" onClick={onRemove}>
           Remove
         </Button>
       </div>

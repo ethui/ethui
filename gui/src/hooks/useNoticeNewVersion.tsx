@@ -1,5 +1,5 @@
 import CloseIcon from "@mui/icons-material/Close";
-import { IconButton, Link } from "@mui/material";
+import { Link } from "@mui/material";
 import { type SnackbarKey, useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 
@@ -44,14 +44,15 @@ export function useNoticeNewVersion() {
         key: "new_release",
         persist: true,
         action: () => (
-          <IconButton
+          <Button
+            size="icon"
             aria-label="close"
             color="inherit"
             sx={{ p: 0.5 }}
             onClick={() => closeSnackbar(key)}
           >
             <CloseIcon />
-          </IconButton>
+          </Button>
         ),
       },
     );

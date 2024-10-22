@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import { Link } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect } from "react";

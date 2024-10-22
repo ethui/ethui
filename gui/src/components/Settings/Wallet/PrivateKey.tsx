@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Step, StepLabel, Stepper } from "@mui/material";
+import { Step, StepLabel, Stepper } from "@mui/material";
 import { useEffect, useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -7,6 +7,7 @@ import { z } from "zod";
 import { passwordFormSchema, passwordSchema } from "@ethui/types/password";
 import type { PrivateKeyWallet } from "@ethui/types/wallets";
 import { Form } from "@ethui/ui/components/form";
+import { Button } from "@ethui/ui/components/shadcn/button";
 
 export const schema = z.object({
   name: z.string().min(1),
@@ -114,7 +115,7 @@ function PrivateKeyStep({ onSubmit, onCancel }: PrivateKeyStepProps) {
       <Form.Text multiline label="Private Key" name="privateKey" />
 
       <div className=" m-2 flex justify-end">
-        <Button color="warning" onClick={onCancel}>
+        <Button variant="destructive" onClick={onCancel}>
           Cancel
         </Button>
 
