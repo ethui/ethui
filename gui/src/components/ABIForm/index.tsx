@@ -61,7 +61,7 @@ export function ABIForm({ chainId, address }: Props) {
     .sort((a, b) => -a.group.localeCompare(b.group));
 
   return (
-    <div className="m-1 flex flex-col items-start">
+    <div className="m-1 flex flex-col items-start gap-4">
       <Popover>
         <PopoverTrigger asChild>
           <Button variant="outline" className="w-full">

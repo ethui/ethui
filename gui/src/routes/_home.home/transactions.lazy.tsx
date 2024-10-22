@@ -4,7 +4,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@ethui/ui/components/shadcn/context-menu";
-import { CircularProgress, Grid2 as Grid } from "@mui/material";
+import { CircularProgress } from "@mui/material";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
@@ -165,16 +165,16 @@ function Details({ tx, chainId }: DetailsProps) {
   const value = BigInt(fullTx.value || 0);
 
   return (
-    <div className="grid grid-cols-4">
+    <div className="grid grid-cols-4 gap-5">
       <Datapoint
+        className="col-span-2"
         label="from"
         value={<AddressView icon address={tx.from} />}
-        size="small"
       />
       <Datapoint
+        className="col-span-2"
         label="to"
         value={tx.to ? <AddressView icon address={tx.to} /> : ""}
-        size="small"
       />
       <Datapoint
         label="value"
@@ -190,21 +190,14 @@ function Details({ tx, chainId }: DetailsProps) {
             </ContextMenuContent>
           </ContextMenu>
         }
-        size="small"
       />
-      <Datapoint
-        label="Block #"
-        value={fullTx?.blockNumber?.toString()}
-        size="small"
-      />
-      <Datapoint
-        label="hash"
-        value={<HashView hash={tx.hash} />}
-        size="small"
-      />
-      <Datapoint label="nonce" value={fullTx.nonce} size="small" />
+      <Datapoint label="Block #" value={fullTx?.blockNumber?.toString()} />
+      <Datapoint label="hash" value={<HashView hash={tx.hash} />} />
+      <Datapoint label="nonce" value={fullTx.nonce} />
+
       <Datapoint
         label="data"
+        className="col-span-4"
         value={
           <SolidityCall
             value={value}
@@ -217,36 +210,34 @@ function Details({ tx, chainId }: DetailsProps) {
           />
         }
       />
-      <Datapoint label="type" value={formatTxType(fullTx?.type)} size="small" />
+      <Datapoint label="type" value={formatTxType(fullTx?.type)} />
       {/* TODO: other txs types */}
       {fullTx?.type === 2 && (
         <>
           <Datapoint
             label="maxFeePerGas"
             value={`${fullTx.maxFeePerGas && formatGwei(BigInt(fullTx.maxFeePerGas))} gwei`}
-            size="small"
           />
           <Datapoint
             label="maxPriorityFeePerGas"
             value={`${fullTx.maxPriorityFeePerGas && formatGwei(BigInt(fullTx.maxPriorityFeePerGas))} gwei`}
-            size="small"
           />
         </>
       )}
       <Datapoint
         label="gasLimit"
         value={fullTx.gasLimit && `${formatGwei(BigInt(fullTx.gasLimit))} gwei`}
-        size="small"
       />
       <Datapoint
         label="gasUsed"
         value={fullTx.gasUsed && `${formatGwei(BigInt(fullTx.gasUsed))} gwei`}
-        size="medium"
       />
 
-      <Grid size={{ xs: 12 }}>
-        <Button onClick={() => resend(fullTx)}>Send again</Button>
-      </Grid>
+      <div className="col-start-1">
+        <Button className="col-start-1" onClick={() => resend(fullTx)}>
+          Send again
+        </Button>
+      </div>
     </div>
   );
 }

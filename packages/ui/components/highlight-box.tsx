@@ -6,5 +6,9 @@ export interface HighlightBoxProps {
 }
 
 export function HighlightBox({ children, className }: HighlightBoxProps) {
-  return <div className={clsx("max-w-full p-2", className)}>{children}</div>;
+  return (
+    <div className={clsx("max-w-full p-2 bg-gray-200 rounded-md", className)}>
+      {children}
+    </div>
+  );
 }

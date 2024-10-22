@@ -1,20 +1,15 @@
 import { Skeleton } from "@mui/material";
+import { clsx } from "clsx";
 
 interface DatapointProps {
   label: string;
   value?: React.ReactNode | string;
-  size?: "large" | "medium" | "small";
+  className?: string;
 }
 
-export function Datapoint({ label, value, size = "large" }: DatapointProps) {
-  let xs = 12;
-  if (size === "medium") {
-    xs = 6;
-  } else if (size === "small") {
-    xs = 4;
-  }
+export function Datapoint({ label, value, className }: DatapointProps) {
   return (
-    <div className="flex flex-col">
+    <div className={clsx("flex flex-col", className)}>
       <span className="text-muted-foreground">{label}</span>
       {value !== undefined && value}
       {value === undefined && <Skeleton variant="text" width="80%" />}

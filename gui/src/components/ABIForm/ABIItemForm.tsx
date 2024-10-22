@@ -24,11 +24,11 @@ interface ItemFormProps {
 
 type Result =
   | {
-      write: Hash;
-    }
+    write: Hash;
+  }
   | {
-      read: string;
-    };
+    read: string;
+  };
 
 export function ABIItemForm({
   to,
@@ -82,8 +82,8 @@ export function ABIItemForm({
   );
 
   return (
-    <Grid container>
-      <Grid size={{ xs: 12, sm: 4 }}>
+    <div className="grid grid-cols-3 gap-2">
+      <div className="col-span-3 md:col-span-1">
         <AbiForm
           submit={submit}
           abiItem={abiItem!}
@@ -94,12 +94,9 @@ export function ABIItemForm({
           <span className="font-mono">{result.read.toString()}</span>
         )}
         {result && "write" in result && <HashView hash={result.write} />}
-      </Grid>
+      </div>
 
-      <Grid
-        size={{ xs: 12, sm: 8 }}
-        sx={{ pl: { md: 2 }, pt: { xs: 2, md: 0 } }}
-      >
+      <div className="col-span-3 md:col-span-2">
         <HighlightBox className="w-full">
           {data && from ? (
             <SolidityCall
@@ -117,7 +114,7 @@ export function ABIItemForm({
             "Preview not ready. Fill in the form"
           )}
         </HighlightBox>
-      </Grid>
-    </Grid>
+      </div>
+    </div>
   );
 }
