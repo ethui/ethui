@@ -1,5 +1,5 @@
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { CardHeader, List } from "@mui/material";
+import { CardHeader } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import type { Address } from "viem";
 
@@ -23,7 +23,7 @@ export function SettingsTokens() {
   };
 
   return (
-    <List sx={{ maxWidth: 350 }}>
+    <ul sx={{ maxWidth: 350 }}>
       {blacklist.map(({ contract, metadata }) => (
         <CardHeader
           key={contract}
@@ -54,6 +54,6 @@ export function SettingsTokens() {
           }
         />
       ))}
-    </List>
+    </ul>
   );
 }
