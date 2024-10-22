@@ -1,5 +1,5 @@
-import { Label } from "@ethui/ui/components/ui/label";
-import { Switch } from "@ethui/ui/components/ui/switch";
+import { Label } from "@ethui/ui/components/shadcn/label";
+import { Switch } from "@ethui/ui/components/shadcn/switch";
 import { invoke } from "@tauri-apps/api/core";
 
 import { useSettings } from "#/store/useSettings";

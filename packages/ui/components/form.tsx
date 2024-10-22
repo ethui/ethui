@@ -19,7 +19,7 @@ import {
   FormMessage,
   Form as ShadForm,
 } from "./shadcn/form";
-import { Input, type InputProps } from "./ui/input";
+import { Input, type InputProps } from "./shadcn/input";
 import {
   Select,
   SelectContent,

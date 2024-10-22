@@ -3,7 +3,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@ethui/ui/components/ui/accordion";
+} from "@ethui/ui/components/shadcn/accordion";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useShallow } from "zustand/shallow";
@@ -11,7 +11,7 @@ import { useShallow } from "zustand/shallow";
 import { type Network, networkSchema } from "@ethui/types/network";
 import { ChainView } from "@ethui/ui/components/chain-view";
 import { Form } from "@ethui/ui/components/form";
-import { Button } from "@ethui/ui/components/ui/button";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import { ConfirmationDialog } from "#/components/ConfirmationDialog";
 import { useNetworks } from "#/store/useNetworks";
 

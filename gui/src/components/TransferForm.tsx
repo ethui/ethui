@@ -1,6 +1,6 @@
 import { addressSchema } from "@ethui/types/wallets";
 import { Form } from "@ethui/ui/components/form";
-import { Button } from "@ethui/ui/components/ui/button";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";

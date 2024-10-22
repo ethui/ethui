@@ -10,7 +10,7 @@ import type { Tab } from "@ethui/types/ui";
 import { AppSidebar } from "#/components/AppSidebar";
 import { CommandBar } from "#/components/CommandBar";
 import { SettingsDialog } from "#/components/Settings/SettingsDialog";
-import { SidebarProvider } from "#/components/ui/sidebar";
+import { SidebarProvider } from "#/components/shadcn/sidebar";
 import { useNoticeAlchemyKeyMissing } from "#/hooks/useNoticeAlchemyKeyMissing";
 import { useNoticeNewVersion } from "#/hooks/useNoticeNewVersion";
 

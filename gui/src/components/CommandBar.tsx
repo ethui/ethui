@@ -32,16 +32,13 @@ function useActions() {
   const walletActions = useWallets((s) => s.actions);
   const networkActions = useNetworks((s) => s.actions);
   const settingsActions = useSettings((s) => s.actions);
-  const [theme, themeActions] = useTheme(
-    useShallow((s) => [s.theme, s.actions]),
-  );
+  const [themeActions] = useTheme(useShallow((s) => [s.actions]));
   const settingsWindowActions = useSettingsWindow((s) => s.actions);
 
   return {
     walletActions,
     networkActions,
     settingsActions,
-    theme,
     themeActions,
     settingsWindowActions,
   };
@@ -63,7 +60,7 @@ export function CommandBar({ children }: { children: ReactNode }) {
   return (
     <KBarProvider actions={allActions}>
       <KBarPortal>
-        <KBarPositioner style={{ zIndex: actions.theme.zIndex.tooltip + 1 }}>
+        <KBarPositioner style={{ zIndex: 1000 }}>
           <CommandBarInner />
         </KBarPositioner>
       </KBarPortal>

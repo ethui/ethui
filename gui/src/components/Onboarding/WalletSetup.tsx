@@ -1,4 +1,4 @@
-import { Button } from "@ethui/ui/components/ui/button";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import { SettingsWallets } from "#/components/Settings/Wallets";
 import type { StepProps } from ".";
 

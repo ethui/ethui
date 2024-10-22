@@ -5,7 +5,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@ethui/ui/components/ui/select";
+} from "@ethui/ui/components/shadcn/select";
 import { useShallow } from "zustand/shallow";
 
 import { useWallets } from "#/store/useWallets";

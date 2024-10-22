@@ -3,7 +3,7 @@ import {
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
-} from "@ethui/ui/components/ui/context-menu";
+} from "@ethui/ui/components/shadcn/context-menu";
 import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
 import type { Hash } from "viem";
 

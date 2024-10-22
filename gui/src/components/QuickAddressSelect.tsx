@@ -5,7 +5,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@ethui/ui/components/ui/select";
+} from "@ethui/ui/components/shadcn/select";
 import { map } from "lodash-es";
 import { type Address, getAddress } from "viem";
 import { useShallow } from "zustand/shallow";

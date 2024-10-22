@@ -20,8 +20,8 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@ethui/ui/components/ui/accordion";
-import { Button } from "@ethui/ui/components/ui/button";
+} from "@ethui/ui/components/shadcn/accordion";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import { MoveDownLeft, MoveUpRight, ReceiptText } from "lucide-react";
 import { AddressView } from "#/components/AddressView";
 import { AppNavbar } from "#/components/AppNavbar";

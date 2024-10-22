@@ -20,7 +20,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@ethui/ui/components/ui/accordion";
+} from "@ethui/ui/components/shadcn/accordion";
 import { ABIForm } from "#/components/ABIForm";
 import { AddressView } from "#/components/AddressView";
 import { AppNavbar } from "#/components/AppNavbar";

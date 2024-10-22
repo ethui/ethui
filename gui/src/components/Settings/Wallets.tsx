@@ -9,8 +9,8 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@ethui/ui/components/ui/accordion";
-import { Button } from "@ethui/ui/components/ui/button";
+} from "@ethui/ui/components/shadcn/accordion";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import { CaretDownIcon } from "@radix-ui//react-icons";
 import { useWallets } from "#/store/useWallets";
 import { HDWalletForm } from "./Wallet/HDWallet";

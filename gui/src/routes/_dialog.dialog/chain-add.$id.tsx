@@ -5,7 +5,7 @@ import { isDirty, isValid } from "zod";
 
 import type { Network } from "@ethui/types/network";
 import { ChainView } from "@ethui/ui/components/chain-view";
-import { Button } from "@ethui/ui/components/ui/button";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import { Datapoint } from "#/components/Datapoint";
 import { useDialog } from "#/hooks/useDialog";
 

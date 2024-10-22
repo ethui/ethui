@@ -3,7 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
 import { type Address, formatUnits } from "viem";
 
-import { Button } from "@ethui/ui/components/ui/button";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import { ArrowTopRightIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
 import { useNetworks } from "#/store/useNetworks";
 import { AddressView } from "./AddressView";
