@@ -14,7 +14,6 @@ import { type Abi, type Address, formatEther, formatGwei } from "viem";
 
 import type { Paginated, PaginatedTx, Pagination, Tx } from "@ethui/types";
 import { BlockNumber } from "@ethui/ui/components/block-number";
-import { SolidityCall } from "@ethui/ui/components/solidity-call";
 import {
   Accordion,
   AccordionContent,
@@ -22,6 +21,7 @@ import {
   AccordionTrigger,
 } from "@ethui/ui/components/shadcn/accordion";
 import { Button } from "@ethui/ui/components/shadcn/button";
+import { SolidityCall } from "@ethui/ui/components/solidity-call";
 import { MoveDownLeft, MoveUpRight, ReceiptText } from "lucide-react";
 import { AddressView } from "#/components/AddressView";
 import { AppNavbar } from "#/components/AppNavbar";

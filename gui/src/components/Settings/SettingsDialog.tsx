@@ -1,13 +1,12 @@
 import { find } from "lodash-es";
 import { useState } from "react";
 
-import { DialogDescription } from "@radix-ui/react-dialog";
-import { useSettingsWindow } from "#/store/useSettingsWindow";
 import {
   Dialog,
   DialogContent,
   DialogTitle,
 } from "@ethui/ui/components/shadcn/dialog";
+import { DialogDescription } from "@radix-ui/react-dialog";
 import {
   Sidebar,
   SidebarContent,
@@ -16,6 +15,7 @@ import {
   SidebarMenuButton,
   SidebarProvider,
 } from "#/components/shadcn/sidebar";
+import { useSettingsWindow } from "#/store/useSettingsWindow";
 import { SettingsFoundry } from "./Foundry";
 import { SettingsGeneral } from "./General";
 import { SettingsKeybinds } from "./Keybinds";

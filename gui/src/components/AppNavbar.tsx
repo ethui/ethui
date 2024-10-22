@@ -1,8 +1,8 @@
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import clsx from "clsx";
-import { useIsMobile } from "#/hooks/use-mobile";
 import { useSidebar } from "#/components/shadcn/sidebar";
+import { useIsMobile } from "#/hooks/use-mobile";
 
 interface NavbarProps {
   title: React.ReactNode;
