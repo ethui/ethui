@@ -1,10 +1,24 @@
-import { Autocomplete, Chip, TextField } from "@mui/material";
 import { type Abi, type AbiFunction, formatAbiItem } from "abitype";
-import { Fragment, type SyntheticEvent, useState } from "react";
+import { Fragment, useState } from "react";
 import type { Address } from "viem";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@ethui/ui/components/shadcn/popover";
+import {
+  Command,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+} from "@ethui/ui/components/shadcn/command";
+import { Button } from "@ethui/ui/components/shadcn/button";
 
 import { useInvoke } from "#/hooks/useInvoke";
 import { ABIItemForm } from "./ABIItemForm";
+import { CaretSortIcon } from "@radix-ui/react-icons";
 
 export { ABIItemForm };
 
@@ -46,33 +60,32 @@ export function ABIForm({ chainId, address }: Props) {
     ])
     .sort((a, b) => -a.group.localeCompare(b.group));
 
-  const handleChange = (
-    _event: SyntheticEvent,
-    value: { item: AbiFunction | "raw" } | null,
-  ) => {
-    setCurrentItem(value?.item);
-  };
-
   return (
     <div className="m-1 flex flex-col items-start">
-      <Autocomplete
-        autoFocus
-        selectOnFocus
-        sx={{ minWidth: "100%" }}
-        groupBy={(option) => option.group}
-        options={options}
-        onChange={handleChange}
-        isOptionEqualToValue={(option, value) => option.id === value.id}
-        renderInput={(params) => <TextField {...params}>as</TextField>}
-        renderOption={(props, { label, item }) => (
-          <li {...props} key={JSON.stringify(item)}>
-            <div className=" m-1 flex items-center">
-              {item !== "raw" && <Chip label={item.stateMutability} />}
-              <div>{label}</div>
-            </div>
-          </li>
-        )}
-      />
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="outline" className="w-full">
+            foo
+            <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-full">
+          <Command>
+            <CommandInput placeholder="Search" />
+            <CommandList>
+              <CommandEmpty>No items found</CommandEmpty>
+              <CommandGroup>
+                {options.map(({ item, label, id }) => (
+                  <CommandItem key={id} onSelect={() => setCurrentItem(item)}>
+                    {item !== "raw" && item.stateMutability}
+                    {label}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
 
       {currentItem && (
         <Fragment key={JSON.stringify(currentItem)}>

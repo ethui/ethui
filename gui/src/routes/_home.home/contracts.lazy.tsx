@@ -27,6 +27,7 @@ import { AppNavbar } from "#/components/AppNavbar";
 import { Modal } from "#/components/Modal";
 import { useContracts } from "#/store/useContracts";
 import { useNetworks } from "#/store/useNetworks";
+import { Input } from "@ethui/ui/components/shadcn/input";
 
 export const Route = createLazyFileRoute("/_home/home/contracts")({
   component: Contracts,
@@ -64,14 +65,11 @@ export function Contracts() {
 
 function Filter({ onChange }: { onChange: (f: string) => void }) {
   return (
-    <form>
-      <div className=" m-2 flex items-stretch">
-        <TextField
-          onChange={debounce((e) => onChange(e.target.value), 100)}
-          fullWidth
-          placeholder="Filter..."
-        />
-      </div>
+    <form className="flex items-stretch">
+      <Input
+        onChange={debounce((e) => onChange(e.target.value), 100)}
+        placeholder="Filter..."
+      />
     </form>
   );
 }
@@ -84,15 +82,17 @@ function ContractView({
   return (
     <AccordionItem value={address}>
       <AccordionTrigger>
-        <AddressView address={address} />
-        {name && (
-          <Chip
-            sx={{ marginLeft: 2 }}
-            label={name}
-            color="primary"
-            variant="outlined"
-          />
-        )}
+        <div className="flex justify-start items-baseline">
+          <AddressView address={address} />
+          {name && (
+            <Chip
+              sx={{ marginLeft: 2 }}
+              label={name}
+              color="primary"
+              variant="outlined"
+            />
+          )}
+        </div>
       </AccordionTrigger>
       <AccordionContent>
         <ABIForm address={address} chainId={chainId} />
