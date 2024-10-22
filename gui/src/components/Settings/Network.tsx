@@ -12,8 +12,16 @@ import { type Network, networkSchema } from "@ethui/types/network";
 import { ChainView } from "@ethui/ui/components/chain-view";
 import { Form } from "@ethui/ui/components/form";
 import { Button } from "@ethui/ui/components/shadcn/button";
-import { ConfirmationDialog } from "#/components/ConfirmationDialog";
 import { useNetworks } from "#/store/useNetworks";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@ethui/ui/components/shadcn/dialog";
 
 type NewChild = { new?: boolean };
 
@@ -126,23 +134,32 @@ export function SettingsNetwork() {
         </Button>
       </div>
 
-      <ConfirmationDialog
-        content={
-          <>
-            You are about to reset the networks to their default configuration.
-            This action will replace your existing networks.
-          </>
-        }
-        title="Reset Networks"
-        confirmationLabel="Reset Networks"
-        onConfirm={resetNetworks}
-      >
-        {({ onOpen }) => (
-          <Button variant="destructive" onClick={() => onOpen()}>
-            Reset Networks
-          </Button>
-        )}
-      </ConfirmationDialog>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="destructive">Reset Networks</Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle style={{ cursor: "move" }} id="draggable-dialog-title">
+              Reset Networks
+            </DialogTitle>
+          </DialogHeader>
+          You are about to reset the networks to their default configuration.
+          This action will replace your existing networks.
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="ghost" autoFocus>
+                Cancel
+              </Button>
+            </DialogClose>
+            <DialogClose asChild>
+              <Button variant="destructive" onClick={resetNetworks}>
+                Reset
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Form>
   );
 }

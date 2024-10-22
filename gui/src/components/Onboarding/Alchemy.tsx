@@ -1,5 +1,4 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { useCallback } from "react";
 import { type FieldValues, useForm, useWatch } from "react-hook-form";
@@ -7,6 +6,7 @@ import { z } from "zod";
 
 import { Form } from "@ethui/ui/components/form";
 import type { StepProps } from ".";
+import { Link } from "@tanstack/react-router";
 
 export function AlchemyStep({ onSubmit }: StepProps) {
   const schema = z.object({
@@ -50,7 +50,6 @@ export function AlchemyStep({ onSubmit }: StepProps) {
       <p>
         ethui works with{" "}
         <Link
-          underline="hover"
           href="https://book.getfoundry.sh/anvil/"
           target="_blank"
           rel="nofollow noopener noreferrer"
@@ -59,7 +58,6 @@ export function AlchemyStep({ onSubmit }: StepProps) {
         </Link>{" "}
         out of the box. But for live blockchains, a connection to{" "}
         <Link
-          underline="hover"
           href="https://www.alchemy.com/"
           target="_blank"
           rel="nofollow noopener noreferrer"
@@ -68,7 +66,6 @@ export function AlchemyStep({ onSubmit }: StepProps) {
         </Link>{" "}
         is recommended. Go to your{" "}
         <Link
-          underline="hover"
           href="https://dashboard.alchemy.com/apps"
           target="_blank"
           rel="nofollow noopener noreferrer"
