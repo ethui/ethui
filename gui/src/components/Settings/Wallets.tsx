@@ -47,7 +47,7 @@ export function SettingsWallets({ extraAction }: Props) {
         {newType && <NewItem key="_new" type={newType} onFinish={closeNew} />}
       </div>
       {!newType && (
-        <div className="m-2 mt-4 flex justify-between justify-between">
+        <div className="mt-4 flex justify-between justify-between">
           <AddWalletButton onChoice={startNew} />
           {extraAction && extraAction}
         </div>
@@ -116,7 +116,7 @@ function NewItem({ type, onFinish }: NewItemProps) {
   };
 
   return (
-    <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
+    <div className="p-2">
       <span className="pb-2">New {type}</span>
 
       {type === "plaintext" && <Plaintext {...props} />}
@@ -125,7 +125,7 @@ function NewItem({ type, onFinish }: NewItemProps) {
       {type === "impersonator" && <ImpersonatorForm {...props} />}
       {type === "ledger" && <Ledger {...props} />}
       {type === "privateKey" && <PrivateKeyForm {...props} />}
-    </Paper>
+    </div>
   );
 }
 

@@ -1,5 +1,4 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@mui/material";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -10,6 +9,7 @@ import {
   mnemonicSchema,
 } from "@ethui/types/wallets";
 import { Form } from "@ethui/ui/components/form";
+import { Button } from "@ethui/ui/components/shadcn/button";
 
 const schema = z.object({
   name: z.string().min(1),
@@ -46,10 +46,10 @@ export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
       <Form.Text label="Derivation Path" name="derivationPath" />
       <Form.NumberField label="Count" name="count" />
 
-      <div className=" m-2 flex">
+      <div className="flex gap-2">
         <Form.Submit label="Save" />
 
-        <Button color="warning" onClick={onRemove}>
+        <Button variant="destructive" onClick={onRemove}>
           Remove
         </Button>
       </div>

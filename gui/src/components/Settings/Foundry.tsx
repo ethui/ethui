@@ -40,7 +40,11 @@ export function SettingsFoundry() {
         output ABIs automatically.
       </span>
 
-      <Form.Text name="abiWatchPath" label="ABI Watch path" />
+      <Form.Text
+        name="abiWatchPath"
+        label="ABI Watch path"
+        className="w-full"
+      />
       <Form.Submit label="Save" />
     </Form>
   );

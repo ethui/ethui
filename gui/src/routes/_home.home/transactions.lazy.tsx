@@ -3,7 +3,7 @@ import {
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
-} from "@ethui/ui/components/ui/context-menu";
+} from "@ethui/ui/components/shadcn/context-menu";
 import { CircularProgress, Grid2 as Grid } from "@mui/material";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";

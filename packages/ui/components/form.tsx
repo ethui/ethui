@@ -47,7 +47,7 @@ export function Form<S extends FieldValues>({
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className={clsx(
-          "flex flex-col items-stretch gap-5 align-start",
+          "flex flex-col items-start gap-5 align-start",
           className,
         )}
         {...props}
@@ -61,14 +61,13 @@ export function Form<S extends FieldValues>({
 interface BaseInputProps<T extends FieldValues> extends InputProps {
   label?: string;
   name: Path<T>;
-  helperText?: string;
+  className?: string;
 }
 
 function Text<T extends FieldValues>({
   name,
   label,
-  helperText = "",
-  ...props
+  className = "",
 }: BaseInputProps<T>) {
   const { control } = useFormContext();
 
@@ -77,10 +76,10 @@ function Text<T extends FieldValues>({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem>
+        <FormItem className={className}>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Input {...field} {...props} />
+            <Input {...field} />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -239,8 +238,8 @@ function SelectInput<
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem>
-          <FormLabel>{label}</FormLabel>
+        <FormItem className="flex items-baseline gap-2">
+          <FormLabel className="shrink-0">{label}</FormLabel>
           <Select
             onValueChange={field.onChange}
             defaultValue={field.value || defaultValue}

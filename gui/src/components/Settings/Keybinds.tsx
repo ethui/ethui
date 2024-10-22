@@ -1,18 +1,10 @@
-import {
-  ListItem,
-  ListItemText,
-  TextField,
-  useMediaQuery,
-} from "@mui/material";
+import { ListItem, ListItemText } from "@mui/material";
 import { useState } from "react";
 
 import { clsx } from "clsx";
-import { useTheme } from "#/store/useTheme";
+import { Input } from "@ethui/ui/components/shadcn/input";
 
 export function SettingsKeybinds() {
-  const { theme } = useTheme();
-  const isSmallerScreen = useMediaQuery(theme.breakpoints.down("md"));
-
   const keybinds = [
     { name: "Toggle Command Bar", combination: "Ctrl + K" },
     { name: "Switch between tabs", combination: "Ctrl + [1..4]" },
@@ -50,24 +42,17 @@ export function SettingsKeybinds() {
 
   return (
     <>
-      <div
-        className={clsx("flex flex-col", isSmallerScreen ? "gap-0" : "gap-7")}
-      >
-        <div
-          className={clsx(
-            "flex justify-between gap-3.5",
-            isSmallerScreen ? "flex-col" : "flex-row",
-          )}
-        >
-          <div>
+      <div className={clsx("flex flex-col", "gap-0")}>
+        <div className={clsx("flex justify-between gap-3.5 flex-row")}>
+          <div className="shrink-0">
             <h6>Search keybinds</h6>
             <span>Showing {filteredKeybinds.length} keybinds.</span>
           </div>
-          <TextField
+          <Input
             value={search}
             onChange={handleSearch}
             id="outlined-required"
-            label="Filter..."
+            placeholder="Filter..."
           />
         </div>
         <div>
@@ -78,7 +63,7 @@ export function SettingsKeybinds() {
                 sx={{
                   display: "flex",
                   alignItems: "flex-start",
-                  flexDirection: isSmallerScreen ? "column" : "row",
+                  flexDirection: "row",
                   borderBottom: 1,
                   pr: 3,
                   py: 3,

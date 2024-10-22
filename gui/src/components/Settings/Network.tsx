@@ -69,8 +69,8 @@ export function SettingsNetwork() {
                 {!field.chain_id && "new network"}
               </AccordionTrigger>
               <AccordionContent>
-                <div className="m-2 flex flex-col items-start">
-                  <div className="m-2 flex flex-col">
+                <div className="flex flex-col items-start w-full gap-2">
+                  <div className="flex flex-row gap-2">
                     <Form.Text label="Name" name={`networks.${index}.name`} />
                     <Form.NumberField
                       label="Chain Id"
@@ -86,16 +86,19 @@ export function SettingsNetwork() {
                   <Form.Text
                     label="HTTP RPC"
                     name={`networks.${index}.http_url`}
+                    className="w-full"
                   />
                   <Form.Text
                     label="WebSockets RPC"
                     name={`networks.${index}.ws_url`}
+                    className="w-full"
                   />
                   <Form.Text
                     label="Explorer URL"
                     name={`networks.${index}.explorer_url`}
+                    className="w-full"
                   />
-                  <div className="m-2 flex flex-col">
+                  <div className="flex flex-row gap-2">
                     <Form.Text
                       label="Currency"
                       name={`networks.${index}.currency`}
@@ -106,7 +109,7 @@ export function SettingsNetwork() {
                     />
                   </div>
 
-                  <Button color="warning" onClick={() => remove(index)}>
+                  <Button variant="destructive" onClick={() => remove(index)}>
                     Remove
                   </Button>
                 </div>

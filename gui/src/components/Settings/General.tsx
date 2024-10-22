@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import {} from "@mui/material";
+import { } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { useCallback } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
@@ -85,7 +85,11 @@ export function SettingsGeneral() {
         label="Alchemy API Key"
         className="w-full"
       />
-      <Form.Text label="Etherscan API Key" name="etherscanApiKey" />
+      <Form.Text
+        label="Etherscan API Key"
+        name="etherscanApiKey"
+        className="w-full"
+      />
 
       <Form.Checkbox
         label="Hide Tokens Without Balance"
