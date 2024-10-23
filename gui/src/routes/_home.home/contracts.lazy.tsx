@@ -1,10 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Chip,
-  CircularProgress,
-  SpeedDial,
-  SpeedDialIcon,
-} from "@mui/material";
+import { Chip, CircularProgress, SpeedDial } from "@mui/material";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import debounce from "lodash-es/debounce";
 import { useState } from "react";
@@ -27,6 +22,7 @@ import { Modal } from "#/components/Modal";
 import { useContracts } from "#/store/useContracts";
 import { useNetworks } from "#/store/useNetworks";
 import { Input } from "@ethui/ui/components/shadcn/input";
+import { Plus } from "lucide-react";
 
 export const Route = createLazyFileRoute("/_home/home/contracts")({
   component: Contracts,
@@ -51,7 +47,7 @@ export function Contracts() {
       <SpeedDial
         ariaLabel="Add contract"
         sx={{ position: "absolute", bottom: 16, right: 16 }}
-        icon={<SpeedDialIcon />}
+        icon={<Plus />}
         onClick={() => setAddContractOpen(true)}
       />
 

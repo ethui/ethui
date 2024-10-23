@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  Button,
   Step,
   StepLabel,
   Stepper,
@@ -25,6 +24,7 @@ import {
 import { Form } from "@ethui/ui/components/form";
 import { useProvider } from "#/hooks/useProvider";
 import { truncateHex } from "#/utils";
+import { Button } from "@ethui/ui/components/shadcn/button";
 
 export const schema = z.object({
   count: z.number().int().min(1).max(100),
@@ -155,7 +155,7 @@ function MnemonicStep({ onSubmit, onCancel }: MnemonicStepProps) {
       <Form.Text label="12-word mnemonic" name="mnemonic" multiline />
 
       <div className=" m-2 flex justify-end">
-        <Button color="warning" onClick={onCancel}>
+        <Button variant="outline" onClick={onCancel}>
           Cancel
         </Button>
 
@@ -187,7 +187,7 @@ function PasswordStep({ onSubmit, onCancel }: PasswordStepProps) {
       />
 
       <div className="m-2 flex flex-col justify-end">
-        <Button color="warning" onClick={onCancel}>
+        <Button variant="outline" onClick={onCancel}>
           Cancel
         </Button>
 
@@ -261,7 +261,7 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
           </TableContainer>
 
           <div className=" m-2 flex justify-end">
-            <Button color="warning" onClick={onCancel}>
+            <Button variant="outline" onClick={onCancel}>
               Cancel
             </Button>
 
