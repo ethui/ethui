@@ -1,22 +1,19 @@
 import {
   Avatar,
   Badge,
-  Box,
   FormControl,
   MenuItem,
   Select,
   type SelectChangeEvent,
-  Stack,
-  Typography,
 } from "@mui/material";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { map } from "lodash-es";
 import { useEffect, useState } from "react";
 
-import { ChainView } from "@ethui/react/components/ChainView";
 import type { Affinity, Peer } from "@ethui/types";
-import { Navbar } from "#/components/Home/Navbar";
+import { ChainView } from "@ethui/ui/components/chain-view";
+import { AppNavbar } from "#/components/AppNavbar";
 import { Panel } from "#/components/Panel";
 import { useEventListener } from "#/hooks/useEventListener";
 import { useInvoke } from "#/hooks/useInvoke";
@@ -34,31 +31,29 @@ export function Connections() {
 
   return (
     <>
-      <Navbar>Connections</Navbar>
-      <Panel>
-        <Stack spacing={2}>
-          {map(peersByDomain, (peers, domain) => (
-            <Domain key={domain} domain={domain} peers={peers} />
-          ))}
-        </Stack>
-      </Panel>
+      <AppNavbar title="Connections" />
+      <div className="m-1 flex flex-col">
+        {map(peersByDomain, (peers, domain) => (
+          <Domain key={domain} domain={domain} peers={peers} />
+        ))}
+      </div>
     </>
   );
 }
 
 function Domain({ domain, peers }: { domain: string; peers: Peer[] }) {
   return (
-    <Stack direction="row" alignItems="center" spacing={2}>
+    <div className=" m-1 flex items-center">
       <Badge>
         <Avatar sx={{ width: 30, height: 30 }} src={peers[0].favicon}>
           {peers[0].origin.replace(/https?:\/\//, "").slice(0, 2)}
         </Avatar>
       </Badge>
-      <Typography> {peers[0].origin}</Typography>
-      <Box sx={{ "&&": { ml: "auto" } }}>
+      <span> {peers[0].origin}</span>
+      <div>
         <AffinityForm domain={domain} />
-      </Box>
-    </Stack>
+      </div>
+    </div>
   );
 }
 

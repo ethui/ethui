@@ -1,8 +1,7 @@
-import { Typography } from "@mui/material";
 import { type AbiFunction, decodeFunctionData } from "viem";
 
 export function Debug({ value }: { value: any }) {
-  return <Typography fontFamily="monospace">{stringify(value)}</Typography>;
+  return <span className="font-mono">{stringify(value)}</span>;
 }
 
 export function stringify(v: any, indent = 2) {

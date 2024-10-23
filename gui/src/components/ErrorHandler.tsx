@@ -3,9 +3,6 @@ import { invoke } from "@tauri-apps/api/core";
 import type { ErrorInfo, ReactNode } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { Typography } from "@ethui/react/components/Typography";
-import { Panel } from "./Panel";
-
 interface Props {
   children: ReactNode;
 }
@@ -27,16 +24,14 @@ function Fallback({ error }: { error: Error }) {
   return (
     <>
       <Alert severity="error">Something went wrong</Alert>
-      <Panel>
-        <Typography mono>
-          {error.toString()}
-          <br />
-          <br />
-          {formatStack(error.stack).map((line, i) => (
-            <div key={i}>{line}</div>
-          ))}
-        </Typography>
-      </Panel>
+      <span className="font-mono">
+        {error.toString()}
+        <br />
+        <br />
+        {formatStack(error.stack).map((line, i) => (
+          <div key={i}>{line}</div>
+        ))}
+      </span>
     </>
   );
 }

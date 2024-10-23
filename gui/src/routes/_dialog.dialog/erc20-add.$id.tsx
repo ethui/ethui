@@ -1,4 +1,4 @@
-import { Button, Grid2 as Grid, Stack, Typography } from "@mui/material";
+import { Grid2 as Grid } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { isDirty, isValid } from "zod";
@@ -25,23 +25,19 @@ export function ERC20AddDialog() {
   if (!token) return null;
 
   return (
-    <Stack spacing={2} alignItems="center">
-      <Typography variant="h6" component="h1">
-        Add suggested token
-      </Typography>
-      <Typography textAlign={"center"}>
+    <div className="m-2 flex flex-col items-center">
+      <h1 className="font-bold">Add suggested token</h1>
+      <span className="text-center">
         This allows the following asset to be added to your wallet.
-      </Typography>
+      </span>
       <Grid container rowSpacing={2}>
         <Datapoint
           label=""
           value={
-            <Stack direction="row" spacing={1.5} textAlign="center">
+            <div className="m-1 flex flex flex-col text-center">
               <IconToken iconUrl={token.alchemy_metadata.logo} />
-              <Typography alignSelf={"center"}>
-                {token.metadata.name}
-              </Typography>
-            </Stack>
+              <span className="self-center">{token.metadata.name}</span>
+            </div>
           }
         />
         <Datapoint size="small" label="Symbol" value={token.metadata.symbol} />
@@ -56,23 +52,18 @@ export function ERC20AddDialog() {
         />
       </Grid>
 
-      <Stack direction="row" spacing={2}>
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() => tauriWindow.close()}
-        >
+      <div className=" m-2 flex">
+        <Button color="error" onClick={() => tauriWindow.close()}>
           Cancel
         </Button>
         <Button
-          variant="contained"
           type="submit"
           disabled={!isDirty || !isValid}
           onClick={() => send("accept")}
         >
           Add
         </Button>
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }

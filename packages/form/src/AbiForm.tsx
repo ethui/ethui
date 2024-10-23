@@ -1,8 +1,9 @@
-import { Alert, Box, Button, Grid2 as Grid, Stack } from "@mui/material";
+import { Alert } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { type AbiFunction, type AbiItem, parseAbiItem } from "viem";
 import { encodeFunctionData } from "viem/utils";
 
+import { Button } from "@ethui/ui/components/shadcn/button";
 import { AbiInput } from "./AbiInput";
 import { decodeDefaultArgs } from "./utils";
 
@@ -29,7 +30,7 @@ export function AbiForm({
   defaultCalldata,
   defaultEther,
   onChange,
-  onSubmit = () => {},
+  onSubmit = () => { },
   submit = false,
 }: AbiFormProps) {
   if (!abiItem || abiItem === "") {
@@ -91,10 +92,8 @@ export function RawForm({
   }, [onChange, calldata, ether]);
 
   return (
-    <Stack
-      component="form"
-      spacing={2}
-      sx={{ p: 2 }}
+    <form
+      className="grid grid-cols-3 p-2"
       onSubmit={(e) => {
         e.preventDefault();
         onSubmit?.();
@@ -110,24 +109,26 @@ export function RawForm({
           setCalldata(e);
         }}
       />
-      <AbiInput
-        name="value"
-        label="value"
-        type="uint256"
-        debug={debug}
-        defaultValue={defaultEther}
-        onChange={(e) => {
-          setEther(e);
-        }}
-      />
+      <div className="col-span-2">
+        <AbiInput
+          name="value"
+          label="value"
+          type="uint256"
+          debug={debug}
+          defaultValue={defaultEther}
+          onChange={(e) => {
+            setEther(e);
+          }}
+        />
+      </div>
       {onSubmit && submit && (
-        <Box>
-          <Button variant="contained" type="submit" disabled={!calldata}>
+        <div className="col-start-1">
+          <Button type="submit" disabled={!calldata}>
             Submit
           </Button>
-        </Box>
+        </div>
       )}
-    </Stack>
+    </form>
   );
 }
 
@@ -185,53 +186,49 @@ export function AbiFormInner({
   }, [item, parentOnChange, calldata, ether, values]);
 
   return (
-    <Grid container spacing={2} onSubmit={(e) => e.preventDefault()}>
-      <Stack
-        component="form"
-        spacing={2}
-        sx={{ p: 2 }}
-        onSubmit={(e) => {
-          e.preventDefault();
-          onSubmit?.();
-        }}
-      >
-        {item.inputs.map((input, i) => (
-          <AbiInput
-            key={i}
-            name={input.name || i.toString()}
-            label={input.name || i.toString()}
-            type={input.type}
-            debug={debug}
-            defaultValue={values[i]}
-            onChange={(e) => {
-              onChange(e, i);
-            }}
-          />
-        ))}
-        {item.stateMutability === "payable" && (
-          <AbiInput
-            name="value"
-            label="value"
-            type="uint256"
-            debug={debug}
-            defaultValue={defaultEther}
-            onChange={(e) => {
-              try {
-                setEther(BigInt(e));
-              } catch (e) {
-                setEther(undefined);
-              }
-            }}
-          />
-        )}
-        {submit && (
-          <Box>
-            <Button variant="contained" type="submit" disabled={!calldata}>
-              Submit
-            </Button>
-          </Box>
-        )}
-      </Stack>
-    </Grid>
+    <form
+      className="flex flex-col gap-2"
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit?.();
+      }}
+    >
+      {item.inputs.map((input, i) => (
+        <AbiInput
+          key={i}
+          name={input.name || i.toString()}
+          label={input.name || i.toString()}
+          type={input.type}
+          debug={debug}
+          defaultValue={values[i]}
+          onChange={(e) => {
+            onChange(e, i);
+          }}
+        />
+      ))}
+      {item.stateMutability === "payable" && (
+        <AbiInput
+          name="value"
+          label="value"
+          type="uint256"
+          debug={debug}
+          defaultValue={defaultEther}
+          onChange={(e) => {
+            try {
+              setEther(BigInt(e));
+            } catch (e) {
+              setEther(undefined);
+            }
+          }}
+        />
+      )}
+      {submit && (
+        <div>
+          <Button variant="contained" type="submit" disabled={!calldata}>
+            Submit
+          </Button>
+        </div>
+      )}
+    </form>
   );
 }

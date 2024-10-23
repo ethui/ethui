@@ -1,15 +1,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Stack } from "@mui/material";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Form } from "@ethui/react/components/Form";
 import {
   type PlaintextWallet,
   type Wallet,
   derivationPathSchema,
   mnemonicSchema,
 } from "@ethui/types/wallets";
+import { Form } from "@ethui/ui/components/form";
+import { Button } from "@ethui/ui/components/shadcn/button";
 
 const schema = z.object({
   name: z.string().min(1),
@@ -41,20 +41,18 @@ export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
 
   return (
     <Form form={form} onSubmit={prepareAndSubmit}>
-      <Stack spacing={2} alignItems="flex-start">
-        <Form.Text label="Name" name="name" />
-        <Form.Text label="Mnemonic" name="mnemonic" fullWidth />
-        <Form.Text label="Derivation Path" name="derivationPath" />
-        <Form.NumberField label="Count" name="count" />
+      <Form.Text label="Name" name="name" />
+      <Form.Text label="Mnemonic" name="mnemonic" />
+      <Form.Text label="Derivation Path" name="derivationPath" />
+      <Form.NumberField label="Count" name="count" />
 
-        <Stack direction="row" spacing={2}>
-          <Form.Submit label="Save" />
+      <div className="flex gap-2">
+        <Form.Submit label="Save" />
 
-          <Button color="warning" variant="contained" onClick={onRemove}>
-            Remove
-          </Button>
-        </Stack>
-      </Stack>
+        <Button variant="destructive" onClick={onRemove}>
+          Remove
+        </Button>
+      </div>
     </Form>
   );
 }

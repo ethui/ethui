@@ -1,18 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Backdrop,
-  Button,
-  CircularProgress,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Backdrop, CircularProgress } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Form } from "@ethui/react/components/Form";
+import { Form } from "@ethui/ui/components/form";
 import { useDialog } from "#/hooks/useDialog";
+import { Button } from "@ethui/ui/components/shadcn/button";
 
 export const Route = createFileRoute("/_dialog/dialog/wallet-unlock/$id")({
   component: WalletUnlockDialog,
@@ -58,11 +53,15 @@ export function WalletUnlockDialog() {
 
   return (
     <>
-      <Form form={form} onSubmit={onSubmit} className="flex flex-col gap-4">
-        <Stack spacing={2}>
-          <Typography>
+      <Form
+        form={form}
+        onSubmit={onSubmit}
+        className="flex flex flex-col gap-4"
+      >
+        <div className="m-2 flex flex-col">
+          <span>
             ethui is asking to unlock wallet <b>{name}:</b>
-          </Typography>
+          </span>
 
           <Form.Text
             label="Password"
@@ -75,17 +74,13 @@ export function WalletUnlockDialog() {
             }
             fullWidth
           />
-          <Stack direction="row" spacing={2}>
+          <div className=" m-1 flex">
             <Form.Submit label="Unlock" />
-            <Button
-              variant="contained"
-              color="error"
-              onClick={() => send("reject")}
-            >
+            <Button color="error" onClick={() => send("reject")}>
               Cancel
             </Button>
-          </Stack>
-        </Stack>
+          </div>
+        </div>
       </Form>
       <Backdrop open={loading}>
         <CircularProgress color="inherit" />

@@ -6,7 +6,8 @@
   "scripts": {
     "app:dev": "cargo tauri dev --config bin/tauri-dev.conf.json --features debug",
     "gui:build": "yarn workspace @ethui/gui build",
-    "storybook": "yarn workspace @ethui/react storybook",
+    "gui:devtools": "yarn workspace @ethui/gui devtools",
+    "storybook": "yarn workspace @ethui/ui storybook",
     "ext:dev": "yarn workspace @ethui/extension dev",
     "ext:build": "yarn workspace @ethui/extension build \"$@\"",
     "lint": "yarn lint:biome && yarn lint:tsc",
@@ -19,11 +20,11 @@
   },
   "workspaces": [
     "extension",
-    "packages/react",
     "packages/types",
     "packages/data",
     "packages/abiparse",
     "packages/form",
+    "packages/ui",
     "gui"
   ],
   "devDependencies": {

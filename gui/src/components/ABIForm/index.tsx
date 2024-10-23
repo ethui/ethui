@@ -1,11 +1,24 @@
-import { Autocomplete, Box, Chip, TextField } from "@mui/material";
-import { Stack } from "@mui/system";
 import { type Abi, type AbiFunction, formatAbiItem } from "abitype";
-import { Fragment, type SyntheticEvent, useState } from "react";
+import { Fragment, useState } from "react";
 import type { Address } from "viem";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@ethui/ui/components/shadcn/popover";
+import {
+  Command,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+} from "@ethui/ui/components/shadcn/command";
+import { Button } from "@ethui/ui/components/shadcn/button";
 
 import { useInvoke } from "#/hooks/useInvoke";
 import { ABIItemForm } from "./ABIItemForm";
+import { CaretSortIcon } from "@radix-ui/react-icons";
 
 export { ABIItemForm };
 
@@ -47,33 +60,32 @@ export function ABIForm({ chainId, address }: Props) {
     ])
     .sort((a, b) => -a.group.localeCompare(b.group));
 
-  const handleChange = (
-    _event: SyntheticEvent,
-    value: { item: AbiFunction | "raw" } | null,
-  ) => {
-    setCurrentItem(value?.item);
-  };
-
   return (
-    <Stack alignItems="flex-start" spacing={2}>
-      <Autocomplete
-        autoFocus
-        selectOnFocus
-        sx={{ minWidth: "100%" }}
-        groupBy={(option) => option.group}
-        options={options}
-        onChange={handleChange}
-        isOptionEqualToValue={(option, value) => option.id === value.id}
-        renderInput={(params) => <TextField {...params}>as</TextField>}
-        renderOption={(props, { label, item }) => (
-          <Box component="li" {...props} key={JSON.stringify(item)}>
-            <Stack direction="row" spacing={1} alignItems="center">
-              {item !== "raw" && <Chip label={item.stateMutability} />}
-              <Box>{label}</Box>
-            </Stack>
-          </Box>
-        )}
-      />
+    <div className="m-1 flex flex-col items-start gap-4">
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="outline" className="w-full">
+            foo
+            <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-full">
+          <Command>
+            <CommandInput placeholder="Search" />
+            <CommandList>
+              <CommandEmpty>No items found</CommandEmpty>
+              <CommandGroup>
+                {options.map(({ item, label, id }) => (
+                  <CommandItem key={id} onSelect={() => setCurrentItem(item)}>
+                    {item !== "raw" && item.stateMutability}
+                    {label}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
 
       {currentItem && (
         <Fragment key={JSON.stringify(currentItem)}>
@@ -83,6 +95,6 @@ export function ABIForm({ chainId, address }: Props) {
           />
         </Fragment>
       )}
-    </Stack>
+    </div>
   );
 }

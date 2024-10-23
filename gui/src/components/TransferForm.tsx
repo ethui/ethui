@@ -1,7 +1,8 @@
-import { Form } from "@ethui/react/components/Form";
 import { addressSchema } from "@ethui/types/wallets";
+import { Form } from "@ethui/ui/components/form";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Alert, Button, Stack, Typography } from "@mui/material";
+import { Alert } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
@@ -112,51 +113,44 @@ export function TransferForm({
 
   return (
     <Form form={form} onSubmit={onSubmit}>
-      <Stack alignItems="flex-start" spacing={2}>
-        <Typography>Transfer token</Typography>
+      <span>Transfer token</span>
 
-        <Form.Select
-          fullWidth
-          name="currency"
-          label="Currency"
-          items={Array.from(tokens.values())}
-          toValue={(v) => v.contract}
-          render={(v) => v.currency}
-          sx={{ minWidth: 120 }}
-        />
+      <Form.Select
+        name="currency"
+        label="Currency"
+        items={Array.from(tokens.values())}
+        toValue={(v) => v.contract}
+        render={(v) => v.currency}
+      />
 
-        <Typography variant="body2">
-          Balance: {formatUnits(currentToken.balance, currentToken.decimals)}
-        </Typography>
+      <span>
+        Balance: {formatUnits(currentToken.balance, currentToken.decimals)}
+      </span>
 
-        <Form.Text label="To" name="to" fullWidth />
-        <Form.BigInt
-          label="Amount"
-          name="value"
-          fullWidth
-          decimals={currentToken.decimals}
-        />
+      <Form.Text label="To" name="to" />
+      <Form.BigInt
+        label="Amount"
+        name="value"
+        decimals={currentToken.decimals}
+      />
 
-        {result && (
-          <Alert
-            sx={{ alignSelf: "stretch" }}
-            variant="outlined"
-            severity="success"
-          >
-            <Typography variant="body2" noWrap>
-              {result}
-            </Typography>
-          </Alert>
-        )}
+      {result && (
+        <Alert
+          sx={{ alignSelf: "stretch" }}
+          variant="outlined"
+          severity="success"
+        >
+          <span>{result}</span>
+        </Alert>
+      )}
 
-        <Stack width="100%" direction="row" justifyContent="space-between">
-          <Button variant="outlined" color="error" onClick={onClose}>
-            Close
-          </Button>
+      <div className=" flex w-full justify-between">
+        <Button variant="outline" color="error" onClick={onClose}>
+          Close
+        </Button>
 
-          <Form.Submit label="Send" />
-        </Stack>
-      </Stack>
+        <Form.Submit label="Send" />
+      </div>
     </Form>
   );
 }

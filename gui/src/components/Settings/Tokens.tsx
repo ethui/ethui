@@ -1,5 +1,4 @@
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { Box, CardHeader, IconButton, List, Stack } from "@mui/material";
+import { CardHeader } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import type { Address } from "viem";
 
@@ -7,6 +6,8 @@ import { IconAddress } from "#/components/Icons/Address";
 import { useBlacklist } from "#/store/useBlacklist";
 import { useNetworks } from "#/store/useNetworks";
 import { AddressView } from "../AddressView";
+import { Button } from "@ethui/ui/components/shadcn/button";
+import { EyeOff } from "lucide-react";
 
 export function SettingsTokens() {
   const currentNetwork = useNetworks((s) => s.current);
@@ -22,7 +23,7 @@ export function SettingsTokens() {
   };
 
   return (
-    <List sx={{ maxWidth: 350 }}>
+    <ul>
       {blacklist.map(({ contract, metadata }) => (
         <CardHeader
           key={contract}
@@ -31,20 +32,19 @@ export function SettingsTokens() {
             <IconAddress chainId={currentNetwork.chain_id} address={contract} />
           }
           action={
-            <Stack direction="row" justifyContent="center">
-              <IconButton
+            <div className=" center flex">
+              <Button
+                size="icon"
                 title={"Unhide token"}
                 onClick={() => unhide(contract)}
               >
-                <VisibilityOffIcon />
-              </IconButton>
-            </Stack>
+                <EyeOff />
+              </Button>
+            </div>
           }
           title={
             <>
-              <Box component="span" sx={{ mr: 1 }}>
-                {metadata?.symbol}
-              </Box>
+              <span className="mr-1">{metadata?.symbol}</span>
               {contract && (
                 <>
                   (<AddressView address={contract} />)
@@ -54,6 +54,6 @@ export function SettingsTokens() {
           }
         />
       ))}
-    </List>
+    </ul>
   );
 }

@@ -1,5 +1,4 @@
 import {
-  Box,
   List,
   ListItem,
   ListItemButton,
@@ -7,7 +6,6 @@ import {
   ListItemSecondaryAction,
   ListItemText,
   Paper,
-  Typography,
 } from "@mui/material";
 import {
   type ActionId,
@@ -34,16 +32,13 @@ function useActions() {
   const walletActions = useWallets((s) => s.actions);
   const networkActions = useNetworks((s) => s.actions);
   const settingsActions = useSettings((s) => s.actions);
-  const [theme, themeActions] = useTheme(
-    useShallow((s) => [s.theme, s.actions]),
-  );
+  const [themeActions] = useTheme(useShallow((s) => [s.actions]));
   const settingsWindowActions = useSettingsWindow((s) => s.actions);
 
   return {
     walletActions,
     networkActions,
     settingsActions,
-    theme,
     themeActions,
     settingsWindowActions,
   };
@@ -65,8 +60,8 @@ export function CommandBar({ children }: { children: ReactNode }) {
   return (
     <KBarProvider actions={allActions}>
       <KBarPortal>
-        <KBarPositioner style={{ zIndex: actions.theme.zIndex.tooltip + 1 }}>
-          <CommandBarInner actions={actions} />
+        <KBarPositioner style={{ zIndex: 1000 }}>
+          <CommandBarInner />
         </KBarPositioner>
       </KBarPortal>
       {children}
@@ -83,9 +78,7 @@ function RenderResults() {
       onRender={({ item, active }) =>
         typeof item === "string" ? (
           <ListItem dense>
-            <Typography sx={{ color: "gray" }} variant="subtitle2">
-              {item}
-            </Typography>
+            <span className="text-muted-foreground">{item}</span>
           </ListItem>
         ) : (
           <ResultItem
@@ -99,11 +92,7 @@ function RenderResults() {
   );
 }
 
-function CommandBarInner({
-  actions,
-}: {
-  actions: ReturnType<typeof useActions>;
-}) {
+function CommandBarInner() {
   return (
     <Paper
       component={KBarAnimator}
@@ -114,18 +103,7 @@ function CommandBarInner({
         overflow: "hidden",
       }}
     >
-      <Box
-        component={KBarSearch}
-        sx={{
-          width: "100%",
-          outline: "none",
-          border: "none",
-          p: actions.theme.spacing(2),
-          color: actions.theme.palette.text.primary,
-          background: "transparent",
-          ...actions.theme.typography.body1,
-        }}
-      />
+      <KBarSearch className="w-full border-none bg-transparent p-2 text-primary-foreground outline-none" />
       <RenderResults />
     </Paper>
   );
