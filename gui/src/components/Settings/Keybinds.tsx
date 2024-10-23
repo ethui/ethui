@@ -1,7 +1,5 @@
-import { ListItem, ListItemText } from "@mui/material";
 import { useState } from "react";
 
-import { clsx } from "clsx";
 import { Input } from "@ethui/ui/components/shadcn/input";
 
 export function SettingsKeybinds() {
@@ -42,8 +40,8 @@ export function SettingsKeybinds() {
 
   return (
     <>
-      <div className={clsx("flex flex-col", "gap-0")}>
-        <div className={clsx("flex justify-between gap-3.5 flex-row")}>
+      <div className="flex flex-col gap-0">
+        <div className="flex justify-between gap-3.5 flex-row">
           <div className="shrink-0">
             <h6>Search keybinds</h6>
             <span>Showing {filteredKeybinds.length} keybinds.</span>
@@ -55,32 +53,22 @@ export function SettingsKeybinds() {
             placeholder="Filter..."
           />
         </div>
-        <div>
+        <ul>
           {filteredKeybinds.length ? (
             filteredKeybinds.map((keybind) => (
-              <ListItem
-                key={keybind.combination}
-                sx={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  flexDirection: "row",
-                  borderBottom: 1,
-                  pr: 3,
-                  py: 3,
-                }}
-              >
-                <ListItemText primary={keybind.name} />
+              <li className="flex p-3" key={keybind.combination}>
+                {keybind.name}
                 <div className="rounded-sm border">
                   <span className="break-words rounded-sm font-mono">
                     {keybind.combination}
                   </span>
                 </div>
-              </ListItem>
+              </li>
             ))
           ) : (
-            <ListItem>No keybinds found.</ListItem>
+            <li>No keybinds found.</li>
           )}
-        </div>
+        </ul>
       </div>
     </>
   );
