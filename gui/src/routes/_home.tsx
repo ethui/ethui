@@ -1,9 +1,3 @@
-import {
-  CallToAction,
-  OnlinePredictionSharp,
-  Receipt,
-  RequestQuoteSharp,
-} from "@mui/icons-material";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 
 import type { Tab } from "@ethui/types/ui";
@@ -13,6 +7,7 @@ import { SettingsDialog } from "#/components/Settings/SettingsDialog";
 import { SidebarProvider } from "#/components/shadcn/sidebar";
 import { useNoticeAlchemyKeyMissing } from "#/hooks/useNoticeAlchemyKeyMissing";
 import { useNoticeNewVersion } from "#/hooks/useNoticeNewVersion";
+import { CircleUser, FileCode2, ReceiptText, Wifi } from "lucide-react";
 
 export const Route = createFileRoute("/_home")({
   component: HomePageLayout,
@@ -22,22 +17,22 @@ export const tabs: Tab[] = [
   {
     path: "/home/account",
     label: "Account",
-    icon: RequestQuoteSharp,
+    icon: <CircleUser />,
   },
   {
     path: "/home/transactions",
     label: "Transactions",
-    icon: Receipt,
+    icon: <ReceiptText />,
   },
   {
     path: "/home/contracts",
     label: "Contracts",
-    icon: CallToAction,
+    icon: <FileCode2 />,
   },
   {
     path: "/home/connections",
     label: "Connections",
-    icon: OnlinePredictionSharp,
+    icon: <Wifi />,
   },
 ];
 

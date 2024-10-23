@@ -1895,7 +1895,6 @@ __metadata:
   peerDependencies:
     "@emotion/react": ^11.11.4
     "@emotion/styled": ^11.11.5
-    "@mui/icons-material": ^5.15.15
     "@mui/material": ^5.15.15
     react: ^17 || ^18
     typescript: ^5.0.0
@@ -1915,7 +1914,6 @@ __metadata:
     "@fontsource/roboto": "npm:^5.1.0"
     "@fontsource/roboto-mono": "npm:^5.1.0"
     "@hookform/resolvers": "npm:^3.9.0"
-    "@mui/icons-material": "npm:^6.1.4"
     "@mui/lab": "npm:6.0.0-dev.240424162023-9968b4889d"
     "@mui/material": "npm:^6.1.4"
     "@radix-ui/react-avatar": "npm:^1.1.1"
@@ -2514,22 +2512,6 @@ __metadata:
   version: 6.1.4
   resolution: "@mui/core-downloads-tracker@npm:6.1.4"
   checksum: bfd84a726c883dd681b2cda13b977eb6646c1da66ea59905dbe7b857ec4ac86576a318eb116d54633e7c479aecb52fe0c75fb957f1b6081a6c8857dd5ce4c5b9
-  languageName: node
-  linkType: hard
-
-"@mui/icons-material@npm:^6.1.4":
-  version: 6.1.4
-  resolution: "@mui/icons-material@npm:6.1.4"
-  dependencies:
-    "@babel/runtime": "npm:^7.25.7"
-  peerDependencies:
-    "@mui/material": ^6.1.4
-    "@types/react": ^17.0.0 || ^18.0.0 || ^19.0.0
-    react: ^17.0.0 || ^18.0.0 || ^19.0.0
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-  checksum: 8e4e8a20c7183fae76f1e013669212404696e9e146aa413afbc705ee56f0a32cfef6143a16f9ec24aeb1e8dfb567d50f9b04b9bdf381ad8bd7a2c9b09d25186c
   languageName: node
   linkType: hard
 

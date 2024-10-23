@@ -1,4 +1,3 @@
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { CardHeader } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import type { Address } from "viem";
@@ -8,6 +7,7 @@ import { useBlacklist } from "#/store/useBlacklist";
 import { useNetworks } from "#/store/useNetworks";
 import { AddressView } from "../AddressView";
 import { Button } from "@ethui/ui/components/shadcn/button";
+import { EyeOff } from "lucide-react";
 
 export function SettingsTokens() {
   const currentNetwork = useNetworks((s) => s.current);
@@ -23,7 +23,7 @@ export function SettingsTokens() {
   };
 
   return (
-    <ul sx={{ maxWidth: 350 }}>
+    <ul>
       {blacklist.map(({ contract, metadata }) => (
         <CardHeader
           key={contract}
@@ -38,7 +38,7 @@ export function SettingsTokens() {
                 title={"Unhide token"}
                 onClick={() => unhide(contract)}
               >
-                <VisibilityOffIcon />
+                <EyeOff />
               </Button>
             </div>
           }

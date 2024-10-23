@@ -1,10 +1,10 @@
-import { Delete, Task } from "@mui/icons-material";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { HighlightBox } from "@ethui/ui/components/highlight-box";
 
 import { useDialog } from "#/hooks/useDialog";
 import { Button } from "@ethui/ui/components/shadcn/button";
+import { CircleX, ListCheck } from "lucide-react";
 
 export const Route = createFileRoute("/_dialog/dialog/msg-sign/$id")({
   component: MsgSignDialog,
@@ -28,12 +28,12 @@ export function MsgSignDialog() {
       )}
       <div className=" center m-2 mt-auto flex justify-center">
         <Button disabled={!msg} color="error" onClick={() => send("reject")}>
-          <Delete />
+          <CircleX />
           Reject
         </Button>
         <Button disabled={!msg} type="submit" onClick={() => send("accept")}>
           Sign
-          <Task />
+          <ListCheck />
         </Button>
       </div>
     </div>

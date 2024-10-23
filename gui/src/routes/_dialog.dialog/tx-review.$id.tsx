@@ -1,4 +1,3 @@
-import { Cancel, CheckCircle, Delete, Report, Send } from "@mui/icons-material";
 import { Alert, AlertTitle, Button, Grid2 as Grid } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
@@ -27,6 +26,7 @@ import type { Dialog } from "#/hooks/useDialog";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useLedgerDetect } from "#/hooks/useLedgerDetect";
 import { useNetworks } from "#/store/useNetworks";
+import { Check, FilePlus2, X, Send } from "lucide-react";
 
 export const Route = createFileRoute("/_dialog/dialog/tx-review/$id")({
   component: TxReviewDialog,
@@ -39,11 +39,11 @@ export interface TxRequest {
   value: string;
   chainId: number;
   walletType:
-    | "ledger"
-    | "HdWallet"
-    | "jsonKeystore"
-    | "plaintext"
-    | "impersonator";
+  | "ledger"
+  | "HdWallet"
+  | "jsonKeystore"
+  | "plaintext"
+  | "impersonator";
 }
 
 interface Log {
@@ -200,12 +200,12 @@ function SimulationResult({ simulation, chainId, to }: SimulationResultProps) {
           callCount &&
           (callCount > 0 ? (
             <div className="flex">
-              <CheckCircle color="success" />
+              <Check />
               <span>Called {callCount} time(s) before.</span>
             </div>
           ) : (
             <div className="flex">
-              <Report color="error" />
+              <FilePlus2 />
               <span>First interaction with this contract.</span>
             </div>
           ))
@@ -214,13 +214,7 @@ function SimulationResult({ simulation, chainId, to }: SimulationResultProps) {
       />
       <Datapoint
         label="Status"
-        value={
-          simulation.success ? (
-            <CheckCircle color="success" />
-          ) : (
-            <Cancel color="error" />
-          )
-        }
+        value={simulation.success ? <Check /> : <X />}
         size="medium"
       />
       {simulation.success && (
@@ -269,22 +263,12 @@ function Actions({ request, accepted, onReject, onConfirm }: ActionsProps) {
   } else {
     return (
       <div className=" m-2 flex items-center justify-center">
-        <Button
-          size="large"
-          color="error"
-          onClick={onReject}
-          startIcon={<Delete />}
-        >
+        <Button size="large" color="error" onClick={onReject} startIcon={<X />}>
           Reject
         </Button>
-        <Button
-          size="large"
-          color="primary"
-          type="submit"
-          onClick={onConfirm}
-          endIcon={<Send />}
-        >
+        <Button size="icon" color="primary" type="submit" onClick={onConfirm}>
           Confirm
+          <Send />
         </Button>
       </div>
     );

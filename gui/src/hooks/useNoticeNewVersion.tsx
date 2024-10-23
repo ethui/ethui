@@ -1,9 +1,10 @@
-import CloseIcon from "@mui/icons-material/Close";
-import { Link } from "@mui/material";
 import { type SnackbarKey, useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 
 import { useInvoke } from "./useInvoke";
+import { Link } from "@tanstack/react-router";
+import { Button } from "@ethui/ui/components/shadcn/button";
+import { CircleX } from "lucide-react";
 
 export async function getLatestVersion() {
   const response = await fetch(
@@ -48,10 +49,9 @@ export function useNoticeNewVersion() {
             size="icon"
             aria-label="close"
             color="inherit"
-            sx={{ p: 0.5 }}
             onClick={() => closeSnackbar(key)}
           >
-            <CloseIcon />
+            <CircleX />
           </Button>
         ),
       },

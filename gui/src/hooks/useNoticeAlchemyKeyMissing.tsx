@@ -1,4 +1,3 @@
-import { Close, OpenInNew } from "@mui/icons-material";
 import { type SnackbarKey, useSnackbar } from "notistack";
 import { useEffect } from "react";
 
@@ -7,6 +6,7 @@ import { useSettings } from "#/store/useSettings";
 import { useSettingsWindow } from "#/store/useSettingsWindow";
 import { useInvoke } from "./useInvoke";
 import { Button } from "@ethui/ui/components/shadcn/button";
+import { CircleX, SquareArrowOutUpRight } from "lucide-react";
 
 let key: SnackbarKey;
 
@@ -42,19 +42,17 @@ export function useNoticeAlchemyKeyMissing() {
             size="icon"
             aria-label="close"
             color="inherit"
-            sx={{ p: 0.5 }}
             onClick={() => open()}
           >
-            <OpenInNew />
+            <SquareArrowOutUpRight />
           </Button>
           <Button
             size="icon"
             aria-label="close"
             color="inherit"
-            sx={{ p: 0.5 }}
             onClick={() => closeSnackbar(key)}
           >
-            <Close />
+            <CircleX />
           </Button>
         </>
       ),

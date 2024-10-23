@@ -1,7 +1,7 @@
 import { Button } from "@ethui/ui/components/shadcn/button";
-import { Link } from "@mui/material";
 
 import type { StepProps } from ".";
+import { Link } from "@tanstack/react-router";
 
 export function WelcomeStep({ onSubmit }: StepProps) {
   return (
@@ -11,7 +11,6 @@ export function WelcomeStep({ onSubmit }: StepProps) {
       <p>
         ethui is a toolkit for fullstack Ethereum development. Check out{" "}
         <Link
-          underline="hover"
           href="https://ethui.dev"
           target="_blank"
           rel="nofollow noopener noreferrer"
@@ -20,7 +19,6 @@ export function WelcomeStep({ onSubmit }: StepProps) {
         </Link>{" "}
         to learn more, or check out the&nbsp;
         <Link
-          underline="hover"
           href="https://github.com/ethui/ethui"
           target="_blank"
           rel="nofollow noopener noreferrer"

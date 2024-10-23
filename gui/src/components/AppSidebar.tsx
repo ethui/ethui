@@ -1,6 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { useKBar } from "kbar";
-import { Calendar, Cog, Home, Inbox, Search } from "lucide-react";
+import {
+  CircleUser,
+  FileCode2,
+  ReceiptText,
+  Wifi,
+  Cog,
+  Terminal,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -38,7 +45,7 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <Link href={item.url}>
-                      <item.icon />
+                      {item.icon}
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
@@ -62,7 +69,7 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton onClick={kbar.query.toggle}>
-              <Cog />
+              <Terminal />
               <span>Command Bar</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -84,21 +91,21 @@ const items = [
   {
     title: "Account",
     url: "/home/account",
-    icon: Home,
+    icon: <CircleUser />,
   },
   {
     title: "Transactions",
     url: "/home/transactions",
-    icon: Inbox,
+    icon: <ReceiptText />,
   },
   {
     title: "Contracts",
     url: "/home/contracts",
-    icon: Calendar,
+    icon: <FileCode2 />,
   },
   {
     title: "Connections",
     url: "/home/connections",
-    icon: Search,
+    icon: <Wifi />,
   },
 ];

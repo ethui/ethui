@@ -1,4 +1,4 @@
-import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import { Plus, X } from "lucide-react";
 import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { useState } from "react";
 
@@ -139,7 +139,7 @@ function ArrayElements({
               append();
             }}
           >
-            <AddIcon />
+            <Plus />
           </Button>
         </div>
       )}
@@ -179,10 +179,10 @@ function AbiArrayItemInput({
       deleteHover={deleteHover}
       headerActions={
         removable && (
-          <IconButton
+          <Button
             aria-label="delete"
             color="error"
-            size="small"
+            size="icon"
             onMouseEnter={() => setDeleteHover(true)}
             onMouseLeave={() => setDeleteHover(false)}
             onClick={(e) => {
@@ -190,8 +190,8 @@ function AbiArrayItemInput({
               onRemove();
             }}
           >
-            <DeleteIcon />
-          </IconButton>
+            <X />
+          </Button>
         )
       }
     />

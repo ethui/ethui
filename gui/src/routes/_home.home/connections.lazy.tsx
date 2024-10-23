@@ -32,13 +32,11 @@ export function Connections() {
   return (
     <>
       <AppNavbar title="Connections" />
-      <Panel>
-        <div className="m-1 flex flex-col">
-          {map(peersByDomain, (peers, domain) => (
-            <Domain key={domain} domain={domain} peers={peers} />
-          ))}
-        </div>
-      </Panel>
+      <div className="m-1 flex flex-col">
+        {map(peersByDomain, (peers, domain) => (
+          <Domain key={domain} domain={domain} peers={peers} />
+        ))}
+      </div>
     </>
   );
 }
