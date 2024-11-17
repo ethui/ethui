@@ -7,7 +7,6 @@ import {
   DialogTitle,
 } from "@ethui/ui/components/shadcn/dialog";
 import { DialogDescription } from "@radix-ui/react-dialog";
-import { ScrollArea } from "@ethui/ui/components/shadcn/scroll-area";
 import {
   Sidebar,
   SidebarContent,
@@ -16,6 +15,7 @@ import {
   SidebarMenuButton,
   SidebarProvider,
 } from "#/components/shadcn/sidebar";
+import { cn } from "#/lib/utils";
 import { useSettingsWindow } from "#/store/useSettingsWindow";
 import { SettingsFoundry } from "./Foundry";
 import { SettingsGeneral } from "./General";
@@ -23,7 +23,6 @@ import { SettingsKeybinds } from "./Keybinds";
 import { SettingsNetwork } from "./Network";
 import { SettingsTokens } from "./Tokens";
 import { SettingsWallets } from "./Wallets";
-import { cn } from "#/lib/utils";
 
 const TABS = [
   { name: "General", component: SettingsGeneral },
@@ -43,7 +42,7 @@ export function SettingsDialog() {
   return (
     <Dialog open={open} onOpenChange={toggle}>
       <DialogContent className="h-[50vh] min-h-[50vh] min-w-[70vw]">
-        <SidebarProvider style={{ "--sidebar-width": "8rem" }}>
+        <SidebarProvider style={{ "--sidebar-width": "8rem" } as any}>
           <Sidebar>
             <SidebarContent>
               <SidebarGroup>
@@ -53,7 +52,7 @@ export function SettingsDialog() {
                       key={tab.name}
                       className={cn(
                         currentTab === tab.name &&
-                        "bg-primary text-accent hover:bg-primary hover:text-accent",
+                          "bg-primary text-accent hover:bg-primary hover:text-accent",
                       )}
                       onClick={() => setCurrentTab(tab.name)}
                     >
@@ -65,7 +64,7 @@ export function SettingsDialog() {
             </SidebarContent>
           </Sidebar>
           {tab && (
-            <div className="flex flex-col w-full">
+            <div className="flex w-full flex-col">
               <DialogTitle className="mb-5">{tab.name}</DialogTitle>
               <DialogDescription>
                 <tab.component />

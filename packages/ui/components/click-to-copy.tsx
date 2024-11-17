@@ -56,7 +56,11 @@ export function ClickToCopy({
           onMouseLeave={() => setOpening(false)}
           {...props}
         >
-          <span className="cursor-pointer" onClick={handleCopy}>
+          <span
+            className="cursor-pointer"
+            onClick={handleCopy}
+            onKeyDown={handleCopy}
+          >
             {children}
           </span>
         </TooltipTrigger>

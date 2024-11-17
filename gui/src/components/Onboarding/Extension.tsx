@@ -1,5 +1,5 @@
-import { LoaderCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@ethui/ui/components/shadcn/alert";
+import { LoaderCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Button } from "@ethui/ui/components/shadcn/button";

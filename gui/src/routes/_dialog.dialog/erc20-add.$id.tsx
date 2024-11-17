@@ -3,12 +3,12 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { isDirty, isValid } from "zod";
 
 import type { Erc20FullData } from "@ethui/types";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import { AddressView } from "#/components/AddressView";
 import { Datapoint } from "#/components/Datapoint";
+import { IconAddress } from "#/components/Icons/Address";
 import { useDialog } from "#/hooks/useDialog";
 import { useNetworks } from "#/store/useNetworks";
-import { IconAddress } from "#/components/Icons/Address";
-import { Button } from "@ethui/ui/components/shadcn/button";
 
 const tauriWindow = getCurrentWindow();
 

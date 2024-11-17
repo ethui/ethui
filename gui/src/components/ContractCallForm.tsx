@@ -1,15 +1,15 @@
+import { AbiItemFormWithPreview } from "@ethui/form/src/AbiItemFormWithPreview";
+import { AbiItemSelect } from "@ethui/form/src/AbiItemSelect";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import type { Abi, AbiFunction } from "abitype";
 import { type FormEvent, useCallback, useState } from "react";
-import { decodeFunctionResult, type Address, type Hash } from "viem";
-import { AbiItemFormWithPreview } from "@ethui/form/src/AbiItemFormWithPreview";
-import { AbiItemSelect } from "@ethui/form/src/AbiItemSelect";
+import { type Address, type Hash, decodeFunctionResult } from "viem";
 
+import { invoke } from "@tauri-apps/api/core";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useWallets } from "#/store/useWallets";
 import { AddressView } from "./AddressView";
 import { HashView } from "./HashView";
-import { invoke } from "@tauri-apps/api/core";
 
 interface Props {
   chainId: number;
@@ -18,11 +18,11 @@ interface Props {
 
 type Result =
   | {
-    write: Hash;
-  }
+      write: Hash;
+    }
   | {
-    read: string;
-  };
+      read: string;
+    };
 
 export function ContractCallForm({ chainId, address }: Props) {
   const [abiItem, setAbiItem] = useState<AbiFunction | "raw" | undefined>();

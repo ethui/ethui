@@ -1,6 +1,6 @@
-import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@ethui/ui/components/shadcn/alert";
 import { invoke } from "@tauri-apps/api/core";
+import { AlertCircle } from "lucide-react";
 import type { ErrorInfo, ReactNode } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 

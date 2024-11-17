@@ -9,12 +9,12 @@ import { useState } from "react";
 import { type Address, formatUnits } from "viem";
 
 import { Button } from "@ethui/ui/components/shadcn/button";
+import { Dialog, DialogContent } from "@ethui/ui/components/shadcn/dialog";
 import { ArrowTopRightIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
 import { useNetworks } from "#/store/useNetworks";
 import { AddressView } from "./AddressView";
 import { IconAddress } from "./Icons/Address";
 import { TransferForm } from "./TransferForm";
-import { Dialog, DialogContent } from "@ethui/ui/components/shadcn/dialog";
 
 interface Props {
   chainId: number;
@@ -50,7 +50,7 @@ export function ERC20View({
   };
 
   return (
-    <div className="p-4 flex items-center justify-between hover:bg-accent">
+    <div className="flex items-center justify-between p-4 hover:bg-accent">
       <div className="flex items-center">
         <IconAddress chainId={chainId} address={contract} />
         <div className="flex flex-col">

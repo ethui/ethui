@@ -28,7 +28,7 @@
     "gui"
   ],
   "devDependencies": {
-    "@biomejs/biome": "^1.9.3",
+    "@biomejs/biome": "^1.9.4",
     "assert": "^2.1.0"
   },
   "dependencies": {

@@ -1,7 +1,7 @@
-import type { Action } from "#/components/CommandBar";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { type StateCreator, create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
+import type { Action } from "#/components/CommandBar";
 
 interface State {
   show: boolean;

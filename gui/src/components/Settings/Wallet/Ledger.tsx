@@ -1,9 +1,9 @@
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Alert,
-  AlertTitle,
   AlertDescription,
+  AlertTitle,
 } from "@ethui/ui/components/shadcn/alert";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { invoke } from "@tauri-apps/api/core";
 import type { Address } from "abitype";
 import { useEffect, useState } from "react";
@@ -101,16 +101,13 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
       <Form.Text label="Name" name="name" />
 
       {pathsFields.map((field, i) => {
-        const path = form.watch(`paths.${i}.path`);
-        const address = addresses.get(path);
+        // TODO: this was in a helper text in mui. how to add it with shadcn?
+        // const path = form.watch(`paths.${i}.path`);
+        // const address = addresses.get(path);
         return (
           <div className="flex flex-col self-stretch" key={field.id}>
             <div className=" m-2 flex flex self-stretch">
-              <Form.Text
-                label={`Path #${i + 1}`}
-                name={`paths.${i}.path`}
-                helperText={address}
-              />
+              <Form.Text label={`Path #${i + 1}`} name={`paths.${i}.path`} />
 
               <Button onClick={() => remove(i)}>Remove</Button>
             </div>

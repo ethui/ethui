@@ -40,7 +40,7 @@ export function Onboarding() {
       >
         &nbsp;
       </header>
-      <div className="flex flex-col items-center m-4">
+      <div className="m-4 flex flex-col items-center">
         <Logo width={40} />
         <step.component onSubmit={handleNext} />
       </div>

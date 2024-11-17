@@ -1,12 +1,12 @@
-import { useState, useCallback, useEffect } from "react";
-import type { Address, Abi, AbiFunction } from "abitype";
-import { AbiItemForm } from "./AbiItemForm";
 import { HighlightBox } from "@ethui/ui/components/highlight-box";
 import {
   SolidityCall,
   type SolidityCallProps,
 } from "@ethui/ui/components/solidity-call";
+import type { Abi, AbiFunction, Address } from "abitype";
 import { clsx } from "clsx";
+import { useCallback, useState } from "react";
+import { AbiItemForm } from "./AbiItemForm";
 
 interface AbiItemFormWithPreview {
   abiFunction: AbiFunction | "raw";

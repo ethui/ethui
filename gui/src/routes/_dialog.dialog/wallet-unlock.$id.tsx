@@ -62,17 +62,13 @@ export function WalletUnlockDialog() {
             ethui is asking to unlock wallet <b>{name}:</b>
           </span>
 
-          <Form.Text
-            label="Password"
-            name="password"
-            type="password"
-            helperText={
+          {/* TODO: how to re-add this?
+          helperText={
               (attempts !== 3 &&
                 `Incorrect password, ${attempts} attempts left`) ||
               ""
-            }
-            fullWidth
-          />
+            }*/}
+          <Form.Text label="Password" name="password" type="password" />
           <div className=" m-1 flex">
             <Form.Submit label="Unlock" />
             {!loading && (

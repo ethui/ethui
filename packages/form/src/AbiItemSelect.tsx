@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { formatAbiItem, type Abi, type AbiFunction } from "abitype";
+import { Badge } from "@ethui/ui/components/shadcn/badge";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import {
   Command,
   CommandEmpty,
@@ -8,14 +8,14 @@ import {
   CommandItem,
   CommandList,
 } from "@ethui/ui/components/shadcn/command";
-import { Badge } from "@ethui/ui/components/shadcn/badge";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@ethui/ui/components/shadcn/popover";
-import { Button } from "@ethui/ui/components/shadcn/button";
 import { CaretSortIcon } from "@radix-ui/react-icons";
+import { type Abi, type AbiFunction, formatAbiItem } from "abitype";
+import { useEffect, useState } from "react";
 
 interface Option {
   item: AbiFunction | "raw";
@@ -96,7 +96,7 @@ export function AbiItemSelect({ abi, onChange }: AbiItemSelectProps) {
 }
 
 function constructOptions(abi: Abi): GroupedOptions {
-  const options = (abi || [])
+  const options: GroupedOptions = (abi || [])
     .filter(({ type }) => VALID_TYPES.includes(type))
     .reduce((acc, item, id) => {
       const abiItem = item as AbiFunction;
@@ -110,7 +110,7 @@ function constructOptions(abi: Abi): GroupedOptions {
       return acc;
     }, {} as GroupedOptions);
 
-  options["raw"] = { item: "raw", label: "Raw", id: -1 };
+  options.raw = [{ item: "raw", label: "Raw", id: -1 }];
 
   return options;
 }

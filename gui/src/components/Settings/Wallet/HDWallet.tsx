@@ -130,10 +130,10 @@ function MnemonicStep({ onSubmit, onCancel }: MnemonicStepProps) {
 
   return (
     <Form form={form} onSubmit={onSubmitInternal}>
-      <Form.Text label="Name" name="name" multiline />
+      <Form.Textarea label="Name" name="name" />
 
       <span>Insert your 12-word mnemonic</span>
-      <Form.Text label="12-word mnemonic" name="mnemonic" multiline />
+      <Form.Textarea label="12-word mnemonic" name="mnemonic" />
 
       <div className=" m-2 flex justify-end">
         <Button variant="outline" onClick={onCancel}>

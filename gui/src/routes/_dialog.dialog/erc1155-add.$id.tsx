@@ -29,7 +29,7 @@ export function ERC1155AddDialog() {
       <span className="text-center">
         This allows the following asset to be added to your wallet.
       </span>
-      <div className="grid grid-cols-4 gap-5 justify-center">
+      <div className="grid grid-cols-4 justify-center gap-5">
         <img
           alt="Token"
           height={400}

@@ -6,7 +6,7 @@ export const Route = createFileRoute("/_dialog")({
 
 export function DialogLayout() {
   return (
-    <div className="p-2 flex h-screen w-screen flex-col overflow-hidden">
+    <div className="flex h-screen w-screen flex-col overflow-hidden p-2">
       <Outlet />
     </div>
   );

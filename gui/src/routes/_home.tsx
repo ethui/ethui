@@ -40,10 +40,12 @@ export function HomePageLayout() {
   return (
     <CommandBarProvider>
       <SidebarProvider
-        style={{
-          "--sidebar-width": "15rem",
-          "--sidebar-width-mobile": "10rem",
-        }}
+        style={
+          {
+            "--sidebar-width": "15rem",
+            "--sidebar-width-mobile": "10rem",
+          } as any
+        }
       >
         <AppSidebar />
         <main className="relative flex min-h-svh flex-1 flex-col">

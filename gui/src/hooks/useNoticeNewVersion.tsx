@@ -29,16 +29,7 @@ export function useNoticeNewVersion() {
     if (!latest || current === latest) return;
 
     key = enqueueSnackbar(
-      <Link
-        href="https://github.com/ethui/ethui/releases"
-        sx={{
-          "&&": {
-            color: "inherit",
-            textDecorationColor: "currentColor",
-          },
-        }}
-        target="_blank"
-      >
+      <Link href="https://github.com/ethui/ethui/releases" target="_blank">
         <span>New release available.</span>
       </Link>,
       {

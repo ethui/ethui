@@ -126,7 +126,7 @@ export function SettingsNetwork() {
           );
         })}
       </Accordion>
-      <div className="m-2 mt-4 mb-2 flex gap-2 justify-between w-full">
+      <div className="m-2 mt-4 mb-2 flex w-full justify-between gap-2">
         <Dialog>
           <DialogTrigger asChild>
             <Button variant="destructive">Reset All</Button>

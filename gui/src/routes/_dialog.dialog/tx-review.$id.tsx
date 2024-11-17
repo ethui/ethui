@@ -1,7 +1,7 @@
 import {
   Alert,
-  AlertTitle,
   AlertDescription,
+  AlertTitle,
 } from "@ethui/ui/components/shadcn/alert";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { createFileRoute } from "@tanstack/react-router";
@@ -19,6 +19,7 @@ import {
 
 import { ChainView } from "@ethui/ui/components/chain-view";
 
+import { AbiItemFormWithPreview } from "@ethui/form/src/AbiItemFormWithPreview";
 import type { TokenMetadata } from "@ethui/types";
 import type { Network } from "@ethui/types/network";
 import { Check, CheckIcon, FilePlus2, X } from "lucide-react";
@@ -31,7 +32,6 @@ import type { Dialog } from "#/hooks/useDialog";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useLedgerDetect } from "#/hooks/useLedgerDetect";
 import { useNetworks } from "#/store/useNetworks";
-import { AbiItemFormWithPreview } from "@ethui/form/src/AbiItemFormWithPreview";
 
 export const Route = createFileRoute("/_dialog/dialog/tx-review/$id")({
   component: TxReviewDialog,
@@ -44,11 +44,11 @@ export interface TxRequest {
   value: string;
   chainId: number;
   walletType:
-  | "ledger"
-  | "HdWallet"
-  | "jsonKeystore"
-  | "plaintext"
-  | "impersonator";
+    | "ledger"
+    | "HdWallet"
+    | "jsonKeystore"
+    | "plaintext"
+    | "impersonator";
 }
 
 interface Log {

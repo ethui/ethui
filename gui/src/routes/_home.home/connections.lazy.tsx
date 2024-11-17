@@ -5,18 +5,18 @@ import { useEffect, useState } from "react";
 
 import type { Affinity, Peer } from "@ethui/types";
 import { ChainView } from "@ethui/ui/components/chain-view";
-import { AppNavbar } from "#/components/AppNavbar";
-import { useEventListener } from "#/hooks/useEventListener";
-import { useInvoke } from "#/hooks/useInvoke";
-import { useNetworks } from "#/store/useNetworks";
 import {
-  SelectContent,
   Select,
+  SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@ethui/ui/components/shadcn/select";
+import { AppNavbar } from "#/components/AppNavbar";
+import { useEventListener } from "#/hooks/useEventListener";
+import { useInvoke } from "#/hooks/useInvoke";
+import { useNetworks } from "#/store/useNetworks";
 
 export const Route = createLazyFileRoute("/_home/home/connections")({
   component: Connections,

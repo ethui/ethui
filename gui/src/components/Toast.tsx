@@ -21,7 +21,6 @@ export function errorToast(key: string, err: unknown) {
           size="icon"
           aria-label="close"
           color="inherit"
-          sx={{ p: 0.5 }}
           onClick={() => closeSnackbar(key)}
         >
           <CircleX />

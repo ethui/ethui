@@ -1,19 +1,14 @@
 import {
   type Dispatch,
-  useEffect,
-  useState,
   Fragment,
-  useContext,
   type ReactNode,
   createContext,
+  useContext,
+  useEffect,
+  useState,
 } from "react";
 import { useShallow } from "zustand/shallow";
 
-import { useNetworks } from "#/store/useNetworks";
-import { useSettings } from "#/store/useSettings";
-import { useSettingsWindow } from "#/store/useSettingsWindow";
-import { useTheme } from "#/store/useTheme";
-import { useWallets } from "#/store/useWallets";
 import {
   CommandDialog,
   CommandEmpty,
@@ -21,8 +16,12 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
 } from "@ethui/ui/components/shadcn/command";
+import { useNetworks } from "#/store/useNetworks";
+import { useSettings } from "#/store/useSettings";
+import { useSettingsWindow } from "#/store/useSettingsWindow";
+import { useTheme } from "#/store/useTheme";
+import { useWallets } from "#/store/useWallets";
 
 export interface Action {
   id: string;
@@ -37,7 +36,7 @@ interface CommandBarContextProps {
 
 const CommandBarContext = createContext<CommandBarContextProps>({
   open: false,
-  setOpen: () => { },
+  setOpen: () => {},
 });
 
 export function CommandBarProvider({ children }: { children: ReactNode }) {

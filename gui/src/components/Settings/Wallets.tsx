@@ -11,6 +11,12 @@ import {
 } from "@ethui/ui/components/shadcn/accordion";
 import { Badge } from "@ethui/ui/components/shadcn/badge";
 import { Button } from "@ethui/ui/components/shadcn/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@ethui/ui/components/shadcn/dropdown-menu";
 import { CaretDownIcon } from "@radix-ui//react-icons";
 import { useWallets } from "#/store/useWallets";
 import { HDWalletForm } from "./Wallet/HDWallet";
@@ -19,12 +25,6 @@ import { JsonKeystore } from "./Wallet/JsonKeystore";
 import { Ledger } from "./Wallet/Ledger";
 import { Plaintext } from "./Wallet/Plaintext";
 import { PrivateKeyForm } from "./Wallet/PrivateKey";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@ethui/ui/components/shadcn/dropdown-menu";
 
 interface Props {
   extraAction?: React.ReactNode;

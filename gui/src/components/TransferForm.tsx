@@ -1,13 +1,11 @@
 import { addressSchema } from "@ethui/types/wallets";
 import { Form } from "@ethui/ui/components/form";
+import { Alert, AlertDescription } from "@ethui/ui/components/shadcn/alert";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@ethui/ui/components/shadcn/alert";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
-import { useShallow } from "zustand/shallow";
 import {
   type AbiItem,
   type Address,
@@ -17,6 +15,7 @@ import {
   parseAbiItem,
 } from "viem";
 import { z } from "zod";
+import { useShallow } from "zustand/shallow";
 import { useBalances } from "#/store/useBalances";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";

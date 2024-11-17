@@ -24,10 +24,13 @@ export function SettingsTokens() {
   return (
     <ul className="w-full">
       {blacklist.map(({ contract, metadata }) => (
-        <li className="flex gap-5 w-full items-center justify-between">
+        <li
+          key={contract}
+          className="flex w-full items-center justify-between gap-5"
+        >
           <IconAddress chainId={currentNetwork.chain_id} address={contract} />
 
-          <span className="flex gap-1 items-center">
+          <span className="flex items-center gap-1">
             {metadata?.symbol}
             {contract && <AddressView address={contract} />}
           </span>

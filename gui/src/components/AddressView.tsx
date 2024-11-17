@@ -14,12 +14,12 @@ import { z } from "zod";
 
 import { Form } from "@ethui/ui/components/form";
 
+import { Dialog, DialogContent } from "@ethui/ui/components/shadcn/dialog";
 import { Link } from "@tanstack/react-router";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { truncateHex } from "#/utils";
 import { IconAddress } from "./Icons/Address";
-import { Dialog, DialogContent } from "@ethui/ui/components/shadcn/dialog";
 
 interface Props {
   address: Address;

@@ -1,5 +1,5 @@
-import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@ethui/ui/components/shadcn/alert";
+import { AlertCircle } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { type AbiFunction, parseAbiItem } from "viem";
 import { encodeFunctionData } from "viem/utils";
@@ -31,7 +31,7 @@ export function AbiItemForm({
   defaultCalldata,
   defaultEther,
   onChange,
-  onSubmit = () => { },
+  onSubmit = () => {},
   submit = false,
 }: AbiItemFormProps) {
   if (!abiItem || abiItem === "raw") {

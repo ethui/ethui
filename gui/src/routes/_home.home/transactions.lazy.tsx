@@ -1,4 +1,3 @@
-import { LoaderCircle } from "lucide-react";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -8,6 +7,7 @@ import {
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
+import { LoaderCircle } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { type Abi, type Address, formatEther, formatGwei } from "viem";

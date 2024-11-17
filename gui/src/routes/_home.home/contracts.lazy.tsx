@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoaderCircle } from "lucide-react";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import debounce from "lodash-es/debounce";
+import { LoaderCircle } from "lucide-react";
 import { useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -16,6 +16,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@ethui/ui/components/shadcn/accordion";
+import { Badge } from "@ethui/ui/components/shadcn/badge";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import {
   Dialog,
   DialogContent,
@@ -23,13 +25,11 @@ import {
 } from "@ethui/ui/components/shadcn/dialog";
 import { Input } from "@ethui/ui/components/shadcn/input";
 import { Plus } from "lucide-react";
-import { ContractCallForm } from "#/components/ContractCallForm";
 import { AddressView } from "#/components/AddressView";
 import { AppNavbar } from "#/components/AppNavbar";
+import { ContractCallForm } from "#/components/ContractCallForm";
 import { useContracts } from "#/store/useContracts";
 import { useNetworks } from "#/store/useNetworks";
-import { Badge } from "@ethui/ui/components/shadcn/badge";
-import { Button } from "@ethui/ui/components/shadcn/button";
 
 export const Route = createLazyFileRoute("/_home/home/contracts")({
   component: Contracts,
@@ -54,7 +54,7 @@ export function Contracts() {
 
       <Dialog>
         <DialogTrigger>
-          <Button size="icon" className="fixed bottom-6 right-6">
+          <Button size="icon" className="fixed right-6 bottom-6">
             <Plus />
           </Button>
         </DialogTrigger>

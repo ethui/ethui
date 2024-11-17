@@ -91,6 +91,31 @@ function Text<T extends FieldValues>({
 }
 Form.Text = Text;
 
+function Textarea<T extends FieldValues>({
+  name,
+  label,
+  className = "",
+}: BaseInputProps<T>) {
+  const { control } = useFormContext();
+
+  return (
+    <FormField
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <FormItem className={className}>
+          <FormLabel>{label}</FormLabel>
+          <FormControl>
+            <Textarea {...field} />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+}
+Form.Textarea = Textarea;
+
 function NumberField<T extends FieldValues>({
   name,
   label,

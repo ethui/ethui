@@ -100,11 +100,11 @@ function PrivateKeyStep({ onSubmit, onCancel }: PrivateKeyStepProps) {
 
   return (
     <Form form={form} onSubmit={onSubmitInternal}>
-      <Form.Text multiline label="Name" name="name" />
+      <Form.Textarea label="Name" name="name" />
       <span>Insert your 12-word privateKey</span>
-      <Form.Text multiline label="Private Key" name="privateKey" />
+      <Form.Textarea label="Private Key" name="privateKey" />
 
-      <div className=" gap-2 flex justify-end">
+      <div className=" flex justify-end gap-2">
         <Button variant="destructive" onClick={onCancel}>
           Cancel
         </Button>
@@ -141,7 +141,7 @@ function PasswordStep({ onSubmit, onCancel }: PasswordStepProps) {
           name="passwordConfirmation"
         />
 
-        <div className=" gap-2 flex justify-end">
+        <div className=" flex justify-end gap-2">
           <Button color="warning" onClick={onCancel}>
             Cancel
           </Button>
