@@ -58,7 +58,7 @@ export function AppSidebar() {
                       href={item.url}
                       className={cn(
                         item.url === location.pathname &&
-                          "bg-primary text-accent hover:bg-primary hover:text-accent",
+                        "bg-primary text-accent hover:bg-primary hover:text-accent",
                       )}
                     >
                       {item.icon}
@@ -87,7 +87,7 @@ export function AppSidebar() {
                               href={item.url}
                               className={cn(
                                 item.url === location.pathname &&
-                                  "bg-primary text-accent hover:bg-primary hover:text-accent",
+                                "bg-primary text-accent hover:bg-primary hover:text-accent",
                               )}
                             >
                               {item.title}
@@ -155,7 +155,7 @@ const items = [
 const settingsItems = [
   { title: "General", url: "/home/settings/general" },
   { title: "Wallets", url: "/home/settings/wallets" },
-  { title: "Network", url: "/home/settings/network" },
+  { title: "Network", url: "/home/settings/networks" },
   { title: "Foundry", url: "/home/settings/foundry" },
   { title: "Keybinds", url: "/home/settings/keybinds" },
   { title: "Tokens", url: "/home/settings/tokens" },
