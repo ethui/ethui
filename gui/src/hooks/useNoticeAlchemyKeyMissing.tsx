@@ -2,16 +2,15 @@ import { type SnackbarKey, useSnackbar } from "notistack";
 import { useEffect } from "react";
 
 import { Button } from "@ethui/ui/components/shadcn/button";
+import { Link } from "@tanstack/react-router";
 import { CircleX, SquareArrowOutUpRight } from "lucide-react";
 import { useNetworks } from "#/store/useNetworks";
 import { useSettings } from "#/store/useSettings";
-import { useSettingsWindow } from "#/store/useSettingsWindow";
 import { useInvoke } from "./useInvoke";
 
 let key: SnackbarKey;
 
 export function useNoticeAlchemyKeyMissing() {
-  const { open } = useSettingsWindow();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { settings } = useSettings();
   const currentNetwork = useNetworks((s) => s.current);
@@ -38,14 +37,13 @@ export function useNoticeAlchemyKeyMissing() {
       variant: "warning",
       action: () => (
         <>
-          <Button
-            size="icon"
+          <Link
+            href="/home/settings/general"
             aria-label="close"
             color="inherit"
-            onClick={() => open()}
           >
             <SquareArrowOutUpRight />
-          </Button>
+          </Link>
           <Button
             size="icon"
             aria-label="close"
@@ -57,5 +55,5 @@ export function useNoticeAlchemyKeyMissing() {
         </>
       ),
     });
-  }, [closeSnackbar, enqueueSnackbar, open, requiresAlchemyKey]);
+  }, [closeSnackbar, enqueueSnackbar, requiresAlchemyKey]);
 }

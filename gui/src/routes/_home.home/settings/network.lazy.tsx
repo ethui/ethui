@@ -1,3 +1,5 @@
+import { createLazyFileRoute } from "@tanstack/react-router";
+
 import {
   Accordion,
   AccordionContent,
@@ -21,7 +23,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@ethui/ui/components/shadcn/dialog";
+import { AppNavbar } from "#/components/AppNavbar";
 import { useNetworks } from "#/store/useNetworks";
+
+export const Route = createLazyFileRoute("/_home/home/settings/network")({
+  component: () => (
+    <>
+      <AppNavbar title="Settings » Networks" />
+      <div className="m-4">
+        <SettingsNetworks />
+      </div>
+    </>
+  ),
+});
 
 type NewChild = { new?: boolean };
 
@@ -39,7 +53,7 @@ const emptyNetwork: Network & NewChild = {
   new: true,
 };
 
-export function SettingsNetwork() {
+function SettingsNetworks() {
   const [networks, setNetworks, resetNetworks] = useNetworks(
     useShallow((s) => [s.networks, s.setNetworks, s.resetNetworks]),
   );

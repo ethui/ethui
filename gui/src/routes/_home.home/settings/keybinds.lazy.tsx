@@ -1,8 +1,21 @@
-import { useState } from "react";
+import { createLazyFileRoute } from "@tanstack/react-router";
 
 import { Input } from "@ethui/ui/components/shadcn/input";
+import { useState } from "react";
+import { AppNavbar } from "#/components/AppNavbar";
 
-export function SettingsKeybinds() {
+export const Route = createLazyFileRoute("/_home/home/settings/keybinds")({
+  component: () => (
+    <>
+      <AppNavbar title="Settings » Keybinds" />
+      <div className="m-4">
+        <SettingsKeybinds />
+      </div>
+    </>
+  ),
+});
+
+function SettingsKeybinds() {
   const keybinds = [
     { name: "Toggle Command Bar", combination: "Ctrl + K" },
     { name: "Switch between tabs", combination: "Ctrl + [1..4]" },

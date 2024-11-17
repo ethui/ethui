@@ -1,11 +1,24 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { useCallback } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Form } from "@ethui/ui/components/form";
+import { AppNavbar } from "#/components/AppNavbar";
 import { useSettings } from "#/store/useSettings";
+
+export const Route = createLazyFileRoute("/_home/home/settings/general")({
+  component: () => (
+    <>
+      <AppNavbar title="Settings » General" />
+      <div className="m-4">
+        <SettingsGeneral />
+      </div>
+    </>
+  ),
+});
 
 export const schema = z.object({
   darkMode: z.enum(["auto", "dark", "light"]),

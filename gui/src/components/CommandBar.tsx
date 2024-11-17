@@ -19,7 +19,6 @@ import {
 } from "@ethui/ui/components/shadcn/command";
 import { useNetworks } from "#/store/useNetworks";
 import { useSettings } from "#/store/useSettings";
-import { useSettingsWindow } from "#/store/useSettingsWindow";
 import { useTheme } from "#/store/useTheme";
 import { useWallets } from "#/store/useWallets";
 
@@ -56,13 +55,11 @@ function useActions(): Record<string, Action[]> {
   const networkActions = useNetworks((s) => s.actions);
   const settingsActions = useSettings((s) => s.actions);
   const themeActions = useTheme(useShallow((s) => s.actions));
-  const settingsWindowActions = useSettingsWindow((s) => s.actions);
 
   return {
     Network: networkActions,
     Settings: settingsActions,
     Theme: themeActions,
-    SettingsWindow: settingsWindowActions,
     Wallet: walletActions,
   };
 }
