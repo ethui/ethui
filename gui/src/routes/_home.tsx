@@ -4,7 +4,6 @@ import type { Tab } from "@ethui/types/ui";
 import { CircleUser, FileCode2, ReceiptText, Wifi } from "lucide-react";
 import { AppSidebar } from "#/components/AppSidebar";
 import { CommandBar, CommandBarProvider } from "#/components/CommandBar";
-import { SettingsDialog } from "#/components/Settings/SettingsDialog";
 import { SidebarProvider } from "#/components/shadcn/sidebar";
 import { useNoticeAlchemyKeyMissing } from "#/hooks/useNoticeAlchemyKeyMissing";
 import { useNoticeNewVersion } from "#/hooks/useNoticeNewVersion";
@@ -54,7 +53,6 @@ export function HomePageLayout() {
         </main>
       </SidebarProvider>
 
-      <SettingsDialog />
       <CommandBar />
     </CommandBarProvider>
   );

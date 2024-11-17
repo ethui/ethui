@@ -34,6 +34,24 @@ const HomeHomeContractsLazyImport = createFileRoute('/_home/home/contracts')()
 const HomeHomeConnectionsLazyImport = createFileRoute(
   '/_home/home/connections',
 )()
+const HomeHomeSettingsWalletsLazyImport = createFileRoute(
+  '/_home/home/settings/wallets',
+)()
+const HomeHomeSettingsTokensLazyImport = createFileRoute(
+  '/_home/home/settings/tokens',
+)()
+const HomeHomeSettingsNetworkLazyImport = createFileRoute(
+  '/_home/home/settings/network',
+)()
+const HomeHomeSettingsKeybindsLazyImport = createFileRoute(
+  '/_home/home/settings/keybinds',
+)()
+const HomeHomeSettingsGeneralLazyImport = createFileRoute(
+  '/_home/home/settings/general',
+)()
+const HomeHomeSettingsFoundryLazyImport = createFileRoute(
+  '/_home/home/settings/foundry',
+)()
 
 // Create/Update Routes
 
@@ -77,6 +95,55 @@ const HomeHomeAccountRoute = HomeHomeAccountImport.update({
   path: '/home/account',
   getParentRoute: () => HomeRoute,
 } as any)
+
+const HomeHomeSettingsWalletsLazyRoute =
+  HomeHomeSettingsWalletsLazyImport.update({
+    path: '/home/settings/wallets',
+    getParentRoute: () => HomeRoute,
+  } as any).lazy(() =>
+    import('./routes/_home.home/settings/wallets.lazy').then((d) => d.Route),
+  )
+
+const HomeHomeSettingsTokensLazyRoute = HomeHomeSettingsTokensLazyImport.update(
+  {
+    path: '/home/settings/tokens',
+    getParentRoute: () => HomeRoute,
+  } as any,
+).lazy(() =>
+  import('./routes/_home.home/settings/tokens.lazy').then((d) => d.Route),
+)
+
+const HomeHomeSettingsNetworkLazyRoute =
+  HomeHomeSettingsNetworkLazyImport.update({
+    path: '/home/settings/network',
+    getParentRoute: () => HomeRoute,
+  } as any).lazy(() =>
+    import('./routes/_home.home/settings/network.lazy').then((d) => d.Route),
+  )
+
+const HomeHomeSettingsKeybindsLazyRoute =
+  HomeHomeSettingsKeybindsLazyImport.update({
+    path: '/home/settings/keybinds',
+    getParentRoute: () => HomeRoute,
+  } as any).lazy(() =>
+    import('./routes/_home.home/settings/keybinds.lazy').then((d) => d.Route),
+  )
+
+const HomeHomeSettingsGeneralLazyRoute =
+  HomeHomeSettingsGeneralLazyImport.update({
+    path: '/home/settings/general',
+    getParentRoute: () => HomeRoute,
+  } as any).lazy(() =>
+    import('./routes/_home.home/settings/general.lazy').then((d) => d.Route),
+  )
+
+const HomeHomeSettingsFoundryLazyRoute =
+  HomeHomeSettingsFoundryLazyImport.update({
+    path: '/home/settings/foundry',
+    getParentRoute: () => HomeRoute,
+  } as any).lazy(() =>
+    import('./routes/_home.home/settings/foundry.lazy').then((d) => d.Route),
+  )
 
 const DialogDialogWalletUnlockIdRoute = DialogDialogWalletUnlockIdImport.update(
   {
@@ -217,6 +284,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DialogDialogWalletUnlockIdImport
       parentRoute: typeof DialogImport
     }
+    '/_home/home/settings/foundry': {
+      id: '/_home/home/settings/foundry'
+      path: '/home/settings/foundry'
+      fullPath: '/home/settings/foundry'
+      preLoaderRoute: typeof HomeHomeSettingsFoundryLazyImport
+      parentRoute: typeof HomeImport
+    }
+    '/_home/home/settings/general': {
+      id: '/_home/home/settings/general'
+      path: '/home/settings/general'
+      fullPath: '/home/settings/general'
+      preLoaderRoute: typeof HomeHomeSettingsGeneralLazyImport
+      parentRoute: typeof HomeImport
+    }
+    '/_home/home/settings/keybinds': {
+      id: '/_home/home/settings/keybinds'
+      path: '/home/settings/keybinds'
+      fullPath: '/home/settings/keybinds'
+      preLoaderRoute: typeof HomeHomeSettingsKeybindsLazyImport
+      parentRoute: typeof HomeImport
+    }
+    '/_home/home/settings/network': {
+      id: '/_home/home/settings/network'
+      path: '/home/settings/network'
+      fullPath: '/home/settings/network'
+      preLoaderRoute: typeof HomeHomeSettingsNetworkLazyImport
+      parentRoute: typeof HomeImport
+    }
+    '/_home/home/settings/tokens': {
+      id: '/_home/home/settings/tokens'
+      path: '/home/settings/tokens'
+      fullPath: '/home/settings/tokens'
+      preLoaderRoute: typeof HomeHomeSettingsTokensLazyImport
+      parentRoute: typeof HomeImport
+    }
+    '/_home/home/settings/wallets': {
+      id: '/_home/home/settings/wallets'
+      path: '/home/settings/wallets'
+      fullPath: '/home/settings/wallets'
+      preLoaderRoute: typeof HomeHomeSettingsWalletsLazyImport
+      parentRoute: typeof HomeImport
+    }
   }
 }
 
@@ -237,6 +346,12 @@ export const routeTree = rootRoute.addChildren({
     HomeHomeConnectionsLazyRoute,
     HomeHomeContractsLazyRoute,
     HomeHomeTransactionsLazyRoute,
+    HomeHomeSettingsFoundryLazyRoute,
+    HomeHomeSettingsGeneralLazyRoute,
+    HomeHomeSettingsKeybindsLazyRoute,
+    HomeHomeSettingsNetworkLazyRoute,
+    HomeHomeSettingsTokensLazyRoute,
+    HomeHomeSettingsWalletsLazyRoute,
   }),
   OnboardingRoute,
 })
