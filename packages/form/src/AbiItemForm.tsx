@@ -1,15 +1,15 @@
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@ethui/ui/components/shadcn/alert";
 import { useCallback, useEffect, useState } from "react";
-import { type AbiFunction, type AbiItem, parseAbiItem } from "viem";
+import { type AbiFunction, parseAbiItem } from "viem";
 import { encodeFunctionData } from "viem/utils";
 
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { AbiInput } from "./AbiInput";
 import { decodeDefaultArgs } from "./utils";
 
-interface AbiFormProps {
-  abiItem?: AbiItem | string;
+interface AbiItemFormProps {
+  item?: AbiFunction | "raw";
   debug?: boolean;
   onChange?: (params: {
     item?: AbiFunction;
@@ -25,18 +25,18 @@ interface AbiFormProps {
 
 export type { AbiFunction };
 
-export function AbiForm({
-  abiItem,
+export function AbiItemForm({
+  item: abiItem,
   debug = false,
   defaultCalldata,
   defaultEther,
   onChange,
   onSubmit = () => { },
   submit = false,
-}: AbiFormProps) {
-  if (!abiItem || abiItem === "") {
+}: AbiItemFormProps) {
+  if (!abiItem || abiItem === "raw") {
     return (
-      <RawForm
+      <RawItemForm
         {...{
           debug,
           onChange,
@@ -64,7 +64,7 @@ export function AbiForm({
   }
 
   return (
-    <AbiFormInner
+    <AbiItemFormInner
       {...{
         submit,
         item,
@@ -78,17 +78,17 @@ export function AbiForm({
   );
 }
 
-type RawFormProps = Omit<AbiFormProps, "abiItem" | "debug"> & {
+type RawItemFormProps = Omit<AbiItemFormProps, "abiItem" | "debug"> & {
   debug: boolean;
 };
-export function RawForm({
+export function RawItemForm({
   debug,
   onChange,
   onSubmit,
   defaultCalldata,
   defaultEther,
   submit,
-}: RawFormProps) {
+}: RawItemFormProps) {
   const [calldata, setCalldata] = useState<`0x${string}`>("0x");
   const [ether, setEther] = useState<bigint>(0n);
 
@@ -138,7 +138,7 @@ export function RawForm({
   );
 }
 
-type AbiFormInnerProps = Omit<AbiFormProps, "abiItem" | "debug"> & {
+type AbiFormInnerProps = Omit<AbiItemFormProps, "abiItem" | "debug"> & {
   item: AbiFunction;
   debug: boolean;
   onCalldataChange?: (calldata: `0x${string}`) => void;
@@ -147,7 +147,7 @@ type AbiFormInnerProps = Omit<AbiFormProps, "abiItem" | "debug"> & {
   submit: boolean;
 };
 
-export function AbiFormInner({
+export function AbiItemFormInner({
   item,
   debug,
   onChange: parentOnChange,
@@ -162,7 +162,7 @@ export function AbiFormInner({
   const [values, setValues] = useState(
     decodeDefaultArgs(item, defaultCalldata),
   );
-  const [ether, setEther] = useState<bigint | undefined>(undefined);
+  const [ether, setEther] = useState<bigint | undefined>(defaultEther);
 
   const onChange = useCallback(
     (newValue: any, i: number) => {

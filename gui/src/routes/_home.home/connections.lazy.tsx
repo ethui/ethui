@@ -26,7 +26,10 @@ export function Connections() {
   const { data: peersByDomain, refetch } =
     useInvoke<Record<string, Peer[]>>("ws_peers_by_domain");
 
+  useEventListener("peers-updated", () => console.log("refetch"));
   useEventListener("peers-updated", refetch);
+
+  console.log(peersByDomain);
 
   return (
     <>

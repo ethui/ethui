@@ -22,7 +22,6 @@ import { ChainView } from "@ethui/ui/components/chain-view";
 import type { TokenMetadata } from "@ethui/types";
 import type { Network } from "@ethui/types/network";
 import { Check, CheckIcon, FilePlus2, X } from "lucide-react";
-import { ABIItemForm } from "#/components/ABIForm";
 import { AddressView } from "#/components/AddressView";
 import { Datapoint } from "#/components/Datapoint";
 import { DialogBottom } from "#/components/Dialogs/Bottom";
@@ -32,6 +31,7 @@ import type { Dialog } from "#/hooks/useDialog";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useLedgerDetect } from "#/hooks/useLedgerDetect";
 import { useNetworks } from "#/store/useNetworks";
+import { AbiItemFormWithPreview } from "@ethui/form/src/AbiItemFormWithPreview";
 
 export const Route = createFileRoute("/_dialog/dialog/tx-review/$id")({
   component: TxReviewDialog,
@@ -136,13 +136,15 @@ function Inner({ dialog, request, network }: InnerProps) {
       <Header {...{ from, to, network }} />
 
       {item && (
-        <ABIItemForm
-          submit={false}
-          to={to}
-          abiItem={item}
+        <AbiItemFormWithPreview
+          abiFunction={item}
+          address={to}
+          sender={from}
+          chainId={chainId}
+          ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
+          onChange={onChange}
           defaultCalldata={calldata}
           defaultEther={value}
-          onChange={onChange}
         />
       )}
 

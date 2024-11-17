@@ -6,7 +6,7 @@ export default {
   content: [
     "./src/components/**/*.tsx",
     "./src/routes/**/*.tsx",
-    "../packages/ui/**/*.tsx",
+    "../packages/**/*.tsx",
   ],
   presets: [baseConfig],
   plugins: [require("tailwindcss-animate")],

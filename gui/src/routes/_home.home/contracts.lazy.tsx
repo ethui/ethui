@@ -23,7 +23,7 @@ import {
 } from "@ethui/ui/components/shadcn/dialog";
 import { Input } from "@ethui/ui/components/shadcn/input";
 import { Plus } from "lucide-react";
-import { ABIForm } from "#/components/ABIForm";
+import { ContractCallForm } from "#/components/ContractCallForm";
 import { AddressView } from "#/components/AddressView";
 import { AppNavbar } from "#/components/AppNavbar";
 import { useContracts } from "#/store/useContracts";
@@ -98,7 +98,7 @@ function ContractView({
         </div>
       </AccordionTrigger>
       <AccordionContent>
-        <ABIForm address={address} chainId={chainId} />
+        <ContractCallForm address={address} chainId={chainId} />
       </AccordionContent>
     </AccordionItem>
   );
