@@ -1,12 +1,9 @@
-import { Cancel, CheckCircle, Delete, Report, Send } from "@mui/icons-material";
 import {
   Alert,
+  AlertDescription,
   AlertTitle,
-  Box,
-  Button,
-  Grid2 as Grid,
-  Stack,
-} from "@mui/material";
+} from "@ethui/ui/components/shadcn/alert";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -20,11 +17,12 @@ import {
   parseAbi,
 } from "viem";
 
-import { ChainView } from "@ethui/react/components/ChainView";
-import { Typography } from "@ethui/react/components/Typography";
+import { ChainView } from "@ethui/ui/components/chain-view";
+
+import { AbiItemFormWithPreview } from "@ethui/form/src/AbiItemFormWithPreview";
 import type { TokenMetadata } from "@ethui/types";
 import type { Network } from "@ethui/types/network";
-import { ABIItemForm } from "#/components/ABIForm";
+import { Check, CheckIcon, FilePlus2, X } from "lucide-react";
 import { AddressView } from "#/components/AddressView";
 import { Datapoint } from "#/components/Datapoint";
 import { DialogBottom } from "#/components/Dialogs/Bottom";
@@ -138,17 +136,21 @@ function Inner({ dialog, request, network }: InnerProps) {
       <Header {...{ from, to, network }} />
 
       {item && (
-        <ABIItemForm
-          submit={false}
-          to={to}
-          abiItem={item}
+        <AbiItemFormWithPreview
+          abiFunction={item}
+          address={to}
+          sender={from}
+          chainId={chainId}
+          ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
+          onChange={onChange}
           defaultCalldata={calldata}
           defaultEther={value}
-          onChange={onChange}
         />
       )}
 
-      <SimulationResult simulation={simulation} chainId={chainId} to={to} />
+      <div className="my-4">
+        <SimulationResult simulation={simulation} chainId={chainId} to={to} />
+      </div>
 
       <DialogBottom>
         <Actions
@@ -170,24 +172,18 @@ interface HeaderProps {
 
 function Header({ from, to, network }: HeaderProps) {
   return (
-    <Stack
-      direction="row"
-      justifyContent="space-between"
-      alignItems="stretch"
-      alignSelf="center"
-      width="100%"
-    >
-      <Typography variant="h6" component="h1">
-        <Stack direction="row" alignItems="center" spacing={1}>
+    <div className=" flex w-full items-stretch justify-between self-center">
+      <h1 className="font-xl">
+        <div className="m-2 flex items-center gap-2">
           <AddressView address={from} />
           <span>→</span>
           <AddressView address={to} />
-        </Stack>
-      </Typography>
-      <Box ml={5}>
+        </div>
+      </h1>
+      <div className="ml-5">
         <ChainView name={network.name} chainId={network.chain_id} />
-      </Box>
-    </Stack>
+      </div>
+    </div>
   );
 }
 
@@ -206,49 +202,37 @@ function SimulationResult({ simulation, chainId, to }: SimulationResultProps) {
   if (!simulation) return null;
 
   return (
-    <Grid container rowSpacing={1}>
+    <div className="grid grid-cols-4 gap-5">
       <Datapoint
         label="Trust"
         value={
-          callCount &&
-          (callCount > 0 ? (
-            <Stack direction="row">
-              <CheckCircle color="success" />
-              <Typography>Called {callCount} time(s) before.</Typography>
-            </Stack>
+          callCount && callCount > 0 ? (
+            <div className="flex">
+              <Check />
+              <span>Called {callCount} time(s) before.</span>
+            </div>
           ) : (
-            <Stack direction="row">
-              <Report color="error" />
-              <Typography>First interaction with this contract.</Typography>
-            </Stack>
-          ))
+            <div className="flex">
+              <FilePlus2 />
+              <span>First interaction.</span>
+            </div>
+          )
         }
-        size="large"
+        className="col-span-2"
       />
       <Datapoint
         label="Status"
-        value={
-          simulation.success ? (
-            <CheckCircle color="success" />
-          ) : (
-            <Cancel color="error" />
-          )
-        }
-        size="medium"
+        value={simulation.success ? <Check /> : <X />}
       />
       {simulation.success && (
-        <Datapoint
-          label="Expected Gas Usage"
-          value={simulation.gasUsed.toString()}
-          size="medium"
-        />
+        <Datapoint label="Gas Used" value={simulation.gasUsed.toString()} />
       )}
-      <Grid size={{ xs: 12 }}>
+      <div className="col-span-4">
         {simulation.logs.map((log, i) => (
           <Log key={i} log={log} chainId={chainId} />
         ))}
-      </Grid>
-    </Grid>
+      </div>
+    </div>
   );
 }
 
@@ -267,46 +251,34 @@ function Actions({ request, accepted, onReject, onConfirm }: ActionsProps) {
 
   if (request.walletType === "ledger" && !ledgerDetected) {
     return (
-      <Alert severity="info">
+      <Alert>
         <AlertTitle>Ledger not detected</AlertTitle>
-        Please unlock your Ledger, and open the Ethereum app
+        <AlertDescription>
+          Please unlock your Ledger, and open the Ethereum app
+        </AlertDescription>
       </Alert>
     );
   } else if (request.walletType === "ledger" && ledgerDetected && accepted) {
     return (
-      <Alert severity="info">
+      <Alert>
         <AlertTitle>Check your ledger</AlertTitle>
-        You need to confirm your transaction in your physical device
+        <AlertDescription>
+          You need to confirm your transaction in your physical device
+        </AlertDescription>
       </Alert>
     );
   } else {
     return (
-      <Stack
-        direction="row"
-        alignItems="center"
-        justifyContent="center"
-        spacing={2}
-      >
-        <Button
-          size="large"
-          variant="outlined"
-          color="error"
-          onClick={onReject}
-          startIcon={<Delete />}
-        >
+      <div className="m-2 flex items-center justify-center gap-2">
+        <Button variant="destructive" onClick={onReject}>
+          <X />
           Reject
         </Button>
-        <Button
-          size="large"
-          variant="contained"
-          color="primary"
-          type="submit"
-          onClick={onConfirm}
-          endIcon={<Send />}
-        >
+        <Button type="submit" onClick={onConfirm}>
+          <CheckIcon />
           Confirm
         </Button>
-      </Stack>
+      </div>
     );
   }
 }
@@ -377,7 +349,7 @@ function Erc20Transfer({
   });
 
   return (
-    <Stack direction="row" alignItems="center" spacing={1}>
+    <div className=" m-1 flex items-center">
       <AddressView address={from} />
       <span>→</span>
       <AddressView address={to} />
@@ -386,6 +358,6 @@ function Erc20Transfer({
         ? formatUnits(value, metadata.decimals)
         : value.toString()}{" "}
       {metadata?.symbol && `${metadata.symbol}`}
-    </Stack>
+    </div>
   );
 }

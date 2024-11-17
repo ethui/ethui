@@ -1,9 +1,9 @@
-import { Button, Grid2 as Grid, Stack, Typography } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { isDirty, isValid } from "zod";
 
 import type { ErcFullData } from "@ethui/types";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import { AddressView } from "#/components/AddressView";
 import { Datapoint } from "#/components/Datapoint";
 import { useDialog } from "#/hooks/useDialog";
@@ -24,56 +24,43 @@ export function ERC721AddDialog() {
   if (!token) return null;
 
   return (
-    <Stack spacing={2} alignItems="center">
-      <Typography variant="h6" component="h1">
-        Add suggested NFT
-      </Typography>
-      <Typography textAlign={"center"}>
+    <div className="m-2 flex flex-col items-center">
+      <h1 className="font-xl">Add suggested NFT</h1>
+      <span className="text-center">
         This allows the following asset to be added to your wallet.
-      </Typography>
-      <Grid container rowSpacing={1} justifyItems={"center"}>
-        <Grid container justifyContent={"center"} sx={{ mb: 2 }}>
-          <img
-            alt="Token"
-            height={400}
-            src={token.image.originalUrl || "../public/default_nft.svg"}
+      </span>
+      <div className="grid grid-cols-4 justify-center gap-5">
+        <img
+          alt="Token"
+          height={400}
+          src={token.image.originalUrl || "../public/default_nft.svg"}
+        />
+        <div>
+          <Datapoint
+            label="Contract Address"
+            value={<AddressView address={token.contract.address} />}
           />
-        </Grid>
-        <Grid container spacing={4}>
-          <Grid>
-            <Datapoint
-              label="Contract Address"
-              value={<AddressView address={token.contract.address} />}
-            />
-          </Grid>
-          <Grid>
-            <Datapoint label="Token ID" value={`#${Number(token.tokenId)}`} />
-          </Grid>
-        </Grid>
+          <Datapoint label="Token ID" value={`#${Number(token.tokenId)}`} />
+        </div>
         <Datapoint label="Name" value={token.raw.metadata.name || undefined} />
         <Datapoint
           label="Description"
           value={token.raw.metadata.description || undefined}
         />
-      </Grid>
+      </div>
 
-      <Stack direction="row" spacing={2}>
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() => tauriWindow.close()}
-        >
+      <div className=" m-2 flex">
+        <Button color="error" onClick={() => tauriWindow.close()}>
           Cancel
         </Button>
         <Button
-          variant="contained"
           type="submit"
           disabled={!isDirty || !isValid}
           onClick={() => send("accept")}
         >
           Add
         </Button>
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }

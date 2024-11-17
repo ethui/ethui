@@ -1,7 +1,7 @@
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
-import type { Action } from "kbar";
 import { type StateCreator, create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
+import type { Action } from "#/components/CommandBar";
 
 interface State {
   show: boolean;
@@ -20,10 +20,8 @@ const store: StateCreator<Store> = (set, get) => ({
   actions: [
     {
       id: "settings",
-      name: "Settings",
-      subtitle: "open/close",
-      shortcut: ["˄ ", "+", " S"],
-      perform: () => set({ show: !get().show }),
+      text: "Settings",
+      run: () => set({ show: !get().show }),
     },
   ],
   open() {

@@ -1,13 +1,3 @@
-import { KeyboardArrowDown } from "@mui/icons-material";
-import {
-  Button,
-  Chip,
-  Menu,
-  MenuItem,
-  Paper,
-  Stack,
-  Typography,
-} from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { startCase } from "lodash-es";
 import { useState } from "react";
@@ -15,9 +5,19 @@ import { useState } from "react";
 import { type Wallet, walletTypes } from "@ethui/types/wallets";
 import {
   Accordion,
-  AccordionDetails,
-  AccordionSummary,
-} from "#/components/Accordion";
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@ethui/ui/components/shadcn/accordion";
+import { Badge } from "@ethui/ui/components/shadcn/badge";
+import { Button } from "@ethui/ui/components/shadcn/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@ethui/ui/components/shadcn/dropdown-menu";
+import { CaretDownIcon } from "@radix-ui//react-icons";
 import { useWallets } from "#/store/useWallets";
 import { HDWalletForm } from "./Wallet/HDWallet";
 import { ImpersonatorForm } from "./Wallet/Impersonator";
@@ -44,22 +44,19 @@ export function SettingsWallets({ extraAction }: Props) {
 
   return (
     <>
-      <Stack>
-        {wallets.map((wallet) => (
-          <ExistingItem key={wallet.name} wallet={wallet} />
-        ))}
+      <div className="flex flex-col">
+        <Accordion type="single" collapsible className="w-full">
+          {wallets.map((wallet) => (
+            <ExistingItem key={wallet.name} wallet={wallet} />
+          ))}
+        </Accordion>
         {newType && <NewItem key="_new" type={newType} onFinish={closeNew} />}
-      </Stack>
+      </div>
       {!newType && (
-        <Stack
-          spacing={2}
-          direction="row"
-          justifyContent="space-between"
-          sx={{ mt: 4 }}
-        >
+        <div className="mt-4 flex justify-between justify-between">
           <AddWalletButton onChoice={startNew} />
           {extraAction && extraAction}
-        </Stack>
+        </div>
       )}
     </>
   );
@@ -77,14 +74,16 @@ function ExistingItem({ wallet }: ItemProps) {
   };
 
   return (
-    <Accordion defaultExpanded={!wallet}>
-      <AccordionSummary>
-        <Stack alignItems="center" direction="row">
-          <Typography>{wallet.name}</Typography>
-          <Chip sx={{ marginLeft: 2 }} label={wallet.type} />
-        </Stack>
-      </AccordionSummary>
-      <AccordionDetails>
+    <AccordionItem value={wallet.name}>
+      <AccordionTrigger>
+        <div className=" flex items-center">
+          <span>{wallet.name}</span>
+          <Badge variant="secondary" className="ml-2">
+            {wallet.type}
+          </Badge>
+        </div>
+      </AccordionTrigger>
+      <AccordionContent>
         {wallet.type === "plaintext" && (
           <Plaintext wallet={wallet} {...props} />
         )}
@@ -101,8 +100,8 @@ function ExistingItem({ wallet }: ItemProps) {
           <PrivateKeyForm wallet={wallet} {...props} />
         )}
         {wallet.type === "ledger" && <Ledger wallet={wallet} {...props} />}
-      </AccordionDetails>
-    </Accordion>
+      </AccordionContent>
+    </AccordionItem>
   );
 }
 
@@ -125,8 +124,8 @@ function NewItem({ type, onFinish }: NewItemProps) {
   };
 
   return (
-    <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
-      <Typography sx={{ pb: 2 }}>New {type}</Typography>
+    <div className="p-2">
+      <span className="pb-2">New {type}</span>
 
       {type === "plaintext" && <Plaintext {...props} />}
       {type === "jsonKeystore" && <JsonKeystore {...props} />}
@@ -134,7 +133,7 @@ function NewItem({ type, onFinish }: NewItemProps) {
       {type === "impersonator" && <ImpersonatorForm {...props} />}
       {type === "ledger" && <Ledger {...props} />}
       {type === "privateKey" && <PrivateKeyForm {...props} />}
-    </Paper>
+    </div>
   );
 }
 
@@ -143,51 +142,24 @@ interface AddWalletButtonProps {
 }
 
 const AddWalletButton = ({ onChoice }: AddWalletButtonProps) => {
-  const [anchor, setAnchor] = useState<HTMLElement | undefined>();
-  const open = Boolean(anchor);
-
-  const handleOpen = (e: React.MouseEvent<HTMLElement>) => {
-    setAnchor(e.currentTarget);
-  };
-  const handleClose = () => setAnchor(undefined);
-  const handleChoice = (type: Wallet["type"]) => {
-    onChoice(type);
-    setAnchor(undefined);
-  };
-
   return (
-    <>
-      <Button
-        id="add-wallet-btn"
-        aria-controls={open ? "add-wallet-type-menu" : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? "true" : undefined}
-        variant="contained"
-        disableElevation
-        onClick={handleOpen}
-        endIcon={<KeyboardArrowDown />}
-        color="info"
-        size="medium"
-      >
-        Add
-      </Button>
-      <Menu
-        id="add-wallet-type-menu"
-        anchorEl={anchor}
-        open={open}
-        onClose={handleClose}
-      >
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button id="add-wallet-btn">
+          <CaretDownIcon />
+          Add
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
         {walletTypes.map((walletType: Wallet["type"]) => (
-          <MenuItem
-            value={walletType}
+          <DropdownMenuItem
             key={walletType}
-            sx={{ textTransform: "capitalize" }}
-            onClick={() => handleChoice(walletType)}
+            onClick={() => onChoice(walletType)}
           >
             {startCase(walletType)}
-          </MenuItem>
+          </DropdownMenuItem>
         ))}
-      </Menu>
-    </>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };

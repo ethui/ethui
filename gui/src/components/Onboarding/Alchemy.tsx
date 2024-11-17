@@ -1,11 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, Stack, Typography } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { useCallback } from "react";
 import { type FieldValues, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
-import { Form } from "@ethui/react/components/Form";
+import { Form } from "@ethui/ui/components/form";
+import { Link } from "@tanstack/react-router";
 import type { StepProps } from ".";
 
 export function AlchemyStep({ onSubmit }: StepProps) {
@@ -45,48 +45,41 @@ export function AlchemyStep({ onSubmit }: StepProps) {
 
   return (
     <Form form={form} onSubmit={localOnSubmit}>
-      <Stack alignItems="flex-end" spacing={3}>
-        <Typography variant="h6" component="h1" alignSelf="start">
-          Alchemy
-        </Typography>
+      <h1 className="self-start text-xl">Alchemy</h1>
 
-        <Typography component="p">
-          ethui works with{" "}
-          <Link
-            underline="hover"
-            href="https://book.getfoundry.sh/anvil/"
-            target="_blank"
-            rel="nofollow noopener noreferrer"
-          >
-            Anvil
-          </Link>{" "}
-          out of the box. But for live blockchains, a connection to{" "}
-          <Link
-            underline="hover"
-            href="https://www.alchemy.com/"
-            target="_blank"
-            rel="nofollow noopener noreferrer"
-          >
-            alchemy.com
-          </Link>{" "}
-          is recommended. Go to your{" "}
-          <Link
-            underline="hover"
-            href="https://dashboard.alchemy.com/apps"
-            target="_blank"
-            rel="nofollow noopener noreferrer"
-          >
-            Alchemy dashboard
-          </Link>{" "}
-          and grab an API key.
-        </Typography>
-        <Form.Text label="API Key" name="alchemyApiKey" fullWidth />
+      <p>
+        ethui works with{" "}
+        <Link
+          href="https://book.getfoundry.sh/anvil/"
+          target="_blank"
+          rel="nofollow noopener noreferrer"
+        >
+          Anvil
+        </Link>{" "}
+        out of the box. But for live blockchains, a connection to{" "}
+        <Link
+          href="https://www.alchemy.com/"
+          target="_blank"
+          rel="nofollow noopener noreferrer"
+        >
+          alchemy.com
+        </Link>{" "}
+        is recommended. Go to your{" "}
+        <Link
+          href="https://dashboard.alchemy.com/apps"
+          target="_blank"
+          rel="nofollow noopener noreferrer"
+        >
+          Alchemy dashboard
+        </Link>{" "}
+        and grab an API key.
+      </p>
+      <Form.Text label="API Key" name="alchemyApiKey" />
 
-        <Form.Submit
-          useDirtyAlt={false}
-          label={alchemyApiKey?.length > 0 ? "Next" : "Skip"}
-        />
-      </Stack>
+      <Form.Submit
+        useDirtyAlt={false}
+        label={alchemyApiKey?.length > 0 ? "Next" : "Skip"}
+      />
     </Form>
   );
 }

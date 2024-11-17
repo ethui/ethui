@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { AddressView } from "#/components/AddressView";
+import { AppNavbar } from "#/components/AppNavbar";
 import { BalancesList } from "#/components/BalancesList";
-import { Navbar } from "#/components/Home/Navbar";
 import { useWallets } from "#/store/useWallets";
 
 export const Route = createFileRoute("/_home/home/account")({
@@ -16,10 +16,10 @@ export function Account() {
 
   return (
     <>
-      <Navbar>
-        <AddressView variant="h6" address={address} />
-      </Navbar>
-      <BalancesList />
+      <AppNavbar title={<AddressView address={address} />} />
+      <div className="container">
+        <BalancesList />
+      </div>
     </>
   );
 }

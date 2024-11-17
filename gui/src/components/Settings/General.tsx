@@ -1,11 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Stack } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import { useCallback } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Form } from "@ethui/react/components/Form";
+import { Form } from "@ethui/ui/components/form";
 import { useSettings } from "#/store/useSettings";
 
 export const schema = z.object({
@@ -67,32 +66,36 @@ export function SettingsGeneral() {
   if (!general) return null;
 
   return (
-    <Form form={form} onSubmit={onSubmit} className="flex flex-col gap-4">
-      <Stack alignItems="flex-start" spacing={2}>
-        <Form.Select
-          name="darkMode"
-          label="Dark mode"
-          defaultValue={general.darkMode}
-          items={["auto", "dark", "light"]}
-        />
+    <Form form={form} onSubmit={onSubmit}>
+      <Form.Select
+        name="darkMode"
+        label="Dark mode"
+        defaultValue={general.darkMode}
+        items={["auto", "dark", "light"]}
+      />
 
-        <Form.Checkbox
-          name="autostart"
-          label="Start automatically on boot (minimized)"
-        />
+      <Form.Checkbox
+        name="autostart"
+        label="Start automatically on boot (minimized)"
+      />
 
-        <Form.Checkbox name="fastMode" label="Fast mode" />
+      <Form.Text
+        name="alchemyApiKey"
+        label="Alchemy API Key"
+        className="w-full"
+      />
+      <Form.Text
+        label="Etherscan API Key"
+        name="etherscanApiKey"
+        className="w-full"
+      />
 
-        <Form.Text name="alchemyApiKey" label="Alchemy API Key" fullWidth />
-        <Form.Text label="Etherscan API Key" name="etherscanApiKey" fullWidth />
+      <Form.Checkbox
+        label="Hide Tokens Without Balance"
+        name="hideEmptyTokens"
+      />
 
-        <Form.Checkbox
-          label="Hide Tokens Without Balance"
-          name="hideEmptyTokens"
-        />
-
-        <Form.Submit label="Save" />
-      </Stack>
+      <Form.Submit label="Save" />
     </Form>
   );
 }

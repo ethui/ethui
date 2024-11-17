@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import { Link } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect } from "react";
@@ -9,20 +9,19 @@ export function ThankYouStep() {
   });
 
   return (
-    <Stack spacing={3} width="100%">
-      <Typography variant="h6" component="h1" alignSelf="start">
-        Thank you
-      </Typography>
-      <Typography component="p">
+    <div className="m-3 flex w-full flex-col">
+      <h1 className="self-start text-xl">Thank you</h1>
+
+      <p>
         Thank you for using ethui. If you find any problems, please open an
         issue on GitHub.
-      </Typography>
+      </p>
 
-      <Box alignSelf="flex-end">
+      <div className="self-end">
         <Link to="/home/account">
-          <Button variant="contained">Finish</Button>
+          <Button>Finish</Button>
         </Link>
-      </Box>
-    </Stack>
+      </div>
+    </div>
   );
 }

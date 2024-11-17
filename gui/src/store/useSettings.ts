@@ -1,10 +1,10 @@
 import { event } from "@tauri-apps/api";
 import { invoke } from "@tauri-apps/api/core";
-import type { Action } from "kbar";
 import { type StateCreator, create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
 import type { GeneralSettings } from "@ethui/types/settings";
+import type { Action } from "#/components/CommandBar";
 
 interface Store {
   settings?: GeneralSettings;
@@ -17,22 +17,13 @@ const actionId = "settings/fastMode";
 
 const store: StateCreator<Store> = (set) => ({
   settings: undefined,
-  actions: [
-    {
-      id: actionId,
-      name: "Fast mode",
-      subtitle: "enable/disable",
-      shortcut: ["˄ ", "+", " F"],
+  actions: ["Enable", "Disable"].map((mode) => ({
+    id: `${actionId}/${mode}`,
+    text: mode,
+    run: () => {
+      invoke("settings_set_fast_mode", { mode: mode === "Enable" });
     },
-    ...(["Enable", "Disable"] as const).map((mode, index) => ({
-      id: `${actionId}/${mode}`,
-      name: `${index + 1}: ${mode}`,
-      parent: actionId,
-      perform: () => {
-        invoke("settings_set_fast_mode", { mode: mode === "Enable" });
-      },
-    })),
-  ],
+  })),
 
   async reload() {
     const settings = await invoke<GeneralSettings>("settings_get");

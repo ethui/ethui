@@ -1,23 +1,19 @@
-import {
-  Avatar,
-  Badge,
-  Box,
-  FormControl,
-  MenuItem,
-  Select,
-  type SelectChangeEvent,
-  Stack,
-  Typography,
-} from "@mui/material";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { map } from "lodash-es";
 import { useEffect, useState } from "react";
 
-import { ChainView } from "@ethui/react/components/ChainView";
 import type { Affinity, Peer } from "@ethui/types";
-import { Navbar } from "#/components/Home/Navbar";
-import { Panel } from "#/components/Panel";
+import { ChainView } from "@ethui/ui/components/chain-view";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@ethui/ui/components/shadcn/select";
+import { AppNavbar } from "#/components/AppNavbar";
 import { useEventListener } from "#/hooks/useEventListener";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
@@ -30,35 +26,32 @@ export function Connections() {
   const { data: peersByDomain, refetch } =
     useInvoke<Record<string, Peer[]>>("ws_peers_by_domain");
 
+  useEventListener("peers-updated", () => console.log("refetch"));
   useEventListener("peers-updated", refetch);
+
+  console.log(peersByDomain);
 
   return (
     <>
-      <Navbar>Connections</Navbar>
-      <Panel>
-        <Stack spacing={2}>
-          {map(peersByDomain, (peers, domain) => (
-            <Domain key={domain} domain={domain} peers={peers} />
-          ))}
-        </Stack>
-      </Panel>
+      <AppNavbar title="Connections" />
+      <div className="m-1 flex flex-col">
+        {map(peersByDomain, (peers, domain) => (
+          <Domain key={domain} domain={domain} peers={peers} />
+        ))}
+      </div>
     </>
   );
 }
 
 function Domain({ domain, peers }: { domain: string; peers: Peer[] }) {
   return (
-    <Stack direction="row" alignItems="center" spacing={2}>
-      <Badge>
-        <Avatar sx={{ width: 30, height: 30 }} src={peers[0].favicon}>
-          {peers[0].origin.replace(/https?:\/\//, "").slice(0, 2)}
-        </Avatar>
-      </Badge>
-      <Typography> {peers[0].origin}</Typography>
-      <Box sx={{ "&&": { ml: "auto" } }}>
+    <div className=" m-1 flex items-center gap-2">
+      <img className="h-8 w-8" src={peers[0].favicon} alt={domain} />
+      <span> {peers[0].origin}</span>
+      <div>
         <AffinityForm domain={domain} />
-      </Box>
-    </Stack>
+      </div>
+    </div>
   );
 }
 
@@ -79,10 +72,11 @@ function AffinityForm({ domain }: { domain: string }) {
     setCurrent(affinity || "global");
   }, [affinity]);
 
-  const handleChange = (event: SelectChangeEvent<string>) => {
+  // TODO: bug can't currently clear affinity
+  const handleChange = (value: string) => {
     let affinity: Affinity = "global";
-    if (event.target.value !== "global") {
-      affinity = { sticky: Number.parseInt(event.target.value) };
+    if (value !== "global") {
+      affinity = { sticky: Number.parseInt(value) };
     }
     invoke("connections_set_affinity", {
       domain,
@@ -97,24 +91,25 @@ function AffinityForm({ domain }: { domain: string }) {
       : current.sticky.toString();
 
   return (
-    <FormControl fullWidth variant="standard">
-      <Select
-        labelId="network-select-label"
-        label="Network"
-        size="small"
-        onChange={handleChange}
-        value={value}
-        displayEmpty
-      >
-        <MenuItem value="global">
-          <em>Global</em>
-        </MenuItem>
-        {networks.map((network) => (
-          <MenuItem value={network.chain_id} key={network.name}>
-            <ChainView chainId={network.chain_id} name={network.name} />
-          </MenuItem>
-        ))}
+    <>
+      <Select defaultValue={value} onValueChange={handleChange}>
+        <SelectTrigger>
+          <SelectValue />
+        </SelectTrigger>
+
+        <SelectContent>
+          <SelectGroup>
+            {networks.map((network) => (
+              <SelectItem
+                value={network.chain_id.toString()}
+                key={network.name}
+              >
+                <ChainView chainId={network.chain_id} name={network.name} />
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
       </Select>
-    </FormControl>
+    </>
   );
 }

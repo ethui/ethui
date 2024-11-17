@@ -1,5 +1,5 @@
-import CloseIcon from "@mui/icons-material/Close";
-import { IconButton, Typography } from "@mui/material";
+import { Button } from "@ethui/ui/components/shadcn/button";
+import { CircleX } from "lucide-react";
 import { closeSnackbar, enqueueSnackbar } from "notistack";
 
 export function errorToast(key: string, err: unknown) {
@@ -12,19 +12,19 @@ export function errorToast(key: string, err: unknown) {
     msg = JSON.stringify(err);
   }
 
-  enqueueSnackbar(<Typography>{msg}</Typography>, {
+  enqueueSnackbar(<span>{msg}</span>, {
     key,
     variant: "error",
     action: () => (
       <>
-        <IconButton
+        <Button
+          size="icon"
           aria-label="close"
           color="inherit"
-          sx={{ p: 0.5 }}
           onClick={() => closeSnackbar(key)}
         >
-          <CloseIcon />
-        </IconButton>
+          <CircleX />
+        </Button>
       </>
     ),
   });
