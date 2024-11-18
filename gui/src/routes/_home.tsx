@@ -1,7 +1,5 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 
-import type { Tab } from "@ethui/types/ui";
-import { CircleUser, FileCode2, ReceiptText, Wifi } from "lucide-react";
 import { AppSidebar } from "#/components/AppSidebar";
 import { CommandBar, CommandBarProvider } from "#/components/CommandBar";
 import { SidebarProvider } from "#/components/shadcn/sidebar";
