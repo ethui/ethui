@@ -7,7 +7,7 @@ import { Button } from "@ethui/ui/components/shadcn/button";
 import { AppNavbar } from "#/components/AppNavbar";
 import { invoke } from "@tauri-apps/api/core";
 
-export const Route = createLazyFileRoute("/_home/home/settings/networks/$name")(
+export const Route = createLazyFileRoute("/_home/home/settings/networks/$name/edit")(
   {
     component: () => {
       const network = Route.useLoaderData();
@@ -36,11 +36,7 @@ function Content({ network }: { network: Network }) {
   const router = useRouter();
 
   const onSubmit = async (data: Network) => {
-    // TODO: update network
-    //await setNetworks(data.networks);
-    console.log(
-      await invoke("networks_update", { oldName: network.name, network: data }),
-    );
+    await invoke("networks_update", { oldName: network.name, network: data });
     router.history.back();
   };
 

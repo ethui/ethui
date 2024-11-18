@@ -24,7 +24,7 @@ import { Route as DialogDialogErc721AddIdImport } from './routes/_dialog.dialog/
 import { Route as DialogDialogErc20AddIdImport } from './routes/_dialog.dialog/erc20-add.$id'
 import { Route as DialogDialogErc1155AddIdImport } from './routes/_dialog.dialog/erc1155-add.$id'
 import { Route as DialogDialogChainAddIdImport } from './routes/_dialog.dialog/chain-add.$id'
-import { Route as HomeHomeSettingsNetworksNameImport } from './routes/_home.home/settings/networks/$name'
+import { Route as HomeHomeSettingsNetworksNameEditImport } from './routes/_home.home/settings/networks/$name.edit'
 
 // Create Virtual Routes
 
@@ -52,6 +52,9 @@ const HomeHomeSettingsFoundryLazyImport = createFileRoute(
 )()
 const HomeHomeSettingsNetworksIndexLazyImport = createFileRoute(
   '/_home/home/settings/networks/',
+)()
+const HomeHomeSettingsNetworksNewLazyImport = createFileRoute(
+  '/_home/home/settings/networks/new',
 )()
 
 // Create/Update Routes
@@ -185,12 +188,22 @@ const HomeHomeSettingsNetworksIndexLazyRoute =
     ),
   )
 
-const HomeHomeSettingsNetworksNameRoute =
-  HomeHomeSettingsNetworksNameImport.update({
-    path: '/home/settings/networks/$name',
+const HomeHomeSettingsNetworksNewLazyRoute =
+  HomeHomeSettingsNetworksNewLazyImport.update({
+    path: '/home/settings/networks/new',
     getParentRoute: () => HomeRoute,
   } as any).lazy(() =>
-    import('./routes/_home.home/settings/networks/$name.lazy').then(
+    import('./routes/_home.home/settings/networks/new.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+
+const HomeHomeSettingsNetworksNameEditRoute =
+  HomeHomeSettingsNetworksNameEditImport.update({
+    path: '/home/settings/networks/$name/edit',
+    getParentRoute: () => HomeRoute,
+  } as any).lazy(() =>
+    import('./routes/_home.home/settings/networks/$name.edit.lazy').then(
       (d) => d.Route,
     ),
   )
@@ -332,11 +345,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeHomeSettingsWalletsLazyImport
       parentRoute: typeof HomeImport
     }
-    '/_home/home/settings/networks/$name': {
-      id: '/_home/home/settings/networks/$name'
-      path: '/home/settings/networks/$name'
-      fullPath: '/home/settings/networks/$name'
-      preLoaderRoute: typeof HomeHomeSettingsNetworksNameImport
+    '/_home/home/settings/networks/new': {
+      id: '/_home/home/settings/networks/new'
+      path: '/home/settings/networks/new'
+      fullPath: '/home/settings/networks/new'
+      preLoaderRoute: typeof HomeHomeSettingsNetworksNewLazyImport
       parentRoute: typeof HomeImport
     }
     '/_home/home/settings/networks/': {
@@ -344,6 +357,13 @@ declare module '@tanstack/react-router' {
       path: '/home/settings/networks/'
       fullPath: '/home/settings/networks/'
       preLoaderRoute: typeof HomeHomeSettingsNetworksIndexLazyImport
+      parentRoute: typeof HomeImport
+    }
+    '/_home/home/settings/networks/$name/edit': {
+      id: '/_home/home/settings/networks/$name/edit'
+      path: '/home/settings/networks/$name/edit'
+      fullPath: '/home/settings/networks/$name/edit'
+      preLoaderRoute: typeof HomeHomeSettingsNetworksNameEditImport
       parentRoute: typeof HomeImport
     }
   }
@@ -371,8 +391,9 @@ export const routeTree = rootRoute.addChildren({
     HomeHomeSettingsKeybindsLazyRoute,
     HomeHomeSettingsTokensLazyRoute,
     HomeHomeSettingsWalletsLazyRoute,
-    HomeHomeSettingsNetworksNameRoute,
+    HomeHomeSettingsNetworksNewLazyRoute,
     HomeHomeSettingsNetworksIndexLazyRoute,
+    HomeHomeSettingsNetworksNameEditRoute,
   }),
   OnboardingRoute,
 })
