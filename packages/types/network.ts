@@ -22,9 +22,4 @@ export const networkSchema = z
     },
   );
 
-// const formSchema = schema.shape.network;
-export const networkListSchema = z.object({
-  networks: networkSchema,
-});
-
-export type Network = z.infer<typeof networkListSchema.shape.networks>[number];
+export type Network = z.infer<typeof networkSchema>;

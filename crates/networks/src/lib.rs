@@ -108,7 +108,6 @@ impl Networks {
     }
 
     pub async fn update_network(&mut self, old_name: &str, network: Network) -> Result<()> {
-        // TODO: ensure we're deleting the correct one (chain id matches?)
         self.networks.remove(old_name);
         self.networks.insert(network.name.clone(), network.clone());
 

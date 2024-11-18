@@ -1,4 +1,4 @@
-import { createLazyFileRoute } from '@tanstack/react-router'
+import { createLazyFileRoute } from "@tanstack/react-router";
 import { useRouter } from "@tanstack/react-router";
 import { type Network, networkSchema } from "@ethui/types/network";
 import { useForm } from "react-hook-form";
@@ -8,24 +8,21 @@ import { Button } from "@ethui/ui/components/shadcn/button";
 import { AppNavbar } from "#/components/AppNavbar";
 import { invoke } from "@tauri-apps/api/core";
 
-export const Route = createLazyFileRoute("/_home/home/settings/networks/new")(
-  {
-    component: () => {
-
-      return (
-        <>
-          <AppNavbar title="Settings » Networks » New" />
-          <div className="m-4">
-            <Content />
-          </div>
-        </>
-      );
-    },
+export const Route = createLazyFileRoute("/_home/home/settings/networks/new")({
+  component: () => {
+    return (
+      <>
+        <AppNavbar title="Settings » Networks » New" />
+        <div className="m-4">
+          <Content />
+        </div>
+      </>
+    );
   },
-);
+});
 
 function Content() {
-  const form = useForm({
+  const form = useForm<Network>({
     mode: "onBlur",
     resolver: zodResolver(networkSchema),
   });
@@ -35,6 +32,8 @@ function Content() {
     await invoke("networks_add", { network: data });
     router.history.back();
   };
+
+  const cancel = () => router.history.back();
 
   // TODO: fix remove button
   return (
@@ -56,7 +55,9 @@ function Content() {
 
       <div className="flex gap-2">
         <Button>Create</Button>
-        <Button variant="destructive" onClick={router.history.back}>Cancel</Button>
+        <Button variant="destructive" onClick={cancel}>
+          Cancel
+        </Button>
       </div>
     </Form>
   );

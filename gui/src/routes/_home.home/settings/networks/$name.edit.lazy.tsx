@@ -7,25 +7,25 @@ import { Button } from "@ethui/ui/components/shadcn/button";
 import { AppNavbar } from "#/components/AppNavbar";
 import { invoke } from "@tauri-apps/api/core";
 
-export const Route = createLazyFileRoute("/_home/home/settings/networks/$name/edit")(
-  {
-    component: () => {
-      const network = Route.useLoaderData();
+export const Route = createLazyFileRoute(
+  "/_home/home/settings/networks/$name/edit",
+)({
+  component: () => {
+    const network = Route.useLoaderData();
 
-      // TODO: can we show an error here instead?
-      if (!network) return;
+    // TODO: can we show an error here instead?
+    if (!network) return;
 
-      return (
-        <>
-          <AppNavbar title={`Settings » Networks » ${network.name}`} />
-          <div className="m-4">
-            <Content network={network} />
-          </div>
-        </>
-      );
-    },
+    return (
+      <>
+        <AppNavbar title={`Settings » Networks » ${network.name}`} />
+        <div className="m-4">
+          <Content network={network} />
+        </div>
+      </>
+    );
   },
-);
+});
 
 function Content({ network }: { network: Network }) {
   const form = useForm({
@@ -40,7 +40,7 @@ function Content({ network }: { network: Network }) {
     router.history.back();
   };
 
-  const remove = async (e) => {
+  const remove = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     await invoke("networks_remove", { name: network.name });
     router.history.back();
@@ -66,7 +66,9 @@ function Content({ network }: { network: Network }) {
 
       <div className="flex gap-2">
         <Button>Save</Button>
-        <Button variant="destructive" onClick={remove}>Remove</Button>
+        <Button variant="destructive" onClick={remove}>
+          Remove
+        </Button>
       </div>
     </Form>
   );
