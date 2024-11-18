@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { Link } from "@tanstack/react-router";
 import { CircleX } from "lucide-react";
-import { useInvoke } from "./useInvoke";
+import { useInvoke } from "./useInvoke.ts";
 
 export async function getLatestVersion() {
   const response = await fetch(

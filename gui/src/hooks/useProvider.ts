@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { http, createPublicClient } from "viem";
 
 import type { Network } from "@ethui/types/network";
-import { useInvoke } from "./useInvoke";
+import { useInvoke } from "./useInvoke.ts";
 
 export function useProvider() {
   const { data: network } = useInvoke<Network>("networks_get_current");

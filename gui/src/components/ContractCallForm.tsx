@@ -8,8 +8,8 @@ import { type Address, type Hash, decodeFunctionResult } from "viem";
 import { invoke } from "@tauri-apps/api/core";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useWallets } from "#/store/useWallets";
-import { AddressView } from "./AddressView";
-import { HashView } from "./HashView";
+import { AddressView } from "./AddressView.tsx";
+import { HashView } from "./HashView.tsx";
 
 interface Props {
   chainId: number;

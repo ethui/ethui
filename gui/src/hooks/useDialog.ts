@@ -3,7 +3,7 @@ import type { EventCallback, EventName } from "@tauri-apps/api/event";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { useCallback } from "react";
 
-import { useInvoke } from "./useInvoke";
+import { useInvoke } from "./useInvoke.ts";
 
 export function useDialog<T>(idStr: string) {
   const view = getCurrentWebviewWindow();

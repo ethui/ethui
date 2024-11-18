@@ -6,7 +6,7 @@ import { Link } from "@tanstack/react-router";
 import { CircleX, SquareArrowOutUpRight } from "lucide-react";
 import { useNetworks } from "#/store/useNetworks";
 import { useSettings } from "#/store/useSettings";
-import { useInvoke } from "./useInvoke";
+import { useInvoke } from "./useInvoke.ts";
 
 let key: SnackbarKey;
 

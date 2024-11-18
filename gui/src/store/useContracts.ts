@@ -6,7 +6,7 @@ import { subscribeWithSelector } from "zustand/middleware";
 
 import type { Contract } from "@ethui/types";
 import { errorToast } from "#/components/Toast";
-import { useNetworks } from "./useNetworks";
+import { useNetworks } from "./useNetworks.ts";
 
 interface State {
   chainId?: number;

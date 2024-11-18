@@ -1,6 +1,6 @@
 import type { GeneralSettings } from "@ethui/types/settings";
 import { useInvoke } from "#/hooks/useInvoke";
-import { ERC20View } from "./ERC20View";
+import { ERC20View } from "./ERC20View.tsx";
 
 import { useBalances } from "#/store/useBalances";
 import { useNetworks } from "#/store/useNetworks";

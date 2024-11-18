@@ -3,7 +3,7 @@ import { LoaderCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Button } from "@ethui/ui/components/shadcn/button";
-import { useInvoke } from "#/hooks/useInvoke";
+import { useInvoke } from "#/hooks/useInvoke.ts";
 import type { StepProps } from ".";
 
 export function InstallExtensionStep({ onSubmit }: StepProps) {

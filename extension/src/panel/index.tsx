@@ -9,7 +9,7 @@ import {
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
 
-import { useStore } from "./store";
+import { useStore } from "./store.ts";
 
 function Time({ request, response }: { request: number; response?: number }) {
   if (!response) return null;

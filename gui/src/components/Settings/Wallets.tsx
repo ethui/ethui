@@ -19,12 +19,12 @@ import {
 } from "@ethui/ui/components/shadcn/dropdown-menu";
 import { CaretDownIcon } from "@radix-ui//react-icons";
 import { useWallets } from "#/store/useWallets";
-import { HDWalletForm } from "./Wallet/HDWallet";
-import { ImpersonatorForm } from "./Wallet/Impersonator";
-import { JsonKeystore } from "./Wallet/JsonKeystore";
-import { Ledger } from "./Wallet/Ledger";
-import { Plaintext } from "./Wallet/Plaintext";
-import { PrivateKeyForm } from "./Wallet/PrivateKey";
+import { HDWalletForm } from "./Wallet/HDWallet.tsx";
+import { ImpersonatorForm } from "./Wallet/Impersonator.tsx";
+import { JsonKeystore } from "./Wallet/JsonKeystore.tsx";
+import { Ledger } from "./Wallet/Ledger.tsx";
+import { Plaintext } from "./Wallet/Plaintext.tsx";
+import { PrivateKeyForm } from "./Wallet/PrivateKey.tsx";
 
 interface Props {
   extraAction?: React.ReactNode;

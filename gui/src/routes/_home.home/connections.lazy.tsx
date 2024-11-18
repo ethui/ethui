@@ -15,7 +15,7 @@ import {
 } from "@ethui/ui/components/shadcn/select";
 import { AppNavbar } from "#/components/AppNavbar";
 import { useEventListener } from "#/hooks/useEventListener";
-import { useInvoke } from "#/hooks/useInvoke";
+import { useInvoke } from "#/hooks/useInvoke.ts";
 import { useNetworks } from "#/store/useNetworks";
 
 export const Route = createLazyFileRoute("/_home/home/connections")({

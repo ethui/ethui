@@ -9,8 +9,8 @@ import {
 } from "react-hook-form";
 
 import clsx from "clsx";
-import { Button, type ButtonProps } from "./shadcn/button";
-import { Checkbox as ShadCheckbox } from "./shadcn/checkbox";
+import { Button, type ButtonProps } from "./shadcn/button.tsx";
+import { Checkbox as ShadCheckbox } from "./shadcn/checkbox.tsx";
 import {
   FormControl,
   FormField,
@@ -18,15 +18,15 @@ import {
   FormLabel,
   FormMessage,
   Form as ShadForm,
-} from "./shadcn/form";
-import { Input, type InputProps } from "./shadcn/input";
+} from "./shadcn/form.tsx";
+import { Input, type InputProps } from "./shadcn/input.tsx";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./shadcn/select";
+} from "./shadcn/select.tsx";
 
 interface Props<T extends FieldValues>
   extends Omit<React.FormHTMLAttributes<HTMLFormElement>, "onSubmit"> {

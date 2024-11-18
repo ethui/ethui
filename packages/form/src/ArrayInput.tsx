@@ -3,9 +3,9 @@ import { useState } from "react";
 
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { Separator } from "@ethui/ui/components/shadcn/separator";
-import { AbiInput, type InnerProps } from "./AbiInput";
-import { Basic } from "./Basic";
-import { Debug } from "./utils";
+import { AbiInput, type InnerProps } from "./AbiInput.tsx";
+import { Basic } from "./Basic.tsx";
+import { Debug } from "./utils.tsx";
 
 type ArrayInputProps = InnerProps & {
   length?: number;

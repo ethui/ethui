@@ -1,10 +1,10 @@
 import { Input } from "@ethui/ui/components/shadcn/input";
 import { useCallback, useState } from "react";
 
-import type { InnerProps } from "./AbiInput";
+import type { InnerProps } from "./AbiInput.tsx";
 
 import { parse } from "@ethui/abiparse";
-import { Debug, stringify } from "./utils";
+import { Debug, stringify } from "./utils.tsx";
 
 export type BasicProps = Omit<InnerProps, "depth" | "type" | "label">;
 export function Basic({ name, defaultValue, onChange, debug }: BasicProps) {

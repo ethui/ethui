@@ -5,8 +5,8 @@ import { type AbiFunction, parseAbiItem } from "viem";
 import { encodeFunctionData } from "viem/utils";
 
 import { Button } from "@ethui/ui/components/shadcn/button";
-import { AbiInput } from "./AbiInput";
-import { decodeDefaultArgs } from "./utils";
+import { AbiInput } from "./AbiInput.tsx";
+import { decodeDefaultArgs } from "./utils.tsx";
 
 interface AbiItemFormProps {
   item?: AbiFunction | "raw";

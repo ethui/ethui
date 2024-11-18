@@ -28,12 +28,12 @@ import {
   SidebarRail,
 } from "#/components/shadcn/sidebar";
 import { cn } from "#/lib/utils";
-import { useCommandBar } from "./CommandBar";
-import { Logo } from "./Logo";
-import { QuickAddressSelect } from "./QuickAddressSelect";
-import { QuickFastModeToggle } from "./QuickFastModeToggle";
-import { QuickNetworkSelect } from "./QuickNetworkSelect";
-import { QuickWalletSelect } from "./QuickWalletSelect";
+import { useCommandBar } from "./CommandBar.tsx";
+import { Logo } from "./Logo.tsx";
+import { QuickAddressSelect } from "./QuickAddressSelect.tsx";
+import { QuickFastModeToggle } from "./QuickFastModeToggle.tsx";
+import { QuickNetworkSelect } from "./QuickNetworkSelect.tsx";
+import { QuickWalletSelect } from "./QuickWalletSelect.tsx";
 
 export function AppSidebar() {
   const commandBar = useCommandBar();

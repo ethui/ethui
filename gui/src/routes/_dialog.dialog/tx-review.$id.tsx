@@ -29,7 +29,7 @@ import { DialogBottom } from "#/components/Dialogs/Bottom";
 import { IconAddress } from "#/components/Icons/Address";
 import { useDialog } from "#/hooks/useDialog";
 import type { Dialog } from "#/hooks/useDialog";
-import { useInvoke } from "#/hooks/useInvoke";
+import { useInvoke } from "#/hooks/useInvoke.ts";
 import { useLedgerDetect } from "#/hooks/useLedgerDetect";
 import { useNetworks } from "#/store/useNetworks";
 

@@ -11,6 +11,7 @@
       "packages/**/dist/**",
       "extension/dist",
       "gui/dist",
+      "bin/gen",
       "target"
     ]
   },

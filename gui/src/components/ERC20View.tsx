@@ -12,9 +12,9 @@ import { Button } from "@ethui/ui/components/shadcn/button";
 import { Dialog, DialogContent } from "@ethui/ui/components/shadcn/dialog";
 import { ArrowTopRightIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
 import { useNetworks } from "#/store/useNetworks";
-import { AddressView } from "./AddressView";
-import { IconAddress } from "./Icons/Address";
-import { TransferForm } from "./TransferForm";
+import { AddressView } from "./AddressView.tsx";
+import { IconAddress } from "./Icons/Address.tsx";
+import { TransferForm } from "./TransferForm.tsx";
 
 interface Props {
   chainId: number;

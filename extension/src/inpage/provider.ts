@@ -9,9 +9,9 @@ import log from "loglevel";
 
 import type { Duplex } from "node:stream";
 import type { Json, JsonRpcResponse } from "@metamask/utils";
-import type { Address, RequestArguments } from "./types";
+import type { Address, RequestArguments } from "./types.ts";
 
-import { errorMiddleware } from "./utils";
+import { errorMiddleware } from "./utils.ts";
 
 export class EthUIProvider extends EventEmitter {
   protected initialized = false;
