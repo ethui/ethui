@@ -38,8 +38,6 @@ import { QuickWalletSelect } from "./QuickWalletSelect";
 export function AppSidebar() {
   const commandBar = useCommandBar();
   const location = useLocation();
-  console.log(items, location);
-  console.log(items[0].url === location.pathname);
 
   return (
     <Sidebar collapsible="icon">
@@ -155,7 +153,7 @@ const items = [
 const settingsItems = [
   { title: "General", url: "/home/settings/general" },
   { title: "Wallets", url: "/home/settings/wallets" },
-  { title: "Network", url: "/home/settings/network" },
+  { title: "Network", url: "/home/settings/networks" },
   { title: "Foundry", url: "/home/settings/foundry" },
   { title: "Keybinds", url: "/home/settings/keybinds" },
   { title: "Tokens", url: "/home/settings/tokens" },

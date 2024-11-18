@@ -24,6 +24,7 @@ import { Route as DialogDialogErc721AddIdImport } from './routes/_dialog.dialog/
 import { Route as DialogDialogErc20AddIdImport } from './routes/_dialog.dialog/erc20-add.$id'
 import { Route as DialogDialogErc1155AddIdImport } from './routes/_dialog.dialog/erc1155-add.$id'
 import { Route as DialogDialogChainAddIdImport } from './routes/_dialog.dialog/chain-add.$id'
+import { Route as HomeHomeSettingsNetworksNameEditImport } from './routes/_home.home/settings/networks/$name.edit'
 
 // Create Virtual Routes
 
@@ -40,9 +41,6 @@ const HomeHomeSettingsWalletsLazyImport = createFileRoute(
 const HomeHomeSettingsTokensLazyImport = createFileRoute(
   '/_home/home/settings/tokens',
 )()
-const HomeHomeSettingsNetworkLazyImport = createFileRoute(
-  '/_home/home/settings/network',
-)()
 const HomeHomeSettingsKeybindsLazyImport = createFileRoute(
   '/_home/home/settings/keybinds',
 )()
@@ -51,6 +49,12 @@ const HomeHomeSettingsGeneralLazyImport = createFileRoute(
 )()
 const HomeHomeSettingsFoundryLazyImport = createFileRoute(
   '/_home/home/settings/foundry',
+)()
+const HomeHomeSettingsNetworksIndexLazyImport = createFileRoute(
+  '/_home/home/settings/networks/',
+)()
+const HomeHomeSettingsNetworksNewLazyImport = createFileRoute(
+  '/_home/home/settings/networks/new',
 )()
 
 // Create/Update Routes
@@ -113,14 +117,6 @@ const HomeHomeSettingsTokensLazyRoute = HomeHomeSettingsTokensLazyImport.update(
   import('./routes/_home.home/settings/tokens.lazy').then((d) => d.Route),
 )
 
-const HomeHomeSettingsNetworkLazyRoute =
-  HomeHomeSettingsNetworkLazyImport.update({
-    path: '/home/settings/network',
-    getParentRoute: () => HomeRoute,
-  } as any).lazy(() =>
-    import('./routes/_home.home/settings/network.lazy').then((d) => d.Route),
-  )
-
 const HomeHomeSettingsKeybindsLazyRoute =
   HomeHomeSettingsKeybindsLazyImport.update({
     path: '/home/settings/keybinds',
@@ -181,6 +177,36 @@ const DialogDialogChainAddIdRoute = DialogDialogChainAddIdImport.update({
   path: '/dialog/chain-add/$id',
   getParentRoute: () => DialogRoute,
 } as any)
+
+const HomeHomeSettingsNetworksIndexLazyRoute =
+  HomeHomeSettingsNetworksIndexLazyImport.update({
+    path: '/home/settings/networks/',
+    getParentRoute: () => HomeRoute,
+  } as any).lazy(() =>
+    import('./routes/_home.home/settings/networks/index.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+
+const HomeHomeSettingsNetworksNewLazyRoute =
+  HomeHomeSettingsNetworksNewLazyImport.update({
+    path: '/home/settings/networks/new',
+    getParentRoute: () => HomeRoute,
+  } as any).lazy(() =>
+    import('./routes/_home.home/settings/networks/new.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+
+const HomeHomeSettingsNetworksNameEditRoute =
+  HomeHomeSettingsNetworksNameEditImport.update({
+    path: '/home/settings/networks/$name/edit',
+    getParentRoute: () => HomeRoute,
+  } as any).lazy(() =>
+    import('./routes/_home.home/settings/networks/$name.edit.lazy').then(
+      (d) => d.Route,
+    ),
+  )
 
 // Populate the FileRoutesByPath interface
 
@@ -305,13 +331,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeHomeSettingsKeybindsLazyImport
       parentRoute: typeof HomeImport
     }
-    '/_home/home/settings/network': {
-      id: '/_home/home/settings/network'
-      path: '/home/settings/network'
-      fullPath: '/home/settings/network'
-      preLoaderRoute: typeof HomeHomeSettingsNetworkLazyImport
-      parentRoute: typeof HomeImport
-    }
     '/_home/home/settings/tokens': {
       id: '/_home/home/settings/tokens'
       path: '/home/settings/tokens'
@@ -324,6 +343,27 @@ declare module '@tanstack/react-router' {
       path: '/home/settings/wallets'
       fullPath: '/home/settings/wallets'
       preLoaderRoute: typeof HomeHomeSettingsWalletsLazyImport
+      parentRoute: typeof HomeImport
+    }
+    '/_home/home/settings/networks/new': {
+      id: '/_home/home/settings/networks/new'
+      path: '/home/settings/networks/new'
+      fullPath: '/home/settings/networks/new'
+      preLoaderRoute: typeof HomeHomeSettingsNetworksNewLazyImport
+      parentRoute: typeof HomeImport
+    }
+    '/_home/home/settings/networks/': {
+      id: '/_home/home/settings/networks/'
+      path: '/home/settings/networks/'
+      fullPath: '/home/settings/networks/'
+      preLoaderRoute: typeof HomeHomeSettingsNetworksIndexLazyImport
+      parentRoute: typeof HomeImport
+    }
+    '/_home/home/settings/networks/$name/edit': {
+      id: '/_home/home/settings/networks/$name/edit'
+      path: '/home/settings/networks/$name/edit'
+      fullPath: '/home/settings/networks/$name/edit'
+      preLoaderRoute: typeof HomeHomeSettingsNetworksNameEditImport
       parentRoute: typeof HomeImport
     }
   }
@@ -349,9 +389,11 @@ export const routeTree = rootRoute.addChildren({
     HomeHomeSettingsFoundryLazyRoute,
     HomeHomeSettingsGeneralLazyRoute,
     HomeHomeSettingsKeybindsLazyRoute,
-    HomeHomeSettingsNetworkLazyRoute,
     HomeHomeSettingsTokensLazyRoute,
     HomeHomeSettingsWalletsLazyRoute,
+    HomeHomeSettingsNetworksNewLazyRoute,
+    HomeHomeSettingsNetworksIndexLazyRoute,
+    HomeHomeSettingsNetworksNameEditRoute,
   }),
   OnboardingRoute,
 })

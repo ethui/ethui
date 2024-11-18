@@ -4,7 +4,7 @@ mod init;
 mod network;
 
 use std::{
-    collections::{HashMap, HashSet},
+    collections::HashMap,
     fs::File,
     path::{Path, PathBuf},
 };
@@ -90,23 +90,57 @@ impl Networks {
     }
 
     pub async fn add_network(&mut self, network: Network) -> Result<()> {
+        // TODO: need to ensure uniqueness by name, not chain id
         if self.validate_chain_id(network.chain_id) {
             return Ok(());
+        }
+
+        if self.networks.contains_key(&network.name) {
+            return Err(Error::AlreadyExists);
         }
 
         self.networks.insert(network.name.clone(), network.clone());
         self.save()?;
         ethui_broadcast::network_added(network.chain_id).await;
+        ethui_broadcast::ui_notify(UINotify::NetworksChanged).await;
 
         Ok(())
     }
 
-    pub async fn set_networks(&mut self, networks: Vec<Network>) -> Result<()> {
-        self.do_set_networks(networks).await
+    pub async fn update_network(&mut self, old_name: &str, network: Network) -> Result<()> {
+        self.networks.remove(old_name);
+        self.networks.insert(network.name.clone(), network.clone());
+
+        if self.current == old_name {
+            self.current = network.name.clone();
+            self.on_network_changed().await?;
+        }
+
+        self.save()?;
+        ethui_broadcast::network_updated(network.chain_id).await;
+        ethui_broadcast::ui_notify(UINotify::NetworksChanged).await;
+        Ok(())
     }
 
-    pub async fn reset_networks(&mut self) -> Result<()> {
-        self.do_set_networks(Network::all_default()).await
+    pub async fn remove_network(&mut self, name: &str) -> Result<()> {
+        let network = self.networks.remove(name);
+
+        match network {
+            Some(network) => {
+                if self.current == name {
+                    let first = self.networks.values().next().unwrap();
+                    self.current = first.name.clone();
+                    self.on_network_changed().await?;
+                }
+                self.save()?;
+                ethui_broadcast::network_removed(network.chain_id).await;
+                ethui_broadcast::ui_notify(UINotify::NetworksChanged).await;
+            }
+            None => {
+                return Err(Error::NotExists);
+            }
+        }
+        Ok(())
     }
 
     pub fn get_current_provider(&self) -> RootProvider<RetryBackoffService<Http<Client>>> {
@@ -116,37 +150,12 @@ impl Networks {
     async fn on_network_changed(&self) -> Result<()> {
         // TODO: check domain
         self.notify_peers();
-        ethui_broadcast::ui_notify(UINotify::NetworkChanged).await;
+        ethui_broadcast::ui_notify(UINotify::CurrentNetworkChanged).await;
 
         let chain_id = self.get_current().chain_id;
         ethui_broadcast::current_network_changed(chain_id).await;
 
         Ok(())
-    }
-
-    async fn do_set_networks(&mut self, networks: Vec<Network>) -> Result<()> {
-        let first = networks[0].name.clone();
-
-        // update networks, keeping track of chain_ids before and after
-        let before: HashSet<_> = self.current_chain_ids();
-        self.networks = networks.into_iter().map(|n| (n.name.clone(), n)).collect();
-        let after: HashSet<_> = self.current_chain_ids();
-
-        tokio::spawn(async move {
-            for c in after.difference(&before) {
-                ethui_broadcast::network_added(*c).await;
-            }
-            for c in before.difference(&after) {
-                ethui_broadcast::network_removed(*c).await;
-            }
-        });
-
-        if !self.networks.contains_key(&self.current) {
-            self.current = first;
-            self.on_network_changed().await?;
-        }
-
-        self.save()
     }
 
     // broadcasts `accountsChanged` to all peers
@@ -170,10 +179,6 @@ impl Networks {
         for network in self.networks.values_mut() {
             network.reset_listener().await.unwrap();
         }
-    }
-
-    fn current_chain_ids(&self) -> HashSet<u32> {
-        self.networks.values().map(|n| n.chain_id).collect()
     }
 
     // Persists current state to disk

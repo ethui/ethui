@@ -19,6 +19,12 @@ pub enum Error {
 
     #[error(transparent)]
     Rpc(#[from] RpcError<TransportErrorKind>),
+
+    #[error("Already exists")]
+    AlreadyExists,
+
+    #[error("Not exists")]
+    NotExists,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
