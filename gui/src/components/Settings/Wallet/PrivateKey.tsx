@@ -8,7 +8,7 @@ import type { PrivateKeyWallet } from "@ethui/types/wallets";
 import { Form } from "@ethui/ui/components/form";
 import { Button } from "@ethui/ui/components/shadcn/button";
 
-export const schema = z.object({
+const schema = z.object({
   name: z.string().min(1),
   privateKey: z.string().regex(/^0x[a-fA-F0-9]{64}$/),
   password: passwordSchema,

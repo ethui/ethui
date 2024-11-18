@@ -10,7 +10,7 @@
     "storybook": "yarn workspace @ethui/ui storybook",
     "ext:dev": "yarn workspace @ethui/extension dev",
     "ext:build": "yarn workspace @ethui/extension build \"$@\"",
-    "lint": "yarn lint:biome && yarn lint:tsc",
+    "lint": "yarn lint:biome && yarn lint:tsc && yarn workspaces @ethui/gui run lint",
     "lint:biome": "biome check .",
     "lint:tsc": "yarn workspaces foreach --all --parallel run tsc --noEmit",
     "fix": "yarn fix:biome",
@@ -29,7 +29,8 @@
   ],
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "assert": "^2.1.0"
+    "assert": "^2.1.0",
+    "ts-unused-exports": "^10.1.0"
   },
   "dependencies": {
     "@tauri-apps/cli": "^2.0.3",

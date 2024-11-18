@@ -22,7 +22,7 @@ export const Route = createFileRoute("/_home/home/connections")({
   component: Connections,
 });
 
-export function Connections() {
+function Connections() {
   const { data: peersByDomain, refetch } =
     useInvoke<Record<string, Peer[]>>("ws_peers_by_domain");
 

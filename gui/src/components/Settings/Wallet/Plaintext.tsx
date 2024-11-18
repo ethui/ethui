@@ -21,7 +21,7 @@ const schema = z.object({
 
 type Schema = z.infer<typeof schema>;
 
-export interface Props {
+interface Props {
   wallet?: PlaintextWallet;
   onSubmit: (data: Wallet) => void;
   onRemove: () => void;

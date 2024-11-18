@@ -12,7 +12,7 @@ export const Route = createFileRoute("/_dialog/dialog/chain-add/$id")({
   component: ChainAddDialog,
 });
 
-export function ChainAddDialog() {
+function ChainAddDialog() {
   const { id } = Route.useParams();
   const { data: network, send } = useDialog<Network>(id);
 

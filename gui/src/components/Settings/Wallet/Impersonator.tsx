@@ -12,7 +12,7 @@ import { Form } from "@ethui/ui/components/form";
 import { Button } from "@ethui/ui/components/shadcn/button";
 
 // react-hook-form doesn't support value-arrays, only object-arrays, so we need this type as a workaround for the impersonator form
-export const schema = z.object({
+const schema = z.object({
   name: z.string().min(1),
   addresses: z.array(
     z.object({
@@ -24,7 +24,7 @@ export const schema = z.object({
 
 type Schema = z.infer<typeof schema>;
 
-export interface Props {
+interface Props {
   wallet?: ImpersonatorWallet;
   onSubmit: (data: Wallet) => void;
   onRemove: () => void;

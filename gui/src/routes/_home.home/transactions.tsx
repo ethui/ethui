@@ -36,7 +36,7 @@ export const Route = createFileRoute("/_home/home/transactions")({
   component: Txs,
 });
 
-export function Txs() {
+function Txs() {
   const account = useWallets((s) => s.address);
   const chainId = useNetworks((s) => s.current?.chain_id);
 

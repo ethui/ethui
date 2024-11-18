@@ -9,7 +9,7 @@ export const Route = createFileRoute("/_home/home/account")({
   component: Account,
 });
 
-export function Account() {
+function Account() {
   const address = useWallets((s) => s.address);
 
   if (!address) return null;

@@ -16,7 +16,7 @@ import { Button } from "@ethui/ui/components/shadcn/button";
 import { useProvider } from "#/hooks/useProvider";
 import { truncateHex } from "#/utils";
 
-export const schema = z.object({
+const schema = z.object({
   count: z.number().int().min(1).max(100),
   name: z.string().min(1),
   current: z.array(z.string()).length(2).optional(),

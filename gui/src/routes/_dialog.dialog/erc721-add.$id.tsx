@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_dialog/dialog/erc721-add/$id")({
   component: ERC721AddDialog,
 });
 
-export function ERC721AddDialog() {
+function ERC721AddDialog() {
   const { id } = Route.useParams();
   const { data: token, send } = useDialog<ErcFullData>(id);
   const network = useNetworks((s) => s.current);

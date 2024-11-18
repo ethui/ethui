@@ -15,7 +15,7 @@ import { Form } from "@ethui/ui/components/form";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { useLedgerDetect } from "#/hooks/useLedgerDetect";
 
-export const schema = z.object({
+const schema = z.object({
   name: z.string().min(1),
   paths: z.array(
     z.object({
@@ -31,7 +31,7 @@ const defaultValues: Schema = {
   paths: [{ path: "m/44'/60'/0'/0/0" }],
 };
 
-export interface Props {
+interface Props {
   wallet?: LedgerWallet;
   onSubmit: (data: object) => void;
   onRemove: () => void;

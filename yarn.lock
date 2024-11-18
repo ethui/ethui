@@ -1869,6 +1869,7 @@ __metadata:
     tailwind-merge: "npm:^2.5.4"
     tailwindcss: "npm:^3.4.14"
     tailwindcss-animate: "npm:^1.0.7"
+    ts-unused-exports: "npm:^10.1.0"
     typescript: "npm:^5.6.3"
     viem: "npm:^2.21.27"
     vite: "npm:^5.4.9"
@@ -5150,6 +5151,13 @@ __metadata:
   version: 2.0.4
   resolution: "@types/http-errors@npm:2.0.4"
   checksum: 494670a57ad4062fee6c575047ad5782506dd35a6b9ed3894cea65830a94367bd84ba302eb3dde331871f6d70ca287bfedb1b2cf658e6132cd2cbd427ab56836
+  languageName: node
+  linkType: hard
+
+"@types/json5@npm:^0.0.29":
+  version: 0.0.29
+  resolution: "@types/json5@npm:0.0.29"
+  checksum: 6bf5337bc447b706bb5b4431d37686aa2ea6d07cfd6f79cc31de80170d6ff9b1c7384a9c0ccbc45b3f512bae9e9f75c2e12109806a15331dc94e8a8db6dbb4ac
   languageName: node
   linkType: hard
 
@@ -10367,6 +10375,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"json5@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "json5@npm:1.0.2"
+  dependencies:
+    minimist: "npm:^1.2.0"
+  bin:
+    json5: lib/cli.js
+  checksum: 9ee316bf21f000b00752e6c2a3b79ecf5324515a5c60ee88983a1910a45426b643a4f3461657586e8aeca87aaf96f0a519b0516d2ae527a6c3e7eed80f68717f
+  languageName: node
+  linkType: hard
+
 "json5@npm:^2.2.2, json5@npm:^2.2.3":
   version: 2.2.3
   resolution: "json5@npm:2.2.3"
@@ -13134,6 +13153,7 @@ __metadata:
     "@biomejs/biome": "npm:^1.9.4"
     "@tauri-apps/cli": "npm:^2.0.3"
     assert: "npm:^2.1.0"
+    ts-unused-exports: "npm:^10.1.0"
     typescript: "npm:5.6.3"
   languageName: unknown
   linkType: soft
@@ -14277,6 +14297,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ts-unused-exports@npm:^10.1.0":
+  version: 10.1.0
+  resolution: "ts-unused-exports@npm:10.1.0"
+  dependencies:
+    chalk: "npm:^4.0.0"
+    tsconfig-paths: "npm:^3.9.0"
+  peerDependencies:
+    typescript: ">=3.8.3"
+  peerDependenciesMeta:
+    typescript:
+      optional: false
+  bin:
+    ts-unused-exports: bin/ts-unused-exports
+  checksum: 55a6757ca6f9b99a50794ec03caf06d5b74b2dbdd72a189b98f1a72caa34159c44045c7f21d492847b525b8317b973516a2fb48f9487c54c5292557d4e44c49c
+  languageName: node
+  linkType: hard
+
 "tsconfck@npm:^3.0.3":
   version: 3.0.3
   resolution: "tsconfck@npm:3.0.3"
@@ -14288,6 +14325,18 @@ __metadata:
   bin:
     tsconfck: bin/tsconfck.js
   checksum: d45009230c4caa5fc765bdded96f3b8703a7cdd44a1d63024914b0fb1c4dabf9e94d28cc9f9edccaef9baa7b99adc963502d34943d82fcb07b92e1161ee03c56
+  languageName: node
+  linkType: hard
+
+"tsconfig-paths@npm:^3.9.0":
+  version: 3.15.0
+  resolution: "tsconfig-paths@npm:3.15.0"
+  dependencies:
+    "@types/json5": "npm:^0.0.29"
+    json5: "npm:^1.0.2"
+    minimist: "npm:^1.2.6"
+    strip-bom: "npm:^3.0.0"
+  checksum: 5b4f301a2b7a3766a986baf8fc0e177eb80bdba6e396792ff92dc23b5bca8bb279fc96517dcaaef63a3b49bebc6c4c833653ec58155780bc906bdbcf7dda0ef5
   languageName: node
   linkType: hard
 

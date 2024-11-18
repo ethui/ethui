@@ -13,7 +13,7 @@ export const Route = createFileRoute("/onboarding")({
   component: Onboarding,
 });
 
-export const steps: { component: React.FC<StepProps> }[] = [
+const steps: { component: React.FC<StepProps> }[] = [
   { component: WelcomeStep },
   { component: AlchemyStep },
   { component: WalletSetupStep },
@@ -21,9 +21,7 @@ export const steps: { component: React.FC<StepProps> }[] = [
   { component: ThankYouStep },
 ];
 
-export type WizardFormData = { alchemyApiKey?: string | null };
-
-export function Onboarding() {
+function Onboarding() {
   const [activeStep, setActiveStep] = useState(0);
 
   const handleNext = () => {

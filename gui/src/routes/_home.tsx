@@ -1,7 +1,5 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 
-import type { Tab } from "@ethui/types/ui";
-import { CircleUser, FileCode2, ReceiptText, Wifi } from "lucide-react";
 import { AppSidebar } from "#/components/AppSidebar";
 import { CommandBar, CommandBarProvider } from "#/components/CommandBar";
 import { SidebarProvider } from "#/components/shadcn/sidebar";
@@ -12,30 +10,7 @@ export const Route = createFileRoute("/_home")({
   component: HomePageLayout,
 });
 
-export const tabs: Tab[] = [
-  {
-    path: "/home/account",
-    label: "Account",
-    icon: <CircleUser />,
-  },
-  {
-    path: "/home/transactions",
-    label: "Transactions",
-    icon: <ReceiptText />,
-  },
-  {
-    path: "/home/contracts",
-    label: "Contracts",
-    icon: <FileCode2 />,
-  },
-  {
-    path: "/home/connections",
-    label: "Connections",
-    icon: <Wifi />,
-  },
-];
-
-export function HomePageLayout() {
+function HomePageLayout() {
   return (
     <CommandBarProvider>
       <SidebarProvider
