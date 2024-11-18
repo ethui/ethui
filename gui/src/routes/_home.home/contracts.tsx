@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import debounce from "lodash-es/debounce";
 import { LoaderCircle } from "lucide-react";
 import { useState } from "react";
@@ -31,7 +31,7 @@ import { ContractCallForm } from "#/components/ContractCallForm";
 import { useContracts } from "#/store/useContracts";
 import { useNetworks } from "#/store/useNetworks";
 
-export const Route = createLazyFileRoute("/_home/home/contracts")({
+export const Route = createFileRoute("/_home/home/contracts")({
   component: Contracts,
 });
 

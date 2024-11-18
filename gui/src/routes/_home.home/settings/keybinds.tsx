@@ -1,10 +1,10 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 import { Input } from "@ethui/ui/components/shadcn/input";
 import { useState } from "react";
 import { AppNavbar } from "#/components/AppNavbar";
 
-export const Route = createLazyFileRoute("/_home/home/settings/keybinds")({
+export const Route = createFileRoute("/_home/home/settings/keybinds")({
   component: () => (
     <>
       <AppNavbar title="Settings » Keybinds" />

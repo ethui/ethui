@@ -1,4 +1,4 @@
-import { Link, createLazyFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 
 import { useShallow } from "zustand/shallow";
 
@@ -7,7 +7,7 @@ import { Button } from "@ethui/ui/components/shadcn/button";
 import { AppNavbar } from "#/components/AppNavbar";
 import { useNetworks } from "#/store/useNetworks";
 
-export const Route = createLazyFileRoute("/_home/home/settings/networks/")({
+export const Route = createFileRoute("/_home/home/settings/networks/")({
   component: () => (
     <>
       <AppNavbar title="Settings » Networks" />
