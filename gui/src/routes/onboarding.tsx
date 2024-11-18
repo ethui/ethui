@@ -21,8 +21,6 @@ const steps: { component: React.FC<StepProps> }[] = [
   { component: ThankYouStep },
 ];
 
-type WizardFormData = { alchemyApiKey?: string | null };
-
 function Onboarding() {
   const [activeStep, setActiveStep] = useState(0);
 

@@ -12,29 +12,6 @@ export const Route = createFileRoute("/_home")({
   component: HomePageLayout,
 });
 
-const tabs: Tab[] = [
-  {
-    path: "/home/account",
-    label: "Account",
-    icon: <CircleUser />,
-  },
-  {
-    path: "/home/transactions",
-    label: "Transactions",
-    icon: <ReceiptText />,
-  },
-  {
-    path: "/home/contracts",
-    label: "Contracts",
-    icon: <FileCode2 />,
-  },
-  {
-    path: "/home/connections",
-    label: "Connections",
-    icon: <Wifi />,
-  },
-];
-
 function HomePageLayout() {
   return (
     <CommandBarProvider>
