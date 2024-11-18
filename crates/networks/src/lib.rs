@@ -4,7 +4,7 @@ mod init;
 mod network;
 
 use std::{
-    collections::{HashMap, HashSet},
+    collections::HashMap,
     fs::File,
     path::{Path, PathBuf},
 };
@@ -111,7 +111,7 @@ impl Networks {
         self.networks.remove(old_name);
         self.networks.insert(network.name.clone(), network.clone());
 
-        if (self.current == old_name) {
+        if self.current == old_name {
             self.current = network.name.clone();
             self.on_network_changed().await?;
         }
