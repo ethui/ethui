@@ -128,8 +128,14 @@ impl Networks {
 
         match network {
             Some(network) => {
+                if self.current == name {
+                    let first = self.networks.values().next().unwrap();
+                    self.current = first.name.clone();
+                    self.on_network_changed().await?;
+                }
                 self.save()?;
                 ethui_broadcast::network_removed(network.chain_id).await;
+                ethui_broadcast::ui_notify(UINotify::NetworksChanged).await;
             }
             None => {
                 return Err(Error::NotExists);

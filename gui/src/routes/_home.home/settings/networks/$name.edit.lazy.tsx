@@ -35,14 +35,20 @@ function Content({ network }: { network: Network }) {
   });
   const router = useRouter();
 
-  const onSubmit = async (data: Network) => {
+  const create = async (data: Network) => {
     await invoke("networks_update", { oldName: network.name, network: data });
+    router.history.back();
+  };
+
+  const remove = async (e) => {
+    e.preventDefault();
+    await invoke("networks_remove", { name: network.name });
     router.history.back();
   };
 
   // TODO: fix remove button
   return (
-    <Form form={form} onSubmit={onSubmit} className="gap-4">
+    <Form form={form} onSubmit={create} className="gap-4">
       <div className="flex flex-row gap-2">
         <Form.Text label="Name" name="name" />
         <Form.NumberField label="Chain Id" name="chain_id" />
@@ -60,7 +66,7 @@ function Content({ network }: { network: Network }) {
 
       <div className="flex gap-2">
         <Button>Save</Button>
-        <Button variant="destructive">Remove</Button>
+        <Button variant="destructive" onClick={remove}>Remove</Button>
       </div>
     </Form>
   );
