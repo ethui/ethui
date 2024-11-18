@@ -1,5 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Outlet, createRootRoute } from "@tanstack/react-router";
+import {
+  Outlet,
+  createRootRoute,
+  getRouterContext,
+} from "@tanstack/react-router";
 import { Suspense } from "react";
 
 import { ErrorHandler } from "#/components/ErrorHandler";

@@ -1,10 +1,11 @@
-import { Outlet, createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 import { AppSidebar } from "#/components/AppSidebar";
 import { CommandBar, CommandBarProvider } from "#/components/CommandBar";
 import { SidebarProvider } from "#/components/shadcn/sidebar";
 import { useNoticeAlchemyKeyMissing } from "#/hooks/useNoticeAlchemyKeyMissing";
 import { useNoticeNewVersion } from "#/hooks/useNoticeNewVersion";
+import { AnimatedOutlet } from "#/components/AnimatedOutlet";
 
 export const Route = createFileRoute("/_home")({
   component: HomePageLayout,
@@ -23,7 +24,7 @@ function HomePageLayout() {
       >
         <AppSidebar />
         <main className="relative flex min-h-svh flex-1 flex-col">
-          <Outlet />
+          <AnimatedOutlet />
           <Notifications />
         </main>
       </SidebarProvider>

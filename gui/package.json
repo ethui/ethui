@@ -49,6 +49,7 @@
     "kbar": "^0.1.0-beta.45",
     "lodash-es": "^4.17.21",
     "lucide-react": "^0.453.0",
+    "motion": "^11.11.17",
     "next-themes": "^0.3.0",
     "notistack": "^3.0.1",
     "react": "^18.3.1",
