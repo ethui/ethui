@@ -35,7 +35,7 @@ pub async fn networks_add(network: Network) -> Result<()> {
 #[tauri::command]
 pub async fn networks_update(old_name: String, network: Network) -> Result<()> {
     let mut networks = Networks::write().await;
-    dbg!(networks.update_network(&old_name, network).await?);
+    networks.update_network(&old_name, network).await?;
     Ok(())
 }
 
