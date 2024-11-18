@@ -3,9 +3,9 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { useShallow } from "zustand/shallow";
 
 import { ChainView } from "@ethui/ui/components/chain-view";
+import { Plus } from "lucide-react";
 import { AppNavbar } from "#/components/AppNavbar";
 import { useNetworks } from "#/store/useNetworks";
-import { Plus } from "lucide-react";
 
 export const Route = createFileRoute("/_home/home/settings/networks/")({
   component: () => (
@@ -38,7 +38,7 @@ function SettingsNetworks() {
         ))}
         <Link
           href="/home/settings/networks/new"
-          className="border p-4 hover:bg-accent flex align-baseline gap-2"
+          className="flex gap-2 border p-4 align-baseline hover:bg-accent"
         >
           <Plus />
           Add new
