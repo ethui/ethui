@@ -3,7 +3,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { useShallow } from "zustand/shallow";
 
 import { ChainView } from "@ethui/ui/components/chain-view";
-import { Button } from "@ethui/ui/components/shadcn/button";
+import { Plus } from "lucide-react";
 import { AppNavbar } from "#/components/AppNavbar";
 import { useNetworks } from "#/store/useNetworks";
 
@@ -36,11 +36,13 @@ function SettingsNetworks() {
             <ChainView chainId={chain_id} name={name} />
           </Link>
         ))}
-      </div>
-      <div>
-        <Button asChild>
-          <Link href="/home/settings/networks/new">Add network</Link>
-        </Button>
+        <Link
+          href="/home/settings/networks/new"
+          className="flex gap-2 border p-4 align-baseline hover:bg-accent"
+        >
+          <Plus />
+          Add new
+        </Link>
       </div>
     </div>
   );
