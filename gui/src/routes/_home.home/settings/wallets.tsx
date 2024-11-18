@@ -1,9 +1,9 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { AppNavbar } from "#/components/AppNavbar";
 
 import { SettingsWallets } from "#/components/Settings/Wallets";
 
-export const Route = createLazyFileRoute("/_home/home/settings/wallets")({
+export const Route = createFileRoute("/_home/home/settings/wallets")({
   component: () => (
     <>
       <AppNavbar title="Settings » Wallets" />

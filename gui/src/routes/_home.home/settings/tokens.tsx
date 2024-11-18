@@ -1,4 +1,4 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 import { invoke } from "@tauri-apps/api/core";
 import type { Address } from "viem";
@@ -11,7 +11,7 @@ import { IconAddress } from "#/components/Icons/Address";
 import { useBlacklist } from "#/store/useBlacklist";
 import { useNetworks } from "#/store/useNetworks";
 
-export const Route = createLazyFileRoute("/_home/home/settings/tokens")({
+export const Route = createFileRoute("/_home/home/settings/tokens")({
   component: () => (
     <>
       <AppNavbar title="Settings » Tokens" />

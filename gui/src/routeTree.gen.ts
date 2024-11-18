@@ -8,15 +8,21 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from '@tanstack/react-router'
-
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as OnboardingImport } from './routes/onboarding'
 import { Route as HomeImport } from './routes/_home'
 import { Route as DialogImport } from './routes/_dialog'
+import { Route as HomeHomeTransactionsImport } from './routes/_home.home/transactions'
+import { Route as HomeHomeContractsImport } from './routes/_home.home/contracts'
+import { Route as HomeHomeConnectionsImport } from './routes/_home.home/connections'
 import { Route as HomeHomeAccountImport } from './routes/_home.home/account'
+import { Route as HomeHomeSettingsWalletsImport } from './routes/_home.home/settings/wallets'
+import { Route as HomeHomeSettingsTokensImport } from './routes/_home.home/settings/tokens'
+import { Route as HomeHomeSettingsKeybindsImport } from './routes/_home.home/settings/keybinds'
+import { Route as HomeHomeSettingsGeneralImport } from './routes/_home.home/settings/general'
+import { Route as HomeHomeSettingsFoundryImport } from './routes/_home.home/settings/foundry'
 import { Route as DialogDialogWalletUnlockIdImport } from './routes/_dialog.dialog/wallet-unlock.$id'
 import { Route as DialogDialogTxReviewIdImport } from './routes/_dialog.dialog/tx-review.$id'
 import { Route as DialogDialogMsgSignIdImport } from './routes/_dialog.dialog/msg-sign.$id'
@@ -24,38 +30,9 @@ import { Route as DialogDialogErc721AddIdImport } from './routes/_dialog.dialog/
 import { Route as DialogDialogErc20AddIdImport } from './routes/_dialog.dialog/erc20-add.$id'
 import { Route as DialogDialogErc1155AddIdImport } from './routes/_dialog.dialog/erc1155-add.$id'
 import { Route as DialogDialogChainAddIdImport } from './routes/_dialog.dialog/chain-add.$id'
+import { Route as HomeHomeSettingsNetworksIndexImport } from './routes/_home.home/settings/networks/index'
+import { Route as HomeHomeSettingsNetworksNewImport } from './routes/_home.home/settings/networks/new'
 import { Route as HomeHomeSettingsNetworksNameEditImport } from './routes/_home.home/settings/networks/$name.edit'
-
-// Create Virtual Routes
-
-const HomeHomeTransactionsLazyImport = createFileRoute(
-  '/_home/home/transactions',
-)()
-const HomeHomeContractsLazyImport = createFileRoute('/_home/home/contracts')()
-const HomeHomeConnectionsLazyImport = createFileRoute(
-  '/_home/home/connections',
-)()
-const HomeHomeSettingsWalletsLazyImport = createFileRoute(
-  '/_home/home/settings/wallets',
-)()
-const HomeHomeSettingsTokensLazyImport = createFileRoute(
-  '/_home/home/settings/tokens',
-)()
-const HomeHomeSettingsKeybindsLazyImport = createFileRoute(
-  '/_home/home/settings/keybinds',
-)()
-const HomeHomeSettingsGeneralLazyImport = createFileRoute(
-  '/_home/home/settings/general',
-)()
-const HomeHomeSettingsFoundryLazyImport = createFileRoute(
-  '/_home/home/settings/foundry',
-)()
-const HomeHomeSettingsNetworksIndexLazyImport = createFileRoute(
-  '/_home/home/settings/networks/',
-)()
-const HomeHomeSettingsNetworksNewLazyImport = createFileRoute(
-  '/_home/home/settings/networks/new',
-)()
 
 // Create/Update Routes
 
@@ -75,29 +52,23 @@ const DialogRoute = DialogImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const HomeHomeTransactionsLazyRoute = HomeHomeTransactionsLazyImport.update({
+const HomeHomeTransactionsRoute = HomeHomeTransactionsImport.update({
   id: '/home/transactions',
   path: '/home/transactions',
   getParentRoute: () => HomeRoute,
-} as any).lazy(() =>
-  import('./routes/_home.home/transactions.lazy').then((d) => d.Route),
-)
+} as any)
 
-const HomeHomeContractsLazyRoute = HomeHomeContractsLazyImport.update({
+const HomeHomeContractsRoute = HomeHomeContractsImport.update({
   id: '/home/contracts',
   path: '/home/contracts',
   getParentRoute: () => HomeRoute,
-} as any).lazy(() =>
-  import('./routes/_home.home/contracts.lazy').then((d) => d.Route),
-)
+} as any)
 
-const HomeHomeConnectionsLazyRoute = HomeHomeConnectionsLazyImport.update({
+const HomeHomeConnectionsRoute = HomeHomeConnectionsImport.update({
   id: '/home/connections',
   path: '/home/connections',
   getParentRoute: () => HomeRoute,
-} as any).lazy(() =>
-  import('./routes/_home.home/connections.lazy').then((d) => d.Route),
-)
+} as any)
 
 const HomeHomeAccountRoute = HomeHomeAccountImport.update({
   id: '/home/account',
@@ -105,51 +76,35 @@ const HomeHomeAccountRoute = HomeHomeAccountImport.update({
   getParentRoute: () => HomeRoute,
 } as any)
 
-const HomeHomeSettingsWalletsLazyRoute =
-  HomeHomeSettingsWalletsLazyImport.update({
-    id: '/home/settings/wallets',
-    path: '/home/settings/wallets',
-    getParentRoute: () => HomeRoute,
-  } as any).lazy(() =>
-    import('./routes/_home.home/settings/wallets.lazy').then((d) => d.Route),
-  )
+const HomeHomeSettingsWalletsRoute = HomeHomeSettingsWalletsImport.update({
+  id: '/home/settings/wallets',
+  path: '/home/settings/wallets',
+  getParentRoute: () => HomeRoute,
+} as any)
 
-const HomeHomeSettingsTokensLazyRoute = HomeHomeSettingsTokensLazyImport.update(
-  {
-    id: '/home/settings/tokens',
-    path: '/home/settings/tokens',
-    getParentRoute: () => HomeRoute,
-  } as any,
-).lazy(() =>
-  import('./routes/_home.home/settings/tokens.lazy').then((d) => d.Route),
-)
+const HomeHomeSettingsTokensRoute = HomeHomeSettingsTokensImport.update({
+  id: '/home/settings/tokens',
+  path: '/home/settings/tokens',
+  getParentRoute: () => HomeRoute,
+} as any)
 
-const HomeHomeSettingsKeybindsLazyRoute =
-  HomeHomeSettingsKeybindsLazyImport.update({
-    id: '/home/settings/keybinds',
-    path: '/home/settings/keybinds',
-    getParentRoute: () => HomeRoute,
-  } as any).lazy(() =>
-    import('./routes/_home.home/settings/keybinds.lazy').then((d) => d.Route),
-  )
+const HomeHomeSettingsKeybindsRoute = HomeHomeSettingsKeybindsImport.update({
+  id: '/home/settings/keybinds',
+  path: '/home/settings/keybinds',
+  getParentRoute: () => HomeRoute,
+} as any)
 
-const HomeHomeSettingsGeneralLazyRoute =
-  HomeHomeSettingsGeneralLazyImport.update({
-    id: '/home/settings/general',
-    path: '/home/settings/general',
-    getParentRoute: () => HomeRoute,
-  } as any).lazy(() =>
-    import('./routes/_home.home/settings/general.lazy').then((d) => d.Route),
-  )
+const HomeHomeSettingsGeneralRoute = HomeHomeSettingsGeneralImport.update({
+  id: '/home/settings/general',
+  path: '/home/settings/general',
+  getParentRoute: () => HomeRoute,
+} as any)
 
-const HomeHomeSettingsFoundryLazyRoute =
-  HomeHomeSettingsFoundryLazyImport.update({
-    id: '/home/settings/foundry',
-    path: '/home/settings/foundry',
-    getParentRoute: () => HomeRoute,
-  } as any).lazy(() =>
-    import('./routes/_home.home/settings/foundry.lazy').then((d) => d.Route),
-  )
+const HomeHomeSettingsFoundryRoute = HomeHomeSettingsFoundryImport.update({
+  id: '/home/settings/foundry',
+  path: '/home/settings/foundry',
+  getParentRoute: () => HomeRoute,
+} as any)
 
 const DialogDialogWalletUnlockIdRoute = DialogDialogWalletUnlockIdImport.update(
   {
@@ -195,38 +150,26 @@ const DialogDialogChainAddIdRoute = DialogDialogChainAddIdImport.update({
   getParentRoute: () => DialogRoute,
 } as any)
 
-const HomeHomeSettingsNetworksIndexLazyRoute =
-  HomeHomeSettingsNetworksIndexLazyImport.update({
+const HomeHomeSettingsNetworksIndexRoute =
+  HomeHomeSettingsNetworksIndexImport.update({
     id: '/home/settings/networks/',
     path: '/home/settings/networks/',
     getParentRoute: () => HomeRoute,
-  } as any).lazy(() =>
-    import('./routes/_home.home/settings/networks/index.lazy').then(
-      (d) => d.Route,
-    ),
-  )
+  } as any)
 
-const HomeHomeSettingsNetworksNewLazyRoute =
-  HomeHomeSettingsNetworksNewLazyImport.update({
+const HomeHomeSettingsNetworksNewRoute =
+  HomeHomeSettingsNetworksNewImport.update({
     id: '/home/settings/networks/new',
     path: '/home/settings/networks/new',
     getParentRoute: () => HomeRoute,
-  } as any).lazy(() =>
-    import('./routes/_home.home/settings/networks/new.lazy').then(
-      (d) => d.Route,
-    ),
-  )
+  } as any)
 
 const HomeHomeSettingsNetworksNameEditRoute =
   HomeHomeSettingsNetworksNameEditImport.update({
     id: '/home/settings/networks/$name/edit',
     path: '/home/settings/networks/$name/edit',
     getParentRoute: () => HomeRoute,
-  } as any).lazy(() =>
-    import('./routes/_home.home/settings/networks/$name.edit.lazy').then(
-      (d) => d.Route,
-    ),
-  )
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -264,21 +207,21 @@ declare module '@tanstack/react-router' {
       id: '/_home/home/connections'
       path: '/home/connections'
       fullPath: '/home/connections'
-      preLoaderRoute: typeof HomeHomeConnectionsLazyImport
+      preLoaderRoute: typeof HomeHomeConnectionsImport
       parentRoute: typeof HomeImport
     }
     '/_home/home/contracts': {
       id: '/_home/home/contracts'
       path: '/home/contracts'
       fullPath: '/home/contracts'
-      preLoaderRoute: typeof HomeHomeContractsLazyImport
+      preLoaderRoute: typeof HomeHomeContractsImport
       parentRoute: typeof HomeImport
     }
     '/_home/home/transactions': {
       id: '/_home/home/transactions'
       path: '/home/transactions'
       fullPath: '/home/transactions'
-      preLoaderRoute: typeof HomeHomeTransactionsLazyImport
+      preLoaderRoute: typeof HomeHomeTransactionsImport
       parentRoute: typeof HomeImport
     }
     '/_dialog/dialog/chain-add/$id': {
@@ -334,49 +277,49 @@ declare module '@tanstack/react-router' {
       id: '/_home/home/settings/foundry'
       path: '/home/settings/foundry'
       fullPath: '/home/settings/foundry'
-      preLoaderRoute: typeof HomeHomeSettingsFoundryLazyImport
+      preLoaderRoute: typeof HomeHomeSettingsFoundryImport
       parentRoute: typeof HomeImport
     }
     '/_home/home/settings/general': {
       id: '/_home/home/settings/general'
       path: '/home/settings/general'
       fullPath: '/home/settings/general'
-      preLoaderRoute: typeof HomeHomeSettingsGeneralLazyImport
+      preLoaderRoute: typeof HomeHomeSettingsGeneralImport
       parentRoute: typeof HomeImport
     }
     '/_home/home/settings/keybinds': {
       id: '/_home/home/settings/keybinds'
       path: '/home/settings/keybinds'
       fullPath: '/home/settings/keybinds'
-      preLoaderRoute: typeof HomeHomeSettingsKeybindsLazyImport
+      preLoaderRoute: typeof HomeHomeSettingsKeybindsImport
       parentRoute: typeof HomeImport
     }
     '/_home/home/settings/tokens': {
       id: '/_home/home/settings/tokens'
       path: '/home/settings/tokens'
       fullPath: '/home/settings/tokens'
-      preLoaderRoute: typeof HomeHomeSettingsTokensLazyImport
+      preLoaderRoute: typeof HomeHomeSettingsTokensImport
       parentRoute: typeof HomeImport
     }
     '/_home/home/settings/wallets': {
       id: '/_home/home/settings/wallets'
       path: '/home/settings/wallets'
       fullPath: '/home/settings/wallets'
-      preLoaderRoute: typeof HomeHomeSettingsWalletsLazyImport
+      preLoaderRoute: typeof HomeHomeSettingsWalletsImport
       parentRoute: typeof HomeImport
     }
     '/_home/home/settings/networks/new': {
       id: '/_home/home/settings/networks/new'
       path: '/home/settings/networks/new'
       fullPath: '/home/settings/networks/new'
-      preLoaderRoute: typeof HomeHomeSettingsNetworksNewLazyImport
+      preLoaderRoute: typeof HomeHomeSettingsNetworksNewImport
       parentRoute: typeof HomeImport
     }
     '/_home/home/settings/networks/': {
       id: '/_home/home/settings/networks/'
       path: '/home/settings/networks'
       fullPath: '/home/settings/networks'
-      preLoaderRoute: typeof HomeHomeSettingsNetworksIndexLazyImport
+      preLoaderRoute: typeof HomeHomeSettingsNetworksIndexImport
       parentRoute: typeof HomeImport
     }
     '/_home/home/settings/networks/$name/edit': {
@@ -416,32 +359,31 @@ const DialogRouteWithChildren =
 
 interface HomeRouteChildren {
   HomeHomeAccountRoute: typeof HomeHomeAccountRoute
-  HomeHomeConnectionsLazyRoute: typeof HomeHomeConnectionsLazyRoute
-  HomeHomeContractsLazyRoute: typeof HomeHomeContractsLazyRoute
-  HomeHomeTransactionsLazyRoute: typeof HomeHomeTransactionsLazyRoute
-  HomeHomeSettingsFoundryLazyRoute: typeof HomeHomeSettingsFoundryLazyRoute
-  HomeHomeSettingsGeneralLazyRoute: typeof HomeHomeSettingsGeneralLazyRoute
-  HomeHomeSettingsKeybindsLazyRoute: typeof HomeHomeSettingsKeybindsLazyRoute
-  HomeHomeSettingsTokensLazyRoute: typeof HomeHomeSettingsTokensLazyRoute
-  HomeHomeSettingsWalletsLazyRoute: typeof HomeHomeSettingsWalletsLazyRoute
-  HomeHomeSettingsNetworksNewLazyRoute: typeof HomeHomeSettingsNetworksNewLazyRoute
-  HomeHomeSettingsNetworksIndexLazyRoute: typeof HomeHomeSettingsNetworksIndexLazyRoute
+  HomeHomeConnectionsRoute: typeof HomeHomeConnectionsRoute
+  HomeHomeContractsRoute: typeof HomeHomeContractsRoute
+  HomeHomeTransactionsRoute: typeof HomeHomeTransactionsRoute
+  HomeHomeSettingsFoundryRoute: typeof HomeHomeSettingsFoundryRoute
+  HomeHomeSettingsGeneralRoute: typeof HomeHomeSettingsGeneralRoute
+  HomeHomeSettingsKeybindsRoute: typeof HomeHomeSettingsKeybindsRoute
+  HomeHomeSettingsTokensRoute: typeof HomeHomeSettingsTokensRoute
+  HomeHomeSettingsWalletsRoute: typeof HomeHomeSettingsWalletsRoute
+  HomeHomeSettingsNetworksNewRoute: typeof HomeHomeSettingsNetworksNewRoute
+  HomeHomeSettingsNetworksIndexRoute: typeof HomeHomeSettingsNetworksIndexRoute
   HomeHomeSettingsNetworksNameEditRoute: typeof HomeHomeSettingsNetworksNameEditRoute
 }
 
 const HomeRouteChildren: HomeRouteChildren = {
   HomeHomeAccountRoute: HomeHomeAccountRoute,
-  HomeHomeConnectionsLazyRoute: HomeHomeConnectionsLazyRoute,
-  HomeHomeContractsLazyRoute: HomeHomeContractsLazyRoute,
-  HomeHomeTransactionsLazyRoute: HomeHomeTransactionsLazyRoute,
-  HomeHomeSettingsFoundryLazyRoute: HomeHomeSettingsFoundryLazyRoute,
-  HomeHomeSettingsGeneralLazyRoute: HomeHomeSettingsGeneralLazyRoute,
-  HomeHomeSettingsKeybindsLazyRoute: HomeHomeSettingsKeybindsLazyRoute,
-  HomeHomeSettingsTokensLazyRoute: HomeHomeSettingsTokensLazyRoute,
-  HomeHomeSettingsWalletsLazyRoute: HomeHomeSettingsWalletsLazyRoute,
-  HomeHomeSettingsNetworksNewLazyRoute: HomeHomeSettingsNetworksNewLazyRoute,
-  HomeHomeSettingsNetworksIndexLazyRoute:
-    HomeHomeSettingsNetworksIndexLazyRoute,
+  HomeHomeConnectionsRoute: HomeHomeConnectionsRoute,
+  HomeHomeContractsRoute: HomeHomeContractsRoute,
+  HomeHomeTransactionsRoute: HomeHomeTransactionsRoute,
+  HomeHomeSettingsFoundryRoute: HomeHomeSettingsFoundryRoute,
+  HomeHomeSettingsGeneralRoute: HomeHomeSettingsGeneralRoute,
+  HomeHomeSettingsKeybindsRoute: HomeHomeSettingsKeybindsRoute,
+  HomeHomeSettingsTokensRoute: HomeHomeSettingsTokensRoute,
+  HomeHomeSettingsWalletsRoute: HomeHomeSettingsWalletsRoute,
+  HomeHomeSettingsNetworksNewRoute: HomeHomeSettingsNetworksNewRoute,
+  HomeHomeSettingsNetworksIndexRoute: HomeHomeSettingsNetworksIndexRoute,
   HomeHomeSettingsNetworksNameEditRoute: HomeHomeSettingsNetworksNameEditRoute,
 }
 
@@ -451,9 +393,9 @@ export interface FileRoutesByFullPath {
   '': typeof HomeRouteWithChildren
   '/onboarding': typeof OnboardingRoute
   '/home/account': typeof HomeHomeAccountRoute
-  '/home/connections': typeof HomeHomeConnectionsLazyRoute
-  '/home/contracts': typeof HomeHomeContractsLazyRoute
-  '/home/transactions': typeof HomeHomeTransactionsLazyRoute
+  '/home/connections': typeof HomeHomeConnectionsRoute
+  '/home/contracts': typeof HomeHomeContractsRoute
+  '/home/transactions': typeof HomeHomeTransactionsRoute
   '/dialog/chain-add/$id': typeof DialogDialogChainAddIdRoute
   '/dialog/erc1155-add/$id': typeof DialogDialogErc1155AddIdRoute
   '/dialog/erc20-add/$id': typeof DialogDialogErc20AddIdRoute
@@ -461,13 +403,13 @@ export interface FileRoutesByFullPath {
   '/dialog/msg-sign/$id': typeof DialogDialogMsgSignIdRoute
   '/dialog/tx-review/$id': typeof DialogDialogTxReviewIdRoute
   '/dialog/wallet-unlock/$id': typeof DialogDialogWalletUnlockIdRoute
-  '/home/settings/foundry': typeof HomeHomeSettingsFoundryLazyRoute
-  '/home/settings/general': typeof HomeHomeSettingsGeneralLazyRoute
-  '/home/settings/keybinds': typeof HomeHomeSettingsKeybindsLazyRoute
-  '/home/settings/tokens': typeof HomeHomeSettingsTokensLazyRoute
-  '/home/settings/wallets': typeof HomeHomeSettingsWalletsLazyRoute
-  '/home/settings/networks/new': typeof HomeHomeSettingsNetworksNewLazyRoute
-  '/home/settings/networks': typeof HomeHomeSettingsNetworksIndexLazyRoute
+  '/home/settings/foundry': typeof HomeHomeSettingsFoundryRoute
+  '/home/settings/general': typeof HomeHomeSettingsGeneralRoute
+  '/home/settings/keybinds': typeof HomeHomeSettingsKeybindsRoute
+  '/home/settings/tokens': typeof HomeHomeSettingsTokensRoute
+  '/home/settings/wallets': typeof HomeHomeSettingsWalletsRoute
+  '/home/settings/networks/new': typeof HomeHomeSettingsNetworksNewRoute
+  '/home/settings/networks': typeof HomeHomeSettingsNetworksIndexRoute
   '/home/settings/networks/$name/edit': typeof HomeHomeSettingsNetworksNameEditRoute
 }
 
@@ -475,9 +417,9 @@ export interface FileRoutesByTo {
   '': typeof HomeRouteWithChildren
   '/onboarding': typeof OnboardingRoute
   '/home/account': typeof HomeHomeAccountRoute
-  '/home/connections': typeof HomeHomeConnectionsLazyRoute
-  '/home/contracts': typeof HomeHomeContractsLazyRoute
-  '/home/transactions': typeof HomeHomeTransactionsLazyRoute
+  '/home/connections': typeof HomeHomeConnectionsRoute
+  '/home/contracts': typeof HomeHomeContractsRoute
+  '/home/transactions': typeof HomeHomeTransactionsRoute
   '/dialog/chain-add/$id': typeof DialogDialogChainAddIdRoute
   '/dialog/erc1155-add/$id': typeof DialogDialogErc1155AddIdRoute
   '/dialog/erc20-add/$id': typeof DialogDialogErc20AddIdRoute
@@ -485,13 +427,13 @@ export interface FileRoutesByTo {
   '/dialog/msg-sign/$id': typeof DialogDialogMsgSignIdRoute
   '/dialog/tx-review/$id': typeof DialogDialogTxReviewIdRoute
   '/dialog/wallet-unlock/$id': typeof DialogDialogWalletUnlockIdRoute
-  '/home/settings/foundry': typeof HomeHomeSettingsFoundryLazyRoute
-  '/home/settings/general': typeof HomeHomeSettingsGeneralLazyRoute
-  '/home/settings/keybinds': typeof HomeHomeSettingsKeybindsLazyRoute
-  '/home/settings/tokens': typeof HomeHomeSettingsTokensLazyRoute
-  '/home/settings/wallets': typeof HomeHomeSettingsWalletsLazyRoute
-  '/home/settings/networks/new': typeof HomeHomeSettingsNetworksNewLazyRoute
-  '/home/settings/networks': typeof HomeHomeSettingsNetworksIndexLazyRoute
+  '/home/settings/foundry': typeof HomeHomeSettingsFoundryRoute
+  '/home/settings/general': typeof HomeHomeSettingsGeneralRoute
+  '/home/settings/keybinds': typeof HomeHomeSettingsKeybindsRoute
+  '/home/settings/tokens': typeof HomeHomeSettingsTokensRoute
+  '/home/settings/wallets': typeof HomeHomeSettingsWalletsRoute
+  '/home/settings/networks/new': typeof HomeHomeSettingsNetworksNewRoute
+  '/home/settings/networks': typeof HomeHomeSettingsNetworksIndexRoute
   '/home/settings/networks/$name/edit': typeof HomeHomeSettingsNetworksNameEditRoute
 }
 
@@ -501,9 +443,9 @@ export interface FileRoutesById {
   '/_home': typeof HomeRouteWithChildren
   '/onboarding': typeof OnboardingRoute
   '/_home/home/account': typeof HomeHomeAccountRoute
-  '/_home/home/connections': typeof HomeHomeConnectionsLazyRoute
-  '/_home/home/contracts': typeof HomeHomeContractsLazyRoute
-  '/_home/home/transactions': typeof HomeHomeTransactionsLazyRoute
+  '/_home/home/connections': typeof HomeHomeConnectionsRoute
+  '/_home/home/contracts': typeof HomeHomeContractsRoute
+  '/_home/home/transactions': typeof HomeHomeTransactionsRoute
   '/_dialog/dialog/chain-add/$id': typeof DialogDialogChainAddIdRoute
   '/_dialog/dialog/erc1155-add/$id': typeof DialogDialogErc1155AddIdRoute
   '/_dialog/dialog/erc20-add/$id': typeof DialogDialogErc20AddIdRoute
@@ -511,13 +453,13 @@ export interface FileRoutesById {
   '/_dialog/dialog/msg-sign/$id': typeof DialogDialogMsgSignIdRoute
   '/_dialog/dialog/tx-review/$id': typeof DialogDialogTxReviewIdRoute
   '/_dialog/dialog/wallet-unlock/$id': typeof DialogDialogWalletUnlockIdRoute
-  '/_home/home/settings/foundry': typeof HomeHomeSettingsFoundryLazyRoute
-  '/_home/home/settings/general': typeof HomeHomeSettingsGeneralLazyRoute
-  '/_home/home/settings/keybinds': typeof HomeHomeSettingsKeybindsLazyRoute
-  '/_home/home/settings/tokens': typeof HomeHomeSettingsTokensLazyRoute
-  '/_home/home/settings/wallets': typeof HomeHomeSettingsWalletsLazyRoute
-  '/_home/home/settings/networks/new': typeof HomeHomeSettingsNetworksNewLazyRoute
-  '/_home/home/settings/networks/': typeof HomeHomeSettingsNetworksIndexLazyRoute
+  '/_home/home/settings/foundry': typeof HomeHomeSettingsFoundryRoute
+  '/_home/home/settings/general': typeof HomeHomeSettingsGeneralRoute
+  '/_home/home/settings/keybinds': typeof HomeHomeSettingsKeybindsRoute
+  '/_home/home/settings/tokens': typeof HomeHomeSettingsTokensRoute
+  '/_home/home/settings/wallets': typeof HomeHomeSettingsWalletsRoute
+  '/_home/home/settings/networks/new': typeof HomeHomeSettingsNetworksNewRoute
+  '/_home/home/settings/networks/': typeof HomeHomeSettingsNetworksIndexRoute
   '/_home/home/settings/networks/$name/edit': typeof HomeHomeSettingsNetworksNameEditRoute
 }
 
@@ -659,15 +601,15 @@ export const routeTree = rootRoute
       "parent": "/_home"
     },
     "/_home/home/connections": {
-      "filePath": "_home.home/connections.lazy.tsx",
+      "filePath": "_home.home/connections.tsx",
       "parent": "/_home"
     },
     "/_home/home/contracts": {
-      "filePath": "_home.home/contracts.lazy.tsx",
+      "filePath": "_home.home/contracts.tsx",
       "parent": "/_home"
     },
     "/_home/home/transactions": {
-      "filePath": "_home.home/transactions.lazy.tsx",
+      "filePath": "_home.home/transactions.tsx",
       "parent": "/_home"
     },
     "/_dialog/dialog/chain-add/$id": {
@@ -699,31 +641,31 @@ export const routeTree = rootRoute
       "parent": "/_dialog"
     },
     "/_home/home/settings/foundry": {
-      "filePath": "_home.home/settings/foundry.lazy.tsx",
+      "filePath": "_home.home/settings/foundry.tsx",
       "parent": "/_home"
     },
     "/_home/home/settings/general": {
-      "filePath": "_home.home/settings/general.lazy.tsx",
+      "filePath": "_home.home/settings/general.tsx",
       "parent": "/_home"
     },
     "/_home/home/settings/keybinds": {
-      "filePath": "_home.home/settings/keybinds.lazy.tsx",
+      "filePath": "_home.home/settings/keybinds.tsx",
       "parent": "/_home"
     },
     "/_home/home/settings/tokens": {
-      "filePath": "_home.home/settings/tokens.lazy.tsx",
+      "filePath": "_home.home/settings/tokens.tsx",
       "parent": "/_home"
     },
     "/_home/home/settings/wallets": {
-      "filePath": "_home.home/settings/wallets.lazy.tsx",
+      "filePath": "_home.home/settings/wallets.tsx",
       "parent": "/_home"
     },
     "/_home/home/settings/networks/new": {
-      "filePath": "_home.home/settings/networks/new.lazy.tsx",
+      "filePath": "_home.home/settings/networks/new.tsx",
       "parent": "/_home"
     },
     "/_home/home/settings/networks/": {
-      "filePath": "_home.home/settings/networks/index.lazy.tsx",
+      "filePath": "_home.home/settings/networks/index.tsx",
       "parent": "/_home"
     },
     "/_home/home/settings/networks/$name/edit": {

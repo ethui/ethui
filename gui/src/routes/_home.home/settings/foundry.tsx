@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { AppNavbar } from "#/components/AppNavbar";
 
 import { invoke } from "@tauri-apps/api/core";
@@ -10,7 +10,7 @@ import { z } from "zod";
 import { Form } from "@ethui/ui/components/form";
 import { useSettings } from "#/store/useSettings";
 
-export const Route = createLazyFileRoute("/_home/home/settings/foundry")({
+export const Route = createFileRoute("/_home/home/settings/foundry")({
   component: () => (
     <>
       <AppNavbar title="Settings » Foundry" />
