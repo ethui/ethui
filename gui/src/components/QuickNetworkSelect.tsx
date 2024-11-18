@@ -19,7 +19,7 @@ export function QuickNetworkSelect() {
   if (!networks || !current) return <>Loading</>;
 
   return (
-    <Select defaultValue={current.name} onValueChange={setCurrent}>
+    <Select value={current.name} onValueChange={setCurrent}>
       <SelectTrigger>
         <SelectValue />
       </SelectTrigger>

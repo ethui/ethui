@@ -38,8 +38,6 @@ import { QuickWalletSelect } from "./QuickWalletSelect";
 export function AppSidebar() {
   const commandBar = useCommandBar();
   const location = useLocation();
-  console.log(items, location);
-  console.log(items[0].url === location.pathname);
 
   return (
     <Sidebar collapsible="icon">
