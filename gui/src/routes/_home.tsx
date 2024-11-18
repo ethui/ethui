@@ -14,14 +14,7 @@ export const Route = createFileRoute("/_home")({
 function HomePageLayout() {
   return (
     <CommandBarProvider>
-      <SidebarProvider
-        style={
-          {
-            "--sidebar-width": "15rem",
-            "--sidebar-width-mobile": "10rem",
-          } as any
-        }
-      >
+      <SidebarProvider>
         <AppSidebar />
         <main className="relative flex min-h-svh flex-1 flex-col">
           <AnimatedOutlet />
