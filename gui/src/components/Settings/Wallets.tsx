@@ -25,6 +25,7 @@ import { JsonKeystore } from "./Wallet/JsonKeystore";
 import { Ledger } from "./Wallet/Ledger";
 import { Plaintext } from "./Wallet/Plaintext";
 import { PrivateKeyForm } from "./Wallet/PrivateKey";
+import { Link } from "@tanstack/react-router";
 
 interface Props {
   extraAction?: React.ReactNode;
@@ -44,20 +45,25 @@ export function SettingsWallets({ extraAction }: Props) {
 
   return (
     <>
-      <div className="flex flex-col">
-        <Accordion type="single" collapsible className="w-full">
-          {wallets.map((wallet) => (
-            <ExistingItem key={wallet.name} wallet={wallet} />
+      <div className="flex flex-col gap-2">
+        <div className="grid grid-cols-4 gap-2">
+          {wallets.map(({ type, name }) => (
+            <Link
+              href={`/home/settings/wallets/${name}/edit`}
+              key={name}
+              className="border p-4 hover:bg-accent"
+            >
+              {name} {type}
+            </Link>
           ))}
-        </Accordion>
-        {newType && <NewItem key="_new" type={newType} onFinish={closeNew} />}
-      </div>
-      {!newType && (
-        <div className="mt-4 flex justify-between justify-between">
-          <AddWalletButton onChoice={startNew} />
-          {extraAction && extraAction}
         </div>
-      )}
+
+        <div>
+          <Button asChild>
+            <Link href="/home/settings/wallets/new">Add wallet</Link>
+          </Button>
+        </div>
+      </div>
     </>
   );
 }

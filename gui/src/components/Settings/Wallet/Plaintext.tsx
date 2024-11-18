@@ -23,8 +23,8 @@ type Schema = z.infer<typeof schema>;
 
 interface Props {
   wallet?: PlaintextWallet;
-  onSubmit: (data: Wallet) => void;
-  onRemove: () => void;
+  onSubmit: (data: Wallet) => Promise<void>;
+  onRemove: () => Promise<void>;
 }
 
 export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
