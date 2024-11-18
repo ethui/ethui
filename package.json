@@ -10,7 +10,7 @@
     "storybook": "yarn workspace @ethui/ui storybook",
     "ext:dev": "yarn workspace @ethui/extension dev",
     "ext:build": "yarn workspace @ethui/extension build \"$@\"",
-    "lint": "yarn lint:biome && yarn lint:tsc && yarn workspaces @ethui/gui run lint",
+    "lint": "yarn lint:biome && yarn lint:tsc && yarn workspace @ethui/gui run lint",
     "lint:biome": "biome check .",
     "lint:tsc": "yarn workspaces foreach --all --parallel run tsc --noEmit",
     "fix": "yarn fix:biome",
