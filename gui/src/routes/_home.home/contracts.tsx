@@ -35,7 +35,7 @@ export const Route = createFileRoute("/_home/home/contracts")({
   component: Contracts,
 });
 
-export function Contracts() {
+function Contracts() {
   const [filter, setFilter] = useState("");
   const contracts = useContracts(
     useShallow((s) => s.filteredContracts(filter)),

@@ -12,7 +12,7 @@ export const Route = createFileRoute("/_home")({
   component: HomePageLayout,
 });
 
-export const tabs: Tab[] = [
+const tabs: Tab[] = [
   {
     path: "/home/account",
     label: "Account",
@@ -35,7 +35,7 @@ export const tabs: Tab[] = [
   },
 ];
 
-export function HomePageLayout() {
+function HomePageLayout() {
   return (
     <CommandBarProvider>
       <SidebarProvider

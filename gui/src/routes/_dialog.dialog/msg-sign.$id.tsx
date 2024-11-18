@@ -10,7 +10,7 @@ export const Route = createFileRoute("/_dialog/dialog/msg-sign/$id")({
   component: MsgSignDialog,
 });
 
-export function MsgSignDialog() {
+function MsgSignDialog() {
   const { id } = Route.useParams();
   const { data, send } = useDialog<Record<string, string>>(id);
 

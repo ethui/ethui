@@ -21,11 +21,11 @@ export const Route = createFileRoute("/_home/home/settings/foundry")({
   ),
 });
 
-export const schema = z.object({
+const schema = z.object({
   abiWatchPath: z.string().optional().nullable(),
 });
 
-export function SettingsFoundry() {
+function SettingsFoundry() {
   const general = useSettings((s) => s.settings);
 
   const form = useForm({

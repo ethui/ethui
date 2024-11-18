@@ -19,7 +19,7 @@ interface Request {
 
 const schema = z.object({ password: z.string() });
 
-export function WalletUnlockDialog() {
+function WalletUnlockDialog() {
   const { id } = Route.useParams();
   const { data, send, listen } = useDialog<Request>(id);
   const form = useForm({

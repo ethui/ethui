@@ -6,7 +6,7 @@ import type { JsonKeystoreWallet, Wallet } from "@ethui/types/wallets";
 import { Form } from "@ethui/ui/components/form";
 import { Button } from "@ethui/ui/components/shadcn/button";
 
-export const schema = z.object({
+const schema = z.object({
   name: z.string().min(1),
   file: z.string().min(1),
   currentPath: z.string().optional(),

@@ -22,7 +22,7 @@ export const Route = createFileRoute("/_home/home/settings/tokens")({
   ),
 });
 
-export function SettingsTokens() {
+function SettingsTokens() {
   const currentNetwork = useNetworks((s) => s.current);
   const blacklist = useBlacklist((s) => s.erc20Blacklist);
 

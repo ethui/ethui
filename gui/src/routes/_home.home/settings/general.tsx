@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_home/home/settings/general")({
   ),
 });
 
-export const schema = z.object({
+const schema = z.object({
   darkMode: z.enum(["auto", "dark", "light"]),
   autostart: z.boolean(),
   alchemyApiKey: z
@@ -57,7 +57,7 @@ export const schema = z.object({
   fastMode: z.boolean(),
 });
 
-export function SettingsGeneral() {
+function SettingsGeneral() {
   const general = useSettings((s) => s.settings);
 
   const form = useForm({

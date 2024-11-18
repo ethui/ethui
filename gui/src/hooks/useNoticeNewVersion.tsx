@@ -6,6 +6,7 @@ import { Link } from "@tanstack/react-router";
 import { CircleX } from "lucide-react";
 import { useInvoke } from "./useInvoke";
 
+// TODO: currently this is not being used
 export async function getLatestVersion() {
   const response = await fetch(
     "https://api.github.com/repos/ethui/ethui/releases?per_page=1",

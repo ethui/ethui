@@ -37,18 +37,18 @@ export const Route = createFileRoute("/_dialog/dialog/tx-review/$id")({
   component: TxReviewDialog,
 });
 
-export interface TxRequest {
+interface TxRequest {
   input: `0x${string}`;
   from: Address;
   to: Address;
   value: string;
   chainId: number;
   walletType:
-    | "ledger"
-    | "HdWallet"
-    | "jsonKeystore"
-    | "plaintext"
-    | "impersonator";
+  | "ledger"
+  | "HdWallet"
+  | "jsonKeystore"
+  | "plaintext"
+  | "impersonator";
 }
 
 interface Log {
@@ -65,7 +65,7 @@ interface Simulation {
   logs: Log[];
 }
 
-export function TxReviewDialog() {
+function TxReviewDialog() {
   const { id } = Route.useParams();
   const dialog = useDialog<TxRequest>(id);
   const network = useNetworks((s) =>
