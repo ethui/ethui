@@ -1,11 +1,11 @@
-import { createLazyFileRoute, Link } from "@tanstack/react-router";
+import { Link, createLazyFileRoute } from "@tanstack/react-router";
 
 import { useShallow } from "zustand/shallow";
 
 import { ChainView } from "@ethui/ui/components/chain-view";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import { AppNavbar } from "#/components/AppNavbar";
 import { useNetworks } from "#/store/useNetworks";
-import { Button } from "@ethui/ui/components/shadcn/button";
 
 export const Route = createLazyFileRoute("/_home/home/settings/networks/")({
   component: () => (

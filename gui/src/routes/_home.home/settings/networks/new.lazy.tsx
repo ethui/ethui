@@ -1,12 +1,12 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { useRouter } from "@tanstack/react-router";
 import { type Network, networkSchema } from "@ethui/types/network";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@ethui/ui/components/form";
 import { Button } from "@ethui/ui/components/shadcn/button";
-import { AppNavbar } from "#/components/AppNavbar";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createLazyFileRoute } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
+import { useForm } from "react-hook-form";
+import { AppNavbar } from "#/components/AppNavbar";
 
 export const Route = createLazyFileRoute("/_home/home/settings/networks/new")({
   component: () => {
