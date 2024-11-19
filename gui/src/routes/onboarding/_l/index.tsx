@@ -1,24 +1,10 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 import { Button } from "@ethui/ui/components/shadcn/button";
-import type { StepProps } from "#/components/Onboarding";
-import { AlchemyStep } from "#/components/Onboarding/Alchemy";
-import { InstallExtensionStep } from "#/components/Onboarding/Extension";
-import { ThankYouStep } from "#/components/Onboarding/ThankYou";
-import { WalletSetupStep } from "#/components/Onboarding/WalletSetup";
-import { WelcomeStep } from "#/components/Onboarding/Welcome";
 
 export const Route = createFileRoute("/onboarding/_l/")({
   component: Onboarding,
 });
-
-const steps: { component: React.FC<StepProps> }[] = [
-  { component: WelcomeStep },
-  { component: AlchemyStep },
-  { component: WalletSetupStep },
-  { component: InstallExtensionStep },
-  { component: ThankYouStep },
-];
 
 function Onboarding() {
   return (
