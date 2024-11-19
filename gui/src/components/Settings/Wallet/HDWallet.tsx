@@ -130,17 +130,20 @@ function MnemonicStep({ onSubmit, onCancel }: MnemonicStepProps) {
 
   return (
     <Form form={form} onSubmit={onSubmitInternal}>
-      <Form.Textarea label="Name" name="name" />
+      <Form.Text label="Name" name="name" className="w-full" />
 
       <span>Insert your 12-word mnemonic</span>
-      <Form.Textarea label="12-word mnemonic" name="mnemonic" />
+      <Form.Textarea
+        label="12-word mnemonic"
+        name="mnemonic"
+        className="w-full"
+      />
 
-      <div className=" m-2 flex justify-end">
+      <div className="flex gap-2">
+        <Form.Submit label="Continue" />
         <Button variant="outline" onClick={onCancel}>
           Cancel
         </Button>
-
-        <Form.Submit label="Continue" />
       </div>
     </Form>
   );
@@ -167,12 +170,11 @@ function PasswordStep({ onSubmit, onCancel }: PasswordStepProps) {
         name="passwordConfirmation"
       />
 
-      <div className="m-2 flex flex-col justify-end">
+      <div className="flex gap-2">
+        <Form.Submit label="Continue" />
         <Button variant="outline" onClick={onCancel}>
           Cancel
         </Button>
-
-        <Form.Submit label="Continue" />
       </div>
     </Form>
   );
@@ -219,7 +221,7 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
       <Form.Text label="Derivation Path" name="derivationPath" />
 
       {form.formState.isValid && (
-        <div className="m-2 flex flex-col flex-col">
+        <div className="flex flex-col">
           <table>
             <tbody>
               {addresses.map(([key, address]) => (
@@ -244,12 +246,11 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
             </tbody>
           </table>
 
-          <div className=" m-2 flex justify-end">
+          <div className="flex gap-2">
+            <Form.Submit label="Save" />
             <Button variant="outline" onClick={onCancel}>
               Cancel
             </Button>
-
-            <Form.Submit label="Save" />
           </div>
         </div>
       )}
@@ -303,7 +304,7 @@ function Update({ wallet, onSubmit, onRemove }: Props) {
       <Form.Text label="Name" name="name" />
       <Form.Text label="Derivation Path" name="derivationPath" />
       <Form.NumberField label="Address count" name="count" />
-      <div className=" m-2 flex">
+      <div className="flex gap-2">
         <Form.Submit label="Save" />
         <Button color="warning" onClick={onRemove}>
           Remove

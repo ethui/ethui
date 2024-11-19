@@ -98,7 +98,7 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
   return (
     <Form form={form} onSubmit={prepareAndSubmit}>
       <Detect />
-      <Form.Text label="Name" name="name" />
+      <Form.Text label="Name" name="name" className="w-full" />
 
       {pathsFields.map((field, i) => {
         // TODO: this was in a helper text in mui. how to add it with shadcn?
@@ -106,10 +106,16 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
         // const address = addresses.get(path);
         return (
           <div className="flex flex-col self-stretch" key={field.id}>
-            <div className=" m-2 flex flex self-stretch">
-              <Form.Text label={`Path #${i + 1}`} name={`paths.${i}.path`} />
+            <div className="flex items-center self-stretch">
+              <Form.Text
+                label={`Path #${i + 1}`}
+                name={`paths.${i}.path`}
+                className="w-full"
+              />
 
-              <Button onClick={() => remove(i)}>Remove</Button>
+              <Button variant="ghost" onClick={() => remove(i)}>
+                Remove
+              </Button>
             </div>
           </div>
         );
@@ -117,7 +123,7 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
       <Button variant="outline" onClick={() => append({ path: "" })}>
         Add
       </Button>
-      <div className=" m-2 flex">
+      <div className="flex gap-2">
         <Form.Submit label="Save" />
         <Button variant="destructive" onClick={onRemove}>
           Remove
@@ -141,7 +147,7 @@ function Detect() {
     );
   } else if (detected === false) {
     return (
-      <Alert>
+      <Alert variant="destructive" className="">
         <AlertTitle>Failed to detect your ledger</AlertTitle>
         <AlertDescription>
           Please unlock your Ledger, and open the Ethereum app
@@ -150,7 +156,7 @@ function Detect() {
     );
   } else {
     return (
-      <Alert>
+      <Alert variant="destructive">
         <AlertTitle>Ledger not detected</AlertTitle>
         <AlertDescription>
           Please unlock your Ledger, and open the Ethereum app

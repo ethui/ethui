@@ -100,16 +100,15 @@ function PrivateKeyStep({ onSubmit, onCancel }: PrivateKeyStepProps) {
 
   return (
     <Form form={form} onSubmit={onSubmitInternal}>
-      <Form.Textarea label="Name" name="name" />
+      <Form.Textarea label="Name" name="name" className="w-full" />
       <span>Insert your 12-word privateKey</span>
-      <Form.Textarea label="Private Key" name="privateKey" />
+      <Form.Textarea label="Private Key" name="privateKey" className="w-full" />
 
-      <div className=" flex justify-end gap-2">
+      <div className="flex gap-2">
+        <Form.Submit label="Continue" />
         <Button variant="destructive" onClick={onCancel}>
           Cancel
         </Button>
-
-        <Form.Submit label="Continue" />
       </div>
     </Form>
   );
@@ -134,19 +133,24 @@ function PasswordStep({ onSubmit, onCancel }: PasswordStepProps) {
     <Form form={form} onSubmit={onSubmitInternal}>
       <div className="m-2 flex flex-col flex-col">
         <span>Choose a secure password</span>
-        <Form.Text type="password" label="Password" name="password" />
+        <Form.Text
+          type="password"
+          label="Password"
+          name="password"
+          className="w-full"
+        />
         <Form.Text
           type="password"
           label="Password Confirmation"
           name="passwordConfirmation"
+          className="w-full"
         />
 
-        <div className=" flex justify-end gap-2">
+        <div className="flex gap-2">
+          <Form.Submit label="Continue" />
           <Button color="warning" onClick={onCancel}>
             Cancel
           </Button>
-
-          <Form.Submit label="Continue" />
         </div>
       </div>
     </Form>
@@ -163,9 +167,8 @@ function Update({ wallet, onSubmit, onRemove }: Props) {
   return (
     <Form form={form} onSubmit={onSubmit}>
       <Form.Text label="Name" name="name" />
-      <div className=" m-2 flex">
+      <div className="flex gap-2">
         <Form.Submit label="Save" />
-
         <Button color="warning" onClick={onRemove}>
           Remove
         </Button>
