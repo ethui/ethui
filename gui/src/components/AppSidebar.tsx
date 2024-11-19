@@ -155,6 +155,5 @@ const settingsItems = [
   { title: "Wallets", url: "/home/settings/wallets" },
   { title: "Network", url: "/home/settings/networks" },
   { title: "Foundry", url: "/home/settings/foundry" },
-  { title: "Keybinds", url: "/home/settings/keybinds" },
   { title: "Tokens", url: "/home/settings/tokens" },
 ];

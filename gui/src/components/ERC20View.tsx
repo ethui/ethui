@@ -51,16 +51,12 @@ export function ERC20View({
 
   return (
     <div className="flex items-center justify-between p-4 hover:bg-accent">
-      <div className="flex items-center">
+      <div className="flex items-center gap-2">
         <IconAddress chainId={chainId} address={contract} />
         <div className="flex flex-col">
-          <div className="items-bottom flex">
+          <div className="items-bottom flex gap-4">
             {symbol}
-            {contract && (
-              <>
-                (<AddressView address={contract} />)
-              </>
-            )}
+            {contract && <AddressView address={contract} />}
           </div>
           <span>
             {truncatedBalance > 0

@@ -26,7 +26,6 @@ import { Route as HomeLConnectionsImport } from './routes/home/_l/connections'
 import { Route as HomeLAccountImport } from './routes/home/_l/account'
 import { Route as OnboardingLWalletsLImport } from './routes/onboarding/_l/wallets/_l'
 import { Route as HomeLSettingsTokensImport } from './routes/home/_l/settings/tokens'
-import { Route as HomeLSettingsKeybindsImport } from './routes/home/_l/settings/keybinds'
 import { Route as HomeLSettingsGeneralImport } from './routes/home/_l/settings/general'
 import { Route as HomeLSettingsFoundryImport } from './routes/home/_l/settings/foundry'
 import { Route as DialogLWalletUnlockIdImport } from './routes/dialog/_l/wallet-unlock.$id'
@@ -150,12 +149,6 @@ const OnboardingLWalletsLRoute = OnboardingLWalletsLImport.update({
 const HomeLSettingsTokensRoute = HomeLSettingsTokensImport.update({
   id: '/settings/tokens',
   path: '/settings/tokens',
-  getParentRoute: () => HomeLRoute,
-} as any)
-
-const HomeLSettingsKeybindsRoute = HomeLSettingsKeybindsImport.update({
-  id: '/settings/keybinds',
-  path: '/settings/keybinds',
   getParentRoute: () => HomeLRoute,
 } as any)
 
@@ -437,13 +430,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeLSettingsGeneralImport
       parentRoute: typeof HomeLImport
     }
-    '/home/_l/settings/keybinds': {
-      id: '/home/_l/settings/keybinds'
-      path: '/settings/keybinds'
-      fullPath: '/home/settings/keybinds'
-      preLoaderRoute: typeof HomeLSettingsKeybindsImport
-      parentRoute: typeof HomeLImport
-    }
     '/home/_l/settings/tokens': {
       id: '/home/_l/settings/tokens'
       path: '/settings/tokens'
@@ -574,7 +560,6 @@ interface HomeLRouteChildren {
   HomeLTransactionsRoute: typeof HomeLTransactionsRoute
   HomeLSettingsFoundryRoute: typeof HomeLSettingsFoundryRoute
   HomeLSettingsGeneralRoute: typeof HomeLSettingsGeneralRoute
-  HomeLSettingsKeybindsRoute: typeof HomeLSettingsKeybindsRoute
   HomeLSettingsTokensRoute: typeof HomeLSettingsTokensRoute
   HomeLSettingsNetworksNewRoute: typeof HomeLSettingsNetworksNewRoute
   HomeLSettingsWalletsNewRoute: typeof HomeLSettingsWalletsNewRoute
@@ -591,7 +576,6 @@ const HomeLRouteChildren: HomeLRouteChildren = {
   HomeLTransactionsRoute: HomeLTransactionsRoute,
   HomeLSettingsFoundryRoute: HomeLSettingsFoundryRoute,
   HomeLSettingsGeneralRoute: HomeLSettingsGeneralRoute,
-  HomeLSettingsKeybindsRoute: HomeLSettingsKeybindsRoute,
   HomeLSettingsTokensRoute: HomeLSettingsTokensRoute,
   HomeLSettingsNetworksNewRoute: HomeLSettingsNetworksNewRoute,
   HomeLSettingsWalletsNewRoute: HomeLSettingsWalletsNewRoute,
@@ -692,7 +676,6 @@ export interface FileRoutesByFullPath {
   '/dialog/wallet-unlock/$id': typeof DialogLWalletUnlockIdRoute
   '/home/settings/foundry': typeof HomeLSettingsFoundryRoute
   '/home/settings/general': typeof HomeLSettingsGeneralRoute
-  '/home/settings/keybinds': typeof HomeLSettingsKeybindsRoute
   '/home/settings/tokens': typeof HomeLSettingsTokensRoute
   '/onboarding/wallets': typeof OnboardingLWalletsLRouteWithChildren
   '/home/settings/networks/new': typeof HomeLSettingsNetworksNewRoute
@@ -726,7 +709,6 @@ export interface FileRoutesByTo {
   '/dialog/wallet-unlock/$id': typeof DialogLWalletUnlockIdRoute
   '/home/settings/foundry': typeof HomeLSettingsFoundryRoute
   '/home/settings/general': typeof HomeLSettingsGeneralRoute
-  '/home/settings/keybinds': typeof HomeLSettingsKeybindsRoute
   '/home/settings/tokens': typeof HomeLSettingsTokensRoute
   '/onboarding/wallets': typeof OnboardingLWalletsLIndexRoute
   '/home/settings/networks/new': typeof HomeLSettingsNetworksNewRoute
@@ -764,7 +746,6 @@ export interface FileRoutesById {
   '/dialog/_l/wallet-unlock/$id': typeof DialogLWalletUnlockIdRoute
   '/home/_l/settings/foundry': typeof HomeLSettingsFoundryRoute
   '/home/_l/settings/general': typeof HomeLSettingsGeneralRoute
-  '/home/_l/settings/keybinds': typeof HomeLSettingsKeybindsRoute
   '/home/_l/settings/tokens': typeof HomeLSettingsTokensRoute
   '/onboarding/_l/wallets': typeof OnboardingLWalletsRouteWithChildren
   '/onboarding/_l/wallets/_l': typeof OnboardingLWalletsLRouteWithChildren
@@ -802,7 +783,6 @@ export interface FileRouteTypes {
     | '/dialog/wallet-unlock/$id'
     | '/home/settings/foundry'
     | '/home/settings/general'
-    | '/home/settings/keybinds'
     | '/home/settings/tokens'
     | '/onboarding/wallets'
     | '/home/settings/networks/new'
@@ -835,7 +815,6 @@ export interface FileRouteTypes {
     | '/dialog/wallet-unlock/$id'
     | '/home/settings/foundry'
     | '/home/settings/general'
-    | '/home/settings/keybinds'
     | '/home/settings/tokens'
     | '/onboarding/wallets'
     | '/home/settings/networks/new'
@@ -871,7 +850,6 @@ export interface FileRouteTypes {
     | '/dialog/_l/wallet-unlock/$id'
     | '/home/_l/settings/foundry'
     | '/home/_l/settings/general'
-    | '/home/_l/settings/keybinds'
     | '/home/_l/settings/tokens'
     | '/onboarding/_l/wallets'
     | '/onboarding/_l/wallets/_l'
@@ -949,7 +927,6 @@ export const routeTree = rootRoute
         "/home/_l/transactions",
         "/home/_l/settings/foundry",
         "/home/_l/settings/general",
-        "/home/_l/settings/keybinds",
         "/home/_l/settings/tokens",
         "/home/_l/settings/networks/new",
         "/home/_l/settings/wallets/new",
@@ -1042,10 +1019,6 @@ export const routeTree = rootRoute
     },
     "/home/_l/settings/general": {
       "filePath": "home/_l/settings/general.tsx",
-      "parent": "/home/_l"
-    },
-    "/home/_l/settings/keybinds": {
-      "filePath": "home/_l/settings/keybinds.tsx",
       "parent": "/home/_l"
     },
     "/home/_l/settings/tokens": {
