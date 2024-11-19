@@ -33,7 +33,7 @@
     "ts-unused-exports": "^10.1.0"
   },
   "dependencies": {
-    "@tauri-apps/cli": "^2.0.3",
+    "@tauri-apps/cli": "^2.1.0",
     "typescript": "5.6.3"
   },
   "packageManager": "yarn@4.0.2"
