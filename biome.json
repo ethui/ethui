@@ -20,6 +20,8 @@
   },
   "linter": {
     "rules": {
+      "recommended": true,
+      "correctness": { "noUnusedVariables": "error" },
       "suspicious": {
         "noExplicitAny": "off",
         "noArrayIndexKey": "off"
@@ -29,7 +31,9 @@
         "noNonNullAssertion": "off"
       },
       "performance": {
-        "noAccumulatingSpread": "warn",
+        "noAccumulatingSpread": "error",
+        "noDelete": "error",
+        "noReExportAll": "error",
         "noBarrelFile": "error"
       },
       "complexity": {

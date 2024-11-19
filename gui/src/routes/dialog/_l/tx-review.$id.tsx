@@ -323,7 +323,7 @@ function decodeKnownLog(log: Log) {
         topics: log.topics,
       }),
     ] as const;
-  } catch (e) {
+  } catch (_e) {
     return null;
   }
 }
