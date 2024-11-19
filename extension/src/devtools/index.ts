@@ -1,11 +1,10 @@
 import { devtools, runtime } from "webextension-polyfill";
 import type { DevtoolsPanels } from "webextension-polyfill/namespaces/devtools_panels";
-import type { Request, Response } from "#/types";
 
 const tabId = devtools.inspectedWindow.tabId;
 
 let panel: DevtoolsPanels.ExtensionPanel;
-let cache: Array<Request | Response> = [];
+let cache: Array<unknown> = [];
 
 (async () => init())();
 
@@ -21,8 +20,8 @@ async function init() {
   panel.onShown.addListener(panelListener);
 }
 
-function cacheListener(msg: Request | Response) {
-  if (msg.tabId !== tabId) return;
+async function cacheListener(msg: unknown) {
+  if ((msg as any)?.tabId !== tabId) return;
 
   cache.push(msg);
 }

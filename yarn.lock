@@ -1926,7 +1926,7 @@ __metadata:
     "@types/node": "npm:^22.9.1"
     "@types/react": "npm:^18.3.12"
     "@types/react-dom": "npm:^18.3.1"
-    "@types/webextension-polyfill": "npm:^0.10.7"
+    "@types/webextension-polyfill": "npm:^0.12.1"
     autoprefixer: "npm:^10.4.20"
     crx: "npm:^5.0.1"
     eth-json-rpc-filters: "npm:^6.0.1"
@@ -5139,10 +5139,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/webextension-polyfill@npm:^0.10.7":
-  version: 0.10.7
-  resolution: "@types/webextension-polyfill@npm:0.10.7"
-  checksum: 78f9153398172b66db74e02202146e078b9c8fe30a283f52e7ab58021fdb4d18be74555142ec83b878f9d05d98a0296ffbef8287aedd411d9503025fe8ddba36
+"@types/webextension-polyfill@npm:^0.12.1":
+  version: 0.12.1
+  resolution: "@types/webextension-polyfill@npm:0.12.1"
+  checksum: d6e6253bbd020dcfa40391112212e3486320760d12c58854d0410140bda7ad0476749b9476e18d6888a1b04092662715b488f470c3aa29b44768990ffaf6d194
   languageName: node
   linkType: hard
 

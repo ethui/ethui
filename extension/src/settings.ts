@@ -1,7 +1,7 @@
 import log from "loglevel";
 import { storage } from "webextension-polyfill";
 
-export interface Settings {
+export interface Settings extends Record<string, string> {
   logLevel: "info" | "debug" | "warn" | "error";
   endpoint: string;
 }

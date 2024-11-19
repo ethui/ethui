@@ -2,7 +2,7 @@ import { runtime, tabs } from "webextension-polyfill";
 import { type StateCreator, create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import type { Request, Response, Start } from "#/types";
+import type { Request, Response } from "#/types";
 
 interface State {
   requests: { request: Request; response?: Response }[];
@@ -56,10 +56,11 @@ const store: StateCreator<Store> = (set, get) => ({
 
 export const useStore = create<Store>()(subscribeWithSelector(store));
 
-runtime.onMessage.addListener((msg: Request | Response | Start) => {
-  if (msg.tabId !== tabId) return;
+runtime.onMessage.addListener(async (_msg) => {
+  const msg: any = _msg as any;
+  if (msg?.tabId !== tabId) return;
 
-  if (msg.type === "start") {
+  if (msg?.type === "start") {
     useStore.getState().reset();
     useStore.getState().processMsgs(msg.data || []);
   } else {
