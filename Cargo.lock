@@ -3177,6 +3177,7 @@ dependencies = [
 name = "ethui"
 version = "1.8.0"
 dependencies = [
+ "anyhow",
  "ethui-args",
  "ethui-broadcast",
  "ethui-connections",
@@ -3199,7 +3200,6 @@ dependencies = [
  "tauri",
  "tauri-build",
  "tauri-plugin-os",
- "thiserror 1.0.69",
  "tokio",
  "tracing",
 ]

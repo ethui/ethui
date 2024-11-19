@@ -35,8 +35,8 @@ ethui-args.workspace = true
 serde.workspace = true
 tauri.workspace = true
 tokio.workspace = true
-thiserror.workspace = true
 tracing.workspace = true
+anyhow.workspace = true
 
 fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs", rev = "0e479e2" }
 named-lock = "0.3.0"
