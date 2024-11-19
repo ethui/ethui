@@ -51,7 +51,7 @@ function ERC20AddDialog() {
         />
       </div>
 
-      <div className=" m-2 flex">
+      <div className="flex gap-2">
         <Button color="error" onClick={() => tauriWindow.close()}>
           Cancel
         </Button>

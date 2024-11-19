@@ -1,5 +1,4 @@
 import { startCase } from "lodash-es";
-import { useState } from "react";
 
 import { type Wallet, walletTypes } from "@ethui/types/wallets";
 import { Button } from "@ethui/ui/components/shadcn/button";
@@ -13,21 +12,10 @@ import { CaretDownIcon } from "@radix-ui//react-icons";
 import { useWallets } from "#/store/useWallets";
 import { Link } from "@tanstack/react-router";
 
-interface Props {
-  extraAction?: React.ReactNode;
-}
-
-export function SettingsWallets({ extraAction }: Props) {
+export function SettingsWallets() {
   const wallets = useWallets((s) => s.wallets);
-  const [newType, setNewType] = useState<Wallet["type"] | null>(null);
 
   if (!wallets) return null;
-
-  const startNew = (type: Wallet["type"]) => {
-    setNewType(type);
-  };
-
-  const closeNew = () => setNewType(null);
 
   return (
     <>
@@ -43,18 +31,14 @@ export function SettingsWallets({ extraAction }: Props) {
             </Link>
           ))}
 
-          <AddWalletButton onChoice={startNew} />
+          <AddWalletButton />
         </div>
       </div>
     </>
   );
 }
 
-interface AddWalletButtonProps {
-  onChoice: (type: Wallet["type"]) => void;
-}
-
-const AddWalletButton = ({ onChoice }: AddWalletButtonProps) => {
+const AddWalletButton = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -68,11 +52,10 @@ const AddWalletButton = ({ onChoice }: AddWalletButtonProps) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         {walletTypes.map((walletType: Wallet["type"]) => (
-          <DropdownMenuItem
-            key={walletType}
-            onClick={() => onChoice(walletType)}
-          >
-            {startCase(walletType)}
+          <DropdownMenuItem key={walletType} asChild>
+            <Link to="/home/settings/wallets/new" search={{ type: walletType }}>
+              {startCase(walletType)}
+            </Link>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

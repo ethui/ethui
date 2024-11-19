@@ -40,15 +40,18 @@ export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
   };
 
   return (
-    <Form form={form} onSubmit={prepareAndSubmit}>
-      <Form.Text label="Name" name="name" />
-      <Form.Text label="Mnemonic" name="mnemonic" />
-      <Form.Text label="Derivation Path" name="derivationPath" />
+    <Form form={form} onSubmit={prepareAndSubmit} className="gap-4">
+      <Form.Text label="Name" name="name" className="w-full" />
+      <Form.Text label="Mnemonic" name="mnemonic" className="w-full" />
+      <Form.Text
+        label="Derivation Path"
+        name="derivationPath"
+        className="w-full"
+      />
       <Form.NumberField label="Count" name="count" />
 
       <div className="flex gap-2">
         <Form.Submit label="Save" />
-
         <Button variant="destructive" onClick={onRemove}>
           Remove
         </Button>

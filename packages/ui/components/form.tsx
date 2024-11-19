@@ -9,6 +9,7 @@ import {
 } from "react-hook-form";
 
 import clsx from "clsx";
+import { Textarea as ShadTextarea } from "./shadcn/textarea";
 import { Button, type ButtonProps } from "./shadcn/button";
 import { Checkbox as ShadCheckbox } from "./shadcn/checkbox";
 import {
@@ -106,7 +107,7 @@ function Textarea<T extends FieldValues>({
         <FormItem className={className}>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Textarea {...field} />
+            <ShadTextarea {...field} />
           </FormControl>
           <FormMessage />
         </FormItem>

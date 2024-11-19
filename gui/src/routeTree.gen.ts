@@ -31,6 +31,7 @@ import { Route as DialogDialogErc1155AddIdImport } from './routes/_dialog.dialog
 import { Route as DialogDialogChainAddIdImport } from './routes/_dialog.dialog/chain-add.$id'
 import { Route as HomeHomeSettingsWalletsIndexImport } from './routes/_home.home/settings/wallets/index'
 import { Route as HomeHomeSettingsNetworksIndexImport } from './routes/_home.home/settings/networks/index'
+import { Route as HomeHomeSettingsWalletsNewImport } from './routes/_home.home/settings/wallets/new'
 import { Route as HomeHomeSettingsNetworksNewImport } from './routes/_home.home/settings/networks/new'
 import { Route as HomeHomeSettingsWalletsNameEditImport } from './routes/_home.home/settings/wallets/$name.edit'
 import { Route as HomeHomeSettingsNetworksNameEditImport } from './routes/_home.home/settings/networks/$name.edit'
@@ -158,6 +159,14 @@ const HomeHomeSettingsNetworksIndexRoute =
     path: '/home/settings/networks/',
     getParentRoute: () => HomeRoute,
   } as any)
+
+const HomeHomeSettingsWalletsNewRoute = HomeHomeSettingsWalletsNewImport.update(
+  {
+    id: '/home/settings/wallets/new',
+    path: '/home/settings/wallets/new',
+    getParentRoute: () => HomeRoute,
+  } as any,
+)
 
 const HomeHomeSettingsNetworksNewRoute =
   HomeHomeSettingsNetworksNewImport.update({
@@ -317,6 +326,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeHomeSettingsNetworksNewImport
       parentRoute: typeof HomeImport
     }
+    '/_home/home/settings/wallets/new': {
+      id: '/_home/home/settings/wallets/new'
+      path: '/home/settings/wallets/new'
+      fullPath: '/home/settings/wallets/new'
+      preLoaderRoute: typeof HomeHomeSettingsWalletsNewImport
+      parentRoute: typeof HomeImport
+    }
     '/_home/home/settings/networks/': {
       id: '/_home/home/settings/networks/'
       path: '/home/settings/networks'
@@ -383,6 +399,7 @@ interface HomeRouteChildren {
   HomeHomeSettingsKeybindsRoute: typeof HomeHomeSettingsKeybindsRoute
   HomeHomeSettingsTokensRoute: typeof HomeHomeSettingsTokensRoute
   HomeHomeSettingsNetworksNewRoute: typeof HomeHomeSettingsNetworksNewRoute
+  HomeHomeSettingsWalletsNewRoute: typeof HomeHomeSettingsWalletsNewRoute
   HomeHomeSettingsNetworksIndexRoute: typeof HomeHomeSettingsNetworksIndexRoute
   HomeHomeSettingsWalletsIndexRoute: typeof HomeHomeSettingsWalletsIndexRoute
   HomeHomeSettingsNetworksNameEditRoute: typeof HomeHomeSettingsNetworksNameEditRoute
@@ -399,6 +416,7 @@ const HomeRouteChildren: HomeRouteChildren = {
   HomeHomeSettingsKeybindsRoute: HomeHomeSettingsKeybindsRoute,
   HomeHomeSettingsTokensRoute: HomeHomeSettingsTokensRoute,
   HomeHomeSettingsNetworksNewRoute: HomeHomeSettingsNetworksNewRoute,
+  HomeHomeSettingsWalletsNewRoute: HomeHomeSettingsWalletsNewRoute,
   HomeHomeSettingsNetworksIndexRoute: HomeHomeSettingsNetworksIndexRoute,
   HomeHomeSettingsWalletsIndexRoute: HomeHomeSettingsWalletsIndexRoute,
   HomeHomeSettingsNetworksNameEditRoute: HomeHomeSettingsNetworksNameEditRoute,
@@ -426,6 +444,7 @@ export interface FileRoutesByFullPath {
   '/home/settings/keybinds': typeof HomeHomeSettingsKeybindsRoute
   '/home/settings/tokens': typeof HomeHomeSettingsTokensRoute
   '/home/settings/networks/new': typeof HomeHomeSettingsNetworksNewRoute
+  '/home/settings/wallets/new': typeof HomeHomeSettingsWalletsNewRoute
   '/home/settings/networks': typeof HomeHomeSettingsNetworksIndexRoute
   '/home/settings/wallets': typeof HomeHomeSettingsWalletsIndexRoute
   '/home/settings/networks/$name/edit': typeof HomeHomeSettingsNetworksNameEditRoute
@@ -451,6 +470,7 @@ export interface FileRoutesByTo {
   '/home/settings/keybinds': typeof HomeHomeSettingsKeybindsRoute
   '/home/settings/tokens': typeof HomeHomeSettingsTokensRoute
   '/home/settings/networks/new': typeof HomeHomeSettingsNetworksNewRoute
+  '/home/settings/wallets/new': typeof HomeHomeSettingsWalletsNewRoute
   '/home/settings/networks': typeof HomeHomeSettingsNetworksIndexRoute
   '/home/settings/wallets': typeof HomeHomeSettingsWalletsIndexRoute
   '/home/settings/networks/$name/edit': typeof HomeHomeSettingsNetworksNameEditRoute
@@ -478,6 +498,7 @@ export interface FileRoutesById {
   '/_home/home/settings/keybinds': typeof HomeHomeSettingsKeybindsRoute
   '/_home/home/settings/tokens': typeof HomeHomeSettingsTokensRoute
   '/_home/home/settings/networks/new': typeof HomeHomeSettingsNetworksNewRoute
+  '/_home/home/settings/wallets/new': typeof HomeHomeSettingsWalletsNewRoute
   '/_home/home/settings/networks/': typeof HomeHomeSettingsNetworksIndexRoute
   '/_home/home/settings/wallets/': typeof HomeHomeSettingsWalletsIndexRoute
   '/_home/home/settings/networks/$name/edit': typeof HomeHomeSettingsNetworksNameEditRoute
@@ -505,6 +526,7 @@ export interface FileRouteTypes {
     | '/home/settings/keybinds'
     | '/home/settings/tokens'
     | '/home/settings/networks/new'
+    | '/home/settings/wallets/new'
     | '/home/settings/networks'
     | '/home/settings/wallets'
     | '/home/settings/networks/$name/edit'
@@ -529,6 +551,7 @@ export interface FileRouteTypes {
     | '/home/settings/keybinds'
     | '/home/settings/tokens'
     | '/home/settings/networks/new'
+    | '/home/settings/wallets/new'
     | '/home/settings/networks'
     | '/home/settings/wallets'
     | '/home/settings/networks/$name/edit'
@@ -554,6 +577,7 @@ export interface FileRouteTypes {
     | '/_home/home/settings/keybinds'
     | '/_home/home/settings/tokens'
     | '/_home/home/settings/networks/new'
+    | '/_home/home/settings/wallets/new'
     | '/_home/home/settings/networks/'
     | '/_home/home/settings/wallets/'
     | '/_home/home/settings/networks/$name/edit'
@@ -612,6 +636,7 @@ export const routeTree = rootRoute
         "/_home/home/settings/keybinds",
         "/_home/home/settings/tokens",
         "/_home/home/settings/networks/new",
+        "/_home/home/settings/wallets/new",
         "/_home/home/settings/networks/",
         "/_home/home/settings/wallets/",
         "/_home/home/settings/networks/$name/edit",
@@ -683,6 +708,10 @@ export const routeTree = rootRoute
     },
     "/_home/home/settings/networks/new": {
       "filePath": "_home.home/settings/networks/new.tsx",
+      "parent": "/_home"
+    },
+    "/_home/home/settings/wallets/new": {
+      "filePath": "_home.home/settings/wallets/new.tsx",
       "parent": "/_home"
     },
     "/_home/home/settings/networks/": {

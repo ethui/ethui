@@ -1,13 +1,8 @@
-import { type Network, networkSchema } from "@ethui/types/network";
-import { Form } from "@ethui/ui/components/form";
-import { Button } from "@ethui/ui/components/shadcn/button";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
-import { useForm } from "react-hook-form";
 import { AppNavbar } from "#/components/AppNavbar";
 import { useWallets } from "#/store/useWallets";
-import { Wallet } from "@ethui/types/wallets";
+import type { Wallet } from "@ethui/types/wallets";
 import { Plaintext } from "#/components/Settings/Wallet/Plaintext";
 import { HDWalletForm } from "#/components/Settings/Wallet/HDWallet";
 import { JsonKeystore } from "#/components/Settings/Wallet/JsonKeystore";

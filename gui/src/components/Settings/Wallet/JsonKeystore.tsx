@@ -37,10 +37,11 @@ export function JsonKeystore({
   };
 
   return (
-    <Form form={form} onSubmit={prepareAndSubmit}>
-      <Form.Text label="Name" name="name" />
-      <Form.Text label="Keystore file" name="file" />
-      <div className=" m-2 flex">
+    <Form form={form} onSubmit={prepareAndSubmit} className="gap-4">
+      <Form.Text label="Name" name="name" className="w-full" />
+      <Form.Text label="Keystore file" name="file" className="w-full" />
+
+      <div className="flex gap-2">
         <Form.Submit label="Save" />
         <Button variant="destructive" onClick={onRemove}>
           Remove
