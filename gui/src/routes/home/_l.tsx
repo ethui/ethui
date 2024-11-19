@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { AnimatedOutlet } from "#/components/AnimatedOutlet";
 import { AppSidebar } from "#/components/AppSidebar";
 import { CommandBar, CommandBarProvider } from "#/components/CommandBar";
 import { SidebarProvider } from "#/components/shadcn/sidebar";
 import { useNoticeAlchemyKeyMissing } from "#/hooks/useNoticeAlchemyKeyMissing";
 import { useNoticeNewVersion } from "#/hooks/useNoticeNewVersion";
-import { AnimatedOutlet } from "#/components/AnimatedOutlet";
 
 export const Route = createFileRoute("/home/_l")({
   component: HomePageLayout,

@@ -1,5 +1,5 @@
-import { AnimatedOutlet } from "#/components/AnimatedOutlet";
 import { createFileRoute } from "@tanstack/react-router";
+import { AnimatedOutlet } from "#/components/AnimatedOutlet";
 
 export const Route = createFileRoute("/dialog/_l")({
   component: DialogLayout,
