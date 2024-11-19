@@ -31,16 +31,10 @@
         "noNonNullAssertion": "off"
       },
       "performance": {
-<<<<<<< HEAD
         "noAccumulatingSpread": "error",
         "noDelete": "error",
-        "noReExportAll": "error"
-||||||| 2ff6ad91
-        "noAccumulatingSpread": "warn"
-=======
-        "noAccumulatingSpread": "warn",
+        "noReExportAll": "error",
         "noBarrelFile": "error"
->>>>>>> main
       },
       "complexity": {
         "useOptionalChain": {
