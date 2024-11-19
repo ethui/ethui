@@ -1,184 +1,116 @@
 import {
-  Box,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemSecondaryAction,
-  ListItemText,
-  Paper,
-  Typography,
-} from "@mui/material";
-import {
-  type ActionId,
-  type ActionImpl,
-  KBarAnimator,
-  KBarPortal,
-  KBarPositioner,
-  KBarProvider,
-  KBarResults,
-  KBarSearch,
-  useMatches,
-} from "kbar";
-import type React from "react";
-import { type ReactNode, forwardRef, useMemo } from "react";
+  type Dispatch,
+  Fragment,
+  type ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { useShallow } from "zustand/shallow";
 
 import {
-  useNetworks,
-  useSettings,
-  useSettingsWindow,
-  useWallets,
-} from "#/store";
-import { useTheme } from "#/store/theme";
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@ethui/ui/components/shadcn/command";
+import { useNetworks } from "#/store/useNetworks";
+import { useSettings } from "#/store/useSettings";
+import { useTheme } from "#/store/useTheme";
+import { useWallets } from "#/store/useWallets";
 
-function useActions() {
+export interface Action {
+  id: string;
+  text: string;
+  run?: () => void;
+}
+
+interface CommandBarContextProps {
+  open: boolean;
+  setOpen: Dispatch<React.SetStateAction<boolean>>;
+}
+
+const CommandBarContext = createContext<CommandBarContextProps>({
+  open: false,
+  setOpen: () => {},
+});
+
+export function CommandBarProvider({ children }: { children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <CommandBarContext.Provider value={{ open, setOpen }}>
+      {children}
+    </CommandBarContext.Provider>
+  );
+}
+
+export const useCommandBar = () => useContext(CommandBarContext);
+
+function useActions(): Record<string, Action[]> {
   const walletActions = useWallets((s) => s.actions);
   const networkActions = useNetworks((s) => s.actions);
   const settingsActions = useSettings((s) => s.actions);
-  const [theme, themeActions] = useTheme(
-    useShallow((s) => [s.theme, s.actions]),
-  );
-  const settingsWindowActions = useSettingsWindow((s) => s.actions);
+  const themeActions = useTheme(useShallow((s) => s.actions));
 
   return {
-    walletActions,
-    networkActions,
-    settingsActions,
-    theme,
-    themeActions,
-    settingsWindowActions,
+    Network: networkActions,
+    Settings: settingsActions,
+    Theme: themeActions,
+    Wallet: walletActions,
   };
 }
 
-export function CommandBar({ children }: { children: ReactNode }) {
+export function CommandBar() {
+  const { open, setOpen } = useCommandBar();
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setOpen((o) => !o);
+      }
+    };
+
+    document.addEventListener("keydown", down);
+    return () => {
+      document.removeEventListener("keydown", down);
+    };
+  }, [setOpen]);
   const actions = useActions();
 
-  if (actions.walletActions.length === 0) return null;
-
-  const allActions = [
-    actions.walletActions,
-    actions.networkActions,
-    actions.settingsActions,
-    actions.themeActions,
-    actions.settingsWindowActions,
-  ].flat();
+  if (actions.Wallet.length === 0) return null;
 
   return (
-    <KBarProvider actions={allActions}>
-      <KBarPortal>
-        <KBarPositioner style={{ zIndex: actions.theme.zIndex.tooltip + 1 }}>
-          <CommandBarInner actions={actions} />
-        </KBarPositioner>
-      </KBarPortal>
-      {children}
-    </KBarProvider>
+    <CommandDialog open={open} onOpenChange={setOpen}>
+      <CommandInput placeholder="Search" />
+      <CommandList>
+        <CommandEmpty>No commands found</CommandEmpty>
+        {Object.keys(actions).map((group) => {
+          const items = actions[group];
+          return (
+            <Fragment key={group}>
+              <CommandGroup heading={group}>
+                {items.map((item) => (
+                  <CommandItem
+                    key={item.id}
+                    onSelect={() => {
+                      item.run?.();
+                      setOpen(false);
+                    }}
+                    keywords={[group]}
+                  >
+                    {item.text}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </Fragment>
+          );
+        })}
+      </CommandList>
+    </CommandDialog>
   );
 }
-
-function RenderResults() {
-  const { results, rootActionId } = useMatches();
-  return (
-    <List
-      component={KBarResults}
-      items={results}
-      onRender={({ item, active }) =>
-        typeof item === "string" ? (
-          <ListItem dense>
-            <Typography sx={{ color: "gray" }} variant="subtitle2">
-              {item}
-            </Typography>
-          </ListItem>
-        ) : (
-          <ResultItem
-            currentRootActionId={rootActionId}
-            action={item}
-            active={active}
-          />
-        )
-      }
-    />
-  );
-}
-
-function CommandBarInner({
-  actions,
-}: {
-  actions: ReturnType<typeof useActions>;
-}) {
-  return (
-    <Paper
-      component={KBarAnimator}
-      elevation={3}
-      sx={{
-        maxWidth: "600px",
-        width: "100%",
-        overflow: "hidden",
-      }}
-    >
-      <Box
-        component={KBarSearch}
-        sx={{
-          width: "100%",
-          outline: "none",
-          border: "none",
-          p: actions.theme.spacing(2),
-          color: actions.theme.palette.text.primary,
-          background: "transparent",
-          ...actions.theme.typography.body1,
-        }}
-      />
-      <RenderResults />
-    </Paper>
-  );
-}
-
-interface ResultItemProps {
-  action: ActionImpl;
-  active: boolean;
-  currentRootActionId?: ActionId | null;
-}
-
-const ResultItem = forwardRef(
-  (
-    { action, active, currentRootActionId }: ResultItemProps,
-    ref: React.Ref<HTMLDivElement>,
-  ) => {
-    const ancestors = useMemo(() => {
-      if (!currentRootActionId) return action.ancestors;
-      const index = action.ancestors.findIndex(
-        (ancestor) => ancestor.id === currentRootActionId,
-      );
-      // +1 removes the currentRootAction; e.g.
-      // if we are on the "Set theme" parent action,
-      // the UI should not display "Set theme… > Dark"
-      // but rather just "Dark"
-      return action.ancestors.slice(index + 1);
-    }, [action.ancestors, currentRootActionId]);
-
-    return (
-      <ListItemButton ref={ref} selected={active}>
-        {action.icon && <ListItemIcon>{action.icon}</ListItemIcon>}
-
-        <ListItemText
-          primary={
-            ancestors.length
-              ? `${ancestors.map((a) => a.name).join(" > ")}: ${action.name}`
-              : action.name
-          }
-          secondary={action.subtitle}
-        />
-
-        {action.shortcut?.length ? (
-          <ListItemSecondaryAction aria-hidden>
-            {action.shortcut.map((sc) => (
-              <kbd key={sc}>{sc}</kbd>
-            ))}
-          </ListItemSecondaryAction>
-        ) : null}
-      </ListItemButton>
-    );
-  },
-);
-
-ResultItem.displayName = "ResultItem";

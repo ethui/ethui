@@ -1,4 +1,4 @@
-import { Stack, TextField } from "@mui/material";
+import { Input } from "@ethui/ui/components/shadcn/input";
 import { useCallback, useState } from "react";
 
 import type { InnerProps } from "./AbiInput";
@@ -20,15 +20,14 @@ export function Basic({ name, defaultValue, onChange, debug }: BasicProps) {
   );
 
   return (
-    <Stack spacing={1}>
-      <TextField
-        size="small"
-        variant="standard"
+    <div className="m-1">
+      <Input
+        type="text"
         name={name}
         onChange={handleChange}
         defaultValue={defaultValue && stringify(defaultValue, 0)}
       />
       {debug && <Debug value={value} />}
-    </Stack>
+    </div>
   );
 }

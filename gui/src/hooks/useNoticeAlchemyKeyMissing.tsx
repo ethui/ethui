@@ -1,15 +1,16 @@
-import { Close, OpenInNew } from "@mui/icons-material";
-import { IconButton, Typography } from "@mui/material";
 import { type SnackbarKey, useSnackbar } from "notistack";
 import { useEffect } from "react";
 
-import { useNetworks, useSettings, useSettingsWindow } from "#/store";
+import { Button } from "@ethui/ui/components/shadcn/button";
+import { Link } from "@tanstack/react-router";
+import { CircleX, SquareArrowOutUpRight } from "lucide-react";
+import { useNetworks } from "#/store/useNetworks";
+import { useSettings } from "#/store/useSettings";
 import { useInvoke } from "./useInvoke";
 
 let key: SnackbarKey;
 
 export function useNoticeAlchemyKeyMissing() {
-  const { open } = useSettingsWindow();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { settings } = useSettings();
   const currentNetwork = useNetworks((s) => s.current);
@@ -30,30 +31,29 @@ export function useNoticeAlchemyKeyMissing() {
       return;
     }
 
-    key = enqueueSnackbar(<Typography>Alchemy key missing</Typography>, {
+    key = enqueueSnackbar(<span>Alchemy key missing</span>, {
       key: "alchemy_key_missing",
       persist: true,
       variant: "warning",
       action: () => (
         <>
-          <IconButton
+          <Link
+            href="/home/settings/general"
             aria-label="close"
             color="inherit"
-            sx={{ p: 0.5 }}
-            onClick={() => open()}
           >
-            <OpenInNew />
-          </IconButton>
-          <IconButton
+            <SquareArrowOutUpRight />
+          </Link>
+          <Button
+            size="icon"
             aria-label="close"
             color="inherit"
-            sx={{ p: 0.5 }}
             onClick={() => closeSnackbar(key)}
           >
-            <Close />
-          </IconButton>
+            <CircleX />
+          </Button>
         </>
       ),
     });
-  }, [closeSnackbar, enqueueSnackbar, open, requiresAlchemyKey]);
+  }, [closeSnackbar, enqueueSnackbar, requiresAlchemyKey]);
 }

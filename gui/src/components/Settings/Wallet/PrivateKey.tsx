@@ -1,21 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Button,
-  Stack,
-  Step,
-  StepLabel,
-  Stepper,
-  Typography,
-} from "@mui/material";
 import { useEffect, useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Form } from "@ethui/react/components";
 import { passwordFormSchema, passwordSchema } from "@ethui/types/password";
 import type { PrivateKeyWallet } from "@ethui/types/wallets";
+import { Form } from "@ethui/ui/components/form";
+import { Button } from "@ethui/ui/components/shadcn/button";
 
-export const schema = z.object({
+const schema = z.object({
   name: z.string().min(1),
   privateKey: z.string().regex(/^0x[a-fA-F0-9]{64}$/),
   password: passwordSchema,
@@ -29,8 +22,6 @@ const updateSchema = schema.pick({
 
 type CreateSchema = z.infer<typeof createSchema>;
 type UpdateSchema = z.infer<typeof updateSchema>;
-
-const steps = ["Import", "Secure"];
 
 interface Props {
   wallet?: PrivateKeyWallet;
@@ -65,14 +56,7 @@ function Create({ onSubmit, onRemove }: Props) {
   }, [name, privateKey, password, onSubmit, submitted]);
 
   return (
-    <Stack direction="column" spacing={2}>
-      <Stepper activeStep={step} alternativeLabel>
-        {steps.map((label) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
+    <div className="m-2 flex flex-col flex-col">
       {step === 0 && (
         <PrivateKeyStep
           onSubmit={(name: string, privateKey) => {
@@ -93,7 +77,7 @@ function Create({ onSubmit, onRemove }: Props) {
           onCancel={onRemove}
         />
       )}
-    </Stack>
+    </div>
   );
 }
 
@@ -116,19 +100,16 @@ function PrivateKeyStep({ onSubmit, onCancel }: PrivateKeyStepProps) {
 
   return (
     <Form form={form} onSubmit={onSubmitInternal}>
-      <Stack direction="column" spacing={2}>
-        <Form.Text multiline label="Name" name="name" />
-        <Typography>Insert your 12-word privateKey</Typography>
-        <Form.Text multiline label="Private Key" name="privateKey" />
+      <Form.Textarea label="Name" name="name" className="w-full" />
+      <span>Insert your 12-word privateKey</span>
+      <Form.Textarea label="Private Key" name="privateKey" className="w-full" />
 
-        <Stack direction="row" spacing={2} justifyContent="flex-end">
-          <Button color="warning" variant="contained" onClick={onCancel}>
-            Cancel
-          </Button>
-
-          <Form.Submit label="Continue" />
-        </Stack>
-      </Stack>
+      <div className="flex gap-2">
+        <Form.Submit label="Continue" />
+        <Button variant="destructive" onClick={onCancel}>
+          Cancel
+        </Button>
+      </div>
     </Form>
   );
 }
@@ -150,23 +131,28 @@ function PasswordStep({ onSubmit, onCancel }: PasswordStepProps) {
 
   return (
     <Form form={form} onSubmit={onSubmitInternal}>
-      <Stack direction="column" spacing={2}>
-        <Typography>Choose a secure password</Typography>
-        <Form.Text type="password" label="Password" name="password" />
+      <div className="m-2 flex flex-col flex-col">
+        <span>Choose a secure password</span>
+        <Form.Text
+          type="password"
+          label="Password"
+          name="password"
+          className="w-full"
+        />
         <Form.Text
           type="password"
           label="Password Confirmation"
           name="passwordConfirmation"
+          className="w-full"
         />
 
-        <Stack direction="row" spacing={2} justifyContent="flex-end">
-          <Button color="warning" variant="contained" onClick={onCancel}>
+        <div className="flex gap-2">
+          <Form.Submit label="Continue" />
+          <Button color="warning" onClick={onCancel}>
             Cancel
           </Button>
-
-          <Form.Submit label="Continue" />
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </Form>
   );
 }
@@ -180,16 +166,13 @@ function Update({ wallet, onSubmit, onRemove }: Props) {
 
   return (
     <Form form={form} onSubmit={onSubmit}>
-      <Stack spacing={2} alignItems="flex-start">
-        <Form.Text label="Name" name="name" />
-        <Stack direction="row" spacing={2}>
-          <Form.Submit label="Save" />
-
-          <Button color="warning" variant="contained" onClick={onRemove}>
-            Remove
-          </Button>
-        </Stack>
-      </Stack>
+      <Form.Text label="Name" name="name" />
+      <div className="flex gap-2">
+        <Form.Submit label="Save" />
+        <Button color="warning" onClick={onRemove}>
+          Remove
+        </Button>
+      </div>
     </Form>
   );
 }

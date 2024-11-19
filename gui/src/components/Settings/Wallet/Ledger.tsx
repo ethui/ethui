@@ -1,16 +1,21 @@
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@ethui/ui/components/shadcn/alert";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Alert, AlertTitle, Button, Stack } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
 import type { Address } from "abitype";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
-import { Form } from "@ethui/react/components";
 import { type LedgerWallet, derivationPathSchema } from "@ethui/types/wallets";
-import { useLedgerDetect } from "#/hooks";
+import { Form } from "@ethui/ui/components/form";
+import { Button } from "@ethui/ui/components/shadcn/button";
+import { useLedgerDetect } from "#/hooks/useLedgerDetect";
 
-export const schema = z.object({
+const schema = z.object({
   name: z.string().min(1),
   paths: z.array(
     z.object({
@@ -26,7 +31,7 @@ const defaultValues: Schema = {
   paths: [{ path: "m/44'/60'/0'/0/0" }],
 };
 
-export interface Props {
+interface Props {
   wallet?: LedgerWallet;
   onSubmit: (data: object) => void;
   onRemove: () => void;
@@ -92,38 +97,38 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
 
   return (
     <Form form={form} onSubmit={prepareAndSubmit}>
-      <Stack spacing={2} alignItems="flex-start">
-        <Detect />
-        <Form.Text label="Name" name="name" />
+      <Detect />
+      <Form.Text label="Name" name="name" className="w-full" />
 
-        {pathsFields.map((field, i) => {
-          const path = form.watch(`paths.${i}.path`);
-          const address = addresses.get(path);
-          return (
-            <Stack alignSelf="stretch" key={field.id}>
-              <Stack alignSelf="stretch" direction="row" spacing={2}>
-                <Form.Text
-                  label={`Path #${i + 1}`}
-                  name={`paths.${i}.path`}
-                  helperText={address}
-                  fullWidth
-                />
+      {pathsFields.map((field, i) => {
+        // TODO: this was in a helper text in mui. how to add it with shadcn?
+        // const path = form.watch(`paths.${i}.path`);
+        // const address = addresses.get(path);
+        return (
+          <div className="flex flex-col self-stretch" key={field.id}>
+            <div className="flex items-center self-stretch">
+              <Form.Text
+                label={`Path #${i + 1}`}
+                name={`paths.${i}.path`}
+                className="w-full"
+              />
 
-                <Button onClick={() => remove(i)}>Remove</Button>
-              </Stack>
-            </Stack>
-          );
-        })}
-        <Button color="secondary" onClick={() => append({ path: "" })}>
-          Add
+              <Button variant="ghost" onClick={() => remove(i)}>
+                Remove
+              </Button>
+            </div>
+          </div>
+        );
+      })}
+      <Button variant="outline" onClick={() => append({ path: "" })}>
+        Add
+      </Button>
+      <div className="flex gap-2">
+        <Form.Submit label="Save" />
+        <Button variant="destructive" onClick={onRemove}>
+          Remove
         </Button>
-        <Stack direction="row" spacing={2}>
-          <Form.Submit label="Save" />
-          <Button color="warning" variant="contained" onClick={onRemove}>
-            Remove
-          </Button>
-        </Stack>
-      </Stack>
+      </div>
     </Form>
   );
 }
@@ -133,23 +138,29 @@ function Detect() {
 
   if (detected === true) {
     return (
-      <Alert severity="success">
+      <Alert>
         <AlertTitle>Ledger detected</AlertTitle>
-        Please keep the Ethereum app open during this setup
+        <AlertDescription>
+          Please keep the Ethereum app open during this setup
+        </AlertDescription>
       </Alert>
     );
   } else if (detected === false) {
     return (
-      <Alert severity="warning">
+      <Alert variant="destructive" className="">
         <AlertTitle>Failed to detect your ledger</AlertTitle>
-        Please unlock your Ledger, and open the Ethereum app
+        <AlertDescription>
+          Please unlock your Ledger, and open the Ethereum app
+        </AlertDescription>
       </Alert>
     );
   } else {
     return (
-      <Alert severity="info">
+      <Alert variant="destructive">
         <AlertTitle>Ledger not detected</AlertTitle>
-        Please unlock your Ledger, and open the Ethereum app
+        <AlertDescription>
+          Please unlock your Ledger, and open the Ethereum app
+        </AlertDescription>
       </Alert>
     );
   }

@@ -5,6 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "@ethui/abiparse": "*",
+    "@ethui/ui": "*",
     "nearly": "^1.8.1",
     "viem": "^2.21.27"
   },
@@ -16,8 +17,6 @@
   "peerDependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
-    "@mui/icons-material": "^5.15.15",
-    "@mui/material": "^5.15.15",
     "react": "^17 || ^18",
     "typescript": "^5.0.0"
   }

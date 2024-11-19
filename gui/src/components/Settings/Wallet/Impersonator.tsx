@@ -1,18 +1,18 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Stack } from "@mui/material";
 import type { Address } from "abitype";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Form } from "@ethui/react/components";
 import {
   type ImpersonatorWallet,
   type Wallet,
   addressSchema,
 } from "@ethui/types/wallets";
+import { Form } from "@ethui/ui/components/form";
+import { Button } from "@ethui/ui/components/shadcn/button";
 
 // react-hook-form doesn't support value-arrays, only object-arrays, so we need this type as a workaround for the impersonator form
-export const schema = z.object({
+const schema = z.object({
   name: z.string().min(1),
   addresses: z.array(
     z.object({
@@ -24,7 +24,7 @@ export const schema = z.object({
 
 type Schema = z.infer<typeof schema>;
 
-export interface Props {
+interface Props {
   wallet?: ImpersonatorWallet;
   onSubmit: (data: Wallet) => void;
   onRemove: () => void;
@@ -65,31 +65,31 @@ export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
   });
 
   return (
-    <Form form={form} onSubmit={prepareAndSubmit}>
-      <Stack spacing={2} alignItems="flex-start">
-        <Form.Text label="Name" name="name" />
-        {addressFields.map((field, i) => (
-          <Stack alignSelf="stretch" key={field.id} direction="row" spacing={2}>
-            <Form.Text
-              label="Address"
-              name={`addresses.${i}.address`}
-              fullWidth
-            />
-            <Button onClick={() => remove(i)}>Remove</Button>
-          </Stack>
-        ))}
-
-        <Button color="secondary" onClick={() => append({ address: "" })}>
-          Add
-        </Button>
-
-        <Stack direction="row" spacing={2}>
-          <Form.Submit label="Save" />
-          <Button color="warning" variant="contained" onClick={onRemove}>
+    <Form form={form} onSubmit={prepareAndSubmit} className="gap-4">
+      <Form.Text label="Name" name="name" className="w-full" />
+      {addressFields.map((field, i) => (
+        <div className="flex items-center self-stretch" key={field.id}>
+          <Form.Text
+            label="Address"
+            name={`addresses.${i}.address`}
+            className="w-full"
+          />
+          <Button variant="ghost" onClick={() => remove(i)}>
             Remove
           </Button>
-        </Stack>
-      </Stack>
+        </div>
+      ))}
+
+      <Button color="secondary" onClick={() => append({ address: "" })}>
+        Add Address
+      </Button>
+
+      <div className="flex gap-2">
+        <Form.Submit label="Save" />
+        <Button variant="destructive" onClick={onRemove}>
+          Remove
+        </Button>
+      </div>
     </Form>
   );
 }

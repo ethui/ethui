@@ -1,5 +1,6 @@
-import "@fontsource/roboto-mono/latin.css";
-import "@fontsource/roboto/latin.css";
+import "./global.css";
+import "@ethui/ui/tailwind.css";
+import "./tailwind.css";
 
 import {
   RouterProvider,

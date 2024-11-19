@@ -1,12 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Stack } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Form } from "@ethui/react/components";
 import type { JsonKeystoreWallet, Wallet } from "@ethui/types/wallets";
+import { Form } from "@ethui/ui/components/form";
+import { Button } from "@ethui/ui/components/shadcn/button";
 
-export const schema = z.object({
+const schema = z.object({
   name: z.string().min(1),
   file: z.string().min(1),
   currentPath: z.string().optional(),
@@ -37,17 +37,16 @@ export function JsonKeystore({
   };
 
   return (
-    <Form form={form} onSubmit={prepareAndSubmit}>
-      <Stack spacing={2} alignItems="flex-start">
-        <Form.Text label="Name" name="name" />
-        <Form.Text label="Keystore file" name="file" fullWidth />
-        <Stack direction="row" spacing={2}>
-          <Form.Submit label="Save" />
-          <Button color="warning" variant="contained" onClick={onRemove}>
-            Remove
-          </Button>
-        </Stack>
-      </Stack>
+    <Form form={form} onSubmit={prepareAndSubmit} className="gap-4">
+      <Form.Text label="Name" name="name" className="w-full" />
+      <Form.Text label="Keystore file" name="file" className="w-full" />
+
+      <div className="flex gap-2">
+        <Form.Submit label="Save" />
+        <Button variant="destructive" onClick={onRemove}>
+          Remove
+        </Button>
+      </div>
     </Form>
   );
 }

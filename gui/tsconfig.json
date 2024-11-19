@@ -3,11 +3,11 @@
   "compilerOptions": {
     "composite": true,
     "typeRoots": [
-      "./src/global.d.ts",
       "../packages/react/@types",
       "./node_modules/@types",
       "../node_modules/@types"
     ],
+    "moduleResolution": "bundler",
     "paths": {
       "#/*": ["./src/*"]
     }

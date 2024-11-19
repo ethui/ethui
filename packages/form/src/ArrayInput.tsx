@@ -1,15 +1,8 @@
-import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
-import {
-  Box,
-  IconButton,
-  Stack,
-  ToggleButton,
-  ToggleButtonGroup,
-  alpha,
-} from "@mui/material";
-import { grey, red } from "@mui/material/colors";
+import { Plus, X } from "lucide-react";
 import { useState } from "react";
 
+import { Button } from "@ethui/ui/components/shadcn/button";
+import { Separator } from "@ethui/ui/components/shadcn/separator";
 import { AbiInput, type InnerProps } from "./AbiInput";
 import { Basic } from "./Basic";
 import { Debug } from "./utils";
@@ -32,7 +25,11 @@ export function ArrayInput({
   const [tab, setTab] = useState("text");
   const [value, setValue] = useState<any[]>(defaultValue);
 
-  const onTabChange = (_e: React.SyntheticEvent, v: string) => {
+  const onTabChange = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    v: string,
+  ) => {
+    e.preventDefault();
     setTab(v);
   };
 
@@ -42,21 +39,24 @@ export function ArrayInput({
   };
 
   return (
-    <Stack spacing={1}>
-      <ToggleButtonGroup
-        color="primary"
-        value={tab}
-        exclusive
-        onChange={onTabChange}
-        aria-label="Platform"
-      >
-        <ToggleButton value="text" size="small">
+    <div className="m-1">
+      <div className="flex items-center">
+        <Button
+          size="sm"
+          variant={tab === "text" ? "secondary" : "outline"}
+          onClick={(e) => onTabChange(e, "text")}
+        >
           Text
-        </ToggleButton>
-        <ToggleButton value="expanded" size="small">
+        </Button>
+        <Separator orientation="vertical" />
+        <Button
+          size="sm"
+          variant={tab === "expanded" ? "secondary" : "outline"}
+          onClick={(e) => onTabChange(e, "expanded")}
+        >
           Expanded
-        </ToggleButton>
-      </ToggleButtonGroup>
+        </Button>
+      </div>
       <>
         {tab === "text" && (
           <Basic
@@ -65,7 +65,7 @@ export function ArrayInput({
           />
         )}
         {tab === "expanded" && (
-          <Box sx={{ borderLeft: `solid 3px ${grey[100]}`, pl: 1 }}>
+          <div className="border-bg-secondary border-l-2 border-solid pl-1">
             <ArrayElements
               {...{
                 ...rest,
@@ -74,10 +74,10 @@ export function ArrayInput({
               }}
               onChange={onChange}
             />
-          </Box>
+          </div>
         )}
       </>
-    </Stack>
+    </div>
   );
 }
 
@@ -120,9 +120,9 @@ function ArrayElements({
   };
 
   return (
-    <Stack direction="column" spacing={1}>
+    <div className=" m-1 flex-col">
       {value.map((v, i) => (
-        <Stack direction="row" key={i} spacing={1}>
+        <div className="" key={i}>
           <AbiArrayItemInput
             name={`${name}[${i}]`}
             depth={depth + 1}
@@ -133,25 +133,25 @@ function ArrayElements({
             onChange={(v) => update(i, v)}
             onRemove={() => remove(i)}
           />
-        </Stack>
+        </div>
       ))}
       {!length && (
-        <Box>
-          <IconButton
+        <div>
+          <Button
             aria-label="delete"
             color="primary"
-            size="small"
+            size="icon"
             onClick={(e) => {
               e.preventDefault();
               append();
             }}
           >
-            <AddIcon />
-          </IconButton>
-        </Box>
+            <Plus />
+          </Button>
+        </div>
       )}
       {debug && <Debug value={value} />}
-    </Stack>
+    </div>
   );
 }
 
@@ -182,16 +182,14 @@ function AbiArrayItemInput({
       defaultValue={defaultValue}
       type={type}
       onChange={onChange}
-      sx={{
-        backgroundColor: deleteHover ? alpha(red.A100, 0.1) : "initial",
-        transition: "background-color 0.2s",
-      }}
+      red
+      deleteHover={deleteHover}
       headerActions={
         removable && (
-          <IconButton
+          <Button
             aria-label="delete"
             color="error"
-            size="small"
+            size="icon"
             onMouseEnter={() => setDeleteHover(true)}
             onMouseLeave={() => setDeleteHover(false)}
             onClick={(e) => {
@@ -199,8 +197,8 @@ function AbiArrayItemInput({
               onRemove();
             }}
           >
-            <DeleteIcon />
-          </IconButton>
+            <X />
+          </Button>
         )
       }
     />

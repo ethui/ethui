@@ -1,32 +1,36 @@
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@ethui/ui/components/shadcn/context-menu";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Stack } from "@mui/material";
 import { invoke } from "@tauri-apps/api/core";
+import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
 import { useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { type Address, getAddress } from "viem";
 import { z } from "zod";
 
-import { Form, Typography } from "@ethui/react/components";
-import { useInvoke } from "#/hooks";
-import { useNetworks } from "#/store";
+import { Form } from "@ethui/ui/components/form";
+
+import { Dialog, DialogContent } from "@ethui/ui/components/shadcn/dialog";
+import { Link } from "@tanstack/react-router";
+import { useInvoke } from "#/hooks/useInvoke";
+import { useNetworks } from "#/store/useNetworks";
 import { truncateHex } from "#/utils";
-import { ContextMenuWithTauri, Modal } from "./";
-import { IconAddress } from "./Icons";
+import { IconAddress } from "./Icons/Address";
 
 interface Props {
   address: Address;
   copyIcon?: boolean;
-  mono?: boolean;
   contextMenu?: boolean;
-  variant?: "h6";
   icon?: boolean;
 }
 
 export function AddressView({
   address: addr,
-  mono = false,
   contextMenu = true,
-  variant,
   icon = false,
 }: Props) {
   const network = useNetworks((s) => s.current);
@@ -40,50 +44,52 @@ export function AddressView({
 
   const text = alias ? alias : truncateHex(address);
   const content = (
-    <Stack direction="row" alignItems="center" spacing={1}>
+    <div className="flex items-center gap-x-1 font-mono text-base">
       {icon && (
         <IconAddress
           chainId={network.chain_id}
           address={address}
-          size="small"
           effigy
+          className="h-4"
         />
       )}
-      <Typography mono={mono} variant={variant}>
-        {text}
-      </Typography>
-    </Stack>
+      {text}
+    </div>
   );
 
   if (!contextMenu) return content;
 
   return (
-    <ContextMenuWithTauri
-      copy={address}
-      actions={[
-        {
-          label: "Open in explorer",
-          href: `${network.explorer_url}${address}`,
-          disabled: !network.explorer_url,
-        },
-        { label: "Set alias", action: () => setAliasFormOpen(true) },
-        {
-          label: "Clear alias",
-          action: () => setAliasFormOpen(true),
-          disabled: !alias,
-        },
-      ]}
-      sx={{ textTransform: "none" }}
-    >
-      {content}
+    <ContextMenu>
+      <ContextMenuTrigger className="cursor-pointer">
+        {content}
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem onClick={() => tauriClipboard.writeText(address)}>
+          Copy to clipboard
+        </ContextMenuItem>
+        <ContextMenuItem onClick={() => setAliasFormOpen(true)}>
+          Set alias
+        </ContextMenuItem>
+        <ContextMenuItem onClick={() => setAliasFormOpen(true)}>
+          Clear alias
+        </ContextMenuItem>
+        <ContextMenuItem>
+          <Link target="_blank" href={`${network.explorer_url}${address}`}>
+            Open in explorer
+          </Link>
+        </ContextMenuItem>
+      </ContextMenuContent>
 
-      <Modal open={aliasFormOpen} onClose={() => setAliasFormOpen(false)}>
-        <AliasForm
-          {...{ address, alias, refetch }}
-          onSubmit={() => setAliasFormOpen(false)}
-        />
-      </Modal>
-    </ContextMenuWithTauri>
+      <Dialog open={aliasFormOpen} onOpenChange={setAliasFormOpen}>
+        <DialogContent>
+          <AliasForm
+            {...{ address, alias, refetch }}
+            onSubmit={() => setAliasFormOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
+    </ContextMenu>
   );
 }
 
@@ -112,12 +118,10 @@ function AliasForm({ address, alias, refetch, onSubmit }: AliasFormProps) {
 
   return (
     <Form form={form} onSubmit={submit}>
-      <Stack alignItems="flex-start" spacing={2}>
-        <Typography>Set alias for {truncateHex(address)}</Typography>
-        <Form.Text label="Alias" name="alias" defaultValue={alias} />
+      <span>Set alias for {truncateHex(address)}</span>
+      <Form.Text label="Alias" name="alias" defaultValue={alias} />
 
-        <Form.Submit label="Save" />
-      </Stack>
+      <Form.Submit label="Save" />
     </Form>
   );
 }
