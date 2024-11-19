@@ -1,6 +1,5 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
-import { AppNavbar } from "#/components/AppNavbar";
 import { HDWalletForm } from "#/components/Settings/Wallet/HDWallet";
 import { ImpersonatorForm } from "#/components/Settings/Wallet/Impersonator";
 import { JsonKeystore } from "#/components/Settings/Wallet/JsonKeystore";

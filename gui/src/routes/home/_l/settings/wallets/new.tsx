@@ -1,13 +1,6 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { invoke } from "@tauri-apps/api/core";
+import { createFileRoute } from "@tanstack/react-router";
 import { AppNavbar } from "#/components/AppNavbar";
-import { HDWalletForm } from "#/components/Settings/Wallet/HDWallet";
-import { ImpersonatorForm } from "#/components/Settings/Wallet/Impersonator";
-import { JsonKeystore } from "#/components/Settings/Wallet/JsonKeystore";
-import { Ledger } from "#/components/Settings/Wallet/Ledger";
-import { Plaintext } from "#/components/Settings/Wallet/Plaintext";
-import { PrivateKeyForm } from "#/components/Settings/Wallet/PrivateKey";
-import { WalletNew } from "#/components/Settings/Wallet/new";
+import { WalletNew } from "#/components/Settings/Wallet/New";
 
 export const Route = createFileRoute("/home/_l/settings/wallets/new")({
   validateSearch: (search: Record<string, string>) => {

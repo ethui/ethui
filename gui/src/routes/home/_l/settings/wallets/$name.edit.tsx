@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppNavbar } from "#/components/AppNavbar";
-import { WalletEdit } from "#/components/Settings/Wallet/edit";
+import { WalletEdit } from "#/components/Settings/Wallet/Edit";
 import { useWallets } from "#/store/useWallets";
 
 export const Route = createFileRoute("/home/_l/settings/wallets/$name/edit")({
