@@ -1,5 +1,6 @@
-import { Outlet, createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
+import { AnimatedOutlet } from "#/components/AnimatedOutlet";
 import { AppSidebar } from "#/components/AppSidebar";
 import { CommandBar, CommandBarProvider } from "#/components/CommandBar";
 import { SidebarProvider } from "#/components/shadcn/sidebar";
@@ -13,17 +14,10 @@ export const Route = createFileRoute("/home/_l")({
 function HomePageLayout() {
   return (
     <CommandBarProvider>
-      <SidebarProvider
-        style={
-          {
-            "--sidebar-width": "15rem",
-            "--sidebar-width-mobile": "10rem",
-          } as any
-        }
-      >
+      <SidebarProvider>
         <AppSidebar />
         <main className="relative flex min-h-svh flex-1 flex-col">
-          <Outlet />
+          <AnimatedOutlet />
           <Notifications />
         </main>
       </SidebarProvider>
