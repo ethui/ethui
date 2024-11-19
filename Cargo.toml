@@ -54,7 +54,7 @@ ethui-tracing = { path = "crates/tracing" }
 ethui-exchange-rates = { path = "crates/exchange-rates" }
 ethui-args = { path = "crates/args" }
 ethui-token-list = { path = "crates/token-list" }
-tokio = { version = "1.40", features = ["rt-multi-thread", "sync"] }
+tokio = { version = "1.41", features = ["rt-multi-thread", "sync"] }
 thiserror = "1.0"
 sqlx = { version = "0.8", default-features = false, features = [
   "macros",
@@ -94,20 +94,19 @@ alloy = { version = "0.6", default-features = false, features = [
 alloy-chains = { version = "0.1", default-features = false, features = [
   "serde",
 ] }
-alloy-signer-aws = { version = "0.6.4" }
 url = { version = "2.5", features = ["serde"] }
-futures = { version = "0.3.28", default-features = false }
-clap = { version = "4.4", default-features = false, features = [
+futures = { version = "0.3", default-features = false }
+clap = { version = "4.5", default-features = false, features = [
   "derive",
   "env",
 ] }
 coins-ledger = "0.12"
 rand = "0.8"
 rstest = "0.23"
+regex = "1.11"
 
 # Foundry - October 11th 2024
-foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-bcacf39e43812e50a124e3ba60d1becd9866534d" }
-foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-bcacf39e43812e50a124e3ba60d1becd9866534d" }
-# foundry-common = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-bcacf39e43812e50a124e3ba60d1becd9866534d" }
+foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-e649e62f125244a3ef116be25dfdc81a2afbaf2a" }
+foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-e649e62f125244a3ef116be25dfdc81a2afbaf2a" }
 foundry-block-explorers = "0.8"
-anyhow = { version = "1.0.83", default-features = false }
+anyhow = { version = "1.0", default-features = false }

@@ -19,7 +19,6 @@ pub enum Error {
     #[error("serialization error: {0}")]
     Serde(#[from] serde_json::Error),
 
-
     #[error("wallet unlock rejected by user")]
     UnlockDialogRejected,
 

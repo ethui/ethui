@@ -1,12 +1,13 @@
 use std::collections::HashSet;
 
-use crate::{Error, Result};
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_networks::Networks;
 use ethui_sync::{get_alchemy, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse};
 use ethui_types::{Address, GlobalState, TokenMetadata, U256};
 use ethui_wallets::{WalletControl, Wallets};
 use serde::{Deserialize, Serialize};
+
+use crate::{Error, Result};
 
 #[derive(Debug)]
 pub struct TokenAdd {

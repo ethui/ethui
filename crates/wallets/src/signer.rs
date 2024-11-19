@@ -1,11 +1,9 @@
-use alloy::network::EthereumWallet;
-use alloy::primitives::{Address, PrimitiveSignature, B256};
-use alloy::signers::ledger::LedgerSigner;
-use alloy::signers::local::PrivateKeySigner;
-use alloy::signers::Signature;
+use alloy::{
+    network::EthereumWallet,
+    primitives::{Address, PrimitiveSignature, B256},
+    signers::{ledger::LedgerSigner, local::PrivateKeySigner},
+};
 use async_trait::async_trait;
-
-//use crate::{utils::HID_MUTEX, Error, Result};
 
 #[derive(Debug)]
 pub enum Signer {
