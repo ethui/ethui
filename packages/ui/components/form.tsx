@@ -27,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./shadcn/select";
+import { Textarea as ShadTextarea } from "./shadcn/textarea";
 
 interface Props<T extends FieldValues>
   extends Omit<React.FormHTMLAttributes<HTMLFormElement>, "onSubmit"> {
@@ -106,7 +107,7 @@ function Textarea<T extends FieldValues>({
         <FormItem className={className}>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Textarea {...field} />
+            <ShadTextarea {...field} />
           </FormControl>
           <FormMessage />
         </FormItem>

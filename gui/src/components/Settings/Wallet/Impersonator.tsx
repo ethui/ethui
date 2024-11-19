@@ -65,22 +65,28 @@ export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
   });
 
   return (
-    <Form form={form} onSubmit={prepareAndSubmit}>
-      <Form.Text label="Name" name="name" />
+    <Form form={form} onSubmit={prepareAndSubmit} className="gap-4">
+      <Form.Text label="Name" name="name" className="w-full" />
       {addressFields.map((field, i) => (
-        <div className=" m-2 flex self-stretch" key={field.id}>
-          <Form.Text label="Address" name={`addresses.${i}.address`} />
-          <Button onClick={() => remove(i)}>Remove</Button>
+        <div className="flex items-center self-stretch" key={field.id}>
+          <Form.Text
+            label="Address"
+            name={`addresses.${i}.address`}
+            className="w-full"
+          />
+          <Button variant="ghost" onClick={() => remove(i)}>
+            Remove
+          </Button>
         </div>
       ))}
 
       <Button color="secondary" onClick={() => append({ address: "" })}>
-        Add
+        Add Address
       </Button>
 
-      <div className=" m-2 flex">
+      <div className="flex gap-2">
         <Form.Submit label="Save" />
-        <Button color="warning" onClick={onRemove}>
+        <Button variant="destructive" onClick={onRemove}>
           Remove
         </Button>
       </div>
