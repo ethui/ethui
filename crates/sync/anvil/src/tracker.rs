@@ -152,10 +152,10 @@ async fn watch(
                 b = stream.next() => {
                     match b {
                         Some(b) => {
-                            let block_traces = provider.trace_block(b.header.number.into()).await?;
+                            let block_traces = provider.trace_block(b.number.into()).await?;
                             block_snd.send(Msg::Traces(block_traces)).map_err(|_|Error::Watcher)?;
 
-                            let logs = provider.get_logs(&Filter::new().select(b.header.number)).await?;
+                            let logs = provider.get_logs(&Filter::new().select(b.number)).await?;
                             block_snd.send(Msg::Logs(logs)).map_err(|_| Error::Watcher)?;
                         },
                         None => break 'ws,

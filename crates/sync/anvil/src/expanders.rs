@@ -1,4 +1,5 @@
 use alloy::{
+    consensus::{Transaction as _, TxType},
     primitives::{Bytes, Log},
     providers::{Provider as _, RootProvider},
     rpc::types::{
@@ -82,10 +83,10 @@ async fn expand_trace(
                     deployed_contract: Some(address),
                     gas_limit: Some(gas),
                     gas_used: Some(gas_used),
-                    max_fee_per_gas: tx.max_fee_per_gas,
-                    max_priority_fee_per_gas: tx.max_fee_per_gas,
-                    r#type: tx.transaction_type.map(|t| t as u64),
-                    nonce: Some(tx.nonce),
+                    max_fee_per_gas: tx.inner.as_eip1559().map(|t| t.tx().max_fee_per_gas),
+                    max_priority_fee_per_gas: tx.inner.as_eip1559().map(|t| t.tx().max_fee_per_gas),
+                    r#type: Some(<TxType as Into<u8>>::into(tx.inner.tx_type()) as u64),
+                    nonce: Some(tx.inner.nonce()),
                     incomplete: false,
                 }
                 .into(),
@@ -125,10 +126,10 @@ async fn expand_trace(
             block_number,
             gas_limit: Some(gas),
             gas_used: Some(gas_used),
-            max_fee_per_gas: tx.max_fee_per_gas,
-            max_priority_fee_per_gas: tx.max_fee_per_gas,
-            nonce: Some(tx.nonce),
-            r#type: tx.transaction_type.map(|t| t as u64),
+            max_fee_per_gas: tx.inner.as_eip1559().map(|t| t.tx().max_fee_per_gas),
+            max_priority_fee_per_gas: tx.inner.as_eip1559().map(|t| t.tx().max_fee_per_gas),
+            nonce: Some(tx.inner.nonce()),
+            r#type: Some(<TxType as Into<u8>>::into(tx.inner.tx_type()) as u64),
             deployed_contract: None,
             incomplete: false,
         }
