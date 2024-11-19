@@ -1,12 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import {
-  Outlet,
-  createRootRoute,
-  getRouterContext,
-} from "@tanstack/react-router";
+import { createRootRoute } from "@tanstack/react-router";
 import { Suspense } from "react";
 
 import { ErrorHandler } from "#/components/ErrorHandler";
+import { AnimatedOutlet } from "#/components/AnimatedOutlet";
 
 const queryClient = new QueryClient();
 
@@ -19,7 +16,7 @@ function Root() {
     <ErrorHandler>
       <QueryClientProvider client={queryClient}>
         <Suspense>
-          <Outlet />
+          <AnimatedOutlet />
         </Suspense>
       </QueryClientProvider>
     </ErrorHandler>

@@ -1,5 +1,6 @@
-import { Outlet, createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Logo } from "#/components/Logo";
+import { AnimatedOutlet } from "#/components/AnimatedOutlet";
 
 export const Route = createFileRoute("/onboarding/_l")({
   component: OnboardingLayout,
@@ -16,7 +17,7 @@ function OnboardingLayout() {
       </header>
       <div className="m-4 flex flex-col items-center">
         <Logo width={40} />
-        <Outlet />
+        <AnimatedOutlet />
       </div>
     </>
   );

@@ -1,4 +1,5 @@
-import { Outlet, createFileRoute } from "@tanstack/react-router";
+import { AnimatedOutlet } from "#/components/AnimatedOutlet";
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/onboarding/_l/wallets/_l")({
   component: () => (
@@ -11,7 +12,7 @@ export const Route = createFileRoute("/onboarding/_l/wallets/_l")({
         use.
       </p>
 
-      <Outlet />
+      <AnimatedOutlet />
     </div>
   ),
 });

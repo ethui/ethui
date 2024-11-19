@@ -14,14 +14,14 @@ import {
 
 import cloneDeep from "lodash-es/cloneDeep";
 
-const exit = { opacity: 0, scale: 0.98 };
+const exit = { opacity: 0.0, scale: 0.99 };
 
 const transitionProps = {
   initial: exit,
   animate: { opacity: 1, scale: 1 },
   exit,
   transition: {
-    duration: 0.2,
+    duration: 0.3,
     ease: cubicBezier(0.6, 0.05, -0.01, 0.9),
   },
 };
@@ -42,7 +42,12 @@ export const AnimatedOutlet = forwardRef<HTMLDivElement>((_, ref) => {
   }
 
   return (
-    <motion.div ref={ref} {...transitionProps} key={nextMatch.id}>
+    <motion.div
+      className="w-full"
+      ref={ref}
+      {...transitionProps}
+      key={nextMatch.id}
+    >
       <RouterContext.Provider value={renderedContext.current}>
         <AnimatePresence mode="popLayout">
           <Outlet />
