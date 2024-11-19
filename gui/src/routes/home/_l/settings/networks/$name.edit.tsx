@@ -1,21 +1,21 @@
-import { type Network, networkSchema } from '@ethui/types/network'
-import { Form } from '@ethui/ui/components/form'
-import { Button } from '@ethui/ui/components/shadcn/button'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { invoke } from '@tauri-apps/api/core'
-import { useForm } from 'react-hook-form'
-import { AppNavbar } from '#/components/AppNavbar'
-import { useNetworks } from '#/store/useNetworks'
+import { type Network, networkSchema } from "@ethui/types/network";
+import { Form } from "@ethui/ui/components/form";
+import { Button } from "@ethui/ui/components/shadcn/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { invoke } from "@tauri-apps/api/core";
+import { useForm } from "react-hook-form";
+import { AppNavbar } from "#/components/AppNavbar";
+import { useNetworks } from "#/store/useNetworks";
 
-export const Route = createFileRoute('/home/_l/settings/networks/$name/edit')({
+export const Route = createFileRoute("/home/_l/settings/networks/$name/edit")({
   loader: ({ params }: { params: { name: string } }) =>
     useNetworks.getState().networks.find((n) => n.name === params.name),
   component: () => {
-    const network = Route.useLoaderData()
+    const network = Route.useLoaderData();
 
     // TODO: can we show an error here instead?
-    if (!network) return
+    if (!network) return;
 
     return (
       <>
@@ -24,28 +24,28 @@ export const Route = createFileRoute('/home/_l/settings/networks/$name/edit')({
           <Content network={network} />
         </div>
       </>
-    )
+    );
   },
-})
+});
 
 function Content({ network }: { network: Network }) {
   const form = useForm({
-    mode: 'onBlur',
+    mode: "onBlur",
     resolver: zodResolver(networkSchema),
     defaultValues: network,
-  })
-  const router = useRouter()
+  });
+  const router = useRouter();
 
   const create = async (data: Network) => {
-    await invoke('networks_update', { oldName: network.name, network: data })
-    router.history.back()
-  }
+    await invoke("networks_update", { oldName: network.name, network: data });
+    router.history.back();
+  };
 
   const remove = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
-    await invoke('networks_remove', { name: network.name })
-    router.history.back()
-  }
+    e.preventDefault();
+    await invoke("networks_remove", { name: network.name });
+    router.history.back();
+  };
 
   // TODO: fix remove button
   return (
@@ -72,5 +72,5 @@ function Content({ network }: { network: Network }) {
         </Button>
       </div>
     </Form>
-  )
+  );
 }

@@ -1,27 +1,27 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { getCurrentWindow } from '@tauri-apps/api/window'
-import { isDirty, isValid } from 'zod'
+import { createFileRoute } from "@tanstack/react-router";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+import { isDirty, isValid } from "zod";
 
-import type { ErcFullData } from '@ethui/types'
-import { Button } from '@ethui/ui/components/shadcn/button'
-import { AddressView } from '#/components/AddressView'
-import { Datapoint } from '#/components/Datapoint'
-import { useDialog } from '#/hooks/useDialog'
-import { useNetworks } from '#/store/useNetworks'
+import type { ErcFullData } from "@ethui/types";
+import { Button } from "@ethui/ui/components/shadcn/button";
+import { AddressView } from "#/components/AddressView";
+import { Datapoint } from "#/components/Datapoint";
+import { useDialog } from "#/hooks/useDialog";
+import { useNetworks } from "#/store/useNetworks";
 
-const tauriWindow = getCurrentWindow()
+const tauriWindow = getCurrentWindow();
 
-export const Route = createFileRoute('/dialog/_l/erc1155-add/$id')({
+export const Route = createFileRoute("/dialog/_l/erc1155-add/$id")({
   component: ERC1155AddDialog,
-})
+});
 
 function ERC1155AddDialog() {
-  const { id } = Route.useParams()
-  const { data: token, send } = useDialog<ErcFullData>(id)
-  const network = useNetworks((s) => s.current)
+  const { id } = Route.useParams();
+  const { data: token, send } = useDialog<ErcFullData>(id);
+  const network = useNetworks((s) => s.current);
 
-  if (!network) return null
-  if (!token) return null
+  if (!network) return null;
+  if (!token) return null;
 
   return (
     <div className="m-2 flex flex-col items-center">
@@ -33,7 +33,7 @@ function ERC1155AddDialog() {
         <img
           alt="Token"
           height={400}
-          src={token.image.originalUrl || '../public/default_nft.svg'}
+          src={token.image.originalUrl || "../public/default_nft.svg"}
         />
         <div>
           <Datapoint
@@ -57,11 +57,11 @@ function ERC1155AddDialog() {
         <Button
           type="submit"
           disabled={!isDirty || !isValid}
-          onClick={() => send('accept')}
+          onClick={() => send("accept")}
         >
           Add
         </Button>
       </div>
     </div>
-  )
+  );
 }

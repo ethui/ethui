@@ -1,13 +1,13 @@
-import { Link, createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute } from "@tanstack/react-router";
 
-import { useShallow } from 'zustand/shallow'
+import { useShallow } from "zustand/shallow";
 
-import { ChainView } from '@ethui/ui/components/chain-view'
-import { Plus } from 'lucide-react'
-import { AppNavbar } from '#/components/AppNavbar'
-import { useNetworks } from '#/store/useNetworks'
+import { ChainView } from "@ethui/ui/components/chain-view";
+import { Plus } from "lucide-react";
+import { AppNavbar } from "#/components/AppNavbar";
+import { useNetworks } from "#/store/useNetworks";
 
-export const Route = createFileRoute('/home/_l/settings/networks/')({
+export const Route = createFileRoute("/home/_l/settings/networks/")({
   component: () => (
     <>
       <AppNavbar title="Settings » Networks" />
@@ -16,12 +16,12 @@ export const Route = createFileRoute('/home/_l/settings/networks/')({
       </div>
     </>
   ),
-})
+});
 
 function SettingsNetworks() {
-  const networks = useNetworks(useShallow((s) => s.networks))
+  const networks = useNetworks(useShallow((s) => s.networks));
 
-  if (!networks) return <>Loading</>
+  if (!networks) return <>Loading</>;
 
   // TODO: add network button
   return (
@@ -45,5 +45,5 @@ function SettingsNetworks() {
         </Link>
       </div>
     </div>
-  )
+  );
 }

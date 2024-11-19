@@ -1,8 +1,8 @@
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect } from "react";
-import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/onboarding/_l/thank-you")({
   component: OnboardingThankYou,

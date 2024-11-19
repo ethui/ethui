@@ -1,14 +1,14 @@
-import { Outlet, createFileRoute } from '@tanstack/react-router'
+import { Outlet, createFileRoute } from "@tanstack/react-router";
 
-import { AppSidebar } from '#/components/AppSidebar'
-import { CommandBar, CommandBarProvider } from '#/components/CommandBar'
-import { SidebarProvider } from '#/components/shadcn/sidebar'
-import { useNoticeAlchemyKeyMissing } from '#/hooks/useNoticeAlchemyKeyMissing'
-import { useNoticeNewVersion } from '#/hooks/useNoticeNewVersion'
+import { AppSidebar } from "#/components/AppSidebar";
+import { CommandBar, CommandBarProvider } from "#/components/CommandBar";
+import { SidebarProvider } from "#/components/shadcn/sidebar";
+import { useNoticeAlchemyKeyMissing } from "#/hooks/useNoticeAlchemyKeyMissing";
+import { useNoticeNewVersion } from "#/hooks/useNoticeNewVersion";
 
-export const Route = createFileRoute('/home/_l')({
+export const Route = createFileRoute("/home/_l")({
   component: HomePageLayout,
-})
+});
 
 function HomePageLayout() {
   return (
@@ -16,8 +16,8 @@ function HomePageLayout() {
       <SidebarProvider
         style={
           {
-            '--sidebar-width': '15rem',
-            '--sidebar-width-mobile': '10rem',
+            "--sidebar-width": "15rem",
+            "--sidebar-width-mobile": "10rem",
           } as any
         }
       >
@@ -30,12 +30,12 @@ function HomePageLayout() {
 
       <CommandBar />
     </CommandBarProvider>
-  )
+  );
 }
 
 function Notifications() {
-  useNoticeAlchemyKeyMissing()
-  useNoticeNewVersion()
+  useNoticeAlchemyKeyMissing();
+  useNoticeNewVersion();
 
-  return null
+  return null;
 }

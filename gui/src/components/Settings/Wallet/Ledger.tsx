@@ -40,9 +40,9 @@ interface Props {
 export function Ledger({ wallet, onSubmit, onRemove }: Props) {
   const formWallet = wallet
     ? {
-      ...wallet,
-      paths: wallet ? wallet.addresses.map(([path]) => ({ path })) : [],
-    }
+        ...wallet,
+        paths: wallet ? wallet.addresses.map(([path]) => ({ path })) : [],
+      }
     : defaultValues;
 
   const [addresses, setAddresses] = useState<Map<string, Address>>(new Map());
@@ -106,7 +106,7 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
         // const address = addresses.get(path);
         return (
           <div className="flex flex-col self-stretch" key={field.id}>
-            <div className="flex self-stretch items-center">
+            <div className="flex items-center self-stretch">
               <Form.Text
                 label={`Path #${i + 1}`}
                 name={`paths.${i}.path`}

@@ -1,5 +1,5 @@
+import { Outlet, createFileRoute } from "@tanstack/react-router";
 import { Logo } from "#/components/Logo";
-import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/onboarding/_l")({
   component: OnboardingLayout,

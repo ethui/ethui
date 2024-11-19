@@ -33,11 +33,11 @@ interface Props {
 export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
   const formWallet = wallet
     ? {
-      ...wallet,
-      addresses: wallet
-        ? wallet.addresses.map((address) => ({ address }))
-        : [],
-    }
+        ...wallet,
+        addresses: wallet
+          ? wallet.addresses.map((address) => ({ address }))
+          : [],
+      }
     : undefined;
 
   const form = useForm({
@@ -68,7 +68,7 @@ export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
     <Form form={form} onSubmit={prepareAndSubmit} className="gap-4">
       <Form.Text label="Name" name="name" className="w-full" />
       {addressFields.map((field, i) => (
-        <div className="flex self-stretch items-center" key={field.id}>
+        <div className="flex items-center self-stretch" key={field.id}>
           <Form.Text
             label="Address"
             name={`addresses.${i}.address`}
@@ -81,7 +81,7 @@ export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
       ))}
 
       <Button color="secondary" onClick={() => append({ address: "" })}>
-        Add
+        Add Address
       </Button>
 
       <div className="flex gap-2">

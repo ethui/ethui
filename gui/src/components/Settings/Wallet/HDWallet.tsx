@@ -140,11 +140,10 @@ function MnemonicStep({ onSubmit, onCancel }: MnemonicStepProps) {
       />
 
       <div className="flex gap-2">
+        <Form.Submit label="Continue" />
         <Button variant="outline" onClick={onCancel}>
           Cancel
         </Button>
-
-        <Form.Submit label="Continue" />
       </div>
     </Form>
   );
@@ -172,11 +171,10 @@ function PasswordStep({ onSubmit, onCancel }: PasswordStepProps) {
       />
 
       <div className="flex gap-2">
+        <Form.Submit label="Continue" />
         <Button variant="outline" onClick={onCancel}>
           Cancel
         </Button>
-
-        <Form.Submit label="Continue" />
       </div>
     </Form>
   );
@@ -249,11 +247,10 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
           </table>
 
           <div className="flex gap-2">
+            <Form.Submit label="Save" />
             <Button variant="outline" onClick={onCancel}>
               Cancel
             </Button>
-
-            <Form.Submit label="Save" />
           </div>
         </div>
       )}

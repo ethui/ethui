@@ -9,10 +9,20 @@ import {
   DropdownMenuTrigger,
 } from "@ethui/ui/components/shadcn/dropdown-menu";
 import { CaretDownIcon } from "@radix-ui//react-icons";
-import { useWallets } from "#/store/useWallets";
 import { Link } from "@tanstack/react-router";
+import { useWallets } from "#/store/useWallets";
 
-export function SettingsWallets() {
+interface Props {
+  backUrl?: "/home/settings/wallets" | "/onboarding/wallets";
+  newWalletUrl?: "/home/settings/wallets/new" | "/onboarding/wallets/new";
+  editWalletBaseUrl?: "/home/settings/wallets" | "/onboarding/wallets";
+}
+
+export function SettingsWallets({
+  backUrl = "/home/settings/wallets",
+  newWalletUrl = "/home/settings/wallets/new",
+  editWalletBaseUrl = "/home/settings/wallets",
+}: Props) {
   const wallets = useWallets((s) => s.wallets);
 
   if (!wallets) return null;
@@ -23,7 +33,8 @@ export function SettingsWallets() {
         <div className="grid grid-cols-4 gap-2">
           {wallets.map(({ type, name }) => (
             <Link
-              href={`/home/settings/wallets/${name}/edit`}
+              to={`${editWalletBaseUrl}/${name}/edit`}
+              search={{ backUrl }}
               key={name}
               className="border p-4 hover:bg-accent"
             >
@@ -31,20 +42,25 @@ export function SettingsWallets() {
             </Link>
           ))}
 
-          <AddWalletButton />
+          <AddWalletButton backUrl={backUrl} newWalletUrl={newWalletUrl} />
         </div>
       </div>
     </>
   );
 }
 
-const AddWalletButton = () => {
+interface AddWalletButtonProps {
+  backUrl: "/home/settings/wallets" | "/onboarding/wallets";
+  newWalletUrl: "/home/settings/wallets/new" | "/onboarding/wallets/new";
+}
+
+function AddWalletButton({ backUrl, newWalletUrl }: AddWalletButtonProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           id="add-wallet-btn"
-          className="flex text-md h-fit border p-4 bg-inherit text-primary hover:bg-accent"
+          className="flex h-fit border bg-inherit p-4 text-md text-primary hover:bg-accent"
         >
           <CaretDownIcon />
           Add
@@ -53,7 +69,7 @@ const AddWalletButton = () => {
       <DropdownMenuContent>
         {walletTypes.map((walletType: Wallet["type"]) => (
           <DropdownMenuItem key={walletType} asChild>
-            <Link to="/home/settings/wallets/new" search={{ type: walletType }}>
+            <Link to={newWalletUrl} search={{ type: walletType, backUrl }}>
               {startCase(walletType)}
             </Link>
           </DropdownMenuItem>
@@ -61,4 +77,4 @@ const AddWalletButton = () => {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-};
+}

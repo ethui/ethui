@@ -10,6 +10,7 @@ import {
 } from "@ethui/types/wallets";
 import { Form } from "@ethui/ui/components/form";
 import { Button } from "@ethui/ui/components/shadcn/button";
+import { useRouter } from "@tanstack/react-router";
 
 const schema = z.object({
   name: z.string().min(1),
@@ -28,6 +29,7 @@ interface Props {
 }
 
 export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
+  const router = useRouter();
   const form = useForm<Schema>({
     mode: "onBlur",
     resolver: zodResolver(schema),
@@ -52,6 +54,15 @@ export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
 
       <div className="flex gap-2">
         <Form.Submit label="Save" />
+        <Button
+          variant="outline"
+          onClick={(e) => {
+            e.preventDefault();
+            router.history.back();
+          }}
+        >
+          Back
+        </Button>
         <Button variant="destructive" onClick={onRemove}>
           Remove
         </Button>

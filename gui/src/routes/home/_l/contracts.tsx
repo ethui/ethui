@@ -1,43 +1,45 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { createFileRoute } from '@tanstack/react-router'
-import debounce from 'lodash-es/debounce'
-import { LoaderCircle } from 'lucide-react'
-import { useState } from 'react'
-import { type FieldValues, useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { useShallow } from 'zustand/shallow'
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createFileRoute } from "@tanstack/react-router";
+import debounce from "lodash-es/debounce";
+import { LoaderCircle } from "lucide-react";
+import { useState } from "react";
+import { type FieldValues, useForm } from "react-hook-form";
+import { z } from "zod";
+import { useShallow } from "zustand/shallow";
 
-import type { Contract } from '@ethui/types'
-import { ChainView } from '@ethui/ui/components/chain-view'
-import { Form } from '@ethui/ui/components/form'
+import type { Contract } from "@ethui/types";
+import { ChainView } from "@ethui/ui/components/chain-view";
+import { Form } from "@ethui/ui/components/form";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@ethui/ui/components/shadcn/accordion'
-import { Badge } from '@ethui/ui/components/shadcn/badge'
-import { Button } from '@ethui/ui/components/shadcn/button'
+} from "@ethui/ui/components/shadcn/accordion";
+import { Badge } from "@ethui/ui/components/shadcn/badge";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import {
   Dialog,
   DialogContent,
   DialogTrigger,
-} from '@ethui/ui/components/shadcn/dialog'
-import { Input } from '@ethui/ui/components/shadcn/input'
-import { Plus } from 'lucide-react'
-import { AddressView } from '#/components/AddressView'
-import { AppNavbar } from '#/components/AppNavbar'
-import { ContractCallForm } from '#/components/ContractCallForm'
-import { useContracts } from '#/store/useContracts'
-import { useNetworks } from '#/store/useNetworks'
+} from "@ethui/ui/components/shadcn/dialog";
+import { Input } from "@ethui/ui/components/shadcn/input";
+import { Plus } from "lucide-react";
+import { AddressView } from "#/components/AddressView";
+import { AppNavbar } from "#/components/AppNavbar";
+import { ContractCallForm } from "#/components/ContractCallForm";
+import { useContracts } from "#/store/useContracts";
+import { useNetworks } from "#/store/useNetworks";
 
-export const Route = createFileRoute('/home/_l/contracts')({
+export const Route = createFileRoute("/home/_l/contracts")({
   component: Contracts,
-})
+});
 
 function Contracts() {
-  const [filter, setFilter] = useState('')
-  const contracts = useContracts(useShallow((s) => s.filteredContracts(filter)))
+  const [filter, setFilter] = useState("");
+  const contracts = useContracts(
+    useShallow((s) => s.filteredContracts(filter)),
+  );
 
   return (
     <>
@@ -61,7 +63,7 @@ function Contracts() {
         </DialogContent>
       </Dialog>
     </>
-  )
+  );
 }
 
 function Filter({ onChange }: { onChange: (f: string) => void }) {
@@ -73,11 +75,11 @@ function Filter({ onChange }: { onChange: (f: string) => void }) {
         className="h-10"
       />
     </form>
-  )
+  );
 }
 
 interface ContractViewProps {
-  contract: Contract
+  contract: Contract;
 }
 
 function ContractView({
@@ -99,31 +101,31 @@ function ContractView({
         <ContractCallForm address={address} chainId={chainId} />
       </AccordionContent>
     </AccordionItem>
-  )
+  );
 }
 
 function AddressForm() {
   const [networks, currentNetwork] = useNetworks(
     useShallow((s) => [s.networks, s.current]),
-  )
+  );
   const schema = z.object({
     chainId: z.number(),
-    address: z.string().regex(/^0x[a-fA-F0-9]{40}$/, 'Invalid format'),
-  })
+    address: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid format"),
+  });
 
-  type Schema = z.infer<typeof schema>
+  type Schema = z.infer<typeof schema>;
 
-  const add = useContracts((s) => s.add)
+  const add = useContracts((s) => s.add);
 
   const form = useForm({
-    mode: 'onChange',
+    mode: "onChange",
     resolver: zodResolver(schema),
     defaultValues: { chainId: currentNetwork?.chain_id } as Schema,
-  })
+  });
 
-  const onSubmit = (data: FieldValues) => add(data.chainId, data.address)
+  const onSubmit = (data: FieldValues) => add(data.chainId, data.address);
 
-  if (!currentNetwork) return null
+  if (!currentNetwork) return null;
 
   return (
     <Form form={form} onSubmit={onSubmit}>
@@ -145,10 +147,10 @@ function AddressForm() {
           form.formState.isSubmitting ? (
             <LoaderCircle className="animate-spin" />
           ) : (
-            'Add'
+            "Add"
           )
         }
       />
     </Form>
-  )
+  );
 }

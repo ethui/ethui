@@ -1,14 +1,14 @@
-import { type Network, networkSchema } from '@ethui/types/network'
-import { Form } from '@ethui/ui/components/form'
-import { Button } from '@ethui/ui/components/shadcn/button'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { createFileRoute } from '@tanstack/react-router'
-import { useRouter } from '@tanstack/react-router'
-import { invoke } from '@tauri-apps/api/core'
-import { useForm } from 'react-hook-form'
-import { AppNavbar } from '#/components/AppNavbar'
+import { type Network, networkSchema } from "@ethui/types/network";
+import { Form } from "@ethui/ui/components/form";
+import { Button } from "@ethui/ui/components/shadcn/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createFileRoute } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
+import { invoke } from "@tauri-apps/api/core";
+import { useForm } from "react-hook-form";
+import { AppNavbar } from "#/components/AppNavbar";
 
-export const Route = createFileRoute('/home/_l/settings/networks/new')({
+export const Route = createFileRoute("/home/_l/settings/networks/new")({
   component: () => {
     return (
       <>
@@ -17,23 +17,23 @@ export const Route = createFileRoute('/home/_l/settings/networks/new')({
           <Content />
         </div>
       </>
-    )
+    );
   },
-})
+});
 
 function Content() {
   const form = useForm<Network>({
-    mode: 'onBlur',
+    mode: "onBlur",
     resolver: zodResolver(networkSchema),
-  })
-  const router = useRouter()
+  });
+  const router = useRouter();
 
   const onSubmit = async (data: Network) => {
-    await invoke('networks_add', { network: data })
-    router.history.back()
-  }
+    await invoke("networks_add", { network: data });
+    router.history.back();
+  };
 
-  const cancel = () => router.history.back()
+  const cancel = () => router.history.back();
 
   // TODO: fix remove button
   return (
@@ -60,5 +60,5 @@ function Content() {
         </Button>
       </div>
     </Form>
-  )
+  );
 }

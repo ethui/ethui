@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
 import { Alert, AlertDescription } from "@ethui/ui/components/shadcn/alert";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { LoaderCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -46,7 +46,7 @@ function OnboardingExtension() {
       <div className="self-stretch">
         {!detected ? (
           <Alert>
-            <AlertDescription className="flex align-baseline gap-2">
+            <AlertDescription className="flex gap-2 align-baseline">
               <LoaderCircle className="animate-spin" /> Waiting...
             </AlertDescription>
           </Alert>

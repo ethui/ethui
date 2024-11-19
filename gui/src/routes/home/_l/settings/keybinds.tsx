@@ -1,10 +1,10 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
-import { Input } from '@ethui/ui/components/shadcn/input'
-import { useState } from 'react'
-import { AppNavbar } from '#/components/AppNavbar'
+import { Input } from "@ethui/ui/components/shadcn/input";
+import { useState } from "react";
+import { AppNavbar } from "#/components/AppNavbar";
 
-export const Route = createFileRoute('/home/_l/settings/keybinds')({
+export const Route = createFileRoute("/home/_l/settings/keybinds")({
   component: () => (
     <>
       <AppNavbar title="Settings » Keybinds" />
@@ -13,43 +13,43 @@ export const Route = createFileRoute('/home/_l/settings/keybinds')({
       </div>
     </>
   ),
-})
+});
 
 function SettingsKeybinds() {
   const keybinds = [
-    { name: 'Toggle Command Bar', combination: 'Ctrl + K' },
-    { name: 'Switch between tabs', combination: 'Ctrl + [1..4]' },
-    { name: 'Open / Close Settings menu', combination: 'Ctrl + S' },
-    { name: 'Toggle Fast mode', combination: 'Ctrl + F' },
+    { name: "Toggle Command Bar", combination: "Ctrl + K" },
+    { name: "Switch between tabs", combination: "Ctrl + [1..4]" },
+    { name: "Open / Close Settings menu", combination: "Ctrl + S" },
+    { name: "Toggle Fast mode", combination: "Ctrl + F" },
     {
-      name: 'Change wallet',
-      combination: 'W',
+      name: "Change wallet",
+      combination: "W",
     },
     {
-      name: 'Change network',
-      combination: 'N',
+      name: "Change network",
+      combination: "N",
     },
     {
-      name: 'Change theme',
-      combination: 'T',
+      name: "Change theme",
+      combination: "T",
     },
-  ]
+  ];
 
-  const [search, setSearch] = useState('')
+  const [search, setSearch] = useState("");
   const [filteredKeybinds, setFilteredKeybinds] = useState(
     keybinds.filter((keybind) => keybind),
-  )
+  );
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const currentSearch = event.target.value
-    setSearch(currentSearch)
+    const currentSearch = event.target.value;
+    setSearch(currentSearch);
 
     const filteredItems = keybinds.filter((keybind) =>
       keybind.name.toLowerCase().includes(currentSearch.toLowerCase()),
-    )
+    );
 
-    setFilteredKeybinds(filteredItems)
-  }
+    setFilteredKeybinds(filteredItems);
+  };
 
   return (
     <>
@@ -84,5 +84,5 @@ function SettingsKeybinds() {
         </ul>
       </div>
     </>
-  )
+  );
 }

@@ -2,10 +2,10 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
-} from '@ethui/ui/components/shadcn/alert'
-import { Button } from '@ethui/ui/components/shadcn/button'
-import { createFileRoute } from '@tanstack/react-router'
-import { useCallback, useEffect, useState } from 'react'
+} from "@ethui/ui/components/shadcn/alert";
+import { Button } from "@ethui/ui/components/shadcn/button";
+import { createFileRoute } from "@tanstack/react-router";
+import { useCallback, useEffect, useState } from "react";
 import {
   type Abi,
   type AbiFunction,
@@ -15,121 +15,121 @@ import {
   formatUnits,
   getAbiItem,
   parseAbi,
-} from 'viem'
+} from "viem";
 
-import { ChainView } from '@ethui/ui/components/chain-view'
+import { ChainView } from "@ethui/ui/components/chain-view";
 
-import { AbiItemFormWithPreview } from '@ethui/form/src/AbiItemFormWithPreview'
-import type { TokenMetadata } from '@ethui/types'
-import type { Network } from '@ethui/types/network'
-import { Check, CheckIcon, FilePlus2, X } from 'lucide-react'
-import { AddressView } from '#/components/AddressView'
-import { Datapoint } from '#/components/Datapoint'
-import { DialogBottom } from '#/components/Dialogs/Bottom'
-import { IconAddress } from '#/components/Icons/Address'
-import { useDialog } from '#/hooks/useDialog'
-import type { Dialog } from '#/hooks/useDialog'
-import { useInvoke } from '#/hooks/useInvoke'
-import { useLedgerDetect } from '#/hooks/useLedgerDetect'
-import { useNetworks } from '#/store/useNetworks'
+import { AbiItemFormWithPreview } from "@ethui/form/src/AbiItemFormWithPreview";
+import type { TokenMetadata } from "@ethui/types";
+import type { Network } from "@ethui/types/network";
+import { Check, CheckIcon, FilePlus2, X } from "lucide-react";
+import { AddressView } from "#/components/AddressView";
+import { Datapoint } from "#/components/Datapoint";
+import { DialogBottom } from "#/components/Dialogs/Bottom";
+import { IconAddress } from "#/components/Icons/Address";
+import { useDialog } from "#/hooks/useDialog";
+import type { Dialog } from "#/hooks/useDialog";
+import { useInvoke } from "#/hooks/useInvoke";
+import { useLedgerDetect } from "#/hooks/useLedgerDetect";
+import { useNetworks } from "#/store/useNetworks";
 
-export const Route = createFileRoute('/dialog/_l/tx-review/$id')({
+export const Route = createFileRoute("/dialog/_l/tx-review/$id")({
   component: TxReviewDialog,
-})
+});
 
 interface TxRequest {
-  input: `0x${string}`
-  from: Address
-  to: Address
-  value: string
-  chainId: number
+  input: `0x${string}`;
+  from: Address;
+  to: Address;
+  value: string;
+  chainId: number;
   walletType:
-    | 'ledger'
-    | 'HdWallet'
-    | 'jsonKeystore'
-    | 'plaintext'
-    | 'impersonator'
+    | "ledger"
+    | "HdWallet"
+    | "jsonKeystore"
+    | "plaintext"
+    | "impersonator";
 }
 
 interface Log {
-  address: Address
-  data: Hex
-  topics: [signature: Hex, ...args: Hex[]]
+  address: Address;
+  data: Hex;
+  topics: [signature: Hex, ...args: Hex[]];
 }
 
 interface Simulation {
-  pastInteractions: number
-  success: boolean
-  gasUsed: bigint
-  blockNumber: bigint
-  logs: Log[]
+  pastInteractions: number;
+  success: boolean;
+  gasUsed: bigint;
+  blockNumber: bigint;
+  logs: Log[];
 }
 
 function TxReviewDialog() {
-  const { id } = Route.useParams()
-  const dialog = useDialog<TxRequest>(id)
+  const { id } = Route.useParams();
+  const dialog = useDialog<TxRequest>(id);
   const network = useNetworks((s) =>
     s.networks.find((n) => n.chain_id === dialog.data?.chainId),
-  )
+  );
 
-  if (!dialog.data || !network) return null
+  if (!dialog.data || !network) return null;
 
-  return <Inner {...{ dialog, request: dialog.data, network }} />
+  return <Inner {...{ dialog, request: dialog.data, network }} />;
 }
 
 interface InnerProps {
-  dialog: Dialog<TxRequest>
-  request: TxRequest
-  network: Network
+  dialog: Dialog<TxRequest>;
+  request: TxRequest;
+  network: Network;
 }
 
 function Inner({ dialog, request, network }: InnerProps) {
-  const { send, listen } = dialog
-  const { from, to, chainId, input: data, value: valueStr } = request
+  const { send, listen } = dialog;
+  const { from, to, chainId, input: data, value: valueStr } = request;
 
   const [simulation, setSimulation] = useState<Simulation | undefined>(
     undefined,
-  )
-  const [accepted, setAccepted] = useState(false)
-  const [calldata, setCalldata] = useState<`0x${string}` | undefined>(data)
-  const [value, setValue] = useState<bigint>(BigInt(valueStr || 0))
+  );
+  const [accepted, setAccepted] = useState(false);
+  const [calldata, setCalldata] = useState<`0x${string}` | undefined>(data);
+  const [value, setValue] = useState<bigint>(BigInt(valueStr || 0));
 
-  const { data: abi } = useInvoke<Abi>('db_get_contract_abi', {
+  const { data: abi } = useInvoke<Abi>("db_get_contract_abi", {
     address: request?.to,
     chainId: request?.chainId,
-  })
+  });
 
   useEffect(() => {
-    listen<Simulation>('simulation-result', ({ payload }) => {
-      setSimulation(payload)
-    })
-  }, [listen])
+    listen<Simulation>("simulation-result", ({ payload }) => {
+      setSimulation(payload);
+    });
+  }, [listen]);
 
   useEffect(() => {
-    send({ event: 'simulate' })
-  }, [send])
+    send({ event: "simulate" });
+  }, [send]);
 
   const onReject = () => {
-    send({ event: 'reject' })
-  }
+    send({ event: "reject" });
+  };
 
   const onConfirm = () => {
-    send({ event: 'accept' })
-    setAccepted(true)
-  }
+    send({ event: "accept" });
+    setAccepted(true);
+  };
 
   const onChange = useCallback(
     ({ value, data }: { value?: bigint; data?: `0x${string}` }) => {
-      setValue(value || 0n)
-      setCalldata(data)
-      send({ event: 'update', value, data })
+      setValue(value || 0n);
+      setCalldata(data);
+      send({ event: "update", value, data });
     },
     [send],
-  )
+  );
 
   const item = abi
     ? (getAbiItem({ abi, name: data.slice(0, 10) }) as AbiFunction)
-    : undefined
+    : undefined;
 
   return (
     <>
@@ -161,13 +161,13 @@ function Inner({ dialog, request, network }: InnerProps) {
         />
       </DialogBottom>
     </>
-  )
+  );
 }
 
 interface HeaderProps {
-  from: Address
-  to: Address
-  network: Network
+  from: Address;
+  to: Address;
+  network: Network;
 }
 
 function Header({ from, to, network }: HeaderProps) {
@@ -184,22 +184,22 @@ function Header({ from, to, network }: HeaderProps) {
         <ChainView name={network.name} chainId={network.chain_id} />
       </div>
     </div>
-  )
+  );
 }
 
 interface SimulationResultProps {
-  simulation: Simulation | undefined
-  chainId: number
-  to: Address
+  simulation: Simulation | undefined;
+  chainId: number;
+  to: Address;
 }
 
 function SimulationResult({ simulation, chainId, to }: SimulationResultProps) {
-  const { data: callCount } = useInvoke<number>('simulator_get_call_count', {
+  const { data: callCount } = useInvoke<number>("simulator_get_call_count", {
     chainId,
     to,
-  })
+  });
 
-  if (!simulation) return null
+  if (!simulation) return null;
 
   return (
     <div className="grid grid-cols-4 gap-5">
@@ -233,23 +233,23 @@ function SimulationResult({ simulation, chainId, to }: SimulationResultProps) {
         ))}
       </div>
     </div>
-  )
+  );
 }
 
 interface ActionsProps {
-  request: TxRequest
-  onReject: () => void
-  onConfirm: () => void
-  accepted: boolean
+  request: TxRequest;
+  onReject: () => void;
+  onConfirm: () => void;
+  accepted: boolean;
 }
 
 function Actions({ request, accepted, onReject, onConfirm }: ActionsProps) {
   const ledgerDetected = useLedgerDetect({
-    disabled: request?.walletType !== 'ledger',
+    disabled: request?.walletType !== "ledger",
     stopOnDetected: true,
-  })
+  });
 
-  if (request.walletType === 'ledger' && !ledgerDetected) {
+  if (request.walletType === "ledger" && !ledgerDetected) {
     return (
       <Alert>
         <AlertTitle>Ledger not detected</AlertTitle>
@@ -257,8 +257,8 @@ function Actions({ request, accepted, onReject, onConfirm }: ActionsProps) {
           Please unlock your Ledger, and open the Ethereum app
         </AlertDescription>
       </Alert>
-    )
-  } else if (request.walletType === 'ledger' && ledgerDetected && accepted) {
+    );
+  } else if (request.walletType === "ledger" && ledgerDetected && accepted) {
     return (
       <Alert>
         <AlertTitle>Check your ledger</AlertTitle>
@@ -266,7 +266,7 @@ function Actions({ request, accepted, onReject, onConfirm }: ActionsProps) {
           You need to confirm your transaction in your physical device
         </AlertDescription>
       </Alert>
-    )
+    );
   } else {
     return (
       <div className="m-2 flex items-center justify-center gap-2">
@@ -279,28 +279,28 @@ function Actions({ request, accepted, onReject, onConfirm }: ActionsProps) {
           Confirm
         </Button>
       </div>
-    )
+    );
   }
 }
 
 interface LogProps {
-  log: Log
-  chainId: number
+  log: Log;
+  chainId: number;
 }
 
 const erc20Transfer = parseAbi([
-  'event Transfer(address indexed from, address indexed to, uint256 value)',
-])
+  "event Transfer(address indexed from, address indexed to, uint256 value)",
+]);
 
 function Log({ log, chainId }: LogProps) {
-  const result = decodeKnownLog(log)
-  if (!result) return null
-  const [type, decoded] = result
+  const result = decodeKnownLog(log);
+  if (!result) return null;
+  const [type, decoded] = result;
 
   switch (type) {
     case null:
-      return null
-    case 'erc20transfer':
+      return null;
+    case "erc20transfer":
       return (
         <Erc20Transfer
           from={decoded.args.from}
@@ -309,31 +309,31 @@ function Log({ log, chainId }: LogProps) {
           contract={log.address}
           chainId={chainId}
         />
-      )
+      );
   }
 }
 
 function decodeKnownLog(log: Log) {
   try {
     return [
-      'erc20transfer',
+      "erc20transfer",
       decodeEventLog({
         abi: erc20Transfer,
         data: log.data,
         topics: log.topics,
       }),
-    ] as const
+    ] as const;
   } catch (e) {
-    return null
+    return null;
   }
 }
 
 interface Erc20TransferProps {
-  chainId: number
-  from: Address
-  to: Address
-  value: bigint
-  contract: Address
+  chainId: number;
+  from: Address;
+  to: Address;
+  value: bigint;
+  contract: Address;
 }
 
 function Erc20Transfer({
@@ -343,10 +343,10 @@ function Erc20Transfer({
   value,
   contract,
 }: Erc20TransferProps) {
-  const { data: metadata } = useInvoke<TokenMetadata>('db_get_erc20_metadata', {
+  const { data: metadata } = useInvoke<TokenMetadata>("db_get_erc20_metadata", {
     chainId,
     contract,
-  })
+  });
 
   return (
     <div className=" m-1 flex items-center">
@@ -356,8 +356,8 @@ function Erc20Transfer({
       <IconAddress chainId={chainId} address={contract} />
       {metadata?.decimals
         ? formatUnits(value, metadata.decimals)
-        : value.toString()}{' '}
+        : value.toString()}{" "}
       {metadata?.symbol && `${metadata.symbol}`}
     </div>
-  )
+  );
 }

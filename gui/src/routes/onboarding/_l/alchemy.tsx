@@ -1,13 +1,13 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { useCallback } from "react";
 import { type FieldValues, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
 import { Form } from "@ethui/ui/components/form";
-import { Link } from "@tanstack/react-router";
 import { Button } from "@ethui/ui/components/shadcn/button";
+import { Link } from "@tanstack/react-router";
 
 const schema = z.object({
   alchemyApiKey: z
@@ -44,7 +44,7 @@ function OnboardingAlchemy() {
       invoke("settings_set", {
         params: { alchemyApiKey: params.alchemyApiKey },
       });
-      router.navigate({ to: "/onboarding/wallet" });
+      router.navigate({ to: "/onboarding/wallets" });
     },
     [router],
   );

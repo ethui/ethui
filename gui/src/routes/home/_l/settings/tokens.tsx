@@ -1,17 +1,17 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
-import { invoke } from '@tauri-apps/api/core'
-import type { Address } from 'viem'
-import { AppNavbar } from '#/components/AppNavbar'
+import { invoke } from "@tauri-apps/api/core";
+import type { Address } from "viem";
+import { AppNavbar } from "#/components/AppNavbar";
 
-import { Button } from '@ethui/ui/components/shadcn/button'
-import { EyeOff } from 'lucide-react'
-import { AddressView } from '#/components/AddressView'
-import { IconAddress } from '#/components/Icons/Address'
-import { useBlacklist } from '#/store/useBlacklist'
-import { useNetworks } from '#/store/useNetworks'
+import { Button } from "@ethui/ui/components/shadcn/button";
+import { EyeOff } from "lucide-react";
+import { AddressView } from "#/components/AddressView";
+import { IconAddress } from "#/components/Icons/Address";
+import { useBlacklist } from "#/store/useBlacklist";
+import { useNetworks } from "#/store/useNetworks";
 
-export const Route = createFileRoute('/home/_l/settings/tokens')({
+export const Route = createFileRoute("/home/_l/settings/tokens")({
   component: () => (
     <>
       <AppNavbar title="Settings » Tokens" />
@@ -20,20 +20,20 @@ export const Route = createFileRoute('/home/_l/settings/tokens')({
       </div>
     </>
   ),
-})
+});
 
 function SettingsTokens() {
-  const currentNetwork = useNetworks((s) => s.current)
-  const blacklist = useBlacklist((s) => s.erc20Blacklist)
+  const currentNetwork = useNetworks((s) => s.current);
+  const blacklist = useBlacklist((s) => s.erc20Blacklist);
 
-  if (!currentNetwork) return null
+  if (!currentNetwork) return null;
 
   const unhide = (contract: Address) => {
-    invoke('db_clear_erc20_blacklist', {
+    invoke("db_clear_erc20_blacklist", {
       chainId: currentNetwork.chain_id,
       address: contract,
-    })
-  }
+    });
+  };
 
   return (
     <ul className="w-full">
@@ -51,7 +51,7 @@ function SettingsTokens() {
 
           <Button
             size="icon"
-            title={'Unhide token'}
+            title={"Unhide token"}
             onClick={() => unhide(contract)}
           >
             <EyeOff />
@@ -59,5 +59,5 @@ function SettingsTokens() {
         </li>
       ))}
     </ul>
-  )
+  );
 }

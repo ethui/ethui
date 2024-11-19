@@ -9,7 +9,6 @@ import {
 } from "react-hook-form";
 
 import clsx from "clsx";
-import { Textarea as ShadTextarea } from "./shadcn/textarea";
 import { Button, type ButtonProps } from "./shadcn/button";
 import { Checkbox as ShadCheckbox } from "./shadcn/checkbox";
 import {
@@ -28,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./shadcn/select";
+import { Textarea as ShadTextarea } from "./shadcn/textarea";
 
 interface Props<T extends FieldValues>
   extends Omit<React.FormHTMLAttributes<HTMLFormElement>, "onSubmit"> {

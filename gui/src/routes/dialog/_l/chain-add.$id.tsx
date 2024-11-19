@@ -1,22 +1,22 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow'
-import { isDirty, isValid } from 'zod'
+import { createFileRoute } from "@tanstack/react-router";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
+import { isDirty, isValid } from "zod";
 
-import type { Network } from '@ethui/types/network'
-import { ChainView } from '@ethui/ui/components/chain-view'
-import { Button } from '@ethui/ui/components/shadcn/button'
-import { Datapoint } from '#/components/Datapoint'
-import { useDialog } from '#/hooks/useDialog'
+import type { Network } from "@ethui/types/network";
+import { ChainView } from "@ethui/ui/components/chain-view";
+import { Button } from "@ethui/ui/components/shadcn/button";
+import { Datapoint } from "#/components/Datapoint";
+import { useDialog } from "#/hooks/useDialog";
 
-export const Route = createFileRoute('/dialog/_l/chain-add/$id')({
+export const Route = createFileRoute("/dialog/_l/chain-add/$id")({
   component: ChainAddDialog,
-})
+});
 
 function ChainAddDialog() {
-  const { id } = Route.useParams()
-  const { data: network, send } = useDialog<Network>(id)
+  const { id } = Route.useParams();
+  const { data: network, send } = useDialog<Network>(id);
 
-  if (!network) return null
+  if (!network) return null;
 
   return (
     <div className="m-1 flex flex-col items-center">
@@ -60,11 +60,11 @@ function ChainAddDialog() {
         <Button
           type="submit"
           disabled={!isDirty || !isValid}
-          onClick={() => send('accept')}
+          onClick={() => send("accept")}
         >
           Add
         </Button>
       </div>
     </div>
-  )
+  );
 }
