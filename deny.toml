@@ -1,6 +1,6 @@
 [advisories]
 yanked = "warn"
-ignore = ["RUSTSEC-2024-0370", "RUSTSEC-2024-0362"]
+ignore = ["RUSTSEC-2024-0370"]
 
 [licenses]
 allow = [
