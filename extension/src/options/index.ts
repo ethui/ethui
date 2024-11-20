@@ -28,8 +28,8 @@ const saveOptions = () => {
 // stored in chrome.storage.
 const restoreOptions = () => {
   storage.sync.get(defaultSettings).then((items) => {
-    $logLevel.value = items.logLevel;
-    $endpoint.value = items.endpoint;
+    $logLevel.value = items.logLevel as string;
+    $endpoint.value = items.endpoint as string;
   });
 };
 

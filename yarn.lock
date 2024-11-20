@@ -1889,7 +1889,7 @@ __metadata:
   resolution: "@ethui/abiparse@workspace:packages/abiparse"
   dependencies:
     bun-plugin-dts: "npm:^0.3.0"
-    bun-types: "npm:^1.1.34"
+    bun-types: "npm:^1.1.35"
     chevrotain: "npm:^11.0.3"
     nearly: "npm:^1.8.1"
     vitest: "npm:^2.1.5"
@@ -1904,7 +1904,7 @@ __metadata:
   dependencies:
     "@types/core-js": "npm:^2.5.8"
     "@types/lodash-es": "npm:^4.17.12"
-    "@types/node": "npm:^22.9.0"
+    "@types/node": "npm:^22.9.1"
     typescript: "npm:^5.6.3"
     viem: "npm:^2.21.48"
   languageName: unknown
@@ -1917,16 +1917,16 @@ __metadata:
     "@devtools-ds/object-inspector": "npm:^1.2.1"
     "@devtools-ds/table": "npm:^1.2.1"
     "@lukeed/uuid": "npm:^2.0.1"
-    "@metamask/eth-json-rpc-middleware": "npm:^14.0.2"
-    "@metamask/json-rpc-engine": "npm:^9.0.3"
-    "@metamask/json-rpc-middleware-stream": "npm:^8.0.3"
+    "@metamask/eth-json-rpc-middleware": "npm:^15.0.0"
+    "@metamask/json-rpc-engine": "npm:^10.0.1"
+    "@metamask/json-rpc-middleware-stream": "npm:^8.0.5"
     "@metamask/post-message-stream": "npm:^8.1.1"
-    "@metamask/utils": "npm:^9.3.0"
+    "@metamask/utils": "npm:^10.0.1"
     "@types/chrome": "npm:^0.0.283"
-    "@types/node": "npm:^22.9.0"
+    "@types/node": "npm:^22.9.1"
     "@types/react": "npm:^18.3.12"
     "@types/react-dom": "npm:^18.3.1"
-    "@types/webextension-polyfill": "npm:^0.10.7"
+    "@types/webextension-polyfill": "npm:^0.12.1"
     autoprefixer: "npm:^10.4.20"
     crx: "npm:^5.0.1"
     eth-json-rpc-filters: "npm:^6.0.1"
@@ -1942,7 +1942,7 @@ __metadata:
     typescript: "npm:^5.6.3"
     vite: "npm:^5.4.11"
     vite-plugin-node-polyfills: "npm:^0.22.0"
-    vite-tsconfig-paths: "npm:^5.1.2"
+    vite-tsconfig-paths: "npm:^5.1.3"
     web-ext: "npm:^8.3.0"
     webextension-polyfill: "npm:^0.12.0"
     websocket-ts: "npm:^2.1.5"
@@ -2003,7 +2003,7 @@ __metadata:
     "@types/chrome": "npm:^0.0.283"
     "@types/core-js": "npm:^2.5.8"
     "@types/lodash-es": "npm:^4.17.12"
-    "@types/node": "npm:^22.9.0"
+    "@types/node": "npm:^22.9.1"
     "@types/react": "npm:^18.3.12"
     "@types/react-dom": "npm:^18.3.1"
     "@types/react-infinite-scroller": "npm:^1.2.5"
@@ -2039,7 +2039,7 @@ __metadata:
     vite: "npm:^5.4.11"
     vite-plugin-babel-import: "npm:^2.0.5"
     vite-plugin-imp: "npm:^2.4.0"
-    vite-tsconfig-paths: "npm:^5.1.2"
+    vite-tsconfig-paths: "npm:^5.1.3"
     zod: "npm:^3.23.8"
     zustand: "npm:^5.0.1"
     zxcvbn-typescript: "npm:^5.0.1"
@@ -2052,7 +2052,7 @@ __metadata:
   dependencies:
     "@types/core-js": "npm:^2.5.8"
     "@types/lodash-es": "npm:^4.17.12"
-    "@types/node": "npm:^22.9.0"
+    "@types/node": "npm:^22.9.1"
     jsdom: "npm:^25.0.1"
     typescript: "npm:^5.6.3"
     viem: "npm:^2.21.48"
@@ -2412,22 +2412,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/eth-json-rpc-middleware@npm:^14.0.2":
-  version: 14.0.2
-  resolution: "@metamask/eth-json-rpc-middleware@npm:14.0.2"
+"@metamask/eth-json-rpc-middleware@npm:^15.0.0":
+  version: 15.0.0
+  resolution: "@metamask/eth-json-rpc-middleware@npm:15.0.0"
   dependencies:
     "@metamask/eth-block-tracker": "npm:^11.0.1"
-    "@metamask/eth-json-rpc-provider": "npm:^4.1.1"
+    "@metamask/eth-json-rpc-provider": "npm:^4.1.5"
     "@metamask/eth-sig-util": "npm:^7.0.3"
-    "@metamask/json-rpc-engine": "npm:^9.0.2"
-    "@metamask/rpc-errors": "npm:^6.3.1"
+    "@metamask/json-rpc-engine": "npm:^10.0.0"
+    "@metamask/rpc-errors": "npm:^7.0.0"
     "@metamask/utils": "npm:^9.1.0"
     "@types/bn.js": "npm:^5.1.5"
     bn.js: "npm:^5.2.1"
     klona: "npm:^2.0.6"
     pify: "npm:^5.0.0"
     safe-stable-stringify: "npm:^2.4.3"
-  checksum: ffad394f0d5ffc798a6fe73a3725c180a71b4d4c14b9e89b1e56e47fb2970342d280e6d9249ea1fa93712f45ca2736d359a7db05a2e46116f7e559675fb6aaab
+  checksum: 225f8e3edf24bd1b591456abf6625dd0e632233246147efcd8b7730b69ebf9de54e88aa18b274f2b9fe41ae5f78f0ec9b212f316b38ae7412ff595045bb64041
   languageName: node
   linkType: hard
 
@@ -2441,6 +2441,19 @@ __metadata:
     "@metamask/utils": "npm:^9.1.0"
     uuid: "npm:^8.3.2"
   checksum: 2ae71d9eea49ae40af18f7d34abbb22112f87d6cfbf90e2bda47eab7c820ac43100ff5ad3e04b13547e61d1a39098bcb177e342f945f5569369b8cde2fcb9e84
+  languageName: node
+  linkType: hard
+
+"@metamask/eth-json-rpc-provider@npm:^4.1.5":
+  version: 4.1.6
+  resolution: "@metamask/eth-json-rpc-provider@npm:4.1.6"
+  dependencies:
+    "@metamask/json-rpc-engine": "npm:^10.0.1"
+    "@metamask/rpc-errors": "npm:^7.0.1"
+    "@metamask/safe-event-emitter": "npm:^3.0.0"
+    "@metamask/utils": "npm:^10.0.0"
+    uuid: "npm:^8.3.2"
+  checksum: 3c033e2b52883d3e6b7b4fec721443196bcc47357d106bcd328ce399939cbc60864282c24851b3cd873e6bf8b5dabb60b8fb10870f8963828072bbe5e07cc9e6
   languageName: node
   linkType: hard
 
@@ -2458,7 +2471,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/json-rpc-engine@npm:^9.0.2, @metamask/json-rpc-engine@npm:^9.0.3":
+"@metamask/json-rpc-engine@npm:^10.0.0, @metamask/json-rpc-engine@npm:^10.0.1":
+  version: 10.0.1
+  resolution: "@metamask/json-rpc-engine@npm:10.0.1"
+  dependencies:
+    "@metamask/rpc-errors": "npm:^7.0.1"
+    "@metamask/safe-event-emitter": "npm:^3.0.0"
+    "@metamask/utils": "npm:^10.0.0"
+  checksum: a38e390d2b96cae76be4508a7f8a8b6b5ad05e65b863cda78422ab3311a3d368975fef329dba437c74940a47795244ff51e640820e282e723e0810e6f81d1c33
+  languageName: node
+  linkType: hard
+
+"@metamask/json-rpc-engine@npm:^9.0.3":
   version: 9.0.3
   resolution: "@metamask/json-rpc-engine@npm:9.0.3"
   dependencies:
@@ -2469,15 +2493,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/json-rpc-middleware-stream@npm:^8.0.3":
-  version: 8.0.3
-  resolution: "@metamask/json-rpc-middleware-stream@npm:8.0.3"
+"@metamask/json-rpc-middleware-stream@npm:^8.0.5":
+  version: 8.0.5
+  resolution: "@metamask/json-rpc-middleware-stream@npm:8.0.5"
   dependencies:
-    "@metamask/json-rpc-engine": "npm:^9.0.3"
+    "@metamask/json-rpc-engine": "npm:^10.0.1"
     "@metamask/safe-event-emitter": "npm:^3.0.0"
-    "@metamask/utils": "npm:^9.1.0"
+    "@metamask/utils": "npm:^10.0.0"
     readable-stream: "npm:^3.6.2"
-  checksum: a9eee516dec2b83b2e9846ff85026993b781c869b145521e723bed53a746434036873bb0fd3ca12b70c125abf34907363d355bb9d6b8d72d51d92f154c2a9acd
+  checksum: 1455b74c08b5842b7c8fe35f955654a42cd7e98024ca3999246a08153df0653944af385ab7f3e2f15834b5c6510e2b5f5f3784e38ee30fd631005059e3be338b
   languageName: node
   linkType: hard
 
@@ -2498,6 +2522,16 @@ __metadata:
     "@metamask/utils": "npm:^9.0.0"
     fast-safe-stringify: "npm:^2.0.6"
   checksum: eeca3a2316c97f2f0e8922fc3a0625a704f76a1dd3b0cc78ed54dcc3c4ca7f5c3f5c90880e74c748f09f075cc21f176f3498421ad75a5c323535e454a7896c21
+  languageName: node
+  linkType: hard
+
+"@metamask/rpc-errors@npm:^7.0.0, @metamask/rpc-errors@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "@metamask/rpc-errors@npm:7.0.1"
+  dependencies:
+    "@metamask/utils": "npm:^10.0.0"
+    fast-safe-stringify: "npm:^2.0.6"
+  checksum: 45d3e452def7cef0bf942061e5da57fd26557f69d8774a9e4b37dfe72d63db92abe247b7f0fe00c2f2a4c0b4bfc2a9a56a090f37673afb9de88d78b99bf4dcd5
   languageName: node
   linkType: hard
 
@@ -2529,7 +2563,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/utils@npm:^9.0.0, @metamask/utils@npm:^9.1.0, @metamask/utils@npm:^9.3.0":
+"@metamask/utils@npm:^10.0.0, @metamask/utils@npm:^10.0.1":
+  version: 10.0.1
+  resolution: "@metamask/utils@npm:10.0.1"
+  dependencies:
+    "@ethereumjs/tx": "npm:^4.2.0"
+    "@metamask/superstruct": "npm:^3.1.0"
+    "@noble/hashes": "npm:^1.3.1"
+    "@scure/base": "npm:^1.1.3"
+    "@types/debug": "npm:^4.1.7"
+    debug: "npm:^4.3.4"
+    pony-cause: "npm:^2.1.10"
+    semver: "npm:^7.5.4"
+    uuid: "npm:^9.0.1"
+  checksum: 762416f4b86014380a63243b6070c34da17c2a7cad19fb88105b73201679f1b6a7f540cc8d059f63854b6f434ccb0dd2f5c546bb1970146cde23e98f43027d9e
+  languageName: node
+  linkType: hard
+
+"@metamask/utils@npm:^9.0.0, @metamask/utils@npm:^9.1.0":
   version: 9.3.0
   resolution: "@metamask/utils@npm:9.3.0"
   dependencies:
@@ -4987,12 +5038,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^22.9.0":
-  version: 22.9.0
-  resolution: "@types/node@npm:22.9.0"
+"@types/node@npm:^22.9.1":
+  version: 22.9.1
+  resolution: "@types/node@npm:22.9.1"
   dependencies:
     undici-types: "npm:~6.19.8"
-  checksum: 3f46cbe0a49bab4ba30494025e4c8a6e699b98ac922857aa1f0209ce11a1313ee46e6808b8f13fe5b8b960a9d7796b77c8d542ad4e9810e85ef897d5593b5d51
+  checksum: ea489ae603aa8874e4e88980aab6f2dad09c755da779c88dd142983bfe9609803c89415ca7781f723072934066f63daf2b3339ef084a8ad1a8079cf3958be243
   languageName: node
   linkType: hard
 
@@ -5088,10 +5139,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/webextension-polyfill@npm:^0.10.7":
-  version: 0.10.7
-  resolution: "@types/webextension-polyfill@npm:0.10.7"
-  checksum: 78f9153398172b66db74e02202146e078b9c8fe30a283f52e7ab58021fdb4d18be74555142ec83b878f9d05d98a0296ffbef8287aedd411d9503025fe8ddba36
+"@types/webextension-polyfill@npm:^0.12.1":
+  version: 0.12.1
+  resolution: "@types/webextension-polyfill@npm:0.12.1"
+  checksum: d6e6253bbd020dcfa40391112212e3486320760d12c58854d0410140bda7ad0476749b9476e18d6888a1b04092662715b488f470c3aa29b44768990ffaf6d194
   languageName: node
   linkType: hard
 
@@ -6136,13 +6187,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bun-types@npm:^1.1.34":
-  version: 1.1.34
-  resolution: "bun-types@npm:1.1.34"
+"bun-types@npm:^1.1.35":
+  version: 1.1.35
+  resolution: "bun-types@npm:1.1.35"
   dependencies:
     "@types/node": "npm:~20.12.8"
     "@types/ws": "npm:~8.5.10"
-  checksum: 922552b70f1d43c9990cd440b732793bcd7a4e277a645885532a0e1b605c857aba23ba993df484e053a4699ef1949b5056d9ef7971c9ba409d3c67917216734f
+  checksum: 2c79efbc17e245fa116f9f4d1466f39fa236c37466b85a0b4b22513eabbf236bb314c3c13a860c804d3aedb71c5d35d09a104ab9b858ec8f998c6fcbaca580c6
   languageName: node
   linkType: hard
 
@@ -14027,9 +14078,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-tsconfig-paths@npm:^5.1.2":
-  version: 5.1.2
-  resolution: "vite-tsconfig-paths@npm:5.1.2"
+"vite-tsconfig-paths@npm:^5.1.3":
+  version: 5.1.3
+  resolution: "vite-tsconfig-paths@npm:5.1.3"
   dependencies:
     debug: "npm:^4.1.1"
     globrex: "npm:^0.1.2"
@@ -14039,7 +14090,7 @@ __metadata:
   peerDependenciesMeta:
     vite:
       optional: true
-  checksum: 7db445b6b1f48e7b89f39f5eb8cf4ea645994f581fcc7c9fac721e0c36f8203c0770007ec27825caa6e2566e3127b2b1bfe8be28ca05cd0e9fb67a2943dcdec5
+  checksum: fb7480efa31fd50439f4a12c91bc953e5cc09d69fdc7eeb6ffff7cc796bc2c1f2c617c3abfdcbf5d7414848076cea9deb60bc002142f93b6e3131e5458760710
   languageName: node
   linkType: hard
 
