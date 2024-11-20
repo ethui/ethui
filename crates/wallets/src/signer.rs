@@ -1,11 +1,9 @@
-use alloy::network::EthereumWallet;
-use alloy::primitives::{Address, B256};
-use alloy::signers::ledger::LedgerSigner;
-use alloy::signers::local::PrivateKeySigner;
-use alloy::signers::Signature;
+use alloy::{
+    network::EthereumWallet,
+    primitives::{Address, PrimitiveSignature, B256},
+    signers::{ledger::LedgerSigner, local::PrivateKeySigner},
+};
 use async_trait::async_trait;
-
-//use crate::{utils::HID_MUTEX, Error, Result};
 
 #[derive(Debug)]
 pub enum Signer {
@@ -23,7 +21,7 @@ impl Signer {
 }
 
 #[async_trait]
-impl alloy::signers::Signer<Signature> for Signer {
+impl alloy::signers::Signer<PrimitiveSignature> for Signer {
     fn address(&self) -> Address {
         match self {
             Self::Local(signer) => signer.address(),
@@ -45,7 +43,7 @@ impl alloy::signers::Signer<Signature> for Signer {
         };
     }
 
-    async fn sign_hash(&self, hash: &B256) -> alloy::signers::Result<Signature> {
+    async fn sign_hash(&self, hash: &B256) -> alloy::signers::Result<PrimitiveSignature> {
         match self {
             Self::Local(signer) => signer.sign_hash(hash).await,
             Self::Ledger(signer) => signer.sign_hash(hash).await,

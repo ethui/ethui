@@ -1,8 +1,8 @@
-use alloy::providers::ext::TraceApi as _;
-use alloy::providers::{Provider as _, ProviderBuilder, RootProvider, WsConnect};
-use alloy::rpc::types::trace::parity::LocalizedTransactionTrace;
-use alloy::rpc::types::{Filter, Log};
-use alloy::transports::http::Http;
+use alloy::{
+    providers::{ext::TraceApi as _, Provider as _, ProviderBuilder, RootProvider, WsConnect},
+    rpc::types::{trace::parity::LocalizedTransactionTrace, Filter, Log},
+    transports::http::Http,
+};
 use base64::{self, Engine as _};
 use ethui_abis::{IERC721WithMetadata, IERC20, IERC721};
 use ethui_types::{Address, Erc721Token, Erc721TokenDetails, TokenMetadata, UINotify};
@@ -152,10 +152,10 @@ async fn watch(
                 b = stream.next() => {
                     match b {
                         Some(b) => {
-                            let block_traces = provider.trace_block(b.header.number.into()).await?;
+                            let block_traces = provider.trace_block(b.number.into()).await?;
                             block_snd.send(Msg::Traces(block_traces)).map_err(|_|Error::Watcher)?;
 
-                            let logs = provider.get_logs(&Filter::new().select(b.header.number)).await?;
+                            let logs = provider.get_logs(&Filter::new().select(b.number)).await?;
                             block_snd.send(Msg::Logs(logs)).map_err(|_| Error::Watcher)?;
                         },
                         None => break 'ws,
