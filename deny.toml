@@ -14,6 +14,7 @@ allow = [
   "MPL-2.0",
   "BSD-2-Clause",
   "BSD-3-Clause",
+  "Unicode-3.0",
   "BSL-1.0",
   "OpenSSL",
   "0BSD",
