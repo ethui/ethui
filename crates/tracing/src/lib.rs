@@ -1,15 +1,36 @@
 mod error;
 
 pub use error::{TracingError, TracingResult};
-use tracing_subscriber::{fmt::format::FmtSpan, EnvFilter};
+use tracing_subscriber::{
+    filter,
+    fmt::{self, format::FmtSpan},
+    layer::SubscriberExt as _,
+    reload,
+    util::SubscriberInitExt as _,
+    EnvFilter,
+};
 
 pub fn init() -> TracingResult<()> {
-    let subscriber = tracing_subscriber::FmtSubscriber::builder()
-        .with_env_filter(EnvFilter::from_default_env())
-        .with_span_events(FmtSpan::NEW)
-        .compact()
-        .finish();
-    tracing::subscriber::set_global_default(subscriber)?;
+    let filter = filter::LevelFilter::WARN;
+    let (filter, reload_handle) = reload::Layer::new(filter);
+
+    tracing_subscriber::registry()
+        .with(filter)
+        .with(fmt::Layer::default())
+        .init();
+
+    tracing::info!("This will be ignored");
+    let _ = reload_handle.modify(|filter| *filter = filter::LevelFilter::INFO);
+    tracing::info!("This will be logged");
 
     Ok(())
 }
+
+//pub fn reload() -> TracingResult<()> {
+//    let filter = Level::WARN;
+//    let (filter, reload_handle) = reload::Layer::new(filter);
+//    tracing_subscriber::registry()
+//        .with(filter)
+//        .with(fmt::Layer::default().init());
+//    Ok(())
+//}
