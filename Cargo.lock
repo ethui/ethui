@@ -3377,6 +3377,7 @@ dependencies = [
  "async-trait",
  "auto-launch",
  "ethui-broadcast",
+ "ethui-tracing",
  "ethui-types",
  "foundry-block-explorers 0.8.0",
  "once_cell",
@@ -3480,6 +3481,7 @@ dependencies = [
 name = "ethui-tracing"
 version = "1.8.0"
 dependencies = [
+ "once_cell",
  "thiserror 1.0.69",
  "tracing",
  "tracing-subscriber",

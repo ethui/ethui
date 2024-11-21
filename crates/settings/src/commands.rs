@@ -48,3 +48,8 @@ pub async fn settings_test_alchemy_api_key(key: String) -> bool {
 pub async fn settings_test_etherscan_api_key(key: String) -> bool {
     crate::utils::test_etherscan_api_key(key).await
 }
+
+#[tauri::command]
+pub async fn settings_test_rust_log(directives: String) -> bool {
+    ethui_tracing::parse(&directives).is_ok()
+}
