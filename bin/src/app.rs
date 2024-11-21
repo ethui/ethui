@@ -34,6 +34,7 @@ impl EthUIApp {
                 ethui_settings::commands::settings_get_alias,
                 ethui_settings::commands::settings_test_alchemy_api_key,
                 ethui_settings::commands::settings_test_etherscan_api_key,
+                ethui_settings::commands::settings_test_rust_log,
                 ethui_networks::commands::networks_get_list,
                 ethui_networks::commands::networks_get_current,
                 ethui_networks::commands::networks_set_current,

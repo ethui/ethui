@@ -55,6 +55,19 @@ const schema = z.object({
   hideEmptyTokens: z.boolean(),
   onboarded: z.boolean(),
   fastMode: z.boolean(),
+  rustLog: z
+    .string()
+    .optional()
+    .superRefine(async (directives, ctx) => {
+      if (!directives) return;
+      const valid = await invoke("settings_test_rust_log", { directives });
+      if (valid) return;
+
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Invalid directives",
+      });
+    }),
 });
 
 function SettingsGeneral() {
@@ -106,6 +119,12 @@ function SettingsGeneral() {
       <Form.Checkbox
         label="Hide Tokens Without Balance"
         name="hideEmptyTokens"
+      />
+
+      <Form.Text
+        label="Rust log level (tracing_subscriber)"
+        name="rustLog"
+        className="w-full"
       />
 
       <Form.Submit label="Save" />
