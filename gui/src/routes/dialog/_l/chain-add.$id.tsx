@@ -6,6 +6,7 @@ import type { Network } from "@ethui/types/network";
 import { ChainView } from "@ethui/ui/components/chain-view";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { Datapoint } from "#/components/Datapoint";
+import { DialogBottom } from "#/components/Dialogs/Bottom";
 import { useDialog } from "#/hooks/useDialog";
 
 export const Route = createFileRoute("/dialog/_l/chain-add/$id")({
@@ -19,16 +20,34 @@ function ChainAddDialog() {
   if (!network) return null;
 
   return (
-    <div className="m-1 flex flex-col items-center">
-      <h1 className="font-xl">Add new network?</h1>
+    <div className="flex flex-col gap-5">
+      <div className="flex w-full items-stretch justify-center self-center">
+        <h1 className="font-xl">Add new network</h1>
+      </div>
 
       <ChainView chainId={network.chain_id} name={network.name} />
 
       <div className="grid grid-cols-4 gap-5">
-        <Datapoint label="Chain ID" value={network.chain_id} />
-        <Datapoint label="Currency" value={network.currency} />
-        <Datapoint label="Decimals" value={network.decimals} />
-        <Datapoint label="Decimals" value={network.decimals} />
+        <Datapoint
+          label="Chain ID"
+          value={network.chain_id}
+          className="col-span-2"
+        />
+        <Datapoint
+          label="Currency"
+          value={network.currency}
+          className="col-span-2"
+        />
+        <Datapoint
+          label="Decimals"
+          value={network.decimals}
+          className="col-span-2"
+        />
+        <Datapoint
+          label="Decimals"
+          value={network.decimals}
+          className="col-span-2"
+        />
         <Datapoint
           className="col-span-4"
           label="RPC (HTTP)"
@@ -50,21 +69,23 @@ function ChainAddDialog() {
         )}
       </div>
 
-      <div className=" m-1 flex">
-        <Button
-          variant="destructive"
-          onClick={() => getCurrentWebviewWindow().close()}
-        >
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          disabled={!isDirty || !isValid}
-          onClick={() => send("accept")}
-        >
-          Add
-        </Button>
-      </div>
+      <DialogBottom>
+        <div className="m-2 flex items-center justify-center gap-2">
+          <Button
+            variant="destructive"
+            onClick={() => getCurrentWebviewWindow().close()}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            disabled={!isDirty || !isValid}
+            onClick={() => send("accept")}
+          >
+            Add
+          </Button>
+        </div>
+      </DialogBottom>
     </div>
   );
 }
