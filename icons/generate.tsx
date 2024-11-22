@@ -69,14 +69,6 @@ async function gen(path: string, opts: Opts) {
 const dev = true;
 const attention = true;
 
-console.log("removing old icons");
-//await $`rm -rf icons/*.{png,svg} || true 2> /dev/null`;
-//await $`rm -rf gui/public/logo`;
-//await $`rm -rf extension/src/public/icons`;
-//await $`rm -rf bin/icons`;
-await $`mkdir -p gui/public/logo`;
-await $`mkdir -p extension/src/public/icons`;
-
 await gen("symbol-black", { mode: "light" });
 await gen("symbol-white", { mode: "dark" });
 await gen("symbol-purple", { mode: "light", dev: true });
