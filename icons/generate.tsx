@@ -79,10 +79,10 @@ await $`mkdir -p extension/src/public/icons`;
 
 await gen("symbol-black", { mode: "light" });
 await gen("symbol-white", { mode: "dark" });
-await gen("symbol-purple", { mode: "dark", dev: true });
+await gen("symbol-purple", { mode: "light", dev: true });
 await gen("symbol-black-attention", { mode: "light", attention });
 await gen("symbol-white-attention", { mode: "dark", attention });
-await gen("symbol-purple-attention", { mode: "dark", dev, attention });
+await gen("symbol-purple-attention", { mode: "light", dev, attention });
 
 console.log("copying production icons to bin/icons");
 await $`cargo tauri icon --output bin/icons icons/symbol-white.png 2> /dev/null`;
