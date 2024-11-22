@@ -9,6 +9,7 @@ import {
 } from "react-hook-form";
 
 import clsx from "clsx";
+import { Check, LoaderCircle } from "lucide-react";
 import { Button, type ButtonProps } from "./shadcn/button";
 import { Checkbox as ShadCheckbox } from "./shadcn/checkbox";
 import {
@@ -48,7 +49,7 @@ export function Form<S extends FieldValues>({
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className={clsx(
-          "flex flex-col items-start gap-5 align-start",
+          "flex flex-col items-start gap-2 align-start",
           className,
         )}
         {...props}
@@ -84,7 +85,7 @@ function Text<T extends FieldValues>({
           <FormControl>
             <Input {...field} type={type} />
           </FormControl>
-          <FormMessage />
+          <FormMessage>&nbsp;</FormMessage>
         </FormItem>
       )}
     />
@@ -109,7 +110,7 @@ function Textarea<T extends FieldValues>({
           <FormControl>
             <ShadTextarea {...field} />
           </FormControl>
-          <FormMessage />
+          <FormMessage>&nbsp;</FormMessage>
         </FormItem>
       )}
     />
@@ -134,7 +135,7 @@ function NumberField<T extends FieldValues>({
             {/* TODO: maybe we should use zod's coerce instead? https://github.com/shadcn-ui/ui/issues/421 */}
             <Input type="number" {...register(name, { valueAsNumber: true })} />
           </FormControl>
-          <FormMessage />
+          <FormMessage>&nbsp;</FormMessage>
         </FormItem>
       )}
     />
@@ -172,7 +173,7 @@ function BigIntField<T extends FieldValues>({
               value={(BigInt(field.value) / multiplier).toString()}
             />
           </FormControl>
-          <FormMessage />
+          <FormMessage>&nbsp;</FormMessage>
         </FormItem>
       )}
     />
@@ -188,19 +189,21 @@ function Checkbox<T extends FieldValues>({ name, label }: BaseInputProps<T>) {
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-          <FormControl>
-            {/* TODO: maybe we should use zod's coerce instead? https://github.com/shadcn-ui/ui/issues/421 */}
+        <FormItem className="flex flex-col">
+          <div className="flex flex-row items-start space-x-3 space-y-0">
+            <FormControl>
+              {/* TODO: maybe we should use zod's coerce instead? https://github.com/shadcn-ui/ui/issues/421 */}
 
-            <ShadCheckbox
-              checked={field.value}
-              onCheckedChange={field.onChange}
-            />
-          </FormControl>
-          <div className="space-y-1 leading-none">
-            <FormLabel className="cursor-pointer">{label}</FormLabel>
+              <ShadCheckbox
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+            </FormControl>
+            <div className="space-y-1 leading-none">
+              <FormLabel className="cursor-pointer">{label}</FormLabel>
+            </div>
           </div>
-          <FormMessage />
+          <FormMessage>&nbsp;</FormMessage>
         </FormItem>
       )}
     />
@@ -221,13 +224,18 @@ function Submit({
   ...props
 }: SubmitProps) {
   const {
-    formState: { isValid, dirtyFields },
+    formState: { isValid, isDirty, isSubmitting },
   } = useFormContext();
   // https://github.com/react-hook-form/react-hook-form/issues/3213
-  const isDirtyAlt = useDirtyAlt && !!Object.keys(dirtyFields).length;
+  //const isDirtyAlt = useDirtyAlt && !!Object.keys(dirtyFields).length;
 
   return (
-    <Button type="submit" disabled={!isDirtyAlt && !isValid} {...props}>
+    <Button
+      type="submit"
+      disabled={!isDirty || !isValid || isSubmitting}
+      {...props}
+    >
+      {isSubmitting ? <LoaderCircle className="animate-spin" /> : <Check />}
       {label}
     </Button>
   );
@@ -285,7 +293,7 @@ function SelectInput<
               ))}
             </SelectContent>
           </Select>
-          <FormMessage />
+          <FormMessage>&nbsp;</FormMessage>
         </FormItem>
       )}
     />
