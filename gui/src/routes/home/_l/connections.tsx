@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { map } from "lodash-es";
-import { useShallow } from "zustand/shallow";
 import { useEffect, useState } from "react";
+import { useShallow } from "zustand/shallow";
 
 import type { Affinity, Peer } from "@ethui/types";
+import type { Network } from "@ethui/types/network";
 import { ChainView } from "@ethui/ui/components/chain-view";
 import {
   Select,
@@ -18,7 +19,6 @@ import { AppNavbar } from "#/components/AppNavbar";
 import { useEventListener } from "#/hooks/useEventListener";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
-import type { Network } from "@ethui/types/network";
 
 export const Route = createFileRoute("/home/_l/connections")({
   component: Connections,
