@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { map } from "lodash-es";
+import { useShallow } from "zustand/shallow";
 import { useEffect, useState } from "react";
 
 import type { Affinity, Peer } from "@ethui/types";
@@ -17,6 +18,7 @@ import { AppNavbar } from "#/components/AppNavbar";
 import { useEventListener } from "#/hooks/useEventListener";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
+import type { Network } from "@ethui/types/network";
 
 export const Route = createFileRoute("/home/_l/connections")({
   component: Connections,
@@ -26,10 +28,7 @@ function Connections() {
   const { data: peersByDomain, refetch } =
     useInvoke<Record<string, Peer[]>>("ws_peers_by_domain");
 
-  useEventListener("peers-updated", () => console.log("refetch"));
   useEventListener("peers-updated", refetch);
-
-  console.log(peersByDomain);
 
   return (
     <>
@@ -56,7 +55,9 @@ function Domain({ domain, peers }: { domain: string; peers: Peer[] }) {
 }
 
 function AffinityForm({ domain }: { domain: string }) {
-  const networks = useNetworks((s) => s.networks);
+  const [networks, currentGlobalNetwork] = useNetworks(
+    useShallow((s) => [s.networks, s.current]),
+  );
   const { data: affinity, refetch } = useInvoke<Affinity>(
     "connections_affinity_for",
     {
@@ -67,10 +68,21 @@ function AffinityForm({ domain }: { domain: string }) {
   useEventListener("peers-updated", refetch);
 
   const [current, setCurrent] = useState<Affinity>("global");
+  const [currentNetwork, setCurrentNetwork] = useState<Network | undefined>(
+    currentGlobalNetwork,
+  );
 
   useEffect(() => {
     setCurrent(affinity || "global");
   }, [affinity]);
+
+  useEffect(() => {
+    if (current === "global" || current === "unset") {
+      setCurrentNetwork(currentGlobalNetwork);
+    } else {
+      setCurrentNetwork(networks.find((n) => n.chain_id === current.sticky));
+    }
+  }, [current, networks, currentGlobalNetwork]);
 
   // TODO: bug can't currently clear affinity
   const handleChange = (value: string) => {
@@ -89,16 +101,27 @@ function AffinityForm({ domain }: { domain: string }) {
     current === "global" || current === "unset"
       ? "global"
       : current.sticky.toString();
+  const isGlobal = current === "global" || current === "unset";
 
   return (
     <>
       <Select defaultValue={value} onValueChange={handleChange}>
         <SelectTrigger>
-          <SelectValue />
+          <SelectValue>
+            {!isGlobal && currentNetwork ? (
+              <ChainView
+                chainId={currentNetwork.chain_id}
+                name={currentNetwork.name}
+              />
+            ) : (
+              "Global"
+            )}
+          </SelectValue>
         </SelectTrigger>
 
         <SelectContent>
           <SelectGroup>
+            <SelectItem value="global">Global</SelectItem>
             {networks.map((network) => (
               <SelectItem
                 value={network.chain_id.toString()}
