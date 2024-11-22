@@ -32,6 +32,7 @@
     --solidity-value: #0284c7;
     --solidity-callname: #a16207;
     --solidity-arg: #0284c7;
+    --dev: #8d64d1;
   }
   .dark {
     --background: 0 0% 3.9%;
