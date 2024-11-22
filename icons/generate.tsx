@@ -70,14 +70,13 @@ const dev = true;
 const attention = true;
 
 console.log("removing old icons");
-await $`rm -rf ./icons/*.{png,svg}`;
+await $`rm -rf icons/*.{png,svg} || true 2> /dev/null`;
 await $`rm -rf gui/public/logo`;
 await $`rm -rf extension/src/public/icons`;
 await $`rm -rf bin/icons`;
-//await $`mkdir -p gui/public/logo`;
-//await $`mkdir -p extension/src/public/icons`;
+await $`mkdir -p gui/public/logo`;
+await $`mkdir -p extension/src/public/icons`;
 
-console.log("generating new icons");
 await gen("symbol-black", { mode: "light" });
 await gen("symbol-white", { mode: "dark" });
 await gen("symbol-purple", { mode: "dark", dev: true });
@@ -90,3 +89,17 @@ await $`cargo tauri icon --output bin/icons icons/symbol-white.png 2> /dev/null`
 
 console.log("copying dev icons to bin/icons-dev");
 await $`cargo tauri icon --output bin/icons-dev icons/symbol-purple.png 2> /dev/null`;
+
+console.log("copying production icons to gui/public/logo");
+await $`cp icons/symbol-{white,black,purple}.svg gui/public/logo/`;
+
+for (const size of [16, 48, 96, 128]) {
+  for (const color of ["purple", "white", "black"]) {
+    for (const attention of ["", "-attention"]) {
+      const svg = `icons/symbol-${color}${attention}.svg`;
+      const png = `icons/symbol-${color}${attention}-${size}.png`;
+      console.log(`[extension] ${png}`);
+      await $`magick ${svg} -resize ${size}x extension/src/public/icons/ethui-${color}-${size}.png`;
+    }
+  }
+}
