@@ -70,10 +70,10 @@ const dev = true;
 const attention = true;
 
 console.log("removing old icons");
-await $`rm -rf icons/*.{png,svg} || true 2> /dev/null`;
-await $`rm -rf gui/public/logo`;
-await $`rm -rf extension/src/public/icons`;
-await $`rm -rf bin/icons`;
+//await $`rm -rf icons/*.{png,svg} || true 2> /dev/null`;
+//await $`rm -rf gui/public/logo`;
+//await $`rm -rf extension/src/public/icons`;
+//await $`rm -rf bin/icons`;
 await $`mkdir -p gui/public/logo`;
 await $`mkdir -p extension/src/public/icons`;
 
@@ -85,7 +85,7 @@ await gen("symbol-white-attention", { mode: "dark", attention });
 await gen("symbol-purple-attention", { mode: "light", dev, attention });
 
 console.log("copying production icons to bin/icons");
-await $`cargo tauri icon --output bin/icons icons/symbol-white.png 2> /dev/null`;
+await $`cargo tauri icon --output bin/icons icons/symbol-black.png 2> /dev/null`;
 
 console.log("copying dev icons to bin/icons-dev");
 await $`cargo tauri icon --output bin/icons-dev icons/symbol-purple.png 2> /dev/null`;
