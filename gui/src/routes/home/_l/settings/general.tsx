@@ -6,9 +6,9 @@ import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Form } from "@ethui/ui/components/form";
+import memoize from "lodash-es/memoize";
 import { AppNavbar } from "#/components/AppNavbar";
 import { useSettings } from "#/store/useSettings";
-import memoize from "lodash-es/memoize";
 
 export const Route = createFileRoute("/home/_l/settings/general")({
   component: () => (

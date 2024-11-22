@@ -9,6 +9,7 @@ import {
 } from "react-hook-form";
 
 import clsx from "clsx";
+import { Check, LoaderCircle } from "lucide-react";
 import { Button, type ButtonProps } from "./shadcn/button";
 import { Checkbox as ShadCheckbox } from "./shadcn/checkbox";
 import {
@@ -28,7 +29,6 @@ import {
   SelectValue,
 } from "./shadcn/select";
 import { Textarea as ShadTextarea } from "./shadcn/textarea";
-import { Check, LoaderCircle } from "lucide-react";
 
 interface Props<T extends FieldValues>
   extends Omit<React.FormHTMLAttributes<HTMLFormElement>, "onSubmit"> {
