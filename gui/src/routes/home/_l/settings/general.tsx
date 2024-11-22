@@ -8,6 +8,7 @@ import { z } from "zod";
 import { Form } from "@ethui/ui/components/form";
 import { AppNavbar } from "#/components/AppNavbar";
 import { useSettings } from "#/store/useSettings";
+import memoize from "lodash-es/memoize";
 
 export const Route = createFileRoute("/home/_l/settings/general")({
   component: () => (
@@ -20,54 +21,35 @@ export const Route = createFileRoute("/home/_l/settings/general")({
   ),
 });
 
+const alchemyKeyValidator = memoize(
+  (key) => !key || invoke("settings_test_alchemy_api_key", { key }),
+);
+
+const etherscanKeyValidator = memoize(
+  (key) => !key || invoke("settings_test_etherscan_api_key", { key }),
+);
+
+const rustLogValidator = memoize(
+  (directives) =>
+    !directives || invoke("settings_test_rust_log", { directives }),
+);
+
 const schema = z.object({
   darkMode: z.enum(["auto", "dark", "light"]),
   autostart: z.boolean(),
-  alchemyApiKey: z
-    .string()
-    .optional()
-    .nullable()
-    .superRefine(async (key, ctx) => {
-      if (!key) return;
-      const valid = await invoke("settings_test_alchemy_api_key", { key });
-      if (valid) return;
-
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Invalid key",
-      });
-    }),
+  alchemyApiKey: z.string().optional().nullable().refine(alchemyKeyValidator, {
+    message: "Invalid key",
+  }),
   etherscanApiKey: z
     .string()
     .optional()
     .nullable()
 
-    .superRefine(async (key, ctx) => {
-      if (!key) return;
-      const valid = await invoke("settings_test_etherscan_api_key", { key });
-      if (valid) return;
-
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Invalid key",
-      });
-    }),
+    .refine(etherscanKeyValidator, { message: "Invalid key" }),
   hideEmptyTokens: z.boolean(),
   onboarded: z.boolean(),
   fastMode: z.boolean(),
-  rustLog: z
-    .string()
-    .optional()
-    .superRefine(async (directives, ctx) => {
-      if (!directives) return;
-      const valid = await invoke("settings_test_rust_log", { directives });
-      if (valid) return;
-
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Invalid directives",
-      });
-    }),
+  rustLog: z.string().optional().refine(rustLogValidator, "Invalid directives"),
 });
 
 function SettingsGeneral() {

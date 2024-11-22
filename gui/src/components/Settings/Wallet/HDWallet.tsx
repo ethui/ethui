@@ -132,7 +132,6 @@ function MnemonicStep({ onSubmit, onCancel }: MnemonicStepProps) {
     <Form form={form} onSubmit={onSubmitInternal}>
       <Form.Text label="Name" name="name" className="w-full" />
 
-      <span>Insert your 12-word mnemonic</span>
       <Form.Textarea
         label="12-word mnemonic"
         name="mnemonic"
