@@ -1,3 +1,4 @@
+import { EthuiLogo } from "@ethui/ui/components/ethui-logo";
 import {
   Collapsible,
   CollapsibleContent,
@@ -27,7 +28,6 @@ import {
   SidebarMenuSub,
   SidebarRail,
 } from "#/components/shadcn/sidebar";
-import { EthuiLogo } from "@ethui/ui/components/ethui-logo";
 import { cn } from "#/lib/utils";
 import { useCommandBar } from "./CommandBar";
 import { QuickAddressSelect } from "./QuickAddressSelect";
@@ -62,7 +62,7 @@ export function AppSidebar() {
                       href={item.url}
                       className={cn(
                         item.url === location.pathname &&
-                        "bg-primary text-accent hover:bg-primary hover:text-accent",
+                          "bg-primary text-accent hover:bg-primary hover:text-accent",
                       )}
                     >
                       {item.icon}
@@ -91,7 +91,7 @@ export function AppSidebar() {
                               href={item.url}
                               className={cn(
                                 item.url === location.pathname &&
-                                "bg-primary text-accent hover:bg-primary hover:text-accent",
+                                  "bg-primary text-accent hover:bg-primary hover:text-accent",
                               )}
                             >
                               {item.title}
