@@ -4,7 +4,6 @@ use std::{collections::BTreeMap, path::PathBuf};
 
 use alloy::primitives::Bytes;
 use tokio::{spawn, sync::mpsc};
-use tracing::trace;
 
 use crate::{
     abi::Abi,

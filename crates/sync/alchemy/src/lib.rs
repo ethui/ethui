@@ -50,11 +50,10 @@ impl Alchemy {
             return Ok(());
         }
 
-        let inc = dbg!(
-            self.client
-                .get_asset_transfers(Direction::From(address), from_block, latest)
-                .await
-        )?;
+        let inc = self
+            .client
+            .get_asset_transfers(Direction::From(address), from_block, latest)
+            .await?;
         let out = self
             .client
             .get_asset_transfers(Direction::To(address), from_block, latest)
