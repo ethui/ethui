@@ -41,11 +41,8 @@
     "@tauri-apps/plugin-os": "^2.0.0",
     "@uidotdev/usehooks": "^2.4.1",
     "abitype": "^1.0.6",
-    "class-variance-authority": "^0.7.0",
-    "classnames": "^2.5.1",
     "clsx": "^2.1.1",
     "core-js": "^3.39.0",
-    "immer": "^10.1.1",
     "kbar": "^0.1.0-beta.45",
     "lodash-es": "^4.17.21",
     "lucide-react": "^0.460.0",
@@ -67,7 +64,6 @@
     "zxcvbn-typescript": "^5.0.1"
   },
   "devDependencies": {
-    "@storybook/builder-vite": "^8.4.4",
     "@tanstack/react-query-devtools": "^5.60.6",
     "@tanstack/router-devtools": "^1.82.1",
     "@tanstack/router-plugin": "^1.81.9",

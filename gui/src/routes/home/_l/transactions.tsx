@@ -129,8 +129,9 @@ interface IconProps {
 }
 
 function Icon({ account, tx }: IconProps) {
+  console.log(tx.to);
   if (!tx.to) {
-    <ReceiptText size={15} />;
+    return <ReceiptText size={15} />;
   } else if (tx.to.toLowerCase() === account.toLowerCase()) {
     return <MoveDownLeft size={15} />;
   } else {
