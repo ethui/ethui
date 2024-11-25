@@ -29,9 +29,17 @@ export const Attention: Story = {
 };
 
 export const Dev: Story = {
-  args: { dev: true },
+  args: { fg: "fill-dev", bg: "bg-transparent" },
 };
 
 export const DevAttention: Story = {
-  args: { dev: true, attention: true },
+  args: { fg: "fill-dev", bg: "bg-transparent", attention: true },
+};
+
+export const DevBg: Story = {
+  args: { bg: "fill-dev" },
+};
+
+export const DevBgAttention: Story = {
+  args: { bg: "fill-dev", attention: true },
 };

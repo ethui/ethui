@@ -35,14 +35,20 @@ import { QuickFastModeToggle } from "./QuickFastModeToggle";
 import { QuickNetworkSelect } from "./QuickNetworkSelect";
 import { QuickWalletSelect } from "./QuickWalletSelect";
 
+const isDev = import.meta.env.MODE === "development";
+
 export function AppSidebar() {
   const commandBar = useCommandBar();
   const location = useLocation();
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="">
-        <EthuiLogo size={48} />
+      <SidebarHeader className="flex items-center">
+        <EthuiLogo
+          size={48}
+          bg="bg-transparent"
+          fg={isDev ? "fill-dev" : "fill-sidebar-foreground"}
+        />
       </SidebarHeader>
 
       <SidebarContent>

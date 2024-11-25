@@ -22,6 +22,7 @@ pub(crate) fn build(app: &AppHandle) -> AppResult<()> {
         .build()?;
 
     TrayIconBuilder::new()
+        .icon(app.default_window_icon().unwrap().clone())
         .menu(&menu)
         .on_menu_event(event_handler)
         .on_tray_icon_event(|tray, event| {
