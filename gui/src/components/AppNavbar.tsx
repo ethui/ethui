@@ -3,12 +3,9 @@ import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import clsx from "clsx";
 import { useSidebar } from "#/components/shadcn/sidebar";
 import { useIsMobile } from "#/hooks/use-mobile";
+import { Breadcrumbs } from "./Breadcrumbs";
 
-interface NavbarProps {
-  title: React.ReactNode;
-}
-
-export function AppNavbar({ title }: NavbarProps) {
+export function AppNavbar() {
   const sidebar = useSidebar();
   const isMobile = useIsMobile();
 
@@ -25,9 +22,7 @@ export function AppNavbar({ title }: NavbarProps) {
         >
           <HamburgerMenuIcon />
         </Button>
-        <div className="flex items-center space-x-0 space-x-4 md:mx-4">
-          <h1 className="font-bold">{title}</h1>
-        </div>
+        <Breadcrumbs />
       </div>
     </header>
   );

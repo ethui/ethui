@@ -6,18 +6,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useRouter } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { useForm } from "react-hook-form";
-import { AppNavbar } from "#/components/AppNavbar";
 
-export const Route = createFileRoute("/home/_l/settings/networks/new")({
+export const Route = createFileRoute("/home/_l/settings/_l/networks/_l/new")({
+  beforeLoad: () => ({ breadcrumb: "New" }),
   component: () => {
-    return (
-      <>
-        <AppNavbar title="Settings » Networks » New" />
-        <div className="m-4">
-          <Content />
-        </div>
-      </>
-    );
+    return <Content />;
   },
 });
 

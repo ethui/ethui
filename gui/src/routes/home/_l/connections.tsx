@@ -15,12 +15,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@ethui/ui/components/shadcn/select";
-import { AppNavbar } from "#/components/AppNavbar";
 import { useEventListener } from "#/hooks/useEventListener";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 
 export const Route = createFileRoute("/home/_l/connections")({
+  beforeLoad: () => ({
+    breadcrumb: "Connections",
+  }),
   component: Connections,
 });
 
@@ -31,14 +33,11 @@ function Connections() {
   useEventListener("peers-updated", refetch);
 
   return (
-    <>
-      <AppNavbar title="Connections" />
-      <div className="m-1 flex flex-col">
-        {map(peersByDomain, (peers, domain) => (
-          <Domain key={domain} domain={domain} peers={peers} />
-        ))}
-      </div>
-    </>
+    <div className="m-1 flex flex-col">
+      {map(peersByDomain, (peers, domain) => (
+        <Domain key={domain} domain={domain} peers={peers} />
+      ))}
+    </div>
   );
 }
 

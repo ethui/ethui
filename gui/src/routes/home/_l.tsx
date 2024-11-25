@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { AnimatedOutlet } from "#/components/AnimatedOutlet";
+import { AppNavbar } from "#/components/AppNavbar";
 import { AppSidebar } from "#/components/AppSidebar";
 import { CommandBar, CommandBarProvider } from "#/components/CommandBar";
 import { SidebarProvider } from "#/components/shadcn/sidebar";
@@ -17,6 +18,7 @@ function HomePageLayout() {
       <SidebarProvider>
         <AppSidebar />
         <main className="relative flex min-h-svh flex-1 flex-col">
+          <AppNavbar />
           <AnimatedOutlet />
           <Notifications />
         </main>

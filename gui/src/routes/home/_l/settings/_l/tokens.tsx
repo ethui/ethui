@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { invoke } from "@tauri-apps/api/core";
 import type { Address } from "viem";
-import { AppNavbar } from "#/components/AppNavbar";
 
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { EyeOff } from "lucide-react";
@@ -11,15 +10,9 @@ import { IconAddress } from "#/components/Icons/Address";
 import { useBlacklist } from "#/store/useBlacklist";
 import { useNetworks } from "#/store/useNetworks";
 
-export const Route = createFileRoute("/home/_l/settings/tokens")({
-  component: () => (
-    <>
-      <AppNavbar title="Settings » Tokens" />
-      <div className="m-4">
-        <SettingsTokens />
-      </div>
-    </>
-  ),
+export const Route = createFileRoute("/home/_l/settings/_l/tokens")({
+  beforeLoad: () => ({ breadcrumb: "Tokens" }),
+  component: () => <SettingsTokens />,
 });
 
 function SettingsTokens() {
