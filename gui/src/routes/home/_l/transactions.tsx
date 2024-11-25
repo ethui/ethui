@@ -24,7 +24,6 @@ import { Button } from "@ethui/ui/components/shadcn/button";
 import { SolidityCall } from "@ethui/ui/components/solidity-call";
 import { MoveDownLeft, MoveUpRight, ReceiptText } from "lucide-react";
 import { AddressView } from "#/components/AddressView";
-import { AppNavbar } from "#/components/AppNavbar";
 import { Datapoint } from "#/components/Datapoint";
 import { HashView } from "#/components/HashView";
 import { useEventListener } from "#/hooks/useEventListener";
@@ -33,6 +32,7 @@ import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
 
 export const Route = createFileRoute("/home/_l/transactions")({
+  beforeLoad: () => ({ breadcrumb: "Transactions" }),
   component: Txs,
 });
 
@@ -82,29 +82,26 @@ function Txs() {
   );
 
   return (
-    <>
-      <AppNavbar title="Transactions" />
-      <Accordion type="multiple" className="w-full">
-        <InfiniteScroll
-          loadMore={loadMore}
-          hasMore={!pages.at(-1)?.last}
-          loader={loader}
-        >
-          {pages.flatMap((page) =>
-            page.items.map((tx, i) => (
-              <AccordionItem key={`${tx.hash} ${i}`} value={tx.hash}>
-                <AccordionTrigger>
-                  <Summary account={account} tx={tx} />
-                </AccordionTrigger>
-                <AccordionContent>
-                  <Details tx={tx} chainId={chainId} />
-                </AccordionContent>
-              </AccordionItem>
-            )),
-          )}
-        </InfiniteScroll>
-      </Accordion>
-    </>
+    <Accordion type="multiple" className="w-full">
+      <InfiniteScroll
+        loadMore={loadMore}
+        hasMore={!pages.at(-1)?.last}
+        loader={loader}
+      >
+        {pages.flatMap((page) =>
+          page.items.map((tx, i) => (
+            <AccordionItem key={`${tx.hash} ${i}`} value={tx.hash}>
+              <AccordionTrigger>
+                <Summary account={account} tx={tx} />
+              </AccordionTrigger>
+              <AccordionContent>
+                <Details tx={tx} chainId={chainId} />
+              </AccordionContent>
+            </AccordionItem>
+          )),
+        )}
+      </InfiniteScroll>
+    </Accordion>
   );
 }
 

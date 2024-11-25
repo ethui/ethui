@@ -26,12 +26,12 @@ import {
 import { Input } from "@ethui/ui/components/shadcn/input";
 import { Plus } from "lucide-react";
 import { AddressView } from "#/components/AddressView";
-import { AppNavbar } from "#/components/AppNavbar";
 import { ContractCallForm } from "#/components/ContractCallForm";
 import { useContracts } from "#/store/useContracts";
 import { useNetworks } from "#/store/useNetworks";
 
 export const Route = createFileRoute("/home/_l/contracts")({
+  beforeLoad: () => ({ breadcrumb: "Contracts" }),
   component: Contracts,
 });
 
@@ -43,7 +43,6 @@ function Contracts() {
 
   return (
     <>
-      <AppNavbar title="Contracts" />
       <Filter onChange={(f) => setFilter(f)} />
 
       <Accordion type="multiple" className="w-full">

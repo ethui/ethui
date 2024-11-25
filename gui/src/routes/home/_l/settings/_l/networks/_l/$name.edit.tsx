@@ -5,10 +5,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { useForm } from "react-hook-form";
-import { AppNavbar } from "#/components/AppNavbar";
 import { useNetworks } from "#/store/useNetworks";
 
-export const Route = createFileRoute("/home/_l/settings/networks/$name/edit")({
+export const Route = createFileRoute(
+  "/home/_l/settings/_l/networks/_l/$name/edit",
+)({
   loader: ({ params }: { params: { name: string } }) =>
     useNetworks.getState().networks.find((n) => n.name === params.name),
   component: () => {
@@ -17,14 +18,7 @@ export const Route = createFileRoute("/home/_l/settings/networks/$name/edit")({
     // TODO: can we show an error here instead?
     if (!network) return;
 
-    return (
-      <>
-        <AppNavbar title={`Settings » Networks » ${network.name}`} />
-        <div className="m-4">
-          <Content network={network} />
-        </div>
-      </>
-    );
+    return <Content network={network} />;
   },
 });
 

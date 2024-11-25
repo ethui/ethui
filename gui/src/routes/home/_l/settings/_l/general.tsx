@@ -7,18 +7,11 @@ import { z } from "zod";
 
 import { Form } from "@ethui/ui/components/form";
 import memoize from "lodash-es/memoize";
-import { AppNavbar } from "#/components/AppNavbar";
 import { useSettings } from "#/store/useSettings";
 
-export const Route = createFileRoute("/home/_l/settings/general")({
-  component: () => (
-    <>
-      <AppNavbar title="Settings » General" />
-      <div className="m-4">
-        <SettingsGeneral />
-      </div>
-    </>
-  ),
+export const Route = createFileRoute("/home/_l/settings/_l/general")({
+  beforeLoad: () => ({ breadcrumb: "General" }),
+  component: () => <SettingsGeneral />,
 });
 
 const alchemyKeyValidator = memoize(

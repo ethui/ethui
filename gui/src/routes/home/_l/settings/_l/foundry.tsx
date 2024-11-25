@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute } from "@tanstack/react-router";
-import { AppNavbar } from "#/components/AppNavbar";
 
 import { invoke } from "@tauri-apps/api/core";
 import { useCallback } from "react";
@@ -10,15 +9,9 @@ import { z } from "zod";
 import { Form } from "@ethui/ui/components/form";
 import { useSettings } from "#/store/useSettings";
 
-export const Route = createFileRoute("/home/_l/settings/foundry")({
-  component: () => (
-    <>
-      <AppNavbar title="Settings » Foundry" />
-      <div className="m-4">
-        <SettingsFoundry />
-      </div>
-    </>
-  ),
+export const Route = createFileRoute("/home/_l/settings/_l/foundry")({
+  beforeLoad: () => ({ breadcrumb: "Foundry" }),
+  component: () => <SettingsFoundry />,
 });
 
 const schema = z.object({
