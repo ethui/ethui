@@ -91,7 +91,7 @@ for (const size of [16, 48, 96, 128]) {
       const svg = `icons/symbol-${color}${attention}.svg`;
       const png = `icons/symbol-${color}${attention}-${size}.png`;
       console.log(`[extension] ${png}`);
-      await $`magick ${svg} -resize ${size}x extension/src/public/icons/ethui-${color}-${size}.png`;
+      await $`magick ${svg} -resize ${size}x extension/src/public/icons/ethui-${color}${attention}-${size}.png`;
     }
   }
 }
