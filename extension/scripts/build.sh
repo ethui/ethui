@@ -5,7 +5,7 @@ set -ue
 #
 # defaults
 #
-target=chrome-dev
+target=${1:-firefox-dev}
 version=0.0.0
 
 #
@@ -72,17 +72,19 @@ sed "${sed_args[@]}" "s/%VERSION%/$version/g" $DIST_DIR/manifest.json
 echo target $target
 # create crx / xpi
 case $target in
-  # builds and publishes to the chrome extension store
   chrome-dev)
     yarn run crx pack $DIST_DIR -o ./dist/chrome-dev-v$version.crx
     ;;
 
-  # builds and publishes to the chrome extension store
   chrome)
     yarn run crx pack $DIST_DIR -o ./dist/chrome-v$version.crx
     ;;
 
-  # builds and publishes to the firefox extension store
+  firefox-dev)
+    yarn run web-ext build -s $DIST_DIR -a .
+    mv ./ethui-dev-$version.zip dist/firefox-dev-v$version.xpi
+    ;;
+
   firefox)
     yarn run web-ext build -s $DIST_DIR -a .
     mv ./ethui-$version.zip dist/firefox-v$version.xpi

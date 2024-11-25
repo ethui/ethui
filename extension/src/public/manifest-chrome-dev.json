@@ -25,6 +25,15 @@
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self';"
   },
+  "action": {
+    "default_icon": {
+      "16": "icons/ethui-purple-16.png",
+      "48": "icons/ethui-purple-48.png",
+      "96": "icons/ethui-purple-96.png",
+      "128": "icons/ethui-purple-128.png"
+    },
+    "default_title": "Click me"
+  },
   "web_accessible_resources": [
     {
       "matches": ["<all_urls>"],

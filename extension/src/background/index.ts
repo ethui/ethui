@@ -1,5 +1,5 @@
 import log from "loglevel";
-import { type Runtime, runtime } from "webextension-polyfill";
+import { type Runtime, action, runtime } from "webextension-polyfill";
 import { ArrayQueue, ConstantBackoff, WebsocketBuilder } from "websocket-ts";
 
 import { type Settings, defaultSettings, loadSettings } from "#/settings";
@@ -19,6 +19,10 @@ export async function init() {
   // handle each incoming content script connection
   runtime.onConnect.addListener((port: Runtime.Port) => {
     setupProviderConnection(port);
+  });
+
+  action.onClicked.addListener(() => {
+    console.log("icon clicked");
   });
 }
 

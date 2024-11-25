@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "ethui",
+  "name": "ethui-dev",
   "description": "An Ethereum toolkit",
-  "version": "%VERSION%",
+  "version": "0.0.0",
   "author": "Miguel Palhas <mpalhas@gmail.com>",
   "homepage_url": "https://github.com/ethui",
   "devtools_page": "devtools/index.html",
@@ -45,10 +45,10 @@
   ],
   "permissions": ["storage", "scripting"],
   "icons": {
-    "16": "icons/ethui-black-16.png",
-    "48": "icons/ethui-black-48.png",
-    "96": "icons/ethui-black-96.png",
-    "128": "icons/ethui-black-128.png"
+    "16": "icons/ethui-purple-16.png",
+    "48": "icons/ethui-purple-48.png",
+    "96": "icons/ethui-purple-96.png",
+    "128": "icons/ethui-purple-128.png"
   },
   "browser_specific_settings": {
     "gecko": {
