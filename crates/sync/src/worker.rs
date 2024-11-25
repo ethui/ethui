@@ -176,10 +176,12 @@ async fn unit_worker(
     mut rx: mpsc::UnboundedReceiver<()>,
 ) -> Result<()> {
     loop {
-        let alchemy = get_alchemy(chain_id).await?;
-        if alchemy.fetch_updates(addr).await.is_err() {
-            warn!("Alchemy sync not set up");
-        };
+        if ethui_sync_alchemy::supports_network(chain_id) {
+            let alchemy = get_alchemy(chain_id).await?;
+            if let Err(e) = alchemy.fetch_updates(addr).await {
+                warn!("Alchemy error: {:?}", e);
+            };
+        }
 
         // wait for either a set delay, or for an outside poll request
         select! {

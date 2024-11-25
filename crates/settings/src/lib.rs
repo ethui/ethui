@@ -37,6 +37,7 @@ impl Settings {
     pub async fn init(&self) -> Result<()> {
         // make sure OS's autostart is synced with settings
         crate::autostart::update(self.inner.autostart)?;
+        ethui_tracing::reload(&self.inner.rust_log)?;
 
         Ok(())
     }

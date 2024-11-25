@@ -1,4 +1,4 @@
-use ethui_types::{events::Tx, Address, TokenMetadata, B256, U256};
+use ethui_types::{events::Tx, Address, TokenMetadata, B256, U256, U64};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -25,7 +25,7 @@ impl From<TokenBalance> for (Address, U256) {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AlchemyAssetTransfer {
-    pub block_num: u64,
+    pub block_num: U64,
     pub hash: B256,
     pub from: Address,
     pub to: Option<Address>,
@@ -38,7 +38,7 @@ pub struct AlchemyAssetTransfer {
 #[serde(rename_all = "camelCase")]
 pub struct AlchemyRawContract {
     pub address: Option<Address>,
-    pub decimal: Option<u8>,
+    pub decimal: Option<U64>,
 }
 
 impl From<&AlchemyAssetTransfer> for Tx {
@@ -46,7 +46,7 @@ impl From<&AlchemyAssetTransfer> for Tx {
         Self {
             hash: value.hash,
             trace_address: None,
-            block_number: Some(value.block_num),
+            block_number: Some(value.block_num.to()),
             from: value.from,
             to: value.to,
 
@@ -82,7 +82,7 @@ impl TryFrom<&AlchemyAssetTransfer> for TokenMetadata {
             address: value.raw_contract.address.unwrap(),
             name: None,
             symbol: value.asset.clone(),
-            decimals: value.raw_contract.decimal,
+            decimals: value.raw_contract.decimal.map(|d| d.to::<u32>() as u8),
         })
     }
 }
