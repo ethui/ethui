@@ -9,20 +9,11 @@
   },
   "app": {
     "trayIcon": {
-      "iconPath": "icons/icon.png",
+      "iconPath": "icons-dev/128x128.png",
       "iconAsTemplate": true
-    },
-    "security": {
-      "csp": {
-        "default-src": "'self'",
-        "font-src": ["'self'", "data:"],
-        "style-src": ["'self'", "'unsafe-inline'"],
-        "connect-src": ["https://api.github.com"]
-      }
     }
   },
   "bundle": {
-    "active": true,
-    "targets": "all"
+    "icon": ["icons-dev/128x128.png"]
   }
 }

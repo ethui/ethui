@@ -1,3 +1,4 @@
+import { EthuiLogo } from "@ethui/ui/components/ethui-logo";
 import {
   Collapsible,
   CollapsibleContent,
@@ -27,7 +28,6 @@ import {
   SidebarMenuSub,
   SidebarRail,
 } from "#/components/shadcn/sidebar";
-import { EthuiLogo } from "@ethui/ui/components/ethui-logo";
 import { cn } from "#/lib/utils";
 import { useCommandBar } from "./CommandBar";
 import { QuickAddressSelect } from "./QuickAddressSelect";
@@ -35,14 +35,20 @@ import { QuickFastModeToggle } from "./QuickFastModeToggle";
 import { QuickNetworkSelect } from "./QuickNetworkSelect";
 import { QuickWalletSelect } from "./QuickWalletSelect";
 
+const isDev = import.meta.env.MODE === "development";
+
 export function AppSidebar() {
   const commandBar = useCommandBar();
   const location = useLocation();
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="">
-        <EthuiLogo size={48} />
+      <SidebarHeader className="flex items-center">
+        <EthuiLogo
+          size={48}
+          bg="bg-transparent"
+          fg={isDev ? "fill-dev" : "fill-sidebar-foreground"}
+        />
       </SidebarHeader>
 
       <SidebarContent>
@@ -56,7 +62,7 @@ export function AppSidebar() {
                       href={item.url}
                       className={cn(
                         item.url === location.pathname &&
-                        "bg-primary text-accent hover:bg-primary hover:text-accent",
+                          "bg-primary text-accent hover:bg-primary hover:text-accent",
                       )}
                     >
                       {item.icon}
@@ -85,7 +91,7 @@ export function AppSidebar() {
                               href={item.url}
                               className={cn(
                                 item.url === location.pathname &&
-                                "bg-primary text-accent hover:bg-primary hover:text-accent",
+                                  "bg-primary text-accent hover:bg-primary hover:text-accent",
                               )}
                             >
                               {item.title}
