@@ -56,9 +56,8 @@ yarn run vite build --config vite/content.ts
 yarn run vite build --config vite/inpage.ts
 yarn run vite build --config vite/background.ts
 
-# choose manifest
-mv $DIST_DIR/manifest-$target.json $DIST_DIR/manifest.json
-rm $DIST_DIR/manifest-*.json
+# compile manifest
+jq -s '.[0] * .[1]' manifest/base.json manifest/$target.json > $DIST_DIR/manifest.json
 
 sed_args=(-i)
 if [ "$(uname -s)" == "Darwin" ]; then
