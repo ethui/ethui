@@ -7,7 +7,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "./scripts/build.sh",
+    "dev": "./scripts/build.sh firefox-dev",
     "build": "./scripts/build.sh \"$@\""
   },
   "dependencies": {
