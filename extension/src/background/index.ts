@@ -1,6 +1,6 @@
 import log from "loglevel";
 import { type Runtime, action, runtime } from "webextension-polyfill";
-import { ArrayQueue, ConstantBackoff, WebsocketBuilder } from "websocket";
+import { ArrayQueue, ConstantBackoff, WebsocketBuilder } from "websocket-ts";
 
 import { type Settings, defaultSettings, loadSettings } from "#/settings";
 
