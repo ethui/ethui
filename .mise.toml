@@ -2,7 +2,7 @@
 depends = ["dev"]
 
 [tasks.dev]
-run = "cargo tauri dev --config bin/tauri-dev.conf.json --features ${ETHUI_FEATURES:-debug} -- -- $@"
+run = "yarn run app:dev"
 alias = "d"
 
 [tasks.prod]
