@@ -1,9 +1,9 @@
-import yargs from "yargs";
-import { hideBin } from "yargs/helpers";
 import { exec } from "node:child_process";
-import JSON5 from "json5";
 import { readFile, writeFile } from "node:fs/promises";
 import jsonmergepatch from "json-merge-patch";
+import JSON5 from "json5";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 
 const { target, v: version } = await yargs(hideBin(process.argv))
   .option("target", { type: "string", default: "firefox-dev" })
