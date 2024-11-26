@@ -1888,13 +1888,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@ethui/abiparse@workspace:packages/abiparse"
   dependencies:
-    bun-plugin-dts: "npm:^0.3.0"
-    bun-types: "npm:^1.1.35"
     chevrotain: "npm:^11.0.3"
     nearly: "npm:^1.8.1"
+    tsc: "npm:^2.0.4"
+    typescript: "npm:^5.7.2"
     vitest: "npm:^2.1.5"
-  peerDependencies:
-    typescript: ^5.0.0
   languageName: unknown
   linkType: soft
 
@@ -5148,15 +5146,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:~20.12.8":
-  version: 20.12.14
-  resolution: "@types/node@npm:20.12.14"
-  dependencies:
-    undici-types: "npm:~5.26.4"
-  checksum: d6e383a09139efdedd91f4e8b584bb9b7537382d3dd276296a68b20a7819a562ae651efdd007a60036116f286b9c9a8a31af698f93b4024e569b0d129f293165
-  languageName: node
-  linkType: hard
-
 "@types/parse-json@npm:^4.0.0":
   version: 4.0.0
   resolution: "@types/parse-json@npm:4.0.0"
@@ -5244,15 +5233,6 @@ __metadata:
   version: 0.12.1
   resolution: "@types/webextension-polyfill@npm:0.12.1"
   checksum: d6e6253bbd020dcfa40391112212e3486320760d12c58854d0410140bda7ad0476749b9476e18d6888a1b04092662715b488f470c3aa29b44768990ffaf6d194
-  languageName: node
-  linkType: hard
-
-"@types/ws@npm:~8.5.10":
-  version: 8.5.10
-  resolution: "@types/ws@npm:8.5.10"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: e9af279b984c4a04ab53295a40aa95c3e9685f04888df5c6920860d1dd073fcc57c7bd33578a04b285b2c655a0b52258d34bee0a20569dca8defb8393e1e5d29
   languageName: node
   linkType: hard
 
@@ -6286,27 +6266,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bun-plugin-dts@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "bun-plugin-dts@npm:0.3.0"
-  dependencies:
-    common-path-prefix: "npm:^3.0.0"
-    dts-bundle-generator: "npm:^9.5.1"
-    get-tsconfig: "npm:^4.8.1"
-  checksum: 4875b7c30652200a7a4ef226de346ff998016a7cab90f25a36831b52e98523db47bffd074140d70d27cb12aa30fdce4ff8ca0bfab7de6dfdb6517ad401770ab2
-  languageName: node
-  linkType: hard
-
-"bun-types@npm:^1.1.35":
-  version: 1.1.35
-  resolution: "bun-types@npm:1.1.35"
-  dependencies:
-    "@types/node": "npm:~20.12.8"
-    "@types/ws": "npm:~8.5.10"
-  checksum: 2c79efbc17e245fa116f9f4d1466f39fa236c37466b85a0b4b22513eabbf236bb314c3c13a860c804d3aedb71c5d35d09a104ab9b858ec8f998c6fcbaca580c6
-  languageName: node
-  linkType: hard
-
 "bundle-name@npm:^3.0.0":
   version: 3.0.0
   resolution: "bundle-name@npm:3.0.0"
@@ -6853,13 +6812,6 @@ __metadata:
   version: 9.5.0
   resolution: "commander@npm:9.5.0"
   checksum: 5f7784fbda2aaec39e89eb46f06a999e00224b3763dc65976e05929ec486e174fe9aac2655f03ba6a5e83875bd173be5283dc19309b7c65954701c02025b3c1d
-  languageName: node
-  linkType: hard
-
-"common-path-prefix@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "common-path-prefix@npm:3.0.0"
-  checksum: c4a74294e1b1570f4a8ab435285d185a03976c323caa16359053e749db4fde44e3e6586c29cd051100335e11895767cbbd27ea389108e327d62f38daf4548fdb
   languageName: node
   linkType: hard
 
@@ -7552,18 +7504,6 @@ __metadata:
   dependencies:
     type-fest: "npm:^4.18.2"
   checksum: 4bac49a2f559156811862ac92813906f70529c50da918eaab81b38dd869743c667d578e183607f5ae11e8ae2a02e43e98e32c8a37bc4cae76b04d5b576e3112f
-  languageName: node
-  linkType: hard
-
-"dts-bundle-generator@npm:^9.5.1":
-  version: 9.5.1
-  resolution: "dts-bundle-generator@npm:9.5.1"
-  dependencies:
-    typescript: "npm:>=5.0.2"
-    yargs: "npm:^17.6.0"
-  bin:
-    dts-bundle-generator: dist/bin/dts-bundle-generator.js
-  checksum: 3685d3797b6cd252c5a27174a504193469e2a8d82188224767e522e2e8eb03de431107836232a0ac89bcfbc38caa0dcf2ec7fb81716e781185f8ea840b956bc2
   languageName: node
   linkType: hard
 
@@ -8740,7 +8680,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"get-tsconfig@npm:^4.7.5, get-tsconfig@npm:^4.8.1":
+"get-tsconfig@npm:^4.7.5":
   version: 4.8.1
   resolution: "get-tsconfig@npm:4.8.1"
   dependencies:
@@ -13612,6 +13552,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tsc@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "tsc@npm:2.0.4"
+  bin:
+    tsc: bin/tsc
+  checksum: 4651d344891d995e62ab7ca64ce0a8597bbdc2d392886c9956d15caab4dc9bfe86e759d3385b3f97c49fb5294194a161d6812673e3f51e46357c82482f32c3ab
+  languageName: node
+  linkType: hard
+
 "tsconfck@npm:^3.0.3":
   version: 3.0.3
   resolution: "tsconfck@npm:3.0.3"
@@ -13765,7 +13714,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:5.7":
+"typescript@npm:5.7, typescript@npm:^5.7.2":
   version: 5.7.2
   resolution: "typescript@npm:5.7.2"
   bin:
@@ -13775,33 +13724,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:>=5.0.2":
-  version: 5.4.5
-  resolution: "typescript@npm:5.4.5"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 2954022ada340fd3d6a9e2b8e534f65d57c92d5f3989a263754a78aba549f7e6529acc1921913560a4b816c46dce7df4a4d29f9f11a3dc0d4213bb76d043251e
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@npm%3A5.7#optional!builtin<compat/typescript>":
+"typescript@patch:typescript@npm%3A5.7#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.7.2#optional!builtin<compat/typescript>":
   version: 5.7.2
   resolution: "typescript@patch:typescript@npm%3A5.7.2#optional!builtin<compat/typescript>::version=5.7.2&hash=e012d7"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: c891ccf04008bc1305ba34053db951f8a4584b4a1bf2f68fd972c4a354df3dc5e62c8bfed4f6ac2d12e5b3b1c49af312c83a651048f818cd5b4949d17baacd79
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@npm%3A>=5.0.2#optional!builtin<compat/typescript>":
-  version: 5.4.5
-  resolution: "typescript@patch:typescript@npm%3A5.4.5#optional!builtin<compat/typescript>::version=5.4.5&hash=e012d7"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 9cf4c053893bcf327d101b6c024a55baf05430dc30263f9adb1bf354aeffc11306fe1f23ba2f9a0209674359f16219b5b7d229e923477b94831d07d5a33a4217
   languageName: node
   linkType: hard
 
@@ -14786,7 +14715,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs@npm:17.7.2, yargs@npm:^17.6.0, yargs@npm:^17.7.2":
+"yargs@npm:17.7.2, yargs@npm:^17.7.2":
   version: 17.7.2
   resolution: "yargs@npm:17.7.2"
   dependencies:
