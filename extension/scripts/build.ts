@@ -1,5 +1,5 @@
 import { exec } from "node:child_process";
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import jsonmergepatch from "json-merge-patch";
 import JSON5 from "json5";
 import yargs from "yargs";
@@ -70,5 +70,6 @@ async function generateManifest() {
 
   const manifest = jsonmergepatch.apply(baseManifest, targetManifest);
   manifest.version = version;
+  await mkdir(dist, { recursive: true });
   await writeFile(`${dist}/manifest.json`, JSON.stringify(manifest));
 }
