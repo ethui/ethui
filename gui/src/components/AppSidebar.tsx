@@ -1,3 +1,4 @@
+import { EthuiLogo } from "@ethui/ui/components/ethui-logo";
 import {
   Collapsible,
   CollapsibleContent,
@@ -28,12 +29,13 @@ import {
   SidebarRail,
 } from "#/components/shadcn/sidebar";
 import { cn } from "#/lib/utils";
-import { useCommandBar } from "./CommandBar.tsx";
-import { Logo } from "./Logo.tsx";
-import { QuickAddressSelect } from "./QuickAddressSelect.tsx";
-import { QuickFastModeToggle } from "./QuickFastModeToggle.tsx";
-import { QuickNetworkSelect } from "./QuickNetworkSelect.tsx";
-import { QuickWalletSelect } from "./QuickWalletSelect.tsx";
+import { useCommandBar } from "./CommandBar";
+import { QuickAddressSelect } from "./QuickAddressSelect";
+import { QuickFastModeToggle } from "./QuickFastModeToggle";
+import { QuickNetworkSelect } from "./QuickNetworkSelect";
+import { QuickWalletSelect } from "./QuickWalletSelect";
+
+const isDev = import.meta.env.MODE === "development";
 
 export function AppSidebar() {
   const commandBar = useCommandBar();
@@ -42,7 +44,11 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="flex items-center">
-        <Logo width={40} />
+        <EthuiLogo
+          size={48}
+          bg="bg-transparent"
+          fg={isDev ? "fill-dev" : "fill-sidebar-foreground"}
+        />
       </SidebarHeader>
 
       <SidebarContent>
@@ -155,6 +161,5 @@ const settingsItems = [
   { title: "Wallets", url: "/home/settings/wallets" },
   { title: "Network", url: "/home/settings/networks" },
   { title: "Foundry", url: "/home/settings/foundry" },
-  { title: "Keybinds", url: "/home/settings/keybinds" },
   { title: "Tokens", url: "/home/settings/tokens" },
 ];

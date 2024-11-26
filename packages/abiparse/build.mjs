@@ -1,4 +1,4 @@
-import dts from "bun-plugin-dts";
+import dts from "bun-plugin-";
 
 await Bun.build({
   entrypoints: ["./index.ts"],

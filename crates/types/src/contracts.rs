@@ -1,6 +1,5 @@
-use serde::Serialize;
-
 use alloy::{json_abi::JsonAbi, primitives::Address};
+use serde::Serialize;
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]

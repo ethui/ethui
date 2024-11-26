@@ -1,13 +1,18 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Outlet, createRootRoute } from "@tanstack/react-router";
+import { createRootRouteWithContext } from "@tanstack/react-router";
 import { Suspense } from "react";
 
+import { AnimatedOutlet } from "#/components/AnimatedOutlet";
 import { ErrorHandler } from "#/components/ErrorHandler";
 
 const queryClient = new QueryClient();
 
-export const Route = createRootRoute({
-  component: () => <Root />,
+type Context = {
+  breadcrumb?: string;
+};
+
+export const Route = createRootRouteWithContext<Context>()({
+  component: Root,
 });
 
 function Root() {
@@ -15,7 +20,7 @@ function Root() {
     <ErrorHandler>
       <QueryClientProvider client={queryClient}>
         <Suspense>
-          <Outlet />
+          <AnimatedOutlet />
         </Suspense>
       </QueryClientProvider>
     </ErrorHandler>

@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { z } from "zod";
 
-import { passwordSchema } from "./password.ts";
+import { passwordSchema } from "./password";
 
 export const mnemonicSchema = z
   .string()

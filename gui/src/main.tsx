@@ -1,6 +1,4 @@
-import "./global.css";
 import "@ethui/ui/tailwind.css";
-import "./tailwind.css";
 
 import {
   RouterProvider,
@@ -12,7 +10,11 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { routeTree } from "./routeTree.gen";
 
-const router = createRouter({ routeTree, history: createHashHistory() });
+const router = createRouter({
+  routeTree,
+  history: createHashHistory(),
+  context: {},
+});
 
 createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>

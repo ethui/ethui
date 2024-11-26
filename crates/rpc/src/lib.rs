@@ -4,8 +4,7 @@ mod methods;
 
 use std::collections::HashMap;
 
-use alloy::providers::Provider as _;
-use alloy::{dyn_abi::TypedData, hex, primitives::Bytes};
+use alloy::{dyn_abi::TypedData, hex, primitives::Bytes, providers::Provider as _};
 use ethui_connections::Ctx;
 use ethui_types::GlobalState;
 use ethui_wallets::{WalletControl, Wallets};
@@ -152,7 +151,7 @@ impl Handler {
         }))
     }
 
-    #[tracing::instrument()]
+    #[tracing::instrument(skip(params))]
     async fn add_chain(params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
         let method = methods::ChainAdd::build()
             .set_params(params.into())?

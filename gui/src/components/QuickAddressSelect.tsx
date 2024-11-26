@@ -13,7 +13,7 @@ import { useShallow } from "zustand/shallow";
 import type { Wallet } from "@ethui/types/wallets";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useWallets } from "#/store/useWallets";
-import { AddressView } from "./AddressView.tsx";
+import { AddressView } from "./AddressView";
 
 export function QuickAddressSelect() {
   const [currentWallet, setCurrentAddress] = useWallets(

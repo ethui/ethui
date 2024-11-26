@@ -4,13 +4,13 @@
   "license": "MIT",
   "description": "An Ethereum toolkit",
   "scripts": {
-    "app:dev": "cargo tauri dev --config bin/tauri-dev.conf.json --features debug",
+    "app:dev": "cargo tauri dev --config bin/tauri.dev.conf.json --features debug",
     "gui:build": "yarn workspace @ethui/gui build",
     "gui:devtools": "yarn workspace @ethui/gui devtools",
     "storybook": "yarn workspace @ethui/ui storybook",
     "ext:dev": "yarn workspace @ethui/extension dev",
     "ext:build": "yarn workspace @ethui/extension build \"$@\"",
-    "lint": "yarn lint:biome && yarn lint:tsc",
+    "lint": "yarn lint:biome && yarn lint:tsc && yarn workspace @ethui/gui run lint",
     "lint:biome": "biome check .",
     "lint:tsc": "yarn workspaces foreach --all --parallel run tsc --noEmit",
     "fix": "yarn fix:biome",
@@ -29,11 +29,14 @@
   ],
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "assert": "^2.1.0"
+    "assert": "^2.1.0",
+    "html-to-image": "^1.11.11",
+    "ts-unused-exports": "^10.1.0",
+    "tsx": "^4.19.2"
   },
   "dependencies": {
-    "@tauri-apps/cli": "^2.0.3",
-    "typescript": "5.7.0-beta"
+    "@tauri-apps/cli": "^2.1.0",
+    "typescript": "5.7"
   },
   "packageManager": "yarn@4.0.2"
 }

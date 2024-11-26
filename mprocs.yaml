@@ -3,8 +3,6 @@ procs:
     cmd: ["yarn", "run", "app:dev"]
   storybook:
     cmd: ["yarn", "run", "storybook"]
-  react-devtools:
-    cmd: ["yarn", "run", "gui:devtools"]
   web3-demo-anvil:
     cwd: "../web3-demo/"
     cmd: ["anvil"]

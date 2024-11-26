@@ -1,4 +1,4 @@
-import { ChainIcon } from "./icons/chain.tsx";
+import { ChainIcon } from "./icons/chain";
 
 export interface ChainViewProps {
   name: string;

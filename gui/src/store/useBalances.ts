@@ -5,8 +5,8 @@ import { type StateCreator, create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
 import type { TokenBalance } from "@ethui/types";
-import { useNetworks } from "./useNetworks.tsx";
-import { useWallets } from "./useWallets.ts";
+import { useNetworks } from "./useNetworks";
+import { useWallets } from "./useWallets";
 
 interface State {
   nativeBalance?: bigint;

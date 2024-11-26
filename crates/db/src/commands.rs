@@ -3,7 +3,6 @@ use ethui_types::{
     events::Tx, transactions::PaginatedTx, Address, Contract, Erc721TokenData, TokenBalance,
     TokenMetadata, UINotify, B256, U256,
 };
-use tracing::instrument;
 
 use super::{Paginated, Pagination, Result};
 use crate::{
@@ -23,12 +22,12 @@ pub async fn db_get_transactions(
 }
 
 #[tauri::command]
-#[instrument(skip(db))]
 pub async fn db_get_transaction_by_hash(
     chain_id: u32,
     hash: B256,
     db: tauri::State<'_, Db>,
 ) -> Result<Tx> {
+    tracing::trace!("db_get_transaction_by_hash");
     let tx = db.get_transaction_by_hash(chain_id, hash).await?;
 
     if tx.incomplete {

@@ -38,12 +38,12 @@ tokio.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
 
-fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs", rev = "016512b" }
+fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs", rev = "0e479e2" }
 named-lock = "0.3.0"
-tauri-plugin-os = "2.0.0-beta.6"
+tauri-plugin-os = "2.0.1"
 
 [build-dependencies]
-tauri-build = { version = "2.0.1", default-features = false , features = [] }
+tauri-build = { version = "2.0", default-features = false, features = [] }
 ethui-token-list.workspace = true
 
 [features]

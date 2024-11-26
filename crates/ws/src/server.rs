@@ -46,15 +46,11 @@ async fn accept_connection(socket: SocketAddr, stream: TcpStream) {
     let (snd, rcv) = mpsc::unbounded_channel::<serde_json::Value>();
     let url = query_params.get("url").cloned().unwrap_or_default();
 
-    tracing::debug!("Peer connected {}", url);
-
     let peer = Peer::new(socket, snd, &query_params);
 
     Peers::write().await.add_peer(peer.clone()).await;
     let res = handle_connection(peer, ws_stream, rcv).await;
     Peers::write().await.remove_peer(socket).await;
-
-    tracing::debug!("Peer disconnected {}", url);
 
     if let Err(e) = res {
         match e {

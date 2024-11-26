@@ -15,9 +15,9 @@ serde_json.workspace = true
 thiserror.workspace = true
 rand.workspace = true
 chacha20poly1305 = "0.10.1"
-rust-argon2 = "2.0.0"
+rust-argon2 = "2.1"
 aead = { version = "0.5.2", features = ["stream"], default-features = false }
-zeroize = "1.6.0"
+zeroize = "1.8"
 
 [package.metadata.cargo-machete]
 ignored = ["rust-argon2"]

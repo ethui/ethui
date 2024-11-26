@@ -12,9 +12,9 @@ import { Button } from "@ethui/ui/components/shadcn/button";
 import { Dialog, DialogContent } from "@ethui/ui/components/shadcn/dialog";
 import { ArrowTopRightIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
 import { useNetworks } from "#/store/useNetworks";
-import { AddressView } from "./AddressView.tsx";
-import { IconAddress } from "./Icons/Address.tsx";
-import { TransferForm } from "./TransferForm.tsx";
+import { AddressView } from "./AddressView";
+import { IconAddress } from "./Icons/Address";
+import { TransferForm } from "./TransferForm";
 
 interface Props {
   chainId: number;
@@ -51,16 +51,12 @@ export function ERC20View({
 
   return (
     <div className="flex items-center justify-between p-4 hover:bg-accent">
-      <div className="flex items-center">
+      <div className="flex items-center gap-2">
         <IconAddress chainId={chainId} address={contract} />
         <div className="flex flex-col">
-          <div className="items-bottom flex">
+          <div className="items-bottom flex gap-4">
             {symbol}
-            {contract && (
-              <>
-                (<AddressView address={contract} />)
-              </>
-            )}
+            {contract && <AddressView address={contract} />}
           </div>
           <span>
             {truncatedBalance > 0

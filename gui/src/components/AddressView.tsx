@@ -19,7 +19,7 @@ import { Link } from "@tanstack/react-router";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { truncateHex } from "#/utils";
-import { IconAddress } from "./Icons/Address.tsx";
+import { IconAddress } from "./Icons/Address";
 
 interface Props {
   address: Address;

@@ -2,8 +2,8 @@ use std::str::FromStr;
 
 use alloy::{
     dyn_abi::TypedData,
-    primitives::Bytes,
-    signers::{Signature, Signer as _},
+    primitives::{Bytes, PrimitiveSignature},
+    signers::Signer as _,
 };
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_networks::Network;
@@ -28,7 +28,7 @@ impl<'a> SignMessage<'a> {
         Default::default()
     }
 
-    pub async fn finish(&mut self) -> Result<Signature> {
+    pub async fn finish(&mut self) -> Result<PrimitiveSignature> {
         let skip =
             { self.network.is_dev() && self.wallet.is_dev() && Settings::read().await.fast_mode() };
 
@@ -61,7 +61,7 @@ impl<'a> SignMessage<'a> {
         }
     }
 
-    pub async fn sign(&mut self) -> Result<Signature> {
+    pub async fn sign(&mut self) -> Result<PrimitiveSignature> {
         let signer = self.build_signer().await;
 
         match self.data {

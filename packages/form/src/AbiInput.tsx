@@ -1,9 +1,9 @@
 import clsx from "clsx";
 import { useCallback } from "react";
 
-import { ArrayInput } from "./ArrayInput.tsx";
-import { Basic } from "./Basic.tsx";
-import { matchArrayType } from "./utils.tsx";
+import { ArrayInput } from "./ArrayInput";
+import { Basic } from "./Basic";
+import { matchArrayType } from "./utils";
 
 export interface BaseProps {
   name: string;

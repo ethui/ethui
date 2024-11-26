@@ -113,7 +113,7 @@ jobs:
               - '**/Cargo.lock'
         if: ${{ matrix.checks == 'advisories' }}
 
-      - uses: EmbarkStudios/cargo-deny-action@v1
+      - uses: EmbarkStudios/cargo-deny-action@v2.0.1
         with:
           command: check ${{ matrix.checks }}
         # conditionally run advisories only if lock changed

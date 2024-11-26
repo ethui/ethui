@@ -13,48 +13,53 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as OnboardingImport } from './routes/onboarding'
-import { Route as HomeImport } from './routes/_home'
-import { Route as DialogImport } from './routes/_dialog'
-import { Route as HomeHomeAccountImport } from './routes/_home.home/account'
-import { Route as DialogDialogWalletUnlockIdImport } from './routes/_dialog.dialog/wallet-unlock.$id'
-import { Route as DialogDialogTxReviewIdImport } from './routes/_dialog.dialog/tx-review.$id'
-import { Route as DialogDialogMsgSignIdImport } from './routes/_dialog.dialog/msg-sign.$id'
-import { Route as DialogDialogErc721AddIdImport } from './routes/_dialog.dialog/erc721-add.$id'
-import { Route as DialogDialogErc20AddIdImport } from './routes/_dialog.dialog/erc20-add.$id'
-import { Route as DialogDialogErc1155AddIdImport } from './routes/_dialog.dialog/erc1155-add.$id'
-import { Route as DialogDialogChainAddIdImport } from './routes/_dialog.dialog/chain-add.$id'
-import { Route as HomeHomeSettingsNetworksNameEditImport } from './routes/_home.home/settings/networks/$name.edit'
+import { Route as OnboardingLImport } from './routes/onboarding/_l'
+import { Route as HomeLImport } from './routes/home/_l'
+import { Route as DialogLImport } from './routes/dialog/_l'
+import { Route as OnboardingLIndexImport } from './routes/onboarding/_l/index'
+import { Route as OnboardingLThankYouImport } from './routes/onboarding/_l/thank-you'
+import { Route as OnboardingLExtensionImport } from './routes/onboarding/_l/extension'
+import { Route as OnboardingLAlchemyImport } from './routes/onboarding/_l/alchemy'
+import { Route as HomeLTransactionsImport } from './routes/home/_l/transactions'
+import { Route as HomeLContractsImport } from './routes/home/_l/contracts'
+import { Route as HomeLConnectionsImport } from './routes/home/_l/connections'
+import { Route as HomeLAccountImport } from './routes/home/_l/account'
+import { Route as OnboardingLWalletsLImport } from './routes/onboarding/_l/wallets/_l'
+import { Route as HomeLSettingsLImport } from './routes/home/_l/settings/_l'
+import { Route as DialogLWalletUnlockIdImport } from './routes/dialog/_l/wallet-unlock.$id'
+import { Route as DialogLTxReviewIdImport } from './routes/dialog/_l/tx-review.$id'
+import { Route as DialogLMsgSignIdImport } from './routes/dialog/_l/msg-sign.$id'
+import { Route as DialogLErc721AddIdImport } from './routes/dialog/_l/erc721-add.$id'
+import { Route as DialogLErc20AddIdImport } from './routes/dialog/_l/erc20-add.$id'
+import { Route as DialogLErc1155AddIdImport } from './routes/dialog/_l/erc1155-add.$id'
+import { Route as DialogLChainAddIdImport } from './routes/dialog/_l/chain-add.$id'
+import { Route as OnboardingLWalletsLIndexImport } from './routes/onboarding/_l/wallets/_l/index'
+import { Route as OnboardingLWalletsLNewImport } from './routes/onboarding/_l/wallets/_l/new'
+import { Route as HomeLSettingsLTokensImport } from './routes/home/_l/settings/_l/tokens'
+import { Route as HomeLSettingsLGeneralImport } from './routes/home/_l/settings/_l/general'
+import { Route as HomeLSettingsLFoundryImport } from './routes/home/_l/settings/_l/foundry'
+import { Route as OnboardingLWalletsLNameEditImport } from './routes/onboarding/_l/wallets/_l/$name.edit'
+import { Route as HomeLSettingsLWalletsLImport } from './routes/home/_l/settings/_l/wallets/_l'
+import { Route as HomeLSettingsLNetworksLImport } from './routes/home/_l/settings/_l/networks/_l'
+import { Route as HomeLSettingsLWalletsLIndexImport } from './routes/home/_l/settings/_l/wallets/_l/index'
+import { Route as HomeLSettingsLNetworksLIndexImport } from './routes/home/_l/settings/_l/networks/_l/index'
+import { Route as HomeLSettingsLWalletsLNewImport } from './routes/home/_l/settings/_l/wallets/_l/new'
+import { Route as HomeLSettingsLNetworksLNewImport } from './routes/home/_l/settings/_l/networks/_l/new'
+import { Route as HomeLSettingsLWalletsLNameEditImport } from './routes/home/_l/settings/_l/wallets/_l/$name.edit'
+import { Route as HomeLSettingsLNetworksLNameEditImport } from './routes/home/_l/settings/_l/networks/_l/$name.edit'
 
 // Create Virtual Routes
 
-const HomeHomeTransactionsLazyImport = createFileRoute(
-  '/_home/home/transactions',
+const OnboardingImport = createFileRoute('/onboarding')()
+const HomeImport = createFileRoute('/home')()
+const DialogImport = createFileRoute('/dialog')()
+const OnboardingLWalletsImport = createFileRoute('/onboarding/_l/wallets')()
+const HomeLSettingsImport = createFileRoute('/home/_l/settings')()
+const HomeLSettingsLWalletsImport = createFileRoute(
+  '/home/_l/settings/_l/wallets',
 )()
-const HomeHomeContractsLazyImport = createFileRoute('/_home/home/contracts')()
-const HomeHomeConnectionsLazyImport = createFileRoute(
-  '/_home/home/connections',
-)()
-const HomeHomeSettingsWalletsLazyImport = createFileRoute(
-  '/_home/home/settings/wallets',
-)()
-const HomeHomeSettingsTokensLazyImport = createFileRoute(
-  '/_home/home/settings/tokens',
-)()
-const HomeHomeSettingsKeybindsLazyImport = createFileRoute(
-  '/_home/home/settings/keybinds',
-)()
-const HomeHomeSettingsGeneralLazyImport = createFileRoute(
-  '/_home/home/settings/general',
-)()
-const HomeHomeSettingsFoundryLazyImport = createFileRoute(
-  '/_home/home/settings/foundry',
-)()
-const HomeHomeSettingsNetworksIndexLazyImport = createFileRoute(
-  '/_home/home/settings/networks/',
-)()
-const HomeHomeSettingsNetworksNewLazyImport = createFileRoute(
-  '/_home/home/settings/networks/new',
+const HomeLSettingsLNetworksImport = createFileRoute(
+  '/home/_l/settings/_l/networks',
 )()
 
 // Create/Update Routes
@@ -66,185 +71,276 @@ const OnboardingRoute = OnboardingImport.update({
 } as any)
 
 const HomeRoute = HomeImport.update({
-  id: '/_home',
+  id: '/home',
+  path: '/home',
   getParentRoute: () => rootRoute,
 } as any)
 
 const DialogRoute = DialogImport.update({
-  id: '/_dialog',
+  id: '/dialog',
+  path: '/dialog',
   getParentRoute: () => rootRoute,
 } as any)
 
-const HomeHomeTransactionsLazyRoute = HomeHomeTransactionsLazyImport.update({
-  id: '/home/transactions',
-  path: '/home/transactions',
-  getParentRoute: () => HomeRoute,
-} as any).lazy(() =>
-  import('./routes/_home.home/transactions.lazy').then((d) => d.Route),
-)
+const OnboardingLRoute = OnboardingLImport.update({
+  id: '/_l',
+  getParentRoute: () => OnboardingRoute,
+} as any)
 
-const HomeHomeContractsLazyRoute = HomeHomeContractsLazyImport.update({
-  id: '/home/contracts',
-  path: '/home/contracts',
-  getParentRoute: () => HomeRoute,
-} as any).lazy(() =>
-  import('./routes/_home.home/contracts.lazy').then((d) => d.Route),
-)
-
-const HomeHomeConnectionsLazyRoute = HomeHomeConnectionsLazyImport.update({
-  id: '/home/connections',
-  path: '/home/connections',
-  getParentRoute: () => HomeRoute,
-} as any).lazy(() =>
-  import('./routes/_home.home/connections.lazy').then((d) => d.Route),
-)
-
-const HomeHomeAccountRoute = HomeHomeAccountImport.update({
-  id: '/home/account',
-  path: '/home/account',
+const HomeLRoute = HomeLImport.update({
+  id: '/_l',
   getParentRoute: () => HomeRoute,
 } as any)
 
-const HomeHomeSettingsWalletsLazyRoute =
-  HomeHomeSettingsWalletsLazyImport.update({
-    id: '/home/settings/wallets',
-    path: '/home/settings/wallets',
-    getParentRoute: () => HomeRoute,
-  } as any).lazy(() =>
-    import('./routes/_home.home/settings/wallets.lazy').then((d) => d.Route),
-  )
+const DialogLRoute = DialogLImport.update({
+  id: '/_l',
+  getParentRoute: () => DialogRoute,
+} as any)
 
-const HomeHomeSettingsTokensLazyRoute = HomeHomeSettingsTokensLazyImport.update(
+const OnboardingLWalletsRoute = OnboardingLWalletsImport.update({
+  id: '/wallets',
+  path: '/wallets',
+  getParentRoute: () => OnboardingLRoute,
+} as any)
+
+const HomeLSettingsRoute = HomeLSettingsImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => HomeLRoute,
+} as any)
+
+const OnboardingLIndexRoute = OnboardingLIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OnboardingLRoute,
+} as any)
+
+const OnboardingLThankYouRoute = OnboardingLThankYouImport.update({
+  id: '/thank-you',
+  path: '/thank-you',
+  getParentRoute: () => OnboardingLRoute,
+} as any)
+
+const OnboardingLExtensionRoute = OnboardingLExtensionImport.update({
+  id: '/extension',
+  path: '/extension',
+  getParentRoute: () => OnboardingLRoute,
+} as any)
+
+const OnboardingLAlchemyRoute = OnboardingLAlchemyImport.update({
+  id: '/alchemy',
+  path: '/alchemy',
+  getParentRoute: () => OnboardingLRoute,
+} as any)
+
+const HomeLTransactionsRoute = HomeLTransactionsImport.update({
+  id: '/transactions',
+  path: '/transactions',
+  getParentRoute: () => HomeLRoute,
+} as any)
+
+const HomeLContractsRoute = HomeLContractsImport.update({
+  id: '/contracts',
+  path: '/contracts',
+  getParentRoute: () => HomeLRoute,
+} as any)
+
+const HomeLConnectionsRoute = HomeLConnectionsImport.update({
+  id: '/connections',
+  path: '/connections',
+  getParentRoute: () => HomeLRoute,
+} as any)
+
+const HomeLAccountRoute = HomeLAccountImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => HomeLRoute,
+} as any)
+
+const OnboardingLWalletsLRoute = OnboardingLWalletsLImport.update({
+  id: '/_l',
+  getParentRoute: () => OnboardingLWalletsRoute,
+} as any)
+
+const HomeLSettingsLRoute = HomeLSettingsLImport.update({
+  id: '/_l',
+  getParentRoute: () => HomeLSettingsRoute,
+} as any)
+
+const DialogLWalletUnlockIdRoute = DialogLWalletUnlockIdImport.update({
+  id: '/wallet-unlock/$id',
+  path: '/wallet-unlock/$id',
+  getParentRoute: () => DialogLRoute,
+} as any)
+
+const DialogLTxReviewIdRoute = DialogLTxReviewIdImport.update({
+  id: '/tx-review/$id',
+  path: '/tx-review/$id',
+  getParentRoute: () => DialogLRoute,
+} as any)
+
+const DialogLMsgSignIdRoute = DialogLMsgSignIdImport.update({
+  id: '/msg-sign/$id',
+  path: '/msg-sign/$id',
+  getParentRoute: () => DialogLRoute,
+} as any)
+
+const DialogLErc721AddIdRoute = DialogLErc721AddIdImport.update({
+  id: '/erc721-add/$id',
+  path: '/erc721-add/$id',
+  getParentRoute: () => DialogLRoute,
+} as any)
+
+const DialogLErc20AddIdRoute = DialogLErc20AddIdImport.update({
+  id: '/erc20-add/$id',
+  path: '/erc20-add/$id',
+  getParentRoute: () => DialogLRoute,
+} as any)
+
+const DialogLErc1155AddIdRoute = DialogLErc1155AddIdImport.update({
+  id: '/erc1155-add/$id',
+  path: '/erc1155-add/$id',
+  getParentRoute: () => DialogLRoute,
+} as any)
+
+const DialogLChainAddIdRoute = DialogLChainAddIdImport.update({
+  id: '/chain-add/$id',
+  path: '/chain-add/$id',
+  getParentRoute: () => DialogLRoute,
+} as any)
+
+const HomeLSettingsLWalletsRoute = HomeLSettingsLWalletsImport.update({
+  id: '/wallets',
+  path: '/wallets',
+  getParentRoute: () => HomeLSettingsLRoute,
+} as any)
+
+const HomeLSettingsLNetworksRoute = HomeLSettingsLNetworksImport.update({
+  id: '/networks',
+  path: '/networks',
+  getParentRoute: () => HomeLSettingsLRoute,
+} as any)
+
+const OnboardingLWalletsLIndexRoute = OnboardingLWalletsLIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OnboardingLWalletsLRoute,
+} as any)
+
+const OnboardingLWalletsLNewRoute = OnboardingLWalletsLNewImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => OnboardingLWalletsLRoute,
+} as any)
+
+const HomeLSettingsLTokensRoute = HomeLSettingsLTokensImport.update({
+  id: '/tokens',
+  path: '/tokens',
+  getParentRoute: () => HomeLSettingsLRoute,
+} as any)
+
+const HomeLSettingsLGeneralRoute = HomeLSettingsLGeneralImport.update({
+  id: '/general',
+  path: '/general',
+  getParentRoute: () => HomeLSettingsLRoute,
+} as any)
+
+const HomeLSettingsLFoundryRoute = HomeLSettingsLFoundryImport.update({
+  id: '/foundry',
+  path: '/foundry',
+  getParentRoute: () => HomeLSettingsLRoute,
+} as any)
+
+const OnboardingLWalletsLNameEditRoute =
+  OnboardingLWalletsLNameEditImport.update({
+    id: '/$name/edit',
+    path: '/$name/edit',
+    getParentRoute: () => OnboardingLWalletsLRoute,
+  } as any)
+
+const HomeLSettingsLWalletsLRoute = HomeLSettingsLWalletsLImport.update({
+  id: '/_l',
+  getParentRoute: () => HomeLSettingsLWalletsRoute,
+} as any)
+
+const HomeLSettingsLNetworksLRoute = HomeLSettingsLNetworksLImport.update({
+  id: '/_l',
+  getParentRoute: () => HomeLSettingsLNetworksRoute,
+} as any)
+
+const HomeLSettingsLWalletsLIndexRoute =
+  HomeLSettingsLWalletsLIndexImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => HomeLSettingsLWalletsLRoute,
+  } as any)
+
+const HomeLSettingsLNetworksLIndexRoute =
+  HomeLSettingsLNetworksLIndexImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => HomeLSettingsLNetworksLRoute,
+  } as any)
+
+const HomeLSettingsLWalletsLNewRoute = HomeLSettingsLWalletsLNewImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => HomeLSettingsLWalletsLRoute,
+} as any)
+
+const HomeLSettingsLNetworksLNewRoute = HomeLSettingsLNetworksLNewImport.update(
   {
-    id: '/home/settings/tokens',
-    path: '/home/settings/tokens',
-    getParentRoute: () => HomeRoute,
-  } as any,
-).lazy(() =>
-  import('./routes/_home.home/settings/tokens.lazy').then((d) => d.Route),
-)
-
-const HomeHomeSettingsKeybindsLazyRoute =
-  HomeHomeSettingsKeybindsLazyImport.update({
-    id: '/home/settings/keybinds',
-    path: '/home/settings/keybinds',
-    getParentRoute: () => HomeRoute,
-  } as any).lazy(() =>
-    import('./routes/_home.home/settings/keybinds.lazy').then((d) => d.Route),
-  )
-
-const HomeHomeSettingsGeneralLazyRoute =
-  HomeHomeSettingsGeneralLazyImport.update({
-    id: '/home/settings/general',
-    path: '/home/settings/general',
-    getParentRoute: () => HomeRoute,
-  } as any).lazy(() =>
-    import('./routes/_home.home/settings/general.lazy').then((d) => d.Route),
-  )
-
-const HomeHomeSettingsFoundryLazyRoute =
-  HomeHomeSettingsFoundryLazyImport.update({
-    id: '/home/settings/foundry',
-    path: '/home/settings/foundry',
-    getParentRoute: () => HomeRoute,
-  } as any).lazy(() =>
-    import('./routes/_home.home/settings/foundry.lazy').then((d) => d.Route),
-  )
-
-const DialogDialogWalletUnlockIdRoute = DialogDialogWalletUnlockIdImport.update(
-  {
-    id: '/dialog/wallet-unlock/$id',
-    path: '/dialog/wallet-unlock/$id',
-    getParentRoute: () => DialogRoute,
+    id: '/new',
+    path: '/new',
+    getParentRoute: () => HomeLSettingsLNetworksLRoute,
   } as any,
 )
 
-const DialogDialogTxReviewIdRoute = DialogDialogTxReviewIdImport.update({
-  id: '/dialog/tx-review/$id',
-  path: '/dialog/tx-review/$id',
-  getParentRoute: () => DialogRoute,
-} as any)
+const HomeLSettingsLWalletsLNameEditRoute =
+  HomeLSettingsLWalletsLNameEditImport.update({
+    id: '/$name/edit',
+    path: '/$name/edit',
+    getParentRoute: () => HomeLSettingsLWalletsLRoute,
+  } as any)
 
-const DialogDialogMsgSignIdRoute = DialogDialogMsgSignIdImport.update({
-  id: '/dialog/msg-sign/$id',
-  path: '/dialog/msg-sign/$id',
-  getParentRoute: () => DialogRoute,
-} as any)
-
-const DialogDialogErc721AddIdRoute = DialogDialogErc721AddIdImport.update({
-  id: '/dialog/erc721-add/$id',
-  path: '/dialog/erc721-add/$id',
-  getParentRoute: () => DialogRoute,
-} as any)
-
-const DialogDialogErc20AddIdRoute = DialogDialogErc20AddIdImport.update({
-  id: '/dialog/erc20-add/$id',
-  path: '/dialog/erc20-add/$id',
-  getParentRoute: () => DialogRoute,
-} as any)
-
-const DialogDialogErc1155AddIdRoute = DialogDialogErc1155AddIdImport.update({
-  id: '/dialog/erc1155-add/$id',
-  path: '/dialog/erc1155-add/$id',
-  getParentRoute: () => DialogRoute,
-} as any)
-
-const DialogDialogChainAddIdRoute = DialogDialogChainAddIdImport.update({
-  id: '/dialog/chain-add/$id',
-  path: '/dialog/chain-add/$id',
-  getParentRoute: () => DialogRoute,
-} as any)
-
-const HomeHomeSettingsNetworksIndexLazyRoute =
-  HomeHomeSettingsNetworksIndexLazyImport.update({
-    id: '/home/settings/networks/',
-    path: '/home/settings/networks/',
-    getParentRoute: () => HomeRoute,
-  } as any).lazy(() =>
-    import('./routes/_home.home/settings/networks/index.lazy').then(
-      (d) => d.Route,
-    ),
-  )
-
-const HomeHomeSettingsNetworksNewLazyRoute =
-  HomeHomeSettingsNetworksNewLazyImport.update({
-    id: '/home/settings/networks/new',
-    path: '/home/settings/networks/new',
-    getParentRoute: () => HomeRoute,
-  } as any).lazy(() =>
-    import('./routes/_home.home/settings/networks/new.lazy').then(
-      (d) => d.Route,
-    ),
-  )
-
-const HomeHomeSettingsNetworksNameEditRoute =
-  HomeHomeSettingsNetworksNameEditImport.update({
-    id: '/home/settings/networks/$name/edit',
-    path: '/home/settings/networks/$name/edit',
-    getParentRoute: () => HomeRoute,
-  } as any).lazy(() =>
-    import('./routes/_home.home/settings/networks/$name.edit.lazy').then(
-      (d) => d.Route,
-    ),
-  )
+const HomeLSettingsLNetworksLNameEditRoute =
+  HomeLSettingsLNetworksLNameEditImport.update({
+    id: '/$name/edit',
+    path: '/$name/edit',
+    getParentRoute: () => HomeLSettingsLNetworksLRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_dialog': {
-      id: '/_dialog'
-      path: ''
-      fullPath: ''
+    '/dialog': {
+      id: '/dialog'
+      path: '/dialog'
+      fullPath: '/dialog'
       preLoaderRoute: typeof DialogImport
       parentRoute: typeof rootRoute
     }
-    '/_home': {
-      id: '/_home'
-      path: ''
-      fullPath: ''
+    '/dialog/_l': {
+      id: '/dialog/_l'
+      path: '/dialog'
+      fullPath: '/dialog'
+      preLoaderRoute: typeof DialogLImport
+      parentRoute: typeof DialogRoute
+    }
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
       preLoaderRoute: typeof HomeImport
       parentRoute: typeof rootRoute
+    }
+    '/home/_l': {
+      id: '/home/_l'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeLImport
+      parentRoute: typeof HomeRoute
     }
     '/onboarding': {
       id: '/onboarding'
@@ -253,283 +349,607 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingImport
       parentRoute: typeof rootRoute
     }
-    '/_home/home/account': {
-      id: '/_home/home/account'
-      path: '/home/account'
+    '/onboarding/_l': {
+      id: '/onboarding/_l'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingLImport
+      parentRoute: typeof OnboardingRoute
+    }
+    '/home/_l/account': {
+      id: '/home/_l/account'
+      path: '/account'
       fullPath: '/home/account'
-      preLoaderRoute: typeof HomeHomeAccountImport
-      parentRoute: typeof HomeImport
+      preLoaderRoute: typeof HomeLAccountImport
+      parentRoute: typeof HomeLImport
     }
-    '/_home/home/connections': {
-      id: '/_home/home/connections'
-      path: '/home/connections'
+    '/home/_l/connections': {
+      id: '/home/_l/connections'
+      path: '/connections'
       fullPath: '/home/connections'
-      preLoaderRoute: typeof HomeHomeConnectionsLazyImport
-      parentRoute: typeof HomeImport
+      preLoaderRoute: typeof HomeLConnectionsImport
+      parentRoute: typeof HomeLImport
     }
-    '/_home/home/contracts': {
-      id: '/_home/home/contracts'
-      path: '/home/contracts'
+    '/home/_l/contracts': {
+      id: '/home/_l/contracts'
+      path: '/contracts'
       fullPath: '/home/contracts'
-      preLoaderRoute: typeof HomeHomeContractsLazyImport
-      parentRoute: typeof HomeImport
+      preLoaderRoute: typeof HomeLContractsImport
+      parentRoute: typeof HomeLImport
     }
-    '/_home/home/transactions': {
-      id: '/_home/home/transactions'
-      path: '/home/transactions'
+    '/home/_l/transactions': {
+      id: '/home/_l/transactions'
+      path: '/transactions'
       fullPath: '/home/transactions'
-      preLoaderRoute: typeof HomeHomeTransactionsLazyImport
-      parentRoute: typeof HomeImport
+      preLoaderRoute: typeof HomeLTransactionsImport
+      parentRoute: typeof HomeLImport
     }
-    '/_dialog/dialog/chain-add/$id': {
-      id: '/_dialog/dialog/chain-add/$id'
-      path: '/dialog/chain-add/$id'
+    '/onboarding/_l/alchemy': {
+      id: '/onboarding/_l/alchemy'
+      path: '/alchemy'
+      fullPath: '/onboarding/alchemy'
+      preLoaderRoute: typeof OnboardingLAlchemyImport
+      parentRoute: typeof OnboardingLImport
+    }
+    '/onboarding/_l/extension': {
+      id: '/onboarding/_l/extension'
+      path: '/extension'
+      fullPath: '/onboarding/extension'
+      preLoaderRoute: typeof OnboardingLExtensionImport
+      parentRoute: typeof OnboardingLImport
+    }
+    '/onboarding/_l/thank-you': {
+      id: '/onboarding/_l/thank-you'
+      path: '/thank-you'
+      fullPath: '/onboarding/thank-you'
+      preLoaderRoute: typeof OnboardingLThankYouImport
+      parentRoute: typeof OnboardingLImport
+    }
+    '/onboarding/_l/': {
+      id: '/onboarding/_l/'
+      path: '/'
+      fullPath: '/onboarding/'
+      preLoaderRoute: typeof OnboardingLIndexImport
+      parentRoute: typeof OnboardingLImport
+    }
+    '/dialog/_l/chain-add/$id': {
+      id: '/dialog/_l/chain-add/$id'
+      path: '/chain-add/$id'
       fullPath: '/dialog/chain-add/$id'
-      preLoaderRoute: typeof DialogDialogChainAddIdImport
-      parentRoute: typeof DialogImport
+      preLoaderRoute: typeof DialogLChainAddIdImport
+      parentRoute: typeof DialogLImport
     }
-    '/_dialog/dialog/erc1155-add/$id': {
-      id: '/_dialog/dialog/erc1155-add/$id'
-      path: '/dialog/erc1155-add/$id'
+    '/dialog/_l/erc1155-add/$id': {
+      id: '/dialog/_l/erc1155-add/$id'
+      path: '/erc1155-add/$id'
       fullPath: '/dialog/erc1155-add/$id'
-      preLoaderRoute: typeof DialogDialogErc1155AddIdImport
-      parentRoute: typeof DialogImport
+      preLoaderRoute: typeof DialogLErc1155AddIdImport
+      parentRoute: typeof DialogLImport
     }
-    '/_dialog/dialog/erc20-add/$id': {
-      id: '/_dialog/dialog/erc20-add/$id'
-      path: '/dialog/erc20-add/$id'
+    '/dialog/_l/erc20-add/$id': {
+      id: '/dialog/_l/erc20-add/$id'
+      path: '/erc20-add/$id'
       fullPath: '/dialog/erc20-add/$id'
-      preLoaderRoute: typeof DialogDialogErc20AddIdImport
-      parentRoute: typeof DialogImport
+      preLoaderRoute: typeof DialogLErc20AddIdImport
+      parentRoute: typeof DialogLImport
     }
-    '/_dialog/dialog/erc721-add/$id': {
-      id: '/_dialog/dialog/erc721-add/$id'
-      path: '/dialog/erc721-add/$id'
+    '/dialog/_l/erc721-add/$id': {
+      id: '/dialog/_l/erc721-add/$id'
+      path: '/erc721-add/$id'
       fullPath: '/dialog/erc721-add/$id'
-      preLoaderRoute: typeof DialogDialogErc721AddIdImport
-      parentRoute: typeof DialogImport
+      preLoaderRoute: typeof DialogLErc721AddIdImport
+      parentRoute: typeof DialogLImport
     }
-    '/_dialog/dialog/msg-sign/$id': {
-      id: '/_dialog/dialog/msg-sign/$id'
-      path: '/dialog/msg-sign/$id'
+    '/dialog/_l/msg-sign/$id': {
+      id: '/dialog/_l/msg-sign/$id'
+      path: '/msg-sign/$id'
       fullPath: '/dialog/msg-sign/$id'
-      preLoaderRoute: typeof DialogDialogMsgSignIdImport
-      parentRoute: typeof DialogImport
+      preLoaderRoute: typeof DialogLMsgSignIdImport
+      parentRoute: typeof DialogLImport
     }
-    '/_dialog/dialog/tx-review/$id': {
-      id: '/_dialog/dialog/tx-review/$id'
-      path: '/dialog/tx-review/$id'
+    '/dialog/_l/tx-review/$id': {
+      id: '/dialog/_l/tx-review/$id'
+      path: '/tx-review/$id'
       fullPath: '/dialog/tx-review/$id'
-      preLoaderRoute: typeof DialogDialogTxReviewIdImport
-      parentRoute: typeof DialogImport
+      preLoaderRoute: typeof DialogLTxReviewIdImport
+      parentRoute: typeof DialogLImport
     }
-    '/_dialog/dialog/wallet-unlock/$id': {
-      id: '/_dialog/dialog/wallet-unlock/$id'
-      path: '/dialog/wallet-unlock/$id'
+    '/dialog/_l/wallet-unlock/$id': {
+      id: '/dialog/_l/wallet-unlock/$id'
+      path: '/wallet-unlock/$id'
       fullPath: '/dialog/wallet-unlock/$id'
-      preLoaderRoute: typeof DialogDialogWalletUnlockIdImport
-      parentRoute: typeof DialogImport
+      preLoaderRoute: typeof DialogLWalletUnlockIdImport
+      parentRoute: typeof DialogLImport
     }
-    '/_home/home/settings/foundry': {
-      id: '/_home/home/settings/foundry'
-      path: '/home/settings/foundry'
+    '/home/_l/settings': {
+      id: '/home/_l/settings'
+      path: '/settings'
+      fullPath: '/home/settings'
+      preLoaderRoute: typeof HomeLSettingsImport
+      parentRoute: typeof HomeLImport
+    }
+    '/home/_l/settings/_l': {
+      id: '/home/_l/settings/_l'
+      path: '/settings'
+      fullPath: '/home/settings'
+      preLoaderRoute: typeof HomeLSettingsLImport
+      parentRoute: typeof HomeLSettingsRoute
+    }
+    '/onboarding/_l/wallets': {
+      id: '/onboarding/_l/wallets'
+      path: '/wallets'
+      fullPath: '/onboarding/wallets'
+      preLoaderRoute: typeof OnboardingLWalletsImport
+      parentRoute: typeof OnboardingLImport
+    }
+    '/onboarding/_l/wallets/_l': {
+      id: '/onboarding/_l/wallets/_l'
+      path: '/wallets'
+      fullPath: '/onboarding/wallets'
+      preLoaderRoute: typeof OnboardingLWalletsLImport
+      parentRoute: typeof OnboardingLWalletsRoute
+    }
+    '/home/_l/settings/_l/foundry': {
+      id: '/home/_l/settings/_l/foundry'
+      path: '/foundry'
       fullPath: '/home/settings/foundry'
-      preLoaderRoute: typeof HomeHomeSettingsFoundryLazyImport
-      parentRoute: typeof HomeImport
+      preLoaderRoute: typeof HomeLSettingsLFoundryImport
+      parentRoute: typeof HomeLSettingsLImport
     }
-    '/_home/home/settings/general': {
-      id: '/_home/home/settings/general'
-      path: '/home/settings/general'
+    '/home/_l/settings/_l/general': {
+      id: '/home/_l/settings/_l/general'
+      path: '/general'
       fullPath: '/home/settings/general'
-      preLoaderRoute: typeof HomeHomeSettingsGeneralLazyImport
-      parentRoute: typeof HomeImport
+      preLoaderRoute: typeof HomeLSettingsLGeneralImport
+      parentRoute: typeof HomeLSettingsLImport
     }
-    '/_home/home/settings/keybinds': {
-      id: '/_home/home/settings/keybinds'
-      path: '/home/settings/keybinds'
-      fullPath: '/home/settings/keybinds'
-      preLoaderRoute: typeof HomeHomeSettingsKeybindsLazyImport
-      parentRoute: typeof HomeImport
-    }
-    '/_home/home/settings/tokens': {
-      id: '/_home/home/settings/tokens'
-      path: '/home/settings/tokens'
+    '/home/_l/settings/_l/tokens': {
+      id: '/home/_l/settings/_l/tokens'
+      path: '/tokens'
       fullPath: '/home/settings/tokens'
-      preLoaderRoute: typeof HomeHomeSettingsTokensLazyImport
-      parentRoute: typeof HomeImport
+      preLoaderRoute: typeof HomeLSettingsLTokensImport
+      parentRoute: typeof HomeLSettingsLImport
     }
-    '/_home/home/settings/wallets': {
-      id: '/_home/home/settings/wallets'
-      path: '/home/settings/wallets'
-      fullPath: '/home/settings/wallets'
-      preLoaderRoute: typeof HomeHomeSettingsWalletsLazyImport
-      parentRoute: typeof HomeImport
+    '/onboarding/_l/wallets/_l/new': {
+      id: '/onboarding/_l/wallets/_l/new'
+      path: '/new'
+      fullPath: '/onboarding/wallets/new'
+      preLoaderRoute: typeof OnboardingLWalletsLNewImport
+      parentRoute: typeof OnboardingLWalletsLImport
     }
-    '/_home/home/settings/networks/new': {
-      id: '/_home/home/settings/networks/new'
-      path: '/home/settings/networks/new'
-      fullPath: '/home/settings/networks/new'
-      preLoaderRoute: typeof HomeHomeSettingsNetworksNewLazyImport
-      parentRoute: typeof HomeImport
+    '/onboarding/_l/wallets/_l/': {
+      id: '/onboarding/_l/wallets/_l/'
+      path: '/'
+      fullPath: '/onboarding/wallets/'
+      preLoaderRoute: typeof OnboardingLWalletsLIndexImport
+      parentRoute: typeof OnboardingLWalletsLImport
     }
-    '/_home/home/settings/networks/': {
-      id: '/_home/home/settings/networks/'
-      path: '/home/settings/networks'
+    '/home/_l/settings/_l/networks': {
+      id: '/home/_l/settings/_l/networks'
+      path: '/networks'
       fullPath: '/home/settings/networks'
-      preLoaderRoute: typeof HomeHomeSettingsNetworksIndexLazyImport
-      parentRoute: typeof HomeImport
+      preLoaderRoute: typeof HomeLSettingsLNetworksImport
+      parentRoute: typeof HomeLSettingsLImport
     }
-    '/_home/home/settings/networks/$name/edit': {
-      id: '/_home/home/settings/networks/$name/edit'
-      path: '/home/settings/networks/$name/edit'
+    '/home/_l/settings/_l/networks/_l': {
+      id: '/home/_l/settings/_l/networks/_l'
+      path: '/networks'
+      fullPath: '/home/settings/networks'
+      preLoaderRoute: typeof HomeLSettingsLNetworksLImport
+      parentRoute: typeof HomeLSettingsLNetworksRoute
+    }
+    '/home/_l/settings/_l/wallets': {
+      id: '/home/_l/settings/_l/wallets'
+      path: '/wallets'
+      fullPath: '/home/settings/wallets'
+      preLoaderRoute: typeof HomeLSettingsLWalletsImport
+      parentRoute: typeof HomeLSettingsLImport
+    }
+    '/home/_l/settings/_l/wallets/_l': {
+      id: '/home/_l/settings/_l/wallets/_l'
+      path: '/wallets'
+      fullPath: '/home/settings/wallets'
+      preLoaderRoute: typeof HomeLSettingsLWalletsLImport
+      parentRoute: typeof HomeLSettingsLWalletsRoute
+    }
+    '/onboarding/_l/wallets/_l/$name/edit': {
+      id: '/onboarding/_l/wallets/_l/$name/edit'
+      path: '/$name/edit'
+      fullPath: '/onboarding/wallets/$name/edit'
+      preLoaderRoute: typeof OnboardingLWalletsLNameEditImport
+      parentRoute: typeof OnboardingLWalletsLImport
+    }
+    '/home/_l/settings/_l/networks/_l/new': {
+      id: '/home/_l/settings/_l/networks/_l/new'
+      path: '/new'
+      fullPath: '/home/settings/networks/new'
+      preLoaderRoute: typeof HomeLSettingsLNetworksLNewImport
+      parentRoute: typeof HomeLSettingsLNetworksLImport
+    }
+    '/home/_l/settings/_l/wallets/_l/new': {
+      id: '/home/_l/settings/_l/wallets/_l/new'
+      path: '/new'
+      fullPath: '/home/settings/wallets/new'
+      preLoaderRoute: typeof HomeLSettingsLWalletsLNewImport
+      parentRoute: typeof HomeLSettingsLWalletsLImport
+    }
+    '/home/_l/settings/_l/networks/_l/': {
+      id: '/home/_l/settings/_l/networks/_l/'
+      path: '/'
+      fullPath: '/home/settings/networks/'
+      preLoaderRoute: typeof HomeLSettingsLNetworksLIndexImport
+      parentRoute: typeof HomeLSettingsLNetworksLImport
+    }
+    '/home/_l/settings/_l/wallets/_l/': {
+      id: '/home/_l/settings/_l/wallets/_l/'
+      path: '/'
+      fullPath: '/home/settings/wallets/'
+      preLoaderRoute: typeof HomeLSettingsLWalletsLIndexImport
+      parentRoute: typeof HomeLSettingsLWalletsLImport
+    }
+    '/home/_l/settings/_l/networks/_l/$name/edit': {
+      id: '/home/_l/settings/_l/networks/_l/$name/edit'
+      path: '/$name/edit'
       fullPath: '/home/settings/networks/$name/edit'
-      preLoaderRoute: typeof HomeHomeSettingsNetworksNameEditImport
-      parentRoute: typeof HomeImport
+      preLoaderRoute: typeof HomeLSettingsLNetworksLNameEditImport
+      parentRoute: typeof HomeLSettingsLNetworksLImport
+    }
+    '/home/_l/settings/_l/wallets/_l/$name/edit': {
+      id: '/home/_l/settings/_l/wallets/_l/$name/edit'
+      path: '/$name/edit'
+      fullPath: '/home/settings/wallets/$name/edit'
+      preLoaderRoute: typeof HomeLSettingsLWalletsLNameEditImport
+      parentRoute: typeof HomeLSettingsLWalletsLImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface DialogLRouteChildren {
+  DialogLChainAddIdRoute: typeof DialogLChainAddIdRoute
+  DialogLErc1155AddIdRoute: typeof DialogLErc1155AddIdRoute
+  DialogLErc20AddIdRoute: typeof DialogLErc20AddIdRoute
+  DialogLErc721AddIdRoute: typeof DialogLErc721AddIdRoute
+  DialogLMsgSignIdRoute: typeof DialogLMsgSignIdRoute
+  DialogLTxReviewIdRoute: typeof DialogLTxReviewIdRoute
+  DialogLWalletUnlockIdRoute: typeof DialogLWalletUnlockIdRoute
+}
+
+const DialogLRouteChildren: DialogLRouteChildren = {
+  DialogLChainAddIdRoute: DialogLChainAddIdRoute,
+  DialogLErc1155AddIdRoute: DialogLErc1155AddIdRoute,
+  DialogLErc20AddIdRoute: DialogLErc20AddIdRoute,
+  DialogLErc721AddIdRoute: DialogLErc721AddIdRoute,
+  DialogLMsgSignIdRoute: DialogLMsgSignIdRoute,
+  DialogLTxReviewIdRoute: DialogLTxReviewIdRoute,
+  DialogLWalletUnlockIdRoute: DialogLWalletUnlockIdRoute,
+}
+
+const DialogLRouteWithChildren =
+  DialogLRoute._addFileChildren(DialogLRouteChildren)
+
 interface DialogRouteChildren {
-  DialogDialogChainAddIdRoute: typeof DialogDialogChainAddIdRoute
-  DialogDialogErc1155AddIdRoute: typeof DialogDialogErc1155AddIdRoute
-  DialogDialogErc20AddIdRoute: typeof DialogDialogErc20AddIdRoute
-  DialogDialogErc721AddIdRoute: typeof DialogDialogErc721AddIdRoute
-  DialogDialogMsgSignIdRoute: typeof DialogDialogMsgSignIdRoute
-  DialogDialogTxReviewIdRoute: typeof DialogDialogTxReviewIdRoute
-  DialogDialogWalletUnlockIdRoute: typeof DialogDialogWalletUnlockIdRoute
+  DialogLRoute: typeof DialogLRouteWithChildren
 }
 
 const DialogRouteChildren: DialogRouteChildren = {
-  DialogDialogChainAddIdRoute: DialogDialogChainAddIdRoute,
-  DialogDialogErc1155AddIdRoute: DialogDialogErc1155AddIdRoute,
-  DialogDialogErc20AddIdRoute: DialogDialogErc20AddIdRoute,
-  DialogDialogErc721AddIdRoute: DialogDialogErc721AddIdRoute,
-  DialogDialogMsgSignIdRoute: DialogDialogMsgSignIdRoute,
-  DialogDialogTxReviewIdRoute: DialogDialogTxReviewIdRoute,
-  DialogDialogWalletUnlockIdRoute: DialogDialogWalletUnlockIdRoute,
+  DialogLRoute: DialogLRouteWithChildren,
 }
 
 const DialogRouteWithChildren =
   DialogRoute._addFileChildren(DialogRouteChildren)
 
+interface HomeLSettingsLNetworksLRouteChildren {
+  HomeLSettingsLNetworksLNewRoute: typeof HomeLSettingsLNetworksLNewRoute
+  HomeLSettingsLNetworksLIndexRoute: typeof HomeLSettingsLNetworksLIndexRoute
+  HomeLSettingsLNetworksLNameEditRoute: typeof HomeLSettingsLNetworksLNameEditRoute
+}
+
+const HomeLSettingsLNetworksLRouteChildren: HomeLSettingsLNetworksLRouteChildren =
+  {
+    HomeLSettingsLNetworksLNewRoute: HomeLSettingsLNetworksLNewRoute,
+    HomeLSettingsLNetworksLIndexRoute: HomeLSettingsLNetworksLIndexRoute,
+    HomeLSettingsLNetworksLNameEditRoute: HomeLSettingsLNetworksLNameEditRoute,
+  }
+
+const HomeLSettingsLNetworksLRouteWithChildren =
+  HomeLSettingsLNetworksLRoute._addFileChildren(
+    HomeLSettingsLNetworksLRouteChildren,
+  )
+
+interface HomeLSettingsLNetworksRouteChildren {
+  HomeLSettingsLNetworksLRoute: typeof HomeLSettingsLNetworksLRouteWithChildren
+}
+
+const HomeLSettingsLNetworksRouteChildren: HomeLSettingsLNetworksRouteChildren =
+  {
+    HomeLSettingsLNetworksLRoute: HomeLSettingsLNetworksLRouteWithChildren,
+  }
+
+const HomeLSettingsLNetworksRouteWithChildren =
+  HomeLSettingsLNetworksRoute._addFileChildren(
+    HomeLSettingsLNetworksRouteChildren,
+  )
+
+interface HomeLSettingsLWalletsLRouteChildren {
+  HomeLSettingsLWalletsLNewRoute: typeof HomeLSettingsLWalletsLNewRoute
+  HomeLSettingsLWalletsLIndexRoute: typeof HomeLSettingsLWalletsLIndexRoute
+  HomeLSettingsLWalletsLNameEditRoute: typeof HomeLSettingsLWalletsLNameEditRoute
+}
+
+const HomeLSettingsLWalletsLRouteChildren: HomeLSettingsLWalletsLRouteChildren =
+  {
+    HomeLSettingsLWalletsLNewRoute: HomeLSettingsLWalletsLNewRoute,
+    HomeLSettingsLWalletsLIndexRoute: HomeLSettingsLWalletsLIndexRoute,
+    HomeLSettingsLWalletsLNameEditRoute: HomeLSettingsLWalletsLNameEditRoute,
+  }
+
+const HomeLSettingsLWalletsLRouteWithChildren =
+  HomeLSettingsLWalletsLRoute._addFileChildren(
+    HomeLSettingsLWalletsLRouteChildren,
+  )
+
+interface HomeLSettingsLWalletsRouteChildren {
+  HomeLSettingsLWalletsLRoute: typeof HomeLSettingsLWalletsLRouteWithChildren
+}
+
+const HomeLSettingsLWalletsRouteChildren: HomeLSettingsLWalletsRouteChildren = {
+  HomeLSettingsLWalletsLRoute: HomeLSettingsLWalletsLRouteWithChildren,
+}
+
+const HomeLSettingsLWalletsRouteWithChildren =
+  HomeLSettingsLWalletsRoute._addFileChildren(
+    HomeLSettingsLWalletsRouteChildren,
+  )
+
+interface HomeLSettingsLRouteChildren {
+  HomeLSettingsLFoundryRoute: typeof HomeLSettingsLFoundryRoute
+  HomeLSettingsLGeneralRoute: typeof HomeLSettingsLGeneralRoute
+  HomeLSettingsLTokensRoute: typeof HomeLSettingsLTokensRoute
+  HomeLSettingsLNetworksRoute: typeof HomeLSettingsLNetworksRouteWithChildren
+  HomeLSettingsLWalletsRoute: typeof HomeLSettingsLWalletsRouteWithChildren
+}
+
+const HomeLSettingsLRouteChildren: HomeLSettingsLRouteChildren = {
+  HomeLSettingsLFoundryRoute: HomeLSettingsLFoundryRoute,
+  HomeLSettingsLGeneralRoute: HomeLSettingsLGeneralRoute,
+  HomeLSettingsLTokensRoute: HomeLSettingsLTokensRoute,
+  HomeLSettingsLNetworksRoute: HomeLSettingsLNetworksRouteWithChildren,
+  HomeLSettingsLWalletsRoute: HomeLSettingsLWalletsRouteWithChildren,
+}
+
+const HomeLSettingsLRouteWithChildren = HomeLSettingsLRoute._addFileChildren(
+  HomeLSettingsLRouteChildren,
+)
+
+interface HomeLSettingsRouteChildren {
+  HomeLSettingsLRoute: typeof HomeLSettingsLRouteWithChildren
+}
+
+const HomeLSettingsRouteChildren: HomeLSettingsRouteChildren = {
+  HomeLSettingsLRoute: HomeLSettingsLRouteWithChildren,
+}
+
+const HomeLSettingsRouteWithChildren = HomeLSettingsRoute._addFileChildren(
+  HomeLSettingsRouteChildren,
+)
+
+interface HomeLRouteChildren {
+  HomeLAccountRoute: typeof HomeLAccountRoute
+  HomeLConnectionsRoute: typeof HomeLConnectionsRoute
+  HomeLContractsRoute: typeof HomeLContractsRoute
+  HomeLTransactionsRoute: typeof HomeLTransactionsRoute
+  HomeLSettingsRoute: typeof HomeLSettingsRouteWithChildren
+}
+
+const HomeLRouteChildren: HomeLRouteChildren = {
+  HomeLAccountRoute: HomeLAccountRoute,
+  HomeLConnectionsRoute: HomeLConnectionsRoute,
+  HomeLContractsRoute: HomeLContractsRoute,
+  HomeLTransactionsRoute: HomeLTransactionsRoute,
+  HomeLSettingsRoute: HomeLSettingsRouteWithChildren,
+}
+
+const HomeLRouteWithChildren = HomeLRoute._addFileChildren(HomeLRouteChildren)
+
 interface HomeRouteChildren {
-  HomeHomeAccountRoute: typeof HomeHomeAccountRoute
-  HomeHomeConnectionsLazyRoute: typeof HomeHomeConnectionsLazyRoute
-  HomeHomeContractsLazyRoute: typeof HomeHomeContractsLazyRoute
-  HomeHomeTransactionsLazyRoute: typeof HomeHomeTransactionsLazyRoute
-  HomeHomeSettingsFoundryLazyRoute: typeof HomeHomeSettingsFoundryLazyRoute
-  HomeHomeSettingsGeneralLazyRoute: typeof HomeHomeSettingsGeneralLazyRoute
-  HomeHomeSettingsKeybindsLazyRoute: typeof HomeHomeSettingsKeybindsLazyRoute
-  HomeHomeSettingsTokensLazyRoute: typeof HomeHomeSettingsTokensLazyRoute
-  HomeHomeSettingsWalletsLazyRoute: typeof HomeHomeSettingsWalletsLazyRoute
-  HomeHomeSettingsNetworksNewLazyRoute: typeof HomeHomeSettingsNetworksNewLazyRoute
-  HomeHomeSettingsNetworksIndexLazyRoute: typeof HomeHomeSettingsNetworksIndexLazyRoute
-  HomeHomeSettingsNetworksNameEditRoute: typeof HomeHomeSettingsNetworksNameEditRoute
+  HomeLRoute: typeof HomeLRouteWithChildren
 }
 
 const HomeRouteChildren: HomeRouteChildren = {
-  HomeHomeAccountRoute: HomeHomeAccountRoute,
-  HomeHomeConnectionsLazyRoute: HomeHomeConnectionsLazyRoute,
-  HomeHomeContractsLazyRoute: HomeHomeContractsLazyRoute,
-  HomeHomeTransactionsLazyRoute: HomeHomeTransactionsLazyRoute,
-  HomeHomeSettingsFoundryLazyRoute: HomeHomeSettingsFoundryLazyRoute,
-  HomeHomeSettingsGeneralLazyRoute: HomeHomeSettingsGeneralLazyRoute,
-  HomeHomeSettingsKeybindsLazyRoute: HomeHomeSettingsKeybindsLazyRoute,
-  HomeHomeSettingsTokensLazyRoute: HomeHomeSettingsTokensLazyRoute,
-  HomeHomeSettingsWalletsLazyRoute: HomeHomeSettingsWalletsLazyRoute,
-  HomeHomeSettingsNetworksNewLazyRoute: HomeHomeSettingsNetworksNewLazyRoute,
-  HomeHomeSettingsNetworksIndexLazyRoute:
-    HomeHomeSettingsNetworksIndexLazyRoute,
-  HomeHomeSettingsNetworksNameEditRoute: HomeHomeSettingsNetworksNameEditRoute,
+  HomeLRoute: HomeLRouteWithChildren,
 }
 
 const HomeRouteWithChildren = HomeRoute._addFileChildren(HomeRouteChildren)
 
+interface OnboardingLWalletsLRouteChildren {
+  OnboardingLWalletsLNewRoute: typeof OnboardingLWalletsLNewRoute
+  OnboardingLWalletsLIndexRoute: typeof OnboardingLWalletsLIndexRoute
+  OnboardingLWalletsLNameEditRoute: typeof OnboardingLWalletsLNameEditRoute
+}
+
+const OnboardingLWalletsLRouteChildren: OnboardingLWalletsLRouteChildren = {
+  OnboardingLWalletsLNewRoute: OnboardingLWalletsLNewRoute,
+  OnboardingLWalletsLIndexRoute: OnboardingLWalletsLIndexRoute,
+  OnboardingLWalletsLNameEditRoute: OnboardingLWalletsLNameEditRoute,
+}
+
+const OnboardingLWalletsLRouteWithChildren =
+  OnboardingLWalletsLRoute._addFileChildren(OnboardingLWalletsLRouteChildren)
+
+interface OnboardingLWalletsRouteChildren {
+  OnboardingLWalletsLRoute: typeof OnboardingLWalletsLRouteWithChildren
+}
+
+const OnboardingLWalletsRouteChildren: OnboardingLWalletsRouteChildren = {
+  OnboardingLWalletsLRoute: OnboardingLWalletsLRouteWithChildren,
+}
+
+const OnboardingLWalletsRouteWithChildren =
+  OnboardingLWalletsRoute._addFileChildren(OnboardingLWalletsRouteChildren)
+
+interface OnboardingLRouteChildren {
+  OnboardingLAlchemyRoute: typeof OnboardingLAlchemyRoute
+  OnboardingLExtensionRoute: typeof OnboardingLExtensionRoute
+  OnboardingLThankYouRoute: typeof OnboardingLThankYouRoute
+  OnboardingLIndexRoute: typeof OnboardingLIndexRoute
+  OnboardingLWalletsRoute: typeof OnboardingLWalletsRouteWithChildren
+}
+
+const OnboardingLRouteChildren: OnboardingLRouteChildren = {
+  OnboardingLAlchemyRoute: OnboardingLAlchemyRoute,
+  OnboardingLExtensionRoute: OnboardingLExtensionRoute,
+  OnboardingLThankYouRoute: OnboardingLThankYouRoute,
+  OnboardingLIndexRoute: OnboardingLIndexRoute,
+  OnboardingLWalletsRoute: OnboardingLWalletsRouteWithChildren,
+}
+
+const OnboardingLRouteWithChildren = OnboardingLRoute._addFileChildren(
+  OnboardingLRouteChildren,
+)
+
+interface OnboardingRouteChildren {
+  OnboardingLRoute: typeof OnboardingLRouteWithChildren
+}
+
+const OnboardingRouteChildren: OnboardingRouteChildren = {
+  OnboardingLRoute: OnboardingLRouteWithChildren,
+}
+
+const OnboardingRouteWithChildren = OnboardingRoute._addFileChildren(
+  OnboardingRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
-  '': typeof HomeRouteWithChildren
-  '/onboarding': typeof OnboardingRoute
-  '/home/account': typeof HomeHomeAccountRoute
-  '/home/connections': typeof HomeHomeConnectionsLazyRoute
-  '/home/contracts': typeof HomeHomeContractsLazyRoute
-  '/home/transactions': typeof HomeHomeTransactionsLazyRoute
-  '/dialog/chain-add/$id': typeof DialogDialogChainAddIdRoute
-  '/dialog/erc1155-add/$id': typeof DialogDialogErc1155AddIdRoute
-  '/dialog/erc20-add/$id': typeof DialogDialogErc20AddIdRoute
-  '/dialog/erc721-add/$id': typeof DialogDialogErc721AddIdRoute
-  '/dialog/msg-sign/$id': typeof DialogDialogMsgSignIdRoute
-  '/dialog/tx-review/$id': typeof DialogDialogTxReviewIdRoute
-  '/dialog/wallet-unlock/$id': typeof DialogDialogWalletUnlockIdRoute
-  '/home/settings/foundry': typeof HomeHomeSettingsFoundryLazyRoute
-  '/home/settings/general': typeof HomeHomeSettingsGeneralLazyRoute
-  '/home/settings/keybinds': typeof HomeHomeSettingsKeybindsLazyRoute
-  '/home/settings/tokens': typeof HomeHomeSettingsTokensLazyRoute
-  '/home/settings/wallets': typeof HomeHomeSettingsWalletsLazyRoute
-  '/home/settings/networks/new': typeof HomeHomeSettingsNetworksNewLazyRoute
-  '/home/settings/networks': typeof HomeHomeSettingsNetworksIndexLazyRoute
-  '/home/settings/networks/$name/edit': typeof HomeHomeSettingsNetworksNameEditRoute
+  '/dialog': typeof DialogLRouteWithChildren
+  '/home': typeof HomeLRouteWithChildren
+  '/onboarding': typeof OnboardingLRouteWithChildren
+  '/home/account': typeof HomeLAccountRoute
+  '/home/connections': typeof HomeLConnectionsRoute
+  '/home/contracts': typeof HomeLContractsRoute
+  '/home/transactions': typeof HomeLTransactionsRoute
+  '/onboarding/alchemy': typeof OnboardingLAlchemyRoute
+  '/onboarding/extension': typeof OnboardingLExtensionRoute
+  '/onboarding/thank-you': typeof OnboardingLThankYouRoute
+  '/onboarding/': typeof OnboardingLIndexRoute
+  '/dialog/chain-add/$id': typeof DialogLChainAddIdRoute
+  '/dialog/erc1155-add/$id': typeof DialogLErc1155AddIdRoute
+  '/dialog/erc20-add/$id': typeof DialogLErc20AddIdRoute
+  '/dialog/erc721-add/$id': typeof DialogLErc721AddIdRoute
+  '/dialog/msg-sign/$id': typeof DialogLMsgSignIdRoute
+  '/dialog/tx-review/$id': typeof DialogLTxReviewIdRoute
+  '/dialog/wallet-unlock/$id': typeof DialogLWalletUnlockIdRoute
+  '/home/settings': typeof HomeLSettingsLRouteWithChildren
+  '/onboarding/wallets': typeof OnboardingLWalletsLRouteWithChildren
+  '/home/settings/foundry': typeof HomeLSettingsLFoundryRoute
+  '/home/settings/general': typeof HomeLSettingsLGeneralRoute
+  '/home/settings/tokens': typeof HomeLSettingsLTokensRoute
+  '/onboarding/wallets/new': typeof OnboardingLWalletsLNewRoute
+  '/onboarding/wallets/': typeof OnboardingLWalletsLIndexRoute
+  '/home/settings/networks': typeof HomeLSettingsLNetworksLRouteWithChildren
+  '/home/settings/wallets': typeof HomeLSettingsLWalletsLRouteWithChildren
+  '/onboarding/wallets/$name/edit': typeof OnboardingLWalletsLNameEditRoute
+  '/home/settings/networks/new': typeof HomeLSettingsLNetworksLNewRoute
+  '/home/settings/wallets/new': typeof HomeLSettingsLWalletsLNewRoute
+  '/home/settings/networks/': typeof HomeLSettingsLNetworksLIndexRoute
+  '/home/settings/wallets/': typeof HomeLSettingsLWalletsLIndexRoute
+  '/home/settings/networks/$name/edit': typeof HomeLSettingsLNetworksLNameEditRoute
+  '/home/settings/wallets/$name/edit': typeof HomeLSettingsLWalletsLNameEditRoute
 }
 
 export interface FileRoutesByTo {
-  '': typeof HomeRouteWithChildren
-  '/onboarding': typeof OnboardingRoute
-  '/home/account': typeof HomeHomeAccountRoute
-  '/home/connections': typeof HomeHomeConnectionsLazyRoute
-  '/home/contracts': typeof HomeHomeContractsLazyRoute
-  '/home/transactions': typeof HomeHomeTransactionsLazyRoute
-  '/dialog/chain-add/$id': typeof DialogDialogChainAddIdRoute
-  '/dialog/erc1155-add/$id': typeof DialogDialogErc1155AddIdRoute
-  '/dialog/erc20-add/$id': typeof DialogDialogErc20AddIdRoute
-  '/dialog/erc721-add/$id': typeof DialogDialogErc721AddIdRoute
-  '/dialog/msg-sign/$id': typeof DialogDialogMsgSignIdRoute
-  '/dialog/tx-review/$id': typeof DialogDialogTxReviewIdRoute
-  '/dialog/wallet-unlock/$id': typeof DialogDialogWalletUnlockIdRoute
-  '/home/settings/foundry': typeof HomeHomeSettingsFoundryLazyRoute
-  '/home/settings/general': typeof HomeHomeSettingsGeneralLazyRoute
-  '/home/settings/keybinds': typeof HomeHomeSettingsKeybindsLazyRoute
-  '/home/settings/tokens': typeof HomeHomeSettingsTokensLazyRoute
-  '/home/settings/wallets': typeof HomeHomeSettingsWalletsLazyRoute
-  '/home/settings/networks/new': typeof HomeHomeSettingsNetworksNewLazyRoute
-  '/home/settings/networks': typeof HomeHomeSettingsNetworksIndexLazyRoute
-  '/home/settings/networks/$name/edit': typeof HomeHomeSettingsNetworksNameEditRoute
+  '/dialog': typeof DialogLRouteWithChildren
+  '/home': typeof HomeLRouteWithChildren
+  '/onboarding': typeof OnboardingLIndexRoute
+  '/home/account': typeof HomeLAccountRoute
+  '/home/connections': typeof HomeLConnectionsRoute
+  '/home/contracts': typeof HomeLContractsRoute
+  '/home/transactions': typeof HomeLTransactionsRoute
+  '/onboarding/alchemy': typeof OnboardingLAlchemyRoute
+  '/onboarding/extension': typeof OnboardingLExtensionRoute
+  '/onboarding/thank-you': typeof OnboardingLThankYouRoute
+  '/dialog/chain-add/$id': typeof DialogLChainAddIdRoute
+  '/dialog/erc1155-add/$id': typeof DialogLErc1155AddIdRoute
+  '/dialog/erc20-add/$id': typeof DialogLErc20AddIdRoute
+  '/dialog/erc721-add/$id': typeof DialogLErc721AddIdRoute
+  '/dialog/msg-sign/$id': typeof DialogLMsgSignIdRoute
+  '/dialog/tx-review/$id': typeof DialogLTxReviewIdRoute
+  '/dialog/wallet-unlock/$id': typeof DialogLWalletUnlockIdRoute
+  '/home/settings': typeof HomeLSettingsLRouteWithChildren
+  '/onboarding/wallets': typeof OnboardingLWalletsLIndexRoute
+  '/home/settings/foundry': typeof HomeLSettingsLFoundryRoute
+  '/home/settings/general': typeof HomeLSettingsLGeneralRoute
+  '/home/settings/tokens': typeof HomeLSettingsLTokensRoute
+  '/onboarding/wallets/new': typeof OnboardingLWalletsLNewRoute
+  '/home/settings/networks': typeof HomeLSettingsLNetworksLIndexRoute
+  '/home/settings/wallets': typeof HomeLSettingsLWalletsLIndexRoute
+  '/onboarding/wallets/$name/edit': typeof OnboardingLWalletsLNameEditRoute
+  '/home/settings/networks/new': typeof HomeLSettingsLNetworksLNewRoute
+  '/home/settings/wallets/new': typeof HomeLSettingsLWalletsLNewRoute
+  '/home/settings/networks/$name/edit': typeof HomeLSettingsLNetworksLNameEditRoute
+  '/home/settings/wallets/$name/edit': typeof HomeLSettingsLWalletsLNameEditRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/_dialog': typeof DialogRouteWithChildren
-  '/_home': typeof HomeRouteWithChildren
-  '/onboarding': typeof OnboardingRoute
-  '/_home/home/account': typeof HomeHomeAccountRoute
-  '/_home/home/connections': typeof HomeHomeConnectionsLazyRoute
-  '/_home/home/contracts': typeof HomeHomeContractsLazyRoute
-  '/_home/home/transactions': typeof HomeHomeTransactionsLazyRoute
-  '/_dialog/dialog/chain-add/$id': typeof DialogDialogChainAddIdRoute
-  '/_dialog/dialog/erc1155-add/$id': typeof DialogDialogErc1155AddIdRoute
-  '/_dialog/dialog/erc20-add/$id': typeof DialogDialogErc20AddIdRoute
-  '/_dialog/dialog/erc721-add/$id': typeof DialogDialogErc721AddIdRoute
-  '/_dialog/dialog/msg-sign/$id': typeof DialogDialogMsgSignIdRoute
-  '/_dialog/dialog/tx-review/$id': typeof DialogDialogTxReviewIdRoute
-  '/_dialog/dialog/wallet-unlock/$id': typeof DialogDialogWalletUnlockIdRoute
-  '/_home/home/settings/foundry': typeof HomeHomeSettingsFoundryLazyRoute
-  '/_home/home/settings/general': typeof HomeHomeSettingsGeneralLazyRoute
-  '/_home/home/settings/keybinds': typeof HomeHomeSettingsKeybindsLazyRoute
-  '/_home/home/settings/tokens': typeof HomeHomeSettingsTokensLazyRoute
-  '/_home/home/settings/wallets': typeof HomeHomeSettingsWalletsLazyRoute
-  '/_home/home/settings/networks/new': typeof HomeHomeSettingsNetworksNewLazyRoute
-  '/_home/home/settings/networks/': typeof HomeHomeSettingsNetworksIndexLazyRoute
-  '/_home/home/settings/networks/$name/edit': typeof HomeHomeSettingsNetworksNameEditRoute
+  '/dialog': typeof DialogRouteWithChildren
+  '/dialog/_l': typeof DialogLRouteWithChildren
+  '/home': typeof HomeRouteWithChildren
+  '/home/_l': typeof HomeLRouteWithChildren
+  '/onboarding': typeof OnboardingRouteWithChildren
+  '/onboarding/_l': typeof OnboardingLRouteWithChildren
+  '/home/_l/account': typeof HomeLAccountRoute
+  '/home/_l/connections': typeof HomeLConnectionsRoute
+  '/home/_l/contracts': typeof HomeLContractsRoute
+  '/home/_l/transactions': typeof HomeLTransactionsRoute
+  '/onboarding/_l/alchemy': typeof OnboardingLAlchemyRoute
+  '/onboarding/_l/extension': typeof OnboardingLExtensionRoute
+  '/onboarding/_l/thank-you': typeof OnboardingLThankYouRoute
+  '/onboarding/_l/': typeof OnboardingLIndexRoute
+  '/dialog/_l/chain-add/$id': typeof DialogLChainAddIdRoute
+  '/dialog/_l/erc1155-add/$id': typeof DialogLErc1155AddIdRoute
+  '/dialog/_l/erc20-add/$id': typeof DialogLErc20AddIdRoute
+  '/dialog/_l/erc721-add/$id': typeof DialogLErc721AddIdRoute
+  '/dialog/_l/msg-sign/$id': typeof DialogLMsgSignIdRoute
+  '/dialog/_l/tx-review/$id': typeof DialogLTxReviewIdRoute
+  '/dialog/_l/wallet-unlock/$id': typeof DialogLWalletUnlockIdRoute
+  '/home/_l/settings': typeof HomeLSettingsRouteWithChildren
+  '/home/_l/settings/_l': typeof HomeLSettingsLRouteWithChildren
+  '/onboarding/_l/wallets': typeof OnboardingLWalletsRouteWithChildren
+  '/onboarding/_l/wallets/_l': typeof OnboardingLWalletsLRouteWithChildren
+  '/home/_l/settings/_l/foundry': typeof HomeLSettingsLFoundryRoute
+  '/home/_l/settings/_l/general': typeof HomeLSettingsLGeneralRoute
+  '/home/_l/settings/_l/tokens': typeof HomeLSettingsLTokensRoute
+  '/onboarding/_l/wallets/_l/new': typeof OnboardingLWalletsLNewRoute
+  '/onboarding/_l/wallets/_l/': typeof OnboardingLWalletsLIndexRoute
+  '/home/_l/settings/_l/networks': typeof HomeLSettingsLNetworksRouteWithChildren
+  '/home/_l/settings/_l/networks/_l': typeof HomeLSettingsLNetworksLRouteWithChildren
+  '/home/_l/settings/_l/wallets': typeof HomeLSettingsLWalletsRouteWithChildren
+  '/home/_l/settings/_l/wallets/_l': typeof HomeLSettingsLWalletsLRouteWithChildren
+  '/onboarding/_l/wallets/_l/$name/edit': typeof OnboardingLWalletsLNameEditRoute
+  '/home/_l/settings/_l/networks/_l/new': typeof HomeLSettingsLNetworksLNewRoute
+  '/home/_l/settings/_l/wallets/_l/new': typeof HomeLSettingsLWalletsLNewRoute
+  '/home/_l/settings/_l/networks/_l/': typeof HomeLSettingsLNetworksLIndexRoute
+  '/home/_l/settings/_l/wallets/_l/': typeof HomeLSettingsLWalletsLIndexRoute
+  '/home/_l/settings/_l/networks/_l/$name/edit': typeof HomeLSettingsLNetworksLNameEditRoute
+  '/home/_l/settings/_l/wallets/_l/$name/edit': typeof HomeLSettingsLWalletsLNameEditRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | ''
+    | '/dialog'
+    | '/home'
     | '/onboarding'
     | '/home/account'
     | '/home/connections'
     | '/home/contracts'
     | '/home/transactions'
+    | '/onboarding/alchemy'
+    | '/onboarding/extension'
+    | '/onboarding/thank-you'
+    | '/onboarding/'
     | '/dialog/chain-add/$id'
     | '/dialog/erc1155-add/$id'
     | '/dialog/erc20-add/$id'
@@ -537,22 +957,34 @@ export interface FileRouteTypes {
     | '/dialog/msg-sign/$id'
     | '/dialog/tx-review/$id'
     | '/dialog/wallet-unlock/$id'
+    | '/home/settings'
+    | '/onboarding/wallets'
     | '/home/settings/foundry'
     | '/home/settings/general'
-    | '/home/settings/keybinds'
     | '/home/settings/tokens'
-    | '/home/settings/wallets'
-    | '/home/settings/networks/new'
+    | '/onboarding/wallets/new'
+    | '/onboarding/wallets/'
     | '/home/settings/networks'
+    | '/home/settings/wallets'
+    | '/onboarding/wallets/$name/edit'
+    | '/home/settings/networks/new'
+    | '/home/settings/wallets/new'
+    | '/home/settings/networks/'
+    | '/home/settings/wallets/'
     | '/home/settings/networks/$name/edit'
+    | '/home/settings/wallets/$name/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | ''
+    | '/dialog'
+    | '/home'
     | '/onboarding'
     | '/home/account'
     | '/home/connections'
     | '/home/contracts'
     | '/home/transactions'
+    | '/onboarding/alchemy'
+    | '/onboarding/extension'
+    | '/onboarding/thank-you'
     | '/dialog/chain-add/$id'
     | '/dialog/erc1155-add/$id'
     | '/dialog/erc20-add/$id'
@@ -560,51 +992,75 @@ export interface FileRouteTypes {
     | '/dialog/msg-sign/$id'
     | '/dialog/tx-review/$id'
     | '/dialog/wallet-unlock/$id'
+    | '/home/settings'
+    | '/onboarding/wallets'
     | '/home/settings/foundry'
     | '/home/settings/general'
-    | '/home/settings/keybinds'
     | '/home/settings/tokens'
-    | '/home/settings/wallets'
-    | '/home/settings/networks/new'
+    | '/onboarding/wallets/new'
     | '/home/settings/networks'
+    | '/home/settings/wallets'
+    | '/onboarding/wallets/$name/edit'
+    | '/home/settings/networks/new'
+    | '/home/settings/wallets/new'
     | '/home/settings/networks/$name/edit'
+    | '/home/settings/wallets/$name/edit'
   id:
     | '__root__'
-    | '/_dialog'
-    | '/_home'
+    | '/dialog'
+    | '/dialog/_l'
+    | '/home'
+    | '/home/_l'
     | '/onboarding'
-    | '/_home/home/account'
-    | '/_home/home/connections'
-    | '/_home/home/contracts'
-    | '/_home/home/transactions'
-    | '/_dialog/dialog/chain-add/$id'
-    | '/_dialog/dialog/erc1155-add/$id'
-    | '/_dialog/dialog/erc20-add/$id'
-    | '/_dialog/dialog/erc721-add/$id'
-    | '/_dialog/dialog/msg-sign/$id'
-    | '/_dialog/dialog/tx-review/$id'
-    | '/_dialog/dialog/wallet-unlock/$id'
-    | '/_home/home/settings/foundry'
-    | '/_home/home/settings/general'
-    | '/_home/home/settings/keybinds'
-    | '/_home/home/settings/tokens'
-    | '/_home/home/settings/wallets'
-    | '/_home/home/settings/networks/new'
-    | '/_home/home/settings/networks/'
-    | '/_home/home/settings/networks/$name/edit'
+    | '/onboarding/_l'
+    | '/home/_l/account'
+    | '/home/_l/connections'
+    | '/home/_l/contracts'
+    | '/home/_l/transactions'
+    | '/onboarding/_l/alchemy'
+    | '/onboarding/_l/extension'
+    | '/onboarding/_l/thank-you'
+    | '/onboarding/_l/'
+    | '/dialog/_l/chain-add/$id'
+    | '/dialog/_l/erc1155-add/$id'
+    | '/dialog/_l/erc20-add/$id'
+    | '/dialog/_l/erc721-add/$id'
+    | '/dialog/_l/msg-sign/$id'
+    | '/dialog/_l/tx-review/$id'
+    | '/dialog/_l/wallet-unlock/$id'
+    | '/home/_l/settings'
+    | '/home/_l/settings/_l'
+    | '/onboarding/_l/wallets'
+    | '/onboarding/_l/wallets/_l'
+    | '/home/_l/settings/_l/foundry'
+    | '/home/_l/settings/_l/general'
+    | '/home/_l/settings/_l/tokens'
+    | '/onboarding/_l/wallets/_l/new'
+    | '/onboarding/_l/wallets/_l/'
+    | '/home/_l/settings/_l/networks'
+    | '/home/_l/settings/_l/networks/_l'
+    | '/home/_l/settings/_l/wallets'
+    | '/home/_l/settings/_l/wallets/_l'
+    | '/onboarding/_l/wallets/_l/$name/edit'
+    | '/home/_l/settings/_l/networks/_l/new'
+    | '/home/_l/settings/_l/wallets/_l/new'
+    | '/home/_l/settings/_l/networks/_l/'
+    | '/home/_l/settings/_l/wallets/_l/'
+    | '/home/_l/settings/_l/networks/_l/$name/edit'
+    | '/home/_l/settings/_l/wallets/_l/$name/edit'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   DialogRoute: typeof DialogRouteWithChildren
   HomeRoute: typeof HomeRouteWithChildren
-  OnboardingRoute: typeof OnboardingRoute
+  OnboardingRoute: typeof OnboardingRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   DialogRoute: DialogRouteWithChildren,
   HomeRoute: HomeRouteWithChildren,
-  OnboardingRoute: OnboardingRoute,
+  OnboardingRoute: OnboardingRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -617,118 +1073,237 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/_dialog",
-        "/_home",
+        "/dialog",
+        "/home",
         "/onboarding"
       ]
     },
-    "/_dialog": {
-      "filePath": "_dialog.tsx",
+    "/dialog": {
+      "filePath": "dialog",
       "children": [
-        "/_dialog/dialog/chain-add/$id",
-        "/_dialog/dialog/erc1155-add/$id",
-        "/_dialog/dialog/erc20-add/$id",
-        "/_dialog/dialog/erc721-add/$id",
-        "/_dialog/dialog/msg-sign/$id",
-        "/_dialog/dialog/tx-review/$id",
-        "/_dialog/dialog/wallet-unlock/$id"
+        "/dialog/_l"
       ]
     },
-    "/_home": {
-      "filePath": "_home.tsx",
+    "/dialog/_l": {
+      "filePath": "dialog/_l.tsx",
+      "parent": "/dialog",
       "children": [
-        "/_home/home/account",
-        "/_home/home/connections",
-        "/_home/home/contracts",
-        "/_home/home/transactions",
-        "/_home/home/settings/foundry",
-        "/_home/home/settings/general",
-        "/_home/home/settings/keybinds",
-        "/_home/home/settings/tokens",
-        "/_home/home/settings/wallets",
-        "/_home/home/settings/networks/new",
-        "/_home/home/settings/networks/",
-        "/_home/home/settings/networks/$name/edit"
+        "/dialog/_l/chain-add/$id",
+        "/dialog/_l/erc1155-add/$id",
+        "/dialog/_l/erc20-add/$id",
+        "/dialog/_l/erc721-add/$id",
+        "/dialog/_l/msg-sign/$id",
+        "/dialog/_l/tx-review/$id",
+        "/dialog/_l/wallet-unlock/$id"
+      ]
+    },
+    "/home": {
+      "filePath": "home",
+      "children": [
+        "/home/_l"
+      ]
+    },
+    "/home/_l": {
+      "filePath": "home/_l.tsx",
+      "parent": "/home",
+      "children": [
+        "/home/_l/account",
+        "/home/_l/connections",
+        "/home/_l/contracts",
+        "/home/_l/transactions",
+        "/home/_l/settings"
       ]
     },
     "/onboarding": {
-      "filePath": "onboarding.tsx"
+      "filePath": "onboarding",
+      "children": [
+        "/onboarding/_l"
+      ]
     },
-    "/_home/home/account": {
-      "filePath": "_home.home/account.tsx",
-      "parent": "/_home"
+    "/onboarding/_l": {
+      "filePath": "onboarding/_l.tsx",
+      "parent": "/onboarding",
+      "children": [
+        "/onboarding/_l/alchemy",
+        "/onboarding/_l/extension",
+        "/onboarding/_l/thank-you",
+        "/onboarding/_l/",
+        "/onboarding/_l/wallets"
+      ]
     },
-    "/_home/home/connections": {
-      "filePath": "_home.home/connections.lazy.tsx",
-      "parent": "/_home"
+    "/home/_l/account": {
+      "filePath": "home/_l/account.tsx",
+      "parent": "/home/_l"
     },
-    "/_home/home/contracts": {
-      "filePath": "_home.home/contracts.lazy.tsx",
-      "parent": "/_home"
+    "/home/_l/connections": {
+      "filePath": "home/_l/connections.tsx",
+      "parent": "/home/_l"
     },
-    "/_home/home/transactions": {
-      "filePath": "_home.home/transactions.lazy.tsx",
-      "parent": "/_home"
+    "/home/_l/contracts": {
+      "filePath": "home/_l/contracts.tsx",
+      "parent": "/home/_l"
     },
-    "/_dialog/dialog/chain-add/$id": {
-      "filePath": "_dialog.dialog/chain-add.$id.tsx",
-      "parent": "/_dialog"
+    "/home/_l/transactions": {
+      "filePath": "home/_l/transactions.tsx",
+      "parent": "/home/_l"
     },
-    "/_dialog/dialog/erc1155-add/$id": {
-      "filePath": "_dialog.dialog/erc1155-add.$id.tsx",
-      "parent": "/_dialog"
+    "/onboarding/_l/alchemy": {
+      "filePath": "onboarding/_l/alchemy.tsx",
+      "parent": "/onboarding/_l"
     },
-    "/_dialog/dialog/erc20-add/$id": {
-      "filePath": "_dialog.dialog/erc20-add.$id.tsx",
-      "parent": "/_dialog"
+    "/onboarding/_l/extension": {
+      "filePath": "onboarding/_l/extension.tsx",
+      "parent": "/onboarding/_l"
     },
-    "/_dialog/dialog/erc721-add/$id": {
-      "filePath": "_dialog.dialog/erc721-add.$id.tsx",
-      "parent": "/_dialog"
+    "/onboarding/_l/thank-you": {
+      "filePath": "onboarding/_l/thank-you.tsx",
+      "parent": "/onboarding/_l"
     },
-    "/_dialog/dialog/msg-sign/$id": {
-      "filePath": "_dialog.dialog/msg-sign.$id.tsx",
-      "parent": "/_dialog"
+    "/onboarding/_l/": {
+      "filePath": "onboarding/_l/index.tsx",
+      "parent": "/onboarding/_l"
     },
-    "/_dialog/dialog/tx-review/$id": {
-      "filePath": "_dialog.dialog/tx-review.$id.tsx",
-      "parent": "/_dialog"
+    "/dialog/_l/chain-add/$id": {
+      "filePath": "dialog/_l/chain-add.$id.tsx",
+      "parent": "/dialog/_l"
     },
-    "/_dialog/dialog/wallet-unlock/$id": {
-      "filePath": "_dialog.dialog/wallet-unlock.$id.tsx",
-      "parent": "/_dialog"
+    "/dialog/_l/erc1155-add/$id": {
+      "filePath": "dialog/_l/erc1155-add.$id.tsx",
+      "parent": "/dialog/_l"
     },
-    "/_home/home/settings/foundry": {
-      "filePath": "_home.home/settings/foundry.lazy.tsx",
-      "parent": "/_home"
+    "/dialog/_l/erc20-add/$id": {
+      "filePath": "dialog/_l/erc20-add.$id.tsx",
+      "parent": "/dialog/_l"
     },
-    "/_home/home/settings/general": {
-      "filePath": "_home.home/settings/general.lazy.tsx",
-      "parent": "/_home"
+    "/dialog/_l/erc721-add/$id": {
+      "filePath": "dialog/_l/erc721-add.$id.tsx",
+      "parent": "/dialog/_l"
     },
-    "/_home/home/settings/keybinds": {
-      "filePath": "_home.home/settings/keybinds.lazy.tsx",
-      "parent": "/_home"
+    "/dialog/_l/msg-sign/$id": {
+      "filePath": "dialog/_l/msg-sign.$id.tsx",
+      "parent": "/dialog/_l"
     },
-    "/_home/home/settings/tokens": {
-      "filePath": "_home.home/settings/tokens.lazy.tsx",
-      "parent": "/_home"
+    "/dialog/_l/tx-review/$id": {
+      "filePath": "dialog/_l/tx-review.$id.tsx",
+      "parent": "/dialog/_l"
     },
-    "/_home/home/settings/wallets": {
-      "filePath": "_home.home/settings/wallets.lazy.tsx",
-      "parent": "/_home"
+    "/dialog/_l/wallet-unlock/$id": {
+      "filePath": "dialog/_l/wallet-unlock.$id.tsx",
+      "parent": "/dialog/_l"
     },
-    "/_home/home/settings/networks/new": {
-      "filePath": "_home.home/settings/networks/new.lazy.tsx",
-      "parent": "/_home"
+    "/home/_l/settings": {
+      "filePath": "home/_l/settings",
+      "parent": "/home/_l",
+      "children": [
+        "/home/_l/settings/_l"
+      ]
     },
-    "/_home/home/settings/networks/": {
-      "filePath": "_home.home/settings/networks/index.lazy.tsx",
-      "parent": "/_home"
+    "/home/_l/settings/_l": {
+      "filePath": "home/_l/settings/_l.tsx",
+      "parent": "/home/_l/settings",
+      "children": [
+        "/home/_l/settings/_l/foundry",
+        "/home/_l/settings/_l/general",
+        "/home/_l/settings/_l/tokens",
+        "/home/_l/settings/_l/networks",
+        "/home/_l/settings/_l/wallets"
+      ]
     },
-    "/_home/home/settings/networks/$name/edit": {
-      "filePath": "_home.home/settings/networks/$name.edit.tsx",
-      "parent": "/_home"
+    "/onboarding/_l/wallets": {
+      "filePath": "onboarding/_l/wallets",
+      "parent": "/onboarding/_l",
+      "children": [
+        "/onboarding/_l/wallets/_l"
+      ]
+    },
+    "/onboarding/_l/wallets/_l": {
+      "filePath": "onboarding/_l/wallets/_l.tsx",
+      "parent": "/onboarding/_l/wallets",
+      "children": [
+        "/onboarding/_l/wallets/_l/new",
+        "/onboarding/_l/wallets/_l/",
+        "/onboarding/_l/wallets/_l/$name/edit"
+      ]
+    },
+    "/home/_l/settings/_l/foundry": {
+      "filePath": "home/_l/settings/_l/foundry.tsx",
+      "parent": "/home/_l/settings/_l"
+    },
+    "/home/_l/settings/_l/general": {
+      "filePath": "home/_l/settings/_l/general.tsx",
+      "parent": "/home/_l/settings/_l"
+    },
+    "/home/_l/settings/_l/tokens": {
+      "filePath": "home/_l/settings/_l/tokens.tsx",
+      "parent": "/home/_l/settings/_l"
+    },
+    "/onboarding/_l/wallets/_l/new": {
+      "filePath": "onboarding/_l/wallets/_l/new.tsx",
+      "parent": "/onboarding/_l/wallets/_l"
+    },
+    "/onboarding/_l/wallets/_l/": {
+      "filePath": "onboarding/_l/wallets/_l/index.tsx",
+      "parent": "/onboarding/_l/wallets/_l"
+    },
+    "/home/_l/settings/_l/networks": {
+      "filePath": "home/_l/settings/_l/networks",
+      "parent": "/home/_l/settings/_l",
+      "children": [
+        "/home/_l/settings/_l/networks/_l"
+      ]
+    },
+    "/home/_l/settings/_l/networks/_l": {
+      "filePath": "home/_l/settings/_l/networks/_l.tsx",
+      "parent": "/home/_l/settings/_l/networks",
+      "children": [
+        "/home/_l/settings/_l/networks/_l/new",
+        "/home/_l/settings/_l/networks/_l/",
+        "/home/_l/settings/_l/networks/_l/$name/edit"
+      ]
+    },
+    "/home/_l/settings/_l/wallets": {
+      "filePath": "home/_l/settings/_l/wallets",
+      "parent": "/home/_l/settings/_l",
+      "children": [
+        "/home/_l/settings/_l/wallets/_l"
+      ]
+    },
+    "/home/_l/settings/_l/wallets/_l": {
+      "filePath": "home/_l/settings/_l/wallets/_l.tsx",
+      "parent": "/home/_l/settings/_l/wallets",
+      "children": [
+        "/home/_l/settings/_l/wallets/_l/new",
+        "/home/_l/settings/_l/wallets/_l/",
+        "/home/_l/settings/_l/wallets/_l/$name/edit"
+      ]
+    },
+    "/onboarding/_l/wallets/_l/$name/edit": {
+      "filePath": "onboarding/_l/wallets/_l/$name.edit.tsx",
+      "parent": "/onboarding/_l/wallets/_l"
+    },
+    "/home/_l/settings/_l/networks/_l/new": {
+      "filePath": "home/_l/settings/_l/networks/_l/new.tsx",
+      "parent": "/home/_l/settings/_l/networks/_l"
+    },
+    "/home/_l/settings/_l/wallets/_l/new": {
+      "filePath": "home/_l/settings/_l/wallets/_l/new.tsx",
+      "parent": "/home/_l/settings/_l/wallets/_l"
+    },
+    "/home/_l/settings/_l/networks/_l/": {
+      "filePath": "home/_l/settings/_l/networks/_l/index.tsx",
+      "parent": "/home/_l/settings/_l/networks/_l"
+    },
+    "/home/_l/settings/_l/wallets/_l/": {
+      "filePath": "home/_l/settings/_l/wallets/_l/index.tsx",
+      "parent": "/home/_l/settings/_l/wallets/_l"
+    },
+    "/home/_l/settings/_l/networks/_l/$name/edit": {
+      "filePath": "home/_l/settings/_l/networks/_l/$name.edit.tsx",
+      "parent": "/home/_l/settings/_l/networks/_l"
+    },
+    "/home/_l/settings/_l/wallets/_l/$name/edit": {
+      "filePath": "home/_l/settings/_l/wallets/_l/$name.edit.tsx",
+      "parent": "/home/_l/settings/_l/wallets/_l"
     }
   }
 }

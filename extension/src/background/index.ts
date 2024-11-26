@@ -1,8 +1,6 @@
 import log from "loglevel";
-import { type Runtime, runtime } from "webextension-polyfill";
-import { ArrayQueue, ConstantBackoff, WebsocketBuilder } from "websocket-ts";
-
-import type { Json, JsonRpcRequest, JsonRpcResponse } from "@metamask/utils";
+import { type Runtime, action, runtime } from "webextension-polyfill";
+import { ArrayQueue, ConstantBackoff, WebsocketBuilder } from "websocket";
 
 import { type Settings, defaultSettings, loadSettings } from "#/settings";
 
@@ -22,6 +20,10 @@ export async function init() {
   runtime.onConnect.addListener((port: Runtime.Port) => {
     setupProviderConnection(port);
   });
+
+  action.onClicked.addListener(() => {
+    console.log("icon clicked");
+  });
 }
 
 /**
@@ -32,7 +34,7 @@ export async function init() {
 async function notifyDevtools(
   tabId: number,
   type: "request" | "response" | "start",
-  data?: JsonRpcResponse<Json> | JsonRpcRequest,
+  data?: unknown,
 ) {
   try {
     await runtime.sendMessage({
@@ -92,7 +94,7 @@ export function setupProviderConnection(port: Runtime.Port) {
     .build();
 
   // forwarding incoming stream data to the WS server
-  port.onMessage.addListener((data: JsonRpcResponse<Json>) => {
+  port.onMessage.addListener((data) => {
     ws.send(JSON.stringify(data));
 
     log.debug("[WS] request:", data);

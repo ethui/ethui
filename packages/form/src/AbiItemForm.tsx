@@ -5,8 +5,8 @@ import { type AbiFunction, parseAbiItem } from "viem";
 import { encodeFunctionData } from "viem/utils";
 
 import { Button } from "@ethui/ui/components/shadcn/button";
-import { AbiInput } from "./AbiInput.tsx";
-import { decodeDefaultArgs } from "./utils.tsx";
+import { AbiInput } from "./AbiInput";
+import { decodeDefaultArgs } from "./utils";
 
 interface AbiItemFormProps {
   item?: AbiFunction | "raw";
@@ -181,7 +181,7 @@ export function AbiItemFormInner({
         args: values,
       });
       setCalldata(encoded);
-    } catch (e) {
+    } catch (_e) {
       setCalldata(undefined);
     }
   }, [values, item]);
@@ -222,7 +222,7 @@ export function AbiItemFormInner({
           onChange={(e) => {
             try {
               setEther(BigInt(e));
-            } catch (e) {
+            } catch (_e) {
               setEther(undefined);
             }
           }}

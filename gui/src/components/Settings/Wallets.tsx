@@ -1,15 +1,6 @@
-import { invoke } from "@tauri-apps/api/core";
 import { startCase } from "lodash-es";
-import { useState } from "react";
 
 import { type Wallet, walletTypes } from "@ethui/types/wallets";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@ethui/ui/components/shadcn/accordion";
-import { Badge } from "@ethui/ui/components/shadcn/badge";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import {
   DropdownMenu,
@@ -18,148 +9,72 @@ import {
   DropdownMenuTrigger,
 } from "@ethui/ui/components/shadcn/dropdown-menu";
 import { CaretDownIcon } from "@radix-ui//react-icons";
+import { Link } from "@tanstack/react-router";
 import { useWallets } from "#/store/useWallets";
-import { HDWalletForm } from "./Wallet/HDWallet.tsx";
-import { ImpersonatorForm } from "./Wallet/Impersonator.tsx";
-import { JsonKeystore } from "./Wallet/JsonKeystore.tsx";
-import { Ledger } from "./Wallet/Ledger.tsx";
-import { Plaintext } from "./Wallet/Plaintext.tsx";
-import { PrivateKeyForm } from "./Wallet/PrivateKey.tsx";
 
 interface Props {
-  extraAction?: React.ReactNode;
+  backUrl?: "/home/settings/wallets" | "/onboarding/wallets";
+  newWalletUrl?: "/home/settings/wallets/new" | "/onboarding/wallets/new";
+  editWalletBaseUrl?: "/home/settings/wallets" | "/onboarding/wallets";
 }
 
-export function SettingsWallets({ extraAction }: Props) {
+export function SettingsWallets({
+  backUrl = "/home/settings/wallets",
+  newWalletUrl = "/home/settings/wallets/new",
+  editWalletBaseUrl = "/home/settings/wallets",
+}: Props) {
   const wallets = useWallets((s) => s.wallets);
-  const [newType, setNewType] = useState<Wallet["type"] | null>(null);
 
   if (!wallets) return null;
 
-  const startNew = (type: Wallet["type"]) => {
-    setNewType(type);
-  };
-
-  const closeNew = () => setNewType(null);
-
   return (
     <>
-      <div className="flex flex-col">
-        <Accordion type="single" collapsible className="w-full">
-          {wallets.map((wallet) => (
-            <ExistingItem key={wallet.name} wallet={wallet} />
+      <div className="flex flex-col gap-2">
+        <div className="grid grid-cols-4 gap-2">
+          {wallets.map(({ type, name }) => (
+            <Link
+              to={`${editWalletBaseUrl}/${name}/edit`}
+              search={{ backUrl }}
+              key={name}
+              className="border p-4 hover:bg-accent"
+            >
+              {name} {type}
+            </Link>
           ))}
-        </Accordion>
-        {newType && <NewItem key="_new" type={newType} onFinish={closeNew} />}
-      </div>
-      {!newType && (
-        <div className="mt-4 flex justify-between justify-between">
-          <AddWalletButton onChoice={startNew} />
-          {extraAction && extraAction}
+
+          <AddWalletButton backUrl={backUrl} newWalletUrl={newWalletUrl} />
         </div>
-      )}
+      </div>
     </>
   );
 }
 
-interface ItemProps {
-  wallet: Wallet;
-}
-
-function ExistingItem({ wallet }: ItemProps) {
-  const props = {
-    onSubmit: (params: object) =>
-      invoke("wallets_update", { name: wallet.name, params }),
-    onRemove: () => invoke("wallets_remove", { name: wallet.name }),
-  };
-
-  return (
-    <AccordionItem value={wallet.name}>
-      <AccordionTrigger>
-        <div className=" flex items-center">
-          <span>{wallet.name}</span>
-          <Badge variant="secondary" className="ml-2">
-            {wallet.type}
-          </Badge>
-        </div>
-      </AccordionTrigger>
-      <AccordionContent>
-        {wallet.type === "plaintext" && (
-          <Plaintext wallet={wallet} {...props} />
-        )}
-        {wallet.type === "jsonKeystore" && (
-          <JsonKeystore wallet={wallet} {...props} />
-        )}
-        {wallet.type === "HDWallet" && (
-          <HDWalletForm wallet={wallet} {...props} />
-        )}
-        {wallet.type === "impersonator" && (
-          <ImpersonatorForm wallet={wallet} {...props} />
-        )}
-        {wallet.type === "privateKey" && (
-          <PrivateKeyForm wallet={wallet} {...props} />
-        )}
-        {wallet.type === "ledger" && <Ledger wallet={wallet} {...props} />}
-      </AccordionContent>
-    </AccordionItem>
-  );
-}
-
-interface NewItemProps {
-  type: Wallet["type"];
-  onFinish: () => void;
-}
-
-function NewItem({ type, onFinish }: NewItemProps) {
-  const save = async (params: object) => {
-    await invoke("wallets_create", { params: { ...params, type } });
-  };
-
-  const props = {
-    onSubmit: (params: object) => {
-      save(params);
-      onFinish();
-    },
-    onRemove: onFinish,
-  };
-
-  return (
-    <div className="p-2">
-      <span className="pb-2">New {type}</span>
-
-      {type === "plaintext" && <Plaintext {...props} />}
-      {type === "jsonKeystore" && <JsonKeystore {...props} />}
-      {type === "HDWallet" && <HDWalletForm {...props} />}
-      {type === "impersonator" && <ImpersonatorForm {...props} />}
-      {type === "ledger" && <Ledger {...props} />}
-      {type === "privateKey" && <PrivateKeyForm {...props} />}
-    </div>
-  );
-}
-
 interface AddWalletButtonProps {
-  onChoice: (type: Wallet["type"]) => void;
+  backUrl: "/home/settings/wallets" | "/onboarding/wallets";
+  newWalletUrl: "/home/settings/wallets/new" | "/onboarding/wallets/new";
 }
 
-const AddWalletButton = ({ onChoice }: AddWalletButtonProps) => {
+function AddWalletButton({ backUrl, newWalletUrl }: AddWalletButtonProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button id="add-wallet-btn">
+        <Button
+          id="add-wallet-btn"
+          className="flex h-fit border bg-inherit p-4 text-md text-primary hover:bg-accent"
+        >
           <CaretDownIcon />
           Add
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         {walletTypes.map((walletType: Wallet["type"]) => (
-          <DropdownMenuItem
-            key={walletType}
-            onClick={() => onChoice(walletType)}
-          >
-            {startCase(walletType)}
+          <DropdownMenuItem key={walletType} asChild>
+            <Link to={newWalletUrl} search={{ type: walletType, backUrl }}>
+              {startCase(walletType)}
+            </Link>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );
-};
+}

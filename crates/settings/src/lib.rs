@@ -37,6 +37,7 @@ impl Settings {
     pub async fn init(&self) -> Result<()> {
         // make sure OS's autostart is synced with settings
         crate::autostart::update(self.inner.autostart)?;
+        ethui_tracing::reload(&self.inner.rust_log)?;
 
         Ok(())
     }
@@ -69,6 +70,11 @@ impl Settings {
 
         if let Some(v) = params.get("fastMode") {
             self.inner.fast_mode = serde_json::from_value(v.clone()).unwrap();
+        }
+
+        if let Some(v) = params.get("rustLog") {
+            self.inner.rust_log = serde_json::from_value(v.clone()).unwrap();
+            ethui_tracing::parse(&self.inner.rust_log)?;
         }
 
         self.save().await?;
@@ -138,6 +144,7 @@ impl Settings {
         let path = Path::new(&pathbuf);
         let file = File::create(path)?;
 
+        ethui_tracing::reload(&self.inner.rust_log)?;
         serde_json::to_writer_pretty(file, &self.inner)?;
         ethui_broadcast::settings_updated().await;
         ethui_broadcast::ui_notify(UINotify::SettingsChanged).await;
@@ -168,6 +175,9 @@ pub struct SerializedSettings {
 
     #[serde(default)]
     autostart: bool,
+
+    #[serde(default)]
+    rust_log: String,
 }
 
 impl Default for SerializedSettings {
@@ -182,6 +192,7 @@ impl Default for SerializedSettings {
             onboarded: false,
             fast_mode: false,
             autostart: false,
+            rust_log: "warn".into(),
         }
     }
 }

@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { Link } from "@tanstack/react-router";
 import { CircleX } from "lucide-react";
-import { useInvoke } from "./useInvoke.ts";
+import { useInvoke } from "./useInvoke";
 
-export async function getLatestVersion() {
+async function getLatestVersion() {
   const response = await fetch(
     "https://api.github.com/repos/ethui/ethui/releases?per_page=1",
   );

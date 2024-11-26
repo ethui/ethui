@@ -6,7 +6,7 @@ import {
 import type { Abi, AbiFunction, Address } from "abitype";
 import { clsx } from "clsx";
 import { useCallback, useState } from "react";
-import { AbiItemForm } from "./AbiItemForm.tsx";
+import { AbiItemForm } from "./AbiItemForm";
 
 interface AbiItemFormWithPreview {
   abiFunction: AbiFunction | "raw";
