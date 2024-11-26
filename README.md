@@ -18,7 +18,7 @@
 
 ## What is ethui?
 
-A developer's crypto wallet. ethui has the usual functionality of a crypto wallet, as well as additional built-in tooling meant to speed up your development workflows.
+A developer's crypto wallet. [ethui](https://ethui.dev/) has the usual functionality of a crypto wallet, as well as additional built-in tooling meant to speed up your development workflows.
 
 ### Main features
 

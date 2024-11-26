@@ -77,18 +77,17 @@ impl Peers {
     pub async fn add_peer(&mut self, peer: Peer) {
         self.map.insert(peer.socket, peer);
         ethui_broadcast::ui_notify(UINotify::PeersUpdated).await;
-        //self.window_snd.send(UINotify::PeersUpdated.into()).unwrap();
     }
 
     /// Removes an existing peer
     pub async fn remove_peer(&mut self, peer: SocketAddr) {
         self.map.remove(&peer);
         ethui_broadcast::ui_notify(UINotify::PeersUpdated).await;
-        //self.window_snd.send(UINotify::PeersUpdated.into()).unwrap();
     }
 
     pub async fn peer_alive(&mut self, peer: Peer) {
         self.map.get_mut(&peer.socket).unwrap().alive = true;
+        ethui_broadcast::ui_notify(UINotify::PeersUpdated).await;
     }
 
     /// Broadcasts an `accountsChanged` event to all peers

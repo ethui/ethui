@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "DELETE FROM tokens_metadata WHERE chain_id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "46cc9231af6c952dece630116c01dbd7b5698d7db62d1c819493098a36114c8a"
+}

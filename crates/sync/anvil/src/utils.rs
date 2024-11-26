@@ -1,13 +1,10 @@
-use ethers::providers::{Http, Middleware, Provider};
-use ethui_types::{Address, ToAlloy, ToEthers, U256};
+use alloy::providers::{Provider as _, ProviderBuilder};
+use ethui_types::{Address, U256};
 
 use crate::Result;
 
 pub async fn get_native_balance(url: String, address: Address) -> Result<U256> {
-    let provider: Provider<Http> = Provider::<Http>::try_from(&url.to_string()).unwrap();
+    let provider = ProviderBuilder::new().on_builtin(&url).await?;
 
-    Ok(provider
-        .get_balance(address.to_ethers(), None)
-        .await?
-        .to_alloy())
+    Ok(provider.get_balance(address).await?)
 }

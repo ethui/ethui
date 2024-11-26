@@ -1,4 +1,4 @@
-use alloy_primitives::{Bytes, Log, U256};
+use alloy::primitives::{Bytes, Log, U256};
 use ethui_types::Address;
 use foundry_evm::traces::CallTraceNode;
 use serde::{Deserialize, Serialize};
@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 pub struct Request {
     pub from: Address,
-    pub to: Address,
+    pub to: Option<Address>,
     pub data: Option<Bytes>,
     pub gas_limit: u64,
     pub value: Option<U256>,

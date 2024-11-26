@@ -36,12 +36,12 @@
       {
         "name": "block_number",
         "ordinal": 6,
-        "type_info": "Int64"
+        "type_info": "Integer"
       },
       {
         "name": "position",
         "ordinal": 7,
-        "type_info": "Int64"
+        "type_info": "Integer"
       },
       {
         "name": "gas_limit",
@@ -66,17 +66,17 @@
       {
         "name": "type",
         "ordinal": 12,
-        "type_info": "Int64"
+        "type_info": "Integer"
       },
       {
         "name": "nonce",
         "ordinal": 13,
-        "type_info": "Int64"
+        "type_info": "Integer"
       },
       {
         "name": "status",
         "ordinal": 14,
-        "type_info": "Int64"
+        "type_info": "Integer"
       },
       {
         "name": "incomplete!",

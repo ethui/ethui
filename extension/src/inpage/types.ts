@@ -1,4 +1,4 @@
-import { type JsonRpcParams } from "@metamask/utils";
+import type { JsonRpcParams } from "@metamask/utils";
 
 export interface RequestArguments {
   method: string;

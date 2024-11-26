@@ -1,10 +1,10 @@
 import { ObjectInspector } from "@devtools-ds/object-inspector";
 import { Table } from "@devtools-ds/table";
 import {
+  type Json,
+  type JsonRpcResponse,
   isJsonRpcError,
   isJsonRpcSuccess,
-  Json,
-  JsonRpcResponse,
 } from "@metamask/utils";
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";

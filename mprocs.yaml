@@ -1,0 +1,14 @@
+procs:
+  app:
+    cmd: ["yarn", "run", "app:dev"]
+  storybook:
+    cmd: ["yarn", "run", "storybook"]
+  web3-demo-anvil:
+    cwd: "../web3-demo/"
+    cmd: ["anvil"]
+  web3-demo-frontend:
+    cwd: "../web3-demo/"
+    cmd: ["yarn", "dev"]
+  web3-demo-contracts-deploy:
+    cwd: "../web3-demo/"
+    cmd: ["mise", "run", "eth-watch"]

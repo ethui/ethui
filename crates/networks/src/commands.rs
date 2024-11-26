@@ -26,19 +26,22 @@ pub async fn networks_set_current(network: String) -> Result<Network> {
 }
 
 #[tauri::command]
-pub async fn networks_set_list(new_networks: Vec<Network>) -> Result<Vec<Network>> {
+pub async fn networks_add(network: Network) -> Result<()> {
     let mut networks = Networks::write().await;
-
-    networks.set_networks(new_networks).await?;
-
-    Ok(networks.networks.values().cloned().collect())
+    networks.add_network(network).await?;
+    Ok(())
 }
 
 #[tauri::command]
-pub async fn networks_reset() -> Result<Vec<Network>> {
+pub async fn networks_update(old_name: String, network: Network) -> Result<()> {
     let mut networks = Networks::write().await;
+    networks.update_network(&old_name, network).await?;
+    Ok(())
+}
 
-    networks.reset_networks().await?;
-
-    Ok(networks.networks.values().cloned().collect())
+#[tauri::command]
+pub async fn networks_remove(name: String) -> Result<()> {
+    let mut networks = Networks::write().await;
+    networks.remove_network(&name).await?;
+    Ok(())
 }

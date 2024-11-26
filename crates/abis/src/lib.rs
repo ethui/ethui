@@ -1,34 +1,27 @@
-pub mod commands;
+use alloy::sol;
 
-use ethers::prelude::abigen;
+sol! {
+    #[sol(rpc)]
+    contract IERC20 {
+        event Transfer(address indexed from, address indexed to, uint256 value);
+        event Approval(address indexed owner, address indexed spender, uint256 value);
+        function name() public view returns (string name);
+        function symbol() public view returns (string symbol);
+        function decimals() public view returns (uint8 decimals);
+    }
+}
 
-abigen!(
-    IERC20,
-    r#"[
-        event Transfer(address indexed from, address indexed to, uint256 value)
-        event Approval(address indexed owner, address indexed spender, uint256 value)
-    
-        function name() public view returns (string)
-        function symbol() public view returns (string)
-        function decimals() public view returns (uint8)
-    ]"#,
-    event_derives(serde::Deserialize)
-);
+sol! {
+    #[sol(rpc)]
+    contract IERC721 {
+        event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
+        event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
+        function name() public view returns (string name);
+        function symbol() public view returns (string symbol);
+    }
 
-abigen!(
-    ERC20Token,
-    r#"[
-    ]"#,
-);
-
-abigen!(
-    IERC721,
-    r#"[
-        event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)
-        event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId)
-        function name() public view returns (string)
-        function symbol() public view returns (string)
-        function tokenURI(uint256 tokenId) public view returns (string)
-    ]"#,
-    event_derives(serde::Deserialize)
-);
+    #[sol(rpc)]
+    contract IERC721WithMetadata is IERC721 {
+        function tokenURI(uint256 tokenId) public view returns (string uri);
+    }
+}

@@ -1,3 +1,4 @@
+use alloy::signers::ledger::{HDPath, LedgerSigner};
 use async_trait::async_trait;
 use ethui_types::{Address, Json};
 use serde::{Deserialize, Serialize};
@@ -75,12 +76,10 @@ impl WalletControl for LedgerWallet {
     }
 
     async fn build_signer(&self, chain_id: u32, path: &str) -> Result<Signer> {
-        let ledger = ethers::signers::Ledger::new(
-            ethers::signers::HDPath::Other(path.into()),
-            chain_id as u64,
-        )
-        .await
-        .map_err(|e| Error::Ledger(e.to_string()))?;
+        // TODO: use u64 for chain id
+        let ledger = LedgerSigner::new(HDPath::Other(path.into()), Some(chain_id.into()))
+            .await
+            .map_err(|e| Error::Ledger(e.to_string()))?;
 
         Ok(Signer::Ledger(ledger))
     }

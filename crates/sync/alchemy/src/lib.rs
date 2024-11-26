@@ -5,16 +5,16 @@ mod types;
 mod utils;
 
 use ethui_db::Db;
-use ethui_types::{Address, U64};
+use ethui_types::{Address, U256};
 pub use networks::supports_network;
 use tracing::instrument;
-pub use utils::get_current_api_key;
+pub use types::{Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse};
+pub use utils::{get_alchemy, get_current_api_key};
 
 pub use self::error::{Error, Result};
 use self::networks::default_from_block;
 use crate::client::{Client, Direction};
 
-#[derive(Debug)]
 pub struct Alchemy {
     chain_id: u32,
     db: Db,
@@ -42,11 +42,11 @@ impl Alchemy {
         let key = (self.chain_id, "transactions", address);
         let last_tip: Option<u64> = self.db.kv_get(&key).await?;
 
-        let from_block = U64::from(last_tip.unwrap_or_else(|| default_from_block(self.chain_id)));
+        let from_block = last_tip.unwrap_or_else(|| default_from_block(self.chain_id));
         let latest = self.client.get_block_number().await?;
 
         // if tip - 1 == latest, we're up to date, nothing to do
-        if from_block.saturating_sub(U64::from(1)) == latest {
+        if from_block.saturating_sub(1) == latest {
             return Ok(());
         }
 
@@ -59,20 +59,22 @@ impl Alchemy {
             .get_asset_transfers(Direction::To(address), from_block, latest)
             .await?;
 
+        tracing::trace!("inc {}, out {}", inc.0.len(), out.0.len());
+
         let tip = out
             .0
             .iter()
             .chain(inc.0.iter())
             .map(|tx| tx.block_number)
-            .fold(std::u64::MIN, |a, b| a.max(b.unwrap_or(0)));
+            .fold(u64::MIN, |a, b| a.max(b.unwrap_or(0)));
 
         self.db.insert_transactions(self.chain_id, inc.0).await?;
         self.db.insert_transactions(self.chain_id, out.0).await?;
         self.db.save_erc20_metadatas(self.chain_id, inc.1).await?;
         self.db.save_erc20_metadatas(self.chain_id, out.1).await?;
 
-        if tip > std::u64::MIN {
-            self.db.kv_set(&(self.chain_id, address), &tip).await?;
+        if tip > u64::MIN {
+            self.db.kv_set(&key, &tip).await?;
         }
 
         Ok(())
@@ -96,5 +98,31 @@ impl Alchemy {
             .await?;
 
         Ok(())
+    }
+
+    #[instrument(skip(self))]
+    pub async fn fetch_erc20_metadata(&self, address: Address) -> Result<Erc20Metadata> {
+        let metadata = self.client.get_erc20_metadata(address).await?;
+        Ok(metadata)
+    }
+
+    #[instrument(skip(self))]
+    pub async fn fetch_erc_metadata(
+        &self,
+        address: Address,
+        token_id: U256,
+        _type: String,
+    ) -> Result<ErcMetadataResponse> {
+        let metadata_response = self
+            .client
+            .get_erc_metadata(address, token_id, _type)
+            .await?;
+        Ok(metadata_response)
+    }
+
+    #[instrument(skip(self))]
+    pub async fn fetch_erc_owners(&self, address: Address) -> Result<ErcOwnersResponse> {
+        let owners_response = self.client.get_erc_owners(address).await?;
+        Ok(owners_response)
     }
 }

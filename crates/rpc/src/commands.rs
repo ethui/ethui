@@ -1,4 +1,4 @@
-use ethui_types::Bytes;
+use alloy::primitives::Bytes;
 
 use super::{Handler, Result};
 use crate::Ctx;

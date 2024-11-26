@@ -1,5 +1,5 @@
-import { JsonRpcMiddleware } from "@metamask/json-rpc-engine";
-import { Json, JsonRpcParams } from "@metamask/utils";
+import type { JsonRpcMiddleware } from "@metamask/json-rpc-engine";
+import type { Json, JsonRpcParams } from "@metamask/utils";
 import { ethErrors } from "eth-rpc-errors";
 import log from "loglevel";
 

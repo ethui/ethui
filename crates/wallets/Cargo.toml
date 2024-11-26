@@ -15,7 +15,7 @@ ethui-dialogs.workspace = true
 ethui-crypto.workspace = true
 ethui-broadcast.workspace = true
 
-ethers.workspace = true
+alloy.workspace = true
 tauri.workspace = true
 serde.workspace = true
 serde_json.workspace = true
@@ -24,12 +24,9 @@ secrets.workspace = true
 thiserror.workspace = true
 once_cell.workspace = true
 async-trait.workspace = true
-futures.workspace = true
-tracing.workspace = true
-coins-ledger.workspace = true
-hex.workspace = true
 
 enum_dispatch = "0.3.11"
-coins-bip32 = "0.8.3"
-futures-executor = "0.3.29"
-semver = "1.0.20"
+coins-bip32 = "0.12"
+
+[dev-dependencies]
+rstest.workspace = true

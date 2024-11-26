@@ -1,35 +1,22 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Button,
-  Stack,
-  Step,
-  StepLabel,
-  Stepper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
-import { FieldValues, useForm } from "react-hook-form";
-import truncateEthAddress from "truncate-eth-address";
-import { Address, formatUnits } from "viem";
+import { type FieldValues, useForm } from "react-hook-form";
+import { type Address, formatUnits } from "viem";
 import { z } from "zod";
 
-import { Form } from "@ethui/react/components";
 import { passwordFormSchema, passwordSchema } from "@ethui/types/password";
 import {
+  type HdWallet,
   derivationPathSchema,
-  HdWallet,
   mnemonicSchema,
 } from "@ethui/types/wallets";
-import { useProvider } from "@/hooks";
+import { Form } from "@ethui/ui/components/form";
+import { Button } from "@ethui/ui/components/shadcn/button";
+import { useProvider } from "#/hooks/useProvider";
+import { truncateHex } from "#/utils";
 
-export const schema = z.object({
+const schema = z.object({
   count: z.number().int().min(1).max(100),
   name: z.string().min(1),
   current: z.array(z.string()).length(2).optional(),
@@ -50,8 +37,6 @@ const updateSchema = schema.pick({
 
 type CreateSchema = z.infer<typeof createSchema>;
 type UpdateSchema = z.infer<typeof updateSchema>;
-
-const steps = ["Import", "Secure", "Review"];
 
 interface Props {
   wallet?: HdWallet;
@@ -91,15 +76,8 @@ function Create({ onSubmit, onRemove }: Props) {
   }, [name, current, mnemonic, derivationPath, password, onSubmit, submitted]);
 
   return (
-    <Stack direction="column" spacing={2}>
-      <Stepper activeStep={step} alternativeLabel>
-        {steps.map((label) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
-      {step == 0 && (
+    <div className="m-2 flex flex-col flex-col">
+      {step === 0 && (
         <MnemonicStep
           onSubmit={(name: string, mnemonic) => {
             setName(name);
@@ -110,7 +88,7 @@ function Create({ onSubmit, onRemove }: Props) {
         />
       )}
 
-      {step == 1 && (
+      {step === 1 && (
         <PasswordStep
           onSubmit={(p) => {
             setPassword(p);
@@ -120,7 +98,7 @@ function Create({ onSubmit, onRemove }: Props) {
         />
       )}
 
-      {step == 2 && (
+      {step === 2 && (
         <ReviewStep
           mnemonic={mnemonic}
           onSubmit={(derivationPath, current) => {
@@ -130,7 +108,7 @@ function Create({ onSubmit, onRemove }: Props) {
           onCancel={onRemove}
         />
       )}
-    </Stack>
+    </div>
   );
 }
 
@@ -152,20 +130,20 @@ function MnemonicStep({ onSubmit, onCancel }: MnemonicStepProps) {
 
   return (
     <Form form={form} onSubmit={onSubmitInternal}>
-      <Stack direction="column" spacing={2}>
-        <Form.Text label="Name" name="name" multiline />
+      <Form.Text label="Name" name="name" className="w-full" />
 
-        <Typography>Insert your 12-word mnemonic</Typography>
-        <TextField label="12-word mnemonic" name="mnemonic" multiline />
+      <Form.Textarea
+        label="12-word mnemonic"
+        name="mnemonic"
+        className="w-full"
+      />
 
-        <Stack direction="row" spacing={2} justifyContent="flex-end">
-          <Button color="warning" variant="contained" onClick={onCancel}>
-            Cancel
-          </Button>
-
-          <Form.Submit label="Continue" />
-        </Stack>
-      </Stack>
+      <div className="flex gap-2">
+        <Form.Submit label="Continue" />
+        <Button variant="outline" onClick={onCancel}>
+          Cancel
+        </Button>
+      </div>
     </Form>
   );
 }
@@ -183,23 +161,20 @@ function PasswordStep({ onSubmit, onCancel }: PasswordStepProps) {
 
   return (
     <Form form={form} onSubmit={(d) => onSubmit(d.password)}>
-      <Stack direction="column" spacing={2}>
-        <Typography>Choose a secure password</Typography>
-        <Form.Text type="password" label="Password" name="password" />
-        <Form.Text
-          type="password"
-          label="Password Confirmation"
-          name="passwordConfirmation"
-        />
+      <span>Choose a secure password</span>
+      <Form.Text type="password" label="Password" name="password" />
+      <Form.Text
+        type="password"
+        label="Password Confirmation"
+        name="passwordConfirmation"
+      />
 
-        <Stack direction="row" spacing={2} justifyContent="flex-end">
-          <Button color="warning" variant="contained" onClick={onCancel}>
-            Cancel
-          </Button>
-
-          <Form.Submit label="Continue" />
-        </Stack>
-      </Stack>
+      <div className="flex gap-2">
+        <Form.Submit label="Continue" />
+        <Button variant="outline" onClick={onCancel}>
+          Cancel
+        </Button>
+      </div>
     </Form>
   );
 }
@@ -242,42 +217,42 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
 
   return (
     <Form form={form} onSubmit={onSubmitInternal}>
-      <Stack spacing={2} direction="column">
-        <Form.Text label="Derivation Path" name="derivationPath" />
+      <Form.Text label="Derivation Path" name="derivationPath" />
 
-        {form.formState.isValid && (
-          <Stack direction="column" spacing={2}>
-            <TableContainer>
-              <Table size="small">
-                <TableBody>
-                  {addresses.map(([key, address]) => (
-                    <TableRow
-                      hover
-                      selected={current == key}
-                      sx={{ cursor: "pointer" }}
-                      onClick={() => setCurrent(key)}
-                      key={key}
+      {form.formState.isValid && (
+        <div className="flex flex-col">
+          <table>
+            <tbody>
+              {addresses.map(([key, address]) => (
+                <tr key={key}>
+                  <td>{truncateHex(address)}</td>
+                  <td align="right">
+                    <NativeBalance address={address} />
+                  </td>
+                  <td>
+                    <Button
+                      variant={current === key ? "secondary" : "outline"}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrent(key);
+                      }}
                     >
-                      <TableCell>{truncateEthAddress(address)}</TableCell>
-                      <TableCell align="right">
-                        <NativeBalance address={address} />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                      Pick
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-            <Stack direction="row" spacing={2} justifyContent="flex-end">
-              <Button color="warning" variant="contained" onClick={onCancel}>
-                Cancel
-              </Button>
-
-              <Form.Submit label="Save" />
-            </Stack>
-          </Stack>
-        )}
-      </Stack>
+          <div className="flex gap-2">
+            <Form.Submit label="Save" />
+            <Button variant="outline" onClick={onCancel}>
+              Cancel
+            </Button>
+          </div>
+        </div>
+      )}
     </Form>
   );
 }
@@ -295,7 +270,7 @@ function NativeBalance({ address }: NativeBalanceProps) {
   useEffect(() => {
     if (!provider) return;
     provider.getBalance({ address }).then((balance: bigint) => {
-      if (balance == 0n) return;
+      if (balance === 0n) return;
 
       const threshold = BigInt(0.001 * 10 ** decimals);
       if (balance < threshold) {
@@ -325,17 +300,15 @@ function Update({ wallet, onSubmit, onRemove }: Props) {
 
   return (
     <Form form={form} onSubmit={onSubmit}>
-      <Stack spacing={2} alignItems="flex-start">
-        <Form.Text label="Name" name="name" />
-        <Form.Text label="Derivation Path" name="derivationPath" />
-        <Form.Number label="Address count" name="count" />
-        <Stack direction="row" spacing={2}>
-          <Form.Submit label="Save" />
-          <Button color="warning" variant="contained" onClick={onRemove}>
-            Remove
-          </Button>
-        </Stack>
-      </Stack>
+      <Form.Text label="Name" name="name" />
+      <Form.Text label="Derivation Path" name="derivationPath" />
+      <Form.NumberField label="Address count" name="count" />
+      <div className="flex gap-2">
+        <Form.Submit label="Save" />
+        <Button color="warning" onClick={onRemove}>
+          Remove
+        </Button>
+      </div>
     </Form>
   );
 }

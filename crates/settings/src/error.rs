@@ -11,6 +11,9 @@ pub enum Error {
 
     #[error(transparent)]
     AutoLaunch(#[from] auto_launch::Error),
+
+    #[error(transparent)]
+    Tracing(#[from] ethui_tracing::TracingError),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

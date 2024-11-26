@@ -17,12 +17,12 @@ impl ChainAdd {
     }
 
     pub async fn run(self) -> Result<()> {
-        let dialog = Dialog::new("chain-add", serde_json::to_value(&self.network).unwrap());
-        dialog.open().await?;
-
         if self.already_exists().await {
             return Ok(());
         }
+
+        let dialog = Dialog::new("chain-add", serde_json::to_value(&self.network).unwrap());
+        dialog.open().await?;
 
         while let Some(msg) = dialog.recv().await {
             match msg {
@@ -67,7 +67,6 @@ pub struct Params {
 #[serde(rename_all = "camelCase")]
 pub struct Currency {
     decimals: u64,
-    // name: String,
     symbol: String,
 }
 
@@ -91,6 +90,7 @@ impl TryFrom<Params> for Network {
             ws_url: None,
             currency: params.native_currency.symbol,
             decimals: params.native_currency.decimals as u32,
+            force_is_anvil: false,
         })
     }
 }

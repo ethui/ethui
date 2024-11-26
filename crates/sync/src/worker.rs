@@ -10,7 +10,7 @@ use tokio::{
     task::JoinHandle,
     time::{sleep, Duration},
 };
-use tracing::instrument;
+use tracing::{instrument, warn};
 
 use crate::{utils, Error, Msg, Result};
 
@@ -176,8 +176,12 @@ async fn unit_worker(
     mut rx: mpsc::UnboundedReceiver<()>,
 ) -> Result<()> {
     loop {
-        let alchemy = get_alchemy(chain_id).await?;
-        alchemy.fetch_updates(addr).await.unwrap();
+        if ethui_sync_alchemy::supports_network(chain_id) {
+            let alchemy = get_alchemy(chain_id).await?;
+            if let Err(e) = alchemy.fetch_updates(addr).await {
+                warn!("Alchemy error: {:?}", e);
+            };
+        }
 
         // wait for either a set delay, or for an outside poll request
         select! {

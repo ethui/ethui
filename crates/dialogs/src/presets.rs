@@ -24,8 +24,8 @@ pub(super) static PRESETS: Lazy<HashMap<String, Preset>> = Lazy::new(|| {
         "msg-sign".into(),
         Preset {
             title: "Sign Message".into(),
-            w: 400.0,
-            h: 220.0,
+            w: 600.0,
+            h: 600.0,
         },
     );
 
@@ -44,6 +44,33 @@ pub(super) static PRESETS: Lazy<HashMap<String, Preset>> = Lazy::new(|| {
             title: "Add Chain".into(),
             w: 400.0,
             h: 500.0,
+        },
+    );
+
+    presets.insert(
+        "erc20-add".into(),
+        Preset {
+            title: "Add ERC20".into(),
+            w: 450.0,
+            h: 400.0,
+        },
+    );
+
+    presets.insert(
+        "erc721-add".into(),
+        Preset {
+            title: "Add ERC721".into(),
+            w: 450.0,
+            h: 800.0,
+        },
+    );
+
+    presets.insert(
+        "erc1155-add".into(),
+        Preset {
+            title: "Add ERC1155".into(),
+            w: 450.0,
+            h: 800.0,
         },
     );
 

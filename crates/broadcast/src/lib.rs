@@ -25,6 +25,7 @@ pub enum InternalMsg {
     CurrentAddressChanged(Address),
 
     NetworkAdded(u32),
+    NetworkUpdated(u32),
     NetworkRemoved(u32),
     CurrentNetworkChanged(u32),
 
@@ -99,6 +100,10 @@ mod internal_msgs {
 
     pub async fn network_added(chain_id: u32) {
         send(NetworkAdded(chain_id)).await;
+    }
+
+    pub async fn network_updated(chain_id: u32) {
+        send(NetworkUpdated(chain_id)).await;
     }
 
     pub async fn network_removed(chain_id: u32) {

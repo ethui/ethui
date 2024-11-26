@@ -1,7 +1,10 @@
 use std::{sync::Arc, time::Duration};
 
+use alloy::signers::{
+    local::{coins_bip39::English, MnemonicBuilder},
+    Signer as _,
+};
 use async_trait::async_trait;
-use ethers::signers::{coins_bip39::English, MnemonicBuilder, Signer as _};
 use ethui_crypto::{self, EncryptedData};
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_types::Address;
@@ -111,12 +114,14 @@ impl WalletControl for HDWallet {
         let secret = secret.as_ref().unwrap().lock().await;
 
         let mnemonic = mnemonic_from_secret(&secret);
-        let signer = MnemonicBuilder::<English>::default()
+        let mut signer = MnemonicBuilder::<English>::default()
             .phrase(mnemonic.as_str())
             .derivation_path(path)?
             .build()?;
 
-        Ok(Signer::SigningKey(signer.with_chain_id(chain_id)))
+        signer.set_chain_id(Some(chain_id.into()));
+
+        Ok(Signer::Local(signer))
     }
 }
 
@@ -263,4 +268,19 @@ pub fn mnemonic_into_secret(mnemonic: String) -> SecretVec<u8> {
 pub fn mnemonic_from_secret(secret: &SecretVec<u8>) -> String {
     let signer_bytes = secret.borrow();
     String::from_utf8(signer_bytes.to_vec()).unwrap()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn secret() {
+        let signer = "test test test test test test test test test test test junk".to_string();
+
+        let secret = mnemonic_into_secret(signer.clone());
+        let recovered_signer = mnemonic_from_secret(&secret);
+
+        assert_eq!(signer, recovered_signer);
+    }
 }

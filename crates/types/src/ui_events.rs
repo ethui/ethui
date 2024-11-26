@@ -27,7 +27,8 @@ pub struct DialogSend {
 pub enum UINotify {
     #[allow(unused)]
     WalletsChanged,
-    NetworkChanged,
+    NetworksChanged,
+    CurrentNetworkChanged,
     TxsUpdated,
     PeersUpdated,
     BalancesUpdated,
@@ -40,7 +41,8 @@ impl UINotify {
     pub fn label(&self) -> &str {
         match self {
             Self::WalletsChanged => "wallets-changed",
-            Self::NetworkChanged => "network-changed",
+            Self::NetworksChanged => "networks-changed",
+            Self::CurrentNetworkChanged => "current-network-changed",
             Self::TxsUpdated => "txs-updated",
             Self::PeersUpdated => "peers-updated",
             Self::BalancesUpdated => "balances-updated",

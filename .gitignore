@@ -7,6 +7,7 @@ target/
 !migrations/*.sql
 gui/vite.config.ts.timestamp-*
 dev-data
+.direnv/
 
 # extension artifacts
 extension/*.zip
@@ -23,3 +24,4 @@ extension/*.zip
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+*storybook.log

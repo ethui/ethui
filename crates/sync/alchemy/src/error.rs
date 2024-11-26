@@ -1,5 +1,4 @@
-use ethers::providers::JsonRpcError;
-use ethui_types::B256;
+use alloy::transports::TransportErrorKind;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -25,13 +24,10 @@ pub enum Error {
     JoinError(#[from] tokio::task::JoinError),
 
     #[error(transparent)]
-    ProviderError(#[from] ethers::providers::ProviderError),
+    Alloy(#[from] alloy::transports::RpcError<TransportErrorKind>),
 
-    #[error(transparent)]
-    JsonRpcError(#[from] JsonRpcError),
-
-    #[error("Transaction not found: {0}")]
-    TxNotFound(B256),
+    #[error("Unable to verify ownership. Possibly because the standard is not supported or the user's currently selected network does not match the chain of the asset in question.")]
+    ErcInvalid,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

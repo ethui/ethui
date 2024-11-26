@@ -1,59 +1,28 @@
-import { lazy, Suspense } from "react";
-import { createRootRoute, Outlet } from "@tanstack/react-router";
-import { Box, GlobalStyles, ThemeProvider } from "@mui/material";
-import CssBaseline from "@mui/material/CssBaseline";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { createRootRouteWithContext } from "@tanstack/react-router";
+import { Suspense } from "react";
 
-import { DevBuildNotice, ErrorHandler } from "@/components";
-import { useTheme } from "@/store/theme";
+import { AnimatedOutlet } from "#/components/AnimatedOutlet";
+import { ErrorHandler } from "#/components/ErrorHandler";
 
 const queryClient = new QueryClient();
 
-const RouterDevtools =
-  process.env.NODE_ENV === "production"
-    ? () => null
-    : lazy(() =>
-        import("@tanstack/router-devtools").then((res) => ({
-          default: res.TanStackRouterDevtools,
-        })),
-      );
-
-const globalStyles = {
-  body: { userSelect: "none" },
-  p: { userSelect: "initial" },
-  h1: { userSelect: "initial" },
-  h2: { userSelect: "initial" },
-  h3: { userSelect: "initial" },
+type Context = {
+  breadcrumb?: string;
 };
 
-export const Route = createRootRoute({
-  component: () => <Root />,
+export const Route = createRootRouteWithContext<Context>()({
+  component: Root,
 });
 
 function Root() {
-  const theme = useTheme((s) => s.theme);
-
   return (
-    <ThemeProvider theme={theme}>
-      <GlobalStyles styles={globalStyles} />
-      <CssBaseline>
-        <ErrorHandler>
-          <QueryClientProvider client={queryClient}>
-            <DevBuildNotice />
-            <Suspense>
-              <Outlet />
-            </Suspense>
-
-            <Suspense>
-              <Box sx={{ position: "absolute", bottom: 50, left: 0 }}>
-                <ReactQueryDevtools buttonPosition="relative" />
-              </Box>
-              <RouterDevtools position="bottom-left" />
-            </Suspense>
-          </QueryClientProvider>
-        </ErrorHandler>
-      </CssBaseline>
-    </ThemeProvider>
+    <ErrorHandler>
+      <QueryClientProvider client={queryClient}>
+        <Suspense>
+          <AnimatedOutlet />
+        </Suspense>
+      </QueryClientProvider>
+    </ErrorHandler>
   );
 }

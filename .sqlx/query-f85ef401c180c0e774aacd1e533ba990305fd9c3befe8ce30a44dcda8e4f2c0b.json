@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "DELETE FROM erc20_blacklist WHERE chain_id = ? AND address = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "f85ef401c180c0e774aacd1e533ba990305fd9c3befe8ce30a44dcda8e4f2c0b"
+}

@@ -13,12 +13,13 @@ ethui-types.workspace = true
 ethui-settings.workspace = true
 ethui-broadcast.workspace = true
 
-ethers.workspace = true
-sqlx = { workspace = true, features = ["json"] }
+alloy.workspace = true
+alloy-chains.workspace = true
+foundry-block-explorers.workspace = true
+sqlx.workspace = true
 tauri.workspace = true
 serde.workspace = true
 serde_json.workspace = true
-tokio.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
 once_cell.workspace = true

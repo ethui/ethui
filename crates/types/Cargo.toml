@@ -8,14 +8,9 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
-ethers.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 sqlx.workspace = true
 tokio.workspace = true
 async-trait.workspace = true
-tracing.workspace = true
-alloy-primitives.workspace = true
-alloy-json-abi.workspace = true
-foundry-config.workspace = true
-foundry-common.workspace = true
+alloy.workspace = true

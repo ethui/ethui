@@ -1,5 +1,6 @@
-use ethui_types::{events::Tx, Address, ToEthers, TokenMetadata, B256, U256, U64};
+use ethui_types::{events::Tx, Address, TokenMetadata, B256, U256, U64};
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -45,7 +46,7 @@ impl From<&AlchemyAssetTransfer> for Tx {
         Self {
             hash: value.hash,
             trace_address: None,
-            block_number: Some(value.block_num.to_ethers().as_u64()),
+            block_number: Some(value.block_num.to()),
             from: value.from,
             to: value.to,
 
@@ -81,10 +82,84 @@ impl TryFrom<&AlchemyAssetTransfer> for TokenMetadata {
             address: value.raw_contract.address.unwrap(),
             name: None,
             symbol: value.asset.clone(),
-            decimals: value
-                .raw_contract
-                .decimal
-                .map(|d| d.to_ethers().as_u32() as u8),
+            decimals: value.raw_contract.decimal.map(|d| d.to::<u32>() as u8),
         })
     }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Erc20MetadataResponse {
+    pub result: Erc20Metadata,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct Erc20Metadata {
+    pub decimals: Option<u8>,
+    pub logo: Option<String>,
+    pub name: Option<String>,
+    pub symbol: Option<String>,
+}
+
+// the single 'Erc' naming refers to ERC721 and ERC1155 tokens
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct ErcContract {
+    pub address: Address,
+    pub name: String,
+    pub symbol: String,
+    pub token_type: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct ErcImageData {
+    pub original_url: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct ErcRawMetadata {
+    pub token_uri: String,
+    pub metadata: Value,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct ErcCollectionData {
+    pub name: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct ErcMetadataResponse {
+    pub contract: ErcContract,
+    pub token_id: U256,
+    pub image: ErcImageData,
+    pub raw: ErcRawMetadata,
+    pub collection: Option<ErcCollectionData>,
+    pub balance: Option<U256>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ErcBalances {
+    pub token_id: String,
+    pub balance: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ErcOwners {
+    pub owner_address: String,
+    pub token_balances: Vec<ErcBalances>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ErcOwnersResponse {
+    pub owners: Vec<ErcOwners>,
+    pub page_key: Option<String>,
 }

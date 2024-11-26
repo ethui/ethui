@@ -1,4 +1,4 @@
-import { Json, JsonRpcRequest, JsonRpcResponse } from "@metamask/utils";
+import type { Json, JsonRpcRequest, JsonRpcResponse } from "@metamask/utils";
 
 export interface Request {
   timestamp: number;

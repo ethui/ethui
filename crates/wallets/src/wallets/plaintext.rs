@@ -1,9 +1,12 @@
 use std::str::FromStr;
 
+use alloy::signers::{
+    local::{coins_bip39::English, MnemonicBuilder},
+    Signer as _,
+};
 use async_trait::async_trait;
 use coins_bip32::path::DerivationPath;
-use ethers::signers::{coins_bip39::English, MnemonicBuilder, Signer as _};
-use ethui_types::{Address, ToAlloy};
+use ethui_types::Address;
 use serde::{Deserialize, Serialize};
 
 use crate::{utils, wallet::WalletCreate, Result, Signer, Wallet, WalletControl};
@@ -40,7 +43,6 @@ impl WalletControl for PlaintextWallet {
             .await
             .unwrap()
             .address()
-            .to_alloy()
     }
 
     fn get_current_path(&self) -> String {
@@ -60,7 +62,7 @@ impl WalletControl for PlaintextWallet {
     }
 
     async fn get_address(&self, path: &str) -> Result<Address> {
-        Ok(self.build_signer(1, path).await?.address().to_alloy())
+        Ok(self.build_signer(1, path).await?.address())
     }
 
     async fn get_all_addresses(&self) -> Vec<(String, Address)> {
@@ -73,12 +75,15 @@ impl WalletControl for PlaintextWallet {
 
     async fn build_signer(&self, chain_id: u32, path: &str) -> Result<Signer> {
         let signer = MnemonicBuilder::<English>::default()
-            .phrase(self.mnemonic.as_ref())
+            .phrase(&self.mnemonic)
             .derivation_path(path)?
             .build()
-            .map(|v| v.with_chain_id(chain_id))?;
+            .map(|mut v| {
+                v.set_chain_id(Some(chain_id.into()));
+                v
+            })?;
 
-        Ok(Signer::SigningKey(signer))
+        Ok(Signer::Local(signer))
     }
 }
 

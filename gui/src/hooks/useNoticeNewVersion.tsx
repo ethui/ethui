@@ -1,11 +1,12 @@
-import CloseIcon from "@mui/icons-material/Close";
-import { IconButton, Link, Typography } from "@mui/material";
-import { SnackbarKey, useSnackbar } from "notistack";
+import { type SnackbarKey, useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 
+import { Button } from "@ethui/ui/components/shadcn/button";
+import { Link } from "@tanstack/react-router";
+import { CircleX } from "lucide-react";
 import { useInvoke } from "./useInvoke";
 
-export async function getLatestVersion() {
+async function getLatestVersion() {
   const response = await fetch(
     "https://api.github.com/repos/ethui/ethui/releases?per_page=1",
   );
@@ -22,36 +23,27 @@ export function useNoticeNewVersion() {
 
   useEffect(() => {
     getLatestVersion().then(setLatest);
-  }, [setLatest]);
+  }, []);
 
   useEffect(() => {
     if (!latest || current === latest) return;
 
     key = enqueueSnackbar(
-      <Link
-        href="https://github.com/ethui/ethui/releases"
-        sx={{
-          "&&": {
-            color: "inherit",
-            textDecorationColor: "currentColor",
-          },
-        }}
-        target="_blank"
-      >
-        <Typography>New release available.</Typography>
+      <Link href="https://github.com/ethui/ethui/releases" target="_blank">
+        <span>New release available.</span>
       </Link>,
       {
         key: "new_release",
         persist: true,
         action: () => (
-          <IconButton
+          <Button
+            size="icon"
             aria-label="close"
             color="inherit"
-            sx={{ p: 0.5 }}
             onClick={() => closeSnackbar(key)}
           >
-            <CloseIcon />
-          </IconButton>
+            <CircleX />
+          </Button>
         ),
       },
     );

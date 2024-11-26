@@ -1,0 +1,17 @@
+{
+  "name": "ethui-dev",
+  "action": {
+    "default_icon": {
+      "16": "icons/ethui-purple-16.png",
+      "48": "icons/ethui-purple-48.png",
+      "96": "icons/ethui-purple-96.png",
+      "128": "icons/ethui-purple-128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/ethui-purple-16.png",
+    "48": "icons/ethui-purple-48.png",
+    "96": "icons/ethui-purple-96.png",
+    "128": "icons/ethui-purple-128.png"
+  }
+}

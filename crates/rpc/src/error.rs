@@ -1,4 +1,4 @@
-use ethers::prelude::{signer::SignerMiddlewareError, *};
+use alloy::transports::{RpcError, TransportErrorKind};
 use ethui_types::Address;
 use jsonrpc_core::ErrorCode;
 
@@ -19,22 +19,17 @@ pub enum Error {
     #[error("Error building signer: {0}")]
     SignerBuild(String),
 
-    #[error(transparent)]
-    SignerMiddleware(
-        #[from] SignerMiddlewareError<Provider<RetryClient<Http>>, ethui_wallets::Signer>,
-    ),
+    #[error("failed to parse URL {0}")]
+    CannotParseUrl(String),
 
     #[error(transparent)]
-    Provider(#[from] ethers::providers::ProviderError),
+    SignerError(#[from] alloy::signers::Error),
 
-    #[error("Signer error: {0}")]
-    Signer(String),
+    #[error(transparent)]
+    Transport(#[from] alloy::transports::TransportError),
 
     #[error(transparent)]
     EthuiWallets(#[from] ethui_wallets::Error),
-
-    #[error(transparent)]
-    Wallet(#[from] ethers::signers::WalletError),
 
     #[error(transparent)]
     Network(#[from] ethui_networks::Error),
@@ -59,6 +54,39 @@ pub enum Error {
 
     #[error("RPC error: {0}")]
     Rpc(i64),
+
+    #[error("Parse error")]
+    ParseError,
+
+    #[error("The user rejected the request")]
+    UserRejectedDialog,
+
+    #[error("Invalid token")]
+    TokenInvalid,
+
+    #[error("Invalid token: 'symbol' is needed")]
+    SymbolMissing,
+
+    #[error("Invalid symbol : longer than 11 characters")]
+    SymbolInvalid,
+
+    #[error("Invalid decimals : must be 0 <= 36")]
+    DecimalsInvalid,
+
+    #[error("The Provider is not connected to the requested chain")]
+    NetworkInvalid,
+
+    #[error("Asset type {0} not supported")]
+    TypeInvalid(String),
+
+    #[error("Added asset type {0} does not match existing token type {1}")]
+    ErcTypeInvalid(String, String),
+
+    #[error("Suggested asset is not owned by the selected account")]
+    ErcWrongOwner,
+
+    #[error("Unable to verify ownership. Possibly because the standard is not supported or the user's currently selected network does not match the chain of the asset in question.")]
+    ErcInvalid,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -68,6 +96,17 @@ impl From<Error> for jsonrpc_core::Error {
         let code = match value {
             Error::TxDialogRejected | Error::SignatureRejected => ErrorCode::ServerError(4001),
             Error::WalletNotFound(..) => ErrorCode::ServerError(4100),
+            Error::ParseError => ErrorCode::ServerError(-32700),
+            Error::UserRejectedDialog => ErrorCode::ServerError(4001),
+            Error::TokenInvalid => ErrorCode::ServerError(-32602),
+            Error::SymbolMissing => ErrorCode::ServerError(-32602),
+            Error::SymbolInvalid => ErrorCode::ServerError(-32602),
+            Error::DecimalsInvalid => ErrorCode::ServerError(-32602),
+            Error::NetworkInvalid => ErrorCode::ServerError(4901),
+            Error::TypeInvalid(..) => ErrorCode::ServerError(-32603),
+            Error::ErcTypeInvalid(..) => ErrorCode::ServerError(-32002),
+            Error::ErcWrongOwner => ErrorCode::ServerError(-32002),
+            Error::ErcInvalid => ErrorCode::ServerError(-32002),
             _ => ErrorCode::InternalError,
         };
 
@@ -88,22 +127,15 @@ impl serde::Serialize for Error {
     }
 }
 
-pub(crate) fn ethers_to_jsonrpc_error(e: ProviderError) -> jsonrpc_core::Error {
+pub(crate) fn alloy_to_jsonrpc_error(e: RpcError<TransportErrorKind>) -> jsonrpc_core::Error {
     // TODO: probable handle more error types here
-    match e {
-        ProviderError::JsonRpcClientError(e) => {
-            if let Some(e) = e.as_error_response() {
-                jsonrpc_core::Error {
-                    code: ErrorCode::ServerError(e.code),
-                    data: e.data.clone(),
-                    message: e.message.clone(),
-                }
-            } else if e.as_serde_error().is_some() {
-                jsonrpc_core::Error::invalid_request()
-            } else {
-                jsonrpc_core::Error::internal_error()
-            }
+    if let Some(e) = e.as_error_resp() {
+        jsonrpc_core::Error {
+            code: ErrorCode::ServerError(e.code),
+            data: e.data.clone().map(|d| serde_json::to_value(d).unwrap()),
+            message: e.message.to_string(),
         }
-        _ => jsonrpc_core::Error::internal_error(),
+    } else {
+        jsonrpc_core::Error::internal_error()
     }
 }
