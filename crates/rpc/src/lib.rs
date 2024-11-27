@@ -1,6 +1,8 @@
+mod apis;
 pub mod commands;
 mod error;
 mod methods;
+pub mod v2;
 
 use std::collections::HashMap;
 

@@ -70,7 +70,7 @@ tauri = { version = "2.1", features = ["tray-icon"] }
 once_cell = { version = "1.19", default-features = false }
 secrets = { version = "1.2", features = ["use-libsodium-sys"] }
 tracing = "0.1"
-jsonrpsee = { version = "0.22.5", features = ["server", "macros"] }
+jsonrpsee = { version = "0.24", features = ["server", "macros"] }
 jsonrpsee-proc-macros = { version = "0.22.5" }
 jsonrpc-core = { version = "18.0", default-features = false }
 reqwest = { version = "0.12", default-features = false, features = [

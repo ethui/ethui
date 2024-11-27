@@ -1,54 +1,79 @@
-use std::{collections::HashMap, net::SocketAddr};
-
-use ethui_types::GlobalState;
-use futures::{stream::SplitSink, SinkExt, StreamExt};
-use jsonrpsee::types::ErrorObjectOwned;
-use tokio::{
-    net::{TcpListener, TcpStream},
-    sync::mpsc,
+use std::{
+    //collections::HashMap,
+    //net::SocketAddr,
+    sync::{
+        atomic::{AtomicUsize, Ordering},
+        Arc,
+    },
 };
-use tokio_tungstenite::{accept_hdr_async, WebSocketStream};
-use tracing::warn;
-use tungstenite::{
-    handshake::server::{ErrorResponse, Request, Response},
-    Message,
+
+//use ethui_types::GlobalState;
+use futures::{future::BoxFuture, stream::SplitSink, FutureExt as _, SinkExt, StreamExt};
+use jsonrpsee::{
+    server::{middleware::rpc::RpcServiceT, RpcServiceBuilder, Server},
+    types::Request,
+    MethodResponse,
 };
-use url::Url;
+//use tokio::{net::TcpStream, sync::mpsc};
+//use tokio_tungstenite::{accept_hdr_async, WebSocketStream};
+//use tracing::warn;
+//use tungstenite::{
+//    handshake::server::{ErrorResponse, Response},
+//    Message,
+//};
+//use url::Url;
 
-pub use crate::error::{WsError, WsResult};
-use crate::peers::{Peer, Peers};
-use jsonrpsee::proc_macros::rpc;
-use jsonrpsee::server::Server;
-use jsonrpsee::ConnectionDetails;
+//pub use crate::error::{WsError, WsResult};
+//use crate::peers::{Peer, Peers};
 
-#[rpc(server)]
-pub trait Rpc {
-    #[method(name = "say_hello", raw_method)]
-    async fn say_hello(&self) -> Result<(), ErrorObjectOwned>;
-
-    #[method(name = "eth_accounts", raw_method)]
-    async fn eth_accounts(&self) -> Result<Vec<String>, ErrorObjectOwned>;
+// It's possible to access the connection ID
+// by using the low-level API.
+#[derive(Clone)]
+pub struct CallsPerConn<S> {
+    service: S,
+    count: Arc<AtomicUsize>,
 }
 
-struct RpcServerImpl;
-#[async_trait::async_trait]
-impl RpcServer for RpcServerImpl {
-    async fn say_hello(&self, conn: ConnectionDetails) -> Result<(), ErrorObjectOwned> {
-        dbg!(&conn);
-        Ok(())
+impl<'a, S> RpcServiceT<'a> for CallsPerConn<S>
+where
+    S: RpcServiceT<'a> + Send + Sync + Clone + 'static,
+{
+    type Future = BoxFuture<'a, MethodResponse>;
+
+    fn call(&self, req: Request<'a>) -> Self::Future {
+        let count = self.count.clone();
+        let service = self.service.clone();
+
+        async move {
+            let rp = service.call(req).await;
+            count.fetch_add(1, Ordering::SeqCst);
+            let count = count.load(Ordering::SeqCst);
+            println!("the server has processed calls={count} on the connection");
+            rp
+        }
+        .boxed()
     }
 }
-
 pub(crate) async fn server_loop(port: u16) {
     let addr = format!("127.0.0.1:{}", port);
     // let listener = TcpListener::bind(&addr).await.expect("Can't listen to");
 
     tracing::debug!("WS server listening on: {}", addr);
 
-    let server = Server::builder().build(addr).await.unwrap();
-    let handle = server.start(RpcServerImpl.into_rpc());
+    let rpc_middleware = RpcServiceBuilder::new().layer_fn(|service| CallsPerConn {
+        service,
+        count: Default::default(),
+    });
 
-    tokio::spawn(handle.stopped()).await;
+    let server = Server::builder()
+        .set_rpc_middleware(rpc_middleware)
+        .build(addr)
+        .await
+        .unwrap();
+    let rpc = ethui_rpc::v2::module();
+    let handle = server.start(rpc);
+
+    tokio::spawn(handle.stopped()).await.unwrap();
 
     // while let Ok((stream, _)) = listener.accept().await {
     //     let peer = stream
@@ -59,110 +84,110 @@ pub(crate) async fn server_loop(port: u16) {
     // }
 }
 
-async fn accept_connection(socket: SocketAddr, stream: TcpStream) {
-    let mut query_params: HashMap<String, String> = Default::default();
-    let callback = |req: &Request, res: Response| -> std::result::Result<Response, ErrorResponse> {
-        let url = Url::parse(&format!("{}{}", "http://localhost", req.uri())).unwrap();
-        query_params = url.query_pairs().into_owned().collect();
-        Ok(res)
-    };
-
-    let ws_stream = accept_hdr_async(stream, callback)
-        .await
-        .expect("Failed to accept");
-    let (snd, rcv) = mpsc::unbounded_channel::<serde_json::Value>();
-    let url = query_params.get("url").cloned().unwrap_or_default();
-
-    let peer = Peer::new(socket, snd, &query_params);
-
-    Peers::write().await.add_peer(peer.clone()).await;
-    let res = handle_connection(peer, ws_stream, rcv).await;
-    Peers::write().await.remove_peer(socket).await;
-
-    if let Err(e) = res {
-        match e {
-            WsError::Websocket(e) => match e {
-                tungstenite::Error::ConnectionClosed
-                | tungstenite::Error::Protocol(_)
-                | tungstenite::Error::Utf8 => {
-                    tracing::debug!("Close  {} {:?}", url, e);
-                }
-                _ => (),
-            },
-            _ => {
-                tracing::error!("Error {} {}", url, e);
-            }
-        }
-    }
-}
-
-async fn handle_connection(
-    peer: Peer,
-    stream: WebSocketStream<TcpStream>,
-    mut rcv: mpsc::UnboundedReceiver<serde_json::Value>,
-) -> WsResult<()> {
-    let handler: ethui_rpc::Handler = peer.clone().into();
-
-    // will be used at most once to mark the peer as live once the first message comes in
-    let mut liveness_checker = Some(peer);
-    let mut interval = tokio::time::interval(std::time::Duration::from_secs(15));
-    let (mut ws_sender, mut ws_receiver) = stream.split();
-
-    loop {
-        tokio::select! {
-            // RPC request
-            Some(msg) = ws_receiver.next() => {
-
-                match msg {
-                    Ok(Message::Text(msg)) => handle_message(msg, &handler, &mut ws_sender, &mut liveness_checker).await?,
-                    Ok(Message::Close(_)) => break,
-                    Ok(_) => continue,
-                    Err(e) => warn!("websocket error: {}", e),
-                }
-            }
-
-            // data sent from provider, or event broadcast
-            msg = rcv.recv() =>{
-                match msg {
-                    Some(msg) => {
-                        ws_sender.send(msg.to_string().into()).await?;
-                    },
-                    None => {
-                        tracing::error!("unexpected error");
-                        break
-                    }
-                }
-            }
-
-            // send a ping every 1 seconds
-            _ = interval.tick() => {
-                ws_sender.send(Message::Text("ping".to_string())).await?;
-            }
-        }
-    }
-
-    Ok(())
-}
-
-async fn handle_message(
-    text: String,
-    handler: &ethui_rpc::Handler,
-    sender: &mut SplitSink<WebSocketStream<TcpStream>, Message>,
-    liveness_checker: &mut Option<Peer>,
-) -> WsResult<()> {
-    if text == "pong" {
-        return Ok(());
-    }
-
-    if let Some(p) = liveness_checker.take() {
-        Peers::write().await.peer_alive(p).await;
-    }
-
-    let reply = handler.handle(serde_json::from_str(&text).unwrap()).await;
-    let reply = reply
-        .map(|r| serde_json::to_string(&r).unwrap())
-        .unwrap_or_else(|| serde_json::Value::Null.to_string());
-
-    sender.send(reply.into()).await?;
-    Ok(())
-}
+//async fn accept_connection(socket: SocketAddr, stream: TcpStream) {
+//    let mut query_params: HashMap<String, String> = Default::default();
+//    let callback = |req: &Request, res: Response| -> std::result::Result<Response, ErrorResponse> {
+//        let url = Url::parse(&format!("{}{}", "http://localhost", req.uri())).unwrap();
+//        query_params = url.query_pairs().into_owned().collect();
+//        Ok(res)
+//    };
+//
+//    let ws_stream = accept_hdr_async(stream, callback)
+//        .await
+//        .expect("Failed to accept");
+//    let (snd, rcv) = mpsc::unbounded_channel::<serde_json::Value>();
+//    let url = query_params.get("url").cloned().unwrap_or_default();
+//
+//    let peer = Peer::new(socket, snd, &query_params);
+//
+//    Peers::write().await.add_peer(peer.clone()).await;
+//    let res = handle_connection(peer, ws_stream, rcv).await;
+//    Peers::write().await.remove_peer(socket).await;
+//
+//    if let Err(e) = res {
+//        match e {
+//            WsError::Websocket(e) => match e {
+//                tungstenite::Error::ConnectionClosed
+//                | tungstenite::Error::Protocol(_)
+//                | tungstenite::Error::Utf8 => {
+//                    tracing::debug!("Close  {} {:?}", url, e);
+//                }
+//                _ => (),
+//            },
+//            _ => {
+//                tracing::error!("Error {} {}", url, e);
+//            }
+//        }
+//    }
+//}
+//
+//async fn handle_connection(
+//    peer: Peer,
+//    stream: WebSocketStream<TcpStream>,
+//    mut rcv: mpsc::UnboundedReceiver<serde_json::Value>,
+//) -> WsResult<()> {
+//    let handler: ethui_rpc::Handler = peer.clone().into();
+//
+//    // will be used at most once to mark the peer as live once the first message comes in
+//    let mut liveness_checker = Some(peer);
+//    let mut interval = tokio::time::interval(std::time::Duration::from_secs(15));
+//    let (mut ws_sender, mut ws_receiver) = stream.split();
+//
+//    loop {
+//        tokio::select! {
+//            // RPC request
+//            Some(msg) = ws_receiver.next() => {
+//
+//                match msg {
+//                    Ok(Message::Text(msg)) => handle_message(msg, &handler, &mut ws_sender, &mut liveness_checker).await?,
+//                    Ok(Message::Close(_)) => break,
+//                    Ok(_) => continue,
+//                    Err(e) => warn!("websocket error: {}", e),
+//                }
+//            }
+//
+//            // data sent from provider, or event broadcast
+//            msg = rcv.recv() =>{
+//                match msg {
+//                    Some(msg) => {
+//                        ws_sender.send(msg.to_string().into()).await?;
+//                    },
+//                    None => {
+//                        tracing::error!("unexpected error");
+//                        break
+//                    }
+//                }
+//            }
+//
+//            // send a ping every 1 seconds
+//            _ = interval.tick() => {
+//                ws_sender.send(Message::Text("ping".to_string())).await?;
+//            }
+//        }
+//    }
+//
+//    Ok(())
+//}
+//
+//async fn handle_message(
+//    text: String,
+//    handler: &ethui_rpc::Handler,
+//    sender: &mut SplitSink<WebSocketStream<TcpStream>, Message>,
+//    liveness_checker: &mut Option<Peer>,
+//) -> WsResult<()> {
+//    if text == "pong" {
+//        return Ok(());
+//    }
+//
+//    if let Some(p) = liveness_checker.take() {
+//        Peers::write().await.peer_alive(p).await;
+//    }
+//
+//    let reply = handler.handle(serde_json::from_str(&text).unwrap()).await;
+//    let reply = reply
+//        .map(|r| serde_json::to_string(&r).unwrap())
+//        .unwrap_or_else(|| serde_json::Value::Null.to_string());
+//
+//    sender.send(reply.into()).await?;
+//    Ok(())
+//}
