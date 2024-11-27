@@ -203,5 +203,5 @@ async fn should_start_main_window(args: &Args) -> bool {
     }
 
     let settings = ethui_settings::Settings::read().await;
-    return !settings.start_minimized();
+    !settings.start_minimized()
 }
