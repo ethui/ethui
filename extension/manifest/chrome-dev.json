@@ -1,5 +1,8 @@
 {
   "name": "ethui-dev",
+  "background": {
+    "service_worker": "./background/background.js"
+  },
   "action": {
     "default_icon": {
       "16": "icons/ethui-purple-16.png",
