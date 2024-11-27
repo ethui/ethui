@@ -1,5 +1,8 @@
 {
   "name": "ethui-dev",
+  "background": {
+    "scripts": ["./background/background.js"]
+  },
   "action": {
     "default_icon": {
       "16": "icons/ethui-purple-16.png",

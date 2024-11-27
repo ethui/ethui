@@ -15,9 +15,6 @@
       "all_frames": true
     }
   ],
-  "background": {
-    "service_worker": "./background/background.js"
-  },
   "options_ui": {
     "page": "./options/index.html",
     "browser_style": false

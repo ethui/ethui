@@ -63,13 +63,18 @@ async function notifyDevtools(
  * This behaviour prevents initiating connections for browser tabs where `window.ethereum` is not actually used
  */
 export function setupProviderConnection(port: Runtime.Port) {
-  const tabId = port.sender!.tab!.id!;
+  const tab = port.sender!.tab!;
+  const tabId = tab.id!;
+  const url = tab.url;
 
   notifyDevtools(tabId, "start");
 
   const ws = new WebsocketBuilder(endpoint(port))
     .onOpen(() => {
-      log.debug("WS connection opened");
+      log.debug(`WS connection opened (${url})`);
+    })
+    .onClose(() => {
+      log.debug(`WS connection closed (${url})`);
     })
     .onReconnect(() => {
       log.debug("WS connection reconnected");

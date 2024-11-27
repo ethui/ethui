@@ -1,6 +1,8 @@
 procs:
   app:
     cmd: ["yarn", "run", "app:dev"]
+  ext:
+    cmd: ["yarn", "run", "ext:watch"]
   storybook:
     cmd: ["yarn", "run", "storybook"]
   web3-demo-anvil:

@@ -7,7 +7,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "tsx ./scripts/build.ts",
+    "dev": "tsx ./scripts/build.ts \"$@\"",
+    "watch": "tsx watch --include src --include manifest --include 'vite/*.ts' --include package.json ./scripts/build.ts \"$@\"",
     "build": "tsx ./scripts/build.ts \"$@\""
   },
   "dependencies": {

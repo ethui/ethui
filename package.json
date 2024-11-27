@@ -10,6 +10,7 @@
     "gui:devtools": "yarn workspace @ethui/gui devtools",
     "storybook": "yarn workspace @ethui/ui storybook",
     "ext:dev": "yarn workspace @ethui/extension dev",
+    "ext:watch": "yarn workspace @ethui/extension watch \"$@\"",
     "ext:build": "yarn workspace @ethui/extension build \"$@\"",
     "lint": "yarn lint:biome && yarn lint:tsc && yarn workspace @ethui/gui run lint",
     "lint:biome": "biome check .",
