@@ -29,20 +29,22 @@ await Promise.all([
   generateManifest(),
 ]);
 
+console.log("Done. packing");
+
 switch (target) {
   case "chrome-dev":
   case "chrome":
-    await run(`yarn run crx pack ${dist} -o ${basename}.crx`);
+    await run(`yarn run crx pack ${dist} -o ./dist/${basename}.crx`);
     break;
 
   case "firefox-dev":
     await run(`yarn run web-ext build -s ${dist} -a .`);
-    await run(`mv ./ethui-dev-${version}.zip ${basename}.xpi`);
+    await run(`mv ./ethui-dev-${version}.zip ./dist/${basename}.xpi`);
     break;
 
   case "firefox":
     await run(`yarn run web-ext build -s ${dist} -a .`);
-    await run(`mv ./ethui-${version}.zip ${basename}.xpi`);
+    await run(`mv ./ethui-${version}.zip ./dist/${basename}.xpi`);
     break;
 }
 
