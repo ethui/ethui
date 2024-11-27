@@ -1,4 +1,7 @@
 {
+  "background": {
+    "scripts": ["./background/background.js"]
+  },
   "browser_specific_settings": {
     "gecko": {
       "id": "iron-wallet@naps62.com"
