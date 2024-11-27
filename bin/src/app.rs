@@ -2,6 +2,7 @@ use std::path::PathBuf;
 
 use ethui_args::Args;
 use ethui_broadcast::UIMsg;
+use ethui_types::GlobalState as _;
 #[cfg(target_os = "macos")]
 use tauri::WindowEvent;
 use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
@@ -90,7 +91,7 @@ impl EthUIApp {
 
         init(&app, args).await?;
 
-        if !args.hidden {
+        if should_start_main_window(args).await {
             main_window_show(app.handle()).await;
         }
 
@@ -194,4 +195,13 @@ fn config_dir(app: &tauri::App, args: &Args) -> PathBuf {
                 .app_config_dir()
                 .expect("failed to resolve app_config_dir")
         })
+}
+
+async fn should_start_main_window(args: &Args) -> bool {
+    if args.hidden {
+        return false;
+    }
+
+    let settings = ethui_settings::Settings::read().await;
+    return !settings.start_minimized();
 }

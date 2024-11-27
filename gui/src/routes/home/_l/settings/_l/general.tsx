@@ -30,6 +30,7 @@ const rustLogValidator = memoize(
 const schema = z.object({
   darkMode: z.enum(["auto", "dark", "light"]),
   autostart: z.boolean(),
+  startMinimized: z.boolean(),
   alchemyApiKey: z.string().optional().nullable().refine(alchemyKeyValidator, {
     message: "Invalid key",
   }),
@@ -75,10 +76,9 @@ function SettingsGeneral() {
         items={["auto", "dark", "light"]}
       />
 
-      <Form.Checkbox
-        name="autostart"
-        label="Start automatically on boot (minimized)"
-      />
+      <Form.Checkbox name="autostart" label="Start automatically on boot" />
+
+      <Form.Checkbox name="startMinimized" label="Start minimized" />
 
       <Form.Text
         name="alchemyApiKey"

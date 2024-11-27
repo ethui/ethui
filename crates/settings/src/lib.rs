@@ -68,6 +68,10 @@ impl Settings {
             crate::autostart::update(self.inner.autostart)?;
         }
 
+        if let Some(v) = params.get("startMinimized") {
+            self.inner.start_minimized = serde_json::from_value(v.clone()).unwrap();
+        }
+
         if let Some(v) = params.get("fastMode") {
             self.inner.fast_mode = serde_json::from_value(v.clone()).unwrap();
         }
@@ -113,6 +117,10 @@ impl Settings {
 
     pub fn fast_mode(&self) -> bool {
         self.inner.fast_mode
+    }
+
+    pub fn start_minimized(&self) -> bool {
+        self.inner.start_minimized
     }
 
     pub fn get_etherscan_api_key(&self) -> Result<String> {
@@ -177,6 +185,9 @@ pub struct SerializedSettings {
     autostart: bool,
 
     #[serde(default)]
+    start_minimized: bool,
+
+    #[serde(default)]
     rust_log: String,
 }
 
@@ -192,6 +203,7 @@ impl Default for SerializedSettings {
             onboarded: false,
             fast_mode: false,
             autostart: false,
+            start_minimized: false,
             rust_log: "warn".into(),
         }
     }
