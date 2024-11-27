@@ -107,6 +107,10 @@ rand = "0.8"
 rstest = "0.23"
 regex = "1.11"
 
+tower = { version = "0.4", features = ["full"] }
+tower-http = { version = "0.6.1", features = ["full"] }
+hyper = "1.3"
+
 # Foundry - October 11th 2024
 foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-e649e62f125244a3ef116be25dfdc81a2afbaf2a" }
 foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-e649e62f125244a3ef116be25dfdc81a2afbaf2a" }

@@ -59,11 +59,11 @@ impl Peer {
     }
 }
 
-impl From<Peer> for ethui_rpc::Handler {
-    fn from(value: Peer) -> Self {
-        Self::new(value.domain())
-    }
-}
+//impl From<Peer> for ethui_rpc::Handler {
+//    fn from(value: Peer) -> Self {
+//        Self::new(value.domain())
+//    }
+//}
 
 /// Tracks a list of peers, usually browser tabs, that connect to the app
 #[derive(Debug, Default)]

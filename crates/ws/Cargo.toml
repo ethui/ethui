@@ -10,7 +10,7 @@ authors.workspace = true
 
 [dependencies]
 ethui-types.workspace = true
-ethui-rpc.workspace = true
+# ethui-rpc.workspace = true
 ethui-broadcast.workspace = true
 ethui-networks.workspace = true
 ethui-connections.workspace = true

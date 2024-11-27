@@ -4,8 +4,7 @@ use alloy::eips::BlockNumberOrTag;
 use alloy::network::Ethereum;
 use alloy::network::Network;
 use alloy::primitives::Bytes;
-use alloy::primitives::B64;
-use alloy::primitives::U64;
+use alloy::primitives::{B64, U64};
 use alloy::rpc::types::serde_helpers::JsonStorageKey;
 use alloy::rpc::types::simulate::SimulatePayload;
 use alloy::rpc::types::simulate::SimulatedBlock;
@@ -27,6 +26,8 @@ use ethui_types::U256;
 use jsonrpsee::core::{async_trait, RpcResult};
 use jsonrpsee::proc_macros::rpc;
 use jsonrpsee::types::ErrorObject;
+
+pub struct EthRpc;
 
 #[rpc(server, namespace = "eth")]
 pub trait EthApi {
@@ -363,7 +364,6 @@ pub trait EthApi {
     ) -> RpcResult<EIP1186AccountProofResponse>;
 }
 
-pub struct EthRpc;
 #[async_trait]
 impl EthApiServer for EthRpc {
     async fn protocol_version(&self) -> RpcResult<U64> {

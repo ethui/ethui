@@ -60,20 +60,20 @@ pub(crate) async fn server_loop(port: u16) {
 
     tracing::debug!("WS server listening on: {}", addr);
 
-    let rpc_middleware = RpcServiceBuilder::new().layer_fn(|service| CallsPerConn {
-        service,
-        count: Default::default(),
-    });
+    //let rpc_middleware = RpcServiceBuilder::new().layer_fn(|service| CallsPerConn {
+    //    service,
+    //    count: Default::default(),
+    //});
 
-    let server = Server::builder()
-        .set_rpc_middleware(rpc_middleware)
-        .build(addr)
-        .await
-        .unwrap();
-    let rpc = ethui_rpc::v2::module();
-    let handle = server.start(rpc);
-
-    tokio::spawn(handle.stopped()).await.unwrap();
+    //let server = Server::builder()
+    //    .set_rpc_middleware(rpc_middleware)
+    //    .build(addr)
+    //    .await
+    //    .unwrap();
+    //let rpc = ethui_rpc::v2::module();
+    //let handle = server.start(rpc);
+    //
+    //tokio::spawn(handle.stopped()).await.unwrap();
 
     // while let Ok((stream, _)) = listener.accept().await {
     //     let peer = stream

@@ -28,3 +28,10 @@ jsonrpc-core.workspace = true
 thiserror.workspace = true
 url.workspace = true
 jsonrpsee.workspace = true
+once_cell.workspace = true
+tokio.workspace = true
+tower.workspace = true
+tower-http.workspace = true
+hyper.workspace = true
+# tower-http = { version = "*", features = ["full"] }
+# hyper = "*"
