@@ -25,6 +25,9 @@ use jsonrpsee::ConnectionDetails;
 pub trait Rpc {
     #[method(name = "say_hello", raw_method)]
     async fn say_hello(&self) -> Result<(), ErrorObjectOwned>;
+
+    #[method(name = "eth_accounts", raw_method)]
+    async fn eth_accounts(&self) -> Result<Vec<String>, ErrorObjectOwned>;
 }
 
 struct RpcServerImpl;
