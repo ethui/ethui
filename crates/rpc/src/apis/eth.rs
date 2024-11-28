@@ -23,9 +23,11 @@ use alloy::rpc::types::{SyncStatus, TransactionRequest};
 use ethui_types::Address;
 use ethui_types::B256;
 use ethui_types::U256;
+use hyper::Uri;
 use jsonrpsee::core::{async_trait, RpcResult};
 use jsonrpsee::proc_macros::rpc;
 use jsonrpsee::types::ErrorObject;
+use jsonrpsee::Extensions;
 
 pub struct EthRpc;
 
@@ -44,7 +46,7 @@ pub trait EthApi {
     async fn author(&self) -> RpcResult<Address>;
 
     /// Returns a list of addresses owned by client.
-    #[method(name = "accounts")]
+    #[method(name = "accounts", with_extensions)]
     fn accounts(&self) -> RpcResult<Vec<Address>>;
 
     /// Returns the number of most recent block.
@@ -378,7 +380,9 @@ impl EthApiServer for EthRpc {
         Err(ErrorObject::owned(0, "Not implemented", None::<()>))
     }
 
-    fn accounts(&self) -> RpcResult<Vec<Address>> {
+    fn accounts(&self, ext: &Extensions) -> RpcResult<Vec<Address>> {
+        let uri = ext.get::<Uri>();
+        dbg!("eth_accounts", uri);
         Err(ErrorObject::owned(0, "Not implemented", None::<()>))
     }
 

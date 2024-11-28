@@ -1,36 +1,42 @@
-use alloy::transports::BoxFuture;
-use jsonrpc_core::futures_util::FutureExt as _;
-use jsonrpsee::{
-    server::middleware::rpc::RpcServiceT, types::Request, ConnectionId, MethodResponse,
-};
-use tower::Layer;
+use std::task::{Context, Poll};
+
+use jsonrpsee::server::HttpRequest;
+use tower::{Layer, Service};
 
 #[derive(Clone, Debug)]
 pub struct PeerTrackerLayer {}
 
 impl<S> Layer<S> for PeerTrackerLayer {
     type Service = PeerTracker<S>;
+
+    fn layer(&self, inner: S) -> Self::Service {
+        dbg!("layer");
+        PeerTracker { inner }
+    }
 }
 
-#[derive(Clone)]
-pub struct PeerTracker<S> {}
+#[derive(Clone, Debug)]
+pub struct PeerTracker<S> {
+    inner: S,
+}
 
-impl<'a, S> RpcServiceT<'a> for PeerTracker<S>
+impl<S, B> Service<HttpRequest<B>> for PeerTracker<S>
 where
-    S: RpcServiceT<'a> + Send + Sync + Clone + 'static,
+    S: Service<HttpRequest<B>>,
 {
-    type Future = BoxFuture<'a, MethodResponse>;
+    type Response = S::Response;
+    type Error = S::Error;
+    type Future = S::Future;
 
-    fn call(&self, req: Request<'a>) -> Self::Future {
-        dbg!(&req);
-        dbg!(req.extensions().get::<ConnectionId>());
-        //let count = self.count.clone();
-        let service = self.service.clone();
+    #[inline]
+    fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
+        self.inner.poll_ready(cx).map_err(Into::into)
+    }
 
-        async move {
-            let rp = service.call(req).await;
-            rp
-        }
-        .boxed()
+    fn call(&mut self, mut request: HttpRequest<B>) -> Self::Future {
+        let uri = request.uri().clone();
+        request.extensions_mut().insert(uri);
+        dbg!("inserting");
+        self.inner.call(request)
     }
 }

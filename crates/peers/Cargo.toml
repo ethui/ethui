@@ -1,5 +1,5 @@
 [package]
-name = "ethui-ws"
+name = "ethui-peers"
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true

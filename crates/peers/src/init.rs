@@ -1,18 +1,14 @@
 use async_trait::async_trait;
-use ethui_args::Args;
 use ethui_broadcast::InternalMsg;
 use ethui_types::GlobalState;
 use once_cell::sync::Lazy;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
-use crate::{peers::Peers, server::server_loop};
+use crate::peers::Peers;
 
 static PEERS: Lazy<RwLock<Peers>> = Lazy::new(Default::default);
 
-pub async fn init(args: &Args) {
-    let port = args.ws_port;
-
-    tokio::spawn(async move { server_loop(port).await });
+pub async fn init() {
     tokio::spawn(async { receiver().await });
 }
 

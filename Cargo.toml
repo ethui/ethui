@@ -17,7 +17,7 @@ members = [
   "crates/networks",
   "crates/wallets",
   "crates/simulator",
-  "crates/ws",
+  "crates/peers",
   "crates/rpc",
   "crates/connections",
   "crates/dialogs",
@@ -39,7 +39,7 @@ ethui-settings = { path = "crates/settings" }
 ethui-networks = { path = "crates/networks" }
 ethui-wallets = { path = "crates/wallets" }
 ethui-simulator = { path = "crates/simulator" }
-ethui-ws = { path = "crates/ws" }
+ethui-peers = { path = "crates/peers" }
 ethui-rpc = { path = "crates/rpc" }
 ethui-connections = { path = "crates/connections" }
 ethui-dialogs = { path = "crates/dialogs" }

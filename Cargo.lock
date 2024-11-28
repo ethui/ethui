@@ -3189,6 +3189,7 @@ dependencies = [
  "ethui-dialogs",
  "ethui-forge",
  "ethui-networks",
+ "ethui-peers",
  "ethui-rpc",
  "ethui-settings",
  "ethui-simulator",
@@ -3197,7 +3198,6 @@ dependencies = [
  "ethui-tracing",
  "ethui-types",
  "ethui-wallets",
- "ethui-ws",
  "fix-path-env",
  "named-lock",
  "serde",
@@ -3347,6 +3347,30 @@ dependencies = [
  "tauri",
  "thiserror 1.0.69",
  "tokio",
+ "url",
+]
+
+[[package]]
+name = "ethui-peers"
+version = "1.8.0"
+dependencies = [
+ "async-trait",
+ "ethui-args",
+ "ethui-broadcast",
+ "ethui-connections",
+ "ethui-networks",
+ "ethui-types",
+ "futures",
+ "jsonrpsee",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror 1.0.69",
+ "tokio",
+ "tokio-tungstenite",
+ "tracing",
+ "tungstenite",
  "url",
 ]
 
@@ -3530,30 +3554,6 @@ dependencies = [
  "tauri",
  "thiserror 1.0.69",
  "tokio",
-]
-
-[[package]]
-name = "ethui-ws"
-version = "1.8.0"
-dependencies = [
- "async-trait",
- "ethui-args",
- "ethui-broadcast",
- "ethui-connections",
- "ethui-networks",
- "ethui-types",
- "futures",
- "jsonrpsee",
- "once_cell",
- "serde",
- "serde_json",
- "tauri",
- "thiserror 1.0.69",
- "tokio",
- "tokio-tungstenite",
- "tracing",
- "tungstenite",
- "url",
 ]
 
 [[package]]
