@@ -1,17 +1,13 @@
-import { type SnackbarKey, useSnackbar } from "notistack";
 import { useEffect } from "react";
 
-import { Button } from "@ethui/ui/components/shadcn/button";
 import { Link } from "@tanstack/react-router";
-import { CircleX, SquareArrowOutUpRight } from "lucide-react";
+import { ToastAction } from "@ethui/ui/components/shadcn/toast";
 import { useNetworks } from "#/store/useNetworks";
 import { useSettings } from "#/store/useSettings";
 import { useInvoke } from "./useInvoke";
-
-let key: SnackbarKey;
+import { toast } from "@ethui/ui/hooks/use-toast";
 
 export function useNoticeAlchemyKeyMissing() {
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { settings } = useSettings();
   const currentNetwork = useNetworks((s) => s.current);
 
@@ -27,33 +23,17 @@ export function useNoticeAlchemyKeyMissing() {
 
   useEffect(() => {
     if (!requiresAlchemyKey) {
-      closeSnackbar(key);
       return;
     }
 
-    key = enqueueSnackbar(<span>Alchemy key missing</span>, {
-      key: "alchemy_key_missing",
-      persist: true,
-      variant: "warning",
-      action: () => (
-        <>
-          <Link
-            href="/home/settings/general"
-            aria-label="close"
-            color="inherit"
-          >
-            <SquareArrowOutUpRight />
-          </Link>
-          <Button
-            size="icon"
-            aria-label="close"
-            color="inherit"
-            onClick={() => closeSnackbar(key)}
-          >
-            <CircleX />
-          </Button>
-        </>
+    toast({
+      title: "Alchemy key missing",
+      description: "Transaction history for livenets not available",
+      action: (
+        <ToastAction altText="Set key" asChild>
+          <Link to="/home/settings/general">Set key</Link>
+        </ToastAction>
       ),
     });
-  }, [closeSnackbar, enqueueSnackbar, requiresAlchemyKey]);
+  }, [requiresAlchemyKey]);
 }

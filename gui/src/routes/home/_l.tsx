@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { Toaster } from "@ethui/ui/components/shadcn/toaster";
 import { AnimatedOutlet } from "#/components/AnimatedOutlet";
 import { AppNavbar } from "#/components/AppNavbar";
 import { AppSidebar } from "#/components/AppSidebar";
@@ -13,6 +14,9 @@ export const Route = createFileRoute("/home/_l")({
 });
 
 function HomePageLayout() {
+  useNoticeAlchemyKeyMissing();
+  useNoticeNewVersion();
+
   return (
     <CommandBarProvider>
       <SidebarProvider>
@@ -20,18 +24,11 @@ function HomePageLayout() {
         <main className="relative flex min-h-svh flex-1 flex-col">
           <AppNavbar />
           <AnimatedOutlet />
-          <Notifications />
+          <Toaster />
         </main>
       </SidebarProvider>
 
       <CommandBar />
     </CommandBarProvider>
   );
-}
-
-function Notifications() {
-  useNoticeAlchemyKeyMissing();
-  useNoticeNewVersion();
-
-  return null;
 }
