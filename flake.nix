@@ -32,6 +32,7 @@
           harfbuzz
           webkitgtk_4_1
           openssl
+          watchexec
         ];
         libraries = with pkgs; [
           cargo-tauri

@@ -21,6 +21,7 @@ export function ClickToCopy({
   const [opening, setOpening] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
   const [copied, setCopied] = useState(false);
+  console.log(open, opening);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -49,7 +50,7 @@ export function ClickToCopy({
 
   return (
     <TooltipProvider>
-      <Tooltip open={open}>
+      <Tooltip open={true}>
         <TooltipTrigger
           asChild
           onMouseEnter={() => setOpening(true)}

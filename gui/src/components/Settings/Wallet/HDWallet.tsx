@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
-import { type Address, formatUnits } from "viem";
+import type { Address } from "viem";
 import { z } from "zod";
 
 import { passwordFormSchema, passwordSchema } from "@ethui/types/password";
@@ -13,13 +13,10 @@ import {
 } from "@ethui/types/wallets";
 import { Form } from "@ethui/ui/components/form";
 import { Button } from "@ethui/ui/components/shadcn/button";
-import { useProvider } from "#/hooks/useProvider";
-import { truncateHex } from "#/utils";
 
 const schema = z.object({
   count: z.number().int().min(1).max(100),
   name: z.string().min(1),
-  current: z.array(z.string()).length(2).optional(),
   mnemonic: mnemonicSchema,
   derivationPath: derivationPathSchema,
   password: passwordSchema,
@@ -58,26 +55,24 @@ function Create({ onSubmit, onRemove }: Props) {
   const [step, setStep] = useState(0);
   const [mnemonic, setMnemonic] = useState<string>("");
   const [derivationPath, setDerivationPath] = useState<string | null>(null);
-  const [current, setCurrent] = useState<string | null>(null);
   const [password, setPassword] = useState("");
   const [submitted, setSubmitted] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!current || !mnemonic || !derivationPath || submitted) return;
+    if (!mnemonic || !derivationPath || submitted) return;
     onSubmit({
       count: 5,
       name,
       mnemonic,
       derivationPath,
-      current,
       password,
     });
     setSubmitted(true);
-  }, [name, current, mnemonic, derivationPath, password, onSubmit, submitted]);
+  }, [name, mnemonic, derivationPath, password, onSubmit, submitted]);
 
-  return (
-    <div className="m-2 flex flex-col flex-col">
-      {step === 0 && (
+  switch (step) {
+    case 0:
+      return (
         <MnemonicStep
           onSubmit={(name: string, mnemonic) => {
             setName(name);
@@ -86,9 +81,10 @@ function Create({ onSubmit, onRemove }: Props) {
           }}
           onCancel={onRemove}
         />
-      )}
+      );
 
-      {step === 1 && (
+    case 1:
+      return (
         <PasswordStep
           onSubmit={(p) => {
             setPassword(p);
@@ -96,20 +92,19 @@ function Create({ onSubmit, onRemove }: Props) {
           }}
           onCancel={onRemove}
         />
-      )}
+      );
 
-      {step === 2 && (
+    case 2:
+      return (
         <ReviewStep
           mnemonic={mnemonic}
-          onSubmit={(derivationPath, current) => {
+          onSubmit={(derivationPath) => {
             setDerivationPath(derivationPath);
-            setCurrent(current);
           }}
           onCancel={onRemove}
         />
-      )}
-    </div>
-  );
+      );
+  }
 }
 
 interface MnemonicStepProps {
@@ -181,7 +176,7 @@ function PasswordStep({ onSubmit, onCancel }: PasswordStepProps) {
 
 interface ReviewStepProps {
   mnemonic: string;
-  onSubmit: (derivationPath: string, key: string) => void;
+  onSubmit: (derivationPath: string) => void;
   onCancel: () => void;
 }
 
@@ -198,17 +193,14 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
   });
 
   const [addresses, setAddresses] = useState<[string, Address][]>([]);
-  const [current, setCurrent] = useState<string | null>(null);
 
   const onSubmitInternal = (data: FieldValues) => {
-    if (!current) return;
-    onSubmit(data.derivationPath, current);
+    onSubmit(data.derivationPath);
   };
 
   const derivationPath = form.watch("derivationPath");
 
   useEffect(() => {
-    setCurrent(null);
     invoke<[string, Address][]>("wallets_get_mnemonic_addresses", {
       mnemonic,
       derivationPath,
@@ -221,75 +213,23 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
     <Form form={form} onSubmit={onSubmitInternal}>
       <Form.Text label="Derivation Path" name="derivationPath" />
 
-      {form.formState.isValid && (
-        <div className="flex flex-col">
-          <table>
-            <tbody>
-              {addresses.map(([key, address]) => (
-                <tr key={key}>
-                  <td>{truncateHex(address)}</td>
-                  <td align="right">
-                    <NativeBalance address={address} />
-                  </td>
-                  <td>
-                    <Button
-                      variant={current === key ? "secondary" : "outline"}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setCurrent(key);
-                      }}
-                    >
-                      Pick
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <div className="flex flex-col w-full space-y-2">
+        {addresses.map(([key, address]) => (
+          <ul key={key}>
+            <li>
+              {key} - <strong>{address}</strong>
+            </li>
+          </ul>
+        ))}
+      </div>
 
-          <div className="flex gap-2">
-            <Form.Submit label="Save" disabled={false} />
-            <Button variant="outline" onClick={onCancel}>
-              Cancel
-            </Button>
-          </div>
-        </div>
-      )}
+      <div className="flex gap-2">
+        <Form.Submit label="Save" disabled={false} />
+        <Button variant="outline" onClick={onCancel}>
+          Cancel
+        </Button>
+      </div>
     </Form>
-  );
-}
-
-interface NativeBalanceProps {
-  address: Address;
-}
-
-function NativeBalance({ address }: NativeBalanceProps) {
-  const provider = useProvider();
-  const symbol = provider?.chain?.nativeCurrency.symbol || "ETH";
-  const decimals = provider?.chain?.nativeCurrency.decimals || 18;
-  const [balance, setBalance] = useState<string>("");
-
-  useEffect(() => {
-    if (!provider) return;
-    provider.getBalance({ address }).then((balance: bigint) => {
-      if (balance === 0n) return;
-
-      const threshold = BigInt(0.001 * 10 ** decimals);
-      if (balance < threshold) {
-        setBalance("< 0.001");
-      } else {
-        const truncatedBalance = balance - (balance % threshold);
-        setBalance(formatUnits(truncatedBalance, decimals));
-      }
-    });
-  }, [provider, address, decimals]);
-
-  if (!balance || !provider) return null;
-
-  return (
-    <>
-      {balance} {symbol}
-    </>
   );
 }
 
