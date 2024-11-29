@@ -213,7 +213,7 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
     <Form form={form} onSubmit={onSubmitInternal}>
       <Form.Text label="Derivation Path" name="derivationPath" />
 
-      <div className="flex flex-col w-full space-y-2">
+      <div className="flex w-full flex-col space-y-2">
         {addresses.map(([key, address]) => (
           <ul key={key}>
             <li>
