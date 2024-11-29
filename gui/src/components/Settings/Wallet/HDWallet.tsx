@@ -215,6 +215,8 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
     }).then(setAddresses);
   }, [mnemonic, derivationPath]);
 
+  // TODO: form submit disabled is overriden here, but needs to be removed
+  // this needs to take into account the "pick" table
   return (
     <Form form={form} onSubmit={onSubmitInternal}>
       <Form.Text label="Derivation Path" name="derivationPath" />
@@ -246,7 +248,7 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
           </table>
 
           <div className="flex gap-2">
-            <Form.Submit label="Save" />
+            <Form.Submit label="Save" disabled={false} />
             <Button variant="outline" onClick={onCancel}>
               Cancel
             </Button>
