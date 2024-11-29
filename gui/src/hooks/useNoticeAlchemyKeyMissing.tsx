@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 
-import { Link } from "@tanstack/react-router";
 import { ToastAction } from "@ethui/ui/components/shadcn/toast";
+import { toast } from "@ethui/ui/hooks/use-toast";
+import { Link } from "@tanstack/react-router";
 import { useNetworks } from "#/store/useNetworks";
 import { useSettings } from "#/store/useSettings";
 import { useInvoke } from "./useInvoke";
-import { toast } from "@ethui/ui/hooks/use-toast";
 
 export function useNoticeAlchemyKeyMissing() {
   const { settings } = useSettings();

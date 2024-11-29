@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
+import { ToastAction } from "@ethui/ui/components/shadcn/toast";
 import { toast } from "@ethui/ui/hooks/use-toast";
 import { useInvoke } from "./useInvoke";
-import { ToastAction } from "@ethui/ui/components/shadcn/toast";
 
 async function getLatestVersion() {
   const response = await fetch(

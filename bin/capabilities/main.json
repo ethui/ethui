@@ -1,8 +1,6 @@
 {
   "identifier": "capabilities",
-  "windows": [
-    "*"
-  ],
+  "windows": ["*"],
   "permissions": [
     "core:window:allow-start-dragging",
     "core:window:allow-close",
