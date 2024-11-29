@@ -17,7 +17,7 @@ export function WalletEdit({ wallet }: { wallet: Wallet }) {
   };
 
   const onRemove = async () => {
-    invoke("networks_remove", { name: wallet.name });
+    invoke("wallets_remove", { name: wallet.name });
     router.history.back();
   };
 

@@ -11,7 +11,7 @@ export function WalletNew({ type }: { type: string }) {
   const router = useRouter();
 
   const onSubmit = async (params: object) => {
-    await invoke("wallets_create", { params });
+    await invoke("wallets_create", { params: { type, ...params } });
     router.history.back();
   };
 
