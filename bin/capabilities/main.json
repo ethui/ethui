@@ -6,6 +6,8 @@
     "core:window:allow-close",
     "core:event:allow-listen",
     "core:event:allow-unlisten",
-    "os:allow-os-type"
+    "os:allow-os-type",
+    "clipboard-manager:allow-write-text",
+    "clipboard-manager:allow-read-text"
   ]
 }

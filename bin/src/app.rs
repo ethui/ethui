@@ -80,6 +80,7 @@ impl EthUIApp {
                 ethui_simulator::commands::simulator_get_call_count,
             ])
             .plugin(tauri_plugin_os::init())
+            .plugin(tauri_plugin_clipboard_manager::init())
             .setup(|app| {
                 let handle = app.handle();
                 let _ = menu::build(handle);
