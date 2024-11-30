@@ -5,7 +5,7 @@ import { type StateCreator, create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
 import type { Contract } from "@ethui/types";
-import { errorToast } from "#/components/Toast";
+import { toast } from "@ethui/ui/hooks/use-toast";
 import { useNetworks } from "./useNetworks";
 
 interface State {
@@ -46,8 +46,12 @@ const store: StateCreator<Store> = (set, get) => ({
   add: async (chainId: number, address: Address) => {
     try {
       await invoke("db_insert_contract", { chainId, address });
-    } catch (err: unknown) {
-      errorToast("contracts-add-error", err);
+    } catch (err: any) {
+      toast({
+        title: "Error",
+        description: err.toString(),
+        variant: "destructive",
+      });
     }
   },
 

@@ -28,8 +28,6 @@ interface Props {
   icon?: boolean;
 }
 
-window.c = tauriClipboard;
-
 export function AddressView({
   address: addr,
   contextMenu = true,
