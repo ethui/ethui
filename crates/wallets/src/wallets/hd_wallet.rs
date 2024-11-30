@@ -129,14 +129,7 @@ impl HDWallet {
     pub async fn from_params(params: HDWalletParams) -> Result<Self> {
         let addresses =
             utils::derive_addresses(&params.mnemonic, &params.derivation_path, params.count);
-
-        // use given `current`, but only after ensuring it is part of the derived list of addresses
-        let current = if let Some(current) = addresses.iter().find(|(p, _)| p == &params.current) {
-            current.clone()
-        } else {
-            return Err(Error::InvalidKey(params.current));
-        };
-
+        let current = addresses.first().unwrap().clone();
         let ciphertext = ethui_crypto::encrypt(&params.mnemonic, &params.password).unwrap();
 
         Ok(Self {
@@ -246,7 +239,6 @@ impl HDWallet {
 pub struct HDWalletParams {
     mnemonic: String,
     derivation_path: String,
-    current: String,
     password: String,
     name: String,
     count: u32,

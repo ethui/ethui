@@ -48,11 +48,11 @@ export const AnimatedOutlet = forwardRef<HTMLDivElement>((_, ref) => {
       {...transitionProps}
       key={nextMatch.id}
     >
-      <RouterContext.Provider value={renderedContext.current}>
-        <AnimatePresence mode="popLayout">
+      <AnimatePresence mode="popLayout">
+        <RouterContext.Provider value={renderedContext.current}>
           <Outlet />
-        </AnimatePresence>
-      </RouterContext.Provider>
+        </RouterContext.Provider>
+      </AnimatePresence>
     </motion.div>
   );
 });

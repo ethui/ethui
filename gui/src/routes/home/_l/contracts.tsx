@@ -52,7 +52,7 @@ function Contracts() {
       </Accordion>
 
       <Dialog>
-        <DialogTrigger>
+        <DialogTrigger asChild>
           <Button size="icon" className="fixed right-6 bottom-6">
             <Plus />
           </Button>

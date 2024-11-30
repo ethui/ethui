@@ -11,5 +11,12 @@
       "#/*": ["./*"]
     }
   },
-  "include": ["components", "lib", "./*.ts", "@types", "vite.config.ts"]
+  "include": [
+    "components",
+    "hooks",
+    "lib",
+    "./*.ts",
+    "@types",
+    "vite.config.ts"
+  ]
 }

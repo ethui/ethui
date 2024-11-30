@@ -1,9 +1,7 @@
-import { type SnackbarKey, useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 
-import { Button } from "@ethui/ui/components/shadcn/button";
-import { Link } from "@tanstack/react-router";
-import { CircleX } from "lucide-react";
+import { ToastAction } from "@ethui/ui/components/shadcn/toast";
+import { toast } from "@ethui/ui/hooks/use-toast";
 import { useInvoke } from "./useInvoke";
 
 async function getLatestVersion() {
@@ -14,10 +12,7 @@ async function getLatestVersion() {
   return json[0].tag_name.replace("v", "");
 }
 
-let key: SnackbarKey;
-
 export function useNoticeNewVersion() {
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { data: current } = useInvoke("get_version");
   const [latest, setLatest] = useState<string | null>(null);
 
@@ -28,26 +23,21 @@ export function useNoticeNewVersion() {
   useEffect(() => {
     if (!latest || current === latest) return;
 
-    key = enqueueSnackbar(
-      <Link href="https://github.com/ethui/ethui/releases" target="_blank">
-        <span>New release available.</span>
-      </Link>,
-      {
-        key: "new_release",
-        persist: true,
-        action: () => (
-          <Button
-            size="icon"
-            aria-label="close"
-            color="inherit"
-            onClick={() => closeSnackbar(key)}
+    toast({
+      title: "New release available",
+      action: (
+        <ToastAction altText="Set key" asChild>
+          <a
+            href="https://github.com/ethui/ethui/releases"
+            target="_blank"
+            rel="noreferrer"
           >
-            <CircleX />
-          </Button>
-        ),
-      },
-    );
-  }, [latest, current, closeSnackbar, enqueueSnackbar]);
+            Download
+          </a>
+        </ToastAction>
+      ),
+    });
+  }, [latest, current]);
 
   return null;
 }
