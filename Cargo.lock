@@ -3463,6 +3463,7 @@ dependencies = [
  "ethui-sync",
  "ethui-types",
  "ethui-wallets",
+ "futures",
  "hyper 1.5.1",
  "jsonrpc-core",
  "jsonrpsee",

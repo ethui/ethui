@@ -2,7 +2,7 @@ use jsonrpsee::server::{RpcServiceBuilder, Server};
 use tokio::task::JoinHandle;
 use tracing::instrument;
 
-use crate::middleware::{PeerTracker, PeerTrackerLayer};
+use crate::middleware::{CallsPerConn, PeerTrackerLayer};
 
 #[derive(Default)]
 pub struct RpcServer {
@@ -15,15 +15,13 @@ impl RpcServer {
         let addr = format!("127.0.0.1:{}", port);
         tracing::debug!("RPC server listening on: {}", addr);
 
-        let service_builder = tower::ServiceBuilder::new().layer(PeerTrackerLayer {});
+        let service_builder = tower::ServiceBuilder::new().layer(PeerTrackerLayer::new());
+        let rpc_middleware =
+            RpcServiceBuilder::new().layer_fn(|service| CallsPerConn::new(service));
 
-        //let rpc_middleware = RpcServiceBuilder::new().layer_fn(|service| PeerTrackerLayer {
-        //    //count: Default::default(),
-        //});
-        //
         let server = Server::builder()
             .set_http_middleware(service_builder)
-            //.set_rpc_middleware(rpc_middleware)
+            .set_rpc_middleware(rpc_middleware)
             .build(addr)
             .await
             .unwrap();
