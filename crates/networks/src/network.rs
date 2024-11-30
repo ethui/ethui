@@ -77,7 +77,7 @@ impl Network {
             ws_url: Some(String::from("ws://localhost:8545")),
             currency: String::from("ETH"),
             decimals: 18,
-            force_is_anvil: false,
+            force_is_anvil: true,
         }
     }
 

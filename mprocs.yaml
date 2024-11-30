@@ -8,6 +8,8 @@ procs:
   web3-demo-anvil:
     cwd: "../web3-demo/"
     cmd: ["anvil"]
+    env:
+      RUST_LOG: "info"
   web3-demo-frontend:
     cwd: "../web3-demo/"
     cmd: ["yarn", "dev"]
