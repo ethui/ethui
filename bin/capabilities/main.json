@@ -8,6 +8,8 @@
     "core:event:allow-unlisten",
     "os:allow-os-type",
     "clipboard-manager:allow-write-text",
-    "clipboard-manager:allow-read-text"
+    "clipboard-manager:allow-read-text",
+    "shell:allow-open",
+    "shell:default"
   ]
 }

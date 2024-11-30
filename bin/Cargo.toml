@@ -33,6 +33,7 @@ ethui-simulator.workspace = true
 ethui-args.workspace = true
 
 serde.workspace = true
+serde_json.workspace = true
 tauri.workspace = true
 tokio.workspace = true
 thiserror.workspace = true
@@ -42,6 +43,7 @@ fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs", rev = "0
 named-lock = "0.3.0"
 tauri-plugin-os = "2.0.1"
 tauri-plugin-clipboard-manager = "2.0.2"
+tauri-plugin-shell = "2"
 
 [build-dependencies]
 tauri-build = { version = "2.0", default-features = false, features = [] }
