@@ -19,7 +19,7 @@ use ethui_wallets::{WalletControl, WalletType, Wallets};
 
 use crate::{Error, Result};
 
-// TODO: how to simplfy this type, or use a generic?
+// TODO: how to simplify this type, or use a generic?
 type InnerProvider = FillProvider<
     JoinFill<
         JoinFill<
@@ -57,7 +57,7 @@ impl SendTransaction {
 
     pub async fn estimate_gas(&mut self) -> &mut SendTransaction {
         // TODO: we're defaulting to 1_000_000 gas cost if estimation fails
-        // estimation failing means the tx will faill anyway, so this is fine'ish
+        // estimation failing means the tx will fail anyway, so this is fine'ish
         // but can probably be improved a lot in the future
 
         // TODO: check how to make this work with alloy
