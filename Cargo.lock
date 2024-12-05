@@ -3434,6 +3434,7 @@ dependencies = [
  "ethui-broadcast",
  "ethui-connections",
  "ethui-networks",
+ "ethui-rpc",
  "ethui-types",
  "futures",
  "jsonrpsee",

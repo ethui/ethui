@@ -1,18 +1,32 @@
 use std::{
     //collections::HashMap,
     //net::SocketAddr,
+    collections::HashMap,
+    net::SocketAddr,
     sync::{
         atomic::{AtomicUsize, Ordering},
         Arc,
     },
 };
 
+use ethui_types::GlobalState as _;
 //use ethui_types::GlobalState;
 use futures::{future::BoxFuture, stream::SplitSink, FutureExt as _, SinkExt, StreamExt};
 use jsonrpsee::{
     server::{middleware::rpc::RpcServiceT, RpcServiceBuilder, Server},
-    types::Request,
     MethodResponse,
+};
+use tokio::{
+    net::{TcpListener, TcpStream},
+    sync::mpsc,
+};
+use tokio_tungstenite::accept_hdr_async;
+use tungstenite::handshake::server::{ErrorResponse, Request, Response};
+use url::Url;
+
+use crate::{
+    peers::{Peer, Peers},
+    WsError,
 };
 //use tokio::{net::TcpStream, sync::mpsc};
 //use tokio_tungstenite::{accept_hdr_async, WebSocketStream};
@@ -28,98 +42,100 @@ use jsonrpsee::{
 
 // It's possible to access the connection ID
 // by using the low-level API.
-#[derive(Clone)]
-pub struct CallsPerConn<S> {
-    service: S,
-    count: Arc<AtomicUsize>,
-}
+//#[derive(Clone)]
+//pub struct CallsPerConn<S> {
+//    service: S,
+//    count: Arc<AtomicUsize>,
+//}
+//
+//impl<'a, S> RpcServiceT<'a> for CallsPerConn<S>
+//where
+//    S: RpcServiceT<'a> + Send + Sync + Clone + 'static,
+//{
+//    type Future = BoxFuture<'a, MethodResponse>;
+//
+//    fn call(&self, req: Request<'a>) -> Self::Future {
+//        let count = self.count.clone();
+//        let service = self.service.clone();
+//
+//        async move {
+//            let rp = service.call(req).await;
+//            count.fetch_add(1, Ordering::SeqCst);
+//            let count = count.load(Ordering::SeqCst);
+//            println!("the server has processed calls={count} on the connection");
+//            rp
+//        }
+//        .boxed()
+//    }
+//}
 
-impl<'a, S> RpcServiceT<'a> for CallsPerConn<S>
-where
-    S: RpcServiceT<'a> + Send + Sync + Clone + 'static,
-{
-    type Future = BoxFuture<'a, MethodResponse>;
-
-    fn call(&self, req: Request<'a>) -> Self::Future {
-        let count = self.count.clone();
-        let service = self.service.clone();
-
-        async move {
-            let rp = service.call(req).await;
-            count.fetch_add(1, Ordering::SeqCst);
-            let count = count.load(Ordering::SeqCst);
-            println!("the server has processed calls={count} on the connection");
-            rp
-        }
-        .boxed()
-    }
-}
 pub(crate) async fn server_loop(port: u16) {
     let addr = format!("127.0.0.1:{}", port);
-    // let listener = TcpListener::bind(&addr).await.expect("Can't listen to");
+    let listener = TcpListener::bind(&addr).await.expect("Can't listen to");
 
     tracing::debug!("WS server listening on: {}", addr);
 
-    //let rpc_middleware = RpcServiceBuilder::new().layer_fn(|service| CallsPerConn {
-    //    service,
-    //    count: Default::default(),
-    //});
-
-    //let server = Server::builder()
-    //    .set_rpc_middleware(rpc_middleware)
-    //    .build(addr)
-    //    .await
-    //    .unwrap();
-    //let rpc = ethui_rpc::v2::module();
-    //let handle = server.start(rpc);
+    // Each RPC call/connection get its own `stop_handle`
+    // to able to determine whether the server has been stopped or not.
     //
-    //tokio::spawn(handle.stopped()).await.unwrap();
+    // To keep the server running the `server_handle`
+    // must be kept and it can also be used to stop the server.
+    let (stop_handle, server_handle) = stop_channel();
 
-    // while let Ok((stream, _)) = listener.accept().await {
-    //     let peer = stream
-    //         .peer_addr()
-    //         .expect("connected streams should have a peer address");
-    //
-    //     tokio::spawn(accept_connection(peer, stream));
-    // }
+    let per_conn = per_connection(
+        ().into_rpc().into(),
+        stop_handle.clone(),
+        jsonrpsee::server::Server::builder()
+            .set_config(ServerConfig::builder().max_connections(33).build())
+            .set_http_middleware(tower::ServiceBuilder::new().layer(CorsLayer::permissive()))
+            .to_service_builder(),
+    );
+
+    while let Ok((stream, _)) = listener.accept().await {
+        let peer = stream
+            .peer_addr()
+            .expect("connected streams should have a peer address");
+
+        tokio::spawn(accept_connection(peer, stream));
+    }
 }
 
-//async fn accept_connection(socket: SocketAddr, stream: TcpStream) {
-//    let mut query_params: HashMap<String, String> = Default::default();
-//    let callback = |req: &Request, res: Response| -> std::result::Result<Response, ErrorResponse> {
-//        let url = Url::parse(&format!("{}{}", "http://localhost", req.uri())).unwrap();
-//        query_params = url.query_pairs().into_owned().collect();
-//        Ok(res)
-//    };
-//
-//    let ws_stream = accept_hdr_async(stream, callback)
-//        .await
-//        .expect("Failed to accept");
-//    let (snd, rcv) = mpsc::unbounded_channel::<serde_json::Value>();
-//    let url = query_params.get("url").cloned().unwrap_or_default();
-//
-//    let peer = Peer::new(socket, snd, &query_params);
-//
-//    Peers::write().await.add_peer(peer.clone()).await;
-//    let res = handle_connection(peer, ws_stream, rcv).await;
-//    Peers::write().await.remove_peer(socket).await;
-//
-//    if let Err(e) = res {
-//        match e {
-//            WsError::Websocket(e) => match e {
-//                tungstenite::Error::ConnectionClosed
-//                | tungstenite::Error::Protocol(_)
-//                | tungstenite::Error::Utf8 => {
-//                    tracing::debug!("Close  {} {:?}", url, e);
-//                }
-//                _ => (),
-//            },
-//            _ => {
-//                tracing::error!("Error {} {}", url, e);
-//            }
-//        }
-//    }
-//}
+async fn accept_connection(socket: SocketAddr, stream: TcpStream) {
+    let mut query_params: HashMap<String, String> = Default::default();
+    let callback = |req: &Request, res: Response| -> std::result::Result<Response, ErrorResponse> {
+        let url = Url::parse(&format!("{}{}", "http://localhost", req.uri())).unwrap();
+        query_params = url.query_pairs().into_owned().collect();
+        Ok(res)
+    };
+
+    let ws_stream = accept_hdr_async(stream, callback)
+        .await
+        .expect("Failed to accept");
+    let (snd, rcv) = mpsc::unbounded_channel::<serde_json::Value>();
+    let url = query_params.get("url").cloned().unwrap_or_default();
+
+    let peer = Peer::new(socket, snd, &query_params);
+
+    Peers::write().await.add_peer(peer.clone()).await;
+    let res = handle_connection(peer, ws_stream, rcv).await;
+    Peers::write().await.remove_peer(socket).await;
+
+    if let Err(e) = res {
+        match e {
+            WsError::Websocket(e) => match e {
+                tungstenite::Error::ConnectionClosed
+                | tungstenite::Error::Protocol(_)
+                | tungstenite::Error::Utf8 => {
+                    tracing::debug!("Close  {} {:?}", url, e);
+                }
+                _ => (),
+            },
+            _ => {
+                tracing::error!("Error {} {}", url, e);
+            }
+        }
+    }
+}
 //
 //async fn handle_connection(
 //    peer: Peer,
