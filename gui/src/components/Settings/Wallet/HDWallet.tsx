@@ -207,7 +207,7 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
     }).then(setAddresses);
   }, [mnemonic, derivationPath]);
 
-  // TODO: form submit disabled is overriden here, but needs to be removed
+  // TODO: form submit disabled is overridden here, but needs to be removed
   // this needs to take into account the "pick" table
   return (
     <Form form={form} onSubmit={onSubmitInternal}>
