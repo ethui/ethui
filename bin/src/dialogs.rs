@@ -2,14 +2,19 @@ use ethui_types::ui_events;
 use tauri::{AppHandle, Emitter as _, Manager, WebviewUrl, WebviewWindowBuilder, WindowEvent};
 
 pub(crate) fn open(handle: &AppHandle, params: ui_events::DialogOpen) {
-    let window =
+    let builder =
         WebviewWindowBuilder::new(handle, params.label, WebviewUrl::App(params.url.into()))
             .inner_size(params.w, params.h)
             .title(params.title)
             .resizable(true)
-            .decorations(false)
-            .build()
-            .unwrap();
+            .decorations(false);
+
+    #[cfg(target_os = "macos")]
+    let builder = builder
+        .title_bar_style(tauri::TitleBarStyle::Transparent)
+        .decorations(true);
+
+    let window = builder.build().unwrap();
 
     window.on_window_event(move |event| on_event(params.id, event));
 }

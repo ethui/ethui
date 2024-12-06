@@ -18,12 +18,14 @@ pub(crate) async fn main_window_show(app: &AppHandle) {
         let builder = WebviewWindowBuilder::new(app, "main", tauri::WebviewUrl::App(url.into()))
             .fullscreen(false)
             .resizable(true)
-            .decorations(true)
+            .decorations(false)
             .inner_size(600.0, 800.0)
             .on_menu_event(menu::event_handler);
 
         #[cfg(target_os = "macos")]
-        let builder = builder.title_bar_style(tauri::TitleBarStyle::Transparent);
+        let builder = builder
+            .title_bar_style(tauri::TitleBarStyle::Transparent)
+            .decorations(true);
 
         builder.build().unwrap();
     }
