@@ -6,7 +6,7 @@ run = "yarn run app:dev"
 alias = "d"
 
 [tasks.prod]
-run = "echo $NODE_ENV && yarn run tauri build"
+run = "yarn run tauri build"
 env = { NODE_ENV = "production" }
 
 [tasks.setup]
