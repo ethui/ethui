@@ -1,23 +1,19 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "./shadcn/tooltip";
+import { ClipboardContext } from "./providers/clipboard-provider";
 
 export interface ClickToCopyProps {
   text: string | bigint | number;
   children: React.ReactNode;
-  write?: (text: string) => void;
 }
 
-export function ClickToCopy({
-  children,
-  text,
-  write = navigator.clipboard.writeText,
-  ...props
-}: ClickToCopyProps) {
+export function ClickToCopy({ children, text, ...props }: ClickToCopyProps) {
+  const { writeText } = useContext(ClipboardContext);
   const [opening, setOpening] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
   const [copied, setCopied] = useState(false);
@@ -44,7 +40,7 @@ export function ClickToCopy({
     setCopied(true);
     setOpening(true);
     setOpen(true);
-    write(text.toString());
+    writeText(text.toString());
   };
 
   return (
@@ -65,7 +61,7 @@ export function ClickToCopy({
           </span>
         </TooltipTrigger>
         <TooltipContent asChild>
-          <p>{copied ? "Copied to clipboard" : text.toString()}</p>
+          <span>{copied ? "Copied to clipboard" : text.toString()}</span>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

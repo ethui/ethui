@@ -1,8 +1,8 @@
 import { withThemeByClassName } from "@storybook/addon-themes";
 import type { Preview } from "@storybook/react";
 import "../tailwind.css";
-import { Story } from "@storybook/react";
 import React from "react";
+import { ClipboardProvider } from "../components/providers/clipboard-provider";
 
 const preview: Preview = {
   parameters: {
@@ -24,7 +24,9 @@ const preview: Preview = {
     }),
     (Story) => (
       <div className="dark:bg-gray-800">
-        <Story />
+        <ClipboardProvider>
+          <Story />
+        </ClipboardProvider>
       </div>
     ),
   ],
