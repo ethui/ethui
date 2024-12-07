@@ -7,12 +7,6 @@
     "frontendDist": "../gui/dist",
     "devUrl": "http://localhost:1420"
   },
-  "app": {
-    "trayIcon": {
-      "iconPath": "icons-dev/128x128.png",
-      "iconAsTemplate": true
-    }
-  },
   "bundle": {
     "icon": ["icons-dev/128x128.png"]
   }

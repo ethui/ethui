@@ -8,10 +8,6 @@
     "devUrl": "http://localhost:1420"
   },
   "app": {
-    "trayIcon": {
-      "iconPath": "icons/icon.png",
-      "iconAsTemplate": true
-    },
     "security": {
       "csp": {
         "default-src": "'self'",
