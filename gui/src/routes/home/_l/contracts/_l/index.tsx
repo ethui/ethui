@@ -36,13 +36,13 @@ function Contracts() {
     <>
       <Filter onChange={(f) => setFilter(f)} />
 
-      <div className="flex flex-col gap-4 p-2">
+      <div className="flex flex-col gap-2 pt-2">
         {Array.from(contracts || []).map(({ address, name, chainId }) => (
           <Link
             key={address}
             to="/home/contracts/$chainId/$address"
             params={{ address: address, chainId: chainId }}
-            className="flex border p-4 align-baseline hover:bg-accent"
+            className="flex p-4 align-baseline hover:bg-accent"
           >
             <AddressView address={address} />
             {name && (
@@ -70,7 +70,7 @@ function Contracts() {
 
 function Filter({ onChange }: { onChange: (f: string) => void }) {
   return (
-    <form className="flex items-stretch">
+    <form className="mx-2 flex items-stretch">
       <Input
         onChange={debounce((e) => onChange(e.target.value), 100)}
         placeholder="Filter..."
