@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import debounce from "lodash-es/debounce";
 import { LoaderCircle } from "lucide-react";
 import { useState } from "react";
@@ -7,15 +7,8 @@ import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/shallow";
 
-import type { Contract } from "@ethui/types";
 import { ChainView } from "@ethui/ui/components/chain-view";
 import { Form } from "@ethui/ui/components/form";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@ethui/ui/components/shadcn/accordion";
 import { Badge } from "@ethui/ui/components/shadcn/badge";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import {
@@ -26,12 +19,10 @@ import {
 import { Input } from "@ethui/ui/components/shadcn/input";
 import { Plus } from "lucide-react";
 import { AddressView } from "#/components/AddressView";
-import { ContractCallForm } from "#/components/ContractCallForm";
 import { useContracts } from "#/store/useContracts";
 import { useNetworks } from "#/store/useNetworks";
 
-export const Route = createFileRoute("/home/_l/contracts")({
-  beforeLoad: () => ({ breadcrumb: "Contracts" }),
+export const Route = createFileRoute("/home/_l/contracts/_l/")({
   component: Contracts,
 });
 
@@ -45,11 +36,23 @@ function Contracts() {
     <>
       <Filter onChange={(f) => setFilter(f)} />
 
-      <Accordion type="multiple" className="w-full">
-        {Array.from(contracts || []).map((contract) => (
-          <ContractView key={contract.address} contract={contract} />
+      <div className="flex flex-col gap-4 p-2">
+        {Array.from(contracts || []).map(({ address, name, chainId }) => (
+          <Link
+            key={address}
+            to="/home/contracts/$chainId/$address"
+            params={{ address: address, chainId: chainId }}
+            className="flex border p-4 align-baseline hover:bg-accent"
+          >
+            <AddressView address={address} />
+            {name && (
+              <Badge variant="secondary" className="ml-2">
+                {name}
+              </Badge>
+            )}
+          </Link>
         ))}
-      </Accordion>
+      </div>
 
       <Dialog>
         <DialogTrigger asChild>
@@ -74,32 +77,6 @@ function Filter({ onChange }: { onChange: (f: string) => void }) {
         className="h-10"
       />
     </form>
-  );
-}
-
-interface ContractViewProps {
-  contract: Contract;
-}
-
-function ContractView({
-  contract: { address, name, chainId },
-}: ContractViewProps) {
-  return (
-    <AccordionItem value={address}>
-      <AccordionTrigger>
-        <div className="flex items-baseline justify-start">
-          <AddressView address={address} />
-          {name && (
-            <Badge variant="secondary" className="ml-2">
-              {name}
-            </Badge>
-          )}
-        </div>
-      </AccordionTrigger>
-      <AccordionContent>
-        <ContractCallForm address={address} chainId={chainId} />
-      </AccordionContent>
-    </AccordionItem>
   );
 }
 
