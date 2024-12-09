@@ -14,6 +14,7 @@ import { z } from "zod";
 
 import { Form } from "@ethui/ui/components/form";
 
+import { ClickToCopy } from "@ethui/ui/components/click-to-copy";
 import {
   Dialog,
   DialogContent,
@@ -25,7 +26,6 @@ import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { truncateHex } from "#/utils";
 import { IconAddress } from "./Icons/Address";
-import { ClickToCopy } from "@ethui/ui/components/click-to-copy";
 
 interface Props {
   address: Address;
