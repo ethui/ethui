@@ -18,7 +18,9 @@
     "fix": "yarn fix:biome",
     "fix:biome": "biome check --write .",
     "setup": "yarn install && yarn ext:build",
-    "test": "yarn workspaces foreach --all run test"
+    "test": "yarn workspaces foreach --all run test",
+    "demo:dev": "yarn workspace @ethui/demo dev",
+    "demo:eth-watch": "./eth-watch.sh"
   },
   "workspaces": [
     "extension",
