@@ -1,0 +1,7 @@
+procs:
+  anvil:
+    cmd: ["anvil"]
+  frontend:
+    cmd: ["yarn", "dev"]
+  contracts-deploy:
+    cmd: ["mise", "run", "eth-watch"]

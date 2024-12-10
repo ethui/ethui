@@ -1,0 +1,26 @@
+[tasks.default]
+alias = "d"
+run = "mprocs"
+
+[tasks.web]
+run = "yarn dev"
+
+[tasks.anvil]
+run = "$WATCHER anvil --host 0.0.0.0"
+
+[tasks.eth-watch]
+run = "$WATCHER mise run eth"
+
+[tasks.eth-deploy]
+run = ["mise run forge-script script/DevDeploy.s.sol"]
+
+[tasks.forge-script]
+run = 'forge script $1 --rpc-url http://localhost:8545 --broadcast --mnemonics "$MNEMONIC" --sender "$SENDER" --slow'
+
+[tools]
+node = "20"
+
+[env]
+MNEMONIC = "test test test test test test test test test test test junk"
+SENDER = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+WATCHER = "watchexec --watch contracts --watch test --watch foundry.toml --restart --exts sol,toml"

@@ -1,0 +1,1 @@
+export { EthuiIconWhite } from "./EthuiIconWhite";

@@ -27,6 +27,7 @@
     "packages/abiparse",
     "packages/form",
     "packages/ui",
+    "packages/demo",
     "gui"
   ],
   "devDependencies": {
