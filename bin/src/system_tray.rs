@@ -1,6 +1,6 @@
 use tauri::{
     menu::{MenuBuilder, MenuEvent, MenuItemBuilder},
-    tray::{MouseButton, TrayIconBuilder, TrayIconEvent},
+    tray::TrayIconBuilder,
     AppHandle, Manager,
 };
 
@@ -8,11 +8,6 @@ use crate::AppResult;
 
 pub(crate) fn build(app: &AppHandle) -> AppResult<()> {
     let menu_builder = MenuBuilder::new(app);
-
-    //#[cfg(feature = "debug")]
-    let menu_builder = menu_builder
-        .item(&MenuItemBuilder::with_id("dev_mode", "Dev Mode").build(app)?)
-        .separator();
 
     let menu = menu_builder
         .item(&MenuItemBuilder::with_id("show", "Show").build(app)?)
@@ -25,25 +20,12 @@ pub(crate) fn build(app: &AppHandle) -> AppResult<()> {
         .icon(app.default_window_icon().unwrap().clone())
         .menu(&menu)
         .on_menu_event(event_handler)
-        .on_tray_icon_event(|tray, event| {
-            if let TrayIconEvent::Click {
-                button: MouseButton::Left,
-                ..
-            } = event
-            {
-                let app = tray.app_handle();
-                if let Some(window) = app.get_webview_window("main") {
-                    let _ = window.show();
-                    let _ = window.set_focus();
-                }
-            }
-        })
         .build(app)?;
 
     Ok(())
 }
 
-pub(crate) fn event_handler(app: &AppHandle, event: MenuEvent) {
+fn event_handler(app: &AppHandle, event: MenuEvent) {
     match event.id().as_ref() {
         "quit" => app.exit(0),
         "hide" => app.get_webview_window("main").unwrap().hide().unwrap(),
