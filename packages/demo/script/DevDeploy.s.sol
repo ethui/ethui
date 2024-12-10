@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import {Script} from "lib/forge-std/src/Script.sol";
+import {Script} from "forge-std/Script.sol";
 
 import {NFT} from "contracts/NFT.sol";
 import {Token} from "contracts/Token.sol";
@@ -33,7 +33,7 @@ contract DevDeployScript is Script {
         vm.startBroadcast();
         NFT nft = new NFT("https://assets.pokemon.com/assets/cms2/img/pokedex/detail/");
         Token token = new Token();
-        TestCalls testCalls = new TestCalls();
+        new TestCalls();
 
         for (uint256 i = 0; i < testAccounts.length; i++) {
             address addr = testAccounts[i];

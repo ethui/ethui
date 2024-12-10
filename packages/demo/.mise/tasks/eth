@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-set -ue
-
-forge build
-forge test
-sleep 0.2 && mise run eth-deploy &
-yarn run wagmi generate &

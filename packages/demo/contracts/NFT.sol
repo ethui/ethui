@@ -4,14 +4,14 @@
 
 pragma solidity ^0.8.13;
 
-import {ERC721} from "lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
-import {ERC721Enumerable} from "lib/openzeppelin-contracts/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import {Strings} from "lib/openzeppelin-contracts/contracts/utils/Strings.sol";
-import {Base64} from "lib/openzeppelin-contracts/contracts/utils/Base64.sol";
+import {ERC721} from "@openzeppelin/token/ERC721/ERC721.sol";
+import {ERC721Enumerable} from "@openzeppelin/token/ERC721/extensions/ERC721Enumerable.sol";
+import {Strings} from "@openzeppelin/utils/Strings.sol";
+import {Base64} from "@openzeppelin/utils/Base64.sol";
 
 error InvalidArguments();
 
-contract NFT is ERC721, ERC721Enumerable {
+contract NFT is ERC721Enumerable {
     //
     // State
     //
@@ -56,10 +56,6 @@ contract NFT is ERC721, ERC721Enumerable {
 
     /// @inheritdoc ERC721
     function tokenURI(uint256 id) public view override(ERC721) returns (string memory) {
-        if (!_exists(id)) {
-            revert InvalidArguments();
-        }
-
         string memory idStr = Strings.toString(id);
         string memory paddedIdStr = idStr;
 
@@ -88,19 +84,5 @@ contract NFT is ERC721, ERC721Enumerable {
         );
 
         return string(abi.encodePacked("data:application/json;base64,", Base64.encode(dataURI)));
-    }
-
-    //
-    // ERC721Enumerable
-    //
-    function _beforeTokenTransfer(address from, address to, uint256 tokenId, uint256 batchSize)
-        internal
-        override(ERC721, ERC721Enumerable)
-    {
-        ERC721Enumerable._beforeTokenTransfer(from, to, tokenId, batchSize);
-    }
-
-    function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC721Enumerable) returns (bool) {
-        return ERC721Enumerable.supportsInterface(interfaceId);
     }
 }

@@ -1,7 +1,7 @@
 procs:
   anvil:
-    cmd: ["anvil"]
+    cmd: ["anvil", "--host", "0.0.0.0"]
   frontend:
     cmd: ["yarn", "dev"]
   contracts-deploy:
-    cmd: ["mise", "run", "eth-watch"]
+    cmd: ["eth-watch.sh"]

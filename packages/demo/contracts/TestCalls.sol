@@ -37,7 +37,7 @@ contract TestCalls {
 
     function call_uintArraySpecificLength(uint256[2] calldata v) external {}
 
-    function length_uintArry() external view returns (uint256) {
+    function length_uintArry() external pure returns (uint256) {
         return 10;
     }
 
