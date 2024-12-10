@@ -25,7 +25,7 @@ pub(crate) fn build(app: &AppHandle) -> AppResult<()> {
     Ok(())
 }
 
-pub(crate) fn event_handler(app: &AppHandle, event: MenuEvent) {
+fn event_handler(app: &AppHandle, event: MenuEvent) {
     match event.id().as_ref() {
         "quit" => app.exit(0),
         "hide" => app.get_webview_window("main").unwrap().hide().unwrap(),
