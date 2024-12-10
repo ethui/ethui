@@ -25,11 +25,11 @@ interface Props {
 
 type Result =
   | {
-      write: Hash;
-    }
+    write: Hash;
+  }
   | {
-      read: string;
-    };
+    read: string;
+  };
 
 interface Option {
   item: AbiFunction | "raw";
@@ -58,7 +58,7 @@ export function ContractCallForm({ chainId, address }: Props) {
   return (
     <>
       <Filter onChange={(f) => setFilter(f)} />
-      <Accordion type="multiple" className="w-full">
+      <Accordion type="multiple" className="w-full pt-2">
         {GROUPS.map((group) => {
           const options = groupedOptions[group];
 
