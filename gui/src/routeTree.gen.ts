@@ -21,11 +21,11 @@ import { Route as OnboardingLThankYouImport } from './routes/onboarding/_l/thank
 import { Route as OnboardingLExtensionImport } from './routes/onboarding/_l/extension'
 import { Route as OnboardingLAlchemyImport } from './routes/onboarding/_l/alchemy'
 import { Route as HomeLTransactionsImport } from './routes/home/_l/transactions'
-import { Route as HomeLContractsImport } from './routes/home/_l/contracts'
 import { Route as HomeLConnectionsImport } from './routes/home/_l/connections'
 import { Route as HomeLAccountImport } from './routes/home/_l/account'
 import { Route as OnboardingLWalletsLImport } from './routes/onboarding/_l/wallets/_l'
 import { Route as HomeLSettingsLImport } from './routes/home/_l/settings/_l'
+import { Route as HomeLContractsLImport } from './routes/home/_l/contracts/_l'
 import { Route as DialogLWalletUnlockIdImport } from './routes/dialog/_l/wallet-unlock.$id'
 import { Route as DialogLTxReviewIdImport } from './routes/dialog/_l/tx-review.$id'
 import { Route as DialogLMsgSignIdImport } from './routes/dialog/_l/msg-sign.$id'
@@ -34,6 +34,7 @@ import { Route as DialogLErc20AddIdImport } from './routes/dialog/_l/erc20-add.$
 import { Route as DialogLErc1155AddIdImport } from './routes/dialog/_l/erc1155-add.$id'
 import { Route as DialogLChainAddIdImport } from './routes/dialog/_l/chain-add.$id'
 import { Route as OnboardingLWalletsLIndexImport } from './routes/onboarding/_l/wallets/_l/index'
+import { Route as HomeLContractsLIndexImport } from './routes/home/_l/contracts/_l/index'
 import { Route as OnboardingLWalletsLNewImport } from './routes/onboarding/_l/wallets/_l/new'
 import { Route as HomeLSettingsLTokensImport } from './routes/home/_l/settings/_l/tokens'
 import { Route as HomeLSettingsLGeneralImport } from './routes/home/_l/settings/_l/general'
@@ -41,6 +42,7 @@ import { Route as HomeLSettingsLFoundryImport } from './routes/home/_l/settings/
 import { Route as OnboardingLWalletsLNameEditImport } from './routes/onboarding/_l/wallets/_l/$name.edit'
 import { Route as HomeLSettingsLWalletsLImport } from './routes/home/_l/settings/_l/wallets/_l'
 import { Route as HomeLSettingsLNetworksLImport } from './routes/home/_l/settings/_l/networks/_l'
+import { Route as HomeLContractsLChainIdAddressImport } from './routes/home/_l/contracts/_l/$chainId.$address'
 import { Route as HomeLSettingsLWalletsLIndexImport } from './routes/home/_l/settings/_l/wallets/_l/index'
 import { Route as HomeLSettingsLNetworksLIndexImport } from './routes/home/_l/settings/_l/networks/_l/index'
 import { Route as HomeLSettingsLWalletsLNewImport } from './routes/home/_l/settings/_l/wallets/_l/new'
@@ -55,6 +57,7 @@ const HomeImport = createFileRoute('/home')()
 const DialogImport = createFileRoute('/dialog')()
 const OnboardingLWalletsImport = createFileRoute('/onboarding/_l/wallets')()
 const HomeLSettingsImport = createFileRoute('/home/_l/settings')()
+const HomeLContractsImport = createFileRoute('/home/_l/contracts')()
 const HomeLSettingsLWalletsImport = createFileRoute(
   '/home/_l/settings/_l/wallets',
 )()
@@ -109,6 +112,12 @@ const HomeLSettingsRoute = HomeLSettingsImport.update({
   getParentRoute: () => HomeLRoute,
 } as any)
 
+const HomeLContractsRoute = HomeLContractsImport.update({
+  id: '/contracts',
+  path: '/contracts',
+  getParentRoute: () => HomeLRoute,
+} as any)
+
 const OnboardingLIndexRoute = OnboardingLIndexImport.update({
   id: '/',
   path: '/',
@@ -139,12 +148,6 @@ const HomeLTransactionsRoute = HomeLTransactionsImport.update({
   getParentRoute: () => HomeLRoute,
 } as any)
 
-const HomeLContractsRoute = HomeLContractsImport.update({
-  id: '/contracts',
-  path: '/contracts',
-  getParentRoute: () => HomeLRoute,
-} as any)
-
 const HomeLConnectionsRoute = HomeLConnectionsImport.update({
   id: '/connections',
   path: '/connections',
@@ -165,6 +168,11 @@ const OnboardingLWalletsLRoute = OnboardingLWalletsLImport.update({
 const HomeLSettingsLRoute = HomeLSettingsLImport.update({
   id: '/_l',
   getParentRoute: () => HomeLSettingsRoute,
+} as any)
+
+const HomeLContractsLRoute = HomeLContractsLImport.update({
+  id: '/_l',
+  getParentRoute: () => HomeLContractsRoute,
 } as any)
 
 const DialogLWalletUnlockIdRoute = DialogLWalletUnlockIdImport.update({
@@ -227,6 +235,12 @@ const OnboardingLWalletsLIndexRoute = OnboardingLWalletsLIndexImport.update({
   getParentRoute: () => OnboardingLWalletsLRoute,
 } as any)
 
+const HomeLContractsLIndexRoute = HomeLContractsLIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => HomeLContractsLRoute,
+} as any)
+
 const OnboardingLWalletsLNewRoute = OnboardingLWalletsLNewImport.update({
   id: '/new',
   path: '/new',
@@ -267,6 +281,13 @@ const HomeLSettingsLNetworksLRoute = HomeLSettingsLNetworksLImport.update({
   id: '/_l',
   getParentRoute: () => HomeLSettingsLNetworksRoute,
 } as any)
+
+const HomeLContractsLChainIdAddressRoute =
+  HomeLContractsLChainIdAddressImport.update({
+    id: '/$chainId/$address',
+    path: '/$chainId/$address',
+    getParentRoute: () => HomeLContractsLRoute,
+  } as any)
 
 const HomeLSettingsLWalletsLIndexRoute =
   HomeLSettingsLWalletsLIndexImport.update({
@@ -370,13 +391,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeLConnectionsImport
       parentRoute: typeof HomeLImport
     }
-    '/home/_l/contracts': {
-      id: '/home/_l/contracts'
-      path: '/contracts'
-      fullPath: '/home/contracts'
-      preLoaderRoute: typeof HomeLContractsImport
-      parentRoute: typeof HomeLImport
-    }
     '/home/_l/transactions': {
       id: '/home/_l/transactions'
       path: '/transactions'
@@ -461,6 +475,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DialogLWalletUnlockIdImport
       parentRoute: typeof DialogLImport
     }
+    '/home/_l/contracts': {
+      id: '/home/_l/contracts'
+      path: '/contracts'
+      fullPath: '/home/contracts'
+      preLoaderRoute: typeof HomeLContractsImport
+      parentRoute: typeof HomeLImport
+    }
+    '/home/_l/contracts/_l': {
+      id: '/home/_l/contracts/_l'
+      path: '/contracts'
+      fullPath: '/home/contracts'
+      preLoaderRoute: typeof HomeLContractsLImport
+      parentRoute: typeof HomeLContractsRoute
+    }
     '/home/_l/settings': {
       id: '/home/_l/settings'
       path: '/settings'
@@ -517,12 +545,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingLWalletsLNewImport
       parentRoute: typeof OnboardingLWalletsLImport
     }
+    '/home/_l/contracts/_l/': {
+      id: '/home/_l/contracts/_l/'
+      path: '/'
+      fullPath: '/home/contracts/'
+      preLoaderRoute: typeof HomeLContractsLIndexImport
+      parentRoute: typeof HomeLContractsLImport
+    }
     '/onboarding/_l/wallets/_l/': {
       id: '/onboarding/_l/wallets/_l/'
       path: '/'
       fullPath: '/onboarding/wallets/'
       preLoaderRoute: typeof OnboardingLWalletsLIndexImport
       parentRoute: typeof OnboardingLWalletsLImport
+    }
+    '/home/_l/contracts/_l/$chainId/$address': {
+      id: '/home/_l/contracts/_l/$chainId/$address'
+      path: '/$chainId/$address'
+      fullPath: '/home/contracts/$chainId/$address'
+      preLoaderRoute: typeof HomeLContractsLChainIdAddressImport
+      parentRoute: typeof HomeLContractsLImport
     }
     '/home/_l/settings/_l/networks': {
       id: '/home/_l/settings/_l/networks'
@@ -640,6 +682,32 @@ const DialogRouteChildren: DialogRouteChildren = {
 const DialogRouteWithChildren =
   DialogRoute._addFileChildren(DialogRouteChildren)
 
+interface HomeLContractsLRouteChildren {
+  HomeLContractsLIndexRoute: typeof HomeLContractsLIndexRoute
+  HomeLContractsLChainIdAddressRoute: typeof HomeLContractsLChainIdAddressRoute
+}
+
+const HomeLContractsLRouteChildren: HomeLContractsLRouteChildren = {
+  HomeLContractsLIndexRoute: HomeLContractsLIndexRoute,
+  HomeLContractsLChainIdAddressRoute: HomeLContractsLChainIdAddressRoute,
+}
+
+const HomeLContractsLRouteWithChildren = HomeLContractsLRoute._addFileChildren(
+  HomeLContractsLRouteChildren,
+)
+
+interface HomeLContractsRouteChildren {
+  HomeLContractsLRoute: typeof HomeLContractsLRouteWithChildren
+}
+
+const HomeLContractsRouteChildren: HomeLContractsRouteChildren = {
+  HomeLContractsLRoute: HomeLContractsLRouteWithChildren,
+}
+
+const HomeLContractsRouteWithChildren = HomeLContractsRoute._addFileChildren(
+  HomeLContractsRouteChildren,
+)
+
 interface HomeLSettingsLNetworksLRouteChildren {
   HomeLSettingsLNetworksLNewRoute: typeof HomeLSettingsLNetworksLNewRoute
   HomeLSettingsLNetworksLIndexRoute: typeof HomeLSettingsLNetworksLIndexRoute
@@ -738,16 +806,16 @@ const HomeLSettingsRouteWithChildren = HomeLSettingsRoute._addFileChildren(
 interface HomeLRouteChildren {
   HomeLAccountRoute: typeof HomeLAccountRoute
   HomeLConnectionsRoute: typeof HomeLConnectionsRoute
-  HomeLContractsRoute: typeof HomeLContractsRoute
   HomeLTransactionsRoute: typeof HomeLTransactionsRoute
+  HomeLContractsRoute: typeof HomeLContractsRouteWithChildren
   HomeLSettingsRoute: typeof HomeLSettingsRouteWithChildren
 }
 
 const HomeLRouteChildren: HomeLRouteChildren = {
   HomeLAccountRoute: HomeLAccountRoute,
   HomeLConnectionsRoute: HomeLConnectionsRoute,
-  HomeLContractsRoute: HomeLContractsRoute,
   HomeLTransactionsRoute: HomeLTransactionsRoute,
+  HomeLContractsRoute: HomeLContractsRouteWithChildren,
   HomeLSettingsRoute: HomeLSettingsRouteWithChildren,
 }
 
@@ -827,7 +895,6 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof OnboardingLRouteWithChildren
   '/home/account': typeof HomeLAccountRoute
   '/home/connections': typeof HomeLConnectionsRoute
-  '/home/contracts': typeof HomeLContractsRoute
   '/home/transactions': typeof HomeLTransactionsRoute
   '/onboarding/alchemy': typeof OnboardingLAlchemyRoute
   '/onboarding/extension': typeof OnboardingLExtensionRoute
@@ -840,13 +907,16 @@ export interface FileRoutesByFullPath {
   '/dialog/msg-sign/$id': typeof DialogLMsgSignIdRoute
   '/dialog/tx-review/$id': typeof DialogLTxReviewIdRoute
   '/dialog/wallet-unlock/$id': typeof DialogLWalletUnlockIdRoute
+  '/home/contracts': typeof HomeLContractsLRouteWithChildren
   '/home/settings': typeof HomeLSettingsLRouteWithChildren
   '/onboarding/wallets': typeof OnboardingLWalletsLRouteWithChildren
   '/home/settings/foundry': typeof HomeLSettingsLFoundryRoute
   '/home/settings/general': typeof HomeLSettingsLGeneralRoute
   '/home/settings/tokens': typeof HomeLSettingsLTokensRoute
   '/onboarding/wallets/new': typeof OnboardingLWalletsLNewRoute
+  '/home/contracts/': typeof HomeLContractsLIndexRoute
   '/onboarding/wallets/': typeof OnboardingLWalletsLIndexRoute
+  '/home/contracts/$chainId/$address': typeof HomeLContractsLChainIdAddressRoute
   '/home/settings/networks': typeof HomeLSettingsLNetworksLRouteWithChildren
   '/home/settings/wallets': typeof HomeLSettingsLWalletsLRouteWithChildren
   '/onboarding/wallets/$name/edit': typeof OnboardingLWalletsLNameEditRoute
@@ -864,7 +934,6 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingLIndexRoute
   '/home/account': typeof HomeLAccountRoute
   '/home/connections': typeof HomeLConnectionsRoute
-  '/home/contracts': typeof HomeLContractsRoute
   '/home/transactions': typeof HomeLTransactionsRoute
   '/onboarding/alchemy': typeof OnboardingLAlchemyRoute
   '/onboarding/extension': typeof OnboardingLExtensionRoute
@@ -876,12 +945,14 @@ export interface FileRoutesByTo {
   '/dialog/msg-sign/$id': typeof DialogLMsgSignIdRoute
   '/dialog/tx-review/$id': typeof DialogLTxReviewIdRoute
   '/dialog/wallet-unlock/$id': typeof DialogLWalletUnlockIdRoute
+  '/home/contracts': typeof HomeLContractsLIndexRoute
   '/home/settings': typeof HomeLSettingsLRouteWithChildren
   '/onboarding/wallets': typeof OnboardingLWalletsLIndexRoute
   '/home/settings/foundry': typeof HomeLSettingsLFoundryRoute
   '/home/settings/general': typeof HomeLSettingsLGeneralRoute
   '/home/settings/tokens': typeof HomeLSettingsLTokensRoute
   '/onboarding/wallets/new': typeof OnboardingLWalletsLNewRoute
+  '/home/contracts/$chainId/$address': typeof HomeLContractsLChainIdAddressRoute
   '/home/settings/networks': typeof HomeLSettingsLNetworksLIndexRoute
   '/home/settings/wallets': typeof HomeLSettingsLWalletsLIndexRoute
   '/onboarding/wallets/$name/edit': typeof OnboardingLWalletsLNameEditRoute
@@ -901,7 +972,6 @@ export interface FileRoutesById {
   '/onboarding/_l': typeof OnboardingLRouteWithChildren
   '/home/_l/account': typeof HomeLAccountRoute
   '/home/_l/connections': typeof HomeLConnectionsRoute
-  '/home/_l/contracts': typeof HomeLContractsRoute
   '/home/_l/transactions': typeof HomeLTransactionsRoute
   '/onboarding/_l/alchemy': typeof OnboardingLAlchemyRoute
   '/onboarding/_l/extension': typeof OnboardingLExtensionRoute
@@ -914,6 +984,8 @@ export interface FileRoutesById {
   '/dialog/_l/msg-sign/$id': typeof DialogLMsgSignIdRoute
   '/dialog/_l/tx-review/$id': typeof DialogLTxReviewIdRoute
   '/dialog/_l/wallet-unlock/$id': typeof DialogLWalletUnlockIdRoute
+  '/home/_l/contracts': typeof HomeLContractsRouteWithChildren
+  '/home/_l/contracts/_l': typeof HomeLContractsLRouteWithChildren
   '/home/_l/settings': typeof HomeLSettingsRouteWithChildren
   '/home/_l/settings/_l': typeof HomeLSettingsLRouteWithChildren
   '/onboarding/_l/wallets': typeof OnboardingLWalletsRouteWithChildren
@@ -922,7 +994,9 @@ export interface FileRoutesById {
   '/home/_l/settings/_l/general': typeof HomeLSettingsLGeneralRoute
   '/home/_l/settings/_l/tokens': typeof HomeLSettingsLTokensRoute
   '/onboarding/_l/wallets/_l/new': typeof OnboardingLWalletsLNewRoute
+  '/home/_l/contracts/_l/': typeof HomeLContractsLIndexRoute
   '/onboarding/_l/wallets/_l/': typeof OnboardingLWalletsLIndexRoute
+  '/home/_l/contracts/_l/$chainId/$address': typeof HomeLContractsLChainIdAddressRoute
   '/home/_l/settings/_l/networks': typeof HomeLSettingsLNetworksRouteWithChildren
   '/home/_l/settings/_l/networks/_l': typeof HomeLSettingsLNetworksLRouteWithChildren
   '/home/_l/settings/_l/wallets': typeof HomeLSettingsLWalletsRouteWithChildren
@@ -944,7 +1018,6 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/home/account'
     | '/home/connections'
-    | '/home/contracts'
     | '/home/transactions'
     | '/onboarding/alchemy'
     | '/onboarding/extension'
@@ -957,13 +1030,16 @@ export interface FileRouteTypes {
     | '/dialog/msg-sign/$id'
     | '/dialog/tx-review/$id'
     | '/dialog/wallet-unlock/$id'
+    | '/home/contracts'
     | '/home/settings'
     | '/onboarding/wallets'
     | '/home/settings/foundry'
     | '/home/settings/general'
     | '/home/settings/tokens'
     | '/onboarding/wallets/new'
+    | '/home/contracts/'
     | '/onboarding/wallets/'
+    | '/home/contracts/$chainId/$address'
     | '/home/settings/networks'
     | '/home/settings/wallets'
     | '/onboarding/wallets/$name/edit'
@@ -980,7 +1056,6 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/home/account'
     | '/home/connections'
-    | '/home/contracts'
     | '/home/transactions'
     | '/onboarding/alchemy'
     | '/onboarding/extension'
@@ -992,12 +1067,14 @@ export interface FileRouteTypes {
     | '/dialog/msg-sign/$id'
     | '/dialog/tx-review/$id'
     | '/dialog/wallet-unlock/$id'
+    | '/home/contracts'
     | '/home/settings'
     | '/onboarding/wallets'
     | '/home/settings/foundry'
     | '/home/settings/general'
     | '/home/settings/tokens'
     | '/onboarding/wallets/new'
+    | '/home/contracts/$chainId/$address'
     | '/home/settings/networks'
     | '/home/settings/wallets'
     | '/onboarding/wallets/$name/edit'
@@ -1015,7 +1092,6 @@ export interface FileRouteTypes {
     | '/onboarding/_l'
     | '/home/_l/account'
     | '/home/_l/connections'
-    | '/home/_l/contracts'
     | '/home/_l/transactions'
     | '/onboarding/_l/alchemy'
     | '/onboarding/_l/extension'
@@ -1028,6 +1104,8 @@ export interface FileRouteTypes {
     | '/dialog/_l/msg-sign/$id'
     | '/dialog/_l/tx-review/$id'
     | '/dialog/_l/wallet-unlock/$id'
+    | '/home/_l/contracts'
+    | '/home/_l/contracts/_l'
     | '/home/_l/settings'
     | '/home/_l/settings/_l'
     | '/onboarding/_l/wallets'
@@ -1036,7 +1114,9 @@ export interface FileRouteTypes {
     | '/home/_l/settings/_l/general'
     | '/home/_l/settings/_l/tokens'
     | '/onboarding/_l/wallets/_l/new'
+    | '/home/_l/contracts/_l/'
     | '/onboarding/_l/wallets/_l/'
+    | '/home/_l/contracts/_l/$chainId/$address'
     | '/home/_l/settings/_l/networks'
     | '/home/_l/settings/_l/networks/_l'
     | '/home/_l/settings/_l/wallets'
@@ -1109,8 +1189,8 @@ export const routeTree = rootRoute
       "children": [
         "/home/_l/account",
         "/home/_l/connections",
-        "/home/_l/contracts",
         "/home/_l/transactions",
+        "/home/_l/contracts",
         "/home/_l/settings"
       ]
     },
@@ -1137,10 +1217,6 @@ export const routeTree = rootRoute
     },
     "/home/_l/connections": {
       "filePath": "home/_l/connections.tsx",
-      "parent": "/home/_l"
-    },
-    "/home/_l/contracts": {
-      "filePath": "home/_l/contracts.tsx",
       "parent": "/home/_l"
     },
     "/home/_l/transactions": {
@@ -1190,6 +1266,21 @@ export const routeTree = rootRoute
     "/dialog/_l/wallet-unlock/$id": {
       "filePath": "dialog/_l/wallet-unlock.$id.tsx",
       "parent": "/dialog/_l"
+    },
+    "/home/_l/contracts": {
+      "filePath": "home/_l/contracts",
+      "parent": "/home/_l",
+      "children": [
+        "/home/_l/contracts/_l"
+      ]
+    },
+    "/home/_l/contracts/_l": {
+      "filePath": "home/_l/contracts/_l.tsx",
+      "parent": "/home/_l/contracts",
+      "children": [
+        "/home/_l/contracts/_l/",
+        "/home/_l/contracts/_l/$chainId/$address"
+      ]
     },
     "/home/_l/settings": {
       "filePath": "home/_l/settings",
@@ -1241,9 +1332,17 @@ export const routeTree = rootRoute
       "filePath": "onboarding/_l/wallets/_l/new.tsx",
       "parent": "/onboarding/_l/wallets/_l"
     },
+    "/home/_l/contracts/_l/": {
+      "filePath": "home/_l/contracts/_l/index.tsx",
+      "parent": "/home/_l/contracts/_l"
+    },
     "/onboarding/_l/wallets/_l/": {
       "filePath": "onboarding/_l/wallets/_l/index.tsx",
       "parent": "/onboarding/_l/wallets/_l"
+    },
+    "/home/_l/contracts/_l/$chainId/$address": {
+      "filePath": "home/_l/contracts/_l/$chainId.$address.tsx",
+      "parent": "/home/_l/contracts/_l"
     },
     "/home/_l/settings/_l/networks": {
       "filePath": "home/_l/settings/_l/networks",

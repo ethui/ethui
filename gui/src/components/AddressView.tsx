@@ -14,6 +14,7 @@ import { z } from "zod";
 
 import { Form } from "@ethui/ui/components/form";
 
+import { ClickToCopy } from "@ethui/ui/components/click-to-copy";
 import {
   Dialog,
   DialogContent,
@@ -25,7 +26,7 @@ import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { truncateHex } from "#/utils";
 import { IconAddress } from "./Icons/Address";
-import { ClickToCopy } from "@ethui/ui/components/click-to-copy";
+import { PropagationStopper } from "./PropagationStopper";
 
 interface Props {
   address: Address;
@@ -89,16 +90,18 @@ export function AddressView({
         </ContextMenuItem>
       </ContextMenuContent>
 
-      <Dialog open={aliasFormOpen} onOpenChange={setAliasFormOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Set alias for {truncateHex(address)}</DialogTitle>
-          </DialogHeader>
-          <AliasForm
-            {...{ address, alias, refetch }}
-            onSubmit={() => setAliasFormOpen(false)}
-          />
-        </DialogContent>
+      <Dialog open={aliasFormOpen} onOpenChange={setAliasFormOpen} modal={true}>
+        <PropagationStopper>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Set alias for {truncateHex(address)}</DialogTitle>
+            </DialogHeader>
+            <AliasForm
+              {...{ address, alias, refetch }}
+              onSubmit={() => setAliasFormOpen(false)}
+            />
+          </DialogContent>
+        </PropagationStopper>
       </Dialog>
     </ContextMenu>
   );
