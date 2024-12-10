@@ -20,7 +20,7 @@
     "setup": "yarn install && yarn ext:build",
     "test": "yarn workspaces foreach --all run test",
     "demo:dev": "yarn workspace @ethui/demo dev",
-    "demo:eth-watch": "./eth-watch.sh"
+    "demo:eth-watch": "yarn workspace @ethui/demo eth-watch"
   },
   "workspaces": [
     "extension",

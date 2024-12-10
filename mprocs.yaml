@@ -5,14 +5,9 @@ procs:
     cmd: ["yarn", "run", "ext:watch"]
   storybook:
     cmd: ["yarn", "run", "storybook"]
-  web3-demo-anvil:
-    cwd: "../web3-demo/"
-    cmd: ["anvil"]
-    env:
-      RUST_LOG: "info"
-  web3-demo-frontend:
-    cwd: "../web3-demo/"
-    cmd: ["yarn", "dev"]
-  web3-demo-contracts-deploy:
-    cwd: "../web3-demo/"
-    cmd: ["mise", "run", "eth-watch"]
+  anvil:
+    cmd: ["anvil", "--host", "0.0.0.0"]
+  demo:
+    cmd: ["yarn", "demo:dev"]
+  demo-contracts:
+    cmd: ["yarn", "demo:eth-watch"]
