@@ -27,6 +27,7 @@ import {
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarRail,
+  useSidebar,
 } from "#/components/shadcn/sidebar";
 import { cn } from "#/lib/utils";
 import { useCommandBar } from "./CommandBar";
@@ -40,6 +41,7 @@ const isDev = import.meta.env.MODE === "development";
 export function AppSidebar() {
   const commandBar = useCommandBar();
   const location = useLocation();
+  const { open } = useSidebar();
 
   return (
     <Sidebar collapsible="icon">
@@ -62,7 +64,7 @@ export function AppSidebar() {
                       href={item.url}
                       className={cn(
                         item.url === location.pathname &&
-                          "bg-primary text-accent hover:bg-primary hover:text-accent",
+                        "bg-primary text-accent hover:bg-primary hover:text-accent",
                       )}
                     >
                       {item.icon}
@@ -91,7 +93,7 @@ export function AppSidebar() {
                               href={item.url}
                               className={cn(
                                 item.url === location.pathname &&
-                                  "bg-primary text-accent hover:bg-primary hover:text-accent",
+                                "bg-primary text-accent hover:bg-primary hover:text-accent",
                               )}
                             >
                               {item.title}
@@ -107,14 +109,16 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup>
-          <div className="flex flex-col gap-y-3">
-            <QuickWalletSelect />
-            <QuickAddressSelect />
-            <QuickNetworkSelect />
-            <QuickFastModeToggle />
-          </div>
-        </SidebarGroup>
+        {open && (
+          <SidebarGroup>
+            <div className="flex flex-col gap-y-3">
+              <QuickWalletSelect />
+              <QuickAddressSelect />
+              <QuickNetworkSelect />
+              <QuickFastModeToggle />
+            </div>
+          </SidebarGroup>
+        )}
       </SidebarContent>
 
       <SidebarFooter>
