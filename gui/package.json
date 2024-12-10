@@ -10,7 +10,6 @@
     "tauri": "tauri",
     "test:ui": "vitest run",
     "test:ui:watch": "vitest",
-    "devtools": "react-devtools",
     "lint": "yarn lint:unused",
     "lint:unused": "ts-unused-exports tsconfig.json --ignoreFiles=vite.config.ts --excludePathsFromReport=shadcn --excludePathsFromReport=routeTree.gen.ts"
   },
@@ -79,7 +78,6 @@
     "autoprefixer": "^10.4.20",
     "jsdom": "^25.0.1",
     "postcss": "^8.4.49",
-    "react-devtools": "^6.0.1",
     "tailwindcss": "^3.4.15",
     "ts-unused-exports": "^10.1.0",
     "vite-plugin-babel-import": "^2.0.5",
