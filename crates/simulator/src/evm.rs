@@ -21,7 +21,7 @@ impl Evm {
             fork_url: Some(fork_url.clone()),
             fork_block_number,
             env: foundry_evm::opts::Env {
-                gas_limit: u64::MAX,
+                gas_limit: u64::MAX.into(),
                 ..Default::default()
             },
             memory_limit: foundry_config.memory_limit,
