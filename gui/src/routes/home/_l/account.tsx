@@ -15,11 +15,11 @@ function Account() {
   if (!address) return null;
 
   return (
-    <div className="container">
+    <>
       <div className="flex justify-center gap-2 space-y-2">
         <AddressView address={address} />
       </div>
       <BalancesList />
-    </div>
+    </>
   );
 }
