@@ -6,7 +6,7 @@ import {
   AccordionTrigger,
 } from "@ethui/ui/components/shadcn/accordion";
 import { Button } from "@ethui/ui/components/shadcn/button";
-import { formatAbiItem, type Abi, type AbiFunction } from "abitype";
+import { type Abi, type AbiFunction, formatAbiItem } from "abitype";
 import debounce from "lodash-es/debounce";
 import { type FormEvent, useCallback, useEffect, useState } from "react";
 import { type Address, type Hash, decodeFunctionResult } from "viem";
@@ -25,11 +25,11 @@ interface Props {
 
 type Result =
   | {
-    write: Hash;
-  }
+      write: Hash;
+    }
   | {
-    read: string;
-  };
+      read: string;
+    };
 
 interface Option {
   item: AbiFunction | "raw";
@@ -38,7 +38,7 @@ interface Option {
 }
 
 const VALID_TYPES = ["function", "receive", "fallback"];
-export const GROUPS = ["view", "write", "fallback", "raw"];
+const GROUPS = ["view", "write", "fallback", "raw"];
 type Group = (typeof GROUPS)[number];
 type GroupedOptions = Record<Group, Option[]>;
 
@@ -138,7 +138,7 @@ function AbiItemFormWithSubmit({
     }
   };
   return (
-    <>
+    <div className="flex w-full flex-col gap-2">
       <AbiItemFormWithPreview
         abiFunction={item}
         address={address}
@@ -157,7 +157,7 @@ function AbiItemFormWithSubmit({
         <span className="font-mono">{result.read.toString()}</span>
       )}
       {result && "write" in result && <HashView hash={result.write} />}
-    </>
+    </div>
   );
 }
 
@@ -173,7 +173,7 @@ function Filter({ onChange }: { onChange: (f: string) => void }) {
   );
 }
 
-export function constructOptions(abi: Abi, filter?: string): GroupedOptions {
+function constructOptions(abi: Abi, filter?: string): GroupedOptions {
   const options: GroupedOptions = (abi || [])
     .filter(({ type }) => VALID_TYPES.includes(type))
     .reduce((acc, item, id) => {

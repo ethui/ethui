@@ -70,7 +70,7 @@ function Contracts() {
 
 function Filter({ onChange }: { onChange: (f: string) => void }) {
   return (
-    <form className="mx-2 flex items-stretch">
+    <form className="mx-2 flex items-center gap-1">
       <Input
         onChange={debounce((e) => onChange(e.target.value), 100)}
         placeholder="Filter..."
