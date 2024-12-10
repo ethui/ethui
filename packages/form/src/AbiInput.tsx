@@ -20,6 +20,7 @@ export type InnerProps = BaseProps & { depth?: number };
 export type AbiInputProps = InnerProps & {
   red?: boolean;
   deleteHover?: boolean;
+  className?: string;
 };
 
 export function AbiInput({
@@ -29,6 +30,7 @@ export function AbiInput({
   headerActions,
   red = false,
   deleteHover = false,
+  className,
   ...rest
 }: AbiInputProps) {
   const arrayMatch = matchArrayType(type);
@@ -41,14 +43,14 @@ export function AbiInput({
   );
 
   return (
-    <div className={clsx("w-full pl-1", red && deleteHover && "bg-red-500")}>
+    <div className={clsx("w-full transition-colors", className)}>
       <div>
         <div className=" flex items-center justify-between">
-          <span className="font-bold">
-            {label}
-            <span className="pl-2 font-mono">{type}</span>
-          </span>
-          {headerActions}
+          <div className="flex gap-2">
+            <span className="font-bold">{label}</span>
+            <span className="font-mono">{type}</span>
+          </div>
+          <span className="justify-self-end">{headerActions}</span>
         </div>
         {arrayMatch ? (
           <ArrayInput

@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { Plus, X } from "lucide-react";
 import { useState } from "react";
 
@@ -39,7 +40,7 @@ export function ArrayInput({
   };
 
   return (
-    <div className="m-1">
+    <div className="">
       <div className="flex items-center">
         <Button
           size="sm"
@@ -120,7 +121,7 @@ function ArrayElements({
   };
 
   return (
-    <div className=" m-1 flex-col">
+    <div className="flex-col">
       {value.map((v, i) => (
         <div className="" key={i}>
           <AbiArrayItemInput
@@ -182,8 +183,7 @@ function AbiArrayItemInput({
       defaultValue={defaultValue}
       type={type}
       onChange={onChange}
-      red
-      deleteHover={deleteHover}
+      className={clsx(deleteHover && "bg-secondary")}
       headerActions={
         removable && (
           <Button

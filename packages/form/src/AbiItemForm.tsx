@@ -99,7 +99,7 @@ export function RawItemForm({
 
   return (
     <form
-      className="grid grid-cols-3 p-2"
+      className="flex flex-col gap-2"
       onSubmit={(e) => {
         e.preventDefault();
         onSubmit?.();

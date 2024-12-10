@@ -1,9 +1,8 @@
-import { HighlightBox } from "@ethui/ui/components/highlight-box";
 import {
   SolidityCall,
   type SolidityCallProps,
 } from "@ethui/ui/components/solidity-call";
-import type { Abi, AbiFunction, Address } from "abitype";
+import type { AbiFunction, Address } from "abitype";
 import { clsx } from "clsx";
 import { useCallback, useState } from "react";
 import { AbiItemForm } from "./AbiItemForm";
@@ -63,23 +62,19 @@ export function AbiItemFormWithPreview({
           showForm ? "md:col-span-2" : "md:col-span-3",
         )}
       >
-        <HighlightBox className="w-full">
-          {data && sender ? (
-            <SolidityCall
-              {...{
-                value,
-                data,
-                from: sender,
-                to: address,
-                abi: abiFunction ? ([abiFunction] as Abi) : [],
-                chainId,
-                ArgProps,
-              }}
-            />
-          ) : (
-            "Preview not ready. Fill in the form"
-          )}
-        </HighlightBox>
+        {data && sender && (
+          <SolidityCall
+            {...{
+              value,
+              data,
+              from: sender,
+              to: address,
+              abi: abiFunction !== "raw" ? [abiFunction] : [],
+              chainId,
+              ArgProps,
+            }}
+          />
+        )}
       </div>
     </div>
   );

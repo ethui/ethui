@@ -20,7 +20,7 @@ export function Basic({ name, defaultValue, onChange, debug }: BasicProps) {
   );
 
   return (
-    <div className="m-1">
+    <div>
       <Input
         type="text"
         name={name}
