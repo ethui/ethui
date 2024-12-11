@@ -113,7 +113,6 @@ function AbiItemFormWithSubmit({
       to: address,
     };
     if (item !== "raw" && item?.stateMutability === "view") {
-      console.log(params);
       const rawResult = await invoke<`0x${string}`>("rpc_eth_call", { params });
       const result = decodeFunctionResult({
         abi: [item],

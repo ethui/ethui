@@ -12,7 +12,7 @@ import { Fragment } from "react/jsx-runtime";
 
 export function Breadcrumbs() {
   const matches = useRouterState({ select: (s) => s.matches });
-  //
+
   const breadcrumbs = matches.reduce(
     (acc, { context, pathname }) => {
       if (
@@ -25,8 +25,6 @@ export function Breadcrumbs() {
     },
     [] as { label: string; path: string }[],
   );
-
-  console.log(breadcrumbs);
 
   return (
     <Breadcrumb className="md:mx-4">

@@ -12,12 +12,26 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
+import { Route as ContractsErc721Import } from './routes/contracts/erc721'
+import { Route as ContractsErc20Import } from './routes/contracts/erc20'
 
 // Create/Update Routes
 
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ContractsErc721Route = ContractsErc721Import.update({
+  id: '/contracts/erc721',
+  path: '/contracts/erc721',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ContractsErc20Route = ContractsErc20Import.update({
+  id: '/contracts/erc20',
+  path: '/contracts/erc20',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -32,6 +46,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/contracts/erc20': {
+      id: '/contracts/erc20'
+      path: '/contracts/erc20'
+      fullPath: '/contracts/erc20'
+      preLoaderRoute: typeof ContractsErc20Import
+      parentRoute: typeof rootRoute
+    }
+    '/contracts/erc721': {
+      id: '/contracts/erc721'
+      path: '/contracts/erc721'
+      fullPath: '/contracts/erc721'
+      preLoaderRoute: typeof ContractsErc721Import
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -39,32 +67,42 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/contracts/erc20': typeof ContractsErc20Route
+  '/contracts/erc721': typeof ContractsErc721Route
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/contracts/erc20': typeof ContractsErc20Route
+  '/contracts/erc721': typeof ContractsErc721Route
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/contracts/erc20': typeof ContractsErc20Route
+  '/contracts/erc721': typeof ContractsErc721Route
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/contracts/erc20' | '/contracts/erc721'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/contracts/erc20' | '/contracts/erc721'
+  id: '__root__' | '/' | '/contracts/erc20' | '/contracts/erc721'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ContractsErc20Route: typeof ContractsErc20Route
+  ContractsErc721Route: typeof ContractsErc721Route
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ContractsErc20Route: ContractsErc20Route,
+  ContractsErc721Route: ContractsErc721Route,
 }
 
 export const routeTree = rootRoute
@@ -77,11 +115,19 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/"
+        "/",
+        "/contracts/erc20",
+        "/contracts/erc721"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/contracts/erc20": {
+      "filePath": "contracts/erc20.tsx"
+    },
+    "/contracts/erc721": {
+      "filePath": "contracts/erc721.tsx"
     }
   }
 }
