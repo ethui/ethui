@@ -6,5 +6,21 @@ export const Route = createFileRoute("/contracts/erc721")({
 });
 
 function RouteComponent() {
-  return <div>Hello "/contracts/erc721"!</div>;
+  return (
+    <>
+      <Mint />
+      <Owned />
+    </>
+  );
+}
+
+function Mint() {
+  return (
+    <>
+      <h2>Mint</h2>
+      <Button disabled={isPending} onClick={onClick}>
+        Mint
+      </Button>
+    </>
+  );
 }
