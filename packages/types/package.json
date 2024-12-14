@@ -6,8 +6,8 @@
   "type": "module",
   "dependencies": {
     "typescript": "5.7",
-    "viem": "^2.21.48",
-    "zod": "^3.23.8",
+    "viem": "^2.21.55",
+    "zod": "^3.24.1",
     "zxcvbn-typescript": "^5.0.1"
   },
   "devDependencies": {

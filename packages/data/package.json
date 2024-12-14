@@ -6,7 +6,7 @@
   "type": "module",
   "dependencies": {
     "typescript": "5.7",
-    "viem": "^2.21.48"
+    "viem": "^2.21.55"
   },
   "devDependencies": {
     "@types/core-js": "^2.5.8",

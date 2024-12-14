@@ -30,7 +30,7 @@
     "stream": "^0.0.3",
     "webextension-polyfill": "^0.12.0",
     "websocket-ts": "^2.1.5",
-    "zustand": "^5.0.1"
+    "zustand": "^5.0.2"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.287",
