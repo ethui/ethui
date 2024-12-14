@@ -19,6 +19,7 @@ export function QuickAddressSelect() {
   const [currentWallet, setCurrentAddress] = useWallets(
     useShallow((s) => [s.currentWallet, s.setCurrentAddress]),
   );
+  //console.log(currentWallet);
   const { data: addresses } = useInvoke<[string, Address][]>(
     "wallets_get_wallet_addresses",
     { name: currentWallet?.name },
@@ -26,6 +27,8 @@ export function QuickAddressSelect() {
 
   if (!addresses || !currentWallet) return <>Loading</>;
 
+  console.log("ads", addresses);
+  console.log("a", getCurrentPath(currentWallet, addresses));
   return (
     <Select
       defaultValue={getCurrentPath(currentWallet, addresses)}
@@ -54,7 +57,7 @@ function getCurrentPath(wallet: Wallet, addresses: [string, Address][]) {
       return wallet.current ? wallet.current[0] : addresses[0][0];
 
     case "impersonator":
-      return wallet.addresses[wallet.current || 0];
+      return (wallet.current || 0).toString();
 
     case "jsonKeystore":
     case "plaintext":
