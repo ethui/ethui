@@ -1,12 +1,13 @@
-import { Breadcrumbs } from "#/components/breadcrumbs";
 import { Separator } from "@ethui/ui/components/shadcn/separator";
 import { AppSidebar } from "#/components/app-sidebar";
+import { Breadcrumbs } from "#/components/breadcrumbs";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "#/components/shadcn/sidebar";
 
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
@@ -14,7 +15,6 @@ import {
   createRootRouteWithContext,
 } from "@tanstack/react-router";
 import { Ethereum } from "#/components/ethereum";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 type Context = {
   breadcrumb?: string;
@@ -33,8 +33,8 @@ function Root() {
         <SidebarProvider>
           <AppSidebar />
           <SidebarInset>
-            <header className="flex sticky top-0 bg-background h-16 shrink-0 items-center justify-between  border-b px-4">
-              <div className="flex gap-2 items-center">
+            <header className="sticky top-0 flex h-16 shrink-0 items-center justify-between border-b bg-background px-4">
+              <div className="flex items-center gap-2">
                 <SidebarTrigger className="-ml-1" />
                 <Separator orientation="vertical" className="mr-2 h-4" />
                 <Breadcrumbs />

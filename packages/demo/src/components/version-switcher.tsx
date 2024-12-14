@@ -1,5 +1,5 @@
-import * as React from "react";
 import { GalleryVerticalEnd } from "lucide-react";
+import * as React from "react";
 
 import {
   DropdownMenu,
@@ -7,12 +7,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@ethui/ui/components/shadcn/dropdown-menu";
+import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "#/components/shadcn/sidebar";
-import { CheckIcon, CaretSortIcon } from "@radix-ui/react-icons";
 
 export function VersionSwitcher({
   versions,

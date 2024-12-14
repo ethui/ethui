@@ -1,5 +1,5 @@
+import { RainbowKitProvider, getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { anvil } from "viem/chains";
-import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
 
 interface Props {

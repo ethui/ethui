@@ -1,13 +1,13 @@
+import { Button } from "@ethui/ui/components/shadcn/button";
+import { createFileRoute } from "@tanstack/react-router";
+import { Check, LoaderCircle } from "lucide-react";
+import { formatEther } from "viem";
+import { useAccount } from "wagmi";
 import {
   useReadTokenBalanceOf,
   useWatchTokenTransferEvent,
   useWriteTokenMint,
 } from "#/wagmi.generated";
-import { Button } from "@ethui/ui/components/shadcn/button";
-import { createFileRoute } from "@tanstack/react-router";
-import { Check, LoaderCircle } from "lucide-react";
-import { useAccount } from "wagmi";
-import { formatEther } from "viem";
 
 export const Route = createFileRoute("/contracts/erc20")({
   beforeLoad: () => ({ breadcrumb: "ERC20" }),

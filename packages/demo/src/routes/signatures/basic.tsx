@@ -1,8 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useSignMessage } from "wagmi";
 import { Form } from "@ethui/ui/components/form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { createFileRoute } from "@tanstack/react-router";
 import { type FieldValues, useForm } from "react-hook-form";
+import { useSignMessage } from "wagmi";
 import { z } from "zod";
 
 export const Route = createFileRoute("/signatures/basic")({
@@ -30,7 +30,7 @@ function Basic() {
 
   return (
     <>
-      <Form form={form} onSubmit={onSubmit} className="w-full flex gap-2">
+      <Form form={form} onSubmit={onSubmit} className="flex w-full gap-2">
         <h2>Sign String</h2>
         <Form.Textarea label="Message" name="message" className="w-full" />
         <Form.Submit label="Sign Message" />

@@ -1,11 +1,12 @@
-import { SearchForm } from "#/components/search-form";
-import { VersionSwitcher } from "#/components/version-switcher";
 import { EthuiLogo } from "@ethui/ui/components/ethui-logo";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@ethui/ui/components/shadcn/collapsible";
+import { ChevronRightIcon } from "@radix-ui/react-icons";
+import { Link } from "@tanstack/react-router";
+import { SearchForm } from "#/components/search-form";
 import {
   Sidebar,
   SidebarContent,
@@ -18,8 +19,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "#/components/shadcn/sidebar";
-import { ChevronRightIcon } from "@radix-ui/react-icons";
-import { Link } from "@tanstack/react-router";
+import { VersionSwitcher } from "#/components/version-switcher";
 
 // This is sample data.
 const data = {
@@ -74,7 +74,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarGroup>
               <SidebarGroupLabel
                 asChild
-                className="group/label text-sm text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                className="group/label text-sidebar-foreground text-sm hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               >
                 <CollapsibleTrigger>
                   {item.title}{" "}

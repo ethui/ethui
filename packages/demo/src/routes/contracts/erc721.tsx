@@ -1,15 +1,15 @@
-import { useWriteNftMint } from "#/wagmi.generated";
-import { map } from "lodash-es";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { createFileRoute } from "@tanstack/react-router";
+import { map } from "lodash-es";
+import { Check, LoaderCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useAccount } from "wagmi";
 import { useReadsNftTokenUri } from "#/wagmi.extra";
+import { useWriteNftMint } from "#/wagmi.generated";
 import {
   useReadNftListTokensByAddress,
   useWatchNftTransferEvent,
 } from "#/wagmi.generated";
-import { useAccount } from "wagmi";
-import { useEffect, useState } from "react";
-import { Check, LoaderCircle } from "lucide-react";
 
 export const Route = createFileRoute("/contracts/erc721")({
   beforeLoad: () => ({ breadcrumb: "ERC721" }),

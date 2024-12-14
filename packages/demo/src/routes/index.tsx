@@ -1,5 +1,5 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { Button } from "@ethui/ui/components/shadcn/button";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
   beforeLoad: () => ({ breadcrumb: "Home" }),

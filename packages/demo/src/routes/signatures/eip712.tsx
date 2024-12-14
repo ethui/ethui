@@ -1,8 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useSignTypedData } from "wagmi";
 import { Form } from "@ethui/ui/components/form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { createFileRoute } from "@tanstack/react-router";
 import { type FieldValues, useForm } from "react-hook-form";
+import { useSignTypedData } from "wagmi";
 import { z } from "zod";
 
 export const Route = createFileRoute("/signatures/eip712")({
@@ -51,7 +51,7 @@ function Eip712() {
 
   return (
     <>
-      <Form form={form} onSubmit={onSubmit} className="w-full flex gap-2">
+      <Form form={form} onSubmit={onSubmit} className="flex w-full gap-2">
         <h2>Sign Typed Data</h2>
         <Form.Text label="from (name)" name="from.name" className="w-full" />
         <Form.Text
