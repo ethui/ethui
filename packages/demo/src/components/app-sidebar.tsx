@@ -6,7 +6,6 @@ import {
 } from "@ethui/ui/components/shadcn/collapsible";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { Link } from "@tanstack/react-router";
-import { SearchForm } from "#/components/search-form";
 import {
   Sidebar,
   SidebarContent,
@@ -19,7 +18,6 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "#/components/shadcn/sidebar";
-import { VersionSwitcher } from "#/components/version-switcher";
 
 // This is sample data.
 const data = {
