@@ -7,5 +7,5 @@
       "#/*": ["./src/*"]
     }
   },
-  "include": ["./app", "./src", "vinxi.config.ts"]
+  "include": ["./src", "vite.config.ts"]
 }

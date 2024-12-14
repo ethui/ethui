@@ -19,6 +19,7 @@ import {
   SidebarRail,
 } from "#/components/shadcn/sidebar";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
+import { Link } from "@tanstack/react-router";
 
 // This is sample data.
 const data = {
@@ -30,11 +31,25 @@ const data = {
       items: [
         {
           title: "ERC20 (Token)",
-          url: "/contracts/erc20",
+          to: "/contracts/erc20",
         },
         {
           title: "ERC721 (NFT)",
-          url: "/contracts/erc721",
+          to: "/contracts/erc721",
+        },
+      ],
+    },
+    {
+      title: "Signatures",
+      url: "#",
+      items: [
+        {
+          title: "Basic",
+          to: "/signatures/basic",
+        },
+        {
+          title: "EIP-712",
+          to: "/signatures/eip712",
         },
       ],
     },
@@ -69,10 +84,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <CollapsibleContent>
                 <SidebarGroupContent>
                   <SidebarMenu>
-                    {item.items.map((item) => (
-                      <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton asChild isActive={item.isActive}>
-                          <a href={item.url}>{item.title}</a>
+                    {item.items.map(({ title, to }) => (
+                      <SidebarMenuItem key={to}>
+                        <SidebarMenuButton asChild>
+                          <Link to={to}>{title}</Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     ))}

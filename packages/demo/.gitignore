@@ -1,34 +1,24 @@
-# local env files
-.env
-.env*.local
-
-#
-# foundry
-#
-cache/
-out/
-!/broadcast
-/broadcast/*/31337/
-/broadcast/**/dry-run/
-
-#
-# next.js
-#
-/.next/
-/out/
-/node_modules
-/.pnp
-.pnp.js
-/build
+# Logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
-.vercel
-*.tsbuildinfo
-next-env.d.ts
-src/wagmi.generated.ts
+pnpm-debug.log*
+lerna-debug.log*
 
+node_modules
+dist
+dist-ssr
+*.local
 
-# Soldeer
-/dependencies
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
