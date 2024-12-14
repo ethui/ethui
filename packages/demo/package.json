@@ -16,7 +16,7 @@
     "lucide-react": "^0.468.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-hook-form": "^7.53.2",
+    "react-hook-form": "^7.54.1",
     "viem": "^2.21.55",
     "wagmi": "^2.14.1",
     "zod": "^3.24.1"
@@ -29,7 +29,7 @@
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
     "@wagmi/cli": "^2.1.21",
-    "globals": "^15.12.0",
+    "globals": "^15.13.0",
     "vite": "^6.0.3"
   }
 }
