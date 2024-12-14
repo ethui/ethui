@@ -14,8 +14,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@ethui/ui/components/shadcn/tooltip";
+import { cn } from "@ethui/ui/lib/utils";
 import { useIsMobile } from "#/hooks/use-mobile";
-import { cn } from "#/lib/utils";
 
 const SIDEBAR_COOKIE_NAME = "sidebar:state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;

@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "moduleResolution": "Bundler",
+    "skipLibCheck": true,
+    "paths": {
+      "#/*": ["./src/*"]
+    }
+  },
+  "include": ["./src", "vite.config.ts"]
+}
