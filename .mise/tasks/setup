@@ -1,35 +1,81 @@
 #!/usr/bin/env bash
 
-set -e
+RED="\e[31m"
+GREEN="\e[32m"
+ENDCOLOR="\e[0m"
+INDENT=0
+
+set -ue
 
 main() {
-  # cargo binstall
-  if ! check_cmd cargo; then
-    echo -e "Installing Rust.."
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-    echo "Done"
-  fi
-
-  # cargo binstall
-  if ! check_cmd cargo-binstall; then
-    curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
-  fi
-
-  # tauri-cli
-  if ! check_cmd cargo-tauri; then
-    cargo binstall tauri-cli
-  fi
-
-  # sqlx-cli
-  if ! check_cmd cargo-sqlx; then
-    cargo binstall sqlx-cli
-  fi
+  deps
 }
 
+deps() {
+  echo "Checking dependencies:"
+  INDENT=2
 
+  install_dep "Rust" cargo
+  install_dep "cargo-binstall" cargo-binstall
+  install_dep "tauri-cli" cargo-tauri
+  install_dep "sqlx-cli" cargo-sqlx
+  install_dep "mise-en-place" mise2
+}
 
 check_cmd() {
   command -v "$1" &> /dev/null
+}
+
+install_dep() {
+  name=$1
+  cmd=$2
+  if ! check_cmd $cmd; then
+    indent=$(printf "%*s" ${INDENT})
+    echo -n "${indent}"
+    echo -n "${indent}Installing $name.."
+    install_${cmd//[- ]/_}
+    green "Done"
+  else
+    green -n "[✔]"
+    echo " $name"
+  fi
+}
+
+install_cargo() {
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+}
+
+install_cargo_binstall() {
+  curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash > /dev/null 2>/dev/null
+}
+
+install_tauri_cli() {
+  cargo install tauri-cli
+}
+
+install_sqlx_cli() {
+  cargo install sqlx-cli
+}
+
+install_mise2() {
+  red -e "\nmise-en-place needs to be installed manually: https://mise.jdx.dev/"
+  exit 1
+}
+
+green() {
+  echo -e -n "${GREEN}"
+  indent=$(printf "%*s" ${INDENT})
+  echo -n "${indent}"
+  echo -e "$@"
+  echo -e -n "${ENDCOLOR}"
+}
+
+red() {
+  echo -e -n "${RED}"
+  indent=$(printf "%*s" ${INDENT})
+  echo -n "${indent}"
+  echo -e "$@"
+  echo -e -n "${ENDCOLOR}"
 }
 
 main
