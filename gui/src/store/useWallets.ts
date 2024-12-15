@@ -52,10 +52,7 @@ const store: StateCreator<Store> = (set, get) => ({
   },
 
   async setCurrentAddress(key: string) {
-    console.log(get().wallets);
-    console.log("set", key);
     await invoke("wallets_set_current_path", { key });
-    console.log(1);
     get().reload();
   },
 
@@ -65,9 +62,6 @@ const store: StateCreator<Store> = (set, get) => ({
       invoke<Wallet>("wallets_get_current"),
       invoke<Address>("wallets_get_current_address"),
     ]);
-    console.log("wallets", wallets);
-    console.log("current", currentWallet);
-    console.log("address", address);
 
     set({ wallets, currentWallet, address });
     get().reloadActions();
