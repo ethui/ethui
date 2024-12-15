@@ -58,7 +58,6 @@ impl Wallets {
     /// Since wallets actually contain multiple addresses, we need the ability to connect to a
     /// different one within the same wallet
     async fn set_current_path(&mut self, key: String) -> Result<()> {
-        dbg!("path", &key);
         self.wallets[self.current].set_current_path(key).await?;
         self.on_wallet_changed().await?;
         self.save()?;
@@ -76,7 +75,6 @@ impl Wallets {
         }
 
         self.current = id;
-        dbg!("current", id);
         self.on_wallet_changed().await?;
         self.save()?;
         Ok(())
