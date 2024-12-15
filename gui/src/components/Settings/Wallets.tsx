@@ -10,6 +10,7 @@ import {
 } from "@ethui/ui/components/shadcn/dropdown-menu";
 import { CaretDownIcon } from "@radix-ui//react-icons";
 import { Link } from "@tanstack/react-router";
+import { WalletView } from "#/components/WalletView";
 import { useWallets } from "#/store/useWallets";
 
 interface Props {
@@ -28,24 +29,20 @@ export function SettingsWallets({
   if (!wallets) return null;
 
   return (
-    <>
-      <div className="flex flex-col gap-2">
-        <div className="grid grid-cols-4 gap-2">
-          {wallets.map(({ type, name }) => (
-            <Link
-              to={`${editWalletBaseUrl}/${name}/edit`}
-              search={{ backUrl }}
-              key={name}
-              className="border p-4 hover:bg-accent"
-            >
-              {name} {type}
-            </Link>
-          ))}
+    <div className="flex flex-wrap gap-2">
+      {wallets.map(({ type, name }) => (
+        <Link
+          to={`${editWalletBaseUrl}/${name}/edit`}
+          search={{ backUrl }}
+          key={name}
+          className="border p-4 hover:bg-accent"
+        >
+          <WalletView name={name} type={type} />
+        </Link>
+      ))}
 
-          <AddWalletButton backUrl={backUrl} newWalletUrl={newWalletUrl} />
-        </div>
-      </div>
-    </>
+      <AddWalletButton backUrl={backUrl} newWalletUrl={newWalletUrl} />
+    </div>
   );
 }
 
