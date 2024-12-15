@@ -18,25 +18,23 @@ function SettingsNetworks() {
 
   // TODO: add network button
   return (
-    <div className="flex flex-col gap-2">
-      <div className="grid grid-cols-4 gap-2">
-        {networks.map(({ chain_id, name }) => (
-          <Link
-            href={`/home/settings/networks/${name}/edit`}
-            key={name}
-            className="border p-4 hover:bg-accent"
-          >
-            <ChainView chainId={chain_id} name={name} />
-          </Link>
-        ))}
+    <div className="flex flex-wrap gap-2">
+      {networks.map(({ chain_id, name }) => (
         <Link
-          href="/home/settings/networks/new"
-          className="flex gap-2 border p-4 align-baseline hover:bg-accent"
+          href={`/home/settings/networks/${name}/edit`}
+          key={name}
+          className="border p-4 hover:bg-accent"
         >
-          <Plus />
-          Add new
+          <ChainView chainId={chain_id} name={name} />
         </Link>
-      </div>
+      ))}
+      <Link
+        href="/home/settings/networks/new"
+        className="flex gap-2 border p-4 align-baseline hover:bg-accent"
+      >
+        <Plus />
+        Add new
+      </Link>
     </div>
   );
 }
