@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -e
+
+main() {
+  # cargo binstall
+  if ! check_cmd cargo; then
+    echo -e "Installing Rust.."
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    echo "Done"
+  fi
+
+  # cargo binstall
+  if ! check_cmd cargo-binstall; then
+    curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+  fi
+
+  # tauri-cli
+  if ! check_cmd cargo-tauri; then
+    cargo binstall tauri-cli
+  fi
+
+  # sqlx-cli
+  if ! check_cmd cargo-sqlx; then
+    cargo binstall sqlx-cli
+  fi
+}
+
+
+
+check_cmd() {
+  command -v "$1" &> /dev/null
+}
+
+main
