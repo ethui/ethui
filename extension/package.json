@@ -30,12 +30,12 @@
     "stream": "^0.0.3",
     "webextension-polyfill": "^0.12.0",
     "websocket-ts": "^2.1.5",
-    "zustand": "^5.0.1"
+    "zustand": "^5.0.2"
   },
   "devDependencies": {
-    "@types/chrome": "^0.0.283",
-    "@types/json-merge-patch": "^1",
-    "@types/node": "^22.9.1",
+    "@types/chrome": "^0.0.287",
+    "@types/json-merge-patch": "^1.0.0",
+    "@types/node": "^22.10.2",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@types/webextension-polyfill": "^0.12.1",
