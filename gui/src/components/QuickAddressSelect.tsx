@@ -19,7 +19,7 @@ export function QuickAddressSelect() {
   const [currentWallet, setCurrentAddress] = useWallets(
     useShallow((s) => [s.currentWallet, s.setCurrentAddress]),
   );
-  //console.log(currentWallet);
+
   const { data: addresses } = useInvoke<[string, Address][]>(
     "wallets_get_wallet_addresses",
     { name: currentWallet?.name },
@@ -27,31 +27,35 @@ export function QuickAddressSelect() {
 
   if (!addresses || !currentWallet) return <>Loading</>;
 
-  console.log("ads", addresses);
-  console.log("a", getCurrentPath(currentWallet, addresses));
   return (
     <Select
+      key={currentWallet.name}
       defaultValue={getCurrentPath(currentWallet, addresses)}
       onValueChange={setCurrentAddress}
     >
       <SelectTrigger>
-        <SelectValue />
+        <SelectValue placeholder="foo" />
       </SelectTrigger>
 
       <SelectContent>
         <SelectGroup>
-          {map(addresses, ([key, address]) => (
-            <SelectItem value={key} key={key}>
-              <AddressView icon contextMenu={false} address={address} />
-            </SelectItem>
-          ))}
+          {map(addresses, ([key, address]) => {
+            return (
+              <SelectItem value={key.toString()} key={key}>
+                <AddressView icon contextMenu={false} address={address} />
+              </SelectItem>
+            );
+          })}
         </SelectGroup>
       </SelectContent>
     </Select>
   );
 }
 
-function getCurrentPath(wallet: Wallet, addresses: [string, Address][]) {
+function getCurrentPath(
+  wallet: Wallet,
+  addresses: [string, Address][],
+): string | undefined {
   switch (wallet.type) {
     case "HDWallet":
       return wallet.current ? wallet.current[0] : addresses[0][0];
