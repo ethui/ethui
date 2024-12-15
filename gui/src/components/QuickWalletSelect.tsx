@@ -9,6 +9,7 @@ import {
 import { useShallow } from "zustand/shallow";
 
 import { useWallets } from "#/store/useWallets";
+import { WalletView } from "./WalletView";
 
 export function QuickWalletSelect() {
   const [wallets, currentWallet, setCurrentWallet] = useWallets(
@@ -29,9 +30,9 @@ export function QuickWalletSelect() {
 
       <SelectContent>
         <SelectGroup>
-          {wallets.map(({ name }) => (
+          {wallets.map(({ name, type }) => (
             <SelectItem value={name} key={name}>
-              {name}
+              <WalletView name={name} type={type} />
             </SelectItem>
           ))}
         </SelectGroup>

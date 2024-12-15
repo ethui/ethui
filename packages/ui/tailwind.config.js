@@ -74,6 +74,7 @@ export default {
           callname: "var(--solidity-callname)",
           arg: "var(--solidity-arg)",
         },
+        highlight: "hsl(var(--highlight))",
       },
       keyframes: {
         "accordion-down": {

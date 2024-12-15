@@ -10,7 +10,7 @@ function OnboardingWalletsList() {
   const router = useRouter();
 
   return (
-    <div className="flex w-full flex-col gap-4">
+    <>
       <SettingsWallets
         backUrl="/onboarding/wallets"
         newWalletUrl="/onboarding/wallets/new"
@@ -25,6 +25,6 @@ function OnboardingWalletsList() {
           <Link to="/onboarding/extension">Next</Link>
         </Button>
       </div>
-    </div>
+    </>
   );
 }
