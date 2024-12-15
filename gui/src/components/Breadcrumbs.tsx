@@ -26,8 +26,6 @@ export function Breadcrumbs() {
     [] as { label: string; path: string }[],
   );
 
-  console.log(breadcrumbs);
-
   return (
     <Breadcrumb className="md:mx-4">
       <BreadcrumbList>

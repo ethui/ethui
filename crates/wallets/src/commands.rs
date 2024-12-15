@@ -48,7 +48,7 @@ pub async fn wallets_set_current_wallet(idx: usize) -> Result<()> {
 /// Switches the current key of the current wallet
 #[tauri::command]
 pub async fn wallets_set_current_path(key: String) -> Result<()> {
-    dbg!(Wallets::write().await.set_current_path(key).await)
+    Wallets::write().await.set_current_path(key).await
 }
 
 /// Get all known addresses of a wallet
