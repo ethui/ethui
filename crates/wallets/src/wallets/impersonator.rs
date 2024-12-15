@@ -61,11 +61,7 @@ impl WalletControl for Impersonator {
     }
 
     async fn get_all_addresses(&self) -> Vec<(String, Address)> {
-        self.addresses
-            .iter()
-            .enumerate()
-            .map(|(i, v)| (i.to_string(), *v))
-            .collect()
+        self.addresses.iter().map(|v| (v.to_string(), *v)).collect()
     }
 
     async fn get_address(&self, path: &str) -> Result<Address> {
