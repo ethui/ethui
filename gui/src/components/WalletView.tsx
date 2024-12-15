@@ -8,7 +8,7 @@ import {
   WalletIcon,
 } from "lucide-react";
 
-export interface Props {
+interface Props {
   name: string;
   type: Wallet["type"];
 }
