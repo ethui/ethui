@@ -28,6 +28,7 @@ export function QuickAddressSelect() {
 
   return (
     <Select
+      key={currentWallet.name}
       defaultValue={getCurrentPath(currentWallet, addresses)}
       onValueChange={setCurrentAddress}
     >
@@ -54,7 +55,7 @@ function getCurrentPath(wallet: Wallet, addresses: [string, Address][]) {
       return wallet.current ? wallet.current[0] : addresses[0][0];
 
     case "impersonator":
-      return wallet.addresses[wallet.current || 0];
+      return (wallet.current || 0).toString();
 
     case "jsonKeystore":
     case "plaintext":
