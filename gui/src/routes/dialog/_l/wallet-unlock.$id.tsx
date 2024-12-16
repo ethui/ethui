@@ -70,7 +70,7 @@ function WalletUnlockDialog() {
           type="password"
           className="w-full"
         />
-        <div className="w-full flex items-center justify-center gap-2">
+        <div className="flex w-full items-center justify-center gap-2">
           <Button
             disabled={loading}
             variant="destructive"

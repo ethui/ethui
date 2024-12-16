@@ -4,8 +4,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@ethui/ui/components/shadcn/collapsible";
-import { ChevronRightIcon } from "@radix-ui/react-icons";
-import { Link } from "@tanstack/react-router";
 import {
   Sidebar,
   SidebarContent,
@@ -18,6 +16,8 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@ethui/ui/components/shadcn/sidebar";
+import { ChevronRightIcon } from "@radix-ui/react-icons";
+import { Link } from "@tanstack/react-router";
 
 // This is sample data.
 const data = {
