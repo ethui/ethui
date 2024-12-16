@@ -146,7 +146,7 @@ install_anvil() {
   printf_ansi "[ ] " $ANSI_TEXT_YELLOW
   echo -n "Foundry..."
 
-  curl -L https://foundry.paradigm.xyz | bash
+  curl -L https://foundry.paradigm.xyz | bash > /dev/null 2>&1
 
   printf_ansi "\r[✔] " $ANSI_TEXT_GREEN
   echo -e "Foundry installation done"
