@@ -24,6 +24,7 @@ deps() {
   install_dep "sqlx cli" cargo-sqlx
   install_dep "yarn" yarn
   install_dep "mprocs" mprocs
+  install_dep "foundry" anvil
   install_tauri_prerequisites
 
   echo -e "\nSetting up dev environment"
@@ -139,6 +140,16 @@ install_tauri_prerequisites_unsupported_os() {
   echo -e "Tauri prerequisites:\n\n${OSTYPE} Detected. Tauri prerequisites cannot be automatically installed.\nCheck the official docs for manual steps:"
 
   echo_ansi "https://v2.tauri.app/start/prerequisites/#linux" $ANSI_TEXT_BOLD_BLUE
+}
+
+install_foundry() {
+  printf_ansi "[ ] " $ANSI_TEXT_YELLOW
+  echo -n "Foundry..."
+
+  curl -L https://foundry.paradigm.xyz | bash
+
+  printf_ansi "\r[✔] " $ANSI_TEXT_GREEN
+  echo -e "Foundry installation done"
 }
 
 run_sqlx_setup() {
