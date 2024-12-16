@@ -9,9 +9,6 @@ alias = "d"
 run = "yarn run tauri build"
 env = { NODE_ENV = "production" }
 
-[tasks.setup]
-run = ["yarn", "cargo build"]
-
 [tasks.fix]
 run = [
   "cargo +nightly fmt --all -- --check",
