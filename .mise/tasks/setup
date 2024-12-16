@@ -9,7 +9,6 @@ ANSI_TEXT_GREEN="\e[0;32m"
 ANSI_TEXT_YELLOW="\e[0;33m"
 ANSI_RESET_RESET="\e[0m"
 ANSI_TEXT_BOLD_BLUE="\e[1;34m"
-INDENT=0
 
 main() {
   banner
@@ -18,19 +17,16 @@ main() {
 
 deps() {
   echo -e "\n\nChecking dependencies:"
-  INDENT=2
-
   install_dep "mise" mise
   run_mise_install
-
   install_dep "cargo binstall" cargo-binstall
   install_dep "tauri cli" cargo-tauri
   install_dep "sqlx cli" cargo-sqlx
   install_dep "yarn" yarn
   install_dep "mprocs" mprocs
-
   install_tauri_prerequisites
 
+  echo -e "\n\nSetting up dev environment"
   run_sqlx_setup
   run_yarn_install
   run_ext_build
