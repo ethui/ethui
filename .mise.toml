@@ -28,7 +28,6 @@ node = "22.12.0"
 rust = "stable"
 
 [env]
-MISE_ENV_FILE=".env"
 NODE_ENV = "development"
 RUST_LOG = "warn"
 ETHUI_FEATURES = "debug"
