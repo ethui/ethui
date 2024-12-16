@@ -57,11 +57,11 @@ install_cargo_binstall() {
 }
 
 install_cargo_tauri() {
-  cargo binstall tauri-cli
+  cargo binstall tauri-cli --no-confirm
 }
 
 install_cargo_sqlx() {
-  cargo binstall sqlx-cli
+  cargo binstall sqlx-cli --no-confirm
 }
 
 install_yarn() {
@@ -74,7 +74,7 @@ install_mise() {
 }
 
 install_mprocs(){
-  cargo binstall mprocs
+  cargo binstall mprocs --no-confirm
 }
 
 run_mise_install() {
