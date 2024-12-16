@@ -61,7 +61,7 @@ export function Form<S extends FieldValues>({
 }
 
 interface BaseInputProps<T extends FieldValues> extends InputProps {
-  label?: string;
+  label?: string | React.ReactNode;
   name: Path<T>;
   type?: string;
   className?: string;
@@ -151,6 +151,7 @@ function BigIntField<T extends FieldValues>({
   name,
   label,
   decimals = 18,
+  className = "",
 }: BigIntProps<T>) {
   const multiplier = 10n ** BigInt(decimals);
   const { control } = useFormContext();
@@ -160,7 +161,7 @@ function BigIntField<T extends FieldValues>({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem>
+        <FormItem className={className}>
           <FormLabel>{label}</FormLabel>
           <FormControl>
             {/* TODO: maybe we should use zod's coerce instead? https://github.com/shadcn-ui/ui/issues/421 */}
@@ -214,6 +215,7 @@ Form.Checkbox = Checkbox;
 interface SubmitProps extends ButtonProps {
   label: React.ReactNode;
   useDirtyAlt?: boolean;
+  isSubmitting?: boolean;
 }
 
 function Submit({
@@ -221,6 +223,7 @@ function Submit({
   // this arg was kept here and defaulted to true for backwards compatibility,
   // need to double check if the issue linked above is still required (for cases where array fields are present)
   useDirtyAlt = true,
+  isSubmitting: isSubmittingOverride = false,
   ...props
 }: SubmitProps) {
   const {
@@ -235,7 +238,11 @@ function Submit({
       disabled={!isDirty || !isValid || isSubmitting}
       {...props}
     >
-      {isSubmitting ? <LoaderCircle className="animate-spin" /> : <Check />}
+      {isSubmitting || isSubmittingOverride ? (
+        <LoaderCircle className="animate-spin" />
+      ) : (
+        <Check />
+      )}
       {label}
     </Button>
   );

@@ -126,16 +126,7 @@ function AddressForm() {
       />
 
       <Form.Text label="Contract Address" name="address" />
-
-      <Form.Submit
-        label={
-          form.formState.isSubmitting ? (
-            <LoaderCircle className="animate-spin" />
-          ) : (
-            "Add"
-          )
-        }
-      />
+      <Form.Submit label="Add" />
     </Form>
   );
 }
