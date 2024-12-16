@@ -60,7 +60,7 @@ install_cargo_tauri() {
   cargo binstall tauri-cli
 }
 
-install_sqlx_cli() {
+install_cargo_sqlx() {
   cargo binstall sqlx-cli
 }
 
