@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import debounce from "lodash-es/debounce";
-import { LoaderCircle } from "lucide-react";
 import { useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -126,16 +125,7 @@ function AddressForm() {
       />
 
       <Form.Text label="Contract Address" name="address" />
-
-      <Form.Submit
-        label={
-          form.formState.isSubmitting ? (
-            <LoaderCircle className="animate-spin" />
-          ) : (
-            "Add"
-          )
-        }
-      />
+      <Form.Submit label="Add" />
     </Form>
   );
 }

@@ -130,11 +130,12 @@ export function TransferForm({
         Balance: {formatUnits(currentToken.balance, currentToken.decimals)}
       </span>
 
-      <Form.Text label="To" name="to" />
+      <Form.Text label="To" name="to" className="w-full" />
       <Form.BigInt
         label="Amount"
         name="value"
         decimals={currentToken.decimals}
+        className="w-full"
       />
 
       {result && (
@@ -143,7 +144,7 @@ export function TransferForm({
         </Alert>
       )}
 
-      <div className=" flex w-full justify-between">
+      <div className="flex w-full justify-center gap-2">
         <Button variant="outline" color="error" onClick={onClose}>
           Close
         </Button>

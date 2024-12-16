@@ -33,13 +33,16 @@ function WalletUnlockDialog() {
   useEffect(() => {
     const unlisten = listen("failed", () => {
       setAttempts(attempts - 1);
+      form.setError("password", {
+        message: `Incorrect password, ${attempts} attempts left`,
+      });
       setLoading(false);
     });
 
     return () => {
       unlisten.then((cb) => cb());
     };
-  }, [attempts, listen]);
+  }, [attempts, listen, form.setError]);
 
   if (!data) return null;
 
@@ -55,29 +58,28 @@ function WalletUnlockDialog() {
       <Form
         form={form}
         onSubmit={onSubmit}
-        className="flex flex flex-col gap-4"
+        className="flex w-full flex-col gap-2"
       >
-        <div className="m-2 flex flex-col">
-          <span>
-            ethui is asking to unlock wallet <b>{name}:</b>
-          </span>
-
-          {/* TODO: how to re-add this?
-          helperText={
-              (attempts !== 3 &&
-                `Incorrect password, ${attempts} attempts left`) ||
-              ""
-            }*/}
-          <Form.Text label="Password" name="password" type="password" />
-          <div className="m-2 flex items-center justify-center gap-2">
-            <Form.Submit label="Unlock" />
-            {!loading && (
-              <Button color="error" onClick={() => send("reject")}>
-                Cancel
-              </Button>
-            )}
-            {loading && "Unlocking..."}
-          </div>
+        <Form.Text
+          label={
+            <>
+              unlock wallet <b>{name}</b>
+            </>
+          }
+          name="password"
+          type="password"
+          className="w-full"
+        />
+        <div className="flex w-full items-center justify-center gap-2">
+          <Button
+            disabled={loading}
+            variant="destructive"
+            color="error"
+            onClick={() => send("reject")}
+          >
+            Cancel
+          </Button>
+          <Form.Submit label="Unlock" isSubmitting={loading} />
         </div>
       </Form>
     </>

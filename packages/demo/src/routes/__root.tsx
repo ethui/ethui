@@ -1,11 +1,11 @@
 import { Separator } from "@ethui/ui/components/shadcn/separator";
-import { AppSidebar } from "#/components/app-sidebar";
-import { Breadcrumbs } from "#/components/breadcrumbs";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@ethui/ui/components/shadcn/sidebar";
+import { AppSidebar } from "#/components/app-sidebar";
+import { Breadcrumbs } from "#/components/breadcrumbs";
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";

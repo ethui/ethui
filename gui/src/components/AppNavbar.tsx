@@ -1,7 +1,7 @@
 import { Button } from "@ethui/ui/components/shadcn/button";
+import { useSidebar } from "@ethui/ui/components/shadcn/sidebar";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import clsx from "clsx";
-import { useSidebar } from "@ethui/ui/components/shadcn/sidebar";
 import { useIsMobile } from "#/hooks/use-mobile";
 import { Breadcrumbs } from "./Breadcrumbs";
 
