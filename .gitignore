@@ -8,6 +8,7 @@ target/
 gui/vite.config.ts.timestamp-*
 dev-data
 .direnv/
+.env
 
 # extension artifacts
 extension/*.zip
