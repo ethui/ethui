@@ -1,0 +1,225 @@
+#!/usr/bin/env bash
+#MISE description="Setup the development environment"
+#MISE raw=true
+
+set -ue
+
+# Regular Colors
+ANSI_TEXT_GREEN="\e[0;32m"
+ANSI_TEXT_YELLOW="\e[0;33m"
+ANSI_RESET_RESET="\e[0m"
+ANSI_TEXT_BOLD_BLUE="\e[1;34m"
+
+main() {
+  banner
+  deps
+}
+
+deps() {
+  echo -e "\nChecking dependencies:"
+  install_dep "mise" mise
+  run_mise_install
+  install_dep "cargo binstall" cargo-binstall
+  install_dep "tauri cli" cargo-tauri
+  install_dep "sqlx cli" cargo-sqlx
+  install_dep "yarn" yarn
+  install_dep "watchexec" watchexec
+  install_dep "mprocs" mprocs
+  install_dep "foundry" anvil
+  install_tauri_prerequisites
+
+  echo -e "\nSetting up dev environment"
+  run_sqlx_setup
+  run_yarn_install
+  run_ext_build
+}
+
+install_dep() {
+  name=$1
+  cmd=$2
+  if ! check_cmd $cmd; then
+    printf_ansi "[ ] " $ANSI_TEXT_YELLOW
+    echo -n "$name..."
+    install_${cmd//[- ]/_}
+    printf_ansi "\r[✔] " $ANSI_TEXT_GREEN
+    echo $name
+  fi
+
+  printf_ansi "[✔] " $ANSI_TEXT_GREEN
+  echo $name
+}
+
+install_cargo_binstall() {
+  curl --silent -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash > /dev/null 2>/dev/null
+}
+
+install_cargo_tauri() {
+  cargo binstall tauri-cli --no-confirm > /dev/null 2>&1
+}
+
+install_cargo_sqlx() {
+  cargo binstall sqlx-cli --no-confirm > /dev/null 2>&1
+}
+
+install_watchexec_cli() {
+  cargo binstall watchexec-cli --no-confirm > /dev/null 2>&1
+}
+
+install_yarn() {
+  npm i -g yarn > /dev/null 2>&1
+}
+
+install_mise() {
+  red -e "\nmise-en-place needs to be installed manually: https://mise.jdx.dev/"
+  exit 1
+}
+
+install_mprocs(){
+  cargo binstall mprocs --no-confirm
+}
+
+run_mise_install() {
+  mise install > /dev/null 2>&1
+}
+
+install_tauri_prerequisites() {
+  printf_ansi "[ ] " $ANSI_TEXT_YELLOW
+  echo -n "Tauri prerequisites..."
+
+  if [[ $OSTYPE == 'darwin'* ]]; then
+    install_tauri_prerequisites_macos
+  elif [[ $OSTYPE == 'linux-gnu'* ]]; then
+    if check_cmd apt-get; then
+      install_tauri_prerequisites_linux_debian
+    elif check_cmd nixos-version; then
+      install_tauri_prerequisites_nixos
+    else
+      install_tauri_prerequisites_linux_other
+    fi
+  else
+    install_tauri_prerequisites_unsupported_os
+  fi
+}
+
+install_tauri_prerequisites_macos() {
+  if ! xcode-select --print-path > /dev/null 2>&1; then
+    xcode-select --install
+  fi
+  printf_ansi "\r[✔] " $ANSI_TEXT_GREEN
+  echo -e "Tauri prerequisites"
+}
+
+install_tauri_prerequisites_linux_debian() {
+  # run apt-get update if the cache is older than 1 day
+  last_update=$(stat -c %Y /var/cache/apt/pkgcache.bin)
+  now=$(date +%s)
+  if [ $((now - last_update)) -gt 86400 ]; then
+    apt-get update
+  fi
+
+  sudo apt install libwebkit2gtk-4.1-dev \
+    build-essential \
+    curl \
+    wget \
+    file \
+    libxdo-dev \
+    libssl-dev \
+    libayatana-appindicator3-dev \
+    librsvg2-dev
+}
+
+install_tauri_prerequisites_nixos() {
+  printf_ansi "\r[-] " $ANSI_TEXT_YELLOW
+  echo -e "Tauri prerequisites: NixOS detected. Make sure direnv / flake.nix is loaded"
+}
+
+install_tauri_prerequisites_linux_other() {
+  distro_name=$(hostnamectl | grep "Operating System" | cut -d ":" -f 2 | sed 's/ //g')
+  printf_ansi "\r[-] " $ANSI_TEXT_YELLOW
+  echo -e "Tauri prerequisites:\n\n${distro_name} detected. Tauri prerequisites cannot be automatically installed.\nCheck the official docs for manual steps:"
+  echo_ansi "https://v2.tauri.app/start/prerequisites/#linux" $ANSI_TEXT_BOLD_BLUE
+}
+
+install_tauri_prerequisites_unsupported_os() {
+  printf_ansi "\r[-] " $ANSI_TEXT_YELLOW
+  echo -e "Tauri prerequisites:\n\n${OSTYPE} Detected. Tauri prerequisites cannot be automatically installed.\nCheck the official docs for manual steps:"
+
+  echo_ansi "https://v2.tauri.app/start/prerequisites/#linux" $ANSI_TEXT_BOLD_BLUE
+}
+
+install_anvil() {
+  printf_ansi "[ ] " $ANSI_TEXT_YELLOW
+  echo -n "Foundry..."
+
+  brew install libusb > /dev/null 2>&1
+  curl --silent -L https://foundry.paradigm.xyz | bash > /dev/null 2>&1
+  export PATH=$PATH:$HOME/.foundry/bin
+  foundryup > /dev/null 2>&1
+
+  printf_ansi "\r[✔] " $ANSI_TEXT_GREEN
+  echo -e "Foundry installation done"
+}
+
+run_sqlx_setup() {
+  printf_ansi "[ ] " $ANSI_TEXT_YELLOW
+  echo -n "Database setup..."
+  export DATABASE_URL=sqlite://dev-data/default/db.sqlite3
+  cargo sqlx database create > /dev/null 2>&1
+  printf_ansi "\r[✔] " $ANSI_TEXT_GREEN
+  echo -e "Database setup done"
+}
+
+run_yarn_install() {
+  printf_ansi "[ ] " $ANSI_TEXT_GREEN
+  echo -n "yarn install..."
+  yarn install > /dev/null 2>&1
+  printf_ansi "\r[✔] " $ANSI_TEXT_GREEN
+  echo -e "Yarn install done"
+}
+
+run_ext_build() {
+  printf_ansi "[ ] " $ANSI_TEXT_YELLOW
+  echo -n "Extension (Firefox)..."
+  yarn run ext:build --target firefox > /dev/null 2>&1
+  printf_ansi "\r[✔] " $ANSI_TEXT_GREEN
+  echo -e "Extension (Firefox) done"
+
+  printf_ansi "[ ] " $ANSI_TEXT_YELLOW
+  echo -n "Extension (Google Chrome)..."
+  yarn run ext:build --target chrome > /dev/null 2>&1
+  printf_ansi "\r[✔] " $ANSI_TEXT_GREEN
+  echo -e "Extension (Google Chrome) done"
+}
+
+banner(){
+  echo ""
+  echo "  ███████ ████████ ██   ██ ██    ██ ██"
+  echo "  ██         ██    ██   ██ ██    ██ ██"
+  echo "  █████      ██    ███████ ██    ██ ██"
+  echo "  ██         ██    ██   ██ ██    ██ ██"
+  echo "  ███████    ██    ██   ██  ██████  ██"
+}
+
+check_cmd() {
+  command -v "$1" &> /dev/null
+}
+
+indent() {
+  indent=$(printf "%*s" $1)
+  echo -n "${indent}"
+}
+                                     
+function printf_ansi(){
+    ansi_codes="${@:2}"
+    ansi_codes="${ansi_codes//[[:blank:]]/}"
+    printf "$ansi_codes$1$ANSI_RESET_RESET"
+}
+
+function echo_ansi(){
+    ansi_codes="${@:2}"
+    ansi_codes="${ansi_codes//[[:blank:]]/}"
+    printf "$ansi_codes$1$ANSI_RESET_RESET\n"
+}
+
+
+main

@@ -4,7 +4,7 @@
   "license": "MIT",
   "description": "An Ethereum toolkit",
   "scripts": {
-    "app:dev": "cargo tauri dev --config bin/tauri.dev.conf.json --features debug",
+    "app:dev": "yarn tauri dev --config bin/tauri.dev.conf.json --features debug",
     "app:build": "yarn run tauri build",
     "gui:build": "yarn workspace @ethui/gui build",
     "gui:devtools": "yarn workspace @ethui/gui devtools",
