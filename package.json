@@ -4,8 +4,8 @@
   "license": "MIT",
   "description": "An Ethereum toolkit",
   "scripts": {
-    "app:dev": "yarn tauri dev --config bin/tauri.dev.conf.json --features debug -- --target $(yarn run rust-target)",
-    "app:build": "yarn tauri build -- --target $(yarn run rust-target)",
+    "app:dev": "yarn tauri dev --config bin/tauri.dev.conf.json --features debug --target $(yarn run rust-target)",
+    "app:build": "yarn tauri build --target $(yarn run rust-target)",
     "rust-target": "rustc -vV | sed -n 's/host: //p'",
     "gui:build": "yarn workspace @ethui/gui build",
     "gui:devtools": "yarn workspace @ethui/gui devtools",
