@@ -29,7 +29,6 @@ deps() {
   install_tauri_prerequisites
 
   echo -e "\nSetting up dev environment"
-  setup_rust_target
   run_sqlx_setup
   run_yarn_install
   run_ext_build
@@ -159,10 +158,6 @@ install_anvil() {
 
   printf_ansi "\r[✔] " $ANSI_TEXT_GREEN
   echo -e "Foundry installation done"
-}
-
-setup_rust_target(){
-
 }
 
 run_sqlx_setup() {
