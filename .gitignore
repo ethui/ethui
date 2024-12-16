@@ -9,6 +9,7 @@ target/
 dev-data
 .direnv/
 .env
+mprocs.log
 
 # extension artifacts
 extension/*.zip

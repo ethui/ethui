@@ -19,16 +19,11 @@ static LOCK_NAME: &str = "iron-wallet-dev";
 
 #[tokio::main]
 pub async fn run() -> AppResult<()> {
-    dbg!("tracing");
     ethui_tracing::init()?;
-    dbg!("tracing");
     fix_path_env::fix()?;
-    dbg!("tracing");
 
     let args = ethui_args::parse();
-    dbg!(&args);
     let lock = NamedLock::create(LOCK_NAME)?;
-    dbg!("a");
 
     let _guard = match lock.try_lock() {
         Ok(g) => g,
