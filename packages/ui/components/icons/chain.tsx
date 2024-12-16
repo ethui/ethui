@@ -44,7 +44,7 @@ export function ChainIcon({ chainId, className }: IconChainProps) {
   return (
     <img
       alt={`Chain ${chainId}`}
-      className={clsx("h-6 w-6", className)}
+      className={clsx("h-5 w-5", className)}
       src={Mappings[chainId] || unknown}
     />
   );
