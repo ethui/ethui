@@ -168,6 +168,7 @@ run_ext_build() {
   printf_ansi "[ ] " $ANSI_TEXT_YELLOW
   echo -n "Extension (Google Chrome)..."
   yarn run ext:build --target chrome > /dev/null 2>&1
+  printf_ansi "\r[✔] " $ANSI_TEXT_GREEN
   echo -e "Extension (Google Chrome) done"
 }
 
