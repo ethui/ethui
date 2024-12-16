@@ -52,15 +52,15 @@ install_cargo_binstall() {
 }
 
 install_cargo_tauri() {
-  cargo binstall tauri-cli --no-confirm
+  cargo binstall tauri-cli --no-confirm > /dev/null 2>&1
 }
 
 install_cargo_sqlx() {
-  cargo binstall sqlx-cli --no-confirm
+  cargo binstall sqlx-cli --no-confirm > /dev/null 2>&1
 }
 
 install_yarn() {
-  npm i -g yarn
+  npm i -g yarn > /dev/null 2>&1
 }
 
 install_mise() {
@@ -164,7 +164,6 @@ run_ext_build() {
   yarn run ext:build --target firefox > /dev/null 2>&1
 
   printf_ansi "[ ] " $ANSI_TEXT_YELLOW
-  yarn run ext:build --target chrome
   echo -n "Building extension (Google Chrome)"
   yarn run ext:build --target chrome > /dev/null 2>&1
 }
