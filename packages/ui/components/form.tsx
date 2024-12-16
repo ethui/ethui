@@ -273,29 +273,32 @@ function SelectInput<
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
-        <FormItem className="flex items-baseline gap-2">
-          <FormLabel className="shrink-0">{label}</FormLabel>
-          <Select
-            onValueChange={field.onChange}
-            defaultValue={field.value || defaultValue}
-          >
-            <FormControl>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a verified email to display" />
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              {items.map((v: Item) => (
-                <SelectItem key={toValue(v)} value={toValue(v)}>
-                  {render(v)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <FormMessage>&nbsp;</FormMessage>
-        </FormItem>
-      )}
+      render={({ field }) => {
+        console.log(field.value);
+        return (
+          <FormItem className="flex items-baseline gap-2">
+            <FormLabel className="shrink-0">{label}</FormLabel>
+            <Select
+              onValueChange={field.onChange}
+              defaultValue={field.value || defaultValue}
+            >
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a verified email to display" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {items.map((v: Item) => (
+                  <SelectItem key={toValue(v)} value={toValue(v)}>
+                    {render(v)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage>&nbsp;</FormMessage>
+          </FormItem>
+        );
+      }}
     />
   );
 }

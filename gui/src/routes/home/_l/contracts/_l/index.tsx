@@ -14,6 +14,9 @@ import { Button } from "@ethui/ui/components/shadcn/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
   DialogTrigger,
 } from "@ethui/ui/components/shadcn/dialog";
 import { Input } from "@ethui/ui/components/shadcn/input";
@@ -61,6 +64,12 @@ function Contracts() {
           </Button>
         </DialogTrigger>
         <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Contract</DialogTitle>
+            <DialogDescription>
+              Manually add a contract to the list of known contracts.
+            </DialogDescription>
+          </DialogHeader>
           <AddressForm />
         </DialogContent>
       </Dialog>
@@ -85,7 +94,7 @@ function AddressForm() {
     useShallow((s) => [s.networks, s.current]),
   );
   const schema = z.object({
-    chainId: z.number(),
+    chainId: z.string(),
     address: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid format"),
   });
 
@@ -96,7 +105,7 @@ function AddressForm() {
   const form = useForm({
     mode: "onChange",
     resolver: zodResolver(schema),
-    defaultValues: { chainId: currentNetwork?.chain_id } as Schema,
+    defaultValues: { chainId: currentNetwork?.chain_id?.toString() } as Schema,
   });
 
   const onSubmit = (data: FieldValues) => add(data.chainId, data.address);
@@ -108,7 +117,7 @@ function AddressForm() {
       <Form.Select
         label="Network"
         name="chainId"
-        defaultValue={currentNetwork.chain_id}
+        defaultValue={currentNetwork.chain_id.toString()}
         items={networks}
         toValue={(n) => n.chain_id.toString()}
         render={({ chain_id, name }) => (
