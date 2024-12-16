@@ -100,7 +100,7 @@ install_tauri_prerequisites() {
   fi
 }
 
-isntall_tauri_prerequisites_macos() {
+install_tauri_prerequisites_macos() {
   if xcode-select --print-path > /dev/null 2>&1; then
     xcode-select --install
   fi
