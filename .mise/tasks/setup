@@ -23,6 +23,7 @@ deps() {
   install_dep "tauri cli" cargo-tauri
   install_dep "sqlx cli" cargo-sqlx
   install_dep "yarn" yarn
+  install_dep "watchexec" watchexec-cli
   install_dep "mprocs" mprocs
   install_dep "foundry" anvil
   install_tauri_prerequisites
@@ -38,7 +39,7 @@ install_dep() {
   cmd=$2
   if ! check_cmd $cmd; then
     printf_ansi "[ ] " $ANSI_TEXT_YELLOW
-    echo -n "Installing $name..."
+    echo -n "$name..."
     install_${cmd//[- ]/_}
     printf_ansi "\r[✔] " $ANSI_TEXT_GREEN
     echo $name
@@ -58,6 +59,10 @@ install_cargo_tauri() {
 
 install_cargo_sqlx() {
   cargo binstall sqlx-cli --no-confirm > /dev/null 2>&1
+}
+
+install_watchexec_cli() {
+  cargo binstall watchexec-cli --no-confirm > /dev/null 2>&1
 }
 
 install_yarn() {
