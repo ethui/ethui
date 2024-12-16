@@ -89,9 +89,12 @@ impl EthUIApp {
                 Ok(())
             });
 
+        dbg!("1");
         let app = builder.build(tauri::generate_context!())?;
+        dbg!("2");
 
         init(&app, args).await?;
+        dbg!("3");
 
         if should_start_main_window(args).await {
             main_window_show(app.handle()).await;
@@ -183,12 +186,14 @@ fn config_dir(_app: &tauri::App, args: &Args) -> PathBuf {
         .config_dir
         .clone()
         .unwrap_or(String::from("../dev-data/default"));
+    dbg!(&path);
 
     PathBuf::from(path)
 }
 
 #[cfg(not(debug_assertions))]
 fn config_dir(app: &tauri::App, args: &Args) -> PathBuf {
+    dbg!("here");
     args.config_dir
         .clone()
         .map(PathBuf::from)
