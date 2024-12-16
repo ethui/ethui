@@ -16,7 +16,7 @@ main() {
 }
 
 deps() {
-  echo -e "\n\nChecking dependencies:"
+  echo -e "\nChecking dependencies:"
   install_dep "mise" mise
   run_mise_install
   install_dep "cargo binstall" cargo-binstall
@@ -26,7 +26,7 @@ deps() {
   install_dep "mprocs" mprocs
   install_tauri_prerequisites
 
-  echo -e "\n\nSetting up dev environment"
+  echo -e "\nSetting up dev environment"
   run_sqlx_setup
   run_yarn_install
   run_ext_build
