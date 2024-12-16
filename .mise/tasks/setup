@@ -86,8 +86,9 @@ install_tauri_prerequisites() {
   echo -n "Installing Tauri prerequisites..."
 
   if [[ $OSTYPE == 'darwin'* ]]; then
-    # TODO: how to detect if xcode is already installed?
-    xcode-select --install
+    if xcode-select --print-path > /dev/null 2>&1; then
+      xcode-select --install
+    fi
   elif [[ $OSTYPE == 'linux-gnu'* ]]; then
     if check_cmd apt-get; then
       install_tauri_prerequisites_linux_debian
