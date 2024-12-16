@@ -147,6 +147,8 @@ install_anvil() {
   echo -n "Foundry..."
 
   curl -L https://foundry.paradigm.xyz | bash > /dev/null 2>&1
+  export PATH=$PATH:$HOME/.foundry/bin
+  foundryup > /dev/null 2>&1
 
   printf_ansi "\r[✔] " $ANSI_TEXT_GREEN
   echo -e "Foundry installation done"
