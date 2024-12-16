@@ -146,6 +146,7 @@ install_anvil() {
   printf_ansi "[ ] " $ANSI_TEXT_YELLOW
   echo -n "Foundry..."
 
+  brew install libusb > /dev/null 2>&1
   curl --silent -L https://foundry.paradigm.xyz | bash > /dev/null 2>&1
   export PATH=$PATH:$HOME/.foundry/bin
   foundryup > /dev/null 2>&1
