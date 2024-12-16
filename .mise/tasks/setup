@@ -82,7 +82,7 @@ run_mise_install() {
 
 install_tauri_prerequisites() {
   printf_ansi "[ ] " $ANSI_TEXT_YELLOW
-  echo -n "Installing Tauri prerequisites..."
+  echo -n "Tauri prerequisites..."
 
   if [[ $OSTYPE == 'darwin'* ]]; then
     install_tauri_prerequisites_macos
@@ -103,6 +103,8 @@ install_tauri_prerequisites_macos() {
   if ! xcode-select --print-path > /dev/null 2>&1; then
     xcode-select --install
   fi
+  printf_ansi "\r[✔] " $ANSI_TEXT_GREEN
+  echo -e "Tauri prerequisites"
 }
 
 install_tauri_prerequisites_linux_debian() {
