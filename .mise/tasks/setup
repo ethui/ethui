@@ -170,6 +170,7 @@ run_sqlx_setup() {
   echo -n "Database setup..."
   export DATABASE_URL=sqlite://dev-data/default/db.sqlite3
   cargo sqlx database create > /dev/null 2>&1
+  cargo sqlx migrate run > /dev/null 2>&1
   printf_ansi "\r[✔] " $ANSI_TEXT_GREEN
   echo -e "Database setup done"
 }
