@@ -1,48 +1,124 @@
 #!/usr/bin/env bash
-
-RED="\e[31m"
-GREEN="\e[32m"
-ENDCOLOR="\e[0m"
-INDENT=0
+#MISE description="Setup the development environment"
+#MISE raw=true
 
 set -ue
 
+# Regular Colors
+export ANSI_TEXT_BLACK="\e[0;30m"
+export ANSI_TEXT_RED="\e[0;31m"
+export ANSI_TEXT_GREEN="\e[0;32m"
+export ANSI_TEXT_YELLOW="\e[0;33m"
+export ANSI_TEXT_BLUE="\e[0;34m"
+export ANSI_TEXT_PURPLE="\e[0;35m"
+export ANSI_TEXT_CYAN="\e[0;36m"
+export ANSI_TEXT_WHITE="\e[0;37m"
+export ANSI_TEXT_GREY="\e[0;39m"
+
+# Bold
+export ANSI_TEXT_BOLD_BLACK="\e[1;30m"
+export ANSI_TEXT_BOLD_RED="\e[1;31m"
+export ANSI_TEXT_BOLD_GREEN="\e[1;32m"
+export ANSI_TEXT_BOLD_YELLOW="\e[1;33m"
+export ANSI_TEXT_BOLD_BLUE="\e[1;34m"
+export ANSI_TEXT_BOLD_PURPLE="\e[1;35m"
+export ANSI_TEXT_BOLD_CYAN="\e[1;36m"
+export ANSI_TEXT_BOLD_WHITE="\e[1;37m"
+export ANSI_TEXT_BOLD_GREY="\e[1;39m"
+
+# Underline
+export ANSI_TEXT_UNDERLINE_BLACK="\e[4;30m"
+export ANSI_TEXT_UNDERLINE_RED="\e[4;31m"
+export ANSI_TEXT_UNDERLINE_GREEN="\e[4;32m"
+export ANSI_TEXT_UNDERLINE_YELLOW="\e[4;33m"
+export ANSI_TEXT_UNDERLINE_BLUE="\e[4;34m"
+export ANSI_TEXT_UNDERLINE_PURPLE="\e[4;35m"
+export ANSI_TEXT_UNDERLINE_CYAN="\e[4;36m"
+export ANSI_TEXT_UNDERLINE_WHITE="\e[4;37m"
+export ANSI_TEXT_UNDERLINE_GREY="\e[4;39m"
+
+# Background
+export ANSI_BACKGROUND_BLACK="\e[40m"
+export ANSI_BACKGROUND_RED="\e[41m"
+export ANSI_BACKGROUND_GREEN="\e[42m"
+export ANSI_BACKGROUND_YELLOW="\e[43m"
+export ANSI_BACKGROUND_BLUE="\e[44m"
+export ANSI_BACKGROUND_PURPLE="\e[45m"
+export ANSI_BACKGROUND_CYAN="\e[46m"
+export ANSI_BACKGROUND_WHITE="\e[47m"
+
+# High Intensty
+export ANSI_HIGH_INTENSITY_BLACK="\e[0;90m"
+export ANSI_HIGH_INTENSITY_RED="\e[0;91m"
+export ANSI_HIGH_INTENSITY_GREEN="\e[0;92m"
+export ANSI_HIGH_INTENSITY_YELLOW="\e[0;93m"
+export ANSI_HIGH_INTENSITY_BLUE="\e[0;94m"
+export ANSI_HIGH_INTENSITY_PURPLE="\e[0;95m"
+export ANSI_HIGH_INTENSITY_CYAN="\e[0;96m"
+export ANSI_HIGH_INTENSITY_WHITE="\e[0;97m"
+
+# Bold High Intensty
+export ANSI_BOLD_HIGH_INTENSITY_BLACK="\e[1;90m"
+export ANSI_BOLD_HIGH_INTENSITY_RED="\e[1;91m"
+export ANSI_BOLD_HIGH_INTENSITY_GREEN="\e[1;92m"
+export ANSI_BOLD_HIGH_INTENSITY_YELLOW="\e[1;93m"
+export ANSI_BOLD_HIGH_INTENSITY_BLUE="\e[1;94m"
+export ANSI_BOLD_HIGH_INTENSITY_PURPLE="\e[1;95m"
+export ANSI_BOLD_HIGH_INTENSITY_CYAN="\e[1;96m"
+export ANSI_BOLD_HIGH_INTENSITY_WHITE="\e[1;97m"
+
+# High Intensty backgrounds
+export ANSI_HIGH_INTENSITY_BACKGROUND_BLACK="\e[0;100m"
+export ANSI_HIGH_INTENSITY_BACKGROUND_RED="\e[0;101m"
+export ANSI_HIGH_INTENSITY_BACKGROUND_GREEN="\e[0;102m"
+export ANSI_HIGH_INTENSITY_BACKGROUND_YELLOW="\e[0;103m"
+export ANSI_HIGH_INTENSITY_BACKGROUND_BLUE="\e[0;104m"
+export ANSI_HIGH_INTENSITY_BACKGROUND_PURPLE="\e[0;105m"
+export ANSI_HIGH_INTENSITY_BACKGROUND_CYAN="\e[0;106m"
+export ANSI_HIGH_INTENSITY_BACKGROUND_WHITE="\e[0;107m"
+
+# Reset
+export ANSI_RESET_RESET="\e[0m"
+INDENT=0
+
 main() {
+  banner
   deps
 }
 
 deps() {
-  echo "Checking dependencies:"
+  echo -e "\n\nChecking dependencies:"
   INDENT=2
 
-  install_dep "Rust" cargo
-  install_dep "cargo-binstall" cargo-binstall
-  install_dep "tauri-cli" cargo-tauri
-  install_dep "sqlx-cli" cargo-sqlx
-  install_dep "mise-en-place" mise2
-}
+  install_dep "mise" mise
+  run_mise_install
 
-check_cmd() {
-  command -v "$1" &> /dev/null
+  install_dep "cargo binstall" cargo-binstall
+  install_dep "tauri cli" cargo-tauri
+  install_dep "sqlx cli" cargo-sqlx
+  install_dep "yarn" yarn
+  install_dep "mprocs" mprocs
+
+  install_tauri_prerequisites
+
+  run_sqlx_setup
+  run_yarn_install
 }
 
 install_dep() {
   name=$1
   cmd=$2
   if ! check_cmd $cmd; then
-    indent=$(printf "%*s" ${INDENT})
-    echo -n "${indent}"
-    echo -n "${indent}Installing $name.."
+    printf_ansi "[ ] " $ANSI_TEXT_YELLOW
+    echo -n "Installing $name..."
     install_${cmd//[- ]/_}
-    green "Done"
-  else
-    green -n "[✔]"
-    echo " $name"
+    echo -en "\r"
+    printf_ansi "[✔] " $ANSI_TEXT_GREEN
+    echo $name
   fi
-}
 
-install_cargo() {
-  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+  printf_ansi "[✔] " $ANSI_TEXT_GREEN
+  echo $name
 }
 
 install_cargo_binstall() {
@@ -57,25 +133,129 @@ install_sqlx_cli() {
   cargo install sqlx-cli
 }
 
-install_mise2() {
+install_yarn() {
+  npm i -g yarn
+}
+
+install_mise() {
   red -e "\nmise-en-place needs to be installed manually: https://mise.jdx.dev/"
   exit 1
 }
 
-green() {
-  echo -e -n "${GREEN}"
-  indent=$(printf "%*s" ${INDENT})
-  echo -n "${indent}"
-  echo -e "$@"
-  echo -e -n "${ENDCOLOR}"
+run_mise_install() {
+  mise install > /dev/null 2>&1
 }
 
-red() {
-  echo -e -n "${RED}"
-  indent=$(printf "%*s" ${INDENT})
-  echo -n "${indent}"
-  echo -e "$@"
-  echo -e -n "${ENDCOLOR}"
+install_tauri_prerequisites() {
+  printf_ansi "[ ] " $ANSI_TEXT_YELLOW
+  echo -n "Installing Tauri prerequisites..."
+
+  if [[ $OSTYPE == 'darwin'* ]]; then
+    # TODO: how to detect if xcode is already installed?
+    xcode-select --install
+  elif [[ $OSTYPE == 'linux-gnu'* ]]; then
+    if check_cmd apt-get; then
+      install_tauri_prerequisites_linux_debian
+    elif check_cmd nixos-version; then
+      install_tauri_prerequisites_nixos
+    else
+      install_tauri_prerequisites_linux_other
+    fi
+  else
+    install_tauri_prerequisites_unsupported_os
+  fi
 }
+
+install_tauri_prerequisites_linux_debian() {
+  # run apt-get update if the cache is older than 1 day
+  last_update=$(stat -c %Y /var/cache/apt/pkgcache.bin)
+  now=$(date +%s)
+  if [ $((now - last_update)) -gt 86400 ]; then
+    apt-get update
+  fi
+
+  sudo apt install libwebkit2gtk-4.1-dev \
+    build-essential \
+    curl \
+    wget \
+    file \
+    libxdo-dev \
+    libssl-dev \
+    libayatana-appindicator3-dev \
+    librsvg2-dev
+}
+
+install_tauri_prerequisites_nixos() {
+  echo -ne "\r"
+  printf_ansi "[-] " $ANSI_TEXT_YELLOW
+  echo -e "Tauri prerequisites. NixOS detected. Make sure direnv / flake.nix is loaded"
+}
+
+install_tauri_prerequisites_linux_other() {
+  distro_name=$(hostnamectl | grep "Operating System" | cut -d ":" -f 2 | sed 's/ //g')
+  echo -ne "\r"
+  printf_ansi "[-] " $ANSI_TEXT_YELLOW
+  echo -e "Tauri prerequisites.\n\n${distro_name} detected. Tauri prerequisites cannot be automatically installed.\nCheck the official docs for manual steps:"
+  echo_ansi "https://v2.tauri.app/start/prerequisites/#linux" $ANSI_TEXT_BOLD_BLUE
+}
+
+install_tauri_prerequisites_unsupported_os() {
+  echo -ne "\r"
+  printf_ansi "[-] " $ANSI_TEXT_YELLOW
+  echo -e "Tauri prerequisites.\n\n${OSTYPE} Detected. Tauri prerequisites cannot be automatically installed.\nCheck the official docs for manual steps:"
+
+  echo_ansi "https://v2.tauri.app/start/prerequisites/#linux" $ANSI_TEXT_BOLD_BLUE
+}
+
+run_sqlx_setup() {
+  printf_ansi "[ ] " $ANSI_TEXT_YELLOW
+  echo -n "Database setup..."
+  export DATABASE_URL=sqlite://dev-data/default/db.sqlite3
+  cargo sqlx database create > /dev/null 2>&1
+  echo -ne "\r"
+  printf_ansi "[✔] " $ANSI_TEXT_GREEN
+  echo -e "Database setup done"
+}
+
+run_yarn_install() {
+  printf_ansi "[ ] " $ANSI_TEXT_GREEN
+  echo -n "yarn install"
+  yarn install > /dev/null 2>&1
+  echo -ne "\r"
+  printf_ansi "[✔] " $ANSI_TEXT_GREEN
+  echo -e "Yarn install done"
+}
+
+banner(){
+  echo ""
+  echo "  ███████ ████████ ██   ██ ██    ██ ██ "
+  echo "  ██         ██    ██   ██ ██    ██ ██ "
+  echo "  █████      ██    ███████ ██    ██ ██ "
+  echo "  ██         ██    ██   ██ ██    ██ ██ "
+  echo "  ███████    ██    ██   ██  ██████  ██ "
+}
+
+check_cmd() {
+  command -v "$1" &> /dev/null
+}
+
+indent() {
+  indent=$(printf "%*s" $1)
+  echo -n "${indent}"
+}
+                                     
+# adapted from https://gist.github.com/nuvious/3bc27c0737b9a9a157dda22c91ad26ff
+function printf_ansi(){
+    ansi_codes="${@:2}"
+    ansi_codes="${ansi_codes//[[:blank:]]/}"
+    printf "$ansi_codes$1$ANSI_RESET_RESET"
+}
+
+function echo_ansi(){
+    ansi_codes="${@:2}"
+    ansi_codes="${ansi_codes//[[:blank:]]/}"
+    printf "$ansi_codes$1$ANSI_RESET_RESET\n"
+}
+
 
 main
