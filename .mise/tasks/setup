@@ -56,7 +56,7 @@ install_cargo_binstall() {
   curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash > /dev/null 2>/dev/null
 }
 
-install_tauri_cli() {
+install_cargo_tauri() {
   cargo binstall tauri-cli
 }
 
