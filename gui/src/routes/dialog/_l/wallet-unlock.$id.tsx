@@ -69,7 +69,7 @@ function WalletUnlockDialog() {
               ""
             }*/}
           <Form.Text label="Password" name="password" type="password" />
-          <div className=" m-1 flex">
+          <div className="m-2 flex items-center justify-center gap-2">
             <Form.Submit label="Unlock" />
             {!loading && (
               <Button color="error" onClick={() => send("reject")}>

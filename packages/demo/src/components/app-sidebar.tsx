@@ -17,7 +17,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "#/components/shadcn/sidebar";
+} from "@ethui/ui/components/shadcn/sidebar";
 
 // This is sample data.
 const data = {

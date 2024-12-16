@@ -28,7 +28,7 @@ import {
   SidebarMenuSub,
   SidebarRail,
   useSidebar,
-} from "#/components/shadcn/sidebar";
+} from "@ethui/ui/components/shadcn/sidebar";
 import { cn } from "#/lib/utils";
 import { useCommandBar } from "./CommandBar";
 import { QuickAddressSelect } from "./QuickAddressSelect";
@@ -64,7 +64,7 @@ export function AppSidebar() {
                       href={item.url}
                       className={cn(
                         item.url === location.pathname &&
-                          "bg-primary text-accent hover:bg-primary hover:text-accent",
+                        "bg-primary text-accent hover:bg-primary hover:text-accent",
                       )}
                     >
                       {item.icon}
@@ -93,7 +93,7 @@ export function AppSidebar() {
                               href={item.url}
                               className={cn(
                                 item.url === location.pathname &&
-                                  "bg-primary text-accent hover:bg-primary hover:text-accent",
+                                "bg-primary text-accent hover:bg-primary hover:text-accent",
                               )}
                             >
                               {item.title}

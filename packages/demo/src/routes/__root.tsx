@@ -5,7 +5,7 @@ import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "#/components/shadcn/sidebar";
+} from "@ethui/ui/components/shadcn/sidebar";
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";

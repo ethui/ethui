@@ -5,7 +5,7 @@ import { AnimatedOutlet } from "#/components/AnimatedOutlet";
 import { AppNavbar } from "#/components/AppNavbar";
 import { AppSidebar } from "#/components/AppSidebar";
 import { CommandBar, CommandBarProvider } from "#/components/CommandBar";
-import { SidebarProvider } from "#/components/shadcn/sidebar";
+import { SidebarProvider } from "@ethui/ui/components/shadcn/sidebar";
 import { useNoticeAlchemyKeyMissing } from "#/hooks/useNoticeAlchemyKeyMissing";
 import { useNoticeNewVersion } from "#/hooks/useNoticeNewVersion";
 
