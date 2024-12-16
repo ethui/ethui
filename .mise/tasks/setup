@@ -142,7 +142,7 @@ install_tauri_prerequisites_unsupported_os() {
   echo_ansi "https://v2.tauri.app/start/prerequisites/#linux" $ANSI_TEXT_BOLD_BLUE
 }
 
-install_foundry() {
+install_anvil() {
   printf_ansi "[ ] " $ANSI_TEXT_YELLOW
   echo -n "Foundry..."
 
