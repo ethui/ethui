@@ -43,8 +43,7 @@ install_dep() {
     printf_ansi "[ ] " $ANSI_TEXT_YELLOW
     echo -n "Installing $name..."
     install_${cmd//[- ]/_}
-    echo -en "\r"
-    printf_ansi "[✔] " $ANSI_TEXT_GREEN
+    printf_ansi "\r[✔] " $ANSI_TEXT_GREEN
     echo $name
   fi
 
@@ -126,8 +125,7 @@ install_tauri_prerequisites_linux_debian() {
 }
 
 install_tauri_prerequisites_nixos() {
-  echo -ne "\r"
-  printf_ansi "[-] " $ANSI_TEXT_YELLOW
+  printf_ansi "\r[-] " $ANSI_TEXT_YELLOW
   echo -e "Tauri prerequisites: NixOS detected. Make sure direnv / flake.nix is loaded"
 }
 
@@ -139,8 +137,7 @@ install_tauri_prerequisites_linux_other() {
 }
 
 install_tauri_prerequisites_unsupported_os() {
-  echo -ne "\r"
-  printf_ansi "[-] " $ANSI_TEXT_YELLOW
+  printf_ansi "\r[-] " $ANSI_TEXT_YELLOW
   echo -e "Tauri prerequisites:\n\n${OSTYPE} Detected. Tauri prerequisites cannot be automatically installed.\nCheck the official docs for manual steps:"
 
   echo_ansi "https://v2.tauri.app/start/prerequisites/#linux" $ANSI_TEXT_BOLD_BLUE
