@@ -45,7 +45,10 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="flex items-center">
+      <SidebarHeader
+        className="flex items-center"
+        data-tauri-drag-region="true"
+      >
         <EthuiLogo
           size={48}
           bg="bg-transparent"
@@ -64,7 +67,7 @@ export function AppSidebar() {
                       href={item.url}
                       className={cn(
                         item.url === location.pathname &&
-                          "bg-primary text-accent hover:bg-primary hover:text-accent",
+                        "bg-primary text-accent hover:bg-primary hover:text-accent",
                       )}
                     >
                       {item.icon}
@@ -93,7 +96,7 @@ export function AppSidebar() {
                               href={item.url}
                               className={cn(
                                 item.url === location.pathname &&
-                                  "bg-primary text-accent hover:bg-primary hover:text-accent",
+                                "bg-primary text-accent hover:bg-primary hover:text-accent",
                               )}
                             >
                               {item.title}
