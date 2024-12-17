@@ -24,7 +24,7 @@ pub(crate) async fn main_window_show(app: &AppHandle) {
 
         #[cfg(target_os = "macos")]
         let builder = builder
-            .title_bar_style(tauri::TitleBarStyle::Transparent)
+            .title_bar_style(tauri::TitleBarStyle::Overlay)
             .decorations(true);
 
         builder.build().unwrap();
