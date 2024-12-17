@@ -1,7 +1,7 @@
+import { EthuiLogo } from "@ethui/ui/components/ethui-logo";
 import { createFileRoute } from "@tanstack/react-router";
 import { AnimatedOutlet } from "#/components/AnimatedOutlet";
 import { useTheme } from "#/store/useTheme";
-import { EthuiLogo } from "@ethui/ui/components/ethui-logo";
 
 export const Route = createFileRoute("/dialog/_l")({
   component: DialogLayout,
