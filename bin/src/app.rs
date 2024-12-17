@@ -102,11 +102,11 @@ impl EthUIApp {
 
     pub fn run(self) {
         self.app.run(|_, event| match event {
-            #[cfg(target_os = "macos")]
             tauri::RunEvent::ExitRequested { api, .. } => {
                 api.prevent_exit();
             }
 
+            #[cfg(target_os = "macos")]
             tauri::RunEvent::Reopen {
                 has_visible_windows,
                 ..
