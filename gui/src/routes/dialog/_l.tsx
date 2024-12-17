@@ -1,18 +1,33 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AnimatedOutlet } from "#/components/AnimatedOutlet";
 import { useTheme } from "#/store/useTheme";
+import { EthuiLogo } from "@ethui/ui/components/ethui-logo";
 
 export const Route = createFileRoute("/dialog/_l")({
   component: DialogLayout,
 });
+
+const isDev = import.meta.env.MODE === "development";
 
 function DialogLayout() {
   // necessary to correctly apply dark mode
   useTheme();
 
   return (
-    <main className="flex h-screen w-screen flex-col overflow-hidden p-2">
-      <AnimatedOutlet />
-    </main>
+    // TODO: merge this header with the one from each dialog's layout, to save vertical space
+    // ideally the logo should just be in the left corner, before whatever each other dialog shows
+    <>
+      <header className="flex justify-center" data-tauri-drag-region>
+        <EthuiLogo
+          size={40}
+          bg="bg-transparent"
+          fg={isDev ? "fill-dev" : "fill-sidebar-foreground"}
+        />
+        &nbsp;
+      </header>
+      <main className="flex h-screen w-screen flex-col overflow-hidden p-2">
+        <AnimatedOutlet />
+      </main>
+    </>
   );
 }
