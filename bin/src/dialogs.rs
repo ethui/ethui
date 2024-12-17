@@ -10,9 +10,7 @@ pub(crate) fn open(handle: &AppHandle, params: ui_events::DialogOpen) {
             .decorations(false);
 
     #[cfg(target_os = "macos")]
-    let builder = builder
-        .title_bar_style(tauri::TitleBarStyle::Transparent)
-        .decorations(true);
+    let builder = builder.title_bar_style(tauri::TitleBarStyle::Overlay);
 
     let window = builder.build().unwrap();
 

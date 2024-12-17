@@ -45,7 +45,10 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="flex items-center">
+      <SidebarHeader
+        className="flex items-center"
+        data-tauri-drag-region="true"
+      >
         <EthuiLogo
           size={48}
           bg="bg-transparent"
