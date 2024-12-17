@@ -28,7 +28,11 @@ pub(crate) fn build(app: &AppHandle) -> AppResult<()> {
 fn event_handler(app: &AppHandle, event: MenuEvent) {
     match event.id().as_ref() {
         "quit" => app.exit(0),
-        "hide" => app.get_webview_window("main").unwrap().hide().unwrap(),
+        "hide" => {
+            if let Some(w) = app.get_webview_window("main") {
+                w.hide().unwrap()
+            }
+        }
         "show" => {
             tokio::spawn(async { ethui_broadcast::main_window_show().await });
         }
