@@ -1,43 +1,20 @@
 use std::str::FromStr;
 
 use alloy::{
-    network::{Ethereum, EthereumWallet, TransactionBuilder as _},
+    network::{Ethereum, TransactionBuilder as _},
     primitives::{Bytes, U256},
-    providers::{
-        fillers::{ChainIdFiller, FillProvider, GasFiller, JoinFill, NonceFiller, WalletFiller},
-        Identity, PendingTransactionBuilder, Provider, ProviderBuilder, RootProvider,
-    },
+    providers::{ext::AnvilApi, PendingTransactionBuilder, Provider, ProviderBuilder},
     rpc::types::TransactionRequest,
-    transports::http::{Client, Http},
+    transports::http::{reqwest, Client, Http},
 };
 use ethui_connections::Ctx;
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_networks::Network;
 use ethui_settings::Settings;
 use ethui_types::{Address, GlobalState};
-use ethui_wallets::{WalletControl, WalletType, Wallets};
+use ethui_wallets::{Wallet, WalletControl, WalletType, Wallets};
 
 use crate::{Error, Result};
-
-// TODO: how to simplify this type, or use a generic?
-type InnerProvider = FillProvider<
-    JoinFill<
-        JoinFill<
-            Identity,
-            JoinFill<
-                GasFiller,
-                JoinFill<
-                    alloy::providers::fillers::BlobGasFiller,
-                    JoinFill<NonceFiller, ChainIdFiller>,
-                >,
-            >,
-        >,
-        WalletFiller<EthereumWallet>,
-    >,
-    RootProvider<Http<Client>>,
-    Http<Client>,
-    Ethereum,
->;
 
 /// Orchestrates the signing of a transaction
 /// Takes references to both the wallet and network where this
@@ -47,7 +24,7 @@ pub struct SendTransaction {
     pub wallet_path: String,
     pub wallet_type: WalletType,
     pub request: TransactionRequest,
-    pub provider: Option<InnerProvider>,
+    pub provider: Option<Box<dyn Provider<Http<Client>>>>,
 }
 
 impl SendTransaction {
@@ -162,10 +139,12 @@ impl SendTransaction {
 
     async fn send(&mut self) -> Result<PendingTransactionBuilder<Http<Client>, Ethereum>> {
         self.build_provider().await?;
-        let provider = self.provider.as_ref().unwrap();
-        let pending = provider.send_transaction(self.request.clone()).await?;
-
-        Ok(pending)
+        Ok(self
+            .provider
+            .as_ref()
+            .unwrap()
+            .send_transaction(self.request.clone())
+            .await?)
     }
 
     async fn build_provider(&mut self) -> Result<()> {
@@ -189,12 +168,26 @@ impl SendTransaction {
             .parse()
             .map_err(|_| Error::CannotParseUrl(self.network.http_url.clone()))?;
 
-        let provider = ProviderBuilder::new()
-            .with_recommended_fillers()
-            .wallet(signer.to_wallet())
-            .on_http(url);
+        if self.network.is_dev() {
+            if let Wallet::Impersonator(ref wallet) = wallet {
+                let account = wallet.get_address(&self.wallet_path).await?;
 
-        self.provider = Some(provider);
+                let provider = ProviderBuilder::new()
+                    .with_recommended_fillers()
+                    .on_http(url);
+
+                provider.anvil_impersonate_account(account).await.unwrap();
+
+                self.provider = Some(Box::new(provider));
+            }
+        } else {
+            let provider = ProviderBuilder::new()
+                .with_recommended_fillers()
+                .wallet(signer.to_wallet())
+                .on_http(url);
+            self.provider = Some(Box::new(provider));
+        }
+
         Ok(())
     }
 
