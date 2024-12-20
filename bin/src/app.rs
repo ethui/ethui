@@ -12,7 +12,7 @@ use crate::{
     commands, dialogs,
     error::AppResult,
     menu, system_tray,
-    utils::{main_window_hide, main_window_show},
+    utils::{all_windows_focus, main_window_hide, main_window_show},
 };
 
 pub struct EthUIApp {
@@ -107,13 +107,8 @@ impl EthUIApp {
             }
 
             #[cfg(target_os = "macos")]
-            tauri::RunEvent::Reopen {
-                has_visible_windows,
-                ..
-            } => {
-                if !has_visible_windows {
-                    tokio::spawn(async { ethui_broadcast::main_window_show().await });
-                }
+            tauri::RunEvent::Reopen { .. } => {
+                tokio::spawn(async { ethui_broadcast::all_windows_focus().await });
             }
             _ => (),
         });
@@ -173,6 +168,7 @@ async fn event_listener(handle: AppHandle) {
 
                 MainWindowShow => main_window_show(&handle).await,
                 MainWindowHide => main_window_hide(&handle),
+                AllWindowsFocus => all_windows_focus(&handle).await,
             }
         }
     }
