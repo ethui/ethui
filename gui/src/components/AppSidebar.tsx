@@ -41,7 +41,7 @@ const isDev = import.meta.env.MODE === "development";
 export function AppSidebar() {
   const commandBar = useCommandBar();
   const location = useLocation();
-  const { open } = useSidebar();
+  const { open, toggleSidebar } = useSidebar();
 
   return (
     <Sidebar collapsible="icon">
@@ -50,6 +50,7 @@ export function AppSidebar() {
         data-tauri-drag-region="true"
       >
         <EthuiLogo
+          onClick={toggleSidebar}
           size={48}
           bg="bg-transparent"
           fg={isDev ? "fill-dev" : "fill-sidebar-foreground"}
@@ -134,7 +135,6 @@ export function AppSidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
-      <SidebarRail />
     </Sidebar>
   );
 }
