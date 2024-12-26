@@ -6,11 +6,13 @@ use ethui_types::GlobalState as _;
 use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
 use tracing::debug;
 
+#[cfg(target_os = "macos")]
+use crate::utils::all_windows_focus;
 use crate::{
     commands, dialogs,
     error::AppResult,
     menu, system_tray,
-    utils::{all_windows_focus, main_window_hide, main_window_show},
+    utils::{main_window_hide, main_window_show},
 };
 
 pub struct EthUIApp {
@@ -167,7 +169,6 @@ async fn event_listener(handle: AppHandle) {
 
                 MainWindowShow => main_window_show(&handle).await,
                 MainWindowHide => main_window_hide(&handle),
-                AllWindowsFocus => all_windows_focus(&handle).await,
             }
         }
     }

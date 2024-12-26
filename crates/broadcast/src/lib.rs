@@ -53,7 +53,6 @@ pub enum UIMsg {
 
     MainWindowShow,
     MainWindowHide,
-    AllWindowsFocus,
 }
 
 mod internal_msgs {
@@ -178,10 +177,6 @@ mod ui_msgs {
 
     pub async fn main_window_hide() {
         send(MainWindowHide).await;
-    }
-
-    pub async fn all_windows_focus() {
-        send(AllWindowsFocus).await;
     }
 
     /// broadcaster for UI msgs
