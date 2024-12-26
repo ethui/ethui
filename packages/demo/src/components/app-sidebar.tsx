@@ -14,7 +14,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail,
 } from "@ethui/ui/components/shadcn/sidebar";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { Link } from "@tanstack/react-router";
@@ -96,7 +95,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </Collapsible>
         ))}
       </SidebarContent>
-      <SidebarRail />
     </Sidebar>
   );
 }
