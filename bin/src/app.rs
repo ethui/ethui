@@ -101,14 +101,14 @@ impl EthUIApp {
     }
 
     pub fn run(self) {
-        self.app.run(|_, event| match event {
+        self.app.run(|handle, event| match event {
             tauri::RunEvent::ExitRequested { api, .. } => {
                 api.prevent_exit();
             }
 
             #[cfg(target_os = "macos")]
             tauri::RunEvent::Reopen { .. } => {
-                tokio::spawn(async { ethui_broadcast::all_windows_focus().await });
+                tokio::spawn(async move { all_windows_focus(handle).await });
             }
             _ => (),
         });
