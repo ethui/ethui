@@ -3,11 +3,11 @@ use std::path::PathBuf;
 use ethui_args::Args;
 use ethui_broadcast::UIMsg;
 use ethui_types::GlobalState as _;
-#[cfg(target_os = "macos")]
-use tauri::WindowEvent;
 use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
 use tracing::debug;
 
+#[cfg(target_os = "macos")]
+use crate::utils::all_windows_focus;
 use crate::{
     commands, dialogs,
     error::AppResult,
@@ -101,10 +101,17 @@ impl EthUIApp {
     }
 
     pub fn run(self) {
-        self.app.run(|_, event| {
-            if let tauri::RunEvent::ExitRequested { api, .. } = event {
+        self.app.run(|#[allow(unused)] handle, event| match event {
+            tauri::RunEvent::ExitRequested { api, .. } => {
                 api.prevent_exit();
             }
+
+            #[cfg(target_os = "macos")]
+            tauri::RunEvent::Reopen { .. } => {
+                let handle = handle.clone();
+                tokio::spawn(async move { all_windows_focus(&handle).await });
+            }
+            _ => (),
         });
     }
 }
