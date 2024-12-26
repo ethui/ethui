@@ -6,7 +6,6 @@ import * as React from "react";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { Input } from "@ethui/ui/components/shadcn/input";
 import { Separator } from "@ethui/ui/components/shadcn/separator";
-import { Sheet, SheetContent } from "@ethui/ui/components/shadcn/sheet";
 import { Skeleton } from "@ethui/ui/components/shadcn/skeleton";
 import {
   Tooltip,
@@ -580,7 +579,7 @@ const SidebarMenuAction = React.forwardRef<
         "peer-data-[size=lg]/menu-button:top-2.5",
         "group-data-[collapsible=icon]:hidden",
         showOnHover &&
-          "opacity-0 group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 peer-data-[active=true]/menu-button:text-sidebar-accent-foreground",
+        "opacity-0 group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 peer-data-[active=true]/menu-button:text-sidebar-accent-foreground",
         className,
       )}
       {...props}

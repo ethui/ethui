@@ -10,7 +10,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
-  SidebarRail,
   useSidebar,
 } from "@ethui/ui/components/shadcn/sidebar";
 import {
