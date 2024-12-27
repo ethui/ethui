@@ -3,11 +3,10 @@
 
 mod app;
 mod commands;
-mod dialogs;
 pub mod error;
 mod menu;
 mod system_tray;
-mod utils;
+mod windows;
 
 use error::AppResult;
 use named_lock::NamedLock;
