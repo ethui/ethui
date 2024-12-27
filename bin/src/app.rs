@@ -6,14 +6,7 @@ use ethui_types::GlobalState as _;
 use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
 use tracing::debug;
 
-#[cfg(target_os = "macos")]
-use crate::utils::all_windows_focus;
-use crate::{
-    commands, dialogs,
-    error::AppResult,
-    menu, system_tray,
-    utils::{main_window_hide, main_window_show},
-};
+use crate::{commands, error::AppResult, menu, system_tray, windows};
 
 pub struct EthUIApp {
     app: tauri::App,
@@ -94,7 +87,7 @@ impl EthUIApp {
         init(&app, args).await?;
 
         if should_start_main_window(args).await {
-            main_window_show(app.handle()).await;
+            windows::main::show(app.handle()).await;
         }
 
         Ok(Self { app })
@@ -109,7 +102,7 @@ impl EthUIApp {
             #[cfg(target_os = "macos")]
             tauri::RunEvent::Reopen { .. } => {
                 let handle = handle.clone();
-                tokio::spawn(async move { all_windows_focus(&handle).await });
+                tokio::spawn(async move { windows::all_windows_focus(&handle).await });
             }
             _ => (),
         });
@@ -163,12 +156,12 @@ async fn event_listener(handle: AppHandle) {
                     }
                 }
 
-                DialogOpen(params) => dialogs::open(&handle, params),
-                DialogClose(params) => dialogs::close(&handle, params),
-                DialogSend(params) => dialogs::send(&handle, params),
+                DialogOpen(params) => windows::dialogs::open(&handle, params),
+                DialogClose(params) => windows::dialogs::close(&handle, params),
+                DialogSend(params) => windows::dialogs::send(&handle, params),
 
-                MainWindowShow => main_window_show(&handle).await,
-                MainWindowHide => main_window_hide(&handle),
+                MainWindowShow => windows::main::show(&handle).await,
+                MainWindowHide => windows::main::hide(&handle),
             }
         }
     }
