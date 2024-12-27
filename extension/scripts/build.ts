@@ -18,6 +18,7 @@ if (target.includes("dev")) {
 } else {
   env = `${env} NODE_ENV=production`;
 }
+console.log(env);
 
 console.log("Building", target, version);
 
@@ -38,12 +39,12 @@ switch (target) {
     break;
 
   case "firefox-dev":
-    await run(`yarn run web-ext build -s ${dist} -a .`);
+    await run(`yarn run web-ext build -s ${dist} -a . --overwrite-dest`);
     await run(`mv ./ethui-dev-${version}.zip ./dist/${basename}.xpi`);
     break;
 
   case "firefox":
-    await run(`yarn run web-ext build -s ${dist} -a .`);
+    await run(`yarn run web-ext build -s ${dist} -a . --overwrite-dest`);
     await run(`mv ./ethui-${version}.zip ./dist/${basename}.xpi`);
     break;
 }

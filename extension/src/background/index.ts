@@ -69,6 +69,9 @@ export function setupProviderConnection(port: Runtime.Port) {
 
   notifyDevtools(tabId, "start");
 
+  type Request = { id: number; method: string; params?: unknown };
+  const reqs: Map<Request["id"], Request> = new Map();
+
   const ws = new WebsocketBuilder(endpoint(port))
     .onOpen(() => {
       log.debug(`WS connection opened (${url})`);
@@ -90,19 +93,29 @@ export function setupProviderConnection(port: Runtime.Port) {
         return;
       }
       // forward WS server messages back to the stream (content script)
-      const data = JSON.parse(event.data);
-      port.postMessage(data);
+      const resp = JSON.parse(event.data);
+      port.postMessage(resp);
 
-      log.debug("[WS] response:", data);
-      notifyDevtools(tabId, "response", data);
+      const req = reqs.get(resp.id);
+      const logRequest = req?.params
+        ? [req?.method, req?.params]
+        : [req?.method];
+      const fn = resp.error ? log.error : log.debug;
+      fn(...logRequest, resp.error || resp.result);
+      notifyDevtools(tabId, "response", resp);
     })
     .build();
 
   // forwarding incoming stream data to the WS server
   port.onMessage.addListener((data) => {
-    ws.send(JSON.stringify(data));
+    const req = data as Request;
+    if (req.id) {
+      reqs.set(req.id as number, req);
+    }
 
-    log.debug("[WS] request:", data);
+    const msg = JSON.stringify(data);
+    ws.send(msg);
+
     notifyDevtools(tabId, "request", data);
   });
 
