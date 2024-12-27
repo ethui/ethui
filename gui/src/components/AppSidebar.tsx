@@ -1,4 +1,6 @@
 import { EthuiLogo } from "@ethui/ui/components/ethui-logo";
+import clsx from "clsx";
+import { platform } from "@tauri-apps/plugin-os";
 import {
   Sidebar,
   SidebarContent,
@@ -41,11 +43,12 @@ export function AppSidebar() {
   const commandBar = useCommandBar();
   const location = useLocation();
   const { open, toggleSidebar } = useSidebar();
+  const isMacos = platform() == "macos";
 
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader
-        className="flex items-center"
+        className={clsx("flex items-center", { "pt-4": isMacos })}
         data-tauri-drag-region="true"
       >
         <EthuiLogo
@@ -67,7 +70,7 @@ export function AppSidebar() {
                       href={item.url}
                       className={cn(
                         item.url === location.pathname &&
-                          "bg-primary text-accent hover:bg-primary hover:text-accent",
+                        "bg-primary text-accent hover:bg-primary hover:text-accent",
                       )}
                     >
                       {item.icon}
@@ -96,7 +99,7 @@ export function AppSidebar() {
                               href={item.url}
                               className={cn(
                                 item.url === location.pathname &&
-                                  "bg-primary text-accent hover:bg-primary hover:text-accent",
+                                "bg-primary text-accent hover:bg-primary hover:text-accent",
                               )}
                             >
                               {item.title}
@@ -134,7 +137,7 @@ export function AppSidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
-    </Sidebar>
+    </Sidebar >
   );
 }
 
