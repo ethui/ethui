@@ -26,6 +26,8 @@ ignore = [
   "RUSTSEC-2024-0420",
   # gtk3-macros is unmaintained
   "RUSTSEC-2024-0419",
+  # glib unsoundness
+  "RUSTSEC-2024-0429",
 ]
 
 

@@ -1,6 +1,7 @@
 mod error;
 
 pub use error::{TracingError, TracingResult};
+use once_cell::sync::OnceCell;
 use tracing_subscriber::{
     fmt::{self},
     layer::SubscriberExt as _,
@@ -8,8 +9,6 @@ use tracing_subscriber::{
     util::SubscriberInitExt as _,
     EnvFilter, Registry,
 };
-
-use once_cell::sync::OnceCell;
 
 static RELOAD_HANDLE: OnceCell<reload::Handle<EnvFilter, Registry>> = OnceCell::new();
 
