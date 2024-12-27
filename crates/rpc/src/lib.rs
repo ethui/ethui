@@ -50,8 +50,6 @@ impl Handler {
             ($name:literal) => {
                 self.io
                     .add_method_with_meta($name, |params: Params, ctx: Ctx| async move {
-                        tracing::debug!("{} {:?}", $name, params);
-
                         let provider = ctx.network().await.get_provider();
 
                         let res: jsonrpc_core::Result<serde_json::Value> = provider
@@ -199,22 +197,20 @@ impl Handler {
 
     #[tracing::instrument()]
     async fn switch_chain(params: Params, mut ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
-        debug!("switch_chain");
         let params = params.parse::<Vec<HashMap<String, String>>>().unwrap();
         let chain_id_str = params[0].get("chainId").unwrap().clone();
         let new_chain_id = u32::from_str_radix(&chain_id_str[2..], 16).unwrap();
-        dbg!(new_chain_id);
 
-        Ok(dbg!(ctx
+        Ok(ctx
             .switch_chain(new_chain_id)
             .await
-            .map(|_| serde_json::Value::Null))
-        .map_err(|e| match e {
-            ethui_connections::Error::InvalidChainId(chain_id) => {
-                Error::UnrecognizedChainId(chain_id)
-            }
-            _ => Error::Connection(e),
-        })?)
+            .map(|_| serde_json::Value::Null)
+            .map_err(|e| match e {
+                ethui_connections::Error::InvalidChainId(chain_id) => {
+                    Error::UnrecognizedChainId(chain_id)
+                }
+                _ => Error::Connection(e),
+            })?)
     }
 
     async fn send_transaction<T: Into<serde_json::Value>>(
