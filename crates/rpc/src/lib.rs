@@ -10,6 +10,7 @@ use ethui_types::GlobalState;
 use ethui_wallets::{WalletControl, Wallets};
 use jsonrpc_core::{MetaIoHandler, Params};
 use serde_json::json;
+use tracing::debug;
 
 pub use self::error::{Error, Result};
 
@@ -49,8 +50,6 @@ impl Handler {
             ($name:literal) => {
                 self.io
                     .add_method_with_meta($name, |params: Params, ctx: Ctx| async move {
-                        tracing::debug!("{} {:?}", $name, params);
-
                         let provider = ctx.network().await.get_provider();
 
                         let res: jsonrpc_core::Result<serde_json::Value> = provider
@@ -206,7 +205,12 @@ impl Handler {
             .switch_chain(new_chain_id)
             .await
             .map(|_| serde_json::Value::Null)
-            .map_err(Error::Connection)?)
+            .map_err(|e| match e {
+                ethui_connections::Error::InvalidChainId(chain_id) => {
+                    Error::UnrecognizedChainId(chain_id)
+                }
+                _ => Error::Connection(e),
+            })?)
     }
 
     async fn send_transaction<T: Into<serde_json::Value>>(

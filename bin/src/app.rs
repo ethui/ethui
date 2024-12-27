@@ -172,7 +172,6 @@ async fn event_listener(handle: AppHandle) {
 /// Otherwise, the app's default config dir will be used.
 fn resource(app: &tauri::App, resource: &str, args: &Args) -> PathBuf {
     let dir = config_dir(app, args);
-    debug!("config dir: {:?}", dir);
     std::fs::create_dir_all(&dir).expect("could not create config dir");
     dir.join(resource)
 }
