@@ -1,7 +1,7 @@
 pub mod dialogs;
 pub mod main;
 
-use tauri::{AppHandle, WebviewWindowBuilder};
+use tauri::{AppHandle, Manager as _, WebviewWindowBuilder};
 
 use crate::menu;
 
@@ -31,7 +31,6 @@ pub fn build_window(
 
 /// Focuses all exiting windows, opening main window in the process if it doesn't exist
 /// Useful for macOS's dock icon click
-#[cfg(target_os = "macos")]
 pub(crate) async fn all_windows_focus(app: &AppHandle) {
     let windows = app.webview_windows();
 
