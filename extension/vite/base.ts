@@ -30,6 +30,11 @@ export default defineConfig({
     minify: false,
     outDir: path.resolve(__dirname, "..", dist),
     emptyOutDir: false,
+    lib: {
+      formats: ["iife"],
+      entry: path.resolve(__dirname, "..", "src", "content-script", "index.ts"),
+      name: "ethui - Content Script",
+    },
     rollupOptions: {
       input: {
         options: new URL("../src/options/index.html", import.meta.url).pathname,

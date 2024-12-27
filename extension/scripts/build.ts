@@ -24,7 +24,7 @@ console.log("Building", target, version);
 
 await Promise.all([
   run("yarn run vite build --config vite/base.ts"),
-  run("yarn run vite build --config vite/content.ts"),
+  //run("yarn run vite build --config vite/content.ts"),
   run("yarn run vite build --config vite/inpage.ts"),
   run("yarn run vite build --config vite/background.ts"),
   generateManifest(),
