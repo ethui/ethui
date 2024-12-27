@@ -1,7 +1,7 @@
 use ethui_networks::{Network, Networks};
 use ethui_types::{Affinity, GlobalState};
 
-use crate::{Error, Result, Store};
+use crate::{permissions::Permission, Error, Result, Store};
 
 /// Context for a provider connection
 ///
@@ -11,13 +11,17 @@ use crate::{Error, Result, Store};
 pub struct Ctx {
     /// The domain associated with a connection
     pub domain: Option<String>,
+    pub permissions: Vec<Permission>,
 }
 
 impl jsonrpc_core::Metadata for Ctx {}
 
 impl Ctx {
     pub fn empty() -> Self {
-        Self { domain: None }
+        Self {
+            domain: None,
+            permissions: vec![],
+        }
     }
 
     pub async fn get_affinity(&self) -> Affinity {
@@ -80,5 +84,9 @@ impl Ctx {
             Affinity::Sticky(chain_id) => chain_id,
             _ => Networks::read().await.get_current().chain_id,
         }
+    }
+
+    pub fn get_permissions(&self) -> &Vec<Permission> {
+        &self.permissions
     }
 }

@@ -109,6 +109,8 @@ impl Handler {
         self_handler!("personal_sign", Self::eth_sign);
         self_handler!("eth_signTypedData", Self::eth_sign_typed_data_v4);
         self_handler!("eth_signTypedData_v4", Self::eth_sign_typed_data_v4);
+        self_handler!("wallet_requestPermissions", Self::request_permissions);
+        self_handler!("wallet_getPermissions", Self::get_permissions);
         self_handler!("wallet_addEthereumChain", Self::add_chain);
         self_handler!("wallet_switchEthereumChain", Self::switch_chain);
         self_handler!("wallet_watchAsset", Self::add_token);
@@ -149,6 +151,33 @@ impl Handler {
             "networkVersion": network.chain_id.to_string(),
             "accounts": [address],
         }))
+    }
+
+    #[tracing::instrument(skip(params))]
+    async fn request_permissions(
+        params: Params,
+        ctx: Ctx,
+    ) -> jsonrpc_core::Result<serde_json::Value> {
+        let method = methods::RequestPermissions::build()
+            .set_params(params.into())?
+            .build()
+            .await;
+
+        method.run().await?;
+
+        Ok(serde_json::Value::Null)
+    }
+
+    #[tracing::instrument(skip(params))]
+    async fn get_permissions(params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+        let method = methods::GetPermissions::build()
+            .set_params(params.into())?
+            .build()
+            .await;
+
+        method.run().await?;
+
+        Ok(serde_json::Value::Null)
     }
 
     #[tracing::instrument(skip(params))]
