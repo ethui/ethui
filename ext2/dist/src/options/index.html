@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type="module" src="http://localhost:5173/@vite/client"></script>
+
+    <title>ethui Options</title>
+    <script type="module" crossorigin src="/modulepreload-polyfill.js"></script>
+  </head>
+  <style type="text/css">
+    .form-section {
+      margin: 10px;
+    }
+
+    .label {
+      display: block;
+    }
+  </style>
+  <body>
+    <div class="form-section">
+      <label class="label">Log level</label>
+      <select id="log-level">
+        <option value="info">Info</option>
+        <option value="warn">Warn</option>
+        <option value="error">Error</option>
+        <option value="debug">Debug</option>
+      </select>
+    </div>
+
+    <div class="form-section">
+      <label class="label">Endpoint</label>
+      <input type="text" id="endpoint">
+    </div>
+
+    <div class="form-section">
+      <div id="status"></div>
+      <button id="save">Save</button>
+    </div>
+
+    <script src="http://localhost:5173/src/options/index.ts" type="module"></script>
+  </body>
+</html>
