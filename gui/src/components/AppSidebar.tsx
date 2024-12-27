@@ -1,6 +1,4 @@
 import { EthuiLogo } from "@ethui/ui/components/ethui-logo";
-import clsx from "clsx";
-import { platform } from "@tauri-apps/plugin-os";
 import {
   Sidebar,
   SidebarContent,
@@ -20,6 +18,8 @@ import {
   CollapsibleTrigger,
 } from "@radix-ui/react-collapsible";
 import { Link, useLocation } from "@tanstack/react-router";
+import { platform } from "@tauri-apps/plugin-os";
+import clsx from "clsx";
 import {
   ChevronDown,
   ChevronRight,
@@ -43,7 +43,7 @@ export function AppSidebar() {
   const commandBar = useCommandBar();
   const location = useLocation();
   const { open, toggleSidebar } = useSidebar();
-  const isMacos = platform() == "macos";
+  const isMacos = platform() === "macos";
 
   return (
     <Sidebar collapsible="icon">
@@ -70,7 +70,7 @@ export function AppSidebar() {
                       href={item.url}
                       className={cn(
                         item.url === location.pathname &&
-                        "bg-primary text-accent hover:bg-primary hover:text-accent",
+                          "bg-primary text-accent hover:bg-primary hover:text-accent",
                       )}
                     >
                       {item.icon}
@@ -99,7 +99,7 @@ export function AppSidebar() {
                               href={item.url}
                               className={cn(
                                 item.url === location.pathname &&
-                                "bg-primary text-accent hover:bg-primary hover:text-accent",
+                                  "bg-primary text-accent hover:bg-primary hover:text-accent",
                               )}
                             >
                               {item.title}
@@ -137,7 +137,7 @@ export function AppSidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
-    </Sidebar >
+    </Sidebar>
   );
 }
 
