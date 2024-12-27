@@ -43,6 +43,11 @@ pub enum Error {
     #[error(transparent)]
     Connection(#[from] ethui_connections::Error),
 
+    #[error(
+        "Unrecongnized chainID {0}. Try adding the chain using wallet_addEthereumChain first."
+    )]
+    UnrecognizedChainId(u32),
+
     #[error("serialization error: {0}")]
     Serde(#[from] serde_json::Error),
 
@@ -107,6 +112,8 @@ impl From<Error> for jsonrpc_core::Error {
             Error::ErcTypeInvalid(..) => ErrorCode::ServerError(-32002),
             Error::ErcWrongOwner => ErrorCode::ServerError(-32002),
             Error::ErcInvalid => ErrorCode::ServerError(-32002),
+            // https://github.com/MetaMask/metamask-mobile/blob/5fe6aceffcf4c80ed1f3530282640aebcd201935/app/core/RPCMethods/wallet_switchEthereumChain.js#L88C11-L88C15
+            Error::UnrecognizedChainId(_) => ErrorCode::ServerError(4902),
             _ => ErrorCode::InternalError,
         };
 

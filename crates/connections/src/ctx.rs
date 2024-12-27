@@ -47,6 +47,7 @@ impl Ctx {
     }
 
     pub async fn switch_chain(&mut self, new_chain_id: u32) -> Result<()> {
+        dbg!(&self, &self.chain_id().await);
         if self.chain_id().await == new_chain_id {
             return Ok(());
         }
