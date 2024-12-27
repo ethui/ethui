@@ -6,7 +6,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
 const { target, v: version } = await yargs(hideBin(process.argv))
-  .option("target", { type: "string", default: "firefox-dev" })
+  .option("target", { type: "string", default: "chrome-dev" })
   .option("v", { type: "string", default: "0.0.0" })
   .parse();
 
