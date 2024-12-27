@@ -99,19 +99,20 @@ pub type Result<T> = std::result::Result<T, Error>;
 impl From<Error> for jsonrpc_core::Error {
     fn from(value: Error) -> Self {
         let code = match value {
-            Error::TxDialogRejected | Error::SignatureRejected => ErrorCode::ServerError(4001),
+            Error::TxDialogRejected | Error::SignatureRejected | Error::UserRejectedDialog => {
+                ErrorCode::ServerError(4001)
+            }
+            Error::ParseError => ErrorCode::ParseError,
+            Error::TypeInvalid(..)
+            | Error::ErcTypeInvalid(..)
+            | Error::ErcInvalid
+            | Error::ErcWrongOwner
+            | Error::DecimalsInvalid
+            | Error::TokenInvalid
+            | Error::SymbolMissing
+            | Error::SymbolInvalid => ErrorCode::InvalidParams,
             Error::WalletNotFound(..) => ErrorCode::ServerError(4100),
-            Error::ParseError => ErrorCode::ServerError(-32700),
-            Error::UserRejectedDialog => ErrorCode::ServerError(4001),
-            Error::TokenInvalid => ErrorCode::ServerError(-32602),
-            Error::SymbolMissing => ErrorCode::ServerError(-32602),
-            Error::SymbolInvalid => ErrorCode::ServerError(-32602),
-            Error::DecimalsInvalid => ErrorCode::ServerError(-32602),
             Error::NetworkInvalid => ErrorCode::ServerError(4901),
-            Error::TypeInvalid(..) => ErrorCode::ServerError(-32603),
-            Error::ErcTypeInvalid(..) => ErrorCode::ServerError(-32002),
-            Error::ErcWrongOwner => ErrorCode::ServerError(-32002),
-            Error::ErcInvalid => ErrorCode::ServerError(-32002),
             // https://github.com/MetaMask/metamask-mobile/blob/5fe6aceffcf4c80ed1f3530282640aebcd201935/app/core/RPCMethods/wallet_switchEthereumChain.js#L88C11-L88C15
             Error::UnrecognizedChainId(_) => ErrorCode::ServerError(4902),
             _ => ErrorCode::InternalError,
