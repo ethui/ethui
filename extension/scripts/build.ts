@@ -54,6 +54,7 @@ function run(cmd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     exec(`${env} ${cmd}`, (error) => {
       if (error) {
+        console.log(error);
         reject();
       } else {
         resolve();
