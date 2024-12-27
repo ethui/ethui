@@ -41,5 +41,5 @@ pub(crate) async fn all_windows_focus(app: &AppHandle) {
         }
     }
 
-    main_window_show(app).await;
+    main::show(app).await;
 }
