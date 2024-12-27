@@ -1,13 +1,16 @@
 use ethui_networks::{Network, Networks};
 use ethui_types::{Affinity, GlobalState};
 
-use crate::{permissions::Permission, Error, Result, Store};
+use crate::{
+    permissions::{Permission, PermissionRequest, RequestedPermission},
+    Error, Result, Store,
+};
 
 /// Context for a provider connection
 ///
 /// Handles network affinity of this individual connection
 /// Affinity is actually stored in `Store` for persistence
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Ctx {
     /// The domain associated with a connection
     pub domain: Option<String>,
@@ -17,13 +20,6 @@ pub struct Ctx {
 impl jsonrpc_core::Metadata for Ctx {}
 
 impl Ctx {
-    pub fn empty() -> Self {
-        Self {
-            domain: None,
-            permissions: vec![],
-        }
-    }
-
     pub async fn get_affinity(&self) -> Affinity {
         if let Some(ref domain) = self.domain {
             Store::read().await.get_affinity(domain)
@@ -84,6 +80,19 @@ impl Ctx {
             Affinity::Sticky(chain_id) => chain_id,
             _ => Networks::read().await.get_current().chain_id,
         }
+    }
+
+    // TODO: make this itneractive instead of blindly accepting all permissions
+    pub fn request_permissions(&mut self, request: PermissionRequest) -> Vec<RequestedPermission> {
+        let ret = request.clone().into_request_permissions_result().collect();
+
+        let new_permissions: Vec<_> = request
+            .into_permissions(self.domain.clone().unwrap())
+            .collect();
+
+        self.permissions.extend(new_permissions);
+
+        ret
     }
 
     pub fn get_permissions(&self) -> &Vec<Permission> {

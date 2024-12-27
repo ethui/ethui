@@ -1,19 +1,57 @@
-use serde::Serialize;
+use std::collections::HashMap;
+
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize)]
 pub struct Permission {
-    invoker: String,
-    parent_capability: String,
-    caveats: Vec<Caveat>,
+    pub invoker: String,
+    pub parent_capability: String,
+    pub caveats: Vec<Caveat>,
 }
 
 #[derive(Debug, Clone, Serialize)]
 pub struct Caveat {
-    r#type: String,
-    value: serde_json::Value,
+    pub r#type: String,
+    pub value: serde_json::Value,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct PermissionRequest {
+    methods: HashMap<String, HashMap<String, serde_json::Value>>,
+}
+
+impl PermissionRequest {
+    pub fn into_permissions(self, invoker: String) -> impl Iterator<Item = Permission> {
+        self.methods
+            .into_iter()
+            .map(move |(method, caveats)| Permission {
+                invoker: invoker.clone(),
+                parent_capability: method.to_string(),
+                caveats: caveats
+                    .into_iter()
+                    .map(move |(caveat, value)| Caveat {
+                        r#type: caveat.to_string(),
+                        value: value.clone(),
+                    })
+                    .collect(),
+            })
+    }
+
+    pub fn into_request_permissions_result(self) -> impl Iterator<Item = RequestedPermission> {
+        self.methods.into_iter().map(|(method, _caveats)| {
+            let parent_capability = method.to_string();
+            let date = chrono::Utc::now().to_rfc3339();
+
+            RequestedPermission {
+                parent_capability,
+                date,
+            }
+        })
+    }
 }
 
 #[derive(Debug, Clone, Serialize)]
-pub struct PermissionRequest {
-    name: String,
+pub struct RequestedPermission {
+    pub parent_capability: String,
+    pub date: String,
 }

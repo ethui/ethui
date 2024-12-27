@@ -5,7 +5,7 @@ mod methods;
 use std::collections::HashMap;
 
 use alloy::{dyn_abi::TypedData, hex, primitives::Bytes, providers::Provider as _};
-use ethui_connections::Ctx;
+use ethui_connections::{permissions::PermissionRequest, Ctx};
 use ethui_types::GlobalState;
 use ethui_wallets::{WalletControl, Wallets};
 use jsonrpc_core::{MetaIoHandler, Params};
@@ -22,7 +22,10 @@ impl Handler {
     pub fn new(domain: Option<String>) -> Self {
         let mut res = Self {
             io: MetaIoHandler::default(),
-            ctx: Ctx { domain },
+            ctx: Ctx {
+                domain,
+                ..Default::default()
+            },
         };
         res.add_handlers();
         res
@@ -156,32 +159,21 @@ impl Handler {
     #[tracing::instrument(skip(params))]
     async fn request_permissions(
         params: Params,
-        ctx: Ctx,
+        mut ctx: Ctx,
     ) -> jsonrpc_core::Result<serde_json::Value> {
-        let method = methods::RequestPermissions::build()
-            .set_params(params.into())?
-            .build()
-            .await;
+        let request = params.parse::<PermissionRequest>().unwrap();
+        let ret = ctx.request_permissions(request);
 
-        method.run().await?;
-
-        Ok(serde_json::Value::Null)
+        Ok(json!(ret))
     }
 
-    #[tracing::instrument(skip(params))]
-    async fn get_permissions(params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
-        let method = methods::GetPermissions::build()
-            .set_params(params.into())?
-            .build()
-            .await;
-
-        method.run().await?;
-
-        Ok(serde_json::Value::Null)
+    #[tracing::instrument(skip(_params, ctx))]
+    async fn get_permissions(_params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+        Ok(json!(ctx.get_permissions()))
     }
 
-    #[tracing::instrument(skip(params))]
-    async fn add_chain(params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+    #[tracing::instrument(skip(params, _ctx))]
+    async fn add_chain(params: Params, _ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
         let method = methods::ChainAdd::build()
             .set_params(params.into())?
             .build()
