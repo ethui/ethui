@@ -26,6 +26,9 @@ export default defineConfig({
     }),
     tsconfigPaths({ parseNative: true }),
   ],
+  define: {
+    "process.env": {},
+  },
   build: {
     minify: false,
     outDir: path.resolve(__dirname, "..", dist),

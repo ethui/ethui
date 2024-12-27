@@ -1,0 +1,55 @@
+{
+  "manifest_version": 3,
+  "name": "ethui",
+  "description": "An Ethereum toolkit",
+  "version": "1.0.0",
+  "author": "Miguel Palhas <mpalhas@gmail.com>",
+  "homepage_url": "https://github.com/ethui",
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "run_at": "document_start",
+      "js": ["src/content-script/index.ts"],
+      "all_frames": true
+    }
+  ],
+  "options_ui": {
+    "page": "src/options/index.html",
+    "browser_style": false
+  },
+  "{{chrome}}.background": {
+    "service_worker": "src/background.ts"
+  },
+  "{{firefox}}.background": {
+    "scripts": ["src/background/background.ts"]
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
+  },
+  "options_page": "src/options.html",
+
+  "permissions": ["storage"],
+  "web_accessible_resources": [
+    {
+      "matches": ["<all_urls>"],
+      "resources": [
+        "/inpage/inpage.js",
+        "devtools/index.html",
+        "panel/index.html"
+      ]
+    }
+  ],
+  "icons": {
+    "16": "icons/ethui-black-16.png",
+    "48": "icons/ethui-black-48.png",
+    "96": "icons/ethui-black-96.png",
+    "128": "icons/ethui-black-128.png"
+  },
+
+  "{{firefox}}.browser_specific_settings": {
+    "gecko": {
+      "id": "iron-wallet@naps62.com"
+    }
+  }
+}

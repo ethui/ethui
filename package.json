@@ -25,6 +25,7 @@
   },
   "workspaces": [
     "extension",
+    "ext2",
     "packages/types",
     "packages/data",
     "packages/abiparse",
