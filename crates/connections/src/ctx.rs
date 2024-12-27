@@ -84,7 +84,7 @@ impl Ctx {
 
     // TODO: make this itneractive instead of blindly accepting all permissions
     pub fn request_permissions(&mut self, request: PermissionRequest) -> Vec<RequestedPermission> {
-        let ret = request.clone().into_request_permissions_result().collect();
+        let ret = request.clone().into_request_permissions_result();
 
         let new_permissions: Vec<_> = request
             .into_permissions(self.domain.clone().unwrap())

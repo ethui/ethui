@@ -37,16 +37,19 @@ impl PermissionRequest {
             })
     }
 
-    pub fn into_request_permissions_result(self) -> impl Iterator<Item = RequestedPermission> {
-        self.methods.into_iter().map(|(method, _caveats)| {
-            let parent_capability = method.to_string();
-            let date = chrono::Utc::now().to_rfc3339();
+    pub fn into_request_permissions_result(&self) -> Vec<RequestedPermission> {
+        self.methods
+            .keys()
+            .map(|method| {
+                let parent_capability = method.clone().to_string();
+                let date = chrono::Utc::now().to_rfc3339();
 
-            RequestedPermission {
-                parent_capability,
-                date,
-            }
-        })
+                RequestedPermission {
+                    parent_capability,
+                    date,
+                }
+            })
+            .collect()
     }
 }
 
