@@ -108,7 +108,6 @@ jobs:
           brew install libsodium libusb
 
       - uses: dtolnay/rust-toolchain@stable
-        if: ${{ matrix.platform != 'macos-latest' }}
         with:
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
