@@ -146,10 +146,10 @@ jobs:
         run: yarn workspace @ethui/extension install
 
       - name: Create chrome bundle
-        run: yarn workspace @ethui/extension build --target chrome --version ${{ needs.setup.outputs.version }}
+        run: yarn workspace @ethui/extension build --target chrome -v ${{ needs.setup.outputs.version }}
 
       - name: Create firefox bundle
-        run: yarn workspace @ethui/extension build --target firefox --version ${{ needs.setup.outputs.version }}
+        run: yarn workspace @ethui/extension build --target firefox -v ${{ needs.setup.outputs.version }}
 
       - name: Upload to release
         run: gh release upload ${{ needs.setup.outputs.tag }} ./extension/dist/*.{crx,zip,xpi}
