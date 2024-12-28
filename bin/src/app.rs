@@ -131,8 +131,8 @@ async fn init(app: &tauri::App, args: &Args) -> AppResult<()> {
     ethui_forge::init().await?;
 
     // automatically open devtools if env asks for it
-    //#[cfg(feature = "debug")]
-    if std::env::var("ethui_OPEN_DEVTOOLS").is_ok() {
+    #[cfg(feature = "debug")]
+    if std::env::var("ETHUI_OPEN_DEVTOOLS").is_ok() {
         let window = app.get_webview_window("main").unwrap();
         window.open_devtools();
     }
@@ -172,7 +172,6 @@ async fn event_listener(handle: AppHandle) {
 /// Otherwise, the app's default config dir will be used.
 fn resource(app: &tauri::App, resource: &str, args: &Args) -> PathBuf {
     let dir = config_dir(app, args);
-    debug!("config dir: {:?}", dir);
     std::fs::create_dir_all(&dir).expect("could not create config dir");
     dir.join(resource)
 }
