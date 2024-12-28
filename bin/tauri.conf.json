@@ -19,6 +19,7 @@
     }
   },
   "bundle": {
+    "icon": ["icons/128x128.png"],
     "active": true,
     "targets": "all"
   }
