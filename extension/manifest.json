@@ -19,24 +19,25 @@
     "browser_style": false
   },
   "{{chrome}}.background": {
-    "service_worker": "src/background.ts"
+    "service_worker": "src/background/index.ts"
   },
   "{{firefox}}.background": {
-    "scripts": ["src/background/background.ts"]
+    "scripts": ["src/background/background/index.ts"]
   },
+  "devtools_page": "src/devtools/index.html",
+
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self';"
   },
-  "options_page": "src/options.html",
 
   "permissions": ["storage"],
   "web_accessible_resources": [
     {
       "matches": ["<all_urls>"],
       "resources": [
-        "/inpage/inpage.js",
-        "devtools/index.html",
-        "panel/index.html"
+        "src/inpage/index.js",
+        "src/devtools/index.html",
+        "src/panel/index.html"
       ]
     }
   ],
