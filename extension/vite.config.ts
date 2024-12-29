@@ -1,7 +1,10 @@
 import { defineConfig } from "vite";
-import webExtension from "vite-plugin-web-extension";
+import webExtension, { readJsonFile } from "vite-plugin-web-extension";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 import tsconfigPaths from "vite-tsconfig-paths";
+
+const browser = process.env.ETHUI_BROWSER || "chrome";
+const isDev = process.env.NODE_ENV === "development";
 
 const fetchVersion = () => {
   return {
@@ -36,6 +39,9 @@ const nodePolyfillsFix = (options?: PolyfillOptions | undefined): Plugin => {
 };
 
 export default defineConfig({
+  build: {
+    outDir: `dist/${browser}`,
+  },
   plugins: [
     nodePolyfillsFix({
       exclude: ["fs"],
@@ -43,6 +49,15 @@ export default defineConfig({
     fetchVersion(),
     tsconfigPaths({ parseNative: true }),
     webExtension({
+      browser,
+      manifest: () => {
+        const pkg = readJsonFile("package.json");
+        const template = readJsonFile("manifest.json");
+        return {
+          ...template,
+          version: pkg.version,
+        };
+      },
       additionalInputs: [
         "src/inpage/index.ts",
         "src/devtools/index.html",

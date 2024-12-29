@@ -2,7 +2,6 @@
   "manifest_version": 3,
   "name": "ethui",
   "description": "An Ethereum toolkit",
-  "version": "1.0.0",
   "author": "Miguel Palhas <mpalhas@gmail.com>",
   "homepage_url": "https://github.com/ethui",
 
@@ -22,7 +21,7 @@
     "service_worker": "src/background/index.ts"
   },
   "{{firefox}}.background": {
-    "scripts": ["src/background/background/index.ts"]
+    "scripts": ["src/background/index.ts"]
   },
   "devtools_page": "src/devtools/index.html",
 
