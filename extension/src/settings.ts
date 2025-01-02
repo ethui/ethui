@@ -2,6 +2,7 @@ import log from "loglevel";
 import { storage } from "webextension-polyfill";
 
 const { PROD } = import.meta.env;
+console.log(import.meta.env);
 
 export interface Settings extends Record<string, string> {
   logLevel: "info" | "debug" | "warn" | "error";
@@ -16,5 +17,6 @@ export const defaultSettings: Settings = {
 export async function loadSettings() {
   const settings = (await storage.sync.get(defaultSettings)) as Settings;
   log.setLevel(settings.logLevel);
+  console.log(1, settings);
   return settings;
 }

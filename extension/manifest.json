@@ -26,7 +26,7 @@
   "devtools_page": "src/devtools/index.html",
 
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self';"
+    "extension_pages": "script-src 'self'; object-src 'self'; script-src-elem 'self' http://localhost:5173;"
   },
 
   "permissions": ["storage"],
@@ -36,7 +36,8 @@
       "resources": [
         "src/inpage/index.js",
         "src/devtools/index.html",
-        "src/panel/index.html"
+        "src/panel/index.html",
+        "src/options/index.js"
       ]
     }
   ],

@@ -34,4 +34,10 @@ const restoreOptions = () => {
 };
 
 restoreOptions();
+document.getElementsByClassName("form-section").forEach((el) => {
+  console.log(el);
+});
+console.log($logLevel);
 $save.addEventListener("click", saveOptions);
+
+alert("asd");
