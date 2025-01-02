@@ -2,7 +2,6 @@ import log from "loglevel";
 import { storage } from "webextension-polyfill";
 
 const { PROD } = import.meta.env;
-console.log(import.meta.env);
 
 export interface Settings extends Record<string, string> {
   logLevel: "info" | "debug" | "warn" | "error";
