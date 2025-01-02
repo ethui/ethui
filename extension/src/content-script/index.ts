@@ -70,7 +70,7 @@ function initProviderForward() {
  * which will connect to the stream being forward by this content script
  */
 export function injectInPageScript() {
-  const url = runtime.getURL("inpage/inpage.js");
+  const url = runtime.getURL("src/inpage/index.js");
 
   try {
     const container = document.head || document.documentElement;
