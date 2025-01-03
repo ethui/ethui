@@ -155,35 +155,44 @@ impl SendTransaction {
             .ok_or(Error::WalletNameNotFound(self.wallet_name.clone()))?
             .clone();
 
-        let signer = wallet
-            .build_signer(self.network.chain_id, &self.wallet_path)
-            .await?;
-
         let url = self
             .network
             .http_url
             .parse()
             .map_err(|_| Error::CannotParseUrl(self.network.http_url.clone()))?;
 
-        if self.network.is_dev() {
+        if self.network.is_dev() && self.network.chain_id == 31337 {
             if let Wallet::Impersonator(ref wallet) = wallet {
                 let account = wallet.get_address(&self.wallet_path).await?;
-
                 let provider = ProviderBuilder::new()
                     .with_recommended_fillers()
                     .on_http(url);
 
+                // TODO: maybe we can find a way to only do this once for every account,
+                // or only call anvil_autoImpersonate once for the whole network, instead of making this request for every single transaction.
+                // this is just a minor optimization, though
                 provider.anvil_impersonate_account(account).await?;
-
+                self.provider = Some(Box::new(provider));
+            } else {
+                let signer = wallet
+                    .build_signer(self.network.chain_id, &self.wallet_path)
+                    .await?;
+                let provider = ProviderBuilder::new()
+                    .with_recommended_fillers()
+                    .wallet(signer.to_wallet())
+                    .on_http(url);
                 self.provider = Some(Box::new(provider));
             }
         } else {
+            let signer = wallet
+                .build_signer(self.network.chain_id, &self.wallet_path)
+                .await?;
             let provider = ProviderBuilder::new()
                 .with_recommended_fillers()
                 .wallet(signer.to_wallet())
                 .on_http(url);
             self.provider = Some(Box::new(provider));
-        }
+        };
 
         Ok(())
     }
