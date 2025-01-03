@@ -172,7 +172,8 @@ impl SendTransaction {
                         .on_http(url);
 
                     // TODO: maybe we can find a way to only do this once for every account,
-                    // or only call anvil_autoImpersonate once for the whole network, instead of making this request for every single transaction.
+                    // or only call anvil_autoImpersonate once for the whole network,
+                    // instead of making this request for every single transaction.
                     // this is just a minor optimization, though
                     provider.anvil_impersonate_account(account).await?;
                     self.provider = Some(Box::new(provider));
