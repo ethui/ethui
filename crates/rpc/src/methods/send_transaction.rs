@@ -5,7 +5,7 @@ use alloy::{
     primitives::{Bytes, U256},
     providers::{ext::AnvilApi, PendingTransactionBuilder, Provider, ProviderBuilder},
     rpc::types::TransactionRequest,
-    transports::http::{reqwest, Client, Http},
+    transports::http::{Client, Http},
 };
 use ethui_connections::Ctx;
 use ethui_dialogs::{Dialog, DialogMsg};
@@ -139,12 +139,9 @@ impl SendTransaction {
 
     async fn send(&mut self) -> Result<PendingTransactionBuilder<Http<Client>, Ethereum>> {
         self.build_provider().await?;
-        Ok(self
-            .provider
-            .as_ref()
-            .unwrap()
-            .send_transaction(self.request.clone())
-            .await?)
+        let provider = self.provider.as_ref().unwrap();
+        let pending = provider.send_transaction(self.request.clone()).await?;
+        Ok(pending)
     }
 
     async fn build_provider(&mut self) -> Result<()> {
@@ -176,7 +173,7 @@ impl SendTransaction {
                     .with_recommended_fillers()
                     .on_http(url);
 
-                provider.anvil_impersonate_account(account).await.unwrap();
+                provider.anvil_impersonate_account(account).await?;
 
                 self.provider = Some(Box::new(provider));
             }
