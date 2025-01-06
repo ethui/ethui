@@ -8,6 +8,8 @@ import { Button } from "@ethui/ui/components/shadcn/button";
 import { Datapoint } from "#/components/Datapoint";
 import { DialogBottom } from "#/components/Dialogs/Bottom";
 import { useDialog } from "#/hooks/useDialog";
+import { Check, LoaderCircle } from "lucide-react";
+import { useState } from "react";
 
 export const Route = createFileRoute("/dialog/_l/chain-add/$id")({
   component: ChainAddDialog,
@@ -16,8 +18,15 @@ export const Route = createFileRoute("/dialog/_l/chain-add/$id")({
 function ChainAddDialog() {
   const { id } = Route.useParams();
   const { data: network, send } = useDialog<Network>(id);
+  const [loading, setLoading] = useState(false);
 
   if (!network) return null;
+
+  const onClick = () => {
+    setLoading(true);
+    send("accept");
+    setLoading(false);
+  };
 
   return (
     <div className="flex flex-col gap-5">
@@ -80,8 +89,9 @@ function ChainAddDialog() {
           <Button
             type="submit"
             disabled={!isDirty || !isValid}
-            onClick={() => send("accept")}
+            onClick={onClick}
           >
+            {loading ? <LoaderCircle className="animate-spin" /> : <Check />}
             Add
           </Button>
         </div>

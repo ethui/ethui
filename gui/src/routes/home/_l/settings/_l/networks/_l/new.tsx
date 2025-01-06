@@ -47,10 +47,10 @@ function Content() {
       </div>
 
       <div className="flex gap-2">
-        <Button>Create</Button>
         <Button variant="destructive" onClick={cancel}>
           Cancel
         </Button>
+        <Button>Create</Button>
       </div>
     </Form>
   );

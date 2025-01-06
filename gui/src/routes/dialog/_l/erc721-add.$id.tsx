@@ -8,6 +8,8 @@ import { AddressView } from "#/components/AddressView";
 import { Datapoint } from "#/components/Datapoint";
 import { useDialog } from "#/hooks/useDialog";
 import { useNetworks } from "#/store/useNetworks";
+import { useState } from "react";
+import { Check, LoaderCircle } from "lucide-react";
 
 const tauriWindow = getCurrentWindow();
 
@@ -19,9 +21,16 @@ function ERC721AddDialog() {
   const { id } = Route.useParams();
   const { data: token, send } = useDialog<ErcFullData>(id);
   const network = useNetworks((s) => s.current);
+  const [loading, setLoading] = useState(false);
 
   if (!network) return null;
   if (!token) return null;
+
+  const onClick = () => {
+    setLoading(true);
+    send("accept");
+    setLoading(false);
+  };
 
   return (
     <div className="m-2 flex flex-col items-center">
@@ -49,15 +58,12 @@ function ERC721AddDialog() {
         />
       </div>
 
-      <div className=" m-2 flex">
-        <Button color="error" onClick={() => tauriWindow.close()}>
+      <div className="flex flex-col gap-2">
+        <Button variant="destructive" onClick={() => tauriWindow.close()}>
           Cancel
         </Button>
-        <Button
-          type="submit"
-          disabled={!isDirty || !isValid}
-          onClick={() => send("accept")}
-        >
+        <Button type="submit" disabled={!isDirty || !isValid} onClick={onClick}>
+          {loading ? <LoaderCircle className="animate-spin" /> : <Check />}
           Add
         </Button>
       </div>
