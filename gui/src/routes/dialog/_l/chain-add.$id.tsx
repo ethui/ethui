@@ -5,11 +5,11 @@ import { isDirty, isValid } from "zod";
 import type { Network } from "@ethui/types/network";
 import { ChainView } from "@ethui/ui/components/chain-view";
 import { Button } from "@ethui/ui/components/shadcn/button";
+import { Check, LoaderCircle } from "lucide-react";
+import { useState } from "react";
 import { Datapoint } from "#/components/Datapoint";
 import { DialogBottom } from "#/components/Dialogs/Bottom";
 import { useDialog } from "#/hooks/useDialog";
-import { Check, LoaderCircle } from "lucide-react";
-import { useState } from "react";
 
 export const Route = createFileRoute("/dialog/_l/chain-add/$id")({
   component: ChainAddDialog,
@@ -82,13 +82,14 @@ function ChainAddDialog() {
         <div className="m-2 flex items-center justify-center gap-2">
           <Button
             variant="destructive"
+            disabled={loading}
             onClick={() => getCurrentWebviewWindow().close()}
           >
             Cancel
           </Button>
           <Button
             type="submit"
-            disabled={!isDirty || !isValid}
+            disabled={!isDirty || !isValid || loading}
             onClick={onClick}
           >
             {loading ? <LoaderCircle className="animate-spin" /> : <Check />}

@@ -4,12 +4,12 @@ import { isDirty, isValid } from "zod";
 
 import type { ErcFullData } from "@ethui/types";
 import { Button } from "@ethui/ui/components/shadcn/button";
+import { Check, LoaderCircle } from "lucide-react";
+import { useState } from "react";
 import { AddressView } from "#/components/AddressView";
 import { Datapoint } from "#/components/Datapoint";
 import { useDialog } from "#/hooks/useDialog";
 import { useNetworks } from "#/store/useNetworks";
-import { useState } from "react";
-import { Check, LoaderCircle } from "lucide-react";
 
 const tauriWindow = getCurrentWindow();
 
@@ -59,10 +59,18 @@ function ERC721AddDialog() {
       </div>
 
       <div className="flex flex-col gap-2">
-        <Button variant="destructive" onClick={() => tauriWindow.close()}>
+        <Button
+          variant="destructive"
+          disabled={loading}
+          onClick={() => tauriWindow.close()}
+        >
           Cancel
         </Button>
-        <Button type="submit" disabled={!isDirty || !isValid} onClick={onClick}>
+        <Button
+          type="submit"
+          disabled={!isDirty || !isValid || loading}
+          onClick={onClick}
+        >
           {loading ? <LoaderCircle className="animate-spin" /> : <Check />}
           Add
         </Button>

@@ -5,6 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute } from "@tanstack/react-router";
 import { useRouter } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
+import { Check, LoaderCircle } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 export const Route = createFileRoute("/home/_l/settings/_l/networks/_l/new")({
@@ -20,9 +22,12 @@ function Content() {
     resolver: zodResolver(networkSchema),
   });
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data: Network) => {
+    setLoading(true);
     await invoke("networks_add", { network: data });
+    setLoading(false);
     router.history.back();
   };
 
@@ -50,7 +55,10 @@ function Content() {
         <Button variant="destructive" onClick={cancel}>
           Cancel
         </Button>
-        <Button>Create</Button>
+        <Button>
+          {loading ? <LoaderCircle className="animate-spin" /> : <Check />}
+          Create
+        </Button>
       </div>
     </Form>
   );

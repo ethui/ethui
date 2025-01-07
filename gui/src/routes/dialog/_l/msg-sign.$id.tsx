@@ -3,9 +3,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { HighlightBox } from "@ethui/ui/components/highlight-box";
 
 import { Button } from "@ethui/ui/components/shadcn/button";
-import { useDialog } from "#/hooks/useDialog";
-import { useState } from "react";
 import { Check, LoaderCircle } from "lucide-react";
+import { useState } from "react";
+import { useDialog } from "#/hooks/useDialog";
 
 export const Route = createFileRoute("/dialog/_l/msg-sign/$id")({
   component: MsgSignDialog,

@@ -138,7 +138,7 @@ function AbiItemFormWithSubmit({
       try {
         const result = await invoke<Hash>("rpc_send_transaction", { params });
         setResult({ write: result });
-      } catch (err) {
+      } catch (_err) {
         setLoading(false);
       }
     }
