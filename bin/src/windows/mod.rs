@@ -26,7 +26,11 @@ pub fn build_window(
         .decorations(true)
         .title_bar_style(tauri::TitleBarStyle::Overlay);
 
-    builder.build().unwrap()
+    let window = builder.build().unwrap();
+    window.show().unwrap();
+    window.set_focus().unwrap();
+
+    window
 }
 
 /// Focuses all exiting windows, opening main window in the process if it doesn't exist
