@@ -4,8 +4,6 @@ import { isDirty, isValid } from "zod";
 
 import type { Erc20FullData } from "@ethui/types";
 import { Button } from "@ethui/ui/components/shadcn/button";
-import { Check, LoaderCircle } from "lucide-react";
-import { useState } from "react";
 import { AddressView } from "#/components/AddressView";
 import { Datapoint } from "#/components/Datapoint";
 import { IconAddress } from "#/components/Icons/Address";
@@ -22,16 +20,9 @@ function ERC20AddDialog() {
   const { id } = Route.useParams();
   const { data: token, send } = useDialog<Erc20FullData>(id);
   const network = useNetworks((s) => s.current);
-  const [loading, setLoading] = useState(false);
 
   if (!network) return null;
   if (!token) return null;
-
-  const onClick = () => {
-    setLoading(true);
-    send("accept");
-    setLoading(false);
-  };
 
   return (
     <div className="m-2 flex flex-col items-center">
@@ -61,19 +52,14 @@ function ERC20AddDialog() {
       </div>
 
       <div className="flex flex-col gap-2">
-        <Button
-          variant="destructive"
-          disabled={loading}
-          onClick={() => tauriWindow.close()}
-        >
+        <Button variant="destructive" onClick={() => tauriWindow.close()}>
           Cancel
         </Button>
         <Button
           type="submit"
-          disabled={!isDirty || !isValid || loading}
-          onClick={onClick}
+          disabled={!isDirty || !isValid}
+          onClick={() => send("accept")}
         >
-          {loading ? <LoaderCircle className="animate-spin" /> : <Check />}
           Add
         </Button>
       </div>

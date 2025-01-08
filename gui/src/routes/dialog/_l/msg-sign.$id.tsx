@@ -3,8 +3,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { HighlightBox } from "@ethui/ui/components/highlight-box";
 
 import { Button } from "@ethui/ui/components/shadcn/button";
-import { Check, LoaderCircle } from "lucide-react";
-import { useState } from "react";
 import { useDialog } from "#/hooks/useDialog";
 
 export const Route = createFileRoute("/dialog/_l/msg-sign/$id")({
@@ -14,17 +12,10 @@ export const Route = createFileRoute("/dialog/_l/msg-sign/$id")({
 function MsgSignDialog() {
   const { id } = Route.useParams();
   const { data, send } = useDialog<Record<string, string>>(id);
-  const [loading, setLoading] = useState(false);
 
   if (!data) return null;
 
   const msg = data.Raw || JSON.stringify(data.Typed, null, 2);
-
-  const onClick = () => {
-    setLoading(true);
-    send("accept");
-    setLoading(false);
-  };
 
   return (
     <div className="h-full flex-col gap-3.5">
@@ -43,8 +34,7 @@ function MsgSignDialog() {
         >
           Reject
         </Button>
-        <Button disabled={!msg} type="submit" onClick={onClick}>
-          {loading ? <LoaderCircle className="animate-spin" /> : <Check />}
+        <Button disabled={!msg} type="submit" onClick={() => send("accept")}>
           Sign
         </Button>
       </div>
