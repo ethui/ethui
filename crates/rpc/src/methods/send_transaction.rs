@@ -163,7 +163,7 @@ impl SendTransaction {
 
         let is_dev_network = self.network.is_dev() && self.network.chain_id == 31337;
 
-        match wallet {
+        self.provider = match wallet {
             Wallet::Impersonator(ref wallet) if is_dev_network => {
                 let account = wallet.get_address(&self.wallet_path).await?;
                 let provider = ProviderBuilder::new()
@@ -175,7 +175,7 @@ impl SendTransaction {
                 // instead of making this request for every single transaction.
                 // this is just a minor optimization, though
                 provider.anvil_impersonate_account(account).await?;
-                self.provider = Some(Box::new(provider));
+                Some(Box::new(provider))
             }
             _ => {
                 let signer = wallet
@@ -185,7 +185,7 @@ impl SendTransaction {
                     .with_recommended_fillers()
                     .wallet(signer.to_wallet())
                     .on_http(url);
-                self.provider = Some(Box::new(provider));
+                Some(Box::new(provider))
             }
         };
 
