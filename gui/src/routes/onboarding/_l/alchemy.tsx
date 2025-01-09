@@ -15,7 +15,7 @@ const schema = z.object({
     .optional()
     .nullable()
     .superRefine(async (key, ctx) => {
-      if (!key) return;
+      if (key == "" || !key) return;
       const valid = await invoke("settings_test_alchemy_api_key", { key });
       if (valid) return;
 
@@ -32,7 +32,11 @@ export const Route = createFileRoute("/onboarding/_l/alchemy")({
 
 function OnboardingAlchemy() {
   const router = useRouter();
-  const form = useForm({ mode: "onChange", resolver: zodResolver(schema) });
+  const form = useForm({
+    mode: "onChange",
+    resolver: zodResolver(schema),
+    defaultValues: { alchemyApiKey: "" },
+  });
 
   const alchemyApiKey = useWatch({
     control: form.control,
@@ -88,7 +92,7 @@ function OnboardingAlchemy() {
         </Button>
 
         <Form.Submit
-          useDirtyAlt={false}
+          skipDirty={true}
           label={alchemyApiKey?.length > 0 ? "Next" : "Skip"}
         />
       </div>
