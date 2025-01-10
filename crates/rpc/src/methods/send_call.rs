@@ -19,7 +19,7 @@ pub struct SendCall {
     pub request: TransactionRequest,
 }
 
-impl<'a> SendCall {
+impl SendCall {
     pub fn build(ctx: &Ctx) -> SendCallBuilder<'_> {
         SendCallBuilder::new(ctx)
     }
