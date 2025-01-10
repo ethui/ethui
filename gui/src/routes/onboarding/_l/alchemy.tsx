@@ -15,7 +15,7 @@ const schema = z.object({
     .optional()
     .nullable()
     .superRefine(async (key, ctx) => {
-      if (key == "" || !key) return;
+      if (key === "" || !key) return;
       const valid = await invoke("settings_test_alchemy_api_key", { key });
       if (valid) return;
 
