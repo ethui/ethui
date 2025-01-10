@@ -214,12 +214,12 @@ Form.Checkbox = Checkbox;
 
 interface SubmitProps extends ButtonProps {
   label: React.ReactNode;
-  skipDirty?: boolean;
+  skipDirtyCheck?: boolean;
   isSubmitting?: boolean;
 }
 
 function Submit({
-  skipDirty = false,
+  skipDirtyCheck = false,
   label,
   isSubmitting: isSubmittingOverride = false,
   ...props
@@ -228,7 +228,7 @@ function Submit({
     formState: { isValid, isDirty, isSubmitting },
   } = useFormContext();
 
-  const disabled = skipDirty
+  const disabled = skipDirtyCheck
     ? !isValid || isSubmitting
     : !isDirty || !isValid || isSubmitting;
 
