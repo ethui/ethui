@@ -32,7 +32,11 @@ export const Route = createFileRoute("/onboarding/_l/alchemy")({
 
 function OnboardingAlchemy() {
   const router = useRouter();
-  const form = useForm({ mode: "onChange", resolver: zodResolver(schema) });
+  const form = useForm({
+    mode: "onChange",
+    resolver: zodResolver(schema),
+    defaultValues: { alchemyApiKey: "" },
+  });
 
   const alchemyApiKey = useWatch({
     control: form.control,
@@ -88,7 +92,7 @@ function OnboardingAlchemy() {
         </Button>
 
         <Form.Submit
-          useDirtyAlt={false}
+          skipDirtyCheck={true}
           label={alchemyApiKey?.length > 0 ? "Next" : "Skip"}
         />
       </div>

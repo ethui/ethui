@@ -140,7 +140,7 @@ mod internal_msgs {
         RwLock::new(tx)
     });
 
-    async fn send<'a>(msg: InternalMsg) {
+    async fn send(msg: InternalMsg) {
         INTERNAL.read().await.send(msg).unwrap();
     }
 }
@@ -185,7 +185,7 @@ mod ui_msgs {
         RwLock::new(tx)
     });
 
-    async fn send<'a>(msg: UIMsg) {
+    async fn send(msg: UIMsg) {
         INTERNAL.read().await.send(msg).unwrap();
     }
 }
