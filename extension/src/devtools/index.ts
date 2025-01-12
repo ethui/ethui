@@ -13,7 +13,7 @@ async function init() {
   panel = await devtools.panels.create(
     "ethui",
     "icons/ethui-48.png",
-    "panel/index.html",
+    "src/panel/index.html",
   );
 
   runtime.onMessage.addListener(cacheListener);

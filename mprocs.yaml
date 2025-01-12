@@ -2,7 +2,7 @@ procs:
   app:
     cmd: ["yarn", "run", "app:dev"]
   ext:
-    cmd: ["yarn", "run", "ext:watch"]
+    cmd: ["yarn", "run", "ext:dev"]
   storybook:
     cmd: ["yarn", "run", "storybook"]
   anvil:

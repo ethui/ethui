@@ -16,5 +16,6 @@ export const defaultSettings: Settings = {
 export async function loadSettings() {
   const settings = (await storage.sync.get(defaultSettings)) as Settings;
   log.setLevel(settings.logLevel);
+  console.log(1, settings);
   return settings;
 }
