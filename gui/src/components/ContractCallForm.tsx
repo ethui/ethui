@@ -94,18 +94,21 @@ function AbiItemFormWithSubmit({
   const [result, setResult] = useState<Result>();
   const [value, setValue] = useState<bigint | undefined>();
   const [data, setData] = useState<`0x${string}` | undefined>();
+  const [loading, setLoading] = useState(false);
   const sender = useWallets((s) => s.address);
 
   const onChange = useCallback(
     ({ value, data }: { value?: bigint; data?: `0x${string}` }) => {
       setValue(value);
       setData(data);
+      setLoading(false);
     },
     [],
   );
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     const params = {
       value: `0x${(value || 0).toString(16)}`,
       data,
@@ -132,9 +135,14 @@ function AbiItemFormWithSubmit({
           break;
       }
     } else {
-      const result = await invoke<Hash>("rpc_send_transaction", { params });
-      setResult({ write: result });
+      try {
+        const result = await invoke<Hash>("rpc_send_transaction", { params });
+        setResult({ write: result });
+      } catch (_err) {
+        setLoading(false);
+      }
     }
+    setLoading(false);
   };
   return (
     <div className="flex w-full flex-col gap-2">
@@ -149,7 +157,9 @@ function AbiItemFormWithSubmit({
         onChange={onChange}
       />
       <form onSubmit={onSubmit}>
-        <Button type="submit">submit</Button>
+        <Button type="submit" disabled={loading}>
+          submit
+        </Button>
       </form>
 
       {result && "read" in result && (

@@ -49,8 +49,8 @@ function ERC721AddDialog() {
         />
       </div>
 
-      <div className=" m-2 flex">
-        <Button color="error" onClick={() => tauriWindow.close()}>
+      <div className="flex flex-col gap-2">
+        <Button variant="destructive" onClick={() => tauriWindow.close()}>
           Cancel
         </Button>
         <Button

@@ -60,10 +60,10 @@ function Content({ network }: { network: Network }) {
       </div>
 
       <div className="flex gap-2">
-        <Form.Submit label="Save" />
         <Button variant="destructive" onClick={remove}>
           Remove
         </Button>
+        <Form.Submit label="Save" />
       </div>
     </Form>
   );

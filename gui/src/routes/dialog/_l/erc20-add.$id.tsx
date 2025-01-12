@@ -34,7 +34,7 @@ function ERC20AddDialog() {
         <Datapoint
           label=""
           value={
-            <div className="m-1 flex flex flex-col text-center">
+            <div className="m-1 flex flex-col text-center">
               <IconAddress
                 chainId={network.chain_id}
                 address={token.metadata.address}
@@ -51,8 +51,8 @@ function ERC20AddDialog() {
         />
       </div>
 
-      <div className="flex gap-2">
-        <Button color="error" onClick={() => tauriWindow.close()}>
+      <div className="flex flex-col gap-2">
+        <Button variant="destructive" onClick={() => tauriWindow.close()}>
           Cancel
         </Button>
         <Button
