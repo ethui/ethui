@@ -57,7 +57,7 @@ impl Client {
             "fromBlock": format!("0x{:x}", from_block),
             "toBlock": format!("0x{:x}", latest),
             "maxCount": "0x32",
-            "category": [ "external", "internal", "erc20", "erc721", "erc1155", "specialnft"],
+            "category": [ "external", "erc20", "erc721", "erc1155", "specialnft"],
         });
 
         let params_obj = params.as_object_mut().unwrap();
