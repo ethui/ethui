@@ -65,7 +65,7 @@
     "storybook": "^8.4.7",
     "tailwindcss": "^3.4.16",
     "typescript": "5.7",
-    "vite": "^5.4.11"
+    "vite": "^5.4.12"
   },
   "peerDependencies": {
     "@tanstack/react-query": "^5.21.4"
