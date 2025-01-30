@@ -1,0 +1,16 @@
+name: cargo-outdated
+
+on:
+  schedule:
+    # every sunday
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+jobs:
+  cargo-outdated:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo install cargo-outdated
+      - run: cargo outdated
