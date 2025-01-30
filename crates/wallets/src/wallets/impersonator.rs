@@ -72,6 +72,10 @@ impl WalletControl for Impersonator {
         Ok(self.addresses[usize::from_str(path)?])
     }
 
+    fn is_dev(&self) -> bool {
+        true
+    }
+
     async fn build_signer(&self, _chain_id: u32, _path: &str) -> Result<Signer> {
         Err(crate::Error::WalletCantSign)
     }

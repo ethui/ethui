@@ -55,7 +55,7 @@
     "tailwindcss-animate": "^1.0.7",
     "typescript": "5.7",
     "viem": "^2.21.55",
-    "vite": "^5.4.11",
+    "vite": "^5.4.12",
     "zod": "^3.24.1",
     "zustand": "^5.0.2",
     "zxcvbn-typescript": "^5.0.1"

@@ -1,5 +1,5 @@
 {
-  "productName": "iron",
+  "productName": "ethui",
   "identifier": "dev.ethui",
   "build": {
     "beforeDevCommand": "yarn workspace @ethui/gui dev",
