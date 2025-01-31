@@ -3565,7 +3565,6 @@ dependencies = [
  "ethui-types",
  "ethui-wallets",
  "eyre",
- "foundry-config",
  "foundry-evm",
  "pretty_assertions",
  "serde",
