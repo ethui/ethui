@@ -12,7 +12,6 @@ const { PROD } = import.meta.env;
 import iconProd from "../public/icons/ethui-black.svg?base64";
 import iconDev from "../public/icons/ethui-purple.svg?base64";
 
-console.log(PROD);
 const icon = PROD ? iconProd : iconDev;
 
 /* init on load */
