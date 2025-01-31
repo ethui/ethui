@@ -5,7 +5,12 @@ use crate::{Alchemy, Error, Result};
 pub async fn get_current_api_key() -> Result<Option<String>> {
     let settings = ethui_settings::Settings::read().await;
 
-    Ok(settings.inner.alchemy_api_key.clone())
+    Ok(settings
+        .inner
+        .alchemy_api_key
+        .as_ref()
+        .cloned()
+        .filter(|s| !s.is_empty()))
 }
 
 pub async fn get_alchemy(chain_id: u32) -> Result<Alchemy> {

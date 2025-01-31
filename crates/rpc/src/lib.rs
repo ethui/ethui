@@ -10,7 +10,6 @@ use ethui_types::GlobalState;
 use ethui_wallets::{WalletControl, Wallets};
 use jsonrpc_core::{MetaIoHandler, Params};
 use serde_json::json;
-use tracing::debug;
 
 pub use self::error::{Error, Result};
 
