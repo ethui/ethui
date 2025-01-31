@@ -45,3 +45,10 @@ pub async fn networks_remove(name: String) -> Result<()> {
     networks.remove_network(&name).await?;
     Ok(())
 }
+
+#[tauri::command]
+pub async fn networks_is_dev() -> Result<bool> {
+    let networks = Networks::read().await;
+
+    Ok(networks.get_current().is_dev().await)
+}
