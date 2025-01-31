@@ -22,6 +22,9 @@ pub enum Error {
 
     #[error("No API Key")]
     NoApiKey,
+
+    #[error("Alchemy Error {0}")]
+    Alchemy(#[from] ethui_sync_alchemy::Error),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

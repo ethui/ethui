@@ -4,7 +4,6 @@ use ethui_args::Args;
 use ethui_broadcast::UIMsg;
 use ethui_types::GlobalState as _;
 use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
-use tracing::debug;
 
 use crate::{commands, error::AppResult, menu, system_tray, windows};
 

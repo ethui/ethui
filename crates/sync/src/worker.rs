@@ -177,9 +177,8 @@ async fn unit_worker(
 ) -> Result<()> {
     loop {
         if ethui_sync_alchemy::supports_network(chain_id) {
-            let alchemy = get_alchemy(chain_id).await?;
-            if let Err(e) = alchemy.fetch_updates(addr).await {
-                warn!("Alchemy error: {:?}", e);
+            if let Ok(alchemy) = get_alchemy(chain_id).await {
+                alchemy.fetch_updates(addr).await?;
             };
         }
 
@@ -196,6 +195,7 @@ async fn get_alchemy(chain_id: u32) -> Result<ethui_sync_alchemy::Alchemy> {
         Ok(Some(api_key)) => api_key,
         _ => return Err(Error::NoApiKey),
     };
+    dbg!(&api_key);
     let alchemy = ethui_sync_alchemy::Alchemy::new(&api_key, ethui_db::get(), chain_id).unwrap();
 
     Ok(alchemy)
