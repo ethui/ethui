@@ -45,7 +45,19 @@ const store: StateCreator<Store> = (set, get) => ({
 
   add: async (chainId: number, address: Address) => {
     try {
-      await invoke("db_insert_contract_with_etherscan", { chainId, address });
+      const is_dev = await invoke("networks_is_dev");
+      if (is_dev) {
+        // TODO check hex
+        await invoke("db_insert_contract", {
+          chainId: Number(chainId),
+          address,
+        });
+      } else {
+        await invoke("db_insert_contract_with_etherscan", {
+          chainId: Number(chainId),
+          address,
+        });
+      }
     } catch (err: any) {
       toast({
         title: "Error",

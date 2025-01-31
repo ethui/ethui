@@ -29,8 +29,11 @@ impl<'a> SignMessage<'a> {
     }
 
     pub async fn finish(&mut self) -> Result<PrimitiveSignature> {
-        let skip =
-            { self.network.is_dev() && self.wallet.is_dev() && Settings::read().await.fast_mode() };
+        let skip = {
+            self.network.is_dev().await
+                && self.wallet.is_dev()
+                && Settings::read().await.fast_mode()
+        };
 
         if !skip {
             self.spawn_dialog().await?;

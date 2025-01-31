@@ -59,7 +59,7 @@ impl SendTransaction {
                 .get(&self.wallet_name)
                 .ok_or_else(|| Error::WalletNameNotFound(self.wallet_name.clone()))?;
 
-            self.network.is_dev() && wallet.is_dev() && Settings::read().await.fast_mode()
+            self.network.is_dev().await && wallet.is_dev() && Settings::read().await.fast_mode()
         };
 
         // skip the dialog if both network & wallet allow for it, and if fast_mode is enabled
@@ -161,7 +161,7 @@ impl SendTransaction {
             .parse()
             .map_err(|_| Error::CannotParseUrl(self.network.http_url.clone()))?;
 
-        let is_dev_network = self.network.is_dev() && self.network.chain_id == 31337;
+        let is_dev_network = self.network.is_dev().await && self.network.chain_id == 31337;
 
         self.provider = match wallet {
             Wallet::Impersonator(ref wallet) if is_dev_network => {
