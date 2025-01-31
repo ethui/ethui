@@ -37,6 +37,7 @@ impl EthUIApp {
                 ethui_networks::commands::networks_remove,
                 ethui_db::commands::db_get_contracts,
                 ethui_db::commands::db_insert_contract,
+                ethui_db::commands::db_insert_contract_with_etherscan,
                 ethui_db::commands::db_get_transactions,
                 ethui_db::commands::db_get_transaction_by_hash,
                 ethui_db::commands::db_get_contract_abi,

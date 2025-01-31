@@ -92,7 +92,7 @@ pub async fn db_get_contract_abi(
 }
 
 #[tauri::command]
-pub async fn db_insert_contract(
+pub async fn db_insert_contract_with_etherscan(
     chain_id: u64,
     address: Address,
     db: tauri::State<'_, Db>,
@@ -103,6 +103,20 @@ pub async fn db_insert_contract(
         .map(|abi| serde_json::to_string(&abi).unwrap());
 
     db.insert_contract_with_abi(chain_id as u32, address, abi, name)
+        .await?;
+
+    ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn db_insert_contract(
+    chain_id: u64,
+    address: Address,
+    db: tauri::State<'_, Db>,
+) -> Result<()> {
+    db.insert_contract_with_abi(chain_id as u32, address, None, None)
         .await?;
 
     ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
