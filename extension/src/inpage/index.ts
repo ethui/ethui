@@ -7,9 +7,14 @@ import { type EIP1193Provider, announceProvider } from "mipd";
 import { EthUIProvider } from "./provider";
 import { name } from "./utils";
 
-// URI-encoded SVG logo (symbol-offblack-transparent version of EthUI's logo, 96x96)
-const icon =
-  "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI3LjIuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkNhbWFkYV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgNjAwIDYwMCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNjAwIDYwMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiIHdpZHRoPSI5NiIgaGVpZ2h0PSI5NiI+CjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+Cgkuc3Qwe2ZpbGw6IzE2MTYxNjt9Cgkuc3Qxe2ZpbGw6I0YxRjFGMTt9Cjwvc3R5bGU+CjxnPgoJPHBvbHlnb24gY2xhc3M9InN0MCIgcG9pbnRzPSIyMTcuMiwzNzIgMjYzLjgsMzcyIDMwMCw0MjEuMSAzMzYuMiwzNzIgMzgyLjgsMzcyIDMwMCwyNjAuOCAJIi8+Cgk8cGF0aCBjbGFzcz0ic3QwIiBkPSJNNDY5LDBIMTMxQzU4LjYsMCwwLDU4LjYsMCwxMzFWNDY5YzAsNzIuMyw1OC42LDEzMSwxMzEsMTMxSDQ2OWM3Mi4zLDAsMTMxLTU4LjYsMTMxLTEzMVYxMzEKCQlDNjAwLDU4LjYsNTQxLjQsMCw0NjksMHogTTM4NCwzNzJsLTg0LDExNGwtODQtMTE0SDEwOGwxOTItMjU4bDE5MiwyNThIMzg0eiIvPgo8L2c+Cjwvc3ZnPgo=";
+const { PROD } = import.meta.env;
+
+// @ts-ignore
+import iconProd from "../public/icons/ethui-black.svg?base64";
+// @ts-ignore
+import iconDev from "../public/icons/ethui-purple.svg?base64";
+
+const icon = PROD ? iconProd : iconDev;
 
 /* init on load */
 init();
@@ -40,7 +45,7 @@ export function initializeProvider() {
 
   announceProvider({
     info: {
-      icon,
+      icon: `data:image/svg+xml;base64,${icon}`,
       name,
       rdns: "eth.ethui",
       uuid: uuidv4(),
