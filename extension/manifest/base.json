@@ -24,10 +24,10 @@
   },
   "action": {
     "default_icon": {
-      "16": "icons/ethui-purple-16.png",
-      "48": "icons/ethui-purple-48.png",
-      "96": "icons/ethui-purple-96.png",
-      "128": "icons/ethui-purple-128.png"
+      "16": "icons/ethui-black-16.png",
+      "48": "icons/ethui-black-48.png",
+      "96": "icons/ethui-black-96.png",
+      "128": "icons/ethui-black-128.png"
     }
   },
   "web_accessible_resources": [
