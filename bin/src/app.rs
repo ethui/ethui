@@ -35,6 +35,7 @@ impl EthUIApp {
                 ethui_networks::commands::networks_add,
                 ethui_networks::commands::networks_update,
                 ethui_networks::commands::networks_remove,
+                ethui_networks::commands::networks_is_dev,
                 ethui_db::commands::db_get_contracts,
                 ethui_db::commands::db_insert_contract,
                 ethui_db::commands::db_insert_contract_with_etherscan,

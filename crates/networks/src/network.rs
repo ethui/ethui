@@ -1,5 +1,5 @@
 use alloy::{
-    providers::{ProviderBuilder, RootProvider},
+    providers::{ext::AnvilApi, ProviderBuilder, RootProvider},
     rpc::client::ClientBuilder,
     transports::{
         http::{Client, Http},
@@ -94,8 +94,10 @@ impl Network {
         format!("0x{:x}", self.chain_id)
     }
 
-    pub fn is_dev(&self) -> bool {
-        self.force_is_anvil || self.chain_id == 31337
+    pub async fn is_dev(&self) -> bool {
+        let provider = self.get_alloy_provider().await.unwrap();
+        // TODO cache node_info for entire chain
+        self.chain_id == 31337 || provider.anvil_node_info().await.is_ok()
     }
 
     pub async fn get_alloy_provider(&self) -> Result<RootProvider<BoxTransport>> {
@@ -123,7 +125,7 @@ impl Network {
     }
 
     pub async fn reset_listener(&mut self) -> Result<()> {
-        if self.is_dev() {
+        if self.is_dev().await {
             let http = Url::parse(&self.http_url)?;
             let ws = Url::parse(&self.ws_url.clone().unwrap())?;
             ethui_broadcast::reset_anvil_listener(self.chain_id, http, ws).await;
