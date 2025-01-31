@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import {Script} from "forge-std/Script.sol";
+import "forge-std/Script.sol";
+import {UnsafeUpgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";
 
 import {NFT} from "contracts/NFT.sol";
 import {Token} from "contracts/Token.sol";
 import {TestCalls} from "contracts/TestCalls.sol";
+import {TestCallsUpgradeable} from "contracts/TestCallsUpgradeable.sol";
 
 contract DevDeployScript is Script {
     address alice = address(0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266);
@@ -32,8 +34,17 @@ contract DevDeployScript is Script {
     function run() public {
         vm.startBroadcast();
         NFT nft = new NFT("https://assets.pokemon.com/assets/cms2/img/pokedex/detail/");
+        console.log("NFT", address(nft));
+
         Token token = new Token();
+        console.log("Token", address(token));
+
         new TestCalls();
+        console.log("TestCalls", address(new TestCalls()));
+
+        address impl = address(new TestCallsUpgradeable());
+        address proxy = UnsafeUpgrades.deployUUPSProxy(impl, abi.encodeCall(TestCallsUpgradeable.initialize, ()));
+        console.log("TestCallsUpgradeable %s (impl %s)", address(proxy), address(impl));
 
         for (uint256 i = 0; i < testAccounts.length; i++) {
             address addr = testAccounts[i];

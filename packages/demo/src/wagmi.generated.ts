@@ -1,9 +1,75 @@
 import {
+  createUseWatchContractEvent,
   createUseReadContract,
   createUseWriteContract,
   createUseSimulateContract,
-  createUseWatchContractEvent,
 } from 'wagmi/codegen'
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Address
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const addressAbi = [
+  {
+    type: 'error',
+    inputs: [{ name: 'target', internalType: 'address', type: 'address' }],
+    name: 'AddressEmptyCode',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'AddressInsufficientBalance',
+  },
+  { type: 'error', inputs: [], name: 'FailedInnerCall' },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// BeaconProxy
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const beaconProxyAbi = [
+  {
+    type: 'constructor',
+    inputs: [
+      { name: 'beacon', internalType: 'address', type: 'address' },
+      { name: 'data', internalType: 'bytes', type: 'bytes' },
+    ],
+    stateMutability: 'payable',
+  },
+  { type: 'fallback', stateMutability: 'payable' },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'beacon',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'BeaconUpgraded',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'target', internalType: 'address', type: 'address' }],
+    name: 'AddressEmptyCode',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'beacon', internalType: 'address', type: 'address' }],
+    name: 'ERC1967InvalidBeacon',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'implementation', internalType: 'address', type: 'address' },
+    ],
+    name: 'ERC1967InvalidImplementation',
+  },
+  { type: 'error', inputs: [], name: 'ERC1967NonPayable' },
+  { type: 'error', inputs: [], name: 'FailedInnerCall' },
+] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ERC165
@@ -17,6 +83,119 @@ export const erc165Abi = [
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
     stateMutability: 'view',
   },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ERC1967Proxy
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const erc1967ProxyAbi = [
+  {
+    type: 'constructor',
+    inputs: [
+      { name: 'implementation', internalType: 'address', type: 'address' },
+      { name: '_data', internalType: 'bytes', type: 'bytes' },
+    ],
+    stateMutability: 'payable',
+  },
+  { type: 'fallback', stateMutability: 'payable' },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'implementation',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'Upgraded',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'target', internalType: 'address', type: 'address' }],
+    name: 'AddressEmptyCode',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'implementation', internalType: 'address', type: 'address' },
+    ],
+    name: 'ERC1967InvalidImplementation',
+  },
+  { type: 'error', inputs: [], name: 'ERC1967NonPayable' },
+  { type: 'error', inputs: [], name: 'FailedInnerCall' },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ERC1967Utils
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const erc1967UtilsAbi = [
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'previousAdmin',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'newAdmin',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'AdminChanged',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'beacon',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'BeaconUpgraded',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'implementation',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'Upgraded',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'admin', internalType: 'address', type: 'address' }],
+    name: 'ERC1967InvalidAdmin',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'beacon', internalType: 'address', type: 'address' }],
+    name: 'ERC1967InvalidBeacon',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'implementation', internalType: 'address', type: 'address' },
+    ],
+    name: 'ERC1967InvalidImplementation',
+  },
+  { type: 'error', inputs: [], name: 'ERC1967NonPayable' },
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -668,6 +847,20 @@ export const erc721EnumerableAbi = [
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// IBeacon
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const iBeaconAbi = [
+  {
+    type: 'function',
+    inputs: [],
+    name: 'implementation',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // IERC1155Errors
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -717,6 +910,58 @@ export const ierc1155ErrorsAbi = [
       { name: 'owner', internalType: 'address', type: 'address' },
     ],
     name: 'ERC1155MissingApprovalForAll',
+  },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// IERC1967
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const ierc1967Abi = [
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'previousAdmin',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'newAdmin',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'AdminChanged',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'beacon',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'BeaconUpgraded',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'implementation',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'Upgraded',
   },
 ] as const
 
@@ -1568,6 +1813,156 @@ export const iMulticall3Abi = [
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// IProxyAdmin
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const iProxyAdminAbi = [
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'address', type: 'address' },
+      { name: '', internalType: 'address', type: 'address' },
+    ],
+    name: 'upgrade',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'address', type: 'address' },
+      { name: '', internalType: 'address', type: 'address' },
+      { name: '', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'upgradeAndCall',
+    outputs: [],
+    stateMutability: 'payable',
+  },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ITransparentUpgradeableProxy
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const iTransparentUpgradeableProxyAbi = [
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'address', type: 'address' },
+      { name: '', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'upgradeToAndCall',
+    outputs: [],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'previousAdmin',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'newAdmin',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'AdminChanged',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'beacon',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'BeaconUpgraded',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'implementation',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'Upgraded',
+  },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// IUpgradeableBeacon
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const iUpgradeableBeaconAbi = [
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'upgradeTo',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// IUpgradeableProxy
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const iUpgradeableProxyAbi = [
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'upgradeTo',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'address', type: 'address' },
+      { name: '', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'upgradeToAndCall',
+    outputs: [],
+    stateMutability: 'payable',
+  },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Initializable
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const initializableAbi = [
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'version',
+        internalType: 'uint64',
+        type: 'uint64',
+        indexed: false,
+      },
+    ],
+    name: 'Initialized',
+  },
+  { type: 'error', inputs: [], name: 'InvalidInitialization' },
+  { type: 'error', inputs: [], name: 'NotInitializing' },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Math
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1878,6 +2273,157 @@ export const nftAddress = {
 export const nftConfig = { address: nftAddress, abi: nftAbi } as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Ownable
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const ownableAbi = [
+  {
+    type: 'function',
+    inputs: [],
+    name: 'owner',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'renounceOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'newOwner', internalType: 'address', type: 'address' }],
+    name: 'transferOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'previousOwner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'newOwner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'OwnershipTransferred',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'owner', internalType: 'address', type: 'address' }],
+    name: 'OwnableInvalidOwner',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'OwnableUnauthorizedAccount',
+  },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Proxy
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const proxyAbi = [
+  { type: 'fallback', stateMutability: 'payable' },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ProxyAdmin
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const proxyAdminAbi = [
+  {
+    type: 'constructor',
+    inputs: [
+      { name: 'initialOwner', internalType: 'address', type: 'address' },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'UPGRADE_INTERFACE_VERSION',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'owner',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'renounceOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'newOwner', internalType: 'address', type: 'address' }],
+    name: 'transferOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'proxy',
+        internalType: 'contract ITransparentUpgradeableProxy',
+        type: 'address',
+      },
+      { name: 'implementation', internalType: 'address', type: 'address' },
+      { name: 'data', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'upgradeAndCall',
+    outputs: [],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'previousOwner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'newOwner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'OwnershipTransferred',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'owner', internalType: 'address', type: 'address' }],
+    name: 'OwnableInvalidOwner',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'OwnableUnauthorizedAccount',
+  },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Strings
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2079,6 +2625,210 @@ export const testCallsConfig = {
 } as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// TestCallsUpgradeable
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const testCallsUpgradeableAbi = [
+  { type: 'fallback', stateMutability: 'nonpayable' },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_amount', internalType: 'uint256', type: 'uint256' },
+      { name: '_proof', internalType: 'string[]', type: 'string[]' },
+    ],
+    name: 'buy',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'v', internalType: 'bytes', type: 'bytes' }],
+    name: 'call_bytes',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'v', internalType: 'bytes32', type: 'bytes32' }],
+    name: 'call_bytes32',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'v', internalType: 'bytes[]', type: 'bytes[]' }],
+    name: 'call_bytes32Array',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'v', internalType: 'bytes32[]', type: 'bytes32[]' }],
+    name: 'call_bytesArray',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'call_empty',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'v',
+        internalType: 'struct TestCalls.Struct2',
+        type: 'tuple',
+        components: [
+          { name: 'a', internalType: 'address', type: 'address' },
+          {
+            name: 's',
+            internalType: 'struct TestCalls.Struct',
+            type: 'tuple',
+            components: [
+              { name: 'n', internalType: 'string', type: 'string' },
+              { name: 'v', internalType: 'uint256', type: 'uint256' },
+            ],
+          },
+        ],
+      },
+    ],
+    name: 'call_nestedStruct',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'v', internalType: 'string', type: 'string' }],
+    name: 'call_string',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'v', internalType: 'string[]', type: 'string[]' }],
+    name: 'call_stringArray',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'v',
+        internalType: 'struct TestCalls.Struct',
+        type: 'tuple',
+        components: [
+          { name: 'n', internalType: 'string', type: 'string' },
+          { name: 'v', internalType: 'uint256', type: 'uint256' },
+        ],
+      },
+    ],
+    name: 'call_struct',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'v', internalType: 'uint256', type: 'uint256' }],
+    name: 'call_uint',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'v', internalType: 'uint256[]', type: 'uint256[]' }],
+    name: 'call_uintArray',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'v', internalType: 'uint256[2]', type: 'uint256[2]' }],
+    name: 'call_uintArraySpecificLength',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'v', internalType: 'uint256[][]', type: 'uint256[][]' }],
+    name: 'call_uintNestedArray',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'initialize',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'length_uintArry',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'pure',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'v', internalType: 'uint256', type: 'uint256' }],
+    name: 'pay',
+    outputs: [],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_x', internalType: 'uint256', type: 'uint256' }],
+    name: 'setX',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'x', internalType: 'uint256', type: 'uint256' },
+      { name: 'y', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'two',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    name: 'uintArray',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'x',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'version',
+        internalType: 'uint64',
+        type: 'uint64',
+        indexed: false,
+      },
+    ],
+    name: 'Initialized',
+  },
+  { type: 'error', inputs: [], name: 'InvalidInitialization' },
+  { type: 'error', inputs: [], name: 'NotInitializing' },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Token
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2276,8 +3026,193 @@ export const tokenAddress = {
 export const tokenConfig = { address: tokenAddress, abi: tokenAbi } as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// TransparentUpgradeableProxy
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const transparentUpgradeableProxyAbi = [
+  {
+    type: 'constructor',
+    inputs: [
+      { name: '_logic', internalType: 'address', type: 'address' },
+      { name: 'initialOwner', internalType: 'address', type: 'address' },
+      { name: '_data', internalType: 'bytes', type: 'bytes' },
+    ],
+    stateMutability: 'payable',
+  },
+  { type: 'fallback', stateMutability: 'payable' },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'previousAdmin',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'newAdmin',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'AdminChanged',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'implementation',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'Upgraded',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'target', internalType: 'address', type: 'address' }],
+    name: 'AddressEmptyCode',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'admin', internalType: 'address', type: 'address' }],
+    name: 'ERC1967InvalidAdmin',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'implementation', internalType: 'address', type: 'address' },
+    ],
+    name: 'ERC1967InvalidImplementation',
+  },
+  { type: 'error', inputs: [], name: 'ERC1967NonPayable' },
+  { type: 'error', inputs: [], name: 'FailedInnerCall' },
+  { type: 'error', inputs: [], name: 'ProxyDeniedAdminAccess' },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// UpgradeableBeacon
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const upgradeableBeaconAbi = [
+  {
+    type: 'constructor',
+    inputs: [
+      { name: 'implementation_', internalType: 'address', type: 'address' },
+      { name: 'initialOwner', internalType: 'address', type: 'address' },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'implementation',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'owner',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'renounceOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'newOwner', internalType: 'address', type: 'address' }],
+    name: 'transferOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'newImplementation', internalType: 'address', type: 'address' },
+    ],
+    name: 'upgradeTo',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'previousOwner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'newOwner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'OwnershipTransferred',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'implementation',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'Upgraded',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'implementation', internalType: 'address', type: 'address' },
+    ],
+    name: 'BeaconInvalidImplementation',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'owner', internalType: 'address', type: 'address' }],
+    name: 'OwnableInvalidOwner',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'OwnableUnauthorizedAccount',
+  },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // React
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link beaconProxyAbi}__
+ */
+export const useWatchBeaconProxyEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({ abi: beaconProxyAbi })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link beaconProxyAbi}__ and `eventName` set to `"BeaconUpgraded"`
+ */
+export const useWatchBeaconProxyBeaconUpgradedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: beaconProxyAbi,
+    eventName: 'BeaconUpgraded',
+  })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link erc165Abi}__
@@ -2293,6 +3228,54 @@ export const useReadErc165SupportsInterface =
   /*#__PURE__*/ createUseReadContract({
     abi: erc165Abi,
     functionName: 'supportsInterface',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link erc1967ProxyAbi}__
+ */
+export const useWatchErc1967ProxyEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({ abi: erc1967ProxyAbi })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link erc1967ProxyAbi}__ and `eventName` set to `"Upgraded"`
+ */
+export const useWatchErc1967ProxyUpgradedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: erc1967ProxyAbi,
+    eventName: 'Upgraded',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link erc1967UtilsAbi}__
+ */
+export const useWatchErc1967UtilsEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({ abi: erc1967UtilsAbi })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link erc1967UtilsAbi}__ and `eventName` set to `"AdminChanged"`
+ */
+export const useWatchErc1967UtilsAdminChangedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: erc1967UtilsAbi,
+    eventName: 'AdminChanged',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link erc1967UtilsAbi}__ and `eventName` set to `"BeaconUpgraded"`
+ */
+export const useWatchErc1967UtilsBeaconUpgradedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: erc1967UtilsAbi,
+    eventName: 'BeaconUpgraded',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link erc1967UtilsAbi}__ and `eventName` set to `"Upgraded"`
+ */
+export const useWatchErc1967UtilsUpgradedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: erc1967UtilsAbi,
+    eventName: 'Upgraded',
   })
 
 /**
@@ -2847,6 +3830,54 @@ export const useWatchErc721EnumerableTransferEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: erc721EnumerableAbi,
     eventName: 'Transfer',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link iBeaconAbi}__
+ */
+export const useReadIBeacon = /*#__PURE__*/ createUseReadContract({
+  abi: iBeaconAbi,
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link iBeaconAbi}__ and `functionName` set to `"implementation"`
+ */
+export const useReadIBeaconImplementation = /*#__PURE__*/ createUseReadContract(
+  { abi: iBeaconAbi, functionName: 'implementation' },
+)
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ierc1967Abi}__
+ */
+export const useWatchIerc1967Event = /*#__PURE__*/ createUseWatchContractEvent({
+  abi: ierc1967Abi,
+})
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ierc1967Abi}__ and `eventName` set to `"AdminChanged"`
+ */
+export const useWatchIerc1967AdminChangedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: ierc1967Abi,
+    eventName: 'AdminChanged',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ierc1967Abi}__ and `eventName` set to `"BeaconUpgraded"`
+ */
+export const useWatchIerc1967BeaconUpgradedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: ierc1967Abi,
+    eventName: 'BeaconUpgraded',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ierc1967Abi}__ and `eventName` set to `"Upgraded"`
+ */
+export const useWatchIerc1967UpgradedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: ierc1967Abi,
+    eventName: 'Upgraded',
   })
 
 /**
@@ -3637,6 +4668,217 @@ export const useSimulateIMulticall3TryBlockAndAggregate =
   })
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iProxyAdminAbi}__
+ */
+export const useWriteIProxyAdmin = /*#__PURE__*/ createUseWriteContract({
+  abi: iProxyAdminAbi,
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iProxyAdminAbi}__ and `functionName` set to `"upgrade"`
+ */
+export const useWriteIProxyAdminUpgrade = /*#__PURE__*/ createUseWriteContract({
+  abi: iProxyAdminAbi,
+  functionName: 'upgrade',
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iProxyAdminAbi}__ and `functionName` set to `"upgradeAndCall"`
+ */
+export const useWriteIProxyAdminUpgradeAndCall =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: iProxyAdminAbi,
+    functionName: 'upgradeAndCall',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iProxyAdminAbi}__
+ */
+export const useSimulateIProxyAdmin = /*#__PURE__*/ createUseSimulateContract({
+  abi: iProxyAdminAbi,
+})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iProxyAdminAbi}__ and `functionName` set to `"upgrade"`
+ */
+export const useSimulateIProxyAdminUpgrade =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: iProxyAdminAbi,
+    functionName: 'upgrade',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iProxyAdminAbi}__ and `functionName` set to `"upgradeAndCall"`
+ */
+export const useSimulateIProxyAdminUpgradeAndCall =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: iProxyAdminAbi,
+    functionName: 'upgradeAndCall',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iTransparentUpgradeableProxyAbi}__
+ */
+export const useWriteITransparentUpgradeableProxy =
+  /*#__PURE__*/ createUseWriteContract({ abi: iTransparentUpgradeableProxyAbi })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iTransparentUpgradeableProxyAbi}__ and `functionName` set to `"upgradeToAndCall"`
+ */
+export const useWriteITransparentUpgradeableProxyUpgradeToAndCall =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: iTransparentUpgradeableProxyAbi,
+    functionName: 'upgradeToAndCall',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iTransparentUpgradeableProxyAbi}__
+ */
+export const useSimulateITransparentUpgradeableProxy =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: iTransparentUpgradeableProxyAbi,
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iTransparentUpgradeableProxyAbi}__ and `functionName` set to `"upgradeToAndCall"`
+ */
+export const useSimulateITransparentUpgradeableProxyUpgradeToAndCall =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: iTransparentUpgradeableProxyAbi,
+    functionName: 'upgradeToAndCall',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iTransparentUpgradeableProxyAbi}__
+ */
+export const useWatchITransparentUpgradeableProxyEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: iTransparentUpgradeableProxyAbi,
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iTransparentUpgradeableProxyAbi}__ and `eventName` set to `"AdminChanged"`
+ */
+export const useWatchITransparentUpgradeableProxyAdminChangedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: iTransparentUpgradeableProxyAbi,
+    eventName: 'AdminChanged',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iTransparentUpgradeableProxyAbi}__ and `eventName` set to `"BeaconUpgraded"`
+ */
+export const useWatchITransparentUpgradeableProxyBeaconUpgradedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: iTransparentUpgradeableProxyAbi,
+    eventName: 'BeaconUpgraded',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iTransparentUpgradeableProxyAbi}__ and `eventName` set to `"Upgraded"`
+ */
+export const useWatchITransparentUpgradeableProxyUpgradedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: iTransparentUpgradeableProxyAbi,
+    eventName: 'Upgraded',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iUpgradeableBeaconAbi}__
+ */
+export const useWriteIUpgradeableBeacon = /*#__PURE__*/ createUseWriteContract({
+  abi: iUpgradeableBeaconAbi,
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iUpgradeableBeaconAbi}__ and `functionName` set to `"upgradeTo"`
+ */
+export const useWriteIUpgradeableBeaconUpgradeTo =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: iUpgradeableBeaconAbi,
+    functionName: 'upgradeTo',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iUpgradeableBeaconAbi}__
+ */
+export const useSimulateIUpgradeableBeacon =
+  /*#__PURE__*/ createUseSimulateContract({ abi: iUpgradeableBeaconAbi })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iUpgradeableBeaconAbi}__ and `functionName` set to `"upgradeTo"`
+ */
+export const useSimulateIUpgradeableBeaconUpgradeTo =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: iUpgradeableBeaconAbi,
+    functionName: 'upgradeTo',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iUpgradeableProxyAbi}__
+ */
+export const useWriteIUpgradeableProxy = /*#__PURE__*/ createUseWriteContract({
+  abi: iUpgradeableProxyAbi,
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iUpgradeableProxyAbi}__ and `functionName` set to `"upgradeTo"`
+ */
+export const useWriteIUpgradeableProxyUpgradeTo =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: iUpgradeableProxyAbi,
+    functionName: 'upgradeTo',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iUpgradeableProxyAbi}__ and `functionName` set to `"upgradeToAndCall"`
+ */
+export const useWriteIUpgradeableProxyUpgradeToAndCall =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: iUpgradeableProxyAbi,
+    functionName: 'upgradeToAndCall',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iUpgradeableProxyAbi}__
+ */
+export const useSimulateIUpgradeableProxy =
+  /*#__PURE__*/ createUseSimulateContract({ abi: iUpgradeableProxyAbi })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iUpgradeableProxyAbi}__ and `functionName` set to `"upgradeTo"`
+ */
+export const useSimulateIUpgradeableProxyUpgradeTo =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: iUpgradeableProxyAbi,
+    functionName: 'upgradeTo',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iUpgradeableProxyAbi}__ and `functionName` set to `"upgradeToAndCall"`
+ */
+export const useSimulateIUpgradeableProxyUpgradeToAndCall =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: iUpgradeableProxyAbi,
+    functionName: 'upgradeToAndCall',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link initializableAbi}__
+ */
+export const useWatchInitializableEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({ abi: initializableAbi })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link initializableAbi}__ and `eventName` set to `"Initialized"`
+ */
+export const useWatchInitializableInitializedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: initializableAbi,
+    eventName: 'Initialized',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link nftAbi}__
  *
  *
@@ -3967,6 +5209,194 @@ export const useWatchNftTransferEvent =
     abi: nftAbi,
     address: nftAddress,
     eventName: 'Transfer',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link ownableAbi}__
+ */
+export const useReadOwnable = /*#__PURE__*/ createUseReadContract({
+  abi: ownableAbi,
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link ownableAbi}__ and `functionName` set to `"owner"`
+ */
+export const useReadOwnableOwner = /*#__PURE__*/ createUseReadContract({
+  abi: ownableAbi,
+  functionName: 'owner',
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ownableAbi}__
+ */
+export const useWriteOwnable = /*#__PURE__*/ createUseWriteContract({
+  abi: ownableAbi,
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ownableAbi}__ and `functionName` set to `"renounceOwnership"`
+ */
+export const useWriteOwnableRenounceOwnership =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: ownableAbi,
+    functionName: 'renounceOwnership',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link ownableAbi}__ and `functionName` set to `"transferOwnership"`
+ */
+export const useWriteOwnableTransferOwnership =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: ownableAbi,
+    functionName: 'transferOwnership',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ownableAbi}__
+ */
+export const useSimulateOwnable = /*#__PURE__*/ createUseSimulateContract({
+  abi: ownableAbi,
+})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ownableAbi}__ and `functionName` set to `"renounceOwnership"`
+ */
+export const useSimulateOwnableRenounceOwnership =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: ownableAbi,
+    functionName: 'renounceOwnership',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link ownableAbi}__ and `functionName` set to `"transferOwnership"`
+ */
+export const useSimulateOwnableTransferOwnership =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: ownableAbi,
+    functionName: 'transferOwnership',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ownableAbi}__
+ */
+export const useWatchOwnableEvent = /*#__PURE__*/ createUseWatchContractEvent({
+  abi: ownableAbi,
+})
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link ownableAbi}__ and `eventName` set to `"OwnershipTransferred"`
+ */
+export const useWatchOwnableOwnershipTransferredEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: ownableAbi,
+    eventName: 'OwnershipTransferred',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link proxyAdminAbi}__
+ */
+export const useReadProxyAdmin = /*#__PURE__*/ createUseReadContract({
+  abi: proxyAdminAbi,
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link proxyAdminAbi}__ and `functionName` set to `"UPGRADE_INTERFACE_VERSION"`
+ */
+export const useReadProxyAdminUpgradeInterfaceVersion =
+  /*#__PURE__*/ createUseReadContract({
+    abi: proxyAdminAbi,
+    functionName: 'UPGRADE_INTERFACE_VERSION',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link proxyAdminAbi}__ and `functionName` set to `"owner"`
+ */
+export const useReadProxyAdminOwner = /*#__PURE__*/ createUseReadContract({
+  abi: proxyAdminAbi,
+  functionName: 'owner',
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link proxyAdminAbi}__
+ */
+export const useWriteProxyAdmin = /*#__PURE__*/ createUseWriteContract({
+  abi: proxyAdminAbi,
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link proxyAdminAbi}__ and `functionName` set to `"renounceOwnership"`
+ */
+export const useWriteProxyAdminRenounceOwnership =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: proxyAdminAbi,
+    functionName: 'renounceOwnership',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link proxyAdminAbi}__ and `functionName` set to `"transferOwnership"`
+ */
+export const useWriteProxyAdminTransferOwnership =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: proxyAdminAbi,
+    functionName: 'transferOwnership',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link proxyAdminAbi}__ and `functionName` set to `"upgradeAndCall"`
+ */
+export const useWriteProxyAdminUpgradeAndCall =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: proxyAdminAbi,
+    functionName: 'upgradeAndCall',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link proxyAdminAbi}__
+ */
+export const useSimulateProxyAdmin = /*#__PURE__*/ createUseSimulateContract({
+  abi: proxyAdminAbi,
+})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link proxyAdminAbi}__ and `functionName` set to `"renounceOwnership"`
+ */
+export const useSimulateProxyAdminRenounceOwnership =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: proxyAdminAbi,
+    functionName: 'renounceOwnership',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link proxyAdminAbi}__ and `functionName` set to `"transferOwnership"`
+ */
+export const useSimulateProxyAdminTransferOwnership =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: proxyAdminAbi,
+    functionName: 'transferOwnership',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link proxyAdminAbi}__ and `functionName` set to `"upgradeAndCall"`
+ */
+export const useSimulateProxyAdminUpgradeAndCall =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: proxyAdminAbi,
+    functionName: 'upgradeAndCall',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link proxyAdminAbi}__
+ */
+export const useWatchProxyAdminEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({ abi: proxyAdminAbi })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link proxyAdminAbi}__ and `eventName` set to `"OwnershipTransferred"`
+ */
+export const useWatchProxyAdminOwnershipTransferredEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: proxyAdminAbi,
+    eventName: 'OwnershipTransferred',
   })
 
 /**
@@ -4392,6 +5822,389 @@ export const useSimulateTestCallsTwo = /*#__PURE__*/ createUseSimulateContract({
 })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__
+ */
+export const useReadTestCallsUpgradeable = /*#__PURE__*/ createUseReadContract({
+  abi: testCallsUpgradeableAbi,
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"length_uintArry"`
+ */
+export const useReadTestCallsUpgradeableLengthUintArry =
+  /*#__PURE__*/ createUseReadContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'length_uintArry',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"uintArray"`
+ */
+export const useReadTestCallsUpgradeableUintArray =
+  /*#__PURE__*/ createUseReadContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'uintArray',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"x"`
+ */
+export const useReadTestCallsUpgradeableX = /*#__PURE__*/ createUseReadContract(
+  { abi: testCallsUpgradeableAbi, functionName: 'x' },
+)
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__
+ */
+export const useWriteTestCallsUpgradeable =
+  /*#__PURE__*/ createUseWriteContract({ abi: testCallsUpgradeableAbi })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"buy"`
+ */
+export const useWriteTestCallsUpgradeableBuy =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'buy',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"call_bytes"`
+ */
+export const useWriteTestCallsUpgradeableCallBytes =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'call_bytes',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"call_bytes32"`
+ */
+export const useWriteTestCallsUpgradeableCallBytes32 =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'call_bytes32',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"call_bytes32Array"`
+ */
+export const useWriteTestCallsUpgradeableCallBytes32Array =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'call_bytes32Array',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"call_bytesArray"`
+ */
+export const useWriteTestCallsUpgradeableCallBytesArray =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'call_bytesArray',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"call_empty"`
+ */
+export const useWriteTestCallsUpgradeableCallEmpty =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'call_empty',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"call_nestedStruct"`
+ */
+export const useWriteTestCallsUpgradeableCallNestedStruct =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'call_nestedStruct',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"call_string"`
+ */
+export const useWriteTestCallsUpgradeableCallString =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'call_string',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"call_stringArray"`
+ */
+export const useWriteTestCallsUpgradeableCallStringArray =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'call_stringArray',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"call_struct"`
+ */
+export const useWriteTestCallsUpgradeableCallStruct =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'call_struct',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"call_uint"`
+ */
+export const useWriteTestCallsUpgradeableCallUint =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'call_uint',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"call_uintArray"`
+ */
+export const useWriteTestCallsUpgradeableCallUintArray =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'call_uintArray',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"call_uintArraySpecificLength"`
+ */
+export const useWriteTestCallsUpgradeableCallUintArraySpecificLength =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'call_uintArraySpecificLength',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"call_uintNestedArray"`
+ */
+export const useWriteTestCallsUpgradeableCallUintNestedArray =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'call_uintNestedArray',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"initialize"`
+ */
+export const useWriteTestCallsUpgradeableInitialize =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'initialize',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"pay"`
+ */
+export const useWriteTestCallsUpgradeablePay =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'pay',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"setX"`
+ */
+export const useWriteTestCallsUpgradeableSetX =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'setX',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"two"`
+ */
+export const useWriteTestCallsUpgradeableTwo =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'two',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__
+ */
+export const useSimulateTestCallsUpgradeable =
+  /*#__PURE__*/ createUseSimulateContract({ abi: testCallsUpgradeableAbi })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"buy"`
+ */
+export const useSimulateTestCallsUpgradeableBuy =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'buy',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"call_bytes"`
+ */
+export const useSimulateTestCallsUpgradeableCallBytes =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'call_bytes',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"call_bytes32"`
+ */
+export const useSimulateTestCallsUpgradeableCallBytes32 =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'call_bytes32',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"call_bytes32Array"`
+ */
+export const useSimulateTestCallsUpgradeableCallBytes32Array =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'call_bytes32Array',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"call_bytesArray"`
+ */
+export const useSimulateTestCallsUpgradeableCallBytesArray =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'call_bytesArray',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"call_empty"`
+ */
+export const useSimulateTestCallsUpgradeableCallEmpty =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'call_empty',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"call_nestedStruct"`
+ */
+export const useSimulateTestCallsUpgradeableCallNestedStruct =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'call_nestedStruct',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"call_string"`
+ */
+export const useSimulateTestCallsUpgradeableCallString =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'call_string',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"call_stringArray"`
+ */
+export const useSimulateTestCallsUpgradeableCallStringArray =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'call_stringArray',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"call_struct"`
+ */
+export const useSimulateTestCallsUpgradeableCallStruct =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'call_struct',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"call_uint"`
+ */
+export const useSimulateTestCallsUpgradeableCallUint =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'call_uint',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"call_uintArray"`
+ */
+export const useSimulateTestCallsUpgradeableCallUintArray =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'call_uintArray',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"call_uintArraySpecificLength"`
+ */
+export const useSimulateTestCallsUpgradeableCallUintArraySpecificLength =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'call_uintArraySpecificLength',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"call_uintNestedArray"`
+ */
+export const useSimulateTestCallsUpgradeableCallUintNestedArray =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'call_uintNestedArray',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"initialize"`
+ */
+export const useSimulateTestCallsUpgradeableInitialize =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'initialize',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"pay"`
+ */
+export const useSimulateTestCallsUpgradeablePay =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'pay',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"setX"`
+ */
+export const useSimulateTestCallsUpgradeableSetX =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'setX',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `functionName` set to `"two"`
+ */
+export const useSimulateTestCallsUpgradeableTwo =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: testCallsUpgradeableAbi,
+    functionName: 'two',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link testCallsUpgradeableAbi}__
+ */
+export const useWatchTestCallsUpgradeableEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({ abi: testCallsUpgradeableAbi })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link testCallsUpgradeableAbi}__ and `eventName` set to `"Initialized"`
+ */
+export const useWatchTestCallsUpgradeableInitializedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: testCallsUpgradeableAbi,
+    eventName: 'Initialized',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link tokenAbi}__
  *
  *
@@ -4628,4 +6441,146 @@ export const useWatchTokenTransferEvent =
     abi: tokenAbi,
     address: tokenAddress,
     eventName: 'Transfer',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link transparentUpgradeableProxyAbi}__
+ */
+export const useWatchTransparentUpgradeableProxyEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: transparentUpgradeableProxyAbi,
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link transparentUpgradeableProxyAbi}__ and `eventName` set to `"AdminChanged"`
+ */
+export const useWatchTransparentUpgradeableProxyAdminChangedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: transparentUpgradeableProxyAbi,
+    eventName: 'AdminChanged',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link transparentUpgradeableProxyAbi}__ and `eventName` set to `"Upgraded"`
+ */
+export const useWatchTransparentUpgradeableProxyUpgradedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: transparentUpgradeableProxyAbi,
+    eventName: 'Upgraded',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link upgradeableBeaconAbi}__
+ */
+export const useReadUpgradeableBeacon = /*#__PURE__*/ createUseReadContract({
+  abi: upgradeableBeaconAbi,
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link upgradeableBeaconAbi}__ and `functionName` set to `"implementation"`
+ */
+export const useReadUpgradeableBeaconImplementation =
+  /*#__PURE__*/ createUseReadContract({
+    abi: upgradeableBeaconAbi,
+    functionName: 'implementation',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link upgradeableBeaconAbi}__ and `functionName` set to `"owner"`
+ */
+export const useReadUpgradeableBeaconOwner =
+  /*#__PURE__*/ createUseReadContract({
+    abi: upgradeableBeaconAbi,
+    functionName: 'owner',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link upgradeableBeaconAbi}__
+ */
+export const useWriteUpgradeableBeacon = /*#__PURE__*/ createUseWriteContract({
+  abi: upgradeableBeaconAbi,
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link upgradeableBeaconAbi}__ and `functionName` set to `"renounceOwnership"`
+ */
+export const useWriteUpgradeableBeaconRenounceOwnership =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: upgradeableBeaconAbi,
+    functionName: 'renounceOwnership',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link upgradeableBeaconAbi}__ and `functionName` set to `"transferOwnership"`
+ */
+export const useWriteUpgradeableBeaconTransferOwnership =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: upgradeableBeaconAbi,
+    functionName: 'transferOwnership',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link upgradeableBeaconAbi}__ and `functionName` set to `"upgradeTo"`
+ */
+export const useWriteUpgradeableBeaconUpgradeTo =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: upgradeableBeaconAbi,
+    functionName: 'upgradeTo',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link upgradeableBeaconAbi}__
+ */
+export const useSimulateUpgradeableBeacon =
+  /*#__PURE__*/ createUseSimulateContract({ abi: upgradeableBeaconAbi })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link upgradeableBeaconAbi}__ and `functionName` set to `"renounceOwnership"`
+ */
+export const useSimulateUpgradeableBeaconRenounceOwnership =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: upgradeableBeaconAbi,
+    functionName: 'renounceOwnership',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link upgradeableBeaconAbi}__ and `functionName` set to `"transferOwnership"`
+ */
+export const useSimulateUpgradeableBeaconTransferOwnership =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: upgradeableBeaconAbi,
+    functionName: 'transferOwnership',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link upgradeableBeaconAbi}__ and `functionName` set to `"upgradeTo"`
+ */
+export const useSimulateUpgradeableBeaconUpgradeTo =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: upgradeableBeaconAbi,
+    functionName: 'upgradeTo',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link upgradeableBeaconAbi}__
+ */
+export const useWatchUpgradeableBeaconEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({ abi: upgradeableBeaconAbi })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link upgradeableBeaconAbi}__ and `eventName` set to `"OwnershipTransferred"`
+ */
+export const useWatchUpgradeableBeaconOwnershipTransferredEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: upgradeableBeaconAbi,
+    eventName: 'OwnershipTransferred',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link upgradeableBeaconAbi}__ and `eventName` set to `"Upgraded"`
+ */
+export const useWatchUpgradeableBeaconUpgradedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: upgradeableBeaconAbi,
+    eventName: 'Upgraded',
   })
