@@ -45,7 +45,7 @@ const store: StateCreator<Store> = (set, get) => ({
 
   add: async (chainId: number, address: Address) => {
     try {
-      await invoke("db_insert_contract", { chainId, address });
+      await invoke("db_insert_contract", { chainId: chainId, address });
     } catch (err: any) {
       toast({
         title: "Error",

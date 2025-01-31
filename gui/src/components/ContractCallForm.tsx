@@ -32,13 +32,13 @@ type Result =
     };
 
 interface Option {
-  item: AbiFunction | "raw";
+  item: AbiFunction | "raw" | "rawCall";
   label: string;
   id: number;
 }
 
 const VALID_TYPES = ["function", "receive", "fallback"];
-const GROUPS = ["view", "write", "fallback", "raw"];
+const GROUPS = ["view", "write", "fallback", "raw", "rawCall"];
 type Group = (typeof GROUPS)[number];
 type GroupedOptions = Record<Group, Option[]>;
 
@@ -81,7 +81,7 @@ export function ContractCallForm({ chainId, address }: Props) {
 }
 
 interface AbiItemFormWithSubmitProps {
-  item: "raw" | AbiFunction;
+  item: "raw" | "rawCall" | AbiFunction;
   address: Address;
   chainId: number;
 }
@@ -115,7 +115,11 @@ function AbiItemFormWithSubmit({
       from: sender,
       to: address,
     };
-    if (item !== "raw" && item?.stateMutability === "view") {
+    if (
+      item !== "raw" &&
+      item !== "rawCall" &&
+      item?.stateMutability === "view"
+    ) {
       const rawResult = await invoke<`0x${string}`>("rpc_eth_call", { params });
       const result = decodeFunctionResult({
         abi: [item],
@@ -136,8 +140,13 @@ function AbiItemFormWithSubmit({
       }
     } else {
       try {
-        const result = await invoke<Hash>("rpc_send_transaction", { params });
-        setResult({ write: result });
+        if (item === "raw") {
+          const result = await invoke<Hash>("rpc_send_transaction", { params });
+          setResult({ write: result });
+        } else if (item === "rawCall") {
+          const result = await invoke<Hash>("rpc_eth_call", { params });
+          setResult({ read: result });
+        }
       } catch (_err) {
         setLoading(false);
       }
@@ -201,7 +210,8 @@ function constructOptions(abi: Abi, filter?: string): GroupedOptions {
       return acc;
     }, {} as GroupedOptions);
 
-  options.raw = [{ item: "raw", label: "Raw", id: -1 }];
+  options.raw = [{ item: "raw", label: "Raw Transaction", id: -1 }];
+  options.rawCall = [{ item: "rawCall", label: "Raw Call", id: -2 }];
 
   return options;
 }
