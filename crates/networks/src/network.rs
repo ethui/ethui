@@ -42,25 +42,12 @@ impl Network {
         }
     }
 
-    pub fn goerli() -> Self {
-        Self {
-            name: String::from("Goerli"),
-            chain_id: 5,
-            explorer_url: Some(String::from("https://goerli.etherscan.io/search?q=")),
-            http_url: String::from("https://rpc.ankr.com/eth_goerli"),
-            ws_url: None,
-            currency: String::from("ETH"),
-            decimals: 18,
-            force_is_anvil: false,
-        }
-    }
-
     pub fn sepolia() -> Self {
         Self {
             name: String::from("Sepolia"),
             chain_id: 11155111,
             explorer_url: Some(String::from("https://sepolia.etherscan.io/search?q=")),
-            http_url: String::from("https://rpc2.sepolia.org"),
+            http_url: String::from("https://ethereum-sepolia-rpc.publicnode.com"),
             ws_url: None,
             currency: String::from("ETH"),
             decimals: 18,
@@ -82,12 +69,7 @@ impl Network {
     }
 
     pub fn all_default() -> Vec<Self> {
-        vec![
-            Self::anvil(),
-            Self::mainnet(),
-            Self::goerli(),
-            Self::sepolia(),
-        ]
+        vec![Self::anvil(), Self::mainnet(), Self::sepolia()]
     }
 
     pub fn chain_id_hex(&self) -> String {
