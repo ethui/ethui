@@ -70,3 +70,6 @@ name = "ring"
 version = "*"
 expression = "OpenSSL"
 license-files = [{ path = "LICENSE", hash = 0xbd0eed23 }]
+
+[sources.allow-org]
+github = ["ethui"]
