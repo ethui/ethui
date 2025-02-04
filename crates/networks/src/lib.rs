@@ -9,13 +9,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use alloy::{
-    providers::RootProvider,
-    transports::{
-        http::{Client, Http},
-        layers::RetryBackoffService,
-    },
-};
+use alloy::{network::Ethereum, providers::RootProvider};
 use ethui_types::{Affinity, UINotify};
 pub use init::init;
 use serde::Serialize;
@@ -143,7 +137,7 @@ impl Networks {
         Ok(())
     }
 
-    pub fn get_current_provider(&self) -> RootProvider<RetryBackoffService<Http<Client>>> {
+    pub fn get_current_provider(&self) -> RootProvider<Ethereum> {
         self.get_current().get_provider()
     }
 

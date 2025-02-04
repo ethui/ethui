@@ -1,10 +1,8 @@
 use alloy::{
+    network::Ethereum,
     providers::{Provider, ProviderBuilder, RootProvider},
     rpc::client::ClientBuilder,
-    transports::{
-        http::Http,
-        layers::{RetryBackoffLayer, RetryBackoffService},
-    },
+    transports::layers::RetryBackoffLayer,
 };
 use ethui_types::{events::Tx, Address, TokenMetadata, U256};
 use serde::{Deserialize, Serialize};
@@ -18,7 +16,7 @@ use crate::{
 };
 
 pub(crate) struct Client {
-    v2_provider: Box<RootProvider<RetryBackoffService<Http<reqwest::Client>>>>,
+    v2_provider: Box<RootProvider<Ethereum>>,
     nft_v3_endpoint: Url,
 }
 
@@ -33,7 +31,11 @@ impl Client {
         let v2_client = ClientBuilder::default()
             .layer(RetryBackoffLayer::new(10, 500, 300))
             .http(v2_url);
-        let v2_provider = Box::new(ProviderBuilder::new().on_client(v2_client));
+        let v2_provider = Box::new(
+            ProviderBuilder::new()
+                .disable_recommended_fillers()
+                .on_client(v2_client),
+        );
 
         let nft_v3_endpoint = networks::get_endpoint(chain_id, "nft/v3/", api_key)?;
 

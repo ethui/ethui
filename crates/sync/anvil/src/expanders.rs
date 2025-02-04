@@ -1,5 +1,6 @@
 use alloy::{
     consensus::{Transaction as _, TxType},
+    network::Ethereum,
     primitives::{Bytes, Log},
     providers::{Provider as _, RootProvider},
     rpc::types::{
@@ -10,20 +11,18 @@ use alloy::{
         Log as RpcLog,
     },
     sol_types::SolEvent as _,
-    transports::http::Http,
 };
 use ethui_types::{
     events::{ContractDeployed, ERC20Transfer, ERC721Transfer, Tx},
     Event,
 };
 use futures::future::join_all;
-use reqwest::Client;
 
 use super::{Error, Result};
 
 pub(super) async fn expand_traces(
     traces: Vec<LocalizedTransactionTrace>,
-    provider: &RootProvider<Http<Client>>,
+    provider: &RootProvider<Ethereum>,
     chain_id: u32,
 ) -> Vec<Event> {
     let result = traces
@@ -40,7 +39,7 @@ pub(super) fn expand_logs(traces: Vec<RpcLog>) -> Vec<ethui_types::Event> {
 
 async fn expand_trace(
     trace: LocalizedTransactionTrace,
-    provider: &RootProvider<Http<Client>>,
+    provider: &RootProvider<Ethereum>,
     _chain_id: u32,
 ) -> Result<Vec<Event>> {
     let hash = trace.transaction_hash.unwrap();
