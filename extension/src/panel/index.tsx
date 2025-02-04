@@ -21,9 +21,23 @@ function Response({ response }: { response?: JsonRpcResponse<Json> }) {
   if (!response) return null;
 
   if (isJsonRpcError(response)) {
-    return <ObjectInspector data={response} />;
+    return (
+      <ObjectInspector
+        data={response}
+        expandLevel={1}
+        sortKeys={true}
+        includePrototypes={false}
+      />
+    );
   } else if (isJsonRpcSuccess(response)) {
-    return <ObjectInspector data={response.result} />;
+    return (
+      <ObjectInspector
+        data={response.result}
+        expandLevel={1}
+        sortKeys={true}
+        includePrototypes={false}
+      />
+    );
   } else {
     return null;
   }
@@ -60,7 +74,12 @@ function App() {
             </Table.Cell>
             <Table.Cell>
               {request.data.params && (
-                <ObjectInspector data={request.data.params} />
+                <ObjectInspector
+                  data={request.data.params}
+                  expandLevel={1}
+                  sortKeys={true}
+                  includePrototypes={false}
+                />
               )}
             </Table.Cell>
             <Table.Cell>
