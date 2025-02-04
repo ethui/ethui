@@ -2324,7 +2324,7 @@ __metadata:
     "@storybook/builder-vite": "npm:^8.5.3"
     "@tanstack/react-query": "npm:^5.66.0"
     "@tanstack/react-query-devtools": "npm:^5.66.0"
-    "@tanstack/react-router": "npm:^1.99.0"
+    "@tanstack/react-router": "npm:^1.89.1"
     "@tanstack/router-devtools": "npm:^1.99.0"
     "@tanstack/router-plugin": "npm:^1.99.3"
     "@tanstack/router-vite-plugin": "npm:^1.99.3"
@@ -5821,6 +5821,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/history@npm:1.87.6":
+  version: 1.87.6
+  resolution: "@tanstack/history@npm:1.87.6"
+  checksum: 6f661c1c9f46f58ada98aed356fef5d383f78252834e0c54e07094793614bfee010a45f1e4e382bbe0563db68dad25819d077483b0365bcc2c5eba7f040fba03
+  languageName: node
+  linkType: hard
+
 "@tanstack/history@npm:1.99.0":
   version: 1.99.0
   resolution: "@tanstack/history@npm:1.99.0"
@@ -5865,6 +5872,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/react-router@npm:^1.89.1":
+  version: 1.89.1
+  resolution: "@tanstack/react-router@npm:1.89.1"
+  dependencies:
+    "@tanstack/history": "npm:1.87.6"
+    "@tanstack/react-store": "npm:^0.6.1"
+    jsesc: "npm:^3.0.2"
+    tiny-invariant: "npm:^1.3.3"
+    tiny-warning: "npm:^1.0.3"
+  peerDependencies:
+    "@tanstack/router-generator": ^1.87.7
+    react: ">=18"
+    react-dom: ">=18"
+  peerDependenciesMeta:
+    "@tanstack/router-generator":
+      optional: true
+  checksum: 11082401f812415f7e10e513727c3bb42036e1f73ad8fd38f5925a5566146367fe2dfab91b393cd47e46e3683372969b077bf4068ca986b111b2d18f0a4150af
+  languageName: node
+  linkType: hard
+
 "@tanstack/react-router@npm:^1.99.0":
   version: 1.99.0
   resolution: "@tanstack/react-router@npm:1.99.0"
@@ -5879,6 +5906,19 @@ __metadata:
     react: ">=18.0.0 || >=19.0.0"
     react-dom: ">=18.0.0 || >=19.0.0"
   checksum: 5f13f4beeaf46d242a877c785111bfb31f6c851fbcb058d584e9f1f13df9c618db6994ad9b62a5d0b238e3fa96b7f70e10d10276a18871a54b350307abd17420
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-store@npm:^0.6.1":
+  version: 0.6.1
+  resolution: "@tanstack/react-store@npm:0.6.1"
+  dependencies:
+    "@tanstack/store": "npm:0.6.0"
+    use-sync-external-store: "npm:^1.2.2"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: f16046e27c1323037688e33d7958132786bd671d2c70a8b18f3df6b3115f9fc86a0a5f5c1001d4befdc690a8ebfb4ffa59be9c26df7ddd9829ae3ca6a6668f24
   languageName: node
   linkType: hard
 
@@ -5989,6 +6029,13 @@ __metadata:
   dependencies:
     "@tanstack/router-plugin": "npm:^1.99.3"
   checksum: c6ebba21911b3cd98676f2c2af443a73c1e3565a427d848c4dccaa6f2f84f07f3d89ed4aa5e44f2f7f63c24ad32ec06fcf5c7166da887626b21fb0406f1360a0
+  languageName: node
+  linkType: hard
+
+"@tanstack/store@npm:0.6.0":
+  version: 0.6.0
+  resolution: "@tanstack/store@npm:0.6.0"
+  checksum: 72fbd772b757b53885d628ed486e00d75d16cac2002111bf0fed18382f62f4d3bd936e5c5fbc053af5752910d8c8b2aaec6de48cacc2f17c9fefc8929c153840
   languageName: node
   linkType: hard
 
