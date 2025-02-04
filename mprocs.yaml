@@ -1,6 +1,8 @@
 procs:
   app:
     cmd: ["yarn", "run", "app:dev"]
+  console:
+    cmd: ["tokio-console"]
   chrome-ext:
     cmd: ["yarn", "run", "ext:watch:chrome"]
   firefox-ext:

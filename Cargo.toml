@@ -54,7 +54,13 @@ ethui-tracing = { path = "crates/tracing" }
 ethui-exchange-rates = { path = "crates/exchange-rates" }
 ethui-args = { path = "crates/args" }
 ethui-token-list = { path = "crates/token-list" }
-tokio = { version = "1.42", features = ["rt-multi-thread", "sync"] }
+tokio = { version = "1.42", features = [
+  "rt-multi-thread",
+  "sync",
+  "full",
+  "tracing",
+] }
+console-subscriber = "0.1"
 thiserror = "1.0"
 sqlx = { version = "0.8", default-features = false, features = [
   "macros",
