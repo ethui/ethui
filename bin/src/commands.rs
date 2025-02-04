@@ -1,3 +1,9 @@
+use ethui_db::utils::{fetch_etherscan_abi, fetch_etherscan_contract_name};
+use ethui_db::Db;
+use ethui_networks::commands::networks_is_dev;
+use ethui_networks::Error;
+use ethui_types::{Address, GlobalState, UINotify};
+
 use crate::error::AppResult;
 
 #[tauri::command]
@@ -18,5 +24,48 @@ pub fn get_version() -> String {
 pub async fn ui_error(message: String, _stack: Option<Vec<String>>) -> AppResult<()> {
     tracing::error!(error_type = "UI Error", message = message);
 
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn add_contract(
+    chain_id: u64,
+    address: Address,
+    db: tauri::State<'_, Db>,
+) -> AppResult<()> {
+    let networks = ethui_networks::Networks::read().await;
+
+    let provider = async move {
+        match networks.get_network(chain_id as u32) {
+            Some(network) => Ok(network.get_alloy_provider().await?),
+            _ => Err(Error::InvalidNetwork(chain_id as u32)),
+        }
+    }
+    .await
+    .unwrap();
+
+    let proxy_for = ethui_proxy_detect::detect_proxy(address, &provider)
+        .await?
+        .map(|proxy| proxy.implementation());
+
+    let (abi, name) = if networks_is_dev().await? {
+        (None, None)
+    } else {
+        let name = fetch_etherscan_contract_name(chain_id.into(), address).await?;
+        let abi = fetch_etherscan_abi(chain_id.into(), address)
+            .await?
+            .map(|abi| serde_json::to_string(&abi).unwrap());
+
+        (abi, name)
+    };
+
+    db.insert_contract_with_abi(chain_id as u32, address, abi, name, proxy_for)
+        .await?;
+
+    if proxy_for.is_some() {
+        let _ = Box::pin(add_contract(chain_id, proxy_for.unwrap(), db)).await;
+    }
+
+    ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
     Ok(())
 }

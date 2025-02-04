@@ -40,6 +40,7 @@ pub(crate) async fn update_db_contracts() -> Result<()> {
                     address,
                     Some(serde_json::to_string(&abi.abi)?),
                     Some(abi.name),
+                    None,
                 )
                 .await?
             }

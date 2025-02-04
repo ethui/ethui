@@ -3549,7 +3549,7 @@ dependencies = [
 [[package]]
 name = "ethui-proxy-detect"
 version = "0.1.0"
-source = "git+https://github.com/ethui/proxy-detect?rev=f3ce623#f3ce6232de16967baa9829e0fbc75a55ec5c7a62"
+source = "git+https://github.com/ethui/proxy-detect?rev=4110990#41109908393e7887d720af71886741087ea6f0cd"
 dependencies = [
  "alloy",
  "thiserror 2.0.11",
