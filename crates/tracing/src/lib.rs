@@ -3,7 +3,7 @@ mod error;
 pub use error::{TracingError, TracingResult};
 use once_cell::sync::OnceCell;
 use tracing_subscriber::{
-    fmt::{self},
+    fmt::{self, format::FmtSpan},
     layer::SubscriberExt as _,
     reload,
     util::SubscriberInitExt as _,
@@ -17,10 +17,10 @@ pub fn init() -> TracingResult<()> {
     let (filter, reload_handle) = reload::Layer::new(filter);
     RELOAD_HANDLE.set(reload_handle).unwrap();
 
-    tracing_subscriber::registry()
-        .with(filter)
-        .with(fmt::Layer::default())
-        .init();
+    let fmt = fmt::Layer::default()
+        .with_ansi(true)
+        .with_span_events(FmtSpan::ACTIVE);
+    tracing_subscriber::registry().with(filter).with(fmt).init();
 
     Ok(())
 }

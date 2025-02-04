@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use tracing::{debug, instrument};
 
 use ethui_types::{
     ui_events::{DialogClose, DialogOpen, DialogSend},
@@ -35,8 +36,10 @@ impl Dialog {
     ///
     /// Here, we emits an OpenDialog event, asking the tauri app to do so
     /// The event loop will eventually call back into `open_with_handle` to continue the process
+    #[instrument(skip(self))]
     pub async fn open(&self) -> Result<()> {
         let inner = self.0.read().await;
+        debug!("Opening dialog {} {}", inner.preset, inner.id);
         OPEN_DIALOGS
             .lock()
             .await

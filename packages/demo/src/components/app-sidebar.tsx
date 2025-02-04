@@ -50,6 +50,17 @@ const data = {
         },
       ],
     },
+    {
+      title: "wallet_*",
+      url: "#",
+      items: [
+        { title: "switchChain", to: "/wallet/switchChain" },
+        {
+          title: "addEthereumChain",
+          to: "/wallet/addEthereumChain",
+        },
+      ],
+    },
   ],
 };
 

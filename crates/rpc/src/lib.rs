@@ -10,6 +10,7 @@ use ethui_types::GlobalState;
 use ethui_wallets::{WalletControl, Wallets};
 use jsonrpc_core::{MetaIoHandler, Params};
 use serde_json::json;
+use tracing::info;
 
 pub use self::error::{Error, Result};
 
@@ -40,7 +41,10 @@ impl Handler {
             ($name:literal, $fn:path) => {
                 self.io
                     .add_method_with_meta($name, |params: Params, ctx: Ctx| async move {
-                        $fn(params, ctx).await
+                        info!(method = $name, params = ?params);
+                        let ret = $fn(params, ctx).await;
+                        info!(result = ?ret);
+                        ret
                     });
             };
         }
@@ -175,8 +179,7 @@ impl Handler {
     async fn add_chain(params: Params, _ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
         let method = methods::ChainAdd::build()
             .set_params(params.into())?
-            .build()
-            .await;
+            .build();
 
         method.run().await?;
 

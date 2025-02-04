@@ -16,8 +16,10 @@ impl ChainAdd {
         ChainAddBuilder::default()
     }
 
+    #[tracing::instrument(skip(self))]
     pub async fn run(self) -> Result<()> {
         if self.already_exists().await {
+            tracing::info!("Already exists {}", self.network.chain_id);
             return Ok(());
         }
 
@@ -59,20 +61,40 @@ pub struct Params {
     chain_id: U64,
     chain_name: String,
     native_currency: Currency,
-    block_explorer_urls: Vec<Url>,
-    rpc_urls: Vec<Url>,
+    block_explorer_urls: Vec<Option<Url>>,
+    rpc_urls: Vec<Option<Url>>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Currency {
-    decimals: u64,
+    name: String,
     symbol: String,
+    decimals: u64,
 }
 
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct ChainAddBuilder {
     params: Option<Params>,
+}
+
+impl ChainAddBuilder {
+    pub fn set_params(mut self, params: serde_json::Value) -> Result<Self> {
+        let params: serde_json::Value = if params.is_array() {
+            params.as_array().unwrap()[0].clone()
+        } else {
+            params
+        };
+
+        self.params = Some(serde_json::from_value(params)?);
+        Ok(self)
+    }
+
+    pub fn build(self) -> ChainAdd {
+        ChainAdd {
+            network: self.params.unwrap().try_into().unwrap(),
+        }
+    }
 }
 
 impl TryFrom<Params> for Network {
@@ -84,33 +106,19 @@ impl TryFrom<Params> for Network {
             explorer_url: params.block_explorer_urls.first().map(|u| u.to_string()),
             http_url: params
                 .rpc_urls
-                .first()
-                .map(|s| s.to_string())
-                .ok_or(Error::Rpc(-32602))?,
-            ws_url: None,
+                .iter()
+                .find(|s| s.scheme().starts_with("http"))
+                .cloned()
+                .ok_or(Error::Rpc(-32602))?
+                .to_string(),
+            ws_url: params
+                .rpc_urls
+                .iter()
+                .find(|s| s.scheme().starts_with("ws"))
+                .map(|s| s.to_string()),
             currency: params.native_currency.symbol,
             decimals: params.native_currency.decimals as u32,
             force_is_anvil: false,
         })
-    }
-}
-
-impl ChainAddBuilder {
-    pub fn set_params(mut self, params: serde_json::Value) -> Result<Self> {
-        // TODO: why is this an array?
-        let params: serde_json::Value = if params.is_array() {
-            params.as_array().unwrap()[0].clone()
-        } else {
-            params
-        };
-
-        self.params = Some(serde_json::from_value(params)?);
-        Ok(self)
-    }
-
-    pub async fn build(self) -> ChainAdd {
-        ChainAdd {
-            network: self.params.unwrap().try_into().unwrap(),
-        }
     }
 }
