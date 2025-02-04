@@ -55,7 +55,7 @@
     "tailwindcss-animate": "^1.0.7",
     "typescript": "5.7.3",
     "viem": "^2.22.21",
-    "vite": "^5.4.14",
+    "vite": "^6.0.11",
     "zod": "^3.24.1",
     "zustand": "^5.0.3",
     "zxcvbn-typescript": "^5.0.1"
@@ -77,7 +77,7 @@
     "jsdom": "^25.0.1",
     "postcss": "^8.5.1",
     "tailwindcss": "^3.4.17",
-    "ts-unused-exports": "^10.1.0",
+    "ts-unused-exports": "^11.0.1",
     "vite-plugin-babel-import": "^2.0.5",
     "vite-plugin-imp": "^2.4.0",
     "vite-tsconfig-paths": "^5.1.4"
