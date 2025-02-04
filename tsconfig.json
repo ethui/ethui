@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
-    "target": "esnext",
+    "composite": true,
+    "target": "es2022",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": false,
     "skipLibCheck": true,
-    "noEmit": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
@@ -19,14 +19,17 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    "rewriteRelativeImportExtensions": true,
 
     "types": ["node"]
   },
-  "include": [".eslintrc.js"],
+  "files": [],
   "references": [
     { "path": "./gui" },
     { "path": "./extension" },
     { "path": "./packages/form" },
-    { "path": "./packages/abiparse" }
+    { "path": "./packages/abiparse" },
+    { "path": "./packages/ui" },
+    { "path": "./packages/demo" }
   ]
 }

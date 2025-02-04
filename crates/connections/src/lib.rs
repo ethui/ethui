@@ -2,6 +2,7 @@ pub mod commands;
 mod ctx;
 mod error;
 mod init;
+pub mod permissions;
 mod store;
 pub mod utils;
 

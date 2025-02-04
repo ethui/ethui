@@ -1,4 +1,4 @@
-use ethui_types::{events::Tx, Address, ToEthers, TokenMetadata, B256, U256, U64};
+use ethui_types::{events::Tx, Address, TokenMetadata, B256, U256, U64};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -46,7 +46,7 @@ impl From<&AlchemyAssetTransfer> for Tx {
         Self {
             hash: value.hash,
             trace_address: None,
-            block_number: Some(value.block_num.to_ethers().as_u64()),
+            block_number: Some(value.block_num.to()),
             from: value.from,
             to: value.to,
 
@@ -82,10 +82,7 @@ impl TryFrom<&AlchemyAssetTransfer> for TokenMetadata {
             address: value.raw_contract.address.unwrap(),
             name: None,
             symbol: value.asset.clone(),
-            decimals: value
-                .raw_contract
-                .decimal
-                .map(|d| d.to_ethers().as_u32() as u8),
+            decimals: value.raw_contract.decimal.map(|d| d.to::<u32>() as u8),
         })
     }
 }
@@ -143,7 +140,7 @@ pub struct ErcMetadataResponse {
     pub image: ErcImageData,
     pub raw: ErcRawMetadata,
     pub collection: Option<ErcCollectionData>,
-    pub balance: Option<U256>, 
+    pub balance: Option<U256>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

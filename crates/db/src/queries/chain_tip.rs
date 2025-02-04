@@ -1,11 +1,11 @@
-use ethui_types::Address;
+use alloy::primitives::Address;
 use tracing::instrument;
 
 use crate::{DbInner, Result};
 
 impl DbInner {
     pub async fn get_tip(&self, chain_id: u32, addr: Address) -> Result<u64> {
-        let addr = format!("0x{:x}", addr);
+        let addr = addr.to_string();
 
         let row = sqlx::query!(
             r#"SELECT tip FROM tips WHERE owner = ? AND chain_id = ?"#,
@@ -20,7 +20,7 @@ impl DbInner {
 
     #[instrument(skip(self), level = "trace")]
     pub async fn set_tip(&self, chain_id: u32, addr: Address, tip: u64) -> Result<()> {
-        let addr = format!("0x{:x}", addr);
+        let addr = addr.to_string();
         let tip = format!("0x{:x}", tip);
 
         sqlx::query!(

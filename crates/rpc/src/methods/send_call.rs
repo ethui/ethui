@@ -1,12 +1,13 @@
 use std::str::FromStr;
 
-use ethers::{
-    prelude::*,
-    types::{serde_helpers::StringifiedNumeric, transaction::eip2718::TypedTransaction},
+use alloy::{
+    network::TransactionBuilder as _,
+    primitives::{Address, Bytes, U256},
+    providers::Provider as _,
+    rpc::types::TransactionRequest,
 };
 use ethui_connections::Ctx;
 use ethui_networks::Network;
-use ethui_types::{Address, ToEthers};
 
 use crate::Result;
 
@@ -15,10 +16,10 @@ use crate::Result;
 #[derive(Debug)]
 pub struct SendCall {
     pub network: Network,
-    pub request: TypedTransaction,
+    pub request: TransactionRequest,
 }
 
-impl<'a> SendCall {
+impl SendCall {
     pub fn build(ctx: &Ctx) -> SendCallBuilder<'_> {
         SendCallBuilder::new(ctx)
     }
@@ -28,14 +29,14 @@ impl<'a> SendCall {
     }
 
     async fn send(&mut self) -> Result<Bytes> {
-        let provider = self.network.get_provider();
-        Ok(provider.call(&self.request, None).await?)
+        let provider = self.network.get_alloy_provider().await?;
+        Ok(provider.call(&self.request).await?)
     }
 }
 
 pub struct SendCallBuilder<'a> {
     ctx: &'a Ctx,
-    pub request: TypedTransaction,
+    pub request: TransactionRequest,
 }
 
 impl<'a> SendCallBuilder<'a> {
@@ -49,27 +50,24 @@ impl<'a> SendCallBuilder<'a> {
     pub async fn set_request(mut self, params: serde_json::Value) -> Result<SendCallBuilder<'a>> {
         // TODO: why is this an array?
         let params = if params.is_array() {
-            &params.as_array().unwrap()[0]
+            params.as_array().unwrap()[0].clone()
         } else {
-            &params
+            params
         };
 
         if let Some(from) = params["from"].as_str() {
-            self.request
-                .set_from(Address::from_str(from).unwrap().to_ethers());
+            self.request.set_from(Address::from_str(from).unwrap());
         }
         if let Some(to) = params["to"].as_str() {
-            self.request
-                .set_to(Address::from_str(to).unwrap().to_ethers());
+            self.request.set_to(Address::from_str(to).unwrap());
         }
 
         if let Some(value) = params["value"].as_str() {
-            let v = StringifiedNumeric::String(value.to_string());
-            self.request.set_value(U256::try_from(v).unwrap());
+            self.request.set_value(U256::from_str(value).unwrap());
         }
 
         if let Some(data) = params["data"].as_str() {
-            self.request.set_data(Bytes::from_str(data).unwrap());
+            self.request.set_input(Bytes::from_str(data).unwrap());
         }
 
         Ok(self)

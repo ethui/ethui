@@ -1,9 +1,10 @@
 use std::str::FromStr;
 
+use alloy::primitives::{Bytes, U256};
 use serde::Serialize;
 use sqlx::{sqlite::SqliteRow, Row};
 
-use crate::{Address, Bytes, B256, U256};
+use crate::{Address, B256};
 
 #[derive(Debug)]
 pub enum Event {
@@ -30,10 +31,10 @@ pub struct Tx {
     pub position: Option<usize>,
     pub status: u64,
     pub deployed_contract: Option<Address>,
-    pub gas_limit: Option<U256>,
-    pub gas_used: Option<U256>,
-    pub max_fee_per_gas: Option<U256>,
-    pub max_priority_fee_per_gas: Option<U256>,
+    pub gas_limit: Option<u64>,
+    pub gas_used: Option<u64>,
+    pub max_fee_per_gas: Option<u128>,
+    pub max_priority_fee_per_gas: Option<u128>,
     pub nonce: Option<u64>,
     pub r#type: Option<u64>,
     pub incomplete: bool,
@@ -61,7 +62,7 @@ pub struct ERC721Transfer {
 pub struct ContractDeployed {
     pub address: Address,
     pub code: Option<Bytes>,
-    pub block_number: u64,
+    pub block_number: Option<u64>,
 }
 
 impl From<ContractDeployed> for Event {
@@ -105,18 +106,14 @@ impl TryFrom<&SqliteRow> for Tx {
             data: row
                 .get::<Option<String>, _>("data")
                 .map(|b| Bytes::from_str(&b).unwrap()),
-            gas_limit: row
-                .get::<Option<String>, _>("gas_limit")
-                .map(|v| U256::from_str_radix(&v, 10).unwrap()),
-            gas_used: row
-                .get::<Option<String>, _>("gas_used")
-                .map(|v| U256::from_str_radix(&v, 10).unwrap()),
+            gas_limit: row.get::<Option<u64>, _>("gas_limit"),
+            gas_used: row.get::<Option<u64>, _>("gas_used"),
             max_fee_per_gas: row
-                .get::<Option<String>, _>("max_fee_per_gas")
-                .map(|v| U256::from_str_radix(&v, 10).unwrap()),
+                .get::<Option<&str>, _>("max_fee_per_gas")
+                .map(|v| v.parse::<u128>().unwrap()),
             max_priority_fee_per_gas: row
-                .get::<Option<String>, _>("max_priority_fee_per_gas")
-                .map(|v| U256::from_str_radix(&v, 10).unwrap()),
+                .get::<Option<&str>, _>("max_priority_fee_per_gas")
+                .map(|v| v.parse::<u128>().unwrap()),
             r#type: row.get::<Option<i32>, _>("type").map(|b| b as u64),
 
             block_number: row.get::<Option<i64>, _>("block_number").map(|b| b as u64),

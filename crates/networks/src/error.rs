@@ -1,3 +1,5 @@
+use alloy::transports::{RpcError, TransportErrorKind};
+
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("IO error: {0}")]
@@ -14,6 +16,15 @@ pub enum Error {
 
     #[error("Invalid chain ID: {0}")]
     InvalidChainId(u32),
+
+    #[error(transparent)]
+    Rpc(#[from] RpcError<TransportErrorKind>),
+
+    #[error("Already exists")]
+    AlreadyExists,
+
+    #[error("Not exists")]
+    NotExists,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

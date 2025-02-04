@@ -4,9 +4,9 @@ mod methods;
 
 use std::collections::HashMap;
 
-use ethers::{abi::AbiEncode, types::transaction::eip712};
-use ethui_connections::Ctx;
-use ethui_types::{Bytes, GlobalState};
+use alloy::{dyn_abi::TypedData, hex, primitives::Bytes, providers::Provider as _};
+use ethui_connections::{permissions::PermissionRequest, Ctx};
+use ethui_types::GlobalState;
 use ethui_wallets::{WalletControl, Wallets};
 use jsonrpc_core::{MetaIoHandler, Params};
 use serde_json::json;
@@ -22,7 +22,10 @@ impl Handler {
     pub fn new(domain: Option<String>) -> Self {
         let mut res = Self {
             io: MetaIoHandler::default(),
-            ctx: Ctx { domain },
+            ctx: Ctx {
+                domain,
+                ..Default::default()
+            },
         };
         res.add_handlers();
         res
@@ -46,14 +49,12 @@ impl Handler {
             ($name:literal) => {
                 self.io
                     .add_method_with_meta($name, |params: Params, ctx: Ctx| async move {
-                        tracing::debug!("{} {:?}", $name, params);
-
                         let provider = ctx.network().await.get_provider();
 
                         let res: jsonrpc_core::Result<serde_json::Value> = provider
-                            .request::<_, serde_json::Value>($name, params)
+                            .raw_request::<_, serde_json::Value>($name.into(), params)
                             .await
-                            .map_err(error::ethers_to_jsonrpc_error);
+                            .map_err(error::alloy_to_jsonrpc_error);
                         res
                     });
             };
@@ -109,6 +110,8 @@ impl Handler {
         self_handler!("personal_sign", Self::eth_sign);
         self_handler!("eth_signTypedData", Self::eth_sign_typed_data_v4);
         self_handler!("eth_signTypedData_v4", Self::eth_sign_typed_data_v4);
+        self_handler!("wallet_requestPermissions", Self::request_permissions);
+        self_handler!("wallet_getPermissions", Self::get_permissions);
         self_handler!("wallet_addEthereumChain", Self::add_chain);
         self_handler!("wallet_switchEthereumChain", Self::switch_chain);
         self_handler!("wallet_updateEthereumChain", Self::update_chain);
@@ -152,8 +155,24 @@ impl Handler {
         }))
     }
 
-    #[tracing::instrument()]
-    async fn add_chain(params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+    #[tracing::instrument(skip(params))]
+    async fn request_permissions(
+        params: Params,
+        mut ctx: Ctx,
+    ) -> jsonrpc_core::Result<serde_json::Value> {
+        let request = params.parse::<PermissionRequest>().unwrap();
+        let ret = ctx.request_permissions(request);
+
+        Ok(json!(ret))
+    }
+
+    #[tracing::instrument(skip(_params, ctx))]
+    async fn get_permissions(_params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+        Ok(json!(ctx.get_permissions()))
+    }
+
+    #[tracing::instrument(skip(params, _ctx))]
+    async fn add_chain(params: Params, _ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
         let method = methods::ChainAdd::build()
             .set_params(params.into())?
             .build()
@@ -198,7 +217,12 @@ impl Handler {
             .switch_chain(new_chain_id)
             .await
             .map(|_| serde_json::Value::Null)
-            .map_err(Error::Connection)?)
+            .map_err(|e| match e {
+                ethui_connections::Error::InvalidChainId(chain_id) => {
+                    Error::UnrecognizedChainId(chain_id)
+                }
+                _ => Error::Connection(e),
+            })?)
     }
 
     async fn send_transaction<T: Into<serde_json::Value>>(
@@ -213,12 +237,9 @@ impl Handler {
             .build()
             .await;
 
-        let result = sender.estimate_gas().await.finish().await;
+        let result = sender.estimate_gas().await.finish().await?;
 
-        match result {
-            Ok(res) => Ok(res.tx_hash().encode_hex().into()),
-            Err(e) => Err(e.into()),
-        }
+        Ok(format!("0x{:x}", result.tx_hash()).into())
     }
 
     async fn send_call(params: serde_json::Value, ctx: Ctx) -> jsonrpc_core::Result<Bytes> {
@@ -252,12 +273,9 @@ impl Handler {
 
         // TODO: ensure from == signer
 
-        let result = signer.finish().await;
+        let result = signer.finish().await?;
 
-        match result {
-            Ok(res) => Ok(format!("0x{}", res).into()),
-            Err(e) => Err(e.into()),
-        }
+        Ok(format!("0x{}", hex::encode(result.as_bytes())).into())
     }
 
     async fn eth_sign_typed_data_v4(
@@ -268,7 +286,7 @@ impl Handler {
         // TODO where should this be used?
         // let address = Address::from_str(&params[0].as_ref().cloned().unwrap()).unwrap();
         let data = params[1].as_ref().cloned().unwrap();
-        let typed_data: eip712::TypedData = serde_json::from_str(&data).unwrap();
+        let typed_data: TypedData = serde_json::from_str(&data).unwrap();
 
         let wallets = Wallets::read().await;
 
@@ -282,12 +300,9 @@ impl Handler {
             .set_typed_data(typed_data)
             .build();
 
-        let result = signer.finish().await;
+        let result = signer.finish().await?;
 
-        match result {
-            Ok(res) => Ok(format!("0x{}", res).into()),
-            Err(e) => Err(e.into()),
-        }
+        Ok(format!("0x{}", hex::encode(result.as_bytes())).into())
     }
 
     async fn unimplemented(params: Params, _: Ctx) -> jsonrpc_core::Result<serde_json::Value> {

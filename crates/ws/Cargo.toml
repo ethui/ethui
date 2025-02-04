@@ -16,7 +16,6 @@ ethui-networks.workspace = true
 ethui-connections.workspace = true
 ethui-args.workspace = true
 
-ethers.workspace = true
 tokio.workspace = true
 tauri.workspace = true
 serde.workspace = true
@@ -28,5 +27,5 @@ url.workspace = true
 futures.workspace = true
 async-trait.workspace = true
 
-tokio-tungstenite = "0.20.1"
-tungstenite = "0.20.1"
+tokio-tungstenite = "0.24"
+tungstenite = "0.24"

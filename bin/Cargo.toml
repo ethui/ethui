@@ -8,6 +8,13 @@ repository.workspace = true
 exclude.workspace = true
 authors.workspace = true
 
+[lib]
+name = "ethui_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[[bin]]
+name = "ethui"
+
 [dependencies]
 ethui-forge.workspace = true
 ethui-settings.workspace = true
@@ -16,35 +23,30 @@ ethui-wallets.workspace = true
 ethui-dialogs.workspace = true
 ethui-rpc.workspace = true
 ethui-ws.workspace = true
-ethui-http.workspace = true
 ethui-connections.workspace = true
 ethui-types.workspace = true
 ethui-db.workspace = true
 ethui-sync.workspace = true
 ethui-tracing.workspace = true
-ethui-exchange-rates.workspace = true
 ethui-broadcast.workspace = true
 ethui-simulator.workspace = true
 ethui-args.workspace = true
-ethui-token-list.workspace = true
-ethui-abis.workspace = true
 
 serde.workspace = true
 serde_json.workspace = true
 tauri.workspace = true
 tokio.workspace = true
 thiserror.workspace = true
-ethers.workspace = true
 tracing.workspace = true
-anyhow.workspace = true
 
-fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs", rev = "016512b" }
-tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
-named-lock = "0.3.0"
-auto-launch = "0.5.0"
+fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs", rev = "0e479e2" }
+named-lock = "0.4"
+tauri-plugin-os = "2.2"
+tauri-plugin-clipboard-manager = "2.0"
+tauri-plugin-shell = "2"
 
 [build-dependencies]
-tauri-build = { version = "1.2", features = [] }
+tauri-build = { version = "2.0", default-features = false, features = [] }
 ethui-token-list.workspace = true
 
 [features]

@@ -1,14 +1,16 @@
 import log from "loglevel";
 import { storage } from "webextension-polyfill";
 
-export interface Settings {
+const { PROD } = import.meta.env;
+
+export interface Settings extends Record<string, string> {
   logLevel: "info" | "debug" | "warn" | "error";
   endpoint: string;
 }
 
 export const defaultSettings: Settings = {
   logLevel: "debug",
-  endpoint: `ws://localhost:9002`,
+  endpoint: PROD ? "ws://localhost:9002" : "ws://localhost:9102",
 };
 
 export async function loadSettings() {

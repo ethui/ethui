@@ -1,51 +1,57 @@
 use std::str::FromStr;
 
-use ethers::{
-    prelude::*,
-    types::{serde_helpers::StringifiedNumeric, transaction::eip2718::TypedTransaction},
+use alloy::{
+    network::{Ethereum, TransactionBuilder as _},
+    primitives::{Bytes, U256},
+    providers::{ext::AnvilApi, PendingTransactionBuilder, Provider, ProviderBuilder},
+    rpc::types::TransactionRequest,
+    transports::http::{Client, Http},
 };
 use ethui_connections::Ctx;
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_networks::Network;
 use ethui_settings::Settings;
-use ethui_types::{Address, GlobalState, ToAlloy, ToEthers};
-use ethui_wallets::{WalletControl, WalletType, Wallets};
+use ethui_types::{Address, GlobalState};
+use ethui_wallets::{Wallet, WalletControl, WalletType, Wallets};
 
 use crate::{Error, Result};
 
 /// Orchestrates the signing of a transaction
 /// Takes references to both the wallet and network where this
-#[derive(Debug)]
 pub struct SendTransaction {
     pub network: Network,
     pub wallet_name: String,
     pub wallet_path: String,
     pub wallet_type: WalletType,
-    pub request: TypedTransaction,
-    pub signer: Option<SignerMiddleware<Provider<RetryClient<Http>>, ethui_wallets::Signer>>,
+    pub request: TransactionRequest,
+    pub provider: Option<Box<dyn Provider<Http<Client>>>>,
 }
 
-impl<'a> SendTransaction {
+impl SendTransaction {
     pub fn build(ctx: &Ctx) -> SendTransactionBuilder<'_> {
         SendTransactionBuilder::new(ctx)
     }
 
     pub async fn estimate_gas(&mut self) -> &mut SendTransaction {
         // TODO: we're defaulting to 1_000_000 gas cost if estimation fails
-        // estimation failing means the tx will faill anyway, so this is fine'ish
+        // estimation failing means the tx will fail anyway, so this is fine'ish
         // but can probably be improved a lot in the future
-        let gas_limit = self
-            .network
-            .get_provider()
-            .estimate_gas(&self.request, None)
-            .await
-            .unwrap_or(1_000_000.into());
 
-        self.request.set_gas(gas_limit * 120 / 100);
+        // TODO: check how to make this work with alloy
+        //let gas_limit = self
+        //    .network
+        //    .get_provider()
+        //    .estimate_gas(&self.request, None)
+        //    .await
+        //    .unwrap_or(1_000_000.into());
+
+        let gas_limit = 1_000_000;
+
+        self.request.set_gas_limit(gas_limit * 120 / 100);
         self
     }
 
-    pub async fn finish(&mut self) -> Result<PendingTransaction<'_, RetryClient<Http>>> {
+    pub async fn finish(&mut self) -> Result<PendingTransactionBuilder<Http<Client>, Ethereum>> {
         // inner scope so as not to lock wallets for the entire duration of the tx review
         let skip = {
             let wallets = Wallets::read().await;
@@ -53,7 +59,7 @@ impl<'a> SendTransaction {
                 .get(&self.wallet_name)
                 .ok_or_else(|| Error::WalletNameNotFound(self.wallet_name.clone()))?;
 
-            self.network.is_dev() && wallet.is_dev() && Settings::read().await.fast_mode()
+            self.network.is_dev().await && wallet.is_dev() && Settings::read().await.fast_mode()
         };
 
         // skip the dialog if both network & wallet allow for it, and if fast_mode is enabled
@@ -64,7 +70,9 @@ impl<'a> SendTransaction {
         }
     }
 
-    async fn dialog_and_send(&mut self) -> Result<PendingTransaction<'_, RetryClient<Http>>> {
+    async fn dialog_and_send(
+        &mut self,
+    ) -> Result<PendingTransactionBuilder<Http<Client>, Ethereum>> {
         let mut params = serde_json::to_value(&self.request).unwrap();
         params["chainId"] = self.network.chain_id.into();
         params["walletType"] = self.wallet_type.to_string().into();
@@ -75,7 +83,10 @@ impl<'a> SendTransaction {
         while let Some(msg) = dialog.recv().await {
             match msg {
                 DialogMsg::Data(msg) => match &msg["event"].as_str() {
-                    Some("simulate") => self.simulate(&dialog).await?,
+                    Some("simulate") => {
+                        dialog.send("trying", None).await?;
+                        self.simulate(&dialog).await?
+                    }
                     Some("accept") => break,
                     Some("update") => {
                         self.update(msg);
@@ -103,12 +114,12 @@ impl<'a> SendTransaction {
 
     fn update(&mut self, data: serde_json::Value) {
         if let Some(data) = data["data"].as_str() {
-            self.request.set_data(Bytes::from_str(data).unwrap());
+            self.request.set_input(Bytes::from_str(data).unwrap());
         }
 
         if let Some(value) = data["value"].as_str() {
-            let v = StringifiedNumeric::String(value.to_string());
-            self.request.set_value(U256::try_from(v).unwrap());
+            // TODO: does this work with both hex and decimal?
+            self.request.set_value(U256::from_str(value).unwrap());
         }
     }
 
@@ -117,6 +128,7 @@ impl<'a> SendTransaction {
         let request = self.simulation_request().await?;
 
         if let Ok(sim) = ethui_simulator::commands::simulator_run(chain_id, request).await {
+            dialog.send("foo", None).await?;
             dialog
                 .send("simulation-result", Some(serde_json::to_value(sim)?))
                 .await?
@@ -125,15 +137,15 @@ impl<'a> SendTransaction {
         Ok(())
     }
 
-    async fn send(&mut self) -> Result<PendingTransaction<'_, RetryClient<Http>>> {
-        self.build_signer().await?;
-        let signer = self.signer.as_ref().unwrap();
-
-        Ok(signer.send_transaction(self.request.clone(), None).await?)
+    async fn send(&mut self) -> Result<PendingTransactionBuilder<Http<Client>, Ethereum>> {
+        self.build_provider().await?;
+        let provider = self.provider.as_ref().unwrap();
+        let pending = provider.send_transaction(self.request.clone()).await?;
+        Ok(pending)
     }
 
-    async fn build_signer(&mut self) -> Result<()> {
-        if self.signer.is_some() {
+    async fn build_provider(&mut self) -> Result<()> {
+        if self.provider.is_some() {
             return Ok(());
         }
 
@@ -143,12 +155,40 @@ impl<'a> SendTransaction {
             .ok_or(Error::WalletNameNotFound(self.wallet_name.clone()))?
             .clone();
 
-        let signer = wallet
-            .build_signer(self.network.chain_id, &self.wallet_path)
-            .await?;
+        let url = self
+            .network
+            .http_url
+            .parse()
+            .map_err(|_| Error::CannotParseUrl(self.network.http_url.clone()))?;
 
-        let signer = SignerMiddleware::new(self.network.get_provider(), signer);
-        self.signer = Some(signer);
+        let is_dev_network = self.network.is_dev().await && self.network.chain_id == 31337;
+
+        self.provider = match wallet {
+            Wallet::Impersonator(ref wallet) if is_dev_network => {
+                let account = wallet.get_address(&self.wallet_path).await?;
+                let provider = ProviderBuilder::new()
+                    .with_recommended_fillers()
+                    .on_http(url);
+
+                // TODO: maybe we can find a way to only do this once for every account,
+                // or only call anvil_autoImpersonate once for the whole network,
+                // instead of making this request for every single transaction.
+                // this is just a minor optimization, though
+                provider.anvil_impersonate_account(account).await?;
+                Some(Box::new(provider))
+            }
+            _ => {
+                let signer = wallet
+                    .build_signer(self.network.chain_id, &self.wallet_path)
+                    .await?;
+                let provider = ProviderBuilder::new()
+                    .with_recommended_fillers()
+                    .wallet(signer.to_wallet())
+                    .on_http(url);
+                Some(Box::new(provider))
+            }
+        };
+
         Ok(())
     }
 
@@ -158,21 +198,14 @@ impl<'a> SendTransaction {
         Ok(ethui_simulator::Request {
             from: self.from().await.map_err(|_| Error::CannotSimulate)?,
             to: tx_request
-                .to()
+                .to
+                .map(|v| v.into())
                 .ok_or(())
-                .and_then(|v| match v {
-                    NameOrAddress::Name(_) => Err(()),
-                    NameOrAddress::Address(a) => Ok(a.to_alloy()),
-                })
                 .map_err(|_| Error::CannotSimulate)?,
-            value: tx_request.value().cloned().map(|v| v.to_alloy()),
-            data: tx_request
-                .data()
-                .cloned()
-                .map(|v| alloy_primitives::Bytes(v.0)),
+            value: tx_request.value,
+            data: tx_request.input.clone().into_input(),
             gas_limit: tx_request
-                .gas()
-                .map(|v| v.as_u64())
+                .gas
                 .ok_or(())
                 .map_err(|_| Error::CannotSimulate)?,
         })
@@ -200,7 +233,7 @@ pub struct SendTransactionBuilder<'a> {
     pub wallet_name: Option<String>,
     pub wallet_path: Option<String>,
     pub wallet_type: Option<WalletType>,
-    pub request: TypedTransaction,
+    pub request: TransactionRequest,
 }
 
 impl<'a> SendTransactionBuilder<'a> {
@@ -228,7 +261,7 @@ impl<'a> SendTransactionBuilder<'a> {
         let wallets = Wallets::read().await;
         if let Some(from) = params["from"].as_str() {
             let address = Address::from_str(from).unwrap();
-            self.request.set_from(address.to_ethers());
+            self.request.set_from(address);
 
             let (wallet, path) = wallets
                 .find(address)
@@ -241,24 +274,22 @@ impl<'a> SendTransactionBuilder<'a> {
             let wallet = wallets.get_current_wallet();
 
             self.wallet_path = Some(wallet.get_current_path());
-            self.request
-                .set_from(wallet.get_current_address().await.to_ethers());
+            self.request.set_from(wallet.get_current_address().await);
             self.wallet_name = Some(wallet.name());
             self.wallet_type = Some(wallet.into());
         }
 
         if let Some(to) = params["to"].as_str() {
-            self.request
-                .set_to(Address::from_str(to).unwrap().to_ethers());
+            self.request.set_to(Address::from_str(to).unwrap());
         }
 
         if let Some(value) = params["value"].as_str() {
-            let v = StringifiedNumeric::String(value.to_string());
-            self.request.set_value(U256::try_from(v).unwrap());
+            // TODO: does this support both hex and decimal?
+            self.request.set_value(U256::from_str(value).unwrap());
         }
 
         if let Some(data) = params["data"].as_str() {
-            self.request.set_data(Bytes::from_str(data).unwrap());
+            self.request.set_input(Bytes::from_str(data).unwrap());
         }
 
         Ok(self)
@@ -271,7 +302,7 @@ impl<'a> SendTransactionBuilder<'a> {
             wallet_type: self.wallet_type.unwrap(),
             network: self.ctx.network().await,
             request: self.request,
-            signer: None,
+            provider: None,
         }
     }
 }

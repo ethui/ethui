@@ -1,2 +1,2 @@
-imports_granularity = "crate"
+imports_granularity = "Crate"
 group_imports = "StdExternalCrate"

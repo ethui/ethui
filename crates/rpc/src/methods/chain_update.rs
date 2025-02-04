@@ -161,6 +161,7 @@ impl TryFrom<Params> for Network {
             ws_url: None,
             currency: params.native_currency.symbol,
             decimals: params.native_currency.decimals as u32,
+            force_is_anvil: false,
         })
     }
 }

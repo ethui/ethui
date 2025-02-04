@@ -1,25 +1,20 @@
 name-template: "v$RESOLVED_VERSION"
 tag-template: "v$RESOLVED_VERSION"
 categories:
-  - title: "🚀 Features"
+  - title: "🚀 Desktop app"
     labels:
-      - "feature"
-  - title: "🐛 Bug Fixes"
-    labels:
-      - "bugfix"
-      - "bug"
+      - "C-app"
+      - "A-EIPs"
   - title: "🌐 Extension"
     labels:
-      - "extension"
-  - title: "Code Quality"
+      - "C-extension"
+  - title: "🐛 Bug Fixes"
     labels:
-      - "refactor"
-      - "enhancement"
+      - "B-bugfix"
   - title: "🧰 Maintenance"
     labels:
-      - "chore"
-      - "docs"
-      - "dependencies"
+      - "C-docs"
+      - "C-dependencies"
 
 change-template: "- $TITLE @$AUTHOR (#$NUMBER)"
 

@@ -1,9 +1,35 @@
 [advisories]
-vulnerability = "deny"
-unmaintained = "warn"
 yanked = "warn"
-notice = "warn"
-ignore = ["RUSTSEC-2023-0081"]
+ignore = [
+  "RUSTSEC-2024-0370",
+  # instant is unmaintained
+  "RUSTSEC-2024-0384",
+  # derivative is unmaintained
+  "RUSTSEC-2024-0388",
+  # atk is unmaintained
+  "RUSTSEC-2024-0413",
+  # atk-sys is unmaintained
+  "RUSTSEC-2024-0416",
+  # gdk is unmaintained
+  "RUSTSEC-2024-0412",
+  # gdk-sys is unmaintained
+  "RUSTSEC-2024-0418",
+  # gdkwayland-sys is unmaintained
+  "RUSTSEC-2024-0411",
+  # gdkx11 is unmaintained
+  "RUSTSEC-2024-0417",
+  # gdkx11-sys is unmaintained
+  "RUSTSEC-2024-0414",
+  # gtk3 is unmaintained
+  "RUSTSEC-2024-0415",
+  # gtk3-sys is unmaintained
+  "RUSTSEC-2024-0420",
+  # gtk3-macros is unmaintained
+  "RUSTSEC-2024-0419",
+  # glib unsoundness
+  "RUSTSEC-2024-0429",
+]
+
 
 [licenses]
 allow = [
@@ -17,10 +43,12 @@ allow = [
   "MPL-2.0",
   "BSD-2-Clause",
   "BSD-3-Clause",
+  "Unicode-3.0",
   "BSL-1.0",
   "OpenSSL",
   "0BSD",
   "CC0-1.0",
+  "Zlib",
 ]
 exceptions = [
   # As stated in https://github.com/gakonst/ethers-rs/blob/master/deny.toml
@@ -29,6 +57,7 @@ exceptions = [
   # https://tldrlegal.com/license/creative-commons-cc0-1.0-universal
   { allow = ["CC0-1.0"], name = "tiny-keccak" },
 ]
+
 
 # See note in unicode-ident's readme!
 [[licenses.clarify]]

@@ -1,42 +1,42 @@
 import {
-  FormControl,
-  InputLabel,
-  MenuItem,
   Select,
-  SelectChangeEvent,
-} from "@mui/material";
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@ethui/ui/components/shadcn/select";
+import { useShallow } from "zustand/shallow";
 
-import { useWallets } from "@/store";
+import { useWallets } from "#/store/useWallets";
+import { WalletView } from "./WalletView";
 
 export function QuickWalletSelect() {
-  const [wallets, currentWallet, setCurrentWallet] = useWallets((s) => [
-    s.wallets,
-    s.currentWallet,
-    s.setCurrentWallet,
-  ]);
+  const [wallets, currentWallet, setCurrentWallet] = useWallets(
+    useShallow((s) => [s.wallets, s.currentWallet, s.setCurrentWallet]),
+  );
 
-  const handleChange = (event: SelectChangeEvent<string>) => {
-    setCurrentWallet(event.target.value);
+  const handleChange = (value: string) => {
+    setCurrentWallet(value);
   };
 
   if (!wallets || !currentWallet) return <>Loading</>;
 
   return (
-    <FormControl variant="standard" fullWidth>
-      <InputLabel id="wallet-select-label">Wallet</InputLabel>
-      <Select
-        label="Wallet"
-        labelId="wallet-select-label"
-        onChange={handleChange}
-        size="small"
-        value={currentWallet.name}
-      >
-        {wallets.map(({ name }) => (
-          <MenuItem value={name} key={name}>
-            {name}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
+    <Select defaultValue={currentWallet.name} onValueChange={handleChange}>
+      <SelectTrigger>
+        <SelectValue />
+      </SelectTrigger>
+
+      <SelectContent>
+        <SelectGroup>
+          {wallets.map(({ name, type }) => (
+            <SelectItem value={name} key={name}>
+              <WalletView name={name} type={type} />
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
   );
 }

@@ -1,41 +1,13 @@
 {
+  "productName": "ethui",
+  "identifier": "dev.ethui",
   "build": {
     "beforeDevCommand": "yarn workspace @ethui/gui dev",
     "beforeBuildCommand": "yarn workspace @ethui/gui build",
-    "devPath": "http://localhost:1420",
-    "distDir": "../gui/dist"
+    "frontendDist": "../gui/dist",
+    "devUrl": "http://localhost:1420"
   },
-  "package": {
-    "productName": "ethui",
-    "version": "../package.json"
-  },
-  "tauri": {
-    "allowlist": {
-      "all": true,
-      "shell": {
-        "all": false,
-        "open": true
-      },
-      "fs": {
-        "scope": ["$APPDATA/*"]
-      }
-    },
-    "bundle": {
-      "active": true,
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "identifier": "ethui",
-      "targets": "all"
-    },
-    "systemTray": {
-      "iconPath": "icons/icon.png",
-      "iconAsTemplate": true
-    },
+  "app": {
     "security": {
       "csp": {
         "default-src": "'self'",
@@ -45,5 +17,10 @@
         "img-src": ["'self'", "https://effigy.im", "data:"]
       }
     }
+  },
+  "bundle": {
+    "icon": ["icons/128x128.png"],
+    "active": true,
+    "targets": "all"
   }
 }

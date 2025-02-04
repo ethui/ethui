@@ -2,9 +2,8 @@
 
 use std::{collections::BTreeMap, path::PathBuf};
 
-use ethui_types::Bytes;
+use alloy::primitives::Bytes;
 use tokio::{spawn, sync::mpsc};
-use tracing::trace;
 
 use crate::{
     abi::Abi,
@@ -96,11 +95,9 @@ async fn handle_events(mut rcv: mpsc::UnboundedReceiver<Match>) -> Result<()> {
     while let Some(m) = rcv.recv().await {
         let mut forge = FORGE.write().await;
         if let Ok(abi) = Abi::try_from_match(m.clone()) {
-            trace!("inserting ABI: {:?}", m.full_path.clone());
             forge.insert_abi(abi);
             ethui_broadcast::forge_abi_found().await;
         } else {
-            trace!("removing ABI: {:?}", m.full_path.clone());
             forge.remove_abi(m.full_path);
         }
     }
@@ -133,7 +130,7 @@ pub fn diff_score(a: &[u8], b: &[u8]) -> f64 {
 mod tests {
     use std::str::FromStr;
 
-    use ethui_types::Bytes;
+    use alloy::primitives::Bytes;
 
     use super::*;
 

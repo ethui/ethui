@@ -8,19 +8,21 @@ on:
       - "*"
   pull_request:
     types: [opened, synchronize]
-    paths-ignore:
-      - "./migrations/**"
-      - "./tauri/**"
-      - "*.toml"
-      - "*.md"
-      - "LICENSE"
+    paths:
+      - ".github/workflows/yarn.yml"
+      - "gui/**"
+      - "extension/**"
+      - "packages/**"
+      - "package.json"
+      - "yarn.lock"
   merge_group:
-    paths-ignore:
-      - "./migrations/**"
-      - "./tauri/**"
-      - "*.toml"
-      - "*.md"
-      - "LICENSE"
+    paths:
+      - ".github/workflows/yarn.yml"
+      - "gui/**"
+      - "extension/**"
+      - "packages/**"
+      - "package.json"
+      - "yarn.lock"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -35,8 +37,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           cache: "yarn"
-          node-version: "20"
+          node-version: "22"
 
       - run: yarn install --frozen-lockfile
+      - run: cat packages/abiparse/package.json
       - run: yarn lint
       - run: yarn test

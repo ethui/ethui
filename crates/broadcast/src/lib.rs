@@ -25,6 +25,7 @@ pub enum InternalMsg {
     CurrentAddressChanged(Address),
 
     NetworkAdded(u32),
+    NetworkUpdated(u32),
     NetworkRemoved(u32),
     CurrentNetworkChanged(u32),
 
@@ -101,6 +102,10 @@ mod internal_msgs {
         send(NetworkAdded(chain_id)).await;
     }
 
+    pub async fn network_updated(chain_id: u32) {
+        send(NetworkUpdated(chain_id)).await;
+    }
+
     pub async fn network_removed(chain_id: u32) {
         send(NetworkRemoved(chain_id)).await;
     }
@@ -135,7 +140,7 @@ mod internal_msgs {
         RwLock::new(tx)
     });
 
-    async fn send<'a>(msg: InternalMsg) {
+    async fn send(msg: InternalMsg) {
         INTERNAL.read().await.send(msg).unwrap();
     }
 }
@@ -180,7 +185,7 @@ mod ui_msgs {
         RwLock::new(tx)
     });
 
-    async fn send<'a>(msg: UIMsg) {
+    async fn send(msg: UIMsg) {
         INTERNAL.read().await.send(msg).unwrap();
     }
 }

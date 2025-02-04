@@ -5,8 +5,11 @@ parcel-bundle-reports
 tsconfig.tsbuildinfo
 target/
 !migrations/*.sql
-gui/vite.config.ts.timestamp-*
+*.ts.timestamp-*
 dev-data
+.direnv/
+.env
+mprocs.log
 
 # extension artifacts
 extension/*.zip
@@ -23,3 +26,4 @@ extension/*.zip
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+*storybook.log

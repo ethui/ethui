@@ -1,5 +1,5 @@
 [workspace.package]
-version = "1.8.0"
+version = "1.9.0"
 edition = "2021"
 license-file = "./LICENSE"
 homepage = "https://github.com/ethui"
@@ -18,7 +18,6 @@ members = [
   "crates/wallets",
   "crates/simulator",
   "crates/ws",
-  "crates/http",
   "crates/rpc",
   "crates/connections",
   "crates/dialogs",
@@ -41,7 +40,6 @@ ethui-networks = { path = "crates/networks" }
 ethui-wallets = { path = "crates/wallets" }
 ethui-simulator = { path = "crates/simulator" }
 ethui-ws = { path = "crates/ws" }
-ethui-http = { path = "crates/http" }
 ethui-rpc = { path = "crates/rpc" }
 ethui-connections = { path = "crates/connections" }
 ethui-dialogs = { path = "crates/dialogs" }
@@ -56,51 +54,58 @@ ethui-tracing = { path = "crates/tracing" }
 ethui-exchange-rates = { path = "crates/exchange-rates" }
 ethui-args = { path = "crates/args" }
 ethui-token-list = { path = "crates/token-list" }
-
-tokio = { version = "1.37", features = ["full", "sync"] }
+tokio = { version = "1.42", features = ["rt-multi-thread", "sync"] }
 thiserror = "1.0"
-ethers = { features = [
-  "ws",
-  "ledger",
-], git = "https://github.com/gakonst/ethers-rs", rev = "5394d89" }
-sqlx = { version = "0.7.4", features = [
+sqlx = { version = "0.8", default-features = false, features = [
+  "macros",
   "runtime-tokio-rustls",
   "sqlite",
   "migrate",
   "json",
 ] }
-serde = { version = "1.0", features = ["derive", "std"] }
+serde = { version = "1.0", default-features = false, features = ["derive"] }
 serde_json = "1.0"
-async-trait = "0.1.68"
-tauri = { version = "1.6.7", features = ["api-all", "system-tray"] }
-once_cell = "1.19"
-secrets = { version = "1.2.0", features = ["use-libsodium-sys"] }
+async-trait = "0.1"
+tauri = { version = "2.2", features = ["tray-icon"] }
+once_cell = { version = "1.19", default-features = false }
+secrets = { version = "1.2", features = ["use-libsodium-sys"] }
 tracing = "0.1"
-jsonrpc-core = "18.0.0"
+jsonrpc-core = { version = "18.0", default-features = false }
 reqwest = { version = "0.12", default-features = false, features = [
   "rustls-tls",
 ] }
-alloy-primitives = { version = "0.7.1", features = [
-  "serde",
-  "rlp",
-  "getrandom",
+alloy = { version = "0.9", default-features = false, features = [
+  "sol-types",
+  "contract",
+  "signer-local",
+  "signer-ledger",
+  "signer-keystore",
+  "signer-mnemonic",
+  "eip712",
+  "provider-http",
+  "provider-ws",
+  "provider-anvil-api",
+  "provider-trace-api",
+  "rpc",
+  "json-rpc",
+  "rpc-types",
+  "reqwest-rustls-tls",
 ] }
-revm-inspectors = { git = "https://github.com/paradigmxyz/evm-inspectors", rev = "c1b5dd0", features = [
+alloy-chains = { version = "0.1", default-features = false, features = [
   "serde",
 ] }
-alloy-json-abi = { version = "0.7.1" }
 url = { version = "2.5", features = ["serde"] }
-futures = "0.3.28"
-clap = { version = "4.4.8", features = ["derive", "env"] }
-coins-ledger = "0.10.1"
-rand = "0.8.5"
+futures = { version = "0.3", default-features = false }
+clap = { version = "4.5", default-features = false, features = [
+  "derive",
+  "env",
+] }
+coins-ledger = "0.12"
+rand = "0.8"
+rstest = "0.23"
+regex = "1.11"
+anyhow = { version = "1.0", default-features = false }
 
-# Foundry - May 12th 2024
-foundry-config = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-a117fbfa41edbaa1618ed099d78d65727bff4790" }
-foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-a117fbfa41edbaa1618ed099d78d65727bff4790" }
-foundry-common = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-a117fbfa41edbaa1618ed099d78d65727bff4790" }
-hex = "0.4.3"
-anyhow = "1.0.83"
-
-# [patch.crates-io]
-# ethers-core = { git = "https://github.com/gakonst/ethers-rs", rev = "5394d89" }
+# Foundry - December 10th 2024
+foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-aa69ed1e46dd61fbf9d73399396a4db4dd527431" }
+foundry-block-explorers = "0.8"

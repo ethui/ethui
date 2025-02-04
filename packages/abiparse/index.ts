@@ -1,6 +1,6 @@
-import { createToken, Lexer as ChevrotainLexer, CstParser } from "chevrotain";
+import { Lexer as ChevrotainLexer, CstParser, createToken } from "chevrotain";
 
-import { ethUnitRegex, parseIntWithUnit, type TEthUnit } from "./src/utils";
+import { type TEthUnit, ethUnitRegex, parseIntWithUnit } from "./src/utils";
 
 const int = createToken({ name: "int", pattern: /-?\d+/ });
 const ethUnit = createToken({

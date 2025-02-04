@@ -1,9 +1,8 @@
-import { Json, JsonRpcRequest, JsonRpcResponse } from "@metamask/utils";
 import log from "loglevel";
-import { type Runtime, runtime } from "webextension-polyfill";
+import { type Runtime, action, runtime } from "webextension-polyfill";
 import { ArrayQueue, ConstantBackoff, WebsocketBuilder } from "websocket-ts";
 
-import { defaultSettings, loadSettings, type Settings } from "@/settings";
+import { type Settings, defaultSettings, loadSettings } from "#/settings";
 
 // init on load
 (async () => init())();
@@ -21,6 +20,10 @@ export async function init() {
   runtime.onConnect.addListener((port: Runtime.Port) => {
     setupProviderConnection(port);
   });
+
+  action.onClicked.addListener(() => {
+    console.log("icon clicked");
+  });
 }
 
 /**
@@ -31,7 +34,7 @@ export async function init() {
 async function notifyDevtools(
   tabId: number,
   type: "request" | "response" | "start",
-  data?: JsonRpcResponse<Json> | JsonRpcRequest,
+  data?: unknown,
 ) {
   try {
     await runtime.sendMessage({
@@ -60,13 +63,21 @@ async function notifyDevtools(
  * This behaviour prevents initiating connections for browser tabs where `window.ethereum` is not actually used
  */
 export function setupProviderConnection(port: Runtime.Port) {
-  const tabId = port.sender!.tab!.id!;
+  const tab = port.sender!.tab!;
+  const tabId = tab.id!;
+  const url = tab.url;
 
   notifyDevtools(tabId, "start");
 
+  type Request = { id: number; method: string; params?: unknown };
+  const reqs: Map<Request["id"], Request> = new Map();
+
   const ws = new WebsocketBuilder(endpoint(port))
     .onOpen(() => {
-      log.debug("WS connection opened");
+      log.debug(`WS connection opened (${url})`);
+    })
+    .onClose(() => {
+      log.debug(`WS connection closed (${url})`);
     })
     .onReconnect(() => {
       log.debug("WS connection reconnected");
@@ -82,19 +93,29 @@ export function setupProviderConnection(port: Runtime.Port) {
         return;
       }
       // forward WS server messages back to the stream (content script)
-      const data = JSON.parse(event.data);
-      port.postMessage(data);
+      const resp = JSON.parse(event.data);
+      port.postMessage(resp);
 
-      log.debug("[WS] response:", data);
-      notifyDevtools(tabId, "response", data);
+      const req = reqs.get(resp.id);
+      const logRequest = req?.params
+        ? [req?.method, req?.params]
+        : [req?.method];
+      const fn = resp.error ? log.error : log.debug;
+      fn(...logRequest, resp.error || resp.result);
+      notifyDevtools(tabId, "response", resp);
     })
     .build();
 
   // forwarding incoming stream data to the WS server
-  port.onMessage.addListener((data: JsonRpcResponse<Json>) => {
-    ws.send(JSON.stringify(data));
+  port.onMessage.addListener((data) => {
+    const req = data as Request;
+    if (req.id) {
+      reqs.set(req.id as number, req);
+    }
 
-    log.debug("[WS] request:", data);
+    const msg = JSON.stringify(data);
+    ws.send(msg);
+
     notifyDevtools(tabId, "request", data);
   });
 

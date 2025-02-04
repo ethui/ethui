@@ -1,8 +1,8 @@
-import { Box, Stack, Typography, type SxProps } from "@mui/material";
+import clsx from "clsx";
 import { useCallback } from "react";
 
-import { Basic } from "./Basic";
 import { ArrayInput } from "./ArrayInput";
+import { Basic } from "./Basic";
 import { matchArrayType } from "./utils";
 
 export interface BaseProps {
@@ -17,14 +17,20 @@ export interface BaseProps {
 
 export type InnerProps = BaseProps & { depth?: number };
 
-export type AbiInputProps = InnerProps & { sx?: SxProps };
+export type AbiInputProps = InnerProps & {
+  red?: boolean;
+  deleteHover?: boolean;
+  className?: string;
+};
 
 export function AbiInput({
   label,
   type,
   onChange: parentOnChange,
   headerActions,
-  sx = {},
+  red = false,
+  deleteHover = false,
+  className,
   ...rest
 }: AbiInputProps) {
   const arrayMatch = matchArrayType(type);
@@ -37,21 +43,15 @@ export function AbiInput({
   );
 
   return (
-    <Box sx={{ width: "100%", pl: 1, ...sx }}>
-      <Stack>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <Typography fontWeight="bold">
-            {label}
-            <Typography sx={{ pl: 2 }} component="span" fontFamily="monospace">
-              {type}
-            </Typography>
-          </Typography>
-          {headerActions}
-        </Stack>
+    <div className={clsx("w-full transition-colors", className)}>
+      <div>
+        <div className=" flex items-center justify-between">
+          <div className="flex gap-2">
+            <span className="font-bold">{label}</span>
+            <span className="font-mono">{type}</span>
+          </div>
+          <span className="justify-self-end">{headerActions}</span>
+        </div>
         {arrayMatch ? (
           <ArrayInput
             {...{
@@ -67,7 +67,7 @@ export function AbiInput({
         ) : (
           <Basic {...{ type, onChange, ...rest }} />
         )}
-      </Stack>
-    </Box>
+      </div>
+    </div>
   );
 }

@@ -1,10 +1,9 @@
-import { type Duplex } from "stream";
+import type { Duplex } from "node:stream";
 import { WindowPostMessageStream } from "@metamask/post-message-stream";
 import log from "loglevel";
 import { runtime } from "webextension-polyfill";
-
-import { loadSettings } from "@/settings";
-import { name } from "@/inpage/utils";
+import { name } from "#/inpage/utils";
+import { loadSettings } from "#/settings";
 
 declare global {
   interface Document {

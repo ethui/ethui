@@ -1,0 +1,13 @@
+{
+  "productName": "ethui (dev)",
+  "identifier": "dev.ethui.dev-build",
+  "build": {
+    "beforeDevCommand": "yarn workspace @ethui/gui dev",
+    "beforeBuildCommand": "yarn workspace @ethui/gui build",
+    "frontendDist": "../gui/dist",
+    "devUrl": "http://localhost:1420"
+  },
+  "bundle": {
+    "icon": ["icons-dev/128x128.png"]
+  }
+}

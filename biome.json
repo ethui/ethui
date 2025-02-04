@@ -1,0 +1,56 @@
+{
+  "files": {
+    "ignore": [
+      ".sqlx",
+      ".direnv",
+      ".pnp.cjs",
+      ".pnp.loader.mjs",
+      "**/*.gen.ts",
+      "**/package.json",
+      "packages/data/**/*.json",
+      "packages/**/dist/**",
+      "packages/**/*.generated.ts",
+      "extension/dist",
+      "gui/dist",
+      "bin/gen",
+      "target"
+    ]
+  },
+  "formatter": {
+    "indentStyle": "space"
+  },
+  "linter": {
+    "rules": {
+      "recommended": true,
+      "correctness": { "noUnusedVariables": "error" },
+      "suspicious": {
+        "noExplicitAny": "off",
+        "noArrayIndexKey": "off"
+      },
+      "style": {
+        "noUselessElse": "off",
+        "noNonNullAssertion": "off"
+      },
+      "performance": {
+        "noAccumulatingSpread": "error",
+        "noDelete": "error",
+        "noReExportAll": "error",
+        "noBarrelFile": "error"
+      },
+      "complexity": {
+        "useOptionalChain": {
+          "fix": "safe"
+        }
+      },
+      "nursery": {
+        "useSortedClasses": {
+          "level": "error",
+          "fix": "safe"
+        }
+      }
+    }
+  },
+  "vcs": {
+    "useIgnoreFile": true
+  }
+}

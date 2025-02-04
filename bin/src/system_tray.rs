@@ -1,40 +1,39 @@
-use tauri::{AppHandle, Manager, SystemTrayEvent};
+use tauri::{
+    menu::{MenuBuilder, MenuEvent, MenuItemBuilder},
+    tray::TrayIconBuilder,
+    AppHandle, Manager,
+};
 
-pub(crate) fn build() -> tauri::SystemTray {
-    use tauri::{CustomMenuItem, SystemTray, SystemTrayMenu, SystemTrayMenuItem};
+use crate::AppResult;
 
-    let quit = CustomMenuItem::new("quit".to_string(), "Quit");
-    let hide = CustomMenuItem::new("hide".to_string(), "Hide");
-    let show = CustomMenuItem::new("show".to_string(), "Show");
-    let tray_menu = SystemTrayMenu::new();
+pub(crate) fn build(app: &AppHandle) -> AppResult<()> {
+    let menu_builder = MenuBuilder::new(app);
 
-    #[cfg(feature = "debug")]
-    let tray_menu = tray_menu
-        .add_item(CustomMenuItem::new("dev_mode".to_string(), "Dev Mode"))
-        .add_native_item(SystemTrayMenuItem::Separator);
+    let menu = menu_builder
+        .item(&MenuItemBuilder::with_id("show", "Show").build(app)?)
+        .item(&MenuItemBuilder::with_id("hide", "Hide").build(app)?)
+        .separator()
+        .item(&MenuItemBuilder::with_id("quit", "Quit").build(app)?)
+        .build()?;
 
-    let tray_menu = tray_menu
-        .add_item(show)
-        .add_item(hide)
-        .add_native_item(SystemTrayMenuItem::Separator)
-        .add_item(quit);
+    TrayIconBuilder::new()
+        .icon(app.default_window_icon().unwrap().clone())
+        .menu(&menu)
+        .on_menu_event(event_handler)
+        .build(app)?;
 
-    SystemTray::new().with_menu(tray_menu)
+    Ok(())
 }
 
-pub(crate) fn event_handler(app: &AppHandle, event: SystemTrayEvent) {
-    use SystemTrayEvent::*;
-
-    match event {
-        MenuItemClick { id, .. } => match id.as_str() {
-            "quit" => app.exit(0),
-            "hide" => app.get_window("main").unwrap().hide().unwrap(),
-            "show" => {
-                tokio::spawn(async { ethui_broadcast::main_window_show().await });
+fn event_handler(app: &AppHandle, event: MenuEvent) {
+    match event.id().as_ref() {
+        "quit" => app.exit(0),
+        "hide" => {
+            if let Some(w) = app.get_webview_window("main") {
+                w.hide().unwrap()
             }
-            _ => {}
-        },
-        DoubleClick { .. } => {
+        }
+        "show" => {
             tokio::spawn(async { ethui_broadcast::main_window_show().await });
         }
         _ => {}

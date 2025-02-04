@@ -1,16 +1,13 @@
-import { Close, OpenInNew } from "@mui/icons-material";
-import { IconButton, Typography } from "@mui/material";
-import { SnackbarKey, useSnackbar } from "notistack";
 import { useEffect } from "react";
 
-import { useNetworks, useSettings, useSettingsWindow } from "@/store";
+import { ToastAction } from "@ethui/ui/components/shadcn/toast";
+import { toast } from "@ethui/ui/hooks/use-toast";
+import { Link } from "@tanstack/react-router";
+import { useNetworks } from "#/store/useNetworks";
+import { useSettings } from "#/store/useSettings";
 import { useInvoke } from "./useInvoke";
 
-let key: SnackbarKey;
-
 export function useNoticeAlchemyKeyMissing() {
-  const { open } = useSettingsWindow();
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { settings } = useSettings();
   const currentNetwork = useNetworks((s) => s.current);
 
@@ -26,34 +23,17 @@ export function useNoticeAlchemyKeyMissing() {
 
   useEffect(() => {
     if (!requiresAlchemyKey) {
-      closeSnackbar(key);
       return;
     }
 
-    key = enqueueSnackbar(<Typography>Alchemy key missing</Typography>, {
-      key: "alchemy_key_missing",
-      persist: true,
-      variant: "warning",
-      action: () => (
-        <>
-          <IconButton
-            aria-label="close"
-            color="inherit"
-            sx={{ p: 0.5 }}
-            onClick={() => open()}
-          >
-            <OpenInNew />
-          </IconButton>
-          <IconButton
-            aria-label="close"
-            color="inherit"
-            sx={{ p: 0.5 }}
-            onClick={() => closeSnackbar(key)}
-          >
-            <Close />
-          </IconButton>
-        </>
+    toast({
+      title: "Alchemy key missing",
+      description: "Transaction history for livenets not available",
+      action: (
+        <ToastAction altText="Set key" asChild>
+          <Link to="/home/settings/general">Set key</Link>
+        </ToastAction>
       ),
     });
-  }, [closeSnackbar, enqueueSnackbar, open, requiresAlchemyKey]);
+  }, [requiresAlchemyKey]);
 }

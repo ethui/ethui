@@ -1,12 +1,13 @@
 use std::collections::HashSet;
 
-use crate::{Error, Result};
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_networks::Networks;
 use ethui_sync::{get_alchemy, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse};
 use ethui_types::{Address, GlobalState, TokenMetadata, U256};
 use ethui_wallets::{WalletControl, Wallets};
 use serde::{Deserialize, Serialize};
+
+use crate::{Error, Result};
 
 #[derive(Debug)]
 pub struct TokenAdd {
@@ -96,7 +97,7 @@ impl TokenAdd {
                     Err(Error::ParseError)
                 }
             }
-            _ => return Err(Error::TypeInvalid(self._type.clone())),
+            _ => Err(Error::TypeInvalid(self._type.clone())),
         }
     }
 
@@ -109,9 +110,9 @@ impl TokenAdd {
                         .fetch_erc_owners(erc721_token.address)
                         .await
                         .map_err(|_| Error::ParseError)?;
-                    return Ok(owners_response);
+                    Ok(owners_response)
                 } else {
-                    return Err(Error::ParseError);
+                    Err(Error::ParseError)
                 }
             }
             "ERC1155" => {
@@ -120,12 +121,12 @@ impl TokenAdd {
                         .fetch_erc_owners(erc1155_token.address)
                         .await
                         .map_err(|_| Error::ParseError)?;
-                    return Ok(owners_response);
+                    Ok(owners_response)
                 } else {
-                    return Err(Error::ParseError);
+                    Err(Error::ParseError)
                 }
             }
-            _ => return Err(Error::TypeInvalid(self._type.clone())),
+            _ => Err(Error::TypeInvalid(self._type.clone())),
         }
     }
 
@@ -141,7 +142,7 @@ impl TokenAdd {
                 .collect();
 
             if !owners.contains(&wallet_address.to_string()) {
-                return Err(Error::ErcWrongOwner);
+                Err(Error::ErcWrongOwner)
             } else {
                 for owner in balances_response.owners {
                     if owner.owner_address == wallet_address.to_string() {
@@ -156,7 +157,7 @@ impl TokenAdd {
                         }
                     }
                 }
-                return Err(Error::ErcInvalid);
+                Err(Error::ErcInvalid)
             }
         } else {
             Err(Error::ParseError)
@@ -251,7 +252,7 @@ impl TokenAdd {
             .map(|owner| owner.owner_address.clone())
             .collect();
         if !owners.contains(&wallet_address.to_string()) {
-            return Err(Error::ErcWrongOwner);
+            Err(Error::ErcWrongOwner)
         } else {
             Ok(())
         }
@@ -324,7 +325,7 @@ impl TokenAdd {
                     serde_json::to_value(erc1155_full_data.clone()).unwrap(),
                 )
             }
-          
+
             _ => return Err(Error::TypeInvalid(self._type.clone())),
         };
         dialog.open().await?;

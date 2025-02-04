@@ -5,6 +5,8 @@
 [releases]: https://github.com/ethui/ethui/releases
 [prank-wallet]: https://ethglobal.com/showcase/prank-wallet-cgnb3
 [anvil]: https://book.getfoundry.sh/anvil/
+[chrome-extension]: https://chrome.google.com/webstore/detail/ethui/eljobehkpcnpekmbcjiidekjhkbcnpkf
+[firefox-extension]: https://addons.mozilla.org/en-US/firefox/addon/ethui/
 
 <p align="center">
     <img src="https://raw.githubusercontent.com/ethui/.github/main/banner/github.png" width=70%>
@@ -18,29 +20,21 @@
 
 ## What is ethui?
 
-A developer's crypto wallet. ethui has the usual functionality of a crypto wallet, as well as additional built-in tooling meant to speed up your development workflows.
+An Ethereum development toolkip. [ethui](https://ethui.dev/) has the usual functionality of a crypto wallet, while also providing access to crucial features for a comfortable & fast development workflow.
 
 ### Main features
 
 - **anvil-aware**: ethui uses a dedicated syncing process for local [anvil][anvil] nodes, enabling real-time syncing which works across chain restarts, reverts, and downtime. No longer should you have to manually reset the `nonce` in your wallet
-- **foundry-aware**: the wallet finds existing `forge` outputs in your filesystem, and matches them against on-chain bytecode to create a built-in explorer akin to Etherscan's contract interaction tool
-- **multiple wallets**: ethui is not restricted to a single mnemonic. Create as many wallets as you want, and switch seamlessly between them
-- **Desktop-native experience**: no longer tied to a browser's sandbox. Your wallet is now reachable across your entire system, and you can even use it as a proxy for your scripting RPC needs
-- **quick keyboard-based navigation**: A command bar reachable via `Cmd+K` / `Ctrl+K` provides quick access to all of the major actions
-
-## Status
-
-ethui is in active development, but the existing features are more than to provide an enhanced developer experience over consumer-facing wallets.
+- **foundry-aware**: the wallet finds existing `forge` outputs in your filesystem, and matches them against on-chain bytecode to create a built-in explorer akin to Etherscan's contract interaction tool;
+- **multiple wallets**: ethui is not restricted to a single mnemonic. Create as many wallets as you want, and switch seamlessly between them;
+- **fast mode**: when using a test wallet & an anvil node, ethui can skip security and password checks, allowing fast iteration times without compromising security;
+- **Desktop-native experience**: no longer tied to a browser's sandbox. Your wallet is now reachable across your entire system, and you can even use it as a proxy for your scripting RPC needs;
 
 ## Installing
 
 1. Check the latest [release][releases]
 2. Download the appropriate binary for your architecture, and set it up in your `$PATH`
-3. Download `extension.zip` and manually install it in your browser (currently tested on Google Chrome, more to come soon):
-   3.1. Extract the zip file
-   3.2. go to `chrome://extensions`
-   3.3. enable `Developer mode` (upper right corner)
-   3.4. Load unpacked -> choose the directory you extracted from the ZIP file
+3. Install the extension for [Google Chrome][chrome-extension] or [Firefox][firefox-extension]
 4. Run `ethui`.
 
 ---

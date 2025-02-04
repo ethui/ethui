@@ -1,4 +1,4 @@
-use ethers::prelude::{signer::SignerMiddlewareError, *};
+use alloy::transports::{RpcError, TransportErrorKind};
 use ethui_types::Address;
 use jsonrpc_core::ErrorCode;
 
@@ -19,22 +19,17 @@ pub enum Error {
     #[error("Error building signer: {0}")]
     SignerBuild(String),
 
-    #[error(transparent)]
-    SignerMiddleware(
-        #[from] SignerMiddlewareError<Provider<RetryClient<Http>>, ethui_wallets::Signer>,
-    ),
+    #[error("failed to parse URL {0}")]
+    CannotParseUrl(String),
 
     #[error(transparent)]
-    Provider(#[from] ethers::providers::ProviderError),
+    SignerError(#[from] alloy::signers::Error),
 
-    #[error("Signer error: {0}")]
-    Signer(String),
+    #[error(transparent)]
+    Transport(#[from] alloy::transports::TransportError),
 
     #[error(transparent)]
     EthuiWallets(#[from] ethui_wallets::Error),
-
-    #[error(transparent)]
-    Wallet(#[from] ethers::signers::WalletError),
 
     #[error(transparent)]
     Network(#[from] ethui_networks::Error),
@@ -47,6 +42,11 @@ pub enum Error {
 
     #[error(transparent)]
     Connection(#[from] ethui_connections::Error),
+
+    #[error(
+        "Unrecongnized chainID {0}. Try adding the chain using wallet_addEthereumChain first."
+    )]
+    UnrecognizedChainId(u32),
 
     #[error("serialization error: {0}")]
     Serde(#[from] serde_json::Error),
@@ -99,19 +99,22 @@ pub type Result<T> = std::result::Result<T, Error>;
 impl From<Error> for jsonrpc_core::Error {
     fn from(value: Error) -> Self {
         let code = match value {
-            Error::TxDialogRejected | Error::SignatureRejected => ErrorCode::ServerError(4001),
+            Error::TxDialogRejected | Error::SignatureRejected | Error::UserRejectedDialog => {
+                ErrorCode::ServerError(4001)
+            }
+            Error::ParseError => ErrorCode::ParseError,
+            Error::TypeInvalid(..)
+            | Error::ErcTypeInvalid(..)
+            | Error::ErcInvalid
+            | Error::ErcWrongOwner
+            | Error::DecimalsInvalid
+            | Error::TokenInvalid
+            | Error::SymbolMissing
+            | Error::SymbolInvalid => ErrorCode::InvalidParams,
             Error::WalletNotFound(..) => ErrorCode::ServerError(4100),
-            Error::ParseError => ErrorCode::ServerError(-32700),
-            Error::UserRejectedDialog => ErrorCode::ServerError(4001),
-            Error::TokenInvalid => ErrorCode::ServerError(-32602),
-            Error::SymbolMissing => ErrorCode::ServerError(-32602),
-            Error::SymbolInvalid => ErrorCode::ServerError(-32602),
-            Error::DecimalsInvalid => ErrorCode::ServerError(-32602),
             Error::NetworkInvalid => ErrorCode::ServerError(4901),
-            Error::TypeInvalid(..) => ErrorCode::ServerError(-32603),
-            Error::ErcTypeInvalid(..) => ErrorCode::ServerError(-32002),
-            Error::ErcWrongOwner => ErrorCode::ServerError(-32002),
-            Error::ErcInvalid => ErrorCode::ServerError(-32002),
+            // https://github.com/MetaMask/metamask-mobile/blob/5fe6aceffcf4c80ed1f3530282640aebcd201935/app/core/RPCMethods/wallet_switchEthereumChain.js#L88C11-L88C15
+            Error::UnrecognizedChainId(_) => ErrorCode::ServerError(4902),
             _ => ErrorCode::InternalError,
         };
 
@@ -132,22 +135,15 @@ impl serde::Serialize for Error {
     }
 }
 
-pub(crate) fn ethers_to_jsonrpc_error(e: ProviderError) -> jsonrpc_core::Error {
+pub(crate) fn alloy_to_jsonrpc_error(e: RpcError<TransportErrorKind>) -> jsonrpc_core::Error {
     // TODO: probable handle more error types here
-    match e {
-        ProviderError::JsonRpcClientError(e) => {
-            if let Some(e) = e.as_error_response() {
-                jsonrpc_core::Error {
-                    code: ErrorCode::ServerError(e.code),
-                    data: e.data.clone(),
-                    message: e.message.clone(),
-                }
-            } else if e.as_serde_error().is_some() {
-                jsonrpc_core::Error::invalid_request()
-            } else {
-                jsonrpc_core::Error::internal_error()
-            }
+    if let Some(e) = e.as_error_resp() {
+        jsonrpc_core::Error {
+            code: ErrorCode::ServerError(e.code),
+            data: e.data.clone().map(|d| serde_json::to_value(d).unwrap()),
+            message: e.message.to_string(),
         }
-        _ => jsonrpc_core::Error::internal_error(),
+    } else {
+        jsonrpc_core::Error::internal_error()
     }
 }

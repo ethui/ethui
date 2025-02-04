@@ -61,11 +61,19 @@ impl WalletControl for Impersonator {
     }
 
     async fn get_all_addresses(&self) -> Vec<(String, Address)> {
-        self.addresses.iter().map(|v| (v.to_string(), *v)).collect()
+        self.addresses
+            .iter()
+            .enumerate()
+            .map(|(i, v)| (i.to_string(), *v))
+            .collect()
     }
 
     async fn get_address(&self, path: &str) -> Result<Address> {
         Ok(self.addresses[usize::from_str(path)?])
+    }
+
+    fn is_dev(&self) -> bool {
+        true
     }
 
     async fn build_signer(&self, _chain_id: u32, _path: &str) -> Result<Signer> {

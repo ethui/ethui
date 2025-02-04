@@ -7,9 +7,6 @@ pub enum AppError {
     Forge(#[from] ethui_forge::Error),
 
     #[error(transparent)]
-    Http(#[from] ethui_http::Error),
-
-    #[error(transparent)]
     FixPathEnv(#[from] fix_path_env::Error),
 
     #[error(transparent)]

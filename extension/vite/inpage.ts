@@ -2,6 +2,7 @@ import path from "node:path";
 import { defineConfig } from "vite";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 import tsconfigPaths from "vite-tsconfig-paths";
+import { base64Loader } from "./utils";
 
 const dist = process.env.DIST_DIR || "dist/dev";
 
@@ -20,6 +21,7 @@ const fetchVersion = () => {
 export default defineConfig({
   root: "src",
   plugins: [
+    base64Loader,
     fetchVersion(),
     nodePolyfills({
       exclude: ["fs"],

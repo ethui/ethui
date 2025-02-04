@@ -1,0 +1,13 @@
+[profile.default]
+src = 'contracts'
+out = 'out'
+libs = ['lib', "dependencies"]
+solc_version = '0.8.27'
+
+[soldeer]
+recursive_deps = true
+
+[dependencies]
+forge-std = "1.9.5"
+"@openzeppelin-contracts-upgradeable" = "5.2.0"
+openzeppelin-foundry-upgrades = "0.4.0"

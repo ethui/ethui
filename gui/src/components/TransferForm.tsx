@@ -1,21 +1,24 @@
+import { addressSchema } from "@ethui/types/wallets";
+import { Form } from "@ethui/ui/components/form";
+import { Alert, AlertDescription } from "@ethui/ui/components/shadcn/alert";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Alert, Button, Stack, Typography } from "@mui/material";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
-import { FieldValues, useForm } from "react-hook-form";
+import { type FieldValues, useForm } from "react-hook-form";
 import {
-  AbiItem,
-  Address,
+  type AbiItem,
+  type Address,
   encodeFunctionData,
   formatUnits,
   getAddress,
   parseAbiItem,
 } from "viem";
 import { z } from "zod";
-
-import { Form } from "@ethui/react/components";
-import { addressSchema } from "@ethui/types/wallets";
-import { useBalances, useNetworks, useWallets } from "@/store";
+import { useShallow } from "zustand/shallow";
+import { useBalances } from "#/store/useBalances";
+import { useNetworks } from "#/store/useNetworks";
+import { useWallets } from "#/store/useWallets";
 
 interface Token {
   currency?: string;
@@ -37,9 +40,11 @@ export function TransferForm({
 }: TransferFormProps) {
   const network = useNetworks((s) => s.current);
   const address = useWallets((s) => s.address);
-  const { native, erc20s } = useBalances((s) => {
-    return { native: s.nativeBalance, erc20s: s.erc20Balances };
-  });
+  const { native, erc20s } = useBalances(
+    useShallow((s) => {
+      return { native: s.nativeBalance, erc20s: s.erc20Balances };
+    }),
+  );
   const [result, setResult] = useState<string | null>(null);
 
   // map list of tokens
@@ -65,7 +70,7 @@ export function TransferForm({
       contract: ZeroAddress,
     });
     setTokens(newTokens);
-  }, [setTokens, native, erc20s, network]);
+  }, [native, erc20s, network]);
 
   const schema = z.object({
     to: addressSchema.optional(),
@@ -111,51 +116,41 @@ export function TransferForm({
 
   return (
     <Form form={form} onSubmit={onSubmit}>
-      <Stack alignItems="flex-start" spacing={2}>
-        <Typography>Transfer token</Typography>
+      <span>Transfer token</span>
 
-        <Form.Select
-          fullWidth
-          name="currency"
-          label="Currency"
-          items={Array.from(tokens.values())}
-          toValue={(v) => v.contract}
-          render={(v) => v.currency}
-          sx={{ minWidth: 120 }}
-        />
+      <Form.Select
+        name="currency"
+        label="Currency"
+        items={Array.from(tokens.values())}
+        toValue={(v) => v.contract}
+        render={(v) => v.currency}
+      />
 
-        <Typography variant="body2">
-          Balance: {formatUnits(currentToken.balance, currentToken.decimals)}
-        </Typography>
+      <span>
+        Balance: {formatUnits(currentToken.balance, currentToken.decimals)}
+      </span>
 
-        <Form.Text label="To" name="to" fullWidth />
-        <Form.BigInt
-          label="Amount"
-          name="value"
-          fullWidth
-          decimals={currentToken.decimals}
-        />
+      <Form.Text label="To" name="to" className="w-full" />
+      <Form.BigInt
+        label="Amount"
+        name="value"
+        decimals={currentToken.decimals}
+        className="w-full"
+      />
 
-        {result && (
-          <Alert
-            sx={{ alignSelf: "stretch" }}
-            variant="outlined"
-            severity="success"
-          >
-            <Typography variant="body2" noWrap>
-              {result}
-            </Typography>
-          </Alert>
-        )}
+      {result && (
+        <Alert>
+          <AlertDescription>{result}</AlertDescription>
+        </Alert>
+      )}
 
-        <Stack width="100%" direction="row" justifyContent="space-between">
-          <Button variant="outlined" color="error" onClick={onClose}>
-            Close
-          </Button>
+      <div className="flex w-full justify-center gap-2">
+        <Button variant="outline" color="error" onClick={onClose}>
+          Close
+        </Button>
 
-          <Form.Submit label="Send" />
-        </Stack>
-      </Stack>
+        <Form.Submit label="Send" />
+      </div>
     </Form>
   );
 }
@@ -171,7 +166,7 @@ const transferNative = async (from: Address, to: Address, value: bigint) => {
 };
 
 const erc20transfer: AbiItem = parseAbiItem(
-  `function transfer(address to, uint amount) returns (bool)`,
+  "function transfer(address to, uint amount) returns (bool)",
 );
 
 const transferERC20 = async (

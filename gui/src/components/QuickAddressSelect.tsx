@@ -1,60 +1,51 @@
 import {
-  FormControl,
-  InputLabel,
-  MenuItem,
   Select,
-  SelectChangeEvent,
-} from "@mui/material";
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@ethui/ui/components/shadcn/select";
 import { map } from "lodash-es";
-import { Address, getAddress } from "viem";
+import { type Address, getAddress } from "viem";
+import { useShallow } from "zustand/shallow";
 
-import { Wallet } from "@ethui/types/wallets";
-import { useInvoke } from "@/hooks";
-import { useWallets } from "@/store";
-import { AddressView } from "./";
+import type { Wallet } from "@ethui/types/wallets";
+import { useInvoke } from "#/hooks/useInvoke";
+import { useWallets } from "#/store/useWallets";
+import { AddressView } from "./AddressView";
 
 export function QuickAddressSelect() {
-  const [currentWallet, setCurrentAddress] = useWallets((s) => [
-    s.currentWallet,
-    s.setCurrentAddress,
-  ]);
+  const [currentWallet, setCurrentAddress] = useWallets(
+    useShallow((s) => [s.currentWallet, s.setCurrentAddress]),
+  );
   const { data: addresses } = useInvoke<[string, Address][]>(
     "wallets_get_wallet_addresses",
     { name: currentWallet?.name },
   );
 
-  const handleChange = (event: SelectChangeEvent<string | undefined>) => {
-    if (!event.target.value) return;
-    setCurrentAddress(event.target.value);
-  };
-
-  const renderValue = (v: string) => {
-    const address = addresses?.find(([key]) => key === v)?.[1];
-    return (
-      address && <AddressView icon contextMenu={false} address={address} />
-    );
-  };
-
   if (!addresses || !currentWallet) return <>Loading</>;
 
   return (
-    <FormControl fullWidth variant="standard">
-      <InputLabel id="account-select-label">Account</InputLabel>
-      <Select
-        label="Account"
-        labelId="account-select-label"
-        onChange={handleChange}
-        renderValue={renderValue}
-        size="small"
-        value={getCurrentPath(currentWallet, addresses)}
-      >
-        {map(addresses, ([key, address]) => (
-          <MenuItem value={key} key={key}>
-            <AddressView icon contextMenu={false} address={address} />
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
+    <Select
+      key={currentWallet.name}
+      defaultValue={getCurrentPath(currentWallet, addresses)}
+      onValueChange={setCurrentAddress}
+    >
+      <SelectTrigger>
+        <SelectValue />
+      </SelectTrigger>
+
+      <SelectContent>
+        <SelectGroup>
+          {map(addresses, ([key, address]) => (
+            <SelectItem value={key} key={key}>
+              <AddressView icon contextMenu={false} address={address} />
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
   );
 }
 
@@ -64,7 +55,7 @@ function getCurrentPath(wallet: Wallet, addresses: [string, Address][]) {
       return wallet.current ? wallet.current[0] : addresses[0][0];
 
     case "impersonator":
-      return wallet.addresses[wallet.current || 0];
+      return (wallet.current || 0).toString();
 
     case "jsonKeystore":
     case "plaintext":

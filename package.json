@@ -1,59 +1,49 @@
 {
   "private": true,
-  "version": "1.8.0",
+  "version": "1.9.0",
   "license": "MIT",
   "description": "An Ethereum toolkit",
   "scripts": {
-    "app:dev": "rm -rf target/debug/db.*; RUST_LOG=ethui=debug cargo tauri dev --config bin/tauri-dev.conf.json --features debug",
+    "app:dev": "yarn tauri dev --config bin/tauri.dev.conf.json --features debug --target $(yarn run rust-target)",
+    "app:build": "yarn tauri build --target $(yarn run rust-target)",
+    "rust-target": "rustc -vV | sed -n 's/host: //p'",
     "gui:build": "yarn workspace @ethui/gui build",
-    "storybook": "yarn workspace @ethui/react storybook",
+    "gui:devtools": "yarn workspace @ethui/gui devtools",
+    "storybook": "yarn workspace @ethui/ui storybook",
     "ext:dev": "yarn workspace @ethui/extension dev",
+    "ext:watch:chrome": "yarn workspace @ethui/extension watch:chrome",
+    "ext:watch:firefox": "yarn workspace @ethui/extension watch:firefox",
     "ext:build": "yarn workspace @ethui/extension build \"$@\"",
-    "lint": "yarn lint:eslint && yarn lint:tsc && yarn lint:prettier",
-    "lint:eslint": "eslint .",
+    "lint": "yarn lint:biome && yarn lint:tsc && yarn workspace @ethui/gui run lint",
+    "lint:biome": "biome check .",
     "lint:tsc": "yarn workspaces foreach --all --parallel run tsc --noEmit",
-    "lint:prettier": "prettier --check .",
-    "fix": "yarn fix:eslint && yarn fix:prettier",
-    "fix:eslint": "eslint --fix .",
-    "fix:prettier": "prettier --write .",
-    "setup": "yarn install && yarn ext:build",
-    "test": "yarn workspaces foreach --all run test"
+    "fix": "yarn fix:biome",
+    "fix:biome": "biome check --write .",
+    "setup": "yarn install && yarn ext:dev",
+    "test": "yarn workspaces foreach --all run test",
+    "demo:dev": "yarn workspace @ethui/demo dev",
+    "demo:eth-watch": "yarn workspace @ethui/demo eth-watch"
   },
   "workspaces": [
     "extension",
-    "packages/react",
     "packages/types",
     "packages/data",
     "packages/abiparse",
     "packages/form",
+    "packages/ui",
+    "packages/demo",
     "gui"
   ],
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^7.9.0",
-    "@typescript-eslint/parser": "^7.9.0",
+    "@biomejs/biome": "^1.9.4",
     "assert": "^2.1.0",
-    "eslint": "^8.57.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-config-standard-with-typescript": "^43.0.1",
-    "eslint-import-resolver-typescript": "^3.6.1",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-n": "^16.6.2",
-    "eslint-plugin-promise": "^6.1.1",
-    "eslint-plugin-react": "^7.34.1",
-    "eslint-plugin-react-hooks": "^4.6.2",
-    "prettier": "^3.2.5"
+    "html-to-image": "^1.11.11",
+    "ts-unused-exports": "^11.0.1",
+    "tsx": "^4.19.2"
   },
   "dependencies": {
-    "@tauri-apps/cli": "^1.5.14",
-    "typescript": "5.4.5"
+    "@tauri-apps/cli": "^2.2.7",
+    "typescript": "5.7.3"
   },
-  "resolutions": {
-    "postcss": "^8.4.31",
-    "jose": "4.15.5",
-    "ws": "8.17.1"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
-  "packageManager": "yarn@4.0.2"
+  "packageManager": "yarn@4.4.1+sha224.fd21d9eb5fba020083811af1d4953acc21eeb9f6ff97efd1b3f9d4de"
 }
