@@ -38,7 +38,7 @@
     "@biomejs/biome": "^1.9.4",
     "assert": "^2.1.0",
     "html-to-image": "^1.11.11",
-    "ts-unused-exports": "^10.1.0",
+    "ts-unused-exports": "^11.0.1",
     "tsx": "^4.19.2"
   },
   "dependencies": {
