@@ -49,6 +49,8 @@ switch (target) {
     break;
 }
 
+console.log("Done");
+
 function run(cmd: string): Promise<void> {
   console.log(cmd);
   return new Promise((resolve, reject) => {

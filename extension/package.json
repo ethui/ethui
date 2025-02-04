@@ -7,8 +7,11 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "tsx ./scripts/build.ts \"$@\"",
-    "watch": "tsx watch --include src --include manifest --include 'vite/*.ts' --include package.json ./scripts/build.ts \"$@\"",
+    "dev": "yarn dev:chrome & yarn dev:firefox",
+    "dev:chrome": "tsx ./scripts/build.ts --target chrome-dev",
+    "dev:firefox": "tsx ./scripts/build.ts --target firefox-dev",
+    "watch:chrome": "tsx watch --include src --include manifest --include 'vite/*.ts' --include package.json ./scripts/build.ts --target chrome-dev",
+    "watch:firefox": "tsx watch --include src --include manifest --include 'vite/*.ts' --include package.json ./scripts/build.ts --target firefox-dev",
     "build": "tsx ./scripts/build.ts \"$@\""
   },
   "dependencies": {

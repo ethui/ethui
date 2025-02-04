@@ -1,8 +1,10 @@
 procs:
   app:
     cmd: ["yarn", "run", "app:dev"]
-  ext:
-    cmd: ["yarn", "run", "ext:watch"]
+  chrome-ext:
+    cmd: ["yarn", "run", "ext:watch:chrome"]
+  firefox-ext:
+    cmd: ["yarn", "run", "ext:watch:firefox"]
   storybook:
     cmd: ["yarn", "run", "storybook"]
   anvil:
