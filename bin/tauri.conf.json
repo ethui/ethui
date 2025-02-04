@@ -1,5 +1,5 @@
 {
-  "productName": "iron",
+  "productName": "ethui",
   "identifier": "dev.ethui",
   "build": {
     "beforeDevCommand": "yarn workspace @ethui/gui dev",
@@ -19,6 +19,7 @@
     }
   },
   "bundle": {
+    "icon": ["icons/128x128.png"],
     "active": true,
     "targets": "all"
   }

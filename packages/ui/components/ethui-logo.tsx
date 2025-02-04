@@ -6,6 +6,7 @@ interface Props {
   dev?: boolean;
   fg?: string;
   bg?: string;
+  onClick?: () => void;
 }
 
 export function EthuiLogo({
@@ -14,6 +15,7 @@ export function EthuiLogo({
   dev,
   fg = "fill-background",
   bg = "fill-foreground",
+  onClick,
 }: Props) {
   return (
     <svg
@@ -22,6 +24,9 @@ export function EthuiLogo({
       viewBox="0 0 600 600"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      onClick={onClick}
+      onKeyUp={onClick}
+      className="cursor-pointer"
     >
       <title>ethui logo</title>
       <Background color={clsx(bg || (dev ? "fill-dev" : "fill-background"))} />

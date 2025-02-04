@@ -9,7 +9,7 @@ import { AbiInput } from "./AbiInput";
 import { decodeDefaultArgs } from "./utils";
 
 interface AbiItemFormProps {
-  item?: AbiFunction | "raw";
+  item?: AbiFunction | "raw" | "rawCall";
   debug?: boolean;
   onChange?: (params: {
     item?: AbiFunction;
@@ -34,7 +34,7 @@ export function AbiItemForm({
   onSubmit = () => {},
   submit = false,
 }: AbiItemFormProps) {
-  if (!abiItem || abiItem === "raw") {
+  if (!abiItem || abiItem === "raw" || abiItem === "rawCall") {
     return (
       <RawItemForm
         {...{

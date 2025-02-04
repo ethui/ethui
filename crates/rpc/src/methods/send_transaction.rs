@@ -1,12 +1,9 @@
 use std::str::FromStr;
 
 use alloy::{
-    network::{Ethereum, EthereumWallet, TransactionBuilder as _},
+    network::{Ethereum, TransactionBuilder as _},
     primitives::{Bytes, U256},
-    providers::{
-        fillers::{ChainIdFiller, FillProvider, GasFiller, JoinFill, NonceFiller, WalletFiller},
-        Identity, PendingTransactionBuilder, Provider, ProviderBuilder, RootProvider,
-    },
+    providers::{ext::AnvilApi, PendingTransactionBuilder, Provider, ProviderBuilder},
     rpc::types::TransactionRequest,
     transports::http::{Client, Http},
 };
@@ -15,29 +12,9 @@ use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_networks::Network;
 use ethui_settings::Settings;
 use ethui_types::{Address, GlobalState};
-use ethui_wallets::{WalletControl, WalletType, Wallets};
+use ethui_wallets::{Wallet, WalletControl, WalletType, Wallets};
 
 use crate::{Error, Result};
-
-// TODO: how to simplify this type, or use a generic?
-type InnerProvider = FillProvider<
-    JoinFill<
-        JoinFill<
-            Identity,
-            JoinFill<
-                GasFiller,
-                JoinFill<
-                    alloy::providers::fillers::BlobGasFiller,
-                    JoinFill<NonceFiller, ChainIdFiller>,
-                >,
-            >,
-        >,
-        WalletFiller<EthereumWallet>,
-    >,
-    RootProvider<Http<Client>>,
-    Http<Client>,
-    Ethereum,
->;
 
 /// Orchestrates the signing of a transaction
 /// Takes references to both the wallet and network where this
@@ -47,7 +24,7 @@ pub struct SendTransaction {
     pub wallet_path: String,
     pub wallet_type: WalletType,
     pub request: TransactionRequest,
-    pub provider: Option<InnerProvider>,
+    pub provider: Option<Box<dyn Provider<Http<Client>>>>,
 }
 
 impl SendTransaction {
@@ -82,7 +59,7 @@ impl SendTransaction {
                 .get(&self.wallet_name)
                 .ok_or_else(|| Error::WalletNameNotFound(self.wallet_name.clone()))?;
 
-            self.network.is_dev() && wallet.is_dev() && Settings::read().await.fast_mode()
+            self.network.is_dev().await && wallet.is_dev() && Settings::read().await.fast_mode()
         };
 
         // skip the dialog if both network & wallet allow for it, and if fast_mode is enabled
@@ -164,7 +141,6 @@ impl SendTransaction {
         self.build_provider().await?;
         let provider = self.provider.as_ref().unwrap();
         let pending = provider.send_transaction(self.request.clone()).await?;
-
         Ok(pending)
     }
 
@@ -179,22 +155,40 @@ impl SendTransaction {
             .ok_or(Error::WalletNameNotFound(self.wallet_name.clone()))?
             .clone();
 
-        let signer = wallet
-            .build_signer(self.network.chain_id, &self.wallet_path)
-            .await?;
-
         let url = self
             .network
             .http_url
             .parse()
             .map_err(|_| Error::CannotParseUrl(self.network.http_url.clone()))?;
 
-        let provider = ProviderBuilder::new()
-            .with_recommended_fillers()
-            .wallet(signer.to_wallet())
-            .on_http(url);
+        let is_dev_network = self.network.is_dev().await && self.network.chain_id == 31337;
 
-        self.provider = Some(provider);
+        self.provider = match wallet {
+            Wallet::Impersonator(ref wallet) if is_dev_network => {
+                let account = wallet.get_address(&self.wallet_path).await?;
+                let provider = ProviderBuilder::new()
+                    .with_recommended_fillers()
+                    .on_http(url);
+
+                // TODO: maybe we can find a way to only do this once for every account,
+                // or only call anvil_autoImpersonate once for the whole network,
+                // instead of making this request for every single transaction.
+                // this is just a minor optimization, though
+                provider.anvil_impersonate_account(account).await?;
+                Some(Box::new(provider))
+            }
+            _ => {
+                let signer = wallet
+                    .build_signer(self.network.chain_id, &self.wallet_path)
+                    .await?;
+                let provider = ProviderBuilder::new()
+                    .with_recommended_fillers()
+                    .wallet(signer.to_wallet())
+                    .on_http(url);
+                Some(Box::new(provider))
+            }
+        };
+
         Ok(())
     }
 

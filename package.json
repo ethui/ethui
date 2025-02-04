@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "1.8.0",
+  "version": "1.9.0",
   "license": "MIT",
   "description": "An Ethereum toolkit",
   "scripts": {
@@ -42,8 +42,8 @@
     "tsx": "^4.19.2"
   },
   "dependencies": {
-    "@tauri-apps/cli": "^2.1.0",
-    "typescript": "5.7"
+    "@tauri-apps/cli": "^2.2.7",
+    "typescript": "5.7.3"
   },
   "packageManager": "yarn@4.4.1+sha224.fd21d9eb5fba020083811af1d4953acc21eeb9f6ff97efd1b3f9d4de"
 }

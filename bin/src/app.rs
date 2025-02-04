@@ -3,17 +3,9 @@ use std::path::PathBuf;
 use ethui_args::Args;
 use ethui_broadcast::UIMsg;
 use ethui_types::GlobalState as _;
-#[cfg(target_os = "macos")]
-use tauri::WindowEvent;
 use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
-use tracing::debug;
 
-use crate::{
-    commands, dialogs,
-    error::AppResult,
-    menu, system_tray,
-    utils::{main_window_hide, main_window_show},
-};
+use crate::{commands, error::AppResult, menu, system_tray, windows};
 
 pub struct EthUIApp {
     app: tauri::App,
@@ -42,8 +34,10 @@ impl EthUIApp {
                 ethui_networks::commands::networks_add,
                 ethui_networks::commands::networks_update,
                 ethui_networks::commands::networks_remove,
+                ethui_networks::commands::networks_is_dev,
                 ethui_db::commands::db_get_contracts,
                 ethui_db::commands::db_insert_contract,
+                ethui_db::commands::db_insert_contract_with_etherscan,
                 ethui_db::commands::db_get_transactions,
                 ethui_db::commands::db_get_transaction_by_hash,
                 ethui_db::commands::db_get_contract_abi,
@@ -94,17 +88,24 @@ impl EthUIApp {
         init(&app, args).await?;
 
         if should_start_main_window(args).await {
-            main_window_show(app.handle()).await;
+            windows::main::show(app.handle()).await;
         }
 
         Ok(Self { app })
     }
 
     pub fn run(self) {
-        self.app.run(|_, event| {
-            if let tauri::RunEvent::ExitRequested { api, .. } = event {
+        self.app.run(|#[allow(unused)] handle, event| match event {
+            tauri::RunEvent::ExitRequested { api, .. } => {
                 api.prevent_exit();
             }
+
+            #[cfg(target_os = "macos")]
+            tauri::RunEvent::Reopen { .. } => {
+                let handle = handle.clone();
+                tokio::spawn(async move { windows::all_windows_focus(&handle).await });
+            }
+            _ => (),
         });
     }
 }
@@ -131,8 +132,8 @@ async fn init(app: &tauri::App, args: &Args) -> AppResult<()> {
     ethui_forge::init().await?;
 
     // automatically open devtools if env asks for it
-    //#[cfg(feature = "debug")]
-    if std::env::var("ethui_OPEN_DEVTOOLS").is_ok() {
+    #[cfg(feature = "debug")]
+    if std::env::var("ETHUI_OPEN_DEVTOOLS").is_ok() {
         let window = app.get_webview_window("main").unwrap();
         window.open_devtools();
     }
@@ -156,12 +157,12 @@ async fn event_listener(handle: AppHandle) {
                     }
                 }
 
-                DialogOpen(params) => dialogs::open(&handle, params),
-                DialogClose(params) => dialogs::close(&handle, params),
-                DialogSend(params) => dialogs::send(&handle, params),
+                DialogOpen(params) => windows::dialogs::open(&handle, params),
+                DialogClose(params) => windows::dialogs::close(&handle, params),
+                DialogSend(params) => windows::dialogs::send(&handle, params),
 
-                MainWindowShow => main_window_show(&handle).await,
-                MainWindowHide => main_window_hide(&handle),
+                MainWindowShow => windows::main::show(&handle).await,
+                MainWindowHide => windows::main::hide(&handle),
             }
         }
     }
@@ -172,7 +173,6 @@ async fn event_listener(handle: AppHandle) {
 /// Otherwise, the app's default config dir will be used.
 fn resource(app: &tauri::App, resource: &str, args: &Args) -> PathBuf {
     let dir = config_dir(app, args);
-    debug!("config dir: {:?}", dir);
     std::fs::create_dir_all(&dir).expect("could not create config dir");
     dir.join(resource)
 }

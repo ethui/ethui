@@ -3,7 +3,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { HighlightBox } from "@ethui/ui/components/highlight-box";
 
 import { Button } from "@ethui/ui/components/shadcn/button";
-import { CircleX, ListCheck } from "lucide-react";
 import { useDialog } from "#/hooks/useDialog";
 
 export const Route = createFileRoute("/dialog/_l/msg-sign/$id")({
@@ -26,14 +25,17 @@ function MsgSignDialog() {
           <span className="whitespace-pre-wrap font-mono">{msg}</span>
         </HighlightBox>
       )}
-      <div className=" center m-2 mt-auto flex justify-center">
-        <Button disabled={!msg} color="error" onClick={() => send("reject")}>
-          <CircleX />
+      <div className="flex w-full items-center justify-center gap-2">
+        <Button
+          disabled={!msg}
+          variant="destructive"
+          color="error"
+          onClick={() => send("reject")}
+        >
           Reject
         </Button>
         <Button disabled={!msg} type="submit" onClick={() => send("accept")}>
           Sign
-          <ListCheck />
         </Button>
       </div>
     </div>

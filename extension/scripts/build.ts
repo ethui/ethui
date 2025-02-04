@@ -6,7 +6,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
 const { target, v: version } = await yargs(hideBin(process.argv))
-  .option("target", { type: "string", default: "firefox-dev" })
+  .option("target", { type: "string", default: "chrome-dev" })
   .option("v", { type: "string", default: "0.0.0" })
   .parse();
 
@@ -18,6 +18,7 @@ if (target.includes("dev")) {
 } else {
   env = `${env} NODE_ENV=production`;
 }
+console.log(env);
 
 console.log("Building", target, version);
 
@@ -38,12 +39,12 @@ switch (target) {
     break;
 
   case "firefox-dev":
-    await run(`yarn run web-ext build -s ${dist} -a .`);
+    await run(`yarn run web-ext build -s ${dist} -a . --overwrite-dest`);
     await run(`mv ./ethui-dev-${version}.zip ./dist/${basename}.xpi`);
     break;
 
   case "firefox":
-    await run(`yarn run web-ext build -s ${dist} -a .`);
+    await run(`yarn run web-ext build -s ${dist} -a . --overwrite-dest`);
     await run(`mv ./ethui-${version}.zip ./dist/${basename}.xpi`);
     break;
 }
@@ -53,6 +54,7 @@ function run(cmd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     exec(`${env} ${cmd}`, (error) => {
       if (error) {
+        console.log(error);
         reject();
       } else {
         resolve();

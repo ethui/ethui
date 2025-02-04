@@ -8,7 +8,7 @@ import { useCallback, useState } from "react";
 import { AbiItemForm } from "./AbiItemForm";
 
 interface AbiItemFormWithPreview {
-  abiFunction: AbiFunction | "raw";
+  abiFunction: AbiFunction | "raw" | "rawCall";
   address: Address;
   sender?: Address;
   chainId: number;
@@ -30,7 +30,10 @@ export function AbiItemFormWithPreview({
 }: AbiItemFormWithPreview) {
   const [value, setValue] = useState<bigint | undefined>(defaultEther);
   const [data, setData] = useState<`0x${string}` | undefined>(defaultCalldata);
-  const showForm = abiFunction === "raw" || abiFunction.inputs.length > 0;
+  const showForm =
+    abiFunction === "raw" ||
+    abiFunction === "rawCall" ||
+    abiFunction.inputs.length > 0;
 
   const onChange = useCallback(
     ({ value, data }: { value?: bigint; data?: `0x${string}` }) => {
@@ -69,7 +72,10 @@ export function AbiItemFormWithPreview({
               data,
               from: sender,
               to: address,
-              abi: abiFunction !== "raw" ? [abiFunction] : [],
+              abi:
+                abiFunction !== "raw" && abiFunction !== "rawCall"
+                  ? [abiFunction]
+                  : [],
               chainId,
               ArgProps,
             }}

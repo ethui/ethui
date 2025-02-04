@@ -10,7 +10,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
-  SidebarRail,
   useSidebar,
 } from "@ethui/ui/components/shadcn/sidebar";
 import {
@@ -19,6 +18,8 @@ import {
   CollapsibleTrigger,
 } from "@radix-ui/react-collapsible";
 import { Link, useLocation } from "@tanstack/react-router";
+import { platform } from "@tauri-apps/plugin-os";
+import clsx from "clsx";
 import {
   ChevronDown,
   ChevronRight,
@@ -41,15 +42,17 @@ const isDev = import.meta.env.MODE === "development";
 export function AppSidebar() {
   const commandBar = useCommandBar();
   const location = useLocation();
-  const { open } = useSidebar();
+  const { open, toggleSidebar } = useSidebar();
+  const isMacos = platform() === "macos";
 
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader
-        className="flex items-center"
+        className={clsx("flex items-center", { "pt-4": isMacos })}
         data-tauri-drag-region="true"
       >
         <EthuiLogo
+          onClick={toggleSidebar}
           size={48}
           bg="bg-transparent"
           fg={isDev ? "fill-dev" : "fill-sidebar-foreground"}
@@ -134,7 +137,6 @@ export function AppSidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
-      <SidebarRail />
     </Sidebar>
   );
 }

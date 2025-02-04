@@ -7,10 +7,10 @@
     "@ethui/abiparse": "*",
     "@ethui/ui": "*",
     "nearly": "^1.8.1",
-    "viem": "^2.21.55"
+    "viem": "^2.22.21"
   },
   "devDependencies": {
-    "@types/react": "^18.3.12",
+    "@types/react": "^18.3.18",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

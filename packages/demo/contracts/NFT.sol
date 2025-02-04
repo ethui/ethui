@@ -4,10 +4,10 @@
 
 pragma solidity ^0.8.13;
 
-import {ERC721} from "@openzeppelin/token/ERC721/ERC721.sol";
-import {ERC721Enumerable} from "@openzeppelin/token/ERC721/extensions/ERC721Enumerable.sol";
-import {Strings} from "@openzeppelin/utils/Strings.sol";
-import {Base64} from "@openzeppelin/utils/Base64.sol";
+import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {ERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
+import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 
 error InvalidArguments();
 

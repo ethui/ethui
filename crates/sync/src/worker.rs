@@ -177,9 +177,8 @@ async fn unit_worker(
 ) -> Result<()> {
     loop {
         if ethui_sync_alchemy::supports_network(chain_id) {
-            let alchemy = get_alchemy(chain_id).await?;
-            if let Err(e) = alchemy.fetch_updates(addr).await {
-                warn!("Alchemy error: {:?}", e);
+            if let Ok(alchemy) = get_alchemy(chain_id).await {
+                alchemy.fetch_updates(addr).await?;
             };
         }
 
