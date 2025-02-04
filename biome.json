@@ -10,10 +10,16 @@
       "packages/data/**/*.json",
       "packages/**/dist/**",
       "packages/**/*.generated.ts",
+      "packages/demo/out/**",
+      "packages/demo/cache/**",
+      "packages/demo/broadcast/**",
+      "packages/demo/dependencies/**",
       "extension/dist",
       "gui/dist",
+      "gui/vite.config.ts.timestamp*",
       "bin/gen",
-      "target"
+      "target",
+      "dev-data"
     ]
   },
   "formatter": {
