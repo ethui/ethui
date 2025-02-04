@@ -44,7 +44,7 @@ named-lock = "0.4"
 tauri-plugin-os = "2.2"
 tauri-plugin-clipboard-manager = "2.0"
 tauri-plugin-shell = "2"
-ethui-proxy-detect = { git = "https://github.com/ethui/proxy-detect", version = "0.1.0" }
+ethui-proxy-detect.workspace = true
 
 [build-dependencies]
 tauri-build = { version = "2.0", default-features = false, features = [] }
