@@ -15,3 +15,6 @@ procs:
   demo-contracts:
     cwd: "../demo"
     cmd: ["yarn", "eth-watch"]
+
+env:
+  CARGO_TERM_COLOR: always

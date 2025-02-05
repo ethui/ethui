@@ -10,6 +10,7 @@ use ethui_types::GlobalState;
 use ethui_wallets::{WalletControl, Wallets};
 use jsonrpc_core::{MetaIoHandler, Params};
 use serde_json::json;
+use tracing::info;
 
 pub use self::error::{Error, Result};
 
@@ -40,7 +41,10 @@ impl Handler {
             ($name:literal, $fn:path) => {
                 self.io
                     .add_method_with_meta($name, |params: Params, ctx: Ctx| async move {
-                        $fn(params, ctx).await
+                        info!(method = $name, params = serde_json::to_string(&params).unwrap());
+                        let ret = $fn(params, ctx).await;
+                        info!(result = ?ret);
+                        ret
                     });
             };
         }
@@ -174,26 +178,12 @@ impl Handler {
     async fn add_chain(params: Params, _ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
         let method = methods::ChainAdd::build()
             .set_params(params.into())?
-            .build()
-            .await;
+            .build();
 
         method.run().await?;
 
         Ok(serde_json::Value::Null)
     }
-
-    #[tracing::instrument()]
-    async fn add_token(params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
-        let method = methods::TokenAdd::build()
-            .set_params(params.into())?
-            .build()
-            .await;
-
-        method.run().await?;
-
-        Ok(true.into())
-    }
-
     #[tracing::instrument()]
     async fn switch_chain(params: Params, mut ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
         let params = params.parse::<Vec<HashMap<String, String>>>().unwrap();
@@ -210,6 +200,18 @@ impl Handler {
                 }
                 _ => Error::Connection(e),
             })?)
+    }
+
+    #[tracing::instrument()]
+    async fn add_token(params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+        let method = methods::TokenAdd::build()
+            .set_params(params.into())?
+            .build()
+            .await;
+
+        method.run().await?;
+
+        Ok(true.into())
     }
 
     async fn send_transaction<T: Into<serde_json::Value>>(

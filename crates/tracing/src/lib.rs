@@ -3,11 +3,7 @@ mod error;
 pub use error::{TracingError, TracingResult};
 use once_cell::sync::OnceCell;
 use tracing_subscriber::{
-    fmt::{self},
-    layer::SubscriberExt as _,
-    reload,
-    util::SubscriberInitExt as _,
-    EnvFilter, Registry,
+    fmt, layer::SubscriberExt as _, reload, util::SubscriberInitExt as _, EnvFilter, Registry,
 };
 
 static RELOAD_HANDLE: OnceCell<reload::Handle<EnvFilter, Registry>> = OnceCell::new();
@@ -17,10 +13,8 @@ pub fn init() -> TracingResult<()> {
     let (filter, reload_handle) = reload::Layer::new(filter);
     RELOAD_HANDLE.set(reload_handle).unwrap();
 
-    tracing_subscriber::registry()
-        .with(filter)
-        .with(fmt::Layer::default())
-        .init();
+    let fmt = fmt::Layer::default().with_ansi(true);
+    tracing_subscriber::registry().with(filter).with(fmt).init();
 
     Ok(())
 }

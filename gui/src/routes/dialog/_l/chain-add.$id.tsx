@@ -44,11 +44,6 @@ function ChainAddDialog() {
           className="col-span-2"
         />
         <Datapoint
-          label="Decimals"
-          value={network.decimals}
-          className="col-span-2"
-        />
-        <Datapoint
           className="col-span-4"
           label="RPC (HTTP)"
           value={network.http_url}
