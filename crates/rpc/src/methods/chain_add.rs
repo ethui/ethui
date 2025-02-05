@@ -61,9 +61,9 @@ impl ChainAdd {
 pub struct Params {
     chain_id: U64,
     chain_name: String,
+    rpc_urls: Vec<Url>,
     native_currency: Currency,
     block_explorer_urls: Vec<Url>,
-    rpc_urls: Vec<Url>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

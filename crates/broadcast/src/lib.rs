@@ -56,7 +56,7 @@ pub enum UIMsg {
 }
 
 mod internal_msgs {
-    use tracing::instrument;
+    use tracing::{debug, instrument};
     use InternalMsg::*;
 
     use super::*;
@@ -140,12 +140,15 @@ mod internal_msgs {
         RwLock::new(tx)
     });
 
+    #[instrument()]
     async fn send(msg: InternalMsg) {
+        debug!("UI msg: {:?}", msg);
         INTERNAL.read().await.send(msg).unwrap();
     }
 }
 
 mod ui_msgs {
+    use tracing::{debug, instrument};
     use UIMsg::*;
 
     use super::*;
@@ -185,7 +188,9 @@ mod ui_msgs {
         RwLock::new(tx)
     });
 
+    #[instrument()]
     async fn send(msg: UIMsg) {
+        debug!("UI msg: {:?}", msg);
         INTERNAL.read().await.send(msg).unwrap();
     }
 }

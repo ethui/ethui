@@ -113,11 +113,4 @@ export interface Paginated<T> {
   total: number;
 }
 
-export interface NetworkSwitch {
-  current_id: number;
-  current_name: string;
-  new_id: number;
-  new_name: string;
-}
-
 export type Affinity = { sticky: number } | "global" | "unset";
