@@ -14,7 +14,9 @@ pub struct Network {
     pub name: String,
     pub chain_id: u32,
     pub explorer_url: Option<String>,
+    // TODO: turn this into a Url
     pub http_url: String,
+    // TODO: turn this into an Option<Url>
     pub ws_url: Option<String>,
     pub currency: String,
     pub decimals: u32,

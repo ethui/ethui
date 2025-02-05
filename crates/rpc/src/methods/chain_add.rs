@@ -2,6 +2,7 @@ use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_networks::{Network, Networks};
 use ethui_types::{GlobalState, U64};
 use serde::{Deserialize, Serialize};
+use tracing::info;
 use url::Url;
 
 use crate::{Error, Result};
@@ -19,7 +20,7 @@ impl ChainAdd {
     #[tracing::instrument(skip(self))]
     pub async fn run(self) -> Result<()> {
         if self.already_exists().await {
-            tracing::info!("Already exists {}", self.network.chain_id);
+            info!("Network already exists");
             return Ok(());
         }
 
@@ -61,8 +62,8 @@ pub struct Params {
     chain_id: U64,
     chain_name: String,
     native_currency: Currency,
-    block_explorer_urls: Vec<Option<Url>>,
-    rpc_urls: Vec<Option<Url>>,
+    block_explorer_urls: Vec<Url>,
+    rpc_urls: Vec<Url>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -109,12 +110,13 @@ impl TryFrom<Params> for Network {
                 .iter()
                 .find(|s| s.scheme().starts_with("http"))
                 .cloned()
-                .ok_or(Error::Rpc(-32602))?
+                .expect("http url not found")
                 .to_string(),
             ws_url: params
                 .rpc_urls
                 .iter()
                 .find(|s| s.scheme().starts_with("ws"))
+                .cloned()
                 .map(|s| s.to_string()),
             currency: params.native_currency.symbol,
             decimals: params.native_currency.decimals as u32,
