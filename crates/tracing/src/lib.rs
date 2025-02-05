@@ -13,9 +13,6 @@ pub fn init() -> TracingResult<()> {
     let (filter, reload_handle) = reload::Layer::new(filter);
     RELOAD_HANDLE.set(reload_handle).unwrap();
 
-    #[cfg(feature = "debug")]
-    let fmt = fmt::Layer::default().pretty();
-    #[cfg(not(feature = "debug"))]
     let fmt = fmt::Layer::default().with_ansi(true);
     tracing_subscriber::registry().with(filter).with(fmt).init();
 
