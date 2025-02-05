@@ -51,9 +51,9 @@ ethui-sync-anvil = { path = "crates/sync/anvil" }
 ethui-sync-alchemy = { path = "crates/sync/alchemy" }
 ethui-broadcast = { path = "crates/broadcast" }
 ethui-tracing = { path = "crates/tracing" }
-ethui-exchange-rates = { path = "crates/exchange-rates" }
 ethui-args = { path = "crates/args" }
 ethui-token-list = { path = "crates/token-list" }
+ethui-proxy-detect = { git = "https://github.com/ethui/proxy-detect", rev = "f3ce623" }
 tokio = { version = "1.42", features = ["rt-multi-thread", "sync"] }
 thiserror = "1.0"
 sqlx = { version = "0.8", default-features = false, features = [
@@ -100,7 +100,6 @@ clap = { version = "4.5", default-features = false, features = [
   "derive",
   "env",
 ] }
-coins-ledger = "0.12"
 rand = "0.8"
 rstest = "0.23"
 regex = "1.11"
