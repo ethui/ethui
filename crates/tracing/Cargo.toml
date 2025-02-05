@@ -13,4 +13,11 @@ tracing.workspace = true
 thiserror.workspace = true
 once_cell.workspace = true
 
-tracing-subscriber = { version = "0.3", features = ["env-filter", "std"] }
+tracing-subscriber = { version = "0.3", features = [
+  "env-filter",
+  "std",
+  "ansi",
+] }
+
+[features]
+debug = []

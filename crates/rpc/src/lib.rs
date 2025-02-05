@@ -41,7 +41,7 @@ impl Handler {
             ($name:literal, $fn:path) => {
                 self.io
                     .add_method_with_meta($name, |params: Params, ctx: Ctx| async move {
-                        info!(method = $name, params = ?params);
+                        info!(method = $name, params = serde_json::to_string(&params).unwrap());
                         let ret = $fn(params, ctx).await;
                         info!(result = ?ret);
                         ret
