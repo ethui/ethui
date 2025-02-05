@@ -8,7 +8,7 @@ use ethui_abis::{IERC721WithMetadata, IERC20, IERC721};
 use ethui_types::{Address, Erc721Token, Erc721TokenDetails, TokenMetadata, UINotify};
 use futures::StreamExt as _;
 use tokio::sync::mpsc;
-use tracing::warn;
+use tracing::{instrument, trace, warn};
 use url::Url;
 
 pub use crate::error::{Error, Result};
@@ -91,6 +91,7 @@ impl Drop for Tracker {
 ///     3. listens to new blocks via websockets
 ///     4. if anvil_nodeInfo is available, also check forkBlockNumber, and prevent fetching blocks
 ///        past that (so that forked anvil don't overload or past fetching logic)
+#[instrument(skip_all, fields(chain_id = ctx.chain_id))]
 async fn watch(
     ctx: Ctx,
     mut quit_rcv: mpsc::Receiver<()>,
@@ -128,6 +129,8 @@ async fn watch(
             .as_u64()
             .unwrap_or(0);
 
+        trace!("starting from block {}", fork_block);
+
         let mut stream = provider.subscribe_blocks().await?.into_stream();
 
         // catch up with everything behind
@@ -145,6 +148,7 @@ async fn watch(
                 .map_err(|_| Error::Watcher)?;
         }
 
+        trace!("caught up");
         block_snd.send(Msg::CaughtUp).map_err(|_| Error::Watcher)?;
 
         'ws: loop {
@@ -156,6 +160,7 @@ async fn watch(
                 b = stream.next() => {
                     match b {
                         Some(b) => {
+                            trace!("block {}", b.number);
                             let block_traces = provider.trace_block(b.number.into()).await?;
                             block_snd.send(Msg::Traces(block_traces)).map_err(|_|Error::Watcher)?;
 
