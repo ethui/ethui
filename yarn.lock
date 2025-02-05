@@ -2294,7 +2294,6 @@ __metadata:
   resolution: "@ethui/ui@workspace:packages/ui"
   dependencies:
     "@chromatic-com/storybook": "npm:^3.2.4"
-    "@ethui/types": "npm:*"
     "@hookform/resolvers": "npm:^3.10.0"
     "@radix-ui/react-accordion": "npm:^1.2.2"
     "@radix-ui/react-avatar": "npm:^1.1.2"
