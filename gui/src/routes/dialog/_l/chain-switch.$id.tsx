@@ -1,18 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { isDirty, isValid } from "zod";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
+import { isDirty, isValid } from "zod";
 
 import type { NetworkSwitch } from "@ethui/types";
-import { Button } from "@ethui/ui/components/shadcn/button";
 import { ChainView } from "@ethui/ui/components/chain-view";
-import { useDialog } from "#/hooks/useDialog";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import { DialogBottom } from "#/components/Dialogs/Bottom";
+import { useDialog } from "#/hooks/useDialog";
 
 export const Route = createFileRoute("/dialog/_l/chain-switch/$id")({
   component: ChainSwitchDialog,
 });
 
-export function ChainSwitchDialog() {
+function ChainSwitchDialog() {
   const { id } = Route.useParams();
   const { data: network, send } = useDialog<NetworkSwitch>(id);
 
