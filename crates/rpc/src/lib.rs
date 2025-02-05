@@ -184,19 +184,6 @@ impl Handler {
 
         Ok(serde_json::Value::Null)
     }
-
-    #[tracing::instrument()]
-    async fn add_token(params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
-        let method = methods::TokenAdd::build()
-            .set_params(params.into())?
-            .build()
-            .await;
-
-        method.run().await?;
-
-        Ok(true.into())
-    }
-
     #[tracing::instrument()]
     async fn switch_chain(params: Params, mut ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
         let params = params.parse::<Vec<HashMap<String, String>>>().unwrap();
@@ -213,6 +200,18 @@ impl Handler {
                 }
                 _ => Error::Connection(e),
             })?)
+    }
+
+    #[tracing::instrument()]
+    async fn add_token(params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+        let method = methods::TokenAdd::build()
+            .set_params(params.into())?
+            .build()
+            .await;
+
+        method.run().await?;
+
+        Ok(true.into())
     }
 
     async fn send_transaction<T: Into<serde_json::Value>>(

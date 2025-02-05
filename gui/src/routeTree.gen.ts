@@ -32,7 +32,6 @@ import { Route as DialogLMsgSignIdImport } from './routes/dialog/_l/msg-sign.$id
 import { Route as DialogLErc721AddIdImport } from './routes/dialog/_l/erc721-add.$id'
 import { Route as DialogLErc20AddIdImport } from './routes/dialog/_l/erc20-add.$id'
 import { Route as DialogLErc1155AddIdImport } from './routes/dialog/_l/erc1155-add.$id'
-import { Route as DialogLChainSwitchIdImport } from './routes/dialog/_l/chain-switch.$id'
 import { Route as DialogLChainAddIdImport } from './routes/dialog/_l/chain-add.$id'
 import { Route as OnboardingLWalletsLIndexImport } from './routes/onboarding/_l/wallets/_l/index'
 import { Route as HomeLContractsLIndexImport } from './routes/home/_l/contracts/_l/index'
@@ -209,12 +208,6 @@ const DialogLErc20AddIdRoute = DialogLErc20AddIdImport.update({
 const DialogLErc1155AddIdRoute = DialogLErc1155AddIdImport.update({
   id: '/erc1155-add/$id',
   path: '/erc1155-add/$id',
-  getParentRoute: () => DialogLRoute,
-} as any)
-
-const DialogLChainSwitchIdRoute = DialogLChainSwitchIdImport.update({
-  id: '/chain-switch/$id',
-  path: '/chain-switch/$id',
   getParentRoute: () => DialogLRoute,
 } as any)
 
@@ -440,13 +433,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DialogLChainAddIdImport
       parentRoute: typeof DialogLImport
     }
-    '/dialog/_l/chain-switch/$id': {
-      id: '/dialog/_l/chain-switch/$id'
-      path: '/chain-switch/$id'
-      fullPath: '/dialog/chain-switch/$id'
-      preLoaderRoute: typeof DialogLChainSwitchIdImport
-      parentRoute: typeof DialogLImport
-    }
     '/dialog/_l/erc1155-add/$id': {
       id: '/dialog/_l/erc1155-add/$id'
       path: '/erc1155-add/$id'
@@ -664,7 +650,6 @@ declare module '@tanstack/react-router' {
 
 interface DialogLRouteChildren {
   DialogLChainAddIdRoute: typeof DialogLChainAddIdRoute
-  DialogLChainSwitchIdRoute: typeof DialogLChainSwitchIdRoute
   DialogLErc1155AddIdRoute: typeof DialogLErc1155AddIdRoute
   DialogLErc20AddIdRoute: typeof DialogLErc20AddIdRoute
   DialogLErc721AddIdRoute: typeof DialogLErc721AddIdRoute
@@ -675,7 +660,6 @@ interface DialogLRouteChildren {
 
 const DialogLRouteChildren: DialogLRouteChildren = {
   DialogLChainAddIdRoute: DialogLChainAddIdRoute,
-  DialogLChainSwitchIdRoute: DialogLChainSwitchIdRoute,
   DialogLErc1155AddIdRoute: DialogLErc1155AddIdRoute,
   DialogLErc20AddIdRoute: DialogLErc20AddIdRoute,
   DialogLErc721AddIdRoute: DialogLErc721AddIdRoute,
@@ -917,7 +901,6 @@ export interface FileRoutesByFullPath {
   '/onboarding/thank-you': typeof OnboardingLThankYouRoute
   '/onboarding/': typeof OnboardingLIndexRoute
   '/dialog/chain-add/$id': typeof DialogLChainAddIdRoute
-  '/dialog/chain-switch/$id': typeof DialogLChainSwitchIdRoute
   '/dialog/erc1155-add/$id': typeof DialogLErc1155AddIdRoute
   '/dialog/erc20-add/$id': typeof DialogLErc20AddIdRoute
   '/dialog/erc721-add/$id': typeof DialogLErc721AddIdRoute
@@ -956,7 +939,6 @@ export interface FileRoutesByTo {
   '/onboarding/extension': typeof OnboardingLExtensionRoute
   '/onboarding/thank-you': typeof OnboardingLThankYouRoute
   '/dialog/chain-add/$id': typeof DialogLChainAddIdRoute
-  '/dialog/chain-switch/$id': typeof DialogLChainSwitchIdRoute
   '/dialog/erc1155-add/$id': typeof DialogLErc1155AddIdRoute
   '/dialog/erc20-add/$id': typeof DialogLErc20AddIdRoute
   '/dialog/erc721-add/$id': typeof DialogLErc721AddIdRoute
@@ -996,7 +978,6 @@ export interface FileRoutesById {
   '/onboarding/_l/thank-you': typeof OnboardingLThankYouRoute
   '/onboarding/_l/': typeof OnboardingLIndexRoute
   '/dialog/_l/chain-add/$id': typeof DialogLChainAddIdRoute
-  '/dialog/_l/chain-switch/$id': typeof DialogLChainSwitchIdRoute
   '/dialog/_l/erc1155-add/$id': typeof DialogLErc1155AddIdRoute
   '/dialog/_l/erc20-add/$id': typeof DialogLErc20AddIdRoute
   '/dialog/_l/erc721-add/$id': typeof DialogLErc721AddIdRoute
@@ -1043,7 +1024,6 @@ export interface FileRouteTypes {
     | '/onboarding/thank-you'
     | '/onboarding/'
     | '/dialog/chain-add/$id'
-    | '/dialog/chain-switch/$id'
     | '/dialog/erc1155-add/$id'
     | '/dialog/erc20-add/$id'
     | '/dialog/erc721-add/$id'
@@ -1081,7 +1061,6 @@ export interface FileRouteTypes {
     | '/onboarding/extension'
     | '/onboarding/thank-you'
     | '/dialog/chain-add/$id'
-    | '/dialog/chain-switch/$id'
     | '/dialog/erc1155-add/$id'
     | '/dialog/erc20-add/$id'
     | '/dialog/erc721-add/$id'
@@ -1119,7 +1098,6 @@ export interface FileRouteTypes {
     | '/onboarding/_l/thank-you'
     | '/onboarding/_l/'
     | '/dialog/_l/chain-add/$id'
-    | '/dialog/_l/chain-switch/$id'
     | '/dialog/_l/erc1155-add/$id'
     | '/dialog/_l/erc20-add/$id'
     | '/dialog/_l/erc721-add/$id'
@@ -1191,7 +1169,6 @@ export const routeTree = rootRoute
       "parent": "/dialog",
       "children": [
         "/dialog/_l/chain-add/$id",
-        "/dialog/_l/chain-switch/$id",
         "/dialog/_l/erc1155-add/$id",
         "/dialog/_l/erc20-add/$id",
         "/dialog/_l/erc721-add/$id",
@@ -1264,10 +1241,6 @@ export const routeTree = rootRoute
     },
     "/dialog/_l/chain-add/$id": {
       "filePath": "dialog/_l/chain-add.$id.tsx",
-      "parent": "/dialog/_l"
-    },
-    "/dialog/_l/chain-switch/$id": {
-      "filePath": "dialog/_l/chain-switch.$id.tsx",
       "parent": "/dialog/_l"
     },
     "/dialog/_l/erc1155-add/$id": {
