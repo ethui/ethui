@@ -1,11 +1,8 @@
 use alloy::{
+    network::Ethereum,
     providers::{ext::AnvilApi, ProviderBuilder, RootProvider},
     rpc::client::ClientBuilder,
-    transports::{
-        http::{Client, Http},
-        layers::{RetryBackoffLayer, RetryBackoffService},
-        BoxTransport,
-    },
+    transports::layers::RetryBackoffLayer,
 };
 use serde::{Deserialize, Serialize};
 use url::Url;
@@ -82,11 +79,14 @@ impl Network {
         self.chain_id == 31337 || provider.anvil_node_info().await.is_ok()
     }
 
-    pub async fn get_alloy_provider(&self) -> Result<RootProvider<BoxTransport>> {
-        Ok(ProviderBuilder::new().on_builtin(&self.http_url).await?)
+    pub async fn get_alloy_provider(&self) -> Result<RootProvider<Ethereum>> {
+        Ok(ProviderBuilder::new()
+            .disable_recommended_fillers()
+            .on_builtin(&self.http_url)
+            .await?)
     }
 
-    pub fn get_provider(&self) -> RootProvider<RetryBackoffService<Http<Client>>> {
+    pub fn get_provider(&self) -> RootProvider<Ethereum> {
         let url = Url::parse(&self.http_url).unwrap();
 
         //let url = Url::parse(&self.http_url).unwrap();
@@ -94,7 +94,9 @@ impl Network {
             .layer(RetryBackoffLayer::new(10, 500, 300))
             .http(url);
 
-        ProviderBuilder::new().on_client(client)
+        ProviderBuilder::new()
+            .disable_recommended_fillers()
+            .on_client(client)
         //let url = Url::parse(&self.http_url).unwrap();
         //let http = Http::new(url);
         //let policy = Box::<HttpRateLimitRetryPolicy>::default();
