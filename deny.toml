@@ -77,5 +77,5 @@ github = ["ethui"]
 [sources]
 allow-git = [
   "https://github.com/foundry-rs/foundry",
-  "https://github.com/tauri-apps/fix-path-env",
+  "https://github.com/tauri-apps/fix-path-env-rs",
 ]
