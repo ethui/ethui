@@ -10,6 +10,8 @@ procs:
   anvil:
     cmd: ["anvil", "--host", "0.0.0.0"]
   demo:
-    cmd: ["yarn", "demo:dev"]
+    cwd: "../demo"
+    cmd: ["yarn", "dev"]
   demo-contracts:
-    cmd: ["yarn", "demo:eth-watch"]
+    cwd: "../demo"
+    cmd: ["yarn", "eth-watch"]
