@@ -87,6 +87,10 @@ event.listen("networks-changed", async () => {
   await useNetworks.getState().reload();
 });
 
+event.listen("current-network-changed", async () => {
+  await useNetworks.getState().reload();
+});
+
 (async () => {
   await useNetworks.getState().reload();
 })();

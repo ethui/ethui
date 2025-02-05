@@ -18,6 +18,8 @@ import {
   CollapsibleTrigger,
 } from "@radix-ui/react-collapsible";
 import { Link, useLocation } from "@tanstack/react-router";
+import { platform } from "@tauri-apps/plugin-os";
+import clsx from "clsx";
 import {
   ChevronDown,
   ChevronRight,
@@ -41,11 +43,12 @@ export function AppSidebar() {
   const commandBar = useCommandBar();
   const location = useLocation();
   const { open, toggleSidebar } = useSidebar();
+  const isMacos = platform() === "macos";
 
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader
-        className="flex items-center"
+        className={clsx("flex items-center", { "pt-4": isMacos })}
         data-tauri-drag-region="true"
       >
         <EthuiLogo

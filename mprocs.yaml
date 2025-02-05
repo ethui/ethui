@@ -1,13 +1,12 @@
 procs:
   app:
     cmd: ["yarn", "run", "app:dev"]
-  ext:
-    cmd: ["yarn", "run", "ext:watch"]
+  chrome-ext:
+    cmd: ["yarn", "run", "ext:watch:chrome"]
+  firefox-ext:
+    cmd: ["yarn", "run", "ext:watch:firefox"]
   storybook:
     cmd: ["yarn", "run", "storybook"]
-  anvil:
-    cmd: ["anvil", "--host", "0.0.0.0"]
-  demo:
-    cmd: ["yarn", "demo:dev"]
-  demo-contracts:
-    cmd: ["yarn", "demo:eth-watch"]
+
+env:
+  CARGO_TERM_COLOR: always

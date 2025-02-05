@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "1.8.0",
+  "version": "1.9.0",
   "license": "MIT",
   "description": "An Ethereum toolkit",
   "scripts": {
@@ -11,17 +11,16 @@
     "gui:devtools": "yarn workspace @ethui/gui devtools",
     "storybook": "yarn workspace @ethui/ui storybook",
     "ext:dev": "yarn workspace @ethui/extension dev",
-    "ext:watch": "yarn workspace @ethui/extension watch \"$@\"",
+    "ext:watch:chrome": "yarn workspace @ethui/extension watch:chrome",
+    "ext:watch:firefox": "yarn workspace @ethui/extension watch:firefox",
     "ext:build": "yarn workspace @ethui/extension build \"$@\"",
     "lint": "yarn lint:biome && yarn lint:tsc && yarn workspace @ethui/gui run lint",
     "lint:biome": "biome check .",
     "lint:tsc": "yarn workspaces foreach --all --parallel run tsc --noEmit",
     "fix": "yarn fix:biome",
     "fix:biome": "biome check --write .",
-    "setup": "yarn install && yarn ext:build",
-    "test": "yarn workspaces foreach --all run test",
-    "demo:dev": "yarn workspace @ethui/demo dev",
-    "demo:eth-watch": "yarn workspace @ethui/demo eth-watch"
+    "setup": "yarn install && yarn ext:dev",
+    "test": "yarn workspaces foreach --all run test"
   },
   "workspaces": [
     "extension",
@@ -30,19 +29,18 @@
     "packages/abiparse",
     "packages/form",
     "packages/ui",
-    "packages/demo",
     "gui"
   ],
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "assert": "^2.1.0",
     "html-to-image": "^1.11.11",
-    "ts-unused-exports": "^10.1.0",
+    "ts-unused-exports": "^11.0.1",
     "tsx": "^4.19.2"
   },
   "dependencies": {
-    "@tauri-apps/cli": "^2.1.0",
-    "typescript": "5.7"
+    "@tauri-apps/cli": "^2.2.7",
+    "typescript": "5.7.3"
   },
   "packageManager": "yarn@4.4.1+sha224.fd21d9eb5fba020083811af1d4953acc21eeb9f6ff97efd1b3f9d4de"
 }

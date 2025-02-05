@@ -214,30 +214,26 @@ Form.Checkbox = Checkbox;
 
 interface SubmitProps extends ButtonProps {
   label: React.ReactNode;
-  useDirtyAlt?: boolean;
+  skipDirtyCheck?: boolean;
   isSubmitting?: boolean;
 }
 
 function Submit({
+  skipDirtyCheck = false,
   label,
-  // this arg was kept here and defaulted to true for backwards compatibility,
-  // need to double check if the issue linked above is still required (for cases where array fields are present)
-  useDirtyAlt = true,
   isSubmitting: isSubmittingOverride = false,
   ...props
 }: SubmitProps) {
   const {
     formState: { isValid, isDirty, isSubmitting },
   } = useFormContext();
-  // https://github.com/react-hook-form/react-hook-form/issues/3213
-  //const isDirtyAlt = useDirtyAlt && !!Object.keys(dirtyFields).length;
+
+  const disabled = skipDirtyCheck
+    ? !isValid || isSubmitting
+    : !isDirty || !isValid || isSubmitting;
 
   return (
-    <Button
-      type="submit"
-      disabled={!isDirty || !isValid || isSubmitting}
-      {...props}
-    >
+    <Button type="submit" disabled={disabled} {...props}>
       {isSubmitting || isSubmittingOverride ? (
         <LoaderCircle className="animate-spin" />
       ) : (
@@ -281,7 +277,6 @@ function SelectInput<
       control={control}
       name={name}
       render={({ field }) => {
-        console.log(field.value);
         return (
           <FormItem className="flex items-baseline gap-2">
             <FormLabel className="shrink-0">{label}</FormLabel>

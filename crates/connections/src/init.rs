@@ -6,6 +6,7 @@ use std::{
 };
 
 use async_trait::async_trait;
+use ethui_broadcast::InternalMsg;
 use ethui_types::{Affinity, GlobalState};
 use once_cell::sync::OnceCell;
 use serde::Deserialize;
@@ -41,6 +42,8 @@ pub async fn init(pathbuf: PathBuf) {
     };
 
     STORE.set(RwLock::new(store)).unwrap();
+
+    tokio::spawn(async { receiver().await });
 }
 
 #[async_trait]
@@ -51,5 +54,20 @@ impl GlobalState for Store {
 
     async fn write<'a>() -> RwLockWriteGuard<'a, Self> {
         STORE.get().unwrap().write().await
+    }
+}
+
+async fn receiver() -> ! {
+    let mut rx = ethui_broadcast::subscribe_internal().await;
+
+    loop {
+        if let Ok(msg) = rx.recv().await {
+            use InternalMsg::*;
+
+            if let NetworkRemoved(chain_id) = msg {
+                let mut store = Store::write().await;
+                store.on_chain_removed(chain_id);
+            }
+        }
     }
 }

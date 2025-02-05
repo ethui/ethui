@@ -16,7 +16,6 @@ pub struct Evm {
 
 impl Evm {
     pub async fn new(fork_url: String, fork_block_number: Option<u64>, gas_limit: u64) -> Self {
-        let foundry_config = foundry_config::Config::default();
         let evm_opts = EvmOpts {
             fork_url: Some(fork_url.clone()),
             fork_block_number,
@@ -24,7 +23,7 @@ impl Evm {
                 gas_limit: u64::MAX.into(),
                 ..Default::default()
             },
-            memory_limit: foundry_config.memory_limit,
+            memory_limit: 1 << 27, // taken from foundry-config
             ..Default::default()
         };
 

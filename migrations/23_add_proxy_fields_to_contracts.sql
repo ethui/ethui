@@ -1,0 +1,5 @@
+ALTER TABLE contracts
+ADD proxy_for VARCHAR COLLATE NOCASE;
+
+ALTER TABLE contracts
+ADD proxied_by VARCHAR COLLATE NOCASE;

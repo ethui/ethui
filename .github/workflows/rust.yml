@@ -64,7 +64,6 @@ jobs:
 
       - run: cargo nextest run --workspace
 
-
   clippy:
     runs-on: ubuntu-latest
     steps:
@@ -85,7 +84,11 @@ jobs:
 
       - run: cargo check
       - run: cargo clippy --all -- -D clippy::all -D clippy::dbg_macro
-      - run: cargo install sqlx-cli && cargo sqlx prepare --workspace --check
+
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: sqlx-cli
+      - run: cargo sqlx prepare --workspace --check
 
   deny:
     runs-on: ubuntu-latest

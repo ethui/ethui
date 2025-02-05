@@ -4,11 +4,8 @@
 [contact]: https://linktr.ee/naps62
 [good-first-issue]: https://github.com/ethui/ethui/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22
 [tauri-requirements]: https://tauri.app/v1/guides/getting-started/prerequisites/
-[libsodium-macos]: https://formulae.brew.sh/formula/libsodium
-[libsodium-arch]: https://archlinux.org/packages/extra/x86_64/libsodium/
-[libsodium-ubuntu]: https://packages.ubuntu.com/search?keywords=libsodium-dev
 [foundry]: https://getfoundry.sh/
-[web3-demo]: https://github.com/ethui/web3-demo
+[demo]: https://github.com/ethui/demo
 [anvil]: https://book.getfoundry.sh/anvil/
 [mise]: https://mise.jdx.dev
 
@@ -33,24 +30,22 @@ Here's a few suggestions on how to get started:
 ### Requirements
 
 - [**Tauri's requirements**][tauri-requirements];
-- **libsodium** ([macos][libsodium-macos], [Arch][libsodium-arch], [Ubuntu][libsodium-ubuntu])
-- **Google Chrome**, running a profile without MetaMask or other wallet installed, to be solved once EIP-6963 is widely adopted
-- (optional) [**mise**][Mise], a task & env manager
-- (optional) [**Foundry**][foundry], the toolkit for Ethereum development. You'll want this to run [anvil][anvil] nodes locally to point to wallet to
-- (optional) [**Our own web3-demo app**][web3-demo], to have some basic setup to test various transactions with
+- **Google Chrome** or **Firefox**;
+- [**mise**][Mise], a task & env manager;
+- [**Foundry**][foundry], the toolkit for Ethereum smart contract development.
 
 ### Get started
 
-**1. Clone the repo and install dependencies:**
+**1. Clone the repo**
 
 ```sh
 git clone git@github.com:ethui/ethui && cd ethui
 ```
 
-**2. Run the initial build**, which will install dependencies and build the extension `dist`:
+**2. Run the setup script**, which should guide you through all requirements:
 
-```sh
-yarn setup
+```
+./.mise/tasks/setup
 ```
 
 **3. Install the extension**
@@ -58,16 +53,14 @@ yarn setup
 1. Open Google Chrome
 2. go to `chrome://extensions`
 3. enable `Developer mode` (upper right corner)
-4. Load unpacked -> choose the `ethui/extension/dist` directory
+4. Load unpacked -> choose the `ethui/extension/dist/chrome-dev` directory
 5. ethui should now be running
 
-**4. Start the app in development mode**
+**4. Start the development environment**
 
 ```sh
-yarn app:dev
+mprocs
 ```
-
-**Note:** If you change the extension' code, you may also need to use `yarn ext:dev`, and to manually reload it on `chrome://extensions`. Live code reloading is tricky with these.
 
 ## Code of Conduct
 

@@ -32,13 +32,13 @@ type Result =
     };
 
 interface Option {
-  item: AbiFunction | "raw";
+  item: AbiFunction | "raw" | "rawCall";
   label: string;
   id: number;
 }
 
 const VALID_TYPES = ["function", "receive", "fallback"];
-const GROUPS = ["view", "write", "fallback", "raw"];
+const GROUPS = ["view", "write", "fallback", "raw", "rawCall"];
 type Group = (typeof GROUPS)[number];
 type GroupedOptions = Record<Group, Option[]>;
 
@@ -81,7 +81,7 @@ export function ContractCallForm({ chainId, address }: Props) {
 }
 
 interface AbiItemFormWithSubmitProps {
-  item: "raw" | AbiFunction;
+  item: "raw" | "rawCall" | AbiFunction;
   address: Address;
   chainId: number;
 }
@@ -94,25 +94,32 @@ function AbiItemFormWithSubmit({
   const [result, setResult] = useState<Result>();
   const [value, setValue] = useState<bigint | undefined>();
   const [data, setData] = useState<`0x${string}` | undefined>();
+  const [loading, setLoading] = useState(false);
   const sender = useWallets((s) => s.address);
 
   const onChange = useCallback(
     ({ value, data }: { value?: bigint; data?: `0x${string}` }) => {
       setValue(value);
       setData(data);
+      setLoading(false);
     },
     [],
   );
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     const params = {
       value: `0x${(value || 0).toString(16)}`,
       data,
       from: sender,
       to: address,
     };
-    if (item !== "raw" && item?.stateMutability === "view") {
+    if (
+      item !== "raw" &&
+      item !== "rawCall" &&
+      item?.stateMutability === "view"
+    ) {
       const rawResult = await invoke<`0x${string}`>("rpc_eth_call", { params });
       const result = decodeFunctionResult({
         abi: [item],
@@ -132,9 +139,19 @@ function AbiItemFormWithSubmit({
           break;
       }
     } else {
-      const result = await invoke<Hash>("rpc_send_transaction", { params });
-      setResult({ write: result });
+      try {
+        if (item === "raw") {
+          const result = await invoke<Hash>("rpc_send_transaction", { params });
+          setResult({ write: result });
+        } else if (item === "rawCall") {
+          const result = await invoke<Hash>("rpc_eth_call", { params });
+          setResult({ read: result });
+        }
+      } catch (_err) {
+        setLoading(false);
+      }
     }
+    setLoading(false);
   };
   return (
     <div className="flex w-full flex-col gap-2">
@@ -149,7 +166,9 @@ function AbiItemFormWithSubmit({
         onChange={onChange}
       />
       <form onSubmit={onSubmit}>
-        <Button type="submit">submit</Button>
+        <Button type="submit" disabled={loading}>
+          submit
+        </Button>
       </form>
 
       {result && "read" in result && (
@@ -191,7 +210,8 @@ function constructOptions(abi: Abi, filter?: string): GroupedOptions {
       return acc;
     }, {} as GroupedOptions);
 
-  options.raw = [{ item: "raw", label: "Raw", id: -1 }];
+  options.raw = [{ item: "raw", label: "Raw Transaction", id: -1 }];
+  options.rawCall = [{ item: "rawCall", label: "Raw Call", id: -2 }];
 
   return options;
 }

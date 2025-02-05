@@ -1,11 +1,8 @@
 use alloy::{
-    providers::{ProviderBuilder, RootProvider},
+    network::Ethereum,
+    providers::{ext::AnvilApi, ProviderBuilder, RootProvider},
     rpc::client::ClientBuilder,
-    transports::{
-        http::{Client, Http},
-        layers::{RetryBackoffLayer, RetryBackoffService},
-        BoxTransport,
-    },
+    transports::layers::RetryBackoffLayer,
 };
 use serde::{Deserialize, Serialize};
 use url::Url;
@@ -17,7 +14,9 @@ pub struct Network {
     pub name: String,
     pub chain_id: u32,
     pub explorer_url: Option<String>,
+    // TODO: turn this into a Url
     pub http_url: String,
+    // TODO: turn this into an Option<Url>
     pub ws_url: Option<String>,
     pub currency: String,
     pub decimals: u32,
@@ -42,25 +41,12 @@ impl Network {
         }
     }
 
-    pub fn goerli() -> Self {
-        Self {
-            name: String::from("Goerli"),
-            chain_id: 5,
-            explorer_url: Some(String::from("https://goerli.etherscan.io/search?q=")),
-            http_url: String::from("https://rpc.ankr.com/eth_goerli"),
-            ws_url: None,
-            currency: String::from("ETH"),
-            decimals: 18,
-            force_is_anvil: false,
-        }
-    }
-
     pub fn sepolia() -> Self {
         Self {
             name: String::from("Sepolia"),
             chain_id: 11155111,
             explorer_url: Some(String::from("https://sepolia.etherscan.io/search?q=")),
-            http_url: String::from("https://rpc2.sepolia.org"),
+            http_url: String::from("https://ethereum-sepolia-rpc.publicnode.com"),
             ws_url: None,
             currency: String::from("ETH"),
             decimals: 18,
@@ -82,27 +68,27 @@ impl Network {
     }
 
     pub fn all_default() -> Vec<Self> {
-        vec![
-            Self::anvil(),
-            Self::mainnet(),
-            Self::goerli(),
-            Self::sepolia(),
-        ]
+        vec![Self::anvil(), Self::mainnet(), Self::sepolia()]
     }
 
     pub fn chain_id_hex(&self) -> String {
         format!("0x{:x}", self.chain_id)
     }
 
-    pub fn is_dev(&self) -> bool {
-        self.force_is_anvil || self.chain_id == 31337
+    pub async fn is_dev(&self) -> bool {
+        let provider = self.get_alloy_provider().await.unwrap();
+        // TODO cache node_info for entire chain
+        self.chain_id == 31337 || provider.anvil_node_info().await.is_ok()
     }
 
-    pub async fn get_alloy_provider(&self) -> Result<RootProvider<BoxTransport>> {
-        Ok(ProviderBuilder::new().on_builtin(&self.http_url).await?)
+    pub async fn get_alloy_provider(&self) -> Result<RootProvider<Ethereum>> {
+        Ok(ProviderBuilder::new()
+            .disable_recommended_fillers()
+            .on_builtin(&self.http_url)
+            .await?)
     }
 
-    pub fn get_provider(&self) -> RootProvider<RetryBackoffService<Http<Client>>> {
+    pub fn get_provider(&self) -> RootProvider<Ethereum> {
         let url = Url::parse(&self.http_url).unwrap();
 
         //let url = Url::parse(&self.http_url).unwrap();
@@ -110,7 +96,9 @@ impl Network {
             .layer(RetryBackoffLayer::new(10, 500, 300))
             .http(url);
 
-        ProviderBuilder::new().on_client(client)
+        ProviderBuilder::new()
+            .disable_recommended_fillers()
+            .on_client(client)
         //let url = Url::parse(&self.http_url).unwrap();
         //let http = Http::new(url);
         //let policy = Box::<HttpRateLimitRetryPolicy>::default();
@@ -123,7 +111,7 @@ impl Network {
     }
 
     pub async fn reset_listener(&mut self) -> Result<()> {
-        if self.is_dev() {
+        if self.is_dev().await {
             let http = Url::parse(&self.http_url)?;
             let ws = Url::parse(&self.ws_url.clone().unwrap())?;
             ethui_broadcast::reset_anvil_listener(self.chain_id, http, ws).await;

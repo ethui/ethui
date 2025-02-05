@@ -71,41 +71,36 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ubuntu-20.04, macos-latest, windows-latest]
+        include:
+          - platform: 'macos-latest' # for Arm based macs (M1 and above).
+            args: '--target universal-apple-darwin'
+          - platform: 'ubuntu-22.04'
+            args: ''
+          # - platform: 'windows-latest'
+          #   args: ''
+
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
 
       - name: install dependencies (ubuntu)
-        if: matrix.platform == 'ubuntu-20.04'
+        if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential curl wget file libssl-dev libayatana-appindicator3-dev librsvg2-dev libwebkit2gtk-4.1-dev libjavascriptcoregtk-4.1 libsoup-3.0-dev patchelf libsodium-dev
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev patchelf libsodium-dev
 
-      - name: install dependencies (windows)
-        if: matrix.platform == 'windows-latest'
-        run: |
-          curl https://download.libsodium.org/libsodium/releases/libsodium-1.0.18-msvc.zip --output libsodium.zip
-          7z x libsodium.zip
-          cp libsodium/x64/Release/v142/static/libsodium.lib sodium.lib
-          ls
-        shell: bash
-
-      - name: install dependencies (macos)
-        if: matrix.platform == 'macos-latest'
-        run: |
-          brew install libsodium libusb
-
-      #
-      # install rust, forcing x86_64 on macos
-      #
-      - uses: dtolnay/rust-toolchain@stable
-        if: ${{ matrix.platform != 'macos-latest' }}
+      # - name: install dependencies (windows)
+      #   if: matrix.platform == 'windows-latest'
+      #   run: |
+      #     curl https://download.libsodium.org/libsodium/releases/libsodium-1.0.18-msvc.zip --output libsodium.zip
+      #     7z x libsodium.zip
+      #     cp libsodium/x64/Release/v142/static/libsodium.lib sodium.lib
+      #     ls
+      #   shell: bash
 
       - uses: dtolnay/rust-toolchain@stable
-        if: ${{ matrix.platform == 'macos-latest' }}
         with:
-          targets: "x86_64-apple-darwin"
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
       - uses: Swatinem/rust-cache@v2
         with:
@@ -120,23 +115,12 @@ jobs:
 
       - run: yarn install --frozen-lockfile --network-timeout 1000000
 
-      #
-      # run tauri build, forcing x86_64 on macos
-      #
       - uses: tauri-apps/tauri-action@v0
-        if: ${{ matrix.platform != 'macos-latest' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           releaseId: ${{ needs.setup.outputs.release_id }}
-
-      - uses: tauri-apps/tauri-action@v0
-        if: ${{ matrix.platform == 'macos-latest' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          releaseId: ${{ needs.setup.outputs.release_id }}
-          args: "--target x86_64-apple-darwin"
+          args: ${{ matrix.args }}
 
   # build extension
   # upload to draft release
@@ -158,18 +142,18 @@ jobs:
         run: yarn workspace @ethui/extension install
 
       - name: Create chrome bundle
-        run: yarn workspace @ethui/extension build --target chrome --version ${{ needs.setup.outputs.version }}
+        run: yarn workspace @ethui/extension build --target chrome -v ${{ needs.setup.outputs.version }}
 
       - name: Create firefox bundle
-        run: yarn workspace @ethui/extension build --target firefox --version ${{ needs.setup.outputs.version }}
+        run: yarn workspace @ethui/extension build --target firefox -v ${{ needs.setup.outputs.version }}
 
       - name: Upload to release
-        run: gh release upload ${{ needs.setup.outputs.tag }} ./extension/dist/*.{crx,zip,xpi}
+        run: gh release upload ${{ needs.setup.outputs.tag }} ./extension/dist/*.{crx,xpi,zip}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Submit to Google
-        run: npx chrome-webstore-upload-cli@2 upload --source ./extension/dist/chrome --auto-publish || true
+        run: npx chrome-webstore-upload-cli@2 upload --source ./extension/dist/chrome --auto-publish
         env:
           EXTENSION_ID: ${{ secrets.CHROME_WEB_EXT_ID }}
           CLIENT_ID: ${{ secrets.CHROME_WEB_EXT_CLIENT_ID }}
@@ -177,7 +161,7 @@ jobs:
           REFRESH_TOKEN: ${{ secrets.CHROME_WEB_EXT_REFRESH_TOKEN }}
 
       - name: Submit to Mozilla
-        run: yarn workspace @ethui/extension run web-ext sign --channel listed --source-dir ./extension/dist/firefox || true
+        run: yarn workspace @ethui/extension run web-ext sign --channel listed --source-dir ./extension/dist/firefox
         env:
           WEB_EXT_API_KEY: ${{ secrets.FIREFOX_WEB_EXT_API_KEY }}
           WEB_EXT_API_SECRET: ${{ secrets.FIREFOX_WEB_EXT_API_SECRET }}
