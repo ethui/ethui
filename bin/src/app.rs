@@ -82,6 +82,7 @@ impl EthUIApp {
                 let _ = system_tray::build(handle);
                 Ok(())
             });
+
         let app = builder.build(tauri::generate_context!())?;
 
         init(&app, args).await?;
