@@ -7,14 +7,6 @@ procs:
     cmd: ["yarn", "run", "ext:watch:firefox"]
   storybook:
     cmd: ["yarn", "run", "storybook"]
-  anvil:
-    cmd: ["anvil", "--host", "0.0.0.0"]
-  demo:
-    cwd: "../demo"
-    cmd: ["yarn", "dev"]
-  demo-contracts:
-    cwd: "../demo"
-    cmd: ["yarn", "eth-watch"]
 
 env:
   CARGO_TERM_COLOR: always
