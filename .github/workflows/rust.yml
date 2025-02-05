@@ -64,7 +64,6 @@ jobs:
 
       - run: cargo nextest run --workspace
 
-
   clippy:
     runs-on: ubuntu-latest
     steps:
