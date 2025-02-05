@@ -16,7 +16,7 @@ interface NetworkSwitch {
   newId: number;
 }
 
-export function ChainSwitchDialog() {
+function ChainSwitchDialog() {
   const { id } = Route.useParams();
   const { data: switchData, send } = useDialog<NetworkSwitch>(id);
   const networks = useNetworks((s) => s.networks);
