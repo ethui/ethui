@@ -85,7 +85,7 @@ jobs:
       - run: cargo check
       - run: cargo clippy --all -- -D clippy::all -D clippy::dbg_macro
 
-      - run : taiki-e/install-action@v2
+      - run: taiki-e/install-action@v2
         with:
           tool: sqlx-cli
       - run: cargo sqlx prepare --workspace --check
