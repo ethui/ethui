@@ -24,7 +24,7 @@ jobs:
         run: |
           CONFIG_FILE=".github/release-drafter.yml"
           if [ -f "$CONFIG_FILE" ]; then
-            echo "labels=$(yq '.categories[].labels | flatten | join(",")' $CONFIG_FILE)" >> $GITHUB_OUTPUT
+            echo "labels=$(yq -r '.categories[].labels | flatten[]' $CONFIG_FILE) | tr '\n' ','" >> $GITHUB_OUTPUT
           else
             echo "Config file not found!"
             exit 1
