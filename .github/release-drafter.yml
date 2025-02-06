@@ -46,6 +46,4 @@ version-resolver:
 include-pre-releases: true
 
 template: |
-  ## Changes
-
   $CHANGES
