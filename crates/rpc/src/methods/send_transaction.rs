@@ -11,7 +11,7 @@ use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_networks::Network;
 use ethui_settings::Settings;
 use ethui_types::{Address, GlobalState};
-use ethui_wallets::{Wallet, WalletControl, WalletType, Wallets};
+use ethui_wallets::{WalletControl, WalletType, Wallets};
 
 use crate::{Error, Result};
 
@@ -158,29 +158,22 @@ impl SendTransaction {
             .parse()
             .map_err(|_| Error::CannotParseUrl(self.network.http_url.clone()))?;
 
-        let is_dev_network = self.network.is_dev().await && self.network.chain_id == 31337;
-
-        self.provider = match wallet {
-            Wallet::Impersonator(ref wallet) if is_dev_network => {
-                let account = wallet.get_address(&self.wallet_path).await?;
-                let provider = ProviderBuilder::new().on_http(url);
-
-                // TODO: maybe we can find a way to only do this once for every account,
-                // or only call anvil_autoImpersonate once for the whole network,
-                // instead of making this request for every single transaction.
-                // this is just a minor optimization, though
-                provider.anvil_impersonate_account(account).await?;
-                Some(Box::new(provider))
-            }
-            _ => {
-                let signer = wallet
-                    .build_signer(self.network.chain_id, &self.wallet_path)
-                    .await?;
-                let provider = ProviderBuilder::new()
-                    .wallet(signer.to_wallet())
-                    .on_http(url);
-                Some(Box::new(provider))
-            }
+        self.provider = if self.network.is_dev().await {
+            // TODO: maybe we can find a way to only do this once for every account,
+            // or only call anvil_autoImpersonate once for the whole network,
+            // instead of making this request for every single transaction.
+            // this is just a minor optimization, though
+            let provider = ProviderBuilder::new().on_http(url);
+            provider.anvil_auto_impersonate_account(true).await?;
+            Some(Box::new(provider))
+        } else {
+            let signer = wallet
+                .build_signer(self.network.chain_id, &self.wallet_path)
+                .await?;
+            let provider = ProviderBuilder::new()
+                .wallet(signer.to_wallet())
+                .on_http(url);
+            Some(Box::new(provider))
         };
 
         Ok(())
