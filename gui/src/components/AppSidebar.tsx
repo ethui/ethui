@@ -46,7 +46,7 @@ export function AppSidebar() {
   const isMacos = platform() === "macos";
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar className="select-none" collapsible="icon">
       <SidebarHeader
         className={clsx("flex items-center", { "pt-4": isMacos })}
         data-tauri-drag-region="true"
