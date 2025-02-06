@@ -15,6 +15,9 @@ pub enum AppError {
     #[error(transparent)]
     Network(#[from] ethui_networks::Error),
 
+    #[error("Invalid Network {0}")]
+    InvalidNetwork(u32),
+
     #[error(transparent)]
     TauriError(#[from] tauri::Error),
 

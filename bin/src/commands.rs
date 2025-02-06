@@ -4,7 +4,7 @@ use ethui_networks::commands::networks_is_dev;
 use ethui_proxy_detect::ProxyType;
 use ethui_types::{Address, GlobalState, UINotify};
 
-use crate::error::AppResult;
+use crate::error::{AppError, AppResult};
 
 #[tauri::command]
 pub fn get_build_mode() -> String {
@@ -35,7 +35,9 @@ pub async fn add_contract(
 ) -> AppResult<()> {
     let networks = ethui_networks::Networks::read().await;
 
-    let network = networks.get_network(chain_id as u32).unwrap();
+    let network = networks
+        .get_network(chain_id as u32)
+        .ok_or(AppError::InvalidNetwork(chain_id as u32))?;
     let provider = network.get_alloy_provider().await?;
 
     let proxy = ethui_proxy_detect::detect_proxy(address, &provider).await?;
