@@ -27,3 +27,4 @@ tracing.workspace = true
 jsonrpc-core.workspace = true
 thiserror.workspace = true
 url.workspace = true
+ethui-rpc-macros.workspace = true

@@ -29,6 +29,7 @@ members = [
   "crates/tracing",
   "crates/exchange-rates",
   "crates/args",
+  "crates/rpc/rpc-macros",
 ]
 default-members = ["bin"]
 
@@ -53,6 +54,7 @@ ethui-broadcast = { path = "crates/broadcast" }
 ethui-tracing = { path = "crates/tracing" }
 ethui-args = { path = "crates/args" }
 ethui-token-list = { path = "crates/token-list" }
+ethui-rpc-macros = { path = "crates/rpc/rpc-macros" }
 ethui-proxy-detect = { git = "https://github.com/ethui/proxy-detect", rev = "4110990" }
 tokio = { version = "1.42", features = ["rt-multi-thread", "sync"] }
 thiserror = "1.0"
