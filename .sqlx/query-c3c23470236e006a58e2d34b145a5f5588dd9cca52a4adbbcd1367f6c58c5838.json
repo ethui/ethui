@@ -1,0 +1,38 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT address, name, proxy_for, proxied_by FROM contracts WHERE chain_id = ?",
+  "describe": {
+    "columns": [
+      {
+        "name": "address",
+        "ordinal": 0,
+        "type_info": "Text"
+      },
+      {
+        "name": "name",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "proxy_for",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "proxied_by",
+        "ordinal": 3,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "c3c23470236e006a58e2d34b145a5f5588dd9cca52a4adbbcd1367f6c58c5838"
+}

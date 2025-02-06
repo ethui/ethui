@@ -9,7 +9,7 @@ use crate::{DbInner, Error, Result};
 impl DbInner {
     pub async fn get_contracts(&self, chain_id: u32) -> Result<Vec<Contract>> {
         let rows = sqlx::query!(
-            r#"SELECT address, name FROM contracts WHERE chain_id = ?"#,
+            r#"SELECT address, name, proxy_for, proxied_by FROM contracts WHERE chain_id = ?"#,
             chain_id
         )
         .fetch_all(self.pool())
@@ -21,6 +21,8 @@ impl DbInner {
                 address: Address::from_str(&r.address).unwrap(),
                 chain_id,
                 name: r.name,
+                proxy_for: r.proxy_for.map(|p| Address::from_str(&p).unwrap()),
+                proxied_by: r.proxied_by.map(|p| Address::from_str(&p).unwrap()),
             })
             .collect())
     }

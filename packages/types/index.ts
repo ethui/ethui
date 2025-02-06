@@ -90,6 +90,9 @@ export interface Contract {
   name?: string;
   address: Address;
   chainId: number;
+  proxyName?: string;
+  proxyFor?: Address;
+  proxiedBy?: Address;
 }
 
 export interface Peer {

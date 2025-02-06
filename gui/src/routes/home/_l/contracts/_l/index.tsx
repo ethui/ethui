@@ -19,7 +19,7 @@ import {
   DialogTrigger,
 } from "@ethui/ui/components/shadcn/dialog";
 import { Input } from "@ethui/ui/components/shadcn/input";
-import { Plus } from "lucide-react";
+import { MoveRight, Plus } from "lucide-react";
 import { AddressView } from "#/components/AddressView";
 import { useContracts } from "#/store/useContracts";
 import { useNetworks } from "#/store/useNetworks";
@@ -39,21 +39,27 @@ function Contracts() {
       <Filter onChange={(f) => setFilter(f)} />
 
       <div className="flex flex-col gap-2 pt-2">
-        {Array.from(contracts || []).map(({ address, name, chainId }) => (
-          <Link
-            key={address}
-            to="/home/contracts/$chainId/$address"
-            params={{ address: address, chainId: chainId }}
-            className="flex p-4 align-baseline hover:bg-accent"
-          >
-            <AddressView address={address} />
-            {name && (
-              <Badge variant="secondary" className="ml-2">
-                {name}
-              </Badge>
-            )}
-          </Link>
-        ))}
+        {Array.from(contracts || []).map(
+          ({ address, name, chainId, proxyName }) => (
+            <Link
+              key={address}
+              to="/home/contracts/$chainId/$address"
+              params={{ address: address, chainId: chainId }}
+              className="flex p-4 align-baseline hover:bg-accent"
+            >
+              <div className="flex items-center gap-2 ">
+                <AddressView address={address} />
+                {proxyName && (
+                  <>
+                    <Badge variant="secondary">{proxyName}</Badge>
+                    <MoveRight strokeWidth={1} size={16} />
+                  </>
+                )}
+                {name && <Badge variant="secondary">{name}</Badge>}
+              </div>
+            </Link>
+          ),
+        )}
       </div>
 
       <Dialog>
