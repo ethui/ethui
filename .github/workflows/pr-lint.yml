@@ -1,0 +1,46 @@
+name: Pull request linter
+
+on:
+  pull_request:
+    types:
+      - synchronize
+      - labeled
+      - unlabeled
+      - opened
+      - reopened
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  enforce-labels:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get release-drafter config
+        id: current-labels
+        run: |
+          echo "labels=$(yq -r '.categories[].labels | flatten[]' .github/release-drafter.yml | tr '\n' ',')" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Check PR labels
+        id: check-labels
+        run: |
+          PR_LABELS=$(gh pr view ${{ github.event.pull_request.number }} --json labels -q '.labels[].name')
+          MATCH_FOUND=0
+
+          for label in $PR_LABELS; do
+            if [[ "${{ steps.current-labels.outputs.labels }}" =~ "$label" ]]; then
+              MATCH_FOUND=1
+              break
+            fi
+          done
+
+          if [[ ! $MATCH_FOUND -eq 1 ]]; then
+            eco "No matching labels found. Must have one of: ${{ steps.current-labels.outputs.labels }}"
+            exit 1
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
