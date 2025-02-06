@@ -42,7 +42,7 @@ pub async fn add_contract(
 
     let proxy = ethui_proxy_detect::detect_proxy(address, &provider).await?;
 
-    let (abi, name) = if networks_is_dev().await? {
+    let (name, abi) = if networks_is_dev().await? {
         (None, None)
     } else {
         match proxy {
