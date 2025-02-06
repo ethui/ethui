@@ -176,8 +176,6 @@ impl SendTransaction {
             Some(Box::new(provider))
         };
 
-        //self.provider = Some(provider);
-
         Ok(())
     }
 
