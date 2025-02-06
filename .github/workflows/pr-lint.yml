@@ -22,13 +22,7 @@ jobs:
       - name: Get release-drafter config
         id: current-labels
         run: |
-          CONFIG_FILE=".github/release-drafter.yml"
-          if [ -f "$CONFIG_FILE" ]; then
-            echo "labels=$(yq -r '.categories[].labels | flatten[]' $CONFIG_FILE) | tr '\n' ','" >> $GITHUB_OUTPUT
-          else
-            echo "Config file not found!"
-            exit 1
-          fi
+          echo "labels=$(yq -r '.categories[].labels | flatten[]' .github/release-drafter.yml | tr '\n' ',')" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Check PR labels
