@@ -1,7 +1,7 @@
 use ethui_db::utils::{fetch_etherscan_abi, fetch_etherscan_contract_name};
 use ethui_db::Db;
 use ethui_networks::commands::networks_is_dev;
-use ethui_networks::Error;
+use ethui_proxy_detect::ProxyType;
 use ethui_types::{Address, GlobalState, UINotify};
 
 use crate::error::AppResult;
@@ -35,29 +35,26 @@ pub async fn add_contract(
 ) -> AppResult<()> {
     let networks = ethui_networks::Networks::read().await;
 
-    let provider = async move {
-        match networks.get_network(chain_id as u32) {
-            Some(network) => Ok(network.get_alloy_provider().await?),
-            _ => Err(Error::InvalidNetwork(chain_id as u32)),
-        }
-    }
-    .await
-    .unwrap();
+    let network = networks.get_network(chain_id as u32).unwrap();
+    let provider = network.get_alloy_provider().await?;
 
-    let proxy_for = ethui_proxy_detect::detect_proxy(address, &provider)
-        .await?
-        .map(|proxy| proxy.implementation());
+    let proxy = ethui_proxy_detect::detect_proxy(address, &provider).await?;
 
     let (abi, name) = if networks_is_dev().await? {
         (None, None)
     } else {
         let name = fetch_etherscan_contract_name(chain_id.into(), address).await?;
-        let abi = fetch_etherscan_abi(chain_id.into(), address)
-            .await?
-            .map(|abi| serde_json::to_string(&abi).unwrap());
+        let abi = match proxy {
+            Some(ProxyType::Eip1167(_)) => None,
+            _ => fetch_etherscan_abi(chain_id.into(), address)
+                .await?
+                .map(|abi| serde_json::to_string(&abi).unwrap()),
+        };
 
         (abi, name)
     };
+
+    let proxy_for = proxy.map(|proxy| proxy.implementation());
 
     db.insert_contract_with_abi(chain_id as u32, address, abi, name, proxy_for)
         .await?;

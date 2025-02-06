@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": " INSERT INTO contracts (address, chain_id, proxied_by)\n                VALUES (?,?,?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": []
+  },
+  "hash": "c04f674d4516b262ffede780de8ae867e3a9ad832723e38fdf77d6702f16b8c9"
+}
