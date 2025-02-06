@@ -3,7 +3,7 @@ version = "1.9.0"
 edition = "2021"
 license-file = "./LICENSE"
 homepage = "https://github.com/ethui"
-repository = "https://github.com/ethui/reth/reth"
+repository = "https://github.com/ethui/ethui"
 exclude = [".github/", "extension/"]
 authors = ["Miguel Palhas <mpalhas@gmail.com>"]
 
