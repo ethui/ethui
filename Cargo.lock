@@ -3470,7 +3470,7 @@ dependencies = [
  "ethui-broadcast",
  "ethui-settings",
  "ethui-types",
- "foundry-block-explorers 0.8.0",
+ "foundry-block-explorers",
  "once_cell",
  "serde",
  "serde_json",
@@ -3590,7 +3590,7 @@ dependencies = [
  "ethui-broadcast",
  "ethui-tracing",
  "ethui-types",
- "foundry-block-explorers 0.8.0",
+ "foundry-block-explorers",
  "once_cell",
  "serde",
  "serde_json",
@@ -3966,23 +3966,6 @@ dependencies = [
 
 [[package]]
 name = "foundry-block-explorers"
-version = "0.8.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "351c0e19c5309d4b10fe9ac06a5a1e2b8aa9ec3bde5f00f0d627083af12a9e50"
-dependencies = [
- "alloy-chains",
- "alloy-json-abi",
- "alloy-primitives",
- "reqwest",
- "semver 1.0.23",
- "serde",
- "serde_json",
- "thiserror 1.0.69",
- "tracing",
-]
-
-[[package]]
-name = "foundry-block-explorers"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0faa449506113b4969029da2ac1df3a1b3201bf10c99a4a8e6d684977b80c938"
@@ -4089,7 +4072,7 @@ dependencies = [
  "comfy-table",
  "dunce",
  "eyre",
- "foundry-block-explorers 0.9.0",
+ "foundry-block-explorers",
  "foundry-common-fmt",
  "foundry-compilers",
  "foundry-config",
@@ -4243,7 +4226,7 @@ dependencies = [
  "dunce",
  "eyre",
  "figment",
- "foundry-block-explorers 0.9.0",
+ "foundry-block-explorers",
  "foundry-compilers",
  "glob",
  "globset",
@@ -4396,7 +4379,7 @@ dependencies = [
  "alloy-primitives",
  "alloy-sol-types",
  "eyre",
- "foundry-block-explorers 0.9.0",
+ "foundry-block-explorers",
  "foundry-common",
  "foundry-compilers",
  "foundry-config",
@@ -6569,7 +6552,7 @@ version = "0.7.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "af1844ef2428cc3e1cb900be36181049ef3d3193c63e43026cfe202983b27a56"
 dependencies = [
- "proc-macro-crate 3.2.0",
+ "proc-macro-crate 1.3.1",
  "proc-macro2",
  "quote",
  "syn 2.0.87",
