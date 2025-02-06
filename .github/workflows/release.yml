@@ -148,7 +148,7 @@ jobs:
         run: yarn workspace @ethui/extension build --target firefox -v ${{ needs.setup.outputs.version }}
 
       - name: Upload to release
-        run: gh release upload ${{ needs.setup.outputs.tag }} ./extension/dist/*.{crx,xpi,zip}
+        run: gh release upload ${{ needs.setup.outputs.tag }} ./extension/dist/*.{crx,xpi}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
