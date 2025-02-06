@@ -45,16 +45,16 @@ pub async fn add_contract(
     let (abi, name) = if networks_is_dev().await? {
         (None, None)
     } else {
-        let name = fetch_etherscan_contract_name(chain_id.into(), address).await?;
-        let abi = match proxy {
-            // Eip1167 minimal proxies don't have an ABI, and etherscan actually returns the implementation's ABI in this case, which we don't want
-            Some(ProxyType::Eip1167(_)) => None,
-            _ => fetch_etherscan_abi(chain_id.into(), address)
-                .await?
-                .map(|abi| serde_json::to_string(&abi).unwrap()),
-        };
-
-        (abi, name)
+        match proxy {
+            // Eip1166 minimal proxies don't have an ABI, and etherscan actually returns the implementation's ABI in this case, which we don't want
+            Some(ProxyType::Eip1167(_)) => (Some("EIP1167".to_string()), None),
+            _ => (
+                fetch_etherscan_contract_name(chain_id.into(), address).await?,
+                fetch_etherscan_abi(chain_id.into(), address)
+                    .await?
+                    .map(|abi| serde_json::to_string(&abi).unwrap()),
+            ),
+        }
     };
 
     let proxy_for = proxy.map(|proxy| proxy.implementation());
