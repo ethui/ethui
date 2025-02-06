@@ -76,7 +76,7 @@ const store: StateCreator<Store> = (set, get) => ({
         ...(addresses || []).map(({ key, address }) => {
           return {
             id: `${actionId}/${wallet.name}/${key}`,
-            text: address,
+            text: `${wallet.name}/${address}`,
             run: () => {
               get().setCurrentWallet(wallet.name);
               get().setCurrentAddress(key);

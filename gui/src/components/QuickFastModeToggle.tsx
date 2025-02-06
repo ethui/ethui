@@ -15,6 +15,7 @@ export function QuickFastModeToggle() {
     <div className="flex items-center space-x-2">
       <Switch
         defaultChecked={fastMode}
+        checked={fastMode}
         onCheckedChange={onChange}
         id="fast-mode"
       />
