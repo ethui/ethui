@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  enforcet-labels:
+  enforce-labels:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -39,7 +39,7 @@ jobs:
           done
 
           if [[ ! $MATCH_FOUND -eq 1 ]]; then
-            echo "No matching labels found. Must have one of: ${{ steps.current-labels.outputs.labels }}"
+            eco "No matching labels found. Must have one of: ${{ steps.current-labels.outputs.labels }}"
             exit 1
           fi
         env:
