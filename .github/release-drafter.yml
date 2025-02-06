@@ -1,21 +1,31 @@
 name-template: "v$RESOLVED_VERSION"
 tag-template: "v$RESOLVED_VERSION"
+
 categories:
-  - title: "🚀 Desktop app"
+  - title: "🚀 New features"
     labels:
-      - "C-app"
       - "A-feature"
-      - "A-EIPs"
-  - title: "🌐 Extension"
+
+  - title: "💥 Breaking changes"
     labels:
-      - "C-extension"
+      - "B-breaking-change"
+
   - title: "🐛 Bug Fixes"
     labels:
       - "B-bugfix"
+
   - title: "🧰 Maintenance"
+    collapse-after: 5
     labels:
       - "C-docs"
       - "C-dependencies"
+      - "C-chore"
+
+  - title: "⬆️ Dependencies"
+    collapse-after: 5
+    labels:
+      - "C-dependencies"
+
 
 change-template: "- $TITLE @$AUTHOR (#$NUMBER)"
 
@@ -24,14 +34,10 @@ change-title-escapes: '\<*_&'
 version-resolver:
   major:
     labels:
-      - "breaking-change"
+      - "B-breaking-change"
   minor:
     labels:
       - "A-feature"
-  patch:
-    labels:
-      - "B-bugfix"
-      - "B-bug"
   default: patch
 
 include-pre-releases: true
