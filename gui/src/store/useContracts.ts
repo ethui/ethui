@@ -40,7 +40,23 @@ const store: StateCreator<Store> = (set, get) => ({
         return { ...c, alias };
       }),
     );
-    set({ contracts: contractsWithAlias });
+
+    const filteredContractsAndProxiesWithAlias = contractsWithAlias.reduce(
+      (acc: Contract[], c: Contract) => {
+        if (c.proxiedBy) {
+          const proxyName = contractsWithAlias.find(
+            (e) => e.proxyFor === c.address,
+          )?.name;
+          acc.push({ ...c, proxyName });
+        } else if (!c.proxyFor) {
+          acc.push(c);
+        }
+        return acc;
+      },
+      [],
+    );
+
+    set({ contracts: filteredContractsAndProxiesWithAlias });
   },
 
   add: async (chainId: number, address: Address) => {
