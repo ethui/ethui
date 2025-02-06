@@ -19,7 +19,7 @@
     "@devtools-ds/table": "^1.2.1",
     "@lukeed/uuid": "^2.0.1",
     "@metamask/eth-json-rpc-middleware": "^15.1.2",
-    "@metamask/json-rpc-engine": "^10.0.2",
+    "@metamask/json-rpc-engine": "^10.0.3",
     "@metamask/json-rpc-middleware-stream": "^8.0.6",
     "@metamask/post-message-stream": "^9.0.0",
     "@metamask/utils": "^11.1.0",
