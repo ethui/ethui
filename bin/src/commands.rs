@@ -63,9 +63,9 @@ pub async fn add_contract(
         .await?;
 
     if proxy_for.is_some() {
-        let _ = Box::pin(add_contract(chain_id, proxy_for.unwrap(), db)).await;
+        Box::pin(add_contract(chain_id, proxy_for.unwrap(), db)).await
+    } else {
+        ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
+        Ok(())
     }
-
-    ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
-    Ok(())
 }
