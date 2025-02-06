@@ -5,14 +5,13 @@ use alloy::{
     primitives::{Bytes, U256},
     providers::{ext::AnvilApi, PendingTransactionBuilder, Provider, ProviderBuilder},
     rpc::types::TransactionRequest,
-    transports::http::{Client, Http},
 };
 use ethui_connections::Ctx;
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_networks::Network;
 use ethui_settings::Settings;
 use ethui_types::{Address, GlobalState};
-use ethui_wallets::{Wallet, WalletControl, WalletType, Wallets};
+use ethui_wallets::{WalletControl, WalletType, Wallets};
 
 use crate::{Error, Result};
 
@@ -24,7 +23,7 @@ pub struct SendTransaction {
     pub wallet_path: String,
     pub wallet_type: WalletType,
     pub request: TransactionRequest,
-    pub provider: Option<Box<dyn Provider<Http<Client>>>>,
+    pub provider: Option<Box<dyn Provider<Ethereum>>>,
 }
 
 impl SendTransaction {
@@ -51,7 +50,7 @@ impl SendTransaction {
         self
     }
 
-    pub async fn finish(&mut self) -> Result<PendingTransactionBuilder<Http<Client>, Ethereum>> {
+    pub async fn finish(&mut self) -> Result<PendingTransactionBuilder<Ethereum>> {
         // inner scope so as not to lock wallets for the entire duration of the tx review
         let skip = {
             let wallets = Wallets::read().await;
@@ -70,9 +69,7 @@ impl SendTransaction {
         }
     }
 
-    async fn dialog_and_send(
-        &mut self,
-    ) -> Result<PendingTransactionBuilder<Http<Client>, Ethereum>> {
+    async fn dialog_and_send(&mut self) -> Result<PendingTransactionBuilder<Ethereum>> {
         let mut params = serde_json::to_value(&self.request).unwrap();
         params["chainId"] = self.network.chain_id.into();
         params["walletType"] = self.wallet_type.to_string().into();
@@ -137,7 +134,7 @@ impl SendTransaction {
         Ok(())
     }
 
-    async fn send(&mut self) -> Result<PendingTransactionBuilder<Http<Client>, Ethereum>> {
+    async fn send(&mut self) -> Result<PendingTransactionBuilder<Ethereum>> {
         self.build_provider().await?;
         let provider = self.provider.as_ref().unwrap();
         let pending = provider.send_transaction(self.request.clone()).await?;
@@ -161,32 +158,22 @@ impl SendTransaction {
             .parse()
             .map_err(|_| Error::CannotParseUrl(self.network.http_url.clone()))?;
 
-        let is_dev_network = self.network.is_dev().await && self.network.chain_id == 31337;
-
-        self.provider = match wallet {
-            Wallet::Impersonator(ref wallet) if is_dev_network => {
-                let account = wallet.get_address(&self.wallet_path).await?;
-                let provider = ProviderBuilder::new()
-                    .with_recommended_fillers()
-                    .on_http(url);
-
-                // TODO: maybe we can find a way to only do this once for every account,
-                // or only call anvil_autoImpersonate once for the whole network,
-                // instead of making this request for every single transaction.
-                // this is just a minor optimization, though
-                provider.anvil_impersonate_account(account).await?;
-                Some(Box::new(provider))
-            }
-            _ => {
-                let signer = wallet
-                    .build_signer(self.network.chain_id, &self.wallet_path)
-                    .await?;
-                let provider = ProviderBuilder::new()
-                    .with_recommended_fillers()
-                    .wallet(signer.to_wallet())
-                    .on_http(url);
-                Some(Box::new(provider))
-            }
+        self.provider = if self.network.is_dev().await {
+            // TODO: maybe we can find a way to only do this once for every account,
+            // or only call anvil_autoImpersonate once for the whole network,
+            // instead of making this request for every single transaction.
+            // this is just a minor optimization, though
+            let provider = ProviderBuilder::new().on_http(url);
+            provider.anvil_auto_impersonate_account(true).await?;
+            Some(Box::new(provider))
+        } else {
+            let signer = wallet
+                .build_signer(self.network.chain_id, &self.wallet_path)
+                .await?;
+            let provider = ProviderBuilder::new()
+                .wallet(signer.to_wallet())
+                .on_http(url);
+            Some(Box::new(provider))
         };
 
         Ok(())

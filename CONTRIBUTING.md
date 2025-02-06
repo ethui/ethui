@@ -5,7 +5,7 @@
 [good-first-issue]: https://github.com/ethui/ethui/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22
 [tauri-requirements]: https://tauri.app/v1/guides/getting-started/prerequisites/
 [foundry]: https://getfoundry.sh/
-[web3-demo]: https://github.com/ethui/web3-demo
+[demo]: https://github.com/ethui/demo
 [anvil]: https://book.getfoundry.sh/anvil/
 [mise]: https://mise.jdx.dev
 

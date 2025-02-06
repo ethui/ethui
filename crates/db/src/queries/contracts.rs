@@ -79,22 +79,37 @@ impl DbInner {
         address: Address,
         abi: Option<String>,
         name: Option<String>,
+        proxy_for: Option<Address>,
     ) -> Result<()> {
         let address = format!("0x{:x}", address);
+        let proxy_for = proxy_for.map(|p| format!("0x{:x}", p));
 
         sqlx::query!(
-            r#" INSERT INTO contracts (address, chain_id, abi, name)
-                VALUES (?,?,?,?)
+            r#" INSERT INTO contracts (address, chain_id, abi, name, proxy_for)
+                VALUES (?,?,?,?,?)
                 ON CONFLICT(address, chain_id) DO UPDATE SET name=?, abi=?"#,
             address,
             chain_id,
             abi,
             name,
+            proxy_for,
             name,
             abi
         )
         .execute(self.pool())
         .await?;
+
+        if let Some(proxy_for) = proxy_for {
+            sqlx::query!(
+                r#" INSERT INTO contracts (address, chain_id, proxied_by)
+                VALUES (?,?,?)"#,
+                proxy_for,
+                chain_id,
+                address,
+            )
+            .execute(self.pool())
+            .await?;
+        }
 
         Ok(())
     }

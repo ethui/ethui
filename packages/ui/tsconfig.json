@@ -1,6 +1,27 @@
 {
-  "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "composite": true,
+    "target": "es2022",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "isolatedModules": true,
+
+    "forceConsistentCasingInFileNames": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "rewriteRelativeImportExtensions": true,
+
+    "types": ["node"],
     "typeRoots": [
       "@types",
       "./node_modules/@types",

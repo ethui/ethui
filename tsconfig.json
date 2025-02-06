@@ -29,7 +29,6 @@
     { "path": "./extension" },
     { "path": "./packages/form" },
     { "path": "./packages/abiparse" },
-    { "path": "./packages/ui" },
-    { "path": "./packages/demo" }
+    { "path": "./packages/ui" }
   ]
 }

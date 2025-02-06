@@ -8,6 +8,9 @@ pub enum Error {
     #[error("serialization error: {0}")]
     Serde(#[from] serde_json::Error),
 
+    #[error("Invalid Network {0}")]
+    InvalidNetwork(u32),
+
     #[error(transparent)]
     Url(#[from] url::ParseError),
 

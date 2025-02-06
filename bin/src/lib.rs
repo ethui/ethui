@@ -28,7 +28,6 @@ pub async fn run() -> AppResult<()> {
         Ok(g) => g,
         Err(_) => {
             ethui_broadcast::main_window_show().await;
-            //ethui_http::request_main_window_open(args.http_port).await?;
             return Ok(());
         }
     };

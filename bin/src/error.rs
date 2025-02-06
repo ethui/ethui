@@ -10,6 +10,15 @@ pub enum AppError {
     FixPathEnv(#[from] fix_path_env::Error),
 
     #[error(transparent)]
+    DetectProxyError(#[from] ethui_proxy_detect::error::DetectProxyError),
+
+    #[error(transparent)]
+    Network(#[from] ethui_networks::Error),
+
+    #[error("Invalid Network {0}")]
+    InvalidNetwork(u32),
+
+    #[error(transparent)]
     TauriError(#[from] tauri::Error),
 
     #[error(transparent)]

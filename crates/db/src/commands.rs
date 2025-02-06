@@ -5,10 +5,7 @@ use ethui_types::{
 };
 
 use super::{Paginated, Pagination, Result};
-use crate::{
-    utils::{fetch_etherscan_abi, fetch_etherscan_contract_name},
-    Db,
-};
+use crate::Db;
 
 #[tauri::command]
 pub async fn db_get_transactions(
@@ -89,39 +86,6 @@ pub async fn db_get_contract_abi(
     db: tauri::State<'_, Db>,
 ) -> Result<JsonAbi> {
     db.get_contract_abi(chain_id, address).await
-}
-
-#[tauri::command]
-pub async fn db_insert_contract_with_etherscan(
-    chain_id: u64,
-    address: Address,
-    db: tauri::State<'_, Db>,
-) -> Result<()> {
-    let name = fetch_etherscan_contract_name(chain_id.into(), address).await?;
-    let abi = fetch_etherscan_abi(chain_id.into(), address)
-        .await?
-        .map(|abi| serde_json::to_string(&abi).unwrap());
-
-    db.insert_contract_with_abi(chain_id as u32, address, abi, name)
-        .await?;
-
-    ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
-
-    Ok(())
-}
-
-#[tauri::command]
-pub async fn db_insert_contract(
-    chain_id: u64,
-    address: Address,
-    db: tauri::State<'_, Db>,
-) -> Result<()> {
-    db.insert_contract_with_abi(chain_id as u32, address, None, None)
-        .await?;
-
-    ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
-
-    Ok(())
 }
 
 #[tauri::command]

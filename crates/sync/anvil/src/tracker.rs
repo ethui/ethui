@@ -1,15 +1,14 @@
 use alloy::{
+    network::Ethereum,
     providers::{ext::TraceApi as _, Provider as _, ProviderBuilder, RootProvider, WsConnect},
     rpc::types::{trace::parity::LocalizedTransactionTrace, Filter, Log},
-    transports::http::Http,
 };
 use base64::{self, Engine as _};
 use ethui_abis::{IERC721WithMetadata, IERC20, IERC721};
 use ethui_types::{Address, Erc721Token, Erc721TokenDetails, TokenMetadata, UINotify};
 use futures::StreamExt as _;
-use reqwest::Client;
 use tokio::sync::mpsc;
-use tracing::warn;
+use tracing::{instrument, trace, warn};
 use url::Url;
 
 pub use crate::error::{Error, Result};
@@ -92,6 +91,7 @@ impl Drop for Tracker {
 ///     3. listens to new blocks via websockets
 ///     4. if anvil_nodeInfo is available, also check forkBlockNumber, and prevent fetching blocks
 ///        past that (so that forked anvil don't overload or past fetching logic)
+#[instrument(skip_all, fields(chain_id = ctx.chain_id))]
 async fn watch(
     ctx: Ctx,
     mut quit_rcv: mpsc::Receiver<()>,
@@ -102,7 +102,9 @@ async fn watch(
 
         // retry forever
         let block_number = 'wait: loop {
-            let http_provider = ProviderBuilder::new().on_http(ctx.http_url.clone());
+            let http_provider = ProviderBuilder::new()
+                .disable_recommended_fillers()
+                .on_http(ctx.http_url.clone());
 
             tokio::select! {
                 _ = quit_rcv.recv() => break 'watcher,
@@ -113,7 +115,10 @@ async fn watch(
         };
 
         let ws_connect = WsConnect::new(ctx.ws_url.to_string());
-        let provider = ProviderBuilder::new().on_ws(ws_connect).await?;
+        let provider = ProviderBuilder::new()
+            .disable_recommended_fillers()
+            .on_ws(ws_connect)
+            .await?;
 
         // if we're in a forked anvil, grab the fork block number, so we don't index too much
         let node_info: serde_json::Value = provider
@@ -123,6 +128,8 @@ async fn watch(
         let fork_block = node_info["forkConfig"]["forkBlockNumber"]
             .as_u64()
             .unwrap_or(0);
+
+        trace!("starting from block {}", fork_block);
 
         let mut stream = provider.subscribe_blocks().await?.into_stream();
 
@@ -141,6 +148,7 @@ async fn watch(
                 .map_err(|_| Error::Watcher)?;
         }
 
+        trace!("caught up");
         block_snd.send(Msg::CaughtUp).map_err(|_| Error::Watcher)?;
 
         'ws: loop {
@@ -152,6 +160,7 @@ async fn watch(
                 b = stream.next() => {
                     match b {
                         Some(b) => {
+                            trace!("block {}", b.number);
                             let block_traces = provider.trace_block(b.number.into()).await?;
                             block_snd.send(Msg::Traces(block_traces)).map_err(|_|Error::Watcher)?;
 
@@ -171,7 +180,9 @@ async fn watch(
 async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Result<()> {
     let mut caught_up = false;
 
-    let provider = ProviderBuilder::new().on_http(ctx.http_url);
+    let provider = ProviderBuilder::new()
+        .disable_recommended_fillers()
+        .on_http(ctx.http_url);
     let db = ethui_db::get();
 
     while let Some(msg) = block_rcv.recv().await {
@@ -266,7 +277,7 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
 
 pub async fn fetch_erc20_metadata(
     address: Address,
-    client: &alloy::providers::RootProvider<Http<Client>>,
+    client: &alloy::providers::RootProvider<Ethereum>,
 ) -> TokenMetadata {
     let contract = IERC20::new(address, client);
 
@@ -280,7 +291,7 @@ pub async fn fetch_erc20_metadata(
 
 pub async fn fetch_erc721_token_data(
     erc721_token: Erc721Token,
-    client: &RootProvider<Http<Client>>,
+    client: &RootProvider<Ethereum>,
 ) -> Result<Erc721TokenDetails> {
     let contract = IERC721WithMetadata::new(erc721_token.contract, client);
 

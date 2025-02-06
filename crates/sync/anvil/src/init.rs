@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use ethui_broadcast::InternalMsg;
 use once_cell::sync::Lazy;
 use tokio::sync::Mutex;
+use tracing::trace;
 use url::Url;
 
 use crate::tracker::Tracker;
@@ -18,6 +19,7 @@ async fn receiver() -> ! {
 
     loop {
         if let Ok(InternalMsg::ResetAnvilListener { chain_id, http, ws }) = rx.recv().await {
+            trace!("resetting anvil listener for chain_id {}", chain_id);
             reset_listener(chain_id, http, ws).await
         }
     }

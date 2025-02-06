@@ -1,7 +1,7 @@
 use alloy::{
     consensus::{Transaction as _, TxType},
+    network::Ethereum,
     providers::{Provider as _, RootProvider},
-    transports::BoxTransport,
 };
 use ethui_abis::IERC20;
 use ethui_types::{events::Tx, Address, GlobalState, TokenMetadata, B256};
@@ -67,7 +67,7 @@ pub(crate) async fn fetch_erc20_metadata(chain_id: u32, address: Address) -> Res
     Ok(())
 }
 
-async fn provider(chain_id: u32) -> Result<RootProvider<BoxTransport>> {
+async fn provider(chain_id: u32) -> Result<RootProvider<Ethereum>> {
     let networks = ethui_networks::Networks::read().await;
 
     match networks.get_network(chain_id) {
