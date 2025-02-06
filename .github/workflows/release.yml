@@ -154,6 +154,7 @@ jobs:
 
       - name: Submit to Google
         run: npx chrome-webstore-upload-cli@2 upload --source ./extension/dist/chrome --auto-publish
+        continue-on-error: true
         env:
           EXTENSION_ID: ${{ secrets.CHROME_WEB_EXT_ID }}
           CLIENT_ID: ${{ secrets.CHROME_WEB_EXT_CLIENT_ID }}
