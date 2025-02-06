@@ -47,7 +47,7 @@ function Contracts() {
               params={{ address: address, chainId: chainId }}
               className="flex p-4 align-baseline hover:bg-accent"
             >
-              <div className="flex gap-2 items-center">
+              <div className="flex items-center gap-2 ">
                 <AddressView address={address} />
                 {proxyName && (
                   <>
