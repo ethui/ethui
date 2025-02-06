@@ -4,6 +4,7 @@ categories:
   - title: "🚀 Desktop app"
     labels:
       - "C-app"
+      - "A-feature"
       - "A-EIPs"
   - title: "🌐 Extension"
     labels:
@@ -26,11 +27,11 @@ version-resolver:
       - "breaking-change"
   minor:
     labels:
-      - "feature"
+      - "A-feature"
   patch:
     labels:
-      - "bugfix"
-      - "bug"
+      - "B-bugfix"
+      - "B-bug"
   default: patch
 
 include-pre-releases: true
