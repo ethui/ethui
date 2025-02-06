@@ -18,13 +18,16 @@ categories:
     collapse-after: 5
     labels:
       - "C-docs"
-      - "C-dependencies"
       - "C-chore"
 
   - title: "⬆️ Dependencies"
     collapse-after: 5
     labels:
       - "C-dependencies"
+
+exclude-labels:
+  - "A-enhancement"
+  - "A-refactor"
 
 
 change-template: "- $TITLE @$AUTHOR (#$NUMBER)"
