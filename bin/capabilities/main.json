@@ -2,7 +2,7 @@
   "identifier": "capabilities",
   "windows": ["*"],
   "permissions": [
-    "core:window:allow-internal-toggle-maximize",
+    "core:window:default",
     "core:window:allow-start-dragging",
     "core:window:allow-close",
     "core:event:allow-listen",
