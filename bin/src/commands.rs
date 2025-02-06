@@ -47,6 +47,7 @@ pub async fn add_contract(
     } else {
         let name = fetch_etherscan_contract_name(chain_id.into(), address).await?;
         let abi = match proxy {
+            // Eip1167 minimal proxies don't have an ABI, and etherscan actually returns the implementation's ABI in this case, which we don't want
             Some(ProxyType::Eip1167(_)) => None,
             _ => fetch_etherscan_abi(chain_id.into(), address)
                 .await?
