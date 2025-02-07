@@ -158,6 +158,14 @@ impl DbInner {
         Ok(Paginated::new(items, pagination, total_row.total as u32))
     }
 
+    pub async fn remove_transactions(&self, chain_id: u32) -> Result<()> {
+        sqlx::query!(r#"DELETE FROM transactions where chain_id = ?"#, chain_id)
+            .execute(self.pool())
+            .await?;
+
+        Ok(())
+    }
+
     pub async fn get_call_count(&self, chain_id: u32, from: Address, to: Address) -> Result<u32> {
         let from = format!("0x{:x}", from);
         let to = format!("0x{:x}", to);

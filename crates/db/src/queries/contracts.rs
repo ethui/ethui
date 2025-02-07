@@ -141,4 +141,12 @@ impl DbInner {
             })
             .collect())
     }
+
+    pub async fn remove_contracts(&self, chain_id: u32) -> Result<()> {
+        sqlx::query!(r#"DELETE FROM contracts where chain_id = ?"#, chain_id)
+            .execute(&self.pool)
+            .await?;
+
+        Ok(())
+    }
 }
