@@ -18,6 +18,7 @@ alloy-chains.workspace = true
 foundry-block-explorers.workspace = true
 sqlx.workspace = true
 tauri.workspace = true
+tokio.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true

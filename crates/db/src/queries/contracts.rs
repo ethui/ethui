@@ -128,4 +128,12 @@ impl DbInner {
             .map(|r| (r.chain_id as u32, Address::from_str(&r.address).unwrap()))
             .collect())
     }
+
+    pub async fn remove_contracts(&self, chain_id: u32) -> Result<()> {
+        sqlx::query!(r#"DELETE FROM contracts where chain_id = ?"#, chain_id)
+            .execute(&self.pool)
+            .await?;
+
+        Ok(())
+    }
 }
