@@ -126,12 +126,17 @@ interface IconProps {
 }
 
 function Icon({ account, tx }: IconProps) {
+  const isIncoming = tx.to?.toLowerCase() === account.toLowerCase();
+  const baseColorClass = isIncoming 
+    ? 'text-destructive dark:text-destructive' // red for outgoing
+    : 'text-[#22c55e] dark:text-[#4ade80]';   // green for incoming
+
   if (!tx.to) {
-    return <ReceiptText size={15} />;
-  } else if (tx.to.toLowerCase() === account.toLowerCase()) {
-    return <MoveDownLeft size={15} />;
+    return <ReceiptText size={15} />; // Contract deployment stays uncolored
+  } else if (isIncoming) {
+    return <MoveDownLeft size={15} className={baseColorClass} />;
   } else {
-    return <MoveUpRight size={15} />;
+    return <MoveUpRight size={15} className={baseColorClass} />;
   }
 }
 
