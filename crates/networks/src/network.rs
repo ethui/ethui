@@ -75,6 +75,12 @@ impl Network {
         format!("0x{:x}", self.chain_id)
     }
 
+    pub fn ws_url(&self) -> String {
+        self.ws_url
+            .clone()
+            .unwrap_or_else(|| self.http_url.clone().replace("http", "ws"))
+    }
+
     pub async fn is_dev(&self) -> bool {
         let provider = self.get_alloy_provider().await.unwrap();
         // TODO cache node_info for entire chain
@@ -113,7 +119,7 @@ impl Network {
     pub async fn reset_listener(&mut self) -> Result<()> {
         if self.is_dev().await {
             let http = Url::parse(&self.http_url)?;
-            let ws = Url::parse(&self.ws_url.clone().unwrap())?;
+            let ws = Url::parse(&self.ws_url())?;
             ethui_broadcast::reset_anvil_listener(self.chain_id, http, ws).await;
         }
 
