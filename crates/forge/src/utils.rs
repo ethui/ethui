@@ -8,7 +8,6 @@ use crate::{init::FORGE, Result};
 pub(crate) async fn update_db_contracts() -> Result<()> {
     let db = ethui_db::get();
 
-    dbg!("get incomplete");
     let contracts = db.get_incomplete_contracts().await?;
     let mut any_updates = false;
 
