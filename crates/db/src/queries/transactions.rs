@@ -160,7 +160,7 @@ impl DbInner {
 
     pub async fn remove_transactions(&self, chain_id: u32) -> Result<()> {
         sqlx::query!(r#"DELETE FROM transactions where chain_id = ?"#, chain_id)
-            .execute(&self.pool)
+            .execute(self.pool())
             .await?;
 
         Ok(())

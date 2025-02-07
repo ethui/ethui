@@ -28,8 +28,10 @@ async fn receiver() -> ! {
             use InternalMsg::*;
 
             if let NetworkRemoved(chain_id) = msg {
-                let _ = get().remove_contracts(chain_id).await;
-                let _ = get().remove_transactions(chain_id).await;
+                let db = get();
+
+                let _ = db.remove_contracts(chain_id).await;
+                let _ = db.remove_transactions(chain_id).await;
             }
         }
     }
