@@ -20,6 +20,9 @@ pub enum Error {
 
     #[error(transparent)]
     Rpc(#[from] RpcError<TransportErrorKind>),
+
+    #[error(transparent)]
+    DetectProxyError(#[from] ethui_proxy_detect::error::DetectProxyError),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

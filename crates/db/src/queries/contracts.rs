@@ -104,10 +104,12 @@ impl DbInner {
         if let Some(proxy_for) = proxy_for {
             sqlx::query!(
                 r#" INSERT INTO contracts (address, chain_id, proxied_by)
-                VALUES (?,?,?)"#,
+                VALUES (?,?,?)
+                ON CONFLICT(address, chain_id) DO UPDATE SET proxied_by=?"#,
                 proxy_for,
                 chain_id,
                 address,
+                address
             )
             .execute(self.pool())
             .await?;

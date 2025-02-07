@@ -68,6 +68,8 @@ async fn expand_trace(
             })),
             _,
         ) => {
+            let proxy_type = ethui_proxy_detect::detect_proxy(address, &provider).await?;
+
             vec![
                 Tx {
                     hash: trace.transaction_hash.unwrap(),
@@ -93,6 +95,7 @@ async fn expand_trace(
                     address,
                     code: provider.get_code_at(address).await.ok(),
                     block_number,
+                    proxy_for: proxy_type.map(|proxy| proxy.implementation()),
                 }
                 .into(),
             ]

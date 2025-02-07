@@ -14,7 +14,7 @@ impl DbInner {
                 }
 
                 Event::ContractDeployed(ref tx) => {
-                    self.insert_contract_with_abi(chain_id, tx.address, None, None, None)
+                    self.insert_contract_with_abi(chain_id, tx.address, None, None, tx.proxy_for)
                         .await?;
                 }
 
