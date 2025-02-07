@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use alloy::json_abi::JsonAbi;
+use alloy::{json_abi::JsonAbi, primitives::Bytes};
 use ethui_types::{Address, Contract, ContractWithAbi};
 use tracing::instrument;
 
@@ -79,24 +79,28 @@ impl DbInner {
         &self,
         chain_id: u32,
         address: Address,
+        code: Option<&Bytes>,
         abi: Option<String>,
         name: Option<String>,
         proxy_for: Option<Address>,
     ) -> Result<()> {
         let address = format!("0x{:x}", address);
         let proxy_for = proxy_for.map(|p| format!("0x{:x}", p));
+        let code = code.map(|c| format!("0x{:x}", c));
 
         sqlx::query!(
-            r#" INSERT INTO contracts (address, chain_id, abi, name, proxy_for)
-                VALUES (?,?,?,?,?)
-                ON CONFLICT(address, chain_id) DO UPDATE SET name=?, abi=?"#,
+            r#" INSERT INTO contracts (address, chain_id, code, abi, name, proxy_for)
+                VALUES (?,?,?,?,?,?)
+                ON CONFLICT(address, chain_id) DO UPDATE SET name=?, abi=?, code=?"#,
             address,
             chain_id,
+            code,
             abi,
             name,
             proxy_for,
             name,
-            abi
+            abi,
+            code
         )
         .execute(self.pool())
         .await?;
@@ -118,16 +122,23 @@ impl DbInner {
         Ok(())
     }
 
-    pub async fn get_incomplete_contracts(&self) -> Result<Vec<(u32, Address)>> {
+    pub async fn get_incomplete_contracts(&self) -> Result<Vec<(u32, Address, Option<Bytes>)>> {
         let rows = sqlx::query!(
-            r#"SELECT address, chain_id FROM contracts WHERE name IS NULL or ABI IS NULL"#,
+            r#"SELECT address, chain_id, code FROM contracts WHERE name IS NULL or ABI IS NULL"#,
         )
         .fetch_all(self.pool())
         .await?;
 
         Ok(rows
             .into_iter()
-            .map(|r| (r.chain_id as u32, Address::from_str(&r.address).unwrap()))
+            .map(|r| {
+                (
+                    r.chain_id as u32,
+                    Address::from_str(&r.address).unwrap(),
+                    r.code
+                        .map(|c| Bytes::from_str(c.trim_start_matches("0x")).unwrap()),
+                )
+            })
             .collect())
     }
 }

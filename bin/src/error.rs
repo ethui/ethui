@@ -1,3 +1,5 @@
+use alloy::transports::{RpcError, TransportErrorKind};
+
 #[derive(thiserror::Error, Debug)]
 pub enum AppError {
     #[error(transparent)]
@@ -29,6 +31,9 @@ pub enum AppError {
 
     #[error("App already running")]
     NamedLock(#[from] named_lock::Error),
+
+    #[error(transparent)]
+    Rpc(#[from] RpcError<TransportErrorKind>),
 }
 
 pub type AppResult<T> = std::result::Result<T, AppError>;

@@ -14,8 +14,15 @@ impl DbInner {
                 }
 
                 Event::ContractDeployed(ref tx) => {
-                    self.insert_contract_with_abi(chain_id, tx.address, None, None, tx.proxy_for)
-                        .await?;
+                    self.insert_contract_with_abi(
+                        chain_id,
+                        tx.address,
+                        tx.code.as_ref(),
+                        None,
+                        None,
+                        tx.proxy_for,
+                    )
+                    .await?;
                 }
 
                 // TODO: what to do if we don't know this contract, and don't have balances yet? (e.g. in a fork)
