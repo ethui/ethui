@@ -3549,8 +3549,8 @@ dependencies = [
 
 [[package]]
 name = "ethui-proxy-detect"
-version = "0.1.0"
-source = "git+https://github.com/ethui/proxy-detect?rev=4110990#41109908393e7887d720af71886741087ea6f0cd"
+version = "0.2.0"
+source = "git+https://github.com/ethui/proxy-detect?rev=6c95b77#6c95b77e03527f3242994aaf170d802eddd9e7f6"
 dependencies = [
  "alloy",
  "thiserror 2.0.11",
@@ -3663,6 +3663,7 @@ dependencies = [
  "ethui-abis",
  "ethui-broadcast",
  "ethui-db",
+ "ethui-proxy-detect",
  "ethui-types",
  "futures",
  "once_cell",

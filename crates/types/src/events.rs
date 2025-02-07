@@ -63,6 +63,7 @@ pub struct ContractDeployed {
     pub address: Address,
     pub code: Option<Bytes>,
     pub block_number: Option<u64>,
+    pub proxy_for: Option<Address>,
 }
 
 impl From<ContractDeployed> for Event {

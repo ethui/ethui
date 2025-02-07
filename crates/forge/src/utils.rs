@@ -1,9 +1,9 @@
 use alloy::providers::Provider as _;
 use ethui_networks::Networks;
 use ethui_types::{GlobalState, UINotify};
-use tracing::trace;
+use tracing::{error, trace};
 
-use crate::{init::FORGE, Error, Result};
+use crate::{init::FORGE, Result};
 
 pub(crate) async fn update_db_contracts() -> Result<()> {
     let db = ethui_db::get();
@@ -14,11 +14,23 @@ pub(crate) async fn update_db_contracts() -> Result<()> {
     for (chain_id, address) in contracts.into_iter() {
         let code = {
             let networks = Networks::read().await;
-            let network = networks
-                .get_network(chain_id)
-                .ok_or(Error::InvalidChainId)?;
+            // instead of failing we should just skip
+            let network = match networks.get_network(chain_id) {
+                Some(network) => network,
+                None => {
+                    error!("failed to get network. ignoring");
+                    continue;
+                }
+            };
+
             let provider = network.get_alloy_provider().await?;
-            provider.get_code_at(address).await?
+            match provider.get_code_at(address).await {
+                Ok(code) => code,
+                Err(_e) => {
+                    error!("failed to get code. ignoring");
+                    continue;
+                }
+            }
         };
 
         if code.len() == 0 {
