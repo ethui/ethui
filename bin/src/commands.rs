@@ -1,3 +1,4 @@
+use alloy::providers::Provider as _;
 use ethui_db::utils::{fetch_etherscan_abi, fetch_etherscan_contract_name};
 use ethui_db::Db;
 use ethui_networks::commands::networks_is_dev;
@@ -40,6 +41,7 @@ pub async fn add_contract(
         .ok_or(AppError::InvalidNetwork(chain_id as u32))?;
     let provider = network.get_alloy_provider().await?;
 
+    let code = provider.get_code_at(address).await?;
     let proxy = ethui_proxy_detect::detect_proxy(address, &provider).await?;
 
     let (name, abi) = if networks_is_dev().await? {
@@ -59,7 +61,7 @@ pub async fn add_contract(
 
     let proxy_for = proxy.map(|proxy| proxy.implementation());
 
-    db.insert_contract_with_abi(chain_id as u32, address, abi, name, proxy_for)
+    db.insert_contract_with_abi(chain_id as u32, address, Some(&code), abi, name, proxy_for)
         .await?;
 
     if proxy_for.is_some() {

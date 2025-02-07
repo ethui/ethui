@@ -44,10 +44,10 @@ impl Default for Forge {
 }
 
 impl Forge {
-    pub(crate) fn get_abi_for(&self, code: Bytes) -> Option<Abi> {
+    pub(crate) fn get_abi_for(&self, code: &Bytes) -> Option<Abi> {
         self.abis_by_path
             .values()
-            .find(|abi| diff_score(&abi.code, &code) < FUZZ_DIFF_THRESHOLD)
+            .find(|abi| diff_score(&abi.code, code) < FUZZ_DIFF_THRESHOLD)
             .cloned()
     }
 
