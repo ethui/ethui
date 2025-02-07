@@ -14,11 +14,7 @@ pub(crate) async fn update_db_contracts() -> Result<()> {
     for (chain_id, address, code) in contracts.into_iter() {
         let code: Option<Bytes> = match code {
             Some(code) if code.len() > 0 => Some(code),
-            _ => {
-                dbg!(code);
-                dbg!(address);
-                get_code(chain_id, address).await.ok()
-            }
+            _ => get_code(chain_id, address).await.ok(),
         };
 
         let code = match code {
