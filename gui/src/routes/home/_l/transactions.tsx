@@ -126,12 +126,16 @@ interface IconProps {
 }
 
 function Icon({ account, tx }: IconProps) {
+  const colorClass = tx.status === 0 
+    ? 'text-destructive dark:text-destructive'     // red for failed/reverted
+    : 'text-[#22c55e] dark:text-[#4ade80]';       // green for successful
+
   if (!tx.to) {
     return <ReceiptText size={15} />;
   } else if (tx.to.toLowerCase() === account.toLowerCase()) {
-    return <MoveDownLeft size={15} />;
+    return <MoveDownLeft size={15} className={colorClass} />;
   } else {
-    return <MoveUpRight size={15} />;
+    return <MoveUpRight size={15} className={colorClass} />;
   }
 }
 
