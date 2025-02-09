@@ -27,7 +27,6 @@
   "references": [
     { "path": "./gui" },
     { "path": "./packages/form" },
-    { "path": "./packages/abiparse" },
-    { "path": "./packages/ui" }
+    { "path": "./packages/abiparse" }
   ]
 }

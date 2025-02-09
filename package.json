@@ -4,12 +4,12 @@
   "license": "MIT",
   "description": "An Ethereum toolkit",
   "scripts": {
+    "dev": "yarn run app:dev",
     "app:dev": "yarn tauri dev --config bin/tauri.dev.conf.json --features debug --target $(yarn run rust-target)",
     "app:build": "yarn tauri build --target $(yarn run rust-target)",
     "rust-target": "rustc -vV | sed -n 's/host: //p'",
     "gui:build": "yarn workspace @ethui/gui build",
     "gui:devtools": "yarn workspace @ethui/gui devtools",
-    "storybook": "yarn workspace @ethui/ui storybook",
     "lint": "yarn lint:biome && yarn lint:tsc && yarn workspace @ethui/gui run lint",
     "lint:biome": "biome check .",
     "lint:tsc": "yarn workspaces foreach --all --parallel run tsc --noEmit",
@@ -23,7 +23,6 @@
     "packages/data",
     "packages/abiparse",
     "packages/form",
-    "packages/ui",
     "gui"
   ],
   "devDependencies": {
