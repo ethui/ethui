@@ -11,6 +11,8 @@
       "packages/**/dist/**",
       "packages/**/*.generated.ts",
       "gui/dist",
+      "gui/vite.config.ts.timestamp-*",
+      "dev-data",
       "bin/gen",
       "target"
     ]
