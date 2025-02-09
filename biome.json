@@ -10,7 +10,6 @@
       "packages/data/**/*.json",
       "packages/**/dist/**",
       "packages/**/*.generated.ts",
-      "extension/dist",
       "gui/dist",
       "bin/gen",
       "target"
