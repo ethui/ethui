@@ -122,53 +122,8 @@ jobs:
           releaseId: ${{ needs.setup.outputs.release_id }}
           args: ${{ matrix.args }}
 
-  # build extension
-  # upload to draft release
-  # release to mozilla and google stores
-  extension:
-    needs: [setup, app]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - run: npm install -g yarn
-
-      - uses: actions/setup-node@v4
-        with:
-          cache: "yarn"
-          node-version: "22"
-
-      - name: Install dependencies
-        run: yarn workspace @ethui/extension install
-
-      - name: Create chrome bundle
-        run: yarn workspace @ethui/extension build --target chrome -v ${{ needs.setup.outputs.version }}
-
-      - name: Create firefox bundle
-        run: yarn workspace @ethui/extension build --target firefox -v ${{ needs.setup.outputs.version }}
-
-      - name: Upload to release
-        run: gh release upload ${{ needs.setup.outputs.tag }} ./extension/dist/*.{crx,xpi}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Submit to Google
-        run: npx chrome-webstore-upload-cli@2 upload --source ./extension/dist/chrome --auto-publish
-        continue-on-error: true
-        env:
-          EXTENSION_ID: ${{ secrets.CHROME_WEB_EXT_ID }}
-          CLIENT_ID: ${{ secrets.CHROME_WEB_EXT_CLIENT_ID }}
-          CLIENT_SECRET: ${{ secrets.CHROME_WEB_EXT_CLIENT_SECRET }}
-          REFRESH_TOKEN: ${{ secrets.CHROME_WEB_EXT_REFRESH_TOKEN }}
-
-      - name: Submit to Mozilla
-        run: yarn workspace @ethui/extension run web-ext sign --channel listed --source-dir ./dist/firefox
-        env:
-          WEB_EXT_API_KEY: ${{ secrets.FIREFOX_WEB_EXT_API_KEY }}
-          WEB_EXT_API_SECRET: ${{ secrets.FIREFOX_WEB_EXT_API_SECRET }}
-
   publish:
-    needs: [setup, extension, app]
+    needs: [setup, app]
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4

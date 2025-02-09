@@ -31,7 +31,6 @@ deps() {
   echo -e "\nSetting up dev environment"
   run_sqlx_setup
   run_yarn_install
-  run_ext_build
 }
 
 install_dep() {
@@ -176,20 +175,6 @@ run_yarn_install() {
   yarn install > /dev/null 2>&1
   printf_ansi "\r[✔] " $ANSI_TEXT_GREEN
   echo -e "Yarn install done"
-}
-
-run_ext_build() {
-  printf_ansi "[ ] " $ANSI_TEXT_YELLOW
-  echo -n "Extension (Firefox)..."
-  yarn run ext:build --target firefox-dev > /dev/null 2>&1
-  printf_ansi "\r[✔] " $ANSI_TEXT_GREEN
-  echo -e "Extension (Firefox) done"
-
-  printf_ansi "[ ] " $ANSI_TEXT_YELLOW
-  echo -n "Extension (Google Chrome)..."
-  yarn run ext:build --target chrome-dev > /dev/null 2>&1
-  printf_ansi "\r[✔] " $ANSI_TEXT_GREEN
-  echo -e "Extension (Google Chrome) done"
 }
 
 banner(){

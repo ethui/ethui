@@ -4,7 +4,7 @@ edition = "2021"
 license-file = "./LICENSE"
 homepage = "https://github.com/ethui"
 repository = "https://github.com/ethui/ethui"
-exclude = [".github/", "extension/"]
+exclude = [".github/"]
 authors = ["Miguel Palhas <mpalhas@gmail.com>"]
 
 [workspace]

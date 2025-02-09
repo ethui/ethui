@@ -10,10 +10,6 @@
     "gui:build": "yarn workspace @ethui/gui build",
     "gui:devtools": "yarn workspace @ethui/gui devtools",
     "storybook": "yarn workspace @ethui/ui storybook",
-    "ext:dev": "yarn workspace @ethui/extension dev",
-    "ext:watch:chrome": "yarn workspace @ethui/extension watch:chrome",
-    "ext:watch:firefox": "yarn workspace @ethui/extension watch:firefox",
-    "ext:build": "yarn workspace @ethui/extension build \"$@\"",
     "lint": "yarn lint:biome && yarn lint:tsc && yarn workspace @ethui/gui run lint",
     "lint:biome": "biome check .",
     "lint:tsc": "yarn workspaces foreach --all --parallel run tsc --noEmit",
@@ -23,7 +19,6 @@
     "test": "yarn workspaces foreach --all run test"
   },
   "workspaces": [
-    "extension",
     "packages/types",
     "packages/data",
     "packages/abiparse",
