@@ -122,6 +122,7 @@ jobs:
           releaseId: ${{ needs.setup.outputs.release_id }}
           args: ${{ matrix.args }}
 
+<<<<<<< Updated upstream
   # build extension
   # upload to draft release
   # release to mozilla and google stores
@@ -167,6 +168,8 @@ jobs:
           WEB_EXT_API_KEY: ${{ secrets.FIREFOX_WEB_EXT_API_KEY }}
           WEB_EXT_API_SECRET: ${{ secrets.FIREFOX_WEB_EXT_API_SECRET }}
 
+=======
+>>>>>>> Stashed changes
   publish:
     needs: [setup, extension, app]
     runs-on: ubuntu-20.04

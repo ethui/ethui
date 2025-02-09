@@ -96,13 +96,13 @@ await $`cp icons/symbol-{white,black,purple}.svg gui/public/logo/`;
 for (const color of ["purple", "white", "black"]) {
   for (const attention of ["", "-attention"]) {
     const svg = `icons/symbol-${color}${attention}.svg`;
-    const svgDest = `extension/src/public/icons/ethui-${color}${attention}.svg`;
+    const svgDest = `../extension/src/public/icons/ethui-${color}${attention}.svg`;
     await $`cp ${svg} ${svgDest}`;
 
     for (const size of [16, 48, 96, 128]) {
       const png = `icons/symbol-${color}${attention}-${size}.png`;
       console.log(`[extension] ${png}`);
-      await $`magick ${svg} -resize ${size}x extension/src/public/icons/ethui-${color}${attention}-${size}.png`;
+      await $`magick ${svg} -resize ${size}x ../extension/src/public/icons/ethui-${color}${attention}-${size}.png`;
     }
   }
 }

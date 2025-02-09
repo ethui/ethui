@@ -8,6 +8,7 @@
 [demo]: https://github.com/ethui/demo
 [anvil]: https://book.getfoundry.sh/anvil/
 [mise]: https://mise.jdx.dev
+[extension-repo]: https://github.com/ethui/extension
 
 We welcome all kinds of contributions:
 
@@ -50,11 +51,10 @@ git clone git@github.com:ethui/ethui && cd ethui
 
 **3. Install the extension**
 
-1. Open Google Chrome
+1. Setup the extension repo
 2. go to `chrome://extensions`
 3. enable `Developer mode` (upper right corner)
-4. Load unpacked -> choose the `ethui/extension/dist/chrome-dev` directory
-5. ethui should now be running
+4. Load unpacked -> choose the `<extension-repo>/dist/chrome-dev` directory
 
 **4. Start the development environment**
 
