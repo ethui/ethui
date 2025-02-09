@@ -65,6 +65,9 @@ async fn worker() -> ! {
             // trigger an update
             match msg {
                 ForgeAbiFound | ContractFound => {
+                    // debounce, if there are other messages in the queue, we don't actually care
+                    // about them since they'll just trigger a repeated call here
+                    rx.resubscribe();
                     utils::update_db_contracts().await.unwrap();
                     time::sleep(Duration::from_secs(1)).await;
                 }
