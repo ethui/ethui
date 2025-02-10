@@ -1,8 +1,0 @@
-procs:
-  app:
-    cmd: ["yarn", "run", "app:dev"]
-  storybook:
-    cmd: ["yarn", "run", "storybook"]
-
-env:
-  CARGO_TERM_COLOR: always

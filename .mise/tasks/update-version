@@ -5,6 +5,5 @@ version=$1
 sed -i 's/^version\s*=.*/version = "'$version'"/' Cargo.toml
 sed -i 's/.*"version":.*/  "version": "'$version'",/' package.json
 sed -i 's/.*"version":.*/  "version": "'$version'",/' gui/package.json
-sed -i 's/.*"version":.*/  "version": "'$version'",/' extension/package.json
 
 git diff

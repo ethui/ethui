@@ -59,7 +59,7 @@ git clone git@github.com:ethui/ethui && cd ethui
 **4. Start the development environment**
 
 ```sh
-mprocs
+yarn run dev
 ```
 
 ## Code of Conduct

@@ -12,6 +12,6 @@
       "#/*": ["./src/*"]
     }
   },
-  "include": ["./src", "vite.config.ts", "../packages/react/@types"],
+  "include": ["./src", "vite.config.ts"],
   "exclude": ["dist", "node_modules", "../node_modules"]
 }
