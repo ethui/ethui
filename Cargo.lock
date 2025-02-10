@@ -3749,7 +3749,7 @@ dependencies = [
  "tauri",
  "thiserror 1.0.69",
  "tokio",
- "tokio-tungstenite 0.24.0",
+ "tokio-tungstenite 0.26.1",
  "tracing",
  "tungstenite 0.26.1",
  "url",

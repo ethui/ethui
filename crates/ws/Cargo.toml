@@ -27,5 +27,5 @@ url.workspace = true
 futures.workspace = true
 async-trait.workspace = true
 
-tokio-tungstenite = "0.24"
+tokio-tungstenite = "0.26"
 tungstenite = "0.26"
