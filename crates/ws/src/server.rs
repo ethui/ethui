@@ -87,7 +87,7 @@ async fn handle_connection(
             Some(msg) = ws_receiver.next() => {
 
                 match msg {
-                    Ok(Message::Text(msg)) => handle_message(msg, &handler, &mut ws_sender, &mut liveness_checker).await?,
+                    Ok(Message::Text(msg)) => handle_message(msg.to_string(), &handler, &mut ws_sender, &mut liveness_checker).await?,
                     Ok(Message::Close(_)) => break,
                     Ok(_) => continue,
                     Err(e) => warn!("websocket error: {}", e),
@@ -109,7 +109,7 @@ async fn handle_connection(
 
             // send a ping every 1 seconds
             _ = interval.tick() => {
-                ws_sender.send(Message::Text("ping".to_string())).await?;
+                ws_sender.send(Message::Text("ping".into())).await?;
             }
         }
     }
