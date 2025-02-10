@@ -23,7 +23,11 @@ export function QuickWalletSelect() {
   if (!wallets || !currentWallet) return <>Loading</>;
 
   return (
-    <Select value={currentWallet.name} defaultValue={currentWallet.name} onValueChange={handleChange}>
+    <Select
+      value={currentWallet.name}
+      defaultValue={currentWallet.name}
+      onValueChange={handleChange}
+    >
       <SelectTrigger>
         <SelectValue />
       </SelectTrigger>
