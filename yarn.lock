@@ -1238,7 +1238,7 @@ __metadata:
     "@types/react-dom": "npm:^18.3.5"
     "@types/react-infinite-scroller": "npm:^1.2.5"
     "@uidotdev/usehooks": "npm:^2.4.1"
-    "@vitejs/plugin-react-swc": "npm:^3.7.2"
+    "@vitejs/plugin-react-swc": "npm:^3.8.0"
     abitype: "npm:^1.0.8"
     autoprefixer: "npm:^10.4.20"
     clsx: "npm:^2.1.1"
@@ -3157,92 +3157,92 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core-darwin-arm64@npm:1.7.35":
-  version: 1.7.35
-  resolution: "@swc/core-darwin-arm64@npm:1.7.35"
+"@swc/core-darwin-arm64@npm:1.10.15":
+  version: 1.10.15
+  resolution: "@swc/core-darwin-arm64@npm:1.10.15"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@swc/core-darwin-x64@npm:1.7.35":
-  version: 1.7.35
-  resolution: "@swc/core-darwin-x64@npm:1.7.35"
+"@swc/core-darwin-x64@npm:1.10.15":
+  version: 1.10.15
+  resolution: "@swc/core-darwin-x64@npm:1.10.15"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm-gnueabihf@npm:1.7.35":
-  version: 1.7.35
-  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.7.35"
+"@swc/core-linux-arm-gnueabihf@npm:1.10.15":
+  version: 1.10.15
+  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.10.15"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm64-gnu@npm:1.7.35":
-  version: 1.7.35
-  resolution: "@swc/core-linux-arm64-gnu@npm:1.7.35"
+"@swc/core-linux-arm64-gnu@npm:1.10.15":
+  version: 1.10.15
+  resolution: "@swc/core-linux-arm64-gnu@npm:1.10.15"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm64-musl@npm:1.7.35":
-  version: 1.7.35
-  resolution: "@swc/core-linux-arm64-musl@npm:1.7.35"
+"@swc/core-linux-arm64-musl@npm:1.10.15":
+  version: 1.10.15
+  resolution: "@swc/core-linux-arm64-musl@npm:1.10.15"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@swc/core-linux-x64-gnu@npm:1.7.35":
-  version: 1.7.35
-  resolution: "@swc/core-linux-x64-gnu@npm:1.7.35"
+"@swc/core-linux-x64-gnu@npm:1.10.15":
+  version: 1.10.15
+  resolution: "@swc/core-linux-x64-gnu@npm:1.10.15"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@swc/core-linux-x64-musl@npm:1.7.35":
-  version: 1.7.35
-  resolution: "@swc/core-linux-x64-musl@npm:1.7.35"
+"@swc/core-linux-x64-musl@npm:1.10.15":
+  version: 1.10.15
+  resolution: "@swc/core-linux-x64-musl@npm:1.10.15"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@swc/core-win32-arm64-msvc@npm:1.7.35":
-  version: 1.7.35
-  resolution: "@swc/core-win32-arm64-msvc@npm:1.7.35"
+"@swc/core-win32-arm64-msvc@npm:1.10.15":
+  version: 1.10.15
+  resolution: "@swc/core-win32-arm64-msvc@npm:1.10.15"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@swc/core-win32-ia32-msvc@npm:1.7.35":
-  version: 1.7.35
-  resolution: "@swc/core-win32-ia32-msvc@npm:1.7.35"
+"@swc/core-win32-ia32-msvc@npm:1.10.15":
+  version: 1.10.15
+  resolution: "@swc/core-win32-ia32-msvc@npm:1.10.15"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
-"@swc/core-win32-x64-msvc@npm:1.7.35":
-  version: 1.7.35
-  resolution: "@swc/core-win32-x64-msvc@npm:1.7.35"
+"@swc/core-win32-x64-msvc@npm:1.10.15":
+  version: 1.10.15
+  resolution: "@swc/core-win32-x64-msvc@npm:1.10.15"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"@swc/core@npm:^1.7.26":
-  version: 1.7.35
-  resolution: "@swc/core@npm:1.7.35"
+"@swc/core@npm:^1.10.15":
+  version: 1.10.15
+  resolution: "@swc/core@npm:1.10.15"
   dependencies:
-    "@swc/core-darwin-arm64": "npm:1.7.35"
-    "@swc/core-darwin-x64": "npm:1.7.35"
-    "@swc/core-linux-arm-gnueabihf": "npm:1.7.35"
-    "@swc/core-linux-arm64-gnu": "npm:1.7.35"
-    "@swc/core-linux-arm64-musl": "npm:1.7.35"
-    "@swc/core-linux-x64-gnu": "npm:1.7.35"
-    "@swc/core-linux-x64-musl": "npm:1.7.35"
-    "@swc/core-win32-arm64-msvc": "npm:1.7.35"
-    "@swc/core-win32-ia32-msvc": "npm:1.7.35"
-    "@swc/core-win32-x64-msvc": "npm:1.7.35"
+    "@swc/core-darwin-arm64": "npm:1.10.15"
+    "@swc/core-darwin-x64": "npm:1.10.15"
+    "@swc/core-linux-arm-gnueabihf": "npm:1.10.15"
+    "@swc/core-linux-arm64-gnu": "npm:1.10.15"
+    "@swc/core-linux-arm64-musl": "npm:1.10.15"
+    "@swc/core-linux-x64-gnu": "npm:1.10.15"
+    "@swc/core-linux-x64-musl": "npm:1.10.15"
+    "@swc/core-win32-arm64-msvc": "npm:1.10.15"
+    "@swc/core-win32-ia32-msvc": "npm:1.10.15"
+    "@swc/core-win32-x64-msvc": "npm:1.10.15"
     "@swc/counter": "npm:^0.1.3"
-    "@swc/types": "npm:^0.1.13"
+    "@swc/types": "npm:^0.1.17"
   peerDependencies:
     "@swc/helpers": "*"
   dependenciesMeta:
@@ -3269,7 +3269,7 @@ __metadata:
   peerDependenciesMeta:
     "@swc/helpers":
       optional: true
-  checksum: aae11f2f311f16a21348e33768debe2295a7e0a04f4b37ffbbb15cf5303e0cd08cf0c72661b72f8e4e33cf530d82c15bb2cef090548c65c4bf3ab3854724465b
+  checksum: 281c76e3f84465cbccd4782d8f0fbaff964ed1121cda444d1ae707d58ae7f20046e5b03b3d677f945148604bba15aac79093bcb5a1a260e79dbc4a2e2c7ec993
   languageName: node
   linkType: hard
 
@@ -3280,12 +3280,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/types@npm:^0.1.13":
-  version: 0.1.13
-  resolution: "@swc/types@npm:0.1.13"
+"@swc/types@npm:^0.1.17":
+  version: 0.1.17
+  resolution: "@swc/types@npm:0.1.17"
   dependencies:
     "@swc/counter": "npm:^0.1.3"
-  checksum: f85a850dead981ca9a26ae366529f2b383fa26324ffcbbee46d7b48399e6ed36d6a6a3d55398f17f87c65f550e28d642a35877d40f389c78765a31ecdfc88bd9
+  checksum: 29f5c8933a16042956f1adb7383e836ed7646cbf679826e78b53fdd0c08e8572cb42152e527b6b530a9bd1052d33d0972f90f589761ccd252c12652c9b7a72fc
   languageName: node
   linkType: hard
 
@@ -3809,14 +3809,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitejs/plugin-react-swc@npm:^3.7.2":
-  version: 3.7.2
-  resolution: "@vitejs/plugin-react-swc@npm:3.7.2"
+"@vitejs/plugin-react-swc@npm:^3.8.0":
+  version: 3.8.0
+  resolution: "@vitejs/plugin-react-swc@npm:3.8.0"
   dependencies:
-    "@swc/core": "npm:^1.7.26"
+    "@swc/core": "npm:^1.10.15"
   peerDependencies:
     vite: ^4 || ^5 || ^6
-  checksum: 9b9a5e0540791ba96a9fe4e8b8146ab274edcc730315535705f20126d6dfaffe72ae474bac9904ce841976e1959b6ecffd047bb2f0b7abf4d85aae7fbfdd00ab
+  checksum: ad676290907a9330825c2270fb04bd2fcbdbf402317230c8985765119727b6d5657d777ba55b6d1300efb818698959917b6c639b90dd615dfaf0654dc07a9df8
   languageName: node
   linkType: hard
 
