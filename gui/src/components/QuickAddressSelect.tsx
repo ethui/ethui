@@ -28,7 +28,7 @@ export function QuickAddressSelect() {
 
   return (
     <Select
-      key={currentWallet.name}
+      key={getCurrentPath(currentWallet, addresses)}
       defaultValue={getCurrentPath(currentWallet, addresses)}
       onValueChange={setCurrentAddress}
     >
