@@ -19,7 +19,7 @@ const store: StateCreator<Store> = (set) => ({
   settings: undefined,
   actions: ["Enable", "Disable"].map((mode) => ({
     id: `${actionId}/${mode}`,
-    text: mode,
+    text: `${mode} fast mode`,
     run: () => {
       invoke("settings_set_fast_mode", { mode: mode === "Enable" });
     },
