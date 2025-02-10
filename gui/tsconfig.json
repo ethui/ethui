@@ -13,7 +13,5 @@
     }
   },
   "include": ["./src", "vite.config.ts"],
-  "exclude": ["dist", "node_modules", "../node_modules"],
-
-  "references": [{ "path": "../node_modules/@ethui/ui" }]
+  "exclude": ["dist", "node_modules", "../node_modules"]
 }

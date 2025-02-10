@@ -5,7 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "@ethui/abiparse": "*",
-    "@ethui/ui": "0.0.7",
+    "@ethui/ui": "0.0.8",
     "nearly": "^1.8.1",
     "viem": "^2.22.21"
   },

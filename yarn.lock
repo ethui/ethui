@@ -1195,7 +1195,7 @@ __metadata:
   resolution: "@ethui/form@workspace:packages/form"
   dependencies:
     "@ethui/abiparse": "npm:*"
-    "@ethui/ui": "npm:0.0.7"
+    "@ethui/ui": "npm:0.0.8"
     "@types/react": "npm:^18.3.18"
     nearly: "npm:^1.8.1"
     react: "npm:^18.3.1"
@@ -1216,7 +1216,7 @@ __metadata:
     "@ethui/data": "npm:*"
     "@ethui/form": "npm:*"
     "@ethui/types": "npm:*"
-    "@ethui/ui": "npm:0.0.7"
+    "@ethui/ui": "npm:0.0.8"
     "@fontsource/source-code-pro": "npm:^5.1.1"
     "@hookform/resolvers": "npm:^3.10.0"
     "@radix-ui/react-avatar": "npm:^1.1.2"
@@ -1298,9 +1298,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@ethui/ui@npm:0.0.7":
-  version: 0.0.7
-  resolution: "@ethui/ui@npm:0.0.7"
+"@ethui/ui@npm:0.0.8":
+  version: 0.0.8
+  resolution: "@ethui/ui@npm:0.0.8"
   dependencies:
     "@fontsource/source-code-pro": "npm:^5.1.1"
     "@hookform/resolvers": "npm:^3.10.0"
@@ -1339,7 +1339,7 @@ __metadata:
     zustand: "npm:^5.0.3"
   peerDependencies:
     "@tanstack/react-query": ^5.21.4
-  checksum: 3e8507f668c5a42a36171f0b9395c4f5e46c1d8d86fb6d00caac6b6ffc65bbfd9f4dfb6dddb247ebe19464ff6e35e500ea2bdbf3089d0d6f94c21259ec7762eb
+  checksum: 3eda7689bd8aabe70fd63e0efc2a740317a7f6ac9a51bf022eba35c5b44e497d15dbae91f83ba1623e29730122b56970a6df2d7839d35ad59cef1229155d8e17
   languageName: node
   linkType: hard
 

@@ -27,7 +27,6 @@
   "references": [
     { "path": "./gui" },
     { "path": "./packages/form" },
-    { "path": "./packages/abiparse" },
-    { "path": "node_modules/@ethui/ui" }
+    { "path": "./packages/abiparse" }
   ]
 }
