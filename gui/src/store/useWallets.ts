@@ -73,10 +73,10 @@ const store: StateCreator<Store> = (set, get) => ({
 
     const actions = info.flatMap(({ wallet, addresses }) => {
       return [
-        ...(addresses || []).map(({ key, address }) => {
+        ...(addresses || []).map(({ key, address, alias }) => {
           return {
             id: `${actionId}/${wallet.name}/${key}`,
-            text: `${wallet.name}/${address}`,
+            text: `${wallet.name}/${alias || address}`,
             run: () => {
               get().setCurrentWallet(wallet.name);
               get().setCurrentAddress(key);
