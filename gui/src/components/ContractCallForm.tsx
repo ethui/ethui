@@ -140,12 +140,12 @@ function AbiItemFormWithSubmit({
       }
     } else {
       try {
-        if (item === "raw") {
-          const result = await invoke<Hash>("rpc_send_transaction", { params });
-          setResult({ write: result });
-        } else if (item === "rawCall") {
+        if (item === "rawCall") {
           const result = await invoke<Hash>("rpc_eth_call", { params });
           setResult({ read: result });
+        } else {
+          const result = await invoke<Hash>("rpc_send_transaction", { params });
+          setResult({ write: result });
         }
       } catch (_err) {
         setLoading(false);
