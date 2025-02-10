@@ -1195,7 +1195,7 @@ __metadata:
   resolution: "@ethui/form@workspace:packages/form"
   dependencies:
     "@ethui/abiparse": "npm:*"
-    "@ethui/ui": "https://github.com/ethui/ui"
+    "@ethui/ui": "npm:0.0.7"
     "@types/react": "npm:^18.3.18"
     nearly: "npm:^1.8.1"
     react: "npm:^18.3.1"
@@ -1216,7 +1216,7 @@ __metadata:
     "@ethui/data": "npm:*"
     "@ethui/form": "npm:*"
     "@ethui/types": "npm:*"
-    "@ethui/ui": "file:../../ui"
+    "@ethui/ui": "npm:0.0.7"
     "@fontsource/source-code-pro": "npm:^5.1.1"
     "@hookform/resolvers": "npm:^3.10.0"
     "@radix-ui/react-avatar": "npm:^1.1.2"
@@ -1298,9 +1298,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@ethui/ui@file:../../ui::locator=%40ethui%2Fgui%40workspace%3Agui":
-  version: 0.0.0
-  resolution: "@ethui/ui@file:../../ui#../../ui::hash=13db24&locator=%40ethui%2Fgui%40workspace%3Agui"
+"@ethui/ui@npm:0.0.7":
+  version: 0.0.7
+  resolution: "@ethui/ui@npm:0.0.7"
   dependencies:
     "@fontsource/source-code-pro": "npm:^5.1.1"
     "@hookform/resolvers": "npm:^3.10.0"
@@ -1339,52 +1339,7 @@ __metadata:
     zustand: "npm:^5.0.3"
   peerDependencies:
     "@tanstack/react-query": ^5.21.4
-  checksum: e3db773a2cfffde7ddbcb65f4020a90f145490e1c380c375383c43ee3b75c678deb3f4a65a7d48a015350fb76c67b90c9da2d93e09bb56b7768d1008215a4169
-  languageName: node
-  linkType: hard
-
-"@ethui/ui@https://github.com/ethui/ui":
-  version: 0.0.0
-  resolution: "@ethui/ui@https://github.com/ethui/ui.git#commit=d88764c2216d022fb3f020748097522ca08c90cb"
-  dependencies:
-    "@fontsource/source-code-pro": "npm:^5.1.1"
-    "@hookform/resolvers": "npm:^3.10.0"
-    "@radix-ui/react-accordion": "npm:^1.2.2"
-    "@radix-ui/react-avatar": "npm:^1.1.2"
-    "@radix-ui/react-checkbox": "npm:^1.1.3"
-    "@radix-ui/react-collapsible": "npm:^1.1.3"
-    "@radix-ui/react-context-menu": "npm:^2.2.5"
-    "@radix-ui/react-dialog": "npm:^1.1.6"
-    "@radix-ui/react-dropdown-menu": "npm:^2.1.6"
-    "@radix-ui/react-icons": "npm:^1.3.2"
-    "@radix-ui/react-label": "npm:^2.1.1"
-    "@radix-ui/react-popover": "npm:^1.1.5"
-    "@radix-ui/react-scroll-area": "npm:^1.2.2"
-    "@radix-ui/react-select": "npm:^2.1.5"
-    "@radix-ui/react-separator": "npm:^1.1.2"
-    "@radix-ui/react-slot": "npm:^1.1.1"
-    "@radix-ui/react-switch": "npm:^1.1.2"
-    "@radix-ui/react-tabs": "npm:^1.1.2"
-    "@radix-ui/react-toast": "npm:^1.2.5"
-    "@radix-ui/react-tooltip": "npm:^1.1.7"
-    class-variance-authority: "npm:^0.7.1"
-    clsx: "npm:^2.1.1"
-    cmdk: "npm:1.0.4"
-    immer: "npm:^10.1.1"
-    lucide-react: "npm:^0.475.0"
-    next-themes: "npm:^0.4.4"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
-    react-hook-form: "npm:^7.54.2"
-    tailwind-merge: "npm:^2.6.0"
-    tailwindcss-animate: "npm:^1.0.7"
-    viem: "npm:^2.22.21"
-    vite-tsconfig-paths: "npm:^5.1.4"
-    zod: "npm:^3.24.1"
-    zustand: "npm:^5.0.3"
-  peerDependencies:
-    "@tanstack/react-query": ^5.21.4
-  checksum: f20436870d34b9056bc8f3e2c0cf7827173a55b13faa31da6b9f0f29dc54db1e7f734e2dc40772b41cb21a82f5d5ca58a37cf8a7f0d6c960a6b4b172c754a000
+  checksum: 3e8507f668c5a42a36171f0b9395c4f5e46c1d8d86fb6d00caac6b6ffc65bbfd9f4dfb6dddb247ebe19464ff6e35e500ea2bdbf3089d0d6f94c21259ec7762eb
   languageName: node
   linkType: hard
 
