@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@ethui/ui/components/shadcn/dropdown-menu";
-import { CaretDownIcon } from "@radix-ui//react-icons";
+import { CaretDownIcon } from "@radix-ui/react-icons";
 import { Link } from "@tanstack/react-router";
 import { WalletView } from "#/components/WalletView";
 import { useWallets } from "#/store/useWallets";
