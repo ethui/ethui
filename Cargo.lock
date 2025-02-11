@@ -3400,7 +3400,7 @@ dependencies = [
  "tauri-plugin-clipboard-manager",
  "tauri-plugin-os",
  "tauri-plugin-shell",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
  "tracing",
 ]
@@ -3444,7 +3444,7 @@ dependencies = [
  "serde",
  "serde_json",
  "tauri",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
 ]
 
@@ -3458,7 +3458,7 @@ dependencies = [
  "rust-argon2",
  "serde",
  "serde_json",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "zeroize",
 ]
 
@@ -3477,7 +3477,7 @@ dependencies = [
  "serde_json",
  "sqlx",
  "tauri",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
  "tracing",
 ]
@@ -3493,7 +3493,7 @@ dependencies = [
  "serde",
  "serde_json",
  "tauri",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
  "tracing",
 ]
@@ -3527,7 +3527,7 @@ dependencies = [
  "regex",
  "serde",
  "serde_json",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
  "tracing",
 ]
@@ -3544,7 +3544,7 @@ dependencies = [
  "serde",
  "serde_json",
  "tauri",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
  "url",
 ]
@@ -3576,7 +3576,7 @@ dependencies = [
  "serde",
  "serde_json",
  "tauri",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tracing",
  "url",
 ]
@@ -3597,7 +3597,7 @@ dependencies = [
  "serde",
  "serde_json",
  "tauri",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
 ]
 
@@ -3615,7 +3615,7 @@ dependencies = [
  "pretty_assertions",
  "serde",
  "tauri",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
 ]
 
@@ -3633,7 +3633,7 @@ dependencies = [
  "ethui-types",
  "serde",
  "tauri",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
  "tracing",
 ]
@@ -3650,7 +3650,7 @@ dependencies = [
  "reqwest",
  "serde",
  "serde_json",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
  "tracing",
  "url",
@@ -3672,7 +3672,7 @@ dependencies = [
  "reqwest",
  "serde",
  "serde_json",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
  "tracing",
  "url",
@@ -3695,7 +3695,7 @@ name = "ethui-tracing"
 version = "1.11.0"
 dependencies = [
  "once_cell",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tracing",
  "tracing-subscriber",
 ]
@@ -3730,7 +3730,7 @@ dependencies = [
  "serde",
  "serde_json",
  "tauri",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
 ]
 
@@ -3750,7 +3750,7 @@ dependencies = [
  "serde",
  "serde_json",
  "tauri",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tokio",
  "tokio-tungstenite 0.26.1",
  "tracing",
