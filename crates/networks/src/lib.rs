@@ -93,7 +93,6 @@ impl Networks {
         self.save()?;
         ethui_broadcast::network_added(network.clone()).await;
         ethui_broadcast::ui_notify(UINotify::NetworksChanged).await;
-        network.reset_listener().await?;
 
         Ok(())
     }
@@ -111,7 +110,7 @@ impl Networks {
         self.save()?;
         ethui_broadcast::network_updated(network.clone()).await;
         ethui_broadcast::ui_notify(UINotify::NetworksChanged).await;
-        network.reset_listener().await?;
+
         Ok(())
     }
 
@@ -166,12 +165,6 @@ impl Networks {
 
         let network = self.get_current().clone();
         ethui_broadcast::current_network_changed(network).await;
-    }
-
-    async fn reset_listeners(&mut self) {
-        for network in self.networks.values_mut() {
-            network.reset_listener().await.unwrap();
-        }
     }
 
     // Persists current state to disk

@@ -23,6 +23,9 @@ pub enum Error {
 
     #[error(transparent)]
     DetectProxyError(#[from] ethui_proxy_detect::error::DetectProxyError),
+
+    #[error(transparent)]
+    Url(#[from] url::ParseError),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

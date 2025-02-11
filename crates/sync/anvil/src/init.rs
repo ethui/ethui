@@ -18,9 +18,17 @@ async fn receiver() -> ! {
     let mut rx = ethui_broadcast::subscribe_internal().await;
 
     loop {
-        if let Ok(InternalMsg::ResetAnvilListener { chain_id, http, ws }) = rx.recv().await {
-            trace!("resetting anvil listener for chain_id {}", chain_id);
-            reset_listener(chain_id, http, ws).await
+        match rx.recv().await {
+            Ok(InternalMsg::NetworkAdded(network))
+            | Ok(InternalMsg::NetworkUpdated(network))
+            | Ok(InternalMsg::NetworkRemoved(network)) => {
+                if network.is_dev().await {
+                    trace!("resetting anvil listener for chain_id {}", network.chain_id);
+                    reset_listener(network.chain_id, network.clone().http_url, network.ws_url())
+                        .await
+                }
+            }
+            _ => (),
         }
     }
 }

@@ -11,6 +11,7 @@ authors.workspace = true
 [dependencies]
 ethui-db.workspace = true
 ethui-abis.workspace = true
+ethui-networks.workspace = true
 ethui-types.workspace = true
 ethui-broadcast.workspace = true
 ethui-proxy-detect.workspace = true
