@@ -116,7 +116,7 @@ impl Network {
         //Provider::new(client)
     }
 
-    pub async fn reset_listener(&mut self) -> Result<()> {
+    pub async fn reset_listener(&self) -> Result<()> {
         if self.is_dev().await {
             let http = Url::parse(&self.http_url)?;
             let ws = Url::parse(&self.ws_url())?;

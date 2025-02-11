@@ -97,6 +97,7 @@ impl Networks {
         self.save()?;
         ethui_broadcast::network_added(network.chain_id).await;
         ethui_broadcast::ui_notify(UINotify::NetworksChanged).await;
+        network.reset_listener().await?;
 
         Ok(())
     }
@@ -113,6 +114,7 @@ impl Networks {
         self.save()?;
         ethui_broadcast::network_updated(network.chain_id).await;
         ethui_broadcast::ui_notify(UINotify::NetworksChanged).await;
+        network.reset_listener().await?;
         Ok(())
     }
 
