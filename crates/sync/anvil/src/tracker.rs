@@ -1,11 +1,11 @@
 use alloy::{
     network::Ethereum,
     providers::{ext::TraceApi as _, Provider as _, ProviderBuilder, RootProvider, WsConnect},
-    rpc::types::{trace::parity::LocalizedTransactionTrace, Filter, Log},
+    rpc::types::{trace::parity::LocalizedTransactionTrace, BlockTransactionsKind, Filter, Log},
 };
 use base64::{self, Engine as _};
 use ethui_abis::{IERC721WithMetadata, IERC20, IERC721};
-use ethui_types::{Address, Erc721Token, Erc721TokenDetails, TokenMetadata, UINotify};
+use ethui_types::{Address, Erc721Token, Erc721TokenDetails, TokenMetadata, UINotify, B256};
 use futures::StreamExt as _;
 use tokio::sync::mpsc;
 use tracing::{instrument, trace, warn};
@@ -98,10 +98,16 @@ async fn watch(
     block_snd: mpsc::UnboundedSender<Msg>,
 ) -> Result<()> {
     'watcher: loop {
-        block_snd.send(Msg::Reset).map_err(|_| Error::Watcher)?;
+        let from_block = match get_sync_status(&ctx).await {
+            None => {
+                block_snd.send(Msg::Reset).map_err(|_| Error::Watcher)?;
+                0
+            }
+            Some(block_number) => block_number,
+        };
 
         // retry forever
-        let block_number = 'wait: loop {
+        let to_block = 'wait: loop {
             let http_provider = ProviderBuilder::new()
                 .disable_recommended_fillers()
                 .on_http(ctx.http_url.clone());
@@ -125,17 +131,21 @@ async fn watch(
             .raw_request("anvil_nodeInfo".into(), ())
             .await
             .unwrap_or(serde_json::Value::Null);
+
+        // max between fork number and from_block +1
         let fork_block = node_info["forkConfig"]["forkBlockNumber"]
             .as_u64()
             .unwrap_or(0);
 
-        trace!("starting from block {}", fork_block);
+        let from_block = u64::max(from_block, fork_block);
+
+        trace!("starting from block {}", from_block);
 
         let mut stream = provider.subscribe_blocks().await?.into_stream();
 
         // catch up with everything behind
         // from the moment the fork started (or genesis if not a fork)
-        let past_range = fork_block..=block_number;
+        let past_range = from_block..=to_block;
         for b in past_range.into_iter() {
             let traces = provider.trace_block(b.into()).await?;
             block_snd
@@ -146,6 +156,13 @@ async fn watch(
             block_snd
                 .send(Msg::Logs(logs))
                 .map_err(|_| Error::Watcher)?;
+
+            if let Some(block) = provider
+                .get_block(b.into(), BlockTransactionsKind::Hashes)
+                .await?
+            {
+                save_known_tip(ctx.chain_id, b, block.header.hash).await?;
+            }
         }
 
         trace!("caught up");
@@ -166,6 +183,8 @@ async fn watch(
 
                             let logs = provider.get_logs(&Filter::new().select(b.number)).await?;
                             block_snd.send(Msg::Logs(logs)).map_err(|_| Error::Watcher)?;
+
+                            save_known_tip(ctx.chain_id, b.number, b.hash).await?;
                         },
                         None => break 'ws,
                     }
@@ -188,6 +207,7 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
     while let Some(msg) = block_rcv.recv().await {
         match msg {
             Msg::Reset => {
+                trace!("resetting {}", ctx.chain_id);
                 db.truncate_events(ctx.chain_id).await?;
                 caught_up = true
             }
@@ -332,4 +352,47 @@ pub async fn fetch_erc721_token_data(
         uri: contract_uri,
         metadata: md,
     })
+}
+
+async fn save_known_tip(chain_id: u32, block_number: u64, hash: B256) -> Result<()> {
+    let db = ethui_db::get();
+    db.kv_set(&("anvil_sync", chain_id, "block_number"), &block_number)
+        .await?;
+    db.kv_set(&("anvil_sync", chain_id, "block_hash"), &hash)
+        .await?;
+
+    Ok(())
+}
+
+async fn get_known_tip(chain_id: u32) -> Result<Option<(u64, B256)>> {
+    let db = ethui_db::get();
+    let block_number = db.kv_get(&("anvil_sync", chain_id, "block_number")).await?;
+    let block_hash = db.kv_get(&("anvil_sync", chain_id, "block_hash")).await?;
+
+    Ok(block_number.zip(block_hash))
+}
+
+async fn get_sync_status(ctx: &Ctx) -> Option<u64> {
+    let http_provider = ProviderBuilder::new()
+        .disable_recommended_fillers()
+        .on_http(ctx.http_url.clone());
+
+    let (known_block_number, known_block_hash) = match get_known_tip(ctx.chain_id).await {
+        Ok(Some(tip)) => tip,
+        _ => return None,
+    };
+
+    let block = match http_provider
+        .get_block(known_block_number.into(), BlockTransactionsKind::Hashes)
+        .await
+    {
+        Ok(Some(block)) => block,
+        _ => return None,
+    };
+
+    if known_block_hash == block.header.hash {
+        Some(known_block_number + 1)
+    } else {
+        None
+    }
 }
