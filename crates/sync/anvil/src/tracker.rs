@@ -132,7 +132,6 @@ async fn watch(
             .await
             .unwrap_or(serde_json::Value::Null);
 
-        // max between fork number and from_block +1
         let fork_block = node_info["forkConfig"]["forkBlockNumber"]
             .as_u64()
             .unwrap_or(0);
