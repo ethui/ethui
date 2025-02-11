@@ -34,7 +34,7 @@ function OnboardingExtension() {
         Go to{" "}
         <a
           className="underline"
-          href="http://ethui.dev/onboarding/extension"
+          href="http://ethui.dev/#/onboarding/extension"
           target="_blank"
           rel="nofollow noopener noreferrer"
         >
