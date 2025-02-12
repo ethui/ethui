@@ -2,12 +2,10 @@ use alloy::{
     network::Ethereum,
     providers::{ext::AnvilApi, ProviderBuilder, RootProvider},
     rpc::client::ClientBuilder,
-    transports::layers::RetryBackoffLayer,
+    transports::{layers::RetryBackoffLayer, RpcError, TransportErrorKind},
 };
 use serde::{Deserialize, Serialize};
 use url::Url;
-
-use super::Result;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Network {
@@ -20,11 +18,6 @@ pub struct Network {
     pub ws_url: Option<String>,
     pub currency: String,
     pub decimals: u32,
-
-    /// Ability to forcefully tell ethui that a given chain is anvil, even if chain ID is not the
-    /// expected 31337
-    #[serde(default = "default_force_is_anvil")]
-    pub force_is_anvil: bool,
 }
 
 impl Network {
@@ -37,7 +30,6 @@ impl Network {
             ws_url: None,
             currency: String::from("ETH"),
             decimals: 18,
-            force_is_anvil: false,
         }
     }
 
@@ -50,7 +42,6 @@ impl Network {
             ws_url: None,
             currency: String::from("ETH"),
             decimals: 18,
-            force_is_anvil: false,
         }
     }
 
@@ -63,7 +54,6 @@ impl Network {
             ws_url: Some(String::from("ws://localhost:8545")),
             currency: String::from("ETH"),
             decimals: 18,
-            force_is_anvil: true,
         }
     }
 
@@ -87,11 +77,13 @@ impl Network {
         self.chain_id == 31337 || provider.anvil_node_info().await.is_ok()
     }
 
-    pub async fn get_alloy_provider(&self) -> Result<RootProvider<Ethereum>> {
-        Ok(ProviderBuilder::new()
+    pub async fn get_alloy_provider(
+        &self,
+    ) -> Result<RootProvider<Ethereum>, RpcError<TransportErrorKind>> {
+        ProviderBuilder::new()
             .disable_recommended_fillers()
             .on_builtin(&self.http_url)
-            .await?)
+            .await
     }
 
     pub fn get_provider(&self) -> RootProvider<Ethereum> {
@@ -131,8 +123,4 @@ impl std::fmt::Display for Network {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}-{}", self.chain_id, self.name)
     }
-}
-
-fn default_force_is_anvil() -> bool {
-    false
 }

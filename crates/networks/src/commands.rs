@@ -1,6 +1,6 @@
-use ethui_types::GlobalState;
+use ethui_types::{GlobalState, Network};
 
-use super::{network::Network, Networks, Result};
+use super::{Networks, Result};
 
 #[tauri::command]
 pub async fn networks_get_current() -> Result<Network> {

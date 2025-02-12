@@ -7,12 +7,12 @@ use std::{
 
 use async_trait::async_trait;
 use ethui_broadcast::InternalMsg;
-use ethui_types::{GlobalState, UINotify};
+use ethui_types::{GlobalState, Network, UINotify};
 use once_cell::sync::OnceCell;
 use serde::Deserialize;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
-use super::{network::Network, Networks};
+use super::Networks;
 
 static NETWORKS: OnceCell<RwLock<Networks>> = OnceCell::new();
 
