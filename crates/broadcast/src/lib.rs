@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use ethui_types::{ui_events, Address, Affinity, B256};
+use ethui_types::{ui_events, Address, Affinity, Network, B256};
 pub use internal_msgs::*;
 use once_cell::sync::Lazy;
 use tokio::sync::{broadcast, oneshot, Mutex, RwLock};
@@ -24,10 +24,10 @@ pub enum InternalMsg {
     AddressRemoved(Address),
     CurrentAddressChanged(Address),
 
-    NetworkAdded(u32),
-    NetworkUpdated(u32),
-    NetworkRemoved(u32),
-    CurrentNetworkChanged(u32),
+    NetworkAdded(Network),
+    NetworkUpdated(Network),
+    NetworkRemoved(Network),
+    CurrentNetworkChanged(Network),
 
     /// Request a full update of a TX. oneshot channel included to notify when job is done
     FetchFullTxSync(u32, B256, Arc<Mutex<Option<oneshot::Sender<()>>>>),
@@ -98,20 +98,20 @@ mod internal_msgs {
         send(CurrentAddressChanged(address)).await;
     }
 
-    pub async fn network_added(chain_id: u32) {
-        send(NetworkAdded(chain_id)).await;
+    pub async fn network_added(network: Network) {
+        send(NetworkAdded(network)).await;
     }
 
-    pub async fn network_updated(chain_id: u32) {
-        send(NetworkUpdated(chain_id)).await;
+    pub async fn network_updated(network: Network) {
+        send(NetworkUpdated(network)).await;
     }
 
-    pub async fn network_removed(chain_id: u32) {
-        send(NetworkRemoved(chain_id)).await;
+    pub async fn network_removed(network: Network) {
+        send(NetworkRemoved(network)).await;
     }
 
-    pub async fn current_network_changed(chain_id: u32) {
-        send(CurrentNetworkChanged(chain_id)).await;
+    pub async fn current_network_changed(network: Network) {
+        send(CurrentNetworkChanged(network)).await;
     }
 
     pub async fn forge_abi_found() {

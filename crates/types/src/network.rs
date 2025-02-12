@@ -12,10 +12,8 @@ pub struct Network {
     pub name: String,
     pub chain_id: u32,
     pub explorer_url: Option<String>,
-    // TODO: turn this into a Url
-    pub http_url: String,
-    // TODO: turn this into an Option<Url>
-    pub ws_url: Option<String>,
+    pub http_url: Url,
+    pub ws_url: Option<Url>,
     pub currency: String,
     pub decimals: u32,
 }
@@ -26,7 +24,7 @@ impl Network {
             name: String::from("Mainnet"),
             chain_id: 1,
             explorer_url: Some(String::from("https://etherscan.io/search?q=")),
-            http_url: String::from("https://eth.llamarpc.com"),
+            http_url: Url::parse("https://eth.llamarpc.com").unwrap(),
             ws_url: None,
             currency: String::from("ETH"),
             decimals: 18,
@@ -38,7 +36,7 @@ impl Network {
             name: String::from("Sepolia"),
             chain_id: 11155111,
             explorer_url: Some(String::from("https://sepolia.etherscan.io/search?q=")),
-            http_url: String::from("https://ethereum-sepolia-rpc.publicnode.com"),
+            http_url: Url::parse("https://ethereum-sepolia-rpc.publicnode.com").unwrap(),
             ws_url: None,
             currency: String::from("ETH"),
             decimals: 18,
@@ -50,8 +48,8 @@ impl Network {
             name: String::from("Anvil"),
             chain_id: 31337,
             explorer_url: None,
-            http_url: String::from("http://localhost:8545"),
-            ws_url: Some(String::from("ws://localhost:8545")),
+            http_url: Url::parse("http://localhost:8545").unwrap(),
+            ws_url: Some(Url::parse("ws://localhost:8545").unwrap()),
             currency: String::from("ETH"),
             decimals: 18,
         }
@@ -65,10 +63,10 @@ impl Network {
         format!("0x{:x}", self.chain_id)
     }
 
-    pub fn ws_url(&self) -> String {
-        self.ws_url
-            .clone()
-            .unwrap_or_else(|| self.http_url.clone().replace("http", "ws"))
+    pub fn ws_url(&self) -> Url {
+        self.ws_url.clone().unwrap_or_else(|| {
+            Url::parse(&self.http_url.clone().as_str().replace("http", "ws")).unwrap()
+        })
     }
 
     pub async fn is_dev(&self) -> bool {
@@ -82,17 +80,14 @@ impl Network {
     ) -> Result<RootProvider<Ethereum>, RpcError<TransportErrorKind>> {
         ProviderBuilder::new()
             .disable_recommended_fillers()
-            .on_builtin(&self.http_url)
+            .on_builtin(self.http_url.as_str())
             .await
     }
 
     pub fn get_provider(&self) -> RootProvider<Ethereum> {
-        let url = Url::parse(&self.http_url).unwrap();
-
-        //let url = Url::parse(&self.http_url).unwrap();
         let client = ClientBuilder::default()
             .layer(RetryBackoffLayer::new(10, 500, 300))
-            .http(url);
+            .http(self.http_url.clone());
 
         ProviderBuilder::new()
             .disable_recommended_fillers()
