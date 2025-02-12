@@ -108,13 +108,7 @@ impl Network {
         //Provider::new(client)
     }
 
-    pub async fn reset_listener(&self) -> Result<()> {
-        if self.is_dev().await {
-            let http = Url::parse(&self.http_url)?;
-            let ws = Url::parse(&self.ws_url())?;
-            ethui_broadcast::reset_anvil_listener(self.chain_id, http, ws).await;
-        }
-
+    pub async fn reset_listener(&self) -> Result<(), RpcError<TransportErrorKind>> {
         Ok(())
     }
 }
