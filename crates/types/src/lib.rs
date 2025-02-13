@@ -2,6 +2,7 @@ mod affinity;
 mod contracts;
 pub mod events;
 mod global_state;
+mod network;
 mod tokens;
 pub mod transactions;
 pub mod ui_events;
@@ -10,6 +11,7 @@ pub use alloy::primitives::{address, Address, B256, U256, U64};
 pub use contracts::{Contract, ContractWithAbi};
 pub use events::Event;
 pub use global_state::GlobalState;
+pub use network::Network;
 pub use tokens::{
     Erc1155Token, Erc1155TokenData, Erc721Collection, Erc721Token, Erc721TokenData,
     Erc721TokenDetails, TokenBalance, TokenMetadata,

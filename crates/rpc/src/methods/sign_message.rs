@@ -6,9 +6,8 @@ use alloy::{
     signers::Signer as _,
 };
 use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_networks::Network;
 use ethui_settings::Settings;
-use ethui_types::GlobalState;
+use ethui_types::{GlobalState, Network};
 use ethui_wallets::{Signer, Wallet, WalletControl};
 use serde::Serialize;
 

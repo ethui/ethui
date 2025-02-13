@@ -7,7 +7,7 @@ use alloy::{
     rpc::types::TransactionRequest,
 };
 use ethui_connections::Ctx;
-use ethui_networks::Network;
+use ethui_types::Network;
 
 use crate::Result;
 

@@ -1,7 +1,6 @@
 pub mod commands;
 mod error;
 mod init;
-mod network;
 
 use std::{
     collections::HashMap,
@@ -10,14 +9,11 @@ use std::{
 };
 
 use alloy::{network::Ethereum, providers::RootProvider};
-use ethui_types::{Affinity, UINotify};
+use ethui_types::{Affinity, Network, UINotify};
 pub use init::init;
 use serde::Serialize;
 
-pub use self::{
-    error::{Error, Result},
-    network::Network,
-};
+pub use self::error::{Error, Result};
 
 #[derive(Debug, Clone, Serialize)]
 pub struct Networks {
@@ -95,16 +91,16 @@ impl Networks {
 
         self.networks.insert(network.name.clone(), network.clone());
         self.save()?;
-        ethui_broadcast::network_added(network.chain_id).await;
+        ethui_broadcast::network_added(network.clone()).await;
         ethui_broadcast::ui_notify(UINotify::NetworksChanged).await;
-        network.reset_listener().await?;
 
         Ok(())
     }
 
     pub async fn update_network(&mut self, old_name: &str, network: Network) -> Result<()> {
         self.networks.remove(old_name);
-        self.networks.insert(network.name.clone(), network.clone());
+        self.networks
+            .insert(network.clone().name.clone(), network.clone());
 
         if self.current == old_name {
             self.current = network.name.clone();
@@ -112,9 +108,9 @@ impl Networks {
         }
 
         self.save()?;
-        ethui_broadcast::network_updated(network.chain_id).await;
+        ethui_broadcast::network_updated(network.clone()).await;
         ethui_broadcast::ui_notify(UINotify::NetworksChanged).await;
-        network.reset_listener().await?;
+
         Ok(())
     }
 
@@ -129,7 +125,7 @@ impl Networks {
                     self.on_network_changed().await?;
                 }
                 self.save()?;
-                ethui_broadcast::network_removed(network.chain_id).await;
+                ethui_broadcast::network_removed(network).await;
                 ethui_broadcast::ui_notify(UINotify::NetworksChanged).await;
             }
             None => {
@@ -148,8 +144,8 @@ impl Networks {
         self.notify_peers();
         ethui_broadcast::ui_notify(UINotify::CurrentNetworkChanged).await;
 
-        let chain_id = self.get_current().chain_id;
-        ethui_broadcast::current_network_changed(chain_id).await;
+        let network = self.get_current().clone();
+        ethui_broadcast::current_network_changed(network).await;
 
         Ok(())
     }
@@ -164,17 +160,11 @@ impl Networks {
 
     async fn broadcast_init(&self) {
         for network in self.networks.values() {
-            ethui_broadcast::network_added(network.chain_id).await;
+            ethui_broadcast::network_added(network.clone()).await;
         }
 
-        let chain_id = self.get_current().chain_id;
-        ethui_broadcast::current_network_changed(chain_id).await;
-    }
-
-    async fn reset_listeners(&mut self) {
-        for network in self.networks.values_mut() {
-            network.reset_listener().await.unwrap();
-        }
+        let network = self.get_current().clone();
+        ethui_broadcast::current_network_changed(network).await;
     }
 
     // Persists current state to disk
