@@ -6,7 +6,7 @@ mod error;
 /// https://kerkour.com/rust-file-encryption-chacha20poly1305-argon2
 /// Encrypted secrets are secured by a password. We use Argon2 to derive a key from it, and then
 /// the ChaCha20poly1305 scheme to encrypt the data.
-use aead::{KeyInit, OsRng};
+use aead::{rand_core::RngCore as _, KeyInit, OsRng};
 use chacha20poly1305::XChaCha20Poly1305;
 use rand::RngCore;
 use zeroize::Zeroize;
