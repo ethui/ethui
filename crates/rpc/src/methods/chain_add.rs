@@ -1,6 +1,6 @@
 use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_networks::{Network, Networks};
-use ethui_types::{GlobalState, U64};
+use ethui_networks::Networks;
+use ethui_types::{GlobalState, Network, U64};
 use serde::{Deserialize, Serialize};
 use tracing::info;
 use url::Url;
@@ -120,7 +120,6 @@ impl TryFrom<Params> for Network {
                 .map(|s| s.to_string()),
             currency: params.native_currency.symbol,
             decimals: params.native_currency.decimals as u32,
-            force_is_anvil: false,
         })
     }
 }

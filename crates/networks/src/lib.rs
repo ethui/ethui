@@ -1,7 +1,6 @@
 pub mod commands;
 mod error;
 mod init;
-mod network;
 
 use std::{
     collections::HashMap,
@@ -10,14 +9,11 @@ use std::{
 };
 
 use alloy::{network::Ethereum, providers::RootProvider};
-use ethui_types::{Affinity, UINotify};
+use ethui_types::{Affinity, Network, UINotify};
 pub use init::init;
 use serde::Serialize;
 
-pub use self::{
-    error::{Error, Result},
-    network::Network,
-};
+pub use self::error::{Error, Result};
 
 #[derive(Debug, Clone, Serialize)]
 pub struct Networks {
