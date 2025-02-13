@@ -5,7 +5,6 @@ pub use internal_msgs::*;
 use once_cell::sync::Lazy;
 use tokio::sync::{broadcast, oneshot, Mutex, RwLock};
 pub use ui_msgs::*;
-use url::Url;
 
 /// Supported messages
 #[derive(Debug, Clone)]
@@ -13,12 +12,6 @@ pub enum InternalMsg {
     ChainChanged(u32, Option<String>, Affinity),
     AccountsChanged(Vec<Address>),
     SettingsUpdated,
-
-    ResetAnvilListener {
-        chain_id: u32,
-        http: Url,
-        ws: Url,
-    },
 
     AddressAdded(Address),
     AddressRemoved(Address),
@@ -79,11 +72,6 @@ mod internal_msgs {
     /// Broadcasts `SettingsUpdated` events
     pub async fn settings_updated() {
         send(SettingsUpdated).await;
-    }
-
-    /// Requests a reset of the anvil listener for a given chain_id
-    pub async fn reset_anvil_listener(chain_id: u32, http: Url, ws: Url) {
-        send(ResetAnvilListener { chain_id, http, ws }).await;
     }
 
     pub async fn address_added(address: Address) {

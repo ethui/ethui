@@ -26,7 +26,7 @@ pub async fn init(pathbuf: PathBuf) {
 
     let path = Path::new(&pathbuf);
 
-    let mut res: Networks = if path.exists() {
+    let res: Networks = if path.exists() {
         let file = File::open(path).unwrap();
         let reader = BufReader::new(file);
 
@@ -48,7 +48,6 @@ pub async fn init(pathbuf: PathBuf) {
     };
 
     res.broadcast_init().await;
-    res.reset_listeners().await;
 
     NETWORKS.set(RwLock::new(res)).unwrap();
 

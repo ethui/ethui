@@ -92,19 +92,6 @@ impl Network {
         ProviderBuilder::new()
             .disable_recommended_fillers()
             .on_client(client)
-        //let url = Url::parse(&self.http_url).unwrap();
-        //let http = Http::new(url);
-        //let policy = Box::<HttpRateLimitRetryPolicy>::default();
-        //let client = RetryClientBuilder::default()
-        //    .rate_limit_retries(10)
-        //    .timeout_retries(3)
-        //    .initial_backoff(Duration::from_millis(500))
-        //    .build(http, policy);
-        //Provider::new(client)
-    }
-
-    pub async fn reset_listener(&self) -> Result<(), RpcError<TransportErrorKind>> {
-        Ok(())
     }
 }
 
