@@ -1,6 +1,7 @@
 import { type Network, networkSchema } from "@ethui/types/network";
 import { Form } from "@ethui/ui/components/form";
 import { Button } from "@ethui/ui/components/shadcn/button";
+import { toast } from "@ethui/ui/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
@@ -31,8 +32,16 @@ function Content({ network }: { network: Network }) {
   const router = useRouter();
 
   const create = async (data: Network) => {
-    await invoke("networks_update", { oldName: network.name, network: data });
-    router.history.back();
+    try {
+      await invoke("networks_update", { oldName: network.name, network: data });
+      router.history.back();
+    } catch (err: any) {
+      toast({
+        title: "Error",
+        description: err.toString(),
+        variant: "destructive",
+      });
+    }
   };
 
   const remove = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -46,7 +55,7 @@ function Content({ network }: { network: Network }) {
     <Form form={form} onSubmit={create} className="gap-4">
       <div className="flex flex-row gap-2">
         <Form.Text label="Name" name="name" />
-        <Form.NumberField label="Chain Id" name="chain_id" />
+        <Form.Text disabled={true} label="Chain Id" name="chain_id" />
       </div>
 
       <Form.Text label="HTTP RPC" name="http_url" className="w-full" />

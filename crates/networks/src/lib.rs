@@ -8,7 +8,10 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use alloy::{network::Ethereum, providers::RootProvider};
+use alloy::{
+    network::Ethereum,
+    providers::{Provider, ProviderBuilder, RootProvider},
+};
 use ethui_types::{Affinity, Network, UINotify};
 pub use init::init;
 use serde::Serialize;
@@ -82,7 +85,7 @@ impl Networks {
     pub async fn add_network(&mut self, network: Network) -> Result<()> {
         // TODO: need to ensure uniqueness by name, not chain id
         if self.validate_chain_id(network.chain_id) {
-            return Ok(());
+            return Err(Error::AlreadyExists);
         }
 
         if self.networks.contains_key(&network.name) {
@@ -98,6 +101,10 @@ impl Networks {
     }
 
     pub async fn update_network(&mut self, old_name: &str, network: Network) -> Result<()> {
+        if network.name != old_name && self.networks.contains_key(&network.name) {
+            return Err(Error::AlreadyExists);
+        }
+
         self.networks.remove(old_name);
         self.networks
             .insert(network.clone().name.clone(), network.clone());
@@ -137,6 +144,15 @@ impl Networks {
 
     pub fn get_current_provider(&self) -> RootProvider<Ethereum> {
         self.get_current().get_provider()
+    }
+
+    pub async fn chain_id_from_provider(&self, url: String) -> Result<u64> {
+        let provider = ProviderBuilder::new()
+            .disable_recommended_fillers()
+            .on_builtin(&url)
+            .await?;
+
+        Ok(provider.get_chain_id().await?)
     }
 
     async fn on_network_changed(&self) -> Result<()> {

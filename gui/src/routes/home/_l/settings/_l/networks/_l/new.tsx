@@ -1,12 +1,13 @@
 import { type Network, networkSchema } from "@ethui/types/network";
 import { Form } from "@ethui/ui/components/form";
 import { Button } from "@ethui/ui/components/shadcn/button";
+import { toast } from "@ethui/ui/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute } from "@tanstack/react-router";
 import { useRouter } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { Check, LoaderCircle } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 export const Route = createFileRoute("/home/_l/settings/_l/networks/_l/new")({
@@ -17,18 +18,55 @@ export const Route = createFileRoute("/home/_l/settings/_l/networks/_l/new")({
 });
 
 function Content() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
   const form = useForm<Network>({
     mode: "onBlur",
     resolver: zodResolver(networkSchema),
   });
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
+
+  const httpUrl = form.watch("http_url");
+  const userChainId = form.watch("chain_id");
+
+  useEffect(() => {
+    if (!httpUrl) return;
+
+    const fetchChainId = async () => {
+      try {
+        const chainId = await invoke<number>(
+          "networks_chain_id_from_provider",
+          {
+            url: httpUrl,
+          },
+        );
+
+        if (!userChainId) {
+          form.setValue("chain_id", chainId);
+          form.clearErrors("chain_id");
+        }
+      } catch (_e) {
+        return null;
+      }
+    };
+
+    fetchChainId();
+  }, [httpUrl, userChainId, form.setValue, form.clearErrors]);
 
   const onSubmit = async (data: Network) => {
-    setLoading(true);
-    await invoke("networks_add", { network: data });
-    setLoading(false);
-    router.history.back();
+    try {
+      setLoading(true);
+      await invoke("networks_add", { network: data });
+      setLoading(false);
+      router.history.back();
+    } catch (err: any) {
+      setLoading(false);
+      toast({
+        title: "Error",
+        description: err.toString(),
+        variant: "destructive",
+      });
+    }
   };
 
   const cancel = () => router.history.back();
