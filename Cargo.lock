@@ -3665,7 +3665,6 @@ dependencies = [
  "ethui-abis",
  "ethui-broadcast",
  "ethui-db",
- "ethui-networks",
  "ethui-proxy-detect",
  "ethui-types",
  "futures",
