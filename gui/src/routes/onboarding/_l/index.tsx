@@ -14,7 +14,7 @@ function Onboarding() {
       <p>
         ethui is a toolkit for fullstack Ethereum development. Check out{" "}
         <Link
-          href="https://ethui.dev"
+          to="https://ethui.dev"
           target="_blank"
           rel="nofollow noopener noreferrer"
         >
@@ -22,7 +22,7 @@ function Onboarding() {
         </Link>{" "}
         to learn more, or check out the&nbsp;
         <Link
-          href="https://github.com/ethui/ethui"
+          to="https://github.com/ethui/ethui"
           target="_blank"
           rel="nofollow noopener noreferrer"
         >

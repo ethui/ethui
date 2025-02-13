@@ -1,5 +1,5 @@
-use ethui_networks::{Network, Networks};
-use ethui_types::{Affinity, GlobalState};
+use ethui_networks::Networks;
+use ethui_types::{Affinity, GlobalState, Network};
 
 use crate::{
     permissions::{Permission, PermissionRequest, RequestedPermission},

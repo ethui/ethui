@@ -21,7 +21,7 @@ function SettingsNetworks() {
     <div className="flex flex-wrap gap-2">
       {networks.map(({ chain_id, name }) => (
         <Link
-          href={`/home/settings/networks/${name}/edit`}
+          to={`/home/settings/networks/${name}/edit`}
           key={name}
           className="border p-4 hover:bg-accent"
         >
@@ -29,7 +29,7 @@ function SettingsNetworks() {
         </Link>
       ))}
       <Link
-        href="/home/settings/networks/new"
+        to="/home/settings/networks/new"
         className="flex gap-2 border p-4 align-baseline hover:bg-accent"
       >
         <Plus />

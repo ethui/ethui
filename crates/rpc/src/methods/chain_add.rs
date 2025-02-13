@@ -1,6 +1,6 @@
 use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_networks::{Network, Networks};
-use ethui_types::{GlobalState, U64};
+use ethui_networks::Networks;
+use ethui_types::{GlobalState, Network, U64};
 use serde::{Deserialize, Serialize};
 use tracing::info;
 use url::Url;
@@ -110,17 +110,14 @@ impl TryFrom<Params> for Network {
                 .iter()
                 .find(|s| s.scheme().starts_with("http"))
                 .cloned()
-                .expect("http url not found")
-                .to_string(),
+                .expect("http url not found"),
             ws_url: params
                 .rpc_urls
                 .iter()
                 .find(|s| s.scheme().starts_with("ws"))
-                .cloned()
-                .map(|s| s.to_string()),
+                .cloned(),
             currency: params.native_currency.symbol,
             decimals: params.native_currency.decimals as u32,
-            force_is_anvil: false,
         })
     }
 }

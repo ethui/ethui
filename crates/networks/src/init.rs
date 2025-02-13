@@ -7,12 +7,12 @@ use std::{
 
 use async_trait::async_trait;
 use ethui_broadcast::InternalMsg;
-use ethui_types::{GlobalState, UINotify};
+use ethui_types::{GlobalState, Network, UINotify};
 use once_cell::sync::OnceCell;
 use serde::Deserialize;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
-use super::{network::Network, Networks};
+use super::Networks;
 
 static NETWORKS: OnceCell<RwLock<Networks>> = OnceCell::new();
 
@@ -26,7 +26,7 @@ pub async fn init(pathbuf: PathBuf) {
 
     let path = Path::new(&pathbuf);
 
-    let mut res: Networks = if path.exists() {
+    let res: Networks = if path.exists() {
         let file = File::open(path).unwrap();
         let reader = BufReader::new(file);
 
@@ -48,7 +48,6 @@ pub async fn init(pathbuf: PathBuf) {
     };
 
     res.broadcast_init().await;
-    res.reset_listeners().await;
 
     NETWORKS.set(RwLock::new(res)).unwrap();
 

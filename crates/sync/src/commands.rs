@@ -22,7 +22,7 @@ pub async fn sync_get_native_balance(
 
     // TODO: check with networks if this is anvil or not
     if network.is_dev().await {
-        Ok(ethui_sync_anvil::get_native_balance(network.http_url, address).await?)
+        Ok(ethui_sync_anvil::get_native_balance(network.http_url.to_string(), address).await?)
     } else {
         Ok(db.get_native_balance(chain_id, address).await)
     }

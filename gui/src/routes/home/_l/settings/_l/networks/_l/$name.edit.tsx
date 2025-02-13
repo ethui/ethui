@@ -47,8 +47,6 @@ function Content({ network }: { network: Network }) {
       <div className="flex flex-row gap-2">
         <Form.Text label="Name" name="name" />
         <Form.NumberField label="Chain Id" name="chain_id" />
-
-        <Form.Checkbox label="Anvil" name="force_is_anvil" />
       </div>
 
       <Form.Text label="HTTP RPC" name="http_url" className="w-full" />

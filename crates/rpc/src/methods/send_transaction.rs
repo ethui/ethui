@@ -8,9 +8,8 @@ use alloy::{
 };
 use ethui_connections::Ctx;
 use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_networks::Network;
 use ethui_settings::Settings;
-use ethui_types::{Address, GlobalState};
+use ethui_types::{Address, GlobalState, Network};
 use ethui_wallets::{WalletControl, WalletType, Wallets};
 
 use crate::{Error, Result};
@@ -155,8 +154,9 @@ impl SendTransaction {
         let url = self
             .network
             .http_url
+            .to_string()
             .parse()
-            .map_err(|_| Error::CannotParseUrl(self.network.http_url.clone()))?;
+            .map_err(|_| Error::CannotParseUrl(self.network.http_url.to_string().clone()))?;
 
         self.provider = if self.network.is_dev().await {
             // TODO: maybe we can find a way to only do this once for every account,
