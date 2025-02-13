@@ -70,7 +70,7 @@ export function AppSidebar() {
                       to={item.url}
                       className={cn(
                         item.url === location.pathname &&
-                        "bg-primary text-accent hover:bg-primary hover:text-accent",
+                          "bg-primary text-accent hover:bg-primary hover:text-accent",
                       )}
                     >
                       {item.icon}
@@ -99,7 +99,7 @@ export function AppSidebar() {
                               to={item.url}
                               className={cn(
                                 item.url === location.pathname &&
-                                "bg-primary text-accent hover:bg-primary hover:text-accent",
+                                  "bg-primary text-accent hover:bg-primary hover:text-accent",
                               )}
                             >
                               {item.title}
