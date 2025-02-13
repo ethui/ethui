@@ -22,7 +22,7 @@ jobs:
       - name: Get release-drafter config
         id: current-labels
         run: |
-          echo "labels=$(yq -r '.categories[].labels | flatten[]' .github/release-drafter.yml | tr '\n' ',')" >> $GITHUB_OUTPUT
+          echo "labels=$(yq -r '[.categories[].labels, .exclude-labels] | flatten[]' .github/release-drafter.yml | tr '\n' ',')" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Check PR labels
