@@ -84,7 +84,7 @@ export function AddressView({
           Clear alias
         </ContextMenuItem>
         <ContextMenuItem>
-          <Link target="_blank" href={`${network.explorer_url}${address}`}>
+          <Link target="_blank" to={`${network.explorer_url}${address}`}>
             Open in explorer
           </Link>
         </ContextMenuItem>

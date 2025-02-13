@@ -60,7 +60,7 @@ function OnboardingAlchemy() {
       <p>
         ethui works with{" "}
         <Link
-          href="https://book.getfoundry.sh/anvil/"
+          to="https://book.getfoundry.sh/anvil/"
           target="_blank"
           rel="nofollow noopener noreferrer"
         >
@@ -68,7 +68,7 @@ function OnboardingAlchemy() {
         </Link>{" "}
         out of the box. But for live blockchains, a connection to{" "}
         <Link
-          href="https://www.alchemy.com/"
+          to="https://www.alchemy.com/"
           target="_blank"
           rel="nofollow noopener noreferrer"
         >
@@ -76,7 +76,7 @@ function OnboardingAlchemy() {
         </Link>{" "}
         is recommended. Go to your{" "}
         <Link
-          href="https://dashboard.alchemy.com/apps"
+          to="https://dashboard.alchemy.com/apps"
           target="_blank"
           rel="nofollow noopener noreferrer"
         >

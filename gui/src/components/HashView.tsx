@@ -32,7 +32,7 @@ export function HashView({ hash }: Props) {
           Copy to clipboard
         </ContextMenuItem>
         <ContextMenuItem>
-          <Link target="_blank" href={`${network.explorer_url}${hash}`}>
+          <Link target="_blank" to={`${network.explorer_url}${hash}`}>
             Open in explorer
           </Link>
         </ContextMenuItem>
