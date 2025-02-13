@@ -39,7 +39,7 @@ jobs:
           done
 
           if [[ ! $MATCH_FOUND -eq 1 ]]; then
-            eco "No matching labels found. Must have one of: ${{ steps.current-labels.outputs.labels }}"
+            echo "No matching labels found. Must have one of: ${{ steps.current-labels.outputs.labels }}"
             exit 1
           fi
         env:
