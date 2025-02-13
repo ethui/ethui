@@ -27,11 +27,11 @@ async fn receiver() -> ! {
         if let Ok(msg) = rx.recv().await {
             use InternalMsg::*;
 
-            if let NetworkRemoved(chain_id) = msg {
+            if let NetworkRemoved(network) = msg {
                 let db = get();
 
-                let _ = db.remove_contracts(chain_id).await;
-                let _ = db.remove_transactions(chain_id).await;
+                let _ = db.remove_contracts(network.chain_id).await;
+                let _ = db.remove_transactions(network.chain_id).await;
             }
         }
     }
