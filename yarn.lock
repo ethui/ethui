@@ -1244,7 +1244,7 @@ __metadata:
     "@radix-ui/react-collapsible": "npm:^1.1.3"
     "@tanstack/react-query": "npm:^5.66.0"
     "@tanstack/react-query-devtools": "npm:^5.66.0"
-    "@tanstack/react-router": "npm:^1.102.5"
+    "@tanstack/react-router": "npm:^1.104.0"
     "@tanstack/router-devtools": "npm:^1.102.1"
     "@tanstack/router-plugin": "npm:^1.102.2"
     "@tanstack/router-vite-plugin": "npm:^1.102.5"
@@ -3488,9 +3488,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-router@npm:^1.102.5":
-  version: 1.102.5
-  resolution: "@tanstack/react-router@npm:1.102.5"
+"@tanstack/react-router@npm:^1.104.0":
+  version: 1.104.0
+  resolution: "@tanstack/react-router@npm:1.104.0"
   dependencies:
     "@tanstack/history": "npm:1.99.13"
     "@tanstack/react-store": "npm:^0.7.0"
@@ -3501,7 +3501,7 @@ __metadata:
   peerDependencies:
     react: ">=18.0.0 || >=19.0.0"
     react-dom: ">=18.0.0 || >=19.0.0"
-  checksum: a24142a51be43db0ed0a65e016263772a7436f70dfe438bb339d90751b132b685c90e1326c9b550d87de53a5d5c2293524499a97d753492190aced315ee540c0
+  checksum: 71c27ba5971b57b6dca83db4f2682f272417f7f85c76dce74082ccdd58133a75439facc199f67061cd5ab3f7ea9d7bb2d7910515ab674de174b28efc5bfcc28f
   languageName: node
   linkType: hard
 
