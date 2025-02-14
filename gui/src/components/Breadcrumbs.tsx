@@ -44,7 +44,7 @@ function Item({ label, path }: { label: string; path: string }) {
   return (
     <BreadcrumbItem>
       <BreadcrumbLink asChild className="font-bold">
-        <Link href={path}>{label}</Link>
+        <Link to={path}>{label}</Link>
       </BreadcrumbLink>
     </BreadcrumbItem>
   );

@@ -1,7 +1,7 @@
 use crate::{Error, Result};
 use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_networks::{Network, Networks};
-use ethui_types::GlobalState;
+use ethui_networks::Networks;
+use ethui_types::{GlobalState, Network};
 use serde::Serialize;
 
 use super::chain_add::Params;

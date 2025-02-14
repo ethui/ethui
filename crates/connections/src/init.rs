@@ -64,9 +64,9 @@ async fn receiver() -> ! {
         if let Ok(msg) = rx.recv().await {
             use InternalMsg::*;
 
-            if let NetworkRemoved(chain_id) = msg {
+            if let NetworkRemoved(network) = msg {
                 let mut store = Store::write().await;
-                store.on_chain_removed(chain_id);
+                store.on_chain_removed(network.chain_id);
             }
         }
     }
