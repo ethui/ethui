@@ -100,7 +100,7 @@ clap = { version = "4.5", default-features = false, features = [
   "derive",
   "env",
 ] }
-rand = "0.8"
+rand = "0.9"
 rstest = "0.23"
 regex = "1.11"
 anyhow = { version = "1.0", default-features = false }
