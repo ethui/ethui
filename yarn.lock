@@ -1240,7 +1240,7 @@ __metadata:
     "@ethui/types": "npm:*"
     "@ethui/ui": "npm:0.0.8"
     "@fontsource/source-code-pro": "npm:^5.1.1"
-    "@hookform/resolvers": "npm:^3.10.0"
+    "@hookform/resolvers": "npm:^4.0.0"
     "@radix-ui/react-collapsible": "npm:^1.1.3"
     "@tanstack/react-query": "npm:^5.66.0"
     "@tanstack/react-query-devtools": "npm:^5.66.0"
@@ -1407,6 +1407,15 @@ __metadata:
   peerDependencies:
     react-hook-form: ^7.0.0
   checksum: 7ee44533b4cdc28c4fa2a94894c735411e5a1f830f4a617c580533321a9b901df0cc8c1e2fad81ad8d55154ebc5cb844cf9c116a3148ffae2bc48758c33cbb8e
+  languageName: node
+  linkType: hard
+
+"@hookform/resolvers@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@hookform/resolvers@npm:4.0.0"
+  peerDependencies:
+    react-hook-form: ^7.0.0
+  checksum: 4839b4cf869e5fe5e271a8d827e3c5ce803a956675f8d66b010f6784caffa2d507ffd4c2065e209470735ebd6fa3d942d74bce1b6223761d48a94b6fd7216e33
   languageName: node
   linkType: hard
 
