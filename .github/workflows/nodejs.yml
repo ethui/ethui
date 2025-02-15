@@ -1,0 +1,48 @@
+name: nodejs
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "*"
+  pull_request:
+  merge_group:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  skip:
+    runs-on: ubuntu-latest
+    outputs:
+      skip: ${{ steps.skip_check.outputs.src }}
+    steps:
+      - uses: dorny/paths-filter@v3
+        id: skip_check
+        with:
+          filters: |
+            src:
+              - ".github/workflows/yarn.yml"
+              - "gui/**"
+              - "packages/**"
+              - "package.json"
+              - "yarn.lock"
+
+  node-lint:
+    needs: skip
+    if: ${{ needs.skip.outputs.skip == 'false' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install -g yarn
+      - uses: actions/setup-node@v4
+        with:
+          cache: "yarn"
+          node-version: "22"
+
+      - run: yarn install --frozen-lockfile
+      - run: cat packages/abiparse/package.json
+      - run: yarn lint
+      - run: yarn test
