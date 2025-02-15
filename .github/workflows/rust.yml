@@ -20,8 +20,8 @@ jobs:
   check-skip:
     runs-on: ubuntu-latest
     outputs:
-      skip-rust: ${{ steps.skip_rust.outputs.src }}
-      skip-lock: ${{ steps.skip_lock.outputs.src }}
+      rust: ${{ steps.skip_rust.outputs.src }}
+      lock: ${{ steps.skip_lock.outputs.src }}
     steps:
       - uses: dorny/paths-filter@v3
         id: skip_rust
@@ -52,7 +52,7 @@ jobs:
 
   cargo-test:
     needs: check-skip
-    if: ${{ needs.check-skip.outputs.skip-rust == 'false' }}
+    if: needs.check-skip.outputs.rust == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -78,7 +78,7 @@ jobs:
 
   cargo-clippy:
     needs: check-skip
-    if: ${{ needs.check-skip.outputs.skip-rust == 'false' }}
+    if: needs.check-skip.outputs.rust == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -106,7 +106,7 @@ jobs:
 
   cargo-deny:
     needs: check-skip
-    if: ${{ needs.check-skip.outputs.skip-lock == 'false' }}
+    if: needs.check-skip.outputs.lock == 'true'
     runs-on: ubuntu-latest
     strategy:
       matrix:

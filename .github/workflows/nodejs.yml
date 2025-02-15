@@ -32,7 +32,7 @@ jobs:
 
   node-lint:
     needs: check-skip
-    if: ${{ needs.check-skip.outputs.skip == 'false' }}
+    if: needs.check-skip.outputs.skip == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
