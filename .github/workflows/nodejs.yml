@@ -31,7 +31,7 @@ jobs:
               - "yarn.lock"
 
   node-lint:
-    needs: skip
+    needs: check-skip
     if: ${{ needs.check-skip.outputs.skip == 'false' }}
     runs-on: ubuntu-latest
     steps:

@@ -51,7 +51,7 @@ jobs:
               - "deny.toml"
 
   cargo-test:
-    needs: skip
+    needs: check-skip
     if: ${{ needs.check-skip.outputs.skip-rust == 'false' }}
     runs-on: ubuntu-latest
     steps:
@@ -77,7 +77,7 @@ jobs:
       - run: cargo nextest run --workspace
 
   cargo-clippy:
-    needs: skip
+    needs: check-skip
     if: ${{ needs.check-skip.outputs.skip-rust == 'false' }}
     runs-on: ubuntu-latest
     steps:
@@ -105,7 +105,7 @@ jobs:
       - run: cargo sqlx prepare --workspace --check
 
   cargo-deny:
-    needs: skip
+    needs: check-skip
     if: ${{ needs.check-skip.outputs.skip-lock == 'false' }}
     runs-on: ubuntu-latest
     strategy:
