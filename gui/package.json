@@ -19,7 +19,7 @@
     "@ethui/types": "*",
     "@ethui/ui": "0.0.8",
     "@fontsource/source-code-pro": "^5.1.1",
-    "@hookform/resolvers": "^3.10.0",
+    "@hookform/resolvers": "^4.1.0",
     "@radix-ui/react-collapsible": "^1.1.3",
     "@tanstack/react-query": "^5.66.0",
     "@tanstack/react-router": "^1.104.0",
