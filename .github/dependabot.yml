@@ -7,12 +7,12 @@ version: 2
 updates:
   - package-ecosystem: "npm"
     directory: "/"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 20
     schedule:
-      interval: "daily"
+      interval: "weekly"
 
   - package-ecosystem: "cargo"
     directory: "/"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 20
     schedule:
-      interval: "daily"
+      interval: "weekly"
