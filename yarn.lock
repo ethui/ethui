@@ -1206,7 +1206,7 @@ __metadata:
   dependencies:
     "@types/core-js": "npm:^2.5.8"
     "@types/lodash-es": "npm:^4.17.12"
-    "@types/node": "npm:^22.13.1"
+    "@types/node": "npm:^22.13.4"
     typescript: "npm:5.7.3"
     viem: "npm:^2.22.21"
   languageName: unknown
@@ -1247,7 +1247,6 @@ __metadata:
     "@tanstack/react-router": "npm:^1.104.0"
     "@tanstack/router-devtools": "npm:^1.102.1"
     "@tanstack/router-plugin": "npm:^1.102.2"
-    "@tanstack/router-vite-plugin": "npm:^1.102.5"
     "@tauri-apps/api": "npm:2.2.0"
     "@tauri-apps/cli": "npm:^2.2.7"
     "@tauri-apps/plugin-clipboard-manager": "npm:^2.2.1"
@@ -1255,7 +1254,7 @@ __metadata:
     "@types/chrome": "npm:^0.0.301"
     "@types/core-js": "npm:^2.5.8"
     "@types/lodash-es": "npm:^4.17.12"
-    "@types/node": "npm:^22.13.1"
+    "@types/node": "npm:^22.13.4"
     "@types/react": "npm:^18.3.18"
     "@types/react-dom": "npm:^18.3.5"
     "@types/react-infinite-scroller": "npm:^1.2.5"
@@ -1299,7 +1298,7 @@ __metadata:
   dependencies:
     "@types/core-js": "npm:^2.5.8"
     "@types/lodash-es": "npm:^4.17.12"
-    "@types/node": "npm:^22.13.1"
+    "@types/node": "npm:^22.13.4"
     jsdom: "npm:^26.0.0"
     typescript: "npm:5.7.3"
     viem: "npm:^2.22.21"
@@ -3570,23 +3569,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/router-generator@npm:^1.102.5":
-  version: 1.102.5
-  resolution: "@tanstack/router-generator@npm:1.102.5"
-  dependencies:
-    "@tanstack/virtual-file-routes": "npm:^1.99.0"
-    prettier: "npm:^3.5.0"
-    tsx: "npm:^4.19.2"
-    zod: "npm:^3.24.1"
-  peerDependencies:
-    "@tanstack/react-router": ^1.102.5
-  peerDependenciesMeta:
-    "@tanstack/react-router":
-      optional: true
-  checksum: 1146803ca7bd9bc11c86568e508b90ee8cb48fbfa882b87e1ce728cd93a37256d9184f0681831a335afe5dd3bf4743871067859959bd25a29de4410b9d66b849
-  languageName: node
-  linkType: hard
-
 "@tanstack/router-plugin@npm:^1.102.2":
   version: 1.102.2
   resolution: "@tanstack/router-plugin@npm:1.102.2"
@@ -3625,44 +3607,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/router-plugin@npm:^1.102.5":
-  version: 1.102.5
-  resolution: "@tanstack/router-plugin@npm:1.102.5"
-  dependencies:
-    "@babel/core": "npm:^7.26.8"
-    "@babel/plugin-syntax-jsx": "npm:^7.25.9"
-    "@babel/plugin-syntax-typescript": "npm:^7.25.9"
-    "@babel/template": "npm:^7.26.8"
-    "@babel/traverse": "npm:^7.26.8"
-    "@babel/types": "npm:^7.26.8"
-    "@tanstack/router-generator": "npm:^1.102.5"
-    "@tanstack/router-utils": "npm:^1.102.2"
-    "@tanstack/virtual-file-routes": "npm:^1.99.0"
-    "@types/babel__core": "npm:^7.20.5"
-    "@types/babel__template": "npm:^7.4.4"
-    "@types/babel__traverse": "npm:^7.20.6"
-    babel-dead-code-elimination: "npm:^1.0.9"
-    chokidar: "npm:^3.6.0"
-    unplugin: "npm:^2.1.2"
-    zod: "npm:^3.24.1"
-  peerDependencies:
-    "@rsbuild/core": ">=1.0.2"
-    "@tanstack/react-router": ^1.102.5
-    vite: ">=5.0.0 || >=6.0.0"
-    webpack: ">=5.92.0"
-  peerDependenciesMeta:
-    "@rsbuild/core":
-      optional: true
-    "@tanstack/react-router":
-      optional: true
-    vite:
-      optional: true
-    webpack:
-      optional: true
-  checksum: f46f90e7d16063932f16957871e6e41409492fc7107c066fe24baa58bfc652a8896fe8293d026dd77537a5293b6f81ac0e001cc84b818f704e7f790559f74626
-  languageName: node
-  linkType: hard
-
 "@tanstack/router-utils@npm:^1.102.2":
   version: 1.102.2
   resolution: "@tanstack/router-utils@npm:1.102.2"
@@ -3672,15 +3616,6 @@ __metadata:
     ansis: "npm:^3.11.0"
     diff: "npm:^7.0.0"
   checksum: 31cb3d4599778ea4955440e59a4de1e543bf908d61a67cae0835b714198021347e6de8fc7aac0dcf92cac2df2c152268e2dbfbf0add8ede530b108b828515bf5
-  languageName: node
-  linkType: hard
-
-"@tanstack/router-vite-plugin@npm:^1.102.5":
-  version: 1.102.5
-  resolution: "@tanstack/router-vite-plugin@npm:1.102.5"
-  dependencies:
-    "@tanstack/router-plugin": "npm:^1.102.5"
-  checksum: a829eaa64cfce56b7a0fe3669c5e54902633752222d894efbf6eeca39cc5579f70be07f59e14d0c223573f96c6351242c9db9f4b22c8c0d1dbbb0d4d14615c59
   languageName: node
   linkType: hard
 
@@ -3975,12 +3910,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^22.13.1":
-  version: 22.13.1
-  resolution: "@types/node@npm:22.13.1"
+"@types/node@npm:^22.13.4":
+  version: 22.13.4
+  resolution: "@types/node@npm:22.13.4"
   dependencies:
     undici-types: "npm:~6.20.0"
-  checksum: d4e56d41d8bd53de93da2651c0a0234e330bd7b1b6d071b1a94bd3b5ee2d9f387519e739c52a15c1faa4fb9d97e825b848421af4b2e50e6518011e7adb4a34b7
+  checksum: 3a234fa7766a3efc382cf81f66f474c26cdab2f54f43f757634c81c0444eb2160c2dabbde9741e4983078a318a88515b65416b5f1ab5478548579d7b3ead1d95
   languageName: node
   linkType: hard
 
