@@ -25,7 +25,7 @@ jobs:
       - uses: dorny/paths-filter@v3
         id: skip_check
         with:
-          filters:
+          filters: |
             src:
               - ".github/workflows/rust.yml"
               - "bin/**"
