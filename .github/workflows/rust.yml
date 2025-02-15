@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       rust: ${{ steps.skip_rust.outputs.src }}
-      lock: ${{ steps.skip_lock.outputs.src }}
+      deps: ${{ steps.skip_deps.outputs.src }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -41,7 +41,7 @@ jobs:
               - "rust-toolchain.toml"
 
       - uses: dorny/paths-filter@v3
-        id: skip_lock
+        id: skip_deps
         with:
           filters: |
             src:
@@ -107,32 +107,10 @@ jobs:
 
   cargo-deny:
     needs: check-skip
-    if: needs.check-skip.outputs.lock == 'true'
+    if: needs.check-skip.outputs.deps == 'true'
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        checks:
-          - advisories
-          - bans licenses sources
-
-    # Prevent sudden announcement of a new advisory from failing ci:
-    continue-on-error: ${{ matrix.checks == 'advisories' }}
-
     steps:
       - uses: actions/checkout@v4
-
-      # check if cargo.lock changed
-      # only needed in advisories
-      - uses: dorny/paths-filter@v2
-        id: lock
-        with:
-          filters: |
-            src:
-              - '**/Cargo.lock'
-        if: ${{ matrix.checks == 'advisories' }}
-
       - uses: EmbarkStudios/cargo-deny-action@v2.0.1
         with:
-          command: check ${{ matrix.checks }}
-        # conditionally run advisories only if lock changed
-        if: ${{ matrix.checks != 'advisories' || steps.lock.outputs.src == 'true' }}
+          command: check advisories bans licenses sources
