@@ -23,6 +23,7 @@ jobs:
       rust: ${{ steps.skip_rust.outputs.src }}
       lock: ${{ steps.skip_lock.outputs.src }}
     steps:
+      - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
         id: skip_rust
         with:

@@ -19,6 +19,7 @@ jobs:
     outputs:
       skip: ${{ steps.skip_check.outputs.src }}
     steps:
+      - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
         id: skip_check
         with:
