@@ -1,4 +1,4 @@
-name: yarn
+name: nodejs
 
 on:
   push:
@@ -7,27 +7,32 @@ on:
     tags:
       - "*"
   pull_request:
-    types: [opened, synchronize]
-    paths:
-      - ".github/workflows/yarn.yml"
-      - "gui/**"
-      - "packages/**"
-      - "package.json"
-      - "yarn.lock"
   merge_group:
-    paths:
-      - ".github/workflows/yarn.yml"
-      - "gui/**"
-      - "packages/**"
-      - "package.json"
-      - "yarn.lock"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  lint:
+  check-skip:
+    runs-on: ubuntu-latest
+    outputs:
+      skip: ${{ steps.skip_check.outputs.src }}
+    steps:
+      - uses: dorny/paths-filter@v3
+        id: skip_check
+        with:
+          filters: |
+            src:
+              - ".github/workflows/yarn.yml"
+              - "gui/**"
+              - "packages/**"
+              - "package.json"
+              - "yarn.lock"
+
+  node-lint:
+    needs: check-skip
+    if: needs.check-skip.outputs.skip == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
