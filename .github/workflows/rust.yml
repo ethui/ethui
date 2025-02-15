@@ -65,6 +65,8 @@ jobs:
       - run: cargo nextest run --workspace
 
   clippy:
+    needs: skip
+    if: ${{ needs.skip.outputs.skip == 'false' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -91,6 +93,8 @@ jobs:
       - run: cargo sqlx prepare --workspace --check
 
   deny:
+    needs: skip
+    if: ${{ needs.skip.outputs.skip == 'false' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
