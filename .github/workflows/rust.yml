@@ -17,7 +17,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  skip:
+  check-skip:
     runs-on: ubuntu-latest
     outputs:
       skip-rust: ${{ steps.skip_rust.outputs.src }}
@@ -52,7 +52,7 @@ jobs:
 
   cargo-test:
     needs: skip
-    if: ${{ needs.skip-rust.outputs.skip == 'false' }}
+    if: ${{ needs.check-skip.outputs.skip-rust == 'false' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -78,7 +78,7 @@ jobs:
 
   cargo-clippy:
     needs: skip
-    if: ${{ needs.skip-rust.outputs.skip == 'false' }}
+    if: ${{ needs.check-skip.outputs.skip-rust == 'false' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -106,7 +106,7 @@ jobs:
 
   cargo-deny:
     needs: skip
-    if: ${{ needs.skip-lock.outputs.skip == 'false' }}
+    if: ${{ needs.check-skip.outputs.skip-lock == 'false' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
