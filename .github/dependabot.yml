@@ -7,12 +7,29 @@ version: 2
 updates:
   - package-ecosystem: "npm"
     directory: "/"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 20
     schedule:
-      interval: "daily"
+      interval: "weekly"
+    groups:
+      alloy:
+        patterns:
+          - "alloy"
+          - "alloy-chains"
 
   - package-ecosystem: "cargo"
     directory: "/"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 20
     schedule:
-      interval: "daily"
+      interval: "weekly"
+    groups:
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+      tanstack-router:
+        patterns:
+          - "@tanstack/react-router"
+          - "@tanstack/router-devtools"
+          - "@tanstack/router-vite-plugin"
