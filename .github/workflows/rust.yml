@@ -26,16 +26,17 @@ jobs:
         id: skip_check
         with:
           filters:
-            - ".github/workflows/rust.yml"
-            - "bin/**"
-            - "migrations/**"
-            - "crates/**"
-            - "sqlx/**"
-            - "Cargo.toml"
-            - "Cargo.lock"
-            - "deny.toml"
-            - "rustfmt.toml"
-            - "rust-toolchain.toml"
+            src:
+              - ".github/workflows/rust.yml"
+              - "bin/**"
+              - "migrations/**"
+              - "crates/**"
+              - "sqlx/**"
+              - "Cargo.toml"
+              - "Cargo.lock"
+              - "deny.toml"
+              - "rustfmt.toml"
+              - "rust-toolchain.toml"
 
   test:
     needs: skip

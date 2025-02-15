@@ -23,11 +23,12 @@ jobs:
         id: skip_check
         with:
           filters:
-            - ".github/workflows/yarn.yml"
-            - "gui/**"
-            - "packages/**"
-            - "package.json"
-            - "yarn.lock"
+            src:
+              - ".github/workflows/yarn.yml"
+              - "gui/**"
+              - "packages/**"
+              - "package.json"
+              - "yarn.lock"
 
   lint:
     needs: skip
