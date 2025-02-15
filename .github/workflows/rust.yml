@@ -38,6 +38,8 @@ jobs:
             - "rust-toolchain.toml"
 
   test:
+    needs: skip
+    if: ${{ needs.skip.outputs.skip == 'false' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

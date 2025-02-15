@@ -30,8 +30,8 @@ jobs:
             - "yarn.lock"
 
   lint:
-    needs: check-skip
-    if: ${{ needs.check-skip.outputs.skip == 'false' }}
+    needs: skip
+    if: ${{ needs.skip.outputs.skip == 'false' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
