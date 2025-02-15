@@ -55,7 +55,7 @@
   "devDependencies": {
     "@tanstack/react-query-devtools": "^5.66.0",
     "@tanstack/router-devtools": "^1.102.1",
-    "@tanstack/router-plugin": "^1.102.2",
+    "@tanstack/router-plugin": "^1.105.0",
     "@types/chrome": "^0.0.301",
     "@types/core-js": "^2.5.8",
     "@types/lodash-es": "^4.17.12",
