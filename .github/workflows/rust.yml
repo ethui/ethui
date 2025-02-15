@@ -7,30 +7,7 @@ on:
     tags:
       - "*"
   pull_request:
-    types: [opened, synchronize]
-    paths:
-      - ".github/workflows/rust.yml"
-      - "bin/**"
-      - "migrations/**"
-      - "crates/**"
-      - "sqlx/**"
-      - "Cargo.toml"
-      - "Cargo.lock"
-      - "deny.toml"
-      - "rustfmt.toml"
-      - "rust-toolchain.toml"
   merge_group:
-    paths:
-      - ".github/workflows/rust.yml"
-      - "bin/**"
-      - "migrations/**"
-      - "crates/**"
-      - "sqlx/**"
-      - "Cargo.toml"
-      - "Cargo.lock"
-      - "deny.toml"
-      - "rustfmt.toml"
-      - "rust-toolchain.toml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -40,7 +17,43 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  test:
+  check-skip:
+    runs-on: ubuntu-latest
+    outputs:
+      rust: ${{ steps.skip_rust.outputs.src }}
+      lock: ${{ steps.skip_lock.outputs.src }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: skip_rust
+        with:
+          filters: |
+            src:
+              - ".github/workflows/rust.yml"
+              - "bin/**"
+              - "migrations/**"
+              - "crates/**"
+              - "sqlx/**"
+              - "Cargo.toml"
+              - "Cargo.lock"
+              - "deny.toml"
+              - "rustfmt.toml"
+              - "rust-toolchain.toml"
+
+      - uses: dorny/paths-filter@v3
+        id: skip_lock
+        with:
+          filters: |
+            src:
+              - ".github/workflows/rust.yml"
+              - "Cargo.toml"
+              - "**/Cargo.toml"
+              - "Cargo.lock"
+              - "deny.toml"
+
+  cargo-test:
+    needs: check-skip
+    if: needs.check-skip.outputs.rust == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -64,7 +77,9 @@ jobs:
 
       - run: cargo nextest run --workspace
 
-  clippy:
+  cargo-clippy:
+    needs: check-skip
+    if: needs.check-skip.outputs.rust == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -90,7 +105,9 @@ jobs:
           tool: sqlx-cli
       - run: cargo sqlx prepare --workspace --check
 
-  deny:
+  cargo-deny:
+    needs: check-skip
+    if: needs.check-skip.outputs.lock == 'true'
     runs-on: ubuntu-latest
     strategy:
       matrix:
