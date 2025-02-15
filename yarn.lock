@@ -1268,7 +1268,7 @@ __metadata:
     kbar: "npm:0.1.0-beta.45"
     lodash-es: "npm:^4.17.21"
     lucide-react: "npm:^0.475.0"
-    motion: "npm:^12.0.11"
+    motion: "npm:^12.4.3"
     next-themes: "npm:^0.4.4"
     postcss: "npm:^8.5.2"
     react: "npm:^18.3.1"
@@ -5114,9 +5114,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:^12.0.11":
-  version: 12.0.11
-  resolution: "framer-motion@npm:12.0.11"
+"framer-motion@npm:^12.4.3":
+  version: 12.4.3
+  resolution: "framer-motion@npm:12.4.3"
   dependencies:
     motion-dom: "npm:^12.0.0"
     motion-utils: "npm:^12.0.0"
@@ -5132,7 +5132,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: cf8b504c66e8ca067db48b95f1601c9da7b040c4877caeee952a7c97873612580782f41750a7c611f0dc937d7b60941fd8d223390440fc64e0f99992a3cfca77
+  checksum: 4f6a4c859c5cc96c234ac6c43ede0ef7a3472f9449fad72dd9fa518b30779b17ee785ab5ca20e626a303d7a0b9b4709bd9a12125381b948e6246b5b94fef87f2
   languageName: node
   linkType: hard
 
@@ -6011,11 +6011,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"motion@npm:^12.0.11":
-  version: 12.0.11
-  resolution: "motion@npm:12.0.11"
+"motion@npm:^12.4.3":
+  version: 12.4.3
+  resolution: "motion@npm:12.4.3"
   dependencies:
-    framer-motion: "npm:^12.0.11"
+    framer-motion: "npm:^12.4.3"
     tslib: "npm:^2.4.0"
   peerDependencies:
     "@emotion/is-prop-valid": "*"
@@ -6028,7 +6028,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 19b72fe0b9ccb42549c7bfad84a9612f9ca35bc9ba980b4bffc5324000b9b1a350bb8efb039692b84e8822dd41cf59f87439003f8c46cbf40c3d6c47c7c834d6
+  checksum: 359d6bd305249b3987a629e38a59bc2488062c5d3eb078e086155939a0594ee6b4651d03cdaf00e2c26f087f4b7cb16770c4926aa48a4f8a0a4a94710d12b09a
   languageName: node
   linkType: hard
 
