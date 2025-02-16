@@ -1245,7 +1245,7 @@ __metadata:
     "@tanstack/react-query": "npm:^5.66.0"
     "@tanstack/react-query-devtools": "npm:^5.66.0"
     "@tanstack/react-router": "npm:^1.105.0"
-    "@tanstack/router-devtools": "npm:^1.102.1"
+    "@tanstack/router-devtools": "npm:^1.105.0"
     "@tanstack/router-plugin": "npm:^1.102.2"
     "@tauri-apps/api": "npm:2.2.0"
     "@tauri-apps/cli": "npm:^2.2.7"
@@ -3527,17 +3527,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/router-devtools@npm:^1.102.1":
-  version: 1.102.1
-  resolution: "@tanstack/router-devtools@npm:1.102.1"
+"@tanstack/router-devtools@npm:^1.105.0":
+  version: 1.105.0
+  resolution: "@tanstack/router-devtools@npm:1.105.0"
   dependencies:
     clsx: "npm:^2.1.1"
     goober: "npm:^2.1.16"
   peerDependencies:
-    "@tanstack/react-router": ^1.102.1
+    "@tanstack/react-router": ^1.105.0
+    csstype: ^3.0.10
     react: ">=18.0.0 || >=19.0.0"
     react-dom: ">=18.0.0 || >=19.0.0"
-  checksum: d78a684b604a317cbb1dfba629701a9a75b31ac0b21dc254527fb23e158cc1495ac7de714b2355f1575a3c3205e4581fc4efb10b5b973f04844be22511d510b6
+  peerDependenciesMeta:
+    csstype:
+      optional: true
+  checksum: 7d817cd8e93baffd291e26f51c36662bac64e7b36ca58d391198b56335dfc3f65e164a964036a1eac1e8e5e90c71dfb52cc3e83defac5f4b6b12f7ed8d041070
   languageName: node
   linkType: hard
 
