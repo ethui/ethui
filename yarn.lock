@@ -5368,10 +5368,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-to-image@npm:^1.11.12":
-  version: 1.11.12
-  resolution: "html-to-image@npm:1.11.12"
-  checksum: 0022c30ef3f86982f62a60337f15ec1327cd236333779a42f00886e0b58c4b3746ad118932ed67aa242788fafb8825e537aa4af156385c0d3a4a67f98bb769f3
+"html-to-image@npm:^1.11.13":
+  version: 1.11.13
+  resolution: "html-to-image@npm:1.11.13"
+  checksum: 03bd7192d87b99499e37ff12a8e2b41ddce4cf8e33a93dfadff18df0f213434c7f1ba8328db2158f4805da07b7aec3c90aec3152908281153217e86784218b10
   languageName: node
   linkType: hard
 
@@ -6920,7 +6920,7 @@ __metadata:
     "@biomejs/biome": "npm:^1.9.4"
     "@tauri-apps/cli": "npm:^2.2.7"
     assert: "npm:^2.1.0"
-    html-to-image: "npm:^1.11.12"
+    html-to-image: "npm:^1.11.13"
     ts-unused-exports: "npm:^11.0.1"
     tsx: "npm:^4.19.2"
     typescript: "npm:5.7.3"
