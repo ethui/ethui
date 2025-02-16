@@ -1221,7 +1221,7 @@ __metadata:
     "@types/react": "npm:^18.3.18"
     nearly: "npm:^1.8.1"
     react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react-dom: "npm:^19.0.0"
     viem: "npm:^2.23.2"
   peerDependencies:
     "@emotion/react": ^11.11.4
@@ -1256,7 +1256,7 @@ __metadata:
     "@types/lodash-es": "npm:^4.17.12"
     "@types/node": "npm:^22.13.4"
     "@types/react": "npm:^18.3.18"
-    "@types/react-dom": "npm:^18.3.5"
+    "@types/react-dom": "npm:^19.0.3"
     "@types/react-infinite-scroller": "npm:^1.2.5"
     "@uidotdev/usehooks": "npm:^2.4.1"
     "@vitejs/plugin-react-swc": "npm:^3.8.0"
@@ -1272,7 +1272,7 @@ __metadata:
     next-themes: "npm:^0.4.4"
     postcss: "npm:^8.5.2"
     react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react-dom: "npm:^19.0.0"
     react-error-boundary: "npm:^5.0.0"
     react-hook-form: "npm:^7.54.2"
     react-infinite-scroller: "npm:^1.2.6"
@@ -3919,12 +3919,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18.3.5":
-  version: 18.3.5
-  resolution: "@types/react-dom@npm:18.3.5"
+"@types/react-dom@npm:^19.0.3":
+  version: 19.0.3
+  resolution: "@types/react-dom@npm:19.0.3"
   peerDependencies:
-    "@types/react": ^18.0.0
-  checksum: b163d35a6b32a79f5782574a7aeb12a31a647e248792bf437e6d596e2676961c394c5e3c6e91d1ce44ae90441dbaf93158efb4f051c0d61e2612f1cb04ce4faa
+    "@types/react": ^19.0.0
+  checksum: 3867427b333cbe8cbba496d7cc20ec9676d32c25ae44f4d1263a4129d42e57cf4adf0039ad263432f1215b88075c27d326e7eb4ed646128235d01a76e661d48f
   languageName: node
   linkType: hard
 
@@ -6533,6 +6533,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-dom@npm:^19.0.0":
+  version: 19.0.0
+  resolution: "react-dom@npm:19.0.0"
+  dependencies:
+    scheduler: "npm:^0.25.0"
+  peerDependencies:
+    react: ^19.0.0
+  checksum: a36ce7ab507b237ae2759c984cdaad4af4096d8199fb65b3815c16825e5cfeb7293da790a3fc2184b52bfba7ba3ff31c058c01947aff6fd1a3701632aabaa6a9
+  languageName: node
+  linkType: hard
+
 "react-error-boundary@npm:^5.0.0":
   version: 5.0.0
   resolution: "react-error-boundary@npm:5.0.0"
@@ -6969,6 +6980,13 @@ __metadata:
   dependencies:
     loose-envify: "npm:^1.1.0"
   checksum: 26383305e249651d4c58e6705d5f8425f153211aef95f15161c151f7b8de885f24751b377e4a0b3dd42cce09aad3f87a61dab7636859c0d89b7daf1a1e2a5c78
+  languageName: node
+  linkType: hard
+
+"scheduler@npm:^0.25.0":
+  version: 0.25.0
+  resolution: "scheduler@npm:0.25.0"
+  checksum: a4bb1da406b613ce72c1299db43759526058fdcc413999c3c3e0db8956df7633acf395cb20eb2303b6a65d658d66b6585d344460abaee8080b4aa931f10eaafe
   languageName: node
   linkType: hard
 
