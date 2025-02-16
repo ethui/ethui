@@ -1245,13 +1245,13 @@ __metadata:
     "@tanstack/react-query": "npm:^5.66.0"
     "@tanstack/react-query-devtools": "npm:^5.66.0"
     "@tanstack/react-router": "npm:^1.105.0"
-    "@tanstack/router-devtools": "npm:^1.102.1"
+    "@tanstack/router-devtools": "npm:^1.105.0"
     "@tanstack/router-plugin": "npm:^1.102.2"
     "@tauri-apps/api": "npm:2.2.0"
     "@tauri-apps/cli": "npm:^2.2.7"
     "@tauri-apps/plugin-clipboard-manager": "npm:^2.2.1"
     "@tauri-apps/plugin-os": "npm:^2.2.0"
-    "@types/chrome": "npm:^0.0.301"
+    "@types/chrome": "npm:^0.0.304"
     "@types/core-js": "npm:^2.5.8"
     "@types/lodash-es": "npm:^4.17.12"
     "@types/node": "npm:^22.13.4"
@@ -1268,7 +1268,7 @@ __metadata:
     kbar: "npm:0.1.0-beta.45"
     lodash-es: "npm:^4.17.21"
     lucide-react: "npm:^0.475.0"
-    motion: "npm:^12.0.11"
+    motion: "npm:^12.4.3"
     next-themes: "npm:^0.4.4"
     postcss: "npm:^8.5.2"
     react: "npm:^18.3.1"
@@ -3527,17 +3527,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/router-devtools@npm:^1.102.1":
-  version: 1.102.1
-  resolution: "@tanstack/router-devtools@npm:1.102.1"
+"@tanstack/router-devtools@npm:^1.105.0":
+  version: 1.105.0
+  resolution: "@tanstack/router-devtools@npm:1.105.0"
   dependencies:
     clsx: "npm:^2.1.1"
     goober: "npm:^2.1.16"
   peerDependencies:
-    "@tanstack/react-router": ^1.102.1
+    "@tanstack/react-router": ^1.105.0
+    csstype: ^3.0.10
     react: ">=18.0.0 || >=19.0.0"
     react-dom: ">=18.0.0 || >=19.0.0"
-  checksum: d78a684b604a317cbb1dfba629701a9a75b31ac0b21dc254527fb23e158cc1495ac7de714b2355f1575a3c3205e4581fc4efb10b5b973f04844be22511d510b6
+  peerDependenciesMeta:
+    csstype:
+      optional: true
+  checksum: 7d817cd8e93baffd291e26f51c36662bac64e7b36ca58d391198b56335dfc3f65e164a964036a1eac1e8e5e90c71dfb52cc3e83defac5f4b6b12f7ed8d041070
   languageName: node
   linkType: hard
 
@@ -3815,13 +3819,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chrome@npm:^0.0.301":
-  version: 0.0.301
-  resolution: "@types/chrome@npm:0.0.301"
+"@types/chrome@npm:^0.0.304":
+  version: 0.0.304
+  resolution: "@types/chrome@npm:0.0.304"
   dependencies:
     "@types/filesystem": "npm:*"
     "@types/har-format": "npm:*"
-  checksum: 4e7b693c27f35e830fbd4a64d25f46b4cdaa7f8690028a24ff39aa0f04f45510fa0ffe74bae747bea1aa59ac75c8145126bd810152d99d4dd8404acaed5bb1d6
+  checksum: 7f5d4a1a07d36abbe81e4572766d841491e374394c364b7a5f7340d3a82e21e120b0423a8c2487cfba76f1d045673c4e65959344b0608d55f495aaa51e7e8710
   languageName: node
   linkType: hard
 
@@ -5114,9 +5118,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:^12.0.11":
-  version: 12.0.11
-  resolution: "framer-motion@npm:12.0.11"
+"framer-motion@npm:^12.4.3":
+  version: 12.4.3
+  resolution: "framer-motion@npm:12.4.3"
   dependencies:
     motion-dom: "npm:^12.0.0"
     motion-utils: "npm:^12.0.0"
@@ -5132,7 +5136,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: cf8b504c66e8ca067db48b95f1601c9da7b040c4877caeee952a7c97873612580782f41750a7c611f0dc937d7b60941fd8d223390440fc64e0f99992a3cfca77
+  checksum: 4f6a4c859c5cc96c234ac6c43ede0ef7a3472f9449fad72dd9fa518b30779b17ee785ab5ca20e626a303d7a0b9b4709bd9a12125381b948e6246b5b94fef87f2
   languageName: node
   linkType: hard
 
@@ -5368,10 +5372,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-to-image@npm:^1.11.12":
-  version: 1.11.12
-  resolution: "html-to-image@npm:1.11.12"
-  checksum: 0022c30ef3f86982f62a60337f15ec1327cd236333779a42f00886e0b58c4b3746ad118932ed67aa242788fafb8825e537aa4af156385c0d3a4a67f98bb769f3
+"html-to-image@npm:^1.11.13":
+  version: 1.11.13
+  resolution: "html-to-image@npm:1.11.13"
+  checksum: 03bd7192d87b99499e37ff12a8e2b41ddce4cf8e33a93dfadff18df0f213434c7f1ba8328db2158f4805da07b7aec3c90aec3152908281153217e86784218b10
   languageName: node
   linkType: hard
 
@@ -6011,11 +6015,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"motion@npm:^12.0.11":
-  version: 12.0.11
-  resolution: "motion@npm:12.0.11"
+"motion@npm:^12.4.3":
+  version: 12.4.3
+  resolution: "motion@npm:12.4.3"
   dependencies:
-    framer-motion: "npm:^12.0.11"
+    framer-motion: "npm:^12.4.3"
     tslib: "npm:^2.4.0"
   peerDependencies:
     "@emotion/is-prop-valid": "*"
@@ -6028,7 +6032,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 19b72fe0b9ccb42549c7bfad84a9612f9ca35bc9ba980b4bffc5324000b9b1a350bb8efb039692b84e8822dd41cf59f87439003f8c46cbf40c3d6c47c7c834d6
+  checksum: 359d6bd305249b3987a629e38a59bc2488062c5d3eb078e086155939a0594ee6b4651d03cdaf00e2c26f087f4b7cb16770c4926aa48a4f8a0a4a94710d12b09a
   languageName: node
   linkType: hard
 
@@ -6920,7 +6924,7 @@ __metadata:
     "@biomejs/biome": "npm:^1.9.4"
     "@tauri-apps/cli": "npm:^2.2.7"
     assert: "npm:^2.1.0"
-    html-to-image: "npm:^1.11.12"
+    html-to-image: "npm:^1.11.13"
     ts-unused-exports: "npm:^11.0.1"
     tsx: "npm:^4.19.2"
     typescript: "npm:5.7.3"
