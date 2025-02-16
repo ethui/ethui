@@ -28,7 +28,7 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "assert": "^2.1.0",
-    "html-to-image": "^1.11.12",
+    "html-to-image": "^1.11.13",
     "ts-unused-exports": "^11.0.1",
     "tsx": "^4.19.2"
   },
