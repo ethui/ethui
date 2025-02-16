@@ -1208,7 +1208,7 @@ __metadata:
     "@types/lodash-es": "npm:^4.17.12"
     "@types/node": "npm:^22.13.4"
     typescript: "npm:5.7.3"
-    viem: "npm:^2.22.21"
+    viem: "npm:^2.23.2"
   languageName: unknown
   linkType: soft
 
@@ -1222,7 +1222,7 @@ __metadata:
     nearly: "npm:^1.8.1"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
-    viem: "npm:^2.22.21"
+    viem: "npm:^2.23.2"
   peerDependencies:
     "@emotion/react": ^11.11.4
     "@emotion/styled": ^11.11.5
@@ -1244,7 +1244,7 @@ __metadata:
     "@radix-ui/react-collapsible": "npm:^1.1.3"
     "@tanstack/react-query": "npm:^5.66.0"
     "@tanstack/react-query-devtools": "npm:^5.66.0"
-    "@tanstack/react-router": "npm:^1.104.0"
+    "@tanstack/react-router": "npm:^1.105.0"
     "@tanstack/router-devtools": "npm:^1.102.1"
     "@tanstack/router-plugin": "npm:^1.102.2"
     "@tauri-apps/api": "npm:2.2.0"
@@ -1281,7 +1281,7 @@ __metadata:
     tailwindcss-animate: "npm:^1.0.7"
     ts-unused-exports: "npm:^11.0.1"
     typescript: "npm:5.7.3"
-    viem: "npm:^2.22.21"
+    viem: "npm:^2.23.2"
     vite: "npm:^6.1.0"
     vite-plugin-babel-import: "npm:^2.0.5"
     vite-plugin-imp: "npm:^2.4.0"
@@ -1301,7 +1301,7 @@ __metadata:
     "@types/node": "npm:^22.13.4"
     jsdom: "npm:^26.0.0"
     typescript: "npm:5.7.3"
-    viem: "npm:^2.22.21"
+    viem: "npm:^2.23.2"
     zod: "npm:^3.24.2"
     zxcvbn-typescript: "npm:^5.0.1"
   peerDependencies:
@@ -3487,20 +3487,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-router@npm:^1.104.0":
-  version: 1.104.0
-  resolution: "@tanstack/react-router@npm:1.104.0"
+"@tanstack/react-router@npm:^1.105.0":
+  version: 1.105.0
+  resolution: "@tanstack/react-router@npm:1.105.0"
   dependencies:
     "@tanstack/history": "npm:1.99.13"
     "@tanstack/react-store": "npm:^0.7.0"
-    "@tanstack/router-core": "npm:^1.102.5"
+    "@tanstack/router-core": "npm:^1.104.1"
     jsesc: "npm:^3.1.0"
     tiny-invariant: "npm:^1.3.3"
     tiny-warning: "npm:^1.0.3"
   peerDependencies:
     react: ">=18.0.0 || >=19.0.0"
     react-dom: ">=18.0.0 || >=19.0.0"
-  checksum: 71c27ba5971b57b6dca83db4f2682f272417f7f85c76dce74082ccdd58133a75439facc199f67061cd5ab3f7ea9d7bb2d7910515ab674de174b28efc5bfcc28f
+  checksum: ccaf5b2e878c042c9f644d88160beb91dc8c101833eaf92894039a7fb1d47221e8732926711e5ea5a1f629c2228d9e8cb71427f983ea8e35057e503bb492e3bd
   languageName: node
   linkType: hard
 
@@ -3517,13 +3517,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/router-core@npm:^1.102.5":
-  version: 1.102.5
-  resolution: "@tanstack/router-core@npm:1.102.5"
+"@tanstack/router-core@npm:^1.104.1":
+  version: 1.104.1
+  resolution: "@tanstack/router-core@npm:1.104.1"
   dependencies:
     "@tanstack/history": "npm:1.99.13"
     "@tanstack/store": "npm:^0.7.0"
-  checksum: c71f30d677489ac4e6d86531d10e4ef5c638b76ad037c248288a25e963c3c9b9d8beb56b6390cc7dac92171412579c18f8d7963b5c0b9d72287c184003b52b9b
+  checksum: 47096c330bd61edf51d4c0fc5d3b82d1c5e3717e397f48b11eab591821461b22c875baa2e2d2289e35d03c666ba5b8a8227b42f92ac00115485c34ee2f7adf22
   languageName: node
   linkType: hard
 
@@ -7696,6 +7696,27 @@ __metadata:
     typescript:
       optional: true
   checksum: 7d502ea91310556878eabe31bbfac56d0d87589a3f9f07608df26e0e044d049ca885c15554f3fae8dced66a2e7d8652d3cfc93c8878b754a44ec4d50ead4a3d3
+  languageName: node
+  linkType: hard
+
+"viem@npm:^2.23.2":
+  version: 2.23.2
+  resolution: "viem@npm:2.23.2"
+  dependencies:
+    "@noble/curves": "npm:1.8.1"
+    "@noble/hashes": "npm:1.7.1"
+    "@scure/bip32": "npm:1.6.2"
+    "@scure/bip39": "npm:1.5.4"
+    abitype: "npm:1.0.8"
+    isows: "npm:1.0.6"
+    ox: "npm:0.6.7"
+    ws: "npm:8.18.0"
+  peerDependencies:
+    typescript: ">=5.0.4"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 39332d008d2ab0700aa57f541bb199350daecdfb722ae1b262404b02944e11205368fcc696cc0ab8327b9f90bf7172014687ae3e5d9091978e9d174885ccff2d
   languageName: node
   linkType: hard
 
