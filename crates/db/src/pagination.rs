@@ -49,7 +49,7 @@ impl<T> Paginated<T> {
     }
 }
 
-#[derive(Deserialize, Debug, Default)]
+#[derive(Deserialize, Debug, Default, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct TxIdx {
     pub block_number: u64,

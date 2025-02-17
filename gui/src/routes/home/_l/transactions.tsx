@@ -34,6 +34,7 @@ import { useEventListener } from "#/hooks/useEventListener";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
+import { AnimatePresence, motion } from "framer-motion";
 
 export const Route = createFileRoute("/home/_l/transactions")({
   beforeLoad: () => ({ breadcrumb: "Transactions" }),
@@ -43,8 +44,10 @@ export const Route = createFileRoute("/home/_l/transactions")({
 function Txs() {
   const account = useWallets((s) => s.address);
   const chainId = useNetworks((s) => s.current?.chain_id);
+  const pageSize = 10;
 
   const [items, setItems] = useState<PaginatedTx[]>([]);
+  const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -55,33 +58,48 @@ function Txs() {
       position: items.at(-1)?.position,
     };
   }
+  let firstKnown = null;
+  if (items.at(0)) {
+    firstKnown = {
+      blockNumber: items.at(0)?.blockNumber,
+      position: items.at(0)?.position,
+    };
+  }
 
   const next = useCallback(async () => {
     setLoading(true);
-    console.log("next");
+    console.log("next", lastKnown);
 
-    invoke<PaginatedTx[]>("db_get_next_transactions", {
+    invoke<PaginatedTx[]>("db_get_older_transactions", {
       address: account,
       chainId,
+      max: pageSize,
       lastKnown,
     }).then((newItems) => {
       console.log(newItems);
+      if (newItems.length < pageSize) {
+        setHasMore(false);
+      }
       setItems([...items, ...newItems]);
-      setLoading(false);
+      setTimeout(() => {
+        setLoading(false);
+      }, 200);
     });
   }, [account, chainId, items, lastKnown]);
 
-  const hasMore = false; //TODO!pages.at(-1)?.last;
-
   const loadNew = () => {
-    invoke("db_get_new_transactions", {
+    invoke<PaginatedTx[]>("db_get_newer_transactions", {
       address: account,
       chainId,
-      lastKnown,
+      max: pageSize,
+      firstKnown,
+    }).then((newItems) => {
+      console.log(newItems.length);
+      setItems([...newItems, ...items]);
     });
-    setItems([]);
   };
 
+  console.log(items.length);
   useEventListener("txs-updated", loadNew);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies(account): used only to trigger effect
@@ -95,16 +113,34 @@ function Txs() {
   return (
     <div className="flex w-full flex-col items-center gap-2" ref={wrapperRef}>
       <Accordion type="multiple" className="w-full">
-        {items.map((tx, i) => (
-          <AccordionItem key={`${tx.hash} ${i}`} value={tx.hash}>
-            <AccordionTrigger>
-              <Summary account={account} tx={tx} />
-            </AccordionTrigger>
-            <AccordionContent>
-              <Details tx={tx} chainId={chainId} />
-            </AccordionContent>
-          </AccordionItem>
-        ))}
+        <AnimatePresence initial={false}>
+          {items.map((tx) => (
+            <AccordionItem key={`${tx.hash}`} value={tx.hash} asChild>
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{
+                  height: { duration: 0.4 },
+                  opacity: { duration: 0.3 },
+                }}
+              >
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
+                >
+                  <AccordionTrigger>
+                    <Summary account={account} tx={tx} />
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <Details tx={tx} chainId={chainId} />
+                  </AccordionContent>
+                </motion.div>
+              </motion.div>
+            </AccordionItem>
+          ))}
+        </AnimatePresence>
       </Accordion>
       <InfiniteScroll
         next={next}

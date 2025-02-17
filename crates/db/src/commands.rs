@@ -8,26 +8,26 @@ use super::{Paginated, Pagination, Result};
 use crate::{pagination::TxIdx, Db};
 
 #[tauri::command]
-pub async fn db_get_prev_transactions(
+pub async fn db_get_newer_transactions(
     address: Address,
     chain_id: u32,
     max: u32,
     first_known: Option<TxIdx>,
     db: tauri::State<'_, Db>,
 ) -> Result<Vec<Transaction>> {
-    db.get_next_transactions(chain_id, address, max, first_known)
+    db.get_older_transactions(chain_id, address, max, first_known)
         .await
 }
 
 #[tauri::command]
-pub async fn db_get_next_transactions(
+pub async fn db_get_older_transactions(
     address: Address,
     chain_id: u32,
     max: u32,
     last_known: Option<TxIdx>,
     db: tauri::State<'_, Db>,
 ) -> Result<Vec<Transaction>> {
-    db.get_next_transactions(chain_id, address, max, last_known)
+    db.get_older_transactions(chain_id, address, max, last_known)
         .await
 }
 

@@ -104,7 +104,7 @@ impl DbInner {
         Ok(tx)
     }
 
-    pub async fn get_first_transactions(
+    pub async fn get_newer_transactions(
         &self,
         chain_id: u32,
         from_or_to: Address,
@@ -154,7 +154,7 @@ impl DbInner {
         Ok(items)
     }
 
-    pub async fn get_next_transactions(
+    pub async fn get_older_transactions(
         &self,
         chain_id: u32,
         from_or_to: Address,
@@ -162,16 +162,18 @@ impl DbInner {
         last_known: Option<TxIdx>,
     ) -> Result<Vec<Transaction>> {
         let from_or_to = from_or_to.to_string();
-        let last_known = last_known.unwrap_or_default();
-        let last_known_block = last_known.block_number as u32;
-        let last_known_position = last_known.position as u32;
+        let last_known_block = last_known
+            .clone()
+            .map(|l| l.block_number as u32)
+            .unwrap_or(u32::MAX);
+        let last_known_position = last_known.map(|l| l.position as u32).unwrap_or(u32::MAX);
 
         let rows = sqlx::query!(
             r#" SELECT value as 'value?', hash, from_address, to_address, block_number, position, status, incomplete as 'incomplete!'
                 FROM transactions
                 WHERE chain_id = ?
                 AND (from_address = ? OR to_address = ?) COLLATE NOCASE
-                AND (block_number > ? OR (block_number = ? AND position > ?))
+                AND (block_number < ? OR (block_number = ? AND position < ?))
                 ORDER BY block_number DESC, position DESC
                 LIMIT ?"#,
             chain_id,
