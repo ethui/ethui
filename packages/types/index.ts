@@ -106,7 +106,7 @@ export interface Peer {
 
 export interface Pagination {
   page?: number;
-  page_size?: number;
+  pageSize?: number;
 }
 
 export interface Paginated<T> {

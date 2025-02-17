@@ -7,9 +7,8 @@ import {
 import { createFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
-import { LoaderCircle } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-import InfiniteScroll from "react-infinite-scroller";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { InfiniteScroll } from "@ethui/ui/components/infinite-scroll";
 import { type Abi, type Address, formatEther, formatGwei } from "viem";
 
 import type { Paginated, PaginatedTx, Pagination, Tx } from "@ethui/types";
@@ -22,7 +21,12 @@ import {
 } from "@ethui/ui/components/shadcn/accordion";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { SolidityCall } from "@ethui/ui/components/solidity-call";
-import { MoveDownLeft, MoveUpRight, ReceiptText } from "lucide-react";
+import {
+  LoaderCircle,
+  MoveDownLeft,
+  MoveUpRight,
+  ReceiptText,
+} from "lucide-react";
 import { AddressView } from "#/components/AddressView";
 import { Datapoint } from "#/components/Datapoint";
 import { HashView } from "#/components/HashView";
@@ -41,8 +45,11 @@ function Txs() {
   const chainId = useNetworks((s) => s.current?.chain_id);
 
   const [pages, setPages] = useState<Paginated<PaginatedTx>[]>([]);
+  const [loading, setLoading] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const loadMore = useCallback(() => {
+  const next = useCallback(async () => {
+    setLoading(true);
     let pagination: Pagination = {};
     const last = pages?.at(-1)?.pagination;
     if (last) {
@@ -54,12 +61,13 @@ function Txs() {
       address: account,
       chainId,
       pagination,
-    }).then((page) => setPages([...pages, page]));
+    }).then((page) => {
+      setPages([...pages, page]);
+      setLoading(false);
+    });
   }, [account, chainId, pages]);
 
-  useEffect(() => {
-    if (pages.length === 0) loadMore();
-  }, [pages, loadMore]);
+  const hasMore = !pages.at(-1)?.last;
 
   const reload = () => {
     setPages([]);
@@ -75,19 +83,9 @@ function Txs() {
 
   if (!account || !chainId) return null;
 
-  const loader = (
-    <div className="flex justify-center" key="loader">
-      <LoaderCircle className="animate-spin" />
-    </div>
-  );
-
   return (
-    <Accordion type="multiple" className="w-full">
-      <InfiniteScroll
-        loadMore={loadMore}
-        hasMore={!pages.at(-1)?.last}
-        loader={loader}
-      >
+    <div className="flex w-full flex-col items-center gap-2" ref={wrapperRef}>
+      <Accordion type="multiple" className="w-full">
         {pages.flatMap((page) =>
           page.items.map((tx, i) => (
             <AccordionItem key={`${tx.hash} ${i}`} value={tx.hash}>
@@ -100,8 +98,17 @@ function Txs() {
             </AccordionItem>
           )),
         )}
+      </Accordion>
+      <InfiniteScroll
+        next={next}
+        isLoading={loading}
+        hasMore={hasMore}
+        threshold={0.5}
+        root={wrapperRef.current}
+      >
+        {hasMore && <LoaderCircle className="animate-spin" />}
       </InfiniteScroll>
-    </Accordion>
+    </div>
   );
 }
 
