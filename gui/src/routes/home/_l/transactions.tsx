@@ -1,3 +1,4 @@
+import { InfiniteScroll } from "@ethui/ui/components/infinite-scroll";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -8,7 +9,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { InfiniteScroll } from "@ethui/ui/components/infinite-scroll";
 import { type Abi, type Address, formatEther, formatGwei } from "viem";
 
 import type { Paginated, PaginatedTx, Pagination, Tx } from "@ethui/types";
