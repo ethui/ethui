@@ -51,7 +51,7 @@
     "zxcvbn-typescript": "^5.0.1"
   },
   "devDependencies": {
-    "@tanstack/react-query-devtools": "^5.66.3",
+    "@tanstack/react-query-devtools": "^5.66.5",
     "@tanstack/router-devtools": "^1.105.0",
     "@tanstack/router-plugin": "^1.105.0",
     "@types/chrome": "^0.0.304",
