@@ -1221,7 +1221,7 @@ __metadata:
     "@types/react": "npm:^18.3.18"
     nearly: "npm:^1.8.1"
     react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react-dom: "npm:^19.0.0"
     viem: "npm:^2.23.2"
   peerDependencies:
     "@emotion/react": ^11.11.4
@@ -1256,7 +1256,7 @@ __metadata:
     "@types/lodash-es": "npm:^4.17.12"
     "@types/node": "npm:^22.13.4"
     "@types/react": "npm:^18.3.18"
-    "@types/react-dom": "npm:^18.3.5"
+    "@types/react-dom": "npm:^19.0.4"
     "@uidotdev/usehooks": "npm:^2.4.1"
     "@vitejs/plugin-react-swc": "npm:^3.8.0"
     abitype: "npm:^1.0.8"
@@ -1271,7 +1271,7 @@ __metadata:
     next-themes: "npm:^0.4.4"
     postcss: "npm:^8.5.2"
     react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react-dom: "npm:^19.0.0"
     react-error-boundary: "npm:^5.0.0"
     react-hook-form: "npm:^7.54.2"
     tailwind-merge: "npm:^2.6.0"
@@ -3991,12 +3991,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18.3.5":
-  version: 18.3.5
-  resolution: "@types/react-dom@npm:18.3.5"
+"@types/react-dom@npm:^19.0.4":
+  version: 19.0.4
+  resolution: "@types/react-dom@npm:19.0.4"
   peerDependencies:
-    "@types/react": ^18.0.0
-  checksum: b163d35a6b32a79f5782574a7aeb12a31a647e248792bf437e6d596e2676961c394c5e3c6e91d1ce44ae90441dbaf93158efb4f051c0d61e2612f1cb04ce4faa
+    "@types/react": ^19.0.0
+  checksum: 4e71853919b94df9e746a4bd73f8180e9ae13016333ce9c543dcba9f4f4c8fe6e28b038ca6ee61c24e291af8e03ca3bc5ded17c46dee938fcb32d71186fda7a3
   languageName: node
   linkType: hard
 
@@ -6567,7 +6567,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^19":
+"react-dom@npm:^19, react-dom@npm:^19.0.0":
   version: 19.0.0
   resolution: "react-dom@npm:19.0.0"
   dependencies:
