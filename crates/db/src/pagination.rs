@@ -1,3 +1,5 @@
+use serde::Deserialize;
+
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Pagination {
@@ -45,4 +47,11 @@ impl<T> Paginated<T> {
             last,
         }
     }
+}
+
+#[derive(Deserialize, Debug, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct TxIdx {
+    pub block_number: u64,
+    pub position: u64,
 }

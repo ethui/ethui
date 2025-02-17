@@ -1,11 +1,35 @@
 use alloy::json_abi::JsonAbi;
 use ethui_types::{
-    events::Tx, transactions::PaginatedTx, Address, Contract, Erc721TokenData, TokenBalance,
+    events::Tx, transactions::Transaction, Address, Contract, Erc721TokenData, TokenBalance,
     TokenMetadata, UINotify, B256, U256,
 };
 
 use super::{Paginated, Pagination, Result};
-use crate::Db;
+use crate::{pagination::TxIdx, Db};
+
+#[tauri::command]
+pub async fn db_get_prev_transactions(
+    address: Address,
+    chain_id: u32,
+    max: u32,
+    first_known: Option<TxIdx>,
+    db: tauri::State<'_, Db>,
+) -> Result<Vec<Transaction>> {
+    db.get_next_transactions(chain_id, address, max, first_known)
+        .await
+}
+
+#[tauri::command]
+pub async fn db_get_next_transactions(
+    address: Address,
+    chain_id: u32,
+    max: u32,
+    last_known: Option<TxIdx>,
+    db: tauri::State<'_, Db>,
+) -> Result<Vec<Transaction>> {
+    db.get_next_transactions(chain_id, address, max, last_known)
+        .await
+}
 
 #[tauri::command]
 pub async fn db_get_transactions(
@@ -13,7 +37,7 @@ pub async fn db_get_transactions(
     chain_id: u32,
     pagination: Option<Pagination>,
     db: tauri::State<'_, Db>,
-) -> Result<Paginated<PaginatedTx>> {
+) -> Result<Paginated<Transaction>> {
     db.get_transactions(chain_id, address, pagination.unwrap_or_default())
         .await
 }

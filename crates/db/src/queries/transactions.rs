@@ -1,9 +1,9 @@
 use std::str::FromStr;
 
 use alloy::primitives::Bytes;
-use ethui_types::{events::Tx, transactions::PaginatedTx, Address, B256, U256};
+use ethui_types::{events::Tx, transactions::Transaction, Address, B256, U256};
 
-use crate::{DbInner, Paginated, Pagination, Result};
+use crate::{pagination::TxIdx, DbInner, Paginated, Pagination, Result};
 
 impl DbInner {
     pub async fn insert_transactions(&self, chain_id: u32, txs: Vec<Tx>) -> Result<()> {
@@ -104,12 +104,109 @@ impl DbInner {
         Ok(tx)
     }
 
+    pub async fn get_first_transactions(
+        &self,
+        chain_id: u32,
+        from_or_to: Address,
+        max: u32,
+        first_known: Option<TxIdx>,
+    ) -> Result<Vec<Transaction>> {
+        let from_or_to = from_or_to.to_string();
+        let first_known = first_known.unwrap_or_default();
+        let first_known_block = first_known.block_number as u32;
+        let first_known_position = first_known.position as u32;
+
+        let rows = sqlx::query!(
+            r#" SELECT * FROM (
+                SELECT value as 'value?', hash, from_address, to_address, block_number, position, status, incomplete as 'incomplete!'
+                FROM transactions
+                WHERE chain_id = ?
+                AND (from_address = ? OR to_address = ?) COLLATE NOCASE
+                AND (block_number < ? OR (block_number = ? AND position > ?))
+                ORDER BY block_number ASC, position ASC
+                LIMIT ?
+            ) sub
+            ORDER BY block_number DESC, position DESC"#,
+            chain_id,
+            from_or_to,
+            from_or_to,
+            first_known_block,
+            first_known_block,
+            first_known_position,
+            max
+        )
+        .fetch_all(self.pool())
+        .await?;
+
+        let items = rows
+            .into_iter()
+            .map(|r| Transaction {
+                hash: B256::from_str(&r.hash.unwrap()).unwrap(),
+                from: Address::from_str(&r.from_address).unwrap(),
+                block_number: r.block_number.map(|b| b as u64),
+                position: r.position.map(|p| p as u64),
+                to: r.to_address.and_then(|r| Address::from_str(&r).ok()),
+                status: r.status.unwrap_or_default() as u64,
+                incomplete: r.incomplete,
+            })
+            .collect();
+
+        Ok(items)
+    }
+
+    pub async fn get_next_transactions(
+        &self,
+        chain_id: u32,
+        from_or_to: Address,
+        max: u32,
+        last_known: Option<TxIdx>,
+    ) -> Result<Vec<Transaction>> {
+        let from_or_to = from_or_to.to_string();
+        let last_known = last_known.unwrap_or_default();
+        let last_known_block = last_known.block_number as u32;
+        let last_known_position = last_known.position as u32;
+
+        let rows = sqlx::query!(
+            r#" SELECT value as 'value?', hash, from_address, to_address, block_number, position, status, incomplete as 'incomplete!'
+                FROM transactions
+                WHERE chain_id = ?
+                AND (from_address = ? OR to_address = ?) COLLATE NOCASE
+                AND (block_number > ? OR (block_number = ? AND position > ?))
+                ORDER BY block_number DESC, position DESC
+                LIMIT ?"#,
+            chain_id,
+            from_or_to,
+            from_or_to,
+            last_known_block,
+            last_known_block,
+            last_known_position,
+            max
+        )
+        .fetch_all(self.pool())
+        .await?;
+
+        let items = rows
+            .into_iter()
+            .map(|r| Transaction {
+                hash: B256::from_str(&r.hash.unwrap()).unwrap(),
+                from: Address::from_str(&r.from_address).unwrap(),
+                block_number: r.block_number.map(|b| b as u64),
+                position: r.position.map(|p| p as u64),
+                to: r.to_address.and_then(|r| Address::from_str(&r).ok()),
+                status: r.status.unwrap_or_default() as u64,
+                incomplete: r.incomplete,
+            })
+            .collect();
+
+        Ok(items)
+    }
+
     pub async fn get_transactions(
         &self,
         chain_id: u32,
         from_or_to: Address,
         pagination: Pagination,
-    ) -> Result<Paginated<PaginatedTx>> {
+    ) -> Result<Paginated<Transaction>> {
         let from_or_to = from_or_to.to_string();
         let offset = pagination.offset();
 
@@ -131,10 +228,11 @@ impl DbInner {
 
         let items = rows
             .into_iter()
-            .map(|r| PaginatedTx {
+            .map(|r| Transaction {
                 hash: B256::from_str(&r.hash.unwrap()).unwrap(),
                 from: Address::from_str(&r.from_address).unwrap(),
                 block_number: r.block_number.map(|b| b as u64),
+                position: Some(0),
                 to: r.to_address.and_then(|r| Address::from_str(&r).ok()),
                 status: r.status.unwrap_or_default() as u64,
                 incomplete: r.incomplete,

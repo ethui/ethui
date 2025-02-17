@@ -83,6 +83,7 @@ export interface PaginatedTx {
   to: Address;
   status?: number;
   blockNumber?: number;
+  position?: number;
 }
 
 export interface Contract {

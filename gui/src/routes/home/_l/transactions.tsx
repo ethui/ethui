@@ -11,7 +11,7 @@ import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { type Abi, type Address, formatEther, formatGwei } from "viem";
 
-import type { Paginated, PaginatedTx, Pagination, Tx } from "@ethui/types";
+import type { PaginatedTx, Tx } from "@ethui/types";
 import { BlockNumber } from "@ethui/ui/components/block-number";
 import {
   Accordion,
@@ -44,41 +44,50 @@ function Txs() {
   const account = useWallets((s) => s.address);
   const chainId = useNetworks((s) => s.current?.chain_id);
 
-  const [pages, setPages] = useState<Paginated<PaginatedTx>[]>([]);
+  const [items, setItems] = useState<PaginatedTx[]>([]);
   const [loading, setLoading] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
+  let lastKnown = null;
+  if (items.at(-1)) {
+    lastKnown = {
+      blockNumber: items.at(-1)?.blockNumber,
+      position: items.at(-1)?.position,
+    };
+  }
+
   const next = useCallback(async () => {
     setLoading(true);
-    let pagination: Pagination = {};
-    const last = pages?.at(-1)?.pagination;
-    if (last) {
-      pagination = last;
-      pagination.page = (pagination.page || 0) + 1;
-    }
+    console.log("next");
 
-    invoke<Paginated<PaginatedTx>>("db_get_transactions", {
+    invoke<PaginatedTx[]>("db_get_next_transactions", {
       address: account,
       chainId,
-      pagination,
-    }).then((page) => {
-      setPages([...pages, page]);
+      lastKnown,
+    }).then((newItems) => {
+      console.log(newItems);
+      setItems([...items, ...newItems]);
       setLoading(false);
     });
-  }, [account, chainId, pages]);
+  }, [account, chainId, items, lastKnown]);
 
-  const hasMore = !pages.at(-1)?.last;
+  const hasMore = false; //TODO!pages.at(-1)?.last;
 
-  const reload = () => {
-    setPages([]);
+  const loadNew = () => {
+    invoke("db_get_new_transactions", {
+      address: account,
+      chainId,
+      lastKnown,
+    });
+    setItems([]);
   };
 
-  useEventListener("txs-updated", reload);
+  useEventListener("txs-updated", loadNew);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies(account): used only to trigger effect
+  // biome-ignore lint/correctness/useExhaustiveDependencies(chainId): used only to trigger effect
   useEffect(() => {
-    // TODO: this needs to depend on account and chainId, because biome complains but shouldn't
-    account;
-    chainId;
-    setPages([]);
+    setItems([]);
   }, [account, chainId]);
 
   if (!account || !chainId) return null;
@@ -86,18 +95,16 @@ function Txs() {
   return (
     <div className="flex w-full flex-col items-center gap-2" ref={wrapperRef}>
       <Accordion type="multiple" className="w-full">
-        {pages.flatMap((page) =>
-          page.items.map((tx, i) => (
-            <AccordionItem key={`${tx.hash} ${i}`} value={tx.hash}>
-              <AccordionTrigger>
-                <Summary account={account} tx={tx} />
-              </AccordionTrigger>
-              <AccordionContent>
-                <Details tx={tx} chainId={chainId} />
-              </AccordionContent>
-            </AccordionItem>
-          )),
-        )}
+        {items.map((tx, i) => (
+          <AccordionItem key={`${tx.hash} ${i}`} value={tx.hash}>
+            <AccordionTrigger>
+              <Summary account={account} tx={tx} />
+            </AccordionTrigger>
+            <AccordionContent>
+              <Details tx={tx} chainId={chainId} />
+            </AccordionContent>
+          </AccordionItem>
+        ))}
       </Accordion>
       <InfiniteScroll
         next={next}
