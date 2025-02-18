@@ -10,10 +10,7 @@ use std::{path::PathBuf, sync::Arc};
 pub use init::{get, init};
 use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous};
 
-pub use self::{
-    error::{Error, Result},
-    pagination::{Paginated, Pagination},
-};
+pub use self::error::{Error, Result};
 
 #[derive(Debug, Clone)]
 pub struct DbInner {

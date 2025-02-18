@@ -11,7 +11,7 @@ import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { type Abi, type Address, formatEther, formatGwei } from "viem";
 
-import type { Paginated, PaginatedTx, Pagination, Tx } from "@ethui/types";
+import type { PaginatedTx, Tx } from "@ethui/types";
 import { BlockNumber } from "@ethui/ui/components/block-number";
 import {
   Accordion,
@@ -21,6 +21,7 @@ import {
 } from "@ethui/ui/components/shadcn/accordion";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { SolidityCall } from "@ethui/ui/components/solidity-call";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   LoaderCircle,
   MoveDownLeft,
@@ -43,42 +44,69 @@ export const Route = createFileRoute("/home/_l/transactions")({
 function Txs() {
   const account = useWallets((s) => s.address);
   const chainId = useNetworks((s) => s.current?.chain_id);
+  const pageSize = 10;
 
-  const [pages, setPages] = useState<Paginated<PaginatedTx>[]>([]);
+  const [items, setItems] = useState<PaginatedTx[]>([]);
+  const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
+  let lastKnown = null;
+  if (items.at(-1)) {
+    lastKnown = {
+      blockNumber: items.at(-1)?.blockNumber,
+      position: items.at(-1)?.position,
+    };
+  }
+  let firstKnown = null;
+  if (items.at(0)) {
+    firstKnown = {
+      blockNumber: items.at(0)?.blockNumber,
+      position: items.at(0)?.position,
+    };
+  }
+
   const next = useCallback(async () => {
     setLoading(true);
-    let pagination: Pagination = {};
-    const last = pages?.at(-1)?.pagination;
-    if (last) {
-      pagination = last;
-      pagination.page = (pagination.page || 0) + 1;
-    }
+    console.log("next", lastKnown);
 
-    invoke<Paginated<PaginatedTx>>("db_get_transactions", {
+    invoke<PaginatedTx[]>("db_get_older_transactions", {
       address: account,
       chainId,
-      pagination,
-    }).then((page) => {
-      setPages([...pages, page]);
-      setLoading(false);
+      max: pageSize,
+      lastKnown,
+    }).then((newItems) => {
+      console.log(newItems);
+      if (newItems.length < pageSize) {
+        setHasMore(false);
+      }
+      setItems([...items, ...newItems]);
+      setTimeout(() => {
+        setLoading(false);
+      }, 200);
     });
-  }, [account, chainId, pages]);
+  }, [account, chainId, items, lastKnown]);
 
-  const hasMore = !pages.at(-1)?.last;
-
-  const reload = () => {
-    setPages([]);
+  const loadNew = () => {
+    invoke<PaginatedTx[]>("db_get_newer_transactions", {
+      address: account,
+      chainId,
+      max: pageSize,
+      firstKnown,
+    }).then((newItems) => {
+      console.log(newItems.length);
+      setItems([...newItems, ...items]);
+    });
   };
 
-  useEventListener("txs-updated", reload);
+  console.log(items.length);
+  useEventListener("txs-updated", loadNew);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies(account): used only to trigger effect
+  // biome-ignore lint/correctness/useExhaustiveDependencies(chainId): used only to trigger effect
   useEffect(() => {
-    // TODO: this needs to depend on account and chainId, because biome complains but shouldn't
-    account;
-    chainId;
-    setPages([]);
+    setItems([]);
+    setHasMore(true);
   }, [account, chainId]);
 
   if (!account || !chainId) return null;
@@ -86,18 +114,27 @@ function Txs() {
   return (
     <div className="flex w-full flex-col items-center gap-2" ref={wrapperRef}>
       <Accordion type="multiple" className="w-full">
-        {pages.flatMap((page) =>
-          page.items.map((tx, i) => (
-            <AccordionItem key={`${tx.hash} ${i}`} value={tx.hash}>
-              <AccordionTrigger>
-                <Summary account={account} tx={tx} />
-              </AccordionTrigger>
-              <AccordionContent>
-                <Details tx={tx} chainId={chainId} />
-              </AccordionContent>
+        <AnimatePresence initial={false}>
+          {items.map((tx) => (
+            <AccordionItem asChild key={`${tx.hash}`} value={tx.hash}>
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                transition={{
+                  height: { duration: 0.4 },
+                  opacity: { duration: 0.3 },
+                }}
+              >
+                <AccordionTrigger>
+                  <Summary account={account} tx={tx} />
+                </AccordionTrigger>
+                <AccordionContent>
+                  <Details tx={tx} chainId={chainId} />
+                </AccordionContent>
+              </motion.div>
             </AccordionItem>
-          )),
-        )}
+          ))}
+        </AnimatePresence>
       </Accordion>
       <InfiniteScroll
         next={next}
