@@ -7,12 +7,12 @@
     "@ethui/abiparse": "*",
     "@ethui/ui": "0.0.8",
     "nearly": "^1.8.1",
-    "viem": "^2.22.21"
+    "viem": "^2.23.2"
   },
   "devDependencies": {
-    "@types/react": "^18.3.18",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "@types/react": "^19.0.10",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "peerDependencies": {
     "@emotion/react": "^11.11.4",

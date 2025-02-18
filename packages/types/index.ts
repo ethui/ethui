@@ -83,6 +83,7 @@ export interface PaginatedTx {
   to: Address;
   status?: number;
   blockNumber?: number;
+  position?: number;
 }
 
 export interface Contract {
@@ -102,18 +103,6 @@ export interface Peer {
   socket: string;
   url: string;
   favicon: string;
-}
-
-export interface Pagination {
-  page?: number;
-  page_size?: number;
-}
-
-export interface Paginated<T> {
-  pagination: Pagination;
-  items: T[];
-  last: boolean;
-  total: number;
 }
 
 export type Affinity = { sticky: number } | "global" | "unset";
