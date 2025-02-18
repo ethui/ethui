@@ -116,7 +116,6 @@ impl DbInner {
         let first_known_block = first_known.block_number as u32;
         let first_known_position = first_known.position as u32;
 
-        dbg!(&first_known);
         let rows = sqlx::query!(
             r#" SELECT * FROM (
                 SELECT value as 'value?', hash, from_address, to_address, block_number, position, status, incomplete as 'incomplete!'
@@ -151,8 +150,6 @@ impl DbInner {
                 incomplete: r.incomplete,
             })
             .collect();
-
-        dbg!(&items);
 
         Ok(items)
     }
@@ -202,8 +199,6 @@ impl DbInner {
                 incomplete: r.incomplete,
             })
             .collect();
-
-        dbg!(&items);
 
         Ok(items)
     }
