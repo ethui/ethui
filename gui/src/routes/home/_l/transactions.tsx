@@ -21,6 +21,7 @@ import {
 } from "@ethui/ui/components/shadcn/accordion";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { SolidityCall } from "@ethui/ui/components/solidity-call";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   LoaderCircle,
   MoveDownLeft,
@@ -34,7 +35,6 @@ import { useEventListener } from "#/hooks/useEventListener";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
-import { AnimatePresence, motion } from "framer-motion";
 
 export const Route = createFileRoute("/home/_l/transactions")({
   beforeLoad: () => ({ breadcrumb: "Transactions" }),
