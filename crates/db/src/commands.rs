@@ -4,7 +4,7 @@ use ethui_types::{
     TokenMetadata, UINotify, B256, U256,
 };
 
-use super::{Paginated, Pagination, Result};
+use super::Result;
 use crate::{pagination::TxIdx, Db};
 
 #[tauri::command]
@@ -28,17 +28,6 @@ pub async fn db_get_older_transactions(
     db: tauri::State<'_, Db>,
 ) -> Result<Vec<Transaction>> {
     db.get_older_transactions(chain_id, address, max, last_known)
-        .await
-}
-
-#[tauri::command]
-pub async fn db_get_transactions(
-    address: Address,
-    chain_id: u32,
-    pagination: Option<Pagination>,
-    db: tauri::State<'_, Db>,
-) -> Result<Paginated<Transaction>> {
-    db.get_transactions(chain_id, address, pagination.unwrap_or_default())
         .await
 }
 

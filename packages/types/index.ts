@@ -105,16 +105,4 @@ export interface Peer {
   favicon: string;
 }
 
-export interface Pagination {
-  page?: number;
-  pageSize?: number;
-}
-
-export interface Paginated<T> {
-  pagination: Pagination;
-  items: T[];
-  last: boolean;
-  total: number;
-}
-
 export type Affinity = { sticky: number } | "global" | "unset";

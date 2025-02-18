@@ -3,7 +3,7 @@ use std::str::FromStr;
 use alloy::primitives::Bytes;
 use ethui_types::{events::Tx, transactions::Transaction, Address, B256, U256};
 
-use crate::{pagination::TxIdx, DbInner, Paginated, Pagination, Result};
+use crate::{pagination::TxIdx, DbInner, Result};
 
 impl DbInner {
     pub async fn insert_transactions(&self, chain_id: u32, txs: Vec<Tx>) -> Result<()> {
@@ -206,61 +206,6 @@ impl DbInner {
         dbg!(&items);
 
         Ok(items)
-    }
-
-    pub async fn get_transactions(
-        &self,
-        chain_id: u32,
-        from_or_to: Address,
-        pagination: Pagination,
-    ) -> Result<Paginated<Transaction>> {
-        let from_or_to = from_or_to.to_string();
-        let offset = pagination.offset();
-
-        let rows = sqlx::query!(
-            r#" SELECT DISTINCT value as 'value?', hash, from_address, to_address, block_number, status, incomplete as 'incomplete!'
-                FROM transactions
-                WHERE chain_id = ?
-                AND (from_address = ? or to_address = ?) COLLATE NOCASE
-                ORDER BY block_number DESC, position DESC
-                LIMIT ? OFFSET ?"#,
-            chain_id,
-            from_or_to,
-            from_or_to,
-            pagination.page_size,
-            offset
-        )
-        .fetch_all(self.pool())
-        .await?;
-
-        let items = rows
-            .into_iter()
-            .map(|r| Transaction {
-                hash: B256::from_str(&r.hash.unwrap()).unwrap(),
-                from: Address::from_str(&r.from_address).unwrap(),
-                block_number: r.block_number.map(|b| b as u64),
-                position: Some(0),
-                to: r.to_address.and_then(|r| Address::from_str(&r).ok()),
-                status: r.status.unwrap_or_default() as u64,
-                incomplete: r.incomplete,
-            })
-            .collect();
-
-        let total_row = sqlx::query!(
-            r#"
-            SELECT COUNT(*) as total
-                FROM transactions
-                WHERE chain_id = ?
-                AND (from_address = ? or to_address = ?) COLLATE NOCASE
-            "#,
-            chain_id,
-            from_or_to,
-            from_or_to
-        )
-        .fetch_one(self.pool())
-        .await?;
-
-        Ok(Paginated::new(items, pagination, total_row.total as u32))
     }
 
     pub async fn remove_transactions(&self, chain_id: u32) -> Result<()> {
