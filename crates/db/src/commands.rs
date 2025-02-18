@@ -15,7 +15,7 @@ pub async fn db_get_newer_transactions(
     first_known: Option<TxIdx>,
     db: tauri::State<'_, Db>,
 ) -> Result<Vec<Transaction>> {
-    db.get_older_transactions(chain_id, address, max, first_known)
+    db.get_newer_transactions(chain_id, address, max, first_known)
         .await
 }
 

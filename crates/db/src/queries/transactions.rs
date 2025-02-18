@@ -116,13 +116,14 @@ impl DbInner {
         let first_known_block = first_known.block_number as u32;
         let first_known_position = first_known.position as u32;
 
+        dbg!(&first_known);
         let rows = sqlx::query!(
             r#" SELECT * FROM (
                 SELECT value as 'value?', hash, from_address, to_address, block_number, position, status, incomplete as 'incomplete!'
                 FROM transactions
                 WHERE chain_id = ?
                 AND (from_address = ? OR to_address = ?) COLLATE NOCASE
-                AND (block_number < ? OR (block_number = ? AND position > ?))
+                AND (block_number > ? OR (block_number = ? AND position > ?))
                 ORDER BY block_number ASC, position ASC
                 LIMIT ?
             ) sub
@@ -151,6 +152,8 @@ impl DbInner {
             })
             .collect();
 
+        dbg!(&items);
+
         Ok(items)
     }
 
@@ -169,7 +172,7 @@ impl DbInner {
         let last_known_position = last_known.map(|l| l.position as u32).unwrap_or(u32::MAX);
 
         let rows = sqlx::query!(
-            r#" SELECT value as 'value?', hash, from_address, to_address, block_number, position, status, incomplete as 'incomplete!'
+            r#" SELECT DISTINCT value as 'value?', hash, from_address, to_address, block_number, position, status, incomplete as 'incomplete!'
                 FROM transactions
                 WHERE chain_id = ?
                 AND (from_address = ? OR to_address = ?) COLLATE NOCASE
@@ -200,6 +203,8 @@ impl DbInner {
             })
             .collect();
 
+        dbg!(&items);
+
         Ok(items)
     }
 
@@ -213,7 +218,7 @@ impl DbInner {
         let offset = pagination.offset();
 
         let rows = sqlx::query!(
-            r#" SELECT value as 'value?', hash, from_address, to_address, block_number, status, incomplete as 'incomplete!'
+            r#" SELECT DISTINCT value as 'value?', hash, from_address, to_address, block_number, status, incomplete as 'incomplete!'
                 FROM transactions
                 WHERE chain_id = ?
                 AND (from_address = ? or to_address = ?) COLLATE NOCASE
