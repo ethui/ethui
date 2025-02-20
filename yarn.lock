@@ -1238,7 +1238,7 @@ __metadata:
     "@ethui/data": "npm:*"
     "@ethui/form": "npm:*"
     "@ethui/types": "npm:*"
-    "@ethui/ui": "file:../../ui/dist"
+    "@ethui/ui": "npm:0.0.31"
     "@fontsource/source-code-pro": "npm:^5.1.1"
     "@hookform/resolvers": "npm:^3.10.0"
     "@radix-ui/react-collapsible": "npm:^1.1.3"
@@ -1309,9 +1309,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@ethui/ui@file:../../ui/dist::locator=%40ethui%2Fgui%40workspace%3Agui":
-  version: 0.0.30
-  resolution: "@ethui/ui@file:../../ui/dist#../../ui/dist::hash=da3d78&locator=%40ethui%2Fgui%40workspace%3Agui"
+"@ethui/ui@npm:0.0.31":
+  version: 0.0.31
+  resolution: "@ethui/ui@npm:0.0.31"
   dependencies:
     "@fontsource/source-code-pro": "npm:^5.1.1"
     "@hookform/resolvers": "npm:^4.1.0"
@@ -1362,7 +1362,7 @@ __metadata:
     tailwind-merge: ^3.0.0
     tailwindcss: ^4.0.0
     tailwindcss-animate: ^1.0.0
-  checksum: d3a7c06abe3eff8c93a76452a66db522b73155fdd9620233d97940326093b1214df9bc0ea8f3fb895a2175f08ee702f0a107b297dbbc280478a05affce910252
+  checksum: 0ae7703f9d98ec9a961d9edda91314f90a3f37702b698b74e6f8fa502c4a9454415bfdf9ef2c4ef79fe6074dcd8f39825fdb545a7c85a96160441e83c9dddf4e
   languageName: node
   linkType: hard
 
