@@ -3,8 +3,8 @@ import { z } from "zod";
 
 const rpcAndChainIdSchema = z
   .object({
-    http_url: z.string().min(1).url().optional(),
-    chain_id: z.coerce.number().positive().optional(),
+    http_url: z.string().min(1).url(),
+    chain_id: z.coerce.number().positive(),
   })
   .superRefine(async ({ http_url, chain_id }, ctx) => {
     if (!http_url || !chain_id || http_url === "") return;
