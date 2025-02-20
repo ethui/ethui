@@ -1,6 +1,5 @@
-use ethui_types::{GlobalState, Network};
-
 use super::{Networks, Result};
+use ethui_types::{GlobalState, Network, NewNetworkParams};
 
 #[tauri::command]
 pub async fn networks_get_current() -> Result<Network> {
@@ -26,7 +25,7 @@ pub async fn networks_set_current(network: String) -> Result<Network> {
 }
 
 #[tauri::command]
-pub async fn networks_add(network: Network) -> Result<()> {
+pub async fn networks_add(network: NewNetworkParams) -> Result<()> {
     let mut networks = Networks::write().await;
     networks.add_network(network).await?;
     Ok(())
