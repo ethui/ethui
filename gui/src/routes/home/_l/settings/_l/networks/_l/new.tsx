@@ -76,7 +76,11 @@ function Content() {
     <Form form={form} onSubmit={onSubmit} className="gap-4">
       <div className="flex flex-row gap-2">
         <Form.Text label="Name" name="name" />
-        <Form.NumberField label="Chain Id" name="chain_id" />
+        <Form.NumberField
+          className="[&::-webkit-inner-spin-button]:appearance-none"
+          label="Chain Id"
+          name="chain_id"
+        />
       </div>
 
       <Form.Text label="HTTP RPC" name="http_url" className="w-full" />

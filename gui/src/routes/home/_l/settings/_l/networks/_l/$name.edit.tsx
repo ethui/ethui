@@ -55,7 +55,12 @@ function Content({ network }: { network: Network }) {
     <Form form={form} onSubmit={create} className="gap-4">
       <div className="flex flex-row gap-2">
         <Form.Text label="Name" name="name" />
-        <Form.Text disabled={true} label="Chain Id" name="chain_id" />
+        <Form.NumberField
+          className="[&::-webkit-inner-spin-button]:appearance-none"
+          disabled={true}
+          label="Chain Id"
+          name="chain_id"
+        />
       </div>
 
       <Form.Text label="HTTP RPC" name="http_url" className="w-full" />
