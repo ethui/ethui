@@ -6,7 +6,6 @@ const rpcAndChainIdSchema = z.object({
   chain_id: z.coerce.number().positive().optional(),
 }).superRefine(async ({ http_url, chain_id }, ctx) => {
 
-  console.log(http_url, chain_id);
   if (!http_url || !chain_id || http_url === "") return;
 
   try {
