@@ -1238,7 +1238,7 @@ __metadata:
     "@ethui/data": "npm:*"
     "@ethui/form": "npm:*"
     "@ethui/types": "npm:*"
-    "@ethui/ui": "npm:0.0.21"
+    "@ethui/ui": "npm:0.0.33"
     "@fontsource/source-code-pro": "npm:^5.1.1"
     "@hookform/resolvers": "npm:^3.10.0"
     "@radix-ui/react-collapsible": "npm:^1.1.3"
@@ -1309,12 +1309,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@ethui/ui@npm:0.0.21":
-  version: 0.0.21
-  resolution: "@ethui/ui@npm:0.0.21"
+"@ethui/ui@npm:0.0.33":
+  version: 0.0.33
+  resolution: "@ethui/ui@npm:0.0.33"
   dependencies:
     "@fontsource/source-code-pro": "npm:^5.1.1"
-    "@hookform/resolvers": "npm:^3.10.0"
+    "@hookform/resolvers": "npm:^4.1.0"
     "@radix-ui/react-accordion": "npm:^1.2.2"
     "@radix-ui/react-avatar": "npm:^1.1.2"
     "@radix-ui/react-checkbox": "npm:^1.1.3"
@@ -1334,7 +1334,7 @@ __metadata:
     "@radix-ui/react-toast": "npm:^1.2.5"
     "@radix-ui/react-tooltip": "npm:^1.1.7"
     "@tailwindcss/postcss": "npm:4.0.6"
-    "@tanstack/react-query": "npm:^5.21.4"
+    "@tanstack/react-query": "npm:^5.66.7"
     class-variance-authority: "npm:^0.7.1"
     clsx: "npm:^2.0.0"
     cmdk: "npm:1.0.4"
@@ -1344,25 +1344,25 @@ __metadata:
     react: "npm: ^19"
     react-dom: "npm:^19"
     react-hook-form: "npm:^7.54.2"
-    tailwind-merge: "npm:^2.0.0"
-    tailwindcss: "npm:^4.0.6"
+    tailwind-merge: "npm:^3.0.1"
+    tailwindcss: "npm:^4.0.7"
     tailwindcss-animate: "npm:^1.0.0"
-    viem: "npm:^2.22.21"
+    viem: "npm:^2.23.3"
     vite-tsconfig-paths: "npm:^5.1.4"
-    zod: "npm:^3.24.1"
+    zod: "npm:^3.24.2"
     zustand: "npm:^5.0.3"
   peerDependencies:
-    "@tanstack/react-query": ^5.21.4
+    "@tanstack/react-query": ^5.66.7
     "@types/react": ^19
     "@types/react-dom": ^19
     clsx: ^2.0.0
     lucide-react: ^0.475.0
-    react: ^18 || ^19
-    react-dom: ^18 || ^19
-    tailwind-merge: ^2.0.0
-    tailwindcss: ^3.4.0
+    react: ^19
+    react-dom: ^19
+    tailwind-merge: ^3.0.0
+    tailwindcss: ^4.0.0
     tailwindcss-animate: ^1.0.0
-  checksum: d4f201bee0d5cd17cd8ad43f1b19076cf46880c10daf239ee2e44c71ec348cbe18e4ae25969a2e4b51e86a3fe1282221d53d61b45bdc1d6bb058fe9b286d3b4e
+  checksum: e269575c66bd7be6d4d3e9bef0b5e1d45024b3a2f3486c753ee4a70200a4c6ea894e20ad681c249797ff60a717e3f23c066c685b48b48c8b8d82727153424dd2
   languageName: node
   linkType: hard
 
@@ -1462,6 +1462,17 @@ __metadata:
   peerDependencies:
     react-hook-form: ^7.0.0
   checksum: 7ee44533b4cdc28c4fa2a94894c735411e5a1f830f4a617c580533321a9b901df0cc8c1e2fad81ad8d55154ebc5cb844cf9c116a3148ffae2bc48758c33cbb8e
+  languageName: node
+  linkType: hard
+
+"@hookform/resolvers@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "@hookform/resolvers@npm:4.1.0"
+  dependencies:
+    caniuse-lite: "npm:^1.0.30001698"
+  peerDependencies:
+    react-hook-form: ^7.0.0
+  checksum: aeb5c0037c49a9bf0b2026e9c28769ba33a9a8d73223319dd576b35e2e5906f062f17b358ea2d0193482805ccd8918e4f97f3924fc94a1fdfe09de3e255a8c39
   languageName: node
   linkType: hard
 
@@ -3666,17 +3677,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:^5.21.4":
-  version: 5.66.4
-  resolution: "@tanstack/react-query@npm:5.66.4"
-  dependencies:
-    "@tanstack/query-core": "npm:5.66.4"
-  peerDependencies:
-    react: ^18 || ^19
-  checksum: 90378598c4d95f1e7c378e5cb65c7e7cf7fee9ff4bc65feccfa9c56703ffe2b74f59245d9e255279b7029219877e0f98dde895940b8db26f5a619b33aa48d063
-  languageName: node
-  linkType: hard
-
 "@tanstack/react-query@npm:^5.66.5":
   version: 5.66.5
   resolution: "@tanstack/react-query@npm:5.66.5"
@@ -3685,6 +3685,17 @@ __metadata:
   peerDependencies:
     react: ^18 || ^19
   checksum: 82a1f82bb0e327af8e4aa4d4464a00ca372eba193c21ab055a46a5a75ef0af695479b156deb7743acd9256a4a3d3abfb1adb9148dfad2252f1f9baacb9ea3f23
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query@npm:^5.66.7":
+  version: 5.66.8
+  resolution: "@tanstack/react-query@npm:5.66.8"
+  dependencies:
+    "@tanstack/query-core": "npm:5.66.4"
+  peerDependencies:
+    react: ^18 || ^19
+  checksum: b5b0f954ee32cff4dbe76731dd7560d03e56f879d8b854049530f4a011a7806a99d8f83b5b69af03156bc5d0b399c66f0f427c43d513d87a2dccd54b256b1fc7
   languageName: node
   linkType: hard
 
@@ -4532,6 +4543,13 @@ __metadata:
   version: 1.0.30001668
   resolution: "caniuse-lite@npm:1.0.30001668"
   checksum: 247b3200aeec55038f3a11f3e6ab66f656c54d30df7b01d8d447efaba9af96ad3e17128da2ddd42ddc9cb6c286bac65b634a20955b3cc6619be7ca4601fddc8e
+  languageName: node
+  linkType: hard
+
+"caniuse-lite@npm:^1.0.30001698":
+  version: 1.0.30001700
+  resolution: "caniuse-lite@npm:1.0.30001700"
+  checksum: 3d391bcdd193208166d3ad759de240b9c18ac3759dbd57195770f0fcd2eedcd47d5e853609aba1eee5a2def44b0a14eee457796bdb3451a27de0c8b27355017c
   languageName: node
   linkType: hard
 
@@ -7170,7 +7188,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwind-merge@npm:^2.0.0, tailwind-merge@npm:^2.6.0":
+"tailwind-merge@npm:^2.6.0":
   version: 2.6.0
   resolution: "tailwind-merge@npm:2.6.0"
   checksum: fc8a5535524de9f4dacf1c16ab298581c7bb757d68a95faaf28942b1c555a619bba9d4c6726fe83986e44973b315410c1a5226e5354c30ba82353bd6d2288fa5
@@ -7200,7 +7218,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwindcss@npm:4.0.7, tailwindcss@npm:^4.0.6, tailwindcss@npm:^4.0.7":
+"tailwindcss@npm:4.0.7, tailwindcss@npm:^4.0.7":
   version: 4.0.7
   resolution: "tailwindcss@npm:4.0.7"
   checksum: d884b580022a439e26c1c372dd693d62f552b19635c3e018af640cca00357c4407710c452bfe465902299698a325f6215777807165f7e94f8f12411651ae3d6a
@@ -7644,6 +7662,27 @@ __metadata:
     typescript:
       optional: true
   checksum: 39332d008d2ab0700aa57f541bb199350daecdfb722ae1b262404b02944e11205368fcc696cc0ab8327b9f90bf7172014687ae3e5d9091978e9d174885ccff2d
+  languageName: node
+  linkType: hard
+
+"viem@npm:^2.23.3":
+  version: 2.23.3
+  resolution: "viem@npm:2.23.3"
+  dependencies:
+    "@noble/curves": "npm:1.8.1"
+    "@noble/hashes": "npm:1.7.1"
+    "@scure/bip32": "npm:1.6.2"
+    "@scure/bip39": "npm:1.5.4"
+    abitype: "npm:1.0.8"
+    isows: "npm:1.0.6"
+    ox: "npm:0.6.7"
+    ws: "npm:8.18.0"
+  peerDependencies:
+    typescript: ">=5.0.4"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 21384e8fc1c35f11c2b0f059b0174abc6b7a20f1fe1565f5e1691135b3f6545df1c57622739a841329c128c10c4f0732f8376d9d38632a5ebeefb78d3b0dd74e
   languageName: node
   linkType: hard
 
