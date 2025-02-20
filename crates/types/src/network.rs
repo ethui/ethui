@@ -9,6 +9,7 @@ use url::Url;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Network {
+    pub internal_id: Option<u32>,
     pub name: String,
     pub chain_id: u32,
     pub explorer_url: Option<String>,
@@ -21,6 +22,7 @@ pub struct Network {
 impl Network {
     pub fn mainnet() -> Self {
         Self {
+            internal_id: Some(0),
             name: String::from("Mainnet"),
             chain_id: 1,
             explorer_url: Some(String::from("https://etherscan.io/search?q=")),
@@ -33,6 +35,7 @@ impl Network {
 
     pub fn sepolia() -> Self {
         Self {
+            internal_id: Some(1),
             name: String::from("Sepolia"),
             chain_id: 11155111,
             explorer_url: Some(String::from("https://sepolia.etherscan.io/search?q=")),
@@ -45,6 +48,7 @@ impl Network {
 
     pub fn anvil() -> Self {
         Self {
+            internal_id: Some(2),
             name: String::from("Anvil"),
             chain_id: 31337,
             explorer_url: None,
