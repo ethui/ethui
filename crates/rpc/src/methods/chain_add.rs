@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use tracing::info;
 use url::Url;
 
-use crate::{Error, Result};
+use crate::Result;
 
 #[derive(Debug)]
 pub struct ChainAdd {
@@ -59,19 +59,19 @@ impl ChainAdd {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Params {
-    chain_id: U64,
-    chain_name: String,
-    rpc_urls: Vec<Url>,
-    native_currency: Currency,
-    block_explorer_urls: Vec<Url>,
+    pub chain_id: U64,
+    pub chain_name: String,
+    pub rpc_urls: Vec<Url>,
+    pub native_currency: Currency,
+    pub block_explorer_urls: Vec<Url>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Currency {
-    name: String,
-    symbol: String,
-    decimals: u64,
+    pub name: String,
+    pub symbol: String,
+    pub decimals: u64,
 }
 
 #[derive(Debug, Default)]
@@ -91,33 +91,33 @@ impl ChainAddBuilder {
         Ok(self)
     }
 
-    pub fn build(self) -> ChainAdd {
-        ChainAdd {
-            network: self.params.unwrap().try_into().unwrap(),
-        }
-    }
-}
+    pub async fn build(self) -> ChainAdd {
+        let networks = Networks::read().await;
+        let params = self.params.unwrap();
 
-impl TryFrom<Params> for Network {
-    type Error = Error;
-    fn try_from(params: Params) -> Result<Self> {
-        Ok(Self {
-            name: params.chain_name,
-            chain_id: params.chain_id.try_into().unwrap(),
-            explorer_url: params.block_explorer_urls.first().map(|u| u.to_string()),
-            http_url: params
-                .rpc_urls
-                .iter()
-                .find(|s| s.scheme().starts_with("http"))
-                .cloned()
-                .expect("http url not found"),
-            ws_url: params
-                .rpc_urls
-                .iter()
-                .find(|s| s.scheme().starts_with("ws"))
-                .cloned(),
-            currency: params.native_currency.symbol,
-            decimals: params.native_currency.decimals as u32,
-        })
+        let chain_id = params.chain_id.try_into().unwrap();
+        let deduplication_id = networks.get_chain_id_count(chain_id);
+
+        ChainAdd {
+            network: Network {
+                deduplication_id,
+                chain_id,
+                name: params.chain_name,
+                explorer_url: params.block_explorer_urls.first().map(|u| u.to_string()),
+                http_url: params
+                    .rpc_urls
+                    .iter()
+                    .find(|s| s.scheme().starts_with("http"))
+                    .cloned()
+                    .expect("http url not found"),
+                ws_url: params
+                    .rpc_urls
+                    .iter()
+                    .find(|s| s.scheme().starts_with("ws"))
+                    .cloned(),
+                currency: params.native_currency.symbol,
+                decimals: params.native_currency.decimals as u32,
+            },
+        }
     }
 }

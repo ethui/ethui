@@ -104,8 +104,34 @@ impl ChainUpdateBuilder {
     }
 
     pub async fn build(self) -> ChainUpdate {
-        ChainUpdate {
-            network: self.params.unwrap().try_into().unwrap(),
-        }
+        let networks = Networks::read().await;
+        let params = self.params.unwrap();
+
+        let deduplication_id = networks
+            .get_network_by_name(&params.chain_name)
+            .unwrap()
+            .deduplication_id;
+
+        let network = Network {
+            deduplication_id,
+            chain_id: params.chain_id.try_into().unwrap(),
+            name: params.chain_name,
+            explorer_url: params.block_explorer_urls.first().map(|u| u.to_string()),
+            http_url: params
+                .rpc_urls
+                .iter()
+                .find(|s| s.scheme().starts_with("http"))
+                .cloned()
+                .expect("http url not found"),
+            ws_url: params
+                .rpc_urls
+                .iter()
+                .find(|s| s.scheme().starts_with("ws"))
+                .cloned(),
+            currency: params.native_currency.symbol,
+            decimals: params.native_currency.decimals as u32,
+        };
+
+        ChainUpdate { network }
     }
 }
