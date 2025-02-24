@@ -54,7 +54,7 @@
     "@tailwindcss/vite": "^4.0.8",
     "@tanstack/react-query-devtools": "^5.66.6",
     "@tanstack/router-devtools": "^1.111.6",
-    "@tanstack/router-plugin": "^1.105.0",
+    "@tanstack/router-plugin": "^1.111.6",
     "@types/chrome": "^0.0.306",
     "@types/core-js": "^2.5.8",
     "@types/lodash-es": "^4.17.12",
