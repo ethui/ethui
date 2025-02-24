@@ -1208,7 +1208,7 @@ __metadata:
     "@types/lodash-es": "npm:^4.17.12"
     "@types/node": "npm:^22.13.4"
     typescript: "npm:5.7.3"
-    viem: "npm:^2.23.2"
+    viem: "npm:^2.23.5"
   languageName: unknown
   linkType: soft
 
@@ -1222,7 +1222,7 @@ __metadata:
     nearly: "npm:^1.8.1"
     react: "npm:^19.0.0"
     react-dom: "npm:^19.0.0"
-    viem: "npm:^2.23.2"
+    viem: "npm:^2.23.5"
   peerDependencies:
     "@emotion/react": ^11.11.4
     "@emotion/styled": ^11.11.5
@@ -1280,7 +1280,7 @@ __metadata:
     tailwindcss-animate: "npm:^1.0.7"
     ts-unused-exports: "npm:^11.0.1"
     typescript: "npm:5.7.3"
-    viem: "npm:^2.23.2"
+    viem: "npm:^2.23.5"
     vite: "npm:^6.1.0"
     vite-plugin-babel-import: "npm:^2.0.5"
     vite-plugin-imp: "npm:^2.4.0"
@@ -1300,7 +1300,7 @@ __metadata:
     "@types/node": "npm:^22.13.4"
     jsdom: "npm:^26.0.0"
     typescript: "npm:5.7.3"
-    viem: "npm:^2.23.2"
+    viem: "npm:^2.23.5"
     zod: "npm:^3.24.2"
     zxcvbn-typescript: "npm:^5.0.1"
   peerDependencies:
@@ -7644,27 +7644,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"viem@npm:^2.23.2":
-  version: 2.23.2
-  resolution: "viem@npm:2.23.2"
-  dependencies:
-    "@noble/curves": "npm:1.8.1"
-    "@noble/hashes": "npm:1.7.1"
-    "@scure/bip32": "npm:1.6.2"
-    "@scure/bip39": "npm:1.5.4"
-    abitype: "npm:1.0.8"
-    isows: "npm:1.0.6"
-    ox: "npm:0.6.7"
-    ws: "npm:8.18.0"
-  peerDependencies:
-    typescript: ">=5.0.4"
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 39332d008d2ab0700aa57f541bb199350daecdfb722ae1b262404b02944e11205368fcc696cc0ab8327b9f90bf7172014687ae3e5d9091978e9d174885ccff2d
-  languageName: node
-  linkType: hard
-
 "viem@npm:^2.23.3":
   version: 2.23.3
   resolution: "viem@npm:2.23.3"
@@ -7683,6 +7662,27 @@ __metadata:
     typescript:
       optional: true
   checksum: 21384e8fc1c35f11c2b0f059b0174abc6b7a20f1fe1565f5e1691135b3f6545df1c57622739a841329c128c10c4f0732f8376d9d38632a5ebeefb78d3b0dd74e
+  languageName: node
+  linkType: hard
+
+"viem@npm:^2.23.5":
+  version: 2.23.5
+  resolution: "viem@npm:2.23.5"
+  dependencies:
+    "@noble/curves": "npm:1.8.1"
+    "@noble/hashes": "npm:1.7.1"
+    "@scure/bip32": "npm:1.6.2"
+    "@scure/bip39": "npm:1.5.4"
+    abitype: "npm:1.0.8"
+    isows: "npm:1.0.6"
+    ox: "npm:0.6.7"
+    ws: "npm:8.18.0"
+  peerDependencies:
+    typescript: ">=5.0.4"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 205d3e6b57df8be9bc13e775e5eddeeb54b3e212e977a4aacab5824248ca6e3e599fd805ee4b10ba3e18f57cba46d592d722c509327937f72e672ec0ab84615f
   languageName: node
   linkType: hard
 
