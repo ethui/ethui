@@ -1456,7 +1456,7 @@ __metadata:
     ts-unused-exports: "npm:^11.0.1"
     typescript: "npm:5.7.3"
     viem: "npm:^2.23.5"
-    vite: "npm:^6.1.0"
+    vite: "npm:^6.1.1"
     vite-plugin-babel-import: "npm:^2.0.5"
     vite-plugin-imp: "npm:^2.4.0"
     vite-tsconfig-paths: "npm:^5.1.4"
@@ -3647,17 +3647,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tailwindcss/node@npm:4.0.7, @tailwindcss/node@npm:^4.0.6":
-  version: 4.0.7
-  resolution: "@tailwindcss/node@npm:4.0.7"
-  dependencies:
-    enhanced-resolve: "npm:^5.18.1"
-    jiti: "npm:^2.4.2"
-    tailwindcss: "npm:4.0.7"
-  checksum: 4820ee88f44d3c14ea0a2d1b9129be50efe8f389cd1207dbf5cf321df0c34c05b16119d525fb1e348df7cc00008e25b5567812692f38988962c76d5656e7374c
-  languageName: node
-  linkType: hard
-
 "@tailwindcss/node@npm:4.0.8":
   version: 4.0.8
   resolution: "@tailwindcss/node@npm:4.0.8"
@@ -3666,6 +3655,17 @@ __metadata:
     jiti: "npm:^2.4.2"
     tailwindcss: "npm:4.0.8"
   checksum: d03e5c8ea15ea30793437816785aa8b9171f9321a67fe344207276617165d9501f9c7498aef53b501813cf0e27088c153db759b015d0dc5a29b2272884550871
+  languageName: node
+  linkType: hard
+
+"@tailwindcss/node@npm:^4.0.6":
+  version: 4.0.7
+  resolution: "@tailwindcss/node@npm:4.0.7"
+  dependencies:
+    enhanced-resolve: "npm:^5.18.1"
+    jiti: "npm:^2.4.2"
+    tailwindcss: "npm:4.0.7"
+  checksum: 4820ee88f44d3c14ea0a2d1b9129be50efe8f389cd1207dbf5cf321df0c34c05b16119d525fb1e348df7cc00008e25b5567812692f38988962c76d5656e7374c
   languageName: node
   linkType: hard
 
@@ -3823,48 +3823,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tailwindcss/oxide@npm:4.0.7, @tailwindcss/oxide@npm:^4.0.6":
-  version: 4.0.7
-  resolution: "@tailwindcss/oxide@npm:4.0.7"
-  dependencies:
-    "@tailwindcss/oxide-android-arm64": "npm:4.0.7"
-    "@tailwindcss/oxide-darwin-arm64": "npm:4.0.7"
-    "@tailwindcss/oxide-darwin-x64": "npm:4.0.7"
-    "@tailwindcss/oxide-freebsd-x64": "npm:4.0.7"
-    "@tailwindcss/oxide-linux-arm-gnueabihf": "npm:4.0.7"
-    "@tailwindcss/oxide-linux-arm64-gnu": "npm:4.0.7"
-    "@tailwindcss/oxide-linux-arm64-musl": "npm:4.0.7"
-    "@tailwindcss/oxide-linux-x64-gnu": "npm:4.0.7"
-    "@tailwindcss/oxide-linux-x64-musl": "npm:4.0.7"
-    "@tailwindcss/oxide-win32-arm64-msvc": "npm:4.0.7"
-    "@tailwindcss/oxide-win32-x64-msvc": "npm:4.0.7"
-  dependenciesMeta:
-    "@tailwindcss/oxide-android-arm64":
-      optional: true
-    "@tailwindcss/oxide-darwin-arm64":
-      optional: true
-    "@tailwindcss/oxide-darwin-x64":
-      optional: true
-    "@tailwindcss/oxide-freebsd-x64":
-      optional: true
-    "@tailwindcss/oxide-linux-arm-gnueabihf":
-      optional: true
-    "@tailwindcss/oxide-linux-arm64-gnu":
-      optional: true
-    "@tailwindcss/oxide-linux-arm64-musl":
-      optional: true
-    "@tailwindcss/oxide-linux-x64-gnu":
-      optional: true
-    "@tailwindcss/oxide-linux-x64-musl":
-      optional: true
-    "@tailwindcss/oxide-win32-arm64-msvc":
-      optional: true
-    "@tailwindcss/oxide-win32-x64-msvc":
-      optional: true
-  checksum: ac2d43dc84dd47537dba4653d7ab90c76786df1a54d20fded11b554a581e568663cce5b58eff4ff39b2a6de64ddcd4894e378f0d38fab38803cbc2608da85288
-  languageName: node
-  linkType: hard
-
 "@tailwindcss/oxide@npm:4.0.8":
   version: 4.0.8
   resolution: "@tailwindcss/oxide@npm:4.0.8"
@@ -3904,6 +3862,48 @@ __metadata:
     "@tailwindcss/oxide-win32-x64-msvc":
       optional: true
   checksum: 7033d4d9cb7dce0e31f293d40a1324e5c55a2dacdb72082e1904f9b80dfeae105105d3f81b3c0b0a2767966a43b16ea49f963bead292d6a31da6b5133f761d4b
+  languageName: node
+  linkType: hard
+
+"@tailwindcss/oxide@npm:^4.0.6":
+  version: 4.0.7
+  resolution: "@tailwindcss/oxide@npm:4.0.7"
+  dependencies:
+    "@tailwindcss/oxide-android-arm64": "npm:4.0.7"
+    "@tailwindcss/oxide-darwin-arm64": "npm:4.0.7"
+    "@tailwindcss/oxide-darwin-x64": "npm:4.0.7"
+    "@tailwindcss/oxide-freebsd-x64": "npm:4.0.7"
+    "@tailwindcss/oxide-linux-arm-gnueabihf": "npm:4.0.7"
+    "@tailwindcss/oxide-linux-arm64-gnu": "npm:4.0.7"
+    "@tailwindcss/oxide-linux-arm64-musl": "npm:4.0.7"
+    "@tailwindcss/oxide-linux-x64-gnu": "npm:4.0.7"
+    "@tailwindcss/oxide-linux-x64-musl": "npm:4.0.7"
+    "@tailwindcss/oxide-win32-arm64-msvc": "npm:4.0.7"
+    "@tailwindcss/oxide-win32-x64-msvc": "npm:4.0.7"
+  dependenciesMeta:
+    "@tailwindcss/oxide-android-arm64":
+      optional: true
+    "@tailwindcss/oxide-darwin-arm64":
+      optional: true
+    "@tailwindcss/oxide-darwin-x64":
+      optional: true
+    "@tailwindcss/oxide-freebsd-x64":
+      optional: true
+    "@tailwindcss/oxide-linux-arm-gnueabihf":
+      optional: true
+    "@tailwindcss/oxide-linux-arm64-gnu":
+      optional: true
+    "@tailwindcss/oxide-linux-arm64-musl":
+      optional: true
+    "@tailwindcss/oxide-linux-x64-gnu":
+      optional: true
+    "@tailwindcss/oxide-linux-x64-musl":
+      optional: true
+    "@tailwindcss/oxide-win32-arm64-msvc":
+      optional: true
+    "@tailwindcss/oxide-win32-x64-msvc":
+      optional: true
+  checksum: ac2d43dc84dd47537dba4653d7ab90c76786df1a54d20fded11b554a581e568663cce5b58eff4ff39b2a6de64ddcd4894e378f0d38fab38803cbc2608da85288
   languageName: node
   linkType: hard
 
@@ -6914,17 +6914,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.5.1":
-  version: 8.5.1
-  resolution: "postcss@npm:8.5.1"
-  dependencies:
-    nanoid: "npm:^3.3.8"
-    picocolors: "npm:^1.1.1"
-    source-map-js: "npm:^1.2.1"
-  checksum: c4d90c59c98e8a0c102b77d3f4cac190f883b42d63dc60e2f3ed840f16197c0c8e25a4327d2e9a847b45a985612317dc0534178feeebd0a1cf3eb0eecf75cae4
-  languageName: node
-  linkType: hard
-
 "prettier@npm:^3.5.0":
   version: 3.5.0
   resolution: "prettier@npm:3.5.0"
@@ -8214,13 +8203,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^6.1.0":
-  version: 6.1.0
-  resolution: "vite@npm:6.1.0"
+"vite@npm:^6.1.1":
+  version: 6.1.1
+  resolution: "vite@npm:6.1.1"
   dependencies:
     esbuild: "npm:^0.24.2"
     fsevents: "npm:~2.3.3"
-    postcss: "npm:^8.5.1"
+    postcss: "npm:^8.5.2"
     rollup: "npm:^4.30.1"
   peerDependencies:
     "@types/node": ^18.0.0 || ^20.0.0 || >=22.0.0
@@ -8262,7 +8251,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: e1cad1cfbd29923a37d2dbd60f7387901ed8356758073a0226cbe844fd032425ba3bf41651332cab4965d5c54d0b51d208889ff32ce81bd282d230c0c9f0f8f1
+  checksum: 4ec5ddc9436951a68b213cd59c2a157663ef423658c387400774582ea33da40dcae18e55f3adb3b629173e2183b10d49db8370bc51a0aa89797e4ca5a34702a0
   languageName: node
   linkType: hard
 
