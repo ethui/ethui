@@ -176,13 +176,16 @@ impl Networks {
         });
     }
 
-    async fn broadcast_init(&self) {
+    async fn broadcast_init(&self) -> Result<()> {
         for network in self.networks.values() {
             ethui_broadcast::network_added(network.clone()).await;
         }
 
         let network = self.get_current().clone();
         ethui_broadcast::current_network_changed(network).await;
+
+        self.save()?;
+        Ok(())
     }
 
     // Persists current state to disk
