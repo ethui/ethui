@@ -1268,7 +1268,7 @@ __metadata:
     kbar: "npm:0.1.0-beta.45"
     lodash-es: "npm:^4.17.21"
     lucide-react: "npm:^0.475.0"
-    motion: "npm:^12.4.3"
+    motion: "npm:^12.4.7"
     next-themes: "npm:^0.4.4"
     postcss: "npm:^8.5.2"
     react: "npm:^19.0.0"
@@ -5248,11 +5248,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:^12.4.3":
-  version: 12.4.3
-  resolution: "framer-motion@npm:12.4.3"
+"framer-motion@npm:^12.4.7":
+  version: 12.4.7
+  resolution: "framer-motion@npm:12.4.7"
   dependencies:
-    motion-dom: "npm:^12.0.0"
+    motion-dom: "npm:^12.4.5"
     motion-utils: "npm:^12.0.0"
     tslib: "npm:^2.4.0"
   peerDependencies:
@@ -5266,7 +5266,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 4f6a4c859c5cc96c234ac6c43ede0ef7a3472f9449fad72dd9fa518b30779b17ee785ab5ca20e626a303d7a0b9b4709bd9a12125381b948e6246b5b94fef87f2
+  checksum: 746b6a82f7c1a663341008241065a44370c02f563e57724ed7147f888c12b5df389e95ccda851195e2da24075daf5124ce00ee5e838b60bc9da56e1421cea86c
   languageName: node
   linkType: hard
 
@@ -6183,12 +6183,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"motion-dom@npm:^12.0.0":
-  version: 12.0.0
-  resolution: "motion-dom@npm:12.0.0"
+"motion-dom@npm:^12.4.5":
+  version: 12.4.5
+  resolution: "motion-dom@npm:12.4.5"
   dependencies:
     motion-utils: "npm:^12.0.0"
-  checksum: d67209bc217f16b9a0305afa4bfc366997d02df76eea9ab29062f98beeff5fdfc60ae1b422ab397f525ae775c640ac9ba061c9f45aacd6cd71a23dce06661384
+  checksum: 2950f3023f09a31d6a86115476d6207f998a64545ea49ff0fddd772d1406b166efca895ab9db9dc87953b3a9154c56aa6df693b52c26ae083b3f665c152f8675
   languageName: node
   linkType: hard
 
@@ -6199,11 +6199,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"motion@npm:^12.4.3":
-  version: 12.4.3
-  resolution: "motion@npm:12.4.3"
+"motion@npm:^12.4.7":
+  version: 12.4.7
+  resolution: "motion@npm:12.4.7"
   dependencies:
-    framer-motion: "npm:^12.4.3"
+    framer-motion: "npm:^12.4.7"
     tslib: "npm:^2.4.0"
   peerDependencies:
     "@emotion/is-prop-valid": "*"
@@ -6216,7 +6216,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 359d6bd305249b3987a629e38a59bc2488062c5d3eb078e086155939a0594ee6b4651d03cdaf00e2c26f087f4b7cb16770c4926aa48a4f8a0a4a94710d12b09a
+  checksum: 369b41600b507d12cf963ec686ca297ca843a3908b1526e2de9593b95416dc89d4b446d4cd7a1fe31e2ca06fcfc1237e5f0d52bcd324649040e90ba012760541
   languageName: node
   linkType: hard
 
