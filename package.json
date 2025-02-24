@@ -27,11 +27,11 @@
   ],
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@tailwindcss/postcss": "^4.0.7",
+    "@tailwindcss/postcss": "^4.0.8",
     "assert": "^2.1.0",
     "html-to-image": "^1.11.13",
     "ts-unused-exports": "^11.0.1",
-    "tsx": "^4.19.2"
+    "tsx": "^4.19.3"
   },
   "dependencies": {
     "@tauri-apps/cli": "^2.2.7",
