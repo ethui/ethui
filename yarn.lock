@@ -1252,7 +1252,7 @@ __metadata:
     "@tauri-apps/cli": "npm:^2.2.7"
     "@tauri-apps/plugin-clipboard-manager": "npm:^2.2.1"
     "@tauri-apps/plugin-os": "npm:^2.2.0"
-    "@types/chrome": "npm:^0.0.304"
+    "@types/chrome": "npm:^0.0.306"
     "@types/core-js": "npm:^2.5.8"
     "@types/lodash-es": "npm:^4.17.12"
     "@types/node": "npm:^22.13.5"
@@ -4161,13 +4161,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chrome@npm:^0.0.304":
-  version: 0.0.304
-  resolution: "@types/chrome@npm:0.0.304"
+"@types/chrome@npm:^0.0.306":
+  version: 0.0.306
+  resolution: "@types/chrome@npm:0.0.306"
   dependencies:
     "@types/filesystem": "npm:*"
     "@types/har-format": "npm:*"
-  checksum: 7f5d4a1a07d36abbe81e4572766d841491e374394c364b7a5f7340d3a82e21e120b0423a8c2487cfba76f1d045673c4e65959344b0608d55f495aaa51e7e8710
+  checksum: 579cee45d88e1cdb6b7507c25efeea244068823a4813d0b794a51f92aabafc4b7cdeeebaf6a00a998b21b91939f1d99cbfeb590e734df802956c16a6f188fd8c
   languageName: node
   linkType: hard
 
