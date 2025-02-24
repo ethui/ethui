@@ -38,7 +38,10 @@ pub async fn init(pathbuf: PathBuf) {
             file: pathbuf,
         }
     } else {
-        let networks = Network::all_default();
+        let mut networks = Network::all_default();
+        for (i, n) in networks.iter_mut().enumerate() {
+            n.internal_id = Some(i as u32);
+        }
         let current = networks[0].name.clone();
         Networks {
             networks: networks.into_iter().map(|n| (n.name.clone(), n)).collect(),
