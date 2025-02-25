@@ -1,6 +1,7 @@
 pub mod commands;
 mod error;
 mod init;
+mod migrations;
 
 use std::{
     collections::HashMap,
