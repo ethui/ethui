@@ -1,5 +1,4 @@
 use ethui_types::{GlobalState, Network};
-use url::Url;
 
 use super::{Networks, Result};
 
@@ -14,7 +13,7 @@ pub async fn networks_get_current() -> Result<Network> {
 pub async fn networks_get_list() -> Result<Vec<Network>> {
     let networks = Networks::read().await;
 
-    Ok(networks.networks.values().cloned().collect())
+    Ok(networks.inner.networks.values().cloned().collect())
 }
 
 #[tauri::command]
