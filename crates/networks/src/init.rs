@@ -12,6 +12,8 @@ use once_cell::sync::OnceCell;
 use serde::Deserialize;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
+use crate::migrations::load_and_migrate;
+
 use super::Networks;
 
 static NETWORKS: OnceCell<RwLock<Networks>> = OnceCell::new();
@@ -29,6 +31,8 @@ pub async fn init(pathbuf: PathBuf) {
     let res: Networks = if path.exists() {
         let file = File::open(path).unwrap();
         let reader = BufReader::new(file);
+
+        load_and_migrate(&pathbuf);
 
         let res: PersistedNetworks = serde_json::from_reader(reader).unwrap();
 
