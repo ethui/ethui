@@ -1,5 +1,4 @@
 use ethui_types::{GlobalState, Network};
-use url::Url;
 
 use super::{Networks, Result};
 

@@ -30,7 +30,13 @@ pub async fn init(pathbuf: PathBuf) {
         let file = File::open(path).unwrap();
         let reader = BufReader::new(file);
 
-        let res: PersistedNetworks = serde_json::from_reader(reader).unwrap();
+        let mut res: PersistedNetworks = serde_json::from_reader(reader).unwrap();
+
+        for (i, (_, n)) in res.networks.iter_mut().enumerate() {
+            if n.internal_id.is_none() {
+                n.internal_id = Some(i as u32)
+            }
+        }
 
         Networks {
             networks: res.networks,
@@ -38,7 +44,10 @@ pub async fn init(pathbuf: PathBuf) {
             file: pathbuf,
         }
     } else {
-        let networks = Network::all_default();
+        let mut networks = Network::all_default();
+        for (i, n) in networks.iter_mut().enumerate() {
+            n.internal_id = Some(i as u32);
+        }
         let current = networks[0].name.clone();
         Networks {
             networks: networks.into_iter().map(|n| (n.name.clone(), n)).collect(),
@@ -47,7 +56,7 @@ pub async fn init(pathbuf: PathBuf) {
         }
     };
 
-    res.broadcast_init().await;
+    res.broadcast_init().await.unwrap();
 
     NETWORKS.set(RwLock::new(res)).unwrap();
 

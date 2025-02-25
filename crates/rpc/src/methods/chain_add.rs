@@ -102,6 +102,7 @@ impl TryFrom<Params> for Network {
     type Error = Error;
     fn try_from(params: Params) -> Result<Self> {
         Ok(Self {
+            internal_id: None,
             name: params.chain_name,
             chain_id: params.chain_id.try_into().unwrap(),
             explorer_url: params.block_explorer_urls.first().map(|u| u.to_string()),

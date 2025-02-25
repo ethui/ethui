@@ -82,7 +82,7 @@ impl Networks {
             .cloned()
     }
 
-    pub async fn add_network(&mut self, network: Network) -> Result<()> {
+    pub async fn add_network(&mut self, mut network: Network) -> Result<()> {
         // TODO: need to ensure uniqueness by name, not chain id
         if self.validate_chain_id(network.chain_id) {
             return Err(Error::AlreadyExists);
@@ -91,6 +91,8 @@ impl Networks {
         if self.networks.contains_key(&network.name) {
             return Err(Error::AlreadyExists);
         }
+
+        network.internal_id = Some(self.networks.len() as u32);
 
         self.networks.insert(network.name.clone(), network.clone());
         self.save()?;
@@ -174,13 +176,16 @@ impl Networks {
         });
     }
 
-    async fn broadcast_init(&self) {
+    async fn broadcast_init(&self) -> Result<()> {
         for network in self.networks.values() {
             ethui_broadcast::network_added(network.clone()).await;
         }
 
         let network = self.get_current().clone();
         ethui_broadcast::current_network_changed(network).await;
+
+        self.save()?;
+        Ok(())
     }
 
     // Persists current state to disk
