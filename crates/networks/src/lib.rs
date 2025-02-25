@@ -19,13 +19,17 @@ use serde::Serialize;
 pub use self::error::{Error, Result};
 
 #[derive(Debug, Clone, Serialize)]
-pub struct Networks {
+pub struct SerializedNetworks {
     pub networks: HashMap<String, Network>,
 
     // global affinity will point to the current network
     pub current: String,
+}
 
-    #[serde(skip)]
+#[derive(Debug, Clone)]
+pub struct Networks {
+    pub inner: SerializedNetworks,
+
     file: PathBuf,
 }
 
@@ -35,7 +39,7 @@ impl Networks {
     /// Broadcasts `chainChanged` to all connections with global or no affinity
     pub async fn set_current_by_name(&mut self, new_current_network: String) -> Result<()> {
         let previous = self.get_current().chain_id;
-        self.current = new_current_network;
+        self.inner.current = new_current_network;
         let new = self.get_current().chain_id;
 
         if previous != new {
@@ -52,6 +56,7 @@ impl Networks {
     /// Broadcasts `chainChanged` to all connections with global or no affinity
     pub async fn set_current_by_id(&mut self, new_chain_id: u32) -> Result<()> {
         let new_network = self
+            .inner
             .networks
             .values()
             .find(|n| n.chain_id == new_chain_id)
@@ -64,19 +69,23 @@ impl Networks {
     }
 
     pub fn validate_chain_id(&self, chain_id: u32) -> bool {
-        self.networks.iter().any(|(_, n)| n.chain_id == chain_id)
+        self.inner
+            .networks
+            .iter()
+            .any(|(_, n)| n.chain_id == chain_id)
     }
 
     pub fn get_current(&self) -> &Network {
-        if !self.networks.contains_key(&self.current) {
-            return self.networks.values().next().unwrap();
+        if !self.inner.networks.contains_key(&self.inner.current) {
+            return self.inner.networks.values().next().unwrap();
         }
 
-        &self.networks[&self.current]
+        &self.inner.networks[&self.inner.current]
     }
 
     pub fn get_network(&self, chain_id: u32) -> Option<Network> {
-        self.networks
+        self.inner
+            .networks
             .values()
             .find(|n| n.chain_id == chain_id)
             .cloned()
@@ -88,11 +97,13 @@ impl Networks {
             return Err(Error::AlreadyExists);
         }
 
-        if self.networks.contains_key(&network.name) {
+        if self.inner.networks.contains_key(&network.name) {
             return Err(Error::AlreadyExists);
         }
 
-        self.networks.insert(network.name.clone(), network.clone());
+        self.inner
+            .networks
+            .insert(network.name.clone(), network.clone());
         self.save()?;
         ethui_broadcast::network_added(network.clone()).await;
         ethui_broadcast::ui_notify(UINotify::NetworksChanged).await;
@@ -101,16 +112,17 @@ impl Networks {
     }
 
     pub async fn update_network(&mut self, old_name: &str, network: Network) -> Result<()> {
-        if network.name != old_name && self.networks.contains_key(&network.name) {
+        if network.name != old_name && self.inner.networks.contains_key(&network.name) {
             return Err(Error::AlreadyExists);
         }
 
-        self.networks.remove(old_name);
-        self.networks
+        self.inner.networks.remove(old_name);
+        self.inner
+            .networks
             .insert(network.clone().name.clone(), network.clone());
 
-        if self.current == old_name {
-            self.current = network.name.clone();
+        if self.inner.current == old_name {
+            self.inner.current = network.name.clone();
             self.on_network_changed().await?;
         }
 
@@ -122,13 +134,13 @@ impl Networks {
     }
 
     pub async fn remove_network(&mut self, name: &str) -> Result<()> {
-        let network = self.networks.remove(name);
+        let network = self.inner.networks.remove(name);
 
         match network {
             Some(network) => {
-                if self.current == name {
-                    let first = self.networks.values().next().unwrap();
-                    self.current = first.name.clone();
+                if self.inner.current == name {
+                    let first = self.inner.networks.values().next().unwrap();
+                    self.inner.current = first.name.clone();
                     self.on_network_changed().await?;
                 }
                 self.save()?;
@@ -175,7 +187,7 @@ impl Networks {
     }
 
     async fn broadcast_init(&self) {
-        for network in self.networks.values() {
+        for network in self.inner.networks.values() {
             ethui_broadcast::network_added(network.clone()).await;
         }
 
@@ -189,7 +201,7 @@ impl Networks {
         let path = Path::new(&pathbuf);
         let file = File::create(path)?;
 
-        serde_json::to_writer_pretty(file, self)?;
+        serde_json::to_writer_pretty(file, &self.inner)?;
 
         Ok(())
     }
