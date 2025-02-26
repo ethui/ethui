@@ -12,6 +12,8 @@ use once_cell::sync::OnceCell;
 use serde::Deserialize;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
+use crate::SerializedNetworks;
+
 use super::Networks;
 
 static NETWORKS: OnceCell<RwLock<Networks>> = OnceCell::new();
@@ -32,17 +34,26 @@ pub async fn init(pathbuf: PathBuf) {
 
         let res: PersistedNetworks = serde_json::from_reader(reader).unwrap();
 
-        Networks {
+        let networks = SerializedNetworks {
             networks: res.networks,
             current: res.current,
+        };
+
+        Networks {
+            inner: networks,
             file: pathbuf,
         }
     } else {
         let networks = Network::all_default();
         let current = networks[0].name.clone();
-        Networks {
+
+        let networks = SerializedNetworks {
             networks: networks.into_iter().map(|n| (n.name.clone(), n)).collect(),
             current,
+        };
+
+        Networks {
+            inner: networks,
             file: pathbuf,
         }
     };
