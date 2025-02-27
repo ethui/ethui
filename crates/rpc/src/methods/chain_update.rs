@@ -30,7 +30,7 @@ impl ChainUpdate {
                     DialogMsg::Data(msg) => {
                         if let Some("accept") = msg.as_str() {
                             let mut networks = Networks::write().await;
-                            networks.add_network(self.network.clone()).await?;
+                            networks.add_network(&self.network.clone()).await?;
                             break;
                         }
                     }
@@ -112,26 +112,26 @@ impl ChainUpdateBuilder {
             .unwrap()
             .deduplication_id;
 
-        let network = Network {
-            deduplication_id,
-            chain_id: params.chain_id.try_into().unwrap(),
-            name: params.chain_name,
-            explorer_url: params.block_explorer_urls.first().map(|u| u.to_string()),
-            http_url: params
-                .rpc_urls
-                .iter()
-                .find(|s| s.scheme().starts_with("http"))
-                .cloned()
-                .expect("http url not found"),
-            ws_url: params
-                .rpc_urls
-                .iter()
-                .find(|s| s.scheme().starts_with("ws"))
-                .cloned(),
-            currency: params.native_currency.symbol,
-            decimals: params.native_currency.decimals as u32,
-        };
-
-        ChainUpdate { network }
+        ChainUpdate {
+            network: Network {
+                deduplication_id,
+                chain_id: params.chain_id.try_into().unwrap(),
+                name: params.chain_name,
+                explorer_url: params.block_explorer_urls.first().map(|u| u.to_string()),
+                http_url: params
+                    .rpc_urls
+                    .iter()
+                    .find(|s| s.scheme().starts_with("http"))
+                    .cloned()
+                    .expect("http url not found"),
+                ws_url: params
+                    .rpc_urls
+                    .iter()
+                    .find(|s| s.scheme().starts_with("ws"))
+                    .cloned(),
+                currency: params.native_currency.symbol,
+                decimals: params.native_currency.decimals as u32,
+            },
+        }
     }
 }

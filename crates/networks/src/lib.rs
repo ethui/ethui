@@ -13,7 +13,7 @@ use alloy::{
     network::Ethereum,
     providers::{Provider, ProviderBuilder, RootProvider},
 };
-use ethui_types::{Affinity, Network, UINotify};
+use ethui_types::{Affinity, Network, NewNetworkParams, UINotify};
 pub use init::init;
 use migrations::LatestVersion;
 use serde::{Deserialize, Serialize};
@@ -103,7 +103,7 @@ impl Networks {
             .cloned()
     }
 
-    pub async fn add_network(&mut self, mut network: Network) -> Result<()> {
+    pub async fn add_network(&mut self, network: NewNetworkParams) -> Result<()> {
         // TODO: need to ensure uniqueness by name, not chain id
         if self.validate_chain_id(network.chain_id) {
             return Err(Error::AlreadyExists);
@@ -113,7 +113,8 @@ impl Networks {
             return Err(Error::AlreadyExists);
         }
 
-        network.deduplication_id = self.get_chain_id_count(network.chain_id);
+        let deduplication_id = self.get_chain_id_count(network.chain_id);
+        let network = network.into_network(deduplication_id);
 
         self.inner
             .networks

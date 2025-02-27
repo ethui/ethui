@@ -1,15 +1,15 @@
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_networks::Networks;
-use ethui_types::{GlobalState, Network, U64};
+use ethui_types::{GlobalState, NewNetworkParams, U64};
 use serde::{Deserialize, Serialize};
 use tracing::info;
 use url::Url;
 
-use crate::Result;
+use crate::{Error, Result};
 
 #[derive(Debug)]
 pub struct ChainAdd {
-    network: Network,
+    network: NewNetworkParams,
 }
 
 impl ChainAdd {
@@ -50,6 +50,7 @@ impl ChainAdd {
 
     pub async fn on_accept(&self) -> Result<()> {
         let mut networks = Networks::write().await;
+
         networks.add_network(self.network.clone()).await?;
 
         Ok(())
@@ -92,32 +93,32 @@ impl ChainAddBuilder {
     }
 
     pub async fn build(self) -> ChainAdd {
-        let networks = Networks::read().await;
-        let params = self.params.unwrap();
-
-        let chain_id = params.chain_id.try_into().unwrap();
-        let deduplication_id = networks.get_chain_id_count(chain_id);
-
         ChainAdd {
-            network: Network {
-                deduplication_id,
-                chain_id,
-                name: params.chain_name,
-                explorer_url: params.block_explorer_urls.first().map(|u| u.to_string()),
-                http_url: params
-                    .rpc_urls
-                    .iter()
-                    .find(|s| s.scheme().starts_with("http"))
-                    .cloned()
-                    .expect("http url not found"),
-                ws_url: params
-                    .rpc_urls
-                    .iter()
-                    .find(|s| s.scheme().starts_with("ws"))
-                    .cloned(),
-                currency: params.native_currency.symbol,
-                decimals: params.native_currency.decimals as u32,
-            },
+            network: self.params.unwrap().try_into().unwrap(),
         }
+    }
+}
+
+impl TryFrom<Params> for NewNetworkParams {
+    type Error = Error;
+    fn try_from(params: Params) -> Result<Self> {
+        Ok(Self {
+            name: params.chain_name,
+            chain_id: params.chain_id.try_into().unwrap(),
+            explorer_url: params.block_explorer_urls.first().map(|u| u.to_string()),
+            http_url: params
+                .rpc_urls
+                .iter()
+                .find(|s| s.scheme().starts_with("http"))
+                .cloned()
+                .expect("http url not found"),
+            ws_url: params
+                .rpc_urls
+                .iter()
+                .find(|s| s.scheme().starts_with("ws"))
+                .cloned(),
+            currency: params.native_currency.symbol,
+            decimals: params.native_currency.decimals as u32,
+        })
     }
 }
