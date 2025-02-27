@@ -1413,7 +1413,7 @@ __metadata:
     "@ethui/data": "npm:*"
     "@ethui/form": "npm:*"
     "@ethui/types": "npm:*"
-    "@ethui/ui": "npm:0.0.41"
+    "@ethui/ui": "npm:0.0.42"
     "@fontsource/source-code-pro": "npm:^5.1.1"
     "@hookform/resolvers": "npm:^3.10.0"
     "@radix-ui/react-collapsible": "npm:^1.1.3"
@@ -1484,9 +1484,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@ethui/ui@npm:0.0.41":
-  version: 0.0.41
-  resolution: "@ethui/ui@npm:0.0.41"
+"@ethui/ui@npm:0.0.42":
+  version: 0.0.42
+  resolution: "@ethui/ui@npm:0.0.42"
   dependencies:
     "@fontsource/source-code-pro": "npm:^5.1.1"
     "@hookform/resolvers": "npm:^4.1.2"
@@ -1537,7 +1537,7 @@ __metadata:
     tailwind-merge: ^3.0.0
     tailwindcss: ^4.0.0
     tailwindcss-animate: ^1.0.0
-  checksum: 10c0/9d38d7aab0331fe84cbca168533ec2aecb8c5d09d41cc9f292cc40815a5cb408ffc0bf16ecdb449fc499a4335af1b5ce91e2fde9244e87d4c379714d77cd3e3e
+  checksum: 10c0/706bf7ac37a2fdaaf5de24c4c34fddacb796fd65d6a46a80f16f6a1f39f2f0c9d73a7c6d4c667c536f18142bde0598f2697105d4a044bc49e8f398ad243692e3
   languageName: node
   linkType: hard
 
@@ -6281,7 +6281,7 @@ __metadata:
   resolution: "lucide-react@npm:0.476.0"
   peerDependencies:
     react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 85d26dbfaf02ef8e4140545c1da09d8df2b78cde45457c8a4ae0898e523e753063c9cc6c05a184575edda981f8b1ff0f77e43dcafbfc189079212844262380e3
+  checksum: 10c0/85d26dbfaf02ef8e4140545c1da09d8df2b78cde45457c8a4ae0898e523e753063c9cc6c05a184575edda981f8b1ff0f77e43dcafbfc189079212844262380e3
   languageName: node
   linkType: hard
 
