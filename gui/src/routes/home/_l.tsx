@@ -19,7 +19,9 @@ function HomePageLayout() {
 
   return (
     <CommandBarProvider>
-      <SidebarProvider>
+      <SidebarProvider
+        style={{ "--sidebar-width": "13em" } as React.CSSProperties}
+      >
         <AppSidebar />
         <main className="relative flex min-h-svh flex-1 flex-col">
           <AppNavbar />

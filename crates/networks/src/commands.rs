@@ -13,7 +13,7 @@ pub async fn networks_get_current() -> Result<Network> {
 pub async fn networks_get_list() -> Result<Vec<Network>> {
     let networks = Networks::read().await;
 
-    Ok(networks.networks.values().cloned().collect())
+    Ok(networks.inner.networks.values().cloned().collect())
 }
 
 #[tauri::command]
@@ -51,4 +51,11 @@ pub async fn networks_is_dev() -> Result<bool> {
     let networks = Networks::read().await;
 
     Ok(networks.get_current().is_dev().await)
+}
+
+#[tauri::command]
+pub async fn networks_chain_id_from_provider(url: String) -> Result<u64> {
+    let networks = Networks::read().await;
+
+    networks.chain_id_from_provider(url).await
 }
