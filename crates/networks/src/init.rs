@@ -1,59 +1,33 @@
-use std::{
-    collections::HashMap,
-    fs::File,
-    io::BufReader,
-    path::{Path, PathBuf},
-};
+use std::path::{Path, PathBuf};
 
 use async_trait::async_trait;
 use ethui_broadcast::InternalMsg;
 use ethui_types::{GlobalState, Network, UINotify};
 use once_cell::sync::OnceCell;
-use serde::Deserialize;
+use serde_constant::ConstI64;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
+use crate::migrations::load_and_migrate;
+use crate::Networks;
 use crate::SerializedNetworks;
-
-use super::Networks;
 
 static NETWORKS: OnceCell<RwLock<Networks>> = OnceCell::new();
 
 pub async fn init(pathbuf: PathBuf) {
-    /// The persisted format of the networks object
-    #[derive(Debug, Deserialize)]
-    struct PersistedNetworks {
-        pub current: String,
-        pub networks: HashMap<String, Network>,
-    }
-
     let path = Path::new(&pathbuf);
 
     let res: Networks = if path.exists() {
-        let file = File::open(path).unwrap();
-        let reader = BufReader::new(file);
-
-        let res: PersistedNetworks = serde_json::from_reader(reader).unwrap();
-
-        let networks = SerializedNetworks {
-            networks: res.networks,
-            current: res.current,
-        };
-
-        Networks {
-            inner: networks,
-            file: pathbuf,
-        }
+        load_and_migrate(&pathbuf).expect("failed to load networks")
     } else {
         let networks = Network::all_default();
         let current = networks[0].name.clone();
 
-        let networks = SerializedNetworks {
-            networks: networks.into_iter().map(|n| (n.name.clone(), n)).collect(),
-            current,
-        };
-
         Networks {
-            inner: networks,
+            inner: SerializedNetworks {
+                networks: networks.into_iter().map(|n| (n.name.clone(), n)).collect(),
+                current,
+                version: ConstI64,
+            },
             file: pathbuf,
         }
     };

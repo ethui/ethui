@@ -1,6 +1,7 @@
 pub mod commands;
 mod error;
 mod init;
+mod migrations;
 
 use std::{
     collections::HashMap,
@@ -14,13 +15,16 @@ use alloy::{
 };
 use ethui_types::{Affinity, Network, UINotify};
 pub use init::init;
-use serde::Serialize;
+use migrations::LatestVersion;
+use serde::{Deserialize, Serialize};
 
 pub use self::error::{Error, Result};
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct SerializedNetworks {
     pub networks: HashMap<String, Network>,
+
+    pub version: LatestVersion,
 
     // global affinity will point to the current network
     pub current: String,
