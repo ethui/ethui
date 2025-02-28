@@ -1220,7 +1220,7 @@ dependencies = [
  "rustls 0.23.19",
  "serde_json",
  "tokio",
- "tokio-tungstenite 0.26.1",
+ "tokio-tungstenite 0.26.2",
  "tracing",
  "ws_stream_wasm",
 ]
@@ -1317,9 +1317,9 @@ dependencies = [
 
 [[package]]
 name = "anyhow"
-version = "1.0.95"
+version = "1.0.96"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "34ac096ce696dc2fcabef30516bb13c0a68a11d30131d3df6f04711467681b04"
+checksum = "6b964d184e89d9b6b67dd2715bc8e74cf3107fb2b529990c90cf517326150bf4"
 
 [[package]]
 name = "arbitrary"
@@ -2318,9 +2318,9 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "4.5.29"
+version = "4.5.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8acebd8ad879283633b343856142139f2da2317c96b05b4dd6181c61e2480184"
+checksum = "027bb0d98429ae334a8698531da7077bdf906419543a35a55c2cb1b66437d767"
 dependencies = [
  "clap_builder",
  "clap_derive",
@@ -2328,9 +2328,9 @@ dependencies = [
 
 [[package]]
 name = "clap_builder"
-version = "4.5.29"
+version = "4.5.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f6ba32cbda51c7e1dfd49acc1457ba1a7dec5b64fe360e828acb13ca8dc9c2f9"
+checksum = "5589e0cba072e0f3d23791efac0fd8627b49c829c196a492e88168e6a669d863"
 dependencies = [
  "anstream",
  "anstyle",
@@ -3371,7 +3371,7 @@ dependencies = [
 
 [[package]]
 name = "ethui"
-version = "1.11.0"
+version = "1.13.0"
 dependencies = [
  "alloy",
  "ethui-args",
@@ -3407,21 +3407,21 @@ dependencies = [
 
 [[package]]
 name = "ethui-abis"
-version = "1.11.0"
+version = "1.13.0"
 dependencies = [
  "alloy",
 ]
 
 [[package]]
 name = "ethui-args"
-version = "1.11.0"
+version = "1.13.0"
 dependencies = [
  "clap",
 ]
 
 [[package]]
 name = "ethui-broadcast"
-version = "1.11.0"
+version = "1.13.0"
 dependencies = [
  "ethui-types",
  "once_cell",
@@ -3432,7 +3432,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-connections"
-version = "1.11.0"
+version = "1.13.0"
 dependencies = [
  "async-trait",
  "chrono",
@@ -3450,7 +3450,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-crypto"
-version = "1.11.0"
+version = "1.13.0"
 dependencies = [
  "aead",
  "chacha20poly1305",
@@ -3464,7 +3464,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-db"
-version = "1.11.0"
+version = "1.13.0"
 dependencies = [
  "alloy",
  "alloy-chains",
@@ -3484,7 +3484,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-dialogs"
-version = "1.11.0"
+version = "1.13.0"
 dependencies = [
  "ethui-broadcast",
  "ethui-types",
@@ -3500,7 +3500,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-exchange-rates"
-version = "1.11.0"
+version = "1.13.0"
 dependencies = [
  "async-trait",
  "ethui-types",
@@ -3512,7 +3512,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-forge"
-version = "1.11.0"
+version = "1.13.0"
 dependencies = [
  "alloy",
  "ethui-broadcast",
@@ -3534,7 +3534,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-networks"
-version = "1.11.0"
+version = "1.13.0"
 dependencies = [
  "alloy",
  "async-trait",
@@ -3542,8 +3542,10 @@ dependencies = [
  "ethui-types",
  "once_cell",
  "serde",
+ "serde-constant",
  "serde_json",
  "tauri",
+ "tempfile",
  "thiserror 2.0.11",
  "tokio",
  "url",
@@ -3560,7 +3562,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-rpc"
-version = "1.11.0"
+version = "1.13.0"
 dependencies = [
  "alloy",
  "ethui-connections",
@@ -3583,7 +3585,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-settings"
-version = "1.11.0"
+version = "1.13.0"
 dependencies = [
  "alloy",
  "alloy-chains",
@@ -3603,7 +3605,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-simulator"
-version = "1.11.0"
+version = "1.13.0"
 dependencies = [
  "alloy",
  "ethui-db",
@@ -3621,7 +3623,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-sync"
-version = "1.11.0"
+version = "1.13.0"
 dependencies = [
  "alloy",
  "ethui-abis",
@@ -3640,7 +3642,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-sync-alchemy"
-version = "1.11.0"
+version = "1.13.0"
 dependencies = [
  "alloy",
  "ethui-db",
@@ -3658,7 +3660,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-sync-anvil"
-version = "1.11.0"
+version = "1.13.0"
 dependencies = [
  "alloy",
  "base64 0.21.7",
@@ -3680,7 +3682,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-token-list"
-version = "1.11.0"
+version = "1.13.0"
 dependencies = [
  "anyhow",
  "chrono",
@@ -3692,7 +3694,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-tracing"
-version = "1.11.0"
+version = "1.13.0"
 dependencies = [
  "once_cell",
  "thiserror 2.0.11",
@@ -3702,7 +3704,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-types"
-version = "1.11.0"
+version = "1.13.0"
 dependencies = [
  "alloy",
  "async-trait",
@@ -3715,7 +3717,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-wallets"
-version = "1.11.0"
+version = "1.13.0"
 dependencies = [
  "alloy",
  "async-trait",
@@ -3737,7 +3739,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-ws"
-version = "1.11.0"
+version = "1.13.0"
 dependencies = [
  "async-trait",
  "ethui-args",
@@ -3753,9 +3755,9 @@ dependencies = [
  "tauri",
  "thiserror 2.0.11",
  "tokio",
- "tokio-tungstenite 0.26.1",
+ "tokio-tungstenite 0.26.2",
  "tracing",
- "tungstenite 0.26.1",
+ "tungstenite 0.26.2",
  "url",
 ]
 
@@ -8626,11 +8628,20 @@ checksum = "cd0b0ec5f1c1ca621c432a25813d8d60c88abe6d3e08a3eb9cf37d97a0fe3d73"
 
 [[package]]
 name = "serde"
-version = "1.0.217"
+version = "1.0.218"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "02fc4265df13d6fa1d00ecff087228cc0a2b5f3c0e87e258d8b94a156e984c70"
+checksum = "e8dfc9d19bdbf6d17e22319da49161d5d0108e4188e8b680aef6299eed22df60"
 dependencies = [
  "serde_derive",
+]
+
+[[package]]
+name = "serde-constant"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "301d0de95fe56444b1ea1ee62363452b756fe715fb4eab505be16b906599b47e"
+dependencies = [
+ "serde",
 ]
 
 [[package]]
@@ -8646,9 +8657,9 @@ dependencies = [
 
 [[package]]
 name = "serde_derive"
-version = "1.0.217"
+version = "1.0.218"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5a9bf7cf98d04a2b28aead066b7496853d4779c9cc183c440dbac457641e19a0"
+checksum = "f09503e191f4e797cb8aac08e9a4a4695c5edf6a2e70e376d961ddd5c969f82b"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -8668,9 +8679,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.138"
+version = "1.0.139"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d434192e7da787e94a6ea7e9670b26a036d0ca41e0b7efb2676dd32bae872949"
+checksum = "44f86c3acccc9c65b153fe1b85a3be07fe5515274ec9f0653b4a0875731c72a6"
 dependencies = [
  "indexmap 2.6.0",
  "itoa 1.0.11",
@@ -9893,12 +9904,13 @@ dependencies = [
 
 [[package]]
 name = "tempfile"
-version = "3.14.0"
+version = "3.17.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "28cce251fcbc87fac86a866eeb0d6c2d536fc16d06f184bb61aeae11aa4cee0c"
+checksum = "22e5a0acb1f3f55f65cc4a866c361b2fb2a0ff6366785ae6fbb5f85df07ba230"
 dependencies = [
  "cfg-if",
  "fastrand",
+ "getrandom 0.3.1",
  "once_cell",
  "rustix",
  "windows-sys 0.59.0",
@@ -10170,9 +10182,9 @@ dependencies = [
 
 [[package]]
 name = "tokio-tungstenite"
-version = "0.26.1"
+version = "0.26.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "be4bf6fecd69fcdede0ec680aaf474cdab988f9de6bc73d3758f0160e3b7025a"
+checksum = "7a9daff607c6d2bf6c16fd681ccb7eecc83e4e2cdc1ca067ffaadfca5de7f084"
 dependencies = [
  "futures-util",
  "log",
@@ -10180,7 +10192,7 @@ dependencies = [
  "rustls-pki-types",
  "tokio",
  "tokio-rustls 0.26.0",
- "tungstenite 0.26.1",
+ "tungstenite 0.26.2",
  "webpki-roots",
 ]
 
@@ -10484,17 +10496,16 @@ dependencies = [
 
 [[package]]
 name = "tungstenite"
-version = "0.26.1"
+version = "0.26.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "413083a99c579593656008130e29255e54dcaae495be556cc26888f211648c24"
+checksum = "4793cb5e56680ecbb1d843515b23b6de9a75eb04b66643e256a396d43be33c13"
 dependencies = [
- "byteorder",
  "bytes",
  "data-encoding",
  "http 1.1.0",
  "httparse",
  "log",
- "rand 0.8.5",
+ "rand 0.9.0",
  "rustls 0.23.19",
  "rustls-pki-types",
  "sha1",

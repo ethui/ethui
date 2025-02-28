@@ -1,5 +1,5 @@
 [workspace.package]
-version = "1.11.0"
+version = "1.13.0"
 edition = "2021"
 license-file = "./LICENSE"
 homepage = "https://github.com/ethui"
@@ -104,6 +104,8 @@ rand = "0.9"
 rstest = "0.23"
 regex = "1.11"
 anyhow = { version = "1.0", default-features = false }
+tempfile = "3.17.1"
+serde-constant = "0.1.0"
 
 # Foundry - December 10th 2024
 foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-aa69ed1e46dd61fbf9d73399396a4db4dd527431" }

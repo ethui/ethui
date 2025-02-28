@@ -16,8 +16,12 @@ alloy.workspace = true
 tauri.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+serde-constant.workspace = true
 tokio.workspace = true
 once_cell.workspace = true
 thiserror.workspace = true
 url.workspace = true
 async-trait.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true

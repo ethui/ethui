@@ -27,7 +27,7 @@ export function Breadcrumbs() {
   );
 
   return (
-    <Breadcrumb className="md:mx-4">
+    <Breadcrumb>
       <BreadcrumbList>
         {breadcrumbs.map(({ label, path }, i) => (
           <Fragment key={path}>
