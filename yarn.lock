@@ -1414,7 +1414,7 @@ __metadata:
     "@ethui/form": "npm:*"
     "@ethui/types": "npm:*"
     "@ethui/ui": "npm:0.0.43"
-    "@fontsource/source-code-pro": "npm:^5.1.1"
+    "@fontsource/source-code-pro": "npm:^5.2.5"
     "@hookform/resolvers": "npm:^3.10.0"
     "@radix-ui/react-collapsible": "npm:^1.1.3"
     "@tailwindcss/vite": "npm:^4.0.8"
@@ -1628,6 +1628,13 @@ __metadata:
   version: 5.1.1
   resolution: "@fontsource/source-code-pro@npm:5.1.1"
   checksum: 10c0/3014fa31a292f17c209c03cf29d2038270596260f769f792731de2ef80ceb57d53c24664c896571739e903c86d4eda9fcb0582a0ad5ec9a354899c54b48fa3ba
+  languageName: node
+  linkType: hard
+
+"@fontsource/source-code-pro@npm:^5.2.5":
+  version: 5.2.5
+  resolution: "@fontsource/source-code-pro@npm:5.2.5"
+  checksum: 10c0/269f734fff5a1347d3e5ec1a32bacb35fbd92b87422d672c1b3059e24c161b44d7698cdebc47fea07fc96dfa02a1c870ddfa094ddb3c311b91d1f9af12ee9884
   languageName: node
   linkType: hard
 
