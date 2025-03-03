@@ -25,7 +25,7 @@ struct SerializedNetworksV0 {
 #[derive(Debug, Deserialize, Serialize)]
 struct SerializedNetworksV1 {
     current: String,
-    networks: HashMap<String, NetworkV0>,
+    networks: HashMap<String, NetworkV1>,
     version: ConstI64<1>,
 }
 
@@ -39,6 +39,17 @@ enum Versions {
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct NetworkV0 {
+    pub name: String,
+    pub chain_id: u32,
+    pub explorer_url: Option<String>,
+    pub http_url: Url,
+    pub ws_url: Option<Url>,
+    pub currency: String,
+    pub decimals: u32,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct NetworkV1 {
     pub name: String,
     pub chain_id: u32,
     pub explorer_url: Option<String>,
@@ -73,14 +84,18 @@ pub(crate) fn load_and_migrate(pathbuf: &PathBuf) -> Result<Networks> {
 
 fn run_migrations(networks: Versions) -> SerializedNetworks {
     match networks {
-        Versions::V0(v0) => SerializedNetworks {
-            current: v0.current,
-            networks: migrate_networks_from_v0_to_v1(v0.networks),
-            version: ConstI64,
-        },
+        Versions::V0(v0) => {
+            let v1 = Versions::V1(SerializedNetworksV1 {
+                current: v0.current,
+                networks: migrate_networks_from_v0_to_v1(v0.networks),
+                version: ConstI64,
+            });
+
+            run_migrations(v1)
+        }
         Versions::V1(v1) => SerializedNetworks {
             current: v1.current,
-            networks: migrate_networks_from_v0_to_v1(v1.networks),
+            networks: migrate_networks_from_v1_to_v2(v1.networks),
             version: ConstI64,
         },
         Versions::V2(latest) => latest,
@@ -89,6 +104,28 @@ fn run_migrations(networks: Versions) -> SerializedNetworks {
 
 fn migrate_networks_from_v0_to_v1(
     networks: HashMap<String, NetworkV0>,
+) -> HashMap<String, NetworkV1> {
+    networks
+        .into_iter()
+        .map(|(name, network)| {
+            (
+                name,
+                NetworkV1 {
+                    name: network.name,
+                    chain_id: network.chain_id,
+                    explorer_url: network.explorer_url,
+                    http_url: network.http_url,
+                    ws_url: network.ws_url,
+                    currency: network.currency,
+                    decimals: network.decimals,
+                },
+            )
+        })
+        .collect::<HashMap<String, NetworkV1>>()
+}
+
+fn migrate_networks_from_v1_to_v2(
+    networks: HashMap<String, NetworkV1>,
 ) -> HashMap<String, Network> {
     networks
         .into_iter()
