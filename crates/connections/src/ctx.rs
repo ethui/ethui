@@ -55,17 +55,24 @@ impl Ctx {
             match self.get_affinity().await {
                 // If affinity is not set, or sticky, update local affinity, and publish event
                 Affinity::Unset | Affinity::Sticky(_) => {
+                    // TODO replace 0 with dedup_id
                     let affinity = (new_chain_id, 0).into();
                     self.set_affinity(affinity).await?;
 
-                    ethui_broadcast::chain_changed(new_chain_id, self.domain.clone(), affinity)
-                        .await;
+                    ethui_broadcast::chain_changed(
+                        // TODO replace 0 with dedup_id
+                        (new_chain_id, 0),
+                        self.domain.clone(),
+                        affinity,
+                    )
+                    .await;
                 }
 
                 // If current affinity is global, there's nothing to update on this Ctx, and the
                 // domain is irrelevant in the update,
                 Affinity::Global => {
-                    ethui_broadcast::chain_changed(new_chain_id, None, Affinity::Global).await;
+                    // TODO replace 0 with dedup_id
+                    ethui_broadcast::chain_changed((new_chain_id, 0), None, Affinity::Global).await;
                 }
             };
 
