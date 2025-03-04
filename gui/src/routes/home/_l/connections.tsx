@@ -79,7 +79,7 @@ function AffinityForm({ domain }: { domain: string }) {
     if (current === "global" || current === "unset") {
       setCurrentNetwork(currentGlobalNetwork);
     } else {
-      setCurrentNetwork(networks.find((n) => n.chain_id === current.sticky));
+      setCurrentNetwork(networks.find((n) => n.chain_id === current.sticky[0]));
     }
   }, [current, networks, currentGlobalNetwork]);
 
@@ -87,7 +87,7 @@ function AffinityForm({ domain }: { domain: string }) {
   const handleChange = (value: string) => {
     let affinity: Affinity = "global";
     if (value !== "global") {
-      affinity = { sticky: Number.parseInt(value) };
+      affinity = { sticky: [Number.parseInt(value), 0] };
     }
     invoke("connections_set_affinity", {
       domain,

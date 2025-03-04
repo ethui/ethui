@@ -11,7 +11,7 @@ pub async fn connections_affinity_for(domain: String) -> Affinity {
 #[tauri::command]
 pub async fn connections_set_affinity(domain: &str, affinity: Affinity) -> Result<()> {
     let new_chain_id = match affinity {
-        Affinity::Sticky(chain_id) => {
+        Affinity::Sticky((chain_id, _dedup_id)) => {
             if !Networks::read().await.validate_chain_id(chain_id) {
                 return Err(Error::InvalidChainId(chain_id));
             }

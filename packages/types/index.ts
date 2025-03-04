@@ -105,4 +105,4 @@ export interface Peer {
   favicon: string;
 }
 
-export type Affinity = { sticky: number } | "global" | "unset";
+export type Affinity = { sticky: [number, number] } | "global" | "unset";

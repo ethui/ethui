@@ -61,6 +61,6 @@ impl Store {
     pub(crate) fn on_chain_removed(&mut self, chain_id: u32) {
         self.inner
             .affinities
-            .retain(|_, affinity| *affinity != chain_id.into());
+            .retain(|_, affinity| *affinity != (chain_id, 0).into());
     }
 }
