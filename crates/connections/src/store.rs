@@ -7,29 +7,38 @@ use std::{
 use ethui_types::Affinity;
 use serde::{Deserialize, Serialize};
 
-use crate::Result;
+use crate::{migrations::LatestVersion, Result};
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", default)]
-pub struct Store {
-    #[serde(skip, default)]
-    pub(crate) file: PathBuf,
-
+pub struct SerializedStore {
     // maps rule -> current_chain_id
     // rule is currently a domain, but may eventually grow
     // TODO: removing networks will cause some affinities to become invalid. need to clean them up
     pub(crate) affinities: HashMap<String, Affinity>,
+    pub version: LatestVersion,
+}
+
+#[derive(Debug, Default)]
+pub struct Store {
+    pub(crate) file: PathBuf,
+
+    pub(crate) inner: SerializedStore,
 }
 
 impl Store {
     pub fn get_affinity(&self, domain: &str) -> Affinity {
-        self.affinities.get(domain).cloned().unwrap_or_default()
+        self.inner
+            .affinities
+            .get(domain)
+            .cloned()
+            .unwrap_or_default()
     }
 
     pub fn set_affinity(&mut self, domain: &str, affinity: Affinity) -> Result<()> {
         match affinity {
-            Affinity::Unset => self.affinities.remove(domain),
-            affinity => self.affinities.insert(domain.to_string(), affinity),
+            Affinity::Unset => self.inner.affinities.remove(domain),
+            affinity => self.inner.affinities.insert(domain.to_string(), affinity),
         };
         self.save()?;
 
@@ -37,12 +46,12 @@ impl Store {
     }
 
     // Persists current state to disk
-    fn save(&self) -> Result<()> {
+    pub(crate) fn save(&self) -> Result<()> {
         let pathbuf = self.file.clone();
         let path = Path::new(&pathbuf);
         let file = File::create(path)?;
 
-        serde_json::to_writer_pretty(file, self)?;
+        serde_json::to_writer_pretty(file, &self.inner)?;
 
         Ok(())
     }
@@ -50,7 +59,8 @@ impl Store {
     /// Whenever a chain is removed, we need to clear all affinities to that chain
     /// otherwise, new connections from the same website will fail
     pub(crate) fn on_chain_removed(&mut self, chain_id: u32) {
-        self.affinities
+        self.inner
+            .affinities
             .retain(|_, affinity| *affinity != chain_id.into());
     }
 }

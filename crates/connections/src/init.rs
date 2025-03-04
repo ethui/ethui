@@ -1,39 +1,20 @@
-use std::{
-    collections::HashMap,
-    fs::File,
-    io::BufReader,
-    path::{Path, PathBuf},
-};
+use std::path::{Path, PathBuf};
 
 use async_trait::async_trait;
 use ethui_broadcast::InternalMsg;
-use ethui_types::{Affinity, GlobalState};
+use ethui_types::GlobalState;
 use once_cell::sync::OnceCell;
-use serde::Deserialize;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
-use crate::store::Store;
+use crate::{migrations::load_and_migrate, store::Store};
 
 static STORE: OnceCell<RwLock<Store>> = OnceCell::new();
 
 pub async fn init(pathbuf: PathBuf) {
     let path = Path::new(&pathbuf);
 
-    #[derive(Debug, Deserialize)]
-    struct PersistedStore {
-        affinities: HashMap<String, Affinity>,
-    }
-
     let store: Store = if path.exists() {
-        let file = File::open(path).unwrap();
-        let reader = BufReader::new(file);
-
-        let store: PersistedStore = serde_json::from_reader(reader).unwrap();
-
-        Store {
-            affinities: store.affinities,
-            file: pathbuf,
-        }
+        load_and_migrate(&pathbuf).expect("failed to load connections")
     } else {
         Store {
             file: pathbuf,
