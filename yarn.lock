@@ -1420,7 +1420,7 @@ __metadata:
     "@tailwindcss/vite": "npm:^4.0.8"
     "@tanstack/react-query": "npm:^5.67.1"
     "@tanstack/react-query-devtools": "npm:^5.67.1"
-    "@tanstack/react-router": "npm:^1.111.6"
+    "@tanstack/react-router": "npm:^1.112.13"
     "@tanstack/router-devtools": "npm:^1.112.13"
     "@tanstack/router-plugin": "npm:^1.112.13"
     "@tauri-apps/api": "npm:2.2.0"
@@ -3826,13 +3826,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/history@npm:1.99.13":
-  version: 1.99.13
-  resolution: "@tanstack/history@npm:1.99.13"
-  checksum: 10c0/0b6405e8bf04474549456d5a3e7aed03adc8875c5d0ba78cf192f72d520fb8af444b555f321be2c86183a8037918860a6c9f3e183b36d2d4fccef9c32236df80
-  languageName: node
-  linkType: hard
-
 "@tanstack/query-core@npm:5.66.4":
   version: 5.66.4
   resolution: "@tanstack/query-core@npm:5.66.4"
@@ -3888,20 +3881,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-router@npm:^1.111.6":
-  version: 1.111.6
-  resolution: "@tanstack/react-router@npm:1.111.6"
+"@tanstack/react-router@npm:^1.112.13":
+  version: 1.112.13
+  resolution: "@tanstack/react-router@npm:1.112.13"
   dependencies:
-    "@tanstack/history": "npm:1.99.13"
+    "@tanstack/history": "npm:1.112.8"
     "@tanstack/react-store": "npm:^0.7.0"
-    "@tanstack/router-core": "npm:^1.111.6"
+    "@tanstack/router-core": "npm:^1.112.12"
     jsesc: "npm:^3.1.0"
     tiny-invariant: "npm:^1.3.3"
     tiny-warning: "npm:^1.0.3"
   peerDependencies:
     react: ">=18.0.0 || >=19.0.0"
     react-dom: ">=18.0.0 || >=19.0.0"
-  checksum: 10c0/c196641b8970cd22e19e0187afc0da689ffa4cd0a8a3eae52255cfaf8f3fddd5011f2c16f31e9421512ba189106791332e61de7481d4f419880df443f20ff496
+  checksum: 10c0/8f6678f1093cabdcca81659502e55c7d69c62d958d9d448b393cad747ea797354091ae3775c3d1a85d6ed4b12824d7b2a2eb19c724d783319f18750921e472b4
   languageName: node
   linkType: hard
 
@@ -3915,16 +3908,6 @@ __metadata:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
   checksum: 10c0/7e971ae3c547d0d803133f07737e7cc7cf381e959b4fab3f55755b28c194688392f5b921d3d43b8c9c81bdc721ea8878c680d4ca28a1ccd59e8a64ab7bcfd0f8
-  languageName: node
-  linkType: hard
-
-"@tanstack/router-core@npm:^1.111.6":
-  version: 1.111.6
-  resolution: "@tanstack/router-core@npm:1.111.6"
-  dependencies:
-    "@tanstack/history": "npm:1.99.13"
-    "@tanstack/store": "npm:^0.7.0"
-  checksum: 10c0/8314acd7fe27ca47fcb3022478e1245ace64ec6326b2952e5d9a36d3083ca744def5c57882a000332314d3205e561935486e7832166217699bcbc2e7d3a8f774
   languageName: node
   linkType: hard
 
