@@ -1423,7 +1423,7 @@ __metadata:
     "@tanstack/react-router": "npm:^1.112.13"
     "@tanstack/router-devtools": "npm:^1.112.13"
     "@tanstack/router-plugin": "npm:^1.112.13"
-    "@tauri-apps/api": "npm:2.2.0"
+    "@tauri-apps/api": "npm:2.3.0"
     "@tauri-apps/cli": "npm:^2.3.1"
     "@tauri-apps/plugin-clipboard-manager": "npm:^2.2.1"
     "@tauri-apps/plugin-os": "npm:^2.2.0"
@@ -4024,10 +4024,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tauri-apps/api@npm:2.2.0":
-  version: 2.2.0
-  resolution: "@tauri-apps/api@npm:2.2.0"
-  checksum: 10c0/0ff0d9735c33d71c934e34045ef3077831fa98de25a42dc4c343120b482c8c114b87ef83dc02195923c23226fe6b8cb3e6bbaa099ab64d741346ba80c164435a
+"@tauri-apps/api@npm:2.3.0":
+  version: 2.3.0
+  resolution: "@tauri-apps/api@npm:2.3.0"
+  checksum: 10c0/0f83a3c51cdd66c6670ff867043c7ff5ebbad5191cd7e6ddfa5afb815cea302fd0dea58074dbee15342879cdb7ad27a814b1d33db5d588c7582ad3a55ec1266d
   languageName: node
   linkType: hard
 
