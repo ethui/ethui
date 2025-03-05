@@ -13,7 +13,7 @@ use alloy::{
     network::Ethereum,
     providers::{Provider, ProviderBuilder, RootProvider},
 };
-use ethui_types::{Affinity, Network, UINotify};
+use ethui_types::{Affinity, Network, NewNetworkParams, UINotify};
 pub use init::init;
 use migrations::LatestVersion;
 use serde::{Deserialize, Serialize};
@@ -95,7 +95,15 @@ impl Networks {
             .cloned()
     }
 
-    pub async fn add_network(&mut self, network: Network) -> Result<()> {
+    pub fn get_network_by_name(&self, name: &str) -> Option<Network> {
+        self.inner
+            .networks
+            .values()
+            .find(|n| n.name == name)
+            .cloned()
+    }
+
+    pub async fn add_network(&mut self, network: NewNetworkParams) -> Result<()> {
         // TODO: need to ensure uniqueness by name, not chain id
         if self.validate_chain_id(network.chain_id) {
             return Err(Error::AlreadyExists);
@@ -105,9 +113,13 @@ impl Networks {
             return Err(Error::AlreadyExists);
         }
 
+        let deduplication_id = self.get_chain_id_count(network.chain_id);
+        let network = network.into_network(deduplication_id);
+
         self.inner
             .networks
             .insert(network.name.clone(), network.clone());
+
         self.save()?;
         ethui_broadcast::network_added(network.clone()).await;
         ethui_broadcast::ui_notify(UINotify::NetworksChanged).await;
@@ -169,6 +181,14 @@ impl Networks {
             .await?;
 
         Ok(provider.get_chain_id().await?)
+    }
+
+    pub fn get_chain_id_count(&self, chain_id: u32) -> u32 {
+        self.inner
+            .networks
+            .values()
+            .filter(|network| network.chain_id == chain_id)
+            .count() as u32
     }
 
     async fn on_network_changed(&self) -> Result<()> {
