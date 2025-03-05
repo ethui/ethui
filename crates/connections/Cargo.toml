@@ -21,4 +21,4 @@ jsonrpc-core.workspace = true
 tauri.workspace = true
 thiserror.workspace = true
 async-trait.workspace = true
-chrono = "0.4.39"
+chrono = "0.4.40"
