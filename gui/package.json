@@ -25,7 +25,7 @@
     "@tanstack/react-router": "^1.111.6",
     "@tanstack/router-devtools": "^1.112.13",
     "@tauri-apps/api": "2.2.0",
-    "@tauri-apps/cli": "^2.2.7",
+    "@tauri-apps/cli": "^2.3.1",
     "@tauri-apps/plugin-clipboard-manager": "^2.2.1",
     "@tauri-apps/plugin-os": "^2.2.0",
     "@uidotdev/usehooks": "^2.4.1",
