@@ -27,11 +27,7 @@ export function useNoticeNewVersion() {
       title: "New release available",
       action: (
         <ToastAction altText="Set key" asChild>
-          <a
-            href="https://github.com/ethui/ethui/releases"
-            target="_blank"
-            rel="noreferrer"
-          >
+          <a href="https://ethui.dev" target="_blank" rel="noreferrer">
             Download
           </a>
         </ToastAction>
