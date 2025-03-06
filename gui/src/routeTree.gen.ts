@@ -21,6 +21,7 @@ import { Route as OnboardingLThankYouImport } from './routes/onboarding/_l/thank
 import { Route as OnboardingLExtensionImport } from './routes/onboarding/_l/extension'
 import { Route as OnboardingLAlchemyImport } from './routes/onboarding/_l/alchemy'
 import { Route as HomeLTransactionsImport } from './routes/home/_l/transactions'
+import { Route as HomeLOnboardingImport } from './routes/home/_l/onboarding'
 import { Route as HomeLConnectionsImport } from './routes/home/_l/connections'
 import { Route as HomeLAccountImport } from './routes/home/_l/account'
 import { Route as OnboardingLWalletsLImport } from './routes/onboarding/_l/wallets/_l'
@@ -146,6 +147,12 @@ const OnboardingLAlchemyRoute = OnboardingLAlchemyImport.update({
 const HomeLTransactionsRoute = HomeLTransactionsImport.update({
   id: '/transactions',
   path: '/transactions',
+  getParentRoute: () => HomeLRoute,
+} as any)
+
+const HomeLOnboardingRoute = HomeLOnboardingImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => HomeLRoute,
 } as any)
 
@@ -396,6 +403,13 @@ declare module '@tanstack/react-router' {
       path: '/connections'
       fullPath: '/home/connections'
       preLoaderRoute: typeof HomeLConnectionsImport
+      parentRoute: typeof HomeLImport
+    }
+    '/home/_l/onboarding': {
+      id: '/home/_l/onboarding'
+      path: '/onboarding'
+      fullPath: '/home/onboarding'
+      preLoaderRoute: typeof HomeLOnboardingImport
       parentRoute: typeof HomeLImport
     }
     '/home/_l/transactions': {
@@ -822,6 +836,7 @@ const HomeLSettingsRouteWithChildren = HomeLSettingsRoute._addFileChildren(
 interface HomeLRouteChildren {
   HomeLAccountRoute: typeof HomeLAccountRoute
   HomeLConnectionsRoute: typeof HomeLConnectionsRoute
+  HomeLOnboardingRoute: typeof HomeLOnboardingRoute
   HomeLTransactionsRoute: typeof HomeLTransactionsRoute
   HomeLContractsRoute: typeof HomeLContractsRouteWithChildren
   HomeLSettingsRoute: typeof HomeLSettingsRouteWithChildren
@@ -830,6 +845,7 @@ interface HomeLRouteChildren {
 const HomeLRouteChildren: HomeLRouteChildren = {
   HomeLAccountRoute: HomeLAccountRoute,
   HomeLConnectionsRoute: HomeLConnectionsRoute,
+  HomeLOnboardingRoute: HomeLOnboardingRoute,
   HomeLTransactionsRoute: HomeLTransactionsRoute,
   HomeLContractsRoute: HomeLContractsRouteWithChildren,
   HomeLSettingsRoute: HomeLSettingsRouteWithChildren,
@@ -911,6 +927,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof OnboardingLRouteWithChildren
   '/home/account': typeof HomeLAccountRoute
   '/home/connections': typeof HomeLConnectionsRoute
+  '/home/onboarding': typeof HomeLOnboardingRoute
   '/home/transactions': typeof HomeLTransactionsRoute
   '/onboarding/alchemy': typeof OnboardingLAlchemyRoute
   '/onboarding/extension': typeof OnboardingLExtensionRoute
@@ -951,6 +968,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingLIndexRoute
   '/home/account': typeof HomeLAccountRoute
   '/home/connections': typeof HomeLConnectionsRoute
+  '/home/onboarding': typeof HomeLOnboardingRoute
   '/home/transactions': typeof HomeLTransactionsRoute
   '/onboarding/alchemy': typeof OnboardingLAlchemyRoute
   '/onboarding/extension': typeof OnboardingLExtensionRoute
@@ -990,6 +1008,7 @@ export interface FileRoutesById {
   '/onboarding/_l': typeof OnboardingLRouteWithChildren
   '/home/_l/account': typeof HomeLAccountRoute
   '/home/_l/connections': typeof HomeLConnectionsRoute
+  '/home/_l/onboarding': typeof HomeLOnboardingRoute
   '/home/_l/transactions': typeof HomeLTransactionsRoute
   '/onboarding/_l/alchemy': typeof OnboardingLAlchemyRoute
   '/onboarding/_l/extension': typeof OnboardingLExtensionRoute
@@ -1037,6 +1056,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/home/account'
     | '/home/connections'
+    | '/home/onboarding'
     | '/home/transactions'
     | '/onboarding/alchemy'
     | '/onboarding/extension'
@@ -1076,6 +1096,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/home/account'
     | '/home/connections'
+    | '/home/onboarding'
     | '/home/transactions'
     | '/onboarding/alchemy'
     | '/onboarding/extension'
@@ -1113,6 +1134,7 @@ export interface FileRouteTypes {
     | '/onboarding/_l'
     | '/home/_l/account'
     | '/home/_l/connections'
+    | '/home/_l/onboarding'
     | '/home/_l/transactions'
     | '/onboarding/_l/alchemy'
     | '/onboarding/_l/extension'
@@ -1212,6 +1234,7 @@ export const routeTree = rootRoute
       "children": [
         "/home/_l/account",
         "/home/_l/connections",
+        "/home/_l/onboarding",
         "/home/_l/transactions",
         "/home/_l/contracts",
         "/home/_l/settings"
@@ -1240,6 +1263,10 @@ export const routeTree = rootRoute
     },
     "/home/_l/connections": {
       "filePath": "home/_l/connections.tsx",
+      "parent": "/home/_l"
+    },
+    "/home/_l/onboarding": {
+      "filePath": "home/_l/onboarding.tsx",
       "parent": "/home/_l"
     },
     "/home/_l/transactions": {
