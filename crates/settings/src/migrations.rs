@@ -56,22 +56,22 @@ pub(crate) async fn load_and_migrate(pathbuf: &PathBuf) -> Result<Settings> {
     let file = File::open(path)?;
     let reader = BufReader::new(&file);
 
-    let mut networks: serde_json::Value = serde_json::from_reader(reader)?;
+    let mut settings: serde_json::Value = serde_json::from_reader(reader)?;
 
-    if networks["version"].is_null() {
-        networks["version"] = json!(0);
+    if settings["version"].is_null() {
+        settings["version"] = json!(0);
     }
 
-    let networks: Versions = serde_json::from_value(networks)?;
+    let settings: Versions = serde_json::from_value(settings)?;
 
-    let networks = Settings {
-        inner: run_migrations(networks),
+    let settings = Settings {
+        inner: run_migrations(settings),
         file: path.to_path_buf(),
     };
 
-    networks.save().await?;
+    settings.save().await?;
 
-    Ok(networks)
+    Ok(settings)
 }
 
 fn run_migrations(settings: Versions) -> SerializedSettings {
