@@ -7,8 +7,11 @@ use alloy::{
 use serde::{Deserialize, Serialize};
 use url::Url;
 
+use crate::dedup_chain_id::DedupChainId;
+
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Network {
+    pub deduplication_id: u32,
     pub name: String,
     pub chain_id: u32,
     pub explorer_url: Option<String>,
@@ -19,8 +22,9 @@ pub struct Network {
 }
 
 impl Network {
-    pub fn mainnet() -> Self {
+    pub fn mainnet(deduplication_id: u32) -> Self {
         Self {
+            deduplication_id,
             name: String::from("Mainnet"),
             chain_id: 1,
             explorer_url: Some(String::from("https://etherscan.io/search?q=")),
@@ -31,8 +35,9 @@ impl Network {
         }
     }
 
-    pub fn sepolia() -> Self {
+    pub fn sepolia(deduplication_id: u32) -> Self {
         Self {
+            deduplication_id,
             name: String::from("Sepolia"),
             chain_id: 11155111,
             explorer_url: Some(String::from("https://sepolia.etherscan.io/search?q=")),
@@ -43,8 +48,9 @@ impl Network {
         }
     }
 
-    pub fn anvil() -> Self {
+    pub fn anvil(deduplication_id: u32) -> Self {
         Self {
+            deduplication_id,
             name: String::from("Anvil"),
             chain_id: 31337,
             explorer_url: None,
@@ -56,7 +62,11 @@ impl Network {
     }
 
     pub fn all_default() -> Vec<Self> {
-        vec![Self::anvil(), Self::mainnet(), Self::sepolia()]
+        vec![Self::anvil(0), Self::mainnet(0), Self::sepolia(0)]
+    }
+
+    pub fn internal_id(&self) -> DedupChainId {
+        (self.chain_id, self.deduplication_id)
     }
 
     pub fn chain_id_hex(&self) -> String {

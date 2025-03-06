@@ -179,7 +179,8 @@ impl Handler {
     async fn add_chain(params: Params, _ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
         let method = methods::ChainAdd::build()
             .set_params(params.into())?
-            .build();
+            .build()
+            .await;
 
         method.run().await?;
 
