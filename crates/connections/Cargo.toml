@@ -16,9 +16,13 @@ ethui-broadcast.workspace = true
 tokio.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+serde-constant.workspace = true
 once_cell.workspace = true
 jsonrpc-core.workspace = true
 tauri.workspace = true
 thiserror.workspace = true
 async-trait.workspace = true
-chrono = "0.4.39"
+chrono = "0.4.40"
+
+[dev-dependencies]
+tempfile.workspace = true
