@@ -2,18 +2,20 @@ mod autostart;
 pub mod commands;
 mod error;
 mod init;
+mod migrations;
 mod utils;
 
 use std::{
     collections::HashMap,
     fs::File,
     path::{Path, PathBuf},
-    str::FromStr,
 };
 
 use ethui_types::{Address, UINotify};
 pub use init::init;
+use migrations::LatestVersion;
 use serde::{Deserialize, Serialize};
+use serde_constant::ConstI64;
 pub use utils::test_alchemy_api_key;
 
 pub use self::error::{Error, Result};
@@ -189,6 +191,8 @@ pub struct SerializedSettings {
 
     #[serde(default)]
     rust_log: String,
+
+    version: LatestVersion,
 }
 
 impl Default for SerializedSettings {
@@ -205,6 +209,7 @@ impl Default for SerializedSettings {
             autostart: false,
             start_minimized: false,
             rust_log: "warn".into(),
+            version: ConstI64,
         }
     }
 }
@@ -214,19 +219,5 @@ const fn default_true() -> bool {
 }
 
 fn default_aliases() -> HashMap<Address, String> {
-    let mut res = HashMap::new();
-    res.insert(
-        Address::from_str("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266").unwrap(),
-        "alice".into(),
-    );
-    res.insert(
-        Address::from_str("0x70997970C51812dc3A010C7d01b50e0d17dc79C8").unwrap(),
-        "bob".into(),
-    );
-    res.insert(
-        Address::from_str("0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC").unwrap(),
-        "charlie".into(),
-    );
-
-    res
+    Default::default()
 }

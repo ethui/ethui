@@ -24,3 +24,7 @@ auto-launch = "0.5.0"
 alloy.workspace = true
 foundry-block-explorers.workspace = true
 alloy-chains.workspace = true
+serde-constant.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
