@@ -208,6 +208,16 @@ impl Networks {
             .count() as u32
     }
 
+    pub fn get_lowest_dedup_id(&self, chain_id: u32) -> u32 {
+        self.inner
+            .networks
+            .values()
+            .filter(|network| network.chain_id == chain_id)
+            .map(|network| network.deduplication_id)
+            .min()
+            .unwrap_or(0)
+    }
+
     async fn on_network_changed(&self) -> Result<()> {
         // TODO: check domain
         self.notify_peers();
