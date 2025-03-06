@@ -19,6 +19,8 @@ impl ChainAdd {
 
     #[tracing::instrument(skip(self))]
     pub async fn run(self) -> Result<()> {
+        // TODO how to handle dedup_id
+        // if the network already exists, we may want to add a new one anyway
         if self.already_exists().await {
             info!("Network already exists");
             return Ok(());

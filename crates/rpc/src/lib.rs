@@ -205,6 +205,9 @@ impl Handler {
         let chain_id_str = params[0].get("chainId").unwrap().clone();
         let new_chain_id = u32::from_str_radix(&chain_id_str[2..], 16).unwrap();
 
+        // TODO future work
+        // multiple netowrks with same chain id should display a dialog so user can select which
+        // network to switch to
         Ok(ctx
             .switch_chain(new_chain_id)
             .await

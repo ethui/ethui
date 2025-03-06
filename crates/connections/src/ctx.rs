@@ -55,7 +55,7 @@ impl Ctx {
             match self.get_affinity().await {
                 // If affinity is not set, or sticky, update local affinity, and publish event
                 Affinity::Unset | Affinity::Sticky(_) => {
-                    let affinity = new_chain_id.into();
+                    let affinity = (new_chain_id, 0).into();
                     self.set_affinity(affinity).await?;
 
                     ethui_broadcast::chain_changed(new_chain_id, self.domain.clone(), affinity)
@@ -77,7 +77,7 @@ impl Ctx {
 
     pub async fn chain_id(&self) -> u32 {
         match self.get_affinity().await {
-            Affinity::Sticky(chain_id) => chain_id,
+            Affinity::Sticky((chain_id, _dedup_id)) => chain_id,
             _ => Networks::read().await.get_current().chain_id,
         }
     }
