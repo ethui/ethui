@@ -66,7 +66,7 @@ impl Network {
     }
 
     pub fn internal_id(&self) -> DedupChainId {
-        (self.chain_id, self.deduplication_id)
+        (self.chain_id, self.deduplication_id).into()
     }
 
     pub fn chain_id_hex(&self) -> String {
