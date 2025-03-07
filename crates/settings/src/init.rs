@@ -1,6 +1,7 @@
 use std::path::{Path, PathBuf};
 
 use async_trait::async_trait;
+use ethui_broadcast::InternalMsg;
 use ethui_types::GlobalState;
 use once_cell::sync::OnceCell;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
@@ -26,6 +27,8 @@ pub async fn init(pathbuf: PathBuf) -> Result<()> {
     res.init().await?;
     SETTINGS.set(RwLock::new(res)).unwrap();
 
+    tokio::spawn(async { receiver().await });
+
     Ok(())
 }
 
@@ -37,5 +40,20 @@ impl GlobalState for Settings {
 
     async fn write<'a>() -> RwLockWriteGuard<'a, Self> {
         SETTINGS.get().unwrap().write().await
+    }
+}
+
+async fn receiver() -> ! {
+    let mut rx = ethui_broadcast::subscribe_internal().await;
+
+    loop {
+        match rx.recv().await {
+            Ok(InternalMsg::SettingsUpdated) => {
+                let mut settings = SETTINGS.get().unwrap().write().await;
+                let onboarding = &settings.inner.onboarding;
+                if !onboarding.alchemy && settings.inner.alchemy_api_key.is_some() {}
+            }
+            _ => (),
+        }
     }
 }

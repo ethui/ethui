@@ -1,38 +1,33 @@
+use ethui_broadcast::InternalMsg;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub enum OnboardingStepState {
-    #[default]
-    Empty,
-    Done,
-    Skipped,
-}
-
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct Onboarding {
-    hidden: bool,
-    create_wallet: OnboardingStepState,
-    import_wallet: OnboardingStepState,
-    create_token: OnboardingStepState,
-    add_token: OnboardingStepState,
-    add_network: OnboardingStepState,
+    pub(crate) hidden: bool,
+    pub(crate) alchemy: bool,
+    pub(crate) wallet: bool,
+    pub(crate) extension: bool,
 }
 
 impl Onboarding {
     pub(crate) fn all_done() -> Self {
         Self {
             hidden: true,
-            create_wallet: OnboardingStepState::Done,
-            import_wallet: OnboardingStepState::Done,
-            create_token: OnboardingStepState::Done,
-            add_token: OnboardingStepState::Done,
-            add_network: OnboardingStepState::Done,
+            alchemy: true,
+            wallet: true,
+            extension: true,
         }
     }
 
     pub(crate) fn hide(&mut self) {
         self.hidden = true;
+    }
+
+    pub(crate) fn update(&mut self, msg: InternalMsg) -> Self {
+        match msg {
+            InternalMsg::SettingsUpdated => Self::default(),
+            _ => Self::default(),
+        }
     }
 }

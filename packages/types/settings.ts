@@ -2,10 +2,9 @@ import { z } from "zod";
 
 export const onboardingSchema = z.object({
   hidden: z.boolean(),
-  createWallet: z.enum(["empty", "done", "skipped"]),
-  importWallet: z.enum(["empty", "done", "skipped"]),
-  createToken: z.enum(["empty", "done", "skipped"]),
-  addToken: z.enum(["empty", "done", "skipped"]),
+  alchemy: z.boolean(),
+  wallet: z.boolean(),
+  extension: z.boolean(),
 });
 
 export const generalSettingsSchema = z.object({
