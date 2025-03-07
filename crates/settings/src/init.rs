@@ -12,7 +12,7 @@ static SETTINGS: OnceCell<RwLock<Settings>> = OnceCell::new();
 pub async fn init(pathbuf: PathBuf) -> Result<()> {
     let path = Path::new(&pathbuf);
 
-    let res: Settings = if path.exists() {
+    let res = if path.exists() {
         load_and_migrate(&pathbuf)
             .await
             .expect("failed to load settings")
