@@ -7,7 +7,7 @@ use alloy::{
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-use crate::dedup_chain_id::DedupChainId;
+use crate::DedupChainId;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Network {

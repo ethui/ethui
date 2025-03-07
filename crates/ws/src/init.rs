@@ -35,10 +35,10 @@ async fn receiver() -> ! {
             use InternalMsg::*;
 
             match msg {
-                ChainChanged(chain_id, domain, affinity) => {
+                ChainChanged(internal_id, domain, affinity) => {
                     Peers::read()
                         .await
-                        .broadcast_chain_changed(chain_id, domain, affinity)
+                        .broadcast_chain_changed(internal_id, domain, affinity)
                         .await
                 }
                 AccountsChanged(accounts) => {

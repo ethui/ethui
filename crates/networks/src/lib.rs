@@ -13,7 +13,7 @@ use alloy::{
     network::Ethereum,
     providers::{Provider, ProviderBuilder, RootProvider},
 };
-use ethui_types::{Affinity, Network, NewNetworkParams, UINotify};
+use ethui_types::{Affinity, DedupChainId, Network, NewNetworkParams, UINotify};
 pub use init::init;
 use migrations::LatestVersion;
 use serde::{Deserialize, Serialize};
@@ -42,9 +42,9 @@ impl Networks {
     ///
     /// Broadcasts `chainChanged` to all connections with global or no affinity
     pub async fn set_current_by_name(&mut self, new_current_network: String) -> Result<()> {
-        let previous = self.get_current().chain_id;
+        let previous = self.get_current().name.clone();
         self.inner.current = new_current_network;
-        let new = self.get_current().chain_id;
+        let new = self.get_current().name.clone();
 
         if previous != new {
             self.on_network_changed().await?;
@@ -64,6 +64,23 @@ impl Networks {
             .networks
             .values()
             .find(|n| n.chain_id == new_chain_id)
+            .unwrap();
+
+        self.set_current_by_name(new_network.name.clone()).await?;
+        self.save()?;
+
+        Ok(())
+    }
+
+    /// Changes the currently connected wallet by internal ID
+    ///
+    /// Broadcasts `chainChanged` to all connections with global or no affinity
+    pub async fn set_current_by_internal_id(&mut self, internal_id: DedupChainId) -> Result<()> {
+        let new_network = self
+            .inner
+            .networks
+            .values()
+            .find(|n| n.internal_id() == internal_id)
             .unwrap();
 
         self.set_current_by_name(new_network.name.clone()).await?;
@@ -191,6 +208,16 @@ impl Networks {
             .count() as u32
     }
 
+    pub fn get_lowest_dedup_id(&self, chain_id: u32) -> u32 {
+        self.inner
+            .networks
+            .values()
+            .filter(|network| network.chain_id == chain_id)
+            .map(|network| network.deduplication_id)
+            .min()
+            .unwrap_or(0)
+    }
+
     async fn on_network_changed(&self) -> Result<()> {
         // TODO: check domain
         self.notify_peers();
@@ -206,7 +233,7 @@ impl Networks {
     fn notify_peers(&self) {
         let current = self.get_current().clone();
         tokio::spawn(async move {
-            ethui_broadcast::chain_changed(current.chain_id, None, Affinity::Global).await;
+            ethui_broadcast::chain_changed(current.internal_id(), None, Affinity::Global).await;
         });
     }
 
