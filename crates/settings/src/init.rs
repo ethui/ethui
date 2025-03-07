@@ -1,31 +1,21 @@
-use std::{
-    fs::File,
-    io::BufReader,
-    path::{Path, PathBuf},
-};
+use std::path::{Path, PathBuf};
 
 use async_trait::async_trait;
 use ethui_types::GlobalState;
 use once_cell::sync::OnceCell;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
-use crate::{Result, SerializedSettings, Settings};
+use crate::{migrations::load_and_migrate, Result, SerializedSettings, Settings};
 
 static SETTINGS: OnceCell<RwLock<Settings>> = OnceCell::new();
 
 pub async fn init(pathbuf: PathBuf) -> Result<()> {
     let path = Path::new(&pathbuf);
 
-    let res: Settings = if path.exists() {
-        let file = File::open(path).unwrap();
-        let reader = BufReader::new(file);
-
-        let inner: SerializedSettings = serde_json::from_reader(reader).unwrap();
-
-        Settings {
-            inner,
-            file: pathbuf,
-        }
+    let res = if path.exists() {
+        load_and_migrate(&pathbuf)
+            .await
+            .expect("failed to load settings")
     } else {
         Settings {
             inner: SerializedSettings::default(),

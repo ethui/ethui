@@ -3599,8 +3599,10 @@ dependencies = [
  "foundry-block-explorers",
  "once_cell",
  "serde",
+ "serde-constant",
  "serde_json",
  "tauri",
+ "tempfile",
  "thiserror 2.0.12",
  "tokio",
 ]
