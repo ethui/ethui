@@ -36,7 +36,7 @@ pub fn build_window(
 /// Focuses all exiting windows, opening main window in the process if it doesn't exist
 /// Useful for macOS's dock icon click
 #[cfg_attr(not(target_os = "macos"), allow(dead_code))]
-pub(crate) fn all_windows_focus(app: &AppHandle) {
+pub(crate) async fn all_windows_focus(app: &AppHandle) {
     let windows = app.webview_windows();
 
     if !windows.is_empty() {
@@ -45,5 +45,5 @@ pub(crate) fn all_windows_focus(app: &AppHandle) {
         }
     }
 
-    main::show(app);
+    main::show(app).await;
 }
