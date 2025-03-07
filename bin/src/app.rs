@@ -89,7 +89,7 @@ impl EthUIApp {
         init(&app, args).await?;
 
         if should_start_main_window(args).await {
-            windows::main::show(app.handle()).await;
+            windows::main::show(app.handle());
         }
 
         Ok(Self { app })
@@ -104,7 +104,7 @@ impl EthUIApp {
             #[cfg(target_os = "macos")]
             tauri::RunEvent::Reopen { .. } => {
                 let handle = handle.clone();
-                tokio::spawn(async move { windows::all_windows_focus(&handle).await });
+                windows::all_windows_focus(&handle);
             }
             _ => (),
         });
@@ -162,7 +162,7 @@ async fn event_listener(handle: AppHandle) {
                 DialogClose(params) => windows::dialogs::close(&handle, params),
                 DialogSend(params) => windows::dialogs::send(&handle, params),
 
-                MainWindowShow => windows::main::show(&handle).await,
+                MainWindowShow => windows::main::show(&handle),
                 MainWindowHide => windows::main::hide(&handle),
             }
         }
