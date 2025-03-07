@@ -83,7 +83,7 @@ fn migrate_affinities_from_v1_to_v2(
     affinities
         .into_iter()
         .map(|(domain, affinity)| match affinity {
-            AffinityV0::Sticky(chain_id) => (domain, Affinity::Sticky((chain_id, 0))),
+            AffinityV0::Sticky(chain_id) => (domain, Affinity::Sticky((chain_id, 0).into())),
             AffinityV0::Unset => (domain, Affinity::Unset),
             AffinityV0::Global => (domain, Affinity::Global),
         })
