@@ -1,5 +1,7 @@
 use ethui_types::Address;
 use serde::Deserialize;
+#[cfg(test)]
+use serde::Serialize;
 use serde_constant::ConstI64;
 use serde_json::json;
 use std::{
