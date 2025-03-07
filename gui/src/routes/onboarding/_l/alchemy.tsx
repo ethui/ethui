@@ -93,7 +93,7 @@ function OnboardingAlchemy() {
 
         <Form.Submit
           skipDirtyCheck={true}
-          label={(alchemyApiKey?.length || 0) > 0 ? "Next" : "Skip"}
+          label={alchemyApiKey?.length > 0 ? "Next" : "Skip"}
         />
       </div>
     </Form>
