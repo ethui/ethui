@@ -197,7 +197,7 @@ mod tests {
             let updated_store: SerializedStore = serde_json::from_reader(reader).unwrap();
             let localhost = updated_store.affinities.get("localhost").unwrap();
 
-            assert_eq!(localhost, &Affinity::Sticky((313337, 0)));
+            assert_eq!(localhost, &Affinity::Sticky((313337, 0).into()));
         }
     }
 }

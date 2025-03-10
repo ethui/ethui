@@ -245,7 +245,7 @@ mod tests {
             let updated_networks: SerializedNetworks = serde_json::from_reader(reader).unwrap();
             let mainnet = updated_networks.networks.get("Mainnet").unwrap();
 
-            assert_eq!(mainnet.internal_id(), (mainnet.chain_id, 0));
+            assert_eq!(mainnet.internal_id(), (mainnet.chain_id, 0).into());
         }
     }
 }

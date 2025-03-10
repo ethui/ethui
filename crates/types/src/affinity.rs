@@ -11,12 +11,6 @@ pub enum Affinity {
     Sticky(DedupChainId),
 }
 
-impl From<(u32, u32)> for Affinity {
-    fn from(internal_id: (u32, u32)) -> Self {
-        Affinity::Sticky(internal_id.into())
-    }
-}
-
 impl From<DedupChainId> for Affinity {
     fn from(internal_id: DedupChainId) -> Self {
         Affinity::Sticky(internal_id)
