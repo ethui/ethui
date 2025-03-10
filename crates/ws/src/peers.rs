@@ -76,6 +76,7 @@ impl Peers {
     /// Adds a new peer
     pub async fn add_peer(&mut self, peer: Peer) {
         self.map.insert(peer.socket, peer);
+        ethui_broadcast::peer_added().await;
         ethui_broadcast::ui_notify(UINotify::PeersUpdated).await;
     }
 

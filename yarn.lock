@@ -1413,7 +1413,7 @@ __metadata:
     "@ethui/data": "npm:*"
     "@ethui/form": "npm:*"
     "@ethui/types": "npm:*"
-    "@ethui/ui": "npm:0.0.43"
+    "@ethui/ui": "npm:0.0.46"
     "@fontsource/source-code-pro": "npm:^5.2.5"
     "@hookform/resolvers": "npm:^3.10.0"
     "@radix-ui/react-collapsible": "npm:^1.1.3"
@@ -1484,11 +1484,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@ethui/ui@npm:0.0.43":
-  version: 0.0.43
-  resolution: "@ethui/ui@npm:0.0.43"
+"@ethui/ui@npm:0.0.46":
+  version: 0.0.46
+  resolution: "@ethui/ui@npm:0.0.46"
   dependencies:
-    "@fontsource/source-code-pro": "npm:^5.1.1"
+    "@fontsource/source-code-pro": "npm:^5.2.5"
     "@hookform/resolvers": "npm:^4.1.2"
     "@radix-ui/react-accordion": "npm:^1.2.2"
     "@radix-ui/react-avatar": "npm:^1.1.2"
@@ -1500,6 +1500,7 @@ __metadata:
     "@radix-ui/react-icons": "npm:^1.3.2"
     "@radix-ui/react-label": "npm:^2.1.1"
     "@radix-ui/react-popover": "npm:^1.1.5"
+    "@radix-ui/react-progress": "npm:^1.1.2"
     "@radix-ui/react-scroll-area": "npm:^1.2.2"
     "@radix-ui/react-select": "npm:^2.1.5"
     "@radix-ui/react-separator": "npm:^1.1.2"
@@ -1514,7 +1515,7 @@ __metadata:
     clsx: "npm:^2.0.0"
     cmdk: "npm:1.0.4"
     immer: "npm:^10.1.1"
-    lucide-react: "npm:^0.475.0"
+    lucide-react: "npm:^0.477.0"
     next-themes: "npm:^0.4.4"
     react: "npm: ^19"
     react-dom: "npm:^19"
@@ -1531,13 +1532,13 @@ __metadata:
     "@types/react": ^19
     "@types/react-dom": ^19
     clsx: ^2.0.0
-    lucide-react: ^0.475.0
+    lucide-react: ^0.477.0
     react: ^19
     react-dom: ^19
     tailwind-merge: ^3.0.0
     tailwindcss: ^4.0.0
     tailwindcss-animate: ^1.0.0
-  checksum: 10c0/28a7b450f24b9d94b76cf2de8b7ce3860caa49319895a19b9780b1cf341bbec78295325a6ac50e2c707c40eb31b987ad4fdcbce340f3f28082204a0fd87afb37
+  checksum: 10c0/5056c7688448f762955576d47aa99105d11eac8653260a83fa232f35ec2d4d104629677bc2ec31673f6adf6da725bc5d99cb845986e9c45c499f95708ea1fbd3
   languageName: node
   linkType: hard
 
@@ -2758,6 +2759,26 @@ __metadata:
     "@types/react-dom":
       optional: true
   checksum: 10c0/1af7a33a86f8bd2467f2300b1bb6ca9af67cae3950953ba543d2a625c17f341dff05d19056ece7b03e5ced8b9f8de99c74f806710ce0da6b9a000f2af063fffe
+  languageName: node
+  linkType: hard
+
+"@radix-ui/react-progress@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "@radix-ui/react-progress@npm:1.1.2"
+  dependencies:
+    "@radix-ui/react-context": "npm:1.1.1"
+    "@radix-ui/react-primitive": "npm:2.0.2"
+  peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+  checksum: 10c0/6aa52b17b0d0858fd7346817f23912fb6a516c3c1aa3b4c3d6f9ed1e9790ccf3529f079eaecb4d9c4ff487f1cc296b6d164941261e124085585746b862cccfc0
   languageName: node
   linkType: hard
 

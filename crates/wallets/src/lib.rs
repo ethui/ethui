@@ -106,6 +106,8 @@ impl Wallets {
         self.on_wallet_changed().await?;
         self.save()?;
 
+        ethui_broadcast::wallet_created().await;
+
         for (_, a) in addresses {
             ethui_broadcast::address_added(a).await;
         }

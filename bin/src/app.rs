@@ -29,6 +29,8 @@ impl EthUIApp {
                 ethui_settings::commands::settings_test_alchemy_api_key,
                 ethui_settings::commands::settings_test_etherscan_api_key,
                 ethui_settings::commands::settings_test_rust_log,
+                ethui_settings::commands::settings_onboarding_finish_step,
+                ethui_settings::commands::settings_onboarding_finish_all,
                 ethui_networks::commands::networks_get_list,
                 ethui_networks::commands::networks_get_current,
                 ethui_networks::commands::networks_set_current,
@@ -104,7 +106,7 @@ impl EthUIApp {
             #[cfg(target_os = "macos")]
             tauri::RunEvent::Reopen { .. } => {
                 let handle = handle.clone();
-                tokio::spawn(async move { windows::all_windows_focus(&handle).await });
+                windows::all_windows_focus(&handle);
             }
             _ => (),
         });

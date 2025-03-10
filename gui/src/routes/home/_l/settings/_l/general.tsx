@@ -41,7 +41,6 @@ const schema = z.object({
 
     .refine(etherscanKeyValidator, { message: "Invalid key" }),
   hideEmptyTokens: z.boolean(),
-  onboarded: z.boolean(),
   fastMode: z.boolean(),
   rustLog: z.string().optional().refine(rustLogValidator, "Invalid directives"),
 });
@@ -54,6 +53,7 @@ function SettingsGeneral() {
     resolver: zodResolver(schema),
     defaultValues: general,
   });
+  console.log(form);
 
   const onSubmit = useCallback(
     async (params: FieldValues) => {
