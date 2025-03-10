@@ -1,5 +1,7 @@
 use ethui_types::{Address, GlobalState};
 
+use crate::onboarding::OnboardingStep;
+
 use super::{DarkMode, Result, SerializedSettings, Settings};
 
 #[tauri::command]
@@ -55,6 +57,11 @@ pub async fn settings_test_rust_log(directives: String) -> bool {
 }
 
 #[tauri::command]
-pub async fn settings_is_onboarding_finished() -> bool {
-    Settings::read().await.inner.onboarding.is_all_done()
+pub async fn settings_onboarding_finish_step(id: OnboardingStep) -> Result<()> {
+    Settings::write().await.finish_onboarding_step(id).await
+}
+
+#[tauri::command]
+pub async fn settings_onboarding_finish_all() -> Result<()> {
+    Settings::write().await.finish_onboarding().await
 }

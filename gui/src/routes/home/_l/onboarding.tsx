@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { useSettings } from "#/store/useSettings";
 import { Progress } from "@ethui/ui/components/shadcn/progress";
 import type { OnboardingStepKey } from "@ethui/types/settings";
+import { invoke } from "@tauri-apps/api/core";
 
 export const Route = createFileRoute("/home/_l/onboarding")({
   beforeLoad: () => ({ breadcrumb: "Onboarding" }),
@@ -50,7 +51,6 @@ const steps = [
 
 function RouteComponent() {
   const onboarding = useSettings((s) => s.settings?.onboarding);
-  console.log(onboarding);
 
   useEffect(() => {
     if (onboarding?.hidden) {
@@ -66,11 +66,18 @@ function RouteComponent() {
   const incomplete = steps.filter(({ id }) => !onboarding.steps[id]);
   const progress = (complete.length / steps.length) * 100;
 
-  console.log(onboarding);
+  const skipAll = () => {
+    invoke("settings_onboarding_finish_all");
+  };
+
   return (
     <div className="flex flex-col">
-      {JSON.stringify(onboarding)}
-      <Progress value={progress} className="h-2 w-full" />
+      <div className="flex items-center gap-4 p-2">
+        <Progress value={progress} className="h-2 w-full" />
+        <Button onClick={skipAll} className="cursor-pointer">
+          Skip all
+        </Button>
+      </div>
       {incomplete.map((step) => (
         <Step key={step.id} {...step} completed={false} />
       ))}
@@ -89,6 +96,10 @@ function Step({
   completed,
   link,
 }: OnboardingStep & { completed: boolean }) {
+  const skipStep = (id: OnboardingStepKey) => {
+    invoke("settings_onboarding_finish_step", { id });
+  };
+
   return (
     <div
       key={id}
@@ -115,23 +126,28 @@ function Step({
       </div>
       {completed && <Check className="h-4 w-4" />}
       {!completed && (
-        <Button
-          variant="secondary"
-          size="sm"
-          className="cursor-pointer gap-1"
-          onClick={() => { }}
-        >
-          {completed && (
-            <>
-              <Check className="h-4 w-4" /> <span>Completed</span>
-            </>
-          )}
-          {!completed && link && (
-            <Link {...link} className="flex items-center gap-1">
-              <span>Start</span> <ChevronRight className="h-4 w-4" />
-            </Link>
-          )}
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button size="sm" className="cursor-pointer gap-1">
+            {completed && (
+              <>
+                <Check className="h-4 w-4" /> <span>Completed</span>
+              </>
+            )}
+            {!completed && link && (
+              <Link {...link} className="flex items-center gap-1">
+                <span>Start</span> <ChevronRight className="h-4 w-4" />
+              </Link>
+            )}
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="cursor-pointer gap-1"
+            onClick={() => skipStep(id)}
+          >
+            Skip
+          </Button>
+        </div>
       )}
     </div>
   );

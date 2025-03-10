@@ -97,6 +97,13 @@ impl Settings {
         Ok(())
     }
 
+    pub async fn finish_onboarding(&mut self) -> Result<()> {
+        self.inner.onboarding.finish();
+        self.save().await?;
+
+        Ok(())
+    }
+
     pub async fn set_dark_mode(&mut self, mode: DarkMode) -> Result<()> {
         self.inner.dark_mode = mode;
         self.save().await?;
@@ -106,13 +113,6 @@ impl Settings {
 
     pub async fn set_fast_mode(&mut self, mode: bool) -> Result<()> {
         self.inner.fast_mode = mode;
-        self.save().await?;
-
-        Ok(())
-    }
-
-    pub async fn finish_onboarding(&mut self) -> Result<()> {
-        self.inner.onboarding.hide();
         self.save().await?;
 
         Ok(())

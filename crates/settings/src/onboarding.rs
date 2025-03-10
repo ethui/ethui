@@ -39,6 +39,13 @@ impl Onboarding {
         }
     }
 
+    pub(crate) fn finish(&mut self) {
+        self.steps.insert(OnboardingStep::Extension, true);
+        self.steps.insert(OnboardingStep::Wallet, true);
+        self.steps.insert(OnboardingStep::Alchemy, true);
+        self.hidden = true;
+    }
+
     pub(crate) fn is_step_finished(&self, step: OnboardingStep) -> bool {
         self.steps.get(&step).cloned().unwrap_or(false)
     }
