@@ -46,7 +46,7 @@ impl Onboarding {
         self.steps.get(&step).cloned().unwrap_or(false)
     }
 
-    pub(crate) fn is_all_done(&self) -> bool {
+    pub fn is_all_done(&self) -> bool {
         self.steps.len() == STEP_COUNT && self.steps.values().all(|v| *v)
     }
 }

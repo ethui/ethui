@@ -91,7 +91,7 @@ impl EthUIApp {
         init(&app, args).await?;
 
         if should_start_main_window(args).await {
-            windows::main::show(app.handle());
+            windows::main::show(app.handle()).await;
         }
 
         Ok(Self { app })
@@ -164,7 +164,7 @@ async fn event_listener(handle: AppHandle) {
                 DialogClose(params) => windows::dialogs::close(&handle, params),
                 DialogSend(params) => windows::dialogs::send(&handle, params),
 
-                MainWindowShow => windows::main::show(&handle),
+                MainWindowShow => windows::main::show(&handle).await,
                 MainWindowHide => windows::main::hide(&handle),
             }
         }
