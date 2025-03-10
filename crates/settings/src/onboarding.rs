@@ -27,10 +27,6 @@ impl Onboarding {
         }
     }
 
-    pub(crate) fn hide(&mut self) {
-        self.hidden = true;
-    }
-
     pub(crate) fn finish_step(&mut self, step: OnboardingStep) {
         self.steps.insert(step, true);
 

@@ -111,49 +111,54 @@ pub(crate) async fn load_and_migrate(pathbuf: &PathBuf) -> Result<Settings> {
 }
 
 fn run_migrations(settings: Versions) -> SerializedSettings {
-    match settings {
-        Versions::V0(v0) => {
-            let v1 = Versions::V1(SerializedSettingsV1 {
-                version: ConstI64,
-                dark_mode: v0.dark_mode,
-                abi_watch_path: v0.abi_watch_path,
-                alchemy_api_key: v0.alchemy_api_key,
-                etherscan_api_key: v0.etherscan_api_key,
-                hide_empty_tokens: v0.hide_empty_tokens,
-                aliases: v0.aliases,
-                onboarded: v0.onboarded,
-                fast_mode: v0.fast_mode,
-                autostart: v0.autostart,
-                start_minimized: v0.start_minimized,
-                rust_log: v0.rust_log,
-            });
+    let mut result = settings;
 
-            run_migrations(v1)
+    loop {
+        if let Versions::V2(v2) = result {
+            break v2;
         }
 
-        Versions::V1(v1) => {
-            let v2 = Versions::V2(SerializedSettings {
-                version: ConstI64,
-                dark_mode: v1.dark_mode,
-                abi_watch_path: v1.abi_watch_path,
-                alchemy_api_key: v1.alchemy_api_key,
-                etherscan_api_key: v1.etherscan_api_key,
-                hide_empty_tokens: v1.hide_empty_tokens,
-                aliases: v1.aliases,
-                fast_mode: v1.fast_mode,
-                autostart: v1.autostart,
-                start_minimized: v1.start_minimized,
-                rust_log: v1.rust_log,
-                onboarding: if v1.onboarded {
-                    Onboarding::all_done()
-                } else {
-                    Onboarding::default()
-                },
-            });
+        match result {
+            Versions::V0(v0) => {
+                result = Versions::V1(SerializedSettingsV1 {
+                    version: ConstI64,
+                    dark_mode: v0.dark_mode,
+                    abi_watch_path: v0.abi_watch_path,
+                    alchemy_api_key: v0.alchemy_api_key,
+                    etherscan_api_key: v0.etherscan_api_key,
+                    hide_empty_tokens: v0.hide_empty_tokens,
+                    aliases: v0.aliases,
+                    onboarded: v0.onboarded,
+                    fast_mode: v0.fast_mode,
+                    autostart: v0.autostart,
+                    start_minimized: v0.start_minimized,
+                    rust_log: v0.rust_log,
+                });
+            }
 
-            run_migrations(v2)
+            Versions::V1(v1) => {
+                result = Versions::V2(SerializedSettings {
+                    version: ConstI64,
+                    dark_mode: v1.dark_mode,
+                    abi_watch_path: v1.abi_watch_path,
+                    alchemy_api_key: v1.alchemy_api_key,
+                    etherscan_api_key: v1.etherscan_api_key,
+                    hide_empty_tokens: v1.hide_empty_tokens,
+                    aliases: v1.aliases,
+                    fast_mode: v1.fast_mode,
+                    autostart: v1.autostart,
+                    start_minimized: v1.start_minimized,
+                    rust_log: v1.rust_log,
+                    onboarding: if v1.onboarded {
+                        Onboarding::all_done()
+                    } else {
+                        Onboarding::default()
+                    },
+                });
+            }
+
+            Versions::V2(v2) => return v2,
         }
-        Versions::V2(v2) => v2,
     }
 }
 
