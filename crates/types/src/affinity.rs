@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::dedup_chain_id::DedupChainId;
+use crate::DedupChainId;
 
 #[derive(Clone, Copy, Debug, Serialize, Deserialize, Default, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
