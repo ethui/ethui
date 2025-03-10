@@ -10,6 +10,8 @@ pub enum OnboardingStep {
     Extension,
 }
 
+const STEP_COUNT: usize = 3;
+
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Onboarding {
@@ -31,9 +33,17 @@ impl Onboarding {
 
     pub(crate) fn finish_step(&mut self, step: OnboardingStep) {
         self.steps.insert(step, true);
+
+        if self.is_all_done() {
+            self.hidden = true;
+        }
     }
 
     pub(crate) fn is_step_finished(&self, step: OnboardingStep) -> bool {
         self.steps.get(&step).cloned().unwrap_or(false)
+    }
+
+    pub(crate) fn is_all_done(&self) -> bool {
+        self.steps.len() == STEP_COUNT && self.steps.values().all(|v| *v)
     }
 }

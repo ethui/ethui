@@ -103,8 +103,7 @@ function Step({
         <div
           className={clsx(
             "p-2",
-            completed &&
-            "bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-400",
+            completed && "text-green-700 dark:text-green-400",
           )}
         >
           {icon}
