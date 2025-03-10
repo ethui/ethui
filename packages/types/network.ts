@@ -33,7 +33,7 @@ const rpcAndChainIdSchema = z
 
 export const networkSchema = z.intersection(
   z.object({
-    deduplication_id: z.number(),
+    deduplication_id: z.number().optional(),
     name: z.string().min(1),
     explorer_url: z.string().optional().nullable(),
     ws_url: z.string().nullable().optional(),

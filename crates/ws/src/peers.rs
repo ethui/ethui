@@ -101,11 +101,11 @@ impl Peers {
     /// Broadcasts a `chainChanged` event to all peers
     pub async fn broadcast_chain_changed(
         &self,
-        internal_id: DedupChainId,
+        dedup_chain_id: DedupChainId,
         domain: Option<String>,
         affinity: Affinity,
     ) {
-        let chain_id = internal_id.0;
+        let chain_id = dedup_chain_id.chain_id();
 
         if Networks::read().await.validate_chain_id(chain_id) {
             let msg = json!({
@@ -123,7 +123,7 @@ impl Peers {
                         event = "peer chain changed",
                         domain = peer.domain(),
                         chain_id,
-                        dedup_id = internal_id.1,
+                        dedup_id = dedup_chain_id.dedup_id(),
                     );
                     peer.sender
                         .send(serde_json::to_value(&msg).unwrap())

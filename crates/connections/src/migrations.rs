@@ -83,7 +83,7 @@ fn migrate_affinities_from_v1_to_v2(
     affinities
         .into_iter()
         .map(|(domain, affinity)| match affinity {
-            AffinityV0::Sticky(chain_id) => (domain, Affinity::Sticky((chain_id, 0))),
+            AffinityV0::Sticky(chain_id) => (domain, Affinity::Sticky((chain_id, 0).into())),
             AffinityV0::Unset => (domain, Affinity::Unset),
             AffinityV0::Global => (domain, Affinity::Global),
         })
@@ -197,7 +197,7 @@ mod tests {
             let updated_store: SerializedStore = serde_json::from_reader(reader).unwrap();
             let localhost = updated_store.affinities.get("localhost").unwrap();
 
-            assert_eq!(localhost, &Affinity::Sticky((313337, 0)));
+            assert_eq!(localhost, &Affinity::Sticky((313337, 0).into()));
         }
     }
 }
