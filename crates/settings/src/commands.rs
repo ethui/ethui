@@ -53,3 +53,8 @@ pub async fn settings_test_etherscan_api_key(key: String) -> bool {
 pub async fn settings_test_rust_log(directives: String) -> bool {
     ethui_tracing::parse(&directives).is_ok()
 }
+
+#[tauri::command]
+pub async fn settings_is_onboarding_finished() -> bool {
+    Settings::read().await.inner.onboarding.is_all_done()
+}
