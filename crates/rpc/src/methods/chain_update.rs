@@ -54,7 +54,9 @@ impl ChainUpdate {
                 DialogMsg::Data(msg) => {
                     if let Some("accept") = msg.as_str() {
                         let mut networks = Networks::write().await;
-                        networks.set_current_by_id(self.network.chain_id).await?;
+                        networks
+                            .set_current_by_internal_id(self.network.internal_id())
+                            .await?;
                         break;
                     }
                 }
