@@ -59,7 +59,7 @@ function Content({ network }: { network: Network }) {
           className="[&::-webkit-inner-spin-button]:appearance-none"
           disabled={true}
           label="Chain Id"
-          name="chain_id"
+          name="dedup_chain_id.chain_id"
         />
       </div>
 

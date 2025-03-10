@@ -85,7 +85,7 @@ impl Ctx {
     pub async fn chain_id(&self) -> u32 {
         match self.get_affinity().await {
             Affinity::Sticky(dedup_chain_id) => dedup_chain_id.chain_id(),
-            _ => Networks::read().await.get_current().chain_id,
+            _ => Networks::read().await.get_current().chain_id(),
         }
     }
 

@@ -20,7 +20,7 @@ pub async fn connections_set_affinity(domain: &str, affinity: Affinity) -> Resul
 
             dedup_chain_id
         }
-        _ => Networks::read().await.get_current().internal_id(),
+        _ => Networks::read().await.get_current().dedup_chain_id(),
     };
 
     Store::write().await.set_affinity(domain, affinity)?;

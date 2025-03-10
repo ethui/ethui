@@ -69,7 +69,7 @@ function TxReviewDialog() {
   const { id } = Route.useParams();
   const dialog = useDialog<TxRequest>(id);
   const network = useNetworks((s) =>
-    s.networks.find((n) => n.chain_id === dialog.data?.chainId),
+    s.networks.find((n) => n.dedup_chain_id.chain_id === dialog.data?.chainId),
   );
 
   if (!dialog.data || !network) return null;
@@ -181,7 +181,10 @@ function Header({ from, to, network }: HeaderProps) {
         </div>
       </h1>
       <div className="ml-5">
-        <ChainView name={network.name} chainId={network.chain_id} />
+        <ChainView
+          name={network.name}
+          chainId={network.dedup_chain_id.chain_id}
+        />
       </div>
     </div>
   );

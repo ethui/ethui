@@ -77,7 +77,7 @@ impl<'a> SignMessage<'a> {
 
     async fn build_signer(&self) -> Signer {
         self.wallet
-            .build_signer(self.network.chain_id, &self.wallet_path)
+            .build_signer(self.network.chain_id(), &self.wallet_path)
             .await
             .unwrap()
     }
