@@ -1,10 +1,11 @@
 import { Button } from "@ethui/ui/components/shadcn/button";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import clsx from "clsx";
 import { Check, ChevronRight, Globe, RefreshCcw, Wallet } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSettings } from "#/store/useSettings";
 import { Progress } from "@ethui/ui/components/shadcn/progress";
+import type { OnboardingStepKey } from "@ethui/types/settings";
 
 export const Route = createFileRoute("/home/_l/onboarding")({
   beforeLoad: () => ({ breadcrumb: "Onboarding" }),
@@ -12,10 +13,11 @@ export const Route = createFileRoute("/home/_l/onboarding")({
 });
 
 interface OnboardingStep {
-  id: string;
+  id: OnboardingStepKey;
   title: string;
   description: string;
   icon: React.ReactNode;
+  link?: Omit<React.ComponentProps<typeof Link>, "children" | "className">;
 }
 
 const steps = [
@@ -24,18 +26,25 @@ const steps = [
     title: "Set up an alchemy.com API Key",
     description: "Enables fast sync on mainnet and other live chains",
     icon: <RefreshCcw className="h-5 w-5" />,
+    link: { to: "/settings/general" },
   },
   {
     id: "wallet",
     title: "Set up a production-ready wallet",
     description: "Create or import a secure wallet",
     icon: <Wallet className="h-5 w-5" />,
+    link: { to: "/settings/wallets" },
   },
   {
     id: "extension",
     title: "Connect the ethui extension",
     description: "To connect ethui to your browser(s)",
     icon: <Globe className="h-5 w-5" />,
+    link: {
+      to: "https://ethui.dev/onboarding/extension",
+      target: "_blank",
+      rel: "noopener noreferrer",
+    },
   },
 ] as const;
 
@@ -53,13 +62,14 @@ function RouteComponent() {
     return null;
   }
 
-  const complete = steps.filter(({ id }) => onboarding[id]);
-  const incomplete = steps.filter(({ id }) => !onboarding[id]);
+  const complete = steps.filter(({ id }) => onboarding.steps[id]);
+  const incomplete = steps.filter(({ id }) => !onboarding.steps[id]);
   const progress = (complete.length / steps.length) * 100;
 
   console.log(onboarding);
   return (
     <div className="flex flex-col">
+      {JSON.stringify(onboarding)}
       <Progress value={progress} className="h-2 w-full" />
       {incomplete.map((step) => (
         <Step key={step.id} {...step} completed={false} />
@@ -77,6 +87,7 @@ function Step({
   title,
   icon,
   completed,
+  link,
 }: OnboardingStep & { completed: boolean }) {
   return (
     <div
@@ -89,7 +100,6 @@ function Step({
       )}
     >
       <div className="flex items-center gap-4">
-        {" "}
         <div
           className={clsx(
             "p-2",
@@ -112,14 +122,15 @@ function Step({
           className="cursor-pointer gap-1"
           onClick={() => { }}
         >
-          {completed ? (
+          {completed && (
             <>
               <Check className="h-4 w-4" /> <span>Completed</span>
             </>
-          ) : (
-            <>
+          )}
+          {!completed && link && (
+            <Link {...link} className="flex items-center gap-1">
               <span>Start</span> <ChevronRight className="h-4 w-4" />
-            </>
+            </Link>
           )}
         </Button>
       )}

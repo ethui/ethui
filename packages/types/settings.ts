@@ -1,10 +1,10 @@
 import { z } from "zod";
 
+const onboardingSteps = z.enum(["alchemy", "wallet", "extension"]);
+
 export const onboardingSchema = z.object({
   hidden: z.boolean(),
-  alchemy: z.boolean(),
-  wallet: z.boolean(),
-  extension: z.boolean(),
+  steps: z.record(onboardingSteps, z.boolean()),
 });
 
 export const generalSettingsSchema = z.object({
@@ -19,5 +19,6 @@ export const generalSettingsSchema = z.object({
   onboarding: onboardingSchema,
 });
 
+export type OnboardingStepKey = z.infer<typeof onboardingSteps>;
 export type Onboarding = z.infer<typeof onboardingSchema>;
 export type GeneralSettings = z.infer<typeof generalSettingsSchema>;

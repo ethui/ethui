@@ -6,7 +6,9 @@ use ethui_types::GlobalState;
 use once_cell::sync::OnceCell;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
-use crate::{migrations::load_and_migrate, Result, SerializedSettings, Settings};
+use crate::{
+    migrations::load_and_migrate, onboarding::OnboardingStep, Result, SerializedSettings, Settings,
+};
 
 static SETTINGS: OnceCell<RwLock<Settings>> = OnceCell::new();
 
@@ -51,7 +53,27 @@ async fn receiver() -> ! {
             Ok(InternalMsg::SettingsUpdated) => {
                 let mut settings = SETTINGS.get().unwrap().write().await;
                 let onboarding = &settings.inner.onboarding;
-                if !onboarding.alchemy && settings.inner.alchemy_api_key.is_some() {}
+                if !onboarding.is_step_finished(OnboardingStep::Alchemy)
+                    && settings.inner.alchemy_api_key.is_some()
+                {
+                    let _ = settings
+                        .finish_onboarding_step(OnboardingStep::Alchemy)
+                        .await;
+                }
+            }
+
+            Ok(InternalMsg::WalletCreated) => {
+                let mut settings = SETTINGS.get().unwrap().write().await;
+                let _ = settings
+                    .finish_onboarding_step(OnboardingStep::Wallet)
+                    .await;
+            }
+
+            Ok(InternalMsg::PeerAdded) => {
+                let mut settings = SETTINGS.get().unwrap().write().await;
+                let _ = settings
+                    .finish_onboarding_step(OnboardingStep::Extension)
+                    .await;
             }
             _ => (),
         }

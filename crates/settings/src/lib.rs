@@ -15,7 +15,7 @@ use std::{
 use ethui_types::{Address, UINotify};
 pub use init::init;
 use migrations::LatestVersion;
-use onboarding::Onboarding;
+use onboarding::{Onboarding, OnboardingStep};
 use serde::{Deserialize, Serialize};
 use serde_constant::ConstI64;
 pub use utils::test_alchemy_api_key;
@@ -85,6 +85,13 @@ impl Settings {
             ethui_tracing::parse(&self.inner.rust_log)?;
         }
 
+        self.save().await?;
+
+        Ok(())
+    }
+
+    pub async fn finish_onboarding_step(&mut self, step: OnboardingStep) -> Result<()> {
+        self.inner.onboarding.finish_step(step);
         self.save().await?;
 
         Ok(())

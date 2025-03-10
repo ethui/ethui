@@ -1,22 +1,27 @@
-use ethui_broadcast::InternalMsg;
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Hash, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum OnboardingStep {
+    Alchemy,
+    Wallet,
+    Extension,
+}
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Onboarding {
     pub(crate) hidden: bool,
-    pub(crate) alchemy: bool,
-    pub(crate) wallet: bool,
-    pub(crate) extension: bool,
+    pub(crate) steps: HashMap<OnboardingStep, bool>,
 }
 
 impl Onboarding {
     pub(crate) fn all_done() -> Self {
         Self {
             hidden: true,
-            alchemy: true,
-            wallet: true,
-            extension: true,
+            steps: Default::default(),
         }
     }
 
@@ -24,10 +29,11 @@ impl Onboarding {
         self.hidden = true;
     }
 
-    pub(crate) fn update(&mut self, msg: InternalMsg) -> Self {
-        match msg {
-            InternalMsg::SettingsUpdated => Self::default(),
-            _ => Self::default(),
-        }
+    pub(crate) fn finish_step(&mut self, step: OnboardingStep) {
+        self.steps.insert(step, true);
+    }
+
+    pub(crate) fn is_step_finished(&self, step: OnboardingStep) -> bool {
+        self.steps.get(&step).cloned().unwrap_or(false)
     }
 }

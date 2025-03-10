@@ -22,6 +22,10 @@ pub enum InternalMsg {
     NetworkRemoved(Network),
     CurrentNetworkChanged(Network),
 
+    WalletCreated,
+
+    PeerAdded,
+
     /// Request a full update of a TX. oneshot channel included to notify when job is done
     FetchFullTxSync(u32, B256, Arc<Mutex<Option<oneshot::Sender<()>>>>),
     FetchERC20Metadata(u32, Address),
@@ -100,6 +104,14 @@ mod internal_msgs {
 
     pub async fn current_network_changed(network: Network) {
         send(CurrentNetworkChanged(network)).await;
+    }
+
+    pub async fn wallet_created() {
+        send(WalletCreated).await;
+    }
+
+    pub async fn peer_added() {
+        send(PeerAdded).await;
     }
 
     pub async fn forge_abi_found() {
