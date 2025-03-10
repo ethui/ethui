@@ -47,7 +47,7 @@ impl ChainAdd {
 
     pub async fn already_exists(&self) -> bool {
         let networks = Networks::read().await;
-        networks.validate_chain_id(self.network.chain_id)
+        networks.validate_chain_id(self.network.dedup_chain_id.chain_id())
     }
 
     pub async fn on_accept(&self) -> Result<()> {
@@ -106,7 +106,8 @@ impl TryFrom<Params> for NewNetworkParams {
     fn try_from(params: Params) -> Result<Self> {
         Ok(Self {
             name: params.chain_name,
-            chain_id: params.chain_id.try_into().unwrap(),
+            // Using 0 for dedup_id since at this time no duplicate chain_id is allowed
+            dedup_chain_id: (params.chain_id.try_into().unwrap(), 0).into(),
             explorer_url: params.block_explorer_urls.first().map(|u| u.to_string()),
             http_url: params
                 .rpc_urls

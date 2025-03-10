@@ -1,12 +1,12 @@
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-use crate::Network;
+use crate::{DedupChainId, Network};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct NewNetworkParams {
     pub name: String,
-    pub chain_id: u32,
+    pub dedup_chain_id: DedupChainId,
     pub explorer_url: Option<String>,
     pub http_url: Url,
     pub ws_url: Option<Url>,
@@ -17,9 +17,8 @@ pub struct NewNetworkParams {
 impl NewNetworkParams {
     pub fn into_network(self, deduplication_id: u32) -> Network {
         Network {
-            deduplication_id,
+            dedup_chain_id: (self.dedup_chain_id.chain_id(), deduplication_id).into(),
             name: self.name,
-            chain_id: self.chain_id,
             explorer_url: self.explorer_url,
             http_url: self.http_url,
             ws_url: self.ws_url,

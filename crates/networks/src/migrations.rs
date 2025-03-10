@@ -13,7 +13,7 @@ use url::Url;
 use crate::Result;
 use crate::{Networks, SerializedNetworks};
 
-pub type LatestVersion = ConstI64<2>;
+pub type LatestVersion = ConstI64<3>;
 
 #[derive(Debug, Deserialize, Serialize)]
 struct SerializedNetworksV0 {
@@ -30,15 +30,35 @@ struct SerializedNetworksV1 {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
+struct SerializedNetworksV2 {
+    current: String,
+    networks: HashMap<String, NetworkV1>,
+    version: ConstI64<2>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(untagged)]
 enum Versions {
     V0(SerializedNetworksV0),
     V1(SerializedNetworksV1),
-    V2(SerializedNetworks),
+    V2(SerializedNetworksV2),
+    V3(SerializedNetworks),
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct NetworkV0 {
+    pub name: String,
+    pub chain_id: u32,
+    pub explorer_url: Option<String>,
+    pub http_url: Url,
+    pub ws_url: Option<Url>,
+    pub currency: String,
+    pub decimals: u32,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct NetworkV1 {
+    pub deduplication_id: u32,
     pub name: String,
     pub chain_id: u32,
     pub explorer_url: Option<String>,
@@ -82,17 +102,50 @@ fn run_migrations(networks: Versions) -> SerializedNetworks {
 
             run_migrations(v1)
         }
-        Versions::V1(v1) => SerializedNetworks {
-            current: v1.current,
-            networks: migrate_networks_from_v1_to_v2(v1.networks),
+        Versions::V1(v1) => {
+            let v2 = Versions::V2(SerializedNetworksV2 {
+                current: v1.current,
+                networks: migrate_networks_from_v1_to_v2(v1.networks),
+                version: ConstI64,
+            });
+
+            run_migrations(v2)
+        }
+        Versions::V2(v2) => SerializedNetworks {
+            current: v2.current,
+            networks: migrate_networks_from_v2_to_v3(v2.networks),
             version: ConstI64,
         },
-        Versions::V2(latest) => latest,
+        Versions::V3(latest) => latest,
     }
 }
 
 fn migrate_networks_from_v1_to_v2(
     networks: HashMap<String, NetworkV0>,
+) -> HashMap<String, NetworkV1> {
+    networks
+        .into_iter()
+        .map(|(name, network)| {
+            (
+                name,
+                NetworkV1 {
+                    // at the time of this migration no duplicate chain id were allowed
+                    deduplication_id: 0,
+                    name: network.name,
+                    chain_id: network.chain_id,
+                    explorer_url: network.explorer_url,
+                    http_url: network.http_url,
+                    ws_url: network.ws_url,
+                    currency: network.currency,
+                    decimals: network.decimals,
+                },
+            )
+        })
+        .collect::<HashMap<String, NetworkV1>>()
+}
+
+fn migrate_networks_from_v2_to_v3(
+    networks: HashMap<String, NetworkV1>,
 ) -> HashMap<String, Network> {
     networks
         .into_iter()
@@ -100,10 +153,8 @@ fn migrate_networks_from_v1_to_v2(
             (
                 name,
                 Network {
-                    // at the time of this migration no duplicate chain id were allowed
-                    deduplication_id: 0,
+                    dedup_chain_id: (network.chain_id, network.deduplication_id).into(),
                     name: network.name,
-                    chain_id: network.chain_id,
                     explorer_url: network.explorer_url,
                     http_url: network.http_url,
                     ws_url: network.ws_url,
@@ -129,7 +180,7 @@ mod tests {
     use super::load_and_migrate;
 
     #[test]
-    fn it_converts_from_v0_to_v1() {
+    fn it_converts_from_v0_to_v3() {
         let mut tempfile = NamedTempFile::new().unwrap();
 
         let networks_v0 = json!({
@@ -154,21 +205,21 @@ mod tests {
             let reader = BufReader::new(file);
 
             let updated_networks: serde_json::Value = serde_json::from_reader(reader).unwrap();
-            assert_eq!(updated_networks["version"], 2);
+            assert_eq!(updated_networks["version"], 3);
         }
     }
 
     #[test]
-    fn it_returns_v2_from_v2() {
+    fn it_returns_v3_from_v3() {
         let mut tempfile = NamedTempFile::new().unwrap();
 
         let networks_v0 = json!({
-            "version": 2,
+            "version": 3,
             "current": "Anvil",
             "networks": {
                 "Mainnet": {
+                    "dedup_chain_id": {"chain_id": 1, "dedup_id": 0},
                     "name": "Mainnet",
-                    "chain_id": 1,
                     "explorer_url": "https://etherscan.io/search?q=",
                     "http_url": "https://eth.llamarpc.com/",
                     "ws_url": null,
@@ -185,7 +236,7 @@ mod tests {
             let reader = BufReader::new(file);
 
             let updated_networks: serde_json::Value = serde_json::from_reader(reader).unwrap();
-            assert_eq!(updated_networks["version"], 2);
+            assert_eq!(updated_networks["version"], 3);
         }
     }
 
@@ -245,7 +296,7 @@ mod tests {
             let updated_networks: SerializedNetworks = serde_json::from_reader(reader).unwrap();
             let mainnet = updated_networks.networks.get("Mainnet").unwrap();
 
-            assert_eq!(mainnet.internal_id(), (mainnet.chain_id, 0).into());
+            assert_eq!(mainnet.dedup_chain_id(), (mainnet.chain_id(), 0).into());
         }
     }
 }

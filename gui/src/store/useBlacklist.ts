@@ -68,7 +68,7 @@ event.listen("balances-updated", async () => {
   );
 
   useNetworks.subscribe(
-    (s) => s.current?.chain_id,
+    (s) => s.current?.dedup_chain_id.chain_id,
     (chainId) => useBlacklist.getState().setChainId(chainId),
     { fireImmediately: true },
   );

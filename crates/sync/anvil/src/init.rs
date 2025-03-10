@@ -24,8 +24,16 @@ async fn receiver() -> ! {
             | Ok(InternalMsg::NetworkRemoved(network))
                 if network.is_dev().await =>
             {
-                trace!("resetting anvil listener for chain_id {}", network.chain_id);
-                reset_listener(network.chain_id, network.clone().http_url, network.ws_url()).await
+                trace!(
+                    "resetting anvil listener for chain_id {}",
+                    network.chain_id()
+                );
+                reset_listener(
+                    network.chain_id(),
+                    network.clone().http_url,
+                    network.ws_url(),
+                )
+                .await
             }
             _ => (),
         }

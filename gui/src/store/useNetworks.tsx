@@ -61,7 +61,7 @@ const store: StateCreator<Store> = (set, get) => ({
     const actions = (networks || []).map((network) => ({
       id: `${actionId}/${network.name}`,
       text: `${network.name}`,
-      icon: <ChainIcon chainId={network.chain_id} />,
+      icon: <ChainIcon chainId={network.dedup_chain_id.chain_id} />,
       run: () => {
         get().setCurrent(network.name);
       },
@@ -76,7 +76,7 @@ const store: StateCreator<Store> = (set, get) => ({
     if (!current) return false;
 
     return await invoke<boolean>("sync_alchemy_is_network_supported", {
-      chainId: current.chain_id,
+      chainId: current.dedup_chain_id.chain_id,
     });
   },
 });

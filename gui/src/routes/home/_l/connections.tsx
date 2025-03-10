@@ -79,7 +79,9 @@ function AffinityForm({ domain }: { domain: string }) {
     if (current === "global" || current === "unset") {
       setCurrentNetwork(currentGlobalNetwork);
     } else {
-      setCurrentNetwork(networks.find((n) => n.chain_id === current.sticky[0]));
+      setCurrentNetwork(
+        networks.find((n) => n.dedup_chain_id.chain_id === current.sticky[0]),
+      );
     }
   }, [current, networks, currentGlobalNetwork]);
 
@@ -109,7 +111,7 @@ function AffinityForm({ domain }: { domain: string }) {
           <SelectValue>
             {!isGlobal && currentNetwork ? (
               <ChainView
-                chainId={currentNetwork.chain_id}
+                chainId={currentNetwork.dedup_chain_id.chain_id}
                 name={currentNetwork.name}
               />
             ) : (
@@ -123,10 +125,13 @@ function AffinityForm({ domain }: { domain: string }) {
             <SelectItem value="global">Global</SelectItem>
             {networks.map((network) => (
               <SelectItem
-                value={network.chain_id.toString()}
+                value={network.dedup_chain_id.chain_id.toString()}
                 key={network.name}
               >
-                <ChainView chainId={network.chain_id} name={network.name} />
+                <ChainView
+                  chainId={network.dedup_chain_id.chain_id}
+                  name={network.name}
+                />
               </SelectItem>
             ))}
           </SelectGroup>

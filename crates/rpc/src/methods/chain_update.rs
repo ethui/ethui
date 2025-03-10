@@ -55,7 +55,7 @@ impl ChainUpdate {
                     if let Some("accept") = msg.as_str() {
                         let mut networks = Networks::write().await;
                         networks
-                            .set_current_by_internal_id(self.network.internal_id())
+                            .set_current_by_dedup_chain_id(self.network.dedup_chain_id())
                             .await?;
                         break;
                     }
@@ -71,14 +71,14 @@ impl ChainUpdate {
         let networks = Networks::read().await;
         let current_chain = networks.get_current();
         NetworkSwitch {
-            old_id: current_chain.chain_id,
-            new_id: self.network.chain_id,
+            old_id: current_chain.chain_id(),
+            new_id: self.network.chain_id(),
         }
     }
 
     async fn already_active(&self) -> bool {
         let networks = Networks::read().await;
-        networks.get_current().chain_id == self.network.chain_id
+        networks.get_current().chain_id() == self.network.chain_id()
     }
 
     async fn already_exists(&self) -> bool {
@@ -117,7 +117,7 @@ impl ChainUpdateBuilder {
         let chain_name = params.chain_name.clone();
 
         let new_network_params = NewNetworkParams {
-            chain_id: params.chain_id.try_into().unwrap(),
+            dedup_chain_id: (params.chain_id.try_into().unwrap(), 0).into(),
             name: chain_name.clone(),
             explorer_url: params.block_explorer_urls.first().map(|u| u.to_string()),
             http_url: params
@@ -137,7 +137,7 @@ impl ChainUpdateBuilder {
 
         let deduplication_id = networks
             .get_network_by_name(&chain_name)
-            .map(|network| network.deduplication_id);
+            .map(|network| network.dedup_chain_id().dedup_id());
 
         ChainUpdate {
             network: new_network_params

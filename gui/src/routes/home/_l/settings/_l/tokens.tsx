@@ -23,7 +23,7 @@ function SettingsTokens() {
 
   const unhide = (contract: Address) => {
     invoke("db_clear_erc20_blacklist", {
-      chainId: currentNetwork.chain_id,
+      chainId: currentNetwork.dedup_chain_id.chain_id,
       address: contract,
     });
   };
@@ -35,7 +35,10 @@ function SettingsTokens() {
           key={contract}
           className="flex w-full items-center justify-between gap-5"
         >
-          <IconAddress chainId={currentNetwork.chain_id} address={contract} />
+          <IconAddress
+            chainId={currentNetwork.dedup_chain_id.chain_id}
+            address={contract}
+          />
 
           <span className="flex items-center gap-1">
             {metadata?.symbol}
