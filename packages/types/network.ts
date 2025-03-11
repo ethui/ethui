@@ -4,9 +4,12 @@ import { z } from "zod";
 const rpcAndChainIdSchema = z
   .object({
     http_url: z.string().min(1).url(),
-    chain_id: z.coerce.number().positive(),
+    dedup_chain_id: z.object({
+      chain_id: z.coerce.number().positive(),
+      dedup_id: z.coerce.number().optional(),
+    }),
   })
-  .superRefine(async ({ http_url, chain_id }, ctx) => {
+  .superRefine(async ({ http_url, dedup_chain_id: { chain_id } }, ctx) => {
     if (!http_url || !chain_id || http_url === "") return;
 
     try {
@@ -33,7 +36,6 @@ const rpcAndChainIdSchema = z
 
 export const networkSchema = z.intersection(
   z.object({
-    deduplication_id: z.number(),
     name: z.string().min(1),
     explorer_url: z.string().optional().nullable(),
     ws_url: z.string().nullable().optional(),

@@ -26,7 +26,7 @@ export function QuickNetworkSelect() {
 
       <SelectContent>
         <SelectGroup>
-          {networks.map(({ chain_id, name }) => (
+          {networks.map(({ dedup_chain_id: { chain_id }, name }) => (
             <SelectItem value={name} key={name}>
               <ChainView chainId={chain_id} name={name} />
             </SelectItem>

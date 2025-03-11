@@ -1,7 +1,7 @@
 use alloy::{
     network::Ethereum,
     providers::{ext::TraceApi as _, Provider as _, ProviderBuilder, RootProvider, WsConnect},
-    rpc::types::{trace::parity::LocalizedTransactionTrace, BlockTransactionsKind, Filter, Log},
+    rpc::types::{trace::parity::LocalizedTransactionTrace, Filter, Log},
 };
 use base64::{self, Engine as _};
 use ethui_abis::{IERC721WithMetadata, IERC20, IERC721};
@@ -156,10 +156,7 @@ async fn watch(
                 .send(Msg::Logs(logs))
                 .map_err(|_| Error::Watcher)?;
 
-            if let Some(block) = provider
-                .get_block(b.into(), BlockTransactionsKind::Hashes)
-                .await?
-            {
+            if let Some(block) = provider.get_block(b.into()).await? {
                 save_known_tip(ctx.chain_id, b, block.header.hash).await?;
             }
         }
@@ -381,10 +378,7 @@ async fn get_sync_status(ctx: &Ctx) -> Option<u64> {
         _ => return None,
     };
 
-    let block = match http_provider
-        .get_block(known_block_number.into(), BlockTransactionsKind::Hashes)
-        .await
-    {
+    let block = match http_provider.get_block(known_block_number.into()).await {
         Ok(Some(block)) => block,
         _ => return None,
     };

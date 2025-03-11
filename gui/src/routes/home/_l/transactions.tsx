@@ -43,7 +43,7 @@ export const Route = createFileRoute("/home/_l/transactions")({
 
 function Txs() {
   const account = useWallets((s) => s.address);
-  const chainId = useNetworks((s) => s.current?.chain_id);
+  const chainId = useNetworks((s) => s.current?.dedup_chain_id.chain_id);
   const pageSize = 10;
 
   const [items, setItems] = useState<PaginatedTx[]>([]);

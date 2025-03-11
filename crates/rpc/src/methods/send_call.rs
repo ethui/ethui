@@ -30,7 +30,7 @@ impl SendCall {
 
     async fn send(&mut self) -> Result<Bytes> {
         let provider = self.network.get_alloy_provider().await?;
-        Ok(provider.call(&self.request).await?)
+        Ok(provider.call(self.request.clone()).await?)
     }
 }
 

@@ -10,18 +10,21 @@ pub async fn connections_affinity_for(domain: String) -> Affinity {
 
 #[tauri::command]
 pub async fn connections_set_affinity(domain: &str, affinity: Affinity) -> Result<()> {
-    let internal_id = match affinity {
-        Affinity::Sticky((chain_id, deduplication_id)) => {
+    let dedup_chain_id = match affinity {
+        Affinity::Sticky(dedup_chain_id) => {
+            let chain_id = dedup_chain_id.chain_id();
+
             if !Networks::read().await.validate_chain_id(chain_id) {
                 return Err(Error::InvalidChainId(chain_id));
             }
-            (chain_id, deduplication_id)
+
+            dedup_chain_id
         }
-        _ => Networks::read().await.get_current().internal_id(),
+        _ => Networks::read().await.get_current().dedup_chain_id(),
     };
 
     Store::write().await.set_affinity(domain, affinity)?;
-    ethui_broadcast::chain_changed(internal_id, Some(domain.into()), affinity).await;
+    ethui_broadcast::chain_changed(dedup_chain_id, Some(domain.into()), affinity).await;
 
     Ok(())
 }

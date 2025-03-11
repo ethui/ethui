@@ -42,9 +42,9 @@ impl TryFrom<InternalMsg> for Msg {
             InternalMsg::AddressAdded(addr) => Msg::TrackAddress(addr),
             InternalMsg::AddressRemoved(addr) => Msg::UntrackAddress(addr),
             InternalMsg::CurrentAddressChanged(addr) => Msg::PollAddress(addr),
-            InternalMsg::NetworkAdded(network) => Msg::TrackNetwork(network.chain_id),
-            InternalMsg::NetworkRemoved(network) => Msg::UntrackNetwork(network.chain_id),
-            InternalMsg::CurrentNetworkChanged(network) => Msg::PollNetwork(network.chain_id),
+            InternalMsg::NetworkAdded(network) => Msg::TrackNetwork(network.chain_id()),
+            InternalMsg::NetworkRemoved(network) => Msg::UntrackNetwork(network.chain_id()),
+            InternalMsg::CurrentNetworkChanged(network) => Msg::PollNetwork(network.chain_id()),
             InternalMsg::FetchFullTxSync(chain_id, hash, oneshot) => {
                 Msg::FetchFullTxSync(chain_id, hash, oneshot)
             }

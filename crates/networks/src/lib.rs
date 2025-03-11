@@ -63,7 +63,7 @@ impl Networks {
             .inner
             .networks
             .values()
-            .find(|n| n.chain_id == new_chain_id)
+            .find(|n| n.chain_id() == new_chain_id)
             .unwrap();
 
         self.set_current_by_name(new_network.name.clone()).await?;
@@ -75,12 +75,15 @@ impl Networks {
     /// Changes the currently connected wallet by internal ID
     ///
     /// Broadcasts `chainChanged` to all connections with global or no affinity
-    pub async fn set_current_by_internal_id(&mut self, internal_id: DedupChainId) -> Result<()> {
+    pub async fn set_current_by_dedup_chain_id(
+        &mut self,
+        dedup_chain_id: DedupChainId,
+    ) -> Result<()> {
         let new_network = self
             .inner
             .networks
             .values()
-            .find(|n| n.internal_id() == internal_id)
+            .find(|n| n.dedup_chain_id() == dedup_chain_id)
             .unwrap();
 
         self.set_current_by_name(new_network.name.clone()).await?;
@@ -93,7 +96,7 @@ impl Networks {
         self.inner
             .networks
             .iter()
-            .any(|(_, n)| n.chain_id == chain_id)
+            .any(|(_, n)| n.chain_id() == chain_id)
     }
 
     pub fn get_current(&self) -> &Network {
@@ -108,7 +111,7 @@ impl Networks {
         self.inner
             .networks
             .values()
-            .find(|n| n.chain_id == chain_id)
+            .find(|n| n.chain_id() == chain_id)
             .cloned()
     }
 
@@ -122,7 +125,7 @@ impl Networks {
 
     pub async fn add_network(&mut self, network: NewNetworkParams) -> Result<()> {
         // TODO: need to ensure uniqueness by name, not chain id
-        if self.validate_chain_id(network.chain_id) {
+        if self.validate_chain_id(network.dedup_chain_id.chain_id()) {
             return Err(Error::AlreadyExists);
         }
 
@@ -130,7 +133,7 @@ impl Networks {
             return Err(Error::AlreadyExists);
         }
 
-        let deduplication_id = self.get_chain_id_count(network.chain_id);
+        let deduplication_id = self.get_chain_id_count(network.dedup_chain_id.chain_id());
         let network = network.into_network(deduplication_id);
 
         self.inner
@@ -194,7 +197,7 @@ impl Networks {
     pub async fn chain_id_from_provider(&self, url: String) -> Result<u64> {
         let provider = ProviderBuilder::new()
             .disable_recommended_fillers()
-            .on_builtin(&url)
+            .connect(&url)
             .await?;
 
         Ok(provider.get_chain_id().await?)
@@ -204,7 +207,7 @@ impl Networks {
         self.inner
             .networks
             .values()
-            .filter(|network| network.chain_id == chain_id)
+            .filter(|network| network.chain_id() == chain_id)
             .count() as u32
     }
 
@@ -212,8 +215,8 @@ impl Networks {
         self.inner
             .networks
             .values()
-            .filter(|network| network.chain_id == chain_id)
-            .map(|network| network.deduplication_id)
+            .filter(|network| network.chain_id() == chain_id)
+            .map(|network| network.dedup_chain_id.dedup_id())
             .min()
             .unwrap_or(0)
     }
@@ -233,7 +236,7 @@ impl Networks {
     fn notify_peers(&self) {
         let current = self.get_current().clone();
         tokio::spawn(async move {
-            ethui_broadcast::chain_changed(current.internal_id(), None, Affinity::Global).await;
+            ethui_broadcast::chain_changed(current.dedup_chain_id(), None, Affinity::Global).await;
         });
     }
 

@@ -1,5 +1,5 @@
 use ethui_networks::Networks;
-use ethui_types::{Affinity, GlobalState, Network};
+use ethui_types::{Affinity, DedupChainId, GlobalState, Network};
 
 use crate::{
     permissions::{Permission, PermissionRequest, RequestedPermission},
@@ -56,22 +56,19 @@ impl Ctx {
             match self.get_affinity().await {
                 // If affinity is not set, or sticky, update local affinity, and publish event
                 Affinity::Unset | Affinity::Sticky(_) => {
-                    let affinity = (new_chain_id, dedup_id).into();
+                    let internal_id: DedupChainId = (new_chain_id, 0).into();
+                    let affinity = internal_id.into();
                     self.set_affinity(affinity).await?;
 
-                    ethui_broadcast::chain_changed(
-                        (new_chain_id, dedup_id),
-                        self.domain.clone(),
-                        affinity,
-                    )
-                    .await;
+                    ethui_broadcast::chain_changed(internal_id, self.domain.clone(), affinity)
+                        .await;
                 }
 
                 // If current affinity is global, there's nothing to update on this Ctx, and the
                 // domain is irrelevant in the update,
                 Affinity::Global => {
                     ethui_broadcast::chain_changed(
-                        (new_chain_id, dedup_id),
+                        (new_chain_id, dedup_id).into(),
                         None,
                         Affinity::Global,
                     )
@@ -87,8 +84,8 @@ impl Ctx {
 
     pub async fn chain_id(&self) -> u32 {
         match self.get_affinity().await {
-            Affinity::Sticky((chain_id, _dedup_id)) => chain_id,
-            _ => Networks::read().await.get_current().chain_id,
+            Affinity::Sticky(dedup_chain_id) => dedup_chain_id.chain_id(),
+            _ => Networks::read().await.get_current().chain_id(),
         }
     }
 

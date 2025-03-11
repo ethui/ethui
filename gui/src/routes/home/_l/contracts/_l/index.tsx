@@ -110,7 +110,9 @@ function AddressForm() {
   const form = useForm({
     mode: "onChange",
     resolver: zodResolver(schema),
-    defaultValues: { chainId: currentNetwork?.chain_id?.toString() } as Schema,
+    defaultValues: {
+      chainId: currentNetwork?.dedup_chain_id.chain_id?.toString(),
+    } as Schema,
   });
 
   const onSubmit = (data: FieldValues) => add(data.chainId, data.address);
@@ -122,10 +124,10 @@ function AddressForm() {
       <Form.Select
         label="Network"
         name="chainId"
-        defaultValue={currentNetwork.chain_id.toString()}
+        defaultValue={currentNetwork.dedup_chain_id.chain_id.toString()}
         items={networks}
-        toValue={(n) => n.chain_id.toString()}
-        render={({ chain_id, name }) => (
+        toValue={(n) => n.dedup_chain_id.chain_id.toString()}
+        render={({ dedup_chain_id: { chain_id }, name }) => (
           <ChainView chainId={chain_id} name={name} />
         )}
       />

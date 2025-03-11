@@ -25,12 +25,15 @@ function ChainAddDialog() {
         <h1 className="font-xl">Add new network</h1>
       </div>
 
-      <ChainView chainId={network.chain_id} name={network.name} />
+      <ChainView
+        chainId={network.dedup_chain_id.chain_id}
+        name={network.name}
+      />
 
       <div className="grid grid-cols-4 gap-5">
         <Datapoint
           label="Chain ID"
-          value={network.chain_id}
+          value={network.dedup_chain_id.chain_id}
           className="col-span-2"
         />
         <Datapoint

@@ -55,7 +55,7 @@ export function AddressView({
       <div className="flex items-center gap-x-1 font-mono text-base">
         {icon && (
           <IconAddress
-            chainId={network.chain_id}
+            chainId={network.dedup_chain_id.chain_id}
             address={address}
             effigy
             className="h-4"

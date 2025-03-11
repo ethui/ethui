@@ -65,11 +65,11 @@ mod internal_msgs {
 
     /// Broadcasts `ChainChanged` events
     pub async fn chain_changed(
-        internal_id: DedupChainId,
+        dedup_chain_id: DedupChainId,
         domain: Option<String>,
         affinity: Affinity,
     ) {
-        send(ChainChanged(internal_id, domain, affinity)).await;
+        send(ChainChanged(dedup_chain_id, domain, affinity)).await;
     }
 
     /// Broadcasts `AccountsChanged` events

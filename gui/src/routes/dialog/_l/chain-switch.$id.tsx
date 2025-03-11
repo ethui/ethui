@@ -23,8 +23,12 @@ function ChainSwitchDialog() {
 
   if (!switchData) return null;
 
-  const from = networks.find((n) => n.chain_id === switchData.oldId);
-  const to = networks.find((n) => n.chain_id === switchData.newId);
+  const from = networks.find(
+    (n) => n.dedup_chain_id.chain_id === switchData.oldId,
+  );
+  const to = networks.find(
+    (n) => n.dedup_chain_id.chain_id === switchData.newId,
+  );
 
   if (!from || !to) return null;
 
@@ -35,9 +39,9 @@ function ChainSwitchDialog() {
       </div>
 
       <div className="flex gap-2 self-center">
-        <ChainView chainId={from.chain_id} name={from.name} />
+        <ChainView chainId={from.dedup_chain_id.chain_id} name={from.name} />
         <span>→</span>
-        <ChainView chainId={to?.chain_id} name={to.name} />
+        <ChainView chainId={to?.dedup_chain_id.chain_id} name={to.name} />
       </div>
 
       <div className="m-2 flex items-center justify-center gap-2">
