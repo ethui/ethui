@@ -1,6 +1,6 @@
 use alloy::{
     consensus::{Transaction as _, TxType},
-    network::Ethereum,
+    network::{Ethereum, TransactionResponse as _},
     providers::{Provider as _, RootProvider},
 };
 use ethui_abis::IERC20;
@@ -25,7 +25,7 @@ pub(crate) async fn fetch_full_tx(chain_id: u32, hash: B256) -> Result<()> {
         hash,
         trace_address: None,
         block_number: receipt.block_number,
-        from: tx.from,
+        from: tx.from(),
         to: tx.to(),
         value: Some(tx.inner.value()),
         data: Some(tx.inner.input().clone()),
