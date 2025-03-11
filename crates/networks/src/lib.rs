@@ -197,7 +197,7 @@ impl Networks {
     pub async fn chain_id_from_provider(&self, url: String) -> Result<u64> {
         let provider = ProviderBuilder::new()
             .disable_recommended_fillers()
-            .on_builtin(&url)
+            .connect(&url)
             .await?;
 
         Ok(provider.get_chain_id().await?)
