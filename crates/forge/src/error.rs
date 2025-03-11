@@ -33,8 +33,14 @@ pub enum Error {
     #[error(transparent)]
     Rpc(#[from] RpcError<TransportErrorKind>),
 
+    #[error(transparent)]
+    Notify(#[from] notify::Error),
+
     #[error("Failed to shutdown task")]
     FailedToShutdown,
+
+    #[error(transparent)]
+    Glob(#[from] glob::PatternError),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

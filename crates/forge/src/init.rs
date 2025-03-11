@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use std::{path::PathBuf, time::Duration};
 
 use ethui_broadcast::InternalMsg;
@@ -6,19 +8,22 @@ use ethui_types::GlobalState;
 use once_cell::sync::Lazy;
 use tokio::{sync::RwLock, time};
 
-use crate::{manager::Forge, utils};
+use crate::{manager::Forge, root_paths_watcher::RootPathsWatcher, utils};
 
 pub(crate) static FORGE: Lazy<RwLock<Forge>> = Lazy::new(Default::default);
+pub(crate) static FORGE2: Lazy<RwLock<RootPathsWatcher>> = Lazy::new(Default::default);
 
 pub async fn init() -> crate::Result<()> {
-    tokio::spawn(async { receiver().await });
-    tokio::spawn(async { worker().await });
+    //tokio::spawn(async { receiver().await });
+    //tokio::spawn(async { worker().await });
 
     let settings = Settings::read().await;
-    let mut forge = FORGE.write().await;
+    //let mut forge = FORGE.write().await;
+    let mut forge2 = FORGE2.write().await;
 
     if let Some(ref path) = settings.inner.abi_watch_path {
-        forge.watch(path.clone().into()).await?;
+        //forge.watch(path.clone().into()).await?;
+        forge2.add_path(path.clone().into()).await?;
     }
 
     Ok(())

@@ -2,8 +2,7 @@ mod abi;
 pub mod error;
 mod init;
 mod manager;
-mod multi_path_watcher;
-mod root_path_watcher;
+mod root_paths_watcher;
 mod utils;
 mod watcher;
 

@@ -3150,6 +3150,7 @@ name = "ethui-forge"
 version = "1.13.0"
 dependencies = [
  "alloy",
+ "anyhow",
  "ethui-broadcast",
  "ethui-db",
  "ethui-networks",
@@ -3162,6 +3163,7 @@ dependencies = [
  "regex",
  "serde",
  "serde_json",
+ "tempfile",
  "thiserror 2.0.12",
  "tokio",
  "tracing",
