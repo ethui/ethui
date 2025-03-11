@@ -31,12 +31,12 @@ import {
   Wifi,
 } from "lucide-react";
 import { cn } from "#/lib/utils";
+import { useSettings } from "#/store/useSettings";
 import { useCommandBar } from "./CommandBar";
 import { QuickAddressSelect } from "./QuickAddressSelect";
 import { QuickFastModeToggle } from "./QuickFastModeToggle";
 import { QuickNetworkSelect } from "./QuickNetworkSelect";
 import { QuickWalletSelect } from "./QuickWalletSelect";
-import { useSettings } from "#/store/useSettings";
 
 const isDev = import.meta.env.MODE === "development";
 
@@ -95,7 +95,7 @@ export function AppSidebar() {
                               to={item.url}
                               className={cn(
                                 item.url === location.pathname &&
-                                "bg-primary text-accent hover:bg-primary hover:text-accent",
+                                  "bg-primary text-accent hover:bg-primary hover:text-accent",
                               )}
                             >
                               {item.title}
@@ -149,7 +149,7 @@ function CustomSidebarMenuItem({
           to={url}
           className={cn(
             url === location.pathname &&
-            "bg-primary text-accent hover:bg-primary hover:text-accent",
+              "bg-primary text-accent hover:bg-primary hover:text-accent",
           )}
         >
           {icon}

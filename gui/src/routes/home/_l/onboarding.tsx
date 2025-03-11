@@ -1,12 +1,12 @@
+import type { OnboardingStepKey } from "@ethui/types/settings";
 import { Button } from "@ethui/ui/components/shadcn/button";
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { Progress } from "@ethui/ui/components/shadcn/progress";
+import { Link, createFileRoute, redirect } from "@tanstack/react-router";
+import { invoke } from "@tauri-apps/api/core";
 import clsx from "clsx";
 import { Check, ChevronRight, Globe, RefreshCcw, Wallet } from "lucide-react";
 import { useEffect } from "react";
 import { useSettings } from "#/store/useSettings";
-import { Progress } from "@ethui/ui/components/shadcn/progress";
-import type { OnboardingStepKey } from "@ethui/types/settings";
-import { invoke } from "@tauri-apps/api/core";
 
 export const Route = createFileRoute("/home/_l/onboarding")({
   beforeLoad: () => ({ breadcrumb: "Onboarding" }),
