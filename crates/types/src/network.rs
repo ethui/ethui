@@ -90,7 +90,7 @@ impl Network {
     ) -> Result<RootProvider<Ethereum>, RpcError<TransportErrorKind>> {
         ProviderBuilder::new()
             .disable_recommended_fillers()
-            .on_builtin(self.http_url.as_str())
+            .connect(self.http_url.as_str())
             .await
     }
 
