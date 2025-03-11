@@ -2,7 +2,8 @@
 
 use futures::channel::oneshot;
 use glob::glob;
-use notify::{INotifyWatcher, RecommendedWatcher, RecursiveMode, Watcher as _};
+use notify::{RecommendedWatcher, RecursiveMode};
+use notify_debouncer_full::{new_debouncer, DebounceEventResult, Debouncer, RecommendedCache};
 use tokio::{
     sync::{mpsc, Mutex},
     task::JoinHandle,
@@ -35,7 +36,7 @@ pub struct Watcher {
     rcv: mpsc::Receiver<Msg>,
     roots: HashSet<PathBuf>,
     foundry_roots: HashSet<PathBuf>,
-    watcher: Arc<Mutex<INotifyWatcher>>,
+    watcher: Arc<Mutex<Debouncer<RecommendedWatcher, RecommendedCache>>>,
     worker: JoinHandle<()>,
 }
 
@@ -50,19 +51,22 @@ impl Watcher {
 
     fn new(snd: mpsc::Sender<Msg>, rcv: mpsc::Receiver<Msg>) -> Result<Self> {
         let (worker_snd, worker_rcv) = mpsc::unbounded_channel();
-        let watcher = RecommendedWatcher::new(
-            move |res| {
-                worker_snd.send(res).unwrap();
+        let debounced_watcher = new_debouncer(
+            Duration::from_secs(2),
+            None,
+            move |result: DebounceEventResult| match result {
+                Ok(events) => worker_snd.send(events).unwrap(),
+                Err(e) => tracing::warn!("watch error: {:?}", e),
             },
-            Default::default(),
         )?;
+
         let worker = tokio::spawn(async move { Worker::new(worker_rcv).run().await });
 
         Ok(Self {
             snd,
             rcv,
             roots: Default::default(),
-            watcher: Arc::new(Mutex::new(watcher)),
+            watcher: Arc::new(Mutex::new(debounced_watcher)),
             foundry_roots: Default::default(),
             worker,
         })
@@ -139,10 +143,10 @@ impl Watcher {
 
         let mut watcher = self.watcher.lock().await;
         for path in to_remove {
-            watcher.unwatch(&path)?;
+            watcher.unwatch(path.join("out"))?;
         }
         for path in to_add {
-            watcher.watch(&path, RecursiveMode::Recursive)?;
+            watcher.watch(path.join("out"), RecursiveMode::Recursive)?;
         }
 
         Ok(())
