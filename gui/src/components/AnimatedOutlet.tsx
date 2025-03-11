@@ -46,7 +46,7 @@ export const AnimatedOutlet = forwardRef<HTMLDivElement>((_, ref) => {
       className="w-full"
       ref={ref}
       {...transitionProps}
-      key={nextMatch.id}
+      key={nextMatch?.id}
     >
       <AnimatePresence mode="popLayout">
         <RouterContext.Provider value={renderedContext.current}>

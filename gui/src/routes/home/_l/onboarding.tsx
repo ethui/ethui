@@ -27,14 +27,14 @@ const steps = [
     title: "Set up an alchemy.com API Key",
     description: "Enables fast sync on mainnet and other live chains",
     icon: <RefreshCcw className="h-5 w-5" />,
-    link: { to: "/settings/general" },
+    link: { to: "/home/settings/general" },
   },
   {
     id: "wallet",
     title: "Set up a production-ready wallet",
     description: "Create or import a secure wallet",
     icon: <Wallet className="h-5 w-5" />,
-    link: { to: "/settings/wallets" },
+    link: { to: "/home/settings/wallets" },
   },
   {
     id: "extension",
