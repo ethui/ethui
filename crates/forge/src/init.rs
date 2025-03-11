@@ -39,7 +39,8 @@ async fn receiver() -> ! {
                     settings.inner.abi_watch_path.clone().map(Into::into);
 
                 // if path didn't change, skip
-                if forge.watch_path == new_path {
+                // TODO: support multiple
+                if forge.watch_path.first().eq(&new_path.as_ref()) {
                     continue;
                 }
 

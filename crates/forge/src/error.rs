@@ -32,6 +32,9 @@ pub enum Error {
 
     #[error(transparent)]
     Rpc(#[from] RpcError<TransportErrorKind>),
+
+    #[error("Failed to shutdown task")]
+    FailedToShutdown,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

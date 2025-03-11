@@ -13,7 +13,7 @@ use crate::{
 };
 
 pub struct Forge {
-    pub(crate) watch_path: Option<PathBuf>,
+    pub(crate) watch_path: Vec<PathBuf>,
     watcher_snd: mpsc::UnboundedSender<watcher::WatcherMsg>,
     result_snd: mpsc::UnboundedSender<Match>,
     abis_by_path: BTreeMap<PathBuf, Abi>,
@@ -35,7 +35,7 @@ impl Default for Forge {
         });
 
         Self {
-            watch_path: None,
+            watch_path: vec![],
             watcher_snd,
             result_snd,
             abis_by_path: BTreeMap::new(),
@@ -57,7 +57,7 @@ impl Forge {
         tracing::trace!("watching {:?}", path);
 
         // watch the new path
-        self.watch_path = Some(path.clone());
+        self.watch_path = vec![path.clone()];
         self.watcher_snd
             .send(watcher::WatcherMsg::Start(path.clone()))?;
 
@@ -71,9 +71,10 @@ impl Forge {
     pub(crate) async fn unwatch(&mut self) -> Result<()> {
         tracing::trace!("unwatching {:?}", self.watch_path);
 
-        if let Some(path) = &self.watch_path.take() {
+        // TODO: support multiple
+        if let Some(path) = &self.watch_path.first() {
             self.watcher_snd
-                .send(watcher::WatcherMsg::Stop(path.clone()))?;
+                .send(watcher::WatcherMsg::Stop(path.to_path_buf()))?;
         }
 
         Ok(())
