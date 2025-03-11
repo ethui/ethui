@@ -1,9 +1,8 @@
 [advisories]
 yanked = "warn"
 ignore = [
+  # proc-macro-error is unmaintained
   "RUSTSEC-2024-0370",
-  # derivative is unmaintained
-  "RUSTSEC-2024-0388",
   # atk is unmaintained
   "RUSTSEC-2024-0413",
   # atk-sys is unmaintained
