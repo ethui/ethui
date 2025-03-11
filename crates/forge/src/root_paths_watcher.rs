@@ -2,17 +2,35 @@
 
 use futures::channel::oneshot;
 use glob::glob;
+use notify::INotifyWatcher;
 use tokio::task::JoinHandle;
 
 use crate::{error::Result, Error};
-use std::{collections::HashSet, path::PathBuf};
+use std::{
+    collections::HashSet,
+    path::PathBuf,
+    sync::{mpsc, Arc, Mutex},
+};
 
-#[derive(Default, Debug)]
+#[derive(Debug)]
 pub struct RootPathsWatcher {
     roots: HashSet<PathBuf>,
+    watcher: Arc<Mutex<INotifyWatcher>>,
+    rcv: Arc<Mutex<mpsc::Receiver<notify::Result<notify::Event>>>>,
 }
 
 impl RootPathsWatcher {
+    pub(crate) fn new() -> Result<Self> {
+        let (snd, rcv) = mpsc::channel();
+        let watcher = notify::recommended_watcher(snd)?;
+
+        Ok(Self {
+            roots: Default::default(),
+            watcher: Arc::new(Mutex::new(watcher)),
+            rcv: Arc::new(Mutex::new(rcv)),
+        })
+    }
+
     pub async fn update_paths(&mut self, paths: Vec<PathBuf>) -> Result<()> {
         let to_remove: Vec<_> = self
             .roots
@@ -119,7 +137,7 @@ mod tests {
     pub async fn find_forge_tomls() -> Result<()> {
         let dir = create_fixture_directories()?;
 
-        let mut root_path_watcher = RootPathsWatcher::default();
+        let mut root_path_watcher = RootPathsWatcher::new()?;
         root_path_watcher.add_path(dir.path().to_path_buf()).await?;
 
         let paths = root_path_watcher.find_foundry_roots().await?;

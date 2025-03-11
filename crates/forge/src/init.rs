@@ -11,7 +11,8 @@ use tokio::{sync::RwLock, time};
 use crate::{manager::Forge, root_paths_watcher::RootPathsWatcher, utils};
 
 pub(crate) static FORGE: Lazy<RwLock<Forge>> = Lazy::new(Default::default);
-pub(crate) static FORGE2: Lazy<RwLock<RootPathsWatcher>> = Lazy::new(Default::default);
+pub(crate) static FORGE2: Lazy<RwLock<RootPathsWatcher>> =
+    Lazy::new(|| RwLock::new(RootPathsWatcher::new().unwrap()));
 
 pub async fn init() -> crate::Result<()> {
     //tokio::spawn(async { receiver().await });
