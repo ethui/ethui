@@ -52,7 +52,7 @@ impl Watcher {
     fn new(snd: mpsc::Sender<Msg>, rcv: mpsc::Receiver<Msg>) -> Result<Self> {
         let (worker_snd, worker_rcv) = mpsc::unbounded_channel();
         let debounced_watcher = new_debouncer(
-            Duration::from_secs(2),
+            Duration::from_millis(200),
             None,
             move |result: DebounceEventResult| match result {
                 Ok(events) => worker_snd.send(events).unwrap(),
