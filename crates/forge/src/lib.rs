@@ -5,6 +5,7 @@ mod manager;
 mod root_paths_watcher;
 mod utils;
 mod watcher;
+mod worker;
 
 pub use abi::Abi;
 pub use error::{Error, Result};

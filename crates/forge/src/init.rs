@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use std::{path::PathBuf, time::Duration};
+use std::{path::PathBuf, sync::OnceLock, time::Duration};
 
 use ethui_broadcast::InternalMsg;
 use ethui_settings::Settings;
@@ -8,23 +8,29 @@ use ethui_types::GlobalState;
 use once_cell::sync::Lazy;
 use tokio::{sync::RwLock, time};
 
-use crate::{manager::Forge, root_paths_watcher::RootPathsWatcher, utils};
+use crate::{
+    manager::Forge,
+    root_paths_watcher::{self, Watcher},
+    utils,
+};
 
 pub(crate) static FORGE: Lazy<RwLock<Forge>> = Lazy::new(Default::default);
-pub(crate) static FORGE2: Lazy<RwLock<RootPathsWatcher>> =
-    Lazy::new(|| RwLock::new(RootPathsWatcher::new().unwrap()));
+pub(crate) static FORGE2: OnceLock<root_paths_watcher::Handle> = OnceLock::new(); // =
+                                                                                  //Lazy::new(|| RwLock::new(RootPathsWatcher::new().unwrap()));
 
 pub async fn init() -> crate::Result<()> {
+    let watcher = Watcher::spawn().unwrap();
+    FORGE2.get_or_init(|| watcher);
     //tokio::spawn(async { receiver().await });
     //tokio::spawn(async { worker().await });
 
     let settings = Settings::read().await;
     //let mut forge = FORGE.write().await;
-    let mut forge2 = FORGE2.write().await;
+    let forge2 = FORGE2.get().unwrap();
 
     if let Some(ref path) = settings.inner.abi_watch_path {
         //forge.watch(path.clone().into()).await?;
-        forge2.add_path(path.clone().into()).await?;
+        forge2.update_roots(vec![path.clone().into()]).await?;
     }
 
     Ok(())
@@ -39,22 +45,25 @@ async fn receiver() -> ! {
 
             if let SettingsUpdated = msg {
                 let settings = Settings::read().await;
-                let mut forge = FORGE.write().await;
+                let forge2 = FORGE2.get().unwrap();
 
                 let new_path: Option<PathBuf> =
                     settings.inner.abi_watch_path.clone().map(Into::into);
 
                 // if path didn't change, skip
-                // TODO: support multiple
-                if forge.watch_path.first().eq(&new_path.as_ref()) {
-                    continue;
+                if let Some(path) = new_path {
+                    // TODO: support multiple
+                    let _ = forge2.update_roots(vec![path]).await;
                 }
+                //if forge.watch_path.first().eq(&new_path.as_ref()) {
+                //    continue;
+                //}
 
-                if let Some(path) = new_path.clone() {
-                    let _ = forge.watch(path).await;
-                } else {
-                    let _ = forge.unwatch().await;
-                }
+                //if let Some(path) = new_path.clone() {
+                //    let _ = forge.watch(path).await;
+                //} else {
+                //    let _ = forge.unwatch().await;
+                //}
             }
         }
     }

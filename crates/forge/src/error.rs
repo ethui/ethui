@@ -1,8 +1,9 @@
 use std::path::PathBuf;
 
 use alloy::transports::{RpcError, TransportErrorKind};
+use tokio::sync::mpsc;
 
-use crate::watcher::WatcherMsg;
+use crate::{root_paths_watcher, watcher::WatcherMsg};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -41,6 +42,12 @@ pub enum Error {
 
     #[error(transparent)]
     Glob(#[from] glob::PatternError),
+
+    #[error("Send error")]
+    SendError,
+
+    #[error(transparent)]
+    HandlerSendError(#[from] mpsc::error::SendError<root_paths_watcher::Msg>),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
