@@ -7,6 +7,7 @@ import clsx from "clsx";
 import { Check, ChevronRight, Globe, RefreshCcw, Wallet } from "lucide-react";
 import { useEffect } from "react";
 import { useSettings } from "#/store/useSettings";
+import { useWallets } from "#/store/useWallets";
 
 export const Route = createFileRoute("/home/_l/onboarding")({
   beforeLoad: () => ({ breadcrumb: "Onboarding" }),
@@ -51,6 +52,7 @@ const steps = [
 
 function RouteComponent() {
   const onboarding = useSettings((s) => s.settings?.onboarding);
+  useAutofill();
 
   useEffect(() => {
     if (onboarding?.hidden) {
@@ -96,10 +98,6 @@ function Step({
   completed,
   link,
 }: OnboardingStep & { completed: boolean }) {
-  const skipStep = (id: OnboardingStepKey) => {
-    invoke("settings_onboarding_finish_step", { id });
-  };
-
   return (
     <div
       key={id}
@@ -151,4 +149,27 @@ function Step({
       )}
     </div>
   );
+}
+
+function useAutofill() {
+  const settings = useSettings((s) => s.settings);
+  const wallets = useWallets((s) => s.wallets);
+
+  // Autofill onboarding steps when first entering the page
+  useEffect(() => {
+    if (!settings?.onboarding.steps.wallet && wallets.length > 1) {
+      skipStep("wallet");
+    }
+
+    if (
+      !settings?.onboarding.steps.alchemy &&
+      (settings?.alchemyApiKey ?? "").length > 0
+    ) {
+      skipStep("alchemy");
+    }
+  });
+}
+
+function skipStep(id: OnboardingStepKey) {
+  invoke("settings_onboarding_finish_step", { id });
 }
