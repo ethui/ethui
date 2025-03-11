@@ -3,6 +3,7 @@ pub mod commands;
 mod error;
 mod init;
 mod migrations;
+mod onboarding;
 mod utils;
 
 use std::{
@@ -14,6 +15,7 @@ use std::{
 use ethui_types::{Address, UINotify};
 pub use init::init;
 use migrations::LatestVersion;
+use onboarding::{Onboarding, OnboardingStep};
 use serde::{Deserialize, Serialize};
 use serde_constant::ConstI64;
 pub use utils::test_alchemy_api_key;
@@ -88,6 +90,20 @@ impl Settings {
         Ok(())
     }
 
+    pub async fn finish_onboarding_step(&mut self, step: OnboardingStep) -> Result<()> {
+        self.inner.onboarding.finish_step(step);
+        self.save().await?;
+
+        Ok(())
+    }
+
+    pub async fn finish_onboarding(&mut self) -> Result<()> {
+        self.inner.onboarding.finish();
+        self.save().await?;
+
+        Ok(())
+    }
+
     pub async fn set_dark_mode(&mut self, mode: DarkMode) -> Result<()> {
         self.inner.dark_mode = mode;
         self.save().await?;
@@ -102,19 +118,8 @@ impl Settings {
         Ok(())
     }
 
-    pub async fn finish_onboarding(&mut self) -> Result<()> {
-        self.inner.onboarded = true;
-        self.save().await?;
-
-        Ok(())
-    }
-
     pub fn get(&self) -> &SerializedSettings {
         &self.inner
-    }
-
-    pub fn onboarded(&self) -> bool {
-        self.inner.onboarded
     }
 
     pub fn fast_mode(&self) -> bool {
@@ -178,9 +183,6 @@ pub struct SerializedSettings {
     aliases: HashMap<Address, String>,
 
     #[serde(default)]
-    onboarded: bool,
-
-    #[serde(default)]
     fast_mode: bool,
 
     #[serde(default)]
@@ -191,6 +193,9 @@ pub struct SerializedSettings {
 
     #[serde(default)]
     rust_log: String,
+
+    #[serde(default)]
+    pub onboarding: Onboarding,
 
     version: LatestVersion,
 }
@@ -204,12 +209,12 @@ impl Default for SerializedSettings {
             etherscan_api_key: None,
             hide_empty_tokens: true,
             aliases: HashMap::new(),
-            onboarded: false,
             fast_mode: false,
             autostart: false,
             start_minimized: false,
             rust_log: "warn".into(),
             version: ConstI64,
+            onboarding: Onboarding::default(),
         }
     }
 }

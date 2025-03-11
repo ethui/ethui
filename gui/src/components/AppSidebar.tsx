@@ -31,6 +31,7 @@ import {
   Wifi,
 } from "lucide-react";
 import { cn } from "#/lib/utils";
+import { useSettings } from "#/store/useSettings";
 import { useCommandBar } from "./CommandBar";
 import { QuickAddressSelect } from "./QuickAddressSelect";
 import { QuickFastModeToggle } from "./QuickFastModeToggle";
@@ -44,6 +45,7 @@ export function AppSidebar() {
   const location = useLocation();
   const { open, toggleSidebar } = useSidebar();
   const isMacos = platform() === "macos";
+  const showOnboarding = useSettings((s) => !s.settings?.onboarding.hidden);
 
   return (
     <Sidebar className="select-none" collapsible="icon">
@@ -63,21 +65,15 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
+              {showOnboarding && (
+                <CustomSidebarMenuItem
+                  url="/home/onboarding"
+                  icon={<CircleUser />}
+                  title="Onboarding"
+                />
+              )}
               {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link
-                      to={item.url}
-                      className={cn(
-                        item.url === location.pathname &&
-                          "bg-primary text-accent hover:bg-primary hover:text-accent",
-                      )}
-                    >
-                      {item.icon}
-                      {item.title}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                <CustomSidebarMenuItem key={item.title} {...item} />
               ))}
 
               <Collapsible className="group/collapsible">
@@ -138,6 +134,29 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
+  );
+}
+
+function CustomSidebarMenuItem({
+  url,
+  icon,
+  title,
+}: { url: string; icon: React.ReactNode; title: string }) {
+  return (
+    <SidebarMenuItem key={title}>
+      <SidebarMenuButton asChild>
+        <Link
+          to={url}
+          className={cn(
+            url === location.pathname &&
+              "bg-primary text-accent hover:bg-primary hover:text-accent",
+          )}
+        >
+          {icon}
+          {title}
+        </Link>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
   );
 }
 
