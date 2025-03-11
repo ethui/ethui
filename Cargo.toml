@@ -107,6 +107,6 @@ anyhow = { version = "1.0", default-features = false }
 tempfile = "3.18.0"
 serde-constant = "0.1.0"
 
-# Foundry - December 10th 2024
-foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-aa69ed1e46dd61fbf9d73399396a4db4dd527431" }
+# Foundry - March 11th 2025
+foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-3c048be05726218c405d5d4deec4d3f1ab515f6f" }
 foundry-block-explorers = "0.9"
