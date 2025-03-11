@@ -53,7 +53,6 @@ function SettingsGeneral() {
     resolver: zodResolver(schema),
     defaultValues: general,
   });
-  console.log(form);
 
   const onSubmit = useCallback(
     async (params: FieldValues) => {
