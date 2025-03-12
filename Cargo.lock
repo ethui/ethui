@@ -3160,7 +3160,6 @@ dependencies = [
  "glob",
  "notify",
  "notify-debouncer-full",
- "once_cell",
  "regex",
  "serde",
  "serde_json",

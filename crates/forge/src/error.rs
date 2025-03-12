@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use alloy::transports::{RpcError, TransportErrorKind};
 use tokio::sync::mpsc;
 
-use crate::root_paths_watcher;
+use crate::worker;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -46,7 +46,7 @@ pub enum Error {
     SendError,
 
     #[error(transparent)]
-    HandlerSendError(#[from] mpsc::error::SendError<root_paths_watcher::Msg>),
+    HandlerSendError(#[from] mpsc::error::SendError<worker::Msg>),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
