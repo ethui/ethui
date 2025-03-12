@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use alloy::transports::{RpcError, TransportErrorKind};
 use tokio::sync::mpsc;
 
-use crate::{root_paths_watcher, watcher::WatcherMsg};
+use crate::root_paths_watcher;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -25,9 +25,8 @@ pub enum Error {
     #[error("invalid chain ID")]
     InvalidChainId,
 
-    #[error(transparent)]
-    WatcherSendError(#[from] tokio::sync::mpsc::error::SendError<WatcherMsg>),
-
+    //#[error(transparent)]
+    //WatcherSendError(#[from] tokio::sync::mpsc::error::SendError<WatcherMsg>),
     #[error(transparent)]
     Network(#[from] ethui_networks::Error),
 

@@ -1,43 +1,27 @@
-use std::{ffi::OsStr, path::PathBuf};
+use std::{ffi::OsStr, fs::File, io::BufReader, path::PathBuf, str::FromStr as _};
 
+use alloy::primitives::Bytes;
 use notify::EventKind;
-use notify_debouncer_full::DebouncedEvent;
-use tokio::sync::mpsc::UnboundedReceiver;
-
-pub(crate) struct Worker {
-    rcv: UnboundedReceiver<Vec<DebouncedEvent>>,
-}
-
-impl Worker {
-    pub fn new(rcv: UnboundedReceiver<Vec<DebouncedEvent>>) -> Self {
-        Self { rcv }
-    }
-
-    pub async fn run(mut self) {
-        while let Some(events) = self.rcv.recv().await {
-            let matches: Vec<Match> = events
-                .into_iter()
-                .filter_map(|event| event.event.try_into().ok())
-                .collect();
-
-            dbg!(&matches);
-        }
-    }
-}
 
 #[derive(Debug, Clone)]
-pub struct Match {
+pub struct ForgeAbi {
     pub path: PathBuf,
     pub project: String,
-    pub file: String,
+    pub solidity_file: String,
     pub name: String,
+    pub code: Bytes,
+    pub abi: serde_json::Value,
 }
 
-impl TryFrom<PathBuf> for Match {
+impl TryFrom<PathBuf> for ForgeAbi {
     type Error = ();
 
     fn try_from(path: PathBuf) -> std::result::Result<Self, Self::Error> {
         use std::path::Component;
+
+        if !path.exists() {
+            return Err(());
+        }
 
         // ignore non-json files
         if path.extension().is_none_or(|p| p != "json") {
@@ -56,7 +40,7 @@ impl TryFrom<PathBuf> for Match {
         };
 
         // parent is solidity file name
-        let file = match components.next() {
+        let solidity_file = match components.next() {
             Some(Component::Normal(file)) => os_str_to_string(file)?,
             _ => return Err(()),
         };
@@ -70,16 +54,33 @@ impl TryFrom<PathBuf> for Match {
             _ => return Err(()),
         };
 
+        let file = File::open(path.clone()).unwrap();
+        let json: serde_json::Value =
+            serde_json::from_reader(BufReader::new(file)).map_err(|_| ())?;
+
+        let abi = json["abi"].clone();
+        let code = match json["deployedBytecode"]["object"].as_str() {
+            Some(b) => Bytes::from_str(b).map_err(|_| ())?,
+            _ => return Err(()),
+        };
+
+        if abi.is_null() {
+            return Err(());
+        }
+
+        //dbg!(&path);
         Ok(Self {
             path,
             project,
-            file,
+            solidity_file,
             name,
+            abi,
+            code,
         })
     }
 }
 
-impl TryFrom<notify::Event> for Match {
+impl TryFrom<notify::Event> for ForgeAbi {
     type Error = ();
 
     fn try_from(event: notify::Event) -> Result<Self, Self::Error> {
