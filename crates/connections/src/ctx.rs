@@ -56,7 +56,7 @@ impl Ctx {
             match self.get_affinity().await {
                 // If affinity is not set, or sticky, update local affinity, and publish event
                 Affinity::Unset | Affinity::Sticky(_) => {
-                    let internal_id: DedupChainId = (new_chain_id, 0).into();
+                    let internal_id: DedupChainId = (new_chain_id, None).into();
                     let affinity = internal_id.into();
                     self.set_affinity(affinity).await?;
 

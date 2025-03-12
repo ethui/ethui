@@ -15,7 +15,7 @@ pub struct NewNetworkParams {
 }
 
 impl NewNetworkParams {
-    pub fn into_network(self, deduplication_id: u32) -> Network {
+    pub fn into_network(self, deduplication_id: Option<u32>) -> Network {
         Network {
             dedup_chain_id: (self.dedup_chain_id.chain_id(), deduplication_id).into(),
             name: self.name,

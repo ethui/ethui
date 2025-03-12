@@ -56,7 +56,6 @@ function Content() {
   const onSubmit = async (data: Network) => {
     try {
       setLoading(true);
-      data.dedup_chain_id.dedup_id = 0;
       await invoke("networks_add", { network: data });
       setLoading(false);
       router.history.back();

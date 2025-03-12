@@ -153,7 +153,7 @@ fn migrate_networks_from_v2_to_v3(
             (
                 name,
                 Network {
-                    dedup_chain_id: (network.chain_id, network.deduplication_id).into(),
+                    dedup_chain_id: (network.chain_id, None).into(),
                     name: network.name,
                     explorer_url: network.explorer_url,
                     http_url: network.http_url,
@@ -296,7 +296,7 @@ mod tests {
             let updated_networks: SerializedNetworks = serde_json::from_reader(reader).unwrap();
             let mainnet = updated_networks.networks.get("Mainnet").unwrap();
 
-            assert_eq!(mainnet.dedup_chain_id(), (mainnet.chain_id(), 0).into());
+            assert_eq!(mainnet.dedup_chain_id(), (mainnet.chain_id(), None).into());
         }
     }
 }

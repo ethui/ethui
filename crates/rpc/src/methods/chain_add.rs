@@ -106,8 +106,8 @@ impl TryFrom<Params> for NewNetworkParams {
     fn try_from(params: Params) -> Result<Self> {
         Ok(Self {
             name: params.chain_name,
-            // Using 0 for dedup_id since at this time no duplicate chain_id is allowed
-            dedup_chain_id: (params.chain_id.try_into().unwrap(), 0).into(),
+            // Using None for dedup_id since at this time no duplicate chain_id are allowed
+            dedup_chain_id: (params.chain_id.try_into().unwrap(), None).into(),
             explorer_url: params.block_explorer_urls.first().map(|u| u.to_string()),
             http_url: params
                 .rpc_urls

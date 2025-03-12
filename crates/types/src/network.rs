@@ -21,7 +21,7 @@ pub struct Network {
 }
 
 impl Network {
-    pub fn mainnet(deduplication_id: u32) -> Self {
+    pub fn mainnet(deduplication_id: Option<u32>) -> Self {
         Self {
             dedup_chain_id: (1, deduplication_id).into(),
             name: String::from("Mainnet"),
@@ -33,7 +33,7 @@ impl Network {
         }
     }
 
-    pub fn sepolia(deduplication_id: u32) -> Self {
+    pub fn sepolia(deduplication_id: Option<u32>) -> Self {
         Self {
             dedup_chain_id: (11155111, deduplication_id).into(),
             name: String::from("Sepolia"),
@@ -45,7 +45,7 @@ impl Network {
         }
     }
 
-    pub fn anvil(deduplication_id: u32) -> Self {
+    pub fn anvil(deduplication_id: Option<u32>) -> Self {
         Self {
             dedup_chain_id: (31337, deduplication_id).into(),
             name: String::from("Anvil"),
@@ -58,7 +58,7 @@ impl Network {
     }
 
     pub fn all_default() -> Vec<Self> {
-        vec![Self::anvil(0), Self::mainnet(0), Self::sepolia(0)]
+        vec![Self::anvil(None), Self::mainnet(None), Self::sepolia(None)]
     }
 
     pub fn dedup_chain_id(&self) -> DedupChainId {

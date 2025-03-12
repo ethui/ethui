@@ -134,7 +134,7 @@ impl Networks {
         }
 
         let deduplication_id = self.get_chain_id_count(network.dedup_chain_id.chain_id());
-        let network = network.into_network(deduplication_id);
+        let network = network.into_network(Some(deduplication_id));
 
         self.inner
             .networks
@@ -211,14 +211,14 @@ impl Networks {
             .count() as u32
     }
 
-    pub fn get_lowest_dedup_id(&self, chain_id: u32) -> u32 {
+    pub fn get_lowest_dedup_id(&self, chain_id: u32) -> Option<u32> {
         self.inner
             .networks
             .values()
             .filter(|network| network.chain_id() == chain_id)
             .map(|network| network.dedup_chain_id.dedup_id())
             .min()
-            .unwrap_or(0)
+            .unwrap_or(None)
     }
 
     async fn on_network_changed(&self) -> Result<()> {
