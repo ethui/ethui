@@ -256,7 +256,6 @@ impl Watcher {
         let mut any_updates = false;
 
         let s = &self;
-        dbg!(&self.abis_by_path);
         trace!("{}", contracts.len());
         let contracts_with_code = stream::iter(contracts)
             .map(|(chain_id, address, code)| async move {
@@ -285,17 +284,15 @@ impl Watcher {
                 "updating contract {chain_id} {address} with ABI: {}",
                 abi.name
             );
-            dbg!(
-                db.insert_contract_with_abi(
-                    chain_id,
-                    address,
-                    Some(&code),
-                    Some(serde_json::to_string(&abi.abi)?),
-                    Some(abi.name),
-                    None,
-                )
-                .await
-            )?;
+            db.insert_contract_with_abi(
+                chain_id,
+                address,
+                Some(&code),
+                Some(serde_json::to_string(&abi.abi)?),
+                Some(abi.name),
+                None,
+            )
+            .await?;
             any_updates = true;
         }
 

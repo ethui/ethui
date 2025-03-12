@@ -68,7 +68,6 @@ impl TryFrom<PathBuf> for ForgeAbi {
             return Err(());
         }
 
-        //dbg!(&path);
         Ok(Self {
             path,
             project,
@@ -77,18 +76,6 @@ impl TryFrom<PathBuf> for ForgeAbi {
             abi,
             code,
         })
-    }
-}
-
-impl TryFrom<notify::Event> for ForgeAbi {
-    type Error = ();
-
-    fn try_from(event: notify::Event) -> Result<Self, Self::Error> {
-        use EventKind::*;
-        match event.kind {
-            Create(_) | Modify(_) => event.paths[0].clone().try_into(),
-            _ => Err(()),
-        }
     }
 }
 
