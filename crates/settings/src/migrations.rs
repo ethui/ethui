@@ -44,6 +44,8 @@ struct SerializedSettingsV0 {
 
     #[serde(default)]
     rust_log: String,
+
+    version: ConstI64<0>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -184,6 +186,7 @@ impl Default for SerializedSettingsV0 {
             autostart: false,
             start_minimized: false,
             rust_log: "warn".into(),
+            version: ConstI64,
         }
     }
 }
