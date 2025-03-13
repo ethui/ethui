@@ -9,7 +9,7 @@ use notify::{RecommendedWatcher, RecursiveMode};
 use notify_debouncer_full::{
     new_debouncer, DebounceEventResult, DebouncedEvent, Debouncer, RecommendedCache,
 };
-use tracing::trace;
+use tracing::{instrument, trace};
 
 use crate::{abi::ForgeAbi, error::Result, utils};
 use std::{
@@ -92,6 +92,7 @@ impl Message<UpdateContracts> for Worker {
         _msg: UpdateContracts,
         _ctx: kameo::message::Context<'_, Self, Self::Reply>,
     ) -> Self::Reply {
+        dbg!(self.update_contracts_triggers);
         self.update_contracts_triggers -= 1;
 
         // if the counter hasn't reached zero, it means more updates are queued, so we skip this
@@ -106,6 +107,8 @@ impl Message<UpdateContracts> for Worker {
         let mut any_updates = false;
 
         let s = &self;
+        dbg!(contracts.len());
+
         let contracts_with_code = stream::iter(contracts)
             .map(|(chain_id, address, code)| async move {
                 let code: Option<Bytes> = match code {
@@ -118,19 +121,19 @@ impl Message<UpdateContracts> for Worker {
             .buffer_unordered(10)
             .filter_map(|x| async { x })
             .map(|(chain_id, address, code)| async move {
-                s.get_abi_for(&code)
-                    .map(|abi| (chain_id, address, code, abi))
+                dbg!(s
+                    .get_abi_for(&code)
+                    .map(|abi| (chain_id, address, code, abi)))
             })
             .buffer_unordered(10)
             .filter_map(|x| async { x })
             .collect::<Vec<_>>()
             .await;
 
+        dbg!(contracts_with_code.len());
+
         for (chain_id, address, code, abi) in contracts_with_code.into_iter() {
-            trace!(
-                "updating contract {chain_id} {address} with ABI: {}",
-                abi.name
-            );
+            trace!(chain_id=chain_id, address=?address, abi=abi.name);
             db.insert_contract_with_abi(
                 chain_id,
                 address,
@@ -178,6 +181,7 @@ impl Actor for Worker {
 }
 
 impl Worker {
+    #[instrument(skip_all)]
     async fn scan_project(&mut self, root: &Path) -> Result<()> {
         let pattern = root.join("out").join("**").join("*.json");
         for path in glob(pattern.to_str().unwrap())?.filter_map(|p| p.ok()) {
@@ -191,6 +195,7 @@ impl Worker {
         Ok(())
     }
 
+    #[instrument(skip_all)]
     async fn update_roots(&mut self, roots: Vec<PathBuf>) -> Result<()> {
         let to_remove: Vec<_> = self
             .roots
@@ -213,7 +218,11 @@ impl Worker {
             self.add_path(path).await?;
         }
 
-        self.update_foundry_roots().await?;
+        self.self_ref
+            .as_ref()
+            .unwrap()
+            .tell(Msg::PollFoundryRoots)
+            .await?;
 
         Ok(())
     }
@@ -225,6 +234,7 @@ impl Worker {
         }
     }
 
+    #[instrument(skip_all)]
     async fn update_foundry_roots(&mut self) -> Result<()> {
         let new_foundry_roots = self.find_foundry_roots().await?;
 
@@ -255,7 +265,9 @@ impl Worker {
         Ok(())
     }
 
+    #[instrument(skip_all)]
     async fn add_path(&mut self, path: PathBuf) -> Result<()> {
+        trace!(path= ?path);
         if self.roots.contains(&path) {
             return Ok(());
         }
@@ -265,7 +277,9 @@ impl Worker {
         Ok(())
     }
 
+    #[instrument(skip_all)]
     async fn remove_path(&mut self, path: PathBuf) -> Result<()> {
+        trace!(path = ?path);
         if self.roots.remove(&path) {
             self.update_foundry_roots().await?;
         }
@@ -274,6 +288,7 @@ impl Worker {
 
     /// Finds all project roots for Foundry projects (by locating foundry.toml files)
     /// If nested foundry.toml files are found, such as in dependencies or lib folders, they will be ignored.
+    #[instrument(skip_all)]
     async fn find_foundry_roots(&self) -> Result<HashSet<PathBuf>> {
         let res = self.roots.iter().flat_map(|root| {
             let pattern = root.join("**").join("foundry.toml");
@@ -300,7 +315,9 @@ impl Worker {
             res.into_iter()
         });
 
-        Ok(res.collect())
+        let res = res.collect();
+        trace!(foundry_roots = ?res);
+        Ok(res)
     }
 
     fn insert_abi(&mut self, abi: ForgeAbi) {
