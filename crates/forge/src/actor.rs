@@ -119,8 +119,7 @@ impl Message<UpdateContracts> for Worker {
             .buffer_unordered(10)
             .filter_map(|x| async { x })
             .map(|(chain_id, address, code)| async move {
-                (s
-                    .get_abi_for(&code)
+                s.get_abi_for(&code)
                     .map(|abi| (chain_id, address, code, abi))
             })
             .buffer_unordered(10)
