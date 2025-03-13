@@ -123,6 +123,10 @@ async fn watch(
         let ws_connect = WsConnect::new(ctx.ws_url.to_string());
         let provider = ProviderBuilder::new()
             .disable_recommended_fillers()
+            .on_ws(ws_connect.clone())
+            .await?;
+        let sub_provider = ProviderBuilder::new()
+            .disable_recommended_fillers()
             .on_ws(ws_connect)
             .await?;
 
@@ -140,7 +144,7 @@ async fn watch(
 
         trace!("starting from block {}", from_block);
 
-        let mut stream = provider.subscribe_blocks().await?.into_stream();
+        let mut stream = sub_provider.subscribe_blocks().await?.into_stream();
 
         // catch up with everything behind
         // from the moment the fork started (or genesis if not a fork)
