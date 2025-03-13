@@ -174,14 +174,13 @@ async fn watch(
                     match b {
                         Some(b) => {
                             trace!("block {}", b.number);
-                            let block_traces = provider.trace_block(b.number.into()).await;
-                            dbg!("here", block_traces.is_err());
-                            //block_snd.send(Msg::Traces(block_traces)).map_err(|_|Error::Watcher)?;
-                            //
-                            //let logs = provider.get_logs(&Filter::new().select(b.number)).await?;
-                            //block_snd.send(Msg::Logs(logs)).map_err(|_| Error::Watcher)?;
-                            //
-                            //save_known_tip(ctx.chain_id, b.number, b.hash).await?;
+                            let block_traces = provider.trace_block(b.number.into()).await?;
+                            block_snd.send(Msg::Traces(block_traces)).map_err(|_|Error::Watcher)?;
+
+                            let logs = provider.get_logs(&Filter::new().select(b.number)).await?;
+                            block_snd.send(Msg::Logs(logs)).map_err(|_| Error::Watcher)?;
+
+                            save_known_tip(ctx.chain_id, b.number, b.hash).await?;
                         },
                         None => break 'ws,
                     }
