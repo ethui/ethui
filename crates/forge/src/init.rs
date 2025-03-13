@@ -30,7 +30,6 @@ async fn receiver(handle: ActorRef<Worker>) -> ! {
             match msg {
                 InternalMsg::SettingsUpdated => {
                     let settings = Settings::read().await;
-                    dbg!("here");
                     if let Some(ref path) = settings.inner.abi_watch_path {
                         // TODO: support multiple
                         handle

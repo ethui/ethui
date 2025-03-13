@@ -92,7 +92,6 @@ impl Message<UpdateContracts> for Worker {
         _msg: UpdateContracts,
         _ctx: kameo::message::Context<'_, Self, Self::Reply>,
     ) -> Self::Reply {
-        dbg!(self.update_contracts_triggers);
         self.update_contracts_triggers -= 1;
 
         // if the counter hasn't reached zero, it means more updates are queued, so we skip this
@@ -107,7 +106,6 @@ impl Message<UpdateContracts> for Worker {
         let mut any_updates = false;
 
         let s = &self;
-        dbg!(contracts.len());
 
         let contracts_with_code = stream::iter(contracts)
             .map(|(chain_id, address, code)| async move {
@@ -121,16 +119,14 @@ impl Message<UpdateContracts> for Worker {
             .buffer_unordered(10)
             .filter_map(|x| async { x })
             .map(|(chain_id, address, code)| async move {
-                dbg!(s
+                (s
                     .get_abi_for(&code)
-                    .map(|abi| (chain_id, address, code, abi)))
+                    .map(|abi| (chain_id, address, code, abi))
             })
             .buffer_unordered(10)
             .filter_map(|x| async { x })
             .collect::<Vec<_>>()
             .await;
-
-        dbg!(contracts_with_code.len());
 
         for (chain_id, address, code, abi) in contracts_with_code.into_iter() {
             trace!(chain_id=chain_id, address=?address, abi=abi.name);
