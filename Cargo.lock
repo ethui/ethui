@@ -3025,6 +3025,7 @@ dependencies = [
  "ethui-wallets",
  "ethui-ws",
  "fix-path-env",
+ "kameo",
  "named-lock",
  "serde",
  "serde_json",
@@ -3158,6 +3159,7 @@ dependencies = [
  "ethui-types",
  "futures",
  "glob",
+ "kameo",
  "notify",
  "notify-debouncer-full",
  "regex",
@@ -5479,6 +5481,35 @@ dependencies = [
  "serdect",
  "sha2",
  "signature",
+]
+
+[[package]]
+name = "kameo"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c1542e1113415cdfd5dac5f663cb69f6be472cff28e90adf6e284e520e399312"
+dependencies = [
+ "dyn-clone",
+ "futures",
+ "kameo_macros",
+ "once_cell",
+ "serde",
+ "tokio",
+ "tokio-stream",
+ "tracing",
+]
+
+[[package]]
+name = "kameo_macros"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8d7adf8a6a19b8582095d1819f4e992817f7dce2b85cd205b6386f9079a2cc81"
+dependencies = [
+ "heck 0.5.0",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.87",
+ "uuid 1.11.0",
 ]
 
 [[package]]
@@ -9654,6 +9685,7 @@ dependencies = [
  "signal-hook-registry",
  "socket2",
  "tokio-macros",
+ "tracing",
  "windows-sys 0.52.0",
 ]
 

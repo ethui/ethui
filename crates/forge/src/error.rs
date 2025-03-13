@@ -1,9 +1,8 @@
 use std::path::PathBuf;
 
 use alloy::transports::{RpcError, TransportErrorKind};
-use tokio::sync::mpsc;
 
-use crate::worker;
+use crate::actor;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -46,7 +45,7 @@ pub enum Error {
     SendError,
 
     #[error(transparent)]
-    HandlerSendError(#[from] mpsc::error::SendError<worker::Msg>),
+    ActorSend(#[from] kameo::error::SendError<actor::Msg>),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

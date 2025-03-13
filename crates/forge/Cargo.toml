@@ -24,6 +24,7 @@ thiserror.workspace = true
 tracing.workspace = true
 futures.workspace = true
 regex.workspace = true
+kameo.workspace = true
 
 glob = "0.3.2"
 notify = "8.0.0"

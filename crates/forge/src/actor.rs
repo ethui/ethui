@@ -2,17 +2,12 @@ use alloy::primitives::Bytes;
 use ethui_types::UINotify;
 use futures::{stream, StreamExt as _};
 use glob::glob;
+use kameo::{
+    actor::ActorRef, error::BoxError, mailbox::bounded::BoundedMailbox, message::Message, Actor,
+};
 use notify::{RecommendedWatcher, RecursiveMode};
 use notify_debouncer_full::{
     new_debouncer, DebounceEventResult, DebouncedEvent, Debouncer, RecommendedCache,
-};
-use tokio::{
-    select,
-    sync::{
-        mpsc::{self, UnboundedReceiver},
-        Mutex, Notify,
-    },
-    time::interval,
 };
 use tracing::trace;
 
@@ -20,95 +15,39 @@ use crate::{abi::ForgeAbi, error::Result, utils};
 use std::{
     collections::{BTreeMap, HashSet},
     path::{Path, PathBuf},
-    sync::Arc,
     time::Duration,
 };
 
-use super::handle::{Handle, Msg};
-
-#[derive(Debug)]
+#[derive(Default)]
 pub struct Worker {
-    msg_rcv: mpsc::Receiver<Msg>,
     roots: HashSet<PathBuf>,
     foundry_roots: HashSet<PathBuf>,
-    watcher: Arc<Mutex<Debouncer<RecommendedWatcher, RecommendedCache>>>,
-    notify_rcv: UnboundedReceiver<Vec<DebouncedEvent>>,
+    watcher: Option<Debouncer<RecommendedWatcher, RecommendedCache>>,
 
     abis_by_path: BTreeMap<PathBuf, ForgeAbi>,
-    new_abis_notifier: Notify,
+    self_ref: Option<ActorRef<Worker>>,
+    has_new_abis: bool,
+
+    update_contracts_triggers: usize,
 }
 
-impl Worker {
-    /// Spawns a new watcher task
-    pub(crate) fn spawn() -> Result<Handle> {
-        let (snd, rcv) = mpsc::channel(100);
-        let watcher = Self::new(rcv)?;
-        dbg!(&watcher);
-        tokio::spawn(async move { watcher.run().await });
+pub enum Msg {
+    UpdateRoots(Vec<PathBuf>),
+    PollFoundryRoots,
+    NewContract,
+}
 
-        Ok(Handle::new(snd))
-    }
+impl Message<Msg> for Worker {
+    type Reply = ();
 
-    fn new(msg_rcv: mpsc::Receiver<Msg>) -> Result<Self> {
-        let (notify_snd, notify_rcv) = mpsc::unbounded_channel();
-        let debounced_watcher = new_debouncer(
-            Duration::from_millis(200),
-            None,
-            move |result: DebounceEventResult| match result {
-                Ok(events) => notify_snd.send(events).unwrap(),
-                Err(e) => tracing::warn!("watch error: {:?}", e),
-            },
-        )?;
-
-        Ok(Self {
-            msg_rcv,
-            roots: Default::default(),
-            watcher: Arc::new(Mutex::new(debounced_watcher)),
-            foundry_roots: Default::default(),
-            notify_rcv,
-            abis_by_path: Default::default(),
-            new_abis_notifier: Default::default(),
-        })
-    }
-
-    async fn run(mut self) -> Result<()> {
-        let mut pool_roots = interval(Duration::from_secs(60));
-
-        loop {
-            select! {
-                _ = pool_roots.tick() => {
-                    let _ =self.update_foundry_roots().await;
-                }
-
-                Some(msg) = self.msg_rcv.recv() => {
-                    let _ = self.process_msg(msg).await;
-                }
-
-                Some(debounced_events) = self.notify_rcv.recv() => {
-                    let _ = self.process_debounced_events(debounced_events).await;
-                }
-
-                _ = self.new_abis_notifier.notified() => {
-                    let _ = self.update_incomplete_contracts().await;
-                }
-            }
-        }
-    }
-
-    async fn scan_project(&mut self, root: &Path) -> Result<()> {
-        let pattern = root.join("out").join("**").join("*.json");
-        for path in glob(pattern.to_str().unwrap())?.filter_map(|p| p.ok()) {
-            if let Ok(abi) = path.clone().try_into() {
-                self.insert_abi(abi);
-            }
-        }
-        Ok(())
-    }
-
-    async fn process_msg(&mut self, msg: Msg) -> Result<()> {
+    async fn handle(
+        &mut self,
+        msg: Msg,
+        _ctx: kameo::message::Context<'_, Self, Self::Reply>,
+    ) -> Self::Reply {
         match msg {
             Msg::UpdateRoots(roots) => {
-                self.update_roots(roots).await?;
+                let _ = self.update_roots(roots).await;
             }
 
             Msg::PollFoundryRoots => {
@@ -116,9 +55,138 @@ impl Worker {
             }
 
             Msg::NewContract => {
-                self.new_abis_notifier.notify_one();
+                self.trigger_update_contracts().await;
             }
         }
+    }
+}
+
+impl Message<Vec<DebouncedEvent>> for Worker {
+    type Reply = ();
+
+    async fn handle(
+        &mut self,
+        events: Vec<DebouncedEvent>,
+        _ctx: kameo::message::Context<'_, Self, Self::Reply>,
+    ) -> Self::Reply {
+        trace!("process_debounced_events");
+        for debounced in events.into_iter() {
+            let path = debounced.event.paths[0].clone();
+            match debounced.event.try_into() {
+                Ok(abi) => self.insert_abi(abi),
+                Err(_) => self.remove_abi(&path),
+            }
+        }
+
+        self.trigger_update_contracts().await;
+    }
+}
+
+struct UpdateContracts;
+
+impl Message<UpdateContracts> for Worker {
+    type Reply = Result<()>;
+
+    async fn handle(
+        &mut self,
+        _msg: UpdateContracts,
+        _ctx: kameo::message::Context<'_, Self, Self::Reply>,
+    ) -> Self::Reply {
+        self.update_contracts_triggers -= 1;
+
+        // if the counter hasn't reached zero, it means more updates are queued, so we skip this
+        // one (poor-man's debounce)
+        if self.update_contracts_triggers > 0 {
+            return Ok(());
+        }
+
+        let db = ethui_db::get();
+        let contracts = db.get_incomplete_contracts().await?;
+
+        let mut any_updates = false;
+
+        let s = &self;
+        let contracts_with_code = stream::iter(contracts)
+            .map(|(chain_id, address, code)| async move {
+                let code: Option<Bytes> = match code {
+                    Some(code) if code.len() > 0 => Some(code),
+                    _ => utils::get_code(chain_id, address).await.ok(),
+                };
+
+                code.map(|c| (chain_id, address, c))
+            })
+            .buffer_unordered(10)
+            .filter_map(|x| async { x })
+            .map(|(chain_id, address, code)| async move {
+                s.get_abi_for(&code)
+                    .map(|abi| (chain_id, address, code, abi))
+            })
+            .buffer_unordered(10)
+            .filter_map(|x| async { x })
+            .collect::<Vec<_>>()
+            .await;
+
+        for (chain_id, address, code, abi) in contracts_with_code.into_iter() {
+            trace!(
+                "updating contract {chain_id} {address} with ABI: {}",
+                abi.name
+            );
+            db.insert_contract_with_abi(
+                chain_id,
+                address,
+                Some(&code),
+                Some(serde_json::to_string(&abi.abi)?),
+                Some(abi.name),
+                None,
+            )
+            .await?;
+            any_updates = true;
+        }
+
+        if any_updates {
+            ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
+        }
+
+        Ok(())
+    }
+}
+
+impl Actor for Worker {
+    type Mailbox = BoundedMailbox<Self>;
+
+    async fn on_start(
+        &mut self,
+        actor_ref: kameo::actor::ActorRef<Self>,
+    ) -> std::result::Result<(), BoxError> {
+        self.self_ref = Some(actor_ref.clone());
+
+        let debounced_watcher = new_debouncer(
+            Duration::from_millis(500),
+            None,
+            move |result: DebounceEventResult| match result {
+                Ok(events) => {
+                    actor_ref.tell(events);
+                }
+                Err(e) => tracing::warn!("watch error: {:?}", e),
+            },
+        )?;
+
+        self.watcher = Some(debounced_watcher);
+
+        Ok(())
+    }
+}
+
+impl Worker {
+    async fn scan_project(&mut self, root: &Path) -> Result<()> {
+        let pattern = root.join("out").join("**").join("*.json");
+        for path in glob(pattern.to_str().unwrap())?.filter_map(|p| p.ok()) {
+            if let Ok(abi) = path.clone().try_into() {
+                self.insert_abi(abi);
+            }
+        }
+
+        self.trigger_update_contracts().await;
 
         Ok(())
     }
@@ -150,6 +218,13 @@ impl Worker {
         Ok(())
     }
 
+    async fn trigger_update_contracts(&mut self) {
+        self.update_contracts_triggers += 1;
+        if let Some(r) = &self.self_ref {
+            let _ = r.tell(UpdateContracts).await;
+        }
+    }
+
     async fn update_foundry_roots(&mut self) -> Result<()> {
         let new_foundry_roots = self.find_foundry_roots().await?;
 
@@ -169,7 +244,7 @@ impl Worker {
         for path in to_add.iter() {
             self.scan_project(path).await?;
         }
-        let mut watcher = self.watcher.lock().await;
+        let watcher = self.watcher.as_mut().unwrap();
         for path in to_remove {
             watcher.unwatch(path.join("out"))?;
         }
@@ -228,80 +303,9 @@ impl Worker {
         Ok(res.collect())
     }
 
-    async fn process_debounced_events(
-        &mut self,
-        debounced_events: Vec<DebouncedEvent>,
-    ) -> Result<()> {
-        trace!("process_debounced_events");
-        for debounced in debounced_events.into_iter() {
-            let path = debounced.event.paths[0].clone();
-            match debounced.event.try_into() {
-                Ok(abi) => self.insert_abi(abi),
-                Err(_) => self.remove_abi(&path),
-            }
-        }
-        Ok(())
-    }
-
-    async fn update_incomplete_contracts(&mut self) -> Result<()> {
-        trace!("update_incomplete_contracts");
-        let db = ethui_db::get();
-        let contracts = db.get_incomplete_contracts().await?;
-
-        let mut any_updates = false;
-
-        let s = &self;
-        trace!("{}", contracts.len());
-        let contracts_with_code = stream::iter(contracts)
-            .map(|(chain_id, address, code)| async move {
-                let code: Option<Bytes> = match code {
-                    Some(code) if code.len() > 0 => Some(code),
-                    _ => utils::get_code(chain_id, address).await.ok(),
-                };
-
-                code.map(|c| (chain_id, address, c))
-            })
-            .buffer_unordered(10)
-            .filter_map(|x| async { x })
-            .map(|(chain_id, address, code)| async move {
-                s.get_abi_for(&code)
-                    .map(|abi| (chain_id, address, code, abi))
-            })
-            .buffer_unordered(10)
-            .filter_map(|x| async { x })
-            .collect::<Vec<_>>()
-            .await;
-
-        trace!("{}", contracts_with_code.len());
-
-        for (chain_id, address, code, abi) in contracts_with_code.into_iter() {
-            trace!(
-                "updating contract {chain_id} {address} with ABI: {}",
-                abi.name
-            );
-            db.insert_contract_with_abi(
-                chain_id,
-                address,
-                Some(&code),
-                Some(serde_json::to_string(&abi.abi)?),
-                Some(abi.name),
-                None,
-            )
-            .await?;
-            any_updates = true;
-        }
-
-        if any_updates {
-            ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
-        }
-
-        Ok(())
-    }
-
     fn insert_abi(&mut self, abi: ForgeAbi) {
-        trace!("insert abi {:?}", abi.path);
         self.abis_by_path.insert(abi.path.clone(), abi);
-        self.new_abis_notifier.notify_one();
+        self.has_new_abis = true;
     }
 
     /// removes a previously known ABI by their path
@@ -329,8 +333,7 @@ mod tests {
     pub async fn find_forge_tomls() -> Result<()> {
         let dir = create_fixture_directories()?;
 
-        let (_snd, rcv) = tokio::sync::mpsc::channel(10);
-        let mut root_path_watcher = Worker::new(rcv)?;
+        let mut root_path_watcher = Worker::default();
         root_path_watcher.add_path(dir.path().to_path_buf()).await?;
 
         let paths = root_path_watcher.find_foundry_roots().await?;

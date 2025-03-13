@@ -1,15 +1,18 @@
 use ethui_broadcast::InternalMsg;
 use ethui_settings::Settings;
 use ethui_types::GlobalState;
+use kameo::actor::ActorRef;
 
-use crate::worker::{Handle, Worker};
+use crate::actor::{Msg, Worker};
 
 pub async fn init() -> crate::Result<()> {
-    let handle = Worker::spawn().unwrap();
+    let handle = kameo::spawn(Worker::default());
     let settings = Settings::read().await;
 
     if let Some(ref path) = settings.inner.abi_watch_path {
-        handle.update_roots(vec![path.clone().into()]).await?;
+        handle
+            .tell(Msg::UpdateRoots(vec![path.clone().into()]))
+            .await?;
     }
 
     tokio::spawn(async move { receiver(handle).await });
@@ -19,7 +22,7 @@ pub async fn init() -> crate::Result<()> {
 
 /// Will listen for new ABI updates, and poll the database for new contracts
 /// the work itself is debounced with a 500ms delay, to batch together multiple updates
-async fn receiver(handle: Handle) -> ! {
+async fn receiver(handle: ActorRef<Worker>) -> ! {
     let mut rx = ethui_broadcast::subscribe_internal().await;
 
     loop {
@@ -29,12 +32,15 @@ async fn receiver(handle: Handle) -> ! {
                     let settings = Settings::read().await;
                     if let Some(ref path) = settings.inner.abi_watch_path {
                         // TODO: support multiple
-                        let _ = handle.update_roots(vec![path.clone().into()]).await;
+                        handle
+                            .tell(Msg::UpdateRoots(vec![path.clone().into()]))
+                            .await
+                            .unwrap();
                     }
                 }
 
                 InternalMsg::ContractFound => {
-                    handle.contract_found().await.unwrap();
+                    handle.tell(Msg::NewContract).await.unwrap();
                 }
                 _ => (),
             }
