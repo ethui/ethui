@@ -568,7 +568,7 @@ dependencies = [
  "alloy-rlp",
  "alloy-serde",
  "alloy-sol-types",
- "itertools 0.13.0",
+ "itertools 0.14.0",
  "serde",
  "serde_json",
  "thiserror 2.0.12",
@@ -3025,6 +3025,7 @@ dependencies = [
  "ethui-wallets",
  "ethui-ws",
  "fix-path-env",
+ "kameo",
  "named-lock",
  "serde",
  "serde_json",
@@ -3150,6 +3151,7 @@ name = "ethui-forge"
 version = "1.13.0"
 dependencies = [
  "alloy",
+ "anyhow",
  "ethui-broadcast",
  "ethui-db",
  "ethui-networks",
@@ -3157,11 +3159,13 @@ dependencies = [
  "ethui-types",
  "futures",
  "glob",
+ "kameo",
  "notify",
- "once_cell",
+ "notify-debouncer-full",
  "regex",
  "serde",
  "serde_json",
+ "tempfile",
  "thiserror 2.0.12",
  "tokio",
  "tracing",
@@ -3480,6 +3484,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "file-id"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6bc904b9bbefcadbd8e3a9fb0d464a9b979de6324c03b3c663e8994f46a5be36"
+dependencies = [
+ "windows-sys 0.52.0",
+]
+
+[[package]]
 name = "filetime"
 version = "0.2.25"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3787,7 +3800,7 @@ dependencies = [
  "foundry-compilers-core",
  "futures-util",
  "home",
- "itertools 0.13.0",
+ "itertools 0.14.0",
  "md-5",
  "path-slash",
  "rayon",
@@ -5471,6 +5484,35 @@ dependencies = [
 ]
 
 [[package]]
+name = "kameo"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c1542e1113415cdfd5dac5f663cb69f6be472cff28e90adf6e284e520e399312"
+dependencies = [
+ "dyn-clone",
+ "futures",
+ "kameo_macros",
+ "once_cell",
+ "serde",
+ "tokio",
+ "tokio-stream",
+ "tracing",
+]
+
+[[package]]
+name = "kameo_macros"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8d7adf8a6a19b8582095d1819f4e992817f7dce2b85cd205b6386f9079a2cc81"
+dependencies = [
+ "heck 0.5.0",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.87",
+ "uuid 1.11.0",
+]
+
+[[package]]
 name = "keccak"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5972,6 +6014,19 @@ dependencies = [
  "notify-types",
  "walkdir",
  "windows-sys 0.59.0",
+]
+
+[[package]]
+name = "notify-debouncer-full"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d2d88b1a7538054351c8258338df7c931a590513fb3745e8c15eb9ff4199b8d1"
+dependencies = [
+ "file-id",
+ "log",
+ "notify",
+ "notify-types",
+ "walkdir",
 ]
 
 [[package]]
@@ -8565,7 +8620,7 @@ dependencies = [
  "const-hex",
  "derive_builder",
  "dunce",
- "itertools 0.10.5",
+ "itertools 0.14.0",
  "itoa 1.0.11",
  "lasso",
  "match_cfg",
@@ -8576,7 +8631,7 @@ dependencies = [
  "solar-config",
  "solar-data-structures",
  "solar-macros",
- "thiserror 1.0.69",
+ "thiserror 2.0.12",
  "tracing",
  "unicode-width 0.2.0",
 ]
@@ -8601,7 +8656,7 @@ dependencies = [
  "alloy-primitives",
  "bitflags 2.8.0",
  "bumpalo",
- "itertools 0.10.5",
+ "itertools 0.14.0",
  "memchr",
  "num-bigint",
  "num-rational",
@@ -9630,6 +9685,7 @@ dependencies = [
  "signal-hook-registry",
  "socket2",
  "tokio-macros",
+ "tracing",
  "windows-sys 0.52.0",
 ]
 

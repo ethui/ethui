@@ -1,75 +1,46 @@
-use std::{path::PathBuf, time::Duration};
-
 use ethui_broadcast::InternalMsg;
 use ethui_settings::Settings;
 use ethui_types::GlobalState;
-use once_cell::sync::Lazy;
-use tokio::{sync::RwLock, time};
+use kameo::actor::ActorRef;
 
-use crate::{manager::Forge, utils};
-
-pub(crate) static FORGE: Lazy<RwLock<Forge>> = Lazy::new(Default::default);
+use crate::actor::{Msg, Worker};
 
 pub async fn init() -> crate::Result<()> {
-    tokio::spawn(async { receiver().await });
-    tokio::spawn(async { worker().await });
-
+    let handle = kameo::spawn(Worker::default());
     let settings = Settings::read().await;
-    let mut forge = FORGE.write().await;
 
     if let Some(ref path) = settings.inner.abi_watch_path {
-        forge.watch(path.clone().into()).await?;
+        handle
+            .tell(Msg::UpdateRoots(vec![path.clone().into()]))
+            .await?;
     }
+
+    tokio::spawn(async move { receiver(handle).await });
 
     Ok(())
 }
 
-async fn receiver() -> ! {
-    let mut rx = ethui_broadcast::subscribe_internal().await;
-
-    loop {
-        if let Ok(msg) = rx.recv().await {
-            use InternalMsg::*;
-
-            if let SettingsUpdated = msg {
-                let settings = Settings::read().await;
-                let mut forge = FORGE.write().await;
-
-                let new_path: Option<PathBuf> =
-                    settings.inner.abi_watch_path.clone().map(Into::into);
-
-                // if path didn't change, skip
-                if forge.watch_path == new_path {
-                    continue;
-                }
-
-                if let Some(path) = new_path.clone() {
-                    let _ = forge.watch(path).await;
-                } else {
-                    let _ = forge.unwatch().await;
-                }
-            }
-        }
-    }
-}
-
 /// Will listen for new ABI updates, and poll the database for new contracts
 /// the work itself is debounced with a 500ms delay, to batch together multiple updates
-async fn worker() -> ! {
+async fn receiver(handle: ActorRef<Worker>) -> ! {
     let mut rx = ethui_broadcast::subscribe_internal().await;
 
     loop {
         if let Ok(msg) = rx.recv().await {
-            use InternalMsg::*;
-
-            // trigger an update
             match msg {
-                ForgeAbiFound | ContractFound => {
-                    // debounce, if there are other messages in the queue, we don't actually care
-                    // about them since they'll just trigger a repeated call here
-                    rx.resubscribe();
-                    utils::update_db_contracts().await.unwrap();
-                    time::sleep(Duration::from_secs(1)).await;
+                InternalMsg::SettingsUpdated => {
+                    let settings = Settings::read().await;
+                    if let Some(ref path) = settings.inner.abi_watch_path {
+                        // TODO: support multiple
+                        handle
+                            .tell(Msg::UpdateRoots(vec![path.clone().into()]))
+                            .await
+                            .unwrap();
+                    }
+                }
+
+                InternalMsg::ContractFound => {
+                    handle.tell(Msg::NewContract).await.unwrap();
                 }
                 _ => (),
             }

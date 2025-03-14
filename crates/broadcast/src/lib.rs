@@ -30,7 +30,6 @@ pub enum InternalMsg {
     FetchFullTxSync(u32, B256, Arc<Mutex<Option<oneshot::Sender<()>>>>),
     FetchERC20Metadata(u32, Address),
 
-    ForgeAbiFound,
     ContractFound,
 }
 
@@ -116,10 +115,6 @@ mod internal_msgs {
 
     pub async fn peer_added() {
         send(PeerAdded).await;
-    }
-
-    pub async fn forge_abi_found() {
-        send(ForgeAbiFound).await;
     }
 
     pub async fn contract_found() {
