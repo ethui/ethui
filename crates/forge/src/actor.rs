@@ -9,7 +9,7 @@ use notify::{RecommendedWatcher, RecursiveMode};
 use notify_debouncer_full::{
     new_debouncer, DebounceEventResult, DebouncedEvent, Debouncer, RecommendedCache,
 };
-use tracing::{instrument, trace};
+use tracing::{instrument, trace, warn};
 
 use crate::{abi::ForgeAbi, error::Result, utils};
 use std::{
@@ -249,12 +249,20 @@ impl Worker {
         for path in to_add.iter() {
             self.scan_project(path).await?;
         }
-        let watcher = self.watcher.as_mut().unwrap();
-        for path in to_remove {
-            watcher.unwatch(path.join("out"))?;
-        }
-        for path in to_add {
-            watcher.watch(path.join("out"), RecursiveMode::Recursive)?;
+
+        match self.watcher.as_mut() {
+            Some(watcher) => {
+                for path in to_remove {
+                    watcher.unwatch(path.join("out"))?;
+                }
+                for path in to_add {
+                    watcher.watch(path.join("out"), RecursiveMode::Recursive)?;
+                }
+            }
+
+            None => {
+                warn!("forge watcher not initialized");
+            }
         }
 
         Ok(())
@@ -345,10 +353,10 @@ mod tests {
     pub async fn find_forge_tomls() -> Result<()> {
         let dir = create_fixture_directories()?;
 
-        let mut root_path_watcher = Worker::default();
-        root_path_watcher.add_path(dir.path().to_path_buf()).await?;
+        let mut actor = Worker::default();
+        actor.add_path(dir.path().to_path_buf()).await?;
 
-        let paths = root_path_watcher.find_foundry_roots().await?;
+        let paths = actor.find_foundry_roots().await?;
 
         assert_eq!(paths.len(), 3);
         paths
