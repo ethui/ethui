@@ -25,11 +25,11 @@ interface Props {
 
 type Result =
   | {
-      write: Hash;
-    }
+    write: Hash;
+  }
   | {
-      read: string;
-    };
+    read: string;
+  };
 
 interface Option {
   item: AbiFunction | "raw" | "rawCall";
