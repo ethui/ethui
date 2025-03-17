@@ -86,7 +86,7 @@ impl<'a> SignMessage<'a> {
 #[derive(Serialize)]
 enum Data {
     Raw(String),
-    Typed(TypedData),
+    Typed(Box<TypedData>),
 }
 
 #[derive(Default)]
@@ -119,7 +119,7 @@ impl<'a> SignMessageBuilder<'a> {
     }
 
     pub fn set_typed_data(mut self, data: TypedData) -> SignMessageBuilder<'a> {
-        self.data = Some(Data::Typed(data));
+        self.data = Some(Data::Typed(Box::new(data)));
         self
     }
 
