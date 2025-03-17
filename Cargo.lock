@@ -3107,7 +3107,7 @@ dependencies = [
  "ethui-broadcast",
  "ethui-settings",
  "ethui-types",
- "foundry-block-explorers 0.9.0",
+ "foundry-block-explorers",
  "once_cell",
  "serde",
  "serde_json",
@@ -3233,7 +3233,7 @@ dependencies = [
  "ethui-broadcast",
  "ethui-tracing",
  "ethui-types",
- "foundry-block-explorers 0.9.0",
+ "foundry-block-explorers",
  "once_cell",
  "serde",
  "serde-constant",
@@ -3622,23 +3622,6 @@ dependencies = [
 
 [[package]]
 name = "foundry-block-explorers"
-version = "0.9.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0faa449506113b4969029da2ac1df3a1b3201bf10c99a4a8e6d684977b80c938"
-dependencies = [
- "alloy-chains",
- "alloy-json-abi",
- "alloy-primitives",
- "reqwest",
- "semver 1.0.23",
- "serde",
- "serde_json",
- "thiserror 1.0.69",
- "tracing",
-]
-
-[[package]]
-name = "foundry-block-explorers"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0d7f2a3d90ff85c164c0eb05fdf19b22e68b9190b5449d1aa0eef8314c1874e9"
@@ -3744,7 +3727,7 @@ dependencies = [
  "comfy-table",
  "dunce",
  "eyre",
- "foundry-block-explorers 0.11.0",
+ "foundry-block-explorers",
  "foundry-common-fmt",
  "foundry-compilers",
  "foundry-config",
@@ -3899,7 +3882,7 @@ dependencies = [
  "dunce",
  "eyre",
  "figment",
- "foundry-block-explorers 0.11.0",
+ "foundry-block-explorers",
  "foundry-compilers",
  "glob",
  "globset",
@@ -4049,7 +4032,7 @@ dependencies = [
  "alloy-primitives",
  "alloy-sol-types",
  "eyre",
- "foundry-block-explorers 0.11.0",
+ "foundry-block-explorers",
  "foundry-common",
  "foundry-compilers",
  "foundry-config",
@@ -6177,7 +6160,7 @@ version = "0.7.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "af1844ef2428cc3e1cb900be36181049ef3d3193c63e43026cfe202983b27a56"
 dependencies = [
- "proc-macro-crate 3.2.0",
+ "proc-macro-crate 1.3.1",
  "proc-macro2",
  "quote",
  "syn 2.0.87",
@@ -10735,7 +10718,7 @@ version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf221c93e13a30d793f7645a0e7762c55d169dbb0a49671918a2319d289b10bb"
 dependencies = [
- "windows-sys 0.59.0",
+ "windows-sys 0.48.0",
 ]
 
 [[package]]
