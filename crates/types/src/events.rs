@@ -8,7 +8,7 @@ use crate::{Address, B256};
 
 #[derive(Debug)]
 pub enum Event {
-    Tx(Tx),
+    Tx(Box<Tx>),
     ContractDeployed(ContractDeployed),
     ERC20Transfer(ERC20Transfer),
     ERC721Transfer(ERC721Transfer),
@@ -74,7 +74,7 @@ impl From<ContractDeployed> for Event {
 
 impl From<Tx> for Event {
     fn from(value: Tx) -> Self {
-        Self::Tx(value)
+        Self::Tx(Box::new(value))
     }
 }
 
