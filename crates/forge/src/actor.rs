@@ -1,3 +1,9 @@
+use std::{
+    collections::{BTreeMap, HashSet},
+    path::{Path, PathBuf},
+    time::Duration,
+};
+
 use alloy::primitives::Bytes;
 use ethui_types::UINotify;
 use futures::{stream, StreamExt as _};
@@ -12,11 +18,6 @@ use notify_debouncer_full::{
 use tracing::{instrument, trace, warn};
 
 use crate::{abi::ForgeAbi, error::Result, utils};
-use std::{
-    collections::{BTreeMap, HashSet},
-    path::{Path, PathBuf},
-    time::Duration,
-};
 
 #[derive(Default)]
 pub struct Worker {
@@ -110,7 +111,7 @@ impl Message<UpdateContracts> for Worker {
         let contracts_with_code = stream::iter(contracts)
             .map(|(chain_id, address, code)| async move {
                 let code: Option<Bytes> = match code {
-                    Some(code) if code.len() > 0 => Some(code),
+                    Some(code) if !code.is_empty() => Some(code),
                     _ => utils::get_code(chain_id, address).await.ok(),
                 };
 
@@ -343,11 +344,12 @@ impl Worker {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use std::fs;
 
     use anyhow::Result;
     use tempfile::TempDir;
+
+    use super::*;
 
     #[tokio::test]
     pub async fn find_forge_tomls() -> Result<()> {
