@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": " INSERT INTO contracts (address, chain_id, dedup_id, code, abi, name, proxy_for)\n                VALUES (?,?,?,?,?,?,?)\n                ON CONFLICT(address, chain_id, dedup_id) DO UPDATE SET name=?, abi=?, code=?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 10
+    },
+    "nullable": []
+  },
+  "hash": "a4dc7c9c9a2013301709d57435722562e902fb73f2164e2e49d5df71a7b3db0d"
+}

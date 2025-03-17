@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": " INSERT INTO contracts (address, chain_id, dedup_id, proxied_by)\n                VALUES (?,?,?,?)\n                ON CONFLICT(address, chain_id, dedup_id) DO UPDATE SET proxied_by=?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": []
+  },
+  "hash": "e103950889bc683dcbf6d2ad725c1e1df5643fbb48b07d397a3f87721e950486"
+}

@@ -123,6 +123,14 @@ impl Networks {
             .cloned()
     }
 
+    pub fn get_network_by_dedup_chain_id(&self, dedup_chain_id: DedupChainId) -> Option<Network> {
+        self.inner
+            .networks
+            .values()
+            .find(|n| n.dedup_chain_id == dedup_chain_id)
+            .cloned()
+    }
+
     pub async fn add_network(&mut self, network: NewNetworkParams) -> Result<()> {
         // TODO: need to ensure uniqueness by name, not chain id
         if self.validate_chain_id(network.dedup_chain_id.chain_id()) {

@@ -4,20 +4,20 @@ import type { Address } from "viem";
 import { type StateCreator, create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import type { Contract } from "@ethui/types";
+import type { Contract, DedupChainId } from "@ethui/types";
 import { toast } from "@ethui/ui/hooks/use-toast";
 import { useNetworks } from "./useNetworks";
 
 interface State {
-  chainId?: number;
+  dedupChainId?: DedupChainId;
   contracts: Contract[];
 }
 
 interface Setters {
   reload: () => Promise<void>;
-  add: (chainId: number, address: Address) => Promise<void>;
+  add: (chainId: number, dedupId: number, address: Address) => Promise<void>;
   removeContract: (chainId: number, address: Address) => Promise<void>;
-  setChainId: (chainId?: number) => void;
+  setChainId: (dedupChainId?: DedupChainId) => void;
   filteredContracts: (filter: string) => Contract[];
 }
 
@@ -27,12 +27,18 @@ const store: StateCreator<Store> = (set, get) => ({
   contracts: [],
 
   async reload() {
-    const { chainId } = get();
-    if (!chainId) return;
+    const { dedupChainId } = get();
+    if (!dedupChainId) return;
+
+    const is_anvil_network = await invoke<boolean>("networks_is_dev", {
+      dedupChainId,
+    });
 
     const contracts = await invoke<Contract[]>("db_get_contracts", {
-      chainId,
+      chainId: dedupChainId.chain_id,
+      dedupId: is_anvil_network ? dedupChainId.dedup_id : -1,
     });
+
     const contractsWithAlias = await Promise.all(
       contracts.map(async (c) => {
         const alias = await invoke<string | undefined>("settings_get_alias", {
@@ -60,10 +66,20 @@ const store: StateCreator<Store> = (set, get) => ({
     set({ contracts: filteredContractsAndProxiesWithAlias });
   },
 
-  add: async (chainId: number, address: Address) => {
+  add: async (chainId: number, dedupId: number, address: Address) => {
     try {
+      const dedupChainId: DedupChainId = {
+        chain_id: chainId,
+        dedup_id: dedupId,
+      };
+
+      const is_anvil_network = await invoke<boolean>("networks_is_dev", {
+        dedupChainId,
+      });
+
       await invoke("add_contract", {
         chainId: Number(chainId),
+        dedupId: is_anvil_network ? Number(dedupId) : -1,
         address,
       });
     } catch (err: any) {
@@ -108,8 +124,8 @@ const store: StateCreator<Store> = (set, get) => ({
     );
   },
 
-  setChainId(chainId) {
-    set({ chainId });
+  setChainId(dedupChainId) {
+    set({ dedupChainId });
     get().reload();
   },
 });
@@ -121,7 +137,7 @@ event.listen("contracts-updated", async () => {
 });
 
 useNetworks.subscribe(
-  (s) => s.current?.dedup_chain_id.chain_id,
-  (chainId) => useContracts.getState().setChainId(chainId),
+  (s) => s.current?.dedup_chain_id,
+  (dedupChainId) => useContracts.getState().setChainId(dedupChainId),
   { fireImmediately: true },
 );
