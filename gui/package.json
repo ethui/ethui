@@ -21,7 +21,7 @@
     "@fontsource/source-code-pro": "^5.2.5",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-collapsible": "^1.1.3",
-    "@tanstack/react-query": "^5.67.1",
+    "@tanstack/react-query": "^5.68.0",
     "@tanstack/react-router": "^1.114.12",
     "@tanstack/router-devtools": "^1.114.13",
     "@tauri-apps/api": "2.3.0",
