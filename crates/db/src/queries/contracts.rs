@@ -7,12 +7,11 @@ use tracing::instrument;
 use crate::{DbInner, Error, Result};
 
 impl DbInner {
-    pub async fn get_contracts(&self, chain_id: u32) -> Result<Vec<Contract>> {
+    pub async fn get_contracts(&self, chain_id: u32, dedup_id: i32) -> Result<Vec<Contract>> {
         let rows = sqlx::query!(
-            r#"SELECT address, name, proxy_for, proxied_by FROM contracts WHERE chain_id = ?"#,
-            chain_id
-        )
-        .fetch_all(self.pool())
+            r#"SELECT address, name, proxy_for, proxied_by FROM contracts WHERE chain_id = ? AND dedup_id = ?"#,
+            chain_id, dedup_id
+        ).fetch_all(self.pool())
         .await?;
 
         Ok(rows
@@ -20,6 +19,7 @@ impl DbInner {
             .map(|r| Contract {
                 address: Address::from_str(&r.address).unwrap(),
                 chain_id,
+                dedup_id,
                 name: r.name,
                 proxy_for: r.proxy_for.map(|p| Address::from_str(&p).unwrap()),
                 proxied_by: r.proxied_by.map(|p| Address::from_str(&p).unwrap()),
@@ -30,15 +30,16 @@ impl DbInner {
     pub async fn get_contract(
         &self,
         chain_id: u32,
+        dedup_id: i32,
         address: Address,
     ) -> Result<Option<ContractWithAbi>> {
         let address = format!("0x{:x}", address);
-
         let res = sqlx::query!(
             r#" SELECT abi, name, address
                 FROM contracts
-                WHERE chain_id = ? AND address = ? "#,
+                WHERE chain_id = ? AND dedup_id = ? AND address = ? "#,
             chain_id,
+            dedup_id,
             address
         )
         .fetch_one(self.pool())
@@ -49,6 +50,7 @@ impl DbInner {
             Some(abi) => Ok(Some(ContractWithAbi {
                 abi: serde_json::from_str(&abi).unwrap_or_default(),
                 chain_id,
+                dedup_id,
                 name: res.name,
                 address: Address::from_str(&res.address).unwrap(),
             })),
@@ -78,6 +80,7 @@ impl DbInner {
     pub async fn insert_contract_with_abi(
         &self,
         chain_id: u32,
+        dedup_id: i32,
         address: Address,
         code: Option<&Bytes>,
         abi: Option<String>,
@@ -89,11 +92,12 @@ impl DbInner {
         let code = code.map(|c| format!("0x{:x}", c));
 
         sqlx::query!(
-            r#" INSERT INTO contracts (address, chain_id, code, abi, name, proxy_for)
-                VALUES (?,?,?,?,?,?)
-                ON CONFLICT(address, chain_id) DO UPDATE SET name=?, abi=?, code=?"#,
+            r#" INSERT INTO contracts (address, chain_id, dedup_id, code, abi, name, proxy_for)
+                VALUES (?,?,?,?,?,?,?)
+                ON CONFLICT(address, chain_id, dedup_id) DO UPDATE SET name=?, abi=?, code=?"#,
             address,
             chain_id,
+            dedup_id,
             code,
             abi,
             name,
@@ -107,11 +111,12 @@ impl DbInner {
 
         if let Some(proxy_for) = proxy_for {
             sqlx::query!(
-                r#" INSERT INTO contracts (address, chain_id, proxied_by)
-                VALUES (?,?,?)
-                ON CONFLICT(address, chain_id) DO UPDATE SET proxied_by=?"#,
+                r#" INSERT INTO contracts (address, chain_id, dedup_id, proxied_by)
+                VALUES (?,?,?,?)
+                ON CONFLICT(address, chain_id, dedup_id) DO UPDATE SET proxied_by=?"#,
                 proxy_for,
                 chain_id,
+                dedup_id,
                 address,
                 address
             )
@@ -122,9 +127,11 @@ impl DbInner {
         Ok(())
     }
 
-    pub async fn get_incomplete_contracts(&self) -> Result<Vec<(u32, Address, Option<Bytes>)>> {
+    pub async fn get_incomplete_contracts(
+        &self,
+    ) -> Result<Vec<((u32, i32), Address, Option<Bytes>)>> {
         let rows = sqlx::query!(
-            r#"SELECT address, chain_id, code FROM contracts WHERE name IS NULL or ABI IS NULL"#,
+            r#"SELECT address, chain_id, dedup_id, code FROM contracts WHERE name IS NULL or ABI IS NULL"#,
         )
         .fetch_all(self.pool())
         .await?;
@@ -133,7 +140,7 @@ impl DbInner {
             .into_iter()
             .map(|r| {
                 (
-                    r.chain_id as u32,
+                    (r.chain_id as u32, r.dedup_id.unwrap() as i32),
                     Address::from_str(&r.address).unwrap(),
                     r.code
                         .map(|c| Bytes::from_str(c.trim_start_matches("0x")).unwrap()),
