@@ -15,6 +15,7 @@ import { useNetworks } from "#/store/useNetworks";
 import { AddressView } from "./AddressView";
 import { IconAddress } from "./Icons/Address";
 import { TransferForm } from "./TransferForm";
+import { Link } from "@tanstack/react-router";
 
 interface Props {
   chainId: number;
@@ -67,12 +68,10 @@ export function ERC20View({
       </div>
 
       <div className="flex">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setTransferFormOpen(true)}
-        >
-          <ArrowTopRightIcon />
+        <Button variant="ghost" size="icon" asChild>
+          <Link to="/home/transfer/erc20" search={{ contract }}>
+            <ArrowTopRightIcon />
+          </Link>
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
