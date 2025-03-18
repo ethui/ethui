@@ -126,6 +126,7 @@ function RouteComponent() {
     setDecimals(currentToken?.decimals);
   }, [currentToken]);
 
+  // redirect if ETH is detected
   useEffect(() => {
     if (currentToken?.contract === ZeroAddress) {
       navigate({ to: "/home/transfer/native" });
@@ -135,9 +136,12 @@ function RouteComponent() {
   if (!network || !address || !currentToken) return null;
 
   const onSubmit = async (data: FieldValues) => {
-    const { contract } = currentToken;
-    const { to, value } = data;
-    const hash = await transferERC20(address, to, value, contract);
+    const hash = await transferERC20(
+      address,
+      data.to,
+      data.value,
+      currentToken.contract,
+    );
     setResult(hash);
   };
 
