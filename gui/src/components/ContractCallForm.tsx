@@ -11,8 +11,15 @@ import debounce from "lodash-es/debounce";
 import { type FormEvent, useCallback, useEffect, useState } from "react";
 import { type Address, type Hash, decodeFunctionResult } from "viem";
 
+import type { Result } from "@ethui/types";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@ethui/ui/components/shadcn/alert";
 import { Input } from "@ethui/ui/components/shadcn/input";
 import { invoke } from "@tauri-apps/api/core";
+import { CircleCheck } from "lucide-react";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useWallets } from "#/store/useWallets";
 import { AddressView } from "./AddressView";
@@ -23,13 +30,9 @@ interface Props {
   address: Address;
 }
 
-type Result =
-  | {
-      write: Hash;
-    }
-  | {
-      read: string;
-    };
+type WriteCall = { write: Hash };
+type ReadCall = { read: string };
+type CallResult = WriteCall | ReadCall;
 
 interface Option {
   item: AbiFunction | "raw" | "rawCall";
@@ -91,7 +94,7 @@ function AbiItemFormWithSubmit({
   address,
   chainId,
 }: AbiItemFormWithSubmitProps) {
-  const [result, setResult] = useState<Result>();
+  const [result, setResult] = useState<Result<CallResult, string>>();
   const [value, setValue] = useState<bigint | undefined>();
   const [data, setData] = useState<`0x${string}` | undefined>();
   const [loading, setLoading] = useState(false);
@@ -129,23 +132,26 @@ function AbiItemFormWithSubmit({
 
       switch (typeof result) {
         case "bigint":
-          setResult({ read: (result as bigint).toString() });
+          setResult({
+            ok: true,
+            value: { read: (result as bigint).toString() },
+          });
           break;
         case "string":
-          setResult({ read: result });
+          setResult({ ok: true, value: { read: result } });
           break;
         default:
-          setResult({ read: JSON.stringify(result) });
+          setResult({ ok: true, value: { read: JSON.stringify(result) } });
           break;
       }
     } else {
       try {
         if (item === "rawCall") {
           const result = await invoke<Hash>("rpc_eth_call", { params });
-          setResult({ read: result });
+          setResult({ ok: true, value: { read: result } });
         } else {
           const result = await invoke<Hash>("rpc_send_transaction", { params });
-          setResult({ write: result });
+          setResult({ ok: true, value: { write: result } });
         }
       } catch (_err) {
         setLoading(false);
@@ -171,10 +177,28 @@ function AbiItemFormWithSubmit({
         </Button>
       </form>
 
-      {result && "read" in result && (
-        <span className="font-mono">{result.read.toString()}</span>
+      {result?.ok && (
+        <Alert className="w-full" variant="success">
+          <CircleCheck className="h-4 w-4" />
+          <AlertTitle>Success</AlertTitle>
+          <AlertDescription className="break-all">
+            {"read" in result.value && result.value.read.toString()}
+            {"write" in result.value && (
+              <HashView truncate={false} hash={result.value.write} />
+            )}
+          </AlertDescription>
+        </Alert>
       )}
-      {result && "write" in result && <HashView hash={result.write} />}
+
+      {result && !result.ok && (
+        <Alert className="w-full" variant="destructive">
+          <CircleCheck className="h-4 w-4" />
+          <AlertTitle>Failed</AlertTitle>
+          <AlertDescription className="break-all">
+            {result.error}
+          </AlertDescription>
+        </Alert>
+      )}
     </div>
   );
 }

@@ -172,12 +172,14 @@ interface IconProps {
 }
 
 function Icon({ account, tx }: IconProps) {
+  const className = tx.status === 1 ? "stroke-success" : "stroke-destructive";
+
   if (!tx.to) {
-    return <ReceiptText size={15} />;
+    return <ReceiptText size={15} className={className} />;
   } else if (tx.to.toLowerCase() === account.toLowerCase()) {
-    return <MoveDownLeft size={15} />;
+    return <MoveDownLeft size={15} className={className} />;
   } else {
-    return <MoveUpRight size={15} />;
+    return <MoveUpRight size={15} className={className} />;
   }
 }
 

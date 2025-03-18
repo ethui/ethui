@@ -23,6 +23,7 @@ import { useBalances } from "#/store/useBalances";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
 
+import type { Result } from "@ethui/types";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { Terminal } from "lucide-react";
 import type { Token } from "./-common";
@@ -58,7 +59,7 @@ function RouteComponent() {
       return { native: s.nativeBalance, erc20s: s.erc20Balances };
     }),
   );
-  const [result, setResult] = useState<string | null>(null);
+  const [result, setResult] = useState<Result<string, string> | undefined>();
   const [decimals, setDecimals] = useState<number>();
 
   // map list of tokens
@@ -126,13 +127,17 @@ function RouteComponent() {
   if (!network || !address || !currentToken) return null;
 
   const onSubmit = async (data: FieldValues) => {
-    const hash = await transferERC20(
-      address,
-      data.to,
-      data.value,
-      currentToken.contract,
-    );
-    setResult(hash);
+    try {
+      const hash = await transferERC20(
+        address,
+        data.to,
+        data.value,
+        currentToken.contract,
+      );
+      setResult({ ok: true, value: hash });
+    } catch (e: any) {
+      setResult({ ok: false, error: e.toString() });
+    }
   };
 
   return (
@@ -150,12 +155,22 @@ function RouteComponent() {
       <Form.Text label="To" name="to" className="w-full" />
       <Form.Text label="Amount" name="value" className="w-full" />
 
-      {form.formState.isSubmitted && result && (
-        <Alert className="w-full">
+      {form.formState.isSubmitted && result?.ok && (
+        <Alert className="w-full" variant="success">
           <Terminal className="h-4 w-4" />
           <AlertTitle>Transaction sent!</AlertTitle>
-          <AlertDescription className="max-w-full overflow-hidden break-all">
-            {result}
+          <AlertDescription className="break-all">
+            {result.value}
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {form.formState.isSubmitted && result && !result.ok && (
+        <Alert className="w-full" variant="destructive">
+          <Terminal className="h-4 w-4" />
+          <AlertTitle>Transaction sent!</AlertTitle>
+          <AlertDescription className="break-all">
+            {result.error}
           </AlertDescription>
         </Alert>
       )}
