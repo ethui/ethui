@@ -3,28 +3,16 @@ import { invoke } from "@tauri-apps/api/core";
 import { type StateCreator, create } from "zustand";
 
 import type { GeneralSettings } from "@ethui/types/settings";
-import type { Action } from "#/components/CommandBar";
 
 interface Store {
   mode: "auto" | "light" | "dark";
-  actions: Action[];
 
   reload: () => Promise<void>;
   changeMode: (mode: "auto" | "light" | "dark") => void;
 }
 
-const actionId = "themeMode";
-
 const store: StateCreator<Store> = (set, get) => ({
   mode: "auto",
-
-  actions: [
-    ...(["auto", "dark", "light"] as const).map((mode) => ({
-      id: `${actionId}/${mode}`,
-      text: `${mode}`,
-      run: () => get().changeMode(mode),
-    })),
-  ],
 
   async reload() {
     const { darkMode } = await invoke<GeneralSettings>("settings_get");
