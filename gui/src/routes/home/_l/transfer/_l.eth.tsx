@@ -10,45 +10,29 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
-import {
-  type Address,
-  encodeFunctionData,
-  ethAddress,
-  formatUnits,
-  parseAbiItem,
-} from "viem";
+import { type Address, ethAddress, formatUnits } from "viem";
 import { z } from "zod";
 import { useShallow } from "zustand/shallow";
 import { useBalances } from "#/store/useBalances";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
 
-import { zodValidator } from "@tanstack/zod-adapter";
 import { Terminal } from "lucide-react";
 import type { Token } from "./-common";
 
 interface Params {
   chainId: string;
-  contract: string;
 }
 
-const searchSchema = z.object({
-  contract: z.string().optional(),
-});
-
-export const Route = createFileRoute("/home/_l/transfer/_l/erc20")({
-  beforeLoad: () => ({ breadcrumb: "ERC20" }),
-  validateSearch: zodValidator(searchSchema),
+export const Route = createFileRoute("/home/_l/transfer/_l/eth")({
+  beforeLoad: () => ({ breadcrumb: "ETH" }),
   loader: ({ params }: { params: Params }) => ({
     chainId: Number(params.chainId),
-    contract: params.contract,
   }),
-
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { contract } = Route.useSearch();
   const navigate = useNavigate();
 
   const network = useNetworks((s) => s.current);
@@ -104,7 +88,7 @@ function RouteComponent() {
     mode: "onChange",
     resolver: zodResolver(schema),
     defaultValues: {
-      currency: contract,
+      currency: ethAddress,
       value: 0n,
     },
   });
@@ -116,22 +100,20 @@ function RouteComponent() {
     setDecimals(currentToken?.decimals);
   }, [currentToken]);
 
-  // redirect if ETH is detected
+  // redirect if ERC20 is detected
   useEffect(() => {
-    if (currentToken?.contract === ethAddress) {
-      navigate({ to: "/home/transfer/eth" });
+    if (currentToken?.contract && currentToken?.contract !== ethAddress) {
+      navigate({
+        to: "/home/transfer/erc20",
+        search: { contract: currentToken.contract },
+      });
     }
   }, [currentToken, navigate]);
 
   if (!network || !address || !currentToken) return null;
 
   const onSubmit = async (data: FieldValues) => {
-    const hash = await transferERC20(
-      address,
-      data.to,
-      data.value,
-      currentToken.contract,
-    );
+    const hash = await transferETH(address, data.to, data.value);
     setResult(hash);
   };
 
@@ -167,24 +149,12 @@ function RouteComponent() {
   );
 }
 
-const transferERC20 = async (
-  from: Address,
-  to: Address,
-  value: bigint,
-  contract: Address,
-) => {
-  const data = encodeFunctionData({
-    abi: [
-      parseAbiItem("function transfer(address to, uint amount) returns (bool)"),
-    ],
-    args: [to, value],
-  });
-
+const transferETH = async (from: Address, to: Address, value: bigint) => {
   return await invoke<`0x${string}`>("rpc_send_transaction", {
     params: {
       from,
-      to: contract,
-      data,
+      to,
+      value,
     },
   });
 };

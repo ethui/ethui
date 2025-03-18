@@ -5,17 +5,14 @@ import {
   DropdownMenuTrigger,
 } from "@ethui/ui/components/shadcn/dropdown-menu";
 import { invoke } from "@tauri-apps/api/core";
-import { useState } from "react";
 import { type Address, formatUnits } from "viem";
 
 import { Button } from "@ethui/ui/components/shadcn/button";
-import { Dialog, DialogContent } from "@ethui/ui/components/shadcn/dialog";
 import { ArrowTopRightIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
+import { Link } from "@tanstack/react-router";
 import { useNetworks } from "#/store/useNetworks";
 import { AddressView } from "./AddressView";
 import { IconAddress } from "./Icons/Address";
-import { TransferForm } from "./TransferForm";
-import { Link } from "@tanstack/react-router";
 
 interface Props {
   chainId: number;
@@ -34,7 +31,6 @@ export function ERC20View({
   balance,
   decimals,
 }: Props) {
-  const [transferFormOpen, setTransferFormOpen] = useState(false);
   const network = useNetworks((s) => s.current);
 
   if (!symbol || !decimals || !network) return null;
@@ -68,11 +64,20 @@ export function ERC20View({
       </div>
 
       <div className="flex">
-        <Button variant="ghost" size="icon" asChild>
-          <Link to="/home/transfer/erc20" search={{ contract }}>
-            <ArrowTopRightIcon />
-          </Link>
-        </Button>
+        {contract && (
+          <Button variant="ghost" size="icon" asChild>
+            <Link to="/home/transfer/erc20" search={{ contract }}>
+              <ArrowTopRightIcon />
+            </Link>
+          </Button>
+        )}
+        {!contract && (
+          <Button variant="ghost" size="icon" asChild>
+            <Link to="/home/transfer/eth">
+              <ArrowTopRightIcon />
+            </Link>
+          </Button>
+        )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
@@ -91,15 +96,6 @@ export function ERC20View({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-
-      <Dialog open={transferFormOpen} onOpenChange={setTransferFormOpen}>
-        <DialogContent>
-          <TransferForm
-            {...{ chainId, contract }}
-            onClose={() => setTransferFormOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
