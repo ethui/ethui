@@ -68,6 +68,7 @@ function RouteComponent() {
     }),
   );
   const [result, setResult] = useState<string | null>(null);
+  const [decimals, setDecimals] = useState<number>();
 
   // map list of tokens
   const [tokens, setTokens] = useState<Token[]>([]);
@@ -89,19 +90,21 @@ function RouteComponent() {
     setTokens([nativeToken, ...newTokens]);
   }, [native, erc20s, network]);
 
+  //const decimals = currentToken?.decimals ?? 18;
   const schema = z.object({
     to: addressSchema.optional(),
     currency: addressSchema,
-    value: z
-      .bigint()
-      .positive()
-      .superRefine((value, ctx) => {
-        if (!currentToken || value <= currentToken.balance) return;
+    value: z.string().transform((val, ctx) => {
+      const num = Number.parseFloat(val);
+      if (Number.isNaN(num)) {
         ctx.addIssue({
+          message: "Invalid value",
           code: z.ZodIssueCode.custom,
-          message: "Not enough balance",
         });
-      }),
+        return z.NEVER;
+      }
+      return BigInt(num * 10 ** (decimals || 0));
+    }),
   });
 
   type Schema = z.infer<typeof schema>;
@@ -114,15 +117,17 @@ function RouteComponent() {
       value: 0n,
     },
   });
-  console.log(form.formState.isSubmitting);
 
   const currency = form.watch("currency");
   const currentToken = tokens.find((t) => t.contract === currency);
   const navigate = useNavigate();
 
   useEffect(() => {
+    setDecimals(currentToken?.decimals);
+  }, [currentToken]);
+
+  useEffect(() => {
     if (currentToken?.contract === ZeroAddress) {
-      console.log("redirecting");
       navigate({ to: "/home/transfer/native" });
     }
   }, [currentToken, navigate]);
@@ -149,12 +154,7 @@ function RouteComponent() {
         Balance: {formatUnits(currentToken.balance, currentToken.decimals)}
       </span>
       <Form.Text label="To" name="to" className="w-full" />
-      <Form.BigInt
-        label="Amount"
-        name="value"
-        decimals={currentToken.decimals}
-        className="w-full"
-      />
+      <Form.Text label="Amount" name="value" className="w-full" />
       {form.formState.isSubmitted && result && (
         <Alert className="w-full">
           <Terminal className="h-4 w-4" />
