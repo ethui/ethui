@@ -109,10 +109,10 @@ rand = "0.9"
 rstest = "0.23"
 regex = "1.11"
 anyhow = { version = "1.0", default-features = false }
-tempfile = "3.18.0"
+tempfile = "3.19.0"
 serde-constant = "0.1.0"
 kameo = "0.14.0"
 
 # Foundry - March 11th 2025
 foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-3c048be05726218c405d5d4deec4d3f1ab515f6f" }
-foundry-block-explorers = "0.9"
+foundry-block-explorers = "0.11"
