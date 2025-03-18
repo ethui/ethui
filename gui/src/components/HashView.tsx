@@ -7,14 +7,14 @@ import {
 import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
 import type { Hash } from "viem";
 
+import { ClickToCopy } from "@ethui/ui/components/click-to-copy";
 import { Link } from "@tanstack/react-router";
 import { useNetworks } from "#/store/useNetworks";
 import { truncateHex } from "#/utils";
-import { ClickToCopy } from "@ethui/ui/components/click-to-copy";
 
 interface Props {
   hash: Hash;
-  truncate?: bool;
+  truncate?: boolean;
 }
 
 export function HashView({ hash, truncate = true }: Props) {

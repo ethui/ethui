@@ -11,19 +11,19 @@ import debounce from "lodash-es/debounce";
 import { type FormEvent, useCallback, useEffect, useState } from "react";
 import { type Address, type Hash, decodeFunctionResult } from "viem";
 
-import { Input } from "@ethui/ui/components/shadcn/input";
-import { invoke } from "@tauri-apps/api/core";
-import { useInvoke } from "#/hooks/useInvoke";
-import { useWallets } from "#/store/useWallets";
-import { AddressView } from "./AddressView";
-import { HashView } from "./HashView";
 import type { Result } from "@ethui/types";
-import { CircleCheck } from "lucide-react";
 import {
   Alert,
   AlertDescription,
   AlertTitle,
 } from "@ethui/ui/components/shadcn/alert";
+import { Input } from "@ethui/ui/components/shadcn/input";
+import { invoke } from "@tauri-apps/api/core";
+import { CircleCheck } from "lucide-react";
+import { useInvoke } from "#/hooks/useInvoke";
+import { useWallets } from "#/store/useWallets";
+import { AddressView } from "./AddressView";
+import { HashView } from "./HashView";
 
 interface Props {
   chainId: number;

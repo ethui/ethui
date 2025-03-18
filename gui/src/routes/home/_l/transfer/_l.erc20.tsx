@@ -23,10 +23,10 @@ import { useBalances } from "#/store/useBalances";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
 
+import type { Result } from "@ethui/types";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { Terminal } from "lucide-react";
 import type { Token } from "./-common";
-import { Result } from "@ethui/types";
 
 export interface Params {
   chainId: string;
