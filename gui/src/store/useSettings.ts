@@ -4,26 +4,20 @@ import { type StateCreator, create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
 import type { GeneralSettings } from "@ethui/types/settings";
-import type { Action } from "#/components/CommandBar";
 
 interface Store {
   settings?: GeneralSettings;
-  actions: Action[];
 
+  setFastMode: (mode: boolean) => void;
   reload: () => void;
 }
 
-const actionId = "settings/fastMode";
-
 const store: StateCreator<Store> = (set) => ({
   settings: undefined,
-  actions: ["Enable", "Disable"].map((mode) => ({
-    id: `${actionId}/${mode}`,
-    text: `${mode} fast mode`,
-    run: () => {
-      invoke("settings_set_fast_mode", { mode: mode === "Enable" });
-    },
-  })),
+
+  setFastMode(mode: boolean) {
+    invoke("settings_set_fast_mode", { mode });
+  },
 
   async reload() {
     const settings = await invoke<GeneralSettings>("settings_get");

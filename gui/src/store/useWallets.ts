@@ -5,13 +5,12 @@ import { type StateCreator, create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
 import type { Wallet } from "@ethui/types/wallets";
-import type { Action } from "#/components/CommandBar";
 
 interface State {
   currentWallet?: Wallet;
   address?: Address;
   wallets: Wallet[];
-  actions: Action[];
+  allWalletInfo?: WalletInfo[];
 }
 
 interface WalletInfo {
@@ -30,16 +29,12 @@ interface Setters {
   setCurrentWallet: (name: string) => Promise<void>;
   setCurrentAddress: (name: string) => Promise<void>;
   reload: () => Promise<void>;
-  reloadActions: () => Promise<unknown>;
 }
 
 type Store = State & Setters;
 
-const actionId = "wallet";
-
 const store: StateCreator<Store> = (set, get) => ({
   wallets: [],
-  actions: [],
 
   async setCurrentWallet(name: string) {
     const { wallets, currentWallet } = get();
@@ -62,37 +57,17 @@ const store: StateCreator<Store> = (set, get) => ({
       invoke<Wallet>("wallets_get_current"),
       invoke<Address>("wallets_get_current_address"),
     ]);
+    const allWalletInfo = await fetchAllWalletInfo(wallets);
 
-    set({ wallets, currentWallet, address });
-    get().reloadActions();
-  },
-
-  async reloadActions() {
-    const { wallets } = get();
-    const info = (await fetchAllWalletInfo(wallets)) || [];
-
-    const actions = info.flatMap(({ wallet, addresses }) => {
-      return [
-        ...(addresses || []).map(({ key, address, alias }) => {
-          return {
-            id: `${actionId}/${wallet.name}/${key}`,
-            text: `${wallet.name}/${alias || address}`,
-            run: () => {
-              get().setCurrentWallet(wallet.name);
-              get().setCurrentAddress(key);
-              get().reload();
-            },
-          };
-        }),
-      ];
-    });
-
-    set({ actions });
+    set({ wallets, currentWallet, address, allWalletInfo });
   },
 });
 
 export const useWallets = create<Store>()(subscribeWithSelector(store));
 
+event.listen("settings-changed", async () => {
+  await useWallets.getState().reload();
+});
 event.listen("wallets-changed", async () => {
   await useWallets.getState().reload();
 });

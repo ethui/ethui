@@ -1,6 +1,5 @@
 import {
   type Dispatch,
-  Fragment,
   type ReactNode,
   createContext,
   useContext,
@@ -9,6 +8,7 @@ import {
 } from "react";
 import { useShallow } from "zustand/shallow";
 
+import { ChainView } from "@ethui/ui/components/chain-view";
 import {
   CommandDialog,
   CommandEmpty,
@@ -17,6 +17,7 @@ import {
   CommandItem,
   CommandList,
 } from "@ethui/ui/components/shadcn/command";
+import { ChevronRight } from "lucide-react";
 import { useNetworks } from "#/store/useNetworks";
 import { useSettings } from "#/store/useSettings";
 import { useTheme } from "#/store/useTheme";
@@ -50,20 +51,6 @@ export function CommandBarProvider({ children }: { children: ReactNode }) {
 
 export const useCommandBar = () => useContext(CommandBarContext);
 
-function useActions(): Record<string, Action[]> {
-  const walletActions = useWallets((s) => s.actions);
-  const networkActions = useNetworks((s) => s.actions);
-  const settingsActions = useSettings((s) => s.actions);
-  const themeActions = useTheme(useShallow((s) => s.actions));
-
-  return {
-    Network: networkActions,
-    Settings: settingsActions,
-    Theme: themeActions,
-    Wallet: walletActions,
-  };
-}
-
 export function CommandBar() {
   const { open, setOpen } = useCommandBar();
 
@@ -80,37 +67,150 @@ export function CommandBar() {
       document.removeEventListener("keydown", down);
     };
   }, [setOpen]);
-  const actions = useActions();
 
-  if (actions.Wallet.length === 0) return null;
+  const onClose = () => {
+    setOpen(false);
+  };
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
       <CommandInput placeholder="Search" />
       <CommandList>
         <CommandEmpty>No commands found</CommandEmpty>
-        {Object.keys(actions).map((group) => {
-          const items = actions[group];
-          return (
-            <Fragment key={group}>
-              <CommandGroup heading={group}>
-                {items.map((item) => (
-                  <CommandItem
-                    key={item.id}
-                    onSelect={() => {
-                      item.run?.();
-                      setOpen(false);
-                    }}
-                    keywords={[group]}
-                  >
-                    {item.text}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </Fragment>
-          );
-        })}
+        <NetworkCommands onClose={onClose} />
+        <WalletCommands onClose={onClose} />
+        <FastModeCommands onClose={onClose} />
+        <ThemeCommands onClose={onClose} />
       </CommandList>
     </CommandDialog>
+  );
+}
+
+function FastModeCommands({ onClose }: { onClose: () => void }) {
+  const setFastMode = useSettings((s) => s.setFastMode);
+
+  return (
+    <CommandGroup heading="Fast Mode">
+      <CommandItem
+        keywords={["enable", "fast", "mode"]}
+        onSelect={() => {
+          setFastMode(true);
+          onClose();
+        }}
+      >
+        Enable
+      </CommandItem>
+      <CommandItem
+        keywords={["disable", "fast", "mode"]}
+        onSelect={() => {
+          setFastMode(false);
+          onClose();
+        }}
+      >
+        Disable
+      </CommandItem>
+    </CommandGroup>
+  );
+}
+
+function NetworkCommands({ onClose }: { onClose: () => void }) {
+  const [networks, setCurrent] = useNetworks(
+    useShallow((s) => [s.networks, s.setCurrent]),
+  );
+
+  return (
+    <CommandGroup heading="Networks">
+      {networks.map(({ dedup_chain_id, name }) => (
+        <CommandItem
+          key={name}
+          keywords={["network", "switch", name]}
+          onSelect={() => {
+            setCurrent(name);
+            onClose();
+          }}
+        >
+          <ChainView chainId={dedup_chain_id.chain_id} name={name} />
+        </CommandItem>
+      ))}
+    </CommandGroup>
+  );
+}
+
+function WalletCommands({ onClose }: { onClose: () => void }) {
+  const [allWalletInfo, setWallet, setAddress] = useWallets(
+    useShallow((s) => [
+      s.allWalletInfo,
+      s.setCurrentWallet,
+      s.setCurrentAddress,
+    ]),
+  );
+  console.log(allWalletInfo);
+
+  return (
+    <CommandGroup heading="Wallets">
+      {allWalletInfo?.flatMap(({ wallet, addresses }) =>
+        addresses.flatMap(({ key, address, alias }) => (
+          <CommandItem
+            key={`${wallet.name} ${key}`}
+            keywords={["switch", "wallet", wallet.name, address, alias].filter(
+              (s) => !!s,
+            )}
+            onSelect={() => {
+              setWallet(wallet.name);
+              setAddress(key);
+              onClose();
+            }}
+          >
+            <div className="flex gap-2">
+              <span>{wallet.name}</span>
+              <ChevronRight size={2} />
+              {alias && (
+                <>
+                  <span>{alias}</span>
+                  <span className="text-muted-foreground">{address}</span>
+                </>
+              )}
+              {!alias && <span>{address}</span>}
+            </div>
+          </CommandItem>
+        )),
+      )}
+    </CommandGroup>
+  );
+}
+
+function ThemeCommands({ onClose }: { onClose: () => void }) {
+  const changeMode = useTheme((s) => s.changeMode);
+
+  return (
+    <CommandGroup heading="Theme">
+      <CommandItem
+        keywords={["theme", "switch", "light", "mode"]}
+        onSelect={() => {
+          changeMode("light");
+          onClose();
+        }}
+      >
+        Light theme
+      </CommandItem>
+      <CommandItem
+        keywords={["theme", "switch", "dark", "mode"]}
+        onSelect={() => {
+          changeMode("dark");
+          onClose();
+        }}
+      >
+        Dark theme
+      </CommandItem>
+      <CommandItem
+        keywords={["theme", "switch", "auto", "mode"]}
+        onSelect={() => {
+          changeMode("auto");
+          onClose();
+        }}
+      >
+        Auto theme
+      </CommandItem>
+    </CommandGroup>
   );
 }
