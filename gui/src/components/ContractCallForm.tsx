@@ -64,7 +64,7 @@ export function ContractCallForm({ chainId, address }: Props) {
 
           return options?.map(({ label, item }) => (
             <AccordionItem key={label} value={label}>
-              <AccordionTrigger>{label}</AccordionTrigger>
+              <AccordionTrigger className="text-left">{label}</AccordionTrigger>
               <AccordionContent>
                 <AbiItemFormWithSubmit
                   item={item}

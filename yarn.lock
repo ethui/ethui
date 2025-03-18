@@ -1406,7 +1406,7 @@ __metadata:
     "@ethui/data": "npm:*"
     "@ethui/form": "npm:*"
     "@ethui/types": "npm:*"
-    "@ethui/ui": "npm:0.0.46"
+    "@ethui/ui": "npm:0.0.51"
     "@fontsource/source-code-pro": "npm:^5.2.5"
     "@hookform/resolvers": "npm:^3.10.0"
     "@radix-ui/react-collapsible": "npm:^1.1.3"
@@ -1416,6 +1416,7 @@ __metadata:
     "@tanstack/react-router": "npm:^1.114.12"
     "@tanstack/router-devtools": "npm:^1.114.13"
     "@tanstack/router-plugin": "npm:^1.114.12"
+    "@tanstack/zod-adapter": "npm:^1.114.23"
     "@tauri-apps/api": "npm:2.3.0"
     "@tauri-apps/cli": "npm:^2.3.1"
     "@tauri-apps/plugin-clipboard-manager": "npm:^2.2.1"
@@ -1477,9 +1478,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@ethui/ui@npm:0.0.46":
-  version: 0.0.46
-  resolution: "@ethui/ui@npm:0.0.46"
+"@ethui/ui@npm:0.0.51":
+  version: 0.0.51
+  resolution: "@ethui/ui@npm:0.0.51"
   dependencies:
     "@fontsource/source-code-pro": "npm:^5.2.5"
     "@hookform/resolvers": "npm:^4.1.2"
@@ -1503,12 +1504,12 @@ __metadata:
     "@radix-ui/react-toast": "npm:^1.2.5"
     "@radix-ui/react-tooltip": "npm:^1.1.7"
     "@tailwindcss/postcss": "npm:4.0.8"
-    "@tanstack/react-query": "npm:^5.66.9"
+    "@tanstack/react-query": "npm:^5.68.0"
     class-variance-authority: "npm:^0.7.1"
     clsx: "npm:^2.0.0"
-    cmdk: "npm:1.0.4"
+    cmdk: "npm:1.1.1"
     immer: "npm:^10.1.1"
-    lucide-react: "npm:^0.477.0"
+    lucide-react: "npm:^0.482.0"
     next-themes: "npm:^0.4.4"
     react: "npm: ^19"
     react-dom: "npm:^19"
@@ -1521,17 +1522,17 @@ __metadata:
     zod: "npm:^3.24.2"
     zustand: "npm:^5.0.3"
   peerDependencies:
-    "@tanstack/react-query": ^5.66.9
+    "@tanstack/react-query": ^5.68.0
     "@types/react": ^19
     "@types/react-dom": ^19
     clsx: ^2.0.0
-    lucide-react: ^0.477.0
+    lucide-react: ^0.482.0
     react: ^19
     react-dom: ^19
     tailwind-merge: ^3.0.0
     tailwindcss: ^4.0.0
     tailwindcss-animate: ^1.0.0
-  checksum: 10c0/5056c7688448f762955576d47aa99105d11eac8653260a83fa232f35ec2d4d104629677bc2ec31673f6adf6da725bc5d99cb845986e9c45c499f95708ea1fbd3
+  checksum: 10c0/7f720b60f2056da110abbf401bad03f16f74af5b90a4a0bf113612bf8e88d01a426e69825b37063a99e33bc122a2e424ac04c2f5efb6b7916e985e0f2519b21e
   languageName: node
   linkType: hard
 
@@ -2071,7 +2072,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@radix-ui/react-compose-refs@npm:1.1.1":
+"@radix-ui/react-compose-refs@npm:1.1.1, @radix-ui/react-compose-refs@npm:^1.1.1":
   version: 1.1.1
   resolution: "@radix-ui/react-compose-refs@npm:1.1.1"
   peerDependencies:
@@ -2736,7 +2737,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@radix-ui/react-primitive@npm:2.0.2":
+"@radix-ui/react-primitive@npm:2.0.2, @radix-ui/react-primitive@npm:^2.0.2":
   version: 2.0.2
   resolution: "@radix-ui/react-primitive@npm:2.0.2"
   dependencies:
@@ -3840,13 +3841,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-core@npm:5.66.4":
-  version: 5.66.4
-  resolution: "@tanstack/query-core@npm:5.66.4"
-  checksum: 10c0/ef0ebf572e0109791e53e9a7c2790a93cbfe1c6f3fb462793c621c0f2d44c0b38f78f22a32526e124790f69a017ae3254877281f418ffef06d83f4edb82df51a
-  languageName: node
-  linkType: hard
-
 "@tanstack/query-core@npm:5.68.0":
   version: 5.68.0
   resolution: "@tanstack/query-core@npm:5.68.0"
@@ -3870,17 +3864,6 @@ __metadata:
     "@tanstack/react-query": ^5.68.0
     react: ^18 || ^19
   checksum: 10c0/794b9d16bd0c6d48970e85593c85549cbefb16916c7245845a851b959b9548a342255563d132bbf8550e86dca794275209cc1b6d92a964b9be6bcf9fb975496d
-  languageName: node
-  linkType: hard
-
-"@tanstack/react-query@npm:^5.66.9":
-  version: 5.66.9
-  resolution: "@tanstack/react-query@npm:5.66.9"
-  dependencies:
-    "@tanstack/query-core": "npm:5.66.4"
-  peerDependencies:
-    react: ^18 || ^19
-  checksum: 10c0/80565eb550e1fe3e90117c8dd4dd13c1ef27d1bf89689b09c6cdf6df084173582c3a20fbc709638b64502a10b1e10357b3172c38604739641dbdeb29715cae0d
   languageName: node
   linkType: hard
 
@@ -4069,6 +4052,16 @@ __metadata:
   version: 1.114.12
   resolution: "@tanstack/virtual-file-routes@npm:1.114.12"
   checksum: 10c0/d8af6b354b106345fa59d267b19d2ca7091be3212c4b335720347f1ff785129fdbb2e76c021fa1fac5f9791b043a77ea8d3b89ca957b3f396c2e79a443d2f5a0
+  languageName: node
+  linkType: hard
+
+"@tanstack/zod-adapter@npm:^1.114.23":
+  version: 1.114.23
+  resolution: "@tanstack/zod-adapter@npm:1.114.23"
+  peerDependencies:
+    "@tanstack/react-router": ">=1.43.2"
+    zod: ^3.23.8
+  checksum: 10c0/03598ec7d785d664a2aa5e07ef51649d13cc1937bfcb0f6411b760cf4def74d9a580ff927d513a87235a849ae805e5e13fd8306c0716b327f3b1d03b37c170ca
   languageName: node
   linkType: hard
 
@@ -4927,6 +4920,21 @@ __metadata:
     react: ^18 || ^19 || ^19.0.0-rc
     react-dom: ^18 || ^19 || ^19.0.0-rc
   checksum: 10c0/8c37568c9b52cb44a7b8f1414d622100cea0368f564167f4a1bc5c97ba3ba2b392ab4871f691c60a9a414a7295fb702c2f941e6556d6861a48657bb4e82fd979
+  languageName: node
+  linkType: hard
+
+"cmdk@npm:1.1.1":
+  version: 1.1.1
+  resolution: "cmdk@npm:1.1.1"
+  dependencies:
+    "@radix-ui/react-compose-refs": "npm:^1.1.1"
+    "@radix-ui/react-dialog": "npm:^1.1.6"
+    "@radix-ui/react-id": "npm:^1.1.0"
+    "@radix-ui/react-primitive": "npm:^2.0.2"
+  peerDependencies:
+    react: ^18 || ^19 || ^19.0.0-rc
+    react-dom: ^18 || ^19 || ^19.0.0-rc
+  checksum: 10c0/5605ac4396ec9bc65c82f954da19dd89a0636a54026df72780e2470da1381f9d57434a80a53f2d57eaa4e759660a3ebba9232b74258dc09970576591eae03116
   languageName: node
   linkType: hard
 
@@ -6354,15 +6362,6 @@ __metadata:
   peerDependencies:
     react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
   checksum: 10c0/9cb17bd4e70da4db104874b6b2e9d9c7e2be9438e9d1c0b2565df0c4d0bdd1add41b7dff3cb60840699ecbd29870c453878b42b69a7c46480def0c9370a852a9
-  languageName: node
-  linkType: hard
-
-"lucide-react@npm:^0.477.0":
-  version: 0.477.0
-  resolution: "lucide-react@npm:0.477.0"
-  peerDependencies:
-    react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/950b21e13875f3fbeaa233ffb470e0200c3a4559fd706a0c80c16f3a401d91acb2bd25848c7dd478da79c74b7fd00582d5114f335dc19ec0190fb130045b19e5
   languageName: node
   linkType: hard
 
