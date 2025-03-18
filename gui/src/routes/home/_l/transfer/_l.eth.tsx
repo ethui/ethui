@@ -20,7 +20,7 @@ import { useWallets } from "#/store/useWallets";
 import { Terminal } from "lucide-react";
 import type { Token } from "./-common";
 
-interface Params {
+export interface Params {
   chainId: string;
 }
 
