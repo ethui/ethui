@@ -136,9 +136,7 @@ function RouteComponent() {
         <Alert className="w-full">
           <Terminal className="h-4 w-4" />
           <AlertTitle>Transaction sent!</AlertTitle>
-          <AlertDescription className="max-w-full overflow-hidden break-all">
-            {result}
-          </AlertDescription>
+          <AlertDescription className="break-all">{result}</AlertDescription>
         </Alert>
       )}
 
