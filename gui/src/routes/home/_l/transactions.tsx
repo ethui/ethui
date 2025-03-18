@@ -44,7 +44,8 @@ export const Route = createFileRoute("/home/_l/transactions")({
 function Txs() {
   const account = useWallets((s) => s.address);
   const chainId = useNetworks((s) => s.current?.dedup_chain_id.chain_id);
-  const pageSize = 10;
+  const pageSize = 20;
+  const [animating, setAnimating] = useState(false);
 
   const [items, setItems] = useState<PaginatedTx[]>([]);
   const [hasMore, setHasMore] = useState(true);
@@ -82,6 +83,7 @@ function Txs() {
       }
       setItems([...items, ...newItems]);
       setTimeout(() => {
+        setAnimating(true);
         setLoading(false);
       }, 200);
     });
@@ -114,11 +116,11 @@ function Txs() {
   return (
     <div className="flex w-full flex-col items-center gap-2" ref={wrapperRef}>
       <Accordion type="multiple" className="w-full">
-        <AnimatePresence initial={false}>
+        <AnimatePresence initial={animating}>
           {items.map((tx) => (
             <AccordionItem asChild key={`${tx.hash}`} value={tx.hash}>
               <motion.div
-                initial={{ height: 0, opacity: 0 }}
+                initial={animating ? { height: 0, opacity: 0 } : false}
                 animate={{ height: "auto", opacity: 1 }}
                 transition={{
                   height: { duration: 0.4 },
