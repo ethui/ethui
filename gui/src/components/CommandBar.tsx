@@ -23,12 +23,6 @@ import { useSettings } from "#/store/useSettings";
 import { useTheme } from "#/store/useTheme";
 import { useWallets } from "#/store/useWallets";
 
-export interface Action {
-  id: string;
-  text: string;
-  run?: () => void;
-}
-
 interface CommandBarContextProps {
   open: boolean;
   setOpen: Dispatch<React.SetStateAction<boolean>>;
@@ -36,7 +30,7 @@ interface CommandBarContextProps {
 
 const CommandBarContext = createContext<CommandBarContextProps>({
   open: false,
-  setOpen: () => {},
+  setOpen: () => { },
 });
 
 export function CommandBarProvider({ children }: { children: ReactNode }) {
