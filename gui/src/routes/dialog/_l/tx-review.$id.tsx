@@ -12,6 +12,7 @@ import {
   type Address,
   type Hex,
   decodeEventLog,
+  encodeEventTopics,
   formatUnits,
   getAbiItem,
   parseAbi,
@@ -210,8 +211,8 @@ function SimulationResult({ simulation, chainId, to }: SimulationResultProps) {
         label="Trust"
         value={
           callCount && callCount > 0 ? (
-            <div className="flex">
-              <Check />
+            <div className="flex gap-1">
+              <Check className="stroke-success" />
               <span>Called {callCount} time(s) before.</span>
             </div>
           ) : (
@@ -225,7 +226,13 @@ function SimulationResult({ simulation, chainId, to }: SimulationResultProps) {
       />
       <Datapoint
         label="Status"
-        value={simulation.success ? <Check /> : <X />}
+        value={
+          simulation.success ? (
+            <Check className="stroke-success" />
+          ) : (
+            <X className="stroke-destructive" />
+          )
+        }
       />
       {simulation.success && (
         <Datapoint label="Gas Used" value={simulation.gasUsed.toString()} />
@@ -291,72 +298,48 @@ interface LogProps {
   chainId: number;
 }
 
-const erc20Transfer = parseAbi([
+const erc20 = parseAbi([
   "event Transfer(address indexed from, address indexed to, uint256 value)",
 ]);
 
 function Log({ log, chainId }: LogProps) {
-  const result = decodeKnownLog(log);
-  if (!result) return null;
-  const [type, decoded] = result;
-
-  switch (type) {
-    case null:
+  switch (log.topics[0]) {
+    case encodeEventTopics({ abi: erc20, eventName: "Transfer" })[0]:
+      return <Erc20Transfer log={log} chainId={chainId} />;
+    default:
       return null;
-    case "erc20transfer":
-      return (
-        <Erc20Transfer
-          from={decoded.args.from}
-          to={decoded.args.to}
-          value={decoded.args.value}
-          contract={log.address}
-          chainId={chainId}
-        />
-      );
-  }
-}
-
-function decodeKnownLog(log: Log) {
-  try {
-    return [
-      "erc20transfer",
-      decodeEventLog({
-        abi: erc20Transfer,
-        data: log.data,
-        topics: log.topics,
-      }),
-    ] as const;
-  } catch (_e) {
-    return null;
   }
 }
 
 interface Erc20TransferProps {
   chainId: number;
-  from: Address;
-  to: Address;
-  value: bigint;
-  contract: Address;
+  log: Log;
 }
 
-function Erc20Transfer({
-  chainId,
-  from,
-  to,
-  value,
-  contract,
-}: Erc20TransferProps) {
+function Erc20Transfer({ chainId, log }: Erc20TransferProps) {
+  const result = decodeEventLog({
+    abi: erc20,
+    eventName: "Transfer",
+    data: log.data,
+    topics: log.topics,
+  });
+  if (!result) return null;
+
+  const {
+    args: { from, to, value },
+  } = result;
+
   const { data: metadata } = useInvoke<TokenMetadata>("db_get_erc20_metadata", {
     chainId,
-    contract,
+    contract: log.address,
   });
 
   return (
-    <div className=" m-1 flex items-center">
+    <div className=" m-1 flex items-center gap-2">
       <AddressView address={from} />
       <span>→</span>
       <AddressView address={to} />
-      <IconAddress chainId={chainId} address={contract} />
+      <IconAddress chainId={chainId} address={log.address} />
       {metadata?.decimals
         ? formatUnits(value, metadata.decimals)
         : value.toString()}{" "}
