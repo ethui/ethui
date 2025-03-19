@@ -73,7 +73,14 @@ export function AppSidebar() {
                 />
               )}
               {items.map((item) => (
-                <CustomSidebarMenuItem key={item.title} {...item} />
+                <CustomSidebarMenuItem
+                  key={item.title}
+                  {...item}
+                  className={cn(
+                    item.url === location.pathname &&
+                    "bg-primary text-accent hover:bg-primary hover:text-accent",
+                  )}
+                />
               ))}
 
               <Collapsible className="group/collapsible">
@@ -95,7 +102,7 @@ export function AppSidebar() {
                               to={item.url}
                               className={cn(
                                 item.url === location.pathname &&
-                                  "bg-primary text-accent hover:bg-primary hover:text-accent",
+                                "bg-primary text-accent hover:bg-primary hover:text-accent",
                               )}
                             >
                               {item.title}
@@ -141,17 +148,12 @@ function CustomSidebarMenuItem({
   url,
   icon,
   title,
-}: { url: string; icon: React.ReactNode; title: string }) {
+  className = "",
+}: { url: string; icon: React.ReactNode; title: string; className?: string }) {
   return (
     <SidebarMenuItem key={title}>
       <SidebarMenuButton asChild>
-        <Link
-          to={url}
-          className={cn(
-            url === location.pathname &&
-              "bg-primary text-accent hover:bg-primary hover:text-accent",
-          )}
-        >
+        <Link to={url} className={className}>
           {icon}
           {title}
         </Link>
