@@ -141,7 +141,7 @@ impl Settings {
         self.inner.aliases.get(&address).cloned()
     }
 
-    fn set_alias(&mut self, address: Address, alias: Option<String>) {
+    async fn set_alias(&mut self, address: Address, alias: Option<String>) -> Result<()> {
         // trim whitespaces
         // empty str becomes None
         let alias = alias.map(|v| v.trim().to_owned()).filter(|v| !v.is_empty());
@@ -151,6 +151,8 @@ impl Settings {
         } else {
             self.inner.aliases.remove(&address);
         }
+        self.save().await?;
+        Ok(())
     }
 
     // Persists current state to disk

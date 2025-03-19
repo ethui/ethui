@@ -1,8 +1,7 @@
 use ethui_types::{Address, GlobalState};
 
-use crate::onboarding::OnboardingStep;
-
 use super::{DarkMode, Result, SerializedSettings, Settings};
+use crate::onboarding::OnboardingStep;
 
 #[tauri::command]
 pub async fn settings_get() -> SerializedSettings {
@@ -37,8 +36,8 @@ pub async fn settings_get_alias(address: Address) -> Option<String> {
 
 /// Sets the alias for an address
 #[tauri::command]
-pub async fn settings_set_alias(address: Address, alias: Option<String>) {
-    Settings::write().await.set_alias(address, alias)
+pub async fn settings_set_alias(address: Address, alias: Option<String>) -> Result<()> {
+    Settings::write().await.set_alias(address, alias).await
 }
 
 #[tauri::command]
