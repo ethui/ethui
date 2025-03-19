@@ -9,7 +9,8 @@ use ethui_types::UINotify;
 use futures::{stream, StreamExt as _};
 use glob::glob;
 use kameo::{
-    actor::ActorRef, error::BoxError, mailbox::bounded::BoundedMailbox, message::Message, Actor,
+    actor::ActorRef, error::BoxError, mailbox::bounded::BoundedMailbox, message::Message,
+    request::TryMessageSend as _, Actor,
 };
 use notify::{RecommendedWatcher, RecursiveMode};
 use notify_debouncer_full::{
@@ -218,6 +219,7 @@ impl Worker {
             .as_ref()
             .unwrap()
             .tell(Msg::PollFoundryRoots)
+            .try_send()
             .await?;
 
         Ok(())
@@ -226,7 +228,7 @@ impl Worker {
     async fn trigger_update_contracts(&mut self) {
         self.update_contracts_triggers += 1;
         if let Some(r) = &self.self_ref {
-            let _ = r.tell(UpdateContracts).await;
+            let _ = r.tell(UpdateContracts).try_send().await;
         }
     }
 
