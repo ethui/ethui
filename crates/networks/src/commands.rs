@@ -1,5 +1,6 @@
-use super::{Networks, Result};
 use ethui_types::{GlobalState, Network, NewNetworkParams};
+
+use super::{Networks, Result};
 
 #[tauri::command]
 pub async fn networks_get_current() -> Result<Network> {
@@ -43,13 +44,6 @@ pub async fn networks_remove(name: String) -> Result<()> {
     let mut networks = Networks::write().await;
     networks.remove_network(&name).await?;
     Ok(())
-}
-
-#[tauri::command]
-pub async fn networks_is_dev() -> Result<bool> {
-    let networks = Networks::read().await;
-
-    Ok(networks.get_current().is_dev().await)
 }
 
 #[tauri::command]
