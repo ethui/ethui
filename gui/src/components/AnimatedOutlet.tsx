@@ -21,7 +21,7 @@ const transitionProps = {
   animate: { opacity: 1, scale: 1 },
   exit,
   transition: {
-    duration: 0.3,
+    duration: 0.2,
     ease: cubicBezier(0.6, 0.05, -0.01, 0.9),
   },
 };
