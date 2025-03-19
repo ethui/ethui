@@ -1,7 +1,6 @@
 use alloy::providers::Provider as _;
 use ethui_db::utils::{fetch_etherscan_abi, fetch_etherscan_contract_name};
 use ethui_db::Db;
-use ethui_networks::commands::networks_is_dev;
 use ethui_proxy_detect::ProxyType;
 use ethui_types::{Address, GlobalState, UINotify};
 
@@ -43,8 +42,9 @@ pub async fn add_contract(
 
     let code = provider.get_code_at(address).await?;
     let proxy = ethui_proxy_detect::detect_proxy(address, &provider).await?;
+    let network_is_dev = network.is_dev().await;
 
-    let (name, abi) = if networks_is_dev().await? {
+    let (name, abi) = if network_is_dev {
         (None, None)
     } else {
         match proxy {
