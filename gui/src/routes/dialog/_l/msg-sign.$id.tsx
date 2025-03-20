@@ -1,8 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { HighlightBox } from "@ethui/ui/components/highlight-box";
+import { ScrollArea } from "@ethui/ui/components/shadcn/scroll-area";
 
 import { Button } from "@ethui/ui/components/shadcn/button";
+import { type Hex, hexToString } from "viem";
+import { Json } from "#/components/JsonView";
 import { useDialog } from "#/hooks/useDialog";
 
 export const Route = createFileRoute("/dialog/_l/msg-sign/$id")({
@@ -11,20 +14,28 @@ export const Route = createFileRoute("/dialog/_l/msg-sign/$id")({
 
 function MsgSignDialog() {
   const { id } = Route.useParams();
-  const { data, send } = useDialog<Record<string, string>>(id);
+  const { data, send } = useDialog<{ raw: Hex } | { typed: Hex }>(id);
 
   if (!data) return null;
 
-  const msg = data.Raw || JSON.stringify(data.Typed, null, 2);
+  const msg =
+    "raw" in data ? hexToString(data.raw) : JSON.stringify(data.typed, null, 2);
 
+  let json: any;
+  try {
+    json = "raw" in data ? JSON.parse(data.raw) : data.typed;
+  } catch (_e) {}
+
+  console.log(json);
   return (
-    <div className="h-full flex-col gap-3.5">
+    <div className="flex h-full flex-col justify-between gap-3 ">
       <h1 className="font-xl">Sign Message</h1>
-      {msg && (
-        <HighlightBox className="w-full">
-          <span className="whitespace-pre-wrap font-mono">{msg}</span>
+      <ScrollArea className="flex-grow">
+        <HighlightBox className="whitespace-pre-wrap text-sm">
+          {json && <Json src={json} />}
+          {!json && msg}
         </HighlightBox>
-      )}
+      </ScrollArea>
       <div className="flex w-full items-center justify-center gap-2">
         <Button
           disabled={!msg}

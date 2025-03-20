@@ -42,6 +42,7 @@ impl<'a> SignMessage<'a> {
     }
 
     async fn spawn_dialog(&mut self) -> Result<()> {
+        dbg!(&self.data);
         let params = serde_json::to_value(&self.data).unwrap();
 
         let dialog = Dialog::new("msg-sign", params);
@@ -83,7 +84,8 @@ impl<'a> SignMessage<'a> {
     }
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
+#[serde(rename_all = "camelCase")]
 enum Data {
     Raw(String),
     Typed(Box<TypedData>),
