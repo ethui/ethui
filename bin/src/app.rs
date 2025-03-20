@@ -105,7 +105,7 @@ impl EthUIApp {
             #[cfg(target_os = "macos")]
             tauri::RunEvent::Reopen { .. } => {
                 let handle = handle.clone();
-                windows::all_windows_focus(&handle);
+                tokio::spawn(async move { windows::all_windows_focus(&handle).await });
             }
             _ => (),
         });

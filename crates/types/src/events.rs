@@ -11,7 +11,6 @@ pub enum Event {
     Tx(Box<Tx>),
     ContractDeployed(ContractDeployed),
     ERC20Transfer(ERC20Transfer),
-    ERC721Transfer(ERC721Transfer),
 }
 
 #[derive(Debug, Serialize)]
@@ -81,12 +80,6 @@ impl From<Tx> for Event {
 impl From<ERC20Transfer> for Event {
     fn from(value: ERC20Transfer) -> Self {
         Self::ERC20Transfer(value)
-    }
-}
-
-impl From<ERC721Transfer> for Event {
-    fn from(value: ERC721Transfer) -> Self {
-        Self::ERC721Transfer(value)
     }
 }
 

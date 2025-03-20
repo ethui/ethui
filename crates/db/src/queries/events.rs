@@ -1,11 +1,17 @@
-use ethui_types::Event;
-use tracing::{instrument, trace};
+use ethui_types::{DedupChainId, Event};
+use tracing::instrument;
 
 use crate::{DbInner, Result};
 
 impl DbInner {
     #[instrument(level = "trace", skip(self, events))]
-    pub async fn save_events(&self, chain_id: u32, events: Vec<Event>) -> Result<()> {
+    pub async fn save_events(
+        &self,
+        dedup_chain_id: DedupChainId,
+        events: Vec<Event>,
+    ) -> Result<()> {
+        let chain_id = dedup_chain_id.chain_id();
+
         for tx in events.iter() {
             // TODO: report this errors in await?. Currently they're being silently ignored, because the task just gets killed
             match tx {
@@ -33,21 +39,6 @@ impl DbInner {
                         transfer.from,
                         transfer.to,
                         transfer.value,
-                    )
-                    .await?;
-                }
-                Event::ERC721Transfer(ref transfer) => {
-                    trace!(
-                        from = transfer.from.to_string(),
-                        to = transfer.to.to_string(),
-                        id = transfer.token_id.to_string()
-                    );
-                    self.process_erc721_transfer(
-                        chain_id,
-                        transfer.contract,
-                        transfer.from,
-                        transfer.to,
-                        transfer.token_id,
                     )
                     .await?;
                 }
