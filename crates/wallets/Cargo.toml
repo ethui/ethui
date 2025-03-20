@@ -27,6 +27,8 @@ async-trait.workspace = true
 
 enum_dispatch = "0.3.11"
 coins-bip32 = "0.12"
+rand_core = { version = "0.9.3", features = ["os_rng"] }
+plume_rustcrypto = "0.2.1"
 
 [dev-dependencies]
 rstest.workspace = true

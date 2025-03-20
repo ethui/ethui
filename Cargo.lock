@@ -3214,6 +3214,8 @@ dependencies = [
  "ethui-types",
  "ethui-wallets",
  "jsonrpc-core",
+ "plume_rustcrypto",
+ "rand_core 0.9.3",
  "serde",
  "serde_json",
  "tauri",
@@ -3369,6 +3371,8 @@ dependencies = [
  "ethui-dialogs",
  "ethui-types",
  "once_cell",
+ "plume_rustcrypto",
+ "rand_core 0.9.3",
  "rstest",
  "secrets",
  "serde",
@@ -6160,7 +6164,7 @@ version = "0.7.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "af1844ef2428cc3e1cb900be36181049ef3d3193c63e43026cfe202983b27a56"
 dependencies = [
- "proc-macro-crate 2.0.0",
+ "proc-macro-crate 3.2.0",
  "proc-macro2",
  "quote",
  "syn 2.0.87",
@@ -6934,6 +6938,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "plume_rustcrypto"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ec831f75343f1f3317c890778d479a02e00d1a84e742f7d9a0651749039b6aa9"
+dependencies = [
+ "k256",
+ "num-bigint",
+ "num-integer",
+ "rand_core 0.6.4",
+ "serde",
+ "signature",
+]
+
+[[package]]
 name = "png"
 version = "0.17.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7323,7 +7341,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3779b94aeb87e8bd4e834cee3650289ee9e0d5677f976ecdb6d219e5f4f6cd94"
 dependencies = [
  "rand_chacha 0.9.0",
- "rand_core 0.9.0",
+ "rand_core 0.9.3",
  "zerocopy 0.8.17",
 ]
 
@@ -7354,7 +7372,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d3022b5f1df60f26e1ffddd6c66e8aa15de382ae63b3a0c1bfc0e4d3e3f325cb"
 dependencies = [
  "ppv-lite86",
- "rand_core 0.9.0",
+ "rand_core 0.9.3",
 ]
 
 [[package]]
@@ -7377,12 +7395,11 @@ dependencies = [
 
 [[package]]
 name = "rand_core"
-version = "0.9.0"
+version = "0.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b08f3c9802962f7e1b25113931d94f43ed9725bebc59db9d0c3e9a23b67e15ff"
+checksum = "99d9a13982dcf210057a8a78572b2217b667c3beacbf3a0d8b454f6f82837d38"
 dependencies = [
  "getrandom 0.3.1",
- "zerocopy 0.8.17",
 ]
 
 [[package]]
@@ -10717,7 +10734,7 @@ version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf221c93e13a30d793f7645a0e7762c55d169dbb0a49671918a2319d289b10bb"
 dependencies = [
- "windows-sys 0.48.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]

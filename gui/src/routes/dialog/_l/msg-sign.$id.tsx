@@ -15,7 +15,7 @@ function MsgSignDialog() {
 
   if (!data) return null;
 
-  const msg = data.Raw || JSON.stringify(data.Typed, null, 2);
+  const msg = data.Plume;
 
   return (
     <div className="h-full flex-col gap-3.5">

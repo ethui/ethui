@@ -7,7 +7,7 @@ use alloy::{
 };
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_settings::Settings;
-use ethui_types::{GlobalState, Network};
+use ethui_types::{Address, GlobalState, Network};
 use ethui_wallets::{Signer, Wallet, WalletControl};
 use serde::Serialize;
 
@@ -27,7 +27,7 @@ impl<'a> SignMessage<'a> {
         Default::default()
     }
 
-    pub async fn finish(&mut self) -> Result<PrimitiveSignature> {
+    pub async fn finish(&mut self) -> Result<serde_json::Value> {
         let skip = {
             self.network.is_dev().await
                 && self.wallet.is_dev()
@@ -63,15 +63,18 @@ impl<'a> SignMessage<'a> {
         }
     }
 
-    pub async fn sign(&mut self) -> Result<PrimitiveSignature> {
+    pub async fn sign(&mut self) -> Result<serde_json::Value> {
         let signer = self.build_signer().await;
 
         match self.data {
             Data::Raw(ref msg) => {
                 let bytes = Bytes::from_str(msg).unwrap();
-                Ok(signer.sign_message(&bytes).await?)
+                Ok(serde_json::to_value(signer.sign_message(&bytes).await?)?)
             }
-            Data::Typed(ref data) => Ok(signer.sign_dynamic_typed_data(data).await?),
+            Data::Typed(ref data) => Ok(serde_json::to_value(
+                signer.sign_dynamic_typed_data(data).await?,
+            )?),
+            Data::Plume(ref message) => Ok(signer.sign_plume(message)?),
         }
     }
 
@@ -87,6 +90,7 @@ impl<'a> SignMessage<'a> {
 enum Data {
     Raw(String),
     Typed(Box<TypedData>),
+    Plume(String),
 }
 
 #[derive(Default)]
@@ -120,6 +124,11 @@ impl<'a> SignMessageBuilder<'a> {
 
     pub fn set_typed_data(mut self, data: TypedData) -> SignMessageBuilder<'a> {
         self.data = Some(Data::Typed(Box::new(data)));
+        self
+    }
+
+    pub fn set_plume_data(mut self, data: String) -> SignMessageBuilder<'a> {
+        self.data = Some(Data::Plume(data));
         self
     }
 

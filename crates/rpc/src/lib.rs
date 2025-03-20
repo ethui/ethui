@@ -114,6 +114,7 @@ impl Handler {
         self_handler!("personal_sign", Self::eth_sign);
         self_handler!("eth_signTypedData", Self::eth_sign_typed_data_v4);
         self_handler!("eth_signTypedData_v4", Self::eth_sign_typed_data_v4);
+        self_handler!("eth_signPlume", Self::eth_sign_plume);
         self_handler!("wallet_requestPermissions", Self::request_permissions);
         self_handler!("wallet_getPermissions", Self::get_permissions);
         self_handler!("wallet_addEthereumChain", Self::add_chain);
@@ -282,7 +283,7 @@ impl Handler {
 
         let result = signer.finish().await?;
 
-        Ok(format!("0x{}", hex::encode(result.as_bytes())).into())
+        Ok(format!("0x{}", serde_json::to_string(&result).unwrap()).into())
     }
 
     async fn eth_sign_typed_data_v4(
@@ -309,7 +310,31 @@ impl Handler {
 
         let result = signer.finish().await?;
 
-        Ok(format!("0x{}", hex::encode(result.as_bytes())).into())
+        Ok(format!("0x{}", serde_json::to_string(&result).unwrap()).into())
+    }
+
+    async fn eth_sign_plume(params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+        let params = params.parse::<Vec<Option<String>>>().unwrap();
+        // TODO where should this be used?
+        // let address = Address::from_str(&params[0].as_ref().cloned().unwrap()).unwrap();
+        dbg!(&params);
+        let data = params[1].as_ref().cloned().unwrap();
+
+        let wallets = Wallets::read().await;
+
+        let wallet = wallets.get_current_wallet();
+        let network = ctx.network().await;
+
+        let mut signer = methods::SignMessage::build()
+            .set_wallet(wallet)
+            .set_wallet_path(wallet.get_current_path())
+            .set_network(network)
+            .set_plume_data(data)
+            .build();
+
+        let result = signer.finish().await?;
+
+        Ok(format!("0x{}", serde_json::to_string(&result).unwrap()).into())
     }
 
     async fn unimplemented(params: Params, _: Ctx) -> jsonrpc_core::Result<serde_json::Value> {

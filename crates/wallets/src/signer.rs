@@ -4,6 +4,7 @@ use alloy::{
     signers::{ledger::LedgerSigner, local::PrivateKeySigner},
 };
 use async_trait::async_trait;
+use serde_json::json;
 
 #[derive(Debug)]
 pub enum Signer {
@@ -16,6 +17,28 @@ impl Signer {
         match self {
             Self::Local(_) => false,
             Self::Ledger(_) => true,
+        }
+    }
+
+    pub fn sign_plume(&self, message: &str) -> crate::Result<serde_json::Value> {
+        match self {
+            Self::Local(signer) => {
+                use coins_bip32::ecdsa::signature::rand_core::OsRng;
+                use plume_rustcrypto::PlumeSignature;
+
+                let signature = PlumeSignature::sign_v2(
+                    &signer.credential().into(),
+                    message.as_bytes(),
+                    &mut OsRng,
+                );
+
+                Ok(dbg!(json!({
+                    "nullifier": signature.nullifier,
+                    "c": signature.c,
+                    "s": signature.s,
+                })))
+            }
+            Self::Ledger(signer) => todo!(),
         }
     }
 }

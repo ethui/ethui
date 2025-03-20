@@ -27,3 +27,5 @@ tracing.workspace = true
 jsonrpc-core.workspace = true
 thiserror.workspace = true
 url.workspace = true
+plume_rustcrypto = "0.2.1"
+rand_core = { version = "0.9.3", features = ["os_rng"] }
