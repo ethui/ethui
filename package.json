@@ -34,7 +34,7 @@
     "tsx": "^4.19.3"
   },
   "dependencies": {
-    "@tauri-apps/cli": "^2.3.1",
+    "@tauri-apps/cli": "^2.4.0",
     "typescript": "5.8.2"
   },
   "packageManager": "yarn@4.6.0"

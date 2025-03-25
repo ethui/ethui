@@ -1418,7 +1418,7 @@ __metadata:
     "@tanstack/router-plugin": "npm:^1.114.12"
     "@tanstack/zod-adapter": "npm:^1.114.23"
     "@tauri-apps/api": "npm:2.3.0"
-    "@tauri-apps/cli": "npm:^2.3.1"
+    "@tauri-apps/cli": "npm:^2.4.0"
     "@tauri-apps/plugin-clipboard-manager": "npm:^2.2.1"
     "@tauri-apps/plugin-os": "npm:^2.2.0"
     "@types/chrome": "npm:^0.0.306"
@@ -4097,90 +4097,98 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-darwin-arm64@npm:2.3.1":
-  version: 2.3.1
-  resolution: "@tauri-apps/cli-darwin-arm64@npm:2.3.1"
+"@tauri-apps/cli-darwin-arm64@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@tauri-apps/cli-darwin-arm64@npm:2.4.0"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-darwin-x64@npm:2.3.1":
-  version: 2.3.1
-  resolution: "@tauri-apps/cli-darwin-x64@npm:2.3.1"
+"@tauri-apps/cli-darwin-x64@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@tauri-apps/cli-darwin-x64@npm:2.4.0"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-linux-arm-gnueabihf@npm:2.3.1":
-  version: 2.3.1
-  resolution: "@tauri-apps/cli-linux-arm-gnueabihf@npm:2.3.1"
+"@tauri-apps/cli-linux-arm-gnueabihf@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@tauri-apps/cli-linux-arm-gnueabihf@npm:2.4.0"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-linux-arm64-gnu@npm:2.3.1":
-  version: 2.3.1
-  resolution: "@tauri-apps/cli-linux-arm64-gnu@npm:2.3.1"
+"@tauri-apps/cli-linux-arm64-gnu@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@tauri-apps/cli-linux-arm64-gnu@npm:2.4.0"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-linux-arm64-musl@npm:2.3.1":
-  version: 2.3.1
-  resolution: "@tauri-apps/cli-linux-arm64-musl@npm:2.3.1"
+"@tauri-apps/cli-linux-arm64-musl@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@tauri-apps/cli-linux-arm64-musl@npm:2.4.0"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-linux-x64-gnu@npm:2.3.1":
-  version: 2.3.1
-  resolution: "@tauri-apps/cli-linux-x64-gnu@npm:2.3.1"
+"@tauri-apps/cli-linux-riscv64-gnu@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@tauri-apps/cli-linux-riscv64-gnu@npm:2.4.0"
+  conditions: os=linux & cpu=riscv64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@tauri-apps/cli-linux-x64-gnu@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@tauri-apps/cli-linux-x64-gnu@npm:2.4.0"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-linux-x64-musl@npm:2.3.1":
-  version: 2.3.1
-  resolution: "@tauri-apps/cli-linux-x64-musl@npm:2.3.1"
+"@tauri-apps/cli-linux-x64-musl@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@tauri-apps/cli-linux-x64-musl@npm:2.4.0"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-win32-arm64-msvc@npm:2.3.1":
-  version: 2.3.1
-  resolution: "@tauri-apps/cli-win32-arm64-msvc@npm:2.3.1"
+"@tauri-apps/cli-win32-arm64-msvc@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@tauri-apps/cli-win32-arm64-msvc@npm:2.4.0"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-win32-ia32-msvc@npm:2.3.1":
-  version: 2.3.1
-  resolution: "@tauri-apps/cli-win32-ia32-msvc@npm:2.3.1"
+"@tauri-apps/cli-win32-ia32-msvc@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@tauri-apps/cli-win32-ia32-msvc@npm:2.4.0"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-win32-x64-msvc@npm:2.3.1":
-  version: 2.3.1
-  resolution: "@tauri-apps/cli-win32-x64-msvc@npm:2.3.1"
+"@tauri-apps/cli-win32-x64-msvc@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@tauri-apps/cli-win32-x64-msvc@npm:2.4.0"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli@npm:^2.3.1":
-  version: 2.3.1
-  resolution: "@tauri-apps/cli@npm:2.3.1"
+"@tauri-apps/cli@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "@tauri-apps/cli@npm:2.4.0"
   dependencies:
-    "@tauri-apps/cli-darwin-arm64": "npm:2.3.1"
-    "@tauri-apps/cli-darwin-x64": "npm:2.3.1"
-    "@tauri-apps/cli-linux-arm-gnueabihf": "npm:2.3.1"
-    "@tauri-apps/cli-linux-arm64-gnu": "npm:2.3.1"
-    "@tauri-apps/cli-linux-arm64-musl": "npm:2.3.1"
-    "@tauri-apps/cli-linux-x64-gnu": "npm:2.3.1"
-    "@tauri-apps/cli-linux-x64-musl": "npm:2.3.1"
-    "@tauri-apps/cli-win32-arm64-msvc": "npm:2.3.1"
-    "@tauri-apps/cli-win32-ia32-msvc": "npm:2.3.1"
-    "@tauri-apps/cli-win32-x64-msvc": "npm:2.3.1"
+    "@tauri-apps/cli-darwin-arm64": "npm:2.4.0"
+    "@tauri-apps/cli-darwin-x64": "npm:2.4.0"
+    "@tauri-apps/cli-linux-arm-gnueabihf": "npm:2.4.0"
+    "@tauri-apps/cli-linux-arm64-gnu": "npm:2.4.0"
+    "@tauri-apps/cli-linux-arm64-musl": "npm:2.4.0"
+    "@tauri-apps/cli-linux-riscv64-gnu": "npm:2.4.0"
+    "@tauri-apps/cli-linux-x64-gnu": "npm:2.4.0"
+    "@tauri-apps/cli-linux-x64-musl": "npm:2.4.0"
+    "@tauri-apps/cli-win32-arm64-msvc": "npm:2.4.0"
+    "@tauri-apps/cli-win32-ia32-msvc": "npm:2.4.0"
+    "@tauri-apps/cli-win32-x64-msvc": "npm:2.4.0"
   dependenciesMeta:
     "@tauri-apps/cli-darwin-arm64":
       optional: true
@@ -4191,6 +4199,8 @@ __metadata:
     "@tauri-apps/cli-linux-arm64-gnu":
       optional: true
     "@tauri-apps/cli-linux-arm64-musl":
+      optional: true
+    "@tauri-apps/cli-linux-riscv64-gnu":
       optional: true
     "@tauri-apps/cli-linux-x64-gnu":
       optional: true
@@ -4204,7 +4214,7 @@ __metadata:
       optional: true
   bin:
     tauri: tauri.js
-  checksum: 10c0/2aac987ed1c43f2c4bdeefb77ac3ab16f786b8e12617e499feb99e67419e948d6e33c02e9e63cf887281581e04a0344e072908222ba38cb73b8c65e4e68a0017
+  checksum: 10c0/592b4a93ebdad87a002bf2b95c0854f770d7299926604d9a0277b2e0ebaaf6bd769db9756d09583bafef88846c69760c1fa5048100afeccf232a56ee1dd1e4f4
   languageName: node
   linkType: hard
 
@@ -7291,7 +7301,7 @@ __metadata:
   dependencies:
     "@biomejs/biome": "npm:^1.9.4"
     "@tailwindcss/postcss": "npm:^4.0.8"
-    "@tauri-apps/cli": "npm:^2.3.1"
+    "@tauri-apps/cli": "npm:^2.4.0"
     assert: "npm:^2.1.0"
     html-to-image: "npm:^1.11.13"
     ts-unused-exports: "npm:^11.0.1"
