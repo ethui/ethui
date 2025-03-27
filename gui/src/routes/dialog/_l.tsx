@@ -1,5 +1,5 @@
 import { EthuiLogo } from "@ethui/ui/components/ethui-logo";
-import { Outlet, createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { AnimatedOutlet } from "#/components/AnimatedOutlet";
 import { useTheme } from "#/store/useTheme";
 
