@@ -132,8 +132,7 @@ impl Message<UpdateContracts> for Worker {
         for ((chain_id, dedup_id), address, code, abi) in contracts_with_code.into_iter() {
             trace!(chain_id=chain_id, dedup_id=dedup_id, address=?address, abi=abi.name);
             db.insert_contract_with_abi(
-                chain_id,
-                dedup_id,
+                (chain_id, dedup_id).into(),
                 address,
                 Some(&code),
                 Some(serde_json::to_string(&abi.abi)?),

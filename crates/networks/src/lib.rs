@@ -211,15 +211,15 @@ impl Networks {
         Ok(provider.get_chain_id().await?)
     }
 
-    pub fn get_chain_id_count(&self, chain_id: u32) -> u32 {
+    pub fn get_chain_id_count(&self, chain_id: u32) -> i32 {
         self.inner
             .networks
             .values()
             .filter(|network| network.chain_id() == chain_id)
-            .count() as u32
+            .count() as i32
     }
 
-    pub fn get_lowest_dedup_id(&self, chain_id: u32) -> u32 {
+    pub fn get_lowest_dedup_id(&self, chain_id: u32) -> i32 {
         self.inner
             .networks
             .values()

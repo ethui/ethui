@@ -11,7 +11,6 @@ impl DbInner {
         events: Vec<Event>,
     ) -> Result<()> {
         let chain_id = dedup_chain_id.chain_id();
-        let dedup_id = dedup_chain_id.dedup_id() as i32;
 
         for tx in events.iter() {
             // TODO: report this errors in await?. Currently they're being silently ignored, because the task just gets killed
@@ -22,8 +21,7 @@ impl DbInner {
 
                 Event::ContractDeployed(ref tx) => {
                     self.insert_contract_with_abi(
-                        chain_id,
-                        dedup_id,
+                        dedup_chain_id,
                         tx.address,
                         tx.code.as_ref(),
                         None,

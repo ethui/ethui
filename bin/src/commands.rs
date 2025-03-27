@@ -65,8 +65,7 @@ pub async fn add_contract(
     let proxy_for = proxy.map(|proxy| proxy.implementation());
 
     db.insert_contract_with_abi(
-        chain_id as u32,
-        dedup_id as i32,
+        (chain_id as u32, dedup_id as i32).into(),
         address,
         Some(&code),
         abi,
