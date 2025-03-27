@@ -132,17 +132,20 @@ impl Networks {
     }
 
     pub async fn add_network(&mut self, network: NewNetworkParams) -> Result<()> {
-        // TODO: need to ensure uniqueness by name, not chain id
-        if self.validate_chain_id(network.dedup_chain_id.chain_id()) {
-            return Err(Error::AlreadyExists);
-        }
-
         if self.inner.networks.contains_key(&network.name) {
             return Err(Error::AlreadyExists);
         }
 
         let deduplication_id = self.get_chain_id_count(network.dedup_chain_id.chain_id());
         let network = network.into_network(deduplication_id);
+
+        if !network.is_dev().await
+            & self
+                .get_network_by_dedup_chain_id(network.dedup_chain_id())
+                .is_some()
+        {
+            return Err(Error::AlreadyExists);
+        }
 
         self.inner
             .networks
