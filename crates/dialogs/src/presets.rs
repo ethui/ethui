@@ -24,8 +24,8 @@ pub(super) static PRESETS: Lazy<HashMap<String, Preset>> = Lazy::new(|| {
         "msg-sign".into(),
         Preset {
             title: "Sign Message".into(),
-            w: 600.0,
-            h: 600.0,
+            w: 300.0,
+            h: 400.0,
         },
     );
 

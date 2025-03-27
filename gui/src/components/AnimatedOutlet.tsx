@@ -43,7 +43,7 @@ export const AnimatedOutlet = forwardRef<HTMLDivElement>((_, ref) => {
 
   return (
     <motion.div
-      className="w-full"
+      className="h-full w-full"
       ref={ref}
       {...transitionProps}
       key={nextMatch?.id}
