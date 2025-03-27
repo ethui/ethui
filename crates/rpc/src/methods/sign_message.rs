@@ -42,7 +42,6 @@ impl<'a> SignMessage<'a> {
     }
 
     async fn spawn_dialog(&mut self) -> Result<()> {
-        dbg!(&self.data);
         let params = serde_json::to_value(&self.data).unwrap();
 
         let dialog = Dialog::new("msg-sign", params);
