@@ -24,6 +24,7 @@ categories:
     collapse-after: 5
     labels:
       - "C-dependencies"
+      - "dependencies"
 
 exclude-labels:
   - "A-enhancement"

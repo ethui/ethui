@@ -13,7 +13,7 @@ use alloy::{
     sol_types::SolEvent as _,
 };
 use ethui_types::{
-    events::{ContractDeployed, ERC20Transfer, ERC721Transfer, Tx},
+    events::{ContractDeployed, ERC20Transfer, Tx},
     Event,
 };
 use futures::future::join_all;
@@ -23,11 +23,8 @@ use super::{Error, Result};
 pub(super) async fn expand_traces(
     traces: Vec<LocalizedTransactionTrace>,
     provider: &RootProvider<Ethereum>,
-    chain_id: u32,
 ) -> Vec<Event> {
-    let result = traces
-        .into_iter()
-        .map(|t| expand_trace(t, provider, chain_id));
+    let result = traces.into_iter().map(|t| expand_trace(t, provider));
     let res = join_all(result).await.into_iter().filter_map(|r| r.ok());
 
     res.flatten().collect()
@@ -40,7 +37,6 @@ pub(super) fn expand_logs(traces: Vec<RpcLog>) -> Vec<ethui_types::Event> {
 async fn expand_trace(
     trace: LocalizedTransactionTrace,
     provider: &RootProvider<Ethereum>,
-    _chain_id: u32,
 ) -> Result<Vec<Event>> {
     let hash = trace.transaction_hash.unwrap();
     let tx = provider
@@ -146,7 +142,7 @@ async fn expand_trace(
 fn expand_log(log: RpcLog) -> Option<Event> {
     let block_number = log.block_number?;
 
-    use ethui_abis::{IERC20, IERC721};
+    use ethui_abis::IERC20;
 
     if let Ok(Log { data, .. }) = IERC20::Transfer::decode_log(&log.inner, true) {
         return Some(
@@ -154,19 +150,6 @@ fn expand_log(log: RpcLog) -> Option<Event> {
                 from: data.from,
                 to: data.to,
                 value: data.value,
-                contract: log.inner.address,
-                block_number,
-            }
-            .into(),
-        );
-    };
-
-    if let Ok(Log { data, .. }) = IERC721::Transfer::decode_log(&log.inner, true) {
-        return Some(
-            ERC721Transfer {
-                from: data.from,
-                to: data.to,
-                token_id: data.tokenId,
                 contract: log.inner.address,
                 block_number,
             }

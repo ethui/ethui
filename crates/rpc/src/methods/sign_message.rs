@@ -86,7 +86,8 @@ impl<'a> SignMessage<'a> {
     }
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
+#[serde(rename_all = "camelCase")]
 enum Data {
     Raw(String),
     Typed(Box<TypedData>),
