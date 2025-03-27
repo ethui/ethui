@@ -1,6 +1,7 @@
-use ethui_types::{GlobalState, Network, NewNetworkParams};
+use ethui_types::{DedupChainId, GlobalState, Network, NewNetworkParams};
 
 use super::{Networks, Result};
+use crate::Error;
 
 #[tauri::command]
 pub async fn networks_get_current() -> Result<Network> {
@@ -44,6 +45,17 @@ pub async fn networks_remove(name: String) -> Result<()> {
     let mut networks = Networks::write().await;
     networks.remove_network(&name).await?;
     Ok(())
+}
+
+#[tauri::command]
+pub async fn networks_is_dev(dedup_chain_id: DedupChainId) -> Result<bool> {
+    let networks = Networks::read().await;
+
+    let network = networks
+        .get_network_by_dedup_chain_id(dedup_chain_id)
+        .ok_or(Error::NotExists)?;
+
+    Ok(network.is_dev().await)
 }
 
 #[tauri::command]

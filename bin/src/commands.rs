@@ -1,6 +1,8 @@
 use alloy::providers::Provider as _;
-use ethui_db::utils::{fetch_etherscan_abi, fetch_etherscan_contract_name};
-use ethui_db::Db;
+use ethui_db::{
+    utils::{fetch_etherscan_abi, fetch_etherscan_contract_name},
+    Db,
+};
 use ethui_proxy_detect::ProxyType;
 use ethui_types::{Address, GlobalState, UINotify};
 
@@ -30,6 +32,7 @@ pub async fn ui_error(message: String, _stack: Option<Vec<String>>) -> AppResult
 #[tauri::command]
 pub async fn add_contract(
     chain_id: u64,
+    dedup_id: i64,
     address: Address,
     db: tauri::State<'_, Db>,
 ) -> AppResult<()> {
@@ -61,11 +64,18 @@ pub async fn add_contract(
 
     let proxy_for = proxy.map(|proxy| proxy.implementation());
 
-    db.insert_contract_with_abi(chain_id as u32, address, Some(&code), abi, name, proxy_for)
-        .await?;
+    db.insert_contract_with_abi(
+        (chain_id as u32, dedup_id as i32).into(),
+        address,
+        Some(&code),
+        abi,
+        name,
+        proxy_for,
+    )
+    .await?;
 
     if proxy_for.is_some() {
-        Box::pin(add_contract(chain_id, proxy_for.unwrap(), db)).await
+        Box::pin(add_contract(chain_id, dedup_id, proxy_for.unwrap(), db)).await
     } else {
         ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
         Ok(())

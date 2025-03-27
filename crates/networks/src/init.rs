@@ -7,9 +7,7 @@ use once_cell::sync::OnceCell;
 use serde_constant::ConstI64;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
-use crate::migrations::load_and_migrate;
-use crate::Networks;
-use crate::SerializedNetworks;
+use crate::{migrations::load_and_migrate, Networks, SerializedNetworks};
 
 static NETWORKS: OnceCell<RwLock<Networks>> = OnceCell::new();
 
