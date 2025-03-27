@@ -153,7 +153,7 @@ fn migrate_networks_from_v2_to_v3(
             (
                 name,
                 Network {
-                    dedup_chain_id: (network.chain_id, network.deduplication_id).into(),
+                    dedup_chain_id: (network.chain_id, network.deduplication_id as i32).into(),
                     name: network.name,
                     explorer_url: network.explorer_url,
                     http_url: network.http_url,
