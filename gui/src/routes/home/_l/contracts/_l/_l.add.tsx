@@ -7,8 +7,8 @@ import { useShallow } from "zustand/shallow";
 import { ChainView } from "@ethui/ui/components/chain-view";
 import { Form } from "@ethui/ui/components/form";
 
-import { useNetworks } from "#/store/useNetworks";
 import { useContracts } from "#/store/useContracts";
+import { useNetworks } from "#/store/useNetworks";
 
 export const Route = createFileRoute("/home/_l/contracts/_l/_l/add")({
   beforeLoad: () => ({ breadcrumb: "Add" }),
