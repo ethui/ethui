@@ -38,6 +38,7 @@ import { Route as HomeLSettingsLGeneralImport } from './routes/home/_l/settings/
 import { Route as HomeLSettingsLFoundryImport } from './routes/home/_l/settings/_l/foundry'
 import { Route as HomeLSettingsLWalletsLImport } from './routes/home/_l/settings/_l/wallets/_l'
 import { Route as HomeLSettingsLNetworksLImport } from './routes/home/_l/settings/_l/networks/_l'
+import { Route as HomeLContractsLLAddImport } from './routes/home/_l/contracts/_l/_l.add'
 import { Route as HomeLContractsLChainIdAddressImport } from './routes/home/_l/contracts/_l/$chainId.$address'
 import { Route as HomeLSettingsLWalletsLIndexImport } from './routes/home/_l/settings/_l/wallets/_l/index'
 import { Route as HomeLSettingsLNetworksLIndexImport } from './routes/home/_l/settings/_l/networks/_l/index'
@@ -245,6 +246,12 @@ const HomeLSettingsLWalletsLRoute = HomeLSettingsLWalletsLImport.update({
 const HomeLSettingsLNetworksLRoute = HomeLSettingsLNetworksLImport.update({
   id: '/_l',
   getParentRoute: () => HomeLSettingsLNetworksRoute,
+} as any)
+
+const HomeLContractsLLAddRoute = HomeLContractsLLAddImport.update({
+  id: '/_l/add',
+  path: '/add',
+  getParentRoute: () => HomeLContractsLRoute,
 } as any)
 
 const HomeLContractsLChainIdAddressRoute =
@@ -503,6 +510,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeLContractsLChainIdAddressImport
       parentRoute: typeof HomeLContractsLImport
     }
+    '/home/_l/contracts/_l/_l/add': {
+      id: '/home/_l/contracts/_l/_l/add'
+      path: '/add'
+      fullPath: '/home/contracts/add'
+      preLoaderRoute: typeof HomeLContractsLLAddImport
+      parentRoute: typeof HomeLContractsLImport
+    }
     '/home/_l/settings/_l/networks': {
       id: '/home/_l/settings/_l/networks'
       path: '/networks'
@@ -617,11 +631,13 @@ const DialogRouteWithChildren =
 interface HomeLContractsLRouteChildren {
   HomeLContractsLIndexRoute: typeof HomeLContractsLIndexRoute
   HomeLContractsLChainIdAddressRoute: typeof HomeLContractsLChainIdAddressRoute
+  HomeLContractsLLAddRoute: typeof HomeLContractsLLAddRoute
 }
 
 const HomeLContractsLRouteChildren: HomeLContractsLRouteChildren = {
   HomeLContractsLIndexRoute: HomeLContractsLIndexRoute,
   HomeLContractsLChainIdAddressRoute: HomeLContractsLChainIdAddressRoute,
+  HomeLContractsLLAddRoute: HomeLContractsLLAddRoute,
 }
 
 const HomeLContractsLRouteWithChildren = HomeLContractsLRoute._addFileChildren(
@@ -818,6 +834,7 @@ export interface FileRoutesByFullPath {
   '/home/transfer/eth': typeof HomeLTransferLEthRoute
   '/home/contracts/': typeof HomeLContractsLIndexRoute
   '/home/contracts/$chainId/$address': typeof HomeLContractsLChainIdAddressRoute
+  '/home/contracts/add': typeof HomeLContractsLLAddRoute
   '/home/settings/networks': typeof HomeLSettingsLNetworksLRouteWithChildren
   '/home/settings/wallets': typeof HomeLSettingsLWalletsLRouteWithChildren
   '/home/settings/networks/new': typeof HomeLSettingsLNetworksLNewRoute
@@ -852,6 +869,7 @@ export interface FileRoutesByTo {
   '/home/transfer/erc20': typeof HomeLTransferLErc20Route
   '/home/transfer/eth': typeof HomeLTransferLEthRoute
   '/home/contracts/$chainId/$address': typeof HomeLContractsLChainIdAddressRoute
+  '/home/contracts/add': typeof HomeLContractsLLAddRoute
   '/home/settings/networks': typeof HomeLSettingsLNetworksLIndexRoute
   '/home/settings/wallets': typeof HomeLSettingsLWalletsLIndexRoute
   '/home/settings/networks/new': typeof HomeLSettingsLNetworksLNewRoute
@@ -891,6 +909,7 @@ export interface FileRoutesById {
   '/home/_l/transfer/_l/eth': typeof HomeLTransferLEthRoute
   '/home/_l/contracts/_l/': typeof HomeLContractsLIndexRoute
   '/home/_l/contracts/_l/$chainId/$address': typeof HomeLContractsLChainIdAddressRoute
+  '/home/_l/contracts/_l/_l/add': typeof HomeLContractsLLAddRoute
   '/home/_l/settings/_l/networks': typeof HomeLSettingsLNetworksRouteWithChildren
   '/home/_l/settings/_l/networks/_l': typeof HomeLSettingsLNetworksLRouteWithChildren
   '/home/_l/settings/_l/wallets': typeof HomeLSettingsLWalletsRouteWithChildren
@@ -930,6 +949,7 @@ export interface FileRouteTypes {
     | '/home/transfer/eth'
     | '/home/contracts/'
     | '/home/contracts/$chainId/$address'
+    | '/home/contracts/add'
     | '/home/settings/networks'
     | '/home/settings/wallets'
     | '/home/settings/networks/new'
@@ -963,6 +983,7 @@ export interface FileRouteTypes {
     | '/home/transfer/erc20'
     | '/home/transfer/eth'
     | '/home/contracts/$chainId/$address'
+    | '/home/contracts/add'
     | '/home/settings/networks'
     | '/home/settings/wallets'
     | '/home/settings/networks/new'
@@ -1000,6 +1021,7 @@ export interface FileRouteTypes {
     | '/home/_l/transfer/_l/eth'
     | '/home/_l/contracts/_l/'
     | '/home/_l/contracts/_l/$chainId/$address'
+    | '/home/_l/contracts/_l/_l/add'
     | '/home/_l/settings/_l/networks'
     | '/home/_l/settings/_l/networks/_l'
     | '/home/_l/settings/_l/wallets'
@@ -1136,7 +1158,8 @@ export const routeTree = rootRoute
       "parent": "/home/_l/contracts",
       "children": [
         "/home/_l/contracts/_l/",
-        "/home/_l/contracts/_l/$chainId/$address"
+        "/home/_l/contracts/_l/$chainId/$address",
+        "/home/_l/contracts/_l/_l/add"
       ]
     },
     "/home/_l/settings": {
@@ -1198,6 +1221,10 @@ export const routeTree = rootRoute
     },
     "/home/_l/contracts/_l/$chainId/$address": {
       "filePath": "home/_l/contracts/_l/$chainId.$address.tsx",
+      "parent": "/home/_l/contracts/_l"
+    },
+    "/home/_l/contracts/_l/_l/add": {
+      "filePath": "home/_l/contracts/_l/_l.add.tsx",
       "parent": "/home/_l/contracts/_l"
     },
     "/home/_l/settings/_l/networks": {
