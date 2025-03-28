@@ -15,10 +15,7 @@ export const Route = createFileRoute("/home/_l")({
 
 function HomePageLayout() {
   useNoticeAlchemyKeyMissing();
-  const isDev = import.meta.env.MODE === "development";
-  if (!isDev) {
-    useNoticeNewVersion();
-  }
+  useNoticeNewVersion();
 
   return (
     <CommandBarProvider>

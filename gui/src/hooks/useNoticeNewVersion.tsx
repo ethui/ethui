@@ -21,7 +21,8 @@ export function useNoticeNewVersion() {
   }, []);
 
   useEffect(() => {
-    if (!latest || current === latest) return;
+    const isDev = import.meta.env.MODE === "development";
+    if (isDev || !latest || current === latest) return;
 
     toast({
       title: "New release available",
