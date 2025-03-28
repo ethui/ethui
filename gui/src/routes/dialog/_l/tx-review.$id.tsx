@@ -10,9 +10,11 @@ import {
   type Abi,
   type AbiFunction,
   type Address,
+  type ContractEventName,
+  type DecodeEventLogParameters,
+  type DecodeEventLogReturnType,
   type Hex,
   decodeEventLog,
-  encodeEventTopics,
   formatUnits,
   getAbiItem,
   parseAbi,
@@ -21,7 +23,7 @@ import {
 import { ChainView } from "@ethui/ui/components/chain-view";
 
 import { AbiItemFormWithPreview } from "@ethui/form/src/AbiItemFormWithPreview";
-import type { TokenMetadata } from "@ethui/types";
+import type { Result, TokenMetadata } from "@ethui/types";
 import type { Network } from "@ethui/types/network";
 import { Check, CheckIcon, FilePlus2, X } from "lucide-react";
 import { AddressView } from "#/components/AddressView";
@@ -303,12 +305,7 @@ const erc20 = parseAbi([
 ]);
 
 function Log({ log, chainId }: LogProps) {
-  switch (log.topics[0]) {
-    case encodeEventTopics({ abi: erc20, eventName: "Transfer" })[0]:
-      return <Erc20Transfer log={log} chainId={chainId} />;
-    default:
-      return null;
-  }
+  return <Erc20Transfer log={log} chainId={chainId} />;
 }
 
 interface Erc20TransferProps {
@@ -317,17 +314,18 @@ interface Erc20TransferProps {
 }
 
 function Erc20Transfer({ chainId, log }: Erc20TransferProps) {
-  const result = decodeEventLog({
+  const result = tryDecodeEventLog({
     abi: erc20,
     eventName: "Transfer",
     data: log.data,
     topics: log.topics,
   });
-  if (!result) return null;
+
+  if (!result.ok) return null;
 
   const {
     args: { from, to, value },
-  } = result;
+  } = result.value;
 
   const { data: metadata } = useInvoke<TokenMetadata>("db_get_erc20_metadata", {
     chainId,
@@ -346,4 +344,23 @@ function Erc20Transfer({ chainId, log }: Erc20TransferProps) {
       {metadata?.symbol && `${metadata.symbol}`}
     </div>
   );
+}
+
+function tryDecodeEventLog<
+  const abi extends Abi | readonly unknown[],
+  eventName extends ContractEventName<abi> | undefined = undefined,
+  topics extends Hex[] = Hex[],
+  data extends Hex | undefined = undefined,
+  strict extends boolean = true,
+>(
+  parameters: DecodeEventLogParameters<abi, eventName, topics, data, strict>,
+): Result<
+  DecodeEventLogReturnType<abi, eventName, topics, data, strict>,
+  undefined
+> {
+  try {
+    return { ok: true, value: decodeEventLog(parameters) };
+  } catch (_e) {
+    return { ok: false, error: undefined };
+  }
 }
