@@ -10,9 +10,9 @@ import {
   type Abi,
   type AbiFunction,
   type Address,
-  ContractEventName,
-  DecodeEventLogParameters,
-  DecodeEventLogReturnType,
+  type ContractEventName,
+  type DecodeEventLogParameters,
+  type DecodeEventLogReturnType,
   type Hex,
   decodeEventLog,
   encodeEventTopics,
@@ -48,11 +48,11 @@ interface TxRequest {
   value: string;
   chainId: number;
   walletType:
-  | "ledger"
-  | "HdWallet"
-  | "jsonKeystore"
-  | "plaintext"
-  | "impersonator";
+    | "ledger"
+    | "HdWallet"
+    | "jsonKeystore"
+    | "plaintext"
+    | "impersonator";
 }
 
 interface Log {
