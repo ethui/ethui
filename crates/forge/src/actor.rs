@@ -110,13 +110,13 @@ impl Message<UpdateContracts> for Worker {
         let s = &self;
 
         let contracts_with_code = stream::iter(contracts)
-            .map(|(chain_id, address, code)| async move {
+            .map(|((chain_id, dedup_id), address, code)| async move {
                 let code: Option<Bytes> = match code {
                     Some(code) if !code.is_empty() => Some(code),
                     _ => utils::get_code(chain_id, address).await.ok(),
                 };
 
-                code.map(|c| (chain_id, address, c))
+                code.map(|c| ((chain_id, dedup_id), address, c))
             })
             .buffer_unordered(10)
             .filter_map(|x| async { x })
@@ -129,10 +129,10 @@ impl Message<UpdateContracts> for Worker {
             .collect::<Vec<_>>()
             .await;
 
-        for (chain_id, address, code, abi) in contracts_with_code.into_iter() {
-            trace!(chain_id=chain_id, address=?address, abi=abi.name);
+        for ((chain_id, dedup_id), address, code, abi) in contracts_with_code.into_iter() {
+            trace!(chain_id=chain_id, dedup_id=dedup_id, address=?address, abi=abi.name);
             db.insert_contract_with_abi(
-                chain_id,
+                (chain_id, dedup_id).into(),
                 address,
                 Some(&code),
                 Some(serde_json::to_string(&abi.abi)?),

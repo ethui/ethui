@@ -1,10 +1,10 @@
-use crate::{Error, Result};
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_networks::Networks;
 use ethui_types::{GlobalState, Network, NewNetworkParams};
 use serde::Serialize;
 
 use super::chain_add::Params;
+use crate::{Error, Result};
 
 #[derive(Debug)]
 pub struct ChainUpdate {
