@@ -21,7 +21,7 @@
     "@fontsource/source-code-pro": "^5.2.5",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-collapsible": "^1.1.3",
-    "@tanstack/react-query": "^5.69.0",
+    "@tanstack/react-query": "^5.71.1",
     "@tanstack/react-router": "^1.114.12",
     "@tanstack/router-devtools": "^1.114.13",
     "@tanstack/zod-adapter": "^1.114.23",
