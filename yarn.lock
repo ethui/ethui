@@ -1201,7 +1201,7 @@ __metadata:
     "@types/lodash-es": "npm:^4.17.12"
     "@types/node": "npm:^22.13.5"
     typescript: "npm:5.8.2"
-    viem: "npm:^2.23.5"
+    viem: "npm:^2.24.3"
   languageName: unknown
   linkType: soft
 
@@ -1215,7 +1215,7 @@ __metadata:
     nearly: "npm:^1.8.1"
     react: "npm:^19.0.0"
     react-dom: "npm:^19.1.0"
-    viem: "npm:^2.23.5"
+    viem: "npm:^2.24.3"
   peerDependencies:
     "@emotion/react": ^11.11.4
     "@emotion/styled": ^11.11.5
@@ -1275,7 +1275,7 @@ __metadata:
     tailwindcss-animate: "npm:^1.0.7"
     ts-unused-exports: "npm:^11.0.1"
     typescript: "npm:5.8.2"
-    viem: "npm:^2.23.5"
+    viem: "npm:^2.24.3"
     vite: "npm:^6.2.3"
     vite-plugin-babel-import: "npm:^2.0.5"
     vite-plugin-imp: "npm:^2.4.0"
@@ -1295,7 +1295,7 @@ __metadata:
     "@types/node": "npm:^22.13.5"
     jsdom: "npm:^26.0.0"
     typescript: "npm:5.8.2"
-    viem: "npm:^2.23.5"
+    viem: "npm:^2.24.3"
     zod: "npm:^3.24.2"
     zxcvbn-typescript: "npm:^5.0.1"
   peerDependencies:
@@ -6384,6 +6384,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ox@npm:0.6.9":
+  version: 0.6.9
+  resolution: "ox@npm:0.6.9"
+  dependencies:
+    "@adraffy/ens-normalize": "npm:^1.10.1"
+    "@noble/curves": "npm:^1.6.0"
+    "@noble/hashes": "npm:^1.5.0"
+    "@scure/bip32": "npm:^1.5.0"
+    "@scure/bip39": "npm:^1.4.0"
+    abitype: "npm:^1.0.6"
+    eventemitter3: "npm:5.0.1"
+  peerDependencies:
+    typescript: ">=5.4.0"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 10c0/02a7ea9795eaac0a7a672e983094f62ae6f19b7d0c786e6d7ef4584683faf535b5b133e42452dd3abb77115382e16b2cb5c0f629d5a0f2b80832c47756e0ecd1
+  languageName: node
+  linkType: hard
+
 "p-map@npm:^4.0.0":
   version: 4.0.0
   resolution: "p-map@npm:4.0.0"
@@ -7658,6 +7678,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"viem@npm:^2.24.3":
+  version: 2.24.3
+  resolution: "viem@npm:2.24.3"
+  dependencies:
+    "@noble/curves": "npm:1.8.1"
+    "@noble/hashes": "npm:1.7.1"
+    "@scure/bip32": "npm:1.6.2"
+    "@scure/bip39": "npm:1.5.4"
+    abitype: "npm:1.0.8"
+    isows: "npm:1.0.6"
+    ox: "npm:0.6.9"
+    ws: "npm:8.18.1"
+  peerDependencies:
+    typescript: ">=5.0.4"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 10c0/d054082f9b5f2e0a9e7f3a5c5e911b6cc7a9879f83e51377c20594ea11a0609abe14b1debebf9a09d77918273342e2a4c830f243f0d03f86b7ed3ef7fdb4d97d
+  languageName: node
+  linkType: hard
+
 "vite-node@npm:3.1.1":
   version: 3.1.1
   resolution: "vite-node@npm:3.1.1"
@@ -7965,6 +8006,21 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: 10c0/25eb33aff17edcb90721ed6b0eb250976328533ad3cd1a28a274bd263682e7296a6591ff1436d6cbc50fa67463158b062f9d1122013b361cec99a05f84680e06
+  languageName: node
+  linkType: hard
+
+"ws@npm:8.18.1":
+  version: 8.18.1
+  resolution: "ws@npm:8.18.1"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ">=5.0.2"
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 10c0/e498965d6938c63058c4310ffb6967f07d4fa06789d3364829028af380d299fe05762961742971c764973dce3d1f6a2633fe8b2d9410c9b52e534b4b882a99fa
   languageName: node
   linkType: hard
 
