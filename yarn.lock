@@ -1236,7 +1236,7 @@ __metadata:
     "@hookform/resolvers": "npm:^3.10.0"
     "@radix-ui/react-collapsible": "npm:^1.1.3"
     "@tailwindcss/vite": "npm:^4.0.8"
-    "@tanstack/react-query": "npm:^5.71.1"
+    "@tanstack/react-query": "npm:^5.72.0"
     "@tanstack/react-query-devtools": "npm:^5.69.0"
     "@tanstack/react-router": "npm:^1.114.12"
     "@tanstack/router-devtools": "npm:^1.114.13"
@@ -3541,10 +3541,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-core@npm:5.71.1":
-  version: 5.71.1
-  resolution: "@tanstack/query-core@npm:5.71.1"
-  checksum: 10c0/cc26032439fa1f4f249a56505a51b251440e08312c65b2dcf6b6970c751a3a1c9b3dba4a03e7a64a5b9be5634b6d86c3f93d95e91d73d3875a86e4d50da7e9ae
+"@tanstack/query-core@npm:5.72.0":
+  version: 5.72.0
+  resolution: "@tanstack/query-core@npm:5.72.0"
+  checksum: 10c0/a22a4536d90069718a8e1d46832ca27d870a5080e98f37021163d4fea4fe2ea499fd7cd3452de340b8805c2378f56f5967bf924eb66105d626f731804500f206
   languageName: node
   linkType: hard
 
@@ -3578,14 +3578,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:^5.71.1":
-  version: 5.71.1
-  resolution: "@tanstack/react-query@npm:5.71.1"
+"@tanstack/react-query@npm:^5.72.0":
+  version: 5.72.0
+  resolution: "@tanstack/react-query@npm:5.72.0"
   dependencies:
-    "@tanstack/query-core": "npm:5.71.1"
+    "@tanstack/query-core": "npm:5.72.0"
   peerDependencies:
     react: ^18 || ^19
-  checksum: 10c0/10b852ff99839069282ff2262817672a1243c781469e71643007a5610a579557a0f50cc0cc39bf3bb59d79c09d16e367952bce6b889117b461bbb548dc2f464e
+  checksum: 10c0/e6b1963bb3a8cd5f68fde8b9a22222450137bf1384fd242c9757ff37feb70abd2627c24763a70d79aa6492f52b4763cff48787bce796662d8359db95e8e33ab9
   languageName: node
   linkType: hard
 
