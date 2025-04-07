@@ -1201,7 +1201,7 @@ __metadata:
     "@types/lodash-es": "npm:^4.17.12"
     "@types/node": "npm:^22.13.5"
     typescript: "npm:5.8.2"
-    viem: "npm:^2.24.3"
+    viem: "npm:^2.26.0"
   languageName: unknown
   linkType: soft
 
@@ -1215,7 +1215,7 @@ __metadata:
     nearly: "npm:^1.8.1"
     react: "npm:^19.0.0"
     react-dom: "npm:^19.1.0"
-    viem: "npm:^2.24.3"
+    viem: "npm:^2.26.0"
   peerDependencies:
     "@emotion/react": ^11.11.4
     "@emotion/styled": ^11.11.5
@@ -1275,7 +1275,7 @@ __metadata:
     tailwindcss-animate: "npm:^1.0.7"
     ts-unused-exports: "npm:^11.0.1"
     typescript: "npm:5.8.2"
-    viem: "npm:^2.24.3"
+    viem: "npm:^2.26.0"
     vite: "npm:^6.2.3"
     vite-plugin-babel-import: "npm:^2.0.5"
     vite-plugin-imp: "npm:^2.4.0"
@@ -1295,7 +1295,7 @@ __metadata:
     "@types/node": "npm:^22.13.5"
     jsdom: "npm:^26.0.0"
     typescript: "npm:5.8.2"
-    viem: "npm:^2.24.3"
+    viem: "npm:^2.26.0"
     zod: "npm:^3.24.2"
     zxcvbn-typescript: "npm:^5.0.1"
   peerDependencies:
@@ -7685,9 +7685,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"viem@npm:^2.24.3":
-  version: 2.24.3
-  resolution: "viem@npm:2.24.3"
+"viem@npm:^2.26.0":
+  version: 2.26.0
+  resolution: "viem@npm:2.26.0"
   dependencies:
     "@noble/curves": "npm:1.8.1"
     "@noble/hashes": "npm:1.7.1"
@@ -7702,7 +7702,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10c0/d054082f9b5f2e0a9e7f3a5c5e911b6cc7a9879f83e51377c20594ea11a0609abe14b1debebf9a09d77918273342e2a4c830f243f0d03f86b7ed3ef7fdb4d97d
+  checksum: 10c0/ad902e2348d42cef7723fc372f87a361ec16b114a2cf21bfc2d92cbdef1ac90142c8b3adc1ceea0438cc5b29796cbb8c23a880449499c21ce6b76f0317e8d524
   languageName: node
   linkType: hard
 
