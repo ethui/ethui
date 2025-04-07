@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/shallow";
@@ -7,6 +7,9 @@ import { useShallow } from "zustand/shallow";
 import { ChainView } from "@ethui/ui/components/chain-view";
 import { Form } from "@ethui/ui/components/form";
 
+import { Button } from "@ethui/ui/components/shadcn/button";
+import { Check, LoaderCircle } from "lucide-react";
+import { useState } from "react";
 import { useContracts } from "#/store/useContracts";
 import { useNetworks } from "#/store/useNetworks";
 
@@ -16,9 +19,11 @@ export const Route = createFileRoute("/home/_l/contracts/_l/_l/add")({
 });
 
 function RouteComponent() {
+  const router = useRouter();
   const [networks, currentNetwork] = useNetworks(
     useShallow((s) => [s.networks, s.current]),
   );
+  const [loading, setLoading] = useState(false);
 
   const schema = z.object({
     dedupChainId: z.string(),
@@ -37,9 +42,17 @@ function RouteComponent() {
     } as Schema,
   });
 
+  const cancel = () => {
+    router.navigate({ to: "/home/contracts" });
+  };
+
   const onSubmit = (data: FieldValues) => {
+    setLoading(true);
     const value = JSON.parse(data.dedupChainId);
-    add(value.chain_id, value.dedup_id, data.address);
+    add(value.chain_id, value.dedup_id, data.address).then(() => {
+      setLoading(false);
+      router.history.back();
+    });
   };
 
   if (!currentNetwork) return null;
@@ -58,7 +71,15 @@ function RouteComponent() {
       />
 
       <Form.Text label="Contract Address" name="address" className="w-full" />
-      <Form.Submit label="Add" />
+      <div className="flex gap-2">
+        <Button variant="destructive" disabled={loading} onClick={cancel}>
+          Cancel
+        </Button>
+        <Button disabled={loading}>
+          {loading ? <LoaderCircle className="animate-spin" /> : <Check />}
+          Add
+        </Button>
+      </div>
     </Form>
   );
 }
