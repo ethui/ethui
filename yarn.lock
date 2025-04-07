@@ -1211,9 +1211,9 @@ __metadata:
   dependencies:
     "@ethui/abiparse": "npm:*"
     "@ethui/ui": "npm:0.0.8"
-    "@types/react": "npm:^19.0.10"
+    "@types/react": "npm:^19.1.0"
     nearly: "npm:^1.8.1"
-    react: "npm:^19.0.0"
+    react: "npm:^19.1.0"
     react-dom: "npm:^19.1.0"
     viem: "npm:^2.24.3"
   peerDependencies:
@@ -1250,7 +1250,7 @@ __metadata:
     "@types/core-js": "npm:^2.5.8"
     "@types/lodash-es": "npm:^4.17.12"
     "@types/node": "npm:^22.13.5"
-    "@types/react": "npm:^19.0.10"
+    "@types/react": "npm:^19.1.0"
     "@types/react-dom": "npm:^19.0.4"
     "@uidotdev/usehooks": "npm:^2.4.1"
     "@vitejs/plugin-react-swc": "npm:^3.8.0"
@@ -4081,12 +4081,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^19.0.10":
-  version: 19.0.10
-  resolution: "@types/react@npm:19.0.10"
+"@types/react@npm:^19.1.0":
+  version: 19.1.0
+  resolution: "@types/react@npm:19.1.0"
   dependencies:
     csstype: "npm:^3.0.2"
-  checksum: 10c0/41884cca21850c8b2d6578b172ca0ca4fff6021251a68532b19f2031ac23dc5a9222470208065f8d9985d367376047df2f49ece8d927f7d04cdc94922b1eb34b
+  checksum: 10c0/632fd20ee176e55801a61c5f854141b043571a3e363ef106b047b766a813a12735cbb37abb3d61d126346979f530f2ed269a60c8ef3cdee54e5e9fe4174e5dad
   languageName: node
   linkType: hard
 
@@ -6752,7 +6752,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm: ^19, react@npm:^19.0.0":
+"react@npm: ^19":
   version: 19.0.0
   resolution: "react@npm:19.0.0"
   checksum: 10c0/9cad8f103e8e3a16d15cb18a0d8115d8bd9f9e1ce3420310aea381eb42aa0a4f812cf047bb5441349257a05fba8a291515691e3cb51267279b2d2c3253f38471
