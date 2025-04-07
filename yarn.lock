@@ -1241,7 +1241,7 @@ __metadata:
     "@tanstack/react-router": "npm:^1.114.12"
     "@tanstack/router-devtools": "npm:^1.114.13"
     "@tanstack/router-plugin": "npm:^1.114.12"
-    "@tanstack/zod-adapter": "npm:^1.114.23"
+    "@tanstack/zod-adapter": "npm:^1.115.0"
     "@tauri-apps/api": "npm:2.4.0"
     "@tauri-apps/cli": "npm:^2.4.0"
     "@tauri-apps/plugin-clipboard-manager": "npm:^2.2.1"
@@ -3766,13 +3766,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/zod-adapter@npm:^1.114.23":
-  version: 1.114.23
-  resolution: "@tanstack/zod-adapter@npm:1.114.23"
+"@tanstack/zod-adapter@npm:^1.115.0":
+  version: 1.115.0
+  resolution: "@tanstack/zod-adapter@npm:1.115.0"
   peerDependencies:
     "@tanstack/react-router": ">=1.43.2"
     zod: ^3.23.8
-  checksum: 10c0/03598ec7d785d664a2aa5e07ef51649d13cc1937bfcb0f6411b760cf4def74d9a580ff927d513a87235a849ae805e5e13fd8306c0716b327f3b1d03b37c170ca
+  checksum: 10c0/98bcb32daf6fec0e0f53e10cd3a226db3e062646a0d7a538fa8f7bed6c1fb005c5cd1acd133dfa87737ea207b42b6dfa35e7de5e78de66ea5079c6097c3001b6
   languageName: node
   linkType: hard
 
