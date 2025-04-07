@@ -41,7 +41,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-error-boundary": "^5.0.0",
-    "react-hook-form": "^7.54.2",
+    "react-hook-form": "^7.55.0",
     "react18-json-view": "^0.2.9",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
