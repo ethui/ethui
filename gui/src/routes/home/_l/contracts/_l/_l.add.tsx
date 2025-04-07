@@ -19,8 +19,9 @@ function RouteComponent() {
   const [networks, currentNetwork] = useNetworks(
     useShallow((s) => [s.networks, s.current]),
   );
+
   const schema = z.object({
-    chainId: z.string(),
+    dedupChainId: z.string(),
     address: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid format"),
   });
 
@@ -32,11 +33,14 @@ function RouteComponent() {
     mode: "onChange",
     resolver: zodResolver(schema),
     defaultValues: {
-      chainId: currentNetwork?.dedup_chain_id.chain_id?.toString(),
+      dedupChainId: JSON.stringify(currentNetwork?.dedup_chain_id),
     } as Schema,
   });
 
-  const onSubmit = (data: FieldValues) => add(data.chainId, data.address);
+  const onSubmit = (data: FieldValues) => {
+    const value = JSON.parse(data.dedupChainId);
+    add(value.chain_id, value.dedup_id, data.address);
+  };
 
   if (!currentNetwork) return null;
 
@@ -44,10 +48,10 @@ function RouteComponent() {
     <Form form={form} onSubmit={onSubmit} className="p-2">
       <Form.Select
         label="Network"
-        name="chainId"
-        defaultValue={currentNetwork.dedup_chain_id.chain_id.toString()}
+        name="dedupChainId"
+        defaultValue={currentNetwork.dedup_chain_id}
         items={networks}
-        toValue={(n) => n.dedup_chain_id.chain_id.toString()}
+        toValue={(n) => JSON.stringify(n.dedup_chain_id)}
         render={({ dedup_chain_id: { chain_id }, name }) => (
           <ChainView chainId={chain_id} name={name} />
         )}
