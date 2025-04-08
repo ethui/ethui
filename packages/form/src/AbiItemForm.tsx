@@ -31,7 +31,7 @@ export function AbiItemForm({
   defaultCalldata,
   defaultEther,
   onChange,
-  onSubmit = () => {},
+  onSubmit = () => { },
   submit = false,
 }: AbiItemFormProps) {
   if (!abiItem || abiItem === "raw" || abiItem === "rawCall") {
