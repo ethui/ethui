@@ -1235,7 +1235,7 @@ __metadata:
     "@fontsource/source-code-pro": "npm:^5.2.5"
     "@hookform/resolvers": "npm:^3.10.0"
     "@radix-ui/react-collapsible": "npm:^1.1.3"
-    "@tailwindcss/vite": "npm:^4.0.8"
+    "@tailwindcss/vite": "npm:^4.1.3"
     "@tanstack/react-query": "npm:^5.71.1"
     "@tanstack/react-query-devtools": "npm:^5.69.0"
     "@tanstack/react-router": "npm:^1.114.12"
@@ -3657,17 +3657,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tailwindcss/vite@npm:^4.0.8":
-  version: 4.0.8
-  resolution: "@tailwindcss/vite@npm:4.0.8"
+"@tailwindcss/vite@npm:^4.1.3":
+  version: 4.1.3
+  resolution: "@tailwindcss/vite@npm:4.1.3"
   dependencies:
-    "@tailwindcss/node": "npm:4.0.8"
-    "@tailwindcss/oxide": "npm:4.0.8"
-    lightningcss: "npm:^1.29.1"
-    tailwindcss: "npm:4.0.8"
+    "@tailwindcss/node": "npm:4.1.3"
+    "@tailwindcss/oxide": "npm:4.1.3"
+    tailwindcss: "npm:4.1.3"
   peerDependencies:
     vite: ^5.2.0 || ^6
-  checksum: 10c0/fff737f5380b5ae3d88d7c7a1afb62b47a9389bd0939caa489ef5f4ad00205a88d642b24390cfab6cea450ad3d2b8b33bc30c34591e439d4577ea589a55f154b
+  checksum: 10c0/0148ba2b33174fb189d2879a58f60ce1ef73aa2637f5469c58a9abcbc005520b60fa65a05d3d2db7bfa758ae7e3ebfe893a89caabf1307620b0bb937e98235de
   languageName: node
   linkType: hard
 
