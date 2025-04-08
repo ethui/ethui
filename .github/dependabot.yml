@@ -5,7 +5,7 @@
 
 version: 2
 updates:
-  - package-ecosystem: "npm"
+  - package-ecosystem: "cargo"
     directory: "/"
     open-pull-requests-limit: 10
     schedule:
@@ -20,7 +20,7 @@ updates:
           - "alloy"
           - "alloy-chains"
 
-  - package-ecosystem: "cargo"
+  - package-ecosystem: "npm"
     directory: "/"
     open-pull-requests-limit: 10
     schedule:
