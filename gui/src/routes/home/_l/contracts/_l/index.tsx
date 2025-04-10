@@ -37,10 +37,12 @@ function Contracts() {
       <div className="flex flex-col gap-2 pt-2">
         {Array.from(contracts || []).map(
           ({ address, name, chainId, proxyName }) => (
-            <div className="flex flex-wrap hover:bg-accent xl:flex-nowrap">
+            <div
+              key={address}
+              className="flex flex-wrap hover:bg-accent xl:flex-nowrap"
+            >
               <div className="grow pr-32">
                 <Link
-                  key={address}
                   to="/home/contracts/$chainId/$address"
                   params={{ address: address, chainId: chainId }}
                   className="flex whitespace-nowrap p-4 align-baseline"
