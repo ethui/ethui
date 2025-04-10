@@ -19,6 +19,7 @@ impl EthUIApp {
                 commands::get_version,
                 commands::ui_error,
                 commands::add_contract,
+                commands::remove_contract,
                 ethui_settings::commands::settings_get,
                 ethui_settings::commands::settings_set,
                 ethui_settings::commands::settings_set_dark_mode,
