@@ -16,6 +16,7 @@ interface State {
 interface Setters {
   reload: () => Promise<void>;
   add: (chainId: number, address: Address) => Promise<void>;
+  removeContract: (chainId: number, address: Address) => Promise<void>;
   setChainId: (chainId?: number) => void;
   filteredContracts: (filter: string) => Contract[];
 }
@@ -64,6 +65,27 @@ const store: StateCreator<Store> = (set, get) => ({
       await invoke("add_contract", {
         chainId: Number(chainId),
         address,
+      });
+    } catch (err: any) {
+      toast({
+        title: "Error",
+        description: err.toString(),
+        variant: "destructive",
+      });
+    }
+  },
+
+  removeContract: async (chainId: number, address: Address) => {
+    try {
+      await invoke("remove_contract", {
+        chainId: Number(chainId),
+        address,
+      });
+
+      toast({
+        title: "Deleted",
+        description: "Contract removed",
+        variant: "destructive",
       });
     } catch (err: any) {
       toast({
