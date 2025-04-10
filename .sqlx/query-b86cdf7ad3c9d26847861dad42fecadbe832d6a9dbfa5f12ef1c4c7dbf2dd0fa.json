@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT proxied_by FROM contracts WHERE chain_id = ? AND address = ?",
+  "describe": {
+    "columns": [
+      {
+        "name": "proxied_by",
+        "ordinal": 0,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "b86cdf7ad3c9d26847861dad42fecadbe832d6a9dbfa5f12ef1c4c7dbf2dd0fa"
+}
