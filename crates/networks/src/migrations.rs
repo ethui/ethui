@@ -1,17 +1,17 @@
-use ethui_types::Network;
-use serde::{Deserialize, Serialize};
-use serde_constant::ConstI64;
-use serde_json::json;
 use std::{
     collections::HashMap,
     fs::File,
     io::BufReader,
     path::{Path, PathBuf},
 };
+
+use ethui_types::Network;
+use serde::{Deserialize, Serialize};
+use serde_constant::ConstI64;
+use serde_json::json;
 use url::Url;
 
-use crate::Result;
-use crate::{Networks, SerializedNetworks};
+use crate::{Networks, Result, SerializedNetworks};
 
 pub type LatestVersion = ConstI64<3>;
 
@@ -153,7 +153,7 @@ fn migrate_networks_from_v2_to_v3(
             (
                 name,
                 Network {
-                    dedup_chain_id: (network.chain_id, network.deduplication_id).into(),
+                    dedup_chain_id: (network.chain_id, network.deduplication_id as i32).into(),
                     name: network.name,
                     explorer_url: network.explorer_url,
                     http_url: network.http_url,
@@ -168,16 +168,16 @@ fn migrate_networks_from_v2_to_v3(
 
 #[cfg(test)]
 mod tests {
-    use serde_json::json;
     use std::{
         fs::File,
         io::{BufReader, Write},
     };
+
+    use serde_json::json;
     use tempfile::NamedTempFile;
 
-    use crate::SerializedNetworks;
-
     use super::load_and_migrate;
+    use crate::SerializedNetworks;
 
     #[test]
     fn it_converts_from_v0_to_v3() {

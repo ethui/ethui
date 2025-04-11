@@ -1,15 +1,16 @@
-use ethui_types::Address;
-use serde::Deserialize;
-#[cfg(test)]
-use serde::Serialize;
-use serde_constant::ConstI64;
-use serde_json::json;
 use std::{
     collections::HashMap,
     fs::File,
     io::BufReader,
     path::{Path, PathBuf},
 };
+
+use ethui_types::Address;
+use serde::Deserialize;
+#[cfg(test)]
+use serde::Serialize;
+use serde_constant::ConstI64;
+use serde_json::json;
 
 use crate::{onboarding::Onboarding, DarkMode, Result, SerializedSettings, Settings};
 
@@ -212,14 +213,14 @@ impl Default for SerializedSettingsV1 {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use std::{
         fs::File,
         io::{BufReader, Write},
     };
+
     use tempfile::NamedTempFile;
 
-    use super::load_and_migrate;
+    use super::{load_and_migrate, *};
 
     #[tokio::test]
     async fn it_converts_from_v0_to_v1() {

@@ -123,18 +123,29 @@ impl Networks {
             .cloned()
     }
 
-    pub async fn add_network(&mut self, network: NewNetworkParams) -> Result<()> {
-        // TODO: need to ensure uniqueness by name, not chain id
-        if self.validate_chain_id(network.dedup_chain_id.chain_id()) {
-            return Err(Error::AlreadyExists);
-        }
+    pub fn get_network_by_dedup_chain_id(&self, dedup_chain_id: DedupChainId) -> Option<Network> {
+        self.inner
+            .networks
+            .values()
+            .find(|n| n.dedup_chain_id == dedup_chain_id)
+            .cloned()
+    }
 
+    pub async fn add_network(&mut self, network: NewNetworkParams) -> Result<()> {
         if self.inner.networks.contains_key(&network.name) {
             return Err(Error::AlreadyExists);
         }
 
         let deduplication_id = self.get_chain_id_count(network.dedup_chain_id.chain_id());
         let network = network.into_network(deduplication_id);
+
+        if !network.is_dev().await
+            & self
+                .get_network_by_dedup_chain_id(network.dedup_chain_id())
+                .is_some()
+        {
+            return Err(Error::AlreadyExists);
+        }
 
         self.inner
             .networks
@@ -203,15 +214,15 @@ impl Networks {
         Ok(provider.get_chain_id().await?)
     }
 
-    pub fn get_chain_id_count(&self, chain_id: u32) -> u32 {
+    pub fn get_chain_id_count(&self, chain_id: u32) -> i32 {
         self.inner
             .networks
             .values()
             .filter(|network| network.chain_id() == chain_id)
-            .count() as u32
+            .count() as i32
     }
 
-    pub fn get_lowest_dedup_id(&self, chain_id: u32) -> u32 {
+    pub fn get_lowest_dedup_id(&self, chain_id: u32) -> i32 {
         self.inner
             .networks
             .values()

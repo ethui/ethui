@@ -96,6 +96,11 @@ export interface Contract {
   proxiedBy?: Address;
 }
 
+export interface DedupChainId {
+  chain_id: number;
+  dedup_id?: number;
+}
+
 export interface Peer {
   origin: string;
   tab_id?: number;
