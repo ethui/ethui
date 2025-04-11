@@ -4,6 +4,7 @@
     utils.url = "github:numtide/flake-utils";
     rust.url = "github:oxalica/rust-overlay";
   };
+
   outputs =
     {
       self,

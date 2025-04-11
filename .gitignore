@@ -27,3 +27,13 @@ extension/*.zip
 !.yarn/sdks
 !.yarn/versions
 *storybook.log
+
+# Devenv
+.devenv*
+devenv.local.nix
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml
