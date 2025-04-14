@@ -17,6 +17,7 @@ import { useBalances } from "#/store/useBalances";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
 
+import type { WriteResponse } from "@ethui/types";
 import { Terminal } from "lucide-react";
 import type { Token } from "./-common";
 
@@ -113,8 +114,11 @@ function RouteComponent() {
   if (!network || !address || !currentToken) return null;
 
   const onSubmit = async (data: FieldValues) => {
-    const hash = await transferETH(address, data.to, data.value);
-    setResult(hash);
+    const result = await transferETH(address, data.to, data.value);
+
+    if (result.status && result.hash) {
+      setResult(result.hash);
+    }
   };
 
   return (
@@ -148,7 +152,7 @@ function RouteComponent() {
 }
 
 const transferETH = async (from: Address, to: Address, value: bigint) => {
-  return await invoke<`0x${string}`>("rpc_send_transaction", {
+  return await invoke<WriteResponse>("rpc_send_transaction", {
     params: {
       from,
       to,

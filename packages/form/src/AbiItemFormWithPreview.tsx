@@ -46,16 +46,19 @@ export function AbiItemFormWithPreview({
 
   return (
     <div className="grid grid-cols-3 gap-2">
-      {showForm && (
-        <div className="col-span-3 md:col-span-1">
-          <AbiItemForm
-            item={abiFunction}
-            onChange={onChange}
-            defaultEther={defaultEther}
-            defaultCalldata={defaultCalldata}
-          />
-        </div>
-      )}
+      <div
+        className={clsx(
+          "col-span-3",
+          showForm ? "md:col-span-1" : "md:col-span-0",
+        )}
+      >
+        <AbiItemForm
+          item={abiFunction}
+          onChange={onChange}
+          defaultEther={defaultEther}
+          defaultCalldata={defaultCalldata}
+        />
+      </div>
       <div className={clsx("col-span-3", showForm && "md:col-span-2")}>
         {data && sender && (
           <SolidityCall

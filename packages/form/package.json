@@ -5,13 +5,13 @@
   "license": "MIT",
   "dependencies": {
     "@ethui/abiparse": "*",
-    "@ethui/ui": "0.0.8",
+    "@ethui/ui": "0.0.60",
     "nearly": "^1.8.1",
-    "viem": "^2.24.3"
+    "viem": "^2.26.2"
   },
   "devDependencies": {
     "@types/react": "^19.0.10",
-    "react": "^19.0.0",
+    "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
   "peerDependencies": {

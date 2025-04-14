@@ -2304,9 +2304,9 @@ dependencies = [
 
 [[package]]
 name = "crossbeam-channel"
-version = "0.5.13"
+version = "0.5.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "33480d6946193aa8033910124896ca395333cae7e2d1113d1fef6c3272217df2"
+checksum = "82b8f8f868b36967f9606790d1903570de9ceaf870a7bf9fbbd3016d636a2cb2"
 dependencies = [
  "crossbeam-utils",
 ]
@@ -3004,7 +3004,7 @@ dependencies = [
 
 [[package]]
 name = "ethui"
-version = "1.14.2"
+version = "1.14.3"
 dependencies = [
  "alloy",
  "ethui-args",
@@ -3041,21 +3041,21 @@ dependencies = [
 
 [[package]]
 name = "ethui-abis"
-version = "1.14.2"
+version = "1.14.3"
 dependencies = [
  "alloy",
 ]
 
 [[package]]
 name = "ethui-args"
-version = "1.14.2"
+version = "1.14.3"
 dependencies = [
  "clap",
 ]
 
 [[package]]
 name = "ethui-broadcast"
-version = "1.14.2"
+version = "1.14.3"
 dependencies = [
  "ethui-types",
  "once_cell",
@@ -3066,7 +3066,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-connections"
-version = "1.14.2"
+version = "1.14.3"
 dependencies = [
  "async-trait",
  "chrono",
@@ -3086,7 +3086,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-crypto"
-version = "1.14.2"
+version = "1.14.3"
 dependencies = [
  "aead",
  "chacha20poly1305",
@@ -3100,7 +3100,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-db"
-version = "1.14.2"
+version = "1.14.3"
 dependencies = [
  "alloy",
  "alloy-chains",
@@ -3120,7 +3120,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-dialogs"
-version = "1.14.2"
+version = "1.14.3"
 dependencies = [
  "ethui-broadcast",
  "ethui-types",
@@ -3136,7 +3136,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-exchange-rates"
-version = "1.14.2"
+version = "1.14.3"
 dependencies = [
  "async-trait",
  "ethui-types",
@@ -3148,7 +3148,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-forge"
-version = "1.14.2"
+version = "1.14.3"
 dependencies = [
  "alloy",
  "anyhow",
@@ -3173,7 +3173,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-networks"
-version = "1.14.2"
+version = "1.14.3"
 dependencies = [
  "alloy",
  "async-trait",
@@ -3201,7 +3201,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-rpc"
-version = "1.14.2"
+version = "1.14.3"
 dependencies = [
  "alloy",
  "ethui-connections",
@@ -3224,7 +3224,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-settings"
-version = "1.14.2"
+version = "1.14.3"
 dependencies = [
  "alloy",
  "alloy-chains",
@@ -3246,7 +3246,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-simulator"
-version = "1.14.2"
+version = "1.14.3"
 dependencies = [
  "alloy",
  "ethui-db",
@@ -3264,7 +3264,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-sync"
-version = "1.14.2"
+version = "1.14.3"
 dependencies = [
  "alloy",
  "ethui-abis",
@@ -3283,7 +3283,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-sync-alchemy"
-version = "1.14.2"
+version = "1.14.3"
 dependencies = [
  "alloy",
  "ethui-db",
@@ -3301,7 +3301,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-sync-anvil"
-version = "1.14.2"
+version = "1.14.3"
 dependencies = [
  "alloy",
  "base64 0.21.7",
@@ -3323,7 +3323,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-token-list"
-version = "1.14.2"
+version = "1.14.3"
 dependencies = [
  "anyhow",
  "chrono",
@@ -3335,7 +3335,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-tracing"
-version = "1.14.2"
+version = "1.14.3"
 dependencies = [
  "once_cell",
  "thiserror 2.0.12",
@@ -3345,7 +3345,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-types"
-version = "1.14.2"
+version = "1.14.3"
 dependencies = [
  "alloy",
  "async-trait",
@@ -3358,7 +3358,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-wallets"
-version = "1.14.2"
+version = "1.14.3"
 dependencies = [
  "alloy",
  "async-trait",
@@ -3380,7 +3380,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-ws"
-version = "1.14.2"
+version = "1.14.3"
 dependencies = [
  "async-trait",
  "ethui-args",
@@ -9365,9 +9365,9 @@ dependencies = [
 
 [[package]]
 name = "tauri-plugin-shell"
-version = "2.2.0"
+version = "2.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bb2c50a63e60fb8925956cc5b7569f4b750ac197a4d39f13b8dd46ea8e2bad79"
+checksum = "69d5eb3368b959937ad2aeaf6ef9a8f5d11e01ffe03629d3530707bbcb27ff5d"
 dependencies = [
  "encoding_rs",
  "log",
@@ -9656,9 +9656,9 @@ checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
 name = "tokio"
-version = "1.44.1"
+version = "1.44.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f382da615b842244d4b8738c82ed1275e6c5dd90c459a30941cd07080b06c91a"
+checksum = "e6b88822cbe49de4185e3a4cbf8321dd487cf5fe0c5c65695fef6346371e9c48"
 dependencies = [
  "backtrace",
  "bytes",

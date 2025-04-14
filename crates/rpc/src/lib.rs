@@ -245,8 +245,15 @@ impl Handler {
             .await;
 
         let result = sender.estimate_gas().await.finish().await?;
+        let hash = *result.tx_hash();
 
-        Ok(format!("0x{:x}", result.tx_hash()).into())
+        let receipt = result.get_receipt().await.unwrap();
+        let status = receipt.status();
+
+        Ok(json!({
+            "hash": format!("0x{:x}", hash),
+            "status": status,
+        }))
     }
 
     async fn send_call(params: serde_json::Value, ctx: Ctx) -> jsonrpc_core::Result<Bytes> {
