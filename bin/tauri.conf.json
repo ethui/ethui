@@ -4,6 +4,7 @@
   "build": {
     "beforeDevCommand": "yarn workspace @ethui/gui dev",
     "beforeBuildCommand": "yarn workspace @ethui/gui build",
+    "beforeBundleCommand": "./scripts/postbuild.sh",
     "frontendDist": "../gui/dist",
     "devUrl": "http://localhost:1420"
   },
