@@ -21,6 +21,9 @@
   "bundle": {
     "icon": ["icons/128x128.png"],
     "active": true,
-    "targets": "all"
+    "targets": "all",
+    "macOS": {
+      "frameworks": ["../assets/libusb-1.0.dylib"]
+    }
   }
 }
