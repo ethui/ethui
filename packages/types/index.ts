@@ -110,7 +110,7 @@ export interface Peer {
   favicon: string;
 }
 
-export type Affinity = { sticky: [number, number] } | "global" | "unset";
+export type Affinity = { sticky: DedupChainId } | "global" | "unset";
 
 export type Result<T, E = Error> =
   | { ok: true; value: T }
