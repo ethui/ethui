@@ -80,16 +80,21 @@ function AffinityForm({ domain }: { domain: string }) {
       setCurrentNetwork(currentGlobalNetwork);
     } else {
       setCurrentNetwork(
-        networks.find((n) => n.dedup_chain_id.chain_id === current.sticky[0]),
+        networks.find(
+          (n) =>
+            n.dedup_chain_id.chain_id === current.sticky.chain_id &&
+            n.dedup_chain_id.dedup_id === current.sticky.dedup_id,
+        ),
       );
     }
   }, [current, networks, currentGlobalNetwork]);
 
-  // TODO: bug can't currently clear affinity
   const handleChange = (value: string) => {
+    const selection = JSON.parse(value);
+
     let affinity: Affinity = "global";
-    if (value !== "global") {
-      affinity = { sticky: [Number.parseInt(value), 0] };
+    if (selection !== "global") {
+      affinity = { sticky: selection };
     }
     invoke("connections_set_affinity", {
       domain,
@@ -98,15 +103,14 @@ function AffinityForm({ domain }: { domain: string }) {
     setCurrent(affinity);
   };
 
-  const value =
-    current === "global" || current === "unset"
-      ? "global"
-      : current.sticky.toString();
+  const value = JSON.stringify(
+    current === "global" || current === "unset" ? "global" : current.sticky,
+  );
   const isGlobal = current === "global" || current === "unset";
 
   return (
     <>
-      <Select defaultValue={value} onValueChange={handleChange}>
+      <Select defaultValue={JSON.parse(value)} onValueChange={handleChange}>
         <SelectTrigger>
           <SelectValue>
             {!isGlobal && currentNetwork ? (
@@ -122,10 +126,10 @@ function AffinityForm({ domain }: { domain: string }) {
 
         <SelectContent>
           <SelectGroup>
-            <SelectItem value="global">Global</SelectItem>
+            <SelectItem value={JSON.stringify("global")}>Global</SelectItem>
             {networks.map((network) => (
               <SelectItem
-                value={network.dedup_chain_id.chain_id.toString()}
+                value={JSON.stringify(network.dedup_chain_id)}
                 key={network.name}
               >
                 <ChainView
