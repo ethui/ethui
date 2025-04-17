@@ -7,6 +7,7 @@ pub mod utils;
 
 use std::{path::PathBuf, sync::Arc};
 
+use ethui_types::DedupChainId;
 pub use init::{get, init};
 use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous};
 
@@ -37,14 +38,20 @@ impl DbInner {
         Ok(db)
     }
 
-    pub async fn truncate_events(&self, chain_id: u32) -> Result<()> {
+    pub async fn truncate_events(&self, dedup_chain_id: DedupChainId) -> Result<()> {
+        let chain_id = dedup_chain_id.chain_id();
+        let dedup_id = dedup_chain_id.dedup_id();
         sqlx::query!(r#"DELETE FROM transactions WHERE chain_id = ?"#, chain_id)
             .execute(self.pool())
             .await?;
 
-        sqlx::query!(r#"DELETE FROM contracts WHERE chain_id = ?"#, chain_id)
-            .execute(self.pool())
-            .await?;
+        sqlx::query!(
+            r#"DELETE FROM contracts WHERE chain_id = ? AND dedup_id = ?"#,
+            chain_id,
+            dedup_id
+        )
+        .execute(self.pool())
+        .await?;
 
         sqlx::query!(r#"DELETE FROM balances WHERE chain_id = ?"#, chain_id)
             .bind(chain_id)
