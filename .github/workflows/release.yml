@@ -120,7 +120,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           releaseId: ${{ needs.setup.outputs.release_id }}
-          args: ${{ matrix.args }}
+          args: ${{ matrix.args }} --features release
 
   publish:
     needs: [setup, app]
