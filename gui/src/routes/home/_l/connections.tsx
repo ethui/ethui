@@ -80,18 +80,21 @@ function AffinityForm({ domain }: { domain: string }) {
       setCurrentNetwork(currentGlobalNetwork);
     } else {
       setCurrentNetwork(
-        networks.find((n) => n.dedup_chain_id.chain_id == current.sticky.chain_id &&
-          n.dedup_chain_id.dedup_id == current.sticky.dedup_id),
+        networks.find(
+          (n) =>
+            n.dedup_chain_id.chain_id === current.sticky.chain_id &&
+            n.dedup_chain_id.dedup_id === current.sticky.dedup_id,
+        ),
       );
     }
   }, [current, networks, currentGlobalNetwork]);
 
   const handleChange = (value: string) => {
-    const network = JSON.parse(value);
+    const selection = JSON.parse(value);
 
     let affinity: Affinity = "global";
-    if (network !== "global") {
-      affinity = { sticky: network };
+    if (selection !== "global") {
+      affinity = { sticky: selection };
     }
     invoke("connections_set_affinity", {
       domain,
@@ -100,10 +103,9 @@ function AffinityForm({ domain }: { domain: string }) {
     setCurrent(affinity);
   };
 
-  const value =
-    current === "global" || current === "unset"
-      ? JSON.stringify("global")
-      : JSON.stringify(current.sticky);
+  const value = JSON.stringify(
+    current === "global" || current === "unset" ? "global" : current.sticky,
+  );
   const isGlobal = current === "global" || current === "unset";
 
   return (
