@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "DELETE FROM contracts where chain_id = ? AND dedup_id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "ec862dceb5b27ad180ca01484e1653c6a69dbcde3b2be69ac9559d02e60124d4"
+}

@@ -21,7 +21,7 @@ impl DbInner {
 
                 Event::ContractDeployed(ref tx) => {
                     self.insert_contract_with_abi(
-                        chain_id,
+                        dedup_chain_id,
                         tx.address,
                         tx.code.as_ref(),
                         None,
