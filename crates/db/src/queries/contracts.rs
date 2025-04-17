@@ -149,4 +149,33 @@ impl DbInner {
 
         Ok(())
     }
+
+    pub async fn remove_contract(&self, chain_id: u32, address: Address) -> Result<()> {
+        let address = format!("0x{:x}", address);
+
+        sqlx::query!(
+            r#"DELETE FROM contracts WHERE chain_id = ? AND address = ?"#,
+            chain_id,
+            address
+        )
+        .execute(&self.pool)
+        .await?;
+
+        Ok(())
+    }
+
+    pub async fn get_proxy(&self, chain_id: u32, address: Address) -> Option<Address> {
+        let address = format!("0x{:x}", address);
+
+        let result = sqlx::query_scalar!(
+            r#"SELECT proxied_by FROM contracts WHERE chain_id = ? AND address = ?"#,
+            chain_id,
+            address
+        )
+        .fetch_one(&self.pool)
+        .await
+        .ok()?;
+
+        result.map(|value| Address::from_str(value.as_str()).unwrap())
+    }
 }
