@@ -211,7 +211,7 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
                     ctx.dedup_chain_id.chain_id(),
                     ctx.dedup_chain_id.dedup_id()
                 );
-                db.truncate_events(ctx.dedup_chain_id.chain_id()).await?;
+                db.truncate_events(ctx.dedup_chain_id).await?;
                 caught_up = true
             }
             Msg::CaughtUp => caught_up = true,
