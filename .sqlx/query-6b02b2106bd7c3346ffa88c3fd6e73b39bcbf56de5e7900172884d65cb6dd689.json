@@ -1,6 +1,6 @@
 {
   "db_name": "SQLite",
-  "query": "SELECT proxied_by FROM contracts WHERE chain_id = ? AND address = ?",
+  "query": "SELECT proxied_by FROM contracts WHERE chain_id = ? AND dedup_id = ? AND address = ?",
   "describe": {
     "columns": [
       {
@@ -10,11 +10,11 @@
       }
     ],
     "parameters": {
-      "Right": 2
+      "Right": 3
     },
     "nullable": [
       true
     ]
   },
-  "hash": "b86cdf7ad3c9d26847861dad42fecadbe832d6a9dbfa5f12ef1c4c7dbf2dd0fa"
+  "hash": "6b02b2106bd7c3346ffa88c3fd6e73b39bcbf56de5e7900172884d65cb6dd689"
 }

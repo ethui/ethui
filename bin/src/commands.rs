@@ -85,15 +85,16 @@ pub async fn add_contract(
 #[tauri::command]
 pub async fn remove_contract(
     chain_id: u32,
+    dedup_id: i32,
     address: Address,
     db: tauri::State<'_, Db>,
 ) -> AppResult<()> {
-    let has_proxy = db.get_proxy(chain_id, address).await;
+    let has_proxy = db.get_proxy(chain_id, dedup_id, address).await;
 
-    db.remove_contract(chain_id, address).await?;
+    db.remove_contract(chain_id, dedup_id, address).await?;
 
     if let Some(proxy) = has_proxy {
-        Box::pin(remove_contract(chain_id, proxy, db)).await?;
+        Box::pin(remove_contract(chain_id, dedup_id, proxy, db)).await?;
     }
 
     ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;

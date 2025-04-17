@@ -93,8 +93,16 @@ const store: StateCreator<Store> = (set, get) => ({
 
   removeContract: async (chainId: number, address: Address) => {
     try {
+      const { dedupChainId } = get();
+      if (!dedupChainId) return;
+
+      const is_anvil_network = await invoke<boolean>("networks_is_dev", {
+        dedupChainId,
+      });
+
       await invoke("remove_contract", {
         chainId: Number(chainId),
+        dedupId: is_anvil_network ? Number(dedupChainId.dedup_id) : -1,
         address,
       });
 

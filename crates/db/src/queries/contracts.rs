@@ -150,20 +150,30 @@ impl DbInner {
             .collect())
     }
 
-    pub async fn remove_contracts(&self, chain_id: u32) -> Result<()> {
-        sqlx::query!(r#"DELETE FROM contracts where chain_id = ?"#, chain_id)
-            .execute(&self.pool)
-            .await?;
+    pub async fn remove_contracts(&self, chain_id: u32, dedup_id: i32) -> Result<()> {
+        sqlx::query!(
+            r#"DELETE FROM contracts where chain_id = ? AND dedup_id = ?"#,
+            chain_id,
+            dedup_id
+        )
+        .execute(&self.pool)
+        .await?;
 
         Ok(())
     }
 
-    pub async fn remove_contract(&self, chain_id: u32, address: Address) -> Result<()> {
+    pub async fn remove_contract(
+        &self,
+        chain_id: u32,
+        dedup_id: i32,
+        address: Address,
+    ) -> Result<()> {
         let address = format!("0x{:x}", address);
 
         sqlx::query!(
-            r#"DELETE FROM contracts WHERE chain_id = ? AND address = ?"#,
+            r#"DELETE FROM contracts WHERE chain_id = ? AND dedup_id = ? AND address = ?"#,
             chain_id,
+            dedup_id,
             address
         )
         .execute(&self.pool)
@@ -172,12 +182,18 @@ impl DbInner {
         Ok(())
     }
 
-    pub async fn get_proxy(&self, chain_id: u32, address: Address) -> Option<Address> {
+    pub async fn get_proxy(
+        &self,
+        chain_id: u32,
+        dedup_id: i32,
+        address: Address,
+    ) -> Option<Address> {
         let address = format!("0x{:x}", address);
 
         let result = sqlx::query_scalar!(
-            r#"SELECT proxied_by FROM contracts WHERE chain_id = ? AND address = ?"#,
+            r#"SELECT proxied_by FROM contracts WHERE chain_id = ? AND dedup_id = ? AND address = ?"#,
             chain_id,
+            dedup_id,
             address
         )
         .fetch_one(&self.pool)
