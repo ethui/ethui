@@ -3004,7 +3004,7 @@ dependencies = [
 
 [[package]]
 name = "ethui"
-version = "1.14.3"
+version = "1.15.0"
 dependencies = [
  "alloy",
  "ethui-args",
@@ -3041,21 +3041,21 @@ dependencies = [
 
 [[package]]
 name = "ethui-abis"
-version = "1.14.3"
+version = "1.15.0"
 dependencies = [
  "alloy",
 ]
 
 [[package]]
 name = "ethui-args"
-version = "1.14.3"
+version = "1.15.0"
 dependencies = [
  "clap",
 ]
 
 [[package]]
 name = "ethui-broadcast"
-version = "1.14.3"
+version = "1.15.0"
 dependencies = [
  "ethui-types",
  "once_cell",
@@ -3066,7 +3066,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-connections"
-version = "1.14.3"
+version = "1.15.0"
 dependencies = [
  "async-trait",
  "chrono",
@@ -3086,7 +3086,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-crypto"
-version = "1.14.3"
+version = "1.15.0"
 dependencies = [
  "aead",
  "chacha20poly1305",
@@ -3100,7 +3100,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-db"
-version = "1.14.3"
+version = "1.15.0"
 dependencies = [
  "alloy",
  "alloy-chains",
@@ -3120,7 +3120,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-dialogs"
-version = "1.14.3"
+version = "1.15.0"
 dependencies = [
  "ethui-broadcast",
  "ethui-types",
@@ -3136,7 +3136,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-exchange-rates"
-version = "1.14.3"
+version = "1.15.0"
 dependencies = [
  "async-trait",
  "ethui-types",
@@ -3148,7 +3148,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-forge"
-version = "1.14.3"
+version = "1.15.0"
 dependencies = [
  "alloy",
  "anyhow",
@@ -3173,7 +3173,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-networks"
-version = "1.14.3"
+version = "1.15.0"
 dependencies = [
  "alloy",
  "async-trait",
@@ -3201,7 +3201,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-rpc"
-version = "1.14.3"
+version = "1.15.0"
 dependencies = [
  "alloy",
  "ethui-connections",
@@ -3224,7 +3224,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-settings"
-version = "1.14.3"
+version = "1.15.0"
 dependencies = [
  "alloy",
  "alloy-chains",
@@ -3246,7 +3246,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-simulator"
-version = "1.14.3"
+version = "1.15.0"
 dependencies = [
  "alloy",
  "ethui-db",
@@ -3264,7 +3264,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-sync"
-version = "1.14.3"
+version = "1.15.0"
 dependencies = [
  "alloy",
  "ethui-abis",
@@ -3283,7 +3283,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-sync-alchemy"
-version = "1.14.3"
+version = "1.15.0"
 dependencies = [
  "alloy",
  "ethui-db",
@@ -3301,7 +3301,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-sync-anvil"
-version = "1.14.3"
+version = "1.15.0"
 dependencies = [
  "alloy",
  "base64 0.21.7",
@@ -3323,7 +3323,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-token-list"
-version = "1.14.3"
+version = "1.15.0"
 dependencies = [
  "anyhow",
  "chrono",
@@ -3335,7 +3335,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-tracing"
-version = "1.14.3"
+version = "1.15.0"
 dependencies = [
  "once_cell",
  "thiserror 2.0.12",
@@ -3345,7 +3345,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-types"
-version = "1.14.3"
+version = "1.15.0"
 dependencies = [
  "alloy",
  "async-trait",
@@ -3358,7 +3358,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-wallets"
-version = "1.14.3"
+version = "1.15.0"
 dependencies = [
  "alloy",
  "async-trait",
@@ -3380,7 +3380,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-ws"
-version = "1.14.3"
+version = "1.15.0"
 dependencies = [
  "async-trait",
  "ethui-args",

@@ -20,7 +20,7 @@ pub fn derive_addresses(
 
     (0..count)
         .map(|idx| {
-            let path = format!("{}/{}", derivation_path, idx);
+            let path = format!("{derivation_path}/{idx}");
             // TODO: what to do about this unwrap?
             let address = derive_from_builder_and_path(builder.clone(), &path).unwrap();
 
