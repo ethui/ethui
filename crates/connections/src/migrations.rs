@@ -122,7 +122,7 @@ mod tests {
             }
         });
 
-        write!(tempfile, "{}", store_v0).unwrap();
+        write!(tempfile, "{store_v0}").unwrap();
 
         if let Ok(_store) = load_and_migrate(&tempfile.path().to_path_buf()) {
             let file = File::open(tempfile.path()).unwrap();
@@ -147,7 +147,7 @@ mod tests {
             }
         });
 
-        write!(tempfile, "{}", store).unwrap();
+        write!(tempfile, "{store}").unwrap();
 
         if let Ok(_store) = load_and_migrate(&tempfile.path().to_path_buf()) {
             let file = File::open(tempfile.path()).unwrap();
@@ -172,7 +172,7 @@ mod tests {
             }
         });
 
-        write!(tempfile, "{}", store_v0).unwrap();
+        write!(tempfile, "{store_v0}").unwrap();
 
         let result = load_and_migrate(&tempfile.path().to_path_buf());
 
@@ -193,7 +193,7 @@ mod tests {
             }
         });
 
-        write!(tempfile, "{}", store_v0).unwrap();
+        write!(tempfile, "{store_v0}").unwrap();
 
         if let Ok(_store) = load_and_migrate(&tempfile.path().to_path_buf()) {
             let file = File::open(tempfile.path()).unwrap();

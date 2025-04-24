@@ -22,7 +22,7 @@ impl DbInner {
                 .join("/")
         });
         let from = format!("0x{:x}", tx.from);
-        let to = tx.to.map(|a| format!("0x{:x}", a));
+        let to = tx.to.map(|a| format!("0x{a:x}"));
         let block_number = tx.block_number.map(|b| b as i64);
         let position = tx.position.unwrap_or(0) as u32;
         let value = tx.value.map(|v| v.to_string());
@@ -212,8 +212,8 @@ impl DbInner {
     }
 
     pub async fn get_call_count(&self, chain_id: u32, from: Address, to: Address) -> Result<u32> {
-        let from = format!("0x{:x}", from);
-        let to = format!("0x{:x}", to);
+        let from = format!("0x{from:x}");
+        let to = format!("0x{to:x}");
 
         let row = sqlx::query!(
             r#"SELECT count(*) as count FROM transactions WHERE chain_id = ? AND from_address = ? AND to_address = ?"#,

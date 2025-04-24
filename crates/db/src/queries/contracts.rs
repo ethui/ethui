@@ -33,7 +33,7 @@ impl DbInner {
         dedup_id: i32,
         address: Address,
     ) -> Result<Option<ContractWithAbi>> {
-        let address = format!("0x{:x}", address);
+        let address = format!("0x{address:x}");
         let res = sqlx::query!(
             r#" SELECT abi, name, address
                 FROM contracts
@@ -58,7 +58,7 @@ impl DbInner {
     }
 
     pub async fn get_contract_abi(&self, chain_id: u32, address: Address) -> Result<JsonAbi> {
-        let address = format!("0x{:x}", address);
+        let address = format!("0x{address:x}");
 
         let res = sqlx::query!(
             r#" SELECT abi
@@ -86,9 +86,9 @@ impl DbInner {
         name: Option<String>,
         proxy_for: Option<Address>,
     ) -> Result<()> {
-        let address = format!("0x{:x}", address);
-        let proxy_for = proxy_for.map(|p| format!("0x{:x}", p));
-        let code = code.map(|c| format!("0x{:x}", c));
+        let address = format!("0x{address:x}");
+        let proxy_for = proxy_for.map(|p| format!("0x{p:x}"));
+        let code = code.map(|c| format!("0x{c:x}"));
         let chain_id = dedup_chain_id.chain_id();
         let dedup_id = dedup_chain_id.dedup_id();
 
@@ -168,7 +168,7 @@ impl DbInner {
         dedup_id: i32,
         address: Address,
     ) -> Result<()> {
-        let address = format!("0x{:x}", address);
+        let address = format!("0x{address:x}");
 
         sqlx::query!(
             r#"DELETE FROM contracts WHERE chain_id = ? AND dedup_id = ? AND address = ?"#,
@@ -188,7 +188,7 @@ impl DbInner {
         dedup_id: i32,
         address: Address,
     ) -> Option<Address> {
-        let address = format!("0x{:x}", address);
+        let address = format!("0x{address:x}");
 
         let result = sqlx::query_scalar!(
             r#"SELECT proxied_by FROM contracts WHERE chain_id = ? AND dedup_id = ? AND address = ?"#,

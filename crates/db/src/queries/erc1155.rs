@@ -16,9 +16,9 @@ impl DbInner {
         let row = sqlx::query(
             r#"SELECT balance FROM erc1155_tokens WHERE chain_id = ? AND contract = ? AND owner = ? AND token_id = ?"#)
             .bind(chain_id)
-            .bind(format!("0x{:x}", contract))
-            .bind(format!("0x{:x}", owner))
-            .bind(format!("0x{:x}", token_id))
+            .bind(format!("0x{contract:x}"))
+            .bind(format!("0x{owner:x}"))
+            .bind(format!("0x{token_id:x}"))
             .fetch_one(self.pool())
             .await?;
         let balance: String = row.get("balance");
@@ -34,8 +34,8 @@ impl DbInner {
         let row = sqlx::query(
             r#"SELECT balance FROM erc1155_tokens WHERE chain_id = ? AND contract = ? AND token_id = ?"#)
             .bind(chain_id)
-            .bind(format!("0x{:x}", contract))
-            .bind(format!("0x{:x}", token_id))
+            .bind(format!("0x{contract:x}"))
+            .bind(format!("0x{token_id:x}"))
             .fetch_one(self.pool())
             .await?;
         Ok(row.get("uri"))
@@ -50,8 +50,8 @@ impl DbInner {
         let row = sqlx::query(
             r#"SELECT balance FROM erc1155_tokens WHERE chain_id = ? AND contract = ? AND token_id = ?"#)
             .bind(chain_id)
-            .bind(format!("0x{:x}", contract))
-            .bind(format!("0x{:x}", token_id))
+            .bind(format!("0x{contract:x}"))
+            .bind(format!("0x{token_id:x}"))
             .fetch_one(self.pool())
             .await?;
         Ok(row.get("metadata"))
@@ -69,10 +69,10 @@ impl DbInner {
             r#"INSERT OR REPLACE INTO balances (contract, chain_id, token_id, owner, balance)
                 VALUES (?,?,?,?) "#,
         )
-        .bind(format!("0x{:x}", contract))
+        .bind(format!("0x{contract:x}"))
         .bind(chain_id)
-        .bind(format!("0x{:x}", token_id))
-        .bind(format!("0x{:x}", owner))
+        .bind(format!("0x{token_id:x}"))
+        .bind(format!("0x{owner:x}"))
         .bind(balance.to_string())
         .execute(self.pool())
         .await?;
@@ -115,9 +115,9 @@ impl DbInner {
                 WHERE chain_id = ? AND contract = ? AND token_id = ? AND owner = ?"#,
             )
             .bind(chain_id)
-            .bind(format!("0x{:x}", contract))
-            .bind(format!("0x{:x}", token_id))
-            .bind(format!("0x{:x}", from))
+            .bind(format!("0x{contract:x}"))
+            .bind(format!("0x{token_id:x}"))
+            .bind(format!("0x{from:x}"))
             .execute(self.pool())
             .await?;
         } else {
@@ -158,10 +158,10 @@ impl DbInner {
         r#" INSERT OR REPLACE INTO erc1155_tokens (contract, chain_id, token_id, owner, balance, uri, metadata)
                 VALUES (?,?,?,?,?,?,?) "#,
         )
-        .bind(format!("0x{:x}", contract))
+        .bind(format!("0x{contract:x}"))
         .bind(chain_id)
-        .bind(format!("0x{:x}", token_id))
-        .bind(format!("0x{:x}", owner))
+        .bind(format!("0x{token_id:x}"))
+        .bind(format!("0x{owner:x}"))
         .bind(balance.to_string())
         .bind(uri)
         .bind(metadata)
@@ -201,7 +201,7 @@ impl DbInner {
             r#" INSERT OR REPLACE INTO erc1155_collections (contract, chain_id, name, symbol)
                       VALUES (?,?,?,?) "#,
         )
-        .bind(format!("0x{:x}", contract))
+        .bind(format!("0x{contract:x}"))
         .bind(chain_id)
         .bind(name)
         .bind(symbol)
@@ -224,7 +224,7 @@ impl DbInner {
                 WHERE erc1155_tokens.chain_id = ? AND erc1155_tokens.owner = ?"#,
       )
       .bind(chain_id)
-      .bind(format!("0x{:x}", owner))
+      .bind(format!("0x{owner:x}"))
       .map(|row| row.try_into().unwrap())
       .fetch_all(self.pool())
       .await?;
