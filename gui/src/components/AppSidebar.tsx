@@ -47,7 +47,6 @@ export function AppSidebar() {
   const isMacos = platform() === "macos";
 
   const showOnboarding = useSettings((s) => !s.settings?.onboarding.hidden);
-  console.log(showOnboarding);
 
   return (
     <Sidebar className="select-none" collapsible="icon">
