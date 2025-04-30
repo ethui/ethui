@@ -52,12 +52,24 @@ async fn receiver() -> ! {
         match rx.recv().await {
             Ok(InternalMsg::SettingsUpdated) => {
                 let mut settings = SETTINGS.get().unwrap().write().await;
+
+                // check if onboarding->alchemy was finished
                 let onboarding = &settings.inner.onboarding;
                 if !onboarding.is_step_finished(OnboardingStep::Alchemy)
                     && settings.inner.alchemy_api_key.is_some()
                 {
                     let _ = settings
                         .finish_onboarding_step(OnboardingStep::Alchemy)
+                        .await;
+                }
+
+                // check if onboarding->etherscan was finished
+                let onboarding = &settings.inner.onboarding;
+                if !onboarding.is_step_finished(OnboardingStep::Etherscan)
+                    && settings.inner.etherscan_api_key.is_some()
+                {
+                    let _ = settings
+                        .finish_onboarding_step(OnboardingStep::Etherscan)
                         .await;
                 }
             }
