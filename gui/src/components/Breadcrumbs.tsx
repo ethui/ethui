@@ -53,7 +53,7 @@ interface BreadcrumbItemProps {
 function Item({ label, path, current }: BreadcrumbItemProps) {
   return (
     <BreadcrumbItem className="font-bold">
-      {current === path ? (
+      {!path || current === path ? (
         <span className="text-foreground">{label}</span>
       ) : (
         <BreadcrumbLink asChild className="font-bold">
