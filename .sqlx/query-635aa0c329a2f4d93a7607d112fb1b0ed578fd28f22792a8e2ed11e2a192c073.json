@@ -1,0 +1,26 @@
+{
+  "db_name": "SQLite",
+  "query": " SELECT proxy_for,abi\n                FROM contracts\n                WHERE address = ? ",
+  "describe": {
+    "columns": [
+      {
+        "name": "proxy_for",
+        "ordinal": 0,
+        "type_info": "Text"
+      },
+      {
+        "name": "abi",
+        "ordinal": 1,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      true,
+      true
+    ]
+  },
+  "hash": "635aa0c329a2f4d93a7607d112fb1b0ed578fd28f22792a8e2ed11e2a192c073"
+}
