@@ -18,7 +18,7 @@ pub use crate::error::{WsError, WsResult};
 use crate::peers::{Peer, Peers};
 
 pub(crate) async fn server_loop(port: u16) {
-    let addr = format!("127.0.0.1:{}", port);
+    let addr = format!("127.0.0.1:{port}");
     let listener = TcpListener::bind(&addr).await.expect("Can't listen to");
 
     tracing::debug!("WS server listening on: {}", addr);

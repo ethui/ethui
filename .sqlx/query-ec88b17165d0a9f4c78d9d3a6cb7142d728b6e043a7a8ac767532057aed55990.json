@@ -1,10 +1,10 @@
 {
   "db_name": "SQLite",
-  "query": " SELECT abi, name, address\n                FROM contracts\n                WHERE chain_id = ? AND address = ? ",
+  "query": "SELECT address, name, proxy_for, proxied_by FROM contracts WHERE chain_id = ? AND dedup_id = ?",
   "describe": {
     "columns": [
       {
-        "name": "abi",
+        "name": "address",
         "ordinal": 0,
         "type_info": "Text"
       },
@@ -14,8 +14,13 @@
         "type_info": "Text"
       },
       {
-        "name": "address",
+        "name": "proxy_for",
         "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "proxied_by",
+        "ordinal": 3,
         "type_info": "Text"
       }
     ],
@@ -23,10 +28,11 @@
       "Right": 2
     },
     "nullable": [
+      false,
       true,
       true,
-      false
+      true
     ]
   },
-  "hash": "a46dd2077632c1760ce88c36d9858879265d9b7d8cf75046fe51796d18082e1f"
+  "hash": "ec88b17165d0a9f4c78d9d3a6cb7142d728b6e043a7a8ac767532057aed55990"
 }

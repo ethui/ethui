@@ -2,7 +2,7 @@ use alloy::providers::{Provider as _, ProviderBuilder};
 use alloy_chains::Chain;
 
 pub async fn test_alchemy_api_key(key: String) -> bool {
-    let rpc_url = match format!("https://eth-mainnet.g.alchemy.com/v2/{}", key).parse() {
+    let rpc_url = match format!("https://eth-mainnet.g.alchemy.com/v2/{key}").parse() {
         Ok(p) => p,
         Err(_) => return false,
     };

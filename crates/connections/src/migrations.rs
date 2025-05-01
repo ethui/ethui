@@ -1,11 +1,16 @@
-use crate::Result;
-use crate::{store::SerializedStore, Store};
-use std::{collections::HashMap, fs::File, io::BufReader, path::Path, path::PathBuf};
+use std::{
+    collections::HashMap,
+    fs::File,
+    io::BufReader,
+    path::{Path, PathBuf},
+};
 
 use ethui_types::Affinity;
 use serde::{Deserialize, Serialize};
 use serde_constant::ConstI64;
 use serde_json::json;
+
+use crate::{store::SerializedStore, Result, Store};
 
 pub type LatestVersion = ConstI64<2>;
 
@@ -92,17 +97,17 @@ fn migrate_affinities_from_v1_to_v2(
 
 #[cfg(test)]
 mod tests {
-    use ethui_types::Affinity;
-    use serde_json::json;
     use std::{
         fs::File,
         io::{BufReader, Write},
     };
+
+    use ethui_types::Affinity;
+    use serde_json::json;
     use tempfile::NamedTempFile;
 
-    use crate::store::SerializedStore;
-
     use super::load_and_migrate;
+    use crate::store::SerializedStore;
 
     #[test]
     fn it_converts_from_v0_to_v1() {
@@ -117,7 +122,7 @@ mod tests {
             }
         });
 
-        write!(tempfile, "{}", store_v0).unwrap();
+        write!(tempfile, "{store_v0}").unwrap();
 
         if let Ok(_store) = load_and_migrate(&tempfile.path().to_path_buf()) {
             let file = File::open(tempfile.path()).unwrap();
@@ -142,7 +147,7 @@ mod tests {
             }
         });
 
-        write!(tempfile, "{}", store).unwrap();
+        write!(tempfile, "{store}").unwrap();
 
         if let Ok(_store) = load_and_migrate(&tempfile.path().to_path_buf()) {
             let file = File::open(tempfile.path()).unwrap();
@@ -167,7 +172,7 @@ mod tests {
             }
         });
 
-        write!(tempfile, "{}", store_v0).unwrap();
+        write!(tempfile, "{store_v0}").unwrap();
 
         let result = load_and_migrate(&tempfile.path().to_path_buf());
 
@@ -188,7 +193,7 @@ mod tests {
             }
         });
 
-        write!(tempfile, "{}", store_v0).unwrap();
+        write!(tempfile, "{store_v0}").unwrap();
 
         if let Ok(_store) = load_and_migrate(&tempfile.path().to_path_buf()) {
             let file = File::open(tempfile.path()).unwrap();

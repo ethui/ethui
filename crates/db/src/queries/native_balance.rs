@@ -10,7 +10,7 @@ impl DbInner {
         address: Address,
     ) -> Result<()> {
         let balance = balance.to_string();
-        let address = format!("0x{:x}", address);
+        let address = format!("0x{address:x}");
 
         sqlx::query!(
             r#" INSERT OR REPLACE INTO native_balances (balance, chain_id, owner)

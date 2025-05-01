@@ -45,6 +45,7 @@ export function AppSidebar() {
   const location = useLocation();
   const { open, toggleSidebar } = useSidebar();
   const isMacos = platform() === "macos";
+
   const showOnboarding = useSettings((s) => !s.settings?.onboarding.hidden);
 
   return (
