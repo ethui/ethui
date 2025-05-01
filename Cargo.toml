@@ -99,6 +99,8 @@ alloy = { version = "0.12", default-features = false, features = [
 alloy-chains = { version = "0.1", default-features = false, features = [
   "serde",
 ] }
+foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "v1.1.0" }
+foundry-block-explorers = "0.11"
 url = { version = "2.5", features = ["serde"] }
 futures = { version = "0.3", default-features = false }
 clap = { version = "4.5", default-features = false, features = [
@@ -112,7 +114,3 @@ anyhow = { version = "1.0", default-features = false }
 tempfile = "3.19.1"
 serde-constant = "0.1.0"
 kameo = "0.14.0"
-
-# Foundry - March 11th 2025
-foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-3c048be05726218c405d5d4deec4d3f1ab515f6f" }
-foundry-block-explorers = "0.11"
