@@ -13,7 +13,7 @@
   "devDependencies": {
     "@types/core-js": "^2.5.8",
     "@types/lodash-es": "^4.17.12",
-    "@types/node": "^22.14.0",
+    "@types/node": "^22.15.3",
     "jsdom": "^26.1.0"
   },
   "peerDependencies": {
