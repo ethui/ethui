@@ -106,6 +106,15 @@ pub async fn db_get_contract_abi(
 }
 
 #[tauri::command]
+pub async fn db_get_contract_impl_abi(
+    chain_id: u32,
+    address: Address,
+    db: tauri::State<'_, Db>,
+) -> Result<JsonAbi> {
+    db.get_contract_impl_abi(chain_id, address).await
+}
+
+#[tauri::command]
 pub async fn db_get_erc721_tokens(
     chain_id: u32,
     owner: Address,

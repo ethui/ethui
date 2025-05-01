@@ -1,6 +1,6 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import debounce from "lodash-es/debounce";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { useShallow } from "zustand/shallow";
 
 import { Badge } from "@ethui/ui/components/shadcn/badge";
@@ -9,7 +9,7 @@ import { Input } from "@ethui/ui/components/shadcn/input";
 import { MoveRight, Plus, Trash2 } from "lucide-react";
 import type { Address } from "viem";
 import { AddressView } from "#/components/AddressView";
-import { useContracts } from "#/store/useContracts";
+import { type OrganizedContract, useContracts } from "#/store/useContracts";
 
 export const Route = createFileRoute("/home/_l/contracts/_l/")({
   component: Contracts,
@@ -26,6 +26,7 @@ function Contracts() {
 
   const removeContract = useContracts((s) => s.removeContract);
 
+  console.log(contracts);
   const startRemoveContract = (address: Address) => {
     setPendingDeleteContract(address);
   };
@@ -36,29 +37,14 @@ function Contracts() {
 
       <div className="flex flex-col gap-2 pt-2">
         {Array.from(contracts || []).map(
-          ({ address, name, chainId, proxyName }) => (
+          ({ address, name, chainId, proxyChain }) => (
             <div
               key={address}
               className="flex flex-wrap hover:bg-accent xl:flex-nowrap"
             >
-              <div className="grow pr-32">
-                <Link
-                  to="/home/contracts/$chainId/$address"
-                  params={{ address: address, chainId: chainId }}
-                  className="flex whitespace-nowrap p-4 align-baseline"
-                >
-                  <div className="flex w-full items-center gap-2">
-                    <AddressView address={address} />
-                    {proxyName && (
-                      <>
-                        <Badge variant="secondary">{proxyName}</Badge>
-                        <MoveRight strokeWidth={1} size={16} />
-                      </>
-                    )}
-                    {name && <Badge variant="secondary">{name}</Badge>}
-                  </div>
-                </Link>
-              </div>
+              <ContractHeader
+                contract={{ address, name, chainId, proxyChain }}
+              />
               {(!pendingDeleteContract ||
                 pendingDeleteContract !== address) && (
                 <div className="flex items-center">
@@ -115,5 +101,40 @@ function Filter({ onChange }: { onChange: (f: string) => void }) {
         className="h-10"
       />
     </form>
+  );
+}
+
+function ContractHeader({ contract }: { contract: OrganizedContract }) {
+  const { address, name, chainId, proxyChain } = contract;
+
+  return (
+    <div className="grow pr-32">
+      <Link
+        to="/home/contracts/$chainId/$address"
+        params={{ address: address, chainId: chainId }}
+        className="flex whitespace-nowrap p-4 align-baseline"
+      >
+        <div className="flex w-full items-center gap-2">
+          <AddressView address={address} />
+
+          <div className="flex items-center">
+            {name && (
+              <Badge key={address} variant="secondary">
+                {name}
+              </Badge>
+            )}
+
+            {proxyChain.map(({ address, name }) => (
+              <Fragment key={address}>
+                <MoveRight strokeWidth={1} size={16} />
+                <Badge key={address} variant="secondary">
+                  {name ? name : <AddressView address={address} noTextStyle />}
+                </Badge>
+              </Fragment>
+            ))}
+          </div>
+        </div>
+      </Link>
+    </div>
   );
 }
