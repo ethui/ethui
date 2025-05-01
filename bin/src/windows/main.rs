@@ -10,7 +10,7 @@ pub(crate) async fn show(app: &AppHandle) {
     if let Some(w) = app.get_webview_window("main") {
         w.show().unwrap()
     } else {
-        let url = if settings.inner.onboarding.is_all_done() {
+        let url = if settings.inner.onboarding.is_all_finished() {
             "index.html#/home/account"
         } else {
             "index.html#/home/onboarding"

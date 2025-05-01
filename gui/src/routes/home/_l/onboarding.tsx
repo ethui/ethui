@@ -31,6 +31,13 @@ const steps = [
     link: { to: "/home/settings/general" },
   },
   {
+    id: "etherscan",
+    title: "Set up an etherscan.io API Key",
+    description: "Enables ABI fetching from verified contracts",
+    icon: <RefreshCcw className="h-5 w-5" />,
+    link: { to: "/home/settings/general" },
+  },
+  {
     id: "wallet",
     title: "Set up a production-ready wallet",
     description: "Create or import a secure wallet",
