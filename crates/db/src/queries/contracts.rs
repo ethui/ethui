@@ -76,6 +76,30 @@ impl DbInner {
         }
     }
 
+    pub async fn get_contract_impl_abi(&self, chain_id: u32, address: Address) -> Result<JsonAbi> {
+        let address = format!("0x{address:x}");
+
+        let res = sqlx::query!(
+            r#" SELECT proxy_for,abi
+                FROM contracts
+                WHERE address = ? "#,
+            address
+        )
+        .fetch_one(self.pool())
+        .await?;
+
+        match (res.proxy_for, res.abi) {
+            (None, Some(abi)) => Ok(serde_json::from_str(&abi).unwrap_or_default()),
+            (Some(proxy_for), _) => {
+                Box::pin(
+                    self.get_contract_impl_abi(chain_id, Address::from_str(&proxy_for).unwrap()),
+                )
+                .await
+            }
+            _ => Err(Error::NotFound),
+        }
+    }
+
     #[instrument(level = "trace", skip(self, abi))]
     pub async fn insert_contract_with_abi(
         &self,

@@ -47,7 +47,7 @@ type GroupedOptions = Record<Group, Option[]>;
 
 export function ContractCallForm({ chainId, address }: Props) {
   const [filter, setFilter] = useState("");
-  const { data: abi } = useInvoke<Abi>("db_get_contract_abi", {
+  const { data: abi } = useInvoke<Abi>("db_get_contract_impl_abi", {
     address,
     chainId,
   });
