@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AnimatedOutlet } from "#/components/AnimatedOutlet";
 
 export const Route = createFileRoute("/home/_l/settings/_l")({
-  beforeLoad: () => ({ breadcrumb: "Settings" }),
+  beforeLoad: () => ({
+    breadcrumb: { label: "Settings", path: null },
+  }),
   component: Settings,
 });
 
