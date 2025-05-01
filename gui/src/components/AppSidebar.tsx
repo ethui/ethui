@@ -51,7 +51,7 @@ export function AppSidebar() {
   return (
     <Sidebar className="select-none" collapsible="icon">
       <SidebarHeader
-        className={clsx("flex items-center", { "pt-4": isMacos })}
+        className={clsx("flex items-center", { "pt-8": isMacos })}
         data-tauri-drag-region="true"
       >
         <EthuiLogo
@@ -79,7 +79,7 @@ export function AppSidebar() {
                   {...item}
                   className={cn(
                     item.url === location.pathname &&
-                      "bg-primary text-accent hover:bg-primary hover:text-accent",
+                    "bg-primary text-accent hover:bg-primary hover:text-accent",
                   )}
                 />
               ))}
@@ -103,7 +103,7 @@ export function AppSidebar() {
                               to={item.url}
                               className={cn(
                                 item.url === location.pathname &&
-                                  "bg-primary text-accent hover:bg-primary hover:text-accent",
+                                "bg-primary text-accent hover:bg-primary hover:text-accent",
                               )}
                             >
                               {item.title}
