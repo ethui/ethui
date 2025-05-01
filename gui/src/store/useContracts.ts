@@ -164,14 +164,10 @@ async function organizeContracts(
   const flatten = (c: NestedContract | undefined): Contract[] => {
     if (!c) return [];
     const { impl, ...contract } = c;
-    const rest = impl ? [] : flatten(impl);
-    return [contract, ...rest];
+    return [contract, ...flatten(impl)];
   };
 
-  const res2 = tmp.map((c) => {
+  return tmp.map((c) => {
     return { ...c, proxyChain: flatten(c.impl) };
   });
-  console.log("1", res2);
-
-  return res2;
 }
