@@ -46,16 +46,16 @@ function Contracts() {
               />
               {(!pendingDeleteContract ||
                 pendingDeleteContract !== address) && (
-                  <div className="flex items-center">
-                    <Button
-                      variant="ghost"
-                      className="h-full w-full"
-                      onClick={() => startRemoveContract(address)}
-                    >
-                      <Trash2 />
-                    </Button>
-                  </div>
-                )}
+                <div className="flex items-center">
+                  <Button
+                    variant="ghost"
+                    className="h-full w-full"
+                    onClick={() => startRemoveContract(address)}
+                  >
+                    <Trash2 />
+                  </Button>
+                </div>
+              )}
 
               {pendingDeleteContract && pendingDeleteContract === address && (
                 <div className="flex items-center">
