@@ -49,7 +49,7 @@ ethui-proxy-detect.workspace = true
 kameo.workspace = true
 
 [build-dependencies]
-tauri-build = { version = "2.0", default-features = false, features = [] }
+tauri-build = { version = "2.2", default-features = false, features = [] }
 ethui-token-list.workspace = true
 
 [features]
