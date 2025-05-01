@@ -17,7 +17,7 @@
     "@ethui/data": "*",
     "@ethui/form": "*",
     "@ethui/types": "*",
-    "@ethui/ui": "0.0.60",
+    "@ethui/ui": "0.0.63",
     "@fontsource/source-code-pro": "^5.2.5",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-collapsible": "^1.1.3",
