@@ -1,5 +1,3 @@
-import { Label } from "@ethui/ui/components/shadcn/label";
-import { Switch } from "@ethui/ui/components/shadcn/switch";
 import { invoke } from "@tauri-apps/api/core";
 
 import { Form } from "@ethui/ui/components/form";
@@ -26,7 +24,7 @@ export function QuickFastModeToggle() {
   }, [watcher]);
 
   return (
-    <Form form={form} onSubmit={() => {}} className="flex items-center ">
+    <Form form={form} onSubmit={() => { }} className="flex items-center ">
       <Form.Checkbox name="fastMode" label="Fast Mode" />
     </Form>
   );
