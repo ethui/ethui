@@ -17,7 +17,7 @@ function DialogLayout() {
     // TODO: merge this header with the one from each dialog's layout, to save vertical space
     // ideally the logo should just be in the left corner, before whatever each other dialog shows
     <div className="flex h-screen w-screen flex-col">
-      <header className="flex justify-center" data-tauri-drag-region>
+      <header className="flex h-auto justify-center" data-tauri-drag-region>
         <EthuiLogo
           size={40}
           bg="bg-transparent"
@@ -25,7 +25,7 @@ function DialogLayout() {
         />
         &nbsp;
       </header>
-      <main className="flex flex-1 flex-col overflow-hidden p-2">
+      <main className="flex-grow overflow-hidden p-2">
         <AnimatedOutlet />
       </main>
     </div>

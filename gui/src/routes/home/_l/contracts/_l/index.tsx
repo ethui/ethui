@@ -1,28 +1,15 @@
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import debounce from "lodash-es/debounce";
-import { useState } from "react";
-import { type FieldValues, useForm } from "react-hook-form";
-import { z } from "zod";
+import { Fragment, useState } from "react";
 import { useShallow } from "zustand/shallow";
 
-import { ChainView } from "@ethui/ui/components/chain-view";
-import { Form } from "@ethui/ui/components/form";
 import { Badge } from "@ethui/ui/components/shadcn/badge";
 import { Button } from "@ethui/ui/components/shadcn/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@ethui/ui/components/shadcn/dialog";
 import { Input } from "@ethui/ui/components/shadcn/input";
-import { MoveRight, Plus } from "lucide-react";
+import { MoveRight, Plus, Trash2 } from "lucide-react";
+import type { Address } from "viem";
 import { AddressView } from "#/components/AddressView";
-import { useContracts } from "#/store/useContracts";
-import { useNetworks } from "#/store/useNetworks";
+import { type OrganizedContract, useContracts } from "#/store/useContracts";
 
 export const Route = createFileRoute("/home/_l/contracts/_l/")({
   component: Contracts,
@@ -30,9 +17,18 @@ export const Route = createFileRoute("/home/_l/contracts/_l/")({
 
 function Contracts() {
   const [filter, setFilter] = useState("");
+  const [pendingDeleteContract, setPendingDeleteContract] = useState<
+    `0x${string}` | null
+  >(null);
   const contracts = useContracts(
     useShallow((s) => s.filteredContracts(filter)),
   );
+
+  const removeContract = useContracts((s) => s.removeContract);
+
+  const startRemoveContract = (address: Address) => {
+    setPendingDeleteContract(address);
+  };
 
   return (
     <>
@@ -40,44 +36,57 @@ function Contracts() {
 
       <div className="flex flex-col gap-2 pt-2">
         {Array.from(contracts || []).map(
-          ({ address, name, chainId, proxyName }) => (
-            <Link
+          ({ address, name, chainId, proxyChain }) => (
+            <div
               key={address}
-              to="/home/contracts/$chainId/$address"
-              params={{ address: address, chainId: chainId }}
-              className="flex p-4 align-baseline hover:bg-accent"
+              className="flex flex-wrap hover:bg-accent xl:flex-nowrap"
             >
-              <div className="flex items-center gap-2 ">
-                <AddressView address={address} />
-                {proxyName && (
-                  <>
-                    <Badge variant="secondary">{proxyName}</Badge>
-                    <MoveRight strokeWidth={1} size={16} />
-                  </>
-                )}
-                {name && <Badge variant="secondary">{name}</Badge>}
-              </div>
-            </Link>
+              <ContractHeader
+                contract={{ address, name, chainId, proxyChain }}
+              />
+              {(!pendingDeleteContract ||
+                pendingDeleteContract !== address) && (
+                <div className="flex items-center">
+                  <Button
+                    variant="ghost"
+                    className="h-full w-full"
+                    onClick={() => startRemoveContract(address)}
+                  >
+                    <Trash2 />
+                  </Button>
+                </div>
+              )}
+
+              {pendingDeleteContract && pendingDeleteContract === address && (
+                <div className="flex items-center">
+                  <span className="flex whitespace-nowrap p-4 text-sm">
+                    Delete contract?
+                  </span>
+                  <Button
+                    className="flex h-10 w-12 p-4"
+                    onClick={() => removeContract(chainId, address)}
+                  >
+                    yes
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="flex h-full w-full text-sm hover:bg-transparent"
+                    onClick={() => setPendingDeleteContract(null)}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              )}
+            </div>
           ),
         )}
       </div>
 
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button size="icon" className="fixed right-6 bottom-6">
-            <Plus />
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add Contract</DialogTitle>
-            <DialogDescription>
-              Manually add a contract to the list of known contracts.
-            </DialogDescription>
-          </DialogHeader>
-          <AddressForm />
-        </DialogContent>
-      </Dialog>
+      <Link to="/home/contracts/add">
+        <Button size="icon" className="fixed right-6 bottom-6">
+          <Plus />
+        </Button>
+      </Link>
     </>
   );
 }
@@ -94,44 +103,37 @@ function Filter({ onChange }: { onChange: (f: string) => void }) {
   );
 }
 
-function AddressForm() {
-  const [networks, currentNetwork] = useNetworks(
-    useShallow((s) => [s.networks, s.current]),
-  );
-  const schema = z.object({
-    chainId: z.string(),
-    address: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid format"),
-  });
-
-  type Schema = z.infer<typeof schema>;
-
-  const add = useContracts((s) => s.add);
-
-  const form = useForm({
-    mode: "onChange",
-    resolver: zodResolver(schema),
-    defaultValues: { chainId: currentNetwork?.chain_id?.toString() } as Schema,
-  });
-
-  const onSubmit = (data: FieldValues) => add(data.chainId, data.address);
-
-  if (!currentNetwork) return null;
+function ContractHeader({ contract }: { contract: OrganizedContract }) {
+  const { address, name, chainId, proxyChain } = contract;
 
   return (
-    <Form form={form} onSubmit={onSubmit}>
-      <Form.Select
-        label="Network"
-        name="chainId"
-        defaultValue={currentNetwork.chain_id.toString()}
-        items={networks}
-        toValue={(n) => n.chain_id.toString()}
-        render={({ chain_id, name }) => (
-          <ChainView chainId={chain_id} name={name} />
-        )}
-      />
+    <div className="grow pr-32">
+      <Link
+        to="/home/contracts/$chainId/$address"
+        params={{ address: address, chainId: chainId }}
+        className="flex whitespace-nowrap p-4 align-baseline"
+      >
+        <div className="flex w-full items-center gap-2">
+          <AddressView address={address} />
 
-      <Form.Text label="Contract Address" name="address" />
-      <Form.Submit label="Add" />
-    </Form>
+          <div className="flex items-center">
+            {name && (
+              <Badge key={address} variant="secondary">
+                {name}
+              </Badge>
+            )}
+
+            {proxyChain.map(({ address, name }) => (
+              <Fragment key={address}>
+                <MoveRight strokeWidth={1} size={16} />
+                <Badge key={address} variant="secondary">
+                  {name ? name : <AddressView address={address} noTextStyle />}
+                </Badge>
+              </Fragment>
+            ))}
+          </div>
+        </div>
+      </Link>
+    </div>
   );
 }

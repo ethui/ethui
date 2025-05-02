@@ -10,6 +10,9 @@ import {
   type Abi,
   type AbiFunction,
   type Address,
+  type ContractEventName,
+  type DecodeEventLogParameters,
+  type DecodeEventLogReturnType,
   type Hex,
   decodeEventLog,
   formatUnits,
@@ -20,7 +23,7 @@ import {
 import { ChainView } from "@ethui/ui/components/chain-view";
 
 import { AbiItemFormWithPreview } from "@ethui/form/src/AbiItemFormWithPreview";
-import type { TokenMetadata } from "@ethui/types";
+import type { Result, TokenMetadata } from "@ethui/types";
 import type { Network } from "@ethui/types/network";
 import { Check, CheckIcon, FilePlus2, X } from "lucide-react";
 import { AddressView } from "#/components/AddressView";
@@ -69,7 +72,7 @@ function TxReviewDialog() {
   const { id } = Route.useParams();
   const dialog = useDialog<TxRequest>(id);
   const network = useNetworks((s) =>
-    s.networks.find((n) => n.chain_id === dialog.data?.chainId),
+    s.networks.find((n) => n.dedup_chain_id.chain_id === dialog.data?.chainId),
   );
 
   if (!dialog.data || !network) return null;
@@ -181,7 +184,10 @@ function Header({ from, to, network }: HeaderProps) {
         </div>
       </h1>
       <div className="ml-5">
-        <ChainView name={network.name} chainId={network.chain_id} />
+        <ChainView
+          name={network.name}
+          chainId={network.dedup_chain_id.chain_id}
+        />
       </div>
     </div>
   );
@@ -207,8 +213,8 @@ function SimulationResult({ simulation, chainId, to }: SimulationResultProps) {
         label="Trust"
         value={
           callCount && callCount > 0 ? (
-            <div className="flex">
-              <Check />
+            <div className="flex gap-1">
+              <Check className="stroke-success" />
               <span>Called {callCount} time(s) before.</span>
             </div>
           ) : (
@@ -222,7 +228,13 @@ function SimulationResult({ simulation, chainId, to }: SimulationResultProps) {
       />
       <Datapoint
         label="Status"
-        value={simulation.success ? <Check /> : <X />}
+        value={
+          simulation.success ? (
+            <Check className="stroke-success" />
+          ) : (
+            <X className="stroke-destructive" />
+          )
+        }
       />
       {simulation.success && (
         <Datapoint label="Gas Used" value={simulation.gasUsed.toString()} />
@@ -288,76 +300,67 @@ interface LogProps {
   chainId: number;
 }
 
-const erc20Transfer = parseAbi([
+const erc20 = parseAbi([
   "event Transfer(address indexed from, address indexed to, uint256 value)",
 ]);
 
 function Log({ log, chainId }: LogProps) {
-  const result = decodeKnownLog(log);
-  if (!result) return null;
-  const [type, decoded] = result;
-
-  switch (type) {
-    case null:
-      return null;
-    case "erc20transfer":
-      return (
-        <Erc20Transfer
-          from={decoded.args.from}
-          to={decoded.args.to}
-          value={decoded.args.value}
-          contract={log.address}
-          chainId={chainId}
-        />
-      );
-  }
-}
-
-function decodeKnownLog(log: Log) {
-  try {
-    return [
-      "erc20transfer",
-      decodeEventLog({
-        abi: erc20Transfer,
-        data: log.data,
-        topics: log.topics,
-      }),
-    ] as const;
-  } catch (_e) {
-    return null;
-  }
+  return <Erc20Transfer log={log} chainId={chainId} />;
 }
 
 interface Erc20TransferProps {
   chainId: number;
-  from: Address;
-  to: Address;
-  value: bigint;
-  contract: Address;
+  log: Log;
 }
 
-function Erc20Transfer({
-  chainId,
-  from,
-  to,
-  value,
-  contract,
-}: Erc20TransferProps) {
+function Erc20Transfer({ chainId, log }: Erc20TransferProps) {
+  const result = tryDecodeEventLog({
+    abi: erc20,
+    eventName: "Transfer",
+    data: log.data,
+    topics: log.topics,
+  });
+
+  if (!result.ok) return null;
+
+  const {
+    args: { from, to, value },
+  } = result.value;
+
   const { data: metadata } = useInvoke<TokenMetadata>("db_get_erc20_metadata", {
     chainId,
-    contract,
+    contract: log.address,
   });
 
   return (
-    <div className=" m-1 flex items-center">
+    <div className=" m-1 flex items-center gap-2">
       <AddressView address={from} />
       <span>→</span>
       <AddressView address={to} />
-      <IconAddress chainId={chainId} address={contract} />
+      <IconAddress chainId={chainId} address={log.address} />
       {metadata?.decimals
         ? formatUnits(value, metadata.decimals)
         : value.toString()}{" "}
       {metadata?.symbol && `${metadata.symbol}`}
     </div>
   );
+}
+
+function tryDecodeEventLog<
+  const abi extends Abi | readonly unknown[],
+  eventName extends ContractEventName<abi> | undefined = undefined,
+  topics extends Hex[] = Hex[],
+  data extends Hex | undefined = undefined,
+  strict extends boolean = true,
+>(
+  parameters: DecodeEventLogParameters<abi, eventName, topics, data, strict>,
+): Result<
+  DecodeEventLogReturnType<abi, eventName, topics, data, strict>,
+  undefined
+> {
+  try {
+    return { ok: true, value: decodeEventLog(parameters) };
+  } catch (_e) {
+    return { ok: false, error: undefined };
+  }
 }

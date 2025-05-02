@@ -4,20 +4,26 @@ import type { Address } from "viem";
 import { type StateCreator, create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-import type { Contract } from "@ethui/types";
+import type { Contract, DedupChainId } from "@ethui/types";
 import { toast } from "@ethui/ui/hooks/use-toast";
 import { useNetworks } from "./useNetworks";
 
 interface State {
-  chainId?: number;
-  contracts: Contract[];
+  dedupChainId?: DedupChainId;
+  contracts: OrganizedContract[];
 }
+
+export type OrganizedContract = Contract & {
+  alias?: string;
+  proxyChain: Contract[];
+};
 
 interface Setters {
   reload: () => Promise<void>;
-  add: (chainId: number, address: Address) => Promise<void>;
-  setChainId: (chainId?: number) => void;
-  filteredContracts: (filter: string) => Contract[];
+  add: (chainId: number, dedupId: number, address: Address) => Promise<void>;
+  removeContract: (chainId: number, address: Address) => Promise<void>;
+  setChainId: (dedupChainId?: DedupChainId) => void;
+  filteredContracts: (filter: string) => OrganizedContract[];
 }
 
 type Store = State & Setters;
@@ -26,44 +32,65 @@ const store: StateCreator<Store> = (set, get) => ({
   contracts: [],
 
   async reload() {
-    const { chainId } = get();
-    if (!chainId) return;
+    const { dedupChainId } = get();
+    if (!dedupChainId) return;
+
+    const is_anvil_network = await invoke<boolean>("networks_is_dev", {
+      dedupChainId,
+    });
 
     const contracts = await invoke<Contract[]>("db_get_contracts", {
-      chainId,
+      chainId: dedupChainId.chain_id,
+      dedupId: is_anvil_network ? dedupChainId.dedup_id : -1,
     });
-    const contractsWithAlias = await Promise.all(
-      contracts.map(async (c) => {
-        const alias = await invoke<string | undefined>("settings_get_alias", {
-          address: c.address,
-        });
-        return { ...c, alias };
-      }),
-    );
 
-    const filteredContractsAndProxiesWithAlias = contractsWithAlias.reduce(
-      (acc: Contract[], c: Contract) => {
-        if (c.proxiedBy) {
-          const proxyName = contractsWithAlias.find(
-            (e) => e.proxyFor === c.address,
-          )?.name;
-          acc.push({ ...c, proxyName });
-        } else if (!c.proxyFor) {
-          acc.push(c);
-        }
-        return acc;
-      },
-      [],
-    );
-
-    set({ contracts: filteredContractsAndProxiesWithAlias });
+    set({ contracts: await organizeContracts(contracts) });
   },
 
-  add: async (chainId: number, address: Address) => {
+  add: async (chainId: number, dedupId: number, address: Address) => {
     try {
+      const dedupChainId: DedupChainId = {
+        chain_id: chainId,
+        dedup_id: dedupId,
+      };
+
+      const is_anvil_network = await invoke<boolean>("networks_is_dev", {
+        dedupChainId,
+      });
+
       await invoke("add_contract", {
         chainId: Number(chainId),
+        dedupId: is_anvil_network ? Number(dedupId) : -1,
         address,
+      });
+    } catch (err: any) {
+      toast({
+        title: "Error",
+        description: err.toString(),
+        variant: "destructive",
+      });
+    }
+  },
+
+  removeContract: async (chainId: number, address: Address) => {
+    try {
+      const { dedupChainId } = get();
+      if (!dedupChainId) return;
+
+      const is_anvil_network = await invoke<boolean>("networks_is_dev", {
+        dedupChainId,
+      });
+
+      await invoke("remove_contract", {
+        chainId: Number(chainId),
+        dedupId: is_anvil_network ? Number(dedupChainId.dedup_id) : -1,
+        address,
+      });
+
+      toast({
+        title: "Deleted",
+        description: "Contract removed",
+        variant: "destructive",
       });
     } catch (err: any) {
       toast({
@@ -86,8 +113,8 @@ const store: StateCreator<Store> = (set, get) => ({
     );
   },
 
-  setChainId(chainId) {
-    set({ chainId });
+  setChainId(dedupChainId) {
+    set({ dedupChainId });
     get().reload();
   },
 });
@@ -99,7 +126,48 @@ event.listen("contracts-updated", async () => {
 });
 
 useNetworks.subscribe(
-  (s) => s.current?.chain_id,
-  (chainId) => useContracts.getState().setChainId(chainId),
+  (s) => s.current?.dedup_chain_id,
+  (dedupChainId) => useContracts.getState().setChainId(dedupChainId),
   { fireImmediately: true },
 );
+
+async function organizeContracts(
+  contracts: Contract[],
+): Promise<OrganizedContract[]> {
+  type NestedContract = Contract & { alias?: string; impl?: NestedContract };
+
+  const withAliases: NestedContract[] = await Promise.all(
+    contracts.map(async (c) => {
+      const alias = await invoke<string | undefined>("settings_get_alias", {
+        address: c.address,
+      });
+      return { ...c, alias };
+    }),
+  );
+
+  const nodeMap = new Map<Address, NestedContract>();
+  const tmp: NestedContract[] = [];
+
+  for (const c of withAliases) {
+    nodeMap.set(c.address, c);
+  }
+
+  for (const c of withAliases) {
+    const node = nodeMap.get(c.address)!;
+    if (c.proxiedBy) {
+      nodeMap.get(c.proxiedBy)!.impl = node;
+    } else {
+      tmp.push(node);
+    }
+  }
+
+  const flatten = (c: NestedContract | undefined): Contract[] => {
+    if (!c) return [];
+    const { impl, ...contract } = c;
+    return [contract, ...flatten(impl)];
+  };
+
+  return tmp.map((c) => {
+    return { ...c, proxyChain: flatten(c.impl) };
+  });
+}

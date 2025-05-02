@@ -1,4 +1,4 @@
-import type { Address } from "viem";
+import type { Address, Hash } from "viem";
 
 export interface Token {
   contract: Address;
@@ -96,6 +96,11 @@ export interface Contract {
   proxiedBy?: Address;
 }
 
+export interface DedupChainId {
+  chain_id: number;
+  dedup_id?: number;
+}
+
 export interface Peer {
   origin: string;
   tab_id?: number;
@@ -105,4 +110,13 @@ export interface Peer {
   favicon: string;
 }
 
-export type Affinity = { sticky: number } | "global" | "unset";
+export type Affinity = { sticky: DedupChainId } | "global" | "unset";
+
+export type Result<T, E = Error> =
+  | { ok: true; value: T }
+  | { ok: false; error: E };
+
+export type WriteResponse = {
+  status: boolean;
+  hash: Hash;
+};

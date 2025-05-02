@@ -13,7 +13,7 @@ use alloy::{
     network::Ethereum,
     providers::{Provider, ProviderBuilder, RootProvider},
 };
-use ethui_types::{Affinity, Network, UINotify};
+use ethui_types::{Affinity, DedupChainId, Network, NewNetworkParams, UINotify};
 pub use init::init;
 use migrations::LatestVersion;
 use serde::{Deserialize, Serialize};
@@ -42,9 +42,9 @@ impl Networks {
     ///
     /// Broadcasts `chainChanged` to all connections with global or no affinity
     pub async fn set_current_by_name(&mut self, new_current_network: String) -> Result<()> {
-        let previous = self.get_current().chain_id;
+        let previous = self.get_current().name.clone();
         self.inner.current = new_current_network;
-        let new = self.get_current().chain_id;
+        let new = self.get_current().name.clone();
 
         if previous != new {
             self.on_network_changed().await?;
@@ -63,7 +63,27 @@ impl Networks {
             .inner
             .networks
             .values()
-            .find(|n| n.chain_id == new_chain_id)
+            .find(|n| n.chain_id() == new_chain_id)
+            .unwrap();
+
+        self.set_current_by_name(new_network.name.clone()).await?;
+        self.save()?;
+
+        Ok(())
+    }
+
+    /// Changes the currently connected wallet by internal ID
+    ///
+    /// Broadcasts `chainChanged` to all connections with global or no affinity
+    pub async fn set_current_by_dedup_chain_id(
+        &mut self,
+        dedup_chain_id: DedupChainId,
+    ) -> Result<()> {
+        let new_network = self
+            .inner
+            .networks
+            .values()
+            .find(|n| n.dedup_chain_id() == dedup_chain_id)
             .unwrap();
 
         self.set_current_by_name(new_network.name.clone()).await?;
@@ -76,7 +96,7 @@ impl Networks {
         self.inner
             .networks
             .iter()
-            .any(|(_, n)| n.chain_id == chain_id)
+            .any(|(_, n)| n.chain_id() == chain_id)
     }
 
     pub fn get_current(&self) -> &Network {
@@ -91,23 +111,46 @@ impl Networks {
         self.inner
             .networks
             .values()
-            .find(|n| n.chain_id == chain_id)
+            .find(|n| n.chain_id() == chain_id)
             .cloned()
     }
 
-    pub async fn add_network(&mut self, network: Network) -> Result<()> {
-        // TODO: need to ensure uniqueness by name, not chain id
-        if self.validate_chain_id(network.chain_id) {
+    pub fn get_network_by_name(&self, name: &str) -> Option<Network> {
+        self.inner
+            .networks
+            .values()
+            .find(|n| n.name == name)
+            .cloned()
+    }
+
+    pub fn get_network_by_dedup_chain_id(&self, dedup_chain_id: DedupChainId) -> Option<Network> {
+        self.inner
+            .networks
+            .values()
+            .find(|n| n.dedup_chain_id == dedup_chain_id)
+            .cloned()
+    }
+
+    pub async fn add_network(&mut self, network: NewNetworkParams) -> Result<()> {
+        if self.inner.networks.contains_key(&network.name) {
             return Err(Error::AlreadyExists);
         }
 
-        if self.inner.networks.contains_key(&network.name) {
+        let deduplication_id = self.get_chain_id_count(network.dedup_chain_id.chain_id());
+        let network = network.into_network(deduplication_id);
+
+        if !network.is_dev().await
+            & self
+                .get_network_by_dedup_chain_id(network.dedup_chain_id())
+                .is_some()
+        {
             return Err(Error::AlreadyExists);
         }
 
         self.inner
             .networks
             .insert(network.name.clone(), network.clone());
+
         self.save()?;
         ethui_broadcast::network_added(network.clone()).await;
         ethui_broadcast::ui_notify(UINotify::NetworksChanged).await;
@@ -165,10 +208,28 @@ impl Networks {
     pub async fn chain_id_from_provider(&self, url: String) -> Result<u64> {
         let provider = ProviderBuilder::new()
             .disable_recommended_fillers()
-            .on_builtin(&url)
+            .connect(&url)
             .await?;
 
         Ok(provider.get_chain_id().await?)
+    }
+
+    pub fn get_chain_id_count(&self, chain_id: u32) -> i32 {
+        self.inner
+            .networks
+            .values()
+            .filter(|network| network.chain_id() == chain_id)
+            .count() as i32
+    }
+
+    pub fn get_lowest_dedup_id(&self, chain_id: u32) -> i32 {
+        self.inner
+            .networks
+            .values()
+            .filter(|network| network.chain_id() == chain_id)
+            .map(|network| network.dedup_chain_id.dedup_id())
+            .min()
+            .unwrap_or(0)
     }
 
     async fn on_network_changed(&self) -> Result<()> {
@@ -186,7 +247,7 @@ impl Networks {
     fn notify_peers(&self) {
         let current = self.get_current().clone();
         tokio::spawn(async move {
-            ethui_broadcast::chain_changed(current.chain_id, None, Affinity::Global).await;
+            ethui_broadcast::chain_changed(current.dedup_chain_id(), None, Affinity::Global).await;
         });
     }
 

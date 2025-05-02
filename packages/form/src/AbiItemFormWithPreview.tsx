@@ -49,7 +49,7 @@ export function AbiItemFormWithPreview({
       <div
         className={clsx(
           "col-span-3",
-          showForm ? "md:col-span-1" : "md-col-span-0",
+          showForm ? "md:col-span-1" : "md:col-span-0",
         )}
       >
         <AbiItemForm
@@ -59,12 +59,7 @@ export function AbiItemFormWithPreview({
           defaultCalldata={defaultCalldata}
         />
       </div>
-      <div
-        className={clsx(
-          "col-span-3",
-          showForm ? "md:col-span-2" : "md:col-span-3",
-        )}
-      >
+      <div className={clsx("col-span-3", showForm && "md:col-span-2")}>
         {data && sender && (
           <SolidityCall
             {...{

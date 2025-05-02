@@ -7,10 +7,12 @@ use alloy::{
 use serde::{Deserialize, Serialize};
 use url::Url;
 
+use crate::DedupChainId;
+
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Network {
+    pub dedup_chain_id: DedupChainId,
     pub name: String,
-    pub chain_id: u32,
     pub explorer_url: Option<String>,
     pub http_url: Url,
     pub ws_url: Option<Url>,
@@ -19,10 +21,10 @@ pub struct Network {
 }
 
 impl Network {
-    pub fn mainnet() -> Self {
+    pub fn mainnet(deduplication_id: i32) -> Self {
         Self {
+            dedup_chain_id: (1, deduplication_id).into(),
             name: String::from("Mainnet"),
-            chain_id: 1,
             explorer_url: Some(String::from("https://etherscan.io/search?q=")),
             http_url: Url::parse("https://eth.llamarpc.com").unwrap(),
             ws_url: None,
@@ -31,10 +33,10 @@ impl Network {
         }
     }
 
-    pub fn sepolia() -> Self {
+    pub fn sepolia(deduplication_id: i32) -> Self {
         Self {
+            dedup_chain_id: (11155111, deduplication_id).into(),
             name: String::from("Sepolia"),
-            chain_id: 11155111,
             explorer_url: Some(String::from("https://sepolia.etherscan.io/search?q=")),
             http_url: Url::parse("https://ethereum-sepolia-rpc.publicnode.com").unwrap(),
             ws_url: None,
@@ -43,10 +45,10 @@ impl Network {
         }
     }
 
-    pub fn anvil() -> Self {
+    pub fn anvil(deduplication_id: i32) -> Self {
         Self {
+            dedup_chain_id: (31337, deduplication_id).into(),
             name: String::from("Anvil"),
-            chain_id: 31337,
             explorer_url: None,
             http_url: Url::parse("http://localhost:8545").unwrap(),
             ws_url: Some(Url::parse("ws://localhost:8545").unwrap()),
@@ -56,11 +58,19 @@ impl Network {
     }
 
     pub fn all_default() -> Vec<Self> {
-        vec![Self::anvil(), Self::mainnet(), Self::sepolia()]
+        vec![Self::anvil(0), Self::mainnet(0), Self::sepolia(0)]
+    }
+
+    pub fn dedup_chain_id(&self) -> DedupChainId {
+        self.dedup_chain_id
+    }
+
+    pub fn chain_id(&self) -> u32 {
+        self.dedup_chain_id.chain_id()
     }
 
     pub fn chain_id_hex(&self) -> String {
-        format!("0x{:x}", self.chain_id)
+        format!("0x{:x}", self.chain_id())
     }
 
     pub fn ws_url(&self) -> Url {
@@ -72,7 +82,7 @@ impl Network {
     pub async fn is_dev(&self) -> bool {
         let provider = self.get_alloy_provider().await.unwrap();
         // TODO cache node_info for entire chain
-        self.chain_id == 31337 || provider.anvil_node_info().await.is_ok()
+        self.chain_id() == 31337 || provider.anvil_node_info().await.is_ok()
     }
 
     pub async fn get_alloy_provider(
@@ -80,7 +90,7 @@ impl Network {
     ) -> Result<RootProvider<Ethereum>, RpcError<TransportErrorKind>> {
         ProviderBuilder::new()
             .disable_recommended_fillers()
-            .on_builtin(self.http_url.as_str())
+            .connect(self.http_url.as_str())
             .await
     }
 
@@ -97,6 +107,6 @@ impl Network {
 
 impl std::fmt::Display for Network {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}-{}", self.chain_id, self.name)
+        write!(f, "{}-{}", self.chain_id(), self.name)
     }
 }

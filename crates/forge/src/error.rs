@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use alloy::transports::{RpcError, TransportErrorKind};
 
-use crate::watcher::WatcherMsg;
+use crate::actor;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -24,14 +24,28 @@ pub enum Error {
     #[error("invalid chain ID")]
     InvalidChainId,
 
-    #[error(transparent)]
-    WatcherSendError(#[from] tokio::sync::mpsc::error::SendError<WatcherMsg>),
-
+    //#[error(transparent)]
+    //WatcherSendError(#[from] tokio::sync::mpsc::error::SendError<WatcherMsg>),
     #[error(transparent)]
     Network(#[from] ethui_networks::Error),
 
     #[error(transparent)]
     Rpc(#[from] RpcError<TransportErrorKind>),
+
+    #[error(transparent)]
+    Notify(#[from] notify::Error),
+
+    #[error("Failed to shutdown task")]
+    FailedToShutdown,
+
+    #[error(transparent)]
+    Glob(#[from] glob::PatternError),
+
+    #[error("Send error")]
+    SendError,
+
+    #[error(transparent)]
+    ActorSend(#[from] kameo::error::SendError<actor::Msg>),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

@@ -1,6 +1,6 @@
 {
   "db_name": "SQLite",
-  "query": "SELECT address, chain_id, code FROM contracts WHERE name IS NULL or ABI IS NULL",
+  "query": "SELECT address, chain_id, dedup_id, code FROM contracts WHERE name IS NULL or ABI IS NULL",
   "describe": {
     "columns": [
       {
@@ -14,8 +14,13 @@
         "type_info": "Integer"
       },
       {
-        "name": "code",
+        "name": "dedup_id",
         "ordinal": 2,
+        "type_info": "Integer"
+      },
+      {
+        "name": "code",
+        "ordinal": 3,
         "type_info": "Text"
       }
     ],
@@ -25,8 +30,9 @@
     "nullable": [
       false,
       false,
+      true,
       true
     ]
   },
-  "hash": "5c750f7d81917d9a042a15cab22c95bbb300924f12bbc53a529514b0be32e3b4"
+  "hash": "96685c49c632b458ea14acdbb5a273626f334c57e14328569cadd0509a5a76c4"
 }

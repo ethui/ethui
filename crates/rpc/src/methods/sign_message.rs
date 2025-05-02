@@ -77,16 +77,17 @@ impl<'a> SignMessage<'a> {
 
     async fn build_signer(&self) -> Signer {
         self.wallet
-            .build_signer(self.network.chain_id, &self.wallet_path)
+            .build_signer(self.network.chain_id(), &self.wallet_path)
             .await
             .unwrap()
     }
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
+#[serde(rename_all = "camelCase")]
 enum Data {
     Raw(String),
-    Typed(TypedData),
+    Typed(Box<TypedData>),
 }
 
 #[derive(Default)]
@@ -119,7 +120,7 @@ impl<'a> SignMessageBuilder<'a> {
     }
 
     pub fn set_typed_data(mut self, data: TypedData) -> SignMessageBuilder<'a> {
-        self.data = Some(Data::Typed(data));
+        self.data = Some(Data::Typed(Box::new(data)));
         self
     }
 

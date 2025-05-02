@@ -1,14 +1,15 @@
-use crate::{Error, Result};
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_networks::Networks;
-use ethui_types::{GlobalState, Network};
+use ethui_types::{GlobalState, Network, NewNetworkParams};
 use serde::Serialize;
 
 use super::chain_add::Params;
+use crate::{Error, Result};
 
 #[derive(Debug)]
 pub struct ChainUpdate {
     network: Network,
+    new_network_params: Option<NewNetworkParams>,
 }
 
 impl ChainUpdate {
@@ -22,7 +23,10 @@ impl ChainUpdate {
         }
 
         if !self.already_exists().await {
-            let add_dialog = Dialog::new("chain-add", serde_json::to_value(&self.network).unwrap());
+            let add_dialog = Dialog::new(
+                "chain-add",
+                serde_json::to_value(&self.new_network_params).unwrap(),
+            );
             add_dialog.open().await?;
 
             while let Some(msg) = add_dialog.recv().await {
@@ -30,7 +34,9 @@ impl ChainUpdate {
                     DialogMsg::Data(msg) => {
                         if let Some("accept") = msg.as_str() {
                             let mut networks = Networks::write().await;
-                            networks.add_network(self.network.clone()).await?;
+                            networks
+                                .add_network(self.new_network_params.clone().unwrap())
+                                .await?;
                             break;
                         }
                     }
@@ -48,7 +54,9 @@ impl ChainUpdate {
                 DialogMsg::Data(msg) => {
                     if let Some("accept") = msg.as_str() {
                         let mut networks = Networks::write().await;
-                        networks.set_current_by_id(self.network.chain_id).await?;
+                        networks
+                            .set_current_by_dedup_chain_id(self.network.dedup_chain_id())
+                            .await?;
                         break;
                     }
                 }
@@ -63,19 +71,19 @@ impl ChainUpdate {
         let networks = Networks::read().await;
         let current_chain = networks.get_current();
         NetworkSwitch {
-            old_id: current_chain.chain_id,
-            new_id: self.network.chain_id,
+            old_id: current_chain.chain_id(),
+            new_id: self.network.chain_id(),
         }
     }
 
     async fn already_active(&self) -> bool {
         let networks = Networks::read().await;
-        networks.get_current().chain_id == self.network.chain_id
+        networks.get_current().chain_id() == self.network.chain_id()
     }
 
     async fn already_exists(&self) -> bool {
         let networks = Networks::read().await;
-        networks.validate_chain_id(self.network.chain_id)
+        networks.get_network_by_name(&self.network.name).is_some()
     }
 }
 
@@ -104,8 +112,38 @@ impl ChainUpdateBuilder {
     }
 
     pub async fn build(self) -> ChainUpdate {
+        let networks = Networks::read().await;
+        let params = self.params.unwrap();
+        let chain_name = params.chain_name.clone();
+
+        let new_network_params = NewNetworkParams {
+            dedup_chain_id: (params.chain_id.try_into().unwrap(), 0).into(),
+            name: chain_name.clone(),
+            explorer_url: params.block_explorer_urls.first().map(|u| u.to_string()),
+            http_url: params
+                .rpc_urls
+                .iter()
+                .find(|s| s.scheme().starts_with("http"))
+                .cloned()
+                .expect("http url not found"),
+            ws_url: params
+                .rpc_urls
+                .iter()
+                .find(|s| s.scheme().starts_with("ws"))
+                .cloned(),
+            currency: params.native_currency.symbol,
+            decimals: params.native_currency.decimals as u32,
+        };
+
+        let deduplication_id = networks
+            .get_network_by_name(&chain_name)
+            .map(|network| network.dedup_chain_id().dedup_id());
+
         ChainUpdate {
-            network: self.params.unwrap().try_into().unwrap(),
+            network: new_network_params
+                .clone()
+                .into_network(deduplication_id.unwrap_or_default()),
+            new_network_params: Some(new_network_params),
         }
     }
 }

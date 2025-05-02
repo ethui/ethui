@@ -2,18 +2,22 @@ mod autostart;
 pub mod commands;
 mod error;
 mod init;
+mod migrations;
+mod onboarding;
 mod utils;
 
 use std::{
     collections::HashMap,
     fs::File,
     path::{Path, PathBuf},
-    str::FromStr,
 };
 
 use ethui_types::{Address, UINotify};
 pub use init::init;
+use migrations::LatestVersion;
+use onboarding::{Onboarding, OnboardingStep};
 use serde::{Deserialize, Serialize};
+use serde_constant::ConstI64;
 pub use utils::test_alchemy_api_key;
 
 pub use self::error::{Error, Result};
@@ -86,6 +90,20 @@ impl Settings {
         Ok(())
     }
 
+    pub async fn finish_onboarding_step(&mut self, step: OnboardingStep) -> Result<()> {
+        self.inner.onboarding.finish_step(step);
+        self.save().await?;
+
+        Ok(())
+    }
+
+    pub async fn finish_onboarding(&mut self) -> Result<()> {
+        self.inner.onboarding.finish();
+        self.save().await?;
+
+        Ok(())
+    }
+
     pub async fn set_dark_mode(&mut self, mode: DarkMode) -> Result<()> {
         self.inner.dark_mode = mode;
         self.save().await?;
@@ -100,19 +118,8 @@ impl Settings {
         Ok(())
     }
 
-    pub async fn finish_onboarding(&mut self) -> Result<()> {
-        self.inner.onboarded = true;
-        self.save().await?;
-
-        Ok(())
-    }
-
     pub fn get(&self) -> &SerializedSettings {
         &self.inner
-    }
-
-    pub fn onboarded(&self) -> bool {
-        self.inner.onboarded
     }
 
     pub fn fast_mode(&self) -> bool {
@@ -134,7 +141,7 @@ impl Settings {
         self.inner.aliases.get(&address).cloned()
     }
 
-    fn set_alias(&mut self, address: Address, alias: Option<String>) {
+    async fn set_alias(&mut self, address: Address, alias: Option<String>) -> Result<()> {
         // trim whitespaces
         // empty str becomes None
         let alias = alias.map(|v| v.trim().to_owned()).filter(|v| !v.is_empty());
@@ -144,6 +151,8 @@ impl Settings {
         } else {
             self.inner.aliases.remove(&address);
         }
+        self.save().await?;
+        Ok(())
     }
 
     // Persists current state to disk
@@ -176,9 +185,6 @@ pub struct SerializedSettings {
     aliases: HashMap<Address, String>,
 
     #[serde(default)]
-    onboarded: bool,
-
-    #[serde(default)]
     fast_mode: bool,
 
     #[serde(default)]
@@ -189,6 +195,11 @@ pub struct SerializedSettings {
 
     #[serde(default)]
     rust_log: String,
+
+    #[serde(default)]
+    pub onboarding: Onboarding,
+
+    version: LatestVersion,
 }
 
 impl Default for SerializedSettings {
@@ -200,11 +211,12 @@ impl Default for SerializedSettings {
             etherscan_api_key: None,
             hide_empty_tokens: true,
             aliases: HashMap::new(),
-            onboarded: false,
             fast_mode: false,
             autostart: false,
             start_minimized: false,
             rust_log: "warn".into(),
+            version: ConstI64,
+            onboarding: Onboarding::default(),
         }
     }
 }
@@ -214,19 +226,5 @@ const fn default_true() -> bool {
 }
 
 fn default_aliases() -> HashMap<Address, String> {
-    let mut res = HashMap::new();
-    res.insert(
-        Address::from_str("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266").unwrap(),
-        "alice".into(),
-    );
-    res.insert(
-        Address::from_str("0x70997970C51812dc3A010C7d01b50e0d17dc79C8").unwrap(),
-        "bob".into(),
-    );
-    res.insert(
-        Address::from_str("0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC").unwrap(),
-        "charlie".into(),
-    );
-
-    res
+    Default::default()
 }

@@ -47,7 +47,7 @@ async fn receiver() -> ! {
 
             if let NetworkRemoved(network) = msg {
                 let mut store = Store::write().await;
-                store.on_chain_removed(network.chain_id);
+                store.on_chain_removed(network.dedup_chain_id());
             }
         }
     }

@@ -22,6 +22,7 @@ import {
   DialogTitle,
 } from "@ethui/ui/components/shadcn/dialog";
 import { Link } from "@tanstack/react-router";
+import clsx from "clsx";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { truncateHex } from "#/utils";
@@ -33,12 +34,14 @@ interface Props {
   copyIcon?: boolean;
   contextMenu?: boolean;
   icon?: boolean;
+  noTextStyle?: boolean;
 }
 
 export function AddressView({
   address: addr,
   contextMenu = true,
   icon = false,
+  noTextStyle = false,
 }: Props) {
   const network = useNetworks((s) => s.current);
   const address = getAddress(addr);
@@ -52,10 +55,15 @@ export function AddressView({
   const text = alias ? alias : truncateHex(address);
   const content = (
     <ClickToCopy text={address}>
-      <div className="flex items-center gap-x-1 font-mono text-base">
+      <div
+        className={clsx(
+          "flex items-center gap-x-1 font-mono",
+          noTextStyle ? "" : "text-base",
+        )}
+      >
         {icon && (
           <IconAddress
-            chainId={network.chain_id}
+            chainId={network.dedup_chain_id.chain_id}
             address={address}
             effigy
             className="h-4"

@@ -27,7 +27,7 @@ function Content() {
   });
 
   const httpUrl = form.watch("http_url");
-  const userChainId = form.watch("chain_id");
+  const userChainId = form.watch("dedup_chain_id.chain_id");
 
   useEffect(() => {
     if (!httpUrl) return;
@@ -42,8 +42,8 @@ function Content() {
         );
 
         if (!userChainId) {
-          form.setValue("chain_id", chainId);
-          form.clearErrors("chain_id");
+          form.setValue("dedup_chain_id.chain_id", chainId);
+          form.clearErrors("dedup_chain_id.chain_id");
         }
       } catch (_e) {
         return null;
@@ -56,6 +56,7 @@ function Content() {
   const onSubmit = async (data: Network) => {
     try {
       setLoading(true);
+      data.dedup_chain_id.dedup_id = 0;
       await invoke("networks_add", { network: data });
       setLoading(false);
       router.history.back();
@@ -79,7 +80,7 @@ function Content() {
         <Form.NumberField
           className="[&::-webkit-inner-spin-button]:appearance-none"
           label="Chain Id"
-          name="chain_id"
+          name="dedup_chain_id.chain_id"
         />
       </div>
 

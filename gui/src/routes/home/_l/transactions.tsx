@@ -11,7 +11,7 @@ import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { type Abi, type Address, formatEther, formatGwei } from "viem";
 
-import type { PaginatedTx, Tx } from "@ethui/types";
+import type { PaginatedTx, Tx, WriteResponse } from "@ethui/types";
 import { BlockNumber } from "@ethui/ui/components/block-number";
 import {
   Accordion,
@@ -43,8 +43,9 @@ export const Route = createFileRoute("/home/_l/transactions")({
 
 function Txs() {
   const account = useWallets((s) => s.address);
-  const chainId = useNetworks((s) => s.current?.chain_id);
-  const pageSize = 10;
+  const chainId = useNetworks((s) => s.current?.dedup_chain_id.chain_id);
+  const pageSize = 20;
+  const [animating, setAnimating] = useState(false);
 
   const [items, setItems] = useState<PaginatedTx[]>([]);
   const [hasMore, setHasMore] = useState(true);
@@ -82,6 +83,7 @@ function Txs() {
       }
       setItems([...items, ...newItems]);
       setTimeout(() => {
+        setAnimating(true);
         setLoading(false);
       }, 200);
     });
@@ -114,11 +116,11 @@ function Txs() {
   return (
     <div className="flex w-full flex-col items-center gap-2" ref={wrapperRef}>
       <Accordion type="multiple" className="w-full">
-        <AnimatePresence initial={false}>
+        <AnimatePresence initial={animating}>
           {items.map((tx) => (
             <AccordionItem asChild key={`${tx.hash}`} value={tx.hash}>
               <motion.div
-                initial={{ height: 0, opacity: 0 }}
+                initial={animating ? { height: 0, opacity: 0 } : false}
                 animate={{ height: "auto", opacity: 1 }}
                 transition={{
                   height: { duration: 0.4 },
@@ -170,12 +172,14 @@ interface IconProps {
 }
 
 function Icon({ account, tx }: IconProps) {
+  const className = tx.status === 1 ? "stroke-success" : "stroke-destructive";
+
   if (!tx.to) {
-    return <ReceiptText size={15} />;
+    return <ReceiptText size={15} className={className} />;
   } else if (tx.to.toLowerCase() === account.toLowerCase()) {
-    return <MoveDownLeft size={15} />;
+    return <MoveDownLeft size={15} className={className} />;
   } else {
-    return <MoveUpRight size={15} />;
+    return <MoveUpRight size={15} className={className} />;
   }
 }
 
@@ -289,7 +293,7 @@ function Details({ tx, chainId }: DetailsProps) {
 }
 
 function resend({ from, to, value, data }: Tx) {
-  invoke<string>("rpc_send_transaction", {
+  invoke<WriteResponse>("rpc_send_transaction", {
     params: { from, to, value, data },
   });
 }

@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use ethui_types::{ui_events, Address, Affinity, Network, B256};
+use ethui_types::{ui_events, Address, Affinity, DedupChainId, Network, B256};
 pub use internal_msgs::*;
 use once_cell::sync::Lazy;
 use tokio::sync::{broadcast, oneshot, Mutex, RwLock};
@@ -9,7 +9,7 @@ pub use ui_msgs::*;
 /// Supported messages
 #[derive(Debug, Clone)]
 pub enum InternalMsg {
-    ChainChanged(u32, Option<String>, Affinity),
+    ChainChanged(DedupChainId, Option<String>, Affinity),
     AccountsChanged(Vec<Address>),
     SettingsUpdated,
 
@@ -22,11 +22,14 @@ pub enum InternalMsg {
     NetworkRemoved(Network),
     CurrentNetworkChanged(Network),
 
+    WalletCreated,
+
+    PeerAdded,
+
     /// Request a full update of a TX. oneshot channel included to notify when job is done
     FetchFullTxSync(u32, B256, Arc<Mutex<Option<oneshot::Sender<()>>>>),
     FetchERC20Metadata(u32, Address),
 
-    ForgeAbiFound,
     ContractFound,
 }
 
@@ -60,8 +63,12 @@ mod internal_msgs {
     }
 
     /// Broadcasts `ChainChanged` events
-    pub async fn chain_changed(chain_id: u32, domain: Option<String>, affinity: Affinity) {
-        send(ChainChanged(chain_id, domain, affinity)).await;
+    pub async fn chain_changed(
+        dedup_chain_id: DedupChainId,
+        domain: Option<String>,
+        affinity: Affinity,
+    ) {
+        send(ChainChanged(dedup_chain_id, domain, affinity)).await;
     }
 
     /// Broadcasts `AccountsChanged` events
@@ -102,8 +109,12 @@ mod internal_msgs {
         send(CurrentNetworkChanged(network)).await;
     }
 
-    pub async fn forge_abi_found() {
-        send(ForgeAbiFound).await;
+    pub async fn wallet_created() {
+        send(WalletCreated).await;
+    }
+
+    pub async fn peer_added() {
+        send(PeerAdded).await;
     }
 
     pub async fn contract_found() {

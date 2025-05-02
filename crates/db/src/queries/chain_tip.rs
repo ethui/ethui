@@ -21,7 +21,7 @@ impl DbInner {
     #[instrument(skip(self), level = "trace")]
     pub async fn set_tip(&self, chain_id: u32, addr: Address, tip: u64) -> Result<()> {
         let addr = addr.to_string();
-        let tip = format!("0x{:x}", tip);
+        let tip = format!("0x{tip:x}");
 
         sqlx::query!(
             r#"INSERT OR REPLACE INTO tips (owner, chain_id, tip) 

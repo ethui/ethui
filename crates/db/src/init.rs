@@ -30,8 +30,10 @@ async fn receiver() -> ! {
             if let NetworkRemoved(network) = msg {
                 let db = get();
 
-                let _ = db.remove_contracts(network.chain_id).await;
-                let _ = db.remove_transactions(network.chain_id).await;
+                let _ = db
+                    .remove_contracts(network.chain_id(), network.dedup_chain_id().dedup_id())
+                    .await;
+                let _ = db.remove_transactions(network.chain_id()).await;
             }
         }
     }

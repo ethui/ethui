@@ -7,20 +7,26 @@ import {
 import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
 import type { Hash } from "viem";
 
+import { ClickToCopy } from "@ethui/ui/components/click-to-copy";
 import { Link } from "@tanstack/react-router";
 import { useNetworks } from "#/store/useNetworks";
 import { truncateHex } from "#/utils";
 
 interface Props {
   hash: Hash;
+  truncate?: boolean;
 }
 
-export function HashView({ hash }: Props) {
+export function HashView({ hash, truncate = true }: Props) {
   const network = useNetworks((s) => s.current);
 
   if (!network) return null;
 
-  const content = <span className="font-mono">{truncateHex(hash)}</span>;
+  const content = (
+    <ClickToCopy text={hash}>
+      <div className="font-mono">{truncate ? truncateHex(hash) : hash}</div>
+    </ClickToCopy>
+  );
 
   return (
     <ContextMenu>

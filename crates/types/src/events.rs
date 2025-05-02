@@ -8,10 +8,9 @@ use crate::{Address, B256};
 
 #[derive(Debug)]
 pub enum Event {
-    Tx(Tx),
+    Tx(Box<Tx>),
     ContractDeployed(ContractDeployed),
     ERC20Transfer(ERC20Transfer),
-    ERC721Transfer(ERC721Transfer),
 }
 
 #[derive(Debug, Serialize)]
@@ -74,19 +73,13 @@ impl From<ContractDeployed> for Event {
 
 impl From<Tx> for Event {
     fn from(value: Tx) -> Self {
-        Self::Tx(value)
+        Self::Tx(Box::new(value))
     }
 }
 
 impl From<ERC20Transfer> for Event {
     fn from(value: ERC20Transfer) -> Self {
         Self::ERC20Transfer(value)
-    }
-}
-
-impl From<ERC721Transfer> for Event {
-    fn from(value: ERC721Transfer) -> Self {
-        Self::ERC721Transfer(value)
     }
 }
 

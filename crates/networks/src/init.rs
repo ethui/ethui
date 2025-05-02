@@ -7,9 +7,7 @@ use once_cell::sync::OnceCell;
 use serde_constant::ConstI64;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
-use crate::migrations::load_and_migrate;
-use crate::Networks;
-use crate::SerializedNetworks;
+use crate::{migrations::load_and_migrate, Networks, SerializedNetworks};
 
 static NETWORKS: OnceCell<RwLock<Networks>> = OnceCell::new();
 
@@ -57,11 +55,14 @@ async fn receiver() -> ! {
         if let Ok(msg) = rx.recv().await {
             use InternalMsg::*;
 
-            if let ChainChanged(chain_id, _domain, affinity) = msg {
+            if let ChainChanged(dedup_chain_id, _domain, affinity) = msg {
                 ethui_broadcast::ui_notify(UINotify::PeersUpdated).await;
                 if affinity.is_global() || affinity.is_unset() {
                     // TODO: handle this error
-                    let _ = Networks::write().await.set_current_by_id(chain_id).await;
+                    let _ = Networks::write()
+                        .await
+                        .set_current_by_dedup_chain_id(dedup_chain_id)
+                        .await;
                 }
             }
         }

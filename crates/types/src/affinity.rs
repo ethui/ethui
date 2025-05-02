@@ -1,17 +1,19 @@
 use serde::{Deserialize, Serialize};
 
+use crate::DedupChainId;
+
 #[derive(Clone, Copy, Debug, Serialize, Deserialize, Default, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub enum Affinity {
     #[default]
     Unset,
     Global,
-    Sticky(u32),
+    Sticky(DedupChainId),
 }
 
-impl From<u32> for Affinity {
-    fn from(chain_id: u32) -> Self {
-        Affinity::Sticky(chain_id)
+impl From<DedupChainId> for Affinity {
+    fn from(internal_id: DedupChainId) -> Self {
+        Affinity::Sticky(internal_id)
     }
 }
 

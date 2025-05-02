@@ -1,6 +1,6 @@
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_networks::Networks;
-use ethui_types::{GlobalState, Network, U64};
+use ethui_types::{GlobalState, NewNetworkParams, U64};
 use serde::{Deserialize, Serialize};
 use tracing::info;
 use url::Url;
@@ -9,7 +9,7 @@ use crate::{Error, Result};
 
 #[derive(Debug)]
 pub struct ChainAdd {
-    network: Network,
+    network: NewNetworkParams,
 }
 
 impl ChainAdd {
@@ -19,6 +19,8 @@ impl ChainAdd {
 
     #[tracing::instrument(skip(self))]
     pub async fn run(self) -> Result<()> {
+        // TODO how to handle dedup_id
+        // if the network already exists, we may want to add a new one anyway
         if self.already_exists().await {
             info!("Network already exists");
             return Ok(());
@@ -45,11 +47,12 @@ impl ChainAdd {
 
     pub async fn already_exists(&self) -> bool {
         let networks = Networks::read().await;
-        networks.validate_chain_id(self.network.chain_id)
+        networks.validate_chain_id(self.network.dedup_chain_id.chain_id())
     }
 
     pub async fn on_accept(&self) -> Result<()> {
         let mut networks = Networks::write().await;
+
         networks.add_network(self.network.clone()).await?;
 
         Ok(())
@@ -59,19 +62,19 @@ impl ChainAdd {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Params {
-    chain_id: U64,
-    chain_name: String,
-    rpc_urls: Vec<Url>,
-    native_currency: Currency,
-    block_explorer_urls: Vec<Url>,
+    pub chain_id: U64,
+    pub chain_name: String,
+    pub rpc_urls: Vec<Url>,
+    pub native_currency: Currency,
+    pub block_explorer_urls: Vec<Url>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Currency {
-    name: String,
-    symbol: String,
-    decimals: u64,
+    pub name: String,
+    pub symbol: String,
+    pub decimals: u64,
 }
 
 #[derive(Debug, Default)]
@@ -91,19 +94,20 @@ impl ChainAddBuilder {
         Ok(self)
     }
 
-    pub fn build(self) -> ChainAdd {
+    pub async fn build(self) -> ChainAdd {
         ChainAdd {
             network: self.params.unwrap().try_into().unwrap(),
         }
     }
 }
 
-impl TryFrom<Params> for Network {
+impl TryFrom<Params> for NewNetworkParams {
     type Error = Error;
     fn try_from(params: Params) -> Result<Self> {
         Ok(Self {
             name: params.chain_name,
-            chain_id: params.chain_id.try_into().unwrap(),
+            // Using 0 for dedup_id since at this time no duplicate chain_id is allowed
+            dedup_chain_id: (params.chain_id.try_into().unwrap(), 0).into(),
             explorer_url: params.block_explorer_urls.first().map(|u| u.to_string()),
             http_url: params
                 .rpc_urls

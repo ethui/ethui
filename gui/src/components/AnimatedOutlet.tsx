@@ -21,7 +21,7 @@ const transitionProps = {
   animate: { opacity: 1, scale: 1 },
   exit,
   transition: {
-    duration: 0.3,
+    duration: 0.2,
     ease: cubicBezier(0.6, 0.05, -0.01, 0.9),
   },
 };
@@ -43,10 +43,10 @@ export const AnimatedOutlet = forwardRef<HTMLDivElement>((_, ref) => {
 
   return (
     <motion.div
-      className="w-full"
+      className="h-full w-full"
       ref={ref}
       {...transitionProps}
-      key={nextMatch.id}
+      key={nextMatch?.id}
     >
       <AnimatePresence mode="popLayout">
         <RouterContext.Provider value={renderedContext.current}>

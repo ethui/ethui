@@ -20,8 +20,8 @@ impl DbInner {
                 r#" DELETE FROM erc721_tokens WHERE chain_id = ? AND contract = ? AND token_id = ? "#,
             )
             .bind(chain_id)
-            .bind(format!("0x{:x}", contract))
-            .bind(format!("0x{:x}", token_id))
+            .bind(format!("0x{contract:x}"))
+            .bind(format!("0x{token_id:x}"))
             .execute(self.pool()).await?;
         } else {
             // minting or transfer
@@ -29,10 +29,10 @@ impl DbInner {
                 r#" INSERT OR REPLACE INTO erc721_tokens (contract, chain_id, token_id, owner)
                         VALUES (?,?,?,?)"#,
             )
-            .bind(format!("0x{:x}", contract))
+            .bind(format!("0x{contract:x}"))
             .bind(chain_id)
-            .bind(format!("0x{:x}", token_id))
-            .bind(format!("0x{:x}", to))
+            .bind(format!("0x{token_id:x}"))
+            .bind(format!("0x{to:x}"))
             .execute(self.pool())
             .await?;
         }
@@ -68,10 +68,10 @@ impl DbInner {
         r#" INSERT OR REPLACE INTO erc721_tokens (contract, chain_id, token_id, owner, uri, metadata)
                         VALUES (?,?,?,?,?,?) "#,
     )
-    .bind(format!("0x{:x}", address))
+    .bind(format!("0x{address:x}"))
     .bind(chain_id)
-    .bind(format!("0x{:x}", token_id))
-    .bind(format!("0x{:x}", owner))
+    .bind(format!("0x{token_id:x}"))
+    .bind(format!("0x{owner:x}"))
     .bind(uri)
     .bind(metadata)
             .execute(self.pool()).await?;
@@ -109,7 +109,7 @@ impl DbInner {
             r#" INSERT OR REPLACE INTO erc721_collections (contract, chain_id, name, symbol)
                       VALUES (?,?,?,?) "#,
         )
-        .bind(format!("0x{:x}", address))
+        .bind(format!("0x{address:x}"))
         .bind(chain_id)
         .bind(name)
         .bind(symbol)
@@ -132,7 +132,7 @@ impl DbInner {
       WHERE erc721_tokens.chain_id = ? AND erc721_tokens.owner = ?"#,
       )
       .bind(chain_id)
-      .bind(format!("0x{:x}", owner))
+      .bind(format!("0x{owner:x}"))
       .map(|row| row.try_into().unwrap())
       .fetch_all(self.pool())
       .await?;

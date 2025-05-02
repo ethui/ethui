@@ -154,7 +154,7 @@ impl Handler {
         Ok(json!({
             "isUnlocked": true,
             "chainId": network.chain_id_hex(),
-            "networkVersion": network.chain_id.to_string(),
+            "networkVersion": network.chain_id().to_string(),
             "accounts": [address],
         }))
     }
@@ -179,7 +179,8 @@ impl Handler {
     async fn add_chain(params: Params, _ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
         let method = methods::ChainAdd::build()
             .set_params(params.into())?
-            .build();
+            .build()
+            .await;
 
         method.run().await?;
 
@@ -204,6 +205,9 @@ impl Handler {
         let chain_id_str = params[0].get("chainId").unwrap().clone();
         let new_chain_id = u32::from_str_radix(&chain_id_str[2..], 16).unwrap();
 
+        // TODO future work
+        // multiple netowrks with same chain id should display a dialog so user can select which
+        // network to switch to
         Ok(ctx
             .switch_chain(new_chain_id)
             .await
@@ -241,8 +245,15 @@ impl Handler {
             .await;
 
         let result = sender.estimate_gas().await.finish().await?;
+        let hash = *result.tx_hash();
 
-        Ok(format!("0x{:x}", result.tx_hash()).into())
+        let receipt = result.get_receipt().await.unwrap();
+        let status = receipt.status();
+
+        Ok(json!({
+            "hash": format!("0x{:x}", hash),
+            "status": status,
+        }))
     }
 
     async fn send_call(params: serde_json::Value, ctx: Ctx) -> jsonrpc_core::Result<Bytes> {

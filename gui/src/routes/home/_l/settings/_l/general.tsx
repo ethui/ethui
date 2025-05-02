@@ -41,7 +41,6 @@ const schema = z.object({
 
     .refine(etherscanKeyValidator, { message: "Invalid key" }),
   hideEmptyTokens: z.boolean(),
-  onboarded: z.boolean(),
   fastMode: z.boolean(),
   rustLog: z.string().optional().refine(rustLogValidator, "Invalid directives"),
 });
@@ -76,9 +75,13 @@ function SettingsGeneral() {
         items={["auto", "dark", "light"]}
       />
 
-      <Form.Checkbox name="autostart" label="Start automatically on boot" />
+      <div className="w-100">
+        <Form.Checkbox name="autostart" label="Start automatically on boot" />
+      </div>
 
-      <Form.Checkbox name="startMinimized" label="Start minimized" />
+      <div className="w-100">
+        <Form.Checkbox name="startMinimized" label="Start minimized" />
+      </div>
 
       <Form.Text
         name="alchemyApiKey"
@@ -91,10 +94,12 @@ function SettingsGeneral() {
         className="w-full"
       />
 
-      <Form.Checkbox
-        label="Hide Tokens Without Balance"
-        name="hideEmptyTokens"
-      />
+      <div className="w-100">
+        <Form.Checkbox
+          label="Hide Tokens Without Balance"
+          name="hideEmptyTokens"
+        />
+      </div>
 
       <Form.Text
         label="Rust log level (tracing_subscriber)"

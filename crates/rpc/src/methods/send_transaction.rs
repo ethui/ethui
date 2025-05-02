@@ -70,7 +70,7 @@ impl SendTransaction {
 
     async fn dialog_and_send(&mut self) -> Result<PendingTransactionBuilder<Ethereum>> {
         let mut params = serde_json::to_value(&self.request).unwrap();
-        params["chainId"] = self.network.chain_id.into();
+        params["chainId"] = self.network.chain_id().into();
         params["walletType"] = self.wallet_type.to_string().into();
 
         let dialog = Dialog::new("tx-review", params);
@@ -120,7 +120,7 @@ impl SendTransaction {
     }
 
     async fn simulate(&self, dialog: &Dialog) -> Result<()> {
-        let chain_id = self.network.chain_id;
+        let chain_id = self.network.chain_id();
         let request = self.simulation_request().await?;
 
         if let Ok(sim) = ethui_simulator::commands::simulator_run(chain_id, request).await {
@@ -168,7 +168,7 @@ impl SendTransaction {
             Some(Box::new(provider))
         } else {
             let signer = wallet
-                .build_signer(self.network.chain_id, &self.wallet_path)
+                .build_signer(self.network.chain_id(), &self.wallet_path)
                 .await?;
             let provider = ProviderBuilder::new()
                 .wallet(signer.to_wallet())

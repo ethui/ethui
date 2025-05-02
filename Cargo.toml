@@ -1,5 +1,5 @@
 [workspace.package]
-version = "1.13.0"
+version = "1.15.0"
 edition = "2021"
 license-file = "./LICENSE"
 homepage = "https://github.com/ethui"
@@ -32,6 +32,11 @@ members = [
 ]
 default-members = ["bin"]
 
+[profile.dev]
+# https://davidlattimore.github.io/posts/2024/02/04/speeding-up-the-rust-edit-build-run-cycle.html
+debug = "line-tables-only"
+split-debuginfo = "unpacked"
+
 [workspace.dependencies]
 ethui-forge = { path = "crates/forge" }
 ethui-crypto = { path = "crates/crypto" }
@@ -53,8 +58,8 @@ ethui-broadcast = { path = "crates/broadcast" }
 ethui-tracing = { path = "crates/tracing" }
 ethui-args = { path = "crates/args" }
 ethui-token-list = { path = "crates/token-list" }
-ethui-proxy-detect = { git = "https://github.com/ethui/proxy-detect", rev = "6c95b77" }
-tokio = { version = "1.43", features = ["rt-multi-thread", "sync"] }
+ethui-proxy-detect = { git = "https://github.com/ethui/proxy-detect", rev = "f29bad1" }
+tokio = { version = "1.44", features = ["rt-multi-thread", "sync"] }
 thiserror = "2.0"
 sqlx = { version = "0.8", default-features = false, features = [
   "macros",
@@ -66,15 +71,15 @@ sqlx = { version = "0.8", default-features = false, features = [
 serde = { version = "1.0", default-features = false, features = ["derive"] }
 serde_json = "1.0"
 async-trait = "0.1"
-tauri = { version = "2.2", features = ["tray-icon"] }
-once_cell = { version = "1.20", default-features = false }
+tauri = { version = "2.5", features = ["tray-icon"] }
+once_cell = { version = "1.21", default-features = false }
 secrets = { version = "1.2", features = ["use-libsodium-sys"] }
 tracing = "0.1"
 jsonrpc-core = { version = "18.0", default-features = false }
 reqwest = { version = "0.12", default-features = false, features = [
   "rustls-tls",
 ] }
-alloy = { version = "0.11", default-features = false, features = [
+alloy = { version = "0.12", default-features = false, features = [
   "sol-types",
   "contract",
   "signer-local",
@@ -94,6 +99,8 @@ alloy = { version = "0.11", default-features = false, features = [
 alloy-chains = { version = "0.1", default-features = false, features = [
   "serde",
 ] }
+foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "v1.1.0" }
+foundry-block-explorers = "0.11"
 url = { version = "2.5", features = ["serde"] }
 futures = { version = "0.3", default-features = false }
 clap = { version = "4.5", default-features = false, features = [
@@ -104,9 +111,6 @@ rand = "0.9"
 rstest = "0.23"
 regex = "1.11"
 anyhow = { version = "1.0", default-features = false }
-tempfile = "3.17.1"
+tempfile = "3.19.1"
 serde-constant = "0.1.0"
-
-# Foundry - December 10th 2024
-foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "nightly-aa69ed1e46dd61fbf9d73399396a4db4dd527431" }
-foundry-block-explorers = "0.9"
+kameo = "0.14.0"

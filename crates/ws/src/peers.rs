@@ -1,7 +1,7 @@
 use std::{collections::HashMap, net::SocketAddr};
 
 use ethui_networks::Networks;
-use ethui_types::{Address, Affinity, GlobalState, UINotify};
+use ethui_types::{Address, Affinity, DedupChainId, GlobalState, UINotify};
 use serde::Serialize;
 use serde_json::json;
 use tokio::sync::mpsc;
@@ -76,6 +76,7 @@ impl Peers {
     /// Adds a new peer
     pub async fn add_peer(&mut self, peer: Peer) {
         self.map.insert(peer.socket, peer);
+        ethui_broadcast::peer_added().await;
         ethui_broadcast::ui_notify(UINotify::PeersUpdated).await;
     }
 
@@ -101,10 +102,12 @@ impl Peers {
     /// Broadcasts a `chainChanged` event to all peers
     pub async fn broadcast_chain_changed(
         &self,
-        chain_id: u32,
+        dedup_chain_id: DedupChainId,
         domain: Option<String>,
         affinity: Affinity,
     ) {
+        let chain_id = dedup_chain_id.chain_id();
+
         if Networks::read().await.validate_chain_id(chain_id) {
             let msg = json!({
                 "method": "chainChanged",
@@ -120,7 +123,8 @@ impl Peers {
                     tracing::info!(
                         event = "peer chain changed",
                         domain = peer.domain(),
-                        chain_id
+                        chain_id,
+                        dedup_id = dedup_chain_id.dedup_id(),
                     );
                     peer.sender
                         .send(serde_json::to_value(&msg).unwrap())
