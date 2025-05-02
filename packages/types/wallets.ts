@@ -30,7 +30,7 @@ export const derivationPathSchema = z
   .regex(/^m\/(\d+'?\/)+\d+$/, {
     message: "invalid path format",
   })
-  .default("m/44'/60'/0'/0");
+  .min(1);
 
 export const addressSchema = z
   .string()

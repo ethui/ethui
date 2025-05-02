@@ -15,8 +15,7 @@
     "dist"
   ],
   "dependencies": {
-    "chevrotain": "^11.0.3",
-    "nearly": "^1.8.1"
+    "chevrotain": "^11.0.3"
   },
   "devDependencies": {
     "tsc": "^2.0.4",

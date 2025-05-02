@@ -67,7 +67,7 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
   useEffect(() => {
     (async () => {
       const newPaths = paths
-        .filter(({ path }) => !addresses.has(path))
+        .filter(({ path }) => path && !addresses.has(path))
         .map(({ path }) => path);
 
       if (newPaths.length === 0) return;

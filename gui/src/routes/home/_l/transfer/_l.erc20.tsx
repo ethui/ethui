@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
-import { type FieldValues, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
   type Address,
   encodeFunctionData,
@@ -82,9 +82,8 @@ function RouteComponent() {
     setTokens([nativeToken, ...newTokens]);
   }, [native, erc20s, network]);
 
-  //const decimals = currentToken?.decimals ?? 18;
   const schema = z.object({
-    to: addressSchema.optional(),
+    to: addressSchema,
     currency: addressSchema,
     value: z.string().transform((val, ctx) => {
       const num = Number.parseFloat(val);
@@ -101,13 +100,14 @@ function RouteComponent() {
 
   type Schema = z.infer<typeof schema>;
 
-  const form = useForm<Schema>({
+  const form = useForm({
     mode: "onChange",
     resolver: zodResolver(schema),
+    // TODO: fix this any
     defaultValues: {
       currency: contract,
       value: 0n,
-    },
+    } as any,
   });
 
   const currency = form.watch("currency");
@@ -126,11 +126,11 @@ function RouteComponent() {
 
   if (!network || !address || !currentToken) return null;
 
-  const onSubmit = async (data: FieldValues) => {
+  const onSubmit = async (data: Schema) => {
     try {
       const result = await transferERC20(
         address,
-        data.to,
+        data.to as Address,
         data.value,
         currentToken.contract,
       );
