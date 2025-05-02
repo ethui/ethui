@@ -1233,7 +1233,7 @@ __metadata:
     "@ethui/types": "npm:*"
     "@ethui/ui": "npm:0.0.63"
     "@fontsource/source-code-pro": "npm:^5.2.5"
-    "@hookform/resolvers": "npm:^3.10.0"
+    "@hookform/resolvers": "npm:^4.1.3"
     "@radix-ui/react-collapsible": "npm:^1.1.3"
     "@tailwindcss/vite": "npm:^4.1.3"
     "@tanstack/react-query": "npm:^5.75.0"
@@ -1407,15 +1407,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hookform/resolvers@npm:^3.10.0":
-  version: 3.10.0
-  resolution: "@hookform/resolvers@npm:3.10.0"
-  peerDependencies:
-    react-hook-form: ^7.0.0
-  checksum: 10c0/7ee44533b4cdc28c4fa2a94894c735411e5a1f830f4a617c580533321a9b901df0cc8c1e2fad81ad8d55154ebc5cb844cf9c116a3148ffae2bc48758c33cbb8e
-  languageName: node
-  linkType: hard
-
 "@hookform/resolvers@npm:^4.1.2":
   version: 4.1.2
   resolution: "@hookform/resolvers@npm:4.1.2"
@@ -1424,6 +1415,17 @@ __metadata:
   peerDependencies:
     react-hook-form: ^7.0.0
   checksum: 10c0/3e74dfac02c9b40d1840f3ede57031a461195eed513d299946d04afc823d92565e74af79aa1c61508d250068105f0ae14409cec35f03eba166bfd1316f1cf3fd
+  languageName: node
+  linkType: hard
+
+"@hookform/resolvers@npm:^4.1.3":
+  version: 4.1.3
+  resolution: "@hookform/resolvers@npm:4.1.3"
+  dependencies:
+    "@standard-schema/utils": "npm:^0.3.0"
+  peerDependencies:
+    react-hook-form: ^7.0.0
+  checksum: 10c0/dfaeb5936de4c21b849ba0120edb3ad8d0a8c835fd496ccb39ff409a19fa2334867218feb1120d7aed57a9a85f0b4f855f658ebd52c1b90122e9171c66275956
   languageName: node
   linkType: hard
 
