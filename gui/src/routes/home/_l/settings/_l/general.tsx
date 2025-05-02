@@ -46,7 +46,7 @@ const schema = z.object({
 });
 
 function SettingsGeneral() {
-  const general = useSettings((s) => s.settings);
+  const general = useSettings((s) => s.settings!);
 
   const form = useForm({
     mode: "onChange",
