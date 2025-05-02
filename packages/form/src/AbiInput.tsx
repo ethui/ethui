@@ -1,5 +1,5 @@
-import clsx from "clsx";
 import { useCallback } from "react";
+import { cn } from "@ethui/ui/lib/utils";
 
 import { ArrayInput } from "./ArrayInput";
 import { Basic } from "./Basic";
@@ -43,7 +43,7 @@ export function AbiInput({
   );
 
   return (
-    <div className={clsx("w-full transition-colors", className)}>
+    <div className={cn("w-full transition-colors", className)}>
       <div>
         <div className=" flex items-center justify-between">
           <div className="flex gap-2">

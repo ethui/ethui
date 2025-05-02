@@ -1256,12 +1256,11 @@ __metadata:
     "@vitejs/plugin-react-swc": "npm:^3.9.0"
     abitype: "npm:^1.0.8"
     autoprefixer: "npm:^10.4.20"
-    clsx: "npm:^2.1.1"
     core-js: "npm:^3.42.0"
     jsdom: "npm:^26.1.0"
     kbar: "npm:0.1.0-beta.45"
     lodash-es: "npm:^4.17.21"
-    lucide-react: "npm:^0.483.0"
+    lucide-react: "npm:^0.506.0"
     motion: "npm:^12.6.2"
     next-themes: "npm:^0.4.4"
     postcss: "npm:^8.5.3"
@@ -6260,21 +6259,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lucide-react@npm:^0.483.0":
-  version: 0.483.0
-  resolution: "lucide-react@npm:0.483.0"
-  peerDependencies:
-    react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/de38ca2c57bcd65aedf750fa101ddcdc24e4a828ae4fa873299fb26a5dfc60ff65582a9cf7d8dfd2fbf8a6db18c69dfbfcf955b2320537da80f7193a4e967596
-  languageName: node
-  linkType: hard
-
 "lucide-react@npm:^0.487.0":
   version: 0.487.0
   resolution: "lucide-react@npm:0.487.0"
   peerDependencies:
     react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
   checksum: 10c0/7177778c584b8e9545957bef28e95841c4be1b3bf473f9e2e64454c3e183d7ed0bc977c9f7b5446088023c7000151b7a3b27398d4f70025bf343782192f653ca
+  languageName: node
+  linkType: hard
+
+"lucide-react@npm:^0.506.0":
+  version: 0.506.0
+  resolution: "lucide-react@npm:0.506.0"
+  peerDependencies:
+    react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10c0/2f6ece3804804e2a558d179a9df2a472b736f8152d3daa6847dd0bf62330aefc2b1d02354ce0ab09a8d4e3018a915c7977ff56dadbe1c0fb06bc34bceca214a8
   languageName: node
   linkType: hard
 

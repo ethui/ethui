@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { cn } from "@ethui/ui/lib/utils";
 import { Plus, X } from "lucide-react";
 import { useState } from "react";
 
@@ -183,7 +183,7 @@ function AbiArrayItemInput({
       defaultValue={defaultValue}
       type={type}
       onChange={onChange}
-      className={clsx(deleteHover && "bg-secondary")}
+      className={cn(deleteHover && "bg-secondary")}
       headerActions={
         removable && (
           <Button

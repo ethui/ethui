@@ -3,7 +3,7 @@ import { Button } from "@ethui/ui/components/shadcn/button";
 import { Progress } from "@ethui/ui/components/shadcn/progress";
 import { Link, createFileRoute, redirect } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
-import clsx from "clsx";
+import { cn } from "@ethui/ui/lib/utils";
 import { Check, ChevronRight, Globe, RefreshCcw, Wallet } from "lucide-react";
 import { useEffect } from "react";
 import { useSettings } from "#/store/useSettings";
@@ -108,7 +108,7 @@ function Step({
   return (
     <div
       key={id}
-      className={clsx(
+      className={cn(
         "flex items-center justify-between p-4 transition-colors",
         completed
           ? "border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950/30"
@@ -117,7 +117,7 @@ function Step({
     >
       <div className="flex items-center gap-4">
         <div
-          className={clsx(
+          className={cn(
             "p-2",
             completed && "text-green-700 dark:text-green-400",
           )}
