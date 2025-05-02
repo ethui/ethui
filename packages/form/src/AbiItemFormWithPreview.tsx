@@ -2,8 +2,8 @@ import {
   SolidityCall,
   type SolidityCallProps,
 } from "@ethui/ui/components/solidity-call";
-import type { AbiFunction, Address } from "abitype";
 import { cn } from "@ethui/ui/lib/utils";
+import type { AbiFunction, Address } from "abitype";
 import { useCallback, useState } from "react";
 import { AbiItemForm } from "./AbiItemForm";
 

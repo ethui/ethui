@@ -12,6 +12,7 @@ import {
   SidebarMenuSub,
   useSidebar,
 } from "@ethui/ui/components/shadcn/sidebar";
+import { cn } from "@ethui/ui/lib/utils";
 import {
   Collapsible,
   CollapsibleContent,
@@ -29,7 +30,6 @@ import {
   Terminal,
   Wifi,
 } from "lucide-react";
-import { cn } from "@ethui/ui/lib/utils";
 import { useSettings } from "#/store/useSettings";
 import { useCommandBar } from "./CommandBar";
 import { QuickAddressSelect } from "./QuickAddressSelect";

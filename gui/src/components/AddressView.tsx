@@ -1,10 +1,10 @@
-import { cn } from "@ethui/ui/lib/utils";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@ethui/ui/components/shadcn/context-menu";
+import { cn } from "@ethui/ui/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { invoke } from "@tauri-apps/api/core";
 import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";

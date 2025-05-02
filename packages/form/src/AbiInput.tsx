@@ -1,5 +1,5 @@
-import { useCallback } from "react";
 import { cn } from "@ethui/ui/lib/utils";
+import { useCallback } from "react";
 
 import { ArrayInput } from "./ArrayInput";
 import { Basic } from "./Basic";
