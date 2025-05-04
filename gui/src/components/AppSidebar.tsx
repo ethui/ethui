@@ -12,6 +12,7 @@ import {
   SidebarMenuSub,
   useSidebar,
 } from "@ethui/ui/components/shadcn/sidebar";
+import { cn } from "@ethui/ui/lib/utils";
 import {
   Collapsible,
   CollapsibleContent,
@@ -19,7 +20,6 @@ import {
 } from "@radix-ui/react-collapsible";
 import { Link, useLocation } from "@tanstack/react-router";
 import { platform } from "@tauri-apps/plugin-os";
-import clsx from "clsx";
 import {
   ChevronDown,
   ChevronRight,
@@ -30,7 +30,6 @@ import {
   Terminal,
   Wifi,
 } from "lucide-react";
-import { cn } from "#/lib/utils";
 import { useSettings } from "#/store/useSettings";
 import { useCommandBar } from "./CommandBar";
 import { QuickAddressSelect } from "./QuickAddressSelect";
@@ -51,7 +50,7 @@ export function AppSidebar() {
   return (
     <Sidebar className="select-none" collapsible="icon">
       <SidebarHeader
-        className={clsx("flex items-center", { "pt-4": isMacos })}
+        className={cn("flex items-center", { "pt-4": isMacos })}
         data-tauri-drag-region="true"
       >
         <EthuiLogo

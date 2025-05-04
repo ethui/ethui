@@ -8,7 +8,7 @@ import { z } from "zod";
 import { useSettings } from "#/store/useSettings";
 
 export function QuickFastModeToggle() {
-  const fastMode = useSettings((s) => s.settings?.fastMode);
+  const fastMode = useSettings((s) => s.settings?.fastMode || false);
 
   const schema = z.object({
     fastMode: z.boolean(),

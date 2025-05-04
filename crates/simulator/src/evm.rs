@@ -34,7 +34,7 @@ impl Evm {
             evm_opts,
         };
 
-        let db = Backend::spawn(Some(fork_opts.clone()));
+        let db = Backend::spawn(Some(fork_opts.clone())).expect("Failed to spawn EVM backend");
 
         let executor = ExecutorBuilder::default()
             .gas_limit(gas_limit)

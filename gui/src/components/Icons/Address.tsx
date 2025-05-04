@@ -1,6 +1,6 @@
 import { getWhitelistedTokenNameAndSymbol } from "@ethui/data";
 import { EffigyIcon } from "@ethui/ui/components/icons/effigy";
-import { clsx } from "clsx";
+import { cn } from "@ethui/ui/lib/utils";
 
 interface Props {
   chainId: number;
@@ -24,7 +24,7 @@ export function IconAddress({
   return (
     <img
       alt={data?.symbol}
-      className={clsx("h-6 w-6", className)}
+      className={cn("h-6 w-6", className)}
       src={urlFor("generic")}
     />
   );

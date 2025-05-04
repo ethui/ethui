@@ -2,8 +2,8 @@ import {
   SolidityCall,
   type SolidityCallProps,
 } from "@ethui/ui/components/solidity-call";
+import { cn } from "@ethui/ui/lib/utils";
 import type { AbiFunction, Address } from "abitype";
-import { clsx } from "clsx";
 import { useCallback, useState } from "react";
 import { AbiItemForm } from "./AbiItemForm";
 
@@ -47,7 +47,7 @@ export function AbiItemFormWithPreview({
   return (
     <div className="grid grid-cols-3 gap-2">
       <div
-        className={clsx(
+        className={cn(
           "col-span-3",
           showForm ? "md:col-span-1" : "md:col-span-0",
         )}
@@ -59,7 +59,7 @@ export function AbiItemFormWithPreview({
           defaultCalldata={defaultCalldata}
         />
       </div>
-      <div className={clsx("col-span-3", showForm && "md:col-span-2")}>
+      <div className={cn("col-span-3", showForm && "md:col-span-2")}>
         {data && sender && (
           <SolidityCall
             {...{

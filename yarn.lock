@@ -487,7 +487,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.13.10":
+"@babel/runtime@npm:^7.12.5":
   version: 7.26.10
   resolution: "@babel/runtime@npm:7.26.10"
   dependencies:
@@ -1199,7 +1199,7 @@ __metadata:
   dependencies:
     "@types/core-js": "npm:^2.5.8"
     "@types/lodash-es": "npm:^4.17.12"
-    "@types/node": "npm:^22.14.0"
+    "@types/node": "npm:^22.15.3"
     typescript: "npm:5.8.2"
     viem: "npm:^2.26.2"
   languageName: unknown
@@ -1233,37 +1233,34 @@ __metadata:
     "@ethui/types": "npm:*"
     "@ethui/ui": "npm:0.0.63"
     "@fontsource/source-code-pro": "npm:^5.2.5"
-    "@hookform/resolvers": "npm:^3.10.0"
+    "@hookform/resolvers": "npm:^4.1.3"
     "@radix-ui/react-collapsible": "npm:^1.1.3"
     "@tailwindcss/vite": "npm:^4.1.3"
-    "@tanstack/react-query": "npm:^5.72.1"
-    "@tanstack/react-query-devtools": "npm:^5.72.1"
+    "@tanstack/react-query": "npm:^5.75.0"
+    "@tanstack/react-query-devtools": "npm:^5.75.0"
     "@tanstack/react-router": "npm:^1.119.0"
     "@tanstack/router-devtools": "npm:^1.119.1"
     "@tanstack/router-plugin": "npm:^1.119.0"
     "@tanstack/zod-adapter": "npm:^1.119.0"
-    "@tauri-apps/api": "npm:2.4.0"
-    "@tauri-apps/cli": "npm:^2.4.0"
-    "@tauri-apps/plugin-clipboard-manager": "npm:^2.2.1"
-    "@tauri-apps/plugin-os": "npm:^2.2.0"
+    "@tauri-apps/api": "npm:2.5.0"
+    "@tauri-apps/cli": "npm:^2.5.0"
+    "@tauri-apps/plugin-clipboard-manager": "npm:^2.2.2"
+    "@tauri-apps/plugin-os": "npm:^2.2.1"
     "@types/chrome": "npm:^0.0.306"
     "@types/core-js": "npm:^2.5.8"
     "@types/lodash-es": "npm:^4.17.12"
-    "@types/node": "npm:^22.14.0"
+    "@types/node": "npm:^22.15.3"
     "@types/react": "npm:^19.0.10"
     "@types/react-dom": "npm:^19.0.4"
     "@uidotdev/usehooks": "npm:^2.4.1"
-    "@vitejs/plugin-react-swc": "npm:^3.8.0"
+    "@vitejs/plugin-react-swc": "npm:^3.9.0"
     abitype: "npm:^1.0.8"
     autoprefixer: "npm:^10.4.20"
-    clsx: "npm:^2.1.1"
     core-js: "npm:^3.42.0"
     jsdom: "npm:^26.1.0"
-    kbar: "npm:0.1.0-beta.45"
     lodash-es: "npm:^4.17.21"
-    lucide-react: "npm:^0.483.0"
+    lucide-react: "npm:^0.506.0"
     motion: "npm:^12.6.2"
-    next-themes: "npm:^0.4.4"
     postcss: "npm:^8.5.3"
     react: "npm:^19.1.0"
     react-dom: "npm:^19.1.0"
@@ -1292,7 +1289,7 @@ __metadata:
   dependencies:
     "@types/core-js": "npm:^2.5.8"
     "@types/lodash-es": "npm:^4.17.12"
-    "@types/node": "npm:^22.14.0"
+    "@types/node": "npm:^22.15.3"
     jsdom: "npm:^26.1.0"
     typescript: "npm:5.8.2"
     viem: "npm:^2.26.2"
@@ -1407,15 +1404,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hookform/resolvers@npm:^3.10.0":
-  version: 3.10.0
-  resolution: "@hookform/resolvers@npm:3.10.0"
-  peerDependencies:
-    react-hook-form: ^7.0.0
-  checksum: 10c0/7ee44533b4cdc28c4fa2a94894c735411e5a1f830f4a617c580533321a9b901df0cc8c1e2fad81ad8d55154ebc5cb844cf9c116a3148ffae2bc48758c33cbb8e
-  languageName: node
-  linkType: hard
-
 "@hookform/resolvers@npm:^4.1.2":
   version: 4.1.2
   resolution: "@hookform/resolvers@npm:4.1.2"
@@ -1424,6 +1412,17 @@ __metadata:
   peerDependencies:
     react-hook-form: ^7.0.0
   checksum: 10c0/3e74dfac02c9b40d1840f3ede57031a461195eed513d299946d04afc823d92565e74af79aa1c61508d250068105f0ae14409cec35f03eba166bfd1316f1cf3fd
+  languageName: node
+  linkType: hard
+
+"@hookform/resolvers@npm:^4.1.3":
+  version: 4.1.3
+  resolution: "@hookform/resolvers@npm:4.1.3"
+  dependencies:
+    "@standard-schema/utils": "npm:^0.3.0"
+  peerDependencies:
+    react-hook-form: ^7.0.0
+  checksum: 10c0/dfaeb5936de4c21b849ba0120edb3ad8d0a8c835fd496ccb39ff409a19fa2334867218feb1120d7aed57a9a85f0b4f855f658ebd52c1b90122e9171c66275956
   languageName: node
   linkType: hard
 
@@ -1883,17 +1882,6 @@ __metadata:
     "@types/react-dom":
       optional: true
   checksum: 10c0/fc03f1964789226161f2cea2a97c909feaf0e09ba5bb849a9471fb19c1e161e4d8c64588d14fba80ac869eb06c752538c0eaa328c3608ef5dddb033a2ad87770
-  languageName: node
-  linkType: hard
-
-"@radix-ui/react-compose-refs@npm:1.0.0":
-  version: 1.0.0
-  resolution: "@radix-ui/react-compose-refs@npm:1.0.0"
-  dependencies:
-    "@babel/runtime": "npm:^7.13.10"
-  peerDependencies:
-    react: ^16.8 || ^17.0 || ^18.0
-  checksum: 10c0/449148920c1df82ffcdd78a68d3485036d198b41b9fcfc407b008df5dfefc8f1a60391f7b53e2bc69e0fdbbba846b0b79fede5f7ed35bca82af4eff6c56b8854
   languageName: node
   linkType: hard
 
@@ -2521,19 +2509,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@radix-ui/react-portal@npm:^1.0.1":
-  version: 1.0.2
-  resolution: "@radix-ui/react-portal@npm:1.0.2"
-  dependencies:
-    "@babel/runtime": "npm:^7.13.10"
-    "@radix-ui/react-primitive": "npm:1.0.2"
-  peerDependencies:
-    react: ^16.8 || ^17.0 || ^18.0
-    react-dom: ^16.8 || ^17.0 || ^18.0
-  checksum: 10c0/2397b9a3fe5e1f7b4982e0995fb088f77221754e42ebf5aa52374794ed7d35048ec530cc486927e65b1975fdb5f5caa1d8d2f87e8aa15004dfa011511fe8c606
-  languageName: node
-  linkType: hard
-
 "@radix-ui/react-presence@npm:1.1.2":
   version: 1.1.2
   resolution: "@radix-ui/react-presence@npm:1.1.2"
@@ -2571,19 +2546,6 @@ __metadata:
     "@types/react-dom":
       optional: true
   checksum: 10c0/8202647139d6f5097b0abcc43dfba471c00b69da95ca336afe3ea23a165e05ca21992f40fc801760fe442f3e064e54e2f2cbcb9ad758c4b07ef6c69a5b6777bd
-  languageName: node
-  linkType: hard
-
-"@radix-ui/react-primitive@npm:1.0.2":
-  version: 1.0.2
-  resolution: "@radix-ui/react-primitive@npm:1.0.2"
-  dependencies:
-    "@babel/runtime": "npm:^7.13.10"
-    "@radix-ui/react-slot": "npm:1.0.1"
-  peerDependencies:
-    react: ^16.8 || ^17.0 || ^18.0
-    react-dom: ^16.8 || ^17.0 || ^18.0
-  checksum: 10c0/bc9dc28568a9d4e0343363e62428fc13685667e470a663a69413a23145264f7a114de9d45c1ce33e6ccdeb7ae5bbfdbc198ee4b2505cd71da8f8d470c4f88d68
   languageName: node
   linkType: hard
 
@@ -2800,18 +2762,6 @@ __metadata:
     "@types/react-dom":
       optional: true
   checksum: 10c0/9efffd4319ab25210702cbacd5a3fe15f22ab9e29afe407b778112056e6a2e1e43847f1ad5f5b73bff5d604722a4fdabd66816216e7ad8f627f7b4c20a19174e
-  languageName: node
-  linkType: hard
-
-"@radix-ui/react-slot@npm:1.0.1":
-  version: 1.0.1
-  resolution: "@radix-ui/react-slot@npm:1.0.1"
-  dependencies:
-    "@babel/runtime": "npm:^7.13.10"
-    "@radix-ui/react-compose-refs": "npm:1.0.0"
-  peerDependencies:
-    react: ^16.8 || ^17.0 || ^18.0
-  checksum: 10c0/5d6c3fe567dec7ac55a581e1fe6a5a5a4bdde32cf17bf022ebe3f96bae3b274ba02ddaa1028ba8413ab4088bd1fca23479de8739cf42eea73e5ce02ee3e8bb70
   languageName: node
   linkType: hard
 
@@ -3224,13 +3174,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reach/observe-rect@npm:^1.1.0":
-  version: 1.2.0
-  resolution: "@reach/observe-rect@npm:1.2.0"
-  checksum: 10c0/e2d2b399381e466705bcf7535ba1ed29866792d7aff386a2a41ca1f5ae9d8920f21c769d67b82b38045cd14e1c2aa29dbf6f37a77f323d16d01378eb02ad2925
-  languageName: node
-  linkType: hard
-
 "@rollup/rollup-android-arm-eabi@npm:4.34.6":
   version: 4.34.6
   resolution: "@rollup/rollup-android-arm-eabi@npm:4.34.6"
@@ -3567,94 +3510,94 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core-darwin-arm64@npm:1.10.15":
-  version: 1.10.15
-  resolution: "@swc/core-darwin-arm64@npm:1.10.15"
+"@swc/core-darwin-arm64@npm:1.11.24":
+  version: 1.11.24
+  resolution: "@swc/core-darwin-arm64@npm:1.11.24"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@swc/core-darwin-x64@npm:1.10.15":
-  version: 1.10.15
-  resolution: "@swc/core-darwin-x64@npm:1.10.15"
+"@swc/core-darwin-x64@npm:1.11.24":
+  version: 1.11.24
+  resolution: "@swc/core-darwin-x64@npm:1.11.24"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm-gnueabihf@npm:1.10.15":
-  version: 1.10.15
-  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.10.15"
+"@swc/core-linux-arm-gnueabihf@npm:1.11.24":
+  version: 1.11.24
+  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.11.24"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm64-gnu@npm:1.10.15":
-  version: 1.10.15
-  resolution: "@swc/core-linux-arm64-gnu@npm:1.10.15"
+"@swc/core-linux-arm64-gnu@npm:1.11.24":
+  version: 1.11.24
+  resolution: "@swc/core-linux-arm64-gnu@npm:1.11.24"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm64-musl@npm:1.10.15":
-  version: 1.10.15
-  resolution: "@swc/core-linux-arm64-musl@npm:1.10.15"
+"@swc/core-linux-arm64-musl@npm:1.11.24":
+  version: 1.11.24
+  resolution: "@swc/core-linux-arm64-musl@npm:1.11.24"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@swc/core-linux-x64-gnu@npm:1.10.15":
-  version: 1.10.15
-  resolution: "@swc/core-linux-x64-gnu@npm:1.10.15"
+"@swc/core-linux-x64-gnu@npm:1.11.24":
+  version: 1.11.24
+  resolution: "@swc/core-linux-x64-gnu@npm:1.11.24"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@swc/core-linux-x64-musl@npm:1.10.15":
-  version: 1.10.15
-  resolution: "@swc/core-linux-x64-musl@npm:1.10.15"
+"@swc/core-linux-x64-musl@npm:1.11.24":
+  version: 1.11.24
+  resolution: "@swc/core-linux-x64-musl@npm:1.11.24"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@swc/core-win32-arm64-msvc@npm:1.10.15":
-  version: 1.10.15
-  resolution: "@swc/core-win32-arm64-msvc@npm:1.10.15"
+"@swc/core-win32-arm64-msvc@npm:1.11.24":
+  version: 1.11.24
+  resolution: "@swc/core-win32-arm64-msvc@npm:1.11.24"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@swc/core-win32-ia32-msvc@npm:1.10.15":
-  version: 1.10.15
-  resolution: "@swc/core-win32-ia32-msvc@npm:1.10.15"
+"@swc/core-win32-ia32-msvc@npm:1.11.24":
+  version: 1.11.24
+  resolution: "@swc/core-win32-ia32-msvc@npm:1.11.24"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
-"@swc/core-win32-x64-msvc@npm:1.10.15":
-  version: 1.10.15
-  resolution: "@swc/core-win32-x64-msvc@npm:1.10.15"
+"@swc/core-win32-x64-msvc@npm:1.11.24":
+  version: 1.11.24
+  resolution: "@swc/core-win32-x64-msvc@npm:1.11.24"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"@swc/core@npm:^1.10.15":
-  version: 1.10.15
-  resolution: "@swc/core@npm:1.10.15"
+"@swc/core@npm:^1.11.21":
+  version: 1.11.24
+  resolution: "@swc/core@npm:1.11.24"
   dependencies:
-    "@swc/core-darwin-arm64": "npm:1.10.15"
-    "@swc/core-darwin-x64": "npm:1.10.15"
-    "@swc/core-linux-arm-gnueabihf": "npm:1.10.15"
-    "@swc/core-linux-arm64-gnu": "npm:1.10.15"
-    "@swc/core-linux-arm64-musl": "npm:1.10.15"
-    "@swc/core-linux-x64-gnu": "npm:1.10.15"
-    "@swc/core-linux-x64-musl": "npm:1.10.15"
-    "@swc/core-win32-arm64-msvc": "npm:1.10.15"
-    "@swc/core-win32-ia32-msvc": "npm:1.10.15"
-    "@swc/core-win32-x64-msvc": "npm:1.10.15"
+    "@swc/core-darwin-arm64": "npm:1.11.24"
+    "@swc/core-darwin-x64": "npm:1.11.24"
+    "@swc/core-linux-arm-gnueabihf": "npm:1.11.24"
+    "@swc/core-linux-arm64-gnu": "npm:1.11.24"
+    "@swc/core-linux-arm64-musl": "npm:1.11.24"
+    "@swc/core-linux-x64-gnu": "npm:1.11.24"
+    "@swc/core-linux-x64-musl": "npm:1.11.24"
+    "@swc/core-win32-arm64-msvc": "npm:1.11.24"
+    "@swc/core-win32-ia32-msvc": "npm:1.11.24"
+    "@swc/core-win32-x64-msvc": "npm:1.11.24"
     "@swc/counter": "npm:^0.1.3"
-    "@swc/types": "npm:^0.1.17"
+    "@swc/types": "npm:^0.1.21"
   peerDependencies:
-    "@swc/helpers": "*"
+    "@swc/helpers": ">=0.5.17"
   dependenciesMeta:
     "@swc/core-darwin-arm64":
       optional: true
@@ -3679,7 +3622,7 @@ __metadata:
   peerDependenciesMeta:
     "@swc/helpers":
       optional: true
-  checksum: 10c0/281c76e3f84465cbccd4782d8f0fbaff964ed1121cda444d1ae707d58ae7f20046e5b03b3d677f945148604bba15aac79093bcb5a1a260e79dbc4a2e2c7ec993
+  checksum: 10c0/26c524a505927ebd4229ec20fecf5f38b6a3265f22f3ede3a334834b37d01eedd133676e231d19ecaae2923bdfb0fa66acb925ffaee6e472e36ed81a7ace90f7
   languageName: node
   linkType: hard
 
@@ -3690,12 +3633,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/types@npm:^0.1.17":
-  version: 0.1.17
-  resolution: "@swc/types@npm:0.1.17"
+"@swc/types@npm:^0.1.21":
+  version: 0.1.21
+  resolution: "@swc/types@npm:0.1.21"
   dependencies:
     "@swc/counter": "npm:^0.1.3"
-  checksum: 10c0/29f5c8933a16042956f1adb7383e836ed7646cbf679826e78b53fdd0c08e8572cb42152e527b6b530a9bd1052d33d0972f90f589761ccd252c12652c9b7a72fc
+  checksum: 10c0/2baa89c824426e0de0c84e212278010e2df8dc2d6ffaa6f1e306e1b2930c6404b3d3f8989307e8c42ceb95ac143ab7a80be138af6a014d5c782dce5be94dcd5e
   languageName: node
   linkType: hard
 
@@ -3863,13 +3806,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-core@npm:5.72.1":
-  version: 5.72.1
-  resolution: "@tanstack/query-core@npm:5.72.1"
-  checksum: 10c0/e89963af090a35db5b11859cd54c5940cb7c47cfef121e3ed9260c06c42328e58b69805ffa4fd962fc39ad8c74f2e97a35787685e546a1357d9e4316ae8a9462
-  languageName: node
-  linkType: hard
-
 "@tanstack/query-core@npm:5.75.0":
   version: 5.75.0
   resolution: "@tanstack/query-core@npm:5.75.0"
@@ -3877,33 +3813,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-devtools@npm:5.72.1":
-  version: 5.72.1
-  resolution: "@tanstack/query-devtools@npm:5.72.1"
-  checksum: 10c0/7946f12f08124456f5e81ebfd610bc122c85bfd9bc96783f4b23eed06a72816567cf735fad9a8617da0a8b850c31efa12b0f10917d971572763e182b0e080529
+"@tanstack/query-devtools@npm:5.74.7":
+  version: 5.74.7
+  resolution: "@tanstack/query-devtools@npm:5.74.7"
+  checksum: 10c0/2c1f113d81b9645f5c90e0cfdf47bce1d3244c57e930207589403258b434680ceddb996e6d9bfcdfb02d0582be54558f5196e2e4c395767d3a85620c45fc6271
   languageName: node
   linkType: hard
 
-"@tanstack/react-query-devtools@npm:^5.72.1":
-  version: 5.72.1
-  resolution: "@tanstack/react-query-devtools@npm:5.72.1"
+"@tanstack/react-query-devtools@npm:^5.75.0":
+  version: 5.75.0
+  resolution: "@tanstack/react-query-devtools@npm:5.75.0"
   dependencies:
-    "@tanstack/query-devtools": "npm:5.72.1"
+    "@tanstack/query-devtools": "npm:5.74.7"
   peerDependencies:
-    "@tanstack/react-query": ^5.72.1
+    "@tanstack/react-query": ^5.75.0
     react: ^18 || ^19
-  checksum: 10c0/660f1c2dd14670e86fb1a8c95d4fe254d541041e2d03e1439e9ca5f897185d854bf14b816ab0ccd8a24662a6caaef654a3cb54ef3c0ca121981c2b991e56fe24
-  languageName: node
-  linkType: hard
-
-"@tanstack/react-query@npm:^5.72.1":
-  version: 5.72.1
-  resolution: "@tanstack/react-query@npm:5.72.1"
-  dependencies:
-    "@tanstack/query-core": "npm:5.72.1"
-  peerDependencies:
-    react: ^18 || ^19
-  checksum: 10c0/2e07d47b559ef6cdd29376c01a40c50241bcd730ea4b6b71fc6d0138d6609b762ddd3ecafa39f4dad670a8f5a45db890f9088120fdf918402b8e0973ce4dec0d
+  checksum: 10c0/4ac90b2db369e98c3ca7a1dcda7ceb7b442c5e8ac1c284016fe34075a6648ab70980ad879dfc674aa70f5813b7b5a8efe2e470221f554496dc12bcb3231b67fb
   languageName: node
   linkType: hard
 
@@ -4105,10 +4030,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tauri-apps/api@npm:2.4.0":
-  version: 2.4.0
-  resolution: "@tauri-apps/api@npm:2.4.0"
-  checksum: 10c0/21b1644904a1d6c8ccdf60a38978a8afc0f756f5192ff47fc408b2df0cbcfe2f60a46d8a282d1e0736dec8559ae01949d0b5e99f9e93cbe98fbb2d343c2a8d47
+"@tauri-apps/api@npm:2.5.0":
+  version: 2.5.0
+  resolution: "@tauri-apps/api@npm:2.5.0"
+  checksum: 10c0/8eeb28049d48f5f89a5419cdf313bb159305204b193a5f27ebddbe0704ff43037c8b2e78518de831d7393e00178f0c0ac66cef1a57b99c632de71eca29f562c0
   languageName: node
   linkType: hard
 
@@ -4119,98 +4044,98 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-darwin-arm64@npm:2.4.0":
-  version: 2.4.0
-  resolution: "@tauri-apps/cli-darwin-arm64@npm:2.4.0"
+"@tauri-apps/cli-darwin-arm64@npm:2.5.0":
+  version: 2.5.0
+  resolution: "@tauri-apps/cli-darwin-arm64@npm:2.5.0"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-darwin-x64@npm:2.4.0":
-  version: 2.4.0
-  resolution: "@tauri-apps/cli-darwin-x64@npm:2.4.0"
+"@tauri-apps/cli-darwin-x64@npm:2.5.0":
+  version: 2.5.0
+  resolution: "@tauri-apps/cli-darwin-x64@npm:2.5.0"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-linux-arm-gnueabihf@npm:2.4.0":
-  version: 2.4.0
-  resolution: "@tauri-apps/cli-linux-arm-gnueabihf@npm:2.4.0"
+"@tauri-apps/cli-linux-arm-gnueabihf@npm:2.5.0":
+  version: 2.5.0
+  resolution: "@tauri-apps/cli-linux-arm-gnueabihf@npm:2.5.0"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-linux-arm64-gnu@npm:2.4.0":
-  version: 2.4.0
-  resolution: "@tauri-apps/cli-linux-arm64-gnu@npm:2.4.0"
+"@tauri-apps/cli-linux-arm64-gnu@npm:2.5.0":
+  version: 2.5.0
+  resolution: "@tauri-apps/cli-linux-arm64-gnu@npm:2.5.0"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-linux-arm64-musl@npm:2.4.0":
-  version: 2.4.0
-  resolution: "@tauri-apps/cli-linux-arm64-musl@npm:2.4.0"
+"@tauri-apps/cli-linux-arm64-musl@npm:2.5.0":
+  version: 2.5.0
+  resolution: "@tauri-apps/cli-linux-arm64-musl@npm:2.5.0"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-linux-riscv64-gnu@npm:2.4.0":
-  version: 2.4.0
-  resolution: "@tauri-apps/cli-linux-riscv64-gnu@npm:2.4.0"
+"@tauri-apps/cli-linux-riscv64-gnu@npm:2.5.0":
+  version: 2.5.0
+  resolution: "@tauri-apps/cli-linux-riscv64-gnu@npm:2.5.0"
   conditions: os=linux & cpu=riscv64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-linux-x64-gnu@npm:2.4.0":
-  version: 2.4.0
-  resolution: "@tauri-apps/cli-linux-x64-gnu@npm:2.4.0"
+"@tauri-apps/cli-linux-x64-gnu@npm:2.5.0":
+  version: 2.5.0
+  resolution: "@tauri-apps/cli-linux-x64-gnu@npm:2.5.0"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-linux-x64-musl@npm:2.4.0":
-  version: 2.4.0
-  resolution: "@tauri-apps/cli-linux-x64-musl@npm:2.4.0"
+"@tauri-apps/cli-linux-x64-musl@npm:2.5.0":
+  version: 2.5.0
+  resolution: "@tauri-apps/cli-linux-x64-musl@npm:2.5.0"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-win32-arm64-msvc@npm:2.4.0":
-  version: 2.4.0
-  resolution: "@tauri-apps/cli-win32-arm64-msvc@npm:2.4.0"
+"@tauri-apps/cli-win32-arm64-msvc@npm:2.5.0":
+  version: 2.5.0
+  resolution: "@tauri-apps/cli-win32-arm64-msvc@npm:2.5.0"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-win32-ia32-msvc@npm:2.4.0":
-  version: 2.4.0
-  resolution: "@tauri-apps/cli-win32-ia32-msvc@npm:2.4.0"
+"@tauri-apps/cli-win32-ia32-msvc@npm:2.5.0":
+  version: 2.5.0
+  resolution: "@tauri-apps/cli-win32-ia32-msvc@npm:2.5.0"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-win32-x64-msvc@npm:2.4.0":
-  version: 2.4.0
-  resolution: "@tauri-apps/cli-win32-x64-msvc@npm:2.4.0"
+"@tauri-apps/cli-win32-x64-msvc@npm:2.5.0":
+  version: 2.5.0
+  resolution: "@tauri-apps/cli-win32-x64-msvc@npm:2.5.0"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli@npm:^2.4.0":
-  version: 2.4.0
-  resolution: "@tauri-apps/cli@npm:2.4.0"
+"@tauri-apps/cli@npm:^2.5.0":
+  version: 2.5.0
+  resolution: "@tauri-apps/cli@npm:2.5.0"
   dependencies:
-    "@tauri-apps/cli-darwin-arm64": "npm:2.4.0"
-    "@tauri-apps/cli-darwin-x64": "npm:2.4.0"
-    "@tauri-apps/cli-linux-arm-gnueabihf": "npm:2.4.0"
-    "@tauri-apps/cli-linux-arm64-gnu": "npm:2.4.0"
-    "@tauri-apps/cli-linux-arm64-musl": "npm:2.4.0"
-    "@tauri-apps/cli-linux-riscv64-gnu": "npm:2.4.0"
-    "@tauri-apps/cli-linux-x64-gnu": "npm:2.4.0"
-    "@tauri-apps/cli-linux-x64-musl": "npm:2.4.0"
-    "@tauri-apps/cli-win32-arm64-msvc": "npm:2.4.0"
-    "@tauri-apps/cli-win32-ia32-msvc": "npm:2.4.0"
-    "@tauri-apps/cli-win32-x64-msvc": "npm:2.4.0"
+    "@tauri-apps/cli-darwin-arm64": "npm:2.5.0"
+    "@tauri-apps/cli-darwin-x64": "npm:2.5.0"
+    "@tauri-apps/cli-linux-arm-gnueabihf": "npm:2.5.0"
+    "@tauri-apps/cli-linux-arm64-gnu": "npm:2.5.0"
+    "@tauri-apps/cli-linux-arm64-musl": "npm:2.5.0"
+    "@tauri-apps/cli-linux-riscv64-gnu": "npm:2.5.0"
+    "@tauri-apps/cli-linux-x64-gnu": "npm:2.5.0"
+    "@tauri-apps/cli-linux-x64-musl": "npm:2.5.0"
+    "@tauri-apps/cli-win32-arm64-msvc": "npm:2.5.0"
+    "@tauri-apps/cli-win32-ia32-msvc": "npm:2.5.0"
+    "@tauri-apps/cli-win32-x64-msvc": "npm:2.5.0"
   dependenciesMeta:
     "@tauri-apps/cli-darwin-arm64":
       optional: true
@@ -4236,25 +4161,25 @@ __metadata:
       optional: true
   bin:
     tauri: tauri.js
-  checksum: 10c0/592b4a93ebdad87a002bf2b95c0854f770d7299926604d9a0277b2e0ebaaf6bd769db9756d09583bafef88846c69760c1fa5048100afeccf232a56ee1dd1e4f4
+  checksum: 10c0/5ce96349371692b7d6c6b9c20af6b137f57373335331d806904e3e37d0a4feac2bbd2fd394bfcffcc2d352ba25b579142e784e18946a83a405a69912078d33bb
   languageName: node
   linkType: hard
 
-"@tauri-apps/plugin-clipboard-manager@npm:^2.2.1":
+"@tauri-apps/plugin-clipboard-manager@npm:^2.2.2":
+  version: 2.2.2
+  resolution: "@tauri-apps/plugin-clipboard-manager@npm:2.2.2"
+  dependencies:
+    "@tauri-apps/api": "npm:^2.0.0"
+  checksum: 10c0/7b97f98013e0e2eec3e49332061a764d13b5beda5e95a13534c6ba4cf325d223a750ec6a529436ef8671ab8817fed650e488e1337ab4decef014d7b4a790fd59
+  languageName: node
+  linkType: hard
+
+"@tauri-apps/plugin-os@npm:^2.2.1":
   version: 2.2.1
-  resolution: "@tauri-apps/plugin-clipboard-manager@npm:2.2.1"
+  resolution: "@tauri-apps/plugin-os@npm:2.2.1"
   dependencies:
     "@tauri-apps/api": "npm:^2.0.0"
-  checksum: 10c0/def68d5ccc74dc8f29f42f1b2fa23f09787955c2ab9e27700bde542600c64a88be02edcff24c4ef4b4f2c4b941b6868648c34857e49509f249ae620703aad794
-  languageName: node
-  linkType: hard
-
-"@tauri-apps/plugin-os@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "@tauri-apps/plugin-os@npm:2.2.0"
-  dependencies:
-    "@tauri-apps/api": "npm:^2.0.0"
-  checksum: 10c0/9440a6bc85be975a2c9f55b4da302531be68ea45d06e6d049c30395dd71749b0d975d4ec56bd6c86ceab0bbfd732dd8bc482772da63f13aa10792fa4ac7b8c64
+  checksum: 10c0/bfd3e213f420cf56c8f4e569dcdf69c9b3d1ca5655b5f642926d5bf5a00855d6b088df2aef6a0ac99421bf5d321f1477f8a1adfa532a8e48d7bd08303cb45a4e
   languageName: node
   linkType: hard
 
@@ -4399,12 +4324,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^22.14.0":
-  version: 22.14.0
-  resolution: "@types/node@npm:22.14.0"
+"@types/node@npm:^22.15.3":
+  version: 22.15.3
+  resolution: "@types/node@npm:22.15.3"
   dependencies:
     undici-types: "npm:~6.21.0"
-  checksum: 10c0/9d79f3fa1af9c2c869514f419c4a4905b34c10e12915582fd1784868ac4e74c6d306cf5eb47ef889b6750ab85a31be96618227b86739c4a3e0b1c15063f384c6
+  checksum: 10c0/2879f012d1aeba0bfdb5fed80d165f4f2cb3d1f2e1f98a24b18d4a211b4ace7d64bf2622784c78355982ffc1081ba79d0934efc2fb8353913e5871a63609661f
   languageName: node
   linkType: hard
 
@@ -4436,14 +4361,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitejs/plugin-react-swc@npm:^3.8.0":
-  version: 3.8.0
-  resolution: "@vitejs/plugin-react-swc@npm:3.8.0"
+"@vitejs/plugin-react-swc@npm:^3.9.0":
+  version: 3.9.0
+  resolution: "@vitejs/plugin-react-swc@npm:3.9.0"
   dependencies:
-    "@swc/core": "npm:^1.10.15"
+    "@swc/core": "npm:^1.11.21"
   peerDependencies:
     vite: ^4 || ^5 || ^6
-  checksum: 10c0/ad676290907a9330825c2270fb04bd2fcbdbf402317230c8985765119727b6d5657d777ba55b6d1300efb818698959917b6c639b90dd615dfaf0654dc07a9df8
+  checksum: 10c0/28e99f2833d390982b9ab17ccabe7fa7562c30ea56cf57b34fe97dc401958ce838bfbb8f562f73c2764e041f8672f10ca3872220fd78660fc9cc43b539bb7962
   languageName: node
   linkType: hard
 
@@ -5463,13 +5388,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-equals@npm:^2.0.3":
-  version: 2.0.4
-  resolution: "fast-equals@npm:2.0.4"
-  checksum: 10c0/2867aa148c995e4ea921242ab605b157e5cbdc44793ebddf83684a5e6673be5016eb790ec4d8329317b92887e1108fb67ed3d4334529f2a7650c1338e6aa2c5f
-  languageName: node
-  linkType: hard
-
 "fdir@npm:^6.4.4":
   version: 6.4.4
   resolution: "fdir@npm:6.4.4"
@@ -5580,13 +5498,6 @@ __metadata:
   version: 1.1.2
   resolution: "function-bind@npm:1.1.2"
   checksum: 10c0/d8680ee1e5fcd4c197e4ac33b2b4dce03c71f4d91717292785703db200f5c21f977c568d28061226f9b5900cbcd2c84463646134fd5337e7925e0942bc3f46d5
-  languageName: node
-  linkType: hard
-
-"fuse.js@npm:^6.6.2":
-  version: 6.6.2
-  resolution: "fuse.js@npm:6.6.2"
-  checksum: 10c0/c2fe4f234f516e9ea83b06f06f8f3c8b7117f51aa75bbccd052eed0c0423364bf1e360ffbf29cadae8ef6aa39476b7961eaf9d07bed779cea5c83d62b34e2df9
   languageName: node
   linkType: hard
 
@@ -6081,22 +5992,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"kbar@npm:0.1.0-beta.45":
-  version: 0.1.0-beta.45
-  resolution: "kbar@npm:0.1.0-beta.45"
-  dependencies:
-    "@radix-ui/react-portal": "npm:^1.0.1"
-    fast-equals: "npm:^2.0.3"
-    fuse.js: "npm:^6.6.2"
-    react-virtual: "npm:^2.8.2"
-    tiny-invariant: "npm:^1.2.0"
-  peerDependencies:
-    react: ^16.0.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/5d40e9d45df3ca3364e774f30c59a9f429edae40c6853dc0392ae3a1497725f20af1d95f8abb9b6d1f1e6608eb5cda49b7818e10e0cd853b5b3512ad7b6046bc
-  languageName: node
-  linkType: hard
-
 "lightningcss-darwin-arm64@npm:1.29.2":
   version: 1.29.2
   resolution: "lightningcss-darwin-arm64@npm:1.29.2"
@@ -6276,21 +6171,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lucide-react@npm:^0.483.0":
-  version: 0.483.0
-  resolution: "lucide-react@npm:0.483.0"
-  peerDependencies:
-    react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/de38ca2c57bcd65aedf750fa101ddcdc24e4a828ae4fa873299fb26a5dfc60ff65582a9cf7d8dfd2fbf8a6db18c69dfbfcf955b2320537da80f7193a4e967596
-  languageName: node
-  linkType: hard
-
 "lucide-react@npm:^0.487.0":
   version: 0.487.0
   resolution: "lucide-react@npm:0.487.0"
   peerDependencies:
     react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
   checksum: 10c0/7177778c584b8e9545957bef28e95841c4be1b3bf473f9e2e64454c3e183d7ed0bc977c9f7b5446088023c7000151b7a3b27398d4f70025bf343782192f653ca
+  languageName: node
+  linkType: hard
+
+"lucide-react@npm:^0.506.0":
+  version: 0.506.0
+  resolution: "lucide-react@npm:0.506.0"
+  peerDependencies:
+    react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10c0/2f6ece3804804e2a558d179a9df2a472b736f8152d3daa6847dd0bf62330aefc2b1d02354ce0ab09a8d4e3018a915c7977ff56dadbe1c0fb06bc34bceca214a8
   languageName: node
   linkType: hard
 
@@ -6904,17 +6799,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-virtual@npm:^2.8.2":
-  version: 2.10.4
-  resolution: "react-virtual@npm:2.10.4"
-  dependencies:
-    "@reach/observe-rect": "npm:^1.1.0"
-  peerDependencies:
-    react: ^16.6.3 || ^17.0.0
-  checksum: 10c0/96813e174f21e044152c09da4782b97dd55a6e32ddad743b39a79afc69e525d591b3263f7001f0e7f453ca5316743a2192bcb6a3686ce1b0ec14d1be8a2ea8e0
-  languageName: node
-  linkType: hard
-
 "react18-json-view@npm:^0.2.9":
   version: 0.2.9
   resolution: "react18-json-view@npm:0.2.9"
@@ -7116,7 +7000,7 @@ __metadata:
   dependencies:
     "@biomejs/biome": "npm:^1.9.4"
     "@tailwindcss/postcss": "npm:^4.1.3"
-    "@tauri-apps/cli": "npm:^2.4.0"
+    "@tauri-apps/cli": "npm:^2.5.0"
     assert: "npm:^2.1.0"
     html-to-image: "npm:^1.11.13"
     ts-unused-exports: "npm:^11.0.1"
@@ -7457,13 +7341,6 @@ __metadata:
     mkdirp: "npm:^1.0.3"
     yallist: "npm:^4.0.0"
   checksum: 10c0/a5eca3eb50bc11552d453488344e6507156b9193efd7635e98e867fab275d527af53d8866e2370cd09dfe74378a18111622ace35af6a608e5223a7d27fe99537
-  languageName: node
-  linkType: hard
-
-"tiny-invariant@npm:^1.2.0":
-  version: 1.3.1
-  resolution: "tiny-invariant@npm:1.3.1"
-  checksum: 10c0/5b87c1d52847d9452b60d0dcb77011b459044e0361ca8253bfe7b43d6288106e12af926adb709a6fc28900e3864349b91dad9a4ac93c39aa15f360b26c2ff4db
   languageName: node
   linkType: hard
 

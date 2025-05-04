@@ -4,6 +4,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@ethui/ui/components/shadcn/context-menu";
+import { cn } from "@ethui/ui/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { invoke } from "@tauri-apps/api/core";
 import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
@@ -22,7 +23,6 @@ import {
   DialogTitle,
 } from "@ethui/ui/components/shadcn/dialog";
 import { Link } from "@tanstack/react-router";
-import clsx from "clsx";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { truncateHex } from "#/utils";
@@ -56,7 +56,7 @@ export function AddressView({
   const content = (
     <ClickToCopy text={address}>
       <div
-        className={clsx(
+        className={cn(
           "flex items-center gap-x-1 font-mono",
           noTextStyle ? "" : "text-base",
         )}

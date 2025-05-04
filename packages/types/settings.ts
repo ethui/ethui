@@ -15,8 +15,10 @@ export const generalSettingsSchema = z.object({
   alchemyApiKey: z.string().optional().nullable(),
   etherscanApiKey: z.string().optional().nullable(),
   hideEmptyTokens: z.boolean(),
+  startMinimized: z.boolean(),
   fastMode: z.boolean(),
   onboarding: onboardingSchema,
+  rustLog: z.string().optional(),
 });
 
 export type OnboardingStepKey = z.infer<typeof onboardingSteps>;
