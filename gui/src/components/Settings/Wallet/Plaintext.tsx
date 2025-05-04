@@ -30,7 +30,7 @@ interface Props {
 
 export function Plaintext({ wallet, onSubmit, onRemove }: Props) {
   const router = useRouter();
-  const form = useForm<Schema>({
+  const form = useForm({
     mode: "onBlur",
     resolver: zodResolver(schema),
     defaultValues: wallet as Schema,

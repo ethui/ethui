@@ -83,15 +83,14 @@ function RouteComponent() {
     }),
   });
 
-  type Schema = z.infer<typeof schema>;
-
-  const form = useForm<Schema>({
+  const form = useForm({
     mode: "onChange",
     resolver: zodResolver(schema),
+    // TODO: fix this any
     defaultValues: {
       currency: ethAddress,
       value: 0n,
-    },
+    } as any,
   });
 
   const currency = form.watch("currency");
