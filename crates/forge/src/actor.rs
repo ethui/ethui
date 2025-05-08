@@ -151,6 +151,20 @@ impl Message<UpdateContracts> for Worker {
     }
 }
 
+pub struct FetchAbis;
+
+impl Message<FetchAbis> for Worker {
+    type Reply = Vec<ForgeAbi>;
+
+    async fn handle(
+        &mut self,
+        _msg: FetchAbis,
+        _ctx: kameo::message::Context<'_, Self, Self::Reply>,
+    ) -> Self::Reply {
+        self.abis_by_path.clone().into_values().collect()
+    }
+}
+
 impl Actor for Worker {
     type Mailbox = BoundedMailbox<Self>;
 

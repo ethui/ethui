@@ -1,8 +1,10 @@
 use std::{ffi::OsStr, fs::File, io::BufReader, path::PathBuf, str::FromStr as _};
 
 use alloy::primitives::Bytes;
+use kameo::Reply;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Reply, Serialize, Deserialize)]
 pub struct ForgeAbi {
     pub path: PathBuf,
     pub project: String,
@@ -10,6 +12,7 @@ pub struct ForgeAbi {
     pub name: String,
     pub code: Bytes,
     pub abi: serde_json::Value,
+    pub method_identifiers: serde_json::Value,
 }
 
 impl TryFrom<PathBuf> for ForgeAbi {
@@ -54,6 +57,7 @@ impl TryFrom<PathBuf> for ForgeAbi {
         };
 
         let file = File::open(path.clone()).unwrap();
+
         let json: serde_json::Value =
             serde_json::from_reader(BufReader::new(file)).map_err(|_| ())?;
 
@@ -62,6 +66,8 @@ impl TryFrom<PathBuf> for ForgeAbi {
             Some(b) => Bytes::from_str(b).map_err(|_| ())?,
             _ => return Err(()),
         };
+
+        let method_identifiers = json["methodIdentifiers"].clone();
 
         if abi.is_null() {
             return Err(());
@@ -73,6 +79,7 @@ impl TryFrom<PathBuf> for ForgeAbi {
             solidity_file,
             name,
             abi,
+            method_identifiers,
             code,
         })
     }

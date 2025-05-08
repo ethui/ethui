@@ -1,5 +1,6 @@
 mod abi;
 mod actor;
+pub mod commands;
 mod error;
 mod init;
 mod utils;
