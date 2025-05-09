@@ -101,7 +101,7 @@ function PrivateKeyStep({ onSubmit, onCancel }: PrivateKeyStepProps) {
   return (
     <Form form={form} onSubmit={onSubmitInternal}>
       <Form.Textarea label="Name" name="name" className="w-full" />
-      <span>Insert your 12-word privateKey</span>
+      <span>Insert your private key</span>
       <Form.Textarea label="Private Key" name="privateKey" className="w-full" />
 
       <div className="flex gap-2">
