@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use alloy::transports::{RpcError, TransportErrorKind};
 
-use crate::actor;
+use crate::actor::{self, FetchAbis};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -46,6 +46,15 @@ pub enum Error {
 
     #[error(transparent)]
     ActorSend(#[from] kameo::error::SendError<actor::Msg>),
+
+    #[error("Actor lookup error")]
+    ActorNotFound,
+
+    #[error(transparent)]
+    RegistryError(#[from] kameo::error::RegistryError),
+
+    #[error(transparent)]
+    ActorCall(#[from] kameo::error::SendError<FetchAbis>),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
