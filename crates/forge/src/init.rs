@@ -7,7 +7,7 @@ use crate::actor::{Msg, Worker};
 
 pub async fn init() -> crate::Result<()> {
     let handle = kameo::spawn(Worker::default());
-    handle.register("forge_actor").unwrap();
+    handle.register("forge").unwrap();
     let settings = Settings::read().await;
 
     if let Some(ref path) = settings.inner.abi_watch_path {
