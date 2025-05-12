@@ -119,7 +119,11 @@ impl ChainUpdateBuilder {
         let new_network_params = NewNetworkParams {
             dedup_chain_id: (params.chain_id.try_into().unwrap(), 0).into(),
             name: chain_name.clone(),
-            explorer_url: params.block_explorer_urls.first().map(|u| u.to_string()),
+            explorer_url: params
+                .block_explorer_urls
+                .unwrap_or_default()
+                .first()
+                .map(|u| u.to_string()),
             http_url: params
                 .rpc_urls
                 .iter()
