@@ -38,6 +38,7 @@ impl Onboarding {
         self.steps.insert(OnboardingStep::Extension, true);
         self.steps.insert(OnboardingStep::Wallet, true);
         self.steps.insert(OnboardingStep::Alchemy, true);
+        self.steps.insert(OnboardingStep::Etherscan, true);
         self.hidden = true;
     }
 
