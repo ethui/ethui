@@ -66,7 +66,7 @@ pub struct Params {
     pub chain_name: String,
     pub rpc_urls: Vec<Url>,
     pub native_currency: Currency,
-    pub block_explorer_urls: Vec<Url>,
+    pub block_explorer_urls: Option<Vec<Url>>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -108,7 +108,11 @@ impl TryFrom<Params> for NewNetworkParams {
             name: params.chain_name,
             // Using 0 for dedup_id since at this time no duplicate chain_id is allowed
             dedup_chain_id: (params.chain_id.try_into().unwrap(), 0).into(),
-            explorer_url: params.block_explorer_urls.first().map(|u| u.to_string()),
+            explorer_url: params
+                .block_explorer_urls
+                .unwrap_or_default()
+                .first()
+                .map(|u| u.to_string()),
             http_url: params
                 .rpc_urls
                 .iter()
