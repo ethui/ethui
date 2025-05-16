@@ -20,7 +20,7 @@
 
 ## What is ethui?
 
-An Ethereum development toolkip. [ethui](https://ethui.dev/) has the usual functionality of a crypto wallet, while also providing access to crucial features for a comfortable & fast development workflow.
+An Ethereum development toolkit. [ethui](https://ethui.dev/) has the usual functionality of a crypto wallet, while also providing access to crucial features for a comfortable & fast development workflow.
 
 ### Main features
 
