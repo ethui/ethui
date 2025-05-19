@@ -16,6 +16,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as HomeLImport } from './routes/home/_l'
 import { Route as DialogLImport } from './routes/dialog/_l'
 import { Route as HomeLTransactionsImport } from './routes/home/_l/transactions'
+import { Route as HomeLTracesImport } from './routes/home/_l/traces'
 import { Route as HomeLOnboardingImport } from './routes/home/_l/onboarding'
 import { Route as HomeLConnectionsImport } from './routes/home/_l/connections'
 import { Route as HomeLAccountImport } from './routes/home/_l/account'
@@ -106,6 +107,12 @@ const HomeLContractsRoute = HomeLContractsImport.update({
 const HomeLTransactionsRoute = HomeLTransactionsImport.update({
   id: '/transactions',
   path: '/transactions',
+  getParentRoute: () => HomeLRoute,
+} as any)
+
+const HomeLTracesRoute = HomeLTracesImport.update({
+  id: '/traces',
+  path: '/traces',
   getParentRoute: () => HomeLRoute,
 } as any)
 
@@ -354,6 +361,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding'
       fullPath: '/home/onboarding'
       preLoaderRoute: typeof HomeLOnboardingImport
+      parentRoute: typeof HomeLImport
+    }
+    '/home/_l/traces': {
+      id: '/home/_l/traces'
+      path: '/traces'
+      fullPath: '/home/traces'
+      preLoaderRoute: typeof HomeLTracesImport
       parentRoute: typeof HomeLImport
     }
     '/home/_l/transactions': {
@@ -781,6 +795,7 @@ interface HomeLRouteChildren {
   HomeLAccountRoute: typeof HomeLAccountRoute
   HomeLConnectionsRoute: typeof HomeLConnectionsRoute
   HomeLOnboardingRoute: typeof HomeLOnboardingRoute
+  HomeLTracesRoute: typeof HomeLTracesRoute
   HomeLTransactionsRoute: typeof HomeLTransactionsRoute
   HomeLContractsRoute: typeof HomeLContractsRouteWithChildren
   HomeLSettingsRoute: typeof HomeLSettingsRouteWithChildren
@@ -791,6 +806,7 @@ const HomeLRouteChildren: HomeLRouteChildren = {
   HomeLAccountRoute: HomeLAccountRoute,
   HomeLConnectionsRoute: HomeLConnectionsRoute,
   HomeLOnboardingRoute: HomeLOnboardingRoute,
+  HomeLTracesRoute: HomeLTracesRoute,
   HomeLTransactionsRoute: HomeLTransactionsRoute,
   HomeLContractsRoute: HomeLContractsRouteWithChildren,
   HomeLSettingsRoute: HomeLSettingsRouteWithChildren,
@@ -815,6 +831,7 @@ export interface FileRoutesByFullPath {
   '/home/account': typeof HomeLAccountRoute
   '/home/connections': typeof HomeLConnectionsRoute
   '/home/onboarding': typeof HomeLOnboardingRoute
+  '/home/traces': typeof HomeLTracesRoute
   '/home/transactions': typeof HomeLTransactionsRoute
   '/dialog/chain-add/$id': typeof DialogLChainAddIdRoute
   '/dialog/chain-switch/$id': typeof DialogLChainSwitchIdRoute
@@ -851,6 +868,7 @@ export interface FileRoutesByTo {
   '/home/account': typeof HomeLAccountRoute
   '/home/connections': typeof HomeLConnectionsRoute
   '/home/onboarding': typeof HomeLOnboardingRoute
+  '/home/traces': typeof HomeLTracesRoute
   '/home/transactions': typeof HomeLTransactionsRoute
   '/dialog/chain-add/$id': typeof DialogLChainAddIdRoute
   '/dialog/chain-switch/$id': typeof DialogLChainSwitchIdRoute
@@ -887,6 +905,7 @@ export interface FileRoutesById {
   '/home/_l/account': typeof HomeLAccountRoute
   '/home/_l/connections': typeof HomeLConnectionsRoute
   '/home/_l/onboarding': typeof HomeLOnboardingRoute
+  '/home/_l/traces': typeof HomeLTracesRoute
   '/home/_l/transactions': typeof HomeLTransactionsRoute
   '/dialog/_l/chain-add/$id': typeof DialogLChainAddIdRoute
   '/dialog/_l/chain-switch/$id': typeof DialogLChainSwitchIdRoute
@@ -930,6 +949,7 @@ export interface FileRouteTypes {
     | '/home/account'
     | '/home/connections'
     | '/home/onboarding'
+    | '/home/traces'
     | '/home/transactions'
     | '/dialog/chain-add/$id'
     | '/dialog/chain-switch/$id'
@@ -965,6 +985,7 @@ export interface FileRouteTypes {
     | '/home/account'
     | '/home/connections'
     | '/home/onboarding'
+    | '/home/traces'
     | '/home/transactions'
     | '/dialog/chain-add/$id'
     | '/dialog/chain-switch/$id'
@@ -999,6 +1020,7 @@ export interface FileRouteTypes {
     | '/home/_l/account'
     | '/home/_l/connections'
     | '/home/_l/onboarding'
+    | '/home/_l/traces'
     | '/home/_l/transactions'
     | '/dialog/_l/chain-add/$id'
     | '/dialog/_l/chain-switch/$id'
@@ -1092,6 +1114,7 @@ export const routeTree = rootRoute
         "/home/_l/account",
         "/home/_l/connections",
         "/home/_l/onboarding",
+        "/home/_l/traces",
         "/home/_l/transactions",
         "/home/_l/contracts",
         "/home/_l/settings",
@@ -1108,6 +1131,10 @@ export const routeTree = rootRoute
     },
     "/home/_l/onboarding": {
       "filePath": "home/_l/onboarding.tsx",
+      "parent": "/home/_l"
+    },
+    "/home/_l/traces": {
+      "filePath": "home/_l/traces.tsx",
       "parent": "/home/_l"
     },
     "/home/_l/transactions": {

@@ -24,7 +24,7 @@ type TraceLog = {
   };
 };
 
-export type SolidityVariable = {
+type SolidityVariable = {
   vartype: string;
   varname: string;
   varvalue: string;
