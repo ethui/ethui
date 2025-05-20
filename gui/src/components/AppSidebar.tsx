@@ -50,7 +50,7 @@ export function AppSidebar() {
   return (
     <Sidebar className="select-none" collapsible="icon">
       <SidebarHeader
-        className={cn("flex items-center", { "pt-4": isMacos })}
+        className={cn("flex items-center", { "pt-8": isMacos })}
         data-tauri-drag-region="true"
       >
         <EthuiLogo
