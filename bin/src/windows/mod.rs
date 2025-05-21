@@ -24,6 +24,7 @@ pub fn build_window(
     let builder = builder
         .title("")
         .decorations(true)
+        .min_inner_size(500.0, 375.0)
         .title_bar_style(tauri::TitleBarStyle::Overlay);
 
     let window = builder.build().unwrap();
