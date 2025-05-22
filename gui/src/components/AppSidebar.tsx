@@ -21,6 +21,7 @@ import {
 import { Link, useLocation } from "@tanstack/react-router";
 import { platform } from "@tauri-apps/plugin-os";
 import {
+  Braces,
   ChevronDown,
   ChevronRight,
   CircleUser,
@@ -183,6 +184,11 @@ const items = [
     title: "Connections",
     url: "/home/connections",
     icon: <Wifi />,
+  },
+  {
+    title: "Traces",
+    url: "/home/traces",
+    icon: <Braces />,
   },
 ];
 

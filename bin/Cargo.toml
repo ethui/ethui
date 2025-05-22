@@ -47,6 +47,8 @@ tauri-plugin-clipboard-manager = "2.2"
 tauri-plugin-shell = "2"
 ethui-proxy-detect.workspace = true
 kameo.workspace = true
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
 
 [build-dependencies]
 tauri-build = { version = "2.2", default-features = false, features = [] }

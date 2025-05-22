@@ -79,6 +79,8 @@ impl EthUIApp {
                 ethui_simulator::commands::simulator_run,
                 ethui_simulator::commands::simulator_get_call_count,
             ])
+            .plugin(tauri_plugin_dialog::init())
+            .plugin(tauri_plugin_fs::init())
             .plugin(tauri_plugin_os::init())
             .plugin(tauri_plugin_clipboard_manager::init())
             .plugin(tauri_plugin_shell::init())
