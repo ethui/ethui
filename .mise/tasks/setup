@@ -23,7 +23,7 @@ deps() {
   install_dep "tauri cli" cargo-tauri
   install_dep "sqlx cli" cargo-sqlx
   install_dep "yarn" yarn
-  install_dep "watchexec" watchexec
+  install_dep "watchexec" watchexec-cli
   install_dep "foundry" anvil
   install_tauri_prerequisites
 
@@ -68,7 +68,7 @@ install_yarn() {
 }
 
 install_mise() {
-  red -e "\nmise-en-place needs to be installed manually: https://mise.jdx.dev/"
+  echo -e "\nmise-en-place needs to be installed manually: https://mise.jdx.dev/"
   exit 1
 }
 
