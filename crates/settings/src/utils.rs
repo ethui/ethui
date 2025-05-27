@@ -7,7 +7,7 @@ pub async fn test_alchemy_api_key(key: String) -> bool {
         Err(_) => return false,
     };
 
-    let provider = ProviderBuilder::new().on_http(rpc_url);
+    let provider = ProviderBuilder::new().connect_http(rpc_url);
     let res = provider.get_block_number().await;
 
     res.is_ok()

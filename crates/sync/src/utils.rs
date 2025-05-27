@@ -54,9 +54,9 @@ pub(crate) async fn fetch_erc20_metadata(chain_id: u32, address: Address) -> Res
 
     let metadata = TokenMetadata {
         address,
-        name: contract.name().call().await.map(|r| r.name).ok(),
-        symbol: contract.symbol().call().await.map(|r| r.symbol).ok(),
-        decimals: contract.decimals().call().await.map(|r| r.decimals).ok(),
+        name: contract.name().call().await.ok(),
+        symbol: contract.symbol().call().await.ok(),
+        decimals: contract.decimals().call().await.ok(),
     };
 
     let db = ethui_db::get();
