@@ -144,7 +144,7 @@ fn expand_log(log: RpcLog) -> Option<Event> {
 
     use ethui_abis::IERC20;
 
-    if let Ok(Log { data, .. }) = IERC20::Transfer::decode_log(&log.inner, true) {
+    if let Ok(Log { data, .. }) = IERC20::Transfer::decode_log(&log.inner) {
         return Some(
             ERC20Transfer {
                 from: data.from,

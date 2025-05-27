@@ -34,7 +34,7 @@ impl Client {
         let v2_provider = Box::new(
             ProviderBuilder::new()
                 .disable_recommended_fillers()
-                .on_client(v2_client),
+                .connect_client(v2_client),
         );
 
         let nft_v3_endpoint = networks::get_endpoint(chain_id, "nft/v3/", api_key)?;

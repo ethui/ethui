@@ -1,6 +1,6 @@
 use alloy::{
     network::EthereumWallet,
-    primitives::{Address, PrimitiveSignature, B256},
+    primitives::{Address, Signature, B256},
     signers::{ledger::LedgerSigner, local::PrivateKeySigner},
 };
 use async_trait::async_trait;
@@ -21,7 +21,7 @@ impl Signer {
 }
 
 #[async_trait]
-impl alloy::signers::Signer<PrimitiveSignature> for Signer {
+impl alloy::signers::Signer<Signature> for Signer {
     fn address(&self) -> Address {
         match self {
             Self::Local(signer) => signer.address(),
@@ -43,7 +43,7 @@ impl alloy::signers::Signer<PrimitiveSignature> for Signer {
         };
     }
 
-    async fn sign_hash(&self, hash: &B256) -> alloy::signers::Result<PrimitiveSignature> {
+    async fn sign_hash(&self, hash: &B256) -> alloy::signers::Result<Signature> {
         match self {
             Self::Local(signer) => signer.sign_hash(hash).await,
             Self::Ledger(signer) => signer.sign_hash(hash).await,
