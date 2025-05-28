@@ -39,17 +39,17 @@ function Contracts() {
           ({ address, name, chainId, proxyChain }) => (
             <div
               key={address}
-              className="flex flex-wrap hover:bg-accent xl:flex-nowrap"
+              className="flex xs:flex-col flex-wrap hover:bg-accent sm:flex-col md:flex-row lg:flex-nowrap"
             >
               <ContractHeader
                 contract={{ address, name, chainId, proxyChain }}
               />
               {(!pendingDeleteContract ||
                 pendingDeleteContract !== address) && (
-                <div className="flex items-center">
+                <div className="flex flex-row items-start">
                   <Button
                     variant="ghost"
-                    className="h-full w-full"
+                    className="h-13 w-12"
                     onClick={() => startRemoveContract(address)}
                   >
                     <Trash2 />
@@ -70,7 +70,7 @@ function Contracts() {
                   </Button>
                   <Button
                     variant="ghost"
-                    className="flex h-full w-full text-sm hover:bg-transparent"
+                    className="flex h-10 w-24 text-sm hover:bg-transparent"
                     onClick={() => setPendingDeleteContract(null)}
                   >
                     Cancel
