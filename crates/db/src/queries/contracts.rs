@@ -215,7 +215,7 @@ impl DbInner {
         let address = format!("0x{address:x}");
 
         let result = sqlx::query_scalar!(
-            r#"SELECT proxied_by FROM contracts WHERE chain_id = ? AND dedup_id = ? AND address = ?"#,
+            r#"SELECT proxy_for FROM contracts WHERE chain_id = ? AND dedup_id = ? AND address = ?"#,
             chain_id,
             dedup_id,
             address
