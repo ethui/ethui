@@ -93,8 +93,8 @@ pub async fn remove_contract(
 
     db.remove_contract(chain_id, dedup_id, address).await?;
 
-    if let Some(proxy) = has_proxy {
-        Box::pin(remove_contract(chain_id, dedup_id, proxy, db)).await?;
+    if let Some(proxy_for) = has_proxy {
+        Box::pin(remove_contract(chain_id, dedup_id, proxy_for, db)).await?;
     }
 
     ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
