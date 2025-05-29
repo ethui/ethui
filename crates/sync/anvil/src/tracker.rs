@@ -109,7 +109,7 @@ async fn watch(
         let to_block = 'wait: loop {
             let http_provider = ProviderBuilder::new()
                 .disable_recommended_fillers()
-                .on_http(ctx.http_url.clone());
+                .connect_http(ctx.http_url.clone());
 
             tokio::select! {
                 _ = quit_rcv.recv() => break 'watcher,
@@ -122,11 +122,11 @@ async fn watch(
         let ws_connect = WsConnect::new(ctx.ws_url.to_string());
         let provider = ProviderBuilder::new()
             .disable_recommended_fillers()
-            .on_ws(ws_connect.clone())
+            .connect_ws(ws_connect.clone())
             .await?;
         let sub_provider = ProviderBuilder::new()
             .disable_recommended_fillers()
-            .on_ws(ws_connect)
+            .connect_ws(ws_connect)
             .await?;
 
         // if we're in a forked anvil, grab the fork block number, so we don't index too much
@@ -200,7 +200,7 @@ async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Resul
 
     let provider = ProviderBuilder::new()
         .disable_recommended_fillers()
-        .on_http(ctx.http_url);
+        .connect_http(ctx.http_url);
     let db = ethui_db::get();
 
     while let Some(msg) = block_rcv.recv().await {
@@ -258,9 +258,9 @@ pub async fn fetch_erc20_metadata(
 
     TokenMetadata {
         address,
-        name: contract.name().call().await.ok().map(|r| r.name),
-        symbol: contract.symbol().call().await.ok().map(|r| r.symbol),
-        decimals: contract.decimals().call().await.ok().map(|r| r.decimals),
+        name: contract.name().call().await.ok(),
+        symbol: contract.symbol().call().await.ok(),
+        decimals: contract.decimals().call().await.ok(),
     }
 }
 
@@ -315,7 +315,7 @@ async fn get_known_tip(dedup_chain_id: DedupChainId) -> Result<Option<(u64, B256
 async fn get_sync_status(ctx: &Ctx) -> Option<u64> {
     let http_provider = ProviderBuilder::new()
         .disable_recommended_fillers()
-        .on_http(ctx.http_url.clone());
+        .connect_http(ctx.http_url.clone());
 
     let (known_block_number, known_block_hash) = match get_known_tip(ctx.dedup_chain_id).await {
         Ok(Some(tip)) => tip,

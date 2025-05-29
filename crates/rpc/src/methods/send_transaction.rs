@@ -163,7 +163,7 @@ impl SendTransaction {
             // or only call anvil_autoImpersonate once for the whole network,
             // instead of making this request for every single transaction.
             // this is just a minor optimization, though
-            let provider = ProviderBuilder::new().on_http(url);
+            let provider = ProviderBuilder::new().connect_http(url);
             provider.anvil_auto_impersonate_account(true).await?;
             Some(Box::new(provider))
         } else {
@@ -172,7 +172,7 @@ impl SendTransaction {
                 .await?;
             let provider = ProviderBuilder::new()
                 .wallet(signer.to_wallet())
-                .on_http(url);
+                .connect_http(url);
             Some(Box::new(provider))
         };
 

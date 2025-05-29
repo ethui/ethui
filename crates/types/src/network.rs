@@ -101,7 +101,7 @@ impl Network {
 
         ProviderBuilder::new()
             .disable_recommended_fillers()
-            .on_client(client)
+            .connect_client(client)
     }
 }
 
