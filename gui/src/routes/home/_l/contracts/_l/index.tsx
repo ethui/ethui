@@ -37,25 +37,22 @@ function Contracts() {
       <div className="flex flex-col gap-2 pt-2">
         {Array.from(contracts || []).map(
           ({ address, name, chainId, proxyChain }) => (
-            <div
-              key={address}
-              className="flex xs:flex-col flex-wrap hover:bg-accent sm:flex-col md:flex-row lg:flex-nowrap"
-            >
+            <div key={address} className="flex hover:bg-accent">
               <ContractHeader
                 contract={{ address, name, chainId, proxyChain }}
               />
               {(!pendingDeleteContract ||
                 pendingDeleteContract !== address) && (
-                <div className="flex flex-row items-start">
-                  <Button
-                    variant="ghost"
-                    className="h-13 w-12"
-                    onClick={() => startRemoveContract(address)}
-                  >
-                    <Trash2 />
-                  </Button>
-                </div>
-              )}
+                  <div className="flex flex-row items-start">
+                    <Button
+                      variant="ghost"
+                      className="h-13 w-12"
+                      onClick={() => startRemoveContract(address)}
+                    >
+                      <Trash2 />
+                    </Button>
+                  </div>
+                )}
 
               {pendingDeleteContract && pendingDeleteContract === address && (
                 <div className="flex items-center">
@@ -107,7 +104,7 @@ function ContractHeader({ contract }: { contract: OrganizedContract }) {
   const { address, name, chainId, proxyChain } = contract;
 
   return (
-    <div className="grow pr-32">
+    <div className="grow">
       <Link
         to="/home/contracts/$chainId/$address"
         params={{ address: address, chainId: chainId }}
