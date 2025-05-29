@@ -99,7 +99,7 @@ alloy = { version = "0.12", default-features = false, features = [
 alloy-chains = { version = "0.1", default-features = false, features = [
   "serde",
 ] }
-foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "v1.1.0" }
+foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "v1.2.1" }
 foundry-block-explorers = "0.13"
 url = { version = "2.5", features = ["serde"] }
 futures = { version = "0.3", default-features = false }
