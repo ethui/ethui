@@ -59,7 +59,7 @@ impl Evm {
 
         Ok(Result {
             gas_used: res.gas_used,
-            block_number: res.env.block.number.to(),
+            block_number: res.env.evm_env.block_env.number,
             success: !res.reverted,
             traces,
             logs: res.logs,
