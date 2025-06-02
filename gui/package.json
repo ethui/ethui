@@ -34,7 +34,7 @@
     "core-js": "^3.42.0",
     "lodash-es": "^4.17.21",
     "lucide-react": "^0.506.0",
-    "motion": "^12.6.2",
+    "motion": "^12.15.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-error-boundary": "^6.0.0",
