@@ -17,18 +17,9 @@ export const Route = createFileRoute("/home/_l/contracts/_l/")({
 
 function Contracts() {
   const [filter, setFilter] = useState("");
-  const [pendingDeleteContract, setPendingDeleteContract] = useState<
-    `0x${string}` | null
-  >(null);
   const contracts = useContracts(
     useShallow((s) => s.filteredContracts(filter)),
   );
-
-  const removeContract = useContracts((s) => s.removeContract);
-
-  const startRemoveContract = (address: Address) => {
-    setPendingDeleteContract(address);
-  };
 
   return (
     <>
@@ -37,47 +28,10 @@ function Contracts() {
       <div className="flex flex-col gap-2 pt-2">
         {Array.from(contracts || []).map(
           ({ address, name, chainId, proxyChain }) => (
-            <div
+            <ContractHeader
               key={address}
-              className="flex flex-wrap hover:bg-accent xl:flex-nowrap"
-            >
-              <ContractHeader
-                contract={{ address, name, chainId, proxyChain }}
-              />
-              {(!pendingDeleteContract ||
-                pendingDeleteContract !== address) && (
-                <div className="flex items-center">
-                  <Button
-                    variant="ghost"
-                    className="h-full w-full"
-                    onClick={() => startRemoveContract(address)}
-                  >
-                    <Trash2 />
-                  </Button>
-                </div>
-              )}
-
-              {pendingDeleteContract && pendingDeleteContract === address && (
-                <div className="flex items-center">
-                  <span className="flex whitespace-nowrap p-4 text-sm">
-                    Delete contract?
-                  </span>
-                  <Button
-                    className="flex h-10 w-12 p-4"
-                    onClick={() => removeContract(chainId, address)}
-                  >
-                    yes
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="flex h-full w-full text-sm hover:bg-transparent"
-                    onClick={() => setPendingDeleteContract(null)}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              )}
-            </div>
+              contract={{ address, name, chainId, proxyChain }}
+            />
           ),
         )}
       </div>
@@ -107,33 +61,84 @@ function ContractHeader({ contract }: { contract: OrganizedContract }) {
   const { address, name, chainId, proxyChain } = contract;
 
   return (
-    <div className="grow pr-32">
-      <Link
-        to="/home/contracts/$chainId/$address"
-        params={{ address: address, chainId: chainId }}
-        className="flex whitespace-nowrap p-4 align-baseline"
-      >
-        <div className="flex w-full items-center gap-2">
-          <AddressView address={address} />
+    <div className="group flex w-full flex-nowrap overflow-hidden hover:bg-accent">
+      <div className="mr-4 grow">
+        <Link
+          to="/home/contracts/$chainId/$address"
+          params={{ address: address, chainId: chainId }}
+          className="flex whitespace-nowrap p-4 align-baseline"
+        >
+          <div className="flex w-full items-center gap-2">
+            <AddressView address={address} />
 
-          <div className="flex items-center">
-            {name && (
-              <Badge key={address} variant="secondary">
-                {name}
-              </Badge>
-            )}
-
-            {proxyChain.map(({ address, name }) => (
-              <Fragment key={address}>
-                <MoveRight strokeWidth={1} size={16} />
+            <div className="flex items-center">
+              {name && (
                 <Badge key={address} variant="secondary">
-                  {name ? name : <AddressView address={address} noTextStyle />}
+                  {name}
                 </Badge>
-              </Fragment>
-            ))}
+              )}
+
+              {proxyChain.map(({ address, name }) => (
+                <Fragment key={address}>
+                  <MoveRight strokeWidth={1} size={16} />
+                  <Badge key={address} variant="secondary">
+                    {name ? (
+                      name
+                    ) : (
+                      <AddressView address={address} noTextStyle />
+                    )}
+                  </Badge>
+                </Fragment>
+              ))}
+            </div>
           </div>
-        </div>
-      </Link>
+        </Link>
+      </div>
+
+      <div className="flex min-w-[50px] items-center justify-end pr-2 group-hover:flex">
+        <DeleteContractButton address={address} chainId={chainId} />
+      </div>
     </div>
   );
+}
+
+interface DeleteContractButtonPropsProps {
+  address: Address;
+  chainId: number;
+}
+
+function DeleteContractButton({
+  address,
+  chainId,
+}: DeleteContractButtonPropsProps) {
+  const [deleting, setDeleting] = useState(false);
+  const removeContract = useContracts((s) => s.removeContract);
+
+  if (!deleting) {
+    return (
+      <Button
+        key="delete"
+        variant="ghost"
+        className="h-13 w-12"
+        onClick={() => setDeleting(true)}
+      >
+        <Trash2 />
+      </Button>
+    );
+  } else {
+    return (
+      <div className="flex items-center justify-stretch">
+        <Button
+          key="delete-confirm"
+          variant="destructive"
+          className="flex"
+          onClick={() => removeContract(chainId, address)}
+          onMouseOut={() => setDeleting(false)}
+          onBlur={() => setDeleting(false)}
+        >
+          Sure?
+        </Button>
+      </div>
+    );
+  }
 }
