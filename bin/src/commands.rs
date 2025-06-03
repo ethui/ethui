@@ -46,19 +46,27 @@ pub async fn add_contract(
     let code = provider.get_code_at(address).await?;
     let proxy = ethui_proxy_detect::detect_proxy(address, &provider).await?;
     let network_is_dev = network.is_dev().await;
+    let network_fork = network.get_forked_network().await;
 
-    let (name, abi) = if network_is_dev {
+    let (name, abi) = if network_is_dev && network_fork.is_none() {
         (None, None)
     } else {
         match proxy {
             // Eip1166 minimal proxies don't have an ABI, and etherscan actually returns the implementation's ABI in this case, which we don't want
             Some(ProxyType::Eip1167(_)) => (Some("EIP1167".to_string()), None),
-            _ => (
-                fetch_etherscan_contract_name(chain_id.into(), address).await?,
-                fetch_etherscan_abi(chain_id.into(), address)
-                    .await?
-                    .map(|abi| serde_json::to_string(&abi).unwrap()),
-            ),
+            _ => {
+                let chain_id = match network_fork {
+                    Some(network) => network.chain_id,
+                    None => chain_id,
+                };
+
+                (
+                    fetch_etherscan_contract_name(chain_id.into(), address).await?,
+                    fetch_etherscan_abi(chain_id.into(), address)
+                        .await?
+                        .map(|abi| serde_json::to_string(&abi).unwrap()),
+                )
+            }
         }
     };
 

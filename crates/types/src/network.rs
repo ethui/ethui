@@ -1,7 +1,7 @@
 use alloy::{
     network::Ethereum,
     providers::{ext::AnvilApi, ProviderBuilder, RootProvider},
-    rpc::client::ClientBuilder,
+    rpc::{client::ClientBuilder, types::anvil::ForkedNetwork},
     transports::{layers::RetryBackoffLayer, RpcError, TransportErrorKind},
 };
 use serde::{Deserialize, Serialize};
@@ -83,6 +83,11 @@ impl Network {
         let provider = self.get_alloy_provider().await.unwrap();
         // TODO cache node_info for entire chain
         self.chain_id() == 31337 || provider.anvil_node_info().await.is_ok()
+    }
+
+    pub async fn get_forked_network(&self) -> Option<ForkedNetwork> {
+        let provider = self.get_alloy_provider().await.unwrap();
+        provider.anvil_metadata().await.unwrap().forked_network
     }
 
     pub async fn get_alloy_provider(
