@@ -1,4 +1,4 @@
-import type { Address, Hash } from "viem";
+import type { Address } from "viem";
 
 export interface Token {
   contract: Address;
@@ -115,8 +115,3 @@ export type Affinity = { sticky: DedupChainId } | "global" | "unset";
 export type Result<T, E = Error> =
   | { ok: true; value: T }
   | { ok: false; error: E };
-
-export type WriteResponse = {
-  status: boolean;
-  hash: Hash;
-};

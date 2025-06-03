@@ -11,7 +11,7 @@ import debounce from "lodash-es/debounce";
 import { type FormEvent, useCallback, useEffect, useState } from "react";
 import { type Address, type Hash, decodeFunctionResult } from "viem";
 
-import type { Result, WriteResponse } from "@ethui/types";
+import type { Result } from "@ethui/types";
 import {
   Alert,
   AlertDescription,
@@ -150,21 +150,8 @@ function AbiItemFormWithSubmit({
           const result = await invoke<Hash>("rpc_eth_call", { params });
           setResult({ ok: true, value: { read: result } });
         } else {
-          const result = await invoke<WriteResponse>("rpc_send_transaction", {
-            params,
-          });
-
-          if (result.status && result.hash) {
-            setResult({ ok: true, value: { read: result.hash } });
-          }
-
-          if (!result.status && result.hash) {
-            setResult({ ok: false, error: "transaction reverted" });
-          }
-
-          if (!result.status && !result.hash) {
-            setResult({ ok: false, error: "failed to send transaction" });
-          }
+          const result = await invoke<Hash>("rpc_send_transaction", { params });
+          setResult({ ok: true, value: { write: result } });
         }
       } catch (_err) {
         setLoading(false);
