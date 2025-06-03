@@ -85,9 +85,11 @@ impl Network {
         self.chain_id() == 31337 || provider.anvil_node_info().await.is_ok()
     }
 
-    pub async fn get_forked_network(&self) -> Option<ForkedNetwork> {
+    pub async fn get_forked_network(
+        &self,
+    ) -> Result<Option<ForkedNetwork>, RpcError<TransportErrorKind>> {
         let provider = self.get_alloy_provider().await.unwrap();
-        provider.anvil_metadata().await.unwrap().forked_network
+        Ok(provider.anvil_metadata().await?.forked_network)
     }
 
     pub async fn get_alloy_provider(
