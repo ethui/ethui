@@ -23,7 +23,7 @@ import { useBalances } from "#/store/useBalances";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
 
-import type { Result, WriteResponse } from "@ethui/types";
+import type { Result } from "@ethui/types";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { Terminal } from "lucide-react";
 import type { Token } from "./-common";
@@ -128,24 +128,13 @@ function RouteComponent() {
 
   const onSubmit = async (data: Schema) => {
     try {
-      const result = await transferERC20(
+      const hash = await transferERC20(
         address,
         data.to as Address,
         data.value,
         currentToken.contract,
       );
-
-      if (result.status && result.hash) {
-        setResult({ ok: true, value: result.hash });
-      }
-
-      if (!result.status && result.hash) {
-        setResult({ ok: false, error: "transaction reverted" });
-      }
-
-      if (!result.status && !result.hash) {
-        setResult({ ok: false, error: "failed to send transaction" });
-      }
+      setResult({ ok: true, value: hash });
     } catch (e: any) {
       setResult({ ok: false, error: e.toString() });
     }
@@ -206,7 +195,7 @@ const transferERC20 = async (
     args: [to, value],
   });
 
-  return await invoke<WriteResponse>("rpc_send_transaction", {
+  return await invoke<`0x${string}`>("rpc_send_transaction", {
     params: {
       from,
       to: contract,

@@ -11,7 +11,7 @@ import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { type Abi, type Address, formatEther, formatGwei } from "viem";
 
-import type { PaginatedTx, Tx, WriteResponse } from "@ethui/types";
+import type { PaginatedTx, Tx } from "@ethui/types";
 import { BlockNumber } from "@ethui/ui/components/block-number";
 import {
   Accordion,
@@ -293,7 +293,7 @@ function Details({ tx, chainId }: DetailsProps) {
 }
 
 function resend({ from, to, value, data }: Tx) {
-  invoke<WriteResponse>("rpc_send_transaction", {
+  invoke<string>("rpc_send_transaction", {
     params: { from, to, value, data },
   });
 }
