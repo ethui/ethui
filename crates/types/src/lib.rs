@@ -1,6 +1,7 @@
 mod affinity;
 mod contracts;
 pub mod dedup_chain_id;
+mod error;
 pub mod events;
 mod global_state;
 mod network;

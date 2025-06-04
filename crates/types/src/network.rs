@@ -2,12 +2,12 @@ use alloy::{
     network::Ethereum,
     providers::{ext::AnvilApi, ProviderBuilder, RootProvider},
     rpc::{client::ClientBuilder, types::anvil::ForkedNetwork},
-    transports::{layers::RetryBackoffLayer, RpcError, TransportErrorKind},
+    transports::layers::RetryBackoffLayer,
 };
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-use crate::DedupChainId;
+use crate::{error::Result, DedupChainId};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Network {
@@ -85,20 +85,16 @@ impl Network {
         self.chain_id() == 31337 || provider.anvil_node_info().await.is_ok()
     }
 
-    pub async fn get_forked_network(
-        &self,
-    ) -> Result<Option<ForkedNetwork>, RpcError<TransportErrorKind>> {
-        let provider = self.get_alloy_provider().await.unwrap();
+    pub async fn get_forked_network(&self) -> Result<Option<ForkedNetwork>> {
+        let provider = self.get_alloy_provider().await?;
         Ok(provider.anvil_metadata().await?.forked_network)
     }
 
-    pub async fn get_alloy_provider(
-        &self,
-    ) -> Result<RootProvider<Ethereum>, RpcError<TransportErrorKind>> {
-        ProviderBuilder::new()
+    pub async fn get_alloy_provider(&self) -> Result<RootProvider<Ethereum>> {
+        Ok(ProviderBuilder::new()
             .disable_recommended_fillers()
             .connect(self.http_url.as_str())
-            .await
+            .await?)
     }
 
     pub fn get_provider(&self) -> RootProvider<Ethereum> {
