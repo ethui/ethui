@@ -1,9 +1,9 @@
-use alloy::transports::TransportErrorKind;
+use alloy::transports::{RpcError, TransportErrorKind};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error(transparent)]
-    TransportErrorKind(#[from] alloy::transports::RpcError<TransportErrorKind>),
+    Rpc(#[from] RpcError<TransportErrorKind>),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
