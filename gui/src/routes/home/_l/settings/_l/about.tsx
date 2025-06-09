@@ -1,5 +1,5 @@
-import { useInvoke } from "#/hooks/useInvoke";
 import { createFileRoute } from "@tanstack/react-router";
+import { useInvoke } from "#/hooks/useInvoke";
 
 export const Route = createFileRoute("/home/_l/settings/_l/about")({
   component: RouteComponent,
