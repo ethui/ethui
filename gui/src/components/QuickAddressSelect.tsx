@@ -32,7 +32,7 @@ export function QuickAddressSelect() {
       defaultValue={getCurrentPath(currentWallet, addresses)}
       onValueChange={setCurrentAddress}
     >
-      <SelectTrigger>
+      <SelectTrigger className="cursor-pointer">
         <SelectValue />
       </SelectTrigger>
 
