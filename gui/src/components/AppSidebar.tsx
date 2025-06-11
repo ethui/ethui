@@ -192,4 +192,5 @@ const settingsItems = [
   { title: "Network", url: "/home/settings/networks" },
   { title: "Foundry", url: "/home/settings/foundry" },
   { title: "Tokens", url: "/home/settings/tokens" },
+  { title: "About", url: "/home/settings/about" },
 ];
