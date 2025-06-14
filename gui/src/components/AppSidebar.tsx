@@ -62,8 +62,28 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
+        {open && (
+          <>
+            <SidebarGroup>
+              <div className="flex flex-col gap-y-2">
+                <div className="text-xs">Wallet</div>
+                <QuickWalletSelect />
+                <QuickAddressSelect />
+              </div>
+            </SidebarGroup>
+            <SidebarGroup>
+              <div className="flex flex-col gap-y-2">
+                <div className="text-xs">Network</div>
+                <QuickNetworkSelect />
+                <QuickFastModeToggle />
+              </div>
+            </SidebarGroup>
+          </>
+        )}
+
         <SidebarGroup>
           <SidebarGroupContent>
+            <div className="text-xs pb-2">Menu</div>
             <SidebarMenu>
               {showOnboarding && (
                 <CustomSidebarMenuItem
@@ -78,14 +98,14 @@ export function AppSidebar() {
                   {...item}
                   className={cn(
                     item.url === location.pathname &&
-                      "bg-primary text-accent hover:bg-primary hover:text-accent",
+                    "bg-primary text-accent hover:bg-primary hover:text-accent",
                   )}
                 />
               ))}
 
               <Collapsible className="group/collapsible">
                 <SidebarMenuItem>
-                  <CollapsibleTrigger asChild>
+                  <CollapsibleTrigger asChild className="cursor-pointer">
                     <SidebarMenuButton>
                       <Cog />
                       <span>Settings</span>
@@ -102,7 +122,7 @@ export function AppSidebar() {
                               to={item.url}
                               className={cn(
                                 item.url === location.pathname &&
-                                  "bg-primary text-accent hover:bg-primary hover:text-accent",
+                                "bg-primary text-accent hover:bg-primary hover:text-accent",
                               )}
                             >
                               {item.title}
@@ -117,17 +137,6 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-
-        {open && (
-          <SidebarGroup>
-            <div className="flex flex-col gap-y-3">
-              <QuickWalletSelect />
-              <QuickAddressSelect />
-              <QuickNetworkSelect />
-              <QuickFastModeToggle />
-            </div>
-          </SidebarGroup>
-        )}
       </SidebarContent>
 
       <SidebarFooter>
