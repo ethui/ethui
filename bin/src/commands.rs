@@ -48,7 +48,16 @@ pub async fn add_contract(
     let network_is_dev = network.is_dev().await;
 
     let (name, abi) = if network_is_dev {
-        (None, None)
+        let network_fork = network.get_forked_network().await;
+        match network_fork {
+            Ok(Some(fork)) => (
+                fetch_etherscan_contract_name(fork.chain_id.into(), address).await?,
+                fetch_etherscan_abi(fork.chain_id.into(), address)
+                    .await?
+                    .map(|abi| serde_json::to_string(&abi).unwrap()),
+            ),
+            _ => (None, None),
+        }
     } else {
         match proxy {
             // Eip1166 minimal proxies don't have an ABI, and etherscan actually returns the implementation's ABI in this case, which we don't want
