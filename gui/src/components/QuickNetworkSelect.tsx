@@ -20,7 +20,7 @@ export function QuickNetworkSelect() {
 
   return (
     <Select value={current.name} onValueChange={setCurrent}>
-      <SelectTrigger>
+      <SelectTrigger className="cursor-pointer">
         <SelectValue />
       </SelectTrigger>
 

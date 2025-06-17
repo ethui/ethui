@@ -28,7 +28,7 @@ export function QuickWalletSelect() {
       defaultValue={currentWallet.name}
       onValueChange={handleChange}
     >
-      <SelectTrigger>
+      <SelectTrigger className="cursor-pointer">
         <SelectValue />
       </SelectTrigger>
 
