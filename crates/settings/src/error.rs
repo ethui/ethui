@@ -14,6 +14,12 @@ pub enum Error {
 
     #[error(transparent)]
     Tracing(#[from] ethui_tracing::TracingError),
+
+    #[error(transparent)]
+    Reqwest(#[from] reqwest::Error),
+
+    #[error("Stacks auth error")]
+    StacksAuth,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

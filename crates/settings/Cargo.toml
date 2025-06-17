@@ -25,6 +25,7 @@ alloy.workspace = true
 foundry-block-explorers.workspace = true
 alloy-chains.workspace = true
 serde-constant.workspace = true
+reqwest.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true

@@ -1,7 +1,8 @@
 use ethui_types::{Address, GlobalState};
+use serde_json::json;
 
 use super::{DarkMode, Result, SerializedSettings, Settings};
-use crate::onboarding::OnboardingStep;
+use crate::{onboarding::OnboardingStep, Error};
 
 #[tauri::command]
 pub async fn settings_get() -> SerializedSettings {
@@ -63,4 +64,41 @@ pub async fn settings_onboarding_finish_step(id: OnboardingStep) -> Result<()> {
 #[tauri::command]
 pub async fn settings_onboarding_finish_all() -> Result<()> {
     Settings::write().await.finish_onboarding().await
+}
+
+#[tauri::command]
+pub async fn settings_stacks_auth_send_code(email: String) -> Result<()> {
+    let email = email.trim().to_owned();
+
+    dbg!(
+        reqwest::Client::new()
+            .post("https://api.stacks.ethui.dev/auth/send-code")
+            .json(&json!({ "email": email}))
+            .send()
+            .await
+    )?;
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn settings_stacks_auth_verify_code(
+    email: String,
+    code: String,
+) -> Result<serde_json::Value> {
+    let email = email.trim().to_owned();
+
+    let resp = reqwest::Client::new()
+        .post("https://api.stacks.ethui.dev/auth/verify-code")
+        .json(&json!({ "email": email, "code": code}))
+        .send()
+        .await?;
+
+    let body = resp.json::<serde_json::Value>().await?;
+    dbg!(&body);
+    let jwt = body["token"].as_str().ok_or(Error::StacksAuth)?.to_owned();
+
+    Settings::write().await.set_stacks(email, jwt).await?;
+
+    Ok(body)
 }
