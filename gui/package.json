@@ -15,7 +15,6 @@
   },
   "dependencies": {
     "@ethui/data": "*",
-    "@ethui/form": "*",
     "@ethui/types": "*",
     "@ethui/ui": "^0.0.75",
     "@fontsource/source-code-pro": "^5.2.5",
