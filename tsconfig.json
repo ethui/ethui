@@ -24,9 +24,5 @@
     "types": ["node"]
   },
   "files": [],
-  "references": [
-    { "path": "./gui" },
-    { "path": "./packages/form" },
-    { "path": "./packages/abiparse" }
-  ]
+  "references": [{ "path": "./gui" }]
 }
