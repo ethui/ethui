@@ -83,7 +83,7 @@ export function AppSidebar() {
 
         <SidebarGroup>
           <SidebarGroupContent>
-            <div className="text-xs pb-2">Menu</div>
+            <div className="pb-2 text-xs">Menu</div>
             <SidebarMenu>
               {showOnboarding && (
                 <CustomSidebarMenuItem
@@ -98,7 +98,7 @@ export function AppSidebar() {
                   {...item}
                   className={cn(
                     item.url === location.pathname &&
-                    "bg-primary text-accent hover:bg-primary hover:text-accent",
+                      "bg-primary text-accent hover:bg-primary hover:text-accent",
                   )}
                 />
               ))}
@@ -122,7 +122,7 @@ export function AppSidebar() {
                               to={item.url}
                               className={cn(
                                 item.url === location.pathname &&
-                                "bg-primary text-accent hover:bg-primary hover:text-accent",
+                                  "bg-primary text-accent hover:bg-primary hover:text-accent",
                               )}
                             >
                               {item.title}
