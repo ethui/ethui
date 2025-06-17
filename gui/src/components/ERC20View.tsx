@@ -1,15 +1,14 @@
+import { Button } from "@ethui/ui/components/shadcn/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@ethui/ui/components/shadcn/dropdown-menu";
-import { invoke } from "@tauri-apps/api/core";
-import { type Address, formatUnits } from "viem";
-
-import { Button } from "@ethui/ui/components/shadcn/button";
 import { ArrowTopRightIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
 import { Link } from "@tanstack/react-router";
+import { invoke } from "@tauri-apps/api/core";
+import { type Address, formatUnits } from "viem";
 import { useNetworks } from "#/store/useNetworks";
 import { AddressView } from "./AddressView";
 import { IconAddress } from "./Icons/Address";

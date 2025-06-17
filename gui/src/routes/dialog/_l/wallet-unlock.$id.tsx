@@ -1,11 +1,10 @@
+import { Form } from "@ethui/ui/components/form";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
-
-import { Form } from "@ethui/ui/components/form";
-import { Button } from "@ethui/ui/components/shadcn/button";
 import { useDialog } from "#/hooks/useDialog";
 
 export const Route = createFileRoute("/dialog/_l/wallet-unlock/$id")({

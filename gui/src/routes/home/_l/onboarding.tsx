@@ -2,7 +2,7 @@ import type { OnboardingStepKey } from "@ethui/types/settings";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { Progress } from "@ethui/ui/components/shadcn/progress";
 import { cn } from "@ethui/ui/lib/utils";
-import { Link, createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { Check, ChevronRight, Globe, RefreshCcw, Wallet } from "lucide-react";
 import { useEffect } from "react";

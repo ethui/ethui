@@ -1,9 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-
 import { HighlightBox } from "@ethui/ui/components/highlight-box";
-import { ScrollArea } from "@ethui/ui/components/shadcn/scroll-area";
-
 import { Button } from "@ethui/ui/components/shadcn/button";
+import { ScrollArea } from "@ethui/ui/components/shadcn/scroll-area";
+import { createFileRoute } from "@tanstack/react-router";
 import { type Hex, hexToString } from "viem";
 import { Json } from "#/components/JsonView";
 import { useDialog } from "#/hooks/useDialog";

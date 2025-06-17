@@ -1,9 +1,8 @@
+import type { ErcFullData } from "@ethui/types";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import { createFileRoute } from "@tanstack/react-router";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { isDirty, isValid } from "zod";
-
-import type { ErcFullData } from "@ethui/types";
-import { Button } from "@ethui/ui/components/shadcn/button";
 import { AddressView } from "#/components/AddressView";
 import { Datapoint } from "#/components/Datapoint";
 import { useDialog } from "#/hooks/useDialog";

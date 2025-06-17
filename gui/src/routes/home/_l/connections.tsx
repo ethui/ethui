@@ -1,9 +1,3 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { invoke } from "@tauri-apps/api/core";
-import { map } from "lodash-es";
-import { useEffect, useState } from "react";
-import { useShallow } from "zustand/shallow";
-
 import type { Affinity, Peer } from "@ethui/types";
 import type { Network } from "@ethui/types/network";
 import { ChainView } from "@ethui/ui/components/chain-view";
@@ -15,6 +9,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@ethui/ui/components/shadcn/select";
+import { createFileRoute } from "@tanstack/react-router";
+import { invoke } from "@tauri-apps/api/core";
+import { map } from "lodash-es";
+import { useEffect, useState } from "react";
+import { useShallow } from "zustand/shallow";
 import { useEventListener } from "#/hooks/useEventListener";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";

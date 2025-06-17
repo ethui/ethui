@@ -1,6 +1,6 @@
 import { Lexer as ChevrotainLexer, CstParser, createToken } from "chevrotain";
 
-import { type TEthUnit, ethUnitRegex, parseIntWithUnit } from "./src/utils";
+import { ethUnitRegex, parseIntWithUnit, type TEthUnit } from "./src/utils";
 
 const int = createToken({ name: "int", pattern: /-?\d+/ });
 const ethUnit = createToken({
@@ -20,7 +20,7 @@ const quotedStr = createToken({
 });
 const unquotedStr = createToken({
   name: "unquotedStr",
-  pattern: /[^\[\]\",]+/,
+  pattern: /[^[\]",]+/,
 });
 
 const whitespace = createToken({

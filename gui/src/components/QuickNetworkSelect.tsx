@@ -1,3 +1,4 @@
+import { ChainView } from "@ethui/ui/components/chain-view";
 import {
   Select,
   SelectContent,
@@ -7,8 +8,6 @@ import {
   SelectValue,
 } from "@ethui/ui/components/shadcn/select";
 import { useShallow } from "zustand/shallow";
-
-import { ChainView } from "@ethui/ui/components/chain-view";
 import { useNetworks } from "#/store/useNetworks";
 
 export function QuickNetworkSelect() {

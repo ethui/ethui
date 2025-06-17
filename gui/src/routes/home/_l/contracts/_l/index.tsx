@@ -1,13 +1,12 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
-import debounce from "lodash-es/debounce";
-import { Fragment, useState } from "react";
-import { useShallow } from "zustand/shallow";
-
 import { Badge } from "@ethui/ui/components/shadcn/badge";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { Input } from "@ethui/ui/components/shadcn/input";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import debounce from "lodash-es/debounce";
 import { MoveRight, Plus, Trash2 } from "lucide-react";
+import { Fragment, useState } from "react";
 import type { Address } from "viem";
+import { useShallow } from "zustand/shallow";
 import { AddressView } from "#/components/AddressView";
 import { type OrganizedContract, useContracts } from "#/store/useContracts";
 

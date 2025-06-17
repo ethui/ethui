@@ -1,11 +1,10 @@
+import type { Contract, DedupChainId } from "@ethui/types";
+import { toast } from "@ethui/ui/hooks/use-toast";
 import { event } from "@tauri-apps/api";
 import { invoke } from "@tauri-apps/api/core";
 import type { Address } from "viem";
-import { type StateCreator, create } from "zustand";
+import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
-
-import type { Contract, DedupChainId } from "@ethui/types";
-import { toast } from "@ethui/ui/hooks/use-toast";
 import { useNetworks } from "./useNetworks";
 
 interface State {

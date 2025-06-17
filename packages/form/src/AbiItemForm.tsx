@@ -1,10 +1,9 @@
 import { Alert, AlertDescription } from "@ethui/ui/components/shadcn/alert";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import { AlertCircle } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { type AbiFunction, parseAbiItem } from "viem";
 import { encodeFunctionData } from "viem/utils";
-
-import { Button } from "@ethui/ui/components/shadcn/button";
 import { AbiInput } from "./AbiInput";
 import { decodeDefaultArgs } from "./utils";
 

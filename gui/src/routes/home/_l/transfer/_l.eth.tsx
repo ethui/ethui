@@ -8,6 +8,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
+import { Terminal } from "lucide-react";
 import { useEffect, useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { type Address, ethAddress, formatUnits } from "viem";
@@ -16,8 +17,6 @@ import { useShallow } from "zustand/shallow";
 import { useBalances } from "#/store/useBalances";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
-
-import { Terminal } from "lucide-react";
 import type { Token } from "./-common";
 
 export interface Params {

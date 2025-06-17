@@ -1,3 +1,4 @@
+import type { Result } from "@ethui/types";
 import { addressSchema } from "@ethui/types/wallets";
 import { Form } from "@ethui/ui/components/form";
 import {
@@ -7,7 +8,9 @@ import {
 } from "@ethui/ui/components/shadcn/alert";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { zodValidator } from "@tanstack/zod-adapter";
 import { invoke } from "@tauri-apps/api/core";
+import { Terminal } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
@@ -22,10 +25,6 @@ import { useShallow } from "zustand/shallow";
 import { useBalances } from "#/store/useBalances";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
-
-import type { Result } from "@ethui/types";
-import { zodValidator } from "@tanstack/zod-adapter";
-import { Terminal } from "lucide-react";
 import type { Token } from "./-common";
 
 export interface Params {

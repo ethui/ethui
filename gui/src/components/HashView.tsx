@@ -1,14 +1,13 @@
+import { ClickToCopy } from "@ethui/ui/components/click-to-copy";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@ethui/ui/components/shadcn/context-menu";
+import { Link } from "@tanstack/react-router";
 import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
 import type { Hash } from "viem";
-
-import { ClickToCopy } from "@ethui/ui/components/click-to-copy";
-import { Link } from "@tanstack/react-router";
 import { useNetworks } from "#/store/useNetworks";
 import { truncateHex } from "#/utils";
 

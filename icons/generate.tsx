@@ -1,7 +1,6 @@
 import fs from "node:fs";
 import { EthuiLogo } from "@ethui/ui/components/ethui-logo";
 import { $ } from "bun";
-import React from "react";
 import ReactDOMServer from "react-dom/server";
 
 const AllColors = {

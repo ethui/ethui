@@ -1,9 +1,8 @@
 import type { GeneralSettings } from "@ethui/types/settings";
 import { useInvoke } from "#/hooks/useInvoke";
-import { ERC20View } from "./ERC20View";
-
 import { useBalances } from "#/store/useBalances";
 import { useNetworks } from "#/store/useNetworks";
+import { ERC20View } from "./ERC20View";
 
 export function BalancesList() {
   return (

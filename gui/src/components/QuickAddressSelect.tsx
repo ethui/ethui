@@ -1,3 +1,4 @@
+import type { Wallet } from "@ethui/types/wallets";
 import {
   Select,
   SelectContent,
@@ -9,8 +10,6 @@ import {
 import { map } from "lodash-es";
 import { type Address, getAddress } from "viem";
 import { useShallow } from "zustand/shallow";
-
-import type { Wallet } from "@ethui/types/wallets";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useWallets } from "#/store/useWallets";
 import { AddressView } from "./AddressView";

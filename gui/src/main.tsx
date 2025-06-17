@@ -1,9 +1,9 @@
 import "./main.css";
 
 import {
-  RouterProvider,
   createHashHistory,
   createRouter,
+  RouterProvider,
 } from "@tanstack/react-router";
 import React from "react";
 

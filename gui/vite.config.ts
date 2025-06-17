@@ -96,7 +96,6 @@ const muteWarningsPlugin = (warningsToIgnore: string[][]): any => {
         this.warn(
           "Some of your muted warnings never appeared during the build process:",
         );
-        // biome-ignore lint/complexity/noForEach: <explanation>
         diff.forEach((m) => this.warn(`- ${m.join(": ")}`));
       }
     },
