@@ -57,26 +57,24 @@ export function ArrayInput({
           Expanded
         </Button>
       </div>
-      <>
-        {tab === "text" && (
-          <Basic
-            {...{ ...rest, label, type, defaultValue: value }}
+      {tab === "text" && (
+        <Basic
+          {...{ ...rest, label, type, defaultValue: value }}
+          onChange={onChange}
+        />
+      )}
+      {tab === "expanded" && (
+        <div className="border-bg-secondary border-l-2 border-solid pl-1">
+          <ArrayElements
+            {...{
+              ...rest,
+              elemType: `${baseType}${subArrays}`,
+              defaultValue: value,
+            }}
             onChange={onChange}
           />
-        )}
-        {tab === "expanded" && (
-          <div className="border-bg-secondary border-l-2 border-solid pl-1">
-            <ArrayElements
-              {...{
-                ...rest,
-                elemType: `${baseType}${subArrays}`,
-                defaultValue: value,
-              }}
-              onChange={onChange}
-            />
-          </div>
-        )}
-      </>
+        </div>
+      )}
     </div>
   );
 }

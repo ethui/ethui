@@ -103,8 +103,6 @@ function Txs() {
   console.log(items.length);
   useEventListener("txs-updated", loadNew);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies(account): used only to trigger effect
-  // biome-ignore lint/correctness/useExhaustiveDependencies(chainId): used only to trigger effect
   useEffect(() => {
     setItems([]);
     setHasMore(true);

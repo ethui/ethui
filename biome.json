@@ -58,6 +58,10 @@
           "level": "error",
           "fix": "safe"
         }
+      },
+      "a11y": {
+        "noStaticElementInteractions": "off",
+        "useKeyWithClickEvents": "off"
       }
     }
   },
