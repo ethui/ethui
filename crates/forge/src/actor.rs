@@ -8,10 +8,7 @@ use alloy::primitives::Bytes;
 use ethui_types::UINotify;
 use futures::{stream, StreamExt as _};
 use glob::glob;
-use kameo::{
-    actor::ActorRef, error::BoxError, mailbox::bounded::BoundedMailbox, message::Message,
-    request::TryMessageSend as _, Actor,
-};
+use kameo::{actor::ActorRef, message::Message, Actor};
 use notify::{RecommendedWatcher, RecursiveMode};
 use notify_debouncer_full::{
     new_debouncer, DebounceEventResult, DebouncedEvent, Debouncer, RecommendedCache,
@@ -45,7 +42,7 @@ impl Message<Msg> for Worker {
     async fn handle(
         &mut self,
         msg: Msg,
-        _ctx: kameo::message::Context<'_, Self, Self::Reply>,
+        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
     ) -> Self::Reply {
         match msg {
             Msg::UpdateRoots(roots) => {
@@ -69,7 +66,7 @@ impl Message<Vec<DebouncedEvent>> for Worker {
     async fn handle(
         &mut self,
         events: Vec<DebouncedEvent>,
-        _ctx: kameo::message::Context<'_, Self, Self::Reply>,
+        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
     ) -> Self::Reply {
         trace!("process_debounced_events");
         for debounced in events.into_iter() {
@@ -92,7 +89,7 @@ impl Message<UpdateContracts> for Worker {
     async fn handle(
         &mut self,
         _msg: UpdateContracts,
-        _ctx: kameo::message::Context<'_, Self, Self::Reply>,
+        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
     ) -> Self::Reply {
         self.update_contracts_triggers -= 1;
 
@@ -159,19 +156,19 @@ impl Message<FetchAbis> for Worker {
     async fn handle(
         &mut self,
         _msg: FetchAbis,
-        _ctx: kameo::message::Context<'_, Self, Self::Reply>,
+        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
     ) -> Self::Reply {
         self.abis_by_path.clone().into_values().collect()
     }
 }
 
 impl Actor for Worker {
-    type Mailbox = BoundedMailbox<Self>;
+    type Error = crate::error::Error;
 
     async fn on_start(
         &mut self,
         actor_ref: kameo::actor::ActorRef<Self>,
-    ) -> std::result::Result<(), BoxError> {
+    ) -> std::result::Result<(), Self::Error> {
         self.self_ref = Some(actor_ref.clone());
 
         let debounced_watcher = new_debouncer(
@@ -233,8 +230,7 @@ impl Worker {
             .as_ref()
             .unwrap()
             .tell(Msg::PollFoundryRoots)
-            .try_send()
-            .await?;
+            .try_send()?;
 
         Ok(())
     }
@@ -242,7 +238,7 @@ impl Worker {
     async fn trigger_update_contracts(&mut self) {
         self.update_contracts_triggers += 1;
         if let Some(r) = &self.self_ref {
-            let _ = r.tell(UpdateContracts).try_send().await;
+            let _ = r.tell(UpdateContracts).try_send();
         }
     }
 
