@@ -1,8 +1,7 @@
+import type { GeneralSettings } from "@ethui/types/settings";
 import { event } from "@tauri-apps/api";
 import { invoke } from "@tauri-apps/api/core";
-import { type StateCreator, create } from "zustand";
-
-import type { GeneralSettings } from "@ethui/types/settings";
+import { create, type StateCreator } from "zustand";
 
 interface Store {
   mode: "auto" | "light" | "dark";

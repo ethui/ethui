@@ -1,28 +1,26 @@
+import { ClickToCopy } from "@ethui/ui/components/click-to-copy";
+import { Form } from "@ethui/ui/components/form";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@ethui/ui/components/shadcn/context-menu";
-import { cn } from "@ethui/ui/lib/utils";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { invoke } from "@tauri-apps/api/core";
-import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
-import { useState } from "react";
-import { type FieldValues, useForm } from "react-hook-form";
-import { type Address, getAddress } from "viem";
-import { z } from "zod";
-
-import { Form } from "@ethui/ui/components/form";
-
-import { ClickToCopy } from "@ethui/ui/components/click-to-copy";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@ethui/ui/components/shadcn/dialog";
+import { cn } from "@ethui/ui/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "@tanstack/react-router";
+import { invoke } from "@tauri-apps/api/core";
+import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
+import { useState } from "react";
+import { type FieldValues, useForm } from "react-hook-form";
+import { type Address, getAddress } from "viem";
+import { z } from "zod";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { truncateHex } from "#/utils";

@@ -1,13 +1,3 @@
-import {
-  type Dispatch,
-  type ReactNode,
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import { useShallow } from "zustand/shallow";
-
 import { ChainView } from "@ethui/ui/components/chain-view";
 import {
   CommandDialog,
@@ -18,6 +8,15 @@ import {
   CommandList,
 } from "@ethui/ui/components/shadcn/command";
 import { ChevronRight } from "lucide-react";
+import {
+  createContext,
+  type Dispatch,
+  type ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { useShallow } from "zustand/shallow";
 import { useNetworks } from "#/store/useNetworks";
 import { useSettings } from "#/store/useSettings";
 import { useTheme } from "#/store/useTheme";

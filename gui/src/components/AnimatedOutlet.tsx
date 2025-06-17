@@ -1,9 +1,10 @@
 import {
-  Outlet,
   getRouterContext,
+  Outlet,
   useMatch,
   useMatches,
 } from "@tanstack/react-router";
+import cloneDeep from "lodash-es/cloneDeep";
 import {
   AnimatePresence,
   cubicBezier,
@@ -11,8 +12,6 @@ import {
   useIsPresent,
 } from "motion/react";
 import { forwardRef, useContext, useRef } from "react";
-
-import cloneDeep from "lodash-es/cloneDeep";
 
 const exit = { opacity: 0.0, scale: 0.99 };
 

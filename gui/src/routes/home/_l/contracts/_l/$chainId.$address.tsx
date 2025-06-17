@@ -7,7 +7,9 @@ export const Route = createFileRoute("/home/_l/contracts/_l/$chainId/$address")(
     beforeLoad: ({ params }) => ({ breadcrumb: params.address }),
     loader: ({
       params,
-    }: { params: { chainId: number; address: Address } }) => ({
+    }: {
+      params: { chainId: number; address: Address };
+    }) => ({
       chainId: Number(params.chainId),
       address: getAddress(params.address),
     }),

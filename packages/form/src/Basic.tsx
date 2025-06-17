@@ -1,9 +1,7 @@
+import { parse } from "@ethui/abiparse";
 import { Input } from "@ethui/ui/components/shadcn/input";
 import { useCallback, useState } from "react";
-
 import type { InnerProps } from "./AbiInput";
-
-import { parse } from "@ethui/abiparse";
 import { Debug, stringify } from "./utils";
 
 export type BasicProps = Omit<InnerProps, "depth" | "type" | "label">;

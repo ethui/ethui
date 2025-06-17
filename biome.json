@@ -1,20 +1,21 @@
 {
   "files": {
-    "ignore": [
-      ".sqlx",
-      ".direnv",
-      ".pnp.cjs",
-      ".pnp.loader.mjs",
-      "**/*.gen.ts",
-      "**/package.json",
-      "packages/data/**/*.json",
-      "packages/**/dist/**",
-      "packages/**/*.generated.ts",
-      "gui/dist",
-      "gui/vite.config.ts.timestamp-*",
-      "dev-data",
-      "bin/gen",
-      "target"
+    "includes": [
+      "**",
+      "!**/.sqlx",
+      "!**/.direnv",
+      "!**/.pnp.cjs",
+      "!**/.pnp.loader.mjs",
+      "!**/*.gen.ts",
+      "!**/package.json",
+      "!**/packages/data/**/*.json",
+      "!**/packages/**/dist/**",
+      "!**/packages/**/*.generated.ts",
+      "!**/gui/dist",
+      "!**/gui/vite.config.ts.timestamp-*",
+      "!**/dev-data",
+      "!**/bin/gen",
+      "!**/target"
     ]
   },
   "formatter": {
@@ -30,7 +31,16 @@
       },
       "style": {
         "noUselessElse": "off",
-        "noNonNullAssertion": "off"
+        "noNonNullAssertion": "off",
+        "noParameterAssign": "error",
+        "useAsConstAssertion": "error",
+        "useDefaultParameterLast": "error",
+        "useEnumInitializers": "error",
+        "useSelfClosingElements": "error",
+        "useSingleVarDeclarator": "error",
+        "noUnusedTemplateLiteral": "error",
+        "useNumberNamespace": "error",
+        "noInferrableTypes": "error"
       },
       "performance": {
         "noAccumulatingSpread": "error",

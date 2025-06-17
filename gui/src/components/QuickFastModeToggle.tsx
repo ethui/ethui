@@ -1,7 +1,6 @@
-import { invoke } from "@tauri-apps/api/core";
-
 import { Form } from "@ethui/ui/components/form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { invoke } from "@tauri-apps/api/core";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";

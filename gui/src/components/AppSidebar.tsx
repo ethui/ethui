@@ -158,7 +158,12 @@ function CustomSidebarMenuItem({
   icon,
   title,
   className = "",
-}: { url: string; icon: React.ReactNode; title: string; className?: string }) {
+}: {
+  url: string;
+  icon: React.ReactNode;
+  title: string;
+  className?: string;
+}) {
   return (
     <SidebarMenuItem key={title}>
       <SidebarMenuButton asChild>
