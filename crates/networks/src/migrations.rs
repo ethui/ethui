@@ -5,13 +5,14 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use color_eyre::Result;
 use ethui_types::Network;
 use serde::{Deserialize, Serialize};
 use serde_constant::ConstI64;
 use serde_json::json;
 use url::Url;
 
-use crate::{Networks, Result, SerializedNetworks};
+use crate::{Networks, SerializedNetworks};
 
 pub type LatestVersion = ConstI64<3>;
 

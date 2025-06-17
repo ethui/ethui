@@ -1,18 +1,19 @@
 use std::path::PathBuf;
 
+use color_eyre::Result;
 use ethui_args::Args;
 use ethui_broadcast::UIMsg;
 use ethui_types::GlobalState as _;
 use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
 
-use crate::{commands, error::AppResult, menu, system_tray, windows};
+use crate::{commands, menu, system_tray, windows};
 
 pub struct EthUIApp {
     app: tauri::App,
 }
 
 impl EthUIApp {
-    pub async fn build(args: &ethui_args::Args) -> AppResult<Self> {
+    pub async fn build(args: &ethui_args::Args) -> Result<Self> {
         let builder = Builder::default()
             .invoke_handler(tauri::generate_handler![
                 commands::get_build_mode,
@@ -117,7 +118,7 @@ impl EthUIApp {
 }
 
 /// Initialization logic
-async fn init(app: &tauri::App, args: &Args) -> AppResult<()> {
+async fn init(app: &tauri::App, args: &Args) -> Result<()> {
     let db = ethui_db::init(&resource(app, "db.sqlite3", args)).await?;
     app.manage(db.clone());
 

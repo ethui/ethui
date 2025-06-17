@@ -1,4 +1,5 @@
 mod affinity;
+mod command_error;
 mod contracts;
 pub mod dedup_chain_id;
 pub mod events;
@@ -31,3 +32,4 @@ pub struct SyncUpdates {
     pub native_balance: Option<U256>,
     pub tip: Option<u64>,
 }
+pub use command_error::{CommandError, CommandResult};

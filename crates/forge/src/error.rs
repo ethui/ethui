@@ -24,11 +24,6 @@ pub enum Error {
     #[error("invalid chain ID")]
     InvalidChainId,
 
-    //#[error(transparent)]
-    //WatcherSendError(#[from] tokio::sync::mpsc::error::SendError<WatcherMsg>),
-    #[error(transparent)]
-    Network(#[from] ethui_networks::Error),
-
     #[error(transparent)]
     Rpc(#[from] RpcError<TransportErrorKind>),
 
@@ -55,6 +50,9 @@ pub enum Error {
 
     #[error(transparent)]
     ActorCall(#[from] kameo::error::SendError<FetchAbis>),
+
+    #[error(transparent)]
+    Other(#[from] color_eyre::Report),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

@@ -58,9 +58,10 @@ ethui-broadcast = { path = "crates/broadcast" }
 ethui-tracing = { path = "crates/tracing" }
 ethui-args = { path = "crates/args" }
 ethui-token-list = { path = "crates/token-list" }
-ethui-proxy-detect = { git = "https://github.com/ethui/proxy-detect", rev = "c0db91a"}
+ethui-proxy-detect = { git = "https://github.com/ethui/proxy-detect", rev = "c0db91a" }
 tokio = { version = "1.45", features = ["rt-multi-thread", "sync"] }
 thiserror = "2.0"
+color-eyre = "0.6"
 sqlx = { version = "0.8", default-features = false, features = [
   "macros",
   "runtime-tokio-rustls",

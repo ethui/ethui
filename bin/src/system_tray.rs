@@ -1,12 +1,11 @@
+use color_eyre::Result;
 use tauri::{
     menu::{MenuBuilder, MenuEvent, MenuItemBuilder},
     tray::TrayIconBuilder,
     AppHandle, Manager,
 };
 
-use crate::AppResult;
-
-pub(crate) fn build(app: &AppHandle) -> AppResult<()> {
+pub(crate) fn build(app: &AppHandle) -> Result<()> {
     let menu_builder = MenuBuilder::new(app);
 
     let menu = menu_builder

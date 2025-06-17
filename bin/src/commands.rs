@@ -1,12 +1,11 @@
 use alloy::providers::Provider as _;
+use color_eyre::eyre::eyre;
 use ethui_db::{
     utils::{fetch_etherscan_abi, fetch_etherscan_contract_name},
     Db,
 };
 use ethui_proxy_detect::ProxyType;
-use ethui_types::{Address, GlobalState, UINotify};
-
-use crate::error::{AppError, AppResult};
+use ethui_types::{Address, CommandResult, GlobalState, UINotify};
 
 #[tauri::command]
 pub fn get_build_mode() -> String {
@@ -23,10 +22,8 @@ pub fn get_version() -> String {
 }
 
 #[tauri::command]
-pub async fn ui_error(message: String, _stack: Option<Vec<String>>) -> AppResult<()> {
+pub async fn ui_error(message: String, _stack: Option<Vec<String>>) {
     tracing::error!(error_type = "UI Error", message = message);
-
-    Ok(())
 }
 
 #[tauri::command]
@@ -35,16 +32,27 @@ pub async fn add_contract(
     dedup_id: i64,
     address: Address,
     db: tauri::State<'_, Db>,
-) -> AppResult<()> {
+) -> CommandResult<()> {
     let networks = ethui_networks::Networks::read().await;
 
     let network = networks
         .get_network(chain_id as u32)
-        .ok_or(AppError::InvalidNetwork(chain_id as u32))?;
-    let provider = network.get_alloy_provider().await?;
+        .ok_or_else(|| eyre!("Invalid network {chain_id}"))?;
 
-    let code = provider.get_code_at(address).await?;
-    let proxy = ethui_proxy_detect::detect_proxy(address, &provider).await?;
+    let provider = network
+        .get_alloy_provider()
+        .await
+        .map_err(|e| eyre!("{}", e.to_string()))?; // TODO
+
+    let code = provider
+        .get_code_at(address)
+        .await
+        .map_err(|e| eyre!(e.to_string()))?; // TODO
+                                             //
+    let proxy = ethui_proxy_detect::detect_proxy(address, &provider)
+        .await
+        .map_err(|e| eyre!(e.to_string()))?; // TOF;DO
+                                             //
     let network_is_dev = network.is_dev().await;
 
     let (name, abi) = if network_is_dev {
@@ -54,9 +62,12 @@ pub async fn add_contract(
             // Eip1166 minimal proxies don't have an ABI, and etherscan actually returns the implementation's ABI in this case, which we don't want
             Some(ProxyType::Eip1167(_)) => (Some("EIP1167".to_string()), None),
             _ => (
-                fetch_etherscan_contract_name(chain_id.into(), address).await?,
+                fetch_etherscan_contract_name(chain_id.into(), address)
+                    .await
+                    .map_err(|e| eyre!(e.to_string()))?, // TODO
                 fetch_etherscan_abi(chain_id.into(), address)
-                    .await?
+                    .await
+                    .map_err(|e| eyre!(e.to_string()))? // TODO
                     .map(|abi| serde_json::to_string(&abi).unwrap()),
             ),
         }
@@ -72,7 +83,8 @@ pub async fn add_contract(
         name,
         proxy_for,
     )
-    .await?;
+    .await
+    .map_err(|e| eyre!(e.to_string()))?; // TODO
 
     if let Some(proxy_for) = proxy_for {
         Box::pin(add_contract(chain_id, dedup_id, proxy_for, db)).await
@@ -88,10 +100,12 @@ pub async fn remove_contract(
     dedup_id: i32,
     address: Address,
     db: tauri::State<'_, Db>,
-) -> AppResult<()> {
+) -> CommandResult<()> {
     let has_proxy = db.get_proxy(chain_id, dedup_id, address).await;
 
-    db.remove_contract(chain_id, dedup_id, address).await?;
+    db.remove_contract(chain_id, dedup_id, address)
+        .await
+        .map_err(|e| eyre!(e.to_string()))?; // TODO
 
     if let Some(proxy_for) = has_proxy {
         Box::pin(remove_contract(chain_id, dedup_id, proxy_for, db)).await?;

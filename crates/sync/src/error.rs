@@ -6,7 +6,7 @@ pub enum Error {
     InvalidNetwork(u32),
 
     #[error(transparent)]
-    Network(#[from] ethui_networks::Error),
+    Other(#[from] color_eyre::Report),
 
     #[error(transparent)]
     Provider(#[from] RpcError<TransportErrorKind>),

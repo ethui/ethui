@@ -32,7 +32,7 @@ pub enum Error {
     EthuiWallets(#[from] ethui_wallets::Error),
 
     #[error(transparent)]
-    Network(#[from] ethui_networks::Error),
+    Other(#[from] color_eyre::Report),
 
     #[error(transparent)]
     JsonRpc(#[from] jsonrpc_core::Error),

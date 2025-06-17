@@ -1,5 +1,4 @@
 pub mod commands;
-mod error;
 mod init;
 mod migrations;
 
@@ -13,12 +12,11 @@ use alloy::{
     network::Ethereum,
     providers::{Provider, ProviderBuilder, RootProvider},
 };
+use color_eyre::{eyre::eyre, Result};
 use ethui_types::{Affinity, DedupChainId, Network, NewNetworkParams, UINotify};
 pub use init::init;
 use migrations::LatestVersion;
 use serde::{Deserialize, Serialize};
-
-pub use self::error::{Error, Result};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct SerializedNetworks {
@@ -133,7 +131,7 @@ impl Networks {
 
     pub async fn add_network(&mut self, network: NewNetworkParams) -> Result<()> {
         if self.inner.networks.contains_key(&network.name) {
-            return Err(Error::AlreadyExists);
+            return Err(eyre!("network already exists"));
         }
 
         let deduplication_id = self.get_chain_id_count(network.dedup_chain_id.chain_id());
@@ -144,7 +142,7 @@ impl Networks {
                 .get_network_by_dedup_chain_id(network.dedup_chain_id())
                 .is_some()
         {
-            return Err(Error::AlreadyExists);
+            return Err(eyre!("network already exists"));
         }
 
         self.inner
@@ -160,7 +158,7 @@ impl Networks {
 
     pub async fn update_network(&mut self, old_name: &str, network: Network) -> Result<()> {
         if network.name != old_name && self.inner.networks.contains_key(&network.name) {
-            return Err(Error::AlreadyExists);
+            return Err(eyre!("network already exists"));
         }
 
         self.inner.networks.remove(old_name);
@@ -195,7 +193,7 @@ impl Networks {
                 ethui_broadcast::ui_notify(UINotify::NetworksChanged).await;
             }
             None => {
-                return Err(Error::NotExists);
+                return Err(eyre!("network does not exists"));
             }
         }
         Ok(())
