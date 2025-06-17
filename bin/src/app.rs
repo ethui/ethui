@@ -32,6 +32,8 @@ impl EthUIApp {
                 ethui_settings::commands::settings_test_rust_log,
                 ethui_settings::commands::settings_onboarding_finish_step,
                 ethui_settings::commands::settings_onboarding_finish_all,
+                ethui_settings::commands::settings_stacks_auth_send_code,
+                ethui_settings::commands::settings_stacks_auth_verify_code,
                 ethui_networks::commands::networks_get_list,
                 ethui_networks::commands::networks_get_current,
                 ethui_networks::commands::networks_set_current,

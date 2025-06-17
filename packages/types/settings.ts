@@ -7,6 +7,11 @@ export const onboardingSchema = z.object({
   steps: z.record(onboardingSteps, z.boolean()),
 });
 
+export const stacksAuthSchema = z.object({
+  email: z.string(),
+  jwt: z.string(),
+});
+
 export const generalSettingsSchema = z.object({
   darkMode: z.enum(["auto", "dark", "light"]),
   autostart: z.boolean(),
@@ -19,7 +24,7 @@ export const generalSettingsSchema = z.object({
   fastMode: z.boolean(),
   onboarding: onboardingSchema,
   rustLog: z.string().optional(),
-  stacksJwt: z.string().optional(),
+  stacks: stacksAuthSchema.optional(),
 });
 
 export type OnboardingStepKey = z.infer<typeof onboardingSteps>;

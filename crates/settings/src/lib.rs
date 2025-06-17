@@ -4,6 +4,7 @@ mod error;
 mod init;
 mod migrations;
 mod onboarding;
+mod stacks;
 mod utils;
 
 use std::{
@@ -80,8 +81,8 @@ impl Settings {
             self.inner.fast_mode = serde_json::from_value(v.clone()).unwrap();
         }
 
-        if let Some(v) = params.get("stacksJwt") {
-            self.inner.stacks_jwt = serde_json::from_value(v.clone()).unwrap();
+        if let Some(v) = params.get("stacks") {
+            self.inner.stacks = serde_json::from_value(v.clone()).unwrap();
         }
 
         if let Some(v) = params.get("rustLog") {
@@ -103,6 +104,13 @@ impl Settings {
 
     pub async fn finish_onboarding(&mut self) -> Result<()> {
         self.inner.onboarding.finish();
+        self.save().await?;
+
+        Ok(())
+    }
+
+    pub async fn set_stacks(&mut self, email: String, jwt: String) -> Result<()> {
+        self.inner.stacks = Some(crate::stacks::StacksAuth { email, jwt });
         self.save().await?;
 
         Ok(())
@@ -204,7 +212,7 @@ pub struct SerializedSettings {
     pub onboarding: Onboarding,
 
     #[serde(default)]
-    pub stacks_jwt: Option<String>,
+    pub stacks: Option<crate::stacks::StacksAuth>,
 
     version: LatestVersion,
 }
@@ -222,7 +230,7 @@ impl Default for SerializedSettings {
             autostart: false,
             start_minimized: false,
             rust_log: "warn".into(),
-            stacks_jwt: None,
+            stacks: None,
             version: ConstI64,
             onboarding: Onboarding::default(),
         }

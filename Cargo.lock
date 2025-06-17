@@ -3542,6 +3542,7 @@ dependencies = [
  "ethui-types",
  "foundry-block-explorers",
  "once_cell",
+ "reqwest",
  "serde",
  "serde-constant",
  "serde_json",
