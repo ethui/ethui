@@ -1,4 +1,3 @@
-import { AbiItemFormWithPreview } from "@ethui/form/src/AbiItemFormWithPreview";
 import {
   Accordion,
   AccordionContent,
@@ -12,6 +11,7 @@ import { type FormEvent, useCallback, useEffect, useState } from "react";
 import { type Address, type Hash, decodeFunctionResult } from "viem";
 
 import type { Result } from "@ethui/types";
+import { AbiItemFormWithPreview } from "@ethui/ui/components/abi-form/abi-item-form-with-preview";
 import {
   Alert,
   AlertDescription,

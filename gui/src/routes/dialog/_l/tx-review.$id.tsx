@@ -1,3 +1,4 @@
+import { AbiItemFormWithPreview } from "@ethui/ui/components/abi-form/abi-item-form-with-preview";
 import {
   Alert,
   AlertDescription,
@@ -22,7 +23,6 @@ import {
 
 import { ChainView } from "@ethui/ui/components/chain-view";
 
-import { AbiItemFormWithPreview } from "@ethui/form/src/AbiItemFormWithPreview";
 import type { Result, TokenMetadata } from "@ethui/types";
 import type { Network } from "@ethui/types/network";
 import { Check, CheckIcon, FilePlus2, X } from "lucide-react";
