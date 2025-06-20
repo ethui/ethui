@@ -114,3 +114,4 @@ anyhow = { version = "1.0", default-features = false }
 tempfile = "3.20.0"
 serde-constant = "0.1.0"
 kameo = "0.16"
+tauri-plugin-aptabase = "1.0.0"

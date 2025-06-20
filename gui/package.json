@@ -14,6 +14,7 @@
     "lint:unused": "ts-unused-exports tsconfig.json --ignoreFiles=vite.config.ts --excludePathsFromReport=shadcn --excludePathsFromReport=routeTree.gen.ts --excludePathsFromReport=src/routes"
   },
   "dependencies": {
+    "@aptabase/tauri": "^0.4.1",
     "@ethui/data": "*",
     "@ethui/types": "*",
     "@ethui/ui": "^0.0.75",
