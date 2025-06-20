@@ -32,6 +32,7 @@ impl EthUIApp {
                 ethui_settings::commands::settings_test_rust_log,
                 ethui_settings::commands::settings_onboarding_finish_step,
                 ethui_settings::commands::settings_onboarding_finish_all,
+                ethui_settings::commands::settings_set_stacks,
                 ethui_networks::commands::networks_get_list,
                 ethui_networks::commands::networks_get_current,
                 ethui_networks::commands::networks_set_current,
@@ -136,6 +137,9 @@ async fn init(app: &tauri::App, args: &Args) -> AppResult<()> {
     ethui_wallets::init(resource(app, "wallets.json", args)).await;
     ethui_networks::init(resource(app, "networks.json", args)).await;
     ethui_forge::init().await?;
+
+    #[cfg(feature = "ethui-stacks")]
+    ethui_stacks::init().await?;
 
     // automatically open devtools if env asks for it
     #[cfg(feature = "debug")]

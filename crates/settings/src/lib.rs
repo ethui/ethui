@@ -85,6 +85,11 @@ impl Settings {
             ethui_tracing::parse(&self.inner.rust_log)?;
         }
 
+        if let Some(v) = params.get("stacks") {
+            println!("Setting stacks mode to {}", v);
+            self.inner.stacks = serde_json::from_value(v.clone()).unwrap();
+        }
+
         self.save().await?;
 
         Ok(())
@@ -118,12 +123,24 @@ impl Settings {
         Ok(())
     }
 
+    pub async fn set_stacks(&mut self, mode: bool) -> Result<()> {
+        println!("Setting stacks mode to {}", mode);
+        self.inner.stacks = mode;
+        self.save().await?;
+
+        Ok(())
+    }
+
     pub fn get(&self) -> &SerializedSettings {
         &self.inner
     }
 
     pub fn fast_mode(&self) -> bool {
         self.inner.fast_mode
+    }
+
+    pub fn stacks(&self) -> bool {
+        self.inner.stacks
     }
 
     pub fn start_minimized(&self) -> bool {
@@ -197,6 +214,9 @@ pub struct SerializedSettings {
     rust_log: String,
 
     #[serde(default)]
+    stacks: bool,
+
+    #[serde(default)]
     pub onboarding: Onboarding,
 
     version: LatestVersion,
@@ -217,6 +237,7 @@ impl Default for SerializedSettings {
             rust_log: "warn".into(),
             version: ConstI64,
             onboarding: Onboarding::default(),
+            stacks: false,
         }
     }
 }
