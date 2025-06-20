@@ -4,7 +4,6 @@ use alloy::transports::{RpcError, TransportErrorKind};
 
 use crate::actor::{self};
 
-
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("IO error: {0}")]
@@ -12,7 +11,6 @@ pub enum Error {
 
     #[error("serialization error: {0}")]
     Serde(#[from] serde_json::Error),
-
 
     #[error(transparent)]
     Notify(#[from] notify::Error),
@@ -31,7 +29,6 @@ pub enum Error {
 
     #[error(transparent)]
     RegistryError(#[from] kameo::error::RegistryError),
-
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

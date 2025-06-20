@@ -11,9 +11,7 @@ pub async fn init() -> crate::Result<()> {
 
     // Set initial state from settings
     let settings = Settings::read().await;
-    handle
-        .tell(Msg::SetStacks(settings.stacks()))
-        .await?;
+    handle.tell(Msg::SetStacks(settings.stacks())).await?;
 
     tokio::spawn(async move { receiver(handle).await });
 

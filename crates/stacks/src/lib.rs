@@ -1,10 +1,9 @@
-mod init;
 mod actor;
 mod error;
+mod init;
 
 pub use error::{Error, Result};
 pub use init::init;
-
 
 #[cfg(test)]
 mod tests {
