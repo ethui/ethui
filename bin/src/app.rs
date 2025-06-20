@@ -120,9 +120,8 @@ impl EthUIApp {
     pub fn run(self) {
         self.app.run(|#[allow(unused)] handle, event| match event {
             tauri::RunEvent::ExitRequested { api, .. } => {
-                dbg!("exiting");
                 #[cfg(feature = "aptabase")]
-                let _ = dbg!(handle.track_event("app_exited", None));
+                let _ = handle.track_event("app_exited", None);
 
                 api.prevent_exit();
             }
