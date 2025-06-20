@@ -8,6 +8,8 @@ pub enum AppError {
     #[error(transparent)]
     Forge(#[from] ethui_forge::Error),
 
+
+    #[cfg(feature = "stacks")]
     #[error(transparent)]
     Stacks(#[from] ethui_stacks::Error),
 
