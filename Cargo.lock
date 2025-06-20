@@ -3352,6 +3352,7 @@ dependencies = [
  "ethui-rpc",
  "ethui-settings",
  "ethui-simulator",
+ "ethui-stacks",
  "ethui-sync",
  "ethui-token-list",
  "ethui-tracing",
@@ -3594,6 +3595,32 @@ dependencies = [
  "serde",
  "tauri",
  "tokio",
+]
+
+[[package]]
+name = "ethui-stacks"
+version = "1.15.1"
+dependencies = [
+ "alloy",
+ "anyhow",
+ "ethui-broadcast",
+ "ethui-db",
+ "ethui-networks",
+ "ethui-settings",
+ "ethui-types",
+ "futures",
+ "glob",
+ "kameo",
+ "notify",
+ "notify-debouncer-full",
+ "regex",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tempfile",
+ "thiserror 2.0.12",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]

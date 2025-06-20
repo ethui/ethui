@@ -49,6 +49,9 @@ pub struct Settings {
     pub rust_log: String,
 
     #[serde(default)]
+    stacks: bool,
+
+    #[serde(default)]
     pub onboarding: Onboarding,
 
     version: LatestVersion,
@@ -69,6 +72,7 @@ impl Default for Settings {
             rust_log: "warn".into(),
             version: ConstI64,
             onboarding: Onboarding::default(),
+            stacks: false,
         }
     }
 }

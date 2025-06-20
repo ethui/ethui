@@ -67,6 +67,7 @@ pub enum Set {
     FinishOnboardingStep(OnboardingStep),
     FinishOnboarding,
     Alias(ethui_types::Address, Option<String>),
+    SetStacks(bool),
 }
 
 #[derive(Debug, Clone)]
@@ -142,6 +143,9 @@ impl Message<Set> for SettingsActor {
                 } else {
                     self.inner.aliases.remove(&address);
                 }
+            }
+            Set::SetStacks(mode) => {
+                self.inner.stacks = mode;
             }
         }
 
