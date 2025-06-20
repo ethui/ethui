@@ -212,23 +212,7 @@ fn run_migrations(settings: Versions) -> SerializedSettings {
                 });
             }
 
-            Versions::V3(v3) => {
-                result = Versions::V3(SerializedSettings {
-                    version: ConstI64,
-                    dark_mode: v3.dark_mode,
-                    abi_watch_path: v3.abi_watch_path,
-                    alchemy_api_key: v3.alchemy_api_key,
-                    etherscan_api_key: v3.etherscan_api_key,
-                    hide_empty_tokens: v3.hide_empty_tokens,
-                    aliases: v3.aliases,
-                    fast_mode: v3.fast_mode,
-                    autostart: v3.autostart,
-                    start_minimized: v3.start_minimized,
-                    rust_log: v3.rust_log,
-                    onboarding: v3.onboarding,
-                    stacks: v3.stacks,
-                });
-            }
+            Versions::V3(v3) => return v3,
         }
     }
 }
