@@ -47,6 +47,7 @@ tauri-plugin-clipboard-manager = "2.2"
 tauri-plugin-shell = "2"
 ethui-proxy-detect.workspace = true
 kameo.workspace = true
+tauri-plugin-aptabase = { workspace = true, optional = true }
 
 [build-dependencies]
 tauri-build = { version = "2.2", default-features = false, features = [] }
@@ -58,3 +59,4 @@ default = []
 # DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
 debug = ["tauri/devtools"]
+aptabase = ["dep:tauri-plugin-aptabase"]
