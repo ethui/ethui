@@ -113,10 +113,7 @@ pub struct SerializedSettingsV2 {
     pub onboarding: Onboarding,
 
     version: ConstI64<2>,
-
 }
-
-
 
 #[derive(Debug, Deserialize)]
 #[serde(untagged)]
@@ -211,7 +208,7 @@ fn run_migrations(settings: Versions) -> SerializedSettings {
                     start_minimized: v2.start_minimized,
                     rust_log: v2.rust_log,
                     onboarding: v2.onboarding,
-                    stacks: false
+                    stacks: false,
                 });
             }
 
@@ -300,7 +297,6 @@ impl Default for SerializedSettingsV2 {
         }
     }
 }
-
 
 #[cfg(test)]
 mod tests {

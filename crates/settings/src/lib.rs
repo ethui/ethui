@@ -220,7 +220,6 @@ pub struct SerializedSettings {
     pub onboarding: Onboarding,
 
     version: LatestVersion,
-
 }
 
 impl Default for SerializedSettings {

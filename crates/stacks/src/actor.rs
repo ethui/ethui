@@ -1,8 +1,8 @@
+use ethui_types::UINotify;
 use kameo::{
     actor::ActorRef, error::BoxError, mailbox::bounded::BoundedMailbox, message::Message,
     request::TryMessageSend as _, Actor,
 };
-use ethui_types::UINotify;
 use tracing::info;
 
 #[derive(Default)]
@@ -27,24 +27,18 @@ impl Message<Msg> for Worker {
                 self.stacks = enabled;
                 if enabled {
                     info!("Starting stacks docker image...");
-
                 } else {
-                    
                     info!("Stopping stacks docker image...");
                 }
             }
         }
     }
-
 }
 
 impl Actor for Worker {
     type Mailbox = BoundedMailbox<Self>;
 
-    async fn on_start(
-        &mut self,
-        _actor_ref: ActorRef<Self>,
-    ) -> std::result::Result<(), BoxError> {
+    async fn on_start(&mut self, _actor_ref: ActorRef<Self>) -> std::result::Result<(), BoxError> {
         Ok(())
     }
 }
