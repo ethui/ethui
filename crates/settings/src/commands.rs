@@ -56,6 +56,11 @@ pub async fn settings_test_rust_log(directives: String) -> bool {
 }
 
 #[tauri::command]
+pub async fn settings_set_stacks(mode: bool) -> Result<()> {
+    Settings::write().await.set_stacks(mode).await
+}
+
+#[tauri::command]
 pub async fn settings_onboarding_finish_step(id: OnboardingStep) -> Result<()> {
     Settings::write().await.finish_onboarding_step(id).await
 }

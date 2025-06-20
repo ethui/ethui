@@ -34,6 +34,7 @@ import { Route as HomeLContractsLIndexImport } from './routes/home/_l/contracts/
 import { Route as HomeLTransferLEthImport } from './routes/home/_l/transfer/_l.eth'
 import { Route as HomeLTransferLErc20Import } from './routes/home/_l/transfer/_l.erc20'
 import { Route as HomeLSettingsLTokensImport } from './routes/home/_l/settings/_l/tokens'
+import { Route as HomeLSettingsLStacksImport } from './routes/home/_l/settings/_l/stacks'
 import { Route as HomeLSettingsLGeneralImport } from './routes/home/_l/settings/_l/general'
 import { Route as HomeLSettingsLFoundryImport } from './routes/home/_l/settings/_l/foundry'
 import { Route as HomeLSettingsLAboutImport } from './routes/home/_l/settings/_l/about'
@@ -224,6 +225,12 @@ const HomeLTransferLErc20Route = HomeLTransferLErc20Import.update({
 const HomeLSettingsLTokensRoute = HomeLSettingsLTokensImport.update({
   id: '/tokens',
   path: '/tokens',
+  getParentRoute: () => HomeLSettingsLRoute,
+} as any)
+
+const HomeLSettingsLStacksRoute = HomeLSettingsLStacksImport.update({
+  id: '/stacks',
+  path: '/stacks',
   getParentRoute: () => HomeLSettingsLRoute,
 } as any)
 
@@ -489,6 +496,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeLSettingsLGeneralImport
       parentRoute: typeof HomeLSettingsLImport
     }
+    '/home/_l/settings/_l/stacks': {
+      id: '/home/_l/settings/_l/stacks'
+      path: '/stacks'
+      fullPath: '/home/settings/stacks'
+      preLoaderRoute: typeof HomeLSettingsLStacksImport
+      parentRoute: typeof HomeLSettingsLImport
+    }
     '/home/_l/settings/_l/tokens': {
       id: '/home/_l/settings/_l/tokens'
       path: '/tokens'
@@ -737,6 +751,7 @@ interface HomeLSettingsLRouteChildren {
   HomeLSettingsLAboutRoute: typeof HomeLSettingsLAboutRoute
   HomeLSettingsLFoundryRoute: typeof HomeLSettingsLFoundryRoute
   HomeLSettingsLGeneralRoute: typeof HomeLSettingsLGeneralRoute
+  HomeLSettingsLStacksRoute: typeof HomeLSettingsLStacksRoute
   HomeLSettingsLTokensRoute: typeof HomeLSettingsLTokensRoute
   HomeLSettingsLNetworksRoute: typeof HomeLSettingsLNetworksRouteWithChildren
   HomeLSettingsLWalletsRoute: typeof HomeLSettingsLWalletsRouteWithChildren
@@ -746,6 +761,7 @@ const HomeLSettingsLRouteChildren: HomeLSettingsLRouteChildren = {
   HomeLSettingsLAboutRoute: HomeLSettingsLAboutRoute,
   HomeLSettingsLFoundryRoute: HomeLSettingsLFoundryRoute,
   HomeLSettingsLGeneralRoute: HomeLSettingsLGeneralRoute,
+  HomeLSettingsLStacksRoute: HomeLSettingsLStacksRoute,
   HomeLSettingsLTokensRoute: HomeLSettingsLTokensRoute,
   HomeLSettingsLNetworksRoute: HomeLSettingsLNetworksRouteWithChildren,
   HomeLSettingsLWalletsRoute: HomeLSettingsLWalletsRouteWithChildren,
@@ -846,6 +862,7 @@ export interface FileRoutesByFullPath {
   '/home/settings/about': typeof HomeLSettingsLAboutRoute
   '/home/settings/foundry': typeof HomeLSettingsLFoundryRoute
   '/home/settings/general': typeof HomeLSettingsLGeneralRoute
+  '/home/settings/stacks': typeof HomeLSettingsLStacksRoute
   '/home/settings/tokens': typeof HomeLSettingsLTokensRoute
   '/home/transfer/erc20': typeof HomeLTransferLErc20Route
   '/home/transfer/eth': typeof HomeLTransferLEthRoute
@@ -883,6 +900,7 @@ export interface FileRoutesByTo {
   '/home/settings/about': typeof HomeLSettingsLAboutRoute
   '/home/settings/foundry': typeof HomeLSettingsLFoundryRoute
   '/home/settings/general': typeof HomeLSettingsLGeneralRoute
+  '/home/settings/stacks': typeof HomeLSettingsLStacksRoute
   '/home/settings/tokens': typeof HomeLSettingsLTokensRoute
   '/home/transfer/erc20': typeof HomeLTransferLErc20Route
   '/home/transfer/eth': typeof HomeLTransferLEthRoute
@@ -923,6 +941,7 @@ export interface FileRoutesById {
   '/home/_l/settings/_l/about': typeof HomeLSettingsLAboutRoute
   '/home/_l/settings/_l/foundry': typeof HomeLSettingsLFoundryRoute
   '/home/_l/settings/_l/general': typeof HomeLSettingsLGeneralRoute
+  '/home/_l/settings/_l/stacks': typeof HomeLSettingsLStacksRoute
   '/home/_l/settings/_l/tokens': typeof HomeLSettingsLTokensRoute
   '/home/_l/transfer/_l/erc20': typeof HomeLTransferLErc20Route
   '/home/_l/transfer/_l/eth': typeof HomeLTransferLEthRoute
@@ -964,6 +983,7 @@ export interface FileRouteTypes {
     | '/home/settings/about'
     | '/home/settings/foundry'
     | '/home/settings/general'
+    | '/home/settings/stacks'
     | '/home/settings/tokens'
     | '/home/transfer/erc20'
     | '/home/transfer/eth'
@@ -1000,6 +1020,7 @@ export interface FileRouteTypes {
     | '/home/settings/about'
     | '/home/settings/foundry'
     | '/home/settings/general'
+    | '/home/settings/stacks'
     | '/home/settings/tokens'
     | '/home/transfer/erc20'
     | '/home/transfer/eth'
@@ -1038,6 +1059,7 @@ export interface FileRouteTypes {
     | '/home/_l/settings/_l/about'
     | '/home/_l/settings/_l/foundry'
     | '/home/_l/settings/_l/general'
+    | '/home/_l/settings/_l/stacks'
     | '/home/_l/settings/_l/tokens'
     | '/home/_l/transfer/_l/erc20'
     | '/home/_l/transfer/_l/eth'
@@ -1198,6 +1220,7 @@ export const routeTree = rootRoute
         "/home/_l/settings/_l/about",
         "/home/_l/settings/_l/foundry",
         "/home/_l/settings/_l/general",
+        "/home/_l/settings/_l/stacks",
         "/home/_l/settings/_l/tokens",
         "/home/_l/settings/_l/networks",
         "/home/_l/settings/_l/wallets"
@@ -1228,6 +1251,10 @@ export const routeTree = rootRoute
     },
     "/home/_l/settings/_l/general": {
       "filePath": "home/_l/settings/_l/general.tsx",
+      "parent": "/home/_l/settings/_l"
+    },
+    "/home/_l/settings/_l/stacks": {
+      "filePath": "home/_l/settings/_l/stacks.tsx",
       "parent": "/home/_l/settings/_l"
     },
     "/home/_l/settings/_l/tokens": {
