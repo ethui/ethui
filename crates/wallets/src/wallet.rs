@@ -4,10 +4,9 @@ use ethui_types::{Address, Json};
 use serde::{Deserialize, Serialize};
 
 use super::{
-    wallets::{HDWallet, Impersonator, JsonKeystoreWallet, LedgerWallet, PlaintextWallet},
+    wallets::{self, Impersonator, LedgerWallet, PlaintextWallet},
     Error, Result,
 };
-use crate::wallets::PrivateKeyWallet;
 
 #[async_trait]
 #[enum_dispatch(Wallet)]
@@ -50,17 +49,19 @@ pub trait WalletCreate {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum Wallet {
-    Plaintext(PlaintextWallet),
-    JsonKeystore(JsonKeystoreWallet),
+    Plaintext(wallets::PlaintextWallet),
+    Impersonator(wallets::Impersonator),
+    Ledger(wallets::LedgerWallet),
 
+    #[cfg(feature = "keystore")]
+    JsonKeystore(wallets::JsonKeystoreWallet),
+
+    #[cfg(feature = "hd")]
     #[serde(rename = "HDWallet")]
-    HDWallet(HDWallet),
+    HDWallet(wallets::HDWallet),
 
-    Impersonator(Impersonator),
-
-    Ledger(LedgerWallet),
-
-    PrivateKey(PrivateKeyWallet),
+    #[cfg(feature = "pkey")]
+    PrivateKey(wallets::PrivateKeyWallet),
 }
 
 impl Wallet {
@@ -69,11 +70,19 @@ impl Wallet {
 
         let wallet = match wallet_type {
             "plaintext" => PlaintextWallet::create(params).await?,
-            "jsonKeystore" => JsonKeystoreWallet::create(params).await?,
-            "HDWallet" => HDWallet::create(params).await?,
+
+            #[cfg(feature = "keystore")]
+            "jsonKeystore" => wallets::JsonKeystoreWallet::create(params).await?,
+
+            #[cfg(feature = "hd")]
+            "HDWallet" => wallets::HDWallet::create(params).await?,
+
             "impersonator" => Impersonator::create(params).await?,
             "ledger" => LedgerWallet::create(params).await?,
-            "privateKey" => PrivateKeyWallet::create(params).await?,
+
+            #[cfg(feature = "pkey")]
+            "privateKey" => wallets::PrivateKeyWallet::create(params).await?,
+
             _ => return Err(Error::InvalidWalletType(wallet_type.into())),
         };
 
@@ -112,10 +121,16 @@ impl From<&Wallet> for WalletType {
     fn from(wallet: &Wallet) -> Self {
         match wallet {
             Wallet::Plaintext(_) => Self::Plaintext,
-            Wallet::JsonKeystore(_) => Self::JsonKeystore,
-            Wallet::HDWallet(_) => Self::HDWallet,
             Wallet::Impersonator(_) => Self::Impersonator,
             Wallet::Ledger(_) => Self::Ledger,
+
+            #[cfg(feature = "keystore")]
+            Wallet::JsonKeystore(_) => Self::JsonKeystore,
+
+            #[cfg(feature = "hd")]
+            Wallet::HDWallet(_) => Self::HDWallet,
+
+            #[cfg(feature = "pkey")]
             Wallet::PrivateKey(_) => Self::PrivateKey,
         }
     }
