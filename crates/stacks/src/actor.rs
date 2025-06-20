@@ -1,7 +1,5 @@
-use ethui_types::UINotify;
 use kameo::{
-    actor::ActorRef, error::BoxError, mailbox::bounded::BoundedMailbox, message::Message,
-    request::TryMessageSend as _, Actor,
+    actor::ActorRef, error::BoxError, mailbox::bounded::BoundedMailbox, message::Message, Actor,
 };
 use tracing::info;
 

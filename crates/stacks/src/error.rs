@@ -1,7 +1,3 @@
-use std::path::PathBuf;
-
-use alloy::transports::{RpcError, TransportErrorKind};
-
 use crate::actor::{self};
 
 #[derive(Debug, thiserror::Error)]
