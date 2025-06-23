@@ -14,10 +14,10 @@
     "lint:unused": "ts-unused-exports tsconfig.json --ignoreFiles=vite.config.ts --excludePathsFromReport=shadcn --excludePathsFromReport=routeTree.gen.ts --excludePathsFromReport=src/routes"
   },
   "dependencies": {
+    "@aptabase/tauri": "^0.4.1",
     "@ethui/data": "*",
-    "@ethui/form": "*",
     "@ethui/types": "*",
-    "@ethui/ui": "0.0.68",
+    "@ethui/ui": "^0.0.75",
     "@fontsource/source-code-pro": "^5.2.5",
     "@hookform/resolvers": "^5.0.1",
     "@radix-ui/react-collapsible": "^1.1.3",

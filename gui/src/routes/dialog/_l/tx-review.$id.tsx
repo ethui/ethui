@@ -1,6 +1,6 @@
-import { AbiItemFormWithPreview } from "@ethui/form/src/AbiItemFormWithPreview";
 import type { Result, TokenMetadata } from "@ethui/types";
 import type { Network } from "@ethui/types/network";
+import { AbiItemFormWithPreview } from "@ethui/ui/components/abi-form/abi-item-form-with-preview";
 import { ChainView } from "@ethui/ui/components/chain-view";
 import {
   Alert,

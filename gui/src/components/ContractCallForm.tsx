@@ -1,5 +1,5 @@
-import { AbiItemFormWithPreview } from "@ethui/form/src/AbiItemFormWithPreview";
 import type { Result } from "@ethui/types";
+import { AbiItemFormWithPreview } from "@ethui/ui/components/abi-form/abi-item-form-with-preview";
 import {
   Accordion,
   AccordionContent,

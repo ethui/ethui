@@ -73,7 +73,7 @@ impl DbInner {
         &self.pool
     }
 
-    pub async fn tx(&self) -> Result<sqlx::Transaction<sqlx::Sqlite>> {
+    pub async fn tx(&self) -> Result<sqlx::Transaction<'_, sqlx::Sqlite>> {
         Ok(self.pool.clone().begin().await?)
     }
 

@@ -4,6 +4,8 @@ use ethui_args::Args;
 use ethui_broadcast::UIMsg;
 use ethui_types::GlobalState as _;
 use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
+#[cfg(feature = "aptabase")]
+use tauri_plugin_aptabase::EventTracker as _;
 
 use crate::{commands, error::AppResult, menu, system_tray, windows};
 
@@ -13,7 +15,13 @@ pub struct EthUIApp {
 
 impl EthUIApp {
     pub async fn build(args: &ethui_args::Args) -> AppResult<Self> {
-        let builder = Builder::default()
+        let builder = Builder::default();
+
+        // #[cfg(feature = "aptabase")]
+        // let builder =
+        //     builder.plugin(tauri_plugin_aptabase::Builder::new(std::env!("APTABASE_KEY")).build());
+
+        let builder = builder
             .invoke_handler(tauri::generate_handler![
                 commands::get_build_mode,
                 commands::get_version,
@@ -81,13 +89,21 @@ impl EthUIApp {
             ])
             .plugin(tauri_plugin_os::init())
             .plugin(tauri_plugin_clipboard_manager::init())
-            .plugin(tauri_plugin_shell::init())
-            .setup(|app| {
-                let handle = app.handle();
-                let _ = menu::build(handle);
-                let _ = system_tray::build(handle);
-                Ok(())
-            });
+            .plugin(tauri_plugin_shell::init());
+
+        #[cfg(feature = "aptabase")]
+        let builder =
+            builder.plugin(tauri_plugin_aptabase::Builder::new(std::env!("APTABASE_KEY")).build());
+
+        let builder = builder.setup(|app| {
+            #[cfg(feature = "aptabase")]
+            let _ = app.track_event("app_started", None);
+
+            let handle = app.handle();
+            let _ = menu::build(handle);
+            let _ = system_tray::build(handle);
+            Ok(())
+        });
 
         let app = builder.build(tauri::generate_context!())?;
 
@@ -102,8 +118,18 @@ impl EthUIApp {
 
     pub fn run(self) {
         self.app.run(|#[allow(unused)] handle, event| match event {
-            tauri::RunEvent::ExitRequested { api, .. } => {
-                api.prevent_exit();
+            tauri::RunEvent::ExitRequested { code, api, .. } => {
+                // code == None seems to happen when the window is closed,
+                // in which case we don't want to close the app, but keep it running in
+                // background & tray
+                if code.is_none() {
+                    api.prevent_exit();
+                }
+            }
+
+            tauri::RunEvent::Exit => {
+                #[cfg(feature = "aptabase")]
+                let _ = handle.track_event("app_exited", None);
             }
 
             #[cfg(target_os = "macos")]

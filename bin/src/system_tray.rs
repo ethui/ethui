@@ -10,10 +10,10 @@ pub(crate) fn build(app: &AppHandle) -> AppResult<()> {
     let menu_builder = MenuBuilder::new(app);
 
     let menu = menu_builder
-        .item(&MenuItemBuilder::with_id("show", "Show").build(app)?)
-        .item(&MenuItemBuilder::with_id("hide", "Hide").build(app)?)
+        .item(&MenuItemBuilder::with_id("tray/show", "Show").build(app)?)
+        .item(&MenuItemBuilder::with_id("tray/hide", "Hide").build(app)?)
         .separator()
-        .item(&MenuItemBuilder::with_id("quit", "Quit").build(app)?)
+        .item(&MenuItemBuilder::with_id("tray/quit", "Quit").build(app)?)
         .build()?;
 
     TrayIconBuilder::new()
@@ -27,13 +27,15 @@ pub(crate) fn build(app: &AppHandle) -> AppResult<()> {
 
 fn event_handler(app: &AppHandle, event: MenuEvent) {
     match event.id().as_ref() {
-        "quit" => app.exit(0),
-        "hide" => {
+        "tray/quit" => {
+            app.exit(0);
+        }
+        "tray/hide" => {
             if let Some(w) = app.get_webview_window("main") {
                 w.hide().unwrap()
             }
         }
-        "show" => {
+        "tray/show" => {
             tokio::spawn(async { ethui_broadcast::main_window_show().await });
         }
         _ => {}

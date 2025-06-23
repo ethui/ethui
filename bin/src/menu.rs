@@ -1,4 +1,4 @@
-use tauri::{menu::MenuEvent, AppHandle, Emitter as _, Window};
+use tauri::{menu::MenuEvent, AppHandle, Emitter as _, Manager, Window};
 
 use crate::AppResult;
 
@@ -71,7 +71,7 @@ pub(crate) fn build(app: &AppHandle) -> AppResult<()> {
 pub(crate) fn event_handler(window: &Window, event: MenuEvent) {
     match event.id().as_ref() {
         "quit" => {
-            std::process::exit(0);
+            window.app_handle().exit(0);
         }
         "close" => {
             window.close().unwrap();
