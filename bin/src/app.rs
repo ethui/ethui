@@ -117,29 +117,28 @@ impl EthUIApp {
     }
 
     pub fn run(self) {
-        self.app
-            .run(|#[allow(unused)] handle, event| match dbg!(event) {
-                tauri::RunEvent::ExitRequested { code, api, .. } => {
-                    // code == None seems to happen when the window is closed,
-                    // in which case we don't want to close the app, but keep it running in
-                    // background & tray
-                    if code.is_none() {
-                        api.prevent_exit();
-                    }
+        self.app.run(|#[allow(unused)] handle, event| match event {
+            tauri::RunEvent::ExitRequested { code, api, .. } => {
+                // code == None seems to happen when the window is closed,
+                // in which case we don't want to close the app, but keep it running in
+                // background & tray
+                if code.is_none() {
+                    api.prevent_exit();
                 }
+            }
 
-                tauri::RunEvent::Exit => {
-                    #[cfg(feature = "aptabase")]
-                    let _ = handle.track_event("app_exited", None);
-                }
+            tauri::RunEvent::Exit => {
+                #[cfg(feature = "aptabase")]
+                let _ = handle.track_event("app_exited", None);
+            }
 
-                #[cfg(target_os = "macos")]
-                tauri::RunEvent::Reopen { .. } => {
-                    let handle = handle.clone();
-                    tokio::spawn(async move { windows::all_windows_focus(&handle).await });
-                }
-                _ => (),
-            });
+            #[cfg(target_os = "macos")]
+            tauri::RunEvent::Reopen { .. } => {
+                let handle = handle.clone();
+                tokio::spawn(async move { windows::all_windows_focus(&handle).await });
+            }
+            _ => (),
+        });
     }
 }
 
