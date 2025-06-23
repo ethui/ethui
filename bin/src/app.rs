@@ -122,8 +122,6 @@ impl EthUIApp {
             tauri::RunEvent::ExitRequested { api, .. } => {
                 #[cfg(feature = "aptabase")]
                 let _ = handle.track_event("app_exited", None);
-
-                api.prevent_exit();
             }
 
             #[cfg(target_os = "macos")]
