@@ -17,9 +17,9 @@ impl EthUIApp {
     pub async fn build(args: &ethui_args::Args) -> AppResult<Self> {
         let builder = Builder::default();
 
-        #[cfg(feature = "aptabase")]
-        let builder =
-            builder.plugin(tauri_plugin_aptabase::Builder::new(std::env!("APTABASE_KEY")).build());
+        // #[cfg(feature = "aptabase")]
+        // let builder =
+        //     builder.plugin(tauri_plugin_aptabase::Builder::new(std::env!("APTABASE_KEY")).build());
 
         let builder = builder
             .invoke_handler(tauri::generate_handler![
@@ -91,10 +91,9 @@ impl EthUIApp {
             .plugin(tauri_plugin_clipboard_manager::init())
             .plugin(tauri_plugin_shell::init());
 
-        // #[cfg(feature = "aptabase")]
-        // let builder = builder.plugin(tauri_plugin_aptabase::Builder::new(
-        //     std::env!("APTABASE_KEY").into(),
-        // ));
+        #[cfg(feature = "aptabase")]
+        let builder =
+            builder.plugin(tauri_plugin_aptabase::Builder::new(std::env!("APTABASE_KEY")).build());
 
         let builder = builder.setup(|app| {
             #[cfg(feature = "aptabase")]
@@ -118,19 +117,29 @@ impl EthUIApp {
     }
 
     pub fn run(self) {
-        self.app.run(|#[allow(unused)] handle, event| match event {
-            tauri::RunEvent::ExitRequested { api, .. } => {
-                #[cfg(feature = "aptabase")]
-                let _ = handle.track_event("app_exited", None);
-            }
+        self.app
+            .run(|#[allow(unused)] handle, event| match dbg!(event) {
+                tauri::RunEvent::ExitRequested { code, api, .. } => {
+                    // code == None seems to happen when the window is closed,
+                    // in which case we don't want to close the app, but keep it running in
+                    // background & tray
+                    if code.is_none() {
+                        api.prevent_exit();
+                    }
+                }
 
-            #[cfg(target_os = "macos")]
-            tauri::RunEvent::Reopen { .. } => {
-                let handle = handle.clone();
-                tokio::spawn(async move { windows::all_windows_focus(&handle).await });
-            }
-            _ => (),
-        });
+                tauri::RunEvent::Exit => {
+                    #[cfg(feature = "aptabase")]
+                    let _ = handle.track_event("app_exited", None);
+                }
+
+                #[cfg(target_os = "macos")]
+                tauri::RunEvent::Reopen { .. } => {
+                    let handle = handle.clone();
+                    tokio::spawn(async move { windows::all_windows_focus(&handle).await });
+                }
+                _ => (),
+            });
     }
 }
 

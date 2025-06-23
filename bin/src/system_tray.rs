@@ -10,10 +10,10 @@ pub(crate) fn build(app: &AppHandle) -> AppResult<()> {
     let menu_builder = MenuBuilder::new(app);
 
     let menu = menu_builder
-        .item(&MenuItemBuilder::with_id("show", "Show").build(app)?)
-        .item(&MenuItemBuilder::with_id("hide", "Hide").build(app)?)
+        .item(&MenuItemBuilder::with_id("tray/show", "Show").build(app)?)
+        .item(&MenuItemBuilder::with_id("tray/hide", "Hide").build(app)?)
         .separator()
-        .item(&MenuItemBuilder::with_id("quit", "Quit").build(app)?)
+        .item(&MenuItemBuilder::with_id("tray/quit", "Quit").build(app)?)
         .build()?;
 
     TrayIconBuilder::new()
