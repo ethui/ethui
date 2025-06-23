@@ -1,18 +1,17 @@
+import { derivationPathSchema, type LedgerWallet } from "@ethui/types/wallets";
+import { Form } from "@ethui/ui/components/form";
 import {
   Alert,
   AlertDescription,
   AlertTitle,
 } from "@ethui/ui/components/shadcn/alert";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { invoke } from "@tauri-apps/api/core";
 import type { Address } from "abitype";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
-
-import { type LedgerWallet, derivationPathSchema } from "@ethui/types/wallets";
-import { Form } from "@ethui/ui/components/form";
-import { Button } from "@ethui/ui/components/shadcn/button";
 import { useLedgerDetect } from "#/hooks/useLedgerDetect";
 
 const schema = z.object({

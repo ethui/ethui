@@ -1,5 +1,3 @@
-import { useLocation, useRouterState } from "@tanstack/react-router";
-
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,7 +5,7 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@ethui/ui/components/shadcn/breadcrumb";
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation, useRouterState } from "@tanstack/react-router";
 import { Fragment } from "react/jsx-runtime";
 
 export function Breadcrumbs() {

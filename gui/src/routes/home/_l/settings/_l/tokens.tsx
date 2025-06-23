@@ -1,10 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
-
-import { invoke } from "@tauri-apps/api/core";
-import type { Address } from "viem";
-
 import { Button } from "@ethui/ui/components/shadcn/button";
+import { createFileRoute } from "@tanstack/react-router";
+import { invoke } from "@tauri-apps/api/core";
 import { EyeOff } from "lucide-react";
+import type { Address } from "viem";
 import { AddressView } from "#/components/AddressView";
 import { IconAddress } from "#/components/Icons/Address";
 import { useBlacklist } from "#/store/useBlacklist";

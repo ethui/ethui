@@ -1,18 +1,17 @@
+import { passwordFormSchema, passwordSchema } from "@ethui/types/password";
+import {
+  derivationPathSchema,
+  type HdWallet,
+  mnemonicSchema,
+} from "@ethui/types/wallets";
+import { Form } from "@ethui/ui/components/form";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import type { Address } from "viem";
 import { z } from "zod";
-
-import { passwordFormSchema, passwordSchema } from "@ethui/types/password";
-import {
-  type HdWallet,
-  derivationPathSchema,
-  mnemonicSchema,
-} from "@ethui/types/wallets";
-import { Form } from "@ethui/ui/components/form";
-import { Button } from "@ethui/ui/components/shadcn/button";
 
 const schema = z.object({
   count: z.number().int().min(1).max(100),

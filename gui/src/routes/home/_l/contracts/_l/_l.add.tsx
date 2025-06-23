@@ -1,15 +1,13 @@
+import { ChainView } from "@ethui/ui/components/chain-view";
+import { Form } from "@ethui/ui/components/form";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { Check, LoaderCircle } from "lucide-react";
+import { useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/shallow";
-
-import { ChainView } from "@ethui/ui/components/chain-view";
-import { Form } from "@ethui/ui/components/form";
-
-import { Button } from "@ethui/ui/components/shadcn/button";
-import { Check, LoaderCircle } from "lucide-react";
-import { useState } from "react";
 import { useContracts } from "#/store/useContracts";
 import { useNetworks } from "#/store/useNetworks";
 

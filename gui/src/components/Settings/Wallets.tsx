@@ -1,5 +1,3 @@
-import { startCase } from "lodash-es";
-
 import { type Wallet, walletTypes } from "@ethui/types/wallets";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import {
@@ -10,6 +8,7 @@ import {
 } from "@ethui/ui/components/shadcn/dropdown-menu";
 import { CaretDownIcon } from "@radix-ui/react-icons";
 import { Link } from "@tanstack/react-router";
+import { startCase } from "lodash-es";
 import { WalletView } from "#/components/WalletView";
 import { useWallets } from "#/store/useWallets";
 

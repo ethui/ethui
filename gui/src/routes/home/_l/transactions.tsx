@@ -1,18 +1,6 @@
-import { InfiniteScroll } from "@ethui/ui/components/infinite-scroll";
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger,
-} from "@ethui/ui/components/shadcn/context-menu";
-import { createFileRoute } from "@tanstack/react-router";
-import { invoke } from "@tauri-apps/api/core";
-import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { type Abi, type Address, formatEther, formatGwei } from "viem";
-
 import type { PaginatedTx, Tx } from "@ethui/types";
 import { BlockNumber } from "@ethui/ui/components/block-number";
+import { InfiniteScroll } from "@ethui/ui/components/infinite-scroll";
 import {
   Accordion,
   AccordionContent,
@@ -20,7 +8,16 @@ import {
   AccordionTrigger,
 } from "@ethui/ui/components/shadcn/accordion";
 import { Button } from "@ethui/ui/components/shadcn/button";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@ethui/ui/components/shadcn/context-menu";
 import { SolidityCall } from "@ethui/ui/components/solidity-call";
+import { createFileRoute } from "@tanstack/react-router";
+import { invoke } from "@tauri-apps/api/core";
+import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   LoaderCircle,
@@ -28,6 +25,8 @@ import {
   MoveUpRight,
   ReceiptText,
 } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { type Abi, type Address, formatEther, formatGwei } from "viem";
 import { AddressView } from "#/components/AddressView";
 import { Datapoint } from "#/components/Datapoint";
 import { HashView } from "#/components/HashView";
@@ -104,8 +103,6 @@ function Txs() {
   console.log(items.length);
   useEventListener("txs-updated", loadNew);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies(account): used only to trigger effect
-  // biome-ignore lint/correctness/useExhaustiveDependencies(chainId): used only to trigger effect
   useEffect(() => {
     setItems([]);
     setHasMore(true);

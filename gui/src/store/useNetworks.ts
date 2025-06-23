@@ -1,9 +1,8 @@
+import type { Network } from "@ethui/types/network";
 import { event } from "@tauri-apps/api";
 import { invoke } from "@tauri-apps/api/core";
-import { type StateCreator, create } from "zustand";
+import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
-
-import type { Network } from "@ethui/types/network";
 
 interface State {
   networks: Network[];

@@ -153,12 +153,19 @@ export function AppSidebar() {
   );
 }
 
+interface CustomSidebarMenuItemProps {
+  url: string;
+  icon: React.ReactNode;
+  title: string;
+  className?: string;
+}
+
 function CustomSidebarMenuItem({
   url,
   icon,
   title,
   className = "",
-}: { url: string; icon: React.ReactNode; title: string; className?: string }) {
+}: CustomSidebarMenuItemProps) {
   return (
     <SidebarMenuItem key={title}>
       <SidebarMenuButton asChild>

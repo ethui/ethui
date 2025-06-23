@@ -1,9 +1,8 @@
+import { ChainView } from "@ethui/ui/components/chain-view";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { createFileRoute } from "@tanstack/react-router";
-import { isDirty, isValid } from "zod";
-
-import { ChainView } from "@ethui/ui/components/chain-view";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
+import { isDirty, isValid } from "zod";
 import { useDialog } from "#/hooks/useDialog";
 import { useNetworks } from "#/store/useNetworks";
 
