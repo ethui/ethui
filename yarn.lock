@@ -29,6 +29,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aptabase/tauri@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "@aptabase/tauri@npm:0.4.1"
+  dependencies:
+    "@tauri-apps/api": "npm:^1.0.0"
+  checksum: 10c0/e796dcb076004947f6f6c3277a381af86418fe6bd2f35bf9032d954c74878618feb13f6520c3c0478bccdaf17588cf4317d8f6c3884b52d6c970952f259234d0
+  languageName: node
+  linkType: hard
+
 "@asamuzakjp/css-color@npm:^2.8.2":
   version: 2.8.3
   resolution: "@asamuzakjp/css-color@npm:2.8.3"
@@ -1238,6 +1247,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@ethui/gui@workspace:gui"
   dependencies:
+    "@aptabase/tauri": "npm:^0.4.1"
     "@ethui/data": "npm:*"
     "@ethui/types": "npm:*"
     "@ethui/ui": "npm:^0.0.75"
@@ -3837,6 +3847,13 @@ __metadata:
   version: 2.5.0
   resolution: "@tauri-apps/api@npm:2.5.0"
   checksum: 10c0/8eeb28049d48f5f89a5419cdf313bb159305204b193a5f27ebddbe0704ff43037c8b2e78518de831d7393e00178f0c0ac66cef1a57b99c632de71eca29f562c0
+  languageName: node
+  linkType: hard
+
+"@tauri-apps/api@npm:^1.0.0":
+  version: 1.6.0
+  resolution: "@tauri-apps/api@npm:1.6.0"
+  checksum: 10c0/c3d9a0126093061b95c968d346dc47bb3ca99056a3b03b53b9f8d8f37c539479298495b79df095c2745a10dcbd4e40e161ec4b148819df2acfa20fa61845001b
   languageName: node
   linkType: hard
 
