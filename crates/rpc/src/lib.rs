@@ -326,7 +326,7 @@ impl Handler {
     ) -> jsonrpc_core::Result<serde_json::Value> {
         let network = ctx.network().await;
 
-        let params = params.parse::<Vec<String>>().unwrap();
+        let params = params.parse::<Vec<String>>().ok_or(Error::InvalidParams)?;
         let method = methods::ethui::AbiForContract::build()
             .set_network(network)
             .set_params(params.into())
