@@ -1,0 +1,28 @@
+thread 'rustc' panicked at /rustc-dev/586ad391f5ee4519acc7cae340e34673bae762b1/compiler/rustc_query_system/src/dep_graph/serialized.rs:284:21:
+Error: A dep graph node (mir_drops_elaborated_and_const_checked) does not have an unique index. Running a clean build on a nightly compiler with `-Z incremental-verify-ich` can help narrow down the issue for reporting. A clean build may also work around the issue.
+
+                     DepNode: DepKind { variant: 56 }(1675f52be9a6829a-96ce49f7b1d8919)
+stack backtrace:
+   0:     0x7f76634eb5d5 - std::backtrace::Backtrace::create::hcf09359f7ca661d2
+   1:     0x7f76634eb525 - std::backtrace::Backtrace::force_capture::h91c72441c143a4e9
+   2:     0x7f76625f8951 - std[969d7c4f52bf98a2]::panicking::update_hook::<alloc[67131b503bc3b69]::boxed::Box<rustc_driver_impl[cf2eeefd8b719405]::install_ice_hook::{closure#1}>>::{closure#0}
+   3:     0x7f7663505773 - std::panicking::rust_panic_with_hook::ha532e0f34c3bed38
+   4:     0x7f766350546a - std::panicking::begin_panic_handler::{{closure}}::heb14a7d45c8f9b66
+   5:     0x7f7663501999 - std::sys::backtrace::__rust_end_short_backtrace::hf236952922059c34
+   6:     0x7f766350513d - __rustc[bffe151c46bb037f]::rust_begin_unwind
+   7:     0x7f765fc946c0 - core::panicking::panic_fmt::hf75a0ff8fae67382
+   8:     0x7f766504686f - rustc_incremental[6c9883f515495c8]::persist::load::setup_dep_graph
+   9:     0x7f7664ed8205 - rustc_interface[b6e22bd203f35f16]::interface::run_compiler::<(), rustc_driver_impl[cf2eeefd8b719405]::run_compiler::{closure#0}>::{closure#1}
+  10:     0x7f766260cbf4 - <rayon_core[1e39052cb5a7478f]::job::StackJob<rayon_core[1e39052cb5a7478f]::latch::LatchRef<rayon_core[1e39052cb5a7478f]::latch::LockLatch>, <rayon_core[1e39052cb5a7478f]::registry::Registry>::in_worker_cold<<rayon_core[1e39052cb5a7478f]::thread_pool::ThreadPool>::install<rustc_interface[b6e22bd203f35f16]::util::run_in_thread_pool_with_globals<rustc_interface[b6e22bd203f35f16]::interface::run_compiler<(), rustc_driver_impl[cf2eeefd8b719405]::run_compiler::{closure#0}>::{closure#1}, ()>::{closure#5}::{closure#0}::{closure#1}::{closure#0}, ()>::{closure#0}, ()>::{closure#0}::{closure#0}, ()> as rayon_core[1e39052cb5a7478f]::job::Job>::execute
+  11:     0x7f766210868e - <rayon_core[1e39052cb5a7478f]::registry::WorkerThread>::wait_until_cold
+  12:     0x7f7662106011 - <rayon_core[1e39052cb5a7478f]::registry::ThreadBuilder>::run
+  13:     0x7f76625ee75d - std[969d7c4f52bf98a2]::sys::backtrace::__rust_begin_short_backtrace::<<rayon_core[1e39052cb5a7478f]::ThreadPoolBuilder>::build_scoped<rustc_interface[b6e22bd203f35f16]::util::run_in_thread_pool_with_globals<rustc_interface[b6e22bd203f35f16]::interface::run_compiler<(), rustc_driver_impl[cf2eeefd8b719405]::run_compiler::{closure#0}>::{closure#1}, ()>::{closure#5}::{closure#0}::{closure#0}, rustc_interface[b6e22bd203f35f16]::util::run_in_thread_pool_with_globals<rustc_interface[b6e22bd203f35f16]::interface::run_compiler<(), rustc_driver_impl[cf2eeefd8b719405]::run_compiler::{closure#0}>::{closure#1}, ()>::{closure#5}::{closure#0}::{closure#1}, ()>::{closure#0}::{closure#0}::{closure#0}, ()>
+  14:     0x7f76625fd682 - <<std[969d7c4f52bf98a2]::thread::Builder>::spawn_unchecked_<<rayon_core[1e39052cb5a7478f]::ThreadPoolBuilder>::build_scoped<rustc_interface[b6e22bd203f35f16]::util::run_in_thread_pool_with_globals<rustc_interface[b6e22bd203f35f16]::interface::run_compiler<(), rustc_driver_impl[cf2eeefd8b719405]::run_compiler::{closure#0}>::{closure#1}, ()>::{closure#5}::{closure#0}::{closure#0}, rustc_interface[b6e22bd203f35f16]::util::run_in_thread_pool_with_globals<rustc_interface[b6e22bd203f35f16]::interface::run_compiler<(), rustc_driver_impl[cf2eeefd8b719405]::run_compiler::{closure#0}>::{closure#1}, ()>::{closure#5}::{closure#0}::{closure#1}, ()>::{closure#0}::{closure#0}::{closure#0}, ()>::{closure#1} as core[9f3219c7c98ff3a5]::ops::function::FnOnce<()>>::call_once::{shim:vtable#0}
+  15:     0x7f7664e394bd - std::sys::pal::unix::thread::Thread::new::thread_start::h9988f4d737a96777
+  16:     0x7f765e8a57eb - <unknown>
+  17:     0x7f765e92918c - <unknown>
+  18:                0x0 - <unknown>
+
+
+rustc version: 1.89.0-nightly (586ad391f 2025-06-15)
+platform: x86_64-unknown-linux-gnu
