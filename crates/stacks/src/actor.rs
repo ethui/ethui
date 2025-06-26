@@ -1,6 +1,5 @@
 use std::path::PathBuf;
 
-use ethui_args::Args;
 use kameo::{actor::ActorRef, message::Message, Actor};
 use tracing::info;
 
@@ -13,7 +12,7 @@ pub struct Worker {
 }
 
 pub enum Msg {
-    SetStacks(bool),
+    SetEnabled(bool),
 }
 
 impl Message<Msg> for Worker {
@@ -25,7 +24,7 @@ impl Message<Msg> for Worker {
         _ctx: &mut kameo::message::Context<Self, Self::Reply>,
     ) -> Self::Reply {
         match msg {
-            Msg::SetStacks(enabled) => {
+            Msg::SetEnabled(enabled) => {
                 self.stacks = enabled;
                 if enabled {
                     start_stacks(self.port, self.config_dir.clone()).unwrap_or_else(|e| {

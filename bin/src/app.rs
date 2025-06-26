@@ -164,7 +164,7 @@ async fn init(app: &tauri::App, args: &Args) -> color_eyre::Result<()> {
     ethui_networks::init(resource(app, "networks.json", args)).await;
     ethui_forge::init().await?;
 
-    #[cfg(feature = "ethui-stacks")]
+    #[cfg(feature = "stacks")]
     ethui_stacks::init(args.stacks_port, resource(app, "stacks/", args)).await?;
 
     // automatically open devtools if env asks for it

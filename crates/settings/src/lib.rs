@@ -49,7 +49,7 @@ pub struct Settings {
     pub rust_log: String,
 
     #[serde(default)]
-    stacks: bool,
+    run_local_stacks: bool,
 
     #[serde(default)]
     pub onboarding: Onboarding,
@@ -72,7 +72,7 @@ impl Default for Settings {
             rust_log: "warn".into(),
             version: ConstI64,
             onboarding: Onboarding::default(),
-            stacks: false,
+            run_local_stacks: false,
         }
     }
 }
