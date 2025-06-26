@@ -3603,6 +3603,7 @@ version = "1.15.1"
 dependencies = [
  "alloy",
  "anyhow",
+ "ethui-args",
  "ethui-broadcast",
  "ethui-db",
  "ethui-networks",

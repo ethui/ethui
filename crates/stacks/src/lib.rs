@@ -1,6 +1,7 @@
 mod actor;
 mod error;
 mod init;
+mod docker;
 
 pub use error::{Error, Result};
 pub use init::init;
