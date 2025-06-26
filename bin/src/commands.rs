@@ -47,7 +47,18 @@ pub async fn add_contract(
     let proxy = ethui_proxy_detect::detect_proxy(address, &provider).await?;
     let network_is_dev = network.is_dev().await;
 
-    let (name, abi) = if network_is_dev {
+    let existing_contract = db
+        .get_contract(chain_id as u32, dedup_id as i32, address)
+        .await
+        .ok()
+        .flatten();
+
+    let (name, abi) = if let Some(contract) = existing_contract {
+        (
+            contract.name,
+            Some(serde_json::to_string(&contract.abi).unwrap()),
+        )
+    } else if network_is_dev {
         let network_fork = network.get_forked_network().await;
         match network_fork {
             Ok(Some(fork)) => (

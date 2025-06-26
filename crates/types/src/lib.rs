@@ -22,6 +22,7 @@ pub use tokens::{
     Erc721TokenDetails, TokenBalance, TokenMetadata,
 };
 pub use ui_events::UINotify;
+pub use error::Error;
 
 pub type Json = serde_json::Value;
 

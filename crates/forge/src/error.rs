@@ -33,7 +33,7 @@ pub enum Error {
     Rpc(#[from] RpcError<TransportErrorKind>),
 
     #[error(transparent)]
-    TransportErrorKindRpc(#[from] ethui_types::Error),
+    Types(#[from] ethui_types::Error),
 
     #[error(transparent)]
     Notify(#[from] notify::Error),

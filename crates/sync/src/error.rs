@@ -25,6 +25,9 @@ pub enum Error {
 
     #[error("Alchemy Error {0}")]
     Alchemy(#[from] ethui_sync_alchemy::Error),
+
+    #[error(transparent)]
+    Types(#[from] ethui_types::Error),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
