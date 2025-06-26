@@ -3515,6 +3515,7 @@ dependencies = [
  "ethui-connections",
  "ethui-db",
  "ethui-dialogs",
+ "ethui-forge",
  "ethui-networks",
  "ethui-settings",
  "ethui-simulator",

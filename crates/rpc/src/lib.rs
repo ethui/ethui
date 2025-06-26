@@ -131,6 +131,8 @@ impl Handler {
         self_handler!("net_peerCount", Self::unimplemented);
         self_handler!("eth_gasPrice", Self::unimplemented);
         self_handler!("eth_signTransaction", Self::unimplemented);
+
+        self_handler!("ethui_getContractAbi", Self::ethui_get_abi_for_contract);
     }
 
     async fn accounts(_: Params, _: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
@@ -316,5 +318,20 @@ impl Handler {
         tracing::warn!("unimplemented method called: {:?}", params);
 
         Err(jsonrpc_core::Error::internal_error())
+    }
+
+    async fn ethui_get_abi_for_contract(
+        params: Params,
+        ctx: Ctx,
+    ) -> jsonrpc_core::Result<serde_json::Value> {
+        let network = ctx.network().await;
+
+        let params = params.parse::<Vec<String>>().unwrap();
+        let method = methods::ethui::AbiForContract::build()
+            .set_network(network)
+            .set_params(params.into())
+            .build()?;
+
+        Ok(method.run().await?)
     }
 }

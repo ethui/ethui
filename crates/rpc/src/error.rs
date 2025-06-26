@@ -35,6 +35,9 @@ pub enum Error {
     Network(#[from] ethui_networks::Error),
 
     #[error(transparent)]
+    Db(#[from] ethui_db::Error),
+
+    #[error(transparent)]
     JsonRpc(#[from] jsonrpc_core::Error),
 
     #[error(transparent)]
@@ -92,6 +95,9 @@ pub enum Error {
 
     #[error("Unable to verify ownership. Possibly because the standard is not supported or the user's currently selected network does not match the chain of the asset in question.")]
     ErcInvalid,
+
+    #[error("Invalid params for JSON-RPC method")]
+    InvalidParams,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
