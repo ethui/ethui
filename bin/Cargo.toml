@@ -59,4 +59,4 @@ default = []
 # DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
 debug = ["tauri/devtools"]
-stacks = ["ethui-stacks"]
+stacks = ["dep:ethui-stacks"]

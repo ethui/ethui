@@ -86,8 +86,7 @@ impl Settings {
         }
 
         if let Some(v) = params.get("stacks") {
-            println!("Setting stacks mode to {}", v);
-            self.inner.stacks = serde_json::from_value(v.clone()).unwrap();
+            self.inner.run_local_stacks = serde_json::from_value(v.clone())?;
         }
 
         self.save().await?;
@@ -124,8 +123,7 @@ impl Settings {
     }
 
     pub async fn set_stacks(&mut self, mode: bool) -> Result<()> {
-        println!("Setting stacks mode to {}", mode);
-        self.inner.stacks = mode;
+        self.inner.run_local_stacks = mode;
         self.save().await?;
 
         Ok(())
@@ -140,7 +138,7 @@ impl Settings {
     }
 
     pub fn stacks(&self) -> bool {
-        self.inner.stacks
+        self.inner.run_local_stacks
     }
 
     pub fn start_minimized(&self) -> bool {
@@ -214,7 +212,7 @@ pub struct SerializedSettings {
     rust_log: String,
 
     #[serde(default)]
-    stacks: bool,
+    run_local_stacks: bool,
 
     #[serde(default)]
     pub onboarding: Onboarding,
@@ -237,7 +235,7 @@ impl Default for SerializedSettings {
             rust_log: "warn".into(),
             version: ConstI64,
             onboarding: Onboarding::default(),
-            stacks: false,
+            run_local_stacks: false,
         }
     }
 }

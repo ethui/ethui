@@ -208,7 +208,7 @@ fn run_migrations(settings: Versions) -> SerializedSettings {
                     start_minimized: v2.start_minimized,
                     rust_log: v2.rust_log,
                     onboarding: v2.onboarding,
-                    stacks: false,
+                    run_local_stacks: false,
                 });
             }
 

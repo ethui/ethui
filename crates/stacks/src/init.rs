@@ -1,6 +1,5 @@
 use std::path::PathBuf;
 
-use ethui_args::Args;
 use ethui_broadcast::InternalMsg;
 use ethui_settings::Settings;
 use ethui_types::GlobalState;
@@ -17,7 +16,7 @@ pub async fn init(stacks_port: u16, config_dir: PathBuf) -> Result<()> {
 
     // Set initial state from settings
     let settings = Settings::read().await;
-    handle.tell(Msg::SetStacks(settings.stacks())).await?;
+    handle.tell(Msg::SetEnabled(settings.stacks())).await?;
 
     tokio::spawn(async move { receiver(handle).await });
 
@@ -33,7 +32,7 @@ async fn receiver(handle: ActorRef<Worker>) -> ! {
                 InternalMsg::SettingsUpdated => {
                     let settings = Settings::read().await;
                     handle
-                        .tell(Msg::SetStacks(settings.stacks()))
+                        .tell(Msg::SetEnabled(settings.stacks()))
                         .await
                         .unwrap();
                 }

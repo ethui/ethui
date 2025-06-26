@@ -44,7 +44,7 @@ impl DockerManager<Initial> {
         {
             let xdg_runtime_dir =
                 env::var("XDG_RUNTIME_DIR").unwrap_or_else(|_| "/run/user/1000".to_string());
-            let podman_sock = format!("{}/podman/podman.sock", xdg_runtime_dir);
+            let podman_sock = format!("{xdg_runtime_dir}/podman/podman.sock");
             self.docker_bin = Some("podman".to_string());
             self.socket_path = Some(podman_sock);
         } else {
@@ -106,26 +106,6 @@ impl DockerManager<ImageAvailable> {
 }
 
 impl DockerManager<DataDirectoryReady> {
-    pub fn check_container_running(self, port: u16) -> Result<DockerManager<ContainerRunning>> {
-        let docker_bin = self.docker_bin.as_ref().unwrap();
-        let container_name = self.container_name.clone();
-        info!(container = %container_name, "Checking if container is running...");
-        let output = Command::new(docker_bin)
-            .args(["ps", "-q", "--filter", &format!("name={}", container_name)])
-            .output()?;
-
-        let id = String::from_utf8_lossy(&output.stdout);
-        if !id.trim().is_empty() {
-            info!(container = %self.container_name, "Container is already running.");
-            return Ok(self.transition());
-        }
-
-        info!(container = %self.container_name, "Container not running. Starting it now...");
-        Err(Error::Command(
-            "run_container must be called with port".to_string(),
-        ))
-    }
-
     pub fn run_container(self, port: u16) -> Result<DockerManager<ContainerRunning>> {
         let docker_bin = self.docker_bin.as_ref().unwrap();
         let socket_path = self.socket_path.as_ref().unwrap();
@@ -152,33 +132,46 @@ impl DockerManager<DataDirectoryReady> {
             .arg(format!("--name={}", self.container_name))
             .arg(&self.image_name);
 
-        println!("Running command: {cmd:?}");
         info!(command = ?cmd, "Running Docker/Podman command");
+
         let output = cmd.output()?;
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
             error!(stderr = %stderr, "Docker/Podman run error");
             return Err(Error::Command("Failed to start container".to_string()));
         }
+
         Ok(self.transition())
     }
 }
 
 impl DockerManager<ContainerRunning> {
-    pub fn check_health(self) -> Result<DockerManager<Ready>> {
+    pub fn check_health(self, port: u16) -> Result<DockerManager<Ready>> {
         let docker_bin = self.docker_bin.as_ref().unwrap();
         let container_name = self.container_name.clone();
-        info!(container = %container_name, "Final check on container status...");
+
+        info!(container = %container_name, "Checking if container is running...");
+
         let output = Command::new(docker_bin)
-            .args(["ps", "-q", "--filter", &format!("name={container_name}")])
+            .args([
+                "ps",
+                "--filter",
+                &format!("name={container_name}"),
+                "--format",
+                "{{Ports}}",
+            ])
             .output()?;
 
-        let id = String::from_utf8_lossy(&output.stdout);
-        if !id.trim().is_empty() {
-            info!(container = %self.container_name, "Container is ready.");
+        let ports = String::from_utf8_lossy(&output.stdout);
+
+        let expected = format!("{port}->4000");
+
+        if !ports.trim().contains(&expected) {
+            info!(container = %self.container_name, "Container is already running.");
             return Ok(self.transition());
         }
 
+        info!(container = %self.container_name, "Container not running. Starting it now...");
         Err(Error::ContainerNotRunning(self.container_name))
     }
 }
@@ -209,7 +202,7 @@ pub fn start_stacks(port: u16, config_dir: PathBuf) -> Result<()> {
         .check_image_available()?
         .ensure_data_directory()?
         .run_container(port)?
-        .check_health()?;
+        .check_health(port)?;
 
     info!("Stacks is fully up and running!");
     Ok(())
