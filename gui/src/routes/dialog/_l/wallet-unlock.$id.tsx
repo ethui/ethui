@@ -78,7 +78,7 @@ function WalletUnlockDialog() {
           >
             Cancel
           </Button>
-          <Form.Submit label="Unlock" isSubmitting={loading} />
+          <Form.Submit label="Unlock" forceLoading={loading} />
         </div>
       </Form>
     </>
