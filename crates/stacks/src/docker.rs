@@ -171,7 +171,6 @@ impl DockerManager<ContainerRunning> {
             return Ok(self.transition());
         }
 
-        info!(container = %self.container_name, "Container not running. Starting it now...");
         Err(Error::ContainerNotRunning(self.container_name))
     }
 }
