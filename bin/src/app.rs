@@ -139,7 +139,7 @@ async fn init(app: &tauri::App, args: &Args) -> AppResult<()> {
     ethui_forge::init().await?;
 
     #[cfg(feature = "ethui-stacks")]
-    ethui_stacks::init().await?;
+    ethui_stacks::init(args.stacks_port, resource(app, "stacks/", args)).await?;
 
     // automatically open devtools if env asks for it
     #[cfg(feature = "debug")]

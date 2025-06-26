@@ -1,12 +1,18 @@
+use std::path::PathBuf;
+
+use ethui_args::Args;
 use ethui_broadcast::InternalMsg;
 use ethui_settings::Settings;
 use ethui_types::GlobalState;
 use kameo::actor::ActorRef;
 
-use crate::actor::{Msg, Worker};
+use crate::{
+    actor::{Msg, Worker},
+    error::Result,
+};
 
-pub async fn init() -> crate::Result<()> {
-    let handle = kameo::spawn(Worker::default());
+pub async fn init(stacks_port: u16, config_dir: PathBuf) -> Result<()> {
+    let handle = kameo::spawn(Worker::new(stacks_port, config_dir));
     handle.register("stacks").unwrap();
 
     // Set initial state from settings

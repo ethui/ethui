@@ -13,6 +13,9 @@ pub struct Args {
     #[arg(long, default_value_t = 9002, env = "ETHUI_WS_PORT")]
     pub ws_port: u16,
 
+    #[arg(long, default_value_t = 9010, env = "ETHUI_STACKS_PORT")]
+    pub stacks_port: u16,
+
     #[arg(long, default_value_t = false)]
     pub hidden: bool,
 }
