@@ -1,5 +1,6 @@
 mod chain_add;
 mod chain_update;
+pub mod ethui;
 mod send_call;
 mod send_transaction;
 mod sign_message;
