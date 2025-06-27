@@ -162,6 +162,20 @@ impl Message<FetchAbis> for Worker {
     }
 }
 
+pub struct GetAbiFor(pub Bytes);
+
+impl Message<GetAbiFor> for Worker {
+    type Reply = Option<ForgeAbi>;
+
+    async fn handle(
+        &mut self,
+        msg: GetAbiFor,
+        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
+    ) -> Self::Reply {
+        self.get_abi_for(&msg.0)
+    }
+}
+
 impl Actor for Worker {
     type Error = crate::error::Error;
 
