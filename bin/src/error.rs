@@ -34,6 +34,9 @@ pub enum AppError {
 
     #[error(transparent)]
     Rpc(#[from] RpcError<TransportErrorKind>),
+
+    #[error(transparent)]
+    Types(#[from] ethui_types::Error),
 }
 
 pub type AppResult<T> = std::result::Result<T, AppError>;
