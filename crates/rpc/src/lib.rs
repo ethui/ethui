@@ -122,7 +122,7 @@ impl Handler {
         self_handler!("wallet_watchAsset", Self::add_token);
 
         // metamask
-        self_handler!("metamask_getProviderState", Self::provider_state);
+        self_handler!("metamask_getProviderState", Self::metamask_provider_state);
 
         // not yet implemented
         self_handler!("web3_clientVersion", Self::unimplemented);
@@ -132,6 +132,7 @@ impl Handler {
         self_handler!("eth_gasPrice", Self::unimplemented);
         self_handler!("eth_signTransaction", Self::unimplemented);
 
+        self_handler!("ethui_getProviderState", Self::ethui_provider_state);
         self_handler!("ethui_getContractAbi", Self::ethui_get_abi_for_contract);
     }
 
@@ -147,7 +148,10 @@ impl Handler {
         Ok(json!(network.chain_id_hex()))
     }
 
-    async fn provider_state(_: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn metamask_provider_state(
+        _: Params,
+        ctx: Ctx,
+    ) -> jsonrpc_core::Result<serde_json::Value> {
         let wallets = Wallets::read().await;
 
         let network = ctx.network().await;
@@ -320,13 +324,29 @@ impl Handler {
         Err(jsonrpc_core::Error::internal_error())
     }
 
+    async fn ethui_provider_state(_: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+        let wallets = Wallets::read().await;
+
+        let network = ctx.network().await;
+        let address = wallets.get_current_wallet().get_current_address().await;
+
+        Ok(json!({
+            "ethui": {
+                "version": env!("CARGO_PKG_VERSION"),
+            },
+            "network": {
+                "chainId": network.chain_id_hex(),
+            },
+            "accounts": [address],
+        }))
+    }
+
     async fn ethui_get_abi_for_contract(
         params: Params,
         ctx: Ctx,
     ) -> jsonrpc_core::Result<serde_json::Value> {
         let network = ctx.network().await;
 
-        let params = params.parse::<Vec<String>>().ok_or(Error::InvalidParams)?;
         let method = methods::ethui::AbiForContract::build()
             .set_network(network)
             .set_params(params.into())
