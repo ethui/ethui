@@ -26,7 +26,7 @@ pub fn reload(directives: &str) -> color_eyre::Result<()> {
 
     RELOAD_HANDLE
         .get()
-        .with_context(|| format!("Reload handle not set"))?
+        .with_context(|| "Reload handle not set".to_string())?
         .modify(|filter| *filter = new_filter)?;
 
     Ok(())

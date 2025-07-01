@@ -67,7 +67,7 @@ pub async fn networks_is_dev(dedup_chain_id: DedupChainId) -> TauriResult<bool> 
 
     let network = networks
         .get_network_by_dedup_chain_id(dedup_chain_id)
-        .with_context(|| format!("Does not exist"))
+        .with_context(|| "Does not exist".to_string())
         .map_err(SerializableError::from)?;
 
     Ok(network.is_dev().await)

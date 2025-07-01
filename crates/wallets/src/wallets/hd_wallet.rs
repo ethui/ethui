@@ -97,7 +97,7 @@ impl WalletControl for HDWallet {
             .iter()
             .find(|(p, _)| p == path)
             .map(|(_, a)| *a)
-            .with_context(|| format!("unknown wallet key: {}", path))
+            .with_context(|| format!("unknown wallet key: {path}"))
     }
 
     async fn get_all_addresses(&self) -> Vec<(String, Address)> {
@@ -199,7 +199,7 @@ impl HDWallet {
                 let password = payload["password"].clone();
                 password
                     .as_str()
-                    .with_context(|| format!("wallet unlock rejected by user"))?
+                    .with_context(|| "wallet unlock rejected by user".to_string())?
                     .to_string()
             } else {
                 return Err(eyre!("wallet unlock rejected by user"));

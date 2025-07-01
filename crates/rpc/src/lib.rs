@@ -220,7 +220,7 @@ impl Handler {
             .await
             .map(|_| serde_json::Value::Null);
 
-        Ok(res.map_err(|e| Error::from(e))?)
+        Ok(res.map_err(Error::from)?)
     }
 
     #[tracing::instrument()]
