@@ -29,3 +29,4 @@ extension/*.zip
 *storybook.log
 CLAUDE.md
 AGENT.md
+.claude/

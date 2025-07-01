@@ -3,6 +3,7 @@ use std::{
     sync::Arc,
 };
 
+use color_eyre::eyre;
 use ethui_types::{Address, UINotify, B256};
 use tokio::{
     select,
@@ -12,7 +13,7 @@ use tokio::{
 };
 use tracing::{instrument, warn};
 
-use crate::{utils, Error, Msg, Result};
+use crate::{utils, Msg};
 
 #[derive(Debug)]
 pub struct Worker {
@@ -174,7 +175,7 @@ async fn unit_worker(
     addr: Address,
     chain_id: u32,
     mut rx: mpsc::UnboundedReceiver<()>,
-) -> Result<()> {
+) -> color_eyre::Result<()> {
     loop {
         if ethui_sync_alchemy::supports_network(chain_id) {
             if let Ok(alchemy) = get_alchemy(chain_id).await {
@@ -190,10 +191,10 @@ async fn unit_worker(
     }
 }
 
-async fn get_alchemy(chain_id: u32) -> Result<ethui_sync_alchemy::Alchemy> {
+async fn get_alchemy(chain_id: u32) -> color_eyre::Result<ethui_sync_alchemy::Alchemy> {
     let api_key = match ethui_sync_alchemy::get_current_api_key().await {
         Ok(Some(api_key)) => api_key,
-        _ => return Err(Error::NoApiKey),
+        _ => return Err(eyre::eyre!("No API key")),
     };
     let alchemy = ethui_sync_alchemy::Alchemy::new(&api_key, ethui_db::get(), chain_id).unwrap();
 

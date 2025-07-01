@@ -21,7 +21,7 @@ serde.workspace = true
 serde_json.workspace = true
 tauri.workspace = true
 tokio.workspace = true
-thiserror.workspace = true
+color-eyre.workspace = true
 tracing.workspace = true
 futures.workspace = true
 regex.workspace = true
@@ -32,5 +32,4 @@ notify = "8.0.0"
 notify-debouncer-full = "0.5.0"
 
 [dev-dependencies]
-anyhow.workspace = true
 tempfile.workspace = true

@@ -1,7 +1,7 @@
 use ethui_types::{DedupChainId, Event};
 use tracing::instrument;
 
-use crate::{DbInner, Result};
+use crate::DbInner;
 
 impl DbInner {
     #[instrument(level = "trace", skip(self, events))]
@@ -9,7 +9,7 @@ impl DbInner {
         &self,
         dedup_chain_id: DedupChainId,
         events: Vec<Event>,
-    ) -> Result<()> {
+    ) -> color_eyre::Result<()> {
         let chain_id = dedup_chain_id.chain_id();
 
         for tx in events.iter() {

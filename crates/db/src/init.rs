@@ -3,11 +3,11 @@ use std::{path::PathBuf, sync::Arc};
 use ethui_broadcast::InternalMsg;
 use once_cell::sync::OnceCell;
 
-use crate::{Db, DbInner, Result};
+use crate::{Db, DbInner};
 
 static DB: OnceCell<Db> = OnceCell::new();
 
-pub async fn init(path: &PathBuf) -> Result<Db> {
+pub async fn init(path: &PathBuf) -> color_eyre::Result<Db> {
     let db = Arc::new(DbInner::connect(path).await.unwrap());
     DB.set(db.clone()).unwrap();
 

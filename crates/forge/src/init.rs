@@ -5,7 +5,7 @@ use kameo::actor::ActorRef;
 
 use crate::actor::{Msg, Worker};
 
-pub async fn init() -> crate::Result<()> {
+pub async fn init() -> color_eyre::Result<()> {
     let handle = kameo::spawn(Worker::default());
     handle.register("forge").unwrap();
     let settings = Settings::read().await;

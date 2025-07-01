@@ -3,17 +3,17 @@ use std::str::FromStr;
 use alloy::primitives::Bytes;
 use ethui_types::{events::Tx, transactions::Transaction, Address, B256, U256};
 
-use crate::{pagination::TxIdx, DbInner, Result};
+use crate::{pagination::TxIdx, DbInner};
 
 impl DbInner {
-    pub async fn insert_transactions(&self, chain_id: u32, txs: Vec<Tx>) -> Result<()> {
+    pub async fn insert_transactions(&self, chain_id: u32, txs: Vec<Tx>) -> color_eyre::Result<()> {
         for tx in txs.iter() {
             self.insert_transaction(chain_id, tx).await?;
         }
         Ok(())
     }
 
-    pub async fn insert_transaction(&self, chain_id: u32, tx: &Tx) -> Result<()> {
+    pub async fn insert_transaction(&self, chain_id: u32, tx: &Tx) -> color_eyre::Result<()> {
         let hash = format!("0x{:x}", tx.hash);
         let trace_address = tx.trace_address.clone().map(|t| {
             t.into_iter()
@@ -62,7 +62,7 @@ impl DbInner {
         Ok(())
     }
 
-    pub async fn get_transaction_by_hash(&self, chain_id: u32, hash: B256) -> Result<Tx> {
+    pub async fn get_transaction_by_hash(&self, chain_id: u32, hash: B256) -> color_eyre::Result<Tx> {
         let hash = hash.to_string();
 
         let row = sqlx::query!(
@@ -110,7 +110,7 @@ impl DbInner {
         from_or_to: Address,
         max: u32,
         first_known: Option<TxIdx>,
-    ) -> Result<Vec<Transaction>> {
+    ) -> color_eyre::Result<Vec<Transaction>> {
         let from_or_to = from_or_to.to_string();
         let first_known = first_known.unwrap_or_default();
         let first_known_block = first_known.block_number as u32;
@@ -160,7 +160,7 @@ impl DbInner {
         from_or_to: Address,
         max: u32,
         last_known: Option<TxIdx>,
-    ) -> Result<Vec<Transaction>> {
+    ) -> color_eyre::Result<Vec<Transaction>> {
         let from_or_to = from_or_to.to_string();
         let last_known_block = last_known
             .clone()
@@ -203,7 +203,7 @@ impl DbInner {
         Ok(items)
     }
 
-    pub async fn remove_transactions(&self, chain_id: u32) -> Result<()> {
+    pub async fn remove_transactions(&self, chain_id: u32) -> color_eyre::Result<()> {
         sqlx::query!(r#"DELETE FROM transactions where chain_id = ?"#, chain_id)
             .execute(self.pool())
             .await?;
@@ -211,7 +211,7 @@ impl DbInner {
         Ok(())
     }
 
-    pub async fn get_call_count(&self, chain_id: u32, from: Address, to: Address) -> Result<u32> {
+    pub async fn get_call_count(&self, chain_id: u32, from: Address, to: Address) -> color_eyre::Result<u32> {
         let from = format!("0x{from:x}");
         let to = format!("0x{to:x}");
 

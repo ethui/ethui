@@ -35,9 +35,6 @@ pub enum Error {
     Network(#[from] ethui_networks::Error),
 
     #[error(transparent)]
-    Db(#[from] ethui_db::Error),
-
-    #[error(transparent)]
     JsonRpc(#[from] jsonrpc_core::Error),
 
     #[error(transparent)]
