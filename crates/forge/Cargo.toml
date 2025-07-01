@@ -26,6 +26,7 @@ tracing.workspace = true
 futures.workspace = true
 regex.workspace = true
 kameo.workspace = true
+tokio-tungstenite.workspace = true
 
 glob.workspace = true
 notify.workspace = true

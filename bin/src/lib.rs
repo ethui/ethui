@@ -7,6 +7,11 @@ mod menu;
 mod system_tray;
 mod windows;
 
+use std::env;
+
+use color_eyre::Result;
+use ethui_args::{Commands, ForgeCommands};
+use ethui_forge::test_runner::ForgeTestRunner;
 use named_lock::NamedLock;
 
 #[cfg(not(debug_assertions))]
@@ -15,11 +20,17 @@ static LOCK_NAME: &str = "iron-wallet";
 static LOCK_NAME: &str = "iron-wallet-dev";
 
 #[tokio::main]
-pub async fn run() -> color_eyre::Result<()> {
+pub async fn run() -> Result<()> {
     ethui_tracing::init()?;
     fix_path_env::fix()?;
 
     let args = ethui_args::parse();
+
+    // Handle subcommands before GUI initialization
+    if let Some(command) = &args.command {
+        return handle_command(command).await;
+    }
+
     let lock = NamedLock::create(LOCK_NAME)?;
 
     let _guard = match lock.try_lock() {
@@ -33,4 +44,21 @@ pub async fn run() -> color_eyre::Result<()> {
     app::EthUIApp::build(&args).await?.run();
 
     Ok(())
+}
+
+async fn handle_command(command: &Commands) -> Result<()> {
+    match command {
+        Commands::Forge { subcommand } => handle_forge_command(subcommand).await,
+    }
+}
+
+async fn handle_forge_command(subcommand: &ForgeCommands) -> Result<()> {
+    match subcommand {
+        ForgeCommands::Test => {
+            let current_dir = env::current_dir().expect("failed to get current dir");
+            let forge_test_runner =
+                ForgeTestRunner::new(current_dir.to_string_lossy().to_string(), 9102);
+            forge_test_runner.run_tests().await
+        }
+    }
 }

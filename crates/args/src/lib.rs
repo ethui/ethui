@@ -1,4 +1,4 @@
-use clap::Parser;
+use clap::{Parser, Subcommand};
 
 pub fn parse() -> Args {
     Args::parse()
@@ -18,4 +18,23 @@ pub struct Args {
 
     #[arg(long, default_value_t = false)]
     pub hidden: bool,
+
+    #[command(subcommand)]
+    pub command: Option<Commands>,
+}
+
+#[derive(Subcommand, Debug)]
+pub enum Commands {
+    /// Run forge tests
+    #[command(name = "forge")]
+    Forge {
+        #[command(subcommand)]
+        subcommand: ForgeCommands,
+    },
+}
+
+#[derive(Subcommand, Debug)]
+pub enum ForgeCommands {
+    /// Run tests
+    Test,
 }
