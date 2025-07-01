@@ -31,7 +31,7 @@
     "@tauri-apps/plugin-os": "^2.3.0",
     "@uidotdev/usehooks": "^2.4.1",
     "abitype": "^1.0.8",
-    "core-js": "^3.42.0",
+    "core-js": "^3.43.0",
     "lodash-es": "^4.17.21",
     "lucide-react": "^0.506.0",
     "motion": "^12.15.0",
