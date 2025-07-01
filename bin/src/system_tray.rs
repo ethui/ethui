@@ -4,9 +4,7 @@ use tauri::{
     AppHandle, Manager,
 };
 
-use crate::AppResult;
-
-pub(crate) fn build(app: &AppHandle) -> AppResult<()> {
+pub(crate) fn build(app: &AppHandle) -> color_eyre::Result<()> {
     let menu_builder = MenuBuilder::new(app);
 
     let menu = menu_builder

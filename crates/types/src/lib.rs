@@ -1,6 +1,7 @@
 mod affinity;
 mod contracts;
 pub mod dedup_chain_id;
+mod error;
 pub mod events;
 mod global_state;
 mod network;
@@ -13,6 +14,7 @@ pub use alloy::primitives::{address, Address, B256, U256, U64};
 pub use color_eyre::eyre::eyre;
 pub use contracts::{Contract, ContractWithAbi};
 pub use dedup_chain_id::DedupChainId;
+pub use error::{SerializableError, TauriResult};
 pub use events::Event;
 pub use global_state::GlobalState;
 pub use network::Network;
@@ -24,34 +26,6 @@ pub use tokens::{
 pub use ui_events::UINotify;
 
 pub type Json = serde_json::Value;
-
-#[derive(Debug)]
-pub struct SerializableError(pub color_eyre::Report);
-
-impl std::fmt::Display for SerializableError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-impl std::error::Error for SerializableError {}
-
-impl serde::Serialize for SerializableError {
-    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(&self.0.to_string())
-    }
-}
-
-impl From<color_eyre::Report> for SerializableError {
-    fn from(err: color_eyre::Report) -> Self {
-        Self(err)
-    }
-}
-
-pub type TauriResult<T> = std::result::Result<T, SerializableError>;
 
 #[derive(Debug, Default)]
 pub struct SyncUpdates {

@@ -5,9 +5,7 @@ use ethui_db::{
     Db,
 };
 use ethui_proxy_detect::ProxyType;
-use ethui_types::{Address, GlobalState, UINotify};
-
-use crate::error::{AppResult, TauriResult};
+use ethui_types::{Address, GlobalState, TauriResult, UINotify};
 
 #[tauri::command]
 pub fn get_build_mode() -> String {
@@ -42,7 +40,7 @@ pub async fn add_contract(
         dedup_id: i64,
         address: Address,
         db: tauri::State<'_, Db>,
-    ) -> AppResult<()> {
+    ) -> color_eyre::Result<()> {
         let networks = ethui_networks::Networks::read().await;
 
         let network = networks
