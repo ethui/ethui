@@ -358,7 +358,6 @@ impl Worker {
 mod tests {
     use std::fs;
 
-    use anyhow::Result;
     use tempfile::TempDir;
 
     use super::*;

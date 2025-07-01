@@ -4,7 +4,6 @@ use ethui_settings::Settings;
 use ethui_types::GlobalState;
 use foundry_block_explorers::errors::EtherscanError;
 
-
 pub async fn fetch_etherscan_contract_name(
     chain: Chain,
     address: Address,
@@ -19,7 +18,10 @@ pub async fn fetch_etherscan_contract_name(
     }
 }
 
-pub async fn fetch_etherscan_abi(chain: Chain, address: Address) -> color_eyre::Result<Option<JsonAbi>> {
+pub async fn fetch_etherscan_abi(
+    chain: Chain,
+    address: Address,
+) -> color_eyre::Result<Option<JsonAbi>> {
     let api_key = Settings::read().await.get_etherscan_api_key()?;
     let client = foundry_block_explorers::Client::new(chain, api_key)?;
 

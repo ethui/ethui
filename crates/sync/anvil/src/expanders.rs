@@ -19,7 +19,6 @@ use ethui_types::{
 };
 use futures::future::join_all;
 
-
 pub(super) async fn expand_traces(
     traces: Vec<LocalizedTransactionTrace>,
     provider: &RootProvider<Ethereum>,

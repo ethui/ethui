@@ -62,7 +62,11 @@ impl DbInner {
         Ok(())
     }
 
-    pub async fn get_transaction_by_hash(&self, chain_id: u32, hash: B256) -> color_eyre::Result<Tx> {
+    pub async fn get_transaction_by_hash(
+        &self,
+        chain_id: u32,
+        hash: B256,
+    ) -> color_eyre::Result<Tx> {
         let hash = hash.to_string();
 
         let row = sqlx::query!(
@@ -211,7 +215,12 @@ impl DbInner {
         Ok(())
     }
 
-    pub async fn get_call_count(&self, chain_id: u32, from: Address, to: Address) -> color_eyre::Result<u32> {
+    pub async fn get_call_count(
+        &self,
+        chain_id: u32,
+        from: Address,
+        to: Address,
+    ) -> color_eyre::Result<u32> {
         let from = format!("0x{from:x}");
         let to = format!("0x{to:x}");
 

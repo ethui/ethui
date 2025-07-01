@@ -5,6 +5,7 @@ use alloy::signers::{
     Signer as _,
 };
 use async_trait::async_trait;
+use color_eyre::eyre::eyre;
 use ethui_crypto::{self, EncryptedData};
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_types::Address;
@@ -14,7 +15,7 @@ use tokio::{
     task::JoinHandle,
 };
 
-use crate::{utils, wallet::WalletCreate, Error, Result, Signer, Wallet, WalletControl};
+use crate::{utils, wallet::WalletCreate, Signer, Wallet, WalletControl};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -45,7 +46,7 @@ pub struct HDWallet {
 
 #[async_trait]
 impl WalletCreate for HDWallet {
-    async fn create(params: serde_json::Value) -> Result<Wallet> {
+    async fn create(params: serde_json::Value) -> color_eyre::Result<Wallet> {
         Ok(Wallet::HDWallet(
             Self::from_params(serde_json::from_value(params)?).await?,
         ))
@@ -58,7 +59,7 @@ impl WalletControl for HDWallet {
         self.name.clone()
     }
 
-    async fn update(mut self, params: serde_json::Value) -> Result<Wallet> {
+    async fn update(mut self, params: serde_json::Value) -> color_eyre::Result<Wallet> {
         if let Some(name) = params["name"].as_str() {
             self.name = name.into();
         }
@@ -80,32 +81,32 @@ impl WalletControl for HDWallet {
         self.current.0.clone()
     }
 
-    async fn set_current_path(&mut self, path: String) -> Result<()> {
+    async fn set_current_path(&mut self, path: String) -> color_eyre::Result<()> {
         self.current = self
             .addresses
             .iter()
             .find(|(p, _)| p == &path)
             .cloned()
-            .ok_or(Error::InvalidKey(path))?;
+            .ok_or_else(|| eyre!("unknown wallet key: {}", path))?;
 
         Ok(())
     }
 
-    async fn get_address(&self, path: &str) -> Result<Address> {
+    async fn get_address(&self, path: &str) -> color_eyre::Result<Address> {
         self.addresses
             .iter()
             .find(|(p, _)| p == path)
             .map(|(_, a)| *a)
-            .ok_or(Error::InvalidKey(path.into()))
+            .ok_or_else(|| eyre!("unknown wallet key: {}", path))
     }
 
     async fn get_all_addresses(&self) -> Vec<(String, Address)> {
         self.addresses.clone()
     }
 
-    async fn build_signer(&self, chain_id: u32, path: &str) -> Result<Signer> {
+    async fn build_signer(&self, chain_id: u32, path: &str) -> color_eyre::Result<Signer> {
         if !self.addresses.iter().any(|(p, _)| p == path) {
-            return Err(Error::InvalidKey(path.to_string()));
+            return Err(eyre!("unknown wallet key: {}", path));
         }
 
         self.unlock().await?;
@@ -126,7 +127,7 @@ impl WalletControl for HDWallet {
 }
 
 impl HDWallet {
-    pub async fn from_params(params: HDWalletParams) -> Result<Self> {
+    pub async fn from_params(params: HDWalletParams) -> color_eyre::Result<Self> {
         let addresses =
             utils::derive_addresses(&params.mnemonic, &params.derivation_path, params.count);
         let current = addresses.first().unwrap().clone();
@@ -144,7 +145,7 @@ impl HDWallet {
         })
     }
 
-    async fn update_derivation_path(&mut self, derivation_path: String) -> Result<()> {
+    async fn update_derivation_path(&mut self, derivation_path: String) -> color_eyre::Result<()> {
         self.derivation_path = derivation_path;
 
         self.update_derived_addresses().await?;
@@ -152,7 +153,7 @@ impl HDWallet {
         Ok(())
     }
 
-    async fn update_count(&mut self, count: u32) -> Result<()> {
+    async fn update_count(&mut self, count: u32) -> color_eyre::Result<()> {
         self.count = count;
 
         self.update_derived_addresses().await?;
@@ -160,7 +161,7 @@ impl HDWallet {
         Ok(())
     }
 
-    async fn update_derived_addresses(&mut self) -> Result<()> {
+    async fn update_derived_addresses(&mut self) -> color_eyre::Result<()> {
         self.unlock().await?;
 
         let secret = self.secret.read().await;
@@ -182,7 +183,7 @@ impl HDWallet {
         secret.is_some()
     }
 
-    async fn unlock(&self) -> Result<()> {
+    async fn unlock(&self) -> color_eyre::Result<()> {
         // if we already have a signer, then we're good
         if self.is_unlocked().await {
             return Ok(());
@@ -198,10 +199,10 @@ impl HDWallet {
                 let password = payload["password"].clone();
                 password
                     .as_str()
-                    .ok_or(Error::UnlockDialogRejected)?
+                    .ok_or_else(|| eyre!("wallet unlock rejected by user"))?
                     .to_string()
             } else {
-                return Err(Error::UnlockDialogRejected);
+                return Err(eyre!("wallet unlock rejected by user"));
             };
 
             // if password was given, and correctly decrypts the keystore
@@ -213,7 +214,7 @@ impl HDWallet {
             dialog.send("failed", None).await?;
         }
 
-        Err(Error::UnlockDialogFailed)
+        Err(eyre!("user failed to unlock the wallet"))
     }
 
     async fn store_secret(&self, mnemonic: String) {

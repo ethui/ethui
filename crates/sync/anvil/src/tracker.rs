@@ -268,7 +268,11 @@ pub async fn fetch_erc20_metadata(
     }
 }
 
-async fn save_known_tip(dedup_chain_id: DedupChainId, block_number: u64, hash: B256) -> color_eyre::Result<()> {
+async fn save_known_tip(
+    dedup_chain_id: DedupChainId,
+    block_number: u64,
+    hash: B256,
+) -> color_eyre::Result<()> {
     let db = ethui_db::get();
     db.kv_set(
         &(

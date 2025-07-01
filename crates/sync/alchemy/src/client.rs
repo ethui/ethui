@@ -93,7 +93,10 @@ impl Client {
         Ok(self.v2_provider.get_balance(address).await?)
     }
 
-    pub async fn get_erc20_balances(&self, address: Address) -> color_eyre::Result<Vec<(Address, U256)>> {
+    pub async fn get_erc20_balances(
+        &self,
+        address: Address,
+    ) -> color_eyre::Result<Vec<(Address, U256)>> {
         #[derive(Debug, Serialize, Deserialize)]
         #[serde(rename_all = "camelCase")]
         struct Balances {
@@ -147,13 +150,10 @@ impl Client {
             .map_err(|_e| eyre::eyre!("Failed to fetch ERC metadata from Alchemy API"))?
             .text()
             .await
-            .map_err(|_e| {
-                eyre::eyre!("Failed to fetch ERC metadata from Alchemy API")
-            })?;
+            .map_err(|_e| eyre::eyre!("Failed to fetch ERC metadata from Alchemy API"))?;
 
-        let response_json: ErcMetadataResponse = serde_json::from_str(&response).map_err(|_e| {
-            eyre::eyre!("Failed to parse ERC metadata response from Alchemy API")
-        })?;
+        let response_json: ErcMetadataResponse = serde_json::from_str(&response)
+            .map_err(|_e| eyre::eyre!("Failed to parse ERC metadata response from Alchemy API"))?;
 
         Ok(response_json)
     }
@@ -168,13 +168,10 @@ impl Client {
             .map_err(|_e| eyre::eyre!("Failed to fetch ERC metadata from Alchemy API"))?
             .text()
             .await
-            .map_err(|_e| {
-                eyre::eyre!("Failed to fetch ERC metadata from Alchemy API")
-            })?;
+            .map_err(|_e| eyre::eyre!("Failed to fetch ERC metadata from Alchemy API"))?;
 
-        let response_json: ErcOwnersResponse = serde_json::from_str(&response).map_err(|_e| {
-            eyre::eyre!("Failed to parse ERC owners response from Alchemy API")
-        })?;
+        let response_json: ErcOwnersResponse = serde_json::from_str(&response)
+            .map_err(|_e| eyre::eyre!("Failed to parse ERC owners response from Alchemy API"))?;
 
         Ok(response_json)
     }

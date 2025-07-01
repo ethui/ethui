@@ -4,7 +4,6 @@ use ethui_networks::Networks;
 use ethui_types::{Address, GlobalState};
 use tracing::{debug, error};
 
-
 pub static FUZZ_DIFF_THRESHOLD: f64 = 0.2;
 
 //pub(crate) async fn update_db_contracts() -> Result<()> {

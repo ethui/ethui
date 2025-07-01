@@ -10,8 +10,8 @@ use crate::{
 #[tauri::command]
 pub async fn fetch_forge_abis() -> TauriResult<Vec<ForgeAbi>> {
     async fn inner() -> color_eyre::Result<Vec<ForgeAbi>> {
-        let actor = ActorRef::<Worker>::lookup("forge")?
-            .ok_or_else(|| eyre::eyre!("Actor not found"))?;
+        let actor =
+            ActorRef::<Worker>::lookup("forge")?.ok_or_else(|| eyre::eyre!("Actor not found"))?;
         Ok(actor.ask(FetchAbis).await?)
     }
 

@@ -8,7 +8,11 @@ use tracing::instrument;
 use crate::DbInner;
 
 impl DbInner {
-    pub async fn get_contracts(&self, chain_id: u32, dedup_id: i32) -> color_eyre::Result<Vec<Contract>> {
+    pub async fn get_contracts(
+        &self,
+        chain_id: u32,
+        dedup_id: i32,
+    ) -> color_eyre::Result<Vec<Contract>> {
         let rows = sqlx::query!(
             r#"SELECT address, name, proxy_for, proxied_by FROM contracts WHERE chain_id = ? AND dedup_id = ?"#,
             chain_id, dedup_id
@@ -58,7 +62,11 @@ impl DbInner {
         }
     }
 
-    pub async fn get_contract_abi(&self, chain_id: u32, address: Address) -> color_eyre::Result<JsonAbi> {
+    pub async fn get_contract_abi(
+        &self,
+        chain_id: u32,
+        address: Address,
+    ) -> color_eyre::Result<JsonAbi> {
         let address = format!("0x{address:x}");
 
         let res = sqlx::query!(
@@ -77,7 +85,11 @@ impl DbInner {
         }
     }
 
-    pub async fn get_contract_impl_abi(&self, chain_id: u32, address: Address) -> color_eyre::Result<JsonAbi> {
+    pub async fn get_contract_impl_abi(
+        &self,
+        chain_id: u32,
+        address: Address,
+    ) -> color_eyre::Result<JsonAbi> {
         let address = format!("0x{address:x}");
 
         let res = sqlx::query!(

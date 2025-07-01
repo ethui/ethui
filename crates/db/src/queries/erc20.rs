@@ -194,7 +194,10 @@ impl DbInner {
             .collect())
     }
 
-    pub async fn get_erc20_missing_metadata(&self, chain_id: u32) -> color_eyre::Result<Vec<Address>> {
+    pub async fn get_erc20_missing_metadata(
+        &self,
+        chain_id: u32,
+    ) -> color_eyre::Result<Vec<Address>> {
         let res: Vec<_> = sqlx::query!(
             r#"SELECT DISTINCT balances.contract
                 FROM balances
@@ -248,7 +251,11 @@ impl DbInner {
         Ok(())
     }
 
-    pub async fn save_erc20_metadata(&self, chain_id: u32, metadata: TokenMetadata) -> color_eyre::Result<()> {
+    pub async fn save_erc20_metadata(
+        &self,
+        chain_id: u32,
+        metadata: TokenMetadata,
+    ) -> color_eyre::Result<()> {
         let address = metadata.address.to_string();
 
         sqlx::query!(
@@ -287,7 +294,11 @@ impl DbInner {
         Ok(())
     }
 
-    pub async fn clear_erc20_blacklist(&self, chain_id: u32, address: Address) -> color_eyre::Result<()> {
+    pub async fn clear_erc20_blacklist(
+        &self,
+        chain_id: u32,
+        address: Address,
+    ) -> color_eyre::Result<()> {
         let address = address.to_string();
 
         sqlx::query!(

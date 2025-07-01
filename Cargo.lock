@@ -3497,6 +3497,7 @@ version = "1.17.0"
 dependencies = [
  "alloy",
  "async-trait",
+ "color-eyre",
  "ethui-broadcast",
  "ethui-types",
  "once_cell",
@@ -3505,7 +3506,6 @@ dependencies = [
  "serde_json",
  "tauri",
  "tempfile",
- "thiserror 2.0.12",
  "tokio",
  "url",
 ]
@@ -3524,6 +3524,7 @@ name = "ethui-rpc"
 version = "1.17.0"
 dependencies = [
  "alloy",
+ "color-eyre",
  "ethui-connections",
  "ethui-db",
  "ethui-dialogs",
@@ -3685,6 +3686,7 @@ dependencies = [
  "alloy",
  "async-trait",
  "coins-bip32",
+ "color-eyre",
  "enum_dispatch",
  "ethui-broadcast",
  "ethui-crypto",
@@ -3696,7 +3698,6 @@ dependencies = [
  "serde",
  "serde_json",
  "tauri",
- "thiserror 2.0.12",
  "tokio",
 ]
 

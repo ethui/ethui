@@ -14,7 +14,8 @@ pub async fn db_get_newer_transactions(
     first_known: Option<TxIdx>,
     db: tauri::State<'_, Db>,
 ) -> TauriResult<Vec<Transaction>> {
-    Ok(db.get_newer_transactions(chain_id, address, max, first_known)
+    Ok(db
+        .get_newer_transactions(chain_id, address, max, first_known)
         .await?)
 }
 
@@ -26,7 +27,8 @@ pub async fn db_get_older_transactions(
     last_known: Option<TxIdx>,
     db: tauri::State<'_, Db>,
 ) -> TauriResult<Vec<Transaction>> {
-    Ok(db.get_older_transactions(chain_id, address, max, last_known)
+    Ok(db
+        .get_older_transactions(chain_id, address, max, last_known)
         .await?)
 }
 
@@ -64,7 +66,9 @@ pub async fn db_get_erc20_balances(
     include_blacklisted: Option<bool>,
     db: tauri::State<'_, Db>,
 ) -> TauriResult<Vec<TokenBalance>> {
-    Ok(db.get_erc20_balances(chain_id, address, include_blacklisted.unwrap_or_default()).await?)
+    Ok(db
+        .get_erc20_balances(chain_id, address, include_blacklisted.unwrap_or_default())
+        .await?)
 }
 
 #[tauri::command]
@@ -128,7 +132,8 @@ pub async fn db_set_erc20_blacklist(
     blacklisted: bool,
     db: tauri::State<'_, Db>,
 ) -> TauriResult<()> {
-    db.set_erc20_blacklist(chain_id, address, blacklisted).await?;
+    db.set_erc20_blacklist(chain_id, address, blacklisted)
+        .await?;
     ethui_broadcast::ui_notify(UINotify::BalancesUpdated).await;
     Ok(())
 }

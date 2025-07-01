@@ -7,7 +7,6 @@ use color_eyre::eyre;
 use ethui_abis::IERC20;
 use ethui_types::{events::Tx, Address, GlobalState, TokenMetadata, B256};
 
-
 pub(crate) async fn fetch_full_tx(chain_id: u32, hash: B256) -> color_eyre::Result<()> {
     let provider = provider(chain_id).await?;
 
@@ -47,7 +46,10 @@ pub(crate) async fn fetch_full_tx(chain_id: u32, hash: B256) -> color_eyre::Resu
     Ok(())
 }
 
-pub(crate) async fn fetch_erc20_metadata(chain_id: u32, address: Address) -> color_eyre::Result<()> {
+pub(crate) async fn fetch_erc20_metadata(
+    chain_id: u32,
+    address: Address,
+) -> color_eyre::Result<()> {
     let provider = provider(chain_id).await?;
 
     let contract = IERC20::new(address, provider);

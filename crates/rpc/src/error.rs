@@ -28,11 +28,8 @@ pub enum Error {
     #[error(transparent)]
     Transport(#[from] alloy::transports::TransportError),
 
-    #[error(transparent)]
-    EthuiWallets(#[from] ethui_wallets::Error),
-
-    #[error(transparent)]
-    Network(#[from] ethui_networks::Error),
+    #[error("Ethui error: {0}")]
+    Ethui(#[from] color_eyre::Report),
 
     #[error(transparent)]
     JsonRpc(#[from] jsonrpc_core::Error),
