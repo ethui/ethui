@@ -15,7 +15,7 @@ use notify_debouncer_full::{
 };
 use tracing::{instrument, trace, warn};
 
-use crate::{abi::ForgeAbi, error::Result, utils};
+use crate::{abi::ForgeAbi, utils};
 
 #[derive(Default)]
 pub struct Worker {
@@ -84,7 +84,7 @@ impl Message<Vec<DebouncedEvent>> for Worker {
 struct UpdateContracts;
 
 impl Message<UpdateContracts> for Worker {
-    type Reply = Result<()>;
+    type Reply = color_eyre::Result<()>;
 
     async fn handle(
         &mut self,
@@ -163,7 +163,7 @@ impl Message<FetchAbis> for Worker {
 }
 
 impl Actor for Worker {
-    type Error = crate::error::Error;
+    type Error = color_eyre::Report;
 
     async fn on_start(
         &mut self,
@@ -190,7 +190,7 @@ impl Actor for Worker {
 
 impl Worker {
     #[instrument(skip_all)]
-    async fn scan_project(&mut self, root: &Path) -> Result<()> {
+    async fn scan_project(&mut self, root: &Path) -> color_eyre::Result<()> {
         let pattern = root.join("out").join("**").join("*.json");
         for path in glob(pattern.to_str().unwrap())?.filter_map(|p| p.ok()) {
             if let Ok(abi) = path.clone().try_into() {
@@ -204,7 +204,7 @@ impl Worker {
     }
 
     #[instrument(skip_all)]
-    async fn update_roots(&mut self, roots: Vec<PathBuf>) -> Result<()> {
+    async fn update_roots(&mut self, roots: Vec<PathBuf>) -> color_eyre::Result<()> {
         let to_remove: Vec<_> = self
             .roots
             .iter()
@@ -243,7 +243,7 @@ impl Worker {
     }
 
     #[instrument(skip_all)]
-    async fn update_foundry_roots(&mut self) -> Result<()> {
+    async fn update_foundry_roots(&mut self) -> color_eyre::Result<()> {
         let new_foundry_roots = self.find_foundry_roots().await?;
 
         let to_remove: Vec<_> = self
@@ -282,7 +282,7 @@ impl Worker {
     }
 
     #[instrument(skip_all)]
-    async fn add_path(&mut self, path: PathBuf) -> Result<()> {
+    async fn add_path(&mut self, path: PathBuf) -> color_eyre::Result<()> {
         trace!(path= ?path);
         if self.roots.contains(&path) {
             return Ok(());
@@ -294,7 +294,7 @@ impl Worker {
     }
 
     #[instrument(skip_all)]
-    async fn remove_path(&mut self, path: PathBuf) -> Result<()> {
+    async fn remove_path(&mut self, path: PathBuf) -> color_eyre::Result<()> {
         trace!(path = ?path);
         if self.roots.remove(&path) {
             self.update_foundry_roots().await?;
@@ -305,7 +305,7 @@ impl Worker {
     /// Finds all project roots for Foundry projects (by locating foundry.toml files)
     /// If nested foundry.toml files are found, such as in dependencies or lib folders, they will be ignored.
     #[instrument(skip_all)]
-    async fn find_foundry_roots(&self) -> Result<HashSet<PathBuf>> {
+    async fn find_foundry_roots(&self) -> color_eyre::Result<HashSet<PathBuf>> {
         let res = self.roots.iter().flat_map(|root| {
             let pattern = root.join("**").join("foundry.toml");
             let matches: Vec<_> = match glob(pattern.to_str().unwrap()) {
@@ -358,13 +358,12 @@ impl Worker {
 mod tests {
     use std::fs;
 
-    use anyhow::Result;
     use tempfile::TempDir;
 
     use super::*;
 
     #[tokio::test]
-    pub async fn find_forge_tomls() -> Result<()> {
+    pub async fn find_forge_tomls() -> color_eyre::Result<()> {
         let dir = create_fixture_directories()?;
 
         let mut actor = Worker::default();
@@ -380,7 +379,7 @@ mod tests {
         Ok(())
     }
 
-    fn create_fixture_directories() -> Result<TempDir> {
+    fn create_fixture_directories() -> color_eyre::Result<TempDir> {
         let tempdir = TempDir::new().unwrap();
         let base_path = tempdir.path();
 

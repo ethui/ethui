@@ -2391,6 +2391,33 @@ dependencies = [
 ]
 
 [[package]]
+name = "color-eyre"
+version = "0.6.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e5920befb47832a6d61ee3a3a846565cfa39b331331e68a3b1d1116630f2f26d"
+dependencies = [
+ "backtrace",
+ "color-spantrace",
+ "eyre",
+ "indenter",
+ "once_cell",
+ "owo-colors",
+ "tracing-error",
+]
+
+[[package]]
+name = "color-spantrace"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b8b88ea9df13354b55bc7234ebcce36e6ef896aca2e42a15de9e10edce01b427"
+dependencies = [
+ "once_cell",
+ "owo-colors",
+ "tracing-core",
+ "tracing-error",
+]
+
+[[package]]
 name = "colorchoice"
 version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3313,6 +3340,7 @@ name = "ethui"
 version = "1.17.0"
 dependencies = [
  "alloy",
+ "color-eyre",
  "ethui-args",
  "ethui-broadcast",
  "ethui-connections",
@@ -3341,7 +3369,6 @@ dependencies = [
  "tauri-plugin-clipboard-manager",
  "tauri-plugin-os",
  "tauri-plugin-shell",
- "thiserror 2.0.12",
  "tokio",
  "tracing",
 ]
@@ -3377,6 +3404,7 @@ version = "1.17.0"
 dependencies = [
  "async-trait",
  "chrono",
+ "color-eyre",
  "ethui-broadcast",
  "ethui-networks",
  "ethui-types",
@@ -3387,7 +3415,6 @@ dependencies = [
  "serde_json",
  "tauri",
  "tempfile",
- "thiserror 2.0.12",
  "tokio",
 ]
 
@@ -3397,11 +3424,11 @@ version = "1.17.0"
 dependencies = [
  "aead",
  "chacha20poly1305",
+ "color-eyre",
  "rand 0.9.1",
  "rust-argon2",
  "serde",
  "serde_json",
- "thiserror 2.0.12",
  "zeroize",
 ]
 
@@ -3411,6 +3438,7 @@ version = "1.17.0"
 dependencies = [
  "alloy",
  "alloy-chains",
+ "color-eyre",
  "ethui-broadcast",
  "ethui-settings",
  "ethui-types",
@@ -3420,7 +3448,6 @@ dependencies = [
  "serde_json",
  "sqlx",
  "tauri",
- "thiserror 2.0.12",
  "tokio",
  "tracing",
 ]
@@ -3429,6 +3456,7 @@ dependencies = [
 name = "ethui-dialogs"
 version = "1.17.0"
 dependencies = [
+ "color-eyre",
  "ethui-broadcast",
  "ethui-types",
  "once_cell",
@@ -3436,7 +3464,6 @@ dependencies = [
  "serde",
  "serde_json",
  "tauri",
- "thiserror 2.0.12",
  "tokio",
  "tracing",
 ]
@@ -3458,7 +3485,7 @@ name = "ethui-forge"
 version = "1.17.0"
 dependencies = [
  "alloy",
- "anyhow",
+ "color-eyre",
  "ethui-broadcast",
  "ethui-db",
  "ethui-networks",
@@ -3474,7 +3501,6 @@ dependencies = [
  "serde_json",
  "tauri",
  "tempfile",
- "thiserror 2.0.12",
  "tokio",
  "tracing",
 ]
@@ -3485,6 +3511,7 @@ version = "1.17.0"
 dependencies = [
  "alloy",
  "async-trait",
+ "color-eyre",
  "ethui-broadcast",
  "ethui-types",
  "once_cell",
@@ -3493,7 +3520,6 @@ dependencies = [
  "serde_json",
  "tauri",
  "tempfile",
- "thiserror 2.0.12",
  "tokio",
  "url",
 ]
@@ -3512,6 +3538,7 @@ name = "ethui-rpc"
 version = "1.17.0"
 dependencies = [
  "alloy",
+ "color-eyre",
  "ethui-connections",
  "ethui-db",
  "ethui-dialogs",
@@ -3539,6 +3566,7 @@ dependencies = [
  "alloy-chains",
  "async-trait",
  "auto-launch",
+ "color-eyre",
  "ethui-broadcast",
  "ethui-tracing",
  "ethui-types",
@@ -3549,7 +3577,6 @@ dependencies = [
  "serde_json",
  "tauri",
  "tempfile",
- "thiserror 2.0.12",
  "tokio",
 ]
 
@@ -3558,6 +3585,7 @@ name = "ethui-simulator"
 version = "1.17.0"
 dependencies = [
  "alloy",
+ "color-eyre",
  "ethui-db",
  "ethui-networks",
  "ethui-types",
@@ -3567,7 +3595,6 @@ dependencies = [
  "pretty_assertions",
  "serde",
  "tauri",
- "thiserror 2.0.12",
  "tokio",
 ]
 
@@ -3576,6 +3603,7 @@ name = "ethui-sync"
 version = "1.17.0"
 dependencies = [
  "alloy",
+ "color-eyre",
  "ethui-abis",
  "ethui-broadcast",
  "ethui-db",
@@ -3585,7 +3613,6 @@ dependencies = [
  "ethui-types",
  "serde",
  "tauri",
- "thiserror 2.0.12",
  "tokio",
  "tracing",
 ]
@@ -3595,6 +3622,7 @@ name = "ethui-sync-alchemy"
 version = "1.17.0"
 dependencies = [
  "alloy",
+ "color-eyre",
  "ethui-db",
  "ethui-settings",
  "ethui-types",
@@ -3602,7 +3630,6 @@ dependencies = [
  "reqwest",
  "serde",
  "serde_json",
- "thiserror 2.0.12",
  "tokio",
  "tracing",
  "url",
@@ -3614,6 +3641,7 @@ version = "1.17.0"
 dependencies = [
  "alloy",
  "base64 0.21.7",
+ "color-eyre",
  "ethui-abis",
  "ethui-broadcast",
  "ethui-db",
@@ -3624,7 +3652,6 @@ dependencies = [
  "reqwest",
  "serde",
  "serde_json",
- "thiserror 2.0.12",
  "tokio",
  "tracing",
  "url",
@@ -3634,8 +3661,8 @@ dependencies = [
 name = "ethui-token-list"
 version = "1.17.0"
 dependencies = [
- "anyhow",
  "chrono",
+ "color-eyre",
  "reqwest",
  "serde",
  "serde_json",
@@ -3646,8 +3673,8 @@ dependencies = [
 name = "ethui-tracing"
 version = "1.17.0"
 dependencies = [
+ "color-eyre",
  "once_cell",
- "thiserror 2.0.12",
  "tracing",
  "tracing-subscriber 0.3.19",
 ]
@@ -3658,6 +3685,7 @@ version = "1.17.0"
 dependencies = [
  "alloy",
  "async-trait",
+ "color-eyre",
  "serde",
  "serde_json",
  "sqlx",
@@ -3672,6 +3700,7 @@ dependencies = [
  "alloy",
  "async-trait",
  "coins-bip32",
+ "color-eyre",
  "enum_dispatch",
  "ethui-broadcast",
  "ethui-crypto",
@@ -3683,7 +3712,6 @@ dependencies = [
  "serde",
  "serde_json",
  "tauri",
- "thiserror 2.0.12",
  "tokio",
 ]
 
@@ -7042,6 +7070,12 @@ name = "overload"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b15813163c1d831bf4a13c3610c05c0d03b39feb07f7e09fa234dac9b15aaf39"
+
+[[package]]
+name = "owo-colors"
+version = "4.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "48dd4f4a2c8405440fd0462561f0e5806bd0f77e86f51c761481bdd4018b545e"
 
 [[package]]
 name = "p256"
@@ -10819,6 +10853,16 @@ checksum = "e672c95779cf947c5311f83787af4fa8fffd12fb27e4993211a84bdfd9610f9c"
 dependencies = [
  "once_cell",
  "valuable",
+]
+
+[[package]]
+name = "tracing-error"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8b1581020d7a273442f5b45074a6a57d5757ad0a47dac0e9f0bd57b81936f3db"
+dependencies = [
+ "tracing",
+ "tracing-subscriber 0.3.19",
 ]
 
 [[package]]

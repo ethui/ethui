@@ -1,5 +1,4 @@
 pub mod commands;
-mod error;
 mod init;
 mod signer;
 mod utils;
@@ -12,7 +11,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-pub use error::{Error, Result};
+use color_eyre::eyre::{eyre, ContextCompat as _};
 use ethui_types::{Address, Json, UINotify};
 pub use init::init;
 use serde::Serialize;
@@ -57,7 +56,7 @@ impl Wallets {
     ///
     /// Since wallets actually contain multiple addresses, we need the ability to connect to a
     /// different one within the same wallet
-    async fn set_current_path(&mut self, key: String) -> Result<()> {
+    async fn set_current_path(&mut self, key: String) -> color_eyre::Result<()> {
         self.wallets[self.current].set_current_path(key).await?;
         self.on_wallet_changed().await?;
         self.save()?;
@@ -69,9 +68,9 @@ impl Wallets {
     }
 
     /// Switches the current default wallet
-    async fn set_current_wallet(&mut self, id: usize) -> Result<()> {
+    async fn set_current_wallet(&mut self, id: usize) -> color_eyre::Result<()> {
         if id >= self.wallets.len() {
-            return Err(Error::InvalidWallet(id));
+            return Err(eyre!("invalid wallet index {}", id));
         }
 
         self.current = id;
@@ -94,7 +93,7 @@ impl Wallets {
         res
     }
 
-    async fn create(&mut self, params: Json) -> Result<()> {
+    async fn create(&mut self, params: Json) -> color_eyre::Result<()> {
         let wallet = Wallet::create(params).await?;
         let addresses = wallet.get_all_addresses().await;
 
@@ -115,12 +114,12 @@ impl Wallets {
         Ok(())
     }
 
-    async fn update(&mut self, name: String, params: Json) -> Result<()> {
+    async fn update(&mut self, name: String, params: Json) -> color_eyre::Result<()> {
         let i = self
             .wallets
             .iter()
             .position(|w| w.name() == name)
-            .ok_or(Error::InvalidWalletName(name))?;
+            .with_context(|| format!("invalid wallet name `{name}`"))?;
 
         let before = self.wallets[i].get_all_addresses().await;
         self.wallets[i] = self.wallets[i].clone().update(params).await?;
@@ -144,7 +143,7 @@ impl Wallets {
         Ok(())
     }
 
-    async fn remove(&mut self, name: String) -> Result<()> {
+    async fn remove(&mut self, name: String) -> color_eyre::Result<()> {
         let found = self
             .wallets
             .iter()
@@ -179,7 +178,7 @@ impl Wallets {
     }
 
     /// Persists current state to disk
-    fn save(&self) -> Result<()> {
+    fn save(&self) -> color_eyre::Result<()> {
         let pathbuf = self.file.clone().unwrap();
         let path = Path::new(&pathbuf);
         let file = File::create(path)?;
@@ -212,7 +211,7 @@ impl Wallets {
         ethui_broadcast::current_address_changed(addr).await;
     }
 
-    async fn on_wallet_changed(&self) -> Result<()> {
+    async fn on_wallet_changed(&self) -> color_eyre::Result<()> {
         let addr = self.get_current_address().await;
 
         self.notify_peers().await;
@@ -228,9 +227,9 @@ impl Wallets {
         ethui_broadcast::accounts_changed(addresses).await;
     }
 
-    fn ensure_no_duplicates_of(&self, name: &str) -> Result<()> {
+    fn ensure_no_duplicates_of(&self, name: &str) -> color_eyre::Result<()> {
         if self.wallets.iter().any(|w| w.name() == name) {
-            return Err(Error::DuplicateWalletNames(name.to_owned()));
+            return Err(eyre!("duplicate wallet names `{}`", name));
         }
         Ok(())
     }

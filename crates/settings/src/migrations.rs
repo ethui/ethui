@@ -12,7 +12,7 @@ use serde::Serialize;
 use serde_constant::ConstI64;
 use serde_json::json;
 
-use crate::{onboarding::Onboarding, DarkMode, Result, SerializedSettings, Settings};
+use crate::{onboarding::Onboarding, DarkMode, SerializedSettings, Settings};
 
 pub type LatestVersion = ConstI64<2>;
 
@@ -90,7 +90,7 @@ enum Versions {
     V2(SerializedSettings),
 }
 
-pub(crate) async fn load_and_migrate(pathbuf: &PathBuf) -> Result<Settings> {
+pub(crate) async fn load_and_migrate(pathbuf: &PathBuf) -> color_eyre::Result<Settings> {
     let path = Path::new(&pathbuf);
     let file = File::open(path)?;
     let reader = BufReader::new(&file);

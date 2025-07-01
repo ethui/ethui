@@ -1,9 +1,9 @@
 use serde::{de::DeserializeOwned, Serialize};
 
-use crate::{DbInner, Result};
+use crate::DbInner;
 
 impl DbInner {
-    pub async fn kv_set<K, V>(&self, key: &K, value: &V) -> Result<()>
+    pub async fn kv_set<K, V>(&self, key: &K, value: &V) -> color_eyre::Result<()>
     where
         K: Serialize,
         V: Serialize + DeserializeOwned,
@@ -24,7 +24,7 @@ impl DbInner {
         Ok(())
     }
 
-    pub async fn kv_get<K, V>(&self, key: &K) -> Result<Option<V>>
+    pub async fn kv_get<K, V>(&self, key: &K) -> color_eyre::Result<Option<V>>
     where
         K: Serialize,
         V: DeserializeOwned,

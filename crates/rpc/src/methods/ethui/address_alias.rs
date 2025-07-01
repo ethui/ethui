@@ -48,4 +48,3 @@ impl Builder {
 pub struct ParsedParams {
     address: Address,
 }
-

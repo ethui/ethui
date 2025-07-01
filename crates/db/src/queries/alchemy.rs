@@ -1,14 +1,14 @@
 // use ethui_types::alchemy::AlchemyAssetTransfer;
 // use ethui_types::ToEthers;
 //
-// use crate::{Db, Result};
+// use crate::DbInner;
 //
 // impl Db {
 //     pub async fn save_alchemy_transfers(
 //         &self,
 //         chain_id: u32,
 //         transfers: Vec<AlchemyAssetTransfer>,
-//     ) -> Result<()> {
+//     ) -> color_eyre::Result<()> {
 //         for transfer in transfers {
 //             let hash = format!("0x{:x}", transfer.hash);
 //             let from = format!("0x{:x}", transfer.from);

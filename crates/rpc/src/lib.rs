@@ -213,18 +213,14 @@ impl Handler {
         let new_chain_id = u32::from_str_radix(&chain_id_str[2..], 16).unwrap();
 
         // TODO future work
-        // multiple netowrks with same chain id should display a dialog so user can select which
+        // multiple networks with same chain id should display a dialog so user can select which
         // network to switch to
-        Ok(ctx
+        let res = ctx
             .switch_chain(new_chain_id)
             .await
-            .map(|_| serde_json::Value::Null)
-            .map_err(|e| match e {
-                ethui_connections::Error::InvalidChainId(chain_id) => {
-                    Error::UnrecognizedChainId(chain_id)
-                }
-                _ => Error::Connection(e),
-            })?)
+            .map(|_| serde_json::Value::Null);
+
+        Ok(res.map_err(Error::from)?)
     }
 
     #[tracing::instrument()]

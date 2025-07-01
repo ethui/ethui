@@ -3,7 +3,7 @@ use std::str::FromStr;
 use ethui_types::{Address, Erc1155Token, Erc1155TokenData, U256};
 use sqlx::Row;
 
-use crate::{DbInner, Result};
+use crate::DbInner;
 
 impl DbInner {
     pub async fn read_erc1155_balance(
@@ -12,7 +12,7 @@ impl DbInner {
         contract: Address,
         owner: Address,
         token_id: U256,
-    ) -> Result<U256> {
+    ) -> color_eyre::Result<U256> {
         let row = sqlx::query(
             r#"SELECT balance FROM erc1155_tokens WHERE chain_id = ? AND contract = ? AND owner = ? AND token_id = ?"#)
             .bind(chain_id)
@@ -30,7 +30,7 @@ impl DbInner {
         chain_id: u32,
         contract: Address,
         token_id: U256,
-    ) -> Result<String> {
+    ) -> color_eyre::Result<String> {
         let row = sqlx::query(
             r#"SELECT balance FROM erc1155_tokens WHERE chain_id = ? AND contract = ? AND token_id = ?"#)
             .bind(chain_id)
@@ -46,7 +46,7 @@ impl DbInner {
         chain_id: u32,
         contract: Address,
         token_id: U256,
-    ) -> Result<String> {
+    ) -> color_eyre::Result<String> {
         let row = sqlx::query(
             r#"SELECT balance FROM erc1155_tokens WHERE chain_id = ? AND contract = ? AND token_id = ?"#)
             .bind(chain_id)
@@ -64,7 +64,7 @@ impl DbInner {
         owner: Address,
         token_id: U256,
         balance: U256,
-    ) -> Result<()> {
+    ) -> color_eyre::Result<()> {
         sqlx::query(
             r#"INSERT OR REPLACE INTO balances (contract, chain_id, token_id, owner, balance)
                 VALUES (?,?,?,?) "#,
@@ -88,7 +88,7 @@ impl DbInner {
         to: Address,
         token_id: U256,
         value: U256,
-    ) -> Result<()> {
+    ) -> color_eyre::Result<()> {
         let to_balance = self
             .read_erc1155_balance(chain_id, contract, to, token_id)
             .await?;
@@ -131,7 +131,7 @@ impl DbInner {
     pub async fn get_erc1155_tokens_with_missing_data(
         &self,
         chain_id: u32,
-    ) -> Result<Vec<Erc1155Token>> {
+    ) -> color_eyre::Result<Vec<Erc1155Token>> {
         let res: Vec<_> = sqlx::query(
             r#"SELECT * FROM erc1155_tokens
             WHERE chain_id = ? AND (uri IS NULL OR metadata IS NULL)"#,
@@ -153,7 +153,7 @@ impl DbInner {
         balance: U256,
         uri: String,
         metadata: String,
-    ) -> Result<()> {
+    ) -> color_eyre::Result<()> {
         sqlx::query(
         r#" INSERT OR REPLACE INTO erc1155_tokens (contract, chain_id, token_id, owner, balance, uri, metadata)
                 VALUES (?,?,?,?,?,?,?) "#,
@@ -174,7 +174,7 @@ impl DbInner {
     pub async fn get_erc1155_collections_with_missing_data(
         &self,
         chain_id: u32,
-    ) -> Result<Vec<Address>> {
+    ) -> color_eyre::Result<Vec<Address>> {
         let res: Vec<Address> = sqlx::query(
             r#"SELECT DISTINCT contract 
                 FROM erc1155_tokens
@@ -196,7 +196,7 @@ impl DbInner {
         chain_id: u32,
         name: String,
         symbol: String,
-    ) -> Result<()> {
+    ) -> color_eyre::Result<()> {
         sqlx::query(
             r#" INSERT OR REPLACE INTO erc1155_collections (contract, chain_id, name, symbol)
                       VALUES (?,?,?,?) "#,
@@ -215,7 +215,7 @@ impl DbInner {
         &self,
         chain_id: u32,
         owner: Address,
-    ) -> Result<Vec<Erc1155TokenData>> {
+    ) -> color_eyre::Result<Vec<Erc1155TokenData>> {
         let res: Vec<Erc1155TokenData> = sqlx::query(
         r#" SELECT erc1155_tokens.*, collection.name, collection.symbol
                 FROM erc1155_tokens

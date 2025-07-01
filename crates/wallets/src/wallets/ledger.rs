@@ -1,9 +1,10 @@
 use alloy::signers::ledger::{HDPath, LedgerSigner};
 use async_trait::async_trait;
+use color_eyre::eyre::{eyre, ContextCompat as _};
 use ethui_types::{Address, Json};
 use serde::{Deserialize, Serialize};
 
-use crate::{utils, wallet::WalletCreate, Error, Result, Signer, Wallet, WalletControl};
+use crate::{utils, wallet::WalletCreate, Signer, Wallet, WalletControl};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -15,7 +16,7 @@ pub struct LedgerWallet {
 
 #[async_trait]
 impl WalletCreate for LedgerWallet {
-    async fn create(params: serde_json::Value) -> Result<Wallet> {
+    async fn create(params: serde_json::Value) -> color_eyre::Result<Wallet> {
         let params = serde_json::from_value(params)?;
         Ok(Wallet::Ledger(Self::from_params(params).await?))
     }
@@ -27,7 +28,7 @@ impl WalletControl for LedgerWallet {
         self.name.clone()
     }
 
-    async fn update(mut self, params: Json) -> Result<Wallet> {
+    async fn update(mut self, params: Json) -> color_eyre::Result<Wallet> {
         if let Some(name) = params["name"].as_str() {
             self.name = name.into();
         }
@@ -53,12 +54,12 @@ impl WalletControl for LedgerWallet {
         self.addresses.get(self.current).unwrap().0.clone()
     }
 
-    async fn set_current_path(&mut self, path: String) -> Result<()> {
+    async fn set_current_path(&mut self, path: String) -> color_eyre::Result<()> {
         self.current = self
             .addresses
             .iter()
             .position(|(p, _)| p == &path)
-            .ok_or(Error::InvalidKey(path))?;
+            .with_context(|| format!("unknown wallet key: {path}"))?;
 
         Ok(())
     }
@@ -67,19 +68,19 @@ impl WalletControl for LedgerWallet {
         self.addresses.clone()
     }
 
-    async fn get_address(&self, path: &str) -> Result<Address> {
+    async fn get_address(&self, path: &str) -> color_eyre::Result<Address> {
         self.addresses
             .iter()
             .find(|(p, _)| p == path)
             .map(|(_, a)| *a)
-            .ok_or(Error::InvalidKey(path.into()))
+            .with_context(|| format!("unknown wallet key: {path}"))
     }
 
-    async fn build_signer(&self, chain_id: u32, path: &str) -> Result<Signer> {
+    async fn build_signer(&self, chain_id: u32, path: &str) -> color_eyre::Result<Signer> {
         // TODO: use u64 for chain id
         let ledger = LedgerSigner::new(HDPath::Other(path.into()), Some(chain_id.into()))
             .await
-            .map_err(|e| Error::Ledger(e.to_string()))?;
+            .map_err(|e| eyre!("Ledger error: {}", e))?;
 
         Ok(Signer::Ledger(ledger))
     }
@@ -93,7 +94,7 @@ pub struct LedgerParams {
 }
 
 impl LedgerWallet {
-    pub async fn from_params(params: LedgerParams) -> Result<Self> {
+    pub async fn from_params(params: LedgerParams) -> color_eyre::Result<Self> {
         let addresses = utils::ledger_derive_multiple(params.paths).await?;
 
         Ok(Self {

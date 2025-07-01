@@ -27,4 +27,5 @@ serde_json.workspace = true
 tracing.workspace = true
 jsonrpc-core.workspace = true
 thiserror.workspace = true
+color-eyre.workspace = true
 url.workspace = true
