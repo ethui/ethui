@@ -1,6 +1,7 @@
 mod affinity;
 mod contracts;
 pub mod dedup_chain_id;
+pub mod error;
 pub mod events;
 mod global_state;
 mod network;
@@ -21,6 +22,7 @@ pub use tokens::{
     Erc721TokenDetails, TokenBalance, TokenMetadata,
 };
 pub use ui_events::UINotify;
+pub use error::Error;
 
 pub type Json = serde_json::Value;
 

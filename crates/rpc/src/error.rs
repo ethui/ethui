@@ -46,6 +46,9 @@ pub enum Error {
     #[error(transparent)]
     Connection(#[from] ethui_connections::Error),
 
+    #[error(transparent)]
+    Types(#[from] ethui_types::Error),
+
     #[error(
         "Unrecongnized chainID {0}. Try adding the chain using wallet_addEthereumChain first."
     )]
