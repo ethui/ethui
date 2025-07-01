@@ -14,7 +14,6 @@ use tungstenite::{
 };
 use url::Url;
 
-pub use crate::error::{WsError, WsResult};
 use crate::peers::{Peer, Peers};
 
 pub(crate) async fn server_loop(port: u16) {

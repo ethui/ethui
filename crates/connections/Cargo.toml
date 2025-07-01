@@ -20,7 +20,7 @@ serde-constant.workspace = true
 once_cell.workspace = true
 jsonrpc-core.workspace = true
 tauri.workspace = true
-thiserror.workspace = true
+color-eyre.workspace = true
 async-trait.workspace = true
 chrono = "0.4.40"
 
