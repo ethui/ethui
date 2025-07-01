@@ -11,7 +11,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use color_eyre::eyre::eyre;
+use color_eyre::eyre::{eyre, ContextCompat as _};
 use ethui_types::{Address, Json, UINotify};
 pub use init::init;
 use serde::Serialize;
@@ -119,7 +119,7 @@ impl Wallets {
             .wallets
             .iter()
             .position(|w| w.name() == name)
-            .ok_or_else(|| eyre!("invalid wallet name `{}`", name))?;
+            .with_context(|| format!("invalid wallet name `{name}`"))?;
 
         let before = self.wallets[i].get_all_addresses().await;
         self.wallets[i] = self.wallets[i].clone().update(params).await?;

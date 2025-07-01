@@ -18,7 +18,6 @@ pub use init::init;
 use migrations::LatestVersion;
 use serde::{Deserialize, Serialize};
 
-
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct SerializedNetworks {
     pub networks: HashMap<String, Network>,
@@ -40,7 +39,10 @@ impl Networks {
     /// Changes the currently connected wallet by network name
     ///
     /// Broadcasts `chainChanged` to all connections with global or no affinity
-    pub async fn set_current_by_name(&mut self, new_current_network: String) -> color_eyre::Result<()> {
+    pub async fn set_current_by_name(
+        &mut self,
+        new_current_network: String,
+    ) -> color_eyre::Result<()> {
         let previous = self.get_current().name.clone();
         self.inner.current = new_current_network;
         let new = self.get_current().name.clone();
@@ -157,7 +159,11 @@ impl Networks {
         Ok(())
     }
 
-    pub async fn update_network(&mut self, old_name: &str, network: Network) -> color_eyre::Result<()> {
+    pub async fn update_network(
+        &mut self,
+        old_name: &str,
+        network: Network,
+    ) -> color_eyre::Result<()> {
         if network.name != old_name && self.inner.networks.contains_key(&network.name) {
             return Err(eyre!("Already exists"));
         }
@@ -194,7 +200,7 @@ impl Networks {
                 ethui_broadcast::ui_notify(UINotify::NetworksChanged).await;
             }
             None => {
-                return Err(eyre!("Not exists"));
+                return Err(eyre!("Does not exist"));
             }
         }
         Ok(())

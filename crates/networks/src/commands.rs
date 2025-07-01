@@ -1,5 +1,7 @@
-use color_eyre::eyre::eyre;
-use ethui_types::{DedupChainId, GlobalState, Network, NewNetworkParams, SerializableError, TauriResult};
+use color_eyre::eyre::ContextCompat as _;
+use ethui_types::{
+    DedupChainId, GlobalState, Network, NewNetworkParams, SerializableError, TauriResult,
+};
 
 use super::Networks;
 
@@ -65,7 +67,7 @@ pub async fn networks_is_dev(dedup_chain_id: DedupChainId) -> TauriResult<bool> 
 
     let network = networks
         .get_network_by_dedup_chain_id(dedup_chain_id)
-        .ok_or_else(|| eyre!("Not exists"))
+        .with_context(|| format!("Does not exist"))
         .map_err(SerializableError::from)?;
 
     Ok(network.is_dev().await)

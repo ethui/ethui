@@ -6,7 +6,7 @@ use alloy::{
 };
 use async_trait::async_trait;
 use coins_bip32::ecdsa;
-use color_eyre::eyre::eyre;
+use color_eyre::eyre::{eyre, ContextCompat as _};
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_types::Address;
 use secrets::SecretVec;
@@ -116,7 +116,7 @@ impl JsonKeystoreWallet {
                 let password = payload["password"].clone();
                 password
                     .as_str()
-                    .ok_or_else(|| eyre!("wallet unlock rejected by user"))?
+                    .with_context(|| "wallet unlock rejected by user".to_string())?
                     .to_string()
             } else {
                 return Err(eyre!("wallet unlock rejected by user"));

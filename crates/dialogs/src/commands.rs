@@ -1,4 +1,5 @@
-use ethui_types::{eyre, TauriResult};
+use color_eyre::eyre::ContextCompat as _;
+use ethui_types::TauriResult;
 
 use super::global::OPEN_DIALOGS;
 
@@ -17,7 +18,7 @@ pub async fn dialog_send(id: u32, payload: serde_json::Value) -> TauriResult<()>
     let dialogs = OPEN_DIALOGS.lock().await;
     let dialog = dialogs
         .get(&id)
-        .ok_or_else(|| eyre!("Dialog not found {id}"))?;
+        .with_context(|| format!("Dialog not found {id}"))?;
 
     dialog.incoming(payload).await?;
 

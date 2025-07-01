@@ -1,6 +1,6 @@
 use alloy::signers::ledger::{HDPath, LedgerSigner};
 use async_trait::async_trait;
-use color_eyre::eyre::eyre;
+use color_eyre::eyre::{eyre, ContextCompat as _};
 use ethui_types::{Address, Json};
 use serde::{Deserialize, Serialize};
 
@@ -59,7 +59,7 @@ impl WalletControl for LedgerWallet {
             .addresses
             .iter()
             .position(|(p, _)| p == &path)
-            .ok_or_else(|| eyre!("unknown wallet key: {}", path))?;
+            .with_context(|| format!("unknown wallet key: {path}"))?;
 
         Ok(())
     }
@@ -73,7 +73,7 @@ impl WalletControl for LedgerWallet {
             .iter()
             .find(|(p, _)| p == path)
             .map(|(_, a)| *a)
-            .ok_or_else(|| eyre!("unknown wallet key: {}", path))
+            .with_context(|| format!("unknown wallet key: {path}"))
     }
 
     async fn build_signer(&self, chain_id: u32, path: &str) -> color_eyre::Result<Signer> {

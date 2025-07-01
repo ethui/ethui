@@ -5,7 +5,7 @@ use alloy::{
     signers::{local::PrivateKeySigner, Signer as _},
 };
 use async_trait::async_trait;
-use color_eyre::eyre::eyre;
+use color_eyre::eyre::{eyre, ContextCompat as _};
 use ethui_crypto::{self, EncryptedData};
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_types::Address;
@@ -140,7 +140,7 @@ impl PrivateKeyWallet {
                 let password = payload["password"].clone();
                 password
                     .as_str()
-                    .ok_or_else(|| eyre!("wallet unlock rejected by user"))?
+                    .with_context(|| "wallet unlock rejected by user".to_string())?
                     .to_string()
             } else {
                 return Err(eyre!("wallet unlock rejected by user"));

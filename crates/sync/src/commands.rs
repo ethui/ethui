@@ -1,6 +1,7 @@
+use color_eyre::eyre::ContextCompat as _;
 use ethui_db::Db;
 use ethui_networks::Networks;
-use ethui_types::{eyre, Address, GlobalState, TauriResult, U256};
+use ethui_types::{Address, GlobalState, TauriResult, U256};
 
 #[tauri::command]
 pub async fn sync_alchemy_is_network_supported(chain_id: u32) -> bool {
@@ -21,7 +22,7 @@ pub async fn sync_get_native_balance(
         let network = Networks::read()
             .await
             .get_network(chain_id)
-            .ok_or_else(|| eyre!("Invalid network: {}", chain_id))?;
+            .with_context(|| format!("Invalid network: {chain_id}"))?;
 
         // TODO: check with networks if this is anvil or not
         if network.is_dev().await {

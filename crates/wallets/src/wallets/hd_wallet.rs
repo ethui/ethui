@@ -5,7 +5,7 @@ use alloy::signers::{
     Signer as _,
 };
 use async_trait::async_trait;
-use color_eyre::eyre::eyre;
+use color_eyre::eyre::{eyre, ContextCompat as _};
 use ethui_crypto::{self, EncryptedData};
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_types::Address;
@@ -87,7 +87,7 @@ impl WalletControl for HDWallet {
             .iter()
             .find(|(p, _)| p == &path)
             .cloned()
-            .ok_or_else(|| eyre!("unknown wallet key: {}", path))?;
+            .with_context(|| format!("unknown wallet key: {path}"))?;
 
         Ok(())
     }
@@ -97,7 +97,7 @@ impl WalletControl for HDWallet {
             .iter()
             .find(|(p, _)| p == path)
             .map(|(_, a)| *a)
-            .ok_or_else(|| eyre!("unknown wallet key: {}", path))
+            .with_context(|| format!("unknown wallet key: {}", path))
     }
 
     async fn get_all_addresses(&self) -> Vec<(String, Address)> {
@@ -199,7 +199,7 @@ impl HDWallet {
                 let password = payload["password"].clone();
                 password
                     .as_str()
-                    .ok_or_else(|| eyre!("wallet unlock rejected by user"))?
+                    .with_context(|| format!("wallet unlock rejected by user"))?
                     .to_string()
             } else {
                 return Err(eyre!("wallet unlock rejected by user"));

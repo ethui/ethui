@@ -1,4 +1,4 @@
-use color_eyre::eyre::eyre;
+use color_eyre::eyre::ContextCompat as _;
 use once_cell::sync::OnceCell;
 use tracing_subscriber::{
     fmt, layer::SubscriberExt as _, reload, util::SubscriberInitExt as _, EnvFilter, Registry,
@@ -26,7 +26,7 @@ pub fn reload(directives: &str) -> color_eyre::Result<()> {
 
     RELOAD_HANDLE
         .get()
-        .ok_or_else(|| eyre!("Reload handle not set"))?
+        .with_context(|| format!("Reload handle not set"))?
         .modify(|filter| *filter = new_filter)?;
 
     Ok(())
