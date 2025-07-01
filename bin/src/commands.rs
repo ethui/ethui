@@ -1,5 +1,5 @@
 use alloy::providers::Provider as _;
-use color_eyre::eyre;
+use color_eyre::eyre::eyre;
 use ethui_db::{
     utils::{fetch_etherscan_abi, fetch_etherscan_contract_name},
     Db,
@@ -47,7 +47,7 @@ pub async fn add_contract(
 
         let network = networks
             .get_network(chain_id as u32)
-            .ok_or_else(|| eyre::eyre!("Invalid network: {}", chain_id))?;
+            .ok_or_else(|| eyre!("Invalid network: {}", chain_id))?;
         let provider = network.get_alloy_provider().await?;
 
         let code = provider.get_code_at(address).await?;

@@ -10,6 +10,7 @@ pub mod transactions;
 pub mod ui_events;
 pub use affinity::Affinity;
 pub use alloy::primitives::{address, Address, B256, U256, U64};
+pub use color_eyre::eyre::eyre;
 pub use contracts::{Contract, ContractWithAbi};
 pub use dedup_chain_id::DedupChainId;
 pub use events::Event;

@@ -3,9 +3,8 @@ use alloy::{
     network::{Ethereum, TransactionResponse as _},
     providers::{Provider as _, RootProvider},
 };
-use color_eyre::eyre;
 use ethui_abis::IERC20;
-use ethui_types::{events::Tx, Address, GlobalState, TokenMetadata, B256};
+use ethui_types::{events::Tx, eyre, Address, GlobalState, TokenMetadata, B256};
 
 pub(crate) async fn fetch_full_tx(chain_id: u32, hash: B256) -> color_eyre::Result<()> {
     let provider = provider(chain_id).await?;
@@ -14,7 +13,7 @@ pub(crate) async fn fetch_full_tx(chain_id: u32, hash: B256) -> color_eyre::Resu
     let receipt = provider.get_transaction_receipt(hash).await?;
 
     if tx.is_none() || receipt.is_none() {
-        return Err(eyre::eyre!("TX not found: {}", hash));
+        return Err(eyre!("TX not found: {}", hash));
     }
 
     let tx = tx.unwrap();
@@ -74,6 +73,6 @@ async fn provider(chain_id: u32) -> color_eyre::Result<RootProvider<Ethereum>> {
 
     match networks.get_network(chain_id) {
         Some(network) => Ok(network.get_alloy_provider().await?),
-        _ => Err(eyre::eyre!("Invalid network: {}", chain_id)),
+        _ => Err(eyre!("Invalid network: {}", chain_id)),
     }
 }

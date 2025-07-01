@@ -12,10 +12,9 @@ use alloy::{
     },
     sol_types::SolEvent as _,
 };
-use color_eyre::eyre;
 use ethui_types::{
     events::{ContractDeployed, ERC20Transfer, Tx},
-    Event,
+    eyre, Event,
 };
 use futures::future::join_all;
 
@@ -41,11 +40,11 @@ async fn expand_trace(
     let tx = provider
         .get_transaction_by_hash(hash)
         .await?
-        .ok_or_else(|| eyre::eyre!("Transaction not found: {}", hash))?;
+        .ok_or_else(|| eyre!("Transaction not found: {}", hash))?;
     let receipt = provider
         .get_transaction_receipt(hash)
         .await?
-        .ok_or_else(|| eyre::eyre!("Transaction not found: {}", hash))?;
+        .ok_or_else(|| eyre!("Transaction not found: {}", hash))?;
     let block_number = trace.block_number;
 
     let res = match (

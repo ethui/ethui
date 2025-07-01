@@ -4,8 +4,7 @@ use alloy::{
     rpc::client::ClientBuilder,
     transports::layers::RetryBackoffLayer,
 };
-use color_eyre::eyre;
-use ethui_types::{events::Tx, Address, TokenMetadata, U256};
+use ethui_types::{events::Tx, eyre, Address, TokenMetadata, U256};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use url::Url;
@@ -147,13 +146,13 @@ impl Client {
         );
         let response = reqwest::get(&path)
             .await
-            .map_err(|_e| eyre::eyre!("Failed to fetch ERC metadata from Alchemy API"))?
+            .map_err(|_e| eyre!("Failed to fetch ERC metadata from Alchemy API"))?
             .text()
             .await
-            .map_err(|_e| eyre::eyre!("Failed to fetch ERC metadata from Alchemy API"))?;
+            .map_err(|_e| eyre!("Failed to fetch ERC metadata from Alchemy API"))?;
 
         let response_json: ErcMetadataResponse = serde_json::from_str(&response)
-            .map_err(|_e| eyre::eyre!("Failed to parse ERC metadata response from Alchemy API"))?;
+            .map_err(|_e| eyre!("Failed to parse ERC metadata response from Alchemy API"))?;
 
         Ok(response_json)
     }
@@ -165,13 +164,13 @@ impl Client {
         );
         let response = reqwest::get(&path)
             .await
-            .map_err(|_e| eyre::eyre!("Failed to fetch ERC metadata from Alchemy API"))?
+            .map_err(|_e| eyre!("Failed to fetch ERC metadata from Alchemy API"))?
             .text()
             .await
-            .map_err(|_e| eyre::eyre!("Failed to fetch ERC metadata from Alchemy API"))?;
+            .map_err(|_e| eyre!("Failed to fetch ERC metadata from Alchemy API"))?;
 
         let response_json: ErcOwnersResponse = serde_json::from_str(&response)
-            .map_err(|_e| eyre::eyre!("Failed to parse ERC owners response from Alchemy API"))?;
+            .map_err(|_e| eyre!("Failed to parse ERC owners response from Alchemy API"))?;
 
         Ok(response_json)
     }

@@ -1,7 +1,6 @@
 use alloy::{primitives::Bytes, providers::Provider as _};
-use color_eyre::eyre;
 use ethui_networks::Networks;
-use ethui_types::{Address, GlobalState};
+use ethui_types::{eyre, Address, GlobalState};
 use tracing::{debug, error};
 
 pub static FUZZ_DIFF_THRESHOLD: f64 = 0.2;
@@ -64,7 +63,7 @@ pub async fn get_code(chain_id: u32, address: Address) -> color_eyre::Result<Byt
         Some(network) => network,
         None => {
             error!("failed to get network for chain id {}. ignoring", chain_id);
-            return Err(eyre::eyre!("Invalid chain ID: {}", chain_id));
+            return Err(eyre!("Invalid chain ID: {}", chain_id));
         }
     };
 
@@ -72,7 +71,7 @@ pub async fn get_code(chain_id: u32, address: Address) -> color_eyre::Result<Byt
     provider
         .get_code_at(address)
         .await
-        .map_err(|e| eyre::eyre!("Failed to get code for chain ID {}: {}", chain_id, e))
+        .map_err(|e| eyre!("Failed to get code for chain ID {}: {}", chain_id, e))
 }
 
 /// Very simple fuzzy matching of contract bytecode.

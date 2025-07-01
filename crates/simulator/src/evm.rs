@@ -5,10 +5,7 @@ use foundry_evm::{
     opts::EvmOpts,
 };
 
-use crate::{
-    errors::SimulationResult,
-    types::{Request, Result},
-};
+use crate::types::{Request, Result};
 
 pub struct Evm {
     executor: Executor,
@@ -43,7 +40,7 @@ impl Evm {
         Evm { executor }
     }
 
-    pub async fn call(&mut self, tx: Request) -> SimulationResult<Result> {
+    pub async fn call(&mut self, tx: Request) -> color_eyre::Result<Result> {
         let res = self.executor.call_raw(
             tx.from,
             tx.to.unwrap_or_default(),

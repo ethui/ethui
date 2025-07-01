@@ -3,8 +3,7 @@ use std::{
     sync::Arc,
 };
 
-use color_eyre::eyre;
-use ethui_types::{Address, UINotify, B256};
+use ethui_types::{eyre, Address, UINotify, B256};
 use tokio::{
     select,
     sync::{mpsc, oneshot, Mutex},
@@ -194,7 +193,7 @@ async fn unit_worker(
 async fn get_alchemy(chain_id: u32) -> color_eyre::Result<ethui_sync_alchemy::Alchemy> {
     let api_key = match ethui_sync_alchemy::get_current_api_key().await {
         Ok(Some(api_key)) => api_key,
-        _ => return Err(eyre::eyre!("No API key")),
+        _ => return Err(eyre!("No API key")),
     };
     let alchemy = ethui_sync_alchemy::Alchemy::new(&api_key, ethui_db::get(), chain_id).unwrap();
 

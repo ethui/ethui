@@ -1,6 +1,5 @@
 mod autostart;
 pub mod commands;
-mod error;
 mod init;
 mod migrations;
 mod onboarding;
@@ -12,6 +11,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use color_eyre::eyre::eyre;
 use ethui_types::{Address, UINotify};
 pub use init::init;
 use migrations::LatestVersion;
@@ -19,8 +19,6 @@ use onboarding::{Onboarding, OnboardingStep};
 use serde::{Deserialize, Serialize};
 use serde_constant::ConstI64;
 pub use utils::test_alchemy_api_key;
-
-pub use self::error::{Error, Result};
 
 #[derive(Debug, Clone)]
 pub struct Settings {
@@ -38,7 +36,7 @@ pub enum DarkMode {
 }
 
 impl Settings {
-    pub async fn init(&self) -> Result<()> {
+    pub async fn init(&self) -> color_eyre::Result<()> {
         // make sure OS's autostart is synced with settings
         crate::autostart::update(self.inner.autostart)?;
         ethui_tracing::reload(&self.inner.rust_log)?;
@@ -46,7 +44,10 @@ impl Settings {
         Ok(())
     }
 
-    pub async fn set(&mut self, params: serde_json::Map<String, serde_json::Value>) -> Result<()> {
+    pub async fn set(
+        &mut self,
+        params: serde_json::Map<String, serde_json::Value>,
+    ) -> color_eyre::Result<()> {
         if let Some(v) = params.get("darkMode") {
             self.inner.dark_mode = serde_json::from_value(v.clone()).unwrap()
         }
@@ -90,28 +91,28 @@ impl Settings {
         Ok(())
     }
 
-    pub async fn finish_onboarding_step(&mut self, step: OnboardingStep) -> Result<()> {
+    pub async fn finish_onboarding_step(&mut self, step: OnboardingStep) -> color_eyre::Result<()> {
         self.inner.onboarding.finish_step(step);
         self.save().await?;
 
         Ok(())
     }
 
-    pub async fn finish_onboarding(&mut self) -> Result<()> {
+    pub async fn finish_onboarding(&mut self) -> color_eyre::Result<()> {
         self.inner.onboarding.finish();
         self.save().await?;
 
         Ok(())
     }
 
-    pub async fn set_dark_mode(&mut self, mode: DarkMode) -> Result<()> {
+    pub async fn set_dark_mode(&mut self, mode: DarkMode) -> color_eyre::Result<()> {
         self.inner.dark_mode = mode;
         self.save().await?;
 
         Ok(())
     }
 
-    pub async fn set_fast_mode(&mut self, mode: bool) -> Result<()> {
+    pub async fn set_fast_mode(&mut self, mode: bool) -> color_eyre::Result<()> {
         self.inner.fast_mode = mode;
         self.save().await?;
 
@@ -130,18 +131,22 @@ impl Settings {
         self.inner.start_minimized
     }
 
-    pub fn get_etherscan_api_key(&self) -> Result<String> {
+    pub fn get_etherscan_api_key(&self) -> color_eyre::Result<String> {
         self.inner
             .etherscan_api_key
             .clone()
-            .ok_or(Error::EtherscanKeyNotSet)
+            .ok_or(eyre!("Etherscan key not set"))
     }
 
     pub fn get_alias(&self, address: Address) -> Option<String> {
         self.inner.aliases.get(&address).cloned()
     }
 
-    async fn set_alias(&mut self, address: Address, alias: Option<String>) -> Result<()> {
+    async fn set_alias(
+        &mut self,
+        address: Address,
+        alias: Option<String>,
+    ) -> color_eyre::Result<()> {
         // trim whitespaces
         // empty str becomes None
         let alias = alias.map(|v| v.trim().to_owned()).filter(|v| !v.is_empty());
@@ -156,7 +161,7 @@ impl Settings {
     }
 
     // Persists current state to disk
-    async fn save(&self) -> Result<()> {
+    async fn save(&self) -> color_eyre::Result<()> {
         let pathbuf = self.file.clone();
         let path = Path::new(&pathbuf);
         let file = File::create(path)?;

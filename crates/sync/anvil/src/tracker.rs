@@ -3,9 +3,8 @@ use alloy::{
     providers::{ext::TraceApi as _, Provider as _, ProviderBuilder, WsConnect},
     rpc::types::{trace::parity::LocalizedTransactionTrace, Filter, Log},
 };
-use color_eyre::eyre;
 use ethui_abis::IERC20;
-use ethui_types::{Address, DedupChainId, TokenMetadata, UINotify, B256};
+use ethui_types::{eyre, Address, DedupChainId, TokenMetadata, UINotify, B256};
 use futures::StreamExt as _;
 use tokio::sync::mpsc;
 use tracing::{instrument, trace, warn};
@@ -101,7 +100,7 @@ async fn watch(
             None => {
                 block_snd
                     .send(Msg::Reset)
-                    .map_err(|_| eyre::eyre!("Watcher error"))?;
+                    .map_err(|_| eyre!("Watcher error"))?;
                 0
             }
             Some(block_number) => block_number,
@@ -154,12 +153,12 @@ async fn watch(
             let traces = provider.trace_block(b.into()).await?;
             block_snd
                 .send(Msg::Traces(traces))
-                .map_err(|_| eyre::eyre!("Watcher error"))?;
+                .map_err(|_| eyre!("Watcher error"))?;
 
             let logs = provider.get_logs(&Filter::new().select(b)).await?;
             block_snd
                 .send(Msg::Logs(logs))
-                .map_err(|_| eyre::eyre!("Watcher error"))?;
+                .map_err(|_| eyre!("Watcher error"))?;
 
             if let Some(block) = provider.get_block(b.into()).await? {
                 save_known_tip(ctx.dedup_chain_id, b, block.header.hash).await?;
@@ -169,7 +168,7 @@ async fn watch(
         trace!("caught up");
         block_snd
             .send(Msg::CaughtUp)
-            .map_err(|_| eyre::eyre!("Watcher error"))?;
+            .map_err(|_| eyre!("Watcher error"))?;
 
         'ws: loop {
             // wait for the next block
@@ -182,10 +181,10 @@ async fn watch(
                         Some(b) => {
                             trace!("block {}", b.number);
                             let block_traces = provider.trace_block(b.number.into()).await?;
-                            block_snd.send(Msg::Traces(block_traces)).map_err(|_| eyre::eyre!("Watcher error"))?;
+                            block_snd.send(Msg::Traces(block_traces)).map_err(|_| eyre!("Watcher error"))?;
 
                             let logs = provider.get_logs(&Filter::new().select(b.number)).await?;
-                            block_snd.send(Msg::Logs(logs)).map_err(|_| eyre::eyre!("Watcher error"))?;
+                            block_snd.send(Msg::Logs(logs)).map_err(|_| eyre!("Watcher error"))?;
 
                             save_known_tip(ctx.dedup_chain_id, b.number, b.hash).await?;
                         },

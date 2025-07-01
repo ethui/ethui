@@ -7,12 +7,12 @@ use once_cell::sync::OnceCell;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
 use crate::{
-    migrations::load_and_migrate, onboarding::OnboardingStep, Result, SerializedSettings, Settings,
+    migrations::load_and_migrate, onboarding::OnboardingStep, SerializedSettings, Settings,
 };
 
 static SETTINGS: OnceCell<RwLock<Settings>> = OnceCell::new();
 
-pub async fn init(pathbuf: PathBuf) -> Result<()> {
+pub async fn init(pathbuf: PathBuf) -> color_eyre::Result<()> {
     let path = Path::new(&pathbuf);
 
     let res = if path.exists() {

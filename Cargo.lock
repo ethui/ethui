@@ -3552,6 +3552,7 @@ dependencies = [
  "alloy-chains",
  "async-trait",
  "auto-launch",
+ "color-eyre",
  "ethui-broadcast",
  "ethui-tracing",
  "ethui-types",
@@ -3562,7 +3563,6 @@ dependencies = [
  "serde_json",
  "tauri",
  "tempfile",
- "thiserror 2.0.12",
  "tokio",
 ]
 
@@ -3571,6 +3571,7 @@ name = "ethui-simulator"
 version = "1.17.0"
 dependencies = [
  "alloy",
+ "color-eyre",
  "ethui-db",
  "ethui-networks",
  "ethui-types",
@@ -3580,7 +3581,6 @@ dependencies = [
  "pretty_assertions",
  "serde",
  "tauri",
- "thiserror 2.0.12",
  "tokio",
 ]
 

@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use alloy::{json_abi::JsonAbi, primitives::Bytes};
-use color_eyre::eyre;
+use color_eyre::eyre::eyre;
 use ethui_types::{Address, Contract, ContractWithAbi, DedupChainId};
 use tracing::instrument;
 
@@ -80,7 +80,7 @@ impl DbInner {
         .await?;
 
         match res.abi {
-            None => Err(eyre::eyre!("not found")),
+            None => Err(eyre!("not found")),
             Some(abi) => Ok(serde_json::from_str(&abi).unwrap_or_default()),
         }
     }
@@ -109,7 +109,7 @@ impl DbInner {
                 )
                 .await
             }
-            _ => Err(eyre::eyre!("not found")),
+            _ => Err(eyre!("not found")),
         }
     }
 
