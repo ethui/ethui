@@ -3410,11 +3410,11 @@ version = "1.17.0"
 dependencies = [
  "aead",
  "chacha20poly1305",
+ "color-eyre",
  "rand 0.9.1",
  "rust-argon2",
  "serde",
  "serde_json",
- "thiserror 2.0.12",
  "zeroize",
 ]
 
@@ -3659,8 +3659,8 @@ dependencies = [
 name = "ethui-tracing"
 version = "1.17.0"
 dependencies = [
+ "color-eyre",
  "once_cell",
- "thiserror 2.0.12",
  "tracing",
  "tracing-subscriber 0.3.19",
 ]
