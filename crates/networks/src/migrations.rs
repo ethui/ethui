@@ -198,7 +198,7 @@ mod tests {
             }
         });
 
-        write!(tempfile, "{}", networks_v0).unwrap();
+        write!(tempfile, "{networks_v0}").unwrap();
 
         if let Ok(_networks) = load_and_migrate(&tempfile.path().to_path_buf()) {
             let file = File::open(tempfile.path()).unwrap();
@@ -229,7 +229,7 @@ mod tests {
             }
         });
 
-        write!(tempfile, "{}", networks_v0).unwrap();
+        write!(tempfile, "{networks_v0}").unwrap();
 
         if let Ok(_networks) = load_and_migrate(&tempfile.path().to_path_buf()) {
             let file = File::open(tempfile.path()).unwrap();
@@ -260,7 +260,7 @@ mod tests {
             }
         });
 
-        write!(tempfile, "{}", networks_v0).unwrap();
+        write!(tempfile, "{networks_v0}").unwrap();
 
         let result = load_and_migrate(&tempfile.path().to_path_buf());
 
@@ -287,7 +287,7 @@ mod tests {
             }
         });
 
-        write!(tempfile, "{}", networks_v0).unwrap();
+        write!(tempfile, "{networks_v0}").unwrap();
 
         if let Ok(_networks) = load_and_migrate(&tempfile.path().to_path_buf()) {
             let file = File::open(tempfile.path()).unwrap();

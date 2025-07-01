@@ -137,7 +137,7 @@ impl Settings {
             .ok_or(Error::EtherscanKeyNotSet)
     }
 
-    fn get_alias(&self, address: Address) -> Option<String> {
+    pub fn get_alias(&self, address: Address) -> Option<String> {
         self.inner.aliases.get(&address).cloned()
     }
 
