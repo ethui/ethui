@@ -229,7 +229,7 @@ mod tests {
         let settings_v0: serde_json::Value =
             serde_json::to_value(SerializedSettingsV0::default()).unwrap();
 
-        write!(tempfile, "{}", settings_v0).unwrap();
+        write!(tempfile, "{settings_v0}").unwrap();
 
         if let Ok(_settings) = load_and_migrate(&tempfile.path().to_path_buf()).await {
             let file = File::open(tempfile.path()).unwrap();
