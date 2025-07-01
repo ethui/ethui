@@ -1,6 +1,5 @@
 use ethui_broadcast::InternalMsg;
-use ethui_settings::Settings;
-use ethui_types::GlobalState;
+use ethui_settings::actor::{get_actor, GetSettings};
 use kameo::actor::ActorRef;
 
 use crate::actor::{Msg, Worker};
@@ -8,9 +7,10 @@ use crate::actor::{Msg, Worker};
 pub async fn init() -> crate::Result<()> {
     let handle = kameo::spawn(Worker::default());
     handle.register("forge").unwrap();
-    let settings = Settings::read().await;
+    let actor = get_actor().await.expect("Settings actor not available");
+    let settings = actor.ask(GetSettings).await.expect("Failed to get settings");
 
-    if let Some(ref path) = settings.inner.abi_watch_path {
+    if let Some(ref path) = settings.abi_watch_path {
         handle
             .tell(Msg::UpdateRoots(vec![path.clone().into()]))
             .await?;
@@ -30,8 +30,9 @@ async fn receiver(handle: ActorRef<Worker>) -> ! {
         if let Ok(msg) = rx.recv().await {
             match msg {
                 InternalMsg::SettingsUpdated => {
-                    let settings = Settings::read().await;
-                    if let Some(ref path) = settings.inner.abi_watch_path {
+                    let actor = get_actor().await.expect("Settings actor not available");
+                    let settings = actor.ask(GetSettings).await.expect("Failed to get settings");
+                    if let Some(ref path) = settings.abi_watch_path {
                         // TODO: support multiple
                         handle
                             .tell(Msg::UpdateRoots(vec![path.clone().into()]))

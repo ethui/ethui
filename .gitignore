@@ -27,3 +27,6 @@ extension/*.zip
 !.yarn/sdks
 !.yarn/versions
 *storybook.log
+CLAUDE.md
+AGENT.md
+.claude/

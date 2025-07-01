@@ -1,3 +1,4 @@
+pub mod actor;
 mod autostart;
 pub mod commands;
 mod error;
@@ -11,6 +12,8 @@ use std::{
     fs::File,
     path::{Path, PathBuf},
 };
+
+use kameo::reply::Reply;
 
 use ethui_types::{Address, UINotify};
 pub use init::init;
@@ -137,11 +140,11 @@ impl Settings {
             .ok_or(Error::EtherscanKeyNotSet)
     }
 
-    fn get_alias(&self, address: Address) -> Option<String> {
+    pub fn get_alias(&self, address: Address) -> Option<String> {
         self.inner.aliases.get(&address).cloned()
     }
 
-    async fn set_alias(&mut self, address: Address, alias: Option<String>) -> Result<()> {
+    pub async fn set_alias(&mut self, address: Address, alias: Option<String>) -> Result<()> {
         // trim whitespaces
         // empty str becomes None
         let alias = alias.map(|v| v.trim().to_owned()).filter(|v| !v.is_empty());
@@ -156,7 +159,7 @@ impl Settings {
     }
 
     // Persists current state to disk
-    async fn save(&self) -> Result<()> {
+    pub async fn save(&self) -> Result<()> {
         let pathbuf = self.file.clone();
         let path = Path::new(&pathbuf);
         let file = File::create(path)?;
@@ -182,19 +185,19 @@ pub struct SerializedSettings {
     pub hide_empty_tokens: bool,
 
     #[serde(default = "default_aliases")]
-    aliases: HashMap<Address, String>,
+    pub aliases: HashMap<Address, String>,
 
     #[serde(default)]
-    fast_mode: bool,
+    pub fast_mode: bool,
 
     #[serde(default)]
-    autostart: bool,
+    pub autostart: bool,
 
     #[serde(default)]
-    start_minimized: bool,
+    pub start_minimized: bool,
 
     #[serde(default)]
-    rust_log: String,
+    pub rust_log: String,
 
     #[serde(default)]
     pub onboarding: Onboarding,
@@ -227,4 +230,22 @@ const fn default_true() -> bool {
 
 fn default_aliases() -> HashMap<Address, String> {
     Default::default()
+}
+
+impl Reply for SerializedSettings {
+    type Ok = Self;
+    type Error = crate::Error;
+    type Value = Self;
+
+    fn to_result(self) -> std::result::Result<Self::Ok, Self::Error> {
+        Ok(self)
+    }
+
+    fn into_any_err(self) -> Option<Box<dyn kameo::reply::ReplyError>> {
+        None
+    }
+
+    fn into_value(self) -> Self::Value {
+        self
+    }
 }

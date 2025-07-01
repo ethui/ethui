@@ -14,6 +14,15 @@ pub enum Error {
 
     #[error(transparent)]
     Tracing(#[from] ethui_tracing::TracingError),
+
+    #[error("Settings actor not found")]
+    ActorNotFound,
+
+    #[error("Actor send error: {0}")]
+    ActorSend(String),
+
+    #[error("Actor spawn error: {0}")]
+    ActorSpawn(String),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -24,5 +33,18 @@ impl serde::Serialize for Error {
         S: serde::Serializer,
     {
         serializer.serialize_str(self.to_string().as_ref())
+    }
+}
+
+// Implement From for all message types' send errors
+impl<M> From<kameo::error::SendError<M, crate::Error>> for Error {
+    fn from(e: kameo::error::SendError<M, crate::Error>) -> Self {
+        Error::ActorSend(format!("{}", e))
+    }
+}
+
+impl<M> From<kameo::error::SendError<M>> for Error {
+    fn from(e: kameo::error::SendError<M>) -> Self {
+        Error::ActorSend(format!("{}", e))
     }
 }

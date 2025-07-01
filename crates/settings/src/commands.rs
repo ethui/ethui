@@ -1,43 +1,53 @@
-use ethui_types::{Address, GlobalState};
+use ethui_types::Address;
 
-use super::{DarkMode, Result, SerializedSettings, Settings};
-use crate::onboarding::OnboardingStep;
+use crate::{
+    actor::{get_actor, GetSettings, SetSettings, SetDarkMode, SetFastMode, FinishOnboarding, FinishOnboardingStep, GetAlias, SetAlias},
+    onboarding::OnboardingStep,
+    DarkMode, Error, Result, SerializedSettings,
+};
 
 #[tauri::command]
-pub async fn settings_get() -> SerializedSettings {
-    Settings::read().await.get().clone()
+pub async fn settings_get() -> Result<SerializedSettings> {
+    let actor = get_actor().await?;
+    Ok(actor.ask(GetSettings).await?)
 }
 
 #[tauri::command]
 pub async fn settings_set(params: serde_json::Map<String, serde_json::Value>) -> Result<()> {
-    Settings::write().await.set(params).await
+    let actor = get_actor().await?;
+    actor.ask(SetSettings(params)).await.map_err(Error::from)
 }
 
 #[tauri::command]
 pub async fn settings_set_dark_mode(mode: DarkMode) -> Result<()> {
-    Settings::write().await.set_dark_mode(mode).await
+    let actor = get_actor().await?;
+    actor.ask(SetDarkMode(mode)).await.map_err(Error::from)
 }
 
 #[tauri::command]
 pub async fn settings_set_fast_mode(mode: bool) -> Result<()> {
-    Settings::write().await.set_fast_mode(mode).await
+    let actor = get_actor().await?;
+    actor.ask(SetFastMode(mode)).await.map_err(Error::from)
 }
 
 #[tauri::command]
 pub async fn settings_finish_onboarding() -> Result<()> {
-    Settings::write().await.finish_onboarding().await
+    let actor = get_actor().await?;
+    actor.ask(FinishOnboarding).await.map_err(Error::from)
 }
 
 /// Gets the alias for an address
 #[tauri::command]
-pub async fn settings_get_alias(address: Address) -> Option<String> {
-    Settings::read().await.get_alias(address)
+pub async fn settings_get_alias(address: Address) -> Result<Option<String>> {
+    let actor = get_actor().await?;
+    Ok(actor.ask(GetAlias(address)).await?)
 }
 
 /// Sets the alias for an address
 #[tauri::command]
 pub async fn settings_set_alias(address: Address, alias: Option<String>) -> Result<()> {
-    Settings::write().await.set_alias(address, alias).await
+    let actor = get_actor().await?;
+    actor.ask(SetAlias(address, alias)).await.map_err(Error::from)
 }
 
 #[tauri::command]
@@ -57,10 +67,12 @@ pub async fn settings_test_rust_log(directives: String) -> bool {
 
 #[tauri::command]
 pub async fn settings_onboarding_finish_step(id: OnboardingStep) -> Result<()> {
-    Settings::write().await.finish_onboarding_step(id).await
+    let actor = get_actor().await?;
+    actor.ask(FinishOnboardingStep(id)).await.map_err(Error::from)
 }
 
 #[tauri::command]
 pub async fn settings_onboarding_finish_all() -> Result<()> {
-    Settings::write().await.finish_onboarding().await
+    let actor = get_actor().await?;
+    actor.ask(FinishOnboarding).await.map_err(Error::from)
 }

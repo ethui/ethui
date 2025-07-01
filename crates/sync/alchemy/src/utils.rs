@@ -1,12 +1,12 @@
-use ethui_types::GlobalState;
+use ethui_settings::actor::{get_actor, GetSettings};
 
 use crate::{Alchemy, Error, Result};
 
 pub async fn get_current_api_key() -> Result<Option<String>> {
-    let settings = ethui_settings::Settings::read().await;
+    let actor = get_actor().await.map_err(|_| Error::NoAPIKey)?;
+    let settings = actor.ask(GetSettings).await.map_err(|_| Error::NoAPIKey)?;
 
     Ok(settings
-        .inner
         .alchemy_api_key
         .as_ref()
         .cloned()
