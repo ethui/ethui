@@ -55,6 +55,7 @@ ethui-token-list.workspace = true
 
 [features]
 default = []
+release = ["ethui-wallets/release"]
 # this feature is used for production builds or when `devPath` points to the filesystem
 # DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
