@@ -30,14 +30,16 @@ where
     OsRng.fill_bytes(&mut salt);
     OsRng.fill_bytes(&mut nonce);
 
-    let mut key = password_to_key(password, &salt);
+    let mut key = password_to_key(password, &salt)?;
 
     let aead = XChaCha20Poly1305::new(key[..32].into());
     let encryptor = aead::stream::EncryptorBE32::from_aead(aead, nonce.as_ref().into());
 
-    let json = serde_json::to_string(data).unwrap();
+    let json = serde_json::to_string(data)
+        .map_err(|e| eyre!("Failed to serialize data for encryption: {}", e))?;
     let bytes = json.as_bytes();
-    let ciphertext = encryptor.encrypt_last(bytes).unwrap();
+    let ciphertext = encryptor.encrypt_last(bytes)
+        .map_err(|e| eyre!("Encryption failed: {}", e))?;
 
     let res = EncryptedData {
         salt,
@@ -63,7 +65,7 @@ where
     let mut salt = [0u8; 32];
     let mut nonce = [0u8; 19];
 
-    let mut key = password_to_key(password, &data.salt);
+    let mut key = password_to_key(password, &data.salt)?;
 
     let aead = XChaCha20Poly1305::new(key[..32].into());
     let mut decryptor = aead::stream::DecryptorBE32::from_aead(aead, data.nonce.as_ref().into());
@@ -82,8 +84,9 @@ where
     Ok(serde_json::from_slice(&plaintext)?)
 }
 
-fn password_to_key(password: &str, salt: &[u8; 32]) -> Vec<u8> {
-    argon2::hash_raw(password.as_bytes(), salt, &argon2_config()).unwrap()
+fn password_to_key(password: &str, salt: &[u8; 32]) -> color_eyre::Result<Vec<u8>> {
+    argon2::hash_raw(password.as_bytes(), salt, &argon2_config())
+        .map_err(|e| eyre!("Key derivation failed: {}", e))
 }
 
 fn argon2_config<'a>() -> argon2::Config<'a> {
@@ -105,16 +108,17 @@ mod tests {
     }
 
     #[test]
-    fn test_encryption() {
+    fn test_encryption() -> color_eyre::Result<()> {
         let password = "foo bar!@";
         let secret = SecretData {
             foo: "The quick brown fox jumps over the lazy dog".to_string(),
         };
 
-        let encrypted_data = encrypt(&secret, password).unwrap();
+        let encrypted_data = encrypt(&secret, password)?;
 
-        let decrypted: SecretData = decrypt(&encrypted_data, password).unwrap();
+        let decrypted: SecretData = decrypt(&encrypted_data, password)?;
 
         assert_eq!(decrypted, secret);
+        Ok(())
     }
 }
