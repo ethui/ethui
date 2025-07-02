@@ -12,7 +12,10 @@ export function QuickFastModeToggle() {
   const schema = z.object({
     fastMode: z.boolean(),
   });
-  const form = useForm({
+
+  type FastModeFormData = z.infer<typeof schema>;
+
+  const form = useForm<FastModeFormData>({
     resolver: zodResolver(schema),
     defaultValues: { fastMode },
   });
