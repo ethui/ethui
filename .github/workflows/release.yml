@@ -111,7 +111,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           cache: "yarn"
-          node-version: "22"
+          node-version: "24.x"
 
       - run: yarn install --frozen-lockfile --network-timeout 1000000
 
