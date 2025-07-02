@@ -134,7 +134,6 @@ impl Message<Set> for SettingsActor {
                     self.settings.inner.rust_log = serde_json::from_value(v.clone()).unwrap();
                     ethui_tracing::parse(&self.settings.inner.rust_log)?;
                 }
-                // Save will be handled by separate Save message
             }
             Set::DarkMode(mode) => {
                 self.settings.inner.dark_mode = mode;
@@ -158,7 +157,8 @@ impl Message<Set> for SettingsActor {
                 }
             }
         }
-        // Send save message to self
+
+        // trigger a file save
         let _ = ctx.actor_ref().tell(Save).await;
 
         Ok(())
