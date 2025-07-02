@@ -14,25 +14,31 @@ impl DbInner {
     }
 
     pub async fn insert_transaction(&self, chain_id: u32, tx: &Tx) -> color_eyre::Result<()> {
-        let hash = format!("0x{:x}", tx.hash);
-        let trace_address = tx.trace_address.clone().map(|t| {
-            t.into_iter()
-                .map(|i| i.to_string())
-                .collect::<Vec<_>>()
-                .join("/")
+        // Use the existing to_string() implementation for hash/addresses to avoid duplicating format logic
+        let hash = tx.hash.to_string();
+        let trace_address = tx.trace_address.as_ref().map(|t| {
+            // Avoid cloning by using a reference and pre-allocating with capacity
+            let mut result = String::with_capacity(t.len() * 4); // estimate 4 chars per number + separator
+            for (i, &num) in t.iter().enumerate() {
+                if i > 0 {
+                    result.push('/');
+                }
+                result.push_str(&num.to_string());
+            }
+            result
         });
-        let from = format!("0x{:x}", tx.from);
-        let to = tx.to.map(|a| format!("0x{a:x}"));
+        let from = tx.from.to_string();
+        let to = tx.to.map(|a| a.to_string());
         let block_number = tx.block_number.map(|b| b as i64);
         let position = tx.position.unwrap_or(0) as u32;
-        let value = tx.value.map(|v| v.to_string());
-        let data = tx.data.clone().map(|d| d.to_string());
+        let value = tx.value.as_ref().map(|v| v.to_string());
+        let data = tx.data.as_ref().map(|d| d.to_string());
         let status = tx.status as u32;
         let incomplete = tx.incomplete;
-        let gas_limit = tx.gas_limit.map(|v| v.to_string());
-        let gas_used = tx.gas_used.map(|v| v.to_string());
-        let max_fee_per_gas = tx.max_fee_per_gas.map(|v| v.to_string());
-        let max_priority_fee_per_gas = tx.max_priority_fee_per_gas.map(|v| v.to_string());
+        let gas_limit = tx.gas_limit.as_ref().map(|v| v.to_string());
+        let gas_used = tx.gas_used.as_ref().map(|v| v.to_string());
+        let max_fee_per_gas = tx.max_fee_per_gas.as_ref().map(|v| v.to_string());
+        let max_priority_fee_per_gas = tx.max_priority_fee_per_gas.as_ref().map(|v| v.to_string());
         let r#type = tx.r#type.map(|t| t as i64);
         let nonce = tx.nonce.map(|n| n as i64);
 
@@ -67,14 +73,14 @@ impl DbInner {
         chain_id: u32,
         hash: B256,
     ) -> color_eyre::Result<Tx> {
-        let hash = hash.to_string();
+        let hash_str = hash.to_string();
 
         let row = sqlx::query!(
             r#" SELECT hash, trace_address, from_address, to_address, data as 'data?', value as 'value?', block_number, position, gas_limit, gas_used, max_fee_per_gas, max_priority_fee_per_gas, type, nonce, status, incomplete as 'incomplete!'
                 FROM transactions
                 WHERE chain_id = ? AND hash = ? "#,
             chain_id,
-            hash
+            hash_str
         )
         .fetch_one(self.pool())
         .await?;
@@ -115,7 +121,7 @@ impl DbInner {
         max: u32,
         first_known: Option<TxIdx>,
     ) -> color_eyre::Result<Vec<Transaction>> {
-        let from_or_to = from_or_to.to_string();
+        let from_or_to_str = from_or_to.to_string();
         let first_known = first_known.unwrap_or_default();
         let first_known_block = first_known.block_number as u32;
         let first_known_position = first_known.position as u32;
@@ -132,8 +138,8 @@ impl DbInner {
             ) sub
             ORDER BY block_number DESC, position DESC"#,
             chain_id,
-            from_or_to,
-            from_or_to,
+            from_or_to_str,
+            from_or_to_str,
             first_known_block,
             first_known_block,
             first_known_position,
@@ -165,9 +171,9 @@ impl DbInner {
         max: u32,
         last_known: Option<TxIdx>,
     ) -> color_eyre::Result<Vec<Transaction>> {
-        let from_or_to = from_or_to.to_string();
+        let from_or_to_str = from_or_to.to_string();
         let last_known_block = last_known
-            .clone()
+            .as_ref()
             .map(|l| l.block_number as u32)
             .unwrap_or(u32::MAX);
         let last_known_position = last_known.map(|l| l.position as u32).unwrap_or(u32::MAX);
@@ -181,8 +187,8 @@ impl DbInner {
                 ORDER BY block_number DESC, position DESC
                 LIMIT ?"#,
             chain_id,
-            from_or_to,
-            from_or_to,
+            from_or_to_str,
+            from_or_to_str,
             last_known_block,
             last_known_block,
             last_known_position,
@@ -221,14 +227,14 @@ impl DbInner {
         from: Address,
         to: Address,
     ) -> color_eyre::Result<u32> {
-        let from = format!("0x{from:x}");
-        let to = format!("0x{to:x}");
+        let from_str = from.to_string();
+        let to_str = to.to_string();
 
         let row = sqlx::query!(
             r#"SELECT count(*) as count FROM transactions WHERE chain_id = ? AND from_address = ? AND to_address = ?"#,
             chain_id,
-            from,
-            to
+            from_str,
+            to_str
         )
         .fetch_one(self.pool())
         .await?;

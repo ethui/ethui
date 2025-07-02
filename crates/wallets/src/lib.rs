@@ -85,9 +85,10 @@ impl Wallets {
     }
 
     pub async fn get_all_addresses(&self) -> Vec<(String, Address)> {
-        let mut res = vec![];
+        // Pre-allocate capacity based on wallet count to reduce reallocations
+        let mut res = Vec::with_capacity(self.wallets.len() * 2); // estimate 2 addresses per wallet
         for wallet in self.wallets.iter() {
-            res.extend(wallet.get_all_addresses().await.into_iter());
+            res.extend(wallet.get_all_addresses().await);
         }
 
         res
