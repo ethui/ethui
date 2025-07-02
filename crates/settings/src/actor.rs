@@ -78,7 +78,7 @@ pub struct GetAll;
 pub struct GetAlias(pub ethui_types::Address);
 
 #[derive(Debug, Clone)]
-pub struct Save;
+struct Save;
 
 impl Message<GetAll> for SettingsActor {
     type Reply = SerializedSettings;
