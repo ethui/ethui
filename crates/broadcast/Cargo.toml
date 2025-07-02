@@ -12,5 +12,4 @@ authors.workspace = true
 ethui-types.workspace = true
 tokio.workspace = true
 once_cell.workspace = true
-url.workspace = true
 tracing.workspace = true
