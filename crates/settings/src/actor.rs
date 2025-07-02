@@ -5,12 +5,14 @@ use kameo::{actor::ActorRef, message::Message, Actor, Reply};
 
 use crate::{
     migrations::load_and_migrate, onboarding::OnboardingStep, DarkMode, SerializedSettings,
-    Settings,
 };
+use ethui_types::UINotify;
+use std::{fs::File, path::Path};
 
 #[derive(Debug)]
 pub struct SettingsActor {
-    settings: Settings,
+    inner: SerializedSettings,
+    file: PathBuf,
 }
 
 pub async fn ask<M>(
@@ -42,18 +44,18 @@ where
 
 impl SettingsActor {
     pub async fn new(pathbuf: PathBuf) -> color_eyre::Result<Self> {
-        let settings = if pathbuf.exists() {
-            load_and_migrate(&pathbuf).await?
+        let (inner, file) = if pathbuf.exists() {
+            let migrated = load_and_migrate(&pathbuf).await?;
+            (migrated.inner, migrated.file)
         } else {
-            Settings {
-                inner: SerializedSettings::default(),
-                file: pathbuf,
-            }
+            (SerializedSettings::default(), pathbuf)
         };
 
-        settings.init().await?;
+        // make sure OS's autostart is synced with settings
+        crate::autostart::update(inner.autostart)?;
+        ethui_tracing::reload(&inner.rust_log)?;
 
-        Ok(Self { settings })
+        Ok(Self { inner, file })
     }
 }
 
@@ -88,7 +90,7 @@ impl Message<GetAll> for SettingsActor {
         _msg: GetAll,
         _ctx: &mut kameo::message::Context<Self, Self::Reply>,
     ) -> Self::Reply {
-        self.settings.inner.clone()
+        self.inner.clone()
     }
 }
 
@@ -103,57 +105,57 @@ impl Message<Set> for SettingsActor {
         match msg {
             Set::All(map) => {
                 if let Some(v) = map.get("darkMode") {
-                    self.settings.inner.dark_mode = serde_json::from_value(v.clone()).unwrap()
+                    self.inner.dark_mode = serde_json::from_value(v.clone()).unwrap()
                 }
                 if let Some(v) = map.get("abiWatchPath") {
-                    self.settings.inner.abi_watch_path = serde_json::from_value(v.clone()).unwrap()
+                    self.inner.abi_watch_path = serde_json::from_value(v.clone()).unwrap()
                 }
                 if let Some(v) = map.get("alchemyApiKey") {
-                    self.settings.inner.alchemy_api_key = serde_json::from_value(v.clone()).unwrap()
+                    self.inner.alchemy_api_key = serde_json::from_value(v.clone()).unwrap()
                 }
                 if let Some(v) = map.get("etherscanApiKey") {
-                    self.settings.inner.etherscan_api_key =
+                    self.inner.etherscan_api_key =
                         serde_json::from_value(v.clone()).unwrap()
                 }
                 if let Some(v) = map.get("hideEmptyTokens") {
-                    self.settings.inner.hide_empty_tokens =
+                    self.inner.hide_empty_tokens =
                         serde_json::from_value(v.clone()).unwrap()
                 }
                 if let Some(v) = map.get("autostart") {
-                    self.settings.inner.autostart = serde_json::from_value(v.clone()).unwrap();
-                    crate::autostart::update(self.settings.inner.autostart)?;
+                    self.inner.autostart = serde_json::from_value(v.clone()).unwrap();
+                    crate::autostart::update(self.inner.autostart)?;
                 }
                 if let Some(v) = map.get("startMinimized") {
-                    self.settings.inner.start_minimized =
+                    self.inner.start_minimized =
                         serde_json::from_value(v.clone()).unwrap();
                 }
                 if let Some(v) = map.get("fastMode") {
-                    self.settings.inner.fast_mode = serde_json::from_value(v.clone()).unwrap();
+                    self.inner.fast_mode = serde_json::from_value(v.clone()).unwrap();
                 }
                 if let Some(v) = map.get("rustLog") {
-                    self.settings.inner.rust_log = serde_json::from_value(v.clone()).unwrap();
-                    ethui_tracing::parse(&self.settings.inner.rust_log)?;
+                    self.inner.rust_log = serde_json::from_value(v.clone()).unwrap();
+                    ethui_tracing::parse(&self.inner.rust_log)?;
                 }
             }
             Set::DarkMode(mode) => {
-                self.settings.inner.dark_mode = mode;
+                self.inner.dark_mode = mode;
             }
             Set::FastMode(mode) => {
-                self.settings.inner.fast_mode = mode;
+                self.inner.fast_mode = mode;
             }
 
             Set::FinishOnboardingStep(step) => {
-                self.settings.inner.onboarding.finish_step(step);
+                self.inner.onboarding.finish_step(step);
             }
             Set::FinishOnboarding => {
-                self.settings.inner.onboarding.finish();
+                self.inner.onboarding.finish();
             }
             Set::Alias(address, alias) => {
                 let alias = alias.map(|v| v.trim().to_owned()).filter(|v| !v.is_empty());
                 if let Some(alias) = alias {
-                    self.settings.inner.aliases.insert(address, alias);
+                    self.inner.aliases.insert(address, alias);
                 } else {
-                    self.settings.inner.aliases.remove(&address);
+                    self.inner.aliases.remove(&address);
                 }
             }
         }
@@ -173,7 +175,16 @@ impl Message<Save> for SettingsActor {
         _msg: Save,
         _ctx: &mut kameo::message::Context<Self, Self::Reply>,
     ) -> Self::Reply {
-        self.settings.save().await
+        let pathbuf = self.file.clone();
+        let path = Path::new(&pathbuf);
+        let file = File::create(path)?;
+
+        ethui_tracing::reload(&self.inner.rust_log)?;
+        serde_json::to_writer_pretty(file, &self.inner)?;
+        ethui_broadcast::settings_updated().await;
+        ethui_broadcast::ui_notify(UINotify::SettingsChanged).await;
+
+        Ok(())
     }
 }
 
@@ -185,6 +196,6 @@ impl Message<GetAlias> for SettingsActor {
         msg: GetAlias,
         _ctx: &mut kameo::message::Context<Self, Self::Reply>,
     ) -> Self::Reply {
-        self.settings.inner.aliases.get(&msg.0).cloned()
+        self.inner.aliases.get(&msg.0).cloned()
     }
 }

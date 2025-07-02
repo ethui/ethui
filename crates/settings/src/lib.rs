@@ -6,14 +6,10 @@ mod migrations;
 mod onboarding;
 mod utils;
 
-use std::{
-    collections::HashMap,
-    fs::File,
-    path::{Path, PathBuf},
-};
+use std::collections::HashMap;
 
 pub use actor::*;
-use ethui_types::{Address, UINotify};
+use ethui_types::Address;
 pub use init::init;
 use kameo::reply::Reply;
 use migrations::LatestVersion;
@@ -21,13 +17,6 @@ use onboarding::Onboarding;
 use serde::{Deserialize, Serialize};
 use serde_constant::ConstI64;
 pub use utils::test_alchemy_api_key;
-
-#[derive(Debug, Clone)]
-pub struct Settings {
-    pub inner: SerializedSettings,
-
-    file: PathBuf,
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
@@ -37,29 +26,6 @@ pub enum DarkMode {
     Light,
 }
 
-impl Settings {
-    pub async fn init(&self) -> color_eyre::Result<()> {
-        // make sure OS's autostart is synced with settings
-        crate::autostart::update(self.inner.autostart)?;
-        ethui_tracing::reload(&self.inner.rust_log)?;
-
-        Ok(())
-    }
-
-    // Persists current state to disk
-    async fn save(&self) -> color_eyre::Result<()> {
-        let pathbuf = self.file.clone();
-        let path = Path::new(&pathbuf);
-        let file = File::create(path)?;
-
-        ethui_tracing::reload(&self.inner.rust_log)?;
-        serde_json::to_writer_pretty(file, &self.inner)?;
-        ethui_broadcast::settings_updated().await;
-        ethui_broadcast::ui_notify(UINotify::SettingsChanged).await;
-
-        Ok(())
-    }
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", default)]

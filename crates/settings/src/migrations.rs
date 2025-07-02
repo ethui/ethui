@@ -12,7 +12,14 @@ use serde::Serialize;
 use serde_constant::ConstI64;
 use serde_json::json;
 
-use crate::{onboarding::Onboarding, DarkMode, SerializedSettings, Settings};
+use crate::{onboarding::Onboarding, DarkMode, SerializedSettings};
+
+// Temporary struct for migration return value
+#[derive(Debug)]
+pub struct MigratedSettings {
+    pub inner: SerializedSettings,
+    pub file: PathBuf,
+}
 
 pub type LatestVersion = ConstI64<2>;
 
@@ -90,7 +97,7 @@ enum Versions {
     V2(SerializedSettings),
 }
 
-pub(crate) async fn load_and_migrate(pathbuf: &PathBuf) -> color_eyre::Result<Settings> {
+pub(crate) async fn load_and_migrate(pathbuf: &PathBuf) -> color_eyre::Result<MigratedSettings> {
     let path = Path::new(&pathbuf);
     let file = File::open(path)?;
     let reader = BufReader::new(&file);
@@ -103,12 +110,10 @@ pub(crate) async fn load_and_migrate(pathbuf: &PathBuf) -> color_eyre::Result<Se
 
     let settings: Versions = serde_json::from_value(settings)?;
 
-    let settings = Settings {
+    let settings = MigratedSettings {
         inner: run_migrations(settings),
         file: path.to_path_buf(),
     };
-
-    settings.save().await?;
 
     Ok(settings)
 }
