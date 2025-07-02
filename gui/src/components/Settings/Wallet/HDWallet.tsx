@@ -9,7 +9,7 @@ import { Button } from "@ethui/ui/components/shadcn/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
-import { type FieldValues, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import type { Address } from "viem";
 import { z } from "zod";
 
@@ -113,11 +113,12 @@ interface MnemonicStepProps {
 
 function MnemonicStep({ onSubmit, onCancel }: MnemonicStepProps) {
   const schema = createSchema.pick({ name: true, mnemonic: true });
-  const form = useForm({
+  type MnemonicFormData = z.infer<typeof schema>;
+  const form = useForm<MnemonicFormData>({
     mode: "onChange",
     resolver: zodResolver(schema),
   });
-  const onSubmitInternal = (data: FieldValues) => {
+  const onSubmitInternal = (data: MnemonicFormData) => {
     onSubmit(data.name, data.mnemonic);
     form.reset(data);
   };
@@ -148,13 +149,14 @@ interface PasswordStepProps {
 }
 
 function PasswordStep({ onSubmit, onCancel }: PasswordStepProps) {
-  const form = useForm({
+  type PasswordFormData = z.infer<typeof passwordFormSchema>;
+  const form = useForm<PasswordFormData>({
     mode: "onChange",
     resolver: zodResolver(passwordFormSchema),
   });
 
   return (
-    <Form form={form} onSubmit={(d) => onSubmit(d.password)}>
+    <Form form={form} onSubmit={(d: PasswordFormData) => onSubmit(d.password)}>
       <span>Choose a secure password</span>
       <Form.Text type="password" label="Password" name="password" />
       <Form.Text
@@ -181,11 +183,12 @@ interface ReviewStepProps {
 
 function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
   const schema = createSchema.pick({ derivationPath: true });
+  type DerivationFormData = z.infer<typeof schema>;
   const defaultValues = {
     derivationPath: derivationPathSchema.parse(undefined),
   };
 
-  const form = useForm({
+  const form = useForm<DerivationFormData>({
     mode: "onChange",
     resolver: zodResolver(schema),
     defaultValues,
@@ -193,7 +196,7 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
 
   const [addresses, setAddresses] = useState<[string, Address][]>([]);
 
-  const onSubmitInternal = (data: FieldValues) => {
+  const onSubmitInternal = (data: DerivationFormData) => {
     onSubmit(data.derivationPath);
   };
 
