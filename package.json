@@ -42,6 +42,6 @@
   },
   "resolutions": {
     "react-hook-form": "7.59.0",
-    "esbuild": ">=0.25.0"
+    "esbuild": "0.25.2"
   }
 }
