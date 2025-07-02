@@ -3576,7 +3576,6 @@ dependencies = [
  "serde_json",
  "tauri",
  "tempfile",
- "thiserror 2.0.12",
  "tokio",
 ]
 
