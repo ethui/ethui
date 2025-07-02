@@ -1,6 +1,4 @@
-use ethui_lib::error::AppResult;
-
-fn main() -> AppResult<()> {
+fn main() -> color_eyre::Result<()> {
     ethui_lib::run()?;
 
     Ok(())

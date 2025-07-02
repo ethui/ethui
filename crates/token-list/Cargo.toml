@@ -14,4 +14,4 @@ reqwest = { workspace = true, features = ["blocking", "json"] }
 serde.workspace = true
 serde_json.workspace = true
 tokio.workspace = true
-anyhow.workspace = true
+color-eyre.workspace = true

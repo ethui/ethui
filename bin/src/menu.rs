@@ -1,14 +1,12 @@
 use tauri::{menu::MenuEvent, AppHandle, Emitter as _, Manager, Window};
 
-use crate::AppResult;
-
 // #[cfg(not(target_os = "macos"))]
-// pub(crate) fn build(_app: &AppHandle) -> AppResult<()> {
+// pub(crate) fn build(_app: &AppHandle) -> color_eyre::Result<()> {
 //     Ok(())
 // }
 //
 // #[cfg(target_os = "macos")]
-pub(crate) fn build(app: &AppHandle) -> AppResult<()> {
+pub(crate) fn build(app: &AppHandle) -> color_eyre::Result<()> {
     use tauri::menu::{MenuBuilder, MenuItemBuilder, SubmenuBuilder};
 
     let settings = MenuItemBuilder::with_id("settings", "Settings")

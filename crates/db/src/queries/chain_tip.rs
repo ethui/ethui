@@ -1,10 +1,10 @@
 use alloy::primitives::Address;
 use tracing::instrument;
 
-use crate::{DbInner, Result};
+use crate::DbInner;
 
 impl DbInner {
-    pub async fn get_tip(&self, chain_id: u32, addr: Address) -> Result<u64> {
+    pub async fn get_tip(&self, chain_id: u32, addr: Address) -> color_eyre::Result<u64> {
         let addr = addr.to_string();
 
         let row = sqlx::query!(
@@ -19,7 +19,7 @@ impl DbInner {
     }
 
     #[instrument(skip(self), level = "trace")]
-    pub async fn set_tip(&self, chain_id: u32, addr: Address, tip: u64) -> Result<()> {
+    pub async fn set_tip(&self, chain_id: u32, addr: Address, tip: u64) -> color_eyre::Result<()> {
         let addr = addr.to_string();
         let tip = format!("0x{tip:x}");
 

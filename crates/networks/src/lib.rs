@@ -1,5 +1,4 @@
 pub mod commands;
-mod error;
 mod init;
 mod migrations;
 
@@ -13,12 +12,11 @@ use alloy::{
     network::Ethereum,
     providers::{Provider, ProviderBuilder, RootProvider},
 };
+use color_eyre::eyre::eyre;
 use ethui_types::{Affinity, DedupChainId, Network, NewNetworkParams, UINotify};
 pub use init::init;
 use migrations::LatestVersion;
 use serde::{Deserialize, Serialize};
-
-pub use self::error::{Error, Result};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct SerializedNetworks {
@@ -41,7 +39,10 @@ impl Networks {
     /// Changes the currently connected wallet by network name
     ///
     /// Broadcasts `chainChanged` to all connections with global or no affinity
-    pub async fn set_current_by_name(&mut self, new_current_network: String) -> Result<()> {
+    pub async fn set_current_by_name(
+        &mut self,
+        new_current_network: String,
+    ) -> color_eyre::Result<()> {
         let previous = self.get_current().name.clone();
         self.inner.current = new_current_network;
         let new = self.get_current().name.clone();
@@ -58,7 +59,7 @@ impl Networks {
     /// Changes the currently connected wallet by chain ID
     ///
     /// Broadcasts `chainChanged` to all connections with global or no affinity
-    pub async fn set_current_by_id(&mut self, new_chain_id: u32) -> Result<()> {
+    pub async fn set_current_by_id(&mut self, new_chain_id: u32) -> color_eyre::Result<()> {
         let new_network = self
             .inner
             .networks
@@ -78,7 +79,7 @@ impl Networks {
     pub async fn set_current_by_dedup_chain_id(
         &mut self,
         dedup_chain_id: DedupChainId,
-    ) -> Result<()> {
+    ) -> color_eyre::Result<()> {
         let new_network = self
             .inner
             .networks
@@ -131,9 +132,9 @@ impl Networks {
             .cloned()
     }
 
-    pub async fn add_network(&mut self, network: NewNetworkParams) -> Result<()> {
+    pub async fn add_network(&mut self, network: NewNetworkParams) -> color_eyre::Result<()> {
         if self.inner.networks.contains_key(&network.name) {
-            return Err(Error::AlreadyExists);
+            return Err(eyre!("Already exists"));
         }
 
         let deduplication_id = self.get_chain_id_count(network.dedup_chain_id.chain_id());
@@ -144,7 +145,7 @@ impl Networks {
                 .get_network_by_dedup_chain_id(network.dedup_chain_id())
                 .is_some()
         {
-            return Err(Error::AlreadyExists);
+            return Err(eyre!("Already exists"));
         }
 
         self.inner
@@ -158,9 +159,13 @@ impl Networks {
         Ok(())
     }
 
-    pub async fn update_network(&mut self, old_name: &str, network: Network) -> Result<()> {
+    pub async fn update_network(
+        &mut self,
+        old_name: &str,
+        network: Network,
+    ) -> color_eyre::Result<()> {
         if network.name != old_name && self.inner.networks.contains_key(&network.name) {
-            return Err(Error::AlreadyExists);
+            return Err(eyre!("Already exists"));
         }
 
         self.inner.networks.remove(old_name);
@@ -180,7 +185,7 @@ impl Networks {
         Ok(())
     }
 
-    pub async fn remove_network(&mut self, name: &str) -> Result<()> {
+    pub async fn remove_network(&mut self, name: &str) -> color_eyre::Result<()> {
         let network = self.inner.networks.remove(name);
 
         match network {
@@ -195,7 +200,7 @@ impl Networks {
                 ethui_broadcast::ui_notify(UINotify::NetworksChanged).await;
             }
             None => {
-                return Err(Error::NotExists);
+                return Err(eyre!("Does not exist"));
             }
         }
         Ok(())
@@ -205,7 +210,7 @@ impl Networks {
         self.get_current().get_provider()
     }
 
-    pub async fn chain_id_from_provider(&self, url: String) -> Result<u64> {
+    pub async fn chain_id_from_provider(&self, url: String) -> color_eyre::Result<u64> {
         let provider = ProviderBuilder::new()
             .disable_recommended_fillers()
             .connect(&url)
@@ -232,7 +237,7 @@ impl Networks {
             .unwrap_or(0)
     }
 
-    async fn on_network_changed(&self) -> Result<()> {
+    async fn on_network_changed(&self) -> color_eyre::Result<()> {
         // TODO: check domain
         self.notify_peers();
         ethui_broadcast::ui_notify(UINotify::CurrentNetworkChanged).await;
@@ -261,7 +266,7 @@ impl Networks {
     }
 
     // Persists current state to disk
-    fn save(&self) -> Result<()> {
+    fn save(&self) -> color_eyre::Result<()> {
         let pathbuf = self.file.clone();
         let path = Path::new(&pathbuf);
         let file = File::create(path)?;

@@ -1,9 +1,9 @@
 use ethui_networks::Networks;
-use ethui_types::{Affinity, DedupChainId, GlobalState, Network};
+use ethui_types::{eyre, Affinity, DedupChainId, GlobalState, Network};
 
 use crate::{
     permissions::{Permission, PermissionRequest, RequestedPermission},
-    Error, Result, Store,
+    Store,
 };
 
 /// Context for a provider connection
@@ -28,7 +28,7 @@ impl Ctx {
         }
     }
 
-    pub async fn set_affinity(&mut self, affinity: Affinity) -> Result<()> {
+    pub async fn set_affinity(&mut self, affinity: Affinity) -> color_eyre::Result<()> {
         if let Some(ref domain) = self.domain {
             Store::write().await.set_affinity(domain, affinity)?;
         }
@@ -46,7 +46,7 @@ impl Ctx {
             .clone()
     }
 
-    pub async fn switch_chain(&mut self, new_chain_id: u32) -> Result<()> {
+    pub async fn switch_chain(&mut self, new_chain_id: u32) -> color_eyre::Result<()> {
         if self.chain_id().await == new_chain_id {
             return Ok(());
         }
@@ -78,7 +78,7 @@ impl Ctx {
 
             Ok(())
         } else {
-            Err(Error::InvalidChainId(new_chain_id))
+            Err(eyre!("Invalid chain ID {new_chain_id}"))
         }
     }
 

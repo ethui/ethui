@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use tokio::sync::{mpsc, RwLock};
 use tracing::{debug, instrument};
 
-use super::{global::OPEN_DIALOGS, presets, Result};
+use super::{global::OPEN_DIALOGS, presets};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub enum DialogMsg {
@@ -37,7 +37,7 @@ impl Dialog {
     /// Here, we emits an OpenDialog event, asking the tauri app to do so
     /// The event loop will eventually call back into `open_with_handle` to continue the process
     #[instrument(skip(self))]
-    pub async fn open(&self) -> Result<()> {
+    pub async fn open(&self) -> color_eyre::Result<()> {
         let inner = self.0.read().await;
         debug!("Opening dialog {} {}", inner.preset, inner.id);
         OPEN_DIALOGS
@@ -47,12 +47,12 @@ impl Dialog {
         inner.open().await
     }
 
-    pub async fn close(self) -> Result<()> {
+    pub async fn close(self) -> color_eyre::Result<()> {
         Ok(())
     }
 
     /// Sends an event to the dialog
-    pub async fn send(&self, event_type: &str, payload: Option<Json>) -> Result<()> {
+    pub async fn send(&self, event_type: &str, payload: Option<Json>) -> color_eyre::Result<()> {
         self.0.read().await.send(event_type, payload).await
     }
 
@@ -80,7 +80,7 @@ impl DialogStore {
     }
 
     /// Data received from the dialog
-    pub async fn incoming(&self, result: Json) -> Result<()> {
+    pub async fn incoming(&self, result: Json) -> color_eyre::Result<()> {
         self.0
             .read()
             .await
@@ -89,7 +89,7 @@ impl DialogStore {
         Ok(())
     }
 
-    pub async fn close(&self) -> Result<()> {
+    pub async fn close(&self) -> color_eyre::Result<()> {
         self.0.read().await.inbound_snd.send(DialogMsg::Close)?;
         Ok(())
     }
@@ -134,7 +134,7 @@ impl Inner {
         }
     }
 
-    async fn open(&self) -> Result<()> {
+    async fn open(&self) -> color_eyre::Result<()> {
         let preset = presets::PRESETS.get(&self.preset).unwrap();
         let url = format!("index.html#/dialog/{}/{}", self.preset, self.id);
         let title = format!("ethui Dialog - {}", preset.title);
@@ -152,7 +152,7 @@ impl Inner {
         Ok(())
     }
 
-    async fn close(&self) -> Result<()> {
+    async fn close(&self) -> color_eyre::Result<()> {
         ethui_broadcast::dialog_close(DialogClose {
             label: self.label(),
         })
@@ -161,7 +161,7 @@ impl Inner {
         Ok(())
     }
 
-    async fn send(&self, event_type: &str, payload: Option<Json>) -> Result<()> {
+    async fn send(&self, event_type: &str, payload: Option<Json>) -> color_eyre::Result<()> {
         ethui_broadcast::dialog_send(DialogSend {
             label: self.label(),
             event_type: event_type.into(),

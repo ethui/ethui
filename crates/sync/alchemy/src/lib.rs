@@ -1,5 +1,4 @@
 mod client;
-mod error;
 mod networks;
 mod types;
 mod utils;
@@ -11,7 +10,6 @@ use tracing::instrument;
 pub use types::{Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse};
 pub use utils::{get_alchemy, get_current_api_key};
 
-pub use self::error::{Error, Result};
 use self::networks::default_from_block;
 use crate::client::{Client, Direction};
 
@@ -22,7 +20,7 @@ pub struct Alchemy {
 }
 
 impl Alchemy {
-    pub fn new(api_key: &str, db: Db, chain_id: u32) -> Result<Self> {
+    pub fn new(api_key: &str, db: Db, chain_id: u32) -> color_eyre::Result<Self> {
         Ok(Self {
             chain_id,
             db,
@@ -30,7 +28,7 @@ impl Alchemy {
         })
     }
 
-    pub async fn fetch_updates(&self, address: Address) -> Result<()> {
+    pub async fn fetch_updates(&self, address: Address) -> color_eyre::Result<()> {
         self.fetch_native_balances(address).await?;
         self.fetch_erc20_balances(address).await?;
         self.fetch_transfers(address).await?;
@@ -38,7 +36,7 @@ impl Alchemy {
     }
 
     #[instrument(skip(self))]
-    async fn fetch_transfers(&self, address: Address) -> Result<()> {
+    async fn fetch_transfers(&self, address: Address) -> color_eyre::Result<()> {
         let key = (self.chain_id, "transactions", address);
         let last_tip: Option<u64> = self.db.kv_get(&key).await?;
 
@@ -81,7 +79,7 @@ impl Alchemy {
     }
 
     #[instrument(skip(self))]
-    async fn fetch_native_balances(&self, address: Address) -> Result<()> {
+    async fn fetch_native_balances(&self, address: Address) -> color_eyre::Result<()> {
         let balance = self.client.get_native_balance(address).await?;
         self.db
             .save_native_balance(balance, self.chain_id, address)
@@ -91,7 +89,7 @@ impl Alchemy {
     }
 
     #[instrument(skip(self))]
-    async fn fetch_erc20_balances(&self, address: Address) -> Result<()> {
+    async fn fetch_erc20_balances(&self, address: Address) -> color_eyre::Result<()> {
         let balances = self.client.get_erc20_balances(address).await?;
         self.db
             .save_erc20_balances(self.chain_id, address, balances)
@@ -101,7 +99,10 @@ impl Alchemy {
     }
 
     #[instrument(skip(self))]
-    pub async fn fetch_erc20_metadata(&self, address: Address) -> Result<Erc20Metadata> {
+    pub async fn fetch_erc20_metadata(
+        &self,
+        address: Address,
+    ) -> color_eyre::Result<Erc20Metadata> {
         let metadata = self.client.get_erc20_metadata(address).await?;
         Ok(metadata)
     }
@@ -112,7 +113,7 @@ impl Alchemy {
         address: Address,
         token_id: U256,
         _type: String,
-    ) -> Result<ErcMetadataResponse> {
+    ) -> color_eyre::Result<ErcMetadataResponse> {
         let metadata_response = self
             .client
             .get_erc_metadata(address, token_id, _type)
@@ -121,7 +122,10 @@ impl Alchemy {
     }
 
     #[instrument(skip(self))]
-    pub async fn fetch_erc_owners(&self, address: Address) -> Result<ErcOwnersResponse> {
+    pub async fn fetch_erc_owners(
+        &self,
+        address: Address,
+    ) -> color_eyre::Result<ErcOwnersResponse> {
         let owners_response = self.client.get_erc_owners(address).await?;
         Ok(owners_response)
     }

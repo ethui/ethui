@@ -73,7 +73,7 @@ impl From<&AlchemyAssetTransfer> for Tx {
 impl TryFrom<&AlchemyAssetTransfer> for TokenMetadata {
     type Error = ();
 
-    fn try_from(value: &AlchemyAssetTransfer) -> Result<Self, Self::Error> {
+    fn try_from(value: &AlchemyAssetTransfer) -> color_eyre::Result<Self, Self::Error> {
         if value.raw_contract.address.is_none() || value.asset.is_none() {
             return Err(());
         }

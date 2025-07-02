@@ -3,15 +3,19 @@ use alloy_chains::Chain;
 use ethui_settings::actor::{get_actor, GetSettings};
 use foundry_block_explorers::errors::EtherscanError;
 
-use crate::Result;
-
 pub async fn fetch_etherscan_contract_name(
     chain: Chain,
     address: Address,
-) -> Result<Option<String>> {
+) -> color_eyre::Result<Option<String>> {
     let actor = get_actor().await?;
-    let settings = actor.ask(GetSettings).await.map_err(|e| ethui_settings::Error::ActorSend(format!("{}", e)))?;
-    let api_key = settings.etherscan_api_key.clone().ok_or(ethui_settings::Error::EtherscanKeyNotSet)?;
+    let settings = actor
+        .ask(GetSettings)
+        .await
+        .map_err(|e| ethui_settings::Error::ActorSend(format!("{}", e)))?;
+    let api_key = settings
+        .etherscan_api_key
+        .clone()
+        .ok_or(ethui_settings::Error::EtherscanKeyNotSet)?;
     let client = foundry_block_explorers::Client::new(chain, api_key)?;
 
     match client.contract_source_code(address).await {
@@ -21,10 +25,19 @@ pub async fn fetch_etherscan_contract_name(
     }
 }
 
-pub async fn fetch_etherscan_abi(chain: Chain, address: Address) -> Result<Option<JsonAbi>> {
+pub async fn fetch_etherscan_abi(
+    chain: Chain,
+    address: Address,
+) -> color_eyre::Result<Option<JsonAbi>> {
     let actor = get_actor().await?;
-    let settings = actor.ask(GetSettings).await.map_err(|e| ethui_settings::Error::ActorSend(format!("{}", e)))?;
-    let api_key = settings.etherscan_api_key.clone().ok_or(ethui_settings::Error::EtherscanKeyNotSet)?;
+    let settings = actor
+        .ask(GetSettings)
+        .await
+        .map_err(|e| ethui_settings::Error::ActorSend(format!("{}", e)))?;
+    let api_key = settings
+        .etherscan_api_key
+        .clone()
+        .ok_or(ethui_settings::Error::EtherscanKeyNotSet)?;
     let client = foundry_block_explorers::Client::new(chain, api_key)?;
 
     match client.contract_abi(address).await {

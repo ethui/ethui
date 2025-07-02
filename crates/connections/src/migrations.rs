@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 use serde_constant::ConstI64;
 use serde_json::json;
 
-use crate::{store::SerializedStore, Result, Store};
+use crate::{store::SerializedStore, Store};
 
 pub type LatestVersion = ConstI64<2>;
 
@@ -45,7 +45,7 @@ pub enum AffinityV0 {
     Sticky(u32),
 }
 
-pub(crate) fn load_and_migrate(pathbuf: &PathBuf) -> Result<Store> {
+pub(crate) fn load_and_migrate(pathbuf: &PathBuf) -> color_eyre::Result<Store> {
     let path = Path::new(&pathbuf);
     let file = File::open(path)?;
     let reader = BufReader::new(&file);

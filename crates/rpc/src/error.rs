@@ -28,28 +28,11 @@ pub enum Error {
     #[error(transparent)]
     Transport(#[from] alloy::transports::TransportError),
 
-    #[error(transparent)]
-    EthuiWallets(#[from] ethui_wallets::Error),
-
-    #[error(transparent)]
-    Network(#[from] ethui_networks::Error),
-
-    #[error(transparent)]
-    Db(#[from] ethui_db::Error),
+    #[error("Ethui error: {0}")]
+    Ethui(#[from] color_eyre::Report),
 
     #[error(transparent)]
     JsonRpc(#[from] jsonrpc_core::Error),
-
-    #[error(transparent)]
-    Dialog(#[from] ethui_dialogs::Error),
-
-    #[error(transparent)]
-    Connection(#[from] ethui_connections::Error),
-
-    #[error(
-        "Unrecongnized chainID {0}. Try adding the chain using wallet_addEthereumChain first."
-    )]
-    UnrecognizedChainId(u32),
 
     #[error("serialization error: {0}")]
     Serde(#[from] serde_json::Error),
@@ -120,7 +103,13 @@ impl From<Error> for jsonrpc_core::Error {
             Error::WalletNotFound(..) => ErrorCode::ServerError(4100),
             Error::NetworkInvalid => ErrorCode::ServerError(4901),
             // https://github.com/MetaMask/metamask-mobile/blob/5fe6aceffcf4c80ed1f3530282640aebcd201935/app/core/RPCMethods/wallet_switchEthereumChain.js#L88C11-L88C15
-            Error::UnrecognizedChainId(_) => ErrorCode::ServerError(4902),
+            Error::Ethui(ref e) => {
+                if e.to_string().to_lowercase().contains("invalid chain id") {
+                    ErrorCode::ServerError(4902)
+                } else {
+                    ErrorCode::InternalError
+                }
+            }
             _ => ErrorCode::InternalError,
         };
 

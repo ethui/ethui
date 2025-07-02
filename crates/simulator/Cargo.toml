@@ -17,7 +17,7 @@ ethui-db.workspace = true
 tauri.workspace = true
 tokio.workspace = true
 serde.workspace = true
-thiserror.workspace = true
+color-eyre.workspace = true
 foundry-evm.workspace = true
 alloy.workspace = true
 

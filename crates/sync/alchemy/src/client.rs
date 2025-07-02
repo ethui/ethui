@@ -4,7 +4,7 @@ use alloy::{
     rpc::client::ClientBuilder,
     transports::layers::RetryBackoffLayer,
 };
-use ethui_types::{events::Tx, Address, TokenMetadata, U256};
+use ethui_types::{events::Tx, eyre, Address, TokenMetadata, U256};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use url::Url;
@@ -12,9 +12,7 @@ use url::Url;
 use crate::{
     networks,
     types::{AlchemyAssetTransfer, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse},
-    Error, Result,
 };
-
 pub(crate) struct Client {
     v2_provider: Box<RootProvider<Ethereum>>,
     nft_v3_endpoint: Url,
@@ -26,7 +24,7 @@ pub(crate) enum Direction {
 }
 
 impl Client {
-    pub fn new(chain_id: u32, api_key: &str) -> Result<Self> {
+    pub fn new(chain_id: u32, api_key: &str) -> color_eyre::Result<Self> {
         let v2_url = networks::get_endpoint(chain_id, "v2/", api_key)?;
         let v2_client = ClientBuilder::default()
             .layer(RetryBackoffLayer::new(10, 500, 300))
@@ -45,7 +43,7 @@ impl Client {
         })
     }
 
-    pub async fn get_block_number(&self) -> Result<u64> {
+    pub async fn get_block_number(&self) -> color_eyre::Result<u64> {
         Ok(self.v2_provider.get_block_number().await?)
     }
 
@@ -54,7 +52,7 @@ impl Client {
         addr: Direction,
         from_block: u64,
         latest: u64,
-    ) -> Result<(Vec<Tx>, Vec<TokenMetadata>)> {
+    ) -> color_eyre::Result<(Vec<Tx>, Vec<TokenMetadata>)> {
         let mut params = json!({
             "fromBlock": format!("0x{:x}", from_block),
             "toBlock": format!("0x{:x}", latest),
@@ -90,11 +88,14 @@ impl Client {
         Ok((txs, erc20_metadatas))
     }
 
-    pub async fn get_native_balance(&self, address: Address) -> Result<U256> {
+    pub async fn get_native_balance(&self, address: Address) -> color_eyre::Result<U256> {
         Ok(self.v2_provider.get_balance(address).await?)
     }
 
-    pub async fn get_erc20_balances(&self, address: Address) -> Result<Vec<(Address, U256)>> {
+    pub async fn get_erc20_balances(
+        &self,
+        address: Address,
+    ) -> color_eyre::Result<Vec<(Address, U256)>> {
         #[derive(Debug, Serialize, Deserialize)]
         #[serde(rename_all = "camelCase")]
         struct Balances {
@@ -124,7 +125,7 @@ impl Client {
         Ok(res.token_balances.into_iter().map(Into::into).collect())
     }
 
-    pub async fn get_erc20_metadata(&self, address: Address) -> Result<Erc20Metadata> {
+    pub async fn get_erc20_metadata(&self, address: Address) -> color_eyre::Result<Erc20Metadata> {
         let params = json!([format!("0x{:x}", address)]);
         let response: Erc20Metadata = self
             .v2_provider
@@ -138,38 +139,38 @@ impl Client {
         address: Address,
         token_id: U256,
         _type: String,
-    ) -> Result<ErcMetadataResponse> {
+    ) -> color_eyre::Result<ErcMetadataResponse> {
         let path = format!(
             "{}/getNFTMetadata?contractAddress={}&tokenId={}&tokenType={}&refreshCache=false",
             self.nft_v3_endpoint, address, token_id, _type,
         );
         let response = reqwest::get(&path)
             .await
-            .map_err(|_e| Error::ErcInvalid)?
+            .map_err(|_e| eyre!("Failed to fetch ERC metadata from Alchemy API"))?
             .text()
             .await
-            .map_err(|_e| Error::ErcInvalid)?;
+            .map_err(|_e| eyre!("Failed to fetch ERC metadata from Alchemy API"))?;
 
-        let response_json: ErcMetadataResponse =
-            serde_json::from_str(&response).map_err(|_e| Error::ErcInvalid)?;
+        let response_json: ErcMetadataResponse = serde_json::from_str(&response)
+            .map_err(|_e| eyre!("Failed to parse ERC metadata response from Alchemy API"))?;
 
         Ok(response_json)
     }
 
-    pub async fn get_erc_owners(&self, address: Address) -> Result<ErcOwnersResponse> {
+    pub async fn get_erc_owners(&self, address: Address) -> color_eyre::Result<ErcOwnersResponse> {
         let path = format!(
             "{}/getOwnersForContract?contractAddress={}&withTokenBalances=true",
             self.nft_v3_endpoint, address
         );
         let response = reqwest::get(&path)
             .await
-            .map_err(|_e| Error::ErcInvalid)?
+            .map_err(|_e| eyre!("Failed to fetch ERC metadata from Alchemy API"))?
             .text()
             .await
-            .map_err(|_e| Error::ErcInvalid)?;
+            .map_err(|_e| eyre!("Failed to fetch ERC metadata from Alchemy API"))?;
 
-        let response_json: ErcOwnersResponse =
-            serde_json::from_str(&response).map_err(|_e| Error::ErcInvalid)?;
+        let response_json: ErcOwnersResponse = serde_json::from_str(&response)
+            .map_err(|_e| eyre!("Failed to parse ERC owners response from Alchemy API"))?;
 
         Ok(response_json)
     }

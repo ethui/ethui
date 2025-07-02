@@ -1,7 +1,7 @@
 use std::{fs, fs::File, io::Write, path::Path};
 
-use anyhow::Result;
 use chrono::{Duration, Utc};
+use color_eyre::Result;
 use reqwest::blocking;
 use serde::{Deserialize, Serialize};
 

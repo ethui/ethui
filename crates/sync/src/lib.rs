@@ -1,11 +1,9 @@
 pub mod commands;
-mod error;
 mod utils;
 mod worker;
 
 use std::sync::Arc;
 
-pub use error::{Error, Result};
 use ethui_broadcast::InternalMsg;
 pub use ethui_sync_alchemy::{
     get_alchemy, Alchemy, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse,

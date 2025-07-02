@@ -29,10 +29,10 @@
     "assert": "^2.1.0",
     "html-to-image": "^1.11.13",
     "ts-unused-exports": "^11.0.1",
-    "tsx": "^4.19.3"
+    "tsx": "^4.20.3"
   },
   "dependencies": {
-    "@tauri-apps/cli": "^2.5.0",
+    "@tauri-apps/cli": "^2.6.2",
     "typescript": "5.8.2"
   },
   "packageManager": "yarn@4.6.0"

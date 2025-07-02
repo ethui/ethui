@@ -1,6 +1,6 @@
 use ethui_types::{Address, U256};
 
-use crate::{DbInner, Result};
+use crate::DbInner;
 
 impl DbInner {
     pub async fn save_native_balance(
@@ -8,7 +8,7 @@ impl DbInner {
         balance: U256,
         chain_id: u32,
         address: Address,
-    ) -> Result<()> {
+    ) -> color_eyre::Result<()> {
         let balance = balance.to_string();
         let address = format!("0x{address:x}");
 
