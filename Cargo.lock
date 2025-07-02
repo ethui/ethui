@@ -3395,7 +3395,6 @@ dependencies = [
  "once_cell",
  "tokio",
  "tracing",
- "url",
 ]
 
 [[package]]
@@ -3425,7 +3424,6 @@ dependencies = [
  "aead",
  "chacha20poly1305",
  "color-eyre",
- "rand 0.9.1",
  "rust-argon2",
  "serde",
  "serde_json",
@@ -3590,7 +3588,6 @@ dependencies = [
  "ethui-networks",
  "ethui-types",
  "ethui-wallets",
- "eyre",
  "foundry-evm",
  "pretty_assertions",
  "serde",
@@ -3640,7 +3637,6 @@ name = "ethui-sync-anvil"
 version = "1.17.0"
 dependencies = [
  "alloy",
- "base64 0.21.7",
  "color-eyre",
  "ethui-abis",
  "ethui-broadcast",
@@ -3649,8 +3645,6 @@ dependencies = [
  "ethui-types",
  "futures",
  "once_cell",
- "reqwest",
- "serde",
  "serde_json",
  "tokio",
  "tracing",
