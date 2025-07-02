@@ -8,7 +8,7 @@ use alloy::{
 };
 use ethui_connections::Ctx;
 use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_settings::{ask, GetSettings};
+use ethui_settings::GetAll;
 use ethui_types::{Address, GlobalState, Network};
 use ethui_wallets::{WalletControl, WalletType, Wallets};
 
@@ -58,8 +58,7 @@ impl SendTransaction {
                 .ok_or_else(|| Error::WalletNameNotFound(self.wallet_name.clone()))?;
 
             self.network.is_dev().await && wallet.is_dev() && {
-                let settings = ask(GetSettings).await.expect("Failed to get settings");
-                settings.fast_mode
+                ethui_settings::ask(GetAll).await?.fast_mode
             }
         };
 

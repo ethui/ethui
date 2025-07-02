@@ -72,17 +72,20 @@ pub enum Set {
 }
 
 #[derive(Debug, Clone)]
-pub struct GetSettings;
+pub struct GetAll;
 
 #[derive(Debug, Clone)]
 pub struct GetAlias(pub ethui_types::Address);
 
-impl Message<GetSettings> for SettingsActor {
+#[derive(Debug, Clone)]
+pub struct Save;
+
+impl Message<GetAll> for SettingsActor {
     type Reply = SerializedSettings;
 
     async fn handle(
         &mut self,
-        _msg: GetSettings,
+        _msg: GetAll,
         _ctx: &mut kameo::message::Context<Self, Self::Reply>,
     ) -> Self::Reply {
         self.settings.inner.clone()
@@ -95,7 +98,7 @@ impl Message<Set> for SettingsActor {
     async fn handle(
         &mut self,
         msg: Set,
-        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
+        ctx: &mut kameo::message::Context<Self, Self::Reply>,
     ) -> Self::Reply {
         match msg {
             Set::All(map) => {
@@ -131,7 +134,7 @@ impl Message<Set> for SettingsActor {
                     self.settings.inner.rust_log = serde_json::from_value(v.clone()).unwrap();
                     ethui_tracing::parse(&self.settings.inner.rust_log)?;
                 }
-                self.settings.save().await?;
+                // Save will be handled by separate Save message
             }
             Set::DarkMode(mode) => {
                 self.settings.inner.dark_mode = mode;
@@ -155,9 +158,22 @@ impl Message<Set> for SettingsActor {
                 }
             }
         }
-        self.settings.save().await?;
+        // Send save message to self
+        let _ = ctx.actor_ref().tell(Save).await;
 
         Ok(())
+    }
+}
+
+impl Message<Save> for SettingsActor {
+    type Reply = color_eyre::Result<()>;
+
+    async fn handle(
+        &mut self,
+        _msg: Save,
+        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
+    ) -> Self::Reply {
+        self.settings.save().await
     }
 }
 

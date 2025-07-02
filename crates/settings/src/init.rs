@@ -5,7 +5,7 @@ use ethui_broadcast::InternalMsg;
 use kameo::actor::ActorRef;
 
 use crate::{
-    actor::{GetSettings, SettingsActor},
+    actor::{GetAll, SettingsActor},
     onboarding::OnboardingStep,
     Set,
 };
@@ -28,7 +28,7 @@ async fn receiver(actor: ActorRef<SettingsActor>) -> ! {
         match rx.recv().await {
             Ok(InternalMsg::SettingsUpdated) => {
                 // Get current settings to check onboarding status
-                if let Ok(settings) = actor.ask(GetSettings).await {
+                if let Ok(settings) = actor.ask(GetAll).await {
                     // check if onboarding->alchemy was finished
                     if !settings
                         .onboarding

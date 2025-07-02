@@ -1,10 +1,12 @@
-use ethui_settings::{ask, GetSettings};
+use ethui_settings::GetAll;
 use tauri::{AppHandle, Manager};
 
 use super::build_window;
 
 pub(crate) async fn show(app: &AppHandle) {
-    let settings = ask(GetSettings).await.expect("Failed to get settings");
+    let settings = ethui_settings::ask(GetAll)
+        .await
+        .expect("Failed to get settings");
 
     if let Some(w) = app.get_webview_window("main") {
         w.show().unwrap()

@@ -1,14 +1,14 @@
 use alloy::{json_abi::JsonAbi, primitives::Address};
 use alloy_chains::Chain;
 use color_eyre::eyre::ContextCompat as _;
-use ethui_settings::{ask, GetSettings};
+use ethui_settings::GetAll;
 use foundry_block_explorers::errors::EtherscanError;
 
 pub async fn fetch_etherscan_contract_name(
     chain: Chain,
     address: Address,
 ) -> color_eyre::Result<Option<String>> {
-    let settings = ask(GetSettings).await?;
+    let settings = ethui_settings::ask(GetAll).await?;
     let api_key = settings
         .etherscan_api_key
         .clone()
@@ -26,7 +26,7 @@ pub async fn fetch_etherscan_abi(
     chain: Chain,
     address: Address,
 ) -> color_eyre::Result<Option<JsonAbi>> {
-    let settings = ask(GetSettings).await?;
+    let settings = ethui_settings::ask(GetAll).await?;
     let api_key = settings
         .etherscan_api_key
         .clone()
