@@ -69,8 +69,5 @@
     "vite-plugin-babel-import": "^2.0.5",
     "vite-plugin-imp": "^2.4.0",
     "vite-tsconfig-paths": "^5.1.4"
-  },
-  "resolutions": {
-    "rollup": "^4.22.4"
   }
 }
