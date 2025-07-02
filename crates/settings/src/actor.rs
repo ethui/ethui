@@ -98,13 +98,61 @@ impl Message<Set> for SettingsActor {
         _ctx: &mut kameo::message::Context<Self, Self::Reply>,
     ) -> Self::Reply {
         match msg {
-            Set::All(map) => self.settings.set(map).await,
-            Set::DarkMode(mode) => self.settings.set_dark_mode(mode).await,
-            Set::FastMode(mode) => self.settings.set_fast_mode(mode).await,
-            Set::FinishOnboardingStep(step) => self.settings.finish_onboarding_step(step).await,
-            Set::FinishOnboarding => self.settings.finish_onboarding().await,
-            Set::Alias(address, alias) => self.settings.set_alias(address, alias).await,
+            Set::All(map) => {
+                if let Some(v) = map.get("darkMode") {
+                    self.settings.inner.dark_mode = serde_json::from_value(v.clone()).unwrap()
+                }
+                if let Some(v) = map.get("abiWatchPath") {
+                    self.settings.inner.abi_watch_path = serde_json::from_value(v.clone()).unwrap()
+                }
+                if let Some(v) = map.get("alchemyApiKey") {
+                    self.settings.inner.alchemy_api_key = serde_json::from_value(v.clone()).unwrap()
+                }
+                if let Some(v) = map.get("etherscanApiKey") {
+                    self.settings.inner.etherscan_api_key =
+                        serde_json::from_value(v.clone()).unwrap()
+                }
+                if let Some(v) = map.get("hideEmptyTokens") {
+                    self.settings.inner.hide_empty_tokens =
+                        serde_json::from_value(v.clone()).unwrap()
+                }
+                if let Some(v) = map.get("autostart") {
+                    self.settings.inner.autostart = serde_json::from_value(v.clone()).unwrap();
+                    crate::autostart::update(self.settings.inner.autostart)?;
+                }
+                if let Some(v) = map.get("startMinimized") {
+                    self.settings.inner.start_minimized =
+                        serde_json::from_value(v.clone()).unwrap();
+                }
+                if let Some(v) = map.get("fastMode") {
+                    self.settings.inner.fast_mode = serde_json::from_value(v.clone()).unwrap();
+                }
+                if let Some(v) = map.get("rustLog") {
+                    self.settings.inner.rust_log = serde_json::from_value(v.clone()).unwrap();
+                    ethui_tracing::parse(&self.settings.inner.rust_log)?;
+                }
+                self.settings.save().await?;
+            }
+            Set::DarkMode(mode) => {
+                self.settings.set_dark_mode(mode).await?;
+            }
+            Set::FastMode(mode) => {
+                self.settings.set_fast_mode(mode).await?;
+            }
+
+            Set::FinishOnboardingStep(step) => {
+                self.settings.inner.onboarding.finish_step(step);
+            }
+            Set::FinishOnboarding => {
+                self.settings.finish_onboarding().await?;
+            }
+            Set::Alias(address, alias) => {
+                self.settings.set_alias(address, alias).await?;
+            }
         }
+        self.settings.save().await?;
+
+        Ok(())
     }
 }
 

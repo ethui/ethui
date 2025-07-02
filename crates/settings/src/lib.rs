@@ -46,63 +46,6 @@ impl Settings {
         Ok(())
     }
 
-    pub(crate) async fn set(
-        &mut self,
-        params: serde_json::Map<String, serde_json::Value>,
-    ) -> color_eyre::Result<()> {
-        if let Some(v) = params.get("darkMode") {
-            self.inner.dark_mode = serde_json::from_value(v.clone()).unwrap()
-        }
-
-        if let Some(v) = params.get("abiWatchPath") {
-            self.inner.abi_watch_path = serde_json::from_value(v.clone()).unwrap()
-        }
-
-        if let Some(v) = params.get("alchemyApiKey") {
-            self.inner.alchemy_api_key = serde_json::from_value(v.clone()).unwrap()
-        }
-
-        if let Some(v) = params.get("etherscanApiKey") {
-            self.inner.etherscan_api_key = serde_json::from_value(v.clone()).unwrap()
-        }
-
-        if let Some(v) = params.get("hideEmptyTokens") {
-            self.inner.hide_empty_tokens = serde_json::from_value(v.clone()).unwrap()
-        }
-
-        if let Some(v) = params.get("autostart") {
-            self.inner.autostart = serde_json::from_value(v.clone()).unwrap();
-            crate::autostart::update(self.inner.autostart)?;
-        }
-
-        if let Some(v) = params.get("startMinimized") {
-            self.inner.start_minimized = serde_json::from_value(v.clone()).unwrap();
-        }
-
-        if let Some(v) = params.get("fastMode") {
-            self.inner.fast_mode = serde_json::from_value(v.clone()).unwrap();
-        }
-
-        if let Some(v) = params.get("rustLog") {
-            self.inner.rust_log = serde_json::from_value(v.clone()).unwrap();
-            ethui_tracing::parse(&self.inner.rust_log)?;
-        }
-
-        self.save().await?;
-
-        Ok(())
-    }
-
-    pub(crate) async fn finish_onboarding_step(
-        &mut self,
-        step: OnboardingStep,
-    ) -> color_eyre::Result<()> {
-        self.inner.onboarding.finish_step(step);
-        self.save().await?;
-
-        Ok(())
-    }
-
     pub(crate) async fn finish_onboarding(&mut self) -> color_eyre::Result<()> {
         self.inner.onboarding.finish();
         self.save().await?;
