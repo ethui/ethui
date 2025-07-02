@@ -17,7 +17,7 @@ use ethui_types::{Address, UINotify};
 pub use init::init;
 use kameo::reply::Reply;
 use migrations::LatestVersion;
-use onboarding::{Onboarding, OnboardingStep};
+use onboarding::Onboarding;
 use serde::{Deserialize, Serialize};
 use serde_constant::ConstI64;
 pub use utils::test_alchemy_api_key;
