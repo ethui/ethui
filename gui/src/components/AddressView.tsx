@@ -18,7 +18,7 @@ import { Link } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
 import { useState } from "react";
-import { type FieldValues, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { type Address, getAddress } from "viem";
 import { z } from "zod";
 import { useInvoke } from "#/hooks/useInvoke";
@@ -117,6 +117,8 @@ const schema = z.object({
   alias: z.string().optional(),
 });
 
+type AliasFormData = z.infer<typeof schema>;
+
 interface AliasFormProps {
   address: string;
   alias?: string;
@@ -125,12 +127,12 @@ interface AliasFormProps {
 }
 
 function AliasForm({ address, alias, refetch, onSubmit }: AliasFormProps) {
-  const form = useForm({
+  const form = useForm<AliasFormData>({
     mode: "onChange",
     resolver: zodResolver(schema),
   });
 
-  const submit = (data: FieldValues) => {
+  const submit = (data: AliasFormData) => {
     invoke("settings_set_alias", { address, alias: data.alias });
     refetch();
     onSubmit();
