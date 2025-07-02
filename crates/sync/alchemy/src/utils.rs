@@ -1,11 +1,10 @@
-use ethui_settings::actor::{get_actor, GetSettings};
+use ethui_settings::{ask, GetSettings};
 use ethui_types::eyre;
 
 use crate::Alchemy;
 
 pub async fn get_current_api_key() -> color_eyre::Result<Option<String>> {
-    let actor = get_actor().await?;
-    let settings = actor.ask(GetSettings).await.map_err(|e| eyre!("Failed to get settings: {}", e))?;
+    let settings = ask(GetSettings).await.map_err(|e| eyre!("Failed to get settings: {}", e))?;
 
     Ok(settings
         .alchemy_api_key

@@ -12,7 +12,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use color_eyre::eyre::eyre;
+pub use actor::*;
 use ethui_types::{Address, UINotify};
 pub use init::init;
 use kameo::reply::Reply;
@@ -46,7 +46,7 @@ impl Settings {
         Ok(())
     }
 
-    pub async fn set(
+    pub(crate) async fn set(
         &mut self,
         params: serde_json::Map<String, serde_json::Value>,
     ) -> color_eyre::Result<()> {
@@ -93,58 +93,42 @@ impl Settings {
         Ok(())
     }
 
-    pub async fn finish_onboarding_step(&mut self, step: OnboardingStep) -> color_eyre::Result<()> {
+    pub(crate) async fn finish_onboarding_step(
+        &mut self,
+        step: OnboardingStep,
+    ) -> color_eyre::Result<()> {
         self.inner.onboarding.finish_step(step);
         self.save().await?;
 
         Ok(())
     }
 
-    pub async fn finish_onboarding(&mut self) -> color_eyre::Result<()> {
+    pub(crate) async fn finish_onboarding(&mut self) -> color_eyre::Result<()> {
         self.inner.onboarding.finish();
         self.save().await?;
 
         Ok(())
     }
 
-    pub async fn set_dark_mode(&mut self, mode: DarkMode) -> color_eyre::Result<()> {
+    pub(crate) async fn set_dark_mode(&mut self, mode: DarkMode) -> color_eyre::Result<()> {
         self.inner.dark_mode = mode;
         self.save().await?;
 
         Ok(())
     }
 
-    pub async fn set_fast_mode(&mut self, mode: bool) -> color_eyre::Result<()> {
+    pub(crate) async fn set_fast_mode(&mut self, mode: bool) -> color_eyre::Result<()> {
         self.inner.fast_mode = mode;
         self.save().await?;
 
         Ok(())
     }
 
-    pub fn get(&self) -> &SerializedSettings {
-        &self.inner
-    }
-
-    pub fn fast_mode(&self) -> bool {
-        self.inner.fast_mode
-    }
-
-    pub fn start_minimized(&self) -> bool {
-        self.inner.start_minimized
-    }
-
-    pub fn get_etherscan_api_key(&self) -> color_eyre::Result<String> {
-        self.inner
-            .etherscan_api_key
-            .clone()
-            .ok_or(eyre!("Etherscan key not set"))
-    }
-
-    pub fn get_alias(&self, address: Address) -> Option<String> {
+    pub(crate) fn get_alias(&self, address: Address) -> Option<String> {
         self.inner.aliases.get(&address).cloned()
     }
 
-    pub async fn set_alias(
+    pub(crate) async fn set_alias(
         &mut self,
         address: Address,
         alias: Option<String>,
@@ -163,7 +147,7 @@ impl Settings {
     }
 
     // Persists current state to disk
-    pub async fn save(&self) -> color_eyre::Result<()> {
+    async fn save(&self) -> color_eyre::Result<()> {
         let pathbuf = self.file.clone();
         let path = Path::new(&pathbuf);
         let file = File::create(path)?;

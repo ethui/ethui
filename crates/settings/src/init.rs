@@ -1,21 +1,22 @@
 use std::path::PathBuf;
 
+use color_eyre::eyre::Context as _;
 use ethui_broadcast::InternalMsg;
-use ethui_types::eyre;
 use kameo::actor::ActorRef;
 
 use crate::{
-    actor::{FinishOnboardingStep, GetSettings, SettingsActor},
+    actor::{GetSettings, SettingsActor},
     onboarding::OnboardingStep,
+    Set,
 };
 
 pub async fn init(pathbuf: PathBuf) -> color_eyre::Result<()> {
     let actor = kameo::spawn(SettingsActor::new(pathbuf).await?);
     actor
         .register("settings")
-        .map_err(|e| eyre!("Actor spawn error: {e}"))?;
+        .wrap_err_with(|| "Actor spawn error")?;
 
-    tokio::spawn(async move { receiver(actor).await });
+    tokio::spawn(receiver(actor));
 
     Ok(())
 }
@@ -35,7 +36,7 @@ async fn receiver(actor: ActorRef<SettingsActor>) -> ! {
                         && settings.alchemy_api_key.is_some()
                     {
                         let _ = actor
-                            .tell(FinishOnboardingStep(OnboardingStep::Alchemy))
+                            .tell(Set::FinishOnboardingStep(OnboardingStep::Alchemy))
                             .await;
                     }
 
@@ -46,7 +47,7 @@ async fn receiver(actor: ActorRef<SettingsActor>) -> ! {
                         && settings.etherscan_api_key.is_some()
                     {
                         let _ = actor
-                            .tell(FinishOnboardingStep(OnboardingStep::Etherscan))
+                            .tell(Set::FinishOnboardingStep(OnboardingStep::Etherscan))
                             .await;
                     }
                 }
@@ -54,13 +55,13 @@ async fn receiver(actor: ActorRef<SettingsActor>) -> ! {
 
             Ok(InternalMsg::WalletCreated) => {
                 let _ = actor
-                    .tell(FinishOnboardingStep(OnboardingStep::Wallet))
+                    .tell(Set::FinishOnboardingStep(OnboardingStep::Wallet))
                     .await;
             }
 
             Ok(InternalMsg::PeerAdded) => {
                 let _ = actor
-                    .tell(FinishOnboardingStep(OnboardingStep::Extension))
+                    .tell(Set::FinishOnboardingStep(OnboardingStep::Extension))
                     .await;
             }
             _ => (),

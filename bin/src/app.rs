@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use ethui_args::Args;
 use ethui_broadcast::UIMsg;
-use ethui_settings::actor::{get_actor, GetSettings};
+use ethui_settings::{ask, GetSettings};
 use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
 #[cfg(feature = "aptabase")]
 use tauri_plugin_aptabase::EventTracker as _;
@@ -236,7 +236,6 @@ async fn should_start_main_window(args: &Args) -> bool {
         return false;
     }
 
-    let actor = get_actor().await.expect("Settings actor not available");
-    let settings = actor.ask(GetSettings).await.expect("Failed to get settings");
+    let settings = ask(GetSettings).await.expect("Failed to get settings");
     !settings.start_minimized
 }

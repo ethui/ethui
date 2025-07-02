@@ -1,5 +1,5 @@
 use ethui_broadcast::InternalMsg;
-use ethui_settings::actor::{get_actor, GetSettings};
+use ethui_settings::{ask, GetSettings};
 use kameo::actor::ActorRef;
 
 use crate::actor::{Msg, Worker};
@@ -7,8 +7,7 @@ use crate::actor::{Msg, Worker};
 pub async fn init() -> color_eyre::Result<()> {
     let handle = kameo::spawn(Worker::default());
     handle.register("forge").unwrap();
-    let actor = get_actor().await.expect("Settings actor not available");
-    let settings = actor.ask(GetSettings).await.expect("Failed to get settings");
+    let settings = ask(GetSettings).await.expect("Failed to get settings");
 
     if let Some(ref path) = settings.abi_watch_path {
         handle
@@ -30,8 +29,7 @@ async fn receiver(handle: ActorRef<Worker>) -> ! {
         if let Ok(msg) = rx.recv().await {
             match msg {
                 InternalMsg::SettingsUpdated => {
-                    let actor = get_actor().await.expect("Settings actor not available");
-                    let settings = actor.ask(GetSettings).await.expect("Failed to get settings");
+                    let settings = ask(GetSettings).await.expect("Failed to get settings");
                     if let Some(ref path) = settings.abi_watch_path {
                         // TODO: support multiple
                         handle
