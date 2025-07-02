@@ -1,3 +1,4 @@
+pub mod actor;
 pub mod commands;
 mod init;
 mod signer;
@@ -21,7 +22,7 @@ pub use self::wallet::{Wallet, WalletControl, WalletType};
 
 /// Maintains a list of Ethereum wallets, including keeping track of the global current wallet &
 /// address
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct Wallets {
     wallets: Vec<Wallet>,
 
@@ -56,19 +57,19 @@ impl Wallets {
     ///
     /// Since wallets actually contain multiple addresses, we need the ability to connect to a
     /// different one within the same wallet
-    async fn set_current_path(&mut self, key: String) -> color_eyre::Result<()> {
+    pub async fn set_current_path(&mut self, key: String) -> color_eyre::Result<()> {
         self.wallets[self.current].set_current_path(key).await?;
         self.on_wallet_changed().await?;
         self.save()?;
         Ok(())
     }
 
-    async fn get_current_address(&self) -> Address {
+    pub async fn get_current_address(&self) -> Address {
         self.get_current_wallet().get_current_address().await
     }
 
     /// Switches the current default wallet
-    async fn set_current_wallet(&mut self, id: usize) -> color_eyre::Result<()> {
+    pub async fn set_current_wallet(&mut self, id: usize) -> color_eyre::Result<()> {
         if id >= self.wallets.len() {
             return Err(eyre!("invalid wallet index {}", id));
         }
@@ -80,7 +81,7 @@ impl Wallets {
     }
 
     /// Retrieves all wallets
-    fn get_all(&self) -> &Vec<Wallet> {
+    pub fn get_all(&self) -> &Vec<Wallet> {
         &self.wallets
     }
 
@@ -93,7 +94,7 @@ impl Wallets {
         res
     }
 
-    async fn create(&mut self, params: Json) -> color_eyre::Result<()> {
+    pub async fn create(&mut self, params: Json) -> color_eyre::Result<()> {
         let wallet = Wallet::create(params).await?;
         let addresses = wallet.get_all_addresses().await;
 
@@ -114,7 +115,7 @@ impl Wallets {
         Ok(())
     }
 
-    async fn update(&mut self, name: String, params: Json) -> color_eyre::Result<()> {
+    pub async fn update(&mut self, name: String, params: Json) -> color_eyre::Result<()> {
         let i = self
             .wallets
             .iter()
@@ -143,7 +144,7 @@ impl Wallets {
         Ok(())
     }
 
-    async fn remove(&mut self, name: String) -> color_eyre::Result<()> {
+    pub async fn remove(&mut self, name: String) -> color_eyre::Result<()> {
         let found = self
             .wallets
             .iter()
@@ -166,7 +167,7 @@ impl Wallets {
     }
 
     /// Get all addresses currently enabled in a given wallet
-    async fn get_wallet_addresses(&self, name: String) -> Vec<(String, Address)> {
+    pub async fn get_wallet_addresses(&self, name: String) -> Vec<(String, Address)> {
         let wallet = self.find_wallet(&name).unwrap();
 
         wallet.get_all_addresses().await
@@ -189,7 +190,7 @@ impl Wallets {
     }
 
     /// Ensures that self.current never points to an invalid wallet
-    fn ensure_current(&mut self) {
+    pub fn ensure_current(&mut self) {
         if self.wallets.is_empty() {
             self.wallets
                 .push(Wallet::Plaintext(wallets::PlaintextWallet::default()));
@@ -200,7 +201,7 @@ impl Wallets {
         }
     }
 
-    async fn init_broadcast(&self) {
+    pub async fn init_broadcast(&self) {
         for wallet in self.wallets.iter() {
             for (_, addr) in wallet.get_all_addresses().await {
                 ethui_broadcast::address_added(addr).await;

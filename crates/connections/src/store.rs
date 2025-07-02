@@ -58,7 +58,7 @@ impl Store {
 
     /// Whenever a chain is removed, we need to clear all affinities to that chain
     /// otherwise, new connections from the same website will fail
-    pub(crate) fn on_chain_removed(&mut self, internal_id: DedupChainId) {
+    pub fn on_chain_removed(&mut self, internal_id: DedupChainId) {
         self.inner
             .affinities
             .retain(|_, affinity| *affinity != internal_id.into());

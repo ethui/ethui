@@ -1,3 +1,4 @@
+pub mod actor;
 pub mod commands;
 mod init;
 mod migrations;
@@ -256,7 +257,7 @@ impl Networks {
         });
     }
 
-    async fn broadcast_init(&self) {
+    pub async fn broadcast_init(&self) {
         for network in self.inner.networks.values() {
             ethui_broadcast::network_added(network.clone()).await;
         }

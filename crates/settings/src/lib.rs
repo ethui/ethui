@@ -1,3 +1,4 @@
+pub mod actor;
 mod autostart;
 pub mod commands;
 mod init;
@@ -142,7 +143,7 @@ impl Settings {
         self.inner.aliases.get(&address).cloned()
     }
 
-    async fn set_alias(
+    pub async fn set_alias(
         &mut self,
         address: Address,
         alias: Option<String>,

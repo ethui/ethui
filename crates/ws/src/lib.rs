@@ -1,3 +1,4 @@
+pub mod actor;
 pub mod commands;
 mod error;
 mod init;
