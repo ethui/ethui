@@ -46,49 +46,6 @@ impl Settings {
         Ok(())
     }
 
-    pub(crate) async fn finish_onboarding(&mut self) -> color_eyre::Result<()> {
-        self.inner.onboarding.finish();
-        self.save().await?;
-
-        Ok(())
-    }
-
-    pub(crate) async fn set_dark_mode(&mut self, mode: DarkMode) -> color_eyre::Result<()> {
-        self.inner.dark_mode = mode;
-        self.save().await?;
-
-        Ok(())
-    }
-
-    pub(crate) async fn set_fast_mode(&mut self, mode: bool) -> color_eyre::Result<()> {
-        self.inner.fast_mode = mode;
-        self.save().await?;
-
-        Ok(())
-    }
-
-    pub(crate) fn get_alias(&self, address: Address) -> Option<String> {
-        self.inner.aliases.get(&address).cloned()
-    }
-
-    pub(crate) async fn set_alias(
-        &mut self,
-        address: Address,
-        alias: Option<String>,
-    ) -> color_eyre::Result<()> {
-        // trim whitespaces
-        // empty str becomes None
-        let alias = alias.map(|v| v.trim().to_owned()).filter(|v| !v.is_empty());
-
-        if let Some(alias) = alias {
-            self.inner.aliases.insert(address, alias);
-        } else {
-            self.inner.aliases.remove(&address);
-        }
-        self.save().await?;
-        Ok(())
-    }
-
     // Persists current state to disk
     async fn save(&self) -> color_eyre::Result<()> {
         let pathbuf = self.file.clone();

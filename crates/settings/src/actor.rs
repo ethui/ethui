@@ -134,20 +134,25 @@ impl Message<Set> for SettingsActor {
                 self.settings.save().await?;
             }
             Set::DarkMode(mode) => {
-                self.settings.set_dark_mode(mode).await?;
+                self.settings.inner.dark_mode = mode;
             }
             Set::FastMode(mode) => {
-                self.settings.set_fast_mode(mode).await?;
+                self.settings.inner.fast_mode = mode;
             }
 
             Set::FinishOnboardingStep(step) => {
                 self.settings.inner.onboarding.finish_step(step);
             }
             Set::FinishOnboarding => {
-                self.settings.finish_onboarding().await?;
+                self.settings.inner.onboarding.finish();
             }
             Set::Alias(address, alias) => {
-                self.settings.set_alias(address, alias).await?;
+                let alias = alias.map(|v| v.trim().to_owned()).filter(|v| !v.is_empty());
+                if let Some(alias) = alias {
+                    self.settings.inner.aliases.insert(address, alias);
+                } else {
+                    self.settings.inner.aliases.remove(&address);
+                }
             }
         }
         self.settings.save().await?;
@@ -164,6 +169,6 @@ impl Message<GetAlias> for SettingsActor {
         msg: GetAlias,
         _ctx: &mut kameo::message::Context<Self, Self::Reply>,
     ) -> Self::Reply {
-        self.settings.get_alias(msg.0)
+        self.settings.inner.aliases.get(&msg.0).cloned()
     }
 }
