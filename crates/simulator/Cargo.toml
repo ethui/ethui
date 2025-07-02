@@ -21,7 +21,5 @@ color-eyre.workspace = true
 foundry-evm.workspace = true
 alloy.workspace = true
 
-eyre = "*"
-
 [dev-dependencies]
 pretty_assertions = "1.4.0"

@@ -32,8 +32,15 @@
     "tsx": "^4.20.3"
   },
   "dependencies": {
+    "@ethui/ui": "^0.0.82",
     "@tauri-apps/cli": "^2.6.2",
     "typescript": "5.8.2"
   },
-  "packageManager": "yarn@4.6.0"
+  "packageManager": "yarn@4.9.2",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "resolutions": {
+    "react-hook-form": "7.59.0"
+  }
 }
