@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use color_eyre::eyre::{bail, Context as _};
+use color_eyre::eyre::bail;
 use kameo::{actor::ActorRef, message::Message, Actor};
 
 use crate::{

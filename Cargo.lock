@@ -3688,6 +3688,7 @@ dependencies = [
  "alloy",
  "async-trait",
  "color-eyre",
+ "kameo",
  "serde",
  "serde_json",
  "sqlx",

@@ -20,7 +20,6 @@ use migrations::LatestVersion;
 use onboarding::{Onboarding, OnboardingStep};
 use serde::{Deserialize, Serialize};
 use serde_constant::ConstI64;
-use thiserror::Error;
 pub use utils::test_alchemy_api_key;
 
 #[derive(Debug, Clone)]
