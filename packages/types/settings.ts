@@ -19,6 +19,7 @@ export const generalSettingsSchema = z.object({
   fastMode: z.boolean(),
   onboarding: onboardingSchema,
   rustLog: z.string().optional(),
+  stacksJwt: z.string().optional(),
 });
 
 export type OnboardingStepKey = z.infer<typeof onboardingSteps>;

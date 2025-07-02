@@ -81,6 +81,10 @@ impl Settings {
             self.inner.fast_mode = serde_json::from_value(v.clone()).unwrap();
         }
 
+        if let Some(v) = params.get("stacksJwt") {
+            self.inner.stacks_jwt = serde_json::from_value(v.clone()).unwrap();
+        }
+
         if let Some(v) = params.get("rustLog") {
             self.inner.rust_log = serde_json::from_value(v.clone()).unwrap();
             ethui_tracing::parse(&self.inner.rust_log)?;
@@ -204,6 +208,9 @@ pub struct SerializedSettings {
     #[serde(default)]
     pub onboarding: Onboarding,
 
+    #[serde(default)]
+    pub stacks_jwt: Option<String>,
+
     version: LatestVersion,
 }
 
@@ -220,6 +227,7 @@ impl Default for SerializedSettings {
             autostart: false,
             start_minimized: false,
             rust_log: "warn".into(),
+            stacks_jwt: None,
             version: ConstI64,
             onboarding: Onboarding::default(),
         }
