@@ -8,6 +8,7 @@ use alloy::primitives::Bytes;
 use ethui_types::UINotify;
 use futures::{stream, StreamExt as _};
 use glob::glob;
+use tokio::task;
 use kameo::{actor::ActorRef, message::Message, Actor};
 use notify::{RecommendedWatcher, RecursiveMode};
 use notify_debouncer_full::{
@@ -192,10 +193,37 @@ impl Worker {
     #[instrument(skip_all)]
     async fn scan_project(&mut self, root: &Path) -> color_eyre::Result<()> {
         let pattern = root.join("out").join("**").join("*.json");
-        for path in glob(pattern.to_str().unwrap())?.filter_map(|p| p.ok()) {
-            if let Ok(abi) = path.clone().try_into() {
-                self.insert_abi(abi);
-            }
+        
+        // Use spawn_blocking for the synchronous glob operation to avoid blocking the async runtime
+        let pattern_str = pattern.to_string_lossy().to_string();
+        let paths: Vec<PathBuf> = task::spawn_blocking(move || -> color_eyre::Result<Vec<PathBuf>> {
+            Ok(glob(&pattern_str)
+                .map_err(|e| color_eyre::eyre::eyre!("Glob pattern error: {}", e))?
+                .filter_map(|p| p.ok())
+                .collect::<Vec<_>>())
+        })
+        .await??;
+
+        // Process files in parallel using buffered stream for controlled concurrency
+        let valid_abis: Vec<_> = stream::iter(paths)
+            .map(|path| async move {
+                // Convert path to ABI in parallel
+                match path.clone().try_into() {
+                    Ok(abi) => Some(abi),
+                    Err(e) => {
+                        tracing::debug!("Failed to parse ABI from {}: {:?}", path.display(), e);
+                        None
+                    }
+                }
+            })
+            .buffer_unordered(10) // Process up to 10 files concurrently
+            .filter_map(|abi| async move { abi })
+            .collect()
+            .await;
+
+        // Insert all valid ABIs
+        for abi in valid_abis {
+            self.insert_abi(abi);
         }
 
         self.trigger_update_contracts().await;
@@ -306,34 +334,59 @@ impl Worker {
     /// If nested foundry.toml files are found, such as in dependencies or lib folders, they will be ignored.
     #[instrument(skip_all)]
     async fn find_foundry_roots(&self) -> color_eyre::Result<HashSet<PathBuf>> {
-        let res = self.roots.iter().flat_map(|root| {
-            let pattern = root.join("**").join("foundry.toml");
-            let matches: Vec<_> = match glob(pattern.to_str().unwrap()) {
-                Ok(g) => g.filter_map(|p| p.ok()).collect(),
-                Err(_) => vec![],
-            };
-
-            let mut dirs: Vec<PathBuf> = matches
-                .into_iter()
-                .map(|p| p.parent().unwrap().into())
-                .collect();
-
-            let mut res: HashSet<PathBuf> = Default::default();
-
-            // remove results that are subdirectories of other results
-            dirs.sort();
-            for dir in dirs {
-                if res.contains(&dir) || res.iter().any(|other| dir.starts_with(other)) {
-                    continue;
+        let roots = self.roots.clone(); // Clone to move into async task
+        
+        // Process all roots in parallel using spawn_blocking for each glob operation
+        let all_matches: Vec<_> = stream::iter(roots)
+            .map(|root| {
+                task::spawn_blocking(move || {
+                    let pattern = root.join("**").join("foundry.toml");
+                    let pattern_str = pattern.to_string_lossy().to_string();
+                    
+                    match glob(&pattern_str) {
+                        Ok(g) => g.filter_map(|p| p.ok()).collect::<Vec<PathBuf>>(),
+                        Err(e) => {
+                            tracing::warn!("Failed to glob pattern {}: {}", pattern_str, e);
+                            vec![]
+                        }
+                    }
+                })
+            })
+            .buffer_unordered(5) // Process up to 5 root directories concurrently
+            .filter_map(|result| async move {
+                match result {
+                    Ok(matches) => Some(matches),
+                    Err(e) => {
+                        tracing::warn!("Task failed: {}", e);
+                        None
+                    }
                 }
-                res.insert(dir);
-            }
-            res.into_iter()
-        });
+            })
+            .collect()
+            .await;
 
-        let res = res.collect();
-        trace!(foundry_roots = ?res);
-        Ok(res)
+        // Flatten all matches and convert to directories
+        let all_dirs: Vec<PathBuf> = all_matches
+            .into_iter()
+            .flatten()
+            .filter_map(|p| p.parent().map(|parent| parent.to_path_buf()))
+            .collect();
+
+        // Remove duplicates and nested directories
+        let mut sorted_dirs = all_dirs;
+        sorted_dirs.sort();
+        
+        let mut result: HashSet<PathBuf> = HashSet::new();
+        for dir in sorted_dirs {
+            // Skip if this directory is a subdirectory of an already included directory
+            if result.contains(&dir) || result.iter().any(|other| dir.starts_with(other)) {
+                continue;
+            }
+            result.insert(dir);
+        }
+
+        trace!(foundry_roots = ?result);
+        Ok(result)
     }
 
     fn insert_abi(&mut self, abi: ForgeAbi) {
