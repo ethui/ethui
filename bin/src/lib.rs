@@ -26,3 +26,26 @@ pub async fn run() -> Result<()> {
 
     Ok(())
 }
+
+async fn handle_command(command: &Commands, args: &ethui_args::Args) -> Result<()> {
+    match command {
+        Commands::App { hidden: _ } => {
+            let lock = NamedLock::create(LOCK_NAME)?;
+
+            let _guard = match lock.try_lock() {
+                Ok(g) => g,
+                Err(_) => {
+                    ethui_broadcast::main_window_show().await;
+                    return Ok(());
+                }
+            };
+            app::EthUIApp::build(args).await?.run();
+            Ok(())
+        }
+
+        #[cfg(feature = "forge-traces")]
+        Commands::Forge { subcommand } => {
+            ethui_forge_traces::handle_forge_command(subcommand, args).await
+        }
+    }
+}
