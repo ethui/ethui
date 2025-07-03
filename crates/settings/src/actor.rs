@@ -84,7 +84,7 @@ pub struct Save;
 impl Message<GetAll> for SettingsActor {
     type Reply = Settings;
 
-    async fn handle(&mut self, _msg: GetAll, _ctx: &mut Context<Self, Settings>) -> Self::Reply {
+    async fn handle(&mut self, _msg: GetAll, _ctx: &mut Context<Self, Self::Reply>) -> Self::Reply {
         self.inner.clone()
     }
 }

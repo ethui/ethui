@@ -1,14 +1,13 @@
 use std::{
-    collections::HashSet,
     fs::File,
     io::BufReader,
     path::{Path, PathBuf},
 };
 
-use ethui_types::{Address, Json, UINotify};
-use kameo::{message::Message, Actor, ActorRef};
-use serde::{Deserialize, Serialize};
-use tokio::sync::RwLock;
+use color_eyre::eyre::{Context as _, ContextCompat as _};
+use ethui_types::{Address, Json};
+use kameo::{actor::ActorRef, message::Message, prelude::Context, Actor, Reply};
+use serde::Deserialize;
 
 use super::{Wallet, Wallets};
 
@@ -62,7 +61,9 @@ impl WalletsActor {
     }
 }
 
-impl Actor for WalletsActor {}
+impl Actor for WalletsActor {
+    type Error = color_eyre::Report;
+}
 
 // Message types
 #[derive(Debug)]
@@ -117,7 +118,7 @@ pub struct GetAllAddresses;
 impl Message<GetAll> for WalletsActor {
     type Reply = Vec<Wallet>;
 
-    async fn handle(&mut self, _msg: GetAll, _ctx: kameo::Context<'_, Self>) -> Self::Reply {
+    async fn handle(&mut self, _msg: GetAll, _ctx: &mut Context<Self, Self::Reply>) -> Self::Reply {
         self.inner.get_all().clone()
     }
 }
@@ -125,23 +126,31 @@ impl Message<GetAll> for WalletsActor {
 impl Message<GetCurrent> for WalletsActor {
     type Reply = Wallet;
 
-    async fn handle(&mut self, _msg: GetCurrent, _ctx: kameo::Context<'_, Self>) -> Self::Reply {
+    async fn handle(
+        &mut self,
+        _msg: GetCurrent,
+        _ctx: &mut Context<Self, Self::Reply>,
+    ) -> Self::Reply {
         self.inner.get_current_wallet().clone()
     }
 }
 
 impl Message<GetCurrentAddress> for WalletsActor {
-    type Reply = Address;
+    type Reply = color_eyre::Result<Address>;
 
-    async fn handle(&mut self, _msg: GetCurrentAddress, _ctx: kameo::Context<'_, Self>) -> Self::Reply {
-        self.inner.get_current_address().await
+    async fn handle(
+        &mut self,
+        _msg: GetCurrentAddress,
+        _ctx: &mut Context<Self, Self::Reply>,
+    ) -> Self::Reply {
+        Ok(self.inner.get_current_address().await)
     }
 }
 
 impl Message<Create> for WalletsActor {
     type Reply = color_eyre::Result<()>;
 
-    async fn handle(&mut self, msg: Create, _ctx: kameo::Context<'_, Self>) -> Self::Reply {
+    async fn handle(&mut self, msg: Create, _ctx: &mut Context<Self, Self::Reply>) -> Self::Reply {
         let result = self.inner.create(msg.params).await;
         if result.is_ok() {
             self.save()?;
@@ -153,7 +162,7 @@ impl Message<Create> for WalletsActor {
 impl Message<Update> for WalletsActor {
     type Reply = color_eyre::Result<()>;
 
-    async fn handle(&mut self, msg: Update, _ctx: kameo::Context<'_, Self>) -> Self::Reply {
+    async fn handle(&mut self, msg: Update, _ctx: &mut Context<Self, Self::Reply>) -> Self::Reply {
         let result = self.inner.update(msg.name, msg.params).await;
         if result.is_ok() {
             self.save()?;
@@ -165,7 +174,7 @@ impl Message<Update> for WalletsActor {
 impl Message<Remove> for WalletsActor {
     type Reply = color_eyre::Result<()>;
 
-    async fn handle(&mut self, msg: Remove, _ctx: kameo::Context<'_, Self>) -> Self::Reply {
+    async fn handle(&mut self, msg: Remove, _ctx: &mut Context<Self, Self::Reply>) -> Self::Reply {
         let result = self.inner.remove(msg.name).await;
         if result.is_ok() {
             self.save()?;
@@ -177,7 +186,11 @@ impl Message<Remove> for WalletsActor {
 impl Message<SetCurrentWallet> for WalletsActor {
     type Reply = color_eyre::Result<()>;
 
-    async fn handle(&mut self, msg: SetCurrentWallet, _ctx: kameo::Context<'_, Self>) -> Self::Reply {
+    async fn handle(
+        &mut self,
+        msg: SetCurrentWallet,
+        _ctx: &mut Context<Self, Self::Reply>,
+    ) -> Self::Reply {
         let result = self.inner.set_current_wallet(msg.idx).await;
         if result.is_ok() {
             self.save()?;
@@ -189,7 +202,11 @@ impl Message<SetCurrentWallet> for WalletsActor {
 impl Message<SetCurrentPath> for WalletsActor {
     type Reply = color_eyre::Result<()>;
 
-    async fn handle(&mut self, msg: SetCurrentPath, _ctx: kameo::Context<'_, Self>) -> Self::Reply {
+    async fn handle(
+        &mut self,
+        msg: SetCurrentPath,
+        _ctx: &mut Context<Self, Self::Reply>,
+    ) -> Self::Reply {
         let result = self.inner.set_current_path(msg.key).await;
         if result.is_ok() {
             self.save()?;
@@ -201,7 +218,11 @@ impl Message<SetCurrentPath> for WalletsActor {
 impl Message<GetWalletAddresses> for WalletsActor {
     type Reply = Vec<(String, Address)>;
 
-    async fn handle(&mut self, msg: GetWalletAddresses, _ctx: kameo::Context<'_, Self>) -> Self::Reply {
+    async fn handle(
+        &mut self,
+        msg: GetWalletAddresses,
+        _ctx: &mut Context<Self, Self::Reply>,
+    ) -> Self::Reply {
         self.inner.get_wallet_addresses(msg.name).await
     }
 }
@@ -209,35 +230,49 @@ impl Message<GetWalletAddresses> for WalletsActor {
 impl Message<Find> for WalletsActor {
     type Reply = Option<(Wallet, String)>;
 
-    async fn handle(&mut self, msg: Find, _ctx: kameo::Context<'_, Self>) -> Self::Reply {
-        self.inner.find(msg.address).await.map(|(w, s)| (w.clone(), s))
+    async fn handle(&mut self, msg: Find, _ctx: &mut Context<Self, Self::Reply>) -> Self::Reply {
+        self.inner
+            .find(msg.address)
+            .await
+            .map(|(w, s)| (w.clone(), s))
     }
 }
 
 impl Message<GetAllAddresses> for WalletsActor {
     type Reply = Vec<(String, Address)>;
 
-    async fn handle(&mut self, msg: GetAllAddresses, _ctx: kameo::Context<'_, Self>) -> Self::Reply {
+    async fn handle(
+        &mut self,
+        _msg: GetAllAddresses,
+        _ctx: &mut Context<Self, Self::Reply>,
+    ) -> Self::Reply {
         self.inner.get_all_addresses().await
     }
 }
 
 // Convenience functions for external use
-pub async fn ask<M>(msg: M) -> color_eyre::Result<M::Reply>
+pub async fn ask<M>(
+    msg: M,
+) -> color_eyre::Result<<<WalletsActor as Message<M>>::Reply as Reply>::Ok>
 where
     WalletsActor: Message<M>,
-    M: Send + 'static,
+    M: Send + 'static + Sync,
+    <<WalletsActor as Message<M>>::Reply as Reply>::Error: Sync + std::fmt::Display,
 {
-    let actor = ActorRef::<WalletsActor>::lookup("wallets")?;
-    Ok(actor.ask(msg).await?)
+    let actor =
+        ActorRef::<WalletsActor>::lookup("wallets")?.wrap_err_with(|| "wallets actor not found")?;
+
+    actor.ask(msg).await.wrap_err_with(|| "failed")
 }
 
 pub async fn tell<M>(msg: M) -> color_eyre::Result<()>
 where
     WalletsActor: Message<M>,
-    M: Send + 'static,
+    M: Send + 'static + Sync,
+    <<WalletsActor as Message<M>>::Reply as Reply>::Error: Sync + std::fmt::Display,
 {
-    let actor = ActorRef::<WalletsActor>::lookup("wallets")?;
-    actor.tell(msg).await?;
-    Ok(())
+    let actor =
+        ActorRef::<WalletsActor>::lookup("wallets")?.wrap_err_with(|| "wallets actor not found")?;
+
+    actor.tell(msg).await.map_err(Into::into)
 }
