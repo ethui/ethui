@@ -212,6 +212,9 @@ impl Worker {
                 match path.clone().try_into() {
                     Ok(abi) => Some(abi),
                     Err(e) => {
+                        // probably not a valid ABI file
+                        // if there's too much spam here, probably means we should narrow down our
+                        // search pattern
                         tracing::debug!("Failed to parse ABI from {}: {:?}", path.display(), e);
                         None
                     }
@@ -386,7 +389,6 @@ impl Worker {
             result.insert(dir);
         }
 
-        trace!(foundry_roots = ?result);
         Ok(result)
     }
 
