@@ -8,12 +8,12 @@ use alloy::primitives::Bytes;
 use ethui_types::UINotify;
 use futures::{stream, StreamExt as _};
 use glob::glob;
-use tokio::task;
 use kameo::{actor::ActorRef, message::Message, Actor};
 use notify::{RecommendedWatcher, RecursiveMode};
 use notify_debouncer_full::{
     new_debouncer, DebounceEventResult, DebouncedEvent, Debouncer, RecommendedCache,
 };
+use tokio::task;
 use tracing::{instrument, trace, warn};
 
 use crate::{abi::ForgeAbi, utils};
@@ -193,16 +193,17 @@ impl Worker {
     #[instrument(skip_all)]
     async fn scan_project(&mut self, root: &Path) -> color_eyre::Result<()> {
         let pattern = root.join("out").join("**").join("*.json");
-        
+
         // Use spawn_blocking for the synchronous glob operation to avoid blocking the async runtime
         let pattern_str = pattern.to_string_lossy().to_string();
-        let paths: Vec<PathBuf> = task::spawn_blocking(move || -> color_eyre::Result<Vec<PathBuf>> {
-            Ok(glob(&pattern_str)
-                .map_err(|e| color_eyre::eyre::eyre!("Glob pattern error: {}", e))?
-                .filter_map(|p| p.ok())
-                .collect::<Vec<_>>())
-        })
-        .await??;
+        let paths: Vec<PathBuf> =
+            task::spawn_blocking(move || -> color_eyre::Result<Vec<PathBuf>> {
+                Ok(glob(&pattern_str)
+                    .map_err(|e| color_eyre::eyre::eyre!("Glob pattern error: {}", e))?
+                    .filter_map(|p| p.ok())
+                    .collect::<Vec<_>>())
+            })
+            .await??;
 
         // Process files in parallel using buffered stream for controlled concurrency
         let valid_abis: Vec<_> = stream::iter(paths)
@@ -335,14 +336,14 @@ impl Worker {
     #[instrument(skip_all)]
     async fn find_foundry_roots(&self) -> color_eyre::Result<HashSet<PathBuf>> {
         let roots = self.roots.clone(); // Clone to move into async task
-        
+
         // Process all roots in parallel using spawn_blocking for each glob operation
         let all_matches: Vec<_> = stream::iter(roots)
             .map(|root| {
                 task::spawn_blocking(move || {
                     let pattern = root.join("**").join("foundry.toml");
                     let pattern_str = pattern.to_string_lossy().to_string();
-                    
+
                     match glob(&pattern_str) {
                         Ok(g) => g.filter_map(|p| p.ok()).collect::<Vec<PathBuf>>(),
                         Err(e) => {
@@ -375,7 +376,7 @@ impl Worker {
         // Remove duplicates and nested directories
         let mut sorted_dirs = all_dirs;
         sorted_dirs.sort();
-        
+
         let mut result: HashSet<PathBuf> = HashSet::new();
         for dir in sorted_dirs {
             // Skip if this directory is a subdirectory of an already included directory
