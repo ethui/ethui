@@ -48,8 +48,6 @@ export function AppSidebar() {
 
   const { data: isStacksEnabled } = useInvoke<boolean>("is_stacks_enabled", {});
 
-  console.log("isStacksEnabled", isStacksEnabled);
-
   const showOnboarding = useSettings((s) => !s.settings?.onboarding.hidden);
 
   const settingsItems = [...defaultSettingsItems];
@@ -114,7 +112,7 @@ export function AppSidebar() {
                   {...item}
                   className={cn(
                     item.url === location.pathname &&
-                      "bg-primary text-accent hover:bg-primary hover:text-accent",
+                    "bg-primary text-accent hover:bg-primary hover:text-accent",
                   )}
                 />
               ))}
@@ -138,7 +136,7 @@ export function AppSidebar() {
                               to={item.url}
                               className={cn(
                                 item.url === location.pathname &&
-                                  "bg-primary text-accent hover:bg-primary hover:text-accent",
+                                "bg-primary text-accent hover:bg-primary hover:text-accent",
                               )}
                             >
                               {item.title}
