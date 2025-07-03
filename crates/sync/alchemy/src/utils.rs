@@ -6,7 +6,7 @@ use crate::Alchemy;
 pub async fn get_current_api_key() -> color_eyre::Result<Option<String>> {
     let settings = ethui_settings::ask(GetAll)
         .await
-        .map_err(|e| eyre!("Failed to get settings: {}", e))?;
+        .wrap_err_with(|| "Failed to get settings")?;
 
     Ok(settings
         .alchemy_api_key
