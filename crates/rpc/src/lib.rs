@@ -6,8 +6,7 @@ use std::collections::HashMap;
 
 use alloy::{dyn_abi::TypedData, hex, primitives::Bytes, providers::Provider as _};
 use ethui_connections::{permissions::PermissionRequest, Ctx};
-use ethui_types::GlobalState;
-use ethui_wallets::{WalletControl, Wallets};
+use ethui_wallets::{WalletControl, actor::*};
 use jsonrpc_core::{MetaIoHandler, Params};
 use serde_json::json;
 use tracing::info;
@@ -138,8 +137,7 @@ impl Handler {
     }
 
     async fn accounts(_: Params, _: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
-        let wallets = Wallets::read().await;
-        let address = wallets.get_current_wallet().get_current_address().await;
+        let address = ask(GetCurrentAddress).await.map_err(|_| jsonrpc_core::Error::internal_error())?;
 
         Ok(json!([address]))
     }
@@ -153,10 +151,8 @@ impl Handler {
         _: Params,
         ctx: Ctx,
     ) -> jsonrpc_core::Result<serde_json::Value> {
-        let wallets = Wallets::read().await;
-
         let network = ctx.network().await;
-        let address = wallets.get_current_wallet().get_current_address().await;
+        let address = ask(GetCurrentAddress).await.map_err(|_| jsonrpc_core::Error::internal_error())?;
 
         Ok(json!({
             "isUnlocked": true,
@@ -269,13 +265,12 @@ impl Handler {
         // TODO where should this be used?
         // let address = Address::from_str(&params[1].as_ref().cloned().unwrap()).unwrap();
 
-        let wallets = Wallets::read().await;
+        let wallet = ask(GetCurrent).await.map_err(|_| jsonrpc_core::Error::internal_error())?;
 
         let network = ctx.network().await;
-        let wallet = wallets.get_current_wallet();
 
         let mut signer = methods::SignMessage::build()
-            .set_wallet(wallet)
+            .set_wallet(&wallet)
             .set_wallet_path(wallet.get_current_path())
             .set_network(network)
             .set_string_data(msg)
@@ -298,13 +293,11 @@ impl Handler {
         let data = params[1].as_ref().cloned().unwrap();
         let typed_data: TypedData = serde_json::from_str(&data).unwrap();
 
-        let wallets = Wallets::read().await;
-
-        let wallet = wallets.get_current_wallet();
+        let wallet = ask(GetCurrent).await.map_err(|_| jsonrpc_core::Error::internal_error())?;
         let network = ctx.network().await;
 
         let mut signer = methods::SignMessage::build()
-            .set_wallet(wallet)
+            .set_wallet(&wallet)
             .set_wallet_path(wallet.get_current_path())
             .set_network(network)
             .set_typed_data(typed_data)
@@ -322,10 +315,8 @@ impl Handler {
     }
 
     async fn ethui_provider_state(_: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
-        let wallets = Wallets::read().await;
-
         let network = ctx.network().await;
-        let address = wallets.get_current_wallet().get_current_address().await;
+        let address = ask(GetCurrentAddress).await.map_err(|_| jsonrpc_core::Error::internal_error())?;
 
         Ok(json!({
             "ethui": {

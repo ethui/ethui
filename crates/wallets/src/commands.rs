@@ -1,80 +1,61 @@
-use ethui_types::{Address, GlobalState, Json, SerializableError, TauriResult};
+use ethui_types::{Address, Json, SerializableError, TauriResult};
 
-use super::{utils, Wallet, WalletControl, Wallets};
+use super::{utils, Wallet, WalletControl, actor::*};
 
 /// Lists all wallets
 #[tauri::command]
 pub async fn wallets_get_all() -> Vec<Wallet> {
-    Wallets::read().await.get_all().clone()
+    ask(GetAll).await.unwrap_or_default()
 }
 
 /// Gets the current wallet
 #[tauri::command]
 pub async fn wallets_get_current() -> TauriResult<Wallet> {
-    Ok(Wallets::read().await.get_current_wallet().clone())
+    ask(GetCurrent).await.map_err(SerializableError::from)
 }
 
 /// Gets the current address ooof the current wallet
 #[tauri::command]
 pub async fn wallets_get_current_address() -> TauriResult<Address> {
-    Ok(Wallets::read()
-        .await
-        .get_current_wallet()
-        .get_current_address()
-        .await)
+    ask(GetCurrentAddress).await.map_err(SerializableError::from)
 }
 
 #[tauri::command]
 pub async fn wallets_create(params: Json) -> TauriResult<()> {
-    Wallets::write()
-        .await
-        .create(params)
-        .await
+    ask(Create { params }).await.map_err(SerializableError::from)?
         .map_err(SerializableError::from)
 }
 
 #[tauri::command]
 pub async fn wallets_update(name: String, params: Json) -> TauriResult<()> {
-    Wallets::write()
-        .await
-        .update(name, params)
-        .await
+    ask(Update { name, params }).await.map_err(SerializableError::from)?
         .map_err(SerializableError::from)
 }
 
 #[tauri::command]
 pub async fn wallets_remove(name: String) -> TauriResult<()> {
-    Wallets::write()
-        .await
-        .remove(name)
-        .await
+    ask(Remove { name }).await.map_err(SerializableError::from)?
         .map_err(SerializableError::from)
 }
 
 /// Switches the current wallet
 #[tauri::command]
 pub async fn wallets_set_current_wallet(idx: usize) -> TauriResult<()> {
-    Wallets::write()
-        .await
-        .set_current_wallet(idx)
-        .await
+    ask(SetCurrentWallet { idx }).await.map_err(SerializableError::from)?
         .map_err(SerializableError::from)
 }
 
 /// Switches the current key of the current wallet
 #[tauri::command]
 pub async fn wallets_set_current_path(key: String) -> TauriResult<()> {
-    Wallets::write()
-        .await
-        .set_current_path(key)
-        .await
+    ask(SetCurrentPath { key }).await.map_err(SerializableError::from)?
         .map_err(SerializableError::from)
 }
 
 /// Get all known addresses of a wallet
 #[tauri::command]
 pub async fn wallets_get_wallet_addresses(name: String) -> TauriResult<Vec<(String, Address)>> {
-    Ok(Wallets::read().await.get_wallet_addresses(name).await)
+    ask(GetWalletAddresses { name }).await.map_err(SerializableError::from)
 }
 
 /// Derives the list of addresses for a given mnemonic Used when importing a new wallet in the UI,

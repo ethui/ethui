@@ -1,3 +1,4 @@
+pub mod actor;
 pub mod commands;
 mod init;
 mod signer;
@@ -18,6 +19,7 @@ use serde::Serialize;
 pub use signer::Signer;
 
 pub use self::wallet::{Wallet, WalletControl, WalletType};
+pub use self::actor::{ask, tell};
 
 /// Maintains a list of Ethereum wallets, including keeping track of the global current wallet &
 /// address

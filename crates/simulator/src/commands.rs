@@ -22,10 +22,9 @@ pub async fn simulator_get_call_count(
     to: Address,
     db: tauri::State<'_, Db>,
 ) -> TauriResult<u32> {
-    let addrs = ethui_wallets::Wallets::read()
+    let addrs = ethui_wallets::ask(ethui_wallets::actor::GetAllAddresses)
         .await
-        .get_all_addresses()
-        .await;
+        .unwrap_or_default();
 
     let mut res = 0;
     for (_, from) in addrs {

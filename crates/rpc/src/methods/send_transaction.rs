@@ -10,7 +10,7 @@ use ethui_connections::Ctx;
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_settings::GetAll;
 use ethui_types::{Address, GlobalState, Network};
-use ethui_wallets::{WalletControl, WalletType, Wallets};
+use ethui_wallets::{WalletControl, WalletType, actor::*};
 
 use crate::{Error, Result};
 
@@ -52,9 +52,10 @@ impl SendTransaction {
     pub async fn finish(&mut self) -> Result<PendingTransactionBuilder<Ethereum>> {
         // inner scope so as not to lock wallets for the entire duration of the tx review
         let skip = {
-            let wallets = Wallets::read().await;
+            let wallets = ask(GetAll).await.map_err(|_| Error::WalletNameNotFound(self.wallet_name.clone()))?;
             let wallet = wallets
-                .get(&self.wallet_name)
+                .iter()
+                .find(|w| w.name() == self.wallet_name)
                 .ok_or_else(|| Error::WalletNameNotFound(self.wallet_name.clone()))?;
 
             self.network.is_dev().await && wallet.is_dev() && {
@@ -147,9 +148,10 @@ impl SendTransaction {
             return Ok(());
         }
 
-        let wallets = Wallets::read().await;
+        let wallets = ask(GetAll).await.map_err(|_| Error::WalletNameNotFound(self.wallet_name.clone()))?;
         let wallet = wallets
-            .get(&self.wallet_name)
+            .iter()
+            .find(|w| w.name() == self.wallet_name)
             .ok_or(Error::WalletNameNotFound(self.wallet_name.clone()))?
             .clone();
 
@@ -201,9 +203,10 @@ impl SendTransaction {
     }
 
     async fn from(&self) -> Result<Address> {
-        let wallets = Wallets::read().await;
+        let wallets = ask(GetAll).await.map_err(|_| Error::WalletNameNotFound(self.wallet_name.clone()))?;
         let wallet = wallets
-            .get(&self.wallet_name)
+            .iter()
+            .find(|w| w.name() == self.wallet_name)
             .ok_or_else(|| Error::WalletNameNotFound(self.wallet_name.clone()))?;
 
         wallet
@@ -247,20 +250,19 @@ impl<'a> SendTransactionBuilder<'a> {
             &params
         };
 
-        let wallets = Wallets::read().await;
         if let Some(from) = params["from"].as_str() {
             let address = Address::from_str(from).unwrap();
             self.request.set_from(address);
 
-            let (wallet, path) = wallets
-                .find(address)
+            let (wallet, path) = ask(Find { address })
                 .await
+                .map_err(|_| Error::WalletNotFound(address))?
                 .ok_or(Error::WalletNotFound(address))?;
             self.wallet_name = Some(wallet.name());
             self.wallet_path = Some(path);
             self.wallet_type = Some(wallet.into());
         } else {
-            let wallet = wallets.get_current_wallet();
+            let wallet = ask(GetCurrent).await.map_err(|_| Error::WalletNameNotFound("current".to_string()))?;
 
             self.wallet_path = Some(wallet.get_current_path());
             self.request.set_from(wallet.get_current_address().await);
