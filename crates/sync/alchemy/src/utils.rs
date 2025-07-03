@@ -1,3 +1,4 @@
+use color_eyre::eyre::WrapErr;
 use ethui_settings::GetAll;
 use ethui_types::eyre;
 
