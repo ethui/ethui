@@ -89,7 +89,7 @@ impl Message<GetAll> for SettingsActor {
     async fn handle(
         &mut self,
         _msg: GetAll,
-        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
+        _ctx: &mut kameo::message::Context<Self, SerializedSettings>,
     ) -> Self::Reply {
         self.inner.clone()
     }

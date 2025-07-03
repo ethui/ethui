@@ -11,7 +11,6 @@ use std::collections::HashMap;
 pub use actor::*;
 use ethui_types::Address;
 pub use init::init;
-use kameo::reply::Reply;
 use migrations::LatestVersion;
 use onboarding::Onboarding;
 use serde::{Deserialize, Serialize};
@@ -26,7 +25,7 @@ pub enum DarkMode {
     Light,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, kameo::Reply)]
 #[serde(rename_all = "camelCase", default)]
 pub struct SerializedSettings {
     pub dark_mode: DarkMode,
@@ -83,22 +82,4 @@ const fn default_true() -> bool {
 
 fn default_aliases() -> HashMap<Address, String> {
     Default::default()
-}
-
-impl Reply for SerializedSettings {
-    type Ok = Self;
-    type Error = color_eyre::Report;
-    type Value = Self;
-
-    fn to_result(self) -> color_eyre::Result<Self::Ok> {
-        Ok(self)
-    }
-
-    fn into_any_err(self) -> Option<Box<dyn kameo::reply::ReplyError>> {
-        None
-    }
-
-    fn into_value(self) -> Self::Value {
-        self
-    }
 }
