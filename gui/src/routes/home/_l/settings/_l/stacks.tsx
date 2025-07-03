@@ -42,7 +42,10 @@ function SettingsStacks() {
   return (
     <Form form={form} onSubmit={onSubmit}>
       <div className="w-100">
-        <Form.Checkbox name="runLocalStacks" label="Enable Stacks Integration" />
+        <Form.Checkbox
+          name="runLocalStacks"
+          label="Enable Stacks Integration"
+        />
       </div>
 
       <Form.Submit label="Save" />
