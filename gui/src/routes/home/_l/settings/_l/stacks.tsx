@@ -9,7 +9,6 @@ import { z } from "zod";
 import { Form } from "@ethui/ui/components/form";
 import { useSettings } from "#/store/useSettings";
 
-
 export const Route = createFileRoute("/home/_l/settings/_l/stacks")({
   beforeLoad: () => ({ breadcrumb: "Stacks" }),
   component: () => <SettingsStacks />,
@@ -43,10 +42,7 @@ function SettingsStacks() {
   return (
     <Form form={form} onSubmit={onSubmit}>
       <div className="w-100">
-        <Form.Checkbox
-          name="stacks"
-          label="Enable Stacks Integration"
-        />
+        <Form.Checkbox name="stacks" label="Enable Stacks Integration" />
       </div>
 
       <Form.Submit label="Save" />
