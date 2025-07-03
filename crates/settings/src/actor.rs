@@ -5,7 +5,7 @@ use std::{
 
 use color_eyre::eyre::{Context as _, ContextCompat as _};
 use ethui_types::UINotify;
-use kameo::{actor::ActorRef, message::Message, Actor, Reply};
+use kameo::{actor::ActorRef, message::Message, prelude::Context, Actor, Reply};
 
 use crate::{migrations::load_and_migrate, onboarding::OnboardingStep, DarkMode, Settings};
 
@@ -84,11 +84,7 @@ pub struct Save;
 impl Message<GetAll> for SettingsActor {
     type Reply = Settings;
 
-    async fn handle(
-        &mut self,
-        _msg: GetAll,
-        _ctx: &mut kameo::message::Context<Self, Settings>,
-    ) -> Self::Reply {
+    async fn handle(&mut self, _msg: GetAll, _ctx: &mut Context<Self, Settings>) -> Self::Reply {
         self.inner.clone()
     }
 }
@@ -96,11 +92,7 @@ impl Message<GetAll> for SettingsActor {
 impl Message<Set> for SettingsActor {
     type Reply = color_eyre::Result<()>;
 
-    async fn handle(
-        &mut self,
-        msg: Set,
-        ctx: &mut kameo::message::Context<Self, Self::Reply>,
-    ) -> Self::Reply {
+    async fn handle(&mut self, msg: Set, ctx: &mut Context<Self, Self::Reply>) -> Self::Reply {
         match msg {
             Set::All(map) => {
                 if let Some(v) = map.get("darkMode") {
@@ -166,11 +158,7 @@ impl Message<Set> for SettingsActor {
 impl Message<Save> for SettingsActor {
     type Reply = color_eyre::Result<()>;
 
-    async fn handle(
-        &mut self,
-        _msg: Save,
-        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
-    ) -> Self::Reply {
+    async fn handle(&mut self, _msg: Save, _ctx: &mut Context<Self, Self::Reply>) -> Self::Reply {
         let pathbuf = self.file.clone();
         let path = Path::new(&pathbuf);
         let file = File::create(path)?;
@@ -189,9 +177,9 @@ impl Message<GetAlias> for SettingsActor {
 
     async fn handle(
         &mut self,
-        msg: GetAlias,
-        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
+        GetAlias(address): GetAlias,
+        _ctx: &mut Context<Self, Self::Reply>,
     ) -> Self::Reply {
-        self.inner.aliases.get(&msg.0).cloned()
+        self.inner.aliases.get(&address).cloned()
     }
 }
