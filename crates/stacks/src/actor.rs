@@ -1,9 +1,11 @@
 use std::path::PathBuf;
 
 use kameo::{actor::ActorRef, message::Message, Actor};
-use tracing::info;
 
-use crate::{docker::start_stacks, error::Result};
+use crate::{
+    docker::{start_stacks, stop_stacks},
+    error::Result,
+};
 
 pub struct Worker {
     pub stacks: bool,
@@ -31,7 +33,9 @@ impl Message<Msg> for Worker {
                         tracing::error!("Failed to start stacks docker image: {}", e);
                     });
                 } else {
-                    info!("Stopping stacks docker image...");
+                    stop_stacks(self.port, self.config_dir.clone()).unwrap_or_else(|e| {
+                        tracing::error!("Failed to stop stacks docker image: {}", e);
+                    });
                 }
             }
         }

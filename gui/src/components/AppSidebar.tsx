@@ -30,6 +30,7 @@ import {
   Terminal,
   Wifi,
 } from "lucide-react";
+import { useInvoke } from "#/hooks/useInvoke";
 import { useSettings } from "#/store/useSettings";
 import { useCommandBar } from "./CommandBar";
 import { QuickAddressSelect } from "./QuickAddressSelect";
@@ -45,7 +46,22 @@ export function AppSidebar() {
   const { open, toggleSidebar } = useSidebar();
   const isMacos = platform() === "macos";
 
+  const { data: isStacksEnabled } = useInvoke<boolean>("is_stacks_enabled", {});
+
+  console.log("isStacksEnabled", isStacksEnabled);
+
   const showOnboarding = useSettings((s) => !s.settings?.onboarding.hidden);
+
+  const settingsItems = [...defaultSettingsItems];
+  if (
+    isStacksEnabled &&
+    !settingsItems.some((item) => item.title === "Stacks")
+  ) {
+    settingsItems.splice(settingsItems.length - 1, 0, {
+      title: "Stacks",
+      url: "/home/settings/stacks",
+    });
+  }
 
   return (
     <Sidebar className="select-none" collapsible="icon">
@@ -98,7 +114,7 @@ export function AppSidebar() {
                   {...item}
                   className={cn(
                     item.url === location.pathname &&
-                    "bg-primary text-accent hover:bg-primary hover:text-accent",
+                      "bg-primary text-accent hover:bg-primary hover:text-accent",
                   )}
                 />
               ))}
@@ -122,7 +138,7 @@ export function AppSidebar() {
                               to={item.url}
                               className={cn(
                                 item.url === location.pathname &&
-                                "bg-primary text-accent hover:bg-primary hover:text-accent",
+                                  "bg-primary text-accent hover:bg-primary hover:text-accent",
                               )}
                             >
                               {item.title}
@@ -202,12 +218,11 @@ const items = [
   },
 ];
 
-const settingsItems = [
+const defaultSettingsItems = [
   { title: "General", url: "/home/settings/general" },
   { title: "Wallets", url: "/home/settings/wallets" },
   { title: "Network", url: "/home/settings/networks" },
   { title: "Foundry", url: "/home/settings/foundry" },
   { title: "Tokens", url: "/home/settings/tokens" },
-  { title: "Stacks", url: "/home/settings/stacks" },
   { title: "About", url: "/home/settings/about" },
 ];
