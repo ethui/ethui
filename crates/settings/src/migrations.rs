@@ -12,7 +12,7 @@ use serde::Serialize;
 use serde_constant::ConstI64;
 use serde_json::json;
 
-use crate::{onboarding::Onboarding, DarkMode, SerializedSettings};
+use crate::{onboarding::Onboarding, DarkMode, Settings};
 
 // Temporary struct for migration return value
 pub type LatestVersion = ConstI64<2>;
@@ -20,7 +20,7 @@ pub type LatestVersion = ConstI64<2>;
 #[derive(Debug, Deserialize)]
 #[cfg_attr(test, derive(Serialize))]
 #[serde(rename_all = "camelCase", default)]
-struct SerializedSettingsV0 {
+struct SettingsV0 {
     pub dark_mode: DarkMode,
 
     pub abi_watch_path: Option<String>,
@@ -53,7 +53,7 @@ struct SerializedSettingsV0 {
 #[derive(Debug, Deserialize)]
 #[cfg_attr(test, derive(Serialize))]
 #[serde(rename_all = "camelCase", default)]
-pub struct SerializedSettingsV1 {
+pub struct SettingsV1 {
     pub dark_mode: DarkMode,
 
     pub abi_watch_path: Option<String>,
@@ -86,12 +86,12 @@ pub struct SerializedSettingsV1 {
 #[derive(Debug, Deserialize)]
 #[serde(untagged)]
 enum Versions {
-    V0(SerializedSettingsV0),
-    V1(SerializedSettingsV1),
-    V2(SerializedSettings),
+    V0(SettingsV0),
+    V1(SettingsV1),
+    V2(Settings),
 }
 
-pub(crate) async fn load_and_migrate(pathbuf: &PathBuf) -> color_eyre::Result<SerializedSettings> {
+pub(crate) async fn load_and_migrate(pathbuf: &PathBuf) -> color_eyre::Result<Settings> {
     let path = Path::new(&pathbuf);
     let file = File::open(path)?;
     let reader = BufReader::new(&file);
@@ -108,7 +108,7 @@ pub(crate) async fn load_and_migrate(pathbuf: &PathBuf) -> color_eyre::Result<Se
     Ok(settings)
 }
 
-fn run_migrations(settings: Versions) -> SerializedSettings {
+fn run_migrations(settings: Versions) -> Settings {
     let mut result = settings;
 
     loop {
@@ -118,7 +118,7 @@ fn run_migrations(settings: Versions) -> SerializedSettings {
 
         match result {
             Versions::V0(v0) => {
-                result = Versions::V1(SerializedSettingsV1 {
+                result = Versions::V1(SettingsV1 {
                     version: ConstI64,
                     dark_mode: v0.dark_mode,
                     abi_watch_path: v0.abi_watch_path,
@@ -135,7 +135,7 @@ fn run_migrations(settings: Versions) -> SerializedSettings {
             }
 
             Versions::V1(v1) => {
-                result = Versions::V2(SerializedSettings {
+                result = Versions::V2(Settings {
                     version: ConstI64,
                     dark_mode: v1.dark_mode,
                     abi_watch_path: v1.abi_watch_path,
@@ -168,7 +168,7 @@ fn default_aliases() -> HashMap<Address, String> {
     Default::default()
 }
 
-impl Default for SerializedSettingsV0 {
+impl Default for SettingsV0 {
     fn default() -> Self {
         Self {
             dark_mode: DarkMode::Auto,
@@ -187,7 +187,7 @@ impl Default for SerializedSettingsV0 {
     }
 }
 
-impl Default for SerializedSettingsV1 {
+impl Default for SettingsV1 {
     fn default() -> Self {
         Self {
             dark_mode: DarkMode::Auto,
@@ -218,8 +218,7 @@ mod tests {
     async fn it_converts_from_v0() {
         let mut tempfile = NamedTempFile::new().unwrap();
 
-        let settings_v0: serde_json::Value =
-            serde_json::to_value(SerializedSettingsV0::default()).unwrap();
+        let settings_v0: serde_json::Value = serde_json::to_value(SettingsV0::default()).unwrap();
 
         write!(tempfile, "{settings_v0}").unwrap();
 

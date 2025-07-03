@@ -27,7 +27,7 @@ pub enum DarkMode {
 
 #[derive(Debug, Clone, Serialize, Deserialize, kameo::Reply)]
 #[serde(rename_all = "camelCase", default)]
-pub struct SerializedSettings {
+pub struct Settings {
     pub dark_mode: DarkMode,
 
     pub abi_watch_path: Option<String>,
@@ -57,7 +57,7 @@ pub struct SerializedSettings {
     version: LatestVersion,
 }
 
-impl Default for SerializedSettings {
+impl Default for Settings {
     fn default() -> Self {
         Self {
             dark_mode: DarkMode::Auto,

@@ -7,13 +7,11 @@ use color_eyre::eyre::{Context as _, ContextCompat as _};
 use ethui_types::UINotify;
 use kameo::{actor::ActorRef, message::Message, Actor, Reply};
 
-use crate::{
-    migrations::load_and_migrate, onboarding::OnboardingStep, DarkMode, SerializedSettings,
-};
+use crate::{migrations::load_and_migrate, onboarding::OnboardingStep, DarkMode, Settings};
 
 #[derive(Debug)]
 pub struct SettingsActor {
-    inner: SerializedSettings,
+    inner: Settings,
     file: PathBuf,
 }
 
@@ -49,7 +47,7 @@ impl SettingsActor {
         let inner = if file.exists() {
             load_and_migrate(&file).await?
         } else {
-            SerializedSettings::default()
+            Settings::default()
         };
 
         // make sure OS's autostart is synced with settings
@@ -84,12 +82,12 @@ pub struct GetAlias(pub ethui_types::Address);
 pub struct Save;
 
 impl Message<GetAll> for SettingsActor {
-    type Reply = SerializedSettings;
+    type Reply = Settings;
 
     async fn handle(
         &mut self,
         _msg: GetAll,
-        _ctx: &mut kameo::message::Context<Self, SerializedSettings>,
+        _ctx: &mut kameo::message::Context<Self, Settings>,
     ) -> Self::Reply {
         self.inner.clone()
     }

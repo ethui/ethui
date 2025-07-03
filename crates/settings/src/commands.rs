@@ -1,11 +1,9 @@
 use ethui_types::{Address, TauriResult};
 
-use crate::{
-    ask, onboarding::OnboardingStep, tell, DarkMode, GetAlias, GetAll, SerializedSettings, Set,
-};
+use crate::{ask, onboarding::OnboardingStep, tell, DarkMode, GetAlias, GetAll, Set, Settings};
 
 #[tauri::command]
-pub async fn settings_get() -> TauriResult<SerializedSettings> {
+pub async fn settings_get() -> TauriResult<Settings> {
     Ok(ask(GetAll).await?)
 }
 
