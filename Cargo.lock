@@ -3105,6 +3105,7 @@ version = "1.19.0"
 dependencies = [
  "alloy",
  "color-eyre",
+ "ethui-broadcast",
  "ethui-connections",
  "ethui-db",
  "ethui-dialogs",

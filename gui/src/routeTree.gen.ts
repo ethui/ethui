@@ -15,6 +15,7 @@ import { Route as HomeLRouteImport } from './routes/home/_l'
 import { Route as DialogLRouteImport } from './routes/dialog/_l'
 import { Route as HomeLTransactionsRouteImport } from './routes/home/_l/transactions'
 import { Route as HomeLOnboardingRouteImport } from './routes/home/_l/onboarding'
+import { Route as HomeLForgeTracesRouteImport } from './routes/home/_l/forge-traces'
 import { Route as HomeLConnectionsRouteImport } from './routes/home/_l/connections'
 import { Route as HomeLAccountRouteImport } from './routes/home/_l/account'
 import { Route as HomeLTransferLRouteImport } from './routes/home/_l/transfer/_l'
@@ -100,6 +101,11 @@ const HomeLTransactionsRoute = HomeLTransactionsRouteImport.update({
 const HomeLOnboardingRoute = HomeLOnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => HomeLRoute,
+} as any)
+const HomeLForgeTracesRoute = HomeLForgeTracesRouteImport.update({
+  id: '/forge-traces',
+  path: '/forge-traces',
   getParentRoute: () => HomeLRoute,
 } as any)
 const HomeLConnectionsRoute = HomeLConnectionsRouteImport.update({
@@ -275,6 +281,7 @@ export interface FileRoutesByFullPath {
   '/home': typeof HomeLRouteWithChildren
   '/home/account': typeof HomeLAccountRoute
   '/home/connections': typeof HomeLConnectionsRoute
+  '/home/forge-traces': typeof HomeLForgeTracesRoute
   '/home/onboarding': typeof HomeLOnboardingRoute
   '/home/transactions': typeof HomeLTransactionsRoute
   '/dialog/chain-add/$id': typeof DialogLChainAddIdRoute
@@ -312,6 +319,7 @@ export interface FileRoutesByTo {
   '/home': typeof HomeLRouteWithChildren
   '/home/account': typeof HomeLAccountRoute
   '/home/connections': typeof HomeLConnectionsRoute
+  '/home/forge-traces': typeof HomeLForgeTracesRoute
   '/home/onboarding': typeof HomeLOnboardingRoute
   '/home/transactions': typeof HomeLTransactionsRoute
   '/dialog/chain-add/$id': typeof DialogLChainAddIdRoute
@@ -349,6 +357,7 @@ export interface FileRoutesById {
   '/home/_l': typeof HomeLRouteWithChildren
   '/home/_l/account': typeof HomeLAccountRoute
   '/home/_l/connections': typeof HomeLConnectionsRoute
+  '/home/_l/forge-traces': typeof HomeLForgeTracesRoute
   '/home/_l/onboarding': typeof HomeLOnboardingRoute
   '/home/_l/transactions': typeof HomeLTransactionsRoute
   '/dialog/_l/chain-add/$id': typeof DialogLChainAddIdRoute
@@ -393,6 +402,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/home/account'
     | '/home/connections'
+    | '/home/forge-traces'
     | '/home/onboarding'
     | '/home/transactions'
     | '/dialog/chain-add/$id'
@@ -430,6 +440,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/home/account'
     | '/home/connections'
+    | '/home/forge-traces'
     | '/home/onboarding'
     | '/home/transactions'
     | '/dialog/chain-add/$id'
@@ -466,6 +477,7 @@ export interface FileRouteTypes {
     | '/home/_l'
     | '/home/_l/account'
     | '/home/_l/connections'
+    | '/home/_l/forge-traces'
     | '/home/_l/onboarding'
     | '/home/_l/transactions'
     | '/dialog/_l/chain-add/$id'
@@ -572,6 +584,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding'
       fullPath: '/home/onboarding'
       preLoaderRoute: typeof HomeLOnboardingRouteImport
+      parentRoute: typeof HomeLRoute
+    }
+    '/home/_l/forge-traces': {
+      id: '/home/_l/forge-traces'
+      path: '/forge-traces'
+      fullPath: '/home/forge-traces'
+      preLoaderRoute: typeof HomeLForgeTracesRouteImport
       parentRoute: typeof HomeLRoute
     }
     '/home/_l/connections': {
@@ -1000,6 +1019,7 @@ const HomeLTransferRouteWithChildren = HomeLTransferRoute._addFileChildren(
 interface HomeLRouteChildren {
   HomeLAccountRoute: typeof HomeLAccountRoute
   HomeLConnectionsRoute: typeof HomeLConnectionsRoute
+  HomeLForgeTracesRoute: typeof HomeLForgeTracesRoute
   HomeLOnboardingRoute: typeof HomeLOnboardingRoute
   HomeLTransactionsRoute: typeof HomeLTransactionsRoute
   HomeLContractsRoute: typeof HomeLContractsRouteWithChildren
@@ -1010,6 +1030,7 @@ interface HomeLRouteChildren {
 const HomeLRouteChildren: HomeLRouteChildren = {
   HomeLAccountRoute: HomeLAccountRoute,
   HomeLConnectionsRoute: HomeLConnectionsRoute,
+  HomeLForgeTracesRoute: HomeLForgeTracesRoute,
   HomeLOnboardingRoute: HomeLOnboardingRoute,
   HomeLTransactionsRoute: HomeLTransactionsRoute,
   HomeLContractsRoute: HomeLContractsRouteWithChildren,

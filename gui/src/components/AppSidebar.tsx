@@ -29,6 +29,7 @@ import {
   ReceiptText,
   Terminal,
   Wifi,
+  Zap,
 } from "lucide-react";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useSettings } from "#/store/useSettings";
@@ -213,6 +214,11 @@ const items = [
     title: "Connections",
     url: "/home/connections",
     icon: <Wifi />,
+  },
+  {
+    title: "Forge Traces",
+    url: "/home/forge-traces",
+    icon: <Zap />,
   },
 ];
 

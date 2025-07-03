@@ -5,7 +5,8 @@ type Event =
   | "peers-updated"
   | "settings-changed"
   | "contracts-updated"
-  | "txs-updated";
+  | "txs-updated"
+  | "forge-test-traces-updated";
 
 export function useEventListener(event: Event, callback: () => unknown) {
   const view = getCurrentWebviewWindow();
