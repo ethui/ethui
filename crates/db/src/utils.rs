@@ -11,8 +11,7 @@ pub async fn fetch_etherscan_contract_name(
     let settings = ethui_settings::ask(GetAll).await?;
     let api_key = settings
         .etherscan_api_key
-        .clone()
-        .with_context(|| "Etherscan API key not set".to_string())?;
+        .wrap_err_with(|| "Etherscan API key not set")?;
     let client = foundry_block_explorers::Client::new(chain, api_key)?;
 
     match client.contract_source_code(address).await {
@@ -29,8 +28,7 @@ pub async fn fetch_etherscan_abi(
     let settings = ethui_settings::ask(GetAll).await?;
     let api_key = settings
         .etherscan_api_key
-        .clone()
-        .with_context(|| "Etherscan API key not set".to_string())?;
+        .wrap_err_with(|| "Etherscan API key not set")?;
     let client = foundry_block_explorers::Client::new(chain, api_key)?;
 
     match client.contract_abi(address).await {
