@@ -26,7 +26,6 @@ pub enum DarkMode {
     Light,
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", default)]
 pub struct SerializedSettings {

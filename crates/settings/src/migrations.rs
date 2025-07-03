@@ -15,15 +15,9 @@ use serde_json::json;
 use crate::{onboarding::Onboarding, DarkMode, SerializedSettings};
 
 // Temporary struct for migration return value
-#[derive(Debug)]
-pub struct MigratedSettings {
-    pub inner: SerializedSettings,
-    pub file: PathBuf,
-}
-
 pub type LatestVersion = ConstI64<2>;
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Deserialize)]
 #[cfg_attr(test, derive(Serialize))]
 #[serde(rename_all = "camelCase", default)]
 struct SerializedSettingsV0 {
@@ -56,7 +50,7 @@ struct SerializedSettingsV0 {
     version: ConstI64<0>,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Deserialize)]
 #[cfg_attr(test, derive(Serialize))]
 #[serde(rename_all = "camelCase", default)]
 pub struct SerializedSettingsV1 {
@@ -97,7 +91,7 @@ enum Versions {
     V2(SerializedSettings),
 }
 
-pub(crate) async fn load_and_migrate(pathbuf: &PathBuf) -> color_eyre::Result<MigratedSettings> {
+pub(crate) async fn load_and_migrate(pathbuf: &PathBuf) -> color_eyre::Result<SerializedSettings> {
     let path = Path::new(&pathbuf);
     let file = File::open(path)?;
     let reader = BufReader::new(&file);
@@ -109,11 +103,7 @@ pub(crate) async fn load_and_migrate(pathbuf: &PathBuf) -> color_eyre::Result<Mi
     }
 
     let settings: Versions = serde_json::from_value(settings)?;
-
-    let settings = MigratedSettings {
-        inner: run_migrations(settings),
-        file: path.to_path_buf(),
-    };
+    let settings = run_migrations(settings);
 
     Ok(settings)
 }
@@ -218,17 +208,14 @@ impl Default for SerializedSettingsV1 {
 
 #[cfg(test)]
 mod tests {
-    use std::{
-        fs::File,
-        io::{BufReader, Write},
-    };
+    use std::io::Write;
 
     use tempfile::NamedTempFile;
 
     use super::{load_and_migrate, *};
 
     #[tokio::test]
-    async fn it_converts_from_v0_to_v1() {
+    async fn it_converts_from_v0() {
         let mut tempfile = NamedTempFile::new().unwrap();
 
         let settings_v0: serde_json::Value =
@@ -236,12 +223,8 @@ mod tests {
 
         write!(tempfile, "{settings_v0}").unwrap();
 
-        if let Ok(_settings) = load_and_migrate(&tempfile.path().to_path_buf()).await {
-            let file = File::open(tempfile.path()).unwrap();
-            let reader = BufReader::new(file);
-
-            let updated_networks: serde_json::Value = serde_json::from_reader(reader).unwrap();
-            assert_eq!(updated_networks["version"], 1);
+        if let Ok(settings) = load_and_migrate(&tempfile.path().to_path_buf()).await {
+            assert_eq!(settings.version, ConstI64::<2>);
         }
     }
 }

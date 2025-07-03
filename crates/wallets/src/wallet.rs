@@ -19,7 +19,11 @@ pub trait WalletControl: Sync + Send + Deserialize<'static> + Serialize + std::f
 
     async fn get_address(&self, path: &str) -> color_eyre::Result<Address>;
 
-    async fn build_signer(&self, chain_id: u32, path: &str) -> color_eyre::Result<crate::signer::Signer>;
+    async fn build_signer(
+        &self,
+        chain_id: u32,
+        path: &str,
+    ) -> color_eyre::Result<crate::signer::Signer>;
 
     async fn find(&self, address: Address) -> Option<String> {
         let addresses = self.get_all_addresses().await;

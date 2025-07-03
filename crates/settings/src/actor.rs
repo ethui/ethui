@@ -1,13 +1,15 @@
-use std::path::PathBuf;
+use std::{
+    fs::File,
+    path::{Path, PathBuf},
+};
 
 use color_eyre::eyre::{Context as _, ContextCompat as _};
+use ethui_types::UINotify;
 use kameo::{actor::ActorRef, message::Message, Actor, Reply};
 
 use crate::{
     migrations::load_and_migrate, onboarding::OnboardingStep, DarkMode, SerializedSettings,
 };
-use ethui_types::UINotify;
-use std::{fs::File, path::Path};
 
 #[derive(Debug)]
 pub struct SettingsActor {
@@ -43,12 +45,11 @@ where
 }
 
 impl SettingsActor {
-    pub async fn new(pathbuf: PathBuf) -> color_eyre::Result<Self> {
-        let (inner, file) = if pathbuf.exists() {
-            let migrated = load_and_migrate(&pathbuf).await?;
-            (migrated.inner, migrated.file)
+    pub async fn new(file: PathBuf) -> color_eyre::Result<Self> {
+        let inner = if file.exists() {
+            load_and_migrate(&file).await?
         } else {
-            (SerializedSettings::default(), pathbuf)
+            SerializedSettings::default()
         };
 
         // make sure OS's autostart is synced with settings
@@ -80,7 +81,7 @@ pub struct GetAll;
 pub struct GetAlias(pub ethui_types::Address);
 
 #[derive(Debug, Clone)]
-struct Save;
+pub struct Save;
 
 impl Message<GetAll> for SettingsActor {
     type Reply = SerializedSettings;
@@ -114,20 +115,17 @@ impl Message<Set> for SettingsActor {
                     self.inner.alchemy_api_key = serde_json::from_value(v.clone()).unwrap()
                 }
                 if let Some(v) = map.get("etherscanApiKey") {
-                    self.inner.etherscan_api_key =
-                        serde_json::from_value(v.clone()).unwrap()
+                    self.inner.etherscan_api_key = serde_json::from_value(v.clone()).unwrap()
                 }
                 if let Some(v) = map.get("hideEmptyTokens") {
-                    self.inner.hide_empty_tokens =
-                        serde_json::from_value(v.clone()).unwrap()
+                    self.inner.hide_empty_tokens = serde_json::from_value(v.clone()).unwrap()
                 }
                 if let Some(v) = map.get("autostart") {
                     self.inner.autostart = serde_json::from_value(v.clone()).unwrap();
                     crate::autostart::update(self.inner.autostart)?;
                 }
                 if let Some(v) = map.get("startMinimized") {
-                    self.inner.start_minimized =
-                        serde_json::from_value(v.clone()).unwrap();
+                    self.inner.start_minimized = serde_json::from_value(v.clone()).unwrap();
                 }
                 if let Some(v) = map.get("fastMode") {
                     self.inner.fast_mode = serde_json::from_value(v.clone()).unwrap();

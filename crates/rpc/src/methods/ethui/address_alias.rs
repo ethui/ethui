@@ -15,7 +15,8 @@ impl AddressAlias {
     }
 
     pub async fn run(self) -> Result<serde_json::Value> {
-        let alias = ethui_settings::ask(ethui_settings::GetAlias(self.address)).await
+        let alias = ethui_settings::ask(ethui_settings::GetAlias(self.address))
+            .await
             .map_err(|e| Error::Ethui(color_eyre::eyre::eyre!("Failed to get alias: {}", e)))?;
 
         Ok(json!(alias))
