@@ -10,7 +10,7 @@ use ethui_connections::Ctx;
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_settings::GetAll;
 use ethui_types::{Address, Network};
-use ethui_wallets::{actor::*, WalletControl, WalletType};
+use ethui_wallets::{WalletControl, WalletType};
 
 use crate::{Error, Result};
 
@@ -52,7 +52,7 @@ impl SendTransaction {
     pub async fn finish(&mut self) -> Result<PendingTransactionBuilder<Ethereum>> {
         // inner scope so as not to lock wallets for the entire duration of the tx review
         let skip = {
-            let wallets = ethui_wallets::ask(ethui_wallets::actor::GetAll)
+            let wallets = ethui_wallets::ask(ethui_wallets::GetAll)
                 .await
                 .map_err(|_| Error::WalletNameNotFound(self.wallet_name.clone()))?;
             let wallet = wallets
@@ -150,7 +150,7 @@ impl SendTransaction {
             return Ok(());
         }
 
-        let wallets = ethui_wallets::ask(ethui_wallets::actor::GetAll)
+        let wallets = ethui_wallets::ask(ethui_wallets::GetAll)
             .await
             .map_err(|_| Error::WalletNameNotFound(self.wallet_name.clone()))?;
         let wallet = wallets
@@ -207,7 +207,7 @@ impl SendTransaction {
     }
 
     async fn from(&self) -> Result<Address> {
-        let wallets = ethui_wallets::ask(ethui_wallets::actor::GetAll)
+        let wallets = ethui_wallets::ask(ethui_wallets::GetAll)
             .await
             .map_err(|_| Error::WalletNameNotFound(self.wallet_name.clone()))?;
         let wallet = wallets
@@ -260,7 +260,7 @@ impl<'a> SendTransactionBuilder<'a> {
             let address = Address::from_str(from).unwrap();
             self.request.set_from(address);
 
-            let (wallet, path) = ask(Find { address })
+            let (wallet, path) = ethui_wallets::ask(ethui_wallets::Find { address })
                 .await
                 .map_err(|_| Error::WalletNotFound(address))?
                 .ok_or(Error::WalletNotFound(address))?;
@@ -268,7 +268,7 @@ impl<'a> SendTransactionBuilder<'a> {
             self.wallet_path = Some(path);
             self.wallet_type = Some(wallet.into());
         } else {
-            let wallet = ask(GetCurrent)
+            let wallet = ethui_wallets::ask(ethui_wallets::GetCurrent)
                 .await
                 .map_err(|_| Error::WalletNameNotFound("current".to_string()))?;
 

@@ -6,7 +6,7 @@ use std::collections::HashMap;
 
 use alloy::{dyn_abi::TypedData, hex, primitives::Bytes, providers::Provider as _};
 use ethui_connections::{permissions::PermissionRequest, Ctx};
-use ethui_wallets::{WalletControl, actor::*};
+use ethui_wallets::{WalletControl, *};
 use jsonrpc_core::{MetaIoHandler, Params};
 use serde_json::json;
 use tracing::info;
@@ -137,7 +137,9 @@ impl Handler {
     }
 
     async fn accounts(_: Params, _: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
-        let address = ask(GetCurrentAddress).await.map_err(|_| jsonrpc_core::Error::internal_error())?;
+        let address = ask(GetCurrentAddress)
+            .await
+            .map_err(|_| jsonrpc_core::Error::internal_error())?;
 
         Ok(json!([address]))
     }
@@ -152,7 +154,9 @@ impl Handler {
         ctx: Ctx,
     ) -> jsonrpc_core::Result<serde_json::Value> {
         let network = ctx.network().await;
-        let address = ask(GetCurrentAddress).await.map_err(|_| jsonrpc_core::Error::internal_error())?;
+        let address = ask(GetCurrentAddress)
+            .await
+            .map_err(|_| jsonrpc_core::Error::internal_error())?;
 
         Ok(json!({
             "isUnlocked": true,
@@ -265,7 +269,9 @@ impl Handler {
         // TODO where should this be used?
         // let address = Address::from_str(&params[1].as_ref().cloned().unwrap()).unwrap();
 
-        let wallet = ask(GetCurrent).await.map_err(|_| jsonrpc_core::Error::internal_error())?;
+        let wallet = ask(GetCurrent)
+            .await
+            .map_err(|_| jsonrpc_core::Error::internal_error())?;
 
         let network = ctx.network().await;
 
@@ -293,7 +299,9 @@ impl Handler {
         let data = params[1].as_ref().cloned().unwrap();
         let typed_data: TypedData = serde_json::from_str(&data).unwrap();
 
-        let wallet = ask(GetCurrent).await.map_err(|_| jsonrpc_core::Error::internal_error())?;
+        let wallet = ask(GetCurrent)
+            .await
+            .map_err(|_| jsonrpc_core::Error::internal_error())?;
         let network = ctx.network().await;
 
         let mut signer = methods::SignMessage::build()
@@ -316,7 +324,9 @@ impl Handler {
 
     async fn ethui_provider_state(_: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
         let network = ctx.network().await;
-        let address = ask(GetCurrentAddress).await.map_err(|_| jsonrpc_core::Error::internal_error())?;
+        let address = ask(GetCurrentAddress)
+            .await
+            .map_err(|_| jsonrpc_core::Error::internal_error())?;
 
         Ok(json!({
             "ethui": {

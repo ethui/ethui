@@ -4,7 +4,6 @@ use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_networks::Networks;
 use ethui_sync::{get_alchemy, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse};
 use ethui_types::{Address, GlobalState, TokenMetadata, U256};
-use ethui_wallets::actor::*;
 use serde::{Deserialize, Serialize};
 
 use crate::{Error, Result};
@@ -47,7 +46,9 @@ impl TokenAdd {
     }
 
     pub async fn get_current_wallet_address(&self) -> Address {
-        ask(GetCurrentAddress).await.unwrap_or_default()
+        ethui_wallets::ask(ethui_wallets::GetCurrentAddress)
+            .await
+            .unwrap_or_default()
     }
 
     pub async fn get_erc20_metadata(&self, chain_id: u32) -> Result<Erc20Metadata> {

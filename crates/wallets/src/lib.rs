@@ -1,4 +1,4 @@
-pub mod actor;
+mod actor;
 pub mod commands;
 mod init;
 mod signer;
@@ -12,14 +12,17 @@ use std::{
     path::{Path, PathBuf},
 };
 
+pub use actor::*;
 use color_eyre::eyre::{eyre, ContextCompat as _};
 use ethui_types::{Address, Json, UINotify};
 pub use init::init;
 use serde::Serialize;
 pub use signer::Signer;
 
-pub use self::wallet::{Wallet, WalletControl, WalletType};
-pub use self::actor::{ask, tell};
+pub use self::{
+    actor::{ask, tell},
+    wallet::{Wallet, WalletControl, WalletType},
+};
 
 /// Maintains a list of Ethereum wallets, including keeping track of the global current wallet &
 /// address
