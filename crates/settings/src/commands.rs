@@ -66,10 +66,9 @@ pub async fn settings_onboarding_finish_step(id: OnboardingStep) -> TauriResult<
 }
 
 #[tauri::command]
-pub async fn settings_set_stacks(mode: bool) -> Result<()> {
-    tell(Set::SetStacks(id)).await?;
+pub async fn settings_run_local_stacks(mode: bool) -> TauriResult<()> {
+    tell(Set::RunLocalStacks(id)).await?;
     Ok(())
-}
 
 #[tauri::command]
 pub async fn settings_onboarding_finish_all() -> TauriResult<()> {

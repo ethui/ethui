@@ -12,11 +12,15 @@ use crate::{
 
 pub async fn init(stacks_port: u16, config_dir: PathBuf) -> Result<()> {
     let handle = kameo::spawn(Worker::new(stacks_port, config_dir));
-    handle.register("stacks").unwrap();
+    handle.register("run_local_stacks").unwrap();
 
     // Set initial state from settings
     let settings = Settings::read().await;
-    handle.tell(Msg::SetEnabled(settings.stacks())).await?;
+
+    println!("current run_local_stacks: {}", settings.run_local_stacks());
+    handle
+        .tell(Msg::SetEnabled(settings.run_local_stacks()))
+        .await?;
 
     tokio::spawn(async move { receiver(handle).await });
 
@@ -28,11 +32,17 @@ async fn receiver(handle: ActorRef<Worker>) -> ! {
 
     loop {
         if let Ok(msg) = rx.recv().await {
+            println!("Received internal message: {:?}", msg);
             match msg {
                 InternalMsg::SettingsUpdated => {
                     let settings = Settings::read().await;
+
+                    println!(
+                        "Received internal message: {:?}",
+                        settings.run_local_stacks()
+                    );
                     handle
-                        .tell(Msg::SetEnabled(settings.stacks()))
+                        .tell(Msg::SetEnabled(settings.run_local_stacks()))
                         .await
                         .unwrap();
                 }

@@ -15,7 +15,7 @@ export const Route = createFileRoute("/home/_l/settings/_l/stacks")({
 });
 
 const schema = z.object({
-  stacks: z.boolean(),
+  runLocalStacks: z.boolean(),
 });
 
 function SettingsStacks() {
@@ -42,7 +42,7 @@ function SettingsStacks() {
   return (
     <Form form={form} onSubmit={onSubmit}>
       <div className="w-100">
-        <Form.Checkbox name="stacks" label="Enable Stacks Integration" />
+        <Form.Checkbox name="runLocalStacks" label="Enable Stacks Integration" />
       </div>
 
       <Form.Submit label="Save" />

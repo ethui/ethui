@@ -67,7 +67,7 @@ pub enum Set {
     FinishOnboardingStep(OnboardingStep),
     FinishOnboarding,
     Alias(ethui_types::Address, Option<String>),
-    SetStacks(bool),
+    RunLocalStacks(bool),
 }
 
 #[derive(Debug, Clone)]
@@ -122,6 +122,9 @@ impl Message<Set> for SettingsActor {
                     self.inner.rust_log = serde_json::from_value(v.clone()).unwrap();
                     ethui_tracing::parse(&self.inner.rust_log)?;
                 }
+                if let Some(v) = map.get("runLocalStacks") {
+                    self.inner.stacks = serde_json::from_value(v.clone()).unwrap();
+                }
             }
             Set::DarkMode(mode) => {
                 self.inner.dark_mode = mode;
@@ -144,7 +147,7 @@ impl Message<Set> for SettingsActor {
                     self.inner.aliases.remove(&address);
                 }
             }
-            Set::SetStacks(mode) => {
+            Set::RunLocalStacks(mode) => {
                 self.inner.stacks = mode;
             }
         }
