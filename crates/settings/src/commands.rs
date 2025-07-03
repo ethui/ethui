@@ -56,8 +56,8 @@ pub async fn settings_test_rust_log(directives: String) -> bool {
 }
 
 #[tauri::command]
-pub async fn settings_set_stacks(mode: bool) -> Result<()> {
-    Settings::write().await.set_stacks(mode).await
+pub async fn settings_set_run_local_stacks(mode: bool) -> Result<()> {
+    Settings::write().await.set_run_local_stacks(mode).await
 }
 
 #[tauri::command]

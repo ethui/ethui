@@ -85,7 +85,7 @@ impl Settings {
             ethui_tracing::parse(&self.inner.rust_log)?;
         }
 
-        if let Some(v) = params.get("stacks") {
+        if let Some(v) = params.get("runLocalStacks") {
             self.inner.run_local_stacks = serde_json::from_value(v.clone())?;
         }
 
@@ -122,7 +122,7 @@ impl Settings {
         Ok(())
     }
 
-    pub async fn set_stacks(&mut self, mode: bool) -> Result<()> {
+    pub async fn set_run_local_stacks(&mut self, mode: bool) -> Result<()> {
         self.inner.run_local_stacks = mode;
         self.save().await?;
 
@@ -137,7 +137,7 @@ impl Settings {
         self.inner.fast_mode
     }
 
-    pub fn stacks(&self) -> bool {
+    pub fn run_local_stacks(&self) -> bool {
         self.inner.run_local_stacks
     }
 
