@@ -7,7 +7,6 @@ use ethui_types::Address;
 use once_cell::sync::Lazy;
 use tokio::sync::Mutex;
 
-
 pub(crate) static HID_MUTEX: Lazy<Mutex<()>> = Lazy::new(Default::default);
 
 pub fn derive_addresses(
@@ -55,7 +54,9 @@ pub(crate) async fn ledger_derive(path: &str) -> color_eyre::Result<Address> {
         .map_err(|e| eyre!("Ledger error: {}", e))
 }
 
-pub(crate) async fn ledger_derive_multiple(paths: Vec<String>) -> color_eyre::Result<Vec<(String, Address)>> {
+pub(crate) async fn ledger_derive_multiple(
+    paths: Vec<String>,
+) -> color_eyre::Result<Vec<(String, Address)>> {
     let mut res = vec![];
 
     for path in paths.into_iter() {
