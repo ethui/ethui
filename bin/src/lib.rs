@@ -11,7 +11,7 @@ use std::env;
 
 use color_eyre::Result;
 use ethui_args::{Commands, ForgeCommands};
-use ethui_forge::test_runner::ForgeTestRunner;
+use ethui_forge_traces::ForgeTestRunner;
 use named_lock::NamedLock;
 
 #[cfg(not(debug_assertions))]
