@@ -7,10 +7,12 @@ mod menu;
 mod system_tray;
 mod windows;
 
-use std::env;
-
 use color_eyre::Result;
-use ethui_args::{Commands, ForgeCommands};
+#[cfg(feature = "forge-traces")]
+use ethui_args::Commands;
+#[cfg(feature = "forge-traces")]
+use ethui_args::ForgeCommands;
+#[cfg(feature = "forge-traces")]
 use ethui_forge_traces::ForgeTestRunner;
 use named_lock::NamedLock;
 
@@ -27,6 +29,7 @@ pub async fn run() -> Result<()> {
     let args = ethui_args::parse();
 
     // Handle subcommands before GUI initialization
+    #[cfg(feature = "forge-traces")]
     if let Some(command) = &args.command {
         return handle_command(command).await;
     }
@@ -46,13 +49,17 @@ pub async fn run() -> Result<()> {
     Ok(())
 }
 
+#[cfg(feature = "forge-traces")]
 async fn handle_command(command: &Commands) -> Result<()> {
     match command {
         Commands::Forge { subcommand } => handle_forge_command(subcommand).await,
     }
 }
 
+#[cfg(feature = "forge-traces")]
 async fn handle_forge_command(subcommand: &ForgeCommands) -> Result<()> {
+    use std::env;
+
     match subcommand {
         ForgeCommands::Test => {
             let current_dir = env::current_dir().expect("failed to get current dir");
