@@ -12,6 +12,7 @@ resolver = "2"
 members = [
   "bin",
   "crates/forge",
+  "crates/forge-traces",
   "crates/crypto",
   "crates/settings",
   "crates/networks",
@@ -39,6 +40,7 @@ split-debuginfo = "unpacked"
 
 [workspace.dependencies]
 ethui-forge = { path = "crates/forge" }
+ethui-forge-traces = { path = "crates/forge-traces" }
 ethui-crypto = { path = "crates/crypto" }
 ethui-settings = { path = "crates/settings" }
 ethui-networks = { path = "crates/networks" }
@@ -115,3 +117,4 @@ tempfile = "3.20.0"
 serde-constant = "0.1.0"
 kameo = "0.16"
 tauri-plugin-aptabase = "1.0.0"
+tokio-tungstenite = "0.23"
