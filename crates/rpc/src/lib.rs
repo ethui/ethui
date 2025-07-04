@@ -132,6 +132,7 @@ impl Handler {
         self_handler!("ethui_getProviderState", Self::ethui_provider_state);
         self_handler!("ethui_getContractAbi", Self::ethui_get_abi_for_contract);
         self_handler!("ethui_getAddressAlias", Self::ethui_get_address_alias);
+        #[cfg(feature = "forge-traces")]
         self_handler!(
             "ethui_forge_test_runner_output",
             Self::ethui_forge_test_traces
@@ -364,6 +365,7 @@ impl Handler {
         Ok(method.run().await?)
     }
 
+    #[cfg(feature = "forge-traces")]
     async fn ethui_forge_test_traces(
         params: Params,
         _ctx: Ctx,

@@ -1,10 +1,16 @@
+#[cfg(feature = "forge-traces")]
 use std::process::Command;
 
+#[cfg(feature = "forge-traces")]
 use color_eyre::{eyre, Result};
+#[cfg(feature = "forge-traces")]
 use futures::{SinkExt, StreamExt};
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "forge-traces")]
 use serde_json::json;
+#[cfg(feature = "forge-traces")]
 use tokio_tungstenite::{connect_async, tungstenite::Message};
+#[cfg(feature = "forge-traces")]
 use tracing::{error, info};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -16,11 +22,13 @@ pub struct ForgeTrace {
     pub success: bool,
 }
 
+#[cfg(feature = "forge-traces")]
 pub struct ForgeTestRunner {
     project_path: String,
     ws_port: u16,
 }
 
+#[cfg(feature = "forge-traces")]
 impl ForgeTestRunner {
     pub fn new(project_path: String, ws_port: u16) -> Self {
         Self {
