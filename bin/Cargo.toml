@@ -17,6 +17,7 @@ name = "ethui"
 
 [dependencies]
 ethui-forge.workspace = true
+ethui-forge-traces.workspace = true
 ethui-settings.workspace = true
 ethui-networks.workspace = true
 ethui-wallets.workspace = true

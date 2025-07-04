@@ -2896,6 +2896,7 @@ dependencies = [
  "ethui-db",
  "ethui-dialogs",
  "ethui-forge",
+ "ethui-forge-traces",
  "ethui-networks",
  "ethui-proxy-detect",
  "ethui-rpc",
@@ -3049,6 +3050,18 @@ dependencies = [
  "serde_json",
  "tauri",
  "tempfile",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "ethui-forge-traces"
+version = "1.17.0"
+dependencies = [
+ "color-eyre",
+ "futures",
+ "serde",
+ "serde_json",
  "tokio",
  "tokio-tungstenite 0.23.1",
  "tracing",
