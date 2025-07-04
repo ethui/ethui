@@ -12,3 +12,7 @@ authors.workspace = true
 
 [dependencies]
 clap.workspace = true
+
+[features]
+default = []
+forge-traces = []
