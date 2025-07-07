@@ -310,7 +310,7 @@ mod tests {
         write!(tempfile, "{settings_v0}").unwrap();
 
         if let Ok(settings) = load_and_migrate(&tempfile.path().to_path_buf()).await {
-            assert_eq!(settings.version, ConstI64::<2>);
+            assert_eq!(settings.version, ConstI64::<3>);
         }
     }
 }
