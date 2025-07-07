@@ -5,10 +5,11 @@ use std::{
 };
 
 use alloy::primitives::Bytes;
+use color_eyre::eyre::{Context as _, ContextCompat as _};
 use ethui_types::UINotify;
 use futures::{stream, StreamExt as _};
 use glob::glob;
-use kameo::{actor::ActorRef, message::Message, Actor};
+use kameo::{actor::ActorRef, message::Message, Actor, Reply};
 use notify::{RecommendedWatcher, RecursiveMode};
 use notify_debouncer_full::{
     new_debouncer, DebounceEventResult, DebouncedEvent, Debouncer, RecommendedCache,
@@ -17,6 +18,31 @@ use tokio::task;
 use tracing::{instrument, trace, warn};
 
 use crate::{abi::ForgeAbi, utils};
+
+pub async fn ask<M>(msg: M) -> color_eyre::Result<<<Worker as Message<M>>::Reply as Reply>::Ok>
+where
+    Worker: Message<M>,
+    M: Send + 'static + Sync,
+    <<Worker as Message<M>>::Reply as Reply>::Error: Sync + std::fmt::Display,
+{
+    let actor =
+        ActorRef::<Worker>::lookup("settings")?.wrap_err_with(|| "forge actor not found")?;
+
+    // The function now directly uses the global actor reference.
+    actor.ask(msg).await.wrap_err_with(|| "failed")
+}
+
+pub async fn tell<M>(msg: M) -> color_eyre::Result<()>
+where
+    Worker: Message<M>,
+    M: Send + 'static + Sync,
+    <<Worker as Message<M>>::Reply as Reply>::Error: Sync + std::fmt::Display,
+{
+    let actor =
+        ActorRef::<Worker>::lookup("settings")?.wrap_err_with(|| "forge actor not found")?;
+
+    actor.tell(msg).await.map_err(Into::into)
+}
 
 #[derive(Default)]
 pub struct Worker {
@@ -160,6 +186,20 @@ impl Message<FetchAbis> for Worker {
         _ctx: &mut kameo::message::Context<Self, Self::Reply>,
     ) -> Self::Reply {
         self.abis_by_path.clone().into_values().collect()
+    }
+}
+
+pub struct GetAbiFor(pub Bytes);
+
+impl Message<GetAbiFor> for Worker {
+    type Reply = Option<ForgeAbi>;
+
+    async fn handle(
+        &mut self,
+        msg: GetAbiFor,
+        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
+    ) -> Self::Reply {
+        self.get_abi_for(&msg.0)
     }
 }
 
@@ -419,7 +459,7 @@ mod tests {
     use super::*;
 
     #[tokio::test]
-    pub async fn find_forge_tomls() -> color_eyre::Result<()> {
+    async fn find_forge_tomls() -> color_eyre::Result<()> {
         let dir = create_fixture_directories()?;
 
         let mut actor = Worker::default();
