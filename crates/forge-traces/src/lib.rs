@@ -42,7 +42,7 @@ impl ForgeTestRunner {
 
         // Run forge test with JSON output
         let output = Command::new("forge")
-            .args(["test", "--json", "-vvvv"])
+            .args(["test", "--json", "-vvvvv"])
             .current_dir(&self.project_path)
             .output()
             .map_err(|e| eyre::eyre!("Failed to execute forge test: {e}"))?;
@@ -157,3 +157,4 @@ impl ForgeTestRunner {
         Ok(())
     }
 }
+
