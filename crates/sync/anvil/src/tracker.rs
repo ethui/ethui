@@ -67,11 +67,10 @@ impl Tracker {
         let quit_snd = self.quit_snd.take();
 
         tokio::spawn(async move {
-            if let Some(quit_snd) = quit_snd {
-                if let Err(e) = quit_snd.clone().send(()).await {
+            if let Some(quit_snd) = quit_snd
+                && let Err(e) = quit_snd.clone().send(()).await {
                     warn!("Error closing listener: {:?}", e)
                 }
-            }
         });
     }
 }
