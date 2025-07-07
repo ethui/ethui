@@ -16,7 +16,7 @@ pub struct DockerManager<State> {
     data_dir: PathBuf,
     image_name: String,
     container_name: String,
-    docker_bin: Option<String>,
+    docker_bin: Option<&'static str>,
     socket_path: Option<PathBuf>,
     _state: PhantomData<State>,
 }
@@ -35,7 +35,6 @@ impl<State> DockerManager<State> {
 
     fn docker_bin(&self) -> Result<&str> {
         self.docker_bin
-            .as_deref()
             .ok_or_else(|| Error::Command("Docker binary not set".to_string()))
     }
 
@@ -85,10 +84,10 @@ impl DockerManager<Initial> {
             let xdg_runtime_dir =
                 env::var("XDG_RUNTIME_DIR").unwrap_or_else(|_| "/run/user/1000".to_string());
             let podman_sock = PathBuf::from(format!("{xdg_runtime_dir}/podman/podman.sock"));
-            self.docker_bin = Some("podman".to_string());
+            self.docker_bin = Some("podman");
             self.socket_path = Some(podman_sock);
         } else {
-            self.docker_bin = Some("docker".to_string());
+            self.docker_bin = Some("docker");
             self.socket_path = Some(PathBuf::from("/var/run/docker.sock"));
         }
         Ok(self.transition())
