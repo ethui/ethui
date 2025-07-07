@@ -26,7 +26,7 @@ where
     <<Worker as Message<M>>::Reply as Reply>::Error: Sync + std::fmt::Display,
 {
     let actor =
-        ActorRef::<Worker>::lookup("settings")?.wrap_err_with(|| "settings actor not found")?;
+        ActorRef::<Worker>::lookup("settings")?.wrap_err_with(|| "forge actor not found")?;
 
     // The function now directly uses the global actor reference.
     actor.ask(msg).await.wrap_err_with(|| "failed")
@@ -39,7 +39,7 @@ where
     <<Worker as Message<M>>::Reply as Reply>::Error: Sync + std::fmt::Display,
 {
     let actor =
-        ActorRef::<Worker>::lookup("settings")?.wrap_err_with(|| "settings actor not found")?;
+        ActorRef::<Worker>::lookup("settings")?.wrap_err_with(|| "forge actor not found")?;
 
     actor.tell(msg).await.map_err(Into::into)
 }
