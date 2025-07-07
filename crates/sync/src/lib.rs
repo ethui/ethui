@@ -6,10 +6,10 @@ use std::sync::Arc;
 
 use ethui_broadcast::InternalMsg;
 pub use ethui_sync_alchemy::{
-    get_alchemy, Alchemy, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse,
+    Alchemy, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse, get_alchemy,
 };
 use ethui_types::{Address, B256};
-use tokio::sync::{mpsc, oneshot, Mutex};
+use tokio::sync::{Mutex, mpsc, oneshot};
 use tracing::instrument;
 pub use worker::Worker;
 
@@ -61,8 +61,9 @@ async fn receiver(snd: mpsc::UnboundedSender<Msg>) -> std::result::Result<(), ()
 
     loop {
         if let Ok(internal_msg) = rx.recv().await
-            && let Ok(msg) = internal_msg.try_into() {
-                snd.send(msg).unwrap();
-            }
+            && let Ok(msg) = internal_msg.try_into()
+        {
+            snd.send(msg).unwrap();
+        }
     }
 }

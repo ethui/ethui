@@ -10,7 +10,7 @@ mod tokens;
 pub mod transactions;
 pub mod ui_events;
 pub use affinity::Affinity;
-pub use alloy::primitives::{address, Address, B256, U256, U64};
+pub use alloy::primitives::{Address, B256, U64, U256, address};
 pub use color_eyre::eyre::eyre;
 pub use contracts::{Contract, ContractWithAbi};
 pub use dedup_chain_id::DedupChainId;
@@ -20,8 +20,8 @@ pub use global_state::GlobalState;
 pub use network::Network;
 pub use new_network_params::NewNetworkParams;
 pub use tokens::{
-    Erc1155Token, Erc1155TokenData, Erc721Collection, Erc721Token, Erc721TokenData,
-    Erc721TokenDetails, TokenBalance, TokenMetadata,
+    Erc721Collection, Erc721Token, Erc721TokenData, Erc721TokenDetails, Erc1155Token,
+    Erc1155TokenData, TokenBalance, TokenMetadata,
 };
 pub use ui_events::UINotify;
 

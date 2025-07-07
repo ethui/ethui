@@ -6,12 +6,12 @@ use std::{
 
 use alloy::primitives::Bytes;
 use ethui_types::UINotify;
-use futures::{stream, StreamExt as _};
+use futures::{StreamExt as _, stream};
 use glob::glob;
-use kameo::{actor::ActorRef, message::Message, Actor};
+use kameo::{Actor, actor::ActorRef, message::Message};
 use notify::{RecommendedWatcher, RecursiveMode};
 use notify_debouncer_full::{
-    new_debouncer, DebounceEventResult, DebouncedEvent, Debouncer, RecommendedCache,
+    DebounceEventResult, DebouncedEvent, Debouncer, RecommendedCache, new_debouncer,
 };
 use tokio::task;
 use tracing::{instrument, trace, warn};

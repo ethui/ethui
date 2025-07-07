@@ -65,7 +65,7 @@ impl Networks {
             .networks
             .values()
             .find(|n| n.chain_id() == new_chain_id)
-            .unwrap();
+            .ok_or_else(|| eyre!("Network with chain_id {} not found", new_chain_id))?;
 
         self.set_current_by_name(new_network.name.clone()).await?;
         self.save()?;
@@ -85,7 +85,7 @@ impl Networks {
             .networks
             .values()
             .find(|n| n.dedup_chain_id() == dedup_chain_id)
-            .unwrap();
+            .ok_or_else(|| eyre!("Network with dedup_chain_id {:?} not found", dedup_chain_id))?;
 
         self.set_current_by_name(new_network.name.clone()).await?;
         self.save()?;
@@ -102,7 +102,12 @@ impl Networks {
 
     pub fn get_current(&self) -> &Network {
         if !self.inner.networks.contains_key(&self.inner.current) {
-            return self.inner.networks.values().next().unwrap();
+            return self
+                .inner
+                .networks
+                .values()
+                .next()
+                .expect("No networks available");
         }
 
         &self.inner.networks[&self.inner.current]
@@ -191,7 +196,12 @@ impl Networks {
         match network {
             Some(network) => {
                 if self.inner.current == name {
-                    let first = self.inner.networks.values().next().unwrap();
+                    let first = self
+                        .inner
+                        .networks
+                        .values()
+                        .next()
+                        .ok_or_else(|| eyre!("No networks remaining"))?;
                     self.inner.current = first.name.clone();
                     self.on_network_changed().await?;
                 }

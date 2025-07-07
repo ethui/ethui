@@ -5,9 +5,9 @@ use std::{
 
 use color_eyre::eyre::{Context as _, ContextCompat as _};
 use ethui_types::UINotify;
-use kameo::{actor::ActorRef, message::Message, prelude::Context, Actor, Reply};
+use kameo::{Actor, Reply, actor::ActorRef, message::Message, prelude::Context};
 
-use crate::{migrations::load_and_migrate, onboarding::OnboardingStep, DarkMode, Settings};
+use crate::{DarkMode, Settings, migrations::load_and_migrate, onboarding::OnboardingStep};
 
 #[derive(Debug)]
 pub struct SettingsActor {

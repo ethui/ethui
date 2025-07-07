@@ -1,10 +1,10 @@
 use alloy::signers::ledger::{HDPath, LedgerSigner};
 use async_trait::async_trait;
-use color_eyre::eyre::{eyre, ContextCompat as _};
+use color_eyre::eyre::{ContextCompat as _, eyre};
 use ethui_types::{Address, Json};
 use serde::{Deserialize, Serialize};
 
-use crate::{utils, wallet::WalletCreate, Signer, Wallet, WalletControl};
+use crate::{Signer, Wallet, WalletControl, utils, wallet::WalletCreate};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]

@@ -1,8 +1,8 @@
 use alloy::{
     network::Ethereum,
-    providers::{ext::AnvilApi, ProviderBuilder, RootProvider},
+    providers::{ProviderBuilder, RootProvider, ext::AnvilApi},
     rpc::client::ClientBuilder,
-    transports::{layers::RetryBackoffLayer, RpcError, TransportErrorKind},
+    transports::{RpcError, TransportErrorKind, layers::RetryBackoffLayer},
 };
 use serde::{Deserialize, Serialize};
 use url::Url;

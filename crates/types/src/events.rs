@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use alloy::primitives::{Bytes, U256};
 use serde::Serialize;
-use sqlx::{sqlite::SqliteRow, Row};
+use sqlx::{Row, sqlite::SqliteRow};
 
 use crate::{Address, B256};
 

@@ -1,11 +1,11 @@
 use color_eyre::eyre::ContextCompat as _;
 use once_cell::sync::OnceCell;
 use tracing_subscriber::{
+    EnvFilter, Registry,
     fmt::{self, format::FmtSpan},
     layer::SubscriberExt as _,
     reload,
     util::SubscriberInitExt as _,
-    EnvFilter, Registry,
 };
 
 static RELOAD_HANDLE: OnceCell<reload::Handle<EnvFilter, Registry>> = OnceCell::new();

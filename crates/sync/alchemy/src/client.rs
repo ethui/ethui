@@ -4,7 +4,7 @@ use alloy::{
     rpc::client::ClientBuilder,
     transports::layers::RetryBackoffLayer,
 };
-use ethui_types::{events::Tx, eyre, Address, TokenMetadata, U256};
+use ethui_types::{Address, TokenMetadata, U256, events::Tx, eyre};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use url::Url;

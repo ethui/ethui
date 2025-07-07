@@ -1,9 +1,9 @@
 use std::sync::Arc;
 
-use ethui_types::{ui_events, Address, Affinity, DedupChainId, Network, B256};
+use ethui_types::{Address, Affinity, B256, DedupChainId, Network, ui_events};
 pub use internal_msgs::*;
 use once_cell::sync::Lazy;
-use tokio::sync::{broadcast, oneshot, Mutex, RwLock};
+use tokio::sync::{Mutex, RwLock, broadcast, oneshot};
 pub use ui_msgs::*;
 
 /// Supported messages
@@ -52,8 +52,8 @@ pub enum UIMsg {
 }
 
 mod internal_msgs {
-    use tracing::{debug, instrument};
     use InternalMsg::*;
+    use tracing::{debug, instrument};
 
     use super::*;
 
@@ -147,8 +147,8 @@ mod internal_msgs {
 }
 
 mod ui_msgs {
-    use tracing::{debug, instrument};
     use UIMsg::*;
+    use tracing::{debug, instrument};
 
     use super::*;
 

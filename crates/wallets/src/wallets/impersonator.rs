@@ -5,7 +5,7 @@ use color_eyre::eyre::eyre;
 use ethui_types::Address;
 use serde::{Deserialize, Serialize};
 
-use crate::{wallet::WalletCreate, Signer, Wallet, WalletControl};
+use crate::{Signer, Wallet, WalletControl, wallet::WalletCreate};
 
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct Impersonator {

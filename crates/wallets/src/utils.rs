@@ -1,6 +1,6 @@
 use alloy::signers::{
     ledger::{HDPath, LedgerSigner},
-    local::{coins_bip39::English, MnemonicBuilder},
+    local::{MnemonicBuilder, coins_bip39::English},
 };
 use color_eyre::eyre::eyre;
 use ethui_types::Address;

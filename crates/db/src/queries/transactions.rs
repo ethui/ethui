@@ -1,9 +1,9 @@
 use std::str::FromStr;
 
 use alloy::primitives::Bytes;
-use ethui_types::{events::Tx, transactions::Transaction, Address, B256, U256};
+use ethui_types::{Address, B256, U256, events::Tx, transactions::Transaction};
 
-use crate::{pagination::TxIdx, DbInner};
+use crate::{DbInner, pagination::TxIdx};
 
 impl DbInner {
     pub async fn insert_transactions(&self, chain_id: u32, txs: Vec<Tx>) -> color_eyre::Result<()> {

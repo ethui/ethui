@@ -1,4 +1,4 @@
-use ethui_types::{events::Tx, Address, TokenMetadata, B256, U256, U64};
+use ethui_types::{Address, B256, TokenMetadata, U64, U256, events::Tx};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 

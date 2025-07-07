@@ -12,7 +12,7 @@ use serde::Serialize;
 use serde_constant::ConstI64;
 use serde_json::json;
 
-use crate::{onboarding::Onboarding, DarkMode, Settings};
+use crate::{DarkMode, Settings, onboarding::Onboarding};
 
 // Temporary struct for migration return value
 pub type LatestVersion = ConstI64<2>;

@@ -2,10 +2,10 @@ use std::{str::FromStr, sync::Arc, time::Duration};
 
 use alloy::{
     primitives::B256,
-    signers::{local::PrivateKeySigner, Signer as _},
+    signers::{Signer as _, local::PrivateKeySigner},
 };
 use async_trait::async_trait;
-use color_eyre::eyre::{eyre, ContextCompat as _};
+use color_eyre::eyre::{ContextCompat as _, eyre};
 use ethui_crypto::{self, EncryptedData};
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_types::Address;
@@ -15,7 +15,7 @@ use tokio::{
     task::JoinHandle,
 };
 
-use crate::{wallet::WalletCreate, Signer, Wallet, WalletControl};
+use crate::{Signer, Wallet, WalletControl, wallet::WalletCreate};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -108,7 +108,8 @@ impl PrivateKeyWallet {
 
         let wallet: PrivateKeySigner = PrivateKeySigner::from_str(&key)?;
 
-        let ciphertext = ethui_crypto::encrypt(&key, &params.password).unwrap();
+        let ciphertext = ethui_crypto::encrypt(&key, &params.password)
+            .map_err(|e| eyre!("Failed to encrypt private key: {}", e))?;
 
         Ok(Self {
             name: params.name,
@@ -131,7 +132,11 @@ impl PrivateKeyWallet {
         }
 
         // open the dialog
-        let dialog = Dialog::new("wallet-unlock", serde_json::to_value(self).unwrap());
+        let dialog = Dialog::new(
+            "wallet-unlock",
+            serde_json::to_value(self)
+                .map_err(|e| eyre!("Failed to serialize wallet data: {}", e))?,
+        );
         dialog.open().await?;
 
         // attempt to receive a password at most 3 times
@@ -203,5 +208,7 @@ fn signer_from_secret(secret: &SecretVec<u8>) -> PrivateKeySigner {
     //let key = String::from_utf8(signer_bytes.to_vec()).unwrap();
 
     let key = B256::from_slice(&signer_bytes);
-    PrivateKeySigner::from_bytes(&key).unwrap()
+    PrivateKeySigner::from_bytes(&key)
+        .map_err(|e| panic!("Failed to create signer from bytes: {}", e))
+        .unwrap()
 }

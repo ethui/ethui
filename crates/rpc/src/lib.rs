@@ -5,7 +5,7 @@ mod methods;
 use std::collections::HashMap;
 
 use alloy::{dyn_abi::TypedData, hex, primitives::Bytes, providers::Provider as _};
-use ethui_connections::{permissions::PermissionRequest, Ctx};
+use ethui_connections::{Ctx, permissions::PermissionRequest};
 use ethui_types::GlobalState;
 use ethui_wallets::{WalletControl, Wallets};
 use jsonrpc_core::{MetaIoHandler, Params};
@@ -228,7 +228,7 @@ impl Handler {
         let method = methods::TokenAdd::build()
             .set_params(params.into())?
             .build()
-            .await;
+            .await?;
 
         method.run().await?;
 

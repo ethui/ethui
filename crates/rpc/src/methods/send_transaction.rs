@@ -3,7 +3,7 @@ use std::str::FromStr;
 use alloy::{
     network::{Ethereum, TransactionBuilder as _},
     primitives::{Bytes, U256},
-    providers::{ext::AnvilApi, PendingTransactionBuilder, Provider, ProviderBuilder},
+    providers::{PendingTransactionBuilder, Provider, ProviderBuilder, ext::AnvilApi},
     rpc::types::TransactionRequest,
 };
 use ethui_connections::Ctx;

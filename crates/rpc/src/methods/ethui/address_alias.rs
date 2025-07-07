@@ -1,4 +1,4 @@
-use ethui_types::{eyre, Address};
+use ethui_types::{Address, eyre};
 use serde::Deserialize;
 use serde_json::json;
 
