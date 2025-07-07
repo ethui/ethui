@@ -4,13 +4,7 @@ use std::{
     time::Duration,
 };
 
-<<<<<<< HEAD
 use ethui_types::prelude::*;
-=======
-use alloy::primitives::Bytes;
-use color_eyre::eyre::{Context as _, ContextCompat as _};
-use ethui_types::UINotify;
->>>>>>> main
 use futures::{stream, StreamExt as _};
 use glob::glob;
 use kameo::{actor::ActorRef, message::Message, Actor, Reply};
@@ -461,11 +455,7 @@ mod tests {
     use super::*;
 
     #[tokio::test]
-<<<<<<< HEAD
-    pub async fn find_forge_tomls() -> Result<()> {
-=======
-    async fn find_forge_tomls() -> color_eyre::Result<()> {
->>>>>>> main
+    async fn find_forge_tomls() -> Result<()> {
         let dir = create_fixture_directories()?;
 
         let mut actor = Worker::default();
