@@ -204,7 +204,5 @@ fn signer_from_secret(secret: &SecretVec<u8>) -> PrivateKeySigner {
     //let key = String::from_utf8(signer_bytes.to_vec()).unwrap();
 
     let key = B256::from_slice(&signer_bytes);
-    PrivateKeySigner::from_bytes(&key)
-        .wrap_err_with(|e| panic!("Failed to create signer from bytes: {e}"))
-        .unwrap()
+    PrivateKeySigner::from_bytes(&key).expect("Failed to create signer from bytes")
 }
