@@ -2,8 +2,7 @@ use alloy::signers::{
     ledger::{HDPath, LedgerSigner},
     local::{coins_bip39::English, MnemonicBuilder},
 };
-use color_eyre::eyre::eyre;
-use ethui_types::Address;
+use ethui_types::prelude::*;
 use once_cell::sync::Lazy;
 use tokio::sync::Mutex;
 
@@ -30,7 +29,7 @@ pub fn derive_addresses(
 pub fn derive_from_builder_and_path(
     builder: MnemonicBuilder<English>,
     path: &str,
-) -> color_eyre::Result<Address> {
+) -> Result<Address> {
     Ok(builder.derivation_path(path)?.build()?.address())
 }
 
@@ -41,7 +40,7 @@ pub fn validate_mnemonic(mnemonic: &str) -> bool {
         .is_ok()
 }
 
-pub(crate) async fn ledger_derive(path: &str) -> color_eyre::Result<Address> {
+pub(crate) async fn ledger_derive(path: &str) -> Result<Address> {
     let _guard = HID_MUTEX.lock().await;
 
     let ledger = LedgerSigner::new(HDPath::Other(path.into()), Some(1))
@@ -56,7 +55,7 @@ pub(crate) async fn ledger_derive(path: &str) -> color_eyre::Result<Address> {
 
 pub(crate) async fn ledger_derive_multiple(
     paths: Vec<String>,
-) -> color_eyre::Result<Vec<(String, Address)>> {
+) -> Result<Vec<(String, Address)>> {
     let mut res = vec![];
 
     for path in paths.into_iter() {

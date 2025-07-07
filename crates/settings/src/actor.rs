@@ -3,8 +3,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use color_eyre::eyre::{Context as _, ContextCompat as _};
-use ethui_types::UINotify;
+use ethui_types::prelude::*;
 use kameo::{actor::ActorRef, message::Message, prelude::Context, Actor, Reply};
 
 use crate::{migrations::load_and_migrate, onboarding::OnboardingStep, DarkMode, Settings};
@@ -17,7 +16,7 @@ pub struct SettingsActor {
 
 pub async fn ask<M>(
     msg: M,
-) -> color_eyre::Result<<<SettingsActor as Message<M>>::Reply as Reply>::Ok>
+) -> Result<<<SettingsActor as Message<M>>::Reply as Reply>::Ok>
 where
     SettingsActor: Message<M>,
     M: Send + 'static + Sync,
@@ -30,7 +29,7 @@ where
     actor.ask(msg).await.wrap_err_with(|| "failed")
 }
 
-pub async fn tell<M>(msg: M) -> color_eyre::Result<()>
+pub async fn tell<M>(msg: M) -> Result<()>
 where
     SettingsActor: Message<M>,
     M: Send + 'static + Sync,
@@ -43,7 +42,7 @@ where
 }
 
 impl SettingsActor {
-    pub async fn new(file: PathBuf) -> color_eyre::Result<Self> {
+    pub async fn new(file: PathBuf) -> Result<Self> {
         let inner = if file.exists() {
             load_and_migrate(&file).await?
         } else {
@@ -90,7 +89,7 @@ impl Message<GetAll> for SettingsActor {
 }
 
 impl Message<Set> for SettingsActor {
-    type Reply = color_eyre::Result<()>;
+    type Reply = Result<()>;
 
     async fn handle(&mut self, msg: Set, ctx: &mut Context<Self, Self::Reply>) -> Self::Reply {
         match msg {
@@ -156,7 +155,7 @@ impl Message<Set> for SettingsActor {
 }
 
 impl Message<Save> for SettingsActor {
-    type Reply = color_eyre::Result<()>;
+    type Reply = Result<()>;
 
     async fn handle(&mut self, _msg: Save, _ctx: &mut Context<Self, Self::Reply>) -> Self::Reply {
         let pathbuf = self.file.clone();

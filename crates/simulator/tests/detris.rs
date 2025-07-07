@@ -1,8 +1,6 @@
-use std::str::FromStr;
-
-use alloy::primitives::{Bytes, Log, LogData};
+use alloy::primitives::{Log, LogData};
 use ethui_simulator::{Evm, Request};
-use ethui_types::{address, Address, B256};
+use ethui_types::prelude::*;
 use pretty_assertions::assert_eq;
 
 #[tokio::test(flavor = "multi_thread")]

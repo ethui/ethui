@@ -1,8 +1,6 @@
 use alloy::signers::ledger::{HDPath, LedgerSigner};
 use async_trait::async_trait;
-use color_eyre::eyre::{eyre, ContextCompat as _};
-use ethui_types::{Address, Json};
-use serde::{Deserialize, Serialize};
+use ethui_types::prelude::*;
 
 use crate::{utils, wallet::WalletCreate, Signer, Wallet, WalletControl};
 

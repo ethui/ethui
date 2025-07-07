@@ -4,10 +4,9 @@ use alloy::{
     rpc::{client::ClientBuilder, types::anvil::ForkedNetwork},
     transports::layers::RetryBackoffLayer,
 };
-use serde::{Deserialize, Serialize};
 use url::Url;
 
-use crate::DedupChainId;
+use crate::{prelude::*, DedupChainId};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Network {
