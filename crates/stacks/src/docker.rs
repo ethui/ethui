@@ -1,8 +1,7 @@
 use std::{env, fs, marker::PhantomData, path::PathBuf, process::Command, str::FromStr};
 
+use color_eyre::eyre::{WrapErr, eyre};
 use tracing::info;
-
-use crate::error::{Error, Result};
 
 pub struct Initial;
 pub struct DockerSocketReady;
@@ -33,18 +32,18 @@ impl<State> DockerManager<State> {
         }
     }
 
-    fn docker_bin(&self) -> Result<&str> {
+    fn docker_bin(&self) -> color_eyre::Result<&str> {
         self.docker_bin
-            .ok_or_else(|| Error::Command("Docker binary not set".to_string()))
+            .ok_or_else(|| eyre!("Docker binary not set"))
     }
 
-    fn socket_path(&self) -> Result<&PathBuf> {
+    fn socket_path(&self) -> color_eyre::Result<&PathBuf> {
         self.socket_path
             .as_ref()
-            .ok_or_else(|| Error::Command("Socket path not set".to_string()))
+            .ok_or_else(|| eyre!("Socket path not set"))
     }
 
-    fn is_container_running(&self, port: u16) -> Result<bool> {
+    fn is_container_running(&self, port: u16) -> color_eyre::Result<bool> {
         let docker_bin = self.docker_bin()?;
         let output = Command::new(docker_bin)
             .args([
@@ -74,7 +73,7 @@ impl DockerManager<Initial> {
         }
     }
 
-    pub fn check_socket_and_bin(mut self) -> Result<DockerManager<DockerSocketReady>> {
+    pub fn check_socket_and_bin(mut self) -> color_eyre::Result<DockerManager<DockerSocketReady>> {
         if Command::new("podman")
             .arg("--version")
             .output()
@@ -95,7 +94,7 @@ impl DockerManager<Initial> {
 }
 
 impl DockerManager<DockerSocketReady> {
-    pub fn check_docker_installed(self) -> Result<DockerManager<DockerInstalled>> {
+    pub fn check_docker_installed(self) -> color_eyre::Result<DockerManager<DockerInstalled>> {
         let docker_bin = self.docker_bin()?;
         info!("Checking for Docker/Podman...");
         let output = Command::new(docker_bin).arg("--version").output()?;
@@ -103,13 +102,13 @@ impl DockerManager<DockerSocketReady> {
             info!("{} is installed.", docker_bin);
             Ok(self.transition())
         } else {
-            Err(Error::DockerNotInstalled)
+            Err(eyre!("Docker/Podman is not installed"))
         }
     }
 }
 
 impl DockerManager<DockerInstalled> {
-    pub fn check_image_available(self) -> Result<DockerManager<ImageAvailable>> {
+    pub fn check_image_available(self) -> color_eyre::Result<DockerManager<ImageAvailable>> {
         let docker_bin = self.docker_bin()?;
         info!(image = %self.image_name, "Checking for Docker image...");
         let output = Command::new(docker_bin)
@@ -120,23 +119,23 @@ impl DockerManager<DockerInstalled> {
             info!(image = %self.image_name, "Docker image found.");
             Ok(self.transition())
         } else {
-            Err(Error::ImageNotFound(self.image_name))
+            Err(eyre!("Docker image not found: {}", self.image_name))
         }
     }
 }
 
 impl DockerManager<ImageAvailable> {
-    pub fn ensure_data_directory(self) -> Result<DockerManager<DataDirectoryReady>> {
+    pub fn ensure_data_directory(self) -> color_eyre::Result<DockerManager<DataDirectoryReady>> {
         info!(path = ?self.data_dir, "Ensuring data directory exists...");
         fs::create_dir_all(&self.data_dir)
-            .map_err(|e| Error::DirectoryCreate(self.data_dir.clone(), e))?;
+            .wrap_err_with(|| format!("Failed to create directory: {:?}", self.data_dir))?;
         info!("Data directory is ready.");
         Ok(self.transition())
     }
 }
 
 impl DockerManager<DataDirectoryReady> {
-    pub fn run(self, port: u16) -> Result<DockerManager<ContainerRunning>> {
+    pub fn run(self, port: u16) -> color_eyre::Result<DockerManager<ContainerRunning>> {
         if self.is_container_running(port)? {
             info!(
                 "Container {} is already running on port {}.",
@@ -181,15 +180,15 @@ impl DockerManager<DataDirectoryReady> {
         let output = command.output()?;
 
         if !output.status.success() {
-            return Err(Error::Command(format!(
+            return Err(eyre!(
                 "Failed to start container: {}",
                 String::from_utf8_lossy(&output.stderr)
-            )));
+            ));
         }
         Ok(self.transition())
     }
 
-    pub fn stop(self, port: u16) -> Result<DockerManager<ContainerNotRunning>> {
+    pub fn stop(self, port: u16) -> color_eyre::Result<DockerManager<ContainerNotRunning>> {
         if !self.is_container_running(port)? {
             info!("Container {} is already stopped.", self.container_name);
             return Ok(self.transition());
@@ -200,39 +199,42 @@ impl DockerManager<DataDirectoryReady> {
             .args(["stop", &self.container_name])
             .output()?;
         if !output.status.success() {
-            return Err(Error::Command(format!(
+            return Err(eyre!(
                 "Failed to stop container: {}",
                 String::from_utf8_lossy(&output.stderr)
-            )));
+            ));
         }
         Ok(self.transition())
     }
 }
 
 impl DockerManager<ContainerRunning> {
-    pub fn check_health(self, port: u16) -> Result<DockerManager<ContainerRunning>> {
+    pub fn check_health(self, port: u16) -> color_eyre::Result<DockerManager<ContainerRunning>> {
         if self.is_container_running(port)? {
             Ok(self)
         } else {
-            Err(Error::ContainerNotRunning(self.container_name.clone()))
+            Err(eyre!(
+                "Container not running: {}",
+                self.container_name.clone()
+            ))
         }
     }
 }
 
 impl DockerManager<ContainerNotRunning> {
-    pub fn check_stopped(self, port: u16) -> Result<DockerManager<ContainerNotRunning>> {
+    pub fn check_stopped(
+        self,
+        port: u16,
+    ) -> color_eyre::Result<DockerManager<ContainerNotRunning>> {
         if !self.is_container_running(port)? {
             Ok(self)
         } else {
-            Err(Error::Command(format!(
-                "Container {} is still running",
-                self.container_name
-            )))
+            Err(eyre!("Container {} is still running", self.container_name))
         }
     }
 }
 
-pub fn start_stacks(port: u16, config_dir: PathBuf) -> Result<()> {
+pub fn start_stacks(port: u16, config_dir: PathBuf) -> color_eyre::Result<()> {
     DockerManager::new(
         config_dir.join("local/"),
         "ethui-stacks".to_string(),
@@ -248,7 +250,7 @@ pub fn start_stacks(port: u16, config_dir: PathBuf) -> Result<()> {
     Ok(())
 }
 
-pub fn stop_stacks(port: u16, config_dir: PathBuf) -> Result<()> {
+pub fn stop_stacks(port: u16, config_dir: PathBuf) -> color_eyre::Result<()> {
     DockerManager::new(
         config_dir.join("local/"),
         "ethui-stacks".to_string(),
