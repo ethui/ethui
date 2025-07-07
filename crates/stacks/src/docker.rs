@@ -156,7 +156,9 @@ impl DockerManager<DataDirectoryReady> {
         let data_dir_str = fs::canonicalize(&self.data_dir)?
             .to_string_lossy()
             .to_string();
-        let output = Command::new(docker_bin)
+
+        let mut binding = Command::new(docker_bin);
+        let mut command = binding
             .arg("run")
             .arg("-d")
             .arg("-v")
@@ -167,11 +169,18 @@ impl DockerManager<DataDirectoryReady> {
             .arg(format!("{}:/var/run/docker.sock", socket_path.display()))
             .arg("--init")
             .arg("-p")
-            .arg(format!("{port}:4000"))
-            .arg("--replace")
+            .arg(format!("{port}:4000"));
+
+        if docker_bin.contains("podman") {
+            command = command.arg("--replace");
+        }
+
+        command = command
             .arg(format!("--name={}", self.container_name))
-            .arg(&self.image_name)
-            .output()?;
+            .arg(&self.image_name);
+
+        let output = command.output()?;
+
         if !output.status.success() {
             return Err(Error::Command(format!(
                 "Failed to start container: {}",
