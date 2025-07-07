@@ -52,9 +52,7 @@ pub async fn add_contract(
         .await
         .wrap_err_with(|| format!("Failed to detect proxy type for {address}"))?;
 
-    let forge_abi = ethui_forge::ask(GetAbiFor(code.clone())).await?;
-
-    let (name, abi) = if let Some(ProxyType::Eip1167(implementation)) = proxy {
+    let (name, abi) = if let Some(ProxyType::Eip1167(_)) = proxy {
         // if it's an EIP1167 proxy, there's no ABI to fetch
         (Some("EIP1167".into()), None)
     } else if let Some(abi) = ethui_forge::ask(GetAbiFor(code.clone())).await? {
@@ -63,46 +61,22 @@ pub async fn add_contract(
             Some(abi.name),
             Some(serde_json::to_string(&abi.abi).unwrap()),
         )
-    } else if network.is_dev().await && let Ok(Some(fork)) = network.get_fored_network().await {
+    } else if let Ok(Some(fork)) = network.get_forked_network().await {
         (
             fetch_etherscan_contract_name(fork.chain_id.into(), address).await?,
             fetch_etherscan_abi(fork.chain_id.into(), address)
                 .await?
                 .map(|abi| serde_json::to_string(&abi).unwrap()),
         )
+    } else if !network.is_dev().await {
+        (
+            fetch_etherscan_contract_name(chain_id.into(), address).await?,
+            fetch_etherscan_abi(chain_id.into(), address)
+                .await?
+                .map(|abi| serde_json::to_string(&abi).unwrap()),
+        )
     } else {
         (None, None)
-    };
-
-    let (name, abi) = if let Some(forge_abi) = forge_abi {
-        // if an ABI is found on our local actor
-        (
-            Some(forge_abi.name),
-            Some(serde_json::to_string(&forge_abi.abi).unwrap()),
-        )
-    } else if network.is_dev().await {
-        // if not, and we're forked, try from the forked network
-        let network_fork = network.get_forked_network().await;
-        match network_fork {
-            Ok(Some(fork)) => (
-                fetch_etherscan_contract_name(fork.chain_id.into(), address).await?,
-                fetch_etherscan_abi(fork.chain_id.into(), address)
-                    .await?
-                    .map(|abi| serde_json::to_string(&abi).unwrap()),
-            ),
-            _ => (None, None),
-        }
-    } else {
-        match proxy {
-            // Eip1166 minimal proxies don't have an ABI, and etherscan actually returns the implementation's ABI in this case, which we don't want
-            Some(ProxyType::Eip1167(_)) => (Some("EIP1167".to_string()), None),
-            _ => (
-                fetch_etherscan_contract_name(chain_id.into(), address).await?,
-                fetch_etherscan_abi(chain_id.into(), address)
-                    .await?
-                    .map(|abi| serde_json::to_string(&abi).unwrap()),
-            ),
-        }
     };
 
     let proxy_for = proxy.map(|proxy| proxy.implementation());
