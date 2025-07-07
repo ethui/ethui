@@ -459,7 +459,7 @@ mod tests {
     use super::*;
 
     #[tokio::test]
-    pub async fn find_forge_tomls() -> color_eyre::Result<()> {
+    async fn find_forge_tomls() -> color_eyre::Result<()> {
         let dir = create_fixture_directories()?;
 
         let mut actor = Worker::default();
