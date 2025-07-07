@@ -120,7 +120,9 @@ impl Worker {
 
         (
             tokio::spawn(async move {
-                let _ = unit_worker(addr, chain_id, rx).await;
+                if let Err(e) = unit_worker(addr, chain_id, rx).await {
+                    tracing::error!(%addr, %chain_id, "unit_worker failed: {:?}", e);
+                }
             }),
             tx,
         )
