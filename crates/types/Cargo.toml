@@ -15,4 +15,5 @@ tokio.workspace = true
 async-trait.workspace = true
 alloy.workspace = true
 url.workspace = true
-thiserror.workspace = true
+color-eyre.workspace = true
+kameo.workspace = true

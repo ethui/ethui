@@ -4,13 +4,12 @@ use alloy::{
     rpc::types::{trace::parity::LocalizedTransactionTrace, Filter, Log},
 };
 use ethui_abis::IERC20;
-use ethui_types::{Address, DedupChainId, TokenMetadata, UINotify, B256};
+use ethui_types::{eyre, Address, DedupChainId, TokenMetadata, UINotify, B256};
 use futures::StreamExt as _;
 use tokio::sync::mpsc;
 use tracing::{instrument, trace, warn};
 use url::Url;
 
-pub use crate::error::{Error, Result};
 use crate::expanders::{expand_logs, expand_traces};
 
 #[derive(Debug)]
@@ -95,11 +94,13 @@ async fn watch(
     ctx: Ctx,
     mut quit_rcv: mpsc::Receiver<()>,
     block_snd: mpsc::UnboundedSender<Msg>,
-) -> Result<()> {
+) -> color_eyre::Result<()> {
     'watcher: loop {
         let from_block = match get_sync_status(&ctx).await {
             None => {
-                block_snd.send(Msg::Reset).map_err(|_| Error::Watcher)?;
+                block_snd
+                    .send(Msg::Reset)
+                    .map_err(|_| eyre!("Watcher error"))?;
                 0
             }
             Some(block_number) => block_number,
@@ -152,12 +153,12 @@ async fn watch(
             let traces = provider.trace_block(b.into()).await?;
             block_snd
                 .send(Msg::Traces(traces))
-                .map_err(|_| Error::Watcher)?;
+                .map_err(|_| eyre!("Watcher error"))?;
 
             let logs = provider.get_logs(&Filter::new().select(b)).await?;
             block_snd
                 .send(Msg::Logs(logs))
-                .map_err(|_| Error::Watcher)?;
+                .map_err(|_| eyre!("Watcher error"))?;
 
             if let Some(block) = provider.get_block(b.into()).await? {
                 save_known_tip(ctx.dedup_chain_id, b, block.header.hash).await?;
@@ -165,7 +166,9 @@ async fn watch(
         }
 
         trace!("caught up");
-        block_snd.send(Msg::CaughtUp).map_err(|_| Error::Watcher)?;
+        block_snd
+            .send(Msg::CaughtUp)
+            .map_err(|_| eyre!("Watcher error"))?;
 
         'ws: loop {
             // wait for the next block
@@ -178,10 +181,10 @@ async fn watch(
                         Some(b) => {
                             trace!("block {}", b.number);
                             let block_traces = provider.trace_block(b.number.into()).await?;
-                            block_snd.send(Msg::Traces(block_traces)).map_err(|_|Error::Watcher)?;
+                            block_snd.send(Msg::Traces(block_traces)).map_err(|_| eyre!("Watcher error"))?;
 
                             let logs = provider.get_logs(&Filter::new().select(b.number)).await?;
-                            block_snd.send(Msg::Logs(logs)).map_err(|_| Error::Watcher)?;
+                            block_snd.send(Msg::Logs(logs)).map_err(|_| eyre!("Watcher error"))?;
 
                             save_known_tip(ctx.dedup_chain_id, b.number, b.hash).await?;
                         },
@@ -195,7 +198,7 @@ async fn watch(
     Ok(())
 }
 
-async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> Result<()> {
+async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> color_eyre::Result<()> {
     let mut caught_up = false;
 
     let provider = ProviderBuilder::new()
@@ -264,7 +267,11 @@ pub async fn fetch_erc20_metadata(
     }
 }
 
-async fn save_known_tip(dedup_chain_id: DedupChainId, block_number: u64, hash: B256) -> Result<()> {
+async fn save_known_tip(
+    dedup_chain_id: DedupChainId,
+    block_number: u64,
+    hash: B256,
+) -> color_eyre::Result<()> {
     let db = ethui_db::get();
     db.kv_set(
         &(
@@ -290,7 +297,7 @@ async fn save_known_tip(dedup_chain_id: DedupChainId, block_number: u64, hash: B
     Ok(())
 }
 
-async fn get_known_tip(dedup_chain_id: DedupChainId) -> Result<Option<(u64, B256)>> {
+async fn get_known_tip(dedup_chain_id: DedupChainId) -> color_eyre::Result<Option<(u64, B256)>> {
     let db = ethui_db::get();
     let block_number = db
         .kv_get(&(

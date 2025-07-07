@@ -9,7 +9,7 @@ use coins_bip32::path::DerivationPath;
 use ethui_types::Address;
 use serde::{Deserialize, Serialize};
 
-use crate::{utils, wallet::WalletCreate, Result, Signer, Wallet, WalletControl};
+use crate::{utils, wallet::WalletCreate, Signer, Wallet, WalletControl};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(try_from = "Deserializer", rename_all = "camelCase")]
@@ -23,7 +23,7 @@ pub struct PlaintextWallet {
 
 #[async_trait]
 impl WalletCreate for PlaintextWallet {
-    async fn create(params: serde_json::Value) -> Result<Wallet> {
+    async fn create(params: serde_json::Value) -> color_eyre::Result<Wallet> {
         Ok(Wallet::Plaintext(serde_json::from_value(params)?))
     }
 }
@@ -34,7 +34,7 @@ impl WalletControl for PlaintextWallet {
         self.name.clone()
     }
 
-    async fn update(mut self, params: serde_json::Value) -> Result<Wallet> {
+    async fn update(mut self, params: serde_json::Value) -> color_eyre::Result<Wallet> {
         Ok(Wallet::Plaintext(serde_json::from_value(params)?))
     }
 
@@ -49,7 +49,7 @@ impl WalletControl for PlaintextWallet {
         self.current_path.clone()
     }
 
-    async fn set_current_path(&mut self, path: String) -> Result<()> {
+    async fn set_current_path(&mut self, path: String) -> color_eyre::Result<()> {
         let builder = MnemonicBuilder::<English>::default().phrase(self.mnemonic.as_str());
 
         match utils::derive_from_builder_and_path(builder, &path) {
@@ -61,7 +61,7 @@ impl WalletControl for PlaintextWallet {
         }
     }
 
-    async fn get_address(&self, path: &str) -> Result<Address> {
+    async fn get_address(&self, path: &str) -> color_eyre::Result<Address> {
         Ok(self.build_signer(1, path).await?.address())
     }
 
@@ -73,7 +73,7 @@ impl WalletControl for PlaintextWallet {
         true
     }
 
-    async fn build_signer(&self, chain_id: u32, path: &str) -> Result<Signer> {
+    async fn build_signer(&self, chain_id: u32, path: &str) -> color_eyre::Result<Signer> {
         let signer = MnemonicBuilder::<English>::default()
             .phrase(&self.mnemonic)
             .derivation_path(path)?

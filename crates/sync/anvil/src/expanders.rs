@@ -12,13 +12,12 @@ use alloy::{
     },
     sol_types::SolEvent as _,
 };
+use color_eyre::eyre::ContextCompat as _;
 use ethui_types::{
     events::{ContractDeployed, ERC20Transfer, Tx},
     Event,
 };
 use futures::future::join_all;
-
-use super::{Error, Result};
 
 pub(super) async fn expand_traces(
     traces: Vec<LocalizedTransactionTrace>,
@@ -37,16 +36,16 @@ pub(super) fn expand_logs(traces: Vec<RpcLog>) -> Vec<ethui_types::Event> {
 async fn expand_trace(
     trace: LocalizedTransactionTrace,
     provider: &RootProvider<Ethereum>,
-) -> Result<Vec<Event>> {
+) -> color_eyre::Result<Vec<Event>> {
     let hash = trace.transaction_hash.unwrap();
     let tx = provider
         .get_transaction_by_hash(hash)
         .await?
-        .ok_or(Error::TxNotFound(hash))?;
+        .with_context(|| format!("Transaction not found: {hash}"))?;
     let receipt = provider
         .get_transaction_receipt(hash)
         .await?
-        .ok_or(Error::TxNotFound(hash))?;
+        .with_context(|| format!("Transaction not found: {hash}"))?;
     let block_number = trace.block_number;
 
     let res = match (

@@ -2,19 +2,19 @@ use std::path::PathBuf;
 
 use ethui_args::Args;
 use ethui_broadcast::UIMsg;
-use ethui_types::GlobalState as _;
+use ethui_settings::GetAll;
 use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
 #[cfg(feature = "aptabase")]
 use tauri_plugin_aptabase::EventTracker as _;
 
-use crate::{commands, error::AppResult, menu, system_tray, windows};
+use crate::{commands, menu, system_tray, windows};
 
 pub struct EthUIApp {
     app: tauri::App,
 }
 
 impl EthUIApp {
-    pub async fn build(args: &ethui_args::Args) -> AppResult<Self> {
+    pub async fn build(args: &ethui_args::Args) -> color_eyre::Result<Self> {
         let builder = Builder::default();
 
         // #[cfg(feature = "aptabase")]
@@ -143,7 +143,7 @@ impl EthUIApp {
 }
 
 /// Initialization logic
-async fn init(app: &tauri::App, args: &Args) -> AppResult<()> {
+async fn init(app: &tauri::App, args: &Args) -> color_eyre::Result<()> {
     let db = ethui_db::init(&resource(app, "db.sqlite3", args)).await?;
     app.manage(db.clone());
 
@@ -236,6 +236,8 @@ async fn should_start_main_window(args: &Args) -> bool {
         return false;
     }
 
-    let settings = ethui_settings::Settings::read().await;
-    !settings.start_minimized()
+    let settings = ethui_settings::ask(GetAll)
+        .await
+        .expect("Failed to get settings");
+    !settings.start_minimized
 }

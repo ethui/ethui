@@ -1,10 +1,11 @@
 use std::str::FromStr;
 
 use async_trait::async_trait;
+use color_eyre::eyre::eyre;
 use ethui_types::Address;
 use serde::{Deserialize, Serialize};
 
-use crate::{wallet::WalletCreate, Result, Signer, Wallet, WalletControl};
+use crate::{wallet::WalletCreate, Signer, Wallet, WalletControl};
 
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct Impersonator {
@@ -17,7 +18,7 @@ pub struct Impersonator {
 
 #[async_trait]
 impl WalletCreate for Impersonator {
-    async fn create(params: serde_json::Value) -> Result<Wallet> {
+    async fn create(params: serde_json::Value) -> color_eyre::Result<Wallet> {
         // TODO: make sure current is within the array
         Ok(Wallet::Impersonator(serde_json::from_value(params)?))
     }
@@ -29,7 +30,7 @@ impl WalletControl for Impersonator {
         self.name.clone()
     }
 
-    async fn update(mut self, params: serde_json::Value) -> Result<Wallet> {
+    async fn update(mut self, params: serde_json::Value) -> color_eyre::Result<Wallet> {
         if let Some(name) = params["name"].as_str() {
             self.name = name.into();
         }
@@ -55,7 +56,7 @@ impl WalletControl for Impersonator {
         self.current.to_string()
     }
 
-    async fn set_current_path(&mut self, path: String) -> Result<()> {
+    async fn set_current_path(&mut self, path: String) -> color_eyre::Result<()> {
         self.current = usize::from_str(&path)?;
         Ok(())
     }
@@ -68,7 +69,7 @@ impl WalletControl for Impersonator {
             .collect()
     }
 
-    async fn get_address(&self, path: &str) -> Result<Address> {
+    async fn get_address(&self, path: &str) -> color_eyre::Result<Address> {
         Ok(self.addresses[usize::from_str(path)?])
     }
 
@@ -76,7 +77,7 @@ impl WalletControl for Impersonator {
         true
     }
 
-    async fn build_signer(&self, _chain_id: u32, _path: &str) -> Result<Signer> {
-        Err(crate::Error::WalletCantSign)
+    async fn build_signer(&self, _chain_id: u32, _path: &str) -> color_eyre::Result<Signer> {
+        Err(eyre!("This wallet type cannot sign"))
     }
 }

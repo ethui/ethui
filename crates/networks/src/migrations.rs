@@ -11,7 +11,7 @@ use serde_constant::ConstI64;
 use serde_json::json;
 use url::Url;
 
-use crate::{Networks, Result, SerializedNetworks};
+use crate::{Networks, SerializedNetworks};
 
 pub type LatestVersion = ConstI64<3>;
 
@@ -68,7 +68,7 @@ pub struct NetworkV1 {
     pub decimals: u32,
 }
 
-pub(crate) fn load_and_migrate(pathbuf: &PathBuf) -> Result<Networks> {
+pub(crate) fn load_and_migrate(pathbuf: &PathBuf) -> color_eyre::Result<Networks> {
     let path = Path::new(&pathbuf);
     let file = File::open(path)?;
     let reader = BufReader::new(&file);
@@ -198,7 +198,7 @@ mod tests {
             }
         });
 
-        write!(tempfile, "{}", networks_v0).unwrap();
+        write!(tempfile, "{networks_v0}").unwrap();
 
         if let Ok(_networks) = load_and_migrate(&tempfile.path().to_path_buf()) {
             let file = File::open(tempfile.path()).unwrap();
@@ -229,7 +229,7 @@ mod tests {
             }
         });
 
-        write!(tempfile, "{}", networks_v0).unwrap();
+        write!(tempfile, "{networks_v0}").unwrap();
 
         if let Ok(_networks) = load_and_migrate(&tempfile.path().to_path_buf()) {
             let file = File::open(tempfile.path()).unwrap();
@@ -260,7 +260,7 @@ mod tests {
             }
         });
 
-        write!(tempfile, "{}", networks_v0).unwrap();
+        write!(tempfile, "{networks_v0}").unwrap();
 
         let result = load_and_migrate(&tempfile.path().to_path_buf());
 
@@ -287,7 +287,7 @@ mod tests {
             }
         });
 
-        write!(tempfile, "{}", networks_v0).unwrap();
+        write!(tempfile, "{networks_v0}").unwrap();
 
         if let Ok(_networks) = load_and_migrate(&tempfile.path().to_path_buf()) {
             let file = File::open(tempfile.path()).unwrap();

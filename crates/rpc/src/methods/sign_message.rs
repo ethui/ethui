@@ -6,8 +6,8 @@ use alloy::{
     signers::Signer as _,
 };
 use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_settings::Settings;
-use ethui_types::{GlobalState, Network};
+use ethui_settings::GetAll;
+use ethui_types::Network;
 use ethui_wallets::{Signer, Wallet, WalletControl};
 use serde::Serialize;
 
@@ -29,9 +29,12 @@ impl<'a> SignMessage<'a> {
 
     pub async fn finish(&mut self) -> Result<Signature> {
         let skip = {
-            self.network.is_dev().await
-                && self.wallet.is_dev()
-                && Settings::read().await.fast_mode()
+            self.network.is_dev().await && self.wallet.is_dev() && {
+                let settings = ethui_settings::ask(GetAll)
+                    .await
+                    .expect("Failed to get settings");
+                settings.fast_mode
+            }
         };
 
         if !skip {

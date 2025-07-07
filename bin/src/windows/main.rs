@@ -1,16 +1,17 @@
-use ethui_settings::Settings;
-use ethui_types::GlobalState as _;
+use ethui_settings::GetAll;
 use tauri::{AppHandle, Manager};
 
 use super::build_window;
 
 pub(crate) async fn show(app: &AppHandle) {
-    let settings = Settings::read().await;
+    let settings = ethui_settings::ask(GetAll)
+        .await
+        .expect("Failed to get settings");
 
     if let Some(w) = app.get_webview_window("main") {
         w.show().unwrap()
     } else {
-        let url = if settings.inner.onboarding.is_all_finished() {
+        let url = if settings.onboarding.is_all_finished() {
             "index.html#/home/account"
         } else {
             "index.html#/home/onboarding"

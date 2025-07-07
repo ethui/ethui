@@ -4,18 +4,16 @@ use alloy::{
     providers::{Provider as _, RootProvider},
 };
 use ethui_abis::IERC20;
-use ethui_types::{events::Tx, Address, GlobalState, TokenMetadata, B256};
+use ethui_types::{events::Tx, eyre, Address, GlobalState, TokenMetadata, B256};
 
-use crate::{Error, Result};
-
-pub(crate) async fn fetch_full_tx(chain_id: u32, hash: B256) -> Result<()> {
+pub(crate) async fn fetch_full_tx(chain_id: u32, hash: B256) -> color_eyre::Result<()> {
     let provider = provider(chain_id).await?;
 
     let tx = provider.get_transaction_by_hash(hash).await?;
     let receipt = provider.get_transaction_receipt(hash).await?;
 
     if tx.is_none() || receipt.is_none() {
-        return Err(Error::TxNotFound(hash));
+        return Err(eyre!("TX not found: {}", hash));
     }
 
     let tx = tx.unwrap();
@@ -47,7 +45,10 @@ pub(crate) async fn fetch_full_tx(chain_id: u32, hash: B256) -> Result<()> {
     Ok(())
 }
 
-pub(crate) async fn fetch_erc20_metadata(chain_id: u32, address: Address) -> Result<()> {
+pub(crate) async fn fetch_erc20_metadata(
+    chain_id: u32,
+    address: Address,
+) -> color_eyre::Result<()> {
     let provider = provider(chain_id).await?;
 
     let contract = IERC20::new(address, provider);
@@ -67,11 +68,11 @@ pub(crate) async fn fetch_erc20_metadata(chain_id: u32, address: Address) -> Res
     Ok(())
 }
 
-async fn provider(chain_id: u32) -> Result<RootProvider<Ethereum>> {
+async fn provider(chain_id: u32) -> color_eyre::Result<RootProvider<Ethereum>> {
     let networks = ethui_networks::Networks::read().await;
 
     match networks.get_network(chain_id) {
         Some(network) => Ok(network.get_alloy_provider().await?),
-        _ => Err(Error::InvalidNetwork(chain_id)),
+        _ => Err(eyre!("Invalid network: {}", chain_id)),
     }
 }

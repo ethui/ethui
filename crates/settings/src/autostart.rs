@@ -1,8 +1,6 @@
 use auto_launch::{AutoLaunch, AutoLaunchBuilder};
 
-use crate::Result;
-
-pub fn update(v: bool) -> Result<()> {
+pub fn update(v: bool) -> color_eyre::Result<()> {
     let handle = handle()?;
 
     if handle.is_enabled()? == v {
@@ -18,7 +16,7 @@ pub fn update(v: bool) -> Result<()> {
     Ok(())
 }
 
-fn handle() -> Result<AutoLaunch> {
+fn handle() -> color_eyre::Result<AutoLaunch> {
     let app_path = std::env::current_exe()?
         .into_os_string()
         .to_str()

@@ -134,6 +134,7 @@ impl Handler {
 
         self_handler!("ethui_getProviderState", Self::ethui_provider_state);
         self_handler!("ethui_getContractAbi", Self::ethui_get_abi_for_contract);
+        self_handler!("ethui_getAddressAlias", Self::ethui_get_address_alias);
     }
 
     async fn accounts(_: Params, _: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
@@ -212,18 +213,14 @@ impl Handler {
         let new_chain_id = u32::from_str_radix(&chain_id_str[2..], 16).unwrap();
 
         // TODO future work
-        // multiple netowrks with same chain id should display a dialog so user can select which
+        // multiple networks with same chain id should display a dialog so user can select which
         // network to switch to
-        Ok(ctx
+        let res = ctx
             .switch_chain(new_chain_id)
             .await
-            .map(|_| serde_json::Value::Null)
-            .map_err(|e| match e {
-                ethui_connections::Error::InvalidChainId(chain_id) => {
-                    Error::UnrecognizedChainId(chain_id)
-                }
-                _ => Error::Connection(e),
-            })?)
+            .map(|_| serde_json::Value::Null);
+
+        Ok(res.map_err(Error::from)?)
     }
 
     #[tracing::instrument()]
@@ -349,6 +346,17 @@ impl Handler {
 
         let method = methods::ethui::AbiForContract::build()
             .set_network(network)
+            .set_params(params.into())
+            .build()?;
+
+        Ok(method.run().await?)
+    }
+
+    async fn ethui_get_address_alias(
+        params: Params,
+        _ctx: Ctx,
+    ) -> jsonrpc_core::Result<serde_json::Value> {
+        let method = methods::ethui::AddressAlias::build()
             .set_params(params.into())
             .build()?;
 

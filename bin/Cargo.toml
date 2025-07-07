@@ -37,14 +37,14 @@ serde.workspace = true
 serde_json.workspace = true
 tauri.workspace = true
 tokio.workspace = true
-thiserror.workspace = true
+color-eyre.workspace = true
 tracing.workspace = true
 
 fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs", rev = "0e479e2" }
 named-lock = "0.4"
-tauri-plugin-os = "2.2"
-tauri-plugin-clipboard-manager = "2.2"
-tauri-plugin-shell = "2"
+tauri-plugin-os = "2.3"
+tauri-plugin-clipboard-manager = "2.3"
+tauri-plugin-shell = "2.3"
 ethui-proxy-detect.workspace = true
 kameo.workspace = true
 tauri-plugin-aptabase = { workspace = true, optional = true }

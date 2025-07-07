@@ -1,5 +1,4 @@
 pub mod commands;
-mod error;
 mod init;
 mod pagination;
 mod queries;
@@ -11,8 +10,6 @@ use ethui_types::DedupChainId;
 pub use init::{get, init};
 use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous};
 
-pub use self::error::{Error, Result};
-
 #[derive(Debug, Clone)]
 pub struct DbInner {
     pub pool: sqlx::Pool<sqlx::Sqlite>,
@@ -20,7 +17,7 @@ pub struct DbInner {
 pub type Db = Arc<DbInner>;
 
 impl DbInner {
-    pub async fn connect(path: &PathBuf) -> Result<Self> {
+    pub async fn connect(path: &PathBuf) -> color_eyre::Result<Self> {
         let connect_options = SqliteConnectOptions::new()
             .filename(path)
             .create_if_missing(true)
@@ -38,7 +35,7 @@ impl DbInner {
         Ok(db)
     }
 
-    pub async fn truncate_events(&self, dedup_chain_id: DedupChainId) -> Result<()> {
+    pub async fn truncate_events(&self, dedup_chain_id: DedupChainId) -> color_eyre::Result<()> {
         let chain_id = dedup_chain_id.chain_id();
         let dedup_id = dedup_chain_id.dedup_id();
         sqlx::query!(r#"DELETE FROM transactions WHERE chain_id = ?"#, chain_id)
@@ -73,11 +70,11 @@ impl DbInner {
         &self.pool
     }
 
-    pub async fn tx(&self) -> Result<sqlx::Transaction<'_, sqlx::Sqlite>> {
+    pub async fn tx(&self) -> color_eyre::Result<sqlx::Transaction<'_, sqlx::Sqlite>> {
         Ok(self.pool.clone().begin().await?)
     }
 
-    async fn migrate(&self) -> Result<()> {
+    async fn migrate(&self) -> color_eyre::Result<()> {
         let pool = self.pool.clone();
 
         sqlx::migrate!("../../migrations/").run(&pool).await?;

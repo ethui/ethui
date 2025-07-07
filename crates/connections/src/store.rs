@@ -7,7 +7,7 @@ use std::{
 use ethui_types::{Affinity, DedupChainId};
 use serde::{Deserialize, Serialize};
 
-use crate::{migrations::LatestVersion, Result};
+use crate::migrations::LatestVersion;
 
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", default)]
@@ -35,7 +35,7 @@ impl Store {
             .unwrap_or_default()
     }
 
-    pub fn set_affinity(&mut self, domain: &str, affinity: Affinity) -> Result<()> {
+    pub fn set_affinity(&mut self, domain: &str, affinity: Affinity) -> color_eyre::Result<()> {
         match affinity {
             Affinity::Unset => self.inner.affinities.remove(domain),
             affinity => self.inner.affinities.insert(domain.to_string(), affinity),
@@ -46,7 +46,7 @@ impl Store {
     }
 
     // Persists current state to disk
-    pub(crate) fn save(&self) -> Result<()> {
+    pub(crate) fn save(&self) -> color_eyre::Result<()> {
         let pathbuf = self.file.clone();
         let path = Path::new(&pathbuf);
         let file = File::create(path)?;

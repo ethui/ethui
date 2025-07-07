@@ -1,9 +1,8 @@
 use std::collections::HashMap;
 
+use ethui_types::eyre;
 use once_cell::sync::Lazy;
 use url::Url;
-
-use crate::{Error, Result};
 
 #[derive(Debug, Clone)]
 pub struct Network {
@@ -144,10 +143,10 @@ pub fn default_from_block(chain_id: u32) -> u64 {
         .unwrap_or(0)
 }
 
-pub fn get_endpoint(chain_id: u32, path: &str, api_key: &str) -> Result<reqwest::Url> {
+pub fn get_endpoint(chain_id: u32, path: &str, api_key: &str) -> color_eyre::Result<reqwest::Url> {
     let endpoint = match get_network(&chain_id) {
         Some(network) => network.base_url,
-        None => return Err(Error::UnsupportedChainId(chain_id)),
+        None => return Err(eyre!("Unsupported chain id: {}", chain_id)),
     };
 
     Ok(endpoint.join(path)?.join(api_key)?)

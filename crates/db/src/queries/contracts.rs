@@ -1,13 +1,18 @@
 use std::str::FromStr;
 
 use alloy::{json_abi::JsonAbi, primitives::Bytes};
+use color_eyre::eyre::eyre;
 use ethui_types::{Address, Contract, ContractWithAbi, DedupChainId};
 use tracing::instrument;
 
-use crate::{DbInner, Error, Result};
+use crate::DbInner;
 
 impl DbInner {
-    pub async fn get_contracts(&self, chain_id: u32, dedup_id: i32) -> Result<Vec<Contract>> {
+    pub async fn get_contracts(
+        &self,
+        chain_id: u32,
+        dedup_id: i32,
+    ) -> color_eyre::Result<Vec<Contract>> {
         let rows = sqlx::query!(
             r#"SELECT address, name, proxy_for, proxied_by FROM contracts WHERE chain_id = ? AND dedup_id = ?"#,
             chain_id, dedup_id
@@ -32,7 +37,7 @@ impl DbInner {
         chain_id: u32,
         dedup_id: i32,
         address: Address,
-    ) -> Result<Option<ContractWithAbi>> {
+    ) -> color_eyre::Result<Option<ContractWithAbi>> {
         let address = format!("0x{address:x}");
         let res = sqlx::query!(
             r#" SELECT abi, name, address
@@ -57,7 +62,11 @@ impl DbInner {
         }
     }
 
-    pub async fn get_contract_abi(&self, chain_id: u32, address: Address) -> Result<JsonAbi> {
+    pub async fn get_contract_abi(
+        &self,
+        chain_id: u32,
+        address: Address,
+    ) -> color_eyre::Result<JsonAbi> {
         let address = format!("0x{address:x}");
 
         let res = sqlx::query!(
@@ -71,12 +80,16 @@ impl DbInner {
         .await?;
 
         match res.abi {
-            None => Err(Error::NotFound),
+            None => Err(eyre!("not found")),
             Some(abi) => Ok(serde_json::from_str(&abi).unwrap_or_default()),
         }
     }
 
-    pub async fn get_contract_impl_abi(&self, chain_id: u32, address: Address) -> Result<JsonAbi> {
+    pub async fn get_contract_impl_abi(
+        &self,
+        chain_id: u32,
+        address: Address,
+    ) -> color_eyre::Result<JsonAbi> {
         let address = format!("0x{address:x}");
 
         let res = sqlx::query!(
@@ -96,7 +109,7 @@ impl DbInner {
                 )
                 .await
             }
-            _ => Err(Error::NotFound),
+            _ => Err(eyre!("not found")),
         }
     }
 
@@ -109,7 +122,7 @@ impl DbInner {
         abi: Option<String>,
         name: Option<String>,
         proxy_for: Option<Address>,
-    ) -> Result<()> {
+    ) -> color_eyre::Result<()> {
         let address = format!("0x{address:x}");
         let proxy_for = proxy_for.map(|p| format!("0x{p:x}"));
         let code = code.map(|c| format!("0x{c:x}"));
@@ -154,7 +167,7 @@ impl DbInner {
 
     pub async fn get_incomplete_contracts(
         &self,
-    ) -> Result<Vec<((u32, i32), Address, Option<Bytes>)>> {
+    ) -> color_eyre::Result<Vec<((u32, i32), Address, Option<Bytes>)>> {
         let rows = sqlx::query!(
             r#"SELECT address, chain_id, dedup_id, code FROM contracts WHERE name IS NULL or ABI IS NULL"#,
         )
@@ -174,7 +187,7 @@ impl DbInner {
             .collect())
     }
 
-    pub async fn remove_contracts(&self, chain_id: u32, dedup_id: i32) -> Result<()> {
+    pub async fn remove_contracts(&self, chain_id: u32, dedup_id: i32) -> color_eyre::Result<()> {
         sqlx::query!(
             r#"DELETE FROM contracts where chain_id = ? AND dedup_id = ?"#,
             chain_id,
@@ -191,7 +204,7 @@ impl DbInner {
         chain_id: u32,
         dedup_id: i32,
         address: Address,
-    ) -> Result<()> {
+    ) -> color_eyre::Result<()> {
         let address = format!("0x{address:x}");
 
         sqlx::query!(

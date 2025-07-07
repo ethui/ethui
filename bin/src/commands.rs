@@ -1,14 +1,12 @@
 use alloy::providers::Provider as _;
+use color_eyre::eyre::{Context as _, ContextCompat as _};
 use ethui_db::{
     utils::{fetch_etherscan_abi, fetch_etherscan_contract_name},
     Db,
 };
-use ethui_forge::{GetAbiFor, Worker};
+use ethui_forge::GetAbiFor;
 use ethui_proxy_detect::ProxyType;
-use ethui_types::{Address, GlobalState, UINotify};
-use kameo::actor::ActorRef;
-
-use crate::error::{AppError, AppResult};
+use ethui_types::{Address, GlobalState, TauriResult, UINotify};
 
 #[tauri::command]
 pub fn get_build_mode() -> String {
@@ -25,7 +23,7 @@ pub fn get_version() -> String {
 }
 
 #[tauri::command]
-pub async fn ui_error(message: String, _stack: Option<Vec<String>>) -> AppResult<()> {
+pub async fn ui_error(message: String, _stack: Option<Vec<String>>) -> TauriResult<()> {
     tracing::error!(error_type = "UI Error", message = message);
 
     Ok(())
@@ -37,34 +35,53 @@ pub async fn add_contract(
     dedup_id: i64,
     address: Address,
     db: tauri::State<'_, Db>,
-) -> AppResult<()> {
+) -> TauriResult<()> {
     let networks = ethui_networks::Networks::read().await;
 
     let network = networks
         .get_network(chain_id as u32)
-        .ok_or(AppError::InvalidNetwork(chain_id as u32))?;
+        .wrap_err_with(|| format!("Invalid network {chain_id}"))?;
     let provider = network.get_alloy_provider().await?;
 
-    let code = provider.get_code_at(address).await?;
-    let proxy = ethui_proxy_detect::detect_proxy(address, &provider).await?;
-    let network_is_dev = network.is_dev().await;
+    let code = provider
+        .get_code_at(address)
+        .await
+        .wrap_err_with(|| format!("Failed to get code at {address}"))?;
 
-    let forge_abi = if let Ok(Some(forge_worker)) = ActorRef::<Worker>::lookup("forge") {
-        forge_worker
-            .ask(GetAbiFor(code.clone()))
-            .await
-            .ok()
-            .flatten()
+    let proxy = ethui_proxy_detect::detect_proxy(address, &provider)
+        .await
+        .wrap_err_with(|| format!("Failed to detect proxy type for {address}"))?;
+
+    let forge_abi = ethui_forge::ask(GetAbiFor(code.clone())).await?;
+
+    let (name, abi) = if let Some(ProxyType::Eip1167(implementation)) = proxy {
+        // if it's an EIP1167 proxy, there's no ABI to fetch
+        (Some("EIP1167".into()), None)
+    } else if let Some(abi) = ethui_forge::ask(GetAbiFor(code.clone())).await? {
+        // if we have a local match, use that
+        (
+            Some(abi.name),
+            Some(serde_json::to_string(&abi.abi).unwrap()),
+        )
+    } else if network.is_dev().await && let Ok(Some(fork)) = network.get_fored_network().await {
+        (
+            fetch_etherscan_contract_name(fork.chain_id.into(), address).await?,
+            fetch_etherscan_abi(fork.chain_id.into(), address)
+                .await?
+                .map(|abi| serde_json::to_string(&abi).unwrap()),
+        )
     } else {
-        None
+        (None, None)
     };
 
     let (name, abi) = if let Some(forge_abi) = forge_abi {
+        // if an ABI is found on our local actor
         (
             Some(forge_abi.name),
             Some(serde_json::to_string(&forge_abi.abi).unwrap()),
         )
-    } else if network_is_dev {
+    } else if network.is_dev().await {
+        // if not, and we're forked, try from the forked network
         let network_fork = network.get_forked_network().await;
         match network_fork {
             Ok(Some(fork)) => (
@@ -114,7 +131,7 @@ pub async fn remove_contract(
     dedup_id: i32,
     address: Address,
     db: tauri::State<'_, Db>,
-) -> AppResult<()> {
+) -> TauriResult<()> {
     let has_proxy = db.get_proxy(chain_id, dedup_id, address).await;
 
     db.remove_contract(chain_id, dedup_id, address).await?;
