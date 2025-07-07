@@ -27,20 +27,17 @@ async fn receiver(handle: ActorRef<Worker>) -> ! {
     let mut rx = ethui_broadcast::subscribe_internal().await;
 
     loop {
-        if let Ok(msg) = rx.recv().await {
-            match msg {
-                InternalMsg::SettingsUpdated => {
-                    let settings = ethui_settings::ask(GetAll)
-                        .await
-                        .expect("Failed to get settings");
+        if let Ok(msg) = rx.recv().await
+            && let InternalMsg::SettingsUpdated = msg
+        {
+            let settings = ethui_settings::ask(GetAll)
+                .await
+                .expect("Failed to get settings");
 
-                    handle
-                        .tell(Msg::SetEnabled(settings.run_local_stacks))
-                        .await
-                        .unwrap();
-                }
-                _ => (),
-            }
+            handle
+                .tell(Msg::SetEnabled(settings.run_local_stacks))
+                .await
+                .unwrap();
         }
     }
 }
