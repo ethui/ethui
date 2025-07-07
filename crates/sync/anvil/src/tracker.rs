@@ -4,7 +4,7 @@ use alloy::{
     rpc::types::{Filter, Log, trace::parity::LocalizedTransactionTrace},
 };
 use ethui_abis::IERC20;
-use ethui_types::{Address, B256, DedupChainId, TokenMetadata, UINotify, eyre};
+use ethui_types::{prelude::*, DedupChainId, TokenMetadata};
 use futures::StreamExt as _;
 use tokio::sync::mpsc;
 use tracing::{instrument, trace, warn};

@@ -1,15 +1,12 @@
-use std::str::FromStr;
-
 use alloy::signers::{
+    local::{coins_bip39::English, MnemonicBuilder},
     Signer as _,
-    local::{MnemonicBuilder, coins_bip39::English},
 };
 use async_trait::async_trait;
 use coins_bip32::path::DerivationPath;
-use ethui_types::Address;
-use serde::{Deserialize, Serialize};
+use ethui_types::prelude::*;
 
-use crate::{Signer, Wallet, WalletControl, utils, wallet::WalletCreate};
+use crate::{utils, wallet::WalletCreate, Signer, Wallet, WalletControl};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(try_from = "Deserializer", rename_all = "camelCase")]

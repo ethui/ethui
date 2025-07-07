@@ -1,21 +1,20 @@
 use std::{sync::Arc, time::Duration};
 
 use alloy::signers::{
+    local::{coins_bip39::English, MnemonicBuilder},
     Signer as _,
-    local::{MnemonicBuilder, coins_bip39::English},
 };
 use async_trait::async_trait;
-use color_eyre::eyre::{ContextCompat as _, eyre};
 use ethui_crypto::{self, EncryptedData};
 use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_types::Address;
+use ethui_types::prelude::*;
 use secrets::SecretVec;
 use tokio::{
     sync::{Mutex, RwLock},
     task::JoinHandle,
 };
 
-use crate::{Signer, Wallet, WalletControl, utils, wallet::WalletCreate};
+use crate::{utils, wallet::WalletCreate, Signer, Wallet, WalletControl};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]

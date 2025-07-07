@@ -2,20 +2,19 @@ use std::{fs::File, io::BufReader, path::PathBuf, str::FromStr, sync::Arc, time:
 
 use alloy::{
     primitives::B256,
-    signers::{Signer as _, local::LocalSigner},
+    signers::{local::LocalSigner, Signer as _},
 };
 use async_trait::async_trait;
 use coins_bip32::ecdsa;
-use color_eyre::eyre::{ContextCompat as _, eyre};
 use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_types::Address;
+use ethui_types::prelude::*;
 use secrets::SecretVec;
 use tokio::{
     sync::{Mutex, RwLock},
     task::JoinHandle,
 };
 
-use crate::{Signer, Wallet, WalletControl, wallet::WalletCreate};
+use crate::{wallet::WalletCreate, Signer, Wallet, WalletControl};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct JsonKeystoreWallet {
