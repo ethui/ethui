@@ -60,10 +60,9 @@ async fn receiver(snd: mpsc::UnboundedSender<Msg>) -> std::result::Result<(), ()
     let mut rx = ethui_broadcast::subscribe_internal().await;
 
     loop {
-        if let Ok(internal_msg) = rx.recv().await {
-            if let Ok(msg) = internal_msg.try_into() {
+        if let Ok(internal_msg) = rx.recv().await
+            && let Ok(msg) = internal_msg.try_into() {
                 snd.send(msg).unwrap();
             }
-        }
     }
 }
