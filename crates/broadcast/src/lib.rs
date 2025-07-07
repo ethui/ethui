@@ -1,9 +1,7 @@
-use std::sync::Arc;
-
-use ethui_types::{ui_events, Address, Affinity, DedupChainId, Network, B256};
+use ethui_types::{prelude::*, ui_events, Affinity, DedupChainId};
 pub use internal_msgs::*;
 use once_cell::sync::Lazy;
-use tokio::sync::{broadcast, oneshot, Mutex, RwLock};
+use tokio::sync::{broadcast, oneshot, Mutex};
 pub use ui_msgs::*;
 
 /// Supported messages

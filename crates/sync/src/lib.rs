@@ -2,15 +2,12 @@ pub mod commands;
 mod utils;
 mod worker;
 
-use std::sync::Arc;
-
 use ethui_broadcast::InternalMsg;
 pub use ethui_sync_alchemy::{
     get_alchemy, Alchemy, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse,
 };
-use ethui_types::{Address, B256};
+use ethui_types::prelude::*;
 use tokio::sync::{mpsc, oneshot, Mutex};
-use tracing::instrument;
 pub use worker::Worker;
 
 pub async fn init() {

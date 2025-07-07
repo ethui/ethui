@@ -3,7 +3,6 @@ mod init;
 mod migrations;
 
 use std::{
-    collections::HashMap,
     fs::File,
     path::{Path, PathBuf},
 };
@@ -12,11 +11,10 @@ use alloy::{
     network::Ethereum,
     providers::{Provider, ProviderBuilder, RootProvider},
 };
-use color_eyre::eyre::eyre;
-use ethui_types::{Affinity, DedupChainId, Network, NewNetworkParams, UINotify};
+use ethui_types::prelude::*;
+use ethui_types::{Affinity, DedupChainId, NewNetworkParams};
 pub use init::init;
 use migrations::LatestVersion;
-use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct SerializedNetworks {

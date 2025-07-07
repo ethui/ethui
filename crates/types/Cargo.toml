@@ -17,3 +17,4 @@ alloy.workspace = true
 url.workspace = true
 color-eyre.workspace = true
 kameo.workspace = true
+tracing.workspace = true

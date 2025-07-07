@@ -1,6 +1,5 @@
-use ethui_types::{events::Tx, Address, TokenMetadata, B256, U256, U64};
-use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use ethui_types::prelude::*;
+use ethui_types::{events::Tx, TokenMetadata};
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -123,7 +122,7 @@ pub struct ErcImageData {
 #[serde(rename_all = "camelCase")]
 pub struct ErcRawMetadata {
     pub token_uri: String,
-    pub metadata: Value,
+    pub metadata: Json,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

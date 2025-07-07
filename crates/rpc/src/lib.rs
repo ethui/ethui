@@ -2,15 +2,12 @@ pub mod commands;
 mod error;
 mod methods;
 
-use std::collections::HashMap;
-
-use alloy::{dyn_abi::TypedData, hex, primitives::Bytes, providers::Provider as _};
+use alloy::{dyn_abi::TypedData, hex, providers::Provider as _};
 use ethui_connections::{permissions::PermissionRequest, Ctx};
-use ethui_types::GlobalState;
+use ethui_types::prelude::*;
 use ethui_wallets::{WalletControl, Wallets};
 use jsonrpc_core::{MetaIoHandler, Params};
 use serde_json::json;
-use tracing::info;
 
 pub use self::error::{Error, Result};
 

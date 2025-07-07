@@ -1,14 +1,10 @@
 use std::{str::FromStr, sync::Arc, time::Duration};
 
-use alloy::{
-    primitives::B256,
-    signers::{local::PrivateKeySigner, Signer as _},
-};
+use alloy::signers::{local::PrivateKeySigner, Signer as _};
 use async_trait::async_trait;
-use color_eyre::eyre::{eyre, ContextCompat as _};
 use ethui_crypto::{self, EncryptedData};
 use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_types::Address;
+use ethui_types::prelude::*;
 use secrets::SecretVec;
 use tokio::{
     sync::{Mutex, RwLock},
@@ -43,7 +39,7 @@ pub struct PrivateKeyWallet {
 
 #[async_trait]
 impl WalletCreate for PrivateKeyWallet {
-    async fn create(params: serde_json::Value) -> color_eyre::Result<Wallet> {
+    async fn create(params: serde_json::Value) -> Result<Wallet> {
         Ok(Wallet::PrivateKey(
             Self::from_params(serde_json::from_value(params)?).await?,
         ))
@@ -56,7 +52,7 @@ impl WalletControl for PrivateKeyWallet {
         self.name.clone()
     }
 
-    async fn update(mut self, params: serde_json::Value) -> color_eyre::Result<Wallet> {
+    async fn update(mut self, params: serde_json::Value) -> Result<Wallet> {
         if let Some(name) = params["name"].as_str() {
             self.name = name.into();
         }
@@ -72,11 +68,11 @@ impl WalletControl for PrivateKeyWallet {
         self.address.to_string()
     }
 
-    async fn set_current_path(&mut self, _path: String) -> color_eyre::Result<()> {
+    async fn set_current_path(&mut self, _path: String) -> Result<()> {
         Ok(())
     }
 
-    async fn get_address(&self, _path: &str) -> color_eyre::Result<Address> {
+    async fn get_address(&self, _path: &str) -> Result<Address> {
         Ok(self.get_current_address().await)
     }
 
@@ -84,7 +80,7 @@ impl WalletControl for PrivateKeyWallet {
         vec![(self.get_current_path(), self.get_current_address().await)]
     }
 
-    async fn build_signer(&self, chain_id: u32, _path: &str) -> color_eyre::Result<Signer> {
+    async fn build_signer(&self, chain_id: u32, _path: &str) -> Result<Signer> {
         self.unlock().await?;
 
         let secret = self.secret.read().await;
@@ -98,7 +94,7 @@ impl WalletControl for PrivateKeyWallet {
 }
 
 impl PrivateKeyWallet {
-    pub async fn from_params(params: PrivateKeyWalletParams) -> color_eyre::Result<Self> {
+    pub async fn from_params(params: PrivateKeyWalletParams) -> Result<Self> {
         let key = params
             .private_key
             .clone()
@@ -124,7 +120,7 @@ impl PrivateKeyWallet {
         secret.is_some()
     }
 
-    async fn unlock(&self) -> color_eyre::Result<()> {
+    async fn unlock(&self) -> Result<()> {
         // if we already have a signer, then we're good
         if self.is_unlocked().await {
             return Ok(());

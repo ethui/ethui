@@ -1,6 +1,7 @@
 use std::{collections::HashSet, str::FromStr};
 
-use ethui_types::{Address, TokenBalance, TokenMetadata, U256};
+use ethui_types::prelude::*;
+use ethui_types::{TokenBalance, TokenMetadata};
 use tracing::instrument;
 
 use crate::DbInner;
@@ -11,7 +12,7 @@ impl DbInner {
         chain_id: u32,
         contract: Address,
         address: Address,
-    ) -> color_eyre::Result<U256> {
+    ) -> Result<U256> {
         let contract = contract.to_string();
         let address = address.to_string();
 
@@ -33,7 +34,7 @@ impl DbInner {
         contract: Address,
         address: Address,
         balance: U256,
-    ) -> color_eyre::Result<()> {
+    ) -> Result<()> {
         let contract = contract.to_string();
         let address = address.to_string();
         let balance = balance.to_string();
@@ -57,7 +58,7 @@ impl DbInner {
         chain_id: u32,
         address: Address,
         balances: Vec<(Address, U256)>,
-    ) -> color_eyre::Result<()> {
+    ) -> Result<()> {
         for (contract, balance) in balances {
             self.save_erc20_balance(chain_id, contract, address, balance)
                 .await?;
@@ -74,7 +75,7 @@ impl DbInner {
         from: Address,
         to: Address,
         value: U256,
-    ) -> color_eyre::Result<()> {
+    ) -> Result<()> {
         // update from's balance
         if !from.is_zero() {
             let current = self.read_erc20_balance(chain_id, contract, from).await?;
@@ -100,7 +101,7 @@ impl DbInner {
         chain_id: u32,
         address: Address,
         include_blacklisted: bool,
-    ) -> color_eyre::Result<Vec<TokenBalance>> {
+    ) -> Result<Vec<TokenBalance>> {
         let address_str = address.to_string();
 
         let rows = sqlx::query!(
@@ -150,7 +151,7 @@ impl DbInner {
         &self,
         chain_id: u32,
         address: Address,
-    ) -> color_eyre::Result<Vec<TokenBalance>> {
+    ) -> Result<Vec<TokenBalance>> {
         let address_str = address.to_string();
 
         let rows = sqlx::query!(
@@ -197,7 +198,7 @@ impl DbInner {
     pub async fn get_erc20_missing_metadata(
         &self,
         chain_id: u32,
-    ) -> color_eyre::Result<Vec<Address>> {
+    ) -> Result<Vec<Address>> {
         let res: Vec<_> = sqlx::query!(
             r#"SELECT DISTINCT balances.contract
                 FROM balances
@@ -219,7 +220,7 @@ impl DbInner {
         &self,
         address: Address,
         chain_id: u32,
-    ) -> color_eyre::Result<TokenMetadata> {
+    ) -> Result<TokenMetadata> {
         let contract = address.to_string();
 
         let row = sqlx::query!(
@@ -244,7 +245,7 @@ impl DbInner {
         &self,
         chain_id: u32,
         metadatas: Vec<TokenMetadata>,
-    ) -> color_eyre::Result<()> {
+    ) -> Result<()> {
         for metadata in metadatas {
             self.save_erc20_metadata(chain_id, metadata).await?;
         }
@@ -255,7 +256,7 @@ impl DbInner {
         &self,
         chain_id: u32,
         metadata: TokenMetadata,
-    ) -> color_eyre::Result<()> {
+    ) -> Result<()> {
         let address = metadata.address.to_string();
 
         sqlx::query!(
@@ -278,7 +279,7 @@ impl DbInner {
         chain_id: u32,
         address: Address,
         blacklisted: bool,
-    ) -> color_eyre::Result<()> {
+    ) -> Result<()> {
         let address = address.to_string();
 
         sqlx::query!(
@@ -298,7 +299,7 @@ impl DbInner {
         &self,
         chain_id: u32,
         address: Address,
-    ) -> color_eyre::Result<()> {
+    ) -> Result<()> {
         let address = address.to_string();
 
         sqlx::query!(

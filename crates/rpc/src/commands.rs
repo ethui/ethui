@@ -1,4 +1,4 @@
-use alloy::primitives::Bytes;
+use ethui_types::prelude::*;
 
 use super::{Handler, Result};
 

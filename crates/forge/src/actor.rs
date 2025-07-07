@@ -4,8 +4,7 @@ use std::{
     time::Duration,
 };
 
-use alloy::primitives::Bytes;
-use ethui_types::UINotify;
+use ethui_types::prelude::*;
 use futures::{stream, StreamExt as _};
 use glob::glob;
 use kameo::{actor::ActorRef, message::Message, Actor};
@@ -14,7 +13,6 @@ use notify_debouncer_full::{
     new_debouncer, DebounceEventResult, DebouncedEvent, Debouncer, RecommendedCache,
 };
 use tokio::task;
-use tracing::{instrument, trace, warn};
 
 use crate::{abi::ForgeAbi, utils};
 
@@ -85,7 +83,7 @@ impl Message<Vec<DebouncedEvent>> for Worker {
 struct UpdateContracts;
 
 impl Message<UpdateContracts> for Worker {
-    type Reply = color_eyre::Result<()>;
+    type Reply = Result<()>;
 
     async fn handle(
         &mut self,
@@ -191,19 +189,18 @@ impl Actor for Worker {
 
 impl Worker {
     #[instrument(skip_all)]
-    async fn scan_project(&mut self, root: &Path) -> color_eyre::Result<()> {
+    async fn scan_project(&mut self, root: &Path) -> Result<()> {
         let pattern = root.join("out").join("**").join("*.json");
 
         // Use spawn_blocking for the synchronous glob operation to avoid blocking the async runtime
         let pattern_str = pattern.to_string_lossy().to_string();
-        let paths: Vec<PathBuf> =
-            task::spawn_blocking(move || -> color_eyre::Result<Vec<PathBuf>> {
-                Ok(glob(&pattern_str)
-                    .map_err(|e| color_eyre::eyre::eyre!("Glob pattern error: {}", e))?
-                    .filter_map(|p| p.ok())
-                    .collect::<Vec<_>>())
-            })
-            .await??;
+        let paths: Vec<PathBuf> = task::spawn_blocking(move || -> Result<Vec<PathBuf>> {
+            Ok(glob(&pattern_str)
+                .map_err(|e| color_eyre::eyre::eyre!("Glob pattern error: {}", e))?
+                .filter_map(|p| p.ok())
+                .collect::<Vec<_>>())
+        })
+        .await??;
 
         // Process files in parallel using buffered stream for controlled concurrency
         let valid_abis: Vec<_> = stream::iter(paths)
@@ -236,7 +233,7 @@ impl Worker {
     }
 
     #[instrument(skip_all)]
-    async fn update_roots(&mut self, roots: Vec<PathBuf>) -> color_eyre::Result<()> {
+    async fn update_roots(&mut self, roots: Vec<PathBuf>) -> Result<()> {
         let to_remove: Vec<_> = self
             .roots
             .iter()
@@ -275,7 +272,7 @@ impl Worker {
     }
 
     #[instrument(skip_all)]
-    async fn update_foundry_roots(&mut self) -> color_eyre::Result<()> {
+    async fn update_foundry_roots(&mut self) -> Result<()> {
         let new_foundry_roots = self.find_foundry_roots().await?;
 
         let to_remove: Vec<_> = self
@@ -314,7 +311,7 @@ impl Worker {
     }
 
     #[instrument(skip_all)]
-    async fn add_path(&mut self, path: PathBuf) -> color_eyre::Result<()> {
+    async fn add_path(&mut self, path: PathBuf) -> Result<()> {
         trace!(path= ?path);
         if self.roots.contains(&path) {
             return Ok(());
@@ -326,7 +323,7 @@ impl Worker {
     }
 
     #[instrument(skip_all)]
-    async fn remove_path(&mut self, path: PathBuf) -> color_eyre::Result<()> {
+    async fn remove_path(&mut self, path: PathBuf) -> Result<()> {
         trace!(path = ?path);
         if self.roots.remove(&path) {
             self.update_foundry_roots().await?;
@@ -337,7 +334,7 @@ impl Worker {
     /// Finds all project roots for Foundry projects (by locating foundry.toml files)
     /// If nested foundry.toml files are found, such as in dependencies or lib folders, they will be ignored.
     #[instrument(skip_all)]
-    async fn find_foundry_roots(&self) -> color_eyre::Result<HashSet<PathBuf>> {
+    async fn find_foundry_roots(&self) -> Result<HashSet<PathBuf>> {
         let roots = self.roots.clone(); // Clone to move into async task
 
         // Process all roots in parallel using spawn_blocking for each glob operation
@@ -419,7 +416,7 @@ mod tests {
     use super::*;
 
     #[tokio::test]
-    pub async fn find_forge_tomls() -> color_eyre::Result<()> {
+    pub async fn find_forge_tomls() -> Result<()> {
         let dir = create_fixture_directories()?;
 
         let mut actor = Worker::default();
@@ -435,7 +432,7 @@ mod tests {
         Ok(())
     }
 
-    fn create_fixture_directories() -> color_eyre::Result<TempDir> {
+    fn create_fixture_directories() -> Result<TempDir> {
         let tempdir = TempDir::new().unwrap();
         let base_path = tempdir.path();
 
