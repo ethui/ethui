@@ -157,7 +157,7 @@ impl Worker {
                         oneshot.take().map(|tx| tx.send(()));
                     }
                     Err(e) => {
-                        tracing::error!("Failed to fetch full transaction for chain_id {} and hash {:?}: {:?}", chain_id, hash, e);
+                        error!("Failed to fetch full transaction for chain_id {} and hash {:?}: {:?}", chain_id, hash, e);
                     }
                 }
             }
