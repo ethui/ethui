@@ -1,9 +1,10 @@
 use alloy::providers::Provider as _;
-use color_eyre::eyre::ContextCompat as _;
+use color_eyre::eyre::{Context as _, ContextCompat as _};
 use ethui_db::{
     utils::{fetch_etherscan_abi, fetch_etherscan_contract_name},
     Db,
 };
+use ethui_forge::GetAbiFor;
 use ethui_proxy_detect::ProxyType;
 use ethui_types::{Address, GlobalState, TauriResult, UINotify};
 
@@ -35,59 +36,67 @@ pub async fn add_contract(
     address: Address,
     db: tauri::State<'_, Db>,
 ) -> TauriResult<()> {
-    async fn inner(
-        chain_id: u64,
-        dedup_id: i64,
-        address: Address,
-        db: tauri::State<'_, Db>,
-    ) -> color_eyre::Result<()> {
-        let networks = ethui_networks::Networks::read().await;
+    let networks = ethui_networks::Networks::read().await;
 
-        let network = networks
-            .get_network(chain_id as u32)
-            .with_context(|| format!("Invalid network: {chain_id}"))?;
-        let provider = network.get_alloy_provider().await?;
+    let network = networks
+        .get_network(chain_id as u32)
+        .wrap_err_with(|| format!("Invalid network {chain_id}"))?;
+    let provider = network.get_alloy_provider().await?;
 
-        let code = provider.get_code_at(address).await?;
-        let proxy = ethui_proxy_detect::detect_proxy(address, &provider).await?;
-        let network_is_dev = network.is_dev().await;
+    let code = provider
+        .get_code_at(address)
+        .await
+        .wrap_err_with(|| format!("Failed to get code at {address}"))?;
 
-        let (name, abi) = if network_is_dev {
-            (None, None)
-        } else {
-            match proxy {
-                // Eip1166 minimal proxies don't have an ABI, and etherscan actually returns the implementation's ABI in this case, which we don't want
-                Some(ProxyType::Eip1167(_)) => (Some("EIP1167".to_string()), None),
-                _ => (
-                    fetch_etherscan_contract_name(chain_id.into(), address).await?,
-                    fetch_etherscan_abi(chain_id.into(), address)
-                        .await?
-                        .map(|abi| serde_json::to_string(&abi).unwrap()),
-                ),
-            }
-        };
+    let proxy = ethui_proxy_detect::detect_proxy(address, &provider)
+        .await
+        .wrap_err_with(|| format!("Failed to detect proxy type for {address}"))?;
 
-        let proxy_for = proxy.map(|proxy| proxy.implementation());
-
-        db.insert_contract_with_abi(
-            (chain_id as u32, dedup_id as i32).into(),
-            address,
-            Some(&code),
-            abi,
-            name,
-            proxy_for,
+    let (name, abi) = if let Some(ProxyType::Eip1167(_)) = proxy {
+        // if it's an EIP1167 proxy, there's no ABI to fetch
+        (Some("EIP1167".into()), None)
+    } else if let Some(abi) = ethui_forge::ask(GetAbiFor(code.clone())).await? {
+        // if we have a local match, use that
+        (
+            Some(abi.name),
+            Some(serde_json::to_string(&abi.abi).unwrap()),
         )
-        .await?;
+    } else if let Ok(Some(fork)) = network.get_forked_network().await {
+        (
+            fetch_etherscan_contract_name(fork.chain_id.into(), address).await?,
+            fetch_etherscan_abi(fork.chain_id.into(), address)
+                .await?
+                .map(|abi| serde_json::to_string(&abi).unwrap()),
+        )
+    } else if !network.is_dev().await {
+        (
+            fetch_etherscan_contract_name(chain_id.into(), address).await?,
+            fetch_etherscan_abi(chain_id.into(), address)
+                .await?
+                .map(|abi| serde_json::to_string(&abi).unwrap()),
+        )
+    } else {
+        (None, None)
+    };
 
-        if let Some(proxy_for) = proxy_for {
-            Box::pin(inner(chain_id, dedup_id, proxy_for, db)).await
-        } else {
-            ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
-            Ok(())
-        }
+    let proxy_for = proxy.map(|proxy| proxy.implementation());
+
+    db.insert_contract_with_abi(
+        (chain_id as u32, dedup_id as i32).into(),
+        address,
+        Some(&code),
+        abi,
+        name,
+        proxy_for,
+    )
+    .await?;
+
+    if let Some(proxy_for) = proxy_for {
+        Box::pin(add_contract(chain_id, dedup_id, proxy_for, db)).await
+    } else {
+        ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
+        Ok(())
     }
-
-    Ok(inner(chain_id, dedup_id, address, db).await?)
 }
 
 #[tauri::command]
