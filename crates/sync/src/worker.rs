@@ -151,9 +151,14 @@ impl Worker {
     ) {
         tokio::spawn(async move {
             if ethui_sync_alchemy::supports_network(chain_id) {
-                if let Ok(_) = utils::fetch_full_tx(chain_id, hash).await {
-                    let mut oneshot = oneshot.lock().await;
-                    oneshot.take().map(|tx| tx.send(()));
+                match utils::fetch_full_tx(chain_id, hash).await {
+                    Ok(_) => {
+                        let mut oneshot = oneshot.lock().await;
+                        oneshot.take().map(|tx| tx.send(()));
+                    }
+                    Err(e) => {
+                        tracing::error!("Failed to fetch full transaction for chain_id {} and hash {:?}: {:?}", chain_id, hash, e);
+                    }
                 }
             }
         });
