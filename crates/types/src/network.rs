@@ -2,7 +2,7 @@ use alloy::{
     network::Ethereum,
     providers::{ext::AnvilApi, ProviderBuilder, RootProvider},
     rpc::{client::ClientBuilder, types::anvil::ForkedNetwork},
-    transports::{layers::RetryBackoffLayer, RpcError, TransportErrorKind},
+    transports::layers::RetryBackoffLayer,
 };
 use url::Url;
 

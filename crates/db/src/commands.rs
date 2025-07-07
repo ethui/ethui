@@ -1,7 +1,7 @@
 use alloy::json_abi::JsonAbi;
 use ethui_types::{
-    events::Tx, prelude::*, transactions::Transaction, Address, Contract, Erc721TokenData,
-    TauriResult, TokenBalance, TokenMetadata, UINotify, B256, U256,
+    events::Tx, prelude::*, transactions::Transaction, Contract, Erc721TokenData, TokenBalance,
+    TokenMetadata,
 };
 
 use crate::{pagination::TxIdx, Db};

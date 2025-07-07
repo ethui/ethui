@@ -105,7 +105,7 @@ impl PrivateKeyWallet {
         let wallet: PrivateKeySigner = PrivateKeySigner::from_str(&key)?;
 
         let ciphertext = ethui_crypto::encrypt(&key, &params.password)
-            .wrap_(|e| format!("Failed to encrypt private key: {e}"))?;
+            .map_err(|e| eyre!("Failed to encrypt private key: {e}"))?;
 
         Ok(Self {
             name: params.name,
@@ -131,7 +131,7 @@ impl PrivateKeyWallet {
         let dialog = Dialog::new(
             "wallet-unlock",
             serde_json::to_value(self)
-                .wrap_err_with(|e| format!("Failed to serialize wallet data: {e}"))?,
+                .map_err(|e| eyre!("Failed to serialize wallet data: {e}"))?,
         );
         dialog.open().await?;
 

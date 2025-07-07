@@ -203,8 +203,8 @@ async fn get_alchemy(chain_id: u32) -> Result<ethui_sync_alchemy::Alchemy> {
         Ok(Some(api_key)) => api_key,
         _ => return Err(eyre!("No API key")),
     };
-    let alchemy = ethui_sync_alchemy::Alchemy::new(&api_key, ethui_db::get(), chain_id).wrap_err_with
-        (|e| format!("Failed to create Alchemy instance: {e}"))?;
+    let alchemy = ethui_sync_alchemy::Alchemy::new(&api_key, ethui_db::get(), chain_id).map_err
+        (|e| eyre!("Failed to create Alchemy instance: {e}"))?;
 
     Ok(alchemy)
 }
