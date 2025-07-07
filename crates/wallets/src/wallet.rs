@@ -2,6 +2,7 @@ use async_trait::async_trait;
 use color_eyre::eyre::eyre;
 use enum_dispatch::enum_dispatch;
 use ethui_types::{Address, Json};
+use kameo::Reply;
 use serde::{Deserialize, Serialize};
 
 use super::wallets::{HDWallet, Impersonator, JsonKeystoreWallet, LedgerWallet, PlaintextWallet};
@@ -49,7 +50,7 @@ pub trait WalletCreate {
 }
 
 #[enum_dispatch]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Reply)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum Wallet {
     Plaintext(PlaintextWallet),
@@ -107,6 +108,12 @@ impl std::fmt::Display for WalletType {
                 WalletType::PrivateKey => "privateKey",
             }
         )
+    }
+}
+
+impl From<Wallet> for WalletType {
+    fn from(wallet: Wallet) -> Self {
+        (&wallet).into()
     }
 }
 
