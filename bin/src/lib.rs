@@ -28,10 +28,9 @@ pub async fn run() -> Result<()> {
 
     let args = ethui_args::parse();
 
-    // Handle subcommands before GUI initialization
     #[cfg(feature = "forge-traces")]
     if let Some(command) = &args.command {
-        return handle_command(command).await;
+        return handle_command(command, &args).await;
     }
 
     let lock = NamedLock::create(LOCK_NAME)?;
@@ -50,21 +49,21 @@ pub async fn run() -> Result<()> {
 }
 
 #[cfg(feature = "forge-traces")]
-async fn handle_command(command: &Commands) -> Result<()> {
+async fn handle_command(command: &Commands, args: &ethui_args::Args) -> Result<()> {
     match command {
-        Commands::Forge { subcommand } => handle_forge_command(subcommand).await,
+        Commands::Forge { subcommand } => handle_forge_command(subcommand, args).await,
     }
 }
 
 #[cfg(feature = "forge-traces")]
-async fn handle_forge_command(subcommand: &ForgeCommands) -> Result<()> {
+async fn handle_forge_command(subcommand: &ForgeCommands, args: &ethui_args::Args) -> Result<()> {
     use std::env;
 
     match subcommand {
         ForgeCommands::Test => {
             let current_dir = env::current_dir().expect("failed to get current dir");
             let forge_test_runner =
-                ForgeTestRunner::new(current_dir.to_string_lossy().to_string(), 9102);
+                ForgeTestRunner::new(current_dir.to_string_lossy().to_string(), args.ws_port);
             forge_test_runner.run_tests().await
         }
     }
