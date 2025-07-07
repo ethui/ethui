@@ -3599,10 +3599,10 @@ dependencies = [
 
 [[package]]
 name = "ethui-stacks"
-version = "1.15.1"
+version = "1.17.0"
 dependencies = [
  "alloy",
- "anyhow",
+ "color-eyre",
  "ethui-args",
  "ethui-broadcast",
  "ethui-db",

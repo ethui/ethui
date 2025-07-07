@@ -26,11 +26,11 @@ tracing.workspace = true
 futures.workspace = true
 regex.workspace = true
 kameo.workspace = true
+color-eyre.workspace = true
 
 glob.workspace = true
 notify.workspace = true
 notify-debouncer-full.workspace = true
 
 [dev-dependencies]
-anyhow.workspace = true
 tempfile.workspace = true

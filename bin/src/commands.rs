@@ -120,10 +120,9 @@ pub async fn remove_contract(
 
 #[tauri::command]
 pub async fn is_stacks_enabled() -> bool {
-
     if cfg!(feature = "stacks") {
         return true;
-    } 
-    
+    }
+
     false
 }

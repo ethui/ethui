@@ -1,23 +1,21 @@
 use std::path::PathBuf;
 
 use ethui_broadcast::InternalMsg;
-use ethui_settings::Settings;
-use ethui_types::GlobalState;
+use ethui_settings::GetAll;
 use kameo::actor::ActorRef;
 
-use crate::{
-    actor::{Msg, Worker},
-    error::Result,
-};
+use crate::actor::{Msg, Worker};
 
-pub async fn init(stacks_port: u16, config_dir: PathBuf) -> Result<()> {
+pub async fn init(stacks_port: u16, config_dir: PathBuf) -> color_eyre::Result<()> {
     let handle = kameo::spawn(Worker::new(stacks_port, config_dir));
     handle.register("run_local_stacks").unwrap();
 
-    let settings = Settings::read().await;
+    let settings = ethui_settings::ask(GetAll)
+        .await
+        .expect("Failed to get settings");
 
     handle
-        .tell(Msg::SetEnabled(settings.run_local_stacks()))
+        .tell(Msg::SetEnabled(settings.run_local_stacks))
         .await?;
 
     tokio::spawn(async move { receiver(handle).await });
@@ -32,10 +30,12 @@ async fn receiver(handle: ActorRef<Worker>) -> ! {
         if let Ok(msg) = rx.recv().await {
             match msg {
                 InternalMsg::SettingsUpdated => {
-                    let settings = Settings::read().await;
+                    let settings = ethui_settings::ask(GetAll)
+                        .await
+                        .expect("Failed to get settings");
 
                     handle
-                        .tell(Msg::SetEnabled(settings.run_local_stacks()))
+                        .tell(Msg::SetEnabled(settings.run_local_stacks))
                         .await
                         .unwrap();
                 }

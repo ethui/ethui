@@ -4,9 +4,9 @@ use std::{
 };
 
 use ethui_types::prelude::*;
-use kameo::{actor::ActorRef, message::Message, prelude::Context, Actor, Reply};
+use kameo::{Actor, Reply, actor::ActorRef, message::Message, prelude::Context};
 
-use crate::{migrations::load_and_migrate, onboarding::OnboardingStep, DarkMode, Settings};
+use crate::{DarkMode, Settings, migrations::load_and_migrate, onboarding::OnboardingStep};
 
 #[derive(Debug)]
 pub struct SettingsActor {
@@ -123,7 +123,7 @@ impl Message<Set> for SettingsActor {
                     ethui_tracing::parse(&self.inner.rust_log)?;
                 }
                 if let Some(v) = map.get("runLocalStacks") {
-                    self.inner.stacks = serde_json::from_value(v.clone()).unwrap();
+                    self.inner.run_local_stacks = serde_json::from_value(v.clone()).unwrap();
                 }
             }
             Set::DarkMode(mode) => {
@@ -148,7 +148,7 @@ impl Message<Set> for SettingsActor {
                 }
             }
             Set::RunLocalStacks(mode) => {
-                self.inner.stacks = mode;
+                self.inner.run_local_stacks = mode;
             }
         }
 

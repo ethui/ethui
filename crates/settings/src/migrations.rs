@@ -86,7 +86,7 @@ pub struct SettingsV1 {
 #[derive(Debug, Clone, Deserialize)]
 #[cfg_attr(test, derive(Serialize))]
 #[serde(rename_all = "camelCase", default)]
-pub struct SerializedSettingsV2 {
+pub struct SettingsV2 {
     pub dark_mode: DarkMode,
 
     pub abi_watch_path: Option<String>,
@@ -221,7 +221,7 @@ fn run_migrations(settings: Versions) -> Settings {
                     start_minimized: v3.start_minimized,
                     rust_log: v3.rust_log,
                     onboarding: v3.onboarding,
-                    stacks: v3.stacks,
+                    run_local_stacks: v3.run_local_stacks,
                 });
             }
         }
@@ -274,7 +274,7 @@ impl Default for SettingsV1 {
     }
 }
 
-impl Default for SerializedSettingsV2 {
+impl Default for SettingsV2 {
     fn default() -> Self {
         Self {
             dark_mode: DarkMode::Auto,

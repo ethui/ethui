@@ -1,11 +1,8 @@
 use std::path::PathBuf;
 
-use kameo::{actor::ActorRef, message::Message, Actor};
+use kameo::{Actor, actor::ActorRef, message::Message};
 
-use crate::{
-    docker::{start_stacks, stop_stacks},
-    error::Result,
-};
+use crate::docker::{start_stacks, stop_stacks};
 
 pub struct Worker {
     pub stacks: bool,
@@ -43,9 +40,9 @@ impl Message<Msg> for Worker {
 }
 
 impl Actor for Worker {
-    type Error = crate::error::Error;
+    type Error = color_eyre::Report;
 
-    async fn on_start(&mut self, _actor_ref: ActorRef<Self>) -> Result<()> {
+    async fn on_start(&mut self, _actor_ref: ActorRef<Self>) -> color_eyre::Result<()> {
         Ok(())
     }
 }

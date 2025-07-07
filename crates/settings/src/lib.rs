@@ -49,7 +49,7 @@ pub struct Settings {
     pub rust_log: String,
 
     #[serde(default)]
-    run_local_stacks: bool,
+    pub run_local_stacks: bool,
 
     #[serde(default)]
     pub onboarding: Onboarding,
