@@ -176,11 +176,10 @@ async fn unit_worker(
     mut rx: mpsc::UnboundedReceiver<()>,
 ) -> color_eyre::Result<()> {
     loop {
-        if ethui_sync_alchemy::supports_network(chain_id) {
-            if let Ok(alchemy) = get_alchemy(chain_id).await {
+        if ethui_sync_alchemy::supports_network(chain_id)
+            && let Ok(alchemy) = get_alchemy(chain_id).await {
                 alchemy.fetch_updates(addr).await?;
             };
-        }
 
         // wait for either a set delay, or for an outside poll request
         select! {

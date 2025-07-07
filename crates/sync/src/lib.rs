@@ -64,6 +64,3 @@ async fn receiver(snd: mpsc::UnboundedSender<Msg>) -> std::result::Result<(), ()
             if let Ok(msg) = internal_msg.try_into() {
                 snd.send(msg).unwrap();
             }
-        }
-    }
-}
