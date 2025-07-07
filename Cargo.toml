@@ -1,6 +1,6 @@
 [workspace.package]
 version = "1.17.0"
-edition = "2021"
+edition = "2024"
 license-file = "./LICENSE"
 homepage = "https://github.com/ethui"
 repository = "https://github.com/ethui/ethui"
