@@ -2,14 +2,13 @@ use std::str::FromStr;
 
 use alloy::{
     network::{Ethereum, TransactionBuilder as _},
-    primitives::{Bytes, U256},
-    providers::{PendingTransactionBuilder, Provider, ProviderBuilder, ext::AnvilApi},
+    providers::{ext::AnvilApi, PendingTransactionBuilder, Provider, ProviderBuilder},
     rpc::types::TransactionRequest,
 };
 use ethui_connections::Ctx;
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_settings::GetAll;
-use ethui_types::{Address, GlobalState, Network};
+use ethui_types::prelude::*;
 use ethui_wallets::{WalletControl, WalletType, Wallets};
 
 use crate::{Error, Result};

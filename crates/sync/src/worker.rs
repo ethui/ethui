@@ -3,14 +3,13 @@ use std::{
     sync::Arc,
 };
 
-use ethui_types::{Address, B256, UINotify, eyre};
+use ethui_types::prelude::*;
 use tokio::{
     select,
     sync::{Mutex, mpsc, oneshot},
     task::JoinHandle,
     time::{Duration, sleep},
 };
-use tracing::{instrument, warn};
 
 use crate::{Msg, utils};
 
@@ -176,7 +175,7 @@ async fn unit_worker(
     addr: Address,
     chain_id: u32,
     mut rx: mpsc::UnboundedReceiver<()>,
-) -> color_eyre::Result<()> {
+) -> Result<()> {
     loop {
         if ethui_sync_alchemy::supports_network(chain_id)
             && let Ok(alchemy) = get_alchemy(chain_id).await
@@ -192,7 +191,7 @@ async fn unit_worker(
     }
 }
 
-async fn get_alchemy(chain_id: u32) -> color_eyre::Result<ethui_sync_alchemy::Alchemy> {
+async fn get_alchemy(chain_id: u32) -> Result<ethui_sync_alchemy::Alchemy> {
     let api_key = match ethui_sync_alchemy::get_current_api_key().await {
         Ok(Some(api_key)) => api_key,
         _ => return Err(eyre!("No API key")),

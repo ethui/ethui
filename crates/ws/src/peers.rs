@@ -1,8 +1,7 @@
-use std::{collections::HashMap, net::SocketAddr};
+use std::net::SocketAddr;
 
 use ethui_networks::Networks;
-use ethui_types::{Address, Affinity, DedupChainId, GlobalState, UINotify};
-use serde::Serialize;
+use ethui_types::{prelude::*, Affinity, DedupChainId};
 use serde_json::json;
 use tokio::sync::mpsc;
 

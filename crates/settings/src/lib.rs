@@ -6,14 +6,11 @@ mod migrations;
 mod onboarding;
 mod utils;
 
-use std::collections::HashMap;
-
 pub use actor::*;
-use ethui_types::Address;
+use ethui_types::prelude::*;
 pub use init::init;
 use migrations::LatestVersion;
 use onboarding::Onboarding;
-use serde::{Deserialize, Serialize};
 use serde_constant::ConstI64;
 pub use utils::test_alchemy_api_key;
 

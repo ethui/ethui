@@ -1,10 +1,6 @@
-use std::str::FromStr;
+use sqlx::{sqlite::SqliteRow, Row};
 
-use alloy::primitives::{Bytes, U256};
-use serde::Serialize;
-use sqlx::{Row, sqlite::SqliteRow};
-
-use crate::{Address, B256};
+use crate::prelude::*;
 
 #[derive(Debug)]
 pub enum Event {

@@ -1,10 +1,6 @@
-use std::collections::HashMap;
-
 use async_trait::async_trait;
-use ethui_types::GlobalState;
+use ethui_types::prelude::*;
 use once_cell::sync::Lazy;
-use serde::Deserialize;
-use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
 use super::{Feeds, feed::Feed};
 

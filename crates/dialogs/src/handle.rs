@@ -1,12 +1,8 @@
-use std::sync::Arc;
-
 use ethui_types::{
-    Json,
+    prelude::*,
     ui_events::{DialogClose, DialogOpen, DialogSend},
 };
-use serde::{Deserialize, Serialize};
-use tokio::sync::{RwLock, mpsc};
-use tracing::{debug, instrument};
+use tokio::sync::mpsc;
 
 use super::{global::OPEN_DIALOGS, presets};
 

@@ -1,5 +1,5 @@
 use ethui_networks::Networks;
-use ethui_types::{Affinity, GlobalState, TauriResult, eyre};
+use ethui_types::prelude::*;
 
 use crate::Store;
 

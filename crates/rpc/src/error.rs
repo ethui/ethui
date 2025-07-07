@@ -1,5 +1,5 @@
 use alloy::transports::{RpcError, TransportErrorKind};
-use ethui_types::Address;
+use ethui_types::prelude::*;
 use jsonrpc_core::ErrorCode;
 
 #[derive(thiserror::Error, Debug)]
@@ -33,6 +33,11 @@ pub enum Error {
 
     #[error(transparent)]
     JsonRpc(#[from] jsonrpc_core::Error),
+
+    #[error(
+        "Unrecongnized chainID {0}. Try adding the chain using wallet_addEthereumChain first."
+    )]
+    UnrecognizedChainId(u32),
 
     #[error("serialization error: {0}")]
     Serde(#[from] serde_json::Error),

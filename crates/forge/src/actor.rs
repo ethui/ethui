@@ -4,19 +4,42 @@ use std::{
     time::Duration,
 };
 
-use alloy::primitives::Bytes;
-use ethui_types::UINotify;
-use futures::{StreamExt as _, stream};
+use ethui_types::prelude::*;
+use futures::{stream, StreamExt as _};
 use glob::glob;
-use kameo::{Actor, actor::ActorRef, message::Message};
+use kameo::{actor::ActorRef, message::Message, Actor, Reply};
 use notify::{RecommendedWatcher, RecursiveMode};
 use notify_debouncer_full::{
-    DebounceEventResult, DebouncedEvent, Debouncer, RecommendedCache, new_debouncer,
+    new_debouncer, DebounceEventResult, DebouncedEvent, Debouncer, RecommendedCache,
 };
 use tokio::task;
-use tracing::{instrument, trace, warn};
 
 use crate::{abi::ForgeAbi, utils};
+
+pub async fn ask<M>(msg: M) -> color_eyre::Result<<<Worker as Message<M>>::Reply as Reply>::Ok>
+where
+    Worker: Message<M>,
+    M: Send + 'static + Sync,
+    <<Worker as Message<M>>::Reply as Reply>::Error: Sync + std::fmt::Display,
+{
+    let actor =
+        ActorRef::<Worker>::lookup("settings")?.wrap_err_with(|| "forge actor not found")?;
+
+    // The function now directly uses the global actor reference.
+    actor.ask(msg).await.wrap_err_with(|| "failed")
+}
+
+pub async fn tell<M>(msg: M) -> color_eyre::Result<()>
+where
+    Worker: Message<M>,
+    M: Send + 'static + Sync,
+    <<Worker as Message<M>>::Reply as Reply>::Error: Sync + std::fmt::Display,
+{
+    let actor =
+        ActorRef::<Worker>::lookup("settings")?.wrap_err_with(|| "forge actor not found")?;
+
+    actor.tell(msg).await.map_err(Into::into)
+}
 
 #[derive(Default)]
 pub struct Worker {
@@ -85,7 +108,7 @@ impl Message<Vec<DebouncedEvent>> for Worker {
 struct UpdateContracts;
 
 impl Message<UpdateContracts> for Worker {
-    type Reply = color_eyre::Result<()>;
+    type Reply = Result<()>;
 
     async fn handle(
         &mut self,
@@ -163,6 +186,20 @@ impl Message<FetchAbis> for Worker {
     }
 }
 
+pub struct GetAbiFor(pub Bytes);
+
+impl Message<GetAbiFor> for Worker {
+    type Reply = Option<ForgeAbi>;
+
+    async fn handle(
+        &mut self,
+        msg: GetAbiFor,
+        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
+    ) -> Self::Reply {
+        self.get_abi_for(&msg.0)
+    }
+}
+
 impl Actor for Worker {
     type Error = color_eyre::Report;
 
@@ -191,19 +228,18 @@ impl Actor for Worker {
 
 impl Worker {
     #[instrument(skip_all)]
-    async fn scan_project(&mut self, root: &Path) -> color_eyre::Result<()> {
+    async fn scan_project(&mut self, root: &Path) -> Result<()> {
         let pattern = root.join("out").join("**").join("*.json");
 
         // Use spawn_blocking for the synchronous glob operation to avoid blocking the async runtime
         let pattern_str = pattern.to_string_lossy().to_string();
-        let paths: Vec<PathBuf> =
-            task::spawn_blocking(move || -> color_eyre::Result<Vec<PathBuf>> {
-                Ok(glob(&pattern_str)
-                    .map_err(|e| color_eyre::eyre::eyre!("Glob pattern error: {}", e))?
-                    .filter_map(|p| p.ok())
-                    .collect::<Vec<_>>())
-            })
-            .await??;
+        let paths: Vec<PathBuf> = task::spawn_blocking(move || -> Result<Vec<PathBuf>> {
+            Ok(glob(&pattern_str)
+                .map_err(|e| color_eyre::eyre::eyre!("Glob pattern error: {}", e))?
+                .filter_map(|p| p.ok())
+                .collect::<Vec<_>>())
+        })
+        .await??;
 
         // Process files in parallel using buffered stream for controlled concurrency
         let valid_abis: Vec<_> = stream::iter(paths)
@@ -236,7 +272,7 @@ impl Worker {
     }
 
     #[instrument(skip_all)]
-    async fn update_roots(&mut self, roots: Vec<PathBuf>) -> color_eyre::Result<()> {
+    async fn update_roots(&mut self, roots: Vec<PathBuf>) -> Result<()> {
         let to_remove: Vec<_> = self
             .roots
             .iter()
@@ -275,7 +311,7 @@ impl Worker {
     }
 
     #[instrument(skip_all)]
-    async fn update_foundry_roots(&mut self) -> color_eyre::Result<()> {
+    async fn update_foundry_roots(&mut self) -> Result<()> {
         let new_foundry_roots = self.find_foundry_roots().await?;
 
         let to_remove: Vec<_> = self
@@ -314,7 +350,7 @@ impl Worker {
     }
 
     #[instrument(skip_all)]
-    async fn add_path(&mut self, path: PathBuf) -> color_eyre::Result<()> {
+    async fn add_path(&mut self, path: PathBuf) -> Result<()> {
         trace!(path= ?path);
         if self.roots.contains(&path) {
             return Ok(());
@@ -326,7 +362,7 @@ impl Worker {
     }
 
     #[instrument(skip_all)]
-    async fn remove_path(&mut self, path: PathBuf) -> color_eyre::Result<()> {
+    async fn remove_path(&mut self, path: PathBuf) -> Result<()> {
         trace!(path = ?path);
         if self.roots.remove(&path) {
             self.update_foundry_roots().await?;
@@ -337,7 +373,7 @@ impl Worker {
     /// Finds all project roots for Foundry projects (by locating foundry.toml files)
     /// If nested foundry.toml files are found, such as in dependencies or lib folders, they will be ignored.
     #[instrument(skip_all)]
-    async fn find_foundry_roots(&self) -> color_eyre::Result<HashSet<PathBuf>> {
+    async fn find_foundry_roots(&self) -> Result<HashSet<PathBuf>> {
         let roots = self.roots.clone(); // Clone to move into async task
 
         // Process all roots in parallel using spawn_blocking for each glob operation
@@ -419,7 +455,7 @@ mod tests {
     use super::*;
 
     #[tokio::test]
-    pub async fn find_forge_tomls() -> color_eyre::Result<()> {
+    async fn find_forge_tomls() -> Result<()> {
         let dir = create_fixture_directories()?;
 
         let mut actor = Worker::default();
@@ -435,7 +471,7 @@ mod tests {
         Ok(())
     }
 
-    fn create_fixture_directories() -> color_eyre::Result<TempDir> {
+    fn create_fixture_directories() -> Result<TempDir> {
         let tempdir = TempDir::new().unwrap();
         let base_path = tempdir.path();
 
