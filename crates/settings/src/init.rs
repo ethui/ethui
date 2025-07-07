@@ -5,9 +5,9 @@ use ethui_broadcast::InternalMsg;
 use kameo::actor::ActorRef;
 
 use crate::{
+    Set,
     actor::{GetAll, Save, SettingsActor},
     onboarding::OnboardingStep,
-    Set,
 };
 
 pub async fn init(pathbuf: PathBuf) -> color_eyre::Result<()> {

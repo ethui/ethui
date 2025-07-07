@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use serde::Serialize;
-use sqlx::{sqlite::SqliteRow, Row};
+use sqlx::{Row, sqlite::SqliteRow};
 
 use crate::{Address, U256};
 

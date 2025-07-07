@@ -50,7 +50,7 @@ impl TokenAdd {
 
     pub async fn get_erc20_metadata(&self, chain_id: u32) -> Result<Erc20Metadata> {
         if let Some(erc20_token) = &self.erc20_token {
-            let alchemy = get_alchemy(chain_id).await.unwrap();
+            let alchemy = get_alchemy(chain_id).await.map_err(|_| Error::ParseError)?;
             let metadata = alchemy
                 .fetch_erc20_metadata(erc20_token.address)
                 .await
@@ -62,7 +62,7 @@ impl TokenAdd {
     }
 
     pub async fn get_erc_metadata(&self, chain_id: u32) -> Result<ErcMetadataResponse> {
-        let alchemy = get_alchemy(chain_id).await.unwrap();
+        let alchemy = get_alchemy(chain_id).await.map_err(|_| Error::ParseError)?;
         match self._type.as_str() {
             "ERC721" => {
                 if let Some(erc721_token) = &self.erc721_token {
@@ -99,7 +99,7 @@ impl TokenAdd {
     }
 
     pub async fn get_erc_owners(&self, chain_id: u32) -> Result<ErcOwnersResponse> {
-        let alchemy = get_alchemy(chain_id).await.unwrap();
+        let alchemy = get_alchemy(chain_id).await.map_err(|_| Error::ParseError)?;
         match self._type.as_str() {
             "ERC721" => {
                 if let Some(erc721_token) = &self.erc721_token {
@@ -404,7 +404,11 @@ impl TokenAdd {
                 .save_erc721_collection(
                     full_data.contract.address,
                     chain_id,
-                    full_data.collection.unwrap().name.unwrap_or_default(),
+                    full_data
+                        .collection
+                        .ok_or(Error::ParseError)?
+                        .name
+                        .unwrap_or_default(),
                     full_data.contract.symbol,
                 )
                 .await;
@@ -441,7 +445,11 @@ impl TokenAdd {
                 .save_erc1155_collection(
                     full_data.contract.address,
                     chain_id,
-                    full_data.collection.unwrap().name.unwrap_or_default(),
+                    full_data
+                        .collection
+                        .ok_or(Error::ParseError)?
+                        .name
+                        .unwrap_or_default(),
                     full_data.contract.symbol,
                 )
                 .await;
@@ -557,10 +565,10 @@ impl TokenAddBuilder {
         Ok(self)
     }
 
-    pub async fn build(self) -> TokenAdd {
-        let params = self.params.unwrap();
+    pub async fn build(self) -> Result<TokenAdd> {
+        let params = self.params.ok_or(Error::ParseError)?;
 
-        match params.options {
+        Ok(match params.options {
             TokenOptions::ERC20(options) => {
                 let metadata = TokenMetadata {
                     address: options.address,
@@ -602,6 +610,6 @@ impl TokenAddBuilder {
                     _type: params._type,
                 }
             }
-        }
+        })
     }
 }

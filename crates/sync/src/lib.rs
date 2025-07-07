@@ -4,7 +4,7 @@ mod worker;
 
 use ethui_broadcast::InternalMsg;
 pub use ethui_sync_alchemy::{
-    get_alchemy, Alchemy, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse,
+    Alchemy, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse, get_alchemy,
 };
 use ethui_types::prelude::*;
 use tokio::sync::{mpsc, oneshot, Mutex};
@@ -58,8 +58,9 @@ async fn receiver(snd: mpsc::UnboundedSender<Msg>) -> std::result::Result<(), ()
 
     loop {
         if let Ok(internal_msg) = rx.recv().await
-            && let Ok(msg) = internal_msg.try_into() {
-                snd.send(msg).unwrap();
-            }
+            && let Ok(msg) = internal_msg.try_into()
+        {
+            snd.send(msg).unwrap();
+        }
     }
 }

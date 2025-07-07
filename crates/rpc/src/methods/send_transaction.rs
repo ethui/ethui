@@ -2,7 +2,6 @@ use std::str::FromStr;
 
 use alloy::{
     network::{Ethereum, TransactionBuilder as _},
-    primitives::Bytes,
     providers::{ext::AnvilApi, PendingTransactionBuilder, Provider, ProviderBuilder},
     rpc::types::TransactionRequest,
 };

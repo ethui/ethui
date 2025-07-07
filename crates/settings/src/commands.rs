@@ -1,6 +1,6 @@
 use ethui_types::{Address, TauriResult};
 
-use crate::{ask, onboarding::OnboardingStep, tell, DarkMode, GetAlias, GetAll, Set, Settings};
+use crate::{DarkMode, GetAlias, GetAll, Set, Settings, ask, onboarding::OnboardingStep, tell};
 
 #[tauri::command]
 pub async fn settings_get() -> TauriResult<Settings> {

@@ -1,7 +1,7 @@
 use tauri::{
+    AppHandle, Manager,
     menu::{MenuBuilder, MenuEvent, MenuItemBuilder},
     tray::TrayIconBuilder,
-    AppHandle, Manager,
 };
 
 pub(crate) fn build(app: &AppHandle) -> color_eyre::Result<()> {

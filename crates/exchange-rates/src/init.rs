@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use ethui_types::prelude::*;
 use once_cell::sync::Lazy;
 
-use super::{feed::Feed, Feeds};
+use super::{Feeds, feed::Feed};
 
 static FEEDS: Lazy<RwLock<Feeds>> = Lazy::new(|| {
     // Embed the JSON file in the binary

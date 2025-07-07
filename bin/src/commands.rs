@@ -1,8 +1,8 @@
 use alloy::providers::Provider as _;
 use color_eyre::eyre::{Context as _, ContextCompat as _};
 use ethui_db::{
-    utils::{fetch_etherscan_abi, fetch_etherscan_contract_name},
     Db,
+    utils::{fetch_etherscan_abi, fetch_etherscan_contract_name},
 };
 use ethui_forge::GetAbiFor;
 use ethui_proxy_detect::ProxyType;

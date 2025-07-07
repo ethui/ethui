@@ -34,9 +34,7 @@ pub enum Error {
     #[error(transparent)]
     JsonRpc(#[from] jsonrpc_core::Error),
 
-    #[error(
-        "Unrecongnized chainID {0}. Try adding the chain using wallet_addEthereumChain first."
-    )]
+    #[error("Unrecognized chainID {0}. Try adding the chain using wallet_addEthereumChain first.")]
     UnrecognizedChainId(u32),
 
     #[error("serialization error: {0}")]
@@ -81,7 +79,9 @@ pub enum Error {
     #[error("Suggested asset is not owned by the selected account")]
     ErcWrongOwner,
 
-    #[error("Unable to verify ownership. Possibly because the standard is not supported or the user's currently selected network does not match the chain of the asset in question.")]
+    #[error(
+        "Unable to verify ownership. Possibly because the standard is not supported or the user's currently selected network does not match the chain of the asset in question."
+    )]
     ErcInvalid,
 
     #[error("Invalid params for JSON-RPC method")]

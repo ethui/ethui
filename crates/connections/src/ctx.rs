@@ -1,9 +1,9 @@
 use ethui_networks::Networks;
-use ethui_types::{eyre, Affinity, DedupChainId, GlobalState, Network};
+use ethui_types::{Affinity, DedupChainId, GlobalState, Network, eyre};
 
 use crate::{
-    permissions::{Permission, PermissionRequest, RequestedPermission},
     Store,
+    permissions::{Permission, PermissionRequest, RequestedPermission},
 };
 
 /// Context for a provider connection

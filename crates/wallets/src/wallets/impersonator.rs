@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use ethui_types::prelude::*;
 
-use crate::{wallet::WalletCreate, Signer, Wallet, WalletControl};
+use crate::{Signer, Wallet, WalletControl, wallet::WalletCreate};
 
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct Impersonator {

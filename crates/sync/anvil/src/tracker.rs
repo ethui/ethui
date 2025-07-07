@@ -1,10 +1,10 @@
 use alloy::{
     network::Ethereum,
-    providers::{ext::TraceApi as _, Provider as _, ProviderBuilder, WsConnect},
-    rpc::types::{trace::parity::LocalizedTransactionTrace, Filter, Log},
+    providers::{Provider as _, ProviderBuilder, WsConnect, ext::TraceApi as _},
+    rpc::types::{Filter, Log, trace::parity::LocalizedTransactionTrace},
 };
 use ethui_abis::IERC20;
-use ethui_types::{eyre, Address, DedupChainId, TokenMetadata, UINotify, B256};
+use ethui_types::{prelude::*, DedupChainId, TokenMetadata};
 use futures::StreamExt as _;
 use tokio::sync::mpsc;
 use tracing::{instrument, trace, warn};
@@ -68,9 +68,10 @@ impl Tracker {
 
         tokio::spawn(async move {
             if let Some(quit_snd) = quit_snd
-                && let Err(e) = quit_snd.clone().send(()).await {
-                    warn!("Error closing listener: {:?}", e)
-                }
+                && let Err(e) = quit_snd.clone().send(()).await
+            {
+                warn!("Error closing listener: {:?}", e)
+            }
         });
     }
 }

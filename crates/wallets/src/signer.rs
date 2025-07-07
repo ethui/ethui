@@ -1,6 +1,6 @@
 use alloy::{
     network::EthereumWallet,
-    primitives::{Address, Signature, B256},
+    primitives::{Address, B256, Signature},
     signers::{ledger::LedgerSigner, local::PrivateKeySigner},
 };
 use async_trait::async_trait;

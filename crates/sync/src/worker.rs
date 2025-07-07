@@ -6,12 +6,12 @@ use std::{
 use ethui_types::prelude::*;
 use tokio::{
     select,
-    sync::{mpsc, oneshot, Mutex},
+    sync::{Mutex, mpsc, oneshot},
     task::JoinHandle,
-    time::{sleep, Duration},
+    time::{Duration, sleep},
 };
 
-use crate::{utils, Msg};
+use crate::{Msg, utils};
 
 #[derive(Debug)]
 pub struct Worker {
@@ -119,7 +119,11 @@ impl Worker {
         let (tx, rx) = mpsc::unbounded_channel();
 
         (
-            tokio::spawn(async move { unit_worker(addr, chain_id, rx).await.unwrap() }),
+            tokio::spawn(async move {
+                if let Err(e) = unit_worker(addr, chain_id, rx).await {
+                    tracing::error!(%addr, %chain_id, "unit_worker failed: {:?}", e);
+                }
+            }),
             tx,
         )
     }
@@ -128,10 +132,11 @@ impl Worker {
         for chain_id in self.chain_ids.iter() {
             if ethui_sync_alchemy::supports_network(*chain_id) {
                 let db = ethui_db::get();
-                let missing = db.get_erc20_missing_metadata(*chain_id).await.unwrap();
-                missing.iter().for_each(|address| {
-                    self.fetch_erc20_metadata(*chain_id, *address);
-                });
+                if let Ok(missing) = db.get_erc20_missing_metadata(*chain_id).await {
+                    missing.iter().for_each(|address| {
+                        self.fetch_erc20_metadata(*chain_id, *address);
+                    });
+                }
                 ethui_broadcast::ui_notify(UINotify::BalancesUpdated).await;
             }
         }
@@ -146,9 +151,15 @@ impl Worker {
     ) {
         tokio::spawn(async move {
             if ethui_sync_alchemy::supports_network(chain_id) {
-                utils::fetch_full_tx(chain_id, hash).await.unwrap();
-                let mut oneshot = oneshot.lock().await;
-                oneshot.take().map(|tx| tx.send(()));
+                match utils::fetch_full_tx(chain_id, hash).await {
+                    Ok(_) => {
+                        let mut oneshot = oneshot.lock().await;
+                        oneshot.take().map(|tx| tx.send(()));
+                    }
+                    Err(e) => {
+                        error!("Failed to fetch full transaction for chain_id {} and hash {:?}: {:?}", chain_id, hash, e);
+                    }
+                }
             }
         });
     }
@@ -156,9 +167,7 @@ impl Worker {
     fn fetch_erc20_metadata(&self, chain_id: u32, address: Address) {
         tokio::spawn(async move {
             if ethui_sync_alchemy::supports_network(chain_id) {
-                utils::fetch_erc20_metadata(chain_id, address)
-                    .await
-                    .unwrap();
+                let _ = utils::fetch_erc20_metadata(chain_id, address).await;
             };
         });
     }
@@ -176,9 +185,10 @@ async fn unit_worker(
 ) -> Result<()> {
     loop {
         if ethui_sync_alchemy::supports_network(chain_id)
-            && let Ok(alchemy) = get_alchemy(chain_id).await {
-                alchemy.fetch_updates(addr).await?;
-            };
+            && let Ok(alchemy) = get_alchemy(chain_id).await
+        {
+            alchemy.fetch_updates(addr).await?;
+        };
 
         // wait for either a set delay, or for an outside poll request
         select! {
@@ -193,7 +203,8 @@ async fn get_alchemy(chain_id: u32) -> Result<ethui_sync_alchemy::Alchemy> {
         Ok(Some(api_key)) => api_key,
         _ => return Err(eyre!("No API key")),
     };
-    let alchemy = ethui_sync_alchemy::Alchemy::new(&api_key, ethui_db::get(), chain_id).unwrap();
+    let alchemy = ethui_sync_alchemy::Alchemy::new(&api_key, ethui_db::get(), chain_id).map_err
+        (|e| eyre!("Failed to create Alchemy instance: {e}"))?;
 
     Ok(alchemy)
 }

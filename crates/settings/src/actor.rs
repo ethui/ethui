@@ -14,9 +14,7 @@ pub struct SettingsActor {
     file: PathBuf,
 }
 
-pub async fn ask<M>(
-    msg: M,
-) -> Result<<<SettingsActor as Message<M>>::Reply as Reply>::Ok>
+pub async fn ask<M>(msg: M) -> Result<<<SettingsActor as Message<M>>::Reply as Reply>::Ok>
 where
     SettingsActor: Message<M>,
     M: Send + 'static + Sync,

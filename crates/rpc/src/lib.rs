@@ -225,7 +225,7 @@ impl Handler {
         let method = methods::TokenAdd::build()
             .set_params(params.into())?
             .build()
-            .await;
+            .await?;
 
         method.run().await?;
 
