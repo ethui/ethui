@@ -89,6 +89,7 @@ impl Message<GetAll> for SettingsActor {
 impl Message<Set> for SettingsActor {
     type Reply = Result<()>;
 
+    #[instrument(skip(self, ctx))]
     async fn handle(&mut self, msg: Set, ctx: &mut Context<Self, Self::Reply>) -> Self::Reply {
         match msg {
             Set::All(map) => {
@@ -98,12 +99,36 @@ impl Message<Set> for SettingsActor {
                 if let Some(v) = map.get("abiWatchPath") {
                     self.inner.abi_watch_path = serde_json::from_value(v.clone()).unwrap()
                 }
+
                 if let Some(v) = map.get("alchemyApiKey") {
+                    // check onboarding step
+                    if !self
+                        .inner
+                        .onboarding
+                        .is_step_finished(OnboardingStep::Alchemy)
+                    {
+                        let _ = ctx
+                            .actor_ref()
+                            .tell(Set::FinishOnboardingStep(OnboardingStep::Alchemy))
+                            .await;
+                    }
                     self.inner.alchemy_api_key = serde_json::from_value(v.clone()).unwrap()
                 }
+
                 if let Some(v) = map.get("etherscanApiKey") {
+                    if !self
+                        .inner
+                        .onboarding
+                        .is_step_finished(OnboardingStep::Etherscan)
+                    {
+                        let _ = ctx
+                            .actor_ref()
+                            .tell(Set::FinishOnboardingStep(OnboardingStep::Etherscan))
+                            .await;
+                    }
                     self.inner.etherscan_api_key = serde_json::from_value(v.clone()).unwrap()
                 }
+
                 if let Some(v) = map.get("hideEmptyTokens") {
                     self.inner.hide_empty_tokens = serde_json::from_value(v.clone()).unwrap()
                 }
@@ -146,7 +171,7 @@ impl Message<Set> for SettingsActor {
         }
 
         // trigger a file save
-        let _ = ctx.actor_ref().tell(Save).await;
+        let _ = ctx.actor_ref().tell(Save).try_send();
 
         Ok(())
     }
@@ -155,6 +180,7 @@ impl Message<Set> for SettingsActor {
 impl Message<Save> for SettingsActor {
     type Reply = Result<()>;
 
+    #[instrument(skip(self, _ctx))]
     async fn handle(&mut self, _msg: Save, _ctx: &mut Context<Self, Self::Reply>) -> Self::Reply {
         let pathbuf = self.file.clone();
         let path = Path::new(&pathbuf);
