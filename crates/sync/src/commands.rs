@@ -22,6 +22,7 @@ pub async fn sync_get_native_balance(
         let network = Networks::read()
             .await
             .get_network(chain_id)
+            .cloned()
             .with_context(|| format!("Invalid network: {chain_id}"))?;
 
         // TODO: check with networks if this is anvil or not

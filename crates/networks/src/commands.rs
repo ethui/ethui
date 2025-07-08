@@ -1,5 +1,4 @@
-use ethui_types::prelude::*;
-use ethui_types::{DedupChainId, NewNetworkParams};
+use ethui_types::{DedupChainId, NewNetworkParams, prelude::*};
 
 use super::Networks;
 

@@ -2,16 +2,13 @@ pub mod commands;
 mod init;
 mod migrations;
 
-use std::{
-    fs::File,
-    path::{Path, PathBuf},
-};
+use std::{fs::File, path::PathBuf};
 
 use alloy::{
     network::Ethereum,
     providers::{Provider, ProviderBuilder, RootProvider},
 };
-use ethui_types::{prelude::*, Affinity, DedupChainId, NewNetworkParams};
+use ethui_types::{Affinity, DedupChainId, NewNetworkParams, prelude::*};
 pub use init::init;
 use migrations::LatestVersion;
 
@@ -109,28 +106,22 @@ impl Networks {
         &self.inner.networks[&self.inner.current]
     }
 
-    pub fn get_network(&self, chain_id: u32) -> Option<Network> {
+    pub fn get_network(&self, chain_id: u32) -> Option<&Network> {
         self.inner
             .networks
             .values()
             .find(|n| n.chain_id() == chain_id)
-            .cloned()
     }
 
-    pub fn get_network_by_name(&self, name: &str) -> Option<Network> {
-        self.inner
-            .networks
-            .values()
-            .find(|n| n.name == name)
-            .cloned()
+    pub fn get_network_by_name(&self, name: &str) -> Option<&Network> {
+        self.inner.networks.values().find(|n| n.name == name)
     }
 
-    pub fn get_network_by_dedup_chain_id(&self, dedup_chain_id: DedupChainId) -> Option<Network> {
+    pub fn get_network_by_dedup_chain_id(&self, dedup_chain_id: DedupChainId) -> Option<&Network> {
         self.inner
             .networks
             .values()
             .find(|n| n.dedup_chain_id == dedup_chain_id)
-            .cloned()
     }
 
     pub async fn add_network(&mut self, network: NewNetworkParams) -> Result<()> {
@@ -269,9 +260,7 @@ impl Networks {
 
     // Persists current state to disk
     fn save(&self) -> Result<()> {
-        let pathbuf = self.file.clone();
-        let path = Path::new(&pathbuf);
-        let file = File::create(path)?;
+        let file = File::create(&self.file)?;
 
         serde_json::to_writer_pretty(file, &self.inner)?;
 
