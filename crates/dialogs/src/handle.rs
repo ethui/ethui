@@ -64,7 +64,9 @@ impl Drop for Dialog {
         tokio::spawn(async move {
             let inner = inner.write().await;
             OPEN_DIALOGS.lock().await.remove(&inner.id);
-            inner.close().await.unwrap();
+            if let Err(e) = inner.close().await {
+                error!("Failed to close dialog {}: {}", inner.id, e);
+            }
         });
     }
 }
@@ -131,7 +133,9 @@ impl Inner {
     }
 
     async fn open(&self) -> color_eyre::Result<()> {
-        let preset = presets::PRESETS.get(&self.preset).unwrap();
+        let preset = presets::PRESETS
+            .get(&self.preset)
+            .ok_or_else(|| color_eyre::eyre::eyre!("Unknown dialog preset: {}", self.preset))?;
         let url = format!("index.html#/dialog/{}/{}", self.preset, self.id);
         let title = format!("ethui Dialog - {}", preset.title);
 
