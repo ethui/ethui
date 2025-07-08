@@ -9,9 +9,7 @@ mod windows;
 
 use color_eyre::Result;
 #[cfg(feature = "forge-traces")]
-use ethui_args::Commands;
-#[cfg(feature = "forge-traces")]
-use ethui_args::ForgeCommands;
+use ethui_args::{Commands, ForgeCommands};
 #[cfg(feature = "forge-traces")]
 use ethui_forge_traces::ForgeTestRunner;
 use named_lock::NamedLock;
