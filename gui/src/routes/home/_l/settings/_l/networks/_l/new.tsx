@@ -1,4 +1,4 @@
-import { type Network, networkSchema } from "@ethui/types/network";
+import { type NetworkInputs, networkSchema } from "@ethui/types/network";
 import { Form } from "@ethui/ui/components/form";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { toast } from "@ethui/ui/hooks/use-toast";
@@ -20,7 +20,7 @@ function Content() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<Network>({
+  const form = useForm<NetworkInputs>({
     mode: "onBlur",
     resolver: zodResolver(networkSchema),
   });
@@ -52,7 +52,7 @@ function Content() {
     fetchChainId();
   }, [httpUrl, userChainId, form.setValue, form.clearErrors]);
 
-  const onSubmit = async (data: Network) => {
+  const onSubmit = async (data: NetworkInputs) => {
     try {
       setLoading(true);
       data.dedup_chain_id.dedup_id = 0;

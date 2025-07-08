@@ -37,7 +37,5 @@ export function WalletNew({ type }: { type: string }) {
       return <PrivateKeyForm {...props} />;
     case "ledger":
       return <Ledger {...props} />;
-    default:
-      return <></>;
   }
 }
