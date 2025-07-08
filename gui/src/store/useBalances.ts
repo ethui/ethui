@@ -31,10 +31,13 @@ const store: StateCreator<Store> = (set, get) => ({
     const { address, chainId } = get();
     if (!address || !chainId) return;
 
-    const nativeBalance = await invoke<string>("sync_get_native_balance", {
-      address,
-      chainId,
-    });
+    let nativeBalance = "0";
+    try {
+      nativeBalance = await invoke<string>("sync_get_native_balance", {
+        address,
+        chainId,
+      });
+    } catch (e) {}
     const erc20Balances = await invoke<TokenBalance[]>(
       "db_get_erc20_balances",
       {
