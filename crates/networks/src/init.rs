@@ -79,7 +79,7 @@ async fn receiver() -> ! {
 
 /// Polls the status of each network every 30 seconds
 async fn status_poller() -> ! {
-    let mut interval = interval(Duration::from_secs(30)); // Poll every 30 seconds
+    let mut interval = interval(Duration::from_secs(10)); // Poll every 30 seconds
 
     loop {
         // Wait for the interval (first tick is immediate)
