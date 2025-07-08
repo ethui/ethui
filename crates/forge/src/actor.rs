@@ -227,7 +227,7 @@ impl Actor for Worker {
 }
 
 impl Worker {
-    #[instrument(skip_all)]
+    #[instrument(skip_all, level = "trace")]
     async fn scan_project(&mut self, root: &Path) -> Result<()> {
         let pattern = root.join("out").join("**").join("*.json");
 
@@ -271,7 +271,7 @@ impl Worker {
         Ok(())
     }
 
-    #[instrument(skip_all)]
+    #[instrument(skip_all, level = "trace")]
     async fn update_roots(&mut self, roots: Vec<PathBuf>) -> Result<()> {
         let to_remove: Vec<_> = self
             .roots
@@ -310,7 +310,7 @@ impl Worker {
         }
     }
 
-    #[instrument(skip_all)]
+    #[instrument(skip_all, level = "trace")]
     async fn update_foundry_roots(&mut self) -> Result<()> {
         let new_foundry_roots = self.find_foundry_roots().await?;
 
@@ -349,7 +349,7 @@ impl Worker {
         Ok(())
     }
 
-    #[instrument(skip_all)]
+    #[instrument(skip_all, level = "trace")]
     async fn add_path(&mut self, path: PathBuf) -> Result<()> {
         trace!(path= ?path);
         if self.roots.contains(&path) {
@@ -361,7 +361,7 @@ impl Worker {
         Ok(())
     }
 
-    #[instrument(skip_all)]
+    #[instrument(skip_all, level = "trace")]
     async fn remove_path(&mut self, path: PathBuf) -> Result<()> {
         trace!(path = ?path);
         if self.roots.remove(&path) {
@@ -372,7 +372,7 @@ impl Worker {
 
     /// Finds all project roots for Foundry projects (by locating foundry.toml files)
     /// If nested foundry.toml files are found, such as in dependencies or lib folders, they will be ignored.
-    #[instrument(skip_all)]
+    #[instrument(skip_all, level = "trace")]
     async fn find_foundry_roots(&self) -> Result<HashSet<PathBuf>> {
         let roots = self.roots.clone(); // Clone to move into async task
 

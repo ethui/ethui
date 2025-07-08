@@ -89,7 +89,7 @@ impl Drop for Tracker {
 ///     3. listens to new blocks via websockets
 ///     4. if anvil_nodeInfo is available, also check forkBlockNumber, and prevent fetching blocks
 ///        past that (so that forked anvil don't overload or past fetching logic)
-#[instrument(skip_all, fields(chain_id = ctx.dedup_chain_id.chain_id(), dedup_id = ctx.dedup_chain_id.dedup_id()))]
+#[instrument(skip_all, fields(chain_id = ctx.dedup_chain_id.chain_id(), dedup_id = ctx.dedup_chain_id.dedup_id()), level = "trace")]
 async fn watch(
     ctx: Ctx,
     mut quit_rcv: mpsc::Receiver<()>,

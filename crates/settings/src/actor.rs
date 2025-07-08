@@ -59,7 +59,7 @@ impl SettingsActor {
         Ok(ret)
     }
 
-    #[instrument(skip(self))]
+    #[instrument(skip(self), level = "trace")]
     async fn save(&self) -> Result<()> {
         let pathbuf = self.file.clone();
         let path = Path::new(&pathbuf);
@@ -105,7 +105,7 @@ impl Message<GetAll> for SettingsActor {
 impl Message<Set> for SettingsActor {
     type Reply = Result<()>;
 
-    #[instrument(skip(self, ctx))]
+    #[instrument(skip(self, ctx), level = "trace")]
     async fn handle(&mut self, msg: Set, ctx: &mut Context<Self, Self::Reply>) -> Self::Reply {
         match msg {
             Set::All(map) => {
