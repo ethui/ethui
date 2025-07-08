@@ -45,11 +45,11 @@ interface TxRequest {
   value: string;
   chainId: number;
   walletType:
-    | "ledger"
-    | "HdWallet"
-    | "jsonKeystore"
-    | "plaintext"
-    | "impersonator";
+  | "ledger"
+  | "HdWallet"
+  | "jsonKeystore"
+  | "plaintext"
+  | "impersonator";
 }
 
 interface Log {
@@ -185,6 +185,7 @@ function Header({ from, to, network }: HeaderProps) {
         <ChainView
           name={network.name}
           chainId={network.dedup_chain_id.chain_id}
+          status={network.status}
         />
       </div>
     </div>

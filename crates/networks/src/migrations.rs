@@ -5,7 +5,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use ethui_types::Network;
+use ethui_types::{Network, NetworkStatus};
 use serde::{Deserialize, Serialize};
 use serde_constant::ConstI64;
 use serde_json::json;
@@ -160,6 +160,7 @@ fn migrate_networks_from_v2_to_v3(
                     ws_url: network.ws_url,
                     currency: network.currency,
                     decimals: network.decimals,
+                    status: NetworkStatus::Unknown,
                 },
             )
         })

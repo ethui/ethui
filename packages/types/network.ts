@@ -46,4 +46,6 @@ export const networkSchema = z.intersection(
   rpcAndChainIdSchema,
 );
 
-export type Network = z.infer<typeof networkSchema>;
+export type Network = z.infer<typeof networkSchema> & {
+  status: "unknown" | "online" | "offline";
+};

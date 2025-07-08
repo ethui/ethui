@@ -15,6 +15,7 @@ export function QuickNetworkSelect() {
     useShallow((s) => [s.networks, s.current, s.setCurrent]),
   );
 
+  console.log(networks, current);
   if (!networks || !current) return <>Loading</>;
 
   return (
@@ -25,9 +26,9 @@ export function QuickNetworkSelect() {
 
       <SelectContent>
         <SelectGroup>
-          {networks.map(({ dedup_chain_id: { chain_id }, name }) => (
+          {networks.map(({ dedup_chain_id: { chain_id }, name, status }) => (
             <SelectItem value={name} key={name}>
-              <ChainView chainId={chain_id} name={name} />
+              <ChainView chainId={chain_id} name={name} status={status} />
             </SelectItem>
           ))}
         </SelectGroup>
