@@ -3577,6 +3577,7 @@ dependencies = [
  "tauri",
  "tempfile",
  "tokio",
+ "tracing",
 ]
 
 [[package]]
