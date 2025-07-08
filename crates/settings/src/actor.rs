@@ -47,11 +47,30 @@ impl SettingsActor {
             Settings::default()
         };
 
-        // make sure OS's autostart is synced with settings
-        crate::autostart::update(inner.autostart)?;
-        ethui_tracing::reload(&inner.rust_log)?;
+        let ret = Self { inner, file };
 
-        Ok(Self { inner, file })
+        // Save immediately after instantiation to persist any migrations
+        ret.save().await?;
+
+        // make sure OS's autostart is synced with settings
+        crate::autostart::update(ret.inner.autostart)?;
+        ethui_tracing::reload(&ret.inner.rust_log)?;
+
+        Ok(ret)
+    }
+
+    #[instrument(skip(self))]
+    async fn save(&self) -> Result<()> {
+        let pathbuf = self.file.clone();
+        let path = Path::new(&pathbuf);
+        let file = File::create(path)?;
+
+        ethui_tracing::reload(&self.inner.rust_log)?;
+        serde_json::to_writer_pretty(file, &self.inner)?;
+        ethui_broadcast::settings_updated().await;
+        ethui_broadcast::ui_notify(UINotify::SettingsChanged).await;
+
+        Ok(())
     }
 }
 
@@ -74,9 +93,6 @@ pub struct GetAll;
 
 #[derive(Debug, Clone)]
 pub struct GetAlias(pub ethui_types::Address);
-
-#[derive(Debug, Clone)]
-pub struct Save;
 
 impl Message<GetAll> for SettingsActor {
     type Reply = Settings;
@@ -170,26 +186,9 @@ impl Message<Set> for SettingsActor {
             }
         }
 
+        self.save().await?;
         // trigger a file save
-        let _ = ctx.actor_ref().tell(Save).try_send();
-
-        Ok(())
-    }
-}
-
-impl Message<Save> for SettingsActor {
-    type Reply = Result<()>;
-
-    #[instrument(skip(self, _ctx))]
-    async fn handle(&mut self, _msg: Save, _ctx: &mut Context<Self, Self::Reply>) -> Self::Reply {
-        let pathbuf = self.file.clone();
-        let path = Path::new(&pathbuf);
-        let file = File::create(path)?;
-
-        ethui_tracing::reload(&self.inner.rust_log)?;
-        serde_json::to_writer_pretty(file, &self.inner)?;
-        ethui_broadcast::settings_updated().await;
-        ethui_broadcast::ui_notify(UINotify::SettingsChanged).await;
+        // let _ = ctx.actor_ref().tell(Save).try_send();
 
         Ok(())
     }

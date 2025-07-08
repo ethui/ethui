@@ -4,20 +4,13 @@ use color_eyre::eyre::Context as _;
 use ethui_broadcast::InternalMsg;
 use kameo::actor::ActorRef;
 
-use crate::{
-    actor::{Save, SettingsActor},
-    onboarding::OnboardingStep,
-    Set,
-};
+use crate::{actor::SettingsActor, onboarding::OnboardingStep, Set};
 
 pub async fn init(pathbuf: PathBuf) -> color_eyre::Result<()> {
     let actor = kameo::spawn(SettingsActor::new(pathbuf).await?);
     actor
         .register("settings")
         .wrap_err_with(|| "Actor spawn error")?;
-
-    // Save immediately after instantiation to persist any migrations
-    actor.tell(Save).await?;
 
     tokio::spawn(receiver(actor));
 
