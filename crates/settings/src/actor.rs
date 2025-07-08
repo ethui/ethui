@@ -47,11 +47,30 @@ impl SettingsActor {
             Settings::default()
         };
 
-        // make sure OS's autostart is synced with settings
-        crate::autostart::update(inner.autostart)?;
-        ethui_tracing::reload(&inner.rust_log)?;
+        let ret = Self { inner, file };
 
-        Ok(Self { inner, file })
+        // Save immediately after instantiation to persist any migrations
+        ret.save().await?;
+
+        // make sure OS's autostart is synced with settings
+        crate::autostart::update(ret.inner.autostart)?;
+        ethui_tracing::reload(&ret.inner.rust_log)?;
+
+        Ok(ret)
+    }
+
+    #[instrument(skip(self), level = "trace")]
+    async fn save(&self) -> Result<()> {
+        let pathbuf = self.file.clone();
+        let path = Path::new(&pathbuf);
+        let file = File::create(path)?;
+
+        ethui_tracing::reload(&self.inner.rust_log)?;
+        serde_json::to_writer_pretty(file, &self.inner)?;
+        ethui_broadcast::settings_updated().await;
+        ethui_broadcast::ui_notify(UINotify::SettingsChanged).await;
+
+        Ok(())
     }
 }
 
@@ -75,9 +94,6 @@ pub struct GetAll;
 #[derive(Debug, Clone)]
 pub struct GetAlias(pub ethui_types::Address);
 
-#[derive(Debug, Clone)]
-pub struct Save;
-
 impl Message<GetAll> for SettingsActor {
     type Reply = Settings;
 
@@ -89,6 +105,7 @@ impl Message<GetAll> for SettingsActor {
 impl Message<Set> for SettingsActor {
     type Reply = Result<()>;
 
+    #[instrument(skip(self, ctx), level = "trace")]
     async fn handle(&mut self, msg: Set, ctx: &mut Context<Self, Self::Reply>) -> Self::Reply {
         match msg {
             Set::All(map) => {
@@ -98,12 +115,36 @@ impl Message<Set> for SettingsActor {
                 if let Some(v) = map.get("abiWatchPath") {
                     self.inner.abi_watch_path = serde_json::from_value(v.clone()).unwrap()
                 }
+
                 if let Some(v) = map.get("alchemyApiKey") {
+                    // check onboarding step
+                    if !self
+                        .inner
+                        .onboarding
+                        .is_step_finished(OnboardingStep::Alchemy)
+                    {
+                        let _ = ctx
+                            .actor_ref()
+                            .tell(Set::FinishOnboardingStep(OnboardingStep::Alchemy))
+                            .await;
+                    }
                     self.inner.alchemy_api_key = serde_json::from_value(v.clone()).unwrap()
                 }
+
                 if let Some(v) = map.get("etherscanApiKey") {
+                    if !self
+                        .inner
+                        .onboarding
+                        .is_step_finished(OnboardingStep::Etherscan)
+                    {
+                        let _ = ctx
+                            .actor_ref()
+                            .tell(Set::FinishOnboardingStep(OnboardingStep::Etherscan))
+                            .await;
+                    }
                     self.inner.etherscan_api_key = serde_json::from_value(v.clone()).unwrap()
                 }
+
                 if let Some(v) = map.get("hideEmptyTokens") {
                     self.inner.hide_empty_tokens = serde_json::from_value(v.clone()).unwrap()
                 }
@@ -145,25 +186,9 @@ impl Message<Set> for SettingsActor {
             }
         }
 
+        self.save().await?;
         // trigger a file save
-        let _ = ctx.actor_ref().tell(Save).await;
-
-        Ok(())
-    }
-}
-
-impl Message<Save> for SettingsActor {
-    type Reply = Result<()>;
-
-    async fn handle(&mut self, _msg: Save, _ctx: &mut Context<Self, Self::Reply>) -> Self::Reply {
-        let pathbuf = self.file.clone();
-        let path = Path::new(&pathbuf);
-        let file = File::create(path)?;
-
-        ethui_tracing::reload(&self.inner.rust_log)?;
-        serde_json::to_writer_pretty(file, &self.inner)?;
-        ethui_broadcast::settings_updated().await;
-        ethui_broadcast::ui_notify(UINotify::SettingsChanged).await;
+        // let _ = ctx.actor_ref().tell(Save).try_send();
 
         Ok(())
     }

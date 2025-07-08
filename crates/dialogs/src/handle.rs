@@ -32,7 +32,7 @@ impl Dialog {
     ///
     /// Here, we emits an OpenDialog event, asking the tauri app to do so
     /// The event loop will eventually call back into `open_with_handle` to continue the process
-    #[instrument(skip(self))]
+    #[instrument(skip(self), level = "trace")]
     pub async fn open(&self) -> color_eyre::Result<()> {
         let inner = self.0.read().await;
         debug!("Opening dialog {} {}", inner.preset, inner.id);
