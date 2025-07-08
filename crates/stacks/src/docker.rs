@@ -7,14 +7,17 @@ pub struct Initial;
 pub struct DockerSocketReady;
 pub struct DockerInstalled;
 pub struct ImageAvailable;
+#[derive(Debug, Clone)]
 pub struct DataDirectoryReady;
 pub struct ContainerRunning;
 pub struct ContainerNotRunning;
 
+#[derive(Debug, Clone)]
 pub struct DockerManager<State> {
     data_dir: PathBuf,
     image_name: String,
     container_name: String,
+    container_port: u16,
     docker_bin: Option<&'static str>,
     socket_path: Option<PathBuf>,
     _state: PhantomData<State>,
@@ -26,6 +29,7 @@ impl<State> DockerManager<State> {
             data_dir: self.data_dir,
             image_name: self.image_name,
             container_name: self.container_name,
+            container_port: self.container_port,
             docker_bin: self.docker_bin,
             socket_path: self.socket_path,
             _state: PhantomData,
@@ -54,7 +58,7 @@ impl<State> DockerManager<State> {
                 "{{.Ports}}",
             ])
             .output()?;
-        let expected = format!("{port}->4000");
+        let expected = format!("{port}->{}", self.container_port);
         Ok(String::from_utf8_lossy(&output.stdout)
             .trim()
             .contains(&expected))
@@ -62,11 +66,17 @@ impl<State> DockerManager<State> {
 }
 
 impl DockerManager<Initial> {
-    pub fn new(data_dir: PathBuf, image_name: String, container_name: String) -> Self {
+    pub fn new(
+        data_dir: PathBuf,
+        image_name: String,
+        container_name: String,
+        container_port: u16,
+    ) -> Self {
         Self {
             data_dir,
             image_name,
             container_name,
+            container_port,
             docker_bin: None,
             socket_path: None,
             _state: PhantomData,
@@ -119,7 +129,20 @@ impl DockerManager<DockerInstalled> {
             info!(image = %self.image_name, "Docker image found.");
             Ok(self.transition())
         } else {
-            Err(eyre!("Docker image not found: {}", self.image_name))
+            println!("📥 Pulling http-echo image...");
+            let output = std::process::Command::new(docker_bin)
+                .args(["pull", &self.image_name])
+                .output()?;
+
+            if !output.status.success() {
+                return Err(eyre!(
+                    "Failed to pull image {}: {}",
+                    self.image_name,
+                    String::from_utf8_lossy(&output.stderr)
+                ));
+            }
+
+            Ok(self.transition())
         }
     }
 }
@@ -135,11 +158,11 @@ impl DockerManager<ImageAvailable> {
 }
 
 impl DockerManager<DataDirectoryReady> {
-    pub fn run(self, port: u16) -> color_eyre::Result<DockerManager<ContainerRunning>> {
-        if self.is_container_running(port)? {
+    pub fn run(self, host_port: u16) -> color_eyre::Result<DockerManager<ContainerRunning>> {
+        if self.is_container_running(host_port)? {
             info!(
                 "Container {} is already running on port {}.",
-                self.container_name, port
+                self.container_name, host_port
             );
             return Ok(self.transition());
         }
@@ -167,7 +190,7 @@ impl DockerManager<DataDirectoryReady> {
             .arg(format!("{}:/var/run/docker.sock", socket_path.display()))
             .arg("--init")
             .arg("-p")
-            .arg(format!("{port}:4000"));
+            .arg(format!("{host_port}:{}", self.container_port));
 
         if docker_bin.contains("podman") {
             command = command.arg("--replace");
@@ -239,6 +262,7 @@ pub fn start_stacks(port: u16, config_dir: PathBuf) -> color_eyre::Result<()> {
         config_dir.join("local/"),
         "ethui-stacks".to_string(),
         "ethui-stacks".to_string(),
+        4000, // Default port for stacks container
     )
     .check_socket_and_bin()?
     .check_docker_installed()?
@@ -255,6 +279,7 @@ pub fn stop_stacks(port: u16, config_dir: PathBuf) -> color_eyre::Result<()> {
         config_dir.join("local/"),
         "ethui-stacks".to_string(),
         "ethui-stacks".to_string(),
+        4000, // Default port for stacks container
     )
     .check_socket_and_bin()?
     .check_docker_installed()?
@@ -264,4 +289,126 @@ pub fn stop_stacks(port: u16, config_dir: PathBuf) -> color_eyre::Result<()> {
     .check_stopped(port)?;
     info!("Stacks has been stopped successfully.");
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use std::time::Duration;
+
+    use tempfile::TempDir;
+    use tokio::time::sleep;
+
+    use super::*;
+
+    const TEST_PORT: u16 = 5678;
+    const TEST_CONTAINER_PORT: u16 = 8080;
+    const TEST_IMAGE: &str = "jmalloc/echo-server";
+    const TEST_CONTAINER: &str = "ethui-test-http-echo";
+
+    async fn wait_for_container_ready() -> Result<(), Box<dyn std::error::Error>> {
+        let client = reqwest::Client::new();
+        let mut attempts = 0;
+        const MAX_ATTEMPTS: u32 = 30; // 30 seconds timeout
+
+        while attempts < MAX_ATTEMPTS {
+            match client
+                .get(&format!("http://localhost:{}", TEST_PORT))
+                .timeout(Duration::from_secs(1))
+                .send()
+                .await
+            {
+                Ok(response) => {
+                    if response.status().is_success() {
+                        return Ok(());
+                    }
+                }
+                Err(_) => {
+                    // Container not ready yet, wait and retry
+                    sleep(Duration::from_secs(1)).await;
+                }
+            }
+            attempts += 1;
+        }
+
+        Err("Container failed to become ready within timeout".into())
+    }
+
+    async fn make_http_request() -> Result<String, Box<dyn std::error::Error>> {
+        let client = reqwest::Client::new();
+        let response = client
+            .get(&format!("http://localhost:{}", TEST_PORT))
+            .timeout(Duration::from_secs(5))
+            .send()
+            .await?;
+
+        if response.status().is_success() {
+            let body = response.text().await?;
+            Ok(body)
+        } else {
+            Err(format!("HTTP request failed with status: {}", response.status()).into())
+        }
+    }
+
+    #[tokio::test]
+    async fn test_docker_container_lifecycle() -> Result<(), Box<dyn std::error::Error>> {
+        let temp_dir = TempDir::new()?;
+        let config_dir = temp_dir.path().to_path_buf();
+
+        let manager = DockerManager::new(
+            config_dir.join("test-local/"),
+            TEST_IMAGE.to_string(),
+            TEST_CONTAINER.to_string(),
+            TEST_CONTAINER_PORT,
+        );
+
+        let docker_manager = manager
+            .check_socket_and_bin()?
+            .check_docker_installed()?
+            .check_image_available()?
+            .ensure_data_directory()?;
+
+        docker_manager
+            .clone()
+            .run(TEST_PORT)?
+            .check_health(TEST_PORT)?;
+
+        wait_for_container_ready().await?;
+
+        let response = make_http_request().await?;
+
+        if !response.contains("Request served by") {
+            return Err(format!("Expected 'hello world' in response, got: {response}").into());
+        }
+
+        docker_manager.stop(TEST_PORT)?.check_stopped(TEST_PORT)?;
+
+        sleep(Duration::from_secs(2)).await; // Give container time to fully stop
+
+        match make_http_request().await {
+            Ok(_) => Err("Container should not be accessible after stopping".into()),
+            Err(_) => Ok(()),
+        }
+    }
+
+    #[tokio::test]
+    async fn test_docker_manager_error_handling() -> Result<(), Box<dyn std::error::Error>> {
+        let temp_dir = TempDir::new()?;
+        let config_dir = temp_dir.path().to_path_buf();
+
+        let docker_manager = DockerManager::new(
+            config_dir.join("test-local/"),
+            "nonexistent-image:latest".to_string(),
+            "test-nonexistent".to_string(),
+            8080,
+        );
+
+        let result = docker_manager
+            .check_socket_and_bin()?
+            .check_docker_installed()?
+            .check_image_available();
+
+        assert!(result.is_err(), "Should fail with nonexistent image");
+
+        Ok(())
+    }
 }
