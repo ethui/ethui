@@ -237,10 +237,10 @@ fn config_dir(app: &tauri::App, args: &Args) -> PathBuf {
 }
 
 async fn should_start_main_window(args: &Args) -> bool {
-    if let Some(Commands::App { hidden }) = &args.command {
-        if *hidden {
-            return false;
-        }
+    if let Some(Commands::App { hidden }) = &args.command
+        && *hidden
+    {
+        return false;
     }
 
     let settings = ethui_settings::ask(GetAll)
