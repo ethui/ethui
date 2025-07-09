@@ -8,8 +8,9 @@ mod system_tray;
 mod windows;
 
 use color_eyre::Result;
+use ethui_args::Commands;
 #[cfg(feature = "forge-traces")]
-use ethui_args::{Commands, ForgeCommands};
+use ethui_args::ForgeCommands;
 #[cfg(feature = "forge-traces")]
 use ethui_forge_traces::ForgeTestRunner;
 use named_lock::NamedLock;
@@ -26,29 +27,31 @@ pub async fn run() -> Result<()> {
 
     let args = ethui_args::parse();
 
-    #[cfg(feature = "forge-traces")]
     if let Some(command) = &args.command {
         return handle_command(command, &args).await;
     }
-
-    let lock = NamedLock::create(LOCK_NAME)?;
-
-    let _guard = match lock.try_lock() {
-        Ok(g) => g,
-        Err(_) => {
-            ethui_broadcast::main_window_show().await;
-            return Ok(());
-        }
-    };
 
     app::EthUIApp::build(&args).await?.run();
 
     Ok(())
 }
 
-#[cfg(feature = "forge-traces")]
 async fn handle_command(command: &Commands, args: &ethui_args::Args) -> Result<()> {
     match command {
+        Commands::App => {
+            let lock = NamedLock::create(LOCK_NAME)?;
+
+            let _guard = match lock.try_lock() {
+                Ok(g) => g,
+                Err(_) => {
+                    ethui_broadcast::main_window_show().await;
+                    return Ok(());
+                }
+            };
+            app::EthUIApp::build(args).await?.run();
+            Ok(())
+        }
+        #[cfg(feature = "forge-traces")]
         Commands::Forge { subcommand } => handle_forge_command(subcommand, args).await,
     }
 }
