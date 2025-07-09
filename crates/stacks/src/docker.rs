@@ -1,7 +1,6 @@
 use std::{env, fs, marker::PhantomData, path::PathBuf, process::Command, str::FromStr};
 
-use color_eyre::eyre::{WrapErr, eyre};
-use tracing::info;
+use color_eyre::eyre::{OptionExt, WrapErr, eyre};
 
 pub struct Initial;
 pub struct DockerSocketReady;
@@ -37,14 +36,11 @@ impl<State> DockerManager<State> {
     }
 
     fn docker_bin(&self) -> color_eyre::Result<&str> {
-        self.docker_bin
-            .ok_or_else(|| eyre!("Docker binary not set"))
+        self.docker_bin.ok_or_eyre("Docker binary not set")
     }
 
     fn socket_path(&self) -> color_eyre::Result<&PathBuf> {
-        self.socket_path
-            .as_ref()
-            .ok_or_else(|| eyre!("Socket path not set"))
+        self.socket_path.as_ref().ok_or_eyre("Socket path not set")
     }
 
     fn is_container_running(&self, port: u16) -> color_eyre::Result<bool> {
@@ -106,10 +102,10 @@ impl DockerManager<Initial> {
 impl DockerManager<DockerSocketReady> {
     pub fn check_docker_installed(self) -> color_eyre::Result<DockerManager<DockerInstalled>> {
         let docker_bin = self.docker_bin()?;
-        info!("Checking for Docker/Podman...");
+        tracing::debug!("Checking for Docker/Podman...");
         let output = Command::new(docker_bin).arg("--version").output()?;
         if output.status.success() {
-            info!("{} is installed.", docker_bin);
+            tracing::debug!("{} is installed.", docker_bin);
             Ok(self.transition())
         } else {
             Err(eyre!("Docker/Podman is not installed"))
@@ -120,13 +116,13 @@ impl DockerManager<DockerSocketReady> {
 impl DockerManager<DockerInstalled> {
     pub fn check_image_available(self) -> color_eyre::Result<DockerManager<ImageAvailable>> {
         let docker_bin = self.docker_bin()?;
-        info!(image = %self.image_name, "Checking for Docker image...");
+        tracing::debug!(image = %self.image_name, "Checking for Docker image...");
         let output = Command::new(docker_bin)
             .args(["images", "-q", &self.image_name])
             .output()?;
         let id = String::from_utf8_lossy(&output.stdout);
         if !id.trim().is_empty() {
-            info!(image = %self.image_name, "Docker image found.");
+            tracing::debug!(image = %self.image_name, "Docker image found.");
             Ok(self.transition())
         } else {
             println!("📥 Pulling http-echo image...");
@@ -149,10 +145,10 @@ impl DockerManager<DockerInstalled> {
 
 impl DockerManager<ImageAvailable> {
     pub fn ensure_data_directory(self) -> color_eyre::Result<DockerManager<DataDirectoryReady>> {
-        info!(path = ?self.data_dir, "Ensuring data directory exists...");
+        tracing::debug!(path = ?self.data_dir, "Ensuring data directory exists...");
         fs::create_dir_all(&self.data_dir)
             .wrap_err_with(|| format!("Failed to create directory: {:?}", self.data_dir))?;
-        info!("Data directory is ready.");
+        tracing::debug!("Data directory is ready.");
         Ok(self.transition())
     }
 }
@@ -160,9 +156,10 @@ impl DockerManager<ImageAvailable> {
 impl DockerManager<DataDirectoryReady> {
     pub fn run(self, host_port: u16) -> color_eyre::Result<DockerManager<ContainerRunning>> {
         if self.is_container_running(host_port)? {
-            info!(
+            tracing::debug!(
                 "Container {} is already running on port {}.",
-                self.container_name, host_port
+                self.container_name,
+                host_port
             );
             return Ok(self.transition());
         }
@@ -213,7 +210,7 @@ impl DockerManager<DataDirectoryReady> {
 
     pub fn stop(self, port: u16) -> color_eyre::Result<DockerManager<ContainerNotRunning>> {
         if !self.is_container_running(port)? {
-            info!("Container {} is already stopped.", self.container_name);
+            tracing::debug!("Container {} is already stopped.", self.container_name);
             return Ok(self.transition());
         }
 
@@ -270,7 +267,8 @@ pub fn start_stacks(port: u16, config_dir: PathBuf) -> color_eyre::Result<()> {
     .ensure_data_directory()?
     .run(port)?
     .check_health(port)?;
-    info!("Stacks is fully up and running!");
+
+    tracing::debug!("Stacks is fully up and running!");
     Ok(())
 }
 
@@ -287,7 +285,8 @@ pub fn stop_stacks(port: u16, config_dir: PathBuf) -> color_eyre::Result<()> {
     .ensure_data_directory()?
     .stop(port)?
     .check_stopped(port)?;
-    info!("Stacks has been stopped successfully.");
+
+    tracing::debug!("Stacks has been stopped successfully.");
     Ok(())
 }
 

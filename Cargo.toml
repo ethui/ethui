@@ -39,6 +39,11 @@ debug = "line-tables-only"
 split-debuginfo = "unpacked"
 
 [workspace.dependencies]
+clap = { version = "4.5", default-features = false, features = [
+  "std",
+  "derive",
+  "env",
+] }
 ethui-forge = { path = "crates/forge" }
 ethui-crypto = { path = "crates/crypto" }
 ethui-settings = { path = "crates/settings" }
@@ -105,10 +110,6 @@ foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "496598b" }
 foundry-block-explorers = "0.17"
 url = { version = "2.5", features = ["serde"] }
 futures = { version = "0.3", default-features = false }
-clap = { version = "4.5", default-features = false, features = [
-  "derive",
-  "env",
-] }
 rand = "0.9"
 rstest = "0.23"
 regex = "1.11"

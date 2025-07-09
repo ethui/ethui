@@ -4,7 +4,7 @@ use ethui_broadcast::InternalMsg;
 use ethui_settings::GetAll;
 use kameo::actor::ActorRef;
 
-use crate::actor::{Msg, Worker};
+use crate::actor::{SetEnabled, Worker};
 
 pub async fn init(stacks_port: u16, config_dir: PathBuf) -> color_eyre::Result<()> {
     let handle = kameo::spawn(Worker::new(stacks_port, config_dir));
@@ -14,9 +14,7 @@ pub async fn init(stacks_port: u16, config_dir: PathBuf) -> color_eyre::Result<(
         .await
         .expect("Failed to get settings");
 
-    handle
-        .tell(Msg::SetEnabled(settings.run_local_stacks))
-        .await?;
+    handle.tell(SetEnabled(settings.run_local_stacks)).await?;
 
     tokio::spawn(async move { receiver(handle).await });
 
@@ -35,7 +33,7 @@ async fn receiver(handle: ActorRef<Worker>) -> ! {
                 .expect("Failed to get settings");
 
             handle
-                .tell(Msg::SetEnabled(settings.run_local_stacks))
+                .tell(SetEnabled(settings.run_local_stacks))
                 .await
                 .unwrap();
         }

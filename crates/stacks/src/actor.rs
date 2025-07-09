@@ -1,6 +1,9 @@
 use std::path::PathBuf;
 
-use kameo::{Actor, actor::ActorRef, message::Message};
+use kameo::{
+    Actor,
+    message::{Context, Message},
+};
 
 use crate::docker::{start_stacks, stop_stacks};
 
@@ -10,30 +13,25 @@ pub struct Worker {
     pub config_dir: PathBuf,
 }
 
-pub enum Msg {
-    SetEnabled(bool),
-}
+pub struct SetEnabled(pub bool);
 
-impl Message<Msg> for Worker {
+impl Message<SetEnabled> for Worker {
     type Reply = ();
 
     async fn handle(
         &mut self,
-        msg: Msg,
-        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
+        msg: SetEnabled,
+        _ctx: &mut Context<Self, Self::Reply>,
     ) -> Self::Reply {
-        match msg {
-            Msg::SetEnabled(enabled) => {
-                self.stacks = enabled;
-                if enabled {
-                    start_stacks(self.port, self.config_dir.clone()).unwrap_or_else(|e| {
-                        tracing::error!("Failed to start stacks docker image: {}", e);
-                    });
-                } else {
-                    stop_stacks(self.port, self.config_dir.clone()).unwrap_or_else(|e| {
-                        tracing::error!("Failed to stop stacks docker image: {}", e);
-                    });
+        if self.stacks != msg.0 {
+            self.stacks = msg.0;
+
+            if msg.0 {
+                if let Err(e) = start_stacks(self.port, self.config_dir.clone()) {
+                    tracing::error!("Failed to start stacks docker image: {}", e);
                 }
+            } else if let Err(e) = stop_stacks(self.port, self.config_dir.clone()) {
+                tracing::error!("Failed to stop stacks docker image: {}", e);
             }
         }
     }
@@ -41,10 +39,6 @@ impl Message<Msg> for Worker {
 
 impl Actor for Worker {
     type Error = color_eyre::Report;
-
-    async fn on_start(&mut self, _actor_ref: ActorRef<Self>) -> color_eyre::Result<()> {
-        Ok(())
-    }
 }
 
 impl Worker {
