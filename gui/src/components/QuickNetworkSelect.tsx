@@ -15,7 +15,6 @@ export function QuickNetworkSelect() {
     useShallow((s) => [s.networks, s.current, s.setCurrent]),
   );
 
-  console.log(networks, current);
   if (!networks || !current) return <>Loading</>;
 
   return (
