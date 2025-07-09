@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use ethui_args::Args;
+use ethui_args::{Args, Commands};
 use ethui_broadcast::UIMsg;
 use ethui_settings::GetAll;
 use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
@@ -232,7 +232,9 @@ fn config_dir(app: &tauri::App, args: &Args) -> PathBuf {
 }
 
 async fn should_start_main_window(args: &Args) -> bool {
-    if args.hidden {
+    if let Some(Commands::App { hidden }) = &args.command
+        && *hidden
+    {
         return false;
     }
 

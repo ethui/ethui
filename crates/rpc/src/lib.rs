@@ -3,7 +3,7 @@ mod error;
 mod methods;
 
 use alloy::{dyn_abi::TypedData, hex, providers::Provider as _};
-use ethui_connections::{permissions::PermissionRequest, Ctx};
+use ethui_connections::{Ctx, permissions::PermissionRequest};
 use ethui_types::prelude::*;
 use ethui_wallets::{WalletControl, Wallets};
 use jsonrpc_core::{MetaIoHandler, Params};
@@ -132,6 +132,8 @@ impl Handler {
         self_handler!("ethui_getProviderState", Self::ethui_provider_state);
         self_handler!("ethui_getContractAbi", Self::ethui_get_abi_for_contract);
         self_handler!("ethui_getAddressAlias", Self::ethui_get_address_alias);
+        #[cfg(feature = "forge-traces")]
+        self_handler!("ethui_forgeTestRunnerOutput", Self::ethui_forge_test_traces);
     }
 
     async fn accounts(_: Params, _: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
@@ -354,6 +356,18 @@ impl Handler {
         _ctx: Ctx,
     ) -> jsonrpc_core::Result<serde_json::Value> {
         let method = methods::ethui::AddressAlias::build()
+            .set_params(params.into())
+            .build()?;
+
+        Ok(method.run().await?)
+    }
+
+    #[cfg(feature = "forge-traces")]
+    async fn ethui_forge_test_traces(
+        params: Params,
+        _ctx: Ctx,
+    ) -> jsonrpc_core::Result<serde_json::Value> {
+        let method = methods::ethui::ForgeTestTraces::build()
             .set_params(params.into())
             .build()?;
 
