@@ -1,6 +1,4 @@
-use clap::Parser;
-#[cfg(feature = "forge-traces")]
-use clap::Subcommand;
+use clap::{Parser, Subcommand};
 
 pub fn parse() -> Args {
     Args::parse()
@@ -18,14 +16,16 @@ pub struct Args {
     #[arg(long, default_value_t = false)]
     pub hidden: bool,
 
-    #[cfg(feature = "forge-traces")]
     #[command(subcommand)]
     pub command: Option<Commands>,
 }
 
-#[cfg(feature = "forge-traces")]
 #[derive(Subcommand, Debug)]
 pub enum Commands {
+    #[command(name = "app")]
+    App,
+
+    #[cfg(feature = "forge-traces")]
     /// Run forge tests
     #[command(name = "forge")]
     Forge {
