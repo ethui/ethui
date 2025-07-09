@@ -8,7 +8,7 @@ use crate::actor::{SetEnabled, Worker};
 
 pub async fn init(stacks_port: u16, config_dir: PathBuf) -> color_eyre::Result<()> {
     let handle = kameo::spawn(Worker::new(stacks_port, config_dir));
-    handle.register("run_local_stacks").unwrap();
+    handle.register("run_local_stacks")?;
 
     let settings = ethui_settings::ask(GetAll)
         .await
@@ -32,10 +32,9 @@ async fn receiver(handle: ActorRef<Worker>) -> ! {
                 .await
                 .expect("Failed to get settings");
 
-            handle
-                .tell(SetEnabled(settings.run_local_stacks))
-                .await
-                .unwrap();
+            if let Err(e) = handle.tell(SetEnabled(settings.run_local_stacks)).await {
+                tracing::error!("Failed to send stacks actor SetEnabled message: {}", e);
+            }
         }
     }
 }
