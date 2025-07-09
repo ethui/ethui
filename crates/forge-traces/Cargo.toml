@@ -11,6 +11,7 @@ authors.workspace = true
 
 [dependencies]
 color-eyre.workspace = true
+ethui-args.workspace = true
 futures.workspace = true
 serde.workspace = true
 serde_json.workspace = true

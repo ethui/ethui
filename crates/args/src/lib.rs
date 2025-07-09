@@ -23,7 +23,10 @@ pub struct Args {
 #[derive(Subcommand, Debug)]
 pub enum Commands {
     #[command(name = "app")]
-    App,
+    App {
+        #[arg(long, default_value_t = false)]
+        hidden: bool,
+    },
 
     #[cfg(feature = "forge-traces")]
     /// Run forge tests

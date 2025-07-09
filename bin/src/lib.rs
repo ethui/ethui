@@ -9,10 +9,6 @@ mod windows;
 
 use color_eyre::Result;
 use ethui_args::Commands;
-#[cfg(feature = "forge-traces")]
-use ethui_args::ForgeCommands;
-#[cfg(feature = "forge-traces")]
-use ethui_forge_traces::ForgeTestRunner;
 use named_lock::NamedLock;
 
 #[cfg(not(debug_assertions))]
@@ -38,7 +34,7 @@ pub async fn run() -> Result<()> {
 
 async fn handle_command(command: &Commands, args: &ethui_args::Args) -> Result<()> {
     match command {
-        Commands::App => {
+        Commands::App { hidden: _ } => {
             let lock = NamedLock::create(LOCK_NAME)?;
 
             let _guard = match lock.try_lock() {
@@ -52,20 +48,7 @@ async fn handle_command(command: &Commands, args: &ethui_args::Args) -> Result<(
             Ok(())
         }
         #[cfg(feature = "forge-traces")]
-        Commands::Forge { subcommand } => handle_forge_command(subcommand, args).await,
+        Commands::Forge { subcommand } => ethui_forge_traces::handle_forge_command(subcommand, args).await,
     }
 }
 
-#[cfg(feature = "forge-traces")]
-async fn handle_forge_command(subcommand: &ForgeCommands, args: &ethui_args::Args) -> Result<()> {
-    use std::env;
-
-    match subcommand {
-        ForgeCommands::Test => {
-            let current_dir = env::current_dir().expect("failed to get current dir");
-            let forge_test_runner =
-                ForgeTestRunner::new(current_dir.to_string_lossy().to_string(), args.ws_port);
-            forge_test_runner.run_tests().await
-        }
-    }
-}
