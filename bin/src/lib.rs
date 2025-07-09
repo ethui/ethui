@@ -17,6 +17,7 @@ static LOCK_NAME: &str = "iron-wallet-dev";
 #[tokio::main]
 pub async fn run() -> color_eyre::Result<()> {
     ethui_tracing::init()?;
+    tracing::info!("Starting ethui application");
     fix_path_env::fix()?;
 
     let args = ethui_args::parse();
@@ -30,7 +31,9 @@ pub async fn run() -> color_eyre::Result<()> {
         }
     };
 
-    app::EthUIApp::build(&args).await?.run();
+    let app = app::EthUIApp::build(&args).await?;
+    tracing::info!("App built successfully, starting event loop");
+    app.run();
 
     Ok(())
 }

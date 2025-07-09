@@ -21,6 +21,7 @@ import {
 import { Link, useLocation } from "@tanstack/react-router";
 import { platform } from "@tauri-apps/plugin-os";
 import {
+  Activity,
   ChevronDown,
   ChevronRight,
   CircleUser,
@@ -200,6 +201,15 @@ const items = [
     url: "/home/connections",
     icon: <Wifi />,
   },
+  ...(isDev
+    ? [
+        {
+          title: "Traces",
+          url: "/home/traces",
+          icon: <Activity />,
+        },
+      ]
+    : []),
 ];
 
 const settingsItems = [

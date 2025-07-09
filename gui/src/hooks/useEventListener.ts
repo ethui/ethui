@@ -5,9 +5,13 @@ type Event =
   | "peers-updated"
   | "settings-changed"
   | "contracts-updated"
-  | "txs-updated";
+  | "txs-updated"
+  | "trace-event";
 
-export function useEventListener(event: Event, callback: () => unknown) {
+export function useEventListener(
+  event: Event,
+  callback: ((event: any) => unknown) | (() => unknown),
+) {
   const view = getCurrentWebviewWindow();
 
   useEffect(() => {

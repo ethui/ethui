@@ -3669,8 +3669,14 @@ dependencies = [
 name = "ethui-tracing"
 version = "1.17.0"
 dependencies = [
+ "chrono",
  "color-eyre",
+ "ethui-broadcast",
+ "ethui-types",
  "once_cell",
+ "serde",
+ "serde_json",
+ "tokio",
  "tracing",
  "tracing-subscriber 0.3.19",
 ]

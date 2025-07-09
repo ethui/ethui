@@ -24,6 +24,16 @@ pub struct DialogSend {
 }
 
 #[derive(Debug, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct TraceEvent {
+    pub timestamp: String,
+    pub level: String,
+    pub target: String,
+    pub message: String,
+    pub fields: std::collections::BTreeMap<String, serde_json::Value>,
+}
+
+#[derive(Debug, Serialize, Clone)]
 pub enum UINotify {
     #[allow(unused)]
     WalletsChanged,
@@ -34,6 +44,7 @@ pub enum UINotify {
     BalancesUpdated,
     ContractsUpdated,
     SettingsChanged,
+    TraceEvent(TraceEvent),
 }
 
 impl UINotify {
@@ -47,6 +58,7 @@ impl UINotify {
             Self::BalancesUpdated => "balances-updated",
             Self::ContractsUpdated => "contracts-updated",
             Self::SettingsChanged => "settings-changed",
+            Self::TraceEvent(_) => "trace-event",
         }
     }
 }

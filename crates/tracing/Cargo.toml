@@ -12,6 +12,12 @@ authors.workspace = true
 tracing.workspace = true
 color-eyre.workspace = true
 once_cell.workspace = true
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
+tokio.workspace = true
+chrono = { version = "0.4", features = ["serde"] }
+ethui-broadcast.workspace = true
+ethui-types.workspace = true
 
 tracing-subscriber = { version = "0.3", features = [
   "env-filter",
