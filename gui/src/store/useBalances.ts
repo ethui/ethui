@@ -37,7 +37,7 @@ const store: StateCreator<Store> = (set, get) => ({
         address,
         chainId,
       });
-    } catch (e) {}
+    } catch (_e) {}
     const erc20Balances = await invoke<TokenBalance[]>(
       "db_get_erc20_balances",
       {
