@@ -63,8 +63,8 @@ function RouteComponent() {
         defaultValue={currentNetwork.dedup_chain_id}
         items={networks}
         toValue={(n) => JSON.stringify(n.dedup_chain_id)}
-        render={({ dedup_chain_id: { chain_id }, name }) => (
-          <ChainView chainId={chain_id} name={name} />
+        render={({ dedup_chain_id: { chain_id }, name, status }) => (
+          <ChainView chainId={chain_id} name={name} status={status} />
         )}
       />
 

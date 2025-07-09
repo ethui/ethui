@@ -1,4 +1,4 @@
-import { type Network, networkSchema } from "@ethui/types/network";
+import { type NetworkInputs, networkSchema } from "@ethui/types/network";
 import { Form } from "@ethui/ui/components/form";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { toast } from "@ethui/ui/hooks/use-toast";
@@ -23,7 +23,7 @@ export const Route = createFileRoute(
   },
 });
 
-function Content({ network }: { network: Network }) {
+function Content({ network }: { network: NetworkInputs }) {
   const form = useForm({
     mode: "onBlur",
     resolver: zodResolver(networkSchema),
@@ -31,7 +31,7 @@ function Content({ network }: { network: Network }) {
   });
   const router = useRouter();
 
-  const create = async (data: Network) => {
+  const create = async (data: NetworkInputs) => {
     try {
       await invoke("networks_update", { oldName: network.name, network: data });
       router.history.back();

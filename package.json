@@ -32,7 +32,7 @@
     "tsx": "^4.20.3"
   },
   "dependencies": {
-    "@ethui/ui": "^0.0.82",
+    "@ethui/ui": "^0.0.88",
     "@tauri-apps/cli": "^2.6.2",
     "typescript": "5.8.2"
   },

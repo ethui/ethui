@@ -38,9 +38,17 @@ function ChainSwitchDialog() {
       </div>
 
       <div className="flex gap-2 self-center">
-        <ChainView chainId={from.dedup_chain_id.chain_id} name={from.name} />
+        <ChainView
+          chainId={from.dedup_chain_id.chain_id}
+          name={from.name}
+          status={from.status}
+        />
         <span>→</span>
-        <ChainView chainId={to?.dedup_chain_id.chain_id} name={to.name} />
+        <ChainView
+          chainId={to?.dedup_chain_id.chain_id}
+          name={to.name}
+          status={to.status}
+        />
       </div>
 
       <div className="m-2 flex items-center justify-center gap-2">

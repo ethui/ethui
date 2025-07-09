@@ -185,6 +185,7 @@ function Header({ from, to, network }: HeaderProps) {
         <ChainView
           name={network.name}
           chainId={network.dedup_chain_id.chain_id}
+          status={network.status}
         />
       </div>
     </div>

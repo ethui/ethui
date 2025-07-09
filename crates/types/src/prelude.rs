@@ -1,5 +1,6 @@
 pub use std::{
     collections::{HashMap, HashSet},
+    default,
     str::FromStr as _,
     sync::Arc,
 };

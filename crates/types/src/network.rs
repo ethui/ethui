@@ -1,9 +1,10 @@
 use alloy::{
     network::Ethereum,
-    providers::{ext::AnvilApi, ProviderBuilder, RootProvider},
+    providers::{ext::AnvilApi, Provider, ProviderBuilder, RootProvider},
     rpc::{client::ClientBuilder, types::anvil::ForkedNetwork},
     transports::layers::RetryBackoffLayer,
 };
+use tracing::instrument;
 use url::Url;
 
 use crate::{prelude::*, DedupChainId};
@@ -17,6 +18,18 @@ pub struct Network {
     pub ws_url: Option<Url>,
     pub currency: String,
     pub decimals: u32,
+
+    #[serde(default)]
+    pub status: NetworkStatus,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub enum NetworkStatus {
+    #[default]
+    Unknown,
+    Online,
+    Offline,
 }
 
 impl Network {
@@ -29,6 +42,7 @@ impl Network {
             ws_url: None,
             currency: String::from("ETH"),
             decimals: 18,
+            status: Default::default(),
         }
     }
 
@@ -41,6 +55,7 @@ impl Network {
             ws_url: None,
             currency: String::from("ETH"),
             decimals: 18,
+            status: Default::default(),
         }
     }
 
@@ -53,6 +68,7 @@ impl Network {
             ws_url: Some(Url::parse("ws://localhost:8545").unwrap()),
             currency: String::from("ETH"),
             decimals: 18,
+            status: Default::default(),
         }
     }
 
@@ -104,6 +120,27 @@ impl Network {
         ProviderBuilder::new()
             .disable_recommended_fillers()
             .connect_client(client)
+    }
+
+    /// Polls the network status by attempting to get the chain ID and updates the status
+    /// Returns the previous status if it changed, or the current status if unchanged
+    #[instrument(level = "trace", skip(self), fields(chain_id = self.chain_id()))]
+    pub async fn poll_status(&mut self) -> Option<NetworkStatus> {
+        let new_status = if let Ok(provider) = self.get_alloy_provider().await
+            && let Ok(_) = provider.get_chain_id().await
+        {
+            NetworkStatus::Online
+        } else {
+            NetworkStatus::Offline
+        };
+
+        if self.status != new_status {
+            let old_status = self.status;
+            self.status = new_status;
+            Some(old_status)
+        } else {
+            None
+        }
     }
 }
 
