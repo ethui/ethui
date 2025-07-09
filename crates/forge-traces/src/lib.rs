@@ -7,6 +7,8 @@ use serde_json::json;
 use tokio_tungstenite::{connect_async, tungstenite::Message};
 use tracing::{error, info};
 
+use ethui_args::ForgeCommands;
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ForgeTrace {
     pub test_name: String,
@@ -147,5 +149,18 @@ impl ForgeTestRunner {
         let _ = ws_sender.close().await;
 
         Ok(())
+    }
+}
+
+pub async fn handle_forge_command(subcommand: &ForgeCommands, args: &ethui_args::Args) -> Result<()> {
+    use std::env;
+
+    match subcommand {
+        ForgeCommands::Test => {
+            let current_dir = env::current_dir().expect("failed to get current dir");
+            let forge_test_runner =
+                ForgeTestRunner::new(current_dir.to_string_lossy().to_string(), args.ws_port);
+            forge_test_runner.run_tests().await
+        }
     }
 }

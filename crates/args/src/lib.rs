@@ -13,9 +13,6 @@ pub struct Args {
     #[arg(long, default_value_t = 9002, env = "ETHUI_WS_PORT")]
     pub ws_port: u16,
 
-    #[arg(long, default_value_t = false)]
-    pub hidden: bool,
-
     #[command(subcommand)]
     pub command: Option<Commands>,
 }
@@ -23,7 +20,10 @@ pub struct Args {
 #[derive(Subcommand, Debug)]
 pub enum Commands {
     #[command(name = "app")]
-    App,
+    App {
+        #[arg(long, default_value_t = false)]
+        hidden: bool,
+    },
 
     #[cfg(feature = "forge-traces")]
     /// Run forge tests
