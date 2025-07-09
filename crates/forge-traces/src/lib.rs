@@ -1,13 +1,12 @@
 use std::process::Command;
 
 use color_eyre::{Result, eyre};
+use ethui_args::ForgeCommands;
 use futures::{SinkExt, StreamExt};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tokio_tungstenite::{connect_async, tungstenite::Message};
 use tracing::{error, info};
-
-use ethui_args::ForgeCommands;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ForgeTrace {
@@ -127,7 +126,7 @@ impl ForgeTestRunner {
 
         let rpc_request = json!({
             "jsonrpc": "2.0",
-            "method": "ethui_forge_test_runner_output",
+            "method": "ethui_forgeTestRunnerOutput",
             "params": {
                 "traces": traces
             },
@@ -152,7 +151,10 @@ impl ForgeTestRunner {
     }
 }
 
-pub async fn handle_forge_command(subcommand: &ForgeCommands, args: &ethui_args::Args) -> Result<()> {
+pub async fn handle_forge_command(
+    subcommand: &ForgeCommands,
+    args: &ethui_args::Args,
+) -> Result<()> {
     use std::env;
 
     match subcommand {

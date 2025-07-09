@@ -34,7 +34,6 @@ pub enum Commands {
     },
 }
 
-#[cfg(feature = "forge-traces")]
 #[derive(Subcommand, Debug)]
 pub enum ForgeCommands {
     /// Run tests
