@@ -20,13 +20,13 @@ impl Message<SetEnabled> for Worker {
 
     async fn handle(
         &mut self,
-        msg: SetEnabled,
+        SetEnabled(enabled): SetEnabled,
         _ctx: &mut Context<Self, Self::Reply>,
     ) -> Self::Reply {
-        if self.stacks != msg.0 {
-            self.stacks = msg.0;
+        if self.stacks != enabled {
+            self.stacks = enabled;
 
-            if msg.0 {
+            if enabled {
                 if let Err(e) = start_stacks(self.port, self.config_dir.clone()) {
                     tracing::error!("Failed to start stacks docker image: {}", e);
                 }

@@ -258,7 +258,7 @@ pub fn start_stacks(port: u16, config_dir: PathBuf) -> color_eyre::Result<()> {
     DockerManager::new(
         config_dir.join("local/"),
         "ethui-stacks".to_string(),
-        "ethui-stacks".to_string(),
+        "ethui-local-stacks".to_string(),
         4000, // Default port for stacks container
     )
     .check_socket_and_bin()?
@@ -276,7 +276,7 @@ pub fn stop_stacks(port: u16, config_dir: PathBuf) -> color_eyre::Result<()> {
     DockerManager::new(
         config_dir.join("local/"),
         "ethui-stacks".to_string(),
-        "ethui-stacks".to_string(),
+        "ethui-local-stacks".to_string(),
         4000, // Default port for stacks container
     )
     .check_socket_and_bin()?
@@ -311,7 +311,7 @@ mod tests {
 
         while attempts < MAX_ATTEMPTS {
             match client
-                .get(&format!("http://localhost:{}", TEST_PORT))
+                .get(format!("http://localhost:{TEST_PORT}"))
                 .timeout(Duration::from_secs(1))
                 .send()
                 .await
@@ -335,7 +335,7 @@ mod tests {
     async fn make_http_request() -> Result<String, Box<dyn std::error::Error>> {
         let client = reqwest::Client::new();
         let response = client
-            .get(&format!("http://localhost:{}", TEST_PORT))
+            .get(format!("http://localhost:{TEST_PORT}"))
             .timeout(Duration::from_secs(5))
             .send()
             .await?;
