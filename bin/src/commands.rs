@@ -117,3 +117,8 @@ pub async fn remove_contract(
     ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
     Ok(())
 }
+
+#[tauri::command]
+pub async fn is_stacks_enabled() -> bool {
+    cfg!(feature = "stacks")
+}

@@ -31,6 +31,7 @@ ethui-tracing.workspace = true
 ethui-broadcast.workspace = true
 ethui-simulator.workspace = true
 ethui-args.workspace = true
+ethui-stacks = { workspace = true, optional = true }
 
 alloy.workspace = true
 serde.workspace = true
@@ -60,3 +61,4 @@ default = []
 custom-protocol = ["tauri/custom-protocol"]
 debug = ["tauri/devtools"]
 aptabase = ["dep:tauri-plugin-aptabase"]
+stacks = ["dep:ethui-stacks"]

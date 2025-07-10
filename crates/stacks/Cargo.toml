@@ -1,6 +1,5 @@
 [package]
-name = "ethui-forge"
-description = "ethui forge integration"
+name = "ethui-stacks"
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true
@@ -15,17 +14,19 @@ ethui-settings.workspace = true
 ethui-networks.workspace = true
 ethui-broadcast.workspace = true
 ethui-db.workspace = true
+ethui-args.workspace = true
 
 alloy.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 tauri.workspace = true
 tokio.workspace = true
-color-eyre.workspace = true
+thiserror.workspace = true
 tracing.workspace = true
 futures.workspace = true
 regex.workspace = true
 kameo.workspace = true
+color-eyre.workspace = true
 
 glob.workspace = true
 notify.workspace = true
@@ -33,3 +34,4 @@ notify-debouncer-full.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true
+reqwest.workspace = true
