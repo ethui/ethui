@@ -9,6 +9,7 @@ import { Button } from "@ethui/ui/components/shadcn/button";
 import { Card, CardContent } from "@ethui/ui/components/shadcn/card";
 import { createFileRoute } from "@tanstack/react-router";
 import { listen } from "@tauri-apps/api/event";
+import { invoke } from "@tauri-apps/api/core";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
@@ -354,6 +355,21 @@ interface TraceTreeNodeProps {
 function TraceTreeNode({ node, arena, depth }: TraceTreeNodeProps) {
   const [isExpanded, setIsExpanded] = useState(depth < 2); // Auto-expand first 2 levels
   const hasChildren = node.children && node.children.length > 0;
+
+  // Call forge ABI fetch for CREATE operations when component mounts
+  useEffect(() => {
+    if (node.trace.kind.toUpperCase() === "CREATE" && node.trace.output) {
+      const fetchForgeAbi = async () => {
+        try {
+          const result = await invoke("get_abi_for_code", { bytecode: node.trace.output });
+          console.log("Forge ABI result for CREATE operation:", result);
+        } catch (error) {
+          console.error("Error fetching forge ABI:", error);
+        }
+      };
+      fetchForgeAbi();
+    }
+  }, [node.trace.kind, node.trace.output]);
 
   const getKindIcon = (kind: string) => {
     switch (kind.toUpperCase()) {
