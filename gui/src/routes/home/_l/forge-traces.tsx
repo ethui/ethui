@@ -8,8 +8,8 @@ import { Badge } from "@ethui/ui/components/shadcn/badge";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { Card, CardContent } from "@ethui/ui/components/shadcn/card";
 import { createFileRoute } from "@tanstack/react-router";
-import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
@@ -38,6 +38,16 @@ interface ForgeTrace {
   trace_data: any;
   gas_used?: number;
   success: boolean;
+}
+
+interface ForgeAbi {
+  path: string;
+  project: string;
+  solidity_file: string;
+  name: string;
+  code: string;
+  abi: any[];
+  method_identifiers: Record<string, string>;
 }
 
 interface TraceNode {
@@ -70,6 +80,7 @@ interface ParsedTraceData {
 function ForgeTraces() {
   const [traces, setTraces] = useState<ForgeTrace[]>([]);
   const [loading, setLoading] = useState(false);
+  const [abis, setAbis] = useState<Map<string, ForgeAbi>>(new Map());
 
   useEffect(() => {
     let unlisten: (() => void) | undefined;
@@ -172,7 +183,11 @@ function ForgeTraces() {
                       <TraceSummary trace={trace} />
                     </AccordionTrigger>
                     <AccordionContent>
-                      <TraceDetails trace={trace} />
+                      <TraceDetails
+                        trace={trace}
+                        abis={abis}
+                        setAbis={setAbis}
+                      />
                     </AccordionContent>
                   </motion.div>
                 </AccordionItem>
@@ -224,9 +239,11 @@ function TraceSummary({ trace }: TraceSummaryProps) {
 
 interface TraceDetailsProps {
   trace: ForgeTrace;
+  abis: Map<string, ForgeAbi>;
+  setAbis: React.Dispatch<React.SetStateAction<Map<string, ForgeAbi>>>;
 }
 
-function TraceDetails({ trace }: TraceDetailsProps) {
+function TraceDetails({ trace, abis, setAbis }: TraceDetailsProps) {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
@@ -259,7 +276,11 @@ function TraceDetails({ trace }: TraceDetailsProps) {
         <h4 className="font-medium">Execution Trace</h4>
         <Card>
           <CardContent className="p-4">
-            <TraceTreeView traceData={trace.trace_data} />
+            <TraceTreeView
+              traceData={trace.trace_data}
+              abis={abis}
+              setAbis={setAbis}
+            />
           </CardContent>
         </Card>
       </div>
@@ -270,9 +291,11 @@ function TraceDetails({ trace }: TraceDetailsProps) {
 // Tree View Components
 interface TraceTreeViewProps {
   traceData: any;
+  abis: Map<string, ForgeAbi>;
+  setAbis: React.Dispatch<React.SetStateAction<Map<string, ForgeAbi>>>;
 }
 
-function TraceTreeView({ traceData }: TraceTreeViewProps) {
+function TraceTreeView({ traceData, abis, setAbis }: TraceTreeViewProps) {
   const parsedTrace = parseTraceData(traceData);
 
   if (!parsedTrace || !parsedTrace.arena || parsedTrace.arena.length === 0) {
@@ -324,6 +347,8 @@ function TraceTreeView({ traceData }: TraceTreeViewProps) {
                   node={node}
                   arena={parsedTrace.arena}
                   depth={0}
+                  abis={abis}
+                  setAbis={setAbis}
                 />
               ))}
             </div>
@@ -338,6 +363,8 @@ function TraceTreeView({ traceData }: TraceTreeViewProps) {
               node={node}
               arena={parsedTrace.arena}
               depth={0}
+              abis={abis}
+              setAbis={setAbis}
             />
           ))}
         </div>
@@ -350,9 +377,17 @@ interface TraceTreeNodeProps {
   node: TraceNode;
   arena: TraceNode[];
   depth: number;
+  abis: Map<string, ForgeAbi>;
+  setAbis: React.Dispatch<React.SetStateAction<Map<string, ForgeAbi>>>;
 }
 
-function TraceTreeNode({ node, arena, depth }: TraceTreeNodeProps) {
+function TraceTreeNode({
+  node,
+  arena,
+  depth,
+  abis,
+  setAbis,
+}: TraceTreeNodeProps) {
   const [isExpanded, setIsExpanded] = useState(depth < 2); // Auto-expand first 2 levels
   const hasChildren = node.children && node.children.length > 0;
 
@@ -361,8 +396,13 @@ function TraceTreeNode({ node, arena, depth }: TraceTreeNodeProps) {
     if (node.trace.kind.toUpperCase() === "CREATE" && node.trace.output) {
       const fetchForgeAbi = async () => {
         try {
-          const result = await invoke("get_abi_for_code", { bytecode: node.trace.output });
+          const result = await invoke<ForgeAbi | null>("get_abi_for_code", {
+            bytecode: node.trace.output,
+          });
           console.log("Forge ABI result for CREATE operation:", result);
+          if (result) {
+            setAbis((prev) => new Map(prev).set(node.trace.address, result));
+          }
         } catch (error) {
           console.error("Error fetching forge ABI:", error);
         }
@@ -371,12 +411,33 @@ function TraceTreeNode({ node, arena, depth }: TraceTreeNodeProps) {
     }
   }, [node.trace.kind, node.trace.output]);
 
-  const getKindIcon = (kind: string) => {
+  // Note: For CALL operations, we can't easily get the contract's deployed bytecode
+  // from the trace data alone. The ABI lookup would need to be done differently,
+  // potentially by querying the blockchain or using a different approach.
+  // For now, we'll rely on CREATE operations to populate the ABI cache.
+
+  const getKindIcon = (node: TraceNode) => {
+    const { kind, data, address } = node.trace;
+
     switch (kind.toUpperCase()) {
       case "CREATE":
       case "CREATE2":
         return <Box className="h-4 w-4 text-blue-500" />;
       case "CALL":
+        // Try to show more specific icons based on function name
+        if (data && data.length >= 10) {
+          const decodedSignature = decodeFunctionSignature(data, address);
+          if (decodedSignature) {
+            const functionName = decodedSignature.split("(")[0].toLowerCase();
+            // You can add more specific icons for common function types
+            if (functionName.includes("transfer")) {
+              return <ArrowRight className="h-4 w-4 text-green-500" />;
+            }
+            if (functionName.includes("approve")) {
+              return <CheckCircle className="h-4 w-4 text-yellow-500" />;
+            }
+          }
+        }
         return <Play className="h-4 w-4 text-green-500" />;
       case "STATICCALL":
         return <Code className="h-4 w-4 text-purple-500" />;
@@ -405,9 +466,67 @@ function TraceTreeNode({ node, arena, depth }: TraceTreeNodeProps) {
     }
   };
 
-  const getFunctionSignature = (data: string) => {
-    if (!data || data === "0x" || data.length < 10) return "";
-    return data.slice(0, 10); // First 4 bytes (8 hex chars + 0x)
+  const decodeFunctionSignature = (data: string, address: string) => {
+    if (!data || data === "0x" || data.length < 10) return null;
+
+    const selector = data.slice(0, 10);
+    const abi = abis.get(address);
+
+    if (!abi || !abi.method_identifiers) return null;
+
+    // Find the function signature for this selector
+    for (const [signature, methodSelector] of Object.entries(
+      abi.method_identifiers,
+    )) {
+      if (`0x${methodSelector}` === selector) {
+        return signature;
+      }
+    }
+
+    return null;
+  };
+
+  const getDisplayName = (node: TraceNode) => {
+    const { kind, data, address } = node.trace;
+
+    // Handle CREATE operations
+    if (kind.toUpperCase() === "CREATE" || kind.toUpperCase() === "CREATE2") {
+      const abi = abis.get(address);
+      if (abi && abi.name) {
+        return `new ${abi.name}()`;
+      }
+      return "Contract Creation";
+    }
+
+    // Handle function calls - try to decode the function signature
+    if (data && data.length >= 10) {
+      const decodedSignature = decodeFunctionSignature(data, address);
+      if (decodedSignature) {
+        // Extract just the function name (before the parentheses)
+        const functionName = decodedSignature.split("(")[0];
+
+        // Get contract name from ABI if available
+        const abi = abis.get(address);
+        if (abi && abi.name) {
+          return `${abi.name}@${functionName}()`;
+        }
+
+        // Fallback to address if no contract name available
+        const shortAddress = formatAddress(address);
+        return `${shortAddress}@${functionName}()`;
+      }
+
+      // If we can't decode but have function data, show a generic function call
+      const abi = abis.get(address);
+      if (abi && abi.name) {
+        return `${abi.name} @ function call`;
+      }
+      const shortAddress = formatAddress(address);
+      return `${shortAddress} @ function call`;
+    }
+
+    // Fallback to operation type for undecodable calls
+    return kind.toLowerCase();
   };
 
   const getStatusColor = (success: boolean) => {
@@ -440,44 +559,12 @@ function TraceTreeNode({ node, arena, depth }: TraceTreeNodeProps) {
           )}
 
           {/* Kind Icon */}
-          {getKindIcon(node.trace.kind)}
+          {getKindIcon(node)}
         </div>
 
         {/* Trace Information */}
         <div className="flex min-w-0 flex-1 items-center gap-2">
-          {/* Show trace type badge for context */}
-          {node.trace._traceType && (
-            <span
-              className={`rounded px-1 font-medium text-xs ${
-                node.trace._traceType === "Setup"
-                  ? "bg-yellow-100 text-yellow-800"
-                  : node.trace._traceType === "Deployment"
-                    ? "bg-blue-100 text-blue-800"
-                    : "bg-green-100 text-green-800"
-              }`}
-            >
-              {node.trace._traceType}
-            </span>
-          )}
-
-          <span className="font-medium font-mono text-sm">
-            {node.trace.kind}
-          </span>
-
-          {node.trace.kind.toUpperCase() !== "CREATE" && (
-            <>
-              <span className="text-muted-foreground">→</span>
-              <span className="font-mono text-sm">
-                {formatAddress(node.trace.address)}
-              </span>
-            </>
-          )}
-
-          {getFunctionSignature(node.trace.data) && (
-            <span className="rounded bg-muted px-1 font-mono text-muted-foreground text-xs">
-              {getFunctionSignature(node.trace.data)}
-            </span>
-          )}
+          <span className="font-medium text-sm">{getDisplayName(node)}</span>
 
           {formatValue(node.trace.value) && (
             <span className="text-blue-600 text-sm">
@@ -510,6 +597,8 @@ function TraceTreeNode({ node, arena, depth }: TraceTreeNodeProps) {
                 node={childNode}
                 arena={arena}
                 depth={depth + 1}
+                abis={abis}
+                setAbis={setAbis}
               />
             );
           })}
