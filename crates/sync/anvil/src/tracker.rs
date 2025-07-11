@@ -127,9 +127,10 @@ async fn watch(
                         Ok(b) => {
                             if warned {
                                 tracing::info!("Anvil node is back online at {}", ctx.http_url);
+                                warned = false;
+                                backoff = INITIAL_BACKOFF;
                             }
-                            warned = false;
-                            backoff = INITIAL_BACKOFF;
+
                             break 'wait b;
                         }
                         Err(e) => {
