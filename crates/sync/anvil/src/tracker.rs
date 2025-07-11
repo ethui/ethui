@@ -1,12 +1,14 @@
+use std::time::Duration;
+
 use alloy::{
     network::Ethereum,
     providers::{Provider as _, ProviderBuilder, WsConnect, ext::TraceApi as _},
     rpc::types::{Filter, Log, trace::parity::LocalizedTransactionTrace},
 };
 use ethui_abis::IERC20;
-use ethui_types::{prelude::*, DedupChainId, TokenMetadata};
+use ethui_types::{DedupChainId, TokenMetadata, prelude::*};
 use futures::StreamExt as _;
-use tokio::sync::mpsc;
+use tokio::{sync::mpsc, time::sleep};
 use tracing::{instrument, trace, warn};
 use url::Url;
 
@@ -95,6 +97,10 @@ async fn watch(
     mut quit_rcv: mpsc::Receiver<()>,
     block_snd: mpsc::UnboundedSender<Msg>,
 ) -> color_eyre::Result<()> {
+    let mut backoff = Duration::from_secs(1);
+    let max_backoff = Duration::from_secs(5);
+    let mut warned = false;
+
     'watcher: loop {
         let from_block = match get_sync_status(&ctx).await {
             None => {
@@ -115,7 +121,26 @@ async fn watch(
             tokio::select! {
                 _ = quit_rcv.recv() => break 'watcher,
                 res = http_provider.get_block_number() => {
-                    if let Ok(b) = res { break 'wait b }
+                    match res {
+                        Ok(b) => {
+                            if warned {
+                                tracing::info!("Anvil node is back online at {}", ctx.http_url);
+                            }
+                            warned = false;
+                            backoff = Duration::from_secs(1);
+                            break 'wait b;
+                        }
+                        Err(e) => {
+                            if !warned {
+                                tracing::warn!("Anvil node not available at {}: {e}", ctx.http_url);
+                                warned = true;
+                            } else {
+                                tracing::debug!("Retrying Anvil connection in {}s...", backoff.as_secs());
+                            }
+                            sleep(backoff).await;
+                            backoff = std::cmp::min(backoff * 2, max_backoff);
+                        }
+                    }
                 }
             };
         };
