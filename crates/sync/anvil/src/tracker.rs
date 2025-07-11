@@ -101,7 +101,6 @@ async fn watch(
     block_snd: mpsc::UnboundedSender<Msg>,
 ) -> color_eyre::Result<()> {
     let mut backoff = INITIAL_BACKOFF;
-    let max_backoff = MAX_BACKOFF;
     let mut warned = false;
 
     'watcher: loop {
@@ -130,7 +129,7 @@ async fn watch(
                                 tracing::info!("Anvil node is back online at {}", ctx.http_url);
                             }
                             warned = false;
-                            backoff = Duration::from_secs(1);
+                            backoff = INITIAL_BACKOFF;
                             break 'wait b;
                         }
                         Err(e) => {
@@ -141,7 +140,7 @@ async fn watch(
                                 tracing::debug!("Retrying Anvil connection in {}s...", backoff.as_secs());
                             }
                             sleep(backoff).await;
-                            backoff = std::cmp::min(backoff * 2, max_backoff);
+                            backoff = std::cmp::min(backoff * 2, MAX_BACKOFF);
                         }
                     }
                 }
