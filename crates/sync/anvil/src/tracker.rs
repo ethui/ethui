@@ -14,6 +14,9 @@ use url::Url;
 
 use crate::expanders::{expand_logs, expand_traces};
 
+const INITIAL_BACKOFF: Duration = Duration::from_secs(1);
+const MAX_BACKOFF: Duration = Duration::from_secs(5);
+
 #[derive(Debug)]
 pub struct Tracker {
     quit_snd: Option<mpsc::Sender<()>>,
@@ -97,8 +100,8 @@ async fn watch(
     mut quit_rcv: mpsc::Receiver<()>,
     block_snd: mpsc::UnboundedSender<Msg>,
 ) -> color_eyre::Result<()> {
-    let mut backoff = Duration::from_secs(1);
-    let max_backoff = Duration::from_secs(5);
+    let mut backoff = INITIAL_BACKOFF;
+    let max_backoff = MAX_BACKOFF;
     let mut warned = false;
 
     'watcher: loop {
