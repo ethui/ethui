@@ -6,9 +6,8 @@ use alloy::{
 };
 use async_trait::async_trait;
 use coins_bip32::ecdsa;
-use color_eyre::eyre::{eyre, ContextCompat as _};
 use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_types::Address;
+use ethui_types::prelude::*;
 use secrets::SecretVec;
 use tokio::{
     sync::{Mutex, RwLock},

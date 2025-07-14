@@ -1,11 +1,18 @@
-use std::path::{Path, PathBuf};
+use std::{
+    path::{Path, PathBuf},
+    time::Duration,
+};
 
 use async_trait::async_trait;
 use ethui_broadcast::InternalMsg;
-use ethui_types::{GlobalState, Network, UINotify};
+use ethui_types::{prelude::*, Network, UINotify};
+use futures::{stream, StreamExt};
 use once_cell::sync::OnceCell;
 use serde_constant::ConstI64;
-use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
+use tokio::{
+    sync::{RwLock, RwLockReadGuard, RwLockWriteGuard},
+    time::interval,
+};
 
 use crate::{migrations::load_and_migrate, Networks, SerializedNetworks};
 
@@ -35,6 +42,7 @@ pub async fn init(pathbuf: PathBuf) {
     NETWORKS.set(RwLock::new(res)).unwrap();
 
     tokio::spawn(async { receiver().await });
+    tokio::spawn(async { status_poller().await });
 }
 
 #[async_trait]
@@ -64,6 +72,32 @@ async fn receiver() -> ! {
                         .set_current_by_dedup_chain_id(dedup_chain_id)
                         .await;
                 }
+            }
+        }
+    }
+}
+
+/// Polls the status of each network every 10 seconds
+async fn status_poller() -> ! {
+    let mut interval = interval(Duration::from_secs(10));
+
+    loop {
+        // Wait for the interval (first tick is immediate)
+        interval.tick().await;
+
+        // Poll each network's status and check if any changed
+        let mut networks = Networks::write().await;
+
+        let any_changes = stream::iter(networks.inner.networks.values_mut())
+            .then(|network| async { network.poll_status().await })
+            .any(|change| async move { change.is_some() })
+            .await;
+
+        // Notify UI if any status changed
+        if any_changes {
+            ethui_broadcast::ui_notify(UINotify::NetworksChanged).await;
+            if let Err(e) = networks.save() {
+                error!("Failed to save network status updates: {}", e);
             }
         }
     }

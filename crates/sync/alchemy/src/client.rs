@@ -11,7 +11,9 @@ use url::Url;
 
 use crate::{
     networks,
-    types::{AlchemyAssetTransfer, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse},
+    types::{
+        AlchemyAssetTransfer, Balances, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse,
+    },
 };
 pub(crate) struct Client {
     v2_provider: Box<RootProvider<Ethereum>>,
@@ -96,26 +98,6 @@ impl Client {
         &self,
         address: Address,
     ) -> color_eyre::Result<Vec<(Address, U256)>> {
-        #[derive(Debug, Serialize, Deserialize)]
-        #[serde(rename_all = "camelCase")]
-        struct Balances {
-            pub address: Address,
-            pub token_balances: Vec<TokenBalance>,
-        }
-
-        #[derive(Debug, Serialize, Deserialize)]
-        #[serde(rename_all = "camelCase")]
-        struct TokenBalance {
-            pub contract_address: Address,
-            pub token_balance: U256,
-        }
-
-        impl From<TokenBalance> for (Address, U256) {
-            fn from(value: TokenBalance) -> Self {
-                (value.contract_address, value.token_balance)
-            }
-        }
-
         let params = json!([format!("0x{:x}", address), "erc20"]);
         let res: Balances = self
             .v2_provider

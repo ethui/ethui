@@ -6,14 +6,11 @@ mod migrations;
 mod onboarding;
 mod utils;
 
-use std::collections::HashMap;
-
 pub use actor::*;
-use ethui_types::Address;
+use ethui_types::prelude::*;
 pub use init::init;
 use migrations::LatestVersion;
 use onboarding::Onboarding;
-use serde::{Deserialize, Serialize};
 use serde_constant::ConstI64;
 pub use utils::test_alchemy_api_key;
 
@@ -52,6 +49,9 @@ pub struct Settings {
     pub rust_log: String,
 
     #[serde(default)]
+    pub run_local_stacks: bool,
+
+    #[serde(default)]
     pub onboarding: Onboarding,
 
     version: LatestVersion,
@@ -72,6 +72,7 @@ impl Default for Settings {
             rust_log: "warn".into(),
             version: ConstI64,
             onboarding: Onboarding::default(),
+            run_local_stacks: false,
         }
     }
 }

@@ -1,19 +1,18 @@
 use std::str::FromStr;
 
-use alloy::primitives::Bytes;
-use ethui_types::{events::Tx, transactions::Transaction, Address, B256, U256};
+use ethui_types::{events::Tx, prelude::*, transactions::Transaction};
 
 use crate::{pagination::TxIdx, DbInner};
 
 impl DbInner {
-    pub async fn insert_transactions(&self, chain_id: u32, txs: Vec<Tx>) -> color_eyre::Result<()> {
+    pub async fn insert_transactions(&self, chain_id: u32, txs: Vec<Tx>) -> Result<()> {
         for tx in txs.iter() {
             self.insert_transaction(chain_id, tx).await?;
         }
         Ok(())
     }
 
-    pub async fn insert_transaction(&self, chain_id: u32, tx: &Tx) -> color_eyre::Result<()> {
+    pub async fn insert_transaction(&self, chain_id: u32, tx: &Tx) -> Result<()> {
         let hash = format!("0x{:x}", tx.hash);
         let trace_address = tx.trace_address.clone().map(|t| {
             t.into_iter()
@@ -114,7 +113,7 @@ impl DbInner {
         from_or_to: Address,
         max: u32,
         first_known: Option<TxIdx>,
-    ) -> color_eyre::Result<Vec<Transaction>> {
+    ) -> Result<Vec<Transaction>> {
         let from_or_to = from_or_to.to_string();
         let first_known = first_known.unwrap_or_default();
         let first_known_block = first_known.block_number as u32;
@@ -164,7 +163,7 @@ impl DbInner {
         from_or_to: Address,
         max: u32,
         last_known: Option<TxIdx>,
-    ) -> color_eyre::Result<Vec<Transaction>> {
+    ) -> Result<Vec<Transaction>> {
         let from_or_to = from_or_to.to_string();
         let last_known_block = last_known
             .clone()

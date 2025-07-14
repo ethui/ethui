@@ -6,6 +6,7 @@ pub mod events;
 mod global_state;
 mod network;
 mod new_network_params;
+pub mod prelude;
 mod tokens;
 pub mod transactions;
 pub mod ui_events;
@@ -17,7 +18,7 @@ pub use dedup_chain_id::DedupChainId;
 pub use error::{SerializableError, TauriResult};
 pub use events::Event;
 pub use global_state::GlobalState;
-pub use network::Network;
+pub use network::{Network, NetworkStatus};
 pub use new_network_params::NewNetworkParams;
 pub use tokens::{
     Erc1155Token, Erc1155TokenData, Erc721Collection, Erc721Token, Erc721TokenData,

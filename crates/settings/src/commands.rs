@@ -1,6 +1,6 @@
 use ethui_types::{Address, TauriResult};
 
-use crate::{ask, onboarding::OnboardingStep, tell, DarkMode, GetAlias, GetAll, Set, Settings};
+use crate::{DarkMode, GetAlias, GetAll, Set, Settings, ask, onboarding::OnboardingStep, tell};
 
 #[tauri::command]
 pub async fn settings_get() -> TauriResult<Settings> {
@@ -62,6 +62,12 @@ pub async fn settings_test_rust_log(directives: String) -> bool {
 #[tauri::command]
 pub async fn settings_onboarding_finish_step(id: OnboardingStep) -> TauriResult<()> {
     tell(Set::FinishOnboardingStep(id)).await?;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn settings_set_run_local_stacks(mode: bool) -> TauriResult<()> {
+    tell(Set::RunLocalStacks(mode)).await?;
     Ok(())
 }
 

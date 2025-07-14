@@ -1,13 +1,10 @@
-use std::str::FromStr;
-
 use alloy::signers::{
     local::{coins_bip39::English, MnemonicBuilder},
     Signer as _,
 };
 use async_trait::async_trait;
 use coins_bip32::path::DerivationPath;
-use ethui_types::Address;
-use serde::{Deserialize, Serialize};
+use ethui_types::prelude::*;
 
 use crate::{utils, wallet::WalletCreate, Signer, Wallet, WalletControl};
 

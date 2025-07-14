@@ -8,7 +8,9 @@ use super::global::OPEN_DIALOGS;
 #[tauri::command]
 pub async fn dialog_get_payload(id: u32) -> TauriResult<serde_json::Value> {
     let dialogs = OPEN_DIALOGS.lock().await;
-    let pending = dialogs.get(&id).unwrap();
+    let pending = dialogs
+        .get(&id)
+        .wrap_err_with(|| format!("Dialog not found {id}"))?;
 
     Ok(pending.get_payload().await)
 }

@@ -1,8 +1,8 @@
 use std::str::FromStr;
 
 use alloy::{json_abi::JsonAbi, primitives::Bytes};
-use color_eyre::eyre::eyre;
-use ethui_types::{Address, Contract, ContractWithAbi, DedupChainId};
+use ethui_types::prelude::*;
+use ethui_types::{Contract, ContractWithAbi, DedupChainId};
 use tracing::instrument;
 
 use crate::DbInner;
@@ -12,7 +12,7 @@ impl DbInner {
         &self,
         chain_id: u32,
         dedup_id: i32,
-    ) -> color_eyre::Result<Vec<Contract>> {
+    ) -> Result<Vec<Contract>> {
         let rows = sqlx::query!(
             r#"SELECT address, name, proxy_for, proxied_by FROM contracts WHERE chain_id = ? AND dedup_id = ?"#,
             chain_id, dedup_id
@@ -37,7 +37,7 @@ impl DbInner {
         chain_id: u32,
         dedup_id: i32,
         address: Address,
-    ) -> color_eyre::Result<Option<ContractWithAbi>> {
+    ) -> Result<Option<ContractWithAbi>> {
         let address = format!("0x{address:x}");
         let res = sqlx::query!(
             r#" SELECT abi, name, address
@@ -66,7 +66,7 @@ impl DbInner {
         &self,
         chain_id: u32,
         address: Address,
-    ) -> color_eyre::Result<JsonAbi> {
+    ) -> Result<JsonAbi> {
         let address = format!("0x{address:x}");
 
         let res = sqlx::query!(
@@ -89,7 +89,7 @@ impl DbInner {
         &self,
         chain_id: u32,
         address: Address,
-    ) -> color_eyre::Result<JsonAbi> {
+    ) -> Result<JsonAbi> {
         let address = format!("0x{address:x}");
 
         let res = sqlx::query!(
@@ -122,7 +122,7 @@ impl DbInner {
         abi: Option<String>,
         name: Option<String>,
         proxy_for: Option<Address>,
-    ) -> color_eyre::Result<()> {
+    ) -> Result<()> {
         let address = format!("0x{address:x}");
         let proxy_for = proxy_for.map(|p| format!("0x{p:x}"));
         let code = code.map(|c| format!("0x{c:x}"));
@@ -167,7 +167,7 @@ impl DbInner {
 
     pub async fn get_incomplete_contracts(
         &self,
-    ) -> color_eyre::Result<Vec<((u32, i32), Address, Option<Bytes>)>> {
+    ) -> Result<Vec<((u32, i32), Address, Option<Bytes>)>> {
         let rows = sqlx::query!(
             r#"SELECT address, chain_id, dedup_id, code FROM contracts WHERE name IS NULL or ABI IS NULL"#,
         )
@@ -187,7 +187,7 @@ impl DbInner {
             .collect())
     }
 
-    pub async fn remove_contracts(&self, chain_id: u32, dedup_id: i32) -> color_eyre::Result<()> {
+    pub async fn remove_contracts(&self, chain_id: u32, dedup_id: i32) -> Result<()> {
         sqlx::query!(
             r#"DELETE FROM contracts where chain_id = ? AND dedup_id = ?"#,
             chain_id,
@@ -204,7 +204,7 @@ impl DbInner {
         chain_id: u32,
         dedup_id: i32,
         address: Address,
-    ) -> color_eyre::Result<()> {
+    ) -> Result<()> {
         let address = format!("0x{address:x}");
 
         sqlx::query!(

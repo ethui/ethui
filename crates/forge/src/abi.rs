@@ -1,8 +1,7 @@
-use std::{ffi::OsStr, fs::File, io::BufReader, path::PathBuf, str::FromStr as _};
+use std::{ffi::OsStr, fs::File, io::BufReader, path::PathBuf};
 
-use alloy::primitives::Bytes;
+use ethui_types::prelude::*;
 use kameo::Reply;
-use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Reply, Serialize, Deserialize)]
 pub struct ForgeAbi {

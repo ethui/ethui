@@ -3,11 +3,10 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use color_eyre::eyre::{Context as _, ContextCompat as _};
-use ethui_types::UINotify;
-use kameo::{actor::ActorRef, message::Message, prelude::Context, Actor, Reply};
+use ethui_types::prelude::*;
+use kameo::{Actor, Reply, actor::ActorRef, message::Message, prelude::Context};
 
-use crate::{migrations::load_and_migrate, onboarding::OnboardingStep, DarkMode, Settings};
+use crate::{DarkMode, Settings, migrations::load_and_migrate, onboarding::OnboardingStep};
 
 #[derive(Debug)]
 pub struct SettingsActor {
@@ -15,9 +14,7 @@ pub struct SettingsActor {
     file: PathBuf,
 }
 
-pub async fn ask<M>(
-    msg: M,
-) -> color_eyre::Result<<<SettingsActor as Message<M>>::Reply as Reply>::Ok>
+pub async fn ask<M>(msg: M) -> Result<<<SettingsActor as Message<M>>::Reply as Reply>::Ok>
 where
     SettingsActor: Message<M>,
     M: Send + 'static + Sync,
@@ -30,7 +27,7 @@ where
     actor.ask(msg).await.wrap_err_with(|| "failed")
 }
 
-pub async fn tell<M>(msg: M) -> color_eyre::Result<()>
+pub async fn tell<M>(msg: M) -> Result<()>
 where
     SettingsActor: Message<M>,
     M: Send + 'static + Sync,
@@ -43,18 +40,37 @@ where
 }
 
 impl SettingsActor {
-    pub async fn new(file: PathBuf) -> color_eyre::Result<Self> {
+    pub async fn new(file: PathBuf) -> Result<Self> {
         let inner = if file.exists() {
             load_and_migrate(&file).await?
         } else {
             Settings::default()
         };
 
-        // make sure OS's autostart is synced with settings
-        crate::autostart::update(inner.autostart)?;
-        ethui_tracing::reload(&inner.rust_log)?;
+        let ret = Self { inner, file };
 
-        Ok(Self { inner, file })
+        // Save immediately after instantiation to persist any migrations
+        ret.save().await?;
+
+        // make sure OS's autostart is synced with settings
+        crate::autostart::update(ret.inner.autostart)?;
+        ethui_tracing::reload(&ret.inner.rust_log)?;
+
+        Ok(ret)
+    }
+
+    #[instrument(skip(self), level = "trace")]
+    async fn save(&self) -> Result<()> {
+        let pathbuf = self.file.clone();
+        let path = Path::new(&pathbuf);
+        let file = File::create(path)?;
+
+        ethui_tracing::reload(&self.inner.rust_log)?;
+        serde_json::to_writer_pretty(file, &self.inner)?;
+        ethui_broadcast::settings_updated().await;
+        ethui_broadcast::ui_notify(UINotify::SettingsChanged).await;
+
+        Ok(())
     }
 }
 
@@ -70,6 +86,7 @@ pub enum Set {
     FinishOnboardingStep(OnboardingStep),
     FinishOnboarding,
     Alias(ethui_types::Address, Option<String>),
+    RunLocalStacks(bool),
 }
 
 #[derive(Debug, Clone)]
@@ -77,9 +94,6 @@ pub struct GetAll;
 
 #[derive(Debug, Clone)]
 pub struct GetAlias(pub ethui_types::Address);
-
-#[derive(Debug, Clone)]
-pub struct Save;
 
 impl Message<GetAll> for SettingsActor {
     type Reply = Settings;
@@ -90,8 +104,9 @@ impl Message<GetAll> for SettingsActor {
 }
 
 impl Message<Set> for SettingsActor {
-    type Reply = color_eyre::Result<()>;
+    type Reply = Result<()>;
 
+    #[instrument(skip(self, ctx), level = "trace")]
     async fn handle(&mut self, msg: Set, ctx: &mut Context<Self, Self::Reply>) -> Self::Reply {
         match msg {
             Set::All(map) => {
@@ -101,12 +116,36 @@ impl Message<Set> for SettingsActor {
                 if let Some(v) = map.get("abiWatchPath") {
                     self.inner.abi_watch_path = serde_json::from_value(v.clone()).unwrap()
                 }
+
                 if let Some(v) = map.get("alchemyApiKey") {
+                    // check onboarding step
+                    if !self
+                        .inner
+                        .onboarding
+                        .is_step_finished(OnboardingStep::Alchemy)
+                    {
+                        let _ = ctx
+                            .actor_ref()
+                            .tell(Set::FinishOnboardingStep(OnboardingStep::Alchemy))
+                            .await;
+                    }
                     self.inner.alchemy_api_key = serde_json::from_value(v.clone()).unwrap()
                 }
+
                 if let Some(v) = map.get("etherscanApiKey") {
+                    if !self
+                        .inner
+                        .onboarding
+                        .is_step_finished(OnboardingStep::Etherscan)
+                    {
+                        let _ = ctx
+                            .actor_ref()
+                            .tell(Set::FinishOnboardingStep(OnboardingStep::Etherscan))
+                            .await;
+                    }
                     self.inner.etherscan_api_key = serde_json::from_value(v.clone()).unwrap()
                 }
+
                 if let Some(v) = map.get("hideEmptyTokens") {
                     self.inner.hide_empty_tokens = serde_json::from_value(v.clone()).unwrap()
                 }
@@ -123,6 +162,9 @@ impl Message<Set> for SettingsActor {
                 if let Some(v) = map.get("rustLog") {
                     self.inner.rust_log = serde_json::from_value(v.clone()).unwrap();
                     ethui_tracing::parse(&self.inner.rust_log)?;
+                }
+                if let Some(v) = map.get("runLocalStacks") {
+                    self.inner.run_local_stacks = serde_json::from_value(v.clone()).unwrap();
                 }
             }
             Set::DarkMode(mode) => {
@@ -146,27 +188,14 @@ impl Message<Set> for SettingsActor {
                     self.inner.aliases.remove(&address);
                 }
             }
+            Set::RunLocalStacks(mode) => {
+                self.inner.run_local_stacks = mode;
+            }
         }
 
+        self.save().await?;
         // trigger a file save
-        let _ = ctx.actor_ref().tell(Save).await;
-
-        Ok(())
-    }
-}
-
-impl Message<Save> for SettingsActor {
-    type Reply = color_eyre::Result<()>;
-
-    async fn handle(&mut self, _msg: Save, _ctx: &mut Context<Self, Self::Reply>) -> Self::Reply {
-        let pathbuf = self.file.clone();
-        let path = Path::new(&pathbuf);
-        let file = File::create(path)?;
-
-        ethui_tracing::reload(&self.inner.rust_log)?;
-        serde_json::to_writer_pretty(file, &self.inner)?;
-        ethui_broadcast::settings_updated().await;
-        ethui_broadcast::ui_notify(UINotify::SettingsChanged).await;
+        // let _ = ctx.actor_ref().tell(Save).try_send();
 
         Ok(())
     }

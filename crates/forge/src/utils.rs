@@ -1,6 +1,6 @@
 use alloy::{primitives::Bytes, providers::Provider as _};
 use ethui_networks::Networks;
-use ethui_types::{eyre, Address, GlobalState};
+use ethui_types::{Address, GlobalState, eyre};
 use tracing::{debug, error};
 
 pub static FUZZ_DIFF_THRESHOLD: f64 = 0.2;

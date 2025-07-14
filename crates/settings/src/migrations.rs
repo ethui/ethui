@@ -12,10 +12,10 @@ use serde::Serialize;
 use serde_constant::ConstI64;
 use serde_json::json;
 
-use crate::{onboarding::Onboarding, DarkMode, Settings};
+use crate::{DarkMode, Settings, onboarding::Onboarding};
 
 // Temporary struct for migration return value
-pub type LatestVersion = ConstI64<2>;
+pub type LatestVersion = ConstI64<3>;
 
 #[derive(Debug, Deserialize)]
 #[cfg_attr(test, derive(Serialize))]
@@ -83,12 +83,46 @@ pub struct SettingsV1 {
     version: ConstI64<1>,
 }
 
+#[derive(Debug, Clone, Deserialize)]
+#[cfg_attr(test, derive(Serialize))]
+#[serde(rename_all = "camelCase", default)]
+pub struct SettingsV2 {
+    pub dark_mode: DarkMode,
+
+    pub abi_watch_path: Option<String>,
+    pub alchemy_api_key: Option<String>,
+    pub etherscan_api_key: Option<String>,
+    #[serde(default = "default_true")]
+    pub hide_empty_tokens: bool,
+
+    #[serde(default = "default_aliases")]
+    aliases: HashMap<Address, String>,
+
+    #[serde(default)]
+    fast_mode: bool,
+
+    #[serde(default)]
+    autostart: bool,
+
+    #[serde(default)]
+    start_minimized: bool,
+
+    #[serde(default)]
+    rust_log: String,
+
+    #[serde(default)]
+    pub onboarding: Onboarding,
+
+    version: ConstI64<2>,
+}
+
 #[derive(Debug, Deserialize)]
 #[serde(untagged)]
 enum Versions {
     V0(SettingsV0),
     V1(SettingsV1),
-    V2(Settings),
+    V2(SettingsV2),
+    V3(Settings),
 }
 
 pub(crate) async fn load_and_migrate(pathbuf: &PathBuf) -> color_eyre::Result<Settings> {
@@ -112,8 +146,8 @@ fn run_migrations(settings: Versions) -> Settings {
     let mut result = settings;
 
     loop {
-        if let Versions::V2(v2) = result {
-            break v2;
+        if let Versions::V3(v3) = result {
+            break v3;
         }
 
         match result {
@@ -135,7 +169,7 @@ fn run_migrations(settings: Versions) -> Settings {
             }
 
             Versions::V1(v1) => {
-                result = Versions::V2(Settings {
+                result = Versions::V2(SettingsV2 {
                     version: ConstI64,
                     dark_mode: v1.dark_mode,
                     abi_watch_path: v1.abi_watch_path,
@@ -155,7 +189,41 @@ fn run_migrations(settings: Versions) -> Settings {
                 });
             }
 
-            Versions::V2(v2) => return v2,
+            Versions::V2(v2) => {
+                result = Versions::V3(Settings {
+                    version: ConstI64,
+                    dark_mode: v2.dark_mode,
+                    abi_watch_path: v2.abi_watch_path,
+                    alchemy_api_key: v2.alchemy_api_key,
+                    etherscan_api_key: v2.etherscan_api_key,
+                    hide_empty_tokens: v2.hide_empty_tokens,
+                    aliases: v2.aliases,
+                    fast_mode: v2.fast_mode,
+                    autostart: v2.autostart,
+                    start_minimized: v2.start_minimized,
+                    rust_log: v2.rust_log,
+                    onboarding: v2.onboarding,
+                    run_local_stacks: false,
+                });
+            }
+
+            Versions::V3(v3) => {
+                result = Versions::V3(Settings {
+                    version: ConstI64,
+                    dark_mode: v3.dark_mode,
+                    abi_watch_path: v3.abi_watch_path,
+                    alchemy_api_key: v3.alchemy_api_key,
+                    etherscan_api_key: v3.etherscan_api_key,
+                    hide_empty_tokens: v3.hide_empty_tokens,
+                    aliases: v3.aliases,
+                    fast_mode: v3.fast_mode,
+                    autostart: v3.autostart,
+                    start_minimized: v3.start_minimized,
+                    rust_log: v3.rust_log,
+                    onboarding: v3.onboarding,
+                    run_local_stacks: v3.run_local_stacks,
+                });
+            }
         }
     }
 }
@@ -206,6 +274,25 @@ impl Default for SettingsV1 {
     }
 }
 
+impl Default for SettingsV2 {
+    fn default() -> Self {
+        Self {
+            dark_mode: DarkMode::Auto,
+            abi_watch_path: None,
+            alchemy_api_key: None,
+            etherscan_api_key: None,
+            hide_empty_tokens: true,
+            aliases: HashMap::new(),
+            fast_mode: false,
+            autostart: false,
+            start_minimized: false,
+            rust_log: "warn".into(),
+            version: ConstI64,
+            onboarding: Onboarding::default(),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use std::io::Write;
@@ -223,7 +310,7 @@ mod tests {
         write!(tempfile, "{settings_v0}").unwrap();
 
         if let Ok(settings) = load_and_migrate(&tempfile.path().to_path_buf()).await {
-            assert_eq!(settings.version, ConstI64::<2>);
+            assert_eq!(settings.version, ConstI64::<3>);
         }
     }
 }

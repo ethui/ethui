@@ -15,11 +15,11 @@ impl DbInner {
         for tx in events.iter() {
             // TODO: report this errors in await?. Currently they're being silently ignored, because the task just gets killed
             match tx {
-                Event::Tx(ref tx) => {
+                Event::Tx(tx) => {
                     self.insert_transaction(chain_id, tx).await?;
                 }
 
-                Event::ContractDeployed(ref tx) => {
+                Event::ContractDeployed(tx) => {
                     self.insert_contract_with_abi(
                         dedup_chain_id,
                         tx.address,

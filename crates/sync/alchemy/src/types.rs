@@ -1,6 +1,4 @@
-use ethui_types::{events::Tx, Address, TokenMetadata, B256, U256, U64};
-use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use ethui_types::{events::Tx, prelude::*, TokenMetadata};
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -87,12 +85,6 @@ impl TryFrom<&AlchemyAssetTransfer> for TokenMetadata {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Erc20MetadataResponse {
-    pub result: Erc20Metadata,
-}
-
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Erc20Metadata {
@@ -123,7 +115,7 @@ pub struct ErcImageData {
 #[serde(rename_all = "camelCase")]
 pub struct ErcRawMetadata {
     pub token_uri: String,
-    pub metadata: Value,
+    pub metadata: Json,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

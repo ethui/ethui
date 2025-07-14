@@ -17,13 +17,13 @@ function SettingsNetworks() {
   // TODO: add network button
   return (
     <div className="flex flex-wrap gap-2">
-      {networks.map(({ dedup_chain_id: { chain_id }, name }) => (
+      {networks.map(({ dedup_chain_id: { chain_id }, name, status }) => (
         <Link
           to={`/home/settings/networks/${name}/edit`}
           key={name}
           className="border p-4 hover:bg-accent"
         >
-          <ChainView chainId={chain_id} name={name} />
+          <ChainView chainId={chain_id} name={name} status={status} />
         </Link>
       ))}
       <Link

@@ -12,11 +12,8 @@ use std::{
     path::{Path, PathBuf},
 };
 
-pub use actor::*;
-use color_eyre::eyre::{eyre, ContextCompat as _};
-use ethui_types::{Address, Json, UINotify};
+use ethui_types::prelude::*;
 pub use init::init;
-use serde::Serialize;
 pub use signer::Signer;
 
 pub use self::{

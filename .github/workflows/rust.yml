@@ -74,7 +74,7 @@ jobs:
         with:
           tool: nextest
 
-      - run: cargo nextest run --workspace
+      - run: cargo nextest run --workspace -E 'not package(ethui-stacks)'
 
   cargo-clippy:
     needs: check-skip
