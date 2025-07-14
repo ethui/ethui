@@ -185,7 +185,6 @@ mod ui_msgs {
         RwLock::new(tx)
     });
 
-    #[instrument(level = "trace")]
     async fn send(msg: UIMsg) {
         debug!("UI msg: {:?}", msg);
         INTERNAL.read().await.send(msg).unwrap();

@@ -24,30 +24,39 @@ where
         _ctx: tracing_subscriber::layer::Context<'_, S>,
     ) {
         dbg!("on_event");
-        // let mut fields = BTreeMap::new();
-        // let mut visitor = JsonVisitor(&mut fields);
-        // event.record(&mut visitor);
-        //
-        // let message = fields
-        //     .get("message")
-        //     .and_then(|v| v.as_str())
-        //     .unwrap_or("")
-        //     .to_string();
-        //
-        // let trace_event = ethui_types::ui_events::TraceEvent {
-        //     timestamp: chrono::Utc::now().to_rfc3339(),
-        //     level: format!("{:?}", event.metadata().level()),
-        //     target: event.metadata().target().to_string(),
-        //     message,
-        //     fields,
-        // };
+        
+        // Only propagate ERROR, WARN, INFO, and DEBUG to UI (not TRACE)
+        match *event.metadata().level() {
+            tracing::Level::ERROR | tracing::Level::WARN | tracing::Level::INFO | tracing::Level::DEBUG => {
+                // Continue processing
+            }
+            tracing::Level::TRACE => return, // Skip TRACE level events
+        }
+        
+        let mut fields = BTreeMap::new();
+        let mut visitor = JsonVisitor(&mut fields);
+        event.record(&mut visitor);
 
-        // tokio::spawn(async move {
-        //     let _ = ethui_broadcast::ui_notify(ethui_types::ui_events::UINotify::TraceEvent(
-        //         trace_event,
-        //     ))
-        //     .await;
-        // });
+        let message = fields
+            .get("message")
+            .and_then(|v| v.as_str())
+            .unwrap_or("")
+            .to_string();
+
+        let trace_event = ethui_types::ui_events::TraceEvent {
+            timestamp: chrono::Utc::now().to_rfc3339(),
+            level: format!("{:?}", event.metadata().level()),
+            target: event.metadata().target().to_string(),
+            message,
+            fields,
+        };
+
+        tokio::spawn(async move {
+            let _ = ethui_broadcast::ui_notify(ethui_types::ui_events::UINotify::TraceEvent(
+                trace_event,
+            ))
+            .await;
+        });
     }
 }
 

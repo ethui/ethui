@@ -59,7 +59,6 @@ impl SettingsActor {
         Ok(ret)
     }
 
-    #[instrument(skip(self), level = "trace")]
     async fn save(&self) -> Result<()> {
         let pathbuf = self.file.clone();
         let path = Path::new(&pathbuf);

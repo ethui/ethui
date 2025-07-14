@@ -18,43 +18,21 @@ import {
 } from "@ethui/ui/components/shadcn/select";
 import { createFileRoute } from "@tanstack/react-router";
 import { Search, Trash2 } from "lucide-react";
-import { useCallback, useState } from "react";
-import { useEventListener } from "#/hooks/useEventListener";
+import { useState } from "react";
+import { useTraces, type TraceEvent } from "#/store/useTraces";
 
 export const Route = createFileRoute("/home/_l/traces")({
   beforeLoad: () => ({ breadcrumb: "Traces" }),
   component: Traces,
 });
 
-interface TraceEvent {
-  timestamp: string;
-  level: string;
-  target: string;
-  message: string;
-  fields: Record<string, any>;
-}
 
 function Traces() {
-  const [traces, setTraces] = useState<TraceEvent[]>([]);
-  const [maxTraces, setMaxTraces] = useState(1000);
+  const { traces, maxTraces, clearTraces, setMaxTraces } = useTraces();
   const [filterLevel, setFilterLevel] = useState<string>("all");
   const [filterTarget, setFilterTarget] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
-  const addTrace = useCallback(
-    (event: { payload: TraceEvent }) => {
-      console.log(event);
-      setTraces((prev) => {
-        const newTraces = [event.payload, ...prev];
-        return newTraces.slice(0, maxTraces);
-      });
-    },
-    [maxTraces],
-  );
-
-  useEventListener("trace-event", addTrace);
-
-  const clearTraces = () => setTraces([]);
 
   const filteredTraces = traces.filter((trace) => {
     const levelMatch =

@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use color_eyre::eyre::Context as _;
 use ethui_broadcast::InternalMsg;
 use kameo::actor::ActorRef;
+use tracing::info;
 
 use crate::{actor::SettingsActor, onboarding::OnboardingStep, Set};
 
@@ -13,6 +14,7 @@ pub async fn init(pathbuf: PathBuf) -> color_eyre::Result<()> {
         .wrap_err_with(|| "Actor spawn error")?;
 
     tokio::spawn(receiver(actor));
+    tokio::spawn(foo());
 
     Ok(())
 }
@@ -40,5 +42,16 @@ async fn receiver(actor: ActorRef<SettingsActor>) -> ! {
             }
             _ => (),
         }
+    }
+}
+
+async fn foo() -> ! {
+    let mut timer = tokio::time::interval(std::time::Duration::from_secs(2));
+    let mut x = 0;
+    loop {
+        timer.tick().await;
+
+        info!("foo {x}");
+        x += 1;
     }
 }
