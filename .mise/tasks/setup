@@ -73,7 +73,8 @@ install_mise() {
 }
 
 run_mise_install() {
-  mise install > /dev/null 2>&1
+  true
+  # mise install > /dev/null 2>&1
 }
 
 install_tauri_prerequisites() {

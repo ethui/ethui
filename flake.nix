@@ -19,21 +19,34 @@
         pkgs = import nixpkgs {
           inherit system overlays;
         };
-        buildInputs = with pkgs; [
-          pkg-config
-          dbus
-          glib
+
+        cargoToml = builtins.fromTOML (builtins.readFile ./bin/Cargo.toml);
+        workspaceToml = builtins.fromTOML (builtins.readFile ./Cargo.toml);
+        rustToolchain = pkgs.rust-bin.nightly.latest.default.override {
+          extensions = [ "rust-src" ];
+        };
+
+        commonDeps = with pkgs; [
+          openssl
+          webkitgtk_4_1
           gtk3
+          cairo
+          gdk-pixbuf
+          glib
+          dbus
+          libsoup_2_4
+        ];
+
+        devDeps = with pkgs; [
+          pkg-config
           bacon
           at-spi2-atk
           atkmm
-          gdk-pixbuf
           gobject-introspection
           harfbuzz
-          webkitgtk_4_1
-          openssl
           watchexec
         ];
+
         libraries = with pkgs; [
           cargo-tauri
           pango
@@ -46,8 +59,34 @@
       in
       with pkgs;
       {
+        packages.default = rustPlatform.buildRustPackage {
+          pname = cargoToml.package.name;
+          version = workspaceToml.workspace.package.version;
+          src = ./.;
+          cargoLock = {
+            lockFile = ./Cargo.lock;
+            allowBuiltinFetchGit = true;
+          };
+
+          nativeBuildInputs = [
+            rustToolchain
+            pkg-config
+            wrapGAppsHook
+          ];
+
+          buildInputs = commonDeps;
+
+          doCheck = false;
+
+          meta = with pkgs.lib; {
+            description = "A desktop wallet for Ethereum and other EVM-compatible networks";
+            homepage = workspaceToml.workspace.package.homepage;
+            licence = licenses.mit;
+          };
+        };
+
         devShells.default = mkShell {
-          inherit buildInputs;
+          buildInputs = commonDeps ++ devDeps;
 
           shellHook = ''
             export LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath libraries}:$LD_LIBRARY_PATH
