@@ -3595,6 +3595,7 @@ dependencies = [
  "ethui-wallets",
  "foundry-evm",
  "pretty_assertions",
+ "revm",
  "serde",
  "tauri",
  "tokio",
@@ -8318,11 +8319,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ad3fbe34f6bb00a9c3155723b3718b9cb9f17066ba38f9eb101b678cd3626775"
 dependencies = [
  "alloy-eips",
+ "alloy-provider",
+ "alloy-transport",
  "revm-bytecode",
  "revm-database-interface",
  "revm-primitives",
  "revm-state",
  "serde",
+ "tokio",
 ]
 
 [[package]]
@@ -8335,6 +8339,7 @@ dependencies = [
  "revm-primitives",
  "revm-state",
  "serde",
+ "tokio",
 ]
 
 [[package]]
