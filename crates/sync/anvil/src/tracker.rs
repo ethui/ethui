@@ -115,12 +115,9 @@ async fn watch(
         let fork_block = get_fork_block_number(&provider).await;
         let from_block = u64::max(from_block, fork_block);
 
-        trace!("starting from block {}", from_block);
-
         // Catch up on past blocks
         catch_up_past_blocks(&provider, &block_snd, &ctx, from_block, to_block).await?;
 
-        trace!("caught up");
         block_snd
             .send(Msg::CaughtUp)
             .map_err(|_| eyre!("Watcher error"))?;
@@ -204,6 +201,7 @@ async fn get_fork_block_number(provider: &alloy::providers::RootProvider<Ethereu
 }
 
 // Catches up on all past blocks from from_block to to_block (inclusive)
+#[instrument(skip_all, fields(chain_id = ctx.dedup_chain_id.chain_id(), dedup_id = ctx.dedup_chain_id.dedup_id()), level = "trace")]
 async fn catch_up_past_blocks(
     provider: &alloy::providers::RootProvider<Ethereum>,
     block_snd: &mpsc::UnboundedSender<Msg>,
