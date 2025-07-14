@@ -47,6 +47,11 @@
           watchexec
         ];
 
+        buildDeps = with pkgs; [
+          nodejs
+          nodejs.pkgs.corepack
+        ];
+
         libraries = with pkgs; [
           cargo-tauri
           pango
@@ -74,9 +79,25 @@
             wrapGAppsHook
           ];
 
-          buildInputs = commonDeps;
+          buildInputs = commonDeps ++ buildDeps;
 
           doCheck = false;
+
+          configurePhase = ''
+            export HOME=$(mktemp -d)
+            corepack enable
+            corepack prepare yarn@4.9.2 --activate
+          '';
+
+          buildPhase = ''
+            yarn install --frozen-lockfile
+            yarn tauri build
+          '';
+
+          installPhase = ''
+            mkdir -p $out/bin
+            cp target/release/${cargoToml.package.name} $out/bin/${cargoToml.package.name}
+          '';
 
           meta = with pkgs.lib; {
             description = "A desktop wallet for Ethereum and other EVM-compatible networks";
