@@ -12,6 +12,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
+pub use actor::*;
 use ethui_types::prelude::*;
 pub use init::init;
 pub use signer::Signer;

@@ -2,7 +2,6 @@ use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_networks::Networks;
 use ethui_sync::{get_alchemy, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse};
 use ethui_types::{prelude::*, TokenMetadata};
-use ethui_wallets::{WalletControl, Wallets};
 
 use crate::{Error, Result};
 
