@@ -126,11 +126,8 @@ async fn watch(
             .map_err(|_| eyre!("Watcher error"))?;
 
         // Subscribe and process new blocks
-        if !subscribe_new_blocks(&sub_provider, &provider, &block_snd, &ctx, &mut quit_rcv).await? {
-            break;
-        }
+        subscribe_new_blocks(&sub_provider, &provider, &block_snd, &ctx, &mut quit_rcv).await?;
     }
-    Ok(())
 }
 
 // Waits for the node to be available and returns the latest block number
@@ -161,6 +158,7 @@ async fn wait_for_node(ctx: &Ctx, quit_rcv: &mut mpsc::Receiver<()>) -> color_ey
                             } else {
                                 tracing::debug!("Retrying Anvil connection in {}s...", backoff.as_secs());
                             }
+
                             tokio::select! {
                                 _ = sleep(backoff) => {},
                                 _ = quit_rcv.recv() => return Err(eyre!("Watcher quit")),
@@ -199,6 +197,7 @@ async fn get_fork_block_number(provider: &alloy::providers::RootProvider<Ethereu
         .raw_request("anvil_nodeInfo".into(), ())
         .await
         .unwrap_or(serde_json::Value::Null);
+
     node_info["forkConfig"]["forkBlockNumber"]
         .as_u64()
         .unwrap_or(0)
@@ -237,11 +236,11 @@ async fn subscribe_new_blocks(
     block_snd: &mpsc::UnboundedSender<Msg>,
     ctx: &Ctx,
     quit_rcv: &mut mpsc::Receiver<()>,
-) -> color_eyre::Result<bool> {
+) -> color_eyre::Result<()> {
     let mut stream = sub_provider.subscribe_blocks().await?.into_stream();
     loop {
         tokio::select! {
-            _ = quit_rcv.recv() => return Ok(false),
+            _ = quit_rcv.recv() => return Err(eyre!("Watcher quit")),
             b = stream.next() => {
                 match b {
                     Some(b) => {
@@ -259,7 +258,8 @@ async fn subscribe_new_blocks(
             }
         }
     }
-    Ok(true)
+
+    Ok(())
 }
 
 async fn process(ctx: Ctx, mut block_rcv: mpsc::UnboundedReceiver<Msg>) -> color_eyre::Result<()> {
