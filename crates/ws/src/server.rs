@@ -1,16 +1,16 @@
 use std::{collections::HashMap, net::SocketAddr};
 
 use ethui_types::GlobalState;
-use futures::{SinkExt, StreamExt, stream::SplitSink};
+use futures::{stream::SplitSink, SinkExt, StreamExt};
 use tokio::{
     net::{TcpListener, TcpStream},
     sync::mpsc,
 };
-use tokio_tungstenite::{WebSocketStream, accept_hdr_async};
+use tokio_tungstenite::{accept_hdr_async, WebSocketStream};
 use tracing::warn;
 use tungstenite::{
-    Message,
     handshake::server::{ErrorResponse, Request, Response},
+    Message,
 };
 use url::Url;
 
