@@ -43,7 +43,7 @@ pub trait WalletCreate {
 }
 
 #[enum_dispatch]
-#[derive(Debug, Serialize, Deserialize, Clone, Reply)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum Wallet {
     Plaintext(PlaintextWallet),

@@ -5,9 +5,8 @@ use std::{
 };
 
 use color_eyre::eyre::{Context as _, ContextCompat as _};
-use ethui_types::{Address, Json};
+use ethui_types::prelude::*;
 use kameo::{actor::ActorRef, message::Message, prelude::Context, Actor, Reply};
-use serde::Deserialize;
 
 use super::{Wallet, Wallets};
 
@@ -124,14 +123,14 @@ impl Message<GetAll> for WalletsActor {
 }
 
 impl Message<GetCurrent> for WalletsActor {
-    type Reply = Wallet;
+    type Reply = Result<Wallet>;
 
     async fn handle(
         &mut self,
         _msg: GetCurrent,
         _ctx: &mut Context<Self, Self::Reply>,
     ) -> Self::Reply {
-        self.inner.get_current_wallet().clone()
+        Ok(self.inner.get_current_wallet().clone())
     }
 }
 
