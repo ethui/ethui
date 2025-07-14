@@ -29,7 +29,7 @@ rust = "nightly"
 [env]
 NODE_ENV = "development"
 RUST_LOG = "warn"
-ETHUI_FEATURES = "debug forge-traces"
+ETHUI_FEATURES = "debug, forge-traces"
 ETHUI_WS_PORT = 9102
 ETHUI_STACKS_PORT = 9110
 DATABASE_URL = "sqlite://dev-data/default/db.sqlite3"

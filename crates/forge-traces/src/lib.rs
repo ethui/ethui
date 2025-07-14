@@ -30,13 +30,15 @@ impl ForgeTestRunner {
         }
     }
 
-    pub async fn run_tests(&self) -> Result<()> {
+    pub async fn run_tests(&self, extra_args: &[String]) -> Result<()> {
         tracing::info!("Running forge tests in {}", self.project_path);
 
-        // Run forge test with JSON output
-        let output = Command::new("forge")
-            .args(["test", "--json", "-vvvvv"])
-            .current_dir(&self.project_path)
+        let mut cmd = Command::new("forge");
+        cmd.args(["test", "--json", "-vvvvv"]);
+        cmd.args(extra_args);
+        cmd.current_dir(&self.project_path);
+
+        let output = cmd
             .output()
             .map_err(|e| eyre::eyre!("Failed to execute forge test: {e}"))?;
 
@@ -158,11 +160,11 @@ pub async fn handle_forge_command(
     use std::env;
 
     match subcommand {
-        ForgeCommands::Test => {
+        ForgeCommands::Test { args: extra_args } => {
             let current_dir = env::current_dir().expect("failed to get current dir");
             let forge_test_runner =
                 ForgeTestRunner::new(current_dir.to_string_lossy().to_string(), args.ws_port);
-            forge_test_runner.run_tests().await
+            forge_test_runner.run_tests(extra_args).await
         }
     }
 }

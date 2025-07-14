@@ -40,5 +40,9 @@ pub enum Commands {
 #[derive(Subcommand, Debug)]
 pub enum ForgeCommands {
     /// Run tests
-    Test,
+    Test {
+        /// Additional arguments to pass to forge test
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
 }

@@ -111,7 +111,12 @@ impl EthUIApp {
 
         init(&app, args).await?;
 
-        if should_start_main_window(args).await {
+        let hidden = if let Some(Commands::App { hidden }) = args.command {
+            hidden
+        } else {
+            false
+        };
+        if should_start_main_window(hidden).await {
             windows::main::show(app.handle()).await;
         }
 
@@ -236,10 +241,8 @@ fn config_dir(app: &tauri::App, args: &Args) -> PathBuf {
         })
 }
 
-async fn should_start_main_window(args: &Args) -> bool {
-    if let Some(Commands::App { hidden }) = &args.command
-        && *hidden
-    {
+async fn should_start_main_window(hidden: bool) -> bool {
+    if hidden {
         return false;
     }
 

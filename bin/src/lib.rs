@@ -34,7 +34,7 @@ pub async fn run() -> Result<()> {
 
 async fn handle_command(command: &Commands, args: &ethui_args::Args) -> Result<()> {
     match command {
-        Commands::App { hidden: _ } => {
+        _app_args @ Commands::App { .. } => {
             let lock = NamedLock::create(LOCK_NAME)?;
 
             let _guard = match lock.try_lock() {
@@ -48,7 +48,8 @@ async fn handle_command(command: &Commands, args: &ethui_args::Args) -> Result<(
             Ok(())
         }
         #[cfg(feature = "forge-traces")]
-        Commands::Forge { subcommand } => ethui_forge_traces::handle_forge_command(subcommand, args).await,
+        Commands::Forge { subcommand } => {
+            ethui_forge_traces::handle_forge_command(subcommand, args).await
+        }
     }
 }
-
