@@ -15,7 +15,7 @@ use url::Url;
 use crate::expanders::{expand_logs, expand_traces};
 
 const INITIAL_BACKOFF: Duration = Duration::from_secs(1);
-const MAX_BACKOFF: Duration = Duration::from_secs(5);
+const MAX_BACKOFF: Duration = Duration::from_secs(10);
 
 #[derive(Debug)]
 pub struct Tracker {
@@ -110,6 +110,7 @@ async fn watch(
         };
 
         let to_block = wait_for_node(&ctx, &mut quit_rcv).await?;
+
         let (provider, sub_provider) = init_providers(&ctx).await?;
         let fork_block = get_fork_block_number(&provider).await;
         let from_block = u64::max(from_block, fork_block);
@@ -137,10 +138,11 @@ async fn wait_for_node(ctx: &Ctx, quit_rcv: &mut mpsc::Receiver<()>) -> color_ey
     let mut backoff = INITIAL_BACKOFF;
     let mut warned = false;
 
-    let http_provider = ProviderBuilder::new()
-        .disable_recommended_fillers()
-        .connect_http(ctx.http_url.clone());
     loop {
+        let http_provider = ProviderBuilder::new()
+            .disable_recommended_fillers()
+            .connect_http(ctx.http_url.clone());
+
         tokio::select! {
             _ = quit_rcv.recv() => return Err(eyre!("Watcher quit")),
                 res = http_provider.get_block_number() => {
@@ -159,7 +161,11 @@ async fn wait_for_node(ctx: &Ctx, quit_rcv: &mut mpsc::Receiver<()>) -> color_ey
                             } else {
                                 tracing::debug!("Retrying Anvil connection in {}s...", backoff.as_secs());
                             }
-                            sleep(backoff).await;
+                            tokio::select! {
+                                _ = sleep(backoff) => {},
+                                _ = quit_rcv.recv() => return Err(eyre!("Watcher quit")),
+                            }
+
                             backoff = std::cmp::min(backoff * 2, MAX_BACKOFF);
                         }
                     }
