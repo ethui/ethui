@@ -85,12 +85,6 @@ impl TryFrom<&AlchemyAssetTransfer> for TokenMetadata {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Erc20MetadataResponse {
-    pub result: Erc20Metadata,
-}
-
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Erc20Metadata {
