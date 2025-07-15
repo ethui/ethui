@@ -2,12 +2,17 @@ use std::path::PathBuf;
 
 use ethui_args::Args;
 use ethui_broadcast::UIMsg;
-use ethui_settings::GetAll;
+use named_lock::NamedLock;
 use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
 #[cfg(feature = "aptabase")]
 use tauri_plugin_aptabase::EventTracker as _;
 
 use crate::{commands, menu, system_tray, windows};
+
+#[cfg(not(debug_assertions))]
+static LOCK_NAME: &str = "iron-wallet";
+#[cfg(debug_assertions)]
+static LOCK_NAME: &str = "iron-wallet-dev";
 
 pub struct EthUIApp {
     app: tauri::App,
@@ -15,6 +20,20 @@ pub struct EthUIApp {
 }
 
 impl EthUIApp {
+    pub async fn start_or_open(args: ethui_args::Args) -> color_eyre::Result<()> {
+        let lock = NamedLock::create(LOCK_NAME)?;
+
+        let _guard = match lock.try_lock() {
+            Ok(g) => g,
+            Err(_) => {
+                ethui_broadcast::main_window_show().await;
+                return Ok(());
+            }
+        };
+        Self::build(args).await?.run().await;
+        Ok(())
+    }
+
     pub async fn build(args: ethui_args::Args) -> color_eyre::Result<Self> {
         let builder = Builder::default();
 
