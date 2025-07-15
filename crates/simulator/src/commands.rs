@@ -1,23 +1,18 @@
 use ethui_db::Db;
 use ethui_networks::Networks;
-use ethui_types::{Address, GlobalState, TauriResult};
+use ethui_types::prelude::*;
 
-use crate::{
-    evm::Evm,
-    types::{Request, Result},
-};
+use crate::types::{Request, SimResult};
 
 #[tauri::command]
-pub async fn simulator_run(chain_id: u32, request: Request) -> TauriResult<Result> {
+pub async fn simulator_run(chain_id: u32, request: Request) -> TauriResult<SimResult> {
     let network = Networks::read()
         .await
         .get_network(chain_id)
         .cloned()
         .unwrap();
 
-    let mut evm = Evm::new(network.http_url.to_string(), None, request.gas_limit).await?;
-
-    Ok(evm.call(request).await?)
+    Ok(crate::simulate_once(network.http_url.to_string(), request).await?)
 }
 
 #[tauri::command]
