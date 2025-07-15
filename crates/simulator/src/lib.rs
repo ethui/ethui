@@ -13,7 +13,7 @@ use revm::{
 };
 pub use types::{Request, SimResult};
 
-//! Simulates a transaction on a given network's latest state.
+/// Simulates a transaction on a given network's latest state.
 pub async fn simulate_once(fork_url: String, tx: Request) -> color_eyre::Result<SimResult> {
     let provider = ProviderBuilder::new().connect(&fork_url).await?;
     let nonce = provider.get_transaction_count(tx.from).await.unwrap();
