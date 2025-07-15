@@ -36,6 +36,7 @@ pub async fn run() -> Result<()> {
             };
             app::EthUIApp::build(args).await?.run().await;
         }
+
         #[cfg(feature = "forge-traces")]
         Command::Forge { subcommand } => {
             ethui_forge_traces::handle_forge_command(&subcommand, &args).await?;
