@@ -10,7 +10,7 @@ import { ScrollArea } from "@ethui/ui/components/shadcn/scroll-area";
 import { Separator } from "@ethui/ui/components/shadcn/separator";
 import { cn } from "@ethui/ui/lib/utils";
 import { map } from "lodash-es";
-import { ChevronDown, Network, Wallet } from "lucide-react";
+import { ChevronDown, Wallet } from "lucide-react";
 import { useState } from "react";
 import { type Address, getAddress } from "viem";
 import { useShallow } from "zustand/shallow";
@@ -60,8 +60,11 @@ export function QuickStatusSelect() {
           />
         </div>
         <div className="flex items-center gap-1 min-w-0">
-          <Network className="h-4 w-4 flex-shrink-0" />
-          <span className="truncate text-sm">{currentNetwork.name}</span>
+          <ChainView
+            chainId={currentNetwork.dedup_chain_id.chain_id}
+            name=""
+            status={currentNetwork.status}
+          />
         </div>
         <ChevronDown className="h-4 w-4 flex-shrink-0 ml-auto" />
       </Button>
