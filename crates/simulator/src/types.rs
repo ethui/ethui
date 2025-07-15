@@ -1,6 +1,6 @@
 use alloy::primitives::Log;
 use ethui_types::prelude::*;
-use foundry_evm::traces::CallTraceNode;
+// use foundry_evm::traces::CallTraceNode;
 
 /// Simulation request
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -16,11 +16,9 @@ pub struct Request {
 /// Simulation result
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
-pub struct Result {
+pub struct SimResult {
     pub gas_used: u64,
-    pub block_number: u64,
     pub success: bool,
-    pub traces: Vec<CallTraceNode>,
     pub logs: Vec<Log>,
-    pub return_data: Bytes,
+    pub return_data: Option<Bytes>,
 }
