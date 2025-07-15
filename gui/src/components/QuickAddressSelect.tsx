@@ -23,7 +23,7 @@ export function QuickAddressSelect() {
     { name: currentWallet?.name },
   );
 
-  if (!addresses || !currentWallet) return <>Loading</>;
+  if (!addresses || !currentWallet) return "Loading";
 
   return (
     <Select

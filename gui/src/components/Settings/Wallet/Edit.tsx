@@ -39,7 +39,5 @@ export function WalletEdit({ wallet }: { wallet: Wallet }) {
       return <PrivateKeyForm {...props} wallet={wallet} />;
     case "ledger":
       return <Ledger {...props} wallet={wallet} />;
-    default:
-      return <></>;
   }
 }

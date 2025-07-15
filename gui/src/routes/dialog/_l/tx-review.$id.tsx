@@ -320,16 +320,16 @@ function Erc20Transfer({ chainId, log }: Erc20TransferProps) {
     topics: log.topics,
   });
 
+  const { data: metadata } = useInvoke<TokenMetadata>("db_get_erc20_metadata", {
+    chainId,
+    contract: log.address,
+  });
+
   if (!result.ok) return null;
 
   const {
     args: { from, to, value },
   } = result.value;
-
-  const { data: metadata } = useInvoke<TokenMetadata>("db_get_erc20_metadata", {
-    chainId,
-    contract: log.address,
-  });
 
   return (
     <div className=" m-1 flex items-center gap-2">

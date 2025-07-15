@@ -53,34 +53,32 @@ function WalletUnlockDialog() {
   };
 
   return (
-    <>
-      <Form
-        form={form}
-        onSubmit={onSubmit}
-        className="flex w-full flex-col gap-2"
-      >
-        <Form.Text
-          label={
-            <>
-              unlock wallet <b>{name}</b>
-            </>
-          }
-          name="password"
-          type="password"
-          className="w-full"
-        />
-        <div className="flex w-full items-center justify-center gap-2">
-          <Button
-            disabled={loading}
-            variant="destructive"
-            color="error"
-            onClick={() => send("reject")}
-          >
-            Cancel
-          </Button>
-          <Form.Submit label="Unlock" isSubmitting={loading} />
-        </div>
-      </Form>
-    </>
+    <Form
+      form={form}
+      onSubmit={onSubmit}
+      className="flex w-full flex-col gap-2"
+    >
+      <Form.Text
+        label={
+          <>
+            unlock wallet <b>{name}</b>
+          </>
+        }
+        name="password"
+        type="password"
+        className="w-full"
+      />
+      <div className="flex w-full items-center justify-center gap-2">
+        <Button
+          disabled={loading}
+          variant="destructive"
+          color="error"
+          onClick={() => send("reject")}
+        >
+          Cancel
+        </Button>
+        <Form.Submit label="Unlock" isSubmitting={loading} />
+      </div>
+    </Form>
   );
 }
