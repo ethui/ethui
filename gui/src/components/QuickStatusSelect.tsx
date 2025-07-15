@@ -1,33 +1,15 @@
 import { ChainView } from "@ethui/ui/components/chain-view";
-import { Button } from "@ethui/ui/components/shadcn/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@ethui/ui/components/shadcn/dialog";
-import { ScrollArea } from "@ethui/ui/components/shadcn/scroll-area";
-import { Separator } from "@ethui/ui/components/shadcn/separator";
-import { cn } from "@ethui/ui/lib/utils";
-import { map } from "lodash-es";
-import { ChevronDown, Wallet } from "lucide-react";
-import { useState } from "react";
+import { Wallet } from "lucide-react";
 import { type Address, getAddress } from "viem";
 import { useShallow } from "zustand/shallow";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
 import { AddressView } from "./AddressView";
-import { WalletView } from "./WalletView";
 
 export function QuickStatusSelect() {
-  const [open, setOpen] = useState(false);
-  const [currentWallet, setCurrentWallet, setCurrentAddress] = useWallets(
-    useShallow((s) => [s.currentWallet, s.setCurrentWallet, s.setCurrentAddress]),
-  );
-  const [networks, currentNetwork, setCurrentNetwork] = useNetworks(
-    useShallow((s) => [s.networks, s.current, s.setCurrent]),
-  );
+  const [currentWallet] = useWallets(useShallow((s) => [s.currentWallet]));
+  const [currentNetwork] = useNetworks(useShallow((s) => [s.current]));
 
   const { data: addresses } = useInvoke<[string, Address][]>(
     "wallets_get_wallet_addresses",
@@ -35,23 +17,17 @@ export function QuickStatusSelect() {
   );
 
   if (!currentWallet || !currentNetwork || !addresses) {
-    return <Button disabled>Loading...</Button>;
+    return <div className="text-sm text-muted-foreground">Loading...</div>;
   }
 
   const currentAddress = getCurrentAddress(currentWallet, addresses);
 
   return (
-    <>
-      <Button
-        variant="outline"
-        className="flex items-center gap-2 min-w-0 justify-start"
-        onClick={() => setOpen(true)}
-      >
-        <div className="flex items-center gap-1 min-w-0">
-          <Wallet className="h-4 w-4 flex-shrink-0" />
-          <span className="truncate text-sm">{currentWallet.name}</span>
-        </div>
-        <div className="flex items-center gap-1 min-w-0">
+    <div className="flex flex-col gap-1 p-2 border rounded-md">
+      <div className="flex items-center gap-2 min-w-0">
+        <Wallet className="h-4 w-4 flex-shrink-0" />
+        <span className="truncate text-sm font-medium">{currentWallet.name}</span>
+        <div className="flex items-center gap-1 min-w-0 ml-auto">
           <AddressView 
             icon 
             contextMenu={false} 
@@ -59,39 +35,15 @@ export function QuickStatusSelect() {
             noTextStyle
           />
         </div>
-        <div className="flex items-center gap-1 min-w-0">
-          <ChainView
-            chainId={currentNetwork.dedup_chain_id.chain_id}
-            name=""
-            status={currentNetwork.status}
-          />
-        </div>
-        <ChevronDown className="h-4 w-4 flex-shrink-0 ml-auto" />
-      </Button>
-
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Select Wallet & Network</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <WalletSection
-              currentWallet={currentWallet}
-              addresses={addresses}
-              currentAddress={currentAddress}
-              onWalletChange={setCurrentWallet}
-              onAddressChange={setCurrentAddress}
-            />
-            <Separator />
-            <NetworkSection
-              networks={networks}
-              currentNetwork={currentNetwork}
-              onNetworkChange={setCurrentNetwork}
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
-    </>
+      </div>
+      <div className="flex items-center gap-2 min-w-0">
+        <ChainView
+          chainId={currentNetwork.dedup_chain_id.chain_id}
+          name={currentNetwork.name}
+          status={currentNetwork.status}
+        />
+      </div>
+    </div>
   );
 }
 
