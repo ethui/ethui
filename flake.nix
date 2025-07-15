@@ -60,6 +60,9 @@
           libappindicator
           glib-networking
         ];
+
+        languages.javascript.package = pkgs.nodejs_24;
+        languages.javascript.corepack.enable = true;
       in
       with pkgs;
       {
@@ -76,21 +79,25 @@
             rustToolchain
             pkg-config
             wrapGAppsHook
+            nodejs
           ];
 
           buildInputs = commonDeps ++ buildDeps;
 
           doCheck = false;
 
+          # Allow network access for npm install
+          __noChroot = true;
+
           configurePhase = ''
             export HOME=$(mktemp -d)
-            corepack enable
-            corepack prepare yarn@4.9.2 --activate
+            export NPM_CONFIG_AUDIT=false
+            export NPM_CONFIG_FUND=false
           '';
 
           buildPhase = ''
-            yarn install --frozen-lockfile
-            yarn tauri build
+            npm install --frozen-lockfile
+            npm run tauri build
           '';
 
           installPhase = ''
