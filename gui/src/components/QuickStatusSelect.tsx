@@ -75,20 +75,21 @@ export function QuickStatusSelect() {
             <DialogTitle>Select Wallet & Network</DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <WalletSection
-              currentWallet={currentWallet}
-              addresses={addresses}
-              currentAddress={currentAddress}
-              onWalletChange={setCurrentWallet}
-              onAddressChange={setCurrentAddress}
-            />
-            <div className="md:block hidden">
-              <Separator orientation="vertical" className="absolute left-1/2 top-16 bottom-6 transform -translate-x-px" />
+            <div>
+              <WalletSection
+                currentWallet={currentWallet}
+                addresses={addresses}
+                currentAddress={currentAddress}
+                onWalletChange={setCurrentWallet}
+                onAddressChange={setCurrentAddress}
+              />
             </div>
             <div className="md:hidden block">
-              <Separator />
+              <Separator className="my-4" />
             </div>
-            <NetworkSection />
+            <div>
+              <NetworkSection />
+            </div>
           </div>
         </DialogContent>
       </Dialog>
@@ -216,7 +217,7 @@ function NetworkSection() {
     useShallow((s) => [s.networks, s.current, s.setCurrent]),
   );
 
-  if (!networks) return null;
+  if (!networks || !currentNetwork) return <div>Loading networks...</div>;
 
   return (
     <div className="space-y-3">
@@ -226,7 +227,7 @@ function NetworkSection() {
           {networks.map((network) => (
             <Button
               key={network.name}
-              variant={network.name === currentNetwork.name ? "secondary" : "ghost"}
+              variant={network.name === currentNetwork?.name ? "secondary" : "ghost"}
               className="w-full justify-start p-2 h-auto"
               onClick={() => setCurrentNetwork(network.name)}
             >
