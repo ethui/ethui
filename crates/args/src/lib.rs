@@ -7,6 +7,9 @@ pub fn parse() -> Args {
 #[derive(Parser, Debug)]
 #[command(name = "ethui", author, version, about, long_about = None)]
 pub struct Args {
+    #[arg(long, default_value_t = false)]
+    pub hidden: bool,
+
     #[arg(long, env = "ETHUI_CONFIG_DIR")]
     pub config_dir: Option<String>,
 
@@ -17,16 +20,20 @@ pub struct Args {
     pub stacks_port: u16,
 
     #[command(subcommand)]
-    pub command: Option<Commands>,
+    command: Option<Command>,
 }
 
-#[derive(Subcommand, Debug)]
-pub enum Commands {
+impl Args {
+    pub fn command(&self) -> Command {
+        self.command.clone().unwrap_or_default()
+    }
+}
+
+#[derive(Subcommand, Debug, Clone, Default)]
+pub enum Command {
+    #[default]
     #[command(name = "app")]
-    App {
-        #[arg(long, default_value_t = false)]
-        hidden: bool,
-    },
+    App,
 
     #[cfg(feature = "forge-traces")]
     /// Run forge tests
@@ -37,7 +44,7 @@ pub enum Commands {
     },
 }
 
-#[derive(Subcommand, Debug)]
+#[derive(Subcommand, Debug, Clone)]
 pub enum ForgeCommands {
     /// Run tests
     Test {

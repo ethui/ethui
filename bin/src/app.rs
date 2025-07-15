@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use ethui_args::{Args, Commands};
+use ethui_args::Args;
 use ethui_broadcast::UIMsg;
 use ethui_settings::GetAll;
 use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
@@ -11,10 +11,11 @@ use crate::{commands, menu, system_tray, windows};
 
 pub struct EthUIApp {
     app: tauri::App,
+    hidden: bool,
 }
 
 impl EthUIApp {
-    pub async fn build(args: &ethui_args::Args) -> color_eyre::Result<Self> {
+    pub async fn build(args: ethui_args::Args) -> color_eyre::Result<Self> {
         let builder = Builder::default();
 
         // #[cfg(feature = "aptabase")]
@@ -109,21 +110,19 @@ impl EthUIApp {
 
         let app = builder.build(tauri::generate_context!())?;
 
-        init(&app, args).await?;
+        init(&app, &args).await?;
 
-        let hidden = if let Some(Commands::App { hidden }) = args.command {
-            hidden
-        } else {
-            false
-        };
-        if should_start_main_window(hidden).await {
-            windows::main::show(app.handle()).await;
-        }
-
-        Ok(Self { app })
+        Ok(Self {
+            app,
+            hidden: args.hidden,
+        })
     }
 
-    pub fn run(self) {
+    pub async fn run(self) {
+        if !self.hidden {
+            windows::main::show(self.app.handle()).await;
+        }
+
         self.app.run(|#[allow(unused)] handle, event| match event {
             tauri::RunEvent::ExitRequested { code, api, .. } => {
                 // code == None seems to happen when the window is closed,
@@ -239,15 +238,4 @@ fn config_dir(app: &tauri::App, args: &Args) -> PathBuf {
                 .app_config_dir()
                 .expect("failed to resolve app_config_dir")
         })
-}
-
-async fn should_start_main_window(hidden: bool) -> bool {
-    if hidden {
-        return false;
-    }
-
-    let settings = ethui_settings::ask(GetAll)
-        .await
-        .expect("Failed to get settings");
-    !settings.start_minimized
 }
