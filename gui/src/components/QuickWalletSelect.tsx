@@ -20,7 +20,7 @@ export function QuickWalletSelect() {
     setCurrentWallet(value);
   };
 
-  if (!wallets || !currentWallet) return <>Loading</>;
+  if (!wallets || !currentWallet) return "Loading";
 
   return (
     <Select

@@ -12,7 +12,7 @@ export const Route = createFileRoute("/home/_l/settings/_l/networks/_l/")({
 function SettingsNetworks() {
   const networks = useNetworks(useShallow((s) => s.networks));
 
-  if (!networks) return <>Loading</>;
+  if (!networks) return "Loading";
 
   // TODO: add network button
   return (

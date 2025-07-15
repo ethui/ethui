@@ -106,7 +106,6 @@ alloy = { version = "1.0", default-features = false, features = [
 alloy-chains = { version = "0.2", default-features = false, features = [
   "serde",
 ] }
-foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "496598b" }
 foundry-block-explorers = "0.17"
 url = { version = "2.5", features = ["serde"] }
 futures = { version = "0.3", default-features = false }

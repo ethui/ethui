@@ -7,7 +7,6 @@
 [foundry]: https://getfoundry.sh/
 [demo]: https://github.com/ethui/demo
 [anvil]: https://book.getfoundry.sh/anvil/
-[mise]: https://mise.jdx.dev
 [extension-repo]: https://github.com/ethui/extension
 
 We welcome all kinds of contributions:
@@ -32,7 +31,6 @@ Here's a few suggestions on how to get started:
 
 - [**Tauri's requirements**][tauri-requirements];
 - **Google Chrome** or **Firefox**;
-- [**mise**][Mise], a task & env manager;
 - [**Foundry**][foundry], the toolkit for Ethereum smart contract development.
 
 ### Get started
@@ -46,7 +44,7 @@ git clone git@github.com:ethui/ethui && cd ethui
 **2. Run the setup script**, which should guide you through all requirements:
 
 ```
-./.mise/tasks/setup
+./scripts/setup
 ```
 
 **3. Install the extension**

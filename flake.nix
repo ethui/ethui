@@ -44,7 +44,7 @@
           atkmm
           gobject-introspection
           harfbuzz
-          watchexec
+          webkitgtk_4_1
         ];
 
         buildDeps = with pkgs; [

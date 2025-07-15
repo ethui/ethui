@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -e
+
+unset ETHUI_FEATURES
+yarn run app:build
+
+unset ETHUI_WS_PORT
+unset ETHUI_STACKS_PORT
+nohup ethui &
+disown
