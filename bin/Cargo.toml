@@ -59,6 +59,5 @@ default = []
 # this feature is used for production builds or when `devPath` points to the filesystem
 # DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
-debug = ["tauri/devtools"]
 aptabase = ["dep:tauri-plugin-aptabase"]
 stacks = ["dep:ethui-stacks"]
