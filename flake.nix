@@ -31,8 +31,6 @@
           gobject-introspection
           harfbuzz
           webkitgtk_4_1
-          watchexec
-          zlib
         ];
         libraries = with pkgs; [
           cargo-tauri
