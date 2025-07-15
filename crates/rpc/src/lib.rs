@@ -132,6 +132,12 @@ impl Handler {
         self_handler!("ethui_getProviderState", Self::ethui_provider_state);
         self_handler!("ethui_getContractAbi", Self::ethui_get_abi_for_contract);
         self_handler!("ethui_getAddressAlias", Self::ethui_get_address_alias);
+
+        #[cfg(feature = "forge-traces")]
+        self_handler!(
+            "ethui_forgeTestSubmitRun",
+            Self::ethui_forge_test_submit_run
+        );
     }
 
     async fn accounts(_: Params, _: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
@@ -354,6 +360,18 @@ impl Handler {
         _ctx: Ctx,
     ) -> jsonrpc_core::Result<serde_json::Value> {
         let method = methods::ethui::AddressAlias::build()
+            .set_params(params.into())
+            .build()?;
+
+        Ok(method.run().await?)
+    }
+
+    #[cfg(feature = "forge-traces")]
+    async fn ethui_forge_test_submit_run(
+        params: Params,
+        _ctx: Ctx,
+    ) -> jsonrpc_core::Result<serde_json::Value> {
+        let method = methods::ethui::ForgeTestTraces::build()
             .set_params(params.into())
             .build()?;
 

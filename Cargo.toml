@@ -12,6 +12,7 @@ resolver = "2"
 members = [
   "bin",
   "crates/forge",
+  "crates/forge-traces",
   "crates/crypto",
   "crates/settings",
   "crates/networks",
@@ -45,6 +46,7 @@ clap = { version = "4.5", default-features = false, features = [
   "env",
 ] }
 ethui-forge = { path = "crates/forge" }
+ethui-forge-traces = { path = "crates/forge-traces" }
 ethui-crypto = { path = "crates/crypto" }
 ethui-settings = { path = "crates/settings" }
 ethui-networks = { path = "crates/networks" }
@@ -120,3 +122,4 @@ tauri-plugin-aptabase = "1.0.0"
 glob = "0.3.2"
 notify = "8.0.0"
 notify-debouncer-full = "0.5.0"
+tokio-tungstenite = "0.23"
