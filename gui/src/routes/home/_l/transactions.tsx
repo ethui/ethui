@@ -104,6 +104,9 @@ function Txs() {
   useEventListener("txs-updated", loadNew);
 
   useEffect(() => {
+    // TODO: does this actually depend on these two values?
+    account;
+    chainId;
     setItems([]);
     setHasMore(true);
   }, [account, chainId]);
