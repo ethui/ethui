@@ -12,7 +12,7 @@ pub async fn simulator_run(chain_id: u32, request: Request) -> TauriResult<SimRe
         .cloned()
         .unwrap();
 
-    Ok(crate::simulate_once(network.http_url.to_string(), request).await?)
+    Ok(crate::simulate_once(request, network.http_url.to_string(), None).await?)
 }
 
 #[tauri::command]

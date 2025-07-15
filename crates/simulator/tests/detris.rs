@@ -1,5 +1,5 @@
 use alloy::primitives::{Log, LogData};
-use ethui_simulator::{Evm, Request};
+use ethui_simulator::*;
 use ethui_types::prelude::*;
 use pretty_assertions::assert_eq;
 
@@ -16,9 +16,9 @@ async fn simulate_detris() {
         gas_limit: 0,
     };
 
-    let mut evm = Evm::new(fork_url, fork_block_number, u64::MAX).await;
-
-    let res = evm.call(tx).await.unwrap();
+    let res = ethui_simulator::simulate_once(tx, fork_url, fork_block_number)
+        .await
+        .unwrap();
 
     assert!(res.success);
     assert_eq!(res.gas_used, 118246);

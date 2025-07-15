@@ -14,11 +14,20 @@ use revm::{
 pub use types::{Request, SimResult};
 
 /// Simulates a transaction on a given network's latest state.
-pub async fn simulate_once(fork_url: String, tx: Request) -> color_eyre::Result<SimResult> {
+pub async fn simulate_once(
+    tx: Request,
+    fork_url: String,
+    fork_block_number: Option<u64>,
+) -> Result<SimResult> {
     let provider = ProviderBuilder::new().connect(&fork_url).await?;
-    let nonce = provider.get_transaction_count(tx.from).await.unwrap();
+    let block_id: BlockId = fork_block_number.map(Into::into).unwrap_or_default();
 
-    let db = WrapDatabaseAsync::new(AlloyDB::new(provider, BlockId::latest())).unwrap();
+    let nonce = provider
+        .get_transaction_count(tx.from)
+        .block_id(block_id)
+        .await?;
+
+    let db = WrapDatabaseAsync::new(AlloyDB::new(provider, block_id)).unwrap();
     let cache_db = CacheDB::new(db);
     let mut evm = revm::Context::mainnet().with_db(cache_db).build_mainnet();
 
