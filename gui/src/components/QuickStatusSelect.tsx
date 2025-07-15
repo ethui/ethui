@@ -44,7 +44,7 @@ export function QuickStatusSelect() {
     <>
       <Button
         variant="outline"
-        className="flex items-center gap-2 min-w-0"
+        className="flex items-center gap-2 min-w-0 justify-start"
         onClick={() => setOpen(true)}
       >
         <div className="flex items-center gap-1 min-w-0">
@@ -52,10 +52,18 @@ export function QuickStatusSelect() {
           <span className="truncate text-sm">{currentWallet.name}</span>
         </div>
         <div className="flex items-center gap-1 min-w-0">
+          <AddressView 
+            icon 
+            contextMenu={false} 
+            address={addresses.find(([path]) => path === currentAddress)?.[1] || addresses[0][1]}
+            noTextStyle
+          />
+        </div>
+        <div className="flex items-center gap-1 min-w-0">
           <Network className="h-4 w-4 flex-shrink-0" />
           <span className="truncate text-sm">{currentNetwork.name}</span>
         </div>
-        <ChevronDown className="h-4 w-4 flex-shrink-0" />
+        <ChevronDown className="h-4 w-4 flex-shrink-0 ml-auto" />
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
