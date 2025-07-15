@@ -49,7 +49,6 @@
 
         buildDeps = with pkgs; [
           nodejs
-          nodejs.pkgs.corepack
         ];
 
         libraries = with pkgs; [
