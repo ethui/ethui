@@ -78,7 +78,6 @@ export function AppSidebar() {
           <>
             <SidebarGroup>
               <div className="flex flex-col gap-y-2">
-                <div className="text-xs">Status</div>
                 <QuickStatusSelect />
                 <QuickFastModeToggle />
               </div>
@@ -103,7 +102,7 @@ export function AppSidebar() {
                   {...item}
                   className={cn(
                     item.url === location.pathname &&
-                      "bg-primary text-accent hover:bg-primary hover:text-accent",
+                    "bg-primary text-accent hover:bg-primary hover:text-accent",
                   )}
                 />
               ))}
@@ -127,7 +126,7 @@ export function AppSidebar() {
                               to={item.url}
                               className={cn(
                                 item.url === location.pathname &&
-                                  "bg-primary text-accent hover:bg-primary hover:text-accent",
+                                "bg-primary text-accent hover:bg-primary hover:text-accent",
                               )}
                             >
                               {item.title}
