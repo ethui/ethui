@@ -15,7 +15,7 @@ export function QuickNetworkSelect() {
     useShallow((s) => [s.networks, s.current, s.setCurrent]),
   );
 
-  if (!networks || !current) return <>Loading</>;
+  if (!networks || !current) return "Loading";
 
   return (
     <Select value={current.name} onValueChange={setCurrent}>

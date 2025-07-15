@@ -108,38 +108,36 @@ function AffinityForm({ domain }: { domain: string }) {
   const isGlobal = current === "global" || current === "unset";
 
   return (
-    <>
-      <Select defaultValue={JSON.parse(value)} onValueChange={handleChange}>
-        <SelectTrigger>
-          <SelectValue>
-            {!isGlobal && currentNetwork ? (
-              <ChainView
-                chainId={currentNetwork.dedup_chain_id.chain_id}
-                name={currentNetwork.name}
-              />
-            ) : (
-              "Global"
-            )}
-          </SelectValue>
-        </SelectTrigger>
+    <Select defaultValue={JSON.parse(value)} onValueChange={handleChange}>
+      <SelectTrigger>
+        <SelectValue>
+          {!isGlobal && currentNetwork ? (
+            <ChainView
+              chainId={currentNetwork.dedup_chain_id.chain_id}
+              name={currentNetwork.name}
+            />
+          ) : (
+            "Global"
+          )}
+        </SelectValue>
+      </SelectTrigger>
 
-        <SelectContent>
-          <SelectGroup>
-            <SelectItem value={JSON.stringify("global")}>Global</SelectItem>
-            {networks.map((network) => (
-              <SelectItem
-                value={JSON.stringify(network.dedup_chain_id)}
-                key={network.name}
-              >
-                <ChainView
-                  chainId={network.dedup_chain_id.chain_id}
-                  name={network.name}
-                />
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-    </>
+      <SelectContent>
+        <SelectGroup>
+          <SelectItem value={JSON.stringify("global")}>Global</SelectItem>
+          {networks.map((network) => (
+            <SelectItem
+              value={JSON.stringify(network.dedup_chain_id)}
+              key={network.name}
+            >
+              <ChainView
+                chainId={network.dedup_chain_id.chain_id}
+                name={network.name}
+              />
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
   );
 }
