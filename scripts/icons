@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # mise description="Regenerate icons for all components"
 
 # cleanup

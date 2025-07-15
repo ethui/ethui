@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-#MISE description="Setup the development environment"
-#MISE raw=true
 
 set -ue
 
@@ -17,8 +15,6 @@ main() {
 
 deps() {
   echo -e "\nChecking dependencies:"
-  install_dep "mise" mise
-  run_mise_install
   install_dep "cargo binstall" cargo-binstall
   install_dep "tauri cli" cargo-tauri
   install_dep "sqlx cli" cargo-sqlx
@@ -65,15 +61,6 @@ install_watchexec_cli() {
 
 install_yarn() {
   npm i -g yarn > /dev/null 2>&1
-}
-
-install_mise() {
-  echo -e "\nmise-en-place needs to be installed manually: https://mise.jdx.dev/"
-  exit 1
-}
-
-run_mise_install() {
-  mise install > /dev/null 2>&1
 }
 
 install_tauri_prerequisites() {
