@@ -1185,7 +1185,7 @@ __metadata:
     "@aptabase/tauri": "npm:^0.4.1"
     "@ethui/data": "npm:*"
     "@ethui/types": "npm:*"
-    "@ethui/ui": "npm:^0.0.91"
+    "@ethui/ui": "npm:^0.0.92"
     "@fontsource/source-code-pro": "npm:^5.2.5"
     "@hookform/resolvers": "npm:^5.1.1"
     "@radix-ui/react-collapsible": "npm:^1.1.3"
@@ -1255,9 +1255,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@ethui/ui@npm:^0.0.91":
-  version: 0.0.91
-  resolution: "@ethui/ui@npm:0.0.91"
+"@ethui/ui@npm:^0.0.92":
+  version: 0.0.92
+  resolution: "@ethui/ui@npm:0.0.92"
   dependencies:
     "@ethui/abiparse": "npm:^0.0.4"
     "@fontsource/source-code-pro": "npm:^5.2.5"
@@ -1297,7 +1297,7 @@ __metadata:
     tailwindcss: ^4.1.5
     viem: ^2.31
     zod: ^3.0
-  checksum: 10c0/cbaf08276afdff0c4822585d1f6ad36e02f4994c98bea9642cb6703050f2423bfb34c2ca0d48238dcf484f8063a81cb09e5bac21c453911377fff187ed663c5a
+  checksum: 10c0/8abe1fb42540b2ecbc3a6bd282cdf8ce1c117a0fc5bbce9bc71e822275a484d980e230bf5ce5717cdbded268786c308bb2824495b45a96483a4af1b61de59117
   languageName: node
   linkType: hard
 
@@ -6031,7 +6031,7 @@ __metadata:
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
     "@biomejs/biome": "npm:^2.1.1"
-    "@ethui/ui": "npm:^0.0.91"
+    "@ethui/ui": "npm:^0.0.92"
     "@tailwindcss/postcss": "npm:^4.1.3"
     "@tauri-apps/cli": "npm:^2.6.2"
     assert: "npm:^2.1.0"
