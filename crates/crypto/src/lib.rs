@@ -1,12 +1,12 @@
+use aead::{rand_core::RngCore as _, KeyInit, OsRng};
+use chacha20poly1305::XChaCha20Poly1305;
+use color_eyre::{eyre::eyre, Result};
 /// Encryption and decryption of secrets
 ///
 /// This largely follows the recommendations described in
 /// https://kerkour.com/rust-file-encryption-chacha20poly1305-argon2
 /// Encrypted secrets are secured by a password. We use Argon2 to derive a key from it, and then
 /// the ChaCha20poly1305 scheme to encrypt the data.
-use aead::{KeyInit, OsRng, rand_core::RngCore as _};
-use chacha20poly1305::XChaCha20Poly1305;
-use color_eyre::eyre::eyre;
 use zeroize::Zeroize;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
@@ -20,7 +20,7 @@ pub struct EncryptedData<T: serde::Serialize + serde::de::DeserializeOwned> {
 }
 
 /// Encrypts a password-protected secret
-pub fn encrypt<T>(data: &T, password: &str) -> color_eyre::Result<EncryptedData<T>>
+pub fn encrypt<T>(data: &T, password: &str) -> Result<EncryptedData<T>>
 where
     T: serde::Serialize + serde::de::DeserializeOwned,
 {
@@ -38,7 +38,8 @@ where
     let json = serde_json::to_string(data)
         .map_err(|e| eyre!("Failed to serialize data for encryption: {}", e))?;
     let bytes = json.as_bytes();
-    let ciphertext = encryptor.encrypt_last(bytes)
+    let ciphertext = encryptor
+        .encrypt_last(bytes)
         .map_err(|e| eyre!("Encryption failed: {}", e))?;
 
     let res = EncryptedData {
@@ -58,7 +59,7 @@ where
 
 #[allow(unused)]
 /// Decrypts a secret from a file using a password
-pub fn decrypt<T>(data: &EncryptedData<T>, password: &str) -> color_eyre::Result<T>
+pub fn decrypt<T>(data: &EncryptedData<T>, password: &str) -> Result<T>
 where
     T: serde::Serialize + serde::de::DeserializeOwned,
 {
@@ -84,7 +85,7 @@ where
     Ok(serde_json::from_slice(&plaintext)?)
 }
 
-fn password_to_key(password: &str, salt: &[u8; 32]) -> color_eyre::Result<Vec<u8>> {
+fn password_to_key(password: &str, salt: &[u8; 32]) -> Result<Vec<u8>> {
     argon2::hash_raw(password.as_bytes(), salt, &argon2_config())
         .map_err(|e| eyre!("Key derivation failed: {}", e))
 }
@@ -108,7 +109,7 @@ mod tests {
     }
 
     #[test]
-    fn test_encryption() -> color_eyre::Result<()> {
+    fn test_encryption() -> Result<()> {
         let password = "foo bar!@";
         let secret = SecretData {
             foo: "The quick brown fox jumps over the lazy dog".to_string(),
