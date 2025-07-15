@@ -121,7 +121,7 @@ impl ForgeTestRunner {
 
         let rpc_request = json!({
             "jsonrpc": "2.0",
-            "method": "ethui_forgeTestRunnerOutput",
+            "method": "ethui_forgeTestSubmitRun",
             "params": {
                 "traces": traces
             },
