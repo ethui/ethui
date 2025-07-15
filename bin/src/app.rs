@@ -172,13 +172,6 @@ async fn init(app: &tauri::App, args: &Args) -> color_eyre::Result<()> {
     #[cfg(feature = "stacks")]
     ethui_stacks::init(args.stacks_port, resource(app, "stacks/", args)).await?;
 
-    // automatically open devtools if env asks for it
-    #[cfg(feature = "debug")]
-    if std::env::var("ETHUI_OPEN_DEVTOOLS").is_ok() {
-        let window = app.get_webview_window("main").unwrap();
-        window.open_devtools();
-    }
-
     Ok(())
 }
 
