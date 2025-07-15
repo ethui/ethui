@@ -33,6 +33,7 @@
           webkitgtk_4_1
           openssl
           watchexec
+          zlib
         ];
         libraries = with pkgs; [
           cargo-tauri

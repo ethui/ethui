@@ -15,7 +15,7 @@ pub async fn simulator_run(chain_id: u32, request: Request) -> TauriResult<Resul
         .cloned()
         .unwrap();
 
-    let mut evm = Evm::new(network.http_url.to_string(), None, request.gas_limit).await;
+    let mut evm = Evm::new(network.http_url.to_string(), None, request.gas_limit).await?;
 
     Ok(evm.call(request).await?)
 }

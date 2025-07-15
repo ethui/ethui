@@ -18,9 +18,8 @@ tauri.workspace = true
 tokio.workspace = true
 serde.workspace = true
 color-eyre.workspace = true
-foundry-evm.workspace = true
 alloy.workspace = true
-revm = { version = "24.0.0", features = ["alloydb"] }
+revm = { version = "27.0.0", features = ["std", "alloydb"] }
 
 [dev-dependencies]
 pretty_assertions = "1.4.0"
