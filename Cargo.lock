@@ -3060,6 +3060,7 @@ version = "1.17.0"
 dependencies = [
  "color-eyre",
  "ethui-args",
+ "ethui-types",
  "futures",
  "serde",
  "serde_json",

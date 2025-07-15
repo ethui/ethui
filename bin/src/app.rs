@@ -23,7 +23,7 @@ impl EthUIApp {
     pub async fn start_or_open(args: ethui_args::Args) -> color_eyre::Result<()> {
         let lock = NamedLock::create(LOCK_NAME)?;
 
-        let _guard = match lock.try_lock() {
+        let _guard = match dbg!(lock.try_lock()) {
             Ok(g) => g,
             Err(_) => {
                 ethui_broadcast::main_window_show().await;

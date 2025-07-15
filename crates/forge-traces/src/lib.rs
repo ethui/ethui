@@ -1,12 +1,11 @@
 use std::process::Command;
 
-use color_eyre::{Result, eyre};
-use ethui_args::ForgeCommands;
+use ethui_args::Forge;
+use ethui_types::prelude::*;
 use futures::{SinkExt, StreamExt};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tokio_tungstenite::{connect_async, tungstenite::Message};
-use tracing::{error, info};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ForgeTrace {
@@ -17,6 +16,7 @@ pub struct ForgeTrace {
     pub success: bool,
 }
 
+#[derive(Debug)]
 pub struct ForgeTestRunner {
     project_path: String,
     ws_port: u16,
@@ -30,21 +30,18 @@ impl ForgeTestRunner {
         }
     }
 
+    #[instrument(skip_all, fields(project_path = self.project_path))]
     pub async fn run_tests(&self, extra_args: &[String]) -> Result<()> {
-        tracing::info!("Running forge tests in {}", self.project_path);
-
         let mut cmd = Command::new("forge");
         cmd.args(["test", "--json", "-vvvvv"]);
         cmd.args(extra_args);
         cmd.current_dir(&self.project_path);
 
-        let output = cmd
-            .output()
-            .map_err(|e| eyre::eyre!("Failed to execute forge test: {e}"))?;
+        let output = cmd.output()?;
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
-            return Err(eyre::eyre!("Forge test failed: {}", stderr));
+            return Err(eyre!("Forge test failed: {}", stderr));
         }
 
         let stdout = String::from_utf8_lossy(&output.stdout);
@@ -52,7 +49,6 @@ impl ForgeTestRunner {
         let traces = self.parse_forge_output(&stdout)?;
 
         if traces.is_empty() {
-            tracing::info!("No traces to send");
             return Ok(());
         }
 
@@ -62,8 +58,7 @@ impl ForgeTestRunner {
     fn parse_forge_output(&self, output: &str) -> Result<Vec<ForgeTrace>> {
         let mut traces = Vec::new();
 
-        let json_value: serde_json::Value = serde_json::from_str(output)
-            .map_err(|e| eyre::eyre!("Failed to parse forge JSON output: {e}"))?;
+        let json_value: serde_json::Value = serde_json::from_str(output)?;
 
         if let Some(test_contracts) = json_value.as_object() {
             for (contract_path, contract_results) in test_contracts {
@@ -116,13 +111,11 @@ impl ForgeTestRunner {
         Ok(traces)
     }
 
+    #[instrument(skip_all)]
     async fn send_traces_to_rpc(&self, traces: Vec<ForgeTrace>) -> Result<()> {
         let ws_url = format!("ws://127.0.0.1:{}", self.ws_port);
-        tracing::info!("Connecting to WebSocket server at {ws_url}");
 
-        let (ws_stream, _) = connect_async(&ws_url)
-            .await
-            .map_err(|e| eyre::eyre!("WebSocket connection failed: {e}"))?;
+        let (ws_stream, _) = connect_async(&ws_url).await?;
 
         let (mut ws_sender, _) = ws_stream.split();
 
@@ -135,17 +128,9 @@ impl ForgeTestRunner {
             "id": 1
         });
 
-        let request_str = serde_json::to_string(&rpc_request)
-            .map_err(|e| eyre::eyre!("Failed to serialize RPC request: {e}"))?;
+        let request_str = serde_json::to_string(&rpc_request)?;
 
-        tracing::info!("Sending traces to {ws_url}");
-        ws_sender
-            .send(Message::Text(request_str))
-            .await
-            .map_err(|e| {
-                error!("Failed to send WebSocket message: {}", e);
-                eyre::eyre!("WebSocket send failed: {e}")
-            })?;
+        ws_sender.send(Message::Text(request_str)).await?;
 
         let _ = ws_sender.close().await;
 
@@ -153,18 +138,18 @@ impl ForgeTestRunner {
     }
 }
 
-pub async fn handle_forge_command(
-    subcommand: &ForgeCommands,
-    args: &ethui_args::Args,
-) -> Result<()> {
+pub async fn handle_forge_command(subcommand: &Forge, args: &ethui_args::Args) -> Result<()> {
     use std::env;
 
+    dbg!(args);
     match subcommand {
-        ForgeCommands::Test { args: extra_args } => {
+        Forge::Test(ethui_args::ForgeTest { args: test_args }) => {
             let current_dir = env::current_dir().expect("failed to get current dir");
-            let forge_test_runner =
-                ForgeTestRunner::new(current_dir.to_string_lossy().to_string(), args.ws_port);
-            forge_test_runner.run_tests(extra_args).await
+            let forge_test_runner = dbg!(ForgeTestRunner::new(
+                current_dir.to_string_lossy().to_string(),
+                args.ws_port
+            ));
+            forge_test_runner.run_tests(test_args).await
         }
     }
 }

@@ -18,12 +18,10 @@ pub async fn run() -> Result<()> {
     let args = ethui_args::parse();
 
     match args.command() {
-        Command::App { .. } => app::EthUIApp::start_or_open(args).await?,
+        Command::App => app::EthUIApp::start_or_open(args).await?,
 
         #[cfg(feature = "forge-traces")]
-        Command::Forge { subcommand } => {
-            ethui_forge_traces::handle_forge_command(&subcommand, &args).await?
-        }
+        Command::Forge { cmd } => ethui_forge_traces::handle_forge_command(&cmd, &args).await?,
     }
 
     Ok(())

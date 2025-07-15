@@ -29,29 +29,29 @@ impl Args {
     }
 }
 
-#[derive(Subcommand, Debug, Clone, Default)]
+#[derive(Subcommand, Clone, Debug, Default)]
 pub enum Command {
     #[default]
     #[command(name = "app")]
     App,
 
     #[cfg(feature = "forge-traces")]
-    /// Run forge tests
-    #[command(name = "forge")]
     Forge {
         #[command(subcommand)]
-        subcommand: ForgeCommands,
+        cmd: Forge,
     },
 }
 
 #[derive(Subcommand, Debug, Clone)]
-pub enum ForgeCommands {
-    /// Run tests
-    Test {
-        /// Additional arguments to pass to forge test
-        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
-        args: Vec<String>,
-    },
+pub enum Forge {
+    Test(ForgeTest),
+}
+
+#[derive(Parser, Debug, Clone, Default)]
+pub struct ForgeTest {
+    /// Additional arguments to pass to forge test
+    #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+    pub args: Vec<String>,
 }
 
 const fn default_ws_port() -> u16 {

@@ -3,7 +3,7 @@ mod error;
 mod methods;
 
 use alloy::{dyn_abi::TypedData, hex, providers::Provider as _};
-use ethui_connections::{Ctx, permissions::PermissionRequest};
+use ethui_connections::{permissions::PermissionRequest, Ctx};
 use ethui_types::prelude::*;
 use ethui_wallets::{WalletControl, Wallets};
 use jsonrpc_core::{MetaIoHandler, Params};
