@@ -24,7 +24,7 @@ pub async fn run() -> Result<()> {
     let args = ethui_args::parse();
 
     match args.command() {
-        _app_args @ Command::App { .. } => {
+        Command::App { .. } => {
             let lock = NamedLock::create(LOCK_NAME)?;
 
             let _guard = match lock.try_lock() {
