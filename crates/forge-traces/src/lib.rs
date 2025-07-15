@@ -141,14 +141,11 @@ impl ForgeTestRunner {
 pub async fn handle_forge_command(subcommand: &Forge, args: &ethui_args::Args) -> Result<()> {
     use std::env;
 
-    dbg!(args);
     match subcommand {
         Forge::Test(ethui_args::ForgeTest { args: test_args }) => {
             let current_dir = env::current_dir().expect("failed to get current dir");
-            let forge_test_runner = dbg!(ForgeTestRunner::new(
-                current_dir.to_string_lossy().to_string(),
-                args.ws_port
-            ));
+            let forge_test_runner =
+                ForgeTestRunner::new(current_dir.to_string_lossy().to_string(), args.ws_port);
             forge_test_runner.run_tests(test_args).await
         }
     }
