@@ -33,10 +33,8 @@ import {
 import { useInvoke } from "#/hooks/useInvoke";
 import { useSettings } from "#/store/useSettings";
 import { useCommandBar } from "./CommandBar";
-import { QuickAddressSelect } from "./QuickAddressSelect";
 import { QuickFastModeToggle } from "./QuickFastModeToggle";
-import { QuickNetworkSelect } from "./QuickNetworkSelect";
-import { QuickWalletSelect } from "./QuickWalletSelect";
+import { QuickStatusSelect } from "./QuickStatusSelect";
 
 const isDev = import.meta.env.MODE === "development";
 
@@ -80,15 +78,8 @@ export function AppSidebar() {
           <>
             <SidebarGroup>
               <div className="flex flex-col gap-y-2">
-                <div className="text-xs">Wallet</div>
-                <QuickWalletSelect />
-                <QuickAddressSelect />
-              </div>
-            </SidebarGroup>
-            <SidebarGroup>
-              <div className="flex flex-col gap-y-2">
-                <div className="text-xs">Network</div>
-                <QuickNetworkSelect />
+                <div className="text-xs">Status</div>
+                <QuickStatusSelect />
                 <QuickFastModeToggle />
               </div>
             </SidebarGroup>
