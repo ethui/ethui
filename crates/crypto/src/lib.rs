@@ -1,12 +1,12 @@
-use aead::{rand_core::RngCore as _, KeyInit, OsRng};
-use chacha20poly1305::XChaCha20Poly1305;
-use color_eyre::{eyre::eyre, Result};
 /// Encryption and decryption of secrets
 ///
 /// This largely follows the recommendations described in
 /// https://kerkour.com/rust-file-encryption-chacha20poly1305-argon2
 /// Encrypted secrets are secured by a password. We use Argon2 to derive a key from it, and then
 /// the ChaCha20poly1305 scheme to encrypt the data.
+use aead::{rand_core::RngCore as _, KeyInit, OsRng};
+use chacha20poly1305::XChaCha20Poly1305;
+use color_eyre::{eyre::eyre, Result};
 use zeroize::Zeroize;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
