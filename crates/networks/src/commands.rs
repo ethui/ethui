@@ -1,7 +1,4 @@
-use color_eyre::eyre::ContextCompat as _;
-use ethui_types::{
-    DedupChainId, GlobalState, Network, NewNetworkParams, SerializableError, TauriResult,
-};
+use ethui_types::{DedupChainId, NewNetworkParams, prelude::*};
 
 use super::Networks;
 

@@ -4,7 +4,7 @@ use alloy::{
     providers::{Provider as _, RootProvider},
 };
 use ethui_abis::IERC20;
-use ethui_types::{events::Tx, eyre, Address, GlobalState, TokenMetadata, B256};
+use ethui_types::{events::Tx, prelude::*, TokenMetadata};
 
 pub(crate) async fn fetch_full_tx(chain_id: u32, hash: B256) -> color_eyre::Result<()> {
     let provider = provider(chain_id).await?;

@@ -1,6 +1,6 @@
 [workspace.package]
 version = "1.17.0"
-edition = "2021"
+edition = "2024"
 license-file = "./LICENSE"
 homepage = "https://github.com/ethui"
 repository = "https://github.com/ethui/ethui"
@@ -29,6 +29,7 @@ members = [
   "crates/tracing",
   "crates/exchange-rates",
   "crates/args",
+  "crates/stacks",
 ]
 default-members = ["bin"]
 
@@ -38,6 +39,11 @@ debug = "line-tables-only"
 split-debuginfo = "unpacked"
 
 [workspace.dependencies]
+clap = { version = "4.5", default-features = false, features = [
+  "std",
+  "derive",
+  "env",
+] }
 ethui-forge = { path = "crates/forge" }
 ethui-crypto = { path = "crates/crypto" }
 ethui-settings = { path = "crates/settings" }
@@ -59,7 +65,8 @@ ethui-tracing = { path = "crates/tracing" }
 ethui-args = { path = "crates/args" }
 ethui-token-list = { path = "crates/token-list" }
 ethui-proxy-detect = { git = "https://github.com/ethui/proxy-detect", rev = "c0db91a" }
-tokio = { version = "1.45", features = ["rt-multi-thread", "sync"] }
+ethui-stacks = { path = "crates/stacks" }
+tokio = { version = "1.46", features = ["rt-multi-thread", "sync"] }
 thiserror = "2.0"
 sqlx = { version = "0.8", default-features = false, features = [
   "macros",
@@ -103,10 +110,6 @@ foundry-evm = { git = "https://github.com/foundry-rs/foundry", rev = "496598b" }
 foundry-block-explorers = "0.17"
 url = { version = "2.5", features = ["serde"] }
 futures = { version = "0.3", default-features = false }
-clap = { version = "4.5", default-features = false, features = [
-  "derive",
-  "env",
-] }
 rand = "0.9"
 rstest = "0.23"
 regex = "1.11"
@@ -115,3 +118,6 @@ tempfile = "3.20.0"
 serde-constant = "0.1.0"
 kameo = "0.16"
 tauri-plugin-aptabase = "1.0.0"
+glob = "0.3.2"
+notify = "8.0.0"
+notify-debouncer-full = "0.5.0"

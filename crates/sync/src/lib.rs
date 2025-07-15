@@ -2,15 +2,12 @@ pub mod commands;
 mod utils;
 mod worker;
 
-use std::sync::Arc;
-
 use ethui_broadcast::InternalMsg;
 pub use ethui_sync_alchemy::{
-    get_alchemy, Alchemy, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse,
+    Alchemy, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse, get_alchemy,
 };
-use ethui_types::{Address, B256};
+use ethui_types::prelude::*;
 use tokio::sync::{mpsc, oneshot, Mutex};
-use tracing::instrument;
 pub use worker::Worker;
 
 pub async fn init() {
@@ -60,10 +57,10 @@ async fn receiver(snd: mpsc::UnboundedSender<Msg>) -> std::result::Result<(), ()
     let mut rx = ethui_broadcast::subscribe_internal().await;
 
     loop {
-        if let Ok(internal_msg) = rx.recv().await {
-            if let Ok(msg) = internal_msg.try_into() {
-                snd.send(msg).unwrap();
-            }
+        if let Ok(internal_msg) = rx.recv().await
+            && let Ok(msg) = internal_msg.try_into()
+        {
+            snd.send(msg).unwrap();
         }
     }
 }

@@ -1,4 +1,4 @@
-use tauri::{menu::MenuEvent, AppHandle, Emitter as _, Manager, Window};
+use tauri::{AppHandle, Emitter as _, Manager, Window, menu::MenuEvent};
 
 // #[cfg(not(target_os = "macos"))]
 // pub(crate) fn build(_app: &AppHandle) -> color_eyre::Result<()> {

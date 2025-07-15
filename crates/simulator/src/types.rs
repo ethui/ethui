@@ -1,7 +1,6 @@
-use alloy::primitives::{Bytes, Log, U256};
-use ethui_types::Address;
+use alloy::primitives::Log;
+use ethui_types::prelude::*;
 use foundry_evm::traces::CallTraceNode;
-use serde::{Deserialize, Serialize};
 
 /// Simulation request
 #[derive(Debug, Clone, Serialize, Deserialize)]

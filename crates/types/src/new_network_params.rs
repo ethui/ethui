@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-use crate::{DedupChainId, Network};
+use crate::{network::NetworkStatus, DedupChainId, Network};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct NewNetworkParams {
@@ -24,6 +24,7 @@ impl NewNetworkParams {
             ws_url: self.ws_url,
             currency: self.currency,
             decimals: self.decimals,
+            status: NetworkStatus::Unknown,
         }
     }
 }

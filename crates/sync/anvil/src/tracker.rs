@@ -1,16 +1,21 @@
+use std::time::Duration;
+
 use alloy::{
     network::Ethereum,
-    providers::{ext::TraceApi as _, Provider as _, ProviderBuilder, WsConnect},
-    rpc::types::{trace::parity::LocalizedTransactionTrace, Filter, Log},
+    providers::{Provider as _, ProviderBuilder, WsConnect, ext::TraceApi as _},
+    rpc::types::{Filter, Log, trace::parity::LocalizedTransactionTrace},
 };
 use ethui_abis::IERC20;
-use ethui_types::{eyre, Address, DedupChainId, TokenMetadata, UINotify, B256};
+use ethui_types::{DedupChainId, TokenMetadata, prelude::*};
 use futures::StreamExt as _;
-use tokio::sync::mpsc;
+use tokio::{sync::mpsc, time::sleep};
 use tracing::{instrument, trace, warn};
 use url::Url;
 
 use crate::expanders::{expand_logs, expand_traces};
+
+const INITIAL_BACKOFF: Duration = Duration::from_secs(1);
+const MAX_BACKOFF: Duration = Duration::from_secs(10);
 
 #[derive(Debug)]
 pub struct Tracker {
@@ -67,10 +72,10 @@ impl Tracker {
         let quit_snd = self.quit_snd.take();
 
         tokio::spawn(async move {
-            if let Some(quit_snd) = quit_snd {
-                if let Err(e) = quit_snd.clone().send(()).await {
-                    warn!("Error closing listener: {:?}", e)
-                }
+            if let Some(quit_snd) = quit_snd
+                && let Err(e) = quit_snd.clone().send(()).await
+            {
+                warn!("Error closing listener: {:?}", e)
             }
         });
     }
@@ -82,20 +87,18 @@ impl Drop for Tracker {
     }
 }
 
-/// Watches a chain for new blocks and sends them to the block processor This monster is very
-/// convoluted:
-///     1. waits for an RPC node to be available (since local devnets may be intermittent)
-///     2. once it does, syncs from scratch, since any past history may no longer be valid
-///     3. listens to new blocks via websockets
-///     4. if anvil_nodeInfo is available, also check forkBlockNumber, and prevent fetching blocks
-///        past that (so that forked anvil don't overload or past fetching logic)
-#[instrument(skip_all, fields(chain_id = ctx.dedup_chain_id.chain_id(), dedup_id = ctx.dedup_chain_id.dedup_id()))]
+/// Watches a chain for new blocks and sends them to the block processor:
+///     1. Waits for an RPC node to be available (since local devnets may be intermittent)
+///     2. Once available, syncs from scratch, since any past history may no longer be valid
+///     3. Listens to new blocks via websockets
+///     4. If anvil_nodeInfo is available, also check forkBlockNumber, and prevent fetching blocks past that (so that forked anvil don't overload or past fetching logic)
+#[instrument(skip_all, fields(chain_id = ctx.dedup_chain_id.chain_id(), dedup_id = ctx.dedup_chain_id.dedup_id()), level = "trace")]
 async fn watch(
     ctx: Ctx,
     mut quit_rcv: mpsc::Receiver<()>,
     block_snd: mpsc::UnboundedSender<Msg>,
 ) -> color_eyre::Result<()> {
-    'watcher: loop {
+    loop {
         let from_block = match get_sync_status(&ctx).await {
             None => {
                 block_snd
@@ -106,90 +109,149 @@ async fn watch(
             Some(block_number) => block_number,
         };
 
-        // retry forever
-        let to_block = 'wait: loop {
-            let http_provider = ProviderBuilder::new()
-                .disable_recommended_fillers()
-                .connect_http(ctx.http_url.clone());
+        let to_block = wait_for_node(&ctx, &mut quit_rcv).await?;
 
-            tokio::select! {
-                _ = quit_rcv.recv() => break 'watcher,
-                res = http_provider.get_block_number() => {
-                    if let Ok(b) = res { break 'wait b }
-                }
-            };
-        };
-
-        let ws_connect = WsConnect::new(ctx.ws_url.to_string());
-        let provider = ProviderBuilder::new()
-            .disable_recommended_fillers()
-            .connect_ws(ws_connect.clone())
-            .await?;
-        let sub_provider = ProviderBuilder::new()
-            .disable_recommended_fillers()
-            .connect_ws(ws_connect)
-            .await?;
-
-        // if we're in a forked anvil, grab the fork block number, so we don't index too much
-        let node_info: serde_json::Value = provider
-            .raw_request("anvil_nodeInfo".into(), ())
-            .await
-            .unwrap_or(serde_json::Value::Null);
-
-        let fork_block = node_info["forkConfig"]["forkBlockNumber"]
-            .as_u64()
-            .unwrap_or(0);
-
+        let (provider, sub_provider) = init_providers(&ctx).await?;
+        let fork_block = get_fork_block_number(&provider).await;
         let from_block = u64::max(from_block, fork_block);
 
-        trace!("starting from block {}", from_block);
+        // Catch up on past blocks
+        catch_up_past_blocks(&provider, &block_snd, &ctx, from_block, to_block).await?;
 
-        let mut stream = sub_provider.subscribe_blocks().await?.into_stream();
-
-        // catch up with everything behind
-        // from the moment the fork started (or genesis if not a fork)
-        let past_range = from_block..=to_block;
-        for b in past_range.into_iter() {
-            let traces = provider.trace_block(b.into()).await?;
-            block_snd
-                .send(Msg::Traces(traces))
-                .map_err(|_| eyre!("Watcher error"))?;
-
-            let logs = provider.get_logs(&Filter::new().select(b)).await?;
-            block_snd
-                .send(Msg::Logs(logs))
-                .map_err(|_| eyre!("Watcher error"))?;
-
-            if let Some(block) = provider.get_block(b.into()).await? {
-                save_known_tip(ctx.dedup_chain_id, b, block.header.hash).await?;
-            }
-        }
-
-        trace!("caught up");
         block_snd
             .send(Msg::CaughtUp)
             .map_err(|_| eyre!("Watcher error"))?;
 
-        'ws: loop {
-            // wait for the next block
-            // once again, break out if we receive a close signal
-            tokio::select! {
-                _ = quit_rcv.recv() => break 'watcher,
+        // Subscribe and process new blocks
+        subscribe_new_blocks(&sub_provider, &provider, &block_snd, &ctx, &mut quit_rcv).await?;
+    }
+}
 
-                b = stream.next() => {
-                    match b {
-                        Some(b) => {
-                            trace!("block {}", b.number);
-                            let block_traces = provider.trace_block(b.number.into()).await?;
-                            block_snd.send(Msg::Traces(block_traces)).map_err(|_| eyre!("Watcher error"))?;
+// Waits for the node to be available and returns the latest block number
+async fn wait_for_node(ctx: &Ctx, quit_rcv: &mut mpsc::Receiver<()>) -> color_eyre::Result<u64> {
+    let mut backoff = INITIAL_BACKOFF;
+    let mut warned = false;
 
-                            let logs = provider.get_logs(&Filter::new().select(b.number)).await?;
-                            block_snd.send(Msg::Logs(logs)).map_err(|_| eyre!("Watcher error"))?;
+    loop {
+        let http_provider = ProviderBuilder::new()
+            .disable_recommended_fillers()
+            .connect_http(ctx.http_url.clone());
 
-                            save_known_tip(ctx.dedup_chain_id, b.number, b.hash).await?;
-                        },
-                        None => break 'ws,
+        tokio::select! {
+            _ = quit_rcv.recv() => return Err(eyre!("Watcher quit")),
+                res = http_provider.get_block_number() => {
+                    match res {
+                        Ok(b) => {
+                            if warned {
+                                tracing::info!("Anvil node is back online at {}", ctx.http_url);
+                            }
+
+                            break Ok(b);
+                        }
+                        Err(e) => {
+                            if !warned {
+                                tracing::warn!("Anvil node not available at {}: {e}", ctx.http_url);
+                                warned = true;
+                            } else {
+                                tracing::debug!("Retrying Anvil connection in {}s...", backoff.as_secs());
+                            }
+
+                            tokio::select! {
+                                _ = sleep(backoff) => {},
+                                _ = quit_rcv.recv() => return Err(eyre!("Watcher quit")),
+                            }
+
+                            backoff = std::cmp::min(backoff * 2, MAX_BACKOFF);
+                        }
                     }
+                }
+        }
+    }
+}
+
+// Initializes the main and subscription providers
+async fn init_providers(
+    ctx: &Ctx,
+) -> color_eyre::Result<(
+    alloy::providers::RootProvider<Ethereum>,
+    alloy::providers::RootProvider<Ethereum>,
+)> {
+    let ws_connect = WsConnect::new(ctx.ws_url.to_string());
+    let provider = ProviderBuilder::new()
+        .disable_recommended_fillers()
+        .connect_ws(ws_connect.clone())
+        .await?;
+    let sub_provider = ProviderBuilder::new()
+        .disable_recommended_fillers()
+        .connect_ws(ws_connect)
+        .await?;
+    Ok((provider, sub_provider))
+}
+
+// Gets the fork block number if available
+async fn get_fork_block_number(provider: &alloy::providers::RootProvider<Ethereum>) -> u64 {
+    let node_info: serde_json::Value = provider
+        .raw_request("anvil_nodeInfo".into(), ())
+        .await
+        .unwrap_or(serde_json::Value::Null);
+
+    node_info["forkConfig"]["forkBlockNumber"]
+        .as_u64()
+        .unwrap_or(0)
+}
+
+// Catches up on all past blocks from from_block to to_block (inclusive)
+#[instrument(skip_all, fields(chain_id = ctx.dedup_chain_id.chain_id(), dedup_id = ctx.dedup_chain_id.dedup_id()), level = "trace")]
+async fn catch_up_past_blocks(
+    provider: &alloy::providers::RootProvider<Ethereum>,
+    block_snd: &mpsc::UnboundedSender<Msg>,
+    ctx: &Ctx,
+    from_block: u64,
+    to_block: u64,
+) -> color_eyre::Result<()> {
+    for b in from_block..=to_block {
+        let traces = provider.trace_block(b.into()).await?;
+        block_snd
+            .send(Msg::Traces(traces))
+            .map_err(|_| eyre!("Watcher error"))?;
+
+        let logs = provider.get_logs(&Filter::new().select(b)).await?;
+        block_snd
+            .send(Msg::Logs(logs))
+            .map_err(|_| eyre!("Watcher error"))?;
+
+        if let Some(block) = provider.get_block(b.into()).await? {
+            save_known_tip(ctx.dedup_chain_id, b, block.header.hash).await?;
+        }
+    }
+    Ok(())
+}
+
+// Subscribes to new blocks and processes them. Returns Ok(false) if quit signal is received.
+async fn subscribe_new_blocks(
+    sub_provider: &alloy::providers::RootProvider<Ethereum>,
+    provider: &alloy::providers::RootProvider<Ethereum>,
+    block_snd: &mpsc::UnboundedSender<Msg>,
+    ctx: &Ctx,
+    quit_rcv: &mut mpsc::Receiver<()>,
+) -> color_eyre::Result<()> {
+    let mut stream = sub_provider.subscribe_blocks().await?.into_stream();
+    loop {
+        tokio::select! {
+            _ = quit_rcv.recv() => return Err(eyre!("Watcher quit")),
+            b = stream.next() => {
+                match b {
+                    Some(b) => {
+                        trace!("block {}", b.number);
+                        let block_traces = provider.trace_block(b.number.into()).await?;
+                        block_snd.send(Msg::Traces(block_traces)).map_err(|_| eyre!("Watcher error"))?;
+
+                        let logs = provider.get_logs(&Filter::new().select(b.number)).await?;
+                        block_snd.send(Msg::Logs(logs)).map_err(|_| eyre!("Watcher error"))?;
+
+                        save_known_tip(ctx.dedup_chain_id, b.number, b.hash).await?;
+                    },
+                    None => break,
                 }
             }
         }

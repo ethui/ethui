@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use ethui_args::Args;
 use ethui_broadcast::UIMsg;
-use ethui_types::GlobalState as _;
+use ethui_settings::GetAll;
 use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
 #[cfg(feature = "aptabase")]
 use tauri_plugin_aptabase::EventTracker as _;
@@ -28,6 +28,7 @@ impl EthUIApp {
                 commands::ui_error,
                 commands::add_contract,
                 commands::remove_contract,
+                commands::is_stacks_enabled,
                 ethui_settings::commands::settings_get,
                 ethui_settings::commands::settings_set,
                 ethui_settings::commands::settings_set_dark_mode,
@@ -40,6 +41,7 @@ impl EthUIApp {
                 ethui_settings::commands::settings_test_rust_log,
                 ethui_settings::commands::settings_onboarding_finish_step,
                 ethui_settings::commands::settings_onboarding_finish_all,
+                ethui_settings::commands::settings_set_run_local_stacks,
                 ethui_networks::commands::networks_get_list,
                 ethui_networks::commands::networks_get_current,
                 ethui_networks::commands::networks_set_current,
@@ -163,6 +165,9 @@ async fn init(app: &tauri::App, args: &Args) -> color_eyre::Result<()> {
     ethui_networks::init(resource(app, "networks.json", args)).await;
     ethui_forge::init().await?;
 
+    #[cfg(feature = "stacks")]
+    ethui_stacks::init(args.stacks_port, resource(app, "stacks/", args)).await?;
+
     // automatically open devtools if env asks for it
     #[cfg(feature = "debug")]
     if std::env::var("ETHUI_OPEN_DEVTOOLS").is_ok() {
@@ -236,6 +241,8 @@ async fn should_start_main_window(args: &Args) -> bool {
         return false;
     }
 
-    let settings = ethui_settings::Settings::read().await;
-    !settings.start_minimized()
+    let settings = ethui_settings::ask(GetAll)
+        .await
+        .expect("Failed to get settings");
+    !settings.start_minimized
 }

@@ -1,12 +1,8 @@
-use std::sync::Arc;
-
 use ethui_types::{
+    prelude::*,
     ui_events::{DialogClose, DialogOpen, DialogSend},
-    Json,
 };
-use serde::{Deserialize, Serialize};
-use tokio::sync::{mpsc, RwLock};
-use tracing::{debug, instrument};
+use tokio::sync::mpsc;
 
 use super::{global::OPEN_DIALOGS, presets};
 
@@ -36,7 +32,7 @@ impl Dialog {
     ///
     /// Here, we emits an OpenDialog event, asking the tauri app to do so
     /// The event loop will eventually call back into `open_with_handle` to continue the process
-    #[instrument(skip(self))]
+    #[instrument(skip(self), level = "trace")]
     pub async fn open(&self) -> color_eyre::Result<()> {
         let inner = self.0.read().await;
         debug!("Opening dialog {} {}", inner.preset, inner.id);
@@ -68,7 +64,9 @@ impl Drop for Dialog {
         tokio::spawn(async move {
             let inner = inner.write().await;
             OPEN_DIALOGS.lock().await.remove(&inner.id);
-            inner.close().await.unwrap();
+            if let Err(e) = inner.close().await {
+                error!("Failed to close dialog {}: {}", inner.id, e);
+            }
         });
     }
 }
@@ -135,7 +133,9 @@ impl Inner {
     }
 
     async fn open(&self) -> color_eyre::Result<()> {
-        let preset = presets::PRESETS.get(&self.preset).unwrap();
+        let preset = presets::PRESETS
+            .get(&self.preset)
+            .ok_or_else(|| color_eyre::eyre::eyre!("Unknown dialog preset: {}", self.preset))?;
         let url = format!("index.html#/dialog/{}/{}", self.preset, self.id);
         let title = format!("ethui Dialog - {}", preset.title);
 

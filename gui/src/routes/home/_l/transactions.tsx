@@ -300,9 +300,9 @@ function formatTxType(type: number | undefined): import("react").ReactNode {
     case 0:
       return "Legacy";
     case 1:
-      return "EIP-1559";
-    case 2:
       return "EIP-2930";
+    case 2:
+      return "EIP-1559";
     case 3:
       return "EIP-4844";
   }

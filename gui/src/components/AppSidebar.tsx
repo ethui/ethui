@@ -30,6 +30,7 @@ import {
   Terminal,
   Wifi,
 } from "lucide-react";
+import { useInvoke } from "#/hooks/useInvoke";
 import { useSettings } from "#/store/useSettings";
 import { useCommandBar } from "./CommandBar";
 import { QuickAddressSelect } from "./QuickAddressSelect";
@@ -45,7 +46,20 @@ export function AppSidebar() {
   const { open, toggleSidebar } = useSidebar();
   const isMacos = platform() === "macos";
 
+  const { data: isStacksEnabled } = useInvoke<boolean>("is_stacks_enabled", {});
+
   const showOnboarding = useSettings((s) => !s.settings?.onboarding.hidden);
+
+  const settingsItems = [...defaultSettingsItems];
+  if (
+    isStacksEnabled &&
+    !settingsItems.some((item) => item.title === "Stacks")
+  ) {
+    settingsItems.splice(settingsItems.length - 1, 0, {
+      title: "Stacks",
+      url: "/home/settings/stacks",
+    });
+  }
 
   return (
     <Sidebar className="select-none" collapsible="icon">
@@ -202,7 +216,7 @@ const items = [
   },
 ];
 
-const settingsItems = [
+const defaultSettingsItems = [
   { title: "General", url: "/home/settings/general" },
   { title: "Wallets", url: "/home/settings/wallets" },
   { title: "Network", url: "/home/settings/networks" },

@@ -1,6 +1,6 @@
 use ethui_types::{Address, GlobalState, Json, SerializableError, TauriResult};
 
-use super::{utils, Wallet, WalletControl, Wallets};
+use super::{Wallet, WalletControl, Wallets, utils};
 
 /// Lists all wallets
 #[tauri::command]

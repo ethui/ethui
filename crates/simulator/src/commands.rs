@@ -9,7 +9,11 @@ use crate::{
 
 #[tauri::command]
 pub async fn simulator_run(chain_id: u32, request: Request) -> TauriResult<Result> {
-    let network = Networks::read().await.get_network(chain_id).unwrap();
+    let network = Networks::read()
+        .await
+        .get_network(chain_id)
+        .cloned()
+        .unwrap();
 
     let mut evm = Evm::new(network.http_url.to_string(), None, request.gas_limit).await;
 

@@ -27,6 +27,7 @@ function ChainAddDialog() {
       <ChainView
         chainId={network.dedup_chain_id.chain_id}
         name={network.name}
+        status={network.status}
       />
 
       <div className="grid grid-cols-4 gap-5">

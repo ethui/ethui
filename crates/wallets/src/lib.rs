@@ -11,7 +11,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use color_eyre::eyre::{eyre, ContextCompat as _};
+use color_eyre::eyre::{ContextCompat as _, eyre};
 use ethui_types::{Address, Json, UINotify};
 pub use init::init;
 use serde::Serialize;

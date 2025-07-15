@@ -1,91 +1,42 @@
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
-use async_trait::async_trait;
+use color_eyre::eyre::Context as _;
 use ethui_broadcast::InternalMsg;
-use ethui_types::GlobalState;
-use once_cell::sync::OnceCell;
-use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
+use kameo::actor::ActorRef;
 
-use crate::{
-    migrations::load_and_migrate, onboarding::OnboardingStep, SerializedSettings, Settings,
-};
-
-static SETTINGS: OnceCell<RwLock<Settings>> = OnceCell::new();
+use crate::{actor::SettingsActor, onboarding::OnboardingStep, Set};
 
 pub async fn init(pathbuf: PathBuf) -> color_eyre::Result<()> {
-    let path = Path::new(&pathbuf);
+    let actor = kameo::spawn(SettingsActor::new(pathbuf).await?);
+    actor
+        .register("settings")
+        .wrap_err_with(|| "Actor spawn error")?;
 
-    let res = if path.exists() {
-        load_and_migrate(&pathbuf)
-            .await
-            .expect("failed to load settings")
-    } else {
-        Settings {
-            inner: SerializedSettings::default(),
-            file: pathbuf,
-        }
-    };
-
-    res.init().await?;
-    SETTINGS.set(RwLock::new(res)).unwrap();
-
-    tokio::spawn(async { receiver().await });
+    tokio::spawn(receiver(actor));
 
     Ok(())
 }
 
-#[async_trait]
-impl GlobalState for Settings {
-    async fn read<'a>() -> RwLockReadGuard<'a, Self> {
-        SETTINGS.get().unwrap().read().await
-    }
-
-    async fn write<'a>() -> RwLockWriteGuard<'a, Self> {
-        SETTINGS.get().unwrap().write().await
-    }
-}
-
-async fn receiver() -> ! {
+async fn receiver(actor: ActorRef<SettingsActor>) -> ! {
     let mut rx = ethui_broadcast::subscribe_internal().await;
+
+    let mut extension_updated = false;
+    let mut wallet_created = false;
 
     loop {
         match rx.recv().await {
-            Ok(InternalMsg::SettingsUpdated) => {
-                let mut settings = SETTINGS.get().unwrap().write().await;
-
-                // check if onboarding->alchemy was finished
-                let onboarding = &settings.inner.onboarding;
-                if !onboarding.is_step_finished(OnboardingStep::Alchemy)
-                    && settings.inner.alchemy_api_key.is_some()
-                {
-                    let _ = settings
-                        .finish_onboarding_step(OnboardingStep::Alchemy)
-                        .await;
-                }
-
-                // check if onboarding->etherscan was finished
-                let onboarding = &settings.inner.onboarding;
-                if !onboarding.is_step_finished(OnboardingStep::Etherscan)
-                    && settings.inner.etherscan_api_key.is_some()
-                {
-                    let _ = settings
-                        .finish_onboarding_step(OnboardingStep::Etherscan)
-                        .await;
-                }
+            Ok(InternalMsg::WalletCreated) if !wallet_created => {
+                let _ = actor
+                    .tell(Set::FinishOnboardingStep(OnboardingStep::Wallet))
+                    .await;
+                wallet_created = true;
             }
 
-            Ok(InternalMsg::WalletCreated) => {
-                let mut settings = SETTINGS.get().unwrap().write().await;
-                let _ = settings
-                    .finish_onboarding_step(OnboardingStep::Wallet)
+            Ok(InternalMsg::PeerAdded) if !extension_updated => {
+                let _ = actor
+                    .tell(Set::FinishOnboardingStep(OnboardingStep::Extension))
                     .await;
-            }
-
-            Ok(InternalMsg::PeerAdded) => {
-                let mut settings = SETTINGS.get().unwrap().write().await;
-                let _ = settings
-                    .finish_onboarding_step(OnboardingStep::Extension)
-                    .await;
+                extension_updated = true;
             }
             _ => (),
         }

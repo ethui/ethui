@@ -2,14 +2,13 @@ use std::str::FromStr;
 
 use alloy::{
     network::{Ethereum, TransactionBuilder as _},
-    primitives::{Bytes, U256},
     providers::{ext::AnvilApi, PendingTransactionBuilder, Provider, ProviderBuilder},
     rpc::types::TransactionRequest,
 };
 use ethui_connections::Ctx;
 use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_settings::Settings;
-use ethui_types::{Address, GlobalState, Network};
+use ethui_settings::GetAll;
+use ethui_types::prelude::*;
 use ethui_wallets::{WalletControl, WalletType, Wallets};
 
 use crate::{Error, Result};
@@ -57,7 +56,9 @@ impl SendTransaction {
                 .get(&self.wallet_name)
                 .ok_or_else(|| Error::WalletNameNotFound(self.wallet_name.clone()))?;
 
-            self.network.is_dev().await && wallet.is_dev() && Settings::read().await.fast_mode()
+            self.network.is_dev().await && wallet.is_dev() && {
+                ethui_settings::ask(GetAll).await?.fast_mode
+            }
         };
 
         // skip the dialog if both network & wallet allow for it, and if fast_mode is enabled

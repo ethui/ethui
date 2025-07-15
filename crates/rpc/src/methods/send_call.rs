@@ -1,13 +1,8 @@
-use std::str::FromStr;
-
 use alloy::{
-    network::TransactionBuilder as _,
-    primitives::{Address, Bytes, U256},
-    providers::Provider as _,
-    rpc::types::TransactionRequest,
+    network::TransactionBuilder as _, providers::Provider as _, rpc::types::TransactionRequest,
 };
 use ethui_connections::Ctx;
-use ethui_types::Network;
+use ethui_types::prelude::*;
 
 use crate::Result;
 

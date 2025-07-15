@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 use serde_constant::ConstI64;
 use serde_json::json;
 
-use crate::{store::SerializedStore, Store};
+use crate::{Store, store::SerializedStore};
 
 pub type LatestVersion = ConstI64<2>;
 
