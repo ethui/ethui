@@ -65,7 +65,7 @@ ethui-sync-alchemy = { path = "crates/sync/alchemy" }
 ethui-broadcast = { path = "crates/broadcast" }
 ethui-tracing = { path = "crates/tracing" }
 ethui-args = { path = "crates/args" }
-# ethui-token-list = { path = "crates/token-list" }
+ethui-token-list = { path = "crates/token-list" }
 ethui-proxy-detect = { git = "https://github.com/ethui/proxy-detect", rev = "c0db91a" }
 ethui-stacks = { path = "crates/stacks" }
 tokio = { version = "1.46", features = ["rt-multi-thread", "sync"] }
