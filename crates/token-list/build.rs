@@ -35,6 +35,12 @@ fn should_update() -> Result<bool> {
         return Ok(true);
     }
 
+    // we can't update during a nix build, since we don't have network access
+    let skip_update = std::env::var("NIX_BUILD").is_ok();
+    if skip_update {
+        return Ok(false);
+    }
+
     let metadata = fs::metadata(FILE)?;
     if let Ok(modified) = metadata.modified() {
         let modified_date = modified

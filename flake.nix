@@ -72,6 +72,7 @@
           version = cargoToml.workspace.package.version;
 
           src = ./.;
+          NIX_BUILD = "1";
 
           cargoRoot = ".";
           buildAndtestSubdir = ".";
