@@ -71,7 +71,6 @@
           NIX_BUILD = "1";
 
           cargoRoot = ".";
-          buildAndtestSubdir = ".";
 
           buildInputs = commonDeps ++ libraries;
           nativeBuildInputs = [
