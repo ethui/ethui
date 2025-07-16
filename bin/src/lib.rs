@@ -7,30 +7,22 @@ mod menu;
 mod system_tray;
 mod windows;
 
-use named_lock::NamedLock;
-
-#[cfg(not(debug_assertions))]
-static LOCK_NAME: &str = "iron-wallet";
-#[cfg(debug_assertions)]
-static LOCK_NAME: &str = "iron-wallet-dev";
+use color_eyre::Result;
+use ethui_args::Command;
 
 #[tokio::main]
-pub async fn run() -> color_eyre::Result<()> {
+pub async fn run() -> Result<()> {
     ethui_tracing::init()?;
     fix_path_env::fix()?;
 
     let args = ethui_args::parse();
-    let lock = NamedLock::create(LOCK_NAME)?;
 
-    let _guard = match lock.try_lock() {
-        Ok(g) => g,
-        Err(_) => {
-            ethui_broadcast::main_window_show().await;
-            return Ok(());
-        }
-    };
+    match args.command() {
+        Command::App => app::EthUIApp::start_or_open(args).await?,
 
-    app::EthUIApp::build(&args).await?.run();
+        #[cfg(feature = "forge-traces")]
+        Command::Forge { cmd } => ethui_forge_traces::handle_forge_command(&cmd, &args).await?,
+    }
 
     Ok(())
 }

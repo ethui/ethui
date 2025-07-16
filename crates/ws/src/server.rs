@@ -1,6 +1,6 @@
 use std::{collections::HashMap, net::SocketAddr};
 
-use ethui_types::GlobalState;
+use ethui_types::prelude::*;
 use futures::{stream::SplitSink, SinkExt, StreamExt};
 use tokio::{
     net::{TcpListener, TcpStream},
@@ -17,6 +17,7 @@ use url::Url;
 pub use crate::error::{WsError, WsResult};
 use crate::peers::{Peer, Peers};
 
+#[instrument(level = "debug")]
 pub(crate) async fn server_loop(port: u16) {
     let addr = format!("127.0.0.1:{port}");
     let listener = TcpListener::bind(&addr).await.expect("Can't listen to");
