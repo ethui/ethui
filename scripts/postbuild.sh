@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 if [[ "$(uname)" != "Darwin" ]]; then
   exit 0;

@@ -1,5 +1,5 @@
-import genTokens from "@ethui/data/gen/tokens.json";
-import tokens from "@ethui/data/tokens.json";
+import genTokens from "./gen/tokens.json";
+import tokens from "./tokens.json";
 
 export interface Token {
   chainId: number;

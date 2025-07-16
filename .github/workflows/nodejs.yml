@@ -28,7 +28,7 @@ jobs:
               - "gui/**"
               - "packages/**"
               - "package.json"
-              - "yarn.lock"
+              - "pnpm-lock.yaml"
 
   node-lint:
     needs: check-skip
@@ -36,11 +36,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-node@v4
         with:
+          cache: 'pnpm'
           node-version: "24.x"
-      - run: corepack enable
 
-      - run: yarn install --immutable
-      - run: yarn lint
-      - run: yarn test
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run lint
