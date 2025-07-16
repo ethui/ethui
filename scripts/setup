@@ -18,14 +18,14 @@ deps() {
   install_dep "cargo binstall" cargo-binstall
   install_dep "tauri cli" cargo-tauri
   install_dep "sqlx cli" cargo-sqlx
-  install_dep "yarn" yarn
+  install_dep "pnpm" pnpm
   install_dep "watchexec" watchexec-cli
   install_dep "foundry" anvil
   install_tauri_prerequisites
 
   echo -e "\nSetting up dev environment"
   run_sqlx_setup
-  run_yarn_install
+  run_pnpm_install
 }
 
 install_dep() {
@@ -59,8 +59,8 @@ install_watchexec_cli() {
   cargo binstall watchexec-cli --no-confirm > /dev/null 2>&1
 }
 
-install_yarn() {
-  npm i -g yarn > /dev/null 2>&1
+install_pnpm() {
+  npm i -g pnpm > /dev/null 2>&1
 }
 
 install_tauri_prerequisites() {
@@ -151,12 +151,12 @@ run_sqlx_setup() {
   echo -e "Database setup done"
 }
 
-run_yarn_install() {
+run_pnpm_install() {
   printf_ansi "[ ] " $ANSI_TEXT_GREEN
-  echo -n "yarn install..."
-  yarn install > /dev/null 2>&1
+  echo -n "pnpm install..."
+  pnpm install > /dev/null 2>&1
   printf_ansi "\r[✔] " $ANSI_TEXT_GREEN
-  echo -e "Yarn install done"
+  echo -e "pnpm install done"
 }
 
 banner(){
