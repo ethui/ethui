@@ -4,6 +4,7 @@
     utils.url = "github:numtide/flake-utils";
     rust.url = "github:oxalica/rust-overlay";
   };
+
   outputs =
     {
       self,
@@ -19,19 +20,36 @@
         pkgs = import nixpkgs {
           inherit system overlays;
         };
-        buildInputs = with pkgs; [
-          pkg-config
-          dbus
-          glib
+
+        cargoToml = builtins.fromTOML (builtins.readFile ./Cargo.toml);
+        rustToolchain = pkgs.rust-bin.nightly.latest.default.override {
+          extensions = [ "rust-src" ];
+        };
+        rustNightly = pkgs.makeRustPlatform {
+          cargo = rustToolchain;
+          rustc = rustToolchain;
+        };
+
+        commonDeps = with pkgs; [
+          openssl
+          webkitgtk_4_1
           gtk3
+          cairo
+          gdk-pixbuf
+          glib
+          dbus
+          libsoup_2_4
+        ];
+
+        devDeps = with pkgs; [
+          pkg-config
           bacon
           at-spi2-atk
           atkmm
-          gdk-pixbuf
           gobject-introspection
           harfbuzz
-          webkitgtk_4_1
         ];
+
         libraries = with pkgs; [
           cargo-tauri
           pango
@@ -41,11 +59,61 @@
           libappindicator
           glib-networking
         ];
+
       in
       with pkgs;
       {
+        packages.default = rustNightly.buildRustPackage (finalAttrs: {
+          pname = "ethui";
+          version = cargoToml.workspace.package.version;
+
+          src = ./.;
+          NIX_BUILD = "1";
+
+          cargoRoot = ".";
+
+          buildInputs = commonDeps ++ libraries;
+          nativeBuildInputs = [
+            cargo-tauri.hook
+            nodejs
+            pnpm.configHook
+            pkg-config
+            wrapGAppsHook3
+          ];
+
+          # necessary for tauri apps apparently
+          # taken from https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/by-name/po/pot/package.nix
+          postPatch = ''
+            substituteInPlace $cargoDepsCopy/libappindicator-sys-*/src/lib.rs \
+              --replace-fail "libayatana-appindicator3.so.1" "${libayatana-appindicator}/lib/libayatana-appindicator3.so.1"
+          '';
+
+          cargoDeps = rustNightly.fetchCargoVendor {
+            inherit (finalAttrs)
+              pname
+              version
+              src
+              cargoRoot
+              ;
+            hash = "sha256-Kj4UeoaPiU53VTDQPso+AC/eGg9+LzXtv91OaIK3rSM=";
+          };
+
+          pnpmDeps = pnpm.fetchDeps {
+            inherit (finalAttrs) pname version src;
+            fetcherVersion = 1;
+            hash = "sha256-+nxjnDBojs1xrxmPJ+10q5vk7AhK2mXx5L50gy3EHQE=";
+          };
+
+          preBuild = ''
+            chmod +x scripts/postbuild.sh
+            substituteInPlace scripts/postbuild.sh \
+              --replace "#!/usr/bin/env bash" "#!${bash}/bin/bash"
+          '';
+
+        });
+
         devShells.default = mkShell {
-          inherit buildInputs;
+          buildInputs = commonDeps ++ devDeps;
 
           shellHook = ''
             export LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath libraries}:$LD_LIBRARY_PATH
