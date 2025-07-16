@@ -51,10 +51,6 @@
           webkitgtk_4_1
         ];
 
-        buildDeps = with pkgs; [
-          nodejs
-        ];
-
         libraries = with pkgs; [
           cargo-tauri
           pango
@@ -80,6 +76,17 @@
           cargoRoot = ".";
           buildAndtestSubdir = ".";
 
+          buildInputs = commonDeps ++ libraries;
+          nativeBuildInputs = [
+            cargo-tauri.hook
+            nodejs
+            pnpm.configHook
+            pkg-config
+            wrapGAppsHook3
+          ];
+
+          # necessary for tauri apps apparently
+          # taken from https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/by-name/po/pot/package.nix
           postPatch = ''
             substituteInPlace $cargoDepsCopy/libappindicator-sys-*/src/lib.rs \
               --replace-fail "libayatana-appindicator3.so.1" "${libayatana-appindicator}/lib/libayatana-appindicator3.so.1"
@@ -101,21 +108,11 @@
             hash = "sha256-+nxjnDBojs1xrxmPJ+10q5vk7AhK2mXx5L50gy3EHQE=";
           };
 
-          nativeBuildInputs = [
-            cargo-tauri.hook
-            nodejs
-            pnpm.configHook
-            pkg-config
-            wrapGAppsHook3
-          ];
-
           preBuild = ''
             chmod +x scripts/postbuild.sh
             substituteInPlace scripts/postbuild.sh \
               --replace "#!/usr/bin/env bash" "#!${bash}/bin/bash"
           '';
-
-          buildInputs = commonDeps ++ buildDeps ++ libraries;
 
         });
 
