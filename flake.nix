@@ -88,7 +88,8 @@
               src
               cargoRoot
               ;
-            hash = "sha256-Wjjd7gdt8iNCpnfK54XWDEDcy5Zp+mVEiNPpGIYNgQA=";
+            # hash = "sha256-Wjjd7gdt8iNCpnfK54XWDEDcy5Zp+mVEiNPpGIYNgQA=";
+            hash = "sha256-Kj4UeoaPiU53VTDQPso+AC/eGg9+LzXtv91OaIK3rSM=";
           };
 
           nativeBuildInputs = [
