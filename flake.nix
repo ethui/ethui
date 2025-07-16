@@ -62,7 +62,6 @@
           librsvg
           atk.dev
           libappindicator
-          libayatana-appindicator
           glib-networking
         ];
 
@@ -80,6 +79,11 @@
 
           cargoRoot = ".";
           buildAndtestSubdir = ".";
+
+          postPatch = ''
+            substituteInPlace $cargoDepsCopy/libappindicator-sys-*/src/lib.rs \
+              --replace-fail "libayatana-appindicator3.so.1" "${libayatana-appindicator}/lib/libayatana-appindicator3.so.1"
+          '';
 
           cargoDeps = rustPlatform.fetchCargoVendor {
             inherit (finalAttrs)
