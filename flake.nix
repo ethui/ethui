@@ -21,10 +21,12 @@
           inherit system overlays;
         };
 
-        cargoToml = builtins.fromTOML (builtins.readFile ./bin/Cargo.toml);
-        workspaceToml = builtins.fromTOML (builtins.readFile ./Cargo.toml);
         rustToolchain = pkgs.rust-bin.nightly.latest.default.override {
           extensions = [ "rust-src" ];
+        };
+        rustNightly = pkgs.makeRustPlatform {
+          cargo = rustToolchain;
+          rustc = rustToolchain;
         };
 
         commonDeps = with pkgs; [
@@ -64,10 +66,11 @@
 
         languages.javascript.package = pkgs.nodejs_24;
         languages.javascript.corepack.enable = true;
+
       in
       with pkgs;
       {
-        packages.default = rustPlatform.buildRustPackage (finalAttrs: {
+        packages.default = rustNightly.buildRustPackage (finalAttrs: {
           pname = "ethui";
           version = "0.1.0";
 
@@ -83,8 +86,7 @@
               src
               cargoRoot
               ;
-            # hash = "sha256-Wjjd7gdt8iNCpnfK54XWDEDcy5Zp+mVEiNPpGIYNgQA=";
-            hash = "sha256-Kj4UeoaPiU53VTDQPso+AC/eGg9+LzXtv91OaIK3rSM=";
+            hash = "sha256-BJMvQNx1KVHvS7s5Y35j/aW2ZdbGotHcebuPgyaGn0c=";
           };
 
           pnpmDeps = pnpm.fetchDeps {
@@ -100,13 +102,19 @@
             pkg-config
             wrapGAppsHook3
           ];
+          
+          preBuild = ''
+            chmod +x scripts/postbuild.sh
+            substituteInPlace scripts/postbuild.sh \
+              --replace "#!/usr/bin/env bash" "#!${bash}/bin/bash"
+          '';
 
           buildInputs = commonDeps ++ buildDeps;
 
         });
 
         devShells.default = mkShell {
-          buildInputs = commonDeps ++ devDeps;
+          buildInputs = commonDeps ++ devDeps ++ [ rustToolchain ];
 
           shellHook = ''
             export LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath libraries}:$LD_LIBRARY_PATH

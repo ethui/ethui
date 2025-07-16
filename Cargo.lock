@@ -2904,7 +2904,6 @@ dependencies = [
  "ethui-simulator",
  "ethui-stacks",
  "ethui-sync",
- "ethui-token-list",
  "ethui-tracing",
  "ethui-types",
  "ethui-wallets",
@@ -3247,18 +3246,6 @@ dependencies = [
  "tokio",
  "tracing",
  "url",
-]
-
-[[package]]
-name = "ethui-token-list"
-version = "1.17.0"
-dependencies = [
- "chrono",
- "color-eyre",
- "reqwest",
- "serde",
- "serde_json",
- "tokio",
 ]
 
 [[package]]
@@ -6866,7 +6853,6 @@ dependencies = [
  "base64 0.22.1",
  "bytes",
  "encoding_rs",
- "futures-channel",
  "futures-core",
  "futures-util",
  "h2",
