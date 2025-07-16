@@ -67,16 +67,11 @@
       in
       with pkgs;
       {
-        packages.default = stdenv.mkDerivation (finalAttrs: {
+        packages.default = rustPlatform.buildRustPackage (finalAttrs: {
           pname = "ethui";
           version = "0.1.0";
 
           src = ./.;
-
-          pnpmDeps = pnpm.fetchDeps {
-            inherit (finalAttrs) pname version src;
-            hash = "sha256-9aDtvIIMKuH+5QrClDcY9KdQEI3YhpUj3qiE9CcIQhQ=";
-          };
 
           cargoRoot = ".";
           buildAndtestSubdir = ".";
@@ -92,63 +87,23 @@
             hash = "sha256-Kj4UeoaPiU53VTDQPso+AC/eGg9+LzXtv91OaIK3rSM=";
           };
 
+          pnpmDeps = pnpm.fetchDeps {
+            inherit (finalAttrs) pname version src;
+            fetcherVersion = 1;
+            hash = "sha256-+nxjnDBojs1xrxmPJ+10q5vk7AhK2mXx5L50gy3EHQE=";
+          };
+
           nativeBuildInputs = [
-            rustPlatform.cargoSetupHook
-            cargo
-            rustc
             cargo-tauri.hook
-            wrapGAppsHook3
+            nodejs
+            pnpm.configHook
             pkg-config
+            wrapGAppsHook3
           ];
 
           buildInputs = commonDeps ++ buildDeps;
 
         });
-        # packages.default = rustPlatform.buildRustPackage {
-        #   pname = cargoToml.package.name;
-        #   version = workspaceToml.workspace.package.version;
-        #   src = ./.;
-        #   cargoLock = {
-        #     lockFile = ./Cargo.lock;
-        #     allowBuiltinFetchGit = true;
-        #   };
-        #
-        #   nativeBuildInputs = [
-        #     rustToolchain
-        #     pkg-config
-        #     wrapGAppsHook
-        #     nodejs
-        #   ];
-        #
-        #   buildInputs = commonDeps ++ buildDeps;
-        #
-        #   doCheck = false;
-        #
-        #   # Allow network access for npm install
-        #   __noChroot = true;
-        #
-        #   configurePhase = ''
-        #     export HOME=$(mktemp -d)
-        #     export NPM_CONFIG_AUDIT=false
-        #     export NPM_CONFIG_FUND=false
-        #   '';
-        #
-        #   buildPhase = ''
-        #     npm install --frozen-lockfile
-        #     npm run tauri build
-        #   '';
-        #
-        #   installPhase = ''
-        #     mkdir -p $out/bin
-        #     cp target/release/${cargoToml.package.name} $out/bin/${cargoToml.package.name}
-        #   '';
-        #
-        #   meta = with pkgs.lib; {
-        #     description = "A desktop wallet for Ethereum and other EVM-compatible networks";
-        #     homepage = workspaceToml.workspace.package.homepage;
-        #     licence = licenses.mit;
-        #   };
-        # };
 
         devShells.default = mkShell {
           buildInputs = commonDeps ++ devDeps;
