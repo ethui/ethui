@@ -4,6 +4,7 @@
     utils.url = "github:numtide/flake-utils";
     rust.url = "github:oxalica/rust-overlay";
   };
+
   outputs =
     {
       self,
@@ -66,51 +67,87 @@
       in
       with pkgs;
       {
-        packages.default = rustPlatform.buildRustPackage {
-          pname = cargoToml.package.name;
-          version = workspaceToml.workspace.package.version;
+        packages.default = stdenv.mkDerivation (finalAttrs: {
+          pname = "ethui";
+          version = "0.1.0";
+
           src = ./.;
-          cargoLock = {
-            lockFile = ./Cargo.lock;
-            allowBuiltinFetchGit = true;
+
+          pnpmDeps = pnpm.fetchDeps {
+            inherit (finalAttrs) pname version src;
+            hash = "sha256-9aDtvIIMKuH+5QrClDcY9KdQEI3YhpUj3qiE9CcIQhQ=";
+          };
+
+          cargoRoot = ".";
+          buildAndtestSubdir = ".";
+
+          cargoDeps = rustPlatform.fetchCargoVendor {
+            inherit (finalAttrs)
+              pname
+              version
+              src
+              cargoRoot
+              ;
+            hash = "sha256-Wjjd7gdt8iNCpnfK54XWDEDcy5Zp+mVEiNPpGIYNgQA=";
           };
 
           nativeBuildInputs = [
-            rustToolchain
+            rustPlatform.cargoSetupHook
+            cargo
+            rustc
+            cargo-tauri.hook
+            wrapGAppsHook3
             pkg-config
-            wrapGAppsHook
-            nodejs
           ];
 
           buildInputs = commonDeps ++ buildDeps;
 
-          doCheck = false;
-
-          # Allow network access for npm install
-          __noChroot = true;
-
-          configurePhase = ''
-            export HOME=$(mktemp -d)
-            export NPM_CONFIG_AUDIT=false
-            export NPM_CONFIG_FUND=false
-          '';
-
-          buildPhase = ''
-            npm install --frozen-lockfile
-            npm run tauri build
-          '';
-
-          installPhase = ''
-            mkdir -p $out/bin
-            cp target/release/${cargoToml.package.name} $out/bin/${cargoToml.package.name}
-          '';
-
-          meta = with pkgs.lib; {
-            description = "A desktop wallet for Ethereum and other EVM-compatible networks";
-            homepage = workspaceToml.workspace.package.homepage;
-            licence = licenses.mit;
-          };
-        };
+        });
+        # packages.default = rustPlatform.buildRustPackage {
+        #   pname = cargoToml.package.name;
+        #   version = workspaceToml.workspace.package.version;
+        #   src = ./.;
+        #   cargoLock = {
+        #     lockFile = ./Cargo.lock;
+        #     allowBuiltinFetchGit = true;
+        #   };
+        #
+        #   nativeBuildInputs = [
+        #     rustToolchain
+        #     pkg-config
+        #     wrapGAppsHook
+        #     nodejs
+        #   ];
+        #
+        #   buildInputs = commonDeps ++ buildDeps;
+        #
+        #   doCheck = false;
+        #
+        #   # Allow network access for npm install
+        #   __noChroot = true;
+        #
+        #   configurePhase = ''
+        #     export HOME=$(mktemp -d)
+        #     export NPM_CONFIG_AUDIT=false
+        #     export NPM_CONFIG_FUND=false
+        #   '';
+        #
+        #   buildPhase = ''
+        #     npm install --frozen-lockfile
+        #     npm run tauri build
+        #   '';
+        #
+        #   installPhase = ''
+        #     mkdir -p $out/bin
+        #     cp target/release/${cargoToml.package.name} $out/bin/${cargoToml.package.name}
+        #   '';
+        #
+        #   meta = with pkgs.lib; {
+        #     description = "A desktop wallet for Ethereum and other EVM-compatible networks";
+        #     homepage = workspaceToml.workspace.package.homepage;
+        #     licence = licenses.mit;
+        #   };
+        # };
 
         devShells.default = mkShell {
           buildInputs = commonDeps ++ devDeps;

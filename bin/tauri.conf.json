@@ -2,8 +2,8 @@
   "productName": "ethui",
   "identifier": "dev.ethui",
   "build": {
-    "beforeDevCommand": "yarn workspace @ethui/gui dev",
-    "beforeBuildCommand": "yarn workspace @ethui/gui build",
+    "beforeDevCommand": "pnpm --filter @ethui/gui dev",
+    "beforeBuildCommand": "pnpm --filter @ethui/gui build",
     "beforeBundleCommand": "./scripts/postbuild.sh",
     "frontendDist": "../gui/dist",
     "devUrl": "http://localhost:1420"
