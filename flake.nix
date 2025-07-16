@@ -62,6 +62,7 @@
           librsvg
           atk.dev
           libappindicator
+          libayatana-appindicator
           glib-networking
         ];
 
