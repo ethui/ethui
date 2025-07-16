@@ -60,9 +60,6 @@
           glib-networking
         ];
 
-        languages.javascript.package = pkgs.nodejs_24;
-        languages.javascript.corepack.enable = true;
-
       in
       with pkgs;
       {
