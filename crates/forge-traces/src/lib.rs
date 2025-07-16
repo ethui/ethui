@@ -84,7 +84,7 @@ impl ForgeTestRunner {
 
         let json_value: serde_json::Value = serde_json::from_str(output).map_err(|e| {
             tracing::error!("Raw forge output that failed to parse: {}", output);
-            eyre::eyre!("Failed to parse forge JSON output: {e}")
+            eyre!("Failed to parse forge JSON output: {e}")
         })?;
 
         // Log the top-level structure to help debug different output formats
@@ -165,7 +165,7 @@ impl ForgeTestRunner {
                             })
                             .unwrap_or_else(|| json!([]));
 
-                        let has_traces = !trace_data.as_array().map_or(true, |arr| arr.is_empty());
+                        let has_traces = !trace_data.as_array().is_none_or(|arr| arr.is_empty());
 
                         tracing::debug!(
                             "Processing test: {} in contract: {}, success: {}, has_traces: {}",
