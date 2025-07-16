@@ -409,7 +409,7 @@ function TraceTreeNode({
       };
       fetchForgeAbi();
     }
-  }, [node.trace.kind, node.trace.output]);
+  }, [node.trace.kind, node.trace.output, node.trace.address, setAbis]);
 
   // Note: For CALL operations, we can't easily get the contract's deployed bytecode
   // from the trace data alone. The ABI lookup would need to be done differently,
