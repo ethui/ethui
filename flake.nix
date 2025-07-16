@@ -60,6 +60,15 @@
           glib-networking
         ];
 
+        desktopItem = pkgs.makeDesktopItem {
+          name = "ethui";
+          exec = "ethui";
+          desktopName = "ethui";
+          comment = "Ethereum Toolkit";
+          icon = "ethui";
+          terminal = false;
+          type = "Application";
+        };
       in
       with pkgs;
       {
@@ -108,6 +117,14 @@
             chmod +x scripts/postbuild.sh
             substituteInPlace scripts/postbuild.sh \
               --replace "#!/usr/bin/env bash" "#!${bash}/bin/bash"
+          '';
+
+          postInstall = ''
+            mkdir -p $out/share/applications
+            cp ${desktopItem}/share/applications/* $out/share/applications/
+
+            mkdir -p $out/share/pixmaps
+            cp ${finalAttrs.src}/bin/icons/icon.png $out/share/pixmaps/ethui.png
           '';
 
         });
