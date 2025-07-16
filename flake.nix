@@ -99,7 +99,7 @@
               src
               cargoRoot
               ;
-            hash = "sha256-BJMvQNx1KVHvS7s5Y35j/aW2ZdbGotHcebuPgyaGn0c=";
+            hash = "sha256-Kj4UeoaPiU53VTDQPso+AC/eGg9+LzXtv91OaIK3rSM=";
           };
 
           pnpmDeps = pnpm.fetchDeps {
