@@ -4,19 +4,17 @@
   "license": "MIT",
   "description": "An Ethereum toolkit",
   "scripts": {
-    "dev": "yarn run app:dev",
-    "app:dev": "yarn tauri dev --config bin/tauri.dev.conf.json  --features ${ETHUI_FEATURES:-''} --target $(yarn run rust-target)",
-    "app:build": "yarn tauri build --target $(yarn run rust-target)",
+    "dev": "pnpm run app:dev",
+    "app:dev": "pnpm tauri dev --config bin/tauri.dev.conf.json  --features ${ETHUI_FEATURES:-''} --target $(pnpm run rust-target | tail -n1)",
+    "app:build": "pnpm tauri build --target $(pnpm run rust-target | tail -n1)",
     "rust-target": "rustc -vV | sed -n 's/host: //p'",
-    "gui:build": "yarn workspace @ethui/gui build",
-    "gui:devtools": "yarn workspace @ethui/gui devtools",
-    "lint": "yarn lint:biome && yarn lint:tsc && yarn workspace @ethui/gui run lint",
+    "gui:build": "pnpm --filter @ethui/gui build",
+    "gui:devtools": "pnpm --filter @ethui/gui devtools",
+    "lint": "pnpm lint:biome && pnpm lint:tsc && pnpm --filter @ethui/gui run lint",
     "lint:biome": "biome check .",
-    "lint:tsc": "yarn workspaces foreach --all --parallel run tsc --noEmit",
-    "fix": "yarn fix:biome",
-    "fix:biome": "biome check --write .",
-    "setup": "yarn install && yarn ext:dev",
-    "test": "yarn workspaces foreach --all run test"
+    "lint:tsc": "pnpm --recursive tsc --noEmit",
+    "fix": "pnpm fix:biome",
+    "fix:biome": "biome check --write ."
   },
   "workspaces": [
     "packages/types",

@@ -106,14 +106,15 @@ jobs:
         with:
           shared-key: "release"
 
-      - run: npm install -g yarn
-
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-node@v4
         with:
-          cache: "yarn"
+          cache: "pnpm"
           node-version: "24.x"
 
-      - run: yarn install --frozen-lockfile --network-timeout 1000000
+      - run: pnpm install --frozen-lockfile --network-timeout 1000000
 
       - uses: tauri-apps/tauri-action@v0
         env:
