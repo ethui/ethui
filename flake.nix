@@ -113,7 +113,7 @@
         });
 
         devShells.default = mkShell {
-          buildInputs = commonDeps ++ devDeps ++ [ rustToolchain ];
+          buildInputs = commonDeps ++ devDeps;
 
           shellHook = ''
             export LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath libraries}:$LD_LIBRARY_PATH
