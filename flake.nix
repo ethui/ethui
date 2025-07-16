@@ -21,6 +21,7 @@
           inherit system overlays;
         };
 
+        cargoToml = builtins.fromTOML (builtins.readFile ./Cargo.toml);
         rustToolchain = pkgs.rust-bin.nightly.latest.default.override {
           extensions = [ "rust-src" ];
         };
@@ -72,7 +73,7 @@
       {
         packages.default = rustNightly.buildRustPackage (finalAttrs: {
           pname = "ethui";
-          version = "0.1.0";
+          version = cargoToml.workspace.package.version;
 
           src = ./.;
 
@@ -102,14 +103,14 @@
             pkg-config
             wrapGAppsHook3
           ];
-          
+
           preBuild = ''
             chmod +x scripts/postbuild.sh
             substituteInPlace scripts/postbuild.sh \
               --replace "#!/usr/bin/env bash" "#!${bash}/bin/bash"
           '';
 
-          buildInputs = commonDeps ++ buildDeps;
+          buildInputs = commonDeps ++ buildDeps ++ libraries;
 
         });
 
