@@ -88,7 +88,7 @@
               --replace-fail "libayatana-appindicator3.so.1" "${libayatana-appindicator}/lib/libayatana-appindicator3.so.1"
           '';
 
-          cargoDeps = rustPlatform.fetchCargoVendor {
+          cargoDeps = rustNightly.fetchCargoVendor {
             inherit (finalAttrs)
               pname
               version
