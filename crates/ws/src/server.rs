@@ -6,12 +6,16 @@ use tokio::{
     net::{TcpListener, TcpStream},
     sync::mpsc,
 };
-use tokio_tungstenite::{accept_hdr_async, WebSocketStream};
-use tracing::warn;
-use tungstenite::{
-    handshake::server::{ErrorResponse, Request, Response},
-    Message,
+use tokio_tungstenite::{
+    accept_hdr_async,
+    tungstenite::{
+        self,
+        handshake::server::{ErrorResponse, Request, Response},
+        Message,
+    },
+    WebSocketStream,
 };
+use tracing::warn;
 use url::Url;
 
 pub use crate::error::{WsError, WsResult};

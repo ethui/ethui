@@ -1,7 +1,7 @@
 #[derive(thiserror::Error, Debug)]
 pub enum WsError {
     #[error(transparent)]
-    Websocket(#[from] tungstenite::Error),
+    Websocket(#[from] tokio_tungstenite::tungstenite::Error),
 
     #[error(transparent)]
     IO(#[from] std::io::Error),
