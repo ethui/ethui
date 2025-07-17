@@ -62,7 +62,7 @@ async fn accept_connection(socket: SocketAddr, stream: TcpStream) {
             WsError::Websocket(e) => match e {
                 tungstenite::Error::ConnectionClosed
                 | tungstenite::Error::Protocol(_)
-                | tungstenite::Error::Utf8(_) => {
+                | tungstenite::Error::Utf8 => {
                     tracing::debug!("Close  {} {:?}", url, e);
                 }
                 _ => (),
