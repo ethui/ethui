@@ -168,8 +168,9 @@ impl Message<Set> for SettingsActor {
                     self.inner.fast_mode = serde_json::from_value(v.clone()).unwrap();
                 }
                 if let Some(v) = map.get("rustLog") {
-                    self.inner.rust_log = serde_json::from_value(v.clone()).unwrap();
-                    ethui_tracing::parse(&self.inner.rust_log)?;
+                    let v: String = serde_json::from_value(v.clone()).unwrap();
+                    ethui_tracing::reload(&v)?;
+                    self.inner.rust_log = v;
                 }
                 if let Some(v) = map.get("runLocalStacks") {
                     self.inner.run_local_stacks = serde_json::from_value(v.clone()).unwrap();
