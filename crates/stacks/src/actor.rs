@@ -1,9 +1,6 @@
 use std::path::PathBuf;
 
-use kameo::{
-    Actor,
-    message::{Context, Message},
-};
+use kameo::prelude::*;
 
 use crate::docker::{start_stacks, stop_stacks};
 
@@ -39,6 +36,14 @@ impl Message<SetEnabled> for Worker {
 
 impl Actor for Worker {
     type Error = color_eyre::Report;
+
+    async fn on_panic(
+        &mut self,
+        _actor_ref: WeakActorRef<Self>,
+        _err: PanicError,
+    ) -> std::result::Result<std::ops::ControlFlow<ActorStopReason>, Self::Error> {
+        Ok(std::ops::ControlFlow::Continue(()))
+    }
 }
 
 impl Worker {

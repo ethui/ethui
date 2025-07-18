@@ -7,7 +7,7 @@ use std::{
 use ethui_types::prelude::*;
 use futures::{stream, StreamExt as _};
 use glob::glob;
-use kameo::{actor::ActorRef, message::Message, Actor, Reply};
+use kameo::prelude::*;
 use notify::{RecommendedWatcher, RecursiveMode};
 use notify_debouncer_full::{
     new_debouncer, DebounceEventResult, DebouncedEvent, Debouncer, RecommendedCache,
@@ -223,6 +223,14 @@ impl Actor for Worker {
         self.watcher = Some(debounced_watcher);
 
         Ok(())
+    }
+
+    async fn on_panic(
+        &mut self,
+        _actor_ref: WeakActorRef<Self>,
+        _err: PanicError,
+    ) -> std::result::Result<std::ops::ControlFlow<ActorStopReason>, Self::Error> {
+        Ok(std::ops::ControlFlow::Continue(()))
     }
 }
 
