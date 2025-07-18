@@ -227,7 +227,7 @@ impl Actor for Worker {
 }
 
 impl Worker {
-    #[instrument(skip_all, level = "trace")]
+    #[instrument(skip(self), level = "trace")]
     async fn scan_project(&mut self, root: &Path) -> Result<()> {
         let pattern = root.join("out").join("**").join("*.json");
 
