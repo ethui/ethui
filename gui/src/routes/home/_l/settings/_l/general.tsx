@@ -7,6 +7,7 @@ import { useCallback } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useSettings } from "#/store/useSettings";
+import { AutoSubmitTextInput } from "@ethui/ui/components/form/auto-submit-text-input";
 
 export const Route = createFileRoute("/home/_l/settings/_l/general")({
   beforeLoad: () => ({ breadcrumb: "General" }),
@@ -67,12 +68,14 @@ function SettingsGeneral() {
 
   return (
     <Form form={form} onSubmit={onSubmit}>
-      <Form.Select
-        name="darkMode"
-        label="Dark mode"
-        defaultValue={general.darkMode}
-        items={["auto", "dark", "light"]}
-      />
+      <div>
+        <Form.Select
+          name="darkMode"
+          label="Dark mode"
+          defaultValue={general.darkMode}
+          items={["auto", "dark", "light"]}
+        />
+      </div>
 
       <div className="w-100">
         <Form.Checkbox name="autostart" label="Start automatically on boot" />
@@ -82,15 +85,24 @@ function SettingsGeneral() {
         <Form.Checkbox name="startMinimized" label="Start minimized" />
       </div>
 
-      <Form.Text
+      <AutoSubmitTextInput
         name="alchemyApiKey"
         label="Alchemy API Key"
-        className="w-full"
+        successLabel="Saved"
+        value={general.alchemyApiKey || ""}
+        callback={async (alchemyApiKey) =>
+          await invoke("settings_set", { params: { alchemyApiKey } })
+        }
       />
-      <Form.Text
-        label="Etherscan API Key"
+
+      <AutoSubmitTextInput
         name="etherscanApiKey"
-        className="w-full"
+        label="Etherscan API Key"
+        successLabel="Saved"
+        value={general.etherscanApiKey || ""}
+        callback={async (etherscanApiKey) =>
+          await invoke("settings_set", { params: { etherscanApiKey } })
+        }
       />
 
       <div className="w-100">
@@ -100,10 +112,14 @@ function SettingsGeneral() {
         />
       </div>
 
-      <Form.Text
-        label="Rust log level (tracing_subscriber)"
+      <AutoSubmitTextInput
         name="rustLog"
-        className="w-full"
+        label="Rust log level (tracing_subscriber)"
+        successLabel="Saved"
+        value={general.rustLog}
+        callback={async (rustLog) =>
+          await invoke("settings_set", { params: { rustLog } })
+        }
       />
 
       <Form.Submit label="Save" />

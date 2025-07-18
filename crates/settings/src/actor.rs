@@ -4,9 +4,9 @@ use std::{
 };
 
 use ethui_types::prelude::*;
-use kameo::{Actor, Reply, actor::ActorRef, message::Message, prelude::Context};
+use kameo::{actor::ActorRef, message::Message, prelude::Context, Actor, Reply};
 
-use crate::{DarkMode, Settings, migrations::load_and_migrate, onboarding::OnboardingStep};
+use crate::{migrations::load_and_migrate, onboarding::OnboardingStep, DarkMode, Settings};
 
 #[derive(Debug)]
 pub struct SettingsActor {
@@ -65,7 +65,6 @@ impl SettingsActor {
         let path = Path::new(&pathbuf);
         let file = File::create(path)?;
 
-        ethui_tracing::reload(&self.inner.rust_log)?;
         serde_json::to_writer_pretty(file, &self.inner)?;
         ethui_broadcast::settings_updated().await;
         ethui_broadcast::ui_notify(UINotify::SettingsChanged).await;
@@ -160,8 +159,9 @@ impl Message<Set> for SettingsActor {
                     self.inner.fast_mode = serde_json::from_value(v.clone()).unwrap();
                 }
                 if let Some(v) = map.get("rustLog") {
-                    self.inner.rust_log = serde_json::from_value(v.clone()).unwrap();
-                    ethui_tracing::parse(&self.inner.rust_log)?;
+                    let value: String = serde_json::from_value(v.clone()).unwrap();
+                    ethui_tracing::reload(&value)?;
+                    self.inner.rust_log = value;
                 }
                 if let Some(v) = map.get("runLocalStacks") {
                     self.inner.run_local_stacks = serde_json::from_value(v.clone()).unwrap();
