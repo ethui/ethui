@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 
 use kameo::prelude::*;
+use tracing::error;
 
 use crate::docker::{start_stacks, stop_stacks};
 
