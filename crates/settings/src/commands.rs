@@ -1,6 +1,6 @@
 use ethui_types::{Address, TauriResult};
 
-use crate::{DarkMode, GetAlias, GetAll, Set, Settings, ask, onboarding::OnboardingStep, tell};
+use crate::{ask, onboarding::OnboardingStep, tell, DarkMode, GetAlias, GetAll, Set, Settings};
 
 #[tauri::command]
 pub async fn settings_get() -> TauriResult<Settings> {
@@ -9,25 +9,25 @@ pub async fn settings_get() -> TauriResult<Settings> {
 
 #[tauri::command]
 pub async fn settings_set(params: serde_json::Map<String, serde_json::Value>) -> TauriResult<()> {
-    tell(Set::All(params)).await?;
+    ask(Set::All(params)).await?;
     Ok(())
 }
 
 #[tauri::command]
 pub async fn settings_set_dark_mode(mode: DarkMode) -> TauriResult<()> {
-    tell(Set::DarkMode(mode)).await?;
+    ask(Set::DarkMode(mode)).await?;
     Ok(())
 }
 
 #[tauri::command]
 pub async fn settings_set_fast_mode(mode: bool) -> TauriResult<()> {
-    tell(Set::FastMode(mode)).await?;
+    ask(Set::FastMode(mode)).await?;
     Ok(())
 }
 
 #[tauri::command]
 pub async fn settings_finish_onboarding() -> TauriResult<()> {
-    tell(Set::FinishOnboarding).await?;
+    ask(Set::FinishOnboarding).await?;
     Ok(())
 }
 
@@ -40,7 +40,7 @@ pub async fn settings_get_alias(address: Address) -> TauriResult<Option<String>>
 /// Sets the alias for an address
 #[tauri::command]
 pub async fn settings_set_alias(address: Address, alias: Option<String>) -> TauriResult<()> {
-    tell(Set::Alias(address, alias)).await?;
+    ask(Set::Alias(address, alias)).await?;
     Ok(())
 }
 

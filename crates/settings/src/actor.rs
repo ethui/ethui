@@ -4,9 +4,9 @@ use std::{
 };
 
 use ethui_types::prelude::*;
-use kameo::{Actor, Reply, actor::ActorRef, message::Message, prelude::Context};
+use kameo::prelude::*;
 
-use crate::{DarkMode, Settings, migrations::load_and_migrate, onboarding::OnboardingStep};
+use crate::{migrations::load_and_migrate, onboarding::OnboardingStep, DarkMode, Settings};
 
 #[derive(Debug)]
 pub struct SettingsActor {
@@ -76,6 +76,15 @@ impl SettingsActor {
 
 impl Actor for SettingsActor {
     type Error = color_eyre::Report;
+
+    async fn on_panic(
+        &mut self,
+        _actor_ref: WeakActorRef<Self>,
+        err: PanicError,
+    ) -> std::result::Result<std::ops::ControlFlow<ActorStopReason>, Self::Error> {
+        error!("ethui_settings panic: {}", err);
+        Ok(std::ops::ControlFlow::Continue(()))
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -160,8 +169,9 @@ impl Message<Set> for SettingsActor {
                     self.inner.fast_mode = serde_json::from_value(v.clone()).unwrap();
                 }
                 if let Some(v) = map.get("rustLog") {
-                    self.inner.rust_log = serde_json::from_value(v.clone()).unwrap();
-                    ethui_tracing::parse(&self.inner.rust_log)?;
+                    let v: String = serde_json::from_value(v.clone()).unwrap();
+                    ethui_tracing::reload(&v)?;
+                    self.inner.rust_log = v;
                 }
                 if let Some(v) = map.get("runLocalStacks") {
                     self.inner.run_local_stacks = serde_json::from_value(v.clone()).unwrap();

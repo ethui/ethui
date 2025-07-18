@@ -130,7 +130,7 @@ impl ForgeTestRunner {
 
         let request_str = serde_json::to_string(&rpc_request)?;
 
-        ws_sender.send(Message::Text(request_str)).await?;
+        ws_sender.send(Message::Text(request_str.into())).await?;
 
         let _ = ws_sender.close().await;
 
