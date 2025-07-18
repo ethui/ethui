@@ -4,9 +4,9 @@ use std::{
 };
 
 use ethui_types::prelude::*;
-use kameo::{Actor, Reply, actor::ActorRef, message::Message, prelude::Context};
+use kameo::prelude::*;
 
-use crate::{DarkMode, Settings, migrations::load_and_migrate, onboarding::OnboardingStep};
+use crate::{migrations::load_and_migrate, onboarding::OnboardingStep, DarkMode, Settings};
 
 #[derive(Debug)]
 pub struct SettingsActor {
@@ -76,6 +76,14 @@ impl SettingsActor {
 
 impl Actor for SettingsActor {
     type Error = color_eyre::Report;
+
+    async fn on_panic(
+        &mut self,
+        _actor_ref: WeakActorRef<Self>,
+        _err: PanicError,
+    ) -> std::result::Result<std::ops::ControlFlow<ActorStopReason>, Self::Error> {
+        Ok(std::ops::ControlFlow::Continue(()))
+    }
 }
 
 #[derive(Debug, Clone)]
