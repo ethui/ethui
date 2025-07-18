@@ -40,8 +40,9 @@ impl Actor for Worker {
     async fn on_panic(
         &mut self,
         _actor_ref: WeakActorRef<Self>,
-        _err: PanicError,
+        err: PanicError,
     ) -> std::result::Result<std::ops::ControlFlow<ActorStopReason>, Self::Error> {
+        error!("ethui_stacks panic: {}", err);
         Ok(std::ops::ControlFlow::Continue(()))
     }
 }
