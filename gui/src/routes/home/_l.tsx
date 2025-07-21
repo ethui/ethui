@@ -5,6 +5,7 @@ import { AnimatedOutlet } from "#/components/AnimatedOutlet";
 import { AppNavbar } from "#/components/AppNavbar";
 import { AppSidebar } from "#/components/AppSidebar";
 import { CommandBar, CommandBarProvider } from "#/components/CommandBar";
+import { TopbarLayout } from "#/components/TopbarLayout";
 import { useNoticeAlchemyKeyMissing } from "#/hooks/useNoticeAlchemyKeyMissing";
 import { useNoticeNewVersion } from "#/hooks/useNoticeNewVersion";
 
@@ -17,19 +18,20 @@ function HomePageLayout() {
   useNoticeNewVersion();
 
   return (
-    <CommandBarProvider>
-      <SidebarProvider
-        style={{ "--sidebar-width": "13em" } as React.CSSProperties}
-      >
-        <AppSidebar />
-        <main className="relative flex min-h-svh flex-1 flex-col">
-          <AppNavbar />
-          <AnimatedOutlet />
-          <Toaster />
-        </main>
-      </SidebarProvider>
-
-      <CommandBar />
-    </CommandBarProvider>
+    <TopbarLayout>
+      <CommandBarProvider>
+        <SidebarProvider
+          style={{ "--sidebar-width": "13em" } as React.CSSProperties}
+        >
+          <AppSidebar />
+          <main className="flex-1 overflow-auto">
+            <AppNavbar />
+            <AnimatedOutlet />
+            <Toaster />
+          </main>
+        </SidebarProvider>
+        <CommandBar />
+      </CommandBarProvider>
+    </TopbarLayout>
   );
 }

@@ -62,7 +62,7 @@ export function AppSidebar() {
   }
 
   return (
-    <Sidebar className="select-none" collapsible="icon">
+    <Sidebar className="select-none pt-10" collapsible="icon">
       <SidebarHeader
         className={cn("flex items-center", { "pt-8": isMacos })}
         data-tauri-drag-region="true"
