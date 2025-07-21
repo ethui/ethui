@@ -7,7 +7,7 @@ use std::{
 use ethui_types::prelude::*;
 use futures::{stream, StreamExt as _};
 use glob::glob;
-use kameo::{actor::ActorRef, message::Message, Actor, Reply};
+use kameo::prelude::*;
 use notify::{RecommendedWatcher, RecursiveMode};
 use notify_debouncer_full::{
     new_debouncer, DebounceEventResult, DebouncedEvent, Debouncer, RecommendedCache,
@@ -224,10 +224,19 @@ impl Actor for Worker {
 
         Ok(())
     }
+
+    async fn on_panic(
+        &mut self,
+        _actor_ref: WeakActorRef<Self>,
+        err: PanicError,
+    ) -> std::result::Result<std::ops::ControlFlow<ActorStopReason>, Self::Error> {
+        error!("ethui_forge panic: {}", err);
+        Ok(std::ops::ControlFlow::Continue(()))
+    }
 }
 
 impl Worker {
-    #[instrument(skip_all, level = "trace")]
+    #[instrument(skip(self), level = "trace")]
     async fn scan_project(&mut self, root: &Path) -> Result<()> {
         let pattern = root.join("out").join("**").join("*.json");
 

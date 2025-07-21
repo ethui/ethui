@@ -4,7 +4,7 @@ use std::{
 };
 
 use ethui_types::prelude::*;
-use kameo::{actor::ActorRef, message::Message, prelude::Context, Actor, Reply};
+use kameo::prelude::*;
 
 use crate::{migrations::load_and_migrate, onboarding::OnboardingStep, DarkMode, Settings};
 
@@ -75,6 +75,15 @@ impl SettingsActor {
 
 impl Actor for SettingsActor {
     type Error = color_eyre::Report;
+
+    async fn on_panic(
+        &mut self,
+        _actor_ref: WeakActorRef<Self>,
+        err: PanicError,
+    ) -> std::result::Result<std::ops::ControlFlow<ActorStopReason>, Self::Error> {
+        error!("ethui_settings panic: {}", err);
+        Ok(std::ops::ControlFlow::Continue(()))
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -158,7 +167,7 @@ impl Message<Set> for SettingsActor {
                 if let Some(v) = map.get("fastMode") {
                     self.inner.fast_mode = serde_json::from_value(v.clone()).unwrap();
                 }
-                if let Some(v) = map.get("rustLog") {
+                if let Some(v) = map.get_mut("rustLog") {
                     let value: String = serde_json::from_value(v.clone()).unwrap();
                     ethui_tracing::reload(&value)?;
                     self.inner.rust_log = value;
