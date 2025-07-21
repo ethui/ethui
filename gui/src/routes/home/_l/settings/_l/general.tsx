@@ -14,35 +14,16 @@ export const Route = createFileRoute("/home/_l/settings/_l/general")({
   component: () => <SettingsGeneral />,
 });
 
-const alchemyKeyValidator = memoize(
-  (key) => !key || invoke("settings_test_alchemy_api_key", { key }),
-);
-
-const etherscanKeyValidator = memoize(
-  (key) => !key || invoke("settings_test_etherscan_api_key", { key }),
-);
-
-const rustLogValidator = memoize(
-  (directives) =>
-    !directives || invoke("settings_test_rust_log", { directives }),
-);
-
 const schema = z.object({
   darkMode: z.enum(["auto", "dark", "light"]),
   autostart: z.boolean(),
   startMinimized: z.boolean(),
-  alchemyApiKey: z.string().optional().nullable().refine(alchemyKeyValidator, {
-    message: "Invalid key",
-  }),
-  etherscanApiKey: z
-    .string()
-    .optional()
-    .nullable()
+  alchemyApiKey: z.string().optional().nullable(),
+  etherscanApiKey: z.string().optional().nullable(),
 
-    .refine(etherscanKeyValidator, { message: "Invalid key" }),
   hideEmptyTokens: z.boolean(),
   fastMode: z.boolean(),
-  rustLog: z.string().optional().refine(rustLogValidator, "Invalid directives"),
+  rustLog: z.string().optional(),
 });
 
 function SettingsGeneral() {
@@ -77,11 +58,11 @@ function SettingsGeneral() {
         />
       </div>
 
-      <div className="w-100">
+      <div className="w-80">
         <Form.Checkbox name="autostart" label="Start automatically on boot" />
       </div>
 
-      <div className="w-100">
+      <div className="w-80">
         <Form.Checkbox name="startMinimized" label="Start minimized" />
       </div>
 
@@ -105,7 +86,7 @@ function SettingsGeneral() {
         }
       />
 
-      <div className="w-100">
+      <div className="w-80">
         <Form.Checkbox
           label="Hide Tokens Without Balance"
           name="hideEmptyTokens"
