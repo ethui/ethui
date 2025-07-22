@@ -1,8 +1,8 @@
-interface TopbarLayoutProps {
+interface TopbarProps {
   onWalletClick?: () => void;
 }
 
-export function TopbarLayout({ onWalletClick }: TopbarLayoutProps) {
+export function Topbar({ onWalletClick }: TopbarProps) {
   return (
     <header
       className="fixed top-0 right-0 left-0 z-50 flex h-12 items-center justify-between border-border border-b bg-sidebar px-10"
