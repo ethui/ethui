@@ -6,7 +6,7 @@ import { AnimatedOutlet } from "#/components/AnimatedOutlet";
 import { AppNavbar } from "#/components/AppNavbar";
 import { AppSidebar } from "#/components/AppSidebar";
 import { CommandBar, CommandBarProvider } from "#/components/CommandBar";
-import { Topbar } from "#/components/TopbarLayout";
+import { Topbar } from "#/components/Topbar";
 import { useNoticeAlchemyKeyMissing } from "#/hooks/useNoticeAlchemyKeyMissing";
 import { useNoticeNewVersion } from "#/hooks/useNoticeNewVersion";
 import { WalletSidebar } from "#/components/WalletSidebar";

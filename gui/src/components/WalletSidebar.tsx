@@ -1,9 +1,14 @@
 import {
   Sidebar,
   SidebarContent,
+  SidebarGroup,
   SidebarHeader,
   SidebarProvider,
 } from "@ethui/ui/components/shadcn/sidebar";
+import { QuickWalletSelect } from "./QuickWalletSelect";
+import { QuickAddressSelect } from "./QuickAddressSelect";
+import { QuickFastModeToggle } from "./QuickFastModeToggle";
+import { QuickNetworkSelect } from "./QuickNetworkSelect";
 
 interface WalletSidebarProps {
   open: boolean;
@@ -15,19 +20,30 @@ export function WalletSidebar({ open, onClose }: WalletSidebarProps) {
 
   return (
     <>
-      <div className="fixed inset-0 z-[100]" onClick={onClose} />
+      <div className="fixed inset-0 z-25" onClick={onClose} />
 
       <SidebarProvider
-        className="fixed top-0 right-0 z-[101] w-72"
+        className="fixed top-0 right-0 z-30 w-72"
         style={{ "--sidebar-width": "18rem" } as React.CSSProperties}
       >
         <Sidebar side="right" className="shadow-2xl h-screen">
           <SidebarHeader className="border-b border-border p-4"></SidebarHeader>
 
           <SidebarContent className="p-4">
-            <div className="text-muted-foreground">
-              Wallet controls will go here...
-            </div>
+            <SidebarGroup>
+              <div className="flex flex-col gap-y-2">
+                <div className="text-xs">Wallet</div>
+                <QuickWalletSelect />
+                <QuickAddressSelect />
+              </div>
+            </SidebarGroup>
+            <SidebarGroup>
+              <div className="flex flex-col gap-y-2">
+                <div className="text-xs">Network</div>
+                <QuickNetworkSelect />
+                <QuickFastModeToggle />
+              </div>
+            </SidebarGroup>
           </SidebarContent>
         </Sidebar>
       </SidebarProvider>
