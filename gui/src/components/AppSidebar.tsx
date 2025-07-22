@@ -62,7 +62,7 @@ export function AppSidebar() {
   }
 
   return (
-    <Sidebar className="select-none pt-10" collapsible="icon">
+    <Sidebar className="select-none pt-12" collapsible="icon">
       <SidebarHeader
         className={cn("flex items-center", { "pt-8": isMacos })}
         data-tauri-drag-region="true"
@@ -76,25 +76,6 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        {open && (
-          <>
-            <SidebarGroup>
-              <div className="flex flex-col gap-y-2">
-                <div className="text-xs">Wallet</div>
-                <QuickWalletSelect />
-                <QuickAddressSelect />
-              </div>
-            </SidebarGroup>
-            <SidebarGroup>
-              <div className="flex flex-col gap-y-2">
-                <div className="text-xs">Network</div>
-                <QuickNetworkSelect />
-                <QuickFastModeToggle />
-              </div>
-            </SidebarGroup>
-          </>
-        )}
-
         <SidebarGroup>
           <SidebarGroupContent>
             <div className="pb-2 text-xs">Menu</div>

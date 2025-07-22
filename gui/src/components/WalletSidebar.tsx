@@ -23,10 +23,10 @@ export function WalletSidebar({ open, onClose }: WalletSidebarProps) {
       <div className="fixed inset-0 z-25" onClick={onClose} />
 
       <SidebarProvider
-        className="fixed top-0 right-0 z-30 w-72"
+        className="fixed z-30"
         style={{ "--sidebar-width": "18rem" } as React.CSSProperties}
       >
-        <Sidebar side="right" className="shadow-2xl h-screen">
+        <Sidebar side="right" className="select-none shadow-2xl">
           <SidebarHeader className="border-b border-border p-4"></SidebarHeader>
 
           <SidebarContent className="p-4">
