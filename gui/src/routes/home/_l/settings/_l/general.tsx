@@ -26,7 +26,7 @@ function SettingsGeneral() {
     <div className="flex flex-col gap-4">
       <div className="flex flex-col">
         <div className="flex w-80 flex-row items-center justify-between">
-          <Label className="w-full grow cursor-pointer cursor-pointer leading-none">
+          <Label className="w-full grow cursor-pointer leading-none">
             Dark mode
           </Label>
           <Select
