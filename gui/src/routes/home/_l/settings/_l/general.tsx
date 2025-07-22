@@ -1,75 +1,55 @@
-import { Form } from "@ethui/ui/components/form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { AutoSubmitSwitch } from "@ethui/ui/components/form/auto-submit/switch";
+import { AutoSubmitTextInput } from "@ethui/ui/components/form/auto-submit/text-input";
+import { Label } from "@ethui/ui/components/shadcn/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@ethui/ui/components/shadcn/select";
 import { createFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
-import memoize from "lodash-es/memoize";
-import { useCallback } from "react";
-import { type FieldValues, useForm } from "react-hook-form";
-import { z } from "zod";
 import { useSettings } from "#/store/useSettings";
-import { AutoSubmitTextInput } from "@ethui/ui/components/form/auto-submit-text-input";
-import { Select as SelectContent, Select, SelectTrigger, SelectValue } from "@ethui/ui/components/shadcn/select";
 
 export const Route = createFileRoute("/home/_l/settings/_l/general")({
   beforeLoad: () => ({ breadcrumb: "General" }),
   component: () => <SettingsGeneral />,
 });
 
-const schema = z.object({
-  darkMode: z.enum(["auto", "dark", "light"]),
-  autostart: z.boolean(),
-  startMinimized: z.boolean(),
-  alchemyApiKey: z.string().optional().nullable(),
-  etherscanApiKey: z.string().optional().nullable(),
-
-  hideEmptyTokens: z.boolean(),
-  fastMode: z.boolean(),
-  rustLog: z.string().optional(),
-});
-
 function SettingsGeneral() {
   const general = useSettings((s) => s.settings!);
 
-  const form = useForm({
-    mode: "onChange",
-    resolver: zodResolver(schema),
-    defaultValues: general,
-  });
-
-  const onSubmit = useCallback(
-    async (params: FieldValues) => {
-      await invoke("settings_set", {
-        params,
-      });
-      form.reset(params);
-    },
-    [form],
-  );
-
   if (!general) return null;
+  console.log(general.darkMode);
 
   return (
-    <Form form={form} onSubmit={onSubmit}>
-      <div>
-        <FormLabel className="shrink-0">Dark mode</FormLabel>
-        <Select onValueChange={console.log} defaultValue={general.darkMode}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-          </SelectContent>
-        </Select>
-        <SelectContent
-          <Form.Select
-          name="darkMode"
-          label="Dark mode"
-          defaultValue={general.darkMode}
-          items={["auto", "dark", "light"]}
-        />
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col">
+        <div className="flex w-80 flex-row items-center justify-between">
+          <Label className="w-full grow cursor-pointer cursor-pointer leading-none">
+            Dark mode
+          </Label>
+          <Select
+            onValueChange={(darkMode: string) =>
+              invoke("settings_set", { params: { darkMode } })
+            }
+            defaultValue={general.darkMode}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="auto">Auto</SelectItem>
+              <SelectItem value="dark">Dark</SelectItem>
+              <SelectItem value="light">Light</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div className="w-80">
-        <AutoSubmitTextInput
+        <AutoSubmitSwitch
           name="autostart"
           label="Start automatically on boot"
           successLabel="Saved"
@@ -81,7 +61,7 @@ function SettingsGeneral() {
       </div>
 
       <div className="w-80">
-        <AutoSubmitTextInput
+        <AutoSubmitSwitch
           name="startMinimized"
           label="Start minimized"
           successLabel="Saved"
@@ -113,7 +93,7 @@ function SettingsGeneral() {
       />
 
       <div className="w-80">
-        <AutoSubmitTextInput
+        <AutoSubmitSwitch
           name="hideEmptyTokens"
           label="Hide Tokens Without Balance"
           successLabel="Saved"
@@ -133,8 +113,6 @@ function SettingsGeneral() {
           await invoke("settings_set", { params: { rustLog } })
         }
       />
-
-      <Form.Submit label="Save" />
-    </Form>
+    </div>
   );
 }
