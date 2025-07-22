@@ -2,7 +2,7 @@ use alloy::providers::{Provider as _, ProviderBuilder};
 use alloy_chains::Chain;
 use color_eyre::Result;
 
-pub async fn test_alchemy_api_key(key: &String) -> Result<()> {
+pub async fn test_alchemy_api_key(key: &str) -> Result<()> {
     let rpc_url = format!("https://eth-mainnet.g.alchemy.com/v2/{key}").parse()?;
     let provider = ProviderBuilder::new().connect_http(rpc_url);
     let res = provider.get_block_number().await;
