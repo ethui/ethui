@@ -8,6 +8,7 @@ import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useSettings } from "#/store/useSettings";
 import { AutoSubmitTextInput } from "@ethui/ui/components/form/auto-submit-text-input";
+import { Select as SelectContent, Select, SelectTrigger, SelectValue } from "@ethui/ui/components/shadcn/select";
 
 export const Route = createFileRoute("/home/_l/settings/_l/general")({
   beforeLoad: () => ({ breadcrumb: "General" }),
@@ -50,7 +51,16 @@ function SettingsGeneral() {
   return (
     <Form form={form} onSubmit={onSubmit}>
       <div>
-        <Form.Select
+        <FormLabel className="shrink-0">Dark mode</FormLabel>
+        <Select onValueChange={console.log} defaultValue={general.darkMode}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+          </SelectContent>
+        </Select>
+        <SelectContent
+          <Form.Select
           name="darkMode"
           label="Dark mode"
           defaultValue={general.darkMode}
@@ -59,11 +69,27 @@ function SettingsGeneral() {
       </div>
 
       <div className="w-80">
-        <Form.Checkbox name="autostart" label="Start automatically on boot" />
+        <AutoSubmitTextInput
+          name="autostart"
+          label="Start automatically on boot"
+          successLabel="Saved"
+          value={general.autostart}
+          callback={async (autostart: boolean) =>
+            await invoke("settings_set", { params: { autostart } })
+          }
+        />
       </div>
 
       <div className="w-80">
-        <Form.Checkbox name="startMinimized" label="Start minimized" />
+        <AutoSubmitTextInput
+          name="startMinimized"
+          label="Start minimized"
+          successLabel="Saved"
+          value={general.startMinimized}
+          callback={async (startMinimized: boolean) =>
+            await invoke("settings_set", { params: { startMinimized } })
+          }
+        />
       </div>
 
       <AutoSubmitTextInput
@@ -71,7 +97,7 @@ function SettingsGeneral() {
         label="Alchemy API Key"
         successLabel="Saved"
         value={general.alchemyApiKey || ""}
-        callback={async (alchemyApiKey) =>
+        callback={async (alchemyApiKey: string) =>
           await invoke("settings_set", { params: { alchemyApiKey } })
         }
       />
@@ -81,15 +107,20 @@ function SettingsGeneral() {
         label="Etherscan API Key"
         successLabel="Saved"
         value={general.etherscanApiKey || ""}
-        callback={async (etherscanApiKey) =>
+        callback={async (etherscanApiKey: string) =>
           await invoke("settings_set", { params: { etherscanApiKey } })
         }
       />
 
       <div className="w-80">
-        <Form.Checkbox
-          label="Hide Tokens Without Balance"
+        <AutoSubmitTextInput
           name="hideEmptyTokens"
+          label="Hide Tokens Without Balance"
+          successLabel="Saved"
+          value={general.hideEmptyTokens}
+          callback={async (hideEmptyTokens: boolean) =>
+            await invoke("settings_set", { params: { hideEmptyTokens } })
+          }
         />
       </div>
 
@@ -98,7 +129,7 @@ function SettingsGeneral() {
         label="Rust log level (tracing_subscriber)"
         successLabel="Saved"
         value={general.rustLog}
-        callback={async (rustLog) =>
+        callback={async (rustLog: string) =>
           await invoke("settings_set", { params: { rustLog } })
         }
       />
