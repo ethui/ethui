@@ -21,11 +21,7 @@ export function WalletSidebar({ open, onClose }: WalletSidebarProps) {
         className="fixed top-0 right-0 z-[101] w-72"
         style={{ "--sidebar-width": "18rem" } as React.CSSProperties}
       >
-        <Sidebar
-          side="right"
-          collapsible="none"
-          className="shadow-2xl h-screen"
-        >
+        <Sidebar side="right" className="shadow-2xl h-screen">
           <SidebarHeader className="border-b border-border p-4"></SidebarHeader>
 
           <SidebarContent className="p-4">
