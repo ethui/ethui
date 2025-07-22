@@ -21,7 +21,6 @@ function SettingsGeneral() {
   const general = useSettings((s) => s.settings!);
 
   if (!general) return null;
-  console.log(general.darkMode);
 
   return (
     <div className="flex flex-col gap-4">
