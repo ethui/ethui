@@ -9,10 +9,24 @@ import { ScrollArea } from "@ethui/ui/components/shadcn/scroll-area";
 import { Check } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useShallow } from "zustand/shallow";
+import type { Wallet } from "@ethui/types/wallets";
+import type { Address } from "viem";
 import { useWallets } from "#/store/useWallets";
 import { AddressView } from "./AddressView";
 import { SearchInput } from "./SearchInput";
 import { WalletView } from "./WalletView";
+
+interface WalletInfo {
+  wallet: Wallet;
+  addresses: AddressInfo[];
+}
+
+interface AddressInfo {
+  walletName: string;
+  key: string;
+  address: Address;
+  alias: string;
+}
 
 export function WalletSelector() {
   const [
@@ -37,26 +51,7 @@ export function WalletSelector() {
 
   const filteredWallets = useMemo(() => {
     if (!allWalletInfo) return [];
-
-    return allWalletInfo.filter((walletInfo) => {
-      const nameMatch = walletInfo.wallet.name
-        .toLowerCase()
-        .includes(walletFilter.toLowerCase());
-
-      if (!walletFilter) return true;
-
-      const addressMatch = walletInfo.addresses.some((addressInfo: any) => {
-        const addressMatches = addressInfo.address
-          .toLowerCase()
-          .includes(walletFilter.toLowerCase());
-        const aliasMatches =
-          addressInfo.alias &&
-          addressInfo.alias.toLowerCase().includes(walletFilter.toLowerCase());
-        return addressMatches || aliasMatches;
-      });
-
-      return nameMatch || addressMatch;
-    });
+    return filterWalletsBySearch(allWalletInfo, walletFilter);
   }, [allWalletInfo, walletFilter]);
 
   function handleWalletAddressSelect(walletName: string, addressPath: string) {
@@ -95,7 +90,6 @@ export function WalletSelector() {
                 walletInfo.addresses,
               )}
               onSelect={handleWalletAddressSelect}
-              filter={walletFilter}
             />
           ))}
         </Accordion>
@@ -105,11 +99,10 @@ export function WalletSelector() {
 }
 
 interface WalletAccordionItemProps {
-  walletInfo: any;
+  walletInfo: WalletInfo;
   isCurrentWallet: boolean;
   currentAddress: string;
   onSelect: (walletName: string, addressPath: string) => void;
-  filter: string;
 }
 
 function WalletAccordionItem({
@@ -117,21 +110,9 @@ function WalletAccordionItem({
   isCurrentWallet,
   currentAddress,
   onSelect,
-  filter,
 }: WalletAccordionItemProps) {
   const wallet = walletInfo.wallet;
   const addresses = walletInfo.addresses;
-
-  const filteredAddresses = addresses.filter((addressInfo: any) => {
-    if (!filter) return true;
-    const addressMatches = addressInfo.address
-      .toLowerCase()
-      .includes(filter.toLowerCase());
-    const aliasMatches =
-      addressInfo.alias &&
-      addressInfo.alias.toLowerCase().includes(filter.toLowerCase());
-    return addressMatches || aliasMatches;
-  });
 
   return (
     <AccordionItem value={wallet.name}>
@@ -142,7 +123,7 @@ function WalletAccordionItem({
       </AccordionTrigger>
       <AccordionContent className="p-0">
         <div className="ml-2 space-y-0">
-          {filteredAddresses.map((addressInfo: any) => (
+          {addresses.map((addressInfo) => (
             <Button
               key={addressInfo.key}
               variant={"ghost"}
@@ -166,7 +147,42 @@ function WalletAccordionItem({
   );
 }
 
-function getCurrentAddress(wallet: any, addresses: any[]): string {
+function filterWalletsBySearch(
+  walletInfoList: WalletInfo[],
+  searchFilter: string,
+): WalletInfo[] {
+  return walletInfoList
+    .map((walletInfo) => {
+      if (!searchFilter) {
+        return walletInfo;
+      }
+
+      const walletNameMatches = walletInfo.wallet.name
+        .toLowerCase()
+        .includes(searchFilter.toLowerCase());
+      if (walletNameMatches) {
+        return walletInfo;
+      }
+
+      const filteredAddresses = walletInfo.addresses.filter((addressInfo) => {
+        const addressMatches = addressInfo.address
+          .toLowerCase()
+          .includes(searchFilter.toLowerCase());
+        const aliasMatches =
+          addressInfo.alias &&
+          addressInfo.alias.toLowerCase().includes(searchFilter.toLowerCase());
+        return addressMatches || aliasMatches;
+      });
+
+      return {
+        ...walletInfo,
+        addresses: filteredAddresses,
+      };
+    })
+    .filter((walletInfo) => walletInfo.addresses.length > 0);
+}
+
+function getCurrentAddress(wallet: Wallet, addresses: AddressInfo[]): string {
   switch (wallet.type) {
     case "HDWallet":
       return wallet.current ? wallet.current[0] : addresses[0]?.key || "";
@@ -174,7 +190,7 @@ function getCurrentAddress(wallet: any, addresses: any[]): string {
       return (wallet.current || 0).toString();
     case "jsonKeystore":
     case "plaintext":
-      return wallet.currentPath;
+      return wallet.currentPath || "";
     case "ledger":
       return wallet.addresses[wallet.current || 0][0];
     case "privateKey":
