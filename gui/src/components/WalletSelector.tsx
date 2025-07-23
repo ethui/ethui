@@ -1,6 +1,3 @@
-import { useState, useMemo } from "react";
-import { useShallow } from "zustand/shallow";
-import { ScrollArea } from "@ethui/ui/components/shadcn/scroll-area";
 import {
   Accordion,
   AccordionContent,
@@ -8,10 +5,14 @@ import {
   AccordionTrigger,
 } from "@ethui/ui/components/shadcn/accordion";
 import { Button } from "@ethui/ui/components/shadcn/button";
+import { ScrollArea } from "@ethui/ui/components/shadcn/scroll-area";
+import { Check } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useShallow } from "zustand/shallow";
 import { useWallets } from "#/store/useWallets";
 import { AddressView } from "./AddressView";
-import { WalletView } from "./WalletView";
 import { SearchInput } from "./SearchInput";
+import { WalletView } from "./WalletView";
 
 export function WalletSelector() {
   const [
@@ -69,7 +70,9 @@ export function WalletSelector() {
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-medium">Wallet</h3>
+      <h3 className="pl-3 font-medium text-muted-foreground text-sm">
+        Wallets & Accounts
+      </h3>
       <SearchInput
         value={walletFilter}
         onChange={setWalletFilter}
@@ -126,10 +129,8 @@ function WalletAccordionItem({
 
   return (
     <AccordionItem value={wallet.name}>
-      <AccordionTrigger
-        className={`w-full justify-start p-1 h-auto hover:no-underline text-sm ${isCurrentWallet ? "bg-secondary" : ""}`}
-      >
-        <div className="flex items-center gap-2 w-full">
+      <AccordionTrigger className="h-auto w-full cursor-pointer justify-start bg-secondary px-3 py-2 text-sm hover:no-underline">
+        <div className="flex w-full items-center gap-2">
           <WalletView name={wallet.name} type={wallet.type} />
         </div>
       </AccordionTrigger>
@@ -138,19 +139,19 @@ function WalletAccordionItem({
           {filteredAddresses.map((addressInfo: any) => (
             <Button
               key={addressInfo.key}
-              variant={
-                isCurrentWallet && addressInfo.key === currentAddress
-                  ? "secondary"
-                  : "ghost"
-              }
-              className="w-full justify-start p-1 h-auto text-xs"
+              variant={"ghost"}
+              className="flex h-auto w-full items-center justify-between gap-2 p-2"
               onClick={() => onSelect(wallet.name, addressInfo.key)}
             >
               <AddressView
+                clickToCopy={false}
                 icon
                 contextMenu={false}
                 address={addressInfo.address}
               />
+              {isCurrentWallet && addressInfo.key === currentAddress && (
+                <Check className="h-4 w-4" color="green" />
+              )}
             </Button>
           ))}
         </div>

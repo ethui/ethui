@@ -1,9 +1,10 @@
-import { useState, useMemo } from "react";
-import { useShallow } from "zustand/shallow";
-import { ScrollArea } from "@ethui/ui/components/shadcn/scroll-area";
-import { Button } from "@ethui/ui/components/shadcn/button";
-import { useNetworks } from "#/store/useNetworks";
 import { ChainView } from "@ethui/ui/components/chain-view";
+import { Button } from "@ethui/ui/components/shadcn/button";
+import { ScrollArea } from "@ethui/ui/components/shadcn/scroll-area";
+import { Check } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useShallow } from "zustand/shallow";
+import { useNetworks } from "#/store/useNetworks";
 import { SearchInput } from "./SearchInput";
 
 export function NetworkSelector() {
@@ -27,7 +28,9 @@ export function NetworkSelector() {
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-medium">Network</h3>
+      <h3 className="pl-3 font-medium text-muted-foreground text-sm">
+        Network
+      </h3>
       <SearchInput
         value={searchFilter}
         onChange={setSearchFilter}
@@ -75,7 +78,7 @@ function NetworkButton({ network, isSelected, onSelect }: NetworkButtonProps) {
   return (
     <Button
       variant={"ghost"}
-      className="p-2 h-auto"
+      className="flex h-auto w-full items-center justify-between gap-2 p-2"
       onClick={() => onSelect(network.name)}
     >
       <ChainView
@@ -83,6 +86,7 @@ function NetworkButton({ network, isSelected, onSelect }: NetworkButtonProps) {
         name={network.name}
         status={network.status}
       />
+      {isSelected && <Check className="h-4 w-4" color="green" />}
     </Button>
   );
 }

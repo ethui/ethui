@@ -1,5 +1,5 @@
-import { Search } from "lucide-react";
 import { Input } from "@ethui/ui/components/shadcn/input";
+import { Search } from "lucide-react";
 
 interface SearchInputProps {
   value: string;
@@ -14,12 +14,12 @@ export function SearchInput({
 }: SearchInputProps) {
   return (
     <div className="relative">
-      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4" />
+      <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 transform" />
       <Input
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="text-sm pl-10"
+        className="pl-10 text-sm"
       />
     </div>
   );

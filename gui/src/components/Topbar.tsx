@@ -9,7 +9,7 @@ export function Topbar({ onWalletClick }: TopbarProps) {
       data-tauri-drag-region="true"
     >
       <div
-        className="h-8 w-32 bg-muted rounded border cursor-pointer hover:bg-muted/80 transition-colors flex items-center justify-center text-sm"
+        className="flex h-8 w-32 cursor-pointer items-center justify-center rounded border bg-muted text-sm transition-colors hover:bg-muted/80"
         onClick={onWalletClick}
         data-tauri-drag-region="false"
       >

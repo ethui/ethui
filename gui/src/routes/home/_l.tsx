@@ -7,9 +7,9 @@ import { AppNavbar } from "#/components/AppNavbar";
 import { AppSidebar } from "#/components/AppSidebar";
 import { CommandBar, CommandBarProvider } from "#/components/CommandBar";
 import { Topbar } from "#/components/Topbar";
+import { WalletSidebar } from "#/components/WalletSidebar";
 import { useNoticeAlchemyKeyMissing } from "#/hooks/useNoticeAlchemyKeyMissing";
 import { useNoticeNewVersion } from "#/hooks/useNoticeNewVersion";
-import { WalletSidebar } from "#/components/WalletSidebar";
 
 export const Route = createFileRoute("/home/_l")({
   component: HomePageLayout,
@@ -29,7 +29,7 @@ function HomePageLayout() {
           style={{ "--sidebar-width": "13em" } as React.CSSProperties}
         >
           <AppSidebar />
-          <main className="relative flex flex-1 flex-col mt-12">
+          <main className="relative mt-12 flex flex-1 flex-col">
             <AppNavbar />
             <AnimatedOutlet />
             <Toaster />

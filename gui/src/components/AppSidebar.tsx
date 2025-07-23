@@ -33,10 +33,7 @@ import {
 import { useInvoke } from "#/hooks/useInvoke";
 import { useSettings } from "#/store/useSettings";
 import { useCommandBar } from "./CommandBar";
-import { QuickAddressSelect } from "./QuickAddressSelect";
 import { QuickFastModeToggle } from "./QuickFastModeToggle";
-import { QuickNetworkSelect } from "./QuickNetworkSelect";
-import { QuickWalletSelect } from "./QuickWalletSelect";
 
 const isDev = import.meta.env.MODE === "development";
 
@@ -125,6 +122,13 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        {open && (
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <QuickFastModeToggle />
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
 
       <SidebarFooter>
