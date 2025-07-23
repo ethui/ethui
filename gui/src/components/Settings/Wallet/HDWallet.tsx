@@ -187,6 +187,7 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
   const schema = createSchema.pick({ derivationPath: true });
   type DerivationFormData = z.infer<typeof schema>;
   const defaultValues = {
+    // TODO: move this default path to a constant, shared with backend
     derivationPath: derivationPathSchema.parse("m/44'/60'/60'/0'/0"),
   };
   console.log("here2");
