@@ -4,6 +4,7 @@ import { ScrollArea } from "@ethui/ui/components/shadcn/scroll-area";
 import { Check } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useShallow } from "zustand/shallow";
+import type { Network } from "@ethui/types/network";
 import { useNetworks } from "#/store/useNetworks";
 import { SearchInput } from "./SearchInput";
 
@@ -48,8 +49,8 @@ export function NetworkSelector() {
 }
 
 interface NetworkGridProps {
-  networks: any[];
-  currentNetwork: any;
+  networks: Network[];
+  currentNetwork: Network;
   onSelect: (networkName: string) => void;
 }
 
@@ -69,7 +70,7 @@ function NetworkGrid({ networks, currentNetwork, onSelect }: NetworkGridProps) {
 }
 
 interface NetworkButtonProps {
-  network: any;
+  network: Network;
   isSelected: boolean;
   onSelect: (networkName: string) => void;
 }
