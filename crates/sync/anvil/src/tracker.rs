@@ -15,7 +15,7 @@ use url::Url;
 use crate::expanders::{expand_logs, expand_traces};
 
 const INITIAL_BACKOFF: Duration = Duration::from_secs(1);
-const MAX_BACKOFF: Duration = Duration::from_secs(10);
+const MAX_BACKOFF: Duration = Duration::from_secs(5);
 
 #[derive(Debug)]
 pub struct Tracker {
@@ -176,7 +176,7 @@ async fn init_providers(
     alloy::providers::RootProvider<Ethereum>,
     alloy::providers::RootProvider<Ethereum>,
 )> {
-    let ws_connect = WsConnect::new(ctx.ws_url.to_string());
+    let ws_connect = WsConnect::new(ctx.ws_url.to_string()).with_max_retries(0);
     let provider = ProviderBuilder::new()
         .disable_recommended_fillers()
         .connect_ws(ws_connect.clone())
