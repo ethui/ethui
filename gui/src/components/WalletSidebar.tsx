@@ -16,17 +16,23 @@ interface WalletSidebarProps {
 }
 
 export function WalletSidebar({ open, onClose }: WalletSidebarProps) {
-  if (!open) return null;
-
   return (
     <>
-      <div className="fixed inset-0 z-25" onClick={onClose} />
+      {open && <div className="fixed inset-0 z-25" onClick={onClose} />}
 
       <SidebarProvider
         className="fixed z-30"
         style={{ "--sidebar-width": "18rem" } as React.CSSProperties}
+        open={open}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) onClose();
+        }}
       >
-        <Sidebar side="right" className="select-none shadow-2xl">
+        <Sidebar
+          side="right"
+          collapsible="offcanvas"
+          className="select-none shadow-2xl"
+        >
           <SidebarHeader className="border-b border-border p-4"></SidebarHeader>
 
           <SidebarContent className="p-4">
