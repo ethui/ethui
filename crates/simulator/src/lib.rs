@@ -37,7 +37,7 @@ pub async fn simulate_once(
         .unwrap_or_default();
     let system_time = SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .unwrap()
+        .expect("System time is set before the UNIX epoch, which is not supported")
         .as_secs();
     let time = std::cmp::max(block_time, system_time);
 
