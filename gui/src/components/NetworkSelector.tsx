@@ -78,7 +78,7 @@ function NetworkButton({ network, isSelected, onSelect }: NetworkButtonProps) {
   return (
     <Button
       variant={"ghost"}
-      className="flex h-auto w-full items-center justify-between gap-2 p-2"
+      className="flex h-auto w-full items-center justify-between gap-2"
       onClick={() => onSelect(network.name)}
     >
       <ChainView
