@@ -124,7 +124,13 @@ function WalletAccordionItem({
 
   const filteredAddresses = addresses.filter((addressInfo: any) => {
     if (!filter) return true;
-    return addressInfo.address.toLowerCase().includes(filter.toLowerCase());
+    const addressMatches = addressInfo.address
+      .toLowerCase()
+      .includes(filter.toLowerCase());
+    const aliasMatches =
+      addressInfo.alias &&
+      addressInfo.alias.toLowerCase().includes(filter.toLowerCase());
+    return addressMatches || aliasMatches;
   });
 
   return (
