@@ -10,23 +10,14 @@ import { Check } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useShallow } from "zustand/shallow";
 import type { Wallet } from "@ethui/types/wallets";
-import type { Address } from "viem";
-import { useWallets } from "#/store/useWallets";
+import {
+  useWallets,
+  type WalletInfo,
+  type AddressInfo,
+} from "#/store/useWallets";
 import { AddressView } from "./AddressView";
 import { SearchInput } from "./SearchInput";
 import { WalletView } from "./WalletView";
-
-interface WalletInfo {
-  wallet: Wallet;
-  addresses: AddressInfo[];
-}
-
-interface AddressInfo {
-  walletName: string;
-  key: string;
-  address: Address;
-  alias: string;
-}
 
 export function WalletSelector() {
   const [
