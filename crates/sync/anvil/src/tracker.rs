@@ -176,6 +176,8 @@ async fn init_providers(
     alloy::providers::RootProvider<Ethereum>,
     alloy::providers::RootProvider<Ethereum>,
 )> {
+    // Disabling retries (max_retries(0)) prevents the main loop from waiting on stale
+    // connections when Anvil restarts, allowing proper state reset.
     let ws_connect = WsConnect::new(ctx.ws_url.to_string()).with_max_retries(0);
     let provider = ProviderBuilder::new()
         .disable_recommended_fillers()
