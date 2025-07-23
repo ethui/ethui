@@ -5,16 +5,14 @@ import {
   SidebarHeader,
   SidebarProvider,
 } from "@ethui/ui/components/shadcn/sidebar";
-import { QuickWalletSelect } from "./QuickWalletSelect";
-import { QuickAddressSelect } from "./QuickAddressSelect";
+import { WalletSelector } from "./WalletSelector";
+import { NetworkSelector } from "./NetworkSelector";
 import { QuickFastModeToggle } from "./QuickFastModeToggle";
-import { QuickNetworkSelect } from "./QuickNetworkSelect";
 import { useEffect } from "react";
 import { IconAddress } from "./Icons/Address";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
 import { AddressView } from "./AddressView";
-import { QuickStatusSelect } from "./QuickStatusSelect";
 
 interface WalletSidebarProps {
   open: boolean;
@@ -50,23 +48,26 @@ export function WalletSidebar({ open, onClose }: WalletSidebarProps) {
           <SidebarHeader className="border-b border-border">
             <HeaderContent />
           </SidebarHeader>
-
-          <SidebarContent className="p-4">
-            {/* <QuickStatusSelect /> */}
-            <SidebarGroup>
-              <div className="flex flex-col gap-y-2">
-                <div className="text-xs">Wallet</div>
+          {open && (
+            <SidebarContent className="p-4">
+              {/* <QuickStatusSelect /> */}
+              <SidebarGroup>
+                <div className="flex flex-col gap-y-2">
+                  {/* <div className="text-xs">Wallet</div>
                 <QuickWalletSelect />
-                <QuickAddressSelect />
-              </div>
-            </SidebarGroup>
-            <SidebarGroup>
-              <div className="flex flex-col gap-y-2">
-                <div className="text-xs">Network</div>
-                <QuickNetworkSelect />
-              </div>
-            </SidebarGroup>
-          </SidebarContent>
+                <QuickAddressSelect /> */}
+                  <WalletSelector />
+                </div>
+              </SidebarGroup>
+              <SidebarGroup>
+                <div className="flex flex-col gap-y-2">
+                  {/* <div className="text-xs">Network</div>
+                <QuickNetworkSelect /> */}
+                  <NetworkSelector />
+                </div>
+              </SidebarGroup>
+            </SidebarContent>
+          )}
         </Sidebar>
       </SidebarProvider>
     </>
