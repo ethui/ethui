@@ -86,6 +86,7 @@ function Create({ onSubmit, onRemove }: Props) {
       return (
         <PasswordStep
           onSubmit={(p) => {
+            console.log("submit password")
             setPassword(p);
             setStep(2);
           }}
@@ -98,6 +99,7 @@ function Create({ onSubmit, onRemove }: Props) {
         <ReviewStep
           mnemonic={mnemonic}
           onSubmit={(derivationPath) => {
+            console.log("submit review")
             setDerivationPath(derivationPath);
           }}
           onCancel={onRemove}
@@ -156,7 +158,7 @@ function PasswordStep({ onSubmit, onCancel }: PasswordStepProps) {
   });
 
   return (
-    <Form form={form} onSubmit={(d: PasswordFormData) => onSubmit(d.password)}>
+    <Form form={form} onSubmit={(d: PasswordFormData) => { console.log("Here"); onSubmit(d.password) }}>
       <span>Choose a secure password</span>
       <Form.Text type="password" label="Password" name="password" />
       <Form.Text
@@ -185,8 +187,9 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
   const schema = createSchema.pick({ derivationPath: true });
   type DerivationFormData = z.infer<typeof schema>;
   const defaultValues = {
-    derivationPath: derivationPathSchema.parse(undefined),
+    derivationPath: derivationPathSchema.parse("m/44'/60'/60'/0'/0"),
   };
+  console.log("here2");
 
   const form = useForm<DerivationFormData>({
     mode: "onChange",
@@ -194,6 +197,7 @@ function ReviewStep({ mnemonic, onSubmit, onCancel }: ReviewStepProps) {
     defaultValues,
   });
 
+  console.log("here3");
   const [addresses, setAddresses] = useState<[string, Address][]>([]);
 
   const onSubmitInternal = (data: DerivationFormData) => {
