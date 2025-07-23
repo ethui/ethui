@@ -114,7 +114,7 @@ jobs:
           cache: "pnpm"
           node-version: "24.x"
 
-      - run: pnpm install --frozen-lockfile --network-timeout 1000000
+      - run: pnpm install --frozen-lockfile
 
       - uses: tauri-apps/tauri-action@v0
         env:
