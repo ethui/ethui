@@ -173,12 +173,17 @@ jobs:
         run: |
           release_data=$(gh release view ${{ needs.setup.outputs.tag }} --json url,body)
           release_url=$(echo "$release_data" | jq -r '.url')
-          changelog=$(echo "$release_data" | jq -r '.body')
           
           echo "url=$release_url" >> $GITHUB_OUTPUT
           
-          # Escape changelog for JSON and truncate if too long
-          changelog_escaped=$(echo "$changelog" | jq -Rs . | sed 's/^"//;s/"$//')
+          # Process changelog: parse PR links, user tags, escape for JSON, and truncate
+          changelog_escaped=$(echo "$release_data" | \
+            jq -r '.body' | \
+            sed -E 's/#([0-9]+)/<https:\/\/github.com\/ethui\/ethui\/pull\/\1|#\1>/g' | \
+            sed -E 's/@([a-zA-Z0-9_-]+)/<https:\/\/github.com\/\1|@\1>/g' | \
+            jq -Rs . | \
+            sed 's/^"//;s/"$//')
+          
           if [ ${#changelog_escaped} -gt 2000 ]; then
             changelog_escaped="${changelog_escaped:0:2000}..."
           fi
@@ -212,7 +217,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Changelog:*\n```${{ steps.release-info.outputs.changelog }}```"
+                    "text": "*Changelog:*\n\n${{ steps.release-info.outputs.changelog }}"
                   }
                 }
               ]
