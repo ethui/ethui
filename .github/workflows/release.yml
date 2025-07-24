@@ -94,6 +94,7 @@ jobs:
   # upload to draft release
   app:
     needs: [setup, update-version, clear-assets]
+    environment: release
     strategy:
       fail-fast: false
       matrix:
@@ -153,3 +154,61 @@ jobs:
         run: gh release edit ${{ needs.setup.outputs.tag }} --draft=false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  notify-slack:
+    needs: [setup, publish]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get release info
+        id: release-info
+        run: |
+          release_data=$(gh release view ${{ needs.setup.outputs.tag }} --json url,body)
+          release_url=$(echo "$release_data" | jq -r '.url')
+          changelog=$(echo "$release_data" | jq -r '.body')
+          
+          echo "url=$release_url" >> $GITHUB_OUTPUT
+          
+          # Escape changelog for JSON and truncate if too long
+          changelog_escaped=$(echo "$changelog" | jq -Rs . | sed 's/^"//;s/"$//')
+          if [ ${#changelog_escaped} -gt 2000 ]; then
+            changelog_escaped="${changelog_escaped:0:2000}..."
+          fi
+          echo "changelog=$changelog_escaped" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Send Slack notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          custom_payload: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "🚀 ethui ${{ needs.setup.outputs.tag }} Released"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "<${{ steps.release-info.outputs.url }}|*Download*>"
+                  }
+                },
+                { "type": "divider" },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Changelog:*\n```${{ steps.release-info.outputs.changelog }}```"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_RELEASE_WEBHOOK_URL }}
