@@ -34,6 +34,8 @@ interface Props {
   icon?: boolean;
   noTextStyle?: boolean;
   clickToCopy?: boolean;
+  className?: string;
+  iconClassName?: string;
 }
 
 export function AddressView({
@@ -42,6 +44,8 @@ export function AddressView({
   icon = false,
   noTextStyle = false,
   clickToCopy = true,
+  className,
+  iconClassName,
 }: Props) {
   const network = useNetworks((s) => s.current);
   const address = getAddress(addr);
@@ -58,6 +62,7 @@ export function AddressView({
       className={cn(
         "flex items-center gap-x-1 font-mono hover:bg-accent",
         noTextStyle ? "" : "text-base",
+        className,
       )}
     >
       {icon && (
@@ -65,7 +70,7 @@ export function AddressView({
           chainId={network.dedup_chain_id.chain_id}
           address={address}
           effigy
-          className="h-4"
+          className={cn("h-4", iconClassName)}
         />
       )}
       {text}

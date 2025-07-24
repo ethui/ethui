@@ -1,3 +1,4 @@
+import type { Wallet } from "@ethui/types/wallets";
 import {
   Accordion,
   AccordionContent,
@@ -9,11 +10,10 @@ import { ScrollArea } from "@ethui/ui/components/shadcn/scroll-area";
 import { Check } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useShallow } from "zustand/shallow";
-import type { Wallet } from "@ethui/types/wallets";
 import {
+  type AddressInfo,
   useWallets,
   type WalletInfo,
-  type AddressInfo,
 } from "#/store/useWallets";
 import { AddressView } from "./AddressView";
 import { SearchInput } from "./SearchInput";
@@ -122,6 +122,8 @@ function WalletAccordionItem({
               onClick={() => onSelect(wallet.name, addressInfo.key)}
             >
               <AddressView
+                className="gap-2 text-sm"
+                iconClassName="!h-5 !w-5"
                 clickToCopy={false}
                 icon
                 contextMenu={false}

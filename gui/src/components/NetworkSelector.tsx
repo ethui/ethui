@@ -1,10 +1,10 @@
+import type { Network } from "@ethui/types/network";
 import { ChainView } from "@ethui/ui/components/chain-view";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { ScrollArea } from "@ethui/ui/components/shadcn/scroll-area";
 import { Check } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useShallow } from "zustand/shallow";
-import type { Network } from "@ethui/types/network";
 import { useNetworks } from "#/store/useNetworks";
 import { SearchInput } from "./SearchInput";
 
