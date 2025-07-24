@@ -48,11 +48,11 @@ interface TxRequest {
   value: string;
   chainId: number;
   walletType:
-    | "ledger"
-    | "HdWallet"
-    | "jsonKeystore"
-    | "plaintext"
-    | "impersonator";
+  | "ledger"
+  | "HdWallet"
+  | "jsonKeystore"
+  | "plaintext"
+  | "impersonator";
 }
 
 interface Log {
@@ -221,7 +221,6 @@ function SimulationResult({
     to,
   });
 
-  if (!simulation) return null;
   const decodedError = tryDecodeErrorResult({
     abi,
     data: simulation.returnData,
@@ -255,7 +254,7 @@ function SimulationResult({
             <div className="flex gap-2 font-bold text-destructive">
               <X className="stroke-destructive" />
               <span>
-                {"value" in decodedError ? decodedError.value.errorName : null}
+                {"value" in decodedError ? decodedError.value?.errorName : null}
               </span>
             </div>
           )
