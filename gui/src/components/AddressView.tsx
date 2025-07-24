@@ -91,9 +91,7 @@ export function AddressView({
         <ContextMenuItem onClick={() => setAliasFormOpen(true)}>
           Set alias
         </ContextMenuItem>
-        <ContextMenuItem onClick={clearAlias}>
-          Clear alias
-        </ContextMenuItem>
+        <ContextMenuItem onClick={clearAlias}>Clear alias</ContextMenuItem>
         <ContextMenuItem>
           <Link target="_blank" to={`${network.explorer_url}${address}`}>
             Open in explorer
