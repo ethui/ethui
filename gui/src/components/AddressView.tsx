@@ -55,7 +55,7 @@ export function AddressView({
     <ClickToCopy text={address}>
       <div
         className={cn(
-          "flex items-center gap-x-1 font-mono",
+          "flex items-center gap-x-1 font-mono hover:bg-accent",
           noTextStyle ? "" : "text-base",
         )}
       >
@@ -72,6 +72,11 @@ export function AddressView({
     </ClickToCopy>
   );
 
+  const clearAlias = () => {
+    invoke("settings_set_alias", { address });
+    refetch();
+  };
+
   if (!contextMenu) return content;
 
   return (
@@ -86,7 +91,7 @@ export function AddressView({
         <ContextMenuItem onClick={() => setAliasFormOpen(true)}>
           Set alias
         </ContextMenuItem>
-        <ContextMenuItem onClick={() => setAliasFormOpen(true)}>
+        <ContextMenuItem onClick={clearAlias}>
           Clear alias
         </ContextMenuItem>
         <ContextMenuItem>
