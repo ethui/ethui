@@ -55,7 +55,7 @@ export function AddressView({
     <ClickToCopy text={address}>
       <div
         className={cn(
-          "flex items-center gap-x-1 font-mono hover:bg-accent",
+          "flex items-center gap-x-1 font-mono",
           noTextStyle ? "" : "text-base",
         )}
       >
