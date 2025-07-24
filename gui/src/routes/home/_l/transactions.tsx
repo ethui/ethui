@@ -160,8 +160,12 @@ function Summary({ account, tx }: SummaryProps) {
     <div className="flex items-center gap-x-3">
       <Icon {...{ tx, account }} />
       <BlockNumber number={tx.blockNumber} />
-      <AddressView address={tx.from} /> <span>→</span>
-      {tx.to ? <AddressView address={tx.to} /> : <span>Contract Deploy</span>}
+      <AddressView address={tx.from} contextMenu={false} /> <span>→</span>
+      {tx.to ? (
+        <AddressView address={tx.to} contextMenu={false} />
+      ) : (
+        <span>Contract Deploy</span>
+      )}
     </div>
   );
 }

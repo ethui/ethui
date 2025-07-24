@@ -53,8 +53,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/types
       '@ethui/ui':
-        specifier: ^0.0.95
-        version: 0.0.95(@hookform/resolvers@5.1.1(react-hook-form@7.59.0(react@19.1.0)))(@tailwindcss/postcss@4.1.11)(@tanstack/react-query@5.83.0(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react-hook-form@7.59.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)(typescript@5.8.2)(viem@2.31.7(typescript@5.8.2)(zod@3.25.76))(zod@3.25.76)
+        specifier: ^0.0.97
+        version: 0.0.97(@hookform/resolvers@5.1.1(react-hook-form@7.59.0(react@19.1.0)))(@tailwindcss/postcss@4.1.11)(@tanstack/react-query@5.83.0(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react-hook-form@7.59.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)(typescript@5.8.2)(viem@2.31.7(typescript@5.8.2)(zod@3.25.76))(zod@3.25.76)
       '@fontsource/source-code-pro':
         specifier: ^5.2.5
         version: 5.2.6
@@ -684,8 +684,8 @@ packages:
       viem: ^2.31
       zod: ^3.0
 
-  '@ethui/ui@0.0.95':
-    resolution: {integrity: sha512-5JjXjugskuQK1A5tTLYfIDozYriIqc1Fe97dk6Aj5h+nBBR645PNaa1nr5uGoLrIlqw+7eystSsB4+caGgG8xQ==}
+  '@ethui/ui@0.0.97':
+    resolution: {integrity: sha512-DzFtvGYRfFBXEi8/jjJILTvkJ9ewIHPkuyowAgSQoF0zrAyhFP90kiwp/a0fl01eFqkBHlAuMFCsUidrOX5Rpg==}
     peerDependencies:
       '@hookform/resolvers': ^5.0.1
       '@tailwindcss/postcss': 4.1.5
@@ -3244,7 +3244,7 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@ethui/ui@0.0.95(@hookform/resolvers@5.1.1(react-hook-form@7.59.0(react@19.1.0)))(@tailwindcss/postcss@4.1.11)(@tanstack/react-query@5.83.0(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react-hook-form@7.59.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)(typescript@5.8.2)(viem@2.31.7(typescript@5.8.2)(zod@3.25.76))(zod@3.25.76)':
+  '@ethui/ui@0.0.97(@hookform/resolvers@5.1.1(react-hook-form@7.59.0(react@19.1.0)))(@tailwindcss/postcss@4.1.11)(@tanstack/react-query@5.83.0(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react-hook-form@7.59.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)(typescript@5.8.2)(viem@2.31.7(typescript@5.8.2)(zod@3.25.76))(zod@3.25.76)':
     dependencies:
       '@ethui/abiparse': 0.0.4(react@19.1.0)(typescript@5.8.2)(zod@3.25.76)
       '@fontsource/source-code-pro': 5.2.6

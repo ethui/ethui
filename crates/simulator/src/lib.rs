@@ -1,6 +1,8 @@
 pub mod commands;
 pub mod types;
 
+use std::time::{SystemTime, UNIX_EPOCH};
+
 use alloy::{
     eips::BlockId,
     providers::{Provider as _, ProviderBuilder},
@@ -27,9 +29,28 @@ pub async fn simulate_once(
         .block_id(block_id)
         .await?;
 
+    let block_number = provider.get_block_number().await?;
+    let block_time = provider
+        .get_block(block_number.into())
+        .await?
+        .map(|b| b.header.timestamp)
+        .unwrap_or_default();
+    let system_time = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs();
+    let time = std::cmp::max(block_time, system_time);
+
     let db = WrapDatabaseAsync::new(AlloyDB::new(provider, block_id)).unwrap();
     let cache_db = CacheDB::new(db);
-    let mut evm = revm::Context::mainnet().with_db(cache_db).build_mainnet();
+
+    let mut evm = revm::Context::mainnet()
+        .with_db(cache_db)
+        .modify_block_chained(|b| {
+            b.timestamp = U256::from(time + 1);
+            b.number = U256::from(block_number + 1);
+        })
+        .build_mainnet();
 
     let tx = TxEnv::builder()
         .caller(tx.from)

@@ -132,7 +132,15 @@ function Step({
       {completed && <Check className="h-4 w-4" />}
       {!completed && (
         <div className="flex items-center gap-1">
-          <Button size="sm" className="cursor-pointer gap-1">
+          <Button
+            size="sm"
+            variant="ghost"
+            className="cursor-pointer gap-1"
+            onClick={() => skipStep(id)}
+          >
+            Skip
+          </Button>
+          <Button size="sm" className="cursor-pointer gap-1" variant="ghost">
             {completed && (
               <>
                 <Check className="h-4 w-4" /> <span>Completed</span>
@@ -143,14 +151,6 @@ function Step({
                 <span>Start</span> <ChevronRight className="h-4 w-4" />
               </Link>
             )}
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            className="cursor-pointer gap-1"
-            onClick={() => skipStep(id)}
-          >
-            Skip
           </Button>
         </div>
       )}
