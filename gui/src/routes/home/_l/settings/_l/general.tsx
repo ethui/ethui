@@ -51,7 +51,6 @@ function SettingsGeneral() {
         <AutoSubmitSwitch
           name="autostart"
           label="Start automatically on boot"
-          successLabel="Saved"
           value={general.autostart}
           callback={async (autostart: boolean) =>
             await invoke("settings_set", { params: { autostart } })
@@ -63,7 +62,6 @@ function SettingsGeneral() {
         <AutoSubmitSwitch
           name="startMinimized"
           label="Start minimized"
-          successLabel="Saved"
           value={general.startMinimized}
           callback={async (startMinimized: boolean) =>
             await invoke("settings_set", { params: { startMinimized } })
@@ -95,7 +93,6 @@ function SettingsGeneral() {
         <AutoSubmitSwitch
           name="hideEmptyTokens"
           label="Hide Tokens Without Balance"
-          successLabel="Saved"
           value={general.hideEmptyTokens}
           callback={async (hideEmptyTokens: boolean) =>
             await invoke("settings_set", { params: { hideEmptyTokens } })

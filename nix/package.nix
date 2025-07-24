@@ -64,13 +64,13 @@ rust.buildRustPackage (finalAttrs: {
       src
       cargoRoot
       ;
-    hash = "sha256-Kj4UeoaPiU53VTDQPso+AC/eGg9+LzXtv91OaIK3rSM=";
+    hash = "sha256-QJk7sfJ2OaK9iQz3tGKs9jCxEdVuuItWDsYfzd/S4BI=";
   };
 
   pnpmDeps = pkgs.pnpm.fetchDeps {
     inherit (finalAttrs) pname version src;
     fetcherVersion = 1;
-    hash = "sha256-+nxjnDBojs1xrxmPJ+10q5vk7AhK2mXx5L50gy3EHQE=";
+    hash = "sha256-0nqmKRiQN6f6sEzY9hcGzY9mg3kLZgAFM2He55souOc=";
   };
 
   preBuild = ''
@@ -87,4 +87,3 @@ rust.buildRustPackage (finalAttrs: {
     cp ${finalAttrs.src}/bin/icons/icon.png $out/share/pixmaps/ethui.png
   '';
 })
-
