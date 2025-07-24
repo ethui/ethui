@@ -1,6 +1,5 @@
 use alloy::primitives::Log;
 use ethui_types::prelude::*;
-// use foundry_evm::traces::CallTraceNode;
 
 /// Simulation request
 #[derive(Debug, Clone, Serialize, Deserialize)]
