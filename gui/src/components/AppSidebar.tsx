@@ -110,10 +110,6 @@ export function AppSidebar() {
                 <CustomSidebarMenuItem
                   key={item.title}
                   {...item}
-                  className={cn(
-                    item.url === location.pathname &&
-                      "bg-primary text-accent hover:bg-primary hover:text-accent",
-                  )}
                 />
               ))}
 
@@ -136,7 +132,7 @@ export function AppSidebar() {
                               to={item.url}
                               className={cn(
                                 item.url === location.pathname &&
-                                  "bg-primary text-accent hover:bg-primary hover:text-accent",
+                                "bg-primary text-accent hover:bg-primary hover:text-accent",
                               )}
                             >
                               {item.title}
@@ -178,12 +174,15 @@ function CustomSidebarMenuItem({
   url,
   icon,
   title,
-  className = "",
 }: CustomSidebarMenuItemProps) {
+  const location = useLocation();
+
   return (
     <SidebarMenuItem key={title}>
       <SidebarMenuButton asChild>
-        <Link to={url} className={className}>
+        <Link to={url} className={cn(url === location.pathname &&
+          "bg-primary text-accent hover:bg-primary hover:text-accent"
+        )}>
           {icon}
           {title}
         </Link>
