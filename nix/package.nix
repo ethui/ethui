@@ -64,7 +64,7 @@ rust.buildRustPackage (finalAttrs: {
       src
       cargoRoot
       ;
-    hash = "sha256-M837aunkz5TegtmtA+IODV5B5IykLijSweNsL8mrilY=";
+    hash = "sha256-CZTkGmzLkyoPDceNsRa6QR0vsiEG19LlkZQ+z20YDm4=";
   };
 
   pnpmDeps = pkgs.pnpm.fetchDeps {
