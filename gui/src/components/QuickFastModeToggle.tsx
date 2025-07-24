@@ -27,7 +27,7 @@ export function QuickFastModeToggle() {
 
   return (
     <Form form={form} onSubmit={() => {}} className="flex items-center ">
-      <Form.Checkbox name="fastMode" label="Fast Mode" />
+      <Form.Switch name="fastMode" label="Fast Mode" />
     </Form>
   );
 }
