@@ -73,7 +73,7 @@ export function AddressView({
   );
 
   const clearAlias = () => {
-    invoke("settings_set_alias", { address });
+    invoke("settings_set_alias", { address, alias: null });
     refetch();
   };
 
