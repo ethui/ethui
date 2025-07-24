@@ -1,11 +1,15 @@
-import { Form } from "@ethui/ui/components/form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { AutoSubmitSwitch } from "@ethui/ui/components/form/auto-submit/switch";
+import { AutoSubmitTextInput } from "@ethui/ui/components/form/auto-submit/text-input";
+import { Label } from "@ethui/ui/components/shadcn/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@ethui/ui/components/shadcn/select";
 import { createFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
-import memoize from "lodash-es/memoize";
-import { useCallback } from "react";
-import { type FieldValues, useForm } from "react-hook-form";
-import { z } from "zod";
 import { useSettings } from "#/store/useSettings";
 
 export const Route = createFileRoute("/home/_l/settings/_l/general")({
@@ -13,100 +17,101 @@ export const Route = createFileRoute("/home/_l/settings/_l/general")({
   component: () => <SettingsGeneral />,
 });
 
-const alchemyKeyValidator = memoize(
-  (key) => !key || invoke("settings_test_alchemy_api_key", { key }),
-);
-
-const etherscanKeyValidator = memoize(
-  (key) => !key || invoke("settings_test_etherscan_api_key", { key }),
-);
-
-const rustLogValidator = memoize(
-  (directives) =>
-    !directives || invoke("settings_test_rust_log", { directives }),
-);
-
-const schema = z.object({
-  darkMode: z.enum(["auto", "dark", "light"]),
-  autostart: z.boolean(),
-  startMinimized: z.boolean(),
-  alchemyApiKey: z.string().optional().nullable().refine(alchemyKeyValidator, {
-    message: "Invalid key",
-  }),
-  etherscanApiKey: z
-    .string()
-    .optional()
-    .nullable()
-
-    .refine(etherscanKeyValidator, { message: "Invalid key" }),
-  hideEmptyTokens: z.boolean(),
-  fastMode: z.boolean(),
-  rustLog: z.string().optional().refine(rustLogValidator, "Invalid directives"),
-});
-
 function SettingsGeneral() {
   const general = useSettings((s) => s.settings!);
-
-  const form = useForm({
-    mode: "onChange",
-    resolver: zodResolver(schema),
-    defaultValues: general,
-  });
-
-  const onSubmit = useCallback(
-    async (params: FieldValues) => {
-      await invoke("settings_set", {
-        params,
-      });
-      form.reset(params);
-    },
-    [form],
-  );
 
   if (!general) return null;
 
   return (
-    <Form form={form} onSubmit={onSubmit}>
-      <Form.Select
-        name="darkMode"
-        label="Dark mode"
-        defaultValue={general.darkMode}
-        items={["auto", "dark", "light"]}
-      />
-
-      <div className="w-100">
-        <Form.Checkbox name="autostart" label="Start automatically on boot" />
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col">
+        <div className="flex w-80 flex-row items-center justify-between">
+          <Label className="w-full grow cursor-pointer leading-none">
+            Dark mode
+          </Label>
+          <Select
+            onValueChange={(darkMode: string) =>
+              invoke("settings_set", { params: { darkMode } })
+            }
+            defaultValue={general.darkMode}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="auto">Auto</SelectItem>
+              <SelectItem value="dark">Dark</SelectItem>
+              <SelectItem value="light">Light</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      <div className="w-100">
-        <Form.Checkbox name="startMinimized" label="Start minimized" />
-      </div>
-
-      <Form.Text
-        name="alchemyApiKey"
-        label="Alchemy API Key"
-        className="w-full"
-      />
-      <Form.Text
-        label="Etherscan API Key"
-        name="etherscanApiKey"
-        className="w-full"
-      />
-
-      <div className="w-100">
-        <Form.Checkbox
-          label="Hide Tokens Without Balance"
-          name="hideEmptyTokens"
+      <div className="w-80">
+        <AutoSubmitSwitch
+          name="autostart"
+          label="Start automatically on boot"
+          successLabel="Saved"
+          value={general.autostart}
+          callback={async (autostart: boolean) =>
+            await invoke("settings_set", { params: { autostart } })
+          }
         />
       </div>
 
-      <Form.Text
-        label="Rust log level (tracing_subscriber)"
-        name="rustLog"
-        className="w-full"
+      <div className="w-80">
+        <AutoSubmitSwitch
+          name="startMinimized"
+          label="Start minimized"
+          successLabel="Saved"
+          value={general.startMinimized}
+          callback={async (startMinimized: boolean) =>
+            await invoke("settings_set", { params: { startMinimized } })
+          }
+        />
+      </div>
+
+      <AutoSubmitTextInput
+        name="alchemyApiKey"
+        label="Alchemy API Key"
+        successLabel="Saved"
+        value={general.alchemyApiKey || ""}
+        callback={async (alchemyApiKey: string) =>
+          await invoke("settings_set", { params: { alchemyApiKey } })
+        }
       />
 
-      <Form.Submit label="Save" />
-    </Form>
+      <AutoSubmitTextInput
+        name="etherscanApiKey"
+        label="Etherscan API Key"
+        successLabel="Saved"
+        value={general.etherscanApiKey || ""}
+        callback={async (etherscanApiKey: string) =>
+          await invoke("settings_set", { params: { etherscanApiKey } })
+        }
+      />
+
+      <div className="w-80">
+        <AutoSubmitSwitch
+          name="hideEmptyTokens"
+          label="Hide Tokens Without Balance"
+          successLabel="Saved"
+          value={general.hideEmptyTokens}
+          callback={async (hideEmptyTokens: boolean) =>
+            await invoke("settings_set", { params: { hideEmptyTokens } })
+          }
+        />
+      </div>
+
+      <AutoSubmitTextInput
+        name="rustLog"
+        label="Rust log level (tracing_subscriber)"
+        successLabel="Saved"
+        value={general.rustLog}
+        callback={async (rustLog: string) =>
+          await invoke("settings_set", { params: { rustLog } })
+        }
+      />
+    </div>
   );
 }

@@ -6,7 +6,10 @@ use std::{
 use ethui_types::prelude::*;
 use kameo::prelude::*;
 
-use crate::{migrations::load_and_migrate, onboarding::OnboardingStep, DarkMode, Settings};
+use crate::{
+    migrations::load_and_migrate, onboarding::OnboardingStep, test_alchemy_api_key,
+    utils::test_etherscan_api_key, DarkMode, Settings,
+};
 
 #[derive(Debug)]
 pub struct SettingsActor {
@@ -65,7 +68,6 @@ impl SettingsActor {
         let path = Path::new(&pathbuf);
         let file = File::create(path)?;
 
-        ethui_tracing::reload(&self.inner.rust_log)?;
         serde_json::to_writer_pretty(file, &self.inner)?;
         ethui_broadcast::settings_updated().await;
         ethui_broadcast::ui_notify(UINotify::SettingsChanged).await;
@@ -138,7 +140,12 @@ impl Message<Set> for SettingsActor {
                             .tell(Set::FinishOnboardingStep(OnboardingStep::Alchemy))
                             .await;
                     }
-                    self.inner.alchemy_api_key = serde_json::from_value(v.clone()).unwrap()
+                    let v: String = serde_json::from_value(v.clone()).unwrap();
+                    let v: Option<String> = Some(v).filter(|s| !s.is_empty());
+                    if let Some(ref str) = v {
+                        test_alchemy_api_key(str).await?;
+                    }
+                    self.inner.alchemy_api_key = v;
                 }
 
                 if let Some(v) = map.get("etherscanApiKey") {
@@ -152,7 +159,12 @@ impl Message<Set> for SettingsActor {
                             .tell(Set::FinishOnboardingStep(OnboardingStep::Etherscan))
                             .await;
                     }
-                    self.inner.etherscan_api_key = serde_json::from_value(v.clone()).unwrap()
+                    let v: String = serde_json::from_value(v.clone()).unwrap();
+                    let v: Option<String> = Some(v).filter(|s| !s.is_empty());
+                    if let Some(ref str) = v {
+                        test_etherscan_api_key(str).await?;
+                    }
+                    self.inner.etherscan_api_key = v;
                 }
 
                 if let Some(v) = map.get("hideEmptyTokens") {
@@ -169,9 +181,9 @@ impl Message<Set> for SettingsActor {
                     self.inner.fast_mode = serde_json::from_value(v.clone()).unwrap();
                 }
                 if let Some(v) = map.get("rustLog") {
-                    let v: String = serde_json::from_value(v.clone()).unwrap();
-                    ethui_tracing::reload(&v)?;
-                    self.inner.rust_log = v;
+                    let value: String = serde_json::from_value(v.clone()).unwrap();
+                    ethui_tracing::reload(&value)?;
+                    self.inner.rust_log = value;
                 }
                 if let Some(v) = map.get("runLocalStacks") {
                     self.inner.run_local_stacks = serde_json::from_value(v.clone()).unwrap();

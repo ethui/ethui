@@ -1,11 +1,11 @@
 use color_eyre::eyre::ContextCompat as _;
 use once_cell::sync::OnceCell;
 use tracing_subscriber::{
-    EnvFilter, Registry,
     fmt::{self, format::FmtSpan},
     layer::SubscriberExt as _,
     reload,
     util::SubscriberInitExt as _,
+    EnvFilter, Registry,
 };
 
 static RELOAD_HANDLE: OnceCell<reload::Handle<EnvFilter, Registry>> = OnceCell::new();
@@ -30,10 +30,11 @@ pub fn parse(directives: &str) -> color_eyre::Result<EnvFilter> {
 pub fn reload(directives: &str) -> color_eyre::Result<()> {
     let new_filter = parse(directives)?;
 
-    RELOAD_HANDLE
+    let handle = RELOAD_HANDLE
         .get()
-        .with_context(|| "Reload handle not set".to_string())?
-        .modify(|filter| *filter = new_filter)?;
+        .with_context(|| "Reload handle not set".to_string())?;
+
+    handle.reload(new_filter)?;
 
     Ok(())
 }
