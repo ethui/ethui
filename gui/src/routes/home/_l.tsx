@@ -22,26 +22,23 @@ function HomePageLayout() {
   useNoticeNewVersion();
 
   return (
-    <>
-      <CommandBarProvider>
-        <Topbar onWalletClick={() => setIsWalletSidebarOpen(true)} />
-        <SidebarProvider
-          style={{ "--sidebar-width": "13em" } as React.CSSProperties}
-        >
-          <AppSidebar />
-          <main className="relative mt-12 flex flex-1 flex-col">
-            <AppNavbar />
-            <AnimatedOutlet />
-            <Toaster />
-          </main>
-        </SidebarProvider>
-        <CommandBar />
-      </CommandBarProvider>
-
+    <CommandBarProvider>
+      <Topbar onWalletClick={() => setIsWalletSidebarOpen(true)} />
+      <SidebarProvider
+        style={{ "--sidebar-width": "13em" } as React.CSSProperties}
+      >
+        <AppSidebar />
+        <main className="relative mt-12 flex flex-1 flex-col">
+          <AppNavbar />
+          <AnimatedOutlet />
+          <Toaster />
+        </main>
+      </SidebarProvider>
+      <CommandBar />
       <WalletSidebar
         open={isWalletSidebarOpen}
         onClose={() => setIsWalletSidebarOpen(false)}
       />
-    </>
+    </CommandBarProvider>
   );
 }
