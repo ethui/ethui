@@ -16,8 +16,11 @@ import {
   type AbiFunction,
   type Address,
   type ContractEventName,
+  type DecodeErrorResultParameters,
+  type DecodeErrorResultReturnType,
   type DecodeEventLogParameters,
   type DecodeEventLogReturnType,
+  decodeErrorResult,
   decodeEventLog,
   formatUnits,
   getAbiItem,
@@ -64,6 +67,7 @@ interface Simulation {
   gasUsed: bigint;
   blockNumber: bigint;
   logs: Log[];
+  returnData: Hex;
 }
 
 function TxReviewDialog() {
@@ -150,7 +154,14 @@ function Inner({ dialog, request, network }: InnerProps) {
       )}
 
       <div className="my-4">
-        <SimulationResult simulation={simulation} chainId={chainId} to={to} />
+        {simulation && (
+          <SimulationResult
+            simulation={simulation}
+            chainId={chainId}
+            to={to}
+            abi={abi}
+          />
+        )}
       </div>
 
       <DialogBottom>
@@ -193,18 +204,27 @@ function Header({ from, to, network }: HeaderProps) {
 }
 
 interface SimulationResultProps {
-  simulation: Simulation | undefined;
+  simulation: Simulation;
   chainId: number;
   to: Address;
+  abi?: Abi;
 }
 
-function SimulationResult({ simulation, chainId, to }: SimulationResultProps) {
+function SimulationResult({
+  simulation,
+  chainId,
+  to,
+  abi,
+}: SimulationResultProps) {
   const { data: callCount } = useInvoke<number>("simulator_get_call_count", {
     chainId,
     to,
   });
 
-  if (!simulation) return null;
+  const decodedError = tryDecodeErrorResult({
+    abi,
+    data: simulation.returnData,
+  });
 
   return (
     <div className="grid grid-cols-4 gap-5">
@@ -231,7 +251,12 @@ function SimulationResult({ simulation, chainId, to }: SimulationResultProps) {
           simulation.success ? (
             <Check className="stroke-success" />
           ) : (
-            <X className="stroke-destructive" />
+            <div className="flex gap-2 font-bold text-destructive">
+              <X className="stroke-destructive" />
+              <span>
+                {"value" in decodedError ? decodedError.value?.errorName : null}
+              </span>
+            </div>
           )
         }
       />
@@ -359,6 +384,16 @@ function tryDecodeEventLog<
 > {
   try {
     return { ok: true, value: decodeEventLog(parameters) };
+  } catch (_e) {
+    return { ok: false, error: undefined };
+  }
+}
+
+function tryDecodeErrorResult<const abi extends Abi | readonly unknown[]>(
+  parameters: DecodeErrorResultParameters<abi>,
+): Result<DecodeErrorResultReturnType<abi>, undefined> {
+  try {
+    return { ok: true, value: decodeErrorResult(parameters) };
   } catch (_e) {
     return { ok: false, error: undefined };
   }
