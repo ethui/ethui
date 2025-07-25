@@ -3,48 +3,40 @@ import { ChainView } from "@ethui/ui/components/chain-view";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { ScrollArea } from "@ethui/ui/components/shadcn/scroll-area";
 import { Check } from "lucide-react";
-import { useMemo, useState } from "react";
 import { useShallow } from "zustand/shallow";
 import { useNetworks } from "#/store/useNetworks";
-import { SearchInput } from "./SearchInput";
 
-export function NetworkSelector() {
-  const [networks, currentNetwork, setCurrentNetwork] = useNetworks(
-    useShallow((s) => [s.networks, s.current, s.setCurrent]),
+interface NetworkSelectorProps {
+  networks: Network[];
+}
+
+export function NetworkSelector({ networks }: NetworkSelectorProps) {
+  const [currentNetwork, setCurrentNetwork] = useNetworks(
+    useShallow((s) => [s.current, s.setCurrent]),
   );
-  const [searchFilter, setSearchFilter] = useState("");
 
-  const filteredNetworks = useMemo(() => {
-    if (!networks || !searchFilter) return networks || [];
-
-    const searchTerm = searchFilter.toLowerCase();
-    return networks.filter((network) =>
-      network.name.toLowerCase().includes(searchTerm),
-    );
-  }, [networks, searchFilter]);
-
-  if (!networks || !currentNetwork) {
+  if (!currentNetwork) {
     return null;
   }
 
   return (
-    <div className="space-y-3">
-      <h3 className="pl-3 font-medium text-muted-foreground text-sm">
-        Network
-      </h3>
-      <SearchInput
-        value={searchFilter}
-        onChange={setSearchFilter}
-        placeholder="Filter"
-      />
-      <ScrollArea className="max-h-96">
-        <NetworkGrid
-          networks={filteredNetworks}
-          currentNetwork={currentNetwork}
-          onSelect={setCurrentNetwork}
-        />
-      </ScrollArea>
-    </div>
+    <>
+      {networks.length > 0 && (
+        <div>
+          <h3 className="p-2 font-medium text-muted-foreground text-sm">
+            Network
+          </h3>
+
+          <ScrollArea className="max-h-96">
+            <NetworkGrid
+              networks={networks}
+              currentNetwork={currentNetwork}
+              onSelect={setCurrentNetwork}
+            />
+          </ScrollArea>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -79,7 +71,7 @@ function NetworkButton({ network, isSelected, onSelect }: NetworkButtonProps) {
   return (
     <Button
       variant={"ghost"}
-      className="flex h-auto w-full items-center justify-between gap-2"
+      className="flex h-auto w-full items-center justify-between gap-2 px-2"
       onClick={() => onSelect(network.name)}
     >
       <ChainView

@@ -5,13 +5,14 @@ import {
   SidebarHeader,
   SidebarProvider,
 } from "@ethui/ui/components/shadcn/sidebar";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
-import { AddressView } from "./AddressView";
-import { IconAddress } from "./Icons/Address";
+import { AddressView } from "../AddressView";
+import { IconAddress } from "../Icons/Address";
+import { SearchInput } from "../SearchInput";
 import { NetworkSelector } from "./NetworkSelector";
-
+import { useSidebarSearch } from "./useSidebarSearch";
 import { WalletSelector } from "./WalletSelector";
 
 interface WalletSidebarProps {
@@ -20,6 +21,16 @@ interface WalletSidebarProps {
 }
 
 export function WalletSidebar({ open, onClose }: WalletSidebarProps) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const networks = useNetworks((s) => s.networks);
+  const allWalletInfo = useWallets((s) => s.allWalletInfo);
+
+  const { wallets, networks: filteredNetworks } = useSidebarSearch(
+    allWalletInfo,
+    networks,
+    searchTerm,
+  );
+
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
@@ -49,12 +60,17 @@ export function WalletSidebar({ open, onClose }: WalletSidebarProps) {
             <HeaderContent />
           </SidebarHeader>
           {open && (
-            <SidebarContent className="p-4">
-              <SidebarGroup>
-                <WalletSelector />
-              </SidebarGroup>
-              <SidebarGroup>
-                <NetworkSelector />
+            <SidebarContent className="px-3 py-5">
+              <SearchInput
+                value={searchTerm}
+                onChange={setSearchTerm}
+                placeholder="Filter"
+              />
+
+              <SidebarGroup className="flex flex-col space-y-3">
+                <WalletSelector wallets={wallets} />
+
+                <NetworkSelector networks={filteredNetworks} />
               </SidebarGroup>
             </SidebarContent>
           )}
