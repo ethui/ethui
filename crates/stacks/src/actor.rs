@@ -5,6 +5,7 @@ use tracing::error;
 
 use crate::docker::{start_stacks, stop_stacks};
 
+#[derive(Clone, Debug)]
 pub struct Worker {
     pub stacks: bool,
     pub port: u16,
@@ -12,6 +13,7 @@ pub struct Worker {
 }
 
 pub struct SetEnabled(pub bool);
+pub struct GetConfig();
 
 impl Message<SetEnabled> for Worker {
     type Reply = ();
@@ -32,6 +34,18 @@ impl Message<SetEnabled> for Worker {
                 tracing::error!("Failed to stop stacks docker image: {}", e);
             }
         }
+    }
+}
+
+impl Message<GetConfig> for Worker {
+    type Reply = (u16, PathBuf);
+
+    async fn handle(
+        &mut self,
+        _msg: GetConfig,
+        _ctx: &mut Context<Self, Self::Reply>,
+    ) -> Self::Reply {
+        (self.port, self.config_dir.clone())
     }
 }
 
