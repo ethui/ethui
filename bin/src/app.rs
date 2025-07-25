@@ -49,6 +49,8 @@ impl EthUIApp {
                 commands::is_stacks_enabled,
                 #[cfg(feature = "stacks")]
                 ethui_stacks::commands::stacks_create,
+                #[cfg(feature = "stacks")]
+                ethui_stacks::commands::stacks_list,
                 ethui_settings::commands::settings_get,
                 ethui_settings::commands::settings_set,
                 ethui_settings::commands::settings_set_dark_mode,
