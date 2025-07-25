@@ -6,13 +6,13 @@ use std::{
 
 use ethui_types::prelude::*;
 use futures::{stream, StreamExt as _};
-use glob::glob;
 use kameo::prelude::*;
 use notify::{RecommendedWatcher, RecursiveMode};
 use notify_debouncer_full::{
     new_debouncer, DebounceEventResult, DebouncedEvent, Debouncer, RecommendedCache,
 };
 use tokio::task;
+use walkdir::{DirEntry, WalkDir};
 
 use crate::{abi::ForgeAbi, utils};
 
@@ -238,15 +238,44 @@ impl Actor for Worker {
 impl Worker {
     #[instrument(skip(self), level = "trace")]
     async fn scan_project(&mut self, root: &Path) -> Result<()> {
-        let pattern = root.join("out").join("**").join("*.json");
+        // TODO: read custom out dir from foundry.toml
+        let out_dir = root.join("out");
 
-        // Use spawn_blocking for the synchronous glob operation to avoid blocking the async runtime
-        let pattern_str = pattern.to_string_lossy().to_string();
-        let paths: Vec<PathBuf> = task::spawn_blocking(move || -> Result<Vec<PathBuf>> {
-            Ok(glob(&pattern_str)
-                .map_err(|e| color_eyre::eyre::eyre!("Glob pattern error: {}", e))?
-                .filter_map(|p| p.ok())
-                .collect::<Vec<_>>())
+        // Return early if out directory doesn't exist
+        if !out_dir.exists() {
+            return Ok(());
+        }
+
+        // Files to skip when scanning for ABIs
+        let skip_patterns = ["build-info", ".sol", "cache", "temp", "tmp"];
+
+        // Use spawn_blocking for the synchronous walkdir operation to avoid blocking the async runtime
+        let paths = task::spawn_blocking(move || -> Result<Vec<_>> {
+            let walker = WalkDir::new(&out_dir)
+                .into_iter()
+                .filter_entry(|e| {
+                    // Skip hidden directories and unwanted patterns
+                    if Self::is_hidden(e) {
+                        return false;
+                    }
+                    if let Some(name) = e.file_name().to_str() {
+                        !skip_patterns.iter().any(|pattern| name.contains(pattern))
+                    } else {
+                        true
+                    }
+                })
+                .filter_map(|e| e.ok())
+                .filter(|e| e.file_type().is_file())
+                .filter(|e| {
+                    // Only include .json files
+                    e.path()
+                        .extension()
+                        .and_then(|ext| ext.to_str())
+                        .map(|ext| ext == "json")
+                        .unwrap_or(false)
+                });
+
+            Ok(walker.map(|entry| entry.path().to_path_buf()).collect())
         })
         .await??;
 
@@ -379,26 +408,78 @@ impl Worker {
         Ok(())
     }
 
+    /// Helper function to check if a directory entry is hidden
+    /// Allows root directory (depth 0) to pass through
+    fn is_hidden(entry: &DirEntry) -> bool {
+        entry
+            .file_name()
+            .to_str()
+            .map(|s| entry.depth() > 0 && s.starts_with('.'))
+            .unwrap_or(false)
+    }
+
     /// Finds all project roots for Foundry projects (by locating foundry.toml files)
-    /// If nested foundry.toml files are found, such as in dependencies or lib folders, they will be ignored.
+    /// Uses depth-first search to stop searching deeper once foundry.toml is found.
+    /// Includes directory blacklist to avoid searching in node_modules, hidden directories, etc.
     #[instrument(skip_all, level = "trace")]
     async fn find_foundry_roots(&self) -> Result<HashSet<PathBuf>> {
-        let roots = self.roots.clone(); // Clone to move into async task
+        let roots = self.roots.clone();
 
-        // Process all roots in parallel using spawn_blocking for each glob operation
+        // Directory blacklist patterns to avoid (hidden directories handled by filter_entry)
+        let blacklist = [
+            "node_modules",
+            "target",
+            "build",
+            "dist",
+            "coverage",
+            "__pycache__",
+            "venv",
+        ];
+
+        // Process all roots in parallel using spawn_blocking
         let all_matches: Vec<_> = stream::iter(roots)
             .map(|root| {
                 task::spawn_blocking(move || {
-                    let pattern = root.join("**").join("foundry.toml");
-                    let pattern_str = pattern.to_string_lossy().to_string();
+                    let mut foundry_dirs = Vec::new();
+                    let mut visited_foundry_roots = HashSet::new();
 
-                    match glob(&pattern_str) {
-                        Ok(g) => g.filter_map(|p| p.ok()).collect::<Vec<PathBuf>>(),
-                        Err(e) => {
-                            tracing::warn!("Failed to glob pattern {}: {}", pattern_str, e);
-                            vec![]
+                    let walker = WalkDir::new(&root)
+                        .into_iter()
+                        .filter_entry(|e| {
+                            // Skip hidden directories and blacklisted directories
+                            if Self::is_hidden(e) {
+                                return false;
+                            }
+                            if let Some(name) = e.file_name().to_str() {
+                                !blacklist.contains(&name)
+                            } else {
+                                true
+                            }
+                        })
+                        .filter_map(|e| e.ok())
+                        .filter(|e| e.file_type().is_dir());
+
+                    for entry in walker {
+                        let dir_path = entry.path();
+                        let foundry_toml_path = dir_path.join("foundry.toml");
+
+                        // Check if this directory contains a foundry.toml file
+                        if foundry_toml_path.exists() {
+                            let dir_path_buf = dir_path.to_path_buf();
+
+                            // Only add if we haven't already found a foundry.toml in a parent directory
+                            let is_nested = visited_foundry_roots
+                                .iter()
+                                .any(|existing: &PathBuf| dir_path_buf.starts_with(existing));
+
+                            if !is_nested {
+                                foundry_dirs.push(dir_path_buf.clone());
+                                visited_foundry_roots.insert(dir_path_buf);
+                            }
                         }
                     }
+
+                    foundry_dirs
                 })
             })
             .buffer_unordered(5) // Process up to 5 root directories concurrently
@@ -414,29 +495,25 @@ impl Worker {
             .collect()
             .await;
 
-        // Flatten all matches and convert to directories
-        let all_dirs: Vec<PathBuf> = all_matches
-            .into_iter()
-            .flatten()
-            .filter_map(|p| p.parent().map(|parent| parent.to_path_buf()))
-            .collect();
-
-        // Remove duplicates and nested directories
+        // Flatten all matches and remove any remaining nested directories
+        let all_dirs: Vec<PathBuf> = all_matches.into_iter().flatten().collect();
         let mut sorted_dirs = all_dirs;
         sorted_dirs.sort();
 
         let mut result: HashSet<PathBuf> = HashSet::new();
         for dir in sorted_dirs {
             // Skip if this directory is a subdirectory of an already included directory
-            if result.contains(&dir) || result.iter().any(|other| dir.starts_with(other)) {
-                continue;
+            if !result.iter().any(|other| dir.starts_with(other)) {
+                // Remove any directories that are subdirectories of this one
+                result.retain(|other| !other.starts_with(&dir));
+                result.insert(dir);
             }
-            result.insert(dir);
         }
 
         Ok(result)
     }
 
+    #[instrument(level = "trace", skip_all, fields(path = ?abi.path))]
     fn insert_abi(&mut self, abi: ForgeAbi) {
         self.abis_by_path.insert(abi.path.clone(), abi);
         self.has_new_abis = true;

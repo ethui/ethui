@@ -28,6 +28,7 @@ regex.workspace = true
 kameo.workspace = true
 
 glob.workspace = true
+walkdir.workspace = true
 notify.workspace = true
 notify-debouncer-full.workspace = true
 
