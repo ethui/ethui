@@ -242,12 +242,10 @@ impl Worker {
         // TODO: read custom out dir from foundry.toml
         let out_dir = root.join("out");
 
-        // Return early if out directory doesn't exist
         if !out_dir.exists() {
             return Ok(());
         }
 
-        // Directories to skip when scanning for ABIs
         let skip_patterns = ["build-info", "cache", "temp", "tmp"];
 
         // Use spawn_blocking for the synchronous glob operation to avoid blocking the async runtime
