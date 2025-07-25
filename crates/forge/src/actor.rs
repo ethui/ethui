@@ -6,6 +6,7 @@ use std::{
 
 use ethui_types::prelude::*;
 use futures::{stream, StreamExt as _};
+use glob::glob;
 use kameo::prelude::*;
 use notify::{RecommendedWatcher, RecursiveMode};
 use notify_debouncer_full::{
@@ -236,7 +237,7 @@ impl Actor for Worker {
 }
 
 impl Worker {
-    #[instrument(skip(self), level = "trace")]
+    #[instrument(skip_all, fields(project = ?root), level = "trace")]
     async fn scan_project(&mut self, root: &Path) -> Result<()> {
         // TODO: read custom out dir from foundry.toml
         let out_dir = root.join("out");
@@ -246,36 +247,29 @@ impl Worker {
             return Ok(());
         }
 
-        // Files to skip when scanning for ABIs
-        let skip_patterns = ["build-info", ".sol", "cache", "temp", "tmp"];
+        // Directories to skip when scanning for ABIs
+        let skip_patterns = ["build-info", "cache", "temp", "tmp"];
 
-        // Use spawn_blocking for the synchronous walkdir operation to avoid blocking the async runtime
+        // Use spawn_blocking for the synchronous glob operation to avoid blocking the async runtime
+        let pattern = out_dir.join("*.sol").join("*.json");
+        let pattern_str = pattern.to_string_lossy().to_string();
         let paths = task::spawn_blocking(move || -> Result<Vec<_>> {
-            let walker = WalkDir::new(&out_dir)
-                .into_iter()
-                .filter_entry(|e| {
-                    // Skip hidden directories and unwanted patterns
-                    if Self::is_hidden(e) {
-                        return false;
-                    }
-                    if let Some(name) = e.file_name().to_str() {
-                        !skip_patterns.iter().any(|pattern| name.contains(pattern))
+            Ok(glob(&pattern_str)
+                .map_err(|e| color_eyre::eyre::eyre!("Glob pattern error: {}", e))?
+                .filter_map(|p| p.ok())
+                .filter(|path| {
+                    // Apply skip patterns to parent directory names
+                    if let Some(parent) = path
+                        .parent()
+                        .and_then(|p| p.file_name())
+                        .and_then(|n| n.to_str())
+                    {
+                        !skip_patterns.iter().any(|pattern| parent.contains(pattern))
                     } else {
                         true
                     }
                 })
-                .filter_map(|e| e.ok())
-                .filter(|e| e.file_type().is_file())
-                .filter(|e| {
-                    // Only include .json files
-                    e.path()
-                        .extension()
-                        .and_then(|ext| ext.to_str())
-                        .map(|ext| ext == "json")
-                        .unwrap_or(false)
-                });
-
-            Ok(walker.map(|entry| entry.path().to_path_buf()).collect())
+                .collect())
         })
         .await??;
 
@@ -348,7 +342,6 @@ impl Worker {
         }
     }
 
-    #[instrument(skip_all, level = "trace")]
     async fn update_foundry_roots(&mut self) -> Result<()> {
         let new_foundry_roots = self.find_foundry_roots().await?;
 
@@ -513,7 +506,7 @@ impl Worker {
         Ok(result)
     }
 
-    #[instrument(level = "trace", skip_all, fields(path = ?abi.path))]
+    #[instrument(level = "trace", skip_all, fields(project = abi.project, name = abi.name))]
     fn insert_abi(&mut self, abi: ForgeAbi) {
         self.abis_by_path.insert(abi.path.clone(), abi);
         self.has_new_abis = true;
