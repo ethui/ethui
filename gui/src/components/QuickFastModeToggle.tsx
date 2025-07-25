@@ -1,33 +1,21 @@
-import { Form } from "@ethui/ui/components/form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { AutoSubmitSwitch } from "@ethui/ui/components/form/auto-submit/switch";
 import { invoke } from "@tauri-apps/api/core";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { useSettings } from "#/store/useSettings";
 
 export function QuickFastModeToggle() {
-  const fastMode = useSettings((s) => s.settings?.fastMode || false);
+  const fastMode = useSettings((s) => s.settings?.fastMode);
 
-  const schema = z.object({
-    fastMode: z.boolean(),
-  });
-
-  type FastModeFormData = z.infer<typeof schema>;
-
-  const form = useForm<FastModeFormData>({
-    resolver: zodResolver(schema),
-    defaultValues: { fastMode },
-  });
-  const watcher = form.watch("fastMode");
-
-  useEffect(() => {
-    invoke("settings_set_fast_mode", { mode: watcher });
-  }, [watcher]);
+  // if settings aren't loaded yet, avoid rendering
+  if (fastMode === undefined) return null;
 
   return (
-    <Form form={form} onSubmit={() => {}} className="flex items-center ">
-      <Form.Switch name="fastMode" label="Fast Mode" />
-    </Form>
+    <AutoSubmitSwitch
+      name="fastMode"
+      label="Fast Mode"
+      value={fastMode}
+      callback={async (fastMode: boolean) =>
+        await invoke("settings_set_fast_mode", { mode: fastMode })
+      }
+    />
   );
 }
