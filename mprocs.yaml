@@ -1,0 +1,18 @@
+procs:
+  app:
+    cmd: ["pnpm", "dev"]
+  anvil:
+    cmd: ["anvil", "--host", "0.0.0.0"]
+  demo/web:
+    cwd: "../demo"
+    cmd: ["sh", "-c", "[ -f package.json ] && yarn dev || echo '../demo not found'"]
+  demo/contracts:
+    cwd: "../demo"
+    cmd: ["sh", "-c", "[ -f package.json ] && yarn eth-watch || echo '../demo not found'"]
+  ui/storybook:
+    cwd: "../ui"
+    cmd: ["sh", "-c", "[ -f package.json ] && yarn dev || echo '../ui not found'"]
+  explorer:
+    cwd: "../explorer"
+    cmd: ["sh", "-c", "[ -f package.json ] && yarn dev || echo '../explorer not found'"]
+
