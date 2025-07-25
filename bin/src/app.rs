@@ -135,7 +135,9 @@ impl EthUIApp {
     }
 
     pub async fn run(self) {
-        if !self.hidden {
+        let settings = ethui_settings::ask(ethui_settings::GetAll).await;
+        let start_minimized = settings.map(|s| s.start_minimized).unwrap_or(false);
+        if !self.hidden && !start_minimized {
             windows::main::show(self.app.handle()).await;
         }
 
