@@ -31,7 +31,7 @@ color-eyre.workspace = true
 glob.workspace = true
 notify.workspace = true
 notify-debouncer-full.workspace = true
-
+reqwest.workspace = true
 [dev-dependencies]
 tempfile.workspace = true
-reqwest.workspace = true
+
