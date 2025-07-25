@@ -68,7 +68,7 @@ export function AddressView({
           chainId={network.dedup_chain_id.chain_id}
           address={address}
           effigy
-          className="!h-5 !w-5"
+          className="h-5 w-5"
         />
       )}
       {text}
