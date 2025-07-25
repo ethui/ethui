@@ -22,14 +22,8 @@ interface WalletSidebarProps {
 
 export function WalletSidebar({ open, onClose }: WalletSidebarProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const networks = useNetworks((s) => s.networks);
-  const allWalletInfo = useWallets((s) => s.allWalletInfo);
 
-  const { wallets, networks: filteredNetworks } = useSidebarSearch(
-    allWalletInfo,
-    networks,
-    searchTerm,
-  );
+  const { wallets, networks } = useSidebarSearch(searchTerm);
 
   useEffect(() => {
     if (open) {
@@ -70,7 +64,7 @@ export function WalletSidebar({ open, onClose }: WalletSidebarProps) {
               <SidebarGroup className="flex flex-col space-y-3">
                 <WalletSelector wallets={wallets} />
 
-                <NetworkSelector networks={filteredNetworks} />
+                <NetworkSelector networks={networks} />
               </SidebarGroup>
             </SidebarContent>
           )}

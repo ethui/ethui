@@ -1,17 +1,16 @@
 import type { Network } from "@ethui/types/network";
 import { useMemo } from "react";
-import type { WalletInfo } from "#/store/useWallets";
+import { useNetworks } from "#/store/useNetworks";
+import { useWallets, type WalletInfo } from "#/store/useWallets";
 
 interface SearchResult {
   wallets: WalletInfo[];
   networks: Network[];
 }
 
-export function useSidebarSearch(
-  allWalletInfo: WalletInfo[] | undefined,
-  networks: Network[] | undefined,
-  searchTerm: string,
-): SearchResult {
+export function useSidebarSearch(searchTerm: string): SearchResult {
+  const networks = useNetworks((s) => s.networks);
+  const allWalletInfo = useWallets((s) => s.allWalletInfo);
   return useMemo(() => {
     if (!searchTerm) {
       return {
