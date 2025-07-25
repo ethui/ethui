@@ -1,4 +1,4 @@
-pub mod actor;
+mod actor;
 mod autostart;
 pub mod commands;
 mod init;
