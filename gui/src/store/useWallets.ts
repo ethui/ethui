@@ -12,12 +12,12 @@ interface State {
   allWalletInfo?: WalletInfo[];
 }
 
-interface WalletInfo {
+export interface WalletInfo {
   wallet: Wallet;
   addresses: AddressInfo[];
 }
 
-interface AddressInfo {
+export interface AddressInfo {
   walletName: string;
   key: string;
   address: Address;
