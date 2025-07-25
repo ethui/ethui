@@ -87,7 +87,7 @@ function NetworkButton({ network, isSelected, onSelect }: NetworkButtonProps) {
         name={network.name}
         status={network.status}
       />
-      {isSelected && <Check className="h-4 w-4" color="green" />}
+      {isSelected && <Check className="h-5 w-5" color="green" />}
     </Button>
   );
 }

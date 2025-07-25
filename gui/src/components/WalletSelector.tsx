@@ -122,15 +122,14 @@ function WalletAccordionItem({
               onClick={() => onSelect(wallet.name, addressInfo.key)}
             >
               <AddressView
-                className="gap-2 text-sm"
-                iconClassName="!h-5 !w-5"
+                noTextStyle
                 clickToCopy={false}
                 icon
                 contextMenu={false}
                 address={addressInfo.address}
               />
               {isCurrentWallet && addressInfo.key === currentAddress && (
-                <Check className="h-4 w-4" color="green" />
+                <Check className="h-5 w-5" color="green" />
               )}
             </Button>
           ))}

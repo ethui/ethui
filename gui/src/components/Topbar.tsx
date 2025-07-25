@@ -58,7 +58,6 @@ function WalletButton({ onClick }: WalletButtonProps) {
       <AddressView
         address={currentAddress}
         className="text-muted-foreground text-sm"
-        iconClassName="h-4 w-4"
         clickToCopy={false}
         icon={false}
         contextMenu={false}
