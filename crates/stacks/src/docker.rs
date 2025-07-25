@@ -269,15 +269,29 @@ impl DockerManager<ContainerRunning> {
             .send()
             .await
             .wrap_err_with(|| format!("Failed to send GET to {url}"))?;
+
         if !res.status().is_success() {
             return Err(eyre!("Failed to list stacks: {}", res.status()));
         }
-        let stacks: Vec<String> = res
+
+        let stacks: ListStacksResponse = res
             .json()
             .await
             .wrap_err("Failed to parse stacks response")?;
-        Ok(stacks)
+
+        Ok(stacks.data.into_iter().map(|stack| stack.slug).collect())
     }
+}
+//{"data":[{"status":"running","slug":"cenasetal"}
+#[derive(serde::Deserialize, Debug)]
+struct ListStacksResponse {
+    data: Vec<StackInfo>,
+}
+
+#[derive(serde::Deserialize, Debug)]
+struct StackInfo {
+    status: String,
+    slug: String,
 }
 
 impl DockerManager<ContainerNotRunning> {

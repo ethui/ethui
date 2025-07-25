@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { useCallback, useState } from "react";
+import { useInvoke } from "#/hooks/useInvoke";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useSettings } from "#/store/useSettings";
@@ -38,6 +39,7 @@ function SettingsStacks() {
   const [slug, setSlug] = useState("");
   const [createStatus, setCreateStatus] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
+  const { data: stacks, refetch } = useInvoke<string[]>("stacks_list");
 
   const handleCreateStack = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,6 +49,7 @@ function SettingsStacks() {
       await invoke("stacks_create", { slug });
       setCreateStatus("Stack created successfully.");
       setSlug("");
+      refetch();
     } catch (err: any) {
       setCreateStatus(err?.toString() || "Failed to create stack");
     } finally {
@@ -95,6 +98,12 @@ function SettingsStacks() {
           </div>
         )}
       </form>
+
+      {stacks?.map((stack) => (
+        <div className="flex flex-wrap gap-2" key={stack}>
+          <p>{stack}</p>
+        </div>
+      ))}
     </>
   );
 }
