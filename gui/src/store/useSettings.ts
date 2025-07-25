@@ -20,7 +20,6 @@ const store: StateCreator<Store> = (set) => ({
 
   async reload() {
     const settings = await invoke<GeneralSettings>("settings_get");
-    console.log("reloaded", settings.fastMode);
 
     set({ settings });
   },
