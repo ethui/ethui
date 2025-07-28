@@ -107,18 +107,18 @@ function WalletAccordionItem({
           <Button
             key={addressInfo.key}
             variant={"ghost"}
-            className="flex h-auto w-full items-center justify-between gap-2 py-2 pr-2 pl-4"
+            className="relative flex h-auto w-full items-center justify-between p-0"
             onClick={() => onSelect(wallet.name, addressInfo.key)}
           >
             <AddressView
               noTextStyle
               clickToCopy={false}
               icon
-              contextMenu={false}
               address={addressInfo.address}
+              className="w-full py-2 pr-2 pl-4"
             />
             {isCurrentWallet && addressInfo.key === currentAddress && (
-              <Check className="h-5 w-5" color="green" />
+              <Check className="absolute right-2" color="green" />
             )}
           </Button>
         ))}

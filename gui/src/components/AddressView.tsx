@@ -81,30 +81,43 @@ export function AddressView({
     addressContent
   );
 
-  const clearAlias = () => {
-    invoke("settings_set_alias", { address, alias: null });
-    refetch();
-  };
-
   if (!contextMenu) return content;
 
   return (
     <ContextMenu>
-      <ContextMenuTrigger className="cursor-pointer">
-        {content}
-      </ContextMenuTrigger>
+      <ContextMenuTrigger asChild>{content}</ContextMenuTrigger>
       <ContextMenuContent>
-        <ContextMenuItem onClick={() => tauriClipboard.writeText(address)}>
+        <ContextMenuItem
+          onClick={(e) => {
+            e.stopPropagation();
+            tauriClipboard.writeText(address);
+          }}
+        >
           Copy to clipboard
         </ContextMenuItem>
-        <ContextMenuItem onClick={() => setAliasFormOpen(true)}>
+        <ContextMenuItem
+          onClick={(e) => {
+            e.stopPropagation();
+            setAliasFormOpen(true);
+          }}
+        >
           Set alias
         </ContextMenuItem>
-        <ContextMenuItem onClick={clearAlias}>Clear alias</ContextMenuItem>
+        <ContextMenuItem
+          onClick={(e) => {
+            e.stopPropagation();
+            invoke("settings_set_alias", { address, alias: null });
+            refetch();
+          }}
+        >
+          Clear alias
+        </ContextMenuItem>
         <ContextMenuItem>
-          <Link target="_blank" to={`${network.explorer_url}${address}`}>
-            Open in explorer
-          </Link>
+          <PropagationStopper>
+            <Link target="_blank" to={`${network.explorer_url}${address}`}>
+              Open in explorer
+            </Link>
+          </PropagationStopper>
         </ContextMenuItem>
       </ContextMenuContent>
 
