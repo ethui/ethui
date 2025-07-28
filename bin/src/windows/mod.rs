@@ -20,6 +20,15 @@ pub fn build_window(
         .inner_size(w, h)
         .on_menu_event(menu::event_handler);
 
+    let name = if cfg!(debug_assertions) {
+        format!("ethui-dev - {label}")
+    } else {
+        format!("ethui - {label}")
+    };
+
+    #[cfg(not(target_os = "macos"))]
+    let builder = builder.title(name);
+
     #[cfg(target_os = "macos")]
     let builder = builder
         .title("")
