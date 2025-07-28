@@ -103,15 +103,17 @@ export function AddressView({
         >
           Set alias
         </ContextMenuItem>
-        <ContextMenuItem
-          onClick={(e) => {
-            e.stopPropagation();
-            invoke("settings_set_alias", { address, alias: null });
-            refetch();
-          }}
-        >
-          Clear alias
-        </ContextMenuItem>
+        {alias && (
+          <ContextMenuItem
+            onClick={(e) => {
+              e.stopPropagation();
+              invoke("settings_set_alias", { address, alias: null });
+              refetch();
+            }}
+          >
+            Clear alias
+          </ContextMenuItem>
+        )}
         <ContextMenuItem>
           <PropagationStopper>
             <Link target="_blank" to={`${network.explorer_url}${address}`}>

@@ -4,7 +4,9 @@ import { ContractCallForm } from "#/components/ContractCallForm";
 
 export const Route = createFileRoute("/home/_l/contracts/_l/$chainId/$address")(
   {
-    beforeLoad: ({ params }) => ({ breadcrumb: params.address }),
+    beforeLoad: ({ params }) => ({
+      breadcrumb: { type: "address", value: params.address },
+    }),
     loader: ({
       params,
     }: {
