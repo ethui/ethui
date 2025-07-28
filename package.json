@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@ethui/ui": "^0.0.92",
-    "@tauri-apps/cli": "^2.6.2",
+    "@tauri-apps/cli": "^2.7.1",
     "typescript": "5.8.2"
   },
   "engines": {
