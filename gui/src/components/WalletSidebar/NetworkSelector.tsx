@@ -48,7 +48,7 @@ interface NetworkGridProps {
 
 function NetworkGrid({ networks, currentNetwork, onSelect }: NetworkGridProps) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap">
       {networks.map((network) => (
         <NetworkButton
           key={network.name}
@@ -71,7 +71,7 @@ function NetworkButton({ network, isSelected, onSelect }: NetworkButtonProps) {
   return (
     <Button
       variant={"ghost"}
-      className="flex h-auto w-full items-center justify-between gap-2 px-2"
+      className="flex h-auto w-full items-center justify-between px-2"
       onClick={() => onSelect(network.name)}
     >
       <ChainView
