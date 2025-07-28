@@ -58,7 +58,7 @@ export function AddressView({
   const addressContent = (
     <div
       className={cn(
-        "flex items-center gap-x-2 font-mono hover:bg-accent",
+        "flex items-center gap-x-2 font-mono",
         noTextStyle ? "" : "text-base",
         className,
       )}
