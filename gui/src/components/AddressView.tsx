@@ -33,6 +33,8 @@ interface Props {
   contextMenu?: boolean;
   icon?: boolean;
   noTextStyle?: boolean;
+  clickToCopy?: boolean;
+  className?: string;
 }
 
 export function AddressView({
@@ -40,6 +42,8 @@ export function AddressView({
   contextMenu = true,
   icon = false,
   noTextStyle = false,
+  clickToCopy = true,
+  className,
 }: Props) {
   const network = useNetworks((s) => s.current);
   const address = getAddress(addr);
@@ -51,51 +55,69 @@ export function AddressView({
   if (!network) return;
 
   const text = alias ? alias : truncateHex(address);
-  const content = (
-    <ClickToCopy text={address}>
-      <div
-        className={cn(
-          "flex items-center gap-x-1 font-mono",
-          noTextStyle ? "" : "text-base",
-        )}
-      >
-        {icon && (
-          <IconAddress
-            chainId={network.dedup_chain_id.chain_id}
-            address={address}
-            effigy
-            className="h-4"
-          />
-        )}
-        {text}
-      </div>
-    </ClickToCopy>
+  const addressContent = (
+    <div
+      className={cn(
+        "flex items-center gap-x-2 font-mono hover:bg-accent",
+        noTextStyle ? "" : "text-base",
+        className,
+      )}
+    >
+      {icon && (
+        <IconAddress
+          chainId={network.dedup_chain_id.chain_id}
+          address={address}
+          effigy
+          className="h-5 w-5"
+        />
+      )}
+      {text}
+    </div>
   );
 
-  const clearAlias = () => {
-    invoke("settings_set_alias", { address, alias: null });
-    refetch();
-  };
+  const content = clickToCopy ? (
+    <ClickToCopy text={address}>{addressContent}</ClickToCopy>
+  ) : (
+    addressContent
+  );
 
   if (!contextMenu) return content;
 
   return (
     <ContextMenu>
-      <ContextMenuTrigger className="cursor-pointer">
-        {content}
-      </ContextMenuTrigger>
+      <ContextMenuTrigger asChild>{content}</ContextMenuTrigger>
       <ContextMenuContent>
-        <ContextMenuItem onClick={() => tauriClipboard.writeText(address)}>
+        <ContextMenuItem
+          onClick={(e) => {
+            e.stopPropagation();
+            tauriClipboard.writeText(address);
+          }}
+        >
           Copy to clipboard
         </ContextMenuItem>
-        <ContextMenuItem onClick={() => setAliasFormOpen(true)}>
+        <ContextMenuItem
+          onClick={(e) => {
+            e.stopPropagation();
+            setAliasFormOpen(true);
+          }}
+        >
           Set alias
         </ContextMenuItem>
-        <ContextMenuItem onClick={clearAlias}>Clear alias</ContextMenuItem>
+        <ContextMenuItem
+          onClick={(e) => {
+            e.stopPropagation();
+            invoke("settings_set_alias", { address, alias: null });
+            refetch();
+          }}
+        >
+          Clear alias
+        </ContextMenuItem>
         <ContextMenuItem>
-          <Link target="_blank" to={`${network.explorer_url}${address}`}>
-            Open in explorer
-          </Link>
+          <PropagationStopper>
+            <Link target="_blank" to={`${network.explorer_url}${address}`}>
+              Open in explorer
+            </Link>
+          </PropagationStopper>
         </ContextMenuItem>
       </ContextMenuContent>
 
