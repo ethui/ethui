@@ -182,6 +182,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+          APTABASE_API: ${{ secrets.APTABASE_API }}
+
           # macOS signing
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
@@ -194,7 +196,7 @@ jobs:
 
         with:
           releaseId: ${{ needs.setup.outputs.release_id }}
-          args: ${{ matrix.args }}
+          args: ${{ matrix.args }} --features production
 
   publish:
     needs: [setup, app]

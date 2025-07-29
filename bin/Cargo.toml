@@ -57,6 +57,7 @@ ethui-token-list.workspace = true
 
 [features]
 default = []
+production = ["aptabase"]
 forge-traces = [
   "dep:ethui-forge-traces",
   "ethui-args/forge-traces",
