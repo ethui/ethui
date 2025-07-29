@@ -120,7 +120,7 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: install dependencies (ubuntu)
+      - name: [linux] install dependencies
         if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
@@ -129,6 +129,16 @@ jobs:
       - uses: dtolnay/rust-toolchain@nightly
         with:
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: [macos] install rust
+        if: matrix.platform == 'macos-latest'
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+
+      - name: [linux] install rust
+        if: matrix.platform != 'macos-latest'
+        uses: dtolnay/rust-toolchain@nightly
 
       - uses: Swatinem/rust-cache@v2
         with:
