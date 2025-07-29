@@ -189,6 +189,8 @@ jobs:
         with:
           releaseId: ${{ needs.setup.outputs.release_id }}
           args: ${{ matrix.args }}
+          includeUpdaterJson: true
+          updaterJsonKeepUniversal: true
 
   publish:
     needs: [setup, app]
