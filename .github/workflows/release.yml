@@ -181,7 +181,7 @@ jobs:
       - name: macos - Install Apple API Key
         if: matrix.platform == 'macos-latest'
         run: |
-          echo ${{ secrets.APPLE_API_KEY }} > /tmp/apple_api_key.p8
+          echo "${{ secrets.APPLE_API_KEY }}" | base64 -d > /tmp/apple_api_key.p8
 
       - uses: tauri-apps/tauri-action@v0
         env:
