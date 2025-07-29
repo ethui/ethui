@@ -120,7 +120,7 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: [linux] install dependencies
+      - name: linux - install dependencies
         if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
@@ -130,13 +130,13 @@ jobs:
         with:
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
-      - name: [macos] install rust
+      - name: macos - install rust
         if: matrix.platform == 'macos-latest'
         uses: dtolnay/rust-toolchain@nightly
         with:
           targets: aarch64-apple-darwin,x86_64-apple-darwin
 
-      - name: [linux] install rust
+      - name: linux - install rust
         if: matrix.platform != 'macos-latest'
         uses: dtolnay/rust-toolchain@nightly
 
@@ -154,7 +154,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: [macos] Import Apple developer certificate
+      - name: macos - Import Apple developer certificate
         if: matrix.platform == 'macos-latest'
         env:
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
@@ -170,7 +170,7 @@ jobs:
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" build.keychain
           security find-identity -v -p codesigning build.keychain
 
-      - name: [macos] Verify Certificate
+      - name: macos - Verify Certificate
         if: matrix.platform == 'macos-latest'
         run: |
           CERT_INFO=$(security find-identity -v -p codesigning build.keychain | grep "Developer ID Application")
