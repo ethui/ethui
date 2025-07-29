@@ -178,11 +178,6 @@ jobs:
           echo "CERT_ID=$CERT_ID" >> $GITHUB_ENV
           echo "Certificate imported."
 
-      - name: macos - Install Apple API Key
-        if: matrix.platform == 'macos-latest'
-        run: |
-          echo "${{ secrets.APPLE_API_KEY }}" | base64 -d > /tmp/apple_api_key.p8
-
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -191,11 +186,11 @@ jobs:
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           APPLE_SIGNING_IDENTITY: ${{ env.CERT_ID }}
-          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
 
           # macOS notarization
-          APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
-          APPLE_API_KEY_PATH: /tmp/apple_api_key.p8
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
 
         with:
           releaseId: ${{ needs.setup.outputs.release_id }}
