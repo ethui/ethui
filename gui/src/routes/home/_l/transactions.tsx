@@ -33,6 +33,7 @@ import { HashView } from "#/components/HashView";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
+import { useEventListener } from "#/hooks/useEventListener";
 
 export const Route = createFileRoute("/home/_l/transactions")({
   beforeLoad: () => ({ breadcrumb: "Transactions" }),
@@ -95,6 +96,8 @@ function Txs() {
       setItems([...newItems, ...items]);
     });
   };
+
+  useEventListener("txs-updated", loadNew);
 
   useEffect(() => {
     // TODO: does this actually depend on these two values?
