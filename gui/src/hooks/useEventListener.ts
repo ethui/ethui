@@ -8,7 +8,7 @@ type Event =
   | "txs-updated"
   | "update-ready";
 
-type Callback = (() => unknown) | ((event: unknown) => unknown);
+type Callback = (event?: any) => unknown;
 
 export function useEventListener({
   event,

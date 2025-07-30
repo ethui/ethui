@@ -126,7 +126,7 @@ impl EthUIApp {
             let _ = system_tray::build(handle);
 
             #[cfg(all(feature = "updater", any(debug_assertions, target_os = "macos")))]
-            let _ = updater::spawn(handle.clone());
+            updater::spawn(handle.clone());
             Ok(())
         });
 

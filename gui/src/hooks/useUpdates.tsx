@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import { useEventListener } from "#/hooks/useEventListener";
 import { useInvoke } from "./useInvoke";
 
+type UpdateReady = { version: string };
+
 export function useUpdates() {
   const isMacos = platform() === "macos";
 
@@ -17,9 +19,10 @@ function useAutoUpdates({ enabled }: { enabled: boolean }) {
   useEventListener({
     event: "update-ready",
     enabled,
-    callback: (e) => {
+    callback: ({ payload, ...rest }: { payload: UpdateReady }) => {
+      console.log(payload, rest);
       toast({
-        title: "New release automatically installed. Restart to apply.",
+        title: `Version ${payload.version} automatically installed. Restart to apply.`,
         action: (
           <ToastAction altText="Restart now" asChild>
             <button type="button" onClick={relaunch}>

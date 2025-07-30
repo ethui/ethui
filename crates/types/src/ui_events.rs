@@ -1,4 +1,5 @@
 use serde::Serialize;
+use serde_json;
 
 #[derive(Debug, Clone)]
 pub struct DialogOpen {
@@ -24,6 +25,7 @@ pub struct DialogSend {
 }
 
 #[derive(Debug, Serialize, Clone)]
+#[serde(untagged)]
 pub enum UINotify {
     #[allow(unused)]
     WalletsChanged,
@@ -51,6 +53,20 @@ impl UINotify {
             Self::ContractsUpdated => "contracts-updated",
             Self::SettingsChanged => "settings-changed",
             Self::UpdateReady { .. } => "update-ready",
+        }
+    }
+
+    pub fn body(&self) -> Option<serde_json::Value> {
+        match self {
+            Self::WalletsChanged => None,
+            Self::NetworksChanged => None,
+            Self::CurrentNetworkChanged => None,
+            Self::TxsUpdated => None,
+            Self::PeersUpdated => None,
+            Self::BalancesUpdated => None,
+            Self::ContractsUpdated => None,
+            Self::SettingsChanged => None,
+            Self::UpdateReady { .. } => None,
         }
     }
 }
