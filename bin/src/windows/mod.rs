@@ -20,6 +20,9 @@ pub fn build_window(
         .inner_size(w, h)
         .on_menu_event(menu::event_handler);
 
+    #[cfg(not(target_os = "macos"))]
+    let builder = builder.title(window_title(label));
+
     #[cfg(target_os = "macos")]
     let builder = builder
         .title("")
@@ -47,4 +50,17 @@ pub(crate) async fn all_windows_focus(app: &AppHandle) {
     }
 
     main::show(app).await;
+}
+
+#[allow(dead_code)]
+fn window_title(name: &str) -> String {
+    #[cfg(debug_assertions)]
+    {
+        format!("ethui-dev - {name}")
+    }
+
+    #[cfg(not(debug_assertions))]
+    {
+        format!("ethui - {name}")
+    }
 }

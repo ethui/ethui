@@ -1,5 +1,5 @@
 {
-  "productName": "ethui (dev)",
+  "productName": "ethui-dev",
   "identifier": "dev.ethui.dev-build",
   "build": {
     "beforeDevCommand": "pnpm --filter @ethui/gui dev",
