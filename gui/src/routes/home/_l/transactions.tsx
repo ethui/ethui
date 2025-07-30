@@ -25,7 +25,7 @@ import {
   MoveUpRight,
   ReceiptText,
 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { type Abi, type Address, formatEther, formatGwei } from "viem";
 import { AddressView } from "#/components/AddressView";
 import { Datapoint } from "#/components/Datapoint";
@@ -49,7 +49,6 @@ function Txs() {
   const [items, setItems] = useState<PaginatedTx[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
-  const wrapperRef = useRef<HTMLDivElement>(null);
 
   let lastKnown = null;
   if (items.at(-1)) {
@@ -76,7 +75,6 @@ function Txs() {
       max: pageSize,
       lastKnown,
     }).then((newItems) => {
-      console.log(newItems);
       if (newItems.length < pageSize) {
         setHasMore(false);
       }
@@ -95,12 +93,10 @@ function Txs() {
       max: pageSize,
       firstKnown,
     }).then((newItems) => {
-      console.log(newItems.length);
       setItems([...newItems, ...items]);
     });
   };
 
-  console.log(items.length);
   useEventListener("txs-updated", loadNew);
 
   useEffect(() => {
@@ -114,7 +110,7 @@ function Txs() {
   if (!account || !chainId) return null;
 
   return (
-    <div className="flex w-full flex-col items-center gap-2" ref={wrapperRef}>
+    <div className="flex w-full flex-col items-center gap-2">
       <Accordion type="multiple" className="w-full">
         <AnimatePresence initial={animating}>
           {items.map((tx) => (
@@ -143,7 +139,6 @@ function Txs() {
         isLoading={loading}
         hasMore={hasMore}
         threshold={0.5}
-        root={wrapperRef.current}
       >
         {hasMore && <LoaderCircle className="animate-spin" />}
       </InfiniteScroll>
