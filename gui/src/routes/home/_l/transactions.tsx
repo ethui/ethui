@@ -25,12 +25,11 @@ import {
   MoveUpRight,
   ReceiptText,
 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { type Abi, type Address, formatEther, formatGwei } from "viem";
 import { AddressView } from "#/components/AddressView";
 import { Datapoint } from "#/components/Datapoint";
 import { HashView } from "#/components/HashView";
-import { useEventListener } from "#/hooks/useEventListener";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
@@ -49,20 +48,12 @@ function Txs() {
   const [items, setItems] = useState<PaginatedTx[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
-  const wrapperRef = useRef<HTMLDivElement>(null);
 
   let lastKnown = null;
   if (items.at(-1)) {
     lastKnown = {
       blockNumber: items.at(-1)?.blockNumber,
       position: items.at(-1)?.position,
-    };
-  }
-  let firstKnown = null;
-  if (items.at(0)) {
-    firstKnown = {
-      blockNumber: items.at(0)?.blockNumber,
-      position: items.at(0)?.position,
     };
   }
 
@@ -76,7 +67,6 @@ function Txs() {
       max: pageSize,
       lastKnown,
     }).then((newItems) => {
-      console.log(newItems);
       if (newItems.length < pageSize) {
         setHasMore(false);
       }
@@ -87,21 +77,6 @@ function Txs() {
       }, 200);
     });
   }, [account, chainId, items, lastKnown]);
-
-  const loadNew = () => {
-    invoke<PaginatedTx[]>("db_get_newer_transactions", {
-      address: account,
-      chainId,
-      max: pageSize,
-      firstKnown,
-    }).then((newItems) => {
-      console.log(newItems.length);
-      setItems([...newItems, ...items]);
-    });
-  };
-
-  console.log(items.length);
-  useEventListener("txs-updated", loadNew);
 
   useEffect(() => {
     // TODO: does this actually depend on these two values?
@@ -114,7 +89,7 @@ function Txs() {
   if (!account || !chainId) return null;
 
   return (
-    <div className="flex w-full flex-col items-center gap-2" ref={wrapperRef}>
+    <div className="flex w-full flex-col items-center gap-2">
       <Accordion type="multiple" className="w-full">
         <AnimatePresence initial={animating}>
           {items.map((tx) => (
@@ -130,9 +105,7 @@ function Txs() {
                 <AccordionTrigger>
                   <Summary account={account} tx={tx} />
                 </AccordionTrigger>
-                <AccordionContent>
-                  <Details tx={tx} chainId={chainId} />
-                </AccordionContent>
+                <AccordionContent>content</AccordionContent>
               </motion.div>
             </AccordionItem>
           ))}
@@ -143,7 +116,6 @@ function Txs() {
         isLoading={loading}
         hasMore={hasMore}
         threshold={0.5}
-        root={wrapperRef.current}
       >
         {hasMore && <LoaderCircle className="animate-spin" />}
       </InfiniteScroll>
