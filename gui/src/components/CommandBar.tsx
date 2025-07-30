@@ -29,7 +29,7 @@ interface CommandBarContextProps {
 
 const CommandBarContext = createContext<CommandBarContextProps>({
   open: false,
-  setOpen: () => {},
+  setOpen: () => { },
 });
 
 export function CommandBarProvider({ children }: { children: ReactNode }) {
@@ -141,7 +141,6 @@ function WalletCommands({ onClose }: { onClose: () => void }) {
       s.setCurrentAddress,
     ]),
   );
-  console.log(allWalletInfo);
 
   return (
     <CommandGroup heading="Wallets">

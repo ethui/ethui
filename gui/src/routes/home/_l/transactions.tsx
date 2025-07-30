@@ -67,7 +67,6 @@ function Txs() {
 
   const next = useCallback(async () => {
     setLoading(true);
-    console.log("next", lastKnown);
 
     invoke<PaginatedTx[]>("db_get_older_transactions", {
       address: account,

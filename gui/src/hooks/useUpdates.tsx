@@ -19,8 +19,7 @@ function useAutoUpdates({ enabled }: { enabled: boolean }) {
   useEventListener({
     event: "update-ready",
     enabled,
-    callback: ({ payload, ...rest }: { payload: UpdateReady }) => {
-      console.log(payload, rest);
+    callback: ({ payload }: { payload: UpdateReady }) => {
       toast({
         title: `Version ${payload.version} automatically installed. Restart to apply.`,
         action: (
