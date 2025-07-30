@@ -55,18 +55,4 @@ impl UINotify {
             Self::UpdateReady { .. } => "update-ready",
         }
     }
-
-    pub fn body(&self) -> Option<serde_json::Value> {
-        match self {
-            Self::WalletsChanged => None,
-            Self::NetworksChanged => None,
-            Self::CurrentNetworkChanged => None,
-            Self::TxsUpdated => None,
-            Self::PeersUpdated => None,
-            Self::BalancesUpdated => None,
-            Self::ContractsUpdated => None,
-            Self::SettingsChanged => None,
-            Self::UpdateReady { .. } => None,
-        }
-    }
 }
