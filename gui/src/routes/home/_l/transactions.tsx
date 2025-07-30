@@ -56,6 +56,13 @@ function Txs() {
       position: items.at(-1)?.position,
     };
   }
+  let firstKnown = null;
+  if (items.at(0)) {
+    firstKnown = {
+      blockNumber: items.at(0)?.blockNumber,
+      position: items.at(0)?.position,
+    };
+  }
 
   const next = useCallback(async () => {
     setLoading(true);
@@ -77,6 +84,17 @@ function Txs() {
       }, 200);
     });
   }, [account, chainId, items, lastKnown]);
+
+  const loadNew = () => {
+    invoke<PaginatedTx[]>("db_get_newer_transactions", {
+      address: account,
+      chainId,
+      max: pageSize,
+      firstKnown,
+    }).then((newItems) => {
+      setItems([...newItems, ...items]);
+    });
+  };
 
   useEffect(() => {
     // TODO: does this actually depend on these two values?
@@ -105,7 +123,9 @@ function Txs() {
                 <AccordionTrigger>
                   <Summary account={account} tx={tx} />
                 </AccordionTrigger>
-                <AccordionContent>content</AccordionContent>
+                <AccordionContent>
+                  <Details tx={tx} chainId={chainId} />
+                </AccordionContent>
               </motion.div>
             </AccordionItem>
           ))}
