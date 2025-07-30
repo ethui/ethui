@@ -183,7 +183,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
           # app environment
-          APTABASE_API: ${{ secrets.APTABASE_API }}
+          APTABASE_KEY: ${{ secrets.APTABASE_KEY }}
 
           # auto-updater signing
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
