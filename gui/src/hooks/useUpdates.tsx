@@ -1,18 +1,16 @@
 import { ToastAction } from "@ethui/ui/components/shadcn/toast";
-import { useEventListener } from "#/hooks/useEventListener";
 import { toast } from "@ethui/ui/hooks/use-toast";
-import { useEffect, useState } from "react";
-import { useInvoke } from "./useInvoke";
-import { relaunch } from "@tauri-apps/plugin-process";
 import { platform } from "@tauri-apps/plugin-os";
+import { relaunch } from "@tauri-apps/plugin-process";
+import { useEffect, useState } from "react";
+import { useEventListener } from "#/hooks/useEventListener";
+import { useInvoke } from "./useInvoke";
 
 export function useUpdates() {
   const isMacos = platform() === "macos";
 
-  // useAutoUpdates({ enabled: !!isMacos });
-  // useNoticeNewVersion({ enabled: !isMacos });
-  useAutoUpdates({ enabled: true });
-  useNoticeNewVersion({ enabled: false });
+  useAutoUpdates({ enabled: !!isMacos });
+  useNoticeNewVersion({ enabled: !isMacos });
 }
 
 function useAutoUpdates({ enabled }: { enabled: boolean }) {

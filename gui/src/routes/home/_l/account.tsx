@@ -1,9 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-
 import { AddressView } from "#/components/AddressView";
 import { BalancesList } from "#/components/BalancesList";
 import { useWallets } from "#/store/useWallets";
-import { Button } from "@ethui/ui/components/shadcn/button";
 
 export const Route = createFileRoute("/home/_l/account")({
   beforeLoad: () => ({ breadcrumb: "Account" }),
