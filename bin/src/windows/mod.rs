@@ -53,7 +53,7 @@ pub(crate) async fn all_windows_focus(app: &AppHandle) {
 }
 
 #[allow(dead_code)]
-fn window_title(name: String) -> String {
+fn window_title(name: &str) -> String {
     #[cfg(debug_assertions)]
     {
         format!("ethui-dev - {name}")
