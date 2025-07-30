@@ -28,7 +28,6 @@ function useAutoUpdates({ enabled }: { enabled: boolean }) {
           </ToastAction>
         ),
       });
-      console.log(e);
     },
   });
 }
