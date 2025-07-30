@@ -3106,6 +3106,7 @@ version = "1.20.2"
 dependencies = [
  "alloy",
  "color-eyre",
+ "ethui-broadcast",
  "ethui-connections",
  "ethui-db",
  "ethui-dialogs",

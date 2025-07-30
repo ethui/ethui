@@ -1,3 +1,4 @@
+use ethui_types::ui_events::UINotify;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tracing::info;
@@ -17,7 +18,15 @@ impl ForgeTestTraces {
     pub async fn run(self) -> Result<serde_json::Value> {
         info!("Processing {} forge test traces", self.traces.len());
 
-        // TODO: Forward traces to UI or store for further processing
+        // Send traces to UI via broadcast system
+        let trace_data: Vec<serde_json::Value> = self
+            .traces
+            .iter()
+            .map(|trace| serde_json::to_value(trace).unwrap_or_default())
+            .collect();
+
+        ethui_broadcast::ui_notify(UINotify::ForgeTestTracesUpdated(trace_data)).await;
+        info!("Sent forge test traces notification to UI");
 
         Ok(json!({
             "status": "processed",

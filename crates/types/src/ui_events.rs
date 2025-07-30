@@ -34,6 +34,7 @@ pub enum UINotify {
     BalancesUpdated,
     ContractsUpdated,
     SettingsChanged,
+    ForgeTestTracesUpdated(Vec<serde_json::Value>),
 }
 
 impl UINotify {
@@ -47,6 +48,7 @@ impl UINotify {
             Self::BalancesUpdated => "balances-updated",
             Self::ContractsUpdated => "contracts-updated",
             Self::SettingsChanged => "settings-changed",
+            Self::ForgeTestTracesUpdated(_) => "forge-test-traces-updated",
         }
     }
 }
