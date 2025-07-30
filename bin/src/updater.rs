@@ -21,7 +21,6 @@ pub(crate) fn spawn(handle: tauri::AppHandle) {
 #[instrument(level = "info", skip_all)]
 async fn update(handle: &tauri::AppHandle) -> color_eyre::Result<()> {
     if let Some(update) = handle.updater()?.check().await? {
-        dbg!("update");
         let mut downloaded = 0;
         let mut percent = 0.;
         let mut last_percent = -0.1;
@@ -41,9 +40,7 @@ async fn update(handle: &tauri::AppHandle) -> color_eyre::Result<()> {
                         }
                     }
                 },
-                || {
-                    info!(percent = 100.);
-                },
+                || info!(percent = 100.),
             )
             .await?;
 

@@ -96,8 +96,8 @@ jobs:
           shared-key: "debug"
           save-if: ${{ github.ref == 'refs/heads/main' }}
 
-      - run: cargo check
-      - run: cargo clippy --all -- -D clippy::all -D clippy::dbg_macro
+      - run: cargo check --all-features
+      - run: cargo clippy --workspace --all-features -- -D clippy::all -D clippy::dbg_macro
 
       - uses: taiki-e/install-action@v2
         with:
