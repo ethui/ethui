@@ -5,6 +5,7 @@ categories:
   - title: "🚀 New features"
     labels:
       - "A-feature"
+      - "A-enhancement"
 
   - title: "💥 Breaking changes"
     labels:
@@ -27,7 +28,6 @@ categories:
       - "dependencies"
 
 exclude-labels:
-  - "A-enhancement"
   - "A-refactor"
 
 
