@@ -23,8 +23,17 @@
     "icon": ["icons/128x128.png"],
     "active": true,
     "targets": "all",
+    "createUpdaterArtifacts": true,
     "macOS": {
       "frameworks": ["../assets/libusb-1.0.dylib"]
+    }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDZCQTRENEVGNzA3RjEwODAKUldTQUVIOXc3OVNrYTVLSmhwM3hsTEY4S2lOd0pzTXpTNVhiTUo3R0VwKzdnM1Y5Q3Bnajh2SWgK",
+      "endpoints": [
+        "https://github.com/ethui/ethui/releases/latest/download/latest.json"
+      ]
     }
   }
 }

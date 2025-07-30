@@ -182,6 +182,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+          # auto-updater signing
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+
           # macOS signing
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
@@ -195,6 +199,8 @@ jobs:
         with:
           releaseId: ${{ needs.setup.outputs.release_id }}
           args: ${{ matrix.args }}
+          includeUpdaterJson: true
+          updaterJsonKeepUniversal: true
 
   publish:
     needs: [setup, app]
