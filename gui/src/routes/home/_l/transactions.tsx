@@ -97,7 +97,7 @@ function Txs() {
     });
   };
 
-  useEventListener("txs-updated", loadNew);
+  useEventListener({ event: "txs-updated", callback: loadNew });
 
   useEffect(() => {
     // TODO: does this actually depend on these two values?

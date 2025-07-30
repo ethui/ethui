@@ -5,16 +5,28 @@ type Event =
   | "peers-updated"
   | "settings-changed"
   | "contracts-updated"
-  | "txs-updated";
+  | "txs-updated"
+  | "update-ready";
 
-export function useEventListener(event: Event, callback: () => unknown) {
+type Callback = (() => unknown) | ((event: unknown) => unknown);
+
+export function useEventListener({
+  event,
+  callback,
+  enabled = true,
+}: {
+  event: Event;
+  callback: Callback;
+  enabled?: boolean;
+}) {
   const view = getCurrentWebviewWindow();
 
   useEffect(() => {
+    if (!enabled) return;
     const unlisten = view.listen(event, callback);
 
     return () => {
       unlisten.then((cb) => cb());
     };
-  }, [event, callback, view.listen]);
+  }, [enabled, event, callback, view.listen]);
 }

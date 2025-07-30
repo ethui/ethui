@@ -7,6 +7,8 @@ use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
 #[cfg(feature = "aptabase")]
 use tauri_plugin_aptabase::EventTracker as _;
 
+#[cfg(all(feature = "updater", any(debug_assertions, target_os = "macos")))]
+use crate::updater;
 use crate::{commands, menu, system_tray, windows};
 
 #[cfg(not(debug_assertions))]
@@ -36,10 +38,6 @@ impl EthUIApp {
 
     pub async fn build(args: ethui_args::Args) -> color_eyre::Result<Self> {
         let builder = Builder::default();
-
-        // #[cfg(feature = "aptabase")]
-        // let builder =
-        //     builder.plugin(tauri_plugin_aptabase::Builder::new(std::env!("APTABASE_KEY")).build());
 
         let builder = builder
             .invoke_handler(tauri::generate_handler![
@@ -114,6 +112,11 @@ impl EthUIApp {
         let builder =
             builder.plugin(tauri_plugin_aptabase::Builder::new(std::env!("APTABASE_KEY")).build());
 
+        #[cfg(all(feature = "updater", any(debug_assertions, target_os = "macos")))]
+        let builder = builder
+            .plugin(tauri_plugin_updater::Builder::new().build())
+            .plugin(tauri_plugin_process::init());
+
         let builder = builder.setup(|app| {
             #[cfg(feature = "aptabase")]
             let _ = app.track_event("app_started", None);
@@ -121,6 +124,9 @@ impl EthUIApp {
             let handle = app.handle();
             let _ = menu::build(handle);
             let _ = system_tray::build(handle);
+
+            #[cfg(all(feature = "updater", any(debug_assertions, target_os = "macos")))]
+            let _ = updater::spawn(handle.clone());
             Ok(())
         });
 

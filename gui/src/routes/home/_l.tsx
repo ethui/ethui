@@ -9,7 +9,7 @@ import { CommandBar, CommandBarProvider } from "#/components/CommandBar";
 import { Topbar } from "#/components/Topbar";
 import { WalletSidebar } from "#/components/WalletSidebar";
 import { useNoticeAlchemyKeyMissing } from "#/hooks/useNoticeAlchemyKeyMissing";
-import { useNoticeNewVersion } from "#/hooks/useNoticeNewVersion";
+import { useUpdates} from "#/hooks/useUpdates";
 
 export const Route = createFileRoute("/home/_l")({
   component: HomePageLayout,
@@ -19,7 +19,7 @@ function HomePageLayout() {
   const [isWalletSidebarOpen, setIsWalletSidebarOpen] = useState(false);
 
   useNoticeAlchemyKeyMissing();
-  useNoticeNewVersion();
+  useUpdates();
 
   return (
     <CommandBarProvider>

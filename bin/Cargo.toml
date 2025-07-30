@@ -68,3 +68,8 @@ forge-traces = [
 custom-protocol = ["tauri/custom-protocol"]
 aptabase = ["dep:tauri-plugin-aptabase"]
 stacks = ["dep:ethui-stacks"]
+updater = ["dep:tauri-plugin-updater", "dep:tauri-plugin-process"]
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-updater = { version = "2", optional = true }
+tauri-plugin-process = { version = "2", optional = true }

@@ -30,6 +30,8 @@
     "@tauri-apps/cli": "^2.7.1",
     "@tauri-apps/plugin-clipboard-manager": "^2.3.0",
     "@tauri-apps/plugin-os": "^2.3.0",
+    "@tauri-apps/plugin-process": "^2.3.0",
+    "@tauri-apps/plugin-updater": "~2.9.0",
     "abitype": "^1.0.8",
     "core-js": "^3.43.0",
     "framer-motion": "^12",

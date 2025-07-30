@@ -34,6 +34,9 @@ pub enum UINotify {
     BalancesUpdated,
     ContractsUpdated,
     SettingsChanged,
+    UpdateReady {
+        version: String,
+    },
 }
 
 impl UINotify {
@@ -47,6 +50,7 @@ impl UINotify {
             Self::BalancesUpdated => "balances-updated",
             Self::ContractsUpdated => "contracts-updated",
             Self::SettingsChanged => "settings-changed",
+            Self::UpdateReady { .. } => "update-ready",
         }
     }
 }

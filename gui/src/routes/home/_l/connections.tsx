@@ -29,7 +29,7 @@ function Connections() {
   const { data: peersByDomain, refetch } =
     useInvoke<Record<string, Peer[]>>("ws_peers_by_domain");
 
-  useEventListener("peers-updated", refetch);
+  useEventListener({ event: "peers-updated", callback: refetch });
 
   return (
     <div className="m-1 flex flex-col">
@@ -63,7 +63,7 @@ function AffinityForm({ domain }: { domain: string }) {
     },
   );
 
-  useEventListener("peers-updated", refetch);
+  useEventListener({ event: "peers-updated", callback: refetch });
 
   const [current, setCurrent] = useState<Affinity>("global");
   const [currentNetwork, setCurrentNetwork] = useState<Network | undefined>(
