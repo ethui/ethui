@@ -29,7 +29,7 @@ interface CommandBarContextProps {
 
 const CommandBarContext = createContext<CommandBarContextProps>({
   open: false,
-  setOpen: () => { },
+  setOpen: () => {},
 });
 
 export function CommandBarProvider({ children }: { children: ReactNode }) {

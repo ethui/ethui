@@ -22,7 +22,7 @@ function MsgSignDialog() {
   let json: any;
   try {
     json = "raw" in data ? JSON.parse(data.raw) : data.typed;
-  } catch (_e) { }
+  } catch (_e) {}
 
   return (
     <div className="flex h-full flex-col justify-between gap-3 ">
