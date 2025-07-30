@@ -30,10 +30,10 @@ import { type Abi, type Address, formatEther, formatGwei } from "viem";
 import { AddressView } from "#/components/AddressView";
 import { Datapoint } from "#/components/Datapoint";
 import { HashView } from "#/components/HashView";
+import { useEventListener } from "#/hooks/useEventListener";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
-import { useEventListener } from "#/hooks/useEventListener";
 
 export const Route = createFileRoute("/home/_l/transactions")({
   beforeLoad: () => ({ breadcrumb: "Transactions" }),
