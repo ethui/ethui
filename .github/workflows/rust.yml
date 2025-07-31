@@ -97,6 +97,9 @@ jobs:
           shared-key: "debug"
           save-if: ${{ github.ref == 'refs/heads/main' }}
 
+      - name: Stub frontend build dir
+        run: mkdir gui/dist
+
       - run: cargo check --all-features
       - run: cargo clippy --workspace --all-features -- -D clippy::all -D clippy::dbg_macro
 
