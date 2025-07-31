@@ -31,6 +31,8 @@ in
     pname = "ethui";
     version = cargoToml.workspace.package.version;
 
+    buildFeatures = [ "nix" ];
+
     src = ../.;
     NIX_BUILD = "1";
 

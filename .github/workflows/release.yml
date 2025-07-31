@@ -201,7 +201,7 @@ jobs:
 
         with:
           releaseId: ${{ needs.setup.outputs.release_id }}
-          args: ${{ matrix.args }} --features production
+          args: ${{ matrix.args }} --features production --config bin/tauri.release.conf.json
           includeUpdaterJson: true
           updaterJsonKeepUniversal: true
 
