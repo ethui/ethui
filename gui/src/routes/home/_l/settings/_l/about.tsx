@@ -10,7 +10,7 @@ export const Route = createFileRoute("/home/_l/settings/_l/about")({
   component: RouteComponent,
 });
 
-type UpdateStatus = 'idle' | 'checking' | 'up-to-date' | 'error';
+type UpdateStatus = 'idle' | 'checking' | 'up-to-date' | 'update-found' | 'error';
 
 function RouteComponent() {
   const { data: version } = useInvoke<string>("get_version");
@@ -28,9 +28,7 @@ function RouteComponent() {
         // Use the auto-updater system for macOS and development builds
         const updateFound = await invoke<boolean>("trigger_updater");
         if (updateFound) {
-          // Don't change status - the original toast will trigger and button will be replaced by checkbox
-          // The update notification system will handle the UI changes
-          return;
+          setUpdateStatus('update-found');
         } else {
           setUpdateStatus('up-to-date');
         }
@@ -86,6 +84,12 @@ function RouteComponent() {
       {updateStatus === 'up-to-date' && (
         <div className="flex items-center text-sm text-muted-foreground">
           ✓ You're up to date
+        </div>
+      )}
+      
+      {updateStatus === 'update-found' && (
+        <div className="flex items-center text-sm text-green-600">
+          ✓ Update found! You'll be notified when it's ready to install.
         </div>
       )}
       
