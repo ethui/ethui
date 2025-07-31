@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { toast } from "@ethui/ui/hooks/use-toast";
+import { createFileRoute } from "@tanstack/react-router";
 import { platform } from "@tauri-apps/plugin-os";
 import { useState } from "react";
 import { useInvoke } from "#/hooks/useInvoke";
@@ -20,7 +20,7 @@ function RouteComponent() {
 
   const handleCheckForUpdates = async () => {
     setIsChecking(true);
-    
+
     try {
       if (canAutoUpdate) {
         // Use the auto-updater system for macOS and development builds
@@ -36,7 +36,7 @@ function RouteComponent() {
         );
         const json = await response.json();
         const latestVersion = json[0].tag_name.replace("v", "");
-        
+
         if (version === latestVersion) {
           toast({
             title: "You're up to date!",
@@ -54,7 +54,7 @@ function RouteComponent() {
           });
         }
       }
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: "Error checking for updates",
         description: "Please try again later.",
@@ -70,8 +70,8 @@ function RouteComponent() {
       <ul>
         <li>ethui {version}</li>
       </ul>
-      
-      <Button 
+
+      <Button
         onClick={handleCheckForUpdates}
         disabled={isChecking}
         variant="outline"
