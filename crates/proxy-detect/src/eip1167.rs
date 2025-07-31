@@ -25,7 +25,7 @@ where
 
     // detect length of address (20 bytes non-optimized, 0 < N < 20 bytes for vanity addresses)
     // push1 ... push20 use opcode 0x60 ... 0x73
-    let address_len = code[EIP1167_PREFIX.len()] as usize - 0x5f;
+    let address_len = code[EIP1167_PREFIX.len()].saturating_sub(0x5f) as usize;
 
     if !(1..=20).contains(&address_len) {
         return Ok(None);
