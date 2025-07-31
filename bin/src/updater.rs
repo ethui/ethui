@@ -19,7 +19,7 @@ pub(crate) fn spawn(handle: tauri::AppHandle) {
 }
 
 #[instrument(level = "info", skip_all)]
-pub(crate) async fn update(handle: &tauri::AppHandle) -> color_eyre::Result<()> {
+pub(crate) async fn update(handle: &tauri::AppHandle) -> color_eyre::Result<bool> {
     if let Some(update) = handle.updater()?.check().await? {
         let mut downloaded = 0;
         let mut last_percent = -0.1;
@@ -41,9 +41,11 @@ pub(crate) async fn update(handle: &tauri::AppHandle) -> color_eyre::Result<()> 
             version: update.version,
         })
         .await;
+        
+        return Ok(true);
     }
 
-    Ok(())
+    Ok(false)
 }
 
 fn notify_download_progress(percent: f64, last_percent: f64) {

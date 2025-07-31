@@ -125,7 +125,9 @@ pub async fn is_stacks_enabled() -> bool {
 
 #[cfg(all(feature = "updater", any(debug_assertions, target_os = "macos")))]
 #[tauri::command]
-pub async fn check_for_updates_manual(handle: tauri::AppHandle) -> TauriResult<()> {
-    let _ = crate::updater::update(&handle).await;
-    Ok(())
+pub async fn trigger_updater(handle: tauri::AppHandle) -> TauriResult<bool> {
+    match crate::updater::update(&handle).await {
+        Ok(update_found) => Ok(update_found),
+        Err(_) => Ok(false),
+    }
 }

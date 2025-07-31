@@ -2,6 +2,7 @@ import { Button } from "@ethui/ui/components/shadcn/button";
 import { toast } from "@ethui/ui/hooks/use-toast";
 import { createFileRoute } from "@tanstack/react-router";
 import { platform } from "@tauri-apps/plugin-os";
+import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
 import { useInvoke } from "#/hooks/useInvoke";
 
@@ -9,26 +10,30 @@ export const Route = createFileRoute("/home/_l/settings/_l/about")({
   component: RouteComponent,
 });
 
+type UpdateStatus = 'idle' | 'checking' | 'up-to-date' | 'error';
+
 function RouteComponent() {
   const { data: version } = useInvoke<string>("get_version");
-  const checkForUpdatesManual = useInvoke<void>("check_for_updates_manual");
-  const [isChecking, setIsChecking] = useState(false);
+  const [updateStatus, setUpdateStatus] = useState<UpdateStatus>('idle');
 
   const isMacos = platform() === "macos";
   const isDev = import.meta.env.MODE === "development";
   const canAutoUpdate = isMacos || isDev;
 
   const handleCheckForUpdates = async () => {
-    setIsChecking(true);
+    setUpdateStatus('checking');
 
     try {
       if (canAutoUpdate) {
         // Use the auto-updater system for macOS and development builds
-        await checkForUpdatesManual.call();
-        toast({
-          title: "Checking for updates...",
-          description: "You'll be notified if an update is available.",
-        });
+        const updateFound = await invoke<boolean>("trigger_updater");
+        if (updateFound) {
+          // Don't change status - the original toast will trigger and button will be replaced by checkbox
+          // The update notification system will handle the UI changes
+          return;
+        } else {
+          setUpdateStatus('up-to-date');
+        }
       } else {
         // For other platforms, check GitHub API manually
         const response = await fetch(
@@ -38,10 +43,7 @@ function RouteComponent() {
         const latestVersion = json[0].tag_name.replace("v", "");
 
         if (version === latestVersion) {
-          toast({
-            title: "You're up to date!",
-            description: `ethui ${version} is the latest version.`,
-          });
+          setUpdateStatus('up-to-date');
         } else {
           toast({
             title: "New version available",
@@ -52,16 +54,11 @@ function RouteComponent() {
               </a>
             ),
           });
+          setUpdateStatus('up-to-date'); // Reset after showing toast
         }
       }
     } catch (_error) {
-      toast({
-        title: "Error checking for updates",
-        description: "Please try again later.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsChecking(false);
+      setUpdateStatus('error');
     }
   };
 
@@ -71,13 +68,32 @@ function RouteComponent() {
         <li>ethui {version}</li>
       </ul>
 
-      <Button
-        onClick={handleCheckForUpdates}
-        disabled={isChecking}
-        variant="outline"
-      >
-        {isChecking ? "Checking..." : "Check for updates"}
-      </Button>
+      {updateStatus === 'idle' && (
+        <Button
+          onClick={handleCheckForUpdates}
+          variant="outline"
+        >
+          Check for updates
+        </Button>
+      )}
+      
+      {updateStatus === 'checking' && (
+        <Button disabled variant="outline">
+          Checking...
+        </Button>
+      )}
+      
+      {updateStatus === 'up-to-date' && (
+        <div className="flex items-center text-sm text-muted-foreground">
+          ✓ You're up to date
+        </div>
+      )}
+      
+      {updateStatus === 'error' && (
+        <div className="flex items-center text-sm text-muted-foreground">
+          ✗ Error checking for updates
+        </div>
+      )}
     </div>
   );
 }
