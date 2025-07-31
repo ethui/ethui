@@ -122,3 +122,12 @@ pub async fn remove_contract(
 pub async fn is_stacks_enabled() -> bool {
     cfg!(feature = "stacks")
 }
+
+#[cfg(all(feature = "updater", any(debug_assertions, target_os = "macos")))]
+#[tauri::command]
+pub async fn trigger_updater(handle: tauri::AppHandle) -> TauriResult<bool> {
+    match crate::updater::update(&handle).await {
+        Ok(update_found) => Ok(update_found),
+        Err(_) => Ok(false),
+    }
+}
