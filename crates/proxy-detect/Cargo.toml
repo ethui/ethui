@@ -1,9 +1,12 @@
 [package]
 name = "ethui-proxy-detect"
-version = "0.2.0"
-edition = "2021"
-license-file = "./LICENSE"
-
+version.workspace = true
+edition.workspace = true
+license-file.workspace = true
+homepage.workspace = true
+repository.workspace = true
+exclude.workspace = true
+authors.workspace = true
 
 [dependencies]
 alloy = { version = "1.0", default-features = false, features = [
