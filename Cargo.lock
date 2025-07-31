@@ -3115,11 +3115,13 @@ dependencies = [
 
 [[package]]
 name = "ethui-proxy-detect"
-version = "0.2.0"
-source = "git+https://github.com/ethui/proxy-detect?rev=c0db91a#c0db91a31ab1ebaced14bc7d28fa7d22b269f46c"
+version = "1.21.1"
 dependencies = [
  "alloy",
+ "lazy_static",
+ "rstest",
  "thiserror 2.0.12",
+ "tokio",
 ]
 
 [[package]]

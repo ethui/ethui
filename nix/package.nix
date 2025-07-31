@@ -57,20 +57,17 @@ rust.buildRustPackage (finalAttrs: {
       --replace-fail "libayatana-appindicator3.so.1" "${pkgs.libayatana-appindicator}/lib/libayatana-appindicator3.so.1"
   '';
 
-  cargoDeps = rust.fetchCargoVendor {
-    inherit (finalAttrs)
-      pname
-      version
-      src
-      cargoRoot
-      ;
-    hash = "sha256-CZTkGmzLkyoPDceNsRa6QR0vsiEG19LlkZQ+z20YDm4=";
+  cargoLock = {
+    lockFile = ../Cargo.lock;
+    outputHashes = {
+      "fix-path-env-0.0.0" = "sha256-SHJc86sbK2fA48vkVjUpvC5FQoBOno3ylUV5J1b4dAk=";
+    };
   };
 
   pnpmDeps = pkgs.pnpm.fetchDeps {
     inherit (finalAttrs) pname version src;
     fetcherVersion = 1;
-    hash = "sha256-0nqmKRiQN6f6sEzY9hcGzY9mg3kLZgAFM2He55souOc=";
+    hash = "sha256-bX3/h0QGHsbkrGD6hAjTt299Yg6g6hNbIyL7h5vgjbY=";
   };
 
   preBuild = ''
