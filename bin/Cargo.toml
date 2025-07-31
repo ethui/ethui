@@ -50,6 +50,7 @@ tauri-plugin-shell = "2.3"
 ethui-proxy-detect.workspace = true
 kameo.workspace = true
 tauri-plugin-aptabase = { workspace = true, optional = true }
+tauri-plugin-process = { version = "2" }
 
 [build-dependencies]
 tauri-build = { version = "2.2", default-features = false, features = [] }
@@ -68,3 +69,7 @@ forge-traces = [
 custom-protocol = ["tauri/custom-protocol"]
 aptabase = ["dep:tauri-plugin-aptabase"]
 stacks = ["dep:ethui-stacks"]
+updater = ["dep:tauri-plugin-updater"]
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-updater = { version = "2", optional = true }

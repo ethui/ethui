@@ -141,7 +141,6 @@ function WalletCommands({ onClose }: { onClose: () => void }) {
       s.setCurrentAddress,
     ]),
   );
-  console.log(allWalletInfo);
 
   return (
     <CommandGroup heading="Wallets">

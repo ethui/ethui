@@ -67,7 +67,6 @@ function Txs() {
 
   const next = useCallback(async () => {
     setLoading(true);
-    console.log("next", lastKnown);
 
     invoke<PaginatedTx[]>("db_get_older_transactions", {
       address: account,
@@ -97,7 +96,7 @@ function Txs() {
     });
   };
 
-  useEventListener("txs-updated", loadNew);
+  useEventListener({ event: "txs-updated", callback: loadNew });
 
   useEffect(() => {
     // TODO: does this actually depend on these two values?

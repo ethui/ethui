@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-
 import { AddressView } from "#/components/AddressView";
 import { BalancesList } from "#/components/BalancesList";
 import { useWallets } from "#/store/useWallets";

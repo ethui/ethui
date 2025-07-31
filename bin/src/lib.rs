@@ -7,6 +7,9 @@ mod menu;
 mod system_tray;
 mod windows;
 
+#[cfg(all(feature = "updater", any(debug_assertions, target_os = "macos")))]
+mod updater;
+
 use color_eyre::Result;
 use ethui_args::Command;
 

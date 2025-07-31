@@ -24,7 +24,6 @@ function MsgSignDialog() {
     json = "raw" in data ? JSON.parse(data.raw) : data.typed;
   } catch (_e) {}
 
-  console.log(json);
   return (
     <div className="flex h-full flex-col justify-between gap-3 ">
       <h1 className="font-xl">Sign Message</h1>

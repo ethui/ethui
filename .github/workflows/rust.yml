@@ -14,6 +14,7 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
+  APTABASE_KEY: "placeholder"
 
 jobs:
   check-skip:
@@ -96,8 +97,11 @@ jobs:
           shared-key: "debug"
           save-if: ${{ github.ref == 'refs/heads/main' }}
 
-      - run: cargo check
-      - run: cargo clippy --all -- -D clippy::all -D clippy::dbg_macro
+      - name: Stub frontend build dir
+        run: mkdir gui/dist
+
+      - run: cargo check --all-features
+      - run: cargo clippy --workspace --all-features -- -D clippy::all -D clippy::dbg_macro
 
       - uses: taiki-e/install-action@v2
         with:
