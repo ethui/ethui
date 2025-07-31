@@ -3115,7 +3115,7 @@ dependencies = [
 
 [[package]]
 name = "ethui-proxy-detect"
-version = "0.2.0"
+version = "1.21.1"
 dependencies = [
  "alloy",
  "lazy_static",
