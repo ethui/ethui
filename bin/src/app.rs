@@ -47,6 +47,8 @@ impl EthUIApp {
                 commands::add_contract,
                 commands::remove_contract,
                 commands::is_stacks_enabled,
+                #[cfg(all(feature = "updater", any(debug_assertions, target_os = "macos")))]
+                commands::check_for_updates_manual,
                 ethui_settings::commands::settings_get,
                 ethui_settings::commands::settings_set,
                 ethui_settings::commands::settings_set_dark_mode,
