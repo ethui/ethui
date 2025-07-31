@@ -1,0 +1,24 @@
+# Integration test dependencies
+# This file defines additional dependencies needed for integration testing
+
+[package]
+name = "ethui-integration-tests"
+version = "1.21.1"
+edition = "2021"
+
+[[test]]
+name = "integration_test"
+path = "tests/integration_test.rs"
+
+[dependencies]
+tokio = { version = "1.46", features = ["rt-multi-thread", "sync", "time"] }
+serde_json = "1.0"
+
+[dev-dependencies]
+# For WebDriver integration testing (optional)
+# thirtyfour = { version = "0.32", optional = true }
+# tokio-test = "0.4"
+
+[features]
+default = []
+webdriver = []  # Enable when WebDriver dependencies are available
