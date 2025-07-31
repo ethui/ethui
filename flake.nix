@@ -31,10 +31,17 @@
       in
       with pkgs;
       {
-        packages.default = import ./nix/package.nix {
-          rust = rustNightly;
-          inherit pkgs;
-        };
+        packages = 
+          let
+            packageSet = import ./nix/package.nix {
+              rust = rustNightly;
+              inherit pkgs;
+            };
+          in
+          {
+            default = packageSet.package;
+            pnpmDeps = packageSet.pnpmDeps;
+          };
 
         devShells.default = import ./nix/devshell.nix {
           inherit pkgs;

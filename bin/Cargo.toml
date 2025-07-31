@@ -32,6 +32,7 @@ ethui-tracing.workspace = true
 ethui-broadcast.workspace = true
 ethui-simulator.workspace = true
 ethui-args.workspace = true
+ethui-proxy-detect.workspace = true
 ethui-stacks = { workspace = true, optional = true }
 
 alloy.workspace = true
@@ -47,7 +48,6 @@ named-lock = "0.4"
 tauri-plugin-os = "2.3"
 tauri-plugin-clipboard-manager = "2.3"
 tauri-plugin-shell = "2.3"
-ethui-proxy-detect.workspace = true
 kameo.workspace = true
 tauri-plugin-aptabase = { workspace = true, optional = true }
 tauri-plugin-process = { version = "2" }

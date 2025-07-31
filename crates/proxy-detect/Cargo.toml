@@ -1,0 +1,23 @@
+[package]
+name = "ethui-proxy-detect"
+version.workspace = true
+edition.workspace = true
+license-file.workspace = true
+homepage.workspace = true
+repository.workspace = true
+exclude.workspace = true
+authors.workspace = true
+
+[dependencies]
+alloy = { version = "1.0", default-features = false, features = [
+  "providers",
+  "reqwest-rustls-tls",
+  "rpc",
+  "rpc-types",
+] }
+thiserror = "2"
+
+[dev-dependencies]
+rstest = "0.26"
+tokio = { version = "1", features = ["rt-multi-thread"] }
+lazy_static = "1.5"
