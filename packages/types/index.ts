@@ -103,11 +103,8 @@ export interface DedupChainId {
 
 export interface Peer {
   origin: string;
-  tab_id?: number;
-  title?: string;
   socket: string;
   url: string;
-  favicon: string;
 }
 
 export type Affinity = { sticky: DedupChainId } | "global" | "unset";

@@ -36,7 +36,7 @@ export function WalletSidebar({ open, onClose }: WalletSidebarProps) {
 
   return (
     <>
-      {open && <div className="fixed inset-0 z-25" onClick={onClose} />}
+      {open && <div className="fixed inset-1 inset-0 z-25" onClick={onClose} />}
       <SidebarProvider
         className="fixed z-30"
         style={{ "--sidebar-width": "16rem" } as React.CSSProperties}
