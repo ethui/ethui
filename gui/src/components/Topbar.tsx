@@ -12,7 +12,7 @@ interface TopbarProps {
 export function Topbar({ onWalletClick }: TopbarProps) {
   return (
     <header
-      className="fixed top-2 top-0 right-0 left-0 z-20 flex h-12 items-center justify-end border-border border-b bg-sidebar px-3"
+      className="fixed top-0 right-0 left-0 z-20 flex h-12 items-center justify-end border-border border-b bg-sidebar px-3"
       data-tauri-drag-region="true"
     >
       <WalletButton onClick={onWalletClick} />
