@@ -40,7 +40,6 @@ const isDev = import.meta.env.MODE === "development";
 
 export function AppSidebar() {
   const commandBar = useCommandBar();
-  const location = useLocation();
   const { open, toggleSidebar } = useSidebar();
   const isMacos = platform() === "macos";
 
@@ -88,69 +87,17 @@ export function AppSidebar() {
                 <CustomSidebarMenuItem key={item.title} {...item} />
               ))}
 
-              <Collapsible className="group/collapsible">
-                <SidebarMenuItem>
-                  <CollapsibleTrigger asChild className="cursor-pointer">
-                    <SidebarMenuButton>
-                      <Globe />
-                      <span>Explorer</span>
-                      <ChevronRight className="ml-auto group-data-[state=open]/collapsible:hidden" />
-                      <ChevronDown className="ml-auto group-data-[state=closed]/collapsible:hidden" />
-                    </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <SidebarMenuSub>
-                      {explorerItems.map((item) => (
-                        <SidebarMenuItem key={item.title}>
-                          <SidebarMenuButton asChild>
-                            <Link
-                              to={item.url}
-                              className={cn(
-                                item.url === location.pathname &&
-                                  "bg-primary text-accent hover:bg-primary hover:text-accent",
-                              )}
-                            >
-                              {item.title}
-                            </Link>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      ))}
-                    </SidebarMenuSub>
-                  </CollapsibleContent>
-                </SidebarMenuItem>
-              </Collapsible>
+              <CollapsibleMenuSection
+                icon={<Globe />}
+                title="Explorer"
+                items={explorerItems}
+              />
 
-              <Collapsible className="group/collapsible">
-                <SidebarMenuItem>
-                  <CollapsibleTrigger asChild className="cursor-pointer">
-                    <SidebarMenuButton>
-                      <Cog />
-                      <span>Settings</span>
-                      <ChevronRight className="ml-auto group-data-[state=open]/collapsible:hidden" />
-                      <ChevronDown className="ml-auto group-data-[state=closed]/collapsible:hidden" />
-                    </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <SidebarMenuSub>
-                      {settingsItems.map((item) => (
-                        <SidebarMenuItem key={item.title}>
-                          <SidebarMenuButton asChild>
-                            <Link
-                              to={item.url}
-                              className={cn(
-                                item.url === location.pathname &&
-                                  "bg-primary text-accent hover:bg-primary hover:text-accent",
-                              )}
-                            >
-                              {item.title}
-                            </Link>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      ))}
-                    </SidebarMenuSub>
-                  </CollapsibleContent>
-                </SidebarMenuItem>
-              </Collapsible>
+              <CollapsibleMenuSection
+                icon={<Cog />}
+                title="Settings"
+                items={settingsItems}
+              />
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -209,6 +156,54 @@ function CustomSidebarMenuItem({
   );
 }
 
+interface CollapsibleMenuSectionProps {
+  icon: React.ReactNode;
+  title: string;
+  items: Array<{ title: string; url: string }>;
+}
+
+function CollapsibleMenuSection({
+  icon,
+  title,
+  items,
+}: CollapsibleMenuSectionProps) {
+  const location = useLocation();
+
+  return (
+    <Collapsible className="group/collapsible">
+      <SidebarMenuItem>
+        <CollapsibleTrigger asChild className="cursor-pointer">
+          <SidebarMenuButton>
+            {icon}
+            <span>{title}</span>
+            <ChevronRight className="ml-auto group-data-[state=open]/collapsible:hidden" />
+            <ChevronDown className="ml-auto group-data-[state=closed]/collapsible:hidden" />
+          </SidebarMenuButton>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <SidebarMenuSub>
+            {items.map((item) => (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton asChild>
+                  <Link
+                    to={item.url}
+                    className={cn(
+                      item.url === location.pathname &&
+                        "bg-primary text-accent hover:bg-primary hover:text-accent",
+                    )}
+                  >
+                    {item.title}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenuSub>
+        </CollapsibleContent>
+      </SidebarMenuItem>
+    </Collapsible>
+  );
+}
+
 // Menu items.
 const items = [
   {
@@ -235,18 +230,9 @@ const items = [
 
 // Explorer items.
 const explorerItems = [
-  {
-    title: "Addresses",
-    url: "/home/explorer/addresses",
-  },
-  {
-    title: "Transactions",
-    url: "/home/explorer/transactions",
-  },
-  {
-    title: "Contracts",
-    url: "/home/explorer/contracts",
-  },
+  { title: "Addresses", url: "/home/explorer/addresses" },
+  { title: "Transactions", url: "/home/explorer/transactions" },
+  { title: "Contracts", url: "/home/explorer/contracts" },
 ];
 
 const defaultSettingsItems = [
