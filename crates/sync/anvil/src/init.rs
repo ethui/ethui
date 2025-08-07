@@ -33,7 +33,7 @@ async fn receiver() -> ! {
                 reset_listener(
                     network.dedup_chain_id(),
                     network.clone().http_url,
-                    network.ws_url(),
+                    network.ws_url,
                 )
                 .await
             }
@@ -42,7 +42,7 @@ async fn receiver() -> ! {
     }
 }
 
-async fn reset_listener(dedup_chain_id: DedupChainId, http: Url, ws: Url) {
+async fn reset_listener(dedup_chain_id: DedupChainId, http: Url, ws: Option<Url>) {
     LISTENERS.lock().await.remove(&dedup_chain_id);
 
     let listener = Tracker::run(dedup_chain_id, http, ws);

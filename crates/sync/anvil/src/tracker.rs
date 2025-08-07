@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use alloy::{
     network::Ethereum,
-    providers::{Provider as _, ProviderBuilder, WsConnect, ext::TraceApi as _},
+    providers::{Provider as _, ProviderBuilder, ext::TraceApi as _},
     rpc::types::{Filter, Log, trace::parity::LocalizedTransactionTrace},
 };
 use ethui_abis::IERC20;
@@ -26,7 +26,7 @@ pub struct Tracker {
 pub struct Ctx {
     dedup_chain_id: DedupChainId,
     http_url: Url,
-    ws_url: Url,
+    ws_url: Option<Url>,
 }
 
 #[derive(Debug)]
@@ -38,7 +38,7 @@ enum Msg {
 }
 
 impl Tracker {
-    pub fn run(dedup_chain_id: DedupChainId, http_url: Url, ws_url: Url) -> Self {
+    pub fn run(dedup_chain_id: DedupChainId, http_url: Url, ws_url: Option<Url>) -> Self {
         tracing::debug!("Starting anvil tracker");
 
         let ctx = Ctx {
@@ -178,15 +178,28 @@ async fn init_providers(
 )> {
     // Disabling retries (max_retries(0)) prevents the main loop from waiting on stale
     // connections when Anvil restarts, allowing proper state reset.
-    let ws_connect = WsConnect::new(ctx.ws_url.to_string()).with_max_retries(0);
+    let url = ctx
+        .ws_url
+        .clone()
+        .unwrap_or_else(|| {
+            warn!(
+                "No websocket url provided for {}, falling back to http",
+                ctx.dedup_chain_id.chain_id()
+            );
+            ctx.http_url.clone()
+        })
+        .to_string();
+
     let provider = ProviderBuilder::new()
         .disable_recommended_fillers()
-        .connect_ws(ws_connect.clone())
+        .connect(&url)
         .await?;
+
     let sub_provider = ProviderBuilder::new()
         .disable_recommended_fillers()
-        .connect_ws(ws_connect)
+        .connect(&url)
         .await?;
+
     Ok((provider, sub_provider))
 }
 
