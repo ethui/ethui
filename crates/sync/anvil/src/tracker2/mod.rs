@@ -12,15 +12,17 @@ use tracing::{debug, info, instrument};
 
 pub mod anvil;
 pub mod consumer;
-pub mod anvil_http;
+pub mod http;
+pub mod monitor;
+mod utils;
 pub mod worker;
-pub mod anvil_ws;
+pub mod ws;
 
-pub use anvil_http::AnvilHttp;
-pub use worker::create_worker;
-pub use anvil_ws::AnvilWs;
 #[cfg(not(test))]
 use consumer::Consumer;
+pub use http::AnvilHttp;
+pub use worker::create_worker;
+pub use ws::AnvilWs;
 
 #[cfg(not(test))]
 #[derive(Clone)]
@@ -240,8 +242,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_worker_types() {
-        use crate::tracker2::{AnvilHttp, AnvilWs};
-        use crate::tracker2::anvil::AnvilProvider;
+        use crate::tracker2::{anvil::AnvilProvider, http::AnvilHttp, ws::AnvilWs};
 
         let network = create_test_network(8);
 
@@ -274,8 +275,10 @@ mod tests {
 
         let worker = create_worker(ws_network.clone());
         match &worker.inner {
-            AnvilProviderType::Ws(_) => {}, // Expected
-            AnvilProviderType::Http(_) => panic!("Expected WS provider for network with WebSocket URL"),
+            AnvilProviderType::Ws(_) => {} // Expected
+            AnvilProviderType::Http(_) => {
+                panic!("Expected WS provider for network with WebSocket URL")
+            }
         }
         assert_eq!(worker.network().name, "WS Network");
 
@@ -293,8 +296,10 @@ mod tests {
 
         let worker = create_worker(http_network.clone());
         match &worker.inner {
-            AnvilProviderType::Http(_) => {}, // Expected
-            AnvilProviderType::Ws(_) => panic!("Expected HTTP provider for network without WebSocket URL"),
+            AnvilProviderType::Http(_) => {} // Expected
+            AnvilProviderType::Ws(_) => {
+                panic!("Expected HTTP provider for network without WebSocket URL")
+            }
         }
         assert_eq!(worker.network().name, "HTTP Network");
     }

@@ -1,7 +1,7 @@
 use std::process::{Child, Command, Stdio};
 
 use ethui_types::{Network, NetworkStatus, prelude::*};
-use tokio::time::{sleep, Duration};
+use tokio::time::{Duration, sleep};
 use tracing::debug;
 use url::Url;
 

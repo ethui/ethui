@@ -2,8 +2,8 @@
 
 use alloy::{
     network::Ethereum,
-    providers::{Provider, RootProvider},
-    rpc::types::{eth::Block, trace::parity::LocalizedTransactionTrace, Log as RpcLog},
+    providers::RootProvider,
+    rpc::types::{trace::parity::LocalizedTransactionTrace, Log as RpcLog},
 };
 use ethui_types::{prelude::*, Network};
 use futures::{Stream, StreamExt};
@@ -11,9 +11,11 @@ use tokio::{
     sync::{mpsc, oneshot},
     time::{sleep, timeout, Duration},
 };
-use tracing::{debug, instrument};
 
-use crate::tracker2::{anvil::AnvilProvider, consumer::Consumer};
+use crate::tracker2::{
+    anvil::AnvilProvider, consumer::Consumer, monitor::TerminateOnConnectionLoss,
+    utils::try_get_sync_info,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SyncInfo {
@@ -43,51 +45,68 @@ impl<I: AnvilProvider + Clone + Send + 'static> Worker<I> {
         Self { inner }
     }
 
-    async fn block_to_sync_info(&self, block: Block) -> Result<SyncInfo> {
-        // Try to get fork block number from anvil_nodeInfo
-        let fork_block_number = match self.inner.provider().await {
-            Ok(provider) => {
-                match provider
-                    .client()
-                    .request::<(), serde_json::Value>("anvil_nodeInfo", ())
-                    .await
-                {
-                    Ok(node_info) => node_info.get("forkBlockNumber").and_then(|v| v.as_u64()),
-                    Err(_) => None,
-                }
-            }
-            Err(_) => None,
-        };
-
-        Ok(SyncInfo {
-            number: block.header.number,
-            hash: block.header.hash,
-            fork_block_number,
-        })
-    }
-
-    pub fn network(&self) -> &Network {
+    pub(crate) fn network(&self) -> &Network {
         self.inner.network()
     }
 
-    pub async fn wait_until_available(&mut self) -> Result<SyncInfo> {
-        self.inner.wait_until_available().await
+    pub(crate) async fn wait(&mut self) -> SyncInfo {
+        let url = self.network().http_url.to_string();
+
+        // Retry logic with exponential backoff
+        let mut retry_count = 0;
+        const BASE_DELAY: u64 = 100; // milliseconds
+
+        loop {
+            match timeout(Duration::from_secs(2), try_get_sync_info(&url)).await {
+                Ok(Ok(block_info)) => {
+                    debug!("node available at block {}", block_info.number);
+                    return block_info;
+                }
+                Ok(Err(e)) => {
+                    debug!("connection failed: {}", e);
+                }
+                Err(_) => {
+                    debug!("connection timeout");
+                }
+            }
+
+            retry_count += 1;
+
+            // Exponential backoff with random jitter
+            let delay = BASE_DELAY * (2_u64.pow(retry_count.min(6))); // Cap at 64x base delay
+            let jitter = self.random_jitter(&self.network().name, delay / 4, retry_count); // Up to 25% jitter
+            sleep(Duration::from_millis(delay + jitter)).await;
+        }
     }
 
-    pub async fn provider(&self) -> Result<RootProvider<Ethereum>> {
+    /// Generate deterministic pseudo-random jitter for retry delays
+    fn random_jitter(&self, seed: &str, max_jitter: u64, retry_count: u32) -> u64 {
+        use std::{
+            collections::hash_map::DefaultHasher,
+            hash::{Hash, Hasher},
+            time::{SystemTime, UNIX_EPOCH},
+        };
+
+        let mut hasher = DefaultHasher::new();
+        seed.hash(&mut hasher);
+        retry_count.hash(&mut hasher);
+
+        // Add some time-based entropy to avoid all instances having the same jitter
+        if let Ok(duration) = SystemTime::now().duration_since(UNIX_EPOCH) {
+            (duration.as_millis() % 1000).hash(&mut hasher);
+        }
+
+        let hash = hasher.finish();
+        hash % max_jitter
+    }
+
+    async fn provider(&self) -> Result<RootProvider<Ethereum>> {
         self.inner.provider().await
     }
 
     #[instrument(skip_all, fields(network = self.network().name))]
-    pub async fn run<C: Consumer + Send + 'static + Clone>(
-        mut self,
-        mut quit_rx: oneshot::Receiver<()>,
-        consumer: C,
-    ) {
-        // Main restart loop - runs indefinitely, restarting on failures
+    pub async fn run(mut self, mut quit_rx: oneshot::Receiver<()>, consumer: impl Consumer) {
         loop {
-            debug!("starting cycle");
-
             match self.run_once(&mut quit_rx, consumer.clone()).await {
                 Ok(()) => {
                     debug!("quit signal received");
@@ -101,81 +120,48 @@ impl<I: AnvilProvider + Clone + Send + 'static> Worker<I> {
         }
     }
 
-    async fn run_once<C: Consumer + Send + 'static>(
+    async fn run_once(
         &mut self,
         quit_rx: &mut oneshot::Receiver<()>,
-        consumer: C,
+        consumer: impl Consumer,
     ) -> Result<()> {
         let (msg_tx, msg_rx) = mpsc::unbounded_channel::<Msg>();
-        let _processor_handle = tokio::spawn(async move {
-            message_processor(msg_rx, consumer).await;
-        });
+        tokio::spawn(async move { consume(msg_rx, consumer).await });
+
         debug!("Resetting tracker");
         msg_tx.send(Msg::Reset)?;
 
         // Phase 1: Initial sync - wait for node to be available
-        let sync_info = loop {
-            tokio::select! {
-                _ = &mut *quit_rx => {
-                    return Ok(());
-                }
-                _ = sleep(Duration::from_secs(1)) => {
-                    // Wait for node to be available and get latest block info
-                    match self.wait_until_available().await {
-                        Ok(block_info) => {
-                            debug!("node available at block {}", block_info.number);
-                            break block_info;
-                        }
-                        Err(e) => {
-                            debug!("node unavailable: {}", e);
-                            continue;
-                        }
-                    }
-                }
+        let sync_info = tokio::select! {
+            _ = &mut *quit_rx => {
+                return Ok(());
+            }
+            info = self.wait() => {
+                debug!("node available at block {}", info.number);
+                info
             }
         };
 
-        // start live stream immediately to ensure from_block is still valid
-        let mut live_stream = self.inner.block_stream().await?;
-        let mut historical_stream = self.inner.historical_blocks_stream(&sync_info).await?;
+        // Create merged stream: historical blocks followed seamlessly by live blocks
+        let live = self.inner.subscribe_blocks().await?;
+        let backfill = self.inner.backfill_blocks(&sync_info).await?;
+        // Wrap the chained stream with connection monitoring (monitors internally)
+        let mut stream =
+            TerminateOnConnectionLoss::new(backfill.chain(live), self.network().clone());
 
-        // Phase 2: Stream historical blocks first
-        debug!("streaming historical blocks up to {}", sync_info.number);
+        debug!("starting block stream");
         loop {
             tokio::select! {
                 _ = &mut *quit_rx => {
                     return Ok(());
                 }
-                msg_opt = historical_stream.next() => {
+                msg_opt = stream.next() => {
                     match msg_opt {
-                        Some(msg) => {
-                            msg_tx.send(msg)?;
-                        }
+                        Some(msg) => msg_tx.send(msg)?,
                         None => {
-                            debug!("historical streaming complete");
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        // Phase 3: poll live stream while handling quit signal
-        debug!("starting live streaming");
-        loop {
-            tokio::select! {
-                _ = &mut *quit_rx => {
-                    return Ok(());
-                }
-                msg_opt = live_stream.next() => {
-                    match msg_opt {
-                        Some(msg) => {
-                            msg_tx.send(msg)?;
-                        }
-                        None => {
-                            // Live stream ended (shouldn't normally happen), return error to restart
-                            debug!("live stream ended, triggering restart");
-                            return Err(eyre!("Live stream ended unexpectedly"));
+                            // Stream ended - either historical finished and live stream ended, or connection lost
+                            debug!("merged stream ended, triggering restart");
+                            return Err(eyre!("Stream ended"));
                         }
                     }
                 }
@@ -184,11 +170,10 @@ impl<I: AnvilProvider + Clone + Send + 'static> Worker<I> {
     }
 }
 
-async fn message_processor<C: Consumer>(mut msg_rx: mpsc::UnboundedReceiver<Msg>, mut consumer: C) {
+async fn consume(mut msg_rx: mpsc::UnboundedReceiver<Msg>, mut consumer: impl Consumer) {
     while let Some(msg) = msg_rx.recv().await {
         consumer.process(msg).await;
     }
-    debug!("message processor stopped");
 }
 
 #[derive(Clone)]
@@ -205,13 +190,6 @@ impl AnvilProvider for AnvilProviderType {
         }
     }
 
-    async fn wait_until_available(&mut self) -> Result<SyncInfo> {
-        match self {
-            AnvilProviderType::Http(provider) => provider.wait_until_available().await,
-            AnvilProviderType::Ws(provider) => provider.wait_until_available().await,
-        }
-    }
-
     async fn provider(&self) -> Result<RootProvider<Ethereum>> {
         match self {
             AnvilProviderType::Http(provider) => provider.provider().await,
@@ -219,20 +197,20 @@ impl AnvilProvider for AnvilProviderType {
         }
     }
 
-    async fn block_stream(&self) -> Result<Box<dyn Stream<Item = Msg> + Send + Unpin>> {
+    async fn subscribe_blocks(&self) -> Result<Box<dyn Stream<Item = Msg> + Send + Unpin>> {
         match self {
-            AnvilProviderType::Http(provider) => provider.block_stream().await,
-            AnvilProviderType::Ws(provider) => provider.block_stream().await,
+            AnvilProviderType::Http(provider) => provider.subscribe_blocks().await,
+            AnvilProviderType::Ws(provider) => provider.subscribe_blocks().await,
         }
     }
 
-    async fn historical_blocks_stream(
+    async fn backfill_blocks(
         &self,
         sync_info: &SyncInfo,
     ) -> Result<Box<dyn Stream<Item = Msg> + Send + Unpin>> {
         match self {
-            AnvilProviderType::Http(provider) => provider.historical_blocks_stream(sync_info).await,
-            AnvilProviderType::Ws(provider) => provider.historical_blocks_stream(sync_info).await,
+            AnvilProviderType::Http(provider) => provider.backfill_blocks(sync_info).await,
+            AnvilProviderType::Ws(provider) => provider.backfill_blocks(sync_info).await,
         }
     }
 }
@@ -255,7 +233,7 @@ mod tests {
     };
 
     use super::*;
-    use crate::tracker2::{AnvilHttp, AnvilWs};
+    use crate::tracker2::{http::AnvilHttp, ws::AnvilWs};
 
     #[tokio::test]
     async fn test_worker_networks() {
@@ -339,7 +317,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_wait_until_available_not_available() {
+    async fn test_wait_not_available() {
         use ethui_types::Network;
         use url::Url;
 
@@ -358,7 +336,7 @@ mod tests {
         let mut worker = Worker::new(AnvilHttp::new(network));
 
         // Should fail quickly but we'll use a timeout to make sure test doesn't hang
-        let result = timeout(Duration::from_secs(3), worker.wait_until_available()).await;
+        let result = timeout(Duration::from_secs(3), worker.wait()).await;
 
         match result {
             Ok(Err(_)) => {} // Expected - connection should fail
@@ -377,7 +355,7 @@ mod tests {
         // Start stream polling in background - expect it to fail quickly due to no node
         let subscription_handle = tokio::spawn(async move {
             // Try to create stream and poll for a short time
-            if let Ok(mut stream) = provider.block_stream().await {
+            if let Ok(mut stream) = provider.subscribe_blocks().await {
                 let _ = timeout(Duration::from_millis(100), async {
                     while let Some(msg) = stream.next().await {
                         let _ = block_tx.send(msg);
@@ -420,7 +398,7 @@ mod tests {
         // Start stream polling in background - expect it to fail quickly due to no node
         let subscription_handle = tokio::spawn(async move {
             // Try to create stream and poll for a short time
-            if let Ok(mut stream) = provider.block_stream().await {
+            if let Ok(mut stream) = provider.subscribe_blocks().await {
                 let _ = timeout(Duration::from_millis(100), async {
                     while let Some(msg) = stream.next().await {
                         let _ = block_tx.send(msg);

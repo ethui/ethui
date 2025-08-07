@@ -1,19 +1,19 @@
 use std::sync::{
-    atomic::{AtomicU32, Ordering},
     Arc,
+    atomic::{AtomicU32, Ordering},
 };
 
 use ethui_types::{Network, NetworkStatus};
 use serial_test::serial;
-use tokio::time::{sleep, timeout, Duration};
+use tokio::time::{Duration, sleep, timeout};
 use url::Url;
 
 use super::utils::{AnvilInstance, TestConsumer};
 use crate::tracker2::{
+    AnvilHttp, AnvilWs,
     anvil::AnvilProvider,
     consumer::Consumer,
     worker::{Msg, Worker},
-    AnvilHttp, AnvilWs,
 };
 
 #[derive(Clone)]
@@ -141,7 +141,7 @@ async fn test_message_processing_with_anvil() {
 
 #[tokio::test]
 #[serial(anvil)]
-async fn test_wait_until_available_with_anvil() {
+async fn test_wait_with_anvil() {
     let anvil = match AnvilInstance::start().await {
         Ok(anvil) => anvil,
         Err(e) => {
@@ -154,7 +154,7 @@ async fn test_wait_until_available_with_anvil() {
 
     // Test HTTP worker
     let mut http_worker = Worker::new(AnvilHttp::new(network.clone()));
-    let result = http_worker.wait_until_available().await;
+    let result = http_worker.wait().await;
     assert!(
         result.is_ok(),
         "HTTP worker should be able to connect to Anvil"
@@ -171,7 +171,7 @@ async fn test_wait_until_available_with_anvil() {
 
     // Test WS worker
     let mut ws_worker = Worker::new(AnvilWs::new(network));
-    let result = ws_worker.wait_until_available().await;
+    let result = ws_worker.wait().await;
     assert!(
         result.is_ok(),
         "WS worker should be able to connect to Anvil"
@@ -188,7 +188,7 @@ async fn test_wait_until_available_with_anvil() {
 }
 
 #[tokio::test]
-async fn test_wait_until_available_unavailable_node() {
+async fn test_wait_unavailable_node() {
     // Test with a network that should fail to connect
     let unavailable_network = Network {
         dedup_chain_id: (31337, 999).into(),
@@ -203,7 +203,7 @@ async fn test_wait_until_available_unavailable_node() {
 
     // Test HTTP worker failure
     let mut http_worker = Worker::new(AnvilHttp::new(unavailable_network.clone()));
-    let result = timeout(Duration::from_secs(2), http_worker.wait_until_available()).await;
+    let result = timeout(Duration::from_secs(2), http_worker.wait()).await;
 
     // Should either timeout or return an error
     match result {
@@ -214,7 +214,7 @@ async fn test_wait_until_available_unavailable_node() {
 
     // Test WS worker failure
     let mut ws_worker = Worker::new(AnvilWs::new(unavailable_network));
-    let result = timeout(Duration::from_secs(2), ws_worker.wait_until_available()).await;
+    let result = timeout(Duration::from_secs(2), ws_worker.wait()).await;
 
     // Should either timeout or return an error
     match result {
@@ -243,7 +243,7 @@ async fn test_block_subscription_with_anvil() {
 
     // Start subscription by polling the stream
     let subscription_handle = tokio::spawn(async move {
-        if let Ok(mut stream) = http_provider.block_stream().await {
+        if let Ok(mut stream) = http_provider.subscribe_blocks().await {
             use futures::StreamExt;
             while let Some(msg) = stream.next().await {
                 if block_tx.send(msg).is_err() {
@@ -368,10 +368,7 @@ async fn test_historical_blocks_stream() {
     // Get the current block info to determine the range
     let http_provider = AnvilHttp::new(network.clone());
     let mut worker = Worker::new(http_provider.clone());
-    let sync_info = worker
-        .wait_until_available()
-        .await
-        .expect("Should get sync info");
+    let sync_info = worker.wait().await.expect("Should get sync info");
 
     println!(
         "Current block: {}, fork block: {:?}",
@@ -380,7 +377,7 @@ async fn test_historical_blocks_stream() {
 
     // Test historical blocks stream
     let historical_stream = http_provider
-        .historical_blocks_stream(&sync_info)
+        .backfill_blocks(&sync_info)
         .await
         .expect("Should create historical stream");
 
@@ -513,4 +510,3 @@ async fn test_worker_historical_then_live_streaming() {
     );
     // May or may not have processed the live block depending on timing
 }
-

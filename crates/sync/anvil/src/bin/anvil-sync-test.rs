@@ -2,7 +2,7 @@ use clap::Parser;
 use color_eyre::eyre::Result;
 use ethui_sync_anvil::tracker2::{
     consumer::Consumer,
-    worker::{create_worker, Msg},
+    worker::{Msg, create_worker},
 };
 use ethui_types::{DedupChainId, Network, NetworkStatus};
 use tokio::signal;
@@ -20,10 +20,6 @@ struct Args {
     /// WebSocket URL for the Anvil node (optional)
     #[arg(short, long)]
     ws_url: Option<String>,
-
-    /// Network name
-    #[arg(short, long, default_value = "Test Anvil")]
-    name: String,
 }
 
 #[derive(Clone)]
@@ -83,7 +79,7 @@ async fn main() -> Result<()> {
     // Create network configuration
     let network = Network {
         dedup_chain_id: DedupChainId::from((31337, 0)), // Default Anvil chain ID
-        name: args.name,
+        name: "test".into(),
         explorer_url: None,
         http_url,
         ws_url,

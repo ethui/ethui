@@ -2,15 +2,12 @@ use std::sync::Arc;
 
 use alloy::{
     network::Ethereum,
-    providers::{ext::TraceApi, Provider as _, ProviderBuilder, RootProvider},
+    providers::{Provider as _, ProviderBuilder, RootProvider, ext::TraceApi},
 };
-use ethui_types::{prelude::*, Network};
-use futures::{future::Either, stream, Stream, StreamExt, TryStreamExt};
-use tokio::{
-    sync::{oneshot, watch, Mutex},
-    time::{interval, sleep, timeout, Duration},
-};
-use tracing::{debug, instrument};
+use ethui_types::{Network, prelude::*};
+use futures::{Stream, StreamExt, stream};
+use tokio::sync::Mutex;
+use tracing::debug;
 
 use crate::tracker2::{
     anvil::AnvilProvider,
@@ -59,94 +56,6 @@ impl AnvilHttp {
             fork_block_number,
         })
     }
-
-    /// Monitor connection health using HTTP/1.1 keep-alive
-    async fn monitor_connection(url: String, connection_lost_tx: oneshot::Sender<()>) {
-        debug!("starting TCP connection monitor for {}", url);
-
-        // Create a raw HTTP client with keep-alive enabled (fast timeouts for local testing)
-        let client = reqwest::Client::builder()
-            .tcp_keepalive(Some(Duration::from_secs(1)))
-            .pool_idle_timeout(Some(Duration::from_secs(2)))
-            .pool_max_idle_per_host(1)
-            .timeout(Duration::from_secs(2))
-            .build()
-            .expect("Failed to create HTTP client");
-
-        // Establish initial connection with a simple JSON-RPC request
-        let initial_request = serde_json::json!({
-            "jsonrpc": "2.0",
-            "method": "eth_blockNumber",
-            "params": [],
-            "id": 1
-        });
-
-        match client
-            .post(&url)
-            .header("Content-Type", "application/json")
-            .header("Connection", "keep-alive")
-            .json(&initial_request)
-            .send()
-            .await
-        {
-            Ok(response) => {
-                debug!("established keep-alive connection: {}", response.status());
-            }
-            Err(e) => {
-                debug!("failed to establish initial connection: {}", e);
-                let _ = connection_lost_tx.send(());
-                return;
-            }
-        }
-
-        // Now periodically send minimal keep-alive requests
-        let mut interval = interval(Duration::from_secs(1));
-
-        loop {
-            interval.tick().await;
-
-            // Send minimal JSON-RPC request to maintain connection
-            let keep_alive_request = serde_json::json!({
-                "jsonrpc": "2.0",
-                "method": "net_version",
-                "params": [],
-                "id": 2
-            });
-
-            match timeout(
-                Duration::from_secs(1), // Fast timeout for local testing
-                client
-                    .post(&url)
-                    .header("Content-Type", "application/json")
-                    .header("Connection", "keep-alive")
-                    .json(&keep_alive_request)
-                    .send(),
-            )
-            .await
-            {
-                Ok(Ok(response)) => {
-                    if !response.status().is_success() {
-                        debug!("connection monitor: HTTP error {}", response.status());
-                        let _ = connection_lost_tx.send(());
-                        break;
-                    }
-                    // Connection is alive, continue monitoring
-                }
-                Ok(Err(e)) => {
-                    debug!("connection monitor: request failed: {}", e);
-                    let _ = connection_lost_tx.send(());
-                    break;
-                }
-                Err(_) => {
-                    debug!("connection monitor: request timeout");
-                    let _ = connection_lost_tx.send(());
-                    break;
-                }
-            }
-        }
-
-        debug!("TCP connection monitor stopped");
-    }
 }
 
 /// Validate chain continuity and update latest block
@@ -193,38 +102,6 @@ impl AnvilProvider for AnvilHttp {
         &self.network
     }
 
-    #[instrument(skip_all, fields(network = self.network.name))]
-    async fn wait_until_available(&mut self) -> Result<SyncInfo> {
-        let url = self.network.http_url.to_string();
-
-        // Retry logic with exponential backoff (fast for local testing)
-        let mut retry_count = 0;
-        const MAX_RETRIES: u32 = 5; // Fewer retries for local testing
-        const BASE_DELAY: u64 = 50; // milliseconds - faster retry
-
-        loop {
-            if let Ok(Ok(block_info)) =
-                timeout(Duration::from_secs(2), self.try_connect_and_get_block(&url)).await
-            {
-                debug!("http node available at block {}", block_info.number);
-                return Ok(block_info);
-            }
-
-            retry_count += 1;
-            if retry_count >= MAX_RETRIES {
-                return Err(eyre!(
-                    "HTTP node not available after {} retries",
-                    MAX_RETRIES
-                ));
-            }
-
-            // Exponential backoff with random jitter
-            let delay = BASE_DELAY * (2_u64.pow(retry_count.min(6))); // Cap at 64x base delay
-            let jitter = self.random_jitter(&self.network.name, delay / 4, retry_count); // Up to 25% jitter
-            sleep(Duration::from_millis(delay + jitter)).await;
-        }
-    }
-
     async fn provider(&self) -> Result<RootProvider<Ethereum>> {
         let url = &self.network.http_url.to_string();
         let provider = ProviderBuilder::new()
@@ -234,23 +111,14 @@ impl AnvilProvider for AnvilHttp {
         Ok(provider)
     }
 
-    async fn block_stream(&self) -> Result<Box<dyn Stream<Item = Msg> + Send + Unpin>> {
+    async fn subscribe_blocks(&self) -> Result<Box<dyn Stream<Item = Msg> + Send + Unpin>> {
         let provider = self.provider().await?;
-
-        // Create connection monitoring
-        let (connection_lost_tx, connection_lost_rx) = oneshot::channel();
-        let monitor_url = self.network.http_url.to_string();
-
-        // Spawn background task to monitor TCP connection health
-        tokio::spawn(async move {
-            Self::monitor_connection(monitor_url, connection_lost_tx).await;
-        });
 
         // Use watch_blocks for HTTP polling-based subscriptions
         let watcher = provider.watch_blocks().await?;
         let stream = watcher.into_stream();
 
-        debug!("http block stream created with TCP monitoring");
+        debug!("http block stream created");
 
         // Transform the stream to process each block and extract traces/logs
         let latest_block = self.latest_block.clone();
@@ -277,11 +145,10 @@ impl AnvilProvider for AnvilHttp {
                                 block_hash,
                             )
                             .await
+                                && !is_valid
                             {
-                                if !is_valid {
-                                    debug!("chain continuity broken, skipping block processing");
-                                    continue;
-                                }
+                                debug!("chain continuity broken, skipping block processing");
+                                continue;
                             }
 
                             // Fetch traces for all transactions in the block
@@ -320,15 +187,10 @@ impl AnvilProvider for AnvilHttp {
             })
             .flatten();
 
-        // For now, let the TCP monitor detect connection loss
-        // The worker's timeout will handle restarting if needed
-        // TODO: We can add stream termination later once the basic flow works
-        drop(connection_lost_rx); // Don't use complex termination for now
-
         Ok(Box::new(Box::pin(block_stream)))
     }
 
-    async fn historical_blocks_stream(
+    async fn backfill_blocks(
         &self,
         sync_info: &SyncInfo,
     ) -> Result<Box<dyn Stream<Item = Msg> + Send + Unpin>> {
@@ -337,12 +199,10 @@ impl AnvilProvider for AnvilHttp {
         // Determine starting block number: fork_block_number + 1 or 1
         let start_block = sync_info.fork_block_number.unwrap_or_default() + 1;
         let end_block = sync_info.number;
-        dbg!(&sync_info);
 
         debug!("http historical stream {}-{}", start_block, end_block);
 
         if end_block < start_block {
-            dbg!("empty");
             return Ok(Box::new(stream::empty()));
         }
 
@@ -362,11 +222,19 @@ impl AnvilProvider for AnvilHttp {
                         let block_hash = block.header.hash;
 
                         // Validate chain continuity and update latest block
-                        if let Ok(is_valid) = validate_and_update_latest_block(&latest_block, &provider, block_number, block_hash).await {
-                            if !is_valid {
-                                debug!("chain continuity broken during historical sync, skipping block");
-                                return None;
-                            }
+                        if let Ok(is_valid) = validate_and_update_latest_block(
+                            &latest_block,
+                            &provider,
+                            block_number,
+                            block_hash,
+                        )
+                        .await
+                            && !is_valid
+                        {
+                            debug!(
+                                "chain continuity broken during historical sync, skipping block"
+                            );
+                            return None;
                         }
 
                         // Fetch traces for all transactions in the block
