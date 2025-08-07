@@ -26,6 +26,7 @@ import {
   CircleUser,
   Cog,
   FileCode2,
+  Globe,
   ReceiptText,
   Terminal,
   Wifi,
@@ -86,6 +87,38 @@ export function AppSidebar() {
               {items.map((item) => (
                 <CustomSidebarMenuItem key={item.title} {...item} />
               ))}
+
+              <Collapsible className="group/collapsible">
+                <SidebarMenuItem>
+                  <CollapsibleTrigger asChild className="cursor-pointer">
+                    <SidebarMenuButton>
+                      <Globe />
+                      <span>Explorer</span>
+                      <ChevronRight className="ml-auto group-data-[state=open]/collapsible:hidden" />
+                      <ChevronDown className="ml-auto group-data-[state=closed]/collapsible:hidden" />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+                      {explorerItems.map((item) => (
+                        <SidebarMenuItem key={item.title}>
+                          <SidebarMenuButton asChild>
+                            <Link
+                              to={item.url}
+                              className={cn(
+                                item.url === location.pathname &&
+                                  "bg-primary text-accent hover:bg-primary hover:text-accent",
+                              )}
+                            >
+                              {item.title}
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      ))}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
 
               <Collapsible className="group/collapsible">
                 <SidebarMenuItem>
@@ -197,6 +230,22 @@ const items = [
     title: "Connections",
     url: "/home/connections",
     icon: <Wifi />,
+  },
+];
+
+// Explorer items.
+const explorerItems = [
+  {
+    title: "Addresses",
+    url: "/home/explorer/addresses",
+  },
+  {
+    title: "Transactions",
+    url: "/home/explorer/transactions",
+  },
+  {
+    title: "Contracts",
+    url: "/home/explorer/contracts",
   },
 ];
 
