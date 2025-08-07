@@ -66,7 +66,7 @@ impl Tracker {
         }
     }
 
-    pub fn stop(&mut self) {
+    fn stop(&mut self) {
         tracing::debug!("Stopping anvil tracker");
 
         let quit_snd = self.quit_snd.take();
