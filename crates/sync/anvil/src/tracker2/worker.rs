@@ -26,7 +26,7 @@ pub struct SyncInfo {
 pub enum Msg {
     Reset,
     CaughtUp,
-    Block { number: u64, hash: B256 },
+    Block(B256),
 }
 
 pub struct Worker<I: AnvilProvider> {
@@ -146,7 +146,7 @@ impl<I: AnvilProvider + Clone + Send + 'static> Worker<I> {
                 msg_opt = timeout(Duration::from_secs(3), stream.next()) => {
                     match msg_opt {
                         Ok(Some(msg)) =>{
-                            if let Msg::Block{hash,..}=msg{
+                            if let Msg::Block(hash)=msg{
                                 checkpoint = validate_and_update_checkpoint(&provider, checkpoint, hash).await?;
                             }
                             msg_tx.send(msg)?;

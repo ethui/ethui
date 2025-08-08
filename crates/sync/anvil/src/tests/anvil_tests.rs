@@ -276,9 +276,7 @@ async fn test_block_subscription_with_anvil() {
         Ok(Some(msg)) => {
             println!("Received message: {msg:?}");
             match msg {
-                crate::tracker2::worker::Msg::Block { number, .. } => {
-                    assert!(number > 0, "Should receive a valid block");
-                }
+                crate::tracker2::worker::Msg::Block(_hash) => {}
                 _ => panic!("Expected BlockData message"),
             }
         }
@@ -428,25 +426,10 @@ async fn test_historical_blocks_stream() {
         "Should receive at least one historical block"
     );
 
-    // Verify all messages are BlockData and in correct order
-    let mut expected_block = sync_info.fork_block_number.map(|fb| fb + 1).unwrap_or(1);
-    for msg in &messages {
-        match msg {
-            Msg::Block { number, .. } => {
-                assert_eq!(
-                    *number, expected_block,
-                    "Blocks should be in sequential order"
-                );
-                expected_block += 1;
-            }
-            _ => panic!("Expected BlockData message, got: {msg:?}"),
-        }
-    }
-
     // The last message should be for the latest known block
-    if let Some(Msg::Block { number, .. }) = messages.last() {
+    if let Some(Msg::Block(hash)) = messages.last() {
         assert_eq!(
-            *number, sync_info.number,
+            *hash, sync_info.hash,
             "Last message should be for the latest block"
         );
     }

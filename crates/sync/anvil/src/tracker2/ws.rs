@@ -1,6 +1,6 @@
 use alloy::{
     network::Ethereum,
-    providers::{ext::TraceApi, Provider as _, ProviderBuilder, RootProvider},
+    providers::{Provider as _, ProviderBuilder, RootProvider},
 };
 use ethui_types::{prelude::*, Network};
 use futures::{stream, Stream, StreamExt};
@@ -47,18 +47,10 @@ impl AnvilProvider for AnvilWs {
         let subscription = provider.subscribe_blocks().await?;
         let stream = subscription.into_stream();
 
-
         // Transform the stream to process each block and extract traces/logs
-        let block_stream = stream.map(move |block_header| {
+        let block_stream = stream.map(move |header| {
             let _provider = Arc::clone(&provider);
-            let block_number = block_header.number;
-            let block_hash = block_header.hash;
-
-
-            Msg::Block {
-                number: block_number,
-                hash: block_hash,
-            }
+            Msg::Block(header.hash)
         });
 
         Ok(Box::new(Box::pin(block_stream)))
@@ -74,45 +66,15 @@ impl AnvilProvider for AnvilWs {
         let start_block = sync_info.fork_block_number.map(|fb| fb + 1).unwrap_or(1);
         let end_block = sync_info.number;
 
-
         // Create a stream that yields blocks sequentially from start to end
         let block_range = start_block..=end_block;
         let historical_stream = stream::iter(block_range)
             .then(move |block_number| {
                 let provider = provider.clone();
                 async move {
-
-                    // Get the block by number
                     if let Ok(Some(block)) = provider.get_block_by_number(block_number.into()).await
                     {
-                        let block_hash = block.header.hash;
-
-                        // Fetch traces for all transactions in the block
-                        let mut all_traces = Vec::new();
-                        let mut all_logs = Vec::new();
-
-                        // Get transaction hashes from the block
-                        for tx_hash in block.transactions.hashes() {
-                            // Fetch traces for this transaction
-                            if let Ok(traces) = provider.trace_transaction(tx_hash).await {
-                                all_traces.extend(traces);
-                            }
-
-                            // Fetch receipt to get logs
-                            if let Ok(Some(receipt)) =
-                                provider.get_transaction_receipt(tx_hash).await
-                            {
-                                all_logs.extend(receipt.inner.logs().iter().cloned());
-                            }
-                        }
-
-                        // Create the block data message
-                        let msg = Msg::Block {
-                            number: block_number,
-                            hash: block_hash,
-                        };
-
-                        Some(msg)
+                        Some(Msg::Block(block.header.hash))
                     } else {
                         None
                     }

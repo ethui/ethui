@@ -34,8 +34,8 @@ impl Consumer for LoggingConsumer {
             Msg::CaughtUp => {
                 info!("✅ Caught up with latest blocks");
             }
-            Msg::Block { number, hash } => {
-                info!("📦 Block {} ({})", number, &hash.to_string()[..10]);
+            Msg::Block(hash) => {
+                info!("📦 Block {}", &hash.to_string()[..10]);
             }
         }
     }

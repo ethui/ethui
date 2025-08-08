@@ -42,23 +42,17 @@ impl AnvilProvider for AnvilHttp {
         let watcher = provider.watch_blocks().await?;
         let stream = watcher.into_stream();
 
-
         // Transform the stream to process each block and extract traces/logs
         let block_stream = stream
             .then(move |block_hashes| {
-                let provider = Arc::clone(&provider);
+                let _provider = Arc::clone(&provider);
                 async move {
                     // Collect all messages for this batch of block hashes
                     let mut messages = Vec::new();
 
                     // Process each block hash (watch_blocks can return multiple hashes)
                     for hash in block_hashes {
-                        if let Ok(Some(block)) = provider.get_block_by_hash(hash).await {
-                            messages.push(Msg::Block {
-                                number: block.header.number,
-                                hash,
-                            });
-                        }
+                        messages.push(Msg::Block(hash));
                     }
 
                     stream::iter(messages)
@@ -79,7 +73,6 @@ impl AnvilProvider for AnvilHttp {
         let start_block = sync_info.fork_block_number.unwrap_or_default() + 1;
         let end_block = sync_info.number;
 
-
         if end_block < start_block {
             return Ok(Box::new(stream::empty()));
         }
@@ -90,19 +83,10 @@ impl AnvilProvider for AnvilHttp {
             .then(move |block_number| {
                 let provider = provider.clone();
                 async move {
-
                     // Get the block by number
                     if let Ok(Some(block)) = provider.get_block_by_number(block_number.into()).await
                     {
-                        let block_hash = block.header.hash;
-
-                        // Create the block data message
-                        let msg = Msg::Block {
-                            number: block_number,
-                            hash: block_hash,
-                        };
-
-                        Some(msg)
+                        Some(Msg::Block(block.header.hash))
                     } else {
                         None
                     }
