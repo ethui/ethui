@@ -154,7 +154,8 @@ async fn test_wait_with_anvil() {
 
     // Test HTTP worker
     let mut http_worker = Worker::new(AnvilHttp::new(network.clone()));
-    let result = http_worker.wait().await;
+    let (_quit_tx, mut quit_rx) = tokio::sync::oneshot::channel();
+    let result = http_worker.wait(&mut quit_rx).await;
     assert!(
         result.is_ok(),
         "HTTP worker should be able to connect to Anvil"
@@ -171,7 +172,8 @@ async fn test_wait_with_anvil() {
 
     // Test WS worker
     let mut ws_worker = Worker::new(AnvilWs::new(network));
-    let result = ws_worker.wait().await;
+    let (_quit_tx, mut quit_rx) = tokio::sync::oneshot::channel();
+    let result = ws_worker.wait(&mut quit_rx).await;
     assert!(
         result.is_ok(),
         "WS worker should be able to connect to Anvil"
@@ -203,7 +205,8 @@ async fn test_wait_unavailable_node() {
 
     // Test HTTP worker failure
     let mut http_worker = Worker::new(AnvilHttp::new(unavailable_network.clone()));
-    let result = timeout(Duration::from_secs(2), http_worker.wait()).await;
+    let (_quit_tx, mut quit_rx) = tokio::sync::oneshot::channel();
+    let result = timeout(Duration::from_secs(2), http_worker.wait(&mut quit_rx)).await;
 
     // Should either timeout or return an error
     match result {
@@ -214,7 +217,8 @@ async fn test_wait_unavailable_node() {
 
     // Test WS worker failure
     let mut ws_worker = Worker::new(AnvilWs::new(unavailable_network));
-    let result = timeout(Duration::from_secs(2), ws_worker.wait()).await;
+    let (_quit_tx, mut quit_rx) = tokio::sync::oneshot::channel();
+    let result = timeout(Duration::from_secs(2), ws_worker.wait(&mut quit_rx)).await;
 
     // Should either timeout or return an error
     match result {
@@ -368,7 +372,8 @@ async fn test_historical_blocks_stream() {
     // Get the current block info to determine the range
     let http_provider = AnvilHttp::new(network.clone());
     let mut worker = Worker::new(http_provider.clone());
-    let sync_info = worker.wait().await.expect("Should get sync info");
+    let (_quit_tx, mut quit_rx) = tokio::sync::oneshot::channel();
+    let sync_info = worker.wait(&mut quit_rx).await.expect("Should get sync info");
 
     println!(
         "Current block: {}, fork block: {:?}",

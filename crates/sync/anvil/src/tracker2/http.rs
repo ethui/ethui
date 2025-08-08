@@ -281,19 +281,18 @@ impl AnvilProvider for AnvilHttp {
 mod tests {
     use ethui_types::Network;
 
-    use super::*;
-
     #[test]
     fn test_random_jitter_produces_different_values() {
+        use crate::tracker2::utils::random_jitter;
+        
         let network = Network::anvil(0);
-        let worker = AnvilHttp::new(network.clone());
 
         let max_jitter = 1000;
         let mut values = std::collections::HashSet::new();
 
         // Generate multiple jitter values and ensure they're different
         for retry_count in 0..10 {
-            let jitter = worker.random_jitter(&network.name, max_jitter, retry_count);
+            let jitter = random_jitter(&network.name, max_jitter, retry_count);
             assert!(jitter <= max_jitter, "Jitter should not exceed max_jitter");
             values.insert(jitter);
         }
@@ -307,12 +306,13 @@ mod tests {
 
     #[test]
     fn test_random_jitter_deterministic_same_inputs() {
-        let network = Network::anvil(0);
-        let worker = AnvilHttp::new(network);
+        use crate::tracker2::utils::random_jitter;
+        
+        let _network = Network::anvil(0);
 
         // Same inputs should produce similar results within a short time window
-        let jitter1 = worker.random_jitter("name", 1000, 5);
-        let jitter2 = worker.random_jitter("name2", 1000, 5);
+        let jitter1 = random_jitter("name", 1000, 5);
+        let jitter2 = random_jitter("name2", 1000, 5);
 
         // Due to time-based entropy, they might be different, but both should be valid
         assert!(jitter1 <= 1000);

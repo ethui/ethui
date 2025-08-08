@@ -14,7 +14,7 @@ use tokio::{
 
 use crate::tracker2::{
     anvil::AnvilProvider, consumer::Consumer, monitor::TerminateOnConnectionLoss,
-    utils::try_get_sync_info,
+    utils::{random_jitter, try_get_sync_info},
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -49,7 +49,7 @@ impl<I: AnvilProvider + Clone + Send + 'static> Worker<I> {
         self.inner.network()
     }
 
-    pub(crate) async fn wait(&mut self) -> SyncInfo {
+    pub(crate) async fn wait(&mut self, quit_rx: &mut oneshot::Receiver<()>) -> Result<SyncInfo> {
         let url = self.network().http_url.to_string();
 
         // Retry logic with exponential backoff
@@ -57,48 +57,41 @@ impl<I: AnvilProvider + Clone + Send + 'static> Worker<I> {
         const BASE_DELAY: u64 = 100; // milliseconds
 
         loop {
-            match timeout(Duration::from_secs(2), try_get_sync_info(&url)).await {
-                Ok(Ok(block_info)) => {
-                    debug!("node available at block {}", block_info.number);
-                    return block_info;
+            tokio::select! {
+                _ = &mut *quit_rx => {
+                    return Err(eyre!("Quit signal received during wait"));
                 }
-                Ok(Err(e)) => {
-                    debug!("connection failed: {}", e);
-                }
-                Err(_) => {
-                    debug!("connection timeout");
+                result = timeout(Duration::from_secs(2), try_get_sync_info(&url)) => {
+                    match result {
+                        Ok(Ok(block_info)) => {
+                            debug!("node available at block {}", block_info.number);
+                            return Ok(block_info);
+                        }
+                        Ok(Err(e)) => {
+                            debug!("connection failed: {}", e);
+                        }
+                        Err(_) => {
+                            debug!("connection timeout");
+                        }
+                    }
+
+                    retry_count += 1;
+
+                    // Exponential backoff with random jitter
+                    let delay = BASE_DELAY * (2_u64.pow(retry_count.min(6))); // Cap at 64x base delay
+                    let jitter = random_jitter(&self.network().name, delay / 4, retry_count); // Up to 25% jitter
+                    
+                    tokio::select! {
+                        _ = &mut *quit_rx => {
+                            return Err(eyre!("Quit signal received during wait"));
+                        }
+                        _ = sleep(Duration::from_millis(delay + jitter)) => {}
+                    }
                 }
             }
-
-            retry_count += 1;
-
-            // Exponential backoff with random jitter
-            let delay = BASE_DELAY * (2_u64.pow(retry_count.min(6))); // Cap at 64x base delay
-            let jitter = self.random_jitter(&self.network().name, delay / 4, retry_count); // Up to 25% jitter
-            sleep(Duration::from_millis(delay + jitter)).await;
         }
     }
 
-    /// Generate deterministic pseudo-random jitter for retry delays
-    fn random_jitter(&self, seed: &str, max_jitter: u64, retry_count: u32) -> u64 {
-        use std::{
-            collections::hash_map::DefaultHasher,
-            hash::{Hash, Hasher},
-            time::{SystemTime, UNIX_EPOCH},
-        };
-
-        let mut hasher = DefaultHasher::new();
-        seed.hash(&mut hasher);
-        retry_count.hash(&mut hasher);
-
-        // Add some time-based entropy to avoid all instances having the same jitter
-        if let Ok(duration) = SystemTime::now().duration_since(UNIX_EPOCH) {
-            (duration.as_millis() % 1000).hash(&mut hasher);
-        }
-
-        let hash = hasher.finish();
-        hash % max_jitter
-    }
 
     async fn provider(&self) -> Result<RootProvider<Ethereum>> {
         self.inner.provider().await
@@ -132,13 +125,13 @@ impl<I: AnvilProvider + Clone + Send + 'static> Worker<I> {
         msg_tx.send(Msg::Reset)?;
 
         // Phase 1: Initial sync - wait for node to be available
-        let sync_info = tokio::select! {
-            _ = &mut *quit_rx => {
-                return Ok(());
-            }
-            info = self.wait() => {
+        let sync_info = match self.wait(quit_rx).await {
+            Ok(info) => {
                 debug!("node available at block {}", info.number);
                 info
+            }
+            Err(e) => {
+                return Err(e);
             }
         };
 
@@ -155,13 +148,18 @@ impl<I: AnvilProvider + Clone + Send + 'static> Worker<I> {
                 _ = &mut *quit_rx => {
                     return Ok(());
                 }
-                msg_opt = stream.next() => {
+                msg_opt = timeout(Duration::from_secs(3), stream.next()) => {
                     match msg_opt {
-                        Some(msg) => msg_tx.send(msg)?,
-                        None => {
+                        Ok(Some(msg)) => msg_tx.send(msg)?,
+                        Ok(None) => {
                             // Stream ended - either historical finished and live stream ended, or connection lost
                             debug!("merged stream ended, triggering restart");
                             return Err(eyre!("Stream ended"));
+                        }
+                        Err(_) => {
+                            // Timeout - continue loop to allow TerminateOnConnectionLoss to be polled
+                            debug!("stream polling timeout, continuing to check connection health");
+                            continue;
                         }
                     }
                 }
@@ -336,7 +334,8 @@ mod tests {
         let mut worker = Worker::new(AnvilHttp::new(network));
 
         // Should fail quickly but we'll use a timeout to make sure test doesn't hang
-        let result = timeout(Duration::from_secs(3), worker.wait()).await;
+        let (_quit_tx, mut quit_rx) = oneshot::channel();
+        let result = timeout(Duration::from_secs(3), worker.wait(&mut quit_rx)).await;
 
         match result {
             Ok(Err(_)) => {} // Expected - connection should fail
