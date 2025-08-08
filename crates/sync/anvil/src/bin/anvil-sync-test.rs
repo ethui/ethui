@@ -2,7 +2,7 @@ use clap::Parser;
 use color_eyre::eyre::Result;
 use ethui_sync_anvil::tracker2::{
     consumer::Consumer,
-    worker::{Msg, create_worker},
+    worker::{create_worker, Msg},
 };
 use ethui_types::{DedupChainId, Network, NetworkStatus};
 use tokio::signal;
@@ -34,19 +34,8 @@ impl Consumer for LoggingConsumer {
             Msg::CaughtUp => {
                 info!("✅ Caught up with latest blocks");
             }
-            Msg::BlockData {
-                block_number,
-                block_hash,
-                traces,
-                logs,
-            } => {
-                info!(
-                    "📦 Block {} ({}): {} traces, {} logs",
-                    block_number,
-                    &block_hash.to_string()[..10],
-                    traces.len(),
-                    logs.len()
-                );
+            Msg::Block { number, hash } => {
+                info!("📦 Block {} ({})", number, &hash.to_string()[..10]);
             }
         }
     }

@@ -1,9 +1,6 @@
-#![allow(dead_code)]
-
 use alloy::{
     network::Ethereum,
-    providers::RootProvider,
-    rpc::types::{trace::parity::LocalizedTransactionTrace, Log as RpcLog},
+    providers::{Provider as _, RootProvider},
 };
 use ethui_types::{prelude::*, Network};
 use futures::{Stream, StreamExt};
@@ -13,7 +10,8 @@ use tokio::{
 };
 
 use crate::tracker2::{
-    anvil::AnvilProvider, consumer::Consumer, monitor::TerminateOnConnectionLoss,
+    anvil::AnvilProvider,
+    consumer::Consumer,
     utils::{random_jitter, try_get_sync_info},
 };
 
@@ -28,12 +26,7 @@ pub struct SyncInfo {
 pub enum Msg {
     Reset,
     CaughtUp,
-    BlockData {
-        block_number: u64,
-        block_hash: B256,
-        traces: Vec<LocalizedTransactionTrace>,
-        logs: Vec<RpcLog>,
-    },
+    Block { number: u64, hash: B256 },
 }
 
 pub struct Worker<I: AnvilProvider> {
@@ -67,11 +60,9 @@ impl<I: AnvilProvider + Clone + Send + 'static> Worker<I> {
                             debug!("node available at block {}", block_info.number);
                             return Ok(block_info);
                         }
-                        Ok(Err(e)) => {
-                            debug!("connection failed: {}", e);
+                        Ok(Err(_)) => {
                         }
                         Err(_) => {
-                            debug!("connection timeout");
                         }
                     }
 
@@ -80,7 +71,7 @@ impl<I: AnvilProvider + Clone + Send + 'static> Worker<I> {
                     // Exponential backoff with random jitter
                     let delay = BASE_DELAY * (2_u64.pow(retry_count.min(6))); // Cap at 64x base delay
                     let jitter = random_jitter(&self.network().name, delay / 4, retry_count); // Up to 25% jitter
-                    
+
                     tokio::select! {
                         _ = &mut *quit_rx => {
                             return Err(eyre!("Quit signal received during wait"));
@@ -90,11 +81,6 @@ impl<I: AnvilProvider + Clone + Send + 'static> Worker<I> {
                 }
             }
         }
-    }
-
-
-    async fn provider(&self) -> Result<RootProvider<Ethereum>> {
-        self.inner.provider().await
     }
 
     #[instrument(skip_all, fields(network = self.network().name))]
@@ -135,12 +121,16 @@ impl<I: AnvilProvider + Clone + Send + 'static> Worker<I> {
             }
         };
 
+        let provider = self.inner.provider().await?;
+        let mut checkpoint: Option<B256> = None;
+
         // Create merged stream: historical blocks followed seamlessly by live blocks
         let live = self.inner.subscribe_blocks().await?;
         let backfill = self.inner.backfill_blocks(&sync_info).await?;
         // Wrap the chained stream with connection monitoring (monitors internally)
-        let mut stream =
-            TerminateOnConnectionLoss::new(backfill.chain(live), self.network().clone());
+        let mut stream = backfill.chain(live);
+
+        let mut checkpoint_interval = tokio::time::interval(Duration::from_secs(5));
 
         debug!("starting block stream");
         loop {
@@ -148,9 +138,19 @@ impl<I: AnvilProvider + Clone + Send + 'static> Worker<I> {
                 _ = &mut *quit_rx => {
                     return Ok(());
                 }
+                _ = checkpoint_interval.tick() => {
+                    if let Some(checkpoint_hash)=checkpoint {
+                        checkpoint = validate_and_update_checkpoint(&provider, checkpoint, checkpoint_hash).await?;
+                    }
+                }
                 msg_opt = timeout(Duration::from_secs(3), stream.next()) => {
                     match msg_opt {
-                        Ok(Some(msg)) => msg_tx.send(msg)?,
+                        Ok(Some(msg)) =>{
+                            if let Msg::Block{hash,..}=msg{
+                                checkpoint = validate_and_update_checkpoint(&provider, checkpoint, hash).await?;
+                            }
+                            msg_tx.send(msg)?;
+                        },
                         Ok(None) => {
                             // Stream ended - either historical finished and live stream ended, or connection lost
                             debug!("merged stream ended, triggering restart");
@@ -158,13 +158,28 @@ impl<I: AnvilProvider + Clone + Send + 'static> Worker<I> {
                         }
                         Err(_) => {
                             // Timeout - continue loop to allow TerminateOnConnectionLoss to be polled
-                            debug!("stream polling timeout, continuing to check connection health");
                             continue;
                         }
                     }
                 }
             }
         }
+    }
+}
+
+async fn validate_and_update_checkpoint(
+    provider: &RootProvider<Ethereum>,
+    checkpoint: Option<B256>,
+    new_checkpoint: B256,
+) -> Result<Option<B256>> {
+    if let Some(checkpoint) = checkpoint {
+        if provider.get_block_by_hash(checkpoint).await?.is_some() {
+            Ok(Some(new_checkpoint))
+        } else {
+            Err(eyre!("Revert detected, triggering restart"))
+        }
+    } else {
+        Ok(Some(new_checkpoint))
     }
 }
 

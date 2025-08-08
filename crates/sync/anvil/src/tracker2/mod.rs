@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 use std::{collections::HashMap, sync::Arc};
 
 use ethui_types::{DedupChainId, Network};
@@ -13,7 +11,7 @@ use tracing::{debug, info, instrument};
 pub mod anvil;
 pub mod consumer;
 pub mod http;
-pub mod monitor;
+// pub mod monitor;
 mod utils;
 pub mod worker;
 pub mod ws;
@@ -24,6 +22,7 @@ pub use http::AnvilHttp;
 pub use worker::create_worker;
 pub use ws::AnvilWs;
 
+#[allow(dead_code)]
 #[cfg(not(test))]
 #[derive(Clone)]
 struct NoOpConsumer;
@@ -37,8 +36,10 @@ impl Consumer for NoOpConsumer {
 
 type Workers = Arc<Mutex<HashMap<DedupChainId, (oneshot::Sender<()>, JoinHandle<()>)>>>;
 
+#[allow(dead_code)]
 static WORKERS: Lazy<Workers> = Lazy::new(Default::default);
 
+#[allow(dead_code)]
 #[instrument(skip_all, fields(network = network.name))]
 pub(crate) async fn watch(network: Network) {
     let mut workers = WORKERS.lock().await;
@@ -64,6 +65,7 @@ pub(crate) async fn watch(network: Network) {
     info!("Started watching network {}", network.name);
 }
 
+#[allow(dead_code)]
 #[instrument(skip_all, fields(network = network.name))]
 pub(crate) async fn unwatch(network: Network) {
     let mut workers = WORKERS.lock().await;

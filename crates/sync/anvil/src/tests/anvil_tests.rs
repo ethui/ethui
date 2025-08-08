@@ -1,19 +1,19 @@
 use std::sync::{
-    Arc,
     atomic::{AtomicU32, Ordering},
+    Arc,
 };
 
 use ethui_types::{Network, NetworkStatus};
 use serial_test::serial;
-use tokio::time::{Duration, sleep, timeout};
+use tokio::time::{sleep, timeout, Duration};
 use url::Url;
 
 use super::utils::{AnvilInstance, TestConsumer};
 use crate::tracker2::{
-    AnvilHttp, AnvilWs,
     anvil::AnvilProvider,
     consumer::Consumer,
     worker::{Msg, Worker},
+    AnvilHttp, AnvilWs,
 };
 
 #[derive(Clone)]
@@ -276,8 +276,8 @@ async fn test_block_subscription_with_anvil() {
         Ok(Some(msg)) => {
             println!("Received message: {msg:?}");
             match msg {
-                crate::tracker2::worker::Msg::BlockData { block_number, .. } => {
-                    assert!(block_number > 0, "Should receive a valid block");
+                crate::tracker2::worker::Msg::Block { number, .. } => {
+                    assert!(number > 0, "Should receive a valid block");
                 }
                 _ => panic!("Expected BlockData message"),
             }
@@ -373,7 +373,10 @@ async fn test_historical_blocks_stream() {
     let http_provider = AnvilHttp::new(network.clone());
     let mut worker = Worker::new(http_provider.clone());
     let (_quit_tx, mut quit_rx) = tokio::sync::oneshot::channel();
-    let sync_info = worker.wait(&mut quit_rx).await.expect("Should get sync info");
+    let sync_info = worker
+        .wait(&mut quit_rx)
+        .await
+        .expect("Should get sync info");
 
     println!(
         "Current block: {}, fork block: {:?}",
@@ -429,9 +432,9 @@ async fn test_historical_blocks_stream() {
     let mut expected_block = sync_info.fork_block_number.map(|fb| fb + 1).unwrap_or(1);
     for msg in &messages {
         match msg {
-            Msg::BlockData { block_number, .. } => {
+            Msg::Block { number, .. } => {
                 assert_eq!(
-                    *block_number, expected_block,
+                    *number, expected_block,
                     "Blocks should be in sequential order"
                 );
                 expected_block += 1;
@@ -441,9 +444,9 @@ async fn test_historical_blocks_stream() {
     }
 
     // The last message should be for the latest known block
-    if let Some(Msg::BlockData { block_number, .. }) = messages.last() {
+    if let Some(Msg::Block { number, .. }) = messages.last() {
         assert_eq!(
-            *block_number, sync_info.number,
+            *number, sync_info.number,
             "Last message should be for the latest block"
         );
     }
