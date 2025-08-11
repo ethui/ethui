@@ -228,7 +228,6 @@ const items = [
   },
 ];
 
-// Explorer items.
 const explorerItems = [
   { title: "Addresses", url: "/home/explorer/addresses" },
   { title: "Transactions", url: "/home/explorer/transactions" },
