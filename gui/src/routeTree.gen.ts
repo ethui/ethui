@@ -19,7 +19,7 @@ import { Route as HomeLConnectionsRouteImport } from './routes/home/_l/connectio
 import { Route as HomeLAccountRouteImport } from './routes/home/_l/account'
 import { Route as HomeLTransferLRouteImport } from './routes/home/_l/transfer/_l'
 import { Route as HomeLSettingsLRouteImport } from './routes/home/_l/settings/_l'
-import { Route as HomeLExplorerAddressesRouteImport } from './routes/home/_l/explorer/addresses'
+import { Route as HomeLExplorerLRouteImport } from './routes/home/_l/explorer/_l'
 import { Route as HomeLContractsLRouteImport } from './routes/home/_l/contracts/_l'
 import { Route as DialogLWalletUnlockIdRouteImport } from './routes/dialog/_l/wallet-unlock.$id'
 import { Route as DialogLTxReviewIdRouteImport } from './routes/dialog/_l/tx-review.$id'
@@ -37,6 +37,7 @@ import { Route as HomeLSettingsLStacksRouteImport } from './routes/home/_l/setti
 import { Route as HomeLSettingsLGeneralRouteImport } from './routes/home/_l/settings/_l/general'
 import { Route as HomeLSettingsLFoundryRouteImport } from './routes/home/_l/settings/_l/foundry'
 import { Route as HomeLSettingsLAboutRouteImport } from './routes/home/_l/settings/_l/about'
+import { Route as HomeLExplorerLAddressesRouteImport } from './routes/home/_l/explorer/_l/addresses'
 import { Route as HomeLSettingsLWalletsLRouteImport } from './routes/home/_l/settings/_l/wallets/_l'
 import { Route as HomeLSettingsLNetworksLRouteImport } from './routes/home/_l/settings/_l/networks/_l'
 import { Route as HomeLContractsLLAddRouteImport } from './routes/home/_l/contracts/_l/_l.add'
@@ -52,6 +53,7 @@ const HomeRouteImport = createFileRoute('/home')()
 const DialogRouteImport = createFileRoute('/dialog')()
 const HomeLTransferRouteImport = createFileRoute('/home/_l/transfer')()
 const HomeLSettingsRouteImport = createFileRoute('/home/_l/settings')()
+const HomeLExplorerRouteImport = createFileRoute('/home/_l/explorer')()
 const HomeLContractsRouteImport = createFileRoute('/home/_l/contracts')()
 const HomeLSettingsLWalletsRouteImport = createFileRoute(
   '/home/_l/settings/_l/wallets',
@@ -88,6 +90,11 @@ const HomeLSettingsRoute = HomeLSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => HomeLRoute,
 } as any)
+const HomeLExplorerRoute = HomeLExplorerRouteImport.update({
+  id: '/explorer',
+  path: '/explorer',
+  getParentRoute: () => HomeLRoute,
+} as any)
 const HomeLContractsRoute = HomeLContractsRouteImport.update({
   id: '/contracts',
   path: '/contracts',
@@ -121,10 +128,9 @@ const HomeLSettingsLRoute = HomeLSettingsLRouteImport.update({
   id: '/_l',
   getParentRoute: () => HomeLSettingsRoute,
 } as any)
-const HomeLExplorerAddressesRoute = HomeLExplorerAddressesRouteImport.update({
-  id: '/explorer/addresses',
-  path: '/explorer/addresses',
-  getParentRoute: () => HomeLRoute,
+const HomeLExplorerLRoute = HomeLExplorerLRouteImport.update({
+  id: '/_l',
+  getParentRoute: () => HomeLExplorerRoute,
 } as any)
 const HomeLContractsLRoute = HomeLContractsLRouteImport.update({
   id: '/_l',
@@ -220,6 +226,11 @@ const HomeLSettingsLAboutRoute = HomeLSettingsLAboutRouteImport.update({
   path: '/about',
   getParentRoute: () => HomeLSettingsLRoute,
 } as any)
+const HomeLExplorerLAddressesRoute = HomeLExplorerLAddressesRouteImport.update({
+  id: '/addresses',
+  path: '/addresses',
+  getParentRoute: () => HomeLExplorerLRoute,
+} as any)
 const HomeLSettingsLWalletsLRoute = HomeLSettingsLWalletsLRouteImport.update({
   id: '/_l',
   getParentRoute: () => HomeLSettingsLWalletsRoute,
@@ -292,9 +303,10 @@ export interface FileRoutesByFullPath {
   '/dialog/tx-review/$id': typeof DialogLTxReviewIdRoute
   '/dialog/wallet-unlock/$id': typeof DialogLWalletUnlockIdRoute
   '/home/contracts': typeof HomeLContractsLRouteWithChildren
-  '/home/explorer/addresses': typeof HomeLExplorerAddressesRoute
+  '/home/explorer': typeof HomeLExplorerLRouteWithChildren
   '/home/settings': typeof HomeLSettingsLRouteWithChildren
   '/home/transfer': typeof HomeLTransferLRouteWithChildren
+  '/home/explorer/addresses': typeof HomeLExplorerLAddressesRoute
   '/home/settings/about': typeof HomeLSettingsLAboutRoute
   '/home/settings/foundry': typeof HomeLSettingsLFoundryRoute
   '/home/settings/general': typeof HomeLSettingsLGeneralRoute
@@ -330,9 +342,10 @@ export interface FileRoutesByTo {
   '/dialog/tx-review/$id': typeof DialogLTxReviewIdRoute
   '/dialog/wallet-unlock/$id': typeof DialogLWalletUnlockIdRoute
   '/home/contracts': typeof HomeLContractsLIndexRoute
-  '/home/explorer/addresses': typeof HomeLExplorerAddressesRoute
+  '/home/explorer': typeof HomeLExplorerLRouteWithChildren
   '/home/settings': typeof HomeLSettingsLRouteWithChildren
   '/home/transfer': typeof HomeLTransferLRouteWithChildren
+  '/home/explorer/addresses': typeof HomeLExplorerLAddressesRoute
   '/home/settings/about': typeof HomeLSettingsLAboutRoute
   '/home/settings/foundry': typeof HomeLSettingsLFoundryRoute
   '/home/settings/general': typeof HomeLSettingsLGeneralRoute
@@ -369,11 +382,13 @@ export interface FileRoutesById {
   '/dialog/_l/wallet-unlock/$id': typeof DialogLWalletUnlockIdRoute
   '/home/_l/contracts': typeof HomeLContractsRouteWithChildren
   '/home/_l/contracts/_l': typeof HomeLContractsLRouteWithChildren
-  '/home/_l/explorer/addresses': typeof HomeLExplorerAddressesRoute
+  '/home/_l/explorer': typeof HomeLExplorerRouteWithChildren
+  '/home/_l/explorer/_l': typeof HomeLExplorerLRouteWithChildren
   '/home/_l/settings': typeof HomeLSettingsRouteWithChildren
   '/home/_l/settings/_l': typeof HomeLSettingsLRouteWithChildren
   '/home/_l/transfer': typeof HomeLTransferRouteWithChildren
   '/home/_l/transfer/_l': typeof HomeLTransferLRouteWithChildren
+  '/home/_l/explorer/_l/addresses': typeof HomeLExplorerLAddressesRoute
   '/home/_l/settings/_l/about': typeof HomeLSettingsLAboutRoute
   '/home/_l/settings/_l/foundry': typeof HomeLSettingsLFoundryRoute
   '/home/_l/settings/_l/general': typeof HomeLSettingsLGeneralRoute
@@ -413,9 +428,10 @@ export interface FileRouteTypes {
     | '/dialog/tx-review/$id'
     | '/dialog/wallet-unlock/$id'
     | '/home/contracts'
-    | '/home/explorer/addresses'
+    | '/home/explorer'
     | '/home/settings'
     | '/home/transfer'
+    | '/home/explorer/addresses'
     | '/home/settings/about'
     | '/home/settings/foundry'
     | '/home/settings/general'
@@ -451,9 +467,10 @@ export interface FileRouteTypes {
     | '/dialog/tx-review/$id'
     | '/dialog/wallet-unlock/$id'
     | '/home/contracts'
-    | '/home/explorer/addresses'
+    | '/home/explorer'
     | '/home/settings'
     | '/home/transfer'
+    | '/home/explorer/addresses'
     | '/home/settings/about'
     | '/home/settings/foundry'
     | '/home/settings/general'
@@ -489,11 +506,13 @@ export interface FileRouteTypes {
     | '/dialog/_l/wallet-unlock/$id'
     | '/home/_l/contracts'
     | '/home/_l/contracts/_l'
-    | '/home/_l/explorer/addresses'
+    | '/home/_l/explorer'
+    | '/home/_l/explorer/_l'
     | '/home/_l/settings'
     | '/home/_l/settings/_l'
     | '/home/_l/transfer'
     | '/home/_l/transfer/_l'
+    | '/home/_l/explorer/_l/addresses'
     | '/home/_l/settings/_l/about'
     | '/home/_l/settings/_l/foundry'
     | '/home/_l/settings/_l/general'
@@ -565,6 +584,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeLSettingsRouteImport
       parentRoute: typeof HomeLRoute
     }
+    '/home/_l/explorer': {
+      id: '/home/_l/explorer'
+      path: '/explorer'
+      fullPath: '/home/explorer'
+      preLoaderRoute: typeof HomeLExplorerRouteImport
+      parentRoute: typeof HomeLRoute
+    }
     '/home/_l/contracts': {
       id: '/home/_l/contracts'
       path: '/contracts'
@@ -614,12 +640,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeLSettingsLRouteImport
       parentRoute: typeof HomeLSettingsRoute
     }
-    '/home/_l/explorer/addresses': {
-      id: '/home/_l/explorer/addresses'
-      path: '/explorer/addresses'
-      fullPath: '/home/explorer/addresses'
-      preLoaderRoute: typeof HomeLExplorerAddressesRouteImport
-      parentRoute: typeof HomeLRoute
+    '/home/_l/explorer/_l': {
+      id: '/home/_l/explorer/_l'
+      path: '/explorer'
+      fullPath: '/home/explorer'
+      preLoaderRoute: typeof HomeLExplorerLRouteImport
+      parentRoute: typeof HomeLExplorerRoute
     }
     '/home/_l/contracts/_l': {
       id: '/home/_l/contracts/_l'
@@ -753,6 +779,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/home/settings/about'
       preLoaderRoute: typeof HomeLSettingsLAboutRouteImport
       parentRoute: typeof HomeLSettingsLRoute
+    }
+    '/home/_l/explorer/_l/addresses': {
+      id: '/home/_l/explorer/_l/addresses'
+      path: '/addresses'
+      fullPath: '/home/explorer/addresses'
+      preLoaderRoute: typeof HomeLExplorerLAddressesRouteImport
+      parentRoute: typeof HomeLExplorerLRoute
     }
     '/home/_l/settings/_l/wallets/_l': {
       id: '/home/_l/settings/_l/wallets/_l'
@@ -891,6 +924,30 @@ const HomeLContractsRouteWithChildren = HomeLContractsRoute._addFileChildren(
   HomeLContractsRouteChildren,
 )
 
+interface HomeLExplorerLRouteChildren {
+  HomeLExplorerLAddressesRoute: typeof HomeLExplorerLAddressesRoute
+}
+
+const HomeLExplorerLRouteChildren: HomeLExplorerLRouteChildren = {
+  HomeLExplorerLAddressesRoute: HomeLExplorerLAddressesRoute,
+}
+
+const HomeLExplorerLRouteWithChildren = HomeLExplorerLRoute._addFileChildren(
+  HomeLExplorerLRouteChildren,
+)
+
+interface HomeLExplorerRouteChildren {
+  HomeLExplorerLRoute: typeof HomeLExplorerLRouteWithChildren
+}
+
+const HomeLExplorerRouteChildren: HomeLExplorerRouteChildren = {
+  HomeLExplorerLRoute: HomeLExplorerLRouteWithChildren,
+}
+
+const HomeLExplorerRouteWithChildren = HomeLExplorerRoute._addFileChildren(
+  HomeLExplorerRouteChildren,
+)
+
 interface HomeLSettingsLNetworksLRouteChildren {
   HomeLSettingsLNetworksLNewRoute: typeof HomeLSettingsLNetworksLNewRoute
   HomeLSettingsLNetworksLIndexRoute: typeof HomeLSettingsLNetworksLIndexRoute
@@ -1022,7 +1079,7 @@ interface HomeLRouteChildren {
   HomeLOnboardingRoute: typeof HomeLOnboardingRoute
   HomeLTransactionsRoute: typeof HomeLTransactionsRoute
   HomeLContractsRoute: typeof HomeLContractsRouteWithChildren
-  HomeLExplorerAddressesRoute: typeof HomeLExplorerAddressesRoute
+  HomeLExplorerRoute: typeof HomeLExplorerRouteWithChildren
   HomeLSettingsRoute: typeof HomeLSettingsRouteWithChildren
   HomeLTransferRoute: typeof HomeLTransferRouteWithChildren
 }
@@ -1033,7 +1090,7 @@ const HomeLRouteChildren: HomeLRouteChildren = {
   HomeLOnboardingRoute: HomeLOnboardingRoute,
   HomeLTransactionsRoute: HomeLTransactionsRoute,
   HomeLContractsRoute: HomeLContractsRouteWithChildren,
-  HomeLExplorerAddressesRoute: HomeLExplorerAddressesRoute,
+  HomeLExplorerRoute: HomeLExplorerRouteWithChildren,
   HomeLSettingsRoute: HomeLSettingsRouteWithChildren,
   HomeLTransferRoute: HomeLTransferRouteWithChildren,
 }
