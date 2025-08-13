@@ -35,6 +35,7 @@ interface Props {
   noTextStyle?: boolean;
   clickToCopy?: boolean;
   className?: string;
+  showAlias?: boolean;
 }
 
 export function AddressView({
@@ -43,6 +44,7 @@ export function AddressView({
   icon = false,
   noTextStyle = false,
   clickToCopy = true,
+  showAlias = true,
   className,
 }: Props) {
   const network = useNetworks((s) => s.current);
@@ -54,7 +56,12 @@ export function AddressView({
 
   if (!network) return;
 
-  const text = alias ? alias : truncateHex(address);
+  const text = showAlias
+    ? alias
+      ? alias
+      : truncateHex(address)
+    : truncateHex(address);
+
   const addressContent = (
     <div
       className={cn(
