@@ -4,7 +4,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { AddressView } from "#/components/AddressView";
 import { type AddressInfo, useWallets } from "#/store/useWallets";
 
-export const Route = createFileRoute("/home/_l/explorer/_l/addresses")({
+export const Route = createFileRoute("/home/_l/explorer/_l/addresses/")({
   beforeLoad: () => ({ breadcrumb: "Addresses" }),
   component: Addresses,
 });
@@ -20,7 +20,6 @@ function Addresses() {
 const columnHelper = createColumnHelper<AddressInfo>();
 
 function AddressTable({ addresses }: { addresses: AddressInfo[] }) {
-  console.log(addresses);
   const columns = [
     columnHelper.accessor("address", {
       header: "Address",
@@ -28,12 +27,17 @@ function AddressTable({ addresses }: { addresses: AddressInfo[] }) {
         <AddressView
           address={getValue()}
           showAlias={false}
+          showLinkExplorer={true}
           className="text-sm"
         />
       ),
     }),
     columnHelper.accessor("alias", {
       header: "Alias",
+      cell: ({ getValue }) => getValue() || "-",
+    }),
+    columnHelper.accessor("walletName", {
+      header: "Wallet",
       cell: ({ getValue }) => getValue() || "-",
     }),
   ];
