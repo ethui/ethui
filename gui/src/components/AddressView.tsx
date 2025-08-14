@@ -86,9 +86,11 @@ export function AddressView({
   );
 
   const content = showLinkExplorer ? (
-    <Link params={{ address }} to="/home/explorer/addresses/$address">
-      {addressContent}
-    </Link>
+    <ClickToCopy text={address}>
+      <Link params={{ address }} to="/home/explorer/addresses/$address">
+        {addressContent}
+      </Link>
+    </ClickToCopy>
   ) : clickToCopy ? (
     <ClickToCopy text={address}>{addressContent}</ClickToCopy>
   ) : (
