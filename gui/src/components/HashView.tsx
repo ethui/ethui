@@ -5,12 +5,12 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@ethui/ui/components/shadcn/context-menu";
+import { cn } from "@ethui/ui/lib/utils";
 import { Link } from "@tanstack/react-router";
 import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
 import type { Hash } from "viem";
 import { useNetworks } from "#/store/useNetworks";
 import { truncateHex } from "#/utils";
-import { cn } from "@ethui/ui/lib/utils";
 
 interface Props {
   hash: Hash;
