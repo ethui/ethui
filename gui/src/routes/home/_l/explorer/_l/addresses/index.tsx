@@ -42,12 +42,5 @@ function AddressTable({ addresses }: { addresses: AddressInfo[] }) {
     }),
   ];
 
-  return (
-    <Table
-      className="mt-10"
-      columns={columns}
-      data={addresses}
-      variant="secondary"
-    />
-  );
+  return <Table columns={columns} data={addresses} variant="secondary" />;
 }

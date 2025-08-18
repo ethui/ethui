@@ -2,11 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useNetworks } from "#/store/useNetworks";
 import { PaginatedTx } from "@ethui/types";
 import { invoke } from "@tauri-apps/api/core";
-import { useEffect, useState } from "react";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Table } from "@ethui/ui/components/table";
 import { AddressView } from "#/components/AddressView";
 import { HashView } from "#/components/HashView";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { InfiniteScroll } from "@ethui/ui/components/infinite-scroll";
+import { LoaderCircle } from "lucide-react";
 
 export const Route = createFileRoute("/home/_l/explorer/_l/addresses/$address")(
   {
@@ -19,35 +21,71 @@ export const Route = createFileRoute("/home/_l/explorer/_l/addresses/$address")(
   },
 );
 
+const pageSize = 20;
+
 function RouteComponent() {
   const { address } = Route.useParams();
   const chainId = useNetworks((s) => s.current?.dedup_chain_id.chain_id);
 
-  const [txs, setTxs] = useState<PaginatedTx[]>([]);
-
-  useEffect(() => {
-    const fetchTxs = async () => {
-      try {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useInfiniteQuery({
+      queryKey: ["address-transactions", address, chainId],
+      queryFn: async ({ pageParam }) => {
         const txs = await invoke<PaginatedTx[]>("db_get_older_transactions", {
           address,
           chainId,
-          max: 20,
-          lastKnown: null,
+          max: pageSize,
+          lastKnown: pageParam,
         });
-        setTxs(txs);
-      } catch (e) {
-        setTxs([]);
-      }
-    };
+        return txs;
+      },
+      getNextPageParam: (lastPage) => {
+        if (lastPage.length < pageSize) {
+          return undefined;
+        }
+        const lastTx = lastPage.at(-1);
+        if (
+          lastTx &&
+          lastTx.blockNumber !== undefined &&
+          lastTx.position !== undefined
+        ) {
+          return {
+            blockNumber: lastTx.blockNumber,
+            position: lastTx.position,
+          };
+        }
+        return undefined;
+      },
+      enabled: !!(address && chainId),
+      initialPageParam: null as {
+        blockNumber: number;
+        position: number;
+      } | null,
+    });
 
-    if (address && chainId) {
-      fetchTxs();
-    }
-  }, [address, chainId]);
+  const allTxs = data?.pages?.flat() ?? [];
 
-  console.log(txs);
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-32">
+        <LoaderCircle className="animate-spin" />
+      </div>
+    );
+  }
 
-  return <TransactionsTable txs={txs} />;
+  return (
+    <div className="flex w-full flex-col items-center gap-2">
+      <TransactionsTable txs={allTxs} />
+      <InfiniteScroll
+        next={() => fetchNextPage()}
+        isLoading={isFetchingNextPage}
+        hasMore={!!hasNextPage}
+        threshold={0.5}
+      >
+        {hasNextPage && <LoaderCircle className="animate-spin" />}
+      </InfiniteScroll>
+    </div>
+  );
 }
 const columnHelper = createColumnHelper<PaginatedTx>();
 
@@ -76,14 +114,19 @@ function TransactionsTable({ txs }: { txs: PaginatedTx[] }) {
     }),
     columnHelper.accessor("to", {
       header: "To",
-      cell: ({ getValue }) => (
-        <AddressView
-          address={getValue()}
-          showAlias={true}
-          showLinkExplorer={true}
-          className="text-sm"
-        />
-      ),
+      cell: ({ getValue }) => {
+        const to = getValue();
+        return to ? (
+          <AddressView
+            address={to}
+            showAlias={true}
+            showLinkExplorer={true}
+            className="text-sm"
+          />
+        ) : (
+          <span className="text-muted-foreground text-sm">Contract Deploy</span>
+        );
+      },
     }),
   ];
   return <Table columns={columns} data={txs} variant="secondary" />;
