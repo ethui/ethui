@@ -58,11 +58,7 @@ export function AddressView({
 
   if (!network) return;
 
-  const text = showAlias
-    ? alias
-      ? alias
-      : truncateHex(address)
-    : truncateHex(address);
+  const text = showAlias ? alias || truncateHex(address) : truncateHex(address);
 
   const addressContent = (
     <div

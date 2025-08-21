@@ -40,7 +40,7 @@ export function HashView({
 
   const content = showLinkExplorer ? (
     <ClickToCopy text={hash}>
-      <Link to={`${network.explorer_url}${hash}`} target="_blank">
+      <Link params={{ hash }} to="/home/explorer/transactions/$hash">
         {hashContent}
       </Link>
     </ClickToCopy>
