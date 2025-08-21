@@ -35,6 +35,8 @@ interface Props {
   noTextStyle?: boolean;
   clickToCopy?: boolean;
   className?: string;
+  showAlias?: boolean;
+  showLinkExplorer?: boolean;
 }
 
 export function AddressView({
@@ -43,6 +45,8 @@ export function AddressView({
   icon = false,
   noTextStyle = false,
   clickToCopy = true,
+  showAlias = true,
+  showLinkExplorer = false,
   className,
 }: Props) {
   const network = useNetworks((s) => s.current);
@@ -54,12 +58,14 @@ export function AddressView({
 
   if (!network) return;
 
-  const text = alias ? alias : truncateHex(address);
+  const text = showAlias ? alias || truncateHex(address) : truncateHex(address);
+
   const addressContent = (
     <div
       className={cn(
         "flex items-center gap-x-2 font-mono",
         noTextStyle ? "" : "text-base",
+        showLinkExplorer && "text-solidity-value hover:text-sky-700",
         className,
       )}
     >
@@ -75,7 +81,13 @@ export function AddressView({
     </div>
   );
 
-  const content = clickToCopy ? (
+  const content = showLinkExplorer ? (
+    <ClickToCopy text={address}>
+      <Link params={{ address }} to="/home/explorer/addresses/$address">
+        {addressContent}
+      </Link>
+    </ClickToCopy>
+  ) : clickToCopy ? (
     <ClickToCopy text={address}>{addressContent}</ClickToCopy>
   ) : (
     addressContent

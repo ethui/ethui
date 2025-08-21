@@ -121,7 +121,7 @@ impl DbInner {
 
         let rows = sqlx::query!(
             r#" SELECT * FROM (
-                SELECT value as 'value?', hash, from_address, to_address, block_number, position, status, incomplete as 'incomplete!'
+                SELECT value as 'value?', hash, from_address, to_address, block_number, position, data as 'data?', status, incomplete as 'incomplete!'
                 FROM transactions
                 WHERE chain_id = ?
                 AND (from_address = ? OR to_address = ?) COLLATE NOCASE
@@ -148,6 +148,7 @@ impl DbInner {
                 from: Address::from_str(&r.from_address).unwrap(),
                 block_number: r.block_number.map(|b| b as u64),
                 position: r.position.map(|p| p as u64),
+                data: r.data.map(|data| Bytes::from_str(&data).unwrap()),
                 to: r.to_address.and_then(|r| Address::from_str(&r).ok()),
                 status: r.status.unwrap_or_default() as u64,
                 incomplete: r.incomplete,
@@ -172,7 +173,7 @@ impl DbInner {
         let last_known_position = last_known.map(|l| l.position as u32).unwrap_or(u32::MAX);
 
         let rows = sqlx::query!(
-            r#" SELECT DISTINCT value as 'value?', hash, from_address, to_address, block_number, position, status, incomplete as 'incomplete!'
+            r#" SELECT DISTINCT value as 'value?', hash, from_address, to_address, block_number, position, data as 'data?', status, incomplete as 'incomplete!'
                 FROM transactions
                 WHERE chain_id = ?
                 AND (from_address = ? OR to_address = ?) COLLATE NOCASE
@@ -197,6 +198,7 @@ impl DbInner {
                 from: Address::from_str(&r.from_address).unwrap(),
                 block_number: r.block_number.map(|b| b as u64),
                 position: r.position.map(|p| p as u64),
+                data: r.data.map(|data| Bytes::from_str(&data).unwrap()),
                 to: r.to_address.and_then(|r| Address::from_str(&r).ok()),
                 status: r.status.unwrap_or_default() as u64,
                 incomplete: r.incomplete,

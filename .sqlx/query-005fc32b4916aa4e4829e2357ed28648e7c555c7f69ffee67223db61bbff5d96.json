@@ -1,6 +1,6 @@
 {
   "db_name": "SQLite",
-  "query": " SELECT DISTINCT value as 'value?', hash, from_address, to_address, block_number, position, status, incomplete as 'incomplete!'\n                FROM transactions\n                WHERE chain_id = ?\n                AND (from_address = ? OR to_address = ?) COLLATE NOCASE\n                AND (block_number < ? OR (block_number = ? AND position < ?))\n                ORDER BY block_number DESC, position DESC\n                LIMIT ?",
+  "query": " SELECT DISTINCT value as 'value?', hash, from_address, to_address, block_number, position, data as 'data?', status, incomplete as 'incomplete!'\n                FROM transactions\n                WHERE chain_id = ?\n                AND (from_address = ? OR to_address = ?) COLLATE NOCASE\n                AND (block_number < ? OR (block_number = ? AND position < ?))\n                ORDER BY block_number DESC, position DESC\n                LIMIT ?",
   "describe": {
     "columns": [
       {
@@ -34,13 +34,18 @@
         "type_info": "Integer"
       },
       {
-        "name": "status",
+        "name": "data?",
         "ordinal": 6,
+        "type_info": "Text"
+      },
+      {
+        "name": "status",
+        "ordinal": 7,
         "type_info": "Integer"
       },
       {
         "name": "incomplete!",
-        "ordinal": 7,
+        "ordinal": 8,
         "type_info": "Bool"
       }
     ],
@@ -55,8 +60,9 @@
       true,
       true,
       true,
+      true,
       true
     ]
   },
-  "hash": "8be4a03cd7356c7c1c3998fcb965deb348bc1e86f4f0b9b3f8b0f7f744e01a4b"
+  "hash": "005fc32b4916aa4e4829e2357ed28648e7c555c7f69ffee67223db61bbff5d96"
 }
