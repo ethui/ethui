@@ -212,14 +212,25 @@ impl DbInner {
         &self,
         chain_id: u32,
         max: u32,
+        last_known: Option<TxIdx>,
     ) -> Result<Vec<Transaction>> {
+        let last_known_block = last_known
+            .clone()
+            .map(|l| l.block_number as u32)
+            .unwrap_or(u32::MAX);
+        let last_known_position = last_known.map(|l| l.position as u32).unwrap_or(u32::MAX);
+
         let rows = sqlx::query!(
             r#" SELECT DISTINCT value as 'value?', hash, from_address, to_address, block_number, position, data as 'data?', status, incomplete as 'incomplete!'
                 FROM transactions
                 WHERE chain_id = ?
+                AND (block_number < ? OR (block_number = ? AND position < ?))
                 ORDER BY block_number DESC, position DESC
                 LIMIT ?"#,
             chain_id,
+            last_known_block,
+            last_known_block,
+            last_known_position,
             max
         )
         .fetch_all(self.pool())
@@ -232,8 +243,8 @@ impl DbInner {
                 from: Address::from_str(&r.from_address).unwrap(),
                 block_number: r.block_number.map(|b| b as u64),
                 position: r.position.map(|p| p as u64),
-                data: r.data.map(|data| Bytes::from_str(&data).unwrap()),
-                to: r.to_address.and_then(|r| Address::from_str(&r).ok()),
+                data: r.data.map(|data: String| Bytes::from_str(&data).unwrap()),
+                to: r.to_address.and_then(|r: String| Address::from_str(&r).ok()),
                 status: r.status.unwrap_or_default() as u64,
                 incomplete: r.incomplete,
             })

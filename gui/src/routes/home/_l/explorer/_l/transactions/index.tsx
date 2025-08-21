@@ -3,15 +3,19 @@ import { LoaderCircle } from "lucide-react";
 import { TransactionsTable } from "#/components/TransactionsTable";
 import { useLatestTxs } from "#/hooks/useLatestTxs";
 import { useNetworks } from "#/store/useNetworks";
+import { InfiniteScroll } from "@ethui/ui/components/infinite-scroll";
 
 export const Route = createFileRoute("/home/_l/explorer/_l/transactions/")({
   beforeLoad: () => ({ breadcrumb: "Transactions" }),
-  component: Transactions,
+  component: RouteComponent,
 });
 
-function Transactions() {
+function RouteComponent() {
   const chainId = useNetworks((s) => s.current?.dedup_chain_id.chain_id);
-  const { data: txs, isLoading } = useLatestTxs(chainId!);
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useLatestTxs(chainId!);
+
+  const txs = data?.pages.flat() ?? [];
 
   if (isLoading) {
     return (
@@ -21,13 +25,21 @@ function Transactions() {
     );
   }
 
-  if (!txs || txs.length === 0) {
+  if (txs?.length === 0) {
     return <EmptyState />;
   }
 
   return (
     <div className="flex w-full flex-col items-center gap-2">
-      <TransactionsTable txs={txs} chainId={chainId!} />
+      <TransactionsTable txs={txs ?? []} chainId={chainId!} />
+      <InfiniteScroll
+        next={() => fetchNextPage()}
+        isLoading={isFetchingNextPage}
+        hasMore={!!hasNextPage}
+        threshold={0.5}
+      >
+        {hasNextPage && <LoaderCircle className="animate-spin" />}
+      </InfiniteScroll>
     </div>
   );
 }
