@@ -1,11 +1,11 @@
+import type { Tx } from "@ethui/types";
 import { InfiniteScroll } from "@ethui/ui/components/infinite-scroll";
+import type {
+  InfiniteData,
+  UseInfiniteQueryResult,
+} from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";
 import { TransactionsTable } from "#/components/TransactionsTable";
-import type {
-  UseInfiniteQueryResult,
-  InfiniteData,
-} from "@tanstack/react-query";
-import type { Tx } from "@ethui/types";
 
 interface TransactionsViewProps {
   query: UseInfiniteQueryResult<InfiniteData<Tx[], unknown>, Error>;
