@@ -68,6 +68,7 @@ impl EthUIApp {
                 ethui_db::commands::db_get_contracts,
                 ethui_db::commands::db_get_newer_transactions,
                 ethui_db::commands::db_get_older_transactions,
+                ethui_db::commands::db_get_latest_transactions,
                 ethui_db::commands::db_get_transaction_by_hash,
                 ethui_db::commands::db_get_contract_abi,
                 ethui_db::commands::db_get_contract_impl_abi,

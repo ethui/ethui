@@ -37,6 +37,7 @@ import { Route as HomeLSettingsLStacksRouteImport } from './routes/home/_l/setti
 import { Route as HomeLSettingsLGeneralRouteImport } from './routes/home/_l/settings/_l/general'
 import { Route as HomeLSettingsLFoundryRouteImport } from './routes/home/_l/settings/_l/foundry'
 import { Route as HomeLSettingsLAboutRouteImport } from './routes/home/_l/settings/_l/about'
+import { Route as HomeLExplorerLTransactionsIndexRouteImport } from './routes/home/_l/explorer/_l/transactions/index'
 import { Route as HomeLExplorerLAddressesIndexRouteImport } from './routes/home/_l/explorer/_l/addresses/index'
 import { Route as HomeLSettingsLWalletsLRouteImport } from './routes/home/_l/settings/_l/wallets/_l'
 import { Route as HomeLSettingsLNetworksLRouteImport } from './routes/home/_l/settings/_l/networks/_l'
@@ -227,6 +228,12 @@ const HomeLSettingsLAboutRoute = HomeLSettingsLAboutRouteImport.update({
   path: '/about',
   getParentRoute: () => HomeLSettingsLRoute,
 } as any)
+const HomeLExplorerLTransactionsIndexRoute =
+  HomeLExplorerLTransactionsIndexRouteImport.update({
+    id: '/transactions/',
+    path: '/transactions/',
+    getParentRoute: () => HomeLExplorerLRoute,
+  } as any)
 const HomeLExplorerLAddressesIndexRoute =
   HomeLExplorerLAddressesIndexRouteImport.update({
     id: '/addresses/',
@@ -328,6 +335,7 @@ export interface FileRoutesByFullPath {
   '/home/settings/networks': typeof HomeLSettingsLNetworksLRouteWithChildren
   '/home/settings/wallets': typeof HomeLSettingsLWalletsLRouteWithChildren
   '/home/explorer/addresses': typeof HomeLExplorerLAddressesIndexRoute
+  '/home/explorer/transactions': typeof HomeLExplorerLTransactionsIndexRoute
   '/home/settings/networks/new': typeof HomeLSettingsLNetworksLNewRoute
   '/home/settings/wallets/new': typeof HomeLSettingsLWalletsLNewRoute
   '/home/settings/networks/': typeof HomeLSettingsLNetworksLIndexRoute
@@ -367,6 +375,7 @@ export interface FileRoutesByTo {
   '/home/settings/networks': typeof HomeLSettingsLNetworksLIndexRoute
   '/home/settings/wallets': typeof HomeLSettingsLWalletsLIndexRoute
   '/home/explorer/addresses': typeof HomeLExplorerLAddressesIndexRoute
+  '/home/explorer/transactions': typeof HomeLExplorerLTransactionsIndexRoute
   '/home/settings/networks/new': typeof HomeLSettingsLNetworksLNewRoute
   '/home/settings/wallets/new': typeof HomeLSettingsLWalletsLNewRoute
   '/home/settings/networks/$name/edit': typeof HomeLSettingsLNetworksLNameEditRoute
@@ -414,6 +423,7 @@ export interface FileRoutesById {
   '/home/_l/settings/_l/wallets': typeof HomeLSettingsLWalletsRouteWithChildren
   '/home/_l/settings/_l/wallets/_l': typeof HomeLSettingsLWalletsLRouteWithChildren
   '/home/_l/explorer/_l/addresses/': typeof HomeLExplorerLAddressesIndexRoute
+  '/home/_l/explorer/_l/transactions/': typeof HomeLExplorerLTransactionsIndexRoute
   '/home/_l/settings/_l/networks/_l/new': typeof HomeLSettingsLNetworksLNewRoute
   '/home/_l/settings/_l/wallets/_l/new': typeof HomeLSettingsLWalletsLNewRoute
   '/home/_l/settings/_l/networks/_l/': typeof HomeLSettingsLNetworksLIndexRoute
@@ -456,6 +466,7 @@ export interface FileRouteTypes {
     | '/home/settings/networks'
     | '/home/settings/wallets'
     | '/home/explorer/addresses'
+    | '/home/explorer/transactions'
     | '/home/settings/networks/new'
     | '/home/settings/wallets/new'
     | '/home/settings/networks/'
@@ -495,6 +506,7 @@ export interface FileRouteTypes {
     | '/home/settings/networks'
     | '/home/settings/wallets'
     | '/home/explorer/addresses'
+    | '/home/explorer/transactions'
     | '/home/settings/networks/new'
     | '/home/settings/wallets/new'
     | '/home/settings/networks/$name/edit'
@@ -541,6 +553,7 @@ export interface FileRouteTypes {
     | '/home/_l/settings/_l/wallets'
     | '/home/_l/settings/_l/wallets/_l'
     | '/home/_l/explorer/_l/addresses/'
+    | '/home/_l/explorer/_l/transactions/'
     | '/home/_l/settings/_l/networks/_l/new'
     | '/home/_l/settings/_l/wallets/_l/new'
     | '/home/_l/settings/_l/networks/_l/'
@@ -794,6 +807,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeLSettingsLAboutRouteImport
       parentRoute: typeof HomeLSettingsLRoute
     }
+    '/home/_l/explorer/_l/transactions/': {
+      id: '/home/_l/explorer/_l/transactions/'
+      path: '/transactions'
+      fullPath: '/home/explorer/transactions'
+      preLoaderRoute: typeof HomeLExplorerLTransactionsIndexRouteImport
+      parentRoute: typeof HomeLExplorerLRoute
+    }
     '/home/_l/explorer/_l/addresses/': {
       id: '/home/_l/explorer/_l/addresses/'
       path: '/addresses'
@@ -948,11 +968,13 @@ const HomeLContractsRouteWithChildren = HomeLContractsRoute._addFileChildren(
 interface HomeLExplorerLRouteChildren {
   HomeLExplorerLAddressesAddressRoute: typeof HomeLExplorerLAddressesAddressRoute
   HomeLExplorerLAddressesIndexRoute: typeof HomeLExplorerLAddressesIndexRoute
+  HomeLExplorerLTransactionsIndexRoute: typeof HomeLExplorerLTransactionsIndexRoute
 }
 
 const HomeLExplorerLRouteChildren: HomeLExplorerLRouteChildren = {
   HomeLExplorerLAddressesAddressRoute: HomeLExplorerLAddressesAddressRoute,
   HomeLExplorerLAddressesIndexRoute: HomeLExplorerLAddressesIndexRoute,
+  HomeLExplorerLTransactionsIndexRoute: HomeLExplorerLTransactionsIndexRoute,
 }
 
 const HomeLExplorerLRouteWithChildren = HomeLExplorerLRoute._addFileChildren(

@@ -33,6 +33,15 @@ pub async fn db_get_older_transactions(
 }
 
 #[tauri::command]
+pub async fn db_get_latest_transactions(
+    chain_id: u32,
+    max: u32,
+    db: tauri::State<'_, Db>,
+) -> TauriResult<Vec<Transaction>> {
+    Ok(db.get_latest_transactions(chain_id, max).await?)
+}
+
+#[tauri::command]
 pub async fn db_get_transaction_by_hash(
     chain_id: u32,
     hash: B256,

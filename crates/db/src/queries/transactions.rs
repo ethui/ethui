@@ -208,6 +208,40 @@ impl DbInner {
         Ok(items)
     }
 
+    pub async fn get_latest_transactions(
+        &self,
+        chain_id: u32,
+        max: u32,
+    ) -> Result<Vec<Transaction>> {
+        let rows = sqlx::query!(
+            r#" SELECT DISTINCT value as 'value?', hash, from_address, to_address, block_number, position, data as 'data?', status, incomplete as 'incomplete!'
+                FROM transactions
+                WHERE chain_id = ?
+                ORDER BY block_number DESC, position DESC
+                LIMIT ?"#,
+            chain_id,
+            max
+        )
+        .fetch_all(self.pool())
+        .await?;
+
+        let items = rows
+            .into_iter()
+            .map(|r| Transaction {
+                hash: B256::from_str(&r.hash.unwrap()).unwrap(),
+                from: Address::from_str(&r.from_address).unwrap(),
+                block_number: r.block_number.map(|b| b as u64),
+                position: r.position.map(|p| p as u64),
+                data: r.data.map(|data| Bytes::from_str(&data).unwrap()),
+                to: r.to_address.and_then(|r| Address::from_str(&r).ok()),
+                status: r.status.unwrap_or_default() as u64,
+                incomplete: r.incomplete,
+            })
+            .collect();
+
+        Ok(items)
+    }
+
     pub async fn remove_transactions(&self, chain_id: u32) -> color_eyre::Result<()> {
         sqlx::query!(r#"DELETE FROM transactions where chain_id = ?"#, chain_id)
             .execute(self.pool())
