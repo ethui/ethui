@@ -187,8 +187,6 @@ impl DockerManager<DataDirectoryReady> {
             .arg(format!("{data_dir_str}:{canonicalize_str}"))
             .arg("-e")
             .arg(format!("DATA_ROOT={canonicalize_str}"))
-            .arg("-e")
-            .arg("LOCAL_MODE=true")
             .arg("-v")
             .arg(format!("{}:/var/run/docker.sock", socket_path.display()))
             .arg("--init")
