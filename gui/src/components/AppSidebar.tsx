@@ -231,7 +231,6 @@ const items = [
 const explorerItems = [
   { title: "Addresses", url: "/home/explorer/addresses" },
   { title: "Transactions", url: "/home/explorer/transactions" },
-  { title: "Contracts", url: "/home/explorer/contracts" },
 ];
 
 const defaultSettingsItems = [
