@@ -45,9 +45,9 @@
     "react18-json-view": "^0.2.9",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "5.8.2",
+    "typescript": "5.9.2",
     "viem": "^2.31.6",
-    "vite": "^6.2.7",
+    "vite": "^7.0.6",
     "zod": "^3.25.46",
     "zustand": "^5.0.3",
     "zxcvbn-typescript": "^5.0.1"
