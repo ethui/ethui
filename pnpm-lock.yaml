@@ -14,13 +14,13 @@ importers:
     dependencies:
       '@ethui/ui':
         specifier: ^0.0.92
-        version: 0.0.92(@hookform/resolvers@5.1.1(react-hook-form@7.59.0(react@19.1.0)))(@tailwindcss/postcss@4.1.11)(@tanstack/react-query@5.83.0(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react-hook-form@7.59.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)(typescript@5.8.2)(viem@2.31.7(typescript@5.8.2)(zod@3.25.76))(zod@3.25.76)
+        version: 0.0.92(@hookform/resolvers@5.1.1(react-hook-form@7.59.0(react@19.1.0)))(@tailwindcss/postcss@4.1.11)(@tanstack/react-query@5.83.0(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react-hook-form@7.59.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)(typescript@5.9.2)(viem@2.31.7(typescript@5.9.2)(zod@3.25.76))(zod@3.25.76)
       '@tauri-apps/cli':
         specifier: ^2.7.1
         version: 2.7.1
       typescript:
-        specifier: 5.8.2
-        version: 5.8.2
+        specifier: 5.9.2
+        version: 5.9.2
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.1.1
@@ -36,7 +36,7 @@ importers:
         version: 1.11.13
       ts-unused-exports:
         specifier: ^11.0.1
-        version: 11.0.1(typescript@5.8.2)
+        version: 11.0.1(typescript@5.9.2)
       tsx:
         specifier: ^4.20.3
         version: 4.20.3
@@ -54,7 +54,7 @@ importers:
         version: link:../packages/types
       '@ethui/ui':
         specifier: ^0.0.100
-        version: 0.0.100(@hookform/resolvers@5.1.1(react-hook-form@7.59.0(react@19.1.0)))(@tailwindcss/postcss@4.1.11)(@tanstack/react-query@5.83.0(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react-hook-form@7.59.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)(typescript@5.8.2)(viem@2.31.7(typescript@5.8.2)(zod@3.25.76))(zod@3.25.76)
+        version: 0.0.100(@hookform/resolvers@5.1.1(react-hook-form@7.59.0(react@19.1.0)))(@tailwindcss/postcss@4.1.11)(@tanstack/react-query@5.83.0(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react-hook-form@7.59.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)(typescript@5.9.2)(viem@2.31.7(typescript@5.9.2)(zod@3.25.76))(zod@3.25.76)
       '@fontsource/source-code-pro':
         specifier: ^5.2.5
         version: 5.2.6
@@ -99,7 +99,7 @@ importers:
         version: 2.9.0
       abitype:
         specifier: ^1.0.8
-        version: 1.0.8(typescript@5.8.2)(zod@3.25.76)
+        version: 1.0.8(typescript@5.9.2)(zod@3.25.76)
       core-js:
         specifier: ^3.43.0
         version: 3.44.0
@@ -137,11 +137,11 @@ importers:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@4.1.11)
       typescript:
-        specifier: 5.8.2
-        version: 5.8.2
+        specifier: 5.9.2
+        version: 5.9.2
       viem:
         specifier: ^2.31.6
-        version: 2.31.7(typescript@5.8.2)(zod@3.25.76)
+        version: 2.31.7(typescript@5.9.2)(zod@3.25.76)
       vite:
         specifier: ^7.0.6
         version: 7.0.6(@types/node@24.0.14)(jiti@2.4.2)(lightningcss@1.30.1)(tsx@4.20.3)
@@ -202,7 +202,7 @@ importers:
         version: 4.1.11
       ts-unused-exports:
         specifier: ^11.0.1
-        version: 11.0.1(typescript@5.8.2)
+        version: 11.0.1(typescript@5.9.2)
       vite-plugin-babel-import:
         specifier: ^2.0.5
         version: 2.0.5
@@ -211,16 +211,16 @@ importers:
         version: 2.4.0(vite@7.0.6(@types/node@24.0.14)(jiti@2.4.2)(lightningcss@1.30.1)(tsx@4.20.3))
       vite-tsconfig-paths:
         specifier: ^5.1.4
-        version: 5.1.4(typescript@5.8.2)(vite@7.0.6(@types/node@24.0.14)(jiti@2.4.2)(lightningcss@1.30.1)(tsx@4.20.3))
+        version: 5.1.4(typescript@5.9.2)(vite@7.0.6(@types/node@24.0.14)(jiti@2.4.2)(lightningcss@1.30.1)(tsx@4.20.3))
 
   packages/data:
     dependencies:
       typescript:
-        specifier: 5.8.2
-        version: 5.8.2
+        specifier: 5.9.2
+        version: 5.9.2
       viem:
         specifier: ^2.31.6
-        version: 2.31.7(typescript@5.8.2)(zod@3.25.76)
+        version: 2.31.7(typescript@5.9.2)(zod@3.25.76)
     devDependencies:
       '@types/core-js':
         specifier: ^2.5.8
@@ -238,11 +238,11 @@ importers:
         specifier: ^5.21.4
         version: 5.83.0(react@19.1.0)
       typescript:
-        specifier: 5.8.2
-        version: 5.8.2
+        specifier: 5.9.2
+        version: 5.9.2
       viem:
         specifier: ^2.31.6
-        version: 2.31.7(typescript@5.8.2)(zod@3.25.76)
+        version: 2.31.7(typescript@5.9.2)(zod@3.25.76)
       zod:
         specifier: ^3.25.46
         version: 3.25.76
@@ -251,8 +251,8 @@ importers:
         version: 5.0.1
     devDependencies:
       '@tauri-apps/api':
-        specifier: 2.6.0
-        version: 2.6.0
+        specifier: 2.7.0
+        version: 2.7.0
       '@types/core-js':
         specifier: ^2.5.8
         version: 2.5.8
@@ -1648,9 +1648,6 @@ packages:
     resolution: {integrity: sha512-rqI++FWClU5I2UBp4HXFvl+sBWkdigBkxnpJDQUWttNyG7IZP4FwQGhTNL5EOw0vI8i6eSAJ5frLqO7n7jbJdg==}
     engines: {node: '>= 14.6.0', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
 
-  '@tauri-apps/api@2.6.0':
-    resolution: {integrity: sha512-hRNcdercfgpzgFrMXWwNDBN0B7vNzOzRepy6ZAmhxi5mDLVPNrTpo9MGg2tN/F7JRugj4d2aF7E1rtPXAHaetg==}
-
   '@tauri-apps/api@2.7.0':
     resolution: {integrity: sha512-v7fVE8jqBl8xJFOcBafDzXFc8FnicoH3j8o8DNNs0tHuEBmXUDqrCOAzMRX0UkfpwqZLqvrvK0GNQ45DfnoVDg==}
 
@@ -2652,8 +2649,8 @@ packages:
     engines: {node: '>=18.0.0'}
     hasBin: true
 
-  typescript@5.8.2:
-    resolution: {integrity: sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ==}
+  typescript@5.9.2:
+    resolution: {integrity: sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -3203,21 +3200,21 @@ snapshots:
   '@esbuild/win32-x64@0.25.2':
     optional: true
 
-  '@ethui/abiparse@0.0.4(react@19.1.0)(typescript@5.8.2)(zod@3.25.76)':
+  '@ethui/abiparse@0.0.4(react@19.1.0)(typescript@5.9.2)(zod@3.25.76)':
     dependencies:
       chevrotain: 11.0.3
       nearly: 1.8.1(react@19.1.0)
-      typescript: 5.8.2
-      viem: 2.31.7(typescript@5.8.2)(zod@3.25.76)
+      typescript: 5.9.2
+      viem: 2.31.7(typescript@5.9.2)(zod@3.25.76)
     transitivePeerDependencies:
       - bufferutil
       - react
       - utf-8-validate
       - zod
 
-  '@ethui/ui@0.0.100(@hookform/resolvers@5.1.1(react-hook-form@7.59.0(react@19.1.0)))(@tailwindcss/postcss@4.1.11)(@tanstack/react-query@5.83.0(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react-hook-form@7.59.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)(typescript@5.8.2)(viem@2.31.7(typescript@5.8.2)(zod@3.25.76))(zod@3.25.76)':
+  '@ethui/ui@0.0.100(@hookform/resolvers@5.1.1(react-hook-form@7.59.0(react@19.1.0)))(@tailwindcss/postcss@4.1.11)(@tanstack/react-query@5.83.0(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react-hook-form@7.59.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)(typescript@5.9.2)(viem@2.31.7(typescript@5.9.2)(zod@3.25.76))(zod@3.25.76)':
     dependencies:
-      '@ethui/abiparse': 0.0.4(react@19.1.0)(typescript@5.8.2)(zod@3.25.76)
+      '@ethui/abiparse': 0.0.4(react@19.1.0)(typescript@5.9.2)(zod@3.25.76)
       '@fontsource/source-code-pro': 5.2.6
       '@hookform/resolvers': 5.1.1(react-hook-form@7.59.0(react@19.1.0))
       '@radix-ui/react-accordion': 1.2.11(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -3252,16 +3249,16 @@ snapshots:
       tailwind-merge: 3.3.1
       tailwindcss: 4.1.11
       tailwindcss-animate: 1.0.7(tailwindcss@4.1.11)
-      viem: 2.31.7(typescript@5.8.2)(zod@3.25.76)
+      viem: 2.31.7(typescript@5.9.2)(zod@3.25.76)
       zod: 3.25.76
     transitivePeerDependencies:
       - bufferutil
       - typescript
       - utf-8-validate
 
-  '@ethui/ui@0.0.92(@hookform/resolvers@5.1.1(react-hook-form@7.59.0(react@19.1.0)))(@tailwindcss/postcss@4.1.11)(@tanstack/react-query@5.83.0(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react-hook-form@7.59.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)(typescript@5.8.2)(viem@2.31.7(typescript@5.8.2)(zod@3.25.76))(zod@3.25.76)':
+  '@ethui/ui@0.0.92(@hookform/resolvers@5.1.1(react-hook-form@7.59.0(react@19.1.0)))(@tailwindcss/postcss@4.1.11)(@tanstack/react-query@5.83.0(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react-hook-form@7.59.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)(typescript@5.9.2)(viem@2.31.7(typescript@5.9.2)(zod@3.25.76))(zod@3.25.76)':
     dependencies:
-      '@ethui/abiparse': 0.0.4(react@19.1.0)(typescript@5.8.2)(zod@3.25.76)
+      '@ethui/abiparse': 0.0.4(react@19.1.0)(typescript@5.9.2)(zod@3.25.76)
       '@fontsource/source-code-pro': 5.2.6
       '@hookform/resolvers': 5.1.1(react-hook-form@7.59.0(react@19.1.0))
       '@radix-ui/react-accordion': 1.2.11(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -3296,7 +3293,7 @@ snapshots:
       tailwind-merge: 3.3.1
       tailwindcss: 4.1.11
       tailwindcss-animate: 1.0.7(tailwindcss@4.1.11)
-      viem: 2.31.7(typescript@5.8.2)(zod@3.25.76)
+      viem: 2.31.7(typescript@5.9.2)(zod@3.25.76)
       zod: 3.25.76
     transitivePeerDependencies:
       - bufferutil
@@ -4214,8 +4211,6 @@ snapshots:
 
   '@tauri-apps/api@1.6.0': {}
 
-  '@tauri-apps/api@2.6.0': {}
-
   '@tauri-apps/api@2.7.0': {}
 
   '@tauri-apps/cli-darwin-arm64@2.7.1':
@@ -4326,9 +4321,9 @@ snapshots:
     transitivePeerDependencies:
       - '@swc/helpers'
 
-  abitype@1.0.8(typescript@5.8.2)(zod@3.25.76):
+  abitype@1.0.8(typescript@5.9.2)(zod@3.25.76):
     optionalDependencies:
-      typescript: 5.8.2
+      typescript: 5.9.2
       zod: 3.25.76
 
   acorn@8.15.0: {}
@@ -4941,7 +4936,7 @@ snapshots:
       has-symbols: 1.1.0
       object-keys: 1.1.1
 
-  ox@0.8.1(typescript@5.8.2)(zod@3.25.76):
+  ox@0.8.1(typescript@5.9.2)(zod@3.25.76):
     dependencies:
       '@adraffy/ens-normalize': 1.11.0
       '@noble/ciphers': 1.3.0
@@ -4949,10 +4944,10 @@ snapshots:
       '@noble/hashes': 1.8.0
       '@scure/bip32': 1.7.0
       '@scure/bip39': 1.6.0
-      abitype: 1.0.8(typescript@5.8.2)(zod@3.25.76)
+      abitype: 1.0.8(typescript@5.9.2)(zod@3.25.76)
       eventemitter3: 5.0.1
     optionalDependencies:
-      typescript: 5.8.2
+      typescript: 5.9.2
     transitivePeerDependencies:
       - zod
 
@@ -5195,15 +5190,15 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
-  ts-unused-exports@11.0.1(typescript@5.8.2):
+  ts-unused-exports@11.0.1(typescript@5.9.2):
     dependencies:
       chalk: 4.1.2
       tsconfig-paths: 3.15.0
-      typescript: 5.8.2
+      typescript: 5.9.2
 
-  tsconfck@3.1.6(typescript@5.8.2):
+  tsconfck@3.1.6(typescript@5.9.2):
     optionalDependencies:
-      typescript: 5.8.2
+      typescript: 5.9.2
 
   tsconfig-paths@3.15.0:
     dependencies:
@@ -5221,7 +5216,7 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.3
 
-  typescript@5.8.2: {}
+  typescript@5.9.2: {}
 
   undici-types@7.8.0: {}
 
@@ -5272,18 +5267,18 @@ snapshots:
       is-typed-array: 1.1.15
       which-typed-array: 1.1.19
 
-  viem@2.31.7(typescript@5.8.2)(zod@3.25.76):
+  viem@2.31.7(typescript@5.9.2)(zod@3.25.76):
     dependencies:
       '@noble/curves': 1.9.2
       '@noble/hashes': 1.8.0
       '@scure/bip32': 1.7.0
       '@scure/bip39': 1.6.0
-      abitype: 1.0.8(typescript@5.8.2)(zod@3.25.76)
+      abitype: 1.0.8(typescript@5.9.2)(zod@3.25.76)
       isows: 1.0.7(ws@8.18.2)
-      ox: 0.8.1(typescript@5.8.2)(zod@3.25.76)
+      ox: 0.8.1(typescript@5.9.2)(zod@3.25.76)
       ws: 8.18.2
     optionalDependencies:
-      typescript: 5.8.2
+      typescript: 5.9.2
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -5313,11 +5308,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  vite-tsconfig-paths@5.1.4(typescript@5.8.2)(vite@7.0.6(@types/node@24.0.14)(jiti@2.4.2)(lightningcss@1.30.1)(tsx@4.20.3)):
+  vite-tsconfig-paths@5.1.4(typescript@5.9.2)(vite@7.0.6(@types/node@24.0.14)(jiti@2.4.2)(lightningcss@1.30.1)(tsx@4.20.3)):
     dependencies:
       debug: 4.4.1
       globrex: 0.1.2
-      tsconfck: 3.1.6(typescript@5.8.2)
+      tsconfck: 3.1.6(typescript@5.9.2)
     optionalDependencies:
       vite: 7.0.6(@types/node@24.0.14)(jiti@2.4.2)(lightningcss@1.30.1)(tsx@4.20.3)
     transitivePeerDependencies:
