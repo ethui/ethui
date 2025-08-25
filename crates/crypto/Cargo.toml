@@ -14,7 +14,7 @@ serde.workspace = true
 serde_json.workspace = true
 color-eyre.workspace = true
 chacha20poly1305 = "0.10.1"
-rust-argon2 = "2.1"
+rust-argon2 = "3.0"
 aead = { version = "0.5.2", features = ["stream"], default-features = false }
 zeroize = "1.8"
 
