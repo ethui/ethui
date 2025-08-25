@@ -270,7 +270,6 @@ impl Handler {
         use serde_json::json;
         use ethui_networks::Networks;
         
-        // Get the specific network by chain_id
         let networks = Networks::read().await;
         let network = networks.get_network(chain_id)
             .ok_or_else(|| jsonrpc_core::Error::invalid_params(format!("Network with chain_id {} not found", chain_id)))?;
