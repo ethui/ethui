@@ -43,7 +43,6 @@ function Connections() {
 function Domain({ domain, peers }: { domain: string; peers: Peer[] }) {
   return (
     <div className=" m-1 flex items-center gap-2">
-      <img className="h-8 w-8" src={peers[0].favicon} alt={domain} />
       <span> {peers[0].origin}</span>
       <div>
         <AffinityForm domain={domain} />
