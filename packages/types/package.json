@@ -5,7 +5,7 @@
   "version": "0.1.0",
   "type": "module",
   "dependencies": {
-    "typescript": "5.8.2",
+    "typescript": "5.9.2",
     "viem": "^2.31.6",
     "zod": "^4.0.14",
     "zxcvbn-typescript": "^5.0.1"
@@ -13,8 +13,8 @@
   "devDependencies": {
     "@types/core-js": "^2.5.8",
     "@types/lodash-es": "^4.17.12",
-    "@types/node": "^24.0.10",
-    "@tauri-apps/api": "2.6.0",
+    "@types/node": "^24.2.0",
+    "@tauri-apps/api": "2.7.0",
     "@types/react": "^19.1.2",
     "jsdom": "^26.1.0",
     "react": "^19"
