@@ -25,6 +25,7 @@ function AddressTable({ addresses }: { addresses: AddressInfo[] }) {
       header: "Address",
       cell: ({ getValue }) => (
         <AddressView
+          showTypeIcon={true}
           address={getValue()}
           showAlias={false}
           showLinkExplorer={true}

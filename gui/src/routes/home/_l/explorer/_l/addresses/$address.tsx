@@ -7,7 +7,7 @@ export const Route = createFileRoute("/home/_l/explorer/_l/addresses/$address")(
   {
     beforeLoad: ({ params }) => {
       return {
-        breadcrumb: params.address,
+        breadcrumb: { type: "address", value: params.address },
       };
     },
     component: RouteComponent,

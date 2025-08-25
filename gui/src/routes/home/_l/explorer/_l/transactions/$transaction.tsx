@@ -80,7 +80,7 @@ function RouteComponent() {
         </DetailRow>
 
         <DetailRow label="Status">
-          <Badge variant={fullTx.status === 1 ? "default" : "destructive"}>
+          <Badge variant={fullTx.status === 1 ? "success" : "destructive"}>
             {fullTx.status === 1 ? "Success" : "Failed"}
           </Badge>
         </DetailRow>
@@ -88,12 +88,20 @@ function RouteComponent() {
         <DetailRow label="Block">{fullTx.blockNumber}</DetailRow>
 
         <DetailRow label="From">
-          <AddressView showLinkExplorer={true} address={fullTx.from} />
+          <AddressView
+            showTypeIcon={true}
+            showLinkExplorer={true}
+            address={fullTx.from}
+          />
         </DetailRow>
 
         <DetailRow label="To">
           {fullTx.to ? (
-            <AddressView showLinkExplorer={true} address={fullTx.to} />
+            <AddressView
+              showTypeIcon={true}
+              showLinkExplorer={true}
+              address={fullTx.to}
+            />
           ) : (
             <span className="text-muted-foreground text-sm">
               Contract Creation

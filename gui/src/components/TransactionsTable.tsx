@@ -72,6 +72,7 @@ export function TransactionsTable({
       header: "From",
       cell: ({ getValue }) => (
         <AddressView
+          showTypeIcon={true}
           address={getValue()}
           showAlias={true}
           showLinkExplorer={true}
@@ -85,6 +86,7 @@ export function TransactionsTable({
         const to = getValue();
         return to ? (
           <AddressView
+            showTypeIcon={true}
             address={to}
             showAlias={true}
             showLinkExplorer={true}
