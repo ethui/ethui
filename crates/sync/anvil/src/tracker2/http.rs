@@ -6,7 +6,7 @@ use ethui_types::{prelude::*, Network};
 use futures::{stream, Stream, StreamExt};
 
 use crate::tracker2::{
-    anvil::AnvilProvider,
+    provider::AnvilProvider,
     worker::{Msg, SyncInfo},
 };
 

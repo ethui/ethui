@@ -8,9 +8,9 @@ use tokio::{
 };
 use tracing::{debug, info, instrument};
 
-pub mod anvil;
 pub mod consumer;
 pub mod http;
+pub mod provider;
 // pub mod monitor;
 mod utils;
 pub mod worker;
@@ -29,8 +29,9 @@ struct NoOpConsumer;
 
 #[cfg(not(test))]
 impl Consumer for NoOpConsumer {
-    async fn process(&mut self, _msg: worker::Msg) {
+    async fn process(&mut self, _msg: worker::Msg) -> color_eyre::Result<()> {
         // No-op implementation for non-test builds
+        Ok(())
     }
 }
 

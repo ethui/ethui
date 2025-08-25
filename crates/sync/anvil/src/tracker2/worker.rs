@@ -10,8 +10,8 @@ use tokio::{
 };
 
 use crate::tracker2::{
-    anvil::AnvilProvider,
     consumer::Consumer,
+    provider::AnvilProvider,
     utils::{random_jitter, try_get_sync_info},
 };
 
@@ -185,7 +185,9 @@ async fn validate_and_update_checkpoint(
 
 async fn consume(mut msg_rx: mpsc::UnboundedReceiver<Msg>, mut consumer: impl Consumer) {
     while let Some(msg) = msg_rx.recv().await {
-        consumer.process(msg).await;
+        if let Err(e) = consumer.process(msg).await {
+            error!("Error processing message: {:?}", e);
+        }
     }
 }
 
