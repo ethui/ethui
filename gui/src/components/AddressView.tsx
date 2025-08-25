@@ -79,9 +79,9 @@ export function AddressView({
     >
       {showTypeIcon &&
         (isContract ? (
-          <FileCode2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+          <FileCode2 className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
         ) : (
-          <Wallet className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+          <Wallet className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
         ))}
       {icon && (
         <IconAddress
