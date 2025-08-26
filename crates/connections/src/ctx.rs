@@ -105,12 +105,11 @@ impl Ctx {
     pub fn revoke_permissions(&mut self, request: PermissionRequest) -> Vec<RequestedPermission> {
         let ret = request.clone().into_request_permissions_result();
 
-        let new_permissions: Vec<_> = request
+        let to_revoke: Vec<_> = request
             .into_permissions(self.domain.clone().unwrap())
-            .filter(|p| !self.permissions.contains(p))
             .collect();
 
-        self.permissions.retain(|p| !new_permissions.contains(p));
+        self.permissions.retain(|p| !to_revoke.contains(p));
 
         ret
     }
