@@ -1,9 +1,9 @@
 use ethui_networks::Networks;
-use ethui_types::{Affinity, DedupChainId, GlobalState, Network, eyre};
+use ethui_types::{eyre, Affinity, DedupChainId, GlobalState, Network};
 
 use crate::{
-    Store,
     permissions::{Permission, PermissionRequest, RequestedPermission},
+    Store,
 };
 
 /// Context for a provider connection
@@ -98,6 +98,19 @@ impl Ctx {
             .collect();
 
         self.permissions.extend(new_permissions);
+
+        ret
+    }
+
+    pub fn revoke_permissions(&mut self, request: PermissionRequest) -> Vec<RequestedPermission> {
+        let ret = request.clone().into_request_permissions_result();
+
+        let new_permissions: Vec<_> = request
+            .into_permissions(self.domain.clone().unwrap())
+            .filter(|p| !self.permissions.contains(p))
+            .collect();
+
+        self.permissions.retain(|p| !new_permissions.contains(p));
 
         ret
     }
