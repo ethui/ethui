@@ -1,7 +1,7 @@
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { FileCode2 } from "lucide-react";
-import { Address, formatEther } from "viem";
+import { type Address, formatEther } from "viem";
 import { TransactionsView } from "#/components/TransactionsView";
 import { useAddressBalance } from "#/hooks/useAddressBalance";
 import { useAddressTxs } from "#/hooks/useAddressTxs";

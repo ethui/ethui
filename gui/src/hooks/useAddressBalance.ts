@@ -1,5 +1,5 @@
-import { useInvoke } from "#/hooks/useInvoke";
 import type { Address } from "viem";
+import { useInvoke } from "#/hooks/useInvoke";
 
 export function useAddressBalance(address: Address, chainId: number) {
   const { data, isLoading, error } = useInvoke<string>(
