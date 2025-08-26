@@ -3,14 +3,31 @@ use std::{env, fs, marker::PhantomData, path::PathBuf, process::Command, str::Fr
 use color_eyre::eyre::{OptionExt, WrapErr, eyre};
 use reqwest::Client;
 
+#[derive(Debug, Clone)]
 pub struct Initial;
+
+#[derive(Debug, Clone)]
 pub struct DockerSocketReady;
+
+#[derive(Debug, Clone)]
 pub struct DockerInstalled;
+
+#[derive(Debug, Clone)]
 pub struct ImageAvailable;
 #[derive(Debug, Clone)]
 pub struct DataDirectoryReady;
+
+#[derive(Debug, Clone)]
 pub struct ContainerRunning;
+
+#[derive(Debug, Clone)]
 pub struct ContainerNotRunning;
+
+#[derive(Clone, Debug)]
+pub enum DockerManagerState {
+    Stopped(DockerManager<ContainerNotRunning>),
+    Running(DockerManager<ContainerRunning>),
+}
 
 #[derive(Debug, Clone)]
 pub struct DockerManager<State> {
@@ -279,8 +296,27 @@ impl DockerManager<ContainerRunning> {
 
         Ok(stacks.data.into_iter().map(|stack| stack.slug).collect())
     }
+
+    pub fn stop(self) -> color_eyre::Result<DockerManager<ContainerNotRunning>> {
+        if !self.is_container_running()? {
+            tracing::debug!("Container {} is already stopped.", self.container_name);
+            return Ok(self.transition());
+        }
+
+        let docker_bin = self.docker_bin()?;
+        let output = Command::new(docker_bin)
+            .args(["stop", &self.container_name])
+            .output()?;
+        if !output.status.success() {
+            return Err(eyre!(
+                "Failed to stop container: {}",
+                String::from_utf8_lossy(&output.stderr)
+            ));
+        }
+        Ok(self.transition())
+    }
 }
-//{"data":[{"status":"running","slug":"cenasetal"}
+
 #[derive(serde::Deserialize, Debug)]
 struct ListStacksResponse {
     data: Vec<StackInfo>,
@@ -299,6 +335,60 @@ impl DockerManager<ContainerNotRunning> {
         } else {
             Err(eyre!("Container {} is still running", self.container_name))
         }
+    }
+
+    pub fn run(self) -> color_eyre::Result<DockerManager<ContainerRunning>> {
+        if self.is_container_running()? {
+            tracing::debug!(
+                "Container {} is already running on port {}.",
+                self.container_name,
+                self.host_port
+            );
+            return Ok(self.transition());
+        }
+
+        let docker_bin = self.docker_bin()?;
+        let socket_path = self.socket_path()?;
+        let home_dir = env::var("HOME").unwrap_or_else(|_| "/home/user".to_string());
+        let canonicalize_str = fs::canonicalize(PathBuf::from_str(&home_dir).unwrap())?
+            .join(".config/ethui/stacks/local")
+            .to_string_lossy()
+            .to_string();
+        let data_dir_str = fs::canonicalize(&self.data_dir)?
+            .to_string_lossy()
+            .to_string();
+
+        let mut binding = Command::new(docker_bin);
+        let mut command = binding
+            .arg("run")
+            .arg("-d")
+            .arg("-v")
+            .arg(format!("{data_dir_str}:{canonicalize_str}"))
+            .arg("-e")
+            .arg(format!("DATA_ROOT={canonicalize_str}"))
+            .arg("-v")
+            .arg(format!("{}:/var/run/docker.sock", socket_path.display()))
+            .arg("--init")
+            .arg("-p")
+            .arg(format!("{}:{}", self.host_port, self.container_port));
+
+        if docker_bin.contains("podman") {
+            command = command.arg("--replace");
+        }
+
+        command = command
+            .arg(format!("--name={}", self.container_name))
+            .arg(&self.image_name);
+
+        let output = command.output()?;
+
+        if !output.status.success() {
+            return Err(eyre!(
+                "Failed to start container: {}",
+                String::from_utf8_lossy(&output.stderr)
+            ));
+        }
+        Ok(self.transition())
     }
 }
 

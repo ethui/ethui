@@ -6,7 +6,7 @@ use kameo::{Actor, Reply, actor::ActorRef, message::Message, prelude::Context};
 use tauri::command;
 
 use crate::{
-    actor::{GetConfig, Worker},
+    actor::{GetConfig, SetEnabled, Worker},
     docker::start_stacks,
 };
 
@@ -15,10 +15,7 @@ pub async fn stacks_create(slug: String) -> TauriResult<()> {
     let actor = ActorRef::<Worker>::lookup("run_local_stacks")
         .wrap_err_with(|| "run local stacks actor not found")?
         .ok_or_eyre("actor not found")?;
-    let msg = actor.ask(GetConfig()).await?;
-    let (port, config_dir) = msg;
-    let manager = start_stacks(port, config_dir.clone())?;
-    manager.create_stack(&slug).await?;
+    actor.ask(SetEnabled());
     Ok(())
 }
 
