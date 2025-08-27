@@ -1,0 +1,24 @@
+# Test-specific dependencies for integration tests
+[dev-dependencies]
+# WebDriver and browser automation
+thirtyfour = "0.34"
+tauri-driver = { git = "https://github.com/tauri-apps/tauri-driver", rev = "latest" }
+
+# Async runtime and utilities
+tokio = { version = "1.46", features = ["full"] }
+tokio-test = "0.4"
+
+# Test utilities
+serial_test = "3.0"
+tempfile = "3.20.0"
+regex = "1.11"
+
+# JSON and serialization for test data
+serde_json = "1.0"
+
+# File system and path utilities
+walkdir = "2.4"
+
+[[test]]
+name = "integration_test"
+harness = false
