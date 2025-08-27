@@ -1,6 +1,7 @@
 use alloy::{
     network::Ethereum,
     providers::{Provider as _, RootProvider},
+    rpc::types::Header,
 };
 use ethui_types::{prelude::*, Network};
 use futures::{Stream, StreamExt};
@@ -26,7 +27,16 @@ pub struct SyncInfo {
 pub enum Msg {
     Reset,
     CaughtUp,
-    Block(B256),
+    Block { hash: B256, number: u64 },
+}
+
+impl From<Header> for Msg {
+    fn from(header: Header) -> Self {
+        Self::Block {
+            hash: header.hash,
+            number: header.number,
+        }
+    }
 }
 
 pub struct Worker<I: AnvilProvider> {
@@ -145,11 +155,9 @@ impl<I: AnvilProvider + Clone + Send + 'static> Worker<I> {
                 }
                 msg_opt = timeout(Duration::from_secs(3), stream.next()) => {
                     match msg_opt {
-                        Ok(Some(msg)) =>{
-                            if let Msg::Block(hash)=msg{
-                                checkpoint = validate_and_update_checkpoint(&provider, checkpoint, hash).await?;
-                            }
-                            msg_tx.send(msg)?;
+                        Ok(Some(block_header)) =>{
+                            checkpoint = validate_and_update_checkpoint(&provider, checkpoint, block_header.hash).await?;
+                            msg_tx.send(block_header.into())?;
                         },
                         Ok(None) => {
                             // Stream ended - either historical finished and live stream ended, or connection lost
@@ -212,7 +220,7 @@ impl AnvilProvider for AnvilProviderType {
         }
     }
 
-    async fn subscribe_blocks(&self) -> Result<Box<dyn Stream<Item = Msg> + Send + Unpin>> {
+    async fn subscribe_blocks(&self) -> Result<Box<dyn Stream<Item = Header> + Send + Unpin>> {
         match self {
             AnvilProviderType::Http(provider) => provider.subscribe_blocks().await,
             AnvilProviderType::Ws(provider) => provider.subscribe_blocks().await,
@@ -222,7 +230,7 @@ impl AnvilProvider for AnvilProviderType {
     async fn backfill_blocks(
         &self,
         sync_info: &SyncInfo,
-    ) -> Result<Box<dyn Stream<Item = Msg> + Send + Unpin>> {
+    ) -> Result<Box<dyn Stream<Item = Header> + Send + Unpin>> {
         match self {
             AnvilProviderType::Http(provider) => provider.backfill_blocks(sync_info).await,
             AnvilProviderType::Ws(provider) => provider.backfill_blocks(sync_info).await,
@@ -373,8 +381,8 @@ mod tests {
             // Try to create stream and poll for a short time
             if let Ok(mut stream) = provider.subscribe_blocks().await {
                 let _ = timeout(Duration::from_millis(100), async {
-                    while let Some(msg) = stream.next().await {
-                        let _ = block_tx.send(msg);
+                    while let Some(header) = stream.next().await {
+                        let _ = block_tx.send(header.into());
                     }
                 })
                 .await;
@@ -416,8 +424,8 @@ mod tests {
             // Try to create stream and poll for a short time
             if let Ok(mut stream) = provider.subscribe_blocks().await {
                 let _ = timeout(Duration::from_millis(100), async {
-                    while let Some(msg) = stream.next().await {
-                        let _ = block_tx.send(msg);
+                    while let Some(header) = stream.next().await {
+                        let _ = block_tx.send(header.into());
                     }
                 })
                 .await;

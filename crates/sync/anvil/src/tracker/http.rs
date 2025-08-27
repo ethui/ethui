@@ -1,14 +1,12 @@
 use alloy::{
     network::Ethereum,
     providers::{Provider as _, ProviderBuilder, RootProvider},
+    rpc::types::Header,
 };
 use ethui_types::{prelude::*, Network};
 use futures::{stream, Stream, StreamExt};
 
-use crate::tracker::{
-    provider::AnvilProvider,
-    worker::{Msg, SyncInfo},
-};
+use crate::tracker::{provider::AnvilProvider, worker::SyncInfo};
 
 #[derive(Clone)]
 pub struct AnvilHttp {
@@ -35,7 +33,7 @@ impl AnvilProvider for AnvilHttp {
         Ok(provider)
     }
 
-    async fn subscribe_blocks(&self) -> Result<Box<dyn Stream<Item = Msg> + Send + Unpin>> {
+    async fn subscribe_blocks(&self) -> Result<Box<dyn Stream<Item = Header> + Send + Unpin>> {
         let provider = Arc::new(self.provider().await?);
 
         // Use watch_blocks for HTTP polling-based subscriptions
@@ -45,14 +43,16 @@ impl AnvilProvider for AnvilHttp {
         // Transform the stream to process each block and extract traces/logs
         let block_stream = stream
             .then(move |block_hashes| {
-                let _provider = Arc::clone(&provider);
+                let provider = Arc::clone(&provider);
                 async move {
                     // Collect all messages for this batch of block hashes
                     let mut messages = Vec::new();
 
                     // Process each block hash (watch_blocks can return multiple hashes)
                     for hash in block_hashes {
-                        messages.push(Msg::Block(hash));
+                        if let Some(block) = provider.get_block_by_hash(hash).await.unwrap() {
+                            messages.push(block.header);
+                        }
                     }
 
                     stream::iter(messages)
@@ -66,7 +66,7 @@ impl AnvilProvider for AnvilHttp {
     async fn backfill_blocks(
         &self,
         sync_info: &SyncInfo,
-    ) -> Result<Box<dyn Stream<Item = Msg> + Send + Unpin>> {
+    ) -> Result<Box<dyn Stream<Item = Header> + Send + Unpin>> {
         let provider = self.provider().await?;
 
         // Determine starting block number: fork_block_number + 1 or 1
@@ -86,7 +86,7 @@ impl AnvilProvider for AnvilHttp {
                     // Get the block by number
                     if let Ok(Some(block)) = provider.get_block_by_number(block_number.into()).await
                     {
-                        Some(Msg::Block(block.header.hash))
+                        Some(block.header)
                     } else {
                         None
                     }

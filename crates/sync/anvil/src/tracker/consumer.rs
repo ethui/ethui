@@ -60,21 +60,12 @@ impl Consumer for EthuiConsumer {
                 self.caught_up = true;
             }
             Msg::CaughtUp => self.caught_up = true,
-            Msg::Block(fixed_bytes) => {
-                let block = provider
-                    .get_block(fixed_bytes.into())
-                    .await
-                    .unwrap()
-                    .unwrap();
-                dbg!(&fixed_bytes);
-                let traces = provider
-                    .trace_block(block.header.number.into())
-                    .await
-                    .unwrap();
+            Msg::Block { hash, number } => {
+                let traces = provider.trace_block(number.into()).await.unwrap();
                 let trace_events = expand_traces(traces, &provider).await;
 
                 let logs = provider
-                    .get_logs(&Filter::new().select(fixed_bytes))
+                    .get_logs(&Filter::new().select(hash))
                     .await
                     .unwrap();
                 let log_events = expand_logs(logs);
