@@ -88,12 +88,6 @@ impl Network {
         format!("0x{:x}", self.chain_id())
     }
 
-    pub fn ws_url(&self) -> Url {
-        self.ws_url.clone().unwrap_or_else(|| {
-            Url::parse(&self.http_url.clone().as_str().replace("http", "ws")).unwrap()
-        })
-    }
-
     pub async fn is_dev(&self) -> bool {
         let provider = self.get_alloy_provider().await.unwrap();
         // TODO cache node_info for entire chain
