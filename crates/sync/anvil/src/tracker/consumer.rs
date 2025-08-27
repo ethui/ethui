@@ -57,7 +57,7 @@ impl Consumer for EthuiConsumer {
                     self.dedup_chain_id.chain_id(),
                     self.dedup_chain_id.dedup_id()
                 );
-                db.truncate_events(self.dedup_chain_id).await.unwrap();
+                let _ = db.truncate_events(self.dedup_chain_id).await;
                 notify = true;
             }
             Msg::CaughtUp => {
@@ -65,13 +65,10 @@ impl Consumer for EthuiConsumer {
                 notify = true;
             }
             Msg::Block { hash, number } => {
-                let traces = provider.trace_block(number.into()).await.unwrap();
+                let traces = provider.trace_block(number.into()).await?;
                 let trace_events = expand_traces(traces, &provider).await;
 
-                let logs = provider
-                    .get_logs(&Filter::new().select(hash))
-                    .await
-                    .unwrap();
+                let logs = provider.get_logs(&Filter::new().select(hash)).await?;
                 let log_events = expand_logs(logs);
 
                 db.save_events(self.dedup_chain_id, trace_events).await?;

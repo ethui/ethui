@@ -50,7 +50,7 @@ impl AnvilProvider for AnvilHttp {
 
                     // Process each block hash (watch_blocks can return multiple hashes)
                     for hash in block_hashes {
-                        if let Some(block) = provider.get_block_by_hash(hash).await.unwrap() {
+                        if let Ok(Some(block)) = provider.get_block_by_hash(hash).await {
                             messages.push(block.header);
                         }
                     }
@@ -70,7 +70,7 @@ impl AnvilProvider for AnvilHttp {
         let provider = self.provider().await?;
 
         // Determine starting block number: fork_block_number + 1 or 1
-        let start_block = sync_info.fork_block_number.unwrap_or_default() + 1;
+        let start_block = sync_info.fork_block_number.unwrap_or(1);
         let end_block = sync_info.number;
 
         if end_block < start_block {
