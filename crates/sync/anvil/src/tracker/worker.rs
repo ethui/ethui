@@ -121,15 +121,7 @@ impl<I: AnvilProvider + Clone + Send + 'static> Worker<I> {
         msg_tx.send(Msg::Reset)?;
 
         // Phase 1: Initial sync - wait for node to be available
-        let sync_info = match self.wait(quit_rx).await {
-            Ok(info) => {
-                debug!("node available at block {}", info.number);
-                info
-            }
-            Err(e) => {
-                return Err(e);
-            }
-        };
+        let sync_info = self.wait(quit_rx).await?;
 
         let provider = self.inner.provider().await?;
         let mut checkpoint: Option<B256> = None;
@@ -149,13 +141,11 @@ impl<I: AnvilProvider + Clone + Send + 'static> Worker<I> {
                     return Ok(());
                 }
                 _ = checkpoint_interval.tick() => {
-                    if let Some(checkpoint_hash)=checkpoint {
-                        checkpoint = validate_and_update_checkpoint(&provider, checkpoint, checkpoint_hash).await?;
-                    }
+                    checkpoint = validate_checkpoint(&provider, checkpoint).await?;
                 }
                 msg_opt = timeout(Duration::from_secs(3), stream.next()) => {
                     match msg_opt {
-                        Ok(Some(block_header)) =>{
+                        Ok(Some(block_header)) => {
                             checkpoint = validate_and_update_checkpoint(&provider, checkpoint, block_header.hash).await?;
                             msg_tx.send(block_header.into())?;
                         },
@@ -175,20 +165,28 @@ impl<I: AnvilProvider + Clone + Send + 'static> Worker<I> {
     }
 }
 
+async fn validate_checkpoint(
+    provider: &RootProvider<Ethereum>,
+    checkpoint: Option<B256>,
+) -> Result<Option<B256>> {
+    if let Some(checkpoint) = checkpoint {
+        if provider.get_block_by_hash(checkpoint).await?.is_some() {
+            Ok(Some(checkpoint))
+        } else {
+            Err(eyre!("Revert detected, triggering restart"))
+        }
+    } else {
+        Ok(None)
+    }
+}
+
 async fn validate_and_update_checkpoint(
     provider: &RootProvider<Ethereum>,
     checkpoint: Option<B256>,
     new_checkpoint: B256,
 ) -> Result<Option<B256>> {
-    if let Some(checkpoint) = checkpoint {
-        if provider.get_block_by_hash(checkpoint).await?.is_some() {
-            Ok(Some(new_checkpoint))
-        } else {
-            Err(eyre!("Revert detected, triggering restart"))
-        }
-    } else {
-        Ok(Some(new_checkpoint))
-    }
+    validate_checkpoint(provider, checkpoint).await?;
+    Ok(Some(new_checkpoint))
 }
 
 async fn consume(mut msg_rx: mpsc::UnboundedReceiver<Msg>, mut consumer: impl Consumer) {

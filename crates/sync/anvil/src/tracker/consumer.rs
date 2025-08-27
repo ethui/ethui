@@ -48,6 +48,7 @@ impl Consumer for EthuiConsumer {
             .connect(&self.url)
             .await?;
         let db = ethui_db::get();
+        let mut notify = false;
 
         match msg {
             Msg::Reset => {
@@ -57,9 +58,12 @@ impl Consumer for EthuiConsumer {
                     self.dedup_chain_id.dedup_id()
                 );
                 db.truncate_events(self.dedup_chain_id).await.unwrap();
-                self.caught_up = true;
+                notify = true;
             }
-            Msg::CaughtUp => self.caught_up = true,
+            Msg::CaughtUp => {
+                self.caught_up = true;
+                notify = true;
+            }
             Msg::Block { hash, number } => {
                 let traces = provider.trace_block(number.into()).await.unwrap();
                 let trace_events = expand_traces(traces, &provider).await;
@@ -73,6 +77,9 @@ impl Consumer for EthuiConsumer {
                 dbg!(&log_events);
                 db.save_events(self.dedup_chain_id, trace_events).await?;
                 db.save_events(self.dedup_chain_id, log_events).await?;
+                if self.caught_up {
+                    notify = true;
+                }
             }
         }
 
@@ -90,7 +97,7 @@ impl Consumer for EthuiConsumer {
 
         // don't emit events until we're catching up
         // otherwise we spam too much during that phase
-        if self.caught_up {
+        if notify {
             ethui_broadcast::ui_notify(UINotify::TxsUpdated).await;
             ethui_broadcast::ui_notify(UINotify::BalancesUpdated).await;
             ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
