@@ -74,7 +74,6 @@ impl Consumer for EthuiConsumer {
                     .unwrap();
                 let log_events = expand_logs(logs);
 
-                dbg!(&log_events);
                 db.save_events(self.dedup_chain_id, trace_events).await?;
                 db.save_events(self.dedup_chain_id, log_events).await?;
                 if self.caught_up {
