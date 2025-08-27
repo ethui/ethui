@@ -86,13 +86,13 @@ export function AppSidebar() {
               {items.map((item) => (
                 <CustomSidebarMenuItem key={item.title} {...item} />
               ))}
-
-              <CollapsibleMenuSection
-                icon={<Globe />}
-                title="Explorer"
-                items={explorerItems}
-              />
-
+              {isDev && (
+                <CollapsibleMenuSection
+                  icon={<Globe />}
+                  title="Explorer"
+                  items={explorerItems}
+                />
+              )}
               <CollapsibleMenuSection
                 icon={<Cog />}
                 title="Settings"

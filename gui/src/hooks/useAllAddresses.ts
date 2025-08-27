@@ -9,7 +9,7 @@ export function useAllAddresses() {
   const { allWalletInfo } = useWallets();
 
   return useQuery({
-    queryKey: ["all-addresses", network?.dedup_chain_id],
+    queryKey: ["all-addresses", network?.dedup_chain_id, allWalletInfo],
     queryFn: async (): Promise<Address[]> => {
       if (!network) return [];
 
@@ -33,6 +33,6 @@ export function useAllAddresses() {
 
       return Array.from(allAddresses);
     },
-    enabled: !!network,
+    enabled: !!network && allWalletInfo !== undefined,
   });
 }
