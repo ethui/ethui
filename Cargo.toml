@@ -1,5 +1,5 @@
 [workspace.package]
-version = "1.21.1"
+version = "1.21.2"
 edition = "2024"
 license-file = "./LICENSE"
 homepage = "https://github.com/ethui"
@@ -69,7 +69,7 @@ ethui-args = { path = "crates/args" }
 ethui-token-list = { path = "crates/token-list" }
 ethui-proxy-detect = { path = "crates/proxy-detect" }
 ethui-stacks = { path = "crates/stacks" }
-tokio = { version = "1.47", features = ["rt-multi-thread", "sync"] }
+tokio = { version = "1.47", features = ["rt-multi-thread", "sync", "signal"] }
 thiserror = "2.0"
 sqlx = { version = "0.8", default-features = false, features = [
   "macros",
@@ -113,10 +113,10 @@ foundry-block-explorers = "0.20"
 url = { version = "2.5", features = ["serde"] }
 futures = { version = "0.3", default-features = false }
 rand = "0.9"
-rstest = "0.23"
+rstest = "0.26"
 regex = "1.11"
 color-eyre = { version = "0.6" }
-tempfile = "3.20.0"
+tempfile = "3.21.0"
 serde-constant = "0.1.0"
 kameo = "0.16"
 tauri-plugin-aptabase = "1.0.0"

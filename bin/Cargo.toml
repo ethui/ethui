@@ -53,7 +53,7 @@ tauri-plugin-aptabase = { workspace = true, optional = true }
 tauri-plugin-process = { version = "2" }
 
 [build-dependencies]
-tauri-build = { version = "2.2", default-features = false, features = [] }
+tauri-build = { version = "2.4", default-features = false, features = [] }
 ethui-token-list.workspace = true
 
 [features]
