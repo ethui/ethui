@@ -19,7 +19,7 @@ tokio.workspace = true
 serde.workspace = true
 color-eyre.workspace = true
 alloy.workspace = true
-revm = { version = "28", features = ["alloydb"] }
+revm = { version = "29", features = ["alloydb"] }
 
 [dev-dependencies]
 pretty_assertions = "1.4.0"
