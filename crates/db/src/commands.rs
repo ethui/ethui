@@ -158,3 +158,20 @@ pub async fn db_clear_erc20_blacklist(
     ethui_broadcast::ui_notify(UINotify::BalancesUpdated).await;
     Ok(())
 }
+
+#[tauri::command]
+pub async fn db_get_contract_addresses(
+    chain_id: u32,
+    dedup_id: i32,
+    db: tauri::State<'_, Db>,
+) -> TauriResult<Vec<Address>> {
+    Ok(db.get_contract_addresses(chain_id, dedup_id).await?)
+}
+
+#[tauri::command]
+pub async fn db_get_transaction_addresses(
+    chain_id: u32,
+    db: tauri::State<'_, Db>,
+) -> TauriResult<Vec<Address>> {
+    Ok(db.get_transaction_addresses(chain_id).await?)
+}

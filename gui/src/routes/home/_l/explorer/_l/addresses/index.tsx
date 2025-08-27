@@ -2,7 +2,8 @@ import { Table } from "@ethui/ui/components/table";
 import { createFileRoute } from "@tanstack/react-router";
 import { createColumnHelper } from "@tanstack/react-table";
 import { AddressView } from "#/components/AddressView";
-import { type AddressInfo, useWallets } from "#/store/useWallets";
+import { useAllAddresses } from "#/hooks/useAllAddresses";
+import { type Address } from "viem";
 
 export const Route = createFileRoute("/home/_l/explorer/_l/addresses/")({
   beforeLoad: () => ({ breadcrumb: "Addresses" }),
@@ -10,36 +11,27 @@ export const Route = createFileRoute("/home/_l/explorer/_l/addresses/")({
 });
 
 function Addresses() {
-  const walletInfo = useWallets((s) => s.allWalletInfo);
+  const { data: addresses = [] } = useAllAddresses();
 
-  const addresses = walletInfo?.[0].addresses;
-
-  return <AddressTable addresses={addresses ?? []} />;
+  return <AddressTable addresses={addresses} />;
 }
 
-const columnHelper = createColumnHelper<AddressInfo>();
+const columnHelper = createColumnHelper<Address>();
 
-function AddressTable({ addresses }: { addresses: AddressInfo[] }) {
+function AddressTable({ addresses }: { addresses: Address[] }) {
   const columns = [
-    columnHelper.accessor("address", {
+    columnHelper.display({
+      id: "address",
       header: "Address",
-      cell: ({ getValue }) => (
+      cell: ({ row }) => (
         <AddressView
           showTypeIcon={true}
-          address={getValue()}
-          showAlias={false}
+          address={row.original}
+          showAlias={true}
           showLinkExplorer={true}
           className="text-sm"
         />
       ),
-    }),
-    columnHelper.accessor("alias", {
-      header: "Alias",
-      cell: ({ getValue }) => getValue() || "-",
-    }),
-    columnHelper.accessor("walletName", {
-      header: "Wallet",
-      cell: ({ getValue }) => getValue() || "-",
     }),
   ];
 

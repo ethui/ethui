@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "\n            SELECT DISTINCT address FROM (\n                SELECT from_address as address FROM transactions WHERE chain_id = ?\n                UNION\n                SELECT to_address as address FROM transactions WHERE chain_id = ? AND to_address IS NOT NULL\n            )\n            ",
+  "describe": {
+    "columns": [
+      {
+        "name": "address",
+        "ordinal": 0,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "4cd331ccab616c9243578d52614921d98459137aa0775344feb0b44ff20fcd49"
+}

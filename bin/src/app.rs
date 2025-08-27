@@ -72,6 +72,8 @@ impl EthUIApp {
                 ethui_db::commands::db_get_transaction_by_hash,
                 ethui_db::commands::db_get_contract_abi,
                 ethui_db::commands::db_get_contract_impl_abi,
+                ethui_db::commands::db_get_contract_addresses,
+                ethui_db::commands::db_get_transaction_addresses,
                 ethui_db::commands::db_get_erc20_metadata,
                 ethui_db::commands::db_get_erc20_balances,
                 ethui_db::commands::db_get_erc20_blacklist,

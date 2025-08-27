@@ -281,4 +281,25 @@ impl DbInner {
 
         Ok(row.count as u32)
     }
+
+
+    pub async fn get_transaction_addresses(&self, chain_id: u32) -> Result<Vec<Address>> {
+        let addresses = sqlx::query_scalar!(
+            r#"
+            SELECT DISTINCT address FROM (
+                SELECT from_address as address FROM transactions WHERE chain_id = ?
+                UNION
+                SELECT to_address as address FROM transactions WHERE chain_id = ? AND to_address IS NOT NULL
+            )
+            "#,
+            chain_id, chain_id
+        )
+        .fetch_all(self.pool())
+        .await?;
+
+        Ok(addresses
+            .into_iter()
+            .filter_map(|addr| addr.and_then(|a| Address::from_str(&a).ok()))
+            .collect())
+    }
 }
