@@ -8,9 +8,9 @@ use tokio::time::{sleep, timeout, Duration};
 use url::Url;
 
 use super::utils::TestConsumer;
-use crate::tracker2::{
-    anvil::AnvilProvider,
+use crate::tracker::{
     consumer::Consumer,
+    provider::AnvilProvider,
     worker::{Msg, Worker},
     AnvilHttp, AnvilWs,
 };
@@ -21,10 +21,14 @@ struct CountingConsumer {
 }
 
 impl Consumer for CountingConsumer {
-    fn process(&mut self, _msg: Msg) -> impl std::future::Future<Output = ()> + Send {
+    fn process(
+        &mut self,
+        _msg: Msg,
+    ) -> impl std::future::Future<Output = color_eyre::Result<()>> + Send {
         let count = self.count.clone();
         async move {
             count.fetch_add(1, Ordering::SeqCst);
+            Ok(())
         }
     }
 }
@@ -316,7 +320,7 @@ async fn test_historical_blocks_stream_interface() {
     let http_provider = AnvilHttp::new(network.clone());
 
     // Create a mock sync info
-    let sync_info = crate::tracker2::worker::SyncInfo {
+    let sync_info = crate::tracker::worker::SyncInfo {
         number: 5,
         hash: B256::default(),
         fork_block_number: Some(2),

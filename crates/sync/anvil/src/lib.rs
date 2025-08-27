@@ -2,8 +2,7 @@ mod expanders;
 mod init;
 #[cfg(test)]
 mod tests;
-mod tracker;
-pub mod tracker2;
+pub mod tracker;
 mod utils;
 
 pub use init::init;

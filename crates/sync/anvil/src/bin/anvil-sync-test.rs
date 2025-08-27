@@ -1,6 +1,6 @@
 use clap::Parser;
 use color_eyre::eyre::Result;
-use ethui_sync_anvil::tracker2::{
+use ethui_sync_anvil::tracker::{
     consumer::Consumer,
     worker::{create_worker, Msg},
 };
@@ -26,7 +26,7 @@ struct Args {
 struct LoggingConsumer;
 
 impl Consumer for LoggingConsumer {
-    async fn process(&mut self, msg: Msg) {
+    async fn process(&mut self, msg: Msg) -> color_eyre::Result<()> {
         match msg {
             Msg::Reset => {
                 info!("🔄 Worker reset");
@@ -38,6 +38,8 @@ impl Consumer for LoggingConsumer {
                 info!("📦 Block {}", &hash.to_string()[..10]);
             }
         }
+
+        Ok(())
     }
 }
 
