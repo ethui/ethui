@@ -1,7 +1,7 @@
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { User } from "lucide-react";
-import { TransactionsView } from "#/components/TransactionsView";
+import { TransactionsView } from "#/components/Transactions/TransactionsView";
 import { useLatestTxs } from "#/hooks/useLatestTxs";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";

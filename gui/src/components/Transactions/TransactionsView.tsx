@@ -5,7 +5,7 @@ import type {
   UseInfiniteQueryResult,
 } from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";
-import { TransactionsTable } from "#/components/TransactionsTable";
+import { TransactionsTable } from "#/components/Transactions/TransactionsTable";
 
 interface TransactionsViewProps {
   query: UseInfiniteQueryResult<InfiniteData<Tx[], unknown>, Error>;
