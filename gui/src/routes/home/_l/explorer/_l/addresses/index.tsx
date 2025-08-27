@@ -1,9 +1,9 @@
 import { Table } from "@ethui/ui/components/table";
 import { createFileRoute } from "@tanstack/react-router";
 import { createColumnHelper } from "@tanstack/react-table";
+import type { Address } from "viem";
 import { AddressView } from "#/components/AddressView";
 import { useAllAddresses } from "#/hooks/useAllAddresses";
-import { type Address } from "viem";
 
 export const Route = createFileRoute("/home/_l/explorer/_l/addresses/")({
   beforeLoad: () => ({ breadcrumb: "Addresses" }),

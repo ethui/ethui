@@ -1,6 +1,6 @@
-import { invoke } from "@tauri-apps/api/core";
-import { type Address } from "viem";
 import { useQuery } from "@tanstack/react-query";
+import { invoke } from "@tauri-apps/api/core";
+import type { Address } from "viem";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
 
