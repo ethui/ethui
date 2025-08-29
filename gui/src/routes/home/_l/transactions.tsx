@@ -34,6 +34,7 @@ import { useEventListener } from "#/hooks/useEventListener";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
+import { formatTxType } from "#/utils";
 
 export const Route = createFileRoute("/home/_l/transactions")({
   beforeLoad: () => ({ breadcrumb: "Transactions" }),
@@ -294,17 +295,4 @@ function resend({ from, to, value, data }: Tx) {
   invoke<string>("rpc_send_transaction", {
     params: { from, to, value, data },
   });
-}
-
-function formatTxType(type: number | undefined): import("react").ReactNode {
-  switch (type) {
-    case 0:
-      return "Legacy";
-    case 1:
-      return "EIP-2930";
-    case 2:
-      return "EIP-1559";
-    case 3:
-      return "EIP-4844";
-  }
 }

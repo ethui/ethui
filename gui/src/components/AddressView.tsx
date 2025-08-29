@@ -17,11 +17,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
+import { FileCode2, Wallet } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { type Address, getAddress } from "viem";
 import { z } from "zod";
 import { useInvoke } from "#/hooks/useInvoke";
+import { useIsContract } from "#/hooks/useIsContract";
 import { useNetworks } from "#/store/useNetworks";
 import { truncateHex } from "#/utils";
 import { IconAddress } from "./Icons/Address";
@@ -35,6 +37,9 @@ interface Props {
   noTextStyle?: boolean;
   clickToCopy?: boolean;
   className?: string;
+  showAlias?: boolean;
+  showLinkExplorer?: boolean;
+  showTypeIcon?: boolean;
 }
 
 export function AddressView({
@@ -43,6 +48,9 @@ export function AddressView({
   icon = false,
   noTextStyle = false,
   clickToCopy = true,
+  showAlias = true,
+  showLinkExplorer = false,
+  showTypeIcon = false,
   className,
 }: Props) {
   const network = useNetworks((s) => s.current);
@@ -50,19 +58,31 @@ export function AddressView({
   const { data: alias, refetch } = useInvoke<string>("settings_get_alias", {
     address,
   });
+  const { isContract } = useIsContract(
+    address,
+    network?.dedup_chain_id.chain_id || 1,
+  );
   const [aliasFormOpen, setAliasFormOpen] = useState(false);
 
   if (!network) return;
 
-  const text = alias ? alias : truncateHex(address);
+  const text = showAlias ? alias || truncateHex(address) : truncateHex(address);
+
   const addressContent = (
     <div
       className={cn(
         "flex items-center gap-x-2 font-mono",
         noTextStyle ? "" : "text-base",
+        showLinkExplorer && "text-solidity-value hover:text-sky-700",
         className,
       )}
     >
+      {showTypeIcon &&
+        (isContract ? (
+          <FileCode2 className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+        ) : (
+          <Wallet className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+        ))}
       {icon && (
         <IconAddress
           chainId={network.dedup_chain_id.chain_id}
@@ -75,7 +95,13 @@ export function AddressView({
     </div>
   );
 
-  const content = clickToCopy ? (
+  const content = showLinkExplorer ? (
+    <ClickToCopy text={address}>
+      <Link params={{ address }} to="/home/explorer/addresses/$address">
+        {addressContent}
+      </Link>
+    </ClickToCopy>
+  ) : clickToCopy ? (
     <ClickToCopy text={address}>{addressContent}</ClickToCopy>
   ) : (
     addressContent
