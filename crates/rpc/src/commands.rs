@@ -1,6 +1,6 @@
 use ethui_types::prelude::*;
 
-use super::{Handler, Result};
+use super::{Handler, Result, utils};
 
 #[tauri::command]
 pub async fn rpc_send_transaction(params: serde_json::Value) -> Result<serde_json::Value> {
@@ -14,11 +14,11 @@ pub async fn rpc_eth_call(params: serde_json::Value) -> Result<Bytes> {
 
 #[tauri::command]
 pub async fn rpc_get_code(address: Address, chain_id: u32) -> Result<Option<String>> {
-    Ok(Handler::get_code(address, chain_id).await?)
+    Ok(utils::get_code(address, chain_id).await?)
 }
 
 #[tauri::command]
 pub async fn rpc_is_contract(address: Address, chain_id: u32) -> Result<bool> {
-    let code = Handler::get_code(address, chain_id).await?;
+    let code = utils::get_code(address, chain_id).await?;
     Ok(code.is_some())
 }
