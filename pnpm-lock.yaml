@@ -53,8 +53,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/types
       '@ethui/ui':
-        specifier: ^0.0.104
-        version: 0.0.104(@hookform/resolvers@5.1.1(react-hook-form@7.59.0(react@19.1.0)))(@tailwindcss/postcss@4.1.11)(@tanstack/react-query@5.83.0(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react-hook-form@7.59.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)(typescript@5.8.2)(viem@2.31.7(typescript@5.8.2)(zod@3.25.76))(zod@3.25.76)
+        specifier: ^0.0.106
+        version: 0.0.106(@hookform/resolvers@5.1.1(react-hook-form@7.59.0(react@19.1.0)))(@tailwindcss/postcss@4.1.11)(@tanstack/react-query@5.83.0(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react-hook-form@7.59.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)(typescript@5.8.2)(viem@2.31.7(typescript@5.8.2)(zod@3.25.76))(zod@3.25.76)
       '@fontsource/source-code-pro':
         specifier: ^5.2.5
         version: 5.2.6
@@ -678,8 +678,8 @@ packages:
     peerDependencies:
       typescript: ^5.0.0
 
-  '@ethui/ui@0.0.104':
-    resolution: {integrity: sha512-DIZSoZZbWb1Po39PH154VnQnVrfzEnzbH+AbPpRkqjxHcm/GNnT6IxwGdcXy+dNN2RyLZmYrv0st7X+7i3UWZg==}
+  '@ethui/ui@0.0.106':
+    resolution: {integrity: sha512-qFmHnxU7F+Mc5tflibQSNaj9hpNokz4WdL8isT4d/RhmDjvI8QKzK4cT7h6PTe8087/Q2a4SRvttWBY4FSRKmw==}
     peerDependencies:
       '@hookform/resolvers': ^5.0.1
       '@tailwindcss/postcss': 4.1.5
@@ -3249,7 +3249,7 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@ethui/ui@0.0.104(@hookform/resolvers@5.1.1(react-hook-form@7.59.0(react@19.1.0)))(@tailwindcss/postcss@4.1.11)(@tanstack/react-query@5.83.0(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react-hook-form@7.59.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)(typescript@5.8.2)(viem@2.31.7(typescript@5.8.2)(zod@3.25.76))(zod@3.25.76)':
+  '@ethui/ui@0.0.106(@hookform/resolvers@5.1.1(react-hook-form@7.59.0(react@19.1.0)))(@tailwindcss/postcss@4.1.11)(@tanstack/react-query@5.83.0(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react-hook-form@7.59.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)(typescript@5.8.2)(viem@2.31.7(typescript@5.8.2)(zod@3.25.76))(zod@3.25.76)':
     dependencies:
       chevrotain: 11.0.3
       nearly: 1.8.1(react@19.1.0)

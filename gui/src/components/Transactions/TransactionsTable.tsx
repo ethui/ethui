@@ -20,7 +20,11 @@ function MethodName({ tx, chainId }: { tx: Tx; chainId: number }) {
     },
   );
 
-  if (!tx.to || !tx.data || !abi) {
+  if (!tx.data || tx.data === "0x") {
+    return <MethodPill name="Transfer" />;
+  }
+
+  if (!tx.to || !abi) {
     return <span className="text-muted-foreground text-sm">-</span>;
   }
 
@@ -72,6 +76,7 @@ export function TransactionsTable({
       header: "From",
       cell: ({ getValue }) => (
         <AddressView
+          showTypeIcon={true}
           address={getValue()}
           showAlias={true}
           showLinkExplorer={true}
@@ -85,6 +90,7 @@ export function TransactionsTable({
         const to = getValue();
         return to ? (
           <AddressView
+            showTypeIcon={true}
             address={to}
             showAlias={true}
             showLinkExplorer={true}

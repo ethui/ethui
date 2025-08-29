@@ -1,15 +1,18 @@
-import { InfiniteScroll } from "@ethui/ui/components/infinite-scroll";
-import { createFileRoute } from "@tanstack/react-router";
-import { LoaderCircle } from "lucide-react";
-import { TransactionsTable } from "#/components/TransactionsTable";
+import { Button } from "@ethui/ui/components/shadcn/button";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { FileCode2 } from "lucide-react";
+import { type Address, formatEther } from "viem";
+import { TransactionsView } from "#/components/Transactions/TransactionsView";
+import { useAddressBalance } from "#/hooks/useAddressBalance";
 import { useAddressTxs } from "#/hooks/useAddressTxs";
+import { useIsContract } from "#/hooks/useIsContract";
 import { useNetworks } from "#/store/useNetworks";
 
 export const Route = createFileRoute("/home/_l/explorer/_l/addresses/$address")(
   {
     beforeLoad: ({ params }) => {
       return {
-        breadcrumb: params.address,
+        breadcrumb: { type: "address", value: params.address },
       };
     },
     component: RouteComponent,
@@ -19,48 +22,59 @@ export const Route = createFileRoute("/home/_l/explorer/_l/addresses/$address")(
 function RouteComponent() {
   const { address } = Route.useParams();
   const chainId = useNetworks((s) => s.current?.dedup_chain_id.chain_id);
-
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-    useAddressTxs(address, chainId!);
-
-  const allTxs = data?.pages?.flat() ?? [];
-
-  if (isLoading) {
-    return (
-      <div className="flex h-32 items-center justify-center">
-        <LoaderCircle className="animate-spin" />
-      </div>
-    );
-  }
-
-  if (allTxs.length === 0) {
-    return <EmptyState />;
-  }
+  const query = useAddressTxs(address, chainId!);
+  const { isContract } = useIsContract(address, chainId!);
+  const { balance } = useAddressBalance(address, chainId!);
 
   return (
-    <div className="flex w-full flex-col items-center gap-2">
-      <TransactionsTable txs={allTxs} chainId={chainId!} />
-      <InfiniteScroll
-        next={() => fetchNextPage()}
-        isLoading={isFetchingNextPage}
-        hasMore={!!hasNextPage}
-        threshold={0.5}
-      >
-        {hasNextPage && <LoaderCircle className="animate-spin" />}
-      </InfiniteScroll>
+    <div className="space-y-4">
+      <Header
+        balance={balance}
+        isContract={isContract}
+        address={address}
+        chainId={chainId!}
+      />
+
+      <TransactionsView
+        query={query}
+        chainId={chainId!}
+        emptyMessage="No transactions found"
+        emptyDescription="This address has no transaction history on this network."
+      />
     </div>
   );
 }
 
-function EmptyState() {
+function Header({
+  balance,
+  isContract,
+  address,
+  chainId,
+}: {
+  balance?: bigint;
+  isContract: boolean;
+  address: Address;
+  chainId: number;
+}) {
   return (
-    <div className="flex h-64 flex-col items-center justify-center text-center">
-      <div className="mb-2 text-lg text-muted-foreground">
-        No transactions found
-      </div>
-      <div className="text-muted-foreground text-sm">
-        This address has no transaction history on this network.
-      </div>
+    <div className="flex items-center justify-between">
+      {balance !== undefined && (
+        <span className="text-muted-foreground text-sm">
+          ETH balance: {formatEther(balance)}
+        </span>
+      )}
+
+      {isContract && (
+        <Link
+          to="/home/contracts/$chainId/$address"
+          params={{ chainId: chainId!, address }}
+        >
+          <Button variant="outline" size="sm" className="gap-2">
+            <FileCode2 className="h-4 w-4" />
+            View Contract
+          </Button>
+        </Link>
+      )}
     </div>
   );
 }

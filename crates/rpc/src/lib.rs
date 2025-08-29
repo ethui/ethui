@@ -1,6 +1,7 @@
 pub mod commands;
 mod error;
 mod methods;
+pub mod utils;
 
 use alloy::{dyn_abi::TypedData, hex, providers::Provider as _};
 use ethui_connections::{permissions::PermissionRequest, Ctx};
@@ -277,6 +278,7 @@ impl Handler {
 
         Ok(sender.finish().await?)
     }
+
 
     async fn eth_sign(params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
         let params = params.parse::<Vec<Option<String>>>().unwrap();

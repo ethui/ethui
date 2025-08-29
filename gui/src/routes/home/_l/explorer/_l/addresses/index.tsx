@@ -1,8 +1,12 @@
 import { Table } from "@ethui/ui/components/table";
 import { createFileRoute } from "@tanstack/react-router";
 import { createColumnHelper } from "@tanstack/react-table";
+import type { Address } from "viem";
+import { formatEther } from "viem";
 import { AddressView } from "#/components/AddressView";
-import { type AddressInfo, useWallets } from "#/store/useWallets";
+import { useAddressBalance } from "#/hooks/useAddressBalance";
+import { useAllAddresses } from "#/hooks/useAllAddresses";
+import { useNetworks } from "#/store/useNetworks";
 
 export const Route = createFileRoute("/home/_l/explorer/_l/addresses/")({
   beforeLoad: () => ({ breadcrumb: "Addresses" }),
@@ -10,35 +14,54 @@ export const Route = createFileRoute("/home/_l/explorer/_l/addresses/")({
 });
 
 function Addresses() {
-  const walletInfo = useWallets((s) => s.allWalletInfo);
+  const { data: addresses = [] } = useAllAddresses();
 
-  const addresses = walletInfo?.[0].addresses;
-
-  return <AddressTable addresses={addresses ?? []} />;
+  return <AddressTable addresses={addresses} />;
 }
 
-const columnHelper = createColumnHelper<AddressInfo>();
+const columnHelper = createColumnHelper<Address>();
 
-function AddressTable({ addresses }: { addresses: AddressInfo[] }) {
+function BalanceCell({ address }: { address: Address }) {
+  const network = useNetworks((s) => s.current);
+  const { balance, isLoading } = useAddressBalance(
+    address,
+    network?.dedup_chain_id.chain_id || 1,
+  );
+
+  if (isLoading) {
+    return <span className="text-muted-foreground text-sm">...</span>;
+  }
+
+  if (!balance) {
+    return <span className="text-muted-foreground text-sm">0 ETH</span>;
+  }
+
+  const formatted = Number(formatEther(balance))
+    .toFixed(4)
+    .replace(/\.?0+$/, "");
+
+  return <span className="text-sm">{formatted} ETH</span>;
+}
+
+function AddressTable({ addresses }: { addresses: Address[] }) {
   const columns = [
-    columnHelper.accessor("address", {
+    columnHelper.display({
+      id: "address",
       header: "Address",
-      cell: ({ getValue }) => (
+      cell: ({ row }) => (
         <AddressView
-          address={getValue()}
-          showAlias={false}
+          showTypeIcon={true}
+          address={row.original}
+          showAlias={true}
           showLinkExplorer={true}
           className="text-sm"
         />
       ),
     }),
-    columnHelper.accessor("alias", {
-      header: "Alias",
-      cell: ({ getValue }) => getValue() || "-",
-    }),
-    columnHelper.accessor("walletName", {
-      header: "Wallet",
-      cell: ({ getValue }) => getValue() || "-",
+    columnHelper.display({
+      id: "balance",
+      header: "ETH Balance",
+      cell: ({ row }) => <BalanceCell address={row.original} />,
     }),
   ];
 

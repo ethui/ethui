@@ -86,13 +86,13 @@ export function AppSidebar() {
               {items.map((item) => (
                 <CustomSidebarMenuItem key={item.title} {...item} />
               ))}
-
-              <CollapsibleMenuSection
-                icon={<Globe />}
-                title="Explorer"
-                items={explorerItems}
-              />
-
+              {isDev && (
+                <CollapsibleMenuSection
+                  icon={<Globe />}
+                  title="Explorer"
+                  items={explorerItems}
+                />
+              )}
               <CollapsibleMenuSection
                 icon={<Cog />}
                 title="Settings"
@@ -231,7 +231,6 @@ const items = [
 const explorerItems = [
   { title: "Addresses", url: "/home/explorer/addresses" },
   { title: "Transactions", url: "/home/explorer/transactions" },
-  { title: "Contracts", url: "/home/explorer/contracts" },
 ];
 
 const defaultSettingsItems = [
