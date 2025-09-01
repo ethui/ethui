@@ -1,6 +1,8 @@
 import type { Tx } from "@ethui/types";
+import { HighlightableWrapper } from "@ethui/ui/components/highlightable-wrapper";
 import { Table } from "@ethui/ui/components/table";
 import { createColumnHelper } from "@tanstack/react-table";
+import { useState } from "react";
 import { type Abi, decodeFunctionData } from "viem";
 import { AddressView } from "#/components/AddressView";
 import { HashView } from "#/components/HashView";
@@ -56,6 +58,8 @@ export function TransactionsTable({
   txs: Tx[];
   chainId: number;
 }) {
+  const [hoveredKey, setHoveredKey] = useState<string | null>(null);
+
   const columns = [
     columnHelper.accessor("hash", {
       header: "Transaction Hash",
@@ -75,13 +79,19 @@ export function TransactionsTable({
     columnHelper.accessor("from", {
       header: "From",
       cell: ({ getValue }) => (
-        <AddressView
-          showTypeIcon={true}
-          address={getValue()}
-          showAlias={true}
-          showLinkExplorer={true}
-          className="text-sm"
-        />
+        <HighlightableWrapper
+          highlightKey={getValue()}
+          hoveredKey={hoveredKey}
+          onHover={setHoveredKey}
+        >
+          <AddressView
+            showTypeIcon={true}
+            address={getValue()}
+            showAlias={true}
+            showLinkExplorer={true}
+            className="text-sm"
+          />
+        </HighlightableWrapper>
       ),
     }),
     columnHelper.accessor("to", {
@@ -89,13 +99,19 @@ export function TransactionsTable({
       cell: ({ getValue }) => {
         const to = getValue();
         return to ? (
-          <AddressView
-            showTypeIcon={true}
-            address={to}
-            showAlias={true}
-            showLinkExplorer={true}
-            className="text-sm"
-          />
+          <HighlightableWrapper
+            highlightKey={to}
+            hoveredKey={hoveredKey}
+            onHover={setHoveredKey}
+          >
+            <AddressView
+              showTypeIcon={true}
+              address={to}
+              showAlias={true}
+              showLinkExplorer={true}
+              className="text-sm"
+            />
+          </HighlightableWrapper>
         ) : (
           <span className="text-muted-foreground text-sm">Contract Deploy</span>
         );
