@@ -1,8 +1,8 @@
 import type { Tx } from "@ethui/types";
 import { HighlightableWrapper } from "@ethui/ui/components/highlightable-wrapper";
+import { HighlightProvider } from "@ethui/ui/components/providers/highlight-provider";
 import { Table } from "@ethui/ui/components/table";
 import { createColumnHelper } from "@tanstack/react-table";
-import { useState } from "react";
 import { type Abi, decodeFunctionData } from "viem";
 import { AddressView } from "#/components/AddressView";
 import { HashView } from "#/components/HashView";
@@ -43,10 +43,12 @@ function MethodName({ tx, chainId }: { tx: Tx; chainId: number }) {
 
 function MethodPill({ name }: { name: string }) {
   return (
-    <div className="flex w-fit items-center border bg-muted p-1">
-      <span className="truncate font-mono text-xs">
-        {name.charAt(0).toUpperCase() + name.slice(1)}
-      </span>
+    <div className="flex w-fit items-center border bg-muted ">
+      <HighlightableWrapper className="p-1" highlightKey={name}>
+        <span className="truncate font-mono text-xs">
+          {name.charAt(0).toUpperCase() + name.slice(1)}
+        </span>
+      </HighlightableWrapper>
     </div>
   );
 }
@@ -58,8 +60,6 @@ export function TransactionsTable({
   txs: Tx[];
   chainId: number;
 }) {
-  const [hoveredKey, setHoveredKey] = useState<string | null>(null);
-
   const columns = [
     columnHelper.accessor("hash", {
       header: "Transaction Hash",
@@ -79,11 +79,7 @@ export function TransactionsTable({
     columnHelper.accessor("from", {
       header: "From",
       cell: ({ getValue }) => (
-        <HighlightableWrapper
-          highlightKey={getValue()}
-          hoveredKey={hoveredKey}
-          onHover={setHoveredKey}
-        >
+        <HighlightableWrapper highlightKey={getValue()}>
           <AddressView
             showTypeIcon={true}
             address={getValue()}
@@ -99,11 +95,7 @@ export function TransactionsTable({
       cell: ({ getValue }) => {
         const to = getValue();
         return to ? (
-          <HighlightableWrapper
-            highlightKey={to}
-            hoveredKey={hoveredKey}
-            onHover={setHoveredKey}
-          >
+          <HighlightableWrapper highlightKey={to}>
             <AddressView
               showTypeIcon={true}
               address={to}
@@ -118,5 +110,9 @@ export function TransactionsTable({
       },
     }),
   ];
-  return <Table columns={columns} data={txs} variant="secondary" />;
+  return (
+    <HighlightProvider>
+      <Table columns={columns} data={txs} variant="secondary" />
+    </HighlightProvider>
+  );
 }
