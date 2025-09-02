@@ -1,4 +1,6 @@
 import type { Tx } from "@ethui/types";
+import { HighlightableWrapper } from "@ethui/ui/components/highlightable-wrapper";
+import { HighlightProvider } from "@ethui/ui/components/providers/highlight-provider";
 import { Table } from "@ethui/ui/components/table";
 import { createColumnHelper } from "@tanstack/react-table";
 import { type Abi, decodeFunctionData } from "viem";
@@ -41,10 +43,12 @@ function MethodName({ tx, chainId }: { tx: Tx; chainId: number }) {
 
 function MethodPill({ name }: { name: string }) {
   return (
-    <div className="flex w-fit items-center border bg-muted p-1">
-      <span className="truncate font-mono text-xs">
-        {name.charAt(0).toUpperCase() + name.slice(1)}
-      </span>
+    <div className="flex w-fit items-center border bg-muted ">
+      <HighlightableWrapper className="p-1" highlightKey={name}>
+        <span className="truncate font-mono text-xs">
+          {name.charAt(0).toUpperCase() + name.slice(1)}
+        </span>
+      </HighlightableWrapper>
     </div>
   );
 }
@@ -75,13 +79,15 @@ export function TransactionsTable({
     columnHelper.accessor("from", {
       header: "From",
       cell: ({ getValue }) => (
-        <AddressView
-          showTypeIcon={true}
-          address={getValue()}
-          showAlias={true}
-          showLinkExplorer={true}
-          className="text-sm"
-        />
+        <HighlightableWrapper highlightKey={getValue()}>
+          <AddressView
+            showTypeIcon={true}
+            address={getValue()}
+            showAlias={true}
+            showLinkExplorer={true}
+            className="text-sm"
+          />
+        </HighlightableWrapper>
       ),
     }),
     columnHelper.accessor("to", {
@@ -89,18 +95,24 @@ export function TransactionsTable({
       cell: ({ getValue }) => {
         const to = getValue();
         return to ? (
-          <AddressView
-            showTypeIcon={true}
-            address={to}
-            showAlias={true}
-            showLinkExplorer={true}
-            className="text-sm"
-          />
+          <HighlightableWrapper highlightKey={to}>
+            <AddressView
+              showTypeIcon={true}
+              address={to}
+              showAlias={true}
+              showLinkExplorer={true}
+              className="text-sm"
+            />
+          </HighlightableWrapper>
         ) : (
           <span className="text-muted-foreground text-sm">Contract Deploy</span>
         );
       },
     }),
   ];
-  return <Table columns={columns} data={txs} variant="secondary" />;
+  return (
+    <HighlightProvider>
+      <Table columns={columns} data={txs} variant="secondary" />
+    </HighlightProvider>
+  );
 }
