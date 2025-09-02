@@ -43,7 +43,7 @@ function MethodName({ tx, chainId }: { tx: Tx; chainId: number }) {
 
 function MethodPill({ name }: { name: string }) {
   return (
-    <div className="flex w-fit items-center border bg-muted ">
+    <div className="flex w-fit items-center border bg-muted">
       <HighlightableWrapper className="p-1" highlightKey={name}>
         <span className="truncate font-mono text-xs">
           {name.charAt(0).toUpperCase() + name.slice(1)}

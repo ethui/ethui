@@ -13,7 +13,7 @@ pub async fn rpc_eth_call(params: serde_json::Value) -> Result<Bytes> {
 }
 
 #[tauri::command]
-pub async fn rpc_get_code(address: Address, chain_id: u32) -> Result<Option<String>> {
+pub async fn rpc_get_code(address: Address, chain_id: u32) -> Result<Option<Bytes>> {
     Ok(utils::get_code(address, chain_id).await?)
 }
 
