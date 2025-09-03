@@ -26,6 +26,7 @@ import {
   Cog,
   Globe,
   Wifi,
+  Database,
 } from "lucide-react";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useIsAnvilNetwork } from "#/hooks/useIsAnvilNetwork";
@@ -209,6 +210,11 @@ const items = [
     title: "Connections",
     url: "/home/connections",
     icon: <Wifi />,
+  },
+  {
+    title: "Stacks",
+    url: "/home/stacks/",
+    icon: <Database />,
   },
 ];
 

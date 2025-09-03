@@ -23,12 +23,6 @@ pub struct ContainerRunning;
 #[derive(Debug, Clone)]
 pub struct ContainerNotRunning;
 
-#[derive(Clone, Debug)]
-pub enum DockerManagerState {
-    Stopped(DockerManager<ContainerNotRunning>),
-    Running(DockerManager<ContainerRunning>),
-}
-
 #[derive(Debug, Clone)]
 pub struct DockerManager<State> {
     data_dir: PathBuf,
@@ -297,6 +291,20 @@ impl DockerManager<ContainerRunning> {
         Ok(stacks.data.into_iter().map(|stack| stack.slug).collect())
     }
 
+    pub async fn remove_stack(&self, slug: &str) -> color_eyre::Result<()> {
+        let url = format!("http://api.localhost:{}/stacks/{slug}", self.host_port);
+        let client = Client::new();
+        let res = client
+            .delete(&url)
+            .send()
+            .await
+            .wrap_err_with(|| format!("Failed to send Delete to {url}"))?;
+        if !res.status().is_success() {
+            return Err(eyre!("Failed to delete stack: {}", res.status()));
+        }
+        Ok(())
+    }
+
     pub fn stop(self) -> color_eyre::Result<DockerManager<ContainerNotRunning>> {
         if !self.is_container_running()? {
             tracing::debug!("Container {} is already stopped.", self.container_name);
@@ -398,7 +406,7 @@ pub fn start_stacks(
 ) -> color_eyre::Result<DockerManager<ContainerRunning>> {
     let manager = DockerManager::new(
         config_dir.join("local/"),
-        "ethui-stacks".to_string(),
+        "ghcr.io/ethui/stacks:latest".to_string(),
         "ethui-local-stacks".to_string(),
         4000,
         port,
@@ -410,27 +418,7 @@ pub fn start_stacks(
     .run()?
     .check_health()?;
 
-    tracing::debug!("Stacks is fully up and running!");
     Ok(manager)
-}
-
-pub fn stop_stacks(port: u16, config_dir: PathBuf) -> color_eyre::Result<()> {
-    DockerManager::new(
-        config_dir.join("local/"),
-        "ethui-stacks".to_string(),
-        "ethui-local-stacks".to_string(),
-        4000,
-        port,
-    )
-    .check_socket_and_bin()?
-    .check_docker_installed()?
-    .check_image_available()?
-    .ensure_data_directory()?
-    .stop()?
-    .check_stopped()?;
-
-    tracing::debug!("Stacks has been stopped successfully.");
-    Ok(())
 }
 
 #[cfg(test)]
