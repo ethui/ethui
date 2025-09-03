@@ -239,4 +239,18 @@ impl DbInner {
 
         result.map(|value| Address::from_str(value.as_str()).unwrap())
     }
+
+    pub async fn get_contract_addresses(&self, chain_id: u32, dedup_id: i32) -> Result<Vec<Address>> {
+        let addresses = sqlx::query_scalar!(
+            r#"SELECT DISTINCT address FROM contracts WHERE chain_id = ? AND dedup_id = ?"#,
+            chain_id, dedup_id
+        )
+        .fetch_all(self.pool())
+        .await?;
+
+        Ok(addresses
+            .into_iter()
+            .filter_map(|addr| Address::from_str(&addr).ok())
+            .collect())
+    }
 }
