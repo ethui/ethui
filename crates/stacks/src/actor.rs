@@ -6,7 +6,6 @@ use tracing::error;
 
 use crate::docker::{
     ContainerNotRunning, ContainerRunning, DockerManager, DockerManagerState, start_stacks,
-    stop_stacks,
 };
 
 pub async fn ask<M>(msg: M) -> color_eyre::Result<<<Worker as Message<M>>::Reply as Reply>::Ok>
@@ -44,6 +43,7 @@ pub struct Worker {
 
 #[derive(Clone, Debug)]
 pub enum RuntimeState {
+    Error,
     Stopped(DockerManager<ContainerNotRunning>),
     Running(DockerManager<ContainerRunning>),
 }
@@ -52,6 +52,7 @@ pub struct SetEnabled(pub bool);
 pub struct GetConfig();
 pub struct ListStracks();
 pub struct CreateStack(pub String);
+pub struct RemoveStack(pub String);
 
 impl Message<SetEnabled> for Worker {
     type Reply = ();
@@ -109,14 +110,30 @@ impl Message<ListStracks> for Worker {
 impl Message<CreateStack> for Worker {
     type Reply = Result<()>;
 
-    fn handle(
+    async fn handle(
         &mut self,
         CreateStack(slug): CreateStack,
-        ctx: &mut Context<Self, Self::Reply>,
-    ) -> impl Future<Output = Self::Reply> + Send {
+        _ctx: &mut Context<Self, Self::Reply>,
+    ) -> Self::Reply {
         match &self.manager {
-            RuntimeState::Running(docker_manager) => docker_manager.create_stack(slug).await,
-            _ => Ok(vec![]),
+            RuntimeState::Running(docker_manager) => docker_manager.create_stack(&slug).await,
+            _ => Ok(()),
+        }
+    }
+}
+
+impl Message<RemoveStack> for Worker {
+    type Reply = Result<()>;
+
+    async fn handle(
+        &mut self,
+        RemoveStack(slug): RemoveStack,
+        _ctx: &mut Context<Self, Self::Reply>,
+    ) -> Self::Reply {
+        println!("{slug}");
+        match &self.manager {
+            RuntimeState::Running(docker_manager) => docker_manager.remove_stack(&slug).await,
+            _ => Ok(()),
         }
     }
 }
@@ -136,10 +153,13 @@ impl Actor for Worker {
 
 impl Worker {
     pub fn new(port: u16, config_dir: PathBuf) -> color_eyre::Result<Self> {
-        let manager = RuntimeState::Running(start_stacks(port, config_dir.clone())?);
+        let manager = match start_stacks(port, config_dir.clone()) {
+            Ok(manager) => RuntimeState::Running(manager),
+            _ => RuntimeState::Error,
+        };
 
         Ok(Self {
-            stacks: false,
+            stacks: !matches!(manager, RuntimeState::Running(_)),
             port,
             config_dir,
             manager,

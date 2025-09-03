@@ -50,3 +50,6 @@ export type NetworkInputs = z.infer<typeof networkSchema>;
 export type Network = NetworkInputs & {
   status: "unknown" | "online" | "offline";
 };
+
+export const stacksSchema = z.object({ slug: z.string() });
+export type StacksInputs = z.infer<typeof stacksSchema>;

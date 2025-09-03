@@ -8,16 +8,16 @@ import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useSettings } from "#/store/useSettings";
 
-export const Route = createFileRoute("/home/_l/settings/_l/stacks")({
+export const Route = createFileRoute("/home/_l/bla-stacks")({
   beforeLoad: () => ({ breadcrumb: "Stacks" }),
-  component: () => <SettingsStacks />,
+  component: RouteComponent,
 });
 
 const schema = z.object({
   runLocalStacks: z.boolean(),
 });
 
-function SettingsStacks() {
+function RouteComponent() {
   const general = useSettings((s) => s.settings!);
 
   const form = useForm({
@@ -75,7 +75,7 @@ function SettingsStacks() {
 
       <form onSubmit={handleCreateStack} className="space-y-4">
         <div>
-          <label className="block mb-1 font-medium">New Stack Slug</label>
+          <p className="block mb-1 font-medium">New Stack Slug</p>
           <input
             type="text"
             value={slug}
