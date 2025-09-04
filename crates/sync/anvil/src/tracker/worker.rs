@@ -138,13 +138,13 @@ impl<I: AnvilProvider + Clone + Send + 'static> Worker<I> {
             .backfill_blocks(&sync_info)
             .await?
             .map(StreamItem::BlockHeader);
-        let caught_up = stream::iter(vec![StreamItem::Msg(Msg::CaughtUp)]);
+        let caught_up = stream::once(async { StreamItem::Msg(Msg::CaughtUp) });
         let live = self
             .inner
             .subscribe_blocks()
             .await?
             .map(StreamItem::BlockHeader);
-        let mut stream = backfill.chain(caught_up).chain(live);
+        let mut stream = Box::pin(backfill.chain(caught_up).chain(live));
 
         let mut checkpoint_interval = tokio::time::interval(Duration::from_secs(2));
 
