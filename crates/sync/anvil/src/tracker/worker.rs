@@ -31,6 +31,7 @@ pub enum Msg {
 }
 
 #[derive(Debug)]
+#[allow(clippy::large_enum_variant)]
 pub enum StreamItem {
     BlockHeader(Header),
     Msg(Msg),
