@@ -4,7 +4,7 @@ use alloy::{
     rpc::types::Header,
 };
 use ethui_types::{prelude::*, Network};
-use futures::{Stream, StreamExt};
+use futures::{stream, Stream, StreamExt};
 use tokio::{
     sync::{mpsc, oneshot},
     time::{sleep, timeout, Duration},
@@ -28,6 +28,12 @@ pub enum Msg {
     Reset,
     CaughtUp,
     Block { hash: B256, number: u64 },
+}
+
+#[derive(Debug)]
+pub enum StreamItem {
+    BlockHeader(Header),
+    Msg(Msg),
 }
 
 impl From<Header> for Msg {
@@ -127,10 +133,18 @@ impl<I: AnvilProvider + Clone + Send + 'static> Worker<I> {
         let mut checkpoint: Option<B256> = None;
 
         // Create merged stream: historical blocks followed seamlessly by live blocks
-        let live = self.inner.subscribe_blocks().await?;
-        let backfill = self.inner.backfill_blocks(&sync_info).await?;
-        // Wrap the chained stream with connection monitoring (monitors internally)
-        let mut stream = backfill.chain(live);
+        let backfill = self
+            .inner
+            .backfill_blocks(&sync_info)
+            .await?
+            .map(StreamItem::BlockHeader);
+        let caught_up = stream::iter(vec![StreamItem::Msg(Msg::CaughtUp)]);
+        let live = self
+            .inner
+            .subscribe_blocks()
+            .await?
+            .map(StreamItem::BlockHeader);
+        let mut stream = backfill.chain(caught_up).chain(live);
 
         let mut checkpoint_interval = tokio::time::interval(Duration::from_secs(2));
 
@@ -145,9 +159,16 @@ impl<I: AnvilProvider + Clone + Send + 'static> Worker<I> {
                 }
                 msg_opt = timeout(Duration::from_secs(3), stream.next()) => {
                     match msg_opt {
-                        Ok(Some(block_header)) => {
-                            checkpoint = validate_and_update_checkpoint(&provider, checkpoint, block_header.hash).await?;
-                            msg_tx.send(block_header.into())?;
+                        Ok(Some(stream_item)) => {
+                            match stream_item {
+                                StreamItem::BlockHeader(block_header) => {
+                                    checkpoint = validate_and_update_checkpoint(&provider, checkpoint, block_header.hash).await?;
+                                    msg_tx.send(block_header.into())?;
+                                },
+                                StreamItem::Msg(msg) => {
+                                    msg_tx.send(msg)?;
+                                }
+                            }
                         },
                         Ok(None) => {
                             // Stream ended - either historical finished and live stream ended, or connection lost
