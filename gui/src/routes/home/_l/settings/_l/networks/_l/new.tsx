@@ -56,7 +56,7 @@ function Content() {
     try {
       setLoading(true);
       data.dedup_chain_id.dedup_id = 0;
-      await invoke("networks_add", { network: data })
+      await invoke("networks_add", { network: data });
       setLoading(false);
       router.history.back();
     } catch (err: any) {
@@ -83,9 +83,24 @@ function Content() {
         />
       </div>
 
-      <Form.Text label="HTTP RPC" name="http_url" className="w-full" nullIfEmpty />
-      <Form.Text label="WebSockets RPC" name="ws_url" className="w-full" nullIfEmpty />
-      <Form.Text label="Explorer URL" name="explorer_url" className="w-full" nullIfEmpty />
+      <Form.Text
+        label="HTTP RPC"
+        name="http_url"
+        className="w-full"
+        nullIfEmpty
+      />
+      <Form.Text
+        label="WebSockets RPC"
+        name="ws_url"
+        className="w-full"
+        nullIfEmpty
+      />
+      <Form.Text
+        label="Explorer URL"
+        name="explorer_url"
+        className="w-full"
+        nullIfEmpty
+      />
       <div className="flex flex-row gap-2">
         <Form.Text label="Currency" name="currency" />
         <Form.NumberField label="Decimals" name="decimals" />
