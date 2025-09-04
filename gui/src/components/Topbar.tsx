@@ -39,18 +39,12 @@ export function Topbar({ onWalletClick }: TopbarProps) {
         <Button
           variant="ghost"
           size="sm"
-          className="h-8 w-8 p-0"
           onClick={handleBack}
           disabled={!canGoBack}
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0"
-          onClick={handleForward}
-        >
+        <Button variant="ghost" size="sm" onClick={handleForward}>
           <ArrowRight className="h-4 w-4" />
         </Button>
       </div>
