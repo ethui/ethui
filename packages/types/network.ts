@@ -38,7 +38,7 @@ export const networkSchema = z.intersection(
   z.object({
     name: z.string().min(1),
     explorer_url: z.string().optional().nullable(),
-    ws_url: z.string().nullable().optional(),
+    ws_url: z.string().url().nullable().optional(),
     currency: z.string().min(1),
     decimals: z.number(),
     warnings: z.string().optional(),

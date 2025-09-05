@@ -17,7 +17,7 @@
     "@aptabase/tauri": "^0.4.1",
     "@ethui/data": "workspace:*",
     "@ethui/types": "workspace:*",
-    "@ethui/ui": "^0.0.113",
+    "@ethui/ui": "^0.0.114",
     "@fontsource/source-code-pro": "^5.2.5",
     "@hookform/resolvers": "^5.1.1",
     "@radix-ui/react-collapsible": "^1.1.3",
