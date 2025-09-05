@@ -25,7 +25,6 @@ import {
   ChevronRight,
   CircleUser,
   Cog,
-  FileCode2,
   Globe,
   Terminal,
   Wifi,

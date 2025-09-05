@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@ethui/ui/components/shadcn/button";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { User } from "lucide-react";
 import { AddressView } from "#/components/AddressView";
 import { BalancesList } from "#/components/BalancesList";
