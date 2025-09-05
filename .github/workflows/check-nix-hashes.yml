@@ -74,7 +74,7 @@ jobs:
     if: |
       failure() && 
       github.event_name == 'pull_request' && 
-      github.actor == 'dependabot[bot]' &&
+      github.event.pull_request.user.login == 'dependabot[bot]' &&
       needs.check-hashes.outputs.needs_update == 'true'
     steps:
       - uses: actions/checkout@v4
