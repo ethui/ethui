@@ -183,7 +183,11 @@ function AbiItemFormWithSubmit({
           <AlertDescription className="break-all">
             {"read" in result.value && result.value.read.toString()}
             {"write" in result.value && (
-              <HashView truncate={false} hash={result.value.write} />
+              <HashView
+                showLinkExplorer
+                truncate={false}
+                hash={result.value.write}
+              />
             )}
           </AlertDescription>
         </Alert>

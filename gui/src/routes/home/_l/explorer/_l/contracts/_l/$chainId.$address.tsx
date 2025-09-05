@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { type Address, getAddress } from "viem";
 import { ContractCallForm } from "#/components/ContractCallForm";
 
-export const Route = createFileRoute("/home/_l/contracts/_l/$chainId/$address")(
+export const Route = createFileRoute("/home/_l/explorer/_l/contracts/_l/$chainId/$address")(
   {
     beforeLoad: ({ params }) => ({
       breadcrumb: { type: "address", value: params.address },

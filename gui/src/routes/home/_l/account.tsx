@@ -1,4 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Button } from "@ethui/ui/components/shadcn/button";
+import { User } from "lucide-react";
 import { AddressView } from "#/components/AddressView";
 import { BalancesList } from "#/components/BalancesList";
 import { useWallets } from "#/store/useWallets";
@@ -14,11 +16,21 @@ function Account() {
   if (!address) return null;
 
   return (
-    <>
+    <div className="space-y-4">
       <div className="flex justify-center gap-2 space-y-2">
-        <AddressView address={address} />
+        <AddressView className="text-lg" address={address} />
       </div>
+
+      <div className="flex justify-center">
+        <Link to="/home/explorer/addresses/$address" params={{ address }}>
+          <Button variant="outline" size="sm" className="gap-2">
+            <User className="h-4 w-4" />
+            View Transactions
+          </Button>
+        </Link>
+      </div>
+
       <BalancesList />
-    </>
+    </div>
   );
 }

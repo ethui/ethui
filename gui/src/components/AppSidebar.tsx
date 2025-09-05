@@ -27,11 +27,11 @@ import {
   Cog,
   FileCode2,
   Globe,
-  ReceiptText,
   Terminal,
   Wifi,
 } from "lucide-react";
 import { useInvoke } from "#/hooks/useInvoke";
+import { useIsAnvilNetwork } from "#/hooks/useIsAnvilNetwork";
 import { useSettings } from "#/store/useSettings";
 import { useCommandBar } from "./CommandBar";
 import { QuickFastModeToggle } from "./QuickFastModeToggle";
@@ -44,6 +44,7 @@ export function AppSidebar() {
   const isMacos = platform() === "macos";
 
   const { data: isStacksEnabled } = useInvoke<boolean>("is_stacks_enabled", {});
+  const { data: isAnvilNetwork = false } = useIsAnvilNetwork();
 
   const showOnboarding = useSettings((s) => !s.settings?.onboarding.hidden);
 
@@ -86,7 +87,7 @@ export function AppSidebar() {
               {items.map((item) => (
                 <CustomSidebarMenuItem key={item.title} {...item} />
               ))}
-              {isDev && (
+              {isAnvilNetwork && (
                 <CollapsibleMenuSection
                   icon={<Globe />}
                   title="Explorer"
@@ -212,16 +213,6 @@ const items = [
     icon: <CircleUser />,
   },
   {
-    title: "Transactions",
-    url: "/home/transactions",
-    icon: <ReceiptText />,
-  },
-  {
-    title: "Contracts",
-    url: "/home/contracts",
-    icon: <FileCode2 />,
-  },
-  {
     title: "Connections",
     url: "/home/connections",
     icon: <Wifi />,
@@ -231,6 +222,7 @@ const items = [
 const explorerItems = [
   { title: "Addresses", url: "/home/explorer/addresses" },
   { title: "Transactions", url: "/home/explorer/transactions" },
+  { title: "Contracts", url: "/home/explorer/contracts" },
 ];
 
 const defaultSettingsItems = [

@@ -76,7 +76,7 @@ function RouteComponent() {
     <div className="space-y-6">
       <div className="space-y-4">
         <DetailRow label="Transaction Hash">
-          <HashView showLinkExplorer={true} hash={fullTx.hash} />
+          <HashView hash={fullTx.hash} />
         </DetailRow>
 
         <DetailRow label="Status">
