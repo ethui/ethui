@@ -20,6 +20,10 @@ on:
 jobs:
   check-hashes:
     runs-on: ubuntu-latest
+    outputs:
+      expected_hash: ${{ steps.get-hash.outputs.expected }}
+      specified_hash: ${{ steps.get-hash.outputs.specified }}
+      needs_update: ${{ steps.get-hash.outputs.needs_update }}
     steps:
       - uses: actions/checkout@v4
         
@@ -33,5 +37,65 @@ jobs:
           echo "experimental-features = nix-command flakes" | sudo tee -a /etc/nix/nix.conf
           sudo systemctl restart nix-daemon.service
           
-      - name: Check pnpm dependency hash
-        run: nix build .#pnpmDeps
+      - name: Get current hash from package.nix
+        id: get-hash
+        run: |
+          # Extract the current hash from package.nix
+          SPECIFIED_HASH=$(grep -A1 'pnpmDeps = pkgs.pnpm.fetchDeps' nix/package.nix | grep 'hash =' | sed 's/.*hash = "\(.*\)";/\1/')
+          echo "Specified hash: $SPECIFIED_HASH"
+          echo "specified=$SPECIFIED_HASH" >> $GITHUB_OUTPUT
+          
+          # Try to build and capture the expected hash from error message if it fails
+          if ! nix build .#pnpmDeps 2>&1 | tee build.log; then
+            # Extract the expected hash from the error message
+            EXPECTED_HASH=$(grep -A1 "got:" build.log | tail -n1 | tr -d ' ')
+            if [ -z "$EXPECTED_HASH" ]; then
+              # Fallback pattern for different error message format
+              EXPECTED_HASH=$(grep "sha256-" build.log | tail -n1 | sed 's/.*\(sha256-[^ ]*\).*/\1/')
+            fi
+            echo "Expected hash: $EXPECTED_HASH"
+            echo "expected=$EXPECTED_HASH" >> $GITHUB_OUTPUT
+            
+            if [ "$SPECIFIED_HASH" != "$EXPECTED_HASH" ]; then
+              echo "needs_update=true" >> $GITHUB_OUTPUT
+              echo "Hash mismatch detected!"
+              echo "::error::Hash mismatch! Specified: $SPECIFIED_HASH, Expected: $EXPECTED_HASH"
+              exit 1
+            fi
+          else
+            echo "Build succeeded, hash is correct"
+            echo "expected=$SPECIFIED_HASH" >> $GITHUB_OUTPUT
+            echo "needs_update=false" >> $GITHUB_OUTPUT
+          fi
+  
+  update-hash:
+    runs-on: ubuntu-latest
+    needs: check-hashes
+    if: |
+      failure() && 
+      github.event_name == 'pull_request' && 
+      github.actor == 'dependabot[bot]' &&
+      needs.check-hashes.outputs.needs_update == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Update hash in package.nix
+        run: |
+          EXPECTED_HASH="${{ needs.check-hashes.outputs.expected }}"
+          SPECIFIED_HASH="${{ needs.check-hashes.outputs.specified }}"
+          
+          echo "Updating hash from $SPECIFIED_HASH to $EXPECTED_HASH"
+          
+          # Update the hash in package.nix
+          sed -i "s|hash = \"$SPECIFIED_HASH\"|hash = \"$EXPECTED_HASH\"|" nix/package.nix
+          
+      - name: Commit updated hash
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add nix/package.nix
+          git commit -m "chore: update pnpm dependency hash"
+          git push
