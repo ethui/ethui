@@ -14,7 +14,9 @@
     "lint:biome": "biome check .",
     "lint:tsc": "pnpm --recursive tsc --noEmit",
     "fix": "pnpm fix:biome",
-    "fix:biome": "biome check --write ."
+    "fix:biome": "biome check --write .",
+    "test:integration": "./scripts/run-integration-tests.sh",
+    "test:integration:ci": "cd bin && cargo test --test integration_test -- --nocapture"
   },
   "workspaces": [
     "packages/types",
