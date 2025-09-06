@@ -17,7 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import * as tauriClipboard from "@tauri-apps/plugin-clipboard-manager";
-import { FileCode2, Wallet } from "lucide-react";
+import { FileCode2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { type Address, getAddress } from "viem";
