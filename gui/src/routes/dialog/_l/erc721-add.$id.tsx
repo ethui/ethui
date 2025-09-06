@@ -38,7 +38,10 @@ function ERC721AddDialog() {
           <Datapoint
             label="Contract Address"
             value={
-              <AddressView showLinkExplorer address={token.contract.address} />
+              <AddressView
+                showLinkExplorer={false}
+                address={token.contract.address}
+              />
             }
           />
           <Datapoint label="Token ID" value={`#${Number(token.tokenId)}`} />

@@ -68,7 +68,7 @@ function ContractHeader({ contract }: { contract: OrganizedContract }) {
           className="flex whitespace-nowrap p-4 align-baseline"
         >
           <div className="flex w-full items-center gap-2">
-            <AddressView address={address} />
+            <AddressView showLinkExplorer={false} address={address} />
 
             <div className="flex items-center">
               {name && (

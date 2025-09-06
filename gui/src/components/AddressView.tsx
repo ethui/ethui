@@ -49,7 +49,7 @@ export function AddressView({
   noTextStyle = false,
   clickToCopy = true,
   showAlias = true,
-  showLinkExplorer = false,
+  showLinkExplorer = true,
   showTypeIcon = false,
   className,
 }: Props) {
@@ -77,12 +77,9 @@ export function AddressView({
         className,
       )}
     >
-      {showTypeIcon &&
-        (isContract ? (
-          <FileCode2 className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-        ) : (
-          <Wallet className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-        ))}
+      {showTypeIcon && isContract && (
+        <FileCode2 className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+      )}
       {icon && (
         <IconAddress
           chainId={network.dedup_chain_id.chain_id}

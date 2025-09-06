@@ -18,7 +18,11 @@ function Account() {
   return (
     <div className="space-y-4">
       <div className="flex justify-center gap-2 space-y-2">
-        <AddressView className="text-lg" address={address} />
+        <AddressView
+          showLinkExplorer={false}
+          className="text-lg"
+          address={address}
+        />
       </div>
 
       <div className="flex justify-center">

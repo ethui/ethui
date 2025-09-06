@@ -88,20 +88,12 @@ function RouteComponent() {
         <DetailRow label="Block">{fullTx.blockNumber}</DetailRow>
 
         <DetailRow label="From">
-          <AddressView
-            showTypeIcon={true}
-            showLinkExplorer={true}
-            address={fullTx.from}
-          />
+          <AddressView showTypeIcon={true} address={fullTx.from} />
         </DetailRow>
 
         <DetailRow label="To">
           {fullTx.to ? (
-            <AddressView
-              showTypeIcon={true}
-              showLinkExplorer={true}
-              address={fullTx.to}
-            />
+            <AddressView showTypeIcon={true} address={fullTx.to} />
           ) : (
             <span className="text-muted-foreground text-sm">
               Contract Creation
@@ -134,7 +126,11 @@ function RouteComponent() {
             to={fullTx.to}
             chainId={chainId}
             abi={abi}
-            ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
+            ArgProps={{
+              addressRenderer: (a) => (
+                <AddressView showLinkExplorer={false} address={a} />
+              ),
+            }}
           />
         </div>
 

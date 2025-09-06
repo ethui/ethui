@@ -53,7 +53,6 @@ function AddressTable({ addresses }: { addresses: Address[] }) {
           showTypeIcon={true}
           address={row.original}
           showAlias={true}
-          showLinkExplorer={true}
           className="text-sm"
         />
       ),

@@ -47,7 +47,10 @@ function ERC20AddDialog() {
         <Datapoint
           label="Address"
           value={
-            <AddressView showLinkExplorer address={token.metadata.address} />
+            <AddressView
+              showLinkExplorer={false}
+              address={token.metadata.address}
+            />
           }
         />
       </div>

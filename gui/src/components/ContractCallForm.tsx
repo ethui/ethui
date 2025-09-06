@@ -166,7 +166,9 @@ function AbiItemFormWithSubmit({
         sender={sender}
         chainId={chainId}
         ArgProps={{
-          addressRenderer: (a) => <AddressView address={a} />,
+          addressRenderer: (a) => (
+            <AddressView showLinkExplorer={false} address={a} />
+          ),
         }}
         onChange={onChange}
       />
