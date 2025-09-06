@@ -34,7 +34,7 @@
     "@tauri-apps/plugin-process": "^2.3.0",
     "@tauri-apps/plugin-updater": "~2.9.0",
     "abitype": "^1.0.8",
-    "core-js": "^3.43.0",
+    "core-js": "^3.45.1",
     "framer-motion": "^12",
     "lodash-es": "^4.17.21",
     "lucide-react": "^0.506.0",
