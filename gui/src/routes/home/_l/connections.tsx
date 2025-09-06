@@ -14,6 +14,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { map } from "lodash-es";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/shallow";
+import { EmptyState } from "#/components/EmptyState";
 import { useEventListener } from "#/hooks/useEventListener";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
@@ -30,6 +31,17 @@ function Connections() {
     useInvoke<Record<string, Peer[]>>("ws_peers_by_domain");
 
   useEventListener({ event: "peers-updated", callback: refetch });
+
+  const hasConnections = peersByDomain && Object.keys(peersByDomain).length > 0;
+
+  if (!hasConnections) {
+    return (
+      <EmptyState
+        message="No connections found"
+        description="Connect to dApps to see them here."
+      />
+    );
+  }
 
   return (
     <div className="m-1 flex flex-col">

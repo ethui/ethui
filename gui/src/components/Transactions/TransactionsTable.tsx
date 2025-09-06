@@ -84,7 +84,6 @@ export function TransactionsTable({
             showTypeIcon={true}
             address={getValue()}
             showAlias={true}
-            showLinkExplorer={true}
             className="text-sm"
           />
         </HighlightableWrapper>
@@ -100,7 +99,6 @@ export function TransactionsTable({
               showTypeIcon={true}
               address={to}
               showAlias={true}
-              showLinkExplorer={true}
               className="text-sm"
             />
           </HighlightableWrapper>

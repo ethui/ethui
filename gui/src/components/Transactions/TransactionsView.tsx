@@ -5,6 +5,7 @@ import type {
   UseInfiniteQueryResult,
 } from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";
+import { EmptyState } from "#/components/EmptyState";
 import { TransactionsTable } from "#/components/Transactions/TransactionsTable";
 
 interface TransactionsViewProps {
@@ -33,12 +34,7 @@ export function TransactionsView({
   }
 
   if (txs.length === 0) {
-    return (
-      <div className="flex h-64 flex-col items-center justify-center text-center">
-        <div className="mb-2 text-lg text-muted-foreground">{emptyMessage}</div>
-        <div className="text-muted-foreground text-sm">{emptyDescription}</div>
-      </div>
-    );
+    return <EmptyState message={emptyMessage} description={emptyDescription} />;
   }
 
   return (
