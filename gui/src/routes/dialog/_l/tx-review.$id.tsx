@@ -187,9 +187,9 @@ function Header({ from, to, network }: HeaderProps) {
     <div className=" flex w-full items-stretch justify-between self-center">
       <h1 className="font-xl">
         <div className="m-2 flex items-center gap-2">
-          <AddressView showLinkExplorer address={from} />
+          <AddressView address={from} />
           <span>→</span>
-          <AddressView showLinkExplorer address={to} />
+          <AddressView address={to} />
         </div>
       </h1>
       <div className="ml-5">
@@ -358,9 +358,9 @@ function Erc20Transfer({ chainId, log }: Erc20TransferProps) {
 
   return (
     <div className=" m-1 flex items-center gap-2">
-      <AddressView showLinkExplorer address={from} />
+      <AddressView address={from} />
       <span>→</span>
-      <AddressView showLinkExplorer address={to} />
+      <AddressView address={to} />
       <IconAddress chainId={chainId} address={log.address} />
       {metadata?.decimals
         ? formatUnits(value, metadata.decimals)
