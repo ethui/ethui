@@ -40,31 +40,37 @@ jobs:
       - name: Get current hash from package.nix
         id: get-hash
         run: |
-          # Extract the current hash from package.nix
-          SPECIFIED_HASH=$(grep -A1 'pnpmDeps = pkgs.pnpm.fetchDeps' nix/package.nix | grep 'hash =' | sed 's/.*hash = "\(.*\)";/\1/')
-          echo "Specified hash: $SPECIFIED_HASH"
-          echo "specified=$SPECIFIED_HASH" >> $GITHUB_OUTPUT
-          
-          # Try to build and capture the expected hash from error message if it fails
+          # Try to build and capture hashes from error message if it fails
           if ! nix build .#pnpmDeps 2>&1 | tee build.log; then
-            # Extract the expected hash from the error message
-            EXPECTED_HASH=$(grep -A1 "got:" build.log | tail -n1 | tr -d ' ')
-            if [ -z "$EXPECTED_HASH" ]; then
-              # Fallback pattern for different error message format
-              EXPECTED_HASH=$(grep "sha256-" build.log | tail -n1 | sed 's/.*\(sha256-[^ ]*\).*/\1/')
-            fi
-            echo "Expected hash: $EXPECTED_HASH"
-            echo "expected=$EXPECTED_HASH" >> $GITHUB_OUTPUT
-            
-            if [ "$SPECIFIED_HASH" != "$EXPECTED_HASH" ]; then
-              echo "needs_update=true" >> $GITHUB_OUTPUT
-              echo "Hash mismatch detected!"
-              echo "::error::Hash mismatch! Specified: $SPECIFIED_HASH, Expected: $EXPECTED_HASH"
+            # Check if there's a hash mismatch error for ethui-pnpm-deps.drv
+            if grep -q "hash mismatch.*ethui-pnpm-deps.drv" build.log; then
+              # Extract the specified and got hashes from the error message
+              # The error format is:
+              # hash mismatch in fixed-output derivation '/nix/store/...-ethui-pnpm-deps.drv':
+              #   specified: sha256-...
+              #   got:       sha256-...
+              SPECIFIED_HASH=$(grep -A2 "hash mismatch.*ethui-pnpm-deps.drv" build.log | grep "specified:" | sed 's/.*specified: *//')
+              EXPECTED_HASH=$(grep -A2 "hash mismatch.*ethui-pnpm-deps.drv" build.log | grep "got:" | sed 's/.*got: *//')
+              
+              echo "Specified hash: $SPECIFIED_HASH"
+              echo "Expected hash: $EXPECTED_HASH"
+              echo "specified=$SPECIFIED_HASH" >> $GITHUB_OUTPUT
+              echo "expected=$EXPECTED_HASH" >> $GITHUB_OUTPUT
+              
+              if [ -n "$SPECIFIED_HASH" ] && [ -n "$EXPECTED_HASH" ] && [ "$SPECIFIED_HASH" != "$EXPECTED_HASH" ]; then
+                echo "needs_update=true" >> $GITHUB_OUTPUT
+                echo "Hash mismatch detected!"
+                echo "::error::Hash mismatch! Specified: $SPECIFIED_HASH, Expected: $EXPECTED_HASH"
+                exit 1
+              fi
+            else
+              # Build failed for another reason
+              echo "Build failed but no hash mismatch found for ethui-pnpm-deps.drv"
+              cat build.log
               exit 1
             fi
           else
             echo "Build succeeded, hash is correct"
-            echo "expected=$SPECIFIED_HASH" >> $GITHUB_OUTPUT
             echo "needs_update=false" >> $GITHUB_OUTPUT
           fi
   
