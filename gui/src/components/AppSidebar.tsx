@@ -138,14 +138,14 @@ function CustomSidebarMenuItem({
 
   return (
     <SidebarMenuItem key={title}>
-      <SidebarMenuButton asChild>
-        <Link
-          to={url}
-          className={cn(
-            url === location.pathname &&
-              "bg-primary text-accent hover:bg-primary hover:text-accent",
-          )}
-        >
+      <SidebarMenuButton
+        asChild
+        className={cn(
+          url === location.pathname &&
+            "bg-primary text-accent hover:bg-primary hover:text-accent",
+        )}
+      >
+        <Link to={url}>
           {icon}
           {title}
         </Link>
@@ -182,16 +182,14 @@ function CollapsibleMenuSection({
           <SidebarMenuSub>
             {items.map((item) => (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild>
-                  <Link
-                    to={item.url}
-                    className={cn(
-                      item.url === location.pathname &&
-                        "bg-primary text-accent hover:bg-primary hover:text-accent",
-                    )}
-                  >
-                    {item.title}
-                  </Link>
+                <SidebarMenuButton
+                  asChild
+                  className={cn(
+                    item.url === location.pathname &&
+                      "bg-primary text-accent hover:bg-primary hover:text-accent",
+                  )}
+                >
+                  <Link to={item.url}>{item.title}</Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
