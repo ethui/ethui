@@ -201,9 +201,7 @@ function CollapsibleMenuSection({
 }
 
 function getExplorerItems(isAnvilNetwork: boolean) {
-  return isAnvilNetwork
-    ? explorerItems
-    : explorerItems.filter((item) => item.title !== "Addresses");
+  return explorerItems.filter((item) => !item.anvilOnly || isAnvilNetwork);
 }
 // Menu items.
 const items = [
@@ -220,7 +218,7 @@ const items = [
 ];
 
 const explorerItems = [
-  { title: "Addresses", url: "/home/explorer/addresses" },
+  { title: "Addresses", url: "/home/explorer/addresses", anvilOnly: true },
   { title: "Transactions", url: "/home/explorer/transactions" },
   { title: "Contracts", url: "/home/explorer/contracts" },
 ];
