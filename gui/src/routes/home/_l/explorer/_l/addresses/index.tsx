@@ -16,10 +16,14 @@ export const Route = createFileRoute("/home/_l/explorer/_l/addresses/")({
 });
 
 function Addresses() {
-  const { data: isAnvilNetwork = false } = useIsAnvilNetwork();
+  const { data: isAnvilNetwork = false, isLoading } = useIsAnvilNetwork();
 
   return (
-    <RouteGuard condition={isAnvilNetwork} fallbackRoute="/home/account">
+    <RouteGuard
+      condition={isAnvilNetwork}
+      isLoading={isLoading}
+      fallbackRoute="/home/account"
+    >
       <AddressTable />
     </RouteGuard>
   );
