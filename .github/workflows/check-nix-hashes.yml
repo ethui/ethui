@@ -21,8 +21,8 @@ jobs:
   check-hashes:
     runs-on: ubuntu-latest
     outputs:
-      expected_hash: ${{ steps.get-hash.outputs.expected }}
-      specified_hash: ${{ steps.get-hash.outputs.specified }}
+      expected: ${{ steps.get-hash.outputs.expected }}
+      specified: ${{ steps.get-hash.outputs.specified }}
       needs_update: ${{ steps.get-hash.outputs.needs_update }}
     steps:
       - uses: actions/checkout@v4
