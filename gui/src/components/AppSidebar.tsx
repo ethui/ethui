@@ -86,13 +86,11 @@ export function AppSidebar() {
               {items.map((item) => (
                 <CustomSidebarMenuItem key={item.title} {...item} />
               ))}
-              {isAnvilNetwork && (
-                <CollapsibleMenuSection
-                  icon={<Globe />}
-                  title="Explorer"
-                  items={explorerItems}
-                />
-              )}
+              <CollapsibleMenuSection
+                icon={<Globe />}
+                title="Explorer"
+                items={getExplorerItems(isAnvilNetwork)}
+              />
               <CollapsibleMenuSection
                 icon={<Cog />}
                 title="Settings"
@@ -203,7 +201,11 @@ function CollapsibleMenuSection({
     </Collapsible>
   );
 }
-
+function getExplorerItems(isAnvilNetwork: boolean) {
+  return isAnvilNetwork
+    ? explorerItems
+    : explorerItems.filter((item) => item.title !== "Addresses");
+}
 // Menu items.
 const items = [
   {
