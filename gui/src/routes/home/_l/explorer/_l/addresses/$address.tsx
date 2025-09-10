@@ -66,7 +66,7 @@ function Header({
 
       {isContract && (
         <Link
-          to="/home/contracts/$chainId/$address"
+          to="/home/explorer/contracts/$chainId/$address"
           params={{ chainId: chainId!, address }}
         >
           <Button variant="outline" size="sm" className="gap-2">
