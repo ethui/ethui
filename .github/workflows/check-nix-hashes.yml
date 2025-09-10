@@ -41,7 +41,8 @@ jobs:
         id: get-hash
         run: |
           # Try to build and capture hashes from error message if it fails
-          if ! nix build .#pnpmDeps 2>&1 | tee build.log; then
+          nix build .#pnpmDeps 2>&1 | tee build.log
+          if [ "${PIPESTATUS[0]}" -ne 0 ]; then
             # Check if there's a hash mismatch error for ethui-pnpm-deps.drv
             if grep -q "hash mismatch.*ethui-pnpm-deps.drv" build.log; then
               # Extract the specified and got hashes from the error message

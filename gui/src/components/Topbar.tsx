@@ -90,6 +90,7 @@ function WalletButton({ onClick }: WalletButtonProps) {
 
       <span className="text-sm">{currentWallet.name}</span>
       <AddressView
+        showLinkExplorer={false}
         address={currentAddress}
         className="text-muted-foreground text-sm"
         clickToCopy={false}
