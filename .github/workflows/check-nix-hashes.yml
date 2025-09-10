@@ -104,10 +104,17 @@ jobs:
       github.event.pull_request.user.login == 'dependabot[bot]' &&
       needs.check-hashes.outputs.needs_update == 'true'
     steps:
+
+      - id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.ETHUI_DEPLOYER_APP_ID }}
+          private-key: ${{ secrets.ETHUI_DEPLOYER_PKEY }}
+
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.generate-token.outputs.token }}
           
       - name: Update hash in package.nix
         run: |
@@ -130,8 +137,8 @@ jobs:
           
       - name: Commit updated hash
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          git config --local user.email "dev@ethui.dev"
+          git config --local user.name "ethui-deployer"
           git add nix/package.nix
           git commit -m "chore: update pnpm dependency hash"
           git push
