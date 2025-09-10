@@ -48,7 +48,7 @@
     "tailwindcss-animate": "^1.0.7",
     "typescript": "5.9.2",
     "viem": "^2.33.2",
-    "vite": "^7.0.6",
+    "vite": "^7.0.7",
     "zod": "^3.25.46",
     "zustand": "^5.0.3",
     "zxcvbn-typescript": "^5.0.1"
