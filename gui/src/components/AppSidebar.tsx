@@ -199,6 +199,7 @@ function CollapsibleMenuSection({
     </Collapsible>
   );
 }
+
 function getExplorerItems(isAnvilNetwork: boolean) {
   return isAnvilNetwork
     ? explorerItems
