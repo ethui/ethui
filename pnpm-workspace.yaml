@@ -1,3 +1,6 @@
 packages:
-  - 'gui'
-  - 'packages/*'
+  - gui
+  - packages/*
+
+onlyBuiltDependencies:
+  - core-js
