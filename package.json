@@ -7,6 +7,7 @@
     "dev": "pnpm run app:dev",
     "app:dev": "pnpm tauri dev --config bin/tauri.dev.conf.json  --features ${ETHUI_FEATURES:-''} --target $(pnpm run rust-target | tail -n1)",
     "app:build": "pnpm tauri build --target $(pnpm run rust-target | tail -n1)",
+    "app:build:test": "pnpm tauri build --debug --no-bundle --config bin/tauri.test.conf.json --features test",
     "rust-target": "rustc -vV | sed -n 's/host: //p'",
     "gui:build": "pnpm --filter @ethui/gui build",
     "gui:devtools": "pnpm --filter @ethui/gui devtools",
@@ -14,7 +15,8 @@
     "lint:biome": "biome check .",
     "lint:tsc": "pnpm --recursive tsc --noEmit",
     "fix": "pnpm fix:biome",
-    "fix:biome": "biome check --write ."
+    "fix:biome": "biome check --write .",
+    "test": "pnpm --filter @ethui/webdriverio test"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.1.1",

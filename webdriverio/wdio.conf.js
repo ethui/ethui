@@ -9,17 +9,29 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
 let tauriDriver;
 let exit = false;
 
+const configDir = path.resolve(__dirname, "../dev-data/integration-tests");
+const application = path.resolve(
+  __dirname,
+  "../target/x86_64-unknown-linux-gnu/debug/ethui-test",
+);
+const args = [
+  "--ws-port",
+  "9103",
+  "--stacks-port",
+  "9104",
+  "--config-dir",
+  configDir,
+];
+
 export const config = {
   host: "127.0.0.1",
   port: 4444,
-  specs: ["./test/specs/**/*.js"],
+  specs: ["./specs/**/*.js"],
   maxInstances: 1,
   capabilities: [
     {
       maxInstances: 1,
-      "tauri:options": {
-        application: "../../src-tauri/target/debug/tauri-app",
-      },
+      "tauri:options": { application, args },
     },
   ],
   reporters: ["spec"],
@@ -31,7 +43,7 @@ export const config = {
 
   // ensure the rust project is built since we expect this binary to exist for the webdriver sessions
   onPrepare: () => {
-    spawnSync("pnpm", ["tauri", "build", "--debug", "--no-bundle"], {
+    spawnSync("pnpm", ["app:build:test"], {
       cwd: path.resolve(__dirname, ".."),
       stdio: "inherit",
       shell: true,
