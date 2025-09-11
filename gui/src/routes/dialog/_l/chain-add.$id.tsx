@@ -3,7 +3,6 @@ import { ChainView } from "@ethui/ui/components/chain-view";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { createFileRoute } from "@tanstack/react-router";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
-import { isDirty, isValid } from "zod";
 import { Datapoint } from "#/components/Datapoint";
 import { DialogBottom } from "#/components/Dialogs/Bottom";
 import { useDialog } from "#/hooks/useDialog";
@@ -75,11 +74,7 @@ function ChainAddDialog() {
           >
             Cancel
           </Button>
-          <Button
-            type="submit"
-            disabled={!isDirty || !isValid}
-            onClick={() => send("accept")}
-          >
+          <Button type="submit" onClick={() => send("accept")}>
             Add
           </Button>
         </div>
