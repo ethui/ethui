@@ -1,6 +1,7 @@
 [workspace.package]
 version = "1.22.0"
 edition = "2024"
+license = "MIT"
 license-file = "./LICENSE"
 homepage = "https://github.com/ethui"
 repository = "https://github.com/ethui/ethui"
