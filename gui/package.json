@@ -11,7 +11,8 @@
     "test:ui": "vitest run",
     "test:ui:watch": "vitest",
     "lint": "pnpm lint:unused",
-    "lint:unused": "ts-unused-exports tsconfig.json --ignoreFiles=vite.config.ts --excludePathsFromReport=shadcn --excludePathsFromReport=routeTree.gen.ts --excludePathsFromReport=src/routes"
+    "lint:unused": "ts-unused-exports tsconfig.json --ignoreFiles=vite.config.ts --excludePathsFromReport=shadcn --excludePathsFromReport=routeTree.gen.ts --excludePathsFromReport=src/routes",
+    "tsc": "tsc"
   },
   "dependencies": {
     "@aptabase/tauri": "^0.4.1",
