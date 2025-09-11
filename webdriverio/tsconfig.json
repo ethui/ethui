@@ -1,0 +1,17 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "typeRoots": [
+      "../packages/react/@types",
+      "./node_modules/@types",
+      "../node_modules/@types"
+    ],
+    "moduleResolution": "bundler",
+    "paths": {
+      "#/*": ["./src/*"]
+    }
+  },
+  "include": ["./src", "vite.config.ts"],
+  "exclude": ["dist", "node_modules", "../node_modules"]
+}
