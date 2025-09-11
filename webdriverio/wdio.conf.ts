@@ -1,4 +1,3 @@
-import type { Options } from "@wdio/types";
 import { spawn, spawnSync } from "node:child_process";
 import os from "node:os";
 import path from "node:path";
