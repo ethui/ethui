@@ -16,11 +16,6 @@
     "fix": "pnpm fix:biome",
     "fix:biome": "biome check --write ."
   },
-  "workspaces": [
-    "packages/types",
-    "packages/data",
-    "gui"
-  ],
   "devDependencies": {
     "@biomejs/biome": "^2.1.1",
     "@tailwindcss/postcss": "^4.1.3",
