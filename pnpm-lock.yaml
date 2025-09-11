@@ -104,8 +104,8 @@ importers:
         specifier: ^1.0.8
         version: 1.0.8(typescript@5.9.2)(zod@4.1.5)
       core-js:
-        specifier: ^3.43.0
-        version: 3.44.0
+        specifier: ^3.45.1
+        version: 3.45.1
       framer-motion:
         specifier: ^12
         version: 12.23.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -1960,8 +1960,8 @@ packages:
   copy-to-clipboard@3.3.3:
     resolution: {integrity: sha512-2KV8NhB5JqC3ky0r9PMCAZKbUHSwtEo4CwCs0KXgruG43gX5PMqDEBbVU4OUzw2MuAWUfsuFmWvEKG5QRfSnJA==}
 
-  core-js@3.44.0:
-    resolution: {integrity: sha512-aFCtd4l6GvAXwVEh3XbbVqJGHDJt0OZRa+5ePGx3LLwi12WfexqQxcsohb2wgsa/92xtl19Hd66G/L+TaAxDMw==}
+  core-js@3.45.1:
+    resolution: {integrity: sha512-L4NPsJlCfZsPeXukyzHFlg/i7IIVwHSItR0wg0FLNqYClJ4MQYTYLbC7EkjKYRLZF2iof2MUgN0EGy7MdQFChg==}
 
   cssstyle@4.6.0:
     resolution: {integrity: sha512-2z+rWdzbbSZv6/rhtvzvqeZQHrBaqgogqt85sqFNbabZOuFbCVFb8kPeEtZjiKkbrm395irpNKiYeFeLiQnFPg==}
@@ -4596,7 +4596,7 @@ snapshots:
     dependencies:
       toggle-selection: 1.0.6
 
-  core-js@3.44.0: {}
+  core-js@3.45.1: {}
 
   cssstyle@4.6.0:
     dependencies:
