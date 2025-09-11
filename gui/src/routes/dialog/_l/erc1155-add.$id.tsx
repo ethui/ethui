@@ -37,7 +37,12 @@ function ERC1155AddDialog() {
         <div>
           <Datapoint
             label="Contract Address"
-            value={<AddressView address={token.contract.address} />}
+            value={
+              <AddressView
+                showLinkExplorer={false}
+                address={token.contract.address}
+              />
+            }
           />
           <Datapoint label="Token ID" value={`#${Number(token.tokenId)}`} />
           <Datapoint label="Balance" value={`${Number(token.balance)}`} />

@@ -166,7 +166,9 @@ function AbiItemFormWithSubmit({
         sender={sender}
         chainId={chainId}
         ArgProps={{
-          addressRenderer: (a) => <AddressView address={a} />,
+          addressRenderer: (a) => (
+            <AddressView showLinkExplorer={false} address={a} />
+          ),
         }}
         onChange={onChange}
       />
@@ -183,7 +185,11 @@ function AbiItemFormWithSubmit({
           <AlertDescription className="break-all">
             {"read" in result.value && result.value.read.toString()}
             {"write" in result.value && (
-              <HashView truncate={false} hash={result.value.write} />
+              <HashView
+                showLinkExplorer
+                truncate={false}
+                hash={result.value.write}
+              />
             )}
           </AlertDescription>
         </Alert>

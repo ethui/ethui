@@ -52,7 +52,9 @@ export function ERC20View({
         <div className="flex flex-col">
           <div className="items-bottom flex gap-4">
             {symbol}
-            {contract && <AddressView address={contract} />}
+            {contract && (
+              <AddressView showLinkExplorer={false} address={contract} />
+            )}
           </div>
           <span>
             {truncatedBalance > 0

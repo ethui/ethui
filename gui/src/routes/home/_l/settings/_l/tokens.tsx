@@ -40,7 +40,7 @@ function SettingsTokens() {
 
           <span className="flex items-center gap-1">
             {metadata?.symbol}
-            {contract && <AddressView address={contract} />}
+            {contract && <AddressView showLinkExplorer address={contract} />}
           </span>
 
           <Button
