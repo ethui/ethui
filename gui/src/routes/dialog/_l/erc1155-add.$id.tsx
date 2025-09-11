@@ -2,7 +2,6 @@ import type { ErcFullData } from "@ethui/types";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { createFileRoute } from "@tanstack/react-router";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { isDirty, isValid } from "zod";
 import { AddressView } from "#/components/AddressView";
 import { Datapoint } from "#/components/Datapoint";
 import { useDialog } from "#/hooks/useDialog";
@@ -58,11 +57,7 @@ function ERC1155AddDialog() {
         <Button variant="destructive" onClick={() => tauriWindow.close()}>
           Cancel
         </Button>
-        <Button
-          type="submit"
-          disabled={!isDirty || !isValid}
-          onClick={() => send("accept")}
-        >
+        <Button type="submit" onClick={() => send("accept")}>
           Add
         </Button>
       </div>
