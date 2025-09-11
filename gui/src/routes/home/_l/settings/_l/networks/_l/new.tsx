@@ -20,9 +20,12 @@ function Content() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<NetworkInputs>({
+  const form = useForm({
     mode: "onBlur",
     resolver: zodResolver(networkSchema),
+    defaultValues: {
+      dedup_chain_id: { dedup_id: 0 },
+    },
   });
 
   const httpUrl = form.watch("http_url");
@@ -55,7 +58,6 @@ function Content() {
   const onSubmit = async (data: NetworkInputs) => {
     try {
       setLoading(true);
-      data.dedup_chain_id.dedup_id = 0;
       await invoke("networks_add", { network: data });
       setLoading(false);
       router.history.back();
