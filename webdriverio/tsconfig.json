@@ -5,13 +5,15 @@
     "typeRoots": [
       "../packages/react/@types",
       "./node_modules/@types",
+      "./node_modules",
       "../node_modules/@types"
     ],
+    "types": ["@wdio/globals/types", "@wdio/mocha-framework"],
     "moduleResolution": "bundler",
     "paths": {
       "#/*": ["./src/*"]
     }
   },
-  "include": ["./src", "vite.config.ts"],
-  "exclude": ["dist", "node_modules", "../node_modules"]
+  "include": ["./specs", "wdio.conf.ts"],
+  "exclude": ["node_modules", "../node_modules"]
 }

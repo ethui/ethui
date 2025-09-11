@@ -19,7 +19,6 @@ pub async fn run() -> Result<()> {
     fix_path_env::fix()?;
 
     let args = ethui_args::parse();
-    dbg!(&args);
 
     match args.command() {
         Command::App => app::EthUIApp::start_or_open(args).await?,
