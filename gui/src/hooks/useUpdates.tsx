@@ -46,7 +46,8 @@ function useNoticeNewVersion({ enabled }: { enabled: boolean }) {
   useEffect(() => {
     if (!enabled) return;
     const isDev = import.meta.env.MODE === "development";
-    if (isDev || !latest || current === latest) return;
+    const isTest = import.meta.env.MODE === "test";
+    if (isDev || isTest || !latest || current === latest) return;
 
     toast({
       title: "New release available",

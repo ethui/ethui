@@ -12,9 +12,11 @@ use crate::updater;
 use crate::{commands, menu, system_tray, windows};
 
 #[cfg(not(debug_assertions))]
-static LOCK_NAME: &str = "iron-wallet";
-#[cfg(debug_assertions)]
-static LOCK_NAME: &str = "iron-wallet-dev";
+static LOCK_NAME: &str = "ethui";
+#[cfg(all(debug_assertions, not(feature = "test")))]
+static LOCK_NAME: &str = "ethui-dev";
+#[cfg(all(debug_assertions, feature = "test"))]
+static LOCK_NAME: &str = "ethui-test";
 
 pub struct EthUIApp {
     app: tauri::App,

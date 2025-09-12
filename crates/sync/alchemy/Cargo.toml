@@ -3,7 +3,6 @@ name = "ethui-sync-alchemy"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-license-file.workspace = true
 homepage.workspace = true
 repository.workspace = true
 exclude.workspace = true

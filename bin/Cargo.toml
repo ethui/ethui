@@ -3,7 +3,6 @@ name = "ethui"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-license-file.workspace = true
 homepage.workspace = true
 repository.workspace = true
 exclude.workspace = true
@@ -71,6 +70,7 @@ custom-protocol = ["tauri/custom-protocol"]
 aptabase = ["dep:tauri-plugin-aptabase"]
 stacks = ["dep:ethui-stacks"]
 updater = ["dep:tauri-plugin-updater"]
+test = []
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-updater = { version = "2", optional = true }

@@ -36,6 +36,7 @@ import { useCommandBar } from "./CommandBar";
 import { QuickFastModeToggle } from "./QuickFastModeToggle";
 
 const isDev = import.meta.env.MODE === "development";
+const isTest = import.meta.env.MODE === "test";
 
 export function AppSidebar() {
   const commandBar = useCommandBar();
@@ -58,6 +59,14 @@ export function AppSidebar() {
     });
   }
 
+  let logoFill = "fill-sidebar-foreground";
+  if (isDev) {
+    logoFill = "fill-dev";
+  }
+  if (isTest) {
+    logoFill = "fill-[#dd8622]";
+  }
+
   return (
     <Sidebar className="select-none pt-12" collapsible="icon">
       <SidebarHeader
@@ -68,7 +77,7 @@ export function AppSidebar() {
           onClick={toggleSidebar}
           size={48}
           bg="bg-transparent"
-          fg={isDev ? "fill-dev" : "fill-sidebar-foreground"}
+          fg={logoFill}
         />
       </SidebarHeader>
 
@@ -145,7 +154,7 @@ function CustomSidebarMenuItem({
           to={url}
           className={cn(
             url === location.pathname &&
-              "bg-primary text-accent hover:bg-primary hover:text-accent",
+            "bg-primary text-accent hover:bg-primary hover:text-accent",
           )}
         >
           {icon}
@@ -189,7 +198,7 @@ function CollapsibleMenuSection({
                     to={item.url}
                     className={cn(
                       item.url === location.pathname &&
-                        "bg-primary text-accent hover:bg-primary hover:text-accent",
+                      "bg-primary text-accent hover:bg-primary hover:text-accent",
                     )}
                   >
                     {item.title}
