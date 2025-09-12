@@ -11,12 +11,13 @@
     "rust-target": "rustc -vV | sed -n 's/host: //p'",
     "gui:build": "pnpm --filter @ethui/gui build",
     "gui:devtools": "pnpm --filter @ethui/gui devtools",
-    "lint": "pnpm lint:biome && pnpm lint:tsc && pnpm --filter @ethui/gui run lint",
+    "lint": "pnpm lint:biome && pnpm lint:tsc && pnpm --filter @ethui/gui run lint:unused",
     "lint:biome": "biome check .",
     "lint:tsc": "pnpm --recursive tsc --noEmit",
     "fix": "pnpm fix:biome",
     "fix:biome": "biome check --write .",
-    "test": "pnpm --filter @ethui/webdriverio test"
+    "test": "pnpm run test:integration",
+    "test:integration": "pnpm --filter @ethui/webdriverio test"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.1.1",

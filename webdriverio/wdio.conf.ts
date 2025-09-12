@@ -52,6 +52,13 @@ export const config = {
       stdio: "inherit",
       shell: true,
     });
+
+    // delete any previous config dir
+    spawnSync("rm", ["-rf", "integration-tests", configDir], {
+      cwd: path.resolve(__dirname, "..", "dev-data"),
+      stdio: "inherit",
+      shell: true,
+    });
   },
 
   // ensure we are running `tauri-driver` before the session starts so that we can proxy the webdriver requests
