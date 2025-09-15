@@ -54,7 +54,7 @@ function Connections() {
 
 function Domain({ domain, peers }: { domain: string; peers: Peer[] }) {
   return (
-    <div className=" m-1 flex items-center gap-2">
+    <div className="m-1 flex items-center gap-2">
       <span> {peers[0].origin}</span>
       <div>
         <AffinityForm domain={domain} />
