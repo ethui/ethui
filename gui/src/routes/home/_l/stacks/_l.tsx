@@ -3,5 +3,13 @@ import { AnimatedOutlet } from "#/components/AnimatedOutlet";
 
 export const Route = createFileRoute("/home/_l/stacks/_l")({
   beforeLoad: () => ({ breadcrumb: { label: "Stacks", path: null } }),
-  component: () => <AnimatedOutlet />,
+  component: Stacks,
 });
+
+function Stacks() {
+  return (
+    <div className="m-4">
+      <AnimatedOutlet />
+    </div>
+  );
+}

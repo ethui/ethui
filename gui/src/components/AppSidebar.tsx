@@ -46,15 +46,6 @@ export function AppSidebar() {
   const showOnboarding = useSettings((s) => !s.settings?.onboarding.hidden);
 
   const settingsItems = [...defaultSettingsItems];
-  if (
-    isStacksEnabled &&
-    !settingsItems.some((item) => item.title === "Stacks")
-  ) {
-    settingsItems.splice(settingsItems.length - 1, 0, {
-      title: "Stacks",
-      url: "/home/settings/stacks",
-    });
-  }
 
   let logoFill = "fill-sidebar-foreground";
   if (isDev) {

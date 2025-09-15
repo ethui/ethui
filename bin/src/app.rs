@@ -52,7 +52,11 @@ impl EthUIApp {
                 #[cfg(feature = "stacks")]
                 ethui_stacks::commands::stacks_list,
                 #[cfg(feature = "stacks")]
+                ethui_stacks::commands::stacks_get_status,
+                #[cfg(feature = "stacks")]
                 ethui_stacks::commands::stacks_remove,
+                #[cfg(feature = "stacks")]
+                ethui_stacks::commands::stacks_shutdown,
                 ethui_settings::commands::settings_get,
                 ethui_settings::commands::settings_set,
                 ethui_settings::commands::settings_set_dark_mode,
@@ -167,6 +171,14 @@ impl EthUIApp {
 
             tauri::RunEvent::Exit => {
                 let _ = ethui_analytics::track_event(handle, "app_exited", None);
+                #[cfg(feature = "aptabase")]
+                let _ = handle.track_event("app_exited", None);
+                
+                
+                //#[cfg(feature = "stacks")]
+                //{
+                //    let _ = handle.try_invoke("stacks_shutdown", ());
+                //}
             }
 
             #[cfg(target_os = "macos")]
