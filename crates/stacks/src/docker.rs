@@ -1,6 +1,6 @@
 use std::{env, fs, marker::PhantomData, path::PathBuf, process::Command, str::FromStr};
 
-use color_eyre::eyre::{eyre, OptionExt, WrapErr};
+use color_eyre::eyre::{OptionExt, WrapErr, eyre};
 use reqwest::Client;
 
 #[derive(Debug, Clone)]
@@ -132,29 +132,29 @@ impl DockerManager<DockerSocketReady> {
 impl DockerManager<DockerInstalled> {
     pub fn check_image_available(self) -> color_eyre::Result<DockerManager<ImageAvailable>> {
         let docker_bin = self.docker_bin()?;
-        tracing::debug!(image = %self.image_name, "Checking for Docker image...");
-        let output = Command::new(docker_bin)
+
+        let pull_output = Command::new(docker_bin)
+            .args(["pull", &self.image_name])
+            .output()?;
+
+        if !pull_output.status.success() {
+            return Err(eyre!(
+                "Failed to pull image {}: {}",
+                self.image_name,
+                String::from_utf8_lossy(&pull_output.stderr)
+            ));
+        }
+
+        let verify_output = Command::new(docker_bin)
             .args(["images", "-q", &self.image_name])
             .output()?;
-        let id = String::from_utf8_lossy(&output.stdout);
-        if !id.trim().is_empty() {
-            tracing::debug!(image = %self.image_name, "Docker image found.");
-            Ok(self.transition())
-        } else {
-            let output = std::process::Command::new(docker_bin)
-                .args(["pull", &self.image_name])
-                .output()?;
+        let id = String::from_utf8_lossy(&verify_output.stdout);
 
-            if !output.status.success() {
-                return Err(eyre!(
-                    "Failed to pull image {}: {}",
-                    self.image_name,
-                    String::from_utf8_lossy(&output.stderr)
-                ));
-            }
-
-            Ok(self.transition())
+        if id.trim().is_empty() {
+            return Err(eyre!("Image not found after pull: {}", self.image_name));
         }
+
+        Ok(self.transition())
     }
 }
 
@@ -523,6 +523,32 @@ mod tests {
             .check_image_available();
 
         assert!(result.is_err(), "Should fail with nonexistent image");
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_image_version_checking() -> Result<(), Box<dyn std::error::Error>> {
+        let temp_dir = TempDir::new()?;
+        let config_dir = temp_dir.path().to_path_buf();
+
+        let docker_manager = DockerManager::new(
+            config_dir.join("test-local/"),
+            TEST_IMAGE.to_string(),
+            "test-image-check".to_string(),
+            8080,
+            12345,
+        );
+
+        let result = docker_manager
+            .check_socket_and_bin()?
+            .check_docker_installed()?
+            .check_image_available();
+
+        assert!(
+            result.is_ok(),
+            "Image checking should succeed for valid image"
+        );
 
         Ok(())
     }
