@@ -3,9 +3,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { useCallback, useState } from "react";
-import { useInvoke } from "#/hooks/useInvoke";
 import { type FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
+import { useInvoke } from "#/hooks/useInvoke";
 import { useSettings } from "#/store/useSettings";
 
 export const Route = createFileRoute("/home/_l/bla-stacks")({
@@ -75,7 +75,7 @@ function RouteComponent() {
 
       <form onSubmit={handleCreateStack} className="space-y-4">
         <div>
-          <p className="block mb-1 font-medium">New Stack Slug</p>
+          <p className="mb-1 block font-medium">New Stack Slug</p>
           <input
             type="text"
             value={slug}
@@ -93,7 +93,7 @@ function RouteComponent() {
           {creating ? "Creating..." : "Create Stack"}
         </button>
         {createStatus && (
-          <div className="mt-2 text-sm text-center text-info">
+          <div className="mt-2 text-center text-info text-sm">
             {createStatus}
           </div>
         )}

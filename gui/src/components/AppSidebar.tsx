@@ -25,11 +25,11 @@ import {
   ChevronRight,
   CircleUser,
   Cog,
+  Database,
   FileCode2,
   ReceiptText,
   Terminal,
   Wifi,
-  Database,
 } from "lucide-react";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useSettings } from "#/store/useSettings";
