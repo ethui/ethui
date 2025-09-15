@@ -69,11 +69,11 @@ impl Message<SetEnabled> for Worker {
                     Ok(c) => self.manager = RuntimeState::Running(c),
                     Err(e) => tracing::error!("Failed to stop stacks docker image: {}", e),
                 }
-            }
-        } else if let RuntimeState::Running(c) = &self.manager {
-            match c.clone().stop() {
-                Ok(c) => self.manager = RuntimeState::Stopped(c),
-                Err(e) => tracing::error!("Failed to stop stacks docker image: {}", e),
+            } else if !enabled && let RuntimeState::Running(c) = &self.manager {
+                match c.clone().stop() {
+                    Ok(c) => self.manager = RuntimeState::Stopped(c),
+                    Err(e) => tracing::error!("Failed to stop stacks docker image: {}", e),
+                }
             }
         }
     }

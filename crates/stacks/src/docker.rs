@@ -1,6 +1,6 @@
 use std::{env, fs, marker::PhantomData, path::PathBuf, process::Command, str::FromStr};
 
-use color_eyre::eyre::{OptionExt, WrapErr, eyre};
+use color_eyre::eyre::{eyre, OptionExt, WrapErr};
 use reqwest::Client;
 
 #[derive(Debug, Clone)]
@@ -222,25 +222,6 @@ impl DockerManager<DataDirectoryReady> {
         }
         Ok(self.transition())
     }
-
-    pub fn stop(self) -> color_eyre::Result<DockerManager<ContainerNotRunning>> {
-        if !self.is_container_running()? {
-            tracing::debug!("Container {} is already stopped.", self.container_name);
-            return Ok(self.transition());
-        }
-
-        let docker_bin = self.docker_bin()?;
-        let output = Command::new(docker_bin)
-            .args(["stop", &self.container_name])
-            .output()?;
-        if !output.status.success() {
-            return Err(eyre!(
-                "Failed to stop container: {}",
-                String::from_utf8_lossy(&output.stderr)
-            ));
-        }
-        Ok(self.transition())
-    }
 }
 
 impl DockerManager<ContainerRunning> {
@@ -312,15 +293,19 @@ impl DockerManager<ContainerRunning> {
         }
 
         let docker_bin = self.docker_bin()?;
-        let output = Command::new(docker_bin)
+        let stop_output = Command::new(docker_bin)
             .args(["stop", &self.container_name])
             .output()?;
-        if !output.status.success() {
+        if !stop_output.status.success() {
             return Err(eyre!(
                 "Failed to stop container: {}",
-                String::from_utf8_lossy(&output.stderr)
+                String::from_utf8_lossy(&stop_output.stderr)
             ));
         }
+
+        Command::new(docker_bin)
+            .args(["rm", &self.container_name])
+            .output()?;
         Ok(self.transition())
     }
 }
@@ -382,6 +367,8 @@ impl DockerManager<ContainerNotRunning> {
 
         if docker_bin.contains("podman") {
             command = command.arg("--replace");
+        } else {
+            command = command.arg("--rm");
         }
 
         command = command
