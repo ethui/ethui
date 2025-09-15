@@ -1,8 +1,7 @@
-import { useInvoke } from "#/hooks/useInvoke";
 import {
   type NetworkInputs,
   networkSchema,
-  StacksInputs,
+  type StacksInputs,
   stacksSchema,
 } from "@ethui/types/network";
 import { Form } from "@ethui/ui/components/form";
@@ -14,6 +13,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { Check, LoaderCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useInvoke } from "#/hooks/useInvoke";
 
 export const Route = createFileRoute("/home/_l/stacks/_l/new")({
   beforeLoad: () => ({ breadcrumb: "New" }),
