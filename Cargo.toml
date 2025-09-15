@@ -117,7 +117,7 @@ rand = "0.9"
 rstest = "0.26"
 regex = "1.11"
 color-eyre = { version = "0.6" }
-tempfile = "3.21.0"
+tempfile = "3.22.0"
 serde-constant = "0.1.0"
 kameo = "0.16"
 tauri-plugin-aptabase = "1.0.0"
