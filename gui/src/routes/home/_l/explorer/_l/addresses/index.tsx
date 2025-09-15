@@ -4,8 +4,10 @@ import { createColumnHelper } from "@tanstack/react-table";
 import type { Address } from "viem";
 import { formatEther } from "viem";
 import { AddressView } from "#/components/AddressView";
+import { RouteGuard } from "#/components/RouteGuard";
 import { useAddressBalance } from "#/hooks/useAddressBalance";
 import { useAllAddresses } from "#/hooks/useAllAddresses";
+import { useIsAnvilNetwork } from "#/hooks/useIsAnvilNetwork";
 import { useNetworks } from "#/store/useNetworks";
 
 export const Route = createFileRoute("/home/_l/explorer/_l/addresses/")({
@@ -14,9 +16,17 @@ export const Route = createFileRoute("/home/_l/explorer/_l/addresses/")({
 });
 
 function Addresses() {
-  const { data: addresses = [] } = useAllAddresses();
+  const { data: isAnvilNetwork = false, isLoading } = useIsAnvilNetwork();
 
-  return <AddressTable addresses={addresses} />;
+  return (
+    <RouteGuard
+      condition={isAnvilNetwork}
+      isLoading={isLoading}
+      fallbackRoute="/home/account"
+    >
+      <AddressTable />
+    </RouteGuard>
+  );
 }
 
 const columnHelper = createColumnHelper<Address>();
@@ -43,7 +53,9 @@ function BalanceCell({ address }: { address: Address }) {
   return <span className="text-sm">{formatted} ETH</span>;
 }
 
-function AddressTable({ addresses }: { addresses: Address[] }) {
+function AddressTable() {
+  const { data: addresses = [] } = useAllAddresses();
+
   const columns = [
     columnHelper.display({
       id: "address",
