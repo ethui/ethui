@@ -1,3 +1,9 @@
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@ethui/ui/components/shadcn/tabs";
 import { Table } from "@ethui/ui/components/table";
 import { createFileRoute } from "@tanstack/react-router";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -9,12 +15,6 @@ import { useAddressBalance } from "#/hooks/useAddressBalance";
 import { useAllAddresses } from "#/hooks/useAllAddresses";
 import { useIsAnvilNetwork } from "#/hooks/useIsAnvilNetwork";
 import { useNetworks } from "#/store/useNetworks";
-import {
-  Tabs,
-  TabsTrigger,
-  TabsContent,
-  TabsList,
-} from "@ethui/ui/components/shadcn/tabs";
 
 export const Route = createFileRoute("/home/_l/explorer/_l/addresses/")({
   beforeLoad: () => ({ breadcrumb: "Addresses" }),
