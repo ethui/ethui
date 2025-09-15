@@ -184,7 +184,7 @@ interface HeaderProps {
 
 function Header({ from, to, network }: HeaderProps) {
   return (
-    <div className=" flex w-full items-stretch justify-between self-center">
+    <div className="flex w-full items-stretch justify-between self-center">
       <h1 className="font-xl">
         <div className="m-2 flex items-center gap-2">
           <AddressView address={from} />
@@ -357,7 +357,7 @@ function Erc20Transfer({ chainId, log }: Erc20TransferProps) {
   } = result.value;
 
   return (
-    <div className=" m-1 flex items-center gap-2">
+    <div className="m-1 flex items-center gap-2">
       <AddressView address={from} />
       <span>→</span>
       <AddressView address={to} />
