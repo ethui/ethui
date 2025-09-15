@@ -151,7 +151,7 @@ function CustomSidebarMenuItem({
         asChild
         className={cn(
           url === location.pathname &&
-          "bg-primary text-accent hover:bg-primary hover:text-accent",
+            "bg-primary text-accent hover:bg-primary hover:text-accent",
         )}
       >
         <Link to={url}>
@@ -191,35 +191,21 @@ function CollapsibleMenuSection({
           <SidebarMenuSub>
             {items.map((item) => (
               <SidebarMenuItem key={item.title}>
-<<<<<<< HEAD
-  <SidebarMenuButton asChild>
-    <Link
-      to={item.url}
-      className={cn(
-        item.url === location.pathname &&
-        "bg-primary text-accent hover:bg-primary hover:text-accent",
-      )}
-    >
-      {item.title}
-    </Link>
-=======
                 <SidebarMenuButton
-      asChild
-      className={cn(
-        item.url === location.pathname &&
-        "bg-primary text-accent hover:bg-primary hover:text-accent",
-      )}
-    >
-      <Link to={item.url}>{item.title}</Link>
->>>>>>> main
-    </SidebarMenuButton>
-  </SidebarMenuItem>
-            ))
-}
-          </SidebarMenuSub >
-        </CollapsibleContent >
-      </SidebarMenuItem >
-    </Collapsible >
+                  asChild
+                  className={cn(
+                    item.url === location.pathname &&
+                      "bg-primary text-accent hover:bg-primary hover:text-accent",
+                  )}
+                >
+                  <Link to={item.url}>{item.title}</Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenuSub>
+        </CollapsibleContent>
+      </SidebarMenuItem>
+    </Collapsible>
   );
 }
 
