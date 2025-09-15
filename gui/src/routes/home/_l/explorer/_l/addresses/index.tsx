@@ -9,6 +9,12 @@ import { useAddressBalance } from "#/hooks/useAddressBalance";
 import { useAllAddresses } from "#/hooks/useAllAddresses";
 import { useIsAnvilNetwork } from "#/hooks/useIsAnvilNetwork";
 import { useNetworks } from "#/store/useNetworks";
+import {
+  Tabs,
+  TabsTrigger,
+  TabsContent,
+  TabsList,
+} from "@ethui/ui/components/shadcn/tabs";
 
 export const Route = createFileRoute("/home/_l/explorer/_l/addresses/")({
   beforeLoad: () => ({ breadcrumb: "Addresses" }),
@@ -54,7 +60,7 @@ function BalanceCell({ address }: { address: Address }) {
 }
 
 function AddressTable() {
-  const { data: addresses = [] } = useAllAddresses();
+  const { data: addresses } = useAllAddresses();
 
   const columns = [
     columnHelper.display({
@@ -76,5 +82,40 @@ function AddressTable() {
     }),
   ];
 
-  return <Table columns={columns} data={addresses} variant="secondary" />;
+  return (
+    <Tabs defaultValue="all" className="w-full">
+      <TabsList className="grid w-full grid-cols-3">
+        <TabsTrigger value="all" className="cursor-pointer">
+          All ({addresses?.all.length ?? 0})
+        </TabsTrigger>
+        <TabsTrigger value="eoas" className="cursor-pointer">
+          EOAs ({addresses?.eoas.length ?? 0})
+        </TabsTrigger>
+        <TabsTrigger value="contracts" className="cursor-pointer">
+          Contracts ({addresses?.contracts.length ?? 0})
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent value="all" className="mt-4">
+        <Table
+          columns={columns}
+          data={addresses?.all ?? []}
+          variant="secondary"
+        />
+      </TabsContent>
+      <TabsContent value="eoas" className="mt-4">
+        <Table
+          columns={columns}
+          data={addresses?.eoas ?? []}
+          variant="secondary"
+        />
+      </TabsContent>
+      <TabsContent value="contracts" className="mt-4">
+        <Table
+          columns={columns}
+          data={addresses?.contracts ?? []}
+          variant="secondary"
+        />
+      </TabsContent>
+    </Tabs>
+  );
 }

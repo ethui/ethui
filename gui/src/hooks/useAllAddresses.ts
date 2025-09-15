@@ -4,14 +4,20 @@ import type { Address } from "viem";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
 
+interface CategorizedAddresses {
+  all: Address[];
+  eoas: Address[];
+  contracts: Address[];
+}
+
 export function useAllAddresses() {
   const network = useNetworks((s) => s.current);
   const { allWalletInfo } = useWallets();
 
   return useQuery({
     queryKey: ["all-addresses", network?.id, allWalletInfo],
-    queryFn: async (): Promise<Address[]> => {
-      if (!network) return [];
+    queryFn: async (): Promise<CategorizedAddresses> => {
+      if (!network) return { all: [], eoas: [], contracts: [] };
 
       const chainId = network.id.chain_id;
       const dedupId = network.id.dedup_id;
@@ -25,13 +31,45 @@ export function useAllAddresses() {
         info.addresses.map((addr) => addr.address),
       );
 
-      const allAddresses = new Set([
-        ...walletAddresses,
-        ...contractAddresses,
-        ...transactionAddresses,
-      ]);
+      const allAddresses = Array.from(
+        new Set([
+          ...walletAddresses,
+          ...contractAddresses,
+          ...transactionAddresses,
+        ]),
+      );
 
-      return Array.from(allAddresses);
+      const knownEOAs = new Set(walletAddresses);
+
+      const knownContracts = new Set(contractAddresses);
+
+      const unknownAddresses = transactionAddresses.filter(
+        (addr) => !knownEOAs.has(addr) && !knownContracts.has(addr),
+      );
+
+      await Promise.all(
+        unknownAddresses.map(async (address) => {
+          try {
+            const isContract = await invoke<boolean>("rpc_is_contract", {
+              address,
+              chainId,
+            });
+            if (isContract) {
+              knownContracts.add(address);
+            } else {
+              knownEOAs.add(address);
+            }
+          } catch {
+            knownEOAs.add(address);
+          }
+        }),
+      );
+
+      return {
+        all: allAddresses,
+        eoas: Array.from(knownEOAs),
+        contracts: Array.from(knownContracts),
+      };
     },
     enabled: !!network && allWalletInfo !== undefined,
   });
