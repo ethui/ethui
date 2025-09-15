@@ -105,7 +105,7 @@ await $`cargo tauri icon --output bin/icons icons/symbol-black.png 2> /dev/null`
 console.log("copying dev icons to bin/icons-dev");
 await $`cargo tauri icon --output bin/icons-dev icons/symbol-purple.png 2> /dev/null`;
 
-console.log("copying dev icons to bin/icons-dev");
+console.log("copying test icons to bin/icons-test");
 await $`cargo tauri icon --output bin/icons-test icons/symbol-red.png 2> /dev/null`;
 
 console.log("copying production icons to gui/public/logo");
