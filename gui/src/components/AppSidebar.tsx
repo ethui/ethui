@@ -95,13 +95,11 @@ export function AppSidebar() {
               {items.map((item) => (
                 <CustomSidebarMenuItem key={item.title} {...item} />
               ))}
-              {isAnvilNetwork && (
-                <CollapsibleMenuSection
-                  icon={<Globe />}
-                  title="Explorer"
-                  items={explorerItems}
-                />
-              )}
+              <CollapsibleMenuSection
+                icon={<Globe />}
+                title="Explorer"
+                items={getExplorerItems(isAnvilNetwork)}
+              />
               <CollapsibleMenuSection
                 icon={<Cog />}
                 title="Settings"
@@ -149,14 +147,14 @@ function CustomSidebarMenuItem({
 
   return (
     <SidebarMenuItem key={title}>
-      <SidebarMenuButton asChild>
-        <Link
-          to={url}
-          className={cn(
-            url === location.pathname &&
-            "bg-primary text-accent hover:bg-primary hover:text-accent",
-          )}
-        >
+      <SidebarMenuButton
+        asChild
+        className={cn(
+          url === location.pathname &&
+          "bg-primary text-accent hover:bg-primary hover:text-accent",
+        )}
+      >
+        <Link to={url}>
           {icon}
           {title}
         </Link>
@@ -193,26 +191,41 @@ function CollapsibleMenuSection({
           <SidebarMenuSub>
             {items.map((item) => (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild>
-                  <Link
-                    to={item.url}
-                    className={cn(
-                      item.url === location.pathname &&
-                      "bg-primary text-accent hover:bg-primary hover:text-accent",
-                    )}
-                  >
-                    {item.title}
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenuSub>
-        </CollapsibleContent>
-      </SidebarMenuItem>
-    </Collapsible>
+<<<<<<< HEAD
+  <SidebarMenuButton asChild>
+    <Link
+      to={item.url}
+      className={cn(
+        item.url === location.pathname &&
+        "bg-primary text-accent hover:bg-primary hover:text-accent",
+      )}
+    >
+      {item.title}
+    </Link>
+=======
+                <SidebarMenuButton
+      asChild
+      className={cn(
+        item.url === location.pathname &&
+        "bg-primary text-accent hover:bg-primary hover:text-accent",
+      )}
+    >
+      <Link to={item.url}>{item.title}</Link>
+>>>>>>> main
+    </SidebarMenuButton>
+  </SidebarMenuItem>
+            ))
+}
+          </SidebarMenuSub >
+        </CollapsibleContent >
+      </SidebarMenuItem >
+    </Collapsible >
   );
 }
 
+function getExplorerItems(isAnvilNetwork: boolean) {
+  return explorerItems.filter((item) => !item.anvilOnly || isAnvilNetwork);
+}
 // Menu items.
 const items = [
   {
@@ -228,7 +241,7 @@ const items = [
 ];
 
 const explorerItems = [
-  { title: "Addresses", url: "/home/explorer/addresses" },
+  { title: "Addresses", url: "/home/explorer/addresses", anvilOnly: true },
   { title: "Transactions", url: "/home/explorer/transactions" },
   { title: "Contracts", url: "/home/explorer/contracts" },
 ];
