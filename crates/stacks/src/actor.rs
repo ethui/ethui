@@ -4,9 +4,7 @@ use ethui_types::prelude::*;
 use kameo::prelude::*;
 use tracing::error;
 
-use crate::docker::{
-    ContainerNotRunning, ContainerRunning, DockerManager, DockerManagerState, start_stacks,
-};
+use crate::docker::{ContainerNotRunning, ContainerRunning, DockerManager, start_stacks};
 
 pub async fn ask<M>(msg: M) -> color_eyre::Result<<<Worker as Message<M>>::Reply as Reply>::Ok>
 where
@@ -53,6 +51,7 @@ pub struct GetConfig();
 pub struct ListStracks();
 pub struct CreateStack(pub String);
 pub struct RemoveStack(pub String);
+pub struct Shutdown();
 
 impl Message<SetEnabled> for Worker {
     type Reply = ();
@@ -134,6 +133,28 @@ impl Message<RemoveStack> for Worker {
         match &self.manager {
             RuntimeState::Running(docker_manager) => docker_manager.remove_stack(&slug).await,
             _ => Ok(()),
+        }
+    }
+}
+
+impl Message<Shutdown> for Worker {
+    type Reply = ();
+
+    async fn handle(
+        &mut self,
+        _msg: Shutdown,
+        _ctx: &mut Context<Self, Self::Reply>,
+    ) -> Self::Reply {
+        if let RuntimeState::Running(docker_manager) = &self.manager {
+            match docker_manager.clone().stop() {
+                Ok(c) => {
+                    tracing::info!("Stacks Docker container stopped successfully");
+                    self.manager = RuntimeState::Stopped(c);
+                }
+                Err(e) => {
+                    tracing::error!("Failed to stop stacks Docker container: {}", e);
+                }
+            }
         }
     }
 }
