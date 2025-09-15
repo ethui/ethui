@@ -1,7 +1,7 @@
 use std::net::SocketAddr;
 
 use ethui_networks::Networks;
-use ethui_types::{prelude::*, Affinity, DedupChainId};
+use ethui_types::{prelude::*, Affinity, NetworkId};
 use serde_json::json;
 use tokio::sync::mpsc;
 
@@ -92,11 +92,11 @@ impl Peers {
     /// Broadcasts a `chainChanged` event to all peers
     pub async fn broadcast_chain_changed(
         &self,
-        dedup_chain_id: DedupChainId,
+        id: NetworkId,
         domain: Option<String>,
         affinity: Affinity,
     ) {
-        let chain_id = dedup_chain_id.chain_id();
+        let chain_id = id.chain_id();
 
         if Networks::read().await.validate_chain_id(chain_id) {
             let msg = json!({
@@ -114,7 +114,7 @@ impl Peers {
                         event = "peer chain changed",
                         domain = peer.domain(),
                         chain_id,
-                        dedup_id = dedup_chain_id.dedup_id(),
+                        dedup_id = id.dedup_id(),
                     );
                     peer.sender
                         .send(serde_json::to_value(&msg).unwrap())

@@ -1,4 +1,4 @@
-use crate::{prelude::*, DedupChainId};
+use crate::prelude::*;
 
 #[derive(Clone, Copy, Debug, Serialize, Deserialize, Default, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
@@ -6,11 +6,11 @@ pub enum Affinity {
     #[default]
     Unset,
     Global,
-    Sticky(DedupChainId),
+    Sticky(NetworkId),
 }
 
-impl From<DedupChainId> for Affinity {
-    fn from(internal_id: DedupChainId) -> Self {
+impl From<NetworkId> for Affinity {
+    fn from(internal_id: NetworkId) -> Self {
         Affinity::Sticky(internal_id)
     }
 }

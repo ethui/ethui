@@ -4,7 +4,7 @@ use ethui_sync_anvil::tracker::{
     consumer::Consumer,
     worker::{create_worker, Msg},
 };
-use ethui_types::{DedupChainId, Network, NetworkStatus};
+use ethui_types::{Network, NetworkStatus};
 use tokio::signal;
 use tracing::{info, warn};
 use url::Url;
@@ -69,7 +69,7 @@ async fn main() -> Result<()> {
 
     // Create network configuration
     let network = Network {
-        dedup_chain_id: DedupChainId::from((31337, 0)), // Default Anvil chain ID
+        id: (31337u32, 0u32).into(), // Default Anvil chain ID
         name: "test".into(),
         explorer_url: None,
         http_url,

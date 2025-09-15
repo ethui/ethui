@@ -1,4 +1,4 @@
-use ethui_types::{DedupChainId, NewNetworkParams, prelude::*};
+use ethui_types::{prelude::*, NewNetworkParams};
 
 use super::Networks;
 
@@ -59,7 +59,7 @@ pub async fn networks_remove(name: String) -> TauriResult<()> {
 }
 
 #[tauri::command]
-pub async fn networks_is_dev(dedup_chain_id: DedupChainId) -> TauriResult<bool> {
+pub async fn networks_is_dev(dedup_chain_id: NetworkId) -> TauriResult<bool> {
     let networks = Networks::read().await;
 
     let network = networks

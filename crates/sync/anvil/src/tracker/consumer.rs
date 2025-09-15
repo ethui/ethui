@@ -2,7 +2,7 @@ use alloy::{
     providers::{ext::TraceApi as _, Provider as _, ProviderBuilder},
     rpc::types::Filter,
 };
-use ethui_types::{prelude::*, DedupChainId};
+use ethui_types::{prelude::*, NetworkId};
 use url::Url;
 
 use super::worker::Msg;
@@ -20,13 +20,13 @@ pub trait Consumer: Send + Clone + 'static {
 
 #[derive(Clone)]
 pub struct EthuiConsumer {
-    dedup_chain_id: DedupChainId,
+    dedup_chain_id: NetworkId,
     url: String,
     caught_up: bool,
 }
 
 impl EthuiConsumer {
-    pub fn new(dedup_chain_id: DedupChainId, url: Url) -> Self {
+    pub fn new(dedup_chain_id: NetworkId, url: Url) -> Self {
         Self {
             dedup_chain_id,
             url: url.to_string(),
@@ -37,7 +37,7 @@ impl EthuiConsumer {
 
 impl From<Network> for EthuiConsumer {
     fn from(network: Network) -> Self {
-        Self::new(network.dedup_chain_id, network.http_url.clone())
+        Self::new(network.id, network.http_url.clone())
     }
 }
 

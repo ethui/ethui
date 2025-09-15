@@ -4,12 +4,12 @@ import { z } from "zod";
 const rpcAndChainIdSchema = z
   .object({
     http_url: z.url().min(1),
-    dedup_chain_id: z.object({
+    id: z.object({
       chain_id: z.number().positive(),
       dedup_id: z.number().optional(),
     }),
   })
-  .superRefine(async ({ http_url, dedup_chain_id: { chain_id } }, ctx) => {
+  .superRefine(async ({ http_url, id: { chain_id } }, ctx) => {
     if (!http_url || !chain_id || http_url === "") return;
 
     try {

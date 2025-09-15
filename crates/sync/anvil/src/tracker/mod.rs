@@ -1,6 +1,6 @@
 use std::{collections::HashMap, sync::Arc};
 
-use ethui_types::{DedupChainId, Network};
+use ethui_types::{Network, NetworkId};
 use once_cell::sync::Lazy;
 use tokio::{
     sync::{oneshot, Mutex},
@@ -22,7 +22,7 @@ pub use http::AnvilHttp;
 pub use worker::create_worker;
 pub use ws::AnvilWs;
 
-type Workers = Arc<Mutex<HashMap<DedupChainId, (oneshot::Sender<()>, JoinHandle<()>)>>>;
+type Workers = Arc<Mutex<HashMap<NetworkId, (oneshot::Sender<()>, JoinHandle<()>)>>>;
 
 static WORKERS: Lazy<Workers> = Lazy::new(Default::default);
 
@@ -30,7 +30,7 @@ static WORKERS: Lazy<Workers> = Lazy::new(Default::default);
 pub(crate) async fn watch(network: &Network) {
     let mut workers = WORKERS.lock().await;
 
-    if workers.contains_key(&network.dedup_chain_id) {
+    if workers.contains_key(&network.id) {
         debug!("Network {} already being watched", network.name);
         return;
     }
@@ -47,7 +47,7 @@ pub(crate) async fn watch(network: &Network) {
         worker.run(quit_rx, consumer).await;
     });
 
-    workers.insert(network.dedup_chain_id, (quit_tx, handle));
+    workers.insert(network.id, (quit_tx, handle));
     info!("Started watching network {}", network.name);
 }
 
@@ -55,7 +55,7 @@ pub(crate) async fn watch(network: &Network) {
 pub(crate) async fn unwatch(network: &Network) {
     let mut workers = WORKERS.lock().await;
 
-    if let Some((quit_tx, handle)) = workers.remove(&network.dedup_chain_id) {
+    if let Some((quit_tx, handle)) = workers.remove(&network.id) {
         let _ = quit_tx.send(());
         handle.abort();
         info!("Stopped watching network {}", network.name);
@@ -72,9 +72,9 @@ mod tests {
 
     use super::*;
 
-    fn create_test_network(dedup_id: i32) -> Network {
+    fn create_test_network(dedup_id: u32) -> Network {
         Network {
-            dedup_chain_id: (31337, dedup_id).into(),
+            id: (31337u32, dedup_id).into(),
             name: "Test Network".to_string(),
             explorer_url: None,
             http_url: Url::parse("http://localhost:8545").unwrap(),
@@ -95,7 +95,7 @@ mod tests {
         // Ensure no workers initially
         {
             let workers = WORKERS.lock().await;
-            assert!(!workers.contains_key(&network.dedup_chain_id));
+            assert!(!workers.contains_key(&network.id));
         }
 
         // Start watching
@@ -104,7 +104,7 @@ mod tests {
         // Verify worker is started
         {
             let workers = WORKERS.lock().await;
-            assert!(workers.contains_key(&network.dedup_chain_id));
+            assert!(workers.contains_key(&network.id));
         }
 
         // Clean up
@@ -125,7 +125,7 @@ mod tests {
         // Should only have one worker for this network
         {
             let workers = WORKERS.lock().await;
-            assert!(workers.contains_key(&network.dedup_chain_id));
+            assert!(workers.contains_key(&network.id));
         }
 
         // Clean up
@@ -145,7 +145,7 @@ mod tests {
         // Verify worker exists
         {
             let workers = WORKERS.lock().await;
-            assert!(workers.contains_key(&network.dedup_chain_id));
+            assert!(workers.contains_key(&network.id));
         }
 
         // Stop watching
@@ -154,7 +154,7 @@ mod tests {
         // Verify worker is removed
         {
             let workers = WORKERS.lock().await;
-            assert!(!workers.contains_key(&network.dedup_chain_id));
+            assert!(!workers.contains_key(&network.id));
         }
     }
 
@@ -183,8 +183,8 @@ mod tests {
         // Verify both workers exist
         {
             let workers = WORKERS.lock().await;
-            assert!(workers.contains_key(&network1.dedup_chain_id));
-            assert!(workers.contains_key(&network2.dedup_chain_id));
+            assert!(workers.contains_key(&network1.id));
+            assert!(workers.contains_key(&network2.id));
         }
 
         // Stop watching first network
@@ -193,8 +193,8 @@ mod tests {
         // Verify only second worker remains
         {
             let workers = WORKERS.lock().await;
-            assert!(!workers.contains_key(&network1.dedup_chain_id));
-            assert!(workers.contains_key(&network2.dedup_chain_id));
+            assert!(!workers.contains_key(&network1.id));
+            assert!(workers.contains_key(&network2.id));
         }
 
         // Clean up
@@ -223,7 +223,7 @@ mod tests {
         // Worker should be cleaned up
         {
             let workers = WORKERS.lock().await;
-            assert!(!workers.contains_key(&network.dedup_chain_id));
+            assert!(!workers.contains_key(&network.id));
         }
     }
 
@@ -250,7 +250,7 @@ mod tests {
 
         // Network with WebSocket should use WsWorker
         let ws_network = Network {
-            dedup_chain_id: (31337, 1).into(),
+            id: (31337u32, 1u32).into(),
             name: "WS Network".to_string(),
             explorer_url: None,
             http_url: Url::parse("http://localhost:8545").unwrap(),
@@ -271,7 +271,7 @@ mod tests {
 
         // Network without WebSocket should use AnvilHttp
         let http_network = Network {
-            dedup_chain_id: (31337, 2).into(),
+            id: (31337u32, 2u32).into(),
             name: "HTTP Network".to_string(),
             explorer_url: None,
             http_url: Url::parse("http://localhost:8545").unwrap(),
