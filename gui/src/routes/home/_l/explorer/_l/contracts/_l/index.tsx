@@ -10,7 +10,7 @@ import { useShallow } from "zustand/shallow";
 import { AddressView } from "#/components/AddressView";
 import { type OrganizedContract, useContracts } from "#/store/useContracts";
 
-export const Route = createFileRoute("/home/_l/contracts/_l/")({
+export const Route = createFileRoute("/home/_l/explorer/_l/contracts/_l/")({
   component: Contracts,
 });
 
@@ -35,7 +35,7 @@ function Contracts() {
         )}
       </div>
 
-      <Link to="/home/contracts/add">
+      <Link to="/home/explorer/contracts/add">
         <Button size="icon" className="fixed right-6 bottom-6">
           <Plus />
         </Button>
@@ -63,12 +63,12 @@ function ContractHeader({ contract }: { contract: OrganizedContract }) {
     <div className="group flex w-full flex-nowrap overflow-hidden hover:bg-accent">
       <div className="mr-4 grow">
         <Link
-          to="/home/contracts/$chainId/$address"
+          to="/home/explorer/contracts/$chainId/$address"
           params={{ address: address, chainId: chainId }}
           className="flex whitespace-nowrap p-4 align-baseline"
         >
           <div className="flex w-full items-center gap-2">
-            <AddressView address={address} />
+            <AddressView showLinkExplorer={false} address={address} />
 
             <div className="flex items-center">
               {name && (
@@ -84,7 +84,11 @@ function ContractHeader({ contract }: { contract: OrganizedContract }) {
                     {name ? (
                       name
                     ) : (
-                      <AddressView address={address} noTextStyle />
+                      <AddressView
+                        showLinkExplorer
+                        address={address}
+                        noTextStyle
+                      />
                     )}
                   </Badge>
                 </Fragment>

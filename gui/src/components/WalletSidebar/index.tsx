@@ -88,7 +88,13 @@ function HeaderContent() {
           className="h-8 w-8"
         />
       )}
-      {addr && <AddressView className="font-bold text-sm" address={addr} />}
+      {addr && (
+        <AddressView
+          className="font-bold text-sm"
+          showLinkExplorer={false}
+          address={addr}
+        />
+      )}
     </div>
   );
 }

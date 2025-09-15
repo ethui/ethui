@@ -4,9 +4,12 @@
   "main": "index.ts",
   "version": "0.1.0",
   "type": "module",
+  "scripts": {
+    "tsc": "tsc"
+  },
   "dependencies": {
     "typescript": "5.9.2",
-    "viem": "^2.33.2"
+    "viem": "^2.37.3"
   },
   "devDependencies": {
     "@types/core-js": "^2.5.8",

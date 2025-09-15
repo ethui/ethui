@@ -11,7 +11,9 @@ import { useShallow } from "zustand/shallow";
 import { useContracts } from "#/store/useContracts";
 import { useNetworks } from "#/store/useNetworks";
 
-export const Route = createFileRoute("/home/_l/contracts/_l/_l/add")({
+export const Route = createFileRoute(
+  "/home/_l/explorer/_l/contracts/_l/_l/add",
+)({
   beforeLoad: () => ({ breadcrumb: "Add" }),
   component: RouteComponent,
 });

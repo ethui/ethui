@@ -2,7 +2,6 @@ import type { Erc20FullData } from "@ethui/types";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { createFileRoute } from "@tanstack/react-router";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { isDirty, isValid } from "zod";
 import { AddressView } from "#/components/AddressView";
 import { Datapoint } from "#/components/Datapoint";
 import { IconAddress } from "#/components/Icons/Address";
@@ -46,7 +45,12 @@ function ERC20AddDialog() {
         <Datapoint label="Decimals" value={token.metadata.decimals} />
         <Datapoint
           label="Address"
-          value={<AddressView address={token.metadata.address} />}
+          value={
+            <AddressView
+              showLinkExplorer={false}
+              address={token.metadata.address}
+            />
+          }
         />
       </div>
 
@@ -54,11 +58,7 @@ function ERC20AddDialog() {
         <Button variant="destructive" onClick={() => tauriWindow.close()}>
           Cancel
         </Button>
-        <Button
-          type="submit"
-          disabled={!isDirty || !isValid}
-          onClick={() => send("accept")}
-        >
+        <Button type="submit" onClick={() => send("accept")}>
           Add
         </Button>
       </div>
