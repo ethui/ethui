@@ -1,4 +1,4 @@
-use ethui_networks::commands::{networks_add, networks_remove};
+use ethui_broadcast::{stack_network_add, stack_network_remove};
 use ethui_types::{DedupChainId, NewNetworkParams, TauriResult};
 use tauri::command;
 use url::Url;
@@ -29,7 +29,8 @@ pub async fn stacks_create(slug: String) -> TauriResult<()> {
         decimals: 18,
     };
 
-    networks_add(network_params).await?;
+
+    stack_network_add(network_params).await;
 
     Ok(())
 }
@@ -55,7 +56,8 @@ pub async fn stacks_remove(slug: String) -> TauriResult<()> {
     // Remove the stack
     crate::actor::ask(RemoveStack(slug.clone())).await?;
 
-    networks_remove(slug).await?;
+
+    stack_network_remove(slug).await;
 
     Ok(())
 }
