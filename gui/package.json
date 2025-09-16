@@ -10,7 +10,6 @@
     "tauri": "tauri",
     "test:ui": "vitest run",
     "test:ui:watch": "vitest",
-    "lint": "pnpm lint:unused",
     "lint:unused": "ts-unused-exports tsconfig.json --ignoreFiles=vite.config.ts --excludePathsFromReport=shadcn --excludePathsFromReport=routeTree.gen.ts --excludePathsFromReport=src/routes",
     "tsc": "tsc"
   },
@@ -43,7 +42,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-error-boundary": "^6.0.0",
-    "react-hook-form": "^7.61.1",
+    "react-hook-form": "^7.62.0",
     "react18-json-view": "^0.2.9",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
