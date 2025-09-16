@@ -1,0 +1,20 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "typeRoots": [
+      "../packages/react/@types",
+      "./node_modules/@types",
+      "./node_modules",
+      "../node_modules/@types"
+    ],
+    "noEmit": true,
+    "types": ["@wdio/globals/types", "@wdio/mocha-framework"],
+    "moduleResolution": "bundler",
+    "paths": {
+      "#/*": ["./src/*"]
+    }
+  },
+  "include": ["./specs", "wdio.conf.ts"],
+  "exclude": ["node_modules", "../node_modules"]
+}
