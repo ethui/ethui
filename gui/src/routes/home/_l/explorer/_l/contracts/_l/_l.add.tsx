@@ -26,7 +26,7 @@ function RouteComponent() {
   const [loading, setLoading] = useState(false);
 
   const schema = z.object({
-    dedupChainId: z.string(),
+    id: z.string(),
     address: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid format"),
   });
 
@@ -38,7 +38,7 @@ function RouteComponent() {
     mode: "onChange",
     resolver: zodResolver(schema),
     defaultValues: {
-      dedupChainId: JSON.stringify(currentNetwork?.dedup_chain_id),
+      id: JSON.stringify(currentNetwork?.id),
     } as Schema,
   });
 
@@ -48,8 +48,8 @@ function RouteComponent() {
 
   const onSubmit = (data: FieldValues) => {
     setLoading(true);
-    const value = JSON.parse(data.dedupChainId);
-    add(value.chain_id, value.dedup_id, data.address).then(() => {
+    const value = JSON.parse(data.id);
+    add(value.chain_id, value.id, data.address).then(() => {
       setLoading(false);
       router.history.back();
     });
@@ -61,11 +61,11 @@ function RouteComponent() {
     <Form form={form} onSubmit={onSubmit} className="p-2">
       <Form.Select
         label="Network"
-        name="dedupChainId"
-        defaultValue={currentNetwork.dedup_chain_id}
+        name="id"
+        defaultValue={currentNetwork.id}
         items={networks}
-        toValue={(n) => JSON.stringify(n.dedup_chain_id)}
-        render={({ dedup_chain_id: { chain_id }, name, status }) => (
+        toValue={(n) => JSON.stringify(n.id)}
+        render={({ id: { chain_id }, name, status }) => (
           <ChainView chainId={chain_id} name={name} status={status} />
         )}
       />

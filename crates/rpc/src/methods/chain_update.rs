@@ -118,7 +118,7 @@ impl ChainUpdateBuilder {
 
         let chain_id = TryInto::<u32>::try_into(params.chain_id).unwrap();
         let new_network_params = NewNetworkParams {
-            dedup_chain_id: (chain_id, 0u32).into(),
+            chain_id,
             name: chain_name.clone(),
             explorer_url: params
                 .block_explorer_urls

@@ -21,7 +21,7 @@ export const Route = createFileRoute("/home/_l/explorer/_l/addresses/$address")(
 
 function RouteComponent() {
   const { address } = Route.useParams();
-  const chainId = useNetworks((s) => s.current?.dedup_chain_id.chain_id);
+  const chainId = useNetworks((s) => s.current?.id.chain_id);
   const query = useAddressTxs(address, chainId!);
   const { isContract } = useIsContract(address, chainId!);
   const { balance } = useAddressBalance(address, chainId!);

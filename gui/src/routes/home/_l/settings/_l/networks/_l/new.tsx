@@ -24,12 +24,12 @@ function Content() {
     mode: "onBlur",
     resolver: zodResolver(networkSchema),
     defaultValues: {
-      dedup_chain_id: { dedup_id: 0 },
+      id: { dedup_id: 0 },
     },
   });
 
   const httpUrl = form.watch("http_url");
-  const userChainId = form.watch("dedup_chain_id.chain_id");
+  const userChainId = form.watch("id.chain_id");
 
   useEffect(() => {
     if (!httpUrl) return;
@@ -44,8 +44,8 @@ function Content() {
         );
 
         if (!userChainId) {
-          form.setValue("dedup_chain_id.chain_id", chainId);
-          form.clearErrors("dedup_chain_id.chain_id");
+          form.setValue("id.chain_id", chainId);
+          form.clearErrors("id.chain_id");
         }
       } catch (_e) {
         return null;

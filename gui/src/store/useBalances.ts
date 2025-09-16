@@ -79,7 +79,7 @@ event.listen("balances-updated", async () => {
   );
 
   useNetworks.subscribe(
-    (s) => s.current?.dedup_chain_id.chain_id,
+    (s) => s.current?.id.chain_id,
     (chainId) => useBalances.getState().setChainId(chainId),
     { fireImmediately: true },
   );

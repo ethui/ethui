@@ -25,7 +25,7 @@ function BalanceETH() {
         balance={balance}
         decimals={currentNetwork.decimals}
         symbol={currentNetwork.currency}
-        chainId={currentNetwork.dedup_chain_id.chain_id}
+        chainId={currentNetwork.id.chain_id}
       />
     </li>
   );
@@ -49,7 +49,7 @@ function BalancesERC20() {
         balance={BigInt(balance)}
         decimals={metadata?.decimals || 0}
         symbol={metadata?.symbol}
-        chainId={currentNetwork.dedup_chain_id.chain_id}
+        chainId={currentNetwork.id.chain_id}
       />
     </li>
   ));

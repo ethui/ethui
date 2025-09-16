@@ -126,7 +126,7 @@ impl Networks {
             return Err(eyre!("Already exists"));
         }
 
-        let deduplication_id = self.get_chain_id_count(network.dedup_chain_id.chain_id()) as u32;
+        let deduplication_id = self.get_chain_id_count(network.chain_id) as u32;
         let network = network.into_network(deduplication_id);
 
         if !network.is_dev().await

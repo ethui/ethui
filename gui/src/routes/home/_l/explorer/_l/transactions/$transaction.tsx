@@ -41,7 +41,7 @@ function DetailRow({ label, children }: DetailRowProps) {
 
 function RouteComponent() {
   const { transaction } = Route.useParams();
-  const chainId = useNetworks((s) => s.current?.dedup_chain_id.chain_id);
+  const chainId = useNetworks((s) => s.current?.id.chain_id);
   const { data: fullTx } = useInvoke<Tx>("db_get_transaction_by_hash", {
     hash: transaction,
     chainId,

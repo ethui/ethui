@@ -1,4 +1,3 @@
-import type { Network } from "@ethui/types/network";
 import { ChainView } from "@ethui/ui/components/chain-view";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { createFileRoute } from "@tanstack/react-router";
@@ -11,9 +10,19 @@ export const Route = createFileRoute("/dialog/_l/chain-add/$id")({
   component: ChainAddDialog,
 });
 
+interface NewNetworkParams {
+  name: string;
+  chain_id: number;
+  explorer_url?: string;
+  http_url: string;
+  ws_url?: string;
+  currency: string;
+  decimals: number;
+}
+
 function ChainAddDialog() {
   const { id } = Route.useParams();
-  const { data: network, send } = useDialog<Network>(id);
+  const { data: network, send } = useDialog<NewNetworkParams>(id);
 
   if (!network) return null;
 
@@ -23,16 +32,12 @@ function ChainAddDialog() {
         <h1 className="font-xl">Add new network</h1>
       </div>
 
-      <ChainView
-        chainId={network.dedup_chain_id.chain_id}
-        name={network.name}
-        status={network.status}
-      />
+      <ChainView chainId={network.chain_id} name={network.name} />
 
       <div className="grid grid-cols-4 gap-5">
         <Datapoint
           label="Chain ID"
-          value={network.dedup_chain_id.chain_id}
+          value={network.chain_id}
           className="col-span-2"
         />
         <Datapoint

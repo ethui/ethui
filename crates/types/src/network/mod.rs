@@ -15,7 +15,11 @@ pub use id::NetworkId;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Network {
+    // previously named "dedup_chain_id"
+    // aliasing allows for backwards compatibility without needing a migration
+    #[serde(alias = "dedup_chain_id")]
     pub id: NetworkId,
+
     pub name: String,
     pub explorer_url: Option<String>,
     pub http_url: Url,

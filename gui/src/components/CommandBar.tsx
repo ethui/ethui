@@ -29,7 +29,7 @@ interface CommandBarContextProps {
 
 const CommandBarContext = createContext<CommandBarContextProps>({
   open: false,
-  setOpen: () => {},
+  setOpen: () => { },
 });
 
 export function CommandBarProvider({ children }: { children: ReactNode }) {
@@ -113,7 +113,7 @@ function NetworkCommands({ onClose }: { onClose: () => void }) {
 
   return (
     <CommandGroup heading="Networks">
-      {networks.map(({ dedup_chain_id, name, status }) => (
+      {networks.map(({ id, name, status }) => (
         <CommandItem
           key={name}
           keywords={["network", "switch", name]}
@@ -122,11 +122,7 @@ function NetworkCommands({ onClose }: { onClose: () => void }) {
             onClose();
           }}
         >
-          <ChainView
-            chainId={dedup_chain_id.chain_id}
-            name={name}
-            status={status}
-          />
+          <ChainView chainId={id.chain_id} name={name} status={status} />
         </CommandItem>
       ))}
     </CommandGroup>

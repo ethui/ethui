@@ -75,7 +75,7 @@ function NetworkButton({ network, isSelected, onSelect }: NetworkButtonProps) {
       onClick={() => onSelect(network.name)}
     >
       <ChainView
-        chainId={network.dedup_chain_id.chain_id}
+        chainId={network.id.chain_id}
         name={network.name}
         status={network.status}
       />

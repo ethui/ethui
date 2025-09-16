@@ -35,7 +35,7 @@ function BalanceCell({ address }: { address: Address }) {
   const network = useNetworks((s) => s.current);
   const { balance, isLoading } = useAddressBalance(
     address,
-    network?.dedup_chain_id.chain_id || 1,
+    network?.id.chain_id || 1,
   );
 
   if (isLoading) {

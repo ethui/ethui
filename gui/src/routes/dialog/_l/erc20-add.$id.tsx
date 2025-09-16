@@ -34,7 +34,7 @@ function ERC20AddDialog() {
           value={
             <div className="m-1 flex flex-col text-center">
               <IconAddress
-                chainId={network.dedup_chain_id.chain_id}
+                chainId={network.id.chain_id}
                 address={token.metadata.address}
               />
               <span className="self-center">{token.metadata.name}</span>
