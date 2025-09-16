@@ -1,5 +1,5 @@
 import type { Address } from "viem";
-import { NetworkId } from "./network";
+import type { NetworkId } from "./network";
 
 export interface Token {
   contract: Address;
