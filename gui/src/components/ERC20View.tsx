@@ -39,7 +39,7 @@ export function ERC20View({
 
   const blacklist = () => {
     invoke("db_set_erc20_blacklist", {
-      chainId: network.dedup_chain_id.chain_id,
+      chainId: network.id.chain_id,
       address: contract,
       blacklisted: true,
     });

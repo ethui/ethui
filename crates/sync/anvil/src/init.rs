@@ -20,7 +20,7 @@ async fn receiver() -> ! {
                 trace!(
                     "resetting anvil listener for chain_id {} {}",
                     network.chain_id(),
-                    network.dedup_chain_id.dedup_id()
+                    network.id.dedup_id()
                 );
                 tracker::unwatch(&network).await;
                 tracker::watch(&network).await;

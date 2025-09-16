@@ -17,7 +17,7 @@ function SettingsNetworks() {
   // TODO: add network button
   return (
     <div className="flex flex-wrap gap-2">
-      {networks.map(({ dedup_chain_id: { chain_id }, name, status }) => (
+      {networks.map(({ id: { chain_id }, name, status }) => (
         <Link
           to={`/home/settings/networks/${name}/edit`}
           key={name}

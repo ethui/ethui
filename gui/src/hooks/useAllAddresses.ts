@@ -9,12 +9,12 @@ export function useAllAddresses() {
   const { allWalletInfo } = useWallets();
 
   return useQuery({
-    queryKey: ["all-addresses", network?.dedup_chain_id, allWalletInfo],
+    queryKey: ["all-addresses", network?.id, allWalletInfo],
     queryFn: async (): Promise<Address[]> => {
       if (!network) return [];
 
-      const chainId = network.dedup_chain_id.chain_id;
-      const dedupId = network.dedup_chain_id.dedup_id;
+      const chainId = network.id.chain_id;
+      const dedupId = network.id.dedup_id;
 
       const [contractAddresses, transactionAddresses] = await Promise.all([
         invoke<Address[]>("db_get_contract_addresses", { chainId, dedupId }),

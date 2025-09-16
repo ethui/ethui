@@ -6,7 +6,7 @@ export function useIsAnvilNetwork() {
 
   return useInvoke<boolean>(
     "networks_is_dev",
-    current ? { dedupChainId: current.dedup_chain_id } : {},
+    current ? { id: current.id } : {},
     { enabled: !!current },
   );
 }

@@ -18,6 +18,6 @@ pub use tracing::{debug, error, info, instrument, trace, warn};
 pub use crate::{
     error::{SerializableError, TauriResult},
     global_state::GlobalState,
-    network::Network,
+    network::{Network, NetworkId},
     ui_events::UINotify,
 };

@@ -12,7 +12,7 @@ export const Route = createFileRoute("/home/_l/explorer/_l/transactions/")({
 });
 
 function RouteComponent() {
-  const chainId = useNetworks((s) => s.current?.dedup_chain_id.chain_id);
+  const chainId = useNetworks((s) => s.current?.id.chain_id);
   const currentAddress = useWallets((s) => s.address);
   const query = useLatestTxs(chainId!);
 

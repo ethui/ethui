@@ -86,7 +86,7 @@ function WalletButton({ onClick }: WalletButtonProps) {
       onClick={onClick}
       data-tauri-drag-region="false"
     >
-      <ChainIcon chainId={network.dedup_chain_id.chain_id} />
+      <ChainIcon chainId={network.id.chain_id} />
 
       <span className="text-sm">{currentWallet.name}</span>
       <AddressView

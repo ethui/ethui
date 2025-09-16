@@ -37,7 +37,7 @@ impl Consumer for CountingConsumer {
 async fn test_http_worker_lifecycle() {
     // Test HTTP worker lifecycle without requiring actual Anvil instance
     let network = Network {
-        dedup_chain_id: (31337, 0).into(),
+        id: (31337u32, 0u32).into(),
         name: "Test HTTP Network".to_string(),
         explorer_url: None,
         http_url: Url::parse("http://localhost:18545").unwrap(),
@@ -71,7 +71,7 @@ async fn test_http_worker_lifecycle() {
 async fn test_ws_worker_lifecycle() {
     // Test WS worker lifecycle without requiring actual Anvil instance
     let network = Network {
-        dedup_chain_id: (31337, 0).into(),
+        id: (31337u32, 0u32).into(),
         name: "Test WS Network".to_string(),
         explorer_url: None,
         http_url: Url::parse("http://localhost:18545").unwrap(),
@@ -105,7 +105,7 @@ async fn test_ws_worker_lifecycle() {
 async fn test_message_processing_lifecycle() {
     // Test message processing lifecycle without requiring actual Anvil instance
     let network = Network {
-        dedup_chain_id: (31337, 0).into(),
+        id: (31337u32, 0u32).into(),
         name: "Test Message Processing".to_string(),
         explorer_url: None,
         http_url: Url::parse("http://localhost:18545").unwrap(),
@@ -149,7 +149,7 @@ async fn test_message_processing_lifecycle() {
 async fn test_wait_behavior() {
     // Test wait behavior - this will test timeout/failure paths without anvil
     let network = Network {
-        dedup_chain_id: (31337, 0).into(),
+        id: (31337u32, 0u32).into(),
         name: "Test Wait Until Available".to_string(),
         explorer_url: None,
         http_url: Url::parse("http://localhost:18545").unwrap(),
@@ -192,7 +192,7 @@ async fn test_wait_behavior() {
 async fn test_wait_unavailable_node() {
     // Test with a network that should fail to connect
     let unavailable_network = Network {
-        dedup_chain_id: (31337, 999).into(),
+        id: (31337u32, 999u32).into(),
         name: "Unavailable Network".to_string(),
         explorer_url: None,
         http_url: Url::parse("http://localhost:9999").unwrap(), // Non-existent port
@@ -231,7 +231,7 @@ async fn test_wait_unavailable_node() {
 async fn test_block_subscription_behavior() {
     // Test block subscription behavior without requiring anvil
     let network = Network {
-        dedup_chain_id: (31337, 0).into(),
+        id: (31337u32, 0u32).into(),
         name: "Test Block Subscription".to_string(),
         explorer_url: None,
         http_url: Url::parse("http://localhost:18545").unwrap(),
@@ -266,7 +266,7 @@ async fn test_block_subscription_behavior() {
 async fn test_worker_subscription_lifecycle() {
     // Test worker subscription lifecycle without requiring anvil
     let network = Network {
-        dedup_chain_id: (31337, 0).into(),
+        id: (31337u32, 0u32).into(),
         name: "Test Worker Block Subscription".to_string(),
         explorer_url: None,
         http_url: Url::parse("http://localhost:18545").unwrap(),
@@ -306,7 +306,7 @@ async fn test_worker_subscription_lifecycle() {
 async fn test_historical_blocks_stream_interface() {
     // Test historical blocks stream interface without requiring anvil
     let network = Network {
-        dedup_chain_id: (31337, 0).into(),
+        id: (31337u32, 0u32).into(),
         name: "Test Historical Blocks Stream".to_string(),
         explorer_url: None,
         http_url: Url::parse("http://localhost:18545").unwrap(),
@@ -351,7 +351,7 @@ async fn test_historical_blocks_stream_interface() {
 async fn test_worker_streaming_lifecycle() {
     // Test worker streaming lifecycle without requiring anvil
     let network = Network {
-        dedup_chain_id: (31337, 0).into(),
+        id: (31337u32, 0u32).into(),
         name: "Test Worker Historical + Live".to_string(),
         explorer_url: None,
         http_url: Url::parse("http://localhost:18545").unwrap(),

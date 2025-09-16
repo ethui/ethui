@@ -295,7 +295,7 @@ mod tests {
 
         // Network with WebSocket URL should create WsWorker
         let network_with_ws = Network {
-            dedup_chain_id: (31337, 0).into(),
+            id: (31337u32, 0u32).into(),
             name: "Test Network".to_string(),
             explorer_url: None,
             http_url: Url::parse("http://localhost:8545").unwrap(),
@@ -316,7 +316,7 @@ mod tests {
 
         // Network without WebSocket URL should create AnvilHttp
         let network_without_ws = Network {
-            dedup_chain_id: (31337, 0).into(),
+            id: (31337u32, 0u32).into(),
             name: "Test Network".to_string(),
             explorer_url: None,
             http_url: Url::parse("http://localhost:8545").unwrap(),
@@ -366,7 +366,7 @@ mod tests {
 
         // Create a network with an unreachable HTTP URL
         let network = Network {
-            dedup_chain_id: (31337, 0).into(),
+            id: (31337u32, 0u32).into(),
             name: "Unreachable Network".to_string(),
             explorer_url: None,
             http_url: Url::parse("http://localhost:9999").unwrap(), // Non-existent port
@@ -425,7 +425,7 @@ mod tests {
     #[tokio::test]
     async fn test_block_subscription_ws() {
         let network = Network {
-            dedup_chain_id: (31337, 0).into(),
+            id: (31337u32, 0u32).into(),
             name: "Test Network".to_string(),
             explorer_url: None,
             http_url: url::Url::parse("http://localhost:8545").unwrap(),

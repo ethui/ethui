@@ -58,10 +58,7 @@ export function AddressView({
   const { data: alias, refetch } = useInvoke<string>("settings_get_alias", {
     address,
   });
-  const { isContract } = useIsContract(
-    address,
-    network?.dedup_chain_id.chain_id || 1,
-  );
+  const { isContract } = useIsContract(address, network?.id.chain_id || 1);
   const [aliasFormOpen, setAliasFormOpen] = useState(false);
 
   if (!network) return;
@@ -82,7 +79,7 @@ export function AddressView({
       )}
       {icon && (
         <IconAddress
-          chainId={network.dedup_chain_id.chain_id}
+          chainId={network.id.chain_id}
           address={address}
           effigy
           className="h-5 w-5"

@@ -4,7 +4,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use ethui_types::{Affinity, DedupChainId};
+use ethui_types::{Affinity, NetworkId};
 use serde::{Deserialize, Serialize};
 
 use crate::migrations::LatestVersion;
@@ -58,7 +58,7 @@ impl Store {
 
     /// Whenever a chain is removed, we need to clear all affinities to that chain
     /// otherwise, new connections from the same website will fail
-    pub(crate) fn on_chain_removed(&mut self, internal_id: DedupChainId) {
+    pub(crate) fn on_chain_removed(&mut self, internal_id: NetworkId) {
         self.inner
             .affinities
             .retain(|_, affinity| *affinity != internal_id.into());

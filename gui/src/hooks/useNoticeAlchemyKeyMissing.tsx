@@ -12,7 +12,7 @@ export function useNoticeAlchemyKeyMissing() {
 
   const { data: isSupportedNetwork, isLoading: isLoadingSupportedNetwork } =
     useInvoke<boolean>("sync_alchemy_is_network_supported", {
-      chainId: currentNetwork?.dedup_chain_id.chain_id,
+      chainId: currentNetwork?.id.chain_id,
     });
 
   const isLoading = !settings || isLoadingSupportedNetwork;

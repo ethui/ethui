@@ -1,3 +1,6 @@
+mod id;
+
+
 use alloy::{
     network::Ethereum,
     providers::{ext::AnvilApi, Provider, ProviderBuilder, RootProvider},
@@ -7,11 +10,16 @@ use alloy::{
 use tracing::instrument;
 use url::Url;
 
-use crate::{prelude::*, DedupChainId};
+use crate::{prelude::*};
+pub use id::NetworkId;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Network {
-    pub dedup_chain_id: DedupChainId,
+    // previously named "dedup_chain_id"
+    // aliasing allows for backwards compatibility without needing a migration
+    #[serde(alias = "dedup_chain_id")]
+    pub id: NetworkId,
+
     pub name: String,
     pub explorer_url: Option<String>,
     pub http_url: Url,
@@ -33,9 +41,9 @@ pub enum NetworkStatus {
 }
 
 impl Network {
-    pub fn mainnet(deduplication_id: i32) -> Self {
+    pub fn mainnet(deduplication_id: u32) -> Self {
         Self {
-            dedup_chain_id: (1, deduplication_id).into(),
+            id: (1u32, deduplication_id).into(),
             name: String::from("Mainnet"),
             explorer_url: Some(String::from("https://etherscan.io/search?q=")),
             http_url: Url::parse("https://eth.llamarpc.com").unwrap(),
@@ -46,9 +54,9 @@ impl Network {
         }
     }
 
-    pub fn sepolia(deduplication_id: i32) -> Self {
+    pub fn sepolia(deduplication_id: u32) -> Self {
         Self {
-            dedup_chain_id: (11155111, deduplication_id).into(),
+            id: (11155111u32, deduplication_id).into(),
             name: String::from("Sepolia"),
             explorer_url: Some(String::from("https://sepolia.etherscan.io/search?q=")),
             http_url: Url::parse("https://ethereum-sepolia-rpc.publicnode.com").unwrap(),
@@ -59,9 +67,9 @@ impl Network {
         }
     }
 
-    pub fn anvil(deduplication_id: i32) -> Self {
+    pub fn anvil(deduplication_id: u32) -> Self {
         Self {
-            dedup_chain_id: (31337, deduplication_id).into(),
+            id: (31337u32, deduplication_id).into(),
             name: String::from("Anvil"),
             explorer_url: None,
             http_url: Url::parse("http://localhost:8545").unwrap(),
@@ -76,12 +84,12 @@ impl Network {
         vec![Self::anvil(0), Self::mainnet(0), Self::sepolia(0)]
     }
 
-    pub fn dedup_chain_id(&self) -> DedupChainId {
-        self.dedup_chain_id
+    pub fn dedup_chain_id(&self) -> NetworkId {
+        self.id
     }
 
     pub fn chain_id(&self) -> u32 {
-        self.dedup_chain_id.chain_id()
+        self.id.chain_id()
     }
 
     pub fn chain_id_hex(&self) -> String {
