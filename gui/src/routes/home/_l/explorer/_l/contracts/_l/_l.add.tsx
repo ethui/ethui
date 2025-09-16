@@ -49,7 +49,7 @@ function RouteComponent() {
   const onSubmit = (data: FieldValues) => {
     setLoading(true);
     const value = JSON.parse(data.id);
-    add(value.chain_id, value.id, data.address).then(() => {
+    add(value.chain_id, value.dedup_id, data.address).then(() => {
       setLoading(false);
       router.history.back();
     });
