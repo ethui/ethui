@@ -14,7 +14,7 @@ importers:
     dependencies:
       '@ethui/ui':
         specifier: ^0.0.92
-        version: 0.0.92(@hookform/resolvers@5.2.1(react-hook-form@7.59.0(react@19.1.0)))(@tailwindcss/postcss@4.1.11)(@tanstack/react-query@5.85.5(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react-hook-form@7.59.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)(typescript@5.9.2)(viem@2.37.5(typescript@5.9.2)(zod@4.1.5))(zod@4.1.5)
+        version: 0.0.92(@hookform/resolvers@5.2.1(react-hook-form@7.62.0(react@19.1.0)))(@tailwindcss/postcss@4.1.11)(@tanstack/react-query@5.85.5(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react-hook-form@7.62.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)(typescript@5.9.2)(viem@2.37.5(typescript@5.9.2)(zod@4.1.5))(zod@4.1.5)
       '@tauri-apps/cli':
         specifier: ^2.7.1
         version: 2.7.1
@@ -3704,6 +3704,12 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
 
+  react-hook-form@7.62.0:
+    resolution: {integrity: sha512-7KWFejc98xqG/F4bAxpL41NB3o1nnvQO1RWZT3TqRZYL8RryQETGfEdVnJN2fy1crCiBLLjkRBVK05j24FxJGA==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      react: ^16.8.0 || ^17 || ^18 || ^19
+
   react-is@18.3.1:
     resolution: {integrity: sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==}
 
@@ -4867,11 +4873,11 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@ethui/ui@0.0.92(@hookform/resolvers@5.2.1(react-hook-form@7.59.0(react@19.1.0)))(@tailwindcss/postcss@4.1.11)(@tanstack/react-query@5.85.5(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react-hook-form@7.59.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)(typescript@5.9.2)(viem@2.37.5(typescript@5.9.2)(zod@4.1.5))(zod@4.1.5)':
+  '@ethui/ui@0.0.92(@hookform/resolvers@5.2.1(react-hook-form@7.62.0(react@19.1.0)))(@tailwindcss/postcss@4.1.11)(@tanstack/react-query@5.85.5(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react-hook-form@7.62.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)(typescript@5.9.2)(viem@2.37.5(typescript@5.9.2)(zod@4.1.5))(zod@4.1.5)':
     dependencies:
       '@ethui/abiparse': 0.0.4(react@19.1.0)(typescript@5.9.2)(zod@4.1.5)
       '@fontsource/source-code-pro': 5.2.6
-      '@hookform/resolvers': 5.2.1(react-hook-form@7.59.0(react@19.1.0))
+      '@hookform/resolvers': 5.2.1(react-hook-form@7.62.0(react@19.1.0))
       '@radix-ui/react-accordion': 1.2.11(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@radix-ui/react-checkbox': 1.3.2(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@radix-ui/react-collapsible': 1.1.11(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -4900,7 +4906,7 @@ snapshots:
       lucide-react: 0.506.0(react@19.1.0)
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
-      react-hook-form: 7.59.0(react@19.1.0)
+      react-hook-form: 7.62.0(react@19.1.0)
       tailwind-merge: 3.3.1
       tailwindcss: 4.1.11
       tailwindcss-animate: 1.0.7(tailwindcss@4.1.11)
@@ -4934,6 +4940,11 @@ snapshots:
     dependencies:
       '@standard-schema/utils': 0.3.0
       react-hook-form: 7.59.0(react@19.1.0)
+
+  '@hookform/resolvers@5.2.1(react-hook-form@7.62.0(react@19.1.0))':
+    dependencies:
+      '@standard-schema/utils': 0.3.0
+      react-hook-form: 7.62.0(react@19.1.0)
 
   '@inquirer/checkbox@4.2.2(@types/node@24.3.0)':
     dependencies:
@@ -7985,6 +7996,10 @@ snapshots:
       react: 19.1.0
 
   react-hook-form@7.59.0(react@19.1.0):
+    dependencies:
+      react: 19.1.0
+
+  react-hook-form@7.62.0(react@19.1.0):
     dependencies:
       react: 19.1.0
 
