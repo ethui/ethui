@@ -175,10 +175,16 @@ impl EthUIApp {
                 let _ = handle.track_event("app_exited", None);
                 
                 
-                //#[cfg(feature = "stacks")]
-                //{
-                //    let _ = handle.try_invoke("stacks_shutdown", ());
-                //}
+                #[cfg(feature = "stacks")]
+                {
+
+                    tokio::task::block_in_place(|| {
+                        tokio::runtime::Handle::current().block_on(async {
+                            let _ = ethui_stacks::actor::ask(ethui_stacks::actor::Shutdown()).await;
+;
+                        });
+                    });
+                }
             }
 
             #[cfg(target_os = "macos")]

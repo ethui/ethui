@@ -14,10 +14,10 @@ pub async fn stacks_create(slug: String) -> TauriResult<()> {
 
     tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
 
-    let rpc_url = format!("http://{}.local.lvh.me", slug);
+    let rpc_url = format!("http://{}.local.ethui.dev:9110", slug);
     let chain_id = utils::get_chain_id(&rpc_url).await?;
 
-    let explorer_url = format!("http://{}.local.lvh.me", slug);
+    let explorer_url = format!("http://{}.local.ethui.dev:9110", slug);
 
     let network_params = NewNetworkParams {
         name: slug.clone(),
@@ -42,7 +42,7 @@ pub async fn stacks_list() -> TauriResult<Vec<String>> {
 
 #[command]
 pub async fn stacks_get_status(slug: String) -> TauriResult<String> {
-    let rpc_url = format!("http://{}.local.lvh.me", slug);
+    let rpc_url = format!("http://{}.local.ethui.dev:9110", slug);
     match utils::check_stack_online(&rpc_url).await {
         Ok(true) => Ok("online".to_string()),
         Ok(false) => Ok("offline".to_string()),
@@ -62,6 +62,6 @@ pub async fn stacks_remove(slug: String) -> TauriResult<()> {
 
 #[command]
 pub async fn stacks_shutdown() -> TauriResult<()> {
-    crate::actor::tell(Shutdown()).await?;
+    crate::actor::ask(Shutdown()).await?;
     Ok(())
 }
