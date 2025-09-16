@@ -36,6 +36,7 @@ import { useCommandBar } from "./CommandBar";
 import { QuickFastModeToggle } from "./QuickFastModeToggle";
 
 const isDev = import.meta.env.MODE === "development";
+const isTest = import.meta.env.MODE === "test";
 
 export function AppSidebar() {
   const commandBar = useCommandBar();
@@ -58,6 +59,14 @@ export function AppSidebar() {
     });
   }
 
+  let logoFill = "fill-sidebar-foreground";
+  if (isDev) {
+    logoFill = "fill-dev";
+  }
+  if (isTest) {
+    logoFill = "fill-[#dd8622]";
+  }
+
   return (
     <Sidebar className="select-none pt-12" collapsible="icon">
       <SidebarHeader
@@ -68,7 +77,7 @@ export function AppSidebar() {
           onClick={toggleSidebar}
           size={48}
           bg="bg-transparent"
-          fg={isDev ? "fill-dev" : "fill-sidebar-foreground"}
+          fg={logoFill}
         />
       </SidebarHeader>
 
@@ -86,13 +95,11 @@ export function AppSidebar() {
               {items.map((item) => (
                 <CustomSidebarMenuItem key={item.title} {...item} />
               ))}
-              {isAnvilNetwork && (
-                <CollapsibleMenuSection
-                  icon={<Globe />}
-                  title="Explorer"
-                  items={explorerItems}
-                />
-              )}
+              <CollapsibleMenuSection
+                icon={<Globe />}
+                title="Explorer"
+                items={getExplorerItems(isAnvilNetwork)}
+              />
               <CollapsibleMenuSection
                 icon={<Cog />}
                 title="Settings"
@@ -140,14 +147,14 @@ function CustomSidebarMenuItem({
 
   return (
     <SidebarMenuItem key={title}>
-      <SidebarMenuButton asChild>
-        <Link
-          to={url}
-          className={cn(
-            url === location.pathname &&
-              "bg-primary text-accent hover:bg-primary hover:text-accent",
-          )}
-        >
+      <SidebarMenuButton
+        asChild
+        className={cn(
+          url === location.pathname &&
+            "bg-primary text-accent hover:bg-primary hover:text-accent",
+        )}
+      >
+        <Link to={url}>
           {icon}
           {title}
         </Link>
@@ -184,16 +191,14 @@ function CollapsibleMenuSection({
           <SidebarMenuSub>
             {items.map((item) => (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild>
-                  <Link
-                    to={item.url}
-                    className={cn(
-                      item.url === location.pathname &&
-                        "bg-primary text-accent hover:bg-primary hover:text-accent",
-                    )}
-                  >
-                    {item.title}
-                  </Link>
+                <SidebarMenuButton
+                  asChild
+                  className={cn(
+                    item.url === location.pathname &&
+                      "bg-primary text-accent hover:bg-primary hover:text-accent",
+                  )}
+                >
+                  <Link to={item.url}>{item.title}</Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
@@ -204,6 +209,9 @@ function CollapsibleMenuSection({
   );
 }
 
+function getExplorerItems(isAnvilNetwork: boolean) {
+  return explorerItems.filter((item) => !item.anvilOnly || isAnvilNetwork);
+}
 // Menu items.
 const items = [
   {
@@ -219,7 +227,7 @@ const items = [
 ];
 
 const explorerItems = [
-  { title: "Addresses", url: "/home/explorer/addresses" },
+  { title: "Addresses", url: "/home/explorer/addresses", anvilOnly: true },
   { title: "Transactions", url: "/home/explorer/transactions" },
   { title: "Contracts", url: "/home/explorer/contracts" },
 ];
