@@ -1,7 +1,7 @@
-use ethui_types::{prelude::*, ui_events, Affinity};
+use ethui_types::{Affinity, NewNetworkParams, prelude::*, ui_events};
 pub use internal_msgs::*;
 use once_cell::sync::Lazy;
-use tokio::sync::{broadcast, oneshot, Mutex};
+use tokio::sync::{Mutex, broadcast, oneshot};
 pub use ui_msgs::*;
 
 /// Supported messages
@@ -32,6 +32,10 @@ pub enum InternalMsg {
     FetchERC20Metadata(u32, Address),
 
     ContractFound,
+
+    StackNetworkAdd(NewNetworkParams),
+
+    StackNetworkRemove(String),
 }
 
 #[derive(Debug, Clone)]
@@ -53,8 +57,8 @@ pub enum UIMsg {
 }
 
 mod internal_msgs {
-    use tracing::{debug, instrument};
     use InternalMsg::*;
+    use tracing::{debug, instrument};
 
     use super::*;
 
@@ -126,6 +130,14 @@ mod internal_msgs {
         send(TransactionSubmitted(chain_id)).await;
     }
 
+    pub async fn stack_network_add(params: NewNetworkParams) {
+        send(StackNetworkAdd(params)).await;
+    }
+
+    pub async fn stack_network_remove(name: String) {
+        send(StackNetworkRemove(name)).await;
+    }
+
     #[instrument(level = "trace")]
     pub async fn fetch_full_tx_sync(chain_id: u32, hash: B256) {
         let (tx, rx) = oneshot::channel();
@@ -152,8 +164,8 @@ mod internal_msgs {
 }
 
 mod ui_msgs {
-    use tracing::{debug, instrument};
     use UIMsg::*;
+    use tracing::{debug, instrument};
 
     use super::*;
 
@@ -167,7 +179,7 @@ mod ui_msgs {
     }
 
     pub async fn dialog_open(params: ui_events::DialogOpen) {
-        send(DialogOpen(params)).await;  
+        send(DialogOpen(params)).await;
     }
 
     pub async fn dialog_close(params: ui_events::DialogClose) {

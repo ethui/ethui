@@ -63,15 +63,24 @@ async fn receiver() -> ! {
         if let Ok(msg) = rx.recv().await {
             use InternalMsg::*;
 
-            if let ChainChanged(dedup_chain_id, _domain, affinity) = msg {
-                ethui_broadcast::ui_notify(UINotify::PeersUpdated).await;
-                if affinity.is_global() || affinity.is_unset() {
-                    // TODO: handle this error
-                    let _ = Networks::write()
-                        .await
-                        .set_current_by_dedup_chain_id(dedup_chain_id)
-                        .await;
+            match msg {
+                ChainChanged(dedup_chain_id, _domain, affinity) => {
+                    ethui_broadcast::ui_notify(UINotify::PeersUpdated).await;
+                    if affinity.is_global() || affinity.is_unset() {
+                        // TODO: handle this error
+                        let _ = Networks::write()
+                            .await
+                            .set_current_by_dedup_chain_id(dedup_chain_id)
+                            .await;
+                    }
                 }
+                StackNetworkAdd(params) => {
+                    let _ = Networks::write().await.add_network(params).await;
+                }
+                StackNetworkRemove(name) => {
+                    let _ = Networks::write().await.remove_network(&name).await;
+                }
+                _ => {}
             }
         }
     }
