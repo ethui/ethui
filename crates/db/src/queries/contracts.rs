@@ -230,7 +230,7 @@ impl DbInner {
     pub async fn get_contract_addresses(
         &self,
         chain_id: u32,
-        dedup_id: i32,
+        dedup_id: u32,
     ) -> Result<Vec<Address>> {
         let addresses = sqlx::query_scalar!(
             r#"SELECT DISTINCT address FROM contracts WHERE chain_id = ? AND dedup_id = ?"#,
