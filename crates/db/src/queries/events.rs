@@ -1,4 +1,4 @@
-use ethui_types::{DedupChainId, Event};
+use ethui_types::{Event, NetworkId};
 use tracing::instrument;
 
 use crate::DbInner;
@@ -7,7 +7,7 @@ impl DbInner {
     #[instrument(level = "trace", skip(self, events))]
     pub async fn save_events(
         &self,
-        dedup_chain_id: DedupChainId,
+        dedup_chain_id: NetworkId,
         events: Vec<Event>,
     ) -> color_eyre::Result<()> {
         let chain_id = dedup_chain_id.chain_id();

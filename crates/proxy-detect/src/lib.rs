@@ -75,10 +75,11 @@ where
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use alloy::{primitives::address, providers::ProviderBuilder, transports::http::reqwest::Url};
     use lazy_static::lazy_static;
     use rstest::*;
+
+    use super::*;
 
     lazy_static! {
         static ref MAINNET_RPC: Url = Url::parse(
@@ -100,7 +101,7 @@ mod tests {
     #[case::eip897(address!("0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B"), ProxyType::Comptroller(address!("0xbafe01ff935c7305907c33bf824352ee5979b526")))]
     #[tokio::test]
     async fn mainnet(#[case] proxy: Address, #[case] impl_: ProxyType) {
-        let provider = ProviderBuilder::new().on_http(MAINNET_RPC.clone());
+        let provider = ProviderBuilder::new().connect_http(MAINNET_RPC.clone());
 
         let result = detect_proxy(proxy, &provider).await.unwrap();
 
@@ -112,7 +113,7 @@ mod tests {
     #[case::dai(address!("0x6B175474E89094C44Da98b954EedeAC495271d0F"))]
     #[tokio::test]
     async fn not_proxy(#[case] proxy: Address) {
-        let provider = ProviderBuilder::new().on_http(MAINNET_RPC.clone());
+        let provider = ProviderBuilder::new().connect_http(MAINNET_RPC.clone());
 
         let result = detect_proxy(proxy, &provider).await.unwrap();
 

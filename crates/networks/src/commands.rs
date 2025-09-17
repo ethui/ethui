@@ -1,4 +1,4 @@
-use ethui_types::{DedupChainId, NewNetworkParams, prelude::*};
+use ethui_types::{prelude::*, NewNetworkParams};
 
 use super::Networks;
 
@@ -59,11 +59,11 @@ pub async fn networks_remove(name: String) -> TauriResult<()> {
 }
 
 #[tauri::command]
-pub async fn networks_is_dev(dedup_chain_id: DedupChainId) -> TauriResult<bool> {
+pub async fn networks_is_dev(id: NetworkId) -> TauriResult<bool> {
     let networks = Networks::read().await;
 
     let network = networks
-        .get_network_by_dedup_chain_id(dedup_chain_id)
+        .get_network_by_dedup_chain_id(id)
         .with_context(|| "Does not exist".to_string())
         .map_err(SerializableError::from)?;
 

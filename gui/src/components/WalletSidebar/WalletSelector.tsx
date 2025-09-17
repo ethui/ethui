@@ -111,6 +111,7 @@ function WalletAccordionItem({
             onClick={() => onSelect(wallet.name, addressInfo.key)}
           >
             <AddressView
+              showLinkExplorer={false}
               noTextStyle
               clickToCopy={false}
               icon

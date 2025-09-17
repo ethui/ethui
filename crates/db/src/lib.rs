@@ -6,7 +6,7 @@ pub mod utils;
 
 use std::{path::PathBuf, sync::Arc};
 
-use ethui_types::DedupChainId;
+use ethui_types::NetworkId;
 pub use init::{get, init};
 use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous};
 
@@ -35,7 +35,7 @@ impl DbInner {
         Ok(db)
     }
 
-    pub async fn truncate_events(&self, dedup_chain_id: DedupChainId) -> color_eyre::Result<()> {
+    pub async fn truncate_events(&self, dedup_chain_id: NetworkId) -> color_eyre::Result<()> {
         let chain_id = dedup_chain_id.chain_id();
         let dedup_id = dedup_chain_id.dedup_id();
         sqlx::query!(r#"DELETE FROM transactions WHERE chain_id = ?"#, chain_id)

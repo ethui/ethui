@@ -22,6 +22,12 @@ const AllColors = {
     "fill-destructive": "#EF4444",
     "fill-dev": "#8d64d1",
   },
+  test: {
+    "fill-background": "#ffffff",
+    "fill-foreground": "#0a0a0a",
+    "fill-destructive": "#EF4444",
+    "fill-dev": "#dd6422",
+  },
 };
 
 interface Opts {
@@ -40,6 +46,10 @@ async function gen(path: string, opts: Opts) {
   svgString = svgString.replace(
     'class="fill-dev"',
     `fill="${AllColors.dev["fill-dev"]}"`,
+  );
+  svgString = svgString.replace(
+    'class="fill-test"',
+    `fill="${AllColors.test["fill-dev"]}"`,
   );
 
   let colors = AllColors.light;
@@ -75,11 +85,17 @@ const attention = true;
 await gen("symbol-black", { mode: "light" });
 await gen("symbol-white", { mode: "dark" });
 await gen("symbol-purple", { mode: "light", bg: "fill-dev" });
+await gen("symbol-red", { mode: "light", bg: "fill-test" });
 await gen("symbol-black-attention", { mode: "light", attention });
 await gen("symbol-white-attention", { mode: "dark", attention });
 await gen("symbol-purple-attention", {
   mode: "light",
   bg: "fill-dev",
+  attention,
+});
+await gen("symbol-red-attention", {
+  mode: "light",
+  bg: "fill-test",
   attention,
 });
 
@@ -89,10 +105,13 @@ await $`cargo tauri icon --output bin/icons icons/symbol-black.png 2> /dev/null`
 console.log("copying dev icons to bin/icons-dev");
 await $`cargo tauri icon --output bin/icons-dev icons/symbol-purple.png 2> /dev/null`;
 
+console.log("copying test icons to bin/icons-test");
+await $`cargo tauri icon --output bin/icons-test icons/symbol-red.png 2> /dev/null`;
+
 console.log("copying production icons to gui/public/logo");
 await $`cp icons/symbol-{white,black,purple}.svg gui/public/logo/`;
 
-for (const color of ["purple", "white", "black"]) {
+for (const color of ["purple", "red", "white", "black"]) {
   for (const attention of ["", "-attention"]) {
     const svg = `icons/symbol-${color}${attention}.svg`;
     const svgDest = `../extension/src/public/icons/ethui-${color}${attention}.svg`;

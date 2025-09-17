@@ -1,9 +1,9 @@
 use ethui_networks::Networks;
-use ethui_types::{Affinity, DedupChainId, GlobalState, Network, eyre};
+use ethui_types::{eyre, Affinity, GlobalState, Network, NetworkId};
 
 use crate::{
-    Store,
     permissions::{Permission, PermissionRequest, RequestedPermission},
+    Store,
 };
 
 /// Context for a provider connection
@@ -56,7 +56,7 @@ impl Ctx {
             match self.get_affinity().await {
                 // If affinity is not set, or sticky, update local affinity, and publish event
                 Affinity::Unset | Affinity::Sticky(_) => {
-                    let internal_id: DedupChainId = (new_chain_id, 0).into();
+                    let internal_id: NetworkId = (new_chain_id, 0u32).into();
                     let affinity = internal_id.into();
                     self.set_affinity(affinity).await?;
 
@@ -98,6 +98,18 @@ impl Ctx {
             .collect();
 
         self.permissions.extend(new_permissions);
+
+        ret
+    }
+
+    pub fn revoke_permissions(&mut self, request: PermissionRequest) -> Vec<RequestedPermission> {
+        let ret = request.clone().into_request_permissions_result();
+
+        let to_revoke: Vec<_> = request
+            .into_permissions(self.domain.clone().unwrap())
+            .collect();
+
+        self.permissions.retain(|p| !to_revoke.contains(p));
 
         ret
     }

@@ -22,22 +22,22 @@ pub use crate::error::{WsError, WsResult};
 use crate::peers::{Peer, Peers};
 
 #[instrument(level = "debug")]
-pub(crate) async fn server_loop(port: u16) {
+pub(crate) async fn server(port: u16) {
     let addr = format!("127.0.0.1:{port}");
     let listener = TcpListener::bind(&addr).await.expect("Can't listen to");
 
-    tracing::debug!("WS server listening on: {}", addr);
+    debug!("WS server listening on: {}", addr);
 
     while let Ok((stream, _)) = listener.accept().await {
         let peer = stream
             .peer_addr()
             .expect("connected streams should have a peer address");
 
-        tokio::spawn(accept_connection(peer, stream));
+        tokio::spawn(accept(peer, stream));
     }
 }
 
-async fn accept_connection(socket: SocketAddr, stream: TcpStream) {
+async fn accept(socket: SocketAddr, stream: TcpStream) {
     let mut query_params: HashMap<String, String> = Default::default();
     let callback = |req: &Request, res: Response| -> std::result::Result<Response, ErrorResponse> {
         let url = Url::parse(&format!("{}{}", "http://localhost", req.uri())).unwrap();
@@ -54,7 +54,7 @@ async fn accept_connection(socket: SocketAddr, stream: TcpStream) {
     let peer = Peer::new(socket, snd, &query_params);
 
     Peers::write().await.add_peer(peer.clone()).await;
-    let res = handle_connection(peer, ws_stream, rcv).await;
+    let res = handle(peer, ws_stream, rcv).await;
     Peers::write().await.remove_peer(socket).await;
 
     if let Err(e) = res {
@@ -74,11 +74,13 @@ async fn accept_connection(socket: SocketAddr, stream: TcpStream) {
     }
 }
 
-async fn handle_connection(
+#[instrument(level = "debug", skip_all, fields(url = peer.url))]
+async fn handle(
     peer: Peer,
     stream: WebSocketStream<TcpStream>,
     mut rcv: mpsc::UnboundedReceiver<serde_json::Value>,
 ) -> WsResult<()> {
+    debug!("open");
     let handler: ethui_rpc::Handler = peer.clone().into();
 
     // will be used at most once to mark the peer as live once the first message comes in
@@ -119,6 +121,7 @@ async fn handle_connection(
         }
     }
 
+    debug!("close");
     Ok(())
 }
 

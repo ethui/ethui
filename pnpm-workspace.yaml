@@ -1,3 +1,7 @@
 packages:
   - 'gui'
   - 'packages/*'
+  - 'webdriverio'
+
+onlyBuiltDependencies:
+  - core-js

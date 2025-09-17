@@ -1,4 +1,4 @@
-use ethui_types::{Affinity, DedupChainId, NewNetworkParams, prelude::*, ui_events};
+use ethui_types::{Affinity, NetworkId, NewNetworkParams, prelude::*, ui_events};
 pub use internal_msgs::*;
 use once_cell::sync::Lazy;
 use tokio::sync::{Mutex, broadcast, oneshot};
@@ -7,7 +7,7 @@ pub use ui_msgs::*;
 /// Supported messages
 #[derive(Debug, Clone)]
 pub enum InternalMsg {
-    ChainChanged(DedupChainId, Option<String>, Affinity),
+    ChainChanged(NetworkId, Option<String>, Affinity),
     AccountsChanged(Vec<Address>),
     SettingsUpdated,
 
@@ -65,12 +65,8 @@ mod internal_msgs {
     }
 
     /// Broadcasts `ChainChanged` events
-    pub async fn chain_changed(
-        dedup_chain_id: DedupChainId,
-        domain: Option<String>,
-        affinity: Affinity,
-    ) {
-        send(ChainChanged(dedup_chain_id, domain, affinity)).await;
+    pub async fn chain_changed(id: NetworkId, domain: Option<String>, affinity: Affinity) {
+        send(ChainChanged(id, domain, affinity)).await;
     }
 
     /// Broadcasts `AccountsChanged` events

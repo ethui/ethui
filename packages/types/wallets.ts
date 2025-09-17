@@ -105,7 +105,7 @@ export const walletSchema = z.discriminatedUnion("type", [
 ]);
 
 export const walletTypes: Wallet["type"][] = Array.from(
-  walletSchema.optionsMap.keys(),
+  walletSchema.options.map((k) => k.type),
 )
   .filter((k) => !!k)
   .map((k) => k as unknown as Wallet["type"]);

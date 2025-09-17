@@ -1,13 +1,13 @@
 use ethui_types::prelude::*;
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
 pub struct Permission {
     pub invoker: String,
     pub parent_capability: String,
     pub caveats: Vec<Caveat>,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
 pub struct Caveat {
     pub r#type: String,
     pub value: serde_json::Value,

@@ -7,22 +7,20 @@
     "dev": "pnpm run app:dev",
     "app:dev": "pnpm tauri dev --config bin/tauri.dev.conf.json  --features ${ETHUI_FEATURES:-''} --target $(pnpm run rust-target | tail -n1)",
     "app:build": "pnpm tauri build --target $(pnpm run rust-target | tail -n1)",
+    "app:build:test": "pnpm tauri build --debug --no-bundle --config bin/tauri.test.conf.json --features test",
     "rust-target": "rustc -vV | sed -n 's/host: //p'",
     "gui:build": "pnpm --filter @ethui/gui build",
     "gui:devtools": "pnpm --filter @ethui/gui devtools",
-    "lint": "pnpm lint:biome && pnpm lint:tsc && pnpm --filter @ethui/gui run lint",
+    "lint": "pnpm lint:biome && pnpm lint:tsc && pnpm --filter @ethui/gui run lint:unused",
     "lint:biome": "biome check .",
     "lint:tsc": "pnpm --recursive tsc --noEmit",
     "fix": "pnpm fix:biome",
-    "fix:biome": "biome check --write ."
+    "fix:biome": "biome check --write .",
+    "test": "pnpm run test:integration",
+    "test:integration": "pnpm --filter @ethui/webdriverio test"
   },
-  "workspaces": [
-    "packages/types",
-    "packages/data",
-    "gui"
-  ],
   "devDependencies": {
-    "@biomejs/biome": "^2.1.1",
+    "@biomejs/biome": "^2.2.2",
     "@tailwindcss/postcss": "^4.1.3",
     "assert": "^2.1.0",
     "html-to-image": "^1.11.13",
@@ -32,7 +30,7 @@
   "dependencies": {
     "@ethui/ui": "^0.0.92",
     "@tauri-apps/cli": "^2.7.1",
-    "typescript": "5.8.2"
+    "typescript": "5.9.2"
   },
   "engines": {
     "node": ">=24.0.0"

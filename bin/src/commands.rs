@@ -1,8 +1,8 @@
 use alloy::providers::Provider as _;
 use color_eyre::eyre::{Context as _, ContextCompat as _};
 use ethui_db::{
-    Db,
     utils::{fetch_etherscan_abi, fetch_etherscan_contract_name},
+    Db,
 };
 use ethui_forge::GetAbiFor;
 use ethui_proxy_detect::ProxyType;
@@ -82,7 +82,7 @@ pub async fn add_contract(
     let proxy_for = proxy.map(|proxy| proxy.implementation());
 
     db.insert_contract_with_abi(
-        (chain_id as u32, dedup_id as i32).into(),
+        (chain_id as u32, dedup_id as u32).into(),
         address,
         Some(&code),
         abi,

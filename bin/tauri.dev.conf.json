@@ -1,6 +1,7 @@
 {
   "productName": "ethui-dev",
   "identifier": "dev.ethui.dev-build",
+  "mainBinaryName": "ethui-dev",
   "build": {
     "beforeDevCommand": "pnpm --filter @ethui/gui dev",
     "beforeBuildCommand": "pnpm --filter @ethui/gui build",

@@ -5,7 +5,7 @@ use pretty_assertions::assert_eq;
 
 #[tokio::test(flavor = "multi_thread")]
 async fn simulate_detris() {
-    let fork_url = "https://eth.llamarpc.com".to_string();
+    let fork_url = "https://ethereum-rpc.publicnode.com".to_string();
     let fork_block_number = Some(17579630);
 
     let tx = Request {

@@ -82,13 +82,19 @@ function HeaderContent() {
     <div className="flex flex-col items-center gap-3 pt-4">
       {network && addr && (
         <IconAddress
-          chainId={network.dedup_chain_id.chain_id}
+          chainId={network.id.chain_id}
           address={addr}
           effigy
           className="h-8 w-8"
         />
       )}
-      {addr && <AddressView className="font-bold text-sm" address={addr} />}
+      {addr && (
+        <AddressView
+          className="font-bold text-sm"
+          showLinkExplorer={false}
+          address={addr}
+        />
+      )}
     </div>
   );
 }

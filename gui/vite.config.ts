@@ -96,7 +96,9 @@ const muteWarningsPlugin = (warningsToIgnore: string[][]): any => {
         this.warn(
           "Some of your muted warnings never appeared during the build process:",
         );
-        diff.forEach((m) => this.warn(`- ${m.join(": ")}`));
+        diff.forEach((m) => {
+          this.warn(`- ${m.join(": ")}`);
+        });
       }
     },
   };

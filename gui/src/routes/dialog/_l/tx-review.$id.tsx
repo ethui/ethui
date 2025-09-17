@@ -74,7 +74,7 @@ function TxReviewDialog() {
   const { id } = Route.useParams();
   const dialog = useDialog<TxRequest>(id);
   const network = useNetworks((s) =>
-    s.networks.find((n) => n.dedup_chain_id.chain_id === dialog.data?.chainId),
+    s.networks.find((n) => n.id.chain_id === dialog.data?.chainId),
   );
 
   if (!dialog.data || !network) return null;
@@ -184,7 +184,7 @@ interface HeaderProps {
 
 function Header({ from, to, network }: HeaderProps) {
   return (
-    <div className=" flex w-full items-stretch justify-between self-center">
+    <div className="flex w-full items-stretch justify-between self-center">
       <h1 className="font-xl">
         <div className="m-2 flex items-center gap-2">
           <AddressView address={from} />
@@ -195,7 +195,7 @@ function Header({ from, to, network }: HeaderProps) {
       <div className="ml-5">
         <ChainView
           name={network.name}
-          chainId={network.dedup_chain_id.chain_id}
+          chainId={network.id.chain_id}
           status={network.status}
         />
       </div>
@@ -357,7 +357,7 @@ function Erc20Transfer({ chainId, log }: Erc20TransferProps) {
   } = result.value;
 
   return (
-    <div className=" m-1 flex items-center gap-2">
+    <div className="m-1 flex items-center gap-2">
       <AddressView address={from} />
       <span>→</span>
       <AddressView address={to} />

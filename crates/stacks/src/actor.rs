@@ -174,9 +174,13 @@ impl Actor for Worker {
 
 impl Worker {
     pub fn new(port: u16, config_dir: PathBuf) -> color_eyre::Result<Self> {
+        dbg!("starting");
         let manager = match start_stacks(port, config_dir.clone()) {
             Ok(manager) => RuntimeState::Running(manager),
-            _ => RuntimeState::Error,
+            Err(e) => {
+                error!("failed to start: {}", e);
+                RuntimeState::Error
+            }
         };
 
         Ok(Self {

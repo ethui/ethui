@@ -9,7 +9,7 @@
       "!**/*.gen.ts",
       "!**/package.json",
       "!**/packages/data/**/*.json",
-      "!**/packages/**/dist/**",
+      "!**/packages/**/dist",
       "!**/packages/**/*.generated.ts",
       "!**/gui/dist",
       "!**/gui/vite.config.ts.timestamp-*",
@@ -25,10 +25,14 @@
   "linter": {
     "rules": {
       "recommended": true,
-      "correctness": { "noUnusedVariables": "error" },
+      "correctness": {
+        "noUnusedVariables": "error",
+        "useUniqueElementIds": "off"
+      },
       "suspicious": {
         "noExplicitAny": "off",
-        "noArrayIndexKey": "off"
+        "noArrayIndexKey": "off",
+        "noUnknownAtRules": "off"
       },
       "style": {
         "noUselessElse": "off",

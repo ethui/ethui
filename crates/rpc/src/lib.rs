@@ -1,6 +1,7 @@
 pub mod commands;
 mod error;
 mod methods;
+pub mod utils;
 
 use alloy::{dyn_abi::TypedData, hex, providers::Provider as _};
 use ethui_connections::{permissions::PermissionRequest, Ctx};
@@ -112,6 +113,7 @@ impl Handler {
         self_handler!("eth_signTypedData", Self::eth_sign_typed_data_v4);
         self_handler!("eth_signTypedData_v4", Self::eth_sign_typed_data_v4);
         self_handler!("wallet_requestPermissions", Self::request_permissions);
+        self_handler!("wallet_revokePermissions", Self::revoke_permissions);
         self_handler!("wallet_getPermissions", Self::get_permissions);
         self_handler!("wallet_addEthereumChain", Self::add_chain);
         self_handler!("wallet_updateEthereumChain", Self::update_chain);
@@ -176,6 +178,17 @@ impl Handler {
     ) -> jsonrpc_core::Result<serde_json::Value> {
         let request = params.parse::<PermissionRequest>().unwrap();
         let ret = ctx.request_permissions(request);
+
+        Ok(json!(ret))
+    }
+
+    #[tracing::instrument(skip(params))]
+    async fn revoke_permissions(
+        params: Params,
+        mut ctx: Ctx,
+    ) -> jsonrpc_core::Result<serde_json::Value> {
+        let request = params.parse::<PermissionRequest>().unwrap();
+        let ret = ctx.revoke_permissions(request);
 
         Ok(json!(ret))
     }
@@ -265,6 +278,7 @@ impl Handler {
 
         Ok(sender.finish().await?)
     }
+
 
     async fn eth_sign(params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
         let params = params.parse::<Vec<Option<String>>>().unwrap();

@@ -1,3 +1,4 @@
+use alloy::primitives::Bytes;
 use serde::Serialize;
 
 use crate::{Address, B256};
@@ -10,6 +11,7 @@ pub struct Transaction {
     pub to: Option<Address>,
     pub block_number: Option<u64>,
     pub position: Option<u64>,
+    pub data: Option<Bytes>,
     pub status: u64,
     pub incomplete: bool,
 }

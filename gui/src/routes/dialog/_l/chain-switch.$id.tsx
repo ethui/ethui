@@ -2,7 +2,6 @@ import { ChainView } from "@ethui/ui/components/chain-view";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { createFileRoute } from "@tanstack/react-router";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
-import { isDirty, isValid } from "zod";
 import { useDialog } from "#/hooks/useDialog";
 import { useNetworks } from "#/store/useNetworks";
 
@@ -22,12 +21,8 @@ function ChainSwitchDialog() {
 
   if (!switchData) return null;
 
-  const from = networks.find(
-    (n) => n.dedup_chain_id.chain_id === switchData.oldId,
-  );
-  const to = networks.find(
-    (n) => n.dedup_chain_id.chain_id === switchData.newId,
-  );
+  const from = networks.find((n) => n.id.chain_id === switchData.oldId);
+  const to = networks.find((n) => n.id.chain_id === switchData.newId);
 
   if (!from || !to) return null;
 
@@ -39,13 +34,13 @@ function ChainSwitchDialog() {
 
       <div className="flex gap-2 self-center">
         <ChainView
-          chainId={from.dedup_chain_id.chain_id}
+          chainId={from.id.chain_id}
           name={from.name}
           status={from.status}
         />
         <span>→</span>
         <ChainView
-          chainId={to?.dedup_chain_id.chain_id}
+          chainId={to?.id.chain_id}
           name={to.name}
           status={to.status}
         />
@@ -58,11 +53,7 @@ function ChainSwitchDialog() {
         >
           Cancel
         </Button>
-        <Button
-          type="submit"
-          disabled={!isDirty || !isValid}
-          onClick={() => send("accept")}
-        >
+        <Button type="submit" onClick={() => send("accept")}>
           Switch
         </Button>
       </div>

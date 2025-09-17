@@ -23,7 +23,11 @@ export function Breadcrumbs() {
       if (context.breadcrumb.value === acc[acc.length - 1]?.label) return acc;
       acc.push({
         label: (
-          <AddressView address={context.breadcrumb.value} className="text-sm" />
+          <AddressView
+            showLinkExplorer={false}
+            address={context.breadcrumb.value}
+            className="text-sm"
+          />
         ),
         path: pathname,
       });

@@ -25,7 +25,7 @@ function MsgSignDialog() {
   } catch (_e) {}
 
   return (
-    <div className="flex h-full flex-col justify-between gap-3 ">
+    <div className="flex h-full flex-col justify-between gap-3">
       <h1 className="font-xl">Sign Message</h1>
       <ScrollArea className="flex-grow">
         <HighlightBox className="whitespace-pre-wrap text-sm">

@@ -2,11 +2,15 @@
 name = "ethui-sync-anvil"
 version.workspace = true
 edition.workspace = true
-license-file.workspace = true
+license.workspace = true
 homepage.workspace = true
 repository.workspace = true
 exclude.workspace = true
 authors.workspace = true
+
+[[bin]]
+name = "anvil-sync-test"
+path = "src/bin/anvil-sync-test.rs"
 
 [dependencies]
 ethui-db.workspace = true
@@ -21,5 +25,11 @@ serde_json.workspace = true
 color-eyre.workspace = true
 once_cell.workspace = true
 tracing.workspace = true
+tracing-subscriber = "0.3"
 url.workspace = true
 futures.workspace = true
+clap.workspace = true
+reqwest = { version = "0.12", features = ["json"] }
+
+[dev-dependencies]
+serial_test = "3.0"

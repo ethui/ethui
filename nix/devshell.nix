@@ -17,6 +17,7 @@ let
     atkmm
     gobject-introspection
     harfbuzz
+    webkitgt_6_0
   ];
 
   libraries = with pkgs; [
@@ -40,4 +41,3 @@ pkgs.mkShell {
     export GIO_MODULE_DIR="${pkgs.glib-networking}/lib/gio/modules/";
   '';
 }
-
