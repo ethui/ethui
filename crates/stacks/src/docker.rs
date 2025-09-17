@@ -133,28 +133,28 @@ impl DockerManager<DockerSocketReady> {
 
 impl DockerManager<DockerInstalled> {
     pub fn check_image_available(self) -> color_eyre::Result<DockerManager<ImageAvailable>> {
-        //let docker_bin = self.docker_bin()?;
+        let docker_bin = self.docker_bin()?;
 
-        //let pull_output = Command::new(docker_bin)
-        //    .args(["pull", &self.image_name])
-        //    .output()?;
+        let pull_output = Command::new(docker_bin)
+            .args(["pull", &self.image_name])
+            .output()?;
 
-        //if !pull_output.status.success() {
-        //    return Err(eyre!(
-        //        "Failed to pull image {}: {}",
-        //        self.image_name,
-        //        String::from_utf8_lossy(&pull_output.stderr)
-        //    ));
-        //}
+        if !pull_output.status.success() {
+            return Err(eyre!(
+                "Failed to pull image {}: {}",
+                self.image_name,
+                String::from_utf8_lossy(&pull_output.stderr)
+            ));
+        }
 
-        //let verify_output = Command::new(docker_bin)
-        //    .args(["images", "-q", &self.image_name])
-        //    .output()?;
-        //let id = String::from_utf8_lossy(&verify_output.stdout);
+        let verify_output = Command::new(docker_bin)
+            .args(["images", "-q", &self.image_name])
+            .output()?;
+        let id = String::from_utf8_lossy(&verify_output.stdout);
 
-        //if id.trim().is_empty() {
-        //    return Err(eyre!("Image not found after pull: {}", self.image_name));
-        //}
+        if id.trim().is_empty() {
+            return Err(eyre!("Image not found after pull: {}", self.image_name));
+        }
 
         Ok(self.transition())
     }
@@ -396,7 +396,7 @@ pub fn start_stacks(
 ) -> color_eyre::Result<DockerManager<ContainerRunning>> {
     let manager = DockerManager::new(
         config_dir.join("local/"),
-        "localhost/ethui-stacks".to_string(),
+        "ghcr.io/ethui/stacks:latest".to_string(),
         "ethui-local-stacks".to_string(),
         4000,
         port,
