@@ -2,7 +2,6 @@ import { EthuiLogo } from "@ethui/ui/components/ethui-logo";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
@@ -26,20 +25,17 @@ import {
   CircleUser,
   Cog,
   Globe,
-  Terminal,
   Wifi,
 } from "lucide-react";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useIsAnvilNetwork } from "#/hooks/useIsAnvilNetwork";
 import { useSettings } from "#/store/useSettings";
-import { useCommandBar } from "./CommandBar";
 import { QuickFastModeToggle } from "./QuickFastModeToggle";
 
 const isDev = import.meta.env.MODE === "development";
 const isTest = import.meta.env.MODE === "test";
 
 export function AppSidebar() {
-  const commandBar = useCommandBar();
   const { open, toggleSidebar } = useSidebar();
   const isMacos = platform() === "macos";
 
@@ -116,17 +112,6 @@ export function AppSidebar() {
           </SidebarGroup>
         )}
       </SidebarContent>
-
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton onClick={() => commandBar.setOpen(true)}>
-              <Terminal />
-              <span>Command Bar</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
     </Sidebar>
   );
 }
