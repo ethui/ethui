@@ -17,7 +17,6 @@ let
     atkmm
     gobject-introspection
     harfbuzz
-    webkitgt_6_0
   ];
 
   libraries = with pkgs; [
