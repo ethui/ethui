@@ -35,6 +35,7 @@ in
 
     src = ../.;
     NIX_BUILD = "1";
+    TAURI_CONFIG = "bin/tauri.nix.conf.json";
 
     cargoRoot = ".";
 
