@@ -74,10 +74,10 @@ async fn receiver() -> ! {
                             .await;
                     }
                 }
-                StackNetworkAdd(params) => {
+                StackAdd(params) => {
                     let _ = Networks::write().await.add_network(params).await;
                 }
-                StackNetworkRemove(name) => {
+                StackRemove(name) => {
                     let _ = Networks::write().await.remove_network(&name).await;
                 }
                 _ => {}
