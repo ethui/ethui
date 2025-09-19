@@ -26,6 +26,5 @@
     "macOS": {
       "frameworks": ["../assets/libusb-1.0.dylib"]
     }
-  },
-  "plugins": {}
+  }
 }
