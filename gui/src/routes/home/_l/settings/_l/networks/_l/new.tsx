@@ -20,13 +20,16 @@ function Content() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<NetworkInputs>({
+  const form = useForm({
     mode: "onBlur",
     resolver: zodResolver(networkSchema),
+    defaultValues: {
+      id: { dedup_id: 0 },
+    },
   });
 
   const httpUrl = form.watch("http_url");
-  const userChainId = form.watch("dedup_chain_id.chain_id");
+  const userChainId = form.watch("id.chain_id");
 
   useEffect(() => {
     if (!httpUrl) return;
@@ -41,8 +44,8 @@ function Content() {
         );
 
         if (!userChainId) {
-          form.setValue("dedup_chain_id.chain_id", chainId);
-          form.clearErrors("dedup_chain_id.chain_id");
+          form.setValue("id.chain_id", chainId);
+          form.clearErrors("id.chain_id");
         }
       } catch (_e) {
         return null;
@@ -55,7 +58,6 @@ function Content() {
   const onSubmit = async (data: NetworkInputs) => {
     try {
       setLoading(true);
-      data.dedup_chain_id.dedup_id = 0;
       await invoke("networks_add", { network: data });
       setLoading(false);
       router.history.back();
@@ -83,9 +85,24 @@ function Content() {
         />
       </div>
 
-      <Form.Text label="HTTP RPC" name="http_url" className="w-full" />
-      <Form.Text label="WebSockets RPC" name="ws_url" className="w-full" />
-      <Form.Text label="Explorer URL" name="explorer_url" className="w-full" />
+      <Form.Text
+        label="HTTP RPC"
+        name="http_url"
+        className="w-full"
+        nullIfEmpty
+      />
+      <Form.Text
+        label="WebSockets RPC"
+        name="ws_url"
+        className="w-full"
+        nullIfEmpty
+      />
+      <Form.Text
+        label="Explorer URL"
+        name="explorer_url"
+        className="w-full"
+        nullIfEmpty
+      />
       <div className="flex flex-row gap-2">
         <Form.Text label="Currency" name="currency" />
         <Form.NumberField label="Decimals" name="decimals" />

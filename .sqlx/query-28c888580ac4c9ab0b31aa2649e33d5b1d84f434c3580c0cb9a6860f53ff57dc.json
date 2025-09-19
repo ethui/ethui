@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT DISTINCT address FROM contracts WHERE chain_id = ? AND dedup_id = ?",
+  "describe": {
+    "columns": [
+      {
+        "name": "address",
+        "ordinal": 0,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "28c888580ac4c9ab0b31aa2649e33d5b1d84f434c3580c0cb9a6860f53ff57dc"
+}

@@ -39,7 +39,7 @@ export function ERC20View({
 
   const blacklist = () => {
     invoke("db_set_erc20_blacklist", {
-      chainId: network.dedup_chain_id.chain_id,
+      chainId: network.id.chain_id,
       address: contract,
       blacklisted: true,
     });
@@ -52,7 +52,9 @@ export function ERC20View({
         <div className="flex flex-col">
           <div className="items-bottom flex gap-4">
             {symbol}
-            {contract && <AddressView address={contract} />}
+            {contract && (
+              <AddressView showLinkExplorer={false} address={contract} />
+            )}
           </div>
           <span>
             {truncatedBalance > 0

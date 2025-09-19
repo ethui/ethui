@@ -1,0 +1,14 @@
+{
+  "productName": "ethui-test",
+  "identifier": "dev.ethui.test-build",
+  "mainBinaryName": "ethui-test",
+  "build": {
+    "beforeDevCommand": "pnpm --filter @ethui/gui dev",
+    "beforeBuildCommand": "pnpm --filter @ethui/gui build --mode test",
+    "frontendDist": "../gui/dist",
+    "features": ["test"]
+  },
+  "bundle": {
+    "icon": ["icons-test/128x128.png"]
+  }
+}

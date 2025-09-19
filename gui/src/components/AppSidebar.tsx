@@ -25,25 +25,26 @@ import {
   ChevronRight,
   CircleUser,
   Cog,
-  FileCode2,
-  ReceiptText,
+  Globe,
   Terminal,
   Wifi,
 } from "lucide-react";
 import { useInvoke } from "#/hooks/useInvoke";
+import { useIsAnvilNetwork } from "#/hooks/useIsAnvilNetwork";
 import { useSettings } from "#/store/useSettings";
 import { useCommandBar } from "./CommandBar";
 import { QuickFastModeToggle } from "./QuickFastModeToggle";
 
 const isDev = import.meta.env.MODE === "development";
+const isTest = import.meta.env.MODE === "test";
 
 export function AppSidebar() {
   const commandBar = useCommandBar();
-  const location = useLocation();
   const { open, toggleSidebar } = useSidebar();
   const isMacos = platform() === "macos";
 
   const { data: isStacksEnabled } = useInvoke<boolean>("is_stacks_enabled", {});
+  const { data: isAnvilNetwork = false } = useIsAnvilNetwork();
 
   const showOnboarding = useSettings((s) => !s.settings?.onboarding.hidden);
 
@@ -58,6 +59,14 @@ export function AppSidebar() {
     });
   }
 
+  let logoFill = "fill-sidebar-foreground";
+  if (isDev) {
+    logoFill = "fill-dev";
+  }
+  if (isTest) {
+    logoFill = "fill-[#dd8622]";
+  }
+
   return (
     <Sidebar className="select-none pt-12" collapsible="icon">
       <SidebarHeader
@@ -68,7 +77,7 @@ export function AppSidebar() {
           onClick={toggleSidebar}
           size={48}
           bg="bg-transparent"
-          fg={isDev ? "fill-dev" : "fill-sidebar-foreground"}
+          fg={logoFill}
         />
       </SidebarHeader>
 
@@ -86,38 +95,16 @@ export function AppSidebar() {
               {items.map((item) => (
                 <CustomSidebarMenuItem key={item.title} {...item} />
               ))}
-
-              <Collapsible className="group/collapsible">
-                <SidebarMenuItem>
-                  <CollapsibleTrigger asChild className="cursor-pointer">
-                    <SidebarMenuButton>
-                      <Cog />
-                      <span>Settings</span>
-                      <ChevronRight className="ml-auto group-data-[state=open]/collapsible:hidden" />
-                      <ChevronDown className="ml-auto group-data-[state=closed]/collapsible:hidden" />
-                    </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <SidebarMenuSub>
-                      {settingsItems.map((item) => (
-                        <SidebarMenuItem key={item.title}>
-                          <SidebarMenuButton asChild>
-                            <Link
-                              to={item.url}
-                              className={cn(
-                                item.url === location.pathname &&
-                                  "bg-primary text-accent hover:bg-primary hover:text-accent",
-                              )}
-                            >
-                              {item.title}
-                            </Link>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      ))}
-                    </SidebarMenuSub>
-                  </CollapsibleContent>
-                </SidebarMenuItem>
-              </Collapsible>
+              <CollapsibleMenuSection
+                icon={<Globe />}
+                title="Explorer"
+                items={getExplorerItems(isAnvilNetwork)}
+              />
+              <CollapsibleMenuSection
+                icon={<Cog />}
+                title="Settings"
+                items={settingsItems}
+              />
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -160,14 +147,14 @@ function CustomSidebarMenuItem({
 
   return (
     <SidebarMenuItem key={title}>
-      <SidebarMenuButton asChild>
-        <Link
-          to={url}
-          className={cn(
-            url === location.pathname &&
-              "bg-primary text-accent hover:bg-primary hover:text-accent",
-          )}
-        >
+      <SidebarMenuButton
+        asChild
+        className={cn(
+          url === location.pathname &&
+            "bg-primary text-accent hover:bg-primary hover:text-accent",
+        )}
+      >
+        <Link to={url}>
           {icon}
           {title}
         </Link>
@@ -176,6 +163,55 @@ function CustomSidebarMenuItem({
   );
 }
 
+interface CollapsibleMenuSectionProps {
+  icon: React.ReactNode;
+  title: string;
+  items: Array<{ title: string; url: string }>;
+}
+
+function CollapsibleMenuSection({
+  icon,
+  title,
+  items,
+}: CollapsibleMenuSectionProps) {
+  const location = useLocation();
+
+  return (
+    <Collapsible className="group/collapsible">
+      <SidebarMenuItem>
+        <CollapsibleTrigger asChild className="cursor-pointer">
+          <SidebarMenuButton>
+            {icon}
+            <span>{title}</span>
+            <ChevronRight className="ml-auto group-data-[state=open]/collapsible:hidden" />
+            <ChevronDown className="ml-auto group-data-[state=closed]/collapsible:hidden" />
+          </SidebarMenuButton>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <SidebarMenuSub>
+            {items.map((item) => (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton
+                  asChild
+                  className={cn(
+                    item.url === location.pathname &&
+                      "bg-primary text-accent hover:bg-primary hover:text-accent",
+                  )}
+                >
+                  <Link to={item.url}>{item.title}</Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenuSub>
+        </CollapsibleContent>
+      </SidebarMenuItem>
+    </Collapsible>
+  );
+}
+
+function getExplorerItems(isAnvilNetwork: boolean) {
+  return explorerItems.filter((item) => !item.anvilOnly || isAnvilNetwork);
+}
 // Menu items.
 const items = [
   {
@@ -184,20 +220,16 @@ const items = [
     icon: <CircleUser />,
   },
   {
-    title: "Transactions",
-    url: "/home/transactions",
-    icon: <ReceiptText />,
-  },
-  {
-    title: "Contracts",
-    url: "/home/contracts",
-    icon: <FileCode2 />,
-  },
-  {
     title: "Connections",
     url: "/home/connections",
     icon: <Wifi />,
   },
+];
+
+const explorerItems = [
+  { title: "Addresses", url: "/home/explorer/addresses", anvilOnly: true },
+  { title: "Transactions", url: "/home/explorer/transactions" },
+  { title: "Contracts", url: "/home/explorer/contracts" },
 ];
 
 const defaultSettingsItems = [

@@ -63,9 +63,24 @@ function Content({ network }: { network: NetworkInputs }) {
         />
       </div>
 
-      <Form.Text label="HTTP RPC" name="http_url" className="w-full" />
-      <Form.Text label="WebSockets RPC" name="ws_url" className="w-full" />
-      <Form.Text label="Explorer URL" name="explorer_url" className="w-full" />
+      <Form.Text
+        label="HTTP RPC"
+        name="http_url"
+        className="w-full"
+        nullIfEmpty
+      />
+      <Form.Text
+        label="WebSockets RPC"
+        name="ws_url"
+        className="w-full"
+        nullIfEmpty
+      />
+      <Form.Text
+        label="Explorer URL"
+        name="explorer_url"
+        className="w-full"
+        nullIfEmpty
+      />
       <div className="flex flex-row gap-2">
         <Form.Text label="Currency" name="currency" />
         <Form.NumberField label="Decimals" name="decimals" />

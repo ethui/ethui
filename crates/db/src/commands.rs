@@ -33,6 +33,18 @@ pub async fn db_get_older_transactions(
 }
 
 #[tauri::command]
+pub async fn db_get_latest_transactions(
+    chain_id: u32,
+    max: u32,
+    last_known: Option<TxIdx>,
+    db: tauri::State<'_, Db>,
+) -> TauriResult<Vec<Transaction>> {
+    Ok(db
+        .get_latest_transactions(chain_id, max, last_known)
+        .await?)
+}
+
+#[tauri::command]
 pub async fn db_get_transaction_by_hash(
     chain_id: u32,
     hash: B256,
@@ -147,4 +159,21 @@ pub async fn db_clear_erc20_blacklist(
     db.clear_erc20_blacklist(chain_id, address).await?;
     ethui_broadcast::ui_notify(UINotify::BalancesUpdated).await;
     Ok(())
+}
+
+#[tauri::command]
+pub async fn db_get_contract_addresses(
+    chain_id: u32,
+    dedup_id: u32,
+    db: tauri::State<'_, Db>,
+) -> TauriResult<Vec<Address>> {
+    Ok(db.get_contract_addresses(chain_id, dedup_id).await?)
+}
+
+#[tauri::command]
+pub async fn db_get_transaction_addresses(
+    chain_id: u32,
+    db: tauri::State<'_, Db>,
+) -> TauriResult<Vec<Address>> {
+    Ok(db.get_transaction_addresses(chain_id).await?)
 }

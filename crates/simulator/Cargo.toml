@@ -2,7 +2,7 @@
 name = "ethui-simulator"
 version.workspace = true
 edition.workspace = true
-license-file.workspace = true
+license.workspace = true
 homepage.workspace = true
 repository.workspace = true
 exclude.workspace = true
@@ -19,7 +19,7 @@ tokio.workspace = true
 serde.workspace = true
 color-eyre.workspace = true
 alloy.workspace = true
-revm = { version = "27", features = ["alloydb"] }
+revm = { version = "29", features = ["alloydb"] }
 
 [dev-dependencies]
 pretty_assertions = "1.4.0"

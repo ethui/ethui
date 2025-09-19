@@ -14,6 +14,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { map } from "lodash-es";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/shallow";
+import { EmptyState } from "#/components/EmptyState";
 import { useEventListener } from "#/hooks/useEventListener";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
@@ -31,6 +32,17 @@ function Connections() {
 
   useEventListener({ event: "peers-updated", callback: refetch });
 
+  const hasConnections = peersByDomain && Object.keys(peersByDomain).length > 0;
+
+  if (!hasConnections) {
+    return (
+      <EmptyState
+        message="No connections found"
+        description="Connect to dApps to see them here."
+      />
+    );
+  }
+
   return (
     <div className="m-1 flex flex-col">
       {map(peersByDomain, (peers, domain) => (
@@ -42,7 +54,7 @@ function Connections() {
 
 function Domain({ domain, peers }: { domain: string; peers: Peer[] }) {
   return (
-    <div className=" m-1 flex items-center gap-2">
+    <div className="m-1 flex items-center gap-2">
       <span> {peers[0].origin}</span>
       <div>
         <AffinityForm domain={domain} />
@@ -80,8 +92,8 @@ function AffinityForm({ domain }: { domain: string }) {
       setCurrentNetwork(
         networks.find(
           (n) =>
-            n.dedup_chain_id.chain_id === current.sticky.chain_id &&
-            n.dedup_chain_id.dedup_id === current.sticky.dedup_id,
+            n.id.chain_id === current.sticky.chain_id &&
+            n.id.dedup_id === current.sticky.dedup_id,
         ),
       );
     }
@@ -112,7 +124,7 @@ function AffinityForm({ domain }: { domain: string }) {
         <SelectValue>
           {!isGlobal && currentNetwork ? (
             <ChainView
-              chainId={currentNetwork.dedup_chain_id.chain_id}
+              chainId={currentNetwork.id.chain_id}
               name={currentNetwork.name}
             />
           ) : (
@@ -125,14 +137,8 @@ function AffinityForm({ domain }: { domain: string }) {
         <SelectGroup>
           <SelectItem value={JSON.stringify("global")}>Global</SelectItem>
           {networks.map((network) => (
-            <SelectItem
-              value={JSON.stringify(network.dedup_chain_id)}
-              key={network.name}
-            >
-              <ChainView
-                chainId={network.dedup_chain_id.chain_id}
-                name={network.name}
-              />
+            <SelectItem value={JSON.stringify(network.id)} key={network.name}>
+              <ChainView chainId={network.id.chain_id} name={network.name} />
             </SelectItem>
           ))}
         </SelectGroup>

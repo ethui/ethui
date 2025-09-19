@@ -8,7 +8,7 @@ use alloy::{
     network::Ethereum,
     providers::{Provider, ProviderBuilder, RootProvider},
 };
-use ethui_types::{Affinity, DedupChainId, NewNetworkParams, prelude::*};
+use ethui_types::{prelude::*, Affinity, NetworkId, NewNetworkParams};
 pub use init::init;
 use migrations::LatestVersion;
 
@@ -67,10 +67,7 @@ impl Networks {
     /// Changes the currently connected wallet by internal ID
     ///
     /// Broadcasts `chainChanged` to all connections with global or no affinity
-    pub async fn set_current_by_dedup_chain_id(
-        &mut self,
-        dedup_chain_id: DedupChainId,
-    ) -> Result<()> {
+    pub async fn set_current_by_dedup_chain_id(&mut self, dedup_chain_id: NetworkId) -> Result<()> {
         let new_network = self
             .inner
             .networks
@@ -117,11 +114,11 @@ impl Networks {
         self.inner.networks.values().find(|n| n.name == name)
     }
 
-    pub fn get_network_by_dedup_chain_id(&self, dedup_chain_id: DedupChainId) -> Option<&Network> {
+    pub fn get_network_by_dedup_chain_id(&self, dedup_chain_id: NetworkId) -> Option<&Network> {
         self.inner
             .networks
             .values()
-            .find(|n| n.dedup_chain_id == dedup_chain_id)
+            .find(|n| n.id == dedup_chain_id)
     }
 
     pub async fn add_network(&mut self, network: NewNetworkParams) -> Result<()> {
@@ -129,7 +126,7 @@ impl Networks {
             return Err(eyre!("Already exists"));
         }
 
-        let deduplication_id = self.get_chain_id_count(network.dedup_chain_id.chain_id());
+        let deduplication_id = self.get_chain_id_count(network.chain_id) as u32;
         let network = network.into_network(deduplication_id);
 
         if !network.is_dev().await
@@ -212,20 +209,20 @@ impl Networks {
         Ok(provider.get_chain_id().await?)
     }
 
-    pub fn get_chain_id_count(&self, chain_id: u32) -> i32 {
+    pub fn get_chain_id_count(&self, chain_id: u32) -> usize {
         self.inner
             .networks
             .values()
             .filter(|network| network.chain_id() == chain_id)
-            .count() as i32
+            .count()
     }
 
-    pub fn get_lowest_dedup_id(&self, chain_id: u32) -> i32 {
+    pub fn get_lowest_dedup_id(&self, chain_id: u32) -> u32 {
         self.inner
             .networks
             .values()
             .filter(|network| network.chain_id() == chain_id)
-            .map(|network| network.dedup_chain_id.dedup_id())
+            .map(|network| network.id.dedup_id())
             .min()
             .unwrap_or(0)
     }

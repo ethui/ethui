@@ -12,9 +12,11 @@ use crate::updater;
 use crate::{commands, menu, system_tray, windows};
 
 #[cfg(not(debug_assertions))]
-static LOCK_NAME: &str = "iron-wallet";
-#[cfg(debug_assertions)]
-static LOCK_NAME: &str = "iron-wallet-dev";
+static LOCK_NAME: &str = "ethui";
+#[cfg(all(debug_assertions, not(feature = "test")))]
+static LOCK_NAME: &str = "ethui-dev";
+#[cfg(all(debug_assertions, feature = "test"))]
+static LOCK_NAME: &str = "ethui-test";
 
 pub struct EthUIApp {
     app: tauri::App,
@@ -68,9 +70,12 @@ impl EthUIApp {
                 ethui_db::commands::db_get_contracts,
                 ethui_db::commands::db_get_newer_transactions,
                 ethui_db::commands::db_get_older_transactions,
+                ethui_db::commands::db_get_latest_transactions,
                 ethui_db::commands::db_get_transaction_by_hash,
                 ethui_db::commands::db_get_contract_abi,
                 ethui_db::commands::db_get_contract_impl_abi,
+                ethui_db::commands::db_get_contract_addresses,
+                ethui_db::commands::db_get_transaction_addresses,
                 ethui_db::commands::db_get_erc20_metadata,
                 ethui_db::commands::db_get_erc20_balances,
                 ethui_db::commands::db_get_erc20_blacklist,
@@ -97,6 +102,8 @@ impl EthUIApp {
                 ethui_dialogs::commands::dialog_send,
                 ethui_rpc::commands::rpc_send_transaction,
                 ethui_rpc::commands::rpc_eth_call,
+                ethui_rpc::commands::rpc_get_code,
+                ethui_rpc::commands::rpc_is_contract,
                 ethui_connections::commands::connections_affinity_for,
                 ethui_connections::commands::connections_set_affinity,
                 ethui_sync::commands::sync_alchemy_is_network_supported,

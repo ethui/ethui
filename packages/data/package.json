@@ -4,13 +4,16 @@
   "main": "index.ts",
   "version": "0.1.0",
   "type": "module",
+  "scripts": {
+    "tsc": "tsc"
+  },
   "dependencies": {
-    "typescript": "5.8.2",
-    "viem": "^2.31.6"
+    "typescript": "5.9.2",
+    "viem": "^2.37.3"
   },
   "devDependencies": {
     "@types/core-js": "^2.5.8",
     "@types/lodash-es": "^4.17.12",
-    "@types/node": "^24.0.10"
+    "@types/node": "^24.2.0"
   }
 }
