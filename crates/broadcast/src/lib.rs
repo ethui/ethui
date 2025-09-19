@@ -1,4 +1,4 @@
-use ethui_types::{Affinity, NewNetworkParams, prelude::*, ui_events};
+use ethui_types::{Affinity, NetworkId, NewNetworkParams, prelude::*, ui_events};
 pub use internal_msgs::*;
 use once_cell::sync::Lazy;
 use tokio::sync::{Mutex, broadcast, oneshot};
@@ -33,9 +33,9 @@ pub enum InternalMsg {
 
     ContractFound,
 
-    StackNetworkAdd(NewNetworkParams),
+    StackAdd(NewNetworkParams),
 
-    StackNetworkRemove(String),
+    StackRemove(String),
 }
 
 #[derive(Debug, Clone)]
@@ -131,11 +131,11 @@ mod internal_msgs {
     }
 
     pub async fn stack_network_add(params: NewNetworkParams) {
-        send(StackNetworkAdd(params)).await;
+        send(StackAdd(params)).await;
     }
 
     pub async fn stack_network_remove(name: String) {
-        send(StackNetworkRemove(name)).await;
+        send(StackRemove(name)).await;
     }
 
     #[instrument(level = "trace")]

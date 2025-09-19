@@ -4,7 +4,7 @@ use ethui_types::prelude::*;
 use kameo::prelude::*;
 use tracing::error;
 
-use crate::docker::{ContainerNotRunning, ContainerRunning, DockerManager, start_stacks};
+use crate::docker::{start_stacks, ContainerNotRunning, ContainerRunning, DockerManager};
 
 pub async fn ask<M>(msg: M) -> color_eyre::Result<<<Worker as Message<M>>::Reply as Reply>::Ok>
 where
@@ -61,10 +61,13 @@ impl Message<SetEnabled> for Worker {
         SetEnabled(enabled): SetEnabled,
         _ctx: &mut Context<Self, Self::Reply>,
     ) -> Self::Reply {
-        if self.stacks != enabled {
-            self.stacks = enabled;
+        if self.stacks == enabled {
+            return;
+        }
 
-            if enabled && let RuntimeState::Stopped(c) = &self.manager {
+        self.stacks = enabled;
+
+        if enabled && let RuntimeState::Stopped(c) = &self.manager {
                 match c.clone().run() {
                     Ok(c) => self.manager = RuntimeState::Running(c),
                     Err(e) => tracing::error!("Failed to stop stacks docker image: {}", e),
@@ -75,7 +78,6 @@ impl Message<SetEnabled> for Worker {
                     Err(e) => tracing::error!("Failed to stop stacks docker image: {}", e),
                 }
             }
-        }
     }
 }
 
@@ -129,7 +131,6 @@ impl Message<RemoveStack> for Worker {
         RemoveStack(slug): RemoveStack,
         _ctx: &mut Context<Self, Self::Reply>,
     ) -> Self::Reply {
-        println!("{slug}");
         match &self.manager {
             RuntimeState::Running(docker_manager) => docker_manager.remove_stack(&slug).await,
             _ => Ok(()),

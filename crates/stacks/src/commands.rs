@@ -4,7 +4,7 @@ use tauri::command;
 use url::Url;
 
 use crate::{
-    actor::{CreateStack, ListStracks, RemoveStack, Shutdown},
+    actor::{CreateStack, GetConfig, ListStracks, RemoveStack, Shutdown},
     utils,
 };
 
@@ -14,10 +14,12 @@ pub async fn stacks_create(slug: String) -> TauriResult<()> {
 
     tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
 
-    let rpc_url = format!("http://{}.local.ethui.dev:9110", slug);
+    let (port, _) = crate::actor::ask(GetConfig()).await?;
+
+    let rpc_url = format!("http://{}.local.ethui.dev:{}", slug, port);
     let chain_id = utils::get_chain_id(&rpc_url).await?;
 
-    let explorer_url = format!("http://{}.local.ethui.dev:9110", slug);
+    let explorer_url = format!("http://{}.local.ethui.dev:{}", slug, port);
 
     let network_params = NewNetworkParams {
         name: slug.clone(),
@@ -43,7 +45,9 @@ pub async fn stacks_list() -> TauriResult<Vec<String>> {
 
 #[command]
 pub async fn stacks_get_status(slug: String) -> TauriResult<String> {
-    let rpc_url = format!("http://{}.local.ethui.dev:9110", slug);
+    let (port, _) = crate::actor::ask(GetConfig()).await?;
+    let rpc_url = format!("http://{}.local.ethui.dev:{}", slug, port);
+
     match utils::check_stack_online(&rpc_url).await {
         Ok(true) => Ok("online".to_string()),
         Ok(false) => Ok("offline".to_string()),
