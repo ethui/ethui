@@ -17,7 +17,7 @@ pub(crate) async fn show(app: &AppHandle) {
             "index.html#/home/onboarding"
         };
 
-        build_window(app, "main", url, 600.0, 800.0);
+        build_window(app, "main", url, 900.0, 800.0);
     }
 }
 
