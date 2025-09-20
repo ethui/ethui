@@ -25,6 +25,9 @@ import {
   ChevronRight,
   CircleUser,
   Cog,
+  Database,
+  FileCode2,
+  ReceiptText,
   Globe,
   Terminal,
   Wifi,
@@ -49,15 +52,6 @@ export function AppSidebar() {
   const showOnboarding = useSettings((s) => !s.settings?.onboarding.hidden);
 
   const settingsItems = [...defaultSettingsItems];
-  if (
-    isStacksEnabled &&
-    !settingsItems.some((item) => item.title === "Stacks")
-  ) {
-    settingsItems.splice(settingsItems.length - 1, 0, {
-      title: "Stacks",
-      url: "/home/settings/stacks",
-    });
-  }
 
   let logoFill = "fill-sidebar-foreground";
   if (isDev) {
@@ -151,7 +145,7 @@ function CustomSidebarMenuItem({
         asChild
         className={cn(
           url === location.pathname &&
-            "bg-primary text-accent hover:bg-primary hover:text-accent",
+          "bg-primary text-accent hover:bg-primary hover:text-accent",
         )}
       >
         <Link to={url}>
@@ -195,7 +189,7 @@ function CollapsibleMenuSection({
                   asChild
                   className={cn(
                     item.url === location.pathname &&
-                      "bg-primary text-accent hover:bg-primary hover:text-accent",
+                    "bg-primary text-accent hover:bg-primary hover:text-accent",
                   )}
                 >
                   <Link to={item.url}>{item.title}</Link>
@@ -223,6 +217,11 @@ const items = [
     title: "Connections",
     url: "/home/connections",
     icon: <Wifi />,
+  },
+  {
+    title: "Stacks",
+    url: "/home/stacks/",
+    icon: <Database />,
   },
 ];
 

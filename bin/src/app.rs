@@ -49,6 +49,16 @@ impl EthUIApp {
                 commands::add_contract,
                 commands::remove_contract,
                 commands::is_stacks_enabled,
+                #[cfg(feature = "stacks")]
+                ethui_stacks::commands::stacks_create,
+                #[cfg(feature = "stacks")]
+                ethui_stacks::commands::stacks_list,
+                #[cfg(feature = "stacks")]
+                ethui_stacks::commands::stacks_get_status,
+                #[cfg(feature = "stacks")]
+                ethui_stacks::commands::stacks_remove,
+                #[cfg(feature = "stacks")]
+                ethui_stacks::commands::stacks_shutdown,
                 ethui_settings::commands::settings_get,
                 ethui_settings::commands::settings_set,
                 ethui_settings::commands::settings_set_dark_mode,
@@ -154,7 +164,7 @@ impl EthUIApp {
             windows::main::show(self.app.handle()).await;
         }
 
-        self.app.run(|#[allow(unused)] handle, event| match event {
+        self.app.run( |#[allow(unused)] handle, event| match event {
             tauri::RunEvent::ExitRequested { code, api, .. } => {
                 // code == None seems to happen when the window is closed,
                 // in which case we don't want to close the app, but keep it running in
@@ -167,6 +177,18 @@ impl EthUIApp {
             tauri::RunEvent::Exit => {
                 #[cfg(feature = "aptabase")]
                 let _ = handle.track_event("app_exited", None);
+                
+                
+                #[cfg(feature = "stacks")]
+                {
+
+                    tokio::task::block_in_place(|| {
+                        tokio::runtime::Handle::current().block_on(async {
+                            let _ = ethui_stacks::actor::ask(ethui_stacks::actor::Shutdown()).await;
+;
+                        });
+                    });
+                }
             }
 
             #[cfg(target_os = "macos")]
