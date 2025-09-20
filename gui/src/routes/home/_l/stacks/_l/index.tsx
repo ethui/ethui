@@ -28,7 +28,7 @@ function StackCard({ name }: { name: string }) {
   useEffect(() => {
     checkStatus();
     // Check status every 10 seconds
-    const interval = setInterval(checkStatus, 10000);
+    const interval = setInterval(checkStatus, 25000);
     return () => clearInterval(interval);
   }, [checkStatus]);
 

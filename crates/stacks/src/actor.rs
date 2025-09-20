@@ -42,10 +42,12 @@ pub struct Worker {
 #[derive(Clone, Debug)]
 pub enum RuntimeState {
     Error,
+    Initializing,
     Stopped(DockerManager<ContainerNotRunning>),
     Running(DockerManager<ContainerRunning>),
 }
 
+pub struct Initializing();
 pub struct SetEnabled(pub bool);
 pub struct GetConfig();
 pub struct ListStracks();
@@ -160,6 +162,31 @@ impl Message<Shutdown> for Worker {
     }
 }
 
+impl Message<Initializing> for Worker {
+    type Reply = Result<()>;
+
+    async fn handle(
+        &mut self,
+        _msg: Initializing,
+        _ctx: &mut Context<Self, Self::Reply>,
+    ) -> Self::Reply {
+        if let RuntimeState::Initializing = &self.manager {
+            match start_stacks(self.port, self.config_dir.clone()) {
+                Ok(manager) => {
+                    self.manager = RuntimeState::Running(manager);
+                    Ok(())
+                }
+                Err(e) => {
+                    self.manager = RuntimeState::Error;
+                    Err(eyre!("Failed Initializing: {e}"))
+                }
+            }
+        } else {
+            Ok(())
+        }
+    }
+}
+
 impl Actor for Worker {
     type Error = color_eyre::Report;
 
@@ -175,20 +202,11 @@ impl Actor for Worker {
 
 impl Worker {
     pub fn new(port: u16, config_dir: PathBuf) -> color_eyre::Result<Self> {
-        dbg!("starting");
-        let manager = match start_stacks(port, config_dir.clone()) {
-            Ok(manager) => RuntimeState::Running(manager),
-            Err(e) => {
-                error!("failed to start: {}", e);
-                RuntimeState::Error
-            }
-        };
-
         Ok(Self {
-            stacks: !matches!(manager, RuntimeState::Running(_)),
+            stacks: false,
             port,
             config_dir,
-            manager,
+            manager: RuntimeState::Initializing,
         })
     }
 }
