@@ -1,6 +1,6 @@
 use std::{env, fs, marker::PhantomData, path::PathBuf, process::Command, str::FromStr};
 
-use color_eyre::eyre::{OptionExt, WrapErr, eyre};
+use color_eyre::eyre::{eyre, OptionExt, WrapErr};
 use reqwest::Client;
 
 #[derive(Debug, Clone)]
@@ -239,7 +239,7 @@ impl DockerManager<ContainerRunning> {
     }
 
     pub async fn create_stack(&self, slug: &str) -> color_eyre::Result<()> {
-        let url = format!("http://api.localhost:{}/stacks", self.host_port);
+        let url = format!("http://api.local.ethui.dev:{}/stacks", self.host_port);
         let client = Client::new();
         let res = client
             .post(&url)
@@ -254,7 +254,7 @@ impl DockerManager<ContainerRunning> {
     }
 
     pub async fn list_stacks(&self) -> color_eyre::Result<Vec<String>> {
-        let url = format!("http://api.localhost:{}/stacks", self.host_port);
+        let url = format!("http://api.local.ethui.dev:{}/stacks", self.host_port);
         let client = Client::new();
         let res = client
             .get(&url)
@@ -275,7 +275,10 @@ impl DockerManager<ContainerRunning> {
     }
 
     pub async fn remove_stack(&self, slug: &str) -> color_eyre::Result<()> {
-        let url = format!("http://api.localhost:{}/stacks/{slug}", self.host_port);
+        let url = format!(
+            "http://api.local.ethui.dev:{}/stacks/{slug}",
+            self.host_port
+        );
         let client = Client::new();
         let res = client
             .delete(&url)

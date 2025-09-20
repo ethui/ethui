@@ -4,7 +4,7 @@ use ethui_types::prelude::*;
 use kameo::prelude::*;
 use tracing::error;
 
-use crate::docker::{start_stacks, ContainerNotRunning, ContainerRunning, DockerManager};
+use crate::docker::{ContainerNotRunning, ContainerRunning, DockerManager, start_stacks};
 
 pub async fn ask<M>(msg: M) -> color_eyre::Result<<<Worker as Message<M>>::Reply as Reply>::Ok>
 where
@@ -42,10 +42,12 @@ pub struct Worker {
 #[derive(Clone, Debug)]
 pub enum RuntimeState {
     Error,
+    Initializing,
     Stopped(DockerManager<ContainerNotRunning>),
     Running(DockerManager<ContainerRunning>),
 }
 
+pub struct Initializing();
 pub struct SetEnabled(pub bool);
 pub struct GetConfig();
 pub struct ListStracks();
@@ -68,16 +70,16 @@ impl Message<SetEnabled> for Worker {
         self.stacks = enabled;
 
         if enabled && let RuntimeState::Stopped(c) = &self.manager {
-                match c.clone().run() {
-                    Ok(c) => self.manager = RuntimeState::Running(c),
-                    Err(e) => tracing::error!("Failed to stop stacks docker image: {}", e),
-                }
-            } else if !enabled && let RuntimeState::Running(c) = &self.manager {
-                match c.clone().stop() {
-                    Ok(c) => self.manager = RuntimeState::Stopped(c),
-                    Err(e) => tracing::error!("Failed to stop stacks docker image: {}", e),
-                }
+            match c.clone().run() {
+                Ok(c) => self.manager = RuntimeState::Running(c),
+                Err(e) => tracing::error!("Failed to stop stacks docker image: {}", e),
             }
+        } else if !enabled && let RuntimeState::Running(c) = &self.manager {
+            match c.clone().stop() {
+                Ok(c) => self.manager = RuntimeState::Stopped(c),
+                Err(e) => tracing::error!("Failed to stop stacks docker image: {}", e),
+            }
+        }
     }
 }
 
@@ -160,6 +162,31 @@ impl Message<Shutdown> for Worker {
     }
 }
 
+impl Message<Initializing> for Worker {
+    type Reply = Result<()>;
+
+    async fn handle(
+        &mut self,
+        _msg: Initializing,
+        _ctx: &mut Context<Self, Self::Reply>,
+    ) -> Self::Reply {
+        if let RuntimeState::Initializing = &self.manager {
+            match start_stacks(self.port, self.config_dir.clone()) {
+                Ok(manager) => {
+                    self.manager = RuntimeState::Running(manager);
+                    Ok(())
+                }
+                Err(e) => {
+                    self.manager = RuntimeState::Error;
+                    Err(eyre!("Failed Initializing: {e}"))
+                }
+            }
+        } else {
+            Ok(())
+        }
+    }
+}
+
 impl Actor for Worker {
     type Error = color_eyre::Report;
 
@@ -175,16 +202,11 @@ impl Actor for Worker {
 
 impl Worker {
     pub fn new(port: u16, config_dir: PathBuf) -> color_eyre::Result<Self> {
-        let manager = match start_stacks(port, config_dir.clone()) {
-            Ok(manager) => RuntimeState::Running(manager),
-            _ => RuntimeState::Error,
-        };
-
         Ok(Self {
-            stacks: !matches!(manager, RuntimeState::Running(_)),
+            stacks: false,
             port,
             config_dir,
-            manager,
+            manager: RuntimeState::Initializing,
         })
     }
 }
