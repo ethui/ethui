@@ -42,44 +42,11 @@ impl Analytics {
         "fallback-unknown-machine".to_string()
     }
 
-    fn common_properties(&self) -> HashMap<String, serde_json::Value> {
+    pub fn get_common_properties(&self) -> HashMap<String, serde_json::Value> {
         let mut props = HashMap::new();
         props.insert("user_id".to_string(), self.user_id.to_string().into());
         props.insert("dev_mode".to_string(), self.is_dev_mode.into());
         props
-    }
-  
-    pub fn track_event(
-        &self,
-        handle: &AppHandle,
-        event_name: &str,
-        properties: Option<HashMap<String, serde_json::Value>>,
-    ) {
-        #[cfg(feature = "aptabase")]
-        {
-            let mut final_props = self.common_properties();
-            if let Some(props) = properties {
-                final_props.extend(props);
-            }           
-            let _ = handle.track_event(event_name, Some(final_props));
-        }
-        
-        #[cfg(not(feature = "aptabase"))]
-        {
-            let final_props = if let Some(mut props) = properties {
-                let common = self.common_properties();
-                props.extend(common);
-                props
-            } else {
-                self.common_properties()
-            };
-            
-            tracing::info!(
-                "Analytics event: {} with properties: {:?}",
-                event_name,
-                final_props
-            );
-        }
     }
 }
 
@@ -95,12 +62,17 @@ pub fn track_event(
     #[cfg(feature = "aptabase")]
     {
         if let Some(analytics) = get_analytics(handle) {
-            analytics.track_event(handle, event_name, properties);
+            
+            let mut final_props = analytics.get_common_properties();
+            if let Some(props) = properties {
+                final_props.extend(props);
+            }
+            let _ = handle.track_event(event_name, Some(final_props));
         }
     }
     
     #[cfg(not(feature = "aptabase"))]
-    {
+    {    
         let machine_uuid = Analytics::get_machine_based_user_id();
         let is_dev = cfg!(debug_assertions);
         
