@@ -806,6 +806,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "analytics"
+version = "1.23.0"
+dependencies = [
+ "hostname",
+ "mac_address",
+ "serde_json",
+ "tauri",
+ "tauri-plugin-aptabase",
+ "tracing",
+ "uuid 1.17.0",
+]
+
+[[package]]
 name = "android-tzdata"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2145,7 +2158,7 @@ dependencies = [
  "hidapi-rusb",
  "js-sys",
  "log",
- "nix",
+ "nix 0.26.4",
  "once_cell",
  "thiserror 1.0.69",
  "tokio",
@@ -2952,6 +2965,7 @@ name = "ethui"
 version = "1.23.0"
 dependencies = [
  "alloy",
+ "analytics",
  "color-eyre",
  "ethui-args",
  "ethui-broadcast",
@@ -4277,6 +4291,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "hostname"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a56f203cd1c76362b69e3863fd987520ac36cf70a8c92627449b2f64a8cf7d65"
+dependencies = [
+ "cfg-if",
+ "libc",
+ "windows-link",
+]
+
+[[package]]
 name = "html5ever"
 version = "0.29.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5186,6 +5211,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c41e0c4fef86961ac6d6f8a82609f55f31b05e4fce149ac5710e439df7619ba4"
 
 [[package]]
+name = "mac_address"
+version = "1.1.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c0aeb26bf5e836cc1c341c8106051b573f1766dfa05aa87f0b98be5e51b02303"
+dependencies = [
+ "nix 0.29.0",
+ "winapi",
+]
+
+[[package]]
 name = "macro-string"
 version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5424,6 +5459,19 @@ dependencies = [
  "libc",
  "memoffset 0.7.1",
  "pin-utils",
+]
+
+[[package]]
+name = "nix"
+version = "0.29.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "71e2746dc3a24dd78b3cfcb7be93368c6de9963d30f43a6a73998a9cf4b17b46"
+dependencies = [
+ "bitflags 2.9.1",
+ "cfg-if",
+ "cfg_aliases",
+ "libc",
+ "memoffset 0.9.1",
 ]
 
 [[package]]
@@ -7997,6 +8045,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "sha1_smol"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bbfa15b3dddfee50a0fff136974b3e1bde555604ba463834a7eb7deb6417705d"
+
+[[package]]
 name = "sha2"
 version = "0.9.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -9828,6 +9882,7 @@ dependencies = [
  "getrandom 0.3.3",
  "js-sys",
  "serde",
+ "sha1_smol",
  "wasm-bindgen",
 ]
 

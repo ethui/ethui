@@ -12,6 +12,7 @@ authors = ["Miguel Palhas <mpalhas@gmail.com>"]
 resolver = "2"
 members = [
   "bin",
+  "crates/analytics",
   "crates/forge",
   "crates/forge-traces",
   "crates/crypto",
@@ -47,6 +48,7 @@ clap = { version = "4.5", default-features = false, features = [
   "derive",
   "env",
 ] }
+analytics = { path = "crates/analytics" }
 ethui-forge = { path = "crates/forge" }
 ethui-forge-traces = { path = "crates/forge-traces" }
 ethui-crypto = { path = "crates/crypto" }
