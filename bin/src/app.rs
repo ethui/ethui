@@ -125,9 +125,6 @@ impl EthUIApp {
             .plugin(tauri_plugin_process::init());
 
         let builder = builder.setup(|app| {
-            #[cfg(feature = "aptabase")]
-            let _ = app.track_event("app_started", None);
-
             let handle = app.handle();
             let _ = menu::build(handle);
             let _ = system_tray::build(handle);
@@ -165,8 +162,7 @@ impl EthUIApp {
             }
 
             tauri::RunEvent::Exit => {
-                #[cfg(feature = "aptabase")]
-                let _ = handle.track_event("app_exited", None);
+                analytics::track_event(&handle, "app_exited", None);
             }
 
             #[cfg(target_os = "macos")]
@@ -181,6 +177,16 @@ impl EthUIApp {
 
 /// Initialization logic
 async fn init(app: &tauri::App, args: &Args) -> color_eyre::Result<()> {
+    // Initialize analytics service only if aptabase feature is enabled
+    #[cfg(feature = "aptabase")]
+    {
+        let analytics_service = analytics::Analytics::new();
+        app.manage(analytics_service);
+    }
+
+    // Track app started event
+    analytics::track_event(app.handle(), "app_started", None);
+
     let db = ethui_db::init(&resource(app, "db.sqlite3", args)).await?;
     app.manage(db.clone());
 
