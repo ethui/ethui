@@ -16,7 +16,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 name = "ethui"
 
 [dependencies]
-analytics.workspace = true
+ethui-analytics.workspace = true
 ethui-forge.workspace = true
 ethui-forge-traces = { workspace = true, optional = true }
 ethui-settings.workspace = true
@@ -68,7 +68,7 @@ forge-traces = [
 # this feature is used for production builds or when `devPath` points to the filesystem
 # DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
-aptabase = ["dep:tauri-plugin-aptabase"]
+aptabase = ["dep:tauri-plugin-aptabase", "ethui-analytics/aptabase"]
 stacks = ["dep:ethui-stacks"]
 updater = ["dep:tauri-plugin-updater"]
 test = []

@@ -4,8 +4,6 @@ use ethui_args::Args;
 use ethui_broadcast::UIMsg;
 use named_lock::NamedLock;
 use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
-#[cfg(feature = "aptabase")]
-use tauri_plugin_aptabase::EventTracker as _;
 
 #[cfg(all(feature = "updater", any(debug_assertions, target_os = "macos")))]
 use crate::updater;
@@ -151,7 +149,7 @@ impl EthUIApp {
             windows::main::show(self.app.handle()).await;
         }
 
-        self.app.run(|#[allow(unused)] handle, event| match event {
+        self.app.run(|handle, event| match event {
             tauri::RunEvent::ExitRequested { code, api, .. } => {
                 // code == None seems to happen when the window is closed,
                 // in which case we don't want to close the app, but keep it running in
@@ -162,7 +160,7 @@ impl EthUIApp {
             }
 
             tauri::RunEvent::Exit => {
-                analytics::track_event(&handle, "app_exited", None);
+                let _ = ethui_analytics::track_event(handle, "app_exited", None);
             }
 
             #[cfg(target_os = "macos")]
@@ -178,10 +176,10 @@ impl EthUIApp {
 /// Initialization logic
 async fn init(app: &tauri::App, args: &Args) -> color_eyre::Result<()> {
     #[cfg(feature = "aptabase")]
-    analytics::init_tauri_state(app.handle());
+    ethui_analytics::init_tauri_state(app.handle());
 
     // Track app started event
-    analytics::track_event(app.handle(), "app_started", None);
+    ethui_analytics::track_event(app.handle(), "app_started", None)?;
 
     let db = ethui_db::init(&resource(app, "db.sqlite3", args)).await?;
     app.manage(db.clone());
