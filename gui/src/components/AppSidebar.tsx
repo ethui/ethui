@@ -24,8 +24,8 @@ import {
   ChevronRight,
   CircleUser,
   Cog,
-  Globe,
   Database,
+  Globe,
   Wifi,
 } from "lucide-react";
 import { useIsAnvilNetwork } from "#/hooks/useIsAnvilNetwork";
