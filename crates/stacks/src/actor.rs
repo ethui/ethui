@@ -4,9 +4,7 @@ use ethui_types::prelude::*;
 use kameo::prelude::*;
 use tracing::error;
 
-use crate::docker::{
-    ContainerNotRunning, ContainerRunning, DockerManager, initialize, start_stacks,
-};
+use crate::docker::{ContainerNotRunning, ContainerRunning, DockerManager, initialize};
 
 pub async fn ask<M>(msg: M) -> color_eyre::Result<<<Worker as Message<M>>::Reply as Reply>::Ok>
 where
@@ -231,11 +229,7 @@ impl Message<GetRuntimeState> for Worker {
     ) -> Self::Reply {
         Ok((
             self.stacks,
-            if let RuntimeState::Error(_) = self.manager {
-                true
-            } else {
-                false
-            },
+            matches!(self.manager, RuntimeState::Error(_)),
             self.manager.as_str().to_string(),
         ))
     }
