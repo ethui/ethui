@@ -224,6 +224,10 @@ impl DockerManager<DataDirectoryReady> {
         }
         Ok(self.transition())
     }
+
+    pub fn initialize(self) -> color_eyre::Result<DockerManager<ContainerNotRunning>> {
+        Ok(self.transition())
+    }
 }
 
 impl DockerManager<ContainerRunning> {
@@ -410,6 +414,26 @@ pub fn start_stacks(
     .ensure_data_directory()?
     .run()?
     .check_health()?;
+
+    Ok(manager)
+}
+
+pub fn initialize(
+    port: u16,
+    config_dir: PathBuf,
+) -> color_eyre::Result<DockerManager<ContainerNotRunning>> {
+    let manager = DockerManager::new(
+        config_dir.join("local/"),
+        "ghcr.io/ethui/stacks:latest".to_string(),
+        "ethui-local-stacks".to_string(),
+        4000,
+        port,
+    )
+    .check_socket_and_bin()?
+    .check_docker_installed()?
+    .check_image_available()?
+    .ensure_data_directory()?
+    .initialize()?;
 
     Ok(manager)
 }
