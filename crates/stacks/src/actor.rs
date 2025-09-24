@@ -250,7 +250,6 @@ impl Actor for Worker {
         err: PanicError,
     ) -> std::result::Result<std::ops::ControlFlow<ActorStopReason>, Self::Error> {
         error!("ethui_stacks panic: {}", err);
-        dbg!(err);
         Ok(std::ops::ControlFlow::Continue(()))
     }
 }
