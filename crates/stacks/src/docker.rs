@@ -1,6 +1,6 @@
 use std::{env, fs, marker::PhantomData, path::PathBuf, process::Command, str::FromStr};
 
-use color_eyre::eyre::{eyre, OptionExt, WrapErr};
+use color_eyre::eyre::{OptionExt, WrapErr, bail, eyre};
 use reqwest::Client;
 
 #[derive(Debug, Clone)]
@@ -179,12 +179,14 @@ impl DockerManager<DataDirectoryReady> {
                 .output()?;
 
             if !stop_output.status.success() {
-                return Err(eyre!(
+                bail!(
                     "Failed to stop container: {}",
                     String::from_utf8_lossy(&stop_output.stderr)
-                ));
+                );
             }
+        }
 
+        if docker_bin.contains("docker") {
             Command::new(docker_bin)
                 .args(["rm", &self.container_name])
                 .output()?;

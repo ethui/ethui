@@ -4,7 +4,7 @@ use ethui_types::prelude::*;
 use kameo::prelude::*;
 use tracing::error;
 
-use crate::docker::{initialize, ContainerNotRunning, ContainerRunning, DockerManager};
+use crate::docker::{ContainerNotRunning, ContainerRunning, DockerManager, initialize};
 
 pub async fn ask<M>(msg: M) -> color_eyre::Result<<<Worker as Message<M>>::Reply as Reply>::Ok>
 where
@@ -219,19 +219,26 @@ impl Message<Initializing> for Worker {
     }
 }
 
+#[derive(Debug, Serialize)]
+pub struct RuntimeStateResponse {
+    pub running: bool,
+    pub error: bool,
+    pub state: String,
+}
+
 impl Message<GetRuntimeState> for Worker {
-    type Reply = Result<(bool, bool, String)>;
+    type Reply = Result<RuntimeStateResponse>;
 
     async fn handle(
         &mut self,
         _msg: GetRuntimeState,
         _ctx: &mut Context<Self, Self::Reply>,
     ) -> Self::Reply {
-        Ok((
-            self.stacks,
-            matches!(self.manager, RuntimeState::Error(_)),
-            self.manager.as_str().to_string(),
-        ))
+        Ok(RuntimeStateResponse {
+            running: self.stacks,
+            error: matches!(self.manager, RuntimeState::Error(_)),
+            state: self.manager.as_str().to_string(),
+        })
     }
 }
 
