@@ -2,9 +2,11 @@ import { ChainView } from "@ethui/ui/components/chain-view";
 import { Form } from "@ethui/ui/components/form";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
-import { Plus } from "lucide-react";
+import { Database, LoaderCircle, Plus, User } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useInvoke } from "#/hooks/useInvoke";
+import { EmptyState } from "#/components/EmptyState";
+import { Button } from "@ethui/ui/components/shadcn/button";
 
 export const Route = createFileRoute("/home/_l/stacks/_l/")({
   beforeLoad: () => ({ breadcrumb: "Stacks" }),
@@ -54,13 +56,18 @@ function RouteComponent() {
 
   if (!enabled) {
     return (
-      <div className="flex flex-wrap gap-2">
-        <Link
-          to="/home/settings/general"
-          className="flex gap-2 border p-4 align-baseline hover:bg-accent"
+      <div>
+        <EmptyState
+          message="Stacks are not enabled"
+          description="You need to enable the stacks integration to use this feature !"
         >
-          You need to enable the stacks integration to use this feature !
-        </Link>
+          <Link to="/home/settings/general">
+            <Button variant="outline" size="sm" className="gap-2">
+              <Database className="h-4 w-4" />
+              Enable Stacks
+            </Button>
+          </Link>
+        </EmptyState>
       </div>
     );
   }
@@ -83,23 +90,26 @@ function RouteComponent() {
 
   if (stacksLoading) {
     return (
-      <div className="flex flex-wrap gap-2">
-        <div className="flex gap-2 border p-4 align-baseline">
-          Loading stacks...
-        </div>
+      <div className="flex h-32 items-center justify-center">
+        <LoaderCircle className="animate-spin" />
       </div>
     );
   }
 
   if (!stacks || stacks.length === 0) {
     return (
-      <div className="flex flex-wrap gap-2">
-        <div className="flex gap-2 border p-4 align-baseline">
-          No stacks found.
-          <Link to="/home/stacks/new" className="text-blue-500 hover:underline">
-            Create your first stack
+      <div>
+        <EmptyState
+          message="No stacks found"
+          description="Add a new stack by clicking the button below"
+        >
+          <Link to="/home/stacks/new">
+            <Button variant="outline" size="sm" className="gap-2">
+              <Database className="h-4 w-4" />
+              Add a new stack
+            </Button>
           </Link>
-        </div>
+        </EmptyState>
       </div>
     );
   }
