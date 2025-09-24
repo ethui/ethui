@@ -28,7 +28,6 @@ import {
   Database,
   Wifi,
 } from "lucide-react";
-import { useInvoke } from "#/hooks/useInvoke";
 import { useIsAnvilNetwork } from "#/hooks/useIsAnvilNetwork";
 import { useSettings } from "#/store/useSettings";
 import { QuickFastModeToggle } from "./QuickFastModeToggle";
@@ -40,7 +39,6 @@ export function AppSidebar() {
   const { open, toggleSidebar } = useSidebar();
   const isMacos = platform() === "macos";
 
-  const { data: isStacksEnabled } = useInvoke<boolean>("is_stacks_enabled", {});
   const { data: isAnvilNetwork = false } = useIsAnvilNetwork();
 
   const showOnboarding = useSettings((s) => !s.settings?.onboarding.hidden);
