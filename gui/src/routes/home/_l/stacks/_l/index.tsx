@@ -50,7 +50,6 @@ function RouteComponent() {
   const { data: stacks, isLoading: stacksLoading } =
     useInvoke<string[]>("stacks_list");
 
-  // Destructure runtime data safely
   const [enabled, timeError, runtimeState] = runtimeData || [false, false, ""];
 
   if (!enabled) {
