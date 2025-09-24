@@ -1,9 +1,4 @@
-import {
-  type NetworkInputs,
-  networkSchema,
-  type StacksInputs,
-  stacksSchema,
-} from "@ethui/types/network";
+import { type StacksInputs, stacksSchema } from "@ethui/types/network";
 import { Form } from "@ethui/ui/components/form";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { toast } from "@ethui/ui/hooks/use-toast";
@@ -11,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { Check, LoaderCircle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useInvoke } from "#/hooks/useInvoke";
 
@@ -33,13 +28,18 @@ function Content() {
 
   const slug = form.watch("slug");
 
-  const { data: stacks, refetch } = useInvoke<string[]>("stacks_list");
+  const { data: stacks } = useInvoke<string[]>("stacks_list");
 
   const onSubmit = async (_data: { slug: string }) => {
     console.log(stacks);
     try {
       setLoading(true);
       await invoke("stacks_create", { slug });
+      toast({
+        title: "Stack created",
+        description: "It may take a few minutes to start the stack",
+        variant: "success",
+      });
       setLoading(false);
       router.history.back();
     } catch (err: any) {
