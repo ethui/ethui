@@ -14,7 +14,7 @@ pub async fn init(stacks_port: u16, config_dir: PathBuf) -> color_eyre::Result<(
         .await
         .expect("Failed to get settings");
 
-    dbg!(handle.tell(Initializing()).await?);
+    handle.tell(Initializing()).await?;
     handle.tell(SetEnabled(settings.run_local_stacks)).await?;
 
     tokio::spawn(async move { receiver(handle).await });
