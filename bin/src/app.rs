@@ -177,12 +177,8 @@ impl EthUIApp {
 
 /// Initialization logic
 async fn init(app: &tauri::App, args: &Args) -> color_eyre::Result<()> {
-    // Initialize analytics service only if aptabase feature is enabled
     #[cfg(feature = "aptabase")]
-    {
-        let analytics_service = analytics::Analytics::new();
-        app.manage(analytics_service);
-    }
+    analytics::init_tauri_state(app.handle());
 
     // Track app started event
     analytics::track_event(app.handle(), "app_started", None);
