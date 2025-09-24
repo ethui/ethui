@@ -4,9 +4,7 @@ use tauri::command;
 use url::Url;
 
 use crate::{
-    actor::{
-        CreateStack, GetConfig, GetRuntimeState, ListStracks, RemoveStack, RuntimeState, Shutdown,
-    },
+    actor::{CreateStack, GetConfig, GetRuntimeState, ListStracks, RemoveStack, Shutdown},
     utils,
 };
 
@@ -25,7 +23,7 @@ pub async fn stacks_create(slug: String) -> TauriResult<()> {
 
     let network_params = NewNetworkParams {
         name: slug.clone(),
-        chain_id: chain_id,
+        chain_id,
         explorer_url: Some(explorer_url),
         http_url: Url::parse(&rpc_url).unwrap(),
         ws_url: Some(Url::parse(&rpc_url.replace("http", "ws")).unwrap()),

@@ -330,14 +330,13 @@ impl DockerManager<ContainerRunning> {
     }
 }
 
-#[derive(serde::Deserialize, Debug)]
+#[derive(serde::Deserialize)]
 struct ListStacksResponse {
     data: Vec<StackInfo>,
 }
 
-#[derive(serde::Deserialize, Debug)]
+#[derive(serde::Deserialize)]
 struct StackInfo {
-    status: String,
     slug: String,
 }
 
@@ -414,27 +413,6 @@ impl DockerManager<ContainerNotRunning> {
         }
         Ok(self.transition())
     }
-}
-
-pub fn start_stacks(
-    port: u16,
-    config_dir: PathBuf,
-) -> color_eyre::Result<DockerManager<ContainerRunning>> {
-    let manager = DockerManager::new(
-        config_dir.join("local/"),
-        "ghcr.io/ethui/stacks:latest".to_string(),
-        "ethui-local-stacks".to_string(),
-        4000,
-        port,
-    )
-    .check_socket_and_bin()?
-    .check_docker_installed()?
-    .check_image_available()?
-    .ensure_data_directory()?
-    .run()?
-    .check_health()?;
-
-    Ok(manager)
 }
 
 pub fn initialize(

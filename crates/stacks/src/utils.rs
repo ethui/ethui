@@ -2,8 +2,6 @@ use serde_json::json;
 
 #[derive(serde::Deserialize, Debug)]
 struct GetChainIdResponse {
-    jsonrpc: String,
-    id: u32,
     result: String,
 }
 
