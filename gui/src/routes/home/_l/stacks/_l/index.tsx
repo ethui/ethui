@@ -46,13 +46,12 @@ function StackCard({ name }: { name: string }) {
 }
 
 function RouteComponent() {
-  const { data: runtimeData } = useInvoke<[boolean, boolean, string]>(
-    "stacks_get_runtime_state",
-  );
+  const { data: runtimeData } = useInvoke<{ running: boolean, error: boolean, state: string }>("stacks_get_runtime_state");
+
   const { data: stacks, isLoading: stacksLoading } =
     useInvoke<string[]>("stacks_list");
 
-  const [enabled, timeError, runtimeState] = runtimeData || [false, false, ""];
+  const { running: enabled, error: timeError, state: runtimeState } = runtimeData || { running: false, error: false, state: "" };
 
   if (!enabled) {
     return (
