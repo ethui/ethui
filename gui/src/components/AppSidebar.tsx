@@ -27,6 +27,7 @@ import {
   Cog,
   Database,
   Terminal,
+  Globe,
   Wifi,
 } from "lucide-react";
 import { useIsAnvilNetwork } from "#/hooks/useIsAnvilNetwork";
