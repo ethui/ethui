@@ -521,7 +521,7 @@ mod tests {
             return Err(format!("Expected 'hello world' in response, got: {response}").into());
         }
 
-        docker_manager.stop()?.check_stopped()?;
+        docker_manager.run()?.stop()?.check_stopped()?;
 
         sleep(Duration::from_secs(2)).await;
 
