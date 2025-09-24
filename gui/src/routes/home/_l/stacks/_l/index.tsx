@@ -1,12 +1,12 @@
 import { ChainView } from "@ethui/ui/components/chain-view";
 import { Form } from "@ethui/ui/components/form";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
-import { Database, LoaderCircle, Plus, User } from "lucide-react";
+import { Database, LoaderCircle, Plus } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { useInvoke } from "#/hooks/useInvoke";
 import { EmptyState } from "#/components/EmptyState";
-import { Button } from "@ethui/ui/components/shadcn/button";
+import { useInvoke } from "#/hooks/useInvoke";
 
 export const Route = createFileRoute("/home/_l/stacks/_l/")({
   beforeLoad: () => ({ breadcrumb: "Stacks" }),

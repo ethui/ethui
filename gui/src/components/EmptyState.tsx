@@ -16,7 +16,7 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex mt-40 flex-col items-center justify-center text-center",
+        "mt-40 flex flex-col items-center justify-center text-center",
         className,
       )}
     >
