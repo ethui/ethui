@@ -15,7 +15,6 @@ import { Route as HomeLRouteImport } from './routes/home/_l'
 import { Route as DialogLRouteImport } from './routes/dialog/_l'
 import { Route as HomeLOnboardingRouteImport } from './routes/home/_l/onboarding'
 import { Route as HomeLConnectionsRouteImport } from './routes/home/_l/connections'
-import { Route as HomeLBlaStacksRouteImport } from './routes/home/_l/bla-stacks'
 import { Route as HomeLAccountRouteImport } from './routes/home/_l/account'
 import { Route as HomeLTransferLRouteImport } from './routes/home/_l/transfer/_l'
 import { Route as HomeLStacksLRouteImport } from './routes/home/_l/stacks/_l'
@@ -119,11 +118,6 @@ const HomeLOnboardingRoute = HomeLOnboardingRouteImport.update({
 const HomeLConnectionsRoute = HomeLConnectionsRouteImport.update({
   id: '/connections',
   path: '/connections',
-  getParentRoute: () => HomeLRoute,
-} as any)
-const HomeLBlaStacksRoute = HomeLBlaStacksRouteImport.update({
-  id: '/bla-stacks',
-  path: '/bla-stacks',
   getParentRoute: () => HomeLRoute,
 } as any)
 const HomeLAccountRoute = HomeLAccountRouteImport.update({
@@ -351,7 +345,6 @@ export interface FileRoutesByFullPath {
   '/dialog': typeof DialogLRouteWithChildren
   '/home': typeof HomeLRouteWithChildren
   '/home/account': typeof HomeLAccountRoute
-  '/home/bla-stacks': typeof HomeLBlaStacksRoute
   '/home/connections': typeof HomeLConnectionsRoute
   '/home/onboarding': typeof HomeLOnboardingRoute
   '/dialog/chain-add/$id': typeof DialogLChainAddIdRoute
@@ -402,7 +395,6 @@ export interface FileRoutesByTo {
   '/dialog': typeof DialogLRouteWithChildren
   '/home': typeof HomeLRouteWithChildren
   '/home/account': typeof HomeLAccountRoute
-  '/home/bla-stacks': typeof HomeLBlaStacksRoute
   '/home/connections': typeof HomeLConnectionsRoute
   '/home/onboarding': typeof HomeLOnboardingRoute
   '/dialog/chain-add/$id': typeof DialogLChainAddIdRoute
@@ -446,7 +438,6 @@ export interface FileRoutesById {
   '/home': typeof HomeRouteWithChildren
   '/home/_l': typeof HomeLRouteWithChildren
   '/home/_l/account': typeof HomeLAccountRoute
-  '/home/_l/bla-stacks': typeof HomeLBlaStacksRoute
   '/home/_l/connections': typeof HomeLConnectionsRoute
   '/home/_l/onboarding': typeof HomeLOnboardingRoute
   '/dialog/_l/chain-add/$id': typeof DialogLChainAddIdRoute
@@ -506,7 +497,6 @@ export interface FileRouteTypes {
     | '/dialog'
     | '/home'
     | '/home/account'
-    | '/home/bla-stacks'
     | '/home/connections'
     | '/home/onboarding'
     | '/dialog/chain-add/$id'
@@ -557,7 +547,6 @@ export interface FileRouteTypes {
     | '/dialog'
     | '/home'
     | '/home/account'
-    | '/home/bla-stacks'
     | '/home/connections'
     | '/home/onboarding'
     | '/dialog/chain-add/$id'
@@ -600,7 +589,6 @@ export interface FileRouteTypes {
     | '/home'
     | '/home/_l'
     | '/home/_l/account'
-    | '/home/_l/bla-stacks'
     | '/home/_l/connections'
     | '/home/_l/onboarding'
     | '/dialog/_l/chain-add/$id'
@@ -730,13 +718,6 @@ declare module '@tanstack/react-router' {
       path: '/connections'
       fullPath: '/home/connections'
       preLoaderRoute: typeof HomeLConnectionsRouteImport
-      parentRoute: typeof HomeLRoute
-    }
-    '/home/_l/bla-stacks': {
-      id: '/home/_l/bla-stacks'
-      path: '/bla-stacks'
-      fullPath: '/home/bla-stacks'
-      preLoaderRoute: typeof HomeLBlaStacksRouteImport
       parentRoute: typeof HomeLRoute
     }
     '/home/_l/account': {
@@ -1296,7 +1277,6 @@ const HomeLTransferRouteWithChildren = HomeLTransferRoute._addFileChildren(
 
 interface HomeLRouteChildren {
   HomeLAccountRoute: typeof HomeLAccountRoute
-  HomeLBlaStacksRoute: typeof HomeLBlaStacksRoute
   HomeLConnectionsRoute: typeof HomeLConnectionsRoute
   HomeLOnboardingRoute: typeof HomeLOnboardingRoute
   HomeLExplorerRoute: typeof HomeLExplorerRouteWithChildren
@@ -1307,7 +1287,6 @@ interface HomeLRouteChildren {
 
 const HomeLRouteChildren: HomeLRouteChildren = {
   HomeLAccountRoute: HomeLAccountRoute,
-  HomeLBlaStacksRoute: HomeLBlaStacksRoute,
   HomeLConnectionsRoute: HomeLConnectionsRoute,
   HomeLOnboardingRoute: HomeLOnboardingRoute,
   HomeLExplorerRoute: HomeLExplorerRouteWithChildren,
