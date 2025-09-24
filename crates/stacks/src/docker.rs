@@ -172,16 +172,24 @@ impl DockerManager<ImageAvailable> {
 
 impl DockerManager<DataDirectoryReady> {
     pub fn run(self) -> color_eyre::Result<DockerManager<ContainerRunning>> {
-        if self.is_container_running()? {
-            tracing::debug!(
-                "Container {} is already running on port {}.",
-                self.container_name,
-                self.host_port
-            );
-            return Ok(self.transition());
+        let docker_bin = self.docker_bin()?;
+        if self.is_container_running()? && docker_bin.contains("docker") {
+            let stop_output = Command::new(docker_bin)
+                .args(["stop", &self.container_name])
+                .output()?;
+
+            if !stop_output.status.success() {
+                return Err(eyre!(
+                    "Failed to stop container: {}",
+                    String::from_utf8_lossy(&stop_output.stderr)
+                ));
+            }
+
+            Command::new(docker_bin)
+                .args(["rm", &self.container_name])
+                .output()?;
         }
 
-        let docker_bin = self.docker_bin()?;
         let socket_path = self.socket_path()?;
         let home_dir = env::var("HOME").unwrap_or_else(|_| "/home/user".to_string());
         let canonicalize_str = fs::canonicalize(PathBuf::from_str(&home_dir).unwrap())?
@@ -208,6 +216,8 @@ impl DockerManager<DataDirectoryReady> {
 
         if docker_bin.contains("podman") {
             command = command.arg("--replace");
+        } else {
+            command = command.arg("--rm");
         }
 
         command = command
