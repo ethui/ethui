@@ -1,9 +1,12 @@
 use std::collections::HashMap;
+use std::sync::OnceLock;
 use tauri::{AppHandle, Manager};
 use uuid::Uuid;
 
 #[cfg(feature = "aptabase")]
 use tauri_plugin_aptabase::EventTracker as _;
+
+static ANALYTICS: OnceLock<Analytics> = OnceLock::new();
 
 pub struct Analytics {
     user_id: Uuid,
@@ -11,12 +14,16 @@ pub struct Analytics {
 }
 
 impl Analytics {
-    pub fn new() -> Self {
+    fn new() -> Self {
         let user_id = Self::get_machine_based_user_id(); 
         Self {
             user_id,
             is_dev_mode: cfg!(debug_assertions),
         }
+    }
+
+    pub fn instance() -> &'static Analytics {
+        ANALYTICS.get_or_init(|| Analytics::new())
     }
    
     fn get_machine_based_user_id() -> Uuid {
@@ -50,8 +57,10 @@ impl Analytics {
     }
 }
 
-pub fn get_analytics(handle: &AppHandle) -> Option<tauri::State<'_, Analytics>> {
-    handle.try_state::<Analytics>()
+pub fn init_tauri_state(handle: &AppHandle) {
+    // Store the singleton instance in Tauri state for Aptabase integration
+    let analytics = Analytics::instance();
+    handle.manage(analytics);
 }
 
 pub fn track_event(
@@ -59,32 +68,26 @@ pub fn track_event(
     event_name: &str, 
     properties: Option<HashMap<String, serde_json::Value>>
 ) {
+    let analytics = Analytics::instance();
+    
     #[cfg(feature = "aptabase")]
     {
-        if let Some(analytics) = get_analytics(handle) {
-            
-            let mut final_props = analytics.get_common_properties();
-            if let Some(props) = properties {
-                final_props.extend(props);
-            }
-            let _ = handle.track_event(event_name, Some(final_props));
+        let mut final_props = analytics.get_common_properties();
+        if let Some(props) = properties {
+            final_props.extend(props);
         }
+        let final_props_value = serde_json::to_value(final_props).unwrap();
+        let _ = handle.track_event(event_name, Some(final_props_value));
     }
     
     #[cfg(not(feature = "aptabase"))]
     {    
-        let machine_uuid = Analytics::get_machine_based_user_id();
-        let is_dev = cfg!(debug_assertions);
-        
         let final_props = if let Some(mut props) = properties {
-            props.insert("user_id".to_string(), machine_uuid.to_string().into());
-            props.insert("dev_mode".to_string(), is_dev.into());
+            let common = analytics.get_common_properties();
+            props.extend(common);
             props
         } else {
-            let mut props = HashMap::new();
-            props.insert("user_id".to_string(), machine_uuid.to_string().into());
-            props.insert("dev_mode".to_string(), is_dev.into());
-            props
+            analytics.get_common_properties()
         };
         
         tracing::info!(
