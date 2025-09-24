@@ -1,4 +1,5 @@
 import { ChainView } from "@ethui/ui/components/chain-view";
+import { Form } from "@ethui/ui/components/form";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { Plus } from "lucide-react";
@@ -27,7 +28,7 @@ function StackCard({ name }: { name: string }) {
 
   useEffect(() => {
     checkStatus();
-    // Check status every 10 seconds
+    // Check status every 25 seconds
     const interval = setInterval(checkStatus, 25000);
     return () => clearInterval(interval);
   }, [checkStatus]);
@@ -43,9 +44,66 @@ function StackCard({ name }: { name: string }) {
 }
 
 function RouteComponent() {
-  const { data: stacks } = useInvoke<string[]>("stacks_list");
+  const { data: runtimeData } = useInvoke<[boolean, boolean, string]>(
+    "stacks_get_runtime_state",
+  );
+  const { data: stacks, isLoading: stacksLoading } =
+    useInvoke<string[]>("stacks_list");
 
-  if (!stacks) return "Loading";
+  // Destructure runtime data safely
+  const [enabled, timeError, runtimeState] = runtimeData || [false, false, ""];
+
+  if (!enabled) {
+    return (
+      <div className="flex flex-wrap gap-2">
+        <Link
+          to="/home/settings/general"
+          className="flex gap-2 border p-4 align-baseline hover:bg-accent"
+        >
+          You need to enable the stacks integration to use this feature !
+        </Link>
+      </div>
+    );
+  }
+
+  if (timeError) {
+    return (
+      <div className="flex flex-wrap gap-2">
+        <div className="flex gap-2 border p-4 align-baseline hover:bg-accent">
+          <Form.Textarea
+            name="runtimeState"
+            value={runtimeState}
+            readOnly
+            className="w-full"
+            placeholder="Runtime state information"
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (stacksLoading) {
+    return (
+      <div className="flex flex-wrap gap-2">
+        <div className="flex gap-2 border p-4 align-baseline">
+          Loading stacks...
+        </div>
+      </div>
+    );
+  }
+
+  if (!stacks || stacks.length === 0) {
+    return (
+      <div className="flex flex-wrap gap-2">
+        <div className="flex gap-2 border p-4 align-baseline">
+          No stacks found.
+          <Link to="/home/stacks/new" className="text-blue-500 hover:underline">
+            Create your first stack
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-wrap gap-2">

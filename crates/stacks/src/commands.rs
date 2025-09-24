@@ -4,7 +4,9 @@ use tauri::command;
 use url::Url;
 
 use crate::{
-    actor::{CreateStack, GetConfig, ListStracks, RemoveStack, Shutdown},
+    actor::{
+        CreateStack, GetConfig, GetRuntimeState, ListStracks, RemoveStack, RuntimeState, Shutdown,
+    },
     utils,
 };
 
@@ -70,4 +72,10 @@ pub async fn stacks_remove(slug: String) -> TauriResult<()> {
 pub async fn stacks_shutdown() -> TauriResult<()> {
     crate::actor::ask(Shutdown()).await?;
     Ok(())
+}
+
+#[command]
+pub async fn stacks_get_runtime_state() -> TauriResult<(bool, bool, String)> {
+    let runtime_state = crate::actor::ask(GetRuntimeState()).await?;
+    Ok(runtime_state)
 }

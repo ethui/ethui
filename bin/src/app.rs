@@ -57,6 +57,8 @@ impl EthUIApp {
                 ethui_stacks::commands::stacks_remove,
                 #[cfg(feature = "stacks")]
                 ethui_stacks::commands::stacks_shutdown,
+                #[cfg(feature = "stacks")]
+                ethui_stacks::commands::stacks_get_runtime_state,
                 ethui_settings::commands::settings_get,
                 ethui_settings::commands::settings_set,
                 ethui_settings::commands::settings_set_dark_mode,
@@ -173,15 +175,12 @@ impl EthUIApp {
                 let _ = ethui_analytics::track_event(handle, "app_exited", None);
                 #[cfg(feature = "aptabase")]
                 let _ = handle.track_event("app_exited", None);
-                
-                
+
                 #[cfg(feature = "stacks")]
                 {
-
                     tokio::task::block_in_place(|| {
                         tokio::runtime::Handle::current().block_on(async {
                             let _ = ethui_stacks::actor::ask(ethui_stacks::actor::Shutdown()).await;
-;
                         });
                     });
                 }
