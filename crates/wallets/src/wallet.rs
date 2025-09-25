@@ -64,6 +64,17 @@ pub enum Wallet {
 }
 
 impl Wallet {
+    pub fn wallet_type(&self) -> &'static str {
+        match self {
+            Wallet::Plaintext(_) => "Plaintext",
+            Wallet::JsonKeystore(_) => "JsonKeystore",
+            Wallet::HDWallet(_) => "HDWallet", 
+            Wallet::Impersonator(_) => "Impersonator",
+            Wallet::Ledger(_) => "Ledger",
+            Wallet::PrivateKey(_) => "PrivateKey",
+        }
+    }
+
     pub(crate) async fn create(params: Json) -> Result<Wallet> {
         let wallet_type = params["type"].as_str().unwrap_or_default();
 

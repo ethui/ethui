@@ -137,6 +137,9 @@ impl SendTransaction {
     async fn send(&mut self) -> Result<PendingTransactionBuilder<Ethereum>> {
         self.build_provider().await?;
         let provider = self.provider.as_ref().unwrap();
+        
+        ethui_broadcast::transaction_submitted(self.network.chain_id()).await;
+        
         let pending = provider.send_transaction(self.request.clone()).await?;
         Ok(pending)
     }
