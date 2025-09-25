@@ -51,13 +51,10 @@ async fn receiver(handle: AppHandle) -> ! {
                 if let Ok(msg) = ui_msg {
                     use UIMsg::*;
                     
-                    match msg {
-                        DialogOpen(params) => {
-                            let mut properties = std::collections::HashMap::new();
-                            properties.insert("label".to_string(), params.title.into());
-                            let _ = track_event(&handle, "dialog_open", Some(properties));
-                        }
-                        _ => {}
+                    if let DialogOpen(params) = msg {
+                        let mut properties = std::collections::HashMap::new();
+                        properties.insert("title".to_string(), params.title.into());
+                        let _ = track_event(&handle, "dialog_open", Some(properties));
                     }
                 }
             }
