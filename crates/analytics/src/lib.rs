@@ -1,7 +1,7 @@
 use std::{collections::HashMap, sync::OnceLock};
 
 use ethui_types::prelude::*;
-use tauri::{AppHandle, Manager};
+use tauri::AppHandle;
 #[cfg(feature = "aptabase")]
 use tauri_plugin_aptabase::EventTracker as _;
 use uuid::Uuid;
