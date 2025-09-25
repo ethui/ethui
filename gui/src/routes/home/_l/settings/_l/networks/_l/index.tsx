@@ -42,20 +42,22 @@ function SettingsNetworks() {
         </div>
       </div>
 
-      <div>
-        <h2 className="mb-4 font-semibold text-lg">Stacks</h2>
-        <div className="flex flex-wrap gap-2">
-          {stackNetworks.map(({ id: { chain_id }, name, status }) => (
-            <div
-              key={name}
-              className="cursor-not-allowed border p-4 opacity-60"
-              title="Stacks are managed in the Stacks tab"
-            >
-              <ChainView chainId={chain_id} name={name} status={status} />
-            </div>
-          ))}
+      {stackNetworks.length > 0 && (
+        <div>
+          <h2 className="mb-4 font-semibold text-lg">Stacks</h2>
+          <div className="flex flex-wrap gap-2">
+            {stackNetworks.map(({ id: { chain_id }, name, status }) => (
+              <div
+                key={name}
+                className="cursor-not-allowed border p-4 opacity-60"
+                title="Stacks are managed in the Stacks tab"
+              >
+                <ChainView chainId={chain_id} name={name} status={status} />
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

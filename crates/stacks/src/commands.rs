@@ -13,6 +13,8 @@ use crate::{
 
 #[command]
 pub async fn stacks_create(slug: String) -> TauriResult<()> {
+    let slug = slug.to_lowercase();
+
     crate::actor::ask(CreateStack(slug.clone())).await?;
 
     tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
