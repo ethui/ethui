@@ -16,6 +16,7 @@ export const networkSchema = z
     decimals: z.number(),
     warnings: z.string().optional(),
     id: networkIdSchema,
+    is_stack: z.boolean(),
   })
 
   // ensure RPC is online, and chain_id matches
