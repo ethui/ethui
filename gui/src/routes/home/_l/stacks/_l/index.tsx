@@ -7,6 +7,7 @@ import { Database, LoaderCircle, Plus } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { EmptyState } from "#/components/EmptyState";
 import { useInvoke } from "#/hooks/useInvoke";
+import { useSettings } from "#/store/useSettings";
 
 export const Route = createFileRoute("/home/_l/stacks/_l/")({
   beforeLoad: () => ({ breadcrumb: "Stacks" }),
@@ -36,42 +37,84 @@ function StackCard({ name }: { name: string }) {
   }, [checkStatus]);
 
   return (
-    <Link
-      to={`/home/stacks/${name}/edit`}
-      className="border p-4 hover:bg-accent"
-    >
+    <Link to={`/home/stacks/${name}`} className="border p-4 hover:bg-accent">
       <ChainView chainId={1} name={name} status={status} />
     </Link>
   );
 }
 
 function RouteComponent() {
-  const { data: runtimeData } = useInvoke<{ running: boolean, error: boolean, state: string }>("stacks_get_runtime_state");
+  const { data: runtimeData, isLoading: runtimeLoading } = useInvoke<{
+    running: boolean;
+    error: boolean;
+    state: string;
+  }>(
+    "stacks_get_runtime_state",
+    {},
+    {
+      refetchInterval: ({ data }: { data: { running: boolean } | null }) =>
+        data?.running ? false : 1000,
+      refetchOnWindowFocus: false,
+    },
+  );
 
   const { data: stacks, isLoading: stacksLoading } =
     useInvoke<string[]>("stacks_list");
+  const settings = useSettings((s) => s.settings);
 
-  const { running: enabled, error: timeError, state: runtimeState } = runtimeData || { running: false, error: false, state: "" };
+  const [stacksEnabledInSettings, setStacksEnabledInSettings] = useState(
+    settings?.runLocalStacks ?? false,
+  );
 
-  if (!enabled) {
+  const {
+    running: runtimeEnabled,
+    error: runtimeError,
+    state: runtimeState,
+  } = runtimeData || { running: false, error: false, state: "" };
+
+  if (!settings || runtimeLoading) {
+    return (
+      <div className="flex h-32 items-center justify-center">
+        <LoaderCircle className="animate-spin" />
+      </div>
+    );
+  }
+
+  if (!stacksEnabledInSettings) {
     return (
       <div>
         <EmptyState
           message="Stacks are not enabled"
-          description="You need to enable the stacks integration to use this feature !"
+          description="You need to enable the stacks integration to use this feature!"
         >
-          <Link to="/home/settings/general">
-            <Button variant="outline" size="sm" className="gap-2">
-              <Database className="h-4 w-4" />
-              Enable Stacks
-            </Button>
-          </Link>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2"
+            onClick={async () => {
+              await invoke("settings_set", {
+                params: { runLocalStacks: true },
+              });
+              setStacksEnabledInSettings(true);
+            }}
+          >
+            <Database className="h-4 w-4" />
+            Enable Stacks
+          </Button>
         </EmptyState>
       </div>
     );
   }
 
-  if (timeError) {
+  if (!runtimeEnabled) {
+    return (
+      <div className="flex h-32 items-center justify-center">
+        <LoaderCircle className="animate-spin" />
+      </div>
+    );
+  }
+
+  if (runtimeError) {
     return (
       <div className="flex flex-wrap gap-2">
         <div className="flex gap-2 border p-4 align-baseline hover:bg-accent">

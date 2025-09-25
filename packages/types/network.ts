@@ -13,6 +13,7 @@ export const networkSchema = z.object({
   currency: z.string().min(1, "Invalid currency"),
   decimals: z.number("Invalid number"),
   id: networkIdSchema,
+  is_stack: z.boolean(),
 });
 
 export type NetworkInputs = z.infer<typeof networkSchema>;

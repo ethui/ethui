@@ -1,17 +1,16 @@
 mod id;
 
-
 use alloy::{
     network::Ethereum,
     providers::{ext::AnvilApi, Provider, ProviderBuilder, RootProvider},
     rpc::{client::ClientBuilder, types::anvil::ForkedNetwork},
     transports::layers::RetryBackoffLayer,
 };
+pub use id::NetworkId;
 use tracing::instrument;
 use url::Url;
 
-use crate::{prelude::*};
-pub use id::NetworkId;
+use crate::prelude::*;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Network {
@@ -29,6 +28,9 @@ pub struct Network {
 
     #[serde(default)]
     pub status: NetworkStatus,
+
+    #[serde(default)]
+    pub is_stack: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Deserialize, Serialize)]
@@ -51,6 +53,7 @@ impl Network {
             currency: String::from("ETH"),
             decimals: 18,
             status: Default::default(),
+            is_stack: false,
         }
     }
 
@@ -64,6 +67,7 @@ impl Network {
             currency: String::from("ETH"),
             decimals: 18,
             status: Default::default(),
+            is_stack: false,
         }
     }
 
@@ -77,6 +81,7 @@ impl Network {
             currency: String::from("ETH"),
             decimals: 18,
             status: Default::default(),
+            is_stack: false,
         }
     }
 

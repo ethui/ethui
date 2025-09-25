@@ -202,7 +202,7 @@ const items = [
   },
   {
     title: "Stacks",
-    url: "/home/stacks/",
+    url: "/home/stacks",
     icon: <Database />,
   },
 ];
