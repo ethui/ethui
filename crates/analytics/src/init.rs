@@ -1,9 +1,14 @@
 use ethui_broadcast::{InternalMsg, UIMsg};
-use tauri::AppHandle;
+use tauri::{AppHandle, Manager};
 
 use crate::track_event;
 
 pub async fn init(handle: &AppHandle) {
+    // Set up Tauri state
+    let analytics = crate::Analytics::instance();
+    handle.manage(analytics);
+    
+    // Start analytics event listener
     let handle = handle.clone();
     tauri::async_runtime::spawn(async move {
         receiver(handle).await;

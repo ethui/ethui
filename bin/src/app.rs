@@ -196,9 +196,6 @@ async fn init(app: &tauri::App, args: &Args) -> color_eyre::Result<()> {
     ethui_forge::init().await?;
 
     #[cfg(feature = "aptabase")]
-    ethui_analytics::init_tauri_state(app.handle());
-    
-    // Initialize analytics event listener
     ethui_analytics::init(app.handle()).await;
 
     // Track app started event
