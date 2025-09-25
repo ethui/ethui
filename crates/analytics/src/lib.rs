@@ -54,11 +54,6 @@ impl Analytics {
     }
 }
 
-pub fn init_tauri_state(handle: &AppHandle) {
-    let analytics = Analytics::instance();
-    handle.manage(analytics);
-}
-
 #[instrument(skip(handle, _handle))]
 pub fn track_event(
     #[cfg(feature = "aptabase")] handle: &AppHandle,
