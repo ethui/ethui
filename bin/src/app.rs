@@ -175,11 +175,6 @@ impl EthUIApp {
 
 /// Initialization logic
 async fn init(app: &tauri::App, args: &Args) -> color_eyre::Result<()> {
-    #[cfg(feature = "aptabase")]
-    ethui_analytics::init_tauri_state(app.handle());
-
-    // Track app started event
-    ethui_analytics::track_event(app.handle(), "app_started", None)?;
 
     let db = ethui_db::init(&resource(app, "db.sqlite3", args)).await?;
     app.manage(db.clone());
@@ -199,6 +194,15 @@ async fn init(app: &tauri::App, args: &Args) -> color_eyre::Result<()> {
     ethui_wallets::init(resource(app, "wallets.json", args)).await;
     ethui_networks::init(resource(app, "networks.json", args)).await;
     ethui_forge::init().await?;
+
+    #[cfg(feature = "aptabase")]
+    ethui_analytics::init_tauri_state(app.handle());
+    
+    // Initialize analytics event listener
+    ethui_analytics::init(app.handle()).await;
+
+    // Track app started event
+    ethui_analytics::track_event(app.handle(), "app_started", None)?;
 
     #[cfg(feature = "stacks")]
     ethui_stacks::init(args.stacks_port, resource(app, "stacks/", args)).await?;

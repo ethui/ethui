@@ -3001,12 +3001,14 @@ dependencies = [
 name = "ethui-analytics"
 version = "1.23.0"
 dependencies = [
+ "ethui-broadcast",
  "ethui-types",
  "hostname",
  "mac_address",
  "serde_json",
  "tauri",
  "tauri-plugin-aptabase",
+ "tokio",
  "tracing",
  "uuid 1.17.0",
 ]
@@ -3024,6 +3026,7 @@ version = "1.23.0"
 dependencies = [
  "ethui-types",
  "once_cell",
+ "serde_json",
  "tokio",
  "tracing",
 ]
@@ -3188,6 +3191,7 @@ version = "1.23.0"
 dependencies = [
  "alloy",
  "color-eyre",
+ "ethui-broadcast",
  "ethui-connections",
  "ethui-db",
  "ethui-dialogs",

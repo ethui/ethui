@@ -6,6 +6,9 @@ use tauri::{AppHandle, Manager};
 use tauri_plugin_aptabase::EventTracker as _;
 use uuid::Uuid;
 
+mod init;
+pub use init::init;
+
 static ANALYTICS: OnceLock<Analytics> = OnceLock::new();
 
 pub struct Analytics {
@@ -25,7 +28,9 @@ impl Analytics {
     fn get_machine_based_user_id() -> Uuid {
         let machine_id = Self::get_machine_identifier();
         let mut buf = [0u8; 16];
-        buf[..machine_id.len()].copy_from_slice(machine_id.as_bytes());
+        let bytes = machine_id.as_bytes();
+        let len = bytes.len().min(16);
+        buf[..len].copy_from_slice(&bytes[..len]);
         Uuid::new_v8(buf)
     }
 
@@ -50,12 +55,11 @@ impl Analytics {
 }
 
 pub fn init_tauri_state(handle: &AppHandle) {
-    // Store the singleton instance in Tauri state for Aptabase integration
     let analytics = Analytics::instance();
     handle.manage(analytics);
 }
 
-#[instrument(skip(handle))]
+#[instrument(skip(handle, _handle))]
 pub fn track_event(
     #[cfg(feature = "aptabase")] handle: &AppHandle,
     #[cfg(not(feature = "aptabase"))] _handle: &AppHandle,
@@ -65,6 +69,7 @@ pub fn track_event(
     let analytics = Analytics::instance();
     let mut full = analytics.get_common_properties();
     full.extend(properties.unwrap_or_default());
+
 
     debug!(properties = ?full);
 
