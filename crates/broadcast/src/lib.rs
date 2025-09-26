@@ -1,4 +1,4 @@
-use ethui_types::{prelude::*, ui_events, Affinity};
+use ethui_types::{prelude::*, ui_events, Affinity, NetworkId, NewNetworkParams};
 pub use internal_msgs::*;
 use once_cell::sync::Lazy;
 use tokio::sync::{broadcast, oneshot, Mutex};
@@ -29,6 +29,10 @@ pub enum InternalMsg {
     FetchERC20Metadata(u32, Address),
 
     ContractFound,
+
+    StackAdd(NewNetworkParams),
+
+    StackRemove(String),
 }
 
 #[derive(Debug, Clone)]
@@ -113,6 +117,14 @@ mod internal_msgs {
 
     pub async fn contract_found() {
         send(ContractFound).await
+    }
+
+    pub async fn stack_network_add(params: NewNetworkParams) {
+        send(StackAdd(params)).await;
+    }
+
+    pub async fn stack_network_remove(name: String) {
+        send(StackRemove(name)).await;
     }
 
     #[instrument(level = "trace")]

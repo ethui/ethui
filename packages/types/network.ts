@@ -16,6 +16,7 @@ export const networkSchema = z
     decimals: z.number(),
     warnings: z.string().optional(),
     id: networkIdSchema,
+    is_stack: z.boolean(),
   })
 
   // ensure RPC is online, and chain_id matches
@@ -49,3 +50,6 @@ export type NetworkId = z.infer<typeof networkIdSchema>;
 export type Network = NetworkInputs & {
   status: "unknown" | "online" | "offline";
 };
+
+export const stacksSchema = z.object({ slug: z.string() });
+export type StacksInputs = z.infer<typeof stacksSchema>;

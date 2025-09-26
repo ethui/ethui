@@ -5,8 +5,8 @@ use std::{
 
 use async_trait::async_trait;
 use ethui_broadcast::InternalMsg;
-use ethui_types::{prelude::*, Network, UINotify};
-use futures::{stream, StreamExt};
+use ethui_types::{Network, UINotify, prelude::*};
+use futures::{StreamExt, stream};
 use once_cell::sync::OnceCell;
 use serde_constant::ConstI64;
 use tokio::{
@@ -14,7 +14,7 @@ use tokio::{
     time::interval,
 };
 
-use crate::{migrations::load_and_migrate, Networks, SerializedNetworks};
+use crate::{Networks, SerializedNetworks, migrations::load_and_migrate};
 
 static NETWORKS: OnceCell<RwLock<Networks>> = OnceCell::new();
 
@@ -63,15 +63,24 @@ async fn receiver() -> ! {
         if let Ok(msg) = rx.recv().await {
             use InternalMsg::*;
 
-            if let ChainChanged(dedup_chain_id, _domain, affinity) = msg {
-                ethui_broadcast::ui_notify(UINotify::PeersUpdated).await;
-                if affinity.is_global() || affinity.is_unset() {
-                    // TODO: handle this error
-                    let _ = Networks::write()
-                        .await
-                        .set_current_by_dedup_chain_id(dedup_chain_id)
-                        .await;
+            match msg {
+                ChainChanged(dedup_chain_id, _domain, affinity) => {
+                    ethui_broadcast::ui_notify(UINotify::PeersUpdated).await;
+                    if affinity.is_global() || affinity.is_unset() {
+                        // TODO: handle this error
+                        let _ = Networks::write()
+                            .await
+                            .set_current_by_dedup_chain_id(dedup_chain_id)
+                            .await;
+                    }
                 }
+                StackAdd(params) => {
+                    let _ = Networks::write().await.add_network(params).await;
+                }
+                StackRemove(name) => {
+                    let _ = Networks::write().await.remove_network(&name).await;
+                }
+                _ => {}
             }
         }
     }
