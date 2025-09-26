@@ -5,9 +5,20 @@ import { toast } from "@ethui/ui/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
-import { Check, LoaderCircle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import z from "zod";
+
+
+export const schema = z.object({
+  name: z.string().min(1, "Invalid name"),
+  explorer_url: z.url().optional().nullable(),
+  http_url: z.url().min(1),
+  ws_url: z.url().nullable().optional(),
+  currency: z.string().min(1, "Invalid currency"),
+  decimals: z.number("Invalid number"),
+  chain_id: z.number().positive(),
+});
 
 export const Route = createFileRoute("/home/_l/settings/_l/networks/_l/new")({
   beforeLoad: () => ({ breadcrumb: "New" }),
@@ -18,34 +29,34 @@ export const Route = createFileRoute("/home/_l/settings/_l/networks/_l/new")({
 
 function Content() {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
 
   const form = useForm({
     mode: "onBlur",
-    resolver: zodResolver(networkSchema),
-    defaultValues: {
-      id: { dedup_id: 0 },
-    },
+    resolver: zodResolver(schema),
   });
 
   const httpUrl = form.watch("http_url");
-  const userChainId = form.watch("id.chain_id");
+  const userChainId = form.watch("chain_id");
+  console.log(form.watch());
 
   useEffect(() => {
     if (!httpUrl) return;
 
     const fetchChainId = async () => {
       try {
+        console.log("fetching");
         const chainId = await invoke<number>(
           "networks_chain_id_from_provider",
           {
             url: httpUrl,
           },
         );
+        console.log("fetched", chainId);
 
         if (!userChainId) {
-          form.setValue("id.chain_id", chainId);
-          form.clearErrors("id.chain_id");
+          form.setValue("chain_id", chainId);
+
+          form.clearErrors("chain_id");
         }
       } catch (_e) {
         return null;
@@ -55,14 +66,14 @@ function Content() {
     fetchChainId();
   }, [httpUrl, userChainId, form.setValue, form.clearErrors]);
 
+
   const onSubmit = async (data: NetworkInputs) => {
     try {
-      setLoading(true);
+      console.log("here", data);
       await invoke("networks_add", { network: data });
-      setLoading(false);
+      console.log("here", data);
       router.history.back();
     } catch (err: any) {
-      setLoading(false);
       toast({
         title: "Error",
         description: err.toString(),
@@ -76,14 +87,7 @@ function Content() {
   // TODO: fix remove button
   return (
     <Form form={form} onSubmit={onSubmit} className="gap-4">
-      <div className="flex flex-row gap-2">
-        <Form.Text label="Name" name="name" />
-        <Form.NumberField
-          className="[&::-webkit-inner-spin-button]:appearance-none"
-          label="Chain Id"
-          name="dedup_chain_id.chain_id"
-        />
-      </div>
+      <Form.Text label="Name" name="name" />
 
       <Form.Text
         label="HTTP RPC"
@@ -106,17 +110,19 @@ function Content() {
       <div className="flex flex-row gap-2">
         <Form.Text label="Currency" name="currency" />
         <Form.NumberField label="Decimals" name="decimals" />
+        <Form.NumberField
+          className="[&::-webkit-inner-spin-button]:appearance-none"
+          label="Chain Id"
+          name="chain_id"
+        />
       </div>
 
       <div className="flex gap-2">
-        <Button variant="destructive" onClick={cancel}>
+        <Button type="button" variant="destructive" onClick={cancel}>
           Cancel
         </Button>
-        <Button>
-          {loading ? <LoaderCircle className="animate-spin" /> : <Check />}
-          Create
-        </Button>
-      </div>
-    </Form>
+        <Form.Submit label="save" />
+      </div >
+    </Form >
   );
 }
