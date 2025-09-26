@@ -1,4 +1,6 @@
+import { Link } from "@tanstack/react-router";
 import { Button } from "@ethui/ui/components/shadcn/button";
+import { ClickToCopy } from "@ethui/ui/components/click-to-copy";
 import { createFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { useNetworks } from "#/store/useNetworks";
@@ -33,16 +35,20 @@ function Content({ name }: { name: string }) {
     <div className="flex flex-col gap-4">
       <div className="flex flex-row gap-2">
         <LabelValue label="Name" value={name} />
-        <LabelValue label="Chain Id" value={String(id.chain_id)} />
+        <ClickToCopy className="hover:bg-accent" text={String(id.chain_id)}>
+          <LabelValue label="Chain Id" value={String(id.chain_id)} />
+        </ClickToCopy>
       </div>
 
-      <LabelValue label="HTTP RPC" value={String(http_url)} mono />
-      <LabelValue
-        label="WebSockets RPC"
-        value={ws_url ? String(ws_url) : ""}
-        mono
-      />
-      <LabelValue label="Explorer URL" value={explorer_url || ""} mono />
+      <ClickToCopy className="hover:bg-accent" text={String(http_url)}>
+        <LabelValue label="HTTP RPC" value={String(http_url)} mono />
+      </ClickToCopy>
+      <ClickToCopy className="hover:bg-accent" text={String(ws_url)}>
+        <LabelValue label="WebSockets RPC" value={String(ws_url)} mono />
+      </ClickToCopy>
+      <Link className="hover:bg-accent" target="_blank" to={explorer_url}>
+        <LabelValue label="Explorer URL" value={explorer_url || ""} mono />
+      </Link>
 
       <div className="flex flex-row gap-2">
         <LabelValue label="Currency" value={currency} />
