@@ -1,4 +1,4 @@
-import { type NetworkInputs, networkSchema } from "@ethui/types/network";
+import type { NetworkInputs } from "@ethui/types/network";
 import { Form } from "@ethui/ui/components/form";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { toast } from "@ethui/ui/hooks/use-toast";
@@ -8,7 +8,6 @@ import { invoke } from "@tauri-apps/api/core";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
-
 
 export const schema = z.object({
   name: z.string().min(1, "Invalid name"),
@@ -66,7 +65,6 @@ function Content() {
     fetchChainId();
   }, [httpUrl, userChainId, form.setValue, form.clearErrors]);
 
-
   const onSubmit = async (data: NetworkInputs) => {
     try {
       console.log("here", data);
@@ -122,7 +120,7 @@ function Content() {
           Cancel
         </Button>
         <Form.Submit label="save" />
-      </div >
-    </Form >
+      </div>
+    </Form>
   );
 }
