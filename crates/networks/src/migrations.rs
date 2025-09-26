@@ -13,7 +13,7 @@ use url::Url;
 
 use crate::{Networks, SerializedNetworks};
 
-pub type LatestVersion = ConstI64<4>;
+pub type LatestVersion = ConstI64<3>;
 
 #[derive(Debug, Deserialize, Serialize)]
 struct SerializedNetworksV0 {
@@ -37,20 +37,12 @@ struct SerializedNetworksV2 {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-struct SerializedNetworksV3 {
-    current: String,
-    networks: HashMap<String, NetworkV2>,
-    version: ConstI64<3>,
-}
-
-#[derive(Debug, Deserialize, Serialize)]
 #[serde(untagged)]
 enum Versions {
     V0(SerializedNetworksV0),
     V1(SerializedNetworksV1),
     V2(SerializedNetworksV2),
-    V3(SerializedNetworksV3),
-    V4(SerializedNetworks),
+    V3(SerializedNetworks),
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -74,21 +66,6 @@ pub struct NetworkV1 {
     pub ws_url: Option<Url>,
     pub currency: String,
     pub decimals: u32,
-}
-
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct NetworkV2 {
-    #[serde(alias = "dedup_chain_id")]
-    pub id: NetworkId,
-
-    pub name: String,
-    pub explorer_url: Option<String>,
-    pub http_url: Url,
-    pub ws_url: Option<Url>,
-    pub currency: String,
-    pub decimals: u32,
-    #[serde(default)]
-    pub status: NetworkStatus,
 }
 
 pub(crate) fn load_and_migrate(pathbuf: &PathBuf) -> color_eyre::Result<Networks> {
@@ -134,20 +111,13 @@ fn run_migrations(networks: Versions) -> SerializedNetworks {
 
             run_migrations(v2)
         }
-        Versions::V2(v2) => {
-            let v3 = Versions::V3(SerializedNetworksV3 {
-                current: v2.current,
-                networks: migrate_networks_from_v2_to_v3(v2.networks),
-                version: ConstI64,
-            });
-            run_migrations(v3)
-        }
-        Versions::V3(v3) => SerializedNetworks {
-            current: v3.current,
-            networks: migrate_networks_from_v3_to_v4(v3.networks),
+        Versions::V2(v2) => SerializedNetworks {
+            current: v2.current,
+            networks: migrate_networks_from_v2_to_v3(v2.networks),
             version: ConstI64,
         },
-        Versions::V4(latest) => latest,
+
+        Versions::V3(latest) => latest,
     }
 }
 
@@ -177,13 +147,13 @@ fn migrate_networks_from_v1_to_v2(
 
 fn migrate_networks_from_v2_to_v3(
     networks: HashMap<String, NetworkV1>,
-) -> HashMap<String, NetworkV2> {
+) -> HashMap<String, Network> {
     networks
         .into_iter()
         .map(|(name, network)| {
             (
                 name,
-                NetworkV2 {
+                Network {
                     id: (network.chain_id, network.deduplication_id).into(),
                     name: network.name,
                     explorer_url: network.explorer_url,
@@ -192,37 +162,9 @@ fn migrate_networks_from_v2_to_v3(
                     currency: network.currency,
                     decimals: network.decimals,
                     status: NetworkStatus::Unknown,
+                    is_stack: false,
                 },
             )
-        })
-        .collect::<HashMap<String, NetworkV2>>()
-}
-fn migrate_networks_from_v3_to_v4(
-    networks: HashMap<String, NetworkV2>,
-) -> HashMap<String, Network> {
-    networks
-        .into_iter()
-        .map(|(name, network)| {
-            // heuristic: mark as stack if host ends with `.local.ethui.dev`
-            let is_stack = network
-                .http_url
-                .host_str()
-                .map(|h| h.ends_with(".local.ethui.dev"))
-                .unwrap_or(false);
-
-            let network = Network {
-                id: network.id,
-                name: network.name,
-                explorer_url: network.explorer_url,
-                http_url: network.http_url,
-                ws_url: network.ws_url,
-                currency: network.currency,
-                decimals: network.decimals,
-                status: NetworkStatus::Unknown,
-                is_stack,
-            };
-
-            (name, network)
         })
         .collect::<HashMap<String, Network>>()
 }
