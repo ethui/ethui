@@ -23,36 +23,69 @@ function Content({ name }: { name: string }) {
     window.history.back();
   };
 
-  if (!stackNetwork) {
-    return <div>Stack not found</div>;
-  }
-
-  const { id, http_url, ws_url, explorer_url, currency, decimals } =
-    stackNetwork;
-
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-row gap-2">
         <LabelValue label="Name" value={name} />
-        <ClickToCopy className="hover:bg-accent" text={String(id.chain_id)}>
-          <LabelValue label="Chain Id" value={String(id.chain_id)} />
-        </ClickToCopy>
       </div>
 
-      <ClickToCopy className="hover:bg-accent" text={String(http_url)}>
-        <LabelValue label="HTTP RPC" value={String(http_url)} mono />
-      </ClickToCopy>
-      <ClickToCopy className="hover:bg-accent" text={String(ws_url)}>
-        <LabelValue label="WebSockets RPC" value={String(ws_url)} mono />
-      </ClickToCopy>
-      <Link className="hover:bg-accent" target="_blank" to={explorer_url}>
-        <LabelValue label="Explorer URL" value={explorer_url || ""} mono />
-      </Link>
+      {stackNetwork && (
+        <>
+          <div className="flex flex-row gap-2">
+            <ClickToCopy
+              className="hover:bg-accent"
+              text={String(stackNetwork.id.chain_id)}
+            >
+              <LabelValue
+                label="Chain Id"
+                value={String(stackNetwork.id.chain_id)}
+              />
+            </ClickToCopy>
+          </div>
 
-      <div className="flex flex-row gap-2">
-        <LabelValue label="Currency" value={currency} />
-        <LabelValue label="Decimals" value={String(decimals)} />
-      </div>
+          <ClickToCopy
+            className="hover:bg-accent"
+            text={String(stackNetwork.http_url)}
+          >
+            <LabelValue
+              label="HTTP RPC"
+              value={String(stackNetwork.http_url)}
+              mono
+            />
+          </ClickToCopy>
+
+          <ClickToCopy
+            className="hover:bg-accent"
+            text={String(stackNetwork.ws_url)}
+          >
+            <LabelValue
+              label="WebSockets RPC"
+              value={String(stackNetwork.ws_url)}
+              mono
+            />
+          </ClickToCopy>
+
+          <Link
+            className="hover:bg-accent"
+            target="_blank"
+            to={stackNetwork.explorer_url}
+          >
+            <LabelValue
+              label="Explorer URL"
+              value={stackNetwork.explorer_url || ""}
+              mono
+            />
+          </Link>
+
+          <div className="flex flex-row gap-2">
+            <LabelValue label="Currency" value={stackNetwork.currency} />
+            <LabelValue
+              label="Decimals"
+              value={String(stackNetwork.decimals)}
+            />
+          </div>
+        </>
+      )}
 
       <div className="flex gap-2">
         <Button variant="destructive" onClick={remove}>
