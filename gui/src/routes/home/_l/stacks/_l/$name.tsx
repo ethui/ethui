@@ -1,7 +1,6 @@
-import { Link } from "@tanstack/react-router";
-import { Button } from "@ethui/ui/components/shadcn/button";
 import { ClickToCopy } from "@ethui/ui/components/click-to-copy";
-import { createFileRoute } from "@tanstack/react-router";
+import { Button } from "@ethui/ui/components/shadcn/button";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { useNetworks } from "#/store/useNetworks";
 
