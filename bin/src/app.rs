@@ -194,11 +194,9 @@ async fn init(app: &tauri::App, args: &Args) -> color_eyre::Result<()> {
     ethui_wallets::init(resource(app, "wallets.json", args)).await;
     ethui_networks::init(resource(app, "networks.json", args)).await;
     ethui_forge::init().await?;
-
-    #[cfg(feature = "aptabase")]
     ethui_analytics::init(app.handle()).await;
 
-    // Track app started event
+    
     ethui_analytics::track_event(app.handle(), "app_started", None)?;
 
     #[cfg(feature = "stacks")]
