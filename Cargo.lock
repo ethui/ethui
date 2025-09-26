@@ -2145,7 +2145,7 @@ dependencies = [
  "hidapi-rusb",
  "js-sys",
  "log",
- "nix",
+ "nix 0.26.4",
  "once_cell",
  "thiserror 1.0.69",
  "tokio",
@@ -2953,6 +2953,7 @@ version = "1.23.0"
 dependencies = [
  "alloy",
  "color-eyre",
+ "ethui-analytics",
  "ethui-args",
  "ethui-broadcast",
  "ethui-connections",
@@ -2997,6 +2998,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "ethui-analytics"
+version = "1.23.0"
+dependencies = [
+ "ethui-broadcast",
+ "ethui-types",
+ "hostname",
+ "mac_address",
+ "serde_json",
+ "tauri",
+ "tauri-plugin-aptabase",
+ "tokio",
+ "tracing",
+ "uuid 1.17.0",
+]
+
+[[package]]
 name = "ethui-args"
 version = "1.23.0"
 dependencies = [
@@ -3009,6 +3026,7 @@ version = "1.23.0"
 dependencies = [
  "ethui-types",
  "once_cell",
+ "serde_json",
  "tokio",
  "tracing",
 ]
@@ -3173,6 +3191,7 @@ version = "1.23.0"
 dependencies = [
  "alloy",
  "color-eyre",
+ "ethui-broadcast",
  "ethui-connections",
  "ethui-db",
  "ethui-dialogs",
@@ -4277,6 +4296,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "hostname"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a56f203cd1c76362b69e3863fd987520ac36cf70a8c92627449b2f64a8cf7d65"
+dependencies = [
+ "cfg-if",
+ "libc",
+ "windows-link",
+]
+
+[[package]]
 name = "html5ever"
 version = "0.29.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5186,6 +5216,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c41e0c4fef86961ac6d6f8a82609f55f31b05e4fce149ac5710e439df7619ba4"
 
 [[package]]
+name = "mac_address"
+version = "1.1.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c0aeb26bf5e836cc1c341c8106051b573f1766dfa05aa87f0b98be5e51b02303"
+dependencies = [
+ "nix 0.29.0",
+ "winapi",
+]
+
+[[package]]
 name = "macro-string"
 version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5424,6 +5464,19 @@ dependencies = [
  "libc",
  "memoffset 0.7.1",
  "pin-utils",
+]
+
+[[package]]
+name = "nix"
+version = "0.29.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "71e2746dc3a24dd78b3cfcb7be93368c6de9963d30f43a6a73998a9cf4b17b46"
+dependencies = [
+ "bitflags 2.9.1",
+ "cfg-if",
+ "cfg_aliases",
+ "libc",
+ "memoffset 0.9.1",
 ]
 
 [[package]]

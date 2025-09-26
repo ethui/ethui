@@ -75,6 +75,10 @@ impl Wallets {
 
         self.current = id;
         self.on_wallet_changed().await?;
+        
+        let wallet_type = self.wallets[id].wallet_type();
+        ethui_broadcast::wallet_connected(wallet_type.to_string()).await;
+        
         self.save()?;
         Ok(())
     }
