@@ -1,8 +1,10 @@
 import { ClickToCopy } from "@ethui/ui/components/click-to-copy";
+import { Clipboard } from "lucide-react";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { useNetworks } from "#/store/useNetworks";
+import { cn } from "@ethui/ui/lib/utils";
 
 export const Route = createFileRoute("/home/_l/stacks/_l/$name")({
   loader: ({ params }: { params: { name: string } }) => params.name,
@@ -24,7 +26,7 @@ function Content({ name }: { name: string }) {
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 w-fit">
       <div className="flex flex-row gap-2">
         <LabelValue label="Name" value={name} />
       </div>
@@ -50,6 +52,7 @@ function Content({ name }: { name: string }) {
             <LabelValue
               label="HTTP RPC"
               value={String(stackNetwork.http_url)}
+              icon={<Clipboard size={18} className="stroke-current/50" />}
               mono
             />
           </ClickToCopy>
@@ -61,6 +64,7 @@ function Content({ name }: { name: string }) {
             <LabelValue
               label="WebSockets RPC"
               value={String(stackNetwork.ws_url)}
+              icon={<Clipboard size={18} className="stroke-current/50" />}
               mono
             />
           </ClickToCopy>
@@ -73,6 +77,7 @@ function Content({ name }: { name: string }) {
             <LabelValue
               label="Explorer URL"
               value={stackNetwork.explorer_url || ""}
+              icon={<Clipboard size={18} className="stroke-current/50" />}
               mono
             />
           </Link>
@@ -100,15 +105,17 @@ function LabelValue({
   label,
   value,
   mono,
+  icon
 }: {
   label: string;
   value: string;
   mono?: boolean;
+  icon?: React.ReactNode;
 }) {
   return (
-    <div className="flex min-w-64 flex-col">
+    <div className="flex p-1 flex-col">
       <div className="text-muted-foreground text-xs">{label}</div>
-      <div className={mono ? "break-all font-mono" : ""}>{value || "-"}</div>
+      <div className={cn("flex flex-row gap-2 items-center", mono && "break-all font-mono")}>{value || "-"} {icon}</div>
     </div>
   );
 }
