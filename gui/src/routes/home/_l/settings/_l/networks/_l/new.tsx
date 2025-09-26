@@ -1,4 +1,3 @@
-import type { NetworkInputs } from "@ethui/types/network";
 import { Form } from "@ethui/ui/components/form";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { toast } from "@ethui/ui/hooks/use-toast";
@@ -18,6 +17,8 @@ export const schema = z.object({
   decimals: z.number("Invalid number"),
   chain_id: z.number().positive(),
 });
+
+export type Schema = z.infer<typeof schema>;
 
 export const Route = createFileRoute("/home/_l/settings/_l/networks/_l/new")({
   beforeLoad: () => ({ breadcrumb: "New" }),
@@ -65,7 +66,7 @@ function Content() {
     fetchChainId();
   }, [httpUrl, userChainId, form.setValue, form.clearErrors]);
 
-  const onSubmit = async (data: NetworkInputs) => {
+  const onSubmit = async (data: Schema) => {
     try {
       console.log("here", data);
       await invoke("networks_add", { network: data });
