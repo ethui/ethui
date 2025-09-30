@@ -53,8 +53,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/types
       '@ethui/ui':
-        specifier: ^0.0.117
-        version: 0.0.117(@hookform/resolvers@5.2.1(react-hook-form@7.59.0(react@19.1.0)))(@tailwindcss/postcss@4.1.14)(@tanstack/react-query@5.85.5(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react-hook-form@7.59.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)(typescript@5.9.2)(viem@2.37.5(typescript@5.9.2)(zod@4.1.5))(zod@4.1.5)
+        specifier: ^0.0.118
+        version: 0.0.118(@hookform/resolvers@5.2.1(react-hook-form@7.59.0(react@19.1.0)))(@tailwindcss/postcss@4.1.11)(@tanstack/react-query@5.85.5(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react-hook-form@7.59.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)(typescript@5.9.2)(viem@2.37.5(typescript@5.9.2)(zod@4.1.5))(zod@4.1.5)
       '@fontsource/source-code-pro':
         specifier: ^5.2.5
         version: 5.2.6
@@ -285,13 +285,13 @@ importers:
         version: 24.3.0
       '@wdio/cli':
         specifier: ^9.19.0
-        version: 9.19.2(@types/node@24.3.0)(expect-webdriverio@5.4.2)
+        version: 9.19.2(@types/node@24.3.0)(expect-webdriverio@5.4.2(@wdio/globals@9.17.0)(@wdio/logger@9.18.0)(webdriverio@9.19.2))
       '@wdio/globals':
         specifier: ^9.17.0
         version: 9.17.0(expect-webdriverio@5.4.2)(webdriverio@9.19.2)
       '@wdio/local-runner':
         specifier: ^9.19.0
-        version: 9.19.2(@wdio/globals@9.17.0)(webdriverio@9.19.2)
+        version: 9.19.2(@wdio/globals@9.17.0(expect-webdriverio@5.4.2)(webdriverio@9.19.2))(webdriverio@9.19.2)
       '@wdio/mocha-framework':
         specifier: ^9.19.0
         version: 9.19.2
@@ -720,8 +720,8 @@ packages:
     peerDependencies:
       typescript: ^5.0.0
 
-  '@ethui/ui@0.0.117':
-    resolution: {integrity: sha512-428kRD/wzsxcvf2LF0K+YXfxeDk/z5GOwnVkCU0S4CuT4A7ghsb08VFuGSxwDRZBnvOxFN1R3X4FYGupd5lxKg==}
+  '@ethui/ui@0.0.118':
+    resolution: {integrity: sha512-qVHHN7E8ATbX0r9ZyFp4l/kZWjAvD3n9gIrefNfYlwqp7PnJ7ZfdM7G+0L4KWqYbrPAAGj+IZrL5AXn1N/l8Cg==}
     peerDependencies:
       '@hookform/resolvers': ^5.2.1
       '@tailwindcss/postcss': 4.1.5
@@ -4922,7 +4922,7 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@ethui/ui@0.0.117(@hookform/resolvers@5.2.1(react-hook-form@7.59.0(react@19.1.0)))(@tailwindcss/postcss@4.1.14)(@tanstack/react-query@5.85.5(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react-hook-form@7.59.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)(typescript@5.9.2)(viem@2.37.5(typescript@5.9.2)(zod@4.1.5))(zod@4.1.5)':
+  '@ethui/ui@0.0.118(@hookform/resolvers@5.2.1(react-hook-form@7.59.0(react@19.1.0)))(@tailwindcss/postcss@4.1.11)(@tanstack/react-query@5.85.5(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react-hook-form@7.59.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)(typescript@5.9.2)(viem@2.37.5(typescript@5.9.2)(zod@4.1.5))(zod@4.1.5)':
     dependencies:
       '@ethui/abiparse': 0.0.4(react@19.1.0)(typescript@5.9.2)(zod@4.1.5)
       '@fontsource/source-code-pro': 5.2.6
@@ -6395,7 +6395,7 @@ snapshots:
       magic-string: 0.30.17
       pathe: 2.0.3
 
-  '@wdio/cli@9.19.2(@types/node@24.3.0)(expect-webdriverio@5.4.2)':
+  '@wdio/cli@9.19.2(@types/node@24.3.0)(expect-webdriverio@5.4.2(@wdio/globals@9.17.0)(@wdio/logger@9.18.0)(webdriverio@9.19.2))':
     dependencies:
       '@vitest/snapshot': 2.1.9
       '@wdio/config': 9.19.2
@@ -6451,12 +6451,12 @@ snapshots:
       expect-webdriverio: 5.4.2(@wdio/globals@9.17.0)(@wdio/logger@9.18.0)(webdriverio@9.19.2)
       webdriverio: 9.19.2
 
-  '@wdio/local-runner@9.19.2(@wdio/globals@9.17.0)(webdriverio@9.19.2)':
+  '@wdio/local-runner@9.19.2(@wdio/globals@9.17.0(expect-webdriverio@5.4.2)(webdriverio@9.19.2))(webdriverio@9.19.2)':
     dependencies:
       '@types/node': 20.19.13
       '@wdio/logger': 9.18.0
       '@wdio/repl': 9.16.2
-      '@wdio/runner': 9.19.2(expect-webdriverio@5.4.2)(webdriverio@9.19.2)
+      '@wdio/runner': 9.19.2(expect-webdriverio@5.4.2(@wdio/globals@9.17.0)(@wdio/logger@9.18.0)(webdriverio@9.19.2))(webdriverio@9.19.2)
       '@wdio/types': 9.19.2
       '@wdio/xvfb': 9.19.2
       exit-hook: 4.0.0
@@ -6507,7 +6507,7 @@ snapshots:
       diff: 8.0.2
       object-inspect: 1.13.4
 
-  '@wdio/runner@9.19.2(expect-webdriverio@5.4.2)(webdriverio@9.19.2)':
+  '@wdio/runner@9.19.2(expect-webdriverio@5.4.2(@wdio/globals@9.17.0)(@wdio/logger@9.18.0)(webdriverio@9.19.2))(webdriverio@9.19.2)':
     dependencies:
       '@types/node': 20.19.13
       '@wdio/config': 9.19.2

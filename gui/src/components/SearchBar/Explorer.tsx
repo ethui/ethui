@@ -6,6 +6,7 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
 import { isAddress, isHash } from "viem";
+import { useAllAddresses } from "#/hooks/useAllAddresses";
 import { useIsContract } from "#/hooks/useIsContract";
 import { useContracts } from "#/store/useContracts";
 import { useNetworks } from "#/store/useNetworks";
@@ -25,59 +26,96 @@ export function ExplorerSearchResults({
   search,
   onClose,
 }: ExplorerSearchResultsProps) {
-  if (!search) return null;
-
-  const showAddressResults = isAddress(search);
+  const showAddressResults = search.startsWith("0x") && search.length >= 3;
   const showTransactionResults = isHash(search);
-
-  if (!showAddressResults && !showTransactionResults) return null;
+  const showHints = !search || search === "0" || search === "0x";
 
   return (
-    <>
+    <CommandGroup heading="Explorer">
+      {showHints && <ExplorerHints />}
+
       {showAddressResults && (
-        <AddressSearchResults
-          address={search as `0x${string}`}
-          onClose={onClose}
-        />
+        <AddressSearchResults searchTerm={search} onClose={onClose} />
       )}
       {showTransactionResults && (
         <TransactionSearchResults hash={search} onClose={onClose} />
       )}
-      <CommandSeparator />
-    </>
+
+      {(showAddressResults || showTransactionResults || showHints) && (
+        <CommandSeparator />
+      )}
+    </CommandGroup>
   );
 }
 
 export function ExplorerHints() {
   return (
-    <CommandGroup heading="Explorer">
-      <CommandItem disabled>
+    <>
+      <CommandItem keywords={["0", "0x"]} disabled>
         <HintItem
           title="Search for Transactions"
           subtitle="Enter any transaction hash"
         />
       </CommandItem>
-      <CommandItem disabled>
-        <HintItem title="Search for Addresses" subtitle="Enter any address" />
+      <CommandItem keywords={["0", "0x"]} disabled>
+        <HintItem
+          title="Search for Addresses"
+          subtitle="Enter full address or partial"
+        />
       </CommandItem>
-    </CommandGroup>
+    </>
   );
 }
 
 function AddressSearchResults({
+  searchTerm,
+  onClose,
+}: {
+  searchTerm: string;
+  onClose: () => void;
+}) {
+  const network = useNetworks((s) => s.current);
+  const isExactAddress = isAddress(searchTerm);
+
+  const { data: addressData } = useAllAddresses({
+    enabled: !isExactAddress,
+    searchTerm: !isExactAddress ? searchTerm : undefined,
+  });
+
+  if (!network) return null;
+
+  const matchingAddresses = isExactAddress
+    ? [searchTerm as `0x${string}`]
+    : addressData?.all || [];
+
+  if (matchingAddresses.length === 0) return null;
+
+  return (
+    <>
+      {matchingAddresses.map((address) => (
+        <AddressCommandItems
+          key={address}
+          address={address as `0x${string}`}
+          chainId={network.id.chain_id}
+          onClose={onClose}
+        />
+      ))}
+    </>
+  );
+}
+
+function AddressCommandItems({
   address,
+  chainId,
   onClose,
 }: {
   address: `0x${string}`;
+  chainId: number;
   onClose: () => void;
 }) {
   const navigate = useNavigate();
-  const network = useNetworks((s) => s.current);
   const contracts = useContracts((s) => s.contracts);
-  const { isContract, isLoading } = useIsContract(
-    address,
-    network?.id.chain_id ?? 1,
-  );
+  const { isContract, isLoading } = useIsContract(address, chainId);
 
   const contractExists = contracts.some(
     (contract) => contract.address.toLowerCase() === address.toLowerCase(),
@@ -91,15 +129,16 @@ function AddressSearchResults({
   const handleContractSelect = () => {
     navigate({
       to: "/home/explorer/contracts/$chainId/$address",
-      params: { chainId: network?.id.chain_id?.toString(), address },
+      params: { chainId: chainId.toString(), address },
     });
     onClose();
   };
 
   return (
-    <CommandGroup heading="Explorer">
+    <>
       <CommandItem
-        value={address}
+        className="cursor-pointer"
+        value={`address-${address}`}
         keywords={[address, "address", "addresses", "explorer"]}
         onSelect={handleAddressSelect}
       >
@@ -112,7 +151,8 @@ function AddressSearchResults({
 
       {!isLoading && isContract && contractExists && (
         <CommandItem
-          value={`${address}-contract`}
+          className="cursor-pointer"
+          value={`contract-${address}`}
           keywords={[address, "contract", "contracts", "explorer"]}
           onSelect={handleContractSelect}
         >
@@ -123,7 +163,7 @@ function AddressSearchResults({
           />
         </CommandItem>
       )}
-    </CommandGroup>
+    </>
   );
 }
 
@@ -145,26 +185,18 @@ function TransactionSearchResults({
   };
 
   return (
-    <CommandGroup heading="Explorer">
-      <CommandItem
-        value={hash}
-        keywords={[
-          hash,
-          "transaction",
-          "transactions",
-          "tx",
-          "hash",
-          "explorer",
-        ]}
-        onSelect={handleTransactionSelect}
-      >
-        <ExternalLink className="mr-2 h-4 w-4" />
-        <SearchResultItem
-          title={`Transactions > ${truncateHex(hash)}`}
-          subtitle="View transaction details"
-        />
-      </CommandItem>
-    </CommandGroup>
+    <CommandItem
+      className="cursor-pointer"
+      value={hash}
+      keywords={[hash, "transaction", "transactions", "tx", "hash", "explorer"]}
+      onSelect={handleTransactionSelect}
+    >
+      <ExternalLink className="mr-2 h-4 w-4" />
+      <SearchResultItem
+        title={`Transactions > ${truncateHex(hash)}`}
+        subtitle="View transaction details"
+      />
+    </CommandItem>
   );
 }
 

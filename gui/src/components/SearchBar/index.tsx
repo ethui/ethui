@@ -3,11 +3,11 @@ import {
   CommandEmpty,
   CommandInput,
   CommandList,
-  CommandSeparator,
 } from "@ethui/ui/components/shadcn/command";
+import { DialogTitle } from "@ethui/ui/components/shadcn/dialog";
 import { useEffect, useState } from "react";
 import { useUI } from "#/store/useUI";
-import { ExplorerHints, ExplorerSearchResults } from "./Explorer";
+import { ExplorerSearchResults } from "./Explorer";
 import { QuickActions } from "./QuickActions";
 
 export function SearchBar() {
@@ -29,21 +29,18 @@ export function SearchBar() {
   const handleClose = () => setOpen(false);
 
   return (
-    <CommandDialog open={open} onOpenChange={setOpen}>
-      <CommandInput
-        placeholder="Search hashes, addresses or quick actions"
-        value={search}
-        onValueChange={setSearch}
-      />
-      <CommandList>
-        <CommandEmpty>No commands found</CommandEmpty>
+    <CommandDialog position="top" open={open} onOpenChange={setOpen}>
+      <DialogTitle>
+        <CommandInput
+          className="font-normal"
+          placeholder="Search hashes, addresses or quick actions"
+          value={search}
+          onValueChange={setSearch}
+        />
+      </DialogTitle>
 
-        {!search && (
-          <>
-            <ExplorerHints />
-            <CommandSeparator />
-          </>
-        )}
+      <CommandList className="">
+        <CommandEmpty>No commands found</CommandEmpty>
 
         <ExplorerSearchResults search={search} onClose={handleClose} />
 

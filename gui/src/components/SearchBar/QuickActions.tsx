@@ -67,6 +67,7 @@ function NavigationActions({ onClose }: QuickActionsProps) {
     <>
       {actions.map((action) => (
         <CommandItem
+          className="cursor-pointer"
           key={action.label}
           keywords={action.keywords}
           onSelect={() => {
@@ -107,6 +108,7 @@ function ThemeActions({ onClose }: QuickActionsProps) {
     <>
       {themes.map((theme) => (
         <CommandItem
+          className="cursor-pointer"
           key={theme.mode}
           keywords={theme.keywords}
           onSelect={() => {

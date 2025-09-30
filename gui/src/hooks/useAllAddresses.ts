@@ -10,7 +10,9 @@ interface CategorizedAddresses {
   contracts: Address[];
 }
 
-export function useAllAddresses() {
+export function useAllAddresses(
+  options: { enabled?: boolean; searchTerm?: string } = {},
+) {
   const network = useNetworks((s) => s.current);
   const { allWalletInfo } = useWallets();
 
@@ -71,6 +73,21 @@ export function useAllAddresses() {
         contracts: Array.from(knownContracts),
       };
     },
-    enabled: !!network && allWalletInfo !== undefined,
+    select: (data) => {
+      if (!options.searchTerm) return data;
+
+      const filterAddresses = (addresses: Address[]) =>
+        addresses.filter((address) =>
+          address.toLowerCase().includes(options.searchTerm!.toLowerCase()),
+        );
+
+      return {
+        all: filterAddresses(data.all),
+        eoas: filterAddresses(data.eoas),
+        contracts: filterAddresses(data.contracts),
+      };
+    },
+    enabled:
+      !!network && allWalletInfo !== undefined && options.enabled !== false,
   });
 }
