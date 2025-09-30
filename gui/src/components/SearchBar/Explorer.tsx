@@ -48,7 +48,7 @@ export function ExplorerSearchResults({
   );
 }
 
-export function ExplorerHints() {
+function ExplorerHints() {
   return (
     <>
       <CommandItem keywords={["0", "0x"]} disabled>
