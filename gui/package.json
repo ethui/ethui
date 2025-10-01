@@ -22,7 +22,7 @@
     "@hookform/resolvers": "^5.2.1",
     "@radix-ui/react-collapsible": "^1.1.3",
     "@radix-ui/react-icons": "^1.3.2",
-    "@tanstack/react-query": "^5.84.1",
+    "@tanstack/react-query": "^5.90.2",
     "@tanstack/react-router": "^1.123.2",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/router-devtools": "^1.123.2",
@@ -55,7 +55,7 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.3",
-    "@tanstack/react-query-devtools": "^5.84.1",
+    "@tanstack/react-query-devtools": "^5.90.2",
     "@tanstack/router-devtools": "^1.123.2",
     "@tanstack/router-plugin": "^1.123.2",
     "@types/chrome": "^0.1.1",
