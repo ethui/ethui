@@ -28,7 +28,7 @@
     "@tanstack/router-devtools": "^1.123.2",
     "@tanstack/zod-adapter": "^1.131.37",
     "@tauri-apps/api": "2.8.0",
-    "@tauri-apps/cli": "^2.8.3",
+    "@tauri-apps/cli": "^2.8.4",
     "@tauri-apps/plugin-clipboard-manager": "^2.3.0",
     "@tauri-apps/plugin-os": "^2.3.0",
     "@tauri-apps/plugin-process": "^2.3.0",
