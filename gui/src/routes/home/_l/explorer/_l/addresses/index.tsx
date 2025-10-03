@@ -12,7 +12,7 @@ import { formatEther } from "viem";
 import { AddressView } from "#/components/AddressView";
 import { RouteGuard } from "#/components/RouteGuard";
 import { useAddressBalance } from "#/hooks/useAddressBalance";
-import { useAllAddresses } from "#/hooks/useAllAddresses";
+import { type AddressData, useAllAddresses } from "#/hooks/useAllAddresses";
 import { useIsAnvilNetwork } from "#/hooks/useIsAnvilNetwork";
 import { useNetworks } from "#/store/useNetworks";
 
@@ -35,7 +35,7 @@ function Addresses() {
   );
 }
 
-const columnHelper = createColumnHelper<Address>();
+const columnHelper = createColumnHelper<AddressData>();
 
 function BalanceCell({ address }: { address: Address }) {
   const network = useNetworks((s) => s.current);
@@ -69,7 +69,7 @@ function AddressTable() {
       cell: ({ row }) => (
         <AddressView
           showTypeIcon={true}
-          address={row.original}
+          address={row.original.address as Address}
           showAlias={true}
           className="text-sm"
         />
@@ -78,7 +78,9 @@ function AddressTable() {
     columnHelper.display({
       id: "balance",
       header: "ETH Balance",
-      cell: ({ row }) => <BalanceCell address={row.original} />,
+      cell: ({ row }) => (
+        <BalanceCell address={row.original.address as Address} />
+      ),
     }),
   ];
 
