@@ -19,7 +19,7 @@
     "@types/node": "^24.2.0",
     "@tauri-apps/api": "2.8.0",
     "@types/react": "^19.1.2",
-    "jsdom": "^26.1.0",
+    "jsdom": "^27.0.0",
     "react": "^19"
   },
   "peerDependencies": {
