@@ -1333,7 +1333,7 @@ dependencies = [
  "percent-encoding",
  "pin-project-lite",
  "tracing",
- "uuid 1.17.0",
+ "uuid 1.18.1",
 ]
 
 [[package]]
@@ -1921,7 +1921,7 @@ checksum = "d38f2da7a0a2c4ccf0065be06397cc26a81f4e528be095826eee9d4adbb8c60f"
 dependencies = [
  "byteorder",
  "fnv",
- "uuid 1.17.0",
+ "uuid 1.18.1",
 ]
 
 [[package]]
@@ -3010,7 +3010,7 @@ dependencies = [
  "tauri-plugin-aptabase",
  "tokio",
  "tracing",
- "uuid 1.17.0",
+ "uuid 1.18.1",
 ]
 
 [[package]]
@@ -4948,7 +4948,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.104",
- "uuid 1.17.0",
+ "uuid 1.18.1",
 ]
 
 [[package]]
@@ -7603,7 +7603,7 @@ dependencies = [
  "serde",
  "serde_json",
  "url",
- "uuid 1.17.0",
+ "uuid 1.18.1",
 ]
 
 [[package]]
@@ -8851,7 +8851,7 @@ dependencies = [
  "thiserror 2.0.12",
  "time",
  "url",
- "uuid 1.17.0",
+ "uuid 1.18.1",
  "walkdir",
 ]
 
@@ -9088,7 +9088,7 @@ dependencies = [
  "toml 0.9.2",
  "url",
  "urlpattern",
- "uuid 1.17.0",
+ "uuid 1.18.1",
  "walkdir",
 ]
 
@@ -9874,9 +9874,9 @@ dependencies = [
 
 [[package]]
 name = "uuid"
-version = "1.17.0"
+version = "1.18.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3cf4199d1e5d15ddd86a694e4d0dffa9c323ce759fea589f00fef9d81cc1931d"
+checksum = "2f87b8aa10b915a06587d0dec516c282ff295b475d94abf425d62b57710070a2"
 dependencies = [
  "getrandom 0.3.3",
  "js-sys",
