@@ -27,7 +27,7 @@ async fn receiver(handle: AppHandle) -> ! {
                     
                     match msg {
                         PeerAdded => {
-                            let _ = track_event(&handle, "extension_connected", None);
+                            let _ = track_event(&handle, "peer_added", None);
                         }
                         WalletCreated => {
                             let _ = track_event(&handle, "wallet_created", None);
