@@ -5,7 +5,7 @@ import {
 } from "@ethui/ui/components/shadcn/command";
 import { useNavigate } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
-import { isAddress, isHash } from "viem";
+import { type Address, isAddress, isHash } from "viem";
 import { useAllAddresses } from "#/hooks/useAllAddresses";
 import { useIsContract } from "#/hooks/useIsContract";
 import { useContracts } from "#/store/useContracts";
@@ -86,7 +86,7 @@ function AddressSearchResults({
 
   const matchingAddresses = isExactAddress
     ? [searchTerm as `0x${string}`]
-    : addressData?.all || [];
+    : addressData?.all.map((data) => data.address as Address) || [];
 
   if (matchingAddresses.length === 0) return null;
 
@@ -95,7 +95,7 @@ function AddressSearchResults({
       {matchingAddresses.map((address) => (
         <AddressCommandItems
           key={address}
-          address={address as `0x${string}`}
+          address={address as Address}
           chainId={network.id.chain_id}
           onClose={onClose}
         />

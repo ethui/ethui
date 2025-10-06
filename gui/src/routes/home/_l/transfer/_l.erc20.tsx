@@ -22,6 +22,7 @@ import {
 } from "viem";
 import { z } from "zod";
 import { useShallow } from "zustand/shallow";
+import { type AddressData, useAllAddresses } from "#/hooks/useAllAddresses";
 import { useBalances } from "#/store/useBalances";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
@@ -50,6 +51,9 @@ export const Route = createFileRoute("/home/_l/transfer/_l/erc20")({
 function RouteComponent() {
   const { contract } = Route.useSearch();
   const navigate = useNavigate();
+
+  const { data: addresses } = useAllAddresses();
+  const addressList: AddressData[] = addresses?.all || [];
 
   const network = useNetworks((s) => s.current);
   const address = useWallets((s) => s.address);
@@ -151,7 +155,12 @@ function RouteComponent() {
       <span>
         Balance: {formatUnits(currentToken.balance, currentToken.decimals)}
       </span>
-      <Form.Text label="To" name="to" className="w-full" />
+      <Form.AddressAutoCompleteTextInput
+        addresses={addressList}
+        name="to"
+        label="To"
+        className="w-full"
+      />
       <Form.Text label="Amount" name="value" className="w-full" />
 
       {form.formState.isSubmitted && result?.ok && (
