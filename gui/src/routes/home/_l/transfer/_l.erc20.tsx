@@ -93,11 +93,11 @@ function RouteComponent() {
       if (Number.isNaN(num)) {
         ctx.addIssue({
           message: "Invalid value",
-          code: z.ZodIssueCode.custom,
+          code: "custom"
         });
         return z.NEVER;
       }
-      return BigInt(num * 10 ** (decimals || 0));
+      return num * 10 ** (decimals || 0);
     }),
   });
 
