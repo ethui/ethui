@@ -8,7 +8,6 @@ export interface Token {
 }
 
 export function parseAmount(num: string, decimals: number): bigint {
-
   if (Number.isNaN(Number.parseFloat(num))) {
     throw new Error("Invalid value");
   }
@@ -23,4 +22,3 @@ export function parseAmount(num: string, decimals: number): bigint {
   }
   return baseUnits;
 }
-

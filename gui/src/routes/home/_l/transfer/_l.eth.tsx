@@ -18,7 +18,7 @@ import { type AddressData, useAllAddresses } from "#/hooks/useAllAddresses";
 import { useBalances } from "#/store/useBalances";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
-import { parseAmount, Token } from "./-common";
+import { parseAmount, type Token } from "./-common";
 
 export interface Params {
   chainId: string;
@@ -72,10 +72,10 @@ function RouteComponent() {
     value: z.string().transform((val, ctx) => {
       try {
         return parseAmount(val, decimals || 0);
-      } catch (e) {
+      } catch (_e) {
         ctx.addIssue({
           message: "Invalid value",
-          code: "custom"
+          code: "custom",
         });
         return z.NEVER;
       }
