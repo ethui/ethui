@@ -26,7 +26,7 @@ import { type AddressData, useAllAddresses } from "#/hooks/useAllAddresses";
 import { useBalances } from "#/store/useBalances";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
-import type { Token } from "./-common";
+import { parseAmount, Token } from "./-common";
 
 export interface Params {
   chainId: string;
@@ -89,15 +89,15 @@ function RouteComponent() {
     to: addressSchema,
     currency: addressSchema,
     value: z.string().transform((val, ctx) => {
-      const num = Number.parseFloat(val);
-      if (Number.isNaN(num)) {
+      try {
+        return parseAmount(val, decimals || 0);
+      } catch (e) {
         ctx.addIssue({
           message: "Invalid value",
           code: "custom"
         });
         return z.NEVER;
       }
-      return num * 10 ** (decimals || 0);
     }),
   });
 
@@ -211,3 +211,4 @@ const transferERC20 = async (
     },
   });
 };
+

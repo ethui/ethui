@@ -18,7 +18,7 @@ import { type AddressData, useAllAddresses } from "#/hooks/useAllAddresses";
 import { useBalances } from "#/store/useBalances";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
-import type { Token } from "./-common";
+import { parseAmount, Token } from "./-common";
 
 export interface Params {
   chainId: string;
@@ -66,20 +66,19 @@ function RouteComponent() {
     setTokens([nativeToken, ...newTokens]);
   }, [native, erc20s, network]);
 
-  //const decimals = currentToken?.decimals ?? 18;
   const schema = z.object({
     to: addressSchema.optional(),
     currency: addressSchema,
     value: z.string().transform((val, ctx) => {
-      const num = Number.parseFloat(val);
-      if (Number.isNaN(num)) {
+      try {
+        return parseAmount(val, decimals || 0);
+      } catch (e) {
         ctx.addIssue({
           message: "Invalid value",
-          code: z.ZodIssueCode.custom,
+          code: "custom"
         });
         return z.NEVER;
       }
-      return BigInt(num * 10 ** (decimals || 0));
     }),
   });
 
@@ -113,6 +112,7 @@ function RouteComponent() {
   if (!network || !address || !currentToken) return null;
 
   const onSubmit = async (data: FieldValues) => {
+    console.log(data);
     const hash = await transferETH(address, data.to, data.value);
     setResult(hash);
   };
@@ -158,7 +158,7 @@ const transferETH = async (from: Address, to: Address, value: bigint) => {
     params: {
       from,
       to,
-      value,
+      value: value.toString(),
     },
   });
 };
