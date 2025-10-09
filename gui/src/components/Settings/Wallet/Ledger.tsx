@@ -39,9 +39,9 @@ interface Props {
 export function Ledger({ wallet, onSubmit, onRemove }: Props) {
   const formWallet = wallet
     ? {
-        ...wallet,
-        paths: wallet ? wallet.addresses.map(([path]) => ({ path })) : [],
-      }
+      ...wallet,
+      paths: wallet ? wallet.addresses.map(([path]) => ({ path })) : [],
+    }
     : defaultValues;
 
   const [addresses, setAddresses] = useState<Map<string, Address>>(new Map());
@@ -137,7 +137,7 @@ function Detect() {
 
   if (detected === true) {
     return (
-      <Alert>
+      <Alert variant="success">
         <AlertTitle>Ledger detected</AlertTitle>
         <AlertDescription>
           Please keep the Ethereum app open during this setup
