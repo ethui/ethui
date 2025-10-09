@@ -162,7 +162,7 @@ impl SendTransaction {
             .parse()
             .map_err(|_| Error::CannotParseUrl(self.network.http_url.to_string().clone()))?;
 
-        self.provider = self.network.is_dev().await {
+        self.provider = if self.network.is_dev().await {
             // TODO: maybe we can find a way to only do this once for every account,
             // or only call anvil_autoImpersonate once for the whole network,
             // instead of making this request for every single transaction.
