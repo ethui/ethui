@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use alloy::{
     network::{Ethereum, TransactionBuilder as _},
-    providers::{ext::AnvilApi, PendingTransactionBuilder, Provider, ProviderBuilder},
+    providers::{PendingTransactionBuilder, Provider, ProviderBuilder, ext::AnvilApi},
     rpc::types::TransactionRequest,
 };
 use ethui_connections::Ctx;
@@ -137,9 +137,9 @@ impl SendTransaction {
     async fn send(&mut self) -> Result<PendingTransactionBuilder<Ethereum>> {
         self.build_provider().await?;
         let provider = self.provider.as_ref().unwrap();
-        
+
         ethui_broadcast::transaction_submitted(self.network.chain_id()).await;
-        
+
         let pending = provider.send_transaction(self.request.clone()).await?;
         Ok(pending)
     }
@@ -162,7 +162,8 @@ impl SendTransaction {
             .parse()
             .map_err(|_| Error::CannotParseUrl(self.network.http_url.to_string().clone()))?;
 
-        self.provider = if self.network.is_dev().await {
+        self.provider = if false {
+            //self.network.is_dev().await {
             // TODO: maybe we can find a way to only do this once for every account,
             // or only call anvil_autoImpersonate once for the whole network,
             // instead of making this request for every single transaction.
