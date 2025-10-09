@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use alloy::{
     network::{Ethereum, TransactionBuilder as _},
-    providers::{ext::AnvilApi, PendingTransactionBuilder, Provider, ProviderBuilder},
+    providers::{PendingTransactionBuilder, Provider, ProviderBuilder, ext::AnvilApi},
     rpc::types::TransactionRequest,
 };
 use ethui_connections::Ctx;
@@ -137,9 +137,9 @@ impl SendTransaction {
     async fn send(&mut self) -> Result<PendingTransactionBuilder<Ethereum>> {
         self.build_provider().await?;
         let provider = self.provider.as_ref().unwrap();
-        
+
         ethui_broadcast::transaction_submitted(self.network.chain_id()).await;
-        
+
         let pending = provider.send_transaction(self.request.clone()).await?;
         Ok(pending)
     }
