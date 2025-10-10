@@ -7,7 +7,7 @@ pub use ethui_sync_alchemy::{
     Alchemy, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse, get_alchemy,
 };
 use ethui_types::prelude::*;
-use tokio::sync::{mpsc, oneshot, Mutex};
+use tokio::sync::{Mutex, mpsc, oneshot};
 pub use worker::Worker;
 
 pub async fn init() {

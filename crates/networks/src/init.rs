@@ -11,6 +11,7 @@ use once_cell::sync::OnceCell;
 use serde_constant::ConstI64;
 use tokio::{
     sync::{RwLock, RwLockReadGuard, RwLockWriteGuard},
+    task,
     time::interval,
 };
 
@@ -91,20 +92,31 @@ async fn status_poller() -> ! {
     let mut interval = interval(Duration::from_secs(10));
 
     loop {
-        // Wait for the interval (first tick is immediate)
         interval.tick().await;
 
-        // Poll each network's status and check if any changed
-        let mut networks = Networks::write().await;
+        // Clone networks without holding the lock
+        let networks_to_poll = {
+            let networks = Networks::read().await;
+            networks
+                .inner
+                .networks
+                .values()
+                .cloned()
+                .collect::<Vec<_>>()
+        };
 
-        let any_changes = stream::iter(networks.inner.networks.values_mut())
-            .then(|network| async { network.poll_status().await })
-            .any(|change| async move { change.is_some() })
+        let poll_results = stream::iter(networks_to_poll)
+            .map(|mut network| async move { network.poll_status().await })
+            .buffer_unordered(8)
+            .collect::<Vec<_>>()
             .await;
 
-        // Notify UI if any status changed
+        let any_changes = poll_results.iter().any(|change| change.is_some());
+
         if any_changes {
             ethui_broadcast::ui_notify(UINotify::NetworksChanged).await;
+
+            let networks = Networks::write().await;
             if let Err(e) = networks.save() {
                 error!("Failed to save network status updates: {}", e);
             }
