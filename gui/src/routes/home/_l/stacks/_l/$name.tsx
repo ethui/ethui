@@ -1,10 +1,10 @@
 import { ClickToCopy } from "@ethui/ui/components/click-to-copy";
-import { Clipboard } from "lucide-react";
 import { Button } from "@ethui/ui/components/shadcn/button";
+import { cn } from "@ethui/ui/lib/utils";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
+import { Clipboard } from "lucide-react";
 import { useNetworks } from "#/store/useNetworks";
-import { cn } from "@ethui/ui/lib/utils";
 
 export const Route = createFileRoute("/home/_l/stacks/_l/$name")({
   loader: ({ params }: { params: { name: string } }) => params.name,
@@ -26,7 +26,7 @@ function Content({ name }: { name: string }) {
   };
 
   return (
-    <div className="flex flex-col gap-4 w-fit">
+    <div className="flex w-fit flex-col gap-4">
       <div className="flex flex-row gap-2">
         <LabelValue label="Name" value={name} />
       </div>
@@ -105,7 +105,7 @@ function LabelValue({
   label,
   value,
   mono,
-  icon
+  icon,
 }: {
   label: string;
   value: string;
@@ -113,9 +113,16 @@ function LabelValue({
   icon?: React.ReactNode;
 }) {
   return (
-    <div className="flex p-1 flex-col">
+    <div className="flex flex-col p-1">
       <div className="text-muted-foreground text-xs">{label}</div>
-      <div className={cn("flex flex-row gap-2 items-center", mono && "break-all font-mono")}>{value || "-"} {icon}</div>
+      <div
+        className={cn(
+          "flex flex-row items-center gap-2",
+          mono && "break-all font-mono",
+        )}
+      >
+        {value || "-"} {icon}
+      </div>
     </div>
   );
 }
