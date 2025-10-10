@@ -28,9 +28,7 @@ import { Route as DialogLErc20AddIdRouteImport } from './routes/dialog/_l/erc20-
 import { Route as DialogLErc1155AddIdRouteImport } from './routes/dialog/_l/erc1155-add.$id'
 import { Route as DialogLChainSwitchIdRouteImport } from './routes/dialog/_l/chain-switch.$id'
 import { Route as DialogLChainAddIdRouteImport } from './routes/dialog/_l/chain-add.$id'
-import { Route as HomeLContractsLIndexRouteImport } from './routes/home/_l/contracts/_l/index'
 import { Route as HomeLStacksLIndexRouteImport } from './routes/home/_l/stacks/_l/index'
-import { Route as HomeLContractsLIndexRouteImport } from './routes/home/_l/contracts/_l/index'
 import { Route as HomeLTransferLEthRouteImport } from './routes/home/_l/transfer/_l.eth'
 import { Route as HomeLTransferLErc20RouteImport } from './routes/home/_l/transfer/_l.erc20'
 import { Route as HomeLStacksLNewRouteImport } from './routes/home/_l/stacks/_l/new'
@@ -195,19 +193,11 @@ const HomeLExplorerLContractsRoute = HomeLExplorerLContractsRouteImport.update({
   id: '/contracts',
   path: '/contracts',
   getParentRoute: () => HomeLExplorerLRoute,
-const HomeLContractsLIndexRoute = HomeLContractsLIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => HomeLContractsLRoute,
+} as any)
 const HomeLStacksLIndexRoute = HomeLStacksLIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => HomeLStacksLRoute,
-} as any)
-const HomeLContractsLIndexRoute = HomeLContractsLIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => HomeLContractsLRoute,
 } as any)
 const HomeLTransferLEthRoute = HomeLTransferLEthRouteImport.update({
   id: '/eth',
@@ -367,21 +357,14 @@ export interface FileRoutesByFullPath {
   '/home/stacks/new': typeof HomeLStacksLNewRoute
   '/home/transfer/erc20': typeof HomeLTransferLErc20Route
   '/home/transfer/eth': typeof HomeLTransferLEthRoute
+  '/home/stacks/': typeof HomeLStacksLIndexRoute
   '/home/explorer/addresses/$address': typeof HomeLExplorerLAddressesAddressRoute
   '/home/explorer/contracts': typeof HomeLExplorerLContractsLRouteWithChildren
   '/home/explorer/transactions/$transaction': typeof HomeLExplorerLTransactionsTransactionRoute
-  '/home/contracts/': typeof HomeLContractsLIndexRoute
-  '/home/contracts/$chainId/$address': typeof HomeLContractsLChainIdAddressRoute
-  '/home/contracts/add': typeof HomeLContractsLLAddRoute
-  '/home/contracts/': typeof HomeLContractsLIndexRoute
-  '/home/stacks/': typeof HomeLStacksLIndexRoute
-  '/home/contracts/$chainId/$address': typeof HomeLContractsLChainIdAddressRoute
-  '/home/contracts/add': typeof HomeLContractsLLAddRoute
   '/home/settings/networks': typeof HomeLSettingsLNetworksLRouteWithChildren
   '/home/settings/wallets': typeof HomeLSettingsLWalletsLRouteWithChildren
   '/home/explorer/addresses': typeof HomeLExplorerLAddressesIndexRoute
   '/home/explorer/transactions': typeof HomeLExplorerLTransactionsIndexRoute
-  '/home/stacks/$name/edit': typeof HomeLStacksLNameEditRoute
   '/home/settings/networks/new': typeof HomeLSettingsLNetworksLNewRoute
   '/home/settings/wallets/new': typeof HomeLSettingsLWalletsLNewRoute
   '/home/explorer/contracts/': typeof HomeLExplorerLContractsLIndexRoute
@@ -425,7 +408,6 @@ export interface FileRoutesByTo {
   '/home/settings/wallets': typeof HomeLSettingsLWalletsLIndexRoute
   '/home/explorer/addresses': typeof HomeLExplorerLAddressesIndexRoute
   '/home/explorer/transactions': typeof HomeLExplorerLTransactionsIndexRoute
-  '/home/stacks/$name/edit': typeof HomeLStacksLNameEditRoute
   '/home/settings/networks/new': typeof HomeLSettingsLNetworksLNewRoute
   '/home/settings/wallets/new': typeof HomeLSettingsLWalletsLNewRoute
   '/home/explorer/contracts/$chainId/$address': typeof HomeLExplorerLContractsLChainIdAddressRoute
@@ -466,24 +448,17 @@ export interface FileRoutesById {
   '/home/_l/stacks/_l/new': typeof HomeLStacksLNewRoute
   '/home/_l/transfer/_l/erc20': typeof HomeLTransferLErc20Route
   '/home/_l/transfer/_l/eth': typeof HomeLTransferLEthRoute
+  '/home/_l/stacks/_l/': typeof HomeLStacksLIndexRoute
   '/home/_l/explorer/_l/addresses/$address': typeof HomeLExplorerLAddressesAddressRoute
   '/home/_l/explorer/_l/contracts': typeof HomeLExplorerLContractsRouteWithChildren
   '/home/_l/explorer/_l/contracts/_l': typeof HomeLExplorerLContractsLRouteWithChildren
   '/home/_l/explorer/_l/transactions/$transaction': typeof HomeLExplorerLTransactionsTransactionRoute
-  '/home/_l/contracts/_l/': typeof HomeLContractsLIndexRoute
-  '/home/_l/contracts/_l/$chainId/$address': typeof HomeLContractsLChainIdAddressRoute
-  '/home/_l/contracts/_l/_l/add': typeof HomeLContractsLLAddRoute
-  '/home/_l/contracts/_l/': typeof HomeLContractsLIndexRoute
-  '/home/_l/stacks/_l/': typeof HomeLStacksLIndexRoute
-  '/home/_l/contracts/_l/$chainId/$address': typeof HomeLContractsLChainIdAddressRoute
-  '/home/_l/contracts/_l/_l/add': typeof HomeLContractsLLAddRoute
   '/home/_l/settings/_l/networks': typeof HomeLSettingsLNetworksRouteWithChildren
   '/home/_l/settings/_l/networks/_l': typeof HomeLSettingsLNetworksLRouteWithChildren
   '/home/_l/settings/_l/wallets': typeof HomeLSettingsLWalletsRouteWithChildren
   '/home/_l/settings/_l/wallets/_l': typeof HomeLSettingsLWalletsLRouteWithChildren
   '/home/_l/explorer/_l/addresses/': typeof HomeLExplorerLAddressesIndexRoute
   '/home/_l/explorer/_l/transactions/': typeof HomeLExplorerLTransactionsIndexRoute
-  '/home/_l/stacks/_l/$name/edit': typeof HomeLStacksLNameEditRoute
   '/home/_l/settings/_l/networks/_l/new': typeof HomeLSettingsLNetworksLNewRoute
   '/home/_l/settings/_l/wallets/_l/new': typeof HomeLSettingsLWalletsLNewRoute
   '/home/_l/explorer/_l/contracts/_l/': typeof HomeLExplorerLContractsLIndexRoute
@@ -522,21 +497,14 @@ export interface FileRouteTypes {
     | '/home/stacks/new'
     | '/home/transfer/erc20'
     | '/home/transfer/eth'
+    | '/home/stacks/'
     | '/home/explorer/addresses/$address'
     | '/home/explorer/contracts'
     | '/home/explorer/transactions/$transaction'
-    | '/home/contracts/'
-    | '/home/contracts/$chainId/$address'
-    | '/home/contracts/add'
-    | '/home/contracts/'
-    | '/home/stacks/'
-    | '/home/contracts/$chainId/$address'
-    | '/home/contracts/add'
     | '/home/settings/networks'
     | '/home/settings/wallets'
     | '/home/explorer/addresses'
     | '/home/explorer/transactions'
-    | '/home/stacks/$name/edit'
     | '/home/settings/networks/new'
     | '/home/settings/wallets/new'
     | '/home/explorer/contracts/'
@@ -580,7 +548,6 @@ export interface FileRouteTypes {
     | '/home/settings/wallets'
     | '/home/explorer/addresses'
     | '/home/explorer/transactions'
-    | '/home/stacks/$name/edit'
     | '/home/settings/networks/new'
     | '/home/settings/wallets/new'
     | '/home/explorer/contracts/$chainId/$address'
@@ -620,24 +587,17 @@ export interface FileRouteTypes {
     | '/home/_l/stacks/_l/new'
     | '/home/_l/transfer/_l/erc20'
     | '/home/_l/transfer/_l/eth'
+    | '/home/_l/stacks/_l/'
     | '/home/_l/explorer/_l/addresses/$address'
     | '/home/_l/explorer/_l/contracts'
     | '/home/_l/explorer/_l/contracts/_l'
     | '/home/_l/explorer/_l/transactions/$transaction'
-    | '/home/_l/contracts/_l/'
-    | '/home/_l/contracts/_l/$chainId/$address'
-    | '/home/_l/contracts/_l/_l/add'
-    | '/home/_l/contracts/_l/'
-    | '/home/_l/stacks/_l/'
-    | '/home/_l/contracts/_l/$chainId/$address'
-    | '/home/_l/contracts/_l/_l/add'
     | '/home/_l/settings/_l/networks'
     | '/home/_l/settings/_l/networks/_l'
     | '/home/_l/settings/_l/wallets'
     | '/home/_l/settings/_l/wallets/_l'
     | '/home/_l/explorer/_l/addresses/'
     | '/home/_l/explorer/_l/transactions/'
-    | '/home/_l/stacks/_l/$name/edit'
     | '/home/_l/settings/_l/networks/_l/new'
     | '/home/_l/settings/_l/wallets/_l/new'
     | '/home/_l/explorer/_l/contracts/_l/'
@@ -837,25 +797,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/home/explorer/contracts'
       preLoaderRoute: typeof HomeLExplorerLContractsRouteImport
       parentRoute: typeof HomeLExplorerLRoute
-    '/home/_l/contracts/_l/': {
-      id: '/home/_l/contracts/_l/'
-      path: '/'
-      fullPath: '/home/contracts/'
-      preLoaderRoute: typeof HomeLContractsLIndexRouteImport
-      parentRoute: typeof HomeLContractsLRoute
+    }
     '/home/_l/stacks/_l/': {
       id: '/home/_l/stacks/_l/'
       path: '/'
       fullPath: '/home/stacks/'
       preLoaderRoute: typeof HomeLStacksLIndexRouteImport
       parentRoute: typeof HomeLStacksLRoute
-    }
-    '/home/_l/contracts/_l/': {
-      id: '/home/_l/contracts/_l/'
-      path: '/'
-      fullPath: '/home/contracts/'
-      preLoaderRoute: typeof HomeLContractsLIndexRouteImport
-      parentRoute: typeof HomeLContractsLRoute
     }
     '/home/_l/transfer/_l/eth': {
       id: '/home/_l/transfer/_l/eth'

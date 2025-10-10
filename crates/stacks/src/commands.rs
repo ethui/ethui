@@ -1,5 +1,5 @@
 use ethui_broadcast::{stack_network_add, stack_network_remove};
-use ethui_types::{DedupChainId, NewNetworkParams, TauriResult};
+use ethui_types::{NewNetworkParams, TauriResult};
 use tauri::command;
 use url::Url;
 
