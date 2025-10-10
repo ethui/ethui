@@ -77,6 +77,7 @@ async fn main() -> Result<()> {
         currency: "ETH".to_string(),
         decimals: 18,
         status: NetworkStatus::Unknown,
+        is_stack: false,
     };
 
     // Create worker

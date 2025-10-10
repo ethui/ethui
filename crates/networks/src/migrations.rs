@@ -116,6 +116,7 @@ fn run_migrations(networks: Versions) -> SerializedNetworks {
             networks: migrate_networks_from_v2_to_v3(v2.networks),
             version: ConstI64,
         },
+
         Versions::V3(latest) => latest,
     }
 }
@@ -161,6 +162,7 @@ fn migrate_networks_from_v2_to_v3(
                     currency: network.currency,
                     decimals: network.decimals,
                     status: NetworkStatus::Unknown,
+                    is_stack: false,
                 },
             )
         })

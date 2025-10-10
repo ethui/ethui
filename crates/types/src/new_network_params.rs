@@ -12,6 +12,7 @@ pub struct NewNetworkParams {
     pub ws_url: Option<Url>,
     pub currency: String,
     pub decimals: u32,
+    pub is_stack: bool,
 }
 
 impl NewNetworkParams {
@@ -25,6 +26,7 @@ impl NewNetworkParams {
             currency: self.currency,
             decimals: self.decimals,
             status: NetworkStatus::Unknown,
+            is_stack: self.is_stack,
         }
     }
 }

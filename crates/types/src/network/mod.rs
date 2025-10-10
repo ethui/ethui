@@ -1,17 +1,16 @@
 mod id;
 
-
 use alloy::{
     network::Ethereum,
-    providers::{ext::AnvilApi, Provider, ProviderBuilder, RootProvider},
+    providers::{Provider, ProviderBuilder, RootProvider, ext::AnvilApi},
     rpc::{client::ClientBuilder, types::anvil::ForkedNetwork},
     transports::layers::RetryBackoffLayer,
 };
+pub use id::NetworkId;
 use tracing::instrument;
 use url::Url;
 
-use crate::{prelude::*};
-pub use id::NetworkId;
+use crate::prelude::*;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Network {
@@ -29,6 +28,9 @@ pub struct Network {
 
     #[serde(default)]
     pub status: NetworkStatus,
+
+    #[serde(default)]
+    pub is_stack: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Deserialize, Serialize)]
@@ -51,6 +53,7 @@ impl Network {
             currency: String::from("ETH"),
             decimals: 18,
             status: Default::default(),
+            is_stack: false,
         }
     }
 
@@ -64,6 +67,7 @@ impl Network {
             currency: String::from("ETH"),
             decimals: 18,
             status: Default::default(),
+            is_stack: false,
         }
     }
 
@@ -77,6 +81,7 @@ impl Network {
             currency: String::from("ETH"),
             decimals: 18,
             status: Default::default(),
+            is_stack: false,
         }
     }
 
@@ -129,7 +134,8 @@ impl Network {
     #[instrument(level = "trace", skip(self), fields(chain_id = self.chain_id()))]
     pub async fn poll_status(&mut self) -> Option<NetworkStatus> {
         let new_status = if let Ok(provider) = self.get_alloy_provider().await
-            && let Ok(_) = provider.get_chain_id().await
+            && let Ok(_) =
+                tokio::time::timeout(Duration::from_secs(5), provider.get_chain_id()).await
         {
             NetworkStatus::Online
         } else {
