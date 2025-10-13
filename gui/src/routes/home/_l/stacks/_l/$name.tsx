@@ -72,7 +72,7 @@ function Content({ name }: { name: string }) {
           <Link
             className="hover:bg-accent"
             target="_blank"
-            to={stackNetwork.explorer_url}
+            to={stackNetwork.explorer_url ?? undefined}
           >
             <LabelValue
               label="Explorer URL"
