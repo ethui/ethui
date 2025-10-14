@@ -57,18 +57,6 @@ function Content({ name }: { name: string }) {
             />
           </ClickToCopy>
 
-          <ClickToCopy
-            className="hover:bg-accent"
-            text={String(stackNetwork.ws_url)}
-          >
-            <LabelValue
-              label="WebSockets RPC"
-              value={String(stackNetwork.ws_url)}
-              icon={<Clipboard size={18} className="stroke-current/50" />}
-              mono
-            />
-          </ClickToCopy>
-
           <Link
             className="hover:bg-accent"
             target="_blank"

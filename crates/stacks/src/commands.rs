@@ -31,7 +31,7 @@ pub async fn stacks_create(slug: String) -> TauriResult<()> {
         chain_id,
         explorer_url: Some(explorer_url),
         http_url: Url::parse(&rpc_url).unwrap(),
-        ws_url: Some(Url::parse(&rpc_url.replace("http", "ws")).unwrap()),
+        ws_url: None,
         currency: "ETH".to_string(),
         decimals: 18,
         is_stack: true,
