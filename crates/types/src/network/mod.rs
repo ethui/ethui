@@ -134,8 +134,7 @@ impl Network {
     #[instrument(level = "trace", skip(self), fields(chain_id = self.chain_id()))]
     pub async fn poll_status(&mut self) -> Option<NetworkStatus> {
         let new_status = if let Ok(provider) = self.get_alloy_provider().await
-            && let Ok(_) =
-                tokio::time::timeout(Duration::from_secs(5), provider.get_chain_id()).await
+            && let Ok(_) = provider.get_chain_id().await
         {
             NetworkStatus::Online
         } else {

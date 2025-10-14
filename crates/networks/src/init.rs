@@ -107,7 +107,7 @@ async fn status_poller() -> ! {
 
         let poll_results = stream::iter(networks_to_poll)
             .map(|mut network| async move { network.poll_status().await })
-            .buffer_unordered(8)
+            .buffer_unordered(64)
             .collect::<Vec<_>>()
             .await;
 
