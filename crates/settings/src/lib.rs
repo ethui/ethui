@@ -27,7 +27,9 @@ pub enum DarkMode {
 pub struct Settings {
     pub dark_mode: DarkMode,
 
-    pub abi_watch_path: Option<String>,
+    #[serde(deserialize_with = "ethui_types::de::optional_string_or_array")]
+    pub abi_watch_path: Vec<String>,
+
     pub alchemy_api_key: Option<String>,
     pub etherscan_api_key: Option<String>,
     #[serde(default = "default_true")]

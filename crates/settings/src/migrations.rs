@@ -313,4 +313,26 @@ mod tests {
             assert_eq!(settings.version, ConstI64::<3>);
         }
     }
+
+    #[tokio::test]
+    async fn abi_watch_path_null() {
+        // V2 is the version where abi_watch_path is a Option<String> and not yet a Vec<String>
+        let mut settings = SettingsV2::default();
+        settings.abi_watch_path = None;
+
+        let str = serde_json::to_string(&settings).unwrap();
+        let settings = Settings::from_str(&str).unwrap();
+        assert_eq!(settings.abi_watch_path, vec![]);
+    }
+
+    #[tokio::test]
+    async fn abi_watch_path_single() {
+        // V2 is the version where abi_watch_path is a Option<String> and not yet a Vec<String>
+        let mut settings = SettingsV2::default();
+        settings.abi_watch_path = Some("path".into());
+
+        let str = serde_json::to_string(&settings).unwrap();
+        let settings = Settings::from_str(&str).unwrap();
+        assert_eq!(settings.abi_watch_path, vec!["path".into()]);
+    }
 }
