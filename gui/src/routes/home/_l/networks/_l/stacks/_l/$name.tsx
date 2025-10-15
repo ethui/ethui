@@ -6,7 +6,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { Clipboard } from "lucide-react";
 import { useNetworks } from "#/store/useNetworks";
 
-export const Route = createFileRoute("/home/_l/stacks/_l/$name")({
+export const Route = createFileRoute("/home/_l/networks/_l/stacks/_l/$name")({
   loader: ({ params }: { params: { name: string } }) => params.name,
   component: () => {
     const name = Route.useLoaderData();

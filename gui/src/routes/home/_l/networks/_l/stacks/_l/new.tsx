@@ -10,7 +10,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useInvoke } from "#/hooks/useInvoke";
 
-export const Route = createFileRoute("/home/_l/stacks/_l/new")({
+export const Route = createFileRoute("/home/_l/networks/_l/stacks/_l/new")({
   beforeLoad: () => ({ breadcrumb: "New" }),
   component: () => {
     return <Content />;
@@ -55,7 +55,6 @@ function Content() {
 
   const cancel = () => router.history.back();
 
-  // TODO: fix remove button
   return (
     <Form form={form} onSubmit={onSubmit} className="gap-4">
       <div className="flex flex-row gap-2">

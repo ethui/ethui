@@ -126,7 +126,7 @@ function CustomSidebarMenuItem({
         asChild
         className={cn(
           (url === location.pathname || location.pathname.startsWith(url)) &&
-            "bg-primary text-accent hover:bg-primary hover:text-accent",
+          "bg-primary text-accent hover:bg-primary hover:text-accent",
         )}
       >
         <Link to={url}>
@@ -171,7 +171,7 @@ function CollapsibleMenuSection({
                   className={cn(
                     (item.url === location.pathname ||
                       location.pathname.startsWith(item.url)) &&
-                      "bg-primary text-accent hover:bg-primary hover:text-accent",
+                    "bg-primary text-accent hover:bg-primary hover:text-accent",
                   )}
                 >
                   <Link to={item.url}>{item.title}</Link>
@@ -201,8 +201,8 @@ const items = [
     icon: <Wifi />,
   },
   {
-    title: "Stacks",
-    url: "/home/stacks",
+    title: "Networks",
+    url: "/home/networks",
     icon: <Database />,
   },
 ];
@@ -216,7 +216,6 @@ const explorerItems = [
 const defaultSettingsItems = [
   { title: "General", url: "/home/settings/general" },
   { title: "Wallets", url: "/home/settings/wallets" },
-  { title: "Network", url: "/home/settings/networks" },
   { title: "Foundry", url: "/home/settings/foundry" },
   { title: "Tokens", url: "/home/settings/tokens" },
   { title: "About", url: "/home/settings/about" },
