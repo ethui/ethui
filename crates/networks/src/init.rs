@@ -90,7 +90,6 @@ async fn receiver() -> ! {
 /// Polls the status of each network every 10 seconds
 async fn status_poller() -> ! {
     let mut interval = interval(Duration::from_secs(10));
-
     loop {
         interval.tick().await;
 
@@ -100,26 +99,41 @@ async fn status_poller() -> ! {
             networks
                 .inner
                 .networks
-                .values()
-                .cloned()
+                .iter()
+                .map(|(key, network)| (key.clone(), network.clone()))
                 .collect::<Vec<_>>()
         };
 
         let poll_results = stream::iter(networks_to_poll)
-            .map(|mut network| async move { network.poll_status().await })
+            .map(|(key, mut network)| async move {
+                let result = network.poll_status().await;
+                (key, network, result)
+            })
             .buffer_unordered(64)
             .collect::<Vec<_>>()
             .await;
 
-        let any_changes = poll_results.iter().any(|change| change.is_some());
+        let any_changes = poll_results.iter().any(|(_, _, change)| change.is_some());
 
         if any_changes {
-            ethui_broadcast::ui_notify(UINotify::NetworksChanged).await;
+            {
+                let mut networks = Networks::write().await;
 
-            let networks = Networks::write().await;
-            if let Err(e) = networks.save() {
-                error!("Failed to save network status updates: {}", e);
+                // We dont want to hold the lock while we poll networks
+                // Update the networks with the polled versions
+                for (key, updated_network, _) in poll_results.iter() {
+                    networks
+                        .inner
+                        .networks
+                        .insert(key.clone(), updated_network.clone());
+                }
+
+                if let Err(e) = networks.save() {
+                    error!("Failed to save network status updates: {}", e);
+                }
             }
+
+            ethui_broadcast::ui_notify(UINotify::NetworksChanged).await;
         }
     }
 }
