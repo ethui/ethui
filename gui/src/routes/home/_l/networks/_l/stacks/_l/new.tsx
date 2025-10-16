@@ -37,7 +37,7 @@ function Content() {
       await invoke("stacks_create", { slug });
       toast({
         title: "Stack created",
-        description: "It may take a few minutes to start the stack",
+        description: "It may take a few seconds to start the stack",
         variant: "success",
       });
       setLoading(false);

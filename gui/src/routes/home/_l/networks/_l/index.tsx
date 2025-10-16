@@ -53,7 +53,7 @@ function NetworksIndex() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="mb-4 font-semibold text-lg">Networks</h2>
+        <h2 className="mb-4 font-semibold text-lg">Chains</h2>
         <div className="flex flex-wrap gap-2">
           {regularNetworks.map(({ id: { chain_id }, name, status }) => (
             <Link
@@ -75,13 +75,13 @@ function NetworksIndex() {
       </div>
 
       <div>
-        <h2 className="mb-4 font-semibold text-lg">Stacks</h2>
+        <h2 className="mb-4 font-semibold text-lg">Local Stacks</h2>
 
         {!settings.runLocalStacks ? (
           <div>
             <EmptyState
-              message="Stacks are not enabled"
-              description="You need to enable the stacks integration to use this feature!"
+              message="You need to enable the local stacks service"
+              className="mt-0 items-start"
             >
               <Button
                 variant="outline"
@@ -94,7 +94,7 @@ function NetworksIndex() {
                 }}
               >
                 <Database className="h-4 w-4" />
-                Enable Stacks
+                Enable
               </Button>
             </EmptyState>
           </div>
