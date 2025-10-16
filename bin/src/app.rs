@@ -199,7 +199,6 @@ impl EthUIApp {
 
 /// Initialization logic
 async fn init(app: &tauri::App, args: &Args) -> color_eyre::Result<()> {
-
     let db = ethui_db::init(&resource(app, "db.sqlite3", args)).await?;
     app.manage(db.clone());
 
@@ -220,7 +219,6 @@ async fn init(app: &tauri::App, args: &Args) -> color_eyre::Result<()> {
     ethui_forge::init().await?;
     ethui_analytics::init(app.handle()).await;
 
-    
     ethui_analytics::track_event(app.handle(), "app_started", None)?;
 
     #[cfg(feature = "stacks")]

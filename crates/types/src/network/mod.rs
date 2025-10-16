@@ -102,6 +102,14 @@ impl Network {
     }
 
     pub async fn is_dev(&self) -> bool {
+        if self.is_stack {
+            return true;
+        }
+
+        if self.chain_id() == 31337 {
+            return true;
+        }
+
         let provider = self.get_alloy_provider().await.unwrap();
         // TODO cache node_info for entire chain
         self.chain_id() == 31337 || provider.anvil_node_info().await.is_ok()

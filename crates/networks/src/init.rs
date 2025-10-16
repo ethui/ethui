@@ -12,7 +12,7 @@ use serde_constant::ConstI64;
 use tokio::{
     sync::{RwLock, RwLockReadGuard, RwLockWriteGuard},
     task,
-    time::interval,
+    time::{interval, timeout},
 };
 
 use crate::{Networks, SerializedNetworks, migrations::load_and_migrate};
@@ -106,7 +106,9 @@ async fn status_poller() -> ! {
 
         let poll_results = stream::iter(networks_to_poll)
             .map(|(key, mut network)| async move {
-                let result = network.poll_status().await;
+                let result = timeout(Duration::from_secs(2), network.poll_status())
+                    .await
+                    .unwrap_or_default();
                 (key, network, result)
             })
             .buffer_unordered(64)

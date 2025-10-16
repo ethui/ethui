@@ -1,5 +1,4 @@
 use ethui_broadcast::InternalMsg;
-use tracing::trace;
 
 use crate::tracker;
 
@@ -12,16 +11,12 @@ async fn receiver() -> ! {
 
     loop {
         match rx.recv().await {
-            Ok(InternalMsg::NetworkAdded(network))
-            | Ok(InternalMsg::NetworkUpdated(network))
-            | Ok(InternalMsg::NetworkRemoved(network))
+            Ok(InternalMsg::NetworkRemoved(network)) => {
+                tracker::unwatch(&network).await;
+            }
+            Ok(InternalMsg::NetworkAdded(network)) | Ok(InternalMsg::NetworkUpdated(network))
                 if network.is_dev().await =>
             {
-                trace!(
-                    "resetting anvil listener for chain_id {} {}",
-                    network.chain_id(),
-                    network.id.dedup_id()
-                );
                 tracker::unwatch(&network).await;
                 tracker::watch(&network).await;
             }

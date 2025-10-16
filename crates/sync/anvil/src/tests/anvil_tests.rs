@@ -1,18 +1,18 @@
 use std::sync::{
-    atomic::{AtomicU32, Ordering},
     Arc,
+    atomic::{AtomicU32, Ordering},
 };
 
-use ethui_types::{prelude::*, Network, NetworkStatus};
-use tokio::time::{sleep, timeout, Duration};
+use ethui_types::{Network, NetworkStatus, prelude::*};
+use tokio::time::{Duration, sleep, timeout};
 use url::Url;
 
 use super::utils::TestConsumer;
 use crate::tracker::{
+    AnvilHttp, AnvilWs,
     consumer::Consumer,
     provider::AnvilProvider,
     worker::{Msg, Worker},
-    AnvilHttp, AnvilWs,
 };
 
 #[derive(Clone)]
@@ -113,6 +113,7 @@ async fn test_message_processing_lifecycle() {
         currency: "ETH".to_string(),
         decimals: 18,
         status: NetworkStatus::Unknown,
+        is_stack: false,
     };
     let worker = AnvilHttp::new(network);
     let message_count = Arc::new(AtomicU32::new(0));
@@ -169,7 +170,7 @@ async fn test_wait_behavior() {
         Ok(Err(_)) => {} // Expected - connection error
         Err(_) => {}     // Expected - timeout
         Ok(Ok(_)) => { // Unexpected - this would mean anvil is actually running
-             // This is fine too, but not expected in CI without anvil setup
+            // This is fine too, but not expected in CI without anvil setup
         }
     }
 
@@ -183,7 +184,7 @@ async fn test_wait_behavior() {
         Ok(Err(_)) => {} // Expected - connection error
         Err(_) => {}     // Expected - timeout
         Ok(Ok(_)) => { // Unexpected - this would mean anvil is actually running
-             // This is fine too, but not expected in CI without anvil setup
+            // This is fine too, but not expected in CI without anvil setup
         }
     }
 }
@@ -297,7 +298,7 @@ async fn test_worker_subscription_lifecycle() {
     match result {
         Ok(_) => {} // Clean termination
         Err(_) => { // Timeout - worker might be retrying, but that's ok for this test
-             // The test validates that the worker can start and handle quit signals
+            // The test validates that the worker can start and handle quit signals
         }
     }
 }
