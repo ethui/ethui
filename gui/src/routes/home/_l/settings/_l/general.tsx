@@ -72,7 +72,7 @@ function SettingsGeneral() {
       <div className="w-80">
         <AutoSubmitSwitch
           name="runLocalStacks"
-          label="Enable Stacks Integration"
+          label="Enable Stacks"
           value={general.runLocalStacks}
           callback={async (runLocalStacks: boolean) =>
             await invoke("settings_set", { params: { runLocalStacks } })

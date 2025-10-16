@@ -114,20 +114,6 @@ function NetworksIndex() {
               />
             </div>
           </div>
-        ) : stackNetworks.length === 0 ? (
-          <div>
-            <EmptyState
-              message="No stacks found"
-              description="Add a new stack by clicking the button below"
-            >
-              <Link to="/home/networks/stacks/new">
-                <Button variant="outline" size="sm" className="gap-2">
-                  <Database className="h-4 w-4" />
-                  Add a new stack
-                </Button>
-              </Link>
-            </EmptyState>
-          </div>
         ) : (
           <div className="flex flex-wrap gap-2">
             {stackNetworks.map(({ id: { chain_id }, name, status }) => (
