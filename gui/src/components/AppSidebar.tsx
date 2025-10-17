@@ -24,10 +24,10 @@ import {
   ChevronRight,
   CircleUser,
   Cog,
+  Database,
   Globe,
   Wifi,
 } from "lucide-react";
-import { useInvoke } from "#/hooks/useInvoke";
 import { useIsAnvilNetwork } from "#/hooks/useIsAnvilNetwork";
 import { useSettings } from "#/store/useSettings";
 import { QuickFastModeToggle } from "./QuickFastModeToggle";
@@ -39,21 +39,11 @@ export function AppSidebar() {
   const { open, toggleSidebar } = useSidebar();
   const isMacos = platform() === "macos";
 
-  const { data: isStacksEnabled } = useInvoke<boolean>("is_stacks_enabled", {});
   const { data: isAnvilNetwork = false } = useIsAnvilNetwork();
 
   const showOnboarding = useSettings((s) => !s.settings?.onboarding.hidden);
 
   const settingsItems = [...defaultSettingsItems];
-  if (
-    isStacksEnabled &&
-    !settingsItems.some((item) => item.title === "Stacks")
-  ) {
-    settingsItems.splice(settingsItems.length - 1, 0, {
-      title: "Stacks",
-      url: "/home/settings/stacks",
-    });
-  }
 
   let logoFill = "fill-sidebar-foreground";
   if (isDev) {
@@ -210,6 +200,11 @@ const items = [
     url: "/home/connections",
     icon: <Wifi />,
   },
+  {
+    title: "Networks",
+    url: "/home/networks",
+    icon: <Database />,
+  },
 ];
 
 const explorerItems = [
@@ -221,7 +216,6 @@ const explorerItems = [
 const defaultSettingsItems = [
   { title: "General", url: "/home/settings/general" },
   { title: "Wallets", url: "/home/settings/wallets" },
-  { title: "Network", url: "/home/settings/networks" },
   { title: "Foundry", url: "/home/settings/foundry" },
   { title: "Tokens", url: "/home/settings/tokens" },
   { title: "About", url: "/home/settings/about" },

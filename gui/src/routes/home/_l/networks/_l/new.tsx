@@ -20,7 +20,7 @@ export const schema = z.object({
 
 export type Schema = z.infer<typeof schema>;
 
-export const Route = createFileRoute("/home/_l/settings/_l/networks/_l/new")({
+export const Route = createFileRoute("/home/_l/networks/_l/new")({
   beforeLoad: () => ({ breadcrumb: "New" }),
   component: () => {
     return <Content />;

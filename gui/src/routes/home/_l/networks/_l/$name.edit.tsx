@@ -8,9 +8,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useForm } from "react-hook-form";
 import { useNetworks } from "#/store/useNetworks";
 
-export const Route = createFileRoute(
-  "/home/_l/settings/_l/networks/_l/$name/edit",
-)({
+export const Route = createFileRoute("/home/_l/networks/_l/$name/edit")({
   loader: ({ params }: { params: { name: string } }) =>
     useNetworks.getState().networks.find((n) => n.name === params.name),
   component: () => {

@@ -1,4 +1,4 @@
-use sqlx::{sqlite::SqliteRow, Row};
+use sqlx::{Row, sqlite::SqliteRow};
 
 use crate::prelude::*;
 
