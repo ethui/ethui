@@ -7,7 +7,9 @@ import { Copy } from "lucide-react";
 import { useNetworks } from "#/store/useNetworks";
 
 export const Route = createFileRoute("/home/_l/networks/_l/stacks/_l/$name")({
-  beforeLoad: ({ params }) => ({ breadcrumb: { label: params.name, path: null } }),
+  beforeLoad: ({ params }) => ({
+    breadcrumb: { label: params.name, path: null },
+  }),
   loader: ({ params }: { params: { name: string } }) => params.name,
   component: () => {
     const name = Route.useLoaderData();
@@ -30,7 +32,6 @@ function Content({ name }: { name: string }) {
 
   return (
     <div className="flex w-fit flex-col gap-4">
-
       <LabelValue label="Name" value={name} />
 
       <ClickToCopy
@@ -45,9 +46,7 @@ function Content({ name }: { name: string }) {
         />
       </ClickToCopy>
 
-      <ClickToCopy
-        text={String(stackNetwork.http_url)}
-      >
+      <ClickToCopy text={String(stackNetwork.http_url)}>
         <LabelValue
           className="hover:bg-accent"
           label="HTTP RPC"
@@ -57,7 +56,7 @@ function Content({ name }: { name: string }) {
         />
       </ClickToCopy>
 
-      <ClickToCopy text={stackNetwork.explorer_url ?? ""} >
+      <ClickToCopy text={stackNetwork.explorer_url ?? ""}>
         <LabelValue
           className="hover:bg-accent"
           label="Explorer URL"
@@ -69,10 +68,7 @@ function Content({ name }: { name: string }) {
 
       <div className="flex flex-row gap-2">
         <LabelValue label="Currency" value={stackNetwork.currency} />
-        <LabelValue
-          label="Decimals"
-          value={String(stackNetwork.decimals)}
-        />
+        <LabelValue label="Decimals" value={String(stackNetwork.decimals)} />
       </div>
 
       <div className="flex gap-2">

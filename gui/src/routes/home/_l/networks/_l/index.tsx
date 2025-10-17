@@ -7,8 +7,8 @@ import { Database, LoaderCircle, Plus } from "lucide-react";
 import { useShallow } from "zustand/shallow";
 import { EmptyState } from "#/components/EmptyState";
 import { useInvoke } from "#/hooks/useInvoke";
-import { useSettings } from "#/store/useSettings";
 import { useNetworks } from "#/store/useNetworks";
+import { useSettings } from "#/store/useSettings";
 
 export const Route = createFileRoute("/home/_l/networks/_l/")({
   beforeLoad: () => ({ breadcrumb: "Networks" }),

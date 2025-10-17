@@ -45,6 +45,7 @@ async fn test_http_worker_lifecycle() {
         currency: "ETH".to_string(),
         decimals: 18,
         status: NetworkStatus::Unknown,
+        is_stack: true,
     };
     let worker = AnvilHttp::new(network);
     let consumer = TestConsumer;
@@ -79,6 +80,7 @@ async fn test_ws_worker_lifecycle() {
         currency: "ETH".to_string(),
         decimals: 18,
         status: NetworkStatus::Unknown,
+        is_stack: true,
     };
     let worker = AnvilWs::new(network);
     let consumer = TestConsumer;
@@ -158,6 +160,7 @@ async fn test_wait_behavior() {
         currency: "ETH".to_string(),
         decimals: 18,
         status: NetworkStatus::Unknown,
+        is_stack: true,
     };
 
     // Test HTTP worker - should timeout or error without anvil
@@ -201,6 +204,7 @@ async fn test_wait_unavailable_node() {
         currency: "ETH".to_string(),
         decimals: 18,
         status: NetworkStatus::Unknown,
+        is_stack: true,
     };
 
     // Test HTTP worker failure
@@ -240,6 +244,7 @@ async fn test_block_subscription_behavior() {
         currency: "ETH".to_string(),
         decimals: 18,
         status: NetworkStatus::Unknown,
+        is_stack: true,
     };
 
     // Test HTTP block subscription - should fail gracefully without anvil
@@ -275,6 +280,7 @@ async fn test_worker_subscription_lifecycle() {
         currency: "ETH".to_string(),
         decimals: 18,
         status: NetworkStatus::Unknown,
+        is_stack: true,
     };
     let worker = Worker::new(AnvilHttp::new(network.clone()));
     let consumer = TestConsumer;
@@ -315,6 +321,7 @@ async fn test_historical_blocks_stream_interface() {
         currency: "ETH".to_string(),
         decimals: 18,
         status: NetworkStatus::Unknown,
+        is_stack: true,
     };
 
     // Test that backfill_blocks interface works without requiring actual anvil
@@ -360,6 +367,7 @@ async fn test_worker_streaming_lifecycle() {
         currency: "ETH".to_string(),
         decimals: 18,
         status: NetworkStatus::Unknown,
+        is_stack: true,
     };
 
     let worker = Worker::new(AnvilHttp::new(network.clone()));
