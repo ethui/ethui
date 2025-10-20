@@ -193,7 +193,7 @@ fn run_migrations(settings: Versions) -> Settings {
                 result = Versions::V3(Settings {
                     version: ConstI64,
                     dark_mode: v2.dark_mode,
-                    abi_watch_path: v2.abi_watch_path,
+                    abi_watch_path: v2.abi_watch_path.map(|s| vec![s]).unwrap_or_default(),
                     alchemy_api_key: v2.alchemy_api_key,
                     etherscan_api_key: v2.etherscan_api_key,
                     hide_empty_tokens: v2.hide_empty_tokens,
@@ -312,5 +312,32 @@ mod tests {
         if let Ok(settings) = load_and_migrate(&tempfile.path().to_path_buf()).await {
             assert_eq!(settings.version, ConstI64::<3>);
         }
+    }
+
+    #[tokio::test]
+    async fn abi_watch_path_null() {
+        // V2 is the version where abi_watch_path is a Option<String> and not yet a Vec<String>
+        let settings = SettingsV2 {
+            abi_watch_path: None,
+            ..Default::default()
+        };
+
+        let str = serde_json::to_string(&settings).unwrap();
+        let settings: Settings = serde_json::from_str(&str).unwrap();
+        let expected: Vec<String> = vec![];
+        assert_eq!(settings.abi_watch_path, expected);
+    }
+
+    #[tokio::test]
+    async fn abi_watch_path_single() {
+        // V2 is the version where abi_watch_path is a Option<String> and not yet a Vec<String>
+        let settings = SettingsV2 {
+            abi_watch_path: Some("path".into()),
+            ..Default::default()
+        };
+
+        let str = serde_json::to_string(&settings).unwrap();
+        let settings: Settings = serde_json::from_str(&str).unwrap();
+        assert_eq!(settings.abi_watch_path, vec!["path".to_string()]);
     }
 }
