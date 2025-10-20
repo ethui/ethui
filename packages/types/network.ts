@@ -13,6 +13,7 @@ export const networkSchema = z.object({
   currency: z.string().min(1, "Invalid currency"),
   decimals: z.number("Invalid number"),
   id: networkIdSchema,
+  is_stack: z.boolean(),
 });
 
 export type NetworkInputs = z.infer<typeof networkSchema>;
@@ -20,3 +21,6 @@ export type NetworkId = z.infer<typeof networkIdSchema>;
 export type Network = NetworkInputs & {
   status: "unknown" | "online" | "offline";
 };
+
+export const stacksSchema = z.object({ slug: z.string() });
+export type StacksInputs = z.infer<typeof stacksSchema>;

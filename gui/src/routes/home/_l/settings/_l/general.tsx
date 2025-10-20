@@ -69,6 +69,17 @@ function SettingsGeneral() {
         />
       </div>
 
+      <div className="w-80">
+        <AutoSubmitSwitch
+          name="runLocalStacks"
+          label="Enable Stacks"
+          value={general.runLocalStacks}
+          callback={async (runLocalStacks: boolean) =>
+            await invoke("settings_set", { params: { runLocalStacks } })
+          }
+        />
+      </div>
+
       <AutoSubmitTextInput
         name="alchemyApiKey"
         label="Alchemy API Key"

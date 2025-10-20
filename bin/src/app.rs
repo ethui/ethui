@@ -4,6 +4,7 @@ use ethui_args::Args;
 use ethui_broadcast::UIMsg;
 use named_lock::NamedLock;
 use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
+use tauri_plugin_aptabase::EventTracker;
 
 #[cfg(all(feature = "updater", any(debug_assertions, target_os = "macos")))]
 use crate::updater;
@@ -47,6 +48,18 @@ impl EthUIApp {
                 commands::add_contract,
                 commands::remove_contract,
                 commands::is_stacks_enabled,
+                #[cfg(feature = "stacks")]
+                ethui_stacks::commands::stacks_create,
+                #[cfg(feature = "stacks")]
+                ethui_stacks::commands::stacks_list,
+                #[cfg(feature = "stacks")]
+                ethui_stacks::commands::stacks_get_status,
+                #[cfg(feature = "stacks")]
+                ethui_stacks::commands::stacks_remove,
+                #[cfg(feature = "stacks")]
+                ethui_stacks::commands::stacks_shutdown,
+                #[cfg(feature = "stacks")]
+                ethui_stacks::commands::stacks_get_runtime_state,
                 ethui_settings::commands::settings_get,
                 ethui_settings::commands::settings_set,
                 ethui_settings::commands::settings_set_dark_mode,
@@ -161,6 +174,17 @@ impl EthUIApp {
 
             tauri::RunEvent::Exit => {
                 let _ = ethui_analytics::track_event(handle, "app_exited", None);
+                #[cfg(feature = "aptabase")]
+                let _ = handle.track_event("app_exited", None);
+
+                #[cfg(feature = "stacks")]
+                {
+                    tokio::task::block_in_place(|| {
+                        tokio::runtime::Handle::current().block_on(async {
+                            let _ = ethui_stacks::actor::ask(ethui_stacks::actor::Shutdown()).await;
+                        });
+                    });
+                }
             }
 
             #[cfg(target_os = "macos")]
@@ -175,7 +199,6 @@ impl EthUIApp {
 
 /// Initialization logic
 async fn init(app: &tauri::App, args: &Args) -> color_eyre::Result<()> {
-
     let db = ethui_db::init(&resource(app, "db.sqlite3", args)).await?;
     app.manage(db.clone());
 
@@ -196,7 +219,6 @@ async fn init(app: &tauri::App, args: &Args) -> color_eyre::Result<()> {
     ethui_forge::init().await?;
     ethui_analytics::init(app.handle()).await;
 
-    
     ethui_analytics::track_event(app.handle(), "app_started", None)?;
 
     #[cfg(feature = "stacks")]
