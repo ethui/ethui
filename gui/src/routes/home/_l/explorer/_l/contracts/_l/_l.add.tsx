@@ -68,6 +68,7 @@ function RouteComponent() {
         render={({ id: { chain_id }, name, status }) => (
           <ChainView chainId={chain_id} name={name} status={status} />
         )}
+        className="w-auto items-center"
       />
 
       <Form.Text label="Contract Address" name="address" className="w-full" />
