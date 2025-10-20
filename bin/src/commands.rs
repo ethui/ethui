@@ -1,8 +1,8 @@
 use alloy::providers::Provider as _;
 use color_eyre::eyre::{Context as _, ContextCompat as _};
 use ethui_db::{
-    utils::{fetch_etherscan_abi, fetch_etherscan_contract_name},
     Db,
+    utils::{fetch_etherscan_abi, fetch_etherscan_contract_name},
 };
 use ethui_forge::GetAbiFor;
 use ethui_proxy_detect::ProxyType;
@@ -43,13 +43,14 @@ pub async fn add_contract(
         .wrap_err_with(|| format!("Invalid network {chain_id}"))?;
     let provider = network.get_alloy_provider().await?;
 
-    let code = provider
-        .get_code_at(address)
-        .await
-        .wrap_err_with(|| format!("Failed to get code at {address}"))?;
+    let code = dbg!(
+        provider
+            .get_code_at(address)
+            .await
+            .wrap_err_with(|| format!("Failed to get code at {address}"))
+    )?;
 
-    let proxy = ethui_proxy_detect::detect_proxy(address, &provider)
-        .await
+    let proxy = dbg!(ethui_proxy_detect::detect_proxy(address, &provider).await)
         .wrap_err_with(|| format!("Failed to detect proxy type for {address}"))?;
 
     let (name, abi) = if let Some(ProxyType::Eip1167(_)) = proxy {
@@ -70,9 +71,8 @@ pub async fn add_contract(
         )
     } else if !network.is_dev().await {
         (
-            fetch_etherscan_contract_name(chain_id.into(), address).await?,
-            fetch_etherscan_abi(chain_id.into(), address)
-                .await?
+            dbg!(fetch_etherscan_contract_name(chain_id.into(), address).await)?,
+            dbg!(fetch_etherscan_abi(chain_id.into(), address).await)?
                 .map(|abi| serde_json::to_string(&abi).unwrap()),
         )
     } else {

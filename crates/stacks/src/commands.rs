@@ -34,7 +34,7 @@ pub async fn stacks_create(slug: String) -> TauriResult<()> {
         ws_url: None,
         currency: "ETH".to_string(),
         decimals: 18,
-        is_stack: true,
+        is_stack: Some(true),
     };
 
     stack_network_add(network_params).await;
