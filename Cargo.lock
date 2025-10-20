@@ -4925,15 +4925,14 @@ dependencies = [
 
 [[package]]
 name = "kameo"
-version = "0.16.0"
+version = "0.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "57f6e65513e125b82d368f59e4099aed7552969f78699b02512c666449c64a0d"
+checksum = "ab031fd265d156f70b6af5b4c8738ef65007e9485d1d28aed5b041b1d4918688"
 dependencies = [
  "downcast-rs 2.0.1",
  "dyn-clone",
  "futures",
  "kameo_macros",
- "once_cell",
  "serde",
  "tokio",
  "tracing",
@@ -4941,15 +4940,14 @@ dependencies = [
 
 [[package]]
 name = "kameo_macros"
-version = "0.16.0"
+version = "0.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a6b32f8aacc9cc1c7d1ff111415d2172dd8c3659902c63b993b79417b7eb8971"
+checksum = "07992e638a2eb9e2007f3ce6376d6b0ce61e5bebc385201e8dabf37a1804f3e0"
 dependencies = [
  "heck 0.5.0",
  "proc-macro2",
  "quote",
  "syn 2.0.104",
- "uuid 1.18.1",
 ]
 
 [[package]]
