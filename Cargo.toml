@@ -112,7 +112,7 @@ alloy = { version = "1.0", default-features = false, features = [
 alloy-chains = { version = "0.2", default-features = false, features = [
   "serde",
 ] }
-foundry-block-explorers = "0.20"
+foundry-block-explorers = "0.22"
 url = { version = "2.5", features = ["serde"] }
 futures = { version = "0.3", default-features = false }
 rand = "0.9"
