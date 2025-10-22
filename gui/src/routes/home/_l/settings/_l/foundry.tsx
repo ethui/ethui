@@ -50,7 +50,7 @@ function SettingsFoundry() {
     >
       <span>
         ethui can monitor your filesystem for foundry projects, indexing the
-        output ABIs automatically.
+        output ABIs automatically. Add your watch paths below:
       </span>
 
       <div className="flex w-full flex-col pb-4">
