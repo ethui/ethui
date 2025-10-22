@@ -77,7 +77,7 @@ function NetworksIndex() {
 
       <div>
         <WithHelpTooltip
-          helpText="Local Stacks allows you to create local Anvil nodes in your docker."
+          text="Local Stacks allows you to create local Anvil nodes in your docker."
           className="mb-4"
         >
           <h2 className="font-semibold text-lg">Local Stacks</h2>

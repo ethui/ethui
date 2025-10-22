@@ -9,13 +9,13 @@ import { Info } from "lucide-react";
 
 interface WithHelpTooltipProps {
   children: React.ReactNode;
-  helpText: string;
+  text: string;
   className?: string;
 }
 
 export function WithHelpTooltip({
   children,
-  helpText,
+  text,
   className,
 }: WithHelpTooltipProps) {
   return (
@@ -32,7 +32,7 @@ export function WithHelpTooltip({
             </button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>{helpText}</p>
+            <p>{text}</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
