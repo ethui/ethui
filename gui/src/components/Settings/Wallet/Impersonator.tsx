@@ -32,11 +32,11 @@ interface Props {
 export function ImpersonatorForm({ wallet, onSubmit, onRemove }: Props) {
   const formWallet = wallet
     ? {
-        ...wallet,
-        addresses: wallet
-          ? wallet.addresses.map((address) => ({ address }))
-          : [],
-      }
+      ...wallet,
+      addresses: wallet
+        ? wallet.addresses.map((address) => ({ address }))
+        : [],
+    }
     : undefined;
 
   const form = useForm({

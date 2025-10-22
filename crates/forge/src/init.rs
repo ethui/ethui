@@ -11,11 +11,13 @@ pub async fn init() -> color_eyre::Result<()> {
         .await
         .expect("Failed to get settings");
 
-    if let Some(ref path) = settings.abi_watch_path {
-        handle
-            .tell(Msg::UpdateRoots(vec![path.clone().into()]))
-            .await?;
-    }
+    // TODO: is this necessary? don't we get an event on startup?
+    let paths = settings
+        .abi_watch_path
+        .iter()
+        .map(|p| p.clone().into())
+        .collect();
+    handle.tell(Msg::UpdateRoots(paths)).await?;
 
     tokio::spawn(async move { receiver(handle).await });
 
@@ -34,13 +36,13 @@ async fn receiver(handle: ActorRef<Worker>) -> ! {
                     let settings = ethui_settings::ask(GetAll)
                         .await
                         .expect("Failed to get settings");
-                    if let Some(ref path) = settings.abi_watch_path {
-                        // TODO: support multiple
-                        handle
-                            .tell(Msg::UpdateRoots(vec![path.clone().into()]))
-                            .await
-                            .unwrap();
-                    }
+                    let paths = settings
+                        .abi_watch_path
+                        .iter()
+                        .map(|p| p.clone().into())
+                        .collect();
+                    // TODO: support multiple
+                    handle.tell(Msg::UpdateRoots(paths)).await.unwrap();
                 }
 
                 InternalMsg::ContractFound => {

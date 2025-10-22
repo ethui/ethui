@@ -1,5 +1,6 @@
 mod affinity;
 mod contracts;
+pub mod de;
 mod error;
 pub mod events;
 mod global_state;
