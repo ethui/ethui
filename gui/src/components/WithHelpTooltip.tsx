@@ -22,7 +22,7 @@ export function WithHelpTooltip({
     <div className={cn("flex items-center gap-2", className)}>
       {children}
       <TooltipProvider>
-        <Tooltip>
+        <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>
             <button
               type="button"
