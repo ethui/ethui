@@ -80,6 +80,17 @@ function SettingsGeneral() {
         />
       </div>
 
+      <div className="w-80">
+        <AutoSubmitSwitch
+          name="checkForUpdates"
+          label="Check for updates automatically"
+          value={general.checkForUpdates}
+          callback={async (checkForUpdates: boolean) =>
+            await invoke("settings_set", { params: { checkForUpdates } })
+          }
+        />
+      </div>
+
       <AutoSubmitTextInput
         name="alchemyApiKey"
         label="Alchemy API Key"

@@ -45,6 +45,9 @@ pub struct Settings {
     #[serde(default)]
     pub start_minimized: bool,
 
+    #[serde(default = "default_true")]
+    pub check_for_updates: bool,
+
     #[serde(default)]
     pub rust_log: String,
 

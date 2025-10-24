@@ -13,7 +13,15 @@ pub(crate) fn spawn(handle: tauri::AppHandle) {
 
         loop {
             interval.tick().await;
-            let _ = update(&handle).await;
+            
+            let check_for_updates = ethui_settings::ask(ethui_settings::GetAll)
+                .await
+                .map(|s| s.check_for_updates)
+                .unwrap_or(true);
+            
+            if check_for_updates {
+                let _ = update(&handle).await;
+            }
         }
     });
 }
