@@ -4,7 +4,14 @@ import { Progress } from "@ethui/ui/components/shadcn/progress";
 import { cn } from "@ethui/ui/lib/utils";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
-import { Check, ChevronRight, Globe, RefreshCcw, Wallet } from "lucide-react";
+import {
+  Check,
+  ChevronRight,
+  FileCode2,
+  Globe,
+  RefreshCcw,
+  Wallet,
+} from "lucide-react";
 import { useEffect } from "react";
 import { useSettings } from "#/store/useSettings";
 import { useWallets } from "#/store/useWallets";
@@ -53,6 +60,16 @@ const steps = [
       to: "https://ethui.dev/onboarding/extension",
       target: "_blank",
       rel: "noopener noreferrer",
+    },
+  },
+  {
+    id: "foundry",
+    title: "Add foundry ABI paths",
+    description:
+      "To automatically sync contracts with ABIs for foundry projects",
+    icon: <FileCode2 className="h-5 w-5" />,
+    link: {
+      to: "/home/settings/foundry",
     },
   },
 ] as const;
@@ -173,6 +190,13 @@ function useAutofill() {
       (settings?.alchemyApiKey ?? "").length > 0
     ) {
       skipStep("alchemy");
+    }
+
+    if (
+      !settings?.onboarding.steps.foundry &&
+      (settings?.abiWatchPath ?? "").length > 0
+    ) {
+      skipStep("foundry");
     }
   });
 }
