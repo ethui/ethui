@@ -191,13 +191,6 @@ function useAutofill() {
     ) {
       skipStep("alchemy");
     }
-
-    if (
-      !settings?.onboarding.steps.foundry &&
-      (settings?.abiWatchPath ?? "").length > 0
-    ) {
-      skipStep("foundry");
-    }
   });
 }
 

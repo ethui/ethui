@@ -133,17 +133,6 @@ impl Message<Set> for SettingsActor {
                     self.inner.dark_mode = serde_json::from_value(v.clone()).unwrap()
                 }
                 if let Some(v) = map.get("abiWatchPath") {
-                    // check onboarding step
-                    if !self
-                        .inner
-                        .onboarding
-                        .is_step_finished(OnboardingStep::Foundry)
-                    {
-                        let _ = ctx
-                            .actor_ref()
-                            .tell(Set::FinishOnboardingStep(OnboardingStep::Foundry))
-                            .await;
-                    }
                     self.inner.abi_watch_path = serde_json::from_value(v.clone()).unwrap()
                 }
 

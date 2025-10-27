@@ -300,6 +300,13 @@ impl Worker {
             self.insert_abi(abi);
         }
 
+        if !self.abis_by_path.is_empty() {
+            let _ = ethui_settings::tell(ethui_settings::Set::FinishOnboardingStep(
+                ethui_settings::OnboardingStep::Foundry,
+            ))
+            .await;
+        }
+
         self.trigger_update_contracts().await;
 
         Ok(())
