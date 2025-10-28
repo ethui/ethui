@@ -76,6 +76,7 @@ impl Default for Settings {
             version: ConstI64,
             onboarding: Onboarding::default(),
             run_local_stacks: false,
+            check_for_updates: true,
         }
     }
 }

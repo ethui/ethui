@@ -204,6 +204,7 @@ fn run_migrations(settings: Versions) -> Settings {
                     rust_log: v2.rust_log,
                     onboarding: v2.onboarding,
                     run_local_stacks: false,
+                    check_for_updates: true,
                 });
             }
 
