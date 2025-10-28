@@ -1,5 +1,5 @@
 [workspace.package]
-version = "1.24.2"
+version = "1.25.0"
 edition = "2024"
 license = "MIT"
 license-file = "./LICENSE"
@@ -72,7 +72,7 @@ ethui-args = { path = "crates/args" }
 ethui-token-list = { path = "crates/token-list" }
 ethui-proxy-detect = { path = "crates/proxy-detect" }
 ethui-stacks = { path = "crates/stacks" }
-tokio = { version = "1.47", features = ["rt-multi-thread", "sync", "signal"] }
+tokio = { version = "1.48", features = ["rt-multi-thread", "sync", "signal"] }
 thiserror = "2.0"
 sqlx = { version = "0.8", default-features = false, features = [
   "macros",
@@ -126,5 +126,5 @@ tauri-plugin-aptabase = "1.0.0"
 glob = "0.3.2"
 walkdir = "2.4"
 notify = "8.2.0"
-notify-debouncer-full = "0.5.0"
+notify-debouncer-full = "0.6.0"
 tokio-tungstenite = "0.26"
