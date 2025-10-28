@@ -1,7 +1,7 @@
 use std::{
     fs::{File, OpenOptions},
     io::{self, Write},
-    path::Path,
+    path::{Path, PathBuf},
     sync::{Arc, Mutex},
 };
 
@@ -23,6 +23,7 @@ pub type TracingError = color_eyre::Report;
 
 static RELOAD_HANDLE: OnceCell<reload::Handle<EnvFilter, Registry>> = OnceCell::new();
 static WRITER_STATE: OnceCell<Arc<Mutex<WriterState>>> = OnceCell::new();
+static LOG_PATH: OnceCell<PathBuf> = OnceCell::new();
 
 /// Sets up the global tracing subscriber for stdout.
 /// Initially, this reads RUST_LOG from env, but is later configured dinamically through a
@@ -37,7 +38,7 @@ pub fn setup() -> color_eyre::Result<()> {
 
     let file_filter = Targets::new().with_target("ethui", LevelFilter::DEBUG);
     let file_layer = fmt::Layer::default()
-        .with_ansi(false)
+        .with_ansi(true)
         .with_writer(LogWriterFactory::new(writer_state.clone()))
         .with_filter(file_filter);
 
@@ -96,8 +97,14 @@ pub fn setup_file_logging<P: AsRef<Path>>(config_dir: P) -> color_eyre::Result<(
         *state = WriterState::File(file);
     }
 
-    info!( path = %session_path.display(), "session log file opened");
+    let _ = LOG_PATH.set(session_path.clone());
+
+    info!(path = %session_path.display(), "session log file opened");
     Ok(())
+}
+
+pub fn current_log_path() -> Option<PathBuf> {
+    LOG_PATH.get().cloned()
 }
 
 pub fn parse(directives: &str) -> color_eyre::Result<EnvFilter> {

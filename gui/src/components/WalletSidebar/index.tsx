@@ -15,6 +15,7 @@ import { SearchInput } from "../SearchInput";
 import { NetworkSelector } from "./NetworkSelector";
 import { useSidebarSearch } from "./useSidebarSearch";
 import { WalletSelector } from "./WalletSelector";
+import { cn } from "@ethui/ui/lib/utils";
 
 export function WalletSidebar() {
   const { walletSidebar: open, setWalletSidebar: setOpen } = useUI();
@@ -49,7 +50,7 @@ export function WalletSidebar() {
         <Sidebar
           side="right"
           collapsible="offcanvas"
-          className="select-none shadow-2xl"
+          className={cn("select-none", open && "shadow-2xl")}
         >
           <SidebarHeader className="border-border border-b">
             <HeaderContent />

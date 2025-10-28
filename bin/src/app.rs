@@ -44,6 +44,7 @@ impl EthUIApp {
             .invoke_handler(tauri::generate_handler![
                 commands::get_build_mode,
                 commands::get_version,
+                commands::logging_get_snapshot,
                 commands::ui_error,
                 commands::add_contract,
                 commands::remove_contract,
