@@ -126,28 +126,26 @@ function SettingsLogging() {
                 value={filter}
                 onChange={(event) => setFilter(event.target.value)}
               />
-              <Search className="pointer-events-none absolute left-2 top-1.5 h-4 w-4 text-muted-foreground" />
+              <Search className="pointer-events-none absolute top-1.5 left-2 h-4 w-4 text-muted-foreground" />
             </div>
           </div>
         </div>
 
-        <ScrollArea className="h-1 w-full flex-1 overflow-auto rounded border bg-muted/40">
-          <div className="flex flex-col gap-1 p-3 font-mono text-sm">
-            {parsedLines.map((segments, idx) => (
-              <div
-                key={idx}
-                className="whitespace-pre-wrap break-words text-foreground/80"
-              >
-                {segments.length === 0
-                  ? "\u00A0"
-                  : segments.map((segment, segmentIdx) => (
-                    <span key={segmentIdx} className={cn(segment.className)}>
-                      {segment.text}
-                    </span>
-                  ))}
-              </div>
-            ))}
-          </div>
+        <ScrollArea className="flex h-1 w-full flex-1 flex-col gap-1 overflow-auto rounded border bg-muted/40 p-3 font-mono text-sm">
+          {parsedLines.map((segments, idx) => (
+            <div
+              key={idx}
+              className="whitespace-pre-wrap break-words text-foreground/80"
+            >
+              {segments.length === 0
+                ? "\u00A0"
+                : segments.map((segment, segmentIdx) => (
+                  <span key={segmentIdx} className={cn(segment.className)}>
+                    {segment.text}
+                  </span>
+                ))}
+            </div>
+          ))}
         </ScrollArea>
 
         {truncatedNotice ? (
