@@ -82,7 +82,7 @@ export function AppSidebar() {
   return (
     <Sidebar
       className={cn(
-        "mt-12 select-none sidebar-transition-fast",
+        "sidebar-transition-fast z-30 mt-12 select-none",
         "group-data-[collapsible=icon]:[&_[data-sidebar=content]]:!overflow-hidden",
         "group-data-[collapsible=icon]:[&_[data-sidebar=group-label]]:!mt-0",
         "group-data-[collapsible=icon]:[&_[data-sidebar=group-label]]:!opacity-100",
