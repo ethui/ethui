@@ -111,15 +111,6 @@ function SettingsGeneral() {
         />
       </div>
 
-      <AutoSubmitTextInput
-        name="rustLog"
-        label="Rust log level (tracing_subscriber)"
-        successLabel="Saved"
-        value={general.rustLog}
-        callback={async (rustLog: string) =>
-          await invoke("settings_set", { params: { rustLog } })
-        }
-      />
     </div>
   );
 }

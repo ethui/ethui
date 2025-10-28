@@ -3357,6 +3357,7 @@ dependencies = [
 name = "ethui-tracing"
 version = "1.24.2"
 dependencies = [
+ "chrono",
  "color-eyre",
  "once_cell",
  "tracing",
