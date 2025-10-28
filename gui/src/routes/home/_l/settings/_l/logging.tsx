@@ -84,7 +84,7 @@ function SettingsLogging() {
     : null;
 
   return (
-    <div className="flex overflow-auto h-full flex-1 flex-col gap-6">
+    <div className="flex h-full flex-1 flex-col gap-6 overflow-auto">
       <div className="max-w-sm flex-none">
         <AutoSubmitTextInput
           name="rustLog"
@@ -98,36 +98,31 @@ function SettingsLogging() {
       </div>
 
       <section className="flex w-full flex-1 flex-col gap-2 overflow-auto">
-        <div className="flex w-full flex-none flex-wrap items-center gap-2">
-          <div className="flex min-w-0 flex-1 flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <h2 className="font-medium text-sm">Live log</h2>
-              <Button
-                size="icon"
-                variant="ghost"
-                onClick={() => void refetch()}
-                disabled={isLogFetching}
-                className="h-7 w-7"
-              >
-                <RefreshCcw
-                  className={cn("h-4 w-4", isLogFetching && "animate-spin")}
-                />
-              </Button>
-            </div>
+        <div className="flex flex-col md:flex-row w-full justify-between gap-2 md:gap-10">
+          <div>
+            <h2 className="font-medium text-sm">Live log</h2>
             <p className="break-all text-muted-foreground text-xs">{logPath}</p>
-            <div className="relative w-full max-w-xs">
-              <label className="sr-only" htmlFor="log-filter">
-                Filter log output
-              </label>
-              <input
-                id="log-filter"
-                className="w-full rounded border bg-background px-8 py-1 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                placeholder="Filter log lines…"
-                value={filter}
-                onChange={(event) => setFilter(event.target.value)}
+          </div>
+          <div className="relative flex w-full flex-1 items-center gap-2">
+            <input
+              id="log-filter"
+              className="w-full rounded border bg-background px-8 py-1 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              placeholder="Filter log lines…"
+              value={filter}
+              onChange={(event) => setFilter(event.target.value)}
+            />
+            <Search className="pointer-events-none absolute top-2 left-2 h-4 w-4 text-muted-foreground" />
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => void refetch()}
+              disabled={isLogFetching}
+              className="h-7 w-7"
+            >
+              <RefreshCcw
+                className={cn("h-8 w-8", isLogFetching && "animate-spin")}
               />
-              <Search className="pointer-events-none absolute top-1.5 left-2 h-4 w-4 text-muted-foreground" />
-            </div>
+            </Button>
           </div>
         </div>
 
