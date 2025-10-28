@@ -4,39 +4,28 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
   useSidebar,
 } from "@ethui/ui/components/shadcn/sidebar";
 import { cn } from "@ethui/ui/lib/utils";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@radix-ui/react-collapsible";
 import { Link, useLocation } from "@tanstack/react-router";
 import { platform } from "@tauri-apps/plugin-os";
-import {
-  ChevronDown,
-  ChevronRight,
-  CircleUser,
-  Cog,
-  Database,
-  Globe,
-  Wifi,
-} from "lucide-react";
+import { CircleUser, Cog, Database, Globe, Wifi } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useIsAnvilNetwork } from "#/hooks/useIsAnvilNetwork";
 import { useSettings } from "#/store/useSettings";
 import { QuickFastModeToggle } from "./QuickFastModeToggle";
 
 const isDev = import.meta.env.MODE === "development";
 const isTest = import.meta.env.MODE === "test";
+const SIDEBAR_COLLAPSE_BREAKPOINT = 1100;
 
 export function AppSidebar() {
-  const { open, toggleSidebar } = useSidebar();
+  const { open, setOpen } = useSidebar();
   const isMacos = platform() === "macos";
 
   const { data: isAnvilNetwork = false } = useIsAnvilNetwork();
@@ -44,6 +33,43 @@ export function AppSidebar() {
   const showOnboarding = useSettings((s) => !s.settings?.onboarding.hidden);
 
   const settingsItems = [...defaultSettingsItems];
+
+  const [isCollapsedHover, setIsCollapsedHover] = useState(false);
+  const openRef = useRef(open);
+
+  useEffect(() => {
+    if (open) {
+      setIsCollapsedHover(false);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    openRef.current = open;
+  }, [open]);
+
+  const syncSidebarWithViewport = useCallback(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const shouldBeOpen = window.innerWidth >= SIDEBAR_COLLAPSE_BREAKPOINT;
+    if (shouldBeOpen !== openRef.current) {
+      openRef.current = shouldBeOpen;
+      setOpen(shouldBeOpen);
+    }
+  }, [setOpen]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    syncSidebarWithViewport();
+    window.addEventListener("resize", syncSidebarWithViewport);
+    return () => window.removeEventListener("resize", syncSidebarWithViewport);
+  }, [syncSidebarWithViewport]);
+
+  const showExpandedSidebar = open || isCollapsedHover;
 
   let logoFill = "fill-sidebar-foreground";
   if (isDev) {
@@ -54,17 +80,71 @@ export function AppSidebar() {
   }
 
   return (
-    <Sidebar className="select-none pt-12" collapsible="icon">
+    <Sidebar
+      className={cn(
+        "mt-12 select-none sidebar-transition-fast",
+        "group-data-[collapsible=icon]:[&_[data-sidebar=content]]:!overflow-hidden",
+        "group-data-[collapsible=icon]:[&_[data-sidebar=group-label]]:!mt-0",
+        "group-data-[collapsible=icon]:[&_[data-sidebar=group-label]]:!opacity-100",
+        "group-data-[collapsible=icon]:[&_[data-sidebar-label]]:opacity-0",
+        "group-data-[collapsible=icon]:[&_[data-sidebar-label]]:pointer-events-none",
+        "group-data-[collapsible=icon]:[&_[data-active=true]]:!bg-transparent",
+        "group-data-[collapsible=icon]:[&_[data-active=true]]:!text-sidebar-foreground",
+        "group-data-[collapsible=icon]:[&_[data-sidebar=menu]]:!flex",
+        "group-data-[collapsible=icon]:[&_[data-sidebar=menu-sub]]:!flex",
+        "group-data-[collapsible=icon]:[&_[data-sidebar=menu-sub]]:!opacity-0",
+        "group-data-[collapsible=icon]:[&_[data-sidebar=menu-sub]]:!pointer-events-none",
+        "group-data-[collapsible=icon]:[&_[data-sidebar=menu-sub-button]]:!opacity-0",
+        "group-data-[collapsible=icon]:[&_[data-sidebar=menu-sub-button]]:!pointer-events-none",
+        "data-[hovered=true]:w-(--sidebar-width)",
+        "data-[hovered=true]:shadow-lg",
+        "data-[hovered=true]:[&_[data-sidebar=content]]:!overflow-auto",
+        "data-[hovered=true]:[&_[data-sidebar=group-label]]:!mt-0",
+        "data-[hovered=true]:[&_[data-sidebar=group-label]]:!opacity-100",
+        "data-[hovered=true]:[&_[data-sidebar-label]]:opacity-100",
+        "data-[hovered=true]:[&_[data-sidebar-label]]:pointer-events-auto",
+        "data-[hovered=true]:[&_[data-sidebar=menu-button]]:!h-8",
+        "data-[hovered=true]:[&_[data-sidebar=menu-button]]:!w-full",
+        "data-[hovered=true]:[&_[data-sidebar=menu-button]]:!justify-start",
+        "data-[hovered=true]:[&_[data-sidebar=menu-button]]:!px-2",
+        "data-[hovered=true]:[&_[data-active=true]]:!bg-primary",
+        "data-[hovered=true]:[&_[data-active=true]]:!text-accent",
+        "data-[hovered=true]:[&_[data-sidebar=menu-action]]:!flex",
+        "data-[hovered=true]:[&_[data-sidebar=menu-badge]]:!flex",
+        "data-[hovered=true]:[&_[data-sidebar=menu-sub]]:!opacity-100",
+        "data-[hovered=true]:[&_[data-sidebar=menu-sub]]:!pointer-events-auto",
+        "data-[hovered=true]:[&_[data-sidebar=menu-sub-button]]:!opacity-100",
+        "data-[hovered=true]:[&_[data-sidebar=menu-sub-button]]:!pointer-events-auto",
+        "data-[hovered=true]:[&_[data-sidebar=menu-sub]]:!flex",
+        "data-[hovered=true]:[&_[data-sidebar=menu-sub-button]]:!flex",
+        "z-30",
+      )}
+      collapsible="icon"
+      data-hovered={isCollapsedHover ? "true" : undefined}
+      onPointerEnter={() => {
+        if (!open) {
+          setIsCollapsedHover(true);
+        }
+      }}
+      onPointerLeave={() => {
+        setIsCollapsedHover(false);
+      }}
+      onFocusCapture={() => {
+        if (!open) {
+          setIsCollapsedHover(true);
+        }
+      }}
+      onBlurCapture={() => {
+        setIsCollapsedHover(false);
+      }}
+    >
       <SidebarHeader
         className={cn("flex items-center", { "pt-8": isMacos })}
         data-tauri-drag-region="true"
       >
-        <EthuiLogo
-          onClick={toggleSidebar}
-          size={48}
-          bg="bg-transparent"
-          fg={logoFill}
-        />
+        <div className="flex w-full items-center justify-center rounded-md px-0 py-2 [&_svg]:cursor-default">
+          <EthuiLogo size={48} bg="bg-transparent" fg={logoFill} />
+        </div>
       </SidebarHeader>
 
       <SidebarContent>
@@ -76,25 +156,32 @@ export function AppSidebar() {
                   url="/home/onboarding"
                   icon={<CircleUser />}
                   title="Onboarding"
+                  showExpanded={showExpandedSidebar}
                 />
               )}
               {items.map((item) => (
-                <CustomSidebarMenuItem key={item.title} {...item} />
+                <CustomSidebarMenuItem
+                  key={item.title}
+                  showExpanded={showExpandedSidebar}
+                  {...item}
+                />
               ))}
-              <CollapsibleMenuSection
-                icon={<Globe />}
-                title="Explorer"
-                items={getExplorerItems(isAnvilNetwork)}
-              />
-              <CollapsibleMenuSection
-                icon={<Cog />}
-                title="Settings"
-                items={settingsItems}
-              />
             </SidebarMenu>
+            <SidebarSection
+              icon={<Globe />}
+              title="Explorer"
+              items={getExplorerItems(isAnvilNetwork)}
+              showExpanded={showExpandedSidebar}
+            />
+            <SidebarSection
+              icon={<Cog />}
+              title="Settings"
+              items={settingsItems}
+              showExpanded={showExpandedSidebar}
+            />
           </SidebarGroupContent>
         </SidebarGroup>
-        {open && (
+        {showExpandedSidebar && (
           <SidebarGroup>
             <SidebarGroupContent>
               <QuickFastModeToggle />
@@ -111,82 +198,92 @@ interface CustomSidebarMenuItemProps {
   icon: React.ReactNode;
   title: string;
   className?: string;
+  showExpanded: boolean;
 }
 
 function CustomSidebarMenuItem({
   url,
   icon,
   title,
+  showExpanded,
 }: CustomSidebarMenuItemProps) {
   const location = useLocation();
+  const isActive = isRouteActive(location.pathname, url);
 
   return (
     <SidebarMenuItem key={title}>
       <SidebarMenuButton
         asChild
+        isActive={isActive}
         className={cn(
-          (url === location.pathname || location.pathname.startsWith(url)) &&
-            "bg-primary text-accent hover:bg-primary hover:text-accent",
+          isActive &&
+          showExpanded &&
+          "bg-primary text-accent hover:bg-primary hover:text-accent",
         )}
       >
         <Link to={url}>
           {icon}
-          {title}
+          <span data-sidebar-label>{title}</span>
         </Link>
       </SidebarMenuButton>
     </SidebarMenuItem>
   );
 }
 
-interface CollapsibleMenuSectionProps {
+interface SidebarSectionProps {
   icon: React.ReactNode;
   title: string;
   items: Array<{ title: string; url: string }>;
+  showExpanded: boolean;
 }
 
-function CollapsibleMenuSection({
+function SidebarSection({
   icon,
   title,
   items,
-}: CollapsibleMenuSectionProps) {
+  showExpanded,
+}: SidebarSectionProps) {
   const location = useLocation();
 
   return (
-    <Collapsible className="group/collapsible">
-      <SidebarMenuItem>
-        <CollapsibleTrigger asChild className="cursor-pointer">
-          <SidebarMenuButton>
-            {icon}
-            <span>{title}</span>
-            <ChevronRight className="ml-auto group-data-[state=open]/collapsible:hidden" />
-            <ChevronDown className="ml-auto group-data-[state=closed]/collapsible:hidden" />
-          </SidebarMenuButton>
-        </CollapsibleTrigger>
-        <CollapsibleContent>
-          <SidebarMenuSub>
-            {items.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton
-                  asChild
-                  className={cn(
-                    (item.url === location.pathname ||
-                      location.pathname.startsWith(item.url)) &&
-                      "bg-primary text-accent hover:bg-primary hover:text-accent",
-                  )}
-                >
-                  <Link to={item.url}>{item.title}</Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenuSub>
-        </CollapsibleContent>
-      </SidebarMenuItem>
-    </Collapsible>
+    <div className="mt-4 flex flex-col gap-1">
+      <SidebarGroupLabel className="gap-2">
+        {icon}
+        <span data-sidebar-label>{title}</span>
+      </SidebarGroupLabel>
+      <SidebarMenu className="pl-6">
+        {items.map((item) => {
+          const isActive = isRouteActive(location.pathname, item.url);
+
+          return (
+            <SidebarMenuItem key={item.title}>
+              <SidebarMenuButton
+                asChild
+                isActive={isActive}
+                className={cn(
+                  isActive &&
+                  showExpanded &&
+                  "bg-primary text-accent hover:bg-primary hover:text-accent",
+                )}
+              >
+                <Link to={item.url}>
+                  <span data-sidebar-label>{item.title}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          );
+        })}
+      </SidebarMenu>
+    </div>
   );
 }
 
 function getExplorerItems(isAnvilNetwork: boolean) {
   return explorerItems.filter((item) => !item.anvilOnly || isAnvilNetwork);
+}
+
+function isRouteActive(pathname: string, url: string) {
+  return pathname === url || pathname.startsWith(url);
 }
 // Menu items.
 const items = [
