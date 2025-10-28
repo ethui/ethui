@@ -117,7 +117,6 @@ export function AppSidebar() {
         "data-[hovered=true]:[&_[data-sidebar=menu-sub-button]]:!pointer-events-auto",
         "data-[hovered=true]:[&_[data-sidebar=menu-sub]]:!flex",
         "data-[hovered=true]:[&_[data-sidebar=menu-sub-button]]:!flex",
-        "z-30",
       )}
       collapsible="icon"
       data-hovered={isCollapsedHover ? "true" : undefined}
@@ -283,7 +282,7 @@ function getExplorerItems(isAnvilNetwork: boolean) {
 }
 
 function isRouteActive(pathname: string, url: string) {
-  return pathname === url || pathname.startsWith(url);
+  return pathname === url || pathname.startsWith(`${url}/`);
 }
 // Menu items.
 const items = [
