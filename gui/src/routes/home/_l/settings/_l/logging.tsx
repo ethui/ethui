@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useSettings } from "#/store/useSettings";
 
+// Maximum bytes to fetch from log file (64 KB)
 const LOG_WINDOW = 64_000;
 
 export const Route = createFileRoute("/home/_l/settings/_l/logging")({
