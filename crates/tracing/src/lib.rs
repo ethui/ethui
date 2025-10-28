@@ -26,7 +26,7 @@ static WRITER_STATE: OnceCell<Arc<Mutex<WriterState>>> = OnceCell::new();
 static LOG_PATH: OnceCell<PathBuf> = OnceCell::new();
 
 /// Sets up the global tracing subscriber for stdout.
-/// Initially, this reads RUST_LOG from env, but is later configured dinamically through a
+/// Initially, this reads RUST_LOG from env, but is later configured dynamically through a
 /// RELOAD_HANDLE, via ethui settings > general
 pub fn setup() -> color_eyre::Result<()> {
     let filter = EnvFilter::from_default_env();
