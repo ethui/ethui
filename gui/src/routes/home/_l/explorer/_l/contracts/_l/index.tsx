@@ -4,7 +4,7 @@ import { Input } from "@ethui/ui/components/shadcn/input";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import debounce from "lodash-es/debounce";
 import { MoveRight, Plus, Trash2 } from "lucide-react";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import type { Address } from "viem";
 import { useShallow } from "zustand/shallow";
 import { AddressView } from "#/components/AddressView";
@@ -78,20 +78,20 @@ function ContractHeader({ contract }: { contract: OrganizedContract }) {
               )}
 
               {proxyChain.map(({ address, name }) => (
-                <Fragment key={address}>
+                <div key={address} className="flex items-center gap-2">
                   <MoveRight strokeWidth={1} size={16} />
-                  <Badge key={address} variant="secondary">
-                    {name ? (
-                      name
-                    ) : (
-                      <AddressView
-                        showLinkExplorer
-                        address={address}
-                        noTextStyle
-                      />
-                    )}
-                  </Badge>
-                </Fragment>
+                  {name ? (
+                    <Badge key={address} variant="secondary">
+                      {name}
+                    </Badge>
+                  ) : (
+                    <AddressView
+                      address={address}
+                      noTextStyle
+                      showLinkExplorer={false}
+                    />
+                  )}
+                </div>
               ))}
             </div>
           </div>
