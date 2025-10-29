@@ -8,13 +8,13 @@ import { Table } from "@ethui/ui/components/table";
 import { createFileRoute } from "@tanstack/react-router";
 import { createColumnHelper } from "@tanstack/react-table";
 import type { Address } from "viem";
-import { formatEther } from "viem";
 import { AddressView } from "#/components/AddressView";
 import { RouteGuard } from "#/components/RouteGuard";
 import { useAddressBalance } from "#/hooks/useAddressBalance";
 import { type AddressData, useAllAddresses } from "#/hooks/useAllAddresses";
 import { useIsAnvilNetwork } from "#/hooks/useIsAnvilNetwork";
 import { useNetworks } from "#/store/useNetworks";
+import { formatBalance } from "#/utils";
 
 export const Route = createFileRoute("/home/_l/explorer/_l/addresses/")({
   beforeLoad: () => ({ breadcrumb: "Addresses" }),
@@ -52,9 +52,7 @@ function BalanceCell({ address }: { address: Address }) {
     return <span className="text-muted-foreground text-sm">0 ETH</span>;
   }
 
-  const formatted = Number(formatEther(balance))
-    .toFixed(4)
-    .replace(/\.?0+$/, "");
+  const formatted = formatBalance(balance);
 
   return <span className="text-sm">{formatted} ETH</span>;
 }
