@@ -16,6 +16,7 @@ export const generalSettingsSchema = z.object({
   etherscanApiKey: z.string().optional().nullable(),
   hideEmptyTokens: z.boolean(),
   startMinimized: z.boolean(),
+  checkForUpdates: z.boolean(),
   fastMode: z.boolean(),
   onboarding: onboardingSchema,
   rustLog: z.string().optional(),
