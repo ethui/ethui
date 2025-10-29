@@ -1,19 +1,17 @@
 use std::{collections::HashMap, net::SocketAddr};
 
 use ethui_types::prelude::*;
-use futures::{stream::SplitSink, SinkExt, StreamExt};
+use futures::{SinkExt, StreamExt, stream::SplitSink};
 use tokio::{
     net::{TcpListener, TcpStream},
     sync::mpsc,
 };
 use tokio_tungstenite::{
-    accept_hdr_async,
+    WebSocketStream, accept_hdr_async,
     tungstenite::{
-        self,
+        self, Message,
         handshake::server::{ErrorResponse, Request, Response},
-        Message,
     },
-    WebSocketStream,
 };
 use tracing::warn;
 use url::Url;
@@ -62,7 +60,7 @@ async fn accept(socket: SocketAddr, stream: TcpStream) {
             WsError::Websocket(e) => match e {
                 tungstenite::Error::ConnectionClosed
                 | tungstenite::Error::Protocol(_)
-                | tungstenite::Error::Utf8 => {
+                | tungstenite::Error::Utf8(_) => {
                     tracing::debug!("Close  {} {:?}", url, e);
                 }
                 _ => (),
