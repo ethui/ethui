@@ -83,40 +83,14 @@ export function AppSidebar() {
     <Sidebar
       className={cn(
         "sidebar-transition-fast z-30 mt-12 select-none",
-        "group-data-[collapsible=icon]:[&_[data-sidebar=content]]:!overflow-hidden",
-        "group-data-[collapsible=icon]:[&_[data-sidebar=group-label]]:!mt-0",
-        "group-data-[collapsible=icon]:[&_[data-sidebar=group-label]]:!opacity-100",
-        "group-data-[collapsible=icon]:[&_[data-sidebar-label]]:opacity-0",
-        "group-data-[collapsible=icon]:[&_[data-sidebar-label]]:pointer-events-none",
-        "group-data-[collapsible=icon]:[&_[data-active=true]]:!bg-transparent",
-        "group-data-[collapsible=icon]:[&_[data-active=true]]:!text-sidebar-foreground",
-        "group-data-[collapsible=icon]:[&_[data-sidebar=menu]]:!flex",
-        "group-data-[collapsible=icon]:[&_[data-sidebar=menu-sub]]:!flex",
-        "group-data-[collapsible=icon]:[&_[data-sidebar=menu-sub]]:!opacity-0",
-        "group-data-[collapsible=icon]:[&_[data-sidebar=menu-sub]]:!pointer-events-none",
-        "group-data-[collapsible=icon]:[&_[data-sidebar=menu-sub-button]]:!opacity-0",
-        "group-data-[collapsible=icon]:[&_[data-sidebar=menu-sub-button]]:!pointer-events-none",
         "data-[hovered=true]:w-(--sidebar-width)",
         "data-[hovered=true]:shadow-lg",
         "data-[hovered=true]:[&_[data-sidebar=content]]:!overflow-auto",
+        "group-data-[collapsible=icon]:[&_[data-sidebar=group-label]]:!mt-0",
         "data-[hovered=true]:[&_[data-sidebar=group-label]]:!mt-0",
         "data-[hovered=true]:[&_[data-sidebar=group-label]]:!opacity-100",
         "data-[hovered=true]:[&_[data-sidebar-label]]:opacity-100",
         "data-[hovered=true]:[&_[data-sidebar-label]]:pointer-events-auto",
-        "data-[hovered=true]:[&_[data-sidebar=menu-button]]:!h-8",
-        "data-[hovered=true]:[&_[data-sidebar=menu-button]]:!w-full",
-        "data-[hovered=true]:[&_[data-sidebar=menu-button]]:!justify-start",
-        "data-[hovered=true]:[&_[data-sidebar=menu-button]]:!px-2",
-        "data-[hovered=true]:[&_[data-active=true]]:!bg-primary",
-        "data-[hovered=true]:[&_[data-active=true]]:!text-accent",
-        "data-[hovered=true]:[&_[data-sidebar=menu-action]]:!flex",
-        "data-[hovered=true]:[&_[data-sidebar=menu-badge]]:!flex",
-        "data-[hovered=true]:[&_[data-sidebar=menu-sub]]:!opacity-100",
-        "data-[hovered=true]:[&_[data-sidebar=menu-sub]]:!pointer-events-auto",
-        "data-[hovered=true]:[&_[data-sidebar=menu-sub-button]]:!opacity-100",
-        "data-[hovered=true]:[&_[data-sidebar=menu-sub-button]]:!pointer-events-auto",
-        "data-[hovered=true]:[&_[data-sidebar=menu-sub]]:!flex",
-        "data-[hovered=true]:[&_[data-sidebar=menu-sub-button]]:!flex",
       )}
       collapsible="icon"
       data-hovered={isCollapsedHover ? "true" : undefined}
@@ -156,6 +130,7 @@ export function AppSidebar() {
                   icon={<CircleUser />}
                   title="Onboarding"
                   showExpanded={showExpandedSidebar}
+                  hideWhenCollapsed
                 />
               )}
               {items.map((item) => (
@@ -198,6 +173,7 @@ interface CustomSidebarMenuItemProps {
   title: string;
   className?: string;
   showExpanded: boolean;
+  hideWhenCollapsed?: boolean;
 }
 
 function CustomSidebarMenuItem({
@@ -205,12 +181,19 @@ function CustomSidebarMenuItem({
   icon,
   title,
   showExpanded,
+  hideWhenCollapsed = false,
 }: CustomSidebarMenuItemProps) {
   const location = useLocation();
   const isActive = isRouteActive(location.pathname, url);
+  const shouldHide = hideWhenCollapsed && !showExpanded;
 
   return (
-    <SidebarMenuItem key={title}>
+    <SidebarMenuItem
+      className={cn(
+        "transition-opacity duration-200",
+        shouldHide && "pointer-events-none opacity-0",
+      )}
+    >
       <SidebarMenuButton
         asChild
         isActive={isActive}
@@ -218,11 +201,21 @@ function CustomSidebarMenuItem({
           isActive &&
             showExpanded &&
             "bg-primary text-accent hover:bg-primary hover:text-accent",
+          showExpanded &&
+            "group-data-[collapsible=icon]:!h-8 group-data-[collapsible=icon]:!w-full group-data-[collapsible=icon]:!justify-start group-data-[collapsible=icon]:!px-2",
         )}
       >
         <Link to={url}>
           {icon}
-          <span data-sidebar-label>{title}</span>
+          <span
+            data-sidebar-label
+            className={cn(
+              "transition-opacity duration-200",
+              showExpanded ? "opacity-100" : "opacity-0",
+            )}
+          >
+            {title}
+          </span>
         </Link>
       </SidebarMenuButton>
     </SidebarMenuItem>
@@ -245,12 +238,32 @@ function SidebarSection({
   const location = useLocation();
 
   return (
-    <div className="mt-4 flex flex-col gap-1">
+    <div
+      className={cn(
+        "mt-4 flex flex-col gap-1 transition-opacity duration-200",
+        showExpanded
+          ? "pointer-events-auto opacity-100"
+          : "pointer-events-none opacity-0",
+      )}
+    >
       <SidebarGroupLabel className="gap-2">
         {icon}
-        <span data-sidebar-label>{title}</span>
+        <span
+          data-sidebar-label
+          className={cn(
+            "transition-opacity duration-200",
+            showExpanded ? "opacity-100" : "opacity-0",
+          )}
+        >
+          {title}
+        </span>
       </SidebarGroupLabel>
-      <SidebarMenu className="pl-6">
+      <SidebarMenu
+        className={cn(
+          "pl-6 transition-opacity duration-200",
+          showExpanded ? "opacity-100" : "opacity-0",
+        )}
+      >
         {items.map((item) => {
           const isActive = isRouteActive(location.pathname, item.url);
 
@@ -263,10 +276,20 @@ function SidebarSection({
                   isActive &&
                     showExpanded &&
                     "bg-primary text-accent hover:bg-primary hover:text-accent",
+                  showExpanded &&
+                    "group-data-[collapsible=icon]:!h-8 group-data-[collapsible=icon]:!w-full group-data-[collapsible=icon]:!justify-start group-data-[collapsible=icon]:!px-2",
                 )}
               >
                 <Link to={item.url}>
-                  <span data-sidebar-label>{item.title}</span>
+                  <span
+                    data-sidebar-label
+                    className={cn(
+                      "transition-opacity duration-200",
+                      showExpanded ? "opacity-100" : "opacity-0",
+                    )}
+                  >
+                    {item.title}
+                  </span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

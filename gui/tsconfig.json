@@ -10,7 +10,8 @@
     "moduleResolution": "bundler",
     "paths": {
       "#/*": ["./src/*"]
-    }
+    },
+    "noEmit": true
   },
   "include": ["./src", "vite.config.ts"],
   "exclude": ["dist", "node_modules", "../node_modules"]
