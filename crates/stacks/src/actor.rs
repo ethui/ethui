@@ -243,7 +243,12 @@ impl Message<GetRuntimeState> for Worker {
 }
 
 impl Actor for Worker {
+    type Args = (u16, PathBuf);
     type Error = color_eyre::Report;
+
+    async fn on_start(args: Self::Args, _actor_ref: ActorRef<Self>) -> color_eyre::Result<Self> {
+        Self::new(args.0, args.1)
+    }
 
     async fn on_panic(
         &mut self,

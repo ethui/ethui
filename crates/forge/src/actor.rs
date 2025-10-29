@@ -5,12 +5,12 @@ use std::{
 };
 
 use ethui_types::prelude::*;
-use futures::{stream, StreamExt as _};
+use futures::{StreamExt as _, stream};
 use glob::glob;
 use kameo::prelude::*;
 use notify::{RecommendedWatcher, RecursiveMode};
 use notify_debouncer_full::{
-    new_debouncer, DebounceEventResult, DebouncedEvent, Debouncer, RecommendedCache,
+    DebounceEventResult, DebouncedEvent, Debouncer, RecommendedCache, new_debouncer,
 };
 use tokio::task;
 use walkdir::{DirEntry, WalkDir};
@@ -202,28 +202,32 @@ impl Message<GetAbiFor> for Worker {
 }
 
 impl Actor for Worker {
+    type Args = ();
     type Error = color_eyre::Report;
 
     async fn on_start(
-        &mut self,
+        _args: Self::Args,
         actor_ref: kameo::actor::ActorRef<Self>,
-    ) -> std::result::Result<(), Self::Error> {
-        self.self_ref = Some(actor_ref.clone());
+    ) -> std::result::Result<Self, Self::Error> {
+        let mut this = Self {
+            self_ref: Some(actor_ref.clone()),
+            ..Default::default()
+        };
 
         let debounced_watcher = new_debouncer(
             Duration::from_millis(500),
             None,
             move |result: DebounceEventResult| match result {
                 Ok(events) => {
-                    actor_ref.tell(events);
+                    let _ = actor_ref.tell(events);
                 }
                 Err(e) => tracing::warn!("watch error: {:?}", e),
             },
         )?;
 
-        self.watcher = Some(debounced_watcher);
+        this.watcher = Some(debounced_watcher);
 
-        Ok(())
+        Ok(this)
     }
 
     async fn on_panic(

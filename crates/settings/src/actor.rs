@@ -77,7 +77,15 @@ impl SettingsActor {
 }
 
 impl Actor for SettingsActor {
+    type Args = PathBuf;
     type Error = color_eyre::Report;
+
+    async fn on_start(
+        args: Self::Args,
+        _actor_ref: ActorRef<Self>,
+    ) -> std::result::Result<Self, Self::Error> {
+        Self::new(args).await
+    }
 
     async fn on_panic(
         &mut self,
