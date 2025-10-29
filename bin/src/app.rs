@@ -210,7 +210,7 @@ async fn init(app: &tauri::App, args: &Args) -> color_eyre::Result<()> {
     // calls other crates' initialization logic. anvil needs to be started before networks,
     // otherwise the initial tracker won't be ready to spawn
     ethui_sync::init().await;
-    ethui_settings::init(resource(app, "settings.json", args)).await?;
+    ethui_settings::init(resource(app, "settings.json", args))?;
     ethui_ws::init(args).await;
     ethui_connections::init(resource(app, "connections.json", args)).await;
     ethui_wallets::init(resource(app, "wallets.json", args)).await;

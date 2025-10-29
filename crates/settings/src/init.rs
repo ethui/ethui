@@ -2,12 +2,13 @@ use std::path::PathBuf;
 
 use color_eyre::eyre::Context as _;
 use ethui_broadcast::InternalMsg;
-use kameo::actor::ActorRef;
+use kameo::{Actor as _, actor::ActorRef};
 
-use crate::{actor::SettingsActor, onboarding::OnboardingStep, Set};
+use crate::{Set, actor::SettingsActor, onboarding::OnboardingStep};
 
-pub async fn init(pathbuf: PathBuf) -> color_eyre::Result<()> {
-    let actor = kameo::spawn(SettingsActor::new(pathbuf).await?);
+pub fn init(pathbuf: PathBuf) -> color_eyre::Result<()> {
+    let actor = SettingsActor::spawn(pathbuf);
+
     actor
         .register("settings")
         .wrap_err_with(|| "Actor spawn error")?;

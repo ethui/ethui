@@ -1,11 +1,11 @@
 use ethui_broadcast::InternalMsg;
 use ethui_settings::GetAll;
-use kameo::actor::ActorRef;
+use kameo::{Actor as _, actor::ActorRef};
 
 use crate::actor::{Msg, Worker};
 
 pub async fn init() -> color_eyre::Result<()> {
-    let handle = kameo::spawn(Worker::default());
+    let handle = Worker::spawn(());
     handle.register("forge").unwrap();
     let settings = ethui_settings::ask(GetAll)
         .await
