@@ -110,7 +110,6 @@ function SettingsGeneral() {
           }
         />
       </div>
-
     </div>
   );
 }

@@ -5,6 +5,7 @@ import {
   SidebarHeader,
   SidebarProvider,
 } from "@ethui/ui/components/shadcn/sidebar";
+import { cn } from "@ethui/ui/lib/utils";
 import { useEffect, useState } from "react";
 import { useNetworks } from "#/store/useNetworks";
 import { useUI } from "#/store/useUI";
@@ -15,7 +16,6 @@ import { SearchInput } from "../SearchInput";
 import { NetworkSelector } from "./NetworkSelector";
 import { useSidebarSearch } from "./useSidebarSearch";
 import { WalletSelector } from "./WalletSelector";
-import { cn } from "@ethui/ui/lib/utils";
 
 export function WalletSidebar() {
   const { walletSidebar: open, setWalletSidebar: setOpen } = useUI();

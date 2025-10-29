@@ -25,8 +25,10 @@ type LogSnapshot = {
 
 type Segment = { text: string; className: string };
 
+// biome-ignore-start lint/suspicious/noControlCharactersInRegex: false positive
 const ANSI_PATTERN = /\u001B\[[0-9;]*m/;
 const ANSI_SPLIT = /\u001B\[[0-9;]*m/g;
+// biome-ignore-end lint/suspicious/noControlCharactersInRegex: false positive
 const DEFAULT_CLASS = "text-foreground/80";
 
 const ANSI_COLOR_CLASSES: Record<number, string> = {
@@ -99,7 +101,7 @@ function SettingsLogging() {
       </div>
 
       <section className="flex w-full flex-1 flex-col gap-2 overflow-auto">
-        <div className="flex flex-col md:flex-row w-full justify-between gap-2 md:gap-10">
+        <div className="flex w-full flex-col justify-between gap-2 md:flex-row md:gap-10">
           <div>
             <h2 className="font-medium text-sm">Live log</h2>
             <p className="break-all text-muted-foreground text-xs">{logPath}</p>
@@ -136,10 +138,10 @@ function SettingsLogging() {
               {segments.length === 0
                 ? "\u00A0"
                 : segments.map((segment, segmentIdx) => (
-                  <span key={segmentIdx} className={cn(segment.className)}>
-                    {segment.text}
-                  </span>
-                ))}
+                    <span key={segmentIdx} className={cn(segment.className)}>
+                      {segment.text}
+                    </span>
+                  ))}
             </div>
           ))}
         </ScrollArea>
