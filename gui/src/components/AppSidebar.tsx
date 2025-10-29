@@ -216,8 +216,8 @@ function CustomSidebarMenuItem({
         isActive={isActive}
         className={cn(
           isActive &&
-          showExpanded &&
-          "bg-primary text-accent hover:bg-primary hover:text-accent",
+            showExpanded &&
+            "bg-primary text-accent hover:bg-primary hover:text-accent",
         )}
       >
         <Link to={url}>
@@ -261,8 +261,8 @@ function SidebarSection({
                 isActive={isActive}
                 className={cn(
                   isActive &&
-                  showExpanded &&
-                  "bg-primary text-accent hover:bg-primary hover:text-accent",
+                    showExpanded &&
+                    "bg-primary text-accent hover:bg-primary hover:text-accent",
                 )}
               >
                 <Link to={item.url}>
