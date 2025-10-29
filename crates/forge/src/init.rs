@@ -41,7 +41,6 @@ async fn receiver(handle: ActorRef<Worker>) -> ! {
                         .iter()
                         .map(|p| p.clone().into())
                         .collect();
-                    // TODO: support multiple
                     handle.tell(Msg::UpdateRoots(paths)).await.unwrap();
                 }
 

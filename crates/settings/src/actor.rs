@@ -125,7 +125,6 @@ impl Message<Set> for SettingsActor {
                     self.inner.dark_mode = serde_json::from_value(v.clone()).unwrap()
                 }
                 if let Some(v) = map.get("abiWatchPath") {
-                    dbg!(&v);
                     self.inner.abi_watch_path = serde_json::from_value(v.clone()).unwrap()
                 }
 
