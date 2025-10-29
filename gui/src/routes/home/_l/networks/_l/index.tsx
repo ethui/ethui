@@ -6,6 +6,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { Database, LoaderCircle, Plus } from "lucide-react";
 import { useShallow } from "zustand/shallow";
 import { EmptyState } from "#/components/EmptyState";
+import { WithHelpTooltip } from "#/components/WithHelpTooltip";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { useSettings } from "#/store/useSettings";
@@ -75,7 +76,12 @@ function NetworksIndex() {
       </div>
 
       <div>
-        <h2 className="mb-4 font-semibold text-lg">Local Stacks</h2>
+        <WithHelpTooltip
+          text="Local Stacks allows you to create local Anvil nodes in your docker."
+          className="mb-4"
+        >
+          <h2 className="font-semibold text-lg">Local Stacks</h2>
+        </WithHelpTooltip>
 
         {!settings.runLocalStacks ? (
           <div>

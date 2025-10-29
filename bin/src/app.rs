@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use ethui_args::Args;
 use ethui_broadcast::UIMsg;
 use named_lock::NamedLock;
-use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
+use tauri::{AppHandle, Builder, Emitter as _, Manager as _, Runtime, plugin::TauriPlugin};
 use tauri_plugin_aptabase::EventTracker;
 
 #[cfg(all(feature = "updater", any(debug_assertions, target_os = "macos")))]
@@ -127,8 +127,7 @@ impl EthUIApp {
             .plugin(tauri_plugin_shell::init());
 
         #[cfg(feature = "aptabase")]
-        let builder =
-            builder.plugin(tauri_plugin_aptabase::Builder::new(std::env!("APTABASE_KEY")).build());
+        let builder = builder.plugin(build_aptabase_plugin());
 
         #[cfg(all(feature = "updater", any(debug_assertions, target_os = "macos")))]
         let builder = builder
@@ -211,7 +210,7 @@ async fn init(app: &tauri::App, args: &Args) -> color_eyre::Result<()> {
     // calls other crates' initialization logic. anvil needs to be started before networks,
     // otherwise the initial tracker won't be ready to spawn
     ethui_sync::init().await;
-    ethui_settings::init(resource(app, "settings.json", args)).await?;
+    ethui_settings::init(resource(app, "settings.json", args))?;
     ethui_ws::init(args).await;
     ethui_connections::init(resource(app, "connections.json", args)).await;
     ethui_wallets::init(resource(app, "wallets.json", args)).await;
@@ -283,4 +282,15 @@ fn config_dir(app: &tauri::App, args: &Args) -> PathBuf {
                 .app_config_dir()
                 .expect("failed to resolve app_config_dir")
         })
+}
+
+#[cfg(feature = "aptabase")]
+fn build_aptabase_plugin<R: Runtime>() -> TauriPlugin<R> {
+    #[cfg(debug_assertions)]
+    let key = std::option_env!("APTABASE_KEY").unwrap_or("debug");
+
+    #[cfg(not(debug_assertions))]
+    let key = std::env!("APTABASE_KEY");
+
+    tauri_plugin_aptabase::Builder::new(key).build()
 }
