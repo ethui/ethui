@@ -5,7 +5,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@ethui/ui/components/shadcn/dropdown-menu";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { startCase } from "lodash-es";
 import { Pencil, Plus } from "lucide-react";
 import type { Address } from "viem";
@@ -50,7 +50,7 @@ function AddWalletCard() {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="group flex min-h-[180px] w-64 flex-col items-center justify-center gap-3 border border-dashed border-muted-foreground/50 bg-muted/20 transition-colors hover:border-primary hover:bg-muted/40 cursor-pointer"
+          className="group flex min-h-[180px] w-64 cursor-pointer flex-col items-center justify-center gap-3 border border-muted-foreground/50 border-dashed bg-muted/20 transition-colors hover:border-primary hover:bg-muted/40"
         >
           <Plus className="h-8 w-8 text-muted-foreground transition-colors group-hover:text-primary" />
           <span className="font-medium text-muted-foreground text-sm transition-colors group-hover:text-primary">
