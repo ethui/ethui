@@ -26,6 +26,7 @@ import {
   Cog,
   Database,
   Globe,
+  Wallet,
   Wifi,
 } from "lucide-react";
 import { useIsAnvilNetwork } from "#/hooks/useIsAnvilNetwork";
@@ -196,6 +197,11 @@ const items = [
     icon: <CircleUser />,
   },
   {
+    title: "Wallets",
+    url: "/home/wallets",
+    icon: <Wallet />,
+  },
+  {
     title: "Connections",
     url: "/home/connections",
     icon: <Wifi />,
@@ -215,7 +221,6 @@ const explorerItems = [
 
 const defaultSettingsItems = [
   { title: "General", url: "/home/settings/general" },
-  { title: "Wallets", url: "/home/settings/wallets" },
   { title: "Foundry", url: "/home/settings/foundry" },
   { title: "Tokens", url: "/home/settings/tokens" },
   { title: "About", url: "/home/settings/about" },
