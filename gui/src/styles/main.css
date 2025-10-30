@@ -1,4 +1,4 @@
 @import "@ethui/ui/tailwind.css";
 @import "react18-json-view/src/style.css";
-@source "../node_modules/@ethui/ui";
-@source "../../packages/form";
+@source "../../node_modules/@ethui/ui";
+@source "../../../packages/form";
