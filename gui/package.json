@@ -71,8 +71,6 @@
     "postcss": "^8.5.3",
     "tailwindcss": "^4.0.7",
     "ts-unused-exports": "^11.0.1",
-    "vite-plugin-babel-import": "^2.0.5",
-    "vite-plugin-imp": "^2.4.0",
     "vite-tsconfig-paths": "^5.1.4"
   }
 }
