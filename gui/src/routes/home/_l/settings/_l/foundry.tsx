@@ -13,11 +13,15 @@ export const Route = createFileRoute("/home/_l/settings/_l/foundry")({
 });
 
 const schema = z.object({
-  abiWatchPath: z.string().optional().nullable(),
+  abiWatchPath: z.array(z.string()),
 });
+
+type Schema = z.infer<typeof schema>;
 
 function SettingsFoundry() {
   const general = useSettings((s) => s.settings);
+
+  console.log(general);
 
   const form = useForm({
     mode: "onChange",
@@ -25,30 +29,34 @@ function SettingsFoundry() {
     defaultValues: general,
   });
 
-  const onSubmit = useCallback(
-    async (params: FieldValues) => {
-      await invoke("settings_set", {
-        params,
-      });
-      form.reset(params);
-    },
-    [form],
-  );
+  const onSubmit = useCallback(async (params: FieldValues) => {
+    await invoke("settings_set", {
+      params,
+    });
+  }, []);
+
+  const prepareAndSubmit = (data: Schema) => {
+    onSubmit(data);
+    form.reset(data);
+  };
 
   if (!general) return null;
 
   return (
-    <Form form={form} onSubmit={onSubmit} className="flex flex-col gap-4">
+    <Form
+      form={form}
+      onSubmit={prepareAndSubmit}
+      className="flex flex-col gap-4"
+    >
       <span>
         ethui can monitor your filesystem for foundry projects, indexing the
-        output ABIs automatically.
+        output ABIs automatically. Add your watch paths below:
       </span>
 
-      <Form.Text
-        name="abiWatchPath"
-        label="ABI Watch path"
-        className="w-full"
-      />
+      <div className="flex w-full flex-col pb-4">
+        <Form.MultiTagInput name="abiWatchPath" placeholder="Add a path" />
+      </div>
+
       <Form.Submit label="Save" />
     </Form>
   );

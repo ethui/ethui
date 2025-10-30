@@ -25,7 +25,6 @@
     "ts-unused-exports": "^11.0.1"
   },
   "dependencies": {
-    "@ethui/ui": "^0.0.92",
     "@tauri-apps/cli": "^2.8.4",
     "typescript": "5.9.2"
   },

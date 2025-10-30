@@ -11,7 +11,7 @@ export const generalSettingsSchema = z.object({
   darkMode: z.enum(["auto", "dark", "light"]),
   autostart: z.boolean(),
   abiWatch: z.boolean(),
-  abiWatchPath: z.string().optional().nullable(),
+  abiWatchPath: z.array(z.string()),
   alchemyApiKey: z.string().optional().nullable(),
   etherscanApiKey: z.string().optional().nullable(),
   hideEmptyTokens: z.boolean(),
