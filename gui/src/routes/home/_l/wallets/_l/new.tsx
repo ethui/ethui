@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { WalletNew } from "#/components/Settings/Wallet/New";
 
-export const Route = createFileRoute("/home/_l/settings/_l/wallets/_l/new")({
+export const Route = createFileRoute("/home/_l/wallets/_l/new")({
   beforeLoad: () => ({ breadcrumb: "New" }),
   validateSearch: (search: Record<string, string>) => {
     // TODO: fail here
