@@ -1,12 +1,20 @@
 use alloy::providers::Provider as _;
 use color_eyre::eyre::{Context as _, ContextCompat as _};
 use ethui_db::{
-    utils::{fetch_etherscan_abi, fetch_etherscan_contract_name},
     Db,
+    utils::{fetch_etherscan_abi, fetch_etherscan_contract_name},
 };
 use ethui_forge::GetAbiFor;
 use ethui_proxy_detect::ProxyType;
 use ethui_types::{Address, GlobalState, TauriResult, UINotify};
+use serde::Serialize;
+
+#[derive(Serialize)]
+pub struct LogSnapshot {
+    path: String,
+    content: String,
+    truncated: bool,
+}
 
 #[tauri::command]
 pub fn get_build_mode() -> String {
@@ -116,6 +124,34 @@ pub async fn remove_contract(
 
     ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
     Ok(())
+}
+
+#[tauri::command]
+pub async fn logging_get_snapshot(limit: Option<usize>) -> TauriResult<LogSnapshot> {
+    use color_eyre::eyre::WrapErr as _;
+
+    let path =
+        ethui_tracing::current_log_path().with_context(|| "log file not ready yet".to_string())?;
+
+    let limit = limit.unwrap_or(64 * 1024);
+    let bytes = tokio::fs::read(&path)
+        .await
+        .wrap_err_with(|| format!("failed to read log file {}", path.display()))?;
+
+    let truncated = bytes.len() > limit;
+    let slice = if truncated {
+        &bytes[bytes.len().saturating_sub(limit)..]
+    } else {
+        &bytes
+    };
+
+    let content = String::from_utf8_lossy(slice).to_string();
+
+    Ok(LogSnapshot {
+        path: path.to_string_lossy().into_owned(),
+        content,
+        truncated,
+    })
 }
 
 #[tauri::command]

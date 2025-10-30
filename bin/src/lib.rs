@@ -15,7 +15,7 @@ use ethui_args::Command;
 
 #[tokio::main]
 pub async fn run() -> Result<()> {
-    ethui_tracing::init()?;
+    ethui_tracing::setup()?;
     fix_path_env::fix()?;
 
     let args = ethui_args::parse();

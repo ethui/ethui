@@ -44,6 +44,7 @@ impl EthUIApp {
             .invoke_handler(tauri::generate_handler![
                 commands::get_build_mode,
                 commands::get_version,
+                commands::logging_get_snapshot,
                 commands::ui_error,
                 commands::add_contract,
                 commands::remove_contract,
@@ -198,6 +199,8 @@ impl EthUIApp {
 
 /// Initialization logic
 async fn init(app: &tauri::App, args: &Args) -> color_eyre::Result<()> {
+    ethui_tracing::setup_file_logging(config_dir(app, args).join("logs"))?;
+
     let db = ethui_db::init(&resource(app, "db.sqlite3", args)).await?;
     app.manage(db.clone());
 
