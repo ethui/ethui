@@ -1,7 +1,13 @@
 import type { Wallet } from "@ethui/types/wallets";
-import { Pencil1Icon } from "@radix-ui/react-icons";
-import { Link } from "@tanstack/react-router";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@ethui/ui/components/shadcn/dropdown-menu";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { startCase } from "lodash-es";
+import { Pencil, Plus } from "lucide-react";
 import type { Address } from "viem";
 import { AddressView } from "#/components/AddressView";
 import { useAddressBalance } from "#/hooks/useAddressBalance";
@@ -9,30 +15,59 @@ import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
 import { formatBalance } from "#/utils";
 
-interface Props {
-  backUrl?: "/home/settings/wallets" | "/onboarding/wallets";
-  editWalletBaseUrl?: "/home/settings/wallets" | "/onboarding/wallets";
-}
+const walletTypes: Wallet["type"][] = [
+  "jsonKeystore",
+  "plaintext",
+  "HDWallet",
+  "ledger",
+  "privateKey",
+  "impersonator",
+];
 
-export function SettingsWallets({
-  backUrl = "/home/settings/wallets",
-  editWalletBaseUrl = "/home/settings/wallets",
-}: Props) {
+export const Route = createFileRoute("/home/_l/wallets/_l/")({
+  beforeLoad: () => ({ breadcrumb: "Wallets" }),
+  component: WalletsPage,
+});
+
+function WalletsPage() {
   const allWalletInfo = useWallets((s) => s.allWalletInfo);
 
   if (!allWalletInfo) return null;
 
   return (
     <div className="flex flex-wrap justify-center gap-8">
+      <AddWalletCard />
       {allWalletInfo.map((walletInfo) => (
-        <WalletCard
-          key={walletInfo.wallet.name}
-          walletInfo={walletInfo}
-          backUrl={backUrl}
-          editWalletBaseUrl={editWalletBaseUrl}
-        />
+        <WalletCard key={walletInfo.wallet.name} walletInfo={walletInfo} />
       ))}
     </div>
+  );
+}
+
+function AddWalletCard() {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          className="group flex min-h-[180px] w-64 flex-col items-center justify-center gap-3 border border-dashed border-muted-foreground/50 bg-muted/20 transition-colors hover:border-primary hover:bg-muted/40 cursor-pointer"
+        >
+          <Plus className="h-8 w-8 text-muted-foreground transition-colors group-hover:text-primary" />
+          <span className="font-medium text-muted-foreground text-sm transition-colors group-hover:text-primary">
+            Add Wallet
+          </span>
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        {walletTypes.map((walletType) => (
+          <DropdownMenuItem key={walletType} asChild>
+            <Link to="/home/wallets/new" search={{ type: walletType }}>
+              {startCase(walletType)}
+            </Link>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -41,15 +76,9 @@ interface WalletCardProps {
     wallet: Wallet;
     addresses: { address: Address; key: string }[];
   };
-  backUrl: "/home/settings/wallets" | "/onboarding/wallets";
-  editWalletBaseUrl: "/home/settings/wallets" | "/onboarding/wallets";
 }
 
-function WalletCard({
-  walletInfo,
-  backUrl,
-  editWalletBaseUrl,
-}: WalletCardProps) {
+function WalletCard({ walletInfo }: WalletCardProps) {
   const { wallet, addresses } = walletInfo;
   const MAX_VISIBLE = 4;
   const visibleAddresses = addresses.slice(0, MAX_VISIBLE);
@@ -65,11 +94,10 @@ function WalletCard({
           </div>
         </div>
         <Link
-          to={`${editWalletBaseUrl}/${wallet.name}/edit`}
-          search={{ backUrl }}
+          to={`/home/wallets/${wallet.name}/edit`}
           className="flex-shrink-0 rounded p-1 hover:bg-accent"
         >
-          <Pencil1Icon className="h-4 w-4" />
+          <Pencil className="h-4 w-4" />
         </Link>
       </div>
 
