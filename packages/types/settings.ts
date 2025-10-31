@@ -1,6 +1,12 @@
 import { z } from "zod";
 
-const onboardingSteps = z.enum(["alchemy", "wallet", "extension", "etherscan"]);
+const onboardingSteps = z.enum([
+  "alchemy",
+  "wallet",
+  "extension",
+  "etherscan",
+  "foundry",
+]);
 
 export const onboardingSchema = z.object({
   hidden: z.boolean(),

@@ -3,7 +3,7 @@ mod autostart;
 pub mod commands;
 mod init;
 mod migrations;
-mod onboarding;
+pub mod onboarding;
 mod utils;
 
 pub use actor::*;
@@ -11,6 +11,7 @@ use ethui_types::prelude::*;
 pub use init::init;
 use migrations::LatestVersion;
 use onboarding::Onboarding;
+pub use onboarding::OnboardingStep;
 use serde_constant::ConstI64;
 pub use utils::test_alchemy_api_key;
 

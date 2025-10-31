@@ -9,9 +9,10 @@ pub enum OnboardingStep {
     Etherscan,
     Wallet,
     Extension,
+    Foundry,
 }
 
-const STEP_COUNT: usize = 4;
+const STEP_COUNT: usize = 5;
 
 #[derive(Debug, Clone, Default, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -39,6 +40,7 @@ impl Onboarding {
         self.steps.insert(OnboardingStep::Wallet, true);
         self.steps.insert(OnboardingStep::Alchemy, true);
         self.steps.insert(OnboardingStep::Etherscan, true);
+        self.steps.insert(OnboardingStep::Foundry, true);
         self.hidden = true;
     }
 
