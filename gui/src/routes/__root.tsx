@@ -10,6 +10,7 @@ const queryClient = new QueryClient();
 
 type Context = {
   breadcrumb?: string;
+  breadcrumbActions?: React.ReactNode;
 };
 
 export const Route = createRootRouteWithContext<Context>()({

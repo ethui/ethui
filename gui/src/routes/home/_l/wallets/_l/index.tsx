@@ -1,10 +1,5 @@
 import type { Wallet } from "@ethui/types/wallets";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@ethui/ui/components/shadcn/dropdown-menu";
+import { Button } from "@ethui/ui/components/shadcn/button";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { startCase } from "lodash-es";
 import { Pencil, Plus } from "lucide-react";
@@ -15,17 +10,18 @@ import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
 import { formatBalance } from "#/utils";
 
-const walletTypes: Wallet["type"][] = [
-  "jsonKeystore",
-  "plaintext",
-  "HDWallet",
-  "ledger",
-  "privateKey",
-  "impersonator",
-];
-
 export const Route = createFileRoute("/home/_l/wallets/_l/")({
-  beforeLoad: () => ({ breadcrumb: "Wallets" }),
+  beforeLoad: () => ({
+    breadcrumb: "Wallets",
+    breadcrumbActions: (
+      <Button variant="outline" asChild size="sm">
+        <Link to="/home/wallets/new">
+          <Plus className="mr-2 h-4 w-4" />
+          Add Wallet
+        </Link>
+      </Button>
+    ),
+  }),
   component: WalletsPage,
 });
 
@@ -35,39 +31,11 @@ function WalletsPage() {
   if (!allWalletInfo) return null;
 
   return (
-    <div className="flex flex-wrap justify-center gap-8">
-      <AddWalletCard />
+    <div className="flex flex-wrap justify-center gap-8 pt-4">
       {allWalletInfo.map((walletInfo) => (
         <WalletCard key={walletInfo.wallet.name} walletInfo={walletInfo} />
       ))}
     </div>
-  );
-}
-
-function AddWalletCard() {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button
-          type="button"
-          className="group flex min-h-[180px] w-64 cursor-pointer flex-col items-center justify-center gap-3 border border-muted-foreground/50 border-dashed bg-muted/20 transition-colors hover:border-primary hover:bg-muted/40"
-        >
-          <Plus className="h-8 w-8 text-muted-foreground transition-colors group-hover:text-primary" />
-          <span className="font-medium text-muted-foreground text-sm transition-colors group-hover:text-primary">
-            Add Wallet
-          </span>
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        {walletTypes.map((walletType) => (
-          <DropdownMenuItem key={walletType} asChild>
-            <Link to="/home/wallets/new" search={{ type: walletType }}>
-              {startCase(walletType)}
-            </Link>
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
   );
 }
 

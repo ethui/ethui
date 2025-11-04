@@ -38,17 +38,27 @@ export function Breadcrumbs() {
     return acc;
   }, [] as BreadcrumbT[]);
 
+  const currentRoute = matches[matches.length - 1];
+  const breadcrumbActions = currentRoute?.context?.breadcrumbActions;
+
   return (
-    <Breadcrumb>
-      <BreadcrumbList className="flex-nowrap">
-        {breadcrumbs.map(({ label, path }, i) => (
-          <Fragment key={path + i}>
-            {i > 0 && <BreadcrumbSeparator />}
-            <Item key={path} label={label} path={path} current={current} />
-          </Fragment>
-        ))}
-      </BreadcrumbList>
-    </Breadcrumb>
+    <div className="flex w-full items-center justify-between pt-2 pr-2">
+      <Breadcrumb>
+        <BreadcrumbList className="flex-nowrap">
+          {breadcrumbs.map(({ label, path }, i) => (
+            <Fragment key={path + i}>
+              {i > 0 && <BreadcrumbSeparator />}
+              <Item key={path} label={label} path={path} current={current} />
+            </Fragment>
+          ))}
+        </BreadcrumbList>
+      </Breadcrumb>
+      {breadcrumbActions && (
+        <div className="ml-auto flex items-center gap-2">
+          {breadcrumbActions}
+        </div>
+      )}
+    </div>
   );
 }
 
