@@ -18,3 +18,4 @@ tracing-subscriber = { version = "0.3", features = [
   "std",
   "ansi",
 ] }
+chrono = { version = "0.4", default-features = false, features = ["clock"] }

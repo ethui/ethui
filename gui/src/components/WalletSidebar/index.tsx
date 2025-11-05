@@ -5,6 +5,7 @@ import {
   SidebarHeader,
   SidebarProvider,
 } from "@ethui/ui/components/shadcn/sidebar";
+import { cn } from "@ethui/ui/lib/utils";
 import { useEffect, useState } from "react";
 import { useNetworks } from "#/store/useNetworks";
 import { useUI } from "#/store/useUI";
@@ -49,7 +50,7 @@ export function WalletSidebar() {
         <Sidebar
           side="right"
           collapsible="offcanvas"
-          className="select-none shadow-2xl"
+          className={cn("select-none", open && "shadow-2xl")}
         >
           <SidebarHeader className="border-border border-b">
             <HeaderContent />

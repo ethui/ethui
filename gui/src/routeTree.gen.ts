@@ -32,6 +32,7 @@ import { Route as HomeLNetworksLIndexRouteImport } from './routes/home/_l/networ
 import { Route as HomeLTransferLEthRouteImport } from './routes/home/_l/transfer/_l.eth'
 import { Route as HomeLTransferLErc20RouteImport } from './routes/home/_l/transfer/_l.erc20'
 import { Route as HomeLSettingsLTokensRouteImport } from './routes/home/_l/settings/_l/tokens'
+import { Route as HomeLSettingsLLoggingRouteImport } from './routes/home/_l/settings/_l/logging'
 import { Route as HomeLSettingsLGeneralRouteImport } from './routes/home/_l/settings/_l/general'
 import { Route as HomeLSettingsLFoundryRouteImport } from './routes/home/_l/settings/_l/foundry'
 import { Route as HomeLSettingsLAboutRouteImport } from './routes/home/_l/settings/_l/about'
@@ -213,6 +214,11 @@ const HomeLSettingsLTokensRoute = HomeLSettingsLTokensRouteImport.update({
   path: '/tokens',
   getParentRoute: () => HomeLSettingsLRoute,
 } as any)
+const HomeLSettingsLLoggingRoute = HomeLSettingsLLoggingRouteImport.update({
+  id: '/logging',
+  path: '/logging',
+  getParentRoute: () => HomeLSettingsLRoute,
+} as any)
 const HomeLSettingsLGeneralRoute = HomeLSettingsLGeneralRouteImport.update({
   id: '/general',
   path: '/general',
@@ -346,6 +352,7 @@ export interface FileRoutesByFullPath {
   '/home/settings/about': typeof HomeLSettingsLAboutRoute
   '/home/settings/foundry': typeof HomeLSettingsLFoundryRoute
   '/home/settings/general': typeof HomeLSettingsLGeneralRoute
+  '/home/settings/logging': typeof HomeLSettingsLLoggingRoute
   '/home/settings/tokens': typeof HomeLSettingsLTokensRoute
   '/home/transfer/erc20': typeof HomeLTransferLErc20Route
   '/home/transfer/eth': typeof HomeLTransferLEthRoute
@@ -389,6 +396,7 @@ export interface FileRoutesByTo {
   '/home/settings/about': typeof HomeLSettingsLAboutRoute
   '/home/settings/foundry': typeof HomeLSettingsLFoundryRoute
   '/home/settings/general': typeof HomeLSettingsLGeneralRoute
+  '/home/settings/logging': typeof HomeLSettingsLLoggingRoute
   '/home/settings/tokens': typeof HomeLSettingsLTokensRoute
   '/home/transfer/erc20': typeof HomeLTransferLErc20Route
   '/home/transfer/eth': typeof HomeLTransferLEthRoute
@@ -436,6 +444,7 @@ export interface FileRoutesById {
   '/home/_l/settings/_l/about': typeof HomeLSettingsLAboutRoute
   '/home/_l/settings/_l/foundry': typeof HomeLSettingsLFoundryRoute
   '/home/_l/settings/_l/general': typeof HomeLSettingsLGeneralRoute
+  '/home/_l/settings/_l/logging': typeof HomeLSettingsLLoggingRoute
   '/home/_l/settings/_l/tokens': typeof HomeLSettingsLTokensRoute
   '/home/_l/transfer/_l/erc20': typeof HomeLTransferLErc20Route
   '/home/_l/transfer/_l/eth': typeof HomeLTransferLEthRoute
@@ -484,6 +493,7 @@ export interface FileRouteTypes {
     | '/home/settings/about'
     | '/home/settings/foundry'
     | '/home/settings/general'
+    | '/home/settings/logging'
     | '/home/settings/tokens'
     | '/home/transfer/erc20'
     | '/home/transfer/eth'
@@ -527,6 +537,7 @@ export interface FileRouteTypes {
     | '/home/settings/about'
     | '/home/settings/foundry'
     | '/home/settings/general'
+    | '/home/settings/logging'
     | '/home/settings/tokens'
     | '/home/transfer/erc20'
     | '/home/transfer/eth'
@@ -573,6 +584,7 @@ export interface FileRouteTypes {
     | '/home/_l/settings/_l/about'
     | '/home/_l/settings/_l/foundry'
     | '/home/_l/settings/_l/general'
+    | '/home/_l/settings/_l/logging'
     | '/home/_l/settings/_l/tokens'
     | '/home/_l/transfer/_l/erc20'
     | '/home/_l/transfer/_l/eth'
@@ -813,6 +825,13 @@ declare module '@tanstack/react-router' {
       path: '/tokens'
       fullPath: '/home/settings/tokens'
       preLoaderRoute: typeof HomeLSettingsLTokensRouteImport
+      parentRoute: typeof HomeLSettingsLRoute
+    }
+    '/home/_l/settings/_l/logging': {
+      id: '/home/_l/settings/_l/logging'
+      path: '/logging'
+      fullPath: '/home/settings/logging'
+      preLoaderRoute: typeof HomeLSettingsLLoggingRouteImport
       parentRoute: typeof HomeLSettingsLRoute
     }
     '/home/_l/settings/_l/general': {
@@ -1151,6 +1170,7 @@ interface HomeLSettingsLRouteChildren {
   HomeLSettingsLAboutRoute: typeof HomeLSettingsLAboutRoute
   HomeLSettingsLFoundryRoute: typeof HomeLSettingsLFoundryRoute
   HomeLSettingsLGeneralRoute: typeof HomeLSettingsLGeneralRoute
+  HomeLSettingsLLoggingRoute: typeof HomeLSettingsLLoggingRoute
   HomeLSettingsLTokensRoute: typeof HomeLSettingsLTokensRoute
   HomeLSettingsLWalletsRoute: typeof HomeLSettingsLWalletsRouteWithChildren
 }
@@ -1159,6 +1179,7 @@ const HomeLSettingsLRouteChildren: HomeLSettingsLRouteChildren = {
   HomeLSettingsLAboutRoute: HomeLSettingsLAboutRoute,
   HomeLSettingsLFoundryRoute: HomeLSettingsLFoundryRoute,
   HomeLSettingsLGeneralRoute: HomeLSettingsLGeneralRoute,
+  HomeLSettingsLLoggingRoute: HomeLSettingsLLoggingRoute,
   HomeLSettingsLTokensRoute: HomeLSettingsLTokensRoute,
   HomeLSettingsLWalletsRoute: HomeLSettingsLWalletsRouteWithChildren,
 }
