@@ -44,7 +44,7 @@ impl Onboarding {
         self.hidden = true;
     }
 
-    pub(crate) fn is_step_finished(&self, step: OnboardingStep) -> bool {
+    pub fn is_step_finished(&self, step: OnboardingStep) -> bool {
         self.steps.get(&step).cloned().unwrap_or(false)
     }
 
