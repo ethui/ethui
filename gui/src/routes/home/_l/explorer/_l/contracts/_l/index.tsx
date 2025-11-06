@@ -9,11 +9,12 @@ import {
 } from "@ethui/ui/components/shadcn/tooltip";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import debounce from "lodash-es/debounce";
-import { MoveRight, Plus, Trash2, TriangleAlert } from "lucide-react";
+import { MoveRight, Trash2, TriangleAlert } from "lucide-react";
 import { useState } from "react";
 import type { Abi, Address } from "viem";
 import { useShallow } from "zustand/shallow";
 import { AddressView } from "#/components/AddressView";
+import { EmptyState } from "#/components/EmptyState";
 import { useInvoke } from "#/hooks/useInvoke";
 import { type OrganizedContract, useContracts } from "#/store/useContracts";
 
@@ -26,6 +27,15 @@ function Contracts() {
   const contracts = useContracts(
     useShallow((s) => s.filteredContracts(filter)),
   );
+
+  if (contracts.length === 0) {
+    return (
+      <EmptyState
+        message="No contracts found"
+        description="No contracts have been added yet. Make sure you have deployed contracts in your running node. Or in case of a live network, add a contract manually."
+      />
+    );
+  }
 
   return (
     <>
@@ -41,12 +51,6 @@ function Contracts() {
           ),
         )}
       </div>
-
-      <Link to="/home/explorer/contracts/add">
-        <Button size="icon" className="fixed right-6 bottom-6">
-          <Plus />
-        </Button>
-      </Link>
     </>
   );
 }
