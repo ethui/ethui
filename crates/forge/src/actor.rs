@@ -302,11 +302,11 @@ impl Worker {
         }
 
         if !self.abis_by_path.is_empty() {
-            if let Ok(settings) = ethui_settings::ask(GetAll).await {
-                if !settings.onboarding.is_step_finished(OnboardingStep::Foundry) {
-                    let _ = ethui_settings::tell(Set::FinishOnboardingStep(OnboardingStep::Foundry))
-                        .await;
-                }
+            if let Ok(settings) = ethui_settings::ask(GetAll).await
+                && !settings.onboarding.is_step_finished(OnboardingStep::Foundry)
+            {
+                let _ = ethui_settings::tell(Set::FinishOnboardingStep(OnboardingStep::Foundry))
+                    .await;
             }
         }
 
