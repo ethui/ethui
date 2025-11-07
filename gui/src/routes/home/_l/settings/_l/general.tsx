@@ -11,6 +11,7 @@ import {
 import { createFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { useSettings } from "#/store/useSettings";
+import { useInvoke } from "#/hooks/useInvoke";
 
 export const Route = createFileRoute("/home/_l/settings/_l/general")({
   beforeLoad: () => ({ breadcrumb: "General" }),
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/home/_l/settings/_l/general")({
 
 function SettingsGeneral() {
   const general = useSettings((s) => s.settings!);
+  const { data: isStacksEnabled } = useInvoke<boolean>("is_stacks_enabled");
 
   if (!general) return null;
 
@@ -69,16 +71,18 @@ function SettingsGeneral() {
         />
       </div>
 
-      <div className="w-80">
-        <AutoSubmitSwitch
-          name="runLocalStacks"
-          label="Enable Stacks"
-          value={general.runLocalStacks}
-          callback={async (runLocalStacks: boolean) =>
-            await invoke("settings_set", { params: { runLocalStacks } })
-          }
-        />
-      </div>
+      {isStacksEnabled && (
+        <div className="w-80">
+          <AutoSubmitSwitch
+            name="runLocalStacks"
+            label="Enable Stacks"
+            value={general.runLocalStacks}
+            callback={async (runLocalStacks: boolean) =>
+              await invoke("settings_set", { params: { runLocalStacks } })
+            }
+          />
+        </div>
+      )}
 
       <div className="w-80">
         <AutoSubmitSwitch

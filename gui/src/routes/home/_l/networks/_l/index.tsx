@@ -20,6 +20,8 @@ function NetworksIndex() {
   const networks = useNetworks(useShallow((s) => s.networks));
   const settings = useSettings((s) => s.settings);
 
+  const { data: isStacksEnabled } = useInvoke<boolean>("is_stacks_enabled");
+
   const { data: runtimeData, isLoading: runtimeLoading } = useInvoke<{
     running: boolean;
     error: boolean;
@@ -31,10 +33,11 @@ function NetworksIndex() {
       refetchInterval: ({ data }: { data: { running: boolean } | null }) =>
         data?.running ? false : 1000,
       refetchOnWindowFocus: false,
+      enabled: isStacksEnabled,
     },
   );
 
-  if (!networks || !settings || runtimeLoading) {
+  if (!networks || !settings || (isStacksEnabled && runtimeLoading)) {
     return (
       <div className="flex h-32 items-center justify-center">
         <LoaderCircle className="animate-spin" />
@@ -75,72 +78,74 @@ function NetworksIndex() {
         </div>
       </div>
 
-      <div>
-        <WithHelpTooltip
-          text="Local Stacks allows you to create local Anvil nodes in your docker."
-          className="mb-4"
-        >
-          <h2 className="font-semibold text-lg">Local Stacks</h2>
-        </WithHelpTooltip>
+      {isStacksEnabled && (
+        <div>
+          <WithHelpTooltip
+            text="Local Stacks allows you to create local Anvil nodes in your docker."
+            className="mb-4"
+          >
+            <h2 className="font-semibold text-lg">Local Stacks</h2>
+          </WithHelpTooltip>
 
-        {!settings.runLocalStacks ? (
-          <div>
-            <EmptyState
-              message="You need to enable the local stacks service"
-              className="mt-0 items-start"
-            >
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-2"
-                onClick={async () => {
-                  await invoke("settings_set", {
-                    params: { runLocalStacks: true },
-                  });
-                }}
+          {!settings.runLocalStacks ? (
+            <div>
+              <EmptyState
+                message="You need to enable the local stacks service"
+                className="mt-0 items-start"
               >
-                <Database className="h-4 w-4" />
-                Enable
-              </Button>
-            </EmptyState>
-          </div>
-        ) : !runtimeEnabled ? (
-          <div className="flex h-32 items-center justify-center">
-            <LoaderCircle className="animate-spin" />
-          </div>
-        ) : runtimeError ? (
-          <div className="flex flex-wrap gap-2">
-            <div className="flex gap-2 border p-4 align-baseline hover:bg-accent">
-              <Form.Textarea
-                name="runtimeState"
-                value={runtimeState}
-                readOnly
-                className="w-full"
-                placeholder="Runtime state information"
-              />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={async () => {
+                    await invoke("settings_set", {
+                      params: { runLocalStacks: true },
+                    });
+                  }}
+                >
+                  <Database className="h-4 w-4" />
+                  Enable
+                </Button>
+              </EmptyState>
             </div>
-          </div>
-        ) : (
-          <div className="flex flex-wrap gap-2">
-            {stackNetworks.map(({ id: { chain_id }, name, status }) => (
+          ) : !runtimeEnabled ? (
+            <div className="flex h-32 items-center justify-center">
+              <LoaderCircle className="animate-spin" />
+            </div>
+          ) : runtimeError ? (
+            <div className="flex flex-wrap gap-2">
+              <div className="flex gap-2 border p-4 align-baseline hover:bg-accent">
+                <Form.Textarea
+                  name="runtimeState"
+                  value={runtimeState}
+                  readOnly
+                  className="w-full"
+                  placeholder="Runtime state information"
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {stackNetworks.map(({ id: { chain_id }, name, status }) => (
+                <Link
+                  to={`/home/networks/stacks/${name}`}
+                  key={name}
+                  className="border p-4 hover:bg-accent"
+                >
+                  <ChainView chainId={chain_id} name={name} status={status} />
+                </Link>
+              ))}
               <Link
-                to={`/home/networks/stacks/${name}`}
-                key={name}
-                className="border p-4 hover:bg-accent"
+                to="/home/networks/stacks/new"
+                className="flex gap-2 border p-4 align-baseline hover:bg-accent"
               >
-                <ChainView chainId={chain_id} name={name} status={status} />
+                <Plus />
+                Add new
               </Link>
-            ))}
-            <Link
-              to="/home/networks/stacks/new"
-              className="flex gap-2 border p-4 align-baseline hover:bg-accent"
-            >
-              <Plus />
-              Add new
-            </Link>
-          </div>
-        )}
-      </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
