@@ -4,6 +4,7 @@ use std::{
     time::Duration,
 };
 
+use ethui_settings::{GetAll, OnboardingStep, Set};
 use ethui_types::prelude::*;
 use futures::{StreamExt as _, stream};
 use glob::glob;
@@ -300,11 +301,12 @@ impl Worker {
             self.insert_abi(abi);
         }
 
-        if !self.abis_by_path.is_empty() {
-            let _ = ethui_settings::tell(ethui_settings::Set::FinishOnboardingStep(
-                ethui_settings::OnboardingStep::Foundry,
-            ))
-            .await;
+        if !self.abis_by_path.is_empty()
+            && let Ok(settings) = ethui_settings::ask(GetAll).await
+            && !settings.onboarding.is_step_finished(OnboardingStep::Foundry)
+        {
+            let _ = ethui_settings::tell(Set::FinishOnboardingStep(OnboardingStep::Foundry))
+                .await;
         }
 
         self.trigger_update_contracts().await;

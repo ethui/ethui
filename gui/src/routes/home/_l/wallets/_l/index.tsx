@@ -5,6 +5,7 @@ import { startCase } from "lodash-es";
 import { Pencil, Plus } from "lucide-react";
 import type { Address } from "viem";
 import { AddressView } from "#/components/AddressView";
+import { EmptyState } from "#/components/EmptyState";
 import { useAddressBalance } from "#/hooks/useAddressBalance";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
@@ -28,7 +29,14 @@ export const Route = createFileRoute("/home/_l/wallets/_l/")({
 function WalletsPage() {
   const allWalletInfo = useWallets((s) => s.allWalletInfo);
 
-  if (!allWalletInfo) return null;
+  if (!allWalletInfo || allWalletInfo.length === 0) {
+    return (
+      <EmptyState
+        message="No wallets found"
+        description="No wallets have been added yet."
+      />
+    );
+  }
 
   return (
     <div className="flex flex-wrap justify-center gap-8 pt-4">
