@@ -10,8 +10,8 @@ import {
 } from "@ethui/ui/components/shadcn/select";
 import { createFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
-import { useSettings } from "#/store/useSettings";
 import { useInvoke } from "#/hooks/useInvoke";
+import { useSettings } from "#/store/useSettings";
 
 export const Route = createFileRoute("/home/_l/settings/_l/general")({
   beforeLoad: () => ({ breadcrumb: "General" }),
