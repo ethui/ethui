@@ -27,7 +27,10 @@ where
         .wrap_err_with(|| "settings actor not found")?;
 
     // The function now directly uses the global actor reference.
-    actor.ask(msg).await.wrap_err_with(|| "failed")
+    match actor.ask(msg).await {
+        Ok(ret) => Ok(ret),
+        Err(e) => Err(eyre!("{}", e)),
+    }
 }
 
 pub async fn tell<M>(msg: M) -> Result<()>
