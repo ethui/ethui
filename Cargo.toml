@@ -121,7 +121,7 @@ regex = "1.12"
 color-eyre = { version = "0.6" }
 tempfile = "3.23.0"
 serde-constant = "0.1.0"
-kameo = "0.18"
+kameo = "0.19"
 tauri-plugin-aptabase = "1.0.0"
 glob = "0.3.2"
 walkdir = "2.4"
