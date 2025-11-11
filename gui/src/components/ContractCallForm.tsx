@@ -13,15 +13,18 @@ import {
 } from "@ethui/ui/components/shadcn/alert";
 import { Button } from "@ethui/ui/components/shadcn/button";
 import { Input } from "@ethui/ui/components/shadcn/input";
+import { Link } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { type Abi, type AbiFunction, formatAbiItem } from "abitype";
 import debounce from "lodash-es/debounce";
 import { CircleCheck } from "lucide-react";
 import { type FormEvent, useCallback, useEffect, useState } from "react";
 import { type Address, decodeFunctionResult, type Hash } from "viem";
+import { useAllAddresses } from "#/hooks/useAllAddresses";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useWallets } from "#/store/useWallets";
 import { AddressView } from "./AddressView";
+import { EmptyState } from "./EmptyState";
 import { HashView } from "./HashView";
 
 interface Props {
@@ -78,6 +81,18 @@ export function ContractCallForm({ chainId, address }: Props) {
           ));
         })}
       </Accordion>
+
+      {(!abi || abi.length === 0) && (
+        <EmptyState
+          message="No ABI found"
+          description="Check if the contract ABI is included in the foundry path on settings"
+          className="mt-8"
+        >
+          <Link to="/home/settings/foundry">
+            <Button>Go to Settings</Button>
+          </Link>
+        </EmptyState>
+      )}
     </>
   );
 }
@@ -97,6 +112,7 @@ function AbiItemFormWithSubmit({
   const [value, setValue] = useState<bigint | undefined>();
   const [data, setData] = useState<`0x${string}` | undefined>();
   const [loading, setLoading] = useState(false);
+  const { data: addresses } = useAllAddresses();
   const sender = useWallets((s) => s.address);
 
   const onChange = useCallback(
@@ -163,6 +179,7 @@ function AbiItemFormWithSubmit({
       <AbiItemFormWithPreview
         abiFunction={item}
         address={address}
+        addresses={addresses?.all || []}
         sender={sender}
         chainId={chainId}
         ArgProps={{

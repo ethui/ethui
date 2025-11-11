@@ -19,6 +19,7 @@ ethui-connections.workspace = true
 ethui-simulator.workspace = true
 ethui-sync.workspace = true
 ethui-forge.workspace = true
+ethui-broadcast.workspace = true
 
 alloy.workspace = true
 tauri.workspace = true

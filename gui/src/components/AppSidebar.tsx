@@ -2,7 +2,6 @@ import { EthuiLogo } from "@ethui/ui/components/ethui-logo";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
@@ -25,39 +24,27 @@ import {
   ChevronRight,
   CircleUser,
   Cog,
+  Database,
   Globe,
-  Terminal,
+  Wallet,
   Wifi,
 } from "lucide-react";
-import { useInvoke } from "#/hooks/useInvoke";
 import { useIsAnvilNetwork } from "#/hooks/useIsAnvilNetwork";
 import { useSettings } from "#/store/useSettings";
-import { useCommandBar } from "./CommandBar";
 import { QuickFastModeToggle } from "./QuickFastModeToggle";
 
 const isDev = import.meta.env.MODE === "development";
 const isTest = import.meta.env.MODE === "test";
 
 export function AppSidebar() {
-  const commandBar = useCommandBar();
   const { open, toggleSidebar } = useSidebar();
   const isMacos = platform() === "macos";
 
-  const { data: isStacksEnabled } = useInvoke<boolean>("is_stacks_enabled", {});
   const { data: isAnvilNetwork = false } = useIsAnvilNetwork();
 
   const showOnboarding = useSettings((s) => !s.settings?.onboarding.hidden);
 
   const settingsItems = [...defaultSettingsItems];
-  if (
-    isStacksEnabled &&
-    !settingsItems.some((item) => item.title === "Stacks")
-  ) {
-    settingsItems.splice(settingsItems.length - 1, 0, {
-      title: "Stacks",
-      url: "/home/settings/stacks",
-    });
-  }
 
   let logoFill = "fill-sidebar-foreground";
   if (isDev) {
@@ -116,17 +103,6 @@ export function AppSidebar() {
           </SidebarGroup>
         )}
       </SidebarContent>
-
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton onClick={() => commandBar.setOpen(true)}>
-              <Terminal />
-              <span>Command Bar</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
     </Sidebar>
   );
 }
@@ -150,7 +126,7 @@ function CustomSidebarMenuItem({
       <SidebarMenuButton
         asChild
         className={cn(
-          url === location.pathname &&
+          (url === location.pathname || location.pathname.startsWith(url)) &&
             "bg-primary text-accent hover:bg-primary hover:text-accent",
         )}
       >
@@ -194,7 +170,8 @@ function CollapsibleMenuSection({
                 <SidebarMenuButton
                   asChild
                   className={cn(
-                    item.url === location.pathname &&
+                    (item.url === location.pathname ||
+                      location.pathname.startsWith(item.url)) &&
                       "bg-primary text-accent hover:bg-primary hover:text-accent",
                   )}
                 >
@@ -220,9 +197,19 @@ const items = [
     icon: <CircleUser />,
   },
   {
+    title: "Wallets",
+    url: "/home/wallets",
+    icon: <Wallet />,
+  },
+  {
     title: "Connections",
     url: "/home/connections",
     icon: <Wifi />,
+  },
+  {
+    title: "Networks",
+    url: "/home/networks",
+    icon: <Database />,
   },
 ];
 
@@ -234,9 +221,8 @@ const explorerItems = [
 
 const defaultSettingsItems = [
   { title: "General", url: "/home/settings/general" },
-  { title: "Wallets", url: "/home/settings/wallets" },
-  { title: "Network", url: "/home/settings/networks" },
   { title: "Foundry", url: "/home/settings/foundry" },
   { title: "Tokens", url: "/home/settings/tokens" },
   { title: "About", url: "/home/settings/about" },
+  { title: "Logging", url: "/home/settings/logging" },
 ];

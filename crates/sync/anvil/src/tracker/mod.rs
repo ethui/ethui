@@ -3,7 +3,7 @@ use std::{collections::HashMap, sync::Arc};
 use ethui_types::{Network, NetworkId};
 use once_cell::sync::Lazy;
 use tokio::{
-    sync::{oneshot, Mutex},
+    sync::{Mutex, oneshot},
     task::JoinHandle,
 };
 use tracing::{debug, info, instrument};
@@ -67,7 +67,7 @@ pub(crate) async fn unwatch(network: &Network) {
 #[cfg(test)]
 mod tests {
     use ethui_types::{Network, NetworkStatus};
-    use tokio::time::{sleep, Duration};
+    use tokio::time::{Duration, sleep};
     use url::Url;
 
     use super::*;
@@ -82,6 +82,7 @@ mod tests {
             currency: "ETH".to_string(),
             decimals: 18,
             status: NetworkStatus::Unknown,
+            is_stack: true,
         }
     }
 
@@ -246,7 +247,7 @@ mod tests {
     async fn test_automatic_worker_selection() {
         use url::Url;
 
-        use crate::tracker::worker::{create_worker, AnvilProviderType};
+        use crate::tracker::worker::{AnvilProviderType, create_worker};
 
         // Network with WebSocket should use WsWorker
         let ws_network = Network {
@@ -258,6 +259,7 @@ mod tests {
             currency: "ETH".to_string(),
             decimals: 18,
             status: NetworkStatus::Unknown,
+            is_stack: true,
         };
 
         let worker = create_worker(ws_network.clone());
@@ -279,6 +281,7 @@ mod tests {
             currency: "ETH".to_string(),
             decimals: 18,
             status: NetworkStatus::Unknown,
+            is_stack: true,
         };
 
         let worker = create_worker(http_network.clone());

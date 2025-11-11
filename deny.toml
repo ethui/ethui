@@ -29,6 +29,18 @@ ignore = [
   "RUSTSEC-2024-0429",
   # fxhash unmaintained
   "RUSTSEC-2025-0057",
+  # alloy-dyn-abi
+  "RUSTSEC-2025-0073",
+  # unic-ucd-version
+  "RUSTSEC-2025-0098",
+  # unic-ucd-ident
+  "RUSTSEC-2025-0100",
+  # unic-ucd-common
+  "RUSTSEC-2025-0080",
+  # unic-char-range
+  "RUSTSEC-2025-0075",
+  # unic-char-property
+  "RUSTSEC-2025-0081",
 ]
 
 

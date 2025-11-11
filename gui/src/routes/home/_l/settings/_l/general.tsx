@@ -10,6 +10,7 @@ import {
 } from "@ethui/ui/components/shadcn/select";
 import { createFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
+import { useInvoke } from "#/hooks/useInvoke";
 import { useSettings } from "#/store/useSettings";
 
 export const Route = createFileRoute("/home/_l/settings/_l/general")({
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/home/_l/settings/_l/general")({
 
 function SettingsGeneral() {
   const general = useSettings((s) => s.settings!);
+  const { data: isStacksEnabled } = useInvoke<boolean>("is_stacks_enabled");
 
   if (!general) return null;
 
@@ -69,6 +71,30 @@ function SettingsGeneral() {
         />
       </div>
 
+      {isStacksEnabled && (
+        <div className="w-80">
+          <AutoSubmitSwitch
+            name="runLocalStacks"
+            label="Enable Stacks"
+            value={general.runLocalStacks}
+            callback={async (runLocalStacks: boolean) =>
+              await invoke("settings_set", { params: { runLocalStacks } })
+            }
+          />
+        </div>
+      )}
+
+      <div className="w-80">
+        <AutoSubmitSwitch
+          name="checkForUpdates"
+          label="Check for updates automatically"
+          value={general.checkForUpdates}
+          callback={async (checkForUpdates: boolean) =>
+            await invoke("settings_set", { params: { checkForUpdates } })
+          }
+        />
+      </div>
+
       <AutoSubmitTextInput
         name="alchemyApiKey"
         label="Alchemy API Key"
@@ -99,16 +125,6 @@ function SettingsGeneral() {
           }
         />
       </div>
-
-      <AutoSubmitTextInput
-        name="rustLog"
-        label="Rust log level (tracing_subscriber)"
-        successLabel="Saved"
-        value={general.rustLog}
-        callback={async (rustLog: string) =>
-          await invoke("settings_set", { params: { rustLog } })
-        }
-      />
     </div>
   );
 }

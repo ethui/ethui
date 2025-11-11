@@ -1,25 +1,17 @@
 import tailwindcss from "@tailwindcss/vite";
-import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
+import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 const host = process.env.TAURI_DEV_HOST;
 
-const warningsToIgnore = [
-  ["SOURCEMAP_ERROR", "Can't resolve original location of error"],
-  ["INVALID_ANNOTATION", "contains an annotation that Rollup cannot interpret"],
-];
-
 export default defineConfig(() => ({
   plugins: [
     react(),
     tailwindcss(),
-    TanStackRouterVite({
-      autoCodeSplitting: true,
-    }),
+    tanstackRouter({ autoCodeSplitting: true }),
     tsconfigPaths({ parseNative: true }),
-    muteWarningsPlugin(warningsToIgnore),
   ],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
@@ -57,49 +49,3 @@ export default defineConfig(() => ({
     },
   },
 }));
-
-// TODO: vite/rollup throw unsolved errors
-// https://github.com/vitejs/vite/issues/15012#issuecomment-1825035992
-const muteWarningsPlugin = (warningsToIgnore: string[][]): any => {
-  const mutedMessages = new Set();
-  return {
-    name: "mute-warnings",
-    enforce: "pre",
-    config: (userConfig: any) => ({
-      build: {
-        rollupOptions: {
-          onwarn(warning: any, defaultHandler: any) {
-            if (warning.code) {
-              const muted = warningsToIgnore.find(
-                ([code, message]) =>
-                  code === warning.code && warning.message.includes(message),
-              );
-
-              if (muted) {
-                mutedMessages.add(muted.join());
-                return;
-              }
-            }
-
-            if (userConfig.build?.rollupOptions?.onwarn) {
-              userConfig.build.rollupOptions.onwarn(warning, defaultHandler);
-            } else {
-              defaultHandler(warning);
-            }
-          },
-        },
-      },
-    }),
-    closeBundle() {
-      const diff = warningsToIgnore.filter((x) => !mutedMessages.has(x.join()));
-      if (diff.length > 0) {
-        this.warn(
-          "Some of your muted warnings never appeared during the build process:",
-        );
-        diff.forEach((m) => {
-          this.warn(`- ${m.join(": ")}`);
-        });
-      }
-    },
-  };
-};

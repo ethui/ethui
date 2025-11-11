@@ -5,8 +5,10 @@ import {
   SidebarHeader,
   SidebarProvider,
 } from "@ethui/ui/components/shadcn/sidebar";
+import { cn } from "@ethui/ui/lib/utils";
 import { useEffect, useState } from "react";
 import { useNetworks } from "#/store/useNetworks";
+import { useUI } from "#/store/useUI";
 import { useWallets } from "#/store/useWallets";
 import { AddressView } from "../AddressView";
 import { IconAddress } from "../Icons/Address";
@@ -15,13 +17,13 @@ import { NetworkSelector } from "./NetworkSelector";
 import { useSidebarSearch } from "./useSidebarSearch";
 import { WalletSelector } from "./WalletSelector";
 
-interface WalletSidebarProps {
-  open: boolean;
-  onClose: () => void;
-}
-
-export function WalletSidebar({ open, onClose }: WalletSidebarProps) {
+export function WalletSidebar() {
+  const { walletSidebar: open, setWalletSidebar: setOpen } = useUI();
   const [searchTerm, setSearchTerm] = useState("");
+
+  const onClose = () => {
+    setOpen(false);
+  };
 
   const { wallets, networks } = useSidebarSearch(searchTerm);
 
@@ -48,7 +50,7 @@ export function WalletSidebar({ open, onClose }: WalletSidebarProps) {
         <Sidebar
           side="right"
           collapsible="offcanvas"
-          className="select-none shadow-2xl"
+          className={cn("select-none", open && "shadow-2xl")}
         >
           <SidebarHeader className="border-border border-b">
             <HeaderContent />

@@ -31,6 +31,7 @@ import { AddressView } from "#/components/AddressView";
 import { Datapoint } from "#/components/Datapoint";
 import { DialogBottom } from "#/components/Dialogs/Bottom";
 import { IconAddress } from "#/components/Icons/Address";
+import { useAllAddresses } from "#/hooks/useAllAddresses";
 import type { Dialog } from "#/hooks/useDialog";
 import { useDialog } from "#/hooks/useDialog";
 import { useInvoke } from "#/hooks/useInvoke";
@@ -91,6 +92,7 @@ interface InnerProps {
 function Inner({ dialog, request, network }: InnerProps) {
   const { send, listen } = dialog;
   const { from, to, chainId, input: data, value: valueStr } = request;
+  const { data: addresses } = useAllAddresses();
 
   const [simulation, setSimulation] = useState<Simulation | undefined>(
     undefined,
@@ -146,6 +148,7 @@ function Inner({ dialog, request, network }: InnerProps) {
           address={to}
           sender={from}
           chainId={chainId}
+          addresses={addresses?.all || []}
           ArgProps={{ addressRenderer: (a) => <AddressView address={a} /> }}
           onChange={onChange}
           defaultCalldata={calldata}

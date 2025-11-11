@@ -8,7 +8,7 @@ use alloy::{
     network::Ethereum,
     providers::{Provider, ProviderBuilder, RootProvider},
 };
-use ethui_types::{prelude::*, Affinity, NetworkId, NewNetworkParams};
+use ethui_types::{Affinity, NetworkId, NewNetworkParams, prelude::*};
 pub use init::init;
 use migrations::LatestVersion;
 

@@ -3,9 +3,8 @@ use std::path::PathBuf;
 use ethui_args::Args;
 use ethui_broadcast::UIMsg;
 use named_lock::NamedLock;
-use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
-#[cfg(feature = "aptabase")]
-use tauri_plugin_aptabase::EventTracker as _;
+use tauri::{AppHandle, Builder, Emitter as _, Manager as _, Runtime, plugin::TauriPlugin};
+use tauri_plugin_aptabase::EventTracker;
 
 #[cfg(all(feature = "updater", any(debug_assertions, target_os = "macos")))]
 use crate::updater;
@@ -45,10 +44,23 @@ impl EthUIApp {
             .invoke_handler(tauri::generate_handler![
                 commands::get_build_mode,
                 commands::get_version,
+                commands::logging_get_snapshot,
                 commands::ui_error,
                 commands::add_contract,
                 commands::remove_contract,
                 commands::is_stacks_enabled,
+                #[cfg(feature = "stacks")]
+                ethui_stacks::commands::stacks_create,
+                #[cfg(feature = "stacks")]
+                ethui_stacks::commands::stacks_list,
+                #[cfg(feature = "stacks")]
+                ethui_stacks::commands::stacks_get_status,
+                #[cfg(feature = "stacks")]
+                ethui_stacks::commands::stacks_remove,
+                #[cfg(feature = "stacks")]
+                ethui_stacks::commands::stacks_shutdown,
+                #[cfg(feature = "stacks")]
+                ethui_stacks::commands::stacks_get_runtime_state,
                 ethui_settings::commands::settings_get,
                 ethui_settings::commands::settings_set,
                 ethui_settings::commands::settings_set_dark_mode,
@@ -116,8 +128,7 @@ impl EthUIApp {
             .plugin(tauri_plugin_shell::init());
 
         #[cfg(feature = "aptabase")]
-        let builder =
-            builder.plugin(tauri_plugin_aptabase::Builder::new(std::env!("APTABASE_KEY")).build());
+        let builder = builder.plugin(build_aptabase_plugin());
 
         #[cfg(all(feature = "updater", any(debug_assertions, target_os = "macos")))]
         let builder = builder
@@ -125,9 +136,6 @@ impl EthUIApp {
             .plugin(tauri_plugin_process::init());
 
         let builder = builder.setup(|app| {
-            #[cfg(feature = "aptabase")]
-            let _ = app.track_event("app_started", None);
-
             let handle = app.handle();
             let _ = menu::build(handle);
             let _ = system_tray::build(handle);
@@ -154,7 +162,7 @@ impl EthUIApp {
             windows::main::show(self.app.handle()).await;
         }
 
-        self.app.run(|#[allow(unused)] handle, event| match event {
+        self.app.run(|handle, event| match event {
             tauri::RunEvent::ExitRequested { code, api, .. } => {
                 // code == None seems to happen when the window is closed,
                 // in which case we don't want to close the app, but keep it running in
@@ -165,8 +173,18 @@ impl EthUIApp {
             }
 
             tauri::RunEvent::Exit => {
+                let _ = ethui_analytics::track_event(handle, "app_exited", None);
                 #[cfg(feature = "aptabase")]
                 let _ = handle.track_event("app_exited", None);
+
+                #[cfg(feature = "stacks")]
+                {
+                    tokio::task::block_in_place(|| {
+                        tokio::runtime::Handle::current().block_on(async {
+                            let _ = ethui_stacks::actor::ask(ethui_stacks::actor::Shutdown()).await;
+                        });
+                    });
+                }
             }
 
             #[cfg(target_os = "macos")]
@@ -181,6 +199,8 @@ impl EthUIApp {
 
 /// Initialization logic
 async fn init(app: &tauri::App, args: &Args) -> color_eyre::Result<()> {
+    ethui_tracing::setup_file_logging(config_dir(app, args).join("logs"))?;
+
     let db = ethui_db::init(&resource(app, "db.sqlite3", args)).await?;
     app.manage(db.clone());
 
@@ -193,12 +213,15 @@ async fn init(app: &tauri::App, args: &Args) -> color_eyre::Result<()> {
     // calls other crates' initialization logic. anvil needs to be started before networks,
     // otherwise the initial tracker won't be ready to spawn
     ethui_sync::init().await;
-    ethui_settings::init(resource(app, "settings.json", args)).await?;
+    ethui_settings::init(resource(app, "settings.json", args))?;
     ethui_ws::init(args).await;
     ethui_connections::init(resource(app, "connections.json", args)).await;
     ethui_wallets::init(resource(app, "wallets.json", args)).await;
     ethui_networks::init(resource(app, "networks.json", args)).await;
     ethui_forge::init().await?;
+    ethui_analytics::init(app.handle()).await;
+
+    ethui_analytics::track_event(app.handle(), "app_started", None)?;
 
     #[cfg(feature = "stacks")]
     ethui_stacks::init(args.stacks_port, resource(app, "stacks/", args)).await?;
@@ -262,4 +285,15 @@ fn config_dir(app: &tauri::App, args: &Args) -> PathBuf {
                 .app_config_dir()
                 .expect("failed to resolve app_config_dir")
         })
+}
+
+#[cfg(feature = "aptabase")]
+fn build_aptabase_plugin<R: Runtime>() -> TauriPlugin<R> {
+    #[cfg(debug_assertions)]
+    let key = std::option_env!("APTABASE_KEY").unwrap_or("debug");
+
+    #[cfg(not(debug_assertions))]
+    let key = std::env!("APTABASE_KEY");
+
+    tauri_plugin_aptabase::Builder::new(key).build()
 }

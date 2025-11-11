@@ -14,10 +14,11 @@ import { type FieldValues, useForm } from "react-hook-form";
 import { type Address, ethAddress, formatUnits } from "viem";
 import { z } from "zod";
 import { useShallow } from "zustand/shallow";
+import { type AddressData, useAllAddresses } from "#/hooks/useAllAddresses";
 import { useBalances } from "#/store/useBalances";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
-import type { Token } from "./-common";
+import { parseAmount, type Token } from "./-common";
 
 export interface Params {
   chainId: string;
@@ -33,7 +34,8 @@ export const Route = createFileRoute("/home/_l/transfer/_l/eth")({
 
 function RouteComponent() {
   const navigate = useNavigate();
-
+  const { data: addresses } = useAllAddresses();
+  const addressList: AddressData[] = addresses?.all || [];
   const network = useNetworks((s) => s.current);
   const address = useWallets((s) => s.address);
   const { native, erc20s } = useBalances(
@@ -64,20 +66,19 @@ function RouteComponent() {
     setTokens([nativeToken, ...newTokens]);
   }, [native, erc20s, network]);
 
-  //const decimals = currentToken?.decimals ?? 18;
   const schema = z.object({
     to: addressSchema.optional(),
     currency: addressSchema,
     value: z.string().transform((val, ctx) => {
-      const num = Number.parseFloat(val);
-      if (Number.isNaN(num)) {
+      try {
+        return parseAmount(val, decimals || 0);
+      } catch (_e) {
         ctx.addIssue({
           message: "Invalid value",
-          code: z.ZodIssueCode.custom,
+          code: "custom",
         });
         return z.NEVER;
       }
-      return BigInt(num * 10 ** (decimals || 0));
     }),
   });
 
@@ -111,6 +112,7 @@ function RouteComponent() {
   if (!network || !address || !currentToken) return null;
 
   const onSubmit = async (data: FieldValues) => {
+    console.log(data);
     const hash = await transferETH(address, data.to, data.value);
     setResult(hash);
   };
@@ -127,7 +129,13 @@ function RouteComponent() {
       <span>
         Balance: {formatUnits(currentToken.balance, currentToken.decimals)}
       </span>
-      <Form.Text label="To" name="to" className="w-full" />
+      <Form.AddressAutoCompleteTextInput
+        placeholder="Search address"
+        addresses={addressList}
+        name="to"
+        label="To"
+        className="w-full"
+      />
       <Form.Text label="Amount" name="value" className="w-full" />
 
       {form.formState.isSubmitted && result && (
@@ -150,7 +158,7 @@ const transferETH = async (from: Address, to: Address, value: bigint) => {
     params: {
       from,
       to,
-      value,
+      value: value.toString(),
     },
   });
 };

@@ -3,11 +3,11 @@ use alloy::{
     providers::{Provider as _, RootProvider},
     rpc::types::Header,
 };
-use ethui_types::{prelude::*, Network};
-use futures::{stream, Stream, StreamExt};
+use ethui_types::{Network, prelude::*};
+use futures::{Stream, StreamExt, stream};
 use tokio::{
     sync::{mpsc, oneshot},
-    time::{sleep, timeout, Duration},
+    time::{Duration, sleep, timeout},
 };
 
 use crate::tracker::{
@@ -272,7 +272,7 @@ mod tests {
     use ethui_types::NetworkStatus;
     use tokio::{
         sync::mpsc,
-        time::{sleep, timeout, Duration},
+        time::{Duration, sleep, timeout},
     };
 
     use super::*;
@@ -303,6 +303,7 @@ mod tests {
             currency: "ETH".to_string(),
             decimals: 18,
             status: NetworkStatus::Unknown,
+            is_stack: false,
         };
 
         let worker = super::create_worker(network_with_ws.clone());
@@ -324,6 +325,7 @@ mod tests {
             currency: "ETH".to_string(),
             decimals: 18,
             status: NetworkStatus::Unknown,
+            is_stack: false,
         };
 
         let worker = super::create_worker(network_without_ws);
@@ -374,6 +376,7 @@ mod tests {
             currency: "ETH".to_string(),
             decimals: 18,
             status: NetworkStatus::Unknown,
+            is_stack: false,
         };
 
         let mut worker = Worker::new(AnvilHttp::new(network));
@@ -433,6 +436,7 @@ mod tests {
             currency: "ETH".to_string(),
             decimals: 18,
             status: ethui_types::NetworkStatus::Unknown,
+            is_stack: false,
         };
 
         let provider = AnvilWs::new(network);

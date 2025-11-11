@@ -1,6 +1,6 @@
 use std::{str::FromStr, sync::Arc, time::Duration};
 
-use alloy::signers::{local::PrivateKeySigner, Signer as _};
+use alloy::signers::{Signer as _, local::PrivateKeySigner};
 use async_trait::async_trait;
 use ethui_crypto::{self, EncryptedData};
 use ethui_dialogs::{Dialog, DialogMsg};
@@ -11,7 +11,7 @@ use tokio::{
     task::JoinHandle,
 };
 
-use crate::{wallet::WalletCreate, Signer, Wallet, WalletControl};
+use crate::{Signer, Wallet, WalletControl, wallet::WalletCreate};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -200,9 +200,10 @@ pub fn private_key_into_secret(private_key: String) -> SecretVec<u8> {
 /// Converts a SecretVec into a signer
 fn signer_from_secret(secret: &SecretVec<u8>) -> PrivateKeySigner {
     let signer_bytes = secret.borrow();
-    // TODO: double check if this works
-    //let key = String::from_utf8(signer_bytes.to_vec()).unwrap();
 
-    let key = B256::from_slice(&signer_bytes);
+    // unwraps should be ok here since we know the input format is correctly
+    // unless the user messes with wallets.json manually, but that's unlikely
+    let key_str = String::from_utf8(signer_bytes.to_vec()).unwrap();
+    let key = B256::from_str(&key_str).unwrap();
     PrivateKeySigner::from_bytes(&key).expect("Failed to create signer from bytes")
 }

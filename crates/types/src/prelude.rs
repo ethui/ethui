@@ -5,10 +5,10 @@ pub use std::{
     sync::Arc,
 };
 
-pub use alloy::primitives::{address, Address, Bytes, B256, U256, U64};
-pub use color_eyre::eyre::{eyre, Context as _, ContextCompat as _, Result, WrapErr};
+pub use alloy::primitives::{Address, B256, Bytes, U64, U256, address};
+pub use color_eyre::eyre::{Context as _, ContextCompat as _, Result, WrapErr, eyre};
 pub use serde::{Deserialize, Serialize};
-pub use serde_json::{json, Value as Json};
+pub use serde_json::{Value as Json, json};
 pub use tokio::{
     sync::{RwLock, RwLockReadGuard, RwLockWriteGuard},
     time::Duration,

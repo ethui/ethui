@@ -3,7 +3,7 @@ mod autostart;
 pub mod commands;
 mod init;
 mod migrations;
-mod onboarding;
+pub mod onboarding;
 mod utils;
 
 pub use actor::*;
@@ -11,6 +11,7 @@ use ethui_types::prelude::*;
 pub use init::init;
 use migrations::LatestVersion;
 use onboarding::Onboarding;
+pub use onboarding::OnboardingStep;
 use serde_constant::ConstI64;
 pub use utils::test_alchemy_api_key;
 
@@ -45,6 +46,9 @@ pub struct Settings {
     #[serde(default)]
     pub start_minimized: bool,
 
+    #[serde(default = "default_true")]
+    pub check_for_updates: bool,
+
     #[serde(default)]
     pub rust_log: String,
 
@@ -73,6 +77,7 @@ impl Default for Settings {
             version: ConstI64,
             onboarding: Onboarding::default(),
             run_local_stacks: false,
+            check_for_updates: true,
         }
     }
 }

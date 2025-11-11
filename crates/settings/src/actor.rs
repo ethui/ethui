@@ -7,8 +7,8 @@ use ethui_types::prelude::*;
 use kameo::prelude::*;
 
 use crate::{
-    migrations::load_and_migrate, onboarding::OnboardingStep, test_alchemy_api_key,
-    utils::test_etherscan_api_key, DarkMode, Settings,
+    DarkMode, Settings, migrations::load_and_migrate, onboarding::OnboardingStep,
+    test_alchemy_api_key, utils::test_etherscan_api_key,
 };
 
 #[derive(Debug)]
@@ -27,7 +27,10 @@ where
         .wrap_err_with(|| "settings actor not found")?;
 
     // The function now directly uses the global actor reference.
-    actor.ask(msg).await.wrap_err_with(|| "failed")
+    match actor.ask(msg).await {
+        Ok(ret) => Ok(ret),
+        Err(e) => Err(eyre!("{}", e)),
+    }
 }
 
 pub async fn tell<M>(msg: M) -> Result<()>
@@ -77,7 +80,15 @@ impl SettingsActor {
 }
 
 impl Actor for SettingsActor {
+    type Args = PathBuf;
     type Error = color_eyre::Report;
+
+    async fn on_start(
+        args: Self::Args,
+        _actor_ref: ActorRef<Self>,
+    ) -> std::result::Result<Self, Self::Error> {
+        Self::new(args).await
+    }
 
     async fn on_panic(
         &mut self,

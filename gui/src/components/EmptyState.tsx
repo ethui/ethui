@@ -4,17 +4,19 @@ interface EmptyStateProps {
   message: string;
   description?: string;
   className?: string;
+  children?: React.ReactNode;
 }
 
 export function EmptyState({
   message,
   description,
   className,
+  children,
 }: EmptyStateProps) {
   return (
     <div
       className={cn(
-        "flex h-64 flex-col items-center justify-center text-center",
+        "mt-40 flex flex-col items-center justify-center px-10 text-center",
         className,
       )}
     >
@@ -22,6 +24,7 @@ export function EmptyState({
       {description && (
         <div className="text-muted-foreground text-sm">{description}</div>
       )}
+      <div className="mt-4">{children}</div>
     </div>
   );
 }

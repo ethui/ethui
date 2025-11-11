@@ -138,6 +138,7 @@ impl ChainUpdateBuilder {
                 .cloned(),
             currency: params.native_currency.symbol,
             decimals: params.native_currency.decimals as u32,
+            is_stack: false,
         };
 
         let deduplication_id = networks

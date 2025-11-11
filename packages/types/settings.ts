@@ -1,6 +1,12 @@
 import { z } from "zod";
 
-const onboardingSteps = z.enum(["alchemy", "wallet", "extension", "etherscan"]);
+const onboardingSteps = z.enum([
+  "alchemy",
+  "wallet",
+  "extension",
+  "etherscan",
+  "foundry",
+]);
 
 export const onboardingSchema = z.object({
   hidden: z.boolean(),
@@ -16,6 +22,7 @@ export const generalSettingsSchema = z.object({
   etherscanApiKey: z.string().optional().nullable(),
   hideEmptyTokens: z.boolean(),
   startMinimized: z.boolean(),
+  checkForUpdates: z.boolean(),
   fastMode: z.boolean(),
   onboarding: onboardingSchema,
   rustLog: z.string().optional(),

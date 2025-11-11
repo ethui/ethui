@@ -1,22 +1,22 @@
-import { useRouter } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
-import { HDWalletForm } from "#/components/Settings/Wallet/HDWallet";
-import { ImpersonatorForm } from "#/components/Settings/Wallet/Impersonator";
-import { JsonKeystore } from "#/components/Settings/Wallet/JsonKeystore";
-import { Ledger } from "#/components/Settings/Wallet/Ledger";
-import { Plaintext } from "#/components/Settings/Wallet/Plaintext";
-import { PrivateKeyForm } from "#/components/Settings/Wallet/PrivateKey";
+import { HDWalletForm } from "./HDWallet";
+import { ImpersonatorForm } from "./Impersonator";
+import { JsonKeystore } from "./JsonKeystore";
+import { Ledger } from "./Ledger";
+import { Plaintext } from "./Plaintext";
+import { PrivateKeyForm } from "./PrivateKey";
 
 export function WalletNew({ type }: { type: string }) {
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const onSubmit = async (params: object) => {
     await invoke("wallets_create", { params: { type, ...params } });
-    router.history.back();
+    navigate({ to: "/home/wallets" });
   };
 
   const onRemove = async () => {
-    router.history.back();
+    navigate({ to: "/home/wallets" });
   };
 
   const props = {

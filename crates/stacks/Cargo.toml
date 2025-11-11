@@ -16,6 +16,7 @@ ethui-broadcast.workspace = true
 ethui-db.workspace = true
 ethui-args.workspace = true
 
+url.workspace = true
 alloy.workspace = true
 serde.workspace = true
 serde_json.workspace = true
@@ -31,7 +32,6 @@ color-eyre.workspace = true
 glob.workspace = true
 notify.workspace = true
 notify-debouncer-full.workspace = true
-
+reqwest.workspace = true
 [dev-dependencies]
 tempfile.workspace = true
-reqwest.workspace = true

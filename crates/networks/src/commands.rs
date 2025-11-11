@@ -1,4 +1,4 @@
-use ethui_types::{prelude::*, NewNetworkParams};
+use ethui_types::{NewNetworkParams, prelude::*};
 
 use super::Networks;
 

@@ -21,7 +21,7 @@ let
     version = cargoToml.workspace.package.version;
     src = ../.;
     fetcherVersion = 1;
-    hash = "sha256-gaHfpqXRz8NkalSvmBuPItM+JyF3qdemp4XGMeHGlcc=";
+    hash = "sha256-tl7ZgpHleHiwuEUtcZn9RdMXC32HE5OxG7jrUC6sDeA=";
   };
 in
 {

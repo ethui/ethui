@@ -137,7 +137,7 @@ function Detect() {
 
   if (detected === true) {
     return (
-      <Alert>
+      <Alert variant="success">
         <AlertTitle>Ledger detected</AlertTitle>
         <AlertDescription>
           Please keep the Ethereum app open during this setup
