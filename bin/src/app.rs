@@ -287,12 +287,12 @@ fn config_dir(app: &tauri::App, args: &Args) -> PathBuf {
         })
 }
 
-#[cfg(feature = "aptabase")]
+#[cfg(all(feature = "aptabase", not(feature = "nix")))]
 fn build_aptabase_plugin<R: Runtime>() -> TauriPlugin<R> {
     #[cfg(debug_assertions)]
     let key = std::option_env!("APTABASE_KEY").unwrap_or("debug");
 
-    #[cfg(not(debug_assertions))]
+    #[cfg(not_debug_assertions)]
     let key = std::env!("APTABASE_KEY");
 
     tauri_plugin_aptabase::Builder::new(key).build()
