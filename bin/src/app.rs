@@ -127,7 +127,7 @@ impl EthUIApp {
             .plugin(tauri_plugin_clipboard_manager::init())
             .plugin(tauri_plugin_shell::init());
 
-        #[cfg(feature = "aptabase")]
+        #[cfg(all(feature = "aptabase", not(feature = "nix")))]
         let builder = builder.plugin(build_aptabase_plugin());
 
         #[cfg(all(feature = "updater", any(debug_assertions, target_os = "macos")))]
