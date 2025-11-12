@@ -62,6 +62,8 @@ pub fn track_event(
     full.extend(properties.unwrap_or_default());
 
     debug!(properties = ?full);
+
+    #[cfg(all(feature = "aptabase", not(feature = "nix")))]
     track_via_aptabase(handle, full, event_name)?;
 
     Ok(())
