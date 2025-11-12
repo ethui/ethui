@@ -2,8 +2,6 @@ use std::{collections::HashMap, sync::OnceLock};
 
 use ethui_types::prelude::*;
 use tauri::AppHandle;
-#[cfg(feature = "aptabase")]
-use tauri_plugin_aptabase::EventTracker as _;
 use uuid::Uuid;
 
 mod init;
@@ -54,10 +52,8 @@ impl Analytics {
     }
 }
 
-#[instrument(skip(handle, _handle))]
 pub fn track_event(
-    #[cfg(feature = "aptabase")] handle: &AppHandle,
-    #[cfg(not(feature = "aptabase"))] _handle: &AppHandle,
+    handle: &AppHandle,
     event_name: &str,
     properties: Option<HashMap<String, serde_json::Value>>,
 ) -> Result<()> {
@@ -65,15 +61,23 @@ pub fn track_event(
     let mut full = analytics.get_common_properties();
     full.extend(properties.unwrap_or_default());
 
-
     debug!(properties = ?full);
+    track_via_aptabase(handle, full, event_name)?;
 
-    #[cfg(feature = "aptabase")]
-    {
-        let json = serde_json::to_value(full)?;
-        if let Err(e) = handle.track_event(event_name, Some(json)) {
-            error!("Error tracking event: {e}");
-        }
+    Ok(())
+}
+
+#[cfg(all(feature = "aptabase", not(feature = "nix")))]
+fn track_via_aptabase(
+    handle: &AppHandle,
+    data: HashMap<String, serde_json::Value>,
+    event_name: &str,
+) -> Result<()> {
+    use tauri_plugin_aptabase::EventTracker as _;
+
+    let json = serde_json::to_value(data)?;
+    if let Err(e) = handle.track_event(event_name, Some(json)) {
+        error!("Error tracking event: {e}");
     }
 
     Ok(())

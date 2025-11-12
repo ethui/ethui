@@ -60,7 +60,7 @@ ethui-token-list.workspace = true
 [features]
 default = ["aptabase"]
 production = ["aptabase", "updater"]
-nix = []
+nix = ["ethui-analytics/nix"]
 forge-traces = [
   "dep:ethui-forge-traces",
   "ethui-args/forge-traces",

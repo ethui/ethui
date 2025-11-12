@@ -174,7 +174,7 @@ impl EthUIApp {
 
             tauri::RunEvent::Exit => {
                 let _ = ethui_analytics::track_event(handle, "app_exited", None);
-                #[cfg(feature = "aptabase")]
+                #[cfg(all(feature = "aptabase", not(feature = "nix")))]
                 let _ = handle.track_event("app_exited", None);
 
                 #[cfg(feature = "stacks")]
@@ -292,7 +292,7 @@ fn build_aptabase_plugin<R: Runtime>() -> TauriPlugin<R> {
     #[cfg(debug_assertions)]
     let key = std::option_env!("APTABASE_KEY").unwrap_or("debug");
 
-    #[cfg(not_debug_assertions)]
+    #[cfg(not(debug_assertions))]
     let key = std::env!("APTABASE_KEY");
 
     tauri_plugin_aptabase::Builder::new(key).build()
