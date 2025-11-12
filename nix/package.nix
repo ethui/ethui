@@ -86,22 +86,6 @@ in
     '';
 
     postInstall = ''
-      # # Wrap the binary to source shell environment
-      # mv $out/bin/ethui $out/bin/.ethui-unwrapped
-      #
-      # cat > $out/bin/ethui <<'EOF'
-      # #!/usr/bin/env bash
-      # if [ -f "$HOME/.zshenv" ]; then
-      #     source "$HOME/.zshenv"
-      # fi
-      # if [ -f "$HOME/.zprofile" ]; then
-      #     source "$HOME/.zprofile"
-      # fi
-      # exec $out/bin/.ethui-unwrapped "$@"
-      # EOF
-
-      chmod +x $out/bin/ethui
-
       mkdir -p $out/share/applications
       cp ${desktopItem}/share/applications/* $out/share/applications/
 
