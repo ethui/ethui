@@ -4,6 +4,7 @@ use ethui_args::Args;
 use ethui_broadcast::UIMsg;
 use named_lock::NamedLock;
 use tauri::{AppHandle, Builder, Emitter as _, Manager as _, Runtime, plugin::TauriPlugin};
+#[cfg(feature = "aptabase")]
 use tauri_plugin_aptabase::EventTracker;
 
 #[cfg(all(feature = "updater", any(debug_assertions, target_os = "macos")))]
