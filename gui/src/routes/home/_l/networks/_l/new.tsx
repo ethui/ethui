@@ -69,7 +69,7 @@ function Content() {
   const onSubmit = async (data: Schema) => {
     try {
       console.log("here", data);
-      await invoke("networks_add", { network: data });
+      await invoke("networks_add", { network: { ...data, is_stack: false } });
       console.log("here", data);
       router.history.back();
     } catch (err: any) {
