@@ -9,7 +9,7 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-alloy = { version = "1.0", default-features = false, features = [
+alloy = { version = "1.1", default-features = false, features = [
   "providers",
   "reqwest-rustls-tls",
   "rpc",
