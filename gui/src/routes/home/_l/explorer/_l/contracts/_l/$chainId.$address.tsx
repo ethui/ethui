@@ -37,6 +37,7 @@ function ContractInteraction() {
       abi={abi ?? []}
       address={address}
       chainId={chainId}
+      sender={sender}
       addresses={addresses?.all ?? []}
       isConnected={!!sender}
       onQuery={async ({ callData, value }) =>
