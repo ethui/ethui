@@ -58,7 +58,7 @@ tauri-build = { version = "2.4", default-features = false, features = [] }
 ethui-token-list.workspace = true
 
 [features]
-default = ["aptabase"]
+default = []
 production = ["aptabase", "updater"]
 forge-traces = [
   "dep:ethui-forge-traces",
