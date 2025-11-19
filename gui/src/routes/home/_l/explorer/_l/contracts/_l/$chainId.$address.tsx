@@ -40,18 +40,20 @@ function ContractInteraction() {
       sender={sender}
       addresses={addresses?.all ?? []}
       isConnected={!!sender}
-      onQuery={async ({ callData, value }) =>
+      onQuery={async ({ callData, value, msgSender }) =>
         invoke<Hash>("rpc_eth_call", {
           params: {
+            from: msgSender,
             data: callData,
             value: value?.toString(),
             to: address,
           },
         })
       }
-      onSimulate={async ({ callData, value }) =>
+      onSimulate={async ({ callData, value, msgSender }) =>
         invoke<Hash>("rpc_eth_call", {
           params: {
+            from: msgSender,
             data: callData,
             value: value?.toString(),
             to: address,
