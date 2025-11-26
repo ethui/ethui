@@ -49,17 +49,17 @@ impl SendTransaction {
     }
 
     pub async fn finish(&mut self) -> Result<PendingTransactionBuilder<Ethereum>> {
-        // inner scope so as not to lock wallets for the entire duration of the tx review
-        let skip = {
+        let wallet_is_dev = {
             let wallets = Wallets::read().await;
             let wallet = wallets
                 .get(&self.wallet_name)
                 .ok_or_else(|| Error::WalletNameNotFound(self.wallet_name.clone()))?;
-
-            self.network.is_dev().await && wallet.is_dev() && {
-                ethui_settings::ask(GetAll).await?.fast_mode
-            }
+            wallet.is_dev()
         };
+
+        let skip = self.network.is_dev().await
+            && wallet_is_dev
+            && ethui_settings::ask(GetAll).await?.fast_mode;
 
         // skip the dialog if both network & wallet allow for it, and if fast_mode is enabled
         if skip {
@@ -149,11 +149,13 @@ impl SendTransaction {
             return Ok(());
         }
 
-        let wallets = Wallets::read().await;
-        let wallet = wallets
-            .get(&self.wallet_name)
-            .ok_or(Error::WalletNameNotFound(self.wallet_name.clone()))?
-            .clone();
+        let wallet = {
+            let wallets = Wallets::read().await;
+            wallets
+                .get(&self.wallet_name)
+                .ok_or(Error::WalletNameNotFound(self.wallet_name.clone()))?
+                .clone()
+        };
 
         let url = self
             .network
@@ -203,10 +205,13 @@ impl SendTransaction {
     }
 
     async fn from(&self) -> Result<Address> {
-        let wallets = Wallets::read().await;
-        let wallet = wallets
-            .get(&self.wallet_name)
-            .ok_or_else(|| Error::WalletNameNotFound(self.wallet_name.clone()))?;
+        let wallet = {
+            let wallets = Wallets::read().await;
+            wallets
+                .get(&self.wallet_name)
+                .ok_or_else(|| Error::WalletNameNotFound(self.wallet_name.clone()))?
+                .clone()
+        };
 
         wallet
             .get_address(&self.wallet_path)
@@ -249,25 +254,25 @@ impl<'a> SendTransactionBuilder<'a> {
             &params
         };
 
-        let wallets = Wallets::read().await;
         if let Some(from) = params["from"].as_str() {
             let address = Address::from_str(from).unwrap();
             self.request.set_from(address);
 
-            let (wallet, path) = wallets
-                .find(address)
+            let (wallet, path) = ethui_wallets::find_wallet(address)
                 .await
                 .ok_or(Error::WalletNotFound(address))?;
+
             self.wallet_name = Some(wallet.name());
             self.wallet_path = Some(path);
-            self.wallet_type = Some(wallet.into());
+            self.wallet_type = Some((&wallet).into());
         } else {
-            let wallet = wallets.get_current_wallet();
+            let wallet = ethui_wallets::get_current_wallet().await;
+            let current_path = wallet.get_current_path();
 
-            self.wallet_path = Some(wallet.get_current_path());
+            self.wallet_path = Some(current_path);
             self.request.set_from(wallet.get_current_address().await);
             self.wallet_name = Some(wallet.name());
-            self.wallet_type = Some(wallet.into());
+            self.wallet_type = Some((&wallet).into());
         }
 
         if let Some(to) = params["to"].as_str() {

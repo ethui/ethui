@@ -128,16 +128,12 @@ impl Networks {
             .find(|n| n.id == dedup_chain_id)
     }
 
-    /// Get a cloned network by chain_id.
-    /// Avoids holding the lock across await points.
     pub fn get_network_cloned(&self, chain_id: u32) -> Result<Network> {
         self.get_network(chain_id)
             .cloned()
             .ok_or_else(|| eyre!("Network with chain_id {} not found", chain_id))
     }
 
-    /// Get a cloned network by dedup_chain_id.
-    /// Avoids holding the lock across await points.
     pub fn get_network_by_dedup_chain_id_cloned(
         &self,
         dedup_chain_id: NetworkId,

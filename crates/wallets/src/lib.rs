@@ -12,12 +12,24 @@ use std::{
 };
 
 use color_eyre::eyre::{ContextCompat as _, eyre};
-use ethui_types::{Address, Json, UINotify};
+use ethui_types::{Address, GlobalState, Json, UINotify};
 pub use init::init;
 use serde::Serialize;
 pub use signer::Signer;
 
 pub use self::wallet::{Wallet, WalletControl, WalletType};
+
+pub async fn find_wallet(address: Address) -> Option<(Wallet, String)> {
+    let wallets = Wallets::read().await;
+    wallets
+        .find(address)
+        .await
+        .map(|(wallet, path)| (wallet.clone(), path))
+}
+
+pub async fn get_current_wallet() -> Wallet {
+    Wallets::read().await.get_current_wallet().clone()
+}
 
 /// Maintains a list of Ethereum wallets, including keeping track of the global current wallet &
 /// address
@@ -42,6 +54,7 @@ impl Wallets {
 
         None
     }
+
 
     /// Gets a reference the current default wallet
     pub fn get_current_wallet(&self) -> &Wallet {

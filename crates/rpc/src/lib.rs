@@ -286,14 +286,13 @@ impl Handler {
         // TODO where should this be used?
         // let address = Address::from_str(&params[1].as_ref().cloned().unwrap()).unwrap();
 
-        let wallets = Wallets::read().await;
-
+        let wallet = ethui_wallets::get_current_wallet().await;
+        let wallet_path = wallet.get_current_path();
         let network = ctx.network().await;
-        let wallet = wallets.get_current_wallet();
 
         let mut signer = methods::SignMessage::build()
             .set_wallet(wallet)
-            .set_wallet_path(wallet.get_current_path())
+            .set_wallet_path(wallet_path)
             .set_network(network)
             .set_string_data(msg)
             .build();
@@ -315,14 +314,13 @@ impl Handler {
         let data = params[1].as_ref().cloned().unwrap();
         let typed_data: TypedData = serde_json::from_str(&data).unwrap();
 
-        let wallets = Wallets::read().await;
-
-        let wallet = wallets.get_current_wallet();
+        let wallet = ethui_wallets::get_current_wallet().await;
+        let wallet_path = wallet.get_current_path();
         let network = ctx.network().await;
 
         let mut signer = methods::SignMessage::build()
             .set_wallet(wallet)
-            .set_wallet_path(wallet.get_current_path())
+            .set_wallet_path(wallet_path)
             .set_network(network)
             .set_typed_data(typed_data)
             .build();
