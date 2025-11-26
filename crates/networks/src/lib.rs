@@ -12,6 +12,8 @@ pub async fn get_network(chain_id: u32) -> Result<Network> {
     Networks::read().await.get_network_cloned(chain_id)
 }
 
+/// Get a provider for a network by chain_id.
+/// Acquires and releases the lock, then creates the provider.
 pub async fn get_provider(chain_id: u32) -> Result<RootProvider<Ethereum>> {
     let network = get_network(chain_id).await?;
     network.get_alloy_provider().await
