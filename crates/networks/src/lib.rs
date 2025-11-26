@@ -4,13 +4,20 @@ mod migrations;
 
 use std::{fs::File, path::PathBuf};
 
-use alloy::{
-    network::Ethereum,
-    providers::{Provider, ProviderBuilder, RootProvider},
-};
 use ethui_types::{Affinity, NetworkId, NewNetworkParams, prelude::*};
 pub use init::init;
 use migrations::LatestVersion;
+
+pub async fn get_network(chain_id: u32) -> Result<Network> {
+    Networks::read().await.get_network_cloned(chain_id)
+}
+
+/// Get a provider for a network by chain_id.
+/// Acquires and releases the lock, then creates the provider.
+pub async fn get_provider(chain_id: u32) -> Result<RootProvider<Ethereum>> {
+    let network = get_network(chain_id).await?;
+    network.get_alloy_provider().await
+}
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct SerializedNetworks {
@@ -121,6 +128,25 @@ impl Networks {
             .find(|n| n.id == dedup_chain_id)
     }
 
+    /// Get a cloned network by chain_id.
+    /// Avoids holding the lock across await points.
+    pub fn get_network_cloned(&self, chain_id: u32) -> Result<Network> {
+        self.get_network(chain_id)
+            .cloned()
+            .ok_or_else(|| eyre!("Network with chain_id {} not found", chain_id))
+    }
+
+    /// Get a cloned network by dedup_chain_id.
+    /// Avoids holding the lock across await points.
+    pub fn get_network_by_dedup_chain_id_cloned(
+        &self,
+        dedup_chain_id: NetworkId,
+    ) -> Result<Network> {
+        self.get_network_by_dedup_chain_id(dedup_chain_id)
+            .cloned()
+            .ok_or_else(|| eyre!("Network with dedup_chain_id {:?} not found", dedup_chain_id))
+    }
+
     pub async fn add_network(&mut self, network: NewNetworkParams) -> Result<()> {
         if self.inner.networks.contains_key(&network.name) {
             return Err(eyre!("Already exists"));
@@ -198,15 +224,6 @@ impl Networks {
 
     pub fn get_current_provider(&self) -> RootProvider<Ethereum> {
         self.get_current().get_provider()
-    }
-
-    pub async fn chain_id_from_provider(&self, url: String) -> Result<u64> {
-        let provider = ProviderBuilder::new()
-            .disable_recommended_fillers()
-            .connect(&url)
-            .await?;
-
-        Ok(provider.get_chain_id().await?)
     }
 
     pub fn get_chain_id_count(&self, chain_id: u32) -> usize {

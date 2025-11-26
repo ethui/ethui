@@ -3,7 +3,9 @@ use std::path::PathBuf;
 use ethui_args::Args;
 use ethui_broadcast::UIMsg;
 use named_lock::NamedLock;
-use tauri::{AppHandle, Builder, Emitter as _, Manager as _, Runtime, plugin::TauriPlugin};
+use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
+#[cfg(feature = "aptabase")]
+use tauri::{Runtime, plugin::TauriPlugin};
 #[cfg(feature = "aptabase")]
 use tauri_plugin_aptabase::EventTracker;
 

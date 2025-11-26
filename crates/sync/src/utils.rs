@@ -1,13 +1,13 @@
 use alloy::{
     consensus::{Transaction as _, TxType},
-    network::{Ethereum, TransactionResponse as _},
-    providers::{Provider as _, RootProvider},
+    network::TransactionResponse as _,
+    providers::Provider as _,
 };
 use ethui_abis::IERC20;
 use ethui_types::{TokenMetadata, events::Tx, prelude::*};
 
 pub(crate) async fn fetch_full_tx(chain_id: u32, hash: B256) -> color_eyre::Result<()> {
-    let provider = provider(chain_id).await?;
+    let provider = ethui_networks::get_provider(chain_id).await?;
 
     let tx = provider.get_transaction_by_hash(hash).await?;
     let receipt = provider.get_transaction_receipt(hash).await?;
@@ -49,7 +49,7 @@ pub(crate) async fn fetch_erc20_metadata(
     chain_id: u32,
     address: Address,
 ) -> color_eyre::Result<()> {
-    let provider = provider(chain_id).await?;
+    let provider = ethui_networks::get_provider(chain_id).await?;
 
     let contract = IERC20::new(address, provider);
 
@@ -66,13 +66,4 @@ pub(crate) async fn fetch_erc20_metadata(
         .unwrap();
 
     Ok(())
-}
-
-async fn provider(chain_id: u32) -> color_eyre::Result<RootProvider<Ethereum>> {
-    let networks = ethui_networks::Networks::read().await;
-
-    match networks.get_network(chain_id) {
-        Some(network) => Ok(network.get_alloy_provider().await?),
-        _ => Err(eyre!("Invalid network: {}", chain_id)),
-    }
 }

@@ -1,7 +1,6 @@
 use alloy::{primitives::Bytes, providers::Provider as _};
-use ethui_networks::Networks;
-use ethui_types::{Address, GlobalState, eyre};
-use tracing::{debug, error};
+use ethui_types::{Address, eyre};
+use tracing::debug;
 
 pub static FUZZ_DIFF_THRESHOLD: f64 = 0.2;
 
@@ -57,17 +56,8 @@ pub async fn get_code(chain_id: u32, address: Address) -> color_eyre::Result<Byt
         "no code in db. fetching from provider for address 0x{:x}",
         address
     );
-    let networks = Networks::read().await;
-    // instead of failing we should just skip
-    let network = match networks.get_network(chain_id) {
-        Some(network) => network,
-        None => {
-            error!("failed to get network for chain id {}. ignoring", chain_id);
-            return Err(eyre!("Invalid chain ID: {}", chain_id));
-        }
-    };
 
-    let provider = network.get_alloy_provider().await?;
+    let provider = ethui_networks::get_provider(chain_id).await?;
     provider
         .get_code_at(address)
         .await
