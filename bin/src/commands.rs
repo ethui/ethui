@@ -6,7 +6,7 @@ use ethui_db::{
 };
 use ethui_forge::GetAbiFor;
 use ethui_proxy_detect::ProxyType;
-use ethui_types::{Address, GlobalState, TauriResult, UINotify};
+use ethui_types::{Address, TauriResult, UINotify};
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -44,11 +44,7 @@ pub async fn add_contract(
     address: Address,
     db: tauri::State<'_, Db>,
 ) -> TauriResult<()> {
-    let networks = ethui_networks::Networks::read().await;
-
-    let network = networks
-        .get_network(chain_id as u32)
-        .wrap_err_with(|| format!("Invalid network {chain_id}"))?;
+    let network = ethui_networks::get_network(chain_id as u32).await?;
     let provider = network.get_alloy_provider().await?;
 
     let code = provider

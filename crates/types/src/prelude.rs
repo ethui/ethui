@@ -5,7 +5,11 @@ pub use std::{
     sync::Arc,
 };
 
-pub use alloy::primitives::{Address, B256, Bytes, U64, U256, address};
+pub use alloy::{
+    network::Ethereum,
+    primitives::{Address, B256, Bytes, U64, U256, address},
+    providers::RootProvider,
+};
 pub use color_eyre::eyre::{Context as _, ContextCompat as _, Result, WrapErr, eyre};
 pub use serde::{Deserialize, Serialize};
 pub use serde_json::{Value as Json, json};

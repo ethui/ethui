@@ -60,11 +60,9 @@ pub async fn networks_remove(name: String) -> TauriResult<()> {
 
 #[tauri::command]
 pub async fn networks_is_dev(id: NetworkId) -> TauriResult<bool> {
-    let networks = Networks::read().await;
-
-    let network = networks
-        .get_network_by_dedup_chain_id(id)
-        .with_context(|| "Does not exist".to_string())
+    let network = Networks::read()
+        .await
+        .get_network_by_dedup_chain_id_cloned(id)
         .map_err(SerializableError::from)?;
 
     Ok(network.is_dev().await)
@@ -72,10 +70,18 @@ pub async fn networks_is_dev(id: NetworkId) -> TauriResult<bool> {
 
 #[tauri::command]
 pub async fn networks_chain_id_from_provider(url: String) -> TauriResult<u64> {
-    let networks = Networks::read().await;
+    use alloy::providers::{Provider, ProviderBuilder};
 
-    networks
-        .chain_id_from_provider(url)
+    let provider = ProviderBuilder::new()
+        .disable_recommended_fillers()
+        .connect(&url)
         .await
+        .with_context(|| format!("Failed to connect to provider at {url}"))
+        .map_err(SerializableError::from)?;
+
+    provider
+        .get_chain_id()
+        .await
+        .with_context(|| format!("Failed to get chain ID from provider at {url}"))
         .map_err(SerializableError::from)
 }
