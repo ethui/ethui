@@ -14,28 +14,25 @@ use serde::Serialize;
 use crate::{Error, Result};
 
 /// Orchestrates message signing
-/// Takes references to both the wallet and network
-pub struct SignMessage<'a> {
-    pub wallet: &'a Wallet,
+pub struct SignMessage {
+    pub wallet: Wallet,
     pub wallet_path: String,
     pub network: Network,
     data: Data,
 }
 
-impl<'a> SignMessage<'a> {
-    pub fn build() -> SignMessageBuilder<'a> {
+impl SignMessage {
+    pub fn build() -> SignMessageBuilder {
         Default::default()
     }
 
     pub async fn finish(&mut self) -> Result<Signature> {
-        let skip = {
-            self.network.is_dev().await && self.wallet.is_dev() && {
-                let settings = ethui_settings::ask(GetAll)
-                    .await
-                    .expect("Failed to get settings");
-                settings.fast_mode
-            }
-        };
+        let skip = self.network.is_dev().await
+            && self.wallet.is_dev()
+            && ethui_settings::ask(GetAll)
+                .await
+                .expect("Failed to get settings")
+                .fast_mode;
 
         if !skip {
             self.spawn_dialog().await?;
@@ -94,40 +91,40 @@ enum Data {
 }
 
 #[derive(Default)]
-pub struct SignMessageBuilder<'a> {
-    pub wallet: Option<&'a Wallet>,
+pub struct SignMessageBuilder {
+    pub wallet: Option<Wallet>,
     pub wallet_path: Option<String>,
     pub network: Option<Network>,
     data: Option<Data>,
 }
 
-impl<'a> SignMessageBuilder<'a> {
-    pub fn set_wallet(mut self, wallet: &'a Wallet) -> SignMessageBuilder<'a> {
+impl SignMessageBuilder {
+    pub fn set_wallet(mut self, wallet: Wallet) -> SignMessageBuilder {
         self.wallet = Some(wallet);
         self
     }
 
-    pub fn set_wallet_path(mut self, wallet_path: String) -> SignMessageBuilder<'a> {
+    pub fn set_wallet_path(mut self, wallet_path: String) -> SignMessageBuilder {
         self.wallet_path = Some(wallet_path);
         self
     }
 
-    pub fn set_network(mut self, network: Network) -> SignMessageBuilder<'a> {
+    pub fn set_network(mut self, network: Network) -> SignMessageBuilder {
         self.network = Some(network);
         self
     }
 
-    pub fn set_string_data(mut self, msg: String) -> SignMessageBuilder<'a> {
+    pub fn set_string_data(mut self, msg: String) -> SignMessageBuilder {
         self.data = Some(Data::Raw(msg));
         self
     }
 
-    pub fn set_typed_data(mut self, data: TypedData) -> SignMessageBuilder<'a> {
+    pub fn set_typed_data(mut self, data: TypedData) -> SignMessageBuilder {
         self.data = Some(Data::Typed(Box::new(data)));
         self
     }
 
-    pub fn build(self) -> SignMessage<'a> {
+    pub fn build(self) -> SignMessage {
         tracing::debug!("building SendTransaction");
 
         SignMessage {
