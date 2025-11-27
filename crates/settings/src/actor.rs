@@ -18,11 +18,11 @@ pub struct SettingsActor {
 }
 
 pub fn settings() -> ActorRef<SettingsActor> {
-    try_settings().expect("settings actor not found")
+    try_settings().expect("settings actor not initialized")
 }
 
-pub fn try_settings() -> Result<ActorRef<SettingsActor>> {
-    ActorRef::<SettingsActor>::lookup("settings")?.wrap_err_with(|| "settings actor not found")
+pub fn try_settings() -> color_eyre::Result<ActorRef<SettingsActor>> {
+    ActorRef::<SettingsActor>::lookup("settings")?.ok_or_else(|| color_eyre::eyre::eyre!("settings actor not found"))
 }
 
 impl SettingsActor {

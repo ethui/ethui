@@ -19,11 +19,11 @@ use walkdir::{DirEntry, WalkDir};
 use crate::{abi::ForgeAbi, utils};
 
 pub fn forge() -> ActorRef<ForgeActor> {
-    try_forge().expect("forge actor not found")
+    try_forge().expect("forge actor not initialized")
 }
 
 pub fn try_forge() -> color_eyre::Result<ActorRef<ForgeActor>> {
-    ActorRef::<ForgeActor>::lookup("forge")?.wrap_err_with(|| "forge actor not found")
+    ActorRef::<ForgeActor>::lookup("forge")?.ok_or_else(|| color_eyre::eyre::eyre!("forge actor not found"))
 }
 
 #[derive(Default)]
@@ -48,7 +48,7 @@ impl Message<UpdateRoots> for ForgeActor {
     async fn handle(
         &mut self,
         UpdateRoots(roots): UpdateRoots,
-        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
+        _ctx: &mut Context<Self, Self::Reply>,
     ) -> Self::Reply {
         let _ = self.update_roots(roots).await;
     }
@@ -60,7 +60,7 @@ impl Message<PollFoundryRoots> for ForgeActor {
     async fn handle(
         &mut self,
         _msg: PollFoundryRoots,
-        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
+        _ctx: &mut Context<Self, Self::Reply>,
     ) -> Self::Reply {
         let _ = self.update_foundry_roots().await;
     }
@@ -72,7 +72,7 @@ impl Message<NewContract> for ForgeActor {
     async fn handle(
         &mut self,
         _msg: NewContract,
-        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
+        _ctx: &mut Context<Self, Self::Reply>,
     ) -> Self::Reply {
         self.trigger_update_contracts().await;
     }
@@ -84,7 +84,7 @@ impl Message<Vec<DebouncedEvent>> for ForgeActor {
     async fn handle(
         &mut self,
         events: Vec<DebouncedEvent>,
-        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
+        _ctx: &mut Context<Self, Self::Reply>,
     ) -> Self::Reply {
         trace!("process_debounced_events");
         for debounced in events.into_iter() {
@@ -99,7 +99,7 @@ impl Message<Vec<DebouncedEvent>> for ForgeActor {
     }
 }
 
-struct UpdateContracts;
+pub struct UpdateContracts;
 
 impl Message<UpdateContracts> for ForgeActor {
     type Reply = color_eyre::Result<()>;
@@ -107,7 +107,7 @@ impl Message<UpdateContracts> for ForgeActor {
     async fn handle(
         &mut self,
         _msg: UpdateContracts,
-        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
+        _ctx: &mut Context<Self, Self::Reply>,
     ) -> Self::Reply {
         self.update_contracts_triggers -= 1;
 
@@ -174,7 +174,7 @@ impl Message<FetchAbis> for ForgeActor {
     async fn handle(
         &mut self,
         _msg: FetchAbis,
-        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
+        _ctx: &mut Context<Self, Self::Reply>,
     ) -> Self::Reply {
         self.abis_by_path.clone().into_values().collect()
     }
@@ -188,7 +188,7 @@ impl Message<GetAbiFor> for ForgeActor {
     async fn handle(
         &mut self,
         msg: GetAbiFor,
-        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
+        _ctx: &mut Context<Self, Self::Reply>,
     ) -> Self::Reply {
         self.get_abi_for(&msg.0)
     }

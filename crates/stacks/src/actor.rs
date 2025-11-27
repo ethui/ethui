@@ -7,16 +7,16 @@ use tracing::error;
 use crate::docker::{ContainerNotRunning, ContainerRunning, DockerManager, initialize};
 
 pub fn stacks() -> ActorRef<StacksActor> {
-    try_stacks().expect("stacks actor not found")
+    try_stacks().expect("stacks actor not initialized")
 }
 
 pub fn try_stacks() -> color_eyre::Result<ActorRef<StacksActor>> {
-    ActorRef::<StacksActor>::lookup("stacks")?.wrap_err_with(|| "stacks actor not found")
+    ActorRef::<StacksActor>::lookup("stacks")?.ok_or_else(|| color_eyre::eyre::eyre!("stacks actor not found"))
 }
 
 #[derive(Clone, Debug)]
 pub struct StacksActor {
-    pub stacks: bool,
+    pub enabled: bool,
     pub port: u16,
     pub config_dir: PathBuf,
     pub manager: RuntimeState,
@@ -58,11 +58,11 @@ impl Message<SetEnabled> for StacksActor {
         SetEnabled(enabled): SetEnabled,
         _ctx: &mut Context<Self, Self::Reply>,
     ) -> Self::Reply {
-        if self.stacks == enabled {
+        if self.enabled == enabled {
             return;
         }
 
-        self.stacks = enabled;
+        self.enabled = enabled;
 
         match (&self.manager, enabled) {
             (RuntimeState::Stopped(manager), true) => match manager.clone().run() {
@@ -179,7 +179,7 @@ impl Message<Initializing> for StacksActor {
         if let RuntimeState::Initializing = &self.manager {
             match initialize(self.port, self.config_dir.clone()) {
                 Ok(manager) => {
-                    if self.stacks {
+                    if self.enabled {
                         match manager.run() {
                             Ok(c) => self.manager = RuntimeState::Running(c),
                             Err(e) => {
@@ -218,7 +218,7 @@ impl Message<GetRuntimeState> for StacksActor {
         _ctx: &mut Context<Self, Self::Reply>,
     ) -> Self::Reply {
         Ok(RuntimeStateResponse {
-            running: self.stacks,
+            running: self.enabled,
             error: matches!(self.manager, RuntimeState::Error(_)),
             state: self.manager.as_str().to_string(),
         })
@@ -246,7 +246,7 @@ impl Actor for StacksActor {
 impl StacksActor {
     pub fn new(port: u16, config_dir: PathBuf) -> color_eyre::Result<Self> {
         Ok(Self {
-            stacks: false,
+            enabled: false,
             port,
             config_dir,
             manager: RuntimeState::Initializing,
