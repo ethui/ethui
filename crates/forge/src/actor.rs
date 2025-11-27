@@ -4,7 +4,7 @@ use std::{
     time::Duration,
 };
 
-use ethui_settings::{GetAll, OnboardingStep, Set};
+use ethui_settings::{OnboardingStep, actor::*};
 use ethui_types::prelude::*;
 use futures::{StreamExt as _, stream};
 use glob::glob;
@@ -18,29 +18,12 @@ use walkdir::{DirEntry, WalkDir};
 
 use crate::{abi::ForgeAbi, utils};
 
-pub async fn ask<M>(msg: M) -> color_eyre::Result<<<Worker as Message<M>>::Reply as Reply>::Ok>
-where
-    Worker: Message<M>,
-    M: Send + 'static + Sync,
-    <<Worker as Message<M>>::Reply as Reply>::Error: Sync + std::fmt::Display,
-{
-    let actor =
-        ActorRef::<Worker>::lookup("settings")?.wrap_err_with(|| "forge actor not found")?;
-
-    // The function now directly uses the global actor reference.
-    actor.ask(msg).await.wrap_err_with(|| "failed")
+pub fn forge_ref() -> ActorRef<Worker> {
+    try_forge_ref().expect("forge actor not found")
 }
 
-pub async fn tell<M>(msg: M) -> color_eyre::Result<()>
-where
-    Worker: Message<M>,
-    M: Send + 'static + Sync,
-    <<Worker as Message<M>>::Reply as Reply>::Error: Sync + std::fmt::Display,
-{
-    let actor =
-        ActorRef::<Worker>::lookup("settings")?.wrap_err_with(|| "forge actor not found")?;
-
-    actor.tell(msg).await.map_err(Into::into)
+fn try_forge_ref() -> color_eyre::Result<ActorRef<Worker>> {
+    ActorRef::<Worker>::lookup("forge")?.wrap_err_with(|| "forge actor not found")
 }
 
 #[derive(Default)]
@@ -301,11 +284,16 @@ impl Worker {
             self.insert_abi(abi);
         }
 
+        let settings_actor = settings_ref();
+        let settings = settings_actor.ask(GetAll).await?;
+
         if !self.abis_by_path.is_empty()
-            && let Ok(settings) = ethui_settings::ask(GetAll).await
-            && !settings.onboarding.is_step_finished(OnboardingStep::Foundry)
+            && !settings
+                .onboarding
+                .is_step_finished(OnboardingStep::Foundry)
         {
-            let _ = ethui_settings::tell(Set::FinishOnboardingStep(OnboardingStep::Foundry))
+            let _ = settings_actor
+                .tell(Set::FinishOnboardingStep(OnboardingStep::Foundry))
                 .await;
         }
 

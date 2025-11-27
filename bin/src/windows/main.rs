@@ -1,10 +1,11 @@
-use ethui_settings::GetAll;
+use ethui_settings::actor::*;
 use tauri::{AppHandle, Manager};
 
 use super::build_window;
 
 pub(crate) async fn show(app: &AppHandle) {
-    let settings = ethui_settings::ask(GetAll)
+    let settings = settings_ref()
+        .ask(GetAll)
         .await
         .expect("Failed to get settings");
 

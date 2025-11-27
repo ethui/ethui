@@ -6,29 +6,12 @@ use tracing::error;
 
 use crate::docker::{ContainerNotRunning, ContainerRunning, DockerManager, initialize};
 
-pub async fn ask<M>(msg: M) -> color_eyre::Result<<<Worker as Message<M>>::Reply as Reply>::Ok>
-where
-    Worker: Message<M>,
-    M: Send + 'static + Sync,
-    <<Worker as Message<M>>::Reply as Reply>::Error: Sync + std::fmt::Display,
-{
-    let actor = ActorRef::<Worker>::lookup("run_local_stacks")?
-        .wrap_err_with(|| "local stacks actor not found")?;
-
-    // The function now directly uses the global actor reference.
-    actor.ask(msg).await.wrap_err_with(|| "failed")
+pub fn stacks_ref() -> ActorRef<Worker> {
+    try_stacks_ref().expect("stacks actor not found")
 }
 
-pub async fn tell<M>(msg: M) -> color_eyre::Result<()>
-where
-    Worker: Message<M>,
-    M: Send + 'static + Sync,
-    <<Worker as Message<M>>::Reply as Reply>::Error: Sync + std::fmt::Display,
-{
-    let actor = ActorRef::<Worker>::lookup("run_local_stacks")?
-        .wrap_err_with(|| "local stacks actor not found")?;
-
-    actor.tell(msg).await.map_err(Into::into)
+fn try_stacks_ref() -> color_eyre::Result<ActorRef<Worker>> {
+    ActorRef::<Worker>::lookup("run_local_stacks")?.wrap_err_with(|| "local stacks actor not found")
 }
 
 #[derive(Clone, Debug)]

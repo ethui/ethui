@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use ethui_broadcast::InternalMsg;
-use ethui_settings::GetAll;
+use ethui_settings::actor::*;
 use kameo::{Actor as _, actor::ActorRef};
 
 use crate::actor::{Initializing, SetEnabled, Worker};
@@ -10,7 +10,8 @@ pub async fn init(stacks_port: u16, config_dir: PathBuf) -> color_eyre::Result<(
     let handle = Worker::spawn((stacks_port, config_dir));
     handle.register("run_local_stacks")?;
 
-    let settings = ethui_settings::ask(GetAll)
+    let settings = settings_ref()
+        .ask(GetAll)
         .await
         .expect("Failed to get settings");
 
@@ -29,7 +30,8 @@ async fn receiver(handle: ActorRef<Worker>) -> ! {
         if let Ok(msg) = rx.recv().await
             && let InternalMsg::SettingsUpdated = msg
         {
-            let settings = ethui_settings::ask(GetAll)
+            let settings = settings_ref()
+                .ask(GetAll)
                 .await
                 .expect("Failed to get settings");
 

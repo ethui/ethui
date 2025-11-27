@@ -1,11 +1,12 @@
 use color_eyre::eyre::WrapErr;
-use ethui_settings::GetAll;
+use ethui_settings::actor::*;
 use ethui_types::eyre;
 
 use crate::Alchemy;
 
 pub async fn get_current_api_key() -> color_eyre::Result<Option<String>> {
-    let settings = ethui_settings::ask(GetAll)
+    let settings = settings_ref()
+        .ask(GetAll)
         .await
         .wrap_err_with(|| "Failed to get settings")?;
 

@@ -17,32 +17,12 @@ pub struct SettingsActor {
     file: PathBuf,
 }
 
-pub async fn ask<M>(msg: M) -> Result<<<SettingsActor as Message<M>>::Reply as Reply>::Ok>
-where
-    SettingsActor: Message<M>,
-    M: Send + 'static + Sync,
-    <<SettingsActor as Message<M>>::Reply as Reply>::Error: Sync + std::fmt::Display,
-{
-    let actor = ActorRef::<SettingsActor>::lookup("settings")?
-        .wrap_err_with(|| "settings actor not found")?;
-
-    // The function now directly uses the global actor reference.
-    match actor.ask(msg).await {
-        Ok(ret) => Ok(ret),
-        Err(e) => Err(eyre!("{}", e)),
-    }
+pub fn settings_ref() -> ActorRef<SettingsActor> {
+    try_settings_ref().expect("settings actor not found")
 }
 
-pub async fn tell<M>(msg: M) -> Result<()>
-where
-    SettingsActor: Message<M>,
-    M: Send + 'static + Sync,
-    <<SettingsActor as Message<M>>::Reply as Reply>::Error: Sync + std::fmt::Display,
-{
-    let actor = ActorRef::<SettingsActor>::lookup("settings")?
-        .wrap_err_with(|| "settings actor not found")?;
-
-    actor.tell(msg).await.map_err(Into::into)
+fn try_settings_ref() -> Result<ActorRef<SettingsActor>> {
+    ActorRef::<SettingsActor>::lookup("settings")?.wrap_err_with(|| "settings actor not found")
 }
 
 impl SettingsActor {
@@ -111,7 +91,7 @@ pub enum Set {
     RunLocalStacks(bool),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct GetAll;
 
 #[derive(Debug, Clone)]
