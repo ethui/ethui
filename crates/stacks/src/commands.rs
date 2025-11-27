@@ -5,7 +5,7 @@ use url::Url;
 
 use crate::{
     actor::{
-        CreateStack, GetConfig, GetRuntimeState, ListStracks, RemoveStack, RuntimeStateResponse,
+        CreateStack, GetConfig, GetRuntimeState, ListStacks, RemoveStack, RuntimeStateResponse,
         Shutdown, stacks,
     },
     utils,
@@ -44,7 +44,7 @@ pub async fn stacks_create(slug: String) -> TauriResult<()> {
 
 #[command]
 pub async fn stacks_list() -> TauriResult<Vec<String>> {
-    let stacks = stacks().ask(ListStracks).await?;
+    let stacks = stacks().ask(ListStacks).await?;
     Ok(stacks)
 }
 

@@ -22,7 +22,7 @@ pub fn forge() -> ActorRef<ForgeActor> {
     try_forge().expect("forge actor not found")
 }
 
-fn try_forge() -> color_eyre::Result<ActorRef<ForgeActor>> {
+pub fn try_forge() -> color_eyre::Result<ActorRef<ForgeActor>> {
     ActorRef::<ForgeActor>::lookup("forge")?.wrap_err_with(|| "forge actor not found")
 }
 

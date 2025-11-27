@@ -21,7 +21,7 @@ pub fn settings() -> ActorRef<SettingsActor> {
     try_settings().expect("settings actor not found")
 }
 
-fn try_settings() -> Result<ActorRef<SettingsActor>> {
+pub fn try_settings() -> Result<ActorRef<SettingsActor>> {
     ActorRef::<SettingsActor>::lookup("settings")?.wrap_err_with(|| "settings actor not found")
 }
 

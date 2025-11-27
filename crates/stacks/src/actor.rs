@@ -45,7 +45,7 @@ pub struct Initializing;
 pub struct SetEnabled(pub bool);
 pub struct GetConfig;
 pub struct GetRuntimeState;
-pub struct ListStracks;
+pub struct ListStacks;
 pub struct CreateStack(pub String);
 pub struct RemoveStack(pub String);
 pub struct Shutdown;
@@ -101,12 +101,12 @@ impl Message<GetConfig> for StacksActor {
     }
 }
 
-impl Message<ListStracks> for StacksActor {
+impl Message<ListStacks> for StacksActor {
     type Reply = Result<Vec<String>>;
 
     async fn handle(
         &mut self,
-        _msg: ListStracks,
+        _msg: ListStacks,
         _ctx: &mut Context<Self, Self::Reply>,
     ) -> Self::Reply {
         match &self.manager {
